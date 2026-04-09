@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Хәбәрне юнәлтү",
+		"searchPlaceholder": "Эзләү",
+		"noResults": "Эзләгән әйберегезне таба алмыйсызмы?",
+		"searchFriendsUsers": "Дусларны һәм кулланучыларны эзләү",
+		"searchingChannel": "Канал эзләү",
+		"sharedContent": "Уртак эчтәлек",
+		"cancel": "Кире кагу",
+		"send": "Җибәрү",
+		"sending": "Җибәрү...",
+		"sendingProgress": "Җибәрү ({{current}}/{{total}})...",
+		"image": "рәсем",
+		"images": "рәсем",
+		"video": "видео",
+		"videos": "видео",
+		"file": "файл",
+		"files": "файл",
+		"additionalMessage": "Өстәмә хәбәр (мәҗбүри түгел)",
+		"additionalMessagePlaceholder": "Бергә җибәрергә теләгән хәбәрегезне керетегез..."
+	},
+	"successMessage": "Хәбәр уңышлы юнәлтелде",
+	"errorMessage": "Хәбәрне юнәлтеп булмады"
+}

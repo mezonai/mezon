@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Convidar amigos para {{target}}",
+		"privateEvent": "Evento externo",
+		"privateRoom": "Sala de reunião",
+		"clanInvite": "convite de clã",
+		"sendLinkText": "Ou, envie o link de {{type}} para eles",
+		"expiresIn": "Seu link de convite expira em {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 minutos",
+		"1hour": "1 hora",
+		"6hours": "6 horas",
+		"12hours": "12 horas",
+		"1day": "1 dia",
+		"7days": "7 dias",
+		"never": "Nunca"
+	},
+	"maxUses": {
+		"noLimit": "Sem limite",
+		"1use": "1 uso",
+		"5uses": "5 usos",
+		"10uses": "10 usos",
+		"25uses": "25 usos",
+		"50uses": "50 usos",
+		"100uses": "100 usos"
+	},
+	"generateLink": {
+		"expireAfter": "Expira após",
+		"maxNumberOfUses": "Número máximo de usos"
+	},
+	"buttons": {
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"copyQR": "Copiar QR",
+		"editInviteLink": "Editar link de convite",
+		"cancel": "Cancelar",
+		"generateNewLink": "Gerar novo link",
+		"invite": "Convidar",
+		"sent": "Enviado"
+	},
+	"searchPlaceholder": "Pesquisar amigos",
+	"privateChannelDescription": "Este canal é privado, apenas os membros e cargos selecionados podem visualizá-lo.",
+	"noResults": "Nenhum resultado",
+	"messages": {
+		"qrCopiedSuccess": "QR copiado com sucesso!"
+	},
+	"errors": {
+		"createInviteLink": "Erro ao criar link de convite",
+		"copyToClipboard": "Não foi possível copiar para a área de transferência",
+		"copyFailed": "Falha ao copiar"
+	},
+	"acceptModal": {
+		"title": "Participar do Clã",
+		"invitedToJoin": "Você foi convidado para participar",
+		"memberCount": "{{count}} Membro",
+		"memberCount_plural": "{{count}} Membros",
+		"clanSettings": "Configurações do Clã",
+		"customizeAnytime": "Você pode personalizar isso a qualquer momento",
+		"noThanks": "Não, obrigado",
+		"acceptInvite": "Aceitar convite",
+		"joining": "Entrando...",
+		"toast": {
+			"alreadyMember": "Você já é um membro!"
+		}
+	}
+}

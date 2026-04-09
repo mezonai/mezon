@@ -2,6 +2,7 @@ import { generateClanWebhook, selectCurrentClanId, useAppDispatch } from '@mezon
 import { Image } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ApiClanWebhook, ApiGenerateClanWebhookRequest } from 'mezon-js/api';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ClanWebhookItemModal from './ClanWebhookItemModal';
@@ -13,6 +14,7 @@ interface IClanWebhooksProps {
 const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 	const { t } = useTranslation('integrations');
 	const dispatch = useAppDispatch();
+	const [expandedWebhookId, setExpandedWebhookId] = useState<string | null>(null);
 	const webhookNames = ['Captain hook', 'Spidey bot', 'Komu Knight'];
 	const getRandomWebhookName = (): string => {
 		const randomIndex = Math.floor(Math.random() * webhookNames.length);
@@ -55,7 +57,15 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 					>
 						{t('newClanWebhook')}
 					</div>
-					{allClanWebhooks && allClanWebhooks.map((webhook) => <ClanWebhookItemModal webhookItem={webhook} key={webhook.id} />)}
+					{allClanWebhooks &&
+						allClanWebhooks.map((webhook) => (
+							<ClanWebhookItemModal
+								webhookItem={webhook}
+								key={webhook.id}
+								isExpanded={expandedWebhookId === webhook.id}
+								onToggleExpand={() => setExpandedWebhookId(expandedWebhookId === webhook.id ? null : (webhook.id ?? null))}
+							/>
+						))}
 				</>
 			) : (
 				<div className="flex items-center flex-col gap-4">

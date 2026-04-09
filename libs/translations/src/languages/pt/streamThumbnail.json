@@ -1,0 +1,50 @@
+{
+	"title": "Capa da Transmissão",
+	"uploadThumbnail": "Fazer upload da capa",
+	"currentThumbnail": "Capa atual",
+	"requirementsTitle": "Requisitos",
+	"buttons": {
+		"change": "Alterar",
+		"remove": "Remover",
+		"selectFile": "Selecionar arquivo",
+		"uploading": "Enviando...",
+		"cancel": "Cancelar",
+		"confirmUpload": "Confirmar",
+		"removing": "Removendo...",
+		"removeThumbnail": "Remover capa"
+	},
+	"upload": {
+		"title": "Faça upload da sua capa",
+		"description": "Clique para navegar ou arraste e solte sua imagem"
+	},
+	"confirmModal": {
+		"uploadTitle": "Confirmar upload",
+		"uploadDescription": "Definir esta imagem como a capa da sua transmissão?",
+		"uploadMessage": "Esta capa será exibida quando sua transmissão estiver offline. Todos os membros verão esta atualização imediatamente.",
+		"removeTitle": "Remover capa",
+		"removeQuestion": "Tem certeza?",
+		"removeMessage": "Isso removerá a capa da sua transmissão. A tela de abertura padrão será exibida no lugar quando sua transmissão estiver offline.",
+		"removeWarning": "Esta ação não pode ser desfeita."
+	},
+	"requirements": {
+		"format": {
+			"title": "Formato",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Resolução",
+			"value": "Recomendado: 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Limite de tamanho",
+			"value": "Máximo de 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Canal não encontrado",
+		"clientNotReady": "Cliente/sessão não está pronto",
+		"uploadFailed": "Falha ao enviar a capa. Tente novamente.",
+		"removeFailed": "Falha ao remover a capa. Tente novamente."
+	},
+	"saved": "Capa salva"
+}

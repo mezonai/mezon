@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Pedido de amizade",
+		"received": "Recebidos",
+		"sent": "Enviados",
+		"emptyReceived": {
+			"title": "Nenhum pedido de amizade recebido",
+			"description": "Aqui você verá todos os pedidos de amizade que as pessoas enviaram para você."
+		},
+		"emptySent": {
+			"title": "Nenhum pedido de amizade enviado",
+			"description": "Aqui você verá todos os pedidos de amizade que você enviou para outras pessoas."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Pedido de amizade recebido",
+		"findYourFriend": "Encontrar amigos",
+		"addByUserName": "Adicionar por nome de usuário ou número de telefone",
+		"addByUsername": "Adicionado por {{username}}",
+		"searchUsernamePlaceholder": "Digite o nome de usuário ou número de telefone",
+		"whoYouWantToAddFriend": "Quem você deseja adicionar como amigo?",
+		"byTheWay": "A propósito, seu nome de usuário é",
+		"sendRequestButton": "Enviar pedido de amizade",
+		"addFriendToast": "Pedido de amizade enviado"
+	},
+	"friends": "Amigos",
+	"noFriendsResultsFound": "Nenhum resultado de amigo encontrado",
+	"toast": {
+		"sendAddFriendSuccess": "Pedido de amizade enviado com sucesso!",
+		"acceptAddFriendSuccess": "Pedido de amizade aceito!",
+		"sendAddFriendFail": "Hmm, ocorreu um erro. Por favor, verifique se o nome de usuário está correto.",
+		"somethingWentWrong": "Ocorreu um erro",
+		"friendRequestAlreadySent": "O pedido de amizade já foi enviado e está aguardando aceitação."
+	},
+	"you": "você"
+}

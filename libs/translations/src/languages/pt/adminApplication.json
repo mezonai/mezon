@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Criar nova aplicação",
+			"bot": "Criar novo bot"
+		},
+		"form": {
+			"type": {
+				"label": "TIPO",
+				"options": {
+					"createApplication": "Criar aplicação",
+					"createBot": "Criar bot"
+				}
+			},
+			"name": {
+				"label": "NOME"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Bot Oculto",
+			"agreement": {
+				"text": "Ao clicar em Criar, você concorda com",
+				"termsOfService": "Termos de Serviço do Desenvolvedor",
+				"policy": "Política do Desenvolvedor",
+				"and": "e"
+			}
+		},
+		"buttons": {
+			"cancel": "Cancelar",
+			"create": "Criar",
+			"creating": "Criando...",
+			"confirm": "Confirmar"
+		},
+		"errors": {
+			"nameRequired": "O nome é obrigatório para criar sua nova {type}.",
+			"urlRequired": "A URL é obrigatória para criar sua nova aplicação.",
+			"invalidUrl": "Por favor, insira uma URL válida (ex: https://exemplo.com).",
+			"createFailed": "Não foi possível criar a aplicação ou falta um ID na resposta",
+			"unexpectedError": "Ocorreu um erro inesperado.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "No modo oculto, o bot pode receber todas as mensagens enviadas ao criador, mas não pode enviar mensagens."
+		},
+		"shadowConfirm": {
+			"title": "Tem certeza de que deseja ativar o modo Bot Oculto?",
+			"message": "Neste modo, o bot pode receber todas as mensagens enviadas ao criador, mas não pode enviar mensagens."
+		}
+	},
+	"sidebar": {
+		"menu": "Menu",
+		"closeMenu": "Fechar menu"
+	},
+	"tabs": {
+		"generalInformation": "Informações gerais",
+		"installation": "Instalação",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Informações gerais",
+		"subtitle": "Como devemos chamar seu produto? O que ele faz de incrível? Qual ícone deve representá-lo no Mezon? Conte-nos aqui!",
+		"agreement": {
+			"text": "Ao clicar em Criar, você concorda com",
+			"adminTerms": "Termos de Serviço de Administrador",
+			"adminPolicy": "Política de Administrador",
+			"and": "e"
+		},
+		"appIcon": {
+			"label": "Ícone do aplicativo",
+			"remove": "Remover",
+			"size": "Tamanho: {size}"
+		},
+		"form": {
+			"name": "Nome",
+			"url": "URL",
+			"botShadow": "Bot Oculto",
+			"description": {
+				"label": "Descrição (máximo 400 caracteres)",
+				"subtitle": "Sua descrição aparecerá na seção Sobre o Bot",
+				"placeholder": "Escreva uma breve descrição do seu Bot"
+			},
+			"appId": "ID do Bot",
+			"appToken": "Token "
+		},
+		"token": {
+			"newTokenWarning": "Este é o seu novo token. Copie-o e guarde-o em segurança; você não poderá vê-lo novamente.",
+			"securityInfo": "Por motivos de segurança, o token só pode ser visualizado uma vez, no momento da criação. Se você esquecer ou perder o acesso ao token, por favor, gere um novo."
+		},
+		"buttons": {
+			"copy": "Copiar",
+			"copied": "Copiado!",
+			"copyToken": "Copiar Token",
+			"resetToken": "Redefinir Token",
+			"delete": "Excluir "
+		},
+		"errors": {
+			"invalidUrl": "Por favor, insira uma URL válida (ex: https://exemplo.com).",
+			"clientNotInitialized": "O cliente ou arquivo não foi inicializado",
+			"resetTokenFailed": "Não foi possível redefinir o token:"
+		}
+	},
+	"installation": {
+		"title": "Instalação",
+		"subtitle": "Escolha como os usuários instalarão seu aplicativo. Crie um link de instalação, escolha o contexto de instalação para suporte e defina os escopos e permissões que deseja solicitar.",
+		"installLink": {
+			"title": "Link de Instalação",
+			"description": "Use o link de instalação fornecido ou registre um link personalizado. Se você escolher um link personalizado, os usuários que adicionarem seu aplicativo serão redirecionados para sua URL em vez do processo 'Adicionar Aplicativo' no Mezon.",
+			"option": "Link fornecido pelo Mezon"
+		},
+		"buttons": {
+			"copy": "Copiar",
+			"copied": "Copiado!"
+		},
+		"loading": "Carregando dados do aplicativo...",
+		"notFound": "Dados do aplicativo não encontrados"
+	},
+	"clientInformation": {
+		"title": "Informações do Cliente",
+		"clientId": "ID do Cliente",
+		"clientSecret": "Segredo do Cliente",
+		"hiddenForSecurity": "Oculto por motivos de segurança",
+		"resetSecret": "Redefinir segredo",
+		"publicClient": {
+			"title": "Cliente público",
+			"description": "Um cliente público não pode manter a confidencialidade das credenciais do cliente (ou seja, aplicativos desktop/mobile que não utilizam um servidor para realizar requisições)"
+		},
+		"buttons": {
+			"copy": "Copiar",
+			"copied": "Copiado!"
+		},
+		"resetSecretPopup": {
+			"title": "Recriar Chave Secreta?",
+			"warning": "Seu aplicativo parará de funcionar até que você atualize a chave secreta no código do aplicativo.",
+			"nevermind": "Cancelar",
+			"confirm": "Sim!"
+		},
+		"toasts": {
+			"addRedirectUri": "Por favor, adicione pelo menos um URI de redirecionamento antes de redefinir a chave secreta!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Painel",
+		"applications": "Aplicações",
+		"teams": "Equipes",
+		"embedDebugger": "Depurador de Embed",
+		"document": "Documentação"
+	},
+	"applicationsPage": {
+		"title": "Aplicações",
+		"newApplicationButton": "Criar nova Aplicação ou Bot",
+		"develop": "Desenvolver",
+		"subtitle": " para personalizar e expandir o Mezon para milhões de usuários.",
+		"appsLinkText": "aplicações",
+		"sortBy": "Ordenar por:",
+		"sortOptions": {
+			"dateOfCreation": "Data de criação",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Pequeno",
+			"large": "Grande"
+		},
+		"sections": {
+			"myApplications": "Minhas aplicações",
+			"myBots": "Meus bots"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Use o Mezon como um sistema de autorização ou use nossa API em nome de seus usuários. Adicione URIs de redirecionamento, escolha escopos, role um D20 para ter sorte e comece!",
+		"learnMore": "Saiba mais sobre OAuth2",
+		"generator": {
+			"title": "Gerador de URL OAuth2",
+			"description": "Crie links de convite para seu aplicativo escolhendo os escopos e permissões necessários para funcionar. Depois, compartilhe a URL com outros!",
+			"scopes": "Escopos"
+		},
+		"redirects": {
+			"title": "Redirecionamentos",
+			"description": "Você deve especificar pelo menos um URI para que a autenticação funcione. Se você passar um URI na requisição OAuth, ele deve coincidir exatamente com um dos URIs inseridos aqui.",
+			"addRedirect": "Adicionar Redirecionamento",
+			"toasts": {
+				"fillAllInputs": "Por favor, preencha todos os campos com URIs válidos!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Existem campos vazios!",
+			"invalidUris": "Os URIs devem ser válidos!",
+			"redirectUriRequired": "O URI de redirecionamento é obrigatório!"
+		}
+	},
+	"backToApps": "Voltar para Aplicações",
+	"selectLabel": "SELECIONAR {{type}}",
+	"settings": "CONFIGURAÇÕES",
+	"flows": {
+		"title": "Fluxos de Chat",
+		"hasTokenInfo": "Você precisa configurar o Token antes de criar um novo fluxo de Bot.",
+		"setToken": "Definir Token",
+		"addFlow": "Adicionar Fluxo",
+		"appTokenModal": {
+			"title": "Token do Aplicativo",
+			"saveButton": "Salvar"
+		},
+		"toasts": {
+			"errorLoading": "Erro ao carregar a lista de fluxos"
+		}
+	},
+	"teams": {
+		"title": "Equipes"
+	},
+	"embed": {
+		"title": "Depurador de Embed"
+	},
+	"small": "Pequeno",
+	"large": "Grande"
+}

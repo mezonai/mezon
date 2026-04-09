@@ -55,7 +55,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, thread?.channel_id ?? ''));
 	const events = useAppSelector((state) => selectEventsByChannelId(state, thread?.clan_id ?? '', thread?.channel_id ?? ''));
 
-	const state = isActive ? 'active' : thread?.unread ? 'inactiveUnread' : 'inactiveRead';
+	const state = isActive ? 'active' : isUnReadChannel ? 'inactiveUnread' : 'inactiveRead';
 
 	useImperativeHandle(ref, () => ({
 		scrollToIntoView: (options?: ScrollIntoViewOptions) => {
@@ -149,7 +149,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 				ref={threadLinkRef}
 				to={channelPath}
 				key={thread.channel_id}
-				className={`${classes[state]} ml-10 w-full leading-[24px] rounded-lg font-medium text-theme-primary-hover  text-[16px] max-w-full one-line ${isActive || isUnReadChannel || numberNotification > 0 ? 'dark:font-medium font-semibold text-theme-primary-active ' : ' '} ${isActive ? 'bg-item-hover text-theme-primary-active bg-item-theme' : 'text-theme-primary'}`}
+				className={`${classes[state]} ml-10 w-full leading-[24px] rounded-lg font-medium text-theme-primary-hover  text-[16px] max-w-full one-line ${isActive ? 'bg-item-hover text-theme-primary-active bg-item-theme' : 'text-theme-primary'} ${isActive || isUnReadChannel || numberNotification > 0 ? 'dark:font-medium font-semibold text-theme-primary-active ' : ' '} `}
 				onClick={(e) => {
 					handleClickLink(e, thread);
 				}}

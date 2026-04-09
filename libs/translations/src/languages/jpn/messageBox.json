@@ -1,0 +1,19 @@
+{
+	"placeholder": "ここにあなたの考えを書きましょう...",
+	"ephemeralMessage": "{{username}}への一時的メッセージ...",
+	"mentionCategories": {
+		"members": "メンバー",
+		"textChannels": "テキストチャンネル",
+		"emojiMatching": "一致する絵文字が見つかりました",
+		"commands": "コマンド"
+	},
+	"suggestions": {
+		"notifyEveryone": "このチャンネルを表示する権限を持つすべての人に通知",
+		"loadingCommands": "コマンドを読み込んでいます..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "一時的メッセージを送信（選択されたユーザーのみが表示）"
+		}
+	}
+}

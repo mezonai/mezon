@@ -1,0 +1,28 @@
+{
+	"title": "統合",
+	"clanWebhooks": "クランWebhook",
+	"webhooks": "Webhook",
+	"description": "統合機能でクランをカスタマイズしましょう。Webhook、トラッキングチャンネル、アプリを管理し、外部システムを統合し、Mezon内の通知プロセスを自動化します。",
+	"learnMore": "統合管理について詳しく学ぶ。",
+	"webhook": "webhook",
+	"webhooksPlural": "webhook",
+	"createWebhook": "Webhookを作成",
+	"createClanWebhook": "クランWebhookを作成",
+	"viewWebhook": "Webhookを表示",
+	"viewClanWebhook": "クランWebhookを表示",
+	"newWebhook": "新しいWebhook",
+	"newClanWebhook": "新しいクランWebhook",
+	"noWebhooks": "まだWebhookがありません!",
+	"webhookDescription": "Webhookは、インターネット技術を使用して、他のアプリやWebサイトからメッセージをMezonに投稿する簡単な方法です。",
+	"clanWebhookDescription": "クランWebhookは、インターネット技術を使用して、Mezonの各ユーザーに他のアプリやWebサイトからメッセージを投稿する簡単な方法です。",
+	"learnMoreWebhook": "詳しく学ぶ",
+	"orTry": "または試す",
+	"buildWebhook": "自分で構築しましょう。",
+	"webhookTip": "ヒント：URLのトークンが侵害された場合または期限切れになった場合は、トークンをリセットして新しいURLをコピーしてください。",
+	"webhookCount": "{{count}} Webhook",
+	"webhook_other": "{{count}} Webhooks",
+	"toast": {
+		"generateSuccess": "{{name}} の作成に成功しました!",
+		"deleteSuccess": "{{name}} の削除に成功しました!"
+	}
+}

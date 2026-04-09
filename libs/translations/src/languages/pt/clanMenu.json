@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Marcar como lido",
+			"browseChannels": "Procurar canais"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Criar canal",
+			"createCategory": "Criar categoria",
+			"createEvent": "Criar evento"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Editar perfil do clã",
+			"showAllChannels": "Mostrar todos os canais",
+			"hideMutedChannels": "Ocultar canais silenciados",
+			"allowDirectMessage": "Permitir mensagens diretas",
+			"allowMessageRequest": "Permitir solicitações de mensagem",
+			"reportServer": "Denunciar clã",
+			"leaveServer": "Sair do clã",
+			"deleteClan": "Excluir clã",
+			"auditLog": "Log de auditoria"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Mostrar categorias vazias",
+			"show": "Mostrar",
+			"hide": "Ocultar"
+		},
+		"devMode": {
+			"title": "Modo de desenvolvedor",
+			"copyServerID": "Copiar ID do clã",
+			"serverIDCopied": "ID do clã copiado"
+		}
+	},
+	"actions": {
+		"boot": "Atualizar",
+		"invite": "Convites",
+		"notifications": "Notificações",
+		"settings": "Configurações"
+	},
+	"info": {
+		"online": "Online",
+		"members": "Membros"
+	},
+	"common": {
+		"search": "Pesquisar",
+		"community": "Comunidade",
+		"searchMembers": "Pesquisar membros"
+	},
+	"modalPanel": {
+		"createCategory": "Criar categoria",
+		"markAsRead": "Marcar como lido",
+		"processing": "Processando...",
+		"invitePeople": "Convidar pessoas",
+		"clanSettings": "Configurações do Clã",
+		"notificationSettings": "Configurações de Notificação",
+		"showEmptyCategories": "Mostrar Categorias Vazias",
+		"leaveClan": "Sair do Clã"
+	}
+}

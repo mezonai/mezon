@@ -1,0 +1,60 @@
+{
+	"joinChannel": "参加",
+	"textChannels": "テキストチャンネル",
+	"voiceChannels": "ボイスチャンネル",
+	"streamingChannels": "ストリーミングチャンネル",
+	"search": "検索",
+	"filterResults": "結果をフィルター...",
+	"members": "メンバー",
+	"channels": "チャンネル",
+	"media": "メディア",
+	"pins": "ピン",
+	"in": ":",
+	"Messages": "メッセージ",
+	"filterOptions": {
+		"fromUser": "特定のユーザーから",
+		"mentionUser": "誰かをメンション",
+		"inChannel": "特定のチャンネル内"
+	},
+	"cancel": "キャンセル",
+	"searchPlaceholder": "検索",
+	"searchFor": "検索:",
+	"enter": "Enter",
+	"searchOptions": "検索オプション",
+	"fromUser": "ユーザーから",
+	"inChannel": "チャンネル内",
+	"hasContent": "コンテンツあり",
+	"mentionsUser": "誰かをメンション",
+	"emptySearch": {
+		"title": "私たちは隅々まで検索しました。残念ながら、結果は見つかりませんでした。"
+	},
+	"learnMore": "詳しく学ぶ",
+	"searchOptionsData": {
+		"fromUserShort": "送信者で検索",
+		"mentionsUserShort": "メンションで検索",
+		"hasContentShort": "添付ファイルを含むで検索",
+		"channelShort": "チャンネル内で検索"
+	},
+	"prefixes": {
+		"from": "から:",
+		"mentions": "メンション:",
+		"has": "を含む:",
+		"in": "内:"
+	},
+	"mentionPrefixes": {
+		"from": "から:",
+		"mentions": "メンション:",
+		"has": "を含む:",
+		"in": "内:"
+	},
+	"allChannels": "すべてのチャンネル",
+	"searching": "検索中...",
+	"noResults": "結果がありません",
+	"resultsCount": "{{count}} 結果",
+	"jump": "ジャンプ",
+	"hasOptions": {
+		"video": "ビデオ",
+		"link": "リンク",
+		"image": "画像"
+	}
+}

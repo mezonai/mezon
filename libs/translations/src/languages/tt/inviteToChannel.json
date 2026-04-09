@@ -1,0 +1,46 @@
+{
+	"title": "Дусны чакыру",
+	"iconTitle": {
+		"shareInvite": "Чакыру белән уртаклашу",
+		"copyLink": "Сылтаманы күчерү",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR-код"
+	},
+	"copyLink": "Сылтама күчерелде!",
+	"unknownChannel": "Билгесез канал",
+	"yourLinkInvite": "Чакыру сылтамагызның гамәл вакыты тәмамлана",
+	"inviteFriendToChannel": "Дусны каналга чакыру",
+	"inviteFriendToClan": "Дусны кланга чакыру",
+	"editInviteLink": "Чакыру сылтамасын үзгәртү",
+	"inviteChannel": "Каналга чакыру",
+	"advancedSettings": "Киңәйтелгән көйләнмәләр",
+	"expireAfter": "Тәмамлана",
+	"maxUsers": "Максималь кулланучы саны",
+	"temporaryMembership": "Вакытлы әгъзалык",
+	"memberAutoKick": "Катнашучылар сүндерелгәндә автоматик рәвештә куып чыгарылачак, әгәр аларга роль билгеләнмәсә.",
+	"btnInvite": "Чакыру",
+	"btnSent": "Җибәрелгән",
+	"qrModal": {
+		"title": "QR-код",
+		"scanToJoin": "{{clanName}} кушылу өчен бу кодны сканерлагыз!",
+		"scanToJoinDefault": "Кланга кушылу өчен бу кодны сканерлагыз!",
+		"generating": "QR-код генерациясе...",
+		"errorGenerating": "QR-код генерациясендә хата",
+		"downloadSuccess": "QR-код галереяга сакланды",
+		"downloadError": "QR-кодны йөкләүдә хата",
+		"shareError": "QR-кодны җибәрүдә хата",
+		"clanDefaultName": "Клан"
+	},
+	"share": {
+		"title": "Уртаклашу",
+		"message": "Миңа Mezonга кушылыгыз: ",
+		"error": "Чакыру сылтамасын җибәрүдә хата",
+		"errorCreateLink": "Чакыру сылтамасын булдыруда хата"
+	},
+	"noFriendsToInvite": "Чакырырлык дуслар юк",
+	"addFriendsToInvite": "Аларны бу кланга чакыру өчен дуслар өстәгез.",
+	"addSomeFriends": "Берничә дус өстәү",
+	"loadingInviteLink": "Чакыру сылтамасын йөкләү..."
+}

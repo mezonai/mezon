@@ -1,0 +1,46 @@
+{
+	"title": "友達を招待",
+	"iconTitle": {
+		"shareInvite": "共有",
+		"copyLink": "コピー",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QRコード"
+	},
+	"copyLink": "リンクがコピーされました!",
+	"unknownChannel": "UNKNOWN CHANNEL",
+	"yourLinkInvite": "リンクはで期限切れになります",
+	"inviteFriendToChannel": "友達をチャンネルに招待",
+	"inviteFriendToClan": "友達をクランに招待",
+	"editInviteLink": "招待リンクを編集",
+	"inviteChannel": "CHANNELに招待",
+	"advancedSettings": "高度な設定",
+	"expireAfter": "期限切れ",
+	"maxUsers": "最大ユーザー数",
+	"temporaryMembership": "一時的なメンバーシップ",
+	"memberAutoKick": "メンバーは切断されると自動的にキックされます、ロールが割り当てられない限り。",
+	"btnInvite": "招待",
+	"btnSent": "招待済み",
+	"qrModal": {
+		"title": "QRコード",
+		"scanToJoin": "このQRをスキャンして{{clanName}}に参加!",
+		"scanToJoinDefault": "このQRをスキャンしてクランに参加!",
+		"generating": "QRコードを生成中...",
+		"errorGenerating": "QRコードの生成中にエラーが発生しました",
+		"downloadSuccess": "QRコードをライブラリに保存しました",
+		"downloadError": "QRコードのダウンロード中にエラーが発生しました",
+		"shareError": "QRコードの共有中にエラーが発生しました",
+		"clanDefaultName": "クラン"
+	},
+	"share": {
+		"title": "共有",
+		"message": "私と一緒にMezonに参加:",
+		"error": "招待リンクの共有中にエラーが発生しました",
+		"errorCreateLink": "招待リンクの作成中にエラーが発生しました"
+	},
+	"noFriendsToInvite": "招待する友達はいません",
+	"addFriendsToInvite": "このクランに招待するために、友達リストに友達を追加しましょう。",
+	"addSomeFriends": "いくつかの友達を追加",
+	"loadingInviteLink": "招待リンクを生成中..."
+}

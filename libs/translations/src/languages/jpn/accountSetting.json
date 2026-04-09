@@ -1,0 +1,144 @@
+{
+	"myAccount": "マイアカウント",
+	"editUserProfile": "ユーザープロフィールを編集",
+	"noDisplayName": "表示名を追加していません。",
+	"edit": "編集",
+	"password": "パスワード",
+	"phoneNumber": "電話番号",
+	"username": "ユーザー名",
+	"displayName": "表示名",
+	"users": "ユーザー",
+	"accountManagement": "アカウント管理",
+	"blockedUsers": "ブロックされたユーザー",
+	"disableAccount": "アカウントを無効化",
+	"deleteAccount": "アカウントを削除",
+	"accountInformation": "アカウント情報",
+	"doNotHaveBlockedUser": "ブロックされたユーザーはいません",
+	"setPassword": "パスワードを設定",
+	"changePassword": "パスワードを変更",
+	"setEmail": "メールを設定",
+	"changeEmail": "メールを変更",
+	"setPhoneNumber": "電話番号を設定",
+	"disableAccountAlert": {
+		"title": "アカウントを無効化",
+		"description": "アカウントを無効化してもよろしいですか？",
+		"noConfirm": "いいえ",
+		"yesConfirm": "はい"
+	},
+	"deleteAccountAlert": {
+		"title": "アカウントを削除",
+		"description": "アカウントを削除してもよろしいですか？",
+		"noConfirm": "いいえ",
+		"yesConfirm": "はい"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "メールのリンクが必要です",
+		"linkEmailRequiredDescription": "パスワードを設定する前にメールをリンクする必要があります",
+		"goTo": "移動",
+		"title": "パスワードを設定",
+		"email": "メール",
+		"password": "パスワード",
+		"currentPassword": "現在のパスワード",
+		"confirmPassword": "パスワードを確認",
+		"confirm": "保存",
+		"changePassword": "パスワードを変更",
+		"description": "パスワードは最小8文字で、少なくとも1つの大文字、1つの小文字、1つの数字、および1つの特殊文字（例：!@#$%^&*）を含める必要があります。",
+		"error": {
+			"characters": "パスワードは最小8文字である必要があります",
+			"uppercase": "パスワードは少なくとも1つの大文字を含める必要があります",
+			"lowercase": "パスワードは少なくとも1つの小文字を含める必要があります",
+			"number": "パスワードは少なくとも1つの数字を含める必要があります",
+			"symbol": "パスワードは少なくとも1つの特殊文字を含める必要があります",
+			"notEqual": "確認パスワードが一致しません",
+			"samePass": "新しいパスワードは古いパスワードと同じにすることはできません",
+			"fillOldPass": "現在のパスワードを入力してください。",
+			"updateFail": "アカウントの更新に失敗しました。",
+			"createFail": "パスワードの設定に失敗しました。",
+			"incorrectCurrent": "現在のパスワードが正しくありません。もう一度お試しください"
+		},
+		"toast": {
+			"success": "パスワードの更新に成功しました",
+			"error": "パスワードの更新に失敗しました"
+		},
+		"placeholder": {
+			"currentPassword": "現在のパスワードを入力",
+			"password": "新しいパスワードを入力",
+			"confirmPassword": "新しいパスワードを確認"
+		}
+	},
+	"setPasswordModal": {
+		"title": "パスワードを設定",
+		"description": "アカウントの新しいパスワードを作成してください",
+		"emailPlaceholder": "your.email@example.com",
+		"loading": "読み込み中...",
+		"close": "閉じる"
+	},
+	"setPhoneModal": {
+		"title": "電話番号を設定",
+		"phoneNumber": "電話番号",
+		"description": "確認コードを含むSMSメッセージを受信します。",
+		"loading": "読み込み中...",
+		"close": "閉じる",
+		"sendOTP": "OTPを送信",
+		"countryCode": "国コード",
+		"confirmOtp": "OTPを確認",
+		"invalidPhone": "無効な電話番号",
+		"updatePhoneSuccess": "電話番号の更新に成功しました",
+		"updatePhoneFail": "エラーが発生しました。後で再試行してください",
+		"emptyOtp": "OTPが無効です!",
+		"resendOtp": "OTPを再送信!",
+		"tooFast": "早すぎます。OTPを再送信する前に{{seconds}}秒お待ちください。",
+		"alreadyLinked": "この番号はすでにあなたのアカウントにリンクされています",
+		"alreadyLinkedToAnother": "この番号は他のアカウントにリンクされています",
+		"country": "国",
+		"otpSentMessage": "確認コード{{phone}}に送信されました。メールボックスを確認してください",
+		"backToPhoneInput": "電話番号を変更しますか？"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "アカウントの削除に成功しました",
+			"error": "あなたはクランのオーナーです"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "電話番号",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "新しい電話番号",
+			"nextButton": "次へ",
+			"removeButton": "電話番号を削除",
+			"failed": "電話番号の更新に失敗しました",
+			"invalidPhoneNumber": "無効な電話番号"
+		},
+		"verifyPhoneNumber": {
+			"description": "送信された6桁のコードを入力してください",
+			"verifyButton": "確認",
+			"success": "電話番号の更新に成功しました"
+		}
+	},
+	"emailSetting": {
+		"cancel": "キャンセル",
+		"currentEmail": "現在のメール",
+		"description": "アカウントのメールアドレスを入力してください",
+		"otpDescription": "新しいメールに確認コードが送信されました",
+		"fillOTP": "確認コードを入力",
+		"send": "OTPを送信",
+		"resendOtp": "OTPを再送信!",
+		"error": {
+			"notEqual": "確認パスワードが一致しません",
+			"required": "メールは必須です",
+			"invalid": "有効なメールアドレスを入力してください"
+		},
+		"updateEmail": {
+			"newEmail": "新しいメール",
+			"nextButton": "次へ",
+			"failed": "メールの更新に失敗しました",
+			"invalidEmail": "無効なメール",
+			"emailAlreadyLinked": "このメールはすでに使用しています"
+		},
+		"verifyEmail": {
+			"description": "送信された6桁のコードを入力してください",
+			"verifyButton": "確認",
+			"success": "メールの更新に成功しました"
+		}
+	}
+}

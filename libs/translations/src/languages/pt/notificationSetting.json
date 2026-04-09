@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Configurações de notificação",
+		"muteUntil": "Você silenciou as notificações deste canal até",
+		"unMute": "Ativar notificações",
+		"mute": "Silenciar",
+		"labelOptions": {
+			"reactionMessage": "Reações de mensagem",
+			"categoryDefault": "Usar configurações padrão",
+			"allMessage": "Tudo",
+			"notThingMessage": "Nenhum",
+			"mentionMessage": "Apenas @menções"
+		},
+		"muteCategoryUntil": "Você silenciou as notificações desta categoria até"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Silenciar este tópico",
+		"headerTitleMuteChannel": "Silenciar este canal",
+		"muteThisConversation": "Silenciar esta conversa",
+		"muteDuration": {
+			"forFifteenMinutes": "Por 15 minutos",
+			"forOneHour": "Por 1 hora",
+			"forThreeHours": "Por 3 horas",
+			"forEightHours": "Por 8 horas",
+			"forTwentyFourHours": "Por 24 horas",
+			"untilTurnItBackOn": "Até que eu ative novamente"
+		},
+		"description": "Você está recebendo notificações de todas as mensagens neste clã, mas pode alterar as configurações aqui",
+		"muteSuccess": "Silenciado com sucesso!",
+		"unMuteSuccess": "Notificações ativadas com sucesso!",
+		"muteFailed": "Falha ao silenciar!",
+		"unMuteFailed": "Falha ao ativar notificações!"
+	},
+	"toast": {
+		"error": "Erro ao atualizar notificação: {{error}}"
+	},
+	"title": "Configurações de notificação",
+	"clanNotificationSettings": "CONFIGURAÇÕES DE NOTIFICAÇÃO DO CLÃ",
+	"notificationOverrides": "SUBSTITUIÇÕES DE NOTIFICAÇÃO",
+	"addChannelOverride": "Adicione um canal para substituir as configurações de notificação padrão",
+	"selectOrCreateOption": "Selecione ou crie uma opção...",
+	"headers": {
+		"channelOrCategory": "CANAL OU CATEGORIA",
+		"all": "TUDO",
+		"mentions": "MENÇÕES",
+		"nothing": "NENHUM",
+		"mute": "Silenciar"
+	},
+	"menu": {
+		"notification": {
+			"all": "Tudo",
+			"onlyMention": "Apenas @menções",
+			"nothing": "Nenhum"
+		}
+	}
+}

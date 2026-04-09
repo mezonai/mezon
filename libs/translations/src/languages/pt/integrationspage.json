@@ -1,0 +1,46 @@
+{
+	"download": "Baixar",
+	"sections": {
+		"section1": {
+			"title": "Tudo o que você precisa, em um só lugar",
+			"description": "Com o Mezon, o aplicativo centraliza todas as ferramentas de que você precisa em um único espaço. Sem a necessidade de alternar entre vários recursos dispersos — apenas desempenho e eficiência."
+		},
+		"section2": {
+			"title": "Liberte o poder do seu negócio com integração low-code contínua",
+			"description": "Com custos e tempo minimizados, elevamos a integração para empresas que desejam reduzir custos de desenvolvimento de capacidades — apenas velocidade e flexibilidade."
+		},
+		"section3": {
+			"title": "Automatize processos para indivíduos e organizações: ",
+			"titleHighlight": "Integração de Bot/App",
+			"titleEnd": "",
+			"description": "Conecte bots e aplicativos para automatizar tarefas, desde funcionários até a produção. Mais rápido, mais preciso e sem a necessidade de lidar com algoritmos complexos."
+		},
+		"section4": {
+			"title": "Sistema ERP",
+			"description": "Com módulos e recursos facilmente personalizáveis, o ERP atenderá plenamente às necessidades da empresa e poderá automatizar atividades relacionadas aos recursos empresariais para reduzir o tempo de processamento e otimizar a gestão de recursos."
+		}
+	},
+	"faq": {
+		"title": "Perguntas Frequentes",
+		"seeAll": "Ver todas as FAQs",
+		"learnMore": "Saiba mais",
+		"questions": [
+			{
+				"question": "Como começo a integrar minhas ferramentas ao Mezon?",
+				"answer": "Começar é muito simples. Navegue até a página de integração, selecione o serviço desejado e siga as instruções de configuração passo a passo."
+			},
+			{
+				"question": "Quais tipos de integração são suportados?",
+				"answer": "O Mezon suporta vários tipos de integração, incluindo webhooks, bots, aplicativos de terceiros e sistemas ERP. Consulte nossa documentação para ver a lista completa."
+			},
+			{
+				"question": "Posso criar integrações personalizadas?",
+				"answer": "Sim! Nossa plataforma oferece APIs e SDKs que permitem construir integrações personalizadas de acordo com suas necessidades específicas."
+			},
+			{
+				"question": "Existe um limite para a quantidade de integrações que posso adicionar?",
+				"answer": "A quantidade de integrações que você pode adicionar depende do seu plano. Planos empresariais oferecem integrações ilimitadas."
+			}
+		]
+	}
+}

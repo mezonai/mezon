@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Белдермә көйләнмәләре",
+		"muteUntil": "Сез бу канал өчен белдермәләрне кадәр сүндердегез",
+		"unMute": "Белдермәләрне кертү",
+		"mute": "Белдермәләрне сүндерү",
+		"labelOptions": {
+			"reactionMessage": "Реакция хәбәре",
+			"categoryDefault": "Төркемчәнең килешү буенча кыйммәтен куллану",
+			"allMessage": "Барысы",
+			"notThingMessage": "Һичнәрсә",
+			"mentionMessage": "Бары тик @искәртүләр"
+		},
+		"muteCategoryUntil": "Сез бу төркемчә өчен белдермәләрне кадәр сүндердегез"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Бу тема өчен белдермәләрне сүндерү",
+		"headerTitleMuteChannel": "Бу канал өчен белдермәләрне сүндерү",
+		"muteThisConversation": "Бу сөйләшү өчен белдермәләрне сүндерү",
+		"muteDuration": {
+			"forFifteenMinutes": "15 минутка",
+			"forOneHour": "1 сәгатькә",
+			"forThreeHours": "3 сәгатькә",
+			"forEightHours": "8 сәгатькә",
+			"forTwentyFourHours": "24 сәгатькә",
+			"untilTurnItBackOn": "Кире кабызганчы"
+		},
+		"description": "Сез бу кланда барлык хәбәрләрдән белдермәләр аласыз, ләкин сез моны монда үзгәртә аласыз",
+		"muteSuccess": "Белдермәләр уңышлы сүндерелде!",
+		"unMuteSuccess": "Белдермәләр уңышлы кертелде!",
+		"muteFailed": "Белдермәләрне сүндереп булмады!",
+		"unMuteFailed": "Белдермәләрне кертеп булмады!"
+	},
+	"toast": {
+		"error": "Белдермәне яңарту хатасы: {{error}}"
+	},
+	"title": "Белдермә көйләнмәләре",
+	"clanNotificationSettings": "Клан белдермә көйләнмәләре",
+	"notificationOverrides": "Белдермәләрне яңадан билгеләү",
+	"addChannelOverride": "Аның килешү буенча белдермә көйләнмәләрен яңадан билгеләү өчен канал өстәгез",
+	"selectOrCreateOption": "Сайлагыз яки вариант булдырыгыз...",
+	"headers": {
+		"channelOrCategory": "Канал яки төркемчә",
+		"all": "Барысы",
+		"mentions": "Искәртүләр",
+		"nothing": "Һичнәрсә",
+		"mute": "Сүндерү"
+	},
+	"menu": {
+		"notification": {
+			"all": "Барысы",
+			"onlyMention": "Бары тик @искәртүләр",
+			"nothing": "Һичнәрсә"
+		}
+	}
+}

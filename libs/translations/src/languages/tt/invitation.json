@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Дусларны {{target}} чакыру",
+		"privateEvent": "Тышкы чара",
+		"privateRoom": "Сөйләшүләр бүлмәсе",
+		"clanInvite": "кланга чакыру",
+		"sendLinkText": "Яки дусыгызга {{type}} сылтамасын җибәрегез",
+		"expiresIn": "Чакыру сылтамасыгызның гамәл вакыты {{time}} аша тәмамлана"
+	},
+	"expiration": {
+		"30minutes": "30 минут",
+		"1hour": "1 сәгать",
+		"6hours": "6 сәгать",
+		"12hours": "12 сәгать",
+		"1day": "1 көн",
+		"7days": "7 көн",
+		"never": "Беркайчан да"
+	},
+	"maxUses": {
+		"noLimit": "Чикләүләр юк",
+		"1use": "1 куллану",
+		"5uses": "5 куллану",
+		"10uses": "10 куллану",
+		"25uses": "25 куллану",
+		"50uses": "50 куллану",
+		"100uses": "100 куллану"
+	},
+	"generateLink": {
+		"expireAfter": "Тәмамлана",
+		"maxNumberOfUses": "Максималь куллану саны"
+	},
+	"buttons": {
+		"copy": "Күчерү",
+		"copied": "Күчерелде",
+		"copyQR": "QR-кодны күчерү",
+		"editInviteLink": "Чакыру сылтамасын үзгәртү",
+		"cancel": "Кире кагу",
+		"generateNewLink": "Яңа сылтама булдыру",
+		"invite": "Чакыру",
+		"sent": "Җибәрелгән"
+	},
+	"searchPlaceholder": "Дусларны эзләү",
+	"privateChannelDescription": "Бу канал шәхси; бары тик сайланган катнашучылар һәм рольләр генә аны күрә ала.",
+	"noResults": "Нәтиҗәләр юк",
+	"messages": {
+		"qrCopiedSuccess": "QR-код уңышлы күчерелде!"
+	},
+	"errors": {
+		"createInviteLink": "Чакыру сылтамасын булдыруда хата",
+		"copyToClipboard": "Алмашу буферына күчереп булмады",
+		"copyFailed": "Күчереп булмады"
+	},
+	"acceptModal": {
+		"title": "Кланга кушылу",
+		"invitedToJoin": "Сезне чакырдылар",
+		"memberCount": "{{count}} катнашучы",
+		"memberCount_plural": "{{count}} катнашучы",
+		"clanSettings": "Клан көйләнмәләре",
+		"customizeAnytime": "Сез аларны теләгән вакытта үзгәртә аласыз",
+		"noThanks": "Рәхмәт, кирәкми",
+		"acceptInvite": "Чакыруны кабул итү",
+		"joining": "Кушылу...",
+		"toast": {
+			"alreadyMember": "Сез инде катнашучысыз!"
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Notificações",
+	"tabNotify": {
+		"forYou": "Para você",
+		"mention": "Menções",
+		"messages": "Mensagens",
+		"topics": "Tópicos",
+		"notificationSettings": "Configurações de notificação"
+	},
+	"removeNotification": "Remover notificação",
+	"nothingHere": "Não há nada aqui",
+	"comeBackNotify": "Volte para receber notificações de eventos e muito mais",
+	"repliedTo": "Respondendo a: ",
+	"sender": "Remetente: ",
+	"seeWhenAnswersAppear": "Ver quando as respostas aparecerem",
+	"enablePushNotifications": "Ativar notificações push",
+	"permissionAlert": {
+		"turnOnNotifications": "Ativar notificações",
+		"permissionDescription": "Por favor, permita que o Mezon envie notificações para manter contato com amigos e familiares.",
+		"openSettings": "Abrir Configurações",
+		"features": {
+			"newMessages": {
+				"title": "Receber notificações de novas mensagens",
+				"description": "Atualizações quando amigos enviarem mensagens para você"
+			},
+			"mentions": {
+				"title": "Saiba quando for mencionado em um grupo",
+				"description": "Nunca perca quando alguém mencionar você"
+			},
+			"muteControl": {
+				"title": "Silenciar conversas e tipos de conversas específicos",
+				"description": "Controle quais notificações você recebe"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Permissões de notificação",
+		"permissionDenied": "Permissões de notificação negadas.",
+		"cancel": "Cancelar",
+		"ok": "OK"
+	},
+	"andYou": "e você",
+	"topicAndYou": "Tópico e você",
+	"unknowClan": "Você não é mais membro desta conversa"
+}

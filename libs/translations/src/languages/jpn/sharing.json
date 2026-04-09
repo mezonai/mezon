@@ -1,0 +1,16 @@
+{
+	"filterOptions": "フィルターオプション",
+	"users": "ユーザー",
+	"channels": "チャンネル",
+	"all": "すべて",
+	"selectChannelPlaceholder": "チャンネルまたはユーザーを選択...",
+	"selectChannel": "チャンネルを選択",
+	"selectUser": "ユーザーを選択",
+	"share": "共有",
+	"suggestions": "提案",
+	"addCommentPlaceholder": "コメントを追加（オプション）",
+	"fileTooLarge": "ファイルが大きすぎます",
+	"fileSizeExceeded": "{{fileType}} は{{maxSize}}MBを超えてはなりません!",
+	"bannedChannel": "あなたは{{channelName}}でチャットが禁止されています。",
+	"empty": "空のデータ"
+}

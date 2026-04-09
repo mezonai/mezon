@@ -1,0 +1,19 @@
+{
+	"placeholder": "Escreva seus pensamentos aqui...",
+	"ephemeralMessage": "Mensagem efêmera para {{username}}...",
+	"mentionCategories": {
+		"members": "MEMBROS",
+		"textChannels": "CANAIS DE TEXTO",
+		"emojiMatching": "Emojis correspondentes",
+		"commands": "COMANDOS"
+	},
+	"suggestions": {
+		"notifyEveryone": "Notificar todos que têm permissão para ver este canal",
+		"loadingCommands": "Carregando comandos..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Envia uma mensagem efêmera (visível apenas para o usuário selecionado)"
+		}
+	}
+}

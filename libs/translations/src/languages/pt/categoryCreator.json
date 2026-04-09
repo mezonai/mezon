@@ -1,0 +1,17 @@
+{
+    "actions": {
+        "create": "Criar",
+        "cancel": "Cancelar"
+    },
+    "fields": {
+        "cateName": {
+            "title": "Nova categoria",
+            "placeholder": "Nome da categoria",
+            "errorMessage": "Por favor, insira um nome de categoria válido (máximo de 64 caracteres, apenas letras, números, _ ou -)."
+        },
+        "catePrivate": {
+            "title": "Categoria privada",
+            "description": "Se a categoria for definida como privada, apenas os membros e cargos selecionados poderão visualizá-la. Os canais sincronizados nesta categoria também serão automaticamente definidos como privados."
+        }
+    }
+}

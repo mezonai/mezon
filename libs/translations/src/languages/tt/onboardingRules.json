@@ -1,0 +1,18 @@
+{
+  "editResources": "Ресурсларны үзгәртү",
+  "form": {
+    "nameTitle": "Бу ресурска исем бирегез",
+    "namePlaceholder": "#rules \"Кагыйдәләр\"не аңлата ала",
+    "descriptionTitle": "Бу ресурска тасвирлама бирегез",
+    "descriptionPlaceholder": "Мисал: Клан өчен кагыйдә",
+    "imageTitle": "Кагыйдәләр белән рәсем",
+    "browse": "Күзәтү",
+    "required": "Бу кыр мәҗбүри.",
+    "minCharacters": "Кагыйдә исеме ким дигәндә 7 символдан торырга тиеш."
+  },
+  "buttons": {
+    "remove": "Бетерү",
+    "save": "Саклау",
+    "add": "Өстәү"
+  }
+}

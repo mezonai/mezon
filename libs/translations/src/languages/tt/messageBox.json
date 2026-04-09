@@ -1,0 +1,19 @@
+{
+  "placeholder": "Фикерләрегезне монда языгыз...",
+  "ephemeralMessage": "{{username}} өчен вакытлыча хәбәр...",
+  "mentionCategories": {
+    "members": "Катнашучылар",
+    "textChannels": "Текст каналлары",
+    "emojiMatching": "Эмодзи тәңгәлләштерү",
+    "commands": "Командалар"
+  },
+  "suggestions": {
+    "notifyEveryone": "Бу каналны карау рөхсәте булган барлык катнашучыларны белдерү",
+    "loadingCommands": "Командалар йөкләү..."
+  },
+  "slashCommands": {
+    "ephemeral": {
+      "description": "Вакытлыча хәбәр җибәрү (бары тик сайланган кулланучыга гына күренә)"
+    }
+  }
+}

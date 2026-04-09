@@ -1,0 +1,54 @@
+{
+	"joinChannel": "Кушылу",
+	"textChannels": "Текст каналлары",
+	"voiceChannels": "Тавыш каналлары",
+	"streamingChannels": "Стриминг каналлары",
+	"search": "Эзләү",
+	"filterResults": "Нәтиҗәләрне фильтрлау...",
+	"members": "Катнашучылар",
+	"channels": "Каналлар",
+	"media": "Медиа",
+	"pins": "Төяп куелганнар",
+	"in": "эчендә:",
+	"messages": "Хәбәрләр",
+	"filterOptions": {
+		"fromUser": "Билгеле кулланучыдан",
+		"mentionUser": "Кемнедер искәртү",
+		"inChannel": "Билгеле каналда"
+	},
+	"cancel": "Кире кагу",
+	"searchPlaceholder": "Эзләү",
+	"searchFor": "Эзләү:",
+	"enter": "Кертү",
+	"searchOptions": "Эзләү опцияләре",
+	"fromUser": "Кулланучыдан",
+	"mentionsUser": "Искәртүләр",
+	"hasContent": "Эчтәлеге",
+	"inChannel": "Каналда",
+	"emptySearch": {
+		"title": "Без һәр яктан эзләдек. Кызганычка каршы, нәтиҗәләр табылмады."
+	},
+	"learnMore": "Күбрәк белү",
+	"searchOptionsData": {
+		"fromUserShort": "хәбәр җибәрүче буенча эзләү",
+		"mentionsUserShort": "искәртелгән кулланучы буенча эзләү",
+		"hasContentShort": "кушымталы эчтәлек буенча эзләү",
+		"channelShort": "каналда эзләү"
+	},
+	"prefixes": {
+		"from": "җибәрүче:",
+		"mentions": "искәртүләр:",
+		"has": "эчендә:",
+		"in": "эчендә:"
+	},
+	"allChannels": "Барлык каналлар",
+	"searching": "Эзләү...",
+	"noResults": "Нәтиҗәләр юк",
+	"resultsCount": "{{count}} нәтиҗә",
+	"jump": "Күчү",
+	"hasOptions": {
+		"video": "видео",
+		"link": "сылтама",
+		"image": "рәсем"
+	}
+}

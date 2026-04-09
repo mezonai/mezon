@@ -1,0 +1,22 @@
+{
+  "editStatus": "Статусны үзгәртү",
+  "save": "Саклау",
+  "statusDuration": {
+    "label": "Статус озынлыгы",
+    "today": "Бүген",
+    "fourHours": "4 сәгать",
+    "oneHour": "1 сәгать",
+    "thirtyMinutes": "30 минут",
+    "dontClear": "Чистартмау"
+  },
+  "placeholder": "Нәрсә белән шөгыльләнәсез?",
+  "userStatus": {
+    "online": "Онлайн",
+    "idle": "Туктауда",
+    "doNotDisturb": "Борчымагыз",
+    "invisible": "Күренмәүчән"
+  },
+  "setCustomStatus": "Үз статусыңны кую",
+  "onlineStatus": "Онлайн статус",
+  "changeOnlineStatus": "Онлайн статусны үзгәртү"
+}

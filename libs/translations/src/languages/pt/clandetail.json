@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Construa uma Comunidade Mais Divertida",
+			"description": "Não é apenas um chat – é o lugar onde você organiza, se conecta com grupos, amigos e comunidades de forma divertida."
+		},
+		"section2": {
+			"title": "A Melhor Experiência de WFH para Organizações",
+			"description": "Trabalhar de casa não significa trabalhar sozinho. Colabore, comunique-se e celebrem juntos — às vezes à distância. A melhor experiência de WFH para sua organização."
+		},
+		"section3": {
+			"title": "Direcione o Relacionamento entre Membros",
+			"description": "Acreditamos que relacionamentos fortes constroem organizações sólidas. Cada recurso é projetado para engajar os membros. Relacionamentos entre membros, amplificados."
+		},
+		"section4": {
+			"title": "Contribua para Ganhar Recompensas",
+			"description": "Participe, ganhe créditos e receba tokens ao ajudar a comunidade a crescer. Sua voz é o seu valor. Contribua para ganhar recompensas."
+		},
+		"section5": {
+			"title": "Relatórios Detalhados e Claros",
+			"description": "Acompanhe o crescimento e o engajamento da comunidade com análises e relatórios detalhados. Mantenha-se sempre informado e tome decisões melhores."
+		}
+	},
+	"features": [
+		{
+			"title": "Você Pode Fazer Upload de Emojis, Figurinhas e Sons",
+			"description": "Totalmente Grátis. Personalize seus próprios emojis, figurinhas e sons para se expressar nas conversas."
+		},
+		{
+			"title": "Gerencie Permissões de Membros no Clã",
+			"description": "Gerencie facilmente as permissões e cargos dos membros do clã para garantir que todos tenham uma experiência adequada e segura."
+		},
+		{
+			"title": "Membros de Todos os Lugares com Interesses Comuns",
+			"description": "Os membros entrarão no seu clã por meio de convites ou descoberta pública, criando uma comunidade diversa e vibrante."
+		},
+		{
+			"title": "Criar um Clã Ficou Mais Fácil do que Nunca",
+			"description": "Responda rapidamente às mensagens com emojis sem precisar digitar."
+		}
+	],
+	"featuresTitle": "Construa sua Comunidade de Forma Mais Divertida",
+	"download": "Baixar",
+	"faq": {
+		"title": "Precisa de Ajuda?",
+		"seeAll": "Ver todas as FAQs",
+		"learnMore": "Saiba Mais",
+		"questions": [
+			{
+				"question": "O que é um Clã no Mezon?",
+				"answer": "Um Clã é o coração do Mezon — o lugar onde as pessoas se conectam, colaboram e compartilham por meio de comunidades construídas em torno de interesses, objetivos ou paixões em comum. Um Clã pode ser um pequeno grupo de amigos ou uma grande comunidade com milhares de membros. Em um Clã, você pode conversar através de Canais organizados, realizar eventos através de Canais de voz e fortalecer a comunidade com Bots, Aplicativos e Mezon Tokens."
+			},
+			{
+				"question": "Como Participar de um Clã no Mezon?",
+				"answer": "Você pode explorar e participar de Clãs de duas maneiras: através do botão Explorar no aplicativo ou pelo site de Clãs em mezon.ai/clans, ou usando um link de convite compartilhado por amigos, companheiros de equipe ou administradores. Basta clicar em 'Participar' para se tornar um membro da comunidade. Cada usuário pode participar de até 50 Clãs ao mesmo tempo. Veja Clãs em destaque como Student Clan, Gamer Clan e Business Clan."
+			},
+			{
+				"question": "Como Criar Meu Próprio Clã?",
+				"answer": "Criar um Clã é muito simples e flexível. Navegue até a seção de Clãs e crie um novo Clã com apenas alguns cliques. Você pode definir o nome, ícone e configurações básicas para personalizar sua comunidade. Após a criação, você pode convidar amigos e companheiros para começar a conversar, compartilhar ideias ou colaborar. Você também pode gerenciar canais, definir permissões e transferir a propriedade, se necessário."
+			},
+			{
+				"question": "Posso Sair de um Clã se Não Quiser Mais Participar?",
+				"answer": "Sim, se você não quiser mais fazer parte de um Clã, pode selecionar 'Sair do Clã' nas configurações do Clã. Após sair, todo o histórico de mensagens e o acesso aos canais daquele Clã serão removidos da sua conta. Você sempre poderá participar de um Clã novamente no futuro se tiver um link de convite ou se o Clã for público."
+			}
+		]
+	}
+}

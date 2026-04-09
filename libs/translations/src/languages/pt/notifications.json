@@ -1,0 +1,25 @@
+{
+  "inbox": "Caixa de entrada",
+  "tabs": {
+    "forYou": "Para você",
+    "messages": "Mensagens",
+    "mentions": "Menções",
+    "topics": "Tópicos"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Não há nada aqui",
+      "description": "Volte para receber notificações de eventos, transmissões ao vivo e muito mais."
+    },
+    "messages": {
+      "title": "Você já viu tudo!",
+      "protip": "Dica:",
+      "description": "Abra a caixa de entrada pressionando CTRL+I e marque a primeira mensagem como lida com CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Você já viu tudo!",
+      "protip": "Dica:",
+      "description": "Sempre que alguém mencionar você, será salvo aqui por 7 dias."
+    }
+  }
+}

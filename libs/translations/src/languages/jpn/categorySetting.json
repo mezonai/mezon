@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "カテゴリ名",
+            "placeholder": "カテゴリ名を入力",
+            "errorMessage": "有効なカテゴリ名を入力してください（最大64文字、文字、数字、_または-のみ）。"
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "カテゴリ権限",
+            "description": "プライバシー権限設定を変更し、メンバーがこのチャンネルとどのように相互作用できるかをカスタマイズします。"
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "カテゴリを削除"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "{{categoryName}}を削除してもよろしいですか？この操作は元に戻せません。",
+            "confirmText": "削除",
+            "title": "カテゴリを削除"
+        },
+        "save": "保存"
+    },
+    "toast": {
+        "updated": "正常に更新されました"
+    }
+}

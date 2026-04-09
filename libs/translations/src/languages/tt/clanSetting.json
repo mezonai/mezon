@@ -1,0 +1,34 @@
+{
+    "menu": {
+        "settings": {
+            "title": "Көйләнмәләр",
+            "overview": "Күзәтү",
+            "moderation": "Модерация",
+            "auditLog": "Аудит журналы",
+            "channels": "Каналлар",
+            "integrations": "Интеграцияләр",
+            "emoji": "Эмодзилар",
+            "sticker": "Стикерлар",
+            "webhooks": "Вебхуклар",
+            "security": "Куркынычсызлык",
+            "permissionDenied": "Сезнең үзгәртү өчен рөхсәтегез юк.",
+            "sound": "Тавыш эффекты",
+            "enableCommunity": "Җәмгыятьне активлаштыру"
+        },
+        "community": {
+            "title": "Җәмгыять",
+            "enableCommunity": "Җәмгыятьне активлаштыру"
+        },
+        "subscriptions": {
+            "title": "Клан язылулары",
+            "getStarted": "Башлыйбыз"
+        },
+        "userManagement": {
+            "title": "Кулланучылар белән идарә итү",
+            "members": "Катнашучылар",
+            "role": "Рольләр",
+            "invite": "Чакырулар",
+            "bans": "Баннар"
+        }
+    }
+}

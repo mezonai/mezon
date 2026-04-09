@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Саклау"
+	},
+	"switch": {
+		"userProfile": "Кулланучы профиле",
+		"serverProfile": "Клан профиле"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Күрсәтелә торган исем",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Клан кушаматы",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Алмашлыклар",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Үзем турында",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Сакланмаган үзгәртүләрне кире кагарга?",
+		"description": "Сездә сакланмаган үзгәртүләр бар. Зинһар, аларны кире кагарга теләвегезне раслагыз?",
+		"discard": "Кире кагу",
+		"keepEditing": "Үзгәртүне дәвам итү"
+	},
+	"selectAClan": "Клан сайлау",
+	"searchClanPlaceholder": "Клан эзләү",
+	"updateProfileSuccess": "Профиль уңышлы яңартылды",
+	"updateProfileError": "Профильне яңартып булмады",
+	"updateClanProfileSuccess": "Клан профиле уңышлы яңартылды",
+	"emptyUsername": "Күрсәтелә торган исем буш була алмый!",
+	"duplicateClannick": "Клан кушаматы инде бар!",
+	"clanNickname": "Клан кушаматы",
+	"changeAvatar": "Аватарны үзгәртү",
+	"removeAvatar": "Аватарны бетерү",
+	"avatar": "Аватар",
+	"preview": "Алдан карау",
+	"nickNameExistsError": "Бу кушамат кланда инде бар. Зинһар, башка кушамат керетегез.",
+	"unsavedChangesWarning": "Игътибар - сездә сакланмаган үзгәртүләр бар!",
+	"reset": "Сброслау",
+	"saveChanges": "Үзгәртүләрне саклау",
+	"showProfilesDescription": "Һәр кланыгыз өчен төрле профильләр ярдәмендә кем икәнегезне күрсәтегез",
+	"chooseAClan": "Клан сайлау",
+	"editImage": "Рәсемне үзгәртү",
+	"close": "Ябу",
+	"resetChanges": "Үзгәртүләрне сброслау",
+	"cancelEditing": "Үзгәртүне кире кагу",
+	"cancel": "Кире кагу",
+	"applyChanges": "Үзгәртүләрне куллану",
+	"apply": "Куллану",
+	"moveImage": "Рәсемне күчерү",
+	"adjustZoom": "Зумын көйләү",
+	"profiles": "Профильләр",
+	"userProfile": "Кулланучы профиле",
+	"clanProfiles": "Клан профильләре",
+	"directMessageIcon": "Туры хәбәр иконасы",
+	"directMessageIconAction": {
+		"remove": "Бетерү",
+		"removeTitle": "Туры хәбәр иконасын бетерү",
+		"removeDescription": "Туры хәбәр иконасын бетерәсегезгә ышанасызмы?"
+	},
+	"displayName": "Күрсәтелә торган исем",
+	"emptyClanProfile": {
+		"title": "Сезнең бернинди кланыгыз юк",
+		"description": "Башлау өчен клан булдырыгыз яки кушылыгыз!",
+		"createClan": "Клан булдыру",
+		"joinClan": "Кланга кушылу"
+	}
+}

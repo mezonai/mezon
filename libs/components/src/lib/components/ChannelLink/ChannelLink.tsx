@@ -92,7 +92,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 	};
 
 	const channelPath = `/chat/clans/${clanId}/channels/${channel.id}`;
-	const state = isActive ? 'active' : channel?.unread ? 'inactiveUnread' : 'inactiveRead';
+	const state = isActive ? 'active' : isUnReadChannel ? 'inactiveUnread' : 'inactiveRead';
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
@@ -234,17 +234,13 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link block rounded-lg mt-[0.2rem] text-theme-primary-hover ${classes[state]} ${
-						isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'
-					} ${numberNotification ? 'text-theme-primary-active' : ''}`}
+					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${numberNotification || isUnReadChannel ? 'text-theme-primary-active' : ''}`}
 					draggable="false"
 				>
 					<span
 						ref={channelLinkRef}
 						className={`flex flex-row items-center rounded relative flex-1 pointer-events-none  ${hightLightTextChannel ? ' font-semibold text-theme-primary-active' : 'font-medium '} ${isChannelMuted ? 'opacity-70' : ''}`}
 					>
-						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
-
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 								<Icons.HashtagWarning className={`w-5 h-5 ${hashtagWarningFillClass}`} defaultFill1="var(--hashtag-warning-fill-1)" />

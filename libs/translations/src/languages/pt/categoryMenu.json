@@ -1,0 +1,39 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Marcar como lido"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Convidar"
+		},
+		"notification": {
+			"title": "",
+			"muteCategory": "Silenciar categoria",
+			"notification": "Configurações de notificação"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Criar canal",
+			"edit": "Editar categoria",
+			"delete": "Excluir categoria"
+		},
+		"devMode": {
+			"title": "Modo de desenvolvedor",
+			"copyServerID": "Copiar ID do Clã"
+		},
+		"modalConfirm": {
+			"title": "Excluir categoria",
+			"content": "Tem certeza de que deseja excluir esta categoria? Esta ação não pode ser desfeita.",
+			"confirmText": "Excluir"
+		},
+		"toast": {
+			"systemChannel": "Erro: {{categoryName}} contém um canal do sistema",
+			"error": "Erro ao excluir a categoria: {{error}}"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "ID do Clã copiado"
+	}
+}

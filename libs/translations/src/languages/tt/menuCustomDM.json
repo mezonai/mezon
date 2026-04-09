@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Төркемне көйләү",
+  "inviteLinks": "Чакыру сылтамалары",
+  "leaveGroup": "Төркемнән чыгу",
+  "closeDM": "Шәхси хәбәрләрне ябу",
+  "groupName": "Төркем исеме",
+  "save": "Саклау",
+  "removeAvatar": "Аватарны бетерү",
+  "invalidGroupName": "Ярамаган төркем исеме",
+  "uploadImage": "Рәсем йөкләү",
+  "toast": {
+    "leaveGroupError": "Төркемнән чыгуда хата: {{error}}"
+  }
+}

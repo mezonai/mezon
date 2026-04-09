@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "作成"
+	},
+	"fields": {
+		"channelName": {
+			"title": "チャンネル名",
+			"placeholder": "新しいチャンネル",
+			"errorMessage": "有効なチャンネル名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+			"duplicateChannelName": "このクランに同じチャンネル名があります。別の名前を入力してください。"
+		},
+		"channelPrivate": {
+			"title": "プライベートチャンネル",
+			"descriptionText": "プライベートチャンネルを作成すると、選択されたメンバーとロールのみがこのチャンネルを表示できます。",
+			"descriptionVoice": "プライベート音声チャンネルを作成すると、選択されたメンバーとロールのみがこのチャンネルを表示または接続する権限を持ちます。"
+		},
+		"channelType": {
+			"title": "チャンネルタイプ",
+			"text": {
+				"title": "テキスト",
+				"description": "画像、GIF、バッジ、コメント、駄洒落を送信"
+			},
+			"voice": {
+				"title": "ボイス",
+				"description": "音声、ビデオ、スクリーン共有で集まる"
+			},
+			"stream": {
+				"title": "ストリーム",
+				"description": "趣味の活動を紹介"
+			}
+		},
+		"channelVoiceType": {
+			"title": "音声チャンネルタイプ",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "画像 & ハイライト",
+			"eventsTitle": "イベント",
+			"familyJourney": "イベント",
+			"cherishMoment": "重要なイベントを追跡。",
+			"since": "から",
+			"viewAlbum": "アルバムを見る",
+			"emptyTitle": "あなたの旅はまだ始まっていません。",
+			"emptyDescription": "思い出を残し始めるために、最初のお祝いを作成してください。",
+			"createFirstMilestone": "最初のお祝いを作成",
+			"selectYear": "年を選択",
+			"special": "特別"
+		},
+		"familyEvents": {
+			"title": "イベント",
+			"eventsIn": "年のイベント",
+			"noEvents": "その年にイベントはありません",
+			"addToGallery": "ギャラリーに追加",
+			"inDays": "{{count}}日後"
+		},
+		"createMilestone": {
+			"headerTitle": "新しいお祝い",
+			"cancel": "キャンセル",
+			"cancelAlertTitle": "キャンセル",
+			"cancelAlertMessage": "このお祝いをキャンセルしてもよろしいですか？",
+			"continueEditing": "編集を続ける",
+			"discard": "破棄",
+			"eventTitleLabel": "イベント名",
+			"eventTitlePlaceholder": "例：チームミーティング、プロジェクトローンチ",
+			"dateLabel": "日付",
+			"datePlaceholder": "日付を選択",
+			"storyLabel": "説明",
+			"storyPlaceholder": "イベントの説明を入力...",
+			"memoriesLabel": "画像/ビデオ",
+			"uploadTitle": "画像またはビデオをアップロード",
+			"uploadSubtitle": "イベントに画像またはビデオを追加",
+			"addMedia": "画像を追加",
+			"tagMembersLabel": "メンバーにタグ付け",
+			"saveButton": "お祝いを保存",
+			"requiredTitle": "必須",
+			"requiredMessage": "イベント名を入力してください",
+			"successTitle": "成功",
+			"successMessage": "お祝いが正常に作成されました!",
+			"errorTitle": "エラー",
+			"errorMessage": "画像を選択できません",
+			"required": "必須",
+			"optional": "オプション",
+			"titleHint": "イベントの短いタイトル、説明を設定"
+		},
+		"eventDetail": {
+			"defaultTitle": "お祝いの詳細",
+			"featured": "注目",
+			"calendar": "カレンダー",
+			"descriptionPlaceholder": "このお祝いの説明を追加...",
+			"addDescription": "説明を追加",
+			"cancel": "キャンセル",
+			"save": "保存"
+		},
+		"albumDetail": {
+			"eventDetails": "お祝いの詳細",
+			"date": "日付",
+			"editEvent": "お祝いを編集",
+			"titleLabel": "タイトル",
+			"titlePlaceholder": "お祝いのタイトル",
+			"descriptionLabel": "説明",
+			"descriptionPlaceholder": "お祝いの説明",
+			"cancel": "キャンセル",
+			"save": "保存",
+			"errorTitle": "エラー",
+			"titleRequired": "タイトルは空にできません",
+			"updateFailed": "お祝いを更新できません",
+			"sessionNotAvailable": "セッションが利用できません",
+			"uploadFailed": "画像をアップロードできません"
+		}
+	},
+	"channelVoiceType": {
+		"title": "音声チャンネルタイプ",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "画像 & ハイライト",
+		"familyJourney": "イベント",
+		"cherishMoment": "重要なイベントを追跡。",
+		"since": "から",
+		"viewAlbum": "アルバムを見る",
+		"emptyTitle": "あなたの旅はまだ始まっていません。",
+		"emptyDescription": "思い出を残し始めるために、最初のお祝いを作成してください。",
+		"createFirstMilestone": "最初のお祝いを作成",
+		"selectYear": "年を選択",
+		"special": "特別"
+	},
+	"familyEvents": {
+		"title": "イベント",
+		"eventsIn": "年のイベント",
+		"noEvents": "その年にイベントはありません",
+		"addToGallery": "ギャラリーに追加",
+		"inDays": "{{count}}日後"
+	},
+	"createMilestone": {
+		"headerTitle": "新しいお祝い",
+		"cancel": "キャンセル",
+		"cancelAlertTitle": "キャンセル",
+		"cancelAlertMessage": "このお祝いをキャンセルしてもよろしいですか？",
+		"continueEditing": "編集を続ける",
+		"discard": "破棄",
+		"eventTitleLabel": "イベント名",
+		"eventTitlePlaceholder": "例：チームミーティング、プロジェクトローンチ",
+		"dateLabel": "日付",
+		"datePlaceholder": "日付を選択",
+		"storyLabel": "説明",
+		"storyPlaceholder": "イベントの説明を入力...",
+		"memoriesLabel": "画像/ビデオ",
+		"uploadTitle": "画像またはビデオをアップロード",
+		"uploadSubtitle": "イベントに画像またはビデオを追加",
+		"addMedia": "画像を追加",
+		"tagMembersLabel": "メンバーにタグ付け",
+		"saveButton": "お祝いを保存",
+		"requiredTitle": "必須",
+		"requiredMessage": "イベント名を入力してください",
+		"successTitle": "成功",
+		"successMessage": "お祝いが正常に作成されました!",
+		"errorTitle": "エラー",
+		"errorMessage": "画像を選択できません",
+		"required": "必須",
+		"optional": "オプション",
+		"titleHint": "イベントの短いタイトル、説明を設定"
+	},
+	"albumDetail": {
+		"eventDetails": "お祝いの詳細",
+		"date": "日付",
+		"editEvent": "お祝いを編集",
+		"titleLabel": "タイトル",
+		"titlePlaceholder": "お祝いのタイトル",
+		"descriptionLabel": "説明",
+		"descriptionPlaceholder": "お祝いの説明",
+		"cancel": "キャンセル",
+		"save": "保存",
+		"errorTitle": "エラー",
+		"titleRequired": "タイトルは空にできません",
+		"updateFailed": "お祝いを更新できません",
+		"sessionNotAvailable": "セッションが利用できません",
+		"uploadFailed": "画像をアップロードできません"
+	},
+	"monthsShort": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+}

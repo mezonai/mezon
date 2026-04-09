@@ -67,6 +67,7 @@ enum EMessageOpt {
 	ADD_TO_NOTE = 'addtonote',
 	REACT = 'react',
 	REPLY = 'reply',
+	TOPIC = 'topic',
 	THREAD = 'thread',
 	OPTION = 'option'
 }
@@ -105,7 +106,7 @@ const ChannelMessageOpt = ({
 	}
 	return (
 		<div
-			className={`chooseForText z-[1] absolute min-h-[34px] p-0.5 bg-theme-contexify rounded-lg block ${!isCombine ? (message?.references ? '-top-5' : 'top-0') : '-top-5'} ${isDifferentDay ? '-top-12 mt-1' : ''} right-6 w-fit`}
+			className={`chooseForText z-[1] absolute min-h-[34px] p-0.5 bg-theme-contexify rounded-lg block ${!isCombine ? (message?.references ? '-top-8' : 'top-4') : '-top-8'} ${isDifferentDay ? '-top-12 mt-1' : ''} right-6 w-fit`}
 			data-e2e={generateE2eId('chat.hover_message_actions')}
 		>
 			<div className="flex justify-between bg-theme-contexify rounded select-none">
@@ -119,7 +120,10 @@ const ChannelMessageOpt = ({
 							if (message?.content?.tp && item.id === 'edit') {
 								return false;
 							}
-							if (message?.code === TypeMessage.Poll && (item.id === 'edit' || item.id === EMessageOpt.THREAD)) {
+							if (
+								message?.code === TypeMessage.Poll &&
+								(item.id === 'edit' || item.id === EMessageOpt.THREAD || item.id === EMessageOpt.TOPIC)
+							) {
 								return false;
 							}
 							return true;
@@ -158,7 +162,8 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		message?.code !== TypeMessage.MessageBuzz &&
 		message?.code !== TypeMessage.AuditLog &&
 		message?.code !== TypeMessage.Welcome &&
-		message?.code !== TypeMessage.UpcomingEvent;
+		message?.code !== TypeMessage.UpcomingEvent &&
+		message?.code !== TypeMessage.Poll;
 
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean, channelId?: string) => {

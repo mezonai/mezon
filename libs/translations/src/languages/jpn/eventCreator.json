@@ -1,0 +1,152 @@
+{
+	"screens": {
+		"eventType": {
+			"headerTitle": "3のステップ 1",
+			"title": "あなたのイベントはどこですか?",
+			"subtitle": "誰も迷わないようにするために",
+			"description": "誰がクラン > 設定 > ロールでイベントを作成する権限を持てるように設定できます"
+		},
+		"eventDetails": {
+			"headerTitle": "3のステップ 2",
+			"title": "あなたのイベントは何についてですか?",
+			"subtitle": "イベントの詳細情報を記入しましょう"
+		},
+		"eventPreview": {
+			"headerTitle": "3のステップ 3",
+			"title": "以下はあなたのイベントのプレビューです",
+			"subtitle": "このイベントは時間になったら自動的に開始されます",
+			"subtitleVoice": "時間になったら、ボイスチャンネルに来てイベントを開始しましょう!"
+		},
+		"channelSelection": {
+			"title": "視聴者とは?",
+			"description": "指定されたチャンネルのメンバーを選択しましょう。",
+			"channel": "視聴者には{{channel}}のメンバーが含まれます: "
+		},
+		"isPrivate": "招待された人のみが参加できます"
+	},
+	"fields": {
+		"channelType": {
+			"voiceChannel": {
+				"title": "ボイスチャンネル",
+				"description": "ボイス、ビデオ、スクリーン共有、ストリーミングで交流しましょう。"
+			},
+			"somewhere": {
+				"title": "その他",
+				"description": "テキストチャンネル、外部リンク、または対面場所。"
+			},
+			"privateEvent": {
+				"title": "外部イベントを作成",
+				"description": "ユーザーはログインせずにリンクで会議に参加できます。"
+			}
+		},
+		"channel": {
+			"title": "チャンネルを選択"
+		},
+		"address": {
+			"title": "場所",
+			"placeholder": "場所、リンク、または何かを追加"
+		},
+		"eventName": {
+			"title": "イベントのトピック",
+			"placeholder": "あなたのイベントは何ですか?",
+			"errorMessage": "イベントにトピックが必要です"
+		},
+		"startDate": {
+			"title": "開始日",
+			"errorMessage": "現在の日付または未来の日付を選択してください"
+		},
+		"startTime": {
+			"title": "開始時間",
+			"errorMessage": "有効な開始時間を選択してください"
+		},
+		"endDate": {
+			"title": "終了日",
+			"errorMessage": "現在の日付または未来の日付を選択してください"
+		},
+		"endTime": {
+			"title": "終了時間",
+			"errorMessage": "有効な終了時間を選択してください"
+		},
+		"eventFrequency": {
+			"title": "イベント頻度",
+			"noRepeat": "繰り返しなし",
+			"weeklyOn": "毎週{{name}}",
+			"everyOther": "隔週{{name}}",
+			"monthlyOn": "毎月{{name}}",
+			"annuallyOn": "毎年{{name}}",
+			"everyWeekday": "毎平日（月曜〜金曜）"
+		},
+		"description": {
+			"title": "説明",
+			"description": "みんなにイベントについて少し教えてください。"
+		},
+		"cover": "表紙"
+	},
+	"actions": {
+		"next": "次へ",
+		"create": "イベントを作成",
+		"edit": "イベントを更新",
+		"event_one": "1イベント",
+		"event_other": "{{count}} イベント",
+		"noEvent": "イベント",
+		"clearAudiences": "視聴者をクリア",
+		"startEvent": "イベントを開始",
+		"editEvent": "イベントを編集",
+		"cancelEvent": "イベントをキャンセル",
+		"copyEventLink": "イベントリンクをコピー",
+		"uploadImage": "表紙画像をアップロード",
+		"neverMind": "なし",
+		"cancelEventQuestion": "イベントをキャンセルしますか?",
+		"confirmCancelEvent": "本当にこのイベントをキャンセルしますか?",
+		"back": "戻る",
+		"cancel": "キャンセル"
+	},
+	"tabs": {
+		"location": "場所",
+		"eventInfo": "イベント情報",
+		"review": "レビュー"
+	},
+	"notify": {
+		"locationBlank": "場所が必要です",
+		"titleBlank": "イベントにトピックが必要です",
+		"time": "開始時間または終了時間が無効です",
+		"type": "開催するイベントタイプを選択する必要があります"
+	},
+	"eventDetail": {
+		"eventIsTaking": "イベントが進行中!",
+		"tenMinutesLeft": "あと{{minutes}}分。今すぐ参加してください!",
+		"eventInfo": "イベント情報",
+		"interested": "{{count}} 興味あり",
+		"personInterested": "{{count}} 人が興味あり",
+		"personInteresteds": "{{count}} 人が興味あり",
+		"createdBy": "{{username}}によって作成",
+		"inviteFriends": "友達をイベントに招待しますか?",
+		"shareLink": "このリンクを他の人と共有して、このサーバーへのアクセス権を付与",
+		"onlyInvitedMembers": "ユーザーはログインせずにリンクで会議に参加できます。",
+		"openLink": "リンクを開く",
+		"invite": "招待",
+		"copyLink": "リンクをコピー",
+		"audienceConsists": "視聴者は以下からのメンバーで構成されています",
+		"thread": "ディスカッションスレッド:",
+		"channel": "チャンネル:",
+		"clanEvent": "クランイベント",
+		"channelEvent": "チャンネルイベント",
+		"privateEvent": "外部イベント",
+		"privateRoom": "外部会議室",
+		"newEvent": "新規",
+		"share": "共有",
+		"noOneInterested": "このイベントに興味を持っている人はいません。"
+	},
+	"errorMessages": {
+		"startTimeFuture": "開始時間は未来である必要があります。",
+		"endTimeAfterStart": "終了時間は開始時間より大きい必要があります。",
+		"invalidTopic": "無効なイベントトピック。文字 '`', '<', '>', ',', '/', '\\\"', '\\\\',および'''は許可されません。"
+	},
+	"selectUser": "イベントを作成するチャンネルまたはスレッドを選択",
+	"emptyState": {
+		"title": "今後のイベントはありません。",
+		"description1": "あらゆるアクティビティのためにイベントをスケジュールしましょう",
+		"clan": "クラン",
+		"description2": "他のメンバーが今後のイベントのアイデアを提供することを許可しましょう。"
+	}
+}

@@ -1,0 +1,50 @@
+{
+	"menu": {
+		"startEvent": "Iniciar evento",
+		"markAsNotInterested": "Marcar como não interessado",
+		"markAsInterested": "Marcar como interessado",
+		"editEvent": "Editar evento",
+		"cancelEvent": "Cancelar evento",
+		"reportEvent": "Denunciar evento",
+		"copyEventLink": "Copiar link do evento",
+		"copyEventID": "Copiar ID do evento"
+	},
+	"confirm": {
+		"title": "Cancelar evento",
+		"content": "Tem certeza de que deseja cancelar este evento?"
+	},
+	"dashboard": {
+		"title": "Eventos",
+		"event_one": "Evento",
+		"noEvent": "Nenhum evento",
+		"noEventDescription": "Sinta-se à vontade para convidar outros membros para contribuírem com ideias para os próximos eventos.",
+		"createButton": "Criar",
+		"noti": "Este evento está aberto para todos no clã.",
+		"endEvent": "Encerrar evento",
+		"UnInterested": "Não interessado",
+		"Interested": "Interessado"
+	},
+	"item": {
+		"interested": "Interessado",
+		"uninterested": "Não interessado"
+	},
+	"detail": {
+		"eventInfo": "Informações do evento",
+		"interested": "Interessado",
+		"personInterested": "{{count}} pessoas interessadas",
+		"onePersonInterested": "1 pessoa interessada",
+		"noOneInterested": "Ninguém demonstrou interesse neste evento.",
+		"createdBy": "Criado por "
+	},
+	"share": {
+		"title": "Compartilhar evento com amigos",
+		"search": "Pesquisar",
+		"share": "Compartilhar",
+		"copied": "Link copiado!"
+	},
+	"countdown": {
+		"joinIn_other": "começará em {{count}} minutos",
+		"joinNow": "O evento está acontecendo!",
+		"joinIn_one": "começará em 1 minuto"
+	}
+}

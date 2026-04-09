@@ -1,0 +1,7 @@
+{
+	"joinStreamingRoomBS": {
+		"stream": "Sala de transmissão",
+		"joinStream": "Entrar na transmissão"
+	},
+	"noDisplay": "Ocultar transmissões ao vivo"
+}

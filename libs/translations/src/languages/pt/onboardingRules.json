@@ -1,0 +1,18 @@
+{
+  "editResources": "Editar recursos",
+  "form": {
+    "nameTitle": "Nomeie este recurso",
+    "namePlaceholder": "#regras pode ser Regras",
+    "descriptionTitle": "Descrição deste recurso",
+    "descriptionPlaceholder": "Ex: Regras para o clã",
+    "imageTitle": "Imagem da regra",
+    "browse": "Procurar",
+    "required": "Este campo é obrigatório.",
+    "minCharacters": "O título da regra deve ter pelo menos 7 caracteres"
+  },
+  "buttons": {
+    "remove": "Remover",
+    "save": "Salvar",
+    "add": "Adicionar"
+  }
+}

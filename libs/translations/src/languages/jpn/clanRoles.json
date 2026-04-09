@@ -1,0 +1,112 @@
+{
+	"roleDescription": "ロールを使用して、クランのメンバーをグループ化し、権限を割り当てましょう",
+	"defaultRole": "すべてのクランメンバーのデフォルト権限",
+	"roles": "ロール",
+	"members": "メンバー",
+	"noRole": "まだロールはありません",
+	"skipStep": "このステップをスキップ",
+	"failed": "失敗",
+	"createNewRole": {
+		"title": "3のステップ 1",
+		"createANewRole": "新しいロールを作成",
+		"description": "このロールに固有の名前と色を設定しましょう。いつでも後でこれを変更できます。",
+		"create": "作成",
+		"newRole": "新しいロール名を入力...",
+		"roleName": "ロール名",
+		"createSuccess": "{{roleName}}の作成に成功しました",
+		"cannotCreate": "{{roleName}}を作成できません"
+	},
+	"setupPermission": {
+		"title": "3のステップ 2",
+		"setupPermissionTitle": "権限を設定",
+		"setupPermissionSuccessfully": "権限の設定に成功しました",
+		"next": "次へ",
+		"searchPermission": "権限を検索"
+	},
+	"setupMember": {
+		"title": "3のステップ 3",
+		"addMember": "メンバーを追加",
+		"description": "あなたのメンバーにこのロールを割り当てましょう。メンバーは複数のロールを持つことができます。",
+		"finish": "完了",
+		"addedMember": "メンバーを追加しました",
+		"searchMembers": "メンバーを検索",
+		"deletedMember": "{{memberName}}を削除しました",
+		"add": "追加",
+		"noMembersFound": "メンバーが見つかりません"
+	},
+	"roleDetail": {
+		"permissions": "権限",
+		"members": "メンバー",
+		"role": "ロール",
+		"roleName": "ロール名",
+		"deleteRole": "ロールを削除",
+		"deleteRoleSuccessfully": "{{roleName}}の削除に成功しました",
+		"changesSaved": "変更が保存されました",
+		"save": "保存",
+		"confirmSaveTitle": "変更を保存しますか？",
+		"confirmSaveContent": "変更を行いました。保存しますか？",
+		"yes": "はい",
+		"doNotSave": "保存しない"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "ロールカラー",
+		"titleBS": "色を選択",
+		"reset": "リセット",
+		"save": "保存"
+	},
+	"roleImagePicker": "ロールアイコン",
+	"notifyEveryone": "このチャンネルを表示する権限を持つすべての人に通知します。",
+	"removeImage": "削除",
+	"allMembers": "すべてのメンバー",
+	"permissionTitles": {
+		"administrator": "管理者",
+		"view-channel": "チャンネルを表示",
+		"manage-channel": "チャンネルを管理",
+		"manage-clan": "クランを管理",
+		"manage-thread": "スレッドを管理",
+		"send-message": "メッセージを送信",
+		"delete-message": "メッセージを削除",
+		"clan-owner": "クランオーナー"
+	},
+	"permissionDescriptions": {
+		"administrator": "メンバーがクラン全体を管理できるようにします（権限はオーナーの下のみ）。",
+		"view-channel": "メンバーがパブリックチャンネルを表示できるようにします。",
+		"manage-channel": "メンバーがチャンネルを作成、編集、または削除できるようにします。",
+		"manage-clan": "メンバーがクラン設定を制御し、ロールとチャンネルを管理し、メンバーアクティビティを監視し、効果的な管理とよく組織されたコミュニティを確保できるようにします。",
+		"manage-thread": "メンバーがチャンネル内のスレッド（プライベートスレッドを含む）を作成、編集、削除できるようにします。",
+		"send-message": "メンバーがパブリックチャンネル（それらのチャンネル内のスレッドとスレッドディスカッションを含む）にメッセージを送信できるようにします。",
+		"delete-message": "メンバーがパブリックチャンネル（それらのチャンネル内のスレッドとスレッドディスカッションを含む）のメッセージを削除できるようにします。",
+		"notAvailable": "権限の説明は利用できません"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "ロールを使用して、クランのメンバーをグループ化し、権限を割り当てましょう。",
+		"defaultPermissions": "デフォルト権限",
+		"everyoneDescription": "@everyone • すべてのクランメンバーに適用",
+		"searchRoles": "ロールを検索",
+		"createRole": "ロールを作成",
+		"membersUseColor": "メンバーは、このリストで最も高いロールの色を使用します。ロールの順序を変更するには、ロールをドラッグしましょう。",
+		"noRoles": "ロールはありません"
+	},
+	"roleManagement": {
+		"newRole": "新しいロール",
+		"editRole": "ロールを編集",
+		"back": "戻る",
+		"display": "表示",
+		"permissions": "権限",
+		"manageMembers": "メンバーを管理",
+		"searchPermissions": "権限を検索",
+		"failedToUpdateRoleOrder": "ロールの順序を更新できません。",
+		"newRoleDefault": "新しいロール",
+		"roleName": "ロール名",
+		"roleColour": "ロールカラー",
+		"membersUseColour": "メンバーは、ロールリストで最も高いロールの色を使用します。",
+		"roleIcon": "ロールアイコン",
+		"roleIconDescription": "256 KB未満の画像をアップロードするか、このクランからカスタム絵文字を選択しましょう。少なくとも64x64ピクセルを推奨します。複数のロールを持つ場合、メンバーは最も高いロールのアイコンを表示します",
+		"chooseImage": "画像を選択",
+		"removeIcon": "アイコンを削除",
+		"edit": "編集",
+		"view": "表示",
+		"delete": "削除",
+		"roleNameIsRequired": "ロール名は必須です"
+	}
+}

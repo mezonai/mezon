@@ -1,0 +1,144 @@
+{
+	"myAccount": "Minha conta",
+	"editUserProfile": "Editar perfil do usuário",
+	"noDisplayName": "Você ainda não adicionou um nome de exibição.",
+	"edit": "Editar",
+	"password": "Senha",
+	"phoneNumber": "Número de telefone",
+	"username": "Nome de usuário",
+	"displayName": "Nome de exibição",
+	"users": "Usuários",
+	"accountManagement": "Gerenciamento de conta",
+	"blockedUsers": "Usuários bloqueados",
+	"disableAccount": "Desativar conta",
+	"deleteAccount": "Excluir conta",
+	"accountInformation": "Informações da conta",
+	"doNotHaveBlockedUser": "Nenhum usuário bloqueado",
+	"setPassword": "Definir senha",
+	"changePassword": "Alterar senha",
+	"setEmail": "Definir e-mail",
+	"changeEmail": "Alterar e-mail",
+	"setPhoneNumber": "Definir número de telefone",
+	"disableAccountAlert": {
+		"title": "Desativar conta",
+		"description": "Tem certeza de que deseja desativar sua conta?",
+		"noConfirm": "Não",
+		"yesConfirm": "Sim"
+	},
+	"deleteAccountAlert": {
+		"title": "Excluir conta",
+		"description": "Tem certeza de que deseja excluir sua conta?",
+		"noConfirm": "Não",
+		"yesConfirm": "Sim"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "E-mail necessário para vincular",
+		"linkEmailRequiredDescription": "Você precisa vincular um e-mail antes de definir uma senha",
+		"goTo": "Ir para",
+		"title": "Definir senha",
+		"email": "E-mail",
+		"password": "Senha",
+		"currentPassword": "Senha atual",
+		"confirmPassword": "Confirmar senha",
+		"confirm": "Salvar",
+		"changePassword": "Alterar senha",
+		"description": "Sua senha deve ter pelo menos 8 caracteres e incluir pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial (ex: !@#$%^&*).",
+		"error": {
+			"characters": "A senha deve ter pelo menos 8 caracteres",
+			"uppercase": "A senha deve conter pelo menos 1 letra maiúscula",
+			"lowercase": "A senha deve conter pelo menos 1 letra minúscula",
+			"number": "A senha deve conter pelo menos 1 número",
+			"symbol": "A senha deve conter pelo menos 1 caractere especial",
+			"notEqual": "As senhas não coincidem",
+			"samePass": "A nova senha não pode ser igual à senha atual",
+			"fillOldPass": "Por favor, insira a senha atual.",
+			"updateFail": "Falha ao atualizar a conta.",
+			"createFail": "Falha ao definir a senha.",
+			"incorrectCurrent": "A senha atual está incorreta. Tente novamente."
+		},
+		"toast": {
+			"success": "Senha atualizada com sucesso",
+			"error": "Falha ao atualizar a senha"
+		},
+		"placeholder": {
+			"currentPassword": "Digite a senha atual",
+			"password": "Digite a nova senha",
+			"confirmPassword": "Confirme a nova senha"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Definir senha",
+		"description": "Por favor, crie uma nova senha para sua conta",
+		"emailPlaceholder": "seu.email@exemplo.com",
+		"loading": "Carregando...",
+		"close": "Fechar"
+	},
+	"setPhoneModal": {
+		"title": "Definir número de telefone",
+		"phoneNumber": "Número de telefone",
+		"description": "Você receberá uma mensagem contendo um código de verificação.",
+		"loading": "Carregando...",
+		"close": "Fechar",
+		"sendOTP": "Enviar código OTP",
+		"countryCode": "Código do país",
+		"confirmOtp": "Confirmar código OTP",
+		"invalidPhone": "Número de telefone inválido",
+		"updatePhoneSuccess": "Número de telefone atualizado com sucesso",
+		"updatePhoneFail": "Ocorreu um erro. Tente novamente mais tarde",
+		"emptyOtp": "Código OTP inválido!",
+		"resendOtp": "Reenviar código OTP!",
+		"tooFast": "Muito rápido. Aguarde {{seconds}} segundos antes de reenviar o código OTP.",
+		"alreadyLinked": "Este número já está vinculado à sua conta",
+		"alreadyLinkedToAnother": "Este número já está vinculado a outra conta",
+		"country": "País",
+		"otpSentMessage": "Verifique o código OTP enviado para o número {{phone}}",
+		"backToPhoneInput": "Alterar número de telefone?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Conta excluída com sucesso",
+			"error": "Você é o proprietário deste clã"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Número de telefone",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Novo número de telefone",
+			"nextButton": "Próximo",
+			"removeButton": "Remover número de telefone",
+			"failed": "Falha ao atualizar o número de telefone",
+			"invalidPhoneNumber": "Número de telefone inválido"
+		},
+		"verifyPhoneNumber": {
+			"description": "Insira o código de 6 dígitos que enviamos para você",
+			"verifyButton": "Confirmar",
+			"success": "Número de telefone atualizado com sucesso"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Cancelar",
+		"currentEmail": "E-mail atual",
+		"description": "Por favor, insira um e-mail para sua conta",
+		"otpDescription": "O código OTP foi enviado para o seu novo e-mail",
+		"fillOTP": "Insira o código OTP",
+		"send": "Enviar OTP",
+		"resendOtp": "Reenviar código OTP!",
+		"error": {
+			"notEqual": "As senhas não coincidem",
+			"required": "O e-mail é obrigatório",
+			"invalid": "Por favor, insira um e-mail válido"
+		},
+		"updateEmail": {
+			"newEmail": "Novo e-mail",
+			"nextButton": "Próximo",
+			"failed": "Falha ao atualizar o e-mail",
+			"invalidEmail": "E-mail inválido",
+			"emailAlreadyLinked": "Você já está usando este e-mail"
+		},
+		"verifyEmail": {
+			"description": "Insira o código de 6 dígitos que enviamos para você",
+			"verifyButton": "Confirmar",
+			"success": "E-mail atualizado com sucesso"
+		}
+	}
+}

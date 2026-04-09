@@ -1,0 +1,79 @@
+{
+	"header": {
+		"save": "Salvar"
+	},
+	"toast": {
+		"saveSuccess": "Salvo com sucesso",
+		"notBlank": "Não pode estar vazio",
+		"saveError": "Erro ao salvar"
+	},
+	"menu": {
+		"serverName": {
+			"title": "Nome do clã",
+			"errorMessage": "Por favor, insira um nome de clã válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+			"duplicateNameMessage": "Este nome de clã já existe. Por favor, escolha outro nome.",
+			"permissionDenied": "Você não tem permissão para editar o plano de fundo do clã"
+		},
+		"inactive": {
+			"title": "Configurações de inatividade",
+			"description": "Move automaticamente os membros para este canal e desativa seus microfones quando eles ficam inativos por um tempo determinado. Este recurso não se aplica à versão web.",
+			"inactiveChannel": "Canal de inatividade",
+			"inactiveTimeout": "Tempo de espera de inatividade"
+		},
+		"systemMessage": {
+			"title": "Configurações de notificações do sistema",
+			"description": "Este é o canal onde enviamos notificações de eventos do sistema. Você pode desativá-las a qualquer momento.",
+			"channel": "Canal",
+			"selectChannel": "Selecionar canal de notificação",
+			"channelDescription": "Este é o canal para o qual as mensagens do sistema serão enviadas",
+			"welcomeRandom": "Enviar uma mensagem de boas-vindas aleatória quando alguém entrar neste clã",
+			"welcomeSticker": "Exigir que os membros respondam à mensagem de boas-vindas com uma figurinha",
+			"boostMessage": "Enviar uma mensagem quando alguém aumentar o nível deste clã",
+			"setupTips": "Enviar dicas úteis para configurar o clã",
+			"hideAuditLog": "Enviar logs quando uma ação for realizada no clã",
+			"anonymousTitle": "Impedir modo anônimo",
+			"anonymousDescription": "Impedir que os usuários usem o modo anônimo"
+		},
+		"deleteServer": {
+			"title": "Excluir clã",
+			"delete": "Excluir clã"
+		}
+	},
+	"fields": {
+		"defaultNotification": {
+			"title": "Configurações de notificação padrão",
+			"description": "Esta configuração determinará se os membros que não configuraram explicitamente suas notificações receberão avisos para todas as mensagens enviadas neste clã. Recomendamos que comunidades de clã configurem para apenas @menções.",
+			"allMessages": "Todas as mensagens",
+			"onlyMentions": "Apenas @menções"
+		}
+	},
+	"permissions": {
+		"toast": {
+			"kickMemberSuccess": "Membro expulso com sucesso",
+			"kickMemberFailed": "Não foi possível expulsar o membro",
+			"removeMemberThreadSuccess": "Membro removido com sucesso",
+			"removeMemberThreadFailed": "Não foi possível remover o membro",
+			"transferOwnershipSuccess": "Propriedade transferida com sucesso",
+			"transferOwnershipFailed": "Falha ao transferir a propriedade"
+		}
+	},
+	"action": {
+		"kick": "Expulsar",
+		"removeFromThread": "Remover do tópico",
+		"manage": "Gerenciar",
+		"transferOwnership": "Transferir propriedade",
+		"ban": "Banir",
+		"unban": "Desbanir"
+	},
+	"threadRemoveModal": {
+		"title": "Remover do tópico?",
+		"description": "Tem certeza de que deseja remover {{username}} deste tópico?",
+		"remove": "Remover",
+		"cancel": "Cancelar"
+	},
+	"modal": {
+		"kickUserClan": {
+			"title": "Tem certeza?"
+		}
+	}
+}

@@ -222,7 +222,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		<div
 			className={`${
 				(!isInChannelCalled && !isPlayDialTone) || dmGroupId !== directId || isPlayBusyTone ? '-z-50 opacity-0 hidden' : ''
-			} flex flex-col group right-0 fixed w-widthThumnailAttachment max-sbm:left-0 max-sbm:right-0 max-sbm:!w-full ${!isShowMeetDM && !isRemoteVideo ? 'h-[240px] min-h-[240px]' : 'h-[510px] max-h-[510px]'} z-10 w-full p-3 min-w-0 items-center dark:bg-bgTertiary bg-bgLightPrimary shadow border-b-[1px] dark:border-bgTertiary border-bgLightTertiary flex-shrink`}
+			} flex flex-col group fixed top-0 left-0 right-0 sbm:left-auto sbm:right-0 sbm:w-widthThumnailAttachment w-full ${!isShowMeetDM && !isRemoteVideo ? 'h-[200px] min-h-[200px] sbm:h-[240px] sbm:min-h-[240px]' : 'h-[380px] sbm:h-[510px] max-h-[510px]'} z-50 sbm:z-10 p-2 sbm:p-3 min-w-0 items-center  shadow border-b-[1px] border-theme-primary bg-theme-setting-primary flex-shrink`}
 		>
 			<div className="sbm:justify-start justify-between items-center gap-1 flex w-full">
 				<div className="flex flex-row gap-1 items-center flex-1">
@@ -245,8 +245,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 						onClick={() => setActiveVideo(activeVideo === 'local' || activeVideo === 'remote' ? null : 'local')}
 						className="w-full h-full"
 						style={{
-							maxWidth: '100%',
-							maxHeight: '100%',
+							width: activeVideo === 'local' ? '100%' : activeVideo === 'remote' ? 'min(120px, 30vw)' : 'min(400px, 45vw)',
+							height: activeVideo === 'local' ? '100%' : activeVideo === 'remote' ? 'min(90px, 22vw)' : 'min(300px, 34vw)',
 							backgroundColor: 'black',
 							borderRadius: '8px',
 							display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
@@ -286,8 +286,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							onClick={() => setActiveVideo(activeVideo === 'local' || activeVideo === 'remote' ? null : 'remote')}
 							className="w-full h-full"
 							style={{
-								maxWidth: '100%',
-								maxHeight: '100%',
+								width: activeVideo === 'remote' ? '100%' : activeVideo === 'local' ? 'min(120px, 30vw)' : 'min(400px, 45vw)',
+								height: activeVideo === 'remote' ? '100%' : activeVideo === 'local' ? 'min(90px, 22vw)' : 'min(300px, 34vw)',
 								backgroundColor: 'black',
 								borderRadius: '8px',
 								display: !isShowMeetDM && !isRemoteVideo ? 'none' : 'block'
@@ -321,54 +321,54 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 			</div>
 
 			<div
-				className={`${isShowMeetDM || isRemoteVideo ? 'absolute w-fit h-fit bottom-5 z-50 left-1/2 transform -translate-x-1/2 translate-y-5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300' : 'w-full h-full'} flex flex-col justify-around`}
+				className={`${isShowMeetDM || isRemoteVideo ? 'absolute left-0 right-0 h-fit bottom-5 z-50 flex justify-center translate-y-5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300' : 'w-full h-full'} flex flex-col justify-around`}
 			>
 				{!isShowMeetDM && !isRemoteVideo && (
-					<div className="justify-center items-center gap-4 flex w-full">
+					<div className="justify-center items-center gap-2 sbm:gap-4 flex w-full">
 						{avatarImages.map((avatar, index) => (
 							<AvatarImage
 								key={index}
-								height={'75px'}
+								height={'60px'}
 								alt={`Avatar ${index + 1}`}
 								username={nameImages[index] ? nameImages[index] : `Avatar ${index + 1}`}
-								className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] font-semibold"
+								className="min-w-[55px] min-h-[55px] max-w-[55px] max-h-[55px] sbm:min-w-[75px] sbm:min-h-[75px] sbm:max-w-[75px] sbm:max-h-[75px] font-semibold"
 								srcImgProxy={createImgproxyUrl(avatar ?? '', {
 									width: 300,
 									height: 300,
 									resizeType: 'fit'
 								})}
 								src={avatar}
-								classNameText="!text-4xl font-semibold"
+								classNameText="!text-3xl sbm:!text-4xl font-semibold"
 							/>
 						))}
 					</div>
 				)}
-				<div className="justify-center items-center gap-4 flex w-full">
+				<div className="justify-center items-center gap-2 sbm:gap-4 flex w-full">
 					{!isInCall ? (
-						<div className="justify-center items-center gap-4 flex w-full">
+						<div className="justify-center items-center gap-3 sbm:gap-4 flex w-full">
 							<div
-								className={`h-[56px] w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
+								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
 								onClick={() => onStartCall({ isVideoCall: true, isAnswer: true })}
 							>
 								<Icons.IconMeetDM />
 							</div>
 							<div
-								className={`h-[56px] w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
+								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
 								onClick={() => onStartCall({ isVideoCall: false, isAnswer: true })}
 							>
 								<Icons.IconPhoneDM />
 							</div>
 							<div
 								onClick={handleCloseCall}
-								className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
+								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 							>
-								<Icons.CloseButton className={`w-[20px]`} />
+								<Icons.CloseButton className={`w-[18px] sbm:w-[20px]`} />
 							</div>
 						</div>
 					) : (
-						<div className="flex flex-row space-x-4 justify-center">
+						<div className="flex flex-row gap-1.5 sbm:gap-2 lg:gap-3 justify-center flex-wrap">
 							<div
-								className={`h-[56px] w-[56px] rounded-full flex items-center justify-center cursor-pointer  ${!isShowMeetDM ? 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
+								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full flex items-center justify-center cursor-pointer  ${!isShowMeetDM ? 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
 								onClick={toggleVideo}
 							>
 								<Icons.IconMeetDM
@@ -378,7 +378,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								/>
 							</div>
 							<div
-								className={`h-[56px] w-[56px] rounded-full flex items-center justify-center cursor-pointer ${isMuteMicrophone ? 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
+								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full flex items-center justify-center cursor-pointer ${isMuteMicrophone ? 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
 								onClick={handleMuteToggle}
 							>
 								<Icons.Microphone
@@ -389,15 +389,15 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							</div>
 
 							<Menu menu={menuDevice} className={'rounded-3xl'}>
-								<div className="h-[56px] w-[56px] relative rounded-full flex items-center justify-center cursor-pointer dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary">
+								<div className="h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] relative rounded-full flex items-center justify-center cursor-pointer dark:bg-bgLightMode dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary">
 									<Icons.ThreeDot className="text-white dark:text-bgTertiary" />
 								</div>
 							</Menu>
 							<div
-								className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
+								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 								onClick={handleCloseCall}
 							>
-								<Icons.StopCall className="size-6 text-white-600" />
+								<Icons.StopCall className="size-4 sbm:size-5 lg:size-6 text-white-600" />
 							</div>
 						</div>
 					)}

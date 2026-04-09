@@ -1,0 +1,9 @@
+{
+	"show": "表示",
+	"membersOf": "総メンバー {{count}}",
+	"addedBy": "{{name}}によって追加",
+	"you": "あなた",
+	"inVoice": "ボイスチャンネル内",
+	"onlineCount": "オンライン - {{count}}",
+	"offlineCount": "オフライン - {{count}}"
+}

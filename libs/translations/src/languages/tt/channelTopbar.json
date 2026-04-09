@@ -1,0 +1,167 @@
+{
+	"pageTitle": {
+		"channels": "Каналлар",
+		"members": "Катнашучылар",
+		"guideClan": "Клан буенча кулланма"
+	},
+	"tooltips": {
+		"clickToEdit": "Төркемне үзгәртү өчен басыгыз",
+		"startVoiceCall": "Тавышлы шалтырату башлау",
+		"startVideoCall": "Видео-шалтырату башлау",
+		"showMemberList": "Катнашучылар исемлеген күрсәтү",
+		"hideMemberList": "Катнашучылар исемлеген яшерү",
+		"showUserProfile": "Кулланучы профилен күрсәтү",
+		"hideUserProfile": "Кулланучы профилен яшерү",
+		"files": "Файллар",
+		"canvas": "Канвас",
+		"threads": "Ботакламалар",
+		"notificationSettings": "Белдермә көйләнмәләре",
+		"pinnedMessages": "Төяп куелган хәбәрләр",
+		"members": "Катнашучылар",
+		"showChat": "Чатны күрсәтү",
+		"addFriendsToDM": "Дуска шәхси хәбәрләргә өстәү",
+		"jump": "Күчү",
+		"gallery": "Галерея",
+		"timelineView": "Вакыт сызыгына күчү",
+		"defaultView": "Чатка күчү"
+	},
+	"directMessage": "Шәхси хәбәр",
+	"activeThreads": "Актив ботакламалар",
+	"joinedThreadsLast30Days": "Минем ботакламаларым (соңгы 30 көн)",
+	"olderThreads": "Иске ботакламалар",
+	"loading": "Йөкләү...",
+	"topic": "Тема",
+	"reactions": "Реакцияләр",
+	"invoice": "Шалтыратуда",
+	"callMessages": {
+		"startedVoiceCall": "Тавышлы шалтырату башлады",
+		"startedVideoCall": "Видео-шалтырату башлады"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "Төркем каналы идентификаторы юк",
+		"dmChannelIdMissing": "Шәхси хәбәрләр каналы идентификаторы юк",
+		"youAreOnAnotherCall": "Сез инде башка шалтыратудасыз"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "Бу каналда төяп куелган хәбәрләр юк... әлегә.",
+		"protip": "КИҢӘШ",
+		"emptyDescription": "\"Хәбәрләр белән идарә итү\" рөхсәте булган кулланучылар контекстлы менюдан хәбәрләрне төяп куя ала.",
+		"unpinMessage": "Хәбәрне төяп куюдан алу",
+		"unpinConfirmation": "Сез чыннан да бу төяп куелган хәбәрне алырга телисезме?",
+		"cancel": "Кире кагу",
+		"unpinIt": "Аны төяп куюдан алу"
+	},
+	"threads": {
+		"emptyTitle": "Бер дә ботаклама юк.",
+		"emptyDescription": "Ботаклама — вакытлы текст каналы ярдәмендә аралашуга игътибар итегез.",
+		"createThread": "Ботаклама булдыру"
+	},
+	"canvas": {
+		"emptyTitle": "Бер дә канвас юк.",
+		"emptyDescription": "Канвас — вакытлы текст каналы ярдәмендә аралашуга игътибар итегез.",
+		"createCanvas": "Канвас булдыру"
+	},
+	"files": {
+		"emptyTitle": "Бер дә файл юк.",
+		"emptyDescription": "Бу каналда файллар юк.",
+		"searchPlaceholder": "Исеме буенча файл эзләү"
+	},
+	"fileItem": {
+		"download": "Күчереп алу",
+		"sharedBy": "{{username}} {{time}} уртаклашты",
+		"attachmentFailed": "Кушымтаны йөкләп булмады."
+	},
+	"notificationSetting": {
+		"muteChannel": "Каналны тындыру",
+		"unmuteChannel": "Каналны тындырудан алу",
+		"mutedUntil": "{{date}} кадәр тындырылган",
+		"useCategoryDefault": "Килешү буенча",
+		"muteOptions": {
+			"for15Minutes": "15 минутка",
+			"for1Hour": "1 сәгатькә",
+			"for3Hours": "3 сәгатькә",
+			"for8Hours": "8 сәгатькә",
+			"for24Hours": "24 сәгатькә",
+			"untilTurnedBackOn": "Кире кабызганчы"
+		}
+	},
+	"gallery": {
+		"title": "Галерея",
+		"sentDate": "Җибәрү датасы",
+		"fromDate": "Датадан",
+		"toDate": "Датага кадәр",
+		"filters": {
+			"all": "Барысы",
+			"images": "Рәсемнәр",
+			"videos": "Видеолар"
+		},
+		"dateRange": {
+			"from": "{{date}} дан",
+			"to": "{{date}} кадәр",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Башлану датасы тәмамлану датасыннан иртәрәк яки тигез булырга тиеш"
+		},
+		"buttons": {
+			"clearAll": "Барысын чистарту",
+			"apply": "Куллану",
+			"clearDateFilter": "Дата фильтрын чистарту"
+		},
+		"emptyState": {
+			"noMediaFiles": "Медиафайллар табылмады",
+			"noMediaFilesDateRange": "Сайланган диапазон өчен медиафайллар табылмады",
+			"noImages": "Рәсемнәр юк",
+			"noVideos": "Видеолар табылмады"
+		},
+		"loading": {
+			"olderImages": "Иске рәсемнәр йөкләү...",
+			"newerImages": "Яңа рәсемнәр йөкләү...",
+			"filterChange": "Медиа йөкләү..."
+		},
+		"filesCount": "{{count}} файл",
+		"imageError": "Хата"
+	},
+	"modals": {
+		"threads": {
+			"title": "Ботакламалар",
+			"create": "Булдыру",
+			"results": "Нәтиҗәләр"
+		},
+		"canvas": {
+			"title": "Канвас",
+			"create": "Булдыру"
+		},
+		"files": {
+			"title": "Файл"
+		},
+		"pinnedMessages": {
+			"title": "Төяп куелган хәбәрләр"
+		}
+	},
+	"createThread": {
+		"newThread": "Яңа ботаклама",
+		"inviteMessage": "Сез аларны искәртеп, яңа кешеләрне чакыра аласыз.",
+		"validation": {
+			"invalidChannelName": "Зинһар, дөрес канал исемен керетегез (64 символдан да ким, бары тик хәрефләр, саннар, _ яки -).",
+			"threadNameRequired": "Ботаклама исеме кирәк",
+			"starterMessageRequired": "Башлангыч хәбәр таләп ителә"
+		},
+		"threadName": "Ботаклама исеме",
+		"enterThreadName": "Ботаклама исемен керетегез",
+		"privateThread": "Шәхси ботаклама",
+		"privateThreadDescription": "Бары тик чакырылган кулланучылар һәм модераторлар гына күрә ала",
+		"toast": {
+			"threadNameTooShort": "Ботаклама исеме 3 символдан озынрак булырга тиеш",
+			"threadNameExists": "Бу ботаклама исеме инде бар",
+			"initialMessageRequired": "Ботакламаны башлау өчен башлангыч хәбәр кирәк.",
+			"messageTooLong": "Хәбәр 4000 символ чиген арттыра.",
+			"messageLimitExceeded": "Хәбәр {{limit}} символлык чикне арттыра."
+		},
+		"placeholder": {
+			"threadName": "Ботаклама исемен керетегез"
+		}
+	},
+	"moreFile": "яңа файл",
+	"moreFiles": "яңа файл"
+}

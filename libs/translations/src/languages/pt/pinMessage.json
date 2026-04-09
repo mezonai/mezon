@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "Este canal ainda não tem mensagens fixadas... mas logo terá.",
+	"PROTIP": "DICA:",
+	"modal": {
+		"title": "Fixar agora. Fixe para garantir.",
+		"description": "Ei, só queria confirmar mais uma vez: você deseja fixar esta mensagem em #{{channelLabel}} para que ela fique salva permanentemente?",
+		"descriptionDM": "Ei, só queria confirmar mais uma vez: você deseja fixar esta mensagem nesta conversa para que ela fique salva permanentemente?",
+		"cancel": "Cancelar",
+		"confirm": "Fixar agora"
+	}
+}

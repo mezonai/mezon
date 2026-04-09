@@ -1,0 +1,22 @@
+{
+  "editStatus": "Status",
+  "save": "Salvar",
+  "statusDuration": {
+    "label": "Duração do status",
+    "today": "Hoje",
+    "fourHours": "4 horas",
+    "oneHour": "1 hora",
+    "thirtyMinutes": "30 minutos",
+    "dontClear": "Não limpar"
+  },
+  "placeholder": "O que você está fazendo?",
+  "userStatus": {
+    "online": "Online",
+    "idle": "Ausente",
+    "doNotDisturb": "Não perturbe",
+    "invisible": "Invisível"
+  },
+  "setCustomStatus": "Definir status personalizado",
+  "onlineStatus": "Status online",
+  "changeOnlineStatus": "Alterar status online"
+}

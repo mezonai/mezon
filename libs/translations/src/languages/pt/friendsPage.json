@@ -1,0 +1,84 @@
+{
+	"friend": "Amigos",
+	"addFriend": "Adicionar amigo",
+	"friends": "Amigos",
+	"clearSearch": "Limpar pesquisa",
+	"search": "Pesquisar",
+	"tabs": {
+		"all": "Todos",
+		"online": "Online",
+		"pending": "Pendentes",
+		"block": "Bloqueados"
+	},
+	"addFriendModal": {
+		"title": "ADICIONAR AMIGO",
+		"description": "Você pode adicionar amigos usando o nome de usuário do Mezon deles",
+		"placeholder": "Digite o nome de usuário",
+		"tooltip": "Você pode adicionar amigos usando o nome de usuário do Mezon deles",
+		"sendRequest": "Enviar pedido de amizade",
+		"add": "Adicionar",
+		"alreadyFriends": "Você já é amigo deste usuário!",
+		"waitAccept": "Você já enviou um pedido de amizade para este usuário!",
+		"invalidInput": "Por favor, use apenas números, letras, sublinhados (_) ou pontos.",
+		"blockedUser": "Você bloqueou este usuário. Por favor, desbloqueie para enviar um pedido de amizade.",
+		"blockedUserMobile": "Você bloqueou este usuário. Desbloqueie para enviar um pedido de amizade.",
+		"waitingMessage": "O Mezon está esperando por você. Mas você não precisa esperar!"
+	},
+	"requestFailedPopup": {
+		"title": "Falha ao enviar pedido de amizade",
+		"message": "Você já é amigo deste usuário!",
+		"okay": "OK"
+	},
+	"activity": {
+		"coding": "Atividade - Trabalho",
+		"music": "Atividade - Vida",
+		"gaming": "Atividade - Lazer"
+	},
+	"friendMenu": {
+		"startVideoCall": "Iniciar chamada de vídeo",
+		"startVoiceCall": "Iniciar chamada de voz",
+		"removeFriend": "Remover amigo",
+		"block": "Bloquear",
+		"unblock": "Desbloquear",
+		"more": "Mais",
+		"cancel": "Cancelar",
+		"accept": "Aceitar",
+		"reject": "Recusar"
+	},
+	"removeFriendModal": {
+		"title": "Remover '{{username}}'",
+		"description": "Tem certeza de que deseja remover <bold>{{username}}</bold> da sua lista de amigos?",
+		"cancel": "Cancelar",
+		"confirm": "Remover amigo"
+	},
+	"cancelRequestModal": {
+		"title": "Cancelar pedido de '{{username}}'",
+		"description": "Tem certeza de que deseja cancelar o pedido de amizade para <bold>{{username}}</bold>?",
+		"cancel": "Cancelar",
+		"confirm": "Cancelar pedido"
+	},
+	"rejectRequestModal": {
+		"title": "Recusar '{{username}}'",
+		"description": "Tem certeza de que deseja recusar o pedido de amizade de <bold>{{username}}</bold>?",
+		"cancel": "Cancelar",
+		"confirm": "Recusar"
+	},
+	"toast": {
+		"userBlockedSuccess": "Usuário bloqueado com sucesso",
+		"userBlockedFailed": "Não foi possível bloquear o usuário",
+		"userUnblockedSuccess": "Usuário desbloqueado com sucesso",
+		"userUnblockedFailed": "Não foi possível desbloquear o usuário"
+	},
+	"statusTapListFriends": {
+		"all": "Parece vazio por aqui! Comece adicionando alguns amigos para iniciar uma conversa.",
+		"online": "Está silencioso! Que tal iniciar uma conversa e ver quem está por aqui?",
+		"pending": "Aqui é onde você encontrará os pedidos de amizade que enviou e recebeu.",
+		"block": "Você ainda não bloqueou ninguém."
+	},
+	"statusTapSearchFriends": {
+		"all": "Nenhum amigo encontrado para sua pesquisa. Tente outro nome.",
+		"online": "Ninguém online encontrado para sua pesquisa. Tente outro nome.",
+		"pending": "Nenhum pedido de amizade encontrado para sua pesquisa. Verifique o nome ou tente novamente.",
+		"block": "Nenhum usuário bloqueado encontrado para sua pesquisa. Tente outro nome."
+	}
+}

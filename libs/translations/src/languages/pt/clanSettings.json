@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Visão geral da comunidade",
+		"deleteClan": "Excluir clã",
+		"sectionTitles": {
+			"apps": "Aplicativos",
+			"moderation": "Moderação",
+			"emotions": "Emojis"
+		},
+		"items": {
+			"overview": "Visão geral",
+			"roles": "Cargos",
+			"emoji": "Emoji",
+			"imageStickers": "Figurinhas de imagem",
+			"voiceStickers": "Efeitos sonoros",
+			"categoryOrder": "Ordem das categorias",
+			"integrations": "Integrações",
+			"auditLog": "Log de auditoria",
+			"onboarding": "Guia",
+			"enableCommunity": "Ativar comunidade"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Tamanho mínimo: 128x128",
+		"recommendedSize": "Recomendamos o uso de uma imagem de pelo menos 512x512 para o clã.",
+		"uploadImage": "Carregar imagem",
+		"clanName": "Nome do Clã",
+		"namePlaceholder": "Nome do clã...",
+		"validationError": "Por favor, insira um nome de clã válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+		"modal": {
+			"title": "Apenas arquivos de imagem são permitidos",
+			"content": "Por favor, carregue apenas arquivos nos formatos (JPEG, PNG), obrigado!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Cuidado — você tem alterações não salvas!",
+		"reset": "Redefinir",
+		"saveChanges": "Salvar alterações"
+	},
+	"clanBanner": {
+		"title": "Banner do Clã",
+		"description": "Esta imagem será exibida no topo da sua lista de canais.",
+		"recommendedSize": "O tamanho mínimo recomendado é 960x540 e uma proporção de 16:9.",
+		"uploadBackground": "Carregar plano de fundo",
+		"chooseImage": "Escolher imagem",
+		"modal": {
+			"title": "Apenas arquivos de imagem são permitidos",
+			"content": "Por favor, carregue apenas arquivos nos formatos (JPEG, PNG), obrigado!"
+		}
+	},
+	"systemMessages": {
+		"title": "Canal de mensagens do sistema",
+		"description": "Este é o canal para o qual enviamos mensagens de eventos do sistema. Pode ser desativado a qualquer momento.",
+		"welcomeRandom": "Enviar uma mensagem de boas-vindas aleatória quando alguém entrar neste servidor.",
+		"welcomeSticker": "Lembrar os membros de responderem à mensagem de boas-vindas com uma figurinha.",
+		"boostMessage": "Enviar uma mensagem quando alguém der Boost neste servidor.",
+		"setupTips": "Enviar dicas úteis para a configuração do servidor.",
+		"auditLog": "Enviar logs quando uma ação for aplicada ao clã.",
+		"anoTitle": "Modo anônimo",
+		"anoDesc": "Impedir que os usuários usem o modo anônimo"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Aplicativos de acompanhamento para jogos",
+			"popularTrending": "Aplicativos populares e em tendência",
+			"serverMiniGames": "Minijogos do servidor",
+			"rolePlayingFavorites": "Favoritos de RPG"
+		},
+		"inServers": "em {{count}} servidores"
+	},
+	"emoji": {
+		"uploadInstructions": "INSTRUÇÕES DE CARREGAMENTO",
+		"title": "Emoji",
+		"description": "Adicione até 250 emojis personalizados que todos podem usar neste servidor.",
+		"uploadRequirements": "REQUISITOS DE CARREGAMENTO",
+		"requirements": {
+			"fileType": "Tipo de arquivo: JPEG, PNG, GIF",
+			"fileSize": "Tamanho de arquivo recomendado: 256 KB",
+			"dimensions": "Dimensões recomendadas: 128x128",
+			"naming": "Nomeação: O nome do emoji deve ter pelo menos 2 caracteres e conter apenas letras, números e sublinhados (_)"
+		},
+		"uploadEmoji": "Carregar emoji"
+	},
+	"stickers": {
+		"uploadInstructions": "INSTRUÇÕES DE CARREGAMENTO",
+		"description": "As figurinhas podem ser estáticas (PNG) ou animadas (APNG, GIF). As figurinhas devem ter exatamente 320 x 320 pixels e não podem ultrapassar 512 KB. Redimensionaremos automaticamente as figurinhas PNG estáticas e GIFs animados para você.",
+		"uploadHere": "Carregue aqui!",
+		"customizeMessage": "Personalize suas figurinhas incríveis conforme seu gosto",
+		"uploadSticker": "Carregar figurinha"
+	},
+	"deleteClanTitle": "Excluir '{{clanName}}'"
+}

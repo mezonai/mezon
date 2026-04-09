@@ -1,0 +1,26 @@
+{
+    "headerTitle": {
+        "settings": "Көйләнмәләр",
+        "friends": "Дуслар",
+        "addFriends": "Дуслар өстәү",
+        "requestFriend": "Дуслык сораулары",
+        "friendRequestSettings": "Дуслык сораулары көйләнмәләре",
+        "language": "Тел",
+        "profile": "Профиль",
+        "newMessage": "Яңа хәбәр",
+        "newGroup": "Яңа төркем",
+        "addMembers": "Катнашучылар өстәү",
+        "share": "Уртаклашу",
+        "appearance": "Тышкы күренеш",
+        "chat": "Чат",
+        "topic": "Тема"
+    },
+    "headerRight": {
+        "addFriends": "Дуслар өстәү"
+    },
+    "navigationTabs": {
+        "messages": "Хәбәрләр",
+        "notifications": "Белдермәләр",
+        "profile": "Профиль"
+    }
+}

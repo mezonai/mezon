@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Compartilhar contato",
+		"searchPlaceholder": "Pesquisar...",
+		"noResults": "Nenhum resultado encontrado",
+		"noFriends": "Nenhum amigo ou canal encontrado",
+		"contactPreview": "Contato que será compartilhado",
+		"cancel": "Cancelar",
+		"share": "Compartilhar",
+		"sharing": "Enviando...",
+		"group": "Grupo",
+		"channel": "Canal",
+		"thread": "Tópico"
+	},
+	"card": {
+		"call": "Ligar",
+		"message": "Mensagem",
+		"blockedAction": "Você não pode realizar esta ação.",
+		"cannotCallSelf": "Você não pode ligar para si mesmo."
+	},
+	"contactSharedSuccess": "Compartilhado com sucesso",
+	"contactSharedError": "Não foi possível compartilhar"
+}

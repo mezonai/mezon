@@ -1,0 +1,104 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "既読にする"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "招待",
+          "markFavorite": "お気に入りに追加",
+          "unMarkFavorite": "お気に入りから削除",
+          "copyLink": "リンクをコピー"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "チャンネルの通知をミュート",
+          "unMuteChannel": "チャンネルの通知をミュート解除",
+          "muteThread": "スレッドの通知をミュート",
+          "unMuteThread": "スレッドの通知をミュート解除",
+          "notification": "通知設定",
+          "for15Minutes": "15分間",
+          "for1Hour": "1時間",
+          "for3Hours": "3時間", 
+          "for8Hours": "8時間",
+          "for24Hours": "24時間",
+          "untilTurnedBackOn": "再度オンにするまで",
+          "useCategoryDefault": "カテゴリデフォルトを使用",
+          "all": "すべて",
+          "onlyMention": "@メンションのみ",
+          "nothing": "なし",
+          "processing": "処理中...",
+          "muteChannelStatus": "チャンネルの通知をミュート",
+          "muteThreadStatus": "スレッドの通知をミュート",
+          "unmuteChannelStatus": "チャンネルの通知をミュート解除", 
+          "unmuteThreadStatus": "スレッドの通知をミュート解除",
+          "mutedUntil": "{{date}}までミュート",
+          "muteSuccess": "通知をミュートしました!",
+          "unMuteSuccess": "通知をミュート解除しました!",
+          "muteFailed": "通知をミュートできませんでした!",
+          "unMuteFailed": "通知をミュート解除できませんでした!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "スレッド",
+        "searchThreads": "スレッド名を検索",
+        "searchFiles": "ファイルを検索",
+        "searchCanvas": "キャンバス名を検索"
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "チャンネルを編集",
+          "deleteChannel": "チャンネルを削除",
+          "duplicateChannel": "チャンネルを複製",
+          "leaveChannel": "チャンネルを退出",
+          "createTextChannel": "テキストチャンネルを作成",
+          "createVoiceChannel": "ボイスチャンネルを作成",
+          "openChat": "チャットを開く",
+          "hideNames": "名前を非表示",
+          "createThread": "スレッドを作成"
+      },
+      "devMode": {
+          "title": "開発者モード",
+          "copyChannelID": "チャンネルIDをコピー"
+      },
+      "manageThreadMenu": {
+          "editThread": "スレッドを編集",
+          "deleteThread": "スレッドを削除",
+          "leaveThread": "スレッドを退出",
+          "closeThread": "スレッドを閉じる",
+          "lockThread": "スレッドをロック",
+          "copyLink": "リンクをコピー"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "チャンネルIDをコピーしました"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "{{threadName}}を削除",
+          "content": "このスレッドを削除してもよろしいですか？",
+          "confirmText": "はい"
+      },
+      "channel": {
+          "title": "#{{channelName}}を削除",
+          "content": "このチャンネルを削除してもよろしいですか？",
+          "confirmText": "はい",
+          "systemChannel": "システムチャンネルは削除できません",
+          "error": "チャンネル削除エラー：{{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "スレッドを退出",
+    "yesButton": "スレッドを退出",
+    "textConfirm": "このスレッドを退出してもよろしいですか？退出後、このチェーンからのメッセージを受け取れなくなります。"
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "チャンネルを退出",
+    "yesButton": "チャンネルを退出",
+    "textConfirm": "このチャンネルを退出してもよろしいですか？退出後、このチャンネルからのメッセージを受け取れなくなります。",
+    "error": "チャンネル退出エラー：{{error}}"
+  },
+  "btnBadgeCount": "新着",
+  "favoriteChannel": "お気に入りチャンネル"
+}

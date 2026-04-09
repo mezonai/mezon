@@ -1,0 +1,76 @@
+{
+	"title": "Personalize seu clã",
+	"subTitle": "Dê um estilo único ao seu novo clã com um nome e um ícone. Você sempre poderá alterá-los mais tarde.",
+	"clanName": "Nome do clã",
+	"createServer": "Criar clã",
+	"byCreatingClan": "Ao criar um clã, você concorda com",
+	"upload": "CARREGAR",
+	"addClan": "Criar clã",
+	"placeholderClan": "Digite o nome do clã",
+	"errorMessage": "Por favor, insira um nome de clã válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+	"duplicateNameMessage": "Este nome de clã já existe. Por favor, escolha outro nome.",
+	"commutityGuide": "Diretrizes da comunidade Mezon.",
+	"busy": "Ocupado",
+	"findOrStartConversation": "Pesquisar ou iniciar uma conversa",
+	"createCategoryModal": {
+		"title": "Criar categoria",
+		"nameLabel": "Qual é o nome da categoria?",
+		"namePlaceholder": "Digite o nome da categoria",
+		"privateCategory": "Categoria privada",
+		"privateDescription": "Ao criar uma categoria privada, apenas os membros e cargos selecionados poderão visualizá-la. Os canais sincronizados nesta categoria serão automaticamente ajustados a esta configuração.",
+		"invalidName": "Por favor, insira um nome de categoria válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+		"duplicateName": "Este nome de categoria já existe no clã. Por favor, insira outro nome.",
+		"cancel": "Cancelar",
+		"create": "Criar categoria"
+	},
+	"leaveClanModal": {
+		"title": "Sair de {{clanName}}",
+		"description": "Tem certeza de que deseja sair de <strong>{{clanName}}</strong>? Você não poderá participar deste servidor novamente, a menos que seja convidado.",
+		"cancel": "Cancelar"
+	},
+	"leaveClan": "Sair do Clã",
+	"leaveClanTitle": "Sair",
+	"categoryOverview": {
+		"categoryName": "Nome da categoria",
+		"categoryNamePlaceholder": "Digite o nome da sua categoria aqui...",
+		"hasWelcomeChannelError": "Esta categoria possui um canal de boas-vindas",
+		"deleteCategory": "Excluir categoria",
+		"deleteCategoryTitle": "Excluir categoria",
+		"deleteCategoryButton": "Excluir categoria",
+		"cannotBeUndone": "Esta ação não pode ser desfeita",
+		"categoryLabel": "Categoria"
+	},
+	"createClanModal": {
+		"title": "Personalize seu Clã",
+		"description": "Dê cor ao seu novo clã escolhendo um nome e um ícone! Você pode mudar depois, se quiser!",
+		"upload": "Carregar",
+		"clanName": "NOME DO CLÃ",
+		"placeholder": "Digite o nome do clã",
+		"invalidName": "Por favor, insira um nome de clã válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+		"duplicateName": "Este nome de clã já existe. Por favor, escolha outro nome.",
+		"agreement": "Ao criar um clã, você concorda com",
+		"communityGuidelines": "Diretrizes da comunidade Mezon",
+		"back": "Voltar",
+		"create": "Criar",
+		"toast": {
+			"limitImageSize": "O tamanho da imagem deve ser menor que {{size}} MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Crie seu Clã",
+		"description": "Seu clã é o lugar para interagir com seus amigos. Crie seu próprio clã e comece a conversar.",
+		"createMyOwn": "Criar meu próprio modelo",
+		"startFromTemplate": "Começar a partir de um modelo",
+		"gamingTemplate": "Jogos",
+		"friendsTemplate": "Amigos",
+		"studyGroupTemplate": "Grupo de estudos",
+		"schoolClubTemplate": "Clube escolar",
+		"localCommunityTemplate": "Comunidade local",
+		"artistsCreatorsTemplate": "Artistas e Criadores"
+	},
+	"limitModal": {
+		"title": "Limite atingido!",
+		"message": "Você já participa de 50 clãs. Você precisa sair de um clã antes de poder participar ou criar outro.",
+		"okayButton": "OK"
+	}
+}

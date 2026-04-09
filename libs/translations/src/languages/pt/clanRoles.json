@@ -1,0 +1,112 @@
+{
+	"roleDescription": "Use cargos para agrupar membros no seu clã e atribuir permissões",
+	"defaultRole": "Permissão padrão para todos os membros do clã",
+	"roles": "Cargos",
+	"members": "Membros",
+	"noRole": "Não há cargos no momento",
+	"skipStep": "Pular esta etapa",
+	"failed": "Falhou",
+	"createNewRole": {
+		"title": "Etapa 1 de 3",
+		"createANewRole": "Criar um novo cargo",
+		"description": "Dê a este cargo um nome e uma cor exclusivos. Você sempre poderá alterar isso depois.",
+		"create": "Criar",
+		"newRole": "Digite o novo nome do cargo...",
+		"roleName": "Nome do cargo",
+		"createSuccess": "Cargo {{roleName}} criado com sucesso",
+		"cannotCreate": "Não foi possível criar {{roleName}}"
+	},
+	"setupPermission": {
+		"title": "Etapa 2 de 3",
+		"setupPermissionTitle": "Configurar permissões",
+		"setupPermissionSuccessfully": "Permissões configuradas com sucesso",
+		"next": "Próximo",
+		"searchPermission": "Pesquisar permissões"
+	},
+	"setupMember": {
+		"title": "Etapa 3 de 3",
+		"addMember": "Adicionar membro",
+		"description": "Atribua este cargo aos seus membros. Os membros podem ter mais de um cargo.",
+		"finish": "Concluir",
+		"addedMember": "Membro adicionado com sucesso",
+		"searchMembers": "Pesquisar membros",
+		"deletedMember": "{{memberName}} removido com sucesso",
+		"add": "Adicionar",
+		"noMembersFound": "Nenhum membro encontrado"
+	},
+	"roleDetail": {
+		"permissions": "Permissões",
+		"members": "Membros",
+		"role": "Cargo",
+		"roleName": "Nome do cargo",
+		"deleteRole": "Excluir cargo",
+		"deleteRoleSuccessfully": "Cargo {{roleName}} excluído com sucesso",
+		"changesSaved": "Alterações salvas",
+		"save": "Salvar",
+		"confirmSaveTitle": "Salvar alterações?",
+		"confirmSaveContent": "Você fez alterações. Deseja salvá-las?",
+		"yes": "Sim",
+		"doNotSave": "Não salvar"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "Cor do cargo",
+		"titleBS": "Selecionar cor",
+		"reset": "Redefinir",
+		"save": "Salvar"
+	},
+	"roleImagePicker": "Ícone do cargo",
+	"notifyEveryone": "Notificar todos que têm permissão para ver este canal.",
+	"removeImage": "Remover",
+	"allMembers": "Todos os membros",
+	"permissionTitles": {
+		"administrator": "Administrador",
+		"view-channel": "Ver canal",
+		"manage-channel": "Gerenciar canal",
+		"manage-clan": "Gerenciar Clã",
+		"manage-thread": "Gerenciar tópico",
+		"send-message": "Enviar mensagem",
+		"delete-message": "Excluir mensagem",
+		"clan-owner": "Dono do Clã"
+	},
+	"permissionDescriptions": {
+		"administrator": "Permite que o membro gerencie todo o clã (permissões apenas abaixo do dono).",
+		"view-channel": "Permite que o membro veja os canais públicos.",
+		"manage-channel": "Permite que o membro crie, edite ou exclua canais.",
+		"manage-clan": "Permite que o membro controle as configurações do clã, gerencie cargos e canais, monitore a atividade dos membros, garantindo uma gestão eficaz e uma comunidade bem organizada.",
+		"manage-thread": "Permite que o membro crie, edite e exclua tópicos no canal (incluindo tópicos privados).",
+		"send-message": "Permite que o membro envie mensagens em canais públicos (incluindo tópicos e discussões de tópicos nesses canais).",
+		"delete-message": "Permite que o membro exclua mensagens em canais públicos (incluindo tópicos e discussões de tópicos nesses canais).",
+		"notAvailable": "Descrição da permissão não disponível"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "Use cargos para agrupar membros no seu clã e atribuir permissões.",
+		"defaultPermissions": "Permissões padrão",
+		"everyoneDescription": "@everyone • aplica-se a todos os membros do clã",
+		"searchRoles": "Pesquisar cargos",
+		"createRole": "Criar cargo",
+		"membersUseColor": "Os membros usam a cor do cargo mais alto que possuem nesta lista. Arraste os cargos para reordená-los.",
+		"noRoles": "Nenhum cargo"
+	},
+	"roleManagement": {
+		"newRole": "NOVO CARGO",
+		"editRole": "EDITAR CARGO",
+		"back": "VOLTAR",
+		"display": "Exibir",
+		"permissions": "Permissões",
+		"manageMembers": "Gerenciar membros",
+		"searchPermissions": "Pesquisar permissões",
+		"failedToUpdateRoleOrder": "Não foi possível atualizar a ordem dos cargos.",
+		"newRoleDefault": "Novo cargo",
+		"roleName": "Nome do cargo",
+		"roleColour": "Cor do cargo",
+		"membersUseColour": "Os membros usam a cor do cargo mais alto que possuem na lista de cargos.",
+		"roleIcon": "Ícone do cargo",
+		"roleIconDescription": "Faça upload de uma imagem abaixo de 256 KB ou escolha um emoji personalizado deste clã. Recomendamos pelo menos 64x64 pixels. Os membros verão o ícone do cargo mais alto se tiverem vários cargos.",
+		"chooseImage": "Escolher imagem",
+		"removeIcon": "Remover ícone",
+		"edit": "Editar",
+		"view": "Visualizar",
+		"delete": "Excluir",
+		"roleNameIsRequired": "O nome do cargo é obrigatório"
+	}
+}

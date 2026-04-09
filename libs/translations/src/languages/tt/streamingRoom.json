@@ -1,0 +1,8 @@
+{
+	"joinStreamingRoomBS": {
+		"stream": "Стриминг бүлмәсе",
+		"joinStream": "Стримга кушылу"
+	},
+	"chat": "Чат",
+	"noDisplay": "Күрсәтелә торган стрим юк"
+}

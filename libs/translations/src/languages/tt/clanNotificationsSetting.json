@@ -1,0 +1,31 @@
+{
+	"muteClan": "Кланны тындыру, сез искәртелмәсәгез, укылмаган күрсәткечләрне һәм белдермәләрне булдырмый.",
+	"notifySettingOption": {
+		"title": "Клан белдермә көйләнмәләре",
+		"allMessage": "Барлык хәбәрләр",
+		"onlyMentions": "Бары тик @искәртүләр",
+		"nothing": "Һичнәрсә"
+	},
+	"suppressOption": {
+		"suppressEveryone": "@everyone һәм @here куллануны бастыру",
+		"suppressAllRole": "Барлык рольләрнең @искәртү куллануын бастыру",
+		"suppressHighlights": "Аерымлауларны бастыру",
+		"subText": "Аерымлаулар дусларыгыз кланда аралашканда вакытлы яңартулар һәм башка күп нәрсәләр тәэмин итә."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Яңа вакыйгаларны тындыру",
+		"mobilePushNotifications": "Мобиль корамаларда пуш-белдермәләр"
+	},
+	"notificationOverrides": {
+		"title": "Белдермәләрне яңадан билгеләү",
+		"addChannelsAllCategory": "Барлык каналлар өчен төркемчә өстәү"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Сез каналлар исемлегендә күренә торган каналлардан белдермәләр алмаячаксыз. Бу параметр барлык корамаларга да кулланыла.",
+		"youHaveMuted": "Сез бу каналны кадәр сүндердегез"
+	},
+	"clanNotificationBS": {
+		"title": "Бу кланны тындыру"
+	},
+	"resetOverrides": "Яңадан билгеләүне сброслау"
+}

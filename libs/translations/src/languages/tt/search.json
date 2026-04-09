@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Катнашучыларны табу",
+  "searchActions": "Гамәлләрне табу",
+  "allUsers": "Барлык кулланучылар",
+  "noResults": {
+    "title": "Нәтиҗәләр юк!",
+    "description": "Сез хата яздыгызмы?"
+  }
+}

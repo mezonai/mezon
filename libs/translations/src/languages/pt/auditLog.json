@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Log de auditoria",
+		"filterByUser": "Filtrar por usuário",
+		"filterByAction": "Filtrar por ação",
+		"filterBtn": "Filtrar"
+	},
+	"auditLogItem": {
+		"performedAnAction": "realizou uma ação",
+		"toChannel": "no canal",
+		"remove": "remover",
+		"add": "adicionar"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Todas as ações",
+		"placeholder": "Pesquisar ação"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Todos os usuários",
+		"placeholder": "Pesquisar usuário"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "SEM REGISTROS",
+		"description": "Depois que os moderadores realizarem suas tarefas, você poderá acompanhar as atividades deles aqui."
+	}
+}

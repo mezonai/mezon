@@ -1,0 +1,9 @@
+{
+	"title": "クランの所有権を転送",
+	"description": "これにより、{{clanName}} の所有権が{{memberName}} に転送されます",
+	"confirmation": "私は、このクランの所有権を{{memberName}} に転送することで、正式に彼らのものになることを確認します。",
+	"buttons": {
+		"transfer": "所有権を転送",
+		"cancel": "キャンセル"
+	}
+}

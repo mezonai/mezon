@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Канвас исеме"
+	},
+	"editor": {
+		"placeholder": "Яза башлагыз...",
+		"uploadingImage": "Рәсем йөкләү..."
+	},
+	"actions": {
+		"save": "Саклау",
+		"saving": "Саклау...",
+		"discardChanges": "Үзгәртүләрне бетерү"
+	},
+	"error": {
+		"title": "Хата"
+	},
+	"toolbar": {
+		"blockFormat": "Блок форматы",
+		"addLink": "Сылтама өстәү",
+		"removeLink": "Сылтаманы бетерү",
+		"codeBlock": "Код блогы",
+		"cancel": "Кире кагу",
+		"apply": "Куллану"
+	},
+	"blocks": {
+		"paragraph": "Параграф",
+		"h1": "H1 Зур исем",
+		"h2": "H2 Уртача исем",
+		"h3": "H3 Кечкенә исем",
+		"checkedList": "Тикшерелгән исемлек",
+		"orderedList": "Тәртипле исемлек",
+		"bulletedList": "Маркерлы исемлек",
+		"blockquote": "Цитата"
+	}
+}

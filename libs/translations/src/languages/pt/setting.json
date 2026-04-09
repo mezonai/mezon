@@ -1,0 +1,131 @@
+{
+	"accountSettings": {
+		"title": "Configurações de conta",
+		"account": "Conta",
+		"profiles": "Perfis",
+		"privacySafety": "Privacidade e Segurança",
+		"familyCenter": "Gerenciamento Familiar",
+		"authorizedApp": "Aplicativos Autorizados",
+		"device": "Dispositivos",
+		"connection": "Conexões",
+		"clip": "Clipes",
+		"friendRequests": "Pedidos de Amizade",
+		"QRScan": "Escanear QR Code",
+		"MyQRCode": "Meu QR Code",
+		"devices": "Dispositivos"
+	},
+	"deviceSettings": {
+		"description1": "Estes são todos os dispositivos conectados à sua conta. Você pode desconectar cada um deles individualmente.",
+		"description2": "Se você vir um acesso que não reconhece, desconecte esse dispositivo e altere sua senha imediatamente.",
+		"currentDevice": "Dispositivo atual",
+		"otherDevices": "Outros dispositivos",
+		"noDevices": "Nenhum dispositivo encontrado",
+		"loggedIn": "Logado em",
+		"current": "Atual",
+		"unknown": "Desconhecido",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Computador",
+		"platformWeb": "Web",
+		"removeDevice": "Sair deste dispositivo"
+	},
+	"paymentSettings": {
+		"title": "Configurações de pagamento",
+		"restoreSubscription": "Restaurar assinatura"
+	},
+	"appSettings": {
+		"title": "Configurações do aplicativo",
+		"voice": "Voz",
+		"appearance": "Aparência",
+		"accessibility": "Acessibilidade",
+		"language": "Idioma",
+		"activity": "Atividade",
+		"notifications": "Notificações",
+		"chat": "Chat",
+		"webBrowser": "Navegador Web",
+		"appIcon": "Ícone",
+		"advanced": "Avançado",
+		"appVersion": "Versão do aplicativo",
+		"startUp": "Inicialização",
+		"quitApp": "Sair do aplicativo"
+	},
+	"autoStart": {
+		"title": "Inicialização automática",
+		"description": "Abrir o aplicativo automaticamente ao iniciar o computador para que você possa usá-lo imediatamente."
+	},
+	"hardwareAcceleration": {
+		"title": "Usar aceleração de hardware quando disponível",
+		"description": "Quando ativado, o aplicativo usará o poder da GPU (placa de vídeo) para processar tarefas gráficas intensas, como renderização 3D e decodificação de vídeo. Isso aumenta a taxa de quadros e a resposta da interface. Se houver problemas de exibição ou travamentos, tente desativar este recurso para melhorar a estabilidade."
+	},
+	"autoHidden": {
+		"title": "Iniciar oculto com o sistema operacional",
+		"description": "O aplicativo iniciará automaticamente em modo oculto ao iniciar o sistema operacional."
+	},
+	"activity": {
+		"title": "Mostrar minha atividade",
+		"description": "Compartilhe o que você está fazendo com seus amigos. Isso ajuda eles a saberem o que você está fazendo e facilita a conexão!"
+	},
+	"supportSettings": {
+		"title": "Suporte",
+		"support": "Suporte",
+		"uploadLog": "Enviar log de erros",
+		"acknowledgement": "Agradecimentos"
+	},
+	"whatsNew": {
+		"title": "Novidades",
+		"whatsNew": "Novidades"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Uma nova versão está disponível",
+		"updateExperience": "Atualize agora para continuar aproveitando nossos mais recentes recursos familiares.",
+		"updateNow": "Atualizar agora",
+		"versionInfo": "VERSÃO"
+	},
+	"language": {
+		"title": "Idioma",
+		"description": "Escolha o idioma.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español"
+	},
+	"voice": {
+		"title": "Voz",
+		"description": "Configure suas configurações de voz.",
+		"microphone": "Microfone",
+		"speaker": "Alto-falante",
+		"microphoneVolume": "Volume do microfone",
+		"speakerVolume": "Volume do alto-falante",
+		"noiseSuppression": {
+			"title": "Supressão de ruído",
+			"toggleAriaLabel": "Ativar ou desativar a supressão de ruído"
+		},
+		"unnamedDevice": "Dispositivo sem nome",
+		"noDevices": "Nenhum dispositivo encontrado",
+		"micTest": {
+			"title": "Teste de microfone",
+			"description": "Problemas com o microfone? Inicie o teste e fale — reproduziremos sua voz.",
+			"letsCheck": "Testar",
+			"stop": "Parar"
+		},
+		"errors": {
+			"permissionDenied": "Permissão de microfone necessária para o teste.",
+			"micPermission": "Não foi possível acessar o microfone."
+		},
+		"warnings": {
+			"outputNotSupported": "O navegador não suporta a seleção de dispositivo de saída. A escolha do alto-falante pode ser ignorada."
+		}
+	},
+	"logOut": "Sair",
+	"logOutPopup": {
+		"description": "Tem certeza de que deseja sair?",
+		"noConfirm": "Não",
+		"yesConfirm": "Sim"
+	},
+	"removeAccount": "Excluir conta",
+	"channelSetting": {
+		"recentChannels": "Canais recentes",
+		"searchByChannelLabel": "Pesquisar por nome do canal"
+	},
+	"setting": "Configurações"
+}

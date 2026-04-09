@@ -1,0 +1,59 @@
+{
+	"directMessages": "Шәхси хәбәрләр",
+	"createDM": "Шәхси хәбәр булдыру",
+	"friends": "Дуслар",
+	"yourMessages": "Сезнең хәбәрләрегез",
+	"selectConversation": "Хат алышу башлау өчен сөйләшүне сайлагыз",
+	"createMessageGroup": {
+		"selectFriends": "Дусларны сайлау",
+		"canAddMoreFriends": "Сез тагын {{count}} дус өстәя аласыз.",
+		"searchPlaceholder": "Дустыгызның кулланучы исемен керетегез",
+		"addToGroupChat": "Төркемгә өстәү",
+		"createDMOrGroupChat": "Язу яки төркемле чат булдыру",
+		"createDM": "Шәхси хәбәр булдыру",
+		"createGroupChat": "Төркемле чат булдыру",
+		"noFriendsFound": "Әле бу шәхси хәбәрдә булмаган дуслар табылмады.",
+		"creating": "Булдыру..."
+	},
+	"editGroup": {
+		"title": "Төркемне үзгәртү",
+		"uploadImageText": "Рәсем йөкләү өчен басыгыз",
+		"removeAvatar": "Аватарны бетерү",
+		"groupNameLabel": "Төркем исеме",
+		"groupNamePlaceholder": "Төркем исемен керетегез",
+		"validationError": "Зинһар, дөрес төркем исемен керетегез (бары тик хәрефләр, саннар, _ яки -).",
+		"cancel": "Кире кагу",
+		"save": "Саклау",
+		"saving": "Саклау..."
+	},
+	"contextMenu": {
+		"editGroup": "Төркемне үзгәртү",
+		"addFriend": "Дус итеп өстәү",
+		"leaveGroup": "Төркемнән чыгу",
+		"closeDM": "Шәхси хәбәрне ябу",
+		"markAsRead": "Укылган дип билгеләү",
+		"invitePeople": "Чакыру",
+		"hideConversation": "Диалогны яшерү",
+		"profile": "Профиль",
+		"message": "Хәбәр",
+		"removeFriend": "Дустан бетерү",
+		"block": "Блоклау",
+		"unblock": "Блоктан алу",
+		"removeFromGroup": "Төркемнән бетерү",
+		"shareContact": "Контакт белән уртаклашу",
+		"mute": "Тындыру",
+		"unmute": "Тындырудан алу",
+		"for15Minutes": "15 минутка",
+		"for1Hour": "1 сәгатькә",
+		"for3Hours": "3 сәгатькә",
+		"for8Hours": "8 сәгатькә",
+		"for24Hours": "24 сәгатькә",
+		"untilTurnBackOn": "Моны кире кабызганчы",
+		"mutedUntil": "{{time}} кадәр тындырылган"
+	},
+	"remove": {
+		"content": "Бу сөйләшү инде доступлы түгел!",
+		"title": "Чат доступлы түгел",
+		"button": "Раслау"
+	}
+}

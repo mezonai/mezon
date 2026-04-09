@@ -1,0 +1,31 @@
+{
+	"muteClan": "Silenciar o clã ocultará os indicadores de mensagens não lidas e não exibirá notificações, a menos que você seja mencionado.",
+	"notifySettingOption": {
+		"title": "Configurações de notificação do clã",
+		"allMessage": "Todas as mensagens",
+		"onlyMentions": "Apenas menções",
+		"nothing": "Nenhuma"
+	},
+	"suppressOption": {
+		"suppressEveryone": "Silenciar @everyone e @here",
+		"suppressAllRole": "Silenciar menções a todos os cargos",
+		"suppressHighlights": "Silenciar destaques",
+		"subText": "Os destaques fornecem atualizações ocasionais quando seus amigos estão conversando no clã e muito mais."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Silenciar novos eventos",
+		"mobilePushNotifications": "Notificações push no celular"
+	},
+	"notificationOverrides": {
+		"title": "Substituições de notificação",
+		"addChannelsAllCategory": "Adicionar todos os canais à categoria"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Você não receberá notificações de canais silenciados. Esta configuração se aplica a todos os seus dispositivos.",
+		"youHaveMuted": "Você silenciou este canal até"
+	},
+	"clanNotificationBS": {
+		"title": "Silenciar este clã"
+	},
+	"resetOverrides": "Redefinir substituições"
+}

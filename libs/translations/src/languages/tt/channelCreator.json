@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Булдыру"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Канал исеме",
+			"placeholder": "яңа-канал",
+			"errorMessage": "Зинһар, дөрес канал исемен керетегез (64 символдан да ким, бары тик хәрефләр, саннар, _ яки -).",
+			"duplicateChannelName": "Бу канал исеме бу кланда инде бар. Зинһар, башка исем керетегез."
+		},
+		"channelPrivate": {
+			"title": "Шәхси канал",
+			"descriptionText": "Шәхси канал булдырганда, бары тик аерым катнашучылар һәм рольләр генә бу каналны күрә алачак.",
+			"descriptionVoice": "Тавышлы канал булдырганда, бары тик сайланган катнашучылар һәм рольләр генә бу каналны карау яки тоташу мөмкинлегенә ия булачак."
+		},
+		"channelType": {
+			"title": "Канал төре",
+			"text": {
+				"title": "Текст",
+				"description": "Рәсемнәр, GIF-файллар, стикерлар, фикерләр һәм көлкеләр бастыру"
+			},
+			"voice": {
+				"title": "Тавыш",
+				"description": "Тавышлы аралашу, видео һәм экран күрсәтү"
+			},
+			"stream": {
+				"title": "Агым",
+				"description": "Кызыксынуларыгыз белән уртаклашу"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Тавышлы канал төре",
+			"mezon": "MEZON ОЧРАШУЛАРЫ",
+			"gMeet": "GOOGLE ОЧРАШУЛАРЫ"
+		},
+		"mediaHighlights": {
+			"title": "Медиа һәм истәлекле мизгелләр",
+			"eventsTitle": "Вакыйгалар",
+			"familyJourney": "Канал вакыйгалары",
+			"cherishMoment": "Мөһим вакыйгаларны күзәтегез",
+			"since": "БИРЛЕ",
+			"viewAlbum": "Альбомны карау",
+			"emptyTitle": "Сәяхәтегез әле башланмады.",
+			"emptyDescription": "Беренче истәлекле вакыйгагызны булдырыгыз.",
+			"createFirstMilestone": "Беренче вакыйгагызны булдырыгыз",
+			"selectYear": "Ел сайлагыз",
+			"special": "МАХСУС"
+		},
+		"familyEvents": {
+			"title": "Вакыйгалар",
+			"eventsIn": "Вакыйгалар",
+			"noEvents": "Вакыйгалар юк",
+			"addToGallery": "Галереяга өстәү",
+			"inDays": "{{count}} көннән соң"
+		},
+		"createMilestone": {
+			"headerTitle": "Яңа вакыйга",
+			"cancel": "Кире кагу",
+			"cancelAlertTitle": "Кире кагу",
+			"cancelAlertMessage": "Бу вакыйгадан баш тартырга телисезме?",
+			"continueEditing": "Үзгәртүне дәвам итү",
+			"discard": "Баш тарту",
+			"eventTitleLabel": "Вакыйга исеме",
+			"eventTitlePlaceholder": "мәсәлән, команда очрашуы, проектны башлау",
+			"dateLabel": "Дата",
+			"datePlaceholder": "Дата сайлагыз",
+			"storyLabel": "Тасвирлама",
+			"storyPlaceholder": "Вакыйганың тасвирламасын керетегез",
+			"memoriesLabel": "Медиа",
+			"uploadTitle": "Фото яки видео йөкләү",
+			"uploadSubtitle": "Вакыйгагызга медиа өстәгез",
+			"addMedia": "Медиа өстәү",
+			"tagMembersLabel": "Катнашучыларны тегләү",
+			"saveButton": "Вакыйганы саклау",
+			"requiredTitle": "Талап ителә",
+			"requiredMessage": "Зинһар, вакыйга исемен керетегез",
+			"successTitle": "Уңышлы",
+			"successMessage": "Вакыйга уңышлы булдырылды!",
+			"errorTitle": "Хата",
+			"errorMessage": "Рәсемнәрне сайлап булмады",
+			"required": "Мәҗбүри",
+			"optional": "Мәҗбүри түгел",
+			"titleHint": "Вакыйгагызга ачык һәм аңлаешлы исем бирегез"
+		},
+		"eventDetail": {
+			"defaultTitle": "Вакыйга детальләре",
+			"featured": "КҮРСӘТЕЛГӘН",
+			"calendar": "Көнбатыш",
+			"descriptionPlaceholder": "Бу вакыйгага тасвирлама өстәү...",
+			"addDescription": "Тасвирлама өстәү",
+			"cancel": "Кире кагу",
+			"save": "Саклау"
+		},
+		"albumDetail": {
+			"eventDetails": "Вакыйга детальләре",
+			"date": "Дата",
+			"editEvent": "Вакыйганы үзгәртү",
+			"titleLabel": "Исеме",
+			"titlePlaceholder": "Вакыйга исеме",
+			"descriptionLabel": "Тасвирлама",
+			"descriptionPlaceholder": "Вакыйга тасвирламасы",
+			"cancel": "Кире кагу",
+			"save": "Саклау",
+			"errorTitle": "Хата",
+			"titleRequired": "Исем буш була алмый",
+			"updateFailed": "Вакыйганы яңартып булмады",
+			"sessionNotAvailable": "Сессия юк",
+			"uploadFailed": "Рәсемнәрне йөкләп булмады"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Тавышлы канал төре",
+		"mezon": "MEZON ОЧРАШУЛАРЫ",
+		"gMeet": "GOOGLE ОЧРАШУЛАРЫ"
+	},
+	"mediaHighlights": {
+		"title": "Медиа һәм истәлекле мизгелләр",
+		"familyJourney": "Канал вакыйгалары",
+		"cherishMoment": "Мөһим вакыйгаларны күзәтегез.",
+		"since": "БИРЛЕ",
+		"viewAlbum": "Альбомны карау",
+		"emptyTitle": "Сәяхәтегез әле башланмады.",
+		"emptyDescription": "Беренче истәлекле вакыйгагызны булдырыгыз.",
+		"createFirstMilestone": "Беренче вакыйгагызны булдырыгыз",
+		"selectYear": "Ел сайлагыз",
+		"special": "МАХСУС"
+	},
+	"familyEvents": {
+		"title": "Вакыйгалар",
+		"eventsIn": "Вакыйгалар",
+		"noEvents": "Вакыйгалар юк",
+		"addToGallery": "Галереяга өстәү",
+		"inDays": "{{count}} көннән соң"
+	},
+	"createMilestone": {
+		"headerTitle": "Яңа вакыйга",
+		"cancel": "Кире кагу",
+		"cancelAlertTitle": "Кире кагу",
+		"cancelAlertMessage": "Бу вакыйгадан баш тартырга телисезме?",
+		"continueEditing": "Үзгәртүне дәвам итү",
+		"discard": "Баш тарту",
+		"eventTitleLabel": "Вакыйга исеме",
+		"eventTitlePlaceholder": "мәсәлән, команда очрашуы, проектны башлау",
+		"dateLabel": "Дата",
+		"datePlaceholder": "Дата сайлагыз",
+		"storyLabel": "Тасвирлама",
+		"storyPlaceholder": "Вакыйганың тасвирламасын керетегез",
+		"memoriesLabel": "Медиа",
+		"uploadTitle": "Фото яки видео йөкләү",
+		"uploadSubtitle": "Вакыйгагызга медиа өстәгез",
+		"addMedia": "Медиа өстәү",
+		"tagMembersLabel": "Катнашучыларны тегләү",
+		"saveButton": "Вакыйганы саклау",
+		"requiredTitle": "Талап ителә",
+		"requiredMessage": "Зинһар, вакыйга исемен керетегез",
+		"successTitle": "Уңышлы",
+		"successMessage": "Вакыйга уңышлы булдырылды!",
+		"errorTitle": "Хата",
+		"errorMessage": "Рәсемнәрне сайлап булмады",
+		"required": "Мәҗбүри",
+		"optional": "Мәҗбүри түгел",
+		"titleHint": "Вакыйгагызга ачык һәм аңлаешлы исем бирегез"
+	},
+	"albumDetail": {
+		"eventDetails": "Вакыйга детальләре",
+		"date": "Дата",
+		"editEvent": "Вакыйганы үзгәртү",
+		"titleLabel": "Исеме",
+		"titlePlaceholder": "Вакыйга исеме",
+		"descriptionLabel": "Тасвирлама",
+		"descriptionPlaceholder": "Вакыйга тасвирламасы",
+		"cancel": "Кире кагу",
+		"save": "Саклау",
+		"errorTitle": "Хата",
+		"titleRequired": "Исем буш була алмый",
+		"updateFailed": "Вакыйганы яңартып булмады",
+		"sessionNotAvailable": "Сессия юк",
+		"uploadFailed": "Рәсемнәрне йөкләп булмады"
+	},
+	"monthsShort": ["ГЫЙН", "ФЕВ", "МАР", "АПР", "МАЙ", "ИЮН", "ИЮЛ", "АВГ", "СЕН", "ОКТ", "НОЯ", "ДЕК"]
+}

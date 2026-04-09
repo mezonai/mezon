@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Visão geral da atividade",
+		"timePeriod": "Período",
+		"totalActiveUsers": "Total de usuários ativos",
+		"totalActiveUsersTooltip": "Número de usuários únicos que estiveram ativos pelo menos uma vez",
+		"totalActiveChannels": "Total de canais ativos",
+		"totalActiveChannelsTooltip": "Número de canais únicos que estiveram ativos pelo menos uma vez",
+		"totalMessages": "Total de mensagens",
+		"totalMessagesTooltip": "Total de mensagens enviadas no período selecionado"
+	},
+	"pagination": {
+		"showing": "Mostrando",
+		"of": "de",
+		"clans": "clãs",
+		"previous": "Anterior",
+		"next": "Próximo"
+	},
+	"chart": {
+		"loadingChartData": "Carregando dados do gráfico...",
+		"metricsAvailableForOwnersOnly": "As métricas estão disponíveis apenas para os proprietários do clã."
+	},
+	"table": {
+		"detailedActivityData": "Dados detalhados de atividade",
+		"channelsActivityData": "Dados de atividade dos canais",
+		"userActivityData": "Dados de atividade dos usuários",
+		"exportCSV": "Exportar CSV",
+		"exporting": "Exportando...",
+		"includedInExport": "Esta coluna será incluída na exportação CSV",
+		"notIncludedInExport": "Esta coluna não será incluída na exportação CSV",
+		"clanName": "Nome do Clã",
+		"channelName": "Nome do canal",
+		"userName": "Nome do usuário",
+		"activeUsers": "Usuários ativos",
+		"activeChannels": "Canais ativos",
+		"messages": "Mensagens",
+		"noOwnedClans": "Você não possui nenhum clã para gerar análises.",
+		"noActiveChannels": "Não há canais ativos neste clã no momento.",
+		"noActiveUsers": "Não há usuários ativos neste canal no momento.",
+		"selectColumnTooltip": "Selecione/desmarque para exportar esta coluna no CSV",
+		"selectAtLeastOneColumn": "Você deve selecionar pelo menos uma coluna para exportar o CSV"
+	},
+	"page": {
+		"backToOverview": "Voltar para a visão geral de uso do Clã",
+		"clanUsageStatisticsReport": "Relatório de Estatísticas de Uso do Clã",
+		"dashboardReport": "Painel",
+		"report": "Relatório"
+	},
+	"state": {
+		"loadingData": "Carregando dados...",
+		"noDataFound": "Nenhum dado encontrado",
+		"noDataDescription": "Não há dados de uso para o período selecionado."
+	},
+	"reportControls": {
+		"timePeriod": "Período",
+		"rangeType": "Tipo de intervalo",
+		"startDate": "Data de início",
+		"endDate": "Data de término",
+		"last7Days": "Últimos 7 dias",
+		"last30Days": "Últimos 30 dias",
+		"last90Days": "Últimos 90 dias",
+		"customDateRange": "Intervalo de datas personalizado",
+		"daily": "Diário",
+		"weekly": "Semanal",
+		"monthly": "Mensal",
+		"runReport": "Gerar relatório",
+		"reset": "Redefinir"
+	},
+	"sortIcon": {
+		"tooltip": "Classificar por esta coluna (asc/desc)",
+		"sortedAsc": "Classificado de forma crescente",
+		"sortedDesc": "Classificado de forma decrescente"
+	}
+}

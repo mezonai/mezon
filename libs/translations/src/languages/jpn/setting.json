@@ -1,0 +1,135 @@
+{
+	"accountSettings": {
+		"title": "アカウント設定",
+		"account": "アカウント",
+		"profiles": "プロフィール",
+		"privacySafety": "プライバシーとセキュリティ",
+		"familyCenter": "ファミリーセンター",
+		"authorizedApp": "承認されたアプリ",
+		"device": "デバイス",
+		"connection": "接続",
+		"clip": "クリップ",
+		"friendRequests": "友達招待",
+		"QRScan": "QRスキャン",
+		"MyQRCode": "私のQRコード",
+		"devices": "デバイス"
+	},
+	"deviceSettings": {
+		"description1": "これはあなたのアカウントにログインしているすべてのデバイスです。各デバイスをログアウトできます。",
+		"description2": "知らないログインが見られる場合、そのデバイスからログアウトし、アカウントのパスワードを即座に変更してください。",
+		"currentDevice": "現在のデバイス",
+		"otherDevices": "他のデバイス",
+		"noDevices": "デバイスが見つかりません",
+		"loggedIn": "ログイン日時",
+		"current": "現在",
+		"unknown": "不明",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "デスクトップ",
+		"platformWeb": "Web",
+		"removeDevice": "このデバイスからログアウト"
+	},
+	"paymentSettings": {
+		"title": "支払い設定",
+		"restoreSubscription": "サブスクリプションを復元"
+	},
+	"appSettings": {
+		"title": "アプリ設定",
+		"voice": "音声",
+		"appearance": "外観",
+		"accessibility": "アクセシビリティ",
+		"language": "言語",
+		"activity": "アクティビティ",
+		"notifications": "通知",
+		"chat": "チャット",
+		"webBrowser": "Webブラウザ",
+		"appIcon": "アイコン",
+		"advanced": "詳細",
+		"appVersion": "アプリバージョン",
+		"startUp": "起動",
+		"quitApp": "アプリを終了"
+	},
+	"autoStart": {
+		"title": "アプリを自動起動",
+		"description": "コンピュータを起動するとアプリが自動的に開き、すぐに使用できます。"
+	},
+	"hardwareAcceleration": {
+		"title": "利用可能な場合グラフィックアクセラレーションを使用",
+		"description": "オンにすると、アプリはGPU（グラフィックカード）の力を活用し、3D画像レンダリングやビデオデコードなどの高度なグラフィックタスクを処理します。これにより、フレームレートとUIのレスポンスが向上します。表示エラーまたはアプリがフリーズする場合は、安定性を向上させるためにこの機能をオフにしてみてください。"
+	},
+	"autoHidden": {
+		"title": "OSと一緒に起動時に非表示",
+		"description": "アプリは、OSと一緒に起動すると自動的に非表示モードで起動します。"
+	},
+	"activity": {
+		"title": "私のアクティビティを表示",
+		"description": "現在のアクティビティを友達と共有しましょう。これにより、彼らがあなたが何をしているかを理解し、つながりやすくなります!"
+	},
+	"supportSettings": {
+		"title": "サポート",
+		"support": "サポート",
+		"uploadLog": "バグログをアップロード",
+		"acknowledgement": "謝辞"
+	},
+	"whatsNew": {
+		"title": "新着情報",
+		"whatsNew": "新着情報"
+	},
+	"updateGate": {
+		"outOfDateVersion": "新しいバージョンが利用可能",
+		"updateExperience": "最新の家族機能を使用し続けるために、迅速なアップデートが必要です。",
+		"updateNow": "今すぐ更新",
+		"versionInfo": "バージョン"
+	},
+	"language": {
+		"title": "言語",
+		"description": "言語を選択。",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語"
+	},
+	"voice": {
+		"title": "音声",
+		"description": "音声設定を設定しましょう。",
+		"microphone": "マイク",
+		"speaker": "スピーカー",
+		"microphoneVolume": "マイクボリューム",
+		"speakerVolume": "スピーカーボリューム",
+		"noiseSuppression": {
+			"title": "ノイズ抑制",
+			"toggleAriaLabel": "ノイズ抑制をオン/オフ"
+		},
+		"unnamedDevice": "名前なしデバイス",
+		"noDevices": "デバイスが見つかりません",
+		"micTest": {
+			"title": "マイクテスト",
+			"description": "マイクに問題がありますか? テストを開始して試してみましょう - あなたの声を再生します。",
+			"letsCheck": "確認",
+			"stop": "停止"
+		},
+		"errors": {
+			"permissionDenied": "マイクテストにはマイク権限が必要です。",
+			"micPermission": "マイクにアクセスできません。"
+		},
+		"warnings": {
+			"outputNotSupported": "ブラウザはデバイス出力の選択をサポートしていません。スピーカーの選択が無視される場合があります。"
+		}
+	},
+	"logOut": "ログアウト",
+	"logOutPopup": {
+		"description": "本当にログアウトしますか?",
+		"noConfirm": "なし",
+		"yesConfirm": "はい"
+	},
+	"removeAccount": "アカウントを削除",
+	"channelSetting": {
+		"recentChannels": "最近のチャンネル",
+		"searchByChannelLabel": "チャンネルラベルで検索"
+	},
+	"setting": "設定"
+}

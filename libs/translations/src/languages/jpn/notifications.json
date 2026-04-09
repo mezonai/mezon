@@ -1,0 +1,25 @@
+{
+  "inbox": "受信トレイ",
+  "tabs": {
+		"forYou": "あなた向け",
+		"messages": "メッセージ",
+		"mentions": "メンション",
+		"topics": "短いディスカッション"
+  },
+  "empty": {
+    "forYou": {
+      "title": "まだここには何もない",
+      "description": "イベント、ライブストリーム、そしてそれ以上の通知を受け取るために戻ってきてください。"
+    },
+    "messages": {
+      "title": "すべてを見ました!",
+      "protip": "ヒント:",
+      "description": "CTRL+I を押して受信トレイを開き、CTRL+Shift+E で最初のメッセージを既読にマークしましょう。"
+    },
+    "mentions": {
+      "title": "すべてを見ました!",
+      "protip": "ヒント:",
+      "description": "誰かがあなたをメンションするたびに、7日間ここに保存されます。"
+    }
+  }
+}

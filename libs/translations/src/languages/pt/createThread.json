@@ -1,0 +1,24 @@
+{
+	"threads": "Tópicos",
+	"emptyThread": {
+		"textNoThread": "Nenhum tópico encontrado",
+		"textNotify": "Foque na conversa com um tópico - um canal de texto temporário.",
+		"createThreads": "Criar tópico"
+	},
+	"otherThreads": "TÓPICOS MAIS ANTIGOS",
+	"errorMessage": "Por favor, insira um nome de tópico válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+	"threadName": "Nome do tópico",
+	"privateThread": "Tópico privado",
+	"onlyPeopleInviteThread": "Apenas as pessoas que você convidou e os moderadores podem ver este tópico",
+	"newThread": "Novo tópico",
+	"joinedThreads": "tópicos participados",
+	"joinedThread": "tópico participado",
+	"otherActiveThreads": "outros tópicos ativos",
+	"olderThreads": "tópicos mais antigos",
+	"searchThreads": "pesquisar tópicos",
+	"searchThread": "pesquisar tópico",
+	"threadFailed": {
+		"title": "Falha ao criar tópico",
+		"content": "Tópico não encontrado ou você não tem permissão para atualizar"
+	}
+}

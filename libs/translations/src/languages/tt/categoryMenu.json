@@ -1,0 +1,39 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Укылган дип билгеләү"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Чакыру"
+		},
+		"notification": {
+			"title": "",
+			"muteCategory": "Төркемчәне тындыру",
+			"notification": "Белдермә көйләнмәләре"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Канал булдыру",
+			"edit": "Төркемчәне үзгәртү",
+			"delete": "Төркемчәне бетерү"
+		},
+		"devMode": {
+			"title": "Эшкәртү режимы",
+			"copyServerID": "Клан идентификаторын күчерү"
+		},
+		"modalConfirm": {
+			"title": "Төркемчәне бетерү",
+			"content": "Зинһар, төркемчәне бетерәсегез килүен раслагыз? Моны кире кайтарып булмый.",
+			"confirmText": "Бетерү"
+		},
+		"toast": {
+			"systemChannel": "Хата: {{categoryName}} системалы каналга ия",
+			"error": "Төркемчәне бетерү хатасы: {{error}}"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "Клан идентификаторы күчерелде"
+	}
+}

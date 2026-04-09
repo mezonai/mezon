@@ -1,0 +1,50 @@
+{
+	"menu": {
+		"startEvent": "Чараны башлау",
+		"markAsNotInterested": "Кызыксынмый дип билгеләү",
+		"markAsInterested": "Кызыксына дип билгеләү",
+		"editEvent": "Чараны үзгәртү",
+		"cancelEvent": "Чараны кире кагу",
+		"reportEvent": "Чарага шикаять итү",
+		"copyEventLink": "Чара сылтамасын күчерү",
+		"copyEventID": "Чара идентификаторын күчерү"
+	},
+	"confirm": {
+		"title": "Чараны кире кагу",
+		"content": "Зинһар, бу чараны кире кагарга теләвегезне раслагыз."
+	},
+	"dashboard": {
+		"title": "Чаралар",
+		"event_one": "Чара",
+		"noEvent": "Алдагы чаралар юк.",
+		"noEventDescription": "Киләчәк чаралар өчен үз идеяләрен тәкъдим итүләре өчен башка катнашучыларны чакыра аласыз.",
+		"createButton": "Булдыру",
+		"noti": "Бу чара кландагы барысы өчен дә ачык.",
+		"endEvent": "Чараны тәмамлау",
+		"UnInterested": "Кызыксынмый",
+		"Interested": "Кызыксына"
+	},
+	"item": {
+		"interested": "Кызыксына",
+		"uninterested": "Кызыксынмый"
+	},
+	"detail": {
+		"eventInfo": "Чара турында мәгълүмат",
+		"interested": "Кызыксына",
+		"personInterested": "{{count}} кеше кызыксына",
+		"onePersonInterested": "1 кеше кызыксына",
+		"noOneInterested": "Әлегә бу чара белән беркем дә кызыксынмады.",
+		"createdBy": "Булдырылган"
+	},
+	"share": {
+		"title": "Чараны дуслар белән уртаклашу",
+		"search": "Эзләү",
+		"share": "Уртаклашу",
+		"copied": "Сылтама күчерелде!"
+	},
+	"countdown": {
+		"joinIn_other": "{{count}} минуттан башлана",
+		"joinNow": "Чара башланды!",
+		"joinIn_one": "1 минуттан башлана"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"title": "Кланга керү өчен чакыру",
+	"offline": "Оффлайн",
+	"online": "Онлайн",
+	"join": "Кушылу",
+	"joining": "Кушылу...",
+	"goToClan": "Кланга күчү",
+	"unknownClan": "Билгесез клан",
+	"memberCount": "{{count}} катнашучы",
+	"memberCount_plural": "{{count}} катнашучы",
+	"failedToJoin": "Бу кланга кушылып булмады.",
+	"inviteTo": "{{clanName}} чакыру",
+	"noThanks": "Рәхмәт, кирәкми",
+	"invalidInvite": {
+		"title": "Ярамаган чакыру",
+		"message": "Яңа чакыру җибәреп карагыз!"
+	}
+}

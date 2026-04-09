@@ -1,0 +1,139 @@
+{
+	"statusProfile": {
+		"balance": "Баланс",
+		"transferFunds": "Акча күчерү",
+		"editCustomStatus": "Үз статусын үзгәртү",
+		"setCustomStatus": "Үз статусын кую",
+		"manageAccounts": "Аккаунтлар белән идарә итү",
+		"switchAccounts": "Аккаунтларны алыштыру",
+		"copyUserId": "Кулланучы ID-сын күчерү",
+		"statusOptions": {
+			"online": "Селтәрдә",
+			"idle": "Актив түгел",
+			"doNotDisturb": "Борчымагыз",
+			"invisible": "Күренмәүчән"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Сез өстәлдә белдермәләр алмаячаксыз",
+			"invisible": "Сез оффлайн кебек күренәчәксез"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 минутка",
+			"for1Hour": "1 сәгатькә",
+			"for3Hours": "3 сәгатькә",
+			"for8Hours": "8 сәгатькә",
+			"for24Hours": "24 сәгатькә",
+			"forever": "Мәңгегә"
+		},
+		"addAccountModal": {
+			"email": "Электрон почта",
+			"password": "Серсүз",
+			"emailPlaceholder": "Электрон почтагызны керетегез",
+			"passwordPlaceholder": "Серсүзегезне керетегез",
+			"cancel": "Кире кагу",
+			"logIn": "Керү"
+		},
+		"sendTokenModal": {
+			"title": "Токеннар җибәрү",
+			"description": "Токеннарны башка кулланучыга күчерү",
+			"fields": {
+				"to": "Кемгә",
+				"amount": "Сумма",
+				"note": "Искәрмә (мәҗбүри түгел)"
+			},
+			"placeholders": {
+				"searchUsers": "Кулланучыларны эзләү...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Искәрмә өстәү..."
+			},
+			"noUsersFound": "Кулланучылар табылмады",
+			"currency": "VND",
+			"buttons": {
+				"cancel": "Кире кагу",
+				"sendTokens": "Токеннар җибәрү"
+			},
+			"errors": {
+				"exceedWalletBalance": "Сумма кешәнек балансыннан арта",
+				"maximumLimit": "Максимум 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Транзакцияләр тарихы",
+			"subtitle": "Барлык транзакция гамәлләрегезне карагыз",
+			"tabs": {
+				"all": "Барлык транзакцияләр",
+				"sent": "Җибәрелгән транзакцияләр",
+				"received": "Алынган транзакцияләр"
+			},
+			"transactionTypes": {
+				"sent": "Җибәрелде",
+				"received": "Алынды"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Бернинди транзакция дә табылмады",
+					"description": "Сез әлегә бернинди транзакция дә ясамагансыз. Сез токеннар җибәрә яки ала башлагач, сезнең транзакцияләр тарихыгыз монда күренәчәк."
+				},
+				"noFilteredTransactions": {
+					"title": "Бернинди транзакция дә табылмады",
+					"description": "Сайланган фильтр өчен транзакцияләр табылмады. Зинһар, башка фильтрны сынап карагыз яки соңрак тикшерегез."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Транзакция #"
+			},
+			"loading": {
+				"fetching": "Транзакцияләр йөкләү...",
+				"fetchingMore": "Өстәмә транзакцияләр йөкләү...",
+				"scrollMore": "Күбрәк күрсәтү өчен аска таба шудырыгыз",
+				"allLoaded": "Сез барлык {{count}} транзакцияне йөкләдегез"
+			}
+		},
+		"customStatusModal": {
+			"title": "Үз статусыгызны куегыз",
+			"whatsCookin": "Яңалыклар ничек, {{name}}?",
+			"placeholder": "Ничек уйлыйсыз?",
+			"clearAfter": "Аннан соң чистарту",
+			"timeOptions": {
+				"today": "Бүген",
+				"fourHours": "4 сәгать",
+				"oneHour": "1 сәгать",
+				"thirtyMinutes": "30 минут",
+				"dontClear": "Чистартмау"
+			},
+			"buttons": {
+				"cancel": "Кире кагу",
+				"save": "Саклау"
+			}
+		}
+	},
+	"channelVoiceSettings": "Тавышлы канал көйләнмәләре",
+	"muteVoice": "Тавышны сүндерү",
+	"kickVoice": "Чыгару",
+	"voiceInfo": {
+		"inVoice": "Тавышта",
+		"joinVoice": "Тавышка кушылу"
+	},
+	"ban": {
+		"title": "Кулланучыны блоклау",
+		"unbanTitle": "Кулланучыны блоктан алу",
+		"content": "Зинһар, \"{{userName}}\" блокларга теләвегезне раслагыз?",
+		"banButton": "Блоклау",
+		"unBanButton": "Блоктан алу",
+		"reasonBan": "Блоклау сәбәбе",
+		"unBanDescription": "Зинһар, \"{{userName}}\" блоктан алырга теләвегезне раслагыз?",
+		"time": {
+			"title": "Озынлык",
+			"tenMinutes": "10 минут",
+			"thirtyMinutes": "30 минут",
+			"oneHour": "1 сәгать",
+			"sixHours": "6 сәгать",
+			"twelveHours": "12 сәгать",
+			"oneDay": "1 көн",
+			"threeDays": "3 көн"
+		},
+		"banList": "Блокланганнар исемлеге",
+		"search": "Блокланган кулланучыларны эзләү",
+		"banListEmpty": "Блокланган кулланучылар табылмады"
+	}
+}

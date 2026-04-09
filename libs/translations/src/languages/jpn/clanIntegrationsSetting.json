@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "自動化されたメッセージとアップデート",
+		"description": "統合でクランをカスタマイズ。Webhook、トラッキングチャンネル、アプリを管理し、クリエイターのためのTwitchとYouTubeの設定を行います。",
+		"learnMore": "統合管理について詳しく学ぶ。"
+	},
+	"webhooks": {
+		"description": "Webhookは、インターネット接続を介して、クランのテキストチャンネルに自動的にメッセージとデータアップデートを受信させるツールです。",
+		"learnMore": "詳しく学ぶ",
+		"try": "または試す",
+		"buildOne": "独自のWebhookを作成しましょう。"
+	},
+	"clanWebhooks": {
+		"description": "クランWebhookは、インターネット技術を使用して、Mezonの各ユーザーに他のアプリやWebサイトからメッセージを投稿する簡単な方法です。",
+		"tips": "ヒント：URLのトークンが侵害された場合または期限切れになった場合は、トークンをリセットして新しいURLをコピーしてください。"
+	},
+	"webhooksEdit": {
+		"title": "Webhookを編集",
+		"save": "保存",
+		"cancel": "キャンセル",
+		"channel": "チャンネル",
+		"nameLabel": "名前",
+		"recommendImage": "最小128x128 pxの画像を使用することを推奨します",
+		"webhookURL": "Webhook URL",
+		"copy": "コピー",
+		"copied": "コピーしました",
+		"delete": "削除",
+		"selectAChannel": "チャンネルを選択",
+		"yes": "はい",
+		"deleteCaptionHook": "{{webhookName}}を削除",
+		"deleteWebhookTitle": "{{webhookName}}を削除",
+		"deleteWebhookConfirmation": "{{webhookName}}を削除してもよろしいですか？この操作は元に戻せません。",
+		"resetToken": "トークンをリセット",
+		"name": "Webhook名",
+		"nameMaxLengthError": "長さは64文字以内である必要があります。"
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Webhookはありません"
+	},
+	"webhooksItem": {
+		"createdBy": "{{webhookCreateTime}}に{{webhookUserOwnerName}}によって作成"
+	},
+	"webhookChannelSelect": {
+		"title": "チャンネルを選択",
+		"description": "Webhookを作成するチャンネルを選択してください",
+		"selectChannel": "チャンネル",
+		"placeholder": "チャンネルを選択",
+		"create": "作成"
+	},
+	"toast": {
+		"addSuccess": "Webhookの作成に成功しました!",
+		"addError": "Webhookの作成中にエラーが発生しました",
+		"saveSuccess": "保存に成功しました!",
+		"saveError": "保存中にエラーが発生しました",
+		"deleteSuccess": "Webhookの削除に成功しました!",
+		"deleteError": "Webhookの削除中にエラーが発生しました",
+		"resetTokenSuccess": "トークンのリセットに成功しました!",
+		"resetTokenError": "トークンのリセット中にエラーが発生しました",
+		"copyError": "URLをコピーできません",
+		"webhookGeneratedSuccess": "{{webhookName}}の作成に成功しました!",
+		"webhookDeletedSuccess": "{{webhookName}}の削除に成功しました!"
+	}
+}

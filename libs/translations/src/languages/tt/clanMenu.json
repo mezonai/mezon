@@ -1,0 +1,62 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Укылган дип билгеләү",
+            "browseChannels": "Каналларны карау"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Канал булдыру",
+            "createCategory": "Төркемчә булдыру",
+            "createEvent": "Вакыйга булдыру"
+        },
+        "optionsMenu": {
+            "title": "",
+            "editServerProfile": "Клан профилен үзгәртү",
+            "showAllChannels": "Барлык каналларны күрсәтү",
+            "hideMutedChannels": "Тындырылган каналларны яшерү",
+            "allowDirectMessage": "Туры хәбәрләргә рөхсәт итү",
+            "allowMessageRequest": "Аралашу соравына рөхсәт итү",
+            "reportServer": "Кланга шикаять итү",
+            "leaveServer": "Кланны ташлап чыгу",
+            "deleteClan": "Кланны бетерү",
+            "auditLog": "Аудит журналы"
+        },
+        "optionShowEmptyCategories": {
+            "title": "Буш төркемчәләрне күрсәтү",
+            "show": "Күрсәтү",
+            "hide": "Яшерү"
+        },
+        "devMode": {
+            "title": "Эшкәртү режимы",
+            "copyServerID": "Клан идентификаторын күчерү",
+            "serverIDCopied": "Клан идентификаторы күчерелде"
+        }
+    },
+    "actions": {
+        "boot": "Бут",
+        "invite": "Чакыру",
+        "notifications": "Белдермәләр",
+        "settings": "Көйләнмәләр"
+    },
+    "info": {
+        "online": "Онлайн",
+        "members": "Катнашучылар"
+    },
+    "common": {
+        "search": "Эзләү",
+        "community": "Җәмгыять",
+        "searchMembers": "Катнашучыларны эзләү"
+    },
+    "modalPanel": {
+        "createCategory": "Төркемчә булдыру",
+        "markAsRead": "Укылган дип билгеләү",
+        "processing": "Эшкәртү...",
+        "invitePeople": "Кешеләрне чакыру",
+        "clanSettings": "Клан көйләнмәләре",
+        "notificationSettings": "Белдермә көйләнмәләре",
+        "showEmptyCategories": "Буш төркемчәләрне күрсәтү",
+        "leaveClan": "Кланны ташлап чыгу"
+    }
+}

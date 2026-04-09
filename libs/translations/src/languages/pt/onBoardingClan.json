@@ -1,0 +1,165 @@
+{
+	"title": "Concluir o guia",
+	"description": "Etapa {{step}} de {{total}}",
+	"action": {
+		"title": "Conclua o guia para o seu clã",
+		"description": "Concluído {{step}} de {{total}} etapas",
+		"createChannel": "Crie seu canal",
+		"invite": "Convide alguns amigos",
+		"sendMessage": "Envie sua primeira mensagem"
+	},
+	"modal": {
+		"title": "Configurações do guia"
+	},
+	"buttons": {
+		"back": "Voltar",
+		"cancel": "Cancelar",
+		"confirm": "Confirmar",
+		"save": "Salvar",
+		"saving": "Salvando...",
+		"setup": "Configurar",
+		"edit": "Editar",
+		"preview": "Prévia",
+		"disable": "Desativar guia"
+	},
+	"onboarding": {
+		"title": "Guia",
+		"description": "Crie uma experiência inicial simples para os membros com canais, cargos e as primeiras personalizações.",
+		"enabledTitle": "O guia foi ativado",
+		"enabledDescription": "As alterações não entrarão em vigor até que você salve.",
+		"featuresEnabled": "O recurso de guia foi ativado"
+	},
+	"questions": {
+		"title": "Perguntas",
+		"description": "Canais públicos podem ser atribuídos através de Perguntas."
+	},
+	"clanGuide": {
+		"title": "Guia do Clã",
+		"description": "Mensagem de boas-vindas, Banner, tarefas a fazer e seus Recursos já foram configurados"
+	},
+	"messages": {
+		"communityEnabledSuccess": "A comunidade foi ativada com sucesso",
+		"changesSavedSuccess": "As alterações foram salvas com sucesso"
+	},
+	"errors": {
+		"needAtLeastOneItem": "É necessário pelo menos um item para ativar o guia",
+		"failedToEnableCommunity": "Não foi possível ativar a comunidade",
+		"failedToSaveChanges": "Não foi possível salvar as alterações",
+		"questionRequired": "A pergunta é obrigatória."
+	},
+	"questionsPage": {
+		"title": "Perguntas",
+		"description": "Crie perguntas para ajudar os membros a selecionar canais e cargos adicionais. A lista de canais deles será personalizada com base em suas respostas.",
+		"noChannelsMissing": "Não faltam canais públicos nas Perguntas e Canais Padrão.",
+		"channelNotAssigned": "Canal não atribuído",
+		"noChannelsHere": "Nenhum canal aqui",
+		"preJoinQuestions": {
+			"title": "Perguntas Antes de Entrar",
+			"description": "Os membros serão questionados antes de entrarem no seu servidor. Use-as para atribuir canais e cargos importantes. As Perguntas Antes de Entrar também estarão disponíveis na página de Canais e Cargos."
+		},
+		"addQuestion": "Adicionar pergunta",
+		"questionNumber": "Pergunta {{number}}",
+		"enterQuestion": "Digite a pergunta...",
+		"availableAnswers": "Respostas disponíveis - {{count}} de 50",
+		"addAnswer": "Adicionar resposta",
+		"questionPlaceholder": "Qual é a sua pergunta?",
+		"answerTitle": "Adicionar título da resposta",
+		"answerDescription": "Adicionar descrição da resposta",
+		"enterAnswer": "Digite a resposta...",
+		"enterDescription": "Digite a descrição... (opcional)",
+		"titleRequired": "O título é obrigatório",
+		"remove": "Remover"
+	},
+	"enableOnboarding": {
+		"title": "Deseja ativar o Onboarding?",
+		"description": "Mude para o Guia para acessar ferramentas administrativas adicionais",
+		"subtitle": "ajudando você a moderar e desenvolver seu Clã de forma eficaz.",
+		"button": "Ativar Guia",
+		"note": "Esta ação desbloqueará recursos avançados de guia"
+	},
+	"enableCommunity": {
+		"title": "Ativar Comunidade?",
+		"description": "Transforme sua comunidade em uma experiência de Comunidade completa.",
+		"subtitle": "Acesse ferramentas administrativas poderosas para moderar e desenvolver seu Clã de forma eficaz.",
+		"button": "Ativar Comunidade",
+		"note": "Esta ação desbloqueará recursos avançados de comunidade"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Campos com * são obrigatórios",
+		"title": "Configurações da Comunidade",
+		"subtitle": "Gerencie as informações da sua comunidade",
+		"enableTitle": "Ativar Comunidade",
+		"enableSubtitle": "Crie um espaço incrível para os membros se conectarem",
+		"loading": "Carregando configurações da comunidade...",
+		"banner": {
+			"title": "Banner da Comunidade",
+			"uploadTitle": "Carregar Banner",
+			"uploadDescription": "Arraste e solte ou clique para escolher uma imagem",
+			"changeBanner": "Alterar Banner",
+			"removeBanner": "Remover Banner"
+		},
+		"description": {
+			"title": "Descrição da Comunidade",
+			"placeholder": "Digite uma breve descrição para sua comunidade..."
+		},
+		"about": {
+			"title": "Sobre a Comunidade",
+			"placeholder": "Conte-nos sobre sua comunidade... O que a torna especial?"
+		},
+		"vanityUrl": {
+			"title": "URL Personalizada",
+			"description": "Crie uma URL personalizada para sua comunidade. Use apenas letras minúsculas, números e hifens.",
+			"placeholder": "minha-comunidade-incrivel",
+			"previewLabel": "Prévia da URL:"
+		},
+		"buttons": {
+			"enableAndSave": "Ativar e Salvar",
+			"saving": "Salvando...",
+			"save": "Salvar alterações",
+			"disable": "Desativar Comunidade",
+			"reset": "Redefinir"
+		},
+		"messages": {
+			"aboutUpdated": "Informações atualizadas!",
+			"aboutUpdateFailed": "Falha ao atualizar as informações!",
+			"descriptionUpdated": "Descrição atualizada!",
+			"descriptionUpdateFailed": "Falha ao atualizar a descrição!",
+			"vanityUrlUpdated": "URL personalizada atualizada!",
+			"vanityUrlUpdateFailed": "Falha ao atualizar a URL personalizada!",
+			"communityEnabledAndSaved": "Comunidade ativada e salva!",
+			"saveFailed": "Falha ao salvar!",
+			"changesSaved": "Alterações salvas!",
+			"communityDisabled": "Comunidade desativada.",
+			"disableFailed": "Falha ao desativar!",
+			"bannerRemoved": "Banner removido!",
+			"fillAllRequiredFields": "Por favor, preencha todos os campos obrigatórios: Banner, Sobre, Descrição, URL personalizada!",
+			"bannerUpdateFailed": "Falha ao atualizar o banner!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Boas-vindas",
+			"description": "Diga aos novos membros o que há de especial na sua comunidade e por que você está feliz em vê-los!"
+		},
+		"newMemberToDos": {
+			"title": "Tarefas de Novos Membros",
+			"description": "Defina de 3 a 5 tarefas para seus novos membros realizarem. Faça com que eles <strong>conversem e participem de seus canais.</strong>"
+		},
+		"dontDoThis": "Não faça isso: seja muito genérico",
+		"exampleTask": {
+			"title": "conversar com a comunidade",
+			"description": "em #geral"
+		},
+		"readTheRules": "Ler as Regras",
+		"addTask": "Adicionar tarefa",
+		"resourcePages": {
+			"title": "Páginas de Recursos",
+			"description": "Transforme canais de apenas leitura em páginas de recursos bonitas no seu Guia do Servidor. Eles não aparecerão na lista de canais, a menos que você ative 'Todos os Canais'. Recursos vêm com alguns benefícios:",
+			"perk1": "Membros começam no topo da página em vez de no fim da sequência de mensagens",
+			"perk2": "A barra de chat e o avatar são removidos para uma aparência mais limpa",
+			"perk3": "Todo o conteúdo, embeds, mídia e formatação serão mantidos"
+		},
+		"addResource": "Adicionar recurso",
+		"ownerGreeting": "Olá, esta é uma saudação do dono do clã. Você verá esta mensagem pela primeira vez ao entrar no clã!"
+	}
+}

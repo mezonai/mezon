@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "設定",
+			"overview": "概要",
+			"moderation": "モデレーション",
+			"auditLog": "監査ログ",
+			"channels": "チャンネル",
+			"integrations": "統合",
+			"emoji": "絵文字",
+			"sticker": "スタンプ",
+			"webhooks": "Webhook",
+			"security": "セキュリティ",
+			"permissionDenied": "編集する権限がありません",
+			"sound": "サウンド",
+			"enableCommunity": "コミュニティを有効化"
+		},
+		"community": {
+			"title": "コミュニティ",
+			"enableCommunity": "コミュニティを有効化"
+		},
+		"subscriptions": {
+			"title": "クランサブスクリプションプラン",
+			"getStarted": "始める"
+		},
+		"userManagement": {
+			"title": "ユーザー管理",
+			"members": "メンバー",
+			"role": "ロール",
+			"invite": "招待",
+			"bans": "禁止"
+		}
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"title": "'{{groupName}}'から退出",
+	"confirmMessage": "本当に{{groupName}}から退出しますか？招待されない限り、このグループに再参加できません。",
+	"leaveWithoutNotifying": "他のメンバーに通知せずに退出",
+	"cancel": "キャンセル",
+	"leaveGroup": "グループを退出"
+}

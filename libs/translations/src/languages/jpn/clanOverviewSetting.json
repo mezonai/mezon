@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "保存"
+  },
+  "toast": {
+    "saveSuccess": "保存に成功しました",
+    "notBlank": "空にできません",
+    "saveError": "保存中にエラーが発生しました"
+  },
+  "menu": {
+    "serverName": {
+      "title": "クラン名",
+      "errorMessage": "有効なクラン名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+      "duplicateNameMessage": "クラン名はすでに存在します。別の名前を選択してください。",
+      "permissionDenied": "クラン背景を編集する権限がありません"
+    },
+    "inactive": {
+      "title": "非アクティブ設定",
+      "description": "アクティビティが指定された時間を超えると、メンバーをこのチャンネルに自動的に転換し、マイクをミュートします。この機能はWebバージョンには適用されません。",
+      "inactiveChannel": "非アクティブチャンネル",
+      "inactiveTimeout": "非アクティブタイムアウト"
+    },
+    "systemMessage": {
+      "title": "システムメッセージ設定",
+      "description": "これはシステムイベント通知メッセージを送信するチャンネルです。いつでもこれらをオフにできます。",
+      "channel": "チャンネル",
+      "selectChannel": "通知チャンネルを選択",
+      "channelDescription": "これはシステムメッセージが送信されるチャンネルです",
+      "welcomeRandom": "誰かがこのクランに参加したときにランダムウェルカムメッセージを送信",
+      "welcomeSticker": "メンバーにウェルカムメッセージにスタンプで返信するよう要求",
+      "boostMessage": "誰かがこのクランをブーストしたときにメッセージを送信",
+      "setupTips": "クラン設定のためのヒントを送信",
+      "hideAuditLog": "クランに対してアクションが実行されたときにログを送信",
+      "anonymousTitle": "匿名モードを防止",
+      "anonymousDescription": "ユーザーが匿名モードを使用するのを防ぐ"
+    },
+    "deleteServer": {
+      "title": "クランを削除",
+      "delete": "クランを削除"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "デフォルト通知設定",
+      "description": "この設定は、明確に通知設定を設定していないメンバーが、このクラン内で送信されたすべてのメッセージの通知を受け取るかどうかを決定します。クランコミュニティには、@メンションのみの通知を設定することを推奨します。",
+      "allMessages": "すべてのメッセージ",
+      "onlyMentions": "@メンションのみ"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "メンバーのキックに成功しました",
+      "kickMemberFailed": "メンバーをキックできません",
+      "removeMemberThreadSuccess": "スレッドからのメンバー削除に成功しました",
+      "removeMemberThreadFailed": "スレッドからのメンバー削除に失敗しました",
+      "transferOwnershipSuccess": "所有権の転送に成功しました",
+      "transferOwnershipFailed": "所有権の転送に失敗しました"
+    }
+  },
+  "action": {
+    "kick": "キック",
+    "removeFromThread": "スレッドから削除",
+    "manage": "管理",
+    "transferOwnership": "所有権を転送",
+    "ban": "禁止",
+    "unban": "禁止を解除"
+  },
+  "threadRemoveModal": {
+    "title": "スレッドから削除?",
+    "description": "本当に{{username}}をこのスレッドから削除しますか？",
+    "remove": "削除",
+    "cancel": "なし"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "本当に確認しますか？"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Клан җитәкчелеге",
+		"events": "Вакыйгалар",
+		"events_one": "{{count}} Вакыйга",
+		"events_other": "{{count}} Вакыйга",
+		"members": "Катнашучылар",
+		"channels": "Каналлар"
+	},
+	"ongoingEvent": {
+		"title": "Алдагы вакыйга",
+		"eventDetail": "Вакыйга детальләре"
+	},
+	"onboarding": {
+		"getStarted": "Башлыйбыз",
+		"of": "дан"
+	},
+	"favoriteChannel": "Күңелдәге канал",
+	"publicChannels": "Җәмәгать каналлары",
+	"channelApps": "Канал кушымталары",
+	"dragMode": {
+		"enable": "Төркемчәләрдә 'Күчерү режимы'н кертү өчен басыгыз",
+		"disable": "Төркемчәләрдә 'Күчерү режимы'н сүндерү өчен басыгыз"
+	}
+}

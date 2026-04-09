@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "Prévia de mensagens DM",
+            "AllMessages": "Todas as mensagens",
+            "UnreadDMOnly": "Apenas DMs não lidas",
+            "None": "Nenhuma"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Tema",
+            "theme": "Tema",
+            "syncAcrossClients": {
+                "title": "Sincronizar em todos os dispositivos",
+                "description": "Ativar este recurso substituirá as configurações de tema acima em todos os outros dispositivos, incluindo desktop e navegador."
+            }
+        },
+        "search": {
+            "title": "Pesquisa",
+            "showResultCount": {
+                "title": "Mostrar contagem exata de resultados",
+                "description": "Ao ativar, isso pode aumentar o tempo de exibição dos resultados da pesquisa."
+            }
+        }
+    }
+}

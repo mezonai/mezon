@@ -1,0 +1,18 @@
+{
+	"buttons": {
+		"cancel": "Cancelar",
+		"save": "Salvar",
+		"reset": "Redefinir",
+		"close": "Fechar",
+		"kick": "Expulsar"
+	},
+	"form": {
+		"required": "Campo obrigatório",
+		"error": "Erro"
+	},
+	"kickMember": {
+		"title": "Expulsar {{username}} de {{clanName}}",
+		"description": "Tem certeza de que deseja expulsar @{{username}} de {{clanName}}? Eles poderão participar novamente através de um novo convite.",
+		"reasonLabel": "Motivo da expulsão"
+	}
+}

@@ -1,0 +1,84 @@
+{
+	"friend": "友達",
+	"addFriend": "友達を追加",
+	"friends": "友達",
+	"clearSearch": "検索をクリア",
+	"search": "検索",
+	"tabs": {
+		"all": "すべて",
+		"online": "オンライン",
+		"pending": "保留中",
+		"block": "ブロック"
+	},
+	"addFriendModal": {
+		"title": "友達を追加",
+		"description": "友達のMezonユーザー名で友達を追加できます",
+		"placeholder": "ユーザー名を入力",
+		"tooltip": "友達のMezonユーザー名で友達を追加できます",
+		"sendRequest": "友達招待を送信",
+		"add": "追加",
+		"alreadyFriends": "あなたはすでにこのユーザーと友達です!",
+		"waitAccept": "あなたはすでにこのユーザーに友達招待を送信しました!",
+		"invalidInput": "文字、数字、アンダースコア_またはピリオドのみを使用してください。",
+		"blockedUser": "あなたはすでにこのユーザーをブロックしています。友達招待を送信するにはブロックを解除してください。",
+		"blockedUserMobile": "あなたはすでにこのユーザーをブロックしています。ブロックを解除して友達招待を送信してください。",
+		"waitingMessage": "Mezonがあなたを待っています。しかし、あなたは待つ必要はありません!"
+	},
+	"requestFailedPopup": {
+		"title": "友達招待の送信に失敗",
+		"message": "あなたはすでにこのユーザーと友達です!",
+		"okay": "OK"
+	},
+	"activity": {
+		"coding": "アクティビティ - 仕事",
+		"music": "アクティビティ - 生活",
+		"gaming": "アクティビティ - 遊び"
+	},
+	"friendMenu": {
+		"startVideoCall": "ビデオ通話を開始",
+		"startVoiceCall": "音声通話を開始",
+		"removeFriend": "友達を削除",
+		"block": "ブロック",
+		"unblock": "ブロックを解除",
+		"more": "もっと",
+		"cancel": "キャンセル",
+		"accept": "承認",
+		"reject": "拒否"
+	},
+	"removeFriendModal": {
+		"title": "'{{username}}'を削除",
+		"description": "本当に<強調>{{username}}</強調>を友達リストから削除しますか?",
+		"cancel": "キャンセル",
+		"confirm": "友達を削除"
+	},
+	"cancelRequestModal": {
+		"title": "'{{username}}'の招待をキャンセル",
+		"description": "本当に<強調>{{username}}</強調>への友達招待をキャンセルしますか?",
+		"cancel": "キャンセル",
+		"confirm": "招待をキャンセル"
+	},
+	"rejectRequestModal": {
+		"title": "'{{username}}'を拒否",
+		"description": "本当に<強調>{{username}}</強調>からの友達招待を拒否しますか?",
+		"cancel": "キャンセル",
+		"confirm": "拒否"
+	},
+	"toast": {
+		"userBlockedSuccess": "ユーザーをブロックしました",
+		"userBlockedFailed": "ユーザーをブロックできません",
+		"userUnblockedSuccess": "ユーザーのブロックを解除しました",
+		"userUnblockedFailed": "ユーザーのブロックを解除できません"
+	},
+	"statusTapListFriends": {
+		"all": "ここでは空のようです! 会話を開始するには、いくつかの友達を始めましょう。",
+		"online": "静かです! なぜ会話を開始して誰がいるか確認しないのですか?",
+		"pending": "ここは、あなたが送信し受信した友達招待を見つける場所です。",
+		"block": "あなたは誰もブロックしていません。"
+	},
+	"statusTapSearchFriends": {
+		"all": "検索に一致する友達が見つかりません。別の名前を試してください。",
+		"online": "検索に一致するオンラインの友達がいません。別の名前を試してください。",
+		"pending": "検索に一致する友達招待はありません。名前を確認するか再試行してください。",
+		"block": "検索に一致するブロックされたユーザーはいません。別の名前を試してください。"
+	}
+}

@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Salvar"
+	},
+	"switch": {
+		"userProfile": "Pessoal",
+		"serverProfile": "Clã"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Nome de exibição",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Apelido do Clã",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronomes",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Bio",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Descartar alterações não salvas?",
+		"description": "Existem alterações que não foram salvas. Tem certeza de que deseja descartá-las?",
+		"discard": "Descartar",
+		"keepEditing": "Continuar editando"
+	},
+	"selectAClan": "Selecione um clã",
+	"searchClanPlaceholder": "Pesquisar clã",
+	"updateProfileSuccess": "Perfil pessoal atualizado com sucesso",
+	"updateProfileError": "Falha ao atualizar o perfil pessoal",
+	"updateClanProfileSuccess": "Perfil do clã atualizado com sucesso",
+	"emptyUsername": "O nome de exibição não pode estar vazio!",
+	"duplicateClannick": "O apelido do clã já está em uso",
+	"clanNickname": "APELIDO DO CLÃ",
+	"changeAvatar": "Alterar foto de perfil",
+	"removeAvatar": "Remover",
+	"avatar": "Foto de perfil",
+	"preview": "PRÉ-VISUALIZAÇÃO",
+	"nickNameExistsError": "Este apelido já existe no clã. Por favor, escolha outro.",
+	"unsavedChangesWarning": "Atenção: você tem alterações não salvas!",
+	"reset": "Redefinir",
+	"saveChanges": "Salvar alterações",
+	"showProfilesDescription": "Mostre quem você é com perfis diferentes para cada um de seus clãs",
+	"chooseAClan": "ESCOLHA UM CLÃ",
+	"editImage": "Editar imagem",
+	"close": "Fechar",
+	"resetChanges": "Redefinir alterações",
+	"cancelEditing": "Cancelar edição",
+	"cancel": "Cancelar",
+	"applyChanges": "Aplicar alterações",
+	"apply": "Aplicar",
+	"moveImage": "Mover imagem",
+	"adjustZoom": "Ajustar zoom",
+	"profiles": "Perfis",
+	"userProfile": "Perfil do usuário",
+	"clanProfiles": "Perfis de Clã",
+	"directMessageIcon": "Ícone de mensagem direta",
+	"directMessageIconAction": {
+		"remove": "Remover",
+		"removeTitle": "Remover ícone de mensagem direta",
+		"removeDescription": "Tem certeza de que deseja remover o ícone de mensagem direta?"
+	},
+	"displayName": "NOME DE EXIBIÇÃO",
+	"emptyClanProfile": {
+		"title": "Você ainda não participa de nenhum clã",
+		"description": "Crie ou entre em um clã para configurar seu perfil de clã.",
+		"createClan": "Criar clã",
+		"joinClan": "Participar de um clã"
+	}
+}

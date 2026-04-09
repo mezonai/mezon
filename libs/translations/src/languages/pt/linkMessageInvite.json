@@ -1,0 +1,18 @@
+{
+	"title": "CONVIDAR PARA O CLÃ",
+	"offline": "offline",
+	"online": "online",
+	"join": "Participar",
+	"joining": "Entrando...",
+	"goToClan": "Ir para o Clã",
+	"unknownClan": "Clã desconhecido",
+	"memberCount": "{{count}} Membro",
+	"memberCount_plural": "{{count}} Membros",
+	"failedToJoin": "Não foi possível participar deste clã.",
+	"inviteTo": "CONVIDAR PARA {{clanName}}",
+	"noThanks": "Não, obrigado",
+	"invalidInvite": {
+		"title": "Convite inválido",
+		"message": "Tente enviar outro convite!"
+	}
+}

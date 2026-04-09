@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "DMメッセージプレビュー",
+            "AllMessages": "すべてのメッセージ",
+            "UnreadDMOnly": "未読DMのみ",
+            "None": "なし"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "外観",
+            "theme": "テーマ",
+            "syncAcrossClients": {
+                "title": "すべてのデバイスで同期",
+                "description": "これをオンにすると、上記のテーマ設定が、デスクトップとブラウザを含むすべてのデバイスで上書きされます。"
+            }
+        },
+        "search": {
+            "title": "検索",
+            "showResultCount": {
+                "title": "正確な検索結果数を表示",
+                "description": "オンにすると、検索結果の表示に時間がかかる場合があります。"
+            }
+        }
+    }
+}

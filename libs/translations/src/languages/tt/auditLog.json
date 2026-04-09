@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Аудит журналы",
+		"filterByUser": "Кулланучы буенча фильтрлау",
+		"filterByAction": "Гамәл буенча фильтрлау",
+		"filterBtn": "Фильтрлау"
+	},
+	"auditLogItem": {
+		"performedAnAction": "гамәл башкарды",
+		"toChannel": "каналда",
+		"remove": "Бетерү",
+		"add": "Өстәү"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Барлык гамәлләр",
+		"placeholder": "Гамәлләрне эзләү"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Барлык кулланучылар",
+		"placeholder": "Кулланучыларны табу"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "ӘЛЕ ЖУРНАЛЛАР ЮК",
+		"description": "Модераторлар модерацияләүне башлагач, сез монда модерацияне модерацияли алачаксыз."
+	}
+}

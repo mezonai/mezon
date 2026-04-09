@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Nome da categoria",
+            "placeholder": "Digite o nome da categoria",
+            "errorMessage": "Por favor, insira um nome de categoria válido (máximo de 64 caracteres, apenas letras, números, _ ou -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Permissões da categoria",
+            "description": "Altere as configurações de privacidade e personalize como os membros podem interagir com esta categoria."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Excluir categoria"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Tem certeza de que deseja excluir a categoria {{categoryName}}? Esta ação não pode ser desfeita.",
+            "confirmText": "Excluir",
+            "title": "Excluir categoria"
+        },
+        "save": "Salvar"
+    },
+    "toast": {
+        "updated": "Atualizado com sucesso"
+    }
+}

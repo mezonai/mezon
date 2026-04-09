@@ -1,0 +1,105 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Marcar como lido"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Convidar",
+          "markFavorite": "Adicionar aos favoritos",
+          "unMarkFavorite": "Remover dos favoritos",
+          "copyLink": "Copiar link"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Silenciar canal",
+          "unMuteChannel": "Ativar notificações do canal",
+          "muteThread": "Silenciar tópico",
+          "unMuteThread": "Ativar notificações do tópico",
+          "notification": "Configurações de notificação",
+          "for15Minutes": "Por 15 minutos",
+          "for1Hour": "Por 1 hora",
+          "for3Hours": "Por 3 horas",
+          "for8Hours": "Por 8 horas",
+          "for24Hours": "Por 24 horas",
+          "untilTurnedBackOn": "Até que eu ative novamente",
+          "useCategoryDefault": "Usar padrão da categoria",
+          "all": "Tudo",
+          "onlyMention": "Apenas menções",
+          "nothing": "Nenhum",
+          "processing": "Processando...",
+          "muteChannelStatus": "Canal silenciado",
+          "muteThreadStatus": "Tópico silenciado",
+          "unmuteChannelStatus": "Notificações do canal ativadas",
+          "unmuteThreadStatus": "Notificações do tópico ativadas",
+          "mutedUntil": "Silenciado até",
+          "muteSuccess": "Canal silenciado com sucesso!",
+          "unMuteSuccess": "Notificações ativadas com sucesso!",
+          "muteFailed": "Falha ao silenciar!",
+          "unMuteFailed": "Falha ao ativar notificações!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Tópicos",
+        "searchThreads": "Pesquisar tópicos",
+        "searchFiles": "Pesquisar arquivos",
+        "searchCanvas": "Pesquisar canvas"
+
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Editar canal",
+          "deleteChannel": "Excluir canal",
+          "duplicateChannel": "Duplicar canal",
+          "leaveChannel": "Sair do canal",
+          "createTextChannel": "Criar canal de texto",
+          "createVoiceChannel": "Criar canal de voz",
+          "openChat": "Abrir conversa",
+          "hideNames": "Ocultar nomes",
+          "createThread": "Criar tópico"
+      },
+      "devMode": {
+          "title": "Modo de desenvolvedor",
+          "copyChannelID": "Copiar ID do canal"
+      },
+      "manageThreadMenu": {
+          "editThread": "Editar tópico",
+          "deleteThread": "Excluir tópico",
+          "leaveThread": "Sair do tópico",
+          "closeThread": "Fechar tópico",
+          "lockThread": "Bloquear tópico",
+          "copyLink": "Copiar link"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "ID do canal copiado"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Excluir tópico {{threadName}}",
+          "content": "Tem certeza de que deseja excluir este tópico?",
+          "confirmText": "Sim"
+      },
+      "channel": {
+          "title": "Excluir canal {{channelName}}",
+          "content": "Tem certeza de que deseja excluir este canal?",
+          "confirmText": "Sim",
+          "systemChannel": "Não é possível excluir um canal do sistema",
+          "error": "Erro ao excluir canal: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Sair do tópico",
+    "yesButton": "Sair do tópico",
+    "textConfirm": "Tem certeza de que deseja sair deste tópico? Você não poderá receber mensagens deste tópico após sair."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Sair do canal",
+    "yesButton": "Sair do canal",
+    "textConfirm": "Tem certeza de que deseja sair deste canal? Você não poderá receber mensagens deste canal após sair.",
+    "error": "Erro ao sair do canal: {{error}}"
+  },
+  "btnBadgeCount": "Novo",
+  "favoriteChannel": "CANAL FAVORITO"
+}

@@ -1,0 +1,35 @@
+{
+	"friendRequest": {
+		"title": "Дуслык сораулары",
+		"received": "Алынганнар",
+		"sent": "Җибәрелгәннәр",
+		"emptyReceived": {
+			"title": "Керүче дуслык сораулары юк",
+			"description": "Монда сез кешеләр сезгә җибәргән барлык дуслык сорауларын күрәчәксез."
+		},
+		"emptySent": {
+			"title": "Чыгучы дуслык сораулары юк",
+			"description": "Монда сез башкаларга җибәргән барлык дуслык сорауларын күрәчәксез."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Керүче дуслык соравы",
+		"findYourFriend": "Дусларны табу",
+		"addByUserName": "Кулланучы исеме яки телефон номеры буенча өстәү",
+		"addByUsername": "{{username}} өстәү",
+		"searchUsernamePlaceholder": "Кулланучы исемен яки телефон номерын керетегез",
+		"whoYouWantToAddFriend": "Кемне дус итеп өстәргә телисез?",
+		"byTheWay": "Әйткәндәй, сезнең кулланучы исемегез",
+		"sendRequestButton": "Дуслык соравын җибәрү",
+		"addFriendToast": "Дуслык соравы җибәрелде"
+	},
+	"friends": "Дуслар",
+	"noFriendsResultsFound": "Дуслар буенча нәтиҗәләр табылмады",
+	"toast": {
+		"sendAddFriendSuccess": "Дуслык соравы уңышлы җибәрелде!",
+		"acceptAddFriendSuccess": "Дуслык соравы кабул ителде!",
+		"sendAddFriendFail": "Хм, эшләмәде. Кулланучы исеме дөрес кертелгәнме, тикшерегез.",
+		"somethingWentWrong": "Нәрсәдер дөрес түгел"
+	},
+	"you": "Сез"
+}

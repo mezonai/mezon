@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Фильтрлау вариантлары",
+	"users": "Кулланучылар",
+	"channels": "Каналлар",
+	"all": "Барысы",
+	"selectChannelPlaceholder": "Канал яки кулланучы сайлагыз...",
+	"selectChannel": "Канал сайлагыз",
+	"selectUser": "Кулланучы сайлагыз",
+	"share": "Уртаклашу",
+	"suggestions": "Тәкъдимнәр",
+	"addCommentPlaceholder": "Комментарий өстәү (мәҗбүри түгел)",
+	"fileTooLarge": "Файл бик зур",
+	"fileSizeExceeded": "{{fileType}} зурлыгы {{maxSize}} МБ тан артырга тиеш түгел!",
+	"bannedChannel": "Сез {{channelName}} каналында блоклангансыз.",
+	"empty": "Мәгълүмат юк"
+}

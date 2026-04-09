@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Тавыш бүлмәсе",
+		"joinVoice": "Шалтыратуга кушылу"
+	},
+	"chat": "Чат",
+	"membersWillBeNotified": "{{participantsCount}} катнашучы белдереләчәк",
+	"noDisplay": "Каналда тавыш күрсәткече юк",
+	"videoConnected": "Видео тоташтырылган",
+	"voiceConnected": "Тавыш бәйләнеше тоташтырылган",
+	"turnOffMicrophone": "Микрофонны сүндерү",
+	"turnOnMicrophone": "Микрофонны кабызу",
+	"turnOffCamera": "Камераны сүндерү",
+	"turnOnCamera": "Камераны кабызу",
+	"stopScreenShare": "Экран күрсәтүне туктату",
+	"shareYourScreen": "Экран белән уртаклашу",
+	"disconnect": "Өзү",
+	"muteModal": {
+		"title": "Катнашучыны тындыру",
+		"content": "Зинһар, \"{{userName}}\" тындырасыгыз килүен раслагыз?",
+		"mute": "Тындыру"
+	},
+	"kickModal": {
+		"title": "Катнашучыны куып чыгару",
+		"content": "Зинһар, \"{{userName}}\" куып чыгарасыгыз килүен раслагыз?",
+		"kick": "Куып чыгару"
+	},
+	"disconnectModal": {
+		"title": "Тавыш бәйләнеше өзелде",
+		"content": {
+			"removed": "Сез тавыш каналыннан бетерелдегез",
+			"duplicate": "Сез башка кушылу сәбәпле өзелдегез",
+			"default": "Сез тавыш каналыннан өзелдегез",
+			"deleted": "Тавыш каналы бетерелде"
+		},
+		"confirm": "Раслау"
+	},
+	"permission": {
+		"cameraTitle": "Камера рөхсәтен бирү",
+		"cameraBody": "Безнең сезнең камерагызга керү мөмкинлегебез юк. Зинһар, система көйләнмәләрегездә камерага керү мөмкинлеген кертегез.",
+		"microphoneTitle": "Микрофон рөхсәтен бирү",
+		"microphoneBody": "Безнең сезнең микрофоныгызга керү мөмкинлегебез юк. Зинһар, система көйләнмәләрегездә микрофонга керү мөмкинлеген кертегез.",
+		"cancel": "Кире кагу",
+		"deviceSettings": "Корама көйләнмәләре"
+	},
+	"device": {
+		"inputDevice": "Кертү корамасы",
+		"outputDevice": "Чыгару корамасы",
+		"camera": "Камера"
+	},
+	"toast": {
+		"connectionConnected": "Бәйләнеш урнаштырылды",
+		"connectionDisconnected": "Бәйләнеш өзелде",
+		"microphonePermissionRequired": "Микрофонга керү мөмкинлеге таләп ителә",
+		"cameraPermissionRequired": "Камерага керү мөмкинлеге таләп ителә",
+		"recipientDidNotAnswer": "Кабул итүче шалтыратуга җавап бирмәде."
+	},
+	"usernameScreen": "{{username}} экраны"
+}

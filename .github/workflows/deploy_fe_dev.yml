@@ -15,21 +15,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24.5.0'
+      #- name: Setup Node.js
+      #  uses: actions/setup-node@v6
+      #  with:
+      #    node-version: '24.5.0'   
 
       - name: Install dependencies
         run: |
+          export PATH="$HOME/.nvm/versions/node/v24.5.0/bin:$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
           echo "Environments"
           echo "NODE_ENV: ${{ env.NODE_ENV }}"
           export nv=$(node -v)
           echo "Node version: $nv"
           echo "Installing dependencies"
-          yarn config set nodedir ~/.cache/node-gyp/20.18.1/
+          yarn config set nodedir ~/.cache/node-gyp/24.5.0/
           echo "Node directory: ${nv:1}"
-          source ~/.bashrc
           yarn
 
       # - name: Reset Nx cache
@@ -41,6 +41,7 @@ jobs:
         env:
           NODE_ENV: 'production'
         run: |
+          export PATH="$HOME/.nvm/versions/node/v24.5.0/bin:$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
           echo NX_CHAT_APP_API_GW_PORT="${{ secrets.NX_CHAT_APP_API_GW_PORT_DEV }}" >> apps/chat/.env

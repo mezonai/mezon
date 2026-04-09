@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Encaminhar mensagem",
+		"searchPlaceholder": "Pesquisar",
+		"noResults": "Não encontrou o que estava procurando?",
+		"searchFriendsUsers": "Pesquisar amigos e usuários",
+		"searchingChannel": "Pesquisar canais",
+		"sharedContent": "Conteúdo compartilhado",
+		"cancel": "Cancelar",
+		"send": "Enviar",
+		"sending": "Enviando...",
+		"sendingProgress": "Enviando ({{current}}/{{total}})...",
+		"image": "imagem",
+		"images": "imagens",
+		"video": "vídeo",
+		"videos": "vídeos",
+		"file": "arquivo",
+		"files": "arquivos",
+		"additionalMessage": "Mensagem adicional (opcional)",
+		"additionalMessagePlaceholder": "Digite a mensagem que deseja enviar junto..."
+	},
+	"successMessage": "Mensagem encaminhada com sucesso",
+	"errorMessage": "Não foi possível encaminhar a mensagem"
+}

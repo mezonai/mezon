@@ -1,0 +1,9 @@
+{
+	"show": "Күрсәтү",
+	"membersOf": "{{count}} катнашучы",
+	"addedBy": "{{name}} өстәде",
+	"you": "Сез",
+	"inVoice": "Шалтыратуда",
+	"onlineCount": "Онлайн - {{count}}",
+	"offlineCount": "Оффлайн - {{count}}"
+}

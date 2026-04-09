@@ -1,0 +1,63 @@
+{
+	"title": "Mensagens",
+	"addFriend": "Adicionar amigo",
+	"friends": "Amigos",
+	"blockedUserMessage": "Mensagem bloqueada",
+	"menu": {
+		"leaveGroup": "Sair do grupo",
+		"deleteGroup": "Excluir grupo",
+		"profile": "Perfil",
+		"closeDm": "Fechar conversa",
+		"markAsRead": "Marcar como lido",
+		"favorite": "Favorito",
+		"muteConversation": "Silenciar conversa",
+		"unMuteConversation": "Ativar notificações",
+		"notificationSettings": "Configurações de notificação",
+		"disableE2EE": "Desativar E2EE",
+		"enableE2EE": "Ativar E2EE",
+		"blockUser": "Bloquear usuário",
+		"unblockUser": "Desbloquear usuário",
+		"removeFriend": "Remover amigo",
+		"addFriend": "Adicionar amigo",
+		"pinConversation": "Fixar conversa",
+		"unpinConversation": "Desafixar conversa"
+	},
+	"confirm": {
+		"title": "Sair de {{groupName}}",
+		"content": "Tem certeza de que deseja sair de {{groupName}}? Você não poderá participar deste grupo novamente, a menos que seja convidado.",
+		"confirmText": "Sim"
+	},
+	"pinConfirm": {
+		"title": "Fixar conversa?",
+		"content": "Esta conversa será movida para o topo da lista de mensagens para facilitar o acesso.",
+		"confirmText": "Fixar"
+	},
+	"unpinConfirm": {
+		"title": "Desafixar conversa?",
+		"content": "Esta conversa retornará à sua posição normal na lista de mensagens.",
+		"confirmText": "Desafixar"
+	},
+	"pinSection": "FIXADO",
+	"allMessagesSection": "TODAS AS MENSAGENS",
+	"maximumPinnedConversationsReached": "Você pode fixar no máximo {{max}} conversas.",
+	"notification": {
+		"blockUser": {
+			"success": "Usuário bloqueado com sucesso",
+			"error": "Não foi possível bloquear o usuário"
+		},
+		"unblockUser": {
+			"success": "Usuário desbloqueado com sucesso",
+			"error": "Não foi possível desbloquear o usuário"
+		},
+		"muteSuccess": "Silenciado com sucesso!",
+		"unMuteSuccess": "Notificações ativadas com sucesso!",
+		"muteFailed": "Falha ao silenciar!",
+		"unMuteFailed": "Falha ao ativar notificações!"
+	},
+	"waveWelcome": "Acene para dar um oi!",
+	"waveWelcomeDM": "Acene para {{username}}",
+	"members": "membros",
+	"speaker": "Alto-falante",
+	"end": "Encerrar",
+	"turnedMicOff": "desativou o microfone"
+}

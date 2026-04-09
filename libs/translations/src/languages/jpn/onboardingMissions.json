@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "メンバーがチャンネルでメッセージを送信",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "メンバーがチャンネルを訪問",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "このタスクを読む",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "新しいメンバーは何をするべきですか?",
+    "placeholder": "例：ペットの写真を投稿",
+    "channelTitle": "彼らはそれをどこですべきですか?",
+    "channelNote": "チャンネルは@everyone（パブリックチャンネル）によって閲覧可能である必要があります",
+    "completeWhen": "このタスクは完了します:",
+    "required": "このフィールドは必須です。",
+    "minCharacters": "アクションは少なくとも7文字である必要があります"
+  },
+  "buttons": {
+    "remove": "削除",
+    "save": "保存",
+    "add": "追加"
+  }
+}

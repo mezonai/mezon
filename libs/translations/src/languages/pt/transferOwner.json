@@ -1,0 +1,9 @@
+{
+	"title": "Transferir propriedade do clã",
+	"description": "Isso transferirá a propriedade de {{clanName}} para {{memberName}}",
+	"confirmation": "Confirmo que, ao transferir a propriedade deste clã para {{memberName}}, ele passará a pertencer oficialmente a essa pessoa.",
+	"buttons": {
+		"transfer": "Transferir propriedade",
+		"cancel": "Cancelar"
+	}
+}

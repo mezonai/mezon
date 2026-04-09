@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Canal de voz",
+		"joinVoice": "Entrar na chamada de voz"
+	},
+	"chat": "Chat",
+	"membersWillBeNotified": "{{participantsCount}} membros serão notificados",
+	"noDisplay": "Não exibir canal de voz",
+	"videoConnected": "Vídeo conectado",
+	"voiceConnected": "Voz conectada",
+	"turnOffMicrophone": "Desativar microfone",
+	"turnOnMicrophone": "Ativar microfone",
+	"turnOffCamera": "Desativar câmera",
+	"turnOnCamera": "Ativar câmera",
+	"stopScreenShare": "Parar de compartilhar tela",
+	"shareYourScreen": "Compartilhar tela",
+	"disconnect": "Desconectar",
+	"muteModal": {
+		"title": "Silenciar membro",
+		"content": "Tem certeza de que deseja silenciar \"{{userName}}\"?",
+		"mute": "Silenciar"
+	},
+	"kickModal": {
+		"title": "Remover do canal de voz",
+		"content": "Tem certeza de que deseja remover \"{{userName}}\" do canal de voz?",
+		"kick": "Remover"
+	},
+	"disconnectModal": {
+		"title": "Desconexão de voz",
+		"content": {
+			"removed": "Você foi removido do canal de voz",
+			"duplicate": "Você foi desconectado porque entrou em outro lugar",
+			"default": "Você foi desconectado do canal de voz",
+			"deleted": "O canal de voz foi excluído"
+		},
+		"confirm": "Confirmar"
+	},
+	"permission": {
+		"cameraTitle": "Permitir acesso à câmera",
+		"cameraBody": "O aplicativo não tem permissão para acessar a câmera. Por favor, ative a permissão de câmera nas configurações do sistema.",
+		"microphoneTitle": "Permitir acesso ao microfone",
+		"microphoneBody": "O aplicativo não tem permissão para acessar o microfone. Por favor, ative a permissão de microfone nas configurações do sistema.",
+		"cancel": "Cancelar",
+		"deviceSettings": "Configurações do dispositivo"
+	},
+	"device": {
+		"inputDevice": "Microfone",
+		"outputDevice": "Áudio",
+		"camera": "Câmera"
+	},
+	"toast": {
+		"connectionConnected": "Conexão estabelecida com sucesso",
+		"connectionDisconnected": "Conexão interrompida",
+		"microphonePermissionRequired": "Permissão de microfone necessária",
+		"cameraPermissionRequired": "Permissão de câmera necessária",
+		"recipientDidNotAnswer": "O destinatário não atendeu a chamada."
+	},
+	"usernameScreen": "Tela de {{username}}"
+}

@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Камерага керү тыелган",
+	"pleaseAllowCamera": "Зинһар, корама көйләнмәләрегездә камерага керү мөмкинлеген бирегез.",
+	"cancel": "Кире кагу",
+	"openSettings": "Көйләнмәләрне ачу",
+	"anErrorOccurred": "Хата килеп чыкты, зинһар, кабат тырышып карагыз.",
+	"youAreIn": "Авторизация узды!",
+	"logInOnNewDevice": "Яңа корамада керергә?",
+	"youAreLoggedInOnDesktop": "Сез компьютерга кердегез",
+	"neverScanALoginQRCodeFromAnotherUser": "Башка кулланучы тәкъдим иткән керү QR-кодын беркайчан да сканерламагыз.",
+	"startTalking": "Сөйләшү башлау",
+	"logIn": "Керү",
+	"requestCameraPermission": "Камераны куллану рөхсәтен сорау",
+	"myQRCode": "Минем QR-код",
+	"selectPhotoWithQRCode": "QR-код булган фотоны сайлагыз",
+	"qrCodeNotValid": "QR-код ярамаган"
+}

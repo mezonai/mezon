@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Эшчәнлек күзәтүе",
+		"timePeriod": "Вакыт периоды",
+		"totalActiveUsers": "Актив кулланучыларның гомуми саны",
+		"totalActiveUsersTooltip": "Ким дигәндә бер тапкыр актив булган уникаль кулланучылар.",
+		"totalActiveChannels": "Актив каналларның гомуми саны",
+		"totalActiveChannelsTooltip": "Ким дигәндә бер тапкыр актив булган уникаль каналлар.",
+		"totalMessages": "Хәбәрләрнең гомуми саны",
+		"totalMessagesTooltip": "Сайланган период эчендә җибәрелгән хәбәрләрнең гомуми саны."
+	},
+	"pagination": {
+		"showing": "Күрсәтелә",
+		"of": "барысы",
+		"clans": "кланнар",
+		"previous": "Алдагы",
+		"next": "Киләсе"
+	},
+	"chart": {
+		"loadingChartData": "График мәгълүматлары йөкләү...",
+		"metricsAvailableForOwnersOnly": "Метрикалар бары тик клан хуҗалары өчен генә доступлы."
+	},
+	"table": {
+		"detailedActivityData": "Эшчәнлекнең җентекле мәгълүматлары",
+		"channelsActivityData": "Каналлар эшчәнлеге мәгълүматлары",
+		"userActivityData": "Кулланучылар эшчәнлеге мәгълүматлары",
+		"exportCSV": "CSV файлына экспортлау",
+		"exporting": "Экспортлау...",
+		"includedInExport": "Экспорт файлына кертелгән",
+		"notIncludedInExport": "Экспорт файлына кертелмәгән",
+		"clanName": "Клан исеме",
+		"channelName": "Канал исеме",
+		"userName": "Кулланучы исеме",
+		"activeUsers": "Актив кулланучылар",
+		"activeChannels": "Актив каналлар",
+		"messages": "Хәбәрләр",
+		"noOwnedClans": "Сезнең аналитика ясау өчен кланыгыз юк.",
+		"noActiveChannels": "Хәзерге вакытта бу кланда актив каналлар юк.",
+		"noActiveUsers": "Хәзерге вакытта бу каналда актив кулланучылар юк.",
+		"selectColumnTooltip": "Бу багананы CSV файлына экспортлауга кертү/кертмәү өчен сайлагыз/сайлауны бетерегез",
+		"selectAtLeastOneColumn": "CSVга экспортлау өчен ким дигәндә бер багана сайларга тиешсез."
+	},
+	"page": {
+		"backToOverview": "Клан куллану күзәтүенә кире кайту",
+		"clanUsageStatisticsReport": "Клан куллану статистикасы хисабы",
+		"dashboardReport": "Эшчәнлекләр панеле",
+		"report": "Шикаять итү"
+	},
+	"state": {
+		"loadingData": "Мәгълүмат йөкләү...",
+		"noDataFound": "Мәгълүмат табылмады",
+		"noDataDescription": "Сайланган период өчен куллану мәгълүматлары доступлы түгел."
+	},
+	"reportControls": {
+		"timePeriod": "Вакыт периоды",
+		"rangeType": "Ранжировка төре",
+		"startDate": "Башлану датасы",
+		"endDate": "Тәмамлану датасы",
+		"last7Days": "Соңгы 7 көн",
+		"last30Days": "Соңгы 30 көн",
+		"last90Days": "Соңгы 90 көн",
+		"customDateRange": "Үз дата диапазоны",
+		"daily": "Көн саен",
+		"weekly": "Атна саен",
+		"monthly": "Ай саен",
+		"runReport": "Хисапны башлау",
+		"reset": "Сброслау"
+	},
+	"sortIcon": {
+		"tooltip": "Бу багана буенча үсә/кими барышлы сортировкалау",
+		"sortedAsc": "Үсә барышлы сортировкаланган",
+		"sortedDesc": "Кими барышлы сортировкаланган"
+	}
+}

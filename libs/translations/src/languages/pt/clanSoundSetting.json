@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Carregar efeito sonoro",
+		"delete": "Excluir",
+		"uploadDetailScreen": "Carregar"
+	},
+	"content": {
+		"description": "• Aceita apenas arquivos .mp3, .wav, com tamanho máximo de 1MB. \n• Dê um nome fácil de lembrar ao efeito sonoro. \n• O efeito sonoro será usado em notificações ou eventos do clã.",
+		"requirements": "REQUISITOS DE CARREGAMENTO",
+		"reqSize": "- Não maior que 1024 KB.",
+		"audioFile": "Arquivo de áudio",
+		"audioName": "Nome do áudio",
+		"preview": "Prévia",
+		"chooseAudioFile": "Escolher arquivo de áudio"
+	},
+	"toast": {
+		"errorSizeLimit": "Limite de tamanho de 1MB excedido",
+		"errorFileType": "Formato de arquivo inválido. Aceita apenas arquivos .mp3, .mpeg e .wav."
+	},
+	"main": {
+		"uploadInstructions": "INSTRUÇÕES DE CARREGAMENTO",
+		"fileRequirements": "Aceita apenas arquivos .mp3, .wav, com tamanho máximo de 1MB. Dê um nome fácil de lembrar ao efeito sonoro. O efeito sonoro será usado em notificações ou eventos do clã.",
+		"uploadHere": "Carregue aqui!",
+		"personalizeDescription": "Personalize os efeitos sonoros para o seu clã!",
+		"uploadSound": "Carregar áudio",
+		"soundEffectList": "Lista de efeitos sonoros",
+		"noSoundEffects": "Nenhum efeito sonoro encontrado. Clique em 'Carregar áudio' para adicionar!"
+	},
+	"modal": {
+		"titleEdit": "Editar efeito sonoro",
+		"titleUpload": "Carregar efeito sonoro",
+		"subtitle": "Suporta formatos MP3, WAV • Máximo de 1MB",
+		"preview": "Prévia",
+		"audioFile": "Arquivo de áudio",
+		"soundName": "Nome do áudio",
+		"soundVolume": "Volume",
+		"chooseOrDrop": "Escolha ou arraste o arquivo",
+		"browse": "Procurar",
+		"placeholder": "Ex: som de gato",
+		"cancel": "Cancelar",
+		"uploading": "Carregando...",
+		"update": "Atualizar",
+		"upload": "Carregar",
+		"errorFileType": "Suporta arquivos .mp3 ou .wav",
+		"errorFileSize": "Arquivo muito grande, máximo de 1MB",
+		"errorUploadFailed": "Não foi possível carregar o áudio",
+		"characters": "O nome deve ter de 3 a 64 caracteres",
+		"errorName": "O nome do efeito sonoro deve ter de {{min}} a {{max}} caracteres, contendo apenas letras, números, _ e -"
+	}
+}

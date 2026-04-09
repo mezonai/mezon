@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan":"既存クランに参加",
+    "enterInvite":"既存クランに参加するために下の招待コードを入力。",
+    "labelInput": "招待リンク",
+    "linkInviteEx":"招待コードはhttps://mezon.ai/invite/1813407038846046912のような形式であるべきです",
+    "joinInviteLink":"招待リンクで参加",
+    "errorMessage": "有効な招待リンクまたは招待コードを入力してください。"
+  },
+  "emptyClans": {
+    "clans": "クラン",
+    "readyChat":"次のレベルのグループチャットの準備はできましたか?",
+    "buildYourCommunity":"組織化された会話、スポンタニアスなミーティング、および強力なカスタマイズ機能でコミュニティを構築しましょう!",
+    "createClan":"クランを作成",
+    "joinClan":"クランに参加",
+    "joinChannel":"チャンネルに参加",
+   "findChannel":"見知らぬ場所にいます。テキストチャンネルにアクセス権限がありません。"
+  },
+  "emptyMessage": {
+   "dMsWith":"便利な機能付きのダイレクトメッセージ",
+    "inviteYourFriends":"友達をゲーム、一緒に音楽を聴く、そしてそれ以上に招待しましょう。",
+    "addFriend":"友達を追加"
+  }
+}

@@ -1,0 +1,104 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Укылган дип билгеләү"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Чакыру",
+			"markFavorite": "Күңелдәгеләргә өстәү",
+			"unMarkFavorite": "Күңелдәгеләрдән бетерү",
+			"copyLink": "Сылтаманы күчерү"
+		},
+		"notification": {
+			"title": "",
+			"muteChannel": "Каналны тындыру",
+			"unMuteChannel": "Каналны тындырудан алу",
+			"muteThread": "Ботакламаны тындыру",
+			"unMuteThread": "Ботакламаны тындырудан алу",
+			"notification": "Белдермә көйләнмәләре",
+			"for15Minutes": "15 минутка",
+			"for1Hour": "1 сәгатькә",
+			"for3Hours": "3 сәгатькә",
+			"for8Hours": "8 сәгатькә",
+			"for24Hours": "24 сәгатькә",
+			"untilTurnedBackOn": "Кире кабызганчы",
+			"useCategoryDefault": "Килешү буенча",
+			"all": "Барысы",
+			"onlyMention": "Бары тик @искәртү",
+			"nothing": "Һичнәрсә",
+			"processing": "Эшкәртү...",
+			"muteChannelStatus": "Канал тындырылган",
+			"muteThreadStatus": "Ботаклама тындырылган",
+			"unmuteChannelStatus": "Канал тындырылмаган",
+			"unmuteThreadStatus": "Ботаклама тындырылмаган",
+			"mutedUntil": "Кадәр тындырылган",
+			"muteSuccess": "Канал уңышлы тындырылды!",
+			"unMuteSuccess": "Канал уңышлы тындырылмады!",
+			"muteFailed": "Каналны тындырып булмады!",
+			"unMuteFailed": "Каналны тындырылудан алып булмады!"
+		},
+		"thread": {
+			"title": "",
+			"threads": "Ботакламалар",
+			"searchThreads": "Ботаклама исемен эзләү",
+			"searchFiles": "Файлларны эзләү",
+			"searchCanvas": "Канвас исемен эзләү"
+		},
+		"organizationMenu": {
+			"title": "",
+			"edit": "Каналны үзгәртү",
+			"deleteChannel": "Каналны бетерү",
+			"duplicateChannel": "Төркемчәне кабатлау",
+			"leaveChannel": "Каналдан чыгу",
+			"createTextChannel": "Текст каналы булдыру",
+			"createVoiceChannel": "Тавышлы канал булдыру",
+			"openChat": "Чат ачу",
+			"hideNames": "Исемнәрне яшерү",
+			"createThread": "Ботаклама булдыру"
+		},
+		"devMode": {
+			"title": "Эшкәртү режимы",
+			"copyChannelID": "Канал идентификаторын күчерү"
+		},
+		"manageThreadMenu": {
+			"editThread": "Ботакламаны үзгәртү",
+			"deleteThread": "Ботакламаны бетерү",
+			"leaveThread": "Ботакламадан чыгу",
+			"closeThread": "Ботакламаны ябу",
+			"lockThread": "Ботакламаны блоклау",
+			"copyLink": "Сылтаманы күчерү"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "Канал идентификаторы күчерелде"
+	},
+	"modalConfirm": {
+		"thread": {
+			"title": "{{threadName}} ботакламасын бетерү",
+			"content": "Зинһар, бу ботакламаны бетерәсегез килүен раслагыз?",
+			"confirmText": "Әйе"
+		},
+		"channel": {
+			"title": "{{channelName}} каналын бетерү",
+			"content": "Зинһар, бу каналны бетерәсегез килүен раслагыз?",
+			"confirmText": "Әйе",
+			"systemChannel": "Системалы каналны бетерү мөмкин түгел",
+			"error": "Каналны бетерү хатасы: {{error}}"
+		}
+	},
+	"modalConfirmLeaveThread": {
+		"title": "Ботакламадан чыгу",
+		"yesButton": "Ботакламадан чыгу",
+		"textConfirm": "Зинһар, ботакламадан чыгарга теләвегезне раслагыз? Ботакламадан чыккач, сез аннан хәбәрләр ала алмаячаксыз."
+	},
+	"modalConfirmLeaveChannel": {
+		"title": "Каналдан чыгу",
+		"yesButton": "Каналдан чыгу",
+		"textConfirm": "Зинһар, каналдан чыгарга теләвегезне раслагыз? Каналдан чыккач, сез аннан хәбәрләр ала алмаячаксыз.",
+		"error": "Каналдан чыгу хатасы: {{error}}"
+	},
+	"btnBadgeCount": "Яңа",
+	"favoriteChannel": "КҮҢЕЛДӘГЕ КАНАЛ"
+}

@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+    "title": "EXCLUIR CARGO",
+    "message": "Tem certeza de que deseja excluir este cargo? Esta ação não pode ser desfeita.",
+    "confirm": "Excluir",
+    "cancel": "Cancelar"
+  },
+  "common": {
+    "areYouSure": "Tem certeza?",
+    "cannotUndo": "Esta ação não pode ser desfeita",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "remove": "Remover",
+    "yes": "Sim",
+    "no": "Não"
+  }
+}

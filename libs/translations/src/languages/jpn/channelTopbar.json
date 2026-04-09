@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "チャンネル",
+		"members": "メンバー",
+		"guideClan": "ガイド"
+	},
+	"tooltips": {
+		"clickToEdit": "クリックしてグループを編集",
+		"startVoiceCall": "音声通話を開始",
+		"startVideoCall": "ビデオ通話を開始",
+		"showMemberList": "メンバーリストを表示",
+		"hideMemberList": "メンバーリストを非表示",
+		"showUserProfile": "ユーザープロフィールを表示",
+		"hideUserProfile": "ユーザープロフィールを非表示",
+		"files": "ファイル",
+		"canvas": "キャンバス",
+		"threads": "スレッド",
+		"notificationSettings": "通知設定",
+		"pinnedMessages": "ピン留めメッセージ",
+		"members": "メンバー",
+		"showChat": "チャットを表示",
+		"hideChat": "チャットを非表示",
+		"addFriendsToDM": "友達をDMに追加",
+		"jump": "ジャンプ",
+		"gallery": "ギャラリー",
+		"timelineView": "タイムラインビューに切り替え",
+		"defaultView": "チャットビューに切り替え"
+	},
+	"directMessage": "ダイレクトメッセージ",
+	"activeThreads": "アクティブスレッド",
+	"joinedThreadsLast30Days": "参加したスレッド（過去30日）",
+	"olderThreads": "古いスレッド",
+	"loading": "読み込み中...",
+	"topic": "トピック",
+	"invoice": "音声チャンネル内",
+	"reactions": "リアクション",
+	"callMessages": {
+		"startedVoiceCall": "音声通話を開始しました",
+		"startedVideoCall": "ビデオ通話を開始しました"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "グループチャンネルIDが不足しています",
+		"dmChannelIdMissing": "ダイレクトメッセージチャンネルIDが不足しています",
+		"youAreOnAnotherCall": "別の通話中です"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "このチャンネルにはまだピン留めされたメッセージがありません。",
+		"protip": "プロヒント:",
+		"emptyDescription": "メッセージ管理権限を持つユーザーは、コンテキストメニューからメッセージをピン留めできます。",
+		"unpinMessage": "メッセージのピン留めを解除",
+		"unpinConfirmation": "このピン留めメッセージを削除してもよろしいですか？",
+		"cancel": "キャンセル",
+		"unpinIt": "ピン留めを解除"
+	},
+	"threads": {
+		"emptyTitle": "スレッドはありません。",
+		"emptyDescription": "スレッド - 一時的なテキストチャンネル - で会話に集中しましょう。",
+		"createThread": "スレッドを作成"
+	},
+	"canvas": {
+		"emptyTitle": "キャンバスはありません。",
+		"emptyDescription": "キャンバス - 一時的なテキストチャンネル - で会話に集中しましょう。",
+		"createCanvas": "キャンバスを作成"
+	},
+	"files": {
+		"emptyTitle": "ファイルはありません。",
+		"emptyDescription": "このチャンネルに共有されたファイルはまだありません。",
+		"searchPlaceholder": "ファイル名を検索"
+	},
+	"fileItem": {
+		"download": "ダウンロード",
+		"sharedBy": "{{username}} {{time}}が共有",
+		"attachmentFailed": "添付ファイルをダウンロードできません。"
+	},
+	"notificationSetting": {
+		"muteChannel": "チャンネルの通知をミュート",
+		"unmuteChannel": "チャンネルの通知をミュート解除",
+		"mutedUntil": "{{date}}までミュート",
+		"useCategoryDefault": "カテゴリデフォルトを使用",
+		"muteOptions": {
+			"for15Minutes": "15分間",
+			"for1Hour": "1時間",
+			"for3Hours": "3時間",
+			"for8Hours": "8時間",
+			"for24Hours": "24時間",
+			"untilTurnedBackOn": "再度オンにするまで"
+		}
+	},
+	"gallery": {
+		"title": "ギャラリー",
+		"sentDate": "送信日",
+		"fromDate": "から",
+		"toDate": "まで",
+		"filters": {
+			"all": "すべて",
+			"images": "画像",
+			"videos": "ビデオ"
+		},
+		"dateRange": {
+			"from": "{{date}}から",
+			"to": "{{date}}まで",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "開始日は終了日以前または同じである必要があります"
+		},
+		"buttons": {
+			"clearAll": "すべてクリア",
+			"apply": "適用",
+			"clearDateFilter": "日付フィルターをクリア"
+		},
+		"emptyState": {
+			"noMediaFiles": "メディアファイルが見つかりません",
+			"noMediaFilesDateRange": "選択した日付範囲でメディアファイルが見つかりません",
+			"noImages": "画像が見つかりません",
+			"noVideos": "ビデオが見つかりません"
+		},
+		"loading": {
+			"olderImages": "古い画像を読み込んでいます...",
+			"newerImages": "新しい画像を読み込んでいます...",
+			"filterChange": "メディアを読み込んでいます..."
+		},
+		"filesCount": "{{count}} ファイル",
+		"imageError": "エラー"
+	},
+	"modals": {
+		"threads": {
+			"title": "スレッド",
+			"create": "作成",
+			"results": "結果"
+		},
+		"canvas": {
+			"title": "キャンバス",
+			"create": "作成"
+		},
+		"files": {
+			"title": "ファイル"
+		},
+		"pinnedMessages": {
+			"title": "ピン留めメッセージ"
+		}
+	},
+	"createThread": {
+		"newThread": "新しいスレッド",
+		"inviteMessage": "彼らを@メンションすることで、新しい人を招待できます。",
+		"validation": {
+			"invalidChannelName": "有効なスレッド名を入力してください（最大65文字、文字、数字、_または-のみ）。",
+			"threadNameRequired": "スレッド名は必須です。",
+			"starterMessageRequired": "開始メッセージは必須です。"
+		},
+		"threadName": "スレッド名",
+		"enterThreadName": "スレッド名を入力",
+		"privateThread": "プライベートスレッド",
+		"privateThreadDescription": "招待された人々とモデレーターのみが見ることができます",
+		"toast": {
+			"threadNameTooShort": "スレッド名は3文字以上である必要があります",
+			"threadNameExists": "スレッド名はすでに存在します",
+			"initialMessageRequired": "スレッドを開始するには初期メッセージが必要です。",
+			"messageTooLong": "メッセージが65文字の制限を超えています",
+			"messageLimitExceeded": "メッセージが{{limit}}文字の制限を超えています"
+		},
+		"placeholder": {
+			"threadName": "スレッド名を入力"
+		}
+	},
+	"moreFile": "ファイル",
+	"moreFiles": "ファイル"
+}

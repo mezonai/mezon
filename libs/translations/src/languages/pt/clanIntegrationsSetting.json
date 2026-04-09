@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "Mensagens e atualizações automáticas",
+		"description": "Personalize seu clã com integrações. Gerencie webhooks, canais de monitoramento e aplicativos, bem como configurações de Twitch e YouTube para criadores.",
+		"learnMore": "Saiba mais sobre o gerenciamento de integrações."
+	},
+	"webhooks": {
+		"description": "Webhooks são ferramentas que ajudam você a receber mensagens automáticas e atualizações de dados enviadas para os canais de texto no seu clã por meio de conexões de internet.",
+		"learnMore": "Saiba mais",
+		"try": "ou tente",
+		"buildOne": "criar o seu próprio."
+	},
+	"clanWebhooks": {
+		"description": "O Webhook do Clã é uma maneira simples de postar mensagens de outros aplicativos e sites para cada usuário do Mezon usando tecnologia de internet.",
+		"tips": "Dica: Se você achar que o token na sua URL foi comprometido ou está desatualizado, redefina-o e copie a nova URL."
+	},
+	"webhooksEdit": {
+		"title": "Editar webhook",
+		"save": "Salvar",
+		"cancel": "Cancelar",
+		"channel": "Canal",
+		"nameLabel": "Nome",
+		"recommendImage": "Recomenda-se usar uma imagem com tamanho mínimo de 128x128 px",
+		"webhookURL": "URL do webhook",
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"delete": "Excluir",
+		"selectAChannel": "Selecione um canal",
+		"yes": "Sim",
+		"deleteCaptionHook": "Excluir {{webhookName}}",
+		"deleteWebhookTitle": "Excluir {{webhookName}}",
+		"deleteWebhookConfirmation": "Tem certeza de que deseja excluir o webhook {{webhookName}}? Esta ação não pode ser desfeita.",
+		"resetToken": "Redefinir token",
+		"name": "Nome do webhook",
+		"nameMaxLengthError": "O comprimento deve ser de até 64 caracteres."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Nenhum webhook encontrado"
+	},
+	"webhooksItem": {
+		"createdBy": "Criado em {{webhookCreateTime}} por {{webhookUserOwnerName}}"
+	},
+	"webhookChannelSelect": {
+		"title": "Selecionar Canal",
+		"description": "Selecione o canal onde deseja criar o webhook",
+		"selectChannel": "Canal",
+		"placeholder": "Selecione um canal",
+		"create": "Criar"
+	},
+	"toast": {
+		"addSuccess": "Webhook criado com sucesso!",
+		"addError": "Erro ao criar o webhook",
+		"saveSuccess": "Salvo com sucesso!",
+		"saveError": "Erro ao salvar",
+		"deleteSuccess": "Webhook excluído com sucesso!",
+		"deleteError": "Erro ao excluir o webhook",
+		"resetTokenSuccess": "Token redefinido com sucesso!",
+		"resetTokenError": "Erro ao redefinir o token",
+		"copyError": "Não foi possível copiar a URL",
+		"webhookGeneratedSuccess": "{{webhookName}} criado com sucesso!",
+		"webhookDeletedSuccess": "{{webhookName}} excluído com sucesso!"
+	}
+}

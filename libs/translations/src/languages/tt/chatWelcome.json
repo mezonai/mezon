@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Башлау өчен кушымтаны эшләтеп җибәрүгә басыгыз",
+		"inviteFriends": "Дусларыгызны чакырыгыз",
+		"sendFirstMessage": "Беренче хәбәрегезне җибәрегез",
+		"downloadApp": "Mezon күчереп алу",
+		"createChannel": "Канал булдыру"
+	},
+	"welcome": {
+		"welcomeToChannel": "#{{channelName}} каналына рәхим итегез",
+		"startOfChannel": "Бу #{{channelName}} {{channelType}} каналының башы",
+		"startOfThread": "{{username}} башлады",
+		"welcomeToGroup": "{{groupName}} төркеменә рәхим итегез.",
+		"beginningOfDM": "Бу {{userName}} белән легендар сөйләшүегезнең башы гына",
+		"editGroup": "Төркемне үзгәртү",
+		"private": "шәхси",
+		"friendRequestSent": "Сезгә дуслык соравы җибәрде:",
+		"addFriend": "Дус итеп өстәү",
+		"removeFriend": "Дустан бетерү",
+		"accept": "Кабул итү",
+		"ignore": "Игътибарсыз калдыру",
+		"friendRequestSentButton": "Дуслык соравы җибәрелде",
+		"block": "Блоклау",
+		"unblock": "Блоктан алу"
+	},
+	"toast": {
+		"userBlockedSuccess": "Кулланучы уңышлы блокланды",
+		"failedToBlock": "Кулланучыны блоклап булмады",
+		"userUnblockedSuccess": "Кулланучы уңышлы блоктан алынды",
+		"failedToUnblock": "Кулланучыны блоктан алып булмады"
+	}
+}

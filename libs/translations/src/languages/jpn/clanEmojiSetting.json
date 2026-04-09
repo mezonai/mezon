@@ -1,0 +1,40 @@
+{
+	"modal": {
+		"uploadAFile": "ファイルをアップロード",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "ファイルはPNGまたはGIFである必要があります、最大256KB",
+		"preview": "プレビュー",
+		"file": "ファイル",
+		"thisCannotBeEdited": "編集できません",
+		"browse": "参照",
+		"chooseAFile": "ファイルを選択",
+		"stickerName": "絵文字名",
+		"exCatHug": "例：cat_hug",
+		"thisIsForSale": "これは販売用です",
+		"neverMind": "なし",
+		"characters": "名前は3〜64文字である必要があります"
+	},
+	"header": {
+		"save": "保存"
+	},
+	"toast": {
+		"saveSuccess": "保存に成功しました",
+		"reject": "拒否",
+		"errorSizeLimit": "画像サイズが256 KBを超えています",
+		"validateName": "長さは{{min}}から{{max}}文字である必要があります。文字、数字、_および-のみ許可されます"
+	},
+	"button": {
+		"upload": "絵文字をアップロード"
+	},
+	"description": {
+		"descriptions": "このクランのすべてのユーザーが使用できるカスタム絵文字を追加しましょう。Mezonのすべてのメンバーは、アニメーションGIF絵文字を使用できます。",
+		"requirements": "アップロード要件",
+		"requireList": "• ファイルタイプ：JPEG、PNG、GIF。\n• 推奨サイズ：256 KB。\n• 推奨画像サイズ：128x128。\n• 命名：絵文字名は少なくとも3文字で、文字、数字、およびアンダースコアのみを含める必要があります。"
+	},
+	"emojiList": {
+		"slotsDetails": "絵文字リスト",
+		"delete": "削除"
+	},
+	"image": "画像",
+	"name": "名前",
+	"uploadedBy": "アップロード元"
+}

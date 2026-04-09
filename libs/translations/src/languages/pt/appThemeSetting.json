@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "Escuro",
+		"darker": "Mais escuro",
+		"midnight": "Meia-noite",
+		"light": "Claro",
+		"system": "Sistema",
+		"sunrise": "Amanhecer",
+		"redDark": "Vermelho Escuro",
+		"purpleHaze": "Névoa Roxa",
+		"abyssDark": "Abismo Escuro",
+		"sunset": "Pôr do sol"
+	},
+	"desc": "Você sempre poderá alterar isso mais tarde!"
+}

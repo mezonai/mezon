@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Histórico de transações",
+		"subtitle": "Veja todas as suas atividades de transação"
+	},
+	"footers": {
+		"noti": "Você carregou todas as {{count}} transações",
+		"fetching": "Carregando mais transações..."
+	},
+	"filters": {
+		"all": "Todas as transações",
+		"sent": "Enviadas",
+		"received": "Recebidas"
+	},
+	"transactionTypes": {
+		"sent": "Enviado",
+		"received": "Recebido"
+	},
+	"currency": {
+		"code": "pt-BR",
+		"symbol": "₫"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Nenhuma transação encontrada",
+			"description": "Você ainda não realizou nenhuma transação. Seu histórico aparecerá aqui quando você começar a enviar ou receber tokens."
+		},
+		"noFilteredTransactions": {
+			"title": "Nenhuma transação encontrada",
+			"description": "Nenhuma transação encontrada para o filtro selecionado. Tente outro filtro ou verifique novamente mais tarde."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "ID da transação",
+			"sender": "Remetente",
+			"amount": "Valor",
+			"receiver": "Destinatário",
+			"note": "Nota",
+			"created": "Criado em"
+		},
+		"defaultNote": "Sem nota",
+		"unknownUser": "Usuário desconhecido"
+	},
+	"transactionItem": {
+		"idPrefix": "Transação #"
+	}
+}

@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Excluir clã",
+    "description": "Tem certeza de que deseja excluir {{currentClan}}? Esta ação não pode ser desfeita.",
+    "confirm": "Sim",
+    "cancel": "Não",
+    "titleLeaveClan": "Sair do clã",
+    "descriptionLeaveClan": "Tem certeza de que deseja sair de {{currentClan}}? Você não poderá participar deste clã novamente, a menos que seja convidado.",
+    "error": "Ocorreu um erro ao tentar excluir/sair do clã"
+  },
+  "confirmMessage": "Tem certeza de que deseja excluir este clã? Esta ação não pode ser desfeita.",
+  "enterClanName": "Digite o nome do clã",
+  "incorrectName": "Você digitou o nome do clã incorretamente",
+  "cancel": "Cancelar"
+}

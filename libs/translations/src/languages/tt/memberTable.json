@@ -1,0 +1,19 @@
+{
+  "headers": {
+    "name": "Исем",
+    "memberSince": "Катнаша башлады",
+    "joinedMezon": "Mezonга кушылды",
+    "roles": "Рольләр",
+    "signals": "Сигналлар"
+  },
+  "topBar": {
+    "recentMembers": "Соңгы катнашучылар",
+    "searchPlaceholder": "Клан исеме, күрсәтелә торган исем яки кулланучы исеме буенча эзләү",
+    "sort": "Сортлау"
+  },
+  "error": "Хата",
+  "profile": "Профиль",
+  "message": "Хәбәр",
+  "transferOwnership": "Хокукларны тапшыру",
+  "removeMember": "Катнашучыны бетерү"
+}
