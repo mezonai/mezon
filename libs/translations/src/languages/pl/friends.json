@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Prośba o zaprzyjaźnienie",
+		"received": "Otrzymano",
+		"sent": "Wysłano",
+		"emptyReceived": {
+			"title": "Brak otrzymanych próśb o zaprzyjaźnienie",
+			"description": "Tutaj zobaczysz wszystkie prośby o zaprzyjaźnienie, które ludzie wysłali do Ciebie."
+		},
+		"emptySent": {
+			"title": "Brak wysłanych próśb o zaprzyjaźnienie",
+			"description": "Tutaj zobaczysz wszystkie prośby o zaprzyjaźnienie, które wysłałeś do innych."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Otrzymano prośbę o zaprzyjaźnienie",
+		"findYourFriend": "Znajdź przyjaciół",
+		"addByUserName": "Dodaj za pomocą nazwy użytkownika lub numeru telefonu",
+		"addByUsername": "Dodaj przez {{username}}",
+		"searchUsernamePlaceholder": "Wpisz nazwę użytkownika lub numer telefonu",
+		"whoYouWantToAddFriend": "Kogo chcesz dodać jako przyjaciela?",
+		"byTheWay": "A propos, Twoja nazwa użytkownika to",
+		"sendRequestButton": "Wyślij prośbę o zaprzyjaźnienie",
+		"addFriendToast": "Wysłano prośbę o zaprzyjaźnienie"
+	},
+	"friends": "Przyjaciele",
+	"noFriendsResultsFound": "Nie znaleziono wyników przyjaciół",
+	"toast": {
+		"sendAddFriendSuccess": "Prośba o zaprzyjaźnienie została wysłana pomyślnie!",
+		"acceptAddFriendSuccess": "Akceptowano prośbę o zaprzyjaźnienie!",
+		"sendAddFriendFail": "Hmm, wystąpił błąd. Proszę sprawdzić, czy nazwa użytkownika jest poprawna.",
+		"somethingWentWrong": "Wystąpił błąd",
+		"friendRequestAlreadySent": "Prośba o zaprzyjaźnienie została wysłana, oczekuje na akceptację."
+	},
+	"you": "ty"
+}

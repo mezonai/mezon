@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+		"title": "USUŃ ROLĘ",
+		"message": "Czy na pewno chcesz usunąć tę rolę? Tej akcji nie można cofnąć",
+		"confirm": "Usuń",
+		"cancel": "Anuluj"
+  },
+  "common": {
+    "areYouSure": "Czy na pewno?",
+    "cannotUndo": "Tej akcji nie można cofnąć",
+    "confirm": "Potwierdź",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "remove": "Usuń",
+    "yes": "Tak",
+    "no": "Nie"
+  }
+}

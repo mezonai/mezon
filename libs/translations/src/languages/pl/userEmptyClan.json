@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan":"Dołącz do istniejącego clanu",
+    "enterInvite":"Wpisz kod zaproszeniowy poniżej, aby dołączyć do istniejącego clanu.",
+    "labelInput":"Link zaproszeniowy",
+    "linkInviteEx":"Kod zaproszeniowy powinien wyglądać jak https://mezon.ai/invite/1813407038846046912",
+    "joinInviteLink":"Dołącz z linkiem zaproszeniowym",
+    "errorMessage":"Proszę wprowadzić poprawny link zaproszeniowy lub kod zaproszeniowy."
+  },
+  "emptyClans": {
+    "clans": "Clany",
+    "readyChat":"Gotowy do rozmów grupowych na najwyższym poziomie?",
+    "buildYourCommunity":"Zbuduj swoją społeczność z zorganizowanymi rozmowami, spontanicznymi spotkaniami i potężnymi funkcjami dostosowanymi!",
+    "createClan":"Utwórz swój clan",
+    "joinClan":"Dołącz do clanu",
+    "joinChannel":"Dołącz do kanału",
+   "findChannel":"Znalazłeś się w obcym miejscu. Nie masz dostępu do żadnych kanałów tekstowych."
+  },
+  "emptyMessage": {
+   "dMsWith":"Wiadomości bezpośrednie z wieloma przydatnymi funkcjami",
+    "inviteYourFriends":"Zaproś przyjaciół, aby razem grać, słuchać muzyki i wiele więcej.",
+    "addFriend":"Dodaj przyjaciela"
+  }
+}

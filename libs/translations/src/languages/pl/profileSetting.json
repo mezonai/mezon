@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Zapisz"
+	},
+	"switch": {
+		"userProfile": "Indywidualny",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Nazwa wyświetlana",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Przydomek Clanu",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Zaimki",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Bio",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Anulować niezapisane zmiany?",
+		"description": "Są niezapisane zmiany, czy na pewno chcesz je anulować?",
+		"discard": "Odrzuć",
+		"keepEditing": "Kontynuuj edycję"
+	},
+	"selectAClan": "Wybierz clan",
+	"searchClanPlaceholder": "Szukaj clanu",
+	"updateProfileSuccess": "Zaktualizowano profil indywidualny pomyślnie",
+	"updateProfileError": "Aktualizacja profilu indywidualnego nie powiodła się",
+	"updateClanProfileSuccess": "Zaktualizowano profil clanu pomyślnie",
+	"emptyUsername": "Nazwa wyświetlana nie może być pusta!",
+	"duplicateClannick": "Przydomek clanu jest duplikatem",
+	"clanNickname": "PRZYDOMEK CLANU",
+	"changeAvatar": "Zmień awatar",
+	"removeAvatar": "Usuń",
+	"avatar": "Awatar",
+	"preview": "PODGLĄD",
+	"nickNameExistsError": "Przydomek już istnieje w clanie. Proszę wprowadzić inny przydomek.",
+	"unsavedChangesWarning": "Uwaga - masz niezapisane zmiany!",
+	"reset": "Zresetuj",
+	"saveChanges": "Zapisz zmiany",
+	"showProfilesDescription": "Pokaż siebie z różnymi profilami dla każdego clanu",
+	"chooseAClan": "WYBIERZ CLAN",
+	"editImage": "Edytuj obraz",
+	"close": "Zamknij",
+	"resetChanges": "Zresetuj zmiany",
+	"cancelEditing": "Anuluj edycję",
+	"cancel": "Anuluj",
+	"applyChanges": "Zastosuj zmiany",
+	"apply": "Zastosuj",
+	"moveImage": "Przenieś obraz",
+	"adjustZoom": "Dostosuj przybliżenie",
+	"profiles": "Profile",
+	"userProfile": "Profil użytkownika",
+	"clanProfiles": "Profile Clanu",
+	"directMessageIcon": "Ikona wiadomości prywatnej",
+	"directMessageIconAction": {
+		"remove": "Usuń",
+		"removeTitle": "Usuń ikonę wiadomości prywatnej",
+		"removeDescription": "Czy na pewno chcesz usunąć ikonę wiadomości prywatnej?"
+	},
+	"displayName": "NAZWA WYŚWIETLANA",
+	"emptyClanProfile": {
+		"title": "Nie dołączyłeś jeszcze do żadnego clanu",
+		"description": "Utwórz lub dołącz do clanu, aby skonfigurować swój profil clanu.",
+		"createClan": "Utwórz clan",
+		"joinClan": "Dołącz do clanu"
+	}
+}

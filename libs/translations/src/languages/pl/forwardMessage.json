@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Przekieruj wiadomość",
+		"searchPlaceholder": "Szukaj",
+		"noResults": "Nie można znaleźć tego, czego szukasz?",
+		"searchFriendsUsers": "Szukaj przyjaciół i użytkowników",
+		"searchingChannel": "Szukanie kanału",
+		"sharedContent": "Udostępnione treści",
+		"cancel": "Anuluj",
+		"send": "Wyślij",
+		"sending": "Wysyłanie...",
+		"sendingProgress": "Wysyłanie ({{current}}/{{total}})...",
+		"image": "obraz",
+		"images": "obrazy",
+		"video": "wideo",
+		"videos": "wideo",
+		"file": "plik",
+		"files": "pliki",
+		"additionalMessage": "Wiadomość dołączenia (opcjonalna)",
+		"additionalMessagePlaceholder": "Wpisz wiadomość, którą chcesz wysłać dołączoną..."
+	},
+	"successMessage": "Przekierowano wiadomość pomyślnie",
+	"errorMessage": "Nie można przekierować wiadomości"
+}

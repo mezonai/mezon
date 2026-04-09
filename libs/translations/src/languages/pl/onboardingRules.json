@@ -1,0 +1,18 @@
+{
+  "editResources": "Edytuj zasoby",
+  "form": {
+    "nameTitle": "Nazwij ten zasób",
+    "namePlaceholder": "#regulamin może być Zasady",
+    "descriptionTitle": "Opisz ten zasób",
+    "descriptionPlaceholder": "Przykład: Zasady clanu",
+    "imageTitle": "Obraz regulaminu",
+    "browse": "Przeglądaj",
+    "required": "To pole jest wymagane.",
+    "minCharacters": "Tytuł regulaminu musi mieć co najmniej 7 znaków"
+  },
+  "buttons": {
+    "remove": "Usuń",
+    "save": "Zapisz",
+    "add": "Dodaj"
+  }
+}

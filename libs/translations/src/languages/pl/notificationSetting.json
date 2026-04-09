@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Ustawienia powiadomień",
+		"muteUntil": "Wyciszyłeś ten kanał do",
+		"unMute": "Odcisz",
+		"mute": "Wycisz",
+		"labelOptions": {
+			"reactionMessage": "Reakcja wiadomości",
+			"categoryDefault": "Użyj domyślnych ustawień",
+			"allMessage": "Wszystkie",
+			"notThingMessage": "Nic",
+			"mentionMessage": "Tylko @wzmianki"
+		},
+		"muteCategoryUntil": "Wyciszyłeś tę kategorię do"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Wycisz ten wątek",
+		"headerTitleMuteChannel": "Wycisz ten kanał",
+		"muteThisConversation": "Wycisz tę konwersację",
+		"muteDuration": {
+			"forFifteenMinutes": "Przez 15 minut",
+			"forOneHour": "Przez 1 godzinę",
+			"forThreeHours": "Przez 3 godziny",
+			"forEightHours": "Przez 8 godzin",
+			"forTwentyFourHours": "Przez 24 godziny",
+			"untilTurnItBackOn": "Do momentu ponownego włączenia"
+		},
+		"description": "Otrzymujesz powiadomienia ze wszystkich wiadomości w tym clanie, ale możesz zmienić ustawienia tutaj",
+		"muteSuccess": "Pomyślnie wyciszono!",
+		"unMuteSuccess": "Pomyślnie odciszono!",
+		"muteFailed": "Nie udało się wyciszyć!",
+		"unMuteFailed": "Nie udało się odciszyć!"
+	},
+	"toast": {
+		"error": "Aktualizacja powiadomień nie powiodła się: {{error}}"
+	},
+	"title": "Ustawienia powiadomień",
+	"clanNotificationSettings": "USTAWIENIA POWIADOMIEŃ CLANU",
+	"notificationOverrides": "NADPISANIA POWIADOMIEŃ",
+	"addChannelOverride": "Dodaj kanał, aby nadpisać domyślne ustawienia powiadomień",
+	"selectOrCreateOption": "Wybierz lub utwórz opcję...",
+	"headers": {
+		"channelOrCategory": "KANAŁ LUB KATEGORIA",
+		"all": "WSZYSTKIE",
+		"mentions": "WZMIANKI",
+		"nothing": "NIC",
+		"mute": "Wycisz"
+	},
+	"menu": {
+		"notification": {
+			"all": "Wszystkie",
+			"onlyMention": "Tylko @wzmianki",
+			"nothing": "Nic"
+		}
+	}
+}

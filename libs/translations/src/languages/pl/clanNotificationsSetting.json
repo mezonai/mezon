@@ -1,0 +1,31 @@
+{
+	"muteClan": "Wyciszenie powiadomień clanu ukryje wskaźniki nieprzeczytanych wiadomości i nie wyświetli powiadomień, chyba że zostaniesz wzmiankowany",
+	"notifySettingOption": {
+		"title": "Ustawienia powiadomień clanu",
+		"allMessage": "Wszystkie wiadomości",
+		"onlyMentions": "Tylko @wzmianki",
+		"nothing": "Nic"
+	},
+	"suppressOption": {
+		"suppressEveryone": "Wycisz @everyone i @here",
+		"suppressAllRole": "Wycisz @wzmianki wszystkich ról",
+		"suppressHighlights": "Wycisz powiadomienia wyróżnień",
+		"subText": "Wyróżnienia zapewniają okazjonalne aktualizacje, gdy Twoi przyjaciele rozmawiają w clanie i więcej."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Wycisz nowe wydarzenia",
+		"mobilePushNotifications": "Powiadomienia push mobilne"
+	},
+	"notificationOverrides": {
+		"title": "Nadpisania powiadomień",
+		"addChannelsAllCategory": "Dodaj wszystkie kanały do kategorii"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Nie będziesz otrzymywać powiadomień z wyciszonych kanałów. To ustawienie obowiązuje na wszystkich Twoich urządzeniach.",
+		"youHaveMuted": "Wyciszyłeś ten kanał do"
+	},
+	"clanNotificationBS": {
+		"title": "Wycisz ten clan"
+	},
+	"resetOverrides": "Zresetuj nadpisania"
+}

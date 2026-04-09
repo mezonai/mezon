@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Oznacz jako przeczytane"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "Zaproś"
+        },
+        "notification": {
+			"title": "",
+			"muteCategory": "Wycisz kategorię",
+			"notification": "Ustawienia powiadomień"
+		},
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Utwórz kanał",
+            "edit": "Edytuj kategorię",
+            "delete": "Usuń kategorię"
+        },
+        "devMode": {
+            "title": "Tryb deweloperski",
+            "copyServerID": "Kopiuj ID Clanu"
+        },
+        "modalConfirm": {
+            "title": "Usuń kategorię",
+            "content": "Czy na pewno chcesz usunąć tę kategorię? Tej akcji nie można cofnąć.",
+            "confirmText": "Usuń"
+        },
+        "toast": {
+            "systemChannel": "Błąd: {{categoryName}} zawiera kanał systemowy",
+            "error": "Błąd usuwania kategorii: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "Skopiowano ID Clanu"
+    }
+}
