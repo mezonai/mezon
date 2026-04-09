@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Benachrichtigungen",
+	"tabNotify": {
+		"forYou": "Für dich",
+		"mention": "Erwähnungen",
+		"messages": "Nachrichten",
+		"topics": "Diskussionen",
+		"notificationSettings": "Benachrichtigungseinstellungen"
+	},
+	"removeNotification": "Benachrichtigung löschen",
+	"nothingHere": "Hier ist noch nichts",
+	"comeBackNotify": "Komm zurück, um Benachrichtigungen über Ereignisse und mehr zu erhalten",
+	"repliedTo": "Geantwortet auf: ",
+	"sender": "Absender: ",
+	"seeWhenAnswersAppear": "Sehen, wenn Antworten erscheinen",
+	"enablePushNotifications": "Push-Benachrichtigungen aktivieren",
+	"permissionAlert": {
+		"turnOnNotifications": "Benachrichtigungen einschalten",
+		"permissionDescription": "Bitte erlaube Mezon, Benachrichtigungen zu senden, um mit Freunden und Familie in Kontakt zu bleiben.",
+		"openSettings": "Einstellungen öffnen",
+		"features": {
+			"newMessages": {
+				"title": "Benachrichtigungen für neue Nachrichten erhalten",
+				"description": "Erhalte Updates, wenn Freunde dir Nachrichten senden"
+			},
+			"mentions": {
+				"title": "Erfahre, wenn du in einer Gruppe erwähnt wirst",
+				"description": "Verpasse nie, wenn dich jemand erwähnt"
+			},
+			"muteControl": {
+				"title": "Benachrichtigungen für bestimmte Chats und Chat-Typen stummschalten",
+				"description": "Kontrolliere, welche Benachrichtigungen du erhältst"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Benachrichtigungsberechtigung",
+		"permissionDenied": "Benachrichtigungsberechtigung verweigert.",
+		"cancel": "Abbrechen",
+		"ok": "OK"
+	},
+	"andYou": "und du",
+	"topicAndYou": "Diskussionen und du",
+	"unknowClan": "Du bist kein Mitglied dieses Chats mehr"
+}

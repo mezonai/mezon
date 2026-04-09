@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "Dunkel",
+		"darker": "Dunkler",
+		"midnight": "Mitternacht",
+		"light": "Hell",
+		"system": "System",
+		"sunrise": "Sonnenaufgang",
+		"redDark": "Dunkelrot",
+		"purpleHaze": "Purple Haze",
+		"abyssDark": "Dunkler Abgrund",
+		"sunset": "Sonnenuntergang"
+	},
+	"desc": "Du kannst dies jederzeit später ändern!"
+}

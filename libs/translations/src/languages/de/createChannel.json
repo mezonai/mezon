@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "NEUEN KANAL ERSTELLEN IN"
+	},
+	"channelType": {
+		"text": "Text",
+		"voice": "Sprache",
+		"forum": "Forum",
+		"announcement": "Ankündigung",
+		"apps": "Apps",
+		"stream": "Livestream",
+		"descriptions": {
+			"text": "Sende Nachrichten, Bilder, GIFs, Emojis, Meinungen und Witze",
+			"voice": "Chatte gemeinsam per Sprache, Video und Bildschirmfreigabe",
+			"forum": "Schaffe Platz für organisierte Diskussionen",
+			"announcement": "Wichtige Updates für alle innerhalb und außerhalb des Clans",
+			"apps": "Apps",
+			"stream": "Teile deine Hobbys und Aktivitäten"
+		}
+	},
+	"validation": {
+		"invalidName": "Bitte gib einen Kanalnamen ein (maximal 64 Zeichen, nur Wörter, Zahlen, _ oder -).",
+		"duplicateName": "Der Kanalname existiert bereits in dieser Kategorie. Bitte wähle einen anderen Namen."
+	},
+	"privacy": {
+		"private": "Privater Kanal",
+		"description": "Nur ausgewählte Mitglieder und Rollen können diesen Kanal sehen."
+	},
+	"labels": {
+		"description": "Bitte richte den Kanal nach deinen Wünschen ein.",
+		"chooseType": "Wähle den Kanaltyp:",
+		"channelName": "Wie soll der Kanal heißen?",
+		"isPrivate": "Privater Kanal?",
+		"placeholder": "Kanalnamen eingeben"
+	},
+	"errors": {
+		"typeRequired": "Kanaltyp ist erforderlich",
+		"nameRequired": "Kanalname ist erforderlich",
+		"selectApp": "Bitte wähle eine App aus",
+		"validName": "Bitte gib einen gültigen Kanalnamen ein"
+	},
+	"buttons": {
+		"cancel": "Abbrechen",
+		"create": "Kanal erstellen",
+		"creating": "Wird erstellt..."
+	}
+}

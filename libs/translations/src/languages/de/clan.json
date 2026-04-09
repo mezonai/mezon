@@ -1,0 +1,76 @@
+{
+	"title": "Dein Clan anpassen",
+	"subTitle": "Verleihe deinem neuen Clan mit einem Namen und einem Icon einen eigenen Stil. Du kannst dies später jederzeit ändern.",
+	"clanName": "Clan-Name",
+	"createServer": "Clan erstellen",
+	"byCreatingClan": "Mit der Erstellung eines Clans stimmst du den",
+	"upload": "HOCHLADEN",
+	"addClan": "Clan erstellen",
+	"placeholderClan": "Clan-Namen eingeben",
+	"errorMessage": "Bitte gib einen gültigen Clan-Namen ein (maximal 64 Zeichen, nur Buchstaben, Zahlen, _ oder -).",
+	"duplicateNameMessage": "Dieser Clan-Name existiert bereits. Bitte wähle einen anderen.",
+	"commutityGuide": "Mezons Community-Richtlinien.",
+	"busy": "Beschäftigt",
+	"findOrStartConversation": "Suche oder starte einen Chat",
+	"createCategoryModal": {
+		"title": "Kategorie erstellen",
+		"nameLabel": "Wie soll die Kategorie heißen?",
+		"namePlaceholder": "Kategorienamen eingeben",
+		"privateCategory": "Private Kategorie",
+		"privateDescription": "Durch das Erstellen einer privaten Kategorie können nur ausgewählte Mitglieder und Rollen diese Kategorie sehen. Die in dieser Kategorie synchronisierten Kanäle werden automatisch an diese Einstellung angepasst.",
+		"invalidName": "Bitte gib einen gültigen Kategorienamen ein (maximal 64 Zeichen, nur Buchstaben, Zahlen, _ oder -).",
+		"duplicateName": "Dieser Kategoriename existiert bereits im Clan. Bitte wähle einen anderen.",
+		"cancel": "Abbrechen",
+		"create": "Kategorie erstellen"
+	},
+	"leaveClanModal": {
+		"title": "{{clanName}} verlassen",
+		"description": "Möchtest du <strong>{{clanName}}</strong> wirklich verlassen? Du kannst diesem Server nicht wieder beitreten, es sei denn, du wirst erneut eingeladen.",
+		"cancel": "Abbrechen"
+	},
+	"leaveClan": "Clan verlassen",
+	"leaveClanTitle": "Verlassen",
+	"categoryOverview": {
+		"categoryName": "Kategoriename",
+		"categoryNamePlaceholder": "Gib deinen Kategorienamen hier ein...",
+		"hasWelcomeChannelError": "Diese Kategorie enthält einen Willkommenskanal",
+		"deleteCategory": "Kategorie löschen",
+		"deleteCategoryTitle": "Kategorie löschen",
+		"deleteCategoryButton": "Kategorie löschen",
+		"cannotBeUndone": "Diese Aktion kann nicht rückgängig gemacht werden",
+		"categoryLabel": "Kategorie"
+	},
+	"createClanModal": {
+		"title": "Dein Clan anpassen",
+		"description": "Verleihe deinem neuen Clan mit einem Namen und einem Icon eine eigene Note! Du kannst dies später jederzeit ändern!",
+		"upload": "Hochladen",
+		"clanName": "CLAN-NAME",
+		"placeholder": "Clan-Namen eingeben",
+		"invalidName": "Bitte gib einen gültigen Clan-Namen ein (maximal 64 Zeichen, nur Buchstaben, Zahlen, _ oder -).",
+		"duplicateName": "Dieser Clan-Name existiert bereits. Bitte wähle einen anderen.",
+		"agreement": "Mit der Erstellung eines Clans stimmst du den",
+		"communityGuidelines": "Mezons Community-Richtlinien",
+		"back": "Zurück",
+		"create": "Erstellen",
+		"toast": {
+			"limitImageSize": "Die Bildgröße muss kleiner als {{size}} MB sein"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Erstelle deinen Clan",
+		"description": "Dein Clan ist der Ort, an dem du dich mit deinen Freunden austauschst. Erstelle deinen eigenen Clan und fang an zu chatten.",
+		"createMyOwn": "Eigenes Template erstellen",
+		"startFromTemplate": "Mit einem Template starten",
+		"gamingTemplate": "Gaming",
+		"friendsTemplate": "Freunde",
+		"studyGroupTemplate": "Lerngruppe",
+		"schoolClubTemplate": "Schulclub",
+		"localCommunityTemplate": "Lokale Community",
+		"artistsCreatorsTemplate": "Künstler & Creator"
+	},
+	"limitModal": {
+		"title": "Limit erreicht!",
+		"message": "Du bist bereits in 50 Clans. Du musst einem Clan beitreten, bevor du einem anderen beitreten oder einen neuen erstellen kannst.",
+		"okayButton": "Okay"
+	}
+}

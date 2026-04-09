@@ -1,0 +1,112 @@
+{
+	"roleDescription": "Nutze Rollen, um deine Clan-Mitglieder zu gruppieren und Berechtigungen zuzuweisen.",
+	"defaultRole": "Standardberechtigung für alle Clan-Mitglieder",
+	"roles": "Rollen",
+	"members": "Mitglieder",
+	"noRole": "Derzeit sind keine Rollen vorhanden",
+	"skipStep": "Diesen Schritt überspringen",
+	"failed": "Fehlgeschlagen",
+	"createNewRole": {
+		"title": "Schritt 1 von 3",
+		"createANewRole": "Eine neue Rolle erstellen",
+		"description": "Vergib einen einzigartigen Namen und eine Farbe für diese Rolle. Du kannst dies später jederzeit ändern.",
+		"create": "Erstellen",
+		"newRole": "Neuen Rollennamen eingeben...",
+		"roleName": "Rollenname",
+		"createSuccess": "Rolle {{roleName}} erfolgreich erstellt",
+		"cannotCreate": "Konnte {{roleName}} nicht erstellen"
+	},
+	"setupPermission": {
+		"title": "Schritt 2 von 3",
+		"setupPermissionTitle": "Berechtigungen einrichten",
+		"setupPermissionSuccessfully": "Berechtigungen erfolgreich eingerichtet",
+		"next": "Weiter",
+		"searchPermission": "Berechtigungen suchen"
+	},
+	"setupMember": {
+		"title": "Schritt 3 von 3",
+		"addMember": "Mitglied hinzufügen",
+		"description": "Weise diese Rolle deinen Mitgliedern zu. Mitglieder können mehr als eine Rolle haben.",
+		"finish": "Fertigstellen",
+		"addedMember": "Mitglied erfolgreich hinzugefügt",
+		"searchMembers": "Mitglieder suchen",
+		"deletedMember": "{{memberName}} erfolgreich entfernt",
+		"add": "Hinzufügen",
+		"noMembersFound": "Keine Mitglieder gefunden"
+	},
+	"roleDetail": {
+		"permissions": "Berechtigungen",
+		"members": "Mitglieder",
+		"role": "Rolle",
+		"roleName": "Rollenname",
+		"deleteRole": "Rolle löschen",
+		"deleteRoleSuccessfully": "Rolle {{roleName}} erfolgreich gelöscht",
+		"changesSaved": "Änderungen gespeichert",
+		"save": "Speichern",
+		"confirmSaveTitle": "Änderungen speichern?",
+		"confirmSaveContent": "Du hast Änderungen vorgenommen. Möchtest du diese speichern?",
+		"yes": "Ja",
+		"doNotSave": "Nicht speichern"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "Rollfarbe",
+		"titleBS": "Farbe wählen",
+		"reset": "Zurücksetzen",
+		"save": "Speichern"
+	},
+	"roleImagePicker": "Rollensymbol",
+	"notifyEveryone": "Benachrichtige alle, die die Berechtigung haben, diesen Kanal zu sehen.",
+	"removeImage": "Entfernen",
+	"allMembers": "Alle Mitglieder",
+	"permissionTitles": {
+		"administrator": "Administrator",
+		"view-channel": "Kanal ansehen",
+		"manage-channel": "Kanal verwalten",
+		"manage-clan": "Clan verwalten",
+		"manage-thread": "Thread verwalten",
+		"send-message": "Nachrichten senden",
+		"delete-message": "Nachrichten löschen",
+		"clan-owner": "Clan-Besitzer"
+	},
+	"permissionDescriptions": {
+		"administrator": "Ermöglicht es Mitgliedern, den gesamten Clan zu verwalten (Berechtigungen nur unterhalb des Besitzers).",
+		"view-channel": "Ermöglicht es Mitgliedern, öffentliche Kanäle zu sehen.",
+		"manage-channel": "Ermöglicht es Mitgliedern, Kanäle zu erstellen, zu bearbeiten oder zu löschen.",
+		"manage-clan": "Ermöglicht es Mitgliedern, die Clan-Einstellungen zu kontrollieren, Rollen und Kanäle zu verwalten sowie die Aktivitäten der Mitglieder zu überwachen, um eine effektive Verwaltung und eine gut organisierte Community zu gewährleisten.",
+		"manage-thread": "Ermöglicht es Mitgliedern, Threads in einem Kanal zu erstellen, zu bearbeiten oder zu löschen (einschließlich privater Threads).",
+		"send-message": "Ermöglicht es Mitgliedern, Nachrichten in öffentlichen Kanälen zu senden (einschließlich Threads und Diskussionen innerhalb dieser Kanäle).",
+		"delete-message": "Ermöglicht es Mitgliedern, Nachrichten in öffentlichen Kanälen zu löschen (einschließlich Threads und Diskussionen innerhalb dieser Kanäle).",
+		"notAvailable": "Berechtigungsbeschreibung nicht verfügbar"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "Nutze Rollen, um deine Clan-Mitglieder zu gruppieren und Berechtigungen zuzuweisen.",
+		"defaultPermissions": "Standardberechtigungen",
+		"everyoneDescription": "@everyone • gilt für alle Clan-Mitglieder",
+		"searchRoles": "Rollen suchen",
+		"createRole": "Rolle erstellen",
+		"membersUseColor": "Mitglieder nutzen die Farbe der höchsten Rolle, die sie in dieser Liste besitzen. Ziehe Rollen, um sie neu zu sortieren.",
+		"noRoles": "Keine Rollen vorhanden"
+	},
+	"roleManagement": {
+		"newRole": "NEUE ROLLE",
+		"editRole": "ROLLE BEARBEITEN",
+		"back": "ZURÜCK",
+		"display": "Anzeigen",
+		"permissions": "Berechtigungen",
+		"manageMembers": "Mitglieder verwalten",
+		"searchPermissions": "Berechtigungen suchen",
+		"failedToUpdateRoleOrder": "Reihenfolge der Rollen konnte nicht aktualisiert werden.",
+		"newRoleDefault": "Neue Rolle",
+		"roleName": "Rollenname",
+		"roleColour": "Rollfarbe",
+		"membersUseColour": "Mitglieder nutzen die Farbe der höchsten Rolle, die sie in der Rollenliste besitzen.",
+		"roleIcon": "Rollensymbol",
+		"roleIconDescription": "Lade ein Bild unter 256 KB hoch oder wähle ein benutzerdefiniertes Emoji aus diesem Clan. Wir empfehlen mindestens 64x64 Pixel. Mitglieder sehen das Icon ihrer höchsten Rolle, falls sie mehrere Rollen besitzen.",
+		"chooseImage": "Bild auswählen",
+		"removeIcon": "Icon entfernen",
+		"edit": "Bearbeiten",
+		"view": "Ansehen",
+		"delete": "Löschen",
+		"roleNameIsRequired": "Rollenname ist erforderlich"
+	}
+}

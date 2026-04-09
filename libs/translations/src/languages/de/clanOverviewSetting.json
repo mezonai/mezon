@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "Speichern"
+  },
+  "toast": {
+    "saveSuccess": "Erfolgreich gespeichert",
+    "notBlank": "Darf nicht leer sein",
+    "saveError": "Fehler beim Speichern"
+  },
+  "menu": {
+    "serverName": {
+      "title": "Clan-Name",
+      "errorMessage": "Bitte gib einen gültigen Clan-Namen ein (maximal 64 Zeichen, nur Buchstaben, Zahlen, _ oder -).",
+      "duplicateNameMessage": "Dieser Clan-Name existiert bereits. Bitte wähle einen anderen.",
+      "permissionDenied": "Du hast keine Berechtigung, das Clan-Hintergrundbild zu bearbeiten"
+    },
+    "inactive": {
+      "title": "Inaktivitäts-Einstellungen",
+      "description": "Mitglieder werden automatisch in diesen Kanal verschoben und ihr Mikrofon wird stummgeschaltet, wenn sie länger als die angegebene Zeit inaktiv sind. Diese Funktion gilt nicht für die Web-Version.",
+      "inactiveChannel": "Inaktivitätskanal",
+      "inactiveTimeout": "Inaktivitäts-Zeitlimit"
+    },
+    "systemMessage": {
+      "title": "Systemnachrichten-Einstellungen",
+      "description": "Dies ist der Kanal, in dem wir System-Event-Benachrichtigungen senden. Du kannst diese jederzeit deaktivieren.",
+      "channel": "Kanal",
+      "selectChannel": "Benachrichtigungskanal auswählen",
+      "channelDescription": "Dies ist der Kanal, in den die Systemnachrichten gesendet werden",
+      "welcomeRandom": "Sende eine zufällige Willkommensnachricht, wenn jemand diesem Clan beitritt",
+      "welcomeSticker": "Fordere Mitglieder auf, auf die Willkommensnachricht mit einem Sticker zu antworten",
+      "boostMessage": "Sende eine Nachricht, wenn jemand diesen Clan boostet",
+      "setupTips": "Sende hilfreiche Tipps zur Clan-Einrichtung",
+      "hideAuditLog": "Sende ein Log, wenn Aktionen im Clan durchgeführt werden",
+      "anonymousTitle": "Anonymitätsmodus verhindern",
+      "anonymousDescription": "Verhindert, dass Nutzer den Anonymitätsmodus verwenden"
+    },
+    "deleteServer": {
+      "title": "Clan löschen",
+      "delete": "Clan löschen"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "Standard-Benachrichtigungseinstellungen",
+      "description": "Diese Einstellung legt fest, ob Mitglieder, die ihre Benachrichtigungseinstellungen noch nicht explizit konfiguriert haben, für jede Nachricht in diesem Clan benachrichtigt werden. Für Clan-Communities empfehlen wir, die Benachrichtigungen auf '@Erwähnungen' zu setzen.",
+      "allMessages": "Alle Nachrichten",
+      "onlyMentions": "Nur @Erwähnungen"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "Mitglied erfolgreich entfernt",
+      "kickMemberFailed": "Mitglied konnte nicht entfernt werden",
+      "removeMemberThreadSuccess": "Mitglied aus dem Thread erfolgreich entfernt",
+      "removeMemberThreadFailed": "Mitglied konnte nicht aus dem Thread entfernt werden",
+      "transferOwnershipSuccess": "Inhaberschaft erfolgreich übertragen",
+      "transferOwnershipFailed": "Übertragung der Inhaberschaft fehlgeschlagen"
+    }
+  },
+  "action": {
+    "kick": "Entfernen",
+    "removeFromThread": "Aus dem Thread entfernen",
+    "manage": "Verwalten",
+    "transferOwnership": "Inhaberschaft übertragen",
+    "ban": "Sperren",
+    "unban": "Entsperren"
+  },
+  "threadRemoveModal": {
+    "title": "Aus dem Thread entfernen?",
+    "description": "Möchtest du {{username}} wirklich aus diesem Thread entfernen?",
+    "remove": "Entfernen",
+    "cancel": "Abbrechen"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Bist du sicher?"
+    }
+  }
+}

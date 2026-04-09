@@ -1,0 +1,25 @@
+{
+  "inbox": "Posteingang",
+  "tabs": {
+    "forYou": "Für dich",
+    "messages": "Nachrichten",
+    "mentions": "Erwähnungen",
+    "topics": "Diskussionen"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Hier ist noch nichts",
+      "description": "Komm zurück, um Benachrichtigungen über Ereignisse, Livestreams und vieles mehr zu erhalten."
+    },
+    "messages": {
+      "title": "Du hast alles gesehen!",
+      "protip": "Profi-Tipp:",
+      "description": "Öffne den Posteingang mit CTRL+I und markiere die erste Nachricht mit CTRL+Shift+E als gelesen."
+    },
+    "mentions": {
+      "title": "Du hast alles gesehen!",
+      "protip": "Profi-Tipp:",
+      "description": "Jedes Mal, wenn dich jemand erwähnt, wird dies hier für 7 Tage gespeichert."
+    }
+  }
+}

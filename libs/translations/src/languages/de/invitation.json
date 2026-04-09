@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Freunde zu {{target}} einladen",
+		"privateEvent": "Externes Event",
+		"privateRoom": "Meetingraum",
+		"clanInvite": "Clan-Einladung",
+		"sendLinkText": "Oder sende ihnen den {{type}}-Link",
+		"expiresIn": "Dein Einladungslink läuft nach {{time}} ab"
+	},
+	"expiration": {
+		"30minutes": "30 Minuten",
+		"1hour": "1 Stunde",
+		"6hours": "6 Stunden",
+		"12hours": "12 Stunden",
+		"1day": "1 Tag",
+		"7days": "7 Tage",
+		"never": "Nie"
+	},
+	"maxUses": {
+		"noLimit": "Unbegrenzt",
+		"1use": "1 Nutzung",
+		"5uses": "5 Nutzungen",
+		"10uses": "10 Nutzungen",
+		"25uses": "25 Nutzungen",
+		"50uses": "50 Nutzungen",
+		"100uses": "100 Nutzungen"
+	},
+	"generateLink": {
+		"expireAfter": "Läuft ab nach",
+		"maxNumberOfUses": "Maximale Anzahl der Nutzungen"
+	},
+	"buttons": {
+		"copy": "Kopieren",
+		"copied": "Kopiert",
+		"copyQR": "QR kopieren",
+		"editInviteLink": "Einladungslink bearbeiten",
+		"cancel": "Abbrechen",
+		"generateNewLink": "Neuen Link erstellen",
+		"invite": "Einladen",
+		"sent": "Gesendet"
+	},
+	"searchPlaceholder": "Freunde suchen",
+	"privateChannelDescription": "Dieser Kanal ist privat. Nur ausgewählte Mitglieder und Rollen können diesen Kanal sehen.",
+	"noResults": "Keine Ergebnisse",
+	"messages": {
+		"qrCopiedSuccess": "QR-Code erfolgreich kopiert!"
+	},
+	"errors": {
+		"createInviteLink": "Fehler beim Erstellen des Einladungslinks",
+		"copyToClipboard": "Kopieren in die Zwischenablage fehlgeschlagen",
+		"copyFailed": "Kopieren fehlgeschlagen"
+	},
+	"acceptModal": {
+		"title": "Clan beitreten",
+		"invitedToJoin": "Du wurdest eingeladen, beizutreten",
+		"memberCount": "{{count}} Mitglieder",
+		"memberCount_plural": "{{count}} Mitglieder",
+		"clanSettings": "Clan-Einstellungen",
+		"customizeAnytime": "Du kannst diese Einstellungen jederzeit anpassen",
+		"noThanks": "Nein, danke",
+		"acceptInvite": "Einladung annehmen",
+		"joining": "Tritt bei...",
+		"toast": {
+			"alreadyMember": "Du bist bereits Mitglied!"
+		}
+	}
+}
