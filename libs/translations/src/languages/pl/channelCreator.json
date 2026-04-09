@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Utwórz"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Nazwa kanału",
+			"placeholder": "nowy-kanał",
+			"errorMessage": "Proszę wprowadzić nazwę kanału (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+			"duplicateChannelName": "Nazwa kanału istnieje już w clanie. Proszę wprowadzić inną nazwę."
+		},
+		"channelPrivate": {
+			"title": "Prywatny kanał",
+			"descriptionText": "Tworząc prywatny kanał, tylko wybrani członkowie i role będą mogli zobaczyć ten kanał.",
+			"descriptionVoice": "Tworząc prywatny kanał głosowy, tylko wybrani członkowie i role będą mogli zobaczyć lub dołączyć do tego kanału."
+		},
+		"channelType": {
+			"title": "Typ kanału",
+			"text": {
+				"title": "Tekstowy",
+				"description": "Nadawaj zdjęcia, GIF-y, odznaki, opinie i żarty"
+			},
+			"voice": {
+				"title": "Głosowy",
+				"description": "Umów się razem z głosem, wideo i udostępnianiem ekranu"
+			},
+			"stream": {
+				"title": "Transmisja",
+				"description": "Udostępnij hobby"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Typ kanału głosowego",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Obrazy & Highlight",
+			"eventsTitle": "Wydarzenia",
+			"familyJourney": "Wydarzenia",
+			"cherishMoment": "Śledź ważne wydarzenia.",
+			"since": "OD",
+			"viewAlbum": "Zobacz Album",
+			"emptyTitle": "Twoja podróż jeszcze się nie zaczęła.",
+			"emptyDescription": "Utwórz swoje pierwsze wydarzenie, aby zacząć zbierać wspomnienia.",
+			"createFirstMilestone": "Utwórz pierwsze wydarzenie",
+			"selectYear": "Wybierz rok",
+			"special": "Wyjątkowy"
+		},
+		"familyEvents": {
+			"title": "Wydarzenia",
+			"eventsIn": "Wydarzenia w roku",
+			"noEvents": "Brak wydarzeń w tym roku",
+			"addToGallery": "Dodaj do galerii",
+			"inDays": "Za {{count}} dni"
+		},
+		"createMilestone": {
+			"headerTitle": "Nowe wydarzenie",
+			"cancel": "Anuluj",
+			"cancelAlertTitle": "Anulowanie",
+			"cancelAlertMessage": "Czy na pewno chcesz anulować to wydarzenie?",
+			"continueEditing": "Kontynuuj edycję",
+			"discard": "Odrzuć",
+			"eventTitleLabel": "Nazwa wydarzenia",
+			"eventTitlePlaceholder": "NP: Spotkanie zespołu, Premiera projektu",
+			"dateLabel": "Data",
+			"datePlaceholder": "Wybierz datę",
+			"storyLabel": "Opis",
+			"storyPlaceholder": "Wpisz opis wydarzenia...",
+			"memoriesLabel": "Obrazy/Wideo",
+			"uploadTitle": "Prześlij Obraz lub Wideo",
+			"uploadSubtitle": "Dodaj obraz lub wideo do wydarzenia",
+			"addMedia": "Dodaj obraz",
+			"tagMembersLabel": "Oznacz członków",
+			"saveButton": "Zapisz wydarzenie",
+			"requiredTitle": "Wymagane",
+			"requiredMessage": "Proszę wpisać nazwę wydarzenia",
+			"successTitle": "Sukces",
+			"successMessage": "Pomyślnie utworzono wydarzenie!",
+			"errorTitle": "Błąd",
+			"errorMessage": "Nie można wybrać obrazu",
+			"required": "Wymagane",
+			"optional": "Opcjonalne",
+			"titleHint": "Ustaw krótki, opisowy tytuł dla wydarzenia"
+		},
+		"eventDetail": {
+			"defaultTitle": "Szczegóły wydarzenia",
+			"featured": "WYRÓŻNIONE",
+			"calendar": "Kalendarz",
+			"descriptionPlaceholder": "Dodaj opis do tego wydarzenia...",
+			"addDescription": "Dodaj opis",
+			"cancel": "Anuluj",
+			"save": "Zapisz"
+		},
+		"albumDetail": {
+			"eventDetails": "Szczegóły wydarzenia",
+			"date": "Data",
+			"editEvent": "Edytuj wydarzenie",
+			"titleLabel": "Tytuł",
+			"titlePlaceholder": "Tytuł wydarzenia",
+			"descriptionLabel": "Opis",
+			"descriptionPlaceholder": "Opis wydarzenia",
+			"cancel": "Anuluj",
+			"save": "Zapisz",
+			"errorTitle": "Błąd",
+			"titleRequired": "Tytuł nie może być pusty",
+			"updateFailed": "Nie można zaktualizować wydarzenia",
+			"sessionNotAvailable": "Sesja nie jest dostępna",
+			"uploadFailed": "Nie można przesłać obrazu"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Typ kanału głosowego",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Obrazy & Highlight",
+		"familyJourney": "Wydarzenia",
+		"cherishMoment": "Śledź ważne wydarzenia.",
+		"since": "OD",
+		"viewAlbum": "Zobacz Album",
+		"emptyTitle": "Twoja podróż jeszcze się nie zaczęła.",
+		"emptyDescription": "Utwórz swoje pierwsze wydarzenie, aby zacząć zbierać wspomnienia.",
+		"createFirstMilestone": "Utwórz pierwsze wydarzenie",
+		"selectYear": "Wybierz rok",
+		"special": "Wyjątkowy"
+	},
+	"familyEvents": {
+		"title": "Wydarzenia",
+		"eventsIn": "Wydarzenia w roku",
+		"noEvents": "Brak wydarzeń w tym roku",
+		"addToGallery": "Dodaj do galerii",
+		"inDays": "Za {{count}} dni"
+	},
+	"createMilestone": {
+		"headerTitle": "Nowe wydarzenie",
+		"cancel": "Anuluj",
+		"cancelAlertTitle": "Anulowanie",
+		"cancelAlertMessage": "Czy na pewno chcesz anulować to wydarzenie?",
+		"continueEditing": "Kontynuuj edycję",
+		"discard": "Odrzuć",
+		"eventTitleLabel": "Nazwa wydarzenia",
+		"eventTitlePlaceholder": "NP: Spotkanie zespołu, Premiera projektu",
+		"dateLabel": "Data",
+		"datePlaceholder": "Wybierz datę",
+		"storyLabel": "Opis",
+		"storyPlaceholder": "Wpisz opis wydarzenia...",
+		"memoriesLabel": "Obrazy/Wideo",
+		"uploadTitle": "Prześlij Obraz lub Wideo",
+		"uploadSubtitle": "Dodaj obraz lub wideo do wydarzenia",
+		"addMedia": "Dodaj obraz",
+		"tagMembersLabel": "Oznacz członków",
+		"saveButton": "Zapisz wydarzenie",
+		"requiredTitle": "Wymagane",
+		"requiredMessage": "Proszę wpisać nazwę wydarzenia",
+		"successTitle": "Sukces",
+		"successMessage": "Pomyślnie utworzono wydarzenie!",
+		"errorTitle": "Błąd",
+		"errorMessage": "Nie można wybrać obrazu",
+		"required": "Wymagane",
+		"optional": "Opcjonalne",
+		"titleHint": "Ustaw krótki, opisowy tytuł dla wydarzenia"
+	},
+	"albumDetail": {
+		"eventDetails": "Szczegóły wydarzenia",
+		"date": "Data",
+		"editEvent": "Edytuj wydarzenie",
+		"titleLabel": "Tytuł",
+		"titlePlaceholder": "Tytuł wydarzenia",
+		"descriptionLabel": "Opis",
+		"descriptionPlaceholder": "Opis wydarzenia",
+		"cancel": "Anuluj",
+		"save": "Zapisz",
+		"errorTitle": "Błąd",
+		"titleRequired": "Tytuł nie może być pusty",
+		"updateFailed": "Nie można zaktualizować wydarzenia",
+		"sessionNotAvailable": "Sesja nie jest dostępna",
+		"uploadFailed": "Nie można przesłać obrazu"
+	},
+	"monthsShort": ["STY", "LUT", "MAR", "KWI", "MAJ", "CZE", "LIP", "SIE", "WRZ", "PAŹ", "LIS", "GRU"]
+}

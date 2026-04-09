@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Prześlij naklejkę",
+		"delete": "Usuń"
+	},
+	"modal": {
+		"uploadAFile": "Prześlij plik",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Plik musi być PNG lub GIF, maksymalnie 512KB",
+		"preview": "Podgląd",
+		"file": "Plik",
+		"thisCannotBeEdited": "Nie można edytować",
+		"browse": "Przeglądaj",
+		"chooseAFile": "Wybierz plik",
+		"stickerName": "Nazwa naklejki",
+		"exCatHug": "NP: cat_hug",
+		"thisIsForSale": "To jest na sprzedaż",
+		"neverMind": "Nie szkodzi",
+		"characters": "Nazwa musi mieć od 3 do 64 znaków"
+	},
+	"content": {
+		"description": "Dodaj maksymalnie 250 własnych naklejek, których może używać każdy w tym clanie.",
+		"requirements": "Wymagania przekazywania",
+		"reqType": "•  Może być statycznym obrazem (PNG) lub animowanym (GIF).",
+		"reqDim": "•  Musi mieć dokładnie 320 x 320 pikseli.",
+		"reqSize": "•  Nie większe niż 512KB.",
+		"available": "Mam {{left}} WOLNYCH MIEJSC NA NAKLEJKI"
+	},
+	"toast": {
+		"errorUpdating": "Błąd aktualizacji",
+		"errorSizeLimit": "Rozmiar obrazu przekracza 512KB",
+		"validateName": "Długość musi być od {{min}} do {{max}} znaków. Dozwolone są tylko litery, cyfry, _ i -"
+	},
+	"empty": {
+		"tip": "PORADA",
+		"voiceSticker": {
+			"title": "Nie ma jeszcze efektów dźwiękowych"
+		},
+		"sticker": {
+			"title": "Nie ma jeszcze naklejek"
+		}
+	}
+}

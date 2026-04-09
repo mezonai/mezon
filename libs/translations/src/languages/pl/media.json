@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "Przeszukaliśmy daleko. Niestety, nie znaleziono wyników",
+	"video": {
+		"error": {
+			"title": "Wideo niedostępne",
+			"cannotPlay": "Nie można odtworzyć wideo",
+			"loadingAborted": "Przekazywanie wideo przerwane",
+			"networkError": "Błąd sieci podczas pobierania wideo",
+			"codecNotSupported": "Kodek wideo nie jest obsługiwany na tej platformie",
+			"codecNotSupportedElectron": "Kodek wideo nie jest obsługiwany na tej platformie. Spróbuj pobrać wideo, aby odtworzyć za pomocą odtwarzacza systemowego.",
+			"formatNotSupported": "Format wideo nie jest obsługiwany",
+			"downloadButton": "Pobierz wideo",
+			"browserNotSupported": "Twoja przeglądarka nie obsługuje tagu wideo."
+		}
+	}
+}

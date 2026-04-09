@@ -1,0 +1,84 @@
+{
+	"friend": "Przyjaciel",
+	"addFriend": "Dodaj przyjaciela",
+	"friends": "Przyjaciele",
+	"clearSearch": "Wyczyść wyszukiwanie",
+	"search": "Szukaj",
+	"tabs": {
+		"all": "Wszystkie",
+		"online": "Online",
+		"pending": "Oczekujące",
+		"block": "Zablokowani"
+	},
+	"addFriendModal": {
+		"title": "DODAJ PRZYJACIÓŁ",
+		"description": "Możesz dodać przyjaciela za pomocą nazwy użytkownika Mezon",
+		"placeholder": "Wpisz nazwę użytkownika",
+		"tooltip": "Możesz dodać przyjaciela za pomocą nazwy użytkownika Mezon",
+		"sendRequest": "Wyślij prośbę o zaprzyjaźnienie",
+		"add": "Dodaj",
+		"alreadyFriends": "Jesteś już przyjacielem tego użytkownika!",
+		"waitAccept": "Wysłano prośbę o zaprzyjaźnienie do tego użytkownika!",
+		"invalidInput": "Proszę używać tylko cyfr, liter, podkreśleń _ lub kropek.",
+		"blockedUser": "Zablokowałeś tego użytkownika. Proszę odblokować, aby wysłać prośbę o zaprzyjaźnienie.",
+		"blockedUserMobile": "Zablokowałeś tego użytkownika. Odblokuj, aby wysłać prośbę o zaprzyjaźnienie.",
+		"waitingMessage": "Mezon oczekuje na Ciebie. Ale nie musisz czekać!"
+	},
+	"requestFailedPopup": {
+		"title": "Wysłanie prośby o zaprzyjaźnienie nie powiodło się",
+		"message": "Jesteś już przyjacielem tego użytkownika!",
+		"okay": "OK"
+	},
+	"activity": {
+		"coding": "Aktywność - Praca",
+		"music": "Aktywność - Życie",
+		"gaming": "Aktywność - Zabawa"
+	},
+	"friendMenu": {
+		"startVideoCall": "Rozpocznij połączenie wideo",
+		"startVoiceCall": "Rozpocznij połączenie głosowe",
+		"removeFriend": "Usuń przyjaciela",
+		"block": "Zablokuj",
+		"unblock": "Odblokuj",
+		"more": "Więcej",
+		"cancel": "Anuluj",
+		"accept": "Akceptuj",
+		"reject": "Odrzuć"
+	},
+	"removeFriendModal": {
+		"title": "Usuń '{{username}}'",
+		"description": "Czy na pewno chcesz usunąć <bold>{{username}}</bold> z listy przyjaciół?",
+		"cancel": "Anuluj",
+		"confirm": "Usuń przyjaciela"
+	},
+	"cancelRequestModal": {
+		"title": "Anuluj prośbę '{{username}}'",
+		"description": "Czy na pewno chcesz anulować prośbę o zaprzyjaźnienie do <bold>{{username}}</bold>?",
+		"cancel": "Anuluj",
+		"confirm": "Anuluj prośbę"
+	},
+	"rejectRequestModal": {
+		"title": "Odrzuć '{{username}}'",
+		"description": "Czy na pewno chcesz odrzucić prośbę o zaprzyjaźnienie od <bold>{{username}}</bold>?",
+		"cancel": "Anuluj",
+		"confirm": "Odrzuć"
+	},
+	"toast": {
+		"userBlockedSuccess": "Pomyślnie zablokowano użytkownika",
+		"userBlockedFailed": "Nie można zablokować użytkownika",
+		"userUnblockedSuccess": "Pomyślnie odblokowano użytkownika",
+		"userUnblockedFailed": "Nie można odblokować użytkownika"
+	},
+	"statusTapListFriends": {
+		"all": "Wygląda na to, że jest tu pusto! Zacznij od kilku przyjaciół, aby rozpocząć konwersację.",
+		"online": "Jest cicho! Dlaczego nie rozpocząć konwersacji i sprawdzić, kto jest tutaj?",
+		"pending": "To miejsce, gdzie znajdziesz prośby o zaprzyjaźnienie, które wysłałeś i otrzymałeś.",
+		"block": "Nie zablokowałeś nikogo."
+	},
+	"statusTapSearchFriends": {
+		"all": "Żaden przyjaciel nie pasuje do Twojego wyszukiwania. Spróbuj innej nazwy.",
+		"online": "Żaden użytkownik online nie pasuje do Twojego wyszukiwania. Spróbuj innej nazwy.",
+		"pending": "Żadna prośba o zaprzyjaźnienie nie pasuje do Twojego wyszukiwania. Proszę sprawdzić nazwę lub spróbować ponownie.",
+		"block": "Żaden zablokowany użytkownik nie pasuje do Twojego wyszukiwania. Spróbuj innej nazwy."
+	}
+}

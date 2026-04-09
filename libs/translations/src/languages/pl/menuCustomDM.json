@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Dostosuj grupę",
+  "inviteLinks": "Linki zaproszeń",
+  "leaveGroup": "Opuść grupę",
+  "closeDM": "Zamknij wiadomość",
+  "groupName": "Nazwa grupy",
+  "save": "Zapisz",
+  "removeAvatar": "Usuń obraz",
+  "invalidGroupName": "Nieprawidłowa nazwa grupy",
+  "uploadImage": "Prześlij obraz",
+  "toast": {
+    "leaveGroupError": "Błąd opuszczania grupy: {{error}}"
+  }
+}

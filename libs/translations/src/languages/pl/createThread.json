@@ -1,0 +1,24 @@
+{
+	"threads": "Wątki",
+	"emptyThread": {
+		"textNoThread": "Brak wątków",
+		"textNotify": "Skup się na konwersacji z wątkiem - tymczasowym kanałem tekstowym.",
+		"createThreads": "Utwórz wątek"
+	},
+	"otherThreads": "STARSZE WĄTKI",
+	"errorMessage": "Proszę wprowadzić poprawną nazwę wątku (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+	"threadName": "Nazwa wątku",
+	"privateThread": "Prywatny wątek",
+	"onlyPeopleInviteThread": "Tylko zaproszeni przez Ciebie członkowie i moderatorzy mogą zobaczyć ten wątek",
+	"newThread": "Nowy wątek",
+	"joinedThreads": "dołączono wątków",
+	"joinedThread": "dołączono wątek",
+	"otherActiveThreads": "inne aktywne wątki",
+	"olderThreads": "starsze wątki",
+	"searchThreads": "wyszukaj wątki",
+	"searchThread": "wyszukaj wątek",
+	"threadFailed": {
+		"title": "Tworzenie wątku nie powiodło się",
+		"content": "Nie znaleziono wątku lub nie masz uprawnień do aktualizacji"
+	}
+}

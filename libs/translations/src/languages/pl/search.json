@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Szukaj członków",
+  "searchActions": "Szukaj działań",
+  "allUsers": "Wszyscy użytkownicy",
+  "noResults": {
+    "title": "Nic nie ma!",
+    "description": "Czy wpisałeś coś źle?"
+  }
+}

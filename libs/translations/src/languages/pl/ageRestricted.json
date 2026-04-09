@@ -1,0 +1,14 @@
+{
+  "title": "Kanał ograniczony wiekowo",
+  "description": "Ten kanał zawiera treści dla dorosłych i jest oznaczony jako ograniczony wiekowo. Czy chcesz kontynuować?",
+  "continue": "Kontynuuj",
+  "nope": "Nie",
+  "confirmBirthdayTitle": "Proszę potwierdzić datę urodzenia",
+  "confirmBirthdayMessage": "Dla zapewnienia bezpieczeństwa użytkowników, musimy zweryfikować Twój wiek. Zapytamy o to tylko raz.",
+  "submit": "Potwierdź",
+  "ageRestrictedForm": {
+    "title": "Proszę potwierdzić datę urodzenia",
+    "description": "Dla zapewnienia bezpieczeństwa użytkowników, musimy zweryfikować Twój wiek. Zapytamy o to tylko raz.",
+    "submit": "Potwierdź"
+  }
+}

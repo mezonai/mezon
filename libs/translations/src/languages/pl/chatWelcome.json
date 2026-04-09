@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Kliknij Uruchom aplikację, aby rozpocząć",
+		"inviteFriends": "Zaproś swoich przyjaciół",
+		"sendFirstMessage": "Wyślij swoją pierwszą wiadomość",
+		"downloadApp": "Pobierz aplikację Mezon",
+		"createChannel": "Utwórz swój kanał"
+	},
+	"welcome": {
+		"welcomeToChannel": "Witaj w #{{channelName}}",
+		"startOfChannel": "To jest początek kanału #{{channelName}} {{channelType}}",
+		"startOfThread": "Rozpoczęte przez {{username}}",
+		"welcomeToGroup": "Witaj w grupie {{groupName}}.",
+		"beginningOfDM": "To jest początek Twojej konwersacji z {{userName}}",
+		"editGroup": "Edytuj grupę",
+		"private": "prywatny",
+		"friendRequestSent": "Wysłano zaproszenie do zaprzyjaźnienia:",
+		"addFriend": "Dodaj przyjaciela",
+		"removeFriend": "Usuń przyjaciela",
+		"accept": "Akceptuj",
+		"ignore": "Ignoruj",
+		"friendRequestSentButton": "Wysłano zaproszenie do zaprzyjaźnienia",
+		"block": "Zablokuj",
+		"unblock": "Odblokuj"
+	},
+	"toast": {
+		"userBlockedSuccess": "Pomyślnie zablokowano użytkownika",
+		"failedToBlock": "Nie można zablokować użytkownika",
+		"userUnblockedSuccess": "Pomyślnie odblokowano użytkownika",
+		"failedToUnblock": "Nie można odblokować użytkownika"
+	}
+}

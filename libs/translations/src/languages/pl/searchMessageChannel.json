@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Dołącz",
+	"textChannels": "Kanały tekstowe",
+	"voiceChannels": "Kanały głosowe",
+	"streamingChannels": "Kanały streamingu",
+	"search": "Szukaj",
+	"filterResults": "Filtruj wyniki...",
+	"members": "Członkowie",
+	"channels": "Kanały",
+	"media": "Media",
+	"pins": "Przypięte",
+	"in": "w:",
+	"Messages": "Wiadomości",
+	"filterOptions": {
+		"fromUser": "Od konkretnego użytkownika",
+		"mentionUser": "Wzmiankuj kogoś",
+		"inChannel": "W konkretnym kanale"
+	},
+	"cancel": "Anuluj",
+	"searchPlaceholder": "Szukaj",
+	"searchFor": "Szukaj:",
+	"enter": "Enter",
+	"searchOptions": "Opcje wyszukiwania",
+	"fromUser": "Od użytkownika",
+	"inChannel": "W kanale",
+	"hasContent": "Ma zawartość",
+	"mentionsUser": "Wzmiankuj kogoś",
+	"emptySearch": {
+		"title": "Przeszukaliśmy wszędzie. Niestety, nie znaleziono wyników."
+	},
+	"learnMore": "Dowiedz się więcej",
+	"searchOptionsData": {
+		"fromUserShort": "szukaj według nadawcy",
+		"mentionsUserShort": "szukaj według osoby wzmiankowanej",
+		"hasContentShort": "szukaj według zawartości z załącznikiem",
+		"channelShort": "szukaj w kanale"
+	},
+	"prefixes": {
+		"from": "od:",
+		"mentions": "wzmianki:",
+		"has": "ma:",
+		"in": "w:"
+	},
+	"mentionPrefixes": {
+		"from": "od:",
+		"mentions": "wzmianki:",
+		"has": "ma:",
+		"in": "w:"
+	},
+	"allChannels": "Wszystkie kanały",
+	"searching": "Szukanie...",
+	"noResults": "Brak wyników",
+	"resultsCount": "{{count}} Wyników",
+	"jump": "Przejdź",
+	"hasOptions": {
+		"video": "wideo",
+		"link": "link",
+		"image": "obraz"
+	}
+}

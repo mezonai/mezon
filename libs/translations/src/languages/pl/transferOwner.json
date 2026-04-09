@@ -1,0 +1,9 @@
+{
+	"title": "Przekaz właścicielstwa Clanu",
+	"description": "To przekaza właścicielstwo {{clanName}} do {{memberName}}",
+	"confirmation": "Potwierdzam, że poprzez przekazanie właścicielstwa tego clanu do {{memberName}}, oficjalnie należy on do nich.",
+	"buttons": {
+		"transfer": "Przekaz właścicielstwa",
+		"cancel": "Anuluj"
+	}
+}

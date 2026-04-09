@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Powiadomienia",
+	"tabNotify": {
+		"forYou": "Dla Ciebie",
+		"mention": "Wzmianki",
+		"messages": "Wiadomości",
+		"topics": "Dyskusje tematyczne",
+		"notificationSettings": "Ustawienia powiadomień"
+	},
+	"removeNotification": "Usuń powiadomienie",
+	"nothingHere": "Nic tu nie ma",
+	"comeBackNotify": "Wróć, aby otrzymywać powiadomienia o wydarzeniach i więcej",
+	"repliedTo": "Odpowiedz: ",
+	"sender": "Nadawca: ",
+	"seeWhenAnswersAppear": "Zobacz, kiedy pojawią się odpowiedzi",
+	"enablePushNotifications": "Włącz powiadomienia push",
+	"permissionAlert": {
+		"turnOnNotifications": "Włącz powiadomienia",
+		"permissionDescription": "Proszę zezwolić Mezon na wysyłanie powiadomień, aby utrzymać kontakt z przyjaciółmi i rodziną.",
+		"openSettings": "Otwórz Ustawienia",
+		"features": {
+			"newMessages": {
+				"title": "Otrzymuj powiadomienia o nowych wiadomościach",
+				"description": "Aktualizacje, gdy przyjaciele wysyłają Ci wiadomości"
+			},
+			"mentions": {
+				"title": "Znajdź, gdy jesteś wzmiankowany w grupie",
+				"description": "Nigdy nie przegap, gdy ktoś Cię wzmiankuje"
+			},
+			"muteControl": {
+				"title": "Wycisz powiadomienia dla konkretnych konwersacji i typów konwersacji",
+				"description": "Kontroluj, jakie powiadomienia otrzymujesz"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Uprawnienia powiadomień",
+		"permissionDenied": "Uprawnienia powiadomień zostały odrzucone.",
+		"cancel": "Anuluj",
+		"ok": "OK"
+	},
+	"andYou": "i Ty",
+	"topicAndYou": "Dyskusja tematyczna i Ty",
+	"unknowClan": "Nie jesteś już członkiem tej konwersacji"
+}

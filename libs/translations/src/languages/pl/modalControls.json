@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "reset": "Zresetuj",
+    "close": "Zamknij",
+    "kick": "Wyrzuć"
+  },
+  "form": {
+    "required": "Pole wymagane",
+    "error": "Błąd"
+  },
+  "kickMember": {
+    "title": "Wyrzuć {{username}} z {{clanName}}",
+    "description": "Czy na pewno chcesz wyrzucić @{{username}} z {{clanName}}? Będą mogli dołączyć ponownie z nowym zaproszeniem.",
+    "reasonLabel": "Powód wyrzucenia"
+  }
+}

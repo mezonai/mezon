@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Przegląd społeczności",
+		"deleteClan": "Usuń clan",
+		"sectionTitles": {
+			"apps": "Aplikacje",
+			"moderation": "Moderacja",
+			"emotions": "Emocje"
+		},
+		"items": {
+			"overview": "Przegląd",
+			"roles": "Role",
+			"emoji": "Emoji",
+			"imageStickers": "Naklejki obrazowe",
+			"voiceStickers": "Naklejki głosowe",
+			"categoryOrder": "Kolejność kategorii",
+			"integrations": "Integracje",
+			"auditLog": "Dziennik kontroli",
+			"onboarding": "Wprowadzenie",
+			"enableCommunity": "Włącz społeczność"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Minimalny rozmiar: 128x128",
+		"recommendedSize": "Zalecamy użycie obrazu o rozmiarze co najmniej 512x512 dla clanu.",
+		"uploadImage": "Prześlij obraz",
+		"clanName": "Nazwa Clanu",
+		"namePlaceholder": "Nazwa clanu...",
+		"validationError": "Proszę wprowadzić nazwę kanału (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+		"modal": {
+			"title": "Dozwolone są tylko pliki obrazów",
+			"content": "Przesyłaj tylko pliki w formacie (JPEG, PNG), dziękujemy!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Uwaga - masz niezapisane zmiany!",
+		"reset": "Zresetuj",
+		"saveChanges": "Zapisz zmiany"
+	},
+	"clanBanner": {
+		"title": "Baner Clanu",
+		"description": "Ten obraz będzie wyświetlany na górze listy kanałów.",
+		"recommendedSize": "Zalecany minimalny rozmiar to 960x540 z proporcją 16:9.",
+		"uploadBackground": "Prześlij tło",
+		"chooseImage": "Wybierz obraz",
+		"modal": {
+			"title": "Dozwolone są tylko pliki obrazów",
+			"content": "Przesyłaj tylko pliki w formacie (JPEG, PNG), dziękujemy!"
+		}
+	},
+	"systemMessages": {
+		"title": "Kanał wiadomości systemowych",
+		"description": "To jest kanał, do którego wysyłamy wiadomości o wydarzeniach systemowych. Można wyłączyć w dowolnym momencie",
+		"welcomeRandom": "Wyślos losową wiadomość powitalną, gdy ktoś dołącza do tego serwera.",
+		"welcomeSticker": "Poproś członków o odpowiedź na wiadomość powitalną za pomocą naklejki.",
+		"boostMessage": "Wyślij wiadomość, gdy ktoś podnosi poziom tego serwera.",
+		"setupTips": "Wyślij przydatne wskazówki dotyczące konfiguracji serwera.",
+		"auditLog": "Wyślij dziennik, gdy zostanie wykonane działanie z clanem",
+		"anoTitle": "Tryb anonimowy",
+		"anoDesc": "Zapobiegaj użytkownikom używającym trybu anonimowego"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Aplikacje towarzyszące gier",
+			"popularTrending": "Popularne i modne aplikacje",
+			"serverMiniGames": "Mini-gry serwera",
+			"rolePlayingFavorites": "Ulubione gry RPG"
+		},
+		"inServers": "w {{count}} serwerach"
+	},
+	"emoji": {
+		"uploadInstructions": "INSTRUKCJE PRZEKAZYWANIA",
+		"title": "Emoji",
+		"description": "Dodaj maksymalnie 250 własnych emoji, których mogą używać wszyscy w tym serwerze.",
+		"uploadRequirements": "WYMAGANIA PRZEKAZYWANIA",
+		"requirements": {
+			"fileType": "Typ pliku: JPEG, PNG, GIF",
+			"fileSize": "Zalecany rozmiar pliku: 256 KB",
+			"dimensions": "Zalecane rozmiary: 128x128",
+			"naming": "Nazewnictwo: Nazwa emoji musi mieć co najmniej 2 znaki i może zawierać tylko znaki literowe i cyfrowe oraz podkreślenie"
+		},
+		"uploadEmoji": "Prześlij emoji"
+	},
+	"stickers": {
+		"uploadInstructions": "INSTRUKCJE PRZEKAZYWANIA",
+		"description": "Naklejki mogą być statyczne (PNG) lub animowane (APNG, GIF). Naklejki muszą mieć dokładnie 320 x 320 pikseli i nie mogą być większe niż 512KB. Automatycznie zmniejszymy rozmiar Twoich statycznych naklejek PNG i animowanych GIF.",
+		"uploadHere": "Prześlij tutaj!",
+		"customizeMessage": "Dostosuj te wspaniałe naklejki do swoich preferencji",
+		"uploadSticker": "Prześlij naklejkę"
+	},
+	"deleteClanTitle": "Usuń '{{clanName}}'"
+}

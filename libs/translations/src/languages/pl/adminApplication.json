@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Utwórz nowe zastosowanie",
+			"bot": "Utwórz nowego bota"
+		},
+		"form": {
+			"type": {
+				"label": "TYP",
+				"options": {
+					"createApplication": "Utwórz zastosowanie",
+					"createBot": "Utwórz bota"
+				}
+			},
+			"name": {
+				"label": "NAZWA"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Ukryty bot",
+			"agreement": {
+				"text": "Klikając Utwórz, zgadzasz się na",
+				"termsOfService": "Warunki usługi dewelopera",
+				"policy": "Polityka dewelopera",
+				"and": "i"
+			}
+		},
+		"buttons": {
+			"cancel": "Anuluj",
+			"create": "Utwórz",
+			"creating": "Tworzenie...",
+			"confirm": "Potwierdź"
+		},
+		"errors": {
+			"nameRequired": "Nazwa jest wymagana, aby utworzyć nowe {type}.",
+			"urlRequired": "URL jest wymagany, aby utworzyć nowe zastosowanie.",
+			"invalidUrl": "Proszę wprowadzić poprawny URL (np. https://przyklad.com).",
+			"createFailed": "Nie można utworzyć zastosowania lub brakuje ID w odpowiedzi",
+			"unexpectedError": "Wystąpił nieoczekiwany błąd.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "W trybie ukrytym bot może otrzymywać wszystkie wiadomości wysyłane do twórcy, ale nie może wysyłać wiadomości."
+		},
+		"shadowConfirm": {
+			"title": "Czy na pewno chcesz włączyć tryb Ukrytego Bota?",
+			"message": "W tym trybie bot może otrzymywać wszystkie wiadomości wysyłane do twórcy, ale nie może wysyłać wiadomości."
+		}
+	},
+	"sidebar": {
+		"menu": "Menu",
+		"closeMenu": "Zamknij menu"
+	},
+	"tabs": {
+		"generalInformation": "Informacje ogólne",
+		"installation": "Instalacja",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Informacje ogólne",
+		"subtitle": "Jak powinniśmy nazwać Twój produkt? Co genialnego potrafi? Jaką ikonę powinien reprezentować w Mezon? Opowiedz nam o tym tutaj!",
+		"agreement": {
+			"text": "Klikając Utwórz, zgadzasz się na",
+			"adminTerms": "Warunki usługi administracyjnej",
+			"adminPolicy": "Polityka administracyjna",
+			"and": "i"
+		},
+		"appIcon": {
+			"label": "Ikona zastosowania",
+			"remove": "Usuń",
+			"size": "Rozmiar: {size}"
+		},
+		"form": {
+			"name": "Nazwa",
+			"url": "URL",
+			"botShadow": "Ukryty bot",
+			"description": {
+				"label": "Opis (maksymalnie 400 znaków)",
+				"subtitle": "Twój opis pojawi się w sekcji Informacje o Bocie ",
+				"placeholder": "Napisz krótki opis swojego bota"
+			},
+			"appId": "ID Bota",
+			"appToken": "Token "
+		},
+		"token": {
+			"newTokenWarning": "To jest Twój nowy token. Skopiuj go i przechowuj bezpiecznie, nie zobaczysz go ponownie.",
+			"securityInfo": "Ze względów bezpieczeństwa token może być wyświetlony tylko raz, gdy został utworzony. Jeśli zapomniałeś lub utraciłeś dostęp do tokena, proszę utworzyć nowy token."
+		},
+		"buttons": {
+			"copy": "Kopiuj",
+			"copied": "Skopiowano!",
+			"copyToken": "Kopiuj Token",
+			"resetToken": "Zresetuj Token",
+			"delete": "Usuń "
+		},
+		"errors": {
+			"invalidUrl": "Proszę wprowadzić poprawny URL (np. https://przyklad.com).",
+			"clientNotInitialized": "Klient lub plik nie został zainicjowany",
+			"resetTokenFailed": "Nie można zresetować tokena:"
+		}
+	},
+	"installation": {
+		"title": "Instalacja",
+		"subtitle": "Wybierz sposób, w jaki użytkownicy zainstalują Twoje zastosowanie. Utwórz link instalacyjny, wybierz konteksty instalacji do wsparcia i określ zakresy oraz uprawnienia, których chcesz zażądać.",
+		"installLink": {
+			"title": "Link instalacyjny",
+			"description": "Użyj dostarczonego linku instalacyjnego lub zarejestruj niestandardowy link. Jeśli wybierzesz niestandardowy link, użytkownicy dodający Twoje zastosowanie zostaną przekierowani do Twojego URL zamiast do procesu Dodaj Zastosowanie w Mezon.",
+			"option": "Link dostarczony przez Mezon"
+		},
+		"buttons": {
+			"copy": "Kopiuj",
+			"copied": "Skopiowano!"
+		},
+		"loading": "Ładowanie danych zastosowania...",
+		"notFound": "Nie znaleziono danych zastosowania"
+	},
+	"clientInformation": {
+		"title": "Informacje o kliencie",
+		"clientId": "ID klienta",
+		"clientSecret": "Sekret klienta",
+		"hiddenForSecurity": "Ukryte ze względów bezpieczeństwa",
+		"resetSecret": "Zresetuj sekret",
+		"publicClient": {
+			"title": "Publiczny klient",
+			"description": "Publiczny klient nie może zachować bezpieczeństwa informacji logowania klienta (np. aplikacji desktop/mobile nie używającej serwera do wykonywania żądań)"
+		},
+		"buttons": {
+			"copy": "Kopiuj",
+			"copied": "Skopiowano!"
+		},
+		"resetSecretPopup": {
+			"title": "Stworzyć ponownie klucz tajny?",
+			"warning": "Twoje zastosowanie przestanie działać, aż zaktualizujesz klucz tajny w kodzie zastosowania.",
+			"nevermind": "Nie szkodzi",
+			"confirm": "Dobrze!"
+		},
+		"toasts": {
+			"addRedirectUri": "Proszę dodać co najmniej jeden redirect URI przed zresetowaniem klucza tajnego!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Panel",
+		"applications": "Zastosowania",
+		"teams": "Zespoły",
+		"embedDebugger": "Debugowanie osadzania",
+		"document": "Dokument"
+	},
+	"applicationsPage": {
+		"title": "Zastosowania",
+		"newApplicationButton": "Utwórz nowe zastosowanie lub bota",
+		"develop": "Rozwijaj",
+		"subtitle": ", aby dostosować i rozszerzyć Mezon dla milionów użytkowników.",
+		"appsLinkText": "zastosowania",
+		"sortBy": "Sortuj według:",
+		"sortOptions": {
+			"dateOfCreation": "Data utworzenia",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Mały",
+			"large": "Duży"
+		},
+		"sections": {
+			"myApplications": "Moje zastosowania",
+			"myBots": "Moje boty"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Użyj Mezon jako systemu autoryzacji lub użyj naszego API w imieniu swoich użytkowników. Dodaj redirect URI, wybierz zakres, rzuć kością D20 dla szczęścia i zacznij!",
+		"learnMore": "Dowiedz się więcej o OAuth2",
+		"generator": {
+			"title": "Generator URL OAuth2",
+			"description": "Utwórz link zaproszenia do swojego zastosowania, wybierając niezbędne zakresy i uprawnienia do działania. Następnie udostępnij URL innym!",
+			"scopes": "Zakresy"
+		},
+		"redirects": {
+			"title": "Przekierowania",
+			"description": "Musisz określić co najmniej jeden URI, aby uwierzytelnienie działało. Jeśli przekażesz URI w żądaniu OAuth, musi ono dokładnie pasować do jednego z URI, które wprowadziłeś tutaj.",
+			"addRedirect": "Dodaj przekierowanie",
+			"toasts": {
+				"fillAllInputs": "Proszę wypełnić wszystkie pola poprawnymi URI!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Mają puste pola wprowadzania!",
+			"invalidUris": "URI musi być poprawne!",
+			"redirectUriRequired": "Redirect URI jest wymagany!"
+		}
+	},
+	"backToApps": "Powrót do Zastosowań",
+	"selectLabel": "WYBIERZ {{type}}",
+	"settings": "USTAWIENIA",
+	"flows": {
+		"title": "Potoki czatu",
+		"hasTokenInfo": "Musisz skonfigurować Token przed utworzeniem nowego potoku bota.",
+		"setToken": "Ustaw Token",
+		"addFlow": "Dodaj potok",
+		"appTokenModal": {
+			"title": "Token Zastosowania",
+			"saveButton": "Zapisz"
+		},
+		"toasts": {
+			"errorLoading": "Błąd podczas ładowania listy potoków"
+		}
+	},
+	"teams": {
+		"title": "Zespoły"
+	},
+	"embed": {
+		"title": "Debugowanie osadzania"
+	},
+	"small": "Mały",
+	"large": "Duży"
+}

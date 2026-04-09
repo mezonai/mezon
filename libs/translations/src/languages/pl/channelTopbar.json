@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Kanały",
+		"members": "Członkowie",
+		"guideClan": "Przewodnik"
+	},
+	"tooltips": {
+		"clickToEdit": "Kliknij, aby edytować grupę",
+		"startVoiceCall": "Rozpocznij połączenie głosowe",
+		"startVideoCall": "Rozpocznij połączenie wideo",
+		"showMemberList": "Pokaż listę członków",
+		"hideMemberList": "Ukryj listę członków",
+		"showUserProfile": "Pokaż profil użytkownika",
+		"hideUserProfile": "Ukryj profil użytkownika",
+		"files": "Pliki",
+		"canvas": "Płótno",
+		"threads": "Wątki",
+		"notificationSettings": "Ustawienia powiadomień",
+		"pinnedMessages": "Przypięte wiadomości",
+		"members": "Członkowie",
+		"showChat": "Pokaż czat",
+		"hideChat": "Ukryj czat",
+		"addFriendsToDM": "Dodaj przyjaciół do DM",
+		"jump": "Przejdź",
+		"gallery": "Galeria",
+		"timelineView": "Przełącz na widok linii czasu",
+		"defaultView": "Przełącz na widok czatu"
+	},
+	"directMessage": "Wiadomość bezpośrednia",
+	"activeThreads": "Aktywne wątki",
+	"joinedThreadsLast30Days": "Dołączone wątki (ostatnie 30 dni)",
+	"olderThreads": "Starsze wątki",
+	"loading": "Ładowanie...",
+	"topic": "Temat",
+	"invoice": "W kanale głosowym",
+	"reactions": "Reakcje",
+	"callMessages": {
+		"startedVoiceCall": "Rozpoczęto połączenie głosowe",
+		"startedVideoCall": "Rozpoczęto połączenie wideo"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "Brak ID kanału grupowego",
+		"dmChannelIdMissing": "Brak ID kanału wiadomości bezpośredniej",
+		"youAreOnAnotherCall": "Jesteś już na innym połączeniu"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "Ten kanał nie ma jeszcze żadnych przypiętych wiadomości.",
+		"protip": "PORADA:",
+		"emptyDescription": "Użytkownicy z uprawnieniami 'Zarządzaj wiadomościami' mogą przypinać wiadomości z menu kontekstowego.",
+		"unpinMessage": "Odepnij wiadomość",
+		"unpinConfirmation": "Czy na pewno chcesz usunąć tę przypiętą wiadomość?",
+		"cancel": "Anuluj",
+		"unpinIt": "Odepnij"
+	},
+	"threads": {
+		"emptyTitle": "Brak wątków.",
+		"emptyDescription": "Skup się na konwersacji z wątkiem - tymczasowym kanałem tekstowym.",
+		"createThread": "Utwórz wątek"
+	},
+	"canvas": {
+		"emptyTitle": "Brak płótn.",
+		"emptyDescription": "Skup się na konwersacji z płótnem - tymczasowym kanałem tekstowym.",
+		"createCanvas": "Utwórz Płótno"
+	},
+	"files": {
+		"emptyTitle": "Brak plików.",
+		"emptyDescription": "Na razie nie udostępniono żadnych plików w tym kanale.",
+		"searchPlaceholder": "Szukaj nazw plików"
+	},
+	"fileItem": {
+		"download": "Pobierz",
+		"sharedBy": "Udostępnione przez {{username}} {{time}}",
+		"attachmentFailed": "Nie można załączyć pliku."
+	},
+	"notificationSetting": {
+		"muteChannel": "Wycisz kanał",
+		"unmuteChannel": "Odcisz kanał",
+		"mutedUntil": "Wyciszone do {{date}}",
+		"useCategoryDefault": "Użyj domyślnych ustawień kategorii",
+		"muteOptions": {
+			"for15Minutes": "Przez 15 minut",
+			"for1Hour": "Przez 1 godzinę",
+			"for3Hours": "Przez 3 godziny",
+			"for8Hours": "Przez 8 godzin",
+			"for24Hours": "Przez 24 godziny",
+			"untilTurnedBackOn": "Do momentu ponownego włączenia"
+		}
+	},
+	"gallery": {
+		"title": "Galeria",
+		"sentDate": "Data wysłania",
+		"fromDate": "Od dnia",
+		"toDate": "Do dnia",
+		"filters": {
+			"all": "Wszystkie",
+			"images": "Obrazy",
+			"videos": "Wideo"
+		},
+		"dateRange": {
+			"from": "Od {{date}}",
+			"to": "Do {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Data rozpoczęcia musi być poprzedzać lub być równa data zakończenia"
+		},
+		"buttons": {
+			"clearAll": "Wyczyść wszystko",
+			"apply": "Zastosuj",
+			"clearDateFilter": "Wyczyść filtr daty"
+		},
+		"emptyState": {
+			"noMediaFiles": "Nie znaleziono plików multimedialnych",
+			"noMediaFilesDateRange": "Nie znaleziono plików multimedialnych dla wybranego zakresu dat",
+			"noImages": "Nie znaleziono obrazów",
+			"noVideos": "Nie znaleziono wideo"
+		},
+		"loading": {
+			"olderImages": "Ładowanie starszych obrazów...",
+			"newerImages": "Ładowanie nowszych obrazów...",
+			"filterChange": "Ładowanie multimediów..."
+		},
+		"filesCount": "{{count}} plików",
+		"imageError": "Błąd"
+	},
+	"modals": {
+		"threads": {
+			"title": "Wątki",
+			"create": "Utwórz",
+			"results": "Wyniki"
+		},
+		"canvas": {
+			"title": "Płótno",
+			"create": "Utwórz"
+		},
+		"files": {
+			"title": "Pliki"
+		},
+		"pinnedMessages": {
+			"title": "Przypięte wiadomości"
+		}
+	},
+	"createThread": {
+		"newThread": "Nowy wątek",
+		"inviteMessage": "Możesz zapraszać nowych członków, oznaczając ich @.",
+		"validation": {
+			"invalidChannelName": "Proszę wprowadzić poprawną nazwę wątku (maksymalnie 65 znaków, tylko litery, cyfry, _ lub -).",
+			"threadNameRequired": "Nazwa wątku jest wymagana.",
+			"starterMessageRequired": "Wiadomość startowa jest wymagana."
+		},
+		"threadName": "Nazwa wątku",
+		"enterThreadName": "Wpisz nazwę wątku",
+		"privateThread": "Prywatny wątek",
+		"privateThreadDescription": "Tylko zaproszeni przez Ciebie członkowie i moderatorzy mogą zobaczyć",
+		"toast": {
+			"threadNameTooShort": "Nazwa wątku musi mieć więcej niż 3 znaki",
+			"threadNameExists": "Nazwa wątku już istnieje",
+			"initialMessageRequired": "Potrzebna jest początkowa wiadomość, aby rozpocząć wątek.",
+			"messageTooLong": "Wiadomość przekracza limit 4000 znaków",
+			"messageLimitExceeded": "Wiadomość przekracza limit {{limit}} znaków"
+		},
+		"placeholder": {
+			"threadName": "Wpisz nazwę wątku"
+		}
+	},
+	"moreFile": "kolejny plik",
+	"moreFiles": "kolejne pliki"
+}

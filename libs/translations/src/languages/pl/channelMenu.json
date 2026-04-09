@@ -1,0 +1,105 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Oznacz jako przeczytane"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Zaproś",
+          "markFavorite": "Dodaj do ulubionych",
+          "unMarkFavorite": "Usuń z ulubionych",
+          "copyLink": "Kopiuj link"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Wycisz kanał",
+          "unMuteChannel": "Odcisz kanał",
+          "muteThread": "Wycisz wątek",
+          "unMuteThread": "Odcisz wątek",
+          "notification": "Ustawienia powiadomień",
+          "for15Minutes": "Przez 15 minut",
+          "for1Hour": "Przez 1 godzinę",
+          "for3Hours": "Przez 3 godziny", 
+          "for8Hours": "Przez 8 godzin",
+          "for24Hours": "Przez 24 godziny",
+          "untilTurnedBackOn": "Do momentu ponownego włączenia",
+          "useCategoryDefault": "Użyj domyślnych ustawień kategorii",
+          "all": "Wszystkie",
+          "onlyMention": "Tylko @wzmianki",
+          "nothing": "Nic",
+          "processing": "Przetwarzanie...",
+          "muteChannelStatus": "Wycisz kanał",
+          "muteThreadStatus": "Wycisz wątek",
+          "unmuteChannelStatus": "Odcisz kanał", 
+          "unmuteThreadStatus": "Odcisz wątek",
+          "mutedUntil": "Wyciszone do",
+          "muteSuccess": "Pomyślnie wyciszono!",
+          "unMuteSuccess": "Pomyślnie odciszono!",
+          "muteFailed": "Nie udało się wyciszyć!",
+          "unMuteFailed": "Nie udało się odciszyć!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Wątki",
+        "searchThreads": "Szukaj nazwy wątku",
+        "searchFiles": "Szukaj plików",
+        "searchCanvas": "Szukaj nazwy płótna"
+
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Edytuj kanał",
+          "deleteChannel": "Usuń kanał",
+          "duplicateChannel": "Duplikuj kanał",
+          "leaveChannel": "Opuść kanał",
+          "createTextChannel": "Utwórz kanał tekstowy",
+          "createVoiceChannel": "Utwórz kanał głosowy",
+          "openChat": "Otwórz czat",
+          "hideNames": "Ukryj nazwy",
+          "createThread": "Utwórz wątek"
+      },
+      "devMode": {
+          "title": "Tryb deweloperski",
+          "copyChannelID": "Kopiuj ID kanału"
+      },
+      "manageThreadMenu": {
+          "editThread": "Edytuj wątek",
+          "deleteThread": "Usuń wątek",
+          "leaveThread": "Opuść wątek",
+          "closeThread": "Zamknij wątek",
+          "lockThread": "Zablokuj wątek",
+          "copyLink": "Kopiuj link"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "Skopiowano ID kanału"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Usuń wątek {{threadName}}",
+          "content": "Czy na pewno chcesz usunąć ten wątek?",
+          "confirmText": "Tak"
+      },
+      "channel": {
+          "title": "Usuń kanał {{channelName}}",
+          "content": "Czy na pewno chcesz usunąć ten kanał?",
+          "confirmText": "Tak",
+          "systemChannel": "Nie można usunąć kanału systemowego",
+          "error": "Błąd usuwania kanału: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Opuść wątek",
+    "yesButton": "Opuść wątek",
+    "textConfirm": "Czy na pewno chcesz opuścić ten wątek? Nie będziesz otrzymywać wiadomości z tego wątku, gdy go opuścisz."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Opuść kanał",
+    "yesButton": "Opuść kanał",
+    "textConfirm": "Czy na pewno chcesz opuścić ten kanał? Nie będziesz otrzymywać wiadomości z tego kanału, gdy go opuścisz.",
+    "error": "Błąd opuszczania kanału: {{error}}"
+  },
+  "btnBadgeCount": "Nowe",
+  "favoriteChannel": "ULUBIONE KANAŁY"
+}
