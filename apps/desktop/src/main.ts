@@ -77,6 +77,7 @@ app.commandLine.appendSwitch('enable-gpu-rasterization');
 app.commandLine.appendSwitch('enable-zero-copy');
 
 export default class Main {
+	static store: Store;
 	static initialize() {
 		if (SquirrelEvents.handleEvents()) {
 			// squirrel event handled (except first run event) and app will exit in 1000ms, so don't do anything else
@@ -98,6 +99,7 @@ export default class Main {
 		}
 	}
 }
+Main.store = new Store();
 
 ipcMain.handle(DOWNLOAD_FILE, async (event, { url, defaultFileName }) => {
 	let fileExtension = defaultFileName.split('.').pop().toLowerCase();
@@ -418,8 +420,7 @@ ipcMain.handle(AUTO_START_APP, (event, action) => {
 });
 
 ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
-	const store = new Store();
-	store.set('hardwareAcceleration', enabled);
+	Main.store.set('hardwareAcceleration', enabled);
 
 	const response = await dialog.showMessageBox({
 		type: 'info',
@@ -440,28 +441,24 @@ ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
 });
 
 ipcMain.handle(SYNC_REDUX_STATE, async (event, state) => {
-	const store = new Store();
-
 	if (state.autoStart !== undefined) {
-		store.set('autoStart', state.autoStart);
+		Main.store.set('autoStart', state.autoStart);
 		app.setLoginItemSettings({
 			openAtLogin: state.autoStart
 		});
 	}
 
 	if (state.hardwareAcceleration !== undefined) {
-		store.set('hardwareAcceleration', state.hardwareAcceleration);
+		Main.store.set('hardwareAcceleration', state.hardwareAcceleration);
 	}
 
 	return { success: true };
 });
 
 ipcMain.handle(GET_REDUX_STATE, async () => {
-	const store = new Store();
-
 	return {
-		autoStart: store.get('autoStart', true),
-		hardwareAcceleration: store.get('hardwareAcceleration', true)
+		autoStart: Main.store.get('autoStart', true),
+		hardwareAcceleration: Main.store.get('hardwareAcceleration', true)
 	};
 });
 
@@ -574,7 +571,7 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 				const success = await handleCopyImageElectron(fileURL);
 				return { success };
 			} catch (error) {
-				return { success: false, error: error.message };
+				return { success: false, error: (error as unknown as { message: string })?.message };
 			}
 		}
 		case 'openLink': {
@@ -582,7 +579,7 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 			break;
 		}
 		case 'saveImage': {
-			win.webContents.downloadURL(cleanedWebpOnUrl);
+			win?.webContents.downloadURL(cleanedWebpOnUrl);
 			break;
 		}
 	}
@@ -596,8 +593,7 @@ ipcMain.handle(SET_RATIO_WINDOW, (event, ratio) => {
 	}
 });
 
-const store = new Store();
-if (!store.get('hardwareAcceleration', true)) {
+if (!Main.store.get('hardwareAcceleration', true)) {
 	app.disableHardwareAcceleration();
 }
 

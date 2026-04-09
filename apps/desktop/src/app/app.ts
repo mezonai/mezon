@@ -6,6 +6,7 @@ import activeWindows from 'mezon-active-windows';
 import { join } from 'path';
 import ua from 'universal-analytics';
 import tray from '../Tray';
+import Main from '../main';
 import { EActivityCoding, EActivityGaming, EActivityMusic } from './activities';
 import setupAutoUpdates from './autoUpdates';
 import { rendererAppName, rendererAppPort } from './constants';
@@ -355,9 +356,10 @@ export default class App {
 
 	private static initMainWindow() {
 		const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
-		const width = Math.min(1280, workAreaSize.width || 1280);
-		const height = Math.min(720, workAreaSize.height || 720);
-
+		const savedWidth = Number(Main.store.get('window.width', workAreaSize.width));
+		const savedHeight = Number(Main.store.get('window.height', workAreaSize.height));
+		const width = savedWidth || 1280;
+		const height = savedHeight || 720;
 		const loginSettings = App.application.getLoginItemSettings();
 		const showOnStartup = loginSettings.wasOpenedAtLogin;
 		const isHidden = process.argv.includes('--hidden');
@@ -397,7 +399,7 @@ export default class App {
 		if (gotTheLock) {
 			App.application.on('second-instance', (e, argv) => {
 				if (process.platform === 'win32' || process.platform === 'linux') {
-					const url = argv.pop().slice(1);
+					const url = argv.pop()?.slice(1);
 
 					if (url) {
 						const index = url.indexOf('data=');
@@ -512,6 +514,17 @@ export default class App {
 			App.mainWindow.hide();
 		});
 
+		App.mainWindow.on('resize', () => {
+			if (!App.mainWindow) return;
+
+			const [newWidth, newHeight] = App.mainWindow.getSize();
+
+			Main.store.set('window.width', newWidth);
+			Main.store.set('window.height', newHeight);
+
+			console.log(`Window resized: ${newWidth}x${newHeight}`);
+		});
+
 		App.application.on('before-quit', async () => {
 			try {
 				autoUpdater.checkForUpdates();
@@ -542,7 +555,7 @@ export default class App {
 	}
 
 	private static loadMainWindow(params?: Record<string, string>) {
-		if (!App.application.isPackaged) {
+		if (!App.application.isPackaged && params) {
 			const baseUrl = `http://localhost:${rendererAppPort}`;
 			const fullUrl = this.generateFullUrl(baseUrl, params);
 			App.mainWindow.loadURL(fullUrl);
@@ -607,7 +620,7 @@ export default class App {
 
 	private static setupWindowManager() {
 		if (!App.isActivityTrackingEnabled) return;
-		let defaultApp = null;
+		let defaultApp: any = null;
 		const usageThreshold = 30 * 60 * 1000;
 
 		const fetchActiveWindow = (): void => {
