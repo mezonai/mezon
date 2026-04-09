@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "Opslaan"
+  },
+  "toast": {
+    "saveSuccess": "Succesvol opgeslagen",
+    "notBlank": "Niet leeg laten",
+    "saveError": "Er is een fout opgetreden bij opslaan"
+  },
+  "menu": {
+    "serverName": {
+      "title": "Clan naam",
+      "errorMessage": "Voer een geldige clan naam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+      "duplicateNameMessage": "Clan naam bestaat al. Kies een andere naam.",
+      "permissionDenied": "Je hebt geen toestemming om de clan achtergrond te bewerken"
+    },
+    "inactive": {
+      "title": "Inactiviteitsinstellingen",
+      "description": "Schakel automatisch over naar dit kanaal en demp hun microfoon wanneer ze langer dan de ingestelde tijd inactief zijn. Deze functie geldt niet voor de webversie.",
+      "inactiveChannel": "Inactiviteitskanaal",
+      "inactiveTimeout": "Inactiviteit time-out"
+    },
+    "systemMessage": {
+      "title": "Systeem meldingsinstellingen",
+      "description": "Dit is het kanaal waar we systeem-evenement meldingen naar sturen. Je kunt ze op elk moment uitschakelen.",
+      "channel": "Kanaal",
+      "selectChannel": "Selecteer meldingskanaal",
+      "channelDescription": "Dit is het kanaal waar systeemberichten worden verzonden",
+      "welcomeRandom": "Willekeurige welkomstberichten versturen wanneer iemand de clan betreedt",
+      "welcomeSticker": "Eis dat leden welkomstberichten beantwoorden met stickers",
+      "boostMessage": "Bericht versturen wanneer iemand deze clan boost",
+      "setupTips": "Handige tips voor clan-instelling versturen",
+      "hideAuditLog": "Log versturen wanneer een actie wordt toegepast op de clan",
+      "anonymousTitle": "Anonieme modus verdringen",
+      "anonymousDescription": "Voorkom dat gebruikers de anonieme modus gebruiken"
+    },
+    "deleteServer": {
+      "title": "Clan verwijderen",
+      "delete": "Clan verwijderen"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "Standaard meldingsinstelling",
+      "description": "Deze instelling bepaalt of leden die hun meldingsinstellingen niet expliciek hebben ingesteld, meldingen ontvangen voor elk bericht dat in deze clan wordt verzonden. Wij adviseren voor clan-communities om meldingen alleen voor @vermeldingen te plaatsen.",
+      "allMessages": "Alle berichten",
+      "onlyMentions": "Alleen @vermelding"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "Lid succesvol uitgestoten",
+      "kickMemberFailed": "Lid kon niet worden uitgestoten",
+      "removeMemberThreadSuccess": "Lid succesvol verwijderd",
+      "removeMemberThreadFailed": "Lid kon niet worden verwijderd",
+      "transferOwnershipSuccess": "Eigendom succesvol overgedragen",
+      "transferOwnershipFailed": "Eigendom overdragen mislukt"
+    }
+  },
+  "action": {
+    "kick": "Uitstoten",
+    "removeFromThread": "Uit topic verwijderen",
+    "manage": "Beheren",
+    "transferOwnership": "Eigendom overdragen",
+    "ban": "Verbannen",
+    "unban": "Ontban"
+  },
+  "threadRemoveModal": {
+    "title": "Uit topic verwijderen?",
+    "description": "Weet je zeker dat je {{username}} uit dit topic wilt verwijderen?",
+    "remove": "Verwijderen",
+    "cancel": "Niet erg"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Weet je zeker?"
+    }
+  }
+}

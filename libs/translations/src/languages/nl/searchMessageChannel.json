@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Betreden",
+	"textChannels": "Tekstkanalen",
+	"voiceChannels": "Stemkanalen",
+	"streamingChannels": "Streamingkanalen",
+	"search": "Zoeken",
+	"filterResults": "Resultaten filteren...",
+	"members": "Leden",
+	"channels": "Kanalen",
+	"media": "Media",
+	"pins": "Vastgezette berichten",
+	"in": "in:",
+	"Messages": "Berichten",
+	"filterOptions": {
+		"fromUser": "Van een specifieke gebruiker",
+		"mentionUser": "Iemand vermelden",
+		"inChannel": "In een specifiek kanaal"
+	},
+	"cancel": "Annuleren",
+	"searchPlaceholder": "Zoeken",
+	"searchFor": "Zoeken:",
+	"enter": "Enter",
+	"searchOptions": "Zoekopties",
+	"fromUser": "Van gebruiker",
+	"inChannel": "In kanaal",
+	"hasContent": "Heeft inhoud",
+	"mentionsUser": "Iemand vermelden",
+	"emptySearch": {
+		"title": "We hebben overal gezocht. Helaas zijn er geen resultaten gevonden."
+	},
+	"learnMore": "Meer informatie",
+	"searchOptionsData": {
+		"fromUserShort": "zoeken op afzender",
+		"mentionsUserShort": "zoeken op vermelding",
+		"hasContentShort": "zoeken op inhoud met bijlage",
+		"channelShort": "zoeken in kanaal"
+	},
+	"prefixes": {
+		"from": "van:",
+		"mentions": "vermelding:",
+		"has": "heeft:",
+		"in": "in:"
+	},
+	"mentionPrefixes": {
+		"from": "van:",
+		"mentions": "vermelding:",
+		"has": "heeft:",
+		"in": "in:"
+	},
+	"allChannels": "Alle kanalen",
+	"searching": "Aan het zoeken...",
+	"noResults": "Geen resultaten",
+	"resultsCount": "{{count}} resultaten",
+	"jump": "Springen",
+	"hasOptions": {
+		"video": "video",
+		"link": "link",
+		"image": "afbeelding"
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Gids",
+		"events": "Evenementen",
+		"events_one": "{{count}} Evenement",
+		"events_other": "{{count}} Evenementen",
+		"members": "Leden",
+		"channels": "Kanalen"
+	},
+	"ongoingEvent": {
+		"title": "Lopende evenement",
+		"eventDetail": "Evenement details"
+	},
+	"onboarding": {
+		"getStarted": "Aan de slag",
+		"of": "van"
+	},
+	"favoriteChannel": "Favoriet kanaal",
+	"publicChannels": "Publieke kanalen",
+	"channelApps": "Kanaal apps",
+	"dragMode": {
+		"enable": "Druk om categorie sleepmodus in te schakelen",
+		"disable": "Druk om categorie sleepmodus uit te schakelen"
+	}
+}

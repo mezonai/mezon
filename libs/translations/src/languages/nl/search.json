@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Leden zoeken",
+  "searchActions": "Acties zoeken",
+  "allUsers": "Alle gebruikers",
+  "noResults": {
+    "title": "Niets!",
+    "description": "Heb je het verkeerd getypt?"
+  }
+}

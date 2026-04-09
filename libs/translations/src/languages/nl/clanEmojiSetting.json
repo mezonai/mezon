@@ -1,0 +1,40 @@
+{
+	"modal": {
+		"uploadAFile": "Bestand uploaden",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Bestand moet PNG of GIF zijn, maximaal 256KB",
+		"preview": "Voorbeeld",
+		"file": "Bestand",
+		"thisCannotBeEdited": "Deze kan niet worden bewerkt",
+		"browse": "Bladeren",
+		"chooseAFile": "Bestand kiezen",
+		"stickerName": "Emoji naam",
+		"exCatHug": "Bijv: kat_omhelzing",
+		"thisIsForSale": "Dit is te koop",
+		"neverMind": "Niet erg",
+		"characters": "Naam moet van 3 tot 64 tekens zijn"
+	},
+	"header": {
+		"save": "Opslaan"
+	},
+	"toast": {
+		"saveSuccess": "Succesvol opgeslagen",
+		"reject": "Afwijzen",
+		"errorSizeLimit": "Afbeeldingsgrootte overschrijdt 256 KB",
+		"validateName": "Lengte moet van {{min}} tot {{max}} tekens zijn. Alleen letters, cijfers, _ en - zijn toegestaan"
+	},
+	"button": {
+		"upload": "Emoji uploaden"
+	},
+	"description": {
+		"descriptions": "Voeg aangepaste emoji's toe die alle gebruikers in deze clan kunnen gebruiken. Alle Mezon-leden kunnen animatie-GIF's gebruiken.",
+		"requirements": "UPLOAD EISEN",
+		"requireList": "•  Bestandssoort: JPEG, PNG, GIF.\n•  Aanbevolen grootte: 256 KB.\n•  Aanbevolen afmetingen: 128x128.\n•  Naamgeving: Emoji naam moet minimaal 3 tekens bevatten en alleen letters, cijfers en onderstrepingsteken bevatten."
+	},
+	"emojiList": {
+		"slotsDetails": "EMOJI LIJST",
+		"delete": "Verwijderen"
+	},
+	"image": "AFBEELDING",
+	"name": "NAAM",
+	"uploadedBy": "UPLOADED DOOR"
+}

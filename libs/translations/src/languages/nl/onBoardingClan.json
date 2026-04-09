@@ -1,0 +1,165 @@
+{
+	"title": "Wijzigingsproces voltooien",
+	"description": "Stap {{step}} van {{total}}",
+	"action": {
+		"title": "Wijzigingsproces voor je clan voltooien",
+		"description": "Stap {{step}} van {{total}} stappen voltooid",
+		"createChannel": "Maak je kanaal",
+		"invite": "Nodig een paar vrienden uit",
+		"sendMessage": "Verstuur je eerste bericht"
+	},
+	"modal": {
+		"title": "Wijzigingsinstellingen"
+	},
+	"buttons": {
+		"back": "Terug",
+		"cancel": "Annuleren",
+		"confirm": "Bevestigen",
+		"save": "Opslaan",
+		"saving": "Aan het opslaan...",
+		"setup": "Instellen",
+		"edit": "Bewerken",
+		"preview": "Voorvertoning",
+		"disable": "Wijziging uitschakelen"
+	},
+	"onboarding": {
+		"title": "Introductie",
+		"description": "Maak een eenvoudige startervaring voor leden met kanalen, rollen en aangepaste stappen.",
+		"enabledTitle": "Introductie is ingeschakeld",
+		"enabledDescription": "Wijzigingen worden van kracht nadat je hebt opgeslagen.",
+		"featuresEnabled": "Introductiefuncties zijn ingeschakeld"
+	},
+	"questions": {
+		"title": "Vragen",
+		"description": "Openbare kanalen kunnen worden toegewezen via Vragen."
+	},
+	"clanGuide": {
+		"title": "Clan Gids",
+		"description": "Welkomstberichten, Banner, taken en Bronnen zijn ingesteld"
+	},
+	"messages": {
+		"communityEnabledSuccess": "Community succesvol ingeschakeld",
+		"changesSavedSuccess": "Wijzigingen succesvol opgeslagen"
+	},
+	"errors": {
+		"needAtLeastOneItem": "Minimaal één item nodig om introductie in te schakelen",
+		"failedToEnableCommunity": "Community kon niet worden ingeschakeld",
+		"failedToSaveChanges": "Wijzigingen konden niet worden opgeslagen",
+		"questionRequired": "Vraag is verplicht."
+	},
+	"questionsPage": {
+		"title": "Vragen",
+		"description": "Maak vragen om leden te helpen extra kanalen en rollen te kiezen. Hun kanalenlijst wordt aangepast op basis van hun antwoorden.",
+		"noChannelsMissing": "Er zijn geen openbare kanalen gemist van Vragen en Standaard Kanaal.",
+		"channelNotAssigned": "Kanaal is niet toegewezen",
+		"noChannelsHere": "Er zijn hier geen kanalen",
+		"preJoinQuestions": {
+			"title": "Vragen voorafgaand aan joinen",
+			"description": "Leden worden deze vragen gesteld voordat ze je server betreden. Gebruik ze om belangrijke kanalen en rollen toe te wijzen. Vragen voorafgaand aan joinen zijn ook beschikbaar op de Kanaal & Rollen-pagina."
+		},
+		"addQuestion": "Vraag toevoegen",
+		"questionNumber": "Vraag {{number}}",
+		"enterQuestion": "Voer vraag in...",
+		"availableAnswers": "Beschikbare antwoorden - {{count}} van 50",
+		"addAnswer": "Antwoord toevoegen",
+		"questionPlaceholder": "Wat is je vraag",
+		"answerTitle": "Antwoordtitel toevoegen",
+		"answerDescription": "Antwoordbeschrijving toevoegen",
+		"enterAnswer": "Voer antwoord in...",
+		"enterDescription": "Voer beschrijving in... (optioneel)",
+		"titleRequired": "Titel is verplicht",
+		"remove": "Verwijderen"
+	},
+	"enableOnboarding": {
+		"title": "Wil je Onboarding inschakelen?",
+		"description": "Schakel over naar Introductie voor extra beheergereedschappen",
+		"subtitle": "helpt je om je clan effectief te modereren en te laten groeien.",
+		"button": "Introductie inschakelen",
+		"note": "Deze actie zal geavanceerde introductiefuncties ontgrendelen"
+	},
+	"enableCommunity": {
+		"title": "Community inschakelen?",
+		"description": "Verander je community in een volledig uitgeruste Community-ervaring.",
+		"subtitle": "Toegang tot krachtige beheergereedschappen om je clan effectief te modereren en te laten groeien.",
+		"button": "Community inschakelen",
+		"note": "Deze actie zal geavanceerde communityfuncties ontgrendelen"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Velden met * zijn verplicht",
+		"title": "Community-instellingen",
+		"subtitle": "Beheer je community-informatie",
+		"enableTitle": "Community inschakelen",
+		"enableSubtitle": "Creëer een geweldige ruimte voor leden om te verbinden",
+		"loading": "Community-instellingen laden...",
+		"banner": {
+			"title": "Community Banner",
+			"uploadTitle": "Banner uploaden",
+			"uploadDescription": "Sleep of klik om afbeelding te selecteren",
+			"changeBanner": "Banner wijzigen",
+			"removeBanner": "Banner verwijderen"
+		},
+		"description": {
+			"title": "Community Beschrijving",
+			"placeholder": "Voer een korte beschrijving voor je community in..."
+		},
+		"about": {
+			"title": "Over Community",
+			"placeholder": "Vertel ons over je community... Wat maakt het bijzonder?"
+		},
+		"vanityUrl": {
+			"title": "Aangepaste URL",
+			"description": "Maak een aangepaste URL voor je community. Gebruik alleen kleine letters, cijfers en streepjes.",
+			"placeholder": "mijn-fantastische-community",
+			"previewLabel": "URL-voorbeeld:"
+		},
+		"buttons": {
+			"enableAndSave": "Inschakelen & Opslaan",
+			"saving": "Aan het opslaan...",
+			"save": "Wijzigingen opslaan",
+			"disable": "Community uitschakelen",
+			"reset": "Herstellen"
+		},
+		"messages": {
+			"aboutUpdated": "Informatie bijgewerkt!",
+			"aboutUpdateFailed": "Informatie bijwerken mislukt!",
+			"descriptionUpdated": "Beschrijving bijgewerkt!",
+			"descriptionUpdateFailed": "Beschrijving bijwerken mislukt!",
+			"vanityUrlUpdated": "Aangepaste URL bijgewerkt!",
+			"vanityUrlUpdateFailed": "Aangepaste URL bijwerken mislukt!",
+			"communityEnabledAndSaved": "Community ingeschakeld en opgeslagen!",
+			"saveFailed": "Opslaan mislukt!",
+			"changesSaved": "Wijzigingen opgeslagen!",
+			"communityDisabled": "Community uitgeschakeld.",
+			"disableFailed": "Uitschakelen mislukt!",
+			"bannerRemoved": "Banner verwijderd!",
+			"fillAllRequiredFields": "Vul alle verplichte velden in: Banner, Introductie, Beschrijving, Aangepaste URL!",
+			"bannerUpdateFailed": "Banner bijwerken mislukt!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Welkom",
+			"description": "Vertel nieuwe leden wat er speciaal is aan je community en waarom je blij bent ze te ontmoeten!"
+		},
+		"newMemberToDos": {
+			"title": "Nieuwe Leden Taken",
+			"description": "Stel 3-5 taken in voor je nieuwe leden om uit te voeren. Laat hen <strong>praten en deelnemen aan je kanalen.</strong>"
+		},
+		"dontDoThis": "Doe dit niet: te algemeen",
+		"exampleTask": {
+			"title": "communiceer met de community",
+			"description": "in #general"
+		},
+		"readTheRules": "Lees de Regels",
+		"addTask": "Taak toevoegen",
+		"resourcePages": {
+			"title": "Bronpagina's",
+			"description": "Maak lees-only kanalen tot prachtige resourcepagina's in je Server Gids. Ze verschijnen niet meer in de kanaallijst tenzij je Alle Kanalen inschakelt. Bronnen hebben enkele voordelen:",
+			"perk1": "Leden beginnen aan het begin van de pagina in plaats van aan het einde van de berichtreeks",
+			"perk2": "Chatbalk en avatar zijn verwijderd om er strakker uit te zien",
+			"perk3": "Alle inhoud, embeds, media en opmaak blijven behouden"
+		},
+		"addResource": "Bron toevoegen",
+		"ownerGreeting": "Hoi, dit is een groet van de clan-eigenaar. Je ziet dit bericht bij je eerste bezoek aan de clan!"
+	}
+}

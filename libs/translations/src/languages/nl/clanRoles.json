@@ -1,0 +1,112 @@
+{
+	"roleDescription": "Gebruik rollen om leden in je clan te groeperen en rechten toe te wijzen",
+	"defaultRole": "Standaardrechten voor alle clanleden",
+	"roles": "Rollen",
+	"members": "Leden",
+	"noRole": "Op dit moment zijn er geen rollen",
+	"skipStep": "Deze stap overslaan",
+	"failed": "Mislukt",
+	"createNewRole": {
+		"title": "Stap 1 van 3",
+		"createANewRole": "Nieuwe rol aanmaken",
+		"description": "Geef deze rol een unieke naam en kleur. Je kunt dit altijd later wijzigen.",
+		"create": "Aanmaken",
+		"newRole": "Nieuwe rol naam invoeren...",
+		"roleName": "Rol naam",
+		"createSuccess": "Rol {{roleName}} succesvol aangemaakt",
+		"cannotCreate": "Kon {{roleName}} niet aanmaken"
+	},
+	"setupPermission": {
+		"title": "Stap 2 van 3",
+		"setupPermissionTitle": "Rechten instellen",
+		"setupPermissionSuccessfully": "Rechten succesvol ingesteld",
+		"next": "Volgende",
+		"searchPermission": "Zoeken naar rechten"
+	},
+	"setupMember": {
+		"title": "Stap 3 van 3",
+		"addMember": "Lid toevoegen",
+		"description": "Wijs deze rol toe aan je leden. Leden kunnen meer dan één rol hebben.",
+		"finish": "Gereed",
+		"addedMember": "Lid succesvol toegevoegd",
+		"searchMembers": "Zoek op leden",
+		"deletedMember": "{{memberName}} succesvol verwijderd",
+		"add": "Toevoegen",
+		"noMembersFound": "Geen leden gevonden"
+	},
+	"roleDetail": {
+		"permissions": "Rechten",
+		"members": "Leden",
+		"role": "Rol",
+		"roleName": "Rol naam",
+		"deleteRole": "Rol verwijderen",
+		"deleteRoleSuccessfully": "Rol {{roleName}} succesvol verwijderd",
+		"changesSaved": "Wijzigingen opgeslagen",
+		"save": "Opslaan",
+		"confirmSaveTitle": "Wijzigingen opslaan?",
+		"confirmSaveContent": "Je hebt wijzigingen aangebracht. Wil je ze opslaan?",
+		"yes": "Ja",
+		"doNotSave": "Niet opslaan"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "Rol kleur",
+		"titleBS": "Kies een kleur",
+		"reset": "Herstellen",
+		"save": "Opslaan"
+	},
+	"roleImagePicker": "Rol embleem",
+	"notifyEveryone": "Stel iedereen op de hoogte met toegang tot dit kanaal.",
+	"removeImage": "Verwijderen",
+	"allMembers": "Alle leden",
+	"permissionTitles": {
+		"administrator": "Beheerder",
+		"view-channel": "Kanaal bekijken",
+		"manage-channel": "Kanaal beheren",
+		"manage-clan": "Clan beheren",
+		"manage-thread": "Topic beheren",
+		"send-message": "Bericht versturen",
+		"delete-message": "Bericht verwijderen",
+		"clan-owner": "Clan-eigenaar"
+	},
+	"permissionDescriptions": {
+		"administrator": "Sta leden toe om de hele clan te beheren (rechten alleen lager dan eigenaar).",
+		"view-channel": "Sta leden toe om openbare kanalen te bekijken.",
+		"manage-channel": "Sta leden toe om kanalen aan te maken, te bewerken of te verwijderen.",
+		"manage-clan": "Sta leden toe om claninstellingen te beheren, rollen en kanalen te beheren, ledenactiviteiten te observeren voor efficiënt beheer en goed georganiseerde community.",
+		"manage-thread": "Sta leden toe om topics in het kanaal aan te maken, te bewerken en te verwijderen (inclusief privé topics).",
+		"send-message": "Sta leden toe om berichten te versturen in openbare kanalen (inclusief topics en topicdiscussies in deze kanalen).",
+		"delete-message": "Sta leden toe om berichten te verwijderen in openbare kanalen (inclusief topics en topicdiscussies in deze kanalen).",
+		"notAvailable": "Rechtbeschrijving niet beschikbaar"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "Gebruik rollen om leden in je clan te groeperen en rechten toe te wijzen.",
+		"defaultPermissions": "Standaard rechten",
+		"everyoneDescription": "@everyone • van toepassing op alle clanleden",
+		"searchRoles": "Zoek op rollen",
+		"createRole": "Rol aanmaken",
+		"membersUseColor": "Leden gebruiken de kleur van hun hoogste rol in deze lijst. Sleep rollen om ze te herordenen.",
+		"noRoles": "Geen rollen"
+	},
+	"roleManagement": {
+		"newRole": "NIEUWE ROL",
+		"editRole": "ROL BEWERKEN",
+		"back": "TERUG",
+		"display": "Weergave",
+		"permissions": "Rechten",
+		"manageMembers": "Leden beheren",
+		"searchPermissions": "Zoek op rechten",
+		"failedToUpdateRoleOrder": "Rolvolgorde kon niet worden bijgewerkt.",
+		"newRoleDefault": "Nieuwe rol",
+		"roleName": "Rol naam",
+		"roleColour": "Rol kleur",
+		"membersUseColour": "Leden gebruiken de kleur van hun hoogste rol in de rollenlijst.",
+		"roleIcon": "Rol embleem",
+		"roleIconDescription": "Upload een afbeelding kleiner dan 256 KB of kies een aangepaste emoji van deze clan. Wij raden minimaal 64x64 pixels aan. Leden zien het embleem van hun hoogste rol als ze meerdere rollen hebben",
+		"chooseImage": "Afbeelding kiezen",
+		"removeIcon": "Embleem verwijderen",
+		"edit": "Bewerken",
+		"view": "Bekijken",
+		"delete": "Verwijderen",
+		"roleNameIsRequired": "Rol naam is vereist"
+	}
+}

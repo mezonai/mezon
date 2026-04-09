@@ -1,0 +1,22 @@
+{
+  "editStatus": "Status",
+  "save": "Opslaan",
+  "statusDuration": {
+    "label": "Statusduur",
+    "today": "Vandaag",
+    "fourHours": "4 uur",
+    "oneHour": "1 uur",
+    "thirtyMinutes": "30 minuten",
+    "dontClear": "Niet wissen"
+  },
+  "placeholder": "Wat ben je aan het doen?",
+  "userStatus": {
+    "online": "Online",
+    "idle": "Tijdelijk afwezig",
+    "doNotDisturb": "Niet storen",
+    "invisible": "Offline (Verborgen)"
+  },
+  "setCustomStatus": "Aangepaste status instellen",
+  "onlineStatus": "Online status",
+  "changeOnlineStatus": "Online status wijzigen"
+}

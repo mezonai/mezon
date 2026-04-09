@@ -1,0 +1,18 @@
+{
+  "editResources": "Bronnen bewerken",
+  "form": {
+    "nameTitle": "Geef deze bron een naam",
+    "namePlaceholder": "#rules kan zijn Regels",
+    "descriptionTitle": "Beschrijf deze bron",
+    "descriptionPlaceholder": "Bijv: Regels voor de clan",
+    "imageTitle": "Regelafbeelding",
+    "browse": "Bladeren",
+    "required": "Dit veld is verplicht.",
+    "minCharacters": "Regel titel moet minimaal 7 tekens bevatten"
+  },
+  "buttons": {
+    "remove": "Verwijderen",
+    "save": "Opslaan",
+    "add": "Toevoegen"
+  }
+}

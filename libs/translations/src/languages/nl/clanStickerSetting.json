@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Sticker uploaden",
+		"delete": "Verwijderen"
+	},
+	"modal": {
+		"uploadAFile": "Bestand uploaden",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Bestand moet PNG of GIF zijn, maximaal 512KB",
+		"preview": "Voorbeeld",
+		"file": "Bestand",
+		"thisCannotBeEdited": "Deze kan niet worden bewerkt",
+		"browse": "Bladeren",
+		"chooseAFile": "Bestand kiezen",
+		"stickerName": "Sticker naam",
+		"exCatHug": "Bijv: kat_oorknuffel",
+		"thisIsForSale": "Dit is te koop",
+		"neverMind": "Niet erg",
+		"characters": "Naam moet van 3 tot 64 tekens zijn"
+	},
+	"content": {
+		"description": "Voeg maximaal 250 aangepaste stickers toe die iedereen kan gebruiken in deze clan.",
+		"requirements": "Upload-eisen",
+		"reqType": "•  Kan statisch (PNG) of dynamisch (GIF) zijn.",
+		"reqDim": "•  Moet precies 320 x 320 pixels zijn.",
+		"reqSize": "•  Niet groter dan 512KB.",
+		"available": "{{left}} PLAATSEN BESCHIKBAAR VOOR STICKERS"
+	},
+	"toast": {
+		"errorUpdating": "Bijwerken fout",
+		"errorSizeLimit": "Afbeeldingsgrootte overschrijdt 512KB",
+		"validateName": "Lengte moet van {{min}} tot {{max}} tekens zijn. Alleen letters, cijfers, _ en - zijn toegestaan"
+	},
+	"empty": {
+		"tip": "TIPTIP",
+		"voiceSticker": {
+			"title": "Nog geen geluidseffecten"
+		},
+		"sticker": {
+			"title": "Nog geen stickers"
+		}
+	}
+}

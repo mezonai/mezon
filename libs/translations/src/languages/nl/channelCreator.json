@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Aanmaken"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Kanaalnaam",
+			"placeholder": "nieuw-kanal",
+			"errorMessage": "Voer een geldige kanaalnaam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+			"duplicateChannelName": "Kanaalnaam bestaat al in clan. Voer een andere naam in."
+		},
+		"channelPrivate": {
+			"title": "Privékanaal",
+			"descriptionText": "Door een privékanaal aan te maken, kunnen alleen geselecteerde leden en rollen dit kanaal zien.",
+			"descriptionVoice": "Door een privé stemkanaal aan te maken, kunnen alleen geselecteerde leden en rollen dit kanaal bekijken of verbinding maken."
+		},
+		"channelType": {
+			"title": "Kanaaltype",
+			"text": {
+				"title": "Tekst",
+				"description": "Plaats afbeeldingen, GIF's, badges, opmerkingen en grappen"
+			},
+			"voice": {
+				"title": "Stem",
+				"description": "Vergader samen met stem, video en schermdeling"
+			},
+			"stream": {
+				"title": "Streamen",
+				"description": "Deel liefdadigheidsactiviteiten"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Stemkanaaltype",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Afbeeldingen & Highlights",
+			"eventsTitle": "Evenementen",
+			"familyJourney": "Evenementen",
+			"cherishMoment": "Volg belangrijke evenementen.",
+			"since": "SINDS",
+			"viewAlbum": "Album Bekijken",
+			"emptyTitle": "Jouw reis is nog niet begonnen.",
+			"emptyDescription": "Maak je eerste evenement om te beginnen met het vastleggen van herinneringen.",
+			"createFirstMilestone": "Eerste evenement aanmaken",
+			"selectYear": "Selecteer jaar",
+			"special": "Speciaal"
+		},
+		"familyEvents": {
+			"title": "Evenementen",
+			"eventsIn": "Evenementen in jaar",
+			"noEvents": "Geen evenementen in dit jaar",
+			"addToGallery": "Toevoegen aan bibliotheek",
+			"inDays": "In {{count}} dagen"
+		},
+		"createMilestone": {
+			"headerTitle": "Nieuw evenement",
+			"cancel": "Annuleren",
+			"cancelAlertTitle": "Annuleren",
+			"cancelAlertMessage": "Weet je zeker dat je dit evenement wilt annuleren?",
+			"continueEditing": "Verder bewerken",
+			"discard": "Weggooien",
+			"eventTitleLabel": "Evenementsnaam",
+			"eventTitlePlaceholder": "Bijv: Teamvergadering, Project launch",
+			"dateLabel": "Datum",
+			"datePlaceholder": "Selecteer datum",
+			"storyLabel": "Beschrijving",
+			"storyPlaceholder": "Voer evenementbeschrijving in...",
+			"memoriesLabel": "Afbeelding/Video",
+			"uploadTitle": "Afbeelding of Video uploaden",
+			"uploadSubtitle": "Afbeelding of video toevoegen aan evenement",
+			"addMedia": "Afbeelding toevoegen",
+			"tagMembersLabel": "Leden taggen",
+			"saveButton": "Evenement opslaan",
+			"requiredTitle": "Vereist",
+			"requiredMessage": "Voer een evenement naam in",
+			"successTitle": "Succes",
+			"successMessage": "Evenement succesvol aangemaakt!",
+			"errorTitle": "Fout",
+			"errorMessage": "Afbeelding kon niet worden geselecteerd",
+			"required": "Vereist",
+			"optional": "Optioneel",
+			"titleHint": "Geef een korte, beschrijvende titel voor het evenement"
+		},
+		"eventDetail": {
+			"defaultTitle": "Evenement details",
+			"featured": "GELICHT",
+			"calendar": "Agenda",
+			"descriptionPlaceholder": "Voer beschrijving voor dit evenement in...",
+			"addDescription": "Beschrijving toevoegen",
+			"cancel": "Annuleren",
+			"save": "Opslaan"
+		},
+		"albumDetail": {
+			"eventDetails": "Evenement details",
+			"date": "Datum",
+			"editEvent": "Evenement bewerken",
+			"titleLabel": "Titel",
+			"titlePlaceholder": "Evenements titel",
+			"descriptionLabel": "Beschrijving",
+			"descriptionPlaceholder": "Evenements beschrijving",
+			"cancel": "Annuleren",
+			"save": "Opslaan",
+			"errorTitle": "Fout",
+			"titleRequired": "Titel mag niet leeg zijn",
+			"updateFailed": "Evenement kon niet worden bijgewerkt",
+			"sessionNotAvailable": "Sessie niet beschikbaar",
+			"uploadFailed": "Afbeelding uploaden mislukt"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Stemkanaaltype",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Afbeeldingen & Highlights",
+		"familyJourney": "Evenementen",
+		"cherishMoment": "Volg belangrijke evenementen.",
+		"since": "SINDS",
+		"viewAlbum": "Album Bekijken",
+		"emptyTitle": "Jouw reis is nog niet begonnen.",
+		"emptyDescription": "Maak je eerste evenement om te beginnen met het vastleggen van herinneringen.",
+		"createFirstMilestone": "Eerste evenement aanmaken",
+		"selectYear": "Selecteer jaar",
+		"special": "Speciaal"
+	},
+	"familyEvents": {
+		"title": "Evenementen",
+		"eventsIn": "Evenementen in jaar",
+		"noEvents": "Geen evenementen in dit jaar",
+		"addToGallery": "Toevoegen aan bibliotheek",
+		"inDays": "In {{count}} dagen"
+	},
+	"createMilestone": {
+		"headerTitle": "Nieuw evenement",
+		"cancel": "Annuleren",
+		"cancelAlertTitle": "Annuleren",
+		"cancelAlertMessage": "Weet je zeker dat je dit evenement wilt annuleren?",
+		"continueEditing": "Verder bewerken",
+		"discard": "Weggooien",
+		"eventTitleLabel": "Evenementsnaam",
+		"eventTitlePlaceholder": "Bijv: Teamvergadering, Project launch",
+		"dateLabel": "Datum",
+		"datePlaceholder": "Selecteer datum",
+		"storyLabel": "Beschrijving",
+		"storyPlaceholder": "Voer evenementbeschrijving in...",
+		"memoriesLabel": "Afbeelding/Video",
+		"uploadTitle": "Afbeelding of Video uploaden",
+		"uploadSubtitle": "Afbeelding of video toevoegen aan evenement",
+		"addMedia": "Afbeelding toevoegen",
+		"tagMembersLabel": "Leden taggen",
+		"saveButton": "Evenement opslaan",
+		"requiredTitle": "Vereist",
+		"requiredMessage": "Voer een evenement naam in",
+		"successTitle": "Succes",
+		"successMessage": "Evenement succesvol aangemaakt!",
+		"errorTitle": "Fout",
+		"errorMessage": "Afbeelding kon niet worden geselecteerd",
+		"required": "Vereist",
+		"optional": "Optioneel",
+		"titleHint": "Geef een korte, beschrijvende titel voor het evenement"
+	},
+	"albumDetail": {
+		"eventDetails": "Evenement details",
+		"date": "Datum",
+		"editEvent": "Evenement bewerken",
+		"titleLabel": "Titel",
+		"titlePlaceholder": "Evenements titel",
+		"descriptionLabel": "Beschrijving",
+		"descriptionPlaceholder": "Evenements beschrijving",
+		"cancel": "Annuleren",
+		"save": "Opslaan",
+		"errorTitle": "Fout",
+		"titleRequired": "Titel mag niet leeg zijn",
+		"updateFailed": "Evenement kon niet worden bijgewerkt",
+		"sessionNotAvailable": "Sessie niet beschikbaar",
+		"uploadFailed": "Afbeelding uploaden mislukt"
+	},
+	"monthsShort": ["JAN", "FEB", "MRT", "APR", "MEI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"]
+}

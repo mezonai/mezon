@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Cameratoegang geweigerd",
+	"pleaseAllowCamera": "Laat cameratoegang toe in je apparaatinstellingen.",
+	"cancel": "Annuleren",
+	"openSettings": "Instellingen openen",
+	"anErrorOccurred": "Er is een fout opgetreden, probeer het opnieuw",
+	"youAreIn": "Je bent ingelogd!",
+	"logInOnNewDevice": "Inloggen op nieuw apparaat?",
+	"youAreLoggedInOnDesktop": "Je bent nu ingelogd op desktop",
+	"neverScanALoginQRCodeFromAnotherUser": "Scans nooit een inlog QR-code van een andere gebruiker.",
+	"startTalking": "Begin met praten",
+	"logIn": "Inloggen",
+	"requestCameraPermission": "Cameratoegang aanvragen",
+	"myQRCode": "Mijn QR-code",
+	"selectPhotoWithQRCode": "Selecteer een afbeelding met QR-code",
+	"qrCodeNotValid": "QR-code is ongeldig"
+}

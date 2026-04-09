@@ -1,0 +1,63 @@
+{
+	"directMessages": "DIRECTE BERICHTEN",
+	"createDM": "Bericht aanmaken",
+	"friends": "Vrienden",
+	"yourMessages": "Jouw berichten",
+	"selectConversation": "Kies een gesprek om te beginnen met chatten",
+	"createMessageGroup": {
+		"selectFriends": "Vrienden selecteren",
+		"canAddMoreFriends": "Je kunt nog {{count}} vrienden toevoegen.",
+		"searchPlaceholder": "Voer vriend gebruikersnaam in",
+		"addToGroupChat": "Toevoegen aan groepschat",
+		"createDMOrGroupChat": "Bericht of groepschat aanmaken",
+		"createDM": "Bericht aanmaken",
+		"createGroupChat": "Groepschat aanmaken",
+		"noFriendsFound": "Geen vrienden gevonden die nog niet in dit gesprek zijn.",
+		"creating": "Aan het maken..."
+	},
+	"editGroup": {
+		"title": "Groep bewerken",
+		"uploadImageText": "Druk om afbeelding te uploaden",
+		"removeAvatar": "Profielfoto verwijderen",
+		"groupNameLabel": "Groep naam",
+		"groupNamePlaceholder": "Voer groepsnaam in",
+		"validationError": "Voer een geldige groepsnaam in (alleen woorden, cijfers, _ of -).",
+		"cancel": "Annuleren",
+		"save": "Opslaan",
+		"saving": "Aan het opslaan..."
+	},
+	"contextMenu": {
+		"editGroup": "Groep bewerken",
+		"addFriend": "Vriend toevoegen",
+		"leaveGroup": "Groep verlaten",
+		"closeDM": "Bericht sluiten",
+		"markAsRead": "Als gelezen markeren",
+		"invitePeople": "Mensen uitnodigen",
+		"hideConversation": "Gesprek verbergen",
+		"profile": "Profiel",
+		"message": "Bericht",
+		"removeFriend": "Vriend verwijderen",
+		"block": "Blokken",
+		"unblock": "Blok opheffen",
+		"removeFromGroup": "Uit groep verwijderen",
+		"shareContact": "Contact delen",
+		"mute": "Melding uitschakelen",
+		"unmute": "Melding inschakelen",
+		"for15Minutes": "Voor 15 Minuten",
+		"for1Hour": "Voor 1 Uur",
+		"for3Hours": "Voor 3 Uren",
+		"for8Hours": "Voor 8 Uren",
+		"for24Hours": "Voor 24 Uren",
+		"untilTurnBackOn": "Totdat het weer wordt ingeschakeld",
+		"mutedUntil": "Melding uit tot {{time}}",
+		"pinConversation": "Gesprek vastzetten",
+		"unpinConversation": "Gesprek losmaken",
+		"pinLimitExceeded": "Je kunt maximaal 10 gesprekken vastzetten. Verwijder een ander gesprek om dit gesprek vast te zetten"
+	},
+	"pinned": "VASTGEZET",
+	"remove": {
+		"content": "Dit gesprek in het kanaal is niet meer beschikbaar!",
+		"title": "Gesprek niet beschikbaar",
+		"button": "Bevestigen"
+	}
+}

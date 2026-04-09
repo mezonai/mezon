@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "NIEUW KANAAL AANMAKEN IN"
+	},
+	"channelType": {
+		"text": "Tekst",
+		"voice": "Stem",
+		"forum": "Forum",
+		"announcement": "Aankondiging",
+		"apps": "Apps",
+		"stream": "Streaming",
+		"descriptions": {
+			"text": "Verstuur berichten, afbeeldingen, GIF's, emoji's, opmerkingen en grappen",
+			"voice": "Communiceer samen via spraak, video en schermdeling",
+			"forum": "Creëer ruimte voor georganiseerde discussies",
+			"announcement": "Belangrijke updates voor iedereen binnen en buiten de clan",
+			"apps": "Apps",
+			"stream": "Deel liefdadigheidsactiviteiten"
+		}
+	},
+	"validation": {
+		"invalidName": "Voer een geldige kanaalnaam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+		"duplicateName": "Kanaalnaam bestaat al in de categorie. Voer een andere naam in."
+	},
+	"privacy": {
+		"private": "Privékanaal",
+		"description": "Alleen geselecteerde leden en rollen kunnen dit kanaal zien."
+	},
+	"labels": {
+		"description": "Stel je kanaal in naar je voorkeur.",
+		"chooseType": "Kies kanaaltype:",
+		"channelName": "Wat is de kanaalnaam?",
+		"isPrivate": "Privékanaal?",
+		"placeholder": "Voer kanaalnaam in"
+	},
+	"errors": {
+		"typeRequired": "Kanaaltype is verplicht",
+		"nameRequired": "Kanaalnaam is verplicht",
+		"selectApp": "Kies een app",
+		"validName": "Voer een geldige kanaalnaam in"
+	},
+	"buttons": {
+		"cancel": "Annuleren",
+		"create": "Kanaal aanmaken",
+		"creating": "Aan het maken"
+	}
+}

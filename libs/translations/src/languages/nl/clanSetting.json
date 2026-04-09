@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "Instellingen",
+			"overview": "Overzicht",
+			"moderation": "Moderatie",
+			"auditLog": "Controlelog",
+			"channels": "Kanalen",
+			"integrations": "Integraties",
+			"emoji": "Emoji's",
+			"sticker": "Stickers",
+			"webhooks": "Webhooks",
+			"security": "Beveiliging",
+			"permissionDenied": "Je hebt geen toestemming om te wijzigen",
+			"sound": "Geluidseffecten",
+			"enableCommunity": "Community activeren"
+		},
+		"community": {
+			"title": "Community",
+			"enableCommunity": "Community activeren"
+		},
+		"subscriptions": {
+			"title": "Clan abonnementspakket",
+			"getStarted": "Aan de slag"
+		},
+		"userManagement": {
+			"title": "Gebruikersbeheer",
+			"members": "Leden",
+			"role": "Rollen",
+			"invite": "Uitnodigingen",
+			"bans": "Verbanningen"
+		}
+	}
+}

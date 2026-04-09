@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Je canvas-titel"
+	},
+	"editor": {
+		"placeholder": "Begin met typen...",
+		"uploadingImage": "Afbeelding laden..."
+	},
+	"actions": {
+		"save": "Opslaan",
+		"saving": "Aan het opslaan...",
+		"discardChanges": "Wijzigingen wissen"
+	},
+	"error": {
+		"title": "Fout"
+	},
+	"toolbar": {
+		"blockFormat": "Opmaak blok",
+		"addLink": "Link toevoegen",
+		"removeLink": "Link verwijderen",
+		"codeBlock": "Codeblok",
+		"cancel": "Annuleren",
+		"apply": "Toepassen"
+	},
+	"blocks": {
+		"paragraph": "Alinea",
+		"h1": "H1 Grote titel",
+		"h2": "H2 Middelgrote titel",
+		"h3": "H3 Kleine titel",
+		"checkedList": "Aangevinkte lijst",
+		"orderedList": "Genummerde lijst",
+		"bulletedList": "Opsommingstekenlijst",
+		"blockquote": "Citaat"
+	}
+}
