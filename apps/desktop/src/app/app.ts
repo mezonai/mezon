@@ -357,9 +357,7 @@ export default class App {
 	private static initMainWindow() {
 		const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
 		const savedWidth = Number(Main.store.get('window.width', workAreaSize.width));
-		console.log('savedWidth: ', savedWidth);
 		const savedHeight = Number(Main.store.get('window.height', workAreaSize.height));
-		console.log('savedHeight: ', savedHeight);
 		const width = savedWidth || 1280;
 		const height = savedHeight || 720;
 		const loginSettings = App.application.getLoginItemSettings();

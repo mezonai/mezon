@@ -87,7 +87,6 @@ export default class Main {
 
 	static bootstrapApp() {
 		log.initialize();
-		Main.store = new Store();
 		App.main(app, BrowserWindow);
 	}
 
@@ -100,6 +99,7 @@ export default class Main {
 		}
 	}
 }
+Main.store = new Store();
 
 ipcMain.handle(DOWNLOAD_FILE, async (event, { url, defaultFileName }) => {
 	let fileExtension = defaultFileName.split('.').pop().toLowerCase();
