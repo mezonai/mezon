@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "Donker",
+		"darker": "Donkerder",
+		"midnight": "Middernacht",
+		"light": "Licht",
+		"system": "Systeem",
+		"sunrise": "Zonopgang",
+		"redDark": "Donkerrood",
+		"purpleHaze": "Paarse Mist",
+		"abyssDark": "Donkere Afgrond",
+		"sunset": "Zonsondergang"
+	},
+	"desc": "Je kunt dit altijd later wijzigen!"
+}

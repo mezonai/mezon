@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Contact delen",
+		"searchPlaceholder": "Zoeken...",
+		"noResults": "Geen resultaten gevonden",
+		"noFriends": "Geen vrienden of kanalen",
+		"contactPreview": "Contact wordt gedeeld",
+		"cancel": "Annuleren",
+		"share": "Delen",
+		"sharing": "Aan het sturen...",
+		"group": "Groep",
+		"channel": "Kanaal",
+		"thread": "Topic"
+	},
+	"card": {
+		"call": "Bellen",
+		"message": "Bericht",
+		"blockedAction": "Je kunt deze actie niet uitvoeren.",
+		"cannotCallSelf": "Je kunt jezelf niet bellen."
+	},
+	"contactSharedSuccess": "Succesvol gedeeld",
+	"contactSharedError": "Kon niet delen"
+}

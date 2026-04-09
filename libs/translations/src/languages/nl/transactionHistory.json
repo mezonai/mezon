@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Transactiesgeschiedenis",
+		"subtitle": "Bekijk alle je transactie-activiteiten"
+	},
+	"footers": {
+		"noti": "Je hebt alle {{count}} transacties geladen",
+		"fetching": "Meer transacties laden..."
+	},
+	"filters": {
+		"all": "Alle transacties",
+		"sent": "Verzonden transacties",
+		"received": "Ontvangen transacties"
+	},
+	"transactionTypes": {
+		"sent": "Verzonden",
+		"received": "Ontvangen"
+	},
+	"currency": {
+		"code": "vi-VN",
+		"symbol": "Coins"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Geen transacties gevonden",
+			"description": "Je hebt nog geen transacties uitgevoerd. Je transactiesgeschiedenis verschijnt hier zodra je begint met tokens te sturen of ontvangen."
+		},
+		"noFilteredTransactions": {
+			"title": "Geen transacties gevonden",
+			"description": "Geen transacties gevonden voor de geselecteerde filter. Probeer een andere filter of controleer later."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "Transactie-ID",
+			"sender": "Afzender",
+			"amount": "Bedrag",
+			"receiver": "Ontvanger",
+			"note": "Notitie",
+			"created": "Aangemaakt"
+		},
+		"defaultNote": "Geen notitie",
+		"unknownUser": "Onbekende gebruiker"
+	},
+	"transactionItem": {
+		"idPrefix": "Transactie #"
+	}
+}

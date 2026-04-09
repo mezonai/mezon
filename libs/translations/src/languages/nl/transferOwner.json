@@ -1,0 +1,9 @@
+{
+	"title": "Clan-eigendom overdragen",
+	"description": "Dit zal de eigendom van {{clanName}} overdragen aan {{memberName}}",
+	"confirmation": "Bevestig dat door de eigendom van deze clan over te dragen aan {{memberName}}, het officieel van hen wordt.",
+	"buttons": {
+		"transfer": "Eigendom overdragen",
+		"cancel": "Annuleren"
+	}
+}

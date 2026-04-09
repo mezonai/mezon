@@ -91,7 +91,10 @@
 		"tatar": "Tatarça",
 		"portuguese": "Português",
 		"italian": "Italiano",
-		"japanese": "日本語"
+		"japanese": "日本語",
+		"french": "Français",
+		"german": "Deutsch",
+		"dutch": "Nederlands"
 	},
 	"voice": {
 		"title": "Voice",

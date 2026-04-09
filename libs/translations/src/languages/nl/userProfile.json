@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "Token overdragen",
+		"sendMessage": "Bericht verzenden",
+		"voiceCall": "Stembellen",
+		"videoCall": "Videobellen",
+		"addFriend": "Vriend worden",
+		"pending": "Wachten",
+		"removeFriend": "Vriend verwijderen"
+	},
+	"aboutMe": {
+		"headerTitle": "OVER MIJ",
+		"roles": {
+			"headerTitle": "ROLLEN"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Lid uitsluiten",
+		"kickFromServer": "{{username}} uitsluiten van clan",
+		"description": "Weet je zeker dat je {{username}} wilt uitsluiten van de clan? Ze kunnen terugkeren met een nieuwe uitnodiging.",
+		"reasonKick": "Reden van uitsluiting",
+		"buttonName": "Uitsluiten"
+	},
+	"transferOwnershipModal": {
+		"warning": "Dit zal de eigendom van <highlightClan>{{clanName}}</highlightClan> overdragen aan <highlightUser>{{username}}</highlightUser>. Deze actie is onherroepelijk!",
+		"sectionTitle": "Eigendom overdragen",
+		"acknowledgment": "Bevestig dat door de eigendom van deze clan over te dragen aan {{username}}, het officieel van hen wordt.",
+		"transferButton": "Overdragen",
+		"confirmTitle": "Eigendom overdragen?",
+		"confirmDescription": "Weet je zeker dat je de eigendom van {{clanName}} wilt overdragen aan {{username}}? Deze actie is onherroepelijk.",
+		"confirmButton": "Overdragen"
+	},
+	"pendingContent": {
+		"block": "Blokken",
+		"unblock": "Blok opheffen",
+		"reportUserProfile": "Gebruikersprofiel rapporteren",
+		"acceptFriend": "Vriend accepteren",
+		"rejectFriend": "Vriendenverzoek afwijzen",
+		"cancelFriendRequest": "Vriendenverzoek annuleren",
+		"copyUsername": "Gebruikersnaam kopiëren",
+		"copiedUserName": "{{username}} gekopieerd",
+		"removeFriend": "Vriend verwijderen",
+		"viewFullProfile": "Volledig profiel bekijken"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Uit groep verwijderen",
+			"removeSuccess": "Lid uit groep verwijderd",
+			"removeFailed": "Lid uit groep verwijderen mislukt"
+		},
+		"mezonMemberSince": "Mezon-lid sinds"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Gebruiker succesvol geblokkeerd",
+			"error": "Gebruiker kon niet worden geblokkeerd"
+		},
+		"unblockUser": {
+			"success": "Gebruiker succesvol ontgrendeld",
+			"error": "Gebruiker kon niet worden ontgrendeld"
+		}
+	},
+	"incomingFriendRequest": "INKOMEND VRIENDENVERZOEK",
+	"sendAddFriendSuccess": "Vriendenverzoek verzonden",
+	"accept": "Accepteren",
+	"ignore": "Negeren",
+	"labels": {
+		"aboutMe": "Over mij",
+		"memberSince": "Lid sinds",
+		"activity": "Activiteit",
+		"unknownUser": "Onbekende gebruiker",
+		"anonymous": "Anoniem",
+		"editProfile": "Profiel bewerken",
+		"note": "NOTITIE",
+		"addNote": "Klik om een notitie toe te voegen",
+		"showLess": "Minder tonen",
+		"addRole": "Rol toevoegen",
+		"addRoles": "Rollen toevoegen",
+		"removeRole": "Rol verwijderen",
+		"role": "Rol",
+		"nope": "Geen!",
+		"typoError": "Heb je het verkeerd getypt?",
+		"userNotFound": "Gebruiker niet in Clan"
+	},
+	"placeholders": {
+		"messageUser": "Bericht naar @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Saldo",
+		"transferFunds": "Token overdragen",
+		"editCustomStatus": "Aangepaste status bewerken",
+		"setCustomStatus": "Aangepaste status instellen",
+		"manageAccounts": "Accounts beheren",
+		"switchAccounts": "Accounts wisselen",
+		"copyUserId": "Gebruikers-ID kopiëren",
+		"statusOptions": {
+			"online": "Online",
+			"idle": "Tijdelijk afwezig",
+			"doNotDisturb": "Niet storen",
+			"invisible": "Verborgen"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Je ontvangt geen meldingen op je computer",
+			"invisible": "Je wordt weergegeven als offline"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 minuten",
+			"for1Hour": "1 uur",
+			"for3Hours": "3 uur",
+			"for8Hours": "8 uur",
+			"for24Hours": "24 uur",
+			"forever": "Altijd"
+		},
+		"addAccountModal": {
+			"email": "E-mail",
+			"password": "Wachtwoord",
+			"emailPlaceholder": "Voer je e-mail in",
+			"passwordPlaceholder": "Voer je wachtwoord in",
+			"cancel": "Annuleren",
+			"logIn": "Inloggen"
+		},
+		"sendTokenModal": {
+			"title": "Token Verzenden",
+			"description": "Token aan een andere gebruiker overdragen",
+			"fields": {
+				"to": "Naar",
+				"amount": "Hoeveelheid",
+				"note": "Notitie (Optioneel)"
+			},
+			"placeholders": {
+				"searchUsers": "Zoek gebruiker...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Voer notitie in..."
+			},
+			"noUsersFound": "Geen gebruikers gevonden",
+			"currency": "VND",
+			"buttons": {
+				"cancel": "Annuleren",
+				"sendTokens": "Token Verzenden"
+			},
+			"errors": {
+				"exceedWalletBalance": "Bedrag overschrijdt portemonneesaldo",
+				"maximumLimit": "Maximaal 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Transactiesgeschiedenis",
+			"subtitle": "Bekijk alle je transactie-activiteiten",
+			"tabs": {
+				"all": "Alle transacties",
+				"sent": "Verzonden transacties",
+				"received": "Ontvangen transacties"
+			},
+			"transactionTypes": {
+				"sent": "Verzonden",
+				"received": "Ontvangen"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Geen transacties gevonden",
+					"description": "Je hebt nog geen transacties uitgevoerd. Je transactiesgeschiedenis verschijnt hier zodra je begint met tokens te sturen of ontvangen."
+				},
+				"noFilteredTransactions": {
+					"title": "Geen transacties gevonden",
+					"description": "Geen transacties gevonden voor de geselecteerde filter. Probeer een andere filter of controleer later."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Transactie #"
+			},
+			"loading": {
+				"fetching": "Transacties laden...",
+				"fetchingMore": "Meer transacties laden...",
+				"scrollMore": "Scroll omlaag om meer te bekijken",
+				"allLoaded": "Je hebt alle {{count}} transacties geladen"
+			}
+		},
+		"customStatusModal": {
+			"title": "Aangepaste status instellen",
+			"whatsCookin": "Waar denk je aan, {{name}}",
+			"placeholder": "Waar denk je aan?",
+			"clearAfter": "Wissen na",
+			"timeOptions": {
+				"today": "Vandaag",
+				"fourHours": "4 uur",
+				"oneHour": "1 uur",
+				"thirtyMinutes": "30 minuten",
+				"dontClear": "Niet wissen"
+			},
+			"buttons": {
+				"cancel": "Annuleren",
+				"save": "Opslaan"
+			}
+		}
+	},
+	"channelVoiceSettings": "Stemkanaal instellingen",
+	"muteVoice": "Stem dempen",
+	"kickVoice": "Uit stemkanaal verwijderen",
+	"voiceInfo": {
+		"inVoice": "In stemkanaal",
+		"joinVoice": "Bij stem betreden"
+	},
+	"ban": {
+		"title": "Gebruiker verbannen",
+		"unbanTitle": "Gebruiker ontban",
+		"content": "Gebruiker \"{{userName}}\" verbannen?",
+		"banButton": "Verbannen",
+		"unBanButton": "Ontban",
+		"reasonBan": "Reden van verbanning",
+		"unBanDescription": "Wil je gebruiker \"{{userName}}\" ontban?",
+		"time": {
+			"title": "Tijdsperiode",
+			"tenMinutes": "10 minuten",
+			"thirtyMinutes": "30 minuten",
+			"oneHour": "1 uur",
+			"sixHours": "6 uur",
+			"twelveHours": "12 uur",
+			"oneDay": "1 dag",
+			"threeDays": "3 dagen"
+		},
+		"banList": "Verbannen lijst",
+		"search": "Gebruikers zoeken die zijn verbannen",
+		"banListEmpty": "Geen verbannen gebruikers gevonden"
+	}
+}

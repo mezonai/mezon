@@ -1,0 +1,25 @@
+{
+  "inbox": "Inbox",
+  "tabs": {
+		"forYou": "Voor jou",
+		"messages": "Berichten",
+		"mentions": "Vermeldingen",
+		"topics": "Korte discussies"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Nog niets hier",
+      "description": "Kom terug om meldingen over evenementen, streaming en meer te ontvangen."
+    },
+    "messages": {
+      "title": "Je hebt alles bekeken!",
+      "protip": "Tip:",
+      "description": "Open de inbox door op CTRL+I te drukken en markeer het eerste bericht als gelezen met CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Je hebt alles bekeken!",
+      "protip": "Tip:",
+      "description": "Elke keer als iemand je vermeldt, wordt het hier 7 dagen opgeslagen."
+    }
+  }
+}

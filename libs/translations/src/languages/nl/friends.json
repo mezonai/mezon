@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Vriendenverzoeken",
+		"received": "Ontvangen",
+		"sent": "Verzonden",
+		"emptyReceived": {
+			"title": "Geen inkomende vriendenverzoeken",
+			"description": "Hier zie je alle vriendenverzoeken die mensen naar je hebben gestuurd."
+		},
+		"emptySent": {
+			"title": "Geen uitgaande vriendenverzoeken",
+			"description": "Hier zie je alle vriendenverzoeken die je naar anderen hebt gestuurd."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Inkomend vriendenverzoek",
+		"findYourFriend": "Vind je vrienden",
+		"addByUserName": "Toevoegen via gebruikersnaam of telefoonnummer",
+		"addByUsername": "Toevoegen via {{username}}",
+		"searchUsernamePlaceholder": "Voer gebruikersnaam of telefoonnummer in",
+		"whoYouWantToAddFriend": "Wie wil je als vriend toevoegen?",
+		"byTheWay": "Tussenpozen, je gebruikersnaam is",
+		"sendRequestButton": "Vriendenverzoek verzenden",
+		"addFriendToast": "Vriendenverzoek verzonden"
+	},
+	"friends": "Vrienden",
+	"noFriendsResultsFound": "Geen vriend resultaten gevonden",
+	"toast": {
+		"sendAddFriendSuccess": "Vriendenverzoek succesvol verzonden!",
+		"acceptAddFriendSuccess": "Uitnodiging geaccepteerd!",
+		"sendAddFriendFail": "Hmm, er is een fout opgetreden. Controleer of de gebruikersnaam correct is.",
+		"somethingWentWrong": "Er is een fout opgetreden",
+		"friendRequestAlreadySent": "Vriendenverzoek is reeds verzonden, wachtend op acceptatie."
+	},
+	"you": "jij"
+}

@@ -1,0 +1,104 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Als gelezen markeren"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Uitnodigen",
+          "markFavorite": "Aan favorieten toevoegen",
+          "unMarkFavorite": "Uit favorieten verwijderen",
+          "copyLink": "Link kopiëren"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Kanaalmelding uitschakelen",
+          "unMuteChannel": "Kanaalmelding inschakelen",
+          "muteThread": "Thema-melding uitschakelen",
+          "unMuteThread": "Thema-melding inschakelen",
+          "notification": "Meldingsinstellingen",
+          "for15Minutes": "Voor 15 minuten",
+          "for1Hour": "Voor 1 uur",
+          "for3Hours": "Voor 3 uur", 
+          "for8Hours": "Voor 8 uur",
+          "for24Hours": "Voor 24 uur",
+          "untilTurnedBackOn": "Totdat het weer wordt ingeschakeld",
+          "useCategoryDefault": "Categorie-standaard gebruiken",
+          "all": "Alle",
+          "onlyMention": "Alleen @vermelding",
+          "nothing": "Niets",
+          "processing": "Aan het verwerken...",
+          "muteChannelStatus": "Kanaalmelding uitgeschakeld",
+          "muteThreadStatus": "Thema-melding uitgeschakeld",
+          "unmuteChannelStatus": "Kanaalmelding ingeschakeld", 
+          "unmuteThreadStatus": "Thema-melding ingeschakeld",
+          "mutedUntil": "Melding uit tot",
+          "muteSuccess": "Melding succesvol uitgeschakeld!",
+          "unMuteSuccess": "Melding succesvol ingeschakeld!",
+          "muteFailed": "Melding uitschakelen mislukt!",
+          "unMuteFailed": "Melding inschakelen mislukt!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Topics",
+        "searchThreads": "Themanamen zoeken",
+        "searchFiles": "Bestanden zoeken",
+        "searchCanvas": "Canvas naam zoeken"
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Kanaal bewerken",
+          "deleteChannel": "Kanaal verwijderen",
+          "duplicateChannel": "Kanaal dupliceren",
+          "leaveChannel": "Kanaal verlaten",
+          "createTextChannel": "Tekstkanaal aanmaken",
+          "createVoiceChannel": "Stemkanaal aanmaken",
+          "openChat": "Gesprek openen",
+          "hideNames": "Namen verbergen",
+          "createThread": "Topic aanmaken"
+      },
+      "devMode": {
+          "title": "Ontwikkelmodus",
+          "copyChannelID": "Kanaal-ID kopiëren"
+      },
+      "manageThreadMenu": {
+          "editThread": "Topic bewerken",
+          "deleteThread": "Topic verwijderen",
+          "leaveThread": "Topic verlaten",
+          "closeThread": "Topic sluiten",
+          "lockThread": "Topic vergrendelen",
+          "copyLink": "Link kopiëren"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "Kanaal-ID gekopieerd"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "{{threadName}} verwijderen",
+          "content": "Weet je zeker dat je dit topic wilt verwijderen?",
+          "confirmText": "Ja"
+      },
+      "channel": {
+          "title": "#{{channelName}} verwijderen",
+          "content": "Weet je zeker dat je dit kanaal wilt verwijderen?",
+          "confirmText": "Ja",
+          "systemChannel": "Systeemkanaal kan niet worden verwijderd",
+          "error": "Kanaal verwijderen fout: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Topic verlaten",
+    "yesButton": "Topic verlaten",
+    "textConfirm": "Weet je zeker dat je dit topic wilt verlaten? Je ontvangt geen berichten van deze reeks meer nadat je bent vertrokken."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Kanaal verlaten",
+    "yesButton": "Kanaal verlaten",
+    "textConfirm": "Weet je zeker dat je dit kanaal wilt verlaten? Je ontvangt geen berichten van dit kanaal meer nadat je bent vertrokken.",
+    "error": "Kanaal verlaten fout: {{error}}"
+  },
+  "btnBadgeCount": "Nieuw",
+  "favoriteChannel": "FAVORIET KANAAL"
+}

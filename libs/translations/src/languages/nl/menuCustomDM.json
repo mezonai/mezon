@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Groep aanpassen",
+  "inviteLinks": "Uitnodigingslinks",
+  "leaveGroup": "Groep verlaten",
+  "closeDM": "Bericht sluiten",
+  "groupName": "Groepsnaam",
+  "save": "Opslaan",
+  "removeAvatar": "Afbeelding verwijderen",
+  "invalidGroupName": "Ongeldige groepsnaam",
+  "uploadImage": "Afbeelding uploaden",
+  "toast": {
+    "leaveGroupError": "Fout bij verlaten groep: {{error}}"
+  }
+}

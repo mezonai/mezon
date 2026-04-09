@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "reset": "Herstellen",
+    "close": "Sluiten",
+    "kick": "Verwijderen"
+  },
+  "form": {
+    "required": "Vereist veld",
+    "error": "Fout"
+  },
+  "kickMember": {
+    "title": "@{{username}} verwijderen uit {{clanName}}",
+    "description": "Weet je zeker dat je @{{username}} wilt verwijderen uit {{clanName}}? Ze kunnen terugkeren met een nieuwe uitnodiging.",
+    "reasonLabel": "Reden van verwijderen"
+  }
+}

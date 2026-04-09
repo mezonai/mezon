@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Bericht doorsturen",
+		"searchPlaceholder": "Zoeken",
+		"noResults": "Kon niet vinden wat je zocht?",
+		"searchFriendsUsers": "Vrienden en gebruikers zoeken",
+		"searchingChannel": "Kanaal zoeken",
+		"sharedContent": "Gedeelde inhoud",
+		"cancel": "Annuleren",
+		"send": "Verzenden",
+		"sending": "Aan het verzenden...",
+		"sendingProgress": "Aan het verzenden ({{current}}/{{total}})...",
+		"image": "afbeelding",
+		"images": "afbeeldingen",
+		"video": "video",
+		"videos": "video's",
+		"file": "bestand",
+		"files": "bestanden",
+		"additionalMessage": "Toegevoegd bericht (optioneel)",
+		"additionalMessagePlaceholder": "Voer bijvoegend bericht in..."
+	},
+	"successMessage": "Berichten succesvol doorgestuurd",
+	"errorMessage": "Berichten konden niet worden doorgestuurd"
+}

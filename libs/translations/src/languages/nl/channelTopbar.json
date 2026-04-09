@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Kanalen",
+		"members": "Leden",
+		"guideClan": "Gids"
+	},
+	"tooltips": {
+		"clickToEdit": "Klik om groepsnaam te bewerken",
+		"startVoiceCall": "Stembellen starten",
+		"startVideoCall": "Videobellen starten",
+		"showMemberList": "Ledenlijst tonen",
+		"hideMemberList": "Ledenlijst verbergen",
+		"showUserProfile": "Gebruikersprofiel tonen",
+		"hideUserProfile": "Gebruikersprofiel verbergen",
+		"files": "Bestanden",
+		"canvas": "Canvas",
+		"threads": "Topics",
+		"notificationSettings": "Meldingsinstellingen",
+		"pinnedMessages": "Vastgezette berichten",
+		"members": "Leden",
+		"showChat": "Chat tonen",
+		"hideChat": "Chat verbergen",
+		"addFriendsToDM": "Vrienden toevoegen aan DM",
+		"jump": "Springen",
+		"gallery": "Bibliotheek",
+		"timelineView": "Naar tijdlijn-weergave overschakelen",
+		"defaultView": "Naar chat-weergave overschakelen"
+	},
+	"directMessage": "Directe bericht",
+	"activeThreads": "Actieve topics",
+	"joinedThreadsLast30Days": "Deelnemende topics (laatste 30 dagen)",
+	"olderThreads": "Oudere topics",
+	"loading": "Aan het laden...",
+	"topic": "Topic",
+	"invoice": "In stemkanaal",
+	"reactions": "Reacties",
+	"callMessages": {
+		"startedVoiceCall": "Stembellen is gestart",
+		"startedVideoCall": "Videobellen is gestart"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "Groep kanaal-ID ontbreekt",
+		"dmChannelIdMissing": "DM kanaal-ID ontbreekt",
+		"youAreOnAnotherCall": "Je bent in een ander gesprek"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "Dit kanaal heeft nog geen vastgezette berichten.",
+		"protip": "TIPTIP:",
+		"emptyDescription": "Gebruikers met 'Berichten beheren' rechten kunnen berichten vastzetten uit het context menu.",
+		"unpinMessage": "Bericht losmaken",
+		"unpinConfirmation": "Weet je zeker dat je dit vastgezette bericht wilt verwijderen?",
+		"cancel": "Annuleren",
+		"unpinIt": "Losmaken"
+	},
+	"threads": {
+		"emptyTitle": "Geen topics.",
+		"emptyDescription": "Focus op het gesprek met een topic - een tijdelijk tekstkanaal.",
+		"createThread": "Topic aanmaken"
+	},
+	"canvas": {
+		"emptyTitle": "Geen canvas.",
+		"emptyDescription": "Focus op het gesprek met een canvas - een tijdelijk tekstkanaal.",
+		"createCanvas": "Canvas aanmaken"
+	},
+	"files": {
+		"emptyTitle": "Geen bestanden.",
+		"emptyDescription": "Op dit moment zijn er geen bestanden gedeeld in dit kanaal.",
+		"searchPlaceholder": "Bestandsnaam zoeken"
+	},
+	"fileItem": {
+		"download": "Downloaden",
+		"sharedBy": "Gedeeld door {{username}} {{time}}",
+		"attachmentFailed": "Bijlage kon niet worden geladen."
+	},
+	"notificationSetting": {
+		"muteChannel": "Kanaal melding uitschakelen",
+		"unmuteChannel": "Kanaal melding inschakelen",
+		"mutedUntil": "Melding uit tot {{date}}",
+		"useCategoryDefault": "Categorie-standaard gebruiken",
+		"muteOptions": {
+			"for15Minutes": "Voor 15 minuten",
+			"for1Hour": "Voor 1 uur",
+			"for3Hours": "Voor 3 uur",
+			"for8Hours": "Voor 8 uur",
+			"for24Hours": "Voor 24 uur",
+			"untilTurnedBackOn": "Totdat het weer wordt ingeschakeld"
+		}
+	},
+	"gallery": {
+		"title": "Bibliotheek",
+		"sentDate": "Verzendedatum",
+		"fromDate": "Van datum",
+		"toDate": "Tot datum",
+		"filters": {
+			"all": "Alle",
+			"images": "Afbeeldingen",
+			"videos": "Video's"
+		},
+		"dateRange": {
+			"from": "Van {{date}}",
+			"to": "Tot {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Startdatum moet voor of op einddatum zijn"
+		},
+		"buttons": {
+			"clearAll": "Alles wissen",
+			"apply": "Toepassen",
+			"clearDateFilter": "Datumbewerking wissen"
+		},
+		"emptyState": {
+			"noMediaFiles": "Geen mediabestanden gevonden",
+			"noMediaFilesDateRange": "Geen mediabestanden gevonden voor geselecteerde datumbereik",
+			"noImages": "Geen afbeeldingen gevonden",
+			"noVideos": "Geen video's gevonden"
+		},
+		"loading": {
+			"olderImages": "Oudere afbeeldingen laden...",
+			"newerImages": "Nieuwere afbeeldingen laden...",
+			"filterChange": "Media laden..."
+		},
+		"filesCount": "{{count}} bestanden",
+		"imageError": "Fout"
+	},
+	"modals": {
+		"threads": {
+			"title": "Topics",
+			"create": "Aanmaken",
+			"results": "Resultaten"
+		},
+		"canvas": {
+			"title": "Canvas",
+			"create": "Aanmaken"
+		},
+		"files": {
+			"title": "Bestanden"
+		},
+		"pinnedMessages": {
+			"title": "Vastgezette berichten"
+		}
+	},
+	"createThread": {
+		"newThread": "Nieuw topic",
+		"inviteMessage": "Je kunt nieuwe mensen uitnodigen door hen @tevermelden.",
+		"validation": {
+			"invalidChannelName": "Voer een geldige themanaam in (maximaal 65 tekens, alleen letters, cijfers, _ of -).",
+			"threadNameRequired": "Theman is vereist.",
+			"starterMessageRequired": "Startbericht is vereist."
+		},
+		"threadName": "Theman",
+		"enterThreadName": "Theman invoeren",
+		"privateThread": "Privé topic",
+		"privateThreadDescription": "Alleen degenen die je uitnodigt en beheerders kunnen zien",
+		"toast": {
+			"threadNameTooShort": "Theman moet langer zijn dan 3 tekens",
+			"threadNameExists": "Theman bestaat al",
+			"initialMessageRequired": "Een initieel bericht nodig om topic te starten.",
+			"messageTooLong": "Bericht overschrijdt limiet van 4000 tekens",
+			"messageLimitExceeded": "Bericht overschrijdt limiet van {{limit}} tekens"
+		},
+		"placeholder": {
+			"threadName": "Voer themanaam in"
+		}
+	},
+	"moreFile": "meer bestand",
+	"moreFiles": "meer bestanden"
+}

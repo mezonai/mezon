@@ -1,0 +1,50 @@
+{
+	"title": "Stream banner",
+	"uploadThumbnail": "Banner uploaden",
+	"currentThumbnail": "Huidige banner",
+	"requirementsTitle": "Eisen",
+	"buttons": {
+		"change": "Wijzigen",
+		"remove": "Verwijderen",
+		"selectFile": "Bestand selecteren",
+		"uploading": "Aan het uploaden...",
+		"cancel": "Annuleren",
+		"confirmUpload": "Bevestigen",
+		"removing": "Aan het verwijderen...",
+		"removeThumbnail": "Banner verwijderen"
+	},
+	"upload": {
+		"title": "Upload je banner",
+		"description": "Klik om te bladeren of sleep en plaats je afbeelding"
+	},
+	"confirmModal": {
+		"uploadTitle": "Upload bevestigen",
+		"uploadDescription": "Deze afbeelding als stream banner instellen?",
+		"uploadMessage": "Deze banner wordt weergegeven wanneer je stream offline is. Alle leden zien deze update onmiddellijk.",
+		"removeTitle": "Banner verwijderen",
+		"removeQuestion": "Weet je zeker?",
+		"removeMessage": "Dit zal je stream banner verwijderen. Het standaard splash-scherm wordt weergegeven wanneer je stream offline is.",
+		"removeWarning": "Deze actie is onherroepelijk."
+	},
+	"requirements": {
+		"format": {
+			"title": "Formaat",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Resolutie",
+			"value": "Aanbevolen 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Groottelimiet",
+			"value": "Maximaal 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Kanaal niet gevonden",
+		"clientNotReady": "Client/session niet klaar",
+		"uploadFailed": "Banner uploaden mislukt. Probeer het opnieuw.",
+		"removeFailed": "Banner verwijderen mislukt. Probeer het opnieuw."
+	},
+	"saved": "Banner opgeslagen"
+}

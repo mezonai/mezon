@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Bouw een Leukere Community",
+			"description": "Niet alleen chatten – hier organiseer je, verbind je met teams, vrienden en community op een leuke manier."
+		},
+		"section2": {
+			"title": "Beste WFH Ervaring voor Organisaties",
+			"description": "Werken vanuit huis betekent niet alleen werken. Samenwerken, communiceren en vieren samen — soms op afstand. Ervaar de beste WFH voor je organisatie."
+		},
+		"section3": {
+			"title": "Leden Relatierichting",
+			"description": "Wij geloven dat sterke relaties stevige organisaties bouwen. Alle functies zijn ontworpen om leden te verbinden. Ledenrelaties versterkt."
+		},
+		"section4": {
+			"title": "Bijdragen voor Beloningen",
+			"description": "Deelneem, verdien credits en ontvang tokens wanneer je de community laat groeien. Jouw stem is jouw waarde. Bijdragen voor beloningen."
+		},
+		"section5": {
+			"title": "Detail en Duidelijke Rapportage",
+			"description": "Volg communitygroei en interactie met analyses en gedetailleerde rapportages. Altijd op de hoogte, betere beslissingen nemen."
+		}
+	},
+	"features": [
+		{
+			"title": "Je kunt Emoji's, Stickers en Geluiden Uploaden",
+			"description": "Volledig Gratis — Pas je eigen Emoji's, Stickers en Geluiden aan om jezelf te uiten in gesprekken."
+		},
+		{
+			"title": "Ledenrechten Beheren in Clan",
+			"description": "Beheer eenvoudig ledenrechten en rollen in de clan om ervoor te zorgen dat iedereen een gepaste en veilige ervaring heeft."
+		},
+		{
+			"title": "Leden Overal met Gelijke interesses",
+			"description": "Leden zullen lid worden van je clan via uitnodigingen of openbare ontdekking, een diverse en levendige community creërend."
+		},
+		{
+			"title": "Clan Maken is Makkelijker dan ooit",
+			"description": "Reageer snel met emoji's zonder tekst te typen."
+		}
+	],
+	"featuresTitle": "Bouw Jouw Community Beter",
+	"download": "Downloaden",
+	"faq": {
+		"title": "Meer Hulp Nodig?",
+		"seeAll": "Bekijk alle FAQ's",
+		"learnMore": "Lees meer",
+		"questions": [
+			{
+				"question": "Wat is een Clan op Mezon?",
+				"answer": "Een clan is het hart van Mezon — waar mensen verbinden, samenwerken en delen via communities rondom gemeenschappelijke interesses, doelen of passies. Een clan kan een kleine vriendengroep of een grote community met duizenden leden zijn. In een clan kun je chatten via georganiseerde Kanalen, evenementen houden via Stemkanalen en de community verrijken met Bots, Apps en Mezon Tokens."
+			},
+			{
+				"question": "Hoe word ik lid van een Clan op Mezon?",
+				"answer": "Je kunt een clan op twee manieren ontdekken en joinen: via de Ontdekken knop in de app of via de Clan-website op mezon.ai/clans, of door een uitnodigingslink die is gedeeld door vrienden, teamleden of beheerders. Klik gewoon op 'Join' om lid te worden van de community. Elk gebruiker kan maximaal 50 clans tegelijk joinen. Bekijk populaire clans zoals Student Clan, Gamer Clan en Business Clan."
+			},
+			{
+				"question": "Hoe maak ik mijn eigen Clan?",
+				"answer": "Clan maken is eenvoudig en flexibel. Navigeer naar het Clan-gedeelte en maak een nieuwe clan met een paar klikken. Je kunt een naam, embleem en basisinstellingen instellen om je community aan te passen. Na het aanmaken kun je vrienden en teamleden uitnodigen om te beginnen met chatten, ideeën delen of samenwerken. Je kunt ook kanalen beheren, rechten instellen en eigendom overdragen indien nodig."
+			},
+			{
+				"question": "Kan ik de Clan verlaten als ik er niet meer in zit?",
+				"answer": "Ja, als je de clan niet meer wilt betreden, kun je 'Clan Verlaten' selecteren in de claninstellingen. Na het verlaten worden alle berichtgeschiedenis en toegang tot de clan-kanalen verwijderd van je account. Je kunt altijd weer joinen als je een uitnodigingslink hebt of als de clan openbaar ontdekt kan worden."
+			}
+		]
+	}
+}

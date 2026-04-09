@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Geluidseffect uploaden",
+		"delete": "Verwijderen",
+		"uploadDetailScreen": "Uploaden"
+	},
+	"content": {
+		"description": "•  Alleen .mp3, .wav-bestanden geaccepteerd, maximale grootte 1MB.\\n•  Geef geluidseffecten herkenbare namen.\\n•  Geluidseffecten worden gebruikt in clanmeldingen of evenementen.",
+		"requirements": "UPLOAD EISEN",
+		"reqSize": "- Niet groter dan 1024KB.",
+		"audioFile": "Audio-bestand",
+		"audioName": "Geluidsnaam",
+		"preview": "Voorbeeld",
+		"chooseAudioFile": "Audio-bestand kiezen"
+	},
+	"toast": {
+		"errorSizeLimit": "Groottelimiet van 1MB overschreden",
+		"errorFileType": "Ongeldig bestandsformaat. Alleen .mp3, .mpeg en .wav bestanden geaccepteerd."
+	},
+	"main": {
+		"uploadInstructions": "UPLOADINSTRUCTIES",
+		"fileRequirements": "Alleen .mp3, .wav-bestanden geaccepteerd, maximale grootte 1MB. Geef geluidseffecten herkenbare namen. Geluidseffecten worden gebruikt in clanmeldingen of evenementen.",
+		"uploadHere": "Uploaden hier!",
+		"personalizeDescription": "Pas geluidseffecten aan voor je clan!",
+		"uploadSound": "Geluid uploaden",
+		"soundEffectList": "Lijst met geluidseffecten",
+		"noSoundEffects": "Nog geen geluidseffecten. Druk op 'Geluid uploaden' om toe te voegen!"
+	},
+	"modal": {
+		"titleEdit": "Geluidseffect bewerken",
+		"titleUpload": "Geluidseffect uploaden",
+		"subtitle": "Ondersteunt MP3, WAV-formaat • Maximaal 1MB",
+		"preview": "Voorbeeld",
+		"audioFile": "Audio-bestand",
+		"soundName": "Geluidsnaam",
+		"soundVolume": "Volume",
+		"chooseOrDrop": "Kies of sleep het bestand",
+		"browse": "Bladeren",
+		"placeholder": "Bijv: miauw van een kat",
+		"cancel": "Annuleren",
+		"uploading": "Aan het uploaden...",
+		"update": "Bijwerken",
+		"upload": "Uploaden",
+		"errorFileType": "Ondersteunt .mp3 of .wav bestanden",
+		"errorFileSize": "Bestand is te groot, maximaal 1MB",
+		"errorUploadFailed": "Geluid kon niet worden geüpload",
+		"characters": "Naam moet van 3 tot 64 tekens zijn",
+		"errorName": "Naam geluidseffect moet van {{min}} tot {{max}} tekens zijn, alleen letters, cijfers, _ en -"
+	}
+}

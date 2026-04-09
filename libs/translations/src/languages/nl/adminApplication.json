@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Nieuwe app aanmaken",
+			"bot": "Nieuwe bot aanmaken"
+		},
+		"form": {
+			"type": {
+				"label": "TYPE",
+				"options": {
+					"createApplication": "App aanmaken",
+					"createBot": "Bot aanmaken"
+				}
+			},
+			"name": {
+				"label": "NAAM"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Schaduw-Bot",
+			"agreement": {
+				"text": "Door op Aanmaken te klikken, ga je akkoord met",
+				"termsOfService": "Ontwikkelaars Servicevoorwaarden",
+				"policy": "Ontwikkelaarsbeleid",
+				"and": "en"
+			}
+		},
+		"buttons": {
+			"cancel": "Annuleren",
+			"create": "Aanmaken",
+			"creating": "Aan het maken...",
+			"confirm": "Bevestigen"
+		},
+		"errors": {
+			"nameRequired": "Naam is vereist om je nieuwe {type} aan te maken.",
+			"urlRequired": "URL is vereist om je nieuwe app aan te maken.",
+			"invalidUrl": "Voer een geldige URL in (bijv. https://voorbeeld.nl).",
+			"createFailed": "App kon niet worden aangemaakt of ontbreekt ID in reactie",
+			"unexpectedError": "Er is een onverwachte fout opgetreden. {message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "In schaduw-modus kan bot alle berichten ontvangen die naar de maker worden verzonden, maar kan berichten niet verzenden."
+		},
+		"shadowConfirm": {
+			"title": "Weet je zeker dat je de Schaduw-Bot modus wilt inschakelen?",
+			"message": "In deze modus kan bot alle berichten ontvangen die naar de maker worden verzonden maar kan berichten niet verzenden."
+		}
+	},
+	"sidebar": {
+		"menu": "Menu",
+		"closeMenu": "Menu sluiten"
+	},
+	"tabs": {
+		"generalInformation": "Algemene informatie",
+		"installation": "Installatie",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Algemene informatie",
+		"subtitle": "Wat moeten we je product noemen? Wat doet het geweldig? Welk embleem moet het voorstellen op Mezon? Vertel ons hier!",
+		"agreement": {
+			"text": "Door op Aanmaken te klikken, ga je akkoord met",
+			"adminTerms": "Beheerders Servicevoorwaarden",
+			"adminPolicy": "Beheerdersbeleid",
+			"and": "en"
+		},
+		"appIcon": {
+			"label": "App embleem",
+			"remove": "Verwijderen",
+			"size": "Grootte: {size}"
+		},
+		"form": {
+			"name": "Naam",
+			"url": "URL",
+			"botShadow": "Schaduw-Bot",
+			"description": {
+				"label": "Beschrijving (maximaal 400 tekens)",
+				"subtitle": "Je beschrijving verschijnt in het Over Bot gedeelte",
+				"placeholder": "Schrijf een korte beschrijving van je Bot"
+			},
+			"appId": "Bot ID",
+			"appToken": "Token"
+		},
+		"token": {
+			"newTokenWarning": "Dit is je nieuwe token. Kopieer en bewaar het veilig, je zal het niet opnieuw kunnen zien.",
+			"securityInfo": "Om veiligheidsredenen kan token slechts één keer worden bekeken bij creatie. Als je het bent vergeten of verliest, maak dan een nieuw token aan."
+		},
+		"buttons": {
+			"copy": "Kopiëren",
+			"copied": "Gekopieerd!",
+			"copyToken": "Token kopiëren",
+			"resetToken": "Token resetten",
+			"delete": "Verwijderen"
+		},
+		"errors": {
+			"invalidUrl": "Voer een geldige URL in (bijv. https://voorbeeld.nl).",
+			"clientNotInitialized": "Client of bestand niet geïnitieerd",
+			"resetTokenFailed": "Token resetten mislukt:"
+		}
+	},
+	"installation": {
+		"title": "Installatie",
+		"subtitle": "Kies hoe gebruikers je app installeren. Maak een installatielink, kies installatie-context om te ondersteunen, en bepaal scopes en rechten die je wilt vragen.",
+		"installLink": {
+			"title": "Installatielink",
+			"description": "Gebruik de verstrekte installatielink of registreer een aangepaste link. Als je een aangepaste link kiest, worden gebruikers die je app toevoigen naar je URL geleid in plaats van het App-Add proces in Mezon.",
+			"option": "Door Mezon verstrekte link"
+		},
+		"buttons": {
+			"copy": "Kopiëren",
+			"copied": "Gekopieerd!"
+		},
+		"loading": "App-gegevens laden...",
+		"notFound": "App-gegevens niet gevonden"
+	},
+	"clientInformation": {
+		"title": "Clientinformatie",
+		"clientId": "Client ID",
+		"clientSecret": "Client Secret",
+		"hiddenForSecurity": "Verborgen om veiligheidsredenen",
+		"resetSecret": "Secret resetten",
+		"publicClient": {
+			"title": "Publieke Client",
+			"description": "Publieke client kan client authenticatie informatie geheim houden (bijv. desktop/mobile apps die geen server gebruiken om requests uit te voeren)"
+		},
+		"buttons": {
+			"copy": "Kopiëren",
+			"copied": "Gekopieerd!"
+		},
+		"resetSecretPopup": {
+			"title": "Nieuwe Secret Key aanmaken?",
+			"warning": "Je app stopt met werken tot je de secret key in je app-code bijwerkt.",
+			"nevermind": "Niet erg",
+			"confirm": "Akkoord!"
+		},
+		"toasts": {
+			"addRedirectUri": "Voeg minstens één redirect URI toe voordat je secret key reset!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Dashboard",
+		"applications": "Apps",
+		"teams": "Teams",
+		"embedDebugger": "Embed Debugger",
+		"document": "Document"
+	},
+	"applicationsPage": {
+		"title": "Apps",
+		"newApplicationButton": "Nieuwe App of Bot aanmaken",
+		"develop": "Ontwikkelen",
+		"subtitle": "om Mezon aan te passen en uit te breiden voor miljoenen gebruikers.",
+		"appsLinkText": "apps",
+		"sortBy": "Sorteren op:",
+		"sortOptions": {
+			"dateOfCreation": "Aanmaakdatum",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Klein",
+			"large": "Groot"
+		},
+		"sections": {
+			"myApplications": "Mijn Apps",
+			"myBots": "Mijn Bots"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Gebruik Mezon als een autorisatiesysteem of gebruik onze API namens je gebruikers. Voeg redirect URI toe, kies scope, gooi een D20 om geluk te krijgen, en begin!",
+		"learnMore": "Lees meer over OAuth2",
+		"generator": {
+			"title": "OAuth2 URL Generator",
+			"description": "Maak een uitnodigingslink voor je app door de benodigde scopes en rechten te selecteren. Deel vervolgens de URL met anderen!",
+			"scopes": "Scopes"
+		},
+		"redirects": {
+			"title": "Redirects",
+			"description": "Je moet minstens één URI specificeren om authenticatie te laten werken. Als je een URI in de OAuth-request overbrengt, moet deze exact matchen met een van de URIs die je hier invoert.",
+			"addRedirect": "Redirect toevoegen",
+			"toasts": {
+				"fillAllInputs": "Vul alle velden met geldige URI's!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Er zijn lege invoervelden!",
+			"invalidUris": "URI moet geldig zijn!",
+			"redirectUriRequired": "Redirect URI is verplicht!"
+		}
+	},
+	"backToApps": "Terug naar Apps",
+	"selectLabel": "KIES {{type}}",
+	"settings": "INSTELLINGEN",
+	"flows": {
+		"title": "Chat Flow",
+		"hasTokenInfo": "Je moet Token instellen voordat je een nieuwe Bot Flow aanmaakt.",
+		"setToken": "Token instellen",
+		"addFlow": "Flow toevoegen",
+		"appTokenModal": {
+			"title": "App Token",
+			"saveButton": "Opslaan"
+		},
+		"toasts": {
+			"errorLoading": "Fout bij laden flow-lijst"
+		}
+	},
+	"teams": {
+		"title": "Teams"
+	},
+	"embed": {
+		"title": "Embed Debugger"
+	},
+	"small": "Klein",
+	"large": "Groot"
+}

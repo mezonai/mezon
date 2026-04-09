@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Stemkamer",
+		"joinVoice": "Bij stem betreden"
+	},
+	"chat": "Chat",
+	"membersWillBeNotified": "{{participantsCount}} leden worden op de hoogte gebracht",
+	"noDisplay": "Stemkanaal niet weergeven",
+	"videoConnected": "Video verbonden",
+	"voiceConnected": "Stem verbonden",
+	"turnOffMicrophone": "Microfoon uitschakelen",
+	"turnOnMicrophone": "Microfoon inschakelen",
+	"turnOffCamera": "Camera uitschakelen",
+	"turnOnCamera": "Camera inschakelen",
+	"stopScreenShare": "Scherm delen stoppen",
+	"shareYourScreen": "Scherm delen",
+	"disconnect": "Loskoppelen",
+	"muteModal": {
+		"title": "Lid dempen",
+		"content": "Weet je zeker dat je \"{{userName}}\" wilt dempen?",
+		"mute": "Dempen"
+	},
+	"kickModal": {
+		"title": "Uit stemkanaal verwijderen",
+		"content": "Weet je zeker dat je \"{{userName}}\" uit het stemkanaal wilt verwijderen?",
+		"kick": "Verwijderen"
+	},
+	"disconnectModal": {
+		"title": "Stem verbinding verbroken",
+		"content": {
+			"removed": "Je bent uit het stemkanaal verwijderd",
+			"duplicate": "Je bent verbroken omdat je elders bent bijgetreden",
+			"default": "Je bent verbroken uit het stemkanaal",
+			"deleted": "Stemkanaal is verwijderd"
+		},
+		"confirm": "Bevestigen"
+	},
+	"permission": {
+		"cameraTitle": "Camerarecht verlenen",
+		"cameraBody": "App heeft camerarecht niet verleend. Schakel camerarecht in in je systeeminstellingen.",
+		"microphoneTitle": "Microfoonrecht verlenen",
+		"microphoneBody": "App heeft microfoonrecht niet verleend. Schakel microfoonrecht in in je systeeminstellingen.",
+		"cancel": "Annuleren",
+		"deviceSettings": "Apparaatinstellingen"
+	},
+	"device": {
+		"inputDevice": "Microfoon",
+		"outputDevice": "Audio",
+		"camera": "Camera"
+	},
+	"toast": {
+		"connectionConnected": "Succesvol verbonden",
+		"connectionDisconnected": "Verbinding verbroken",
+		"microphonePermissionRequired": "Microfoonrecht is vereist",
+		"cameraPermissionRequired": "Camerarecht is vereist",
+		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord."
+	},
+	"usernameScreen": "Scherm van {{username}}"
+}

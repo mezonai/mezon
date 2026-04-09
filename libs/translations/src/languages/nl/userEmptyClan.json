@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan": "Huidige clan betreden",
+    "enterInvite": "Voer de uitnodigingscode hieronder in om een bestaande clan te betreden.",
+    "labelInput": "Uitnodigingslink",
+    "linkInviteEx": "Uitnodigingscode zou moeten lijken op https://mezon.ai/invite/1813407038846046912",
+    "joinInviteLink": "Betreden met uitnodigingslink",
+    "errorMessage": "Voer een geldige uitnodigingslink of -code in."
+  },
+  "emptyClans": {
+    "clans": "De clans",
+    "readyChat": "Klaar voor de volgende niveau groepschat?",
+    "buildYourCommunity": "Bouw je community met georganiseerde gesprekken, spontane vergaderingen en krachtige aangepaste functies!",
+    "createClan": "Maak je clan",
+    "joinClan": "Betreed een clan",
+    "joinChannel": "Betreed een kanaal",
+    "findChannel": "Je bevindt je op een vreemde plek. Je hebt geen toegang tot een tekstkanaal."
+  },
+  "emptyMessage": {
+    "dMsWith": "Directe berichten met veel handige functies",
+    "inviteYourFriends": "Nodig vrienden uit om samen te gamen, muziek te luisteren en nog veel meer.",
+    "addFriend": "Vriend toevoegen"
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "actions": {
+        "create": "Aanmaken",
+        "cancel": "Annuleren"
+    },
+    "fields": {
+        "cateName": {
+            "title": "Nieuwe categorie",
+            "placeholder": "Categorie naam",
+            "errorMessage": "Voer een geldige categorie naam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -)."
+        },
+        "catePrivate": {
+            "title": "Privé categorie",
+            "description": "Als de categorie in privé-modus wordt ingesteld, kunnen alleen geselecteerde leden en rollen deze categorie zien. Kanalen die in deze categorie zijn gesynchroniseerd, worden ook automatisch naar privé overgezet."
+        }
+    }
+}

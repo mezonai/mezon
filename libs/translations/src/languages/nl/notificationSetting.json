@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Meldingsinstellingen",
+		"muteUntil": "Je hebt meldingen voor dit kanaal uitgeschakeld tot",
+		"unMute": "Meldingen inschakelen",
+		"mute": "Meldingen uitschakelen",
+		"labelOptions": {
+			"reactionMessage": "Reactie-bericht",
+			"categoryDefault": "Gebruik standaardinstellingen",
+			"allMessage": "Alle",
+			"notThingMessage": "Niets",
+			"mentionMessage": "Alleen @vermelding"
+		},
+		"muteCategoryUntil": "Je hebt meldingen voor deze categorie uitgeschakeld tot"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Thema-meldingen uitschakelen",
+		"headerTitleMuteChannel": "Kanaal-meldingen uitschakelen",
+		"muteThisConversation": "Gesprek-meldingen uitschakelen",
+		"muteDuration": {
+			"forFifteenMinutes": "Voor 15 minuten",
+			"forOneHour": "Voor 1 uur",
+			"forThreeHours": "Voor 3 uur",
+			"forEightHours": "Voor 8 uur",
+			"forTwentyFourHours": "Voor 24 uur",
+			"untilTurnItBackOn": "Totdat het weer wordt ingeschakeld"
+		},
+		"description": "Je ontvangt meldingen van alle berichten in deze clan, maar je kunt de instellingen hier wijzigen",
+		"muteSuccess": "Meldingen succesvol uitgeschakeld!",
+		"unMuteSuccess": "Meldingen succesvol ingeschakeld!",
+		"muteFailed": "Meldingen uitschakelen mislukt!",
+		"unMuteFailed": "Meldingen inschakelen mislukt!"
+	},
+	"toast": {
+		"error": "Melding bijwerken fout: {{error}}"
+	},
+	"title": "Meldingsinstellingen",
+	"clanNotificationSettings": "CLAN MELDINGSINSTELLINGEN",
+	"notificationOverrides": "MELDINGEN OMSCHRIJVEN",
+	"addChannelOverride": "Kanaal toevoegen om standaard meldingsinstellingen te overschrijven",
+	"selectOrCreateOption": "Selecteer of maak optie...",
+	"headers": {
+		"channelOrCategory": "KANAAL OF CATEGORIE",
+		"all": "ALLE",
+		"mentions": "VERMELDINGEN",
+		"nothing": "NIETS",
+		"mute": "Meldingen uit"
+	},
+	"menu": {
+		"notification": {
+			"all": "Alle",
+			"onlyMention": "Alleen @vermelding",
+			"nothing": "Niets"
+		}
+	}
+}

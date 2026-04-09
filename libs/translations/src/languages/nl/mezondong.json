@@ -1,0 +1,44 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Transparant, Veilig, Gratis",
+			"description": "Mezon Coins zijn gecreëerd om digitale transacties eenvoudiger en transparanter te maken – de basis voor een nieuwe gemeenschapseconomie."
+		},
+		"section2": {
+			"title": "Snel Ongeinterrupt",
+			"description": "Mezon Coins verzenden is zo simpel als een bericht sturen. Geef aan vrienden, bijdragen aan de community of shoppen – allemaal onmiddellijk en zonder kosten."
+		},
+		"section3": {
+			"title": "Werkomgeving Verhogen Met Mezon Coins",
+			"description": "Mezon is niet alleen voor community – bedrijven kunnen Mezon ook gebruiken als intern platform voor communicatie en betaling. Werknemer belonen, voordelen beheren of interne beloningsprogramma's creëren – allemaal soepel en flexibel verwerkt met Mezon Coins."
+		},
+		"section4": {
+			"title": "Geïntegreerde Commerce",
+			"description": "Partnermerken kunnen Mezon Coins accepteren voor hun producten en diensten. Van digitale goederen tot fysieke producten, de community kan direct shoppen met slechts één klik."
+		}
+	},
+	"faq": {
+		"title": "Meer hulp nodig?",
+		"seeAll": "Bekijk alle vragen",
+		"learnMore": "Lees meer",
+		"questions": [
+			{
+				"question": "Wat is Mezon Coins?",
+				"answer": "Mezon Coins zijn een digitaal waarde-eenheid gebruikt als intern uitwisselingsmiddel op het Mezon-platform. Dit is een geïntegreerd digitaal betaalsysteem, waardoor je geld eenvoudig, transparant en veilig kunt sturen en overmaken."
+			},
+			{
+				"question": "Hoe verzend en draag je Mezon Coins over?",
+				"answer": "Mezon Coins worden niet alleen uitgegeven maar ook gedeeld. Je kunt tokens naar vrienden, collega's of clan-leden sturen in slechts een paar eenvoudige stappen. Mezon Coins verzenden is zo eenvoudig als een bericht - open de conversatie, klik op het Mezon Coins-icoon, voer het bedrag in en bevestig. De transactie wordt onmiddellijk verwerkt en is zonder kosten."
+			},
+			{
+				"question": "Hoe kunnen bedrijven Mezon Coins gebruiken?",
+				"answer": "Bedrijven kunnen Mezon gebruiken als intern platform voor communicatie en betaling. Je kunt werknemers belonen, voordelen beheren of interne beloningsprogramma's creëren. Alles wordt soepel en flexibel verwerkt met Mezon Coins."
+			},
+			{
+				"question": "Hoe accepteer je betalingen met Mezon Coins voor je winkel?",
+				"answer": "Partnermerken kunnen Mezon Coins accepteren voor hun producten en diensten. Van digitale goederen tot fysieke producten, de community kan direct shoppen met slechts één klik. Neem contact op met het Mezon-team om een merchant-account in te stellen en Mezon Coins in je winkel te integreren."
+			}
+		]
+	},
+	"download": "Downloaden"
+}
