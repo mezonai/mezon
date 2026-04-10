@@ -8,6 +8,7 @@ import {
 	hasGrandchildModal,
 	listChannelRenderAction,
 	notificationSettingActions,
+	selectAllChannels,
 	selectAllChannelsFavorite,
 	selectCategoryById,
 	selectChannelById,
@@ -147,10 +148,22 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 
 	const currentUserId = useSelector(selectCurrentUserId);
 	const currentCategory = useAppSelector((state) => selectCategoryById(state, channel?.category_id as string));
+	const allChannels = useAppSelector(selectAllChannels);
 	const hasModalInChild = useSelector(hasGrandchildModal);
 	const favoriteChannel = useSelector(selectAllChannelsFavorite);
 	const [isFavorite, setIsFavorite] = useState<boolean>(false);
 	const navigate = useNavigate();
+
+	const threadIdsForArchive = useMemo(() => {
+		if (!channel.id || isThread) {
+			return [] as string[];
+		}
+
+		return allChannels
+			.filter((channelItem) => channelItem.parent_id === channel.id && channelItem.type === ChannelType.CHANNEL_TYPE_THREAD)
+			.map((thread) => thread.id)
+			.filter(Boolean);
+	}, [allChannels, channel.id, isThread]);
 
 	useEffect(() => {
 		if (favoriteChannel && favoriteChannel.length > 0) {
@@ -216,6 +229,59 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const handleCloseModalConfirm = () => {
 		dispatch(stickerSettingActions.closeModalInChild());
 		closeModelConfirm();
+		handClosePannel();
+	};
+
+	const handleArchiveChannel = () => {
+		if (!currentClanId || !channel.id) {
+			handleCloseModalArchive();
+			return;
+		}
+
+		if (!isThread) {
+			if (!canManageChannel) {
+				handleCloseModalArchive();
+				return;
+			}
+			const threadIdsToArchive = threadIdsForArchive.length > 0 ? threadIdsForArchive : [channel.id];
+			dispatch(
+				threadsActions.archiveInactiveChannelThreads({
+					clan_id: currentClanId,
+					parent_id: channel.id,
+					thread_ids: threadIdsToArchive
+				})
+			);
+		} else {
+			dispatch(
+				threadsActions.archiveInactiveChannelThreads({
+					clan_id: currentClanId,
+					parent_id: channel.parent_id || '0',
+					thread_ids: [channel.id]
+				})
+			);
+		}
+
+		handleCloseModalArchive();
+	};
+
+	const [openModalArchive, closeModalArchive] = useModal(() => (
+		<ModalConfirm
+			handleCancel={handleCloseModalArchive}
+			handleConfirm={handleArchiveChannel}
+			title={isThread ? t('modalConfirm.archiveThread.title') : t('modalConfirm.archiveChannel.title')}
+			buttonName={isThread ? t('modalConfirm.archiveThread.confirmText') : t('modalConfirm.archiveChannel.confirmText')}
+			message={isThread ? t('modalConfirm.archiveThread.content') : t('modalConfirm.archiveChannel.content')}
+		/>
+	));
+
+	const handleOpenModalArchive = () => {
+		dispatch(stickerSettingActions.openModalInChild());
+		openModalArchive();
+	};
+
+	const handleCloseModalArchive = () => {
+		dispatch(stickerSettingActions.closeModalInChild());
+		closeModalArchive();
 		handClosePannel();
 	};
 
@@ -431,6 +497,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			{channel.parent_id === '0' || !channel.parent_id ? (
 				<>
 					<GroupPanels>
+						{canManageChannel && <ItemPanel children={t('menu.inviteMenu.archiveChannel')} onClick={handleOpenModalArchive} />}
 						{!getNotificationChannelSelected?.time_mute_seconds ? (
 							<Menu
 								trigger="hover"
@@ -498,6 +565,9 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			) : (
 				<>
 					<GroupPanels>
+						{hasManageThreadPermission && (
+							<ItemPanel onClick={handleOpenModalArchive} children={t('menu.manageThreadMenu.archiveThread')} />
+						)}
 						{!getNotificationChannelSelected?.time_mute_seconds ? (
 							<Menu
 								trigger="hover"

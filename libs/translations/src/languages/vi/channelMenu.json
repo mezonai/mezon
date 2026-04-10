@@ -9,7 +9,8 @@
           "invite": "Mời",
           "markFavorite": "Thêm vào yêu thích",
           "unMarkFavorite": "Bỏ khỏi yêu thích",
-          "copyLink": "Sao chép liên kết"
+          "copyLink": "Sao chép liên kết",
+          "archiveChannel": "Lưu trữ kênh"
       },
       "notification": {
           "title": "",
@@ -69,7 +70,8 @@
           "leaveThread": "Rời chủ đề",
           "closeThread": "Đóng chủ đề",
           "lockThread": "Khóa chủ đề",
-          "copyLink": "Sao chép liên kết"
+          "copyLink": "Sao chép liên kết",
+          "archiveThread": "Lưu trữ chủ đề"
       }
   },
   "notify": {
@@ -87,6 +89,16 @@
           "confirmText": "Có",
           "systemChannel": "Không thể xóa kênh hệ thống",
           "error": "Xóa kênh lỗi: {{error}}"
+      },
+      "archiveChannel": {
+          "title": "Lưu trữ kênh",
+          "content": "Bạn có chắc chắn muốn lưu trữ kênh này không? Kênh sẽ được ẩn khỏi sidebar đối với tất cả thành viên.",
+          "confirmText": "Lưu trữ"
+      },
+      "archiveThread": {
+          "title": "Lưu trữ chủ đề",
+          "content": "Bạn có chắc chắn muốn lưu trữ chủ đề này không? Chủ đề sẽ được ẩn khỏi sidebar đối với tất cả thành viên.",
+          "confirmText": "Lưu trữ"
       }
   },
   "modalConFirmLeaveThread": {

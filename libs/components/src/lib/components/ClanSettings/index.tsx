@@ -24,6 +24,7 @@ import Integrations from './Integrations';
 import type { ItemObjProps } from './ItemObj';
 import { ItemSetting, createTranslatedListItemSetting } from './ItemObj';
 import CategoryOrderSetting from './OrderCategorySetting';
+import SettingArchiveChannels from './SettingArchiveChannels';
 import SettingEmoji from './SettingEmoji';
 import ServerSettingMainRoles from './SettingMainRoles';
 import SettingOnBoarding from './SettingOnBoarding';
@@ -47,6 +48,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 			{ id: ItemSetting.OVERVIEW, name: t('sidebar.items.overview') },
 			{ id: ItemSetting.ROLES, name: t('sidebar.items.roles') },
 			{ id: ItemSetting.CATEGORY_ORDER, name: t('sidebar.items.categoryOrder') },
+			{ id: ItemSetting.ARCHIVE_CHANNELS, name: t('sidebar.items.archiveChannels') },
 			{ id: ItemSetting.EMOJI, name: t('sidebar.items.emoji') },
 			{ id: ItemSetting.IMAGE_STICKERS, name: t('sidebar.items.imageStickers') },
 			{ id: ItemSetting.VOIDE_STICKERS, name: t('sidebar.items.voiceStickers') },
@@ -124,6 +126,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 				return <SettingSoundEffect />;
 			case ItemSetting.CATEGORY_ORDER:
 				return <CategoryOrderSetting />;
+			case ItemSetting.ARCHIVE_CHANNELS:
+				return <SettingArchiveChannels />;
 			case ItemSetting.AUDIT_LOG:
 				return <AuditLog currentClanId={currentClanId} />;
 			case ItemSetting.ON_BOARDING:

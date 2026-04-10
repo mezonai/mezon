@@ -9,7 +9,8 @@
 			"invite": "Invite",
 			"markFavorite": "Mark Favorite",
 			"unMarkFavorite": "Unmark Favorite",
-			"copyLink": "Copy Link"
+			"copyLink": "Copy Link",
+			"archiveChannel": "Archive Channel"
 		},
 		"notification": {
 			"title": "",
@@ -68,7 +69,8 @@
 			"leaveThread": "Leave Thread",
 			"closeThread": "Close Thread",
 			"lockThread": "Lock Thread",
-			"copyLink": "Copy Link"
+			"copyLink": "Copy Link",
+			"archiveThread": "Archive Thread"
 		}
 	},
 	"notify": {
@@ -86,6 +88,16 @@
 			"confirmText": "Yes",
 			"systemChannel": "You can't delete system channel",
 			"error": "Delete channel failed: {{error}}"
+		},
+		"archiveChannel": {
+			"title": "Archive Channel",
+			"content": "Are you sure you want to archive this channel? It will be hidden from the sidebar for all members.",
+			"confirmText": "Archive"
+		},
+		"archiveThread": {
+			"title": "Archive Thread",
+			"content": "Are you sure you want to archive this thread? It will be hidden from the sidebar for all members.",
+			"confirmText": "Archive"
 		}
 	},
 	"modalConFirmLeaveThread": {
