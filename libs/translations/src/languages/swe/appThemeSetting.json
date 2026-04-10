@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "Mörk",
+		"darker": "Mörkare",
+		"midnight": "Midnatt",
+		"light": "Ljus",
+		"system": "System",
+		"sunrise": "Soluppgång",
+		"redDark": "Mörkröd",
+		"purpleHaze": "Lila dimma",
+		"abyssDark": "Avgrund mörk",
+		"sunset": "Solnedgång"
+	},
+	"desc": "Du kan alltid ändra detta senare!"
+}

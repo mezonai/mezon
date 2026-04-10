@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Ladda upp ljud",
+		"delete": "Ta bort",
+		"uploadDetailScreen": "Ladda upp"
+	},
+	"content": {
+		"description": "•  Bara accepterar .mp3, .wav filer, max 1MB. \n•  Ge ljudet ett minnesvärt namn. \n•  Ljud används i clan-notiser eller händelser.",
+		"requirements": "UPPLADDNINGSKRAV",
+		"reqSize": "- Inte större än 1024KB.",
+		"audioFile": "Ljudfil",
+		"audioName": "Ljudnamn",
+		"preview": "Förhandsvisning",
+		"chooseAudioFile": "Välj ljudfil"
+	},
+	"toast": {
+		"errorSizeLimit": "Överstiger 1MB storleksgräns",
+		"errorFileType": "Ogiltigt filformat. Bara accepterar .mp3, .mpeg och .wav filer."
+	},
+	"main": {
+		"uploadInstructions": "UPPLADDNINGSGUID",
+		"fileRequirements": "Bara accepterar .mp3, .wav filer, max 1MB. Ge ljudet ett minnesvärt namn. Ljud används i clan-notiser eller händelser.",
+		"uploadHere": "Ladda upp här!",
+		"personalizeDescription": "Personligg ditt clans ljud!",
+		"uploadSound": "Ladda upp ljud",
+		"soundEffectList": "Ljudlista",
+		"noSoundEffects": "Inga ljud än. Klicka \"Ladda upp ljud\" för att lägga till!"
+	},
+	"modal": {
+		"titleEdit": "Redigera ljud",
+		"titleUpload": "Ladda upp ljud",
+		"subtitle": "Stöder MP3, WAV-format • Max 1MB",
+		"preview": "Förhandsvisning",
+		"audioFile": "Ljudfil",
+		"soundName": "Ljudnamn",
+		"soundVolume": "Volym",
+		"chooseOrDrop": "Välj eller dra och släpp fil",
+		"browse": "Bläddra",
+		"placeholder": "T.ex. kattljud",
+		"cancel": "Avbryt",
+		"uploading": "Laddar upp...",
+		"update": "Uppdatera",
+		"upload": "Ladda upp",
+		"errorFileType": "Stöder .mp3 eller .wav fil",
+		"errorFileSize": "Fil är för stor, max 1MB",
+		"errorUploadFailed": "Kunde inte ladda upp ljud",
+		"characters": "Namn måste vara från 3 till 64 tecken",
+		"errorName": "Ljudnamn måste vara från {{min}} till {{max}} tecken, bara bokstäver, siffror, _ och -"
+	}
+}

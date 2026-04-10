@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "Inställningar",
+			"overview": "Översikt",
+			"moderation": "Moderering",
+			"auditLog": "Redigeringslogg",
+			"channels": "Kanaler",
+			"integrations": "Integrationer",
+			"emoji": "Uttryck",
+			"sticker": "Sticker",
+			"webhooks": "Webhook",
+			"security": "Säkerhet",
+			"permissionDenied": "Du har inte rättigheter att redigera",
+			"sound": "Ljud",
+			"enableCommunity": "Aktivera gemenskap"
+		},
+		"community": {
+			"title": "Gemenskap",
+			"enableCommunity": "Aktivera gemenskap"
+		},
+		"subscriptions": {
+			"title": "Clan prenumerationspaket",
+			"getStarted": "Börja"
+		},
+		"userManagement": {
+			"title": "Användarhantering",
+			"members": "Medlemmar",
+			"role": "Roll",
+			"invite": "Inbjudan",
+			"bans": "Bannlyst"
+		}
+	}
+}

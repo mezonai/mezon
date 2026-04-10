@@ -1,0 +1,7 @@
+{
+	"title": "Lämna '{{groupName}}'",
+	"confirmMessage": "Är du säker på att du vill lämna {{groupName}}? Du kommer inte kunna gå tillbaka till gruppen om du inte bjuds igen.",
+	"leaveWithoutNotifying": "Lämna utan att meddela andra medlemmar",
+	"cancel": "Avbryt",
+	"leaveGroup": "Lämna grupp"
+}

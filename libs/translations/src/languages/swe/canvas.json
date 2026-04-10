@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Din canvas titel"
+	},
+	"editor": {
+		"placeholder": "Börja skriva...",
+		"uploadingImage": "Laddar upp bild..."
+	},
+	"actions": {
+		"save": "Spara",
+		"saving": "Sparar...",
+		"discardChanges": "Håll tillbaka ändringar"
+	},
+	"error": {
+		"title": "Fel"
+	},
+	"toolbar": {
+		"blockFormat": "Blockformatering",
+		"addLink": "Lägg till länk",
+		"removeLink": "Ta bort länk",
+		"codeBlock": "Kodblock",
+		"cancel": "Avbryt",
+		"apply": "Verkställ"
+	},
+	"blocks": {
+		"paragraph": "Stycke",
+		"h1": "H1 Huvudrubrik",
+		"h2": "H2 Rubrik",
+		"h3": "H3 Underrubrik",
+		"checkedList": "Kontrollerad lista",
+		"orderedList": "Numrerad lista",
+		"bulletedList": "Punktlista",
+		"blockquote": "Citat"
+	}
+}

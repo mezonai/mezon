@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Vidarebefordra meddelande",
+		"searchPlaceholder": "Sök",
+		"noResults": "Kunde inte hitta det du söker?",
+		"searchFriendsUsers": "Sök vänner och användare",
+		"searchingChannel": "Söker kanal",
+		"sharedContent": "Delat innehåll",
+		"cancel": "Avbryt",
+		"send": "Skicka",
+		"sending": "Skickar...",
+		"sendingProgress": "Skickar ({{current}}/{{total}})...",
+		"image": "bild",
+		"images": "bilder",
+		"video": "video",
+		"videos": "videor",
+		"file": "fil",
+		"files": "filer",
+		"additionalMessage": "Bifogat meddelande (valfri)",
+		"additionalMessagePlaceholder": "Ange önskat meddelande..."
+	},
+	"successMessage": "Vidarebefordra meddelande framgångsrikt",
+	"errorMessage": "Kunde inte vidarebefordra meddelande"
+}

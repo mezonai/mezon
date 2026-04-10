@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan":"Gå med i existens clan",
+    "enterInvite":"Ange inbjudanskod nedan för att gå med i existens clan.",
+    "labelInput": "Inbjudanslänk",
+    "linkInviteEx":"Inbjudanskod ska vara i format som https://mezon.ai/invite/1813407038846046912",
+    "joinInviteLink":"Gå med med inbjudanslänk",
+    "errorMessage": "Vänligen ange giltig inbjudanslänk eller inbjudanskod."
+  },
+  "emptyClans": {
+    "clans": "Clan",
+    "readyChat":"Redo för nästa nivå gruppsamtal?",
+    "buildYourCommunity":"Bygg din gemenskap med organiserade samtal, spontana möten och kraftfulla anpassade funktioner!",
+    "createClan":"Skapa din clan",
+    "joinClan":"Gå med i en clan",
+    "joinChannel":"Gå med i en kanal",
+   "findChannel":"Du känner dig på en främmande plats. Du har inte åtkomst till någon textkanal."
+  },
+  "emptyMessage": {
+   "dMsWith":"DM med många användbara funktioner",
+    "inviteYourFriends":"Bjud in dina vänner att spela spel, lyssna på musik tillsammans och mer.",
+    "addFriend":"Lägg till vän"
+  }
+}

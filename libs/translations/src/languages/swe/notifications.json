@@ -1,0 +1,25 @@
+{
+  "inbox": "Inkorg",
+  "tabs": {
+		"forYou": "För dig",
+		"messages": "Meddelanden",
+		"mentions": "Nämnd",
+		"topics": "Snabba ämnen"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Inte något här än",
+      "description": "Kom tillbaka för att få notiser om händelser, stream och mer."
+    },
+    "messages": {
+      "title": "Du har tittat alla!",
+      "protip": "PROTIPS:",
+      "description": "Öppna inkorgen genom att klicka på CTRL+I och markera första meddelande som läst med CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Du har tittat allt!",
+      "protip": "PROTIPS:",
+      "description": "Varje gång någon nämner dig, det sparas här i 7 dagar."
+    }
+  }
+}

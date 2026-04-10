@@ -1,0 +1,112 @@
+{
+	"roleDescription": "Använd roller för att gruppera medlemmar i din clan och tilldela rättigheter",
+	"defaultRole": "Standard rättigheter för alla clan-medlemmar",
+	"roles": "Roller",
+	"members": "Medlemmar",
+	"noRole": "Inga roller än",
+	"skipStep": "Hoppa över steg",
+	"failed": "Misslyckades",
+	"createNewRole": {
+		"title": "Steg 1 av 3",
+		"createANewRole": "Skapa en ny roll",
+		"description": "Ge denna roll ett unikt namn och färg. Du kan alltid ändra detta senare.",
+		"create": "Skapa",
+		"newRole": "Ange ny roll namn...",
+		"roleName": "Roll namn",
+		"createSuccess": "Skapade {{roleName}} framgångsrikt",
+		"cannotCreate": "Kunde inte skapa {{roleName}}"
+	},
+	"setupPermission": {
+		"title": "Steg 2 av 3",
+		"setupPermissionTitle": "Ställ in rättigheter",
+		"setupPermissionSuccessfully": "Ställde in rättigheter framgångsrikt",
+		"next": "Nästa",
+		"searchPermission": "Sök rättigheter"
+	},
+	"setupMember": {
+		"title": "Steg 3 av 3",
+		"addMember": "Lägg till medlem",
+		"description": "Tilldela denna roll till dina medlemmar. Medlemmar kan ha mer än en roll.",
+		"finish": "Klar",
+		"addedMember": "Lade till medlem framgångsrikt",
+		"searchMembers": "Sök medlemmar",
+		"deletedMember": "Raderade {{memberName}} framgångsrikt",
+		"add": "Lägg till",
+		"noMembersFound": "Inga medlemmar hittades"
+	},
+	"roleDetail": {
+		"permissions": "Rättigheter",
+		"members": "Medlemmar",
+		"role": "Roll",
+		"roleName": "Roll namn",
+		"deleteRole": "Ta bort roll",
+		"deleteRoleSuccessfully": "Raderade {{roleName}} framgångsrikt",
+		"changesSaved": "Ändringar sparade",
+		"save": "Spara",
+		"confirmSaveTitle": "Spara ändringar?",
+		"confirmSaveContent": "Du har gjort ändringar. Vill du spara dem?",
+		"yes": "Ja",
+		"doNotSave": "Inga spara"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "Rollfärg",
+		"titleBS": "Välj färg",
+		"reset": "Återställ",
+		"save": "Spara"
+	},
+	"roleImagePicker": "Roll ikon",
+	"notifyEveryone": "Notisera alla som har rätt att se denna kanal.",
+	"removeImage": "Ta bort",
+	"allMembers": "Alla medlemmar",
+	"permissionTitles": {
+		"administrator": "Administratör",
+		"view-channel": "Se kanal",
+		"manage-channel": "Hantera kanal",
+		"manage-clan": "Hantera Clan",
+		"manage-thread": "Hantera tråd",
+		"send-message": "Skicka meddelande",
+		"delete-message": "Ta bort meddelande",
+		"clan-owner": "Clan ägare"
+	},
+	"permissionDescriptions": {
+		"administrator": "Tillåt medlemmar att hantera hela clan (behörighet endast under ägare).",
+		"view-channel": "Tillåt medlemmar att se publika kanaler.",
+		"manage-channel": "Tillåt medlemmar att skapa, redigera eller ta bort kanaler.",
+		"manage-clan": "Tillåt medlemmar att kontrollera clan-inställningar, hantera roller och kanaler, övervaka medlemsaktivitet, säkerställa effektiv hantering och välorganiserad gemenskap.",
+		"manage-thread": "Tillåt medlemmar att skapa, redigera, ta bort trådar i kanal (inklusive privata trådar).",
+		"send-message": "Tillåt medlemmar att skicka meddelanden i publika kanaler (inklusive trådar och tråd-diskussioner i dessa kanaler).",
+		"delete-message": "Tillåt medlemmar att ta bort meddelanden i publika kanaler (inklusive trådar och tråd-diskussioner i dessa kanaler).",
+		"notAvailable": "Rättighetsbeskrivning inte tillgänglig"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "Använd roller för att gruppera medlemmar i din clan och tilldela rättigheter.",
+		"defaultPermissions": "Standard rättigheter",
+		"everyoneDescription": "@everyone • gäller för alla clan-medlemmar",
+		"searchRoles": "Sök roller",
+		"createRole": "Skapa roll",
+		"membersUseColor": "Medlemmar använder färgen på den högsta rollen de har i denna lista. Dra roller för att sortera om dem.",
+		"noRoles": "Inga roller"
+	},
+	"roleManagement": {
+		"newRole": "NY ROLL",
+		"editRole": "REDIGERA ROLL",
+		"back": "TILLBAKA",
+		"display": "Visa",
+		"permissions": "Rättigheter",
+		"manageMembers": "Hantera medlemmar",
+		"searchPermissions": "Sök rättigheter",
+		"failedToUpdateRoleOrder": "Kunde inte uppdatera rollordning.",
+		"newRoleDefault": "Ny roll",
+		"roleName": "Roll namn",
+		"roleColour": "Roll färg",
+		"membersUseColour": "Medlemmar använder färgen på den högsta rollen de har i roll-listan.",
+		"roleIcon": "Roll ikon",
+		"roleIconDescription": "Ladda upp bild under 256 KB eller välj anpassad emoji från denna clan. Vi rekommenderar minst 64x64 pixel. Medlemmar kommer att se ikonen för den högsta rollen om de har flera roller",
+		"chooseImage": "Välj bild",
+		"removeIcon": "Ta bort ikon",
+		"edit": "Redigera",
+		"view": "Visa",
+		"delete": "Ta bort",
+		"roleNameIsRequired": "Roll namn är obligatoriskt"
+	}
+}

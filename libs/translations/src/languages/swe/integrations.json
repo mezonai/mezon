@@ -1,0 +1,28 @@
+{
+	"title": "Integrationer",
+	"clanWebhooks": "Clan Webhook",
+	"webhooks": "Webhook",
+	"description": "Anpassa din clan med funktionsintegrationer. Hantera webhook, kanal-spårning och applikationer, integrera externa system och automatiska notisprocesser i Mezon.",
+	"learnMore": "Läs mer om hantering av integrationer.",
+	"webhook": "webhook",
+	"webhooksPlural": "webhooks",
+	"createWebhook": "Skapa Webhook",
+	"createClanWebhook": "Skapa Clan Webhook",
+	"viewWebhook": "Visa Webhook",
+	"viewClanWebhook": "Visa Clan Webhook",
+	"newWebhook": "Ny Webhook",
+	"newClanWebhook": "Ny Clan Webhook",
+	"noWebhooks": "Du har inga webhooks än!",
+	"webhookDescription": "Webhook är ett enkelt sätt att skicka meddelanden från andra appar och webbplatser till Mezon genom att använda internet-teknologi.",
+	"clanWebhookDescription": "Clan Webhook är ett enkelt sätt att skicka meddelanden från andra appar och webbplatser för varje Mezon-användare genom att använda internet-teknologi.",
+	"learnMoreWebhook": "Läs mer",
+	"orTry": "eller prova",
+	"buildWebhook": "bygga själv.",
+	"webhookTip": "Tips: Om du känner att token på din URL är överträdad eller föråldrad, återställ och kopiera den nya URL-en.",
+	"webhookCount": "{{count}} webhook",
+	"webhook_other": "{{count}} webhooks",
+	"toast": {
+		"generateSuccess": "Skapade {{name}} framgångsrikt !",
+		"deleteSuccess": "Raderade {{name}} framgångsrikt !"
+	}
+}

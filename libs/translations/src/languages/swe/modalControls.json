@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "reset": "Återställ",
+    "close": "Stäng",
+    "kick": "Sparka"
+  },
+  "form": {
+    "required": "Obligatoriskt fält",
+    "error": "Fel"
+  },
+  "kickMember": {
+    "title": "Sparka {{username}} från {{clanName}}",
+    "description": "Är du säker på att du vill sparka @{{username}} från {{clanName}}? De kan gå tillbaka med ny inbjudan.",
+    "reasonLabel": "Anledning att sparka"
+  }
+}

@@ -1,0 +1,72 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Chill Med Vänner, Hänga I Voice Kanal",
+			"description": "Mezon är fantastisk för vänner att samlas och umgås, oavsett det är en eftermiddagspaus eller sen natt."
+		},
+		"section2": {
+			"title": "Enkel Koppling, Smidig Chatt Med Voice Kanal",
+			"description": "Du kan enkelt koppla till vänner genom att öppna en voice kanal – och detta är gratis för alltid. Ju mer du använder Mezon, ju lättare blir det att hålla kontakt hela dagen."
+		},
+		"section3": {
+			"title": "Stream och Notiser För Alla Att Följa",
+			"description": "Uppdatera notiser och livestream snabbast möjligt. Delta i livestream när som helst eller reagera på viktig nyhet från kanal eller grupp."
+		},
+		"section4": {
+			"title": "Channel App Gör Ditt Liv Enklare",
+			"description": "Channel App hjälper dig att hålla dig uppdaterad – från notiser, anteckningar, kalender till uppgiftshantering. Mezon tillhandahåller ett unikt App-system med många rikliga val för alla livsstilar."
+		},
+		"section5": {
+			"title": "Super Smart Bot För Hela Clan",
+			"description": "Bot hjälper dig att göra uppgifter snabbt och effektivt, från schemahantering till snabb feedback. Mezon Bot är byggd för att tjäna hela clan, göra arbete enklare och mer organiserat."
+		}
+	},
+	"discover": {
+		"title": "Upptäcka Mer Om Mezon",
+		"description": "Utforska andra Mezon funktioner. Chatta med vänner, Voice Kanaler, Stream, Applikationer, Bot ... och mer",
+		"viewAll": "Visa Alla",
+		"buttonText": "Upptäcka",
+		"slides": [
+			{
+				"title": "Sätt Relation Före – Koppla Laggen Genom Clan, Händelser, Chatt & Röst",
+				"description": "Upprätthålla koppling med de viktigaste genom samtal"
+			},
+			{
+				"title": "Bygg Kultur – Skapa Unik Arbetsmiljö",
+				"description": "Bygg unik arbetsmiljö med anpassade kanaler och integrationer"
+			},
+			{
+				"title": "Arbeta Alltid, Alltid, Ogränsat",
+				"description": "Arbeta smidigt på alla enheter och platser"
+			},
+			{
+				"title": "Skydda Privat – Anonym Chatt",
+				"description": "Din privatitet är skyddad med slut-i-slut-kryptering"
+			}
+		]
+	},
+	"faq": {
+		"title": "Behöver Mer Hjälp?",
+		"seeAll": "Se Alla Frågor",
+		"learnMore": "Läs Mer",
+		"questions": [
+			{
+				"question": "Hur Lägger Man Till Vänner på Mezon?",
+				"answer": "För att lägga till vänner på Mezon, gå till Vänner-sidan och ange Mezon Användarnamn i 'Lägg till vän' del. Du kan hantera din vänlista med filter som Alla, Online, Pending (vänförfrågan) och Blocked (blockerade användare). Du kan också se dina vänars online status i realtid och se vad de gör genom Aktivitet, visar om de koder, lyssnar på musik eller spelar spel."
+			},
+			{
+				"question": "Vilka Mezon Meddelandefunktioner Erbjuds?",
+				"answer": "Mezon tillhandahåller omfattande meddelandefunktioner inklusive: skicka text, emoji, sticker, bilder, video, filer och röstinspelningar; spika viktiga meddelanden för snabb tillgång; skapa små gruppchattar med max 10 medlemmar; ringa 1-1 eller gruppsamtal med HD kvalitet; dela skärm i samtal; och söka meddelanden. Alla kommunikationsfunktioner är helt gratis och ogränsade."
+			},
+			{
+				"question": "Hur Fungerar Röst- och Videosamtal på Mezon?",
+				"answer": "Mezon låter dig göra 1-1 eller små gruppsamtal direkt i appen. I samtal kan du slå på/av mikrofon eller kamera när som helst, dela skärm och njuta av stabil koppling med HD video och låg latens ljud. När någon ringer till dig, din telefon eller dator ringer som vanliga samtal. Alla samtal är gratis och använder ditt internetanslutning."
+			},
+			{
+				"question": "Är Kommunikation på Mezon Privat och Säker?",
+				"answer": "Ja, Mezon sätter alltid privatitet och säkerhet först. Du kan bara chatta med de som är vänner eller delar minst en Clan med dig, vilket hindrar spam och säkerställer privat utrymme. Meddelanden synkroniseras i realtid på Web, Desktop och Mobile, så du missar inte något. När ditt team blir mer dynamiskt kan du uppgradera till Clan för att låsa upp extra funktioner som flera kanaler och administratör behörigheter."
+			}
+		]
+	},
+	"download": "Ladda Ner"
+}

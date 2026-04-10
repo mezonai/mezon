@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Starta händelse",
+      "markAsNotInterested": "Markera som inte intresserad",
+      "markAsInterested": "Markera som intresserad",
+      "editEvent": "Redigera händelse",
+      "cancelEvent": "Avbryt händelse",
+      "reportEvent": "Rapportera händelse",
+      "copyEventLink": "Kopiera händelselänk",
+      "copyEventID": "Kopiera händelse ID"
+    },
+    "confirm": {
+        "title": "Avbryt händelse",
+        "content": "Är du säker på att du vill avbryta denna händelse?"
+    },
+    "dashboard": {
+        "title": "Händelser",
+        "event_one": "Händelse",
+        "noEvent": "Inga händelser",
+        "noEventDescription": "Tveka inte att buda in andra medlemmar att bidra med idéer för framtida händelser.",
+        "createButton": "Skapa",
+        "noti": "Denna händelse är öppen för alla i clan.",
+        "endEvent": "Avsluta händelse",
+        "UnInterested": "Inte intresserad",
+        "Interested": "Intresserad"
+    },
+    "item": {
+      "interested": "Intresserad",
+      "uninterested": "Inte intresserad"
+    },
+    "detail": {
+        "eventInfo": "Händelseinformation",
+        "interested": "Intresserad",
+        "personInterested": "{{count}} personer intresserade",
+        "onePersonInterested": "1 person intresserad",
+        "noOneInterested": "Ingen är intresserad av händelse.",
+        "createdBy": "Skapad av "
+    },
+    "share": {
+        "title": "Dela händelse till vänner",
+        "search": "Sök",
+        "share": "Dela",
+        "copied": "Länk kopierad!"
+    },
+     "countdown": {
+        "joinIn_other": "startar om {{count}} minuter",
+        "joinNow": "Händelse pågår!",
+        "joinIn_one": "startar om 1 minut"
+    }
+  }

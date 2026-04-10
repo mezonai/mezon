@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+		"title": "TA BORT ROLL",
+		"message": "Är du säker på att du vill ta bort denna roll? Denna åtgärd kan inte ångras",
+		"confirm": "Ta bort",
+		"cancel": "Avbryt"
+  },
+  "common": {
+    "areYouSure": "Är du säker?",
+    "cannotUndo": "Denna åtgärd kan inte ångras",
+    "confirm": "Bekräfta",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "remove": "Ta bort",
+    "yes": "Ja",
+    "no": "Nej"
+  }
+}

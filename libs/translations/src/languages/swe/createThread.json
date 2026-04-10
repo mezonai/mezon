@@ -1,0 +1,24 @@
+{
+	"threads": "Trådar",
+	"emptyThread": {
+		"textNoThread": "Inga trådar",
+		"textNotify": "Fokusera på chatt med tråd - en tillfällig textkanal.",
+		"createThreads": "Skapa tråd"
+	},
+	"otherThreads": "ÄLDRRE TRÅDAR",
+	"errorMessage": "Vänligen ange giltig tråd namn (max 64 tecken, bara bokstäver, siffror, _ eller -).",
+	"threadName": "Tråd namn",
+	"privateThread": "Privat tråd",
+	"onlyPeopleInviteThread": "Bara dina inbjudna och administratörer kan se denna tråd",
+	"newThread": "Ny tråd",
+	"joinedThreads": "anvuxna trådar",
+	"joinedThread": "anvuxen tråd",
+	"otherActiveThreads": "andra aktiva trådar",
+	"olderThreads": "äldre trådar",
+	"searchThreads": "tråd sökning",
+	"searchThread": "tråd sökning",
+	"threadFailed": {
+		"title": "Tråd skapande misslyckades",
+		"content": "Tråd hittades inte eller du har inte behörighet att uppdatera"
+	}
+}

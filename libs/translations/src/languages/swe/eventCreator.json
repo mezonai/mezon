@@ -1,0 +1,152 @@
+{
+	"screens": {
+		"eventType": {
+			"headerTitle": "Steg 1 av 3",
+			"title": "Var är din händelse?",
+			"subtitle": "Så att ingen blir vilse till plats",
+			"description": "Du kan ge andra behörighet att skapa händelser i Clan > Inställningar > Roller"
+		},
+		"eventDetails": {
+			"headerTitle": "Steg 2 av 3",
+			"title": "Om vad handlar din händelse?",
+			"subtitle": "Fyll i detaljerad information om din händelse"
+		},
+		"eventPreview": {
+			"headerTitle": "Steg 3 av 3",
+			"title": "Här är en förhandsvisning av din händelse",
+			"subtitle": "Denna händelse kommer att starta automatiskt vid tid",
+			"subtitleVoice": "Vid tid, gå till röstkanal för att starta händelse!"
+		},
+		"channelSelection": {
+			"title": "Vem är publiken?",
+			"description": "Välj medlemmar i angiven kanal.",
+			"channel": "Publiken består av medlemmar från {{channel}}: "
+		},
+		"isPrivate": "Bara inbjudna kan delta"
+	},
+	"fields": {
+		"channelType": {
+			"voiceChannel": {
+				"title": "Röstkanal",
+				"description": "Upplev röst, video, skärmdelning och stream."
+			},
+			"somewhere": {
+				"title": "Någon annanstans",
+				"description": "Textkanal, extern länk eller direktplats."
+			},
+			"privateEvent": {
+				"title": "Skapa extern händelse",
+				"description": "Användare kan delta i mötet via länk utan att logga in."
+			}
+		},
+		"channel": {
+			"title": "Välj kanal"
+		},
+		"address": {
+			"title": "Plats",
+			"placeholder": "Lägg till plats, länk eller något"
+		},
+		"eventName": {
+			"title": "Händelse ämne",
+			"placeholder": "Vad är din händelse?",
+			"errorMessage": "Ämne krävs för händelse"
+		},
+		"startDate": {
+			"title": "Startdatum",
+			"errorMessage": "Vänligen välj dag eller framtid"
+		},
+		"startTime": {
+			"title": "Starttid",
+			"errorMessage": "Vänligen välj giltig starttid"
+		},
+		"endDate": {
+			"title": "Slutdatum",
+			"errorMessage": "Vänligen välj dag eller framtid"
+		},
+		"endTime": {
+			"title": "Sluttid",
+			"errorMessage": "Vänligen välj giltig sluttid"
+		},
+		"eventFrequency": {
+			"title": "Händelsefrekvens",
+			"noRepeat": "Ingen upprepning",
+			"weeklyOn": "Varje vecka på {{name}}",
+			"everyOther": "Varannan vecka {{name}}",
+			"monthlyOn": "Varje månad på {{name}}",
+			"annuallyOn": "Varje år på {{name}}",
+			"everyWeekday": "Varje vardag (Måndag till Fredag)"
+		},
+		"description": {
+			"title": "Beskrivning",
+			"description": "Låt alla veta lite mer om din händelse."
+		},
+		"cover": "Omslagsbild"
+	},
+	"actions": {
+		"next": "Nästa",
+		"create": "Skapa händelse",
+		"edit": "Uppdatera händelse",
+		"event_one": "1 Händelse",
+		"event_other": "{{count}} Händelser",
+		"noEvent": "Händelse",
+		"clearAudiences": "Ta bort publik",
+		"startEvent": "Starta händelse",
+		"editEvent": "Redigera händelse",
+		"cancelEvent": "Avbryt händelse",
+		"copyEventLink": "Kopiera händelselänk",
+		"uploadImage": "Ladda upp omslagsbild",
+		"neverMind": "Glöm det",
+		"cancelEventQuestion": "Avbryt händelse?",
+		"confirmCancelEvent": "Är du säker på att du vill avbryta denna händelse?",
+		"back": "Tillbaka",
+		"cancel": "Avbryt"
+	},
+	"tabs": {
+		"location": "Plats",
+		"eventInfo": "Händelseinformation",
+		"review": "Granska"
+	},
+	"notify": {
+		"locationBlank": "Plats krävs",
+		"titleBlank": "Ämne krävs för händelse",
+		"time": "Ogiltig start eller sluttid",
+		"type": "Måste välja händelse typ att hålla"
+	},
+	"eventDetail": {
+		"eventIsTaking": "Händelse pågår!",
+		"tenMinutesLeft": "Kvar {{minutes}} minuter. Gå med nu!",
+		"eventInfo": "Händelseinformation",
+		"interested": "{{count}} Intresserade",
+		"personInterested": "{{count}} personer intresserade",
+		"personInteresteds": "{{count}} personer intresserade",
+		"createdBy": "Skapad av {{username}}",
+		"inviteFriends": "Bjud in vänner att delta i händelse?",
+		"shareLink": "Dela denna länk med andra för att ge åtkomst till denna server",
+		"onlyInvitedMembers": "Användare kan delta i mötet via länk utan att logga in.",
+		"openLink": "Öppna länk",
+		"invite": "Bjud in",
+		"copyLink": "Kopiera länk",
+		"audienceConsists": "Publiken består av medlemmar från",
+		"thread": "diskussionstråd:",
+		"channel": "kanal:",
+		"clanEvent": "Clan Händelse",
+		"channelEvent": "Kanal Händelse",
+		"privateEvent": "Extern händelse",
+		"privateRoom": "Extern mötesrum",
+		"newEvent": "Ny",
+		"share": "Dela",
+		"noOneInterested": "Ingen är intresserad av denna händelse än."
+	},
+	"errorMessages": {
+		"startTimeFuture": "Starttid måste vara i framtiden.",
+		"endTimeAfterStart": "Sluttid måste vara större än starttid.",
+		"invalidTopic": "Ogiltigt händelseämne. Tecken '`', '<', '>', ',', '/', '\"', '\\', och ''' är inte tillåtna."
+	},
+	"selectUser": "Välj kanal eller tråd för att skapa händelse",
+	"emptyState": {
+		"title": "Inga framtida händelser.",
+		"description1": "Planera händelser för alla aktiviteter i",
+		"clan": "clan",
+		"description2": "Bjud in andra medlemmar att bidra med idéer för framtida händelser."
+	}
+}

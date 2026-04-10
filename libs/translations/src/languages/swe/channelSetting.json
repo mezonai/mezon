@@ -1,0 +1,290 @@
+{
+	"fields": {
+		"channelName": {
+			"title": "Kanal namn",
+			"placeholder": "Ange kanal namn",
+			"errorMessage": "Vänligen ange giltigt kanal namn (max 64 tecken, bara ord, siffror, _ eller -).",
+			"duplicateError": "Kanal namn finns redan i kategori. Vänligen ange ett annat namn."
+		},
+		"threadName": {
+			"title": "Tråd namn",
+			"placeholder": "Ange tråd namn",
+			"errorMessage": "Vänligen ange giltig tråd namn (max 65 tecken, bara ord, siffror, _ eller -).",
+			"emptyError": "Vänligen ange tråd namn (max 65 tecken, bara ord, siffror, _ eller -).",
+			"duplicateError": "Tråd namn finns redan i kanal. Vänligen ange ett annat namn."
+		},
+		"channelDescription": {
+			"title": "Kanal ämne",
+			"placeholder": "Berätta alla hur denna kanal används!"
+		},
+		"threadDescription": {
+			"title": "Tråd beskrivning",
+			"placeholder": "Berätta alla hur denna tråd används!"
+		},
+		"appUrl": {
+			"title": "Applikationsväg",
+			"invalidError": "Vänligen ange giltig URL (t.ex. https://example.com)."
+		},
+		"channelCategory": {
+			"title": "Kanal kategori"
+		},
+		"channelPermission": {
+			"title": "",
+			"permission": "Kanal behörigheter",
+			"description": "Ändra privat inställning och anpassa hur medlemmar kan interagera med denna kanal."
+		},
+		"quickAction": {
+			"title": "Snabbåtgärd"
+		},
+		"privateChannelInvite": {
+			"addMember": "Lägg till medlem"
+		},
+		"channelNotifications": {
+			"title": "",
+			"notification": "Notisinställningar",
+			"pinned": "Spikade meddelanden",
+			"invite": "Inbjudan"
+		},
+		"channelSlowMode": {
+			"title": "Langsam-läge",
+			"description": "Medlemmar kommer att begränsas till att skicka bara ett meddelande varje gång under denna tidsperiod, om de inte har kanaladministratör eller meddelandehantering behörighet.",
+			"_5seconds": "5 sekunder",
+			"_10seconds": "10 sekunder",
+			"_15seconds": "15 sekunder",
+			"_30seconds": "30 sekunder",
+			"_1minute": "1 minut",
+			"_2minutes": "2 minuter",
+			"_5minutes": "5 minuter",
+			"_10minutes": "10 minuter",
+			"_15minutes": "15 minuter",
+			"_30minutes": "30 minuter",
+			"_1hour": "1 timme",
+			"_2hours": "2 timmar",
+			"_6hours": "6 timmar"
+		},
+		"channelHideInactivity": {
+			"title": "Dölj efter inaktivitetsperiod",
+			"description": "Nya trådar kommer inte visas i kanallista efter inaktivitet under den angivna tidsperioden",
+			"_1hour": "1 Timme",
+			"_24hours": "24 Timmar",
+			"_3days": "3 Dagar",
+			"_1Week": "1 Vecka"
+		},
+		"channelWebhooks": {
+			"title": "",
+			"webhook": "Webhook"
+		},
+		"channelDelete": {
+			"title": "",
+			"delete": "Ta bort kanal"
+		},
+		"threadDelete": {
+			"title": "",
+			"delete": "Ta bort tråd"
+		},
+		"threadLeave": {
+			"title": "",
+			"leave": "Lämna tråd"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "Är du säker på att du vill ta bort #{{channelName}}? Denna åtgärd kan inte ångras.",
+			"confirmText": "Ta bort",
+			"title": "Ta bort kanal",
+			"systemChannel": "Kunde inte ta bort systemkanal",
+			"error": "Misslyckades ta bort kanal: {{error}}"
+		},
+		"deleteThread": {
+			"content": "Är du säker på att du vill ta bort {{channelName}}? Denna åtgärd kan inte ångras.",
+			"confirmText": "Ta bort tråd",
+			"title": "Ta bort tråd"
+		},
+		"deleteChannel": {
+			"content": "Är du säker på att du vill ta bort {{channelName}}? Denna åtgärd kan inte ångras.",
+			"confirmText": "Ta bort kanal",
+			"title": "Ta bort kanal"
+		},
+		"cancel": "Avbryt",
+		"leave": {
+			"content": "Är du säker på att du vill lämna kanal #{{channelName}}? Denna åtgärd kan inte ångras.",
+			"confirmText": "Lämna",
+			"title": "Lämna kanal"
+		},
+		"save": "Spara"
+	},
+	"toast": {
+		"updated": "Uppdaterat framgångsrikt"
+	},
+	"channelPermission": {
+		"permissionOverrides": "Behörighetsoverskridning",
+		"save": "Spara",
+		"generalChannelPermission": "ALLMÄN KANAL BEHÖRIGHET",
+		"title": "Åtkomst",
+		"basicView": "Grundläggande",
+		"advancedView": "Avancerad",
+		"roles": "Roller",
+		"members": "Medlemmar",
+		"edit": "Redigera",
+		"done": "Klar",
+		"addRole": "Lägg till roll",
+		"addMember": "Lägg till medlem",
+		"privateChannel": "Privat kanal",
+		"basicViewDescription": "När du ändrar kanal till privat läge kan bara utvalda medlemmar och roller se denna kanal",
+		"ChannelCreator": "Skapare",
+		"addMemberAndRoles": "Lägg till medlem eller roll",
+		"whoCanAccess": "Vem kan komma åt",
+		"warningModal": {
+			"publicChannelTitle": "Gör denna kanal tillgänglig för alla?",
+			"privateChannelTitle": "Gör denna kanal privat?",
+			"publicChannelContent": "{{channelLabel}} blir tillgänglig för alla medlemmar",
+			"privateChannelContent": "{{channelLabel}} blir privat och visas bara för utvalda medlemmar och roller",
+			"confirm": "Godkänn"
+		},
+		"warningChangeSettingModal": {
+			"title": "Du har osparade inställningar",
+			"content": "Vill du spara ändringarna?",
+			"confirm": "Ja, Spara"
+		},
+		"description": {
+			"viewChannel": "Tillåt medlemmar att se denna kanal som standard. Inaktivera detta för @everyone gör denna kanal privat.",
+			"manageChannel": "Tillåt medlemmar att ändra kanal namn, beskrivning och textinställningar för denna kanal. De kan också ta bort kanalen.",
+			"manageThread": "Tillåt medlemmar att byta namn, ta bort, stäng och aktivera slow-mode för trådar i denna kanal. De kan också se privata trådar.",
+			"sendMessage": "Tillåt medlemmar att skicka meddelanden i denna kanal.",
+			"deleteMessage": "Tillåt medlemmar att ta bort meddelanden i denna kanal."
+		},
+		"bottomSheet": {
+			"addMembersOrRoles": "Lägg till medlem eller roll",
+			"add": "Lägg till",
+			"roles": "Roller",
+			"members": "Medlemmar",
+			"rolesMembers": "Roller/Medlemmar",
+			"roleMemberPlaceholder": "Roll/Medlem"
+		},
+		"toast": {
+			"success": "Sparat framgångsrikt",
+			"failed": "Misslyckades spara"
+		},
+		"roleAndMemberEmpty": "Inga roller och medlemmar för att ställa in privat",
+		"header": {
+			"title": "Kanal behörigheter",
+			"description": "Använd behörigheter för att anpassa vem som kan göra vad i denna kanal.",
+			"syncedWithCategory": "Behörigheter synkroniserade med kategori:"
+		}
+	},
+	"quickAction": {
+		"title": "Snabb meny",
+		"description": "Hantera snabba meddelanden och snabbmeny för denna kanal",
+		"keyTitle": "Ange nyckelord (T.ex. hej): ",
+		"valueTitle": "Ange innehåll (T.ex. Godmorgon, önskar dig en bra dag!)",
+		"save": "Spara",
+		"cancel": "Avbryt",
+		"create": "Skapa",
+		"update": "Uppdatera",
+		"delete": "Ta bort",
+		"deleteModal": "Ta bort snabbmeny",
+		"deleteTitle": "Är du säker på att du vill ta bort {{command}}? Denna åtgärd kan inte ångras.",
+		"flashMessage": "Snabbd meddelande",
+		"flashMessages": "Snabba meddelanden",
+		"quickMenu": "Snabb meny",
+		"quickMenus": "Snabba menyer",
+		"menuName": "Meny namn",
+		"commandName": "Kommando namn",
+		"menuNameHelper": "Namn för denna snabbmeny",
+		"commandNameHelper": "Namn som användaren kommer att ange efter slash-tecken",
+		"botEventTrigger": "Bot evenemang trigga",
+		"botEventDescription": "Denna snabb meny kommer automatiskt trigga ett bot-evenemang när den väljs.",
+		"createQuickMenu": "Skapa Snabb Meny",
+		"createFlashMessage": "Skapa Snabbd Meddelande",
+		"editQuickMenu": "Redigera Snabb Meny",
+		"editFlashMessage": "Redigera Snabbd Meddelande",
+		"emptyFlashMessage": "Inga snabba meddelanden än",
+		"emptyFlashMessageDescription": "Börja med att skapa ditt första snabba meddelandekommando",
+		"emptyQuickMenu": "Inga snabba menyer än",
+		"emptyQuickMenuDescription": "Börja med att skapa din första snabba meny",
+		"addFlashMessage": "Lägg till Snabbd Meddelande",
+		"addQuickMenu": "Lägg till Snabb Meny",
+		"editCommand": "Redigera kommando",
+		"deleteCommand": "Ta bort kommando",
+		"triggersBot": "Triggas av bot",
+		"messageContent": "Meddelande innehåll",
+		"messageContentPlaceholder": "Meddelande kommer att skickas snabbt",
+		"messageContentDescription": "Meddelande innehåll som skickas när detta snabba meddelandekommando används",
+		"menuAction": "Meny åtgärd",
+		"menuActionPlaceholder": "Åtgärd kommer att utföras",
+		"menuActionDescription": "Åtgärd som kommer att utföras när denna snabba meny väljs"
+	},
+	"changeCategory": {
+		"title": "Ändra kategori",
+		"label": "FLYTTA FRÅN {{currentChannel}} TILL",
+		"confirmFirstContent": "Är du säker på att du vill flytta",
+		"confirmLastContent": "till kategori",
+		"confirm": "Godkänn",
+		"error": "Kategoribyte misslyckades"
+	},
+	"overview": {
+		"title": "Översikt",
+		"ageRestricted": {
+			"title": "Åldersbegränsad kanal",
+			"description": "Användare behöver bekräfta att de är lagligt tillräckligt gamla för att se innehåll i denna kanal. Åldersbegränsade kanaler undantas från känsligt innehållfilter."
+		},
+		"e2ee": {
+			"title": "Slut-i-slut-kryptering",
+			"description": "Aktivera slut-i-slut-kryptering för denna kanal för att säkra alla meddelanden."
+		}
+	},
+	"tabs": {
+		"overview": "Översikt",
+		"permissions": "Behörigheter",
+		"invites": "Inbjudan",
+		"integrations": "Integrationer",
+		"category": "Kategori",
+		"quickMenu": "Snabb meny"
+	},
+	"categoryManagement": {
+		"title": "Kategori",
+		"channelName": "Kanal namn",
+		"category": "Kategori"
+	},
+	"unsavedChanges": {
+		"warning": "Försiktig - du har osparade ändringar!",
+		"reset": "Återställ",
+		"saveChanges": "Spara ändringar"
+	},
+	"addMembersRoles": {
+		"title": "Lägg till medlem eller roll",
+		"placeholder": "T.ex. Admin, @wumpus",
+		"instruction": "Lägg till individuella medlemmar genom att börja med @ eller ange roll namn",
+		"roles": "Roller",
+		"members": "Medlemmar",
+		"cancel": "Avbryt",
+		"done": "Klar",
+		"searchPlaceholder": "Sök Roller & Medlemmar"
+	},
+	"table": {
+		"columnHeaders": {
+			"name": "Namn",
+			"members": "Medlemmar",
+			"messagesCount": "Meddelande antal",
+			"lastSent": "Senast skickad",
+			"creator": "Skapare"
+		},
+		"pagination": {
+			"show": "Visa",
+			"channelOf": "kanal av"
+		},
+		"memberModal": {
+			"listMember": "Medlemslista"
+		},
+		"threads": {
+			"noThreads": "Inga trådar i denna kanal"
+		},
+		"members": {
+			"allMembers": "(Alla medlemmar)"
+		}
+	},
+	"streamBanner": {
+		"title": "Stream banner"
+	},
+	"banList": "Bannlista"
+}

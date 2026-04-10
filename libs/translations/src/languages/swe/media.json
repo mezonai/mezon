@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "Vi har letat långt. Tyvärr, inga resultat hittades",
+	"video": {
+		"error": {
+			"title": "Video inte tillgänglig",
+			"cannotPlay": "Kunde inte spela video",
+			"loadingAborted": "Video laddning avbruten",
+			"networkError": "Nätverksfel vid ladda video",
+			"codecNotSupported": "Video codec inte stödd på denna plattform",
+			"codecNotSupportedElectron": "Video codec inte stödd på denna plattform. Prova att ladda ner video för att spela med systemspelare.",
+			"formatNotSupported": "Videoformat inte stödd",
+			"downloadButton": "Ladda ner video",
+			"browserNotSupported": "Din webbläsare stöder inte video-tagg."
+		}
+	}
+}

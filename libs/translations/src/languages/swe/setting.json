@@ -1,0 +1,132 @@
+{
+	"accountSettings": {
+		"title": "Kontoinställningar",
+		"account": "Konto",
+		"profiles": "Profiler",
+		"privacySafety": "Privat & Säkerhet",
+		"familyCenter": "Familjecenter",
+		"authorizedApp": "Tillåtna appar",
+		"device": "Enhet",
+		"connection": "Anslutning",
+		"clip": "Klipp",
+		"friendRequests": "Vänförfrågan",
+		"QRScan": "QR-skanning",
+		"MyQRCode": "Min QR-kod",
+		"devices": "Enheter"
+	},
+	"deviceSettings": {
+		"description1": "Detta är alla enheter som är inloggade på ditt konto. Du kan logga ut varje enhet.",
+		"description2": "Om du ser en inloggning som du inte känner igen, logga ut från den enheten och ändra ditt kontos lösenord omedelbart.",
+		"currentDevice": "Nuvarande enhet",
+		"otherDevices": "Andra enheter",
+		"noDevices": "Inga enheter hittades",
+		"loggedIn": "Inloggad vid",
+		"current": "Nuvarande",
+		"unknown": "Okänd",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Skrivbord",
+		"platformWeb": "Webb",
+		"removeDevice": "Logga ut från denna enhet"
+	},
+	"paymentSettings": {
+		"title": "Betalningsinställningar",
+		"restoreSubscription": "Återställ prenumeration"
+	},
+	"appSettings": {
+		"title": "Appinställningar",
+		"voice": "Röst",
+		"appearance": "Utseende",
+		"accessibility": "Tillgänglighet",
+		"language": "Språk",
+		"activity": "Aktivitet",
+		"notifications": "Notiser",
+		"chat": "Chatt",
+		"webBrowser": "Webbläsare",
+		"appIcon": "Ikon",
+		"advanced": "Avancerad",
+		"appVersion": "Appversion",
+		"startUp": "Starta upp",
+		"quitApp": "Avsluta app"
+	},
+	"autoStart": {
+		"title": "Starta app automatiskt",
+		"description": "Öppna app automatiskt när datorn startar så du kan använda den direkt."
+	},
+	"hardwareAcceleration": {
+		"title": "Använd grafikacceleration när tillgänglig",
+		"description": "När det är på, appen kommer att utnyttja GPU (grafikchips) kraft för att bearbeta djup grafiska uppgifter som 3D-rendering och videodekodning. Detta ökar bildfrekvens och gränssnittets respons. Om du upplevis visualisering fel eller appen fryser, prova att stänga av denna funktion för att förbära stabiliteten."
+	},
+	"autoHidden": {
+		"title": "Starta gömd med operativsystem",
+		"description": "App kommer automatiskt starta i gömt läge när den körs med operativsystem."
+	},
+	"activity": {
+		"title": "Visa min aktivitet",
+		"description": "Dela dina nuvarande aktiviteter med vänner. Detta hjälper dem att veta vad du gör och koppla lättare!"
+	},
+	"supportSettings": {
+		"title": "Stöd",
+		"support": "Stöd",
+		"uploadLog": "Ladda upp fellogg",
+		"acknowledgement": "Tacksägelser"
+	},
+	"whatsNew": {
+		"title": "Vad är nytt",
+		"whatsNew": "Vad är nytt"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Ny Version Tillgänglig",
+		"updateExperience": "Snabb uppdatering behövs för att fortsätta använda våra senaste funktioner.",
+		"updateNow": "Uppdatera nu",
+		"versionInfo": "VERSION"
+	},
+	"language": {
+		"title": "Språk",
+		"description": "Välj språk.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"swedish": "Svenska"
+	},
+	"voice": {
+		"title": "Röst",
+		"description": "Konfigurera dina röstinställningar.",
+		"microphone": "Mikrofon",
+		"speaker": "Högtalare",
+		"microphoneVolume": "Mikrofon volym",
+		"speakerVolume": "Högtalare volym",
+		"noiseSuppression": {
+			"title": "Brusundertryckning",
+			"toggleAriaLabel": "Slå på eller av brusundertryckning"
+		},
+		"unnamedDevice": "Namnlös enhet",
+		"noDevices": "Inga enheter hittades",
+		"micTest": {
+			"title": "Mikrokontroll",
+			"description": "Problemer med mikrofon? Börja kontroll och pröva att prata — vi kommer spela upp ditt röst.",
+			"letsCheck": "Kontrollera",
+			"stop": "Stoppa"
+		},
+		"errors": {
+			"permissionDenied": "Mikrofon behörighet krävs för att testa mikrofon.",
+			"micPermission": "Kunde inte komma åt mikrofon."
+		},
+		"warnings": {
+			"outputNotSupported": "Webbläsare stöder inte enhetsval för högtalare. Högtalarval kan förbises."
+		}
+	},
+	"logOut": "Logga ut",
+	"logOutPopup": {
+		"description": "Är du säker på att du vill logga ut?",
+		"noConfirm": "Nej",
+		"yesConfirm": "Ja"
+	},
+	"removeAccount": "Ta bort konto",
+	"channelSetting": {
+		"recentChannels": "Senaste kanaler",
+		"searchByChannelLabel": "Sök efter kanal etikett"
+	},
+	"setting": "Inställningar"
+}

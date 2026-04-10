@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Spara"
+	},
+	"switch": {
+		"userProfile": "Personlig",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Visningsnamn",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Clan Smeknamn",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronomin",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Biografi",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Ta bort osparade ändringar?",
+		"description": "Det finns osparade ändringar, är du säker på att du vill ta bort dem?",
+		"discard": "Slänga",
+		"keepEditing": "Fortsätt redigera"
+	},
+	"selectAClan": "Välj en clan",
+	"searchClanPlaceholder": "Sök clan",
+	"updateProfileSuccess": "Personlig profil uppdaterat framgångsrikt",
+	"updateProfileError": "Personlig profil uppdatering misslyckades",
+	"updateClanProfileSuccess": "Clan profil uppdaterat framgångsrikt",
+	"emptyUsername": "Visningsnamn inte får vara tomt!",
+	"duplicateClannick": "Klansmeknamn är duplicerat",
+	"clanNickname": "CLAN SMEKNAMN",
+	"changeAvatar": "Ändra avatar",
+	"removeAvatar": "Ta bort",
+	"avatar": "Avatar",
+	"preview": "FÖRHANDSVISA",
+	"nickNameExistsError": "Smeknamn finns redan i clan. Vänligen ange ett annat smeknamn.",
+	"unsavedChangesWarning": "Försiktig - du har osparade ändringar!",
+	"reset": "Återställ",
+	"saveChanges": "Spara ändringar",
+	"showProfilesDescription": " Visa dig själv med olika profiler för varje clan",
+	"chooseAClan": "VÄLJ EN CLAN",
+	"editImage": "Redigera bild",
+	"close": "Stäng",
+	"resetChanges": "Återställ ändringar",
+	"cancelEditing": "Avbryt redigering",
+	"cancel": "Avbryt",
+	"applyChanges": "Verkställ ändringar",
+	"apply": "Verkställ",
+	"moveImage": "Flytta bild",
+	"adjustZoom": "Justera zoom",
+	"profiles": "Profiler",
+	"userProfile": "Användarprofil",
+	"clanProfiles": "Clan profiler",
+	"directMessageIcon": "Privat meddelande ikon",
+	"directMessageIconAction": {
+		"remove": "Ta bort",
+		"removeTitle": "Ta bort privat meddelande ikon",
+		"removeDescription": "Är du säker på att du vill ta bort privat meddelande ikon?"
+	},
+	"displayName": "VISNINGSNAMN",
+	"emptyClanProfile": {
+		"title": "Du har inte gått med i någon clan än",
+		"description": "Skapa eller gå med i en clan för att ställa in din clan profil.",
+		"createClan": "Skapa clan",
+		"joinClan": "Gå med i clan"
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Vänförfrågan",
+		"received": "Mottagen",
+		"sent": "Skickad",
+		"emptyReceived": {
+			"title": "Inga vänförfrågan till",
+			"description": "Här ser du alla vänförfrågan som folk skickar till dig."
+		},
+		"emptySent": {
+			"title": "Inga vänförfrågan ut",
+			"description": "Här ser du alla vänförfrågan som du har skickat till andra."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Inkommande vänförfrågan",
+		"findYourFriend": "Hitta vänner",
+		"addByUserName": "Lägg till med användarnamn eller telefonnummer",
+		"addByUsername": "Lägg till av {{username}}",
+		"searchUsernamePlaceholder": "Ange användarnamn eller telefonnummer",
+		"whoYouWantToAddFriend": "Vem vill du lägga till som vän?",
+		"byTheWay": "Förresten, ditt användarnamn är",
+		"sendRequestButton": "Skicka vänförfrågan",
+		"addFriendToast": "Vänförfrågan skickad"
+	},
+	"friends": "Vänner",
+	"noFriendsResultsFound": "Inga vänneresultat hittades",
+	"toast": {
+		"sendAddFriendSuccess": "Vänförfrågan skickades framgångsrikt!",
+		"acceptAddFriendSuccess": "Accepterade inbjudan!",
+		"sendAddFriendFail": "Hmm, något fel uppstod. Vänligen kontrollera om användarnamnet är korrekt.",
+		"somethingWentWrong": "Något fel uppstod",
+		"friendRequestAlreadySent": "Vänförfrågan skickad, väntar på acceptans."
+	},
+	"you": "du"
+}

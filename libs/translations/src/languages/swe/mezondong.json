@@ -1,0 +1,44 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Transparens, Säkerhet, Gratis",
+			"description": "Mezon Coin skapades för att göra digitala transaktioner enklare och mer transparenta – basen för en ny typ av gemenskapsekonomi."
+		},
+		"section2": {
+			"title": "Snabbt Inga Avbrott",
+			"description": "Skicka Mezon Coin lika enkelt som att skicka ett meddelande. Ge till vänner, bidra till gemenskapen eller handla – allt sker omedelbart och avgiftsfritt."
+		},
+		"section3": {
+			"title": "Höj Arbetsmiljön Med Mezon Coin",
+			"description": "Mezon är inte bara för gemenskap – företag kan också använda Mezon som en intern plattform för kommunikation och betalning. Lön till anställda, hantera förmåner eller skapa interna incitament – allt hanteras smidigt och flexibelt med Mezon Coin."
+		},
+		"section4": {
+			"title": "Integrerad Handel",
+			"description": "Partner varumärken kan acceptera Mezon Coin för sina produkter och tjänster. Från digitala varor till fysiska produkter, gemenskapen kan handla direkt med ett klick."
+		}
+	},
+	"faq": {
+		"title": "Behöver mer hjälp?",
+		"seeAll": "Se alla frågor",
+		"learnMore": "Läs mer",
+		"questions": [
+			{
+				"question": "Vad är Mezon Coin?",
+				"answer": "Mezon Coin är en digital värdeenheter som används som inre bytessätt på Mezon-plattformen. Det är ett inbyggt digitalt betalsystem som hjälper dig att skicka och flytta pengar enkelt, transparent och säkert."
+			},
+			{
+				"question": "Hur skickar och flyttar man Mezon Coin?",
+				"answer": "Mezon Coin används inte bara för att spendera utan också för att dela. Du kan skicka tokens till vänner, kollegor eller clan-medlemmar på några enkla steg. Skicka Mezon Coin lika enkelt som att skicka ett meddelande - öppna chatt, klicka på Mezon Coin-ikon, ange belopp och bekräfta. Transaktionen behandlas omedelbart och avgiftsfritt."
+			},
+			{
+				"question": "Hur kan företag använda Mezon Coin?",
+				"answer": "Företag kan använda Mezon som en intern plattform för kommunikation och betalning. Du kan ge lön till anställda, hantera förmåner eller skapa interna incitament. Allt hanteras smidigt och flexibelt med Mezon Coin."
+			},
+			{
+				"question": "Hur accepterar man betalning med Mezon Coin för en butik?",
+				"answer": "Partner varumärken kan acceptera Mezon Coin för sina produkter och tjänster. Från digitala varor till fysiska produkter, gemenskapen kan handla direkt med ett klick. Kontakta Mezon-teamet för att sätta upp handlar-konto och integrera Mezon Coin i din butik."
+			}
+		]
+	},
+	"download": "Ladda Ner"
+}

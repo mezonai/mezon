@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Filtreringsalternativ",
+	"users": "Användare",
+	"channels": "Kanaler",
+	"all": "Alla",
+	"selectChannelPlaceholder": "Välj en kanal eller användare...",
+	"selectChannel": "Välj en kanal",
+	"selectUser": "Välj en användare",
+	"share": "Dela",
+	"suggestions": "Förslag",
+	"addCommentPlaceholder": "Lägg till kommentar (Valfritt)",
+	"fileTooLarge": "Fil är för stor",
+	"fileSizeExceeded": "{{fileType}} kan inte överstiga {{maxSize}}MB!",
+	"bannedChannel": "Du är bannlyst i kanal {{channelName}}.",
+	"empty": "Tom data"
+}

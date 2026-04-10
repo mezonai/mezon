@@ -1,0 +1,46 @@
+{
+	"title": "Bjud in vänner",
+	"iconTitle": {
+		"shareInvite": "Dela",
+		"copyLink": "Kopiera",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR Kod"
+	},
+	"copyLink": "Länk kopierad!",
+	"unknownChannel": "OKÄND KANAL",
+	"yourLinkInvite": "Länk utgår om",
+	"inviteFriendToChannel": "Bjud in vänner till kanal",
+	"inviteFriendToClan": "Bjud in vänner till clan",
+	"editInviteLink": "Redigera inbjudanslänk",
+	"inviteChannel": "BUD TILL KANAL",
+	"advancedSettings": "AVANCERADE INSTÄLLNINGAR",
+	"expireAfter": "UTGÅR OM",
+	"maxUsers": "MAX ANVÄNDARE",
+	"temporaryMembership": "Tillfällig medlem",
+	"memberAutoKick": "Medlemmar kommer automatiskt sparkas när de kopplar ifrån om de inte är tilldelad en roll.",
+	"btnInvite": "Bjud in",
+	"btnSent": "Bjudin",
+	"qrModal": {
+		"title": "QR Kod",
+		"scanToJoin": "Skanna denna kod för att gå med i {{clanName}}!",
+		"scanToJoinDefault": "Skanna denna kod för att gå med i clan!",
+		"generating": "Skapar QR kod...",
+		"errorGenerating": "Fel vid skapande QR kod",
+		"downloadSuccess": "QR kod sparad i bibliotek",
+		"downloadError": "Fel vid ladda ner QR kod",
+		"shareError": "Fel vid dela QR kod",
+		"clanDefaultName": "Clan"
+	},
+	"share": {
+		"title": "dela",
+		"message": "Gå med i Mezon med mig:",
+		"error": "Fel vid dela inbjudanslänk",
+		"errorCreateLink": "Fel vid skapa inbjudanslänk"
+	},
+	"noFriendsToInvite": "Inga vänner att bjud",
+	"addFriendsToInvite": "Lägg till vänner i din vänlista för att bjud till denna clan.",
+	"addSomeFriends": "Lägg till några vänner",
+	"loadingInviteLink": "Skapar inbjudanslänk..."
+}

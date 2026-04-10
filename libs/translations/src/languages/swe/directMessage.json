@@ -1,0 +1,63 @@
+{
+	"directMessages": "DIREKTMEDELANDEN",
+	"createDM": "Skapa meddelande",
+	"friends": "Vänner",
+	"yourMessages": "Dina meddelanden",
+	"selectConversation": "Välj ett samtal för att börja chatta",
+	"createMessageGroup": {
+		"selectFriends": "Välj vänner",
+		"canAddMoreFriends": "Du kan lägga till {{count}} vänner till.",
+		"searchPlaceholder": "Ange dina vänars användarnamn",
+		"addToGroupChat": "Lägg till i gruppchatt",
+		"createDMOrGroupChat": "Skapa meddelande eller gruppchatt",
+		"createDM": "Skapa meddelande",
+		"createGroupChat": "Skapa gruppchatt",
+		"noFriendsFound": "Inga vänner hittade som inte redan finns i detta samtal.",
+		"creating": "Skapar..."
+	},
+	"editGroup": {
+		"title": "Redigera grupp",
+		"uploadImageText": "Klicka för att ladda upp bild",
+		"removeAvatar": "Ta bort avatar",
+		"groupNameLabel": "Grupp namn",
+		"groupNamePlaceholder": "Ange grupp namn",
+		"validationError": "Vänligen ange giltigt grupp namn (bara ord, siffror, _ eller -).",
+		"cancel": "Avbryt",
+		"save": "Spara",
+		"saving": "Sparar..."
+	},
+	"contextMenu": {
+		"editGroup": "Redigera grupp",
+		"addFriend": "Lägg till vän",
+		"leaveGroup": "Lämna grupp",
+		"closeDM": "Stäng meddelande",
+		"markAsRead": "Markera som läst",
+		"invitePeople": "Bjud in personer",
+		"hideConversation": "Dölj samtal",
+		"profile": "Profil",
+		"message": "Meddelande",
+		"removeFriend": "Ta bort vän",
+		"block": "Blokera",
+		"unblock": "Avblockera",
+		"removeFromGroup": "Ta bort från grupp",
+		"shareContact": "Dela kontakt",
+		"mute": "Tysta notis",
+		"unmute": "Aktivera notis",
+		"for15Minutes": "I 15 minuter",
+		"for1Hour": "I 1 timme",
+		"for3Hours": "I 3 timmar",
+		"for8Hours": "I 8 timmar",
+		"for24Hours": "I 24 timmar",
+		"untilTurnBackOn": "Tills slå på igen",
+		"mutedUntil": "Tystad tills {{time}}",
+		"pinConversation": "Spika samtal",
+		"unpinConversation": "Avspika samtal",
+		"pinLimitExceeded": "Du kan bara spika max 10 samtal. Vänligen avspika ett annat samtal för att spika detta"
+	},
+	"pinned": "SPIKAD",
+	"remove": {
+		"content": "Samtal i denna kanal är inte längre tillgänglig!",
+		"title": "Samtal inte tillgänglig",
+		"button": "Bekräfta"
+	}
+}

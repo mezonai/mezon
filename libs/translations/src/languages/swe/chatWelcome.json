@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Klicka Starta applikation för att börja",
+		"inviteFriends": "Bjud in dina vänner",
+		"sendFirstMessage": "Skicka ditt första meddelande",
+		"downloadApp": "Ladda ner Mezon app",
+		"createChannel": "Skapa din kanal"
+	},
+	"welcome": {
+		"welcomeToChannel": "Välkommen till #{{channelName}}",
+		"startOfChannel": "Här är början av #{{channelName}} {{channelType}}-kanal",
+		"startOfThread": "Börjad av {{username}}",
+		"welcomeToGroup": "Välkommen till {{groupName}}-gruppen.",
+		"beginningOfDM": "Här är början på din chatt med {{userName}}",
+		"editGroup": "Redigera grupp",
+		"private": "privat",
+		"friendRequestSent": "Din vän förfrågan skickad till:",
+		"addFriend": "Lägg till vän",
+		"removeFriend": "Ta bort vän",
+		"accept": "Acceptera",
+		"ignore": "Ignorera",
+		"friendRequestSentButton": "Vän förfrågan skickad",
+		"block": "Blokera",
+		"unblock": "Avblockera"
+	},
+	"toast": {
+		"userBlockedSuccess": "Användare blockerad framgångsrikt",
+		"failedToBlock": "Kunde inte blockera användare",
+		"userUnblockedSuccess": "Användare av blockerad framgångsrikt",
+		"failedToUnblock": "Kunde inte av blockera användare"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "Namn",
+		"memberSince": "Medlem från",
+		"joinedMezon": "Gick med i Mezon",
+		"roles": "Roller",
+		"signals": "Signaler"
+	},
+	"topBar": {
+		"recentMembers": "Senaste medlemmar",
+		"searchPlaceholder": "Sök",
+		"sort": "Sortera"
+	},
+	"error": "Fel",
+	"profile": "Profil",
+	"message": "Meddelande",
+	"timeAgo": "{{time}} sedan",
+	"transferOwnership": "Överför ägande",
+	"removeMember": "Ta bort medlem"
+}

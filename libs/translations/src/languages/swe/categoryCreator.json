@@ -1,0 +1,17 @@
+{
+    "actions": {
+        "create": "Skapa",
+        "cancel": "Avbryt"
+    },
+    "fields": {
+        "cateName": {
+            "title": "Ny kategori",
+            "placeholder": "Kategori namn",
+            "errorMessage": "Vänligen ange giltig kategori namn (max 64 tecken, bara ord, siffror, _ eller -)."
+        },
+        "catePrivate": {
+            "title": "Privat kategori",
+            "description": "Om kategorin är i privat läge kan bara utvalda medlemmar och roller se denna kategori. Kanaler som är synkroniserade i denna kategori kommer också automatiskt att konverteras till privata."
+        }
+    }
+}

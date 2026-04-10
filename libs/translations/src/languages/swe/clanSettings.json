@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Gemenskaps översikt",
+		"deleteClan": "Ta bort clan",
+		"sectionTitles": {
+			"apps": "Applikationer",
+			"moderation": "Moderering",
+			"emotions": "Känslor"
+		},
+		"items": {
+			"overview": "Översikt",
+			"roles": "Roller",
+			"emoji": "Uttryck",
+			"imageStickers": "Bildstickers",
+			"voiceStickers": "Ljudstickers",
+			"categoryOrder": "Kategori ordning",
+			"integrations": "Integrationer",
+			"auditLog": "Granskningslogg",
+			"onboarding": "Påfyllning",
+			"enableCommunity": "Aktivera gemenskap"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Minstora storlek: 128x128",
+		"recommendedSize": "Vi rekommenderar att du använder en bild på minst 512x512 för clan.",
+		"uploadImage": "Ladda upp bild",
+		"clanName": "Clan namn",
+		"namePlaceholder": "Clan namn...",
+		"validationError": "Vänligen ange giltigt kanal namn (max 64 tecken, bara ord, siffror, _ eller -).",
+		"modal": {
+			"title": "Bara bildfiler tillåtna",
+			"content": "Endast ladda upp fil i format (JPEG, PNG), tack!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Försiktig — du har osparade ändringar!",
+		"reset": "Återställ",
+		"saveChanges": "Spara ändringar"
+	},
+	"clanBanner": {
+		"title": "Clan Banner bakgrund",
+		"description": "Denna bild visas i toppen av din kanallista.",
+		"recommendedSize": "Rekommenderad minsta storlek är 960x540 och bildförhållande 16:9.",
+		"uploadBackground": "Ladda upp bakgrund",
+		"chooseImage": "Välj bild",
+		"modal": {
+			"title": "Bara bildfiler tillåtna",
+			"content": "Endast ladda upp fil i format (JPEG, PNG), tack!"
+		}
+	},
+	"systemMessages": {
+		"title": "Systemmeddelande kanal",
+		"description": "Detta är kanalen vi skickar systemhändelse meddelanden till. Kan stängas när som helst",
+		"welcomeRandom": "Skicka slumpmässigt välkomnande meddelande när någon går med i servern.",
+		"welcomeSticker": "Påminn medlemmar att svara på välkomnande meddelande med sticker.",
+		"boostMessage": "Skicka meddelande när någon boostar denna server.",
+		"setupTips": "Skicka användbara tips för server-ställning.",
+		"auditLog": "Skicka logg när en åtgärd tillämpas på clan",
+		"anoTitle": "Anonym-läge",
+		"anoDesc": "Hinder användare från att använda anonym-läge"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Gaming Companion Applikationer",
+			"popularTrending": "Populära & Trendande Applikationer",
+			"serverMiniGames": "Server Mini-Games",
+			"rolePlayingFavorites": "Rollspelsfavoriter"
+		},
+		"inServers": "i {{count}} servrar"
+	},
+	"emoji": {
+		"uploadInstructions": "UPPLADDNINGSGUID",
+		"title": "Uttryck",
+		"description": "Lägg till max 250 anpassade uttryck som alla kan använda i denna server.",
+		"uploadRequirements": "UPPLADDNINGSKRAV",
+		"requirements": {
+			"fileType": "Filtyp: JPEG, PNG, GIF",
+			"fileSize": "Rekommenderad filstorlek: 256 KB",
+			"dimensions": "Rekommenderad storlek: 128x128",
+			"naming": "Namngivning: Uttrycks namn måste ha minst 2 tecken och bara innehålla bokstavstecken och siffror samt understreck"
+		},
+		"uploadEmoji": "Ladda upp uttryck"
+	},
+	"stickers": {
+		"uploadInstructions": "UPPLADDNINGSGUID",
+		"description": "Stickers kan vara statiskt (PNG) eller dynamisk (APNG, GIF). Sticker måste vara exakt 320 x 320 pixel och inte större än 512KB. Vi kommer automatiskt ändra storlek på statisk PNG-stickers och dynamisk GIF för dig.",
+		"uploadHere": "Ladda upp här!",
+		"customizeMessage": "Anpassa dessa underbara stickers efter dina preferenser",
+		"uploadSticker": "Ladda upp sticker"
+	},
+	"deleteClanTitle": "Ta bort '{{clanName}}'"
+}

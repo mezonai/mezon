@@ -1,0 +1,18 @@
+{
+	"title": "INBUDAN TILL CLAN",
+	"offline": "offline",
+	"online": "online",
+	"join": "Gå med",
+	"joining": "Ansluter...",
+	"goToClan": "Gå till Clan",
+	"unknownClan": "Okänd Clan",
+	"memberCount": "{{count}} Medlemmar",
+	"memberCount_plural": "{{count}} Medlemmar",
+	"failedToJoin": "Kunde inte gå med i denna clan.",
+	"inviteTo": "BUD TILL {{clanName}}",
+	"noThanks": "Nej tack",
+	"invalidInvite": {
+		"title": "Ogiltig inbjudan",
+		"message": "Prova att skicka en annan inbjudan!"
+	}
+}

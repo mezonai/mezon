@@ -1,0 +1,144 @@
+{
+	"myAccount": "Mitt konto",
+	"editUserProfile": "Redigera användarprofil",
+	"noDisplayName": "Du har inte lagt till ett visningsnamn.",
+	"edit": "Redigera",
+	"password": "Lösenord",
+	"phoneNumber": "Telefonnummer",
+	"username": "Användarnamn",
+	"displayName": "Visningsnamn",
+	"users": "Användare",
+	"accountManagement": "Kontohantering",
+	"blockedUsers": "Bekämpade användare",
+	"disableAccount": "Inaktivera konto",
+	"deleteAccount": "Radera konto",
+	"accountInformation": "Kontoinformation",
+	"doNotHaveBlockedUser": "Inga bekämpade användare",
+	"setPassword": "Ställ in lösenord",
+	"changePassword": "Ändra lösenord",
+	"setEmail": "Ställ in e-post",
+	"changeEmail": "Ändra e-post",
+	"setPhoneNumber": "Ställ in telefonnummer",
+	"disableAccountAlert": {
+		"title": "Inaktivera konto",
+		"description": "Är du säker på att du vill inaktivera kontot?",
+		"noConfirm": "Nej",
+		"yesConfirm": "Ja"
+	},
+	"deleteAccountAlert": {
+		"title": "Radera konto",
+		"description": "Är du säker på att du vill radera kontot?",
+		"noConfirm": "Nej",
+		"yesConfirm": "Ja"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "E-postkrav",
+		"linkEmailRequiredDescription": "Du behöver länka e-post innan du kan ställa in lösenord",
+		"goTo": "Gå till",
+		"title": "Ställ in lösenord",
+		"email": "E-post",
+		"password": "Lösenord",
+		"currentPassword": "Nuvarande lösenord",
+		"confirmPassword": "Bekräfta lösenord",
+		"confirm": "Spara",
+		"changePassword": "Ändra lösenord",
+		"description": "Ditt lösenord måste ha minst 8 tecken och inkludera minst ett stor bokstav, ett litet bokstav, en siffra och ett specialtecken (t.ex. !@#$%^&*).",
+		"error": {
+			"characters": "Lösenordet måste ha minst 8 tecken",
+			"uppercase": "Lösenordet måste innehålla minst 1 stor bokstav",
+			"lowercase": "Lösenordet måste innehålla minst 1 liten bokstav",
+			"number": "Lösenordet måste innehålla minst 1 siffra",
+			"symbol": "Lösenordet måste innehålla minst 1 specialtecken",
+			"notEqual": "Bekräftelselösenord matchar inte",
+			"samePass": "Nytt lösenord får inte vara samma som det gamla",
+			"fillOldPass": "Vänligen ange nuvarande lösenord.",
+			"updateFail": "Misslyckades uppdatera konto.",
+			"createFail": "Misslyckades ställa in lösenord.",
+			"incorrectCurrent": "Nuvarande lösenord är fel. Prova igen"
+		},
+		"toast": {
+			"success": "Lösenord uppdaterat framgångsrikt",
+			"error": "Misslyckades uppdatera lösenord"
+		},
+		"placeholder": {
+			"currentPassword": "Ange nuvarande lösenord",
+			"password": "Ange nytt lösenord",
+			"confirmPassword": "Bekräfta nytt lösenord"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Ställ in lösenord",
+		"description": "Vänligen skapa ett nytt lösenord för ditt konto",
+		"emailPlaceholder": "din.email@example.com",
+		"loading": "Laddar...",
+		"close": "Stäng"
+	},
+	"setPhoneModal": {
+		"title": "Ställ in telefonnummer",
+		"phoneNumber": "Telefonnummer",
+		"description": "Du kommer att få ett SMS med en verifieringskod.",
+		"loading": "Laddar...",
+		"close": "Stäng",
+		"sendOTP": "Skicka OTP",
+		"countryCode": "Landskod",
+		"confirmOtp": "Bekräfta OTP",
+		"invalidPhone": "Ogiltigt telefonnummer",
+		"updatePhoneSuccess": "Telefonnummer uppdaterat framgångsrikt",
+		"updatePhoneFail": "Ett fel uppstod. Prova igen",
+		"emptyOtp": "OTP är ogiltig!",
+		"resendOtp": "Skicka OTP igen!",
+		"tooFast": "För snabbt. Vänligen vänta {{seconds}} sekunder innan OTP skickas.",
+		"alreadyLinked": "Detta nummer är redan länkat till ditt konto",
+		"alreadyLinkedToAnother": "Detta nummer är redan länkat till ett annat konto",
+		"country": "Land",
+		"otpSentMessage": "Vänligen kontrollera OTP som skickades till telefonnumret {{phone}}",
+		"backToPhoneInput": "Ändra telefonnummer?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Kontot raderat framgångsrikt",
+			"error": "Du är klans ägare"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Telefonnummer",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Nytt telefonnummer",
+			"nextButton": "Nästa",
+			"removeButton": "Ta bort telefonnummer",
+			"failed": "Misslyckades uppdatera telefonnummer",
+			"invalidPhoneNumber": "Ogiltigt telefonnummer"
+		},
+		"verifyPhoneNumber": {
+			"description": "Ange 6-siffriga koden som vi skickade till",
+			"verifyButton": "Bekräfta",
+			"success": "Telefonnummer uppdaterat framgångsrikt"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Avbryt",
+		"currentEmail": "Nuvarande e-post",
+		"description": "Vänligen ange e-post för ditt konto",
+		"otpDescription": "OTP har skickats till din nya e-post",
+		"fillOTP": "Ange OTP",
+		"send": "Skicka OTP",
+		"resendOtp": "Skicka OTP igen!",
+		"error": {
+			"notEqual": "Bekräftelselösenord matchar inte",
+			"required": "E-post är obligatorisk",
+			"invalid": "Vänligen ange en giltig e-postadress"
+		},
+		"updateEmail": {
+			"newEmail": "Ny e-post",
+			"nextButton": "Nästa",
+			"failed": "Misslyckades uppdatera e-post",
+			"invalidEmail": "Ogiltig e-post",
+			"emailAlreadyLinked": "Du använder redan denna e-post"
+		},
+		"verifyEmail": {
+			"description": "Ange 6-siffriga koden som vi skickade till",
+			"verifyButton": "Bekräfta",
+			"success": "E-post uppdaterat framgångsrikt"
+		}
+	}
+}

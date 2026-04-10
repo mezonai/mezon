@@ -1,0 +1,18 @@
+{
+  "editResources": "Redigera resurser",
+  "form": {
+    "nameTitle": "Ge denna resurs ett namn",
+    "namePlaceholder": "#rules kan vara Regler",
+    "descriptionTitle": "Beskriv denna resurs",
+    "descriptionPlaceholder": "T.ex. Regler för clan",
+    "imageTitle": "Regelbild",
+    "browse": "Bläddra",
+    "required": "Detta fält är obligatoriskt.",
+    "minCharacters": "Regelnamn måste ha minst 7 tecken"
+  },
+  "buttons": {
+    "remove": "Ta bort",
+    "save": "Spara",
+    "add": "Lägg till"
+  }
+}

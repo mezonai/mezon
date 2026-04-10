@@ -1,0 +1,84 @@
+{
+	"friend": "Vänner",
+	"addFriend": "Lägg till vän",
+	"friends": "Vänner",
+	"clearSearch": "Rensa sökning",
+	"search": "Sök",
+	"tabs": {
+		"all": "Alla",
+		"online": "Online",
+		"pending": "Pågående",
+		"block": "Blokera"
+	},
+	"addFriendModal": {
+		"title": "LÄGG TILL VÄN",
+		"description": "Du kan lägga till vän med deras Mezon användarnamn",
+		"placeholder": "Ange användarnamn",
+		"tooltip": "Du kan lägga till vän med deras Mezon användarnamn",
+		"sendRequest": "Skicka vänförfrågan",
+		"add": "Lägg till",
+		"alreadyFriends": "Du är redan vän med denna användare!",
+		"waitAccept": "Du har redan skickat vänförfrågan till denna användare!",
+		"invalidInput": "Vänligen använd bara siffror, bokstäver, understreck _ eller punkt.",
+		"blockedUser": "Du har blockerat denna användare. Vänligen avblockera för att skicka inbjudan.",
+		"blockedUserMobile": "Du har blockerat denna användare. Avblockera för att skicka inbjudan.",
+		"waitingMessage": "Mezon väntar på dig. Men du behöver inte vänta!"
+	},
+	"requestFailedPopup": {
+		"title": "Vänförfrågan misslyckades",
+		"message": "Du är redan vän med denna användare!",
+		"okay": "OK"
+	},
+	"activity": {
+		"coding": "Aktivitet - Arbete",
+		"music": "Aktivitet - Livsstil",
+		"gaming": "Aktivitet - Rolighet"
+	},
+	"friendMenu": {
+		"startVideoCall": "Börja videosamtal",
+		"startVoiceCall": "Börja röstsamtal",
+		"removeFriend": "Ta bort vän",
+		"block": "Blokera",
+		"unblock": "Avblockera",
+		"more": "Mer",
+		"cancel": "Avbryt",
+		"accept": "Acceptera",
+		"reject": "Avvisa"
+	},
+	"removeFriendModal": {
+		"title": "Ta bort '{{username}}'",
+		"description": "Är du säker på att du vill ta bort <bold>{{username}}</bold från vänlista?",
+		"cancel": "Avbryt",
+		"confirm": "Ta bort vän"
+	},
+	"cancelRequestModal": {
+		"title": "Avbryt '{{username}}' förfrågan",
+		"description": "Är du säker på att du vill avbryta vänförfrågan till <bold>{{username}}?</bold>",
+		"cancel": "Avbryt",
+		"confirm": "Avbryt förfrågan"
+	},
+	"rejectRequestModal": {
+		"title": "Avvisa '{{username}}' förfrågan",
+		"description": "Är du säker på att du vill avvisa vänförfrågan från <bold>{{username}}?</bold>",
+		"cancel": "Avbryt",
+		"confirm": "Avvisa"
+	},
+	"toast": {
+		"userBlockedSuccess": "Användare blockerad framgångsrikt",
+		"userBlockedFailed": "Kunde inte blockera användare",
+		"userUnblockedSuccess": "Användare av blockerad framgångsrikt",
+		"userUnblockedFailed": "Kunde inte av blockera användare"
+	},
+	"statusTapListFriends": {
+		"all": "Verkar tom här! Börja med några vänner för att starta samtal.",
+		"online": "Tyst! Varför inte starta samtal och se vem som är här?",
+		"pending": "Här hittar du vänförfrågan du har skickat och mottagit.",
+		"block": "Du har blockerat ingen än."
+	},
+	"statusTapSearchFriends": {
+		"all": "Inga vänner matchar din sökning. Prova annat namn.",
+		"online": "Inga online matchar din sökning. Prova annat namn.",
+		"pending": "Inga vänförfrågor matchar din sökning. Vänligen dubbelkolla namnet eller prova igen.",
+		"block": "Inga blockerade användare matchar din sökning. Prova annat namn."
+	}
+}
