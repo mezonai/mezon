@@ -3,6 +3,7 @@ import type { ChannelUpdatedEvent } from 'mezon-js';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
+import { channelMetaActions } from './channelmeta.slice';
 import type { ChannelsEntity } from './channels.slice';
 import { channelsActions } from './channels.slice';
 import { listChannelRenderAction } from './listChannelRender.slice';
@@ -105,6 +106,16 @@ export const addChannelNotExist = createAsyncThunk(
 
 export const addThreadNotExist = createAsyncThunk('channels/switchPublicToPrivate', async ({ thread }: { thread: ChannelUpdatedEvent }, thunkAPI) => {
 	thunkAPI.dispatch(listChannelRenderAction.addThreadToListRender({ clanId: thread.clan_id, channel: { ...thread, id: thread.channel_id } }));
+	thunkAPI.dispatch(
+		channelMetaActions.add({
+			id: thread.channel_id || '',
+			clanId: thread.clan_id,
+			senderId: '0',
+			lastSentTimestamp: Date.now() / 1000,
+			lastSeenTimestamp: 0,
+			isMute: false
+		})
+	);
 });
 
 export const updateChannelActions = {
