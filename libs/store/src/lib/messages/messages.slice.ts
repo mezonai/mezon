@@ -968,7 +968,8 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 					channelMetaActions.setChannelLastSeenTimestamp({
 						channelId,
 						timestamp,
-						messageId: messageResult.channel_id
+						messageId: messageResult.channel_id,
+						clanId: clanId
 					})
 				);
 			}
@@ -1287,7 +1288,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					channelMetaActions.setChannelLastSeenTimestamp({
 						channelId,
 						timestamp,
-						messageId: messageResult.message_id
+						messageId: messageResult.message_id,
+						clanId: clanId
 					})
 				);
 			}

@@ -56,6 +56,7 @@ import {
 	selectCategoryById,
 	selectChannelById,
 	selectChannelByIdAndClanId,
+	selectChannelMetaById,
 	selectChannelMetaEntities,
 	selectChannelThreads,
 	selectChannelsByClanId,
@@ -814,7 +815,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 
 		if (clan_id && clan_id !== '0') {
-			const channel = selectChannelByIdAndClanId(state, clan_id, channel_id);
+			const channel = selectChannelMetaById(state, channel_id);
 			badge_count = channel?.count_mess_unread || 0;
 			badgeService.resetChannel({
 				clanId: clan_id,

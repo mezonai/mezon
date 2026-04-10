@@ -104,7 +104,8 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 			channelMetaActions.setChannelLastSeenTimestamp({
 				channelId,
 				timestamp: now + TIME_OFFSET,
-				messageId
+				messageId,
+				clanId
 			})
 		);
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
