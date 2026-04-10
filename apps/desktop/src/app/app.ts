@@ -137,6 +137,7 @@ export default class App {
 		if (App.isShowingConnectingPage) return;
 
 		App.isShowingConnectingPage = true;
+		const reconnectUrl = App.application.isPackaged ? 'https://mezon.ai/' : `http://localhost:${rendererAppPort}`;
 
 		const connectingHTML = `
 			<!DOCTYPE html>
@@ -202,6 +203,33 @@ export default class App {
 						80% { width: 85%; }
 						100%{ width: 95%; }
 					}
+					.connection-status {
+						font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+						font-size: 12px;
+						font-weight: 600;
+						color: #D1D5DB;
+						margin-top: 10px;
+						margin-bottom: 12px;
+						-webkit-app-region: no-drag;
+					}
+					.retry-button {
+						background-color: #5864f2;
+						color: #ffffff;
+						border: none;
+						padding: 8px 18px;
+						border-radius: 6px;
+						font-size: 13px;
+						font-weight: 600;
+						cursor: pointer;
+						-webkit-app-region: no-drag;
+					}
+					.retry-button:hover {
+						background-color: #4752c4;
+					}
+					.retry-button:disabled {
+						background-color: #3b3d5c;
+						cursor: not-allowed;
+					}
 				</style>
 			</head>
 			<body>
@@ -214,6 +242,39 @@ export default class App {
 				<div class="dots">
 					<span></span><span></span><span></span>
 				</div>
+				<div class="connection-status" id="connectionStatusText">Please check your internet connection and click Retry.</div>
+				<button class="retry-button" id="retryBtn" onclick="retryConnection()">Retry</button>
+				<script>
+					var retryTargetUrl = ${JSON.stringify(reconnectUrl)};
+					var connectionStatusText = document.getElementById('connectionStatusText');
+
+					function retryConnection() {
+						var btn = document.getElementById('retryBtn');
+						if (!btn) return;
+
+						btn.disabled = true;
+						btn.textContent = 'Retrying...';
+
+						window.location.href = retryTargetUrl;
+
+						setTimeout(function() {
+							btn.disabled = false;
+							btn.textContent = 'Retry';
+						}, 2000);
+					}
+
+					window.addEventListener('online', function() {
+						if (connectionStatusText) {
+							connectionStatusText.textContent = 'Connection restored. Click Retry.';
+						}
+					});
+
+					window.addEventListener('offline', function() {
+						if (connectionStatusText) {
+							connectionStatusText.textContent = 'Please check your internet connection and click Retry.';
+						}
+					});
+				</script>
 			</body>
 			</html>
 		`;
