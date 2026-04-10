@@ -3,6 +3,7 @@ import { useAppNavigation } from '@mezon/core';
 import type { ChannelsEntity, ThreadsEntity } from '@mezon/store';
 import {
 	appActions,
+	channelMetaActions,
 	channelsActions,
 	selectAllChannelMembers,
 	selectLastMessageIdByChannelId,
@@ -24,12 +25,11 @@ import ThreadModalContent from './ThreadModalContent';
 
 type ThreadItemProps = {
 	thread: ThreadsEntity;
-	setIsShowThread: () => void;
 	isPublicThread?: boolean;
 	preventClosePannel: MutableRefObject<boolean>;
 };
 
-const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventClosePannel }: ThreadItemProps) => {
+const ThreadItem = ({ thread, isPublicThread = false, preventClosePannel }: ThreadItemProps) => {
 	const { i18n } = useTranslation();
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
@@ -69,9 +69,18 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 	const handleLinkThread = (channelId: string, clanId: string) => {
 		preventClosePannel.current = false;
 		dispatch(channelsActions.upsertOne({ clanId, channel: thread as ChannelsEntity }));
+		dispatch(
+			channelMetaActions.add({
+				clanId,
+				id: thread.id,
+				isMute: false,
+				lastSeenTimestamp: thread.last_seen_message?.timestamp_seconds || 0,
+				senderId: '0',
+				lastSentTimestamp: thread.last_sent_message?.timestamp_seconds || 0
+			})
+		);
 		dispatch(appActions.setIsShowCanvas(false));
 		navigate(toChannelPage(channelId, clanId));
-		setIsShowThread();
 	};
 
 	return (

@@ -195,6 +195,7 @@ export type IThread = {
 	create_time_seconds?: number | string | undefined;
 	update_time_seconds?: number | string | undefined;
 	last_sent_message?: ApiChannelMessageHeader;
+	last_seen_message?: ApiChannelMessageHeader;
 	channel_private?: number;
 };
 
@@ -428,7 +429,7 @@ export interface IPollAnswer {
 
 export enum EPollType {
 	SINGLE = 0,
-	MULTIPLE = 1,
+	MULTIPLE = 1
 }
 
 export interface IMessageSendPayload {
@@ -463,9 +464,9 @@ export interface IMessageSendPayload {
 	total_votes?: number;
 	allow_multiple_answers?: boolean;
 	user_votes?: number[];
-	id?: number,
-	expire_at?: number,
-	type?: EPollType,
+	id?: number;
+	expire_at?: number;
+	type?: EPollType;
 }
 
 export type IUser = {
