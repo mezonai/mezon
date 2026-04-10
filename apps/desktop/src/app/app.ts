@@ -519,10 +519,29 @@ export default class App {
 			return { action: 'deny' };
 		});
 
-		App.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+		App.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+			if (!isMainFrame) {
+				return;
+			}
+
 			log.error(`Failed to load: ${validatedURL}, Error code: ${errorCode}, Description: ${errorDescription}`);
-			const isCSPError = errorDescription?.toUpperCase().includes('CSP') || errorDescription?.toUpperCase().includes('CONTENT-SECURITY-POLICY');
-			if (errorCode !== -3 && errorCode !== -21 && !isCSPError) {
+
+			const description = (errorDescription || '').toUpperCase();
+			const isCSPError =
+				description.includes('CSP') ||
+				description.includes('CONTENT-SECURITY-POLICY') ||
+				description.includes('BLOCKED_BY_RESPONSE') ||
+				description.includes('BLOCKED_BY_CLIENT') ||
+				description.includes('FRAME-ANCESTORS') ||
+				description.includes('REFUSED TO FRAME') ||
+				description.includes('REFUSED TO CONNECT');
+
+			if (isCSPError) {
+				log.warn(`Skip connecting page for CSP/policy error: ${errorDescription}`);
+				return;
+			}
+
+			if (errorCode !== -3 && errorCode !== -21) {
 				App.showConnectingPage(errorDescription);
 			}
 		});
