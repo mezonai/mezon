@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Privire de ansamblu comunitate",
+		"deleteClan": "Șterge clan",
+		"sectionTitles": {
+			"apps": "Aplicații",
+			"moderation": "Moderare",
+			"emotions": "Emoții"
+		},
+		"items": {
+			"overview": "Privire de ansamblu",
+			"roles": "Roluri",
+			"emoji": "Emoji",
+			"imageStickers": "Adesive imagini",
+			"voiceStickers": "Sunete vocale",
+			"categoryOrder": "Ordine categorie",
+			"integrations": "Integrări",
+			"auditLog": "Jurnal verificare",
+			"onboarding": "Început",
+			"enableCommunity": "Activează comunitate"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Mărime minimă: 128x128",
+		"recommendedSize": "Recomandăm să folosești imagine cu mărime de minim 512x512 pentru clan.",
+		"uploadImage": "Încarcă imagine",
+		"clanName": "Nume Clan",
+		"namePlaceholder": "Nume clan...",
+		"validationError": "Vă rugăm să introduceți un nume de canal (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+		"modal": {
+			"title": "Doar fișiere de imagine permise",
+			"content": "Doar încarcă fișier cu format (JPEG, PNG), mulțumesc!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Atenție — ai schimbări nesalvate!",
+		"reset": "Resetează",
+		"saveChanges": "Salvează schimbări"
+	},
+	"clanBanner": {
+		"title": "Bannăr Fundal Clan",
+		"description": "Această imagine va fi afișată în partea de sus a listei de canale.",
+		"recommendedSize": "Mărimea minimă recomandată este 960x540 și aspect ratio 16:9.",
+		"uploadBackground": "Încarcă fundal",
+		"chooseImage": "Alege imagine",
+		"modal": {
+			"title": "Doar fișiere de imagine permise",
+			"content": "Doar încarcă fișier cu format (JPEG, PNG), mulțumesc!"
+		}
+	},
+	"systemMessages": {
+		"title": "Canal mesaje sistem",
+		"description": "Acesta este canalul unde trimitem mesaje de eveniment sistem. Poate fi oprit oricând",
+		"welcomeRandom": "Trimite mesaj de bine-venit aleatoriu când cineva se alătură acest server.",
+		"welcomeSticker": "Cere membrilor să răspundă mesajului de bine-venit cu adesive.",
+		"boostMessage": "Trimite mesaj când cineva Boost acest server.",
+		"setupTips": "Trimite sfaturi utile pentru setare server.",
+		"auditLog": "Trimite jurnal când o acțiune este aplicată la clan",
+		"anoTitle": "Mod anonim",
+		"anoDesc": "Previn utilizatorii să folosească mod anonim"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Aplicație Companion Jocuri",
+			"popularTrending": "Aplicații populare & trendy",
+			"serverMiniGames": "Mini-Jocuri server",
+			"rolePlayingFavorites": "Favorite joc rol"
+		},
+		"inServers": "în {{count}} servere"
+	},
+	"emoji": {
+		"uploadInstructions": "GHID ÎNCĂRCARE",
+		"title": "Emoji",
+		"description": "Adaugă maxim 250 de emoji custom pe care oricine le pot folosi în acest server.",
+		"uploadRequirements": "CERINȚE ÎNCĂRCARE",
+		"requirements": {
+			"fileType": "Tip fișier: JPEG, PNG, GIF",
+			"fileSize": "Mărime fișier recomandată: 256 KB",
+			"dimensions": "Dimensiune recomandată: 128x128",
+			"naming": "Nume: Numele emoji trebuie să aibă cel puțin 2 caractere și să conțină doar litere, cifre și underscore"
+		},
+		"uploadEmoji": "Încarcă emoji"
+	},
+	"stickers": {
+		"uploadInstructions": "GHID ÎNCĂRCARE",
+		"description": "Adesivele pot fi statice (PNG) sau animate (APNG, GIF). Adesivele trebuie să aibă dimensiunea exactă de 320 x 320 pixeli și nu mai mult de 512KB. Vom schimba automat dimensiunea adesivelor PNG statice și GIF animate pentru tine.",
+		"uploadHere": "Încarcă aici!",
+		"customizeMessage": "Personalizează aceste adesive minunate după preferințele tale",
+		"uploadSticker": "Încarcă adesiv"
+	},
+	"deleteClanTitle": "Șterge '{{clanName}}'"
+}

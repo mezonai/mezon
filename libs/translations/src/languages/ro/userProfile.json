@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "Transfer token",
+		"sendMessage": "Trimite mesaj",
+		"voiceCall": "Apel vocal",
+		"videoCall": "Apel video",
+		"addFriend": "Alătură-te prieten",
+		"pending": "În așteptare",
+		"removeFriend": "Anulează prietenie"
+	},
+	"aboutMe": {
+		"headerTitle": "DESPRE MINE",
+		"roles": {
+			"headerTitle": "ROLURI"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Dă jos membru",
+		"kickFromServer": "Dă jos {{username}} din clan",
+		"description": "Ești sigur că dorești să dai jos {{username}} din clan? Va putea te alătura din nou cu invitație nouă.",
+		"reasonKick": "Motiv de dat jos",
+		"buttonName": "Dă jos"
+	},
+	"transferOwnershipModal": {
+		"warning": "Acest lucru va transfera proprietatea <highlightClan>{{clanName}}</highlightClan> către <highlightUser>{{username}}</highlightUser>. Această acțiune nu poate fi desfăcută!",
+		"sectionTitle": "Transfer proprietate",
+		"acknowledgment": "Confirm că prin transferarea proprietății acestui clan către {{username}}, aceasta îi va aparține.",
+		"transferButton": "Transferă",
+		"confirmTitle": "Transferă proprietate?",
+		"confirmDescription": "Ești sigur că dorești să transferi proprietatea {{clanName}} către {{username}}? Această acțiune nu poate fi desfăcută.",
+		"confirmButton": "Transferă"
+	},
+	"pendingContent": {
+		"block": "Blochează",
+		"unblock": "Deblochează",
+		"reportUserProfile": "Raportează profil utilizator",
+		"acceptFriend": "Acceptă prietenie",
+		"rejectFriend": "Respinge cerere prietenie",
+		"cancelFriendRequest": "Anulează cerere prietenie",
+		"copyUsername": "Copiază nume utilizator",
+		"copiedUserName": "{{username}} copiat",
+		"removeFriend": "Anulează prietenie",
+		"viewFullProfile": "Vezi profil complet"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Elimină din grup",
+			"removeSuccess": "Membru eliminat din grup cu succes",
+			"removeFailed": "Eliminare membru din grup eșuată"
+		},
+		"mezonMemberSince": "Membru Mezon din"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Utilizator blocat cu succes",
+			"error": "Imposibil de blocat utilizator"
+		},
+		"unblockUser": {
+			"success": "Utilizator deblocat cu succes",
+			"error": "Imposibil de deblocat utilizator"
+		}
+	},
+	"incomingFriendRequest": "CERERE PRIETENIE ÎN AȘTEPTARE",
+	"sendAddFriendSuccess": "Cerere prietenie trimisă",
+	"accept": "Acceptă",
+	"ignore": "Ignoră",
+	"labels": {
+		"aboutMe": "Despre mine",
+		"memberSince": "Membru din",
+		"activity": "Activitate",
+		"unknownUser": "Utilizator nedefinit",
+		"anonymous": "Anonim",
+		"editProfile": "Editează profil",
+		"note": "NOTĂ",
+		"addNote": "Apasă pentru a adăuga notă",
+		"showLess": "Ascunde mai puțin",
+		"addRole": "Adaugă rol",
+		"addRoles": "Adaugă roluri",
+		"removeRole": "Elimină rol",
+		"role": "Rol",
+		"nope": "Nu e!",
+		"typoError": "Ai tastat greșit?",
+		"userNotFound": "Utilizator nu este în Clan"
+	},
+	"placeholders": {
+		"messageUser": "Trimite mesaj către @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Sold",
+		"transferFunds": "Transfer token",
+		"editCustomStatus": "Editează status custom",
+		"setCustomStatus": "Setează status custom",
+		"manageAccounts": "Gestionează conturi",
+		"switchAccounts": "Schimbă conturi",
+		"copyUserId": "Copiază ID utilizator",
+		"statusOptions": {
+			"online": "Online",
+			"idle": "Lipsă",
+			"doNotDisturb": "Nu deranja",
+			"invisible": "Ascuns"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Nu vei primi notificări pe calculator",
+			"invisible": "Vei apărea ca fiind offline"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 minute",
+			"for1Hour": "1 oră",
+			"for3Hours": "3 ore",
+			"for8Hours": "8 ore",
+			"for24Hours": "24 de ore",
+			"forever": "Pentru totdeauna"
+		},
+		"addAccountModal": {
+			"email": "Email",
+			"password": "Parolă",
+			"emailPlaceholder": "Introdu email-ul tău",
+			"passwordPlaceholder": "Introdu parola ta",
+			"cancel": "Anulează",
+			"logIn": "Logare"
+		},
+		"sendTokenModal": {
+			"title": "Trimite Token",
+			"description": "Transferă token la alt utilizator",
+			"fields": {
+				"to": "La",
+				"amount": "Cantitate",
+				"note": "Notă (Opțional)"
+			},
+			"placeholders": {
+				"searchUsers": "Caută utilizatori...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Adaugă notă..."
+			},
+			"noUsersFound": "Nu s-au găsit utilizatori",
+			"currency": "RON",
+			"buttons": {
+				"cancel": "Anulează",
+				"sendTokens": "Trimite Token"
+			},
+			"errors": {
+				"exceedWalletBalance": "Suma depășește soldul în portofel",
+				"maximumLimit": "Maxim 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Istoric tranzacții",
+			"subtitle": "Vezi toate activitățile tale de tranzacție",
+			"tabs": {
+				"all": "Toate tranzacțiile",
+				"sent": "Tranzacții trimise",
+				"received": "Tranzacții primite"
+			},
+			"transactionTypes": {
+				"sent": "Trimis",
+				"received": "Primit"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Nu s-a găsit nicio tranzacție",
+					"description": "Nu ai efectuat nicio tranzacție. Istoricul tranzacțiilor va apărea aici când începi să trimiți sau să primești token."
+				},
+				"noFilteredTransactions": {
+					"title": "Nu s-a găsit nicio tranzacție",
+					"description": "Nu s-a găsit nicio tranzacție pentru filtrul selectat. Vă rugăm să încerci un filtru diferit sau să verifici mai târziu."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Tranzacție #"
+			},
+			"loading": {
+				"fetching": "Se încarcă tranzacții...",
+				"fetchingMore": "Se încarcă mai multe tranzacții...",
+				"scrollMore": "Derulează în jos pentru mai multe",
+				"allLoaded": "Ai încărcat toate {{count}} tranzacții"
+			}
+		},
+		"customStatusModal": {
+			"title": "Setează status custom",
+			"whatsCookin": "Ce gândești, {{name}}",
+			"placeholder": "Ce gândești?",
+			"clearAfter": "Șterge după",
+			"timeOptions": {
+				"today": "Astăzi",
+				"fourHours": "4 ore",
+				"oneHour": "1 oră",
+				"thirtyMinutes": "30 minute",
+				"dontClear": "Nu șterge"
+			},
+			"buttons": {
+				"cancel": "Anulează",
+				"save": "Salvează"
+			}
+		}
+	},
+	"channelVoiceSettings": "Setări canal vocal",
+	"muteVoice": "Oprește sunet",
+	"kickVoice": "Elimină din canal vocal",
+	"voiceInfo": {
+		"inVoice": "În canal vocal",
+		"joinVoice": "Alătură-te vocal"
+	},
+	"ban": {
+		"title": "Blochează utilizator",
+		"unbanTitle": "Deblochează utilizator",
+		"content": "Blochează utilizator \"{{userName}}\"?",
+		"banButton": "Blochează",
+		"unBanButton": "Deblochează",
+		"reasonBan": "Motiv blocare",
+		"unBanDescription": "Vrei să deblochezi utilizator \"{{userName}}\"?",
+		"time": {
+			"title": "Perioadă de timp",
+			"tenMinutes": "10 minute",
+			"thirtyMinutes": "30 minute",
+			"oneHour": "1 oră",
+			"sixHours": "6 ore",
+			"twelveHours": "12 ore",
+			"oneDay": "1 zi",
+			"threeDays": "3 zile"
+		},
+		"banList": "Listă blocări",
+		"search": "Caută utilizatori blocați",
+		"banListEmpty": "Nu s-a găsit niciun utilizator blocat"
+	}
+}

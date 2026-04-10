@@ -1,0 +1,25 @@
+{
+  "inbox": "Inbox",
+  "tabs": {
+		"forYou": "Pentru tine",
+		"messages": "Mesaje",
+		"mentions": "Mențiuni",
+		"topics": "Discuții scurte"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Nu este nimic aici încă",
+      "description": "Revino pentru a primi notificări despre evenimente, stream și mai mult."
+    },
+    "messages": {
+      "title": "Ai terminat cu toate!",
+      "protip": "Sfat:",
+      "description": "Deschide inbox apăsând CTRL+I și marchează primul mesaj ca citit cu CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Ai terminat cu tot!",
+      "protip": "Sfat:",
+      "description": "Când cineva te menționează, este salvat aici timp de 7 zile."
+    }
+  }
+}

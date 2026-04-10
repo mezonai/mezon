@@ -1,0 +1,152 @@
+{
+	"screens": {
+		"eventType": {
+			"headerTitle": "Pasul 1 din 3",
+			"title": "Unde este evenimentul tău?",
+			"subtitle": "Ca să nu se piardă nimeni",
+			"description": "Poți permite ca alții să creeze evenimente în Clan > Setări > Roluri"
+		},
+		"eventDetails": {
+			"headerTitle": "Pasul 2 din 3",
+			"title": "Despre ce este evenimentul tău?",
+			"subtitle": "Completează detaliile evenimentului tău"
+		},
+		"eventPreview": {
+			"headerTitle": "Pasul 3 din 3",
+			"title": "Acesta este o previzualizare a evenimentului tău",
+			"subtitle": "Acest eveniment va începe automat când vine ora",
+			"subtitleVoice": "Când vine ora, mergi la canal vocal pentru a începe evenimentul!"
+		},
+		"channelSelection": {
+			"title": "Cine este audiența?",
+			"description": "Selectează membri din canal specificat.",
+			"channel": "Audiența include membri de la {{channel}}: "
+		},
+		"isPrivate": "Doar invitații pot participa"
+	},
+	"fields": {
+		"channelType": {
+			"voiceChannel": {
+				"title": "Canal vocal",
+				"description": "Vorbește, video, partajează ecran și stream."
+			},
+			"somewhere": {
+				"title": "Undeva",
+				"description": "Canal text, link extern sau locație directă."
+			},
+			"privateEvent": {
+				"title": "Creează eveniment exterior",
+				"description": "Utilizatorii pot participa la întâlnire cu link fără să se logheze."
+			}
+		},
+		"channel": {
+			"title": "Alege canal"
+		},
+		"address": {
+			"title": "Locație",
+			"placeholder": "Adaugă locație, link sau ceva"
+		},
+		"eventName": {
+			"title": "Titlu eveniment",
+			"placeholder": "Ce este evenimentul tău?",
+			"errorMessage": "Este necesar un titlu pentru eveniment"
+		},
+		"startDate": {
+			"title": "Dată start",
+			"errorMessage": "Vă rugăm să selectezi data curentă sau data viitoare"
+		},
+		"startTime": {
+			"title": "Ora start",
+			"errorMessage": "Vă rugăm să selectezi ora start validă"
+		},
+		"endDate": {
+			"title": "Dată final",
+			"errorMessage": "Vă rugăm să selectezi data curentă sau data viitoare"
+		},
+		"endTime": {
+			"title": "Ora final",
+			"errorMessage": "Vă rugăm să selectezi ora final validă"
+		},
+		"eventFrequency": {
+			"title": "Frecvență eveniment",
+			"noRepeat": "Nu se repetă",
+			"weeklyOn": "Săptămânal în {{name}}",
+			"everyOther": "La fiecare săptămână {{name}}",
+			"monthlyOn": "Lunar în {{name}}",
+			"annuallyOn": "Anual în {{name}}",
+			"everyWeekday": "Fiecare zi lucrătoare (Luni până Vineri)"
+		},
+		"description": {
+			"title": "Descriere",
+			"description": "Spune-le oamenilor puțin mai multe despre evenimentul tău."
+		},
+		"cover": "Copertă"
+	},
+	"actions": {
+		"next": "Următorul",
+		"create": "Creează eveniment",
+		"edit": "Actualizează eveniment",
+		"event_one": "1 Eveniment",
+		"event_other": "{{count}} Evenimente",
+		"noEvent": "Eveniment",
+		"clearAudiences": "Elimină audiență",
+		"startEvent": "Începe eveniment",
+		"editEvent": "Editează eveniment",
+		"cancelEvent": "Anulează eveniment",
+		"copyEventLink": "Copiază link eveniment",
+		"uploadImage": "Încarcă copertă",
+		"neverMind": "Lasă pe dinafară",
+		"cancelEventQuestion": "Anulează eveniment?",
+		"confirmCancelEvent": "Ești sigur că dorești să anulezi acest eveniment?",
+		"back": "Înapoi",
+		"cancel": "Anulează"
+	},
+	"tabs": {
+		"location": "Locație",
+		"eventInfo": "Informații eveniment",
+		"review": "Previzualizare"
+	},
+	"notify": {
+		"locationBlank": "Este necesară o locație",
+		"titleBlank": "Este necesar un titlu pentru eveniment",
+		"time": "Ora start sau final nevalidă",
+		"type": "Trebuie să selectezi tip eveniment care trebuie organizat"
+	},
+	"eventDetail": {
+		"eventIsTaking": "Eveniment în desfășurare!",
+		"tenMinutesLeft": "Rămân {{minutes}} minute. Alătură-te acum!",
+		"eventInfo": "Informații eveniment",
+		"interested": "{{count}} Interesat",
+		"personInterested": "{{count}} persoane interesate",
+		"personInteresteds": "{{count}} persoane interesate",
+		"createdBy": "Creat de {{username}}",
+		"inviteFriends": "Invită prieteni să se alăture eveniment?",
+		"shareLink": "Partajează acest link cu alții pentru a da acces la server",
+		"onlyInvitedMembers": "Utilizatorii pot participa la întâlnire cu link fără să se logheze.",
+		"openLink": "Deschide link",
+		"invite": "Invită",
+		"copyLink": "Copiază link",
+		"audienceConsists": "Audiența constă din membri de la",
+		"thread": "șir discuție:",
+		"channel": "canal:",
+		"clanEvent": "Eveniment Clan",
+		"channelEvent": "Eveniment Canal",
+		"privateEvent": "Eveniment exterior",
+		"privateRoom": "Sală de ședințe exterior",
+		"newEvent": "Nou",
+		"share": "Partajează",
+		"noOneInterested": "Nimeni nu este interesat de acest eveniment."
+	},
+	"errorMessages": {
+		"startTimeFuture": "Ora start trebuie să fie în viitor.",
+		"endTimeAfterStart": "Ora final trebuie să fie mai mare decât ora start.",
+		"invalidTopic": "Titlu eveniment nevalid. Caracterele '`', '<', '>', ',', '/', '\"', '\\', și ''' nu sunt permise."
+	},
+	"selectUser": "Alege canal sau subiect pentru a crea eveniment",
+	"emptyState": {
+		"title": "Nu există evenimente viitoare.",
+		"description1": "Programă eveniment pentru orice activitate în",
+		"clan": "clan",
+		"description2": "Invită alți membri să contribuie cu idei pentru evenimente viitoare."
+	}
+}

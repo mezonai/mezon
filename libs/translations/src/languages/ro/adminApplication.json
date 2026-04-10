@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Creează aplicație nouă",
+			"bot": "Creează bot nou"
+		},
+		"form": {
+			"type": {
+				"label": "TIPI",
+				"options": {
+					"createApplication": "Creează aplicație",
+					"createBot": "Creează bot"
+				}
+			},
+			"name": {
+				"label": "NUME"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Bot Ascuns",
+			"agreement": {
+				"text": "Prin apăsarea pe Creează, sunteți de acord cu",
+				"termsOfService": "Termenii Serviciului pentru Dezvoltatori",
+				"policy": "Politica Dezvoltatorului",
+				"and": "și"
+			}
+		},
+		"buttons": {
+			"cancel": "Anulează",
+			"create": "Creează",
+			"creating": "Se creează...",
+			"confirm": "Confirmă"
+		},
+		"errors": {
+			"nameRequired": "Numele este necesar pentru a crea {type}-ul tău nou.",
+			"urlRequired": "URL-ul este necesar pentru a crea aplicația ta nouă.",
+			"invalidUrl": "Vă rugăm să introduceți un URL valid (de exemplu: https://example.com).",
+			"createFailed": "A fost imposibil de creat aplicația sau ID-ul lipsește în răspuns",
+			"unexpectedError": "A apărut o eroare neașteptată.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "În modul ascuns, bot-ul poate primi toate mesajele trimise către creator, dar nu poate trimite mesaje."
+		},
+		"shadowConfirm": {
+			"title": "Ești sigur că dorești să activezi modul Bot Ascuns?",
+			"message": "În acest mod, bot-ul poate primi toate mesajele trimise către creator, dar nu poate trimite mesaje."
+		}
+	},
+	"sidebar": {
+		"menu": "Meniu",
+		"closeMenu": "Închide meniul"
+	},
+	"tabs": {
+		"generalInformation": "Informații generale",
+		"installation": "Instalare",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Informații generale",
+		"subtitle": "Cum ar trebui să-numim produsul tău? Ce face minunat? Ce iconiță ar trebui să-l reprezinte pe Mezon? Spune-ne aici!",
+		"agreement": {
+			"text": "Prin apăsarea pe Creează, sunteți de acord cu",
+			"adminTerms": "Termenii Serviciului de Admin",
+			"adminPolicy": "Politica Admin-ului",
+			"and": "și"
+		},
+		"appIcon": {
+			"label": "Iconița aplicației",
+			"remove": "Șterge",
+			"size": "Mărime: {size}"
+		},
+		"form": {
+			"name": "Nume",
+			"url": "URL",
+			"botShadow": "Bot Ascuns",
+			"description": {
+				"label": "Descriere (maxim 400 caractere)",
+				"subtitle": "Descrierea ta va apărea în secțiunea Despre Bot",
+				"placeholder": "Scrie o scurtă descriere a Bot-ului tău"
+			},
+			"appId": "ID Bot",
+			"appToken": "Token"
+		},
+		"token": {
+			"newTokenWarning": "Acesta este noul tău token. Copiază-l și păstrează-l în siguranță, nu vei mai putea să-l vezi din nou.",
+			"securityInfo": "Din motive de securitate, token-ul poate fi vizualizat o singură dată, la creare. Dacă ai uitat sau ai pierdut accesul la token, te rugăm să re-crei token-ul nou."
+		},
+		"buttons": {
+			"copy": "Copiază",
+			"copied": "Copiat!",
+			"copyToken": "Copiază Token",
+			"resetToken": "Resetează Token",
+			"delete": "Șterge"
+		},
+		"errors": {
+			"invalidUrl": "Vă rugăm să introduceți un URL valid (de exemplu: https://example.com).",
+			"clientNotInitialized": "Clientul sau fișierul nu a fost inițializat",
+			"resetTokenFailed": "Resetare token eșuată:"
+		}
+	},
+	"installation": {
+		"title": "Instalare",
+		"subtitle": "Alege cum utilizatorii vor instala aplicația ta. Creează link de instalare, selectează contextul de instalare pentru suport, și definesc scope-urile și drepturile pe care dorești să le ceri.",
+		"installLink": {
+			"title": "Link de Instalare",
+			"description": "Folosește link-ul de instalare furnizat sau înregistrează un link personalizat. Dacă alegi un link personalizat, utilizatorii care adaugă aplicația ta vor fi redirecționați către URL-ul tău în loc de procesul Adăugare Aplicație în Mezon.",
+			"option": "Link furnizat de Mezon"
+		},
+		"buttons": {
+			"copy": "Copiază",
+			"copied": "Copiat!"
+		},
+		"loading": "Se încarcă datele aplicației...",
+		"notFound": "Datele aplicației nu au fost găsite"
+	},
+	"clientInformation": {
+		"title": "Informații Client",
+		"clientId": "Client ID",
+		"clientSecret": "Client Secret",
+		"hiddenForSecurity": "Ascuns din motive de securitate",
+		"resetSecret": "Resetează secret",
+		"publicClient": {
+			"title": "Client public",
+			"description": "Clientul public poate menține securitatea informațiilor de autentificare a clientului (adică aplicațiile desktop/mobile care nu folosesc server pentru a executa cereri)"
+		},
+		"buttons": {
+			"copy": "Copiază",
+			"copied": "Copiat!"
+		},
+		"resetSecretPopup": {
+			"title": "Re-crează Secret Key?",
+			"warning": "Aplicația ta se va opri până când actualizezi secret key în codul aplicației.",
+			"nevermind": "Nu e nimic",
+			"confirm": "De acord!"
+		},
+		"toasts": {
+			"addRedirectUri": "Vă rugăm să adaugi cel puțin un redirect URI înainte de a reseta secret key!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Tablou de bord",
+		"applications": "Aplicații",
+		"teams": "Echipe",
+		"embedDebugger": "Debugger Embed",
+		"document": "Document"
+	},
+	"applicationsPage": {
+		"title": "Aplicații",
+		"newApplicationButton": "Creează Aplicație sau Bot nou",
+		"develop": "Dezvoltare",
+		"subtitle": " pentru a personaliza și extinde Mezon pentru milioane de utilizatori.",
+		"appsLinkText": "aplicații",
+		"sortBy": "Sortează după:",
+		"sortOptions": {
+			"dateOfCreation": "Data creării",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Mic",
+			"large": "Mare"
+		},
+		"sections": {
+			"myApplications": "Aplicațiile mele",
+			"myBots": "Boții mei"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Folosește Mezon ca un sistem de autorizare sau folosește API-ul nostru în numele utilizatorilor tăi. Adaugă redirect URI, selectează scope, aruncă D20 pentru noroc, și începe!",
+		"learnMore": "Află mai multe despre OAuth2",
+		"generator": {
+			"title": "Generator URL OAuth2",
+			"description": "Creează link-uri de invitație pentru aplicația ta selectând scope-urile și drepturile necesare pentru funcționare. Apoi, împărtășește URL-ul cu alții!",
+			"scopes": "Scope"
+		},
+		"redirects": {
+			"title": "Redirect",
+			"description": "Trebuie să specifice cel puțin un URI pentru autentificare să funcționeze. Dacă transmiți URI în cererea OAuth, acesta trebuie să se potrivească exact cu unul dintre URI-urile pe care le-ai introdus aici.",
+			"addRedirect": "Adaugă Redirect",
+			"toasts": {
+				"fillAllInputs": "Vă rugăm să completați toate câmpurile cu URI valide!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Are câmpuri goale de intrare!",
+			"invalidUris": "URI-ul trebuie să fie valid!",
+			"redirectUriRequired": "Redirect URI este necesar!"
+		}
+	},
+	"backToApps": "Înapoi la Aplicații",
+	"selectLabel": "SELECȚIE {{type}}",
+	"settings": "SETĂRI",
+	"flows": {
+		"title": "Flux Chat",
+		"hasTokenInfo": "Trebuie să setezi Token înainte de a crea flux nou de Bot.",
+		"setToken": "Setează Token",
+		"addFlow": "Adaugă Flux",
+		"appTokenModal": {
+			"title": "Token Aplicație",
+			"saveButton": "Salvează"
+		},
+		"toasts": {
+			"errorLoading": "Eroare la încărcarea listei de fluxuri"
+		}
+	},
+	"teams": {
+		"title": "Echipe"
+	},
+	"embed": {
+		"title": "Debugger Embed"
+	},
+	"small": "Mic",
+	"large": "Mare"
+}

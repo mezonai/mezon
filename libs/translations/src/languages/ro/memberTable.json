@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "Nume",
+		"memberSince": "Membru din",
+		"joinedMezon": "S-a alăturat Mezon",
+		"roles": "Roluri",
+		"signals": "Semnale"
+	},
+	"topBar": {
+		"recentMembers": "Membri recent",
+		"searchPlaceholder": "Caută",
+		"sort": "Sortează"
+	},
+	"error": "Eroare",
+	"profile": "Profil",
+	"message": "Mesaj",
+	"timeAgo": "{{time}} în urmă",
+	"transferOwnership": "Transferă proprietate",
+	"removeMember": "Elimină membru"
+}

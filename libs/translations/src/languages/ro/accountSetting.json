@@ -1,0 +1,144 @@
+{
+	"myAccount": "Contul meu",
+	"editUserProfile": "Editează profilul utilizatorului",
+	"noDisplayName": "Ați adăugat numele afișat.",
+	"edit": "Editează",
+	"password": "Parolă",
+	"phoneNumber": "Număr de telefon",
+	"username": "Nume de utilizator",
+	"displayName": "Nume afișat",
+	"users": "Utilizatori",
+	"accountManagement": "Gestionare cont",
+	"blockedUsers": "Utilizatori blocați",
+	"disableAccount": "Dezactivează contul",
+	"deleteAccount": "Șterge contul",
+	"accountInformation": "Informații cont",
+	"doNotHaveBlockedUser": "Nu sunt utilizatori blocați",
+	"setPassword": "Setează parolă",
+	"changePassword": "Schimbă parola",
+	"setEmail": "Setează Email",
+	"changeEmail": "Schimbă Email",
+	"setPhoneNumber": "Setează număr de telefon",
+	"disableAccountAlert": {
+		"title": "Dezactivare cont",
+		"description": "Sunteți sigur că doriți să dezactivați contul?",
+		"noConfirm": "Nu",
+		"yesConfirm": "Da"
+	},
+	"deleteAccountAlert": {
+		"title": "Ștergere cont",
+		"description": "Sunteți sigur că doriți să ștergeți contul?",
+		"noConfirm": "Nu",
+		"yesConfirm": "Da"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Email necesar legat",
+		"linkEmailRequiredDescription": "Trebuie să legați email-ul înainte de a seta parola",
+		"goTo": "Mergi la",
+		"title": "Setează parolă",
+		"email": "Email",
+		"password": "Parolă",
+		"currentPassword": "Parola curentă",
+		"confirmPassword": "Confirmă parola",
+		"confirm": "Salvează",
+		"changePassword": "Schimbă parola",
+		"description": "Parola trebuie să aibă cel puțin 8 caractere și să includă cel puțin o literă mare, o literă mică, un cifră și un simbol special (de ex: !@#$%^&*).",
+		"error": {
+			"characters": "Parola trebuie să aibă cel puțin 8 caractere",
+			"uppercase": "Parola trebuie să conțină cel puțin 1 literă mare",
+			"lowercase": "Parola trebuie să conțină cel puțin 1 literă mică",
+			"number": "Parola trebuie să conțină cel puțin 1 cifră",
+			"symbol": "Parola trebuie să conțină cel puțin 1 simbol special",
+			"notEqual": "Parola de confirmare nu se potrivește",
+			"samePass": "Parola nouă nu poate fi la fel cu parola veche",
+			"fillOldPass": "Vă rugăm să introduceți parola curentă.",
+			"updateFail": "Actualizare cont eșuată.",
+			"createFail": "Setare parolă eșuată.",
+			"incorrectCurrent": "Parola curentă nu este corectă. Încercați din nou"
+		},
+		"toast": {
+			"success": "Parolă actualizată cu succes",
+			"error": "Actualizare parolă eșuată"
+		},
+		"placeholder": {
+			"currentPassword": "Introduceți parola curentă",
+			"password": "Introduceți parola nouă",
+			"confirmPassword": "Confirmați parola nouă"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Setează parolă",
+		"description": "Vă rugăm să creați o parolă nouă pentru contul dumneavoastră",
+		"emailPlaceholder": "emailul.tau@example.com",
+		"loading": "Se încarcă...",
+		"close": "Închide"
+	},
+	"setPhoneModal": {
+		"title": "Setează număr de telefon",
+		"phoneNumber": "Număr de telefon",
+		"description": "Veți primi un mesaj cu codul de verificare.",
+		"loading": "Se încarcă...",
+		"close": "Închide",
+		"sendOTP": "Trimite cod OTP",
+		"countryCode": "Cod țară",
+		"confirmOtp": "Confirmă cod OTP",
+		"invalidPhone": "Număr de telefon nevalid",
+		"updatePhoneSuccess": "Număr de telefon actualizat cu succes",
+		"updatePhoneFail": "A apărut o eroare. Încearcă din nou mai târziu",
+		"emptyOtp": "Cod OTP nevalid!",
+		"resendOtp": "Trimite din nou codul OTP!",
+		"tooFast": "Prea repede. Așteptați {{seconds}} secunde înainte de a trimite din nou codul OTP.",
+		"alreadyLinked": "Acest număr este deja legat de contul dumneavoastră",
+		"alreadyLinkedToAnother": "Acest număr este deja legat de un alt cont",
+		"country": "Țară",
+		"otpSentMessage": "Vă rugăm să verificați codul OTP trimis la numărul de telefon {{phone}}",
+		"backToPhoneInput": "Schimbați numărul de telefon?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Cont șters cu succes",
+			"error": "Ești proprietarul clanului"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Număr de telefon",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Număr de telefon nou",
+			"nextButton": "Următorul",
+			"removeButton": "Elimină numărul de telefon",
+			"failed": "Actualizare număr de telefon eșuată",
+			"invalidPhoneNumber": "Număr de telefon nevalid"
+		},
+		"verifyPhoneNumber": {
+			"description": "Introduceți codul de 6 cifre pe care l-am trimis",
+			"verifyButton": "Confirmă",
+			"success": "Număr de telefon actualizat cu succes"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Anulează",
+		"currentEmail": "Email curent",
+		"description": "Vă rugăm să introduceți email pentru contul dumneavoastră",
+		"otpDescription": "Codul OTP a fost trimis la noul tău email",
+		"fillOTP": "Introdu codul OTP",
+		"send": "Trimite OTP",
+		"resendOtp": "Trimite din nou codul OTP!",
+		"error": {
+			"notEqual": "Parola de confirmare nu se potrivește",
+			"required": "Email este obligatoriu",
+			"invalid": "Vă rugăm să introduceți o adresă de email validă"
+		},
+		"updateEmail": {
+			"newEmail": "Email nou",
+			"nextButton": "Următorul",
+			"failed": "Actualizare email eșuată",
+			"invalidEmail": "Email nevalid",
+			"emailAlreadyLinked": "Acest email pe care îl folosești"
+		},
+		"verifyEmail": {
+			"description": "Introduceți codul de 6 cifre pe care l-am trimis",
+			"verifyButton": "Confirmă",
+			"success": "Email actualizat cu succes"
+		}
+	}
+}

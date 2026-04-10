@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "Acest canal încă nu are mesaje fixate... dar va avea curând.",
+	"PROTIP": "SFAT:",
+	"modal": {
+		"title": "Fixează. Fixează pentru cert.",
+		"description": "Hei, doar vreau să confirm din nou că vrei să fixezi acest mesaj în #{{channelLabel}} pentru a-l păstra pentru totdeauna?",
+		"descriptionDM": "Hei, doar vreau să confirm din nou că vrei să fixezi acest mesaj în conversația curentă pentru a-l păstra pentru totdeauna?",
+		"cancel": "Anulează",
+		"confirm": "Fixează pentru cert"
+	}
+}

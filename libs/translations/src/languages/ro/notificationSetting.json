@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Setări notificări",
+		"muteUntil": "Ai oprit notificările pentru acest canal până la",
+		"unMute": "Activează notificări",
+		"mute": "Oprește notificări",
+		"labelOptions": {
+			"reactionMessage": "Reacție mesaj",
+			"categoryDefault": "Folosește setare implicită",
+			"allMessage": "Toate",
+			"notThingMessage": "Nimic",
+			"mentionMessage": "Doar @mention"
+		},
+		"muteCategoryUntil": "Ai oprit notificările pentru această categorie până la"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Oprește notificările acestui subiect",
+		"headerTitleMuteChannel": "Oprește notificările acestui canal",
+		"muteThisConversation": "Oprește notificările acestei conversații",
+		"muteDuration": {
+			"forFifteenMinutes": "În 15 minute",
+			"forOneHour": "În 1 oră",
+			"forThreeHours": "În 3 ore",
+			"forEightHours": "În 8 ore",
+			"forTwentyFourHours": "În 24 de ore",
+			"untilTurnItBackOn": "Până când îl redeschid"
+		},
+		"description": "Primești notificări de la toate mesajele în clan, dar poți schimba setările aici",
+		"muteSuccess": "Notificări oprite cu succes!",
+		"unMuteSuccess": "Notificări activate cu succes!",
+		"muteFailed": "Notificări oprite eșuat!",
+		"unMuteFailed": "Notificări activate eșuat!"
+	},
+	"toast": {
+		"error": "Actualizare notificare eșuată: {{error}}"
+	},
+	"title": "Setări notificări",
+	"clanNotificationSettings": "SETĂRI NOTIFICĂRI CLAN",
+	"notificationOverrides": "SUPRASCRIERI NOTIFICĂRI",
+	"addChannelOverride": "Adaugă canal pentru a suprascrive setare notificare implicită",
+	"selectOrCreateOption": "Selectează sau creează opțiune...",
+	"headers": {
+		"channelOrCategory": "CANAL SAU CATEGORIE",
+		"all": "TOATE",
+		"mentions": "MENȚIUNI",
+		"nothing": "NIMIC",
+		"mute": "Oprește notificări"
+	},
+	"menu": {
+		"notification": {
+			"all": "Toate",
+			"onlyMention": "Doar @mention",
+			"nothing": "Nimic"
+		}
+	}
+}

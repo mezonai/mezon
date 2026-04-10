@@ -1,0 +1,137 @@
+{
+	"accountSettings": {
+		"title": "Setări cont",
+		"account": "Cont",
+		"profiles": "Profiluri",
+		"privacySafety": "Securitate și siguranță",
+		"familyCenter": "Centru familie",
+		"authorizedApp": "Aplicații autorizate",
+		"device": "Dispozitiv",
+		"connection": "Conexiune",
+		"clip": "Clip",
+		"friendRequests": "Cereri prietenie",
+		"QRScan": "Scanează QR",
+		"MyQRCode": "Codul tău QR",
+		"devices": "Dispozitive"
+	},
+	"deviceSettings": {
+		"description1": "Acesta sunt toate dispozitivele care sunt logate în contul tău. Poți deconecta fiecare dispozitiv.",
+		"description2": "Dacă vezi o înregistrare pe care nu o cunoști, deconectează-l și schimbă parola contului tău imediat.",
+		"currentDevice": "Dispozitiv curent",
+		"otherDevices": "Alte dispozitive",
+		"noDevices": "Nu s-au găsit dispozitive",
+		"loggedIn": "Logat la",
+		"current": "Curent",
+		"unknown": "Nedefinit",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Desktop",
+		"platformWeb": "Web",
+		"removeDevice": "Deconectează dispozitiv"
+	},
+	"paymentSettings": {
+		"title": "Setări plată",
+		"restoreSubscription": "Restabilește abonament"
+	},
+	"appSettings": {
+		"title": "Setări aplicație",
+		"voice": "Vocal",
+		"appearance": "Aparență",
+		"accessibility": "Accesibilitate",
+		"language": "Limba",
+		"activity": "Activitate",
+		"notifications": "Notificări",
+		"chat": "Conversație",
+		"webBrowser": "Browser web",
+		"appIcon": "Iconiță",
+		"advanced": "Avansat",
+		"appVersion": "Versiune aplicație",
+		"startUp": "Pornire",
+		"quitApp": "Ieși aplicație"
+	},
+	"autoStart": {
+		"title": "Pornire automată aplicație",
+		"description": "Deschide aplicația automat când calculatorul pornește pentru a fi gata de utilizat imediat."
+	},
+	"hardwareAcceleration": {
+		"title": "Folosește accelerație grafică când este disponibil",
+		"description": "Când este activat, aplicația va folosi puterea GPU (card grafic) pentru a procesa sarcini grafice avansate precum randare 3D și decodare video. Acest lucru crește ratele de cadre și reacția interfeței. În cazul erorilor de afișare sau aplicație blocată, încearcă să dezactivezi această funcție pentru a îmbunătăți stabilitatea."
+	},
+	"autoHidden": {
+		"title": "Pornire ascunsă cu sistemul de operare",
+		"description": "Aplicația va porni automat în mod ascuns când rulează cu sistemul de operare."
+	},
+	"activity": {
+		"title": "Arată activitatea mea",
+		"description": "Partajează activitățile tale curente cu prietenii. Acest lucru le ajută să știe ce faci și să te conecteze mai ușor!"
+	},
+	"supportSettings": {
+		"title": "Suport",
+		"support": "Suport",
+		"uploadLog": "Încarcă jurnal erori",
+		"acknowledgement": "Mulțumiri"
+	},
+	"whatsNew": {
+		"title": "Ce e nou",
+		"whatsNew": "Ce e nou"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Versiune Nouă Gata",
+		"updateExperience": "Necesită actualizare rapidă pentru a continua să folosești ultimele funcții familie.",
+		"updateNow": "Actualizează acum",
+		"versionInfo": "VERSIUNE"
+	},
+	"language": {
+		"title": "Limba",
+		"description": "Alege limba.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"italian": "Italiano",
+		"portuguese": "Português",
+		"japanese": "日本語",
+		"korean": "한국어",
+		"romanian": "Română"
+	},
+	"voice": {
+		"title": "Vocal",
+		"description": "Configurează setările tale de voce.",
+		"microphone": "Microfon",
+		"speaker": "Difuzor",
+		"microphoneVolume": "Volum microfon",
+		"speakerVolume": "Volum difuzor",
+		"noiseSuppression": {
+			"title": "Suprimare zgomot",
+			"toggleAriaLabel": "Activează sau dezactivează suprimare zgomot"
+		},
+		"unnamedDevice": "Dispozitiv fără nume",
+		"noDevices": "Nu s-au găsit dispozitive",
+		"micTest": {
+			"title": "Test microfon",
+			"description": "Ai probleme cu microfonul? Începe testul și vorbește — noi vom reda vocea ta.",
+			"letsCheck": "Verifică",
+			"stop": "Oprește"
+		},
+		"errors": {
+			"permissionDenied": "Este necesară permisiunea microfon pentru a testa microfonul.",
+			"micPermission": "Imposibil de accesat microfon."
+		},
+		"warnings": {
+			"outputNotSupported": "Browser nu suportă selectare dispozitiv de ieșire. Selectare difuzor poate fi ignorată."
+		}
+	},
+	"logOut": "Deconectează",
+	"logOutPopup": {
+		"description": "Ești sigur că dorești să te deconectezi?",
+		"noConfirm": "Nu",
+		"yesConfirm": "Da"
+	},
+	"removeAccount": "Șterge cont",
+	"channelSetting": {
+		"recentChannels": "Canale recente",
+		"searchByChannelLabel": "Caută după etichetă canal"
+	},
+	"setting": "Setări"
+}

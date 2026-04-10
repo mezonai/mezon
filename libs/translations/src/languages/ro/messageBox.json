@@ -1,0 +1,19 @@
+{
+	"placeholder": "Scrie-ți gândurile aici...",
+	"ephemeralMessage": "Mesaj efemer pentru {{username}}...",
+	"mentionCategories": {
+		"members": "MEMBRI",
+		"textChannels": "CANALE TEXT",
+		"emojiMatching": "Găsit emoji",
+		"commands": "COMENZI"
+	},
+	"suggestions": {
+		"notifyEveryone": "Notifică toți cei cu permisiune de a vedea acest canal",
+		"loadingCommands": "Se încarcă comenzi..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Trimite mesaj efemer (vizibil doar pentru utilizatorii selectați)"
+		}
+	}
+}

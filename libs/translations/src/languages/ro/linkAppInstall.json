@@ -1,0 +1,11 @@
+{
+  "description": "O aplicație externă",
+  "subDescription": "dorește să acceseze contul tău Mezon",
+  "addToClan": "Adaugă la Clan",
+  "invite": "Autorizează",
+  "back": "Înapoi",
+  "successInstall": "Aplicație adăugată la clan cu succes",
+  "errorInstall": "Eroare la adăugare aplicație la clan",
+  "selectClan": "Caută Clan",
+  "placeholder": "Alege un clan pentru a invita bot/aplicația ta"
+}

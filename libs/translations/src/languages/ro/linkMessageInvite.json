@@ -1,0 +1,18 @@
+{
+	"title": "INVITĂ SAU ALĂTURĂ CLAN",
+	"offline": "offline",
+	"online": "online",
+	"join": "Alătură-te",
+	"joining": "Se alătură...",
+	"goToClan": "Mergi la Clan",
+	"unknownClan": "Clan nedefinit",
+	"memberCount": "{{count}} Membru",
+	"memberCount_plural": "{{count}} Membri",
+	"failedToJoin": "Imposibil de alăturat acest clan.",
+	"inviteTo": "INVITĂ SAU ALĂTURĂ {{clanName}}",
+	"noThanks": "Nu, mulțumesc",
+	"invalidInvite": {
+		"title": "Invitație nevalidă",
+		"message": "Încearcă să trimiți o altă invitație!"
+	}
+}

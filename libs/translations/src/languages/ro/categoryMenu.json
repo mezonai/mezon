@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": " marchează ca citit"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "Invită"
+        },
+        "notification": {
+            "title": "",
+            "muteCategory": "Oprește notificările",
+            "notification": "Setări notificări"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Creează canal",
+            "edit": "Editează categoria",
+            "delete": "Șterge categoria"
+        },
+        "devMode": {
+            "title": "Mod developer",
+            "copyServerID": "Copiază ID Clan"
+        },
+        "modalConfirm": {
+            "title": "Șterge categorie",
+            "content": "Ești sigur că dorești să ștergi această categorie? Această acțiune nu poate fi desfăcută.",
+            "confirmText": "Șterge"
+        },
+        "toast": {
+            "systemChannel": "Eroare: {{categoryName}} conține canal de sistem",
+            "error": "Eroare ștergere categorie: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "ID Clan copiat"
+    }
+}

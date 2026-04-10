@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+		"title": "ȘTERGE ROL",
+		"message": "Ești sigur că dorești să ștergi acest rol? Această acțiune nu poate fi desfăcută",
+		"confirm": "Șterge",
+		"cancel": "Anulează"
+  },
+  "common": {
+    "areYouSure": "Ești sigur?",
+    "cannotUndo": "Această acțiune nu poate fi desfăcută",
+    "confirm": "Confirmă",
+    "cancel": "Anulează",
+    "delete": "Șterge",
+    "remove": "Elimină",
+    "yes": "Da",
+    "no": "Nu"
+  }
+}

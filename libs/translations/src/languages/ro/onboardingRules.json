@@ -1,0 +1,18 @@
+{
+  "editResources": "Editează resursă",
+  "form": {
+    "nameTitle": "Setează nume pentru această resursă",
+    "namePlaceholder": "#reguli poate fi Reguli",
+    "descriptionTitle": "Descrie această resursă",
+    "descriptionPlaceholder": "Ex: Reguli pentru clan",
+    "imageTitle": "Imagine reguli",
+    "browse": "Parcurge",
+    "required": "Acest câmp este obligatoriu.",
+    "minCharacters": "Titlul regulii trebuie să aibă cel puțin 7 caractere"
+  },
+  "buttons": {
+    "remove": "Elimină",
+    "save": "Salvează",
+    "add": "Adaugă"
+  }
+}

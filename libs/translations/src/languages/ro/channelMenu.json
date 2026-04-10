@@ -1,0 +1,105 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": " marchează ca citit"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Invită",
+          "markFavorite": "Adaugă la favorite",
+          "unMarkFavorite": "Elimină din favorite",
+          "copyLink": "Copiază link"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Oprește notificările canalului",
+          "unMuteChannel": "Activează notificările canalului",
+          "muteThread": "Oprește notificările subiectului",
+          "unMuteThread": "Activează notificările subiectului",
+          "notification": "Setări notificări",
+          "for15Minutes": "În 15 minute",
+          "for1Hour": "În 1 oră",
+          "for3Hours": "În 3 ore", 
+          "for8Hours": "În 8 ore",
+          "for24Hours": "În 24 de ore",
+          "untilTurnedBackOn": "Până când îl redeschid",
+          "useCategoryDefault": "Folosește setarea implicită a categoriei",
+          "all": "Toate",
+          "onlyMention": "Doar @mention",
+          "nothing": "Nimic",
+          "processing": "Se procesează...",
+          "muteChannelStatus": "Notificări canal oprite",
+          "muteThreadStatus": "Notificări subiect oprite",
+          "unmuteChannelStatus": "Notificări canal activate", 
+          "unmuteThreadStatus": "Notificări subiect activate",
+          "mutedUntil": "Notificări oprite până la",
+          "muteSuccess": "Notificări oprite cu succes!",
+          "unMuteSuccess": "Notificări activate cu succes!",
+          "muteFailed": "Notificări oprite eșuat!",
+          "unMuteFailed": "Notificări activate eșuat!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Subiecte",
+        "searchThreads": "Caută nume subiect",
+        "searchFiles": "Caută fișiere",
+        "searchCanvas": "Caută nume canvas"
+
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Editează canal",
+          "deleteChannel": "Șterge canal",
+          "duplicateChannel": "Dublează canal",
+          "leaveChannel": "Ieși din canal",
+          "createTextChannel": "Creează canal text",
+          "createVoiceChannel": "Creează canal vocal",
+          "openChat": "Deschide conversație",
+          "hideNames": "Ascunde nume",
+          "createThread": "Creează subiect"
+      },
+      "devMode": {
+          "title": "Mod dezvoltator",
+          "copyChannelID": "Copiază ID canal"
+      },
+      "manageThreadMenu": {
+          "editThread": "Editează subiect",
+          "deleteThread": "Șterge subiect",
+          "leaveThread": "Ieși din subiect",
+          "closeThread": "Închide subiect",
+          "lockThread": "Blochează subiect",
+          "copyLink": "Copiază link"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "ID canal copiat"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Șterge subiect {{threadName}}",
+          "content": "Ești sigur că dorești să ștergi acest subiect?",
+          "confirmText": "Da"
+      },
+      "channel": {
+          "title": "Șterge canal {{channelName}}",
+          "content": "Ești sigur că dorești să ștergi acest canal?",
+          "confirmText": "Da",
+          "systemChannel": "Canal de sistem imposibil de șters",
+          "error": "Eroare ștergere canal: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Ieși din subiect",
+    "yesButton": "Ieși din subiect",
+    "textConfirm": "Ești sigur că dorești să ieși din acest subiect? Nu vei mai primi mesaje din acest șir după ce ieși."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Ieși din canal",
+    "yesButton": "Ieși din canal",
+    "textConfirm": "Ești sigur că dorești să ieși din acest canal? Nu vei mai primi mesaje din acest canal după ce ieși.",
+    "error": "Eroare ieșire din canal: {{error}}"
+  },
+  "btnBadgeCount": "Nou",
+  "favoriteChannel": "CANAL FAVORIT"
+}

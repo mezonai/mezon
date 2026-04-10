@@ -1,0 +1,14 @@
+{
+  "title": "Canal limitat de vârstă",
+  "description": "Acest canal conține conținut pentru adulți și este etichetat ca limitat de vârstă. Dorești să continui?",
+  "continue": "Continuă",
+  "nope": "Nu",
+  "confirmBirthdayTitle": "Vă rugăm să confirmi data nașterii tale",
+  "confirmBirthdayMessage": "Pentru siguranța utilizatorilor, trebuie să verificăm vârsta ta. Vom întreba asta doar o singură dată.",
+  "submit": "Confirmă",
+  "ageRestrictedForm": {
+    "title": "Vă rugăm să confirmi data nașterii tale",
+    "description": "Pentru siguranța utilizatorilor, trebuie să verificăm vârsta ta. Vom întreba asta doar o singură dată.",
+    "submit": "Confirmă"
+  }
+}

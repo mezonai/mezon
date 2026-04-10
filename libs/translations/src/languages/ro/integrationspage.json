@@ -1,0 +1,46 @@
+{
+	"download": "Descarcă",
+	"sections": {
+		"section1": {
+			"title": "Tot Ce Ai Trebuie, Într-un Singur Loc",
+			"description": "Cu Mezon, aplicația centralizează toate instrumentele tale necesare într-un singur spațiu. Nu mai trebuie să transmiți între multiple resurse distincte - doar performanță și eficiență."
+		},
+		"section2": {
+			"title": "Liberează Puterea Afacerii Tale cu Integrare Low-Code fără Bătăi",
+			"description": "Cu costuri și timp minim, ridicăm integrare cu întreprindere care dorește să reducă costuri dezvoltare abilitate - doar viteză și flexibilitate"
+		},
+		"section3": {
+			"title": "Automatizează Procesele pentru Individ și Organizații:",
+			"titleHighlight": "Integrare Bot/Aplicație",
+			"titleEnd": "",
+			"description": "Conectează bot și aplicații pentru a automatiza sarcini de la angajați până la producție. Mai rapid, mai precis și fără a rezolva mai multe algoritmi complecși."
+		},
+		"section4": {
+			"title": "Sistem ERP",
+			"description": "Cu module și funcții ușor personalizabile, ERP va îndeplini complet nevoile întreprinderii și poate automatiza activități legate de resurse întreprindere pentru a reduce timpul procesare și optimiza gestionare resurse"
+		}
+	},
+	"faq": {
+		"title": "Întrebări Frecvente",
+		"seeAll": "Vezi Toate FAQ",
+		"learnMore": "Află mai multe",
+		"questions": [
+			{
+				"question": "Cum încep să integrez instrumentul meu cu Mezon?",
+				"answer": "Începerea este simplă. Navighează la pagina integrare, selectează serviciul dorit și urmează ghidul de setare pas cu pas."
+			},
+			{
+				"question": "Ce tipuri de integrări sunt suportate?",
+				"answer": "Mezon suportă multe tipuri de integrări incluzând webhooks, boți, aplicații terțe și sistem ERP. Verifică documentația noastră pentru lista completă."
+			},
+			{
+				"question": "Pot crea integrare personală?",
+				"answer": "Da! Platforma noastră oferă API și SDK care te permit să construiești integrare personală care se potrivește nevoilor tale specifice."
+			},
+			{
+				"question": "Există limită la numărul de integrări pe care le pot adăuga?",
+				"answer": "Numărul de integrări pe care le poți adăuga depinde de pachetul tău. Pachetele de întreprindere oferă integrări nelimitate."
+			}
+		]
+	}
+}

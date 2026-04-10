@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Partajează contact",
+		"searchPlaceholder": "Caută...",
+		"noResults": "Nu există rezultate",
+		"noFriends": "Nu există prieteni sau canale",
+		"contactPreview": "Contact care va fi partajat",
+		"cancel": "Anulează",
+		"share": "Partajează",
+		"sharing": "Se trimite...",
+		"group": "Grup",
+		"channel": "Canal",
+		"thread": "Subiect"
+	},
+	"card": {
+		"call": "Sună",
+		"message": "Mesaj",
+		"blockedAction": "Nu poți efectua această acțiune.",
+		"cannotCallSelf": "Nu te poți suna pe tine."
+	},
+	"contactSharedSuccess": "Partajat cu succes",
+	"contactSharedError": "Imposibil de partajat"
+}

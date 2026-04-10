@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Alătură-te",
+	"textChannels": "Canale text",
+	"voiceChannels": "Canale vocale",
+	"streamingChannels": "Canale streaming",
+	"search": "Caută",
+	"filterResults": "Filtrează rezultate...",
+	"members": "Membri",
+	"channels": "Canale",
+	"media": "Media",
+	"pins": "Fixate",
+	"in": "în:",
+	"Messages": "Mesaje",
+	"filterOptions": {
+		"fromUser": "De la o persoană specifică",
+		"mentionUser": "Menționează pe cineva",
+		"inChannel": "Într-un canal specific"
+	},
+	"cancel": "Anulează",
+	"searchPlaceholder": "Caută",
+	"searchFor": "Caută:",
+	"enter": "Enter",
+	"searchOptions": "Opțiuni căutare",
+	"fromUser": "De la utilizator",
+	"inChannel": "În canal",
+	"hasContent": "Are conținut",
+	"mentionsUser": "Menționează pe cineva",
+	"emptySearch": {
+		"title": "Am căutat peste tot. Din păcate, nu s-a găsit niciun rezultat."
+	},
+	"learnMore": "Află mai multe",
+	"searchOptionsData": {
+		"fromUserShort": "caută după expeditor",
+		"mentionsUserShort": "caută după menționat",
+		"hasContentShort": "caută după conținut cu atașament",
+		"channelShort": "caută în canal"
+	},
+	"prefixes": {
+		"from": "de la:",
+		"mentions": "menționat:",
+		"has": "are:",
+		"in": "în:"
+	},
+	"mentionPrefixes": {
+		"from": "de la:",
+		"mentions": "menționat:",
+		"has": "are:",
+		"in": "în:"
+	},
+	"allChannels": "Toate canalele",
+	"searching": "Se caută...",
+	"noResults": "Nu există rezultate",
+	"resultsCount": "{{count}} Rezultate",
+	"jump": "Sari la",
+	"hasOptions": {
+		"video": "video",
+		"link": "link",
+		"image": "imagine"
+	}
+}

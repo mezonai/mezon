@@ -1,0 +1,22 @@
+{
+  "editStatus": "Status",
+  "save": "Salvează",
+  "statusDuration": {
+    "label": "Durată status",
+    "today": "Astăzi",
+    "fourHours": "4 ore",
+    "oneHour": "1 oră",
+    "thirtyMinutes": "30 minute",
+    "dontClear": "Nu șterge"
+  },
+  "placeholder": "Ce faci?",
+  "userStatus": {
+    "online": "Online",
+    "idle": "Lipsă",
+    "doNotDisturb": "Nu deranja",
+    "invisible": "Offline (Ascuns)"
+  },
+  "setCustomStatus": "Setează status custom",
+  "onlineStatus": "Status online",
+  "changeOnlineStatus": "Schimbă status online"
+}

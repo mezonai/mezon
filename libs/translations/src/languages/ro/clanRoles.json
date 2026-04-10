@@ -1,0 +1,112 @@
+{
+	"roleDescription": "Folosește roluri pentru a grupa membrii clanului tău și a le atribui permisiuni",
+	"defaultRole": "Permisiuni implicite pentru toți membrii clan",
+	"roles": "Roluri",
+	"members": "Membri",
+	"noRole": "În prezent nu există roluri",
+	"skipStep": "Sari peste acest pas",
+	"failed": "Eșuat",
+	"createNewRole": {
+		"title": "Pasul 1 din 3",
+		"createANewRole": "Creează un rol nou",
+		"description": "Setează un nume și culoare unică pentru acest rol. Poți schimba oricând mai târziu.",
+		"create": "Creează",
+		"newRole": "Introdu numele rolului nou...",
+		"roleName": "Nume rol",
+		"createSuccess": "Rol {{roleName}} creat cu succes",
+		"cannotCreate": "Imposibil de creat {{roleName}}"
+	},
+	"setupPermission": {
+		"title": "Pasul 2 din 3",
+		"setupPermissionTitle": "Setează permisiuni",
+		"setupPermissionSuccessfully": "Permisiuni setate cu succes",
+		"next": "Următorul",
+		"searchPermission": "Caută permisiuni"
+	},
+	"setupMember": {
+		"title": "Pasul 3 din 3",
+		"addMember": "Adaugă membru",
+		"description": "Atribuit acest rol membrilor tăi. Membrii pot avea mai mult de un rol.",
+		"finish": "Termină",
+		"addedMember": "Membru adăugat cu succes",
+		"searchMembers": "Caută membri",
+		"deletedMember": "{{memberName}} șters cu succes",
+		"add": "Adaugă",
+		"noMembersFound": "Nu s-au găsit membri"
+	},
+	"roleDetail": {
+		"permissions": "Permisiuni",
+		"members": "Membri",
+		"role": "Rol",
+		"roleName": "Nume rol",
+		"deleteRole": "Șterge rol",
+		"deleteRoleSuccessfully": "Rol {{roleName}} șters cu succes",
+		"changesSaved": "Schimbări salvate",
+		"save": "Salvează",
+		"confirmSaveTitle": "Salvează schimbări?",
+		"confirmSaveContent": "Ai făcut schimbări. Dorești să le salvezi?",
+		"yes": "Da",
+		"doNotSave": "Nu salva"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "Culoare rol",
+		"titleBS": "Alege culoare",
+		"reset": "Resetează",
+		"save": "Salvează"
+	},
+	"roleImagePicker": "Iconiță rol",
+	"notifyEveryone": "Notifică toți cei cu permisiune de a vedea acest canal.",
+	"removeImage": "Șterge",
+	"allMembers": "Toți membrii",
+	"permissionTitles": {
+		"administrator": "Administrator",
+		"view-channel": "Vezi canal",
+		"manage-channel": "Gestionează canal",
+		"manage-clan": "Gestionează Clan",
+		"manage-thread": "Gestionează subiect",
+		"send-message": "Trimite mesaj",
+		"delete-message": "Șterge mesaj",
+		"clan-owner": "Proprietar Clan"
+	},
+	"permissionDescriptions": {
+		"administrator": "Permite membrilor să gestioneze întregul clan (permisiune doar mai mică decât proprietarul).",
+		"view-channel": "Permite membrilor să vadă canalele publice.",
+		"manage-channel": "Permite membrilor să creeze, editeze sau ștergă canale.",
+		"manage-clan": "Permite membrilor să controleze setările clan, gestionează roluri și canale, monitorizează activitatea membrilor, asigură gestionare eficientă și comunitate bine organizată.",
+		"manage-thread": "Permite membrilor să creeze, editeze, șteargă subiectele în canal (inclusiv subiecte private).",
+		"send-message": "Permite membrilor să trimită mesaje în canalele publice (inclusiv subiecte și discuții subiect în acele canale).",
+		"delete-message": "Permite membrilor să șteargă mesajele în canalele publice (inclusiv subiecte și discuții subiect în acele canale).",
+		"notAvailable": "Descriere permisiune nu este disponibilă"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "Folosește roluri pentru a grupa membrii clanului tău și a le atribui permisiuni.",
+		"defaultPermissions": "Permisiuni implicite",
+		"everyoneDescription": "@everyone • se aplică pentru toți membrii clan",
+		"searchRoles": "Caută roluri",
+		"createRole": "Creează rol",
+		"membersUseColor": "Membrii folosesc culoarea rolului cel mai înalt pe care îl au în această listă. Trage rolurile pentru a le rearanja.",
+		"noRoles": "Niciun rol"
+	},
+	"roleManagement": {
+		"newRole": "ROL NOU",
+		"editRole": "EDITARE ROL",
+		"back": "ÎNAPOI",
+		"display": "Afișare",
+		"permissions": "Permisiuni",
+		"manageMembers": "Gestionează membri",
+		"searchPermissions": "Caută permisiuni",
+		"failedToUpdateRoleOrder": "Imposibil de actualizat ordinea roluri.",
+		"newRoleDefault": "Rol nou",
+		"roleName": "Nume rol",
+		"roleColour": "Culoare rol",
+		"membersUseColour": "Membrii folosesc culoarea rolului cel mai înalt pe care îl au în lista de roluri.",
+		"roleIcon": "Iconiță rol",
+		"roleIconDescription": "Încarcă imagine sub 256 KB sau alege emoji custom din acest clan. Recomandăm minim 64x64 pixeli. Membrii vor vedea iconița rolului cel mai înalt dacă au mai multe roluri",
+		"chooseImage": "Alege imagine",
+		"removeIcon": "Elimină iconiță",
+		"edit": "Editează",
+		"view": "Vezi",
+		"delete": "Șterge",
+		"roleNameIsRequired": "Nume rol este obligatoriu"
+	}
+}

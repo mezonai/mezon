@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Anulează",
+    "save": "Salvează",
+    "reset": "Resetează",
+    "close": "Închide",
+    "kick": "Dă jos"
+  },
+  "form": {
+    "required": "Câmp necesar",
+    "error": "Eroare"
+  },
+  "kickMember": {
+    "title": "Dă jos {{username}} din {{clanName}}",
+    "description": "Ești sigur că vrei să dai jos @{{username}} din {{clanName}}? Va putea te alătura din nou cu invitație nouă.",
+    "reasonLabel": "Motiv de dat jos"
+  }
+}

@@ -1,0 +1,72 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Relaxează cu Prieteni, Adună-te în Voice Channel",
+			"description": "Mezon este minunat pentru prieteni să se adune împreună și să petreacă timp unul cu celălalt, fie că este pauză de după-amiază sau seara târziu."
+		},
+		"section2": {
+			"title": "Conectează-te Ușor, Chatoiește Fluid cu Voice Channel",
+			"description": "Poți te conecta ușor cu prietenii deschizând un voice channel – și aceasta este gratuit pentru totdeauna. Cu cât folosești mai mult Mezon, cu atât vei realiza cât de ușor este să ții legătura tot ziua."
+		},
+		"section3": {
+			"title": "Stream și Notificări Ca Să Te Urmărească Oamenii",
+			"description": "Actualizează notificări și livestream-uri cât de rapid posibil. Alătură-te livestream oricând sau reacționează la știri importante din canal sau grup."
+		},
+		"section4": {
+			"title": "Channel App Îți Face Viața Mai Ușoară",
+			"description": "Channel App te ține la curent cu totul – de la notificări, note, calendar la gestionare listă de sarcini. Mezon oferă sistem App unic cu multe opțiuni pentru fiecare stil de viață."
+		},
+		"section5": {
+			"title": "Bot Super Inteligent pentru Toți Clan",
+			"description": "Bot te ajută să termini treabă rapid și eficient, de la gestionare program la răspuns rapid. Mezon Bot este construit pentru a servi clan întreg, făcând treaba mai ușoară și mai organizată."
+		}
+	},
+	"discover": {
+		"title": "Descoperă Mai Multe Funcții Mezon",
+		"description": "Descoperă alte funcții Mezon. Chatoiește cu prieteni, Voice Channel, Stream, Aplicații, Bot ... și mai mult",
+		"viewAll": "Vezi Tot",
+		"buttonText": "Explorare",
+		"slides": [
+			{
+				"title": "Pune Relația Pe Primul Loc – Conectează Echipa prin Clan, Eveniment, Chat & Voice",
+				"description": "Menține conexiunea cu cei mai importanți prin conversații"
+			},
+			{
+				"title": "Construiește Cultură – Creează Mediu de Lucru cu Amprentă Personală",
+				"description": "Construiește cultură de lucru unică cu canale și integrări custom"
+			},
+			{
+				"title": "Lucrează Orice Loc, Orice Loc, Nelimitat",
+				"description": "Lucrează fluent pe toate dispozitivele și locații"
+			},
+			{
+				"title": "Protejează Personal – Mesaje Anonime",
+				"description": "Privatitatea ta este protejată cu end-to-end encryption"
+			}
+		]
+	},
+	"faq": {
+		"title": "Mai multă nevoie?",
+		"seeAll": "Vezi Toate Întrebările",
+		"learnMore": "Află mai multe",
+		"questions": [
+			{
+				"question": "Cum adaug prieteni pe Mezon?",
+				"answer": "Pentru a adăuga prieteni pe Mezon, mergi la pagina Prieteni și tastează Nume Utilizator Mezon în secțiunea 'Adaugă Prieten'. Poți gestiona lista prieteni cu filtre precum Toate, Online, Pending (cereri prietenie) și Blockați (utilizatori blocați). De asemenea, poți vedea statusul online al prietenilor în timp real și ce fac prin secțiunea Activitate, arătându-i dacă codează, ascultă muzică sau joacă jocuri."
+			},
+			{
+				"question": "Ce funcții de mesagerie oferă Mezon?",
+				"answer": "Mezon oferă funcții de mesagerie complete incluzând: trimite text, emoji, adesive, imagini, video, fișiere și înregistrare vocală; fixează mesaje importante pentru acces rapid; creează chat grup mic cu maxim 10 membri; apel vocal și video 1-1 sau grup cu calitate HD; partajează ecran în apel; și caută mesaje. Toate funcțiile de comunicare sunt complet gratuite și nelimitate."
+			},
+			{
+				"question": "Cum funcționează Apelul Vocal și Video pe Mezon?",
+				"answer": "Mezon îți permite să faci apeluri vocale și video 1-1 sau grup mic direct în aplicație. În apel, poți porni/opri microfon sau camera oricând, partajezi ecran și te bucuri de conexiune stabilă cu video HD și sunet cu latență mică. Când cineva te sună, telefonul sau calculatorul tău sună la fel ca un apel obișnuit. Toate apelurile sunt gratuite și folosesc conexiunea internet a ta."
+			},
+			{
+				"question": "Este Comunicarea pe Mezon Privată și Sigură?",
+				"answer": "Da, Mezon pune mereu prioritate pe privatitate și securitate. Poți trimite mesaje doar oamenilor care sunt prieteni sau care se alătură cel puțin un Clan cu tine, prevenind spam și asigurând spațiu privat. Mesajele sunt sincronizate în timp real pe Web, Desktop și Mobile, astfel încât să nu ratezi nimic. Când echipa ta devine mai dinamică, poți trece la Clan pentru a debloca funcții suplimentare precum multe canale și permisiuni administrator."
+			}
+		]
+	},
+	"download": "Descarcă"
+}

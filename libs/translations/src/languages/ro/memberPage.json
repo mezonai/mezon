@@ -1,0 +1,9 @@
+{
+	"show": "Arată",
+	"membersOf": "Total membri {{count}}",
+	"addedBy": "Adăugat de {{name}}",
+	"you": "tu",
+	"inVoice": "În canal vocal",
+	"onlineCount": "Online - {{count}}",
+	"offlineCount": "Offline - {{count}}"
+}

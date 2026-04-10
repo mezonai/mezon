@@ -1,0 +1,28 @@
+{
+	"title": "Integrare",
+	"clanWebhooks": "Webhook Clan",
+	"webhooks": "Webhook",
+	"description": "Personalizează-ți clanul cu funcții de integrare. Gestionează webhook-uri, canale și aplicații urmărite, integrează sisteme externe și automatizează fluxuri notificare în Mezon.",
+	"learnMore": "Află mai multe despre gestionarea integrărilor.",
+	"webhook": "webhook",
+	"webhooksPlural": "webhook-uri",
+	"createWebhook": "Creează Webhook",
+	"createClanWebhook": "Creează Webhook Clan",
+	"viewWebhook": "Vezi Webhook",
+	"viewClanWebhook": "Vezi Webhook Clan",
+	"newWebhook": "Webhook Nou",
+	"newClanWebhook": "Webhook Clan Nou",
+	"noWebhooks": "Nu ai niciun webhook!",
+	"webhookDescription": "Webhook-ul este un mod simplu de a trimite mesaje de la alte aplicații și site-uri web în Mezon folosind tehnologia internet.",
+	"clanWebhookDescription": "Webhook Clan este un mod simplu de a trimite mesaje de la alte aplicații și site-uri web pentru fiecare utilizator Mezon folosind tehnologia internet.",
+	"learnMoreWebhook": "Află mai multe",
+	"orTry": "sau încearcă",
+	"buildWebhook": "construiește unul.",
+	"webhookTip": "Sfat: Dacă simți că token-ul de pe URL-ul tău a fost compromis sau depășit, reseta-l și copiează URL-ul nou.",
+	"webhookCount": "{{count}} webhook",
+	"webhook_other": "{{count}} webhooks",
+	"toast": {
+		"generateSuccess": "{{name}} creat cu succes!",
+		"deleteSuccess": "{{name}} șters cu succes!"
+	}
+}

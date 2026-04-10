@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Trimite înainte mesaj",
+		"searchPlaceholder": "Caută",
+		"noResults": "Imposibil de găsit ce cauți?",
+		"searchFriendsUsers": "Caută prieteni și utilizatori",
+		"searchingChannel": "Caută canal",
+		"sharedContent": "Conținut partajat",
+		"cancel": "Anulează",
+		"send": "Trimite",
+		"sending": "Se trimite...",
+		"sendingProgress": "Se trimite ({{current}}/{{total}})...",
+		"image": "imagine",
+		"images": "imagini",
+		"video": "video",
+		"videos": "video",
+		"file": "fișier",
+		"files": "fișiere",
+		"additionalMessage": "Mesaj asociat (opțional)",
+		"additionalMessagePlaceholder": "Introdu mesaj pe care dorești să-l trimiți..."
+	},
+	"successMessage": "Mesaj trimis înainte cu succes",
+	"errorMessage": "Imposibil de trimis înainte mesaj"
+}

@@ -1,0 +1,173 @@
+{
+	"actions": {
+		"create": "Creează"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Nume canal",
+			"placeholder": "canal-nou",
+			"errorMessage": "Vă rugăm să introduceți un nume de canal (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+			"duplicateChannelName": "Numele canalului există deja în clan. Vă rugăm să introduceți un nume diferit."
+		},
+		"channelPrivate": {
+			"title": "Canal privat",
+			"descriptionText": "Prin crearea unui canal privat, doar membrii și rolurile selectate pot vedea acest canal.",
+			"descriptionVoice": "Prin crearea unui canal vocal privat, doar membrii și rolurile selectate au dreptul de a vedea sau de a se conecta la acest canal."
+		},
+		"channelType": {
+			"title": "Tip canal",
+			"text": {
+				"title": "Text",
+				"description": "Postează imagini, GIF-uri, embleme, opinii și glume"
+			},
+			"voice": {
+				"title": "Vocal",
+				"description": "Adună-te cu voce, video și partajează ecranul"
+			},
+			"stream": {
+				"title": "Stream",
+				"description": "Partajează activități de interes"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Tip canal vocal",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Imagini & Evidențiere",
+			"eventsTitle": "Evenimente",
+			"familyJourney": "Evenimente",
+			"cherishMoment": "Urmărește momentele importante.",
+			"since": "DIN",
+			"viewAlbum": "Vezi Album",
+			"emptyTitle": "Călătoria ta încă nu a început.",
+			"emptyDescription": "Creează-ți primul eveniment pentru a începe să păstrezi amintirile.",
+			"createFirstMilestone": "Creează primul eveniment",
+			"selectYear": "Alege anul",
+			"special": "Special"
+		},
+		"familyEvents": {
+			"title": "Evenimente",
+			"eventsIn": "Evenimente în anul",
+			"noEvents": "Nu sunt evenimente în acest an",
+			"addToGallery": "Adaugă la bibliotecă",
+			"inDays": "În {{count}} zile"
+		},
+		"createMilestone": {
+			"headerTitle": "Eveniment nou",
+			"cancel": "Anulează",
+			"cancelAlertTitle": "Anulare",
+			"cancelAlertMessage": "Ești sigur că dorești să anulezi acest eveniment?",
+			"continueEditing": "Continuă editarea",
+			"discard": "Renunță",
+			"eventTitleLabel": "Nume eveniment",
+			"eventTitlePlaceholder": "Ex: Reuniune echipă, Lansare proiect",
+			"dateLabel": "Dată",
+			"datePlaceholder": "Alege data",
+			"storyLabel": "Descriere",
+			"storyPlaceholder": "Introduceți descrierea evenimentului...",
+			"memoriesLabel": "Imagini/Video",
+			"uploadTitle": "Încarcă Imagine sau Video",
+			"uploadSubtitle": "Adaugă imagine sau video la eveniment",
+			"addMedia": "Adaugă imagine",
+			"tagMembersLabel": "Tag membri",
+			"saveButton": "Salvează eveniment",
+			"requiredTitle": "Obligatoriu",
+			"requiredMessage": "Vă rugăm să introduceți numele evenimentului",
+			"successTitle": "Succes",
+			"successMessage": "Eveniment creat cu succes!",
+			"errorTitle": "Eroare",
+			"errorMessage": "Imposibil de selectat imagine",
+			"required": "Obligatoriu",
+			"optional": "Opțional",
+			"titleHint": "Setează un titlu scurt și descriptiv pentru eveniment"
+		},
+		"albumDetail": {
+			"eventDetails": "Detalii eveniment",
+			"date": "Dată",
+			"editEvent": "Editează eveniment",
+			"titleLabel": "Titlu",
+			"titlePlaceholder": "Titlu eveniment",
+			"descriptionLabel": "Descriere",
+			"descriptionPlaceholder": "Descriere eveniment",
+			"cancel": "Anulează",
+			"save": "Salvează",
+			"errorTitle": "Eroare",
+			"titleRequired": "Titlul nu trebuie să fie gol",
+			"updateFailed": "Actualizare eveniment eșuată",
+			"sessionNotAvailable": "Sesiune nu este disponibilă",
+			"uploadFailed": "Încărcare imagine eșuată"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Tip canal vocal",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Imagini & Evidențiere",
+		"familyJourney": "Evenimente",
+		"cherishMoment": "Urmărește momentele importante.",
+		"since": "DIN",
+		"viewAlbum": "Vezi Album",
+		"emptyTitle": "Călătoria ta încă nu a început.",
+		"emptyDescription": "Creează-ți primul eveniment pentru a începe să păstrezi amintirile.",
+		"createFirstMilestone": "Creează primul eveniment",
+		"selectYear": "Alege anul",
+		"special": "Special"
+	},
+	"familyEvents": {
+		"title": "Evenimente",
+		"eventsIn": "Evenimente în anul",
+		"noEvents": "Nu sunt evenimente în acest an",
+		"addToGallery": "Adaugă la bibliotecă",
+		"inDays": "În {{count}} zile"
+	},
+	"createMilestone": {
+		"headerTitle": "Eveniment nou",
+		"cancel": "Anulează",
+		"cancelAlertTitle": "Anulare",
+		"cancelAlertMessage": "Ești sigur că dorești să anulezi acest eveniment?",
+		"continueEditing": "Continuă editarea",
+		"discard": "Renunță",
+		"eventTitleLabel": "Nume eveniment",
+		"eventTitlePlaceholder": "Ex: Reuniune echipă, Lansare proiect",
+		"dateLabel": "Dată",
+		"datePlaceholder": "Alege data",
+		"storyLabel": "Descriere",
+		"storyPlaceholder": "Introduceți descrierea evenimentului...",
+		"memoriesLabel": "Imagini/Video",
+		"uploadTitle": "Încarcă Imagine sau Video",
+		"uploadSubtitle": "Adaugă imagine sau video la eveniment",
+		"addMedia": "Adaugă imagine",
+		"tagMembersLabel": "Tag membri",
+		"saveButton": "Salvează eveniment",
+		"requiredTitle": "Obligatoriu",
+		"requiredMessage": "Vă rugăm să introduceți numele evenimentului",
+		"successTitle": "Succes",
+		"successMessage": "Eveniment creat cu succes!",
+		"errorTitle": "Eroare",
+		"errorMessage": "Imposibil de selectat imagine",
+		"required": "Obligatoriu",
+		"optional": "Opțional",
+		"titleHint": "Setează un titlu scurt și descriptiv pentru eveniment"
+	},
+	"albumDetail": {
+		"eventDetails": "Detalii eveniment",
+		"date": "Dată",
+		"editEvent": "Editează eveniment",
+		"titleLabel": "Titlu",
+		"titlePlaceholder": "Titlu eveniment",
+		"descriptionLabel": "Descriere",
+		"descriptionPlaceholder": "Descriere eveniment",
+		"cancel": "Anulează",
+		"save": "Salvează",
+		"errorTitle": "Eroare",
+		"titleRequired": "Titlul nu trebuie să fie gol",
+		"updateFailed": "Actualizare eveniment eșuată",
+		"sessionNotAvailable": "Sesiune nu este disponibilă",
+		"uploadFailed": "Încărcare imagine eșuată"
+	},
+	"monthsShort": ["LUN 1", "LUN 2", "LUN 3", "LUN 4", "LUN 5", "LUN 6", "LUN 7", "LUN 8", "LUN 9", "LUN 10", "LUN 11", "LUN 12"]
+}

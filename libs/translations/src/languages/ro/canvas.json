@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Titlul tău de canvas"
+	},
+	"editor": {
+		"placeholder": "Începe să scrii...",
+		"uploadingImage": "Se încarcă imaginea..."
+	},
+	"actions": {
+		"save": "Salvează",
+		"saving": "Se salvează...",
+		"discardChanges": "Renunță la schimbări"
+	},
+	"error": {
+		"title": "Eroare"
+	},
+	"toolbar": {
+		"blockFormat": "Formatare bloc",
+		"addLink": "Adaugă link",
+		"removeLink": "Elimină link",
+		"codeBlock": "Bloc cod",
+		"cancel": "Anulează",
+		"apply": "Aplică"
+	},
+	"blocks": {
+		"paragraph": "Paragraf",
+		"h1": "H1 Titlu mare",
+		"h2": "H2 Titlu mijlociu",
+		"h3": "H3 Titlu mic",
+		"checkedList": "Listă cu bifă",
+		"orderedList": "Listă numerotată",
+		"bulletedList": "Listă cu buline",
+		"blockquote": "Citat"
+	}
+}

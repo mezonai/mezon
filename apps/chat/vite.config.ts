@@ -227,6 +227,9 @@ export default defineConfig(({ mode }) => {
 						if (normalizedId.includes('libs/translations/src/languages/kr')) {
 							return 'i18n-kr';
 						}
+						if (normalizedId.includes('libs/translations/src/languages/ro')) {
+							return 'i18n-ro';
+						}
 					}
 				}
 			},

@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Construiește Comunitate Mai Veseală",
+			"description": "Nu doar chat – este locul unde organizezi, te conectezi cu grupul, prietenii și comunitatea într-un mod veseală."
+		},
+		"section2": {
+			"title": "Experiența WFH Ideală pentru Organizație",
+			"description": "WFH nu înseamnă a lucra singur. Colaborează, comunică și celebrează împreună — uneori la distanță. Experiența WFH ideală pentru organizația ta."
+		},
+		"section3": {
+			"title": "Orientare Relații Membru",
+			"description": "credem că relațiile solide construiesc organizații puternice. Fiecare funcție este concepută pentru a lega membrii. Relație membru, amplificată."
+		},
+		"section4": {
+			"title": "Contribuie pentru a câștiga recompense",
+			"description": "Alătură-te, câștigă credite și primește token când ajuți comunitatea să crească. Vocea ta este valoarea ta. Contribuie pentru a câștiga recompense."
+		},
+		"section5": {
+			"title": "Raport Detaliat și Clar",
+			"description": "Urmărește creșterea și interacțiunea comunității cu analiză și raportare detaliată. Ține tot mereu la curent, ia decizii mai bune."
+		}
+	},
+	"features": [
+		{
+			"title": "Poți încărca Emojii, Adesive și Sunete",
+			"description": "Complet Gratuit - Personalizează Emojii, Adesive și Sunetele Tale pentru a-ți exprima personalitatea în conversație."
+		},
+		{
+			"title": "Permite Control Membru în Clan",
+			"description": "Gestionează ușor permisiunile și rolurile membrilor în clan pentru a asigura că fiecare are experiența potrivită și sigură."
+		},
+		{
+			"title": "Membri din Locuri Diverse au Interese Comune",
+			"description": "Membrii se vor alătura clanului tău prin invitații sau explorare publică, creând o comunitate diversă și dinamică."
+		},
+		{
+			"title": "Crearea Clan devine mai ușoară ca niciodată",
+			"description": "Răspunde rapid la mesaje cu emoji fără să tastezi."
+		}
+	],
+	"featuresTitle": "Construiește-ți Comunitatea Mai Veselă",
+	"download": "Descarcă",
+	"faq": {
+		"title": "Mai multă nevoie?",
+		"seeAll": "Vezi Toate FAQ",
+		"learnMore": "Află Mai Multe",
+		"questions": [
+			{
+				"question": "Ce este Clan pe Mezon?",
+				"answer": "Clan este inima Mezon — locul unde oamenii se conectează, colaborează și partajează prin comunități construite în jurul intereselor, obiectivelor sau pasiunilor comune. Clan poate fi un grup mic de prieteni sau o comunitate mare cu mii de membri. În Clan, poți chatoia prin Canale organizate, organizezi evenimente prin Canale vocale și ridici comunitatea prin Bot-uri, Aplicații și Token Mezon."
+			},
+			{
+				"question": "Cum te alături la Clan pe Mezon?",
+				"answer": "Poți explora și te alătura Clan în două moduri: prin butonul Explorare în aplicație sau prin pagina Clan pe mezon.ai/clans, sau folosind link-ul de invitație partajat de prieteni, coechipieri sau admin. Doar apasă \"Alătură-te\" pentru a deveni membru al comunității. Fiecare utilizator poate se alătura la maxim 50 de Clan simultan. Verifică Clan-urile populare ca Student Clan, Gamer Clan și Business Clan."
+			},
+			{
+				"question": "Cum îmi creez propriul Clan?",
+				"answer": "Creația Clan este simplă și flexibilă. Navighează la secțiunea Clan și creează un clan nou cu câteva click-uri. Poți seta nume, iconiță și setări de bază pentru a-ți personaliza comunitatea. După ce creezi, poți invita prieteni și coechipieri pentru a începe să chatoiești, partajezi idei sau colaborezi împreună. De asemenea, poți gestiona canale, seta permisiuni și transfera proprietatea dacă este necesar."
+			},
+			{
+				"question": "Pot ieși din Clan dacă nu mai vreau să fiu parte?",
+				"answer": "Da, dacă nu mai vrei să fii parte din Clan, poți alege 'Ieși din Clan' din setările Clan. După ce ieși, toate istoricul de mesaje și accesul la canalele acelui clan vor fi șterse din contul tău. Poți te alătura din nou clan mai târziu dacă ai un link de invitație sau dacă clan poate fi explorat public."
+			}
+		]
+	}
+}
