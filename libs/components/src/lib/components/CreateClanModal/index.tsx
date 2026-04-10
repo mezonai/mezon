@@ -2,7 +2,7 @@ import { toChannelPage, useAppNavigation, useClans } from '@mezon/core';
 import {
 	categoriesActions,
 	channelsActions,
-	checkDuplicateNameClan,
+	checkDuplicateNameApi,
 	createNewChannel,
 	selectAllClans,
 	triggerClanLimitModal,
@@ -10,14 +10,13 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
-import { DEBOUNCE_TYPING_TIME, LIMIT_SIZE_UPLOAD_IMG, ValidateSpecialCharacters, checkClanLimit, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { LIMIT_SIZE_UPLOAD_IMG, TypeCheck, ValidateSpecialCharacters, checkClanLimit, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import type { ApiCategoryDesc } from 'mezon-js/api';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useDebouncedCallback } from 'use-debounce';
 import { ModalErrorTypeUpload, ModalLayout, ModalOverData } from '../../components';
 
 export type ModalCreateClansProps = {
@@ -235,28 +234,16 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 		setNameClan(value);
 		setValidationState(null);
 		if (value) {
-			debouncedSetClanName(value);
+			const regex = ValidateSpecialCharacters();
+			if (regex.test(value)) {
+				setValidationState(EValidateListMessage.VALIDATED);
+			} else {
+				setValidationState(EValidateListMessage.INVALID_NAME);
+			}
 		} else {
-			debouncedSetClanName.cancel();
 			setValidationState(EValidateListMessage.INVALID_NAME);
 		}
 	};
-	const debouncedSetClanName = useDebouncedCallback(async (value: string) => {
-		const regex = ValidateSpecialCharacters();
-		if (regex.test(value)) {
-			await dispatch(checkDuplicateNameClan(value.trim()))
-				.then(unwrapResult)
-				.then((result) => {
-					if (result) {
-						setValidationState(EValidateListMessage.DUPLICATE_NAME);
-						return;
-					}
-					setValidationState(EValidateListMessage.VALIDATED);
-				});
-			return;
-		}
-		setValidationState(EValidateListMessage.INVALID_NAME);
-	}, DEBOUNCE_TYPING_TIME);
 
 	const [openModalError, seOpenModalError] = useState<openModalErrorProps>({
 		errorType: false,
@@ -339,6 +326,23 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 			handleClose();
 			dispatch(triggerClanLimitModal({ type: 'create', clanCount: allClans.length }));
 			return;
+		}
+
+		try {
+			const duplicateRes = await dispatch(
+				checkDuplicateNameApi({
+					name: nameClan.trim(),
+					type: TypeCheck.TYPECLAN,
+					condition_id: '0'
+				})
+			).then(unwrapResult);
+
+			if (duplicateRes?.is_duplicate) {
+				setValidationState(EValidateListMessage.DUPLICATE_NAME);
+				return;
+			}
+		} catch (error) {
+			console.error('Check duplicate name Failed', error);
 		}
 
 		const clan = await createClans(nameClan.trim(), urlImage);

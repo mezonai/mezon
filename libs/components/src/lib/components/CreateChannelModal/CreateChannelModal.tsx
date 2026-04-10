@@ -1,6 +1,7 @@
 import { useAppNavigation, useEscapeKeyClose } from '@mezon/core';
 import {
 	channelsActions,
+	checkDuplicateChannelInCategoryApi,
 	createNewChannel,
 	fetchApplications,
 	listChannelRenderAction,
@@ -12,6 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { AlertTitleTextWarning, Icons } from '@mezon/ui';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -80,6 +82,25 @@ export const CreateNewChannelModal = () => {
 		if (!validate) {
 			setIsErrorName(t('errors.validName'));
 			return;
+		}
+
+		try {
+			const categoryIdParams = currentCategory?.category_id || channelWelcome?.category_id;
+			if (channelType !== ChannelType.CHANNEL_TYPE_APP && categoryIdParams) {
+				const isDuplicateRes = await dispatch(
+					checkDuplicateChannelInCategoryApi({
+						channelName: channelName.trim(),
+						categoryId: categoryIdParams
+					})
+				).then(unwrapResult);
+
+				if (isDuplicateRes) {
+					setIsErrorName(t('validation.duplicateName'));
+					return;
+				}
+			}
+		} catch (error) {
+			console.error('Check duplicate channel name Failed', error);
 		}
 
 		const body: ApiCreateChannelDescRequest = {

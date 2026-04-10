@@ -1,11 +1,9 @@
-import { checkDuplicateChannelInCategory, selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
+import { selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ValidateSpecialCharacters, generateE2eId } from '@mezon/utils';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebouncedCallback } from 'use-debounce';
 import { ChannelLableModal } from '../ChannelLabel';
 
 interface ChannelNameModalProps {
@@ -52,56 +50,37 @@ export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameM
 	const [validateMessage, setValidateMesage] = useState(messages.INVALID_NAME);
 
 	const handleInputChange = useCallback(
-		async (e: React.ChangeEvent<HTMLInputElement>) => {
+		(e: React.ChangeEvent<HTMLInputElement>) => {
 			const value = e.target.value;
 			onChange(value);
 
 			if (value === '') {
 				setCheckNameChannel(true);
+				setCheckValidate(true);
+				setValidateMesage(messages.INVALID_NAME);
+				if (onCheckValidate) {
+					onCheckValidate(false);
+				}
 			} else {
 				setCheckNameChannel(false);
-			}
-
-			debouncedSetChannelName(value);
-		},
-		[onChange, setCheckValidate, onCheckValidate, setValidateMesage]
-	);
-
-	const debouncedSetChannelName = useDebouncedCallback(async (value: string) => {
-		const regex = ValidateSpecialCharacters();
-		if (regex.test(value)) {
-			await dispatch(
-				checkDuplicateChannelInCategory({
-					channelName: value.trim(),
-					categoryId: categoryId ?? '',
-					clanId
-				})
-			)
-				.then(unwrapResult)
-				.then((result) => {
-					if (result) {
-						setCheckValidate(true);
-						setValidateMesage(messages.DUPLICATE_NAME);
-						if (onCheckValidate) {
-							onCheckValidate(false);
-						}
-						return;
-					}
+				const regex = ValidateSpecialCharacters();
+				if (regex.test(value)) {
 					setCheckValidate(false);
 					setValidateMesage('');
 					if (onCheckValidate) {
 						onCheckValidate(true);
 					}
-				});
-			return;
-		} else {
-			setCheckValidate(true);
-			if (onCheckValidate) {
-				onCheckValidate(false);
-				setValidateMesage(messages.INVALID_NAME);
+				} else {
+					setCheckValidate(true);
+					setValidateMesage(messages.INVALID_NAME);
+					if (onCheckValidate) {
+						onCheckValidate(false);
+					}
+				}
 			}
-		}
-	}, 300);
+		},
+		[onChange, setCheckValidate, onCheckValidate, setValidateMesage]
+	);
 
 	const iconMap: Partial<Record<ChannelType, JSX.Element>> = {
 		[ChannelType.CHANNEL_TYPE_CHANNEL]: <Icons.Hashtag defaultSize="w-6 h-6" />,
