@@ -1,16 +1,16 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IClan, LoadingStatus } from '@mezon/utils';
-import { LIMIT_CLAN_ITEM, TypeCheck } from '@mezon/utils';
+import { LIMIT_CLAN_ITEM } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ClanUpdatedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type {
 	ApiChannelDescription,
+	ApiCheckDuplicateNameRequest,
+	ApiCheckDuplicateNameResponse,
 	ApiClanDesc,
 	ApiUpdateAccountRequest,
-	CheckDuplicateNameRequest,
-	CheckDuplicateNameResponse,
 	MezonUpdateClanDescBody
 } from 'mezon-js/api';
 import { batch } from 'react-redux';
@@ -319,11 +319,11 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 	}
 });
 
-export const checkDuplicateNameApi = createAsyncThunk('clans/duplicateNameApi', async (request: CheckDuplicateNameRequest, thunkAPI) => {
+export const checkDuplicateNameApi = createAsyncThunk('clans/duplicateNameApi', async (request: ApiCheckDuplicateNameRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.checkDuplicateName(mezon.session, request);
-		return response as CheckDuplicateNameResponse;
+		return response as ApiCheckDuplicateNameResponse;
 	} catch (error) {
 		captureSentryError(error, 'clans/duplicateNameApi');
 		return thunkAPI.rejectWithValue(error);
