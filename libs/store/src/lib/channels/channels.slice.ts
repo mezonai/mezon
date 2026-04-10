@@ -447,24 +447,6 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 	}
 });
 
-export const checkDuplicateChannelInCategory = createAsyncThunk(
-	'channels/checkDuplicateChannelInCategory',
-	async ({ channelName, categoryId, clanId }: { channelName: string; categoryId: string; clanId: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(channelName, categoryId, TypeCheck.TYPECHANNEL, clanId);
-
-			if (isDuplicateName?.type === TypeCheck.TYPECHANNEL) {
-				return isDuplicateName.exist;
-			}
-			return;
-		} catch (error) {
-			captureSentryError(error, 'channels/checkDuplicateChannelInCategory');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
-
 export const checkDuplicateChannelInCategoryApi = createAsyncThunk(
 	'channels/checkDuplicateChannelInCategoryApi',
 	async ({ channelName, categoryId }: { channelName: string; categoryId: string }, thunkAPI) => {
@@ -475,7 +457,7 @@ export const checkDuplicateChannelInCategoryApi = createAsyncThunk(
 				type: TypeCheck.TYPECHANNEL,
 				condition_id: categoryId
 			};
-			const response = await (mezon.client as any).checkDuplicateName(mezon.session, request);
+			const response = await mezon.client.checkDuplicateName(mezon.session, request);
 			return response?.is_duplicate;
 		} catch (error) {
 			captureSentryError(error, 'channels/checkDuplicateChannelInCategoryApi');
