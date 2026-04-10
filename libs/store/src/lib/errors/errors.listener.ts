@@ -123,17 +123,21 @@ errorListenerMiddleware.startListening({
 			const key = Object.keys(action.payload);
 
 			const getMessageFromPayload = async (payload: ErrorAction['payload']) => {
-				if (key.length === 0) {
-					if (payload && typeof payload.json === 'function') {
-						const data = await payload.json();
-						return data.message;
+				try {
+					if (key.length === 0) {
+						if (payload && typeof payload.json === 'function') {
+							const data = await payload.json();
+							return data?.message ?? null;
+						}
+					} else {
+						const payloadItem = payload?.[key[0]];
+						if (payloadItem && typeof payloadItem === 'object' && 'json' in payloadItem && typeof payloadItem.json === 'function') {
+							const data = await (payloadItem as { json: () => Promise<{ message?: string }> }).json();
+							return data?.message ?? null;
+						}
 					}
-				} else {
-					const payloadItem = payload?.[key[0]];
-					if (payloadItem && typeof payloadItem === 'object' && 'json' in payloadItem && typeof payloadItem.json === 'function') {
-						const data = await (payloadItem as { json: () => Promise<{ message: string }> }).json();
-						return data.message;
-					}
+				} catch {
+					return null;
 				}
 				return null;
 			};

@@ -8,6 +8,7 @@ export const ITEM_TRANSLATION_KEYS = {
 	OVERVIEW: 'overview',
 	ROLES: 'roles',
 	CATEGORY_ORDER: 'categoryOrder',
+	ARCHIVE_CHANNELS: 'archiveChannels',
 	INTEGRATIONS: 'integrations',
 	AUDIT_LOG: 'auditLog',
 	ON_BOARDING: 'onboarding',
@@ -35,6 +36,7 @@ export const ItemSetting = {
 	INTEGRATIONS: 'integrations',
 	// NOTIFICATION_SOUND: 'notification-sound',
 	CATEGORY_ORDER: 'category-order',
+	ARCHIVE_CHANNELS: 'archive-channels',
 	AUDIT_LOG: 'audit-log',
 	ON_BOARDING: 'on-boarding',
 	ON_COMUNITY: 'on-comunity'
@@ -51,7 +53,8 @@ export const createTranslatedListItemSetting = (t: (key: string) => string): Ite
 export const listItemSetting: ItemObjProps[] = [
 	{ id: ItemSetting.OVERVIEW, name: 'Overview' },
 	{ id: ItemSetting.ROLES, name: 'Roles' },
-	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' }
+	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' },
+	{ id: ItemSetting.ARCHIVE_CHANNELS, name: 'Archive Channels' }
 ];
 
 // Helper function to get translated names
@@ -60,6 +63,7 @@ export const getTranslatedItemName = (id: string, t: (key: string) => string): s
 		[ItemSetting.OVERVIEW]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.OVERVIEW}`),
 		[ItemSetting.ROLES]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ROLES}`),
 		[ItemSetting.CATEGORY_ORDER]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.CATEGORY_ORDER}`),
+		[ItemSetting.ARCHIVE_CHANNELS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ARCHIVE_CHANNELS}`),
 		[ItemSetting.INTEGRATIONS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.INTEGRATIONS}`),
 		[ItemSetting.AUDIT_LOG]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.AUDIT_LOG}`),
 		[ItemSetting.ON_BOARDING]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ON_BOARDING}`),

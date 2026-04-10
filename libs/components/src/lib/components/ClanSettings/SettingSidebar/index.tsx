@@ -38,6 +38,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			[ItemSetting.IMAGE_STICKERS]: t('sidebar.items.imageStickers'),
 			[ItemSetting.VOIDE_STICKERS]: t('sidebar.items.voiceStickers'),
 			[ItemSetting.CATEGORY_ORDER]: t('sidebar.items.categoryOrder'),
+			[ItemSetting.ARCHIVE_CHANNELS]: t('sidebar.items.archiveChannels'),
 			[ItemSetting.INTEGRATIONS]: t('sidebar.items.integrations'),
 			[ItemSetting.AUDIT_LOG]: t('sidebar.items.auditLog'),
 			[ItemSetting.ON_BOARDING]: t('sidebar.items.onboarding'),

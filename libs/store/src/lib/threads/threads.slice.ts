@@ -3,6 +3,7 @@ import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
 import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ArchiveInactiveChannelThreadsRequest as ApiArchiveInactiveChannelThreadsRequest } from 'mezon-js-protobuf';
 import type { ApiChannelDescription } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -286,6 +287,32 @@ export const leaveThread = createAsyncThunk(
 	}
 );
 
+export const archiveInactiveChannelThreads = createAsyncThunk(
+	'thread/archiveInactiveChannelThreads',
+	async ({ clan_id, parent_id: _parent_id, thread_ids }: ApiArchiveInactiveChannelThreadsRequest, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const filteredThreadIds = thread_ids.filter(Boolean);
+			const hardcodedParentId = '0';
+			const response = await mezon.client.archiveInactiveChannelThreads(mezon.session, clan_id, hardcodedParentId, filteredThreadIds);
+			for (const threadId of filteredThreadIds) {
+				thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId: threadId, activeCode: 0 }));
+				thunkAPI.dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: threadId, clanId: clan_id }));
+			}
+
+			return {
+				clan_id,
+				parent_id: hardcodedParentId,
+				thread_ids: filteredThreadIds,
+				response
+			};
+		} catch (error) {
+			captureSentryError(error, 'threads/archiveInactiveChannelThreads');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const writeActiveArchivedThread = createAsyncThunk(
 	'threads/writeActiveArchivedThread',
 	async ({ clanId, channelId }: { clanId: string; channelId: string }, thunkAPI) => {
@@ -368,6 +395,21 @@ export const threadsSlice = createSlice({
 					}
 				});
 			}
+
+			if (state.byChannels) {
+				for (const channelState of Object.values(state.byChannels)) {
+					if (!channelState.entities?.[channelId]) {
+						continue;
+					}
+
+					threadsAdapter.updateOne(channelState, {
+						id: channelId,
+						changes: {
+							active: activeCode
+						}
+					});
+				}
+			}
 		},
 		updateLastSentInThread: (state: ThreadsState, action: PayloadAction<{ channelId: string; lastSentTime: number }>) => {
 			const { channelId, lastSentTime } = action.payload;
@@ -448,7 +490,8 @@ export const threadsSlice = createSlice({
 					if (!fromCache) {
 						const validThreads = threads.filter((thread) => {
 							if (thread.channel_private) {
-								const shouldKeep = thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate;
+								const shouldKeep =
+									thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate || thread.active === 0;
 								return shouldKeep;
 							}
 							return true;
@@ -535,6 +578,7 @@ export const threadsActions = {
 	fetchThreads,
 	fetchThread,
 	leaveThread,
+	archiveInactiveChannelThreads,
 	updateCacheOnThreadCreation,
 	searchedThreads,
 	writeActiveArchivedThread
