@@ -648,30 +648,40 @@ type fetchChannelsArgs = {
 
 export const addThreadToChannels = createAsyncThunk(
 	'channels/addThreadToChannels',
-	async ({ clanId, channelId }: { clanId: string; channelId: string }, thunkAPI) => {
-		const channelData = selectChannelByIdAndClanId(thunkAPI.getState() as RootState, clanId, channelId);
+	async ({ clanId, channelId, parentChannelId }: { clanId: string; channelId: string; parentChannelId?: string }, thunkAPI) => {
+		const state = thunkAPI.getState() as RootState;
+		const channelData = selectChannelByIdAndClanId(state, clanId, channelId);
 		if (channelId && !channelData) {
+			const currentChannelId = state.channels?.byClans?.[clanId]?.currentChannelId;
+			const channelIdToFetch = parentChannelId || currentChannelId;
+
+			if (!channelIdToFetch || channelIdToFetch === channelId) {
+				return;
+			}
+
 			const data = await thunkAPI
 				.dispatch(
 					threadsActions.fetchThread({
-						channelId: '0',
+						channelId: channelIdToFetch,
 						clanId,
 						threadId: channelId
 					})
 				)
 				.unwrap();
 
-			if (data?.threads?.length > 0) {
+			const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+
+			if (matchedThread) {
 				thunkAPI.dispatch(
 					channelsActions.upsertOne({
 						clanId,
-						channel: { ...data.threads[0], active: 1 } as ChannelsEntity
+						channel: { ...matchedThread, active: 1 } as ChannelsEntity
 					})
 				);
 				thunkAPI.dispatch(
 					listChannelRenderAction.addThreadToListRender({
 						clanId,
-						channel: { ...data.threads[0], active: 1 } as ChannelsEntity
+						channel: { ...matchedThread, active: 1 } as ChannelsEntity
 					})
 				);
 			}
