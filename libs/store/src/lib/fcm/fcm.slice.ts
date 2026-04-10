@@ -1,3 +1,4 @@
+import { notificationService } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { Session } from 'mezon-js';
@@ -69,12 +70,14 @@ export const connectNotificationService = createAsyncThunk('fcm/connectNotificat
 			mezon
 		});
 
-		if (!response?.token) {
-			return thunkAPI.rejectWithValue('Failed to register FCM token');
+		if (response.token) {
+			notificationService.connect(response.token, sessionData.user_id);
+		} else if (state.fcm.token) {
+			notificationService.connect(state.fcm.token, sessionData.user_id);
 		}
 
 		return {
-			token: response.token,
+			token: response.token || '',
 			userId: sessionData.user_id,
 			deviceId: response.device_id
 		};
@@ -97,6 +100,9 @@ export const fcmSlice = createSlice({
 			const { token, deviceId } = action.payload;
 			if (!state.deviceId && deviceId) {
 				state.deviceId = deviceId;
+			}
+			if (token) {
+				state.token = token;
 			}
 		});
 	}

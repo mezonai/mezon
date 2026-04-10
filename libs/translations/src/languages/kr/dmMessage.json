@@ -1,0 +1,63 @@
+{
+	"title": "메시지",
+	"addFriend": "친구 추가",
+	"friends": "친구들",
+	"blockedUserMessage": "차단된 메시지",
+	"menu": {
+		"leaveGroup": "그룹 나가기",
+		"deleteGroup": "그룹 삭제",
+		"profile": "프로필",
+		"closeDm": "메시지 닫기",
+		"markAsRead": "읽음으로 표시",
+		"favorite": "즐겨찾기",
+		"muteConversation": "대화 알림 끄기",
+		"unMuteConversation": "대화 알림 켜기",
+		"notificationSettings": "알림 설정",
+		"disableE2EE": "E2EE 암호화 끄기",
+		"enableE2EE": "E2EE 암호화 켜기",
+		"blockUser": "사용자 차단",
+		"unblockUser": "사용자 차단 해제",
+		"removeFriend": "친구 제거",
+		"addFriend": "친구 추가",
+		"pinConversation": "대화 고정",
+		"unpinConversation": "대화 고정 해제"
+	},
+	"confirm": {
+		"title": "{{groupName}} 에서 나가기",
+		"content": "{{groupName}} 을(를) 떠나시겠습니까? 다시 초대될 때까지 이 그룹에 다시 참가할 수 없습니다.",
+		"confirmText": "네"
+	},
+	"pinConfirm": {
+		"title": "대화 고정?",
+		"content": "이 대화가 메시 목록 상단으로 이동하여 액세스하기 쉬워집니다.",
+		"confirmText": "고정"
+	},
+	"unpinConfirm": {
+		"title": "대화 고정 해제?",
+		"content": "이 대화가 메시 목록의 평소 위치로 돌아갑니다.",
+		"confirmText": "고정 해제"
+	},
+	"pinSection": "고정됨",
+	"allMessagesSection": "모든 메시지",
+	"maximumPinnedConversationsReached": "최대 {{max}} 개 대화만 고정할 수 있습니다.",
+	"notification": {
+		"blockUser": {
+			"success": "사용자 성공적으로 차단",
+			"error": "사용자 차단 실패"
+		},
+		"unblockUser": {
+			"success": "사용자 성공적으로 차단 해제",
+			"error": "사용자 차단 해제 실패"
+		},
+		"muteSuccess": "알림 성공적으로 끔!",
+		"unMuteSuccess": "알림 성공적으로 켬!",
+		"muteFailed": "알림 끄기 실패!",
+		"unMuteFailed": "알림 켜기 실패!"
+	},
+	"waveWelcome": "손 흔들어 인사하기!",
+	"waveWelcomeDM": "{{username}} 에게 손 흔들어 인사하기",
+	"members": "명",
+	"speaker": "스피커",
+	"end": "종료",
+	"turnedMicOff": "마이크 끔"
+}

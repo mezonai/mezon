@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "취소",
+    "save": "저장",
+    "reset": "재설정",
+    "close": "닫기",
+    "kick": "킥"
+  },
+  "form": {
+    "required": "필수 필드",
+    "error": "오류"
+  },
+  "kickMember": {
+    "title": "{{clanName}} 에서 @{{username}} 킥",
+    "description": "@{{username}} 을(를) {{clanName}} 에서 킥하시겠습니까? 새 초대와 함께 다시 참가할 수 있습니다.",
+    "reasonLabel": "킥 이유"
+  }
+}

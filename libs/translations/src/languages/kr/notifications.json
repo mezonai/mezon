@@ -1,0 +1,25 @@
+{
+  "inbox": " Inbox",
+  "tabs": {
+		"forYou": "당신을 위해",
+		"messages": "메시지",
+		"mentions": "알림",
+		"topics": "토론"
+  },
+  "empty": {
+    "forYou": {
+      "title": "여기에 아무것도 없음",
+      "description": "이벤트, 스트림 및 더 많은 알림을 받기 위해 돌아오세요."
+    },
+    "messages": {
+      "title": "다 보았습니다!",
+      "protip": "팁:",
+      "description": "CTRL+I 를 눌러 상자를 열고 CTRL+Shift+E 를 눌러 첫 번째 메시지를 읽음으로 표시하세요."
+    },
+    "mentions": {
+      "title": "모두 보았습니다!",
+      "protip": "팁:",
+      "description": "누가 당신을 언급할 때마다 7 일 동안 여기에 저장됩니다."
+    }
+  }
+}

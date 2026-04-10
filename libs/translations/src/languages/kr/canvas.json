@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "캔버스 제목"
+	},
+	"editor": {
+		"placeholder": "입력 시작...",
+		"uploadingImage": "이미지 로딩 중..."
+	},
+	"actions": {
+		"save": "저장",
+		"saving": "저장 중...",
+		"discardChanges": "변경사항 취소"
+	},
+	"error": {
+		"title": "오류"
+	},
+	"toolbar": {
+		"blockFormat": "블록 서식",
+		"addLink": "링크 추가",
+		"removeLink": "링크 제거",
+		"codeBlock": "코드 블록",
+		"cancel": "취소",
+		"apply": "적용"
+	},
+	"blocks": {
+		"paragraph": "단락",
+		"h1": "H1 큰 제목",
+		"h2": "H2 중간 제목",
+		"h3": "H3 작은 제목",
+		"checkedList": "체크 목록",
+		"orderedList": "번호 매기기 목록",
+		"bulletedList": "글머리 기호 목록",
+		"blockquote": "인용구"
+	}
+}

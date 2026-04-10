@@ -1,0 +1,24 @@
+{
+	"threads": "스레드",
+	"emptyThread": {
+		"textNoThread": "스레드가 없음",
+		"textNotify": "임시 텍스트 채널인 스레드로 채팅에 집중하세요.",
+		"createThreads": "스레드 만들기"
+	},
+	"otherThreads": "이전 스레드",
+	"errorMessage": "유효한 스레드 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+	"threadName": "스레드 이름",
+	"privateThread": "비공개 스레드",
+	"onlyPeopleInviteThread": "초대된 사람과 관리자만 이 스레드를 볼 수 있음",
+	"newThread": "새 스레드",
+	"joinedThreads": "참가한 스레드",
+	"joinedThread": "참가한 스레드",
+	"otherActiveThreads": "다른 활성 스레드",
+	"olderThreads": "이전 스레드",
+	"searchThreads": "스레드 검색",
+	"searchThread": "스레드 검색",
+	"threadFailed": {
+		"title": "스레드 생성 실패",
+		"content": "스레드를 찾지 못하거나 업데이트할 권한이 없음"
+	}
+}

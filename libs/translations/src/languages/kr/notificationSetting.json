@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "알림 설정",
+		"muteUntil": "이 채널의 알림을 다음까지 끄셨습니다",
+		"unMute": "알림 켜기",
+		"mute": "알림 끄기",
+		"labelOptions": {
+			"reactionMessage": "메시지 반응",
+			"categoryDefault": "기본 설정 사용",
+			"allMessage": "모두",
+			"notThingMessage": "없음",
+			"mentionMessage": "@mention 만"
+		},
+		"muteCategoryUntil": "이 카테고리의 알림을 다음까지 끄셨습니다"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "이 스레드 알림 끄기",
+		"headerTitleMuteChannel": "이 채널 알림 끄기",
+		"muteThisConversation": "이 대화 알림 끄기",
+		"muteDuration": {
+			"forFifteenMinutes": "15 분 동안",
+			"forOneHour": "1 시간 동안",
+			"forThreeHours": "3 시간 동안",
+			"forEightHours": "8 시간 동안",
+			"forTwentyFourHours": "24 시간 동안",
+			"untilTurnItBackOn": "다시 켤 때까지"
+		},
+		"description": "이 클랜의 모든 메시지 알림을 받지만 여기에서 설정을 변경할 수 있습니다",
+		"muteSuccess": "알림 성공적으로 끔!",
+		"unMuteSuccess": "알림 성공적으로 켬!",
+		"muteFailed": "알림 끄기 실패!",
+		"unMuteFailed": "알림 켜기 실패!"
+	},
+	"toast": {
+		"error": "알림 업데이트 오류: {{error}}"
+	},
+	"title": "알림 설정",
+	"clanNotificationSettings": "클랜 알림 설정",
+	"notificationOverrides": "알림 오버라이드",
+	"addChannelOverride": "기본 알림 설정을 오버라이드할 채널 추가",
+	"selectOrCreateOption": "옵션 선택 또는 생성...",
+	"headers": {
+		"channelOrCategory": "채널 또는 카테고리",
+		"all": "모두",
+		"mentions": "알림",
+		"nothing": "없음",
+		"mute": "알림 끄기"
+	},
+	"menu": {
+		"notification": {
+			"all": "모두",
+			"onlyMention": "@mention 만",
+			"nothing": "없음"
+		}
+	}
+}

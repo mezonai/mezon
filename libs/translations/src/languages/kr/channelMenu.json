@@ -1,0 +1,104 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "읽음으로 표시"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "초대",
+          "markFavorite": "즐겨찾기에 추가",
+          "unMarkFavorite": "즐겨찾기에서 제거",
+          "copyLink": "링크 복사"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "채널 알림 끄기",
+          "unMuteChannel": "채널 알림 켜기",
+          "muteThread": "스레드 알림 끄기",
+          "unMuteThread": "스레드 알림 켜기",
+          "notification": "알림 설정",
+          "for15Minutes": "15 분 동안",
+          "for1Hour": "1 시간 동안",
+          "for3Hours": "3 시간 동안", 
+          "for8Hours": "8 시간 동안",
+          "for24Hours": "24 시간 동안",
+          "untilTurnedBackOn": "다시 켜질 때까지",
+          "useCategoryDefault": "카테고리 기본값 사용",
+          "all": "모두",
+          "onlyMention": "@mention 만",
+          "nothing": "없음",
+          "processing": "처리 중...",
+          "muteChannelStatus": "채널 알림 끄기",
+          "muteThreadStatus": "스레드 알림 끄기",
+          "unmuteChannelStatus": "채널 알림 켜기", 
+          "unmuteThreadStatus": "스레드 알림 켜기",
+          "mutedUntil": "{{date}} 까지 알림 끔",
+          "muteSuccess": "알림 성공적으로 끔!",
+          "unMuteSuccess": "알림 성공적으로 켬!",
+          "muteFailed": "알림 끄기 실패!",
+          "unMuteFailed": "알림 켜기 실패!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "스레드",
+        "searchThreads": "스레드 이름 검색",
+        "searchFiles": "파일 검색",
+        "searchCanvas": "캔버스 이름 검색"
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "채널 수정",
+          "deleteChannel": "채널 삭제",
+          "duplicateChannel": "채널 복제",
+          "leaveChannel": "채널 나가기",
+          "createTextChannel": "텍스트 채널 만들기",
+          "createVoiceChannel": "음성 채널 만들기",
+          "openChat": "채팅 열기",
+          "hideNames": "이름 숨기기",
+          "createThread": "스레드 만들기"
+      },
+      "devMode": {
+          "title": "개발자 모드",
+          "copyChannelID": "채널 ID 복사"
+      },
+      "manageThreadMenu": {
+          "editThread": "스레드 수정",
+          "deleteThread": "스레드 삭제",
+          "leaveThread": "스레드 나가기",
+          "closeThread": "스레드 닫기",
+          "lockThread": "스레드 잠금",
+          "copyLink": "링크 복사"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "채널 ID 복사됨"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "{{threadName}} 스테드 삭제",
+          "content": "이 스레드를 삭제하시겠습니까?",
+          "confirmText": "네"
+      },
+      "channel": {
+          "title": "{{channelName}} 채널 삭제",
+          "content": "이 채널을 삭제하시겠습니까?",
+          "confirmText": "네",
+          "systemChannel": "시스템 채널을 삭제할 수 없음",
+          "error": "채널 삭제 오류: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "스레드 나가기",
+    "yesButton": "스레드 나가기",
+    "textConfirm": "이 스레드를 떠나시겠습니까? 떠난 후 이 스트림에서 메시지를 받을 수 없습니다."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "채널 나가기",
+    "yesButton": "채널 나가기",
+    "textConfirm": "이 채널을 떠나시겠습니까? 떠난 후 이 채널에서 메시지를 받을 수 없습니다.",
+    "error": "채널 나가기 오류: {{error}}"
+  },
+  "btnBadgeCount": "새로",
+  "favoriteChannel": "즐겨찾기 채널"
+}

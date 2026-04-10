@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan": "기존 클랜 참가",
+    "enterInvite": "기존 클랜에 참가하려면 아래에 초대 코드를 입력하세요.",
+    "labelInput": "초대 링크",
+    "linkInviteEx": "초대 코드는 https://mezon.ai/invite/1813407038846046912 형태여야 합니다",
+    "joinInviteLink": "초대 링크로 참가",
+    "errorMessage": "유효한 초대 링크 또는 코드를 입력하세요."
+  },
+  "emptyClans": {
+    "clans": "클랜",
+    "readyChat": "다음 단계 그룹 채팅을 준비하셨나요?",
+    "buildYourCommunity": "조직화된 대화, 즉흥적인 만남 및 강력한 커스터마이징 기능으로 커뮤니티를 구축하세요!",
+    "createClan": "클랜 만들기",
+    "joinClan": "클랜 참가",
+    "joinChannel": "채널 참가",
+   "findChannel": "낯선 곳에 있는 것 같습니다. 어떤 텍스트 채널에도 액세스 권한이 없습니다."
+  },
+  "emptyMessage": {
+   "dMsWith": "유용한 기능으로 다이렉트 메시지",
+    "inviteYourFriends": "게임, 함께 음악 듣기 및 더 많은 것을 위해 친구 초대.",
+    "addFriend": "친구 추가"
+  }
+}

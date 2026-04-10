@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "클랜 삭제",
+    "description": "{{currentClan}} 을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 있습니다.",
+    "confirm": "네",
+    "cancel": "아니요",
+     "titleLeaveClan": "클랜 나가기",
+    "descriptionLeaveClan": "{{currentClan}} 에서 떠나시겠습니까? 다시 초대될 때까지 이 클랜에 다시 참가할 수 없습니다.",
+    "error": "클랜 삭제/나가기 시도 중 오류 발생"
+  },
+  "confirmMessage": "이 클랜을 삭제하시겠습니까? 이 작업은 되돌릴 수 있습니다.",
+  "enterClanName": "클랜 이름 입력",
+  "incorrectName": "클랜 이름을 잘못 입력했습니다",
+  "cancel": "취소"
+}

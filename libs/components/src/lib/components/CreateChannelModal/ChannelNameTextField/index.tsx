@@ -27,7 +27,19 @@ export type ChannelNameModalRef = {
 };
 
 export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameModalProps>((props, ref) => {
-	const { channelNameProps, type, onChange, onCheckValidate, onHandleChangeValue, onKeyDown, error, placeholder, shouldValidate, categoryId, clanId } = props;
+	const {
+		channelNameProps,
+		type,
+		onChange,
+		onCheckValidate,
+		onHandleChangeValue,
+		onKeyDown,
+		error,
+		placeholder,
+		shouldValidate,
+		categoryId,
+		clanId
+	} = props;
 	const { t } = useTranslation('createChannel');
 	const [checkValidate, setCheckValidate] = useState(true);
 	const [checkNameChannel, setCheckNameChannel] = useState(true);
@@ -118,7 +130,7 @@ export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameM
 			<ChannelLableModal labelProp={channelNameProps} />
 			<div className="ContentContainer self-stretch h-11 flex-col items-start flex">
 				<div
-					className={`InputContainer self-stretch h-11 px-4 py-3 bg-item-theme rounded shadow border w-full ${error ? 'border border-red-500' : 'border-blue-600'}  justify-start items-center gap-2 inline-flex`}
+					className={`InputContainer self-stretch h-11 px-4 py-3 bg-item-theme rounded shadow border w-full ${error || (shouldValidate && checkValidate && !checkNameChannel) ? 'border-red-500' : 'border-blue-600'}  justify-start items-center gap-2 inline-flex`}
 				>
 					{iconMap[type]}
 					<div className="InputValue grow shrink basis-0 self-stretch justify-start items-center flex">

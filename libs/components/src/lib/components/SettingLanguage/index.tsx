@@ -61,6 +61,11 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				value: 'jpn',
 				contributedBy: 'robits',
 				flag: <JapanFlag />
+			},
+			{
+				title: `${t('setting:language.korean')}`,
+				value: 'kr',
+				contributedBy: 'robits'
 			}
 		];
 	}, [t]);

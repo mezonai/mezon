@@ -1,0 +1,50 @@
+{
+	"title": "스트림 썸네일",
+	"uploadThumbnail": "썸네일 업로드",
+	"currentThumbnail": "현재 썸네일",
+	"requirementsTitle": "요구사항",
+	"buttons": {
+		"change": "변경",
+		"remove": "제거",
+		"selectFile": "파일 선택",
+		"uploading": "업로드 중...",
+		"cancel": "취소",
+		"confirmUpload": "확인",
+		"removing": "제거 중...",
+		"removeThumbnail": "썸네일 제거"
+	},
+	"upload": {
+		"title": "썸네일 업로드",
+		"description": "찾아보기를 클릭하거나 이미지를 드래그 앤 드롭하세요"
+	},
+	"confirmModal": {
+		"uploadTitle": "업로드 확인",
+		"uploadDescription": "이 이미지를 스트림 썸네일로 설정하시겠습니까?",
+		"uploadMessage": "이 썸네일은 스트림이 오프라인일 때 표시됩니다. 모든 멤버는 이 업데이트를 즉시 볼 것입니다.",
+		"removeTitle": "썸네일 제거",
+		"removeQuestion": "확실하십니까?",
+		"removeMessage": "이 작업은 스트림 썸네일을 제거합니다. 스트림이 오프라인일 때 기본 스플래시 화면이 표시됩니다.",
+		"removeWarning": "이 작업은 되돌릴 수 있습니다."
+	},
+	"requirements": {
+		"format": {
+			"title": "형식",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "해상도",
+			"value": "권장 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "크기 제한",
+			"value": "최대 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "채널 찾지 못함",
+		"clientNotReady": "클라이언트/세션 준비 안 됨",
+		"uploadFailed": "썸네일 업로드 실패. 나중에 다시 시도하세요.",
+		"removeFailed": "썸네일 제거 실패. 나중에 다시 시도하세요."
+	},
+	"saved": "썸네일이 저장되었습니다"
+}

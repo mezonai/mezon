@@ -1,0 +1,143 @@
+{
+	"description": {
+		"part1": "게임, 친구와 대화 또는 글로벌 커뮤니티 구축을 위한 완벽한 곳입니다.",
+		"part2": "당신의 전용 공간을 커스터마이징하여",
+		"talk": "대화",
+		"play": "놀이",
+		"and": "그리고",
+		"hangOut": "만남"
+	},
+	"download": {
+		"getItFrom": "다운로드",
+		"cdnUrl": "CDN URL"
+	},
+	"header": {
+		"home": "홈",
+		"overview": "개요",
+		"features": "기능",
+		"developers": "개발자",
+		"botsApps": "봇/앱",
+		"documents": "문서",
+		"discover": "탐색",
+		"blogs": "블로그",
+		"openMezon": "Open Mezon",
+		"login": "로그인",
+		"quickMeeting": "Mezon Meet"
+	},
+	"layout": {
+		"overview": {
+			"title": "개요",
+			"subtitle": "팀과 소통하는 새로운 방식입니다.",
+			"description": "더 빠르고, 더 잘 조직되어, 재택 근무에 완벽합니다."
+		},
+		"features": {
+			"title": "우리의 기능",
+			"subtitle": "포괄적인 커뮤니케이션 도구"
+		},
+		"cards": {
+			"workstation": {
+				"title": "작업 공간",
+				"description": "다양한 시스템과 도구와 통합하여 커뮤니케이션, 협업 및 작업 관리를 최적화하는 디지털 작업 공간. 그룹, 프로젝트 및 부서에 구조화된 공간을 제공하면서 정보와 워크플로우에 원활하게 액세스합니다."
+			},
+			"ecosystem": {
+				"title": "생태계",
+				"description": "작업과 사회적 요소를 결합한 동적 디지털 환경으로 풍부한 상호작용과 엔터테인먼트 기능을 제공합니다. 가상 거래, 커뮤니티 활동 및 관계 구축을 지원하여 사용자 경험을 향상시킵니다."
+			},
+			"aiAgent": {
+				"title": "AI 에이전트",
+				"description": "작업을 자동화하고 정보 관리를 지원하며 워크플로우를 최적화하는 지능 시스템. 알림, 모니터링 및 자동 커뮤니케이션을 통해 생산성을 향상시킵니다."
+			}
+		},
+		"featureCards": {
+			"mezonMainnet": {
+				"title": "Mezon 메인넷",
+				"subtitle": "고속, 수수료 없는 레이어 1",
+				"description": "블록체인"
+			},
+			"developerApi": {
+				"title": "고급 API",
+				"subtitle": "개발자를 위해"
+			},
+			"gaming": {
+				"title": "게임",
+				"subtitle": "& 엔터테인먼트"
+			},
+			"customizable": {
+				"title": "유연한 커스터마이징",
+				"subtitle": "& 쉬운 확장"
+			}
+		}
+	},
+	"sections": {
+		"hero": {
+			"title": {
+				"your": "당신의",
+				"live": "라이브",
+				"work": "작업",
+				"play": "놀이",
+				"platform": "플랫폼",
+				"theBest": "최고의",
+				"yourCommunity": "커뮤니티"
+			},
+			"description": "게임, 친구와 대화 또는 글로벌 커뮤니티 구축을 위한 완벽한 곳입니다. 당신의 전용 공간을 커스터마이징하여",
+			"talk": "대화",
+			"play": "놀이",
+			"and": "그리고",
+			"hangOut": "만남",
+			"tryButton": "Mezon 사용해보기, 무료!",
+			"choosePlatform": "플랫폼 선택"
+		},
+		"textChannel": {
+			"titlesuper": "메시지",
+			"titlemessage": "초고속",
+			"description": "대화, 협업 및 연결을 위해 제작되었습니다.",
+			"description2": "초고속 메시지. 제한 없음. 즉시 전송.",
+			"learnMore": "자세히 알아보기"
+		},
+		"clanDiscover": {
+			"title": "당신의 클랜, 당신의 세상",
+			"description": "취미, 토론, 뉴스 및 트렌드까지, 모든 것에 클랜이 있습니다.",
+			"learnMore": "자세히 알아보기"
+		},
+		"aiAgent": {
+			"title": "클랜 및 24/7 지원을 위한 AI 에이전트",
+			"description": "음성 AI 에이전트 (음성 채널의 대화 내용 요약 또는 인터뷰 역할), AI 어시스턴트, 숨은 모드 봇 (텍스트 채널의 내용 요약).",
+			"learnMore": "자세히 알아보기"
+		},
+		"communityPayments": {
+			"title": "커뮤니티 결제",
+			"description": "Mezon 동 전송, 크리에이터에게 보상이 및 파트너 브랜드와 쇼핑 - 모든 플랫폼 수수료가 무료. 투명성과 보안으로 구축.",
+			"learnMore": "자세히 알아보기"
+		},
+		"enterpriseIntegrations": {
+			"title": "기업 통합",
+			"description": "Mezon 은 전 세계 고객과 연결하고 매력적인 대규모 경험을 제공할 수 있게 합니다.",
+			"learnMore": "자세히 알아보기"
+		}
+	},
+	"footer": {
+		"description": "Mezon 은 게임하고 친구와 휴식을 취하거나 글로벌 커뮤니티를 구축하기 위한 완벽한 곳입니다.",
+		"getTheApp": "앱 다운로드",
+		"copyright": "© 2024 Mezon. All Rights Reserved.",
+		"links": {
+			"executiveSummary": "요약 보고서",
+			"problemStatement": "문제 제기",
+			"solution": "해결책",
+			"blockchainEconomy": "블록체인 & 토큰 경제",
+			"developerApi": "개발자를 위한 API 통합",
+			"technicalArchitecture": "기술 아키텍처",
+			"productRoadmap": "제품 로드맵",
+			"tokenomics": "토큰 경제",
+			"team": "팀"
+		}
+	},
+	"externalMeet": {
+		"title": "회의",
+		"creatingMeeting": "회의가 성공적으로 생성되었습니다!",
+		"invite": "초대",
+		"joinMeeting": "회의 참여",
+		"copyLink": "링크 복사",
+		"toastSuccess": "링크 복사됨!",
+		"toastFail": "복사 실패."
+	}
+}

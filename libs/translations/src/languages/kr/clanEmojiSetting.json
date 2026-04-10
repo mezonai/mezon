@@ -1,0 +1,40 @@
+{
+	"modal": {
+		"uploadAFile": "파일 업로드",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "파일은 PNG 또는 GIF 여야 하며 최대 256KB",
+		"preview": "미리보기",
+		"file": "파일",
+		"thisCannotBeEdited": "수정 불가",
+		"browse": "찾아보기",
+		"chooseAFile": "파일 선택",
+		"stickerName": "이모지 이름",
+		"exCatHug": "예: cat_hug",
+		"thisIsForSale": "판매 중입니다",
+		"neverMind": "괜찮음",
+		"characters": "이름은 3~64 자여야 합니다"
+	},
+	"header": {
+		"save": "저장"
+	},
+	"toast": {
+		"saveSuccess": "성공적으로 저장됨",
+		"reject": "거부",
+		"errorSizeLimit": "이미지 크기가 256 KB 초과",
+		"validateName": "길이는 {{min}}~{{max}} 자여야 합니다. 문자, 숫자, _ 및 - 만 허용됨"
+	},
+	"button": {
+		"upload": "이모지 업로드"
+	},
+	"description": {
+		"descriptions": "이 클랜의 모든 사용자가 사용할 수 있는 커스터마이징 이모지를 추가하세요. Mezon 의 모든 멤버는 애니메이션 GIF 이모지를 사용할 수 있습니다.",
+		"requirements": "업로드 요구사항",
+		"requireList": "•  파일 유형: JPEG, PNG, GIF.\n•  권장 크기: 256 KB.\n•  권장 이미지 크기: 128x128.\n•  이름 붙이기: 이모지 이름은 최소 3 자여야 하며 문자, 숫자 및 밑줄만 포함해야 합니다."
+	},
+	"emojiList": {
+		"slotsDetails": "이모지 목록",
+		"delete": "삭제"
+	},
+	"image": "이미지",
+	"name": "이름",
+	"uploadedBy": "업로드한 사람"
+}

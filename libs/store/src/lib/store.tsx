@@ -303,7 +303,7 @@ const persistedChannelMetaReducer = persistReducer(
 	{
 		key: 'channelmeta',
 		storage,
-		blacklist: ['entities']
+		blacklist: ['entities', 'ids']
 	},
 	channelMetaReducer
 );

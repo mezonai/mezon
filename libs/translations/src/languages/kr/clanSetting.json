@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "설정",
+			"overview": "개요",
+			"moderation": "조정",
+			"auditLog": "편집 감사 로그",
+			"channels": "채널",
+			"integrations": "통합",
+			"emoji": "이모지",
+			"sticker": "스티커",
+			"webhooks": "웹훅",
+			"security": "보안",
+			"permissionDenied": "수정할 권한이 없습니다",
+			"sound": "사운드 효과",
+			"enableCommunity": "커뮤니티 활성화"
+		},
+		"community": {
+			"title": "커뮤니티",
+			"enableCommunity": "커뮤니티 활성화"
+		},
+		"subscriptions": {
+			"title": "클랜 구독 패키지",
+			"getStarted": "시작"
+		},
+		"userManagement": {
+			"title": "사용자 관리",
+			"members": "멤버",
+			"role": "역할",
+			"invite": "초대",
+			"bans": "밴"
+		}
+	}
+}

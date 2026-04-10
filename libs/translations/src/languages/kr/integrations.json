@@ -1,0 +1,28 @@
+{
+	"title": "통합",
+	"clanWebhooks": "클랜 웹훅",
+	"webhooks": "웹훅",
+	"description": "웹훅, 모니터링 채널 및 애플리케이션을 관리하고, 외부 시스템 통합 및 Mezon 에서 알림 프로세스 자동화를 통해 클랜을 커스터마이징하세요.",
+	"learnMore": "통합 관리에 대해 자세히 알아보기.",
+	"webhook": "웹훅",
+	"webhooksPlural": "웹훅",
+	"createWebhook": "웹훅 만들기",
+	"createClanWebhook": "클랜 웹훅 만들기",
+	"viewWebhook": "웹훅 보기",
+	"viewClanWebhook": "클랜 웹훅 보기",
+	"newWebhook": "새 웹훅",
+	"newClanWebhook": "새 클랜 웹훅",
+	"noWebhooks": "웹훅이 없습니다!",
+	"webhookDescription": "웹훅은 인터넷 기술을 사용하여 다른 애플리케이션과 웹사이트의 메시지를 Mezon 으로 보내는 간단한 방법입니다.",
+	"clanWebhookDescription": "클랜 웹훅은 인터넷 기술을 사용하여 각 Mezon 사용자에게 다른 애플리케이션과 웹사이트의 메시지를 게시하는 간단한 방법입니다.",
+	"learnMoreWebhook": "자세히 알아보기",
+	"orTry": "또는 시도",
+	"buildWebhook": "직접 만들기.",
+	"webhookTip": "팁: URL 의 토큰이 손상되었거나 구식이 된 것으로 느껴지면 재설정하고 새 URL 을 복사하세요.",
+	"webhookCount": "{{count}} 웹훅",
+	"webhook_other": "{{count}} 웹훅",
+	"toast": {
+		"generateSuccess": "{{name}} 성공적으로 생성!",
+		"deleteSuccess": "{{name}} 성공적으로 삭제!"
+	}
+}

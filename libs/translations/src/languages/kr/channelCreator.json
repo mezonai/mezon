@@ -1,0 +1,173 @@
+{
+	"actions": {
+		"create": "만들기"
+	},
+	"fields": {
+		"channelName": {
+			"title": "채널 이름",
+			"placeholder": "새-채널",
+			"errorMessage": "채널 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+			"duplicateChannelName": "클랜에 이미 채널 이름이 있습니다. 다른 이름을 입력하세요."
+		},
+		"channelPrivate": {
+			"title": "비공개 채널",
+			"descriptionText": "비공개 채널을 만들면 선택된 멤버와 역할만 이 채널을 볼 수 있습니다.",
+			"descriptionVoice": "비공개 음성 채널을 만들면 선택된 멤버와 역할만 이 채널을 보거나 연결할 수 있습니다."
+		},
+		"channelType": {
+			"title": "채널 종류",
+			"text": {
+				"title": "텍스트",
+				"description": "이미지, GIF, 배지, 의견 및 말장난 게시"
+			},
+			"voice": {
+				"title": "음성",
+				"description": "음성, 비디오 및 화면 공유로 만나기"
+			},
+			"stream": {
+				"title": "스트리밍",
+				"description": "취미 활동 공유"
+			}
+		},
+		"channelVoiceType": {
+			"title": "음성 채널 종류",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "이미지 & 하이라이트",
+			"eventsTitle": "이벤트",
+			"familyJourney": "이벤트",
+			"cherishMoment": "중요한 이벤트를 추적하세요.",
+			"since": "시작",
+			"viewAlbum": "앨범 보기",
+			"emptyTitle": "여정의 시작이 아직입니다.",
+			"emptyDescription": "기억을 기록하기 위해 첫 이벤트를 만드세요.",
+			"createFirstMilestone": "첫 이벤트 만들기",
+			"selectYear": "연도 선택",
+			"special": "특별"
+		},
+		"familyEvents": {
+			"title": "이벤트",
+			"eventsIn": "년의 이벤트",
+			"noEvents": "년에 이벤트가 없습니다",
+			"addToGallery": "갤러리에 추가",
+			"inDays": "{{count}} 일 이내"
+		},
+		"createMilestone": {
+			"headerTitle": "새 이벤트",
+			"cancel": "취소",
+			"cancelAlertTitle": "취소",
+			"cancelAlertMessage": "이 이벤트를 취소하시겠습니까?",
+			"continueEditing": "계속 수정",
+			"discard": "취소",
+			"eventTitleLabel": "이벤트 이름",
+			"eventTitlePlaceholder": "예: 팀 미팅, 프로젝트 출시",
+			"dateLabel": "날짜",
+			"datePlaceholder": "날짜 선택",
+			"storyLabel": "설명",
+			"storyPlaceholder": "이벤트 설명 입력...",
+			"memoriesLabel": "이미지/비디오",
+			"uploadTitle": "이미지 또는 비디오 업로드",
+			"uploadSubtitle": "이벤트에 이미지 또는 비디오 추가",
+			"addMedia": "이미지 추가",
+			"tagMembersLabel": "멤버 태그",
+			"saveButton": "이벤트 저장",
+			"requiredTitle": "필수",
+			"requiredMessage": "이벤트 이름을 입력하세요",
+			"successTitle": "성공",
+			"successMessage": "이벤트 성공적으로 생성!",
+			"errorTitle": "오류",
+			"errorMessage": "이미지 선택 실패",
+			"required": "필수",
+			"optional": "선택",
+			"titleHint": "이벤트에 대한 간략한 제목 설명을 입력하세요"
+		},
+		"albumDetail": {
+			"eventDetails": "이벤트 세부정보",
+			"date": "날짜",
+			"editEvent": "이벤트 수정",
+			"titleLabel": "제목",
+			"titlePlaceholder": "이벤트 제목",
+			"descriptionLabel": "설명",
+			"descriptionPlaceholder": "이벤트 설명",
+			"cancel": "취소",
+			"save": "저장",
+			"errorTitle": "오류",
+			"titleRequired": "제목은 비어있지 않아야 합니다",
+			"updateFailed": "이벤트 업데이트 실패",
+			"sessionNotAvailable": "세션 사용 가능",
+			"uploadFailed": "이미지 업로드 실패"
+		}
+	},
+	"channelVoiceType": {
+		"title": "음성 채널 종류",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "이미지 & 하이라이트",
+		"familyJourney": "이벤트",
+		"cherishMoment": "중요한 이벤트를 추적하세요.",
+		"since": "시작",
+		"viewAlbum": "앨범 보기",
+		"emptyTitle": "여정의 시작이 아직입니다.",
+		"emptyDescription": "기억을 기록하기 위해 첫 이벤트를 만드세요.",
+		"createFirstMilestone": "첫 이벤트 만들기",
+		"selectYear": "연도 선택",
+		"special": "특별"
+	},
+	"familyEvents": {
+		"title": "이벤트",
+		"eventsIn": "년의 이벤트",
+		"noEvents": "년에 이벤트가 없습니다",
+		"addToGallery": "갤러리에 추가",
+		"inDays": "{{count}} 일 이내"
+	},
+	"createMilestone": {
+		"headerTitle": "새 이벤트",
+		"cancel": "취소",
+		"cancelAlertTitle": "취소",
+		"cancelAlertMessage": "이 이벤트를 취소하시겠습니까?",
+		"continueEditing": "계속 수정",
+		"discard": "취소",
+		"eventTitleLabel": "이벤트 이름",
+		"eventTitlePlaceholder": "예: 팀 미팅, 프로젝트 출시",
+		"dateLabel": "날짜",
+		"datePlaceholder": "날짜 선택",
+		"storyLabel": "설명",
+		"storyPlaceholder": "이벤트 설명 입력...",
+		"memoriesLabel": "이미지/비디오",
+		"uploadTitle": "이미지 또는 비디오 업로드",
+		"uploadSubtitle": "이벤트에 이미지 또는 비디오 추가",
+		"addMedia": "이미지 추가",
+		"tagMembersLabel": "멤버 태그",
+		"saveButton": "이벤트 저장",
+		"requiredTitle": "필수",
+		"requiredMessage": "이벤트 이름을 입력하세요",
+		"successTitle": "성공",
+		"successMessage": "이벤트 성공적으로 생성!",
+		"errorTitle": "오류",
+		"errorMessage": "이미지 선택 실패",
+		"required": "필수",
+		"optional": "선택",
+		"titleHint": "이벤트에 대한 간략한 제목 설명을 입력하세요"
+	},
+	"albumDetail": {
+		"eventDetails": "이벤트 세부정보",
+		"date": "날짜",
+		"editEvent": "이벤트 수정",
+		"titleLabel": "제목",
+		"titlePlaceholder": "이벤트 제목",
+		"descriptionLabel": "설명",
+		"descriptionPlaceholder": "이벤트 설명",
+		"cancel": "취소",
+		"save": "저장",
+		"errorTitle": "오류",
+		"titleRequired": "제목은 비어있지 않아야 합니다",
+		"updateFailed": "이벤트 업데이트 실패",
+		"sessionNotAvailable": "세션 사용 가능",
+		"uploadFailed": "이미지 업로드 실패"
+	},
+	"monthsShort": ["1 월", "2 월", "3 월", "4 월", "5 월", "6 월", "7 월", "8 월", "9 월", "10 월", "11 월", "12 월"]
+}

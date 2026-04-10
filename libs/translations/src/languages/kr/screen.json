@@ -1,0 +1,25 @@
+{
+    "headerTitle": {
+		"settings": "설정",
+		"Friends": "친구",
+		"addFriends": "친구 추가",
+		"requestFriend": "친구 요청",
+		"friendRequestSettings": "친구 요청 설정",
+		"language": "언어",
+		"profile": "프로필",
+		"newMessage": "새 메시지",
+		"newGroup": "새 그룹",
+		"addMembers": "멤버 추가",
+		"appearance": "외관",
+		"topic": "토론",
+		"chat": "채팅"
+	},
+    "headerRight": {
+        "addFriends": "친구 추가"
+    },
+    "navigationTabs": {
+        "messages": "메시지",
+        "notifications": "알림",
+        "profile": "프로필"
+    }
+}

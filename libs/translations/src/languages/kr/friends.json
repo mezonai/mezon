@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "친구 요청",
+		"received": "받은",
+		"sent": "보낸",
+		"emptyReceived": {
+			"title": "받은 친구 요청이 없습니다",
+			"description": "여기에 모든 사람이 보낸 친구 요청을 볼 수 있습니다."
+		},
+		"emptySent": {
+			"title": "보낸 친구 요청이 없습니다",
+			"description": "여기에 다른 사람에게 보낸 모든 친구 요청을 볼 수 있습니다."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "받은 친구 요청",
+		"findYourFriend": "친구 찾기",
+		"addByUserName": "사용자 이름 또는 전화번호로 추가",
+		"addByUsername": "{{username}} 님으로 추가",
+		"searchUsernamePlaceholder": "사용자 이름 또는 전화번호 입력",
+		"whoYouWantToAddFriend": "누구를 친구로 추가하고 싶으신가요?",
+		"byTheWay": "그런데, 사용자 이름은",
+		"sendRequestButton": "친구 요청 보내기",
+		"addFriendToast": "친구 요청이 전송됨"
+	},
+	"friends": "친구",
+	"noFriendsResultsFound": "친구 결과 찾지 못함",
+	"toast": {
+		"sendAddFriendSuccess": "친구 요청이 성공적으로 전송됨!",
+		"acceptAddFriendSuccess": "친구 요청 수락!",
+		"sendAddFriendFail": "흠, 오류가 발생했습니다. 사용자 이름을 다시 확인하세요.",
+		"somethingWentWrong": "오류가 발생했습니다",
+		"friendRequestAlreadySent": "친구 요청이 전송되었으니 수락을 기다리는 중."
+	},
+	"you": "귀하"
+}

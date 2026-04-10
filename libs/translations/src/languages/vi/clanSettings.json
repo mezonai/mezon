@@ -77,13 +77,13 @@
 			"fileType": "Loại tệp: JPEG, PNG, GIF",
 			"fileSize": "Kích thước tệp khuyến nghị: 256 KB",
 			"dimensions": "Kích thước khuyến nghị: 128x128",
-			"naming": "Đặt tên: Tên biểu cảm phải có ít nhất 2 ký tự và chỉ có thể chứa ký tự chữ và số cùng dấu gạch dưới"
+			"naming": "Đặt tên: Tên emoji phải có ít nhất 3 ký tự và chỉ có thể chứa các ký tự chữ cái, chữ số, dấu gạch dưới (_) và dấu gạch ngang (-)."
 		},
 		"uploadEmoji": "Tải lên biểu cảm"
 	},
 	"stickers": {
 		"uploadInstructions": "HƯớNG DẪN TẢI LÊN",
-		"description": "Nhãn dán có thể là tĩnh (PNG) hoặc động (APNG, GIF). Nhãn dán phải có kích thước chính xác 320 x 320 pixel và không lớn hơn 512KB. Chúng tôi sẽ tự động thay đổi kích thước nhãn dán PNG tĩnh và GIF động cho bạn.",
+		"description": "Nhãn dán có thể là tĩnh (PNG,JPG) hoặc động (APNG, GIF). Nhãn dán phải có kích thước chính xác 320 x 320 pixel và không lớn hơn 512KB. Chúng tôi sẽ tự động thay đổi kích thước nhãn dán (PNG,JPG) và GIF động cho bạn.",
 		"uploadHere": "Tải lên ở đây!",
 		"customizeMessage": "Hãy tùy chỉnh những nhãn dán tuyệt vời theo sở thích của bạn",
 		"uploadSticker": "Tải lên nhãn dán"

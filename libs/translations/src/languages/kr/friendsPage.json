@@ -1,0 +1,84 @@
+{
+	"friend": "친구",
+	"addFriend": "친구 추가",
+	"friends": "친구",
+	"clearSearch": "검색 지우기",
+	"search": "검색",
+	"tabs": {
+		"all": "모두",
+		"online": "온라인",
+		"pending": "대기 중",
+		"block": "차단"
+	},
+	"addFriendModal": {
+		"title": "친구 추가",
+		"description": "친구의 Mezon 사용자 이름으로 친구를 추가할 수 있습니다",
+		"placeholder": "사용자 이름 입력",
+		"tooltip": "친구의 Mezon 사용자 이름으로 친구를 추가할 수 있습니다",
+		"sendRequest": "친구 요청 보내기",
+		"add": "추가",
+		"alreadyFriends": "이 사용자와 이미 친구입니다!",
+		"waitAccept": "이 사용자에게 친구 요청을 보냈습니다!",
+		"invalidInput": "숫자, 문자, 밑줄 _ 또는 마침표만 사용하세요.",
+		"blockedUser": "이 사용자를 차단했습니다. 친구 요청을 보내려면 차단 해제하세요.",
+		"blockedUserMobile": "이 사용자를 차단했습니다. 친구 요청을 보내려면 차단 해제하세요.",
+		"waitingMessage": "Mezon 이 당신을 기다리고 있습니다. 하지만 기다릴 필요가 없습니다!"
+	},
+	"requestFailedPopup": {
+		"title": "친구 요청 전송 실패",
+		"message": "이 사용자와 이미 친구입니다!",
+		"okay": "확인"
+	},
+	"activity": {
+		"coding": "활동 - 작업",
+		"music": "활동 - 생활",
+		"gaming": "활동 - 놀이"
+	},
+	"friendMenu": {
+		"startVideoCall": "영상 통화 시작",
+		"startVoiceCall": "음성 통화 시작",
+		"removeFriend": "친구 제거",
+		"block": "차단",
+		"unblock": "차단 해제",
+		"more": "더",
+		"cancel": "취소",
+		"accept": "수락",
+		"reject": "거부"
+	},
+	"removeFriendModal": {
+		"title": "'{{username}}' 제거",
+		"description": "<bold>{{username}}</bold> 을(를) 친구 목록에서 제거하시겠습니까?",
+		"cancel": "취소",
+		"confirm": "친구 제거"
+	},
+	"cancelRequestModal": {
+		"title": "'{{username}}' 요청 취소",
+		"description": "<bold>{{username}}</bold> 에게 보낸 친구 요청을 취소하시겠습니까?",
+		"cancel": "취소",
+		"confirm": "요청 취소"
+	},
+	"rejectRequestModal": {
+		"title": "'{{username}}' 거부",
+		"description": "<bold>{{username}}</bold> 으로부터 온 친구 요청을 거부하시겠습니까?",
+		"cancel": "취소",
+		"confirm": "거부"
+	},
+	"toast": {
+		"userBlockedSuccess": "사용자 성공적으로 차단",
+		"userBlockedFailed": "사용자 차단 실패",
+		"userUnblockedSuccess": "사용자 성공적으로 차단 해제",
+		"userUnblockedFailed": "사용자 차단 해제 실패"
+	},
+	"statusTapListFriends": {
+		"all": "여기가 비어있는 것 같아요! 대화를 시작하려면 몇 명의 친구로 시작하세요.",
+		"online": "조용하다! 대화를 시작하고 누가 여기 있는지 확인하세요.",
+		"pending": "여기에 보낸 친구 요청과 받은 친구 요청이 표시됩니다.",
+		"block": "차단한 사람이 없습니다."
+	},
+	"statusTapSearchFriends": {
+		"all": "검색과 일치하는 친구가 없습니다. 다른 이름을 시도하세요.",
+		"online": "검색과 일치하는 온라인 사람이 없습니다. 다른 이름을 시도하세요.",
+		"pending": "검색과 일치하는 친구 요청이 없습니다. 이름을 다시 확인하거나 다시 시도하세요.",
+		"block": "검색과 일치하는 차단된 사용자가 없습니다. 다른 이름을 시도하세요."
+	}
+}

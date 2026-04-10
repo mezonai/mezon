@@ -1,0 +1,14 @@
+{
+	"selectScreen": "공유할 화면 선택",
+	"entireScreen": "전체 화면",
+	"applicationWindow": "애플리케이션 창",
+	"shareAudio": "오디오 공유",
+	"share": "공유",
+	"cancel": "취소",
+	"chooseWhatToShare": "공유할 콘텐츠 선택",
+	"window": "창",
+	"alsoShareSystemAudio": "시스템 오디오도 공유",
+	"loadingMore": "더 로딩 중...",
+	"loadMore": "더 로드",
+	"remaining": "남은"
+}

@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "카테고리 이름",
+            "placeholder": "카테고리 이름을 입력하세요",
+            "errorMessage": "유효한 카테고리 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "카테고리 권한",
+            "description": "비밀권 설정을 변경하고 멤버가 이 채널과 상호 작용하는 방법을 사용자 정의합니다."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "카테고리 삭제"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "{{categoryName}} 을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+            "confirmText": "삭제",
+            "title": "카테고리 삭제"
+        },
+        "save": "저장"
+    },
+    "toast": {
+        "updated": "성공적으로 업데이트됨"
+    }
+}

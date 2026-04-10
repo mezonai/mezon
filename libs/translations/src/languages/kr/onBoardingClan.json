@@ -1,0 +1,165 @@
+{
+	"title": "온보딩 완료",
+	"description": "{{total}} 단계 중 {{step}} 단계",
+	"action": {
+		"title": "클랜 온보딩 완료",
+		"description": "{{total}} 단계 중 {{step}} 단계 완료",
+		"createChannel": "채널 만들기",
+		"invite": "몇 명의 친구 초대",
+		"sendMessage": "첫 번째 메시지 보내기"
+	},
+	"modal": {
+		"title": "온보딩 설정"
+	},
+	"buttons": {
+		"back": "되돌아",
+		"cancel": "취소",
+		"confirm": "확인",
+		"save": "저장",
+		"saving": "저장 중...",
+		"setup": "설정",
+		"edit": "수정",
+		"preview": "미리보기",
+		"disable": "온보딩 끄기"
+	},
+	"onboarding": {
+		"title": "온보딩",
+		"description": "채널, 역할 및 커스터마이징 단계로 멤버에게 간단한 시작 경험을 만드세요.",
+		"enabledTitle": "온보딩이 활성화되었습니다",
+		"enabledDescription": "저장할 때까지 변경사항이 적용됩니다.",
+		"featuresEnabled": "온보딩 기능이 활성화되었습니다"
+	},
+	"questions": {
+		"title": "질문",
+		"description": "공개 채널은 질문을 통해 할당할 수 있습니다."
+	},
+	"clanGuide": {
+		"title": "클랜 가이드",
+		"description": "환영 메시지, 배너, 할 일 및 리소스가 설정되었습니다"
+	},
+	"messages": {
+		"communityEnabledSuccess": "커뮤니티 성공적으로 활성화",
+		"changesSavedSuccess": "변경사항 성공적으로 저장"
+	},
+	"errors": {
+		"needAtLeastOneItem": "온보딩을 켤려면 최소 하나의 항목이 필요합니다",
+		"failedToEnableCommunity": "커뮤니티 활성화 실패",
+		"failedToSaveChanges": "변경사항 저장 실패",
+		"questionRequired": "질문이 필요합니다."
+	},
+	"questionsPage": {
+		"title": "질문",
+		"description": "멤버가 추가 채널과 역할을 선택하도록 질문을 만드세요. 채널 목록은 답변에 따라 커스터마이징됩니다.",
+		"noChannelsMissing": "질문과 기본 채널에서 누락된 공개 채널이 없습니다.",
+		"channelNotAssigned": "채널이 할당되지 않았습니다",
+		"noChannelsHere": "여기에 채널이 없습니다",
+		"preJoinQuestions": {
+			"title": "참가 전 질문",
+			"description": "멤버가 서버에 참가하기 전에 이 질문을 받습니다. 중요한 채널과 역할을 할당하는 데 사용하세요. 참가 전 질문은 채널 & 역할 페이지에서도 사용 가능합니다."
+		},
+		"addQuestion": "질문 추가",
+		"questionNumber": "질문 {{number}}",
+		"enterQuestion": "질문 입력...",
+		"availableAnswers": "사용 가능한 답변 - 50 개 중 {{count}} 개",
+		"addAnswer": "답변 추가",
+		"questionPlaceholder": "질문은 무엇인가요",
+		"answerTitle": "답변 제목 추가",
+		"answerDescription": "답변 설명 추가",
+		"enterAnswer": "답변 입력...",
+		"enterDescription": "설명 입력... (선택)",
+		"titleRequired": "제목이 필요합니다",
+		"remove": "삭제"
+	},
+	"enableOnboarding": {
+		"title": "온보딩을 활성화하시겠습니까?",
+		"description": "온보딩으로 전환하여 추가 관리 도구 액세스",
+		"subtitle": "클랜을 효율적으로 관리하고 성장시킵니다.",
+		"button": "온보딩 켜기",
+		"note": "이 작업은 고급 온보딩 기능을 잠금 해제합니다"
+	},
+	"enableCommunity": {
+		"title": "커뮤니티를 활성화하시겠습니까?",
+		"description": "커뮤니티를 풀 기능 커뮤니티 경험으로 변환하세요.",
+		"subtitle": "클랜을 효율적으로 관리하고 성장시키기 위한 강력한 관리 도구 액세스.",
+		"button": "커뮤니티 켜기",
+		"note": "이 작업은 고급 커뮤니티 기능을 잠금 해제합니다"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "*가 있는 필드는 필수입니다",
+		"title": "커뮤니티 설정",
+		"subtitle": "커뮤니티 정보 관리",
+		"enableTitle": "커뮤니티 활성화",
+		"enableSubtitle": "멤버가 연결할 수 있는 훌륭한 공간 만들기",
+		"loading": "커뮤니티 설정 로딩 중...",
+		"banner": {
+			"title": "커뮤니티 배너",
+			"uploadTitle": "배너 업로드",
+			"uploadDescription": "드래그 앤 드롭하거나 이미지를 클릭하여 선택",
+			"changeBanner": "배너 변경",
+			"removeBanner": "배너 제거"
+		},
+		"description": {
+			"title": "커뮤니티 설명",
+			"placeholder": "커뮤니티에 대한 짧은 설명 입력..."
+		},
+		"about": {
+			"title": "커뮤니티 소개",
+			"placeholder": "커뮤니티에 대해 알려주세요... 무엇으로 특별한가요?"
+		},
+		"vanityUrl": {
+			"title": "맞춤 URL",
+			"description": "커뮤니티를 위한 맞춤 URL 을 만드세요. 소문자, 숫자 및 하이픈만 사용하세요.",
+			"placeholder": "great-community-of-mine",
+			"previewLabel": "URL 미리보기:"
+		},
+		"buttons": {
+			"enableAndSave": "켜기 & 저장",
+			"saving": "저장 중...",
+			"save": "변경사항 저장",
+			"disable": "커뮤니티 끄기",
+			"reset": "재설정"
+		},
+		"messages": {
+			"aboutUpdated": "정보 업데이트됨!",
+			"aboutUpdateFailed": "정보 업데이트 실패!",
+			"descriptionUpdated": "설명 업데이트됨!",
+			"descriptionUpdateFailed": "설명 업데이트 실패!",
+			"vanityUrlUpdated": "맞춤 URL 업데이트됨!",
+			"vanityUrlUpdateFailed": "맞춤 URL 업데이트 실패!",
+			"communityEnabledAndSaved": "커뮤니티 켜기 & 저장됨!",
+			"saveFailed": "저장 실패!",
+			"changesSaved": "변경사항 저장됨!",
+			"communityDisabled": "커뮤니티 끔.",
+			"disableFailed": "끄기 실패!",
+			"bannerRemoved": "배너 제거됨!",
+			"fillAllRequiredFields": "필수 필드를 모두 채우세요: 배너, 소개, 설명, 맞춤 URL!",
+			"bannerUpdateFailed": "배너 업데이트 실패!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "환영",
+			"description": "새 멤버에게 커뮤니티의 특별한 점과 그들이 오기를 기뻐하는 이유를 알려주세요!"
+		},
+		"newMemberToDos": {
+			"title": "새 멤버 할 일",
+			"description": "새 멤버가 수행할 3-5 개의 작업을 설정하세요. <strong>채널에서 대화하고 참여하도록 하세요.</strong>"
+		},
+		"dontDoThis": "이렇게 하지 마세요: 너무 일반적",
+		"exampleTask": {
+			"title": "커뮤니티와 대화",
+			"description": "#general 에서"
+		},
+		"readTheRules": "규칙 읽기",
+		"addTask": "작업 추가",
+		"resourcePages": {
+			"title": "리소스 페이지",
+			"description": "읽기 전용 채널을 서버 가이드의 아름다운 리소스 페이지로 변환하세요. 모든 채널을 켜지 않는 한 채널 목록에 더 이상 표시되지 않습니다. 리소스는 몇 가지 혜택이 있습니다:",
+			"perk1": "멤버가 메시지 스트림의 끝이 아니라 페이지 상단에서 시작",
+			"perk2": "채팅 막대 및 아바타가 깔끔하게 보이도록 제거",
+			"perk3": "모든 콘텐츠, 임베드, 미디어 및 형식이 유지"
+		},
+		"addResource": "리소스 추가",
+		"ownerGreeting": "안녕하세요, 이는 클랜 소유자의 인사말입니다. 처음 클랜에 참가할 때 이 메시지를 보게 됩니다!"
+	}
+}
