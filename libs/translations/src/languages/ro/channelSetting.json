@@ -1,0 +1,290 @@
+{
+	"fields": {
+		"channelName": {
+			"title": "Nume canal",
+			"placeholder": "Introduceți numele canalului",
+			"errorMessage": "Vă rugăm să introduceți un nume de canal (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+			"duplicateError": "Numele canalului există deja în categorie. Vă rugăm să introduceți un nume diferit."
+		},
+		"threadName": {
+			"title": "Nume subiect",
+			"placeholder": "Introduceți numele subiectului",
+			"errorMessage": "Vă rugăm să introduceți un nume de subiect valid (maxim 65 de caractere, doar litere, cifre, _ sau -).",
+			"emptyError": "Vă rugăm să introduceți un nume de subiect (maxim 65 de caractere, doar litere, cifre, _ sau -).",
+			"duplicateError": "Numele subiectului există deja în canal. Vă rugăm să introduceți un nume diferit."
+		},
+		"channelDescription": {
+			"title": "Subiect canal",
+			"placeholder": "Spune-le tuturor cum să folosească acest canal!"
+		},
+		"threadDescription": {
+			"title": "Descriere subiect",
+			"placeholder": "Spune-le tuturor cum să folosească acest subiect!"
+		},
+		"appUrl": {
+			"title": "URL aplicație",
+			"invalidError": "Vă rugăm să introduceți un URL valid (de exemplu: https://example.com)."
+		},
+		"channelCategory": {
+			"title": "Categorie canal"
+		},
+		"channelPermission": {
+			"title": "",
+			"permission": "Permisiuni canal",
+			"description": "Schimbă setările de private și personalizează modul în care membrii pot interacționa cu acest canal."
+		},
+		"quickAction": {
+			"title": "Acțiuni"
+		},
+		"privateChannelInvite": {
+			"addMember": "Adaugă membru"
+		},
+		"channelNotifications": {
+			"title": "",
+			"notification": "Setări notificări",
+			"pinned": "Mesaje fixate",
+			"invite": "Invitații"
+		},
+		"channelSlowMode": {
+			"title": "Mod lent",
+			"description": "Membrii vor fi limitați să trimită un mesaj la un moment dat în această perioadă de timp, dacă nu au permisiunea de a gestiona canalul sau de a gestiona mesajele.",
+			"_5seconds": "5 secunde",
+			"_10seconds": "10 secunde",
+			"_15seconds": "15 secunde",
+			"_30seconds": "30 secunde",
+			"_1minute": "1 minut",
+			"_2minutes": "2 minute",
+			"_5minutes": "5 minute",
+			"_10minutes": "10 minute",
+			"_15minutes": "15 minute",
+			"_30minutes": "30 minute",
+			"_1hour": "1 oră",
+			"_2hours": "2 ore",
+			"_6hours": "6 ore"
+		},
+		"channelHideInactivity": {
+			"title": "Ascunde după perioada de inactivitate",
+			"description": "Subiectele noi nu vor apărea în lista de canale după ce sunt inactive în perioada specificată",
+			"_1hour": "1 Oră",
+			"_24hours": "24 Ore",
+			"_3days": "3 Zile",
+			"_1Week": "1 Săptămână"
+		},
+		"channelWebhooks": {
+			"title": "",
+			"webhook": "Webhook"
+		},
+		"channelDelete": {
+			"title": "",
+			"delete": "Șterge canal"
+		},
+		"threadDelete": {
+			"title": "",
+			"delete": "Șterge subiect"
+		},
+		"threadLeave": {
+			"title": "",
+			"leave": "Ieși din subiect"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "Ești sigur că dorești să ștergi #{{channelName}}? Această acțiune nu poate fi desfăcută.",
+			"confirmText": "Șterge",
+			"title": "Șterge canal",
+			"systemChannel": "Canal de sistem imposibil de șters",
+			"error": "Eroare ștergere canal: {{error}}"
+		},
+		"deleteThread": {
+			"content": "Ești sigur că dorești să ștergi {{channelName}}? Această acțiune nu poate fi desfăcută.",
+			"confirmText": "Șterge subiect",
+			"title": "Șterge subiect"
+		},
+		"deleteChannel": {
+			"content": "Ești sigur că dorești să ștergi {{channelName}}? Această acțiune nu poate fi desfăcută.",
+			"confirmText": "Șterge canal",
+			"title": "Șterge canal"
+		},
+		"cancel": "Anulează",
+		"leave": {
+			"content": "Ești sigur că dorești să ieși din canalul #{{channelName}}? Această acțiune nu poate fi desfăcută.",
+			"confirmText": "Ieși",
+			"title": "Ieși din canal"
+		},
+		"save": "Salvează"
+	},
+	"toast": {
+		"updated": "Actualizat cu succes"
+	},
+	"channelPermission": {
+		"permissionOverrides": "Suprascrive permisiuni",
+		"save": "Salvează",
+		"generalChannelPermission": "PERMISIUNI GENERALE CANAL",
+		"title": "Acces",
+		"basicView": "De bază",
+		"advancedView": "Avansat",
+		"roles": "Roluri",
+		"members": "Membri",
+		"edit": "Editează",
+		"done": "Gata",
+		"addRole": "Adaugă rol",
+		"addMember": "Adaugă membru",
+		"privateChannel": "Canal privat",
+		"basicViewDescription": "Când transformi canalul în mod privat, doar membrii și rolurile selectate pot vedea acest canal",
+		"ChannelCreator": "Creator",
+		"addMemberAndRoles": "Adaugă membru sau rol",
+		"whoCanAccess": "Cine are acces",
+		"warningModal": {
+			"publicChannelTitle": "Deschide acest canal pentru toți?",
+			"privateChannelTitle": "Transformă acest canal în privat?",
+			"publicChannelContent": "{{channelLabel}} va fi disponibil pentru toți membrii",
+			"privateChannelContent": "{{channelLabel}} va deveni privat și va fi vizibil doar pentru membrii și rolurile selectate",
+			"confirm": "De acord"
+		},
+		"warningChangeSettingModal": {
+			"title": "Ai setări nesalvate",
+			"content": "Dorești să salvezi schimbările?",
+			"confirm": "Da, Salvează"
+		},
+		"description": {
+			"viewChannel": "Permite membrilor să vadă acest canal implicit. Dacă dezactivezi pentru @everyone, acest canal va deveni privat.",
+			"manageChannel": "Permite membrilor să schimbe numele canalului, descrierea și setările de text ale acestui canal. Ei pot șterge și canalul.",
+			"manageThread": "Permite membrilor să redenumească, ștergă, închidă și activeze mod lent pentru fluxurile din acest canal. Ei pot vedea și fluxurile private.",
+			"sendMessage": "Permite membrilor să trimită mesaje în acest canal.",
+			"deleteMessage": "Permite membrilor să șteargă mesajele din acest canal."
+		},
+		"bottomSheet": {
+			"addMembersOrRoles": "Adaugă membri sau roluri",
+			"add": "Adaugă",
+			"roles": "Roluri",
+			"members": "Membri",
+			"rolesMembers": "Roluri/Membri",
+			"roleMemberPlaceholder": "Rol/Membru"
+		},
+		"toast": {
+			"success": "Salvat cu succes",
+			"failed": "Salvare eșuată"
+		},
+		"roleAndMemberEmpty": "Niciun rol sau membru setat pentru private",
+		"header": {
+			"title": "Permisiuni canal",
+			"description": "Folosește permisiunile pentru a personaliza ce poate face cineva în acest canal.",
+			"syncedWithCategory": "Permisiuni sincronizate cu categoria:"
+		}
+	},
+	"quickAction": {
+		"title": "Meniu rapid",
+		"description": "Gestionează mesajele rapide și meniul rapid pentru acest canal",
+		"keyTitle": "Introdu cuvânt cheie (Ex: salut): ",
+		"valueTitle": "Introdu conținut (Ex: Bună dimineața, să ai o zi minunată !)",
+		"save": "Salvează",
+		"cancel": "Anulează",
+		"create": "Creează",
+		"update": "Actualizează",
+		"delete": "Șterge",
+		"deleteModal": "Șterge meniu rapid",
+		"deleteTitle": "Ești sigur că dorești să ștergi {{command}}? Această acțiune poate fi desfăcută.",
+		"flashMessage": "Mesaj rapid",
+		"flashMessages": "Mesaje rapide",
+		"quickMenu": "Meniu rapid",
+		"quickMenus": "Menie rapide",
+		"menuName": "Nume meniu",
+		"commandName": "Nume comandă",
+		"menuNameHelper": "Nume pentru acest element de meniu rapid",
+		"commandNameHelper": "Numele pe care utilizatorul va introduce-l după slash",
+		"botEventTrigger": "Declanșare eveniment Bot",
+		"botEventDescription": "Acest meniu rapid va declanșa automat un eveniment bot când este selectat.",
+		"createQuickMenu": "Creează Meniu Rapid",
+		"createFlashMessage": "Creează Mesaj Rapid",
+		"editQuickMenu": "Editează Meniu Rapid",
+		"editFlashMessage": "Editează Mesaj Rapid",
+		"emptyFlashMessage": "Nu sunt mesaje rapide",
+		"emptyFlashMessageDescription": "Începe prin a crea prima comandă de mesaj rapid",
+		"emptyQuickMenu": "Nu există menie rapide",
+		"emptyQuickMenuDescription": "Începe prin a crea primul meniu rapid",
+		"addFlashMessage": "Adaugă Mesaj Rapid",
+		"addQuickMenu": "Adaugă Meniu Rapid",
+		"editCommand": "Editează comandă",
+		"deleteCommand": "Șterge comandă",
+		"triggersBot": "Declanșează eveniment bot",
+		"messageContent": "Conținut mesaj",
+		"messageContentPlaceholder": "Mesajul va fi trimis rapid",
+		"messageContentDescription": "Conținutul mesajului va fi trimis când este utilizată această comandă de mesaj rapid",
+		"menuAction": "Acțiune meniu",
+		"menuActionPlaceholder": "Acțiunea care va fi efectuată",
+		"menuActionDescription": "Acțiunea care va fi efectuată când acest meniu rapid este selectat"
+	},
+	"changeCategory": {
+		"title": "Schimbă categorie",
+		"label": "TRANSFERĂ DE LA {{currentChannel}} PENTRU",
+		"confirmFirstContent": "Ești sigur că dorești să transferi",
+		"confirmLastContent": "la categoria",
+		"confirm": "De acord",
+		"error": "Schimbare categorie eșuată"
+	},
+	"overview": {
+		"title": "Privire de ansamblu",
+		"ageRestricted": {
+			"title": "Canal limitat de vârstă",
+			"description": "Utilizatorii vor trebui să confirme că sunt în vârstă legală pentru a vedea conținutul din acest canal. Canalele limitate de vârstă sunt exceptate de filtrul de conținut sensibil."
+		},
+		"e2ee": {
+			"title": "End-to-End Encryption",
+			"description": "Activează end-to-end encryption pentru acest canal pentru a securiza toate mesajele."
+		}
+	},
+	"tabs": {
+		"overview": "Privire de ansamblu",
+		"permissions": "Permisiuni",
+		"invites": "Invitații",
+		"integrations": "Integrări",
+		"category": "Categorie",
+		"quickMenu": "Meniu rapid"
+	},
+	"categoryManagement": {
+		"title": "Categorie",
+		"channelName": "Nume canal",
+		"category": "Categorie"
+	},
+	"unsavedChanges": {
+		"warning": "Atenție - ai schimbări nesalvate!",
+		"reset": "Resetează",
+		"saveChanges": "Salvează schimbări"
+	},
+	"addMembersRoles": {
+		"title": "Adaugă membru sau rol",
+		"placeholder": "Ex: Administrator, @wumpus",
+		"instruction": "Adaugă membri individuali prin @ sau introdu nume de rol",
+		"roles": "Roluri",
+		"members": "Membri",
+		"cancel": "Anulează",
+		"done": "Gata",
+		"searchPlaceholder": "Caută Roluri & Membri"
+	},
+	"table": {
+		"columnHeaders": {
+			"name": "Nume",
+			"members": "Membri",
+			"messagesCount": "Număr mesaje",
+			"lastSent": "Trimis ultima dată",
+			"creator": "Creator"
+		},
+		"pagination": {
+			"show": "Arată",
+			"channelOf": "canale din"
+		},
+		"memberModal": {
+			"listMember": "Listă membri"
+		},
+		"threads": {
+			"noThreads": "Nu există subiecte în acest canal"
+		},
+		"members": {
+			"allMembers": "(Toți membrii)"
+		}
+	},
+	"streamBanner": {
+		"title": "Bannăr Stream"
+	},
+	"banList": "Listă blocări"
+}

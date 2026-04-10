@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Ghid",
+		"events": "Evenimente",
+		"events_one": "{{count}} Eveniment",
+		"events_other": "{{count}} Evenimente",
+		"members": "Membri",
+		"channels": "Canale"
+	},
+	"ongoingEvent": {
+		"title": "Eveniment în desfășurare",
+		"eventDetail": "Detalii eveniment"
+	},
+	"onboarding": {
+		"getStarted": "Începe",
+		"of": "din"
+	},
+	"favoriteChannel": "Canal favorit",
+	"publicChannels": "Canale publice",
+	"channelApps": "Aplicații canal",
+	"dragMode": {
+		"enable": "Apasă pentru a activa modul de tragere a categoriilor",
+		"disable": "Apasă pentru a dezactiva modul de tragere a categoriilor"
+	}
+}

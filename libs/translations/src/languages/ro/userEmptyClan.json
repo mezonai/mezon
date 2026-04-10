@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan":"Alătură-te clan existent",
+    "enterInvite":"Introdu cod invitație mai jos pentru a te alătura unui clan existent.",
+    "labelInput": "Link invitație",
+    "linkInviteEx":"Cod invitație ar trebui să arate ca https://mezon.ai/invite/1813407038846046912",
+    "joinInviteLink":"Alătură-te cu link invitație",
+    "errorMessage": "Vă rugăm să introduceți un link invitație sau cod valid."
+  },
+  "emptyClans": {
+    "clans": "Clan-urile",
+    "readyChat":"Gata pentru conversația de nivel următor?",
+    "buildYourCommunity":"Construiește comunitatea ta cu conversații organizate, întâlniri spontane și funcții puternice customizabile!",
+    "createClan":"Creează-ți clanul",
+    "joinClan":"Alătură-te unui clan",
+    "joinChannel":"Alătură-te unui canal",
+   "findChannel":"Te-ai trezit undeva ciudat. Nu ai acces la niciun canal text."
+  },
+  "emptyMessage": {
+   "dMsWith":"Mesaje directe cu multe funcții utile",
+    "inviteYourFriends":"Invită-ți prietenii să joace, ascultă muzică împreună și mai mult.",
+    "addFriend":"Adaugă prieten"
+  }
+}

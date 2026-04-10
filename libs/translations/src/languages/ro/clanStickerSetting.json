@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Încarcă adesiv",
+		"delete": "Șterge"
+	},
+	"modal": {
+		"uploadAFile": "Încarcă fișier",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Fișierul trebuie să fie PNG sau GIF, maxim 512KB",
+		"preview": "Previzualizare",
+		"file": "Fișier",
+		"thisCannotBeEdited": "Imposibil de editat",
+		"browse": "Parcurge",
+		"chooseAFile": "Alege un fișier",
+		"stickerName": "Nume adesiv",
+		"exCatHug": "Ex: cat_hug",
+		"thisIsForSale": "Acesta este produs de vânzare",
+		"neverMind": "Lasă pe dinafară",
+		"characters": "Numele trebuie să aibă între 3 și 64 de caractere"
+	},
+	"content": {
+		"description": "Adaugă maxim 250 de adesive custom pe care oricine le pot folosi în acest clan.",
+		"requirements": "Cerințe încărcare",
+		"reqType": "•  Poate fi static (PNG) sau animat (GIF).",
+		"reqDim": "•  Trebuie să fie exact 320 x 320 pixeli.",
+		"reqSize": "•  Nu mai mare de 512KB.",
+		"available": "Au rămas {{left}} SPATII ADESIVE DISPONIBILE"
+	},
+	"toast": {
+		"errorUpdating": "Eroare actualizare",
+		"errorSizeLimit": "Mărimea imaginii depășește 512KB",
+		"validateName": "Lungimea trebuie să fie între {{min}} și {{max}} caractere. Doar litere, cifre, _ și - sunt permise"
+	},
+	"empty": {
+		"tip": "SUGESTIE",
+		"voiceSticker": {
+			"title": "Nu există efecte sonore"
+		},
+		"sticker": {
+			"title": "Nu există adesive"
+		}
+	}
+}

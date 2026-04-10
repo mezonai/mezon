@@ -1,0 +1,165 @@
+{
+	"title": "Completează ghid",
+	"description": "Pasul {{step}} din {{total}}",
+	"action": {
+		"title": "Completează ghid pentru clanul tău",
+		"description": "Ai completat {{step}} din {{total}} pași",
+		"createChannel": "Creează-ți canalul",
+		"invite": "Invită câțiva prieteni",
+		"sendMessage": "Trimite primul tău mesaj"
+	},
+	"modal": {
+		"title": "Setări ghid"
+	},
+	"buttons": {
+		"back": "Înapoi",
+		"cancel": "Anulează",
+		"confirm": "Confirmă",
+		"save": "Salvează",
+		"saving": "Se salvează...",
+		"setup": "Setează",
+		"edit": "Editează",
+		"preview": "Previzualizare",
+		"disable": "Dezactivează ghid"
+	},
+	"onboarding": {
+		"title": "Ghid",
+		"description": "Creează experiență de început simplă pentru membri cu canale, roluri și pași primi customizați.",
+		"enabledTitle": "Ghid activat",
+		"enabledDescription": "Schimbările vor lua efect până când le salvezi.",
+		"featuresEnabled": "Funcții ghid au fost activate"
+	},
+	"questions": {
+		"title": "Întrebări",
+		"description": "Canalele publice pot fi atribuite prin Întrebări."
+	},
+	"clanGuide": {
+		"title": "Ghid Clan",
+		"description": "Mesajul de bine-venit, Banner, misiuni de făcut și Resursele tale au fost setate"
+	},
+	"messages": {
+		"communityEnabledSuccess": "Comunitate activată cu succes",
+		"changesSavedSuccess": "Schimbări salvate cu succes"
+	},
+	"errors": {
+		"needAtLeastOneItem": "Este necesar cel puțin un element pentru a activa ghid",
+		"failedToEnableCommunity": "Imposibil de activat comunitate",
+		"failedToSaveChanges": "Imposibil de salvat schimbări",
+		"questionRequired": "Întrebarea este obligatorie."
+	},
+	"questionsPage": {
+		"title": "Întrebări",
+		"description": "Creează întrebări pentru a ajuta membrii să aleagă canale și roluri suplimentare. Lista lor de canale va fi personalizată bazat pe răspunsurile lor.",
+		"noChannelsMissing": "Nu există canale publice lipsă din Întrebări și Canal Implicit.",
+		"channelNotAssigned": "Canal neatribuit",
+		"noChannelsHere": "Nu există canale aici",
+		"preJoinQuestions": {
+			"title": "Întrebări Pre-Alăturare",
+			"description": "Membrii vor fi întrebați aceste întrebări înainte de a se alătura serverului tău. Folosește-le pentru a atribui canale și roluri importante. Întrebările Pre-Alăturare vor fi disponibile și pe pagina Canale & Roluri."
+		},
+		"addQuestion": "Adaugă întrebare",
+		"questionNumber": "Întrebarea {{number}}",
+		"enterQuestion": "Introdu întrebarea...",
+		"availableAnswers": "Răspunsuri disponibile - {{count}} din 50",
+		"addAnswer": "Adaugă răspuns",
+		"questionPlaceholder": "Care este întrebarea ta",
+		"answerTitle": "Adaugă titlu răspuns",
+		"answerDescription": "Adaugă descriere răspuns",
+		"enterAnswer": "Introdu răspuns...",
+		"enterDescription": "Introdu descriere... (opțional)",
+		"titleRequired": "Titlul este obligatoriu",
+		"remove": "Elimină"
+	},
+	"enableOnboarding": {
+		"title": "Vrei să activezi Onboarding?",
+		"description": "Schimbă la Ghid pentru a accesa instrumente de administrare suplimentare",
+		"subtitle": "te ajută să controlezi și să dezvolți Clanul tău eficient.",
+		"button": "Activează Ghid",
+		"note": "Această acțiune va debloca funcții ghid avansate"
+	},
+	"enableCommunity": {
+		"title": "Activează Comunitate?",
+		"description": "Transformă comunitatea ta într-o experiență Comunitate complet funcțională.",
+		"subtitle": "Accesează instrumente de administrare puternice pentru a controla și dezvolta Clanul tău eficient.",
+		"button": "Activează Comunitate",
+		"note": "Această acțiune va debloca funcții comunitate avansate"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Câmpurile cu * sunt obligatorii",
+		"title": "Setări Comunitate",
+		"subtitle": "Gestionează informațiile comunității tale",
+		"enableTitle": "Activează Comunitate",
+		"enableSubtitle": "Creează un loc minunat pentru membri să se conecteze",
+		"loading": "Se încarcă setări comunitate...",
+		"banner": {
+			"title": "Banner Comunitate",
+			"uploadTitle": "Încarcă Banner",
+			"uploadDescription": "Trage & eliberează sau apasă pentru a alege imagine",
+			"changeBanner": "Schimbă Banner",
+			"removeBanner": "Elimină Banner"
+		},
+		"description": {
+			"title": "Descriere Comunitate",
+			"placeholder": "Introdu descriere scurtă pentru comunitatea ta..."
+		},
+		"about": {
+			"title": "Despre Comunitate",
+			"placeholder": "Spune-ne despre comunitatea ta... Ce o face specială?"
+		},
+		"vanityUrl": {
+			"title": "URL Personalizat",
+			"description": "Creează URL personalizat pentru comunitatea ta. Folosește doar litere mici, cifre și linii.",
+			"placeholder": "comunitatea-meza-minunata",
+			"previewLabel": "Previzualizare URL:"
+		},
+		"buttons": {
+			"enableAndSave": "Activează & Salvează",
+			"saving": "Se salvează...",
+			"save": "Salvează schimbări",
+			"disable": "Dezactivează Comunitate",
+			"reset": "Resetează"
+		},
+		"messages": {
+			"aboutUpdated": "Informații actualizate!",
+			"aboutUpdateFailed": "Actualizare informații eșuată!",
+			"descriptionUpdated": "Descriere actualizată!",
+			"descriptionUpdateFailed": "Actualizare descriere eșuată!",
+			"vanityUrlUpdated": "URL personalizat actualizat!",
+			"vanityUrlUpdateFailed": "Actualizare URL personalizat eșuat!",
+			"communityEnabledAndSaved": "Comunitate activată și salvată!",
+			"saveFailed": "Salvare eșuată!",
+			"changesSaved": "Schimbări salvate!",
+			"communityDisabled": "Comunitate dezactivată.",
+			"disableFailed": "Dezactivare eșuată!",
+			"bannerRemoved": "Banner eliminat!",
+			"fillAllRequiredFields": "Vă rugăm să completați toate câmpurile obligatorii: Banner, Despre, Descriere, URL personalizat!",
+			"bannerUpdateFailed": "Actualizare banner eșuată!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Bine ai venit",
+			"description": "Spune noilor membri ce este special despre comunitatea ta și de ce ești încântat să-i vezi!"
+		},
+		"newMemberToDos": {
+			"title": "Ce ar trebui să facă Noii Membri",
+			"description": "Setează 3-5 sarcini pe care noii tăi membri să le facă. Să-i faci să <strong>chatoiească și să se alăture canalelor tale.</strong>"
+		},
+		"dontDoThis": "Nu face așa: prea general",
+		"exampleTask": {
+			"title": "chatoiește cu comunitatea",
+			"description": "în #general"
+		},
+		"readTheRules": "Citește Regulile",
+		"addTask": "Adaugă sarcină",
+		"resourcePages": {
+			"title": "Pagini Resurse",
+			"description": "Transformă canalele doar-read în pagini resurse frumoase în Ghid Server. Nu vor apărea în lista canale decât dacă activezi Toate Canalele. Resursele vin cu câteva beneficii:",
+			"perk1": "Membrii încep la începutul paginii în loc de finalul șirului de mesaje",
+			"perk2": "Bară conversație și avataruri sunt eliminate pentru a arăta mai curat",
+			"perk3": "Tot conținutul, embeds, media și format va fi păstrat"
+		},
+		"addResource": "Adaugă resursă",
+		"ownerGreeting": "Salut, acesta este salut de la proprietarul clan. Vei vedea acest mesaj prima dată când te alături clan!"
+	}
+}

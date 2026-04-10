@@ -1,0 +1,50 @@
+{
+	"title": "Copertă Stream",
+	"uploadThumbnail": "Încarcă copertă",
+	"currentThumbnail": "Copertă curentă",
+	"requirementsTitle": "Cerințe",
+	"buttons": {
+		"change": "Schimbă",
+		"remove": "Elimină",
+		"selectFile": "Alege fișier",
+		"uploading": "Se încarcă...",
+		"cancel": "Anulează",
+		"confirmUpload": "Confirmă",
+		"removing": "Se elimină...",
+		"removeThumbnail": "Elimină copertă"
+	},
+	"upload": {
+		"title": "Încarcă-ți coperta",
+		"description": "Apasă pentru a parcurge sau trage și eliberează imaginea ta"
+	},
+	"confirmModal": {
+		"uploadTitle": "Confirmă încărcare",
+		"uploadDescription": "Setează această imagine ca copertă stream?",
+		"uploadMessage": "Această copertă va fi afișată când stream-ul tău este offline. Toți membrii vor vedea această actualizare imediat.",
+		"removeTitle": "Elimină copertă",
+		"removeQuestion": "Ești sigur?",
+		"removeMessage": "Acest lucru va șterge coperta stream-ului tău. Ecranul splash implicit va fi afișat în schimb când stream-ul tău este offline.",
+		"removeWarning": "Această acțiune nu poate fi desfăcută."
+	},
+	"requirements": {
+		"format": {
+			"title": "Format",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Rezoluție",
+			"value": "Recomandat 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Limită mărime",
+			"value": "Maxim 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Canal ne găsit",
+		"clientNotReady": "Client/sesiune nu este gata",
+		"uploadFailed": "Încărcare copertă eșuată. Vă rugăm să încerci din nou.",
+		"removeFailed": "Eliminare copertă eșuată. Vă rugăm să încerci din nou."
+	},
+	"saved": "Copertă salvată"
+}

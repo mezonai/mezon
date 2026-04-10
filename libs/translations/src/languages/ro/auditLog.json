@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Jurnal verificare",
+		"filterByUser": "Filtrează după utilizator",
+		"filterByAction": "Filtrează după acțiune",
+		"filterBtn": "Filtrează"
+	},
+	"auditLogItem": {
+		"performedAnAction": "a efectuat o acțiune",
+		"toChannel": "la canal",
+		"remove": "șterge",
+		"add": "adaugă"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Toate acțiunile",
+		"placeholder": "Caută acțiune"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Toți utilizatorii",
+		"placeholder": "Caută utilizator"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "FĂRĂ JURNAL",
+		"description": "După ce moderatorii își îndeplinesc sarcinile, poți urmări activitatea lor aici."
+	}
+}

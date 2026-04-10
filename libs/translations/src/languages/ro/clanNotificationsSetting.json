@@ -1,0 +1,31 @@
+{
+	"muteClan": "Oprirea notificărilor clan va ascunde indicatorii mesajelor necite și nu va afișa notificări, decât dacă ești menționat",
+	"notifySettingOption": {
+		"title": "Setări notificări clan",
+		"allMessage": "Toate mesajele",
+		"onlyMentions": "Doar @mention",
+		"nothing": "Nimic"
+	},
+	"suppressOption": {
+		"suppressEveryone": "Oprește notificările @everyone și @here",
+		"suppressAllRole": "Oprește notificările @mention pentru toate rolurile",
+		"suppressHighlights": "Oprește notificările evidențiate",
+		"subText": "Evidențiate oferă actualizări ocazionale când prietenii tăi chatoiesc în clan și mai mult."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Oprește notificări eveniment nou",
+		"mobilePushNotifications": "Notificări push mobile"
+	},
+	"notificationOverrides": {
+		"title": "Suprascrideri notificări",
+		"addChannelsAllCategory": "Adaugă toate canalele la categorie"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Nu vei primi notificări de la canalele oprite. Această setare se aplică pe toate dispozitivele tale.",
+		"youHaveMuted": "Ai oprit notificările acestui canal până la"
+	},
+	"clanNotificationBS": {
+		"title": "Oprește notificările acestui clan"
+	},
+	"resetOverrides": "Resetează suprascrideri"
+}

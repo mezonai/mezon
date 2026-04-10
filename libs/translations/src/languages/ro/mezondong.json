@@ -1,0 +1,44 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Transparent, Sigur, Gratuit",
+			"description": "Mezon Coin a fost creat pentru a face tranzacțiile digitale mai simple și transparente – fundal pentru o nouă economie de comunitate."
+		},
+		"section2": {
+			"title": "Rapid Fără Întrerupere",
+			"description": "Trimite Mezon Coin la fel de ușor ca un mesaj. Dăruiește prietenilor, donează la comunitate sau cumpără — toate se întâmplă instantaneu și fără cost."
+		},
+		"section3": {
+			"title": "Ridică Mediul de Lucru cu Mezon Coin",
+			"description": "Mezon nu este doar pentru comunitate – întreprinderile pot folosi Mezon ca platformă internă pentru comunicare și plăți. Răsplătește angajații, gestionează beneficii sau creează programe de incentivare internă — toate sunt procesate fluent și flexibil cu Mezon Coin."
+		},
+		"section4": {
+			"title": "Comerț Integrat",
+			"description": "Brandurile partenere pot accepta Mezon Coin pentru produsele și serviciile lor. De la bunuri digitale la produse fizice, comunitatea poate cumpăra direct cu un singur click."
+		}
+	},
+	"faq": {
+		"title": "Mai multă nevoie?",
+		"seeAll": "Vezi toate întrebările",
+		"learnMore": "Află mai multe",
+		"questions": [
+			{
+				"question": "Ce este Mezon Coin?",
+				"answer": "Mezon Coin este o unitate de valoare digitală folosită ca instrument de schimb intern în platforma Mezon. Este sistem de plată digital integrat, care te permite să trimiți și să transfere bani într-un mod ușor, transparent și sigur."
+			},
+			{
+				"question": "Cum trimit și transfăr Mezon Coin?",
+				"answer": "Mezon Coin nu este doar pentru cheltuieli ci și pentru partajare. Poți trimite tokens la prieteni, colegi sau membri Clan în câteva pași simpli. Trimite Mezon Coin la fel de ușor ca un mesaj - deschide conversație, apasă pe iconiță Mezon Coin, introdu suma și confirmă. Tranzacția este procesată imediat și fără cost."
+			},
+			{
+				"question": "Cum poate întreprinderea folosi Mezon Coin?",
+				"answer": "Întreprinderea poate folosi Mezon ca platformă internă pentru comunicare și plăți. Poți răsplăți angajații, gestiona beneficii sau crea programe de incentivare internă. Toate sunt procesate fluent și flexibil cu Mezon Coin."
+			},
+			{
+				"question": "Cum să accept plăți Mezon Coin pentru magazinul tău?",
+				"answer": "Brandurile partenere pot accepta Mezon Coin pentru produsele și serviciile lor. De la bunuri digitale la produse fizice, comunitatea poate cumpăra direct cu un singur click. Contactează echipa Mezon pentru a-ți seta cont merchant și integra Mezon Coin în magazinul tău."
+			}
+		]
+	},
+	"download": "Descarcă"
+}

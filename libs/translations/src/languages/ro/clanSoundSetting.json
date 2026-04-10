@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Încarcă sunet",
+		"delete": "Șterge",
+		"uploadDetailScreen": "Încarcă"
+	},
+	"content": {
+		"description": "•  Acceptă doar fișiere .mp3, .wav, maxim 1MB. \\n•  Dă-i un nume ușor de reținut sunetului. \\n•  Efectul sonor va fi folosit în notificări sau evenimente clan.",
+		"requirements": "CERINȚE ÎNCĂRCARE",
+		"reqSize": "•  Nu mai mare de 1024KB.",
+		"audioFile": "Fișier audio",
+		"audioName": "Nume sunet",
+		"preview": "Previzualizare",
+		"chooseAudioFile": "Alege fișier audio"
+	},
+	"toast": {
+		"errorSizeLimit": "Depășește limita de mărime de 1MB",
+		"errorFileType": "Format fișier nevalid. Acceptă doar fișiere .mp3, .mpeg și .wav."
+	},
+	"main": {
+		"uploadInstructions": "GHID ÎNCĂRCARE",
+		"fileRequirements": "Acceptă doar fișiere .mp3, .wav, maxim 1MB. Dă-i un nume ușor de reținut sunetului. Efectul sonor va fi folosit în notificări sau evenimente clan.",
+		"uploadHere": "Încarcă aici!",
+		"personalizeDescription": "Personalizează sunetul pentru clanul tău!",
+		"uploadSound": "Încarcă sunet",
+		"soundEffectList": "Listă efecte sonore",
+		"noSoundEffects": "Nu există efecte sonore. Apasă \"Încarcă sunet\" pentru a adăuga!"
+	},
+	"modal": {
+		"titleEdit": "Editează efect sonor",
+		"titleUpload": "Încarcă efect sonor",
+		"subtitle": "Suportă format MP3, WAV • Maxim 1MB",
+		"preview": "Previzualizare",
+		"audioFile": "Fișier audio",
+		"soundName": "Nume sunet",
+		"soundVolume": "Volum",
+		"chooseOrDrop": "Alege sau trage fișier",
+		"browse": "Parcurge",
+		"placeholder": "Ex: mieu de pisică",
+		"cancel": "Anulează",
+		"uploading": "Se încarcă...",
+		"update": "Actualizează",
+		"upload": "Încarcă",
+		"errorFileType": "Suportă fișier .mp3 sau .wav",
+		"errorFileSize": "Fișier prea mare, maxim 1MB",
+		"errorUploadFailed": "Imposibil de încărcat sunet",
+		"characters": "Numele trebuie să aibă între 3 și 64 de caractere",
+		"errorName": "Numele efectului sonor trebuie să aibă între {{min}} și {{max}} caractere, doar litere, cifre, _ și -"
+	}
+}

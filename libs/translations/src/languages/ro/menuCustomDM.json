@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Personalizează grup",
+  "inviteLinks": "Link-uri invitație",
+  "leaveGroup": "Ieși din grup",
+  "closeDM": "Închide mesaj",
+  "groupName": "Nume grup",
+  "save": "Salvează",
+  "removeAvatar": "Elimină imagine",
+  "invalidGroupName": "Nume grup nevalid",
+  "uploadImage": "Încarcă imagine",
+  "toast": {
+    "leaveGroupError": "Eroare la ieșire din grup: {{error}}"
+  }
+}

@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "Previzualizare mesaj DM",
+            "AllMessages": "Toate mesajele",
+            "UnreadDMOnly": "Doar mesaje DM necite",
+            "None": "Niciunul"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Aparență",
+            "theme": "Tematică",
+            "syncAcrossClients": {
+                "title": "Sincronizare pe toate dispozitivele",
+                "description": "Această funcție va suprascrive setările de aparență de mai sus pe toate celelalte dispozitive, inclusiv desktop și browser."
+            }
+        },
+        "search": {
+            "title": "Căutare",
+            "showResultCount": {
+                "title": "Afișează numărul de rezultate ale căutării",
+                "description": "Când este activat, poate crește timpul de afișare a rezultatelor căutării."
+            }
+        }
+    }
+}

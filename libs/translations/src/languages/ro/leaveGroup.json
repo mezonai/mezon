@@ -1,0 +1,7 @@
+{
+	"title": "Ieși din '{{groupName}}'",
+	"confirmMessage": "Ești sigur că dorești să ieși din {{groupName}}? Nu vei mai putea te alătura din nou acest grup decât dacă ești invitat din nou.",
+	"leaveWithoutNotifying": "Ieși fără să avertizezi alți membri",
+	"cancel": "Anulează",
+	"leaveGroup": "Ieși din grup"
+}

@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Nume categorie",
+            "placeholder": "Introduceți numele categoriei",
+            "errorMessage": "Vă rugăm să introduceți un nume de categorie valid (maxim 64 de caractere, doar litere, cifre, _ sau -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Permisiuni categorie",
+            "description": "Schimbă setările de private și personalizează modul în care membrii pot interacționa cu acest canal."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Șterge categorie"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Ești sigur că dorești să ștergi canalul {{categoryName}}? Această acțiune nu poate fi desfăcută.",
+            "confirmText": "Șterge",
+            "title": "Șterge categorie"
+        },
+        "save": "Salvează"
+    },
+    "toast": {
+        "updated": "Actualizat cu succes"
+    }
+}

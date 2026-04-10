@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "Membru trimite mesaj în canal",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "Membru accesează canal",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "Citește această sarcină",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "Ce ar trebui să facă noii membri?",
+    "placeholder": "Ex: Postează imagine animal de companie",
+    "channelTitle": "Ar trebui să facă asta undeva?",
+    "channelNote": "Canalul trebuie să fie vizibil de @everyone (canal public)",
+    "completeWhen": "Această sarcină este completată când:",
+    "required": "Acest câmp este obligatoriu.",
+    "minCharacters": "Acțiunea trebuie să aibă cel puțin 7 caractere"
+  },
+  "buttons": {
+    "remove": "Elimină",
+    "save": "Salvează",
+    "add": "Adaugă"
+  }
+}

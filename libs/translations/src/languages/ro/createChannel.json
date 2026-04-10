@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "CREEAZĂ CANAL NOU ÎN"
+	},
+	"channelType": {
+		"text": "Text",
+		"voice": "Vocal",
+		"forum": "Forum",
+		"announcement": "Anunț",
+		"apps": "Aplicații",
+		"stream": "Stream",
+		"descriptions": {
+			"text": "Trimite mesaje, imagini, GIF, emoji, opinii și glume",
+			"voice": "Vorbește împreună cu voce, video și partajează ecranul",
+			"forum": "Creează spațiu pentru discuții organizate",
+			"announcement": "Actualizări importante pentru toți în și afara clan",
+			"apps": "Aplicații",
+			"stream": "Partajează activități de interes"
+		}
+	},
+	"validation": {
+		"invalidName": "Vă rugăm să introduceți un nume de canal (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+		"duplicateName": "Numele canalului există deja în categorie. Vă rugăm să introduceți un nume diferit."
+	},
+	"privacy": {
+		"private": "Canal privat",
+		"description": "Doar membrii și rolurile selectate pot vedea acest canal."
+	},
+	"labels": {
+		"description": "Vă rugăm să setezi canalul după preferințele tale.",
+		"chooseType": "Alege tip canal:",
+		"channelName": "Care este numele canalului?",
+		"isPrivate": "Canal privat?",
+		"placeholder": "Introduceți numele canalului"
+	},
+	"errors": {
+		"typeRequired": "Tipul canalului este obligatoriu",
+		"nameRequired": "Numele canalului este obligatoriu",
+		"selectApp": "Vă rugăm să selectezi o aplicație",
+		"validName": "Vă rugăm să introduceți un nume de canal valid"
+	},
+	"buttons": {
+		"cancel": "Anulează",
+		"create": "Creează canal",
+		"creating": "Se creează"
+	}
+}

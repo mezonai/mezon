@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Începe eveniment",
+      "markAsNotInterested": " marchează ca neinteresat",
+      "markAsInterested": " marchează ca interesat",
+      "editEvent": "Editează eveniment",
+      "cancelEvent": "Anulează eveniment",
+      "reportEvent": "Raportează eveniment",
+      "copyEventLink": "Copiază link eveniment",
+      "copyEventID": "Copiază ID eveniment"
+    },
+    "confirm": {
+        "title": "Anulează eveniment",
+        "content": "Ești sigur că dorești să anulezi acest eveniment?"
+    },
+    "dashboard": {
+        "title": "Evenimente",
+        "event_one": "Eveniment",
+        "noEvent": "Nu există evenimente",
+        "noEventDescription": "Invită alți membri să contribuie cu idei pentru evenimente viitoare.",
+        "createButton": "Creează",
+        "noti": "Acest eveniment este deschis pentru toți în clan.",
+        "endEvent": "Încheie eveniment",
+        "UnInterested": "Neinteresat",
+        "Interested": "Interesat"
+    },
+    "item": {
+      "interested": "Interesat",
+      "uninterested": "Neinteresat"
+    },
+    "detail": {
+        "eventInfo": "Informații eveniment",
+        "interested": "Interesat",
+        "personInterested": "{{count}} persoane interesate",
+        "onePersonInterested": "1 persoană interesată",
+        "noOneInterested": "Nu este nimeni interesat de eveniment.",
+        "createdBy": "Creat de"
+    },
+    "share": {
+        "title": "Partajează eveniment cu prieteni",
+        "search": "Caută",
+        "share": "Partajează",
+        "copied": "Link copiat!"
+    },
+     "countdown": {
+        "joinIn_other": "va începe în {{count}} minute",
+        "joinNow": "Eveniment în desfășurare!",
+        "joinIn_one": "va începe în 1 minut"
+    }
+  }

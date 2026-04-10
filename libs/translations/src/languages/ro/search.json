@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Caută membri",
+  "searchActions": "Caută acțiune",
+  "allUsers": "Toți utilizatorii",
+  "noResults": {
+    "title": "Nu e!",
+    "description": "Ai tastat greșit?"
+  }
+}

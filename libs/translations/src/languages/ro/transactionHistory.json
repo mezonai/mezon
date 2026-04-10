@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Istoric tranzacții",
+		"subtitle": "Vezi toate activitățile tale de tranzacție"
+	},
+	"footers": {
+		"noti": "Ai încărcat toate {{count}} tranzacții",
+		"fetching": "Se încarcă mai multe tranzacții..."
+	},
+	"filters": {
+		"all": "Toate tranzacțiile",
+		"sent": "Tranzacții trimise",
+		"received": "Tranzacții primite"
+	},
+	"transactionTypes": {
+		"sent": "Trimis",
+		"received": "Primit"
+	},
+	"currency": {
+		"code": "ro-RO",
+		"symbol": "RON"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Nu s-a găsit nicio tranzacție",
+			"description": "Nu ai efectuat nicio tranzacție. Istoricul tranzacțiilor tă va apărea aici când începi să trimiți sau să primești token."
+		},
+		"noFilteredTransactions": {
+			"title": "Nu s-a găsit nicio tranzacție",
+			"description": "Nu s-a găsit nicio tranzacție pentru filtrul selectat. Vă rugăm să încerci un filtru diferit sau să verifici mai târziu."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "Cod tranzacție",
+			"sender": "Expeditor",
+			"amount": "Sumă",
+			"receiver": "Destinatar",
+			"note": "Notă",
+			"created": "Creat"
+		},
+		"defaultNote": "Fără notă",
+		"unknownUser": "Utilizator nedefinit"
+	},
+	"transactionItem": {
+		"idPrefix": "Tranzacție #"
+	}
+}

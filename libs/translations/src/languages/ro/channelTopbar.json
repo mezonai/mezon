@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Canale",
+		"members": "Membri",
+		"guideClan": "Ghid"
+	},
+	"tooltips": {
+		"clickToEdit": "Apasă pentru a edita grup",
+		"startVoiceCall": "Începe apel vocal",
+		"startVideoCall": "Începe apel video",
+		"showMemberList": "Arată lista de membri",
+		"hideMemberList": "Ascunde lista de membri",
+		"showUserProfile": "Arată profil utilizator",
+		"hideUserProfile": "Ascunde profil utilizator",
+		"files": "Fișiere",
+		"canvas": "Canvas",
+		"threads": "Subiecte",
+		"notificationSettings": "Setări notificări",
+		"pinnedMessages": "Mesaje fixate",
+		"members": "Membri",
+		"showChat": "Arată conversație",
+		"hideChat": "Ascunde conversație",
+		"addFriendsToDM": "Adaugă prieteni la DM",
+		"jump": "Sari la",
+		"gallery": "Galerie",
+		"timelineView": "Treci la Mod Linie de timp",
+		"defaultView": "Treci la Mod Conversație"
+	},
+	"directMessage": "Mesaj direct",
+	"activeThreads": "Subiecte active",
+	"joinedThreadsLast30Days": "Subiecte la care s-a alăturat (ultimele 30 de zile)",
+	"olderThreads": "Subiecte mai vechi",
+	"loading": "Se încarcă...",
+	"topic": "Subiect",
+	"invoice": "În canal vocal",
+	"reactions": "Reacții",
+	"callMessages": {
+		"startedVoiceCall": "A început apel vocal",
+		"startedVideoCall": "A început apel video"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "ID canal grup lipsește",
+		"dmChannelIdMissing": "ID canal mesaj direct lipsește",
+		"youAreOnAnotherCall": "Ești într-un alt apel"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "Acest canal încă nu are mesaje fixate.",
+		"protip": "SUGESTIE:",
+		"emptyDescription": "Utilizatorii cu permisiunea 'Gestionează mesaje' pot fixa mesaje din meniul context.",
+		"unpinMessage": "Debifează mesaj",
+		"unpinConfirmation": "Ești sigur că dorești să elimini acest mesaj fixat?",
+		"cancel": "Anulează",
+		"unpinIt": "Debifează"
+	},
+	"threads": {
+		"emptyTitle": "Nu există subiecte.",
+		"emptyDescription": "Focalizează-te pe conversație cu subiect - un canal text temporar.",
+		"createThread": "Creează subiect"
+	},
+	"canvas": {
+		"emptyTitle": "Nu există canvas-uri.",
+		"emptyDescription": "Focalizează-te pe conversație cu canvas - un canal text temporar.",
+		"createCanvas": "Creează Canvas"
+	},
+	"files": {
+		"emptyTitle": "Nu există fișiere.",
+		"emptyDescription": "În prezent nu sunt fișiere partajate în acest canal.",
+		"searchPlaceholder": "Caută nume fișier"
+	},
+	"fileItem": {
+		"download": "Descarcă",
+		"sharedBy": "Partajat de {{username}} {{time}}",
+		"attachmentFailed": "Imposibil de încărcat atașament."
+	},
+	"notificationSetting": {
+		"muteChannel": "Oprește notificările canalului",
+		"unmuteChannel": "Activează notificările canalului",
+		"mutedUntil": "Notificări oprite până la {{date}}",
+		"useCategoryDefault": "Folosește setarea implicită a categoriei",
+		"muteOptions": {
+			"for15Minutes": "În 15 minute",
+			"for1Hour": "În 1 oră",
+			"for3Hours": "În 3 ore",
+			"for8Hours": "În 8 ore",
+			"for24Hours": "În 24 de ore",
+			"untilTurnedBackOn": "Până când îl redeschid"
+		}
+	},
+	"gallery": {
+		"title": "Galerie",
+		"sentDate": "Dată trimis",
+		"fromDate": "De la data",
+		"toDate": "Până la data",
+		"filters": {
+			"all": "Toate",
+			"images": "Imagini",
+			"videos": "Video"
+		},
+		"dateRange": {
+			"from": "De la {{date}}",
+			"to": "Până la {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Data de început trebuie să fie înainte sau egală cu data de sfârșit"
+		},
+		"buttons": {
+			"clearAll": "Șterge tot",
+			"apply": "Aplică",
+			"clearDateFilter": "Șterge filtru de dată"
+		},
+		"emptyState": {
+			"noMediaFiles": "Niciun fișier media găsit",
+			"noMediaFilesDateRange": "Niciun fișier media pentru intervalul de date selectat",
+			"noImages": "Nicio imagine găsită",
+			"noVideos": "Niciun video găsit"
+		},
+		"loading": {
+			"olderImages": "Se încarcă imagini mai vechi...",
+			"newerImages": "Se încarcă imagini mai noi...",
+			"filterChange": "Se încarcă media..."
+		},
+		"filesCount": "{{count}} fișiere",
+		"imageError": "Eroare"
+	},
+	"modals": {
+		"threads": {
+			"title": "Subiecte",
+			"create": "Creează",
+			"results": "Rezultate"
+		},
+		"canvas": {
+			"title": "Canvas",
+			"create": "Creează"
+		},
+		"files": {
+			"title": "Fișiere"
+		},
+		"pinnedMessages": {
+			"title": "Mesaje fixate"
+		}
+	},
+	"createThread": {
+		"newThread": "Subiect nou",
+		"inviteMessage": "Poți invita oameni noi dând @mention la ei.",
+		"validation": {
+			"invalidChannelName": "Vă rugăm să introduceți un nume de subiect valid (maxim 65 de caractere, doar litere, cifre, _ sau -).",
+			"threadNameRequired": "Numele subiectului este obligatoriu.",
+			"starterMessageRequired": "Mesajul inițial este obligatoriu."
+		},
+		"threadName": "Nume subiect",
+		"enterThreadName": "Introduceți numele subiectului",
+		"privateThread": "Subiect privat",
+		"privateThreadDescription": "Doar oamenii pe care i-ai invitat și moderatorii pot vedea",
+		"toast": {
+			"threadNameTooShort": "Numele subiectului trebuie să fie mai lung de 3 caractere",
+			"threadNameExists": "Numele subiectului există deja",
+			"initialMessageRequired": "Este necesar un mesaj inițial pentru a începe subiectul.",
+			"messageTooLong": "Mesajul depășește limita de 4000 de caractere",
+			"messageLimitExceeded": "Mesajul depășește limita de {{limit}} caractere"
+		},
+		"placeholder": {
+			"threadName": "Introduceți numele subiectului"
+		}
+	},
+	"moreFile": "fișier",
+	"moreFiles": "fișiere"
+}

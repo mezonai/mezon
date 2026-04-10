@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Notificări",
+	"tabNotify": {
+		"forYou": "Pentru tine",
+		"mention": "Mențiuni",
+		"messages": "Mesaje",
+		"topics": "Discuții scurte",
+		"notificationSettings": "Setări notificări"
+	},
+	"removeNotification": "Elimină notificare",
+	"nothingHere": "Nu este nimic aici încă",
+	"comeBackNotify": "Revino pentru a primi notificări despre evenimente și mai mult",
+	"repliedTo": "Răspuns la: ",
+	"sender": "Expeditor: ",
+	"seeWhenAnswersAppear": "Vezi când apar răspunsurile",
+	"enablePushNotifications": "Activează notificări push",
+	"permissionAlert": {
+		"turnOnNotifications": "Activează notificări",
+		"permissionDescription": "Vă rugăm să dai permisiune Mezon să trimită notificări pentru a te ține conectat cu prieteni și familie.",
+		"openSettings": "Deschide Setări",
+		"features": {
+			"newMessages": {
+				"title": "Primește notificări despre mesaje noi",
+				"description": "Actualizează când prietenii îți trimit mesaje"
+			},
+			"mentions": {
+				"title": "Știi când ești menționat în grup",
+				"description": "Nu rata niciodată când cineva te menționează"
+			},
+			"muteControl": {
+				"title": "Oprește notificări conversații specifice și tipuri conversații",
+				"description": "Controlează ce notificări primești"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Permisiune notificare",
+		"permissionDenied": "Permisiune notificare respinsă.",
+		"cancel": "Anulează",
+		"ok": "OK"
+	},
+	"andYou": "și tu",
+	"topicAndYou": "Discuție scurtă și tu",
+	"unknowClan": "Nu mai ești membru al acestei conversații"
+}

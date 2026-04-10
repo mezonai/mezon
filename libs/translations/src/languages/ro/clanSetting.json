@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "Setări",
+			"overview": "Privire de ansamblu",
+			"moderation": "Moderare",
+			"auditLog": "Jurnal moderare",
+			"channels": "Canale",
+			"integrations": "Integrări",
+			"emoji": "Emoji",
+			"sticker": "Adesiv",
+			"webhooks": "Webhook",
+			"security": "Securitate",
+			"permissionDenied": "Nu ai permisiunea să editezi",
+			"sound": "Sunet",
+			"enableCommunity": "Activează comunitate"
+		},
+		"community": {
+			"title": "Comunitate",
+			"enableCommunity": "Activează comunitate"
+		},
+		"subscriptions": {
+			"title": "Pachet abonament clan",
+			"getStarted": "Începe"
+		},
+		"userManagement": {
+			"title": "Gestionează utilizatori",
+			"members": "Membri",
+			"role": "Rol",
+			"invite": "Invită",
+			"bans": "Blocări"
+		}
+	}
+}

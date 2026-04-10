@@ -1,0 +1,40 @@
+{
+	"modal": {
+		"uploadAFile": "Încarcă fișier",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Fișierul trebuie să fie PNG sau GIF, maxim 256KB",
+		"preview": "Previzualizare",
+		"file": "Fișier",
+		"thisCannotBeEdited": "Imposibil de editat",
+		"browse": "Parcurge",
+		"chooseAFile": "Alege un fișier",
+		"stickerName": "Nume emoji",
+		"exCatHug": "Ex: cat_hug",
+		"thisIsForSale": "Acesta este produs de vânzare",
+		"neverMind": "Lasă pe dinafară",
+		"characters": "Numele trebuie să aibă între 3 și 64 de caractere"
+	},
+	"header": {
+		"save": "Salvează"
+	},
+	"toast": {
+		"saveSuccess": "Salvat cu succes",
+		"reject": "Respinge",
+		"errorSizeLimit": "Mărimea imaginii depășește 256 KB",
+		"validateName": "Lungimea trebuie să fie între {{min}} și {{max}} caractere. Doar litere, cifre, _ și - sunt permise"
+	},
+	"button": {
+		"upload": "Încarcă emoji"
+	},
+	"description": {
+		"descriptions": "Adaugă emoji custom pe care toți utilizatorii din acest clan le pot folosi. Toți membrii Mezon pot folosi emoji GIF animate.",
+		"requirements": "CERINȚE ÎNCĂRCARE",
+		"requireList": "•  Tip fișier: JPEG, PNG, GIF.\\n•  Mărime recomandată: 256 KB.\\n•  Dimensiune imagine recomandată: 128x128.\\n•  Nume: Numele emoji trebuie să aibă cel puțin 3 caractere și să conțină doar litere, cifre și underscore."
+	},
+	"emojiList": {
+		"slotsDetails": "LISTĂ EMOJI",
+		"delete": "Șterge"
+	},
+	"image": "IMAGINE",
+	"name": "NUME",
+	"uploadedBy": "ÎNCĂRCAT DE"
+}

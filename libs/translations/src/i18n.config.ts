@@ -7,6 +7,7 @@ import itTranslations from './languages/it/index';
 import jpnTranslations from './languages/jpn/index';
 import krTranslations from './languages/kr/index';
 import ptTranslations from './languages/pt/index';
+import roTranslations from './languages/ro/index';
 import ruTranslations from './languages/ru/index';
 import ttTranslations from './languages/tt/index';
 import viTranslations from './languages/vi/index';
@@ -28,6 +29,7 @@ const timezoneDetector = {
 				storedLang === 'pt' ||
 				storedLang === 'jpn' ||
 				storedLang === 'kr' ||
+				storedLang === 'ro' ||
 				storedLang === 'it')
 		) {
 			return undefined;
@@ -64,6 +66,9 @@ const timezoneDetector = {
 			if (languageCode.startsWith('kr')) {
 				return 'kr';
 			}
+			if (languageCode.startsWith('ro')) {
+				return 'ro';
+			}
 		}
 
 		return undefined;
@@ -79,6 +84,7 @@ const timezoneDetector = {
 				lng === 'pt' ||
 				lng === 'it' ||
 				lng === 'jpn' ||
+				lng === 'ro' ||
 				lng === 'kr')
 		) {
 			localStorage.setItem('i18nextLng', lng);
@@ -94,7 +100,7 @@ i18n.use(languageDetector)
 	.init({
 		defaultNS,
 		fallbackLng: 'en',
-		supportedLngs: ['en', 'vi', 'ru', 'es', 'tt', 'pt', 'it', 'jpn', 'kr'],
+		supportedLngs: ['en', 'vi', 'ru', 'es', 'tt', 'pt', 'it', 'jpn', 'kr', 'ro'],
 		resources: {
 			en: enTranslations,
 			vi: viTranslations,
@@ -104,7 +110,8 @@ i18n.use(languageDetector)
 			pt: ptTranslations,
 			it: itTranslations,
 			jpn: jpnTranslations,
-			kr: krTranslations
+			kr: krTranslations,
+			ro: roTranslations
 		},
 		detection: {
 			order: ['timezone', 'localStorage', 'navigator', 'htmlTag'],

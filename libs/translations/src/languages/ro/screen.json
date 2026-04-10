@@ -1,0 +1,25 @@
+{
+    "headerTitle": {
+		"settings": "Setări",
+		"Friends": "Prieteni",
+		"addFriends": "Adaugă prieteni",
+		"requestFriend": "Cerere prietenie",
+		"friendRequestSettings": "Setări cerere prietenie",
+		"language": "Limba",
+		"profile": "Profil",
+		"newMessage": "Mesaj nou",
+		"newGroup": "Grup nou",
+		"addMembers": "Adaugă membri",
+		"appearance": "Aparență",
+		"topic": "Subiect",
+		"chat": "Conversație"
+	},
+    "headerRight": {
+        "addFriends": "Adaugă prieteni"
+    },
+    "navigationTabs": {
+        "messages": "Mesaje",
+        "notifications": "Notificări",
+        "profile": "Profil"
+    }
+}

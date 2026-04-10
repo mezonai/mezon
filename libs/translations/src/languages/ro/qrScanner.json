@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Acces cameră respins",
+	"pleaseAllowCamera": "Vă rugăm să dai acces cameră în setările de dispozitiv.",
+	"cancel": "Anulează",
+	"openSettings": "Deschide setări",
+	"anErrorOccurred": "A apărut o eroare, vă rugăm să încerci din nou",
+	"youAreIn": "Ești logat!",
+	"logInOnNewDevice": "Te loghezi pe dispozitiv nou?",
+	"youAreLoggedInOnDesktop": "Acum ești logat pe desktop",
+	"neverScanALoginQRCodeFromAnotherUser": "Nu scana niciodată cod QR de logare de la un alt utilizator.",
+	"startTalking": "Începe să chatoiești",
+	"logIn": "Loghează-te",
+	"requestCameraPermission": "Cere acces cameră",
+	"myQRCode": "Codul tău QR",
+	"selectPhotoWithQRCode": "Alege imagine care conține cod QR",
+	"qrCodeNotValid": "Cod QR nevalid"
+}

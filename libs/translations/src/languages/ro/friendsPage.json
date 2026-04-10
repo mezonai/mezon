@@ -1,0 +1,84 @@
+{
+	"friend": "Prieteni",
+	"addFriend": "Adaugă prieten",
+	"friends": "Prieteni",
+	"clearSearch": "Șterge căutare",
+	"search": "Caută",
+	"tabs": {
+		"all": "Toate",
+		"online": "Online",
+		"pending": "În așteptare",
+		"block": "Blocați"
+	},
+	"addFriendModal": {
+		"title": "ADĂUGĂ PRIETEN",
+		"description": "Poți adăuga prieteni prin numele lor utilizator Mezon",
+		"placeholder": "Tastează nume utilizator",
+		"tooltip": "Poți adăuga prieteni prin numele lor utilizator Mezon",
+		"sendRequest": "Trimite invitație prietenie",
+		"add": "Adaugă",
+		"alreadyFriends": "Ești deja prieten cu acest utilizator!",
+		"waitAccept": "Ai trimis deja cerere prietenie la acest utilizator!",
+		"invalidInput": "Folosește doar cifre, litere, underscore _ sau puncte.",
+		"blockedUser": "Ai blocat acest utilizator. Deblochează pentru a trimite invitație prietenie.",
+		"blockedUserMobile": "Ai blocat acest utilizator. Deblochează pentru a trimite invitație prietenie.",
+		"waitingMessage": "Mezon așteaptă. Dar nu trebuie să aștepți!"
+	},
+	"requestFailedPopup": {
+		"title": "Invitație prietenie eșuată",
+		"message": "Ești deja prieten cu acest utilizator!",
+		"okay": "Ok"
+	},
+	"activity": {
+		"coding": "Activitate - Lucru",
+		"music": "Activitate - Viață",
+		"gaming": "Activitate - Distracție"
+	},
+	"friendMenu": {
+		"startVideoCall": "Începe apel video",
+		"startVoiceCall": "Începe apel vocal",
+		"removeFriend": "Elimină prieten",
+		"block": "Blochează",
+		"unblock": "Deblochează",
+		"more": "Mai mult",
+		"cancel": "Anulează",
+		"accept": "Acceptă",
+		"reject": "Respinge"
+	},
+	"removeFriendModal": {
+		"title": "Elimină '{{username}}'",
+		"description": "Ești sigur că dorești să elimini <bold>{{username}}</bold> din lista prieteni?",
+		"cancel": "Anulează",
+		"confirm": "Elimină prieten"
+	},
+	"cancelRequestModal": {
+		"title": "Anulează cerere '{{username}}'",
+		"description": "Ești sigur că dorești să anulezi cererea de prietenie către <bold>{{username}}</bold>?",
+		"cancel": "Anulează",
+		"confirm": "Anulează cerere"
+	},
+	"rejectRequestModal": {
+		"title": "Respinge '{{username}}'",
+		"description": "Ești sigur că dorești să respingi cererea de prietenie de la <bold>{{username}}</bold>?",
+		"cancel": "Anulează",
+		"confirm": "Respinge"
+	},
+	"toast": {
+		"userBlockedSuccess": "Utilizator blocat cu succes",
+		"userBlockedFailed": "Imposibil de blocat utilizator",
+		"userUnblockedSuccess": "Utilizator deblocat cu succes",
+		"userUnblockedFailed": "Imposibil de deblocat utilizator"
+	},
+	"statusTapListFriends": {
+		"all": "Se pare că e gol aici! Începe cu câteva prieteni pentru a începe conversația.",
+		"online": "Este liniște! De ce nu începi conversația și vezi cine este aici?",
+		"pending": "Aici vei găsi cererile de prietenie pe care le-ai trimis și primit.",
+		"block": "Nu ai blocat pe nimeni."
+	},
+	"statusTapSearchFriends": {
+		"all": "Nu există prieteni potriviți căutării tale. Încearcă alt nume.",
+		"online": "Nu există cineva online care se potrivește căutării tale. Încearcă alt nume.",
+		"pending": "Nu există cereri prietenie care se potrivesc căutării tale. Verifică numele sau încearcă din nou.",
+		"block": "Nu există utilizatori blocați care se potrivesc căutării tale. Încearcă alt nume."
+	}
+}

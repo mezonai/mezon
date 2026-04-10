@@ -1,0 +1,63 @@
+{
+	"title": "Mesaje",
+	"addFriend": "Adaugă prieten",
+	"friends": "Prieteni",
+	"blockedUserMessage": "Mesaj blocat",
+	"menu": {
+		"leaveGroup": "Ieși din grup",
+		"deleteGroup": "Șterge grup",
+		"profile": "Profil",
+		"closeDm": "Închide mesaj",
+		"markAsRead": " marchează ca citit",
+		"favorite": "Favorite",
+		"muteConversation": "Oprește notificări",
+		"unMuteConversation": "Activează notificări",
+		"notificationSettings": "Setări notificări",
+		"disableE2EE": "Dezactivează E2EE",
+		"enableE2EE": "Activează E2EE",
+		"blockUser": "Blochează utilizator",
+		"unblockUser": "Deblochează utilizator",
+		"removeFriend": "Elimină prieten",
+		"addFriend": "Adaugă prieten",
+		"pinConversation": "Fixează conversație",
+		"unpinConversation": "Debifează conversație"
+	},
+	"confirm": {
+		"title": "Ieși din {{groupName}}",
+		"content": "Ești sigur că dorești să ieși din {{groupName}}? Nu vei mai putea te alătura din nou acest grup decât dacă ești invitat din nou.",
+		"confirmText": "Da"
+	},
+	"pinConfirm": {
+		"title": "Fixează conversație?",
+		"content": "Această conversație va fi mutată la începutul listei de mesaje pentru a fi ușor de accesat.",
+		"confirmText": "Fixează"
+	},
+	"unpinConfirm": {
+		"title": "Debifează conversație?",
+		"content": "Această conversație va fi mutată la poziția normală în lista de mesaje.",
+		"confirmText": "Debifează"
+	},
+	"pinSection": "FIXATE",
+	"allMessagesSection": "TOATE MESAJELE",
+	"maximumPinnedConversationsReached": "Poți fixa maxim {{max}} conversații.",
+	"notification": {
+		"blockUser": {
+			"success": "Utilizator blocat cu succes",
+			"error": "Imposibil de blocat utilizator"
+		},
+		"unblockUser": {
+			"success": "Utilizator deblocat cu succes",
+			"error": "Imposibil de deblocat utilizator"
+		},
+		"muteSuccess": "Notificări oprite cu succes!",
+		"unMuteSuccess": "Notificări activate cu succes!",
+		"muteFailed": "Notificări oprite eșuat!",
+		"unMuteFailed": "Notificări activate eșuat!"
+	},
+	"waveWelcome": "Salută pentru a salut!",
+	"waveWelcomeDM": "Salută către {{username}}",
+	"members": "membri",
+	"speaker": "Difuzor",
+	"end": "Sfârșit",
+	"turnedMicOff": "a oprit microfonul"
+}

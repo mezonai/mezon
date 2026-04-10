@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Șterge clan",
+    "description": "Ești sigur că dorești să ștergi {{currentClan}}? Această acțiune nu poate fi desfăcută.",
+    "confirm": "Da",
+    "cancel": "Nu",
+     "titleLeaveClan": "Ieși din clan",
+    "descriptionLeaveClan": "Ești sigur că dorești să ieși din {{currentClan}}? Nu vei mai putea te alătura din nou acest clan decât dacă ești invitat din nou.",
+    "error": "A apărut o eroare când am încercat să ștergi/ieși din clan"
+  },
+  "confirmMessage": "Ești sigur că dorești să ștergi acest clan? Această acțiune nu poate fi desfăcută.",
+  "enterClanName": "Introdu nume clan",
+  "incorrectName": "Ai introdus greșit numele clan",
+  "cancel": "Anulează"
+}

@@ -1,0 +1,24 @@
+{
+	"threads": "Subiecte",
+	"emptyThread": {
+		"textNoThread": "Nu există subiecte",
+		"textNotify": "Focalizează-te pe conversație cu un subiect - un canal text temporar.",
+		"createThreads": "Creează subiect"
+	},
+	"otherThreads": "SUBIECTE MAI VECHI",
+	"errorMessage": "Vă rugăm să introduceți un nume de subiect valid (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+	"threadName": "Nume subiect",
+	"privateThread": "Subiect privat",
+	"onlyPeopleInviteThread": "Doar oamenii pe care i-ai invitat și moderatorii pot vedea acest subiect",
+	"newThread": "Subiect nou",
+	"joinedThreads": "subiecte la care s-a alăturat",
+	"joinedThread": "subiect la care s-a alăturat",
+	"otherActiveThreads": "alte subiecte active",
+	"olderThreads": "subiecte mai vechi",
+	"searchThreads": "caută subiect",
+	"searchThread": "caută subiect",
+	"threadFailed": {
+		"title": "Creare subiect eșuat",
+		"content": "Subiect nu a fost găsit sau nu ai permisiunea de a actualiza"
+	}
+}

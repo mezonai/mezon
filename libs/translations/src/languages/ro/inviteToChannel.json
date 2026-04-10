@@ -1,0 +1,46 @@
+{
+	"title": "Invită prieteni",
+	"iconTitle": {
+		"shareInvite": "Partajează",
+		"copyLink": "Copiază",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "Cod QR"
+	},
+	"copyLink": "Link copiat!",
+	"unknownChannel": "CHANNEL NESTABILIT",
+	"yourLinkInvite": "Link-ul va expira în",
+	"inviteFriendToChannel": "Invită prieteni în canal",
+	"inviteFriendToClan": "Invită prieteni în clan",
+	"editInviteLink": "Editează link invitație",
+	"inviteChannel": "INVITĂ ÎN CHANNEL",
+	"advancedSettings": "SETĂRI AVANSATE",
+	"expireAfter": "EXPIRĂ DUPĂ",
+	"maxUsers": "NUMĂR MAXIM UTILIZATORI",
+	"temporaryMembership": "Membru temporar",
+	"memberAutoKick": "Membri vor fi dați jos automat când se deconectează dacă nu le este atribuit un rol.",
+	"btnInvite": "Invită",
+	"btnSent": "Invitat",
+	"qrModal": {
+		"title": "Cod QR",
+		"scanToJoin": "Scanează acest cod pentru a te alătura {{clanName}}!",
+		"scanToJoinDefault": "Scanează acest cod pentru a te alătura clan!",
+		"generating": "Se generează cod QR...",
+		"errorGenerating": "Eroare la generare cod QR",
+		"downloadSuccess": "Cod QR salvat în bibliotecă",
+		"downloadError": "Eroare la descărcare cod QR",
+		"shareError": "Eroare la partajare cod QR",
+		"clanDefaultName": "Clan"
+	},
+	"share": {
+		"title": "partajează",
+		"message": "Alătură-te Mezon cu mine:",
+		"error": "Eroare la partajare link invitație",
+		"errorCreateLink": "Eroare la creare link invitație"
+	},
+	"noFriendsToInvite": "Nu există prieteni de invitat",
+	"addFriendsToInvite": "Adaugă prieteni în lista ta de prieteni pentru a-i invita în acest clan.",
+	"addSomeFriends": "Adaugă câțiva prieteni",
+	"loadingInviteLink": "Se creează link invitație..."
+}

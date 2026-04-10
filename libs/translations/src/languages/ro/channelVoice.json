@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Sală vocală",
+		"joinVoice": "Alătură-te vocale"
+	},
+	"chat": "Conversație",
+	"membersWillBeNotified": "{{participantsCount}} membri vor fi notificați",
+	"noDisplay": "Nu afișa canalul vocal",
+	"videoConnected": "Video conectat",
+	"voiceConnected": "Vocal conectat",
+	"turnOffMicrophone": "Oprește microfonul",
+	"turnOnMicrophone": "Activează microfonul",
+	"turnOffCamera": "Oprește camera",
+	"turnOnCamera": "Activează camera",
+	"stopScreenShare": "Oprește partajarea ecranului",
+	"shareYourScreen": "Partajează-ți ecranul",
+	"disconnect": "Deconectează",
+	"muteModal": {
+		"title": "Oprește sunetul membrului",
+		"content": "Ești sigur că vrei să oprești sunetul lui \"{{userName}}\"?",
+		"mute": "Oprește"
+	},
+	"kickModal": {
+		"title": "Elimină din canal vocal",
+		"content": "Ești sigur că vrei să elimini \"{{userName}}\" din canalul vocal?",
+		"kick": "Elimină"
+	},
+	"disconnectModal": {
+		"title": "Deconectare vocală",
+		"content": {
+			"removed": "Ești eliminat din canalul vocal",
+			"duplicate": "Ești deconectat deoarece te-ai alăturat în alt loc",
+			"default": "Ești deconectat din canalul vocal",
+			"deleted": "Canalul vocal a fost șters"
+		},
+		"confirm": "Confirmă"
+	},
+	"permission": {
+		"cameraTitle": "Dă permisiune camera",
+		"cameraBody": "Aplicația nu are permisiunea de camera. Vă rugăm să activați permisiunea camera în setările de sistem.",
+		"microphoneTitle": "Dă permisiune microfon",
+		"microphoneBody": "Aplicația nu are permisiunea de microfon. Vă rugăm să activați permisiunea microfon în setările de sistem.",
+		"cancel": "Anulează",
+		"deviceSettings": "Setări dispozitiv"
+	},
+	"device": {
+		"inputDevice": "Microfon",
+		"outputDevice": "Audio",
+		"camera": "Cameră"
+	},
+	"toast": {
+		"connectionConnected": "Conectat cu succes",
+		"connectionDisconnected": "Conexiune întreruptă",
+		"microphonePermissionRequired": "Este necesară permisiunea microfon",
+		"cameraPermissionRequired": "Este necesară permisiunea camera",
+		"recipientDidNotAnswer": "Destinatarul nu a răspuns la apel."
+	},
+	"usernameScreen": "Ecranul lui {{username}}"
+}

@@ -1,0 +1,63 @@
+{
+	"directMessages": "MESAJE DIRECTE",
+	"createDM": "Creează mesaj",
+	"friends": "Prieteni",
+	"yourMessages": "Mesajele tale",
+	"selectConversation": "Alege o conversație pentru a începe mesaj",
+	"createMessageGroup": {
+		"selectFriends": "Alege prieteni",
+		"canAddMoreFriends": "Poți adăuga încă {{count}} prieteni.",
+		"searchPlaceholder": "Tastează numele utilizatorului prietenului",
+		"addToGroupChat": "Adaugă la chat grup",
+		"createDMOrGroupChat": "Creează mesaj sau chat grup",
+		"createDM": "Creează mesaj",
+		"createGroupChat": "Creează chat grup",
+		"noFriendsFound": "Nu s-au găsit prieteni care nu sunt deja în această conversație.",
+		"creating": "Se creează..."
+	},
+	"editGroup": {
+		"title": "Editează grup",
+		"uploadImageText": "Apasă pentru a încărca imagine",
+		"removeAvatar": "Elimină avatar",
+		"groupNameLabel": "Nume grup",
+		"groupNamePlaceholder": "Introdu nume grup",
+		"validationError": "Vă rugăm să introduceți un nume de grup valid (doar litere, cifre, _ sau -).",
+		"cancel": "Anulează",
+		"save": "Salvează",
+		"saving": "Se salvează..."
+	},
+	"contextMenu": {
+		"editGroup": "Editează grup",
+		"addFriend": "Adaugă prieten",
+		"leaveGroup": "Ieși din grup",
+		"closeDM": "Închide mesaj",
+		"markAsRead": " marchează ca citit",
+		"invitePeople": "Invită persoane",
+		"hideConversation": "Ascunde conversație",
+		"profile": "Profil",
+		"message": "Mesaj",
+		"removeFriend": "Elimină prieten",
+		"block": "Blochează",
+		"unblock": "Deblochează",
+		"removeFromGroup": "Elimină din grup",
+		"shareContact": "Partajează contact",
+		"mute": "Oprește notificări",
+		"unmute": "Activează notificări",
+		"for15Minutes": "În 15 Minute",
+		"for1Hour": "În 1 Oră",
+		"for3Hours": "În 3 Ore",
+		"for8Hours": "În 8 Ore",
+		"for24Hours": "În 24 de Ore",
+		"untilTurnBackOn": "Până când redeschide",
+		"mutedUntil": "Notificări oprite până la {{time}}",
+		"pinConversation": "Fixează conversație",
+		"unpinConversation": "Debifează conversație",
+		"pinLimitExceeded": "Poți fixa maxim 10 conversații. Vă rugăm să debifezi altă conversație pentru a fixa această"
+	},
+	"pinned": "FIXATE",
+	"remove": {
+		"content": "Conversația din acest canal nu mai este disponibilă!",
+		"title": "Conversație indisponibilă",
+		"button": "Confirmă"
+	}
+}

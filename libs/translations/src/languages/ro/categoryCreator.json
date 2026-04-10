@@ -1,0 +1,17 @@
+{
+    "actions": {
+        "create": "Creează",
+        "cancel": "Anulează"
+    },
+    "fields": {
+        "cateName": {
+            "title": "Categorie nouă",
+            "placeholder": "Nume categorie",
+            "errorMessage": "Vă rugăm să introduceți un nume de categorie valid (maxim 64 de caractere, doar litere, cifre, _ sau -)."
+        },
+        "catePrivate": {
+            "title": "Categorie privată",
+            "description": "Dacă categoria este setată ca privată, doar membrii și rolurile selectate pot vedea această categorie. Canalele sincronizate în această categorie vor fi convertite automat în private."
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "Întunecat",
+		"darker": "Mai întunecat",
+		"midnight": "Noaptea",
+		"light": "Deschis",
+		"system": "Sistem",
+		"sunrise": "Răsărit",
+		"redDark": "Roșu închis",
+		"purpleHaze": "Ceață mov",
+		"abyssDark": "Abyss Dark",
+		"sunset": "Apus"
+	},
+	"desc": "Poți schimba asta oricând mai târziu!"
+}

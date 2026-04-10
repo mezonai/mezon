@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Salvează"
+	},
+	"switch": {
+		"userProfile": "Personal",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Nume afișat",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Poreclă Clan",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronume",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Biografie",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Elimină schimbări nesalvate?",
+		"description": "Există schimbări nesalvate, ești sigur că vrei să le elimini?",
+		"discard": "Renunță",
+		"keepEditing": "Continuă editarea"
+	},
+	"selectAClan": "Alege un clan",
+	"searchClanPlaceholder": "Caută clan",
+	"updateProfileSuccess": "Profil personal actualizat cu succes",
+	"updateProfileError": "Profil personal actualizat eșuat",
+	"updateClanProfileSuccess": "Profil clan actualizat cu succes",
+	"emptyUsername": "Nume afișat nu trebuie să fie gol!",
+	"duplicateClannick": "Poreclă clan duplicată",
+	"clanNickname": "PORECCLĂ CLAN",
+	"changeAvatar": "Schimbă avatar",
+	"removeAvatar": "Elimină",
+	"avatar": "Avatar",
+	"preview": "PREVIZUALIZARE",
+	"nickNameExistsError": "Porecla există deja în clan. Vă rugăm să introduceți o altă poreclă.",
+	"unsavedChangesWarning": "Atenție - ai schimbări nesalvate!",
+	"reset": "Resetează",
+	"saveChanges": "Salvează schimbări",
+	"showProfilesDescription": " Arată-ți personalitatea cu profiluri diferite pentru fiecare clan",
+	"chooseAClan": "ALEGE UN CLAN",
+	"editImage": "Editează imagine",
+	"close": "Închide",
+	"resetChanges": "Resetează schimbări",
+	"cancelEditing": "Anulează editare",
+	"cancel": "Anulează",
+	"applyChanges": "Aplică schimbări",
+	"apply": "Aplică",
+	"moveImage": "Mută imagine",
+	"adjustZoom": "Ajustează zoom",
+	"profiles": "Profiluri",
+	"userProfile": "Profil utilizator",
+	"clanProfiles": "Profil Clan",
+	"directMessageIcon": "Iconiță mesaj privat",
+	"directMessageIconAction": {
+		"remove": "Elimină",
+		"removeTitle": "Elimină iconiță mesaj privat",
+		"removeDescription": "Ești sigur că vrei să elimini iconița mesajului privat?"
+	},
+	"displayName": "NUME AFISAT",
+	"emptyClanProfile": {
+		"title": "Nu te-ai alăturat încă clanuri",
+		"description": "Creează sau alătură-te unui clan pentru a-ți seta profilul clan.",
+		"createClan": "Creează clan",
+		"joinClan": "Alătură-te clan"
+	}
+}

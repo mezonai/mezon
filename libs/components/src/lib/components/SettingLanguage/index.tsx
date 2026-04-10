@@ -58,6 +58,11 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				title: `${t('setting:language.korean')}`,
 				value: 'kr',
 				contributedBy: 'robits'
+			},
+			{
+				title: `${t('setting:language.romanian')}`,
+				value: 'ro',
+				contributedBy: 'robits'
 			}
 		];
 	}, [t]);

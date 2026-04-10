@@ -1,0 +1,76 @@
+{
+	"title": "Personalizează-ți clanul",
+	"subTitle": "Creează un stil unic pentru noul tău clan cu nume și iconiță. Poți schimba oricând mai târziu.",
+	"clanName": "Nume clan",
+	"createServer": "Creează clan",
+	"byCreatingClan": "Prin crearea clanului, sunteți de acord cu",
+	"upload": "ÎNCĂRCĂ",
+	"addClan": "Creează clan",
+	"placeholderClan": "Introdu nume clan",
+	"errorMessage": "Vă rugăm să introduceți un nume de clan valid (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+	"duplicateNameMessage": "Numele clanului există deja. Vă rugăm să alegi un alt nume.",
+	"commutityGuide": "Regulile comunității Mezon.",
+	"busy": "În curs",
+	"findOrStartConversation": "Găsește sau începe conversația",
+	"createCategoryModal": {
+		"title": "Creează categorie",
+		"nameLabel": "Care este numele categoriei?",
+		"namePlaceholder": "Introduceți numele categoriei",
+		"privateCategory": "Categorie privată",
+		"privateDescription": "Prin crearea unei categorii private, doar membrii și rolurile selectate pot vedea această categorie. Canalele sincronizate în această categorie vor fi setate automat la această setare",
+		"invalidName": "Vă rugăm să introduceți un nume de categorie valid (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+		"duplicateName": "Numele categoriei există deja în clan. Vă rugăm să introduceți un nume diferit.",
+		"cancel": "Anulează",
+		"create": "Creează categorie"
+	},
+	"leaveClanModal": {
+		"title": "Ieși din {{clanName}}",
+		"description": "Ești sigur că vrei să ieși din <strong>{{clanName}}</strong>? Nu vei mai putea să te alături din nou acestui server decât dacă ești invitat din nou.",
+		"cancel": "Anulează"
+	},
+	"leaveClan": "Ieși din Clan",
+	"leaveClanTitle": "Ieși",
+	"categoryOverview": {
+		"categoryName": "Nume categorie",
+		"categoryNamePlaceholder": "Introdu numele tău de categorie aici...",
+		"hasWelcomeChannelError": "Această categorie are canal de bine-venit",
+		"deleteCategory": "Șterge categorie",
+		"deleteCategoryTitle": "Șterge categorie",
+		"deleteCategoryButton": "Șterge categorie",
+		"cannotBeUndone": "Această acțiune nu poate fi desfăcută",
+		"categoryLabel": "Categorie"
+	},
+	"createClanModal": {
+		"title": "Personalizează-ți Clanul",
+		"description": "Dă culoare noului tău clan alegând un nume și iconiță! Poți schimba dacă vrei!",
+		"upload": "Încarcă",
+		"clanName": "NUME CLAN",
+		"placeholder": "Introdu nume clan",
+		"invalidName": "Vă rugăm să introduceți un nume de clan valid (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+		"duplicateName": "Numele clanului există deja. Vă rugăm să alegi un alt nume.",
+		"agreement": "Prin crearea clanului, sunteți de acord cu",
+		"communityGuidelines": "Regulile comunității Mezon",
+		"back": "Înapoi",
+		"create": "Creează",
+		"toast": {
+			"limitImageSize": "Mărimea imaginii trebuie să fie mai mică de {{size}}MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Creează-ți Clanul",
+		"description": "Clanul tău este locul unde te întâlnești cu prietenii tăi. Creează-ți propriul clan și începe să chatoiești.",
+		"createMyOwn": "Creează șablon propriu",
+		"startFromTemplate": "Începe de la un șablon",
+		"gamingTemplate": "Jocuri",
+		"friendsTemplate": "Prieteni",
+		"studyGroupTemplate": "Grup de studiu",
+		"schoolClubTemplate": "Club școlar",
+		"localCommunityTemplate": "Comunitate locală",
+		"artistsCreatorsTemplate": "Artiști & Creatori"
+	},
+	"limitModal": {
+		"title": "Limită atins!",
+		"message": "Te-ai alăturat la 50 de clanuri. Trebuie să ieși dintr-un clan înainte de a putea te alătura sau crea un altul.",
+		"okayButton": "De acord"
+	}
+}

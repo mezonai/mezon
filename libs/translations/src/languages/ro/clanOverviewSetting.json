@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "Salvează"
+  },
+  "toast": {
+    "saveSuccess": "Salvat cu succes",
+    "notBlank": "Nu trebuie să fie gol",
+    "saveError": "A apărut o eroare la salvare"
+  },
+  "menu": {
+    "serverName": {
+      "title": "Nume clan",
+      "errorMessage": "Vă rugăm să introduceți un nume de clan valid (maxim 64 de caractere, doar litere, cifre, _ sau -).",
+      "duplicateNameMessage": "Numele clanului există deja. Vă rugăm să alegi un alt nume.",
+      "permissionDenied": "Nu ai permisiunea să editezi fundalul clan"
+    },
+    "inactive": {
+      "title": "Setări inactivitate",
+      "description": "Mută automat membrii la acest canal și oprește microfonul când nu sunt activi mai mult de perioada specificată. Această funcție nu se aplică pe versiunea web.",
+      "inactiveChannel": "Canal inactiv",
+      "inactiveTimeout": "Timp de așteptare inactivitate"
+    },
+    "systemMessage": {
+      "title": "Setări mesaj sistem",
+      "description": "Acesta este canalul unde trimitem notificări de eveniment sistem. Le poți opri oricând.",
+      "channel": "Canal",
+      "selectChannel": "Alege canal notificări",
+      "channelDescription": "Acesta este canalul unde mesajele sistem vor fi trimise",
+      "welcomeRandom": "Trimite mesaj de bine-venit aleatoriu când cineva se alătură la acest clan",
+      "welcomeSticker": "Cere membrilor să răspundă mesajului de bine-venit cu sticker",
+      "boostMessage": "Trimite mesaj când cineva Boost acest clan",
+      "setupTips": "Trimite sfaturi utile pentru setarea clan",
+      "hideAuditLog": "Trimite jurnal când o acțiune este efectuată cu clan",
+      "anonymousTitle": "Previno modul anonim",
+      "anonymousDescription": "Previn utilizatorii să folosească modul anonim"
+    },
+    "deleteServer": {
+      "title": "Șterge clan",
+      "delete": "Șterge clan"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "Setări notificare implicit",
+      "description": "Această setare va determina dacă membrii care nu și-au setat clar setările de notificare vor primi notificări pentru toate mesajele trimise în acest clan. Recomandăm ca pentru comunitățile clan să seteze notificări doar pentru @mention.",
+      "allMessages": "Toate mesajele",
+      "onlyMentions": "Doar @mention"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "Membru dat jos cu succes",
+      "kickMemberFailed": "Imposibil de dat jos membru",
+      "removeMemberThreadSuccess": "Membru eliminat din subiect cu succes",
+      "removeMemberThreadFailed": "Imposibil de eliminat membru din subiect",
+      "transferOwnershipSuccess": "Proprietate transferată cu succes",
+      "transferOwnershipFailed": "Transfer proprietate eșuat"
+    }
+  },
+  "action": {
+    "kick": "Dă jos",
+    "removeFromThread": "Elimină din subiect",
+    "manage": "Gestionează",
+    "transferOwnership": "Transferă proprietate",
+    "ban": "Blochează",
+    "unban": "Deblochează"
+  },
+  "threadRemoveModal": {
+    "title": "Elimină din subiect?",
+    "description": "Ești sigur că dorești să elimini {{username}} din acest subiect?",
+    "remove": "Elimină",
+    "cancel": "Nu e nimic"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Ești sigur?"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "Am căutat foarte departe. Din păcate, nu s-au găsit rezultate",
+	"video": {
+		"error": {
+			"title": "Video indisponibil",
+			"cannotPlay": "Imposibil de redat video",
+			"loadingAborted": "Încărcare video anulat",
+			"networkError": "Eroare rețea la încărcare video",
+			"codecNotSupported": "Codec video nu este suportat pe această platformă",
+			"codecNotSupportedElectron": "Codec video nu este suportat pe această platformă. Încearcă să descarci video pentru a-l reda cu player de sistem.",
+			"formatNotSupported": "Format video nu este suportat",
+			"downloadButton": "Descarcă video",
+			"browserNotSupported": "Browser-ul tău nu suportă tag video."
+		}
+	}
+}

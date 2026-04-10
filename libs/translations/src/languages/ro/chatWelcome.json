@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Apasă Lansează aplicația pentru a începe",
+		"inviteFriends": "Invită-ți prietenii",
+		"sendFirstMessage": "Trimite-ți primul mesaj",
+		"downloadApp": "Descarcă aplicația Mezon",
+		"createChannel": "Creează-ți canalul"
+	},
+	"welcome": {
+		"welcomeToChannel": "Bine ai venit la #{{channelName}}",
+		"startOfChannel": "Acesta este începutul canalului #{{channelName}} {{channelType}}",
+		"startOfThread": "Început de {{username}}",
+		"welcomeToGroup": "Bine ai venit în grupul {{groupName}}.",
+		"beginningOfDM": "Acesta este începutul conversației tale cu {{userName}}",
+		"editGroup": "Editează grup",
+		"private": "privat",
+		"friendRequestSent": "Ai primit o invitație de prietenie:",
+		"addFriend": "Adaugă prieten",
+		"removeFriend": "Elimină prieten",
+		"accept": "Acceptă",
+		"ignore": "Ignoră",
+		"friendRequestSentButton": "Invitație de prietenie trimisă",
+		"block": "Blochează",
+		"unblock": "Deblochează"
+	},
+	"toast": {
+		"userBlockedSuccess": "Utilizator blocat cu succes",
+		"failedToBlock": "Imposibil de blocat utilizator",
+		"userUnblockedSuccess": "Utilizator deblocat cu succes",
+		"failedToUnblock": "Imposibil de deblocat utilizator"
+	}
+}

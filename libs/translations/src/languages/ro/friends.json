@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Cerere prietenie",
+		"received": "Primite",
+		"sent": "Trimise",
+		"emptyReceived": {
+			"title": "Nu sunt cereri prietenie primite",
+			"description": "Aici vei vedea toate cererile de prietenie pe care oamenii ți le-au trimis."
+		},
+		"emptySent": {
+			"title": "Nu sunt cereri prietenie trimise",
+			"description": "Aici vei vedea toate cererile de prietenie pe care le-ai trimis altora."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Cerere prietenie primită",
+		"findYourFriend": "Găsește prieteni",
+		"addByUserName": "Adaugă prin nume utilizator sau număr telefon",
+		"addByUsername": "Adaugă prin {{username}}",
+		"searchUsernamePlaceholder": "Tastează nume utilizator sau număr telefon",
+		"whoYouWantToAddFriend": "Pe cine vrei să adaugi ca prieten?",
+		"byTheWay": "Apropo, numele tău utilizator este",
+		"sendRequestButton": "Trimite cerere prietenie",
+		"addFriendToast": "Cerere prietenie trimisă"
+	},
+	"friends": "Prieteni",
+	"noFriendsResultsFound": "Nu s-au găsit rezultate prieteni",
+	"toast": {
+		"sendAddFriendSuccess": "Cerere prietenie trimisă cu succes!",
+		"acceptAddFriendSuccess": "Invitație prietenie acceptată!",
+		"sendAddFriendFail": "Hmm, a apărut o eroare. Vă rugăm să verifici dacă numele utilizator este corect.",
+		"somethingWentWrong": "A apărut o eroare",
+		"friendRequestAlreadySent": "Cerere prietenie trimisă, în așteptare de confirmare."
+	},
+	"you": "tu"
+}

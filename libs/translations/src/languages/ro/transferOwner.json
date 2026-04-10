@@ -1,0 +1,9 @@
+{
+	"title": "Transfer proprietate Clan",
+	"description": "Acest lucru va transfera proprietatea {{clanName}} către {{memberName}}",
+	"confirmation": "Confirm că prin transferarea proprietății acestui clan către {{memberName}}, acesta îi aparține oficial.",
+	"buttons": {
+		"transfer": "Transferă proprietate",
+		"cancel": "Anulează"
+	}
+}

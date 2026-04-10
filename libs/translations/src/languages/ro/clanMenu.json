@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": " marchează ca citit",
+			"browseChannels": "Caută canal"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Creează canal",
+			"createCategory": "Creează categorie",
+			"createEvent": "Creează eveniment"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Editează profil clan",
+			"showAllChannels": "Arată toate canalele",
+			"hideMutedChannels": "Ascunde toate canalele",
+			"allowDirectMessage": "Permite mesaje directe",
+			"allowMessageRequest": "Permite cerere mesaj",
+			"reportServer": "Raportează clan",
+			"leaveServer": "Ieși din clan",
+			"deleteClan": "Șterge clan",
+			"auditLog": "Jurnal verificare"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Arată categorii goale",
+			"show": "Arată",
+			"hide": "Ascunde"
+		},
+		"devMode": {
+			"title": "Mod dezvoltator",
+			"copyServerID": "Copiază ID clan",
+			"serverIDCopied": "ID clan copiat"
+		}
+	},
+	"actions": {
+		"boot": "Upgrade",
+		"invite": "Invită",
+		"notifications": "Notificări",
+		"settings": "Setări"
+	},
+	"info": {
+		"online": "Online",
+		"members": "Membri"
+	},
+	"common": {
+		"search": "Caută",
+		"community": "Comunitate",
+		"searchMembers": "Caută membri"
+	},
+	"modalPanel": {
+		"createCategory": "Creează categorie",
+		"markAsRead": " marchează ca citit",
+		"processing": "Se procesează...",
+		"invitePeople": "Invită persoane",
+		"clanSettings": "Setări Clan",
+		"notificationSettings": "Setări notificări",
+		"showEmptyCategories": "Arată categorii goale",
+		"leaveClan": "Ieși din Clan"
+	}
+}

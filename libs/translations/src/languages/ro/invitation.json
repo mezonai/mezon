@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Invită prieteni să se alăture {{target}}",
+		"privateEvent": "Eveniment exterior",
+		"privateRoom": "Sală de ședințe",
+		"clanInvite": "invitație clan",
+		"sendLinkText": "Sau, trimite link {{type}} lor",
+		"expiresIn": "Link-ul tău de invitație expiră în {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 minute",
+		"1hour": "1 oră",
+		"6hours": "6 ore",
+		"12hours": "12 ore",
+		"1day": "1 zi",
+		"7days": "7 zile",
+		"never": "Niciodată"
+	},
+	"maxUses": {
+		"noLimit": "Fără limită",
+		"1use": "1 utilizare",
+		"5uses": "5 utilizări",
+		"10uses": "10 utilizări",
+		"25uses": "25 utilizări",
+		"50uses": "50 utilizări",
+		"100uses": "100 utilizări"
+	},
+	"generateLink": {
+		"expireAfter": "Expiră după",
+		"maxNumberOfUses": "Număr maxim utilizări"
+	},
+	"buttons": {
+		"copy": "Copiază",
+		"copied": "Copiat",
+		"copyQR": "Copiază QR",
+		"editInviteLink": "Editează link invitație.",
+		"cancel": "Anulează",
+		"generateNewLink": "Creează link nou",
+		"invite": "Invită",
+		"sent": "Trimis"
+	},
+	"searchPlaceholder": "Caută prieteni",
+	"privateChannelDescription": "Acest canal este privat, doar membrii și rolurile selectate pot vedea acest canal.",
+	"noResults": "Nu există rezultate",
+	"messages": {
+		"qrCopiedSuccess": "QR copiat cu succes!"
+	},
+	"errors": {
+		"createInviteLink": "Eroare la creare link invitație",
+		"copyToClipboard": "Imposibil de copiat în clipboard",
+		"copyFailed": "Copiere eșuată"
+	},
+	"acceptModal": {
+		"title": "Alătură-te Clan",
+		"invitedToJoin": "Ai fost invitat să te alături",
+		"memberCount": "{{count}} Membru",
+		"memberCount_plural": "{{count}} Membri",
+		"clanSettings": "Setări Clan",
+		"customizeAnytime": "Poți personaliza acestea oricând",
+		"noThanks": "Nu, mulțumesc",
+		"acceptInvite": "Acceptă invitație",
+		"joining": "Se alătură...",
+		"toast": {
+			"alreadyMember": "Ești deja membru!"
+		}
+	}
+}

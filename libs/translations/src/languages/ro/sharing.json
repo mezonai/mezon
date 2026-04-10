@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Opțiuni filtru",
+	"users": "Utilizatori",
+	"channels": "Canale",
+	"all": "Toate",
+	"selectChannelPlaceholder": "Alege un canal sau utilizator...",
+	"selectChannel": "Alege un canal",
+	"selectUser": "Alege un utilizator",
+	"share": "Partajează",
+	"suggestions": "Sugestii",
+	"addCommentPlaceholder": "Adaugă comentariu (Opțional)",
+	"fileTooLarge": "Fișier prea mare",
+	"fileSizeExceeded": "{{fileType}} nu trebuie să depășească {{maxSize}}MB!",
+	"bannedChannel": "Ești blocat în canal {{channelName}}.",
+	"empty": "Date goale"
+}

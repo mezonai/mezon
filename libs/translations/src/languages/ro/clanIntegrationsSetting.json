@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "Mesaje și actualizări automate",
+		"description": "Personalizează-ți clanul cu integrări. Gestionează webhook-uri, canale de tracking și aplicații, precum și setările Twitch și YouTube pentru creatori.",
+		"learnMore": "Află mai multe despre gestionarea integrărilor."
+	},
+	"webhooks": {
+		"description": "Webhook-ul este un instrument care te ajută să primești mesaje automate și actualizări de date trimise către un canal text în clanul tău prin conexiuni internet.",
+		"learnMore": "Află mai multe",
+		"try": "sau încearcă",
+		"buildOne": "construiește unul al tău."
+	},
+	"clanWebhooks": {
+		"description": "Webhook Clan este un mod simplu de a posta mesaje de la alte aplicații și site-uri web pentru fiecare utilizator Mezon folosind tehnologia internet.",
+		"tips": "Sfat: Dacă simți că token-ul de pe URL-ul tău a fost compromis sau depășit, reseta-l și copiează URL-ul nou."
+	},
+	"webhooksEdit": {
+		"title": "Editează webhook",
+		"save": "Salvează",
+		"cancel": "Anulează",
+		"channel": "Canal",
+		"nameLabel": "Nume",
+		"recommendImage": "Se recomandă să folosești o imagine cu mărime minimă de 128x128 px",
+		"webhookURL": "URL webhook",
+		"copy": "Copiază",
+		"copied": "Copiat",
+		"delete": "Șterge",
+		"selectAChannel": "Alege un canal",
+		"yes": "Da",
+		"deleteCaptionHook": "Șterge {{webhookName}}",
+		"deleteWebhookTitle": "Șterge {{webhookName}}",
+		"deleteWebhookConfirmation": "Ești sigur că dorești să ștergi webhook {{webhookName}}? Această acțiune nu poate fi desfăcută.",
+		"resetToken": "Resetează token",
+		"name": "Nume webhook",
+		"nameMaxLengthError": "Lungimea trebuie să fie de până la 64 de caractere."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Nu există webhook-uri"
+	},
+	"webhooksItem": {
+		"createdBy": "Creat la {{webhookCreateTime}} de {{webhookUserOwnerName}}"
+	},
+	"webhookChannelSelect": {
+		"title": "Alege Canal",
+		"description": "Alege canalul unde dorești să creezi webhook",
+		"selectChannel": "Canal",
+		"placeholder": "Alege un canal",
+		"create": "Creează"
+	},
+	"toast": {
+		"addSuccess": "Webhook creat cu succes!",
+		"addError": "A apărut o eroare la crearea webhook",
+		"saveSuccess": "Salvat cu succes!",
+		"saveError": "A apărut o eroare la salvare",
+		"deleteSuccess": "Webhook șters cu succes!",
+		"deleteError": "A apărut o eroare la ștergerea webhook",
+		"resetTokenSuccess": "Token resetat cu succes!",
+		"resetTokenError": "A apărut o eroare la resetarea token",
+		"copyError": "Imposibil de copiat URL",
+		"webhookGeneratedSuccess": "{{webhookName}} creat cu succes!",
+		"webhookDeletedSuccess": "{{webhookName}} șters cu succes!"
+	}
+}

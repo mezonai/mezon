@@ -1,0 +1,143 @@
+{
+	"description": {
+		"part1": "Este un loc minunat pentru a juca, chatoia cu prietenii sau construi o comunitate globală.",
+		"part2": "Personalizează-ți spațiul pentru",
+		"talk": "Chatoiești",
+		"play": "Te Distrăi",
+		"and": "Și",
+		"hangOut": "Te Reunești"
+	},
+	"download": {
+		"getItFrom": "Descarcă De",
+		"cdnUrl": "URL CDN"
+	},
+	"header": {
+		"home": "Acasă",
+		"overview": "Privire de ansamblu",
+		"features": "Funcții",
+		"developers": "Dezvoltatori",
+		"botsApps": "Boți/Aplicații",
+		"documents": "Documente",
+		"discover": "Explorare",
+		"blogs": "Blog",
+		"openMezon": "Open Mezon",
+		"login": "Logare",
+		"quickMeeting": "Mezon Meet"
+	},
+	"layout": {
+		"overview": {
+			"title": "Privire de ansamblu",
+			"subtitle": "Este mod nou de a comunica cu echipa ta.",
+			"description": "Mai rapid, mai bine organizat, perfect pentru lucru de la distanță."
+		},
+		"features": {
+			"title": "Funcțiile Noastre",
+			"subtitle": "Instrument Complet de Comunicare"
+		},
+		"cards": {
+			"workstation": {
+				"title": "Spațiu de lucru",
+				"description": "Spațiu digital de lucru care optimizează comunicare, colaborare și gestionare proiect prin integrare cu multe sisteme și instrumente diferite. Oferă spațiu structurat pentru grupuri, proiecte și departamente asigurând acces la informații și fluxuri de lucru fluent."
+			},
+			"ecosystem": {
+				"title": "Ecosistem",
+				"description": "Mediu digital dinamic care combină factorii de lucru și sociali, oferind funcții interactive și divertisment bogate. Suportă tranzacții virtuale, activitate comunitară și construire relații pentru a îmbunătăți experiența utilizator."
+			},
+			"aiAgent": {
+				"title": "AI Agent",
+				"description": "Sistem inteligent care automatizează sarcini, gestionează informații și optimizează fluxuri de lucru. Crește productivitate prin funcții precum notificări, monitorizare și comunicare automată."
+			}
+		},
+		"featureCards": {
+			"mezonMainnet": {
+				"title": "Mezon Mainnet",
+				"subtitle": "Layer 1 Viteză Mare, Fără Taxe",
+				"description": "Blockchain"
+			},
+			"developerApi": {
+				"title": "API Avansat",
+				"subtitle": "Pentru Dezvoltatori"
+			},
+			"gaming": {
+				"title": "Jocuri",
+				"subtitle": "& Divertisment"
+			},
+			"customizable": {
+				"title": "Personalizare Flexibilă",
+				"subtitle": "& Extindere Ușoară"
+			}
+		}
+	},
+	"sections": {
+		"hero": {
+			"title": {
+				"your": "Platforma ta",
+				"live": "De Conectare",
+				"work": "De Lucru",
+				"play": "De Distracție ",
+				"platform": "Numărul 1",
+				"theBest": "Pentru",
+				"yourCommunity": "Comunitatea ta"
+			},
+			"description": "este un loc minunat pentru a juca, chatoia cu prietenii sau construi o comunitate globală. Personalizează-ți spațiul pentru",
+			"talk": "Chatoiești",
+			"play": "Te Distrăi ",
+			"and": "Și",
+			"hangOut": "Te Reunești",
+			"tryButton": "Încearcă Mezon, Gratuit!",
+			"choosePlatform": "Alege Platforma ta"
+		},
+		"textChannel": {
+			"titlesuper": "Trimite Mesaje ",
+			"titlemessage": "Ultra Rapid",
+			"description": "Construit pentru a Chatoia, Colabora și Conecta.",
+			"description2": "Mesaje ultra rapide. Nelimitat. Trimis instantaneu.",
+			"learnMore": "Află mai multe"
+		},
+		"clanDiscover": {
+			"title": "Clanul tău, Lumea ta",
+			"description": "De la hobby, discuții la știri și trenduri, există un clan pentru orice.",
+			"learnMore": "Află mai multe"
+		},
+		"aiAgent": {
+			"title": "AI Agent pentru Clan și Suport 24/7",
+			"description": "AI Agent vocal (rezumă conținut în conversație voice, sau joacă rol de intervievator), asistent AI, BOT mod anonim (rezumă conținut în canal text).",
+			"learnMore": "Află mai multe"
+		},
+		"communityPayments": {
+			"title": "Plăți în Comunitate",
+			"description": "Trimite Mezon Coin, răsplătește creatori și cumpără de la branduri partenere — toate fără taxe platformă. Construit pe transparență și securitate.",
+			"learnMore": "Află mai multe"
+		},
+		"enterpriseIntegrations": {
+			"title": "Integrări Întreprindere",
+			"description": "Mezon te permite să te conectezi cu clienți din întreaga lume și să aduci experiențe scale mari captivante.",
+			"learnMore": "Află mai multe"
+		}
+	},
+	"footer": {
+		"description": "Mezon este un loc minunat pentru a juca și te distra cu prietenii, sau construi o comunitate globală.",
+		"getTheApp": "Descarcă Aplicație",
+		"copyright": "© 2024 Mezon. Toate Drepturile Rezervate.",
+		"links": {
+			"executiveSummary": "Rezumat Executiv",
+			"problemStatement": "Problema",
+			"solution": "Soluție",
+			"blockchainEconomy": "Blockchain & Economie Token",
+			"developerApi": "Integrare API Pentru Dezvoltatori",
+			"technicalArchitecture": "Arhitectură Tehnică",
+			"productRoadmap": "Plan Produs",
+			"tokenomics": "Tokenomics",
+			"team": "Echipa"
+		}
+	},
+	"externalMeet": {
+		"title": "Întâlnire",
+		"creatingMeeting": "Întâlnire creată cu succes!",
+		"invite": "Invită",
+		"joinMeeting": "Alătură-te Întâlnirii",
+		"copyLink": "Copiază Link",
+		"toastSuccess": "Link copiat!",
+		"toastFail": "Copiere eșuată."
+	}
+}

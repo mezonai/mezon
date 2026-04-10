@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Privire de ansamblu activitate",
+		"timePeriod": "Perioadă de timp",
+		"totalActiveUsers": "Număr total utilizatori activi",
+		"totalActiveUsersTooltip": "Număr de utilizatori unici care au fost activi cel puțin o dată",
+		"totalActiveChannels": "Număr total canale active",
+		"totalActiveChannelsTooltip": "Număr de canale unice care au fost active cel puțin o dată",
+		"totalMessages": "Număr total mesaje",
+		"totalMessagesTooltip": "Total mesaje trimise în perioada selectată"
+	},
+	"pagination": {
+		"showing": "Arată",
+		"of": "din total",
+		"clans": "clan",
+		"previous": "Anterior",
+		"next": "Următor"
+	},
+	"chart": {
+		"loadingChartData": "Se încarcă date grafic...",
+		"metricsAvailableForOwnersOnly": "Metrici disponibile doar pentru proprietari clan."
+	},
+	"table": {
+		"detailedActivityData": "Date activitate detaliată",
+		"channelsActivityData": "Date activitate canal",
+		"userActivityData": "Date activitate utilizator",
+		"exportCSV": "Exportă CSV",
+		"exporting": "Se exportă...",
+		"includedInExport": "Această coloană va fi exportată în fișier CSV",
+		"notIncludedInExport": "Această coloană nu va fi exportată în fișier CSV",
+		"clanName": "Nume Clan",
+		"channelName": "Nume canal",
+		"userName": "Nume utilizator",
+		"activeUsers": "Utilizatori activi",
+		"activeChannels": "Canale active",
+		"messages": "Mesaje",
+		"noOwnedClans": "Nu deții niciun clan pentru a crea analiză.",
+		"noActiveChannels": "În prezent nu există canale active în acest clan.",
+		"noActiveUsers": "În prezent nu există utilizatori activi în acest canal.",
+		"selectColumnTooltip": "Selectează/dezactivează pentru a exporta CSV pe această coloană",
+		"selectAtLeastOneColumn": "Trebuie să selectezi cel puțin 1 coloană pentru a exporta csv"
+	},
+	"page": {
+		"backToOverview": "Înapoi la privirea de ansamblu utilizare Clan",
+		"clanUsageStatisticsReport": "Raport Statistici Utilizare Clan",
+		"dashboardReport": "Tablou de bord",
+		"report": "Raport"
+	},
+	"state": {
+		"loadingData": "Se încarcă date...",
+		"noDataFound": "Date ne găsite",
+		"noDataDescription": "Nu există date utilizare pentru perioada selectată."
+	},
+	"reportControls": {
+		"timePeriod": "Perioadă de timp",
+		"rangeType": "Tip interval",
+		"startDate": "Data de start",
+		"endDate": "Data de final",
+		"last7Days": "Ultimele 7 zile",
+		"last30Days": "Ultimele 30 de zile",
+		"last90Days": "Ultimele 90 de zile",
+		"customDateRange": "Interval dată personalizat",
+		"daily": "Zilnic",
+		"weekly": "Săptămânal",
+		"monthly": "Lunar",
+		"runReport": "Execută raport",
+		"reset": "Resetează"
+	},
+	"sortIcon": {
+		"tooltip": "Sortează crescător/crescător pe această coloană",
+		"sortedAsc": "Sortat crescător",
+		"sortedDesc": "Sortat descrescător"
+	}
+}
