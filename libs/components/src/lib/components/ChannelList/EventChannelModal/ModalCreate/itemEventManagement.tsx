@@ -359,8 +359,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						))}
 					{checkOptionLocation && (
 						<span className="flex gap-x-2 items-start min-w-0">
-							<span className="mt-0.5 shrink-0"><Icons.Location /></span>
-							<span className="break-all">{renderDescriptionWithLinks(address)}</span>
+							<span className="mt-0.5 shrink-0">
+								<Icons.Location />
+							</span>
+							<span className="break-all" data-e2e={generateE2eId('clan_page.modal.create_event.review.location_name')}>
+								{renderDescriptionWithLinks(address)}
+							</span>
 						</span>
 					)}
 					{option === '' && !address && !channelVoice && (
