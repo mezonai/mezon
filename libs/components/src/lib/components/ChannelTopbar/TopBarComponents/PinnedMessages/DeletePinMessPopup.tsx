@@ -1,3 +1,4 @@
+import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
@@ -23,6 +24,7 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const { pinMessage, contentString, closeModal, handlePinMessage, attachments, modalref } = props;
 	const { t } = useTranslation('channelTopbar');
 	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id as string));
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 
 	const messageContentObject = useMemo(() => {
 		return safeJSONParse(pinMessage.content || '{}') || {};
@@ -45,7 +47,14 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 				<div className="px-4 pb-2 max-h-[60vh] overflow-y-auto hide-scrollbar w-full">
 					<div className="flex items-start gap-2 p-2 shadow-md rounded bg-theme-setting-secondary">
 						<div className="flex-shrink-0">
-							<BaseProfile avatar={pinMessage.avatar || ''} hideIcon={true} />
+							<BaseProfile
+								avatar={priorityAvatar || pinMessage.avatar || ''}
+								name={
+									userSender?.clan_nick || userSender?.user?.display_name || userSender?.user?.username || pinMessage.username || ''
+								}
+								hideIcon={true}
+								hideName={true}
+							/>
 						</div>
 						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0">
 							<div className="font-medium">
