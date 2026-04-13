@@ -6,7 +6,6 @@ import {
 	channelsActions,
 	clansActions,
 	hasGrandchildModal,
-	listChannelRenderAction,
 	notificationSettingActions,
 	selectAllChannels,
 	selectAllChannelsFavorite,
@@ -175,13 +174,11 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 
 	const maskFavoriteChannel = () => {
 		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel.id, clan_id: currentClanId as string }));
-		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClanId as string, mark: true }));
 		setIsShowPanelChannel(false);
 	};
 
 	const removeFavoriteChannel = () => {
 		dispatch(channelsActions.removeFavoriteChannel({ channelId: channel.id, clanId: currentClanId || '' }));
-		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClanId as string, mark: false }));
 		setIsShowPanelChannel(false);
 	};
 

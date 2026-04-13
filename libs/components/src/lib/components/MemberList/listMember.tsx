@@ -1,7 +1,6 @@
 import { useMemberStatus } from '@mezon/core';
 import {
-	selectAllChannelMembersClan,
-	selectClanMemberWithStatusIds,
+	selectChannelMembersSortedByStatus,
 	selectCurrentChannelId,
 	selectCurrentClanCreatorId,
 	selectCurrentClanId,
@@ -12,7 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, useWindowSize } from '@mezon/utils';
+import { EUserStatus, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, useWindowSize } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,36 +30,52 @@ type TempMemberItemProps = {
 };
 
 const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
+	const { t } = useTranslation('memberPage');
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
 	const currentChannelID = useAppSelector(selectCurrentChannelId);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user.user?.id || ''));
+	const userVoiceStatus = useAppSelector((state) => selectStatusInVoice(state, user.user?.id || ''));
 	const avatar = user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '');
 	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
+	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
+	const secondaryLine =
+		userVoiceStatus && userMeta?.online ? (
+			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
+				<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+				{t('inVoice')}
+			</span>
+		) : (
+			userCustomStatus
+		);
 
 	return (
-		<div className="cursor-pointer flex items-center gap-[9px] relative ">
-			<div className="relative">
-				<AvatarImage
-					alt={''}
-					username={user?.user?.username ?? username}
-					className="min-w-8 min-h-8 max-w-8 max-h-8"
-					classNameText="font-semibold"
-					srcImgProxy={createImgproxyUrl(avatar ?? '')}
-					src={avatar}
-				/>
-				<div className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm ">
-					<UserStatusIconClan channelId={currentChannelID || ''} userId={id || ''} status={userMeta?.status} />
+		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
+			<div className="cursor-pointer flex items-center gap-[9px] relative">
+				<div className="relative">
+					<AvatarImage
+						alt={username}
+						username={user?.user?.username ?? username}
+						className="min-w-8 min-h-8 max-w-8 max-h-8"
+						classNameText="font-semibold"
+						srcImgProxy={createImgproxyUrl(avatar ?? '')}
+						src={avatar}
+					/>
+					<div className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary">
+						<UserStatusIconClan channelId={currentChannelID || ''} userId={id || ''} status={userMeta?.status} />
+					</div>
 				</div>
-			</div>
-
-			<div className="flex flex-col font-medium">
-				<ClanUserName userId={user.user?.id as string} name={username} isOwner={!!isOwner} />
-				<p className="text-theme-primary w-full text-[12px] line-clamp-1 break-all max-w-[176px] ">{userCustomStatus}</p>
+				<div className="flex flex-col font-medium">
+					<ClanUserName userId={user.user?.id as string} name={username} isOwner={!!isOwner} />
+					<p className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px]">
+						{secondaryLine}
+					</p>
+				</div>
 			</div>
 		</div>
 	);
 });
+
 type MemberClanProps = {
 	id: string;
 	isOwner?: boolean;
@@ -121,19 +136,16 @@ const ListMember = () => {
 
 	const [showFullList, setShowFullList] = useState(false);
 	useEffect(() => {
-		if (showFullList) {
-			setShowFullList(false);
-		}
+		setShowFullList(false);
 	}, [currentClanId]);
 
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const userChannels = useAppSelector((state) => selectAllChannelMembersClan(state, currentChannelId as string));
-	const members = useSelector(selectClanMemberWithStatusIds);
+	const members = useAppSelector((state) => selectChannelMembersSortedByStatus(state, currentChannelId as string));
 
 	const [height, setHeight] = useState(window.innerHeight - heightTopBar - titleBarHeight);
 
 	const lisMembers = useMemo(() => {
-		if (!userChannels || !members) {
+		if (!members) {
 			return {
 				users: [{ onlineSeparate: true }, { offlineSeparate: true }],
 				onlineCount: 0,
@@ -141,23 +153,7 @@ const ListMember = () => {
 			};
 		}
 
-		const userIds = new Set(userChannels.map((item) => item.id));
-
-		const onlines: string[] = [];
-		const offlines: string[] = [];
-
-		for (const memberId of members.online) {
-			if (userIds.has(memberId)) {
-				onlines.push(memberId);
-			}
-		}
-
-		for (const memberId of members.offline) {
-			if (userIds.has(memberId)) {
-				offlines.push(memberId);
-			}
-		}
-
+		const { online: onlines, offline: offlines } = members;
 		const onlineCount = onlines.length;
 		const offlineCount = offlines.length;
 
@@ -185,7 +181,7 @@ const ListMember = () => {
 			offlineCount,
 			fullCount: onlineCount + offlineCount
 		};
-	}, [members, userChannels, showFullList]);
+	}, [members, showFullList, height]);
 
 	const appearanceTheme = useSelector(selectTheme);
 
@@ -198,13 +194,13 @@ const ListMember = () => {
 			() => {
 				setShowFullList(true);
 			},
-			{ timeout: 3000 }
+			{ timeout: 1000 }
 		);
 
 		return () => {
 			window.cancelIdleCallback(idleCallback);
 		};
-	}, [lisMembers]);
+	}, [currentClanId]);
 
 	const parentRef = useRef(null);
 	const rowVirtualizer = useVirtualizer({

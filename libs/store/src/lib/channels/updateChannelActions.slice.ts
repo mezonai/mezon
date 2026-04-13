@@ -6,7 +6,6 @@ import { getStoreAsync } from '../store';
 import { channelMetaActions } from './channelmeta.slice';
 import type { ChannelsEntity } from './channels.slice';
 import { channelsActions } from './channels.slice';
-import { listChannelRenderAction } from './listChannelRender.slice';
 
 export const switchPublicToPrivate = createAsyncThunk(
 	'channels/switchPublicToPrivate',
@@ -40,22 +39,9 @@ export const switchPublicToPrivate = createAsyncThunk(
 					channelPrivate: channel.channel_private
 				})
 			);
-			thunkAPI.dispatch(
-				listChannelRenderAction.updateChannelInListRender({
-					channelId: channel.channel_id,
-					clanId: channel.clan_id as string,
-					dataUpdate: { ...channel }
-				})
-			);
 			return false;
 		}
 		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channel_id }));
-		thunkAPI.dispatch(
-			listChannelRenderAction.deleteChannelInListRender({
-				channelId: channel.channel_id,
-				clanId: channel.clan_id as string
-			})
-		);
 		return true;
 	}
 );
@@ -68,13 +54,6 @@ export const switchPrivateToPublic = createAsyncThunk(
 				clanId: channel.clan_id,
 				channelId: channel.channel_id,
 				channelPrivate: channel.channel_private
-			})
-		);
-		thunkAPI.dispatch(
-			listChannelRenderAction.updateChannelInListRender({
-				channelId: channel.channel_id,
-				clanId: channel.clan_id as string,
-				dataUpdate: { ...channel }
 			})
 		);
 	}
@@ -94,18 +73,16 @@ export const addChannelNotExist = createAsyncThunk(
 				} as ChannelsEntity
 			})
 		);
-		thunkAPI.dispatch(
-			listChannelRenderAction.addChannelToListRender({
-				...channel,
-				type: channel.channel_type,
-				clan_name: ''
-			})
-		);
 	}
 );
 
 export const addThreadNotExist = createAsyncThunk('channels/switchPublicToPrivate', async ({ thread }: { thread: ChannelUpdatedEvent }, thunkAPI) => {
-	thunkAPI.dispatch(listChannelRenderAction.addThreadToListRender({ clanId: thread.clan_id, channel: { ...thread, id: thread.channel_id } }));
+	thunkAPI.dispatch(
+		channelsActions.upsertOne({
+			clanId: thread.clan_id as string,
+			channel: { ...thread, id: thread.channel_id } as ChannelsEntity
+		})
+	);
 	thunkAPI.dispatch(
 		channelMetaActions.add({
 			id: thread.channel_id || '',

@@ -20,8 +20,8 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
-import { listOnlineUserClan, usersClanActions } from '../clanMembers/clan.members';
-import { statusActions } from '../direct/status.slice';
+import { fetchClanMembersWithStatus, usersClanActions } from '../clanMembers/clan.members';
+
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -505,8 +505,7 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 		const state = thunkAPI.getState() as RootState;
 		if (!state.clans?.checkJoinList?.[clanId] && clanId !== '0') {
 			thunkAPI.dispatch(listChannelBadgeCount({ clanId }));
-			thunkAPI.dispatch(listOnlineUserClan({ clanId }));
-			thunkAPI.dispatch(statusActions.fetchListStatusClanUser({ clanId }));
+			await thunkAPI.dispatch(fetchClanMembersWithStatus({ clanId }));
 		}
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');

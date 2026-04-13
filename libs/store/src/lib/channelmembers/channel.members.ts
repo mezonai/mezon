@@ -1,14 +1,27 @@
 import { captureSentryError } from '@mezon/logger';
-import { EOverriddenPermission, type BanClanUsers, type IChannelMember, type LoadingStatus, type RemoveChannelUsers } from '@mezon/utils';
+import {
+	EOverriddenPermission,
+	type BanClanUsers,
+	type IChannelMember,
+	type LoadingStatus,
+	type RemoveChannelUsers,
+	type UsersClanEntity
+} from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type { ChannelUserListChannelUser } from 'mezon-js/api';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { USERS_CLANS_FEATURE_KEY, selectAllUserClans, selectEntitesUserClans, usersClanActions } from '../clanMembers/clan.members';
+import {
+	USERS_CLANS_FEATURE_KEY,
+	selectAllUserClans,
+	selectEntitesUserClans,
+	selectOnlineUserIdsSet,
+	usersClanActions
+} from '../clanMembers/clan.members';
 import type { DirectEntity } from '../direct/direct.slice';
 import { selectDirectMessageEntities } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
@@ -874,5 +887,55 @@ export const selectUserAddedByUserId = createSelector(
 			username: addedByUser.user?.username,
 			display_name: addedByUser.user?.display_name
 		};
+	}
+);
+
+const createCachedSelector = createSelectorCreator({
+	memoize: weakMapMemoize,
+	argsMemoize: weakMapMemoize
+});
+
+const getMemberName = (user: UsersClanEntity) =>
+	user.clan_nick?.toLowerCase() || user.user?.display_name?.toLowerCase() || user.user?.username?.toLowerCase() || '';
+
+const getChannelPrivacyMeta = (state: RootState, channelId: string) => {
+	const currentClanId = state.clans?.currentClanId;
+	const channel = state?.channels?.byClans?.[currentClanId as string]?.entities?.entities?.[channelId];
+	return `${channel?.channel_private},${channel?.parent_id}`;
+};
+
+export const selectChannelMembersSortedByStatus = createCachedSelector(
+	selectMemberIdsByChannelId,
+	selectAllUserClans,
+	selectEntitesUserClans,
+	selectOnlineUserIdsSet,
+	getChannelPrivacyMeta,
+	(channelMemberIds, allClanMembers, entities, onlineIds, privacyMeta) => {
+		const [isPrivate, parentId] = privacyMeta.split(',');
+		const useChannelFilter = isPrivate === '1' || (parentId && parentId !== '0' && parentId !== '');
+
+		const memberPool: UsersClanEntity[] = useChannelFilter
+			? ((channelMemberIds || []).map((id) => entities[id]).filter(Boolean) as UsersClanEntity[])
+			: allClanMembers;
+
+		const online: string[] = [];
+		const offline: string[] = [];
+
+		const sorted = [...memberPool].sort((a, b) => {
+			const aOnline = onlineIds.has(a.id);
+			const bOnline = onlineIds.has(b.id);
+			if (aOnline !== bOnline) return aOnline ? -1 : 1;
+			return getMemberName(a).localeCompare(getMemberName(b));
+		});
+
+		for (const member of sorted) {
+			if (onlineIds.has(member.id)) {
+				online.push(member.id);
+			} else {
+				offline.push(member.id);
+			}
+		}
+
+		return { online, offline };
 	}
 );

@@ -4,7 +4,6 @@ import { ChannelType } from 'mezon-js';
 import { selectCurrentUserId } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { selectChannelByChannelId } from '../channels/channels.slice';
-import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
 import type { RootState } from '../store';
@@ -37,15 +36,6 @@ export const addChannelUsers = createAsyncThunk(
 			const thread = selectChannelByChannelId(state, channelId);
 			if (!thread) return response;
 
-			thunkAPI.dispatch(
-				listChannelRenderAction.addThreadToListRender({
-					clanId: thread.clan_id ?? '',
-					channel: {
-						...thread,
-						active: 1
-					}
-				})
-			);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'channelUsers/addChannelUsers');

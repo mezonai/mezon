@@ -38,7 +38,6 @@ import { channelMediaReducer } from './channels/channelMedia.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
-import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
 import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
@@ -386,7 +385,6 @@ const reducer = {
 	dmcall: DMCallReducer,
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
-	[CHANNEL_LIST_RENDER]: listChannelRenderReducer,
 	[COMPOSE_FEATURE_KEY]: persistedCompose,
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,

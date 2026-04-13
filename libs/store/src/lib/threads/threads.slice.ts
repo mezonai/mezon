@@ -8,7 +8,6 @@ import type { ApiChannelDescription } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions, selectCurrentChannel } from '../channels/channels.slice';
-import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -278,7 +277,6 @@ export const leaveThread = createAsyncThunk(
 					thunkAPI.dispatch(threadsActions.remove(threadId));
 					thunkAPI.dispatch(threadsActions.removeThreadFromCache({ channelId, threadId }));
 				}
-				thunkAPI.dispatch(listChannelRenderAction.leaveChannelListRender({ channelId: threadId, clanId }));
 				return threadId;
 			}
 		} catch (error) {
