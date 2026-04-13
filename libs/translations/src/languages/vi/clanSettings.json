@@ -89,5 +89,15 @@
 		"customizeMessage": "Hãy tùy chỉnh những nhãn dán tuyệt vời theo sở thích của bạn",
 		"uploadSticker": "Tải lên nhãn dán"
 	},
-	"deleteClanTitle": "Xóa '{{clanName}}'"
+	"deleteClanTitle": "Xóa '{{clanName}}'",
+	"archiveChannels": {
+		"description": "Khôi phục kênh vào thanh bên để kích hoạt lại. Các kênh đã lưu trữ vẫn giữ toàn bộ lịch sử tin nhắn nhưng sẽ bị ẩn khỏi điều hướng chính.",
+		"loading": "Đang tải các kênh đã lưu trữ...",
+		"empty": "Không có kênh đã lưu trữ.",
+		"unnamed": "Kênh chưa đặt tên",
+		"restore": "Khôi phục",
+		"restoring": "Đang khôi phục...",
+		"unknownTime": "gần đây",
+		"meta": "Đã lưu trữ {{timeAgo}} • {{count}} tin nhắn"
+	}
 }

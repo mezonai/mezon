@@ -76,6 +76,10 @@
 	"notify": {
 		"serverIDCopied": "Copied Channel ID"
 	},
+	"toast": {
+		"archiveChannelSuccess": "Channel archived successfully.",
+		"restoreChannelSuccess": "Channel restored successfully."
+	},
 	"modalConfirm": {
 		"thread": {
 			"title": "Delete Thread {{threadName}}",

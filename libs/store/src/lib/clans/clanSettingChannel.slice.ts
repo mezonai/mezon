@@ -1,4 +1,4 @@
-import type { LoadingStatus } from '@mezon/utils';
+import { ThreadStatus, type LoadingStatus } from '@mezon/utils';
 import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
@@ -92,7 +92,7 @@ export const fetchChannelSettingInClanCached = async (
 		parentId, // parent_id
 		undefined, // category_id
 		undefined, // private_channel
-		undefined, // active
+		ThreadStatus.joined, // active
 		undefined, // status
 		undefined, // type
 		limit, // limit
@@ -239,6 +239,27 @@ export const settingClanChannelSlice = createSlice({
 	},
 	extraReducers(builder) {
 		builder
+			.addCase('thread/archiveChannel/fulfilled', (state: SettingClanChannelState, action) => {
+				const channelId = action.payload?.channel_id as string | undefined;
+				if (!channelId) {
+					return;
+				}
+
+				if (state.entities[channelId]) {
+					channelSettingAdapter.removeOne(state, channelId);
+					state.channelCount = Math.max(0, state.channelCount - 1);
+				}
+
+				state.listSearchChannel = state.listSearchChannel.filter((channel) => channel.id !== channelId);
+
+				for (const parentId of Object.keys(state.threadsByChannel)) {
+					const previousLength = state.threadsByChannel[parentId].length;
+					state.threadsByChannel[parentId] = state.threadsByChannel[parentId].filter((thread) => thread.id !== channelId);
+					if (state.threadsByChannel[parentId].length < previousLength) {
+						state.threadCount = Math.max(0, state.threadCount - 1);
+					}
+				}
+			})
 			.addCase(fetchChannelSettingInClan.fulfilled, (state: SettingClanChannelState, actions) => {
 				const { fromCache, response, typeFetch } = actions.payload;
 

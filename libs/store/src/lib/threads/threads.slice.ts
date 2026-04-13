@@ -3,14 +3,20 @@ import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
 import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ArchiveInactiveChannelThreadsRequest as ApiArchiveInactiveChannelThreadsRequest } from 'mezon-js-protobuf';
+import { t } from 'i18next';
+import type {
+	ArchiveChannelRequest as ApiArchiveChannelRequest,
+	ListArchivedChannelDescsRequest as ApiListArchivedChannelDescsRequest
+} from 'mezon-js-protobuf';
 import type { ApiChannelDescription } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions, selectCurrentChannel } from '../channels/channels.slice';
+import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
+import { toastActions } from '../toasts';
 
 export const THREADS_FEATURE_KEY = 'threads';
 
@@ -37,7 +43,9 @@ export interface ThreadsState extends EntityState<ThreadsEntity, string> {
 	isThreadModalVisible?: boolean;
 	isFocusThreadBox?: boolean;
 	loadingStatusSearchedThread?: LoadingStatus;
+	loadingStatusArchivedChannels?: LoadingStatus;
 	threadSearchedResult?: Record<string, ThreadsEntity[] | null>;
+	archivedChannelsByClan?: Record<string, ThreadsEntity[] | null>;
 	inputSearchThread?: Record<string, string>;
 	shouldTriggerSendFromThreadName?: boolean;
 }
@@ -94,9 +102,9 @@ export const fetchThreadsCached = async (
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 
-	if (!shouldForceCall && channelData?.ids?.length > 0) {
+	if (!shouldForceCall && channelData) {
 		return {
-			channeldesc: threadsAdapter.getSelectors().selectAll(channelData),
+			channeldesc: channelData || [],
 			fromCache: true,
 			time: channelData.cache?.lastFetched || Date.now()
 		};
@@ -133,11 +141,7 @@ const updateCacheOnThreadCreation = createAsyncThunk(
 	}
 );
 
-const mapToThreadEntity = (threads: ApiChannelDescription[] | ThreadsEntity[] | undefined | null) => {
-	if (!Array.isArray(threads)) {
-		return [];
-	}
-
+const mapToThreadEntity = (threads: ApiChannelDescription[]) => {
 	return threads.map((thread) => ({
 		...thread,
 		id: thread.channel_id as string
@@ -209,6 +213,7 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 			undefined,
 			Boolean(noCache)
 		);
+
 		if (!response.channeldesc) {
 			return {
 				channelId,
@@ -230,7 +235,9 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 });
 
 const getInitialChannelState = () => {
-	return threadsAdapter.getInitialState();
+	return {
+		threads: threadsAdapter.getInitialState()
+	};
 };
 
 export const initialThreadsState: ThreadsState = threadsAdapter.getInitialState({
@@ -244,7 +251,9 @@ export const initialThreadsState: ThreadsState = threadsAdapter.getInitialState(
 	openThreadMessageState: false,
 	isThreadModalVisible: false,
 	loadingStatusSearchedThread: 'not loaded',
+	loadingStatusArchivedChannels: 'not loaded',
 	threadSearchedResult: {},
+	archivedChannelsByClan: {},
 	inputSearchThread: {},
 	shouldTriggerSendFromThreadName: false
 });
@@ -277,6 +286,7 @@ export const leaveThread = createAsyncThunk(
 					thunkAPI.dispatch(threadsActions.remove(threadId));
 					thunkAPI.dispatch(threadsActions.removeThreadFromCache({ channelId, threadId }));
 				}
+				thunkAPI.dispatch(listChannelRenderAction.leaveChannelListRender({ channelId: threadId, clanId }));
 				return threadId;
 			}
 		} catch (error) {
@@ -286,27 +296,45 @@ export const leaveThread = createAsyncThunk(
 	}
 );
 
-export const archiveInactiveChannelThreads = createAsyncThunk(
-	'thread/archiveInactiveChannelThreads',
-	async ({ clan_id, parent_id: _parent_id, thread_ids }: ApiArchiveInactiveChannelThreadsRequest, thunkAPI) => {
+export const archiveChannel = createAsyncThunk('thread/archiveChannel', async ({ clan_id, channel_id }: ApiArchiveChannelRequest, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.archiveChannel(mezon.session, clan_id, channel_id);
+		thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId: channel_id, activeCode: 0 }));
+		thunkAPI.dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: channel_id, clanId: clan_id }));
+		thunkAPI.dispatch(
+			toastActions.addToast({
+				message: t('channelMenu:toast.archiveChannelSuccess'),
+				type: 'success'
+			})
+		);
+
+		return {
+			clan_id,
+			channel_id,
+			response
+		};
+	} catch (error) {
+		captureSentryError(error, 'threads/archiveChannel');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const listArchivedChannelDescs = createAsyncThunk(
+	'threads/listArchivedChannelDescs',
+	async ({ clan_id }: ApiListArchivedChannelDescsRequest, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const filteredThreadIds = thread_ids.filter(Boolean);
-			const hardcodedParentId = '0';
-			const response = await mezon.client.archiveInactiveChannelThreads(mezon.session, clan_id, hardcodedParentId, filteredThreadIds);
-			for (const threadId of filteredThreadIds) {
-				thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId: threadId, activeCode: 0 }));
-				thunkAPI.dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: threadId, clanId: clan_id }));
-			}
+			const response = await mezon.client.listArchivedChannelDescs(mezon.session, clan_id);
+			console.log('API listArchivedChannelDescs response:', response);
+			const channels = mapToThreadEntity((response?.channeldesc as ApiChannelDescription[]) || []);
 
 			return {
 				clan_id,
-				parent_id: hardcodedParentId,
-				thread_ids: filteredThreadIds,
-				response
+				channels
 			};
 		} catch (error) {
-			captureSentryError(error, 'threads/archiveInactiveChannelThreads');
+			captureSentryError(error, 'threads/listArchivedChannelDescs');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -319,6 +347,12 @@ export const writeActiveArchivedThread = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.activeArchivedThread(mezon.session, clanId, channelId);
 			thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId, activeCode: ThreadStatus.joined }));
+			thunkAPI.dispatch(
+				toastActions.addToast({
+					message: t('channelMenu:toast.restoreChannelSuccess'),
+					type: 'success'
+				})
+			);
 			return { channelId, activeCode: ThreadStatus.joined };
 		} catch (error) {
 			captureSentryError(error, 'threads/writeActiveArchivedThread');
@@ -545,6 +579,21 @@ export const threadsSlice = createSlice({
 			.addCase(searchedThreads.rejected, (state: ThreadsState, action) => {
 				state.loadingStatusSearchedThread = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(listArchivedChannelDescs.pending, (state: ThreadsState) => {
+				state.loadingStatusArchivedChannels = 'loading';
+			})
+			.addCase(listArchivedChannelDescs.fulfilled, (state: ThreadsState, action) => {
+				const { clan_id, channels } = action.payload;
+				state.archivedChannelsByClan = {
+					...state.archivedChannelsByClan,
+					[clan_id]: channels
+				};
+				state.loadingStatusArchivedChannels = 'loaded';
+			})
+			.addCase(listArchivedChannelDescs.rejected, (state: ThreadsState, action) => {
+				state.loadingStatusArchivedChannels = 'error';
+				state.error = action.error.message;
 			});
 	}
 });
@@ -577,7 +626,8 @@ export const threadsActions = {
 	fetchThreads,
 	fetchThread,
 	leaveThread,
-	archiveInactiveChannelThreads,
+	archiveChannel,
+	listArchivedChannelDescs,
 	updateCacheOnThreadCreation,
 	searchedThreads,
 	writeActiveArchivedThread
@@ -629,6 +679,13 @@ export const selectIsThreadModalVisible = createSelector(getThreadsState, (state
 export const selectClickedOnThreadBoxStatus = createSelector(getThreadsState, (state) => state.isFocusThreadBox);
 
 export const selectSearchedThreadLoadingStatus = createSelector(getThreadsState, (state) => state.loadingStatusSearchedThread);
+
+export const selectArchivedChannelsLoadingStatus = createSelector(getThreadsState, (state) => state.loadingStatusArchivedChannels);
+
+export const selectArchivedChannelsByClanId = createSelector(
+	[(state: { threads: ThreadsState }) => state.threads.archivedChannelsByClan, (_: unknown, clanId: string) => clanId],
+	(archivedChannelsByClan, clanId): ThreadsEntity[] => archivedChannelsByClan?.[clanId] ?? []
+);
 
 export const selectSearchedThreadResult = createSelector(
 	[(state: { threads: ThreadsState }) => state.threads.threadSearchedResult, (_: any, channelId: string) => channelId],

@@ -64,7 +64,8 @@ type PanelChannel = {
 const typeChannel = {
 	text: ChannelType.CHANNEL_TYPE_CHANNEL,
 	thread: ChannelType.CHANNEL_TYPE_THREAD,
-	voice: ChannelType.CHANNEL_TYPE_MEZON_VOICE
+	voice: ChannelType.CHANNEL_TYPE_MEZON_VOICE,
+	streaming: ChannelType.CHANNEL_TYPE_STREAMING
 };
 // Legacy constants - use translated versions in components
 // TODO: Deprecated - use createNotiLabelsTranslated instead
@@ -132,6 +133,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || ''));
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
+	const activeChannel = useAppSelector((state) => selectChannelById(state, currentChannelId || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, currentClanId as string));
 	const panelRef = useRef<HTMLDivElement | null>(null);
@@ -402,6 +404,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		channel &&
 		channel.type !== undefined &&
 		(channel.type === typeChannel.text || channel.type === typeChannel.thread || (isThread && channel.parent_id && channel.parent_id !== '0'));
+
+	const shouldShowArchiveChannelOption = canManageChannel && channel.type !== typeChannel.voice && channel.type !== typeChannel.streaming;
 
 	const menuOpenMute = useRef(false);
 	const menuOpenNoti = useRef(false);

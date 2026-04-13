@@ -21,11 +21,12 @@ export const getJoinedThreadsWithinLast30Days = (threads: ThreadsEntity[]): Thre
 	const result = threads.filter((thread) => {
 		const isWithin30Days =
 			thread.last_sent_message?.timestamp_seconds && currentTime - Number(thread.last_sent_message.timestamp_seconds) < thirtyDaysInSeconds;
+		const isArchived = thread.active === 0;
 
 		if (!thread.channel_private) {
-			return thread.active === ThreadStatus.joined && isWithin30Days;
+			return (thread.active === ThreadStatus.joined || isArchived) && isWithin30Days;
 		} else {
-			return (thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate) && isWithin30Days;
+			return (thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate || isArchived) && isWithin30Days;
 		}
 	});
 
@@ -38,7 +39,8 @@ export const getThreadsOlderThan30Days = (threads: ThreadsEntity[]): ThreadsEnti
 
 	const result = threads.filter(
 		(thread) =>
-			thread.last_sent_message?.timestamp_seconds && currentTime - Number(thread.last_sent_message.timestamp_seconds) > thirtyDaysInSeconds
+			(!thread.last_sent_message?.timestamp_seconds && thread.active === 0) ||
+			(thread.last_sent_message?.timestamp_seconds && currentTime - Number(thread.last_sent_message.timestamp_seconds) > thirtyDaysInSeconds)
 	);
 
 	return result;
