@@ -268,6 +268,8 @@ type ChannelStreamProps = {
 	streamVideoRef: RefObject<HTMLVideoElement>;
 	disconnect: () => void;
 	isStream: boolean;
+	isPlaybackBlocked: boolean;
+	retryPlayback: () => Promise<boolean>;
 };
 
 // TODO: improve later
@@ -278,7 +280,9 @@ export default function ChannelStream({
 	handleChannelClick,
 	streamVideoRef,
 	disconnect,
-	isStream
+	isStream,
+	isPlaybackBlocked,
+	retryPlayback
 }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
 	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || '0'));
@@ -360,6 +364,11 @@ export default function ChannelStream({
 		resetHideButtonsTimer();
 	};
 
+	const handleRetryPlayback = async (event: React.MouseEvent<HTMLButtonElement>) => {
+		event.stopPropagation();
+		await retryPlayback();
+	};
+
 	useEffect(() => {
 		resetHideButtonsTimer();
 
@@ -410,6 +419,16 @@ export default function ChannelStream({
 								className={`transition-all duration-300 h-full max-sm:w-full w-${showMembers && !isShowChatStream ? '[70%]' : '[100%]'}`}
 							>
 								<HLSPlayer videoRef={streamVideoRef} currentChannel={currentChannel} />
+								{isPlaybackBlocked && (
+									<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+										<button
+											onClick={handleRetryPlayback}
+											className="pointer-events-auto px-4 py-2 rounded-lg bg-black/70 text-white hover:bg-black/80"
+										>
+											Click to enable audio
+										</button>
+									</div>
+								)}
 							</div>
 						) : (
 							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex justify-center items-center text-center border-theme-primary">
