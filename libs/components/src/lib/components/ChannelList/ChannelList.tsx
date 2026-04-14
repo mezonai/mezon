@@ -27,6 +27,7 @@ import {
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import type { ApiCategoryOrderUpdate } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -522,7 +523,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 								</div>
 							);
 						} else {
-							if (!(item as IChannel)?.parent_id || (item as IChannel).parent_id === '0') {
+							if ((item as IChannel).type !== ChannelType.CHANNEL_TYPE_THREAD) {
 								return (
 									<div
 										key={virtualRow.key}

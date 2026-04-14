@@ -19,15 +19,19 @@ function readOrder(ch: IChannel): number | undefined {
 	return (ch as WithOrder).order;
 }
 
-function sortParentsByOptionalOrder(parentsInCategory: IChannel[]): IChannel[] {
-	if (!parentsInCategory.length) {
-		return parentsInCategory;
+function sortByOptionalOrder(items: IChannel[]): IChannel[] {
+	if (!items.length) return items;
+	let hasOrder = false;
+	for (let i = 0; i < items.length; i++) {
+		if (readOrder(items[i]) != null) {
+			hasOrder = true;
+			break;
+		}
 	}
-	const hasOrder = parentsInCategory.some((p) => readOrder(p) != null);
-	if (!hasOrder) {
-		return parentsInCategory;
-	}
-	return [...parentsInCategory].sort((a, b) => {
+	if (!hasOrder) return items;
+	const sorted = new Array<IChannel>(items.length);
+	for (let i = 0; i < items.length; i++) sorted[i] = items[i];
+	sorted.sort((a, b) => {
 		const ao = readOrder(a);
 		const bo = readOrder(b);
 		if (ao != null || bo != null) {
@@ -37,26 +41,7 @@ function sortParentsByOptionalOrder(parentsInCategory: IChannel[]): IChannel[] {
 		const bId = b.channel_id ?? '';
 		return aId < bId ? -1 : aId > bId ? 1 : 0;
 	});
-}
-
-function sortThreadsByOptionalOrder(children: IChannel[] | undefined): IChannel[] {
-	if (!children?.length) {
-		return children ?? [];
-	}
-	const hasOrder = children.some((c) => readOrder(c) != null);
-	if (!hasOrder) {
-		return children;
-	}
-	return [...children].sort((a, b) => {
-		const ao = readOrder(a);
-		const bo = readOrder(b);
-		if (ao != null || bo != null) {
-			return (ao ?? Number.MAX_SAFE_INTEGER) - (bo ?? Number.MAX_SAFE_INTEGER);
-		}
-		const aId = a.channel_id ?? '';
-		const bId = b.channel_id ?? '';
-		return aId < bId ? -1 : aId > bId ? 1 : 0;
-	});
+	return sorted;
 }
 
 function isParentChannel(ch: IChannel): boolean {
@@ -67,7 +52,8 @@ function isParentChannel(ch: IChannel): boolean {
 export function partitionChannelsForRender(channels: IChannel[]): { parents: IChannel[]; threadSlice: IChannel[] } {
 	const parents: IChannel[] = [];
 	const threadSlice: IChannel[] = [];
-	for (const ch of channels) {
+	for (let i = 0; i < channels.length; i++) {
+		const ch = channels[i];
 		if (isParentChannel(ch)) {
 			parents.push(ch);
 		} else {
@@ -93,7 +79,8 @@ export function partitionParentsAndThreads(prioritized: IChannel[]): { parents: 
 
 export function buildThreadsByParent(threadSlice: IChannel[]): Map<string, IChannel[]> {
 	const threadsByParent = new Map<string, IChannel[]>();
-	for (const t of threadSlice) {
+	for (let i = 0; i < threadSlice.length; i++) {
+		const t = threadSlice[i];
 		const pid = t.parent_id || '';
 		let list = threadsByParent.get(pid);
 		if (!list) {
@@ -107,7 +94,8 @@ export function buildThreadsByParent(threadSlice: IChannel[]): Map<string, IChan
 
 export function groupParentsByCategoryId(parents: IChannel[]): Map<string, IChannel[]> {
 	const map = new Map<string, IChannel[]>();
-	for (const p of parents) {
+	for (let i = 0; i < parents.length; i++) {
+		const p = parents[i];
 		const cid = p.category_id as string;
 		let arr = map.get(cid);
 		if (!arr) {
@@ -120,36 +108,45 @@ export function groupParentsByCategoryId(parents: IChannel[]): Map<string, IChan
 }
 
 export function flattenCategoryWithThreads(parentsForCategory: IChannel[], threadsByParent: Map<string, IChannel[]>): IChannel[] {
-	const parentsSorted = sortParentsByOptionalOrder(parentsForCategory);
-	const sortedChannels: IChannel[] = [];
-	for (const channel of parentsSorted) {
-		const newChannel = { ...channel };
-		sortedChannels.push(newChannel);
+	const parentsSorted = sortByOptionalOrder(parentsForCategory);
+	const result: IChannel[] = [];
+	for (let i = 0; i < parentsSorted.length; i++) {
+		const channel = parentsSorted[i];
 		const rawChildren = threadsByParent.get(channel.id);
-		const children = sortThreadsByOptionalOrder(rawChildren);
-		if (children?.length) {
-			for (const thread of children) {
-				sortedChannels.push(thread);
-				if (newChannel.threadIds) {
-					newChannel.threadIds = [...newChannel.threadIds, thread.id];
-				} else {
-					newChannel.threadIds = [thread.id];
-				}
-			}
+		if (!rawChildren || rawChildren.length === 0) {
+			result.push(channel);
+			continue;
+		}
+		const children = sortByOptionalOrder(rawChildren);
+		const threadIds: string[] = channel.threadIds ? channel.threadIds.slice() : [];
+		for (let j = 0; j < children.length; j++) {
+			threadIds.push(children[j].id);
+		}
+		const newChannel = { ...channel, threadIds };
+		result.push(newChannel);
+		for (let j = 0; j < children.length; j++) {
+			result.push(children[j]);
 		}
 	}
-	return sortedChannels;
+	return result;
 }
 
 export function prioritizeChannel(channels: IChannel[]): IChannel[] {
 	const { parents, threadSlice } = partitionChannelsForRender(channels);
-	return [...parents, ...threadSlice];
+	const out = new Array<IChannel>(parents.length + threadSlice.length);
+	let idx = 0;
+	for (let i = 0; i < parents.length; i++) out[idx++] = parents[i];
+	for (let i = 0; i < threadSlice.length; i++) out[idx++] = threadSlice[i];
+	return out;
 }
 
 export function sortChannels(channels: IChannel[], categoryId: string): IChannel[] {
 	const { parents, threadSlice } = partitionChannelsForRender(channels);
 	const threadsByParent = buildThreadsByParent(threadSlice);
-	const parentsInCat = parents.filter((p) => p.category_id === categoryId);
+	const parentsInCat: IChannel[] = [];
+	for (let i = 0; i < parents.length; i++) {
+		if (parents[i].category_id === categoryId) parentsInCat.push(parents[i]);
+	}
 	return flattenCategoryWithThreads(parentsInCat, threadsByParent);
 }
 
@@ -158,30 +155,39 @@ export function buildListChannelRender(payload: DataChannelAndCate): Array<ICate
 	const { parents, threadSlice } = partitionChannelsForRender(listChannel);
 	const threadsByParent = buildThreadsByParent(threadSlice);
 	const parentsByCategory = groupParentsByCategoryId(parents);
-	const favorIdSet = new Set(listChannelFavor);
-	const rows: (ICategoryChannel | IChannel)[] = [];
+
+	const favorIdSet = listChannelFavor.length > 0 ? new Set(listChannelFavor) : null;
+
+	const categoryRows: (ICategoryChannel | IChannel)[] = [];
 	const listFavorChannel: IChannel[] = [];
-	listCategory.forEach((category) => {
+
+	for (let ci = 0; ci < listCategory.length; ci++) {
+		const category = listCategory[ci];
 		const parentsInCat = parentsByCategory.get(category.id) ?? [];
 		const categoryChannels = flattenCategoryWithThreads(parentsInCat, threadsByParent);
-		const listChannelIds = categoryChannels.map((channel) => channel.id);
-		const categoryWithChannels: ICategoryChannel = {
+
+		const listChannelIds = new Array<string>(categoryChannels.length);
+		for (let i = 0; i < categoryChannels.length; i++) {
+			listChannelIds[i] = categoryChannels[i].id;
+		}
+
+		categoryRows.push({
 			...category,
 			channels: listChannelIds
-		};
+		} as ICategoryChannel);
 
-		rows.push(categoryWithChannels);
-		categoryChannels.forEach((channel) => {
-			if (favorIdSet.has(channel.id)) {
+		for (let i = 0; i < categoryChannels.length; i++) {
+			const channel = categoryChannels[i];
+			if (favorIdSet && favorIdSet.has(channel.id)) {
 				listFavorChannel.push({
 					...channel,
 					isFavor: true,
 					category_id: FAVORITE_CATEGORY_ID
 				});
 			}
-			rows.push(channel);
-		});
-	});
+			categoryRows.push(channel);
+		}
+	}
 
 	const favorCate: ICategoryChannel = {
 		channels: listChannelFavor,
@@ -192,33 +198,47 @@ export function buildListChannelRender(payload: DataChannelAndCate): Array<ICate
 		creator_id: '0',
 		category_order: 1,
 		isFavor: true
-	};
+	} as ICategoryChannel;
 
-	return [favorCate, ...listFavorChannel, ...rows];
+	const totalSize = 1 + listFavorChannel.length + categoryRows.length;
+	const result = new Array<ICategoryChannel | IChannel>(totalSize);
+	result[0] = favorCate;
+	for (let i = 0; i < listFavorChannel.length; i++) {
+		result[1 + i] = listFavorChannel[i];
+	}
+	const offset = 1 + listFavorChannel.length;
+	for (let i = 0; i < categoryRows.length; i++) {
+		result[offset + i] = categoryRows[i];
+	}
+
+	return result;
 }
 
 export function sortCategoriesByOrder(categories: CategoriesEntity[]): CategoriesEntity[] {
-	return [...categories].sort((a, b) => {
+	const sorted = new Array<CategoriesEntity>(categories.length);
+	for (let i = 0; i < categories.length; i++) sorted[i] = categories[i];
+	sorted.sort((a, b) => {
 		const ao = (a as { order?: number }).order ?? 0;
 		const bo = (b as { order?: number }).order ?? 0;
 		return ao - bo;
 	});
+	return sorted;
 }
 
 export function applyActiveThreadToRows(rows: Array<ICategoryChannel | IChannel>, activeThreadId?: string): Array<ICategoryChannel | IChannel> {
 	if (!activeThreadId) {
 		return rows;
 	}
-	return rows.map((row) => {
-		if (isCategoryHeaderRow(row)) {
-			return row;
+	const result = new Array<ICategoryChannel | IChannel>(rows.length);
+	for (let i = 0; i < rows.length; i++) {
+		const row = rows[i];
+		if (!isCategoryHeaderRow(row) && (row as IChannel).id === activeThreadId) {
+			result[i] = { ...(row as IChannel), active: 1 };
+		} else {
+			result[i] = row;
 		}
-		const ch = row as IChannel;
-		if (ch.id === activeThreadId) {
-			return { ...ch, active: 1 };
-		}
-		return row;
-	});
+	}
+	return result;
 }
 
 function isCategoryHeaderRow(item: ICategoryChannel | IChannel): item is ICategoryChannel {
@@ -233,7 +253,13 @@ export function applyLocalChannelOrderForCategory(
 	if (!orderedRowIds.length || categoryId === FAVORITE_CATEGORY_ID) {
 		return rows;
 	}
-	const catIndex = rows.findIndex((r) => isCategoryHeaderRow(r) && r.id === categoryId);
+	let catIndex = -1;
+	for (let i = 0; i < rows.length; i++) {
+		if (isCategoryHeaderRow(rows[i]) && rows[i].id === categoryId) {
+			catIndex = i;
+			break;
+		}
+	}
 	if (catIndex === -1) {
 		return rows;
 	}
@@ -242,23 +268,32 @@ export function applyLocalChannelOrderForCategory(
 		end++;
 	}
 	const segment = rows.slice(catIndex + 1, end);
-	const byId = new Map(segment.map((s) => [(s as IChannel).id, s] as const));
+	const byId = new Map<string, ICategoryChannel | IChannel>();
+	for (let i = 0; i < segment.length; i++) {
+		byId.set((segment[i] as IChannel).id, segment[i]);
+	}
 	const reordered: typeof segment = [];
 	const seen = new Set<string>();
-	for (const id of orderedRowIds) {
+	for (let i = 0; i < orderedRowIds.length; i++) {
+		const id = orderedRowIds[i];
 		const row = byId.get(id);
 		if (row) {
 			reordered.push(row);
 			seen.add(id);
 		}
 	}
-	for (const row of segment) {
-		const id = (row as IChannel).id;
+	for (let i = 0; i < segment.length; i++) {
+		const id = (segment[i] as IChannel).id;
 		if (!seen.has(id)) {
-			reordered.push(row);
+			reordered.push(segment[i]);
 		}
 	}
-	return [...rows.slice(0, catIndex + 1), ...reordered, ...rows.slice(end)];
+	const result = new Array<ICategoryChannel | IChannel>(catIndex + 1 + reordered.length + (rows.length - end));
+	let idx = 0;
+	for (let i = 0; i <= catIndex; i++) result[idx++] = rows[i];
+	for (let i = 0; i < reordered.length; i++) result[idx++] = reordered[i];
+	for (let i = end; i < rows.length; i++) result[idx++] = rows[i];
+	return result;
 }
 
 export function applySortChannelInCategory(
@@ -267,24 +302,23 @@ export function applySortChannelInCategory(
 	indexStart: number,
 	indexEnd: number
 ): Array<ICategoryChannel | IChannel> {
-	const next = [...rows];
+	const next = new Array<ICategoryChannel | IChannel>(rows.length);
+	for (let i = 0; i < rows.length; i++) next[i] = rows[i];
 	const itemOrder = next[indexStart] as IChannel;
 	const itemTarget = next[indexEnd] as IChannel;
-	const channelThreadOrder = next.filter((item) => {
-		if (((item as IChannel).id === itemOrder.id || (item as IChannel).parent_id === itemOrder.id) && item.category_id !== FAVORITE_CATEGORY_ID) {
-			return true;
-		}
-		return false;
-	});
-	const channelThreadTarget = next.filter((item) => {
-		if (
-			((item as IChannel).id === itemTarget.id || (item as IChannel).parent_id === itemTarget.id) &&
-			item.category_id !== FAVORITE_CATEGORY_ID
-		) {
-			return true;
-		}
-		return false;
-	});
+	const orderId = itemOrder.id;
+	const targetId = itemTarget.id;
+	const channelThreadOrder: (ICategoryChannel | IChannel)[] = [];
+	const channelThreadTarget: (ICategoryChannel | IChannel)[] = [];
+	for (let i = 0; i < next.length; i++) {
+		const item = next[i];
+		const ch = item as IChannel;
+		const id = ch.id;
+		const pid = ch.parent_id;
+		const notFavor = item.category_id !== FAVORITE_CATEGORY_ID;
+		if ((id === orderId || pid === orderId) && notFavor) channelThreadOrder.push(item);
+		if ((id === targetId || pid === targetId) && notFavor) channelThreadTarget.push(item);
+	}
 
 	if (categoryId !== FAVORITE_CATEGORY_ID) {
 		next.splice(indexStart, channelThreadOrder.length);
@@ -301,7 +335,13 @@ export function applySortChannelInCategory(
 }
 
 export function extractChannelRowIdsForCategory(rows: Array<ICategoryChannel | IChannel>, categoryId: string): string[] {
-	const catIndex = rows.findIndex((r) => isCategoryHeaderRow(r) && r.id === categoryId);
+	let catIndex = -1;
+	for (let i = 0; i < rows.length; i++) {
+		if (isCategoryHeaderRow(rows[i]) && rows[i].id === categoryId) {
+			catIndex = i;
+			break;
+		}
+	}
 	if (catIndex === -1) {
 		return [];
 	}
@@ -309,5 +349,10 @@ export function extractChannelRowIdsForCategory(rows: Array<ICategoryChannel | I
 	while (end < rows.length && !isCategoryHeaderRow(rows[end])) {
 		end++;
 	}
-	return rows.slice(catIndex + 1, end).map((r) => (r as IChannel).id);
+	const count = end - catIndex - 1;
+	const ids = new Array<string>(count);
+	for (let i = 0; i < count; i++) {
+		ids[i] = (rows[catIndex + 1 + i] as IChannel).id;
+	}
+	return ids;
 }
