@@ -80,7 +80,7 @@ export const addThreadNotExist = createAsyncThunk('channels/switchPublicToPrivat
 	thunkAPI.dispatch(
 		channelsActions.upsertOne({
 			clanId: thread.clan_id as string,
-			channel: { ...thread, id: thread.channel_id } as ChannelsEntity
+			channel: { ...thread, id: thread.channel_id, type: thread.channel_type } as ChannelsEntity
 		})
 	);
 	thunkAPI.dispatch(
