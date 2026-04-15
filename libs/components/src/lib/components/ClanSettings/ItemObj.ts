@@ -35,6 +35,7 @@ export const ItemSetting = {
 	INTEGRATIONS: 'integrations',
 	// NOTIFICATION_SOUND: 'notification-sound',
 	CATEGORY_ORDER: 'category-order',
+	ARCHIVED_CHANNELS: 'archived-channels',
 	AUDIT_LOG: 'audit-log',
 	ON_BOARDING: 'on-boarding',
 	ON_COMUNITY: 'on-comunity'
@@ -51,7 +52,8 @@ export const createTranslatedListItemSetting = (t: (key: string) => string): Ite
 export const listItemSetting: ItemObjProps[] = [
 	{ id: ItemSetting.OVERVIEW, name: 'Overview' },
 	{ id: ItemSetting.ROLES, name: 'Roles' },
-	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' }
+	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' },
+	{ id: ItemSetting.ARCHIVED_CHANNELS, name: 'Archived Channels' }
 ];
 
 // Helper function to get translated names
@@ -60,6 +62,7 @@ export const getTranslatedItemName = (id: string, t: (key: string) => string): s
 		[ItemSetting.OVERVIEW]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.OVERVIEW}`),
 		[ItemSetting.ROLES]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ROLES}`),
 		[ItemSetting.CATEGORY_ORDER]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.CATEGORY_ORDER}`),
+		[ItemSetting.ARCHIVED_CHANNELS]: t('sidebar.items.archivedChannels'),
 		[ItemSetting.INTEGRATIONS]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.INTEGRATIONS}`),
 		[ItemSetting.AUDIT_LOG]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.AUDIT_LOG}`),
 		[ItemSetting.ON_BOARDING]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ON_BOARDING}`),
@@ -73,9 +76,9 @@ export const getTranslatedItemName = (id: string, t: (key: string) => string): s
 
 export const getTranslatedTitle = (title: string, t: (key: string) => string): string => {
 	const titleMap: Record<string, string> = {
-		'Emotions': t(`sidebar.sectionTitles.${ITEM_TRANSLATION_KEYS.EMOTIONS}`),
-		'Apps': t(`sidebar.sectionTitles.${ITEM_TRANSLATION_KEYS.APPS}`),
-		'Moderation': t(`sidebar.sectionTitles.${ITEM_TRANSLATION_KEYS.MODERATION}`)
+		Emotions: t(`sidebar.sectionTitles.${ITEM_TRANSLATION_KEYS.EMOTIONS}`),
+		Apps: t(`sidebar.sectionTitles.${ITEM_TRANSLATION_KEYS.APPS}`),
+		Moderation: t(`sidebar.sectionTitles.${ITEM_TRANSLATION_KEYS.MODERATION}`)
 	};
 	return titleMap[title] || title;
 };
