@@ -119,12 +119,18 @@ export const Events = memo(() => {
 				<Link
 					to={serverGuidePath}
 					onClick={handleClose}
-					className={`self-stretch inline-flex cursor-pointer px-2 rounded h-[34px] ${isGuidePath ? 'bg-button-secondary text-theme-primary-active' : ''} bg-item-hover text-theme-primary text-theme-primary-hover`}
+					className={`self-stretch inline-flex cursor-pointer px-2 rounded h-[34px] ${
+						isGuidePath ? 'bg-button-secondary text-theme-primary-active' : ''
+					} bg-item-hover text-theme-primary text-theme-primary-hover ${
+						isGuidePath
+							? '[--guide-fill-1:var(--bg-icon-theme-active)] [--guide-fill-2:var(--bg-theme-secounnd)]'
+							: '[--guide-fill-1:var(--bg-icon-theme)] [--guide-fill-2:var(--bg-theme-secounnd)]'
+					} hover:[--guide-fill-1:var(--bg-icon-theme-active)] hover:[--guide-fill-2:var(--bg-theme-secounnd)]`}
 				>
 					<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.clan_guide')}>
 						<div className="w-5 h-5 relative flex flex-row items-center">
 							<div className="w-5 h-5 left-[1.67px] top-[1.67px] absolute">
-								<Icons.GuideIcon defaultSize="w-5 h-5 " defaultFill="" />
+								<Icons.GuideIcon className="w-5 h-5 " defaultFill1="var(--guide-fill-1)" defaultFill2="var(--guide-fill-2)" />
 							</div>
 						</div>
 						<div className="w-[99px] text-base font-medium">{t('navigation.clanGuide')}</div>
@@ -133,14 +139,14 @@ export const Events = memo(() => {
 			)}
 
 			<div
-				className="self-stretch  items-center inline-flex cursor-pointer px-2 rounded-lg h-[34px] bg-item-hover  text-theme-primary text-theme-primary-hover"
+				className="self-stretch items-center inline-flex cursor-pointer px-2 rounded-lg h-[34px] bg-item-hover text-theme-primary text-theme-primary-hover [--events-fill-1:var(--bg-icon-theme)] [--events-fill-2:var(--bg-theme-secounnd)] hover:[--events-fill-1:var(--bg-icon-theme-active)] hover:[--events-fill-2:var(--bg-theme-secounnd)]"
 				onClick={openModal}
 				data-e2e={generateE2eId('clan_page.side_bar.button.events')}
 			>
 				<div className="grow w-5 flex-row items-center gap-2 flex">
 					<div className="h-5 relative flex justify-center gap-2  items-center">
 						<div className="w-5 h-5">
-							<Icons.IconEvents />
+							<Icons.IconEvents className="w-5 h-5" defaultFill1="var(--events-fill-1)" defaultFill2="var(--events-fill-2)" />
 						</div>
 						<div className="w-[99px] text-base font-medium">
 							{numberEventManagement === 0
@@ -166,7 +172,7 @@ export const Events = memo(() => {
 				<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.members')}>
 					<div className="w-5 h-5 relative flex flex-row items-center">
 						<div className="w-5 h-5 ">
-							<Icons.MemberList defaultSize="w-5 h-5" />
+							<Icons.MemberList className="w-5 h-5" />
 						</div>
 					</div>
 					<div className="text-base font-medium">{t('navigation.members')}</div>
@@ -176,12 +182,18 @@ export const Events = memo(() => {
 				<Link
 					to={channelSettingPath}
 					onClick={handleClose}
-					className={`self-stretch  inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${isSettingPath ? 'bg-button-secondary border-theme-primary text-theme-primary-active' : ''} bg-item-hover text-theme-primary text-theme-primary-hover`}
+					className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
+						isSettingPath ? 'bg-button-secondary border-theme-primary text-theme-primary-active' : ''
+					} bg-item-hover text-theme-primary text-theme-primary-hover ${
+						isSettingPath
+							? '[--channel-browser-fill-1:var(--bg-icon-theme-active)] [--channel-browser-fill-2:var(--bg-theme-secounnd)]'
+							: '[--channel-browser-fill-1:var(--bg-icon-theme)] [--channel-browser-fill-2:var(--bg-theme-secounnd)]'
+					} hover:[--channel-browser-fill-1:var(--bg-icon-theme-active)] hover:[--channel-browser-fill-2:var(--bg-theme-secounnd)]`}
 				>
 					<div className="grow w-5 flex-row items-center gap-2 flex">
 						<div className="w-5 h-5 relative flex flex-row items-center">
 							<div className="w-5 h-5">
-								<Icons.ChannelBrowser />
+								<Icons.ChannelBrowser defaultFill1="var(--channel-browser-fill-1)" defaultFill2="var(--channel-browser-fill-2)" />
 							</div>
 						</div>
 						<div className="w-full text-base font-medium" data-e2e={generateE2eId('clan_page.side_bar.button.channels')}>
