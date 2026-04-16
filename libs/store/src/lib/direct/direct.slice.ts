@@ -68,6 +68,15 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEn
 		mapped.last_seen_message = existingEntity?.last_seen_message;
 	}
 
+	if (existingEntity?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+		if (!Array.isArray(mapped.user_ids) || mapped.user_ids.length === 0) {
+			mapped.user_ids = existingEntity.user_ids;
+		}
+		if (typeof mapped.member_count !== 'number' || mapped.member_count <= 0) {
+			mapped.member_count = existingEntity.member_count;
+		}
+	}
+
 	return mapped;
 };
 
@@ -81,7 +90,9 @@ export const fetchDirectDetail = createAsyncThunk('direct/fetchDirectDetail', as
 			mezon
 		});
 
-		return mapDmGroupToEntity(response);
+		const state = thunkAPI.getState() as RootState;
+		const existingEntity = selectDirectById(state, directId);
+		return mapDmGroupToEntity(response, existingEntity);
 	} catch (error) {
 		captureSentryError(error, 'direct/fetchDirectDetail');
 		return thunkAPI.rejectWithValue(error);
@@ -103,6 +114,17 @@ export const createNewDirectMessage = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 			if (response) {
+				const responseDebug = response as ApiChannelDescription & { member_count?: number; user_ids?: string[] };
+				const state = thunkAPI.getState() as RootState;
+				const existingEntity = response.channel_id ? selectDirectById(state, response.channel_id) : null;
+				const hasValidMemberCount = typeof responseDebug.member_count === 'number' && responseDebug.member_count > 0;
+				const responseUserIds = Array.isArray(responseDebug.user_ids) ? responseDebug.user_ids : [];
+				const mergedUserIds =
+					responseUserIds.length > 0 ? responseUserIds : existingEntity?.user_ids?.length ? existingEntity.user_ids : (body.user_ids ?? []);
+				const mergedMemberCount = hasValidMemberCount
+					? responseDebug.member_count
+					: (existingEntity?.member_count ?? (mergedUserIds.length > 0 ? mergedUserIds.length + 1 : undefined));
+				const mergedChannelAvatar = response.channel_avatar || existingEntity?.channel_avatar || '/assets/images/avatar-group.png';
 				thunkAPI.dispatch(
 					directActions.upsertOne({
 						id: response.channel_id || '0',
@@ -112,15 +134,21 @@ export const createNewDirectMessage = createAsyncThunk(
 						channel_label:
 							response.channel_label ||
 							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
-						channel_avatar: response.channel_avatar || '/assets/images/avatar-group.png',
+						channel_avatar: mergedChannelAvatar,
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
-						user_ids: body.user_ids,
+						user_ids: mergedUserIds,
+						member_count: mergedMemberCount,
 						active: 1,
 						last_sent_message: {
 							timestamp_seconds: Math.floor(Date.now() / 1000)
 						}
 					})
 				);
+
+				// Re-hydrate details for reused existing groups that can return sparse fields on create.
+				if (response.channel_id && (!hasValidMemberCount || !response.channel_avatar || responseUserIds.length === 0)) {
+					thunkAPI.dispatch(fetchDirectDetail({ directId: response.channel_id }));
+				}
 
 				await thunkAPI.dispatch(
 					channelsActions.joinChat({
@@ -591,6 +619,7 @@ export const directSlice = createSlice({
 	reducers: {
 		remove: directAdapter.removeOne,
 		upsertOne: (state, action: PayloadAction<DirectEntity>) => {
+			const before = state.entities[action.payload.id];
 			const { entities } = state;
 			const existLabel = entities[action.payload.id]?.channel_label?.split(',');
 			const existingShowPinBadge = entities[action.payload.id]?.showPinBadge;
@@ -601,6 +630,15 @@ export const directSlice = createSlice({
 
 			if (existingShowPinBadge !== undefined) {
 				dataUpdate.showPinBadge = existingShowPinBadge;
+			}
+
+			if (before?.type === ChannelType.CHANNEL_TYPE_GROUP || dataUpdate.type === ChannelType.CHANNEL_TYPE_GROUP) {
+				if ((!Array.isArray(dataUpdate.user_ids) || dataUpdate.user_ids.length === 0) && Array.isArray(before?.user_ids)) {
+					dataUpdate.user_ids = before.user_ids;
+				}
+				if ((typeof dataUpdate.member_count !== 'number' || dataUpdate.member_count <= 0) && typeof before?.member_count === 'number') {
+					dataUpdate.member_count = before.member_count;
+				}
 			}
 			directAdapter.upsertOne(state, dataUpdate);
 		},
