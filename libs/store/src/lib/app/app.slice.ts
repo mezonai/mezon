@@ -8,7 +8,6 @@ import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelsActions } from '../channels/channels.slice';
-import { usersClanActions } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directActions } from '../direct/direct.slice';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
@@ -202,12 +201,10 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			);
 
 		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
-		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
 		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
-			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
 			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
 			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
 			thunkAPI.dispatch(
@@ -221,7 +218,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
 
-		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
+		const settledPromises = [fetchChannelsPromise].filter(Boolean);
 		await Promise.allSettled(settledPromises);
 
 		badgeService.onReconnect();
