@@ -3,9 +3,10 @@ import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { captureSentryError } from '@mezon/logger';
-import type { ApiChannelSettingItem } from 'mezon-js/api';
+import type { ApiChannelDescription, ApiChannelSettingItem } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { archiveChannel } from '../channels/channels.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
@@ -19,6 +20,7 @@ export interface SettingClanChannelState extends EntityState<ApiChannelSettingIt
 	threadCount: number;
 	threadsByChannel: Record<string, ApiChannelSettingItem[]>;
 	listSearchChannel: ApiChannelSettingItem[];
+	listArchivedChannel: ApiChannelDescription[];
 	cache?: CacheMetadata;
 }
 
@@ -35,7 +37,8 @@ export const initialSettingClanChannelState: SettingClanChannelState = channelSe
 	channelCount: 0,
 	threadCount: 0,
 	threadsByChannel: {},
-	listSearchChannel: []
+	listSearchChannel: [],
+	listArchivedChannel: []
 });
 
 const resetSettingClanChannelState = (state: SettingClanChannelState) => {
@@ -46,6 +49,7 @@ const resetSettingClanChannelState = (state: SettingClanChannelState) => {
 	state.threadCount = 0;
 	state.threadsByChannel = {};
 	state.listSearchChannel = [];
+	state.listArchivedChannel = [];
 	state.cache = undefined;
 };
 
@@ -92,7 +96,7 @@ export const fetchChannelSettingInClanCached = async (
 		parentId, // parent_id
 		undefined, // category_id
 		undefined, // private_channel
-		undefined, // active
+		1, // active
 		undefined, // status
 		undefined, // type
 		limit, // limit
@@ -160,6 +164,22 @@ export const fetchChannelSettingInClan = createAsyncThunk(
 	}
 );
 
+export const fetchArchivedChannelsInClan = createAsyncThunk('channelSetting/fetchArchivedChannelsInClan', async (clanId: string, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.listArchivedChannelDescs(mezon.session, clanId);
+
+		if (!response) {
+			return thunkAPI.rejectWithValue('Invalid fetchArchivedChannelsInClan');
+		}
+
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'channelSetting/fetchArchivedChannelsInClan');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const settingClanChannelSlice = createSlice({
 	name: SETTING_CLAN_CHANNEL,
 	initialState: initialSettingClanChannelState,
@@ -187,6 +207,9 @@ export const settingClanChannelSlice = createSlice({
 		},
 		removeChannelFromSocket: (state, action) => {
 			const channelId = action.payload;
+			if (state.listSearchChannel?.length > 0) {
+				state.listSearchChannel = state.listSearchChannel.filter((c) => c.id !== channelId);
+			}
 			if (state.entities[channelId]) {
 				channelSettingAdapter.removeOne(state, channelId);
 				state.channelCount = Math.max(0, state.channelCount - 1);
@@ -274,13 +297,29 @@ export const settingClanChannelSlice = createSlice({
 			.addCase(fetchChannelSettingInClan.rejected, (state: SettingClanChannelState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(archiveChannel.fulfilled, (state: SettingClanChannelState, action) => {
+				const channelId = action.meta.arg.channelId;
+				settingClanChannelSlice.caseReducers.removeChannelFromSocket(state, { payload: channelId, type: '' });
+			})
+			.addCase(fetchArchivedChannelsInClan.fulfilled, (state: SettingClanChannelState, action) => {
+				state.listArchivedChannel = action.payload.channeldesc || [];
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(fetchArchivedChannelsInClan.pending, (state: SettingClanChannelState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(fetchArchivedChannelsInClan.rejected, (state: SettingClanChannelState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
 			});
 	}
 });
 
 export const channelSettingActions = {
 	...settingClanChannelSlice.actions,
-	fetchChannelSettingInClan
+	fetchChannelSettingInClan,
+	fetchArchivedChannelsInClan
 };
 
 export const getChannelSettingState = (rootState: { [SETTING_CLAN_CHANNEL]: SettingClanChannelState }): SettingClanChannelState =>
@@ -296,3 +335,5 @@ export const settingChannelReducer = settingClanChannelSlice.reducer;
 export const selectNumberChannelCount = createSelector(getChannelSettingState, (state) => state.channelCount);
 
 export const selectListChannelBySearch = createSelector(getChannelSettingState, (state) => state.listSearchChannel);
+
+export const selectArchivedChannels = createSelector(getChannelSettingState, (state) => state.listArchivedChannel);

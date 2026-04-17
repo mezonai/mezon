@@ -31,6 +31,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
 
 	const getTranslatedItemName = (item: ItemObjProps) => {
+		if (item.id === ItemSetting.ARCHIVED_CHANNELS) return 'Archived Channels';
 		const translationMap: Record<string, string> = {
 			[ItemSetting.OVERVIEW]: t('sidebar.items.overview'),
 			[ItemSetting.ROLES]: t('sidebar.items.roles'),

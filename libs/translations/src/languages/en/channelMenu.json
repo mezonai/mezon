@@ -18,6 +18,8 @@
 			"muteThread": "Mute Thread",
 			"unMuteThread": "Unmute Thread",
 			"notification": "Notification Settings",
+			"archiveChannel": "Archive Channel",
+			"archiveThread": "Archive Thread",
 			"for15Minutes": "For 15 Minutes",
 			"for1Hour": "For 1 Hour",
 			"for3Hours": "For 3 Hours",
@@ -98,6 +100,16 @@
 		"yesButton": "Leave Channel",
 		"textConfirm": "Please confirm if you would like to Leave Channel ? You can't receive messages from this channel when leave it",
 		"error": "Leave channel failed: {{error}}"
+	},
+	"modalConfirmArchiveChannel": {
+		"title": "Archive Channel",
+		"button": "Archive",
+		"textConfirm": "Are you sure you want to archive this channel? It will be hidden from the sidebar for all members."
+	},
+	"modalConfirmArchiveThread": {
+		"title": "Archive Thread",
+		"button": "Archive",
+		"textConfirm": "Are you sure you want to archive this thread? It will be hidden from the sidebar for all members."
 	},
 	"btnBadgeCount": "New",
 	"favoriteChannel": "FAVORITE CHANNEL"

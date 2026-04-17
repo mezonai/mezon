@@ -216,6 +216,42 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		handClosePannel();
 	};
 
+	const handleArchiveChannel = () => {
+		dispatch(channelsActions.archiveChannel({ channelId: channel.id, clanId: currentClanId as string }));
+		if (channel.id === currentChannelId || channel.id === selectedChannel) {
+			if (isThread) {
+				navigate(`/chat/clans/${currentClanId}/channels/${channel.parent_id}`);
+			} else {
+				navigate(`/chat/clans/${currentClanId}/channels/${welcomeChannelId}`);
+			}
+		}
+		handleCloseArchiveConfirm();
+	};
+
+	const [openArchiveConfirm, closeArchiveConfirm] = useModal(() => {
+		const keyPrefix = isThread ? 'modalConfirmArchiveThread' : 'modalConfirmArchiveChannel';
+		return (
+			<ModalConfirm
+				handleCancel={handleCloseArchiveConfirm}
+				handleConfirm={handleArchiveChannel}
+				title={t(`${keyPrefix}.title`)}
+				buttonName={t(`${keyPrefix}.button`)}
+				message={t(`${keyPrefix}.textConfirm`)}
+			/>
+		);
+	});
+
+	const handleOpenArchiveConfirm = () => {
+		dispatch(stickerSettingActions.openModalInChild());
+		openArchiveConfirm();
+	};
+
+	const handleCloseArchiveConfirm = () => {
+		dispatch(stickerSettingActions.closeModalInChild());
+		closeArchiveConfirm();
+		handClosePannel();
+	};
+
 	const handleScheduleMute = (duration: number) => {
 		menuOpenMute.current = false;
 
@@ -428,6 +464,10 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			{channel.parent_id === '0' || !channel.parent_id ? (
 				<>
 					<GroupPanels>
+						<ItemPanel
+							children={isThread ? t('menu.notification.archiveThread') : t('menu.notification.archiveChannel')}
+							onClick={handleOpenArchiveConfirm}
+						/>
 						{!getNotificationChannelSelected?.time_mute_seconds ? (
 							<Menu
 								trigger="hover"
@@ -495,6 +535,10 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			) : (
 				<>
 					<GroupPanels>
+						<ItemPanel
+							children={isThread ? t('menu.notification.archiveThread') : t('menu.notification.archiveChannel')}
+							onClick={handleOpenArchiveConfirm}
+						/>
 						{!getNotificationChannelSelected?.time_mute_seconds ? (
 							<Menu
 								trigger="hover"
