@@ -415,6 +415,13 @@ export const threadsSlice = createSlice({
 
 			threadsAdapter.upsertOne(state.byChannels[channelId], thread);
 		},
+		updateThreadFromSocket: (state, action: PayloadAction<{ threadId: string; parentId: string; changes: Partial<ThreadsEntity> }>) => {
+			const { threadId, parentId, changes } = action.payload;
+			const channelData = state.byChannels?.[parentId];
+			if (channelData) {
+				threadsAdapter.updateOne(channelData, { id: threadId, changes });
+			}
+		},
 		resetThreadSearchedResult: (state: ThreadsState, action: PayloadAction<string>) => {
 			const channelId = action.payload;
 			if (state?.threadSearchedResult) {
