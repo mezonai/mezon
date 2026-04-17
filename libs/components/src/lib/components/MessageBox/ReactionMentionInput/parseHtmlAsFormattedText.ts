@@ -229,7 +229,7 @@ function getCleanUrlAndTrailing(match: string, fullText: string, matchIndex: num
 
 const LINK_TEMPLATE = /(?:\w+:)?\/\/[^\s<>]+/gi;
 
-export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks = true, skipMarkdown = false): ApiFormattedText {
+export default function parseHtmlAsFormattedToText(html: string, withMarkdownLinks = true, skipMarkdown = false): ApiFormattedText {
 	const fragment = document.createElement('div');
 	fragment.innerHTML = skipMarkdown ? html : withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
 	fixImageContent(fragment);

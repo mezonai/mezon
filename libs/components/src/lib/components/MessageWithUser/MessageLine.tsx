@@ -53,6 +53,7 @@ export interface ElementToken {
 	image?: string;
 	description?: string;
 	index?: number;
+	language?: string;
 }
 
 export function extractIdsFromUrl(url: string) {
@@ -625,6 +626,7 @@ export const MessageLine = ({
 							content={content}
 							isInPinMsg={isInPinMsg}
 							typeOfBacktick={element.type}
+							language={element.language}
 							messageId={messageId}
 							onContextMenu={onContextMenu}
 						/>
