@@ -35,7 +35,6 @@ import {
 	getStoreAsync,
 	giveCoffeeActions,
 	inviteActions,
-	updateClanBadgeRender,
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	mapMessageChannelToEntityAction,
@@ -93,6 +92,7 @@ import {
 	topicsActions,
 	typingUsersService,
 	updateChannelActions,
+	updateClanBadgeRender,
 	useAppDispatch,
 	userChannelsActions,
 	usersClanActions,
@@ -1039,13 +1039,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						})
 					);
 
-					if (
-						channel_desc.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
-						channel_desc.type === ChannelType.CHANNEL_TYPE_APP ||
-						channel_desc.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
-					) {
-					}
-
 					if (channel_desc.type === ChannelType.CHANNEL_TYPE_THREAD) {
 						dispatch(
 							channelMetaActions.updateBulkChannelMetadata({
@@ -1508,7 +1501,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					);
 				}
 			}
-
 		}
 		if (channelCreated && channelCreated.channel_private === 0 && (channelCreated.parent_id === '' || channelCreated.parent_id === '0')) {
 			const store = await getStoreAsync();
@@ -1788,7 +1780,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						}
 					}
 				}
-
+				dispatch(channelMetaActions.deleteChannelMeta({ channelId: channelDeleted.channel_id }));
 				dispatch(channelsActions.deleteChannelSocket(channelDeleted));
 				dispatch(listChannelsByUserActions.remove(channelDeleted.channel_id));
 				dispatch(updateClanBadgeRender({ channelId: channelDeleted.channel_id, clanId: channelDeleted.clan_id }));
