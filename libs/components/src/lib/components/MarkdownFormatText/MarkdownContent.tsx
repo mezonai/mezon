@@ -12,7 +12,7 @@ import {
 import type { Element, Root } from 'hast';
 import { common, createLowlight } from 'lowlight';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -30,6 +30,7 @@ type MarkdownContentOpt = {
 	isBacktick?: boolean;
 	typeOfBacktick?: EBacktickType;
 	isReply?: boolean;
+	language?: string;
 	isSearchMessage?: boolean;
 	messageId?: string;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -60,21 +61,17 @@ const isGoogleMapsLink = (url?: string) => {
 	);
 };
 
-const extractLanguageFromCodeBlock = (content: string): { language: string | null; code: string } => {
-	if (!content) return { language: null, code: content };
+const extractLanguageFromCodeBlock = (content: string, language: boolean): { code: string } => {
+	if (!content) return { code: content };
 
 	const lines = content.split('\n');
-	const firstLine = lines[0]?.trim();
-	const languagePattern = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
-
-	if (firstLine && languagePattern.test(firstLine) && lines.length > 1) {
+	if (language) {
 		return {
-			language: firstLine.toLowerCase(),
 			code: lines.slice(1).join('\n')
 		};
 	}
 
-	return { language: null, code: content };
+	return { code: content };
 };
 
 const lowlight = createLowlight(common);
@@ -322,7 +319,8 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	isReply,
 	isSearchMessage,
 	messageId,
-	onContextMenu
+	onContextMenu,
+	language
 }) => {
 	const appearanceTheme = useSelector(selectTheme);
 
@@ -354,7 +352,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
 				!posInReply ? (
-					<TripleBackticks contentBacktick={content} isLightMode={isLightMode} isInPinMsg={isInPinMsg} />
+					<TripleBackticks language={language} contentBacktick={content} isLightMode={isLightMode} isInPinMsg={isInPinMsg} />
 				) : (
 					<div className={`py-[4px] relative bg-item-theme `}>
 						<pre
@@ -378,6 +376,7 @@ type BacktickOpt = {
 	isInPinMsg?: boolean;
 	isJumMessageEnabled?: boolean;
 	posInNotification?: boolean;
+	language?: string;
 };
 
 const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _isLightMode, isInPinMsg, posInNotification }) => {
@@ -445,9 +444,9 @@ const CodeHighlighter: React.FC<{ code: string; language: string | null; isInPin
 
 	const codeClassName = `text-sm w-full whitespace-pre-wrap break-words break-all text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`;
 
-	if (highlightedElements && Array.isArray(highlightedElements) && highlightedElements.length > 0) {
+	if (language) {
 		return (
-			<code style={{ fontFamily: 'sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word' }} className={codeClassName}>
+			<code key={code} style={{ fontFamily: 'sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word' }} className={codeClassName}>
 				{highlightedElements}
 			</code>
 		);
@@ -460,7 +459,7 @@ const CodeHighlighter: React.FC<{ code: string; language: string | null; isInPin
 	);
 };
 
-const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _isLightMode, isInPinMsg }) => {
+const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _isLightMode, isInPinMsg, language }) => {
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
@@ -477,9 +476,7 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 			.then(() => setCopied(true))
 			.catch((err) => console.error('Failed to copy text: ', err));
 	};
-
-	const { language, code } = useMemo(() => extractLanguageFromCodeBlock(contentBacktick || ''), [contentBacktick]);
-
+	const code = language ? contentBacktick.split('\n').slice(1).join('\n') : contentBacktick;
 	return (
 		<div className="py-1 relative">
 			<pre
@@ -489,7 +486,7 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 				<button className="absolute right-2 top-3" onClick={handleCopyClick}>
 					{copied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}
 				</button>
-				<CodeHighlighter code={code} language={language} isInPinMsg={isInPinMsg} />
+				<CodeHighlighter code={code} language={language || null} isInPinMsg={isInPinMsg} />
 			</pre>
 		</div>
 	);
