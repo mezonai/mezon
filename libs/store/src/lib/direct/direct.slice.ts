@@ -18,7 +18,6 @@ import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
-import { statusActions } from './status.slice';
 
 export const DIRECT_FEATURE_KEY = 'direct';
 
@@ -233,8 +232,6 @@ const processDmChannels = (channelDescs: ApiChannelDescription[], existingEntiti
 	});
 
 	thunkAPI.dispatch(userChannelsActions.upsertMany(listDM));
-	const users = mapChannelsToUsers(sorted);
-	thunkAPI.dispatch(statusActions.updateBulkStatus(users));
 
 	return channels;
 };
