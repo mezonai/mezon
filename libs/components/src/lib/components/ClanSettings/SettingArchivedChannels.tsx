@@ -1,4 +1,12 @@
-import { channelSettingActions, channelsActions, selectArchivedChannels, selectCurrentClanId, threadsActions, useAppDispatch } from '@mezon/store';
+import {
+	channelSettingActions,
+	channelsActions,
+	selectArchivedChannels,
+	selectCurrentClanId,
+	threadsActions,
+	toastActions,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect } from 'react';
@@ -19,6 +27,13 @@ const SettingArchivedChannels = () => {
 		if (!currentClanId) return;
 		try {
 			await dispatch(threadsActions.writeActiveArchivedThread({ clanId: currentClanId as string, channelId })).unwrap();
+			dispatch(
+				toastActions.addToast({
+					message: 'Channel restored successfully.',
+					type: 'success',
+					autoClose: 3000
+				})
+			);
 			dispatch(channelSettingActions.fetchArchivedChannelsInClan(currentClanId as string));
 			dispatch(channelsActions.fetchChannels({ clanId: currentClanId as string, noCache: true }));
 		} catch (error) {
