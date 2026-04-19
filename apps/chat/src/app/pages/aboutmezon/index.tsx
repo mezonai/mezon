@@ -82,9 +82,9 @@ const AboutMezon = () => {
 
 	const handleDownloadDesktop = () => {
 		if (platform === Platform.IOS) {
-			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank');
+			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank', 'noopener,noreferrer');
 		} else if (platform === Platform.ANDROID) {
-			window.open('https://play.google.com/store/apps/details?id=com.mezon.mobile', '_blank');
+			window.open('https://play.google.com/store/apps/details?id=com.mezon.mobile', '_blank', 'noopener,noreferrer');
 		} else {
 			setIsDesktopDropdownOpen(!isDesktopDropdownOpen);
 		}
@@ -97,9 +97,9 @@ const AboutMezon = () => {
 	};
 	const handleDownloadMobile = () => {
 		if (platform === Platform.IOS) {
-			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank');
+			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank', 'noopener,noreferrer');
 		} else if (platform === Platform.ANDROID) {
-			window.open('https://play.google.com/store/apps/details?id=com.mezon.mobile', '_blank');
+			window.open('https://play.google.com/store/apps/details?id=com.mezon.mobile', '_blank', 'noopener,noreferrer');
 		} else {
 			setIsMobileDropdownOpen(!isMobileDropdownOpen);
 		}

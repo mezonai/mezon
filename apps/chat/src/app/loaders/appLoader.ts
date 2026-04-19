@@ -32,17 +32,22 @@ export const appLoader: CustomLoaderFunction = async ({ dispatch }) => {
 	const result = Object.fromEntries(params.entries());
 	const { deepLinkUrl, notificationPath } = result;
 	if (deepLinkUrl) {
-		redirectTo = `/desktop/login?deepLinkUrl=${deepLinkUrl}`;
+		redirectTo = `/desktop/login?deepLinkUrl=${encodeURIComponent(deepLinkUrl)}`;
 		try {
 			const session = deepLinkUrl.split('#')[0];
-			await dispatch(authActions.setSession(safeJSONParse(decodeURIComponent(session))));
-			window.history.replaceState({}, document.title, pathname);
+			const parsed = safeJSONParse(decodeURIComponent(session));
+			if (parsed && typeof parsed === 'object' && typeof (parsed as any).token === 'string') {
+				await dispatch(authActions.setSession(parsed));
+				window.history.replaceState({}, document.title, pathname);
+			} else {
+				console.warn('Ignoring deepLinkUrl with unexpected session shape');
+			}
 		} catch (error) {
 			console.error('Invalid JSON in deepLinkUrl:', error);
 		}
 	}
 
-	if (notificationPath) {
+	if (notificationPath && typeof notificationPath === 'string' && notificationPath.startsWith('/') && !notificationPath.startsWith('//')) {
 		redirectTo = notificationPath;
 	}
 	dispatch(appActions.setInitialParams(params));

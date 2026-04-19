@@ -28,9 +28,9 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 
 	const handleTryMezon = () => {
 		if (platform === 'iOS') {
-			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank');
+			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank', 'noopener,noreferrer');
 		} else if (platform === 'Android') {
-			window.open('https://play.google.com/store/apps/details?id=com.mezon.mobile', '_blank');
+			window.open('https://play.google.com/store/apps/details?id=com.mezon.mobile', '_blank', 'noopener,noreferrer');
 		} else {
 			setIsDropdownOpen(!isDropdownOpen);
 		}

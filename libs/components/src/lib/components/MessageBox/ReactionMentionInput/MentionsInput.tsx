@@ -20,6 +20,17 @@ import parseHtmlAsFormattedText from './parseHtmlAsFormattedText';
 import { preparePastedHtml } from './utils/cleanHtml';
 import renderText from './utils/renderText';
 
+const escapeMentionText = (value: string): string => {
+	if (value == null) return '';
+	const str = String(value);
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+};
+
 export interface User {
 	id: string;
 	username?: string;
@@ -361,7 +372,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 		useEffect(() => {
 			if (inputRef.current) {
-				inputRef.current.innerHTML = value;
+				// Run through the same allowlist sanitizer as paste so arbitrary HTML from drafts/props cannot execute scripts.
+				inputRef.current.innerHTML = value ? preparePastedHtml(value) : '';
 				if (setCaretToEnd && value) {
 					requestNextMutation(() => {
 						if (inputRef.current) {
@@ -378,7 +390,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			if (value !== html) {
 				setHtml(value);
 				if (inputRef.current) {
-					inputRef.current.innerHTML = value;
+					inputRef.current.innerHTML = value ? preparePastedHtml(value) : '';
 				}
 			}
 		}, [value]);
@@ -600,63 +612,66 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				const { displayTransform, markup = `${config.trigger}[__display__](__id__)`, displayPrefix = config.trigger } = config;
 
 				const display = displayTransform ? displayTransform(suggestion.id, suggestion.display) : suggestion.display;
+				const safeId = escapeMentionText(suggestion.id);
+				const safeDisplay = escapeMentionText(display);
+				const safeDisplayPrefix = escapeMentionText(displayPrefix);
 
 				let htmlToInsert: string;
 				if (markup !== `${config.trigger}[__display__](__id__)`) {
 					if (config.trigger === ':' && markup === '::[__display__](__id__)') {
 						htmlToInsert = `<span
 					data-entity-type="MessageEntityCustomEmoji"
-					data-document-id="${suggestion.id}"
+					data-document-id="${safeId}"
 					contenteditable="false"
 					class="text-entity-emoji"
 					dir="auto"
-				>${display}</span>`;
+				>${safeDisplay}</span>`;
 					} else if (config.trigger === '#' && markup === '#[__display__](__id__)') {
 						htmlToInsert = `<a
 					class="text-entity-link hashtag"
 					data-entity-type="MessageEntityHashtag"
-					data-user-id="${suggestion.id}"
+					data-user-id="${safeId}"
 					contenteditable="false"
 					dir="auto"
-				>#${display}</a>`;
+				>#${safeDisplay}</a>`;
 					} else {
-						htmlToInsert = markup.replace(/__id__/g, suggestion.id).replace(/__display__/g, display);
+						htmlToInsert = escapeMentionText(markup.replace(/__id__/g, suggestion.id).replace(/__display__/g, display));
 					}
 				} else {
 					if (config.trigger === '#') {
 						htmlToInsert = `<a
 					class="text-entity-link hashtag"
 					data-entity-type="MessageEntityHashtag"
-					data-id="${suggestion.id}"
+					data-id="${safeId}"
 					contenteditable="false"
 					dir="auto"
-				>#${display}</a>`;
+				>#${safeDisplay}</a>`;
 					} else if (config.trigger === '/') {
-						htmlToInsert = display;
+						htmlToInsert = safeDisplay;
 					} else {
 						const mainUsername = suggestion.id.startsWith(displayPrefix) ? suggestion.id.substring(displayPrefix.length) : null;
-						const userDisplayName = display;
+						const safeMainUsername = mainUsername != null ? escapeMentionText(mainUsername) : null;
 
 						if (suggestion.isRole) {
-							htmlToInsert = mainUsername
-								? `${displayPrefix}${mainUsername}`
+							htmlToInsert = safeMainUsername
+								? `${safeDisplayPrefix}${safeMainUsername}`
 								: `<a
             class="text-entity-link mention"
             data-entity-type="MessageEntityMentionRole"
-            data-user-id="${suggestion.id}"
+            data-user-id="${safeId}"
             contenteditable="false"
             dir="auto"
-          >${displayPrefix}${userDisplayName}</a>`;
+          >${safeDisplayPrefix}${safeDisplay}</a>`;
 						} else {
-							htmlToInsert = mainUsername
-								? `${displayPrefix}${mainUsername}`
+							htmlToInsert = safeMainUsername
+								? `${safeDisplayPrefix}${safeMainUsername}`
 								: `<a
             class="text-entity-link mention"
             data-entity-type="MessageEntityMentionName"
-            data-user-id="${suggestion.id}"
+            data-user-id="${safeId}"
             contenteditable="false"
             dir="auto"
-          >${suggestion.id !== ID_MENTION_HERE ? displayPrefix : ''}${userDisplayName}</a>`;
+          >${suggestion.id !== ID_MENTION_HERE ? safeDisplayPrefix : ''}${safeDisplay}</a>`;
 						}
 					}
 				}

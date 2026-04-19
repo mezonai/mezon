@@ -1,3 +1,5 @@
+import { sanitizeHref } from '@mezon/utils';
+
 interface EmbedTitleProps {
 	title: string;
 	url?: string;
@@ -5,16 +7,17 @@ interface EmbedTitleProps {
 }
 
 export function EmbedTitle({ title, url, onClick }: EmbedTitleProps) {
+	const safeHref = sanitizeHref(url);
 	return (
 		<div className="mt-2 h-fit ">
-			{url ? (
+			{safeHref ? (
 				<a
-					href={url}
+					href={safeHref}
 					className="font-semibold no-underline hover:underline cursor-pointer text-theme-message"
-					target={'_blank'}
-					rel="noreferrer"
+					target="_blank"
+					rel="noopener noreferrer"
 					onClick={(e) => {
-						if (url?.startsWith('mezon.ai')) {
+						if (safeHref.startsWith('mezon.ai') || safeHref.includes('://mezon.ai')) {
 							e.preventDefault();
 						}
 						onClick?.();
