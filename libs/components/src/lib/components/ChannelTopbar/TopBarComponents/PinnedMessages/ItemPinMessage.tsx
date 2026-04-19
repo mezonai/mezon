@@ -66,7 +66,15 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	let directAvatar = '';
 	let directName = '';
 
-	if (mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+	if (mode === ChannelStreamMode.STREAM_MODE_DM) {
+		if (directChannel?.user_ids) {
+			const userIndex = directChannel.user_ids.indexOf(String(pinMessage?.sender_id || ''));
+			if (userIndex !== -1) {
+				directAvatar = directChannel.avatars?.[userIndex] || '';
+				directName = directChannel.display_names?.[userIndex] || directChannel.usernames?.[userIndex] || '';
+			}
+		}
+	} else if (mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 		if (directChannel?.user_ids) {
 			const userIndex = directChannel.user_ids.indexOf(String(pinMessage?.sender_id || ''));
 			if (userIndex !== -1) {
