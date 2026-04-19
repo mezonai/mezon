@@ -72,6 +72,25 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 		setInputRequest({ ...newRequest });
 	};
 
+	const focusChatInput = () => {
+		const editor = document.getElementById(CHANNEL_INPUT_ID) || document.getElementById(GENERAL_INPUT_ID);
+		if (editor) {
+			editor.focus();
+			if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
+				try {
+					const range = document.createRange();
+					range.selectNodeContents(editor);
+					range.collapse(false);
+					const sel = window.getSelection();
+					sel?.removeAllRanges();
+					sel?.addRange(range);
+				} catch (e) {
+					// ignore
+				}
+			}
+		}
+	};
+
 	const handleSendBuzzMsg = useCallback(() => {
 		const emojiArr: IEmojiOnMessage[] = [];
 		inputRequest.mentionRaw?.forEach((item) => {
@@ -85,24 +104,9 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 		if (inputRequest.content.trim()) {
 			sendMessage({ t: inputRequest.content.trim(), ej: emojiArr }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
 			handleClosePopup();
-			setTimeout(() => {
-				const editor = document.getElementById(CHANNEL_INPUT_ID) || document.getElementById(GENERAL_INPUT_ID);
-				if (editor) {
-					editor.focus();
-					if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
-						try {
-							const range = document.createRange();
-							range.selectNodeContents(editor);
-							range.collapse(false);
-							const sel = window.getSelection();
-							sel?.removeAllRanges();
-							sel?.addRange(range);
-						} catch (e) {
-							// ignore
-						}
-					}
-				}
-			}, 100);
+			requestAnimationFrame(() => {
+				focusChatInput();
+			});
 		}
 	}, [handleClosePopup, inputRequest.content, inputRequest.mentionRaw, sendMessage]);
 
