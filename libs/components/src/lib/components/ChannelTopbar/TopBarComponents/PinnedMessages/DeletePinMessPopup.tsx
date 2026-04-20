@@ -12,6 +12,8 @@ import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
+const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
+
 type ModalDeletePinMessProps = {
 	pinMessage: PinMessageEntity;
 	contentString: string | undefined;
@@ -34,6 +36,8 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 		return getShareContactInfo(messageContentObject?.embed);
 	}, [messageContentObject]);
 
+	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+
 	return (
 		<div
 			ref={modalref}
@@ -50,15 +54,28 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 							<BaseProfile
 								avatar={priorityAvatar || pinMessage.avatar || ''}
 								name={
-									userSender?.clan_nick || userSender?.user?.display_name || userSender?.user?.username || pinMessage.username || ''
+									checkAnonymous
+										? 'Anonymous'
+										: userSender?.clan_nick ||
+											userSender?.user?.display_name ||
+											userSender?.user?.username ||
+											pinMessage.username ||
+											''
 								}
 								hideIcon={true}
 								hideName={true}
+								isAnonymous={checkAnonymous}
 							/>
 						</div>
 						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0">
 							<div className="font-medium">
-								{userSender?.clan_nick || userSender?.user?.display_name || userSender?.user?.username || pinMessage.username}
+								{checkAnonymous
+									? 'Anonymous'
+									: userSender?.clan_nick ||
+										userSender?.user?.display_name ||
+										userSender?.user?.username ||
+										pinMessage.username ||
+										''}
 							</div>
 							{isShareContact && shareContactEmbed ? (
 								<ShareContactCard embed={shareContactEmbed} />
