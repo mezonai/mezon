@@ -146,7 +146,9 @@ const MessageModalImage = () => {
 			if (isPlaying) {
 				videoRef.current.pause();
 			} else {
-				videoRef.current.play();
+				videoRef.current.play().catch((error) => {
+					console.error(error);
+				});
 			}
 			setIsPlaying(!isPlaying);
 		}
@@ -536,7 +538,10 @@ const SenderUser = () => {
 	const dmUser = useAppSelector((state) => selectMemberGroupByUserId(state, directId as string, attachment?.uploader as string));
 	const modeResponsive = useAppSelector(selectModeResponsive);
 	const user = modeResponsive === ModeResponsive.MODE_CLAN ? clanUser : dmUser;
-	const displayName = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
+
+	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
+	const isAnonymous = !user || !user.user || attachment?.uploader === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const displayName = user?.clan_nick || user?.user?.display_name || user?.user?.username || 'Anonymous';
 	const avatarUrl = user?.clan_avatar || user?.user?.avatar_url || '';
 
 	return (
@@ -548,6 +553,7 @@ const SenderUser = () => {
 					src={avatarUrl}
 					srcImgProxy={createImgproxyUrl(avatarUrl, { width: 300, height: 300, resizeType: 'fit' })}
 					className="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10"
+					isAnonymous={isAnonymous}
 				/>
 			</div>
 			<div className="flex flex-col justify-between ">

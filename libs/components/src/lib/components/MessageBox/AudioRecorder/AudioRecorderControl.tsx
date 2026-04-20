@@ -164,6 +164,28 @@ const AudioRecorderControl: React.FC<AudioRecorderProps> = React.memo(({ onSendR
 		resetRecording();
 	}, [outerRecording]);
 
+	useEffect(() => {
+		return () => {
+			if (timerRef.current) {
+				clearInterval(timerRef.current);
+				timerRef.current = null;
+			}
+			if (recorderRef.current && recorderRef.current.state !== 'inactive') {
+				try {
+					recorderRef.current.stop();
+				} catch {
+				}
+			}
+			if (streamRef.current) {
+				streamRef.current.getTracks().forEach((track) => track.stop());
+				streamRef.current = null;
+			}
+			if (audioUrl) {
+				URL.revokeObjectURL(audioUrl);
+			}
+		};
+	}, []);
+
 	return (
 		<div className="hidden">
 			<AudioRecorderUI

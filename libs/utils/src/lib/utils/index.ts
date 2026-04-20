@@ -220,6 +220,7 @@ export {
 	isFromAllowedDomain,
 	isMezonCdnUrl,
 	isSecureAttachmentUrl,
+	sanitizeHref,
 	sanitizeUrl as sanitizeUrlSecure,
 	type SecureURLOptions
 } from './urlSanitization';
@@ -1193,8 +1194,9 @@ export const parseThreadInfo = (messageContent: string) => {
 };
 
 export const openVoiceChannel = (url: string) => {
-	const urlVoice = `https://meet.google.com/${url}`;
-	window.open(urlVoice, '_blank', 'noreferrer');
+	const sanitized = encodeURIComponent(url).replace(/%2F/gi, '/');
+	const urlVoice = `https://meet.google.com/${sanitized}`;
+	window.open(urlVoice, '_blank', 'noopener,noreferrer');
 };
 
 export const getChannelMode = (chatType: number) => {

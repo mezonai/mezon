@@ -70,6 +70,28 @@ export function sanitizeUrl(url: string | undefined, options: SecureURLOptions =
 	}
 }
 
+
+export function sanitizeHref(url: string | undefined): string | undefined {
+	if (!url) return undefined;
+	const trimmed = url.trim();
+	if (!trimmed) return undefined;
+	if (trimmed.startsWith('/') || trimmed.startsWith('#') || trimmed.startsWith('?')) return trimmed;
+	const lower = trimmed.toLowerCase();
+	if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:') || lower.startsWith('file:')) {
+		return undefined;
+	}
+	try {
+		const parsed = new URL(trimmed);
+		if (parsed.protocol === 'http:' || parsed.protocol === 'https:' || parsed.protocol === 'mailto:' || parsed.protocol === 'tel:') {
+			return parsed.toString();
+		}
+		return undefined;
+	} catch {
+		if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return undefined;
+		return trimmed;
+	}
+}
+
 export function isSecureAttachmentUrl(attachment: { url?: string; filetype?: string }): boolean {
 	if (!attachment.url) {
 		return false;

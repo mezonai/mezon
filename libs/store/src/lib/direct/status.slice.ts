@@ -19,11 +19,10 @@ const statusAdapter = createEntityAdapter({
 
 export function convertStatusClan(user: ApiUser & { id: string }, state: RootState): IUserProfileActivity {
 	const isMe = state?.account?.userProfile?.user?.id === user?.id;
-	const isUserInvisible = user?.user_status === EUserStatus.INVISIBLE;
 	return {
 		id: user.id,
-		online: (!isUserInvisible && !!user?.online) || isMe,
-		is_mobile: !isUserInvisible && !!user?.is_mobile,
+		online: !!user?.online || isMe,
+		is_mobile: !!user?.is_mobile,
 		status: user?.online ? user?.status : EUserStatus.INVISIBLE,
 		user_status: user?.user_status
 	};

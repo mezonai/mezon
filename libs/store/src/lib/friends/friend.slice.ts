@@ -8,7 +8,6 @@ import { selectAllAccount, selectCurrentUserId } from '../account/account.slice'
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
-import { statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
@@ -127,7 +126,6 @@ export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', asy
 	const state = thunkAPI.getState() as RootState;
 	const currentUserId = selectAllAccount(state)?.user?.id || '';
 	const listFriends = response.friends.map((friend) => mapFriendToEntity(friend, currentUserId));
-	thunkAPI.dispatch(statusActions.updateBulkStatus(mapFriendToStatus(response.friends)));
 	return { friends: listFriends, fromCache: response.fromCache };
 });
 

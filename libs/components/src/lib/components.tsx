@@ -64,9 +64,9 @@ export { default as UserReactionPanel } from './components/MessageWithUser/Messa
 export { default as MessageVideo } from './components/MessageWithUser/MessageVideo';
 export { default as TimelineAttachment } from './components/MessageWithUser/TimelineAttachment';
 export { default as TimelineDateBadge } from './components/MessageWithUser/TimelineDateBadge';
-export { default as SidebarClanItem } from './components/ModalListClans/index';
 export { default as SidebarLogoItem } from './components/ModalListClans/SidebarLogoItem';
 export { default as SidebarTooltip } from './components/ModalListClans/SidebarTooltip';
+export { default as SidebarClanItem } from './components/ModalListClans/index';
 export { default as ModalUserProfile } from './components/ModalUserProfile';
 export { ModalErrorTypeUpload, ModalOverData } from './components/ModalValidateFile/ModalOverData';
 export { default as NavLinkComponent } from './components/NavLink';
@@ -82,8 +82,6 @@ export { default as SettingDevices } from './components/SettingDevices';
 export { SettingLanguage } from './components/SettingLanguage';
 export { default as SettingNotifications } from './components/SettingNotifications';
 export * from './components/SettingProfile';
-export { getColorAverageFromURL } from './components/SettingProfile/AverageColor';
-export { default as SettingStartUp } from './components/SettingStartUp';
 export { SettingVoice } from './components/SettingVoice';
 export { default as MzToast } from './components/ToastController/MzToast';
 export { default as ToastController } from './components/ToastController/ToastController';
@@ -121,25 +119,25 @@ export { WebRTCStreamProvider, useWebRTCStream } from './components/StreamContex
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 
-export { default as Topbar } from './components/ChannelTopbar/topbar';
 export { default as PrivateThread } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/PrivateThread';
+export { default as Topbar } from './components/ChannelTopbar/topbar';
 export { default as ChannelMessageThread } from './components/MessageBox/ReactionMentionInput/ChannelMessageThread';
 export { default as MessageWithSystem } from './components/MessageWithSystem';
 export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
 
-export * from './components/virtual-core/useVirtualizer';
 export * from './components/VoiceChannel';
+export * from './components/virtual-core/useVirtualizer';
 
 export * from './components/PreJoinCalling/ControlButton';
 export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
 
 export * from './components/GroupCall';
-export { CallControls } from './components/GroupCall/components/CallControls';
-export { CallStatus } from './components/GroupCall/components/CallStatus';
 export * from './components/GroupCall/GroupCallComponent';
 export { default as GroupPopupNotiCall } from './components/GroupCall/GroupPopupNotiCall';
 export { default as PreCallInterface } from './components/GroupCall/PreCallInterface';
+export { CallControls } from './components/GroupCall/components/CallControls';
+export { CallStatus } from './components/GroupCall/components/CallStatus';
 
 export * from './components/ButtonSwitchCustom';
 export { default as ButtonCopy } from './components/ButtonSwitchCustom/CopyButtonComponent';
@@ -152,4 +150,3 @@ export { default as ModalLayout } from './components/Modal';
 export { default as ModalEditGroup } from './components/ModalEditGroup';
 export { default as SidebarHistory } from './components/ModalListClans/SidebarHistory';
 export { OtpConfirm } from './components/OtpConfirm/index';
-

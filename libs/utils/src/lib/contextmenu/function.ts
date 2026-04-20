@@ -74,10 +74,22 @@ export const handleCopyImage = async (urlData: string, onSuccess?: () => void): 
 };
 
 export const handleSaveImage = (urlData: string) => {
+	try {
+		const parsed = new URL(urlData);
+		if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:' && parsed.protocol !== 'blob:' && parsed.protocol !== 'data:') {
+			console.error('Invalid URL:', urlData);
+			return;
+		}
+		
+	} catch {
+		console.error('Error parsing URL:', urlData);
+		return;
+	}
 	fetch(urlData)
 		.then((response) => response.blob())
 		.then((blob) => {
-			const fileName = urlData.split('/').pop()?.split('?')[0] || 'image.png';
+			const rawName = urlData.split('/').pop()?.split('?')[0] || 'image.png';
+			const fileName = rawName.replace(/[\\/:*?"<>|]/g, '_').slice(0, 255) || 'image.png';
 			const url = window.URL.createObjectURL(new Blob([blob]));
 			const a = document.createElement('a');
 			a.href = url;
@@ -101,5 +113,13 @@ export const handleCopyLink = (urlData: string) => {
 };
 
 export const handleOpenLink = (urlData: string) => {
-	window.open(urlData, '_blank');
+	try {
+		const parsed = new URL(urlData);
+		if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:' && parsed.protocol !== 'mailto:') {
+			return;
+		}
+	} catch {
+		return;
+	}
+	window.open(urlData, '_blank', 'noopener,noreferrer');
 };

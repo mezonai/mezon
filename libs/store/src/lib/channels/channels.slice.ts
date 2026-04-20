@@ -1185,7 +1185,16 @@ export const channelsSlice = createSlice({
 					state.byClans[clanId] = getInitialClanState();
 				}
 				state.byClans[clanId].idChannelSelected[clanId] = channelId;
-				const rememberChannel = JSON.parse(localStorage.getItem('remember_channel') || '{}');
+				let rememberChannel: Record<string, string> = {};
+				try {
+					const raw = localStorage.getItem('remember_channel');
+					const parsed = raw ? JSON.parse(raw) : {};
+					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+						rememberChannel = parsed as Record<string, string>;
+					}
+				} catch {
+				}
+				
 				rememberChannel[clanId] = channelId;
 				localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
 			}

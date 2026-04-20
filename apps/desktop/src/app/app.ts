@@ -515,7 +515,16 @@ export default class App {
 			if (App.isDevelopmentMode()) {
 				return { action: 'allow' };
 			}
-			shell.openExternal(url);
+			try {
+				const parsed = new URL(url);
+				if (parsed.protocol === 'http:' || parsed.protocol === 'https:' || parsed.protocol === 'mailto:') {
+					shell.openExternal(url);
+				} else {
+					log.warn(`Blocked window.open for non-http(s) URL: ${url}`);
+				}
+			} catch {
+				log.warn(`Blocked invalid window.open URL: ${url}`);
+			}
 			return { action: 'deny' };
 		});
 

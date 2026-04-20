@@ -129,7 +129,9 @@ export const ReactionCallHandler = memo(() => {
 
 							timeoutsRef.current.set(senderId, timeoutId);
 							if (audioRef.current) {
-								audioRef.current.play();
+								audioRef.current.play().catch((error) => {
+									console.error(error);
+								});
 							}
 
 							return;

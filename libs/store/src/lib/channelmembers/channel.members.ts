@@ -278,7 +278,11 @@ export const updateCustomStatus = createAsyncThunk(
 				const timeDifference = endOfDay.getTime() - now.getTime();
 				minutes = Math.floor(timeDifference / (1000 * 60));
 			}
-			const response = await mezon.clientRef.current?.writeCustomStatus(mezon.session, clanId, customStatus, minutes, noClear);
+			const response = await mezon.client.updateUserCustomStatus(mezon.session, {
+				status: customStatus,
+				minutes,
+				until_turn_on: noClear
+			});
 
 			const state = thunkAPI.getState() as RootState;
 			const userId = state.account?.userProfile?.user?.id;
@@ -295,7 +299,11 @@ export const updateCustomStatus = createAsyncThunk(
 			}
 
 			if (response) {
-				return response;
+				return {
+					status: customStatus,
+					user_id: userId || '',
+					time_reset: minutes
+				};
 			}
 		} catch (error) {
 			captureSentryError(error, 'channelMembers/updateCustomStatusUser');

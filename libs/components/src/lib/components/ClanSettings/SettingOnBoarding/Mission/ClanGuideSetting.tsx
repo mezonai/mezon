@@ -68,7 +68,7 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 				<div className="w-full h-[1px] my-8 text-theme-primary"></div>
 				<SectionDescription
 					title={t('clanGuideSetting.newMemberToDos.title')}
-					description={<div dangerouslySetInnerHTML={{ __html: t('clanGuideSetting.newMemberToDos.description') }} />}
+					description={<div>{t('clanGuideSetting.newMemberToDos.description')}</div>}
 				/>
 
 				<div className="flex flex-col gap-2 pb-8 md:pb-8">

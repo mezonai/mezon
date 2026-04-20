@@ -11,8 +11,6 @@ if (process.env.NX_ENABLE_SENTRY === 'true') {
 	// import('./instrument/instrument');
 }
 
-console.log('app version', process.env.NX_APP_VERSION);
-
 ThemeManager.initializeTheme();
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

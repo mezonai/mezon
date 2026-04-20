@@ -43,7 +43,7 @@ const PictureInPictureCleanup = memo(({ layoutContext }: PictureInPictureCleanup
 interface RoomEventManagerProps {
 	room: ReturnType<typeof useRoomContext>;
 	layoutContext: ReturnType<typeof useCreateLayoutContext>;
-	onJoinRoom?: () => void;
+	onJoinRoom?: (reconnect?: boolean) => void;
 	onLeaveRoom: (self?: boolean) => void | Promise<void>;
 	token?: string;
 	url?: string;
@@ -130,7 +130,7 @@ const RoomEventManager = memo(({ room, layoutContext, onJoinRoom, onLeaveRoom, t
 			}
 		};
 		const handleReconnectedRoom = () => {
-			onJoinRoom?.();
+			onJoinRoom?.(true);
 		};
 
 		const handleUserDisconnect = (participant: RemoteParticipant) => {
@@ -183,7 +183,7 @@ interface MyVideoConferenceProps {
 	token?: string;
 	onLeaveRoom: (self?: boolean) => void | Promise<void>;
 	onFullScreen: () => void;
-	onJoinRoom?: () => void;
+	onJoinRoom?: (reconnect?: boolean) => void;
 	isExternalCalling?: boolean;
 	tracks?: TrackReferenceOrPlaceholder[];
 	isShowChatVoice?: boolean;

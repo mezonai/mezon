@@ -12,7 +12,7 @@ const MainIntegrations = ({ setIsOpenWebhooks, allWebhooks }: IIntegrationProps)
 	const { t } = useTranslation('integrations');
 
 	const openWebhookLearnMore = () => {
-		window.open('https://mezon.ai/docs/en/developer/webhooks/overview', '_blank');
+		window.open('https://mezon.ai/docs/en/developer/webhooks/overview', '_blank', 'noopener,noreferrer');
 	};
 
 	return (

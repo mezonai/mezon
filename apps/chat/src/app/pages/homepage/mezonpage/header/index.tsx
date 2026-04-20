@@ -1,7 +1,7 @@
 import { authActions, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, Image } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { throttle } from 'lodash';
+import throttle from 'lodash/throttle';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

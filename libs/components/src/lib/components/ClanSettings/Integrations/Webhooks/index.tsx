@@ -46,7 +46,7 @@ const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps
 	};
 
 	const openWebhookLearnMore = () => {
-		window.open('https://mezon.ai/docs/en/developer/webhooks/channel-webhook', '_blank');
+		window.open('https://mezon.ai/docs/en/developer/webhooks/channel-webhook', '_blank', 'noopener,noreferrer');
 	};
 
 	return (
