@@ -394,8 +394,7 @@ export const fetchMessages = createAsyncThunk(
 
 			// Fallback
 			if (!topicId && messageId && (!response.messages || response.messages.length === 0)) {
-				/* eslint-disable */
-				console.log('FALLBACK GET MESSAGES', { clanId, channelId, messageId });
+				console.error('FALLBACK GET MESSAGES', { clanId, channelId, messageId });
 				response = await fetchMessagesCached(
 					thunkAPI.getState as () => RootState,
 					mezon,
@@ -1058,6 +1057,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		username,
 		code
 	} = payload;
+
 	const payloadSizeInBytes = Buffer.byteLength(JSON.stringify(payload), 'utf8');
 	if (payloadSizeInBytes > 4 * 1024) {
 		toast.error(t(`message:tooLongMessage`));
@@ -2140,14 +2140,14 @@ export const messagesSlice = createSlice({
 								const apiMessageIds = [...action.payload.messages].map((msg) => msg.id);
 								const newMessageIds = apiMessageIds.filter((id) => !oldViewport.includes(id));
 								const combinedViewport = [...oldViewport, ...newMessageIds];
-								newViewportIds = combinedViewport.sort((a, b) => {
-									const aEntity = state.channelMessages[channelId].entities[a];
-									const bEntity = state.channelMessages[channelId].entities[b];
-									if (aEntity && bEntity && aEntity?.create_time_seconds && bEntity?.create_time_seconds) {
-										return +aEntity.create_time_seconds - +bEntity.create_time_seconds;
-									}
-									return 0;
-								});
+								const entities = state.channelMessages[channelId].entities;
+								const timestamps = new Map<string, number>();
+								for (let i = 0; i < combinedViewport.length; i++) {
+									const id = combinedViewport[i];
+									const ts = entities[id]?.create_time_seconds;
+									timestamps.set(id, ts ? +ts : 0);
+								}
+								newViewportIds = combinedViewport.sort((a, b) => (timestamps.get(a) || 0) - (timestamps.get(b) || 0));
 							} else {
 								newViewportIds = messageIds;
 							}
@@ -2338,9 +2338,13 @@ export const selectMessageViewportIdsByChannelId = createSelector(
 	[selectMessageIdsByChannelId, selectViewportIdsByChannelId],
 	(messageIds, viewportIds) => {
 		if (!viewportIds?.length) {
-			return messageIds;
+			if (messageIds.length <= MESSAGE_LIST_SLICE) {
+				return messageIds;
+			}
+			return messageIds.slice(-MESSAGE_LIST_SLICE);
 		}
-		return messageIds.filter((id) => viewportIds.includes(id));
+		const viewportSet = new Set(viewportIds);
+		return messageIds.filter((id) => viewportSet.has(id));
 	}
 );
 

@@ -574,8 +574,10 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 		</div>
 	);
 
+	const channelListMergedRowsContextValue = useMemo(() => ({ mergedRows: listChannelRender }), [listChannelRender]);
+
 	return (
-		<ChannelListMergedRowsContext.Provider value={{ mergedRows: listChannelRender }}>
+		<ChannelListMergedRowsContext.Provider value={channelListMergedRowsContextValue}>
 			{isDragModeEnabled ? (
 				<DndContext
 					sensors={sensors}

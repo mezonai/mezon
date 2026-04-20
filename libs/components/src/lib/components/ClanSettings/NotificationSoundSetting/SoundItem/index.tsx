@@ -21,7 +21,9 @@ const SoundItem: React.FC<ISoundItemProps> = ({ sound, isSelected, onPlay, onSel
 	useEffect(() => {
 		if (audioRef.current) {
 			if (isPlaying) {
-				audioRef.current.play();
+				audioRef.current.play().catch((error) => {
+					console.error(error);
+				});
 			} else {
 				audioRef.current.pause();
 				audioRef.current.currentTime = 0;
@@ -33,7 +35,9 @@ const SoundItem: React.FC<ISoundItemProps> = ({ sound, isSelected, onPlay, onSel
 		e.stopPropagation();
 		if (audioRef.current) {
 			audioRef.current.currentTime = 0;
-			audioRef.current.play();
+			audioRef.current.play().catch((error) => {
+				console.error(error);
+			});
 		}
 		if (onPlay) {
 			onPlay();

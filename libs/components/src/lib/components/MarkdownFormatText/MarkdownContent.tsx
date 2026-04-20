@@ -253,7 +253,14 @@ const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEn
 						);
 					}
 				} else {
-					window.open(content, '_blank');
+					try {
+						const parsedContent = new URL(content);
+						if (parsedContent.protocol === 'http:' || parsedContent.protocol === 'https:' || parsedContent.protocol === 'mailto:') {
+							window.open(content, '_blank', 'noopener,noreferrer');
+						}
+					} catch (error) {
+						console.error(error);
+					}
 				}
 			}
 		},
