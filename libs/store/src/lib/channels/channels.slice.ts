@@ -678,18 +678,20 @@ export const addThreadToChannels = createAsyncThunk(
 			const data = await thunkAPI
 				.dispatch(
 					threadsActions.fetchThread({
-						channelId: '0',
+						channelId: channelIdToFetch,
 						clanId,
 						threadId: channelId
 					})
 				)
 				.unwrap();
 
-			if (data?.threads?.length > 0) {
+			const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+
+			if (matchedThread) {
 				thunkAPI.dispatch(
 					channelsActions.upsertOne({
 						clanId,
-						channel: { ...data.threads[0], active: 1 } as ChannelsEntity
+						channel: { ...matchedThread, active: 1 } as ChannelsEntity
 					})
 				);
 			}

@@ -93,9 +93,9 @@ export const fetchThreadsCached = async (
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 
-	if (!shouldForceCall && channelData) {
+	if (!shouldForceCall && channelData?.ids?.length > 0) {
 		return {
-			channeldesc: channelData || [],
+			channeldesc: threadsAdapter.getSelectors().selectAll(channelData),
 			fromCache: true,
 			time: channelData.cache?.lastFetched || Date.now()
 		};
@@ -132,7 +132,7 @@ const updateCacheOnThreadCreation = createAsyncThunk(
 	}
 );
 
-const mapToThreadEntity = (threads: ApiChannelDescription[]) => {
+const mapToThreadEntity = (threads: ApiChannelDescription[] | ThreadsEntity[] | undefined | null) => {
 	if (!Array.isArray(threads)) {
 		return [];
 	}
@@ -229,9 +229,7 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 });
 
 const getInitialChannelState = () => {
-	return {
-		threads: threadsAdapter.getInitialState()
-	};
+	return threadsAdapter.getInitialState();
 };
 
 export const initialThreadsState: ThreadsState = threadsAdapter.getInitialState({
