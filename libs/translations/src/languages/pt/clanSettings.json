@@ -83,7 +83,7 @@
 	},
 	"stickers": {
 		"uploadInstructions": "INSTRUÇÕES DE CARREGAMENTO",
-		"description": "As figurinhas podem ser estáticas (PNG) ou animadas (APNG, GIF). As figurinhas devem ter exatamente 320 x 320 pixels e não podem ultrapassar 512 KB. Redimensionaremos automaticamente as figurinhas PNG estáticas e GIFs animados para você.",
+		"description": "As figurinhas podem ser estáticas (PNG, JPG) ou animadas (APNG, GIF). As figurinhas devem ter exatamente 320 x 320 pixels e não podem ultrapassar 512 KB. Redimensionaremos automaticamente as figurinhas (PNG, JPG) estáticas e GIFs animados para você.",
 		"uploadHere": "Carregue aqui!",
 		"customizeMessage": "Personalize suas figurinhas incríveis conforme seu gosto",
 		"uploadSticker": "Carregar figurinha"
