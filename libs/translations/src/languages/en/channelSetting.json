@@ -4,6 +4,7 @@
 			"title": "Channel Name",
 			"placeholder": "Input Channel Name",
 			"errorMessage": "Please enter a channel name (max 64 characters, only words, numbers, _ or -).",
+			"emptyError": "Please enter a channel name (max 64 characters, only words, numbers, _ or -).",
 			"duplicateError": "The channel name already exists in the category. Please enter another name."
 		},
 		"threadName": {

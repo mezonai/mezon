@@ -4,6 +4,7 @@
 			"title": "Tên kênh",
 			"placeholder": "Nhập tên kênh",
 			"errorMessage": "Vui lòng nhập tên kênh (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
+			"emptyError": "Vui lòng nhập tên kênh (tối đa 64 ký tự, chỉ từ, số, _ hoặc -).",
 			"duplicateError": "Tên kênh đã tồn tại trong danh mục. Vui lòng nhập tên khác."
 		},
 		"threadName": {
