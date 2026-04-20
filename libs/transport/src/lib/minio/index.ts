@@ -1,5 +1,4 @@
-import type { Client, Session } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api';
+import type { ApiMessageAttachment, Client, Session } from 'mezon-js';
 
 export class CustomFile extends File {
 	url?: string;

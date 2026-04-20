@@ -1,8 +1,7 @@
 import type { IChannel } from '@mezon/utils';
 import { ID_MENTION_HERE, TIME_OFFSET, TypeMessage, debounce } from '@mezon/utils';
-import type { ChannelMessage } from 'mezon-js';
+import type { ApiMessageMention, ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/api';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { CHANNELS_FEATURE_KEY } from '../channels/channels.slice';

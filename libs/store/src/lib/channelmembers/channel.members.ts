@@ -9,9 +9,8 @@ import {
 } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
-import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
+import type { ChannelPresenceEvent, ChannelUserListChannelUser, StatusPresenceEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ChannelUserListChannelUser } from 'mezon-js/api';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -279,7 +278,7 @@ export const updateCustomStatus = createAsyncThunk(
 				const timeDifference = endOfDay.getTime() - now.getTime();
 				minutes = Math.floor(timeDifference / (1000 * 60));
 			}
-			const response = await mezon.socketRef.current?.writeCustomStatus(clanId, customStatus, minutes, noClear);
+			const response = await mezon.clientRef.current?.writeCustomStatus(mezon.session, clanId, customStatus, minutes, noClear);
 
 			const state = thunkAPI.getState() as RootState;
 			const userId = state.account?.userProfile?.user?.id;

@@ -2,8 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { EUserStatus, type IUserProfileActivity } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { UserStatusEvent } from 'mezon-js';
-import type { ApiAllUsersAddChannelResponse, ApiUser } from 'mezon-js/api';
+import type { ApiAllUsersAddChannelResponse, ApiUser, UserStatusEvent } from 'mezon-js';
 import { ensureSocket, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 

@@ -8,8 +8,8 @@ import {
 	selectFriendsEntities,
 	useAppDispatch
 } from '@mezon/store';
+import type { ApiLinkInviteUser } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiLinkInviteUser } from 'mezon-js/api';
 import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../auth/hooks/useAuth';

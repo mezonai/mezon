@@ -290,14 +290,14 @@ export async function fetchDataWithSocketFallback<T>(
 	responseKey?: string,
 	retryConfig?: RetryConfig
 ): Promise<T> {
-	const socket = mezon.socketRef?.current;
+	const client = mezon.clientRef?.current;
 	let response: T | undefined;
 
 	const shouldUseSocket = SOCKET_ONLY_APIS.includes(socketRequest.api_name);
 
-	if (shouldUseSocket && socket?.isOpen()) {
+	if (shouldUseSocket && client) {
 		try {
-			const data = await socket.listDataSocket(socketRequest);
+			const data = await client.listDataSocket(mezon.session, socketRequest);
 
 			response = responseKey ? data?.[responseKey] : data;
 		} catch (err) {

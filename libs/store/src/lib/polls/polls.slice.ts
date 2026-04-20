@@ -8,7 +8,7 @@ import type {
 	ApiGetPollResponse,
 	ApiVotePollRequest,
 	ApiVotePollResponse
-} from 'mezon-js/api';
+} from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 export const POLLS_FEATURE_KEY = 'polls';

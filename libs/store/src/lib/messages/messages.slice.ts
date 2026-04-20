@@ -27,8 +27,7 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
-import type { ChannelMessage } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage } from 'mezon-js';
 import type { MessageButtonClicked } from 'mezon-js/socket';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
@@ -44,7 +43,7 @@ import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClans
 import { selectCurrentDM, selectDirectMessageEntities } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx, socketState, withRetry } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
 import { referencesActions, selectOgpData } from './references.slice';
@@ -757,7 +756,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 			if (queuedMessages.length > 0) {
 				await thunkAPI.dispatch(processQueuedLastSeenMessages()).unwrap();
 			}
-			await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
+			await mezon.clientRef.current?.writeLastSeenMessage(mezon.session, clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
 		} catch (e) {
 			console.error(e, 'updateLastSeenMessage writeSocket');
 			thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count: badgeCount, message_time }));
@@ -1147,8 +1146,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		let res;
 
 		try {
-			if (socketState.isConnected) {
-				res = await socket.writeChatMessage(
+			if (client) {
+				res = await client.writeChatMessage(
+					mezon.session,
 					clanId,
 					channelId,
 					mode,
@@ -1380,7 +1380,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 		const client = mezon.clientRef.current;
 		const socket = mezon.socketRef.current;
 
-		if (!client || !session || !socket || !channelId) {
+		if (!client || !session || !channelId) {
 			throw new Error('Client is not initialized');
 		}
 
@@ -1398,7 +1398,8 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 			avatarToUse = undefined;
 		}
 
-		await socket.writeEphemeralMessage(
+		await client.writeEphemeralMessage(
+			session,
 			[receiverId],
 			clanId,
 			channelId,
@@ -1553,7 +1554,7 @@ export const sendTypingUser = createAsyncThunk(
 	'messages/sendTypingUser',
 	async ({ clanId, channelId, mode, isPublic, username, topicId = '' }: SendMessageArgs, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const ack = mezon.socketRef.current?.writeMessageTyping(clanId, channelId, mode, isPublic, username, topicId || undefined);
+		const ack = mezon.clientRef.current?.writeMessageTyping(mezon.session, clanId, channelId, mode, isPublic, username, topicId || undefined);
 		return ack;
 	}
 );

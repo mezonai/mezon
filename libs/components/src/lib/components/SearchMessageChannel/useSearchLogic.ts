@@ -18,8 +18,8 @@ import {
 } from '@mezon/store';
 import type { OnChangeHandlerFunc, SearchFilter } from '@mezon/utils';
 import { Platform, SIZE_PAGE_SEARCH, getPlatform } from '@mezon/utils';
+import type { ApiSearchMessageRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiSearchMessageRequest } from 'mezon-js/api';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

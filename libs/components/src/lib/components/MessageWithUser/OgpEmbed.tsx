@@ -104,7 +104,8 @@ const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
 				mk: message.content?.mk?.slice(0, -1)
 			};
 
-			await socket.updateChatMessage(
+			await client.updateChatMessage(
+				session,
 				channelOrDirect.clan_id || '0',
 				channelOrDirect.channel_id ?? '0',
 				mode,

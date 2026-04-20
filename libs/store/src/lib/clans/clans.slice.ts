@@ -3,16 +3,16 @@ import type { IClan, LoadingStatus } from '@mezon/utils';
 import { LIMIT_CLAN_ITEM } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ClanUpdatedEvent } from 'mezon-js';
-import { ChannelType } from 'mezon-js';
 import type {
 	ApiChannelDescription,
 	ApiCheckDuplicateNameRequest,
 	ApiCheckDuplicateNameResponse,
 	ApiClanDesc,
 	ApiUpdateAccountRequest,
+	ClanUpdatedEvent,
 	MezonUpdateClanDescBody
-} from 'mezon-js/api';
+} from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -501,7 +501,7 @@ interface JoinClanPayload {
 export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan', async ({ clanId }, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.socketRef.current?.joinClanChat(clanId);
+		await mezon.clientRef.current?.joinClanChat(mezon.session, clanId);
 		const state = thunkAPI.getState() as RootState;
 		if (!state.clans?.checkJoinList?.[clanId] && clanId !== '0') {
 			thunkAPI.dispatch(listChannelBadgeCount({ clanId }));

@@ -2,9 +2,9 @@ import { captureSentryError } from '@mezon/logger';
 import type { EmojiStorage, IReaction } from '@mezon/utils';
 import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiMessageReaction } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageReaction } from 'mezon-js/api';
-import { ensureSession, getMezonCtx, socketState } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
 import { toastActions } from '../toasts';
 
 export const REACTION_FEATURE_KEY = 'reaction';
@@ -162,12 +162,13 @@ export const writeMessageReaction = createAsyncThunk(
 				}
 
 				let socketSuccess = false;
-				if (socket && socketState.isConnected) {
+				if (client) {
 					try {
 						await retryWithBackoff(
 							async () => {
 								return await createTimeoutPromise(
-									socket.writeMessageReaction(
+									client.writeMessageReaction(
+										session,
 										id || '0',
 										clanId || '0',
 										channelId,

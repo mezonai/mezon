@@ -3,9 +3,16 @@ import type { BuzzArgs, IChannel, IMessage, IUserChannel, IUserProfileActivity, 
 import { ActiveDm } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelMessage, ChannelUpdatedEvent, UserProfile } from 'mezon-js';
+import type {
+	ApiChannelDescription,
+	ApiChannelMessageHeader,
+	ApiCreateChannelDescRequest,
+	ApiDeleteChannelDescRequest,
+	ChannelMessage,
+	ChannelUpdatedEvent,
+	UserProfile
+} from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
@@ -244,7 +251,7 @@ export const fetchDirectMessage = createAsyncThunk(
 	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP, isMobile = false }: fetchDmGroupArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, 1, '0', channelType, isMobile);
+			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, 1, '0', channelType, false);
 			if (!response.channeldesc || response.channeldesc.length === 0) {
 				return { channels: [], hasMore: false, page: 1 };
 			}

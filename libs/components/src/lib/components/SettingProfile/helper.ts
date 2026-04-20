@@ -1,7 +1,7 @@
 import { toastActions } from '@mezon/store';
 import { handleUploadFile } from '@mezon/transport';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/api';
+import type { ApiAccount } from 'mezon-js';
 import { toast } from 'react-toastify';
 
 export const processImage = async (

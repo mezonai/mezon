@@ -3,7 +3,7 @@ import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
 import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelDescription } from 'mezon-js/api';
+import type { ApiChannelDescription } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions, selectCurrentChannel } from '../channels/channels.slice';
@@ -253,9 +253,13 @@ export const checkDuplicateThread = createAsyncThunk(
 	async ({ thread_name, channel_id, clan_id }: { thread_name: string; channel_id: string; clan_id: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(thread_name, channel_id, TypeCheck.TYPETHREAD, clan_id);
-			if (isDuplicateName?.type === TypeCheck.TYPETHREAD) {
-				return isDuplicateName.exist;
+			const isDuplicateName = await mezon.clientRef.current?.checkDuplicateName(mezon.session, {
+				name: thread_name,
+				condition_id: channel_id,
+				type: TypeCheck.TYPETHREAD
+			});
+			if (isDuplicateName?.is_duplicate) {
+				return isDuplicateName?.is_duplicate;
 			}
 		} catch (error) {
 			captureSentryError(error, 'threads/duplicateNameCthread');

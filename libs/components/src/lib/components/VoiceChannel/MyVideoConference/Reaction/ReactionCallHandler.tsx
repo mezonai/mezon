@@ -15,7 +15,7 @@ export const ReactionCallHandler = memo(() => {
 	const [raisingList, setRaisingList] = useState<DisplayedHand[]>([]);
 	const timeoutsRef = useRef<Map<string, number>>(new Map());
 
-	const { socketRef } = useMezon();
+	const { clientRef } = useMezon();
 	const audioRefs = useRef<Map<string, HTMLAudioElement>>(new Map());
 	const emojiQueueRef = useRef<DisplayedEmoji[]>([]);
 	const lastEmojiTimestampRef = useRef<number>(0);
@@ -85,9 +85,9 @@ export const ReactionCallHandler = memo(() => {
 	}, []);
 
 	useEffect(() => {
-		if (!socketRef.current || !channelId) return;
+		if (!clientRef.current || !channelId) return;
 
-		const currentSocket = socketRef.current;
+		const currentSocket = clientRef.current;
 		const audioMap = audioRefs.current;
 
 		currentSocket.onvoicereactionmessage = (message: VoiceReactionSend) => {
@@ -189,7 +189,7 @@ export const ReactionCallHandler = memo(() => {
 			soundReactionsService.clearAllSound();
 			audioMap.clear();
 		};
-	}, [socketRef, channelId, generatePosition, playSound]);
+	}, [clientRef, channelId, generatePosition, playSound]);
 
 	const shouldRender = displayedEmojis.length !== 0 || raisingList.length !== 0;
 	return (

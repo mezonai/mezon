@@ -39,7 +39,7 @@ export const updateCallLog = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const messageId = selectCallMessageId(state);
 			if (messageId) {
-				mezon.socketRef.current?.updateChatMessage('0', channelId ?? '', 4, false, messageId, content, [], [], true);
+				mezon.clientRef.current?.updateChatMessage(mezon.session, '0', channelId ?? '', 4, false, messageId, content, [], [], true);
 			}
 		} catch (error) {
 			return thunkAPI.rejectWithValue(error);

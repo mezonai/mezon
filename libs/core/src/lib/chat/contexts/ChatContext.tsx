@@ -35,7 +35,6 @@ import {
 	getStoreAsync,
 	giveCoffeeActions,
 	inviteActions,
-	updateClanBadgeRender,
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	mapMessageChannelToEntityAction,
@@ -93,6 +92,7 @@ import {
 	topicsActions,
 	typingUsersService,
 	updateChannelActions,
+	updateClanBadgeRender,
 	useAppDispatch,
 	userChannelsActions,
 	usersClanActions,
@@ -132,6 +132,17 @@ import isElectron from 'is-electron';
 import type {
 	AddClanUserEvent,
 	AddFriend,
+	ApiChannelMessageHeader,
+	ApiClanEmoji,
+	ApiCreateEventRequest,
+	ApiGiveCoffeeEvent,
+	ApiMessageReaction,
+	ApiNotification,
+	ApiNotificationUserChannel,
+	ApiPermissionUpdate,
+	ApiTokenSentEvent,
+	ApiUpdateCategoryDescRequest,
+	ApiWebhook,
 	BannedUserEvent,
 	BlockFriend,
 	CategoryEvent,
@@ -143,6 +154,7 @@ import type {
 	ClanDeletedEvent,
 	ClanProfileUpdatedEvent,
 	ClanUpdatedEvent,
+	Client,
 	CustomStatusEvent,
 	EventEmoji,
 	JoinChannelAppData,
@@ -155,7 +167,6 @@ import type {
 	PermissionChangedEvent,
 	PermissionSet,
 	RoleEvent,
-	Socket,
 	StatusPresenceEvent,
 	StickerCreateEvent,
 	StickerDeleteEvent,
@@ -176,19 +187,6 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type {
-	ApiChannelMessageHeader,
-	ApiClanEmoji,
-	ApiCreateEventRequest,
-	ApiGiveCoffeeEvent,
-	ApiMessageReaction,
-	ApiNotification,
-	ApiNotificationUserChannel,
-	ApiPermissionUpdate,
-	ApiTokenSentEvent,
-	ApiUpdateCategoryDescRequest,
-	ApiWebhook
-} from 'mezon-js/api';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -206,7 +204,6 @@ type ChatContextProviderProps = {
 };
 
 export type ChatContextValue = {
-	setCallbackEventFn: (socket: Socket) => void;
 	handleReconnect: (socketType: string) => void;
 	onchannelmessage: (message: ChannelMessage) => void;
 };
@@ -215,7 +212,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isMobile = false }) => {
 	const { t } = useTranslation('token');
-	const { socketRef, mmnRef, reconnectWithTimeout } = useMezon();
+	const { clientRef, sessionRef, mmnRef, reconnectWithTimeout } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
 
@@ -1039,13 +1036,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						})
 					);
 
-					if (
-						channel_desc.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
-						channel_desc.type === ChannelType.CHANNEL_TYPE_APP ||
-						channel_desc.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
-					) {
-					}
-
 					if (channel_desc.type === ChannelType.CHANNEL_TYPE_THREAD) {
 						dispatch(
 							channelMetaActions.updateBulkChannelMetadata({
@@ -1508,7 +1498,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					);
 				}
 			}
-
 		}
 		if (channelCreated && channelCreated.channel_private === 0 && (channelCreated.parent_id === '' || channelCreated.parent_id === '0')) {
 			const store = await getStoreAsync();
@@ -2315,8 +2304,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			const handled = await handleGroupCallSocketEvent(event, state, {
 				dispatch,
-				socketRef,
-				userId
+				clientRef,
+				userId,
+				sessionRef
 			});
 
 			if (handled) {
@@ -2333,8 +2323,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			return;
 		}
 
-		if (userCallId && userCallId !== event?.caller_id) {
-			socketRef.current?.forwardWebrtcSignaling(
+		if (userCallId && userCallId !== event?.caller_id && sessionRef.current) {
+			clientRef.current?.forwardWebrtcSignaling(
+				sessionRef.current,
 				event?.caller_id,
 				WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
 				'',
@@ -2351,8 +2342,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));
-			if (event.data_type !== WEBRTC_CLEAR_CALL) {
-				socketRef.current?.forwardWebrtcSignaling(event?.caller_id, WEBRTC_CLEAR_CALL, '', event?.channel_id, userId || '');
+			if (event.data_type !== WEBRTC_CLEAR_CALL && sessionRef.current) {
+				clientRef.current?.forwardWebrtcSignaling(
+					sessionRef.current,
+					event?.caller_id,
+					WEBRTC_CLEAR_CALL,
+					'',
+					event?.channel_id,
+					userId || ''
+				);
 			} else if (event.data_type === WEBRTC_CLEAR_CALL) {
 				// Force quit call for android
 				dispatch(DMCallActions.setIsForceQuitCallNative(true));
@@ -2573,7 +2571,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	}, []);
 
 	const setCallbackEventFn = React.useCallback(
-		(socket: Socket) => {
+		(socket: Client) => {
 			socket.onvoicejoined = onvoicejoined;
 
 			socket.onvoiceended = onvoiceended;
@@ -2769,7 +2767,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 				return;
 			}
-			setCallbackEventFn(socket as Socket);
+			setCallbackEventFn(socket as Client);
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
@@ -2780,7 +2778,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	useEffect(() => {
 		const subscription = reconnect$
 			.pipe(
-				filter(() => !socketRef.current?.isOpen()),
+				filter(() => !clientRef.current?.isOpen()),
 				throttleTime(500),
 				exhaustMap(
 					(socketType) =>
@@ -2840,7 +2838,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	}, [handleReconnect]);
 
 	useEffect(() => {
-		const socket = socketRef.current;
+		const socket = clientRef.current;
 		if (!socket) return;
 		setCallbackEventFn(socket);
 
@@ -2937,7 +2935,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		oncustomstatus,
 		onstatuspresence,
 		oncanvasevent,
-		socketRef,
+		clientRef,
 		onvoiceended,
 		onvoicejoined,
 		onvoiceleaved,

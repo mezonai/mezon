@@ -46,8 +46,8 @@ import {
 	processFile
 } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -168,8 +168,16 @@ const ThreadBox = () => {
 					const shouldSeedStarterFromValueThread = Boolean(valueThread);
 					const hasUserMessage = Boolean(content?.t && content.t.trim().length > 0) || (attachments?.length ?? 0) > 0;
 
-					const createThreadMessageContent = shouldSeedStarterFromValueThread ? valueThread?.content : hasUserMessage ? content : valueThread?.content;
-					const createThreadAttachments = shouldSeedStarterFromValueThread ? valueThread?.attachments : hasUserMessage ? attachments : valueThread?.attachments;
+					const createThreadMessageContent = shouldSeedStarterFromValueThread
+						? valueThread?.content
+						: hasUserMessage
+							? content
+							: valueThread?.content;
+					const createThreadAttachments = shouldSeedStarterFromValueThread
+						? valueThread?.attachments
+						: hasUserMessage
+							? attachments
+							: valueThread?.attachments;
 
 					const thread = (await createThread(value, createThreadMessageContent, createThreadAttachments)) as ApiChannelDescription;
 					if (thread) {

@@ -28,8 +28,8 @@ import {
 	isYouTubeLink,
 	uniqueUsers
 } from '@mezon/utils';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -159,7 +159,8 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				}
 			}
 
-			await socket.writeChatMessage(
+			await client.writeChatMessage(
+				session,
 				currentClanId,
 				thread.channel_id as string,
 				ChannelStreamMode.STREAM_MODE_THREAD,
@@ -217,7 +218,8 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			if (!client || !session || !socket || !currentClanId) {
 				throw new Error('Client is not initialized');
 			}
-			await socket.updateChatMessage(
+			await client.updateChatMessage(
+				session,
 				currentClanId,
 				channelId,
 				ChannelStreamMode.STREAM_MODE_THREAD,

@@ -3,8 +3,7 @@ import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { captureSentryError } from '@mezon/logger';
-import type { ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanStickerByIdBody } from 'mezon-js/api';
+import type { ApiClanStickerAddRequest, ClanSticker, MezonUpdateClanStickerByIdBody } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

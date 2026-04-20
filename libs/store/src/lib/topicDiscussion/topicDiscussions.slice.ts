@@ -11,7 +11,7 @@ import {
 } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { messagesActions, selectMessageEntitiesByChannelId } from '../messages/messages.slice';
@@ -238,7 +238,8 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		};
 	}
 
-	await socket.writeChatMessage(
+	await client.writeChatMessage(
+		mezon.session,
 		clanId as string,
 		channelId as string,
 		mode,
