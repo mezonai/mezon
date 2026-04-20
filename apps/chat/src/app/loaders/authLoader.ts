@@ -20,7 +20,6 @@ import {
 import { isOnline, waitForOnline } from '@mezon/transport';
 import type { IWithError } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
-import { waitForSocketConnection } from './socketUtils';
 
 export interface IAuthLoaderData {
 	isLogin: boolean;
@@ -114,8 +113,6 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		const currentClanId = selectCurrentClanId(store.getState());
 		dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId as string }));
 	}
-	const session = await refreshSession({ dispatch, initialPath: initialPath as string });
-	await dispatch(waitForSocketConnection());
 
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
@@ -140,7 +137,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		}
 	}
 
-	return session;
+	return { isLogin: true };
 };
 
 export const shouldRevalidateAuth = () => {
