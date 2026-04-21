@@ -3,6 +3,33 @@ import { isYouTubeLink } from '.';
 import type { IMarkdownOnMessage, MentionItem } from '../types';
 import { EBacktickType, ETypeMEntion } from '../types';
 
+function escapeHtmlText(value: string): string {
+	return value.replace(/[&<>"']/g, (ch) => {
+		switch (ch) {
+			case '&':
+				return '&amp;';
+			case '<':
+				return '&lt;';
+			case '>':
+				return '&gt;';
+			case '"':
+				return '&quot;';
+			case "'":
+				return '&#39;';
+			default:
+				return ch;
+		}
+	});
+}
+
+function escapeHtmlAttribute(value: string): string {
+	const lower = value.trim().toLowerCase();
+	if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) {
+		return '#';
+	}
+	return escapeHtmlText(value);
+}
+
 export enum ApiMessageEntityTypes {
 	Bold = 'MessageEntityBold',
 	BotCommand = 'MessageEntityBotCommand',
@@ -270,7 +297,9 @@ function parseMarkdownLinks(html: string) {
 			parts[i] = partText.replace(LINK_TEMPLATE, (match, offset) => {
 				const { cleanMatch, trailingPunctuation } = getCleanUrlAndTrailing(match, partText, offset);
 				if (isUrl(cleanMatch)) {
-					return `<a href="${cleanMatch}" target="_blank">${cleanMatch}</a>${trailingPunctuation}`;
+					const safeHref = escapeHtmlAttribute(cleanMatch);
+					const safeText = escapeHtmlText(cleanMatch);
+					return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${safeText}</a>${trailingPunctuation}`;
 				}
 				return match;
 			});

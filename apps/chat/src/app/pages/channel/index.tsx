@@ -258,7 +258,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 						window.electron.launchAppWindow(urlWithHash);
 						return;
 					}
-					window.open(urlWithHash, currentChannel?.channel_label, 'width=900,height=700');
+					window.open(urlWithHash, currentChannel?.channel_label, 'width=900,height=700,noopener,noreferrer');
 				}
 			}
 		}

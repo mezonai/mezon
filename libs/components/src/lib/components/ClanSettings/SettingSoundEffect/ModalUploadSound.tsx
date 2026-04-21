@@ -196,7 +196,10 @@ function WaveformPlayer({
 		if (isPlaying) {
 			audio.pause();
 		} else {
-			audio.play();
+			audio.play().catch((error) => {
+				console.error(error);
+				// Autoplay may be blocked; silently ignore.
+			});
 		}
 		setIsPlaying(!isPlaying);
 	}, [isPlaying]);

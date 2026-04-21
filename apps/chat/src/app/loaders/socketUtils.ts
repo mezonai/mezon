@@ -12,17 +12,18 @@ export const waitForSocketConnection = createAsyncThunk('socket/waitForConnectio
 		return globalSocketPromise;
 	}
 
-	globalSocketPromise = new Promise<void>((resolve) => {
+	globalSocketPromise = new Promise<void>((resolve, reject) => {
 		const interval = setInterval(() => {
 			if (mezon.socketRef.current && (mezon.socketRef.current as any).adapter && (mezon.socketRef.current as any).adapter.isOpen()) {
 				clearInterval(interval);
+				clearTimeout(deadline);
 				resolve();
 			}
 		}, 100);
 
-		setTimeout(() => {
+		const deadline = setTimeout(() => {
 			clearInterval(interval);
-			resolve();
+			reject(new Error('[waitForSocketConnection] Timed out waiting for socket to open'));
 		}, 5000);
 	});
 

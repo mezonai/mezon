@@ -468,20 +468,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					let isNotCurrentDirect = false;
 
+					const isSameDirect = !!currentDirectId && currentDirectId === message?.channel_id;
 					if (isMobile) {
-						isNotCurrentDirect =
-							isClanView || !currentDirectId || (!!currentDirectId && !RegExp(currentDirectId).test(message?.channel_id));
+						isNotCurrentDirect = isClanView || !currentDirectId || !isSameDirect;
 					} else {
 						const path = isElectron() ? window.location.hash : window.location.pathname;
 						const isFriendPageView = path.includes('/chat/direct/friends');
 						const isFocus = !isBackgroundModeActive();
 
-						isNotCurrentDirect =
-							isFriendPageView ||
-							isClanView ||
-							!currentDirectId ||
-							(currentDirectId && !RegExp(currentDirectId).test(message?.channel_id)) ||
-							!isFocus;
+						isNotCurrentDirect = isFriendPageView || isClanView || !currentDirectId || !isSameDirect || !isFocus;
 					}
 
 					if (isNotCurrentDirect) {
@@ -645,6 +640,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
+	useEffect(() => {
+		return () => {
+			if (statusPresenceTimerRef.current) {
+				clearTimeout(statusPresenceTimerRef.current);
+				statusPresenceTimerRef.current = null;
+			}
+		};
+	}, []);
+
 	const oncanvasevent = useCallback(
 		(canvasEvent: ChannelCanvas) => {
 			if (canvasEvent.status === EEventAction.CREATED) {
@@ -680,12 +684,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				isFriendPageView ||
 				!isFocus
 			) {
+				const parsedNotificationContent = safeJSONParse(notification.content?.content);
 				dispatch(
 					notificationActions.add({
 						data: {
 							...notification,
 							id: notification?.id || '',
-							content: { ...notification.content, content: safeJSONParse(notification.content?.content).t }
+							content: { ...notification.content, content: parsedNotificationContent?.t }
 						},
 						category: notification.category as NotificationCategory
 					})
@@ -740,12 +745,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				notiSoundElement.src = '/assets/audio/noti-linux.mp3';
 				notiSoundElement.preload = 'auto';
 				notiSoundElement.style.display = 'none';
+				const cleanupNoti = () => {
+					notiSoundElement.removeEventListener('ended', cleanupNoti);
+					notiSoundElement.removeEventListener('error', cleanupNoti);
+					if (document.body.contains(notiSoundElement)) {
+						document.body.removeChild(notiSoundElement);
+					}
+					notiSoundElement.src = '';
+				};
+				notiSoundElement.addEventListener('ended', cleanupNoti);
+				notiSoundElement.addEventListener('error', cleanupNoti);
 				document.body.appendChild(notiSoundElement);
-				notiSoundElement.addEventListener('ended', () => {
-					document.body.removeChild(notiSoundElement);
-				});
 				notiSoundElement.play().catch((err) => {
-					console.warn('cant play sound noti:', err.message || err);
+					console.warn('cant play sound noti:', err?.message || err);
+					cleanupNoti();
 				});
 			}
 		},
@@ -1385,11 +1398,21 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				joinSoundElement.src = '/assets/audio/bankSound.mp3';
 				joinSoundElement.preload = 'auto';
 				joinSoundElement.style.display = 'none';
+				const cleanupBank = () => {
+					joinSoundElement.removeEventListener('ended', cleanupBank);
+					joinSoundElement.removeEventListener('error', cleanupBank);
+					if (document.body.contains(joinSoundElement)) {
+						document.body.removeChild(joinSoundElement);
+					}
+					joinSoundElement.src = '';
+				};
+				joinSoundElement.addEventListener('ended', cleanupBank);
+				joinSoundElement.addEventListener('error', cleanupBank);
 				document.body.appendChild(joinSoundElement);
-				joinSoundElement.addEventListener('ended', () => {
-					document.body.removeChild(joinSoundElement);
+				joinSoundElement.play().catch((err) => {
+					console.warn('Failed to play bank sound:', err?.message || err);
+					cleanupBank();
 				});
-				joinSoundElement.play();
 			}
 		},
 		[dispatch, userId]
@@ -2731,7 +2754,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onsdtopicevent,
 			onUnpinMessageEvent,
 			onblockfriend,
-			onunblockfriend
+			onunblockfriend,
+			onMarkAsRead,
+			onaddfriend,
+			onbanneduser
 		]
 	);
 

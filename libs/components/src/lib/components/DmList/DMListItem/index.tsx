@@ -2,7 +2,6 @@ import { useMemberStatus } from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
-	getStore,
 	selectAllAccount,
 	selectBuzzStateByDirectId,
 	selectDirectById,
@@ -74,7 +73,6 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const handleLeave = async (e: React.MouseEvent, directId: string, currentDmGroupId: string) => {
 		e.stopPropagation();
 		await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
-		const store = getStore();
 		if (directId === currentDmGroupId) {
 			dispatch(directActions.setDmGroupCurrentId(''));
 			navigateToFriends();

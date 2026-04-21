@@ -179,7 +179,7 @@
     "css-loader": "^6.10.0",
     "dotenv": "^16.5.0",
     "dotenv-webpack": "^8.1.0",
-    "electron": "37.3.1",
+    "electron": "41.2.1",
     "electron-builder": "^25.1.8",
     "eslint": "8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -235,7 +235,13 @@
     "qs": "^6.14.1",
     "glob": "^10.5.0",
     "@electron/rebuild": "^3.7.0",
-    "cacache": "^18.0.0"
+    "cacache": "^18.0.0",
+    "minimatch": "^9.0.7",
+    "picomatch": "^4.0.4",
+    "js-yaml": "^4.1.1",
+    "file-type": "^21.3.2",
+    "serialize-javascript": "^7.0.5",
+    "@tootallnate/once": "^3.0.1"
   },
   "optionalDependencies": {
     "@nx/nx-darwin-arm64": "18.2.2",

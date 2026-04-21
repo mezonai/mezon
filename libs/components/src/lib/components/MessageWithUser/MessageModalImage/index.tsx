@@ -146,7 +146,9 @@ const MessageModalImage = () => {
 			if (isPlaying) {
 				videoRef.current.pause();
 			} else {
-				videoRef.current.play();
+				videoRef.current.play().catch((error) => {
+					console.error(error);
+				});
 			}
 			setIsPlaying(!isPlaying);
 		}

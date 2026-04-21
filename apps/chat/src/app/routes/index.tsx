@@ -28,7 +28,6 @@ import InitialRoutes from './InititalRoutes';
 import ProtectedRoutes from './ProtectedRoutes';
 import ThreadsRoutes from './ThreadsRoutes';
 
-import { Canvas } from '@mezon/components';
 import { externalLoader } from '../loaders/externalLoader';
 
 const AppLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/AppLayout'));
@@ -71,6 +70,9 @@ const Main = lazy(() => import(/* webpackChunkName: "main-pages" */ '../pages/ma
 const AddFriendPage = lazy(() => import(/* webpackChunkName: "main-pages" */ '../pages/invite/addFriendPage'));
 const MemberMain = lazy(() => import(/* webpackChunkName: "member-pages" */ '../pages/member'));
 const ChannelSettingMain = lazy(() => import(/* webpackChunkName: "setting-pages" */ '../pages/setting/channelSetting'));
+const Canvas = lazy(() =>
+	import(/* webpackChunkName: "canvas" */ '@mezon/components').then((m) => ({ default: m.Canvas }))
+);
 const ThreadsMain = lazy(() => import(/* webpackChunkName: "thread-pages" */ '../pages/thread'));
 
 const SuspenseFallback = () => {
