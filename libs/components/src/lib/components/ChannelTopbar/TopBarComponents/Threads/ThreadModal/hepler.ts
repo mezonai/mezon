@@ -36,10 +36,10 @@ export const getThreadsOlderThan30Days = (threads: ThreadsEntity[]): ThreadsEnti
 	const thirtyDaysInSeconds = 30 * 24 * 60 * 60;
 	const currentTime = Math.floor(Date.now() / 1000);
 
-	const result = threads.filter((thread) => {
-		const lastMessageTimestamp = thread.last_sent_message?.timestamp_seconds;
-		return !lastMessageTimestamp || currentTime - Number(lastMessageTimestamp) > thirtyDaysInSeconds;
-	});
+	const result = threads.filter(
+		(thread) =>
+			thread.last_sent_message?.timestamp_seconds && currentTime - Number(thread.last_sent_message.timestamp_seconds) > thirtyDaysInSeconds
+	);
 
 	return result;
 };

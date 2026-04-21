@@ -78,7 +78,7 @@ interface VoiceConferenceContentProps {
 	voiceInfo: ReturnType<typeof selectVoiceInfo>;
 	handleLeaveRoom: (self?: boolean) => Promise<void>;
 	handleFullScreen: () => void;
-	handleJoinRoom: () => void;
+	handleJoinRoom: (reconnect?: boolean) => void;
 	isShowChatVoice: boolean;
 	toggleChat: () => void;
 }
@@ -187,7 +187,10 @@ const ChannelVoiceInner = () => {
 		}
 	}, [lowPowerMode]);
 
-	const handleJoinRoom = useLastCallback(async () => {
+	const handleJoinRoom = useLastCallback(async (reconnect?: boolean) => {
+		if (reconnect) {
+			return;
+		}
 		try {
 			await room.disconnect();
 		} catch (error) {

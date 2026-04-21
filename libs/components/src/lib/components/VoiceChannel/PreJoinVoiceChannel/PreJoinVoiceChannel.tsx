@@ -9,7 +9,7 @@ interface PreJoinVoiceChannelProps {
 	clan_id?: string;
 	roomName?: string;
 	loading: boolean;
-	handleJoinRoom: () => void;
+	handleJoinRoom: (reconnect?: boolean) => void;
 	isCurrentChannel?: boolean;
 }
 
@@ -49,7 +49,7 @@ export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 				<button
 					disabled={!channel_id || loading}
 					className={`bg-green-700 rounded-3xl p-2 ${channel_id ? 'hover:bg-green-600' : 'opacity-50'}`}
-					onClick={handleJoinRoom}
+					onClick={() => handleJoinRoom()}
 					data-e2e={generateE2eId('clan_page.screen.voice_room.button.join_voice')}
 				>
 					{loading ? t('joining') : t('joinVoice')}

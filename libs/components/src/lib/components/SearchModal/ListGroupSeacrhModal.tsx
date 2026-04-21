@@ -136,7 +136,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 		const handler = () => (usingKeyboard.current = false);
 		document.addEventListener('mousemove', handler);
 		return () => document.removeEventListener('mousemove', handler);
-	});
+	}, []);
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -149,8 +149,10 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 		};
 	}, [allItems, normalizeSearchText]);
 
+	const listGroupSearchContextValue = useMemo(() => ({ itemRefs: itemRefs.current }), []);
+
 	return (
-		<ListGroupSearchModalContext.Provider value={{ itemRefs: itemRefs.current }}>
+		<ListGroupSearchModalContext.Provider value={listGroupSearchContextValue}>
 			<div
 				ref={boxRef}
 				className={`w-full max-h-[250px] overflow-x-hidden overflow-y-auto flex text-theme-primary flex-col gap-[3px] pr-[5px] thread-scroll`}

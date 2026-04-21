@@ -60,7 +60,7 @@ const ModalInvite = (props: ModalParam) => {
 				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.invite_link}`);
 			}
 		} catch {
-			console.log(t('errors.createInviteLink'));
+			console.error(t('errors.createInviteLink'));
 		}
 	}, [channelID, effectiveClanId]);
 

@@ -24,7 +24,7 @@ function createImgProxyUrl(sourceImageUrl: string, width = 0, height = 0, resize
 	if (!sanitizedUrl) return '';
 
 	const base = process.env.NX_IMGPROXY_BASE_URL || 'https://imgproxy.mezon.ai';
-	const key = process.env.NX_IMGPROXY_KEY || 'K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c';
+	const key = process.env.NX_IMGPROXY_KEY;
 	if (!base || !key) return sanitizedUrl;
 
 	const processingOptions = `rs:${resizeType}:${width}:${height}:1/mb:2097152`;

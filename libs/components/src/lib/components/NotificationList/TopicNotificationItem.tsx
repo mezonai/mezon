@@ -19,7 +19,7 @@ import type { IMessageWithUser } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import type { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/api';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +39,16 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 
 	useEffect(() => {
 		setSubjectTopic('Topic and you');
+	}, []);
+
+	const rafIdsRef = useRef<Set<number>>(new Set());
+	const isUnmountedRef = useRef(false);
+	useEffect(() => {
+		return () => {
+			isUnmountedRef.current = true;
+			rafIdsRef.current.forEach((id) => cancelAnimationFrame(id));
+			rafIdsRef.current.clear();
+		};
 	}, []);
 
 	const handleOpenTopic = async () => {
@@ -67,6 +77,9 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 				new Promise((resolve) => {
 					const startTime = Date.now();
 					const checkMessage = () => {
+						if (isUnmountedRef.current) {
+							return resolve(null);
+						}
 						const state = getStore().getState();
 						const msg = selectMessageByMessageId(state, topic.channel_id as string, topic.message_id as string);
 						if (msg) {
@@ -76,7 +89,11 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 							console.warn('Timeout waiting for message to load');
 							return resolve(null);
 						}
-						requestAnimationFrame(checkMessage);
+						const id = requestAnimationFrame(() => {
+							rafIdsRef.current.delete(id);
+							checkMessage();
+						});
+						rafIdsRef.current.add(id);
 					};
 					checkMessage();
 				});

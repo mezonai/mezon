@@ -211,7 +211,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${numberNotification || isUnReadChannel ? 'text-theme-primary-active' : ''}`}
+					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${(numberNotification || isUnReadChannel) && notVoiceOrAppOrStreamChannel ? 'text-theme-primary-active' : ''}`}
 					draggable="false"
 				>
 					<span

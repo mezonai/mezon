@@ -138,17 +138,18 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 	useEffect(() => {
 		if (count === null) return;
 		const timer = setInterval(() => {
-			setCount(() => {
-				if (count <= 1) {
+			setCount((prev) => {
+				if (prev === null) return prev;
+				if (prev <= 1) {
 					clearInterval(timer);
 					return 0;
 				}
-				return count - 1;
+				return prev - 1;
 			});
 		}, 1000);
 
 		return () => clearInterval(timer);
-	}, [count]);
+	}, [count === null]);
 
 	const handleOnclose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.preventDefault();

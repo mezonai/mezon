@@ -173,7 +173,7 @@ function MyApp() {
 		dispatch(e2eeActions.setOpenModalE2ee(false));
 	};
 	const openDiscoverPage = () => {
-		window.open('https://mezon.ai/clans', '_blank');
+		window.open('https://mezon.ai/clans', '_blank', 'noopener,noreferrer');
 	};
 
 	return (

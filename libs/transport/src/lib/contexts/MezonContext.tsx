@@ -247,13 +247,28 @@ export type MezonConfigResult = CreateMezonClientOptions & {
 	ws_url?: string;
 };
 
+// Allowlist of hosts the client is permitted to talk to. Values come from the build-time env.
+// Any tampered `mezon_session` pointing to a different host will be rejected and we fall back to env defaults.
+const ALLOWED_HOST_SUFFIXES: string[] = (() => {
+	const defaults = [process.env.NX_CHAT_APP_API_GW_HOST, process.env.NX_CHAT_APP_API_HOST, 'mezon.ai', 'mezon.vn']
+		.filter((h): h is string => typeof h === 'string' && h.length > 0)
+		.map((h) => h.toLowerCase());
+	return Array.from(new Set(defaults));
+})();
+
+const isAllowedHost = (host: string | undefined): boolean => {
+	if (!host || typeof host !== 'string') return false;
+	const lower = host.toLowerCase();
+	return ALLOWED_HOST_SUFFIXES.some((suffix) => lower === suffix || lower.endsWith('.' + suffix));
+};
+
 export const getMezonConfig = (): MezonConfigResult => {
 	try {
 		const storedConfig = localStorage.getItem('mezon_session');
 
 		if (storedConfig) {
 			const parsedConfig = JSON.parse(storedConfig);
-			if (parsedConfig.host) {
+			if (parsedConfig?.host && isAllowedHost(parsedConfig.host)) {
 				return {
 					host: parsedConfig.host,
 					port: parsedConfig.port || (process.env.NX_CHAT_APP_API_PORT as string),
@@ -262,6 +277,9 @@ export const getMezonConfig = (): MezonConfigResult => {
 					api_url: parsedConfig.api_url,
 					ws_url: parsedConfig.ws_url
 				};
+			}
+			if (parsedConfig?.host && !isAllowedHost(parsedConfig.host)) {
+				console.error('Ignoring mezon_session with non-allowlisted host:', parsedConfig.host);
 			}
 		}
 	} catch (error) {

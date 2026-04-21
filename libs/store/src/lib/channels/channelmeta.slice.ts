@@ -238,6 +238,10 @@ export const channelMetaSlice = createSlice({
 				lastSeenTimestamp: 0,
 				count_mess_unread: 0
 			});
+		},
+		deleteChannelMeta: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+			channelMetaAdapter.removeOne(state, channelId);
 		}
 	}
 });

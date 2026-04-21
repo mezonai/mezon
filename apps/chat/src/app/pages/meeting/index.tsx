@@ -216,14 +216,16 @@ export default function PreJoinCalling() {
 					id="livekitRoom"
 					key={getExternalToken}
 					audio={IS_MOBILE as boolean}
-					video={{
-						resolution: { width: 640, height: 360 },
-						frameRate: 24
-					}}
 					token={getExternalToken}
 					serverUrl={serverUrl}
 					data-lk-theme="default"
 					className="h-full flex-1 flex"
+					options={{
+						videoCaptureDefaults: {
+							resolution: { width: 640, height: 360 },
+							frameRate: 24
+						}
+					}}
 				>
 					<MyVideoConference
 						token={getExternalToken}

@@ -41,9 +41,14 @@ export default function MeetPage() {
 	}, []);
 
 	const handleJoin = useCallback(() => {
-		if (externalLink) {
-			window.location.href = externalLink;
+		if (!externalLink) return;
+		try {
+			const parsed = new URL(externalLink);
+			if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return;
+		} catch {
+			return;
 		}
+		window.location.href = externalLink;
 	}, [externalLink]);
 
 	const handleCopyLink = useCallback(() => {

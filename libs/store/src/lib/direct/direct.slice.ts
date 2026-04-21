@@ -18,7 +18,6 @@ import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
-import { statusActions } from './status.slice';
 
 export const DIRECT_FEATURE_KEY = 'direct';
 
@@ -194,22 +193,20 @@ type fetchDmGroupArgs = {
 
 const processDmChannels = (channelDescs: ApiChannelDescription[], existingEntities: DirectEntity[], userProfile: any, thunkAPI: any) => {
 	const listDM: IUserChannel[] = [];
-	const sorted = channelDescs.sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
-		if (
-			a === undefined ||
-			b === undefined ||
-			a.last_sent_message === undefined ||
-			a.last_seen_message?.id === undefined ||
-			b.last_sent_message === undefined ||
-			b.last_seen_message?.id === undefined
-		) {
-			return 0;
+	const toBigIntSafe = (id: string | undefined): bigint => {
+		if (!id) return 0n;
+		try {
+			return BigInt(id);
+		} catch {
+			return 0n;
 		}
-		if (a.last_sent_message.id && b.last_sent_message.id && a.last_sent_message.id < b.last_sent_message.id) {
-			return 1;
-		}
-
-		return -1;
+	};
+	const sorted = [...channelDescs].sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
+		const aId = a?.last_sent_message?.id;
+		const bId = b?.last_sent_message?.id;
+		if (!aId || !bId) return 0;
+		const diff = toBigIntSafe(bId) - toBigIntSafe(aId);
+		return diff > 0n ? 1 : diff < 0n ? -1 : 0;
 	});
 
 	channelDescs.map((channel: ApiChannelDescription) => {
@@ -233,8 +230,6 @@ const processDmChannels = (channelDescs: ApiChannelDescription[], existingEntiti
 	});
 
 	thunkAPI.dispatch(userChannelsActions.upsertMany(listDM));
-	const users = mapChannelsToUsers(sorted);
-	thunkAPI.dispatch(statusActions.updateBulkStatus(users));
 
 	return channels;
 };

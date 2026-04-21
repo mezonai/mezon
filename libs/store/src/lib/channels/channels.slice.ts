@@ -678,18 +678,20 @@ export const addThreadToChannels = createAsyncThunk(
 			const data = await thunkAPI
 				.dispatch(
 					threadsActions.fetchThread({
-						channelId: '0',
+						channelId: channelIdToFetch,
 						clanId,
 						threadId: channelId
 					})
 				)
 				.unwrap();
 
-			if (data?.threads?.length > 0) {
+			const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+
+			if (matchedThread) {
 				thunkAPI.dispatch(
 					channelsActions.upsertOne({
 						clanId,
-						channel: { ...data.threads[0], active: 1 } as ChannelsEntity
+						channel: { ...matchedThread, active: 1 } as ChannelsEntity
 					})
 				);
 			}
@@ -1181,7 +1183,16 @@ export const channelsSlice = createSlice({
 					state.byClans[clanId] = getInitialClanState();
 				}
 				state.byClans[clanId].idChannelSelected[clanId] = channelId;
-				const rememberChannel = JSON.parse(localStorage.getItem('remember_channel') || '{}');
+				let rememberChannel: Record<string, string> = {};
+				try {
+					const raw = localStorage.getItem('remember_channel');
+					const parsed = raw ? JSON.parse(raw) : {};
+					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+						rememberChannel = parsed as Record<string, string>;
+					}
+				} catch {
+				}
+				
 				rememberChannel[clanId] = channelId;
 				localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
 			}

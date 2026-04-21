@@ -102,6 +102,15 @@ const ListDMChannel = ({ listDM, isPinnedList, pinnedCount = 0 }: ListDMChannelP
 	const scrollRAF = useRef(0);
 	const isFetchingRef = useRef(false);
 
+	useEffect(() => {
+		return () => {
+			if (scrollRAF.current) {
+				cancelAnimationFrame(scrollRAF.current);
+				scrollRAF.current = 0;
+			}
+		};
+	}, []);
+
 	const handleScroll = useCallback(() => {
 		if (scrollRAF.current) return;
 		scrollRAF.current = requestAnimationFrame(() => {
