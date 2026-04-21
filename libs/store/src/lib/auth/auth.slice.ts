@@ -18,7 +18,7 @@ export const AUTH_FEATURE_KEY = 'auth';
 export interface AuthState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	session: Record<string, ISession> | null;
+	session: ISession | null;
 	isLogin?: boolean;
 	isRegistering?: LoadingStatus;
 	loadingStatusEmail?: LoadingStatus;
@@ -323,28 +323,13 @@ export const authSlice = createSlice({
 		},
 
 		setSession(state, action) {
-			if (action.payload.user_id) {
-				if (!state.session) {
-					state.session = {
-						[action.payload.user_id]: action.payload
-					};
-				} else {
-					state.session[action.payload.user_id] = action.payload;
-				}
-				state.activeAccount = action.payload.user_id;
-			}
+			state.session = action.payload;
+
 			state.isLogin = true;
 		},
 
 		updateSession(state, action: PayloadAction<ISession>) {
-			if (action?.payload?.user_id && state.session && state.session[action.payload.user_id]) {
-				const currentSession = state.session[action.payload.user_id];
-
-				state.session[action.payload.user_id] = {
-					...currentSession,
-					...action.payload
-				};
-			}
+			state.session = action.payload;
 		},
 		setLogout(state) {
 			state.activeAccount = null;
@@ -383,16 +368,8 @@ export const authSlice = createSlice({
 			})
 			.addCase(authenticateApple.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
-					if (!state.session) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					} else {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					state.activeAccount = action.payload.user_id;
-				}
+
+				state.session = action.payload;
 
 				state.isLogin = true;
 			})
@@ -407,16 +384,11 @@ export const authSlice = createSlice({
 			})
 			.addCase(refreshSession.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
-					if (!state.session) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					} else {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					state.activeAccount = `${action.payload.user_id}`;
-				}
+
+				state.session = action.payload;
+
+				state.activeAccount = `${action.payload.user_id}`;
+
 				state.isLogin = true;
 			})
 			.addCase(refreshSession.rejected, (state: AuthState, action) => {
@@ -429,16 +401,11 @@ export const authSlice = createSlice({
 			})
 			.addCase(checkSessionWithToken.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
-					if (!state.session) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					} else {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					state.activeAccount = `${action.payload.user_id}`;
-				}
+
+				state.session = action.payload;
+
+				state.activeAccount = `${action.payload.user_id}`;
+
 				state.isLogin = true;
 			})
 			.addCase(checkSessionWithToken.rejected, (state: AuthState, action) => {
@@ -447,17 +414,9 @@ export const authSlice = createSlice({
 			});
 		builder
 			.addCase(checkLoginRequest.fulfilled, (state: AuthState, action) => {
-				if (action.payload !== null) {
-					if (state.session && action.payload.user_id) {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					if (!state.session && action.payload.user_id) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					}
-					state.isLogin = true;
-				}
+				state.session = action.payload;
+
+				state.isLogin = true;
 			})
 			.addCase(checkLoginRequest.rejected, (state: AuthState, action) => {
 				state.loadingStatus = 'error';
@@ -480,16 +439,11 @@ export const authSlice = createSlice({
 			})
 			.addCase(authenticateMezon.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
-					if (!state.session) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					} else {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					state.activeAccount = `${action.payload.user_id}`;
-				}
+
+				state.session = action.payload;
+
+				state.activeAccount = `${action.payload.user_id}`;
+
 				state.isLogin = true;
 			})
 			.addCase(authenticateMezon.rejected, (state: AuthState, action) => {
@@ -503,16 +457,10 @@ export const authSlice = createSlice({
 			.addCase(authenticateEmail.fulfilled, (state: AuthState, action) => {
 				state.loadingStatusEmail = 'loaded';
 				state.isLogin = true;
-				if (action.payload.user_id) {
-					if (!state.session) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					} else {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					state.activeAccount = `${action.payload.user_id}`;
-				}
+
+				state.session = action.payload;
+
+				state.activeAccount = `${action.payload.user_id}`;
 			})
 			.addCase(authenticateEmail.rejected, (state: AuthState, action) => {
 				state.loadingStatusEmail = 'error';
@@ -524,16 +472,11 @@ export const authSlice = createSlice({
 			})
 			.addCase(confirmAuthenticateOTP.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
-					if (!state.session) {
-						state.session = {
-							[action.payload.user_id]: action.payload
-						};
-					} else {
-						state.session[action.payload.user_id] = action.payload;
-					}
-					state.activeAccount = `${action.payload.user_id}`;
-				}
+
+				state.session = action.payload;
+
+				state.activeAccount = `${action.payload.user_id}`;
+
 				state.isLogin = true;
 			})
 			.addCase(confirmAuthenticateOTP.rejected, (state: AuthState, action) => {
@@ -583,11 +526,7 @@ export const selectAllAuth = createSelector(getAuthState, (state: AuthState) => 
 export const selectIsLogin = createSelector(getAuthState, (state: AuthState) => state.isLogin);
 
 export const selectSession = createSelector(getAuthState, (state: AuthState) => {
-	if (state.activeAccount) {
-		return state.session?.[state.activeAccount];
-	}
-	const key = Object.keys(state.session || [])[0];
-	return state.session?.[key];
+	return state.session;
 });
 
 export const selectRegisteringStatus = createSelector(getAuthState, (state: AuthState) => state.isRegistering);
@@ -595,10 +534,7 @@ export const selectRegisteringStatus = createSelector(getAuthState, (state: Auth
 export const selectLoadingEmail = createSelector(getAuthState, (state: AuthState) => state.loadingStatusEmail);
 
 export const selectOthersSession = createSelector(getAuthState, (state: AuthState) => {
-	const key = Object.keys(state.session || []).filter((key) => {
-		return key !== state.activeAccount;
-	});
-	return state.session?.[key[0]];
+	return state.session;
 });
 
 export const selectAllSession = createSelector(getAuthState, (state: AuthState) => {

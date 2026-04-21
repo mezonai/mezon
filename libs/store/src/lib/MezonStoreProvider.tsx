@@ -21,8 +21,7 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 	useEffect(() => {
 		const initConnection = async () => {
 			const currentState = store.getState();
-			const key = currentState.auth.activeAccount;
-			const session = key ? currentState.auth.session?.[key] : null;
+			const session = currentState.auth.session;
 			const client = await createClient();
 			try {
 				if (!session || !client) {
