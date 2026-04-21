@@ -148,6 +148,8 @@ const TopBarChannelText = memo(() => {
 	}, [setStatusMenu]);
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
+	const currentDmGroup = useSelector(selectCurrentDM);
+	const userCurrent = useSelector(selectAllAccount);
 
 	const handleNavigateToParent = () => {
 		if (!channelParent?.id || !channelParent?.clan_id) {
@@ -156,22 +158,33 @@ const TopBarChannelText = memo(() => {
 		navigate(toChannelPage(channelParent.id, channelParent.clan_id));
 		closeMenu();
 	};
-	const currentDmGroup = useSelector(selectCurrentDM);
+
+	const isMe = useMemo(() => {
+		if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
+		return currentDmGroup?.user_ids?.[0] === userCurrent?.user?.id?.toString();
+	}, [currentDmGroup?.type, currentDmGroup?.user_ids, userCurrent?.user?.id]);
+
 	const channelDmGroupLabel = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_label || currentDmGroup?.usernames?.join(',');
 		}
+		if (isMe) {
+			return userCurrent?.user?.display_name || userCurrent?.user?.username || currentDmGroup?.channel_label;
+		}
 		return currentDmGroup?.channel_label;
-	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
+	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames, isMe, userCurrent]);
 	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_avatar || '/assets/images/avatar-group.png';
+		}
+		if (isMe) {
+			return userCurrent?.user?.avatar_url || undefined;
 		}
 
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_ids) {
 			return currentDmGroup.avatars?.at(-1) || undefined;
 		}
-	}, [currentDmGroup]);
+	}, [currentDmGroup, isMe, userCurrent]);
 
 	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channel_id || '0')(state));
 	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channel_id || '0')(state));
@@ -258,7 +271,7 @@ const TopBarChannelText = memo(() => {
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={dmUserAvatar}
-							avatarName={currentDmGroup?.channel_label?.at(0)}
+							avatarName={channelDmGroupLabel?.at(0)}
 						/>
 						{currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_GROUP && (
 							<div className="absolute top-6 left-5 w-3 h-3" data-e2e={generateE2eId('icon.profile_status')}>

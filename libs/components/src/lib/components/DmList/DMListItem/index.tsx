@@ -3,6 +3,7 @@ import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
 	getStore,
+	selectAllAccount,
 	selectBuzzStateByDirectId,
 	selectDirectById,
 	selectIsUnreadDMById,
@@ -14,7 +15,7 @@ import { Icons } from '@mezon/ui';
 import type { ChannelMembersEntity, EUserStatus } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -45,6 +46,12 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const isTypeDMGroup = directMessage?.type === ChannelType.CHANNEL_TYPE_GROUP;
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
+
+	const userCurrent = useAppSelector(selectAllAccount);
+	const isMe = useMemo(() => {
+		if (directMessage?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
+		return directMessage?.user_ids?.[0] === userCurrent?.user?.id?.toString();
+	}, [directMessage?.type, directMessage?.user_ids, userCurrent?.user?.id]);
 
 	const [openUnknown, closeUnknown] = useModal(() => {
 		if (isTypeDMGroup) {
@@ -99,8 +106,18 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			data-e2e={generateE2eId(`chat.direct_message.chat_list`)}
 		>
 			<DmItemProfile
-				avatar={isTypeDMGroup ? directMessage?.channel_avatar || '/assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
-				name={directMessage?.channel_label || ''}
+				avatar={
+					isTypeDMGroup
+						? directMessage?.channel_avatar || '/assets/images/avatar-group.png'
+						: isMe
+							? (userCurrent?.user?.avatar_url ?? '')
+							: (directMessage?.avatars?.at(-1) ?? '')
+				}
+				name={
+					isMe
+						? userCurrent?.user?.display_name || userCurrent?.user?.username || directMessage?.channel_label || ''
+						: directMessage?.channel_label || ''
+				}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
 				highlight={isUnReadChannel || currentDmGroupId === id}
