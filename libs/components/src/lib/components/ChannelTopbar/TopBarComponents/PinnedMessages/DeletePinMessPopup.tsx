@@ -2,7 +2,7 @@ import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { TOPBARS_MAX_WIDTH, getShareContactInfo } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TOPBARS_MAX_WIDTH, getShareContactInfo } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api';
 import { useMemo } from 'react';
@@ -11,9 +11,6 @@ import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
-
-const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
-
 type ModalDeletePinMessProps = {
 	pinMessage: PinMessageEntity;
 	contentString: string | undefined;
