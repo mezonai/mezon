@@ -4,8 +4,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js';
-import { Session } from 'mezon-js';
+import type { ApiLinkAccountConfirmRequest, ApiSession } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
@@ -53,7 +52,7 @@ export const initialAuthState: AuthState = {
 	activeAccount: null
 };
 
-function normalizeSession(session: Session): ISession {
+function normalizeSession(session: ApiSession): ISession {
 	return session as ISession;
 }
 
@@ -81,9 +80,8 @@ export type AuthenticatePhoneSMSOTPRequestPayload = {
 export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', async ({ email, password }: AuthenticateEmailPayload, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon?.authenticateEmail(email, password);
-	if (session && session?.id_token && session?.user_id) {
+	if (session && session?.id_token) {
 		const proofInput = {
-			userId: session?.user_id?.toString() || '',
 			jwt: session.id_token
 		};
 
@@ -102,9 +100,8 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 			console.error(data.message);
 		});
 	});
-	if (session && session.id_token && session.user_id) {
+	if (session && session.id_token) {
 		const proofInput = {
-			userId: session.user_id,
 			jwt: session.id_token
 		};
 
@@ -132,21 +129,18 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 	const config = getMezonConfig();
 	const wsUrl = config.ws_url || DEFAULT_WS_URL;
 
-	let session = new Session(
-		sessionState.token,
-		sessionState.refresh_token,
-		sessionState.created,
-		sessionState.api_url,
-		wsUrl,
-		sessionState.id_token || '',
-		!!sessionState.is_remember
-	);
+	let session: ApiSession | undefined = {
+		token: sessionState.token,
+		refresh_token: sessionState.refresh_token,
+		created: sessionState.created,
+		api_url: sessionState.api_url,
+		ws_url: wsUrl,
+		id_token: sessionState.id_token || '',
+		is_remember: !!sessionState.is_remember
+	};
 
 	try {
-		session = (await mezon?.refreshSession({
-			...session,
-			is_remember: session.is_remember ?? false
-		})) as Session;
+		session = await mezon?.refreshSession(session);
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue(error);
 	}
@@ -169,7 +163,7 @@ export const checkSessionWithToken = createAsyncThunk('auth/checkSessionWithToke
 	try {
 		session = await mezon?.connectWithSession({
 			...mezon.sessionRef.current
-		} as Session);
+		} as ApiSession);
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue('Redirect Login');
 	}
@@ -196,9 +190,8 @@ export const authenticateEmailOTPRequest = createAsyncThunk(
 export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticateOTP', async (data: ApiLinkAccountConfirmRequest, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon?.confirmAuthenticateOTP(data);
-	if (session && session?.id_token && session?.user_id) {
+	if (session && session?.id_token) {
 		const proofInput = {
-			userId: session.user_id?.toString() || '',
 			jwt: session.id_token
 		};
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -255,9 +248,8 @@ export const checkLoginRequest = createAsyncThunk(
 
 		const session = await mezon?.checkLoginRequest({ login_id: loginId, is_remember: isRemember });
 		if (session) {
-			if (session.id_token && session.user_id) {
+			if (session.id_token) {
 				const proofInput = {
-					userId: session.user_id,
 					jwt: session.id_token
 				};
 
@@ -273,9 +265,8 @@ export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', 
 	const mezon = getMezonCtx(thunkAPI);
 
 	const session = await mezon?.confirmLoginRequest({ login_id: loginId });
-	if (session?.id_token && session?.user_id) {
+	if (session?.id_token) {
 		const proofInput = {
-			userId: session.user_id,
 			jwt: session.id_token
 		};
 

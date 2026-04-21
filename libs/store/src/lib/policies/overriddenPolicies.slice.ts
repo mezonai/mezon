@@ -118,7 +118,7 @@ export const fetchMaxChannelPermissionCached = async (
 	const overriddenPoliciesState = currentState[OVERRIDDEN_POLICIES_FEATURE_KEY];
 	const channelData = overriddenPoliciesState.byChannels[channelId] || getInitialChannelState();
 
-	const apiKey = createApiKey('fetchMaxChannelPermission', channelId, clanId, mezon.session.username || '');
+	const apiKey = createApiKey('fetchMaxChannelPermission', channelId, clanId, mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 

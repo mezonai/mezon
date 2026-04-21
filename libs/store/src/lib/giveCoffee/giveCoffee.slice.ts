@@ -62,7 +62,7 @@ export const updateGiveCoffee = createAsyncThunk(
 								MessageRefId: message_ref_id || '',
 								UserReceiverId: receiver_id || '',
 								UserSenderId: sender_id || '',
-								UserSenderUsername: mezon.session.username || ''
+								UserSenderUsername: mezon.session.token || ''
 							}
 						})
 					)
@@ -118,7 +118,7 @@ export const sendToken = createAsyncThunk(
 							type: ETransferType.TransferToken,
 							UserReceiverId: tokenEvent.receiver_id || '',
 							UserSenderId: tokenEvent.sender_id || '',
-							UserSenderUsername: mezon.session.username || '',
+							UserSenderUsername: mezon.session.token || '',
 							ExtraAttribute: tokenEvent?.extra_attribute || ''
 						},
 						isSendByAddress,

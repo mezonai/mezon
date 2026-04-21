@@ -244,7 +244,6 @@ export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ 
 				{
 					...sessionState,
 					is_remember: sessionState.is_remember ?? false,
-					username,
 					refresh_token: response.refresh_token,
 					token: response.token
 				},

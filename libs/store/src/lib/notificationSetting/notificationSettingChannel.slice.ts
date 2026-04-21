@@ -54,7 +54,7 @@ export const fetchNotificationSettingCached = async (getState: () => RootState, 
 	const notiSettingState = currentState[NOTIFICATION_SETTING_FEATURE_KEY];
 	const channelData = notiSettingState.byChannels[channelId] || getInitialChannelState();
 
-	const apiKey = createApiKey('fetchNotificationSetting', channelId, mezon.session.username || '');
+	const apiKey = createApiKey('fetchNotificationSetting', channelId, mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 
@@ -127,7 +127,7 @@ export const fetchMutedChannelsCached = async (getState: () => RootState, mezon:
 	const currentState = getState();
 	const notiSettingState = currentState[NOTIFICATION_SETTING_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchMutedChannels', clanId, mezon.session.username || '');
+	const apiKey = createApiKey('fetchMutedChannels', clanId, mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, notiSettingState.mutedChannelsCache[clanId], noCache);
 

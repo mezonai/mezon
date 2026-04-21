@@ -1,13 +1,13 @@
 import type { AppDispatch, RootState } from '@mezon/store';
 import { audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
-import type { Client, Session, WebrtcSignalingFwd } from 'mezon-js';
+import type { ApiSession, Client, WebrtcSignalingFwd } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
 
 export interface GroupCallSocketHandlerOptions {
 	dispatch: AppDispatch;
 	clientRef: React.RefObject<Client>;
 	userId: string | undefined;
-	sessionRef: React.RefObject<Session>;
+	sessionRef: React.RefObject<ApiSession>;
 }
 
 export interface ParsedCallData {

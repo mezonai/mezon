@@ -103,7 +103,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
-import { resetSessionRefreshManager, useMezon } from '@mezon/transport';
+import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IUserProfileActivity, NotificationCategory } from '@mezon/utils';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
@@ -141,12 +141,14 @@ import type {
 	ApiNotification,
 	ApiNotificationUserChannel,
 	ApiPermissionUpdate,
+	ApiSession,
 	ApiTokenSentEvent,
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook,
 	BannedUserEvent,
 	BlockFriend,
 	CategoryEvent,
+	ChannelCanvas,
 	ChannelCreatedEvent,
 	ChannelDeletedEvent,
 	ChannelMessage,
@@ -157,6 +159,7 @@ import type {
 	ClanUpdatedEvent,
 	Client,
 	CustomStatusEvent,
+	DeleteAccountEvent,
 	EventEmoji,
 	JoinChannelAppData,
 	LastPinMessageEvent,
@@ -167,8 +170,9 @@ import type {
 	MessageTypingEvent,
 	PermissionChangedEvent,
 	PermissionSet,
+	RemoveFriend,
 	RoleEvent,
-	Session,
+	SdTopicEvent,
 	StatusPresenceEvent,
 	StickerCreateEvent,
 	StickerDeleteEvent,
@@ -189,7 +193,6 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Subject, interval } from 'rxjs';
@@ -2776,12 +2779,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socketState.status = 'connecting';
 			const store = getStore();
 			const clanIdActive = selectCurrentClanId(store.getState());
-			const session = selectSession(store.getState()) as Session;
+			const session = selectSession(store.getState()) as ApiSession;
 			if (!session) {
 				return;
 			}
-			const socket = await reconnectWithTimeout(clanIdActive ?? '', session);
-			console.log('socket: ', socket);
+			const socket = await reconnectWithTimeout(clanIdActive ?? '');
 			setCallbackEventFn(client as Client);
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
@@ -2795,27 +2797,27 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			.pipe(
 				exhaustMap((socketType) =>
 					interval(500).pipe(
-						exhaustMap(() => {
+						exhaustMap(async () => {
 							if (clientRef.current) {
-								executeReconnect(socketType, clientRef.current).then(
-									() => true, // success
-									(error) => {
-										dispatch(
-											toastActions.addToast({
-												message: 'Socket reconnecting...',
-												type: 'info',
-												autoClose: 3000,
-												id: 'SOCKET_RECONNECTING_ERROR'
-											})
-										);
-										captureSentryError(error, 'SOCKET_RECONNECT');
-										return false; // fail
-									}
-								);
+								try {
+									await executeReconnect(socketType, clientRef.current);
+									return true; // Resolves as an Observable<boolean>
+								} catch (error) {
+									dispatch(
+										toastActions.addToast({
+											message: 'Socket reconnecting...',
+											type: 'info',
+											autoClose: 3000,
+											id: 'SOCKET_RECONNECTING_ERROR'
+										})
+									);
+									captureSentryError(error, 'SOCKET_RECONNECT');
+									return false; // Resolves as an Observable<boolean>
+								}
 							}
 							return false;
 						}),
-						takeWhile((success) => !success, true) // dừng khi success = true
+						takeWhile((success) => !success, true)
 					)
 				)
 			)
@@ -2829,7 +2831,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	useEffect(() => {
 		const onSessionExpired = () => {
 			console.error('Session expired, logging out');
-			resetSessionRefreshManager();
 			resetRefreshState();
 			dispatch(authActions.setLogout());
 			dispatch(walletActions.setLogout());

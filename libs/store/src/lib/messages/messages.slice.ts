@@ -27,8 +27,7 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage } from 'mezon-js';
-import type { MessageButtonClicked } from 'mezon-js/socket';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -937,6 +936,7 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 			thunkAPI.dispatch(messagesActions.addNewMessage(fakeMess));
 		}
 
+		// eslint-disable-next-line no-useless-catch
 		try {
 			thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
@@ -967,7 +967,7 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 						channelId,
 						timestamp,
 						messageId: messageResult.channel_id,
-						clanId: clanId
+						clanId
 					})
 				);
 			}
@@ -1003,6 +1003,7 @@ export type EditMessageViaApiPayload = {
 export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', async (payload: EditMessageViaApiPayload, thunkAPI) => {
 	const { channelId, clanId, mode, isPublic, messageId, content, mentions, attachments, hideEditted, topicId, isTopic } = payload;
 
+	// eslint-disable-next-line no-useless-catch
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const session = mezon.sessionRef.current;
@@ -1289,7 +1290,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						channelId,
 						timestamp,
 						messageId: messageResult.message_id,
-						clanId: clanId
+						clanId
 					})
 				);
 			}
@@ -1754,7 +1755,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
 					const updateTimeSeconds = action.payload.update_time_seconds;
-					let changes: Partial<MessagesEntity> = {
+					const changes: Partial<MessagesEntity> = {
 						content: action.payload.content,
 						mentions: action.payload.mentions,
 						hide_editted: action.payload.hide_editted,

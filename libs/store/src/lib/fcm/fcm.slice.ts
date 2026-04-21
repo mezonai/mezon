@@ -1,7 +1,7 @@
 import { notificationService } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { Session } from 'mezon-js';
+import type { ApiSession } from 'mezon-js';
 import { selectSession } from '../auth/auth.slice';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -20,7 +20,7 @@ const initialState: fcm = {
 };
 
 type FcmDeviceTokenPayload = {
-	session: Session;
+	session: ApiSession;
 	tokenId: string;
 	deviceId: string;
 	platform?: string;

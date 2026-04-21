@@ -17,10 +17,10 @@ import type {
 	ApiMessageMention,
 	ApiMessageRef,
 	ApiRole,
+	ApiSession,
 	ClanUserListClanUser,
 	Client,
-	RoleUserListRoleUser,
-	Session
+	RoleUserListRoleUser
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
@@ -727,7 +727,7 @@ const fileUploadForeman = new Foreman(MAX_WORKERS);
 export async function getWebUploadedAttachments(payload: {
 	attachments: ApiMessageAttachment[];
 	client: Client;
-	session: Session;
+	session: ApiSession;
 }): Promise<ApiMessageAttachment[]> {
 	const { attachments, client, session } = payload;
 	if (!attachments || attachments?.length === 0) {
@@ -788,7 +788,7 @@ export async function getWebUploadedAttachments(payload: {
 export async function getMobileUploadedAttachments(payload: {
 	attachments: ApiMessageAttachment[];
 	client: Client;
-	session: Session;
+	session: ApiSession;
 }): Promise<ApiMessageAttachment[]> {
 	const { attachments, client, session } = payload;
 	if (!attachments || attachments?.length === 0) {

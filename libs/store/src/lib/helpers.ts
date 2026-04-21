@@ -1,7 +1,7 @@
 import type { MezonContextValue } from '@mezon/transport';
 import { isOnline, socketState } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
-import type { Client, Session } from 'mezon-js';
+import type { ApiSession, Client } from 'mezon-js';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
 
@@ -16,12 +16,12 @@ export const getMezonCtx = (thunkAPI: GetThunkAPI<unknown>) => {
 
 export type MezonValueContext = MezonContextValue & {
 	client: Client;
-	session: Session;
+	session: ApiSession;
 	zkClient: ZkClient | null;
 	mmnClient: MmnClient | null;
 	dongClient: DongClient | null;
 	indexerClient: IndexerClient | null;
-	getLatestSession: () => Session | null;
+	getLatestSession: () => ApiSession | null;
 };
 
 export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
@@ -181,7 +181,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 	]);
 }
 
-export async function withRetry<T>(fn: (() => Promise<T>) | ((session: Session) => Promise<T>), config: RetryConfig = {}): Promise<T> {
+export async function withRetry<T>(fn: (() => Promise<T>) | ((session: ApiSession) => Promise<T>), config: RetryConfig = {}): Promise<T> {
 	const mergedConfig: RequiredRetryConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
 	let lastError: RetryableError | undefined;
 
@@ -195,7 +195,7 @@ export async function withRetry<T>(fn: (() => Promise<T>) | ((session: Session) 
 	const executeCall = (): Promise<T> => {
 		if (config.mezon) {
 			const latestSession = config.mezon.sessionRef.current;
-			return (fn as (session: Session) => Promise<T>)(latestSession as Session);
+			return (fn as (session: ApiSession) => Promise<T>)(latestSession as ApiSession);
 		}
 		return (fn as () => Promise<T>)();
 	};
@@ -283,7 +283,7 @@ const SOCKET_ONLY_APIS = ['ListLogedDevice', 'ListClanBadgeCount', 'ListChannelB
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,
 	socketRequest: SocketDataRequest,
-	restApiFallback: (session: Session) => Promise<T>,
+	restApiFallback: (session: ApiSession) => Promise<T>,
 	responseKey?: string,
 	retryConfig?: RetryConfig
 ): Promise<T> {

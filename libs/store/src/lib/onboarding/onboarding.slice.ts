@@ -74,7 +74,7 @@ export const fetchOnboardingCached = async (getState: () => RootState, mezon: Me
 	const onboardingState = currentState[ONBOARDING_FEATURE_KEY];
 	const clanData = onboardingState.onboardingCache[clan_id] || getInitialOnboardingState();
 
-	const apiKey = createApiKey('fetchOnboarding', clan_id, mezon.session.username || '');
+	const apiKey = createApiKey('fetchOnboarding', clan_id, mezon.session.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData.cache, noCache);
 
 	if (!shouldForceCall) {
@@ -226,7 +226,7 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 	const currentState = getState();
 	const onboardingState = currentState[ONBOARDING_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchOnboardingStep', mezon.session.username || '', clan_id || '0');
+	const apiKey = createApiKey('fetchOnboardingStep', mezon.session.token || '', clan_id || '0');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, onboardingState.onboardingStepCache, noCache);
 

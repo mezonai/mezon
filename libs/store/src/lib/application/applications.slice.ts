@@ -62,7 +62,7 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 	const currentState = getState();
 	const applicationState = currentState[ADMIN_APPLICATIONS];
 
-	const apiKey = createApiKey('fetchApplications', mezon.session.username || '');
+	const apiKey = createApiKey('fetchApplications', mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, applicationState.cache, noCache);
 

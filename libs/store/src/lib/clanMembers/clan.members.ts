@@ -54,7 +54,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 	const currentState = getState();
 	const clanData = currentState[USERS_CLANS_FEATURE_KEY].byClans[clanId];
 
-	const apiKey = createApiKey('fetchUsersClan', clanId, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('fetchUsersClan', clanId, ensuredMezon.session.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData?.cache, noCache);
 
 	if (!shouldForceCall) {
@@ -184,7 +184,7 @@ export const fetchListBanMembersCached = async (
 	const currentState = getState();
 	const clanData = currentState[USERS_CLANS_FEATURE_KEY].byClans[clanId];
 
-	const apiKey = createApiKey('listBannedUsers', clanId, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('listBannedUsers', clanId, ensuredMezon.session.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData?.cache, noCache);
 
 	if (!shouldForceCall) {

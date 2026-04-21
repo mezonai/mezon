@@ -46,7 +46,7 @@ export const fetchClanWebhooksCached = async (getState: () => RootState, mezon: 
 	const clanWebhookState = currentState[INTEGRATION_CLAN_WEBHOOK];
 	const clanData = clanWebhookState.byClan[clanId] || getInitialClanState();
 
-	const apiKey = createApiKey('fetchClanWebhooks', clanId, mezon.session.username || '');
+	const apiKey = createApiKey('fetchClanWebhooks', clanId, mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData.cache, noCache);
 

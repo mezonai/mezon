@@ -1,6 +1,6 @@
 import type { AuthenticateEmailPayload } from '@mezon/store';
 import { accountActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
-import type { ApiLinkAccountConfirmRequest, ApiLoginIDResponse, Session } from 'mezon-js';
+import type { ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js';
 import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -59,7 +59,7 @@ export function useAuth() {
 					isRemember
 				})
 			);
-			const session = action.payload as Session;
+			const session = action.payload as ApiSession;
 			return session;
 		},
 		[dispatch]
@@ -68,7 +68,7 @@ export function useAuth() {
 	const confirmLoginRequest = useCallback(
 		async (loginId: string) => {
 			const action = await dispatch(authActions.confirmLoginRequest({ loginId: loginId || '' }));
-			const session = action.payload as Session;
+			const session = action.payload as ApiSession;
 			return session;
 		},
 		[dispatch]
