@@ -84,7 +84,7 @@
 	"stickers": {
 		"uploadInstructions": "UPLOAD INSTRUCTIONS",
 		"title": "Image Stickers",
-		"description": "Stickers can be static (PNG,JPG) or animated (APNG, GIF). Stickers must be exactly 320 x 320 pixels and no larger than 512KB. We will automatically resize static (PNG,JPG) and animated GIF stickers for you.",
+		"description": "Stickers can be static (PNG, JPG) or animated (APNG, GIF). Stickers must be exactly 320 x 320 pixels and no larger than 512KB. We will automatically resize static (PNG, JPG) and animated GIF stickers for you.",
 		"uploadHere": "Upload it here!",
 		"customizeMessage": "Let's customize the amazing stickers with your interest",
 		"uploadSticker": "upload sticker"
