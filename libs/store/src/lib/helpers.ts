@@ -39,7 +39,7 @@ export async function ensureSocket(mezon: MezonContextValue): Promise<MezonValue
 	return new Promise((resolve, reject) => {
 		const interval = setInterval(() => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			if (mezon.socketRef.current && (mezon.socketRef.current as any).adapter && (mezon.socketRef.current as any).adapter.isOpen()) {
+			if (mezon.clientRef?.current) {
 				clearInterval(interval);
 				resolve(ensureClient(mezon));
 			}

@@ -1079,9 +1079,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		const session = mezon.sessionRef.current;
 		const client = mezon.clientRef.current;
-		const socket = mezon.socketRef.current;
 
-		if (!client || !session || !socket || !channelId) {
+		if (!client || !session || !channelId) {
 			throw new Error('Client is not initialized');
 		}
 
