@@ -31,6 +31,8 @@ export const ONE_MINUTE_MS = 60000;
 export const GUEST_NAME = 'guest';
 export const FOR_SALE_CATE = 'forsale';
 
+export const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
+
 export const INVITE_URL_REGEX = /\/invite\/([A-Za-z0-9_-]+)/i;
 
 export const PREDEFINED_EMOJI_CATEGORIES = [
