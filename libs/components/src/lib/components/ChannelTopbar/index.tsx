@@ -159,28 +159,23 @@ const TopBarChannelText = memo(() => {
 		closeMenu();
 	};
 
-	const isMe = useMemo(() => {
-		if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
-		return currentDmGroup?.user_ids?.[0] === userCurrent?.user?.id?.toString();
-	}, [currentDmGroup?.type, currentDmGroup?.user_ids, userCurrent?.user?.id]);
-
+	const isMe = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_ids?.[0] === userCurrent?.user?.id?.toString();
 	const channelDmGroupLabel = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_label || currentDmGroup?.usernames?.join(',');
 		}
-		if (isMe) {
+		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && isMe) {
 			return userCurrent?.user?.display_name || userCurrent?.user?.username || currentDmGroup?.channel_label;
 		}
 		return currentDmGroup?.channel_label;
-	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames, isMe, userCurrent]);
+	}, [currentDmGroup, isMe, userCurrent]);
 	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_avatar || '/assets/images/avatar-group.png';
 		}
-		if (isMe) {
+		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && isMe) {
 			return userCurrent?.user?.avatar_url || undefined;
 		}
-
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_ids) {
 			return currentDmGroup.avatars?.at(-1) || undefined;
 		}
