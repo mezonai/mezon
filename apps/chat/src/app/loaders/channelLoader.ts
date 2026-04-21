@@ -2,7 +2,6 @@ import { appActions, channelsActions, quickMenuActions, threadsActions, topicsAc
 import { QUICK_MENU_TYPE, notificationService } from '@mezon/utils';
 import type { ShouldRevalidateFunction } from 'react-router-dom';
 import type { CustomLoaderFunction } from './appLoader';
-import { waitForSocketConnection } from './socketUtils';
 
 export const channelLoader: CustomLoaderFunction = async ({ params, request, dispatch }) => {
 	const { channelId, clanId, canvasId } = params;
@@ -10,8 +9,6 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 	if (!channelId || !clanId) {
 		throw new Error('Channel ID null');
 	}
-
-	await dispatch(waitForSocketConnection());
 
 	dispatch(quickMenuActions.listQuickMenuAccess({ channelId, menuType: QUICK_MENU_TYPE.QUICK_MENU }));
 	dispatch(channelsActions.addThreadToChannels({ channelId, clanId }));
