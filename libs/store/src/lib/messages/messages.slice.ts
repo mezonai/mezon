@@ -1018,11 +1018,13 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			t: content.t?.trim()
 		};
 		const stringifiedContent = JSON.stringify(trimContent);
+		const finalTopicId = topicId || '0';
+		const updateChannelId = finalTopicId !== '0' ? finalTopicId : channelId || '0';
 
 		const res = await client.updateChannelMessage(
 			session,
 			clanId || '0',
-			channelId || '0',
+			updateChannelId,
 			mode,
 			isPublic,
 			messageId || '0',
@@ -1030,7 +1032,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			mentions,
 			attachments,
 			hideEditted,
-			topicId || '0',
+			finalTopicId,
 			!!isTopic
 		);
 
