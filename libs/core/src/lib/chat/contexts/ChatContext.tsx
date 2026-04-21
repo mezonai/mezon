@@ -80,6 +80,7 @@ import {
 	selectLatestMessageId,
 	selectLoadingStatus,
 	selectOrderedClans,
+	selectSession,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
 	selectVoiceInfo,
@@ -167,6 +168,7 @@ import type {
 	PermissionChangedEvent,
 	PermissionSet,
 	RoleEvent,
+	Session,
 	StatusPresenceEvent,
 	StickerCreateEvent,
 	StickerDeleteEvent,
@@ -190,8 +192,8 @@ import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } fr
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Subject } from 'rxjs';
-import { exhaustMap, filter, throttleTime } from 'rxjs/operators';
+import { Subject, interval } from 'rxjs';
+import { exhaustMap, takeWhile } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
@@ -2770,30 +2772,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const reconnect$ = useMemo(() => new Subject<string>(), []);
 
 	const executeReconnect = useCallback(
-		async (_socketType: string) => {
+		async (_socketType: string, client: Client) => {
 			socketState.status = 'connecting';
 			const store = getStore();
 			const clanIdActive = selectCurrentClanId(store.getState());
-
-			const socket = await reconnectWithTimeout(clanIdActive ?? '');
-
-			if (socket === 'RECONNECTING') {
+			const session = selectSession(store.getState()) as Session;
+			if (!session) {
 				return;
 			}
-
-			if (!socket) {
-				socketState.status = 'disconnected';
-				dispatch(
-					toastActions.addToast({
-						message: 'Socket reconnecting...',
-						type: 'info',
-						autoClose: 3000,
-						id: 'SOCKET_RECONNECTING'
-					})
-				);
-				return;
-			}
-			setCallbackEventFn(socket as Client);
+			const socket = await reconnectWithTimeout(clanIdActive ?? '', session);
+			console.log('socket: ', socket);
+			setCallbackEventFn(client as Client);
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
@@ -2804,25 +2793,30 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	useEffect(() => {
 		const subscription = reconnect$
 			.pipe(
-				filter(() => !clientRef.current?.isOpen()),
-				throttleTime(500),
-				exhaustMap(
-					(socketType) =>
-						new Promise<void>((resolve) => {
-							executeReconnect(socketType)
-								.catch((error) => {
-									dispatch(
-										toastActions.addToast({
-											message: 'Socket reconnecting...',
-											type: 'info',
-											autoClose: 3000,
-											id: 'SOCKET_RECONNECTING_ERROR'
-										})
-									);
-									captureSentryError(error, 'SOCKET_RECONNECT');
-								})
-								.finally(resolve);
-						})
+				exhaustMap((socketType) =>
+					interval(500).pipe(
+						exhaustMap(() => {
+							if (clientRef.current) {
+								executeReconnect(socketType, clientRef.current).then(
+									() => true, // success
+									(error) => {
+										dispatch(
+											toastActions.addToast({
+												message: 'Socket reconnecting...',
+												type: 'info',
+												autoClose: 3000,
+												id: 'SOCKET_RECONNECTING_ERROR'
+											})
+										);
+										captureSentryError(error, 'SOCKET_RECONNECT');
+										return false; // fail
+									}
+								);
+							}
+							return false;
+						}),
+						takeWhile((success) => !success, true) // dừng khi success = true
+					)
 				)
 			)
 			.subscribe();

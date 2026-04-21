@@ -40,6 +40,7 @@ export interface ISession {
 	is_remember?: boolean;
 	api_url: string;
 	id_token?: string;
+	ws_url?: string;
 }
 
 export const initialAuthState: AuthState = {
@@ -167,9 +168,8 @@ export const checkSessionWithToken = createAsyncThunk('auth/checkSessionWithToke
 	let session;
 	try {
 		session = await mezon?.connectWithSession({
-			...mezon.sessionRef.current,
-			is_remember: mezon.sessionRef.current.is_remember ?? false
-		});
+			...mezon.sessionRef.current
+		} as Session);
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue('Redirect Login');
 	}

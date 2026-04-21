@@ -11,10 +11,7 @@ import {
 	getStore,
 	listChannelsByUserActions,
 	listUsersByUserActions,
-	selectCurrentClanId,
 	selectSession,
-	selectVoiceOpenPopOut,
-	usersClanActions,
 	walletActions
 } from '@mezon/store';
 import { isOnline, waitForOnline } from '@mezon/transport';
@@ -106,14 +103,6 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 };
 
 export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
-	const store = getStore();
-	const isOpenVoicePopout = selectVoiceOpenPopOut(store.getState());
-
-	if (isOpenVoicePopout) {
-		const currentClanId = selectCurrentClanId(store.getState());
-		dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId as string }));
-	}
-
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));

@@ -1,6 +1,6 @@
 import { useMezon } from '@mezon/transport';
-import type { ISession } from 'mezon-js';
-import { useEffect } from 'react';
+import type { ApiSession } from 'mezon-js';
+import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import type { Store } from 'redux';
 import type { Persistor } from 'redux-persist';
@@ -15,39 +15,40 @@ type Props = {
 };
 
 export function MezonStoreProvider({ children, store, loading, persistor }: Props) {
-	const { clientRef, sessionRef } = useMezon();
+	const { sessionRef, createClient } = useMezon();
+	const [connect, setConnect] = useState(false);
 
-	// Nên dùng useEffect để theo dõi khi nào clientRef hoặc store có dữ liệu
 	useEffect(() => {
 		const initConnection = async () => {
-			// Lấy state mới nhất bên trong effect
 			const currentState = store.getState();
 			const key = currentState.auth.activeAccount;
 			const session = key ? currentState.auth.session?.[key] : null;
-			if (!session || !clientRef.current) return;
-			console.log('${session.ws_url}:${clientRef.current.port}: ', `${session.ws_url}`);
-
+			const client = await createClient();
 			try {
-				console.log('Establishing connection...');
-				const result = await clientRef.current.connect(
-					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI5ZjQ0NzRmYS05MWEwLTRkOTQtODE2My0wMDViYTEwMDFiNzQiLCJ1aWQiOjE4MDU0MTU1MjUxMTk5NTQ5NDQsInVzbiI6ImFuaC50cmFudHJ1b25nIiwiZXhwIjoxNzc2NzQwNjg1fQ.1l7nWkPdppsCwi6xpR0agvxQnvBfRDBo-oPfhkohX5g","refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI5ZjQ0NzRmYS05MWEwLTRkOTQtODE2My0wMDViYTEwMDFiNzQiLCJ1aWQiOjE4MDU0MTU1MjUxMTk5NTQ5NDQsInVzbiI6ImFuaC50cmFudHJ1b25nIiwiZXhwIjoxNzc3MzQ0ODg1fQ.FI0AufpaYSh5haCHJRozoSUKHs7b5A0YsZjPkPPv4X4',
-					`dev-mezon-sock.nccsoft.vn:7305`,
-					true,
-					true
-				);
-				console.log('Connection result: ', result);
-				sessionRef.current = session as ISession;
+				if (!session || !client) {
+					setConnect(true);
+					return;
+				}
+				await client.connect(sessionRef.current?.token || session.token, `dev-mezon-sock.nccsoft.vn:7305`, true, true);
+				client.onerror = (error) => {
+					console.error('WebSocket Error Detail:', error);
+				};
+
+				client.onrefreshsession = (session: ApiSession) => {
+					sessionRef.current = session;
+				};
+
+				sessionRef.current = session;
 			} catch (error) {
 				console.error('AppInitializer: Connection failed', error);
 			}
+			setConnect(true);
 		};
 
 		initConnection();
+	}, []);
 
-		// Thêm các dependencies cần thiết để nếu lần đầu chưa có (do PersistGate đang load)
-		// thì khi có dữ liệu nó sẽ chạy lại.
-	}, [clientRef.current, store]);
-
+	if (!connect) return null;
 	return (
 		<Provider store={store}>
 			<PersistGate loading={loading} persistor={persistor}>

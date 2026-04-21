@@ -27,7 +27,7 @@ export type MezonValueContext = MezonContextValue & {
 export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
 	return new Promise((resolve, reject) => {
 		const interval = setInterval(() => {
-			if (mezon?.clientRef?.current && mezon?.sessionRef?.current) {
+			if (mezon?.clientRef?.current) {
 				clearInterval(interval);
 				resolve(ensureClient(mezon));
 			}
@@ -194,11 +194,8 @@ export async function withRetry<T>(fn: (() => Promise<T>) | ((session: Session) 
 
 	const executeCall = (): Promise<T> => {
 		if (config.mezon) {
-			const latestSession = config.mezon.getLatestSession();
-			if (!latestSession) {
-				throw new Error('No session available');
-			}
-			return (fn as (session: Session) => Promise<T>)(latestSession);
+			const latestSession = config.mezon.sessionRef.current;
+			return (fn as (session: Session) => Promise<T>)(latestSession as Session);
 		}
 		return (fn as () => Promise<T>)();
 	};
@@ -281,7 +278,7 @@ export interface SocketDataRequest {
 	[key: string]: unknown;
 }
 
-const SOCKET_ONLY_APIS = ['ListLogedDevice', 'ListClanBadgeCount'];
+const SOCKET_ONLY_APIS = ['ListLogedDevice', 'ListClanBadgeCount', 'ListChannelBadgeCount'];
 
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,
