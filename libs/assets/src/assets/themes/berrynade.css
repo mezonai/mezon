@@ -128,4 +128,7 @@
 	/* unified sound variables */
 	--bg-theme-sound-bar: var(--bg-theme-bar-play-color-dark-sound);
 	--bg-theme-sound-unselect: var(--bg-theme-unselect-dark-sound);
+	--bg-icon-theme:#acacac;
+	--bg-theme-secounnd: oklab(43.143% 0.00504 0.00153 / 0);
+	--bg-icon-theme-active: #f7ffff;
 }

@@ -115,19 +115,21 @@ const GifStickerEmojiButtons = memo(
 						data-e2e={generateE2eId('mention.button.sticker')}
 					>
 						<Icons.Sticker
-							className={`w-5 h-5 ${subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
+							className={`w-5 h-5 text-theme-primary-hover ${
+								subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'
+							}`}
 						/>
 					</div>
 				)}
 
 				<div
 					onClick={handleOpenEmoji}
-					className={`w-5 h-5 text-theme-primary-hover  ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+					className={`w-5 h-5 ${
+						subPanelActive === SubPanelName.EMOJI ? 'text-theme-primary-active' : 'text-theme-primary text-theme-primary-hover'
+					} ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
 					data-e2e={generateE2eId('mention.button.emoji')}
 				>
-					<Icons.Smile
-						className={`w-5 h-5 ${subPanelActive === SubPanelName.EMOJI ? 'text-theme-primary-active' : 'text-theme-primary'}`}
-					/>
+					<Icons.Smile className="w-5 h-5 text-inherit" />
 				</div>
 			</div>
 		);
