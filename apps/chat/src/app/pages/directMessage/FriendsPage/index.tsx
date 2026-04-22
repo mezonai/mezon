@@ -194,7 +194,7 @@ const FriendsPage = () => {
 			<div className={`draggable-area flex min-w-0 items-center bg-theme-chat  px-6 py-3 justify-start h-heightHeader border-b-theme-primary`}>
 				{closeMenuMobile && (
 					<div className="text-theme-primary" onClick={() => setStatusMenu(true)}>
-						<Icons.OpenMenu defaultSize="w-6 h-6" />
+						<Icons.OpenMenu className="w-6 h-6" />
 					</div>
 				)}
 				<div className={`gap-3 flex overflow-x-scroll hide-scrollbar ${closeMenuMobile ? 'ml-7' : ''}`}>

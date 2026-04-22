@@ -255,7 +255,7 @@ const OnboardingGetStart = ({ link, clanId }: { link: string; clanId: string }) 
 					<p className="text-xs font-bold ">{missionDone}</p>
 					<p className="text-xs">{t('onboarding.of')}</p>
 					<p className="text-xs font-bold">{missionSum}</p>
-					<Icons.ArrowRight defaultSize="w-3 h-3" />
+					<Icons.ArrowRight className="w-3 h-3" />
 				</div>
 			</div>
 			<div className="flex bg-slate-700 relative rounded-2xl w-full h-1 overflow-hidden">
@@ -377,7 +377,7 @@ const ChannelAppList = memo(() => {
 						className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover"
 						onClick={handleOpenListApp}
 					>
-						<Icons.RightIcon defaultSize="w-6 h-6" />
+						<Icons.RightIcon className="w-6 h-6" />
 					</div>
 				)}
 			</div>
@@ -450,7 +450,7 @@ const ListChannelApp = ({
 						<p className="text-sm font-medium">Find Channel App</p>
 						<p className="text-xs opacity-60">Discover more apps</p>
 					</div>
-					<Icons.ArrowRight defaultSize="w-5 h-5" />
+					<Icons.ArrowRight className="w-5 h-5" />
 				</button>
 			</div>
 		</div>

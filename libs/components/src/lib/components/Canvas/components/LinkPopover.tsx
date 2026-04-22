@@ -1,14 +1,14 @@
 import {
-    FloatingFocusManager,
-    FloatingPortal,
-    autoUpdate,
-    flip,
-    offset,
-    shift,
-    useDismiss,
-    useFloating,
-    useInteractions,
-    useRole
+	FloatingFocusManager,
+	FloatingPortal,
+	autoUpdate,
+	flip,
+	offset,
+	shift,
+	useDismiss,
+	useFloating,
+	useInteractions,
+	useRole
 } from '@floating-ui/react';
 import { Icons } from '@mezon/ui';
 import type { Editor } from '@tiptap/core';
@@ -78,11 +78,7 @@ export function LinkPopover({ editor, isOpen, onOpenChange }: LinkPopoverProps) 
 			</button>
 
 			{editor.isActive('link') && (
-				<button
-					onClick={() => editor.chain().focus().unsetLink().run()}
-					title={t('toolbar.removeLink')}
-					aria-label={t('toolbar.removeLink')}
-				>
+				<button onClick={() => editor.chain().focus().unsetLink().run()} title={t('toolbar.removeLink')} aria-label={t('toolbar.removeLink')}>
 					<Icons.Close defaultSize="w-4 h-4" />
 				</button>
 			)}

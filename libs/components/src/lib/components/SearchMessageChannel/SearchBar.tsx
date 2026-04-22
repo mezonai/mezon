@@ -56,7 +56,7 @@ const SearchBar = ({
 					onClick={onClose}
 					className={`${valueInputSearch ? 'z-10 opacity-100 rotate-90' : 'z-0 opacity-0 rotate-0'} w-4 h-4 absolute transition-transform`}
 				>
-					<Icons.Close defaultSize="w-4 h-4" />
+					<Icons.Close className="w-4 h-4" />
 				</button>
 			</div>
 		</>

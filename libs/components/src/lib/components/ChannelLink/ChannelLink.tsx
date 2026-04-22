@@ -172,7 +172,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 			hashtagWarning: isIconActive
 				? '[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]'
 				: '[--hashtag-warning-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]',
-			hashtagLocked: `w-5 h-5 ${
+			hashtagLocked: `w-4 h-4 ${
 				isIconActive
 					? '[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
 					: '[--hashtag-locked-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
@@ -249,19 +249,21 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 								<Icons.HashtagWarning
-									className={`w-5 h-5 ${iconFillClasses.hashtagWarning}`}
+									className={`w-4 h-4 ${iconFillClasses.hashtagWarning}`}
 									defaultFill1="var(--hashtag-warning-fill-1)"
 								/>
 							)}
 							{isPrivate === ChannelStatusEnum.isPrivate &&
 								channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 								!isAgeRestrictedChannel && (
-									<Icons.HashtagLocked className={iconFillClasses.hashtagLocked} defaultFill1="var(--hashtag-locked-fill-1)" />
+									<Icons.HashtagLocked
+										className={` ${iconFillClasses.hashtagLocked} w-4 h-4`}
+										defaultFill1="var(--hashtag-locked-fill-1)"
+									/>
 								)}
 							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
 								<Icons.Speaker
-									defaultSize="w-5 h-5 "
-									className={iconFillClasses.speaker}
+									className={` w-4 h-4 ${iconFillClasses.speaker}`}
 									defaultFill1="var(--speaker-fill-1)"
 									defaultFill2="var(--speaker-fill-2)"
 									defaultFill3="var(--speaker-fill-2)"
@@ -269,16 +271,14 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
 								<Icons.Hashtag
-									defaultSize="w-5 h-5 "
-									className={iconFillClasses.hashtag}
+									className={`w-4 h-4 ${iconFillClasses.hashtag}`}
 									defaultFill1="var(--hashtag-fill-1)"
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
 								/>
 							)}
 							{channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
 								<Icons.Stream
-									defaultSize="w-5 h-5 "
-									className={iconFillClasses.stream}
+									className={`w-5 h-5 ${iconFillClasses.stream}`}
 									defaultFill1="var(--stream-fill-1)"
 									defaultFill2="var(--stream-fill-2)"
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')}

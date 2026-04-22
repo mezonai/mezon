@@ -27,7 +27,7 @@ const ItemStatus = ({ children, description, dropdown, startIcon, type, onClick,
 					</div>
 				)}
 				<li className="text-[14px] w-full py-[6px] list-none">{children}</li>
-				{isdoNotDisturb && <Icons.MuteBell defaultSize="w-4 h-4 mx-3" />}
+				{isdoNotDisturb && <Icons.MuteBell className="w-4 h-4 mx-3" />}
 				{dropdown && <Icons.RightIcon />}
 			</div>
 			{description && <p className="text-[10px] relative top-[-8px] mx-6 ">{description}</p>}

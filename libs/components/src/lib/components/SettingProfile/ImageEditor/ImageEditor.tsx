@@ -261,7 +261,7 @@ type ImageControlsProps = {
 
 const ImageControls = React.memo(({ zoom, handleZoom, handleRotate, t }: ImageControlsProps) => (
 	<div className="flex flex-row items-center gap-2 p-0.5">
-		<Icons.ImageThumbnail defaultSize="w-3 h-3" />
+		<Icons.ImageThumbnail className="w-3 h-3" />
 		<input
 			type="range"
 			min="0.5"
@@ -272,7 +272,7 @@ const ImageControls = React.memo(({ zoom, handleZoom, handleRotate, t }: ImageCo
 			className="w-[150px] my-4 cursor-pointer"
 			title={t('adjustZoom')}
 		/>
-		<Icons.ImageThumbnail defaultSize="w-5 h-5" />
+		<Icons.ImageThumbnail className="w-5 h-5" />
 		<Icons.RotateIcon onClick={handleRotate} className="cursor-pointer w-5 h-5 text-[#AEAEAE] hover:text-gray-300" />
 	</div>
 ));

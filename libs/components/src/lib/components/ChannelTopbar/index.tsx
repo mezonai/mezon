@@ -1202,7 +1202,7 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 				title={t('tooltips.addFriendsToDM')}
 				data-e2e={generateE2eId(`chat.direct_message.button.add_user`)}
 			>
-				<Icons.IconAddFriendDM defaultSize="size-5" defaultFill1="currentColor" defaultFill2="currentColor" />
+				<Icons.IconAddFriendDM className="size-5" defaultFill1="currentColor" defaultFill2="currentColor" />
 			</span>
 		</div>
 	);

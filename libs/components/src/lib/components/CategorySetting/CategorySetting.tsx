@@ -41,7 +41,7 @@ export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, cate
 						className={`bg-[#AEAEAE] w-[30px] h-[30px] rounded-[50px] font-bold transform hover:scale-105 hover:bg-slate-400 transition duration-300 ease-in-out flex justify-center items-center ${menu ? 'rotate-90' : '-rotate-90'}`}
 						onClick={() => setMenu(!menu)}
 					>
-						<Icons.ArrowDown defaultFill="white" defaultSize="w-[20px] h-[30px]" />
+						<Icons.ArrowDown defaultFill="white" className="w-[20px] h-[30px]" />
 					</button>
 				</div>
 				<div

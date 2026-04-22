@@ -57,7 +57,7 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 					<SearchFile setKeywordSearch={setKeywordSearch} />
 					<div className="flex flex-row items-center gap-4 text-theme-primary-hover">
 						<button onClick={onClose}>
-							<Icons.Close defaultSize="w-4 h-4 " />
+							<Icons.Close className="w-4 h-4 " />
 						</button>
 					</div>
 				</div>

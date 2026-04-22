@@ -109,7 +109,7 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 									role="button"
 									className="rounded-md w-8 h-8 flex flex-row justify-center items-center cursor-pointer bg-theme-input bg-secondary-button-hover text-theme-primary-hover "
 								>
-									<Icons.Download defaultSize="w-4 h-4" />
+									<Icons.Download className="w-4 h-4" />
 								</div>
 							</div>
 						)}
