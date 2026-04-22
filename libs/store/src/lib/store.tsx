@@ -474,12 +474,11 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 
 					const newAuthState = safeJSONParse(e.newValue);
 					const sessionData = newAuthState.session ? safeJSONParse(newAuthState.session) : null;
-					const activeAccount = newAuthState.activeAccount ? safeJSONParse(newAuthState.activeAccount) : null;
 
 					const currentState = store.getState();
 					const currentSession = currentState.auth?.session;
 
-					const newSession = sessionData && activeAccount ? sessionData[activeAccount] : null;
+					const newSession = sessionData ? sessionData : null;
 					const hasSessionChanged =
 						newSession?.token !== currentSession?.token || newSession?.refresh_token !== currentSession?.refresh_token;
 
