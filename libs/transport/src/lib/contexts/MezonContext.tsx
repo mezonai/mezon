@@ -237,7 +237,6 @@ export type MezonContextValue = {
 	refreshSession: (session: ApiSession, isSetNewUsername?: boolean) => Promise<ApiSession | undefined>;
 	connectWithSession: (session: ApiSession) => Promise<ApiSession>;
 	createSocket: () => Promise<any>;
-	reconnectWithTimeout: (clanId: string) => Promise<unknown>;
 };
 
 const MezonContext = React.createContext<MezonContextValue>({} as MezonContextValue);
@@ -433,7 +432,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!session.token || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.token, session.ws_url, true);
+			try {
+				await clientRef.current.connect(session.token || '', session.ws_url, true);
+			} catch (error) {
+				console.error('error: ', error);
+			}
 			socketState.status = 'connected';
 
 			return session;
@@ -491,7 +494,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!session.token || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
-
 			await clientRef.current.connect(session.token, session.ws_url, true);
 			socketState.status = 'connected';
 			return session;
@@ -592,60 +594,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 	const reconnectingRef = React.useRef<boolean>(false);
 
-	const reconnectWithTimeout = React.useCallback(
-		async (clanId: string) => {
-			if (reconnectingRef.current) {
-				return 'RECONNECTING';
-			}
-
-			if (!clientRef.current || !sessionRef.current) {
-				return null;
-			}
-
-			reconnectingRef.current = true;
-
-			try {
-				let failCount = 0;
-
-				while (failCount < MAX_WEBSOCKET_FAILS) {
-					try {
-						if (!clientRef.current || !sessionRef.current) {
-							return null;
-						}
-
-						const connect = await clientRef.current.connect(sessionRef.current.token || '', sessionRef.current.ws_url || '');
-
-						return connect;
-					} catch (error) {
-						failCount++;
-
-						if (failCount >= MAX_WEBSOCKET_FAILS) {
-							throw new Error('Socket reconnection failed');
-						}
-
-						let retryTime: number;
-
-						if (isFromMobile) {
-							retryTime = 1000;
-						} else if (failCount <= FAST_RETRY_ATTEMPTS) {
-							retryTime = MIN_WEBSOCKET_RETRY_TIME + Math.random() * JITTER_RANGE;
-						} else {
-							const exponentialTime = MIN_WEBSOCKET_RETRY_TIME * Math.pow(2, failCount - FAST_RETRY_ATTEMPTS);
-							retryTime = Math.min(exponentialTime, MAX_WEBSOCKET_RETRY_TIME) + Math.random() * JITTER_RANGE;
-						}
-
-						await waitForNetworkAndDelay(retryTime);
-					}
-				}
-
-				throw new Error('Max reconnection attempts reached');
-			} finally {
-				reconnectingRef.current = false;
-			}
-		},
-		[createSocket, isFromMobile]
-	);
-
 	const value = React.useMemo<MezonContextValue>(
 		() => ({
 			clientRef,
@@ -666,7 +614,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			refreshSession,
 			createSocket,
 			logOutMezon,
-			reconnectWithTimeout,
 			authenticateMezon,
 			authenticateEmail,
 			connectWithSession,
@@ -692,7 +639,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			refreshSession,
 			createSocket,
 			logOutMezon,
-			reconnectWithTimeout,
 			authenticateMezon,
 			authenticateEmail,
 			connectWithSession,

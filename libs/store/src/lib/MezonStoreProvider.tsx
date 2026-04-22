@@ -1,11 +1,12 @@
 import { useMezon } from '@mezon/transport';
 import type { ApiSession } from 'mezon-js';
 import { useEffect, useState } from 'react';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import type { Store } from 'redux';
 import type { Persistor } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-import type { RootState, RootState as RootStateMobile } from './store';
+import { authActions, selectSession } from './auth/auth.slice';
+import { useAppDispatch, type RootState, type RootState as RootStateMobile } from './store';
 
 type Props = {
 	readonly children: React.ReactNode;
@@ -17,7 +18,6 @@ type Props = {
 export function MezonStoreProvider({ children, store, loading, persistor }: Props) {
 	const { sessionRef, createClient } = useMezon();
 	const [connect, setConnect] = useState(false);
-
 	useEffect(() => {
 		const initConnection = async () => {
 			const currentState = store.getState();
@@ -28,10 +28,7 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 					setConnect(true);
 					return;
 				}
-				await client.connect(sessionRef.current?.token || session.token, `dev-mezon-sock.nccsoft.vn:7305`, true, true);
-				client.onerror = (error) => {
-					console.error('WebSocket Error Detail:', error);
-				};
+				await client.connect(sessionRef.current?.session_id || session.token, `dev-mezon-sock.nccsoft.vn:7305`, true, true);
 
 				client.onrefreshsession = (session: ApiSession) => {
 					sessionRef.current = session;
@@ -46,13 +43,41 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 
 		initConnection();
 	}, []);
-
 	if (!connect) return null;
 	return (
 		<Provider store={store}>
 			<PersistGate loading={loading} persistor={persistor}>
-				{children}
+				<ConnectGate>{children}</ConnectGate>
 			</PersistGate>
 		</Provider>
 	);
 }
+interface ConnectGateProps {
+	children: React.ReactNode;
+}
+
+const ConnectGate = ({ children }: ConnectGateProps) => {
+	const { clientRef } = useMezon();
+	const dispatch = useAppDispatch();
+	const session = useSelector(selectSession);
+	const [passGate, setPassGate] = useState(false);
+
+	useEffect(() => {
+		if (clientRef.current && session) {
+			const isOpen = clientRef.current.isOpen();
+
+			if (!isOpen) {
+				dispatch(authActions.logOut({}));
+				window.location.href = '/login';
+				return;
+			}
+		}
+		setPassGate(true);
+	}, [clientRef, dispatch]);
+
+	if (!passGate) {
+		return null;
+	}
+
+	return <>{children}</>;
+};

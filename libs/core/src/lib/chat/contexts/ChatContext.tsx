@@ -217,7 +217,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isMobile = false }) => {
 	const { t } = useTranslation('token');
-	const { clientRef, sessionRef, mmnRef, reconnectWithTimeout } = useMezon();
+	const { clientRef, sessionRef, mmnRef } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
 
@@ -1426,6 +1426,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onerror = useCallback(
 		(event: unknown) => {
+			console.log('event: ', event);
 			dispatch(toastActions.addToast({ message: 'Socket connection failed', type: 'error', id: 'SOCKET_CONNECTION_ERROR' }));
 		},
 		[dispatch]
@@ -2778,18 +2779,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		async (_socketType: string, client: Client) => {
 			socketState.status = 'connecting';
 			const store = getStore();
-			const clanIdActive = selectCurrentClanId(store.getState());
 			const session = selectSession(store.getState()) as ApiSession;
 			if (!session) {
 				return;
 			}
-			const socket = await reconnectWithTimeout(clanIdActive ?? '');
 			setCallbackEventFn(client as Client);
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
 		},
-		[reconnectWithTimeout, setCallbackEventFn, dispatch]
+		[setCallbackEventFn, dispatch]
 	);
 
 	useEffect(() => {
