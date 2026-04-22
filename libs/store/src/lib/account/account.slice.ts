@@ -72,9 +72,11 @@ export const fetchUserProfileCached = async (getState: () => RootState, mezon: M
 export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: boolean }, { noCache: boolean } | void>(
 	'account/user',
 	async (arg, thunkAPI) => {
+		console.log('mezon: ');
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const noCache = arg?.noCache ?? false;
 
+		console.log('response: ');
 		const response = await fetchUserProfileCached(thunkAPI.getState as () => RootState, mezon, Boolean(noCache));
 
 		if (!response) {

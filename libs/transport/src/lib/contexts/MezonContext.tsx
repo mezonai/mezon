@@ -299,7 +299,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		}
 
 		if (sessionRef.current?.token && sessionRef.current.ws_url) {
-			const socket = clientRef.current.connect(sessionRef.current.token, sessionRef.current.ws_url, true);
+			const socket = clientRef.current.connect(sessionRef.current.token, sessionRef.current.ws_url);
 			return socket;
 		}
 	}, [clientRef, socketRef]);
@@ -459,7 +459,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!session.token || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.token, session.ws_url, true);
+			await clientRef.current.connect(session.token, session.ws_url);
 			socketState.status = 'connected';
 			return session;
 		},
@@ -494,7 +494,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!session.token || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.token, session.ws_url, true);
+			await clientRef.current.connect(session.token, session.ws_url);
 			socketState.status = 'connected';
 			return session;
 		},
@@ -568,7 +568,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				is_remember: session.is_remember || false
 			};
 
-			await clientRef.current.connect(sessionObj.token || '', wsUrl, true);
+			await clientRef.current.connect(sessionObj.token || '', wsUrl);
 			socketState.status = 'connected';
 			return sessionObj;
 		},
@@ -585,7 +585,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!socketRef.current) {
 				return session;
 			}
-			await clientRef.current.connect(session.token || '', session.ws_url || '', true);
+			await clientRef.current.connect(session.token || '', session.ws_url || '');
 			socketState.status = 'connected';
 			return session;
 		},

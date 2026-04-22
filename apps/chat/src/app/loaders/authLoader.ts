@@ -89,12 +89,6 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 			return handleLogoutWithRedirect(dispatch, initialPath);
 		}
 
-		const profileResponse = await dispatch(accountActions.getUserProfile());
-		if ((profileResponse as unknown as IWithError).error) {
-			console.error('getUserProfile failed after refresh');
-			return handleLogoutWithRedirect(dispatch, initialPath);
-		}
-
 		return { isLogin: true } as IAuthLoaderData;
 	} catch (error) {
 		console.error('refreshSession error:', error);
@@ -112,6 +106,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
+	dispatch(accountActions.getUserProfile());
 
 	connectNotification(dispatch);
 

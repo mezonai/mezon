@@ -23,7 +23,6 @@ export interface AuthState {
 	isRegistering?: LoadingStatus;
 	loadingStatusEmail?: LoadingStatus;
 	redirectUrl?: string | null;
-	activeAccount: string | null;
 }
 
 export interface ISession {
@@ -48,8 +47,7 @@ export const initialAuthState: AuthState = {
 	isLogin: false,
 	isRegistering: 'not loaded',
 	loadingStatusEmail: 'not loaded',
-	redirectUrl: null,
-	activeAccount: null
+	redirectUrl: null
 };
 
 function normalizeSession(session: ApiSession): ISession {
@@ -332,7 +330,6 @@ export const authSlice = createSlice({
 			state.session = action.payload;
 		},
 		setLogout(state) {
-			state.activeAccount = null;
 			state.session = null;
 			state.isLogin = false;
 			state.loadingStatus = 'not loaded';
@@ -341,24 +338,25 @@ export const authSlice = createSlice({
 			state.loadingStatus = 'not loaded';
 			state.loadingStatusEmail = 'not loaded';
 		},
-		checkFormatSession(state) {
-			if (!state.activeAccount || !state.session) {
-				state.session = null;
-				state.isLogin = false;
-				state.activeAccount = null;
-			}
-		},
+
 		turnOffSetAccount(state) {
 			state.isLogin = true;
 		},
-		switchAccount(state, action: PayloadAction<string>) {
-			state.activeAccount = action.payload;
-		},
 		resetSession(state) {
-			state.activeAccount = null;
 			state.session = null;
 			state.isLogin = false;
 			state.loadingStatus = 'not loaded';
+		},
+		checkFormatSession(state) {
+			const session = state.session;
+
+			if (session && typeof session === 'object' && !Array.isArray(session)) {
+				const entries = Object.entries(session);
+				if (entries.length > 0) {
+					const [, value] = entries[0] as [string, ISession];
+					state.session = value;
+				}
+			}
 		}
 	},
 	extraReducers: (builder) => {
@@ -384,11 +382,7 @@ export const authSlice = createSlice({
 			})
 			.addCase(refreshSession.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-
 				state.session = action.payload;
-
-				state.activeAccount = `${action.payload.user_id}`;
-
 				state.isLogin = true;
 			})
 			.addCase(refreshSession.rejected, (state: AuthState, action) => {
@@ -401,11 +395,7 @@ export const authSlice = createSlice({
 			})
 			.addCase(checkSessionWithToken.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-
 				state.session = action.payload;
-
-				state.activeAccount = `${action.payload.user_id}`;
-
 				state.isLogin = true;
 			})
 			.addCase(checkSessionWithToken.rejected, (state: AuthState, action) => {
@@ -441,9 +431,6 @@ export const authSlice = createSlice({
 				state.loadingStatus = 'loaded';
 
 				state.session = action.payload;
-
-				state.activeAccount = `${action.payload.user_id}`;
-
 				state.isLogin = true;
 			})
 			.addCase(authenticateMezon.rejected, (state: AuthState, action) => {
@@ -459,8 +446,6 @@ export const authSlice = createSlice({
 				state.isLogin = true;
 
 				state.session = action.payload;
-
-				state.activeAccount = `${action.payload.user_id}`;
 			})
 			.addCase(authenticateEmail.rejected, (state: AuthState, action) => {
 				state.loadingStatusEmail = 'error';
@@ -472,11 +457,7 @@ export const authSlice = createSlice({
 			})
 			.addCase(confirmAuthenticateOTP.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-
 				state.session = action.payload;
-
-				state.activeAccount = `${action.payload.user_id}`;
-
 				state.isLogin = true;
 			})
 			.addCase(confirmAuthenticateOTP.rejected, (state: AuthState, action) => {
