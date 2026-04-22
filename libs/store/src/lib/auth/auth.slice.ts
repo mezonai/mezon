@@ -350,7 +350,7 @@ export const authSlice = createSlice({
 		checkFormatSession(state) {
 			const session = state.session;
 
-			if (session && typeof session === 'object' && !Array.isArray(session)) {
+			if (session && typeof session === 'object' && !Array.isArray(session) && !session.token) {
 				const entries = Object.entries(session);
 				if (entries.length > 0) {
 					const [, value] = entries[0] as [string, ISession];
@@ -366,9 +366,7 @@ export const authSlice = createSlice({
 			})
 			.addCase(authenticateApple.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-
 				state.session = action.payload;
-
 				state.isLogin = true;
 			})
 			.addCase(authenticateApple.rejected, (state: AuthState, action) => {
@@ -445,7 +443,6 @@ export const authSlice = createSlice({
 			.addCase(authenticateEmail.fulfilled, (state: AuthState, action) => {
 				state.loadingStatusEmail = 'loaded';
 				state.isLogin = true;
-
 				state.session = action.payload;
 			})
 			.addCase(authenticateEmail.rejected, (state: AuthState, action) => {
