@@ -1426,7 +1426,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onerror = useCallback(
 		(event: unknown) => {
-			console.log('event: ', event);
 			dispatch(toastActions.addToast({ message: 'Socket connection failed', type: 'error', id: 'SOCKET_CONNECTION_ERROR' }));
 		},
 		[dispatch]
@@ -2599,8 +2598,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 	}, []);
 
+	const onrefresssession = useCallback(
+		(session: ApiSession) => {
+			dispatch(authActions.setSession(session));
+			sessionRef.current = session;
+		},
+		[sessionRef, dispatch]
+	);
 	const setCallbackEventFn = React.useCallback(
 		(socket: Client) => {
+			socket.onrefreshsession = onrefresssession;
+
 			socket.onvoicejoined = onvoicejoined;
 
 			socket.onvoiceended = onvoiceended;
@@ -2769,7 +2777,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onunblockfriend,
 			onMarkAsRead,
 			onaddfriend,
-			onbanneduser
+			onbanneduser,
+			onrefresssession
 		]
 	);
 
