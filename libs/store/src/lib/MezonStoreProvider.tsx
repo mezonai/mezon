@@ -39,6 +39,7 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 				connectRef.current = true;
 				sessionRef.current = session;
 			} catch (error) {
+				connectRef.current = true;
 				console.error('AppInitializer: Connection failed', error);
 			}
 			setConnect(true);
