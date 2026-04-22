@@ -60,7 +60,6 @@ const ConnectGate = ({ children }: ConnectGateProps) => {
 	const { clientRef } = useMezon();
 	const dispatch = useAppDispatch();
 	const session = useSelector(selectSession);
-	const [passGate, setPassGate] = useState(false);
 
 	useEffect(() => {
 		if (clientRef.current && session) {
@@ -72,12 +71,7 @@ const ConnectGate = ({ children }: ConnectGateProps) => {
 				return;
 			}
 		}
-		setPassGate(true);
-	}, [clientRef, dispatch]);
-
-	if (!passGate) {
-		return null;
-	}
+	}, []);
 
 	return <>{children}</>;
 };
