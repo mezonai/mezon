@@ -101,23 +101,19 @@ export function IconEditThreeDot({
 	...props
 }: IconProps) {
 	return (
-		<svg width="20" height="20" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-			{' '}
+		<svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
 			<path
 				d="M9.00003 4.33337C8.30968 4.33337 7.75003 3.77373 7.75003 3.08337C7.75003 2.39302 8.30968 1.83337 9.00003 1.83337C9.69039 1.83337 10.25 2.39302 10.25 3.08337C10.25 3.77373 9.69039 4.33337 9.00003 4.33337Z"
-				fill={defaultFill1}
-				className="icon-IconEditThreeDot-fill-1"
-			/>{' '}
+				fill="currentColor"
+			/>
 			<path
 				d="M9.00003 15.1667C8.30967 15.1667 7.75003 14.6071 7.75003 13.9167C7.75003 13.2264 8.30967 12.6667 9.00003 12.6667C9.69039 12.6667 10.25 13.2264 10.25 13.9167C10.25 14.6071 9.69039 15.1667 9.00003 15.1667Z"
-				fill={defaultFill2}
-				className="icon-IconEditThreeDot-fill-2"
-			/>{' '}
+				fill="currentColor"
+			/>
 			<path
 				d="M9.00003 9.75004C8.30968 9.75004 7.75003 9.1904 7.75003 8.50004C7.75003 7.80968 8.30968 7.25004 9.00003 7.25004C9.69039 7.25004 10.25 7.80968 10.25 8.50004C10.25 9.1904 9.69039 9.75004 9.00003 9.75004Z"
-				fill={defaultFill3}
-				className="icon-IconEditThreeDot-fill-3"
-			/>{' '}
+				fill="currentColor"
+			/>
 		</svg>
 	);
 }
@@ -1054,7 +1050,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill1 = '#
 						<feFuncA type="table" tableValues="1.0 0.0"></feFuncA>
 					</feComponentTransfer>
 				</filter>
-				<mask id="__lottie_element_356_2" maskType="alpha">
+				<mask id="__lottie_element_356_2" style={maskTypeAlphaStyle}>
 					<g filter="url(#__lottie_element_380)">
 						<rect width="600" height="600" x="0" y="0" fill="#ffffff" opacity="0" className="icon-Sticker-fill-7"></rect>
 						<use></use>
@@ -1065,7 +1061,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill1 = '#
 						<feFuncA type="table" tableValues="1.0 0.0"></feFuncA>
 					</feComponentTransfer>
 				</filter>
-				<mask id="__lottie_element_346_2" maskType="alpha">
+				<mask id="__lottie_element_346_2" style={maskTypeAlphaStyle}>
 					<g filter="url(#__lottie_element_381)">
 						<rect width="600" height="600" x="0" y="0" fill="#ffffff" opacity="0" className="icon-Sticker-fill-8"></rect>
 						<use></use>
