@@ -31,11 +31,7 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 					setConnect(true);
 					return;
 				}
-				await client.connect(
-					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI4NGYxNDQ3MC03NTAzLTQ1MDUtODAzZi1lOTdiODVkM2M5ZDEiLCJ1aWQiOjE4MDU0MTU1MjUxMTk5NTQ5NDQsInVzbiI6ImFuaC50cmFudHJ1b25nIiwiZXhwIjoxNzc2ODQyODIxfQ.s8qELCpIiOXabZpe0wecVLVof1D-QP0tDdZxJQ_X5TQ',
-					`dev-mezon-sock.nccsoft.vn:7305`,
-					true
-				);
+				await client.connect(sessionRef.current?.token || session.token, `dev-mezon-sock.nccsoft.vn:7305`, true, false);
 
 				client.onrefreshsession = (session: ApiSession) => {
 					sessionRef.current = session;

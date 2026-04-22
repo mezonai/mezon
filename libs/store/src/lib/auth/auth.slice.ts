@@ -404,9 +404,10 @@ export const authSlice = createSlice({
 			});
 		builder
 			.addCase(checkLoginRequest.fulfilled, (state: AuthState, action) => {
-				state.session = action.payload;
-
-				state.isLogin = true;
+				if (action.payload) {
+					state.session = action.payload;
+					state.isLogin = true;
+				}
 			})
 			.addCase(checkLoginRequest.rejected, (state: AuthState, action) => {
 				state.loadingStatus = 'error';
