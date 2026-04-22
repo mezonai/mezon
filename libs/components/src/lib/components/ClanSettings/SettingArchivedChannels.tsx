@@ -8,12 +8,15 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 const SettingArchivedChannels = () => {
 	const dispatch = useAppDispatch();
+	const { t, i18n } = useTranslation('clanSettings', { keyPrefix: 'archivedChannels' });
 	const currentClanId = useSelector(selectCurrentClanId);
 	const listArchivedChannel = useSelector(selectArchivedChannels);
 
@@ -29,7 +32,7 @@ const SettingArchivedChannels = () => {
 			await dispatch(threadsActions.writeActiveArchivedThread({ clanId: currentClanId as string, channelId })).unwrap();
 			dispatch(
 				toastActions.addToast({
-					message: 'Channel restored successfully.',
+					message: t('restoreSuccess'),
 					type: 'success',
 					autoClose: 3000
 				})
@@ -43,14 +46,14 @@ const SettingArchivedChannels = () => {
 
 	return (
 		<div className="pt-2">
-			<div className="text-base text-theme-primary mb-6 max-w-2xl">
-				Restore channels to the sidebar to make them active again. Archived channels preserve all message history but are hidden from the
-				primary navigation.
-			</div>
+			<div className="text-base text-theme-primary mb-6 max-w-2xl">{t('description')}</div>
 			<div className="flex flex-col gap-3">
 				{listArchivedChannel?.map((ch: any) => {
 					const archivedAgoText = ch.last_sent_message?.timestamp_seconds
-						? formatDistanceToNow(Number(ch.last_sent_message.timestamp_seconds) * 1000, { addSuffix: true })
+						? formatDistanceToNow(Number(ch.last_sent_message.timestamp_seconds) * 1000, {
+								addSuffix: true,
+								locale: getDateLocale(i18n.language)
+							})
 						: '';
 
 					const renderIcon = (ch: any) => {
@@ -73,14 +76,14 @@ const SettingArchivedChannels = () => {
 							<div className="flex-1 min-w-0">
 								<div className="font-semibold text-theme-primary text-base leading-tight">{ch.channel_label}</div>
 								<div className="text-xs text-theme-primary mt-0.5">
-									ARCHIVED {archivedAgoText} • {ch.count_mess_unread || 0}
+									{t('archived')} {archivedAgoText}
 								</div>
 							</div>
 							<button
 								className="ml-4 px-5 py-1.5 rounded bg-[#5865f2] hover:bg-[#4752c4] text-white font-semibold text-sm transition"
 								onClick={() => handleRestore(ch.channel_id)}
 							>
-								Restore
+								{t('restore')}
 							</button>
 						</div>
 					);

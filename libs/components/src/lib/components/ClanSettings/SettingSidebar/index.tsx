@@ -31,7 +31,6 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
 
 	const getTranslatedItemName = (item: ItemObjProps) => {
-		if (item.id === ItemSetting.ARCHIVED_CHANNELS) return 'Archived Channels';
 		const translationMap: Record<string, string> = {
 			[ItemSetting.OVERVIEW]: t('sidebar.items.overview'),
 			[ItemSetting.ROLES]: t('sidebar.items.roles'),
@@ -39,6 +38,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			[ItemSetting.IMAGE_STICKERS]: t('sidebar.items.imageStickers'),
 			[ItemSetting.VOIDE_STICKERS]: t('sidebar.items.voiceStickers'),
 			[ItemSetting.CATEGORY_ORDER]: t('sidebar.items.categoryOrder'),
+			[ItemSetting.ARCHIVED_CHANNELS]: t('sidebar.items.archivedChannels'),
 			[ItemSetting.INTEGRATIONS]: t('sidebar.items.integrations'),
 			[ItemSetting.AUDIT_LOG]: t('sidebar.items.auditLog'),
 			[ItemSetting.ON_BOARDING]: t('sidebar.items.onboarding'),

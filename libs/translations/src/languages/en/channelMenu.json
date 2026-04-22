@@ -112,5 +112,7 @@
 		"textConfirm": "Are you sure you want to archive this thread? It will be hidden from the sidebar for all members."
 	},
 	"btnBadgeCount": "New",
-	"favoriteChannel": "FAVORITE CHANNEL"
+	"favoriteChannel": "FAVORITE CHANNEL",
+	"toastArchiveChannel": "Channel archived successfully.",
+	"toastArchiveThread": "Thread archived successfully."
 }

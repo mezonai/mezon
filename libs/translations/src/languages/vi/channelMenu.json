@@ -112,5 +112,7 @@
 		"textConfirm": "Bạn có chắc chắn muốn lưu trữ chủ đề này không? Chủ đề sẽ bị ẩn khỏi thanh bên đối với tất cả thành viên."
 	},
 	"btnBadgeCount": "Mới",
-	"favoriteChannel": "KÊNH YÊU THÍCH"
+	"favoriteChannel": "KÊNH YÊU THÍCH",
+	"toastArchiveChannel": "Lưu trữ kênh thành công.",
+	"toastArchiveThread": "Lưu trữ chủ đề thành công."
 }

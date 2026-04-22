@@ -222,7 +222,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			await dispatch(channelsActions.archiveChannel({ channelId: channel.id, clanId: currentClanId as string })).unwrap();
 			dispatch(
 				toastActions.addToast({
-					message: isThread ? 'Thread archived successfully.' : 'Channel archived successfully.',
+					message: isThread ? t('toastArchiveThread') : t('toastArchiveChannel'),
 					type: 'success',
 					autoClose: 3000
 				})

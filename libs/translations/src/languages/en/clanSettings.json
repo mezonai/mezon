@@ -17,7 +17,8 @@
 			"integrations": "Integrations",
 			"auditLog": "Audit Log",
 			"onboarding": "Onboarding",
-			"enableCommunity": "Enable Community"
+			"enableCommunity": "Enable Community",
+			"archivedChannels": "Archived Channels"
 		}
 	},
 	"clanLogo": {
@@ -89,5 +90,11 @@
 		"customizeMessage": "Let's customize the amazing stickers with your interest",
 		"uploadSticker": "upload sticker"
 	},
-	"deleteClanTitle": "Delete '{{clanName}}'"
+	"deleteClanTitle": "Delete '{{clanName}}'",
+	"archivedChannels": {
+		"description": "Restore channels to the sidebar to make them active again. Archived channels preserve all message history but are hidden from the primary navigation.",
+		"archived": "ARCHIVED",
+		"restore": "Restore",
+		"restoreSuccess": "Channel restored successfully."
+	}
 }

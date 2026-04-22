@@ -48,7 +48,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 			{ id: ItemSetting.OVERVIEW, name: t('sidebar.items.overview') },
 			{ id: ItemSetting.ROLES, name: t('sidebar.items.roles') },
 			{ id: ItemSetting.CATEGORY_ORDER, name: t('sidebar.items.categoryOrder') },
-			{ id: ItemSetting.ARCHIVED_CHANNELS, name: 'Archived Channels' },
+			{ id: ItemSetting.ARCHIVED_CHANNELS, name: t('sidebar.items.archivedChannels') },
 			{ id: ItemSetting.EMOJI, name: t('sidebar.items.emoji') },
 			{ id: ItemSetting.IMAGE_STICKERS, name: t('sidebar.items.imageStickers') },
 			{ id: ItemSetting.VOIDE_STICKERS, name: t('sidebar.items.voiceStickers') },
