@@ -266,8 +266,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				...content,
 				t: content.t?.trim()
 			};
-			const finalTopicId = topic_id || currentTopicId || '0';
-			const updateChannelId = finalTopicId !== '0' ? finalTopicId : channelIdOrDirectId ?? '0';
+			const finalTopicId = topic_id || (isTopic ? currentTopicId || '0' : '0');
+			const updateChannelId = finalTopicId !== '0' ? finalTopicId : (channelIdOrDirectId ?? '0');
 			try {
 				await client.updateChannelMessage(
 					session,
