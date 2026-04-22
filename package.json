@@ -76,7 +76,7 @@
     "i18next": "^23.11.4",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-chained-backend": "^4.6.3",
-    "i18next-http-backend": "^2.5.1",
+    "i18next-http-backend": "^3.0.5",
     "i18next-resources-to-backend": "^1.2.1",
     "is-electron": "^2.2.2",
     "lite-youtube-embed": "^0.3.4",
