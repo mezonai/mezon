@@ -2600,8 +2600,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onrefresssession = useCallback(
 		(session: ApiSession) => {
-			dispatch(authActions.setSession(session));
-			sessionRef.current = session;
+			dispatch(authActions.setSessionId(session.session_id));
+			sessionRef.current = {
+				...sessionRef.current,
+				session_id: session.session_id
+			};
 		},
 		[sessionRef, dispatch]
 	);

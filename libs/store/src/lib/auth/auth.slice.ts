@@ -39,6 +39,7 @@ export interface ISession {
 	api_url: string;
 	id_token?: string;
 	ws_url?: string;
+	session_id?: string;
 }
 
 export const initialAuthState: AuthState = {
@@ -320,6 +321,13 @@ export const authSlice = createSlice({
 			state.redirectUrl = action.payload;
 		},
 
+		setSessionId(state, action) {
+			if (state.session) {
+				state.session = { ...state.session, session_id: action.payload };
+			}
+
+			state.isLogin = true;
+		},
 		setSession(state, action) {
 			state.session = action.payload;
 
