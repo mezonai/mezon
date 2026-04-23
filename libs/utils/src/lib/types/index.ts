@@ -1015,6 +1015,7 @@ export type SearchItemProps = {
 	icon?: string;
 	channelId?: string;
 	channel_private?: number;
+	age_restricted?: number;
 	parent_id?: string;
 	clanId?: string;
 	searchName?: string;
