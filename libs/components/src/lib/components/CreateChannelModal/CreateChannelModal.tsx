@@ -100,6 +100,7 @@ export const CreateNewChannelModal = () => {
 			}
 		} catch (error) {
 			console.error('Check duplicate channel name Failed', error);
+			return;
 		}
 
 		const body: ApiCreateChannelDescRequest = {
