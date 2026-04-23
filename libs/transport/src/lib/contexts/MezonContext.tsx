@@ -545,11 +545,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!clientRef.current) {
 				throw new Error('Mezon client not initialized');
 			}
-			sessionRef.current = session;
 			extractAndSaveConfig(session, isFromMobile);
-			if (!socketRef.current) {
-				return session;
-			}
+
 			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url || '');
 			socketState.status = 'connected';
 			return session;

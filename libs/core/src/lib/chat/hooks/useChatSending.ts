@@ -258,8 +258,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
-			const socket = socketRef.current;
-			if (!client || !session || !socket || !channelOrDirect) {
+			if (!client || !session || !channelOrDirect) {
 				throw new Error('Client is not initialized');
 			}
 			const trimContent: IMessageSendPayload = {

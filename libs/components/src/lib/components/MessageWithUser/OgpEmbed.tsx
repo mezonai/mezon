@@ -79,9 +79,8 @@ const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
 			const channelOrDirect = currentChannel || currentDM;
 			const session = sessionRef.current;
 			const client = clientRef.current;
-			const socket = socketRef.current;
 
-			if (!client || !session || !socket || !channelOrDirect || !messageId) {
+			if (!client || !session || !channelOrDirect || !messageId) {
 				toast.error(t('toast.closeOgpFailed'));
 				return;
 			}

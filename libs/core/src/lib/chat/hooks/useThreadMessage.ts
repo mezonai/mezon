@@ -75,7 +75,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			const client = clientRef.current;
 			const socket = socketRef.current;
 
-			if (!client || !session || !socket || !thread || !currentClanId) {
+			if (!client || !session || !thread || !currentClanId) {
 				throw new Error('Client is not initialized');
 			}
 

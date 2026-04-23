@@ -69,7 +69,7 @@ export function useSendInviteMessage() {
 			const client = clientRef.current;
 			const socket = socketRef.current;
 
-			if (!client || !session || !socket || !channel_id) {
+			if (!client || !session || !channel_id) {
 				console.error(client, session, socket, channel_id);
 				throw new Error('Client is not initialized');
 			}

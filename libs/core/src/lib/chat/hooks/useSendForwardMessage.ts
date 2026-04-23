@@ -18,9 +18,8 @@ export function useSendForwardMessage() {
 		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
-			const socket = socketRef.current;
 
-			if (!client || !session || !socket || !channel_id) {
+			if (!client || !session || !channel_id) {
 				throw new Error('Client is not initialized');
 			}
 

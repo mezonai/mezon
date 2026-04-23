@@ -155,9 +155,8 @@ export const writeMessageReaction = createAsyncThunk(
 				const mezon = await ensureSession(getMezonCtx(thunkAPI));
 				const session = mezon.sessionRef.current;
 				const client = mezon.clientRef.current;
-				const socket = mezon.socketRef.current;
 
-				if (!client || !session || !socket) {
+				if (!client || !session) {
 					throw new Error('Client is not initialized');
 				}
 
