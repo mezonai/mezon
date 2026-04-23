@@ -1,4 +1,5 @@
 import { authActions, selectIsLogin, useAppDispatch } from '@mezon/store';
+import isElectron from 'is-electron';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet, useLoaderData, useLocation } from 'react-router-dom';
 import type { IAuthLoaderData } from '../loaders/authLoader';
@@ -9,7 +10,7 @@ const ProtectedRoutes = () => {
 	const isLogin = isLoginLoader && isLoginStore;
 	const location = useLocation();
 	const dispatch = useAppDispatch();
-	if (!isLogin) {
+	if (!isLogin && isElectron()) {
 		dispatch(authActions.setRedirectUrl(location.pathname));
 		return <Navigate to={redirect || '/desktop/login'} replace />;
 	}
