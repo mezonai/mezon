@@ -189,7 +189,7 @@ export const GroupVideoConference = memo(
 							<div className="w-full h-[68px] flex justify-between items-center p-2 !pr-5">
 								<div className="flex justify-start gap-2">
 									<span>
-										<Icons.Speaker defaultSize="w-6 h-6" defaultFill={isShowMember ? 'text-theme-primary' : 'text-gray-300'} />
+										<Icons.Speaker className="w-6 h-6" defaultFill={isShowMember ? 'text-theme-primary' : 'text-gray-300'} />
 									</span>
 									<p
 										className={`text-base font-semibold cursor-default one-line ${isShowMember ? 'text-theme-primary' : 'text-gray-300'}`}

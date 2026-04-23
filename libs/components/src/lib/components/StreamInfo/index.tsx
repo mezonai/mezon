@@ -119,7 +119,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			<div className="flex justify-between items-center">
 				<div className="flex flex-col max-w-[200px]">
 					<div className="flex items-center gap-1">
-						<Icons.NetworkStatus defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+						<Icons.NetworkStatus className="w-4 h-4 dark:text-channelTextLabel" />
 						<span className="text-green-700 font-bold text-base">
 							{type === ESummaryInfo.CALL ? `${isJoinedCall ? 'Call Connected' : 'Calling...'}` : 'Stream Connected'}
 						</span>

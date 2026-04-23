@@ -100,7 +100,7 @@ const ItemMemberPermission = (props: ItemMemberPermissionProps) => {
 			<div className="flex items-center gap-x-2">
 				<p className="text-xs ">{channelOwner && t('channelPermission.ChannelCreator')}</p>
 				<div onClick={handleDelete} role="button" className={`${channelOwner ? 'cursor-not-allowed' : 'cursor-pointer hover:text-red-500'}`}>
-					<Icons.EscIcon defaultSize={` size-[15px]`} defaultFill={channelOwner ? 'text-theme-primary-active' : ''} />
+					<Icons.EscIcon className={` size-[15px]`} defaultFill={channelOwner ? 'text-theme-primary-active' : ''} />
 				</div>
 			</div>
 		</div>

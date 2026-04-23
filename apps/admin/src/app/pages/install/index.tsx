@@ -125,7 +125,7 @@ const ContentInstall = memo((props: ContentInstallProps) => {
 						<h4 className="text-base font-medium ">Add to clan</h4>
 						<p className="dark:text-contentTertiary text-colorTextLightMode text-xs">Customise your clan by adding this app</p>
 					</div>
-					<Icons.ArrowRight defaultSize="size-6 mr-2 dark:text-contentTertiary text-contentTertiary" />
+					<Icons.ArrowRight className="size-6 mr-2 dark:text-contentTertiary text-contentTertiary" />
 				</div>
 			</div>
 		</div>

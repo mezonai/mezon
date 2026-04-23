@@ -60,7 +60,7 @@ const ItemPermission = forwardRef<{ reset: () => void }, ItemPermissionProps>((p
 						handleSelect(TypeChoose.Remove);
 					}}
 				>
-					<Icons.Close defaultSize="size-4" />
+					<Icons.Close className="size-4" />
 				</button>
 				<button
 					className={`${className.buttonClass} ${choose === TypeChoose.Or ? 'bg-item-theme' : ''}`}
@@ -69,7 +69,7 @@ const ItemPermission = forwardRef<{ reset: () => void }, ItemPermissionProps>((p
 						handleSelect(TypeChoose.Or);
 					}}
 				>
-					<Icons.IconOr defaultSize="size-4" />
+					<Icons.IconOr className="size-4" />
 				</button>
 				<button
 					className={`${className.buttonClass} ${choose === TypeChoose.Tick ? 'bg-colorSuccess text-white' : ''}`}
@@ -78,7 +78,7 @@ const ItemPermission = forwardRef<{ reset: () => void }, ItemPermissionProps>((p
 						handleSelect(TypeChoose.Tick);
 					}}
 				>
-					<Icons.IconTick defaultSize="size-4" />
+					<Icons.IconTick className="size-4" />
 				</button>
 			</div>
 		</div>

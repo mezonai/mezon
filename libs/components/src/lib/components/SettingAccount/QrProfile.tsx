@@ -58,7 +58,7 @@ const QrProfile = ({ onClose, qrData }: { onClose: () => void; qrData: string })
 
 				<ButtonSwitch
 					iconDefault={<Icons.CopyIcon />}
-					iconSwitch={<Icons.Tick defaultSize="w-4 h-4" fill="currentColor" />}
+					iconSwitch={<Icons.Tick className="w-4 h-4" fill="currentColor" />}
 					onClick={handleCopyQR}
 					className="absolute p-4 !rounded-full text-white bg-transparent"
 				/>
