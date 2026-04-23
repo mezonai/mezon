@@ -1904,6 +1904,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 			}
+			if (channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_THREAD && channelUpdated.parent_id) {
+				dispatch(
+					threadsActions.updateThreadFromSocket({
+						threadId: channelUpdated.channel_id,
+						parentId: channelUpdated.parent_id,
+						changes: {
+							channel_label: channelUpdated.channel_label
+						}
+					})
+				);
+			}
 			// Switch public to private
 			if (channelUpdated.channel_private && channelExist && channelExist.channel_private !== channelUpdated.channel_private) {
 				const result = await dispatch(
