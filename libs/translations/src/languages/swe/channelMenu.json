@@ -1,0 +1,104 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Markera som läst"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Bjud in",
+          "markFavorite": "Lägg till i favoriter",
+          "unMarkFavorite": "Ta bort från favoriter",
+          "copyLink": "Kopiera länk"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Tysta kanals notis",
+          "unMuteChannel": "Aktivera kanals notis",
+          "muteThread": "Tysta tråd notis",
+          "unMuteThread": "Aktivera tråd notis",
+          "notification": "Notisinställningar",
+          "for15Minutes": "I 15 minuter",
+          "for1Hour": "I 1 timme",
+          "for3Hours": "I 3 timmar", 
+          "for8Hours": "I 8 timmar",
+          "for24Hours": "I 24 timmar",
+          "untilTurnedBackOn": "Tills jag slå på igen",
+          "useCategoryDefault": "Använd kategori standard",
+          "all": "Alla",
+          "onlyMention": "Endast @nämnd",
+          "nothing": "Inget",
+          "processing": "Bearbetar...",
+          "muteChannelStatus": "Tystad kanals notis",
+          "muteThreadStatus": "Tystad tråd notis",
+          "unmuteChannelStatus": "Aktiverad kanals notis", 
+          "unmuteThreadStatus": "Aktiverad tråd notis",
+          "mutedUntil": "Tystad tills",
+          "muteSuccess": "Tystad framgångsrikt!",
+          "unMuteSuccess": "Aktiverad framgångsrikt!",
+          "muteFailed": "Tystade inte framgångsrikt!",
+          "unMuteFailed": "Aktiverade inte framgångsrikt!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Trådar",
+        "searchThreads": "Sök tråd namn",
+        "searchFiles": "Sök filer",
+        "searchCanvas": "Sök canvas namn"
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Redigera kanal",
+          "deleteChannel": "Ta bort kanal",
+          "duplicateChannel": "Duplikera kanal",
+          "leaveChannel": "Lämna kanal",
+          "createTextChannel": "Skapa textkanal",
+          "createVoiceChannel": "Skapa röstkanal",
+          "openChat": "Öppna chatt",
+          "hideNames": "Dölj namn",
+          "createThread": "Skapa tråd"
+      },
+      "devMode": {
+          "title": "Utvecklingsläge",
+          "copyChannelID": "Kopiera kanal ID"
+      },
+      "manageThreadMenu": {
+          "editThread": "Redigera tråd",
+          "deleteThread": "Ta bort tråd",
+          "leaveThread": "Lämna tråd",
+          "closeThread": "Stäng tråd",
+          "lockThread": "Lås tråd",
+          "copyLink": "Kopiera länk"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "Kanal ID kopierad"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Ta bort tråd {{threadName}}",
+          "content": "Är du säker på att du vill ta bort denna tråd?",
+          "confirmText": "Ja"
+      },
+      "channel": {
+          "title": "Ta bort kanal {{channelName}}",
+          "content": "Är du säker på att du vill ta bort denna kanal?",
+          "confirmText": "Ja",
+          "systemChannel": "Kunde inte ta bort systemkanal",
+          "error": "Misslyckades ta bort kanal: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Lämna tråd",
+    "yesButton": "Lämna tråd",
+    "textConfirm": "Är du säker på att du vill lämna denna tråd? Du kommer inte att få meddelanden från strömmen när du har lämnat."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Lämna kanal",
+    "yesButton": "Lämna kanal",
+    "textConfirm": "Är du säker på att du vill lämna denna kanal? Du kommer inte att få meddelanden från kanalen när du har lämnat.",
+    "error": "Misslyckades lämna kanal: {{error}}"
+  },
+  "btnBadgeCount": "NY",
+  "favoriteChannel": "FAVORIT KANAL"
+}

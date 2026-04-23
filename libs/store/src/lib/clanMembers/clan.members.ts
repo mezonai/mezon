@@ -2,16 +2,19 @@ import { captureSentryError } from '@mezon/logger';
 import type { IUserProfileActivity, LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import { EUserStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api';
+import { batch } from 'react-redux';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { convertStatusClan, selectStatusEntities, statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 export const USERS_CLANS_FEATURE_KEY = 'usersClan';
+
+export const initClanMembersAction = createAction<{ users: UsersClanEntity[]; clanId: string }>('UsersClan/initClanMembers');
 
 /*
  * Update these interfaces according to your requirements.
@@ -92,7 +95,6 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
-
 		return { users: response?.users, fromCache: response.fromCache, clanId };
 	} catch (error) {
 		captureSentryError(error, 'UsersClan/fetchUsersClan');
@@ -125,6 +127,52 @@ export const listOnlineUserClan = createAsyncThunk('UsersClan/listOnlineUserClan
 		return thunkAPI.rejectWithValue(error);
 	}
 });
+
+export const fetchClanMembersWithStatus = createAsyncThunk(
+	'UsersClan/fetchClanMembersWithStatus',
+	async ({ clanId }: { clanId: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+
+			const [membersResponse, onlineResponse, statusResponse] = await Promise.all([
+				fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId),
+				mezon.client.listUserOnline(mezon.session, clanId),
+				mezon.client.listClanUsersStatus(mezon.session, clanId)
+			]);
+
+			const userStatusMap = new Map<string, string>();
+			if (statusResponse?.clan_user_statuses) {
+				for (const s of statusResponse.clan_user_statuses) {
+					if (s.user_id) userStatusMap.set(s.user_id, s.user_status || '');
+				}
+			}
+
+			const state = thunkAPI.getState() as RootState;
+			const statusData: IUserProfileActivity[] = [];
+			if (onlineResponse?.users) {
+				for (const user of onlineResponse.users) {
+					if (user?.id) {
+						const entry = convertStatusClan({ ...user, id: user.id }, state);
+						entry.user_status = userStatusMap.get(user.id) ?? entry.user_status;
+						statusData.push(entry);
+					}
+				}
+			}
+
+			batch(() => {
+				if (!membersResponse.fromCache && membersResponse.users?.length) {
+					thunkAPI.dispatch(initClanMembersAction({ users: membersResponse.users, clanId }));
+				}
+				if (statusData.length) {
+					thunkAPI.dispatch(statusActions.updateBulkStatus(statusData));
+				}
+			});
+		} catch (error) {
+			captureSentryError(error, 'UsersClan/fetchClanMembersWithStatus');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
 
 export const fetchListBanMembersCached = async (
 	getState: () => RootState,
@@ -458,6 +506,24 @@ export const UsersClanSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
+			.addCase(initClanMembersAction, (state, action) => {
+				const { users, clanId } = action.payload;
+				if (!state.byClans[clanId]) {
+					state.byClans[clanId] = getInitialClanState();
+				}
+				const newEntities = users.reduce(
+					(acc, user) => {
+						acc[user.id] = user;
+						return acc;
+					},
+					{} as Record<string, UsersClanEntity>
+				);
+				state.byClans[clanId].entities = {
+					ids: users.map((u) => u.id),
+					entities: newEntities
+				};
+				state.byClans[clanId].cache = createCacheMetadata();
+			})
 			.addCase(fetchUsersClan.pending, (state: UsersClanState) => {
 				state.loadingStatus = 'loading';
 			})
@@ -587,73 +653,68 @@ export const selectMembersClanCount = createSelector(
 const getName = (user: UsersClanEntity) =>
 	user.clan_nick?.toLowerCase() || user.user?.display_name?.toLowerCase() || user.user?.username?.toLowerCase() || '';
 
-// CHECK
-export const selectClanMemberWithStatusIds = createSelector(
-	selectAllUserClans,
+export const selectOnlineUserIdsSet = createSelector(
 	selectStatusEntities,
 	selectAllAccount,
-	(members, metas, userProfile) => {
-		if (!metas || !members) {
-			return {
-				online: [],
-				offline: []
-			};
-		}
-
-		const users = members.map((item) => ({
-			...item,
-			user: {
-				...item.user,
-				online: metas[item.id]?.status !== EUserStatus.INVISIBLE && !!metas[item.id]?.online,
-				is_mobile: !!metas[item.id]?.is_mobile
-			}
-		})) as UsersClanEntity[];
-
-		const userProfileId = userProfile?.user?.id;
-		if (userProfileId) {
-			const userIndex = users.findIndex((user) => user.id === userProfileId);
-
-			if (userIndex === -1 && userProfile?.user?.status !== EUserStatus.INVISIBLE) {
-				users.push({
-					id: userProfileId,
-					user: {
-						...userProfile?.user,
-						online: true
-					}
-				} as UsersClanEntity);
-			} else if (userProfile?.user?.status !== EUserStatus.INVISIBLE) {
-				users[userIndex] = {
-					...users[userIndex],
-					user: {
-						...users[userIndex]?.user,
-						online: true
-					}
-				};
-			} else {
-				users[userIndex] = {
-					...users[userIndex],
-					user: {
-						...users[userIndex]?.user,
-						online: false
-					}
-				};
+	(metas, userProfile) => {
+		const onlineIds = new Set<string>();
+		for (const id in metas) {
+			const meta = metas[id];
+			if (meta && meta.status !== EUserStatus.INVISIBLE && meta.online) {
+				onlineIds.add(id);
 			}
 		}
-
-		users.sort((a, b) => {
-			if (a?.user?.online === b?.user?.online) {
-				return getName(a).localeCompare(getName(b));
+		const myId = userProfile?.user?.id;
+		if (myId && userProfile?.user?.status !== EUserStatus.INVISIBLE) {
+			onlineIds.add(myId);
+		}
+		return onlineIds;
+	},
+	{
+		memoizeOptions: {
+			resultEqualityCheck: (a: Set<string>, b: Set<string>) => {
+				if (a.size !== b.size) return false;
+				for (const id of a) {
+					if (!b.has(id)) return false;
+				}
+				return true;
 			}
-			return a?.user?.online ? -1 : 1;
+		}
+	}
+);
+
+export const selectClanMemberWithStatusIds = createSelector(
+	selectAllUserClans,
+	selectOnlineUserIdsSet,
+	(members, onlineIds) => {
+		const online: string[] = [];
+		const offline: string[] = [];
+
+		const sorted = [...members].sort((a, b) => {
+			const aOnline = onlineIds.has(a.id);
+			const bOnline = onlineIds.has(b.id);
+			if (aOnline !== bOnline) return aOnline ? -1 : 1;
+			return getName(a).localeCompare(getName(b));
 		});
-		const firstOfflineIndex = users.findIndex((user) => !user.user?.online);
-		const onlineUsers = firstOfflineIndex === -1 ? users : users?.slice(0, firstOfflineIndex);
-		const offlineUsers = firstOfflineIndex === -1 ? [] : users?.slice(firstOfflineIndex);
 
-		return {
-			online: onlineUsers?.map((item) => item?.id),
-			offline: offlineUsers?.map((item) => item?.id)
-		};
+		for (const member of sorted) {
+			if (onlineIds.has(member.id)) {
+				online.push(member.id);
+			} else {
+				offline.push(member.id);
+			}
+		}
+
+		return { online, offline };
+	},
+	{
+		memoizeOptions: {
+			resultEqualityCheck: (a: { online: string[]; offline: string[] }, b: { online: string[]; offline: string[] }) =>
+				a.online.length === b.online.length &&
+				a.offline.length === b.offline.length &&
+				a.online.every((id, i) => id === b.online[i]) &&
+				a.offline.every((id, i) => id === b.offline[i])
+		}
 	}
 );
 

@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "감사 로그",
+		"filterByUser": "사용자별로 필터링",
+		"filterByAction": "작업별로 필터링",
+		"filterBtn": "필터"
+	},
+	"auditLogItem": {
+		"performedAnAction": "작업 수행",
+		"toChannel": "채널로",
+		"remove": "삭제",
+		"add": "추가"
+	},
+	"filterActionAuditLog": {
+		"allActions": "모든 작업",
+		"placeholder": "작업 검색"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "모든 사용자",
+		"placeholder": "사용자 검색"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "로그 없음",
+		"description": "검열관이 작업을 수행한 후 여기에서 그들의 활동을 추적할 수 있습니다."
+	}
+}

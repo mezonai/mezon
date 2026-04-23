@@ -99,8 +99,23 @@ export default class Main {
 	}
 }
 
+const isSafeHttpUrl = (url: string | undefined): boolean => {
+	if (!url || typeof url !== 'string') return false;
+	try {
+		const parsed = new URL(url);
+		return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+	} catch {
+		return false;
+	}
+};
+
 ipcMain.handle(DOWNLOAD_FILE, async (event, { url, defaultFileName }) => {
-	let fileExtension = defaultFileName.split('.').pop().toLowerCase();
+	if (!isSafeHttpUrl(url)) {
+		log.warn('Blocked DOWNLOAD_FILE with non-http(s) URL:', url);
+		return null;
+	}
+	const safeDefaultFileName = typeof defaultFileName === 'string' && defaultFileName.length > 0 ? defaultFileName : 'download';
+	let fileExtension = safeDefaultFileName.split('.').pop()?.toLowerCase() ?? '';
 	if (!fileExtension || !/^[a-z0-9]+$/.test(fileExtension)) {
 		const match = url.match(/\.(\w+)(\?.*)?$/);
 		fileExtension = match ? match[1].toLowerCase() : '';
@@ -520,7 +535,10 @@ async function copyBlobToClipboardElectron(blob: Buffer | null) {
 }
 
 const copyImageToClipboardElectron = async (imageUrl?: string) => {
-	if (!imageUrl) return false;
+	if (!imageUrl || !isSafeHttpUrl(imageUrl)) {
+		if (imageUrl) log.warn('Blocked copyImage with non-http(s) URL:', imageUrl);
+		return false;
+	}
 
 	try {
 		const controller = new AbortController();
@@ -566,7 +584,9 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 
 	switch (actionImage) {
 		case 'copyLink': {
-			clipboard.writeText(cleanedWebpOnUrl);
+			if (isSafeHttpUrl(cleanedWebpOnUrl)) {
+				clipboard.writeText(cleanedWebpOnUrl);
+			}
 			break;
 		}
 		case 'copyImage': {
@@ -578,11 +598,15 @@ ipcMain.handle(ACTION_SHOW_IMAGE, async (event, action, _data) => {
 			}
 		}
 		case 'openLink': {
-			shell.openExternal(cleanedWebpOnUrl);
+			if (isSafeHttpUrl(cleanedWebpOnUrl)) {
+				shell.openExternal(cleanedWebpOnUrl);
+			}
 			break;
 		}
 		case 'saveImage': {
-			win.webContents.downloadURL(cleanedWebpOnUrl);
+			if (isSafeHttpUrl(cleanedWebpOnUrl) && win) {
+				win.webContents.downloadURL(cleanedWebpOnUrl);
+			}
 			break;
 		}
 	}

@@ -36,7 +36,8 @@ export const CreateChannelButton: React.FC<CreateChannelProps> = ({ checkInputEr
 			) : (
 				<button
 					onClick={onClickCreate}
-					className={`Text text-xs leading-normal relative h-10 w-30 justify-center px-3 py-3 flex flex-row items-center gap-1 font-semibold rounded-lg btn-primary ${!(checkInputError === false) ? 'text-zinc-300 hover:bg-opacity-50' : 'btn-primary-hover text-white'}`}
+					disabled={Boolean(checkInputError)}
+					className={`Text text-xs leading-normal relative h-10 w-30 justify-center px-3 py-3 flex flex-row items-center gap-1 font-semibold rounded-lg btn-primary ${!(checkInputError === false) ? 'text-zinc-300 focus:outline-none hover:bg-opacity-50 cursor-not-allowed opacity-50' : 'btn-primary-hover text-white'}`}
 					data-e2e={generateE2eId('clan_page.modal.create_channel.button.confirm')}
 				>
 					<span>{t('buttons.create')}</span>

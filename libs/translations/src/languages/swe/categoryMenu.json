@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Markera som läst"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "Bjud in"
+        },
+        "notification": {
+            "title": "",
+            "muteCategory": "Tysta kategori notis",
+            "notification": "Notisinställningar"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Skapa kanal",
+            "edit": "Redigera kategori",
+            "delete": "Ta bort kategori"
+        },
+        "devMode": {
+            "title": "Utvecklingsläge",
+            "copyServerID": "Kopiera Klan ID"
+        },
+        "modalConfirm": {
+            "title": "Ta bort kategori",
+            "content": "Är du säker på att du vill ta bort denna kategori? Denna åtgärd kan inte ångras.",
+            "confirmText": "Ta bort"
+        },
+        "toast": {
+            "systemChannel": "Fel: {{categoryName}} innehåller systemkanal",
+            "error": "Misslyckades ta bort kategori: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "Klan ID kopierad"
+    }
+}

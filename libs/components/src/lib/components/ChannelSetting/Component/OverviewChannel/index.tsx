@@ -2,7 +2,7 @@ import { ModalSaveChanges } from '@mezon/components';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
-	checkDuplicateChannelInCategory,
+	checkDuplicateChannelInCategoryApi,
 	checkDuplicateThread,
 	fetchSystemMessageByClanId,
 	selectAppChannelById,
@@ -149,7 +149,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 					channel_id: currentChannel.parent_id ?? ''
 				});
 			} else {
-				await checkDuplicate(checkDuplicateChannelInCategory, {
+				await checkDuplicate(checkDuplicateChannelInCategoryApi, {
 					channelName: value.trim(),
 					categoryId: currentChannel.category_id ?? ''
 				});

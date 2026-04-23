@@ -21,7 +21,10 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 		const s = offset;
 		const e = offset + length;
 		const display = content.substring(offset, offset + length);
-
+		const lines = display.split('\n');
+		const firstLine = lines[0]?.trim();
+		const languages = new Set(['c', 'c++', 'c#', 'js', 'ts', 'py', 'java', 'javascript', 'typescript', 'python', 'go', 'rust', 'kotlin', 'sql']);
+		let language = undefined;
 		switch (type) {
 			case 'MessageEntityMentionName':
 				if (userId) {
@@ -78,7 +81,10 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 				break;
 
 			case 'MessageEntityPre':
-				markdown.push({ s, e, type: EBacktickType.PRE });
+				if (languages.has(firstLine.toLowerCase())) {
+					language = firstLine;
+				}
+				markdown.push({ s, e, type: EBacktickType.PRE, language });
 				break;
 
 			case 'MessageEntityTextUrl':

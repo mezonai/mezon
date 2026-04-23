@@ -108,7 +108,14 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				modalRef={modalRef}
 				children={t('statusProfile.statusOptions.idle')}
 				statusValue={EUserStatus.IDLE}
-				startIcon={<Icons.DarkModeIcon className="text-[#F0B232] -rotate-90" />}
+				startIcon={
+					<Icons.DarkModeIcon
+						defaultFill1="#f0eee924"
+						defaultFill2="#ffffff28"
+						defaultFill3="#F0B232"
+						className=" w-[11px] h-[11px] -rotate-90"
+					/>
+				}
 				dropdown
 				onClick={() => setStatusMenuVisible(false)}
 			/>,
@@ -117,7 +124,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				children={t('statusProfile.statusOptions.doNotDisturb')}
 				description={t('statusProfile.statusOptionsDescriptions.doNotDisturb')}
 				statusValue={EUserStatus.DO_NOT_DISTURB}
-				startIcon={<Icons.MinusCircleIcon />}
+				startIcon={<Icons.MinusCircleIcon className="w-[12px] h-[12px]" />}
 				dropdown
 				onClick={() => setStatusMenuVisible(false)}
 			/>,
@@ -145,24 +152,31 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 			<div className="max-md:relative">
 				<ItemStatus
 					children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
-					startIcon={<Icons.Check className="text-theme-primary" />}
+					startIcon={<Icons.Check className="text-[var(--bg-icon-theme)]" />}
 					disabled={true}
 				/>
 				<ItemStatus
 					onClick={handleSendToken}
 					children={t('statusProfile.transferFunds')}
-					startIcon={<Icons.SendMoney className="text-theme-primary" />}
+					startIcon={<Icons.SendMoney className="text-[var(--bg-icon-theme)] w-[17px] h-[17px]" />}
 				/>
 				<ItemStatus
 					onClick={handleOpenHistoryModal}
 					children={t('statusProfile.historyTransaction.title')}
-					startIcon={<Icons.History className="text-theme-primary" />}
+					startIcon={
+						<Icons.History
+							defaultFill1="var(--bg-icon-theme)"
+							defaultFill2="#dbd5ca"
+							defaultFill3="#dbd5ca"
+							className="text-theme-primary w-[14px] h-[14px]"
+						/>
+					}
 				/>
 
 				<ItemStatus
 					onClick={handleCustomStatus}
 					children={status.user_status ? t('statusProfile.editCustomStatus') : t('statusProfile.setCustomStatus')}
-					startIcon={<Icons.SmilingFace className="text-theme-primary" />}
+					startIcon={<Icons.SmilingFace className="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />}
 				/>
 				<Menu
 					trigger="click"

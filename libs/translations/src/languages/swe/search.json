@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Sök medlemmar",
+  "searchActions": "Sök åtgärder",
+  "allUsers": "Alla användare",
+  "noResults": {
+    "title": "Inte finns!",
+    "description": "Skriv du fel?"
+  }
+}

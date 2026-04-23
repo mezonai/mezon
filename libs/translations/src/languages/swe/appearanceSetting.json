@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "DM Meddelandeförhandsvisning",
+            "AllMessages": "Alla meddelanden",
+            "UnreadDMOnly": "Endast olästa DM",
+            "None": "Ingen"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Utseende",
+            "theme": "Tema",
+            "syncAcrossClients": {
+                "title": "Synkronisera över alla enheter",
+                "description": "När denna är på kommer att skriva över ovanstående utseendeinställningar på alla andra enheter inklusive skrivbord och webbläsare."
+            }
+        },
+        "search": {
+            "title": "Sök",
+            "showResultCount": {
+                "title": "Visa exakt antal sökresultat",
+                "description": "När det är på kan det öka tiden för att visa sökresultat."
+            }
+        }
+    }
+}

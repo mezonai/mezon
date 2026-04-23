@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Dela kontakt",
+		"searchPlaceholder": "Sök...",
+		"noResults": "Inga resultat",
+		"noFriends": "Inga vänner eller kanaler",
+		"contactPreview": "Kontakt kommer att delas",
+		"cancel": "Avbryt",
+		"share": "Dela",
+		"sharing": "Skickar...",
+		"group": "Grupp",
+		"channel": "Kanal",
+		"thread": "Tråd"
+	},
+	"card": {
+		"call": "Ringa",
+		"message": "Meddelande",
+		"blockedAction": "Du kan inte utföra denna åtgärd.",
+		"cannotCallSelf": "Du kan inte ringa dig själv."
+	},
+	"contactSharedSuccess": "Delat framgångsrikt",
+	"contactSharedError": "Kunde inte dela"
+}

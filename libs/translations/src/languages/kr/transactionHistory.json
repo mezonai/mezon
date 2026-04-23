@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "거래 내역",
+		"subtitle": "모든 거래 활동 보기"
+	},
+	"footers": {
+		"noti": "모든 {{count}} 거래를 로드했습니다",
+		"fetching": "거래 더 로딩 중..."
+	},
+	"filters": {
+		"all": "모든 거래",
+		"sent": "보낸 거래",
+		"received": "받은 거래"
+	},
+	"transactionTypes": {
+		"sent": "보냄",
+		"received": "받음"
+	},
+	"currency": {
+		"code": "vi-VN",
+		"symbol": "동"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "거래 찾지 못함",
+			"description": "거래가 없습니다. 토큰을 보내거나 받기 시작하면 거래 내역이 여기에 표시됩니다."
+		},
+		"noFilteredTransactions": {
+			"title": "거래 찾지 못함",
+			"description": "선택한 필터에 대한 거래가 없습니다. 다른 필터를 시도하거나 나중에 확인하세요."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "거래 ID",
+			"sender": "보낸 사람",
+			"amount": "금액",
+			"receiver": "수신자",
+			"note": "메모",
+			"created": "생성 시간"
+		},
+		"defaultNote": "메모 없음",
+		"unknownUser": "알 수 없는 사용자"
+	},
+	"transactionItem": {
+		"idPrefix": "거래 #"
+	}
+}

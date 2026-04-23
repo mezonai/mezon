@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Notiser",
+	"tabNotify": {
+		"forYou": "För dig",
+		"mention": "Nämnd",
+		"messages": "Meddelanden",
+		"topics": "Snabba ämnen",
+		"notificationSettings": "Notisinställningar"
+	},
+	"removeNotification": "Ta bort notis",
+	"nothingHere": "Inte något här än",
+	"comeBackNotify": "Kom tillbaka för att få notiser om händelser och mer",
+	"repliedTo": "Svarade: ",
+	"sender": "Avsändare: ",
+	"seeWhenAnswersAppear": "Se när svar dyker upp",
+	"enablePushNotifications": "Aktivera push-notiser",
+	"permissionAlert": {
+		"turnOnNotifications": "Slå på notiser",
+		"permissionDescription": "Vänligen låt Mezon skicka notiser för att hålla kontakt med vänner och familj.",
+		"openSettings": "Öppna Inställningar",
+		"features": {
+			"newMessages": {
+				"title": "Få notiser om nya meddelanden",
+				"description": "Uppdatera när vänner skickar meddelanden till dig"
+			},
+			"mentions": {
+				"title": "Vet när du nämns i grupp",
+				"description": "Missa aldrig när någon nämner dig"
+			},
+			"muteControl": {
+				"title": "Stäng av notiser för specifika samtal och samtals-typer",
+				"description": "Kontrollera vilka notiser du får"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Notisbehörighet",
+		"permissionDenied": "Notisbehörighet avvisad.",
+		"cancel": "Avbryt",
+		"ok": "OK"
+	},
+	"andYou": "och du",
+	"topicAndYou": "Snabbt ämne och du",
+	"unknowClan": "Du är inte längre medlem av denna samtal"
+}

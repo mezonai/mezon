@@ -112,31 +112,43 @@ const GlobalEventListener = () => {
 	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
 
 	useEffect(() => {
-		if (user?.encrypt_private_key) {
-			MessageCrypt.checkExistingKeys(user?.user?.id as string)
-				.then((found) => {
-					if (found) {
-						dispatch(e2eeActions.setHasKey(true));
-					}
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-		}
+		const userId = user?.user?.id;
+		if (!user?.encrypt_private_key || !userId) return;
+		let cancelled = false;
+		MessageCrypt.checkExistingKeys(userId as string)
+			.then((found) => {
+				if (cancelled) return;
+				if (found) {
+					dispatch(e2eeActions.setHasKey(true));
+				}
+			})
+			.catch((error) => {
+				if (cancelled) return;
+				console.error(error);
+			});
+		return () => {
+			cancelled = true;
+		};
 	}, [dispatch, user?.encrypt_private_key, user?.user?.id]);
 
 	useEffect(() => {
-		if (!user?.encrypt_private_key) {
-			MessageCrypt.checkExistingKeys(user?.user?.id as string)
-				.then((found) => {
-					if (found) {
-						MessageCrypt.clearKeys(user?.user?.id as string);
-					}
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-		}
+		const userId = user?.user?.id;
+		if (user?.encrypt_private_key || !userId) return;
+		let cancelled = false;
+		MessageCrypt.checkExistingKeys(userId as string)
+			.then((found) => {
+				if (cancelled) return;
+				if (found) {
+					MessageCrypt.clearKeys(userId as string);
+				}
+			})
+			.catch((error) => {
+				if (cancelled) return;
+				console.error(error);
+			});
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	return null;

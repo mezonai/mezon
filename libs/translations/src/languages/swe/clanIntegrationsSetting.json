@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "Automatiska meddelanden och uppdateringar",
+		"description": "Anpassa din clan med funktioner integrationer. Hantera webhook, kanal-spårning och applikationer, samt Twitch och YouTube-inställningar för skapare.",
+		"learnMore": "Läs mer om hantering av integrationer."
+	},
+	"webhooks": {
+		"description": "Webhooks är verktyg som hjälper dig att ta emot automatiska meddelanden och uppdaterade data skickade till din textkanal i clan via internet-anslutningar.",
+		"learnMore": "Läs mer",
+		"try": "eller prova",
+		"buildOne": "skapa en egen."
+	},
+	"clanWebhooks": {
+		"description": "Clan Webhooks är ett enkelt sätt att publicera meddelanden från andra appar och webbplatser för varje Mezon-användare genom att använda internet-teknologi.",
+		"tips": "Tips: Om du känner att token på din URL är överträdad eller föråldrad, återställ och kopiera den nya URL-en."
+	},
+	"webhooksEdit": {
+		"title": "Redigera webhook",
+		"save": "Spara",
+		"cancel": "Avbryt",
+		"channel": "Kanal",
+		"nameLabel": "Namn",
+		"recommendImage": "Rekommenderar att använda bild med minst 128x128 px",
+		"webhookURL": "Webhook URL",
+		"copy": "Kopiera",
+		"copied": "Kopierad",
+		"delete": "Ta bort",
+		"selectAChannel": "Välj en kanal",
+		"yes": "Ja",
+		"deleteCaptionHook": "Ta bort {{webhookName}}",
+		"deleteWebhookTitle": "Ta bort {{webhookName}}",
+		"deleteWebhookConfirmation": "Är du säker på att du vill ta bort {{webhookName}}? Denna åtgärd kan inte ångras.",
+		"resetToken": "Återställ token",
+		"name": "Webhook namn",
+		"nameMaxLengthError": "Längd måste vara 64 tecken eller mindre."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Inga webhooks"
+	},
+	"webhooksItem": {
+		"createdBy": "Skapades {{webhookCreateTime}} av {{webhookUserOwnerName}}"
+	},
+	"webhookChannelSelect": {
+		"title": "Välj Kanal",
+		"description": "Välj kanal där du vill skapa webhook",
+		"selectChannel": "Kanal",
+		"placeholder": "Välj en kanal",
+		"create": "Skapa"
+	},
+	"toast": {
+		"addSuccess": "Webhook skapad framgångsrikt!",
+		"addError": "Ett fel uppstod vid skapande av webhook",
+		"saveSuccess": "Sparat framgångsrikt!",
+		"saveError": "Ett fel uppstod vid sparande",
+		"deleteSuccess": "Webhook raderad framgångsrikt!",
+		"deleteError": "Ett fel uppstod vid radering av webhook",
+		"resetTokenSuccess": "Token återställd framgångsrikt!",
+		"resetTokenError": "Ett fel uppstod vid återställning av token",
+		"copyError": "Kunde inte kopiera URL",
+		"webhookGeneratedSuccess": "Skapade {{webhookName}} framgångsrikt!",
+		"webhookDeletedSuccess": "Raderade {{webhookName}} framgångsrikt!"
+	}
+}

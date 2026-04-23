@@ -4,8 +4,10 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { usePermissionChecker } from '@mezon/core';
 import {
 	FAVORITE_CATEGORY_ID,
+	applyLocalChannelOrderForCategory,
+	applySortChannelInCategory,
 	categoriesActions,
-	listChannelRenderAction,
+	extractChannelRowIdsForCategory,
 	selectCtrlKFocusChannel,
 	selectCurrentChannelId,
 	selectCurrentClanBanner,
@@ -25,6 +27,7 @@ import {
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import type { ApiCategoryOrderUpdate } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +36,7 @@ import { useSelector } from 'react-redux';
 import { CreateNewChannelModal } from '../CreateChannelModal';
 import { MentionFloatButton } from '../MentionFloatButton';
 import { ThreadLinkWrapper } from '../ThreadListChannel';
+import { ChannelListMergedRowsContext } from '../ThreadListChannel/ChannelListMergedRowsContext';
 import { useVirtualizer } from '../virtual-core/useVirtualizer';
 import type { IChannelLinkPermission } from './CategorizedChannels';
 import CategorizedItem from './CategorizedChannels';
@@ -140,7 +144,23 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
 	const dispatch = useAppDispatch();
 
-	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
+	const baseListChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
+	const [localChannelOrderByClan, setLocalChannelOrderByClan] = useState<Record<string, Record<string, string[]>>>({});
+
+	const listChannelRender = useMemo(() => {
+		if (!baseListChannelRender) {
+			return undefined;
+		}
+		const orders = localChannelOrderByClan[currentClanId as string] ?? {};
+		let rows = baseListChannelRender;
+		for (const [categoryId, orderedIds] of Object.entries(orders)) {
+			if (categoryId !== FAVORITE_CATEGORY_ID && orderedIds?.length) {
+				rows = applyLocalChannelOrderForCategory(rows, categoryId, orderedIds);
+			}
+		}
+		return rows;
+	}, [baseListChannelRender, localChannelOrderByClan, currentClanId]);
+
 	const firstChannelWithBadgeCount = useSelector((state) => selectFirstChannelWithBadgeByClanId(state, currentClanId as string));
 
 	const [height, setHeight] = useState(0);
@@ -329,18 +349,23 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 				}
 			}
 
-			if (dragIndex - dragItemIndex.current!.indexEnd >= 2 || dragIndex < dragItemIndex.current!.indexEnd) {
-				dispatch(
-					listChannelRenderAction.sortChannelInCategory({
-						categoryId: data[dragIndex].category_id as string,
-						clanId: data[dragIndex].clan_id as string,
-						indexEnd: dragItemIndex.current!.indexEnd - 1 + countEmptyCategory,
-						indexStart: dragIndex - 1 + countEmptyCategory
-					})
-				);
+			if ((dragIndex - dragItemIndex.current!.indexEnd >= 2 || dragIndex < dragItemIndex.current!.indexEnd) && listChannelRender) {
+				const categoryId = data[dragIndex].category_id as string;
+				const clanId = data[dragIndex].clan_id as string;
+				const indexEnd = dragItemIndex.current!.indexEnd - 1 + countEmptyCategory;
+				const indexStart = dragIndex - 1 + countEmptyCategory;
+				const newRows = applySortChannelInCategory([...listChannelRender], categoryId, indexStart, indexEnd);
+				const orderedRowIds = extractChannelRowIdsForCategory(newRows, categoryId);
+				setLocalChannelOrderByClan((prev) => ({
+					...prev,
+					[clanId]: {
+						...(prev[clanId] ?? {}),
+						[categoryId]: orderedRowIds
+					}
+				}));
 			}
 		},
-		[data, isShowEmptyCategory, listChannelRender, dispatch]
+		[data, isShowEmptyCategory, listChannelRender]
 	);
 
 	const handleChannelClick = useCallback((e: React.MouseEvent) => {
@@ -405,15 +430,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 					categories: categoriesOrderChanges
 				})
 			);
-
-			dispatch(
-				listChannelRenderAction.sortCategoryChannel({
-					listCategoryOrder: reordered,
-					clanId: currentClanId as string
-				})
-			);
 		},
-		[categories, listChannelRender, dispatch, currentClanId]
+		[categories, dispatch, currentClanId, listChannelRender]
 	);
 
 	const channelListContent = (
@@ -505,7 +523,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 								</div>
 							);
 						} else {
-							if (!(item as IChannel)?.parent_id || (item as IChannel).parent_id === '0') {
+							if ((item as IChannel).type !== ChannelType.CHANNEL_TYPE_THREAD) {
 								return (
 									<div
 										key={virtualRow.key}
@@ -556,20 +574,26 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 		</div>
 	);
 
-	return isDragModeEnabled ? (
-		<DndContext
-			sensors={sensors}
-			collisionDetection={closestCenter}
-			onDragStart={handleCategoryDragStart}
-			onDragEnd={handleCategoryDragEnd}
-			modifiers={[restrictToVerticalAxis]}
-		>
-			<SortableContext items={categoryIds} strategy={verticalListSortingStrategy}>
-				{channelListContent}
-			</SortableContext>
-		</DndContext>
-	) : (
-		channelListContent
+	const channelListMergedRowsContextValue = useMemo(() => ({ mergedRows: listChannelRender }), [listChannelRender]);
+
+	return (
+		<ChannelListMergedRowsContext.Provider value={channelListMergedRowsContextValue}>
+			{isDragModeEnabled ? (
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragStart={handleCategoryDragStart}
+					onDragEnd={handleCategoryDragEnd}
+					modifiers={[restrictToVerticalAxis]}
+				>
+					<SortableContext items={categoryIds} strategy={verticalListSortingStrategy}>
+						{channelListContent}
+					</SortableContext>
+				</DndContext>
+			) : (
+				channelListContent
+			)}
+		</ChannelListMergedRowsContext.Provider>
 	);
 });
 

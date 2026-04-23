@@ -1,0 +1,112 @@
+{
+	"roleDescription": "역할을 사용하여 클랜의 멤버를 그룹화하고 권한을 할당합니다",
+	"defaultRole": "모든 클랜 멤버에 대한 기본 권한",
+	"roles": "역할",
+	"members": "멤버",
+	"noRole": "현재 역할이 없습니다",
+	"skipStep": "이 단계 건너뛰기",
+	"failed": "실패",
+	"createNewRole": {
+		"title": "3 단계 중 1 단계",
+		"createANewRole": "새 역할 만들기",
+		"description": "이 역할에 고유한 이름과 색상을 지정하세요. 언제든지 나중에 변경할 수 있습니다.",
+		"create": "만들기",
+		"newRole": "새 역할 이름 입력...",
+		"roleName": "역할 이름",
+		"createSuccess": "{{roleName}} 역할 성공적으로 생성",
+		"cannotCreate": "{{roleName}} 생성 실패"
+	},
+	"setupPermission": {
+		"title": "3 단계 중 2 단계",
+		"setupPermissionTitle": "권한 설정",
+		"setupPermissionSuccessfully": "권한 성공적으로 설정",
+		"next": "다음",
+		"searchPermission": "권한 검색"
+	},
+	"setupMember": {
+		"title": "3 단계 중 3 단계",
+		"addMember": "멤버 추가",
+		"description": "이 역할을 멤버에게 할당하세요. 멤버는 여러 역할을 가질 수 있습니다.",
+		"finish": "완료",
+		"addedMember": "멤버 성공적으로 추가",
+		"searchMembers": "멤버 검색",
+		"deletedMember": "{{memberName}} 성공적으로 삭제",
+		"add": "추가",
+		"noMembersFound": "멤버 찾지 못함"
+	},
+	"roleDetail": {
+		"permissions": "권한",
+		"members": "멤버",
+		"role": "역할",
+		"roleName": "역할 이름",
+		"deleteRole": "역할 삭제",
+		"deleteRoleSuccessfully": "{{roleName}} 역할 성공적으로 삭제",
+		"changesSaved": "변경사항 저장됨",
+		"save": "저장",
+		"confirmSaveTitle": "변경사항 저장?",
+		"confirmSaveContent": "변경사항을 만들었습니다. 저장하시겠습니까?",
+		"yes": "네",
+		"doNotSave": "저장하지 않음"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "역할 색상",
+		"titleBS": "색상 선택",
+		"reset": "재설정",
+		"save": "저장"
+	},
+	"roleImagePicker": "역할 아이콘",
+	"notifyEveryone": "이 채널을 볼 권한이 있는 모든 사람에게 알림.",
+	"removeImage": "삭제",
+	"allMembers": "전체 멤버",
+	"permissionTitles": {
+		"administrator": "관리자",
+		"view-channel": "채널 보기",
+		"manage-channel": "채널 관리",
+		"manage-clan": "클랜 관리",
+		"manage-thread": "스레드 관리",
+		"send-message": "메시지 보내기",
+		"delete-message": "메시지 삭제",
+		"clan-owner": "클랜 소유자"
+	},
+	"permissionDescriptions": {
+		"administrator": "멤버가 전체 클랜을 관리할 수 있게 합니다 (권한은 소유자보다 낮음).",
+		"view-channel": "멤버가 공개 채널을 볼 수 있게 합니다.",
+		"manage-channel": "멤버가 채널을 생성하고, 수정하고, 삭제할 수 있게 합니다.",
+		"manage-clan": "멤버가 클랜 설정을 제어하고, 역할과 채널을 관리하며, 멤버 활동을 모니터링하고, 효율적인 관리와 잘 조직된 커뮤니티를 보장할 수 있게 합니다.",
+		"manage-thread": "멤버가 채널의 스레드를 생성하고, 수정하고, 삭제할 수 있게 합니다 (비공개 스레드 포함).",
+		"send-message": "멤버가 공개 채널에 메시지를 보낼 수 있게 합니다 (그 채널의 스레드와 스레드 토론 포함).",
+		"delete-message": "멤버가 공개 채널의 메시지를 삭제할 수 있게 합니다 (그 채널의 스레드와 스레드 토론 포함).",
+		"notAvailable": "권한 설명 사용 가능"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "역할을 사용하여 클랜의 멤버를 그룹화하고 권한을 할당합니다.",
+		"defaultPermissions": "기본 권한",
+		"everyoneDescription": "@everyone • 모든 클랜 멤버에 적용",
+		"searchRoles": "역할 검색",
+		"createRole": "역할 만들기",
+		"membersUseColor": "멤버는 이 목록에서 가장 높은 역할의 색상을 사용합니다. 순서를 변경하려면 역할을 드래그하세요.",
+		"noRoles": "역할이 없음"
+	},
+	"roleManagement": {
+		"newRole": "새 역할",
+		"editRole": "역할 수정",
+		"back": "뒤로",
+		"display": "표시",
+		"permissions": "권한",
+		"manageMembers": "멤버 관리",
+		"searchPermissions": "권한 검색",
+		"failedToUpdateRoleOrder": "역할 순서 업데이트 실패.",
+		"newRoleDefault": "새 역할",
+		"roleName": "역할 이름",
+		"roleColour": "역할 색상",
+		"membersUseColour": "멤버는 역할 목록에서 가장 높은 역할의 색상을 사용합니다.",
+		"roleIcon": "역할 아이콘",
+		"roleIconDescription": "256 KB 미만의 이미지를 업로드하거나 이 클랜에서 커스터마이징 이모지를 선택하세요. 최소 64x64 픽셀을 권장합니다. 멤버는 여러 역할을 가진 경우 가장 높은 역할의 아이콘을 봅니다",
+		"chooseImage": "이미지 선택",
+		"removeIcon": "아이콘 제거",
+		"edit": "수정",
+		"view": "보기",
+		"delete": "삭제",
+		"roleNameIsRequired": "역할 이름이 필요합니다"
+	}
+}

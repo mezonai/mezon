@@ -1,0 +1,9 @@
+{
+	"title": "클랜 소유권 이전",
+	"description": "이것은 {{clanName}} 의 소유권을 {{memberName}} 님으로 이전합니다",
+	"confirmation": "{{memberName}} 님에게 이 클랜의 소유권을 이전하면 공식적으로 그들의 것이 됩니다.",
+	"buttons": {
+		"transfer": "소유권 이전",
+		"cancel": "취소"
+	}
+}

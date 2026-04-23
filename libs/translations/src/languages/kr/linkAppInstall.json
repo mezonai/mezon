@@ -1,0 +1,11 @@
+{
+  "description": "외부 애플리케이션",
+  "subDescription": "Mezon 계정 액세스를 원합니다",
+  "addToClan": "클랜에 추가",
+  "invite": "권한 부여",
+  "back": "되돌아",
+  "successInstall": "클랜에 애플리케이션 성공적으로 추가",
+  "errorInstall": "클랜에 애플리케이션 추가 오류",
+  "selectClan": "클랜 검색",
+  "placeholder": "봇/애플리케이션을 초대할 클랜 선택"
+}

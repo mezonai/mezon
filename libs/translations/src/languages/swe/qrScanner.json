@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Kameraåtkomst avvisad",
+	"pleaseAllowCamera": "Vänligen tillåt kameraåtkomst i dina enhetsinställningar.",
+	"cancel": "Avbryt",
+	"openSettings": "Öppna inställningar",
+	"anErrorOccurred": "Ett fel uppstod, vänligen prova igen",
+	"youAreIn": "Du är inloggad!",
+	"logInOnNewDevice": "Logga in på ny enhet?",
+	"youAreLoggedInOnDesktop": "Nu är du inloggad på skrivbordet",
+	"neverScanALoginQRCodeFromAnotherUser": "Ska inte scanna inloggnings QR-kod från en annan användare.",
+	"startTalking": "Börja prata",
+	"logIn": "Logga in",
+	"requestCameraPermission": "Begär kameraåtkomst",
+	"myQRCode": "Min QR-kod",
+	"selectPhotoWithQRCode": "Välj en bild som innehåller QR kod",
+	"qrCodeNotValid": "Ogiltig QR kod"
+}

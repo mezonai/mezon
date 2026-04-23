@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "Spara"
+  },
+  "toast": {
+    "saveSuccess": "Sparat framgångsrikt",
+    "notBlank": "Inte tomt",
+    "saveError": "Ett fel uppstod vid sparande"
+  },
+  "menu": {
+    "serverName": {
+      "title": "Clan namn",
+      "errorMessage": "Vänligen ange giltigt clan namn (max 64 tecken, bara ord, siffror, _ eller -).",
+      "duplicateNameMessage": "Clan namn finns redan. Vänligen välj ett annat namn.",
+      "permissionDenied": "Du har inte rättigheter att redigera clan bakgrund"
+    },
+    "inactive": {
+      "title": "Inaktiv inställning",
+      "description": "Flytta automatiskt medlemmar till denna kanal och tysta deras mikrofon när de är inaktiva längre än angiven tid. Denna funktion gäller inte webbläsarversion.",
+      "inactiveChannel": "Inaktiv kanal",
+      "inactiveTimeout": "Inaktiv timeout"
+    },
+    "systemMessage": {
+      "title": "Systemmeddelande inställningar",
+      "description": "Detta är kanalen vi skickar systemhändelse notiser till. Du kan stänga dem när som helst.",
+      "channel": "Kanal",
+      "selectChannel": "Välj notis kanal",
+      "channelDescription": "Detta är kanalen där systemmeddelanden skickas till",
+      "welcomeRandom": "Skicka slumpmässigt välkomnande meddelande när någon går med i denna clan",
+      "welcomeSticker": "Kräv att medlemmar svarar på välkomnande meddelande med sticker",
+      "boostMessage": "Skicka meddelande när någon boostar denna clan",
+      "setupTips": "Skicka användbara tips för att ställa in clan",
+      "hideAuditLog": "Skicka logg när någon åtgärd utförs med clan",
+      "anonymousTitle": "Förhindra anonym-läge",
+      "anonymousDescription": "Förhindra användare från att använda anonym-läge"
+    },
+    "deleteServer": {
+      "title": "Ta bort clan",
+      "delete": "Ta bort clan"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "Standard notisinställningar",
+      "description": "Denna inställning kommer att avgöra om medlemmar som inte har ställt in sina notisinställningar får notis för alla meddelanden som skickas i denna clan. Vi rekommenderar för clan-gemenskaps att bara ställa in notis för @nämnd.",
+      "allMessages": "Alla meddelanden",
+      "onlyMentions": "Endast @nämnd"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "Sparkade medlem framgångsrikt",
+      "kickMemberFailed": "Kunde inte sparka medlem",
+      "removeMemberThreadSuccess": "Raderade medlem från tråd framgångsrikt",
+      "removeMemberThreadFailed": "Kunde inte ta bort medlem från tråd",
+      "transferOwnershipSuccess": "Överförde ägande framgångsrikt",
+      "transferOwnershipFailed": "Överförde ägande misslyckades"
+    }
+  },
+  "action": {
+    "kick": "Sparka",
+    "removeFromThread": "Ta bort från tråd",
+    "manage": "Hantera",
+    "transferOwnership": "Överför ägande",
+    "ban": "Bannlys",
+    "unban": "Avbannlys"
+  },
+  "threadRemoveModal": {
+    "title": "Ta bort från tråd?",
+    "description": "Är du säker på att du vill ta bort {{username}} från denna tråd?",
+    "remove": "Ta bort",
+    "cancel": "Ingen fara"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Är du säker?"
+    }
+  }
+}

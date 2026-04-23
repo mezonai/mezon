@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Transaktionshistorik",
+		"subtitle": "Se alla dina transaktionsaktivitet"
+	},
+	"footers": {
+		"noti": "Du har laddat alla {{count}} transaktioner",
+		"fetching": "Laddar mer transaktioner..."
+	},
+	"filters": {
+		"all": "Alla transaktioner",
+		"sent": "Skickade transaktioner",
+		"received": "Mottagna transaktioner"
+	},
+	"transactionTypes": {
+		"sent": "Skickat",
+		"received": "Mottaget"
+	},
+	"currency": {
+		"code": "sv-SE",
+		"symbol": "SEK"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Inga transaktioner hittades",
+			"description": "Du har inte gjort någon transaktion än. Din transaktionshistorik kommer visas här när du börjar skicka eller ta emot token."
+		},
+		"noFilteredTransactions": {
+			"title": "Inga transaktioner hittades",
+			"description": "Inga transaktioner hittades för valt filter. Vänligen prova ett annat filter eller kolla igen."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "Transaktions ID",
+			"sender": "Avsändare",
+			"amount": "Belopp",
+			"receiver": "Mottagare",
+			"note": "Notera",
+			"created": "Skapad"
+		},
+		"defaultNote": "Ingen notera",
+		"unknownUser": "Okänd användare"
+	},
+	"transactionItem": {
+		"idPrefix": "Transaktion #"
+	}
+}

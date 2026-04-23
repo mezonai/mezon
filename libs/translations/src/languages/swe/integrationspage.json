@@ -1,0 +1,46 @@
+{
+	"download": "Ladda Ner",
+	"sections": {
+		"section1": {
+			"title": "Everything You Need, In One Place",
+			"description": "Med Mezon, applikationen samlar alla dina verktyg på ett enda ställe. Ingen växling mellan många separata resurser - bara prestanda och effektivitet."
+		},
+		"section2": {
+			"title": "Unleash The Power Of Your Business With Seamless Low-Code Integration",
+			"description": "Med minimerad kostnad och tid, vi höjer integrationen med företag som vill minska kompetensutvecklingskostnader - bara hastighet och flexibilitet"
+		},
+		"section3": {
+			"title": "Automate Processes For Individuals And Organizations: ",
+			"titleHighlight": "Bot/Applikationsintegration",
+			"titleEnd": "",
+			"description": "Koppla samman bot och applikationer för att automatiskt uppgifter från personal till produktion. Snabbare, mer exakt och ingen hantering av komplexa algoritmer mer."
+		},
+		"section4": {
+			"title": "ERP System",
+			"description": "Med modulerna och funktionerna som är enkla att anpassa, ERP kommer att uppfylla företagets behov fullt ut och kan automatiskt verksamheter relaterade till företagsresurser för att minska bearbetningstid och optimerar resurshantering"
+		}
+	},
+	"faq": {
+		"title": "Vanliga Frågor",
+		"seeAll": "Se Alla FAQ",
+		"learnMore": "Läs mer",
+		"questions": [
+			{
+				"question": "Hur börjar jag integrera mitt verktyg med Mezon?",
+				"answer": "Börja är enkelt. Navigera till integreringssidan, välj önskad tjänst och följa steg-för-steg installationsguider."
+			},
+			{
+				"question": "Vilka typer av integrationer stöds?",
+				"answer": "Mezon stöder många typer av integrationer inklusive webhooks, bots, tredjepartsapplikationer och ERP-system. Kontrollera vår dokumentation för fullständig lista."
+			},
+			{
+				"question": "Kan jag skapa anpassade integrationer?",
+				"answer": "Ja! Vår plattform tillhandahåller API och SDK som tillåter dig att bygga anpassade integrationer som är skräddarsydda för dina specifika behov."
+			},
+			{
+				"question": "Finns det en gräns för hur många integrationer jag kan lägga till?",
+				"answer": "Antal integrationer du kan lägga till beror på ditt paket. Företagspaket tillhandahåller obegränsad integration."
+			}
+		]
+	}
+}

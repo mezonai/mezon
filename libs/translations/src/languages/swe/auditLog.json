@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Granskningslogg",
+		"filterByUser": "Filtrera efter användare",
+		"filterByAction": "Filtrera efter åtgärd",
+		"filterBtn": "Filtrera"
+	},
+	"auditLogItem": {
+		"performedAnAction": "utförde en åtgärd",
+		"toChannel": "till kanal",
+		"remove": "ta bort",
+		"add": "lägg till"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Alla åtgärder",
+		"placeholder": "Sök åtgärd"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Alla användare",
+		"placeholder": "Sök användare"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "INGA LOGGAR ÄNNU",
+		"description": "Efter att revisorer utför uppgifter kan du spåra deras aktivitet här."
+	}
+}

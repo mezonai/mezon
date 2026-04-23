@@ -1,15 +1,15 @@
 import {
-    FloatingFocusManager,
-    FloatingPortal,
-    autoUpdate,
-    flip,
-    offset,
-    shift,
-    useClick,
-    useDismiss,
-    useFloating,
-    useInteractions,
-    useRole
+	FloatingFocusManager,
+	FloatingPortal,
+	autoUpdate,
+	flip,
+	offset,
+	shift,
+	useClick,
+	useDismiss,
+	useFloating,
+	useInteractions,
+	useRole
 } from '@floating-ui/react';
 import { Icons } from '@mezon/ui';
 import type { Editor } from '@tiptap/core';
@@ -61,7 +61,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 			>
 				<Icons.ParagraphIcon className="canvas-block-trigger-icon" />
 				<span className={`canvas-block-trigger-arrow ${isOpen ? 'rotate-180' : ''}`}>
-					<Icons.ArrowDown defaultSize="w-3 h-3" />
+					<Icons.ArrowDown className="w-3 h-3" />
 				</span>
 			</button>
 
@@ -75,9 +75,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									className={`canvas-block-dropdown-item ${isParagraph(editor) ? 'is-active' : ''}`}
 									onClick={() => handleSelect(() => editor.chain().focus().setParagraph().run())}
 								>
-									<span className="canvas-block-check-col">
-										{isParagraph(editor) && <Icons.IconTick defaultSize="w-4 h-4" />}
-									</span>
+									<span className="canvas-block-check-col">{isParagraph(editor) && <Icons.IconTick className="w-4 h-4" />}</span>
 									<Icons.ParagraphIcon className="w-4 h-4" />
 									<span>{t('blocks.paragraph')}</span>
 								</button>
@@ -87,7 +85,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleHeading({ level: 1 }).run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('heading', { level: 1 }) && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('heading', { level: 1 }) && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.H1Icon className="w-4 h-4" />
 									<span>{t('blocks.h1')}</span>
@@ -98,7 +96,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleHeading({ level: 2 }).run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('heading', { level: 2 }) && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('heading', { level: 2 }) && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.H2Icon className="w-4 h-4" />
 									<span>{t('blocks.h2')}</span>
@@ -109,7 +107,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleHeading({ level: 3 }).run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('heading', { level: 3 }) && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('heading', { level: 3 }) && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.H3Icon className="w-4 h-4" />
 									<span>{t('blocks.h3')}</span>
@@ -125,7 +123,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleTaskList().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('taskList') && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('taskList') && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.CheckListIcon className="w-4 h-4" />
 									<span>{t('blocks.checkedList')}</span>
@@ -136,7 +134,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleOrderedList().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('orderedList') && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('orderedList') && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.OrderedListIcon className="w-4 h-4" />
 									<span>{t('blocks.orderedList')}</span>
@@ -147,7 +145,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleBulletList().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('bulletList') && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('bulletList') && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.BulletListIcon className="w-4 h-4" />
 									<span>{t('blocks.bulletedList')}</span>
@@ -158,7 +156,7 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleBlockquote().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('blockquote') && <Icons.IconTick defaultSize="w-4 h-4" />}
+										{editor.isActive('blockquote') && <Icons.IconTick className="w-4 h-4" />}
 									</span>
 									<Icons.BlockquoteIcon className="w-4 h-4" />
 									<span>{t('blocks.blockquote')}</span>

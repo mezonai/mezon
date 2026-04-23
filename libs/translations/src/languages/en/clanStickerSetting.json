@@ -15,7 +15,8 @@
 		"exCatHug": "Ex: cat_hug",
 		"thisIsForSale": "This is for sale",
 		"neverMind": "Never Mind",
-		"characters": "The name must be between 3 and 64 characters"
+		"characters": "The name must be between 3 and 64 characters",
+		"required": "This field is required"
 	},
 	"content": {
 		"description": "Add upto 250 custom stickers that anyone can use in this clan.",

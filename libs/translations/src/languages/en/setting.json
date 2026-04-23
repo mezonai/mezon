@@ -92,7 +92,12 @@
 		"german": "Deutsch",
 		"portuguese": "Português",
 		"italian": "Italiano",
-		"japanese": "日本語"
+		"japanese": "日本語",
+		"french": "Français",
+		"german": "Deutsch",
+		"polish": "Polski",
+		"korean": "한국어",
+		"swedish": "Svenska"
 	},
 	"voice": {
 		"title": "Voice",

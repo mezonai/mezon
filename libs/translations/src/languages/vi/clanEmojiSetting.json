@@ -11,7 +11,8 @@
 		"exCatHug": "VD: cat_hug",
 		"thisIsForSale": "Đây là sản phẩm bán",
 		"neverMind": "Bỏ qua",
-		"characters": "Tên phải từ 3 đến 64 ký tự"
+		"characters": "Tên phải từ 3 đến 64 ký tự",
+		"required": "Trường này là bắt buộc"
 	},
 	"header": {
 		"save": "Lưu"
@@ -28,7 +29,7 @@
 	"description": {
 		"descriptions": "Thêm biểu cảm tùy chỉnh mà tất cả người dùng trong clan này đều có thể sử dụng. Mọi thành viên trong Mezon đều có thể sử dụng được các biểu cảm GIF động.",
 		"requirements": "YÊU CẦU TẢI LÊN",
-		"requireList": "•  Loại tệp: JPEG, PNG, GIF.\n•  Kích thước đề xuất: 256 KB.\n•  Kích cỡ ảnh đề nghị: 128x128.\n•  Đặt tên: Tên của biểu cảm phải có ít nhất 3 ký tự và chỉ được chứa ký tự chữ, ký tự số và dấu gạch dưới."
+		"requireList": "•  Loại tệp: JPEG, PNG, GIF.\n•  Kích thước đề xuất: 256 KB.\n•  Kích cỡ ảnh đề nghị: 128x128.\n•  Đặt tên: Tên emoji phải có ít nhất 3 ký tự và chỉ có thể chứa các ký tự chữ cái, chữ số, dấu gạch dưới (_) và dấu gạch ngang (-)."
 	},
 	"emojiList": {
 		"slotsDetails": "DANH SÁCH EMOJI",

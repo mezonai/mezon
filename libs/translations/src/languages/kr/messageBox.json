@@ -1,0 +1,19 @@
+{
+	"placeholder": "여기에 생각을 적어보세요...",
+	"ephemeralMessage": "{{username}}님을 위한 임시 메시지...",
+	"mentionCategories": {
+		"members": "회원",
+		"textChannels": "텍스트 채널",
+		"emojiMatching": "이모지 발견됨",
+		"commands": "명령"
+	},
+	"suggestions": {
+		"notifyEveryone": "이 채널을 볼 권한이 있는 모든 사람에게 알림",
+		"loadingCommands": "명령 로딩 중..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "임시 메시지 보내기 (선택된 사용자만 표시)"
+		}
+	}
+}

@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "저장"
+	},
+	"switch": {
+		"userProfile": "개인",
+		"serverProfile": "클랜"
+	},
+	"fields": {
+		"displayName": {
+			"label": "표시 이름",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "클랜 별명",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "대명사",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "약력",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "저장되지 않은 변경사항 제거?",
+		"description": "저장되지 않은 변경사항이 있습니다. 제거하시겠습니까?",
+		"discard": "제거",
+		"keepEditing": "수정 계속"
+	},
+	"selectAClan": "클랜 선택",
+	"searchClanPlaceholder": "클랜 검색",
+	"updateProfileSuccess": "개인 프로필 성공적으로 업데이트",
+	"updateProfileError": "개인 프로필 업데이트 실패",
+	"updateClanProfileSuccess": "클랜 프로필 성공적으로 업데이트",
+	"emptyUsername": "표시 이름이 비어있지 않아야 합니다!",
+	"duplicateClannick": "클랜 별명이 중복됨",
+	"clanNickname": "클랜 별명",
+	"changeAvatar": "아바타 변경",
+	"removeAvatar": "제거",
+	"avatar": "아바타",
+	"preview": "미리보기",
+	"nickNameExistsError": "클랜에 별명이 이미 있습니다. 다른 별명을 입력하세요.",
+	"unsavedChangesWarning": "주의 - 저장되지 않은 변경사항이 있습니다!",
+	"reset": "재설정",
+	"saveChanges": "변경사항 저장",
+	"showProfilesDescription": "각 클랜에 대한 다른 프로필로 자신을 표현하세요",
+	"chooseAClan": "클랜 선택",
+	"editImage": "이미지 수정",
+	"close": "닫기",
+	"resetChanges": "변경사항 재설정",
+	"cancelEditing": "수정 취소",
+	"cancel": "취소",
+	"applyChanges": "변경사항 적용",
+	"apply": "적용",
+	"moveImage": "이미지 이동",
+	"adjustZoom": "확대/축소 조정",
+	"profiles": "프로필",
+	"userProfile": "사용자 프로필",
+	"clanProfiles": "클랜 프로필",
+	"directMessageIcon": "개인 메시지 아이콘",
+	"directMessageIconAction": {
+		"remove": "제거",
+		"removeTitle": "개인 메시지 아이콘 제거",
+		"removeDescription": "개인 메시지 아이콘을 제거하시겠습니까?"
+	},
+	"displayName": "표시 이름",
+	"emptyClanProfile": {
+		"title": "클랜이 없습니다",
+		"description": "클랜 프로필을 설정하려면 클랜을 만들거나 참가하세요.",
+		"createClan": "클랜 만들기",
+		"joinClan": "클랜 참가"
+	}
+}

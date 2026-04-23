@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Röstrum",
+		"joinVoice": "Gå med i röst"
+	},
+	"chat": "Chatt",
+	"membersWillBeNotified": "{{participantsCount}} medlemmar kommer att meddelas",
+	"noDisplay": "Ingen röstkanal visning",
+	"videoConnected": "Video ansluten",
+	"voiceConnected": "Röst ansluten",
+	"turnOffMicrophone": "Stäng av mikrofon",
+	"turnOnMicrophone": "Slå på mikrofon",
+	"turnOffCamera": "Stäng av kamera",
+	"turnOnCamera": "Slå på kamera",
+	"stopScreenShare": "Stäng skärmdelning",
+	"shareYourScreen": "Dela din skärm",
+	"disconnect": "Koppla ifrån",
+	"muteModal": {
+		"title": "Tysta medlem",
+		"content": "Är du säker på att du vill tysta \"{{userName}}\"?",
+		"mute": "Tysta"
+	},
+	"kickModal": {
+		"title": "Ta bort från röstkanal",
+		"content": "Är du säker på att du vill ta bort \"{{userName}}\" från röstkanal?",
+		"kick": "Ta bort"
+	},
+	"disconnectModal": {
+		"title": "Röstkoppling upphör",
+		"content": {
+			"removed": "Du har tagits bort från röstkanal",
+			"duplicate": "Du har kopplats ifrån genom att delta någon annanstans",
+			"default": "Du har kopplats ifrån röstkanal",
+			"deleted": "Röstkanal har tagits bort"
+		},
+		"confirm": "Bekräfta"
+	},
+	"permission": {
+		"cameraTitle": "Kamerabehörighet",
+		"cameraBody": "Applikationen har inte kamera behörighet. Vänligen slå på kamera behörighet i systeminställningar.",
+		"microphoneTitle": "Mikrofonbehörighet",
+		"microphoneBody": "Applikationen har inte mikrofon behörighet. Vänligen slå på mikrofon behörighet i systeminställningar.",
+		"cancel": "Avbryt",
+		"deviceSettings": "Enhetsinställningar"
+	},
+	"device": {
+		"inputDevice": "Mikrofon",
+		"outputDevice": "Ljud",
+		"camera": "Kamera"
+	},
+	"toast": {
+		"connectionConnected": "Ansluten framgångsrikt",
+		"connectionDisconnected": "Anslutning bruten",
+		"microphonePermissionRequired": "Mikrofon behörighet krävs",
+		"cameraPermissionRequired": "Kamera behörighet krävs",
+		"recipientDidNotAnswer": "Mottagaren svarade inte på samtal."
+	},
+	"usernameScreen": "{{username}}s skärm"
+}

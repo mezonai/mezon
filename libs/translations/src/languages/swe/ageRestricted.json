@@ -1,0 +1,14 @@
+{
+  "title": "Åldersgränsad kanal",
+  "description": "Denna kanal innehåller vuxeninnehåll och är märkt som åldersbegränsad. Vill du fortsätta?",
+  "continue": "Fortsätt",
+  "nope": "Nej",
+  "confirmBirthdayTitle": "Vänligen bekräfta ditt födelsedatum",
+  "confirmBirthdayMessage": "För att säkerställa användarsäkerhet behöver vi verifiera din ålder. Vi frågar bara om detta en gång.",
+  "submit": "Bekräfta",
+  "ageRestrictedForm": {
+    "title": "Vänligen bekräfta ditt födelsedatum",
+    "description": "För att säkerställa användarsäkerhet behöver vi verifiera din ålder. Vi frågar bara om detta en gång.",
+    "submit": "Bekräfta"
+  }
+}

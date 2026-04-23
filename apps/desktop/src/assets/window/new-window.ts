@@ -1,9 +1,21 @@
 import { BrowserWindow } from 'electron';
 import { join } from 'path';
 import App from '../../app/app';
-import { sanitizeUrl } from '../../app/utils';
+import { escapeHtml, sanitizeUrl } from '../../app/utils';
 
 import new_window_css from './new-window-css';
+
+function assertSafeHttpUrl(url: string): string | null {
+	try {
+		const parsed = new URL(url);
+		if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+			return parsed.toString();
+		}
+	} catch {
+	}
+	return null;
+}
+
 function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow) {
 	const parentBounds = parentWindow.getBounds();
 	const width = Math.floor(parentBounds.width * 0.8);
@@ -31,7 +43,15 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 		movable: true
 	});
 
-	const title = new URL(url).hostname.split('.')[0];
+	const safeUrl = assertSafeHttpUrl(url);
+	if (!safeUrl) {
+		console.warn('[openNewWindow] Blocked non-http(s) URL:', url);
+		popupWindow.close();
+		return popupWindow;
+	}
+	const rawTitle = new URL(safeUrl).hostname.split('.')[0];
+	const title = escapeHtml(rawTitle);
+	const attrSafeUrl = escapeHtml(safeUrl);
 	const windowSkeleton = `<!DOCTYPE html>
 <html lang="en">
 
@@ -79,7 +99,7 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 		</div>
 	</div>
 	<div class="main-container">
- 		<webview id="webview" src="${url}" style="width: 100%; height: calc(100% - 29px);" allowpopups></webview>
+ 		<webview id="webview" src="${attrSafeUrl}" style="width: 100%; height: calc(100% - 29px);" allowpopups></webview>
 	</div>
 	<div class="footer-bar">
 		@${title}
@@ -116,7 +136,7 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 
 	`);
 
-		popupWindow.webContents.executeJavaScript(`window.location.url = ${JSON.stringify(sanitizeUrl(url))};`).catch((err) => console.error(err));
+		popupWindow.webContents.executeJavaScript(`window.location.url = ${JSON.stringify(sanitizeUrl(safeUrl))};`).catch((err) => console.error(err));
 	});
 
 	popupWindow.once('show', () => {

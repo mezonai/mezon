@@ -11,6 +11,7 @@ import {
 	selectAllRolesClan,
 	selectAnonymousMode,
 	selectAttachmentByChannelId,
+	selectChannelMetaById,
 	selectCloseMenu,
 	selectCurrentTopicId,
 	selectDataMentions,
@@ -69,7 +70,7 @@ import MentionsInput, { type FormattedText, type MentionsInputHandle } from './M
 import SuggestItem from './SuggestItem';
 import { ChatBoxToolbarWrapper } from './components';
 import { useClickUpToEditMessage, useEmojiPicker, useFocusEditor, useFocusManager, useKeyboardHandler } from './hooks';
-import parseHtmlAsFormattedText, { ApiMessageEntityTypes } from './parseHtmlAsFormattedText';
+import parseHtmlAsFormattedToText, { ApiMessageEntityTypes } from './parseHtmlAsFormattedText';
 import { getCanvasTitles } from './utils/canvas';
 
 interface SlashCommand extends MentionData {
@@ -252,15 +253,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			const currentTime = Math.floor(Date.now() / 1000);
-			const lastMessageTimestamp = channel.last_sent_message?.timestamp_seconds;
-
-			const isArchived = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) > THREAD_ARCHIVE_DURATION_SECONDS;
-
 			const store = getStore();
 			const userIds = selectMemberIdsByChannelId(store.getState(), channel.id as string);
+			const threadMeta = selectChannelMetaById(store.getState(), channel.id);
 			const needsJoin = !userProfile?.user?.id ? false : !userIds?.includes(userProfile?.user?.id);
-
+			const currentTime = Math.floor(Date.now() / 1000);
+			const lastMessageTimestamp = threadMeta.lastSentTimestamp;
+			const isArchived = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) > THREAD_ARCHIVE_DURATION_SECONDS;
 			if (isArchived || channel.active === 0) {
 				await dispatch(
 					threadsActions.writeActiveArchivedThread({
@@ -301,10 +300,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				const hasContent = checkedRequest.content?.trim() || checkedRequest.valueTextInput?.trim();
 				// Khi openThreadMessageState: valueThread luôn có content (message gốc) nên KHÔNG tính vào check
 				// → bắt buộc user phải tự nhập vào field starter message
-				const hasValueThreadMedia = !isSendMessageOnThreadBox && (
-					(valueThread?.attachments?.length ?? 0) > 0 ||
-					(valueThread?.content?.t ?? '').trim().length > 0
-				);
+				const hasValueThreadMedia =
+					!isSendMessageOnThreadBox && ((valueThread?.attachments?.length ?? 0) > 0 || (valueThread?.content?.t ?? '').trim().length > 0);
 				if (!hasContent && !checkAttachment && !hasValueThreadMedia) {
 					dispatch(threadsActions.setMessageThreadError(t('channelTopbar:createThread.validation.starterMessageRequired')));
 					return;
@@ -777,7 +774,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const cachedLinkOgp = useRef<string>('');
 
 	const onChangeMentionInput = (html: string) => {
-		const { text: newPlainTextValue, entities, linkPreview } = parseHtmlAsFormattedText(html);
+		const { text: newPlainTextValue, entities, linkPreview } = parseHtmlAsFormattedToText(html);
 
 		if (cachedLinkOgp.current !== linkPreview.url) {
 			dispatch(referencesActions.setOgpPreview(linkPreview.url ? { ...linkPreview, channel_id: props.currentChannelId || '' } : null));

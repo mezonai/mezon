@@ -528,7 +528,7 @@ export const PollMessage = ({
 									type="button"
 									onClick={handleVote}
 									disabled={selectedAnswers.length === 0 || isVoting || isClosing}
-									className="px-4 py-1.5 text-sm font-medium rounded transition-colors btn-primary btn-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+									className="px-4 py-1.5 text-sm font-medium rounded transition-colors bg-buttonPrimary hover:bg-buttonPrimaryHover text-theme-primary-active disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									{t('poll.voteButton')}
 								</button>

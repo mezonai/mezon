@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "시작하려면 애플리케이션 실행을 클릭하세요",
+		"inviteFriends": "친구 초대",
+		"sendFirstMessage": "첫 번째 메시지 보내기",
+		"downloadApp": "Mezon 애플리케이션 다운로드",
+		"createChannel": "채널 만들기"
+	},
+	"welcome": {
+		"welcomeToChannel": "#{{channelName}} 에 오신 것을 환영합니다",
+		"startOfChannel": "{{channelType}} 채널 #{{channelName}} 의 시작입니다",
+		"startOfThread": "{{username}} 님이 시작함",
+		"welcomeToGroup": "{{groupName}} 그룹에 오신 것을 환영합니다.",
+		"beginningOfDM": "이곳이 {{userName}} 님과의 채팅 시작점입니다",
+		"editGroup": "그룹 수정",
+		"private": "비공개",
+		"friendRequestSent": "친구 요청이 전송되었습니다:",
+		"addFriend": "친구 추가",
+		"removeFriend": "친구 제거",
+		"accept": "수락",
+		"ignore": "무시",
+		"friendRequestSentButton": "친구 요청 전송됨",
+		"block": "차단",
+		"unblock": "차단 해제"
+	},
+	"toast": {
+		"userBlockedSuccess": "사용자 성공적으로 차단",
+		"failedToBlock": "사용자 차단 실패",
+		"userUnblockedSuccess": "사용자 성공적으로 차단 해제",
+		"failedToUnblock": "사용자 차단 해제 실패"
+	}
+}

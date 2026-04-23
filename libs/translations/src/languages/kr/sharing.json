@@ -1,0 +1,16 @@
+{
+	"filterOptions": "필터 옵션",
+	"users": "사용자",
+	"channels": "채널",
+	"all": "모두",
+	"selectChannelPlaceholder": "채널 또는 사용자 선택...",
+	"selectChannel": "채널 선택",
+	"selectUser": "사용자 선택",
+	"share": "공유",
+	"suggestions": "제안",
+	"addCommentPlaceholder": "댓글 추가 (선택)",
+	"fileTooLarge": "파일 너무 큼",
+	"fileSizeExceeded": "{{fileType}} 가 {{maxSize}}MB 를 초과할 수 없습니다!",
+	"bannedChannel": "{{channelName}} 채널에서 차단되었습니다.",
+	"empty": "빈 데이터"
+}

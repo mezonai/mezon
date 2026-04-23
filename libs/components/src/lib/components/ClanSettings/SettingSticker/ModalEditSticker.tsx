@@ -1,5 +1,5 @@
 import { useEscapeKeyClose } from '@mezon/core';
-import { createSticker, emojiSuggestionActions, selectCurrentClanId, updateSticker, useAppDispatch } from '@mezon/store';
+import { createSticker, emojiSuggestionActions, selectCurrentClanId, settingClanStickerActions, updateSticker, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 
 import { Button, ButtonLoading, Checkbox, Icons, InputField } from '@mezon/ui';
@@ -207,9 +207,13 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 			media_type: 0
 		};
 
-		isSticker
-			? dispatch(createSticker({ request: requestData, clanId: currentClanId }))
-			: dispatch(emojiSuggestionActions.createEmojiSetting({ request, clanId: currentClanId }));
+		if (isSticker) {
+			await dispatch(createSticker({ request: requestData, clanId: currentClanId }));
+			await dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: currentClanId }));
+		} else {
+			await dispatch(emojiSuggestionActions.createEmojiSetting({ request, clanId: currentClanId }));
+			await dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: currentClanId }));
+		}
 
 		handleCloseModal();
 	};
@@ -294,12 +298,13 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				}
 			>
 				<div className="flex-1 flex items-center justify-end border-b-theme-primary rounded-t p-4">
-					<Button
-						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"
+					<button
+						type="button"
+						className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 						onClick={handleCloseModal}
 					>
-						×
-					</Button>
+						<Icons.Close className="w-5 h-5" />
+					</button>
 				</div>
 				<div className={`w-full flex-1 flex flex-col  overflow-y-auto gap-4 relative px-5 py-4 bg-transparent hide-scrollbar`}>
 					<div className={`flex flex-col gap-2 items-center select-none `}>
@@ -328,7 +333,11 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 					<div className={'flex flex-row gap-4 '}>
 						<div className={'w-1/2 flex flex-col gap-2'}>
 							<p className={`text-xs font-bold uppercase select-none text-theme-primary-active`}>
-								{t('file')} {graphic && ` (${t('thisCannotBeEdited')})`}
+								{t('file')}{' '}
+								<span title={t('required')} className="text-red-500 cursor-pointer">
+									*
+								</span>{' '}
+								{graphic && ` (${t('thisCannotBeEdited')})`}
 							</p>
 							<div
 								className={` border-theme-primary flex flex-row rounded-lg justify-between items-center py-[6px] px-3  ${editingGraphic.fileName && 'cursor-not-allowed'}`}
@@ -374,7 +383,15 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 									maxLength={62}
 								/>
 								<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-									<span className={`text-xs font-medium ${(editingGraphic?.shortname?.length ?? 0) > 25 ? 'text-[#faa61a]' : ''}`}>
+									<span
+										className={`text-xs font-medium ${
+											(editingGraphic?.shortname?.length ?? 0) > 40
+												? 'text-red-500'
+												: (editingGraphic?.shortname?.length ?? 0) > 25
+													? 'text-[#faa61a]'
+													: ''
+										}`}
+									>
 										{editingGraphic?.shortname?.length ?? 0}/62
 									</span>
 								</div>
@@ -383,11 +400,9 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 					</div>
 					<div className={`w-full h-[54px] bottom-0 flex items-center justify-end select-none gap-2`}>
 						{!graphic && (
-							<div className="flex items-center flex-1 h-full gap-2">
-								<Checkbox ref={isForSaleRef} id="sale_item" className="accent-blue-600 w-4 h-4" />
-								<label htmlFor="sale_item" className="">
-									{t('thisIsForSale')}
-								</label>
+							<div className="flex items-center flex-1 h-full gap-2 ">
+								<Checkbox ref={isForSaleRef} id="sale_item" className="accent-blue-600 w-4 h-4 cursor-pointer" />
+								<label htmlFor="sale_item">{t('thisIsForSale')}</label>
 							</div>
 						)}
 						<Button className="px-2 py-1 border-none hover:underline hover:bg-transparent bg-transparent" onClick={handleCloseModal}>

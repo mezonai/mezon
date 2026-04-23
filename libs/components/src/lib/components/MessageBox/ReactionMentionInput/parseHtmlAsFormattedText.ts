@@ -1,3 +1,30 @@
+function escapeHtmlText(value: string): string {
+	return value.replace(/[&<>"']/g, (ch) => {
+		switch (ch) {
+			case '&':
+				return '&amp;';
+			case '<':
+				return '&lt;';
+			case '>':
+				return '&gt;';
+			case '"':
+				return '&quot;';
+			case "'":
+				return '&#39;';
+			default:
+				return ch;
+		}
+	});
+}
+
+function escapeHtmlAttribute(value: string): string {
+	const lower = value.trim().toLowerCase();
+	if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) {
+		return '#';
+	}
+	return escapeHtmlText(value);
+}
+
 export type ApiMessageEntityDefault = {
 	type: Exclude<
 		`${ApiMessageEntityTypes}`,
@@ -229,7 +256,7 @@ function getCleanUrlAndTrailing(match: string, fullText: string, matchIndex: num
 
 const LINK_TEMPLATE = /(?:\w+:)?\/\/[^\s<>]+/gi;
 
-export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks = true, skipMarkdown = false): ApiFormattedText {
+export default function parseHtmlAsFormattedToText(html: string, withMarkdownLinks = true, skipMarkdown = false): ApiFormattedText {
 	const fragment = document.createElement('div');
 	fragment.innerHTML = skipMarkdown ? html : withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
 	fixImageContent(fragment);
@@ -374,7 +401,9 @@ function parseMarkdownLinks(html: string) {
 
 				const { cleanMatch, trailingPunctuation } = getCleanUrlAndTrailing(decodedMatch, partText, offset);
 				if (isUrl(cleanMatch)) {
-					return `<a href="${cleanMatch}" target="_blank">${cleanMatch}</a>${trailingPunctuation}`;
+					const safeHref = escapeHtmlAttribute(cleanMatch);
+					const safeText = escapeHtmlText(cleanMatch);
+					return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${safeText}</a>${trailingPunctuation}`;
 				}
 				return match;
 			});

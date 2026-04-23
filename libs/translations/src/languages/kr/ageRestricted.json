@@ -1,0 +1,14 @@
+{
+  "title": "연령 제한 채널",
+  "description": "이 채널은 성인용 콘텐츠를 포함하며 연령 제한이 표시됩니다. 계속하시겠습니까?",
+  "continue": "계속",
+  "nope": "아니요",
+  "confirmBirthdayTitle": "생년월일을 확인하세요",
+  "confirmBirthdayMessage": "사용자 안전을 위해 나이를 확인해야 합니다. 한 번만 질문합니다.",
+  "submit": "확인",
+  "ageRestrictedForm": {
+    "title": "생년월일을 확인하세요",
+    "description": "사용자 안전을 위해 나이를 확인해야 합니다. 한 번만 질문합니다.",
+    "submit": "확인"
+  }
+}

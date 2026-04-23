@@ -271,7 +271,7 @@ const RoleClanItem = ({
 						data-e2e={generateE2eId('clan_page.channel_list.members.role.role_color')}
 					>
 						<span title={t('labels.removeRole')}>
-							<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : roleColor} />
+							<Icons.IconRemove fill={isHovered ? 'black' : roleColor} className="w-2 h-2" />
 						</span>
 					</button>
 					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}

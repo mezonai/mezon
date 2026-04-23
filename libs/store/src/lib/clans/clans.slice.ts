@@ -1,11 +1,18 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IClan, LoadingStatus } from '@mezon/utils';
-import { LIMIT_CLAN_ITEM, TypeCheck } from '@mezon/utils';
+import { LIMIT_CLAN_ITEM } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ClanUpdatedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api';
+import type {
+	ApiChannelDescription,
+	ApiCheckDuplicateNameRequest,
+	ApiCheckDuplicateNameResponse,
+	ApiClanDesc,
+	ApiUpdateAccountRequest,
+	MezonUpdateClanDescBody
+} from 'mezon-js/api';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -13,8 +20,8 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
-import { listOnlineUserClan, usersClanActions } from '../clanMembers/clan.members';
-import { statusActions } from '../direct/status.slice';
+import { fetchClanMembersWithStatus, usersClanActions } from '../clanMembers/clan.members';
+
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -312,17 +319,13 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 	}
 });
 
-export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan', async (clan_name: string, thunkAPI) => {
+export const checkDuplicateNameApi = createAsyncThunk('clans/duplicateNameApi', async (request: ApiCheckDuplicateNameRequest, thunkAPI) => {
 	try {
-		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '0', TypeCheck.TYPECLAN, '0');
-
-		if (isDuplicateName?.type === TypeCheck.TYPECLAN) {
-			return isDuplicateName.exist;
-		}
-		return;
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.checkDuplicateName(mezon.session, request);
+		return response as ApiCheckDuplicateNameResponse;
 	} catch (error) {
-		captureSentryError(error, 'clans/duplicateNameClan');
+		captureSentryError(error, 'clans/duplicateNameApi');
 		return thunkAPI.rejectWithValue(error);
 	}
 });
@@ -502,8 +505,7 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 		const state = thunkAPI.getState() as RootState;
 		if (!state.clans?.checkJoinList?.[clanId] && clanId !== '0') {
 			thunkAPI.dispatch(listChannelBadgeCount({ clanId }));
-			thunkAPI.dispatch(listOnlineUserClan({ clanId }));
-			thunkAPI.dispatch(statusActions.fetchListStatusClanUser({ clanId }));
+			await thunkAPI.dispatch(fetchClanMembersWithStatus({ clanId }));
 		}
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');
@@ -1048,9 +1050,9 @@ export const selectOrderedClans = createSelector([selectAllClans, (state: RootSt
 	return [...orderedClans, ...remainingClans];
 });
 
-export const selectBadgeCountAllClan = createSelector(getClansState, (state) =>
-	selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (count.badge ?? 0), 0)
-);
+export const selectBadgeCountAllClan = createSelector(getClansState, (state) => {
+	return selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (count.clan_id !== '0' ? (count.badge ?? 0) : 0), 0);
+});
 
 export const selectInvitePeopleStatus = createSelector(getClansState, (state) => state.invitePeople);
 export const selectInviteChannelId = createSelector(getClansState, (state) => state.inviteChannelId);

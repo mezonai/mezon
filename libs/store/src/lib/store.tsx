@@ -38,7 +38,6 @@ import { channelMediaReducer } from './channels/channelMedia.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
-import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
 import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
@@ -303,7 +302,7 @@ const persistedChannelMetaReducer = persistReducer(
 	{
 		key: 'channelmeta',
 		storage,
-		blacklist: ['entities']
+		blacklist: ['entities', 'ids']
 	},
 	channelMetaReducer
 );
@@ -386,7 +385,6 @@ const reducer = {
 	dmcall: DMCallReducer,
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
-	[CHANNEL_LIST_RENDER]: listChannelRenderReducer,
 	[COMPOSE_FEATURE_KEY]: persistedCompose,
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
@@ -404,6 +402,16 @@ let storeInstance = configureStore({
 });
 
 let storeCreated = false;
+
+// Event-based "store ready" promise replaces 100ms polling in getStoreAsync — single shared awaiter, no background timers.
+let _resolveStoreReady: ((store: typeof storeInstance) => void) | null = null;
+let _storeReadyPromise: Promise<typeof storeInstance> = new Promise((resolve) => {
+	_resolveStoreReady = resolve;
+});
+
+// Singleton guards — prevent duplicate listener registration on HMR / repeated initStore calls.
+let _storageListenerActive = false;
+let _friendSyncCleanup: (() => void) | null = null;
 
 export type RootState = ReturnType<typeof storeInstance.getState>;
 
@@ -446,6 +454,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
+	_resolveStoreReady?.(store);
 
 	import('./badge/badgeService').then(({ badgeService }) => {
 		badgeService.init(store.dispatch, store.getState);
@@ -490,12 +499,17 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 			}
 		};
 
-		window.addEventListener('storage', handleStorageChange);
+		if (!_storageListenerActive) {
+			window.addEventListener('storage', handleStorageChange);
+			_storageListenerActive = true;
+		}
 	}
 
 	setupSessionSyncListener(store);
 
-	initFriendRelationCrossTabSync(store.dispatch);
+	if (!_friendSyncCleanup) {
+		_friendSyncCleanup = initFriendRelationCrossTabSync(store.dispatch);
+	}
 
 	return { store, persistor };
 };
@@ -510,18 +524,19 @@ export const getStore = () => {
 	return storeInstance;
 };
 
-export const getStoreAsync = async () => {
-	if (!storeCreated) {
-		return new Promise<Store>((resolve) => {
-			const interval = setInterval(() => {
-				if (storeCreated) {
-					clearInterval(interval);
-					resolve(storeInstance);
-				}
-			}, 100);
-		});
+export const getStoreAsync = async (timeoutMs = 5000): Promise<Store> => {
+	if (storeCreated) {
+		return storeInstance;
 	}
-	return storeInstance;
+	return new Promise<Store>((resolve, reject) => {
+		const deadline = setTimeout(() => {
+			reject(new Error('[getStoreAsync] Store initialization timed out'));
+		}, timeoutMs);
+		_storeReadyPromise.then((store) => {
+			clearTimeout(deadline);
+			resolve(store as Store);
+		});
+	});
 };
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();

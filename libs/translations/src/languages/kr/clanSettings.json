@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "커뮤니티 개요",
+		"deleteClan": "클랜 삭제",
+		"sectionTitles": {
+			"apps": "애플리케이션",
+			"moderation": "검열",
+			"emotions": "감정"
+		},
+		"items": {
+			"overview": "개요",
+			"roles": "역할",
+			"emoji": "이모지",
+			"imageStickers": "이미지 스티커",
+			"voiceStickers": "사운드 스티커",
+			"categoryOrder": "카테고리 순서",
+			"integrations": "통합",
+			"auditLog": "감사 로그",
+			"onboarding": "온보딩",
+			"enableCommunity": "커뮤니티 활성화"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "최소 크기: 128x128",
+		"recommendedSize": "클랜에 최소 512x512 크기의 이미지를 사용하는 것이 좋습니다.",
+		"uploadImage": "이미지 업로드",
+		"clanName": "클랜 이름",
+		"namePlaceholder": "클랜 이름...",
+		"validationError": "채널 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+		"modal": {
+			"title": "이미지 파일만 허용",
+			"content": "(JPEG, PNG) 형식만 업로드하세요, 감사합니다!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "주의 - 저장되지 않은 변경사항이 있습니다!",
+		"reset": "재설정",
+		"saveChanges": "변경사항 저장"
+	},
+	"clanBanner": {
+		"title": "클랜 배너 배경",
+		"description": "이 이미지는 채널 목록 상단에 표시됩니다.",
+		"recommendedSize": "권장 최소 크기는 960x540 이며 16:9 비율입니다.",
+		"uploadBackground": "배경 업로드",
+		"chooseImage": "이미지 선택",
+		"modal": {
+			"title": "이미지 파일만 허용",
+			"content": "(JPEG, PNG) 형식만 업로드하세요, 감사합니다!"
+		}
+	},
+	"systemMessages": {
+		"title": "시스템 메시지 채널",
+		"description": "시스템 이벤트 메시지가 전송되는 채널입니다. 언제든지 끌 수 있습니다",
+		"welcomeRandom": "누가 서버에 참여할 때 랜덤 환영 메시지 보내기.",
+		"welcomeSticker": "멤버에게 환영 메시지에 스티커로 답장하도록 요청.",
+		"boostMessage": "누가 이 서버를 부스트할 때 메시지 보내기.",
+		"setupTips": "서버 설정을 위한 유용한 팁 보내기.",
+		"auditLog": "클랜에 작업이 적용되면 로그 보내기",
+		"anoTitle": "익명 모드",
+		"anoDesc": "멤버가 익명 모드 사용 방지"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "게임 동반 애플리케이션",
+			"popularTrending": "인기 & 트렌드 애플리케이션",
+			"serverMiniGames": "서버 미니게임",
+			"rolePlayingFavorites": "롤プレ잉 인기"
+		},
+		"inServers": "{{count}} 서버에서"
+	},
+	"emoji": {
+		"uploadInstructions": "업로드 가이드",
+		"title": "이모지",
+		"description": "서버에서 사용할 수 있는 최대 250 개의 커스터마이징 이모지를 추가하세요.",
+		"uploadRequirements": "업로드 요구사항",
+		"requirements": {
+			"fileType": "파일 유형: JPEG, PNG, GIF",
+			"fileSize": "권장 파일 크기: 256 KB",
+			"dimensions": "권장 크기: 128x128",
+			"naming": "이름 붙이기: 이모지 이름은 최소 2 자여야 하며 문자와 숫자 및 밑줄만 포함할 수 있음"
+		},
+		"uploadEmoji": "이모지 업로드"
+	},
+	"stickers": {
+		"uploadInstructions": "업로드 가이드",
+		"description": "스티커는 정적 (PNG, JPG) 또는 애니메이션 (APNG, GIF) 일 수 있습니다. 스티커는 정확히 320 x 320 픽셀이고 512KB 를 초과하지 않아야 합니다. 정적 PNG 애니메이션 (PNG, JPG) 스티커를 자동으로 리사이즈합니다.",
+		"uploadHere": "여기서 업로드!",
+		"customizeMessage": "취향에 따라 멋진 스티커를 커스터마이징하세요",
+		"uploadSticker": "스티커 업로드"
+	},
+	"deleteClanTitle": "'{{clanName}}' 삭제"
+}

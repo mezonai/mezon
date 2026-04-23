@@ -5,15 +5,23 @@ export interface ILoginLoaderData {
 	redirectTo?: string;
 }
 
+function isSafeRelativePath(path: string | null | undefined): path is string {
+	if (!path) return false;
+	if (!path.startsWith('/')) return false;
+	if (path.startsWith('//') || path.startsWith('/\\')) return false;
+	if (/^\s*(javascript|data|vbscript):/i.test(path)) return false;
+	return true;
+}
+
 function getRedirectTo(initialPath?: string): string {
 	const searchParams = new URLSearchParams(window.location.search);
 	const redirectParam = searchParams.get('redirect');
 
-	if (redirectParam) {
+	if (isSafeRelativePath(redirectParam)) {
 		return redirectParam;
 	}
 
-	if (initialPath && !initialPath.startsWith('/desktop')) {
+	if (initialPath && !initialPath.startsWith('/desktop') && isSafeRelativePath(initialPath)) {
 		return initialPath;
 	}
 

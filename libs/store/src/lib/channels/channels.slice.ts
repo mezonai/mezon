@@ -25,7 +25,7 @@ import type {
 import { appActions } from '../app/app.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { categoriesActions, type FetchCategoriesPayload } from '../categories/categories.slice';
+import { fetchCategoriesCached, mapCategoryToEntity } from '../categories/categories.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectClansEntities } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
@@ -37,11 +37,11 @@ import { reactionActions } from '../reactionMessage/reactionMessage.slice';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
 import type { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
+import { bulkUpdateClanBadgeRender } from './channelListBadgeThunks';
 import type { LIST_CHANNELS_USER_FEATURE_KEY, ListChannelsByUserState } from './channelUser.slice';
 import { listChannelsByUserActions, selectAllChannelsByUser, selectEntitiesChannelsByUser } from './channelUser.slice';
 import type { ChannelMetaEntity } from './channelmeta.slice';
 import { channelMetaActions, selectChannelMetaById } from './channelmeta.slice';
-import { listChannelRenderAction, selectListChannelRenderByClanId } from './listChannelRender.slice';
 
 const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 5;
 
@@ -447,19 +447,20 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 	}
 });
 
-export const checkDuplicateChannelInCategory = createAsyncThunk(
-	'channels/checkDuplicateChannelInCategory',
-	async ({ channelName, categoryId, clanId }: { channelName: string; categoryId: string; clanId: string }, thunkAPI) => {
+export const checkDuplicateChannelInCategoryApi = createAsyncThunk(
+	'channels/checkDuplicateChannelInCategoryApi',
+	async ({ channelName, categoryId }: { channelName: string; categoryId: string }, thunkAPI) => {
 		try {
-			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(channelName, categoryId, TypeCheck.TYPECHANNEL, clanId);
-
-			if (isDuplicateName?.type === TypeCheck.TYPECHANNEL) {
-				return isDuplicateName.exist;
-			}
-			return;
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const request = {
+				name: channelName,
+				type: TypeCheck.TYPECHANNEL,
+				condition_id: categoryId
+			};
+			const response = await mezon.client.checkDuplicateName(mezon.session, request);
+			return response?.is_duplicate;
 		} catch (error) {
-			captureSentryError(error, 'channels/checkDuplicateChannelInCategory');
+			captureSentryError(error, 'channels/checkDuplicateChannelInCategoryApi');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -475,7 +476,6 @@ export const deleteChannel = createAsyncThunk('channels/deleteChannel', async (b
 			}
 			thunkAPI.dispatch(channelsActions.remove({ channelId: body.channelId, clanId: body.clanId }));
 			thunkAPI.dispatch(listChannelsByUserActions.remove(body.channelId));
-			thunkAPI.dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: body.channelId, clanId: body.clanId }));
 		}
 	} catch (error) {
 		captureSentryError(error, 'channels/deleteChannel');
@@ -543,13 +543,6 @@ export const changeCategoryOfChannel = createAsyncThunk('channels/changeCategory
 				}
 			})
 		);
-		thunkAPI.dispatch(
-			listChannelRenderAction.updateChannelPositionInRenderedList({
-				categoryId: request.category_id as string,
-				channelId: request.channel_id as string,
-				clanId: clanId as string
-			})
-		);
 	} catch (err) {
 		captureSentryError(err, 'channels/changeCategoryOfChannel');
 		return thunkAPI.rejectWithValue(err);
@@ -594,6 +587,29 @@ export const fetchListFavoriteChannel = createAsyncThunk('channels/favorite', as
 		return thunkAPI.rejectWithValue(error);
 	}
 });
+
+type SyncClanChannelSidebarSourcesArgs = {
+	clanId: string;
+	noCache?: boolean;
+};
+
+export const syncClanChannelSidebarSources = createAsyncThunk(
+	'channels/syncClanChannelSidebarSources',
+	async ({ clanId, noCache }: SyncClanChannelSidebarSourcesArgs, thunkAPI) => {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const [favoritesRes, categoriesRes] = await Promise.all([
+			fetchListFavoriteChannelCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache)),
+			fetchCategoriesCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache))
+		]);
+		return {
+			clanId,
+			favoriteChannelIds: favoritesRes.fromCache ? null : (favoritesRes.channel_ids ?? []),
+			favoriteFromCache: favoritesRes.fromCache ?? false,
+			categories: categoriesRes.fromCache ? null : (categoriesRes.categorydesc?.map(mapCategoryToEntity) ?? []),
+			categoriesFromCache: categoriesRes.fromCache ?? false
+		};
+	}
+);
 
 export const addFavoriteChannel = createAsyncThunk('channels/favorite/add', async (body: ApiAddFavoriteChannelRequest, thunkAPI) => {
 	try {
@@ -648,40 +664,37 @@ type fetchChannelsArgs = {
 
 export const addThreadToChannels = createAsyncThunk(
 	'channels/addThreadToChannels',
-	async ({ clanId, channelId }: { clanId: string; channelId: string }, thunkAPI) => {
-		const channelData = selectChannelByIdAndClanId(thunkAPI.getState() as RootState, clanId, channelId);
+	async ({ clanId, channelId, parentChannelId }: { clanId: string; channelId: string; parentChannelId?: string }, thunkAPI) => {
+		const state = thunkAPI.getState() as RootState;
+		const channelData = selectChannelByIdAndClanId(state, clanId, channelId);
 		if (channelId && !channelData) {
+			const currentChannelId = state.channels?.byClans?.[clanId]?.currentChannelId;
+			const channelIdToFetch = parentChannelId || currentChannelId;
+
+			if (!channelIdToFetch || channelIdToFetch === channelId) {
+				return;
+			}
+
 			const data = await thunkAPI
 				.dispatch(
 					threadsActions.fetchThread({
-						channelId: '0',
+						channelId: channelIdToFetch,
 						clanId,
 						threadId: channelId
 					})
 				)
 				.unwrap();
 
-			if (data?.threads?.length > 0) {
+			const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+
+			if (matchedThread) {
 				thunkAPI.dispatch(
 					channelsActions.upsertOne({
 						clanId,
-						channel: { ...data.threads[0], active: 1 } as ChannelsEntity
-					})
-				);
-				thunkAPI.dispatch(
-					listChannelRenderAction.addThreadToListRender({
-						clanId,
-						channel: { ...data.threads[0], active: 1 } as ChannelsEntity
+						channel: { ...matchedThread, active: 1 } as ChannelsEntity
 					})
 				);
 			}
-		} else {
-			thunkAPI.dispatch(
-				listChannelRenderAction.addThreadToListRender({
-					clanId,
-					channel: channelData
-				})
-			);
 		}
 	}
 );
@@ -698,20 +711,7 @@ export const addThreadSocket = createAsyncThunk(
 						channel: { ...channel, active: 1 } as ChannelsEntity
 					})
 				);
-				thunkAPI.dispatch(
-					listChannelRenderAction.addThreadToListRender({
-						clanId,
-						channel: { ...channel, active: 1 } as ChannelsEntity
-					})
-				);
 			}
-		} else {
-			thunkAPI.dispatch(
-				listChannelRenderAction.addThreadToListRender({
-					clanId,
-					channel: { ...channelData, active: 1 }
-				})
-			);
 		}
 	}
 );
@@ -724,7 +724,7 @@ type fetchAppChannelsArgs = {
 export const fetchChannels = createAsyncThunk(
 	'channels/fetchChannels',
 	async ({ clanId, channelType = ChannelType.CHANNEL_TYPE_CHANNEL, noCache, isMobile = false }: fetchChannelsArgs, thunkAPI) => {
-		const cacheKey = `${clanId}-${channelType}-${Boolean(noCache)}`;
+		const cacheKey = `${clanId}-${channelType}`;
 
 		if (pendingFetchChannels.has(cacheKey)) {
 			return pendingFetchChannels.get(cacheKey);
@@ -783,41 +783,34 @@ export const fetchChannels = createAsyncThunk(
 					// ignore
 				}
 
-				const listChannelRender = selectListChannelRenderByClanId(thunkAPI.getState(), clanId);
-				if (listChannelRender && response.fromCache) {
-					return {
-						channels: [],
-						clanId,
-						fromCache: true
-					};
+				const clanChannelBucket = (thunkAPI.getState() as RootState).channels?.byClans[clanId];
+				const skipChannelUpsert = Boolean(response.fromCache && clanChannelBucket?.entities?.ids?.length);
+
+				let channels: ChannelsEntity[] = [];
+				if (!skipChannelUpsert) {
+					const clanData = selectClansEntities(thunkAPI.getState() as RootState)[clanId];
+					channels = response.channeldesc.map((channel) => ({
+						...mapChannelToEntity(channel),
+						last_seen_message: channel.last_seen_message ? channel.last_seen_message : { timestamp_seconds: 0 },
+						clan_name: clanData?.clan_name || ''
+					}));
+					thunkAPI.dispatch(listChannelsByUserActions.upsertMany(channels));
 				}
 
-				const clanData = selectClansEntities(thunkAPI.getState() as RootState)[clanId];
-				const channels = response.channeldesc.map((channel) => ({
-					...mapChannelToEntity(channel),
-					last_seen_message: channel.last_seen_message ? channel.last_seen_message : { timestamp_seconds: 0 },
-					clan_name: clanData?.clan_name || ''
-				}));
-				thunkAPI.dispatch(listChannelsByUserActions.upsertMany(channels));
-				const [favorChannels, listCategory] = await Promise.all([
-					thunkAPI.dispatch(fetchListFavoriteChannel({ clanId, noCache: Boolean(noCache) })),
-					thunkAPI.dispatch(categoriesActions.fetchCategories({ clanId, noCache: Boolean(noCache) }))
-				]);
-
-				thunkAPI.dispatch(
-					listChannelRenderAction.mapListChannelRender({
-						clanId,
-						listChannelFavor: (favorChannels.payload as any)?.channel_ids || [],
-						listCategory: (listCategory.payload as FetchCategoriesPayload)?.categories || [],
-						listChannel: channels,
-						isMobile
-					})
-				);
+				await thunkAPI.dispatch(syncClanChannelSidebarSources({ clanId, noCache: Boolean(noCache) })).unwrap();
 
 				const currentState = thunkAPI.getState() as RootState;
 				const queuedMessages = currentState.messages.queuedLastSeenMessages;
 				if (queuedMessages.length > 0) {
 					thunkAPI.dispatch(processQueuedLastSeenMessages());
+				}
+
+				if (skipChannelUpsert) {
+					return {
+						channels: [],
+						clanId,
+						fromCache: true
+					};
 				}
 
 				return { channels, clanId };
@@ -898,8 +891,7 @@ export const bulkDeleteChannelSocket = createAsyncThunk(
 			}));
 			thunkAPI.dispatch(channelsActions.bulkDeleteChannels({ clanId, channelIds }));
 			thunkAPI.dispatch(listChannelsByUserActions.bulkRemove(channelIds));
-			thunkAPI.dispatch(listChannelRenderAction.bulkUpdateClanBadgeRender({ channelIds, clanId }));
-			thunkAPI.dispatch(listChannelRenderAction.bulkDeleteChannelsInListRender({ channelIds, clanId }));
+			thunkAPI.dispatch(bulkUpdateClanBadgeRender({ channelIds, clanId }));
 
 			return { channelDeleteEvents, channelIds, clanId };
 		} catch (error) {
@@ -931,23 +923,10 @@ export const updateChannelPrivateSocket = createAsyncThunk(
 						channelPrivate: action.channel_private
 					})
 				);
-				thunkAPI.dispatch(
-					listChannelRenderAction.updateChannelInListRender({
-						channelId: action.channel_id,
-						clanId: action.clan_id as string,
-						dataUpdate: { ...action }
-					})
-				);
 				return false;
 			} else {
 				if (!isUserUpdate) {
 					thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: action.channel_id }));
-					thunkAPI.dispatch(
-						listChannelRenderAction.deleteChannelInListRender({
-							channelId: action.channel_id,
-							clanId: action.clan_id as string
-						})
-					);
 					return true;
 				}
 			}
@@ -961,21 +940,6 @@ export const updateChannelPrivateSocket = createAsyncThunk(
 					channel: { ...action, active: 1, id: action.channel_id, type: action.channel_type }
 				})
 			);
-			if (action.channel_type === ChannelType.CHANNEL_TYPE_CHANNEL) {
-				thunkAPI.dispatch(
-					listChannelRenderAction.addChannelToListRender({
-						type: action.channel_type,
-						...action
-					})
-				);
-			}
-			if (action.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
-				const thread: ChannelsEntity = {
-					...action,
-					id: action.channel_id
-				};
-				thunkAPI.dispatch(listChannelRenderAction.addThreadToListRender({ clanId: action.clan_id, channel: thread }));
-			}
 			return false;
 		}
 		return false;
@@ -1219,7 +1183,16 @@ export const channelsSlice = createSlice({
 					state.byClans[clanId] = getInitialClanState();
 				}
 				state.byClans[clanId].idChannelSelected[clanId] = channelId;
-				const rememberChannel = JSON.parse(localStorage.getItem('remember_channel') || '{}');
+				let rememberChannel: Record<string, string> = {};
+				try {
+					const raw = localStorage.getItem('remember_channel');
+					const parsed = raw ? JSON.parse(raw) : {};
+					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+						rememberChannel = parsed as Record<string, string>;
+					}
+				} catch {
+				}
+				
 				rememberChannel[clanId] = channelId;
 				localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
 			}
@@ -1573,6 +1546,13 @@ export const channelsSlice = createSlice({
 				if (state.byClans[clanId]) {
 					state.byClans[clanId].favoriteChannels = state.byClans[clanId].favoriteChannels.filter((id) => id !== channelId);
 				}
+			})
+			.addCase(syncClanChannelSidebarSources.fulfilled, (state, action) => {
+				if (!action.payload) return;
+				const { clanId, favoriteChannelIds, favoriteFromCache } = action.payload;
+				if (favoriteFromCache || !favoriteChannelIds || !state.byClans[clanId]) return;
+				state.byClans[clanId].favoriteChannels = favoriteChannelIds;
+				state.byClans[clanId].favoriteChannelsCache = createCacheMetadata(LIST_CHANNEL_CACHED_TIME);
 			});
 	}
 });
@@ -1613,6 +1593,7 @@ export const channelsActions = {
 	updateChannelPrivate,
 	fetchAppChannels,
 	fetchListFavoriteChannel,
+	syncClanChannelSidebarSources,
 	addFavoriteChannel,
 	removeFavoriteChannel,
 	addThreadToChannels,
@@ -1758,6 +1739,14 @@ export const selectAllChannelsFavorite = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
 	(state, clanId) => state.byClans[clanId]?.favoriteChannels ?? []
 );
+
+export const selectChannelEntityStateByClanId = (state: RootState, clanId: string) => state[CHANNELS_FEATURE_KEY].byClans[clanId]?.entities;
+
+export const selectFavoriteChannelsByClanId = (state: RootState, clanId: string) =>
+	state[CHANNELS_FEATURE_KEY].byClans[clanId]?.favoriteChannels ?? [];
+
+export const selectChannelFetchSuccessByClanId = (state: RootState, clanId: string) =>
+	state[CHANNELS_FEATURE_KEY].byClans[clanId]?.fetchChannelSuccess ?? false;
 
 export const selectPreviousChannels = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],

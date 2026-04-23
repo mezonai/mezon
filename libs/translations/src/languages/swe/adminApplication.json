@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Skapa ny applikation",
+			"bot": "Skapa ny bot"
+		},
+		"form": {
+			"type": {
+				"label": "TYP",
+				"options": {
+					"createApplication": "Skapa applikation",
+					"createBot": "Skapa bot"
+				}
+			},
+			"name": {
+				"label": "NAMN"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Skugga Bot",
+			"agreement": {
+				"text": "Genom att klicka på Skapa godkänner du",
+				"termsOfService": "Utvecklaravtalstjänster",
+				"policy": "Utvecklarpolicy",
+				"and": "och"
+			}
+		},
+		"buttons": {
+			"cancel": "Avbryt",
+			"create": "Skapa",
+			"creating": "Skapar...",
+			"confirm": "Bekräfta"
+		},
+		"errors": {
+			"nameRequired": "Namn är obligatoriskt för att skapa din nya {type}.",
+			"urlRequired": "URL är obligatorisk för att skapa din nya applikation.",
+			"invalidUrl": "Vänligen ange giltig URL (t.ex. https://example.com).",
+			"createFailed": "Kunde inte skapa applikation eller saknas ID i svar",
+			"unexpectedError": "Ett oväntat fel uppstod. {message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "I skuggläge kan boten ta emot alla meddelanden som skickas till skaparen, men kan inte skicka meddelanden."
+		},
+		"shadowConfirm": {
+			"title": "Är du säker på att du vill aktivera Skugga Bot?",
+			"message": "I detta läge kan boten ta emot alla meddelanden som skickas till skaparen men kan inte skicka meddelanden."
+		}
+	},
+	"sidebar": {
+		"menu": "Meny",
+		"closeMenu": "Stäng meny"
+	},
+	"tabs": {
+		"generalInformation": "Allmän information",
+		"installation": "Installering",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Allmän information",
+		"subtitle": "Vad ska vi kalla din produkt? Vad gör det på ett underbart sätt? Vilken ikon ska representera den i Mezon? Berätta för oss här!",
+		"agreement": {
+			"text": "Genom att klicka på Skapa godkänner du",
+			"adminTerms": "Administrativa avtalstjänster",
+			"adminPolicy": "Administrativ policy",
+			"and": "och"
+		},
+		"appIcon": {
+			"label": "Applikationsikon",
+			"remove": "Ta bort",
+			"size": "Storlek: {size}"
+		},
+		"form": {
+			"name": "Namn",
+			"url": "URL",
+			"botShadow": "Skugga Bot",
+			"description": {
+				"label": "Beskrivning (max 400 tecken)",
+				"subtitle": "Din beskrivning visas i About Bot",
+				"placeholder": "Skriv en kort beskrivning av din Bot"
+			},
+			"appId": "Bot ID",
+			"appToken": "Token"
+		},
+		"token": {
+			"newTokenWarning": "Detta är ditt nya token. Kopiera och lagra säkert, du kommer inte att se det igen.",
+			"securityInfo": "Av säkerhetsskäl kan token visas en gång, när den skapas. Om du glömmer eller tappar åtkomst till token, vänligen skapa en ny token."
+		},
+		"buttons": {
+			"copy": "Kopiera",
+			"copied": "Kopierad!",
+			"copyToken": "Kopiera Token",
+			"resetToken": "Återställ Token",
+			"delete": "Ta bort "
+		},
+		"errors": {
+			"invalidUrl": "Vänligen ange giltig URL (t.ex. https://example.com).",
+			"clientNotInitialized": "Klient eller fil har inte initierats",
+			"resetTokenFailed": "Kunde inte återställa token:"
+		}
+	},
+	"installation": {
+		"title": "Installering",
+		"subtitle": "Välj hur användare kommer att installera din applikation. Skapa installationslänk, välj installationskontext för stöd, och definiera skalor och behörigheter du vill kräva.",
+		"installLink": {
+			"title": "Installationslänk",
+			"description": "Använd den tillhandahållna installationslänken eller registrera en anpassad länk. Om du väljer anpassad länk kommer användare som lägger till din applikation att omdirigeras till din URL istället för Lägg till App-process i Mezon.",
+			"option": "Tillhandahållen av Mezon"
+		},
+		"buttons": {
+			"copy": "Kopiera",
+			"copied": "Kopierad!"
+		},
+		"loading": "Laddar applikationsdata...",
+		"notFound": "Ingen applikationsdata hittad"
+	},
+	"clientInformation": {
+		"title": "Klientinformation",
+		"clientId": "Client ID",
+		"clientSecret": "Client Secret",
+		"hiddenForSecurity": "Dold av säkerhetsskäl",
+		"resetSecret": "Återställ hemlighet",
+		"publicClient": {
+			"title": "Publik klient",
+			"description": "Publik klient kan upprätthålla sekretess för client-inloggning (t.ex. desktop/mobile applikationer som använder server för att utföra förfrågningar)"
+		},
+		"buttons": {
+			"copy": "Kopiera",
+			"copied": "Kopierad!"
+		},
+		"resetSecretPopup": {
+			"title": "Skapa ny Secret Key?",
+			"warning": "Din applikation kommer att sluta fungera tills du uppdaterar secret key i din kod.",
+			"nevermind": "Ingen fara",
+			"confirm": "Jag godkänner!"
+		},
+		"toasts": {
+			"addRedirectUri": "Vänligen lägg till minst en redirect URI innan du återställer secret key!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Kontrollpanel",
+		"applications": "Applikationer",
+		"teams": "Team",
+		"embedDebugger": "Embed Debugger",
+		"document": "Dokument"
+	},
+	"applicationsPage": {
+		"title": "Applikationer",
+		"newApplicationButton": "Skapa ny Applikation eller Bot",
+		"develop": "Utveckla",
+		"subtitle": " för att anpassa och utöka Mezon för miljontals användare.",
+		"appsLinkText": "applikationer",
+		"sortBy": "Sortera efter:",
+		"sortOptions": {
+			"dateOfCreation": "Skapningsdatum",
+			"alphabetical": "A-Ö"
+		},
+		"viewOptions": {
+			"small": "Liten",
+			"large": "Stor"
+		},
+		"sections": {
+			"myApplications": "Mina applikationer",
+			"myBots": "Mina Bots"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Använd Mezon som ett auktorisationssystem eller använda vår API i ditt namn. Lägg till redirect URI, välj scope, tärna D20 för tur, och börja!",
+		"learnMore": "Läs mer om OAuth2",
+		"generator": {
+			"title": "OAuth2 URL Generator",
+			"description": "Skapa inbjudanslänk för din applikation genom att välja nödvändiga skalor och behörigheter för att fungera. Sedan dela URL med andra!",
+			"scopes": "Scopes"
+		},
+		"redirects": {
+			"title": "Omdirigering",
+			"description": "Du måste ange minst en URI för att autentisering ska fungera. Om du överför URI i OAuth-förfrågan måste den matcha exakt en av URI:erna du anger här.",
+			"addRedirect": "Lägg till Omdirigering",
+			"toasts": {
+				"fillAllInputs": "Vänligen fyll alla fält med giltiga URI!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Det finns tomt fält!",
+			"invalidUris": "URI måste vara giltig!",
+			"redirectUriRequired": "Redirect URI är obligatorisk!"
+		}
+	},
+	"backToApps": "Tillbaka till Applikationer",
+	"selectLabel": "VÄLJ {{type}}",
+	"settings": "INSTÄLLNINGAR",
+	"flows": {
+		"title": "Chatflöde",
+		"hasTokenInfo": "Du behöver ställa in Token innan du skapar ny Bot-flöde.",
+		"setToken": "Ställ in Token",
+		"addFlow": "Lägg till Flöde",
+		"appTokenModal": {
+			"title": "Applikations Token",
+			"saveButton": "Spara"
+		},
+		"toasts": {
+			"errorLoading": "Fel vid ladda flödeslista"
+		}
+	},
+	"teams": {
+		"title": "Team"
+	},
+	"embed": {
+		"title": "Embed Debugger"
+	},
+	"small": "Liten",
+	"large": "Stor"
+}

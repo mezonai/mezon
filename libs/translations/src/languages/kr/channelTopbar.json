@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "채널",
+		"members": "멤버",
+		"guideClan": "가이드"
+	},
+	"tooltips": {
+		"clickToEdit": "클릭하여 그룹 수정",
+		"startVoiceCall": "음성 통화 시작",
+		"startVideoCall": "영상 통화 시작",
+		"showMemberList": "멤버 목록 표시",
+		"hideMemberList": "멤버 목록 숨기기",
+		"showUserProfile": "사용자 프로필 표시",
+		"hideUserProfile": "사용자 프로필 숨기기",
+		"files": "파일",
+		"canvas": "캔버스",
+		"threads": "스레드",
+		"notificationSettings": "알림 설정",
+		"pinnedMessages": "고정된 메시지",
+		"members": "멤버",
+		"showChat": "채팅 표시",
+		"hideChat": "채팅 숨기기",
+		"addFriendsToDM": "DM 에 친구 추가",
+		"jump": "점프",
+		"gallery": "갤러리",
+		"timelineView": "타임라인 보기로 전환",
+		"defaultView": "채팅 보기로 전환"
+	},
+	"directMessage": "다이렉트 메시지",
+	"activeThreads": "활성 스레드",
+	"joinedThreadsLast30Days": "참가한 스레드 (지난 30 일)",
+	"olderThreads": "이전 스레드",
+	"loading": "로딩 중...",
+	"topic": "주제",
+	"invoice": "음성 채널에서",
+	"reactions": "반응",
+	"callMessages": {
+		"startedVoiceCall": "음성 통화 시작",
+		"startedVideoCall": "영상 통화 시작"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "그룹 채널 ID 누락",
+		"dmChannelIdMissing": "다이렉트 메시지 채널 ID 누락",
+		"youAreOnAnotherCall": "다른 통화 중"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "이 채널에는 아직 고정된 메시지가 없습니다.",
+		"protip": "팁:",
+		"emptyDescription": "'메시지 관리' 권한을 가진 사용자가 컨텍스트 메뉴에서 메시지를 고정할 수 있습니다.",
+		"unpinMessage": "메시지 고정 해제",
+		"unpinConfirmation": "이 고정된 메시지를 삭제하시겠습니까?",
+		"cancel": "취소",
+		"unpinIt": "고정 해제"
+	},
+	"threads": {
+		"emptyTitle": "스레드가 없습니다.",
+		"emptyDescription": "임시 텍스트 채널인 스레드로 채팅에 집중하세요.",
+		"createThread": "스레드 만들기"
+	},
+	"canvas": {
+		"emptyTitle": "캔버스가 없습니다.",
+		"emptyDescription": "임시 텍스트 채널인 캔버스로 채팅에 집중하세요.",
+		"createCanvas": "캔버스 만들기"
+	},
+	"files": {
+		"emptyTitle": "파일이 없습니다.",
+		"emptyDescription": "현재 이 채널에서 공유된 파일이 없습니다.",
+		"searchPlaceholder": "파일 이름 검색"
+	},
+	"fileItem": {
+		"download": "다운로드",
+		"sharedBy": "{{username}} 님이 공유함 {{time}}",
+		"attachmentFailed": "첨부파일 로딩 실패."
+	},
+	"notificationSetting": {
+		"muteChannel": "채널 알림 끄기",
+		"unmuteChannel": "채널 알림 켜기",
+		"mutedUntil": "{{date}} 까지 알림 끔",
+		"useCategoryDefault": "카테고리 기본값 사용",
+		"muteOptions": {
+			"for15Minutes": "15 분 동안",
+			"for1Hour": "1 시간 동안",
+			"for3Hours": "3 시간 동안",
+			"for8Hours": "8 시간 동안",
+			"for24Hours": "24 시간 동안",
+			"untilTurnedBackOn": "다시 켜질 때까지"
+		}
+	},
+	"gallery": {
+		"title": "갤러리",
+		"sentDate": "보낸 날짜",
+		"fromDate": "시작일",
+		"toDate": "종료일",
+		"filters": {
+			"all": "모두",
+			"images": "이미지",
+			"videos": "비디오"
+		},
+		"dateRange": {
+			"from": "{{date}} 부터",
+			"to": "{{date}} 까지",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "시작일은 종료일 이전 또는 동일해야 합니다"
+		},
+		"buttons": {
+			"clearAll": "모두 지우기",
+			"apply": "적용",
+			"clearDateFilter": "날짜 필터 지우기"
+		},
+		"emptyState": {
+			"noMediaFiles": "미디어 파일 찾음",
+			"noMediaFilesDateRange": "선택한 날짜 범위에 미디어 파일 찾음",
+			"noImages": "이미지 찾음",
+			"noVideos": "비디오 찾음"
+		},
+		"loading": {
+			"olderImages": "이전 이미지 로딩 중...",
+			"newerImages": "새 이미지 로딩 중...",
+			"filterChange": "미디어 로딩 중..."
+		},
+		"filesCount": "{{count}} 파일",
+		"imageError": "오류"
+	},
+	"modals": {
+		"threads": {
+			"title": "스레드",
+			"create": "만들기",
+			"results": "결과"
+		},
+		"canvas": {
+			"title": "캔버스",
+			"create": "만들기"
+		},
+		"files": {
+			"title": "파일"
+		},
+		"pinnedMessages": {
+			"title": "고정된 메시지"
+		}
+	},
+	"createThread": {
+		"newThread": "새 스레드",
+		"inviteMessage": "@mention 으로 새 사람을 초대할 수 있습니다.",
+		"validation": {
+			"invalidChannelName": "유효한 스레드 이름을 입력하세요 (최대 65 자, 문자, 숫자, _ 또는 - 만 포함).",
+			"threadNameRequired": "스레드 이름이 필요합니다.",
+			"starterMessageRequired": "시작 메시지가 필요합니다."
+		},
+		"threadName": "스레드 이름",
+		"enterThreadName": "스레드 이름 입력",
+		"privateThread": "비공개 스레드",
+		"privateThreadDescription": "초대된 사람과 운영자만 볼 수 있음",
+		"toast": {
+			"threadNameTooShort": "스레드 이름은 3 자 이상이어야 합니다",
+			"threadNameExists": "스레드 이름이 이미 존재합니다",
+			"initialMessageRequired": "스레드를 시작하려면 초기 메시지가 필요합니다.",
+			"messageTooLong": "메시지가 4000 자 제한을 초과했습니다",
+			"messageLimitExceeded": "메시지가 {{limit}} 자 제한을 초과했습니다"
+		},
+		"placeholder": {
+			"threadName": "스레드 이름 입력"
+		}
+	},
+	"moreFile": "파일",
+	"moreFiles": "파일"
+}

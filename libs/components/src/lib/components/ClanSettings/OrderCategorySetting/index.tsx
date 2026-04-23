@@ -2,8 +2,7 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors, type D
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { CategoriesEntity } from '@mezon/store';
-import { categoriesActions, listChannelRenderAction, selectAllCategories, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
-import type { ICategoryChannel } from '@mezon/utils';
+import { categoriesActions, selectAllCategories, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
 import type { ApiCategoryOrderUpdate } from 'mezon-js/api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,19 +35,11 @@ const CategoryOrderSetting = () => {
 	};
 
 	const handleSave = () => {
-		const listCate: ICategoryChannel[] = [];
 		const categoriesOrderChanges: ApiCategoryOrderUpdate[] =
-			categoryListState.map((category, index) => {
-				listCate.push({
-					...category,
-					id: category.id,
-					channels: []
-				});
-				return {
-					category_id: category.category_id,
-					order: index + 1
-				};
-			}) || [];
+			categoryListState.map((category, index) => ({
+				category_id: category.category_id,
+				order: index + 1
+			})) || [];
 
 		dispatch(
 			categoriesActions.updateCategoriesOrder({
@@ -56,8 +47,6 @@ const CategoryOrderSetting = () => {
 				categories: categoriesOrderChanges
 			})
 		);
-
-		dispatch(listChannelRenderAction.sortCategoryChannel({ listCategoryOrder: listCate, clanId: currentClanId || '' }));
 
 		setHasChanged(false);
 	};

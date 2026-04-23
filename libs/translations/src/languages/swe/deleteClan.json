@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Ta bort clan",
+    "description": "Är du säker på att du vill ta bort {{currentClan}}? Denna åtgärd kan inte ångras.",
+    "confirm": "Ja",
+    "cancel": "Nej",
+     "titleLeaveClan": "Lämna clan",
+    "descriptionLeaveClan": "Är du säker på att du vill lämna {{currentClan}}? Du kommer inte kunna gå tillbaka till denna clan om du inte bjuds igen.",
+    "error": "Ett fel uppstod när vi försökte ta bort/lämna clan"
+  },
+  "confirmMessage": "Är du säker på att du vill ta bort denna clan? Denna åtgärd kan inte ångras.",
+  "enterClanName": "Ange clan namn",
+  "incorrectName": "Du angav fel clan namn",
+  "cancel": "Avbryt"
+}

@@ -53,14 +53,14 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 					{role.role_icon ? (
 						<img src={role.role_icon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
 					) : (
-						<Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />
+						<Icons.RoleIcon className="w-5 h-5 min-w-5" />
 					)}
 					<p className="text-sm">{role.title}</p>
 				</div>
 				<div className="flex items-center gap-x-2">
 					<p className="text-xs ">{t('role')}</p>
 					<div onClick={() => deleteRole(role?.id || '')} role="button">
-						<Icons.EscIcon defaultSize="size-[15px] cursor-pointer" />
+						<Icons.EscIcon className="size-[15px] cursor-pointer" />
 					</div>
 				</div>
 			</div>
@@ -68,7 +68,7 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 	) : (
 		<div className={`flex justify-between text-theme-primary py-2 rounded`}>
 			<div className="flex gap-x-2 items-center">
-				<Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />
+				<Icons.RoleIcon className="w-5 h-5 min-w-5" />
 				<p className="text-sm ">{t('noRoles')}</p>
 			</div>
 		</div>

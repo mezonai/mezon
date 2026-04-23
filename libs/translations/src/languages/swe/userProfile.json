@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "Överför token",
+		"sendMessage": "Skicka meddelande",
+		"voiceCall": "Röstsamtal",
+		"videoCall": "Videosamtal",
+		"addFriend": "Koppla vän",
+		"pending": "Pågående",
+		"removeFriend": "Avsluta vän"
+	},
+	"aboutMe": {
+		"headerTitle": "OM MIG",
+		"roles": {
+			"headerTitle": "ROLLER"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Sparka medlem",
+		"kickFromServer": "Sparka {{username}} från clan",
+		"description": "Är du säker på att du vill sparka {{username}} från clan? De kan gå tillbaka med ny inbjudan.",
+		"reasonKick": "Anledning att sparka",
+		"buttonName": "Sparka"
+	},
+	"transferOwnershipModal": {
+		"warning": "Detta kommer att överföra <highlightClan>{{clanName}}</highlightClan> ägande till <highlightUser>{{username}}</highlightUser>. Denna åtgärd kan inte ångras!",
+		"sectionTitle": "Överför ägande",
+		"acknowledgment": "Jag bekräftar att genom att överföra clan ägande till {{username}}, den kommer tillhöra dem.",
+		"transferButton": "Överför",
+		"confirmTitle": "Överför ägande?",
+		"confirmDescription": "Är du säker på att du vill överföra {{clanName}} ägande till {{username}}? Denna åtgärd kan inte ångras.",
+		"confirmButton": "Överför"
+	},
+	"pendingContent": {
+		"block": "Blokera",
+		"unblock": "Avblockera",
+		"reportUserProfile": "Rapportera användarprofil",
+		"acceptFriend": "Acceptera vän",
+		"rejectFriend": "Avvisa vänförfrågan",
+		"cancelFriendRequest": "Avbryt vänförfrågan",
+		"copyUsername": "Kopiera användarnamn",
+		"copiedUserName": "{{username}} kopierad",
+		"removeFriend": "Avsluta vän",
+		"viewFullProfile": "Visa fullständig profil"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Ta bort från grupp",
+			"removeSuccess": "Medlem raderad från grupp framgångsrikt",
+			"removeFailed": "Medlem raderad från grupp misslyckades"
+		},
+		"mezonMemberSince": "Mezon medlem från"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Användare blockerad framgångsrikt",
+			"error": "Kunde inte blockera användare"
+		},
+		"unblockUser": {
+			"success": "Användare av blockerad framgångsrikt",
+			"error": "Kunde inte av blockera användare"
+		}
+	},
+	"incomingFriendRequest": "INKOMMANDE VÄN FÖRFRÅGAN",
+	"sendAddFriendSuccess": "Vänförfrågan skickad",
+	"accept": "Acceptera",
+	"ignore": "Ignorera",
+	"labels": {
+		"aboutMe": "Om Mig",
+		"memberSince": "Medlem från",
+		"activity": "Aktivitet",
+		"unknownUser": "Okänd användare",
+		"anonymous": "Anonym",
+		"editProfile": "Redigera profil",
+		"note": "NOTERA",
+		"addNote": "Klicka för att lägga till notering",
+		"showLess": "Dölj mer",
+		"addRole": "Lägg till roll",
+		"addRoles": "Lägg till roller",
+		"removeRole": "Ta bort roll",
+		"role": "Roll",
+		"nope": "Inte finns!",
+		"typoError": "Skriv du fel?",
+		"userNotFound": "Användare inte i Clan"
+	},
+	"placeholders": {
+		"messageUser": "Skicka meddelande till @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Saldo",
+		"transferFunds": "Överför token",
+		"editCustomStatus": "Redigera anpassad status",
+		"setCustomStatus": "Ställ in anpassad status",
+		"manageAccounts": "Hantera konton",
+		"switchAccounts": "Byt konton",
+		"copyUserId": "Kopiera användar ID",
+		"statusOptions": {
+			"online": "Online",
+			"idle": "Bortvarande",
+			"doNotDisturb": "Ej stör",
+			"invisible": "Dold"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Du kommer inte att få notiser på dator",
+			"invisible": "Du kommer visas som offline status"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 minuter",
+			"for1Hour": "1 timme",
+			"for3Hours": "3 timmar",
+			"for8Hours": "8 timmar",
+			"for24Hours": "24 timmar",
+			"forever": "För evigt"
+		},
+		"addAccountModal": {
+			"email": "E-post",
+			"password": "Lösenord",
+			"emailPlaceholder": "Ange din e-post",
+			"passwordPlaceholder": "Ange ditt lösenord",
+			"cancel": "Avbryt",
+			"logIn": "Logga in"
+		},
+		"sendTokenModal": {
+			"title": "Skicka Token",
+			"description": "Överför token till annan användare",
+			"fields": {
+				"to": "Till",
+				"amount": "Antal",
+				"note": "Notera (Valfritt)"
+			},
+			"placeholders": {
+				"searchUsers": "Sök användare...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Lägg till notera..."
+			},
+			"noUsersFound": "Inga användare hittades",
+			"currency": "SEK",
+			"buttons": {
+				"cancel": "Avbryt",
+				"sendTokens": "Skicka Token"
+			},
+			"errors": {
+				"exceedWalletBalance": "Belopp överstiger plånboks saldo",
+				"maximumLimit": "Max är 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Transaktionshistorik",
+			"subtitle": "Se alla dina transaktionsaktivitet",
+			"tabs": {
+				"all": "Alla transaktioner",
+				"sent": "Skickade transaktioner",
+				"received": "Mottagna transaktioner"
+			},
+			"transactionTypes": {
+				"sent": "Skickat",
+				"received": "Mottaget"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Inga transaktioner hittades",
+					"description": "Du har inte gjort någon transaktion än. Dina transaktionshistorik kommer visas här när du börjar skicka eller ta emot token."
+				},
+				"noFilteredTransactions": {
+					"title": "Inga transaktioner hittades",
+					"description": "Inga transaktioner hittades för valt filter. Vänligen prova ett annat filter eller kolla igen."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Transaktion #"
+			},
+			"loading": {
+				"fetching": "Laddar transaktioner...",
+				"fetchingMore": "Laddar mer transaktioner...",
+				"scrollMore": "Skrolla ner för att se mer",
+				"allLoaded": "Du har laddat alla {{count}} transaktioner"
+			}
+		},
+		"customStatusModal": {
+			"title": "Ställ in anpassad status",
+			"whatsCookin": "Vad tänker du om, {{name}}",
+			"placeholder": "Vad tänker du?",
+			"clearAfter": "Rensa efter",
+			"timeOptions": {
+				"today": "Idag",
+				"fourHours": "4 timmar",
+				"oneHour": "1 timme",
+				"thirtyMinutes": "30 minuter",
+				"dontClear": "Inta töm"
+			},
+			"buttons": {
+				"cancel": "Avbryt",
+				"save": "Spara"
+			}
+		}
+	},
+	"channelVoiceSettings": "Röstkanal inställningar",
+	"muteVoice": "Tysta",
+	"kickVoice": "Ta bort från röstkanal",
+	"voiceInfo": {
+		"inVoice": "I röstkanal",
+		"joinVoice": "Gå med i röst"
+	},
+	"ban": {
+		"title": "Bannlys användare",
+		"unbanTitle": "Avbannlys användare",
+		"content": "Bannlys användare \"{{userName}}\"?",
+		"banButton": "Bannlys",
+		"unBanButton": "Avbannlys",
+		"reasonBan": "Anledning att bannlys",
+		"unBanDescription": "Vill du avbannlys användare \"{{userName}}\"?",
+		"time": {
+			"title": "Tidsperiod",
+			"tenMinutes": "10 minuter",
+			"thirtyMinutes": "30 minuter",
+			"oneHour": "1 timme",
+			"sixHours": "6 timmar",
+			"twelveHours": "12 timmar",
+			"oneDay": "1 dag",
+			"threeDays": "3 dagar"
+		},
+		"banList": "Bannlista",
+		"search": "Sök bannlysta användare",
+		"banListEmpty": "Inga bannlysta användare hittades"
+	}
+}

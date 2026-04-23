@@ -27,6 +27,25 @@ export default defineConfig(({ mode }) => {
 			proxy: JSON.parse(fs.readFileSync(path.resolve(__dirname, 'proxy.conf.json'), 'utf-8')),
 			fs: {
 				allow: [workspaceRoot, path.join(workspaceRoot, 'libs/assets/src/assets')]
+			},
+			headers: {
+				'Content-Security-Policy': [
+					"default-src 'self'",
+					"script-src 'self' 'wasm-unsafe-eval' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' blob: *.mezon.ai *.googletagmanager.com *.google-analytics.com *.googlesyndication.com *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net",
+					"style-src 'self' 'unsafe-inline' *.mezon.ai *.googleapis.com *.gstatic.com https://cdn.jsdelivr.net",
+					"font-src 'self' data: *.mezon.ai *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net",
+					"object-src 'none'",
+					"worker-src 'self' 'wasm-unsafe-eval' blob:",
+					"manifest-src 'self'",
+					"img-src 'self' data: blob: https: *.mezon.ai media.tenor.com *.googleusercontent.com",
+					"connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com https://cdn.jsdelivr.net",
+					"media-src 'self' blob: https: *.mezon.ai media.tenor.com",
+					"child-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
+					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
+					"base-uri 'self'",
+					"form-action 'self' *.mezon.ai",
+					"frame-ancestors 'self'"
+				].join('; ')
 			}
 		},
 
@@ -226,6 +245,12 @@ export default defineConfig(({ mode }) => {
 						}
 						if (normalizedId.includes('libs/translations/src/languages/jpn')) {
 							return 'i18n-jpn';
+						}
+						if (normalizedId.includes('libs/translations/src/languages/kr')) {
+							return 'i18n-kr';
+						}
+						if (normalizedId.includes('libs/translations/src/languages/swe')) {
+							return 'i18n-swe';
 						}
 					}
 				}

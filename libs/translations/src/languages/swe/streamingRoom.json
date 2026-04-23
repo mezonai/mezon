@@ -1,0 +1,7 @@
+{
+	"joinStreamingRoomBS": {
+		"stream": "Streaming rum",
+		"joinStream": "Gå med i stream"
+	},
+	"noDisplay": "Ingen stream visning"
+}

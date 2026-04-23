@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "음성 룸",
+		"joinVoice": "음성 참여"
+	},
+	"chat": "채팅",
+	"membersWillBeNotified": "{{participantsCount}} 멤버가 알림됩니다",
+	"noDisplay": "음성 채널 숨기기",
+	"videoConnected": "비디오 연결됨",
+	"voiceConnected": "음성 연결됨",
+	"turnOffMicrophone": "마이크 끄기",
+	"turnOnMicrophone": "마이크 켜기",
+	"turnOffCamera": "카메라 끄기",
+	"turnOnCamera": "카메라 켜기",
+	"stopScreenShare": "화면 공유 중지",
+	"shareYourScreen": "화면 공유",
+	"disconnect": "연결 해제",
+	"muteModal": {
+		"title": "멤버ミュート",
+		"content": "\\\"{{userName}}\\\"를ミュート하시겠습니까?",
+		"mute": "ミュート"
+	},
+	"kickModal": {
+		"title": "음성 채널에서 킥",
+		"content": "\\\"{{userName}}\\\"를 음성 채널에서 킥하시겠습니까?",
+		"kick": "킥"
+	},
+	"disconnectModal": {
+		"title": "음성 연결 해제",
+		"content": {
+			"removed": "음성 채널에서 킥되었습니다",
+			"duplicate": "다른 곳에서 참여했으므로 연결이 해제되었습니다",
+			"default": "음성 채널에서 연결이 해제되었습니다",
+			"deleted": "음성 채널이 삭제되었습니다"
+		},
+		"confirm": "확인"
+	},
+	"permission": {
+		"cameraTitle": "카메라 권한 부여",
+		"cameraBody": "애플리케이션이 카메라 권한을 얻지 못했습니다. 시스템 설정에서 카메라 권한을 켜세요.",
+		"microphoneTitle": "마이크 권한 부여",
+		"microphoneBody": "애플리케이션이 마이크 권한을 얻지 못했습니다. 시스템 설정에서 마이크 권한을 켜세요.",
+		"cancel": "취소",
+		"deviceSettings": "장치 설정"
+	},
+	"device": {
+		"inputDevice": "마이크",
+		"outputDevice": "오디오",
+		"camera": "카메라"
+	},
+	"toast": {
+		"connectionConnected": "연결 성공",
+		"connectionDisconnected": "연결 끊김",
+		"microphonePermissionRequired": "마이크 권한 필요",
+		"cameraPermissionRequired": "카메라 권한 필요",
+		"recipientDidNotAnswer": "수신자가 전화를 받았습니다."
+	},
+	"usernameScreen": "{{username}} 의 화면"
+}

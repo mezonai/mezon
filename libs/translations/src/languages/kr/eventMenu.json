@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "이벤트 시작",
+      "markAsNotInterested": "관심 없음으로 표시",
+      "markAsInterested": "관심 있음으로 표시",
+      "editEvent": "이벤트 수정",
+      "cancelEvent": "이벤트 취소",
+      "reportEvent": "이벤트 신고",
+      "copyEventLink": "이벤트 링크 복사",
+      "copyEventID": "이벤트 ID 복사"
+    },
+    "confirm": {
+        "title": "이벤트 취소",
+        "content": "이 이벤트를 취소하시겠습니까?"
+    },
+    "dashboard": {
+        "title": "이벤트",
+        "event_one": "이벤트",
+        "noEvent": "이벤트 없음",
+        "noEventDescription": "다른 멤버에게 다가오는 이벤트 아이디어를 기여하도록 초대하세요.",
+        "createButton": "만들기",
+        "noti": "이 이벤트는 클랜의 모두에게 열려 있습니다.",
+        "endEvent": "이벤트 종료",
+        "UnInterested": "관심 없음",
+        "Interested": "관심 있음"
+    },
+    "item": {
+      "interested": "관심",
+      "uninterested": "관심 없음"
+    },
+    "detail": {
+        "eventInfo": "이벤트 정보",
+        "interested": "관심",
+        "personInterested": "{{count}} 명 관심",
+        "onePersonInterested": "1 명 관심",
+        "noOneInterested": "이벤트에 관심 있는 사람이 없습니다.",
+        "createdBy": "생성자 "
+    },
+    "share": {
+        "title": "이벤트를 친구와 공유",
+        "search": "검색",
+        "share": "공유",
+        "copied": "링크 복사됨!"
+    },
+     "countdown": {
+        "joinIn_other": "{{count}} 분 후 시작",
+        "joinNow": "이벤트 진행 중!",
+        "joinIn_one": "1 분 후 시작"
+    }
+  }

@@ -1,0 +1,63 @@
+{
+	"title": "Meddelande",
+	"addFriend": "Lägg till vän",
+	"friends": "Vänner",
+	"blockedUserMessage": "Meddelande blockerat",
+	"menu": {
+		"leaveGroup": "Lämna grupp",
+		"deleteGroup": "Ta bort grupp",
+		"profile": "Profil",
+		"closeDm": "Stäng meddelande",
+		"markAsRead": "Markera som läst",
+		"favorite": "Favorit",
+		"muteConversation": "Tysta samtal notis",
+		"unMuteConversation": "Aktivera samtal notis",
+		"notificationSettings": "Notisinställningar",
+		"disableE2EE": "Stäng av E2EE kryptering",
+		"enableE2EE": "Slå på E2EE kryptering",
+		"blockUser": "Blokera användare",
+		"unblockUser": "Avblockera användare",
+		"removeFriend": "Ta bort vän",
+		"addFriend": "Lägg till vän",
+		"pinConversation": "Spika samtal",
+		"unpinConversation": "Avspika samtal"
+	},
+	"confirm": {
+		"title": "Lämna {{groupName}}",
+		"content": "Är du säker på att du vill lämna {{groupName}}? Du kommer inte att kunna gå tillbaka till gruppen om du inte bjuds igen.",
+		"confirmText": "Ja"
+	},
+	"pinConfirm": {
+		"title": "Spika samtal?",
+		"content": "Detta samtal flyttas till toppen av meddelandelistan för enkel tillgång.",
+		"confirmText": "Spika"
+	},
+	"unpinConfirm": {
+		"title": "Avspika samtal?",
+		"content": "Detta samtal återställs till sin vanliga plats i meddelandelistan.",
+		"confirmText": "Avspika"
+	},
+	"pinSection": "SPIKAD",
+	"allMessagesSection": "ALLA MEDELANDEN",
+	"maximumPinnedConversationsReached": "Du kan bara spika max {{max}} samtal.",
+	"notification": {
+		"blockUser": {
+			"success": "Användare blockerad framgångsrikt",
+			"error": "Kunde inte blockera användare"
+		},
+		"unblockUser": {
+			"success": "Användare av blockerad framgångsrikt",
+			"error": "Kunde inte av blockera användare"
+		},
+		"muteSuccess": "Tysta framgångsrikt!",
+		"unMuteSuccess": "Aktivera framgångsrikt!",
+		"muteFailed": "Tysta misslyckades!",
+		"unMuteFailed": "Aktivera misslyckades!"
+	},
+	"waveWelcome": "Vinka för att hälsa!",
+	"waveWelcomeDM": "Vinka till {{username}}",
+	"members": "medlemmar",
+	"speaker": "Högtalare",
+	"end": "Avsluta",
+	"turnedMicOff": "stängde mikrofon"
+}

@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "사운드 업로드",
+		"delete": "삭제",
+		"uploadDetailScreen": "업로드"
+	},
+	"content": {
+		"description": "•  .mp3, .wav 파일만 허용, 최대 1MB. \n•  사운드에 쉬운 이름을 지정하세요. \n•  사운드는 클랜 알림 또는 이벤트에서 사용됩니다.",
+		"requirements": "업로드 요구사항",
+		"reqSize": "- 1024KB 미만.",
+		"audioFile": "오디오 파일",
+		"audioName": "사운드 이름",
+		"preview": "미리보기",
+		"chooseAudioFile": "오디오 파일 선택"
+	},
+	"toast": {
+		"errorSizeLimit": "1MB 크기 제한 초과",
+		"errorFileType": "유효하지 않은 파일 형식. .mp3, .mpeg 및 .wav 파일만 허용."
+	},
+	"main": {
+		"uploadInstructions": "업로드 가이드",
+		"fileRequirements": ".mp3, .wav 파일만 허용, 최대 1MB. 사운드에 쉬운 이름을 지정하세요. 사운드는 클랜 알림 또는 이벤트에서 사용됩니다.",
+		"uploadHere": "여기서 업로드!",
+		"personalizeDescription": "클랜을 위한 사운드 커스터마이징!",
+		"uploadSound": "사운드 업로드",
+		"soundEffectList": "사운드 효과 목록",
+		"noSoundEffects": "사운드 효과가 없습니다. '사운드 업로드'를 클릭하여 추가하세요!"
+	},
+	"modal": {
+		"titleEdit": "사운드 효과 수정",
+		"titleUpload": "사운드 효과 업로드",
+		"subtitle": "MP3, WAV 형식 지원 • 최대 1MB",
+		"preview": "미리보기",
+		"audioFile": "오디오 파일",
+		"soundName": "사운드 이름",
+		"soundVolume": "볼륨",
+		"chooseOrDrop": "파일 선택 또는 드래그 앤 드롭",
+		"browse": "찾아보기",
+		"placeholder": "예: 고양이 울음",
+		"cancel": "취소",
+		"uploading": "업로드 중...",
+		"update": "업데이트",
+		"upload": "업로드",
+		"errorFileType": ".mp3 또는 .wav 파일 지원",
+		"errorFileSize": "파일 너무 큼, 최대 1MB",
+		"errorUploadFailed": "사운드 업로드 실패",
+		"characters": "이름은 3~64 자여야 합니다",
+		"errorName": "사운드 효과 이름은 {{min}}~{{max}} 자여야 하며 문자, 숫자, _ 및 - 만 포함"
+	}
+}

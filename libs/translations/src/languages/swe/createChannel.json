@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "SKAPA NY KANAL I"
+	},
+	"channelType": {
+		"text": "Text",
+		"voice": "Röst",
+		"forum": "Forum",
+		"announcement": "Meddelande",
+		"apps": "Applikationer",
+		"stream": "Stream",
+		"descriptions": {
+			"text": "Skicka meddelanden, bilder, GIF, emoji, åsikter och skämt",
+			"voice": "Chatta tillsammans med röst, video och skärmdelning",
+			"forum": "Skapa plats för organiserade diskussioner",
+			"announcement": "Viktiga uppdateringar för alla i och utanför clan",
+			"apps": "Applikationer",
+			"stream": "Dela hobbyaktivitet"
+		}
+	},
+	"validation": {
+		"invalidName": "Vänligen ange giltigt kanal namn (max 64 tecken, bara ord, siffror, _ eller -).",
+		"duplicateName": "Kanal namn finns redan i kategori. Vänligen ange ett annat namn."
+	},
+	"privacy": {
+		"private": "Privat kanal",
+		"description": "Bara utvalda medlemmar och roller kan se denna kanal."
+	},
+	"labels": {
+		"description": "Vänligen ställ in kanal efter dina önskemål.",
+		"chooseType": "Välj kanal typ:",
+		"channelName": "Vad heter din kanal?",
+		"isPrivate": "Privat kanal?",
+		"placeholder": "Ange kanal namn"
+	},
+	"errors": {
+		"typeRequired": "Kanal typ är obligatorisk",
+		"nameRequired": "Kanal namn är obligatorisk",
+		"selectApp": "Vänligen välj en applikation",
+		"validName": "Vänligen ange giltigt kanal namn"
+	},
+	"buttons": {
+		"cancel": "Avbryt",
+		"create": "Skapa kanal",
+		"creating": "Skapar"
+	}
+}

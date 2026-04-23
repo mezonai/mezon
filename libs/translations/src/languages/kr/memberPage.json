@@ -1,0 +1,9 @@
+{
+	"show": "표시",
+	"membersOf": "총 {{count}} 명",
+	"addedBy": "{{name}} 님이 추가",
+	"you": "귀하",
+	"inVoice": "음성 채널에서",
+	"onlineCount": "온라인 - {{count}}",
+	"offlineCount": "오프라인 - {{count}}"
+}

@@ -50,7 +50,7 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 				className="p-2 rounded transition-colors duration-200 text-gray-600 dark:text-[#b9bbbe] hover:bg-gray-300 dark:hover:bg-[#40444b]"
 				title="Zoom in (Ctrl + +)"
 			>
-				<Icons.PlusIcon defaultSize="w-4 h-4" />
+				<Icons.PlusIcon className="w-4 h-4" />
 			</button>
 		</div>
 	</div>

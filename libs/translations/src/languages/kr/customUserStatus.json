@@ -1,0 +1,22 @@
+{
+  "editStatus": "상태",
+  "save": "저장",
+  "statusDuration": {
+    "label": "상태 기간",
+    "today": "오늘",
+    "fourHours": "4 시간",
+    "oneHour": "1 시간",
+    "thirtyMinutes": "30 분",
+    "dontClear": "제거 안 함"
+  },
+  "placeholder": "무엇을 하고 있나요?",
+  "userStatus": {
+    "online": "온라인",
+    "idle": "대기 중",
+    "doNotDisturb": "주먹질",
+    "invisible": "오프라인 (숨김)"
+  },
+  "setCustomStatus": "커스터마이징 상태 설정",
+  "onlineStatus": "온라인 상태",
+  "changeOnlineStatus": "온라인 상태 변경"
+}

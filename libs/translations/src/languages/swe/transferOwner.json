@@ -1,0 +1,9 @@
+{
+	"title": "Clan Ägande Överföring",
+	"description": "Detta kommer att överföra {{clanName}} ägande till {{memberName}}",
+	"confirmation": "Jag bekräftar att genom att överföra clan ägande till {{memberName}}, den formellt tillhör dem.",
+	"buttons": {
+		"transfer": "Överför ägande",
+		"cancel": "Avbryt"
+	}
+}

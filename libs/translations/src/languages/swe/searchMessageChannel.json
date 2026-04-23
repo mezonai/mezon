@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Gå med",
+	"textChannels": "Textkanaler",
+	"voiceChannels": "Röstkanaler",
+	"streamingChannels": "Streaming kanaler",
+	"search": "Sök",
+	"filterResults": "Filtrera resultat...",
+	"members": "Medlemmar",
+	"channels": "Kanaler",
+	"media": "Media",
+	"pins": "Spikad",
+	"in": "i:",
+	"Messages": "Meddelanden",
+	"filterOptions": {
+		"fromUser": "Från en specifik person",
+		"mentionUser": "Nämna någon",
+		"inChannel": "I en specifik kanal"
+	},
+	"cancel": "Avbryt",
+	"searchPlaceholder": "Sök",
+	"searchFor": "Sök:",
+	"enter": "Enter",
+	"searchOptions": "Sökalternativ",
+	"fromUser": "Från användare",
+	"inChannel": "I kanal",
+	"hasContent": "Har innehåll",
+	"mentionsUser": "Nämna någon",
+	"emptySearch": {
+		"title": "Vi har letat överallt. Tyvärr, inga resultat hittades."
+	},
+	"learnMore": "Läs mer",
+	"searchOptionsData": {
+		"fromUserShort": "söka efter avsändare",
+		"mentionsUserShort": "söka efter nämnd",
+		"hasContentShort": "söka efter innehåll med bilaga",
+		"channelShort": "söka i kanal"
+	},
+	"prefixes": {
+		"from": "från:",
+		"mentions": "nämnd:",
+		"has": "har:",
+		"in": "i:"
+	},
+	"mentionPrefixes": {
+		"from": "från:",
+		"mentions": "nämnd:",
+		"has": "har:",
+		"in": "i:"
+	},
+	"allChannels": "Alla kanaler",
+	"searching": "Söker...",
+	"noResults": "Inga resultat",
+	"resultsCount": "{{count}} Resultat",
+	"jump": "Hoppa till",
+	"hasOptions": {
+		"video": "video",
+		"link": "länk",
+		"image": "bild"
+	}
+}

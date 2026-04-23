@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Markera som läst",
+			"browseChannels": "Bläddra kanaler"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Skapa kanal",
+			"createCategory": "Skapa kategori",
+			"createEvent": "Skapa händelse"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Redigera klans profil",
+			"showAllChannels": "Visa alla kanaler",
+			"hideMutedChannels": "Dölj alla tystade kanaler",
+			"allowDirectMessage": "Tillåt skicka direktmeddelande",
+			"allowMessageRequest": "Tillåt skicka meddelandeförfrågan",
+			"reportServer": "Rapportera clan",
+			"leaveServer": "Lämna clan",
+			"deleteClan": "Ta bort clan",
+			"auditLog": "Granskningslogg"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Visa tomma kategorier",
+			"show": "Visa",
+			"hide": "Dölj"
+		},
+		"devMode": {
+			"title": "Utvecklingsläge",
+			"copyServerID": "Kopiera Klan ID",
+			"serverIDCopied": "Klan ID kopierad"
+		}
+	},
+	"actions": {
+		"boot": "Uppgradera",
+		"invite": "Inbjudan",
+		"notifications": "Notis",
+		"settings": "Inställningar"
+	},
+	"info": {
+		"online": "Online",
+		"members": "Medlemmar"
+	},
+	"common": {
+		"search": "Sök",
+		"community": "Gemenskap",
+		"searchMembers": "Sök medlemmar"
+	},
+	"modalPanel": {
+		"createCategory": "Skapa kategori",
+		"markAsRead": "Markera Som Läst",
+		"processing": "Bearbetar...",
+		"invitePeople": "Bjud In Deltagare",
+		"clanSettings": "Clan Inställningar",
+		"notificationSettings": "Notis Inställningar",
+		"showEmptyCategories": "Visa Tomma Kategorier",
+		"leaveClan": "Lämna Clan"
+	}
+}

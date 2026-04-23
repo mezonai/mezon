@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Anpassa grupp",
+  "inviteLinks": "Inbjudanslänkar",
+  "leaveGroup": "Lämna grupp",
+  "closeDM": "Stäng meddelande",
+  "groupName": "Grupp namn",
+  "save": "Spara",
+  "removeAvatar": "Ta bort bild",
+  "invalidGroupName": "Ogiltigt grupp namn",
+  "uploadImage": "Ladda upp bild",
+  "toast": {
+    "leaveGroupError": "Fel vid lämna grupp: {{error}}"
+  }
+}

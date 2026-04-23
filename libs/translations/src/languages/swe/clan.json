@@ -1,0 +1,76 @@
+{
+	"title": "Anpassa din clan",
+	"subTitle": "Ge din nya clan ett unikt utseende med ett namn och ikon. Du kan alltid ändra detta senare.",
+	"clanName": "Clan namn",
+	"createServer": "Skapa clan",
+	"byCreatingClan": "Genom att skapa clan godkänner du",
+	"upload": "LADDA UPP",
+	"addClan": "Skapa clan",
+	"placeholderClan": "Ange clan namn",
+	"errorMessage": "Vänligen ange giltigt clan namn (max 64 tecken, bara ord, siffror, _ eller -).",
+	"duplicateNameMessage": "Clan namn finns redan. Vänligen välj ett annat namn.",
+	"commutityGuide": "Mezon community riktlinjer.",
+	"busy": "Bekymrad",
+	"findOrStartConversation": "Hitta eller starta samtal",
+	"createCategoryModal": {
+		"title": "Skapa kategori",
+		"nameLabel": "Vad heter din kategori?",
+		"namePlaceholder": "Ange kategori namn",
+		"privateCategory": "Privat kategori",
+		"privateDescription": "Genom att skapa en privat kategori kan bara utvalda medlemmar och roller se denna kategori. Kanaler som är synkroniserade i denna kategori kommer automatiskt att matcha denna inställning",
+		"invalidName": "Vänligen ange giltigt kategori namn (max 64 tecken, bara ord, siffror, _ eller -).",
+		"duplicateName": "Kategori namn finns redan i clan. Vänligen ange ett annat namn.",
+		"cancel": "Avbryt",
+		"create": "Skapa kategori"
+	},
+	"leaveClanModal": {
+		"title": "Lämna {{clanName}}",
+		"description": "Är du säker på att du vill lämna <strong>{{clanName}}</strong>? Du kommer inte kunna gå tillbaka till denna server om du inte bjuds igen.",
+		"cancel": "Avbryt"
+	},
+	"leaveClan": "Lämna Clan",
+	"leaveClanTitle": "Lämna",
+	"categoryOverview": {
+		"categoryName": "Kategori namn",
+		"categoryNamePlaceholder": "Ange ditt kategori namn här...",
+		"hasWelcomeChannelError": "Denna kategori har välkomstkanal",
+		"deleteCategory": "Ta bort kategori",
+		"deleteCategoryTitle": "Ta bort kategori",
+		"deleteCategoryButton": "Ta bort kategori",
+		"cannotBeUndone": "Denna åtgärd kan inte ångras",
+		"categoryLabel": "Kategori"
+	},
+	"createClanModal": {
+		"title": "Anpassa din Clan",
+		"description": "Ge din nya clan färg genom att välja ett namn och en ikon! Du kan ändra senare om du vill!",
+		"upload": "Ladda upp",
+		"clanName": "CLAN NAMN",
+		"placeholder": "Ange clan namn",
+		"invalidName": "Vänligen ange giltigt clan namn (max 64 tecken, bara ord, siffror, _ eller -).",
+		"duplicateName": "Clan namn finns redan. Vänligen välj ett annat namn.",
+		"agreement": "Genom att skapa clan godkänner du",
+		"communityGuidelines": "Mezon community riktlinjer",
+		"back": "Tillbaka",
+		"create": "Skapa",
+		"toast": {
+			"limitImageSize": "Bildstorlek måste vara mindre än {{size}}MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Skapa din Clan",
+		"description": "Din clan är platsen där du umgås med dina vänner. Skapa din egen clan och börja chatta.",
+		"createMyOwn": "Skapa egen mall",
+		"startFromTemplate": "Börja med en mall",
+		"gamingTemplate": "Spel",
+		"friendsTemplate": "Vänner",
+		"studyGroupTemplate": "Studiegrupp",
+		"schoolClubTemplate": "Skolkultur",
+		"localCommunityTemplate": "Lokal gemenskap",
+		"artistsCreatorsTemplate": "Artister & Skapare"
+	},
+	"limitModal": {
+		"title": "Gräns nådd!",
+		"message": "Du har gått med i 50 clan. Du behöver lämna ett clan innan du kan gå med i eller skapa ett annat clan.",
+		"okayButton": "OK"
+	}
+}

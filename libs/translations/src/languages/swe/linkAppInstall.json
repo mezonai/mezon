@@ -1,0 +1,11 @@
+{
+  "description": "En extern applikation",
+  "subDescription": "vill komma åt ditt Mezon-konto",
+  "addToClan": "Lägg till till Clan",
+  "invite": "Bemyndiga",
+  "back": "Tillbaka",
+  "successInstall": "Applikation tillagd till clan framgångsrikt",
+  "errorInstall": "Fel vid lägga till applikation till clan",
+  "selectClan": "Sök Clan",
+  "placeholder": "Välj en clan för att buda bot/applikation"
+}

@@ -1,0 +1,25 @@
+{
+    "headerTitle": {
+		"settings": "Inställningar",
+		"Friends": "Vänner",
+		"addFriends": "Lägg till vänner",
+		"requestFriend": "Begär vän",
+		"friendRequestSettings": "Vänförfrågan inställningar",
+		"language": "Språk",
+		"profile": "Profil",
+		"newMessage": "Nytt meddelande",
+		"newGroup": "Ny grupp",
+		"addMembers": "Lägg till medlemmar",
+		"appearance": "Utseende",
+		"topic": "Snabbt ämne",
+		"chat": "Chatt"
+	},
+    "headerRight": {
+        "addFriends": "Lägg till vänner"
+    },
+    "navigationTabs": {
+        "messages": "Meddelanden",
+        "notifications": "Notiser",
+        "profile": "Profil"
+    }
+}

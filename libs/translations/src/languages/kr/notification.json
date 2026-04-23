@@ -1,0 +1,45 @@
+{
+	"headerTitle": "알림",
+	"tabNotify": {
+		"forYou": "당신을 위해",
+		"mention": "알림",
+		"messages": "메시지",
+		"topics": "토론",
+		"notificationSettings": "알림 설정"
+	},
+	"removeNotification": "알림 제거",
+	"nothingHere": "여기에 아무것도 없음",
+	"comeBackNotify": "이벤트 및 더 많은 알림을 받기 위해 돌아오세요",
+	"repliedTo": "답장: ",
+	"sender": "발신자: ",
+	"seeWhenAnswersAppear": "답변이 나타날 때 보기",
+	"enablePushNotifications": "푸시 알림 켜기",
+	"permissionAlert": {
+		"turnOnNotifications": "알림 켜기",
+		"permissionDescription": "친구와 가족과 연락을 유지하려면 Mezon 에 알림을 보낼 권한을 주세요.",
+		"openSettings": "설정 열기",
+		"features": {
+			"newMessages": {
+				"title": "새 메시지 알림 받기",
+				"description": "친구가 메시지를 보낼 때 업데이트"
+			},
+			"mentions": {
+				"title": "그룹에서 알림 받을 때 알기",
+				"description": "누가 당신을 언급할 때 놓치지 마세요"
+			},
+			"muteControl": {
+				"title": "특정 대화 및 대화 유형 알림 끄기",
+				"description": "받는 알림 제어"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "알림 권한",
+		"permissionDenied": "알림 권한이 거부되었습니다.",
+		"cancel": "취소",
+		"ok": "OK"
+	},
+	"andYou": "그리고 당신",
+	"topicAndYou": "토론 및 당신",
+	"unknowClan": "더 이상 이 대화의 멤버가 아닙니다"
+}

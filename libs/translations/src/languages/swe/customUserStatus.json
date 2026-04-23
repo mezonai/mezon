@@ -1,0 +1,22 @@
+{
+  "editStatus": "Status",
+  "save": "Spara",
+  "statusDuration": {
+    "label": "Status längd",
+    "today": "Idag",
+    "fourHours": "4 timmar",
+    "oneHour": "1 timme",
+    "thirtyMinutes": "30 minuter",
+    "dontClear": "Inta töm"
+  },
+  "placeholder": "Vad gör du?",
+  "userStatus": {
+    "online": "Online",
+    "idle": "Bortvarande",
+    "doNotDisturb": "Ej stör",
+    "invisible": "Offline (Dold)"
+  },
+  "setCustomStatus": "Ställ in anpassad status",
+  "onlineStatus": "Online status",
+  "changeOnlineStatus": "Ändra online status"
+}

@@ -1,0 +1,31 @@
+{
+	"muteClan": "Tysta clan notis kommer dölja olästa indikatorer och visa inte notis, om du blir nämnd",
+	"notifySettingOption": {
+		"title": "Clan notisinställningar",
+		"allMessage": "Alla meddelanden",
+		"onlyMentions": "Endast @nämnd",
+		"nothing": "Inget"
+	},
+	"suppressOption": {
+		"suppressEveryone": "Tysta @everyone och @here notis",
+		"suppressAllRole": "Tysta @nämnd alla roller",
+		"suppressHighlights": "Tysta highlight notis",
+		"subText": "Highlights tillhandahåller uppdateringar då och då när dina vänner chatta i clan och mer."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Tysta nya händelser notis",
+		"mobilePushNotifications": "Mobil push-notis"
+	},
+	"notificationOverrides": {
+		"title": "Notis överskridning",
+		"addChannelsAllCategory": "Lägg alla kanaler till kategori"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Du kommer inte att få notis från tystade kanaler. Denna inställning gäller på alla dina enheter.",
+		"youHaveMuted": "Du har tystat denna kanal till"
+	},
+	"clanNotificationBS": {
+		"title": "Tysta denna clan notis"
+	},
+	"resetOverrides": "Återställ överskridning"
+}

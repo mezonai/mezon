@@ -325,7 +325,10 @@ export class MezonNotificationService {
 					notificationUrl = new URL(link);
 				} catch (urlError) {
 					console.error('Invalid notification URL:', link, urlError);
-					window.location.href = link;
+					return;
+				}
+				if (notificationUrl.protocol !== 'http:' && notificationUrl.protocol !== 'https:') {
+					console.error('Blocked notification with unsafe protocol:', notificationUrl.protocol);
 					return;
 				}
 
@@ -357,7 +360,14 @@ export class MezonNotificationService {
 					);
 				}, 100);
 			} else {
-				window.location.href = link;
+				try {
+					const parsed = new URL(link);
+					if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+						window.location.href = link;
+					}
+				} catch {
+					// ignore invalid URL
+				}
 			}
 		};
 	}

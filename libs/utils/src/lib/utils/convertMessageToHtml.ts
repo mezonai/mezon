@@ -39,14 +39,14 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 
 		if (start !== undefined && end !== undefined) {
 			const mentionText = text.substring(start, end);
-			if (mention.user_id) {
+			if (mention.user_id && mention.user_id !== '0') {
 				allEntities.push({
 					start,
 					end,
 					html: `<a class="text-entity-link mention" data-entity-type="MessageEntityMentionName" data-user-id="${mention.user_id}" contenteditable="false" dir="auto">${mentionText}</a>`,
 					type: 'mention'
 				});
-			} else if (mention.role_id) {
+			} else if (mention.role_id && mention.role_id !== '0') {
 				allEntities.push({
 					start,
 					end,

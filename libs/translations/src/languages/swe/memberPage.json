@@ -1,0 +1,9 @@
+{
+	"show": "Visa",
+	"membersOf": "Totalt {{count}} medlemmar",
+	"addedBy": "Lades till av {{name}}",
+	"you": "du",
+	"inVoice": "I röstkanal",
+	"onlineCount": "Online - {{count}}",
+	"offlineCount": "Offline - {{count}}"
+}

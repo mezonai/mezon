@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Ladda upp sticker",
+		"delete": "Ta bort"
+	},
+	"modal": {
+		"uploadAFile": "Ladda upp fil",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Fil måste vara PNG eller GIF, max 512KB",
+		"preview": "Förhandsvisning",
+		"file": "Fil",
+		"thisCannotBeEdited": "Kunde inte redigera",
+		"browse": "Bläddra",
+		"chooseAFile": "Välj fil",
+		"stickerName": "Sticker namn",
+		"exCatHug": "T.ex. cat_hug",
+		"thisIsForSale": "Detta är till salu",
+		"neverMind": "Glöm det",
+		"characters": "Namn måste vara från 3 till 64 tecken"
+	},
+	"content": {
+		"description": "Lägg till max 250 anpassade stickers som alla kan använda i denna clan.",
+		"requirements": "Uppladdningskrav",
+		"reqType": "•  Kan vara statisk bild (PNG) eller dynamisk (GIF).",
+		"reqDim": "•  Måste vara exakt 320 x 320 pixel.",
+		"reqSize": "•  Inte större än 512KB.",
+		"available": "{{left}} LEDIG PLATS STICKERS"
+	},
+	"toast": {
+		"errorUpdating": "Uppdateringsfel",
+		"errorSizeLimit": "Bildstorlek överstiger 512KB",
+		"validateName": "Längd måste vara från {{min}} till {{max}} tecken. Bara bokstäver, siffror, _ och - tillåtna"
+	},
+	"empty": {
+		"tip": "PROTIPS",
+		"voiceSticker": {
+			"title": "Inga ljud än"
+		},
+		"sticker": {
+			"title": "Inga stickers än"
+		}
+	}
+}

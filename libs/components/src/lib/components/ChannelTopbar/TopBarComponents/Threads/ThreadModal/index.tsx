@@ -142,7 +142,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 								{t('modals.threads.create')}
 							</button>
 							<button onClick={onClose} className="text-color-theme-hover">
-								<Icons.Close defaultSize="w-4 h-4 " />
+								<Icons.Close className="w-4 h-4 " />
 							</button>
 						</div>
 					)}

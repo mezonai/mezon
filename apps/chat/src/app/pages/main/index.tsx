@@ -167,13 +167,13 @@ function MyApp() {
 
 	const previewMode = useSelector(selectOnboardingMode);
 
-	const { streamVideoRef, handleChannelClick, disconnect, isStream } = useWebRTCStream();
+	const { streamVideoRef, handleChannelClick, disconnect, isStream, isPlaybackBlocked, retryPlayback } = useWebRTCStream();
 
 	const handleClose = () => {
 		dispatch(e2eeActions.setOpenModalE2ee(false));
 	};
 	const openDiscoverPage = () => {
-		window.open('https://mezon.ai/clans', '_blank');
+		window.open('https://mezon.ai/clans', '_blank', 'noopener,noreferrer');
 	};
 
 	return (
@@ -209,6 +209,8 @@ function MyApp() {
 							streamVideoRef={streamVideoRef}
 							disconnect={disconnect}
 							isStream={isStream}
+							isPlaybackBlocked={isPlaybackBlocked}
+							retryPlayback={retryPlayback}
 						/>
 					) : null}
 				</div>

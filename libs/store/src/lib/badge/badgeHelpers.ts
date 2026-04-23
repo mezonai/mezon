@@ -5,6 +5,7 @@ import { safeJSONParse } from 'mezon-js';
 import type { ApiMessageMention } from 'mezon-js/api';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
+import { CHANNELS_FEATURE_KEY } from '../channels/channels.slice';
 import { selectMemberClanByUserId } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directMetaActions } from '../direct/direct.slice';
@@ -56,13 +57,8 @@ const getCurrentClanBadgeCount = (store: { getState?: () => RootState }, clanId:
 export const getCurrentChannelBadgeCount = (store: { getState?: () => RootState }, clanId: string, channelId: string): number => {
 	try {
 		const state = store?.getState?.();
-		const listChannelRender = state?.CHANNEL_LIST_RENDER?.listChannelRender?.[clanId];
-		if (!listChannelRender) {
-			return 0;
-		}
-
-		const channel = listChannelRender.find((ch) => ch.id === channelId) as IChannel;
-		return channel?.count_mess_unread ?? 0;
+		const entity = state?.[CHANNELS_FEATURE_KEY]?.byClans?.[clanId]?.entities?.entities?.[channelId] as IChannel | undefined;
+		return entity?.count_mess_unread ?? 0;
 	} catch (error) {
 		console.warn('Failed to get channel badge count:', error);
 		return 0;
@@ -104,7 +100,8 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 			channelMetaActions.setChannelLastSeenTimestamp({
 				channelId,
 				timestamp: now + TIME_OFFSET,
-				messageId
+				messageId,
+				clanId
 			})
 		);
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));

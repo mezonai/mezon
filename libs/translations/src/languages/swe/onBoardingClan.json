@@ -1,0 +1,165 @@
+{
+	"title": "Kompletera påfyllning",
+	"description": "Steg {{step}} av {{total}}",
+	"action": {
+		"title": "Kompletera påfyllning för din clan",
+		"description": "Kompletterat {{step}} av {{total}} steg",
+		"createChannel": "Skapa din kanal",
+		"invite": "Bjud in några vänner",
+		"sendMessage": "Skicka ditt första meddelande"
+	},
+	"modal": {
+		"title": "Påfyllningsinställningar"
+	},
+	"buttons": {
+		"back": "Tillbaka",
+		"cancel": "Avbryt",
+		"confirm": "Bekräfta",
+		"save": "Spara",
+		"saving": "Sparar...",
+		"setup": "Ställ in",
+		"edit": "Redigera",
+		"preview": "Förhandsvisa",
+		"disable": "Stäng av påfyllning"
+	},
+	"onboarding": {
+		"title": "Påfyllning",
+		"description": "Skapa enkel startupplevelse för medlemmar med anpassade kanaler, roller och steg.",
+		"enabledTitle": "Påfyllning är aktiverad",
+		"enabledDescription": "Ändringar kommer inte att trädde i kraft tills du sparar.",
+		"featuresEnabled": "Påfyllningsfunktioner är aktiverad"
+	},
+	"questions": {
+		"title": "Frågor",
+		"description": "Publika kanaler kan tilldelas via Frågor."
+	},
+	"clanGuide": {
+		"title": "Clan Guide",
+		"description": "Ditt välkomnande meddelande, Banner, att göra-uppdrag och Resurser är alla ställda in"
+	},
+	"messages": {
+		"communityEnabledSuccess": "Gemenskap aktiverad framgångsrikt",
+		"changesSavedSuccess": "Ändringar sparade framgångsrikt"
+	},
+	"errors": {
+		"needAtLeastOneItem": "Minst ett objekt krävs för att aktivera påfyllning",
+		"failedToEnableCommunity": "Kunde inte aktivera gemenskap",
+		"failedToSaveChanges": "Kunde inte spara ändringar",
+		"questionRequired": "Fråga är obligatorisk."
+	},
+	"questionsPage": {
+		"title": "Frågor",
+		"description": "Skapa frågor för att hjälpa medlemmar att välja tilläggs-kanaler och roller. Deras kanallista kommer anpassas baserat på deras svar.",
+		"noChannelsMissing": "Inga publika kanaler saknas från Frågor och Standard Kanal.",
+		"channelNotAssigned": "Kanal inte tilldelad",
+		"noChannelsHere": "Inga kanaler här",
+		"preJoinQuestions": {
+			"title": "Frågor Innan Anslutning",
+			"description": "Medlemmar kommer att frågas om dessa frågor innan de går med i din server. Använd dem för att tilldela viktiga kanaler och roller. Frågor Innan Anslutning kommer också tillgängliga på Kanaler & Roller-sidan."
+		},
+		"addQuestion": "Lägg till fråga",
+		"questionNumber": "Fråga {{number}}",
+		"enterQuestion": "Ange fråga...",
+		"availableAnswers": "Svar tillgängliga - {{count}} av 50",
+		"addAnswer": "Lägg till svar",
+		"questionPlaceholder": "Vad är din fråga",
+		"answerTitle": "Lägg till svarstitel",
+		"answerDescription": "Lägg till svarsbeskrivning",
+		"enterAnswer": "Ange svar...",
+		"enterDescription": "Ange beskrivning... (valfritt)",
+		"titleRequired": "Titel är obligatorisk",
+		"remove": "Ta bort"
+	},
+	"enableOnboarding": {
+		"title": "Vill du aktivera Onboarding?",
+		"description": "Växla till Guide för att komma åt ytterligare administrativa verktyg",
+		"subtitle": "hjälper dig att moderera och utveckla din Clan effektivt.",
+		"button": "Aktivera Guide",
+		"note": "Denna åtgärd kommer låsa upp avancerade påfyllningsfunktioner"
+	},
+	"enableCommunity": {
+		"title": "Aktivera Gemenskap?",
+		"description": "Gör om din gemenskap till en fullfunktionell Gemenskap-upplevelse.",
+		"subtitle": "Kom åt kraftfulla administrativa verktyg för att moderera och utveckla din Clan effektivt.",
+		"button": "Aktivera Gemenskap",
+		"note": "Denna åtgärd kommer låsa upp avancerade gemenskapsfunktioner"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Fält med * är obligatoriska",
+		"title": "Gemenskapsinställningar",
+		"subtitle": "Hantera din gemenskapsinformation",
+		"enableTitle": "Aktivera Gemenskap",
+		"enableSubtitle": "Skapa en fantastisk plats för medlemmar att koppla",
+		"loading": "Laddar gemenskapsinställningar...",
+		"banner": {
+			"title": "Gemenskaps Banner",
+			"uploadTitle": "Ladda upp Banner",
+			"uploadDescription": "Dra & släpp eller klicka för att välja bild",
+			"changeBanner": "Ändra Banner",
+			"removeBanner": "Ta bort Banner"
+		},
+		"description": {
+			"title": "Gemenskapsbeskrivning",
+			"placeholder": "Ange kort beskrivning för din gemenskap..."
+		},
+		"about": {
+			"title": "Om Gemenskap",
+			"placeholder": "Berätta om din gemenskap... Vad gör den unik?"
+		},
+		"vanityUrl": {
+			"title": "Anpassad URL",
+			"description": "Skapa anpassad URL för din gemenskap. Använd bara små bokstäver, siffror och bindestreck.",
+			"placeholder": "fantastisk-gemenskap-for-all",
+			"previewLabel": "URL Förhandsvisa:"
+		},
+		"buttons": {
+			"enableAndSave": "Aktivera & Spara",
+			"saving": "Sparar...",
+			"save": "Spara ändringar",
+			"disable": "Stäng Gemenskap",
+			"reset": "Återställ"
+		},
+		"messages": {
+			"aboutUpdated": "Information uppdaterad!",
+			"aboutUpdateFailed": "Information uppdatering misslyckades!",
+			"descriptionUpdated": "Beskrivning uppdaterad!",
+			"descriptionUpdateFailed": "Beskrivning uppdatering misslyckades!",
+			"vanityUrlUpdated": "Anpassad URL uppdaterad!",
+			"vanityUrlUpdateFailed": "Anpassad URL uppdatering misslyckades!",
+			"communityEnabledAndSaved": "Gemenskap aktiverad och sparad!",
+			"saveFailed": "Sparning misslyckades!",
+			"changesSaved": "Ändringar sparade!",
+			"communityDisabled": "Gemenskap stängd.",
+			"disableFailed": "Stängning misslyckades!",
+			"bannerRemoved": "Banner raderad!",
+			"fillAllRequiredFields": "Vänligen fyll alla obligatoriska fält: Banner, Om Oss, Beskrivning, Anpassad URL!",
+			"bannerUpdateFailed": "Banner uppdatering misslyckades!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Välkommen",
+			"description": "Berätta för nya medlemmar vad som är speciellt med din gemenskap och varför du är glad att träffa dem!"
+		},
+		"newMemberToDos": {
+			"title": "Nya Medlemmar Bör Göra",
+			"description": "Ställ 3-5 uppgifter för dina nya medlemmar att utföra. Få dem att <strong>chatta och delta i dina kanaler.</strong>"
+		},
+		"dontDoThis": "Gör inte så här: för generellt",
+		"exampleTask": {
+			"title": "chatta med gemenskapen",
+			"description": "i #general"
+		},
+		"readTheRules": "Läs Reglerna",
+		"addTask": "Lägg till uppgift",
+		"resourcePages": {
+			"title": "Resurssidor",
+			"description": "Gör läskanaler till vackra resurssidor i Server Guide. De kommer inte visas i kanallistan om du inte slå alla kanaler. Resurser kommer med vissa fördelar:",
+			"perk1": "Medlemmar börjar längst upp i sidan istället för slutet på strömmen",
+			"perk2": "Chattfält och avatar tas bort för att se renare ut",
+			"perk3": "Allt innehåll, embedding, media och formatering behålls"
+		},
+		"addResource": "Lägg till resurs",
+		"ownerGreeting": "Hej, detta är välkomnande från clan ägare. Du kommer att se detta meddelande första gången du går med i clan!"
+	}
+}

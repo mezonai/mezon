@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Kategori namn",
+            "placeholder": "Ange kategori namn",
+            "errorMessage": "Vänligen ange giltig kategori namn (max 64 tecken, bara ord, siffror, _ eller -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Kategori behörigheter",
+            "description": "Ändra privat inställning och anpassa hur medlemmar kan interagera med denna kanal."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Ta bort kategori"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Är du säker på att du vill ta bort {{categoryName}}? Denna åtgärd kan inte ångras.",
+            "confirmText": "Ta bort",
+            "title": "Ta bort kategori"
+        },
+        "save": "Spara"
+    },
+    "toast": {
+        "updated": "Uppdaterat framgångsrikt"
+    }
+}

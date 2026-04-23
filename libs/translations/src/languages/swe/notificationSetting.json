@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Notisinställningar",
+		"muteUntil": "Du har tystat denna kanal till",
+		"unMute": "Aktivera notis",
+		"mute": "Tysta notis",
+		"labelOptions": {
+			"reactionMessage": "Reaktionsmeddelande",
+			"categoryDefault": "Använd standardinställning",
+			"allMessage": "Alla",
+			"notThingMessage": "Inget",
+			"mentionMessage": "Endast @nämnd"
+		},
+		"muteCategoryUntil": "Du har tystat denna kategori till"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Tysta denna tråd notis",
+		"headerTitleMuteChannel": "Tysta denna kanal notis",
+		"muteThisConversation": "Tysta detta samtal notis",
+		"muteDuration": {
+			"forFifteenMinutes": "I 15 minuter",
+			"forOneHour": "I 1 timme",
+			"forThreeHours": "I 3 timmar",
+			"forEightHours": "I 8 timmar",
+			"forTwentyFourHours": "I 24 timmar",
+			"untilTurnItBackOn": "Tills slå på igen"
+		},
+		"description": "Du får notiser från alla meddelanden i denna clan, men du kan ändra inställningar här",
+		"muteSuccess": "Tysta framgångsrikt!",
+		"unMuteSuccess": "Aktivera framgångsrikt!",
+		"muteFailed": "Tysta misslyckades!",
+		"unMuteFailed": "Aktivera misslyckades!"
+	},
+	"toast": {
+		"error": "Notis uppdatering fel: {{error}}"
+	},
+	"title": "Notisinställningar",
+	"clanNotificationSettings": "CLAN NOTIS INSTÄLLNINGAR",
+	"notificationOverrides": "NOTIS ÖVERSKRIDNING",
+	"addChannelOverride": "Lägg till kanal för att överskrida standard notisinställning",
+	"selectOrCreateOption": "Välj eller skapa alternativ...",
+	"headers": {
+		"channelOrCategory": "KANAL ELLER KATEGORI",
+		"all": "ALLA",
+		"mentions": "NÄMND",
+		"nothing": "INGET",
+		"mute": "Tysta notis"
+	},
+	"menu": {
+		"notification": {
+			"all": "Alla",
+			"onlyMention": "Endast @nämnd",
+			"nothing": "Inget"
+		}
+	}
+}

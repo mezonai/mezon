@@ -19,7 +19,6 @@ import {
 } from '@mezon/store';
 import { isOnline, waitForOnline } from '@mezon/transport';
 import type { IWithError } from '@mezon/utils';
-import { notificationService } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
@@ -45,11 +44,7 @@ function getRedirectTo(initialPath?: string): string {
 
 const connectNotification = async (dispatch: AppDispatch) => {
 	try {
-		const response = await dispatch(fcmActions.connectNotificationService());
-		if (response.payload && typeof response.payload === 'object' && 'token' in response.payload) {
-			const { token, userId } = response.payload as { token: string; userId: string };
-			notificationService.connect(token, userId);
-		}
+		await dispatch(fcmActions.connectNotificationService());
 	} catch (error) {
 		console.error('Failed to connect notification service:', error);
 	}

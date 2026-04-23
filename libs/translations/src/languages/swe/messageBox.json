@@ -1,0 +1,19 @@
+{
+	"placeholder": "Skriv dina tankar här...",
+	"ephemeralMessage": "Tillfälligt meddelande till {{username}}...",
+	"mentionCategories": {
+		"members": "MEDLEM",
+		"textChannels": "TEXTKANALER",
+		"emojiMatching": "Uttryck hittade",
+		"commands": "KOMMANDON"
+	},
+	"suggestions": {
+		"notifyEveryone": "Notisera alla som har rätt att se denna kanal",
+		"loadingCommands": "Laddar kommandon..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Skicka tillfälligt meddelande (bara vald användare ser)"
+		}
+	}
+}

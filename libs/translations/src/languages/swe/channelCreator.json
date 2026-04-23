@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Skapa"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Kanal namn",
+			"placeholder": "ny-kanal",
+			"errorMessage": "Vänligen ange giltigt kanal namn (max 64 tecken, bara ord, siffror, _ eller -).",
+			"duplicateChannelName": "Kanal namn finns redan i klan. Vänligen ange ett annat namn."
+		},
+		"channelPrivate": {
+			"title": "Privat kanal",
+			"descriptionText": "Genom att skapa en privat kanal kan bara utvalda medlemmar och roller se denna kanal.",
+			"descriptionVoice": "Genom att skapa en privat röstkanal kan bara utvalda medlemmar och roller se eller ansluta till denna kanal."
+		},
+		"channelType": {
+			"title": "Kanal typ",
+			"text": {
+				"title": "Text",
+				"description": "Skicka bilder, GIF, badges, åsikter och ordspel"
+			},
+			"voice": {
+				"title": "Röst",
+				"description": "Möt tillsammans med röst, video och dela skärm"
+			},
+			"stream": {
+				"title": "Stream",
+				"description": "Dela hobbyaktivitet"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Röstkanal typ",
+			"mezon": "MEZON MÖTE",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Bilder & Höglight",
+			"eventsTitle": "Händelser",
+			"familyJourney": "Resa",
+			"cherishMoment": "Följ viktiga händelser.",
+			"since": "FRÅN",
+			"viewAlbum": "Se Album",
+			"emptyTitle": "Din resa har inte börjat.",
+			"emptyDescription": "Skapa din första händelse för att börja komma ihåg minnen.",
+			"createFirstMilestone": "Skapa första händelse",
+			"selectYear": "Välj år",
+			"special": "Special"
+		},
+		"familyEvents": {
+			"title": "Händelser",
+			"eventsIn": "Händelser år",
+			"noEvents": "Inga händelser i år",
+			"addToGallery": "Lägg till i galleri",
+			"inDays": "Inom {{count}} dagar"
+		},
+		"createMilestone": {
+			"headerTitle": "Ny händelse",
+			"cancel": "Avbryt",
+			"cancelAlertTitle": "Avbryta",
+			"cancelAlertMessage": "Är du säker på att du vill avbryta denna händelse?",
+			"continueEditing": "Fortsätt redigera",
+			"discard": "Slänga",
+			"eventTitleLabel": "Händelse namn",
+			"eventTitlePlaceholder": "T.ex. Teammöte, Projekt lansering",
+			"dateLabel": "Datum",
+			"datePlaceholder": "Välj datum",
+			"storyLabel": "Beskrivning",
+			"storyPlaceholder": "Ange händelse beskrivning...",
+			"memoriesLabel": "Bilder/Video",
+			"uploadTitle": "Ladda upp Bild eller Video",
+			"uploadSubtitle": "Lägg till bild eller video till händelse",
+			"addMedia": "Lägg till bild",
+			"tagMembersLabel": "Tagga medlemmar",
+			"saveButton": "Spara händelse",
+			"requiredTitle": "Obligatorisk",
+			"requiredMessage": "Vänligen ange händelse namn",
+			"successTitle": "Framgång",
+			"successMessage": "Händelse skapad framgångsrikt!",
+			"errorTitle": "Fel",
+			"errorMessage": "Kunde inte välja bild",
+			"required": "Obligatorisk",
+			"optional": "Valfri",
+			"titleHint": "Ge en kort beskrivning för händelsen"
+		},
+		"eventDetail": {
+			"defaultTitle": "Händelse detaljer",
+			"featured": "PÅSLÅN",
+			"calendar": "Kalender",
+			"descriptionPlaceholder": "Lägg till beskrivning för denna händelse...",
+			"addDescription": "Lägg till beskrivning",
+			"cancel": "Avbryt",
+			"save": "Spara"
+		},
+		"albumDetail": {
+			"eventDetails": "Händelse detaljer",
+			"date": "Datum",
+			"editEvent": "Redigera händelse",
+			"titleLabel": "Titel",
+			"titlePlaceholder": "Händelse titel",
+			"descriptionLabel": "Beskrivning",
+			"descriptionPlaceholder": "Händelse beskrivning",
+			"cancel": "Avbryt",
+			"save": "Spara",
+			"errorTitle": "Fel",
+			"titleRequired": "Titel måste vara ifylld",
+			"updateFailed": "Kunde inte uppdatera händelse",
+			"sessionNotAvailable": "Session inte tillgänglig",
+			"uploadFailed": "Kunde inte ladda upp bild"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Röstkanal typ",
+		"mezon": "MEZON MÖTE",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Bilder & Höglight",
+		"familyJourney": "Resa",
+		"cherishMoment": "Följ viktiga händelser.",
+		"since": "FRÅN",
+		"viewAlbum": "Se Album",
+		"emptyTitle": "Din resa har inte börjat.",
+		"emptyDescription": "Skapa din första händelse för att börja komma ihåg minnen.",
+		"createFirstMilestone": "Skapa första händelse",
+		"selectYear": "Välj år",
+		"special": "Special"
+	},
+	"familyEvents": {
+		"title": "Händelser",
+		"eventsIn": "Händelser år",
+		"noEvents": "Inga händelser i år",
+		"addToGallery": "Lägg till i galleri",
+		"inDays": "Inom {{count}} dagar"
+	},
+	"createMilestone": {
+		"headerTitle": "Ny händelse",
+		"cancel": "Avbryt",
+		"cancelAlertTitle": "Avbryta",
+		"cancelAlertMessage": "Är du säker på att du vill avbryta denna händelse?",
+		"continueEditing": "Fortsätt redigera",
+		"discard": "Slänga",
+		"eventTitleLabel": "Händelse namn",
+		"eventTitlePlaceholder": "T.ex. Teammöte, Projekt lansering",
+		"dateLabel": "Datum",
+		"datePlaceholder": "Välj datum",
+		"storyLabel": "Beskrivning",
+		"storyPlaceholder": "Ange händelse beskrivning...",
+		"memoriesLabel": "Bilder/Video",
+		"uploadTitle": "Ladda upp Bild eller Video",
+		"uploadSubtitle": "Lägg till bild eller video till händelse",
+		"addMedia": "Lägg till bild",
+		"tagMembersLabel": "Tagga medlemmar",
+		"saveButton": "Spara händelse",
+		"requiredTitle": "Obligatorisk",
+		"requiredMessage": "Vänligen ange händelse namn",
+		"successTitle": "Framgång",
+		"successMessage": "Händelse skapad framgångsrikt!",
+		"errorTitle": "Fel",
+		"errorMessage": "Kunde inte välja bild",
+		"required": "Obligatorisk",
+		"optional": "Valfri",
+		"titleHint": "Ge en kort beskrivning för händelsen"
+	},
+	"albumDetail": {
+		"eventDetails": "Händelse detaljer",
+		"date": "Datum",
+		"editEvent": "Redigera händelse",
+		"titleLabel": "Titel",
+		"titlePlaceholder": "Händelse titel",
+		"descriptionLabel": "Beskrivning",
+		"descriptionPlaceholder": "Händelse beskrivning",
+		"cancel": "Avbryt",
+		"save": "Spara",
+		"errorTitle": "Fel",
+		"titleRequired": "Titel måste vara ifylld",
+		"updateFailed": "Kunde inte uppdatera händelse",
+		"sessionNotAvailable": "Session inte tillgänglig",
+		"uploadFailed": "Kunde inte ladda upp bild"
+	},
+	"monthsShort": ["JAN", "FEB", "MAR", "APR", "MAJ", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"]
+}

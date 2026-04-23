@@ -1,7 +1,8 @@
+import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { TOPBARS_MAX_WIDTH, getShareContactInfo } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TOPBARS_MAX_WIDTH, getShareContactInfo } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api';
 import { useMemo } from 'react';
@@ -10,7 +11,6 @@ import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
-
 type ModalDeletePinMessProps = {
 	pinMessage: PinMessageEntity;
 	contentString: string | undefined;
@@ -23,6 +23,7 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const { pinMessage, contentString, closeModal, handlePinMessage, attachments, modalref } = props;
 	const { t } = useTranslation('channelTopbar');
 	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id as string));
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 
 	const messageContentObject = useMemo(() => {
 		return safeJSONParse(pinMessage.content || '{}') || {};
@@ -31,6 +32,8 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const { isShareContact, shareContactEmbed } = useMemo(() => {
 		return getShareContactInfo(messageContentObject?.embed);
 	}, [messageContentObject]);
+
+	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
 	return (
 		<div
@@ -45,11 +48,31 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 				<div className="px-4 pb-2 max-h-[60vh] overflow-y-auto hide-scrollbar w-full">
 					<div className="flex items-start gap-2 p-2 shadow-md rounded bg-theme-setting-secondary">
 						<div className="flex-shrink-0">
-							<BaseProfile avatar={pinMessage.avatar || ''} hideIcon={true} />
+							<BaseProfile
+								avatar={priorityAvatar || pinMessage.avatar || ''}
+								name={
+									checkAnonymous
+										? 'Anonymous'
+										: userSender?.clan_nick ||
+											userSender?.user?.display_name ||
+											userSender?.user?.username ||
+											pinMessage.username ||
+											''
+								}
+								hideIcon={true}
+								hideName={true}
+								isAnonymous={checkAnonymous}
+							/>
 						</div>
 						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0">
 							<div className="font-medium">
-								{userSender?.clan_nick || userSender?.user?.display_name || userSender?.user?.username || pinMessage.username}
+								{checkAnonymous
+									? 'Anonymous'
+									: userSender?.clan_nick ||
+										userSender?.user?.display_name ||
+										userSender?.user?.username ||
+										pinMessage.username ||
+										''}
 							</div>
 							{isShareContact && shareContactEmbed ? (
 								<ShareContactCard embed={shareContactEmbed} />

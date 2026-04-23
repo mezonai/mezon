@@ -182,7 +182,8 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				channelMetaActions.setChannelLastSeenTimestamp({
 					channelId,
 					timestamp,
-					messageId: lastMessageId || undefined
+					messageId: lastMessageId || undefined,
+					clanId: currentClanId
 				})
 			);
 		},

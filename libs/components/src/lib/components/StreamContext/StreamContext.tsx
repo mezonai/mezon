@@ -11,6 +11,8 @@ interface WebRTCContextType {
 	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => void;
 	streamVideoRef: React.RefObject<HTMLVideoElement>;
 	isStream: boolean;
+	isPlaybackBlocked: boolean;
+	retryPlayback: () => Promise<boolean>;
 }
 
 interface WebRTCProviderProps {
@@ -28,6 +30,24 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
 	const [isStream, setIsStream] = useState(false);
+	const [isPlaybackBlocked, setIsPlaybackBlocked] = useState(false);
+
+	const retryPlayback = useCallback(async () => {
+		const videoElement = streamVideoRef.current;
+		if (!videoElement) {
+			return false;
+		}
+		try {
+			await videoElement.play();
+			setIsPlaybackBlocked(false);
+			console.log('play success');
+			return true;
+		} catch (err) {
+			console.error(err, 'error');
+			setIsPlaybackBlocked(true);
+			return false;
+		}
+	}, []);
 
 	useEffect(() => {
 		const checkSupport = () => {
@@ -82,6 +102,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 				streamVideoRef.current.srcObject = remoteStream;
 				streamVideoRef.current.autoplay = true;
 				streamVideoRef.current.controls = true;
+				void retryPlayback();
 			}
 			remoteStream.getVideoTracks().forEach((track) => {
 				track.onmute = () => {
@@ -107,7 +128,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 
 		pcRef.current = peerConnection;
 		return peerConnection;
-	}, [dispatch, wsSend]);
+	}, [dispatch, retryPlayback, wsSend]);
 
 	const startSession = useCallback((sd: string) => {
 		if (pcRef.current) {
@@ -147,6 +168,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		wsRef.current = null;
 		setIsConnected(false);
 		setConnectionState('closed');
+		setIsPlaybackBlocked(false);
 	}, []);
 
 	const handleChannelClick = useCallback(
@@ -228,7 +250,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 				console.log(error, 'error');
 			}
 		},
-		[]
+		[initPeerConnection, startSession]
 	);
 
 	const value = {
@@ -239,7 +261,9 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		disconnect,
 		handleChannelClick,
 		streamVideoRef,
-		isStream
+		isStream,
+		isPlaybackBlocked,
+		retryPlayback
 	};
 
 	return <WebRTCStreamContext.Provider value={value}>{children}</WebRTCStreamContext.Provider>;

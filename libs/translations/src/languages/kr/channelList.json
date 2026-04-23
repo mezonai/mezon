@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "가이드",
+		"events": "이벤트",
+		"events_one": "{{count}} 이벤트",
+		"events_other": "{{count}} 이벤트",
+		"members": "멤버",
+		"channels": "채널"
+	},
+	"ongoingEvent": {
+		"title": "진행 중인 이벤트",
+		"eventDetail": "이벤트 세부정보"
+	},
+	"onboarding": {
+		"getStarted": "시작",
+		"of": "중"
+	},
+	"favoriteChannel": "즐겨찾기 채널",
+	"publicChannels": "공개 채널",
+	"channelApps": "채널 애플리케이션",
+	"dragMode": {
+		"enable": "카테고리 드래그 모드를 켭니다",
+		"disable": "카테고리 드래그 모드를 끕니다"
+	}
+}

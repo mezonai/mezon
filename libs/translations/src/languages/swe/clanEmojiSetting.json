@@ -1,0 +1,40 @@
+{
+	"modal": {
+		"uploadAFile": "Ladda upp fil",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Fil måste vara PNG eller GIF, max 256KB",
+		"preview": "Förhandsvisning",
+		"file": "Fil",
+		"thisCannotBeEdited": "Kunde inte redigera",
+		"browse": "Bläddra",
+		"chooseAFile": "Välj fil",
+		"stickerName": "Uttrycks namn",
+		"exCatHug": "T.ex. katt_grym",
+		"thisIsForSale": "Detta är till salu",
+		"neverMind": "Glöm det",
+		"characters": "Namn måste vara från 3 till 64 tecken"
+	},
+	"header": {
+		"save": "Spara"
+	},
+	"toast": {
+		"saveSuccess": "Sparat framgångsrikt",
+		"reject": "Avvisad",
+		"errorSizeLimit": "Bildstorlek överstiger 256 KB",
+		"validateName": "Längd måste vara från {{min}} till {{max}} tecken. Bara bokstäver, siffror, _ och - tillåtna"
+	},
+	"button": {
+		"upload": "Ladda upp uttryck"
+	},
+	"description": {
+		"descriptions": "Lägg till anpassade uttryck som alla användare i denna clan kan använda. Varje Mezon-användare kan använda GIF-uttryck.",
+		"requirements": "UPPLADDNINGSKRAV",
+		"requireList": "•  Filtyp: JPEG, PNG, GIF.\n•  Rekommenderad storlek: 256 KB.\n•  Rekommenderad bildstorlek: 128x128.\n•  Namngivning: Uttrycks namn måste ha minst 3 tecken och bara innehålla bokstavstecken, siffertecken och understreck."
+	},
+	"emojiList": {
+		"slotsDetails": "UTTRYCKSLISTA",
+		"delete": "Ta bort"
+	},
+	"image": "BILD",
+	"name": "NAMN",
+	"uploadedBy": "UPPLADDAD AV"
+}

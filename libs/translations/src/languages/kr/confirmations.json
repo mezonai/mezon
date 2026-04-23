@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+		"title": "역할 삭제",
+		"message": "이 역할을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다",
+		"confirm": "삭제",
+		"cancel": "취소"
+  },
+  "common": {
+    "areYouSure": "확실합니까?",
+    "cannotUndo": "이 작업은 되돌릴 수 없습니다",
+    "confirm": "확인",
+    "cancel": "취소",
+    "delete": "삭제",
+    "remove": "제거",
+    "yes": "네",
+    "no": "아니요"
+  }
+}

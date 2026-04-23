@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Guide",
+		"events": "Händelser",
+		"events_one": "{{count}} Händelse",
+		"events_other": "{{count}} Händelser",
+		"members": "Medlemmar",
+		"channels": "Kanaler"
+	},
+	"ongoingEvent": {
+		"title": "Pågående händelser",
+		"eventDetail": "Händelse detaljer"
+	},
+	"onboarding": {
+		"getStarted": "Börja",
+		"of": "av"
+	},
+	"favoriteChannel": "Favorit kanal",
+	"publicChannels": "Publika kanaler",
+	"channelApps": "Kanal applikationer",
+	"dragMode": {
+		"enable": "Klicka för att aktivera kategori dra-släpp-läge",
+		"disable": "Klicka för att inaktivera kategori dra-släpp-läge"
+	}
+}

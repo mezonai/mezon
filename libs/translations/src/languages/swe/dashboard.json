@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Aktivitetsöversikt",
+		"timePeriod": "Tidsperiod",
+		"totalActiveUsers": "Totalt antal aktiva användare",
+		"totalActiveUsersTooltip": "Unika användare som var aktiva minst en gång",
+		"totalActiveChannels": "Totalt antal aktiva kanaler",
+		"totalActiveChannelsTooltip": "Unika kanaler som var aktiva minst en gång",
+		"totalMessages": "Totalt antal meddelanden",
+		"totalMessagesTooltip": "Totalt antal meddelanden skickade under valt tidsperiod"
+	},
+	"pagination": {
+		"showing": "Visar",
+		"of": "av totalt",
+		"clans": "clan",
+		"previous": "Tidigare",
+		"next": "Nästa"
+	},
+	"chart": {
+		"loadingChartData": "Laddar diagramdata...",
+		"metricsAvailableForOwnersOnly": "Mått endast tillgängliga för clan ägare."
+	},
+	"table": {
+		"detailedActivityData": "Detaljerad aktivitetsdata",
+		"channelsActivityData": "Kanal aktivt data",
+		"userActivityData": "Användaraktivitetsdata",
+		"exportCSV": "Exportera CSV",
+		"exporting": "Exporterar...",
+		"includedInExport": "Denna kolumn kommer att exporteras till CSV-fil",
+		"notIncludedInExport": "Denna kolumn kommer inte att exporteras till CSV-fil",
+		"clanName": "Clan namn",
+		"channelName": "Kanal namn",
+		"userName": "Användarnamn",
+		"activeUsers": "Aktiva användare",
+		"activeChannels": "Aktiva kanaler",
+		"messages": "Meddelanden",
+		"noOwnedClans": "Du äger inga clan för att skapa analys.",
+		"noActiveChannels": "Det finns inga aktiva kanaler i denna clan än.",
+		"noActiveUsers": "Det finns inga aktiva användare i denna kanal än.",
+		"selectColumnTooltip": "Välj/avvälj för att exportera CSV efter denna kolumn",
+		"selectAtLeastOneColumn": "Måste välja minst 1 kolumn för att exportera csv"
+	},
+	"page": {
+		"backToOverview": "Tillbaka till Clan användning översikt",
+		"clanUsageStatisticsReport": "Clan Användningsstatistik Rapport",
+		"dashboardReport": "Kontrollpanel",
+		"report": "Rapport"
+	},
+	"state": {
+		"loadingData": "Laddar data...",
+		"noDataFound": "Ingen data hittad",
+		"noDataDescription": "Ingen användningsdata för valt tidsperiod."
+	},
+	"reportControls": {
+		"timePeriod": "Tidsperiod",
+		"rangeType": "Intervall typ",
+		"startDate": "Startdatum",
+		"endDate": "Slutdatum",
+		"last7Days": "Senaste 7 dagarna",
+		"last30Days": "Senaste 30 dagarna",
+		"last90Days": "Senaste 90 dagarna",
+		"customDateRange": "Anpassat datumintervall",
+		"daily": "Dagligen",
+		"weekly": "Veckovis",
+		"monthly": "Månadsvis",
+		"runReport": "Kör rapport",
+		"reset": "Återställ"
+	},
+	"sortIcon": {
+		"tooltip": "Sortera stigande/fallande efter denna kolumn",
+		"sortedAsc": "Sorterad stigande",
+		"sortedDesc": "Sorterad fallande"
+	}
+}

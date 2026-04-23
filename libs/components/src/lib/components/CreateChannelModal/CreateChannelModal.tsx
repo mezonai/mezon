@@ -1,9 +1,9 @@
 import { useAppNavigation, useEscapeKeyClose } from '@mezon/core';
 import {
 	channelsActions,
+	checkDuplicateChannelInCategoryApi,
 	createNewChannel,
 	fetchApplications,
-	listChannelRenderAction,
 	selectChannelById,
 	selectCurrentCategory,
 	selectCurrentClanId,
@@ -12,6 +12,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { AlertTitleTextWarning, Icons } from '@mezon/ui';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -82,6 +83,25 @@ export const CreateNewChannelModal = () => {
 			return;
 		}
 
+		try {
+			const categoryIdParams = currentCategory?.category_id || channelWelcome?.category_id;
+			if (channelType !== ChannelType.CHANNEL_TYPE_APP && categoryIdParams) {
+				const isDuplicateRes = await dispatch(
+					checkDuplicateChannelInCategoryApi({
+						channelName: channelName.trim(),
+						categoryId: categoryIdParams
+					})
+				).then(unwrapResult);
+
+				if (isDuplicateRes) {
+					setIsErrorName(t('validation.duplicateName'));
+					return;
+				}
+			}
+		} catch (error) {
+			console.error('Check duplicate channel name Failed', error);
+		}
+
 		const body: ApiCreateChannelDescRequest = {
 			clan_id: currentClanId as string,
 			type: channelType,
@@ -97,15 +117,6 @@ export const CreateNewChannelModal = () => {
 		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
 		const channelID = payload.channel_id;
 		const typeChannel = payload.type;
-		if (currentCategory?.category_id) {
-			dispatch(
-				listChannelRenderAction.updateCategoryChannels({
-					clanId: currentClanId as string,
-					categoryId: currentCategory?.category_id,
-					channelId: channelID ?? ''
-				})
-			);
-		}
 
 		if (newChannelCreatedId && typeChannel !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && typeChannel !== ChannelType.CHANNEL_TYPE_STREAMING) {
 			const channelPath = toChannelPage(channelID ?? '', currentClanId ?? '');

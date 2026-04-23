@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Bjud in vänner till {{target}}",
+		"privateEvent": "Extern händelse",
+		"privateRoom": "Mötesrum",
+		"clanInvite": "clan inbjudan",
+		"sendLinkText": "Eller, skicka {{type}} länk till dem",
+		"expiresIn": "Din inbjudanslänk utgår om {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 minuter",
+		"1hour": "1 timme",
+		"6hours": "6 timmar",
+		"12hours": "12 timmar",
+		"1day": "1 dag",
+		"7days": "7 dagar",
+		"never": "Aldrig"
+	},
+	"maxUses": {
+		"noLimit": "Ingen gräns",
+		"1use": "1 användning",
+		"5uses": "5 användningar",
+		"10uses": "10 användningar",
+		"25uses": "25 användningar",
+		"50uses": "50 användningar",
+		"100uses": "100 användningar"
+	},
+	"generateLink": {
+		"expireAfter": "Utgår om",
+		"maxNumberOfUses": "Max antal användningar"
+	},
+	"buttons": {
+		"copy": "Kopiera",
+		"copied": "Kopierad",
+		"copyQR": "Kopiera QR",
+		"editInviteLink": "Redigera inbjudanslänk.",
+		"cancel": "Avbryt",
+		"generateNewLink": "Skapa ny länk",
+		"invite": "Bjud in",
+		"sent": "Skickad"
+	},
+	"searchPlaceholder": "Sök vänner",
+	"privateChannelDescription": "Denna kanal är privat, bara utvalda medlemmar och roller kan se denna kanal.",
+	"noResults": "Inga resultat",
+	"messages": {
+		"qrCopiedSuccess": "QR kopierad framgångsrikt!"
+	},
+	"errors": {
+		"createInviteLink": "Fel vid skapa inbjudanslänk",
+		"copyToClipboard": "Kunde inte kopiera till klippbrädan",
+		"copyFailed": "Kopiering misslyckades"
+	},
+	"acceptModal": {
+		"title": "Gå med i Clan",
+		"invitedToJoin": "Du är inbjuden att gå med i",
+		"memberCount": "{{count}} Medlemmar",
+		"memberCount_plural": "{{count}} Medlemmar",
+		"clanSettings": "Clan Inställningar",
+		"customizeAnytime": "Du kan anpassa dessa när som helst",
+		"noThanks": "Nej, tack",
+		"acceptInvite": "Acceptera inbjudan",
+		"joining": "Ansluter...",
+		"toast": {
+			"alreadyMember": "Du är redan medlem!"
+		}
+	}
+}

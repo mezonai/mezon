@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Kanaler",
+		"members": "Medlemmar",
+		"guideClan": "Guide"
+	},
+	"tooltips": {
+		"clickToEdit": "Klicka för att redigera gruppen",
+		"startVoiceCall": "Börja röstsamtal",
+		"startVideoCall": "Börja videosamtal",
+		"showMemberList": "Visa medlemslista",
+		"hideMemberList": "Dölj medlemslista",
+		"showUserProfile": "Visa användarprofil",
+		"hideUserProfile": "Dölj användarprofil",
+		"files": "Filer",
+		"canvas": "Canvas",
+		"threads": "Trådar",
+		"notificationSettings": "Notisinställningar",
+		"pinnedMessages": "Spikade meddelanden",
+		"members": "Medlemmar",
+		"showChat": "Visa chatt",
+		"hideChat": "Dölj chatt",
+		"addFriendsToDM": "Lägg till vänner i DM",
+		"jump": "Hoppa till",
+		"gallery": "Galleri",
+		"timelineView": "Byt till Tidslinje-läge",
+		"defaultView": "Byt till Chatt-läge"
+	},
+	"directMessage": "Direktmeddelande",
+	"activeThreads": "Aktiva trådar",
+	"joinedThreadsLast30Days": "Anslutna trådar (senaste 30 dagarna)",
+	"olderThreads": "Äldre trådar",
+	"loading": "Laddar...",
+	"topic": "Ämne",
+	"invoice": "I röstkanal",
+	"reactions": "Reaktioner",
+	"callMessages": {
+		"startedVoiceCall": "Började röstsamtal",
+		"startedVideoCall": "Började videosamtal"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "Saknas gruppkanal ID",
+		"dmChannelIdMissing": "Saknas direktmeddelande kanal ID",
+		"youAreOnAnotherCall": "Du är i ett annat samtal"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "Denna kanal har inga spikade meddelanden än.",
+		"protip": "PROTIPS:",
+		"emptyDescription": "Användare med 'Meddelandehantering'-behörighet kan spika meddelanden från kontextmenyn.",
+		"unpinMessage": "Avspika meddelande",
+		"unpinConfirmation": "Är du säker på att du vill ta bort detta spikade meddelande?",
+		"cancel": "Avbryt",
+		"unpinIt": "Avspika"
+	},
+	"threads": {
+		"emptyTitle": "Inga trådar.",
+		"emptyDescription": "Fokusera på chatt med tråd - en tillfällig textkanal.",
+		"createThread": "Skapa tråd"
+	},
+	"canvas": {
+		"emptyTitle": "Inga canvases.",
+		"emptyDescription": "Fokusera på chatt med canvas - en tillfällig textkanal.",
+		"createCanvas": "Skapa Canvas"
+	},
+	"files": {
+		"emptyTitle": "Inga filer.",
+		"emptyDescription": "Inga filer har delats i denna kanal än.",
+		"searchPlaceholder": "Sök fil namn"
+	},
+	"fileItem": {
+		"download": "Ladda ner",
+		"sharedBy": "Delad av {{username}} {{time}}",
+		"attachmentFailed": "Kunde inte ladda bilaga."
+	},
+	"notificationSetting": {
+		"muteChannel": "Tysta kanal notis",
+		"unmuteChannel": "Aktivera kanal notis",
+		"mutedUntil": "Tystad tills {{date}}",
+		"useCategoryDefault": "Använd kategori standard",
+		"muteOptions": {
+			"for15Minutes": "I 15 minuter",
+			"for1Hour": "I 1 timme",
+			"for3Hours": "I 3 timmar",
+			"for8Hours": "I 8 timmar",
+			"for24Hours": "I 24 timmar",
+			"untilTurnedBackOn": "Tills jag slå på igen"
+		}
+	},
+	"gallery": {
+		"title": "Galleri",
+		"sentDate": "Skickat datum",
+		"fromDate": "Från datum",
+		"toDate": "Till datum",
+		"filters": {
+			"all": "Alla",
+			"images": "Bilder",
+			"videos": "Video"
+		},
+		"dateRange": {
+			"from": "Från {{date}}",
+			"to": "Till {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Startdatum måste vara före eller samma som slutdatum"
+		},
+		"buttons": {
+			"clearAll": "Rensa allt",
+			"apply": "Verkställ",
+			"clearDateFilter": "Rensa datumsfilter"
+		},
+		"emptyState": {
+			"noMediaFiles": "Inga medie-filer hittade",
+			"noMediaFilesDateRange": "Inga medie-filer hittade för valt datumintervall",
+			"noImages": "Inga bilder hittade",
+			"noVideos": "Inga videor hittade"
+		},
+		"loading": {
+			"olderImages": "Laddar äldre bilder...",
+			"newerImages": "Laddar nyare bilder...",
+			"filterChange": "Laddar media..."
+		},
+		"filesCount": "{{count}} filer",
+		"imageError": "Fel"
+	},
+	"modals": {
+		"threads": {
+			"title": "Trådar",
+			"create": "Skapa",
+			"results": "Resultat"
+		},
+		"canvas": {
+			"title": "Canvas",
+			"create": "Skapa"
+		},
+		"files": {
+			"title": "Filer"
+		},
+		"pinnedMessages": {
+			"title": "Spikade meddelanden"
+		}
+	},
+	"createThread": {
+		"newThread": "Ny tråd",
+		"inviteMessage": "Du kan bjuda in nya genom att @nämnar dem.",
+		"validation": {
+			"invalidChannelName": "Vänligen ange giltigt tråd namn (max 65 tecken, bara bokstäver, siffror, _ eller -).",
+			"threadNameRequired": "Tråd namn är obligatoriskt.",
+			"starterMessageRequired": "Startmeddelande är obligatoriskt."
+		},
+		"threadName": "Tråd namn",
+		"enterThreadName": "Ange tråd namn",
+		"privateThread": "Privat tråd",
+		"privateThreadDescription": "Bara dina inbjudna och administratörer kan se",
+		"toast": {
+			"threadNameTooShort": "Tråd namn måste vara längre än 3 tecken",
+			"threadNameExists": "Tråd namn finns redan",
+			"initialMessageRequired": "Ett initialt meddelande krävs för att starta tråden.",
+			"messageTooLong": "Meddelande överstiger 4000 tecken gräns",
+			"messageLimitExceeded": "Meddelande överstiger {{limit}} tecken gräns"
+		},
+		"placeholder": {
+			"threadName": "Ange tråd namn"
+		}
+	},
+	"moreFile": "fler filer",
+	"moreFiles": "fler filer"
+}

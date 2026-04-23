@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "새 채널 만들기"
+	},
+	"channelType": {
+		"text": "텍스트",
+		"voice": "음성",
+		"forum": "포럼",
+		"announcement": "공지",
+		"apps": "애플리케이션",
+		"stream": "스트리밍",
+		"descriptions": {
+			"text": "메시지, 이미지, GIF, 이모지, 의견 및 농담 보내기",
+			"voice": "음성, 비디오 및 화면 공유로 대화",
+			"forum": "조직화된 토론을 위한 공간 만들기",
+			"announcement": "클랜 내부 및 외부 모두를 위한 중요한 업데이트",
+			"apps": "애플리케이션",
+			"stream": "취미 활동 공유"
+		}
+	},
+	"validation": {
+		"invalidName": "채널 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+		"duplicateName": "카테고리에 이미 채널 이름이 있습니다. 다른 이름을 입력하세요."
+	},
+	"privacy": {
+		"private": "비공개 채널",
+		"description": "선택된 멤버와 역할만 이 채널을 볼 수 있습니다."
+	},
+	"labels": {
+		"description": "채널을 선호도에 맞게 설정하세요.",
+		"chooseType": "채널 종류를 선택하세요:",
+		"channelName": "채널 이름은 무엇인가요?",
+		"isPrivate": "비공개 채널인가요?",
+		"placeholder": "채널 이름 입력"
+	},
+	"errors": {
+		"typeRequired": "채널 종류가 필요합니다",
+		"nameRequired": "채널 이름이 필요합니다",
+		"selectApp": "애플리케이션을 선택하세요",
+		"validName": "유효한 채널 이름을 입력하세요"
+	},
+	"buttons": {
+		"cancel": "취소",
+		"create": "채널 만들기",
+		"creating": "만드는 중"
+	}
+}

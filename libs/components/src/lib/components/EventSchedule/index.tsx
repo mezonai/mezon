@@ -36,7 +36,7 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 			onClick={handleOpenVoiceChannel}
 			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.start_time_seconds ?? 0)}`}
 		>
-			<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
+			<Icons.IconEvents className={`w-4 h-4 ${cssEventStatus}`} />
 		</div>
 	);
 };

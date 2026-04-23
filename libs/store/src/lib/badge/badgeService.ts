@@ -384,7 +384,7 @@ class BadgeService extends EventEmitter {
 			}
 		}
 
-		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp: now, messageId }));
+		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp: now, messageId, clanId }));
 		dispatch(listChannelsByUserActions.updateLastSeenTime({ channelId }));
 		this.markResetProcessed(channelId, messageId);
 	}
@@ -413,7 +413,7 @@ class BadgeService extends EventEmitter {
 			this.topicParentMap.delete(topicId);
 		}
 
-		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: topicId, timestamp: now, messageId }));
+		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: topicId, timestamp: now, messageId, clanId }));
 		dispatch(listChannelsByUserActions.updateLastSeenTime({ channelId: topicId }));
 		this.markResetProcessed(topicId, messageId);
 	}

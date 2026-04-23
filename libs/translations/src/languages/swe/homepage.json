@@ -1,0 +1,143 @@
+{
+	"description": {
+		"part1": "En fantastisk plats för att spela spel, chatta med vänner eller bygga en global gemenskap.",
+		"part2": "Anpassa ditt eget utrymme för att",
+		"talk": "Prata",
+		"play": "Spela",
+		"and": "Och",
+		"hangOut": "Hänga"
+	},
+	"download": {
+		"getItFrom": "Ladda Ner Från",
+		"cdnUrl": "CDN Url"
+	},
+	"header": {
+		"home": "Hem",
+		"overview": "Översikt",
+		"features": "Funktioner",
+		"developers": "Utvecklare",
+		"botsApps": "Bots/Applikationer",
+		"documents": "Dokument",
+		"discover": "Upptäcka",
+		"blogs": "Bloggar",
+		"openMezon": "Open Mezon",
+		"login": "Logga in",
+		"quickMeeting": "Mezon Möt"
+	},
+	"layout": {
+		"overview": {
+			"title": "Översikt",
+			"subtitle": "Det nya sättet att kommunicera med ditt team.",
+			"description": "Snabbare, bättre organiserad, perfekt för distansarbete."
+		},
+		"features": {
+			"title": "Våra Funktioner",
+			"subtitle": "Komplett Verktyg för Kommunikation"
+		},
+		"cards": {
+			"workstation": {
+				"title": "Arbetsplats",
+				"description": "Digitaliserat arbetsutrymme som optimerar kommunikation, samarbete och projektledning genom integration med flera olika system och verktyg. Ger strukturerat utrymme för team, projekt och avdelningar samtidigt som det säkerställer smidig information- och arbetsprocess-tillgång."
+			},
+			"ecosystem": {
+				"title": "Ekosystem",
+				"description": "Dynamisk digital miljö som kombinerar arbets- och sociala element, tillhandahåller rika interaktiva och underhållande funktioner. Stöder virtuella transaktioner, gemenskapsaktiviteter och relationsskapande för att förbättra användarupplevelsen."
+			},
+			"aiAgent": {
+				"title": "AI Agent",
+				"description": "Intelligenta system som automatiskt hanterar uppgifter, hjälper till att hantera information och optimerar arbetsprocesser. Förbättrar produktivitet genom funktioner som påminnelser, övervakning och automatisk kommunikation."
+			}
+		},
+		"featureCards": {
+			"mezonMainnet": {
+				"title": "Mezon Mainnet",
+				"subtitle": "Hög Hastighet Layer 1, Ingen Avgift",
+				"description": "Blockchain"
+			},
+			"developerApi": {
+				"title": "Avancerad API",
+				"subtitle": "För Utvecklare"
+			},
+			"gaming": {
+				"title": "Spel",
+				"subtitle": "& Underhållning"
+			},
+			"customizable": {
+				"title": "Flexibel Anpassning",
+				"subtitle": "& Lätt Att Utöka"
+			}
+		}
+	},
+	"sections": {
+		"hero": {
+			"title": {
+				"your": "Din Plattform",
+				"live": "Koppling",
+				"work": "Arbeta",
+				"play": "Spela",
+				"platform": "Plats",
+				"theBest": "För",
+				"yourCommunity": "Din Gemenskap"
+			},
+			"description": "En fantastisk plats för att spela spel, chatta med vänner eller bygga en global gemenskap. Anpassa ditt eget utrymme för att",
+			"talk": "Prata",
+			"play": "Spela",
+			"and": "Och",
+			"hangOut": "Hänga",
+			"tryButton": "Prova Mezon, Gratis!",
+			"choosePlatform": "Välj Din Plattform"
+		},
+		"textChannel": {
+			"titlesuper": "Snabb Meddelande",
+			"titlemessage": "Super Snabb",
+			"description": "Byggd för Att Prata, Samarbeta och Koppla.",
+			"description2": "Super snabbt meddelande. Ogränsad. Skicka omedelbart.",
+			"learnMore": "Läs Mer"
+		},
+		"clanDiscover": {
+			"title": "Din Clan, Din Värld",
+			"description": "Från intressen, diskussioner till nyheter och trender, det finns en clan för allt.",
+			"learnMore": "Läs Mer"
+		},
+		"aiAgent": {
+			"title": "AI Agent För Clan Och 24/7 Stöd",
+			"description": "Röst AI Agent (sammanfattning innehåll i voice kanal chat, eller spela roll som intervjuare), AI-assistent, SKUGGA BOT-läge (sammanfattning innehåll i text kanal).",
+			"learnMore": "Läs Mer"
+		},
+		"communityPayments": {
+			"title": "Betalning i Gemenskap",
+			"description": "Skicka Mezon Coin, belöna skapare och köp från partner varumärken — allt utan plattformavgifter. Byggd på transparens och säkerhet.",
+			"learnMore": "Läs Mer"
+		},
+		"enterpriseIntegrations": {
+			"title": "Företagsintegrationer",
+			"description": "Mezon låter dig koppla till kunder världen över och tillhandahålla imponerande skaliga upplevelser.",
+			"learnMore": "Läs Mer"
+		}
+	},
+	"footer": {
+		"description": "Mezon är en fantastisk plats för att spela spel och umgås med vänner, eller bygga en global gemenskap.",
+		"getTheApp": "Ladda Ned Appen",
+		"copyright": "© 2024 Mezon. Alla Rättigheter Förbehållna.",
+		"links": {
+			"executiveSummary": "Verksamhetsöversikt",
+			"problemStatement": "Problemerklaring",
+			"solution": "Lösning",
+			"blockchainEconomy": "Blockchain & Tokenekonomi",
+			"developerApi": "API Integration För Utvecklare",
+			"technicalArchitecture": "Teknisk Arkitektur",
+			"productRoadmap": "Produktvägkarta",
+			"tokenomics": "Tokenonomi",
+			"team": "Lag"
+		}
+	},
+	"externalMeet": {
+		"title": "Möte",
+		"creatingMeeting": "Möte skapat framgångsrikt!",
+		"invite": "Bjud in",
+		"joinMeeting": "Gå med i Möte",
+		"copyLink": "Kopiera Länk",
+		"toastSuccess": "Länk kopierad!",
+		"toastFail": "Kopiering misslyckades."
+	}
+}

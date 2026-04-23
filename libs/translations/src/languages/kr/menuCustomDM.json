@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "그룹 커스터마이징",
+  "inviteLinks": "초대 링크",
+  "leaveGroup": "그룹 나가기",
+  "closeDM": "메시지 닫기",
+  "groupName": "그룹 이름",
+  "save": "저장",
+  "removeAvatar": "이미지 제거",
+  "invalidGroupName": "유효하지 않은 그룹 이름",
+  "uploadImage": "이미지 업로드",
+  "toast": {
+    "leaveGroupError": "그룹 나가기 오류: {{error}}"
+  }
+}

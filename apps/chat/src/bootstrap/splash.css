@@ -1,0 +1,27 @@
+:root {
+	--splash-background: rgba(240, 240, 240, 0.95);
+	--splash-text-color: rgb(78, 80, 87);
+}
+
+html.dark {
+	--splash-background: rgba(0, 0, 0, 0.8);
+	--splash-text-color: #e6e6e6;
+}
+
+.splash-screen {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overflow: hidden;
+	inset: 0;
+	outline: none;
+	background-color: var(--splash-background);
+	font-family: sans-serif;
+	color: var(--splash-text-color);
+}

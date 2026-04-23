@@ -115,7 +115,13 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 
 	const handelJumpToChannel = async () => {
 		if (threadId) {
-			await dispatch(channelsActions.addThreadToChannels({ channelId: threadId, clanId: message?.clan_id as string }));
+			await dispatch(
+				channelsActions.addThreadToChannels({
+					channelId: threadId,
+					clanId: message?.clan_id as string,
+					parentChannelId: message?.channel_id
+				})
+			);
 			navigate(`/chat/clans/${message?.clan_id}/channels/${threadId}`);
 		}
 	};

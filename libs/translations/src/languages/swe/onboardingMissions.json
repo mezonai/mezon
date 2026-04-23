@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "Medlem skickar meddelande i kanal",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "Medlem besöker kanal",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "Läs denna uppgift",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "Vad bör nya medlemmar göra?",
+    "placeholder": "T.ex. Ladda upp din husdjursbild",
+    "channelTitle": "Vad gör de där?",
+    "channelNote": "Kanal måste vara tillgänglig för @everyone (publik kanal)",
+    "completeWhen": "Denna uppgift är klar när:",
+    "required": "Detta fält är obligatoriskt.",
+    "minCharacters": "Åtgärd måste ha minst 7 tecken"
+  },
+  "buttons": {
+    "remove": "Ta bort",
+    "save": "Spara",
+    "add": "Lägg till"
+  }
+}

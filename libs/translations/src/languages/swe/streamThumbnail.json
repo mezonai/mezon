@@ -1,0 +1,50 @@
+{
+	"title": "Stream banner",
+	"uploadThumbnail": "Ladda upp banner",
+	"currentThumbnail": "Nuvarande banner",
+	"requirementsTitle": "Krav",
+	"buttons": {
+		"change": "Ändra",
+		"remove": "Ta bort",
+		"selectFile": "Välj fil",
+		"uploading": "Laddar upp...",
+		"cancel": "Avbryt",
+		"confirmUpload": "Bekräfta",
+		"removing": "Tar bort...",
+		"removeThumbnail": "Ta bort banner"
+	},
+	"upload": {
+		"title": "Ladda upp din banner",
+		"description": "Klicka för att bläddra eller dra och släpp din bild"
+	},
+	"confirmModal": {
+		"uploadTitle": "Bekräfta uppladdning",
+		"uploadDescription": "Använd denna bild som din stream banner?",
+		"uploadMessage": "Denna banner kommer visas när din stream är offline. Alla medlemmar kommer se denna uppdatering omedelbart.",
+		"removeTitle": "Ta bort banner",
+		"removeQuestion": "Är du säker?",
+		"removeMessage": "Detta kommer ta bort din stream banner. Default splash-skärm visas när din stream är offline.",
+		"removeWarning": "Denna åtgärd kan inte ångras."
+	},
+	"requirements": {
+		"format": {
+			"title": "Format",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Upplösning",
+			"value": "Rekommenderad 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Storleksgräns",
+			"value": "Max 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Kanal hittades inte",
+		"clientNotReady": "Klient/session inte redo",
+		"uploadFailed": "Banner uppladdning misslyckades. Vänligen prova igen.",
+		"removeFailed": "Banner radering misslyckades. Vänligen prova igen."
+	},
+	"saved": "Banner sparad"
+}

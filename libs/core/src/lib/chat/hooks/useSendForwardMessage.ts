@@ -21,8 +21,6 @@ export function useSendForwardMessage() {
 			const socket = socketRef.current;
 
 			if (!client || !session || !socket || !channel_id) {
-				// eslint-disable-next-line no-console
-				console.log(client, session, socket, channel_id);
 				throw new Error('Client is not initialized');
 			}
 

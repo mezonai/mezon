@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Bygg En Roligare Gemenskap",
+			"description": "Inte bara chatt – här är du organiserar, kopplar upp dig med grupp, vänner och gemenskap på ett roligt sätt."
+		},
+		"section2": {
+			"title": "Bästa WFH-Upplevelsen för Organisation",
+			"description": "Work from home betyder inte att jobba ensam. Samarbeta, kommunicera och fira tillsammans — ibland på distans. Bästa WFH-upplevelsen för din organisation."
+		},
+		"section3": {
+			"title": "Rikta Medlemsrelationer",
+			"description": "Vi tror att starka relationer bygger en stabil organisation. Varje funktion är designad för att sammanfoga medlemmar. Medlemsrelation, amplifierad."
+		},
+		"section4": {
+			"title": "Bidra för Att Earna",
+			"description": "Delta, tjäna krediter och ta emot token när du hjälper gemenskapen att växa. Din röst är ditt värde. Bidra för att tjäna."
+		},
+		"section5": {
+			"title": "Detaljerad och Tydlig Rapportering",
+			"description": "Spåra gemenskapens tillväxt och interaktion med detaljerad analys och rapportering. Hålls alltid informerad, fatta bättre beslut."
+		}
+	},
+	"features": [
+		{
+			"title": "Du Kan Ladda Upp Uttryck, Stickers och Ljud",
+			"description": "Helt Gratis Anpassa Dina Egna Uttryck, Stickers och Ljud för Att Uttrycka Dig i Samtal."
+		},
+		{
+			"title": "Hantera Medlemsrättigheter i Clan",
+			"description": "Lätt att hantera medlemsbehörigheter och roller i clan för att säkerställa alla har rätt och säker upplevelse."
+		},
+		{
+			"title": "Medlemmar Runtom Varan Med Samma Intressen",
+			"description": "Medlemmar kommer att gå med i din clan via inbjudor eller upptäckt offentligt, skapa en mångfaldig och livlig gemenskap."
+		},
+		{
+			"title": "Clan Skapande Blivit Enklare Någonsin",
+			"description": "Svara snabbt på meddelanden med emoji utan att behöva skriva."
+		}
+	],
+	"featuresTitle": "Bygg Din Gemenskap Roligare",
+	"download": "Ladda Ner",
+	"faq": {
+		"title": "Behöver Mer Hjälp?",
+		"seeAll": "Se Alla FAQ",
+		"learnMore": "Läs Mer",
+		"questions": [
+			{
+				"question": "Vad är Clan på Mezon?",
+				"answer": "Clan är hjärtat av Mezon – där människor kopplar samman, samarbetar och delar genom gemenskaper byggda runt gemensamma intressen, mål eller passioner. Clan kan vara en liten vänskapsgrupp eller en stor gemenskap med tusentals medlemmar. I Clan kan du chatta via organiserade Kanaler, hålla händelser via Röstkanaler och höja gemenskapen med Bot, Applikationer och Mezon Token."
+			},
+			{
+				"question": "Hur Går Man Med I Clan på Mezon?",
+				"answer": "Du kan upptäcka och gå med i Clan på två sätt: via Upptäcks-funktion i appen eller via Clan-sida på mezon.ai/clans, eller genom att använda inbjudanslänkar delade av vänner, lag eller administratörer. Klicka bara på \"Gå med\" för att bli en del av gemenskapen. Varje användare kan gå med i högst 50 Clan samtidigt. Titta på utmärkta Clans som Student Clan, Gamer Clan och Business Clan."
+			},
+			{
+				"question": "Hur Skapar Man Min Egen Clan?",
+				"answer": "Skapa Clan är enkelt och flexibelt. Navigera till Clan-sektionen och skapa ny clan med några klick. Du kan ge namn, ikon och grundinställningar för att anpassa din gemenskap. Efter skapande kan du bjuda in vänner och lagmedlemmar för att börja chatta, dela idéer eller samarbeta tillsammans. Du kan också hantera kanaler, ställa in rättigheter och överföra ägande om nödvändigt."
+			},
+			{
+				"question": "Kan Man Lämna Clan Om Man Vill Sluta Delta?",
+				"answer": "Ja, om du inte längre vill delta i Clan kan du välja 'Lämna Clan' från Clan-inställningarna. Efter att ha lämnat alla meddelandehistorik och åtkomst till Clan-kanaler tas bort från ditt konto. Du kan alltid gå med i Clan senare om du har inbjudanslänk eller om Clan kan upptäckas offentligt."
+			}
+		]
+	}
+}
