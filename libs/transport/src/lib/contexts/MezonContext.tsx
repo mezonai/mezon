@@ -234,7 +234,6 @@ export type MezonContextValue = {
 	authenticateSMSOTPRequest: (phone: string) => Promise<ApiLinkAccountConfirmRequest>;
 
 	logOutMezon: (device_id?: string, platform?: string, clearSession?: boolean) => Promise<void>;
-	refreshSession: (session: ApiSession, isSetNewUsername?: boolean) => Promise<ApiSession | undefined>;
 	connectWithSession: (session: ApiSession) => Promise<ApiSession>;
 	createSocket: () => Promise<any>;
 };
@@ -298,8 +297,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 		}
 
-		if (sessionRef.current?.token && sessionRef.current.ws_url) {
-			const socket = clientRef.current.connect(sessionRef.current.token, sessionRef.current.ws_url);
+		if ((sessionRef.current?.token || sessionRef.current?.session_id) && sessionRef.current.ws_url) {
+			const socket = clientRef.current.connect(sessionRef.current?.session_id || sessionRef.current.token || '', sessionRef.current.ws_url);
 			return socket;
 		}
 	}, [clientRef, socketRef]);
@@ -429,11 +428,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (config) {
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
-			if (!session.token || !session.ws_url) {
+			if ((!session.token && !session.session_id) || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
 			try {
-				await clientRef.current.connect(session.token || '', session.ws_url, true);
+				await clientRef.current.connect(session.session_id || session.token || '', session.ws_url, true);
 			} catch (error) {
 				console.error('error: ', error);
 			}
@@ -456,10 +455,10 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (config) {
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
-			if (!session.token || !session.ws_url) {
+			if ((!session.token && !session.session_id) || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.token, session.ws_url);
+			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url);
 			socketState.status = 'connected';
 			return session;
 		},
@@ -491,10 +490,10 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
-			if (!session.token || !session.ws_url) {
+			if ((!session.token && !session.session_id) || !session.ws_url) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.token, session.ws_url);
+			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url);
 			socketState.status = 'connected';
 			return session;
 		},
@@ -541,40 +540,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		[socketRef]
 	);
 
-	const refreshSession = useCallback(
-		async (session: ApiSession, isSetNewUsername?: boolean) => {
-			if (!clientRef.current) {
-				throw new Error('Mezon client not initialized');
-			}
-
-			const config = getMezonConfig();
-			const wsUrl = config.ws_url || DEFAULT_WS_URL;
-
-			if (
-				!clientRef.current.host ||
-				(clientRef.current.host === process.env.NX_CHAT_APP_API_GW_HOST && clientRef.current.port === process.env.NX_CHAT_APP_API_GW_PORT)
-			) {
-				await logOutMezon();
-				return;
-			}
-
-			const sessionObj: ApiSession = {
-				token: session.token || '',
-				refresh_token: session.refresh_token || '',
-				created: session.created || false,
-				api_url: session.api_url || '',
-				ws_url: wsUrl,
-				id_token: session.id_token || '',
-				is_remember: session.is_remember || false
-			};
-
-			await clientRef.current.connect(sessionObj.token || '', wsUrl);
-			socketState.status = 'connected';
-			return sessionObj;
-		},
-		[clientRef, socketRef, isFromMobile, logOutMezon, createSocket]
-	);
-
 	const connectWithSession = useCallback(
 		async (session: ApiSession) => {
 			if (!clientRef.current) {
@@ -585,7 +550,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!socketRef.current) {
 				return session;
 			}
-			await clientRef.current.connect(session.token || '', session.ws_url || '');
+			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url || '');
 			socketState.status = 'connected';
 			return session;
 		},
@@ -611,7 +576,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			createQRLogin,
 			checkLoginRequest,
 			confirmLoginRequest,
-			refreshSession,
 			createSocket,
 			logOutMezon,
 			authenticateMezon,
@@ -636,7 +600,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			createQRLogin,
 			checkLoginRequest,
 			confirmLoginRequest,
-			refreshSession,
 			createSocket,
 			logOutMezon,
 			authenticateMezon,
