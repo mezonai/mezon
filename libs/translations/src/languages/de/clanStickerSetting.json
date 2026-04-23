@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Sticker hochladen",
+		"delete": "Löschen"
+	},
+	"modal": {
+		"uploadAFile": "Datei hochladen",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Datei muss PNG oder GIF sein, max. 512 KB",
+		"preview": "Vorschau",
+		"file": "Datei",
+		"thisCannotBeEdited": "Nicht bearbeitbar",
+		"browse": "Durchsuchen",
+		"chooseAFile": "Datei auswählen",
+		"stickerName": "Sticker-Name",
+		"exCatHug": "z. B.: cat_hug",
+		"thisIsForSale": "Dies ist ein Verkaufsartikel",
+		"neverMind": "Ignorieren",
+		"characters": "Der Name muss zwischen 3 und 64 Zeichen lang sein"
+	},
+	"content": {
+		"description": "Füge bis zu 250 benutzerdefinierte Sticker hinzu, die jeder in diesem Clan verwenden kann.",
+		"requirements": "UPLOAD-ANFORDERUNGEN",
+		"reqType": "• Kann ein statisches Bild (PNG) oder ein animiertes Bild (GIF) sein.",
+		"reqDim": "• Muss exakt 320 x 320 Pixel groß sein.",
+		"reqSize": "• Nicht größer als 512 KB.",
+		"available": "{{left}} STICKER-PLÄTZE VERFÜGBAR"
+	},
+	"toast": {
+		"errorUpdating": "Aktualisierungsfehler",
+		"errorSizeLimit": "Bildgröße überschreitet 512 KB",
+		"validateName": "Die Länge muss zwischen {{min}} und {{max}} Zeichen liegen. Nur Buchstaben, Zahlen, _ und - sind erlaubt."
+	},
+	"empty": {
+		"tip": "TIP",
+		"voiceSticker": {
+			"title": "Noch keine Soundeffekte vorhanden"
+		},
+		"sticker": {
+			"title": "Noch keine Sticker vorhanden"
+		}
+	}
+}

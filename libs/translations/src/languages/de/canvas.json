@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Dein Canvas-Titel"
+	},
+	"editor": {
+		"placeholder": "Beginne zu schreiben...",
+		"uploadingImage": "Bild wird hochgeladen..."
+	},
+	"actions": {
+		"save": "Speichern",
+		"saving": "Wird gespeichert...",
+		"discardChanges": "Änderungen verwerfen"
+	},
+	"error": {
+		"title": "Fehler"
+	},
+	"toolbar": {
+		"blockFormat": "Blockformat",
+		"addLink": "Link hinzufügen",
+		"removeLink": "Link entfernen",
+		"codeBlock": "Codeblock",
+		"cancel": "Abbrechen",
+		"apply": "Anwenden"
+	},
+	"blocks": {
+		"paragraph": "Absatz",
+		"h1": "H1 Überschrift",
+		"h2": "H2 Überschrift",
+		"h3": "H3 Überschrift",
+		"checkedList": "Checkliste",
+		"orderedList": "Nummerierte Liste",
+		"bulletedList": "Aufzählungsliste",
+		"blockquote": "Zitat"
+	}
+}

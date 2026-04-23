@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "Einstellungen",
+			"overview": "Übersicht",
+			"moderation": "Moderation",
+			"auditLog": "Audit-Log",
+			"channels": "Kanäle",
+			"integrations": "Integrationen",
+			"emoji": "Emojis",
+			"sticker": "Sticker",
+			"webhooks": "Webhooks",
+			"security": "Sicherheit",
+			"permissionDenied": "Du hast keine Berechtigung zum Bearbeiten",
+			"sound": "Soundeffekte",
+			"enableCommunity": "Community aktivieren"
+		},
+		"community": {
+			"title": "Community",
+			"enableCommunity": "Community aktivieren"
+		},
+		"subscriptions": {
+			"title": "Clan-Abonnements",
+			"getStarted": "Loslegen"
+		},
+		"userManagement": {
+			"title": "Benutzerverwaltung",
+			"members": "Mitglieder",
+			"role": "Rollen",
+			"invite": "Einladungen",
+			"bans": "Sperren"
+		}
+	}
+}

@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
+import deTranslations from './languages/de/index';
 import enTranslations from './languages/en/index';
 import esTranslations from './languages/es/index';
 import itTranslations from './languages/it/index';
@@ -27,6 +28,7 @@ const timezoneDetector = {
 				storedLang === 'es' ||
 				storedLang === 'tt' ||
 				storedLang === 'pt' ||
+				storedLang === 'de' ||
 				storedLang === 'jpn' ||
 				storedLang === 'kr' ||
 				storedLang === 'swe' ||
@@ -53,6 +55,9 @@ const timezoneDetector = {
 			}
 			if (languageCode.startsWith('tt')) {
 				return 'tt';
+			}
+			if (languageCode.startsWith('de')) {
+				return 'de';
 			}
 			if (languageCode.startsWith('pt')) {
 				return 'pt';
@@ -84,8 +89,7 @@ const timezoneDetector = {
 				lng === 'pt' ||
 				lng === 'it' ||
 				lng === 'jpn' ||
-				lng === 'kr' ||
-				lng === 'swe')
+				lng === 'de')
 		) {
 			localStorage.setItem('i18nextLng', lng);
 		}
@@ -100,13 +104,15 @@ i18n.use(languageDetector)
 	.init({
 		defaultNS,
 		fallbackLng: 'en',
-		supportedLngs: ['en', 'vi', 'ru', 'es', 'tt', 'pt', 'it', 'jpn', 'kr', 'swe'],
+
+		supportedLngs: ['en', 'vi', 'ru', 'es', 'tt', 'pt', 'it', 'jpn', 'de'],
 		resources: {
 			en: enTranslations,
 			vi: viTranslations,
 			ru: ruTranslations,
 			es: esTranslations,
 			tt: ttTranslations,
+			de: deTranslations,
 			pt: ptTranslations,
 			it: itTranslations,
 			jpn: jpnTranslations,

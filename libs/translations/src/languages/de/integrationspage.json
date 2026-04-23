@@ -1,0 +1,46 @@
+{
+	"download": "Download",
+	"sections": {
+		"section1": {
+			"title": "Alles, was du brauchst, an einem Ort",
+			"description": "Mit Mezon bündelt die App alle benötigten Tools in einem einzigen Raum. Kein mühsames Wechseln zwischen verschiedenen Ressourcen mehr – nur noch pure Effizienz und Produktivität."
+		},
+		"section2": {
+			"title": "Entfessle das Potenzial deines Unternehmens mit nahtloser Low-Code-Integration",
+			"description": "Mit minimalem Zeit- und Kostenaufwand optimieren wir die Integration für Unternehmen, die ihre Entwicklungskosten senken wollen – einfach nur Geschwindigkeit und Flexibilität."
+		},
+		"section3": {
+			"title": "Prozesse für Einzelpersonen und Organisationen automatisieren: ",
+			"titleHighlight": "Bot/App-Integration",
+			"titleEnd": "",
+			"description": "Verbinde Bots und Apps, um Aufgaben von der Personalverwaltung bis zur Produktion zu automatisieren. Schneller, präziser und ohne die Notwendigkeit, komplexe Algorithmen selbst lösen zu müssen."
+		},
+		"section4": {
+			"title": "ERP-System",
+			"description": "Mit leicht anpassbaren Modulen und Funktionen erfüllt das ERP alle geschäftlichen Anforderungen und automatisiert die Ressourcenverwaltung, um Bearbeitungszeiten zu verkürzen und die Effizienz zu maximieren."
+		}
+	},
+	"faq": {
+		"title": "Häufig gestellte Fragen (FAQ)",
+		"seeAll": "Alle FAQs ansehen",
+		"learnMore": "Mehr erfahren",
+		"questions": [
+			{
+				"question": "Wie beginne ich damit, meine Tools mit Mezon zu integrieren?",
+				"answer": "Der Einstieg ist ganz einfach. Navigiere zur Integrationsseite, wähle den gewünschten Dienst aus und folge den Schritt-für-Schritt-Anleitungen."
+			},
+			{
+				"question": "Welche Arten von Integrationen werden unterstützt?",
+				"answer": "Mezon unterstützt eine Vielzahl von Integrationen, darunter Webhooks, Bots, Drittanbieter-Apps und ERP-Systeme. Schau in unsere Dokumentation für eine vollständige Liste."
+			},
+			{
+				"question": "Kann ich benutzerdefinierte Integrationen erstellen?",
+				"answer": "Ja! Unsere Plattform bietet APIs und SDKs, mit denen du maßgeschneiderte Integrationen erstellen kannst, die genau auf deine spezifischen Bedürfnisse zugeschnitten sind."
+			},
+			{
+				"question": "Gibt es ein Limit für die Anzahl der Integrationen, die ich hinzufügen kann?",
+				"answer": "Die Anzahl der Integrationen hängt von deinem gewählten Paket ab. Enterprise-Pakete bieten unbegrenzte Integrationen."
+			}
+		]
+	}
+}

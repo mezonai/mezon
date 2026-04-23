@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Kontakt teilen",
+		"searchPlaceholder": "Suchen...",
+		"noResults": "Keine Ergebnisse gefunden",
+		"noFriends": "Keine Freunde oder Kanäle vorhanden",
+		"contactPreview": "Kontakt zum Teilen",
+		"cancel": "Abbrechen",
+		"share": "Teilen",
+		"sharing": "Wird gesendet...",
+		"group": "Gruppe",
+		"channel": "Kanal",
+		"thread": "Thread"
+	},
+	"card": {
+		"call": "Anrufen",
+		"message": "Nachricht",
+		"blockedAction": "Du kannst diese Aktion nicht ausführen.",
+		"cannotCallSelf": "Du kannst dich nicht selbst anrufen."
+	},
+	"contactSharedSuccess": "Erfolgreich geteilt",
+	"contactSharedError": "Teilen fehlgeschlagen"
+}

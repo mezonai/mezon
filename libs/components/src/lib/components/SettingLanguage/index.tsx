@@ -45,6 +45,12 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				flag: <TatarFlag />
 			},
 			{
+				title: `${t('setting:language.german')}`,
+				value: 'de',
+				contributedBy: 'robits',
+				flag: <GermanyFlag />
+			},
+			{
 				title: `${t('setting:language.italian')}`,
 				value: 'it',
 				contributedBy: 'robits',
@@ -65,14 +71,12 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 			{
 				title: `${t('setting:language.korean')}`,
 				value: 'kr',
-				contributedBy: 'robits',
-				flag: <KoreanFlag />
+				contributedBy: 'robits'
 			},
 			{
 				title: `${t('setting:language.swedish')}`,
 				value: 'swe',
-				contributedBy: 'robits',
-				flag: <SwedenFlag />
+				contributedBy: 'robits'
 			}
 		];
 	}, [t]);
@@ -328,50 +332,17 @@ const PortugalFlag = () => (
 		></path>
 	</svg>
 );
-
-const KoreanFlag = () => (
+const GermanyFlag = () => (
 	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
 		<defs>
-			<clipPath id="kr-clip">
+			<clipPath id="de-clip">
 				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
 			</clipPath>
 		</defs>
-		<g clipPath="url(#kr-clip)">
-			<rect x="1" y="4" width="30" height="24" fill="#fff" />
-			<circle cx="16" cy="16" r="6" fill="#cd2e3a" />
-			<path d="M16 10 A6 6 0 0 1 16 22" fill="#003478" />
-			{/* Trigrams - simplified */}
-			<line x1="6" y1="9" x2="9" y2="6" stroke="#000" strokeWidth="1.2" />
-			<line x1="7.5" y1="10.5" x2="10.5" y2="7.5" stroke="#000" strokeWidth="1.2" />
-			<line x1="9" y1="12" x2="12" y2="9" stroke="#000" strokeWidth="1.2" />
-			<line x1="20" y1="9" x2="23" y2="6" stroke="#000" strokeWidth="1.2" />
-			<line x1="21.5" y1="10.5" x2="24.5" y2="7.5" stroke="#000" strokeWidth="1.2" />
-			<line x1="23" y1="12" x2="26" y2="9" stroke="#000" strokeWidth="1.2" />
-			<line x1="6" y1="23" x2="9" y2="26" stroke="#000" strokeWidth="1.2" />
-			<line x1="7.5" y1="21.5" x2="10.5" y2="24.5" stroke="#000" strokeWidth="1.2" />
-			<line x1="9" y1="20" x2="12" y2="23" stroke="#000" strokeWidth="1.2" />
-			<line x1="20" y1="23" x2="23" y2="26" stroke="#000" strokeWidth="1.2" />
-			<line x1="21.5" y1="21.5" x2="24.5" y2="24.5" stroke="#000" strokeWidth="1.2" />
-			<line x1="23" y1="20" x2="26" y2="23" stroke="#000" strokeWidth="1.2" />
-		</g>
-		<path
-			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
-			opacity=".15"
-		></path>
-	</svg>
-);
-
-const SwedenFlag = () => (
-	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
-		<defs>
-			<clipPath id="se-clip">
-				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
-			</clipPath>
-		</defs>
-		<g clipPath="url(#se-clip)">
-			<rect x="1" y="4" width="30" height="24" fill="#006AA7" />
-			<rect x="1" y="13" width="30" height="6" fill="#FECC02" />
-			<rect x="11" y="4" width="6" height="24" fill="#FECC02" />
+		<g clipPath="url(#de-clip)">
+			<rect x="1" y="4" width="30" height="8" fill="#000" />
+			<rect x="1" y="12" width="30" height="8" fill="#FF0000" />
+			<rect x="1" y="20" width="30" height="8" fill="#FFCC00" />
 		</g>
 		<path
 			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"

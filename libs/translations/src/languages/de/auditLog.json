@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Audit-Log",
+		"filterByUser": "Nach Benutzer filtern",
+		"filterByAction": "Nach Aktion filtern",
+		"filterBtn": "Filtern"
+	},
+	"auditLogItem": {
+		"performedAnAction": "hat eine Aktion ausgeführt",
+		"toChannel": "in Kanal",
+		"remove": "entfernen",
+		"add": "hinzufügen"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Alle Aktionen",
+		"placeholder": "Aktion suchen"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Alle Benutzer",
+		"placeholder": "Benutzer suchen"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "NOCH KEINE EINTRÄGE",
+		"description": "Sobald Moderatoren Aufgaben ausführen, kannst du ihre Aktivitäten hier verfolgen."
+	}
+}

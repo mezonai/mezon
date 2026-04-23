@@ -1,0 +1,9 @@
+{
+	"show": "Anzeigen",
+	"membersOf": "Insgesamt {{count}} Mitglieder",
+	"addedBy": "Hinzugefügt von {{name}}",
+	"you": "du",
+	"inVoice": "Im Sprachkanal",
+	"onlineCount": "Online - {{count}}",
+	"offlineCount": "Offline - {{count}}"
+}

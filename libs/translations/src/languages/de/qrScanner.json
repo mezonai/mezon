@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Kamerazugriff verweigert",
+	"pleaseAllowCamera": "Bitte erlaube den Zugriff auf die Kamera in deinen Geräteeinstellungen.",
+	"cancel": "Abbrechen",
+	"openSettings": "Einstellungen öffnen",
+	"anErrorOccurred": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+	"youAreIn": "Du bist eingeloggt!",
+	"logInOnNewDevice": "Auf einem neuen Gerät anmelden?",
+	"youAreLoggedInOnDesktop": "Du bist jetzt auf dem Desktop eingeloggt.",
+	"neverScanALoginQRCodeFromAnotherUser": "Scanne niemals einen Login-QR-Code von einem anderen Benutzer.",
+	"startTalking": "Gespräch starten",
+	"logIn": "Anmelden",
+	"requestCameraPermission": "Kamerazugriff anfordern",
+	"myQRCode": "Mein QR-Code",
+	"selectPhotoWithQRCode": "Wähle ein Foto aus, das einen QR-Code enthält",
+	"qrCodeNotValid": "QR-Code ungültig"
+}

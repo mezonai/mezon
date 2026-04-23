@@ -1,0 +1,10 @@
+{
+	"streamThumbnail": "Stream-Thumbnail",
+	"videoError": "Video konnte nicht abgespielt werden. Bitte versuche es später erneut.",
+	"everyoneWaiting": "Alle warten drinnen auf dich",
+	"noOneInStream": "Im Livestream ist momentan niemand",
+	"joinStream": "Livestream beitreten",
+	"noStreamToday": "Heute findet kein Livestream statt",
+	"hideMembers": "Mitglieder ausblenden",
+	"showMembers": "Mitglieder anzeigen"
+}
