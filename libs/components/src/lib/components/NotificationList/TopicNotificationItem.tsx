@@ -128,10 +128,13 @@ function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
 		return messageReplied?.content ? safeJSONParse(messageReplied?.content) : null;
 	}, [messageReplied]);
 
-	const resolvedSenderId = useMemo(
-		() => topic?.last_sent_message?.sender_id || topic?.creator_id || '',
-		[topic?.last_sent_message?.sender_id, topic?.creator_id]
-	);
+	const resolvedSenderId = useMemo(() => {
+		const senderId = topic?.last_sent_message?.sender_id;
+		if (!senderId) {
+			return topic?.creator_id || '';
+		}
+		return senderId;
+	}, [topic?.last_sent_message?.sender_id, topic?.creator_id]);
 
 	const { priorityAvatar, isAnonymous } = useGetPriorityNameFromUserClan(resolvedSenderId);
 	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, resolvedSenderId));
