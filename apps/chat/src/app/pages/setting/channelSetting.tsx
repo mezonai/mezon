@@ -4,56 +4,44 @@ import {
 	channelSettingActions,
 	selectAllChannelSuggestion,
 	selectCurrentClanId,
-	selectListChannelBySearch,
 	selectNumberChannelCount,
 	useAppDispatch
 } from '@mezon/store';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useDebouncedCallback } from 'use-debounce';
 import ChannelTopBar from './ChannelTopBar';
+
+const fuzzyMatch = (text: string, pattern: string): boolean => {
+	const normalizedText = text.toLowerCase();
+	const normalizedPattern = pattern.toLowerCase().trim();
+	if (!normalizedPattern) return true;
+	if (normalizedText.includes(normalizedPattern)) return true;
+	let j = 0;
+	for (let i = 0; i < normalizedText.length && j < normalizedPattern.length; i++) {
+		if (normalizedText[i] === normalizedPattern[j]) j++;
+	}
+	return j === normalizedPattern.length;
+};
 
 const ChannelSetting = () => {
 	const [searchFilter, setSearchFilter] = useState('');
 	const listChannel = useSelector(selectAllChannelSuggestion);
-	const listChannelSearch = useSelector(selectListChannelBySearch);
 	const countChannel = useSelector(selectNumberChannelCount);
 	const dispatch = useAppDispatch();
 	const selectClanId = useSelector(selectCurrentClanId);
 	const prevClanIdRef = useRef<string | null>(null);
 
-	const debouncedSearchChannel = useDebouncedCallback(async (value: string) => {
-		await dispatch(
-			channelSettingActions.fetchChannelSettingInClan({
-				clanId: selectClanId as string,
-				parentId: '0',
-				typeFetch: ETypeFetchChannelSetting.SEARCH_CHANNEL,
-				keyword: value
-			})
-		);
-	}, 300);
+	const handleSearchByNameChannel = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+		setSearchFilter(e.target.value);
+	}, []);
 
-	const handleSearchByNameChannel = useCallback(
-		(e: ChangeEvent<HTMLInputElement>) => {
-			const value = e.target.value;
-			setSearchFilter(value);
+	const fuzzyFilteredList = useMemo(() => {
+		if (!searchFilter.trim()) return listChannel;
+		return listChannel.filter((channel) => fuzzyMatch(channel.channel_label || '', searchFilter));
+	}, [listChannel, searchFilter]);
 
-			if (!value.trim()) {
-				debouncedSearchChannel.cancel();
-				return;
-			}
-			debouncedSearchChannel(value);
-		},
-		[debouncedSearchChannel]
-	);
-
-	const listChannelBySearch = useMemo(() => {
-		if (searchFilter) {
-			return listChannelSearch;
-		}
-		return listChannel;
-	}, [listChannelSearch, listChannel, searchFilter]);
+	const displayCount = searchFilter.trim() ? fuzzyFilteredList.length : countChannel;
 
 	useEffect(() => {
 		if (selectClanId && prevClanIdRef.current && prevClanIdRef.current !== selectClanId) {
@@ -71,7 +59,8 @@ const ChannelSetting = () => {
 				clanId: selectClanId as string,
 				parentId: '0',
 				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL,
-				noCache: true
+				noCache: true,
+				limit: 500
 			})
 		);
 	}, [selectClanId, dispatch]);
@@ -86,9 +75,9 @@ const ChannelSetting = () => {
 				<ChannelTopBar searchQuery={searchFilter} handleSearchChange={handleSearchByNameChannel} />
 			</div>
 			<ListChannelSetting
-				listChannel={listChannelBySearch}
+				listChannel={fuzzyFilteredList}
 				clanId={selectClanId as string}
-				countChannel={countChannel}
+				countChannel={displayCount}
 				searchFilter={searchFilter}
 			/>
 		</div>

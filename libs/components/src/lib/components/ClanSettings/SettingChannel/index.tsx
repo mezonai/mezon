@@ -39,6 +39,10 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 		setCurrentPage(1);
 	}, [clanId]);
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchFilter]);
+
 	const onPageChange = async (page: number) => {
 		setCurrentPage(page);
 		await dispatch(
