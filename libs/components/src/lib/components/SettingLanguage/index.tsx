@@ -45,6 +45,12 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				flag: <TatarFlag />
 			},
 			{
+				title: `${t('setting:language.german')}`,
+				value: 'de',
+				contributedBy: 'robits',
+				flag: <GermanyFlag />
+			},
+			{
 				title: `${t('setting:language.italian')}`,
 				value: 'it',
 				contributedBy: 'robits',
@@ -319,6 +325,24 @@ const PortugalFlag = () => (
 			<rect x="1" y="4" width="12" height="24" fill="#006600" />
 			<rect x="13" y="4" width="18" height="24" fill="#ff0000" />
 			<circle cx="13" cy="16" r="4.5" fill="#ffcc00" />
+		</g>
+		<path
+			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+			opacity=".15"
+		></path>
+	</svg>
+);
+const GermanyFlag = () => (
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+		<defs>
+			<clipPath id="de-clip">
+				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
+			</clipPath>
+		</defs>
+		<g clipPath="url(#de-clip)">
+			<rect x="1" y="4" width="30" height="8" fill="#000" />
+			<rect x="1" y="12" width="30" height="8" fill="#FF0000" />
+			<rect x="1" y="20" width="30" height="8" fill="#FFCC00" />
 		</g>
 		<path
 			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"

@@ -74,7 +74,7 @@ const CopyButtonComponent: React.FC<CopyButtonComponentProps> = ({
 		<ButtonSwitch
 			className={`text-theme-primary-active gap-2 p-1 text-sm bg-transparent bg-item-theme-hover ${className ?? ''}`}
 			iconDefault={<Icons.CopyIcon />}
-			iconSwitch={<Icons.Tick defaultSize="w-4 h-4" fill="currentColor" />}
+			iconSwitch={<Icons.Tick className="w-4 h-4" fill="currentColor" />}
 			onClick={handleCopy}
 			disabled={disabled}
 			title={title}

@@ -22,7 +22,7 @@ const TransactionDetailSkeleton: React.FC = () => {
 	const detailFields = [
 		{ label: t(FIELDS.TRANSACTION_ID), icon: Icons.Transaction },
 		{ label: t(FIELDS.SENDER), icon: Icons.UserIcon },
-		{ label: t(FIELDS.AMOUNT), icon: () => <Icons.DollarIcon defaultSize="w-3 h-3" isWhite /> },
+		{ label: t(FIELDS.AMOUNT), icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite /> },
 		{ label: t(FIELDS.RECEIVER), icon: Icons.UserIcon },
 		{ label: t(FIELDS.NOTE), icon: Icons.PenEdit },
 		{ label: t(FIELDS.CREATED), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
@@ -66,7 +66,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 			{
 				label: t(FIELDS.AMOUNT),
 				value: `${formatBalanceToString(detailLedger.value)} ${t(CURRENCY.SYMBOL)}`,
-				icon: () => <Icons.DollarIcon defaultSize="w-3 h-3" isWhite />
+				icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite />
 			},
 			{ label: t(FIELDS.RECEIVER), value: receiver?.username || t(UNKNOWN_USER), icon: Icons.UserIcon },
 			{ label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: Icons.PenEdit },

@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Als gelesen markieren",
+			"browseChannels": "Kanäle suchen"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Kanal erstellen",
+			"createCategory": "Kategorie erstellen",
+			"createEvent": "Event erstellen"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Clan-Profil bearbeiten",
+			"showAllChannels": "Alle Kanäle anzeigen",
+			"hideMutedChannels": "Alle Kanäle ausblenden",
+			"allowDirectMessage": "Direktnachrichten erlauben",
+			"allowMessageRequest": "Nachrichtenanfragen erlauben",
+			"reportServer": "Clan melden",
+			"leaveServer": "Clan verlassen",
+			"deleteClan": "Clan löschen",
+			"auditLog": "Audit-Log"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Leere Kategorien anzeigen",
+			"show": "Anzeigen",
+			"hide": "Ausblenden"
+		},
+		"devMode": {
+			"title": "Entwicklermodus",
+			"copyServerID": "Clan-ID kopieren",
+			"serverIDCopied": "Clan-ID kopiert"
+		}
+	},
+	"actions": {
+		"boot": "Upgrade",
+		"invite": "Einladungen",
+		"notifications": "Benachrichtigungen",
+		"settings": "Einstellungen"
+	},
+	"info": {
+		"online": "Online",
+		"members": "Mitglieder"
+	},
+	"common": {
+		"search": "Suche",
+		"community": "Community",
+		"searchMembers": "Mitglieder suchen"
+	},
+	"modalPanel": {
+		"createCategory": "Kategorie erstellen",
+		"markAsRead": "Als gelesen markieren",
+		"processing": "Wird verarbeitet...",
+		"invitePeople": "Leute einladen",
+		"clanSettings": "Clan-Einstellungen",
+		"notificationSettings": "Benachrichtigungseinstellungen",
+		"showEmptyCategories": "Leere Kategorien anzeigen",
+		"leaveClan": "Clan verlassen"
+	}
+}

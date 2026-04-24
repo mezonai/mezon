@@ -461,7 +461,7 @@ const ThreadBox = () => {
 					<div className="flex flex-col justify-end flex-grow">
 						{!threadCurrentChannel && (
 							<div className="relative flex text-theme-primary-active items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
-								<Icons.ThreadIcon defaultSize="w-7 h-7" />
+								<Icons.ThreadIcon className="w-7 h-7" />
 								{isPrivate === 1 && (
 									<div className="absolute right-4 bottom-4">
 										<Icons.Locked />

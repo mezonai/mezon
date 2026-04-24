@@ -211,14 +211,14 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 				<h2 className="text-[24px] font-semibold text-center text-theme-primary-active">{t('addMembersRoles.title')}</h2>
 				<div className="flex justify-center">
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
-						<Icons.SpeakerLocked defaultSize="w-5 h-5" />
+						<Icons.SpeakerLocked className="w-5 h-5" />
 					)}
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-						<Icons.HashtagLocked defaultSize="w-5 h-5 " />
+						<Icons.HashtagLocked className="w-5 h-5 " />
 					)}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker defaultSize="w-5 5-5" />}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream defaultSize="w-5 5-5" />}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.Hashtag defaultSize="w-5 h-5" />}
+					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker className="w-5 h-5" />}
+					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream className="w-5 h-5" />}
+					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.Hashtag className="w-5 h-5" />}
 					<p className=" text-[16px] break-words">{channel.channel_label}</p>
 				</div>
 				<div className="py-3">

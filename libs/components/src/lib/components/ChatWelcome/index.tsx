@@ -151,11 +151,11 @@ const WelComeChannel = (props: WelComeChannelProps) => {
 				className={`h-[75px] w-[75px] rounded-full text-theme-primary-active  flex items-center justify-center ${!isChatStream ? 'bg-theme-primary' : ''}`}
 			>
 				{isChatStream ? (
-					<Icons.Chat defaultSize="w-10 h-10 " />
+					<Icons.Chat className="w-10 h-10 " />
 				) : channelPrivate ? (
-					<Icons.HashtagLocked defaultSize="w-10 h-10" />
+					<Icons.HashtagLocked className="w-10 h-10" />
 				) : (
-					<Icons.Hashtag defaultSize="w-10 h-10" />
+					<Icons.Hashtag className="w-10 h-10" />
 				)}
 			</div>
 			<div>
@@ -191,7 +191,7 @@ const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
 				{isPrivate === ChannelStatusEnum.isPrivate ? (
 					<Icons.ThreadIconLocker className="w-10 h-10" />
 				) : (
-					<Icons.ThreadIcon defaultSize="w-10 h-10" />
+					<Icons.ThreadIcon className="w-10 h-10" />
 				)}
 			</div>
 			<div>

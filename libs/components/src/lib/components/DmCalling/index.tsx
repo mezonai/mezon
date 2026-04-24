@@ -202,6 +202,20 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		return <>{menuItems}</>;
 	}, [audioOutputDevicesList, audioInputDevicesList]);
 
+	const localVideoContainerClass =
+		activeVideo === 'remote'
+			? 'absolute z-10 right-0 bottom-0 w-[200px] h-[150px] max-sbm:w-[140px] max-sbm:h-[100px]'
+			: activeVideo === 'local'
+				? 'relative w-full h-full'
+				: 'relative w-[400px] h-[300px] max-sbm:w-full max-sbm:h-[200px]';
+
+	const remoteVideoContainerClass =
+		activeVideo === 'local'
+			? 'absolute z-10 right-0 bottom-0 w-[200px] h-[150px] max-sbm:w-[140px] max-sbm:h-[100px]'
+			: activeVideo === 'remote'
+				? 'relative w-full h-full'
+				: 'relative w-[400px] h-[300px] max-sbm:w-full max-sbm:h-[200px]';
+
 	if (!isInCall && !isInChannelCalled) return <div />;
 
 	return (
@@ -219,18 +233,17 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 			</div>
 
 			<div
-				className={`flex ${activeVideo === 'local' || activeVideo === 'remote' ? 'relative w-full h-[calc(100%_-_32px)] justify-center' : 'flex justify-center items-center h-full'} space-x-4 ${!isShowMeetDM && !isRemoteVideo ? 'hidden -z-10 opacity-0' : `${activeVideo === 'local' || activeVideo === 'remote' ? '' : 'z-10 mb-5 mt-5'}`}`}
+				className={`flex ${activeVideo === 'local' || activeVideo === 'remote' ? 'relative w-full h-[calc(100%_-_32px)] justify-center' : 'flex justify-center items-center h-full'} space-x-4 max-sbm:flex-col max-sbm:space-x-0 max-sbm:space-y-4 ${!isShowMeetDM && !isRemoteVideo ? 'hidden -z-10 opacity-0' : `${activeVideo === 'local' || activeVideo === 'remote' ? '' : 'z-10 mb-5 mt-5'}`}`}
 			>
 				{/* Local Video */}
-				<div
-					className={`${activeVideo === 'remote' ? 'absolute z-10 right-0 bottom-0' : `${activeVideo === 'local' ? 'relative w-fit' : 'relative w-full'}`} `}
-				>
+				<div className={remoteVideoContainerClass}>
 					<video
 						ref={localVideoRef}
 						autoPlay
 						muted
 						playsInline
 						onClick={() => setActiveVideo(activeVideo === 'local' || activeVideo === 'remote' ? null : 'local')}
+						className="w-full h-full"
 						style={{
 							width: activeVideo === 'local' ? '100%' : activeVideo === 'remote' ? 'min(120px, 30vw)' : 'min(400px, 45vw)',
 							height: activeVideo === 'local' ? '100%' : activeVideo === 'remote' ? 'min(90px, 22vw)' : 'min(300px, 34vw)',
@@ -264,15 +277,14 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 					</div>
 				</div>
 				{/* Remote Video */}
-				<div
-					className={`${activeVideo === 'local' ? 'absolute z-10 right-0 bottom-0' : `${activeVideo === 'remote' ? 'relative w-fit' : 'relative w-full'}`}`}
-				>
+				<div className={localVideoContainerClass}>
 					<div className="relative w-full h-full">
 						<video
 							ref={remoteVideoRef}
 							autoPlay
 							playsInline
 							onClick={() => setActiveVideo(activeVideo === 'local' || activeVideo === 'remote' ? null : 'remote')}
+							className="w-full h-full"
 							style={{
 								width: activeVideo === 'remote' ? '100%' : activeVideo === 'local' ? 'min(120px, 30vw)' : 'min(400px, 45vw)',
 								height: activeVideo === 'remote' ? '100%' : activeVideo === 'local' ? 'min(90px, 22vw)' : 'min(300px, 34vw)',

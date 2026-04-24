@@ -57,28 +57,28 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 			if (isPrivate) {
 				return <Icons.ThreadIconLocker className="w-5 h-5 -mt-1 min-w-5 block dark:text-[#AEAEAE] text-colorTextLightMode" />;
 			}
-			return <Icons.ThreadIcon defaultSize="w-5 h-5 -mt-1 min-w-5" />;
+			return <Icons.ThreadIcon className="w-5 h-5 -mt-1 min-w-5" />;
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isPrivate) {
-				return <Icons.HashtagLocked defaultSize="w-5 h-5 -mt-1 min-w-5" />;
+				return <Icons.HashtagLocked className="w-5 h-5 -mt-1 min-w-5" />;
 			}
-			return <Icons.Hashtag defaultSize="w-5 h-5 -mt-1 min-w-5" />;
+			return <Icons.Hashtag className="w-5 h-5 -mt-1 min-w-5" />;
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			if (isPrivate) {
-				return <Icons.SpeakerLocked defaultSize="w-5 h-5 min-w-5" />;
+				return <Icons.SpeakerLocked className="w-5 h-5 min-w-5" />;
 			}
-			return <Icons.Speaker defaultSize="w-5 h-5 min-w-5" />;
+			return <Icons.Speaker className="w-5 h-5 min-w-5" />;
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 			if (isPrivate) {
-				return <Icons.SpeakerLocked defaultSize="w-5 h-5 min-w-5" />;
+				return <Icons.SpeakerLocked className="w-5 h-5 min-w-5" />;
 			}
-			return <Icons.Stream defaultSize="w-5 h-5 min-w-5" />;
+			return <Icons.Stream className="w-5 h-5 min-w-5" />;
 		}
 	};
 	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, channel?.clan_id as string));

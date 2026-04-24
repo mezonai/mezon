@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Neue Anwendung erstellen",
+			"bot": "Neuen Bot erstellen"
+		},
+		"form": {
+			"type": {
+				"label": "TYP",
+				"options": {
+					"createApplication": "Anwendung erstellen",
+					"createBot": "Bot erstellen"
+				}
+			},
+			"name": {
+				"label": "NAME"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Shadow-Bot",
+			"agreement": {
+				"text": "Durch Klicken auf Erstellen stimmst du den",
+				"termsOfService": "Entwickler-Nutzungsbedingungen",
+				"policy": "Entwickler-Richtlinien",
+				"and": "und"
+			}
+		},
+		"buttons": {
+			"cancel": "Abbrechen",
+			"create": "Erstellen",
+			"creating": "Wird erstellt...",
+			"confirm": "Bestätigen"
+		},
+		"errors": {
+			"nameRequired": "Ein Name ist erforderlich, um deine neue {type} zu erstellen.",
+			"urlRequired": "Eine URL ist erforderlich, um deine neue Anwendung zu erstellen.",
+			"invalidUrl": "Bitte gib eine gültige URL ein (z. B. https://example.com).",
+			"createFailed": "Anwendung konnte nicht erstellt werden oder Antwort enthielt keine ID",
+			"unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. {message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "Im Shadow-Modus kann der Bot alle Nachrichten empfangen, die an den Ersteller gesendet werden, aber selbst keine Nachrichten senden."
+		},
+		"shadowConfirm": {
+			"title": "Möchtest du den Shadow-Bot-Modus wirklich aktivieren?",
+			"message": "In diesem Modus kann der Bot alle Nachrichten empfangen, die an den Ersteller gesendet werden, aber selbst keine Nachrichten senden."
+		}
+	},
+	"sidebar": {
+		"menu": "Menü",
+		"closeMenu": "Menü schließen"
+	},
+	"tabs": {
+		"generalInformation": "Allgemeine Informationen",
+		"installation": "Installation",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Allgemeine Informationen",
+		"subtitle": "Wie sollen wir dein Produkt nennen? Was sind seine großartigen Funktionen? Welches Icon soll es auf Mezon repräsentieren? Sag es uns hier!",
+		"agreement": {
+			"text": "Durch Klicken auf Erstellen stimmst du den",
+			"adminTerms": "Admin-Nutzungsbedingungen",
+			"adminPolicy": "Admin-Richtlinien",
+			"and": "und"
+		},
+		"appIcon": {
+			"label": "App-Icon",
+			"remove": "Entfernen",
+			"size": "Größe: {size}"
+		},
+		"form": {
+			"name": "Name",
+			"url": "URL",
+			"botShadow": "Shadow-Bot",
+			"description": {
+				"label": "Beschreibung (max. 400 Zeichen)",
+				"subtitle": "Deine Beschreibung erscheint im Bereich 'Über den Bot'",
+				"placeholder": "Schreibe eine kurze Beschreibung deines Bots"
+			},
+			"appId": "Bot-ID",
+			"appToken": "Token"
+		},
+		"token": {
+			"newTokenWarning": "Dies ist dein neues Token. Kopiere es und speichere es sicher; du wirst es nie wieder sehen können.",
+			"securityInfo": "Aus Sicherheitsgründen kann das Token nur einmal bei der Erstellung eingesehen werden. Wenn du das Token vergisst oder den Zugriff verlierst, erstelle bitte ein neues Token."
+		},
+		"buttons": {
+			"copy": "Kopieren",
+			"copied": "Kopiert!",
+			"copyToken": "Token kopieren",
+			"resetToken": "Token zurücksetzen",
+			"delete": "Löschen"
+		},
+		"errors": {
+			"invalidUrl": "Bitte gib eine gültige URL ein (z. B. https://example.com).",
+			"clientNotInitialized": "Client oder Datei wurde nicht initialisiert",
+			"resetTokenFailed": "Token konnte nicht zurückgesetzt werden:"
+		}
+	},
+	"installation": {
+		"title": "Installation",
+		"subtitle": "Wähle aus, wie Benutzer deine Anwendung installieren. Erstelle Installationslinks, wähle den Installationskontext und lege die Scopes und Berechtigungen fest, die du anfordern möchtest.",
+		"installLink": {
+			"title": "Installationslink",
+			"description": "Verwende den bereitgestellten Installationslink oder registriere einen benutzerdefinierten Link. Wenn du einen benutzerdefinierten Link wählst, werden Benutzer, die deine Anwendung hinzufügen, zu deiner URL weitergeleitet, anstatt den 'Anwendung hinzufügen'-Prozess in Mezon zu nutzen.",
+			"option": "Von Mezon bereitgestellter Link"
+		},
+		"buttons": {
+			"copy": "Kopieren",
+			"copied": "Kopiert!"
+		},
+		"loading": "Anwendungsdaten werden geladen...",
+		"notFound": "Anwendungsdaten nicht gefunden"
+	},
+	"clientInformation": {
+		"title": "Client-Informationen",
+		"clientId": "Client-ID",
+		"clientSecret": "Client-Secret",
+		"hiddenForSecurity": "Aus Sicherheitsgründen ausgeblendet",
+		"resetSecret": "Secret zurücksetzen",
+		"publicClient": {
+			"title": "Öffentlicher Client",
+			"description": "Ein öffentlicher Client kann die Geheimhaltung der Client-Anmeldedaten nicht gewährleisten (d. h. Desktop-/Mobile-Apps, die keinen Server für Anfragen nutzen)."
+		},
+		"buttons": {
+			"copy": "Kopieren",
+			"copied": "Kopiert!"
+		},
+		"resetSecretPopup": {
+			"title": "Secret Key neu erstellen?",
+			"warning": "Deine Anwendung wird nicht funktionieren, bis du den Secret Key in deinem Anwendungscode aktualisiert hast.",
+			"nevermind": "Abbrechen",
+			"confirm": "Bestätigen!"
+		},
+		"toasts": {
+			"addRedirectUri": "Bitte füge mindestens eine Redirect-URI hinzu, bevor du das Secret Key zurücksetzt!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Dashboard",
+		"applications": "Anwendungen",
+		"teams": "Teams",
+		"embedDebugger": "Embed-Debugger",
+		"document": "Dokumentation"
+	},
+	"applicationsPage": {
+		"title": "Anwendungen",
+		"newApplicationButton": "Neue Anwendung oder neuen Bot erstellen",
+		"develop": "Entwickle",
+		"subtitle": " ... um Mezon für Millionen von Nutzern anzupassen und zu erweitern.",
+		"appsLinkText": "Anwendungen",
+		"sortBy": "Sortieren nach:",
+		"sortOptions": {
+			"dateOfCreation": "Erstellungsdatum",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Klein",
+			"large": "Groß"
+		},
+		"sections": {
+			"myApplications": "Meine Anwendungen",
+			"myBots": "Meine Bots"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Nutze Mezon als Autorisierungssystem oder verwende unsere API im Namen deiner Nutzer. Füge Redirect-URIs hinzu, wähle Scopes, würfle eine D20 für Glück und leg los!",
+		"learnMore": "Erfahre mehr über OAuth2",
+		"generator": {
+			"title": "OAuth2-URL-Generator",
+			"description": "Erstelle Einladungslinks für deine Anwendung, indem du die notwendigen Scopes und Berechtigungen auswählst. Teile die URL anschließend mit anderen!",
+			"scopes": "Scopes"
+		},
+		"redirects": {
+			"title": "Redirects",
+			"description": "Du musst mindestens eine URI angeben, damit die Authentifizierung funktioniert. Wenn du eine URI in einer OAuth-Anfrage übergibst, muss sie exakt mit einer der hier eingegebenen URIs übereinstimmen.",
+			"addRedirect": "Redirect hinzufügen",
+			"toasts": {
+				"fillAllInputs": "Bitte fülle alle Felder mit gültigen URIs aus!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Ein Eingabefeld ist leer!",
+			"invalidUris": "URIs müssen gültig sein!",
+			"redirectUriRequired": "Redirect-URI ist erforderlich!"
+		}
+	},
+	"backToApps": "Zurück zu Anwendungen",
+	"selectLabel": "{{type}} WÄHLEN",
+	"settings": "EINSTELLUNGEN",
+	"flows": {
+		"title": "Chat-Flows",
+		"hasTokenInfo": "Du musst zuerst ein Token festlegen, bevor du einen neuen Bot-Flow erstellen kannst.",
+		"setToken": "Token festlegen",
+		"addFlow": "Flow hinzufügen",
+		"appTokenModal": {
+			"title": "App-Token",
+			"saveButton": "Speichern"
+		},
+		"toasts": {
+			"errorLoading": "Fehler beim Laden der Flow-Liste"
+		}
+	},
+	"teams": {
+		"title": "Teams"
+	},
+	"embed": {
+		"title": "Embed-Debugger"
+	},
+	"small": "Klein",
+	"large": "Groß"
+}

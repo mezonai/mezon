@@ -54,9 +54,9 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const markUpOnReplyParent = useRef<HTMLDivElement | null>(null);
 
 	const nameShowed = getShowName(
-		message?.references?.[0]?.message_sender_clan_nick ?? '',
-		message?.references?.[0]?.message_sender_display_name ?? '',
-		messageUsernameSenderRef ?? '',
+		messageSender?.clan_nick || message?.references?.[0]?.message_sender_clan_nick || '',
+		messageSender?.user?.display_name || message?.references?.[0]?.message_sender_display_name || '',
+		messageSender?.user?.username || messageUsernameSenderRef || '',
 		senderIdMessageRef ?? ''
 	);
 
@@ -105,7 +105,11 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 								className="h-6 text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
 								data-e2e={generateE2eId('replied_message.username')}
 							>
-								{!isClanView ? message?.references?.[0]?.message_sender_display_name || messageUsernameSenderRef : nameShowed}
+								{!isClanView
+									? messageSender?.user?.display_name ||
+										message?.references?.[0]?.message_sender_display_name ||
+										messageUsernameSenderRef
+									: nameShowed}
 							</span>
 							{hasAttachmentInMessageRef || isEmbedMessage ? (
 								<div className=" flex flex-row items-center text-theme-primary">

@@ -83,7 +83,7 @@
 	},
 	"stickers": {
 		"uploadInstructions": "UPPLADDNINGSGUID",
-		"description": "Stickers kan vara statiskt (PNG) eller dynamisk (APNG, GIF). Sticker måste vara exakt 320 x 320 pixel och inte större än 512KB. Vi kommer automatiskt ändra storlek på statisk PNG-stickers och dynamisk GIF för dig.",
+		"description": "Stickers kan vara statiskt (PNG, JPG) eller dynamisk (APNG, GIF). Sticker måste vara exakt 320 x 320 pixel och inte större än 512KB. Vi kommer automatiskt ändra storlek på statisk (PNG, JPG) -stickers och dynamisk GIF för dig.",
 		"uploadHere": "Ladda upp här!",
 		"customizeMessage": "Anpassa dessa underbara stickers efter dina preferenser",
 		"uploadSticker": "Ladda upp sticker"

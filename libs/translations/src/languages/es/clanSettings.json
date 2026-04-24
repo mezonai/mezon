@@ -84,7 +84,7 @@
 	"stickers": {
 		"uploadInstructions": "INSTRUCCIONES DE CARGA",
 		"title": "Stickers de Imagen",
-		"description": "Los stickers pueden ser estáticos (PNG) o animados (APNG, GIF). Los stickers deben tener exactamente 320 x 320 píxeles y no más de 512 KB. Redimensionaremos automáticamente los stickers PNG estáticos y GIF animados por ti.",
+		"description": "Los stickers pueden ser estáticos (PNG, JPG) o animados (APNG, GIF). Los stickers deben tener exactamente 320 x 320 píxeles y no más de 512 KB. Redimensionaremos automáticamente los stickers (PNG, JPG) estáticos y GIF animados por ti.",
 		"uploadHere": "¡Súbelo aquí!",
 		"customizeMessage": "Personalicemos los stickers increíbles con tus intereses",
 		"uploadSticker": "subir sticker"

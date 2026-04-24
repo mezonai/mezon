@@ -39,12 +39,12 @@ const Integrations = ({ isClanSetting }: IIntegrationsProps) => {
 				</div>
 				{isOpenClanWebhooks ? (
 					<div className="flex items-center gap-1 max-sm:gap-0.5">
-						<Icons.ArrowDown defaultSize="-rotate-90 w-[20px] max-sm:w-[16px]" />
+						<Icons.ArrowDown className="-rotate-90 w-[20px] max-sm:w-[16px]" />
 						<span className="max-sm:text-base">{t('clanWebhooks')}</span>
 					</div>
 				) : isOpenWebhooks ? (
 					<div className="flex items-center mt-1 gap-1 max-sm:gap-0.5">
-						<Icons.ArrowDown defaultSize="-rotate-90 w-[20px] max-sm:w-[16px]" />
+						<Icons.ArrowDown className="-rotate-90 w-[20px] max-sm:w-[16px]" />
 						<span className="max-sm:text-base">{t('webhooks')}</span>
 					</div>
 				) : (

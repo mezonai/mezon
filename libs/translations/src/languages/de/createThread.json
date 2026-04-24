@@ -1,0 +1,24 @@
+{
+	"threads": "Threads",
+	"emptyThread": {
+		"textNoThread": "Keine Threads vorhanden",
+		"textNotify": "Konzentriere dich auf das Gespräch mit einem Thread – einem temporären Textkanal.",
+		"createThreads": "Thread erstellen"
+	},
+	"otherThreads": "ÄLTERE THREADS",
+	"errorMessage": "Bitte gib einen gültigen Thread-Namen ein (maximal 64 Zeichen, nur Buchstaben, Zahlen, _ oder -).",
+	"threadName": "Thread-Name",
+	"privateThread": "Privater Thread",
+	"onlyPeopleInviteThread": "Nur die von dir eingeladenen Personen und Administratoren können diesen Thread sehen",
+	"newThread": "Neuer Thread",
+	"joinedThreads": "beigetretene Threads",
+	"joinedThread": "beigetretener Thread",
+	"otherActiveThreads": "andere aktive Threads",
+	"olderThreads": "ältere Threads",
+	"searchThreads": "Threads suchen",
+	"searchThread": "Thread suchen",
+	"threadFailed": {
+		"title": "Thread-Erstellung fehlgeschlagen",
+		"content": "Thread nicht gefunden oder du hast keine Berechtigung zum Aktualisieren"
+	}
+}

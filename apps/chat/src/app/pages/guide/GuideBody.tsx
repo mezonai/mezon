@@ -221,7 +221,7 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 			title={mission.title}
 			className="cursor-pointer shadow-sm dark:shadow-none text-theme-primary bg-item-theme"
 			hightLightIcon={true}
-			icon={<Icons.TargetIcon defaultSize="w-6 h-6 " />}
+			icon={<Icons.TargetIcon className="w-6 h-6 " />}
 			onClick={onClick}
 			background=""
 			description={
@@ -234,7 +234,7 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 				<>
 					{tick && (
 						<div className={`w-6 aspect-square rounded-full flex items-center justify-center`}>
-							<Icons.Tick fill="#40C174" defaultSize="w-6 h-6" />
+							<Icons.Tick fill="#40C174" className="w-6 h-6" />
 						</div>
 					)}
 				</>

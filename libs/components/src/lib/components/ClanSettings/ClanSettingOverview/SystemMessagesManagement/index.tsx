@@ -86,9 +86,9 @@ const SystemMessagesManagement = ({
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
 							{channel?.channel_private ? (
-								<Icons.HashtagLocked defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+								<Icons.HashtagLocked className="w-4 h-4 dark:text-channelTextLabel" />
 							) : (
-								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+								<Icons.Hashtag className="w-4 h-4 dark:text-channelTextLabel" />
 							)}
 							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
 								{channel.channel_label ?? ''}
@@ -114,7 +114,7 @@ const SystemMessagesManagement = ({
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
 				>
 					<div className={' flex flex-row items-center'}>
-						<Icons.Hashtag defaultSize="w-4 h-4 " />
+						<Icons.Hashtag className="w-4 h-4 " />
 						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
 							{selectedChannel?.channel_label}
 						</p>

@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "In diesem Kanal wurden noch keine Nachrichten angepinnt... aber das wird sich sicher bald ändern.",
+	"PROTIP": "PROFI-TIPP:",
+	"modal": {
+		"title": "Anpinnen. Sicher ist sicher.",
+		"description": "Hey, ich möchte nur noch einmal kurz bestätigen: Möchtest du diese Nachricht in #{{channelLabel}} anpinnen, um sie dauerhaft zu speichern?",
+		"descriptionDM": "Hey, ich möchte nur noch einmal kurz bestätigen: Möchtest du diese Nachricht in diesem Chat anpinnen, um sie dauerhaft zu speichern?",
+		"cancel": "Abbrechen",
+		"confirm": "Jetzt anpinnen"
+	}
+}

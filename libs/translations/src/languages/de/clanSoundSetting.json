@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Soundeffekt hochladen",
+		"delete": "Löschen",
+		"uploadDetailScreen": "Hochladen"
+	},
+	"content": {
+		"description": "• Es werden nur .mp3- und .wav-Dateien mit einer maximalen Größe von 1 MB akzeptiert.\n• Wähle einen leicht merklichen Namen für den Soundeffekt.\n• Der Soundeffekt wird in Clan-Benachrichtigungen oder -Events verwendet.",
+		"requirements": "UPLOAD-ANFORDERUNGEN",
+		"reqSize": "- Nicht größer als 1024 KB.",
+		"audioFile": "Audiodatei",
+		"audioName": "Soundname",
+		"preview": "Vorschau",
+		"chooseAudioFile": "Audiodatei auswählen"
+	},
+	"toast": {
+		"errorSizeLimit": "Größenlimit von 1 MB überschritten",
+		"errorFileType": "Ungültiges Dateiformat. Nur .mp3, .mpeg und .wav werden akzeptiert."
+	},
+	"main": {
+		"uploadInstructions": "UPLOAD-ANLEITUNG",
+		"fileRequirements": "Es werden nur .mp3- und .wav-Dateien mit einer maximalen Größe von 1 MB akzeptiert. Wähle einen leicht merklichen Namen für den Soundeffekt. Der Soundeffekt wird in Clan-Benachrichtigungen oder -Events verwendet.",
+		"uploadHere": "Hier hochladen!",
+		"personalizeDescription": "Personalisiere die Soundeffekte für deinen Clan!",
+		"uploadSound": "Sound hochladen",
+		"soundEffectList": "Liste der Soundeffekte",
+		"noSoundEffects": "Noch keine Soundeffekte vorhanden. Klicke auf „Sound hochladen“, um einen hinzuzufügen!"
+	},
+	"modal": {
+		"titleEdit": "Soundeffekt bearbeiten",
+		"titleUpload": "Soundeffekt hochladen",
+		"subtitle": "Unterstützt MP3, WAV • Max. 1 MB",
+		"preview": "Vorschau",
+		"audioFile": "Audiodatei",
+		"soundName": "Soundname",
+		"soundVolume": "Lautstärke",
+		"chooseOrDrop": "Datei auswählen oder per Drag & Drop ablegen",
+		"browse": "Durchsuchen",
+		"placeholder": "z. B. Katzenmiau",
+		"cancel": "Abbrechen",
+		"uploading": "Wird hochgeladen...",
+		"update": "Aktualisieren",
+		"upload": "Hochladen",
+		"errorFileType": "Nur .mp3 oder .wav Dateien unterstützt",
+		"errorFileSize": "Datei zu groß, maximal 1 MB",
+		"errorUploadFailed": "Sound konnte nicht hochgeladen werden",
+		"characters": "Der Name muss zwischen 3 und 64 Zeichen lang sein",
+		"errorName": "Der Name des Soundeffekts muss zwischen {{min}} und {{max}} Zeichen lang sein und darf nur Buchstaben, Zahlen, _ und - enthalten."
+	}
+}
