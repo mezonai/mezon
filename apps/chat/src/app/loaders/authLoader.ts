@@ -1,21 +1,16 @@
 import type { AppDispatch } from '@mezon/store';
 import {
 	accountActions,
-	authActions,
 	clansActions,
 	directActions,
 	emojiRecentActions,
 	emojiSuggestionActions,
 	fcmActions,
 	friendsActions,
-	getStore,
 	listChannelsByUserActions,
-	listUsersByUserActions,
-	selectSession,
-	walletActions
+	listUsersByUserActions
 } from '@mezon/store';
 import { isOnline, waitForOnline } from '@mezon/transport';
-import type { IWithError } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
 
 export interface IAuthLoaderData {
@@ -23,76 +18,11 @@ export interface IAuthLoaderData {
 	redirect?: string;
 }
 
-function getRedirectTo(initialPath?: string): string {
-	const searchParams = new URLSearchParams(window.location.search);
-	const redirectParam = searchParams.get('redirect');
-
-	if (redirectParam) {
-		return redirectParam;
-	}
-
-	if (initialPath && !initialPath.startsWith('/desktop')) {
-		return initialPath;
-	}
-
-	return '';
-}
-
 const connectNotification = async (dispatch: AppDispatch) => {
 	try {
 		await dispatch(fcmActions.connectNotificationService());
 	} catch (error) {
 		console.error('Failed to connect notification service:', error);
-	}
-};
-
-const handleLogoutWithRedirect = (dispatch: AppDispatch, initialPath: string): IAuthLoaderData => {
-	const redirectTo = getRedirectTo(initialPath);
-	dispatch(authActions.setLogout());
-	dispatch(walletActions.setLogout());
-	const redirect = redirectTo ? `/desktop/login?redirect=${redirectTo}` : '/desktop/login';
-	return { isLogin: false, redirect } as IAuthLoaderData;
-};
-
-const isUnauthorizedError = (errorPayload: any): boolean => {
-	if (errorPayload && typeof errorPayload === 'object' && 'status' in errorPayload && errorPayload.status === 401) {
-		return true;
-	}
-	if (errorPayload instanceof Response && errorPayload.status === 401) {
-		return true;
-	}
-	return false;
-};
-
-const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch; initialPath: string }) => {
-	const store = getStore();
-	const sessionUser = selectSession(store?.getState());
-
-	if (!sessionUser?.token) {
-		return { isLogin: false } as IAuthLoaderData;
-	}
-
-	try {
-		const response = await dispatch(authActions.refreshSession());
-
-		if (response?.payload === 'Redirect Login') {
-			return handleLogoutWithRedirect(dispatch, initialPath);
-		}
-
-		if ((response as unknown as IWithError).error) {
-			const errorPayload = response.payload;
-			if (isUnauthorizedError(errorPayload)) {
-				console.error('Unauthorized (401), logging out immediately');
-				return handleLogoutWithRedirect(dispatch, initialPath);
-			}
-			console.error('Session refresh failed:', errorPayload);
-			return handleLogoutWithRedirect(dispatch, initialPath);
-		}
-
-		return { isLogin: true } as IAuthLoaderData;
-	} catch (error) {
-		console.error('refreshSession error:', error);
-		return handleLogoutWithRedirect(dispatch, initialPath);
 	}
 };
 
