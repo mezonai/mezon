@@ -3,7 +3,7 @@ import type { DirectEntity } from '@mezon/store';
 import { selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IEmojiOnMessage, RequestInput } from '@mezon/utils';
-import { EmojiPlaces, MAX_LENGTH_MESSAGE_BUZZ, ThemeApp, TypeMessage, generateE2eId } from '@mezon/utils';
+import { CHANNEL_INPUT_ID, EmojiPlaces, GENERAL_INPUT_ID, MAX_LENGTH_MESSAGE_BUZZ, ThemeApp, TypeMessage, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js/api';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -72,6 +72,25 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 		setInputRequest({ ...newRequest });
 	};
 
+	const focusChatInput = () => {
+		const editor = document.getElementById(CHANNEL_INPUT_ID) || document.getElementById(GENERAL_INPUT_ID);
+		if (editor) {
+			editor.focus();
+			if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
+				try {
+					const range = document.createRange();
+					range.selectNodeContents(editor);
+					range.collapse(false);
+					const sel = window.getSelection();
+					sel?.removeAllRanges();
+					sel?.addRange(range);
+				} catch (e) {
+					// ignore
+				}
+			}
+		}
+	};
+
 	const handleSendBuzzMsg = useCallback(() => {
 		const emojiArr: IEmojiOnMessage[] = [];
 		inputRequest.mentionRaw?.forEach((item) => {
@@ -85,6 +104,9 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 		if (inputRequest.content.trim()) {
 			sendMessage({ t: inputRequest.content.trim(), ej: emojiArr }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
 			handleClosePopup();
+			requestAnimationFrame(() => {
+				focusChatInput();
+			});
 		}
 	}, [handleClosePopup, inputRequest.content, inputRequest.mentionRaw, sendMessage]);
 
