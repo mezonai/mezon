@@ -1,5 +1,4 @@
 import { captureSentryError } from '@mezon/logger';
-import { DEFAULT_WS_URL, getMezonConfig } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -110,44 +109,6 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
-	return normalizeSession(session);
-});
-
-export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, thunkAPI) => {
-	const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-	const sessionState = selectSession(thunkAPI.getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-
-	if (!sessionState) {
-		return thunkAPI.rejectWithValue('Invalid refreshSession');
-	}
-
-	if (!sessionState.token || !sessionState.refresh_token) {
-		return thunkAPI.rejectWithValue('Invalid session tokens');
-	}
-
-	const config = getMezonConfig();
-	const wsUrl = config.ws_url || DEFAULT_WS_URL;
-
-	let session: ApiSession | undefined = {
-		token: sessionState.token,
-		refresh_token: sessionState.refresh_token,
-		created: sessionState.created,
-		api_url: sessionState.api_url,
-		ws_url: wsUrl,
-		id_token: sessionState.id_token || '',
-		is_remember: !!sessionState.is_remember
-	};
-
-	try {
-		session = await mezon?.refreshSession(session);
-	} catch (error: any) {
-		return thunkAPI.rejectWithValue(error);
-	}
-
-	if (!session) {
-		return thunkAPI.rejectWithValue('Redirect Login');
-	}
-
 	return normalizeSession(session);
 });
 
@@ -381,20 +342,6 @@ export const authSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
-
-		builder
-			.addCase(refreshSession.pending, (state: AuthState) => {
-				state.loadingStatus = 'loading';
-			})
-			.addCase(refreshSession.fulfilled, (state: AuthState, action) => {
-				state.loadingStatus = 'loaded';
-				state.session = action.payload;
-				state.isLogin = true;
-			})
-			.addCase(refreshSession.rejected, (state: AuthState, action) => {
-				state.loadingStatus = 'not loaded';
-				state.error = action.error.message;
-			});
 		builder
 			.addCase(checkSessionWithToken.pending, (state: AuthState) => {
 				state.loadingStatus = 'loading';
@@ -493,7 +440,6 @@ export const authActions = {
 	...authSlice.actions,
 	authenticateApple,
 	authenticateMezon,
-	refreshSession,
 	createQRLogin,
 	checkLoginRequest,
 	confirmLoginRequest,

@@ -238,18 +238,6 @@ export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ 
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}
-		const sessionState = mezon?.session;
-		if (response?.refresh_token && response?.token) {
-			return await mezon?.refreshSession(
-				{
-					...sessionState,
-					is_remember: sessionState.is_remember ?? false,
-					refresh_token: response.refresh_token,
-					token: response.token
-				},
-				true
-			);
-		}
 		return false;
 	} catch (error) {
 		captureSentryError(error, 'clans/updateUsername');
