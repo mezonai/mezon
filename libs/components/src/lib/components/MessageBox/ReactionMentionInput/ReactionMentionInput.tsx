@@ -59,8 +59,8 @@ import {
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
+import type { ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { ReactElement, RefObject } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -292,7 +292,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					mentionRaw: [],
 					entities: []
 				});
-
 				return;
 			}
 
@@ -519,7 +518,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				payload.cvtt = canvasTitles;
 			}
 
-			const removeEmptyOnPayload = filterEmptyArrays([]);
+			const removeEmptyOnPayload = filterEmptyArrays(payload);
 			const encoder = new TextEncoder();
 			const payloadJson = JSON.stringify(removeEmptyOnPayload);
 			const utf8Bytes = encoder.encode(payloadJson);
