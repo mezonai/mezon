@@ -199,7 +199,7 @@
     "node-polyfill-webpack-plugin": "^4.1.0",
     "npm": "^10.5.0",
     "nx": "^21.1.2",
-    "postcss": "8.4.33",
+    "postcss": "8.5.10",
     "prettier": "3.3.3",
     "prettier-plugin-organize-imports": "^3.2.4",
     "react-refresh": "^0.14.0",
