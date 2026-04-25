@@ -305,7 +305,7 @@ const ChannelAppList = memo(() => {
 					window.electron.launchAppWindow(urlWithHash);
 					return;
 				}
-				window.open(urlWithHash, channel?.channel_label, 'width=900,height=700');
+				window.open(urlWithHash, channel?.channel_label, 'width=900,height=700,noopener,noreferrer');
 			}
 		}
 	};
@@ -397,7 +397,7 @@ const ListChannelApp = ({
 	useOnClickOutside(panelRef, onClose);
 
 	const handleFindChannelApp = () => {
-		window.open('https://top.mezon.ai/search?q=&tags=&type=app', '_blank');
+		window.open('https://top.mezon.ai/search?q=&tags=&type=app', '_blank', 'noopener,noreferrer');
 	};
 
 	return (

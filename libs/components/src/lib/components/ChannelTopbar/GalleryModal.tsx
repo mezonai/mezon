@@ -663,7 +663,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								onClick={() => handleMediaFilterChange('all')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
 									mediaFilter === 'all'
-										? 'bg-theme-primary text-white'
+										? 'bg-buttonPrimary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
 								data-e2e={generateE2eId('clan_page.modal.gallery.tab.all')}
@@ -674,7 +674,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								onClick={() => handleMediaFilterChange('image')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
 									mediaFilter === 'image'
-										? 'bg-theme-primary text-white'
+										? 'bg-buttonPrimary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
 								data-e2e={generateE2eId('clan_page.modal.gallery.tab.image')}
@@ -685,7 +685,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								onClick={() => handleMediaFilterChange('video')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
 									mediaFilter === 'video'
-										? 'bg-theme-primary text-white'
+										? 'bg-buttonPrimary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
 								data-e2e={generateE2eId('clan_page.modal.gallery.tab.video')}

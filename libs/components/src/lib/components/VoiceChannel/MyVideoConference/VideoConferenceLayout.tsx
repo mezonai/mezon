@@ -186,11 +186,17 @@ export const VideoConferenceLayout = memo(
 							<div className="flex justify-start gap-2">
 								<span>
 									{!isExternalCalling ? (
-										<Icons.Speaker className="w-6 h-6" defaultFill={isShowMember ? 'text-theme-primary' : 'text-gray-300'} />
+										<Icons.Speaker
+											defaultSize="w-6 h-6"
+											className={isShowMember ? 'text-theme-primary' : 'text-gray-300'}
+											defaultFill1="currentColor"
+											defaultFill2="currentColor"
+											defaultFill3="currentColor"
+										/>
 									) : (
 										<Icons.SpeakerLocked
-											className="w-6 h-6"
-											defaultFill={isShowMember ? 'text-theme-primary' : 'text-gray-300'}
+											defaultSize="w-6 h-6"
+											className={isShowMember ? 'text-theme-primary' : 'text-gray-300'}
 										/>
 									)}
 								</span>

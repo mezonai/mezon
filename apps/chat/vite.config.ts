@@ -55,15 +55,7 @@ export default defineConfig(({ mode }) => {
 		},
 
 		plugins: [
-			react({
-				babel: {
-					plugins: [
-						['@babel/plugin-proposal-decorators', { legacy: true }],
-						['@babel/plugin-proposal-class-properties', { loose: true }],
-						...(process.env.BABEL_ENV === 'remove-e2e' ? [['react-remove-properties', { properties: ['data-e2e'] }]] : [])
-					]
-				}
-			}),
+			react(),
 			nxViteTsPaths(),
 			nodePolyfills({
 				include: ['buffer', 'process', 'stream', 'util'],
@@ -89,6 +81,36 @@ export default defineConfig(({ mode }) => {
 					reloadPageOnChange: true
 				}
 			}),
+			{
+				name: 'serve-libs-assets-in-dev',
+				apply: 'serve' as const,
+				configureServer(server: import('vite').ViteDevServer) {
+					const assetsRoot = path.join(workspaceRoot, 'libs/assets/src/assets');
+					const mime: Record<string, string> = {
+						'.css': 'text/css',
+						'.svg': 'image/svg+xml',
+						'.png': 'image/png',
+						'.jpg': 'image/jpeg',
+						'.jpeg': 'image/jpeg',
+						'.webp': 'image/webp',
+						'.mp3': 'audio/mpeg'
+					};
+					server.middlewares.use(
+						'/assets',
+						(req: import('http').IncomingMessage, res: import('http').ServerResponse, next: (err?: unknown) => void) => {
+							const url = (req.url ?? '').split('?')[0];
+							const rel = decodeURIComponent(url.replace(/^\/+/, ''));
+							const full = path.join(assetsRoot, rel);
+							if (!full.startsWith(assetsRoot)) return next();
+							fs.stat(full, (err, stat) => {
+								if (err || !stat.isFile()) return next();
+								res.setHeader('Content-Type', mime[path.extname(full).toLowerCase()] ?? 'application/octet-stream');
+								fs.createReadStream(full).pipe(res);
+							});
+						}
+					);
+				}
+			},
 			{
 				name: 'copy-to-correct-dist',
 				closeBundle: async () => {
@@ -142,7 +164,7 @@ export default defineConfig(({ mode }) => {
 				'react-redux',
 				'mezon-js'
 			],
-			esbuildOptions: {
+			rolldownOptions: {
 				target: 'esnext'
 			}
 		},
@@ -164,14 +186,6 @@ export default defineConfig(({ mode }) => {
 			conditions: ['import', 'module', 'browser', 'default']
 		},
 
-		css: {
-			preprocessorOptions: {
-				scss: {
-					api: 'modern-compiler'
-				}
-			}
-		},
-
 		build: {
 			outDir: path.resolve(__dirname, '../../dist/apps/chat'),
 			emptyOutDir: true,
@@ -179,79 +193,37 @@ export default defineConfig(({ mode }) => {
 			commonjsOptions: {
 				transformMixedEsModules: true
 			},
-			rollupOptions: {
+			rolldownOptions: {
 				output: {
 					entryFileNames: '[name].[hash].js',
 					chunkFileNames: '[name].[hash].chunk.js',
-					assetFileNames: (assetInfo) => {
+					assetFileNames: (assetInfo: { name?: string }) => {
 						if (assetInfo.name?.endsWith('.css')) {
 							return '[name].[hash].css';
 						}
 						return 'assets/[name].[hash][ext]';
 					},
-					manualChunks: (id) => {
-						const normalizedId = id.replace(/\\/g, '/');
-
-						if (normalizedId.includes('node_modules')) {
-							if (normalizedId.includes('@tiptap')) {
-								return 'vendor-tiptap';
-							}
-							if (normalizedId.includes('react-datepicker')) {
-								return 'vendor-datepicker';
-							}
-							if (normalizedId.includes('react-pdf') || normalizedId.includes('pdfjs-dist')) {
-								return 'vendor-pdf';
-							}
-							if (normalizedId.includes('react') || normalizedId.includes('react-dom') || normalizedId.includes('scheduler')) {
-								return 'vendor-react';
-							}
-							if (normalizedId.includes('react-router')) {
-								return 'vendor-router';
-							}
-							if (normalizedId.includes('@reduxjs') || normalizedId.includes('redux') || normalizedId.includes('react-redux')) {
-								return 'vendor-redux';
-							}
-							if (normalizedId.includes('mezon-js')) {
-								return 'vendor-mezon';
-							}
-							if (normalizedId.includes('mezon-protobuf')) {
-								return 'vendor-protobuf';
-							}
-						}
-
-						if (normalizedId.includes('libs/translations/src/languages/en')) {
-							return 'i18n-en';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/vi')) {
-							return 'i18n-vi';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/es')) {
-							return 'i18n-es';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/ru')) {
-							return 'i18n-ru';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/tt')) {
-							return 'i18n-tt';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/de')) {
-							return 'i18n-de';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/pt')) {
-							return 'i18n-pt';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/it')) {
-							return 'i18n-it';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/jpn')) {
-							return 'i18n-jpn';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/kr')) {
-							return 'i18n-kr';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/swe')) {
-							return 'i18n-swe';
-						}
+					advancedChunks: {
+						groups: [
+							{ name: 'vendor-tiptap', test: /node_modules\/@tiptap/ },
+							{ name: 'vendor-datepicker', test: /node_modules\/react-datepicker/ },
+							{ name: 'vendor-pdf', test: /node_modules\/(react-pdf|pdfjs-dist)/ },
+							{ name: 'vendor-router', test: /node_modules\/react-router/ },
+							{ name: 'vendor-redux', test: /node_modules\/(@reduxjs|redux|react-redux)/ },
+							{ name: 'vendor-protobuf', test: /node_modules\/mezon-protobuf/ },
+							{ name: 'vendor-mezon', test: /node_modules\/mezon-js/ },
+							{ name: 'vendor-react', test: /node_modules\/(react|react-dom|scheduler)\// },
+							{ name: 'i18n-en', test: /libs\/translations\/src\/languages\/en/ },
+							{ name: 'i18n-vi', test: /libs\/translations\/src\/languages\/vi/ },
+							{ name: 'i18n-es', test: /libs\/translations\/src\/languages\/es/ },
+							{ name: 'i18n-ru', test: /libs\/translations\/src\/languages\/ru/ },
+							{ name: 'i18n-tt', test: /libs\/translations\/src\/languages\/tt/ },
+							{ name: 'i18n-pt', test: /libs\/translations\/src\/languages\/pt/ },
+							{ name: 'i18n-it', test: /libs\/translations\/src\/languages\/it/ },
+							{ name: 'i18n-jpn', test: /libs\/translations\/src\/languages\/jpn/ },
+							{ name: 'i18n-kr', test: /libs\/translations\/src\/languages\/kr/ },
+							{ name: 'i18n-swe', test: /libs\/translations\/src\/languages\/swe/ }
+						]
 					}
 				}
 			},

@@ -44,19 +44,19 @@ export const UserStatusIconClan = ({
 	userId?: string;
 	isShareContact?: boolean;
 }) => {
-	const normalizedStatus = status?.toUpperCase();
 	const isTyping = useIsUserTyping(channelId || '', userId || '');
-	if (isTyping && !isShareContact) {
-		return RenderTypingIndicator();
+	if (channelId && userId && isTyping && !isShareContact) {
+		return <RenderTypingIndicator />;
 	}
 
-	switch (normalizedStatus) {
-		case 'IDLE':
+	switch (status) {
+		case EUserStatus.IDLE:
 			return <Icons.DarkModeIcon className="text-[#F0B232] -rotate-90 w-[10px] h-[10px]" />;
-		case 'DO NOT DISTURB':
+		case EUserStatus.DO_NOT_DISTURB:
 			return <StatusUser status="dnd" />;
-		case 'ONLINE':
+		case EUserStatus.ONLINE:
 			return <StatusUser status="online" />;
+		case EUserStatus.INVISIBLE:
 		default:
 			return null;
 	}

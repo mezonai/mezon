@@ -1,3 +1,5 @@
+import { sanitizeMessageHtml } from '@mezon/utils';
+
 function escapeHtmlText(value: string): string {
 	return value.replace(/[&<>"']/g, (ch) => {
 		switch (ch) {
@@ -159,8 +161,9 @@ export function escapeHtml(html: string) {
 
 		if (part.startsWith('<a')) {
 			const temp = document.createElement('div');
-			temp.innerHTML = part;
-			fragment.appendChild(temp.firstChild!);
+			temp.innerHTML = sanitizeMessageHtml(part);
+			const node = temp.firstChild;
+			if (node) fragment.appendChild(node);
 		} else {
 			// Escape non-link content
 			const text = document.createTextNode(part);
@@ -258,7 +261,8 @@ const LINK_TEMPLATE = /(?:\w+:)?\/\/[^\s<>]+/gi;
 
 export default function parseHtmlAsFormattedToText(html: string, withMarkdownLinks = true, skipMarkdown = false): ApiFormattedText {
 	const fragment = document.createElement('div');
-	fragment.innerHTML = skipMarkdown ? html : withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
+	const prepared = skipMarkdown ? html : withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
+	fragment.innerHTML = sanitizeMessageHtml(prepared);
 	fixImageContent(fragment);
 	const text = fragment.innerText.trim().replace(/\u200b+/g, '');
 	const trimShift = fragment.innerText.indexOf(text[0]);
