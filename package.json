@@ -121,7 +121,7 @@
     "uniforms-semantic": "^4.0.0-alpha.6",
     "universal-analytics": "^0.5.3",
     "use-debounce": "^10.0.0",
-    "uuid": "^10.0.0",
+    "uuid": "^14.0.0",
     "yup": "^1.3.3"
   },
   "devDependencies": {
