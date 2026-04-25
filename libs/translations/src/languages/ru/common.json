@@ -466,7 +466,8 @@
 			"failedToRefresh": "Не удалось обновить данные холста",
 			"titlePlaceholder": "Заголовок холста",
 			"typePlaceholder": "Напечатать/вставить...",
-			"untitled": "безымянный"
+			"untitled": "безымянный",
+			"deleteMessage": "Этот холст будет удалён безвозвратно. Это действие нельзя отменить."
 		},
 		"emojiCategories": {
 			"forsale": "Продаётся",

@@ -467,7 +467,8 @@
 		"failedToRefresh": "キャンバスデータをリフレッシュできません",
 		"titlePlaceholder": "キャンバスのタイトル",
 		"typePlaceholder": "挿入するには/を入力...",
-		"untitled": "無題"
+		"untitled": "無題",
+		"deleteMessage": "このキャンバスは完全に削除されます。この操作は元に戻せません。"
 	},
 	"emojiCategories": {
 		"forsale": "販売中",
