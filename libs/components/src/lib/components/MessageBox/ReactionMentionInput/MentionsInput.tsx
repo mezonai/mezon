@@ -1,5 +1,5 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
-import { ID_MENTION_HERE, IS_SAFARI, generateE2eId } from '@mezon/utils';
+import { ID_MENTION_HERE, IS_SAFARI, generateE2eId, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
 	cloneElement,
@@ -113,7 +113,7 @@ interface ActiveMentionContext {
 
 const prepareForRegExp = (html: string): string => {
 	const tempDiv = document.createElement('div');
-	tempDiv.innerHTML = html;
+	tempDiv.innerHTML = sanitizeMessageHtml(html);
 
 	const entityElements = tempDiv.querySelectorAll('[data-entity-type]');
 	entityElements.forEach((el) => {
@@ -495,11 +495,12 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setUndoHistory((prev) => prev.slice(0, -1));
 
 			isUndoRedoAction.current = true;
-			setHtml(previousHtml);
+			const safePrevious = sanitizeMessageHtml(previousHtml);
+			setHtml(safePrevious);
 			if (inputRef.current) {
-				inputRef.current.innerHTML = previousHtml;
+				inputRef.current.innerHTML = safePrevious;
 			}
-			onChange?.(previousHtml);
+			onChange?.(safePrevious);
 
 			requestNextMutation(() => {
 				if (inputRef.current) {
@@ -521,11 +522,12 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setRedoHistory((prev) => prev.slice(1));
 
 			isUndoRedoAction.current = true;
-			setHtml(nextHtml);
+			const safeNext = sanitizeMessageHtml(nextHtml);
+			setHtml(safeNext);
 			if (inputRef.current) {
-				inputRef.current.innerHTML = nextHtml;
+				inputRef.current.innerHTML = safeNext;
 			}
-			onChange?.(nextHtml);
+			onChange?.(safeNext);
 
 			requestNextMutation(() => {
 				if (inputRef.current) {
@@ -715,7 +717,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					const htmlAfterSelection = cleanWebkitNewLines(inputEl.innerHTML).substring(fixedHtmlBeforeSelection.length);
 					const caretPosition = getCaretPosition(inputEl);
 
-					const finalHtml = `${newHtml}${htmlAfterSelection}`;
+					const finalHtml = sanitizeMessageHtml(`${newHtml}${htmlAfterSelection}`);
 					setHtml(finalHtml);
 					inputEl.innerHTML = finalHtml;
 					onChange?.(finalHtml);

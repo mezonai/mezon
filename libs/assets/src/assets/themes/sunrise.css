@@ -219,4 +219,5 @@
 	--bg-icon-theme:oklab(50.42100000000001% 0.03233 -0.01411);
 	--bg-theme-secounnd: oklab(89.143% 0 -0.0001 / 0);
 	--bg-icon-theme-active: oklab(0.25 0.0316806 -0.0090825);
+	--member-icon-head-fill: rgba(171, 171, 173, 1);
 }

@@ -82,6 +82,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEditGroupModal } from '../../hooks/useEditGroupModal';
 import CreateMessageGroup from '../DmList/CreateMessageGroup';
+import { AppChannelListIcon } from '../ChannelList/AppChannelListIcon';
 import { UserStatusIconDM } from '../MemberProfile';
 import ModalEditGroup from '../ModalEditGroup';
 import { NotificationTooltip } from '../NotificationList';
@@ -385,7 +386,7 @@ const ChannelTopbarLabel = memo(
 					case ChannelType.CHANNEL_TYPE_STREAMING:
 						return <Icons.Stream />;
 					case ChannelType.CHANNEL_TYPE_APP:
-						return <Icons.AppChannelIcon />;
+						return <AppChannelListIcon isEmphasized className="w-4 h-4" />;
 					default:
 						return <Icons.Hashtag />;
 				}
@@ -400,7 +401,7 @@ const ChannelTopbarLabel = memo(
 				case ChannelType.CHANNEL_TYPE_STREAMING:
 					return <Icons.Stream />;
 				case ChannelType.CHANNEL_TYPE_APP:
-					return <Icons.AppChannelIcon />;
+					return <AppChannelListIcon isEmphasized className="w-4 h-4" />;
 				default:
 					return <Icons.HashtagLocked />;
 			}
@@ -408,7 +409,9 @@ const ChannelTopbarLabel = memo(
 
 		return (
 			<div className="none-draggable-area flex items-center text-lg gap-3 min-w-0" onClick={onClick}>
-				<div className="w-4 flex-shrink-0">{renderIcon()}</div>
+				<div className="flex w-4 flex-shrink-0 items-center justify-center text-theme-message">
+					{renderIcon()}
+				</div>
 				<p className="flex-1 min-w-0 text-base font-semibold leading-5 truncate text-theme-message">{label}</p>
 			</div>
 		);
