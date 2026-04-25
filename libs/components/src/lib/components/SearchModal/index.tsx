@@ -89,6 +89,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 		const list: SearchItemProps[] = [];
 		listChannels.map((item) => {
 			if (item) {
+				const ageRestricted = (item as { age_restricted?: number }).age_restricted;
 				list.push({
 					id: item?.channel_id ?? '',
 					name: item?.channel_label ?? '',
@@ -100,6 +101,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 					typeChat: TypeSearch.Channel_Type,
 					prioritizeName: item?.channel_label ?? '',
 					channel_private: item?.channel_private,
+					age_restricted: ageRestricted,
 					type: item?.type,
 					parent_id: item?.parent_id,
 					count_messsage_unread: item?.count_mess_unread,

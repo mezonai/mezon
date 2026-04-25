@@ -62,8 +62,12 @@ const SuggestItem = ({
 		if (!specificChannel) return null;
 
 		const { channel_private, type } = specificChannel;
+		const isAgeRestrictedChannel = (specificChannel as { age_restricted?: number }).age_restricted === 1;
 
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			if (isAgeRestrictedChannel) {
+				return <Icons.HashtagWarning defaultSize="w-5 h-5" />;
+			}
 			if (!channel_private || channel_private === 0) {
 				return <Icons.Hashtag defaultSize="w-5 h-5" />;
 			}
