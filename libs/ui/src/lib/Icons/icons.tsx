@@ -527,13 +527,16 @@ export const ThreadIcon: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5', ...pr
 };
 
 export const CanvasIcon: React.FC<IconProps> = ({
-	defaultSize = 'w-5 h-5 ',
+	defaultSize = 'w-5 h-5',
 	defaultFill1 = 'currentColor',
 	defaultFill2 = 'currentColor',
+	className,
 	...props
 }: IconProps) => {
+	const mergedClassName = [defaultSize, className].filter(Boolean).join(' ');
+
 	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 146 152" {...props}>
+		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 146 152" className={mergedClassName} {...props}>
 			<g>
 				<path
 					d="M 26.05 150.91 C14.28,148.60 4.65,140.29 1.52,129.75 C-0.73,122.16 -0.73,29.84 1.52,22.25 C3.85,14.41 9.67,7.78 17.69,3.83 L 24.46 0.50 L 72.48 0.50 C117.50,0.50 120.81,0.62 125.50,2.43 C132.04,4.95 140.17,12.72 143.15,19.30 C145.46,24.42 145.50,25.06 145.75,61.50 L 145.98 94.00 L 126.62 94.00 C108.02,94.00 106.78,94.12 100.02,96.63 C91.28,99.87 83.65,106.40 80.36,113.48 C78.20,118.11 78.02,119.80 78.01,135.25 L 78.00 151.95 L 57.00 151.88 C42.42,151.82 28.50,151.39 26.05,150.91 ZM 28.11 41.60 C29.95,42.62 37.83,42.94 62.33,42.96 L 94.15 43.00 L 97.08 40.08 C100.84,36.32 101.04,31.32 97.59,27.31 L 95.17 24.50 L 27.83 24.50 L 25.41 27.31 C21.53,31.82 22.82,38.67 28.11,41.60 ZM 30.11 79.60 C31.90,80.59 38.39,80.94 55.83,80.96 L 79.15 81.00 L 82.08 78.08 C85.84,74.32 86.04,69.32 82.59,65.31 L 80.17 62.50 L 29.83 62.50 L 27.41 65.31 C23.53,69.82 24.82,76.67 30.11,79.60 ZM 145.98 95.09 L 146.01 98.50 L 135.75 107.15 C132.44,109.94 126.22,115.25 119.31,121.17 C125.57,115.78 131.24,110.90 134.54,108.07 C141.65,101.95 145.61,97.82 145.82,96.32 L 145.98 95.09 ZM 99.14 138.50 L 83.50 151.97 L 81.04 151.96 C83.09,151.65 87.70,148.24 99.14,138.50 Z"
@@ -752,7 +755,7 @@ export function Speaker({
 			viewBox="0 0 18 17"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
-			className={`${defaultSize} ${defaultFill1 ? defaultFill1 : ''} ${className}`}
+			className={`${defaultSize} ${className ?? ''}`.trim()}
 			{...props}
 		>
 			<g id="Live area" clipPath="url(#clip0_2155_1604)">
@@ -1426,15 +1429,26 @@ export const Private: React.FC<IconProps> = ({ defaultFill1 = '#AEAEAE', default
 };
 
 export const SpeakerLocked: React.FC<IconProps> = ({
-	defaultSize = 'w-5 h-5 ',
+	defaultSize = 'w-5 h-5',
 	defaultFill1 = 'currentColor',
 	defaultFill2 = 'currentColor',
 	defaultFill3 = 'currentColor',
 	defaultFill4 = 'currentColor',
+	className,
 	...props
 }: IconProps) => {
 	return (
-		<svg width="20" height="20" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
+		<svg
+			width="20"
+			height="20"
+			aria-hidden="true"
+			role="img"
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+			className={`${defaultSize} ${className ?? ''}`.trim()}
+			{...props}
+		>
 			<path
 				d="M11.5512 1.57323C11.9214 1.75834 12.1065 2.12856 12.1065 2.40622V19.0659C12.1065 19.4361 11.9214 19.7138 11.5512 19.8989C11.2735 20.084 10.8107 19.9915 10.5331 19.8064L4.88727 15.3638H1.92554C1.37022 15.3638 1 14.9936 1 14.4382V7.03392C1 6.47859 1.37022 6.10838 1.92554 6.10838H4.97982L10.6256 1.66579C10.9033 1.48068 11.2735 1.48068 11.5512 1.57323Z"
 				fill={defaultFill1}
@@ -1612,11 +1626,19 @@ export const ImageThumbnail: React.FC<IconProps> = ({
 	);
 };
 
-export const SyncIcon: React.FC<IconProps> = ({ defaultFill1 = '#AEAEAE', defaultSize = 'w-5 h-5', ...props }) => {
+export const SyncIcon: React.FC<IconProps> = ({ defaultFill1 = '#AEAEAE', defaultSize = 'w-5 h-5', className, ...props }) => {
 	return (
-		<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
+		<svg
+			width="20"
+			height="20"
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+			className={`${defaultSize} ${className ?? ''}`}
+			{...props}
+		>
 			<path
-				fill="currentColor"
+				fill={defaultFill1}
 				d="M21 2a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-6a1 1 0 1 1 0-2h3.93A8 8 0 0 0 6.97 5.78a1 1 0 0 1-1.26-1.56A9.98 9.98 0 0 1 20 6V3a1 1 0 0 1 1-1ZM3 22a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H5.07a8 8 0 0 0 11.96 2.22 1 1 0 1 1 1.26 1.56A9.99 9.99 0 0 1 4 18v3a1 1 0 0 1-1 1Z"
 				className="icon-SyncIcon-fill-1"
 			></path>
@@ -1680,18 +1702,24 @@ export const RoleIcon: React.FC<IconProps> = ({ defaultFill1 = '#AEAEAE', defaul
 	);
 };
 
-export const MemberIcon: React.FC<IconProps> = ({ defaultFill1 = '#AEAEAE', defaultSize = 'w-5 h-5 min-w-5', ...props }) => {
+export const MemberIcon: React.FC<IconProps> = ({
+	defaultFill1 = 'rgba(96,96,101,1)',
+	defaultFill2,
+	defaultSize = 'w-5 h-5 min-w-5',
+	...props
+}) => {
+	const headFill = defaultFill2 ?? 'var(--member-icon-head-fill, rgba(255,255,255,1))';
 	return (
 		<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 124 150" {...props}>
 			<g>
 				<path
 					d="M 5.02 147.71 C-0.59,144.88 0.01,135.72 6.70,122.13 C9.43,116.60 12.54,112.42 17.98,106.95 C30.53,94.34 44.16,88.68 62.00,88.68 C79.84,88.68 93.47,94.34 106.02,106.95 C120.76,121.75 127.62,143.34 118.98,147.71 C117.08,148.68 103.77,148.97 62.00,148.97 C20.23,148.97 6.92,148.68 5.02,147.71 Z"
-					fill="rgba(96,96,101,1)"
+					fill={defaultFill1}
 					className="icon-MemberIcon-fill-1"
 				/>
 				<path
 					d="M 47.33 78.12 C36.85,74.24 29.34,67.37 24.22,57.00 C21.76,52.03 21.50,50.45 21.50,40.50 C21.50,30.36 21.73,29.03 24.44,23.50 C28.19,15.84 35.84,8.19 43.50,4.44 C49.17,1.66 50.20,1.50 62.00,1.50 C73.80,1.50 74.83,1.66 80.50,4.44 C83.80,6.05 88.78,9.65 91.56,12.44 C94.35,15.22 97.95,20.20 99.56,23.50 C102.27,29.03 102.50,30.36 102.50,40.50 C102.50,50.64 102.27,51.97 99.56,57.50 C95.80,65.19 88.13,72.84 80.50,76.52 C75.20,79.07 73.22,79.45 63.50,79.72 C54.58,79.97 51.52,79.67 47.33,78.12 Z"
-					fill="rgba(255,255,255,1)"
+					fill={headFill}
 					className="icon-MemberIcon-fill-2"
 				/>
 			</g>
@@ -2828,26 +2856,37 @@ export const PhoneOff = ({ defaultFill1 = 'white', defaultSize = 'w-5 h-5', ...p
 
 export const IconLoadingTyping = ({
 	iconFill = 'dark:fill-textDarkTheme fill-textPrimaryLight',
-	width = '18',
-	height = '8',
+	width = 18,
+	height = 8,
 	bgFill = 'bg-transparent',
+	className,
 	...props
+}: Omit<React.SVGProps<SVGSVGElement>, 'className' | 'width' | 'height'> & {
+	iconFill?: string;
+	bgFill?: string;
+	width?: number | string;
+	height?: number | string;
+	className?: string;
 }) => {
+	const spanClass = ['rounded-lg flex items-center justify-center px-[2px] py-[1px]', bgFill, className]
+		.filter(Boolean)
+		.join(' ');
 	return (
-		<svg
-			width="20"
-			height="20"
-			id="dots"
-			viewBox="0 0 100 60"
-			version="1.1"
-			xmlns="http://www.w3.org/2000/svg"
-			xmlnsXlink="http://www.w3.org/1999/xlink"
-			{...props}
-		>
-			<circle id="dot1" cx="13" cy="30" r="13"></circle>
-			<circle id="dot2" cx="50" cy="30" r="13"></circle>
-			<circle id="dot3" cx="86" cy="30" r="13"></circle>
-		</svg>
+		<span className={spanClass}>
+			<svg
+				width={width}
+				height={height}
+				viewBox="0 0 100 60"
+				version="1.1"
+				xmlns="http://www.w3.org/2000/svg"
+				xmlnsXlink="http://www.w3.org/1999/xlink"
+				{...props}
+			>
+				<circle className={`typing-indicator-dot-1 ${iconFill}`} cx="13" cy="30" r="13" />
+				<circle className={`typing-indicator-dot-2 ${iconFill}`} cx="50" cy="30" r="13" />
+				<circle className={`typing-indicator-dot-3 ${iconFill}`} cx="86" cy="30" r="13" />
+			</svg>
+		</span>
 	);
 };
 

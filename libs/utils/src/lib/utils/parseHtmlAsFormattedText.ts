@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 import { isYouTubeLink } from '.';
+import { sanitizeMessageHtml } from './sanitizeHtml';
 import type { IMarkdownOnMessage, MentionItem } from '../types';
 import { EBacktickType, ETypeMEntion } from '../types';
 
@@ -99,8 +100,9 @@ export function escapeHtml(html: string) {
 
 		if (part.startsWith('<a')) {
 			const temp = document.createElement('div');
-			temp.innerHTML = part;
-			fragment.appendChild(temp.firstChild!);
+			temp.innerHTML = sanitizeMessageHtml(part);
+			const node = temp.firstChild;
+			if (node) fragment.appendChild(node);
 		} else {
 			// Escape non-link content
 			const text = document.createTextNode(part);
@@ -113,7 +115,7 @@ export function escapeHtml(html: string) {
 
 export function parseHtmlAsFormattedText(html: string): ApiFormattedText {
 	const fragment = document.createElement('div');
-	fragment.innerHTML = parseMarkdown(escapeHtml(parseMarkdownLinks(html)));
+	fragment.innerHTML = sanitizeMessageHtml(parseMarkdown(escapeHtml(parseMarkdownLinks(html))));
 
 	fixImageContent(fragment);
 	const text = fragment.innerText.replace(/___#new_line___/g, '\n');
