@@ -59,8 +59,8 @@ import {
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
-import type { ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { ReactElement, RefObject } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
