@@ -467,7 +467,8 @@
 		"failedToRefresh": "Canvas-Daten konnten nicht aktualisiert werden",
 		"titlePlaceholder": "Dein Canvas-Titel",
 		"typePlaceholder": "Gib / ein, um einzufügen...",
-		"untitled": "Unbenannt"
+		"untitled": "Unbenannt",
+		"deleteMessage": "Dieses Canvas wird dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
 	},
 	"emojiCategories": {
 		"forsale": "Zu verkaufen",

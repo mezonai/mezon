@@ -467,7 +467,8 @@
 		"failedToRefresh": "Kunde inte uppdatera canvas-data",
 		"titlePlaceholder": "Din canvas titel",
 		"typePlaceholder": "Ange / för att infoga...",
-		"untitled": "Namnlös"
+		"untitled": "Namnlös",
+		"deleteMessage": "Detta canvas kommer att raderas permanent. Den här åtgärden kan inte ångras."
 	},
 	"emojiCategories": {
 		"forsale": "Till salu",

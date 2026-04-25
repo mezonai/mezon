@@ -48,6 +48,16 @@ const SystemMessagesManagement = ({
 		return channelsList.find((channel) => channel.id === channelSelectedId);
 	}, [channelsList, channelSelectedId]);
 
+	const renderChannelIcon = (channel?: { age_restricted?: number; channel_private?: number }) => {
+		if (channel?.age_restricted === 1) {
+			return <Icons.HashtagWarning className="w-4 h-4 dark:text-channelTextLabel" />;
+		}
+		if (channel?.channel_private) {
+			return <Icons.HashtagLocked className="w-4 h-4 dark:text-channelTextLabel" />;
+		}
+		return <Icons.Hashtag className="w-4 h-4 dark:text-channelTextLabel" />;
+	};
+
 	const handleToggleSetting = (checked: boolean, type: ETypeUpdateSystemMessage, channelId?: string) => {
 		if (channelId && channelId !== channelSelectedId && type === ETypeUpdateSystemMessage.CHANNEL) {
 			setUpdateSystemMessageRequest({ ...updateSystem, channel_id: channelId });
@@ -85,11 +95,7 @@ const SystemMessagesManagement = ({
 							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
-							{channel?.channel_private ? (
-								<Icons.HashtagLocked className="w-4 h-4 dark:text-channelTextLabel" />
-							) : (
-								<Icons.Hashtag className="w-4 h-4 dark:text-channelTextLabel" />
-							)}
+							{renderChannelIcon(channel)}
 							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
 								{channel.channel_label ?? ''}
 							</p>
@@ -114,7 +120,7 @@ const SystemMessagesManagement = ({
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
 				>
 					<div className={' flex flex-row items-center'}>
-						<Icons.Hashtag className="w-4 h-4 " />
+						{renderChannelIcon(selectedChannel)}
 						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
 							{selectedChannel?.channel_label}
 						</p>

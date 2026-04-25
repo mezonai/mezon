@@ -24,6 +24,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	const { onItemClick, channel, stateMenu, stateClose, displayChannelLabel, getTabTranslation } = props;
 	const { t } = useTranslation('channelSetting');
 	const isPrivate = channel.channel_private;
+	const isAgeRestrictedChannel = channel?.age_restricted === 1;
 	const [selectedButton, setSelectedButton] = useState<string | null>('Overview');
 	const [showModal, setShowModal] = useState(false);
 	const [hasManageChannelPermission] = usePermissionChecker([EPermission.manageChannel, EPermission.manageClan], channel.channel_id ?? '');
@@ -61,6 +62,9 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			if (isAgeRestrictedChannel) {
+				return <Icons.HashtagWarning className="w-5 h-5 -mt-1 min-w-5" />;
+			}
 			if (isPrivate) {
 				return <Icons.HashtagLocked className="w-5 h-5 -mt-1 min-w-5" />;
 			}

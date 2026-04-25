@@ -1,6 +1,7 @@
 import {
 	ETypeFetchChannelSetting,
 	channelSettingActions,
+	selectChannelById,
 	selectMemberClanByUserId,
 	selectThreadsListByParentId,
 	useAppDispatch,
@@ -147,6 +148,10 @@ interface IRenderChannelAndThread {
 	searchFilter?: string;
 }
 
+const isAgeRestrictedChannel = (channel: ApiChannelSettingItem) => {
+	return (channel as { age_restricted?: number }).age_restricted === 1;
+};
+
 const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, searchFilter }: IRenderChannelAndThread) => {
 	const { t } = useTranslation('channelSetting');
 	const dispatch = useAppDispatch();
@@ -215,6 +220,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					creatorId={channelParent.creator_id as string}
 					label={channelParent?.channel_label as string}
 					privateChannel={channelParent?.channel_private as number}
+					isAgeRestricted={isAgeRestrictedChannel(channelParent)}
 					isThread={!!channelParent?.parent_id && channelParent.parent_id !== '0'}
 					key={channelParent?.id}
 					userIds={channelParent?.user_ids || []}
@@ -246,6 +252,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 								creatorId={thread?.creator_id as string}
 								label={thread?.channel_label as string}
 								privateChannel={thread?.channel_private as number}
+								isAgeRestricted={isAgeRestrictedChannel(thread)}
 								isThread={!!thread?.parent_id && thread.parent_id !== '0'}
 								key={`${thread?.id}_thread`}
 								userIds={thread?.user_ids || []}
@@ -282,7 +289,8 @@ const ItemInfor = ({
 	messageCount,
 	lastMessage,
 	isStream,
-	isApp
+	isApp,
+	isAgeRestricted
 }: {
 	isThread?: boolean;
 	label: string;
@@ -296,9 +304,12 @@ const ItemInfor = ({
 	lastMessage?: ApiChannelMessageHeader;
 	isStream?: boolean;
 	isApp?: boolean;
+	isAgeRestricted?: boolean;
 }) => {
 	const { t, i18n } = useTranslation('channelSetting');
 	const creatorChannel = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
+	const channelEntity = useAppSelector((state) => selectChannelById(state, channelId));
+	const isAgeRestrictedChannel = isAgeRestricted || channelEntity?.age_restricted === 1;
 	const handleCopyChannelId = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.stopPropagation();
 		e.preventDefault();
@@ -364,6 +375,8 @@ const ItemInfor = ({
 							) : (
 								<Icons.ThreadIcon />
 							)
+						) : isAgeRestrictedChannel ? (
+							<Icons.HashtagWarning />
 						) : privateChannel ? (
 							<Icons.HashtagLocked />
 						) : (

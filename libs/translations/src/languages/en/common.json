@@ -467,7 +467,8 @@
 		"failedToRefresh": "Failed to refresh canvas data",
 		"titlePlaceholder": "Your canvas title",
 		"typePlaceholder": "Type / to insert...",
-		"untitled": "Untitled"
+		"untitled": "Untitled",
+		"deleteMessage": "This canvas will be permanently deleted. This action cannot be undone."
 	},
 	"emojiCategories": {
 		"forsale": "For Sale",
