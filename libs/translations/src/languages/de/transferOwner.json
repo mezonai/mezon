@@ -1,0 +1,9 @@
+{
+	"title": "Clan-Besitz übertragen",
+	"description": "Dadurch wird der Besitz von {{clanName}} auf {{memberName}} übertragen.",
+	"confirmation": "Ich bestätige, dass durch die Übertragung des Besitzes dieses Clans auf {{memberName}}, dieser offiziell in deren Besitz übergeht.",
+	"buttons": {
+		"transfer": "Besitz übertragen",
+		"cancel": "Abbrechen"
+	}
+}

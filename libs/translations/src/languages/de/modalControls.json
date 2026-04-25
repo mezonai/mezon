@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "reset": "Zurücksetzen",
+    "close": "Schließen",
+    "kick": "Rauswerfen"
+  },
+  "form": {
+    "required": "Pflichtfeld",
+    "error": "Fehler"
+  },
+  "kickMember": {
+    "title": "{{username}} aus {{clanName}} entfernen",
+    "description": "Bist du sicher, dass du @{{username}} aus {{clanName}} entfernen möchtest? Die Person kann über eine neue Einladung wieder beitreten.",
+    "reasonLabel": "Grund für das Entfernen"
+  }
+}

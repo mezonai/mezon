@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Benachrichtigungseinstellungen",
+		"muteUntil": "Du hast die Benachrichtigungen für diesen Kanal stummgeschaltet bis",
+		"unMute": "Benachrichtigungen einschalten",
+		"mute": "Benachrichtigungen stummschalten",
+		"labelOptions": {
+			"reactionMessage": "Nachrichtenreaktionen",
+			"categoryDefault": "Standardeinstellungen verwenden",
+			"allMessage": "Alle",
+			"notThingMessage": "Keine",
+			"mentionMessage": "Nur @Erwähnungen"
+		},
+		"muteCategoryUntil": "Du hast die Benachrichtigungen für diese Kategorie stummgeschaltet bis"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Diesen Thread stummschalten",
+		"headerTitleMuteChannel": "Diesen Kanal stummschalten",
+		"muteThisConversation": "Diesen Chat stummschalten",
+		"muteDuration": {
+			"forFifteenMinutes": "Für 15 Minuten",
+			"forOneHour": "Für 1 Stunde",
+			"forThreeHours": "Für 3 Stunden",
+			"forEightHours": "Für 8 Stunden",
+			"forTwentyFourHours": "Für 24 Stunden",
+			"untilTurnItBackOn": "Bis du sie wieder einschaltest"
+		},
+		"description": "Du erhältst Benachrichtigungen für alle Nachrichten in diesem Clan, aber du kannst die Einstellungen hier ändern",
+		"muteSuccess": "Benachrichtigungen erfolgreich stummgeschaltet!",
+		"unMuteSuccess": "Benachrichtigungen erfolgreich eingeschaltet!",
+		"muteFailed": "Fehler beim Stummschalten der Benachrichtigungen!",
+		"unMuteFailed": "Fehler beim Einschalten der Benachrichtigungen!"
+	},
+	"toast": {
+		"error": "Fehler beim Aktualisieren der Benachrichtigungen: {{error}}"
+	},
+	"title": "Benachrichtigungseinstellungen",
+	"clanNotificationSettings": "CLAN-BENACHRICHTIGUNGSEINSTELLUNGEN",
+	"notificationOverrides": "BENACHRICHTIGUNGS-ÜBERSCHREIBUNGEN",
+	"addChannelOverride": "Kanal hinzufügen, um die Standard-Benachrichtigungseinstellungen zu überschreiben",
+	"selectOrCreateOption": "Option auswählen oder erstellen...",
+	"headers": {
+		"channelOrCategory": "KANAL ODER KATEGORIE",
+		"all": "ALLE",
+		"mentions": "ERWÄHNUNGEN",
+		"nothing": "KEINE",
+		"mute": "STUMMSCHALTEN"
+	},
+	"menu": {
+		"notification": {
+			"all": "Alle",
+			"onlyMention": "Nur @Erwähnungen",
+			"nothing": "Keine"
+		}
+	}
+}

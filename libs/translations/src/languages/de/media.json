@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "Wir haben weit und breit gesucht. Leider wurden keine Ergebnisse gefunden.",
+	"video": {
+		"error": {
+			"title": "Video nicht verfügbar",
+			"cannotPlay": "Video kann nicht abgespielt werden",
+			"loadingAborted": "Videoladen abgebrochen",
+			"networkError": "Netzwerkfehler beim Laden des Videos",
+			"codecNotSupported": "Video-Codec auf dieser Plattform nicht unterstützt",
+			"codecNotSupportedElectron": "Video-Codec auf dieser Plattform nicht unterstützt. Versuche, das Video herunterzuladen, um es mit dem Systemplayer abzuspielen.",
+			"formatNotSupported": "Videoformat wird nicht unterstützt",
+			"downloadButton": "Video herunterladen",
+			"browserNotSupported": "Dein Browser unterstützt das Video-Tag nicht."
+		}
+	}
+}

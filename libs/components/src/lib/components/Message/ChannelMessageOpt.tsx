@@ -196,7 +196,12 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 				builder.when(
 					clanId && clanId !== '0' && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
 					(builder: MenuBuilder) => {
-						builder.addMenuItem('topic', t('topic'), handleCreateTopic, <Icons.TopicIconOption className="w-5 h-5 " />);
+						builder.addMenuItem(
+							'topic',
+							t('topic'),
+							handleCreateTopic,
+							<Icons.TopicIcon className="w-6 h-6 text-theme-primary text-theme-primary-hover" />
+						);
 					}
 				);
 			}
@@ -485,7 +490,7 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 			'option',
 			t('option'),
 			useHandleClickOption,
-			<Icons.ThreeDot defaultSize={'w-5 h-5 text-theme-primary text-theme-primary-hover'} />
+			<Icons.ThreeDot className={'w-5 h-5 text-theme-primary text-theme-primary-hover'} />
 		);
 	});
 }

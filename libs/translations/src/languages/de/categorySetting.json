@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Kategoriename",
+            "placeholder": "Kategorienamen eingeben",
+            "errorMessage": "Bitte gib einen gültigen Kategorienamen ein (maximal 64 Zeichen, nur Buchstaben, Zahlen, _ oder -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Kategorieberechtigungen",
+            "description": "Ändere die Privatsphäre-Einstellungen und passe an, wie Mitglieder mit dieser Kategorie interagieren können."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Kategorie löschen"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Möchtest du die Kategorie {{categoryName}} wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "confirmText": "Löschen",
+            "title": "Kategorie löschen"
+        },
+        "save": "Speichern"
+    },
+    "toast": {
+        "updated": "Erfolgreich aktualisiert"
+    }
+}

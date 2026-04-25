@@ -1,4 +1,4 @@
-import type { ChannelDescription, ChannelMessage, ChannelStreamMode, ChannelType, HashtagDm, WebrtcSignalingFwd } from 'mezon-js';
+import type { ChannelDescription, ChannelStreamMode, ChannelType, HashtagDm, WebrtcSignalingFwd } from 'mezon-js';
 import { NotificationType } from 'mezon-js';
 import type {
 	ApiAccount,
@@ -28,6 +28,7 @@ import type {
 	ApiSearchMessageDocument,
 	ApiSystemMessage,
 	ApiUser,
+	ChannelMessage,
 	ClanUserListClanUser,
 	RoleUserListRoleUser
 } from 'mezon-js/api';
@@ -1015,6 +1016,7 @@ export type SearchItemProps = {
 	icon?: string;
 	channelId?: string;
 	channel_private?: number;
+	age_restricted?: number;
 	parent_id?: string;
 	clanId?: string;
 	searchName?: string;

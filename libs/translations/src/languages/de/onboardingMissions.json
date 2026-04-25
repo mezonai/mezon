@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "Mitglied sendet eine Nachricht in einem Kanal",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "Mitglied besucht einen Kanal",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "Liest diese Mission",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "Was sollten neue Mitglieder tun?",
+    "placeholder": "Beispiel: Poste ein Foto von deinem Haustier",
+    "channelTitle": "Wo sollten sie das tun?",
+    "channelNote": "Der Kanal muss für @everyone sichtbar sein (öffentlicher Kanal)",
+    "completeWhen": "Diese Mission ist abgeschlossen, wenn:",
+    "required": "Dieses Feld ist ein Pflichtfeld.",
+    "minCharacters": "Die Aktion muss mindestens 7 Zeichen haben"
+  },
+  "buttons": {
+    "remove": "Löschen",
+    "save": "Speichern",
+    "add": "Hinzufügen"
+  }
+}

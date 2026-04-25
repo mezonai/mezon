@@ -1,0 +1,105 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Als gelesen markieren"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Einladen",
+          "markFavorite": "Zu Favoriten hinzufügen",
+          "unMarkFavorite": "Aus Favoriten entfernen",
+          "copyLink": "Link kopieren"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Kanal stummschalten",
+          "unMuteChannel": "Kanal entstummen",
+          "muteThread": "Thread stummschalten",
+          "unMuteThread": "Thread entstummen",
+          "notification": "Benachrichtigungseinstellungen",
+          "for15Minutes": "Für 15 Minuten",
+          "for1Hour": "Für 1 Stunde",
+          "for3Hours": "Für 3 Stunden",
+          "for8Hours": "Für 8 Stunden",
+          "for24Hours": "Für 24 Stunden",
+          "untilTurnedBackOn": "Bis ich es wieder einschalte",
+          "useCategoryDefault": "Standardeinstellung der Kategorie verwenden",
+          "all": "Alle",
+          "onlyMention": "Nur @Erwähnungen",
+          "nothing": "Nichts",
+          "processing": "Wird verarbeitet...",
+          "muteChannelStatus": "Kanal stummgeschaltet",
+          "muteThreadStatus": "Thread stummgeschaltet",
+          "unmuteChannelStatus": "Kanal entstummt",
+          "unmuteThreadStatus": "Thread entstummt",
+          "mutedUntil": "Stummgeschaltet bis",
+          "muteSuccess": "Erfolgreich stummgeschaltet!",
+          "unMuteSuccess": "Erfolgreich entstummt!",
+          "muteFailed": "Fehler beim Stummschalten!",
+          "unMuteFailed": "Fehler beim Entstummen!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Threads",
+        "searchThreads": "Thread-Namen suchen",
+        "searchFiles": "Dateien suchen",
+        "searchCanvas": "Canvas-Namen suchen"
+
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Kanal bearbeiten",
+          "deleteChannel": "Kanal löschen",
+          "duplicateChannel": "Kanal duplizieren",
+          "leaveChannel": "Kanal verlassen",
+          "createTextChannel": "Textkanal erstellen",
+          "createVoiceChannel": "Sprachkanal erstellen",
+          "openChat": "Chat öffnen",
+          "hideNames": "Namen ausblenden",
+          "createThread": "Thread erstellen"
+      },
+      "devMode": {
+          "title": "Entwicklermodus",
+          "copyChannelID": "Kanal-ID kopieren"
+      },
+      "manageThreadMenu": {
+          "editThread": "Thread bearbeiten",
+          "deleteThread": "Thread löschen",
+          "leaveThread": "Thread verlassen",
+          "closeThread": "Thread schließen",
+          "lockThread": "Thread sperren",
+          "copyLink": "Link kopieren"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "Kanal-ID kopiert"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Thread {{threadName}} löschen",
+          "content": "Möchtest du diesen Thread wirklich löschen?",
+          "confirmText": "Ja"
+      },
+      "channel": {
+          "title": "Kanal {{channelName}} löschen",
+          "content": "Möchtest du diesen Kanal wirklich löschen?",
+          "confirmText": "Ja",
+          "systemChannel": "Systemkanäle können nicht gelöscht werden",
+          "error": "Fehler beim Löschen des Kanals: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Thread verlassen",
+    "yesButton": "Thread verlassen",
+    "textConfirm": "Möchtest du diesen Thread wirklich verlassen? Sobald du ihn verlassen hast, erhältst du keine Nachrichten mehr aus diesem Thread."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Kanal verlassen",
+    "yesButton": "Kanal verlassen",
+    "textConfirm": "Möchtest du diesen Kanal wirklich verlassen? Sobald du ihn verlassen hast, erhältst du keine Nachrichten mehr aus diesem Kanal.",
+    "error": "Fehler beim Verlassen des Kanals: {{error}}"
+  },
+  "btnBadgeCount": "Neu",
+  "favoriteChannel": "FAVORITENKANAL"
+}

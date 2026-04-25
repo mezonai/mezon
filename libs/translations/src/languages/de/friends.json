@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Freundschaftsanfrage",
+		"received": "Eingegangen",
+		"sent": "Gesendet",
+		"emptyReceived": {
+			"title": "Keine eingehenden Freundschaftsanfragen",
+			"description": "Hier siehst du alle Freundschaftsanfragen, die du erhalten hast."
+		},
+		"emptySent": {
+			"title": "Keine gesendeten Freundschaftsanfragen",
+			"description": "Hier siehst du alle Freundschaftsanfragen, die du an andere gesendet hast."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Eingehende Freundschaftsanfrage",
+		"findYourFriend": "Freunde finden",
+		"addByUserName": "Mit Benutzernamen oder Telefonnummer hinzufügen",
+		"addByUsername": "Hinzufügen über {{username}}",
+		"searchUsernamePlaceholder": "Benutzernamen oder Telefonnummer eingeben",
+		"whoYouWantToAddFriend": "Wen möchtest du als Freund hinzufügen?",
+		"byTheWay": "Übrigens, dein Benutzername ist",
+		"sendRequestButton": "Freundschaftsanfrage senden",
+		"addFriendToast": "Freundschaftsanfrage gesendet"
+	},
+	"friends": "Freunde",
+	"noFriendsResultsFound": "Keine Freunde gefunden",
+	"toast": {
+		"sendAddFriendSuccess": "Freundschaftsanfrage erfolgreich gesendet!",
+		"acceptAddFriendSuccess": "Freundschaftsanfrage angenommen!",
+		"sendAddFriendFail": "Hmm, da ist etwas schiefgelaufen. Bitte überprüfe, ob der Benutzername korrekt ist.",
+		"somethingWentWrong": "Etwas ist schiefgelaufen",
+		"friendRequestAlreadySent": "Freundschaftsanfrage wurde bereits gesendet und wartet auf Annahme."
+	},
+	"you": "du"
+}

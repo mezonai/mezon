@@ -84,7 +84,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowNotificationSetting}
 					children={t('modalPanel.notificationSettings')}
-					endIcon={<Icons.Bell className=" text-theme-primary-hover" />}
+					endIcon={<Icons.Bell className=" w-[18px] h-[18px] text-theme-primary-hover" />}
 				/>
 				<button
 					onClick={toggleShowEmptyCategory}

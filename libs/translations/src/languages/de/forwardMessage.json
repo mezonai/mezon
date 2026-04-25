@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Nachricht weiterleiten",
+		"searchPlaceholder": "Suche",
+		"noResults": "Nichts gefunden, wonach du suchst?",
+		"searchFriendsUsers": "Freunde und Nutzer suchen",
+		"searchingChannel": "Kanal suchen",
+		"sharedContent": "Geteilte Inhalte",
+		"cancel": "Abbrechen",
+		"send": "Senden",
+		"sending": "Wird gesendet...",
+		"sendingProgress": "Wird gesendet ({{current}}/{{total}})...",
+		"image": "Bild",
+		"images": "Bilder",
+		"video": "Video",
+		"videos": "Videos",
+		"file": "Datei",
+		"files": "Dateien",
+		"additionalMessage": "Zusätzliche Nachricht (optional)",
+		"additionalMessagePlaceholder": "Nachricht zum Weiterleiten eingeben..."
+	},
+	"successMessage": "Nachricht erfolgreich weitergeleitet",
+	"errorMessage": "Nachricht konnte nicht weitergeleitet werden"
+}

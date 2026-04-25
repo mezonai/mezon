@@ -467,7 +467,8 @@
 		"failedToRefresh": "Không thể làm mới dữ liệu canvas",
 		"titlePlaceholder": "Tiêu đề canvas của bạn",
 		"typePlaceholder": "Nhập / để chèn...",
-		"untitled": "Chưa đặt tên"
+		"untitled": "Chưa đặt tên",
+		"deleteMessage": "Canvas này sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác."
 	},
 	"emojiCategories": {
 		"forsale": "Đang bán",

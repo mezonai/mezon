@@ -183,7 +183,7 @@ const SearchActionAuditLogModal = ({
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 					<span className="absolute right-3 top-3 text-gray-400 cursor-pointer" onClick={searchTerm ? handleClearSearch : undefined}>
-						{searchTerm ? <Icons.Close defaultSize="size-4" /> : <Icons.Search className="w-4 h-4 text-theme-primary" />}
+						{searchTerm ? <Icons.Close className="w-4 h-4" /> : <Icons.Search className="w-4 h-4 text-theme-primary" />}
 					</span>
 				</div>
 
@@ -201,7 +201,7 @@ const SearchActionAuditLogModal = ({
 								<span className="ml-3 ">{action.name}</span>
 								{selectedAction === action.originalKey && (
 									<span className="ml-auto">
-										<Icons.CheckMarkFilter defaultSize="w-5 h-5" defaultFill="text-white" />
+										<Icons.CheckMarkFilter className="w-5 h-5" defaultFill="text-white" />
 									</span>
 								)}
 							</div>

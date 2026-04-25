@@ -292,7 +292,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					mentionRaw: [],
 					entities: []
 				});
-
 				return;
 			}
 
@@ -519,7 +518,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				payload.cvtt = canvasTitles;
 			}
 
-			const removeEmptyOnPayload = filterEmptyArrays([]);
+			const removeEmptyOnPayload = filterEmptyArrays(payload);
 			const encoder = new TextEncoder();
 			const payloadJson = JSON.stringify(removeEmptyOnPayload);
 			const utf8Bytes = encoder.encode(payloadJson);
