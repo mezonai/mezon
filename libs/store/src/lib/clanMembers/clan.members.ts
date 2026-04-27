@@ -3,7 +3,7 @@ import type { IUserProfileActivity, LoadingStatus, UsersClanEntity } from '@mezo
 import { EUserStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api';
+import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js';
 import { batch } from 'react-redux';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -54,7 +54,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 	const currentState = getState();
 	const clanData = currentState[USERS_CLANS_FEATURE_KEY].byClans[clanId];
 
-	const apiKey = createApiKey('fetchUsersClan', clanId, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('fetchUsersClan', clanId, ensuredMezon.session.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData?.cache, noCache);
 
 	if (!shouldForceCall) {
@@ -184,7 +184,7 @@ export const fetchListBanMembersCached = async (
 	const currentState = getState();
 	const clanData = currentState[USERS_CLANS_FEATURE_KEY].byClans[clanId];
 
-	const apiKey = createApiKey('listBannedUsers', clanId, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('listBannedUsers', clanId, ensuredMezon.session.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData?.cache, noCache);
 
 	if (!shouldForceCall) {

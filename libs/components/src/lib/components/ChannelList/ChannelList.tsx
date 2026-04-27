@@ -27,8 +27,8 @@ import {
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import type { ApiCategoryOrderUpdate } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiCategoryOrderUpdate } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';

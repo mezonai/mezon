@@ -13,7 +13,7 @@ export interface GroupCallSignalingHookReturn {
 }
 
 export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
-	const mezon = useMezon();
+	const { sessionRef, clientRef } = useMezon();
 
 	const sendSignalingToParticipants = useCallback(
 		(participants: string[], signalType: number, data: CallSignalingData | Record<string, any>, channelId: string, currentUserId: string) => {
@@ -24,13 +24,13 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 			participants.forEach((userId) => {
 				if (userId !== currentUserId) {
 					try {
-						const socket = mezon.socketRef.current;
-						if (!socket) {
+						const client = clientRef.current;
+						if (!client || !sessionRef.current) {
 							console.error('Socket not available for signaling');
 							return;
 						}
 
-						socket.forwardWebrtcSignaling(userId, signalType, JSON.stringify(data), channelId, currentUserId);
+						client.forwardWebrtcSignaling(sessionRef.current, userId, signalType, JSON.stringify(data), channelId, currentUserId);
 						if (
 							signalType === WEBRTC_SIGNALING_TYPES.GROUP_CALL_OFFER ||
 							signalType === WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT ||
@@ -46,7 +46,7 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 				}
 			});
 		},
-		[mezon]
+		[clientRef.current, sessionRef.current]
 	);
 
 	const sendGroupCallOffer = useCallback(
@@ -103,15 +103,15 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 			isCancel: boolean;
 			data: CallSignalingData | Record<string, any>;
 		}) => {
-			const socket = mezon.socketRef.current;
-			if (!socket) {
+			const client = clientRef.current;
+			if (!client || !sessionRef.current) {
 				console.error('Socket not available for push notifications');
 				return;
 			}
 
 			if (isCancel) {
 				const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+				client.makeCallPush(sessionRef.current, receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
 				return;
 			}
 
@@ -132,9 +132,9 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 				channelId: data.group_id
 			};
 
-			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+			client.makeCallPush(sessionRef.current, receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
 		},
-		[mezon]
+		[clientRef, sessionRef]
 	);
 
 	return {

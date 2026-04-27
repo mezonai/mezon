@@ -2,8 +2,7 @@ import i18n from '@mezon/translations';
 import { EUserStatus, type IUserProfileActivity, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { AddFriend } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api';
+import type { AddFriend, ApiFriend } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -83,7 +82,7 @@ export const fetchListFriendsCached = async (
 	const currentState = getState();
 	const friendsState = currentState[FRIEND_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchFriends', state, limit, cursor, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('fetchFriends', state, limit, cursor, ensuredMezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, friendsState?.cache, noCache);
 

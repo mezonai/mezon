@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import type { Client } from 'mezon-js';
 
 let globalSocketPromise: Promise<void> | null = null;
 
@@ -14,7 +15,7 @@ export const waitForSocketConnection = createAsyncThunk('socket/waitForConnectio
 
 	globalSocketPromise = new Promise<void>((resolve, reject) => {
 		const interval = setInterval(() => {
-			if (mezon.socketRef.current && (mezon.socketRef.current as any).adapter && (mezon.socketRef.current as any).adapter.isOpen()) {
+			if (mezon.clientRef.current && (mezon.clientRef.current as Client).isOpen()) {
 				clearInterval(interval);
 				clearTimeout(deadline);
 				resolve();

@@ -405,7 +405,7 @@ let storeCreated = false;
 
 // Event-based "store ready" promise replaces 100ms polling in getStoreAsync — single shared awaiter, no background timers.
 let _resolveStoreReady: ((store: typeof storeInstance) => void) | null = null;
-let _storeReadyPromise: Promise<typeof storeInstance> = new Promise((resolve) => {
+const _storeReadyPromise: Promise<typeof storeInstance> = new Promise((resolve) => {
 	_resolveStoreReady = resolve;
 });
 
@@ -474,13 +474,11 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 
 					const newAuthState = safeJSONParse(e.newValue);
 					const sessionData = newAuthState.session ? safeJSONParse(newAuthState.session) : null;
-					const activeAccount = newAuthState.activeAccount ? safeJSONParse(newAuthState.activeAccount) : null;
 
 					const currentState = store.getState();
-					const currentActiveAccount = currentState.auth?.activeAccount;
-					const currentSession = currentState.auth?.session?.[currentActiveAccount || ''];
+					const currentSession = currentState.auth?.session;
 
-					const newSession = sessionData && activeAccount ? sessionData[activeAccount] : null;
+					const newSession = sessionData ? sessionData : null;
 					const hasSessionChanged =
 						newSession?.token !== currentSession?.token || newSession?.refresh_token !== currentSession?.refresh_token;
 

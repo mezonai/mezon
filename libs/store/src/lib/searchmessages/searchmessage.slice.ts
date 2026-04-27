@@ -3,7 +3,6 @@ import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import { decodeAttachments, decodeMentions, decodeReactions, decodeRefs, safeJSONParse } from 'mezon-js';
 import type {
 	ApiFilterParam,
 	ApiMessageAttachment,
@@ -13,7 +12,8 @@ import type {
 	ApiSearchMessageDocument,
 	ApiSearchMessageRequest,
 	ApiSortParam
-} from 'mezon-js/api';
+} from 'mezon-js';
+import { decodeAttachments, decodeMentions, decodeReactions, decodeRefs, safeJSONParse } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 

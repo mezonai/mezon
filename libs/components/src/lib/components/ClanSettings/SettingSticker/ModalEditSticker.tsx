@@ -13,8 +13,7 @@ import {
 	sanitizeUrlSecure
 } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ClanEmoji, ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api';
+import type { ApiClanStickerAddRequest, ClanEmoji, ClanSticker, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

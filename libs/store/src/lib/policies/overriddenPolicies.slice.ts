@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { EOverriddenPermission } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPermission } from 'mezon-js/api';
+import type { ApiPermission } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -118,7 +118,7 @@ export const fetchMaxChannelPermissionCached = async (
 	const overriddenPoliciesState = currentState[OVERRIDDEN_POLICIES_FEATURE_KEY];
 	const channelData = overriddenPoliciesState.byChannels[channelId] || getInitialChannelState();
 
-	const apiKey = createApiKey('fetchMaxChannelPermission', channelId, clanId, mezon.session.username || '');
+	const apiKey = createApiKey('fetchMaxChannelPermission', channelId, clanId, mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 

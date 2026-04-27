@@ -80,6 +80,7 @@ import {
 	selectLatestMessageId,
 	selectLoadingStatus,
 	selectOrderedClans,
+	selectSession,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
 	selectVoiceInfo,
@@ -102,7 +103,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
-import { resetSessionRefreshManager, useMezon } from '@mezon/transport';
+import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IUserProfileActivity, NotificationCategory } from '@mezon/utils';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
@@ -132,9 +133,22 @@ import isElectron from 'is-electron';
 import type {
 	AddClanUserEvent,
 	AddFriend,
+	ApiChannelMessageHeader,
+	ApiClanEmoji,
+	ApiCreateEventRequest,
+	ApiGiveCoffeeEvent,
+	ApiMessageReaction,
+	ApiNotification,
+	ApiNotificationUserChannel,
+	ApiPermissionUpdate,
+	ApiSession,
+	ApiTokenSentEvent,
+	ApiUpdateCategoryDescRequest,
+	ApiWebhook,
 	BannedUserEvent,
 	BlockFriend,
 	CategoryEvent,
+	ChannelCanvas,
 	ChannelCreatedEvent,
 	ChannelDeletedEvent,
 	ChannelMessage,
@@ -143,7 +157,9 @@ import type {
 	ClanDeletedEvent,
 	ClanProfileUpdatedEvent,
 	ClanUpdatedEvent,
+	Client,
 	CustomStatusEvent,
+	DeleteAccountEvent,
 	EventEmoji,
 	JoinChannelAppData,
 	LastPinMessageEvent,
@@ -154,8 +170,9 @@ import type {
 	MessageTypingEvent,
 	PermissionChangedEvent,
 	PermissionSet,
+	RemoveFriend,
 	RoleEvent,
-	Socket,
+	SdTopicEvent,
 	StatusPresenceEvent,
 	StickerCreateEvent,
 	StickerDeleteEvent,
@@ -176,24 +193,10 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type {
-	ApiChannelMessageHeader,
-	ApiClanEmoji,
-	ApiCreateEventRequest,
-	ApiGiveCoffeeEvent,
-	ApiMessageReaction,
-	ApiNotification,
-	ApiNotificationUserChannel,
-	ApiPermissionUpdate,
-	ApiTokenSentEvent,
-	ApiUpdateCategoryDescRequest,
-	ApiWebhook
-} from 'mezon-js/api';
-import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Subject } from 'rxjs';
-import { exhaustMap, filter, throttleTime } from 'rxjs/operators';
+import { Subject, interval } from 'rxjs';
+import { exhaustMap, takeWhile } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
@@ -206,7 +209,6 @@ type ChatContextProviderProps = {
 };
 
 export type ChatContextValue = {
-	setCallbackEventFn: (socket: Socket) => void;
 	handleReconnect: (socketType: string) => void;
 	onchannelmessage: (message: ChannelMessage) => void;
 };
@@ -215,7 +217,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isMobile = false }) => {
 	const { t } = useTranslation('token');
-	const { socketRef, mmnRef, reconnectWithTimeout } = useMezon();
+	const { clientRef, sessionRef, mmnRef } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
 
@@ -2330,8 +2332,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			const handled = await handleGroupCallSocketEvent(event, state, {
 				dispatch,
-				socketRef,
-				userId
+				clientRef,
+				userId,
+				sessionRef
 			});
 
 			if (handled) {
@@ -2348,8 +2351,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			return;
 		}
 
-		if (userCallId && userCallId !== event?.caller_id) {
-			socketRef.current?.forwardWebrtcSignaling(
+		if (userCallId && userCallId !== event?.caller_id && sessionRef.current) {
+			clientRef.current?.forwardWebrtcSignaling(
+				sessionRef.current,
 				event?.caller_id,
 				WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
 				'',
@@ -2366,8 +2370,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));
-			if (event.data_type !== WEBRTC_CLEAR_CALL) {
-				socketRef.current?.forwardWebrtcSignaling(event?.caller_id, WEBRTC_CLEAR_CALL, '', event?.channel_id, userId || '');
+			if (event.data_type !== WEBRTC_CLEAR_CALL && sessionRef.current) {
+				clientRef.current?.forwardWebrtcSignaling(
+					sessionRef.current,
+					event?.caller_id,
+					WEBRTC_CLEAR_CALL,
+					'',
+					event?.channel_id,
+					userId || ''
+				);
 			} else if (event.data_type === WEBRTC_CLEAR_CALL) {
 				// Force quit call for android
 				dispatch(DMCallActions.setIsForceQuitCallNative(true));
@@ -2587,8 +2598,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 	}, []);
 
+	const onrefresssession = useCallback(
+		(session: ApiSession) => {
+			dispatch(authActions.setSessionId(session.session_id));
+			sessionRef.current = {
+				...sessionRef.current,
+				session_id: session.session_id
+			};
+		},
+		[sessionRef, dispatch]
+	);
 	const setCallbackEventFn = React.useCallback(
-		(socket: Socket) => {
+		(socket: Client) => {
+			socket.onrefreshsession = onrefresssession;
+
 			socket.onvoicejoined = onvoicejoined;
 
 			socket.onvoiceended = onvoiceended;
@@ -2757,54 +2780,40 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onunblockfriend,
 			onMarkAsRead,
 			onaddfriend,
-			onbanneduser
+			onbanneduser,
+			onrefresssession
 		]
 	);
 
 	const reconnect$ = useMemo(() => new Subject<string>(), []);
 
 	const executeReconnect = useCallback(
-		async (_socketType: string) => {
+		async (_socketType: string, client: Client) => {
 			socketState.status = 'connecting';
 			const store = getStore();
-			const clanIdActive = selectCurrentClanId(store.getState());
-
-			const socket = await reconnectWithTimeout(clanIdActive ?? '');
-
-			if (socket === 'RECONNECTING') {
+			const session = selectSession(store.getState()) as ApiSession;
+			if (!session) {
 				return;
 			}
-
-			if (!socket) {
-				socketState.status = 'disconnected';
-				dispatch(
-					toastActions.addToast({
-						message: 'Socket reconnecting...',
-						type: 'info',
-						autoClose: 3000,
-						id: 'SOCKET_RECONNECTING'
-					})
-				);
-				return;
-			}
-			setCallbackEventFn(socket as Socket);
+			setCallbackEventFn(client as Client);
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
 		},
-		[reconnectWithTimeout, setCallbackEventFn, dispatch]
+		[setCallbackEventFn, dispatch]
 	);
 
 	useEffect(() => {
 		const subscription = reconnect$
 			.pipe(
-				filter(() => !socketRef.current?.isOpen()),
-				throttleTime(500),
-				exhaustMap(
-					(socketType) =>
-						new Promise<void>((resolve) => {
-							executeReconnect(socketType)
-								.catch((error) => {
+				exhaustMap((socketType) =>
+					interval(500).pipe(
+						exhaustMap(async () => {
+							if (clientRef.current) {
+								try {
+									await executeReconnect(socketType, clientRef.current);
+									return true; // Resolves as an Observable<boolean>
+								} catch (error) {
 									dispatch(
 										toastActions.addToast({
 											message: 'Socket reconnecting...',
@@ -2814,9 +2823,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 										})
 									);
 									captureSentryError(error, 'SOCKET_RECONNECT');
-								})
-								.finally(resolve);
-						})
+									return false; // Resolves as an Observable<boolean>
+								}
+							}
+							return false;
+						}),
+						takeWhile((success) => !success, true)
+					)
 				)
 			)
 			.subscribe();
@@ -2829,7 +2842,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	useEffect(() => {
 		const onSessionExpired = () => {
 			console.error('Session expired, logging out');
-			resetSessionRefreshManager();
 			resetRefreshState();
 			dispatch(authActions.setLogout());
 			dispatch(walletActions.setLogout());
@@ -2858,7 +2870,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	}, [handleReconnect]);
 
 	useEffect(() => {
-		const socket = socketRef.current;
+		const socket = clientRef.current;
 		if (!socket) return;
 		setCallbackEventFn(socket);
 
@@ -2955,7 +2967,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		oncustomstatus,
 		onstatuspresence,
 		oncanvasevent,
-		socketRef,
+		clientRef,
 		onvoiceended,
 		onvoicejoined,
 		onvoiceleaved,

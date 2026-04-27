@@ -77,8 +77,8 @@ import {
 	isPublicChannel,
 	showSimpleToast
 } from '@mezon/utils';
+import type { ApiChannelDescription, ApiQuickMenuAccessRequest } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiChannelDescription, ApiQuickMenuAccessRequest } from 'mezon-js/api';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';

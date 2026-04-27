@@ -3,7 +3,7 @@ import type { ICategory, LoadingStatus, SortChannel } from '@mezon/utils';
 import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js/api';
+import type { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
@@ -151,10 +151,14 @@ export const checkDuplicateCategoryInClan = createAsyncThunk(
 	async ({ categoryName, clanId }: { categoryName: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(categoryName, clanId, TypeCheck.TYPECATEGORY, clanId);
+			const isDuplicateName = await mezon.clientRef.current?.checkDuplicateName(mezon.session, {
+				name: categoryName,
+				condition_id: clanId,
+				type: TypeCheck.TYPECATEGORY
+			});
 
-			if (isDuplicateName?.type === TypeCheck.TYPECATEGORY) {
-				return isDuplicateName.exist;
+			if (isDuplicateName?.is_duplicate) {
+				return isDuplicateName?.is_duplicate;
 			}
 			return;
 		} catch (error) {

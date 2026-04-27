@@ -1,10 +1,13 @@
-import { AppDispatch, RootState, audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
-import { Socket, WebrtcSignalingFwd, safeJSONParse } from 'mezon-js';
+import type { AppDispatch, RootState } from '@mezon/store';
+import { audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
+import type { ApiSession, Client, WebrtcSignalingFwd } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 
 export interface GroupCallSocketHandlerOptions {
 	dispatch: AppDispatch;
-	socketRef: React.RefObject<Socket>;
+	clientRef: React.RefObject<Client>;
 	userId: string | undefined;
+	sessionRef: React.RefObject<ApiSession>;
 }
 
 export interface ParsedCallData {
@@ -37,7 +40,7 @@ export const handleGroupCallSocketEvent = async (
 	}
 
 	try {
-		const { dispatch, socketRef, userId } = options;
+		const { dispatch, clientRef, userId, sessionRef } = options;
 		const isInCall = selectIsInCall(state);
 		const isGroupCallActive = selectIsGroupCallActive(state);
 		const isInAnyCall = isInCall || isGroupCallActive;
@@ -54,12 +57,12 @@ export const handleGroupCallSocketEvent = async (
 
 		const sendBusySignal = (callData: ParsedCallData, isVideoCall: boolean) => {
 			try {
-				if (!socketRef.current || !event.caller_id || !event.channel_id) {
-					console.warn('Cannot send busy signal: missing socket or event data');
+				if (!clientRef.current || !sessionRef.current) {
 					return;
 				}
 
-				socketRef.current.forwardWebrtcSignaling(
+				clientRef.current.forwardWebrtcSignaling(
+					sessionRef.current,
 					event.caller_id,
 					13, // GROUP_CALL_JOINED_OTHER_CALL
 					JSON.stringify({
@@ -99,7 +102,7 @@ export const handleGroupCallSocketEvent = async (
 					dispatch(audioCallActions.setIsDialTone(false));
 					dispatch(groupCallActions.startGroupCall());
 
-					if (socketRef.current && event.caller_id) {
+					if (clientRef.current && sessionRef.current && event.caller_id) {
 						const answerData = {
 							is_video: isVideoCall,
 							group_id: event.channel_id,
@@ -109,7 +112,8 @@ export const handleGroupCallSocketEvent = async (
 							timestamp: Date.now()
 						};
 
-						socketRef.current.forwardWebrtcSignaling(
+						clientRef.current.forwardWebrtcSignaling(
+							sessionRef.current,
 							event.caller_id,
 							10, // GROUP_CALL_ANSWER
 							JSON.stringify(answerData),

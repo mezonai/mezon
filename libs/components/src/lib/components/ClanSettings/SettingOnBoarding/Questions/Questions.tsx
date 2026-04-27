@@ -9,7 +9,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js/api';
+import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -13,7 +13,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
-import type { ApiSdTopic } from 'mezon-js/api';
+import type { ApiSdTopic } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

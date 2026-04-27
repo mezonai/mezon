@@ -10,8 +10,8 @@ import {
 import { Icons, Menu, Pagination } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
+import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

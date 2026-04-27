@@ -2,7 +2,6 @@ import { channelsActions, clansActions, topicsActions } from '@mezon/store';
 import { ModeResponsive } from '@mezon/utils';
 import type { ShouldRevalidateFunction } from 'react-router-dom';
 import type { CustomLoaderFunction } from './appLoader';
-import { waitForSocketConnection } from './socketUtils';
 
 export type ClanLoaderData = {
 	clanId: string;
@@ -13,8 +12,6 @@ export const clanLoader: CustomLoaderFunction = async ({ params, dispatch }) => 
 	if (!clanId) {
 		throw new Error('Clan ID null');
 	}
-
-	await dispatch(waitForSocketConnection());
 
 	dispatch(clansActions.joinClan({ clanId }));
 	dispatch(clansActions.changeCurrentClan({ clanId }));

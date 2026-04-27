@@ -9,8 +9,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
+import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';

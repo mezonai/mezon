@@ -9,8 +9,8 @@ import {
 } from '@mezon/store';
 import type { RequestInput } from '@mezon/utils';
 import { EmojiPlaces, SubPanelName } from '@mezon/utils';
+import type { ApiChannelDescription } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
