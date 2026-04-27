@@ -1,2 +1,0 @@
-export { WebhookChannelSelectModal } from './WebhookChannelSelectModal';
-
