@@ -53,7 +53,7 @@ void import('livekit-client').then(({ LogLevel, setLogLevel }) => {
 
 ThemeManager.initializeTheme();
 
-const config = getMezonConfig();
+const mezon = getMezonConfig();
 
 export const LoadingFallbackWrapper = () => <LoadingFallback />;
 
@@ -351,15 +351,13 @@ export function App() {
 		<LoadingContext.Provider value={loadingContextValue}>
 			{showLoading && <LoadingFallbackWrapper />}
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
-				<MezonContextProvider mezon={config} connect={true}>
-					<LanguageSyncProvider />
-					<PopupManagerProvider>
-						<PermissionProvider>
-							<AppInitializer />
-							<Routes />
-						</PermissionProvider>
-					</PopupManagerProvider>
-				</MezonContextProvider>
+				<LanguageSyncProvider />
+				<PopupManagerProvider>
+					<PermissionProvider>
+						<AppInitializer />
+						<Routes />
+					</PermissionProvider>
+				</PopupManagerProvider>
 			</MezonStoreProvider>
 		</LoadingContext.Provider>
 	);
@@ -376,7 +374,9 @@ function AppWrapper() {
 	return (
 		<I18nextProvider i18n={i18n}>
 			<Suspense fallback={<LoadingFallbackWrapper />}>
-				<App />
+				<MezonContextProvider mezon={mezon} connect={true}>
+					<App />
+				</MezonContextProvider>
 			</Suspense>
 		</I18nextProvider>
 	);
