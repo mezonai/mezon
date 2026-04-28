@@ -39,6 +39,7 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 				);
 
 				client.onrefreshsession = (session: ApiSession) => {
+					store.dispatch(authActions.setSessionId(session.session_id));
 					sessionRef.current = session;
 				};
 				connectRef.current = true;

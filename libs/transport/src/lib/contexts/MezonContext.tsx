@@ -299,6 +299,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 		if ((sessionRef.current?.token || sessionRef.current?.session_id) && sessionRef.current.ws_url) {
 			const socket = clientRef.current.connect(sessionRef.current?.session_id || sessionRef.current.token || '', sessionRef.current.ws_url);
+			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
+				const authData = JSON.stringify({
+					...sessionRef.current,
+					session_id: sessionNew.session_id
+				} as ApiSession);
+
+				localStorage.setItem('persist:auth', authData);
+			};
 			return socket;
 		}
 	}, [clientRef, socketRef]);
@@ -433,6 +441,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 			try {
 				await clientRef.current.connect(session.session_id || session.token || '', session.ws_url, true);
+				clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
+					const authData = JSON.stringify({
+						...session,
+						session_id: sessionNew.session_id
+					} as ApiSession);
+
+					localStorage.setItem('persist:auth', authData);
+				};
 			} catch (error) {
 				console.error('error: ', error);
 			}
@@ -459,6 +475,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon connect lost data');
 			}
 			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url);
+			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
+				const authData = JSON.stringify({
+					...session,
+					session_id: sessionNew.session_id
+				} as ApiSession);
+
+				localStorage.setItem('persist:auth', authData);
+			};
 			socketState.status = 'connected';
 			return session;
 		},
@@ -494,6 +518,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon connect lost data');
 			}
 			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url);
+			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
+				const authData = JSON.stringify({
+					...session,
+					session_id: sessionNew.session_id
+				} as ApiSession);
+
+				localStorage.setItem('persist:auth', authData);
+			};
 			socketState.status = 'connected';
 			return session;
 		},
@@ -548,6 +580,13 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			extractAndSaveConfig(session, isFromMobile);
 
 			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url || '');
+			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
+				const authData = JSON.stringify({
+					...session,
+					session_id: sessionNew.session_id
+				} as ApiSession);
+				localStorage.setItem('persist:auth', authData);
+			};
 			socketState.status = 'connected';
 			return session;
 		},
