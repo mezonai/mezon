@@ -30,6 +30,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import BuzzBadge from '../BuzzBadge';
+import { AppChannelListIcon } from '../ChannelList/AppChannelListIcon';
 import type { IChannelLinkPermission } from '../ChannelList/CategorizedChannels';
 import SettingChannel from '../ChannelSetting';
 import EventSchedule from '../EventSchedule';
@@ -186,9 +187,6 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 			stream: isIconActive
 				? '[--stream-fill-1:var(--bg-icon-theme-active)] [--stream-fill-2:var(--bg-icon-theme-active)]'
 				: '[--stream-fill-1:var(--bg-icon-theme)] [--stream-fill-2:var(--bg-icon-theme)] group-hover:[--stream-fill-1:var(--bg-icon-theme-active)] group-hover:[--stream-fill-2:var(--bg-icon-theme-active)]',
-			app: isIconActive
-				? '[--app-fill-1:var(--bg-icon-theme-active)] [--app-fill-2:var(--bg-theme-secounnd)]'
-				: '[--app-fill-1:var(--bg-icon-theme)] [--app-fill-2:var(--bg-theme-secounnd)] group-hover:[--app-fill-1:var(--bg-icon-theme-active)] group-hover:[--app-fill-2:var(--bg-theme-secounnd)]',
 			privateApp: isIconActive
 				? '[--private-app-fill-1:var(--bg-icon-theme-active)] [--private-app-fill-2:var(--bg-icon-theme)]'
 				: '[--private-app-fill-1:var(--bg-icon-theme)] [--private-app-fill-2:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-1:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-2:var(--bg-icon-theme)]'
@@ -285,12 +283,9 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 								/>
 							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_APP && (
-								<Icons.AppChannelIcon
-									className={`w-5 h-5 ${iconFillClasses.app}`}
-									defaultFill1="var(--app-fill-1)"
-									defaultFill2="var(--app-fill-2)"
-									defaultFill3="var(--app-fill-1)"
-									defaultFill4="var(--app-fill-2)"
+								<AppChannelListIcon
+									isEmphasized={isActive || isUnReadChannel || Boolean(numberNotification)}
+									className="w-5 h-5"
 								/>
 							)}
 							{isPrivate && channel.type === ChannelType.CHANNEL_TYPE_APP ? (
@@ -302,7 +297,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 								/>
 							) : null}
 						</div>
-						{events[0] && <EventSchedule event={events[0]} className="ml-0.2 mt-0.5" />}
+						{events[0] && <EventSchedule event={events[0]} className="ml-1.5 mt-0.5 shrink-0" />}
 						<p
 							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover ${isChannelMuted ? 'opacity-70' : ''}`}
 							title={channel.channel_label && channel?.channel_label.length > 20 ? channel?.channel_label : undefined}

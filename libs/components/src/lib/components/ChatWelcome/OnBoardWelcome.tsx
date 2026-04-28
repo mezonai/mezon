@@ -109,8 +109,8 @@ const Onboarditem = memo(({ icon, title, tick, onClick }: { icon: ReactNode; tit
 			{icon}
 			<div className="flex-1 ">{title}</div>
 			{tick ? (
-				<div className="flex items-center justify-center rounded-full aspect-square h-8 bg-green-600">
-					<Icons.Tick fill="white" />
+				<div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-green-600">
+					<Icons.Tick className="h-3.5 w-3.5" defaultFill1="white" />
 				</div>
 			) : (
 				<Icons.ArrowRight />

@@ -1,3 +1,5 @@
+import { sanitizeMessageHtml } from '@mezon/utils';
+
 interface PasteProcessResult {
 	shouldInsertAsHtml: boolean;
 	content: string;
@@ -14,7 +16,7 @@ export const processPasteContent = (htmlContent: string, plainText: string): Pas
 	}
 
 	const tempDiv = document.createElement('div');
-	tempDiv.innerHTML = htmlContent;
+	tempDiv.innerHTML = sanitizeMessageHtml(htmlContent);
 
 	const mentionElements = tempDiv.querySelectorAll(
 		'a[data-entity-type="MessageEntityMentionName"], a[data-entity-type="MessageEntityMentionRole"]'
@@ -78,7 +80,7 @@ export const insertPastedContent = (
 	range.deleteContents();
 
 	if (shouldInsertAsHtml) {
-		const fragment = range.createContextualFragment(content);
+		const fragment = range.createContextualFragment(sanitizeMessageHtml(content));
 		range.insertNode(fragment);
 	} else {
 		range.insertNode(document.createTextNode(content));

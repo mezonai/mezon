@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import * as fs from 'fs';
 import * as path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, type PluginOption } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
@@ -114,7 +114,7 @@ export default defineConfig(({ mode }) => {
 						})
 					]
 				: [])
-		],
+		] as PluginOption[],
 
 		define: {
 			global: 'globalThis',
@@ -166,9 +166,7 @@ export default defineConfig(({ mode }) => {
 
 		css: {
 			preprocessorOptions: {
-				scss: {
-					api: 'modern-compiler'
-				}
+				scss: { api: 'modern-compiler' } as Record<string, unknown>
 			}
 		},
 

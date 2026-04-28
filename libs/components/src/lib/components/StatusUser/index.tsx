@@ -1,8 +1,7 @@
 import { Icons } from '@mezon/ui';
+
 export const RenderTypingIndicator = () => (
-	<span className={`absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary rounded-lg -right-2`}>
-		<Icons.IconLoadingTyping bgFill="bg-colorSuccess" />
-	</span>
+	<Icons.IconLoadingTyping bgFill="bg-colorSuccess" className="shrink-0" width={18} height={8} />
 );
 
 type Status = 'online' | 'idle' | 'dnd' | 'offline';

@@ -53,7 +53,7 @@ void import('livekit-client').then(({ LogLevel, setLogLevel }) => {
 
 ThemeManager.initializeTheme();
 
-const mezon = getMezonConfig();
+const config = getMezonConfig();
 
 export const LoadingFallbackWrapper = () => <LoadingFallback />;
 
@@ -113,7 +113,7 @@ const AppInitializer = () => {
 		if (!clientRef?.current?.setBasePath) return;
 		if (!isLogin) {
 			clearSessionFromStorage();
-			
+
 			clientRef.current.setBasePath(
 				process.env.NX_CHAT_APP_API_GW_HOST as string,
 				process.env.NX_CHAT_APP_API_GW_PORT as string,
@@ -339,10 +339,7 @@ export function App() {
 		return initStore(mezon, preloadedState);
 	}, [mezon]);
 
-	const loadingContextValue = useMemo(
-		() => ({ isLoading, setIsLoading, suspenseLoading, setSuspenseLoading }),
-		[isLoading, suspenseLoading]
-	);
+	const loadingContextValue = useMemo(() => ({ isLoading, setIsLoading, suspenseLoading, setSuspenseLoading }), [isLoading, suspenseLoading]);
 
 	if (!store) {
 		return <LoadingFallbackWrapper />;
@@ -354,13 +351,15 @@ export function App() {
 		<LoadingContext.Provider value={loadingContextValue}>
 			{showLoading && <LoadingFallbackWrapper />}
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
-				<LanguageSyncProvider />
-				<PopupManagerProvider>
-					<PermissionProvider>
-						<AppInitializer />
-						<Routes />
-					</PermissionProvider>
-				</PopupManagerProvider>
+				<MezonContextProvider mezon={config} connect={true}>
+					<LanguageSyncProvider />
+					<PopupManagerProvider>
+						<PermissionProvider>
+							<AppInitializer />
+							<Routes />
+						</PermissionProvider>
+					</PopupManagerProvider>
+				</MezonContextProvider>
 			</MezonStoreProvider>
 		</LoadingContext.Provider>
 	);
@@ -377,9 +376,7 @@ function AppWrapper() {
 	return (
 		<I18nextProvider i18n={i18n}>
 			<Suspense fallback={<LoadingFallbackWrapper />}>
-				<MezonContextProvider mezon={mezon} connect={true}>
-					<App />
-				</MezonContextProvider>
+				<App />
 			</Suspense>
 		</I18nextProvider>
 	);
