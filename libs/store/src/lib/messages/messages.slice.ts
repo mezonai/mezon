@@ -27,9 +27,7 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
-import type { ChannelMessage } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
-import type { MessageButtonClicked } from 'mezon-js/socket';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -44,7 +42,7 @@ import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClans
 import { selectCurrentDM, selectDirectMessageEntities } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx, socketState, withRetry } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
 import { referencesActions, selectOgpData } from './references.slice';
@@ -394,8 +392,7 @@ export const fetchMessages = createAsyncThunk(
 
 			// Fallback
 			if (!topicId && messageId && (!response.messages || response.messages.length === 0)) {
-				/* eslint-disable */
-				console.log('FALLBACK GET MESSAGES', { clanId, channelId, messageId });
+				console.error('FALLBACK GET MESSAGES', { clanId, channelId, messageId });
 				response = await fetchMessagesCached(
 					thunkAPI.getState as () => RootState,
 					mezon,
@@ -757,7 +754,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 			if (queuedMessages.length > 0) {
 				await thunkAPI.dispatch(processQueuedLastSeenMessages()).unwrap();
 			}
-			await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
+			await mezon.clientRef.current?.writeLastSeenMessage(mezon.session, clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
 		} catch (e) {
 			console.error(e, 'updateLastSeenMessage writeSocket');
 			thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count: badgeCount, message_time }));
@@ -939,6 +936,7 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 			thunkAPI.dispatch(messagesActions.addNewMessage(fakeMess));
 		}
 
+		// eslint-disable-next-line no-useless-catch
 		try {
 			thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
@@ -969,7 +967,7 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 						channelId,
 						timestamp,
 						messageId: messageResult.channel_id,
-						clanId: clanId
+						clanId
 					})
 				);
 			}
@@ -1005,6 +1003,7 @@ export type EditMessageViaApiPayload = {
 export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', async (payload: EditMessageViaApiPayload, thunkAPI) => {
 	const { channelId, clanId, mode, isPublic, messageId, content, mentions, attachments, hideEditted, topicId, isTopic } = payload;
 
+	// eslint-disable-next-line no-useless-catch
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const session = mezon.sessionRef.current;
@@ -1058,6 +1057,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		username,
 		code
 	} = payload;
+
 	const payloadSizeInBytes = Buffer.byteLength(JSON.stringify(payload), 'utf8');
 	if (payloadSizeInBytes > 4 * 1024) {
 		toast.error(t(`message:tooLongMessage`));
@@ -1079,9 +1079,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		const session = mezon.sessionRef.current;
 		const client = mezon.clientRef.current;
-		const socket = mezon.socketRef.current;
 
-		if (!client || !session || !socket || !channelId) {
+		if (!client || !session || !channelId) {
 			throw new Error('Client is not initialized');
 		}
 
@@ -1147,8 +1146,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		let res;
 
 		try {
-			if (socketState.isConnected) {
-				res = await socket.writeChatMessage(
+			if (client) {
+				res = await client.writeChatMessage(
+					mezon.session,
 					clanId,
 					channelId,
 					mode,
@@ -1289,7 +1289,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						channelId,
 						timestamp,
 						messageId: messageResult.message_id,
-						clanId: clanId
+						clanId
 					})
 				);
 			}
@@ -1380,7 +1380,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 		const client = mezon.clientRef.current;
 		const socket = mezon.socketRef.current;
 
-		if (!client || !session || !socket || !channelId) {
+		if (!client || !session || !channelId) {
 			throw new Error('Client is not initialized');
 		}
 
@@ -1398,7 +1398,8 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 			avatarToUse = undefined;
 		}
 
-		await socket.writeEphemeralMessage(
+		await client.writeEphemeralMessage(
+			session,
 			[receiverId],
 			clanId,
 			channelId,
@@ -1553,7 +1554,7 @@ export const sendTypingUser = createAsyncThunk(
 	'messages/sendTypingUser',
 	async ({ clanId, channelId, mode, isPublic, username, topicId = '' }: SendMessageArgs, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const ack = mezon.socketRef.current?.writeMessageTyping(clanId, channelId, mode, isPublic, username, topicId || undefined);
+		const ack = mezon.clientRef.current?.writeMessageTyping(mezon.session, clanId, channelId, mode, isPublic, username, topicId || undefined);
 		return ack;
 	}
 );
@@ -1753,7 +1754,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
 					const updateTimeSeconds = action.payload.update_time_seconds;
-					let changes: Partial<MessagesEntity> = {
+					const changes: Partial<MessagesEntity> = {
 						content: action.payload.content,
 						mentions: action.payload.mentions,
 						hide_editted: action.payload.hide_editted,
@@ -2140,14 +2141,14 @@ export const messagesSlice = createSlice({
 								const apiMessageIds = [...action.payload.messages].map((msg) => msg.id);
 								const newMessageIds = apiMessageIds.filter((id) => !oldViewport.includes(id));
 								const combinedViewport = [...oldViewport, ...newMessageIds];
-								newViewportIds = combinedViewport.sort((a, b) => {
-									const aEntity = state.channelMessages[channelId].entities[a];
-									const bEntity = state.channelMessages[channelId].entities[b];
-									if (aEntity && bEntity && aEntity?.create_time_seconds && bEntity?.create_time_seconds) {
-										return +aEntity.create_time_seconds - +bEntity.create_time_seconds;
-									}
-									return 0;
-								});
+								const entities = state.channelMessages[channelId].entities;
+								const timestamps = new Map<string, number>();
+								for (let i = 0; i < combinedViewport.length; i++) {
+									const id = combinedViewport[i];
+									const ts = entities[id]?.create_time_seconds;
+									timestamps.set(id, ts ? +ts : 0);
+								}
+								newViewportIds = combinedViewport.sort((a, b) => (timestamps.get(a) || 0) - (timestamps.get(b) || 0));
 							} else {
 								newViewportIds = messageIds;
 							}
@@ -2338,9 +2339,13 @@ export const selectMessageViewportIdsByChannelId = createSelector(
 	[selectMessageIdsByChannelId, selectViewportIdsByChannelId],
 	(messageIds, viewportIds) => {
 		if (!viewportIds?.length) {
-			return messageIds;
+			if (messageIds.length <= MESSAGE_LIST_SLICE) {
+				return messageIds;
+			}
+			return messageIds.slice(-MESSAGE_LIST_SLICE);
 		}
-		return messageIds.filter((id) => viewportIds.includes(id));
+		const viewportSet = new Set(viewportIds);
+		return messageIds.filter((id) => viewportSet.has(id));
 	}
 );
 

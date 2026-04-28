@@ -1,0 +1,143 @@
+{
+	"description": {
+		"part1": "Ein großartiger Ort zum Spielen, Chatten mit Freunden oder zum Aufbau einer globalen Community.",
+		"part2": "Personalisiere deinen eigenen Raum, um zu",
+		"talk": "Chatten",
+		"play": "Spielen",
+		"and": "und",
+		"hangOut": "Verbinden"
+	},
+	"download": {
+		"getItFrom": "Download von",
+		"cdnUrl": "CDN URL"
+	},
+	"header": {
+		"home": "Startseite",
+		"overview": "Übersicht",
+		"features": "Features",
+		"developers": "Entwickler",
+		"botsApps": "Bots/Apps",
+		"documents": "Dokumentation",
+		"discover": "Entdecken",
+		"blogs": "Blog",
+		"openMezon": "Mezon öffnen",
+		"login": "Anmelden",
+		"quickMeeting": "Mezon Meet"
+	},
+	"layout": {
+		"overview": {
+			"title": "Übersicht",
+			"subtitle": "Eine neue Art, mit deinem Team zu kommunizieren.",
+			"description": "Schneller, besser organisiert, perfekt für Remote Work."
+		},
+		"features": {
+			"title": "Unsere Features",
+			"subtitle": "Umfassende Kommunikationswerkzeuge"
+		},
+		"cards": {
+			"workstation": {
+				"title": "Arbeitsplatz",
+				"description": "Ein digitaler Arbeitsraum, der die Kommunikation, Zusammenarbeit und Aufgabenverwaltung durch die Integration verschiedener Systeme und Tools optimiert. Er bietet strukturierte Räume für Teams, Projekte und Abteilungen und gewährleistet gleichzeitig einen nahtlosen Zugriff auf Informationen und Workflows."
+			},
+			"ecosystem": {
+				"title": "Ökosystem",
+				"description": "Eine dynamische digitale Umgebung, die Arbeit und soziales Leben kombiniert und reichhaltige interaktive sowie unterhaltsame Funktionen bietet. Unterstützt virtuelle Transaktionen, Community-Aktivitäten und den Beziehungsaufbau, um das Nutzererlebnis zu verbessern."
+			},
+			"aiAgent": {
+				"title": "KI-Agent",
+				"description": "Ein intelligentes System, das Aufgaben automatisiert, die Informationsverwaltung unterstützt und Workflows optimiert. Steigert die Produktivität durch Funktionen wie Erinnerungen, Überwachung und automatisierte Kommunikation."
+			}
+		},
+		"featureCards": {
+			"mezonMainnet": {
+				"title": "Mezon Mainnet",
+				"subtitle": "High-Speed Layer 1, gebührenfrei",
+				"description": "Blockchain"
+			},
+			"developerApi": {
+				"title": "Erweiterte API",
+				"subtitle": "Für Entwickler"
+			},
+			"gaming": {
+				"title": "Gaming",
+				"subtitle": "& Unterhaltung"
+			},
+			"customizable": {
+				"title": "Flexible Anpassung",
+				"subtitle": "& einfache Erweiterbarkeit"
+			}
+		}
+	},
+	"sections": {
+		"hero": {
+			"title": {
+				"your": "Die Plattform",
+				"live": "Verbinden",
+				"work": "Arbeiten",
+				"play": "Spielen ",
+				"platform": "Nr. 1",
+				"theBest": "Für",
+				"yourCommunity": "Deine Community"
+			},
+			"description": "ist der ideale Ort zum Spielen, Chatten mit Freunden oder zum Aufbau einer globalen Community. Personalisiere deinen Raum, um zu",
+			"talk": "Chatten",
+			"play": "Spielen ",
+			"and": "und",
+			"hangOut": "Verbinden",
+			"tryButton": "Mezon kostenlos ausprobieren!",
+			"choosePlatform": "Wähle deine Plattform"
+		},
+		"textChannel": {
+			"titlesuper": "Ultraschnelles ",
+			"titlemessage": "Messaging",
+			"description": "Entwickelt zum Chatten, Zusammenarbeiten und Verbinden.",
+			"description2": "Ultraschnelle Nachrichten. Unbegrenzt. Sofort versendet.",
+			"learnMore": "Mehr erfahren"
+		},
+		"clanDiscover": {
+			"title": "Dein Clan, deine Welt",
+			"description": "Von Hobbys und Diskussionen bis hin zu Nachrichten und Trends – es gibt einen Clan für alles.",
+			"learnMore": "Mehr erfahren"
+		},
+		"aiAgent": {
+			"title": "KI-Agenten für Clans & 24/7 Support",
+			"description": "Voice-KI-Agenten (zusammenfassen von Sprachkanal-Inhalten oder als Interviewer agieren), KI-Assistenten, Stealth-Bots (Zusammenfassung von Textkanal-Inhalten).",
+			"learnMore": "Mehr erfahren"
+		},
+		"communityPayments": {
+			"title": "Community-Zahlungen",
+			"description": "Sende Mezon Coins, belohne Creator und kaufe bei Partnermarken ein – alles ohne Plattformgebühren. Basiert auf Transparenz und Sicherheit.",
+			"learnMore": "Mehr erfahren"
+		},
+		"enterpriseIntegrations": {
+			"title": "Enterprise-Integrationen",
+			"description": "Mezon ermöglicht es dir, dich mit Kunden weltweit zu vernetzen und groß angelegte, immersive Erlebnisse zu schaffen.",
+			"learnMore": "Mehr erfahren"
+		}
+	},
+	"footer": {
+		"description": "Mezon ist der ideale Ort, um Spiele zu spielen und mit Freunden zu entspannen oder eine globale Community aufzubauen.",
+		"getTheApp": "App herunterladen",
+		"copyright": "© 2024 Mezon. Alle Rechte vorbehalten.",
+		"links": {
+			"executiveSummary": "Executive Summary",
+			"problemStatement": "Problemstellung",
+			"solution": "Lösung",
+			"blockchainEconomy": "Blockchain & Token-Economy",
+			"developerApi": "API-Integration für Entwickler",
+			"technicalArchitecture": "Technische Architektur",
+			"productRoadmap": "Produkt-Roadmap",
+			"tokenomics": "Tokenomics",
+			"team": "Team"
+		}
+	},
+	"externalMeet": {
+		"title": "Meeting",
+		"creatingMeeting": "Meeting wurde erfolgreich erstellt!",
+		"invite": "Einladen",
+		"joinMeeting": "Meeting beitreten",
+		"copyLink": "Link kopieren",
+		"toastSuccess": "Link wurde kopiert!",
+		"toastFail": "Kopieren fehlgeschlagen."
+	}
+}

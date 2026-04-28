@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Clan löschen",
+    "description": "Bist du sicher, dass du {{currentClan}} löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirm": "Ja",
+    "cancel": "Nein",
+    "titleLeaveClan": "Clan verlassen",
+    "descriptionLeaveClan": "Bist du sicher, dass du {{currentClan}} verlassen möchtest? Du kannst diesem Clan nicht wieder beitreten, es sei denn, du wirst erneut eingeladen.",
+    "error": "Ein Fehler ist beim Versuch aufgetreten, den Clan zu löschen oder zu verlassen"
+  },
+  "confirmMessage": "Bist du sicher, dass du diesen Clan löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "enterClanName": "Clannamen eingeben",
+  "incorrectName": "Der eingegebene Clanname ist falsch",
+  "cancel": "Abbrechen"
+}

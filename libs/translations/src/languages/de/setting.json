@@ -1,0 +1,133 @@
+{
+	"accountSettings": {
+		"title": "Kontoeinstellungen",
+		"account": "Konto",
+		"profiles": "Profile",
+		"privacySafety": "Sicherheit & Datenschutz",
+		"familyCenter": "Familienverwaltung",
+		"authorizedApp": "Autorisierte Apps",
+		"device": "Geräte",
+		"connection": "Verbindungen",
+		"clip": "Clips",
+		"friendRequests": "Freundschaftsanfragen",
+		"QRScan": "QR-Code scannen",
+		"MyQRCode": "Mein QR-Code",
+		"devices": "Geräte"
+	},
+	"deviceSettings": {
+		"description1": "Dies sind alle Geräte, die in dein Konto eingeloggt sind. Du kannst jedes Gerät einzeln abmelden.",
+		"description2": "Wenn du eine Anmeldung siehst, die du nicht kennst, melde dich sofort von diesem Gerät ab und ändere dein Passwort.",
+		"currentDevice": "Aktuelles Gerät",
+		"otherDevices": "Andere Geräte",
+		"noDevices": "Keine Geräte gefunden",
+		"loggedIn": "Eingeloggt am",
+		"current": "Aktuell",
+		"unknown": "Unbekannt",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Desktop",
+		"platformWeb": "Web",
+		"removeDevice": "Von diesem Gerät abmelden"
+	},
+	"paymentSettings": {
+		"title": "Zahlungseinstellungen",
+		"restoreSubscription": "Abonnement wiederherstellen"
+	},
+	"appSettings": {
+		"title": "App-Einstellungen",
+		"voice": "Audio",
+		"appearance": "Design",
+		"accessibility": "Barrierefreiheit",
+		"language": "Sprache",
+		"activity": "Aktivität",
+		"notifications": "Benachrichtigungen",
+		"chat": "Chat",
+		"webBrowser": "Webbrowser",
+		"appIcon": "App-Icon",
+		"advanced": "Erweitert",
+		"appVersion": "App-Version",
+		"startUp": "Startverhalten",
+		"quitApp": "App beenden"
+	},
+	"autoStart": {
+		"title": "App automatisch starten",
+		"description": "Die App wird beim Starten des Computers automatisch geöffnet, damit du sofort loslegen kannst."
+	},
+	"hardwareAcceleration": {
+		"title": "Hardwarebeschleunigung verwenden, wenn verfügbar",
+		"description": "Wenn aktiviert, nutzt die App die Leistung der GPU (Grafikkarte), um grafikintensive Aufgaben wie 3D-Rendering und Videodekodierung zu bearbeiten. Dies erhöht die Bildrate und die Reaktionsfähigkeit der Benutzeroberfläche. Falls Anzeigefehler oder App-Abstürze auftreten, versuche diese Funktion zu deaktivieren, um die Stabilität zu verbessern."
+	},
+	"autoHidden": {
+		"title": "Mit dem Betriebssystem im Hintergrund starten",
+		"description": "Die App startet automatisch im Hintergrund, wenn das Betriebssystem geladen wird."
+	},
+	"activity": {
+		"title": "Meine Aktivität anzeigen",
+		"description": "Teile deine aktuellen Aktivitäten mit deinen Freunden. So wissen sie, was du gerade machst, und können leichter Kontakt aufnehmen!"
+	},
+	"supportSettings": {
+		"title": "Support",
+		"support": "Hilfe & Support",
+		"uploadLog": "Fehlerprotokoll hochladen",
+		"acknowledgement": "Danksagung"
+	},
+	"whatsNew": {
+		"title": "Neuigkeiten",
+		"whatsNew": "Was ist neu"
+	},
+	"updateGate": {
+		"outOfDateVersion": "NEUE VERSION VERFÜGBAR",
+		"updateExperience": "Ein schnelles Update ist erforderlich, um unsere neuesten Familienfunktionen nutzen zu können.",
+		"updateNow": "Jetzt aktualisieren",
+		"versionInfo": "VERSION"
+	},
+	"language": {
+		"title": "Sprache",
+		"description": "Wähle eine Sprache aus.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"german": "Deutsch"
+	},
+	"voice": {
+		"title": "Audio",
+		"description": "Konfiguriere deine Audio-Einstellungen.",
+		"microphone": "Mikrofon",
+		"speaker": "Lautsprecher",
+		"microphoneVolume": "Mikrofonlautstärke",
+		"speakerVolume": "Lautsprecherlautstärke",
+		"noiseSuppression": {
+			"title": "Rauschunterdrückung",
+			"toggleAriaLabel": "Rauschunterdrückung ein- oder ausschalten"
+		},
+		"unnamedDevice": "Nicht benanntes Gerät",
+		"noDevices": "Keine Geräte gefunden",
+		"micTest": {
+			"title": "Mikrofon-Test",
+			"description": "Probleme mit dem Mikrofon? Starte einen Test und sprich etwas – wir spielen deine Stimme dann ab.",
+			"letsCheck": "Testen",
+			"stop": "Stopp"
+		},
+		"errors": {
+			"permissionDenied": "Mikrofonberechtigung für den Test erforderlich.",
+			"micPermission": "Zugriff auf das Mikrofon nicht möglich."
+		},
+		"warnings": {
+			"outputNotSupported": "Der Browser unterstützt keine Auswahl des Ausgabegeräts. Die Lautsprecherwahl kann ignoriert werden."
+		}
+	},
+	"logOut": "Abmelden",
+	"logOutPopup": {
+		"description": "Möchtest du dich wirklich abmelden?",
+		"noConfirm": "Nein",
+		"yesConfirm": "Ja"
+	},
+	"removeAccount": "Konto löschen",
+	"channelSetting": {
+		"recentChannels": "Kürzlich verwendete Kanäle",
+		"searchByChannelLabel": "Nach Kanalname suchen"
+	},
+	"setting": "Einstellungen"
+}

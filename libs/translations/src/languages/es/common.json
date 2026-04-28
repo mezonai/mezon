@@ -467,7 +467,8 @@
 		"failedToRefresh": "Error al actualizar datos del canvas",
 		"titlePlaceholder": "Tu título de canvas",
 		"typePlaceholder": "Escribe / para insertar...",
-		"untitled": "Sin título"
+		"untitled": "Sin título",
+		"deleteMessage": "Este canvas se eliminará permanentemente. Esta acción no se puede deshacer."
 	},
 	"emojiCategories": {
 		"forsale": "En venta",

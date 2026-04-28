@@ -11,6 +11,7 @@ import {
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import {
+	NX_CHAT_APP_ANNONYMOUS_USER_ID,
 	TypeMessage,
 	convertTimeString,
 	convertTimestampToTimeRemainingI18n,
@@ -19,8 +20,8 @@ import {
 	isImageFileType,
 	isVideoFileType
 } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -30,9 +31,6 @@ import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
 import { PollMessage } from '../../../MessageWithUser/PollMessage';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
-
-const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
-
 type ItemPinMessageProps = {
 	pinMessage: PinMessageEntity;
 	contentString: string | undefined;

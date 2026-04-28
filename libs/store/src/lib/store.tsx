@@ -403,6 +403,16 @@ let storeInstance = configureStore({
 
 let storeCreated = false;
 
+// Event-based "store ready" promise replaces 100ms polling in getStoreAsync — single shared awaiter, no background timers.
+let _resolveStoreReady: ((store: typeof storeInstance) => void) | null = null;
+const _storeReadyPromise: Promise<typeof storeInstance> = new Promise((resolve) => {
+	_resolveStoreReady = resolve;
+});
+
+// Singleton guards — prevent duplicate listener registration on HMR / repeated initStore calls.
+let _storageListenerActive = false;
+let _friendSyncCleanup: (() => void) | null = null;
+
 export type RootState = ReturnType<typeof storeInstance.getState>;
 
 export type PreloadedRootState = RootState | undefined;
@@ -444,6 +454,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
+	_resolveStoreReady?.(store);
 
 	import('./badge/badgeService').then(({ badgeService }) => {
 		badgeService.init(store.dispatch, store.getState);
@@ -463,13 +474,11 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 
 					const newAuthState = safeJSONParse(e.newValue);
 					const sessionData = newAuthState.session ? safeJSONParse(newAuthState.session) : null;
-					const activeAccount = newAuthState.activeAccount ? safeJSONParse(newAuthState.activeAccount) : null;
 
 					const currentState = store.getState();
-					const currentActiveAccount = currentState.auth?.activeAccount;
-					const currentSession = currentState.auth?.session?.[currentActiveAccount || ''];
+					const currentSession = currentState.auth?.session;
 
-					const newSession = sessionData && activeAccount ? sessionData[activeAccount] : null;
+					const newSession = sessionData ? sessionData : null;
 					const hasSessionChanged =
 						newSession?.token !== currentSession?.token || newSession?.refresh_token !== currentSession?.refresh_token;
 
@@ -488,12 +497,17 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 			}
 		};
 
-		window.addEventListener('storage', handleStorageChange);
+		if (!_storageListenerActive) {
+			window.addEventListener('storage', handleStorageChange);
+			_storageListenerActive = true;
+		}
 	}
 
 	setupSessionSyncListener(store);
 
-	initFriendRelationCrossTabSync(store.dispatch);
+	if (!_friendSyncCleanup) {
+		_friendSyncCleanup = initFriendRelationCrossTabSync(store.dispatch);
+	}
 
 	return { store, persistor };
 };
@@ -508,18 +522,19 @@ export const getStore = () => {
 	return storeInstance;
 };
 
-export const getStoreAsync = async () => {
-	if (!storeCreated) {
-		return new Promise<Store>((resolve) => {
-			const interval = setInterval(() => {
-				if (storeCreated) {
-					clearInterval(interval);
-					resolve(storeInstance);
-				}
-			}, 100);
-		});
+export const getStoreAsync = async (timeoutMs = 5000): Promise<Store> => {
+	if (storeCreated) {
+		return storeInstance;
 	}
-	return storeInstance;
+	return new Promise<Store>((resolve, reject) => {
+		const deadline = setTimeout(() => {
+			reject(new Error('[getStoreAsync] Store initialization timed out'));
+		}, timeoutMs);
+		_storeReadyPromise.then((store) => {
+			clearTimeout(deadline);
+			resolve(store as Store);
+		});
+	});
 };
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();

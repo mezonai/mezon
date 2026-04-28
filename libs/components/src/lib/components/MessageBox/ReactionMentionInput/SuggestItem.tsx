@@ -7,6 +7,7 @@ import type { HashtagDm } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { AppChannelListIcon } from '../../ChannelList/AppChannelListIcon';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
 type SuggestItemProps = {
@@ -62,8 +63,12 @@ const SuggestItem = ({
 		if (!specificChannel) return null;
 
 		const { channel_private, type } = specificChannel;
+		const isAgeRestrictedChannel = (specificChannel as { age_restricted?: number }).age_restricted === 1;
 
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			if (isAgeRestrictedChannel) {
+				return <Icons.HashtagWarning defaultSize="w-5 h-5" />;
+			}
 			if (!channel_private || channel_private === 0) {
 				return <Icons.Hashtag defaultSize="w-5 h-5" />;
 			}
@@ -93,11 +98,11 @@ const SuggestItem = ({
 		}
 
 		if (type === ChannelType.CHANNEL_TYPE_APP) {
-			return <Icons.AppChannelIcon className={'w-5 h-5'} />;
+			return <AppChannelListIcon isEmphasized={isUnread || Boolean(count && count > 0)} className="w-5 h-5" />;
 		}
 
 		return null;
-	}, [specificChannel]);
+	}, [specificChannel, isUnread, count]);
 
 	useEffect(() => {
 		if (channel) {
@@ -113,7 +118,7 @@ const SuggestItem = ({
 
 	return (
 		<div
-			className={`flex flex-row items-center h-[24px] w-full ${wrapSuggestItemStyle ?? 'justify-between'}`}
+			className={`group relative flex flex-row items-center h-[24px] w-full ${wrapSuggestItemStyle ?? 'justify-between'}`}
 			data-e2e={generateE2eId('suggest_item')}
 		>
 			<div className="flex flex-row items-center gap-2 py-[3px] text-theme-primary text-theme-primary-hover">

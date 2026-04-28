@@ -19,7 +19,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { EPermission, generateE2eId } from '@mezon/utils';
-import type { ApiCreateCategoryDescRequest } from 'mezon-js/api';
+import type { ApiCreateCategoryDescRequest } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';

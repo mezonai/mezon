@@ -1,0 +1,31 @@
+{
+	"muteClan": "Den Clan stummschalten blendet ungelesene Nachrichten-Indikatoren aus und zeigt keine Benachrichtigungen an, es sei denn, du wirst erwähnt.",
+	"notifySettingOption": {
+		"title": "Clan-Benachrichtigungseinstellungen",
+		"allMessage": "Alle Nachrichten",
+		"onlyMentions": "Nur @Erwähnungen",
+		"nothing": "Nichts"
+	},
+	"suppressOption": {
+		"suppressEveryone": "@everyone und @here stummschalten",
+		"suppressAllRole": "@Erwähnungen aller Rollen stummschalten",
+		"suppressHighlights": "Highlights stummschalten",
+		"subText": "Highlights bieten gelegentliche Updates, wenn deine Freunde im Clan chatten und mehr."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Neue Events stummschalten",
+		"mobilePushNotifications": "Mobile Push-Benachrichtigungen"
+	},
+	"notificationOverrides": {
+		"title": "Benachrichtigungsüberschreibungen",
+		"addChannelsAllCategory": "Alle Kanäle zur Kategorie hinzufügen"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Du erhältst keine Benachrichtigungen von stummgeschalteten Kanälen. Diese Einstellung gilt für alle deine Geräte.",
+		"youHaveMuted": "Du hast diesen Kanal stummgeschaltet bis"
+	},
+	"clanNotificationBS": {
+		"title": "Diesen Clan stummschalten"
+	},
+	"resetOverrides": "Überschreibungen zurücksetzen"
+}

@@ -2,7 +2,7 @@ import { useChatSending, useCurrentInbox } from '@mezon/core';
 import { referencesActions } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { blobToFile, getChannelMode, processFile } from '@mezon/utils';
-import type { ApiChannelDescription, ApiMessageAttachment } from 'mezon-js/api';
+import type { ApiChannelDescription, ApiMessageAttachment } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AudioRecorderUI } from './AudioRecorderUI';
@@ -163,6 +163,28 @@ const AudioRecorderControl: React.FC<AudioRecorderProps> = React.memo(({ onSendR
 		stopRecording();
 		resetRecording();
 	}, [outerRecording]);
+
+	useEffect(() => {
+		return () => {
+			if (timerRef.current) {
+				clearInterval(timerRef.current);
+				timerRef.current = null;
+			}
+			if (recorderRef.current && recorderRef.current.state !== 'inactive') {
+				try {
+					recorderRef.current.stop();
+				} catch {
+				}
+			}
+			if (streamRef.current) {
+				streamRef.current.getTracks().forEach((track) => track.stop());
+				streamRef.current = null;
+			}
+			if (audioUrl) {
+				URL.revokeObjectURL(audioUrl);
+			}
+		};
+	}, []);
 
 	return (
 		<div className="hidden">

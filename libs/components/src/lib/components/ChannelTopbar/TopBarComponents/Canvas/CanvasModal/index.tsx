@@ -79,7 +79,11 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 			<div className="flex flex-col bg-theme-setting-primary rounded-md h-[400px] md:w-[480px] max-h-[80vh] lg:w-[540px] justify-between shadow-sm overflow-hidden">
 				<div className="flex flex-row items-center bg-theme-setting-nav border-b-theme-primary justify-between p-[16px] h-12 ">
 					<div className="flex flex-row items-center border-r-[1px] border-color-theme pr-[16px] gap-4">
-						<Icons.CanvasIcon />
+						<Icons.CanvasIcon
+							className="w-5 h-5 shrink-0"
+							defaultFill1="var(--bg-icon-theme-active)"
+							defaultFill2="var(--bg-theme-secounnd)"
+						/>
 						<span className="text-base font-semibold cursor-default ">{t('modals.canvas.title')}</span>
 					</div>
 					<SearchCanvas setKeywordSearch={setKeywordSearch} />
@@ -92,7 +96,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 							{t('modals.canvas.create')}
 						</button>
 						<button onClick={onClose} className="text-theme-primary text-theme-primary-hover">
-							<Icons.Close defaultSize="w-4 h-4 " />
+							<Icons.Close className="w-4 h-4 " />
 						</button>
 					</div>
 				</div>

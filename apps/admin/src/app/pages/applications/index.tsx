@@ -1,8 +1,8 @@
 import { authActions, getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
 import isElectron from 'is-electron';
+import type { ApiApp } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiApp } from 'mezon-js/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

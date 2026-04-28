@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ApiSearchMessageRequest } from 'mezon-js/api';
+import type { ApiSearchMessageRequest } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 

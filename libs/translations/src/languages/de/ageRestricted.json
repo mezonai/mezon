@@ -1,0 +1,14 @@
+{
+  "title": "Altersbeschränkter Kanal",
+  "description": "Dieser Kanal enthält Inhalte für Erwachsene und ist als altersbeschränkt gekennzeichnet. Möchtest du fortfahren?",
+  "continue": "Fortfahren",
+  "nope": "Nein",
+  "confirmBirthdayTitle": "Bitte bestätige dein Geburtsdatum",
+  "confirmBirthdayMessage": "Um die Sicherheit der Nutzer zu gewährleisten, müssen wir dein Alter verifizieren. Wir werden dies nur einmal abfragen.",
+  "submit": "Bestätigen",
+  "ageRestrictedForm": {
+    "title": "Bitte bestätige dein Geburtsdatum",
+    "description": "Um die Sicherheit der Nutzer zu gewährleisten, müssen wir dein Alter verifizieren. Wir werden dies nur einmal abfragen.",
+    "submit": "Bestätigen"
+  }
+}

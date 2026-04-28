@@ -768,19 +768,18 @@ input:-webkit-autofill:active {
 	}
 }
 
-/* LoadingTyping.css */
-#dot1 {
+.typing-indicator-dot-1 {
 	animation: load 1s infinite ease-in-out;
 }
 
-#dot2 {
+.typing-indicator-dot-2 {
 	animation:
 		load 1s infinite ease-in-out,
 		holdDot2 1s infinite ease-in-out;
 	animation-delay: 0.2s;
 }
 
-#dot3 {
+.typing-indicator-dot-3 {
 	animation:
 		load 1s infinite ease-in-out,
 		holdDot3 1s infinite ease-in-out;

@@ -1,7 +1,35 @@
 /* eslint-disable no-useless-escape */
 import { isYouTubeLink } from '.';
+import { sanitizeMessageHtml } from './sanitizeHtml';
 import type { IMarkdownOnMessage, MentionItem } from '../types';
 import { EBacktickType, ETypeMEntion } from '../types';
+
+function escapeHtmlText(value: string): string {
+	return value.replace(/[&<>"']/g, (ch) => {
+		switch (ch) {
+			case '&':
+				return '&amp;';
+			case '<':
+				return '&lt;';
+			case '>':
+				return '&gt;';
+			case '"':
+				return '&quot;';
+			case "'":
+				return '&#39;';
+			default:
+				return ch;
+		}
+	});
+}
+
+function escapeHtmlAttribute(value: string): string {
+	const lower = value.trim().toLowerCase();
+	if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) {
+		return '#';
+	}
+	return escapeHtmlText(value);
+}
 
 export enum ApiMessageEntityTypes {
 	Bold = 'MessageEntityBold',
@@ -72,8 +100,9 @@ export function escapeHtml(html: string) {
 
 		if (part.startsWith('<a')) {
 			const temp = document.createElement('div');
-			temp.innerHTML = part;
-			fragment.appendChild(temp.firstChild!);
+			temp.innerHTML = sanitizeMessageHtml(part);
+			const node = temp.firstChild;
+			if (node) fragment.appendChild(node);
 		} else {
 			// Escape non-link content
 			const text = document.createTextNode(part);
@@ -86,7 +115,7 @@ export function escapeHtml(html: string) {
 
 export function parseHtmlAsFormattedText(html: string): ApiFormattedText {
 	const fragment = document.createElement('div');
-	fragment.innerHTML = parseMarkdown(escapeHtml(parseMarkdownLinks(html)));
+	fragment.innerHTML = sanitizeMessageHtml(parseMarkdown(escapeHtml(parseMarkdownLinks(html))));
 
 	fixImageContent(fragment);
 	const text = fragment.innerText.replace(/___#new_line___/g, '\n');
@@ -270,7 +299,9 @@ function parseMarkdownLinks(html: string) {
 			parts[i] = partText.replace(LINK_TEMPLATE, (match, offset) => {
 				const { cleanMatch, trailingPunctuation } = getCleanUrlAndTrailing(match, partText, offset);
 				if (isUrl(cleanMatch)) {
-					return `<a href="${cleanMatch}" target="_blank">${cleanMatch}</a>${trailingPunctuation}`;
+					const safeHref = escapeHtmlAttribute(cleanMatch);
+					const safeText = escapeHtmlText(cleanMatch);
+					return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${safeText}</a>${trailingPunctuation}`;
 				}
 				return match;
 			});

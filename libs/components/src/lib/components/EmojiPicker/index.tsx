@@ -107,7 +107,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
 				)
 			),
-			<Icons.Smile defaultSize="w-7 h-7" />,
+			<Icons.Smile className="w-7 h-7" />,
 			<Icons.TheLeaf defaultSize="w-7 h-7" />,
 			<Icons.Bowl defaultSize="w-7 h-7" />,
 			<Icons.GameController defaultSize="w-7 h-7" />,

@@ -18,7 +18,7 @@ import ModalDeleteMess from '../../components/DeleteMessageModal/ModalDeleteMess
 import Mention, { type MentionData } from '../../components/MessageBox/ReactionMentionInput/Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from '../../components/MessageBox/ReactionMentionInput/MentionsInput';
 import SuggestItem from '../../components/MessageBox/ReactionMentionInput/SuggestItem';
-import parseHtmlAsFormattedText from '../../components/MessageBox/ReactionMentionInput/parseHtmlAsFormattedText';
+import { default as parseHtmlAsFormattedToText } from '../../components/MessageBox/ReactionMentionInput/parseHtmlAsFormattedText';
 import { UserMentionList } from '../../components/UserMentionList';
 
 type MessageInputProps = {
@@ -116,7 +116,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 			return;
 		}
 
-		const initialFormattedText = parseHtmlAsFormattedText(initialFormattedValue, true, false);
+		const initialFormattedText = parseHtmlAsFormattedToText(initialFormattedValue, true, false);
 
 		if (JSON.stringify(formattedText) === JSON.stringify(initialFormattedText)) {
 			handleCancelEdit();
@@ -199,7 +199,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 		if (editorRef.current) {
 			const element = editorRef.current.getElement();
 			if (element) {
-				const formattedText = parseHtmlAsFormattedText(element.innerHTML, true, false);
+				const formattedText = parseHtmlAsFormattedToText(element.innerHTML, true, false);
 				handleSendWithFormattedText(formattedText as FormattedText);
 			}
 		}

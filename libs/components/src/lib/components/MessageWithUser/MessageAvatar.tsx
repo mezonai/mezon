@@ -36,7 +36,7 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 
 	const avatarUrl =
 		((mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
-			? overrideClanAvatar || clanAvatar || pendingClanAvatar || overrideAvatar || pendingUserAvatar
+			? overrideClanAvatar || clanAvatar || pendingClanAvatar
 			: overrideAvatar || pendingUserAvatar) ||
 			message?.avatar) ??
 		'';

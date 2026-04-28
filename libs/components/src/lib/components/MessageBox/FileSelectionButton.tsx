@@ -10,8 +10,8 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api';
 import { useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import CreatePollModal, { type PollData } from './CreatePollModal';

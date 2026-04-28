@@ -1,34 +1,34 @@
 {
-    "menu": {
-        "settings": {
-            "title": "Settings",
-            "overview": "Overview",
-            "moderation": "Moderation",
-            "auditLog": "Audit Log",
-            "channels": "Channels",
-            "integrations": "Integrations",
-            "emoji": "Emoji",
-            "sticker": "Sticker",
-            "webhooks": "Webhook",
-            "security": "Security",
-            "permissionDenied": "You do not have permission to edit",
-            "sound": "Sound Effect",
-            "enableCommunity": "Enable Community"
-        },
-        "community": {
-            "title": "Community",
-            "enableCommunity": "Enable Community"
-        },
-        "subscriptions": {
-            "title": "Clan Subscriptions",
-            "getStarted": "Get Started"
-        },
-        "userManagement": {
-            "title": "User Management",
-            "members": "Members",
-            "role": "Roles",
-            "invite": "Invites",
-            "bans": "Bans"
-        }
-    }
+	"menu": {
+		"settings": {
+			"title": "Settings",
+			"overview": "Overview",
+			"moderation": "Moderation",
+			"auditLog": "Audit Log",
+			"channels": "Channels",
+			"integrations": "Integrations",
+			"emoji": "Emoji",
+			"sticker": "Sticker",
+			"webhooks": "Webhook",
+			"security": "Security",
+			"permissionDenied": "You do not have permission to edit",
+			"sound": "Sound Effect",
+			"enableCommunity": "Enable Community"
+		},
+		"community": {
+			"title": "Community",
+			"enableCommunity": "Enable Community"
+		},
+		"subscriptions": {
+			"title": "Clan Subscriptions",
+			"getStarted": "Get Started"
+		},
+		"userManagement": {
+			"title": "User Management",
+			"members": "Members",
+			"role": "Roles",
+			"invite": "Invites",
+			"bans": "Bans"
+		}
+	}
 }

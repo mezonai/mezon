@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook } from 'mezon-js/api';
+import type { ApiWebhook } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 
 interface IIntegrationProps {
@@ -12,7 +12,7 @@ const MainIntegrations = ({ setIsOpenWebhooks, allWebhooks }: IIntegrationProps)
 	const { t } = useTranslation('integrations');
 
 	const openWebhookLearnMore = () => {
-		window.open('https://mezon.ai/docs/en/developer/webhooks/overview', '_blank');
+		window.open('https://mezon.ai/docs/en/developer/webhooks/overview', '_blank', 'noopener,noreferrer');
 	};
 
 	return (

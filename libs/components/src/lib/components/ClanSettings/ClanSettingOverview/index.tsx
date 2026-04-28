@@ -1,8 +1,15 @@
 import { useClans } from '@mezon/core';
-import { fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
-import { generateE2eId } from '@mezon/utils';
+import {
+	checkDuplicateNameApi,
+	fetchSystemMessageByClanId,
+	selectCurrentClan,
+	toastActions,
+	updateSystemMessage,
+	useAppDispatch
+} from '@mezon/store';
+import { TypeCheck, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js/api';
+import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -94,6 +101,24 @@ const ClanSettingOverview = () => {
 	const handleSave = useCallback(async () => {
 		if (currentClan?.clan_id) {
 			if (hasClanChanges) {
+				if (currentClan.clan_name !== clanRequest.clan_name) {
+					try {
+						const duplicateRes = await dispatch(
+							checkDuplicateNameApi({
+								name: clanRequest.clan_name?.trim() ?? '',
+								type: TypeCheck.TYPECLAN,
+								condition_id: '0'
+							})
+						).then(unwrapResult);
+
+						if (duplicateRes?.is_duplicate) {
+							dispatch(toastActions.addToast({ message: 'The clan name already exists. Please enter another name.', type: 'error' }));
+							return;
+						}
+					} catch (error) {
+						console.error('Check duplicate name Failed', error);
+					}
+				}
 				await updateClan({
 					clan_id: currentClan?.clan_id as string,
 					request: clanRequest
@@ -103,7 +128,7 @@ const ClanSettingOverview = () => {
 				await updateSystemMessages();
 			}
 		}
-	}, [currentClan, hasSystemMessageChanges, hasClanChanges, clanRequest, updateSystemMessageRequest, systemMessage]);
+	}, [currentClan, hasSystemMessageChanges, hasClanChanges, clanRequest, updateSystemMessageRequest, systemMessage, dispatch, updateClan]);
 
 	const updateSystemMessages = async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clan_id && updateSystemMessageRequest) {

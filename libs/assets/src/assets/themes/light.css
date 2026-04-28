@@ -136,4 +136,8 @@
 	/* unified sound variables */
 	--bg-theme-sound-bar: var(--bg-theme-bar-play-color-light-sound);
 	--bg-theme-sound-unselect: var(--bg-theme-unselect-light-sound);
+	--bg-icon-theme: oklab(76.617% 0.00763 0.00229);
+	--bg-theme-secounnd: oklab(87.767% 0.0021 0.00055);
+	--bg-icon-theme-active: oklab(45.51% 0.0023 -0.01283);
+	--member-icon-head-fill: rgba(171, 171, 173, 1);
 }

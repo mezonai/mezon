@@ -2,8 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { EUserStatus, type IUserProfileActivity } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { UserStatusEvent } from 'mezon-js';
-import type { ApiAllUsersAddChannelResponse, ApiUser } from 'mezon-js/api';
+import type { ApiAllUsersAddChannelResponse, ApiUser, UserStatusEvent } from 'mezon-js';
 import { ensureSocket, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
@@ -20,11 +19,10 @@ const statusAdapter = createEntityAdapter({
 
 export function convertStatusClan(user: ApiUser & { id: string }, state: RootState): IUserProfileActivity {
 	const isMe = state?.account?.userProfile?.user?.id === user?.id;
-	const isUserInvisible = user?.user_status === EUserStatus.INVISIBLE;
 	return {
 		id: user.id,
-		online: (!isUserInvisible && !!user?.online) || isMe,
-		is_mobile: !isUserInvisible && !!user?.is_mobile,
+		online: !!user?.online || isMe,
+		is_mobile: !!user?.is_mobile,
 		status: user?.online ? user?.status : EUserStatus.INVISIBLE,
 		user_status: user?.user_status
 	};

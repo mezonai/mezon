@@ -1,6 +1,6 @@
 import { directActions, useAppDispatch } from '@mezon/store';
+import type { ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import { ApiCreateChannelDescRequest } from 'mezon-js/api';
 import { useCallback, useMemo } from 'react';
 
 type UseDirectParams = {

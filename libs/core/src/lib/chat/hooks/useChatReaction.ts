@@ -13,7 +13,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { transformPayloadWriteSocket } from '@mezon/utils';
-import type { ApiClanEmoji } from 'mezon-js/api';
+import type { ApiClanEmoji } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 export type UseMessageReactionOption = {

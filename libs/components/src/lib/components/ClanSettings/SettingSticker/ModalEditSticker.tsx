@@ -13,8 +13,7 @@ import {
 	sanitizeUrlSecure
 } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ClanEmoji, ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api';
+import type { ApiClanStickerAddRequest, ClanEmoji, ClanSticker, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -400,11 +399,9 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 					</div>
 					<div className={`w-full h-[54px] bottom-0 flex items-center justify-end select-none gap-2`}>
 						{!graphic && (
-							<div className="flex items-center flex-1 h-full gap-2 cursor-pointer">
-								<Checkbox ref={isForSaleRef} id="sale_item" className="accent-blue-600 w-4 h-4" />
-								<label htmlFor="sale_item" className="cursor-pointer">
-									{t('thisIsForSale')}
-								</label>
+							<div className="flex items-center flex-1 h-full gap-2 ">
+								<Checkbox ref={isForSaleRef} id="sale_item" className="accent-blue-600 w-4 h-4 cursor-pointer" />
+								<label htmlFor="sale_item">{t('thisIsForSale')}</label>
 							</div>
 						)}
 						<Button className="px-2 py-1 border-none hover:underline hover:bg-transparent bg-transparent" onClick={handleCloseModal}>

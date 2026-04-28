@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "Automatische Nachrichten und Updates",
+		"description": "Personalisiere deinen Clan mit Integrationen. Verwalte Webhooks, Watch-Kanäle und Apps sowie Twitch- und YouTube-Einstellungen für Creator.",
+		"learnMore": "Erfahre mehr über die Verwaltung von Integrationen."
+	},
+	"webhooks": {
+		"description": "Ein Webhook ist ein Werkzeug, das dir hilft, automatische Nachrichten und Daten-Updates über Internetverbindungen an Textkanäle in deinem Clan zu senden.",
+		"learnMore": "Mehr erfahren",
+		"try": "oder versuche,",
+		"buildOne": "deinen eigenen zu erstellen."
+	},
+	"clanWebhooks": {
+		"description": "Clan-Webhooks sind ein einfacher Weg, um Nachrichten von anderen Apps und Websites über das Internet an jeden Mezon-Nutzer zu senden.",
+		"tips": "Tipp: Wenn du das Gefühl hast, dass das Token in deiner URL kompromittiert oder veraltet ist, setze es zurück und kopiere die neue URL."
+	},
+	"webhooksEdit": {
+		"title": "Webhook bearbeiten",
+		"save": "Speichern",
+		"cancel": "Abbrechen",
+		"channel": "Kanal",
+		"nameLabel": "Name",
+		"recommendImage": "Empfohlen wird die Verwendung eines Bildes mit einer Mindestgröße von 128x128 px",
+		"webhookURL": "Webhook-URL",
+		"copy": "Kopieren",
+		"copied": "Kopiert",
+		"delete": "Löschen",
+		"selectAChannel": "Wähle einen Kanal",
+		"yes": "Ja",
+		"deleteCaptionHook": "{{webhookName}} löschen",
+		"deleteWebhookTitle": "{{webhookName}} löschen",
+		"deleteWebhookConfirmation": "Möchtest du den Webhook {{webhookName}} wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+		"resetToken": "Token zurücksetzen",
+		"name": "Webhook-Name",
+		"nameMaxLengthError": "Die Länge darf maximal 64 Zeichen betragen."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Keine Webhooks vorhanden"
+	},
+	"webhooksItem": {
+		"createdBy": "Erstellt am {{webhookCreateTime}} von {{webhookUserOwnerName}}"
+	},
+	"webhookChannelSelect": {
+		"title": "Kanal auswählen",
+		"description": "Wähle den Kanal aus, in dem du einen Webhook erstellen möchst",
+		"selectChannel": "Kanal",
+		"placeholder": "Wähle einen Kanal",
+		"create": "Erstellen"
+	},
+	"toast": {
+		"addSuccess": "Webhook erfolgreich erstellt!",
+		"addError": "Fehler beim Erstellen des Webhooks",
+		"saveSuccess": "Erfolgreich gespeichert!",
+		"saveError": "Fehler beim Speichern",
+		"deleteSuccess": "Webhook erfolgreich gelöscht!",
+		"deleteError": "Fehler beim Löschen des Webhooks",
+		"resetTokenSuccess": "Token erfolgreich zurückgesetzt!",
+		"resetTokenError": "Fehler beim Zurücksetzen des Tokens",
+		"copyError": "URL konnte nicht kopiert werden",
+		"webhookGeneratedSuccess": "{{webhookName}} erfolgreich erstellt!",
+		"webhookDeletedSuccess": "{{webhookName}} erfolgreich gelöscht!"
+	}
+}

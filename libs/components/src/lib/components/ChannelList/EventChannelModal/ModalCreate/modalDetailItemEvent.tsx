@@ -222,7 +222,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				})()}
 			</div>
 			<div className="flex items-center gap-x-3">
-				<Icons.MemberList defaultSize={'w-5 h-5'} />
+				<Icons.MemberList className={'w-5 h-5'} />
 				<p>
 					{t(
 						(event?.user_ids?.filter((id) => id !== '0')?.length || 0) === 1

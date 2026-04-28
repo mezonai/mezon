@@ -70,6 +70,7 @@ export interface IMarkdownOnMessage extends IMarkdown, IStartEndIndex {
 	title?: string;
 	description?: string;
 	index?: number;
+	language?: string;
 }
 export type ILinkVoiceRoomOnMessage = IStartEndIndex;
 export type ILinkYoutubeOnMessage = IStartEndIndex;

@@ -3,7 +3,6 @@ import { notificationService } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ShouldRevalidateFunction } from 'react-router-dom';
 import type { CustomLoaderFunction } from './appLoader';
-import { waitForSocketConnection } from './socketUtils';
 
 export const directMessageLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
 	const { directId, type } = params;
@@ -18,8 +17,6 @@ export const directMessageLoader: CustomLoaderFunction = async ({ params, dispat
 			})
 		);
 	}
-	await dispatch(waitForSocketConnection());
-
 	await dispatch(
 		directActions.joinDirectMessage({
 			directMessageId: directId,

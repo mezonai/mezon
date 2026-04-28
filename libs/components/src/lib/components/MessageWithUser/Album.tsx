@@ -1,6 +1,6 @@
 import type { ApiPhoto, IAlbum, IAlbumLayout, ObserveFn } from '@mezon/utils';
 import { AlbumRectPart, generateAttachmentId } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api';
+import type { ApiMessageAttachment } from 'mezon-js';
 import type { FC } from 'react';
 import Photo from './Photo';
 

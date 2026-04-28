@@ -1,0 +1,84 @@
+{
+	"friend": "Freunde",
+	"addFriend": "Freund hinzufügen",
+	"friends": "Freunde",
+	"clearSearch": "Suche löschen",
+	"search": "Suche",
+	"tabs": {
+		"all": "Alle",
+		"online": "Online",
+		"pending": "Ausstehend",
+		"block": "Blockiert"
+	},
+	"addFriendModal": {
+		"title": "FREUND HINZUFÜGEN",
+		"description": "Du kannst Freunde über ihren Mezon-Benutzernamen hinzufügen",
+		"placeholder": "Benutzernamen eingeben",
+		"tooltip": "Du kannst Freunde über ihren Mezon-Benutzernamen hinzufügen",
+		"sendRequest": "Freundschaftsanfrage senden",
+		"add": "Hinzufügen",
+		"alreadyFriends": "Du bist bereits mit diesem Nutzer befreundet!",
+		"waitAccept": "Du hast diesem Nutzer bereits eine Freundschaftsanfrage gesendet!",
+		"invalidInput": "Bitte verwende nur Zahlen, Buchstaben, Unterstriche _ oder Punkte.",
+		"blockedUser": "Du hast diesen Nutzer blockiert. Bitte entsperre ihn, um eine Freundschaftsanfrage zu senden.",
+		"blockedUserMobile": "Du hast diesen Nutzer blockiert. Entsperre ihn, um eine Freundschaftsanfrage zu senden.",
+		"waitingMessage": "Mezon wartet auf dich. Aber du musst nicht warten!"
+	},
+	"requestFailedPopup": {
+		"title": "Freundschaftsanfrage fehlgeschlagen",
+		"message": "Du bist bereits mit diesem Nutzer befreundet!",
+		"okay": "Okay"
+	},
+	"activity": {
+		"coding": "Aktivität - Arbeit",
+		"music": "Aktivität - Leben",
+		"gaming": "Aktivität - Freizeit"
+	},
+	"friendMenu": {
+		"startVideoCall": "Videoanruf starten",
+		"startVoiceCall": "Sprachanruf starten",
+		"removeFriend": "Freund entfernen",
+		"block": "Blockieren",
+		"unblock": "Entsperren",
+		"more": "Mehr",
+		"cancel": "Abbrechen",
+		"accept": "Annehmen",
+		"reject": "Ablehnen"
+	},
+	"removeFriendModal": {
+		"title": "{{username}} entfernen",
+		"description": "Bist du sicher, dass du <bold>{{username}}</bold> aus deiner Freundesliste entfernen möchtest?",
+		"cancel": "Abbrechen",
+		"confirm": "Entfernen"
+	},
+	"cancelRequestModal": {
+		"title": "Anfrage '{{username}}' abbrechen",
+		"description": "Bist du sicher, dass du die Freundschaftsanfrage an <bold>{{username}}</bold> abbrechen möchtest?",
+		"cancel": "Abbrechen",
+		"confirm": "Anfrage abbrechen"
+	},
+	"rejectRequestModal": {
+		"title": "{{username}} ablehnen",
+		"description": "Bist du sicher, dass du die Freundschaftsanfrage von <bold>{{username}}</bold> ablehnen möchtest?",
+		"cancel": "Abbrechen",
+		"confirm": "Ablehnen"
+	},
+	"toast": {
+		"userBlockedSuccess": "Benutzer erfolgreich blockiert",
+		"userBlockedFailed": "Benutzer konnte nicht blockiert werden",
+		"userUnblockedSuccess": "Benutzer erfolgreich entsperrt",
+		"userUnblockedFailed": "Benutzer konnte nicht entsperrt werden"
+	},
+	"statusTapListFriends": {
+		"all": "Hier sieht es leer aus! Fang mit ein paar Freunden an, um das Chatten zu beginnen.",
+		"online": "Es ist ruhig hier! Warum fängst du nicht einfach einen Chat an und siehst, wer da ist?",
+		"pending": "Hier findest du die Freundschaftsanfragen, die du gesendet oder erhalten hast.",
+		"block": "Du hast bisher niemanden blockiert."
+	},
+	"statusTapSearchFriends": {
+		"all": "Keine Freunde passend zu deiner Suche gefunden. Versuche es mit einem anderen Namen.",
+		"online": "Keine passenden Online-Nutzer gefunden. Versuche es mit einem anderen Namen.",
+		"pending": "Keine passenden Freundschaftsanfragen gefunden. Überprüfe den Namen oder versuche es erneut.",
+		"block": "Keine blockierten Nutzer passend zu deiner Suche gefunden. Versuche es mit einem anderen Namen."
+	}
+}

@@ -38,12 +38,12 @@ export const ShareItemRow = ({ item, isSelected, onToggle, searchText, t }: Shar
 				<div className="flex items-center flex-1 mr-1 gap-2">
 					{item.type === 'channel' ? (
 						item.isPublic ? (
-							<Icons.Hashtag defaultSize="w-5 h-5 text-theme-secondary" />
+							<Icons.Hashtag className="w-5 h-5 text-theme-secondary" />
 						) : (
-							<Icons.HashtagLocked defaultSize="w-5 h-5 text-theme-secondary" />
+							<Icons.HashtagLocked className="w-5 h-5 text-theme-secondary" />
 						)
 					) : item.isPublic ? (
-						<Icons.ThreadIcon defaultSize="w-5 h-5 text-theme-secondary" />
+						<Icons.ThreadIcon className="w-5 h-5 text-theme-secondary" />
 					) : (
 						<Icons.ThreadIconLocker className="w-5 h-5 text-theme-secondary" />
 					)}

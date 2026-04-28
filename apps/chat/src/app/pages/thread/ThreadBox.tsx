@@ -46,8 +46,8 @@ import {
 	processFile
 } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -168,8 +168,16 @@ const ThreadBox = () => {
 					const shouldSeedStarterFromValueThread = Boolean(valueThread);
 					const hasUserMessage = Boolean(content?.t && content.t.trim().length > 0) || (attachments?.length ?? 0) > 0;
 
-					const createThreadMessageContent = shouldSeedStarterFromValueThread ? valueThread?.content : hasUserMessage ? content : valueThread?.content;
-					const createThreadAttachments = shouldSeedStarterFromValueThread ? valueThread?.attachments : hasUserMessage ? attachments : valueThread?.attachments;
+					const createThreadMessageContent = shouldSeedStarterFromValueThread
+						? valueThread?.content
+						: hasUserMessage
+							? content
+							: valueThread?.content;
+					const createThreadAttachments = shouldSeedStarterFromValueThread
+						? valueThread?.attachments
+						: hasUserMessage
+							? attachments
+							: valueThread?.attachments;
 
 					const thread = (await createThread(value, createThreadMessageContent, createThreadAttachments)) as ApiChannelDescription;
 					if (thread) {
@@ -453,7 +461,7 @@ const ThreadBox = () => {
 					<div className="flex flex-col justify-end flex-grow">
 						{!threadCurrentChannel && (
 							<div className="relative flex text-theme-primary-active items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
-								<Icons.ThreadIcon defaultSize="w-7 h-7" />
+								<Icons.ThreadIcon className="w-7 h-7" />
 								{isPrivate === 1 && (
 									<div className="absolute right-4 bottom-4">
 										<Icons.Locked />

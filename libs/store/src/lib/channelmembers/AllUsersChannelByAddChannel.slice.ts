@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IUserChannel, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAllUsersAddChannelResponse } from 'mezon-js/api';
+import type { ApiAllUsersAddChannelResponse } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { convertStatusGroup, statusActions } from '../direct/status.slice';
@@ -40,7 +40,7 @@ export const fetchUserChannelsCached = async (
 ) => {
 	const currentState = getState();
 	const userChannelsState = currentState[ALL_USERS_BY_ADD_CHANNEL];
-	const apiKey = createApiKey('fetchUserChannels', channelId, limit, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('fetchUserChannels', channelId, limit, ensuredMezon.session.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, userChannelsState?.cacheByChannels?.[channelId], noCache);
 	if (!shouldForceCall) {
 		const cachedData = userChannelsState.entities[channelId];

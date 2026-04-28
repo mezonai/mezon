@@ -9,6 +9,12 @@ interface Window {
 	};
 }
 
+declare namespace React {
+	interface SVGAttributes<T> {
+		maskType?: string;
+	}
+}
+
 declare module '*.png' {
 	const content: string;
 	export default content;

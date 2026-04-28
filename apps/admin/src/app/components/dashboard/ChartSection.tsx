@@ -24,9 +24,9 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 					onTabChange={onTabChange}
 					totals={metrics}
 					dateRangeText={dateRangeText}
-					iconUsers={<Icons.MemberList defaultSize="w-5 h-5" />}
-					iconChannels={<Icons.Hashtag defaultSize="w-5 h-5" />}
-					iconMessages={<Icons.MessageIcon defaultSize="w-5 h-5" />}
+					iconUsers={<Icons.MemberList className="w-5 h-5" />}
+					iconChannels={<Icons.Hashtag className="w-5 h-5" />}
+					iconMessages={<Icons.MessageIcon className="w-5 h-5" />}
 				/>
 			</div>
 

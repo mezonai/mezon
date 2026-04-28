@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Sprachkanal",
+		"joinVoice": "Sprachanruf beitreten"
+	},
+	"chat": "Chat",
+	"membersWillBeNotified": "{{participantsCount}} Mitglieder werden benachrichtigt",
+	"noDisplay": "Sprachkanal nicht anzeigen",
+	"videoConnected": "Video verbunden",
+	"voiceConnected": "Sprache verbunden",
+	"turnOffMicrophone": "Mikrofon ausschalten",
+	"turnOnMicrophone": "Mikrofon einschalten",
+	"turnOffCamera": "Kamera ausschalten",
+	"turnOnCamera": "Kamera einschalten",
+	"stopScreenShare": "Bildschirmfreigabe stoppen",
+	"shareYourScreen": "Bildschirm teilen",
+	"disconnect": "Trennen",
+	"muteModal": {
+		"title": "Mitglied stummschalten",
+		"content": "Möchtest du \"{{userName}}\" wirklich stummschalten?",
+		"mute": "Stummschalten"
+	},
+	"kickModal": {
+		"title": "Aus Sprachkanal entfernen",
+		"content": "Möchtest du \"{{userName}}\" wirklich aus dem Sprachkanal entfernen?",
+		"kick": "Entfernen"
+	},
+	"disconnectModal": {
+		"title": "Sprachverbindung verloren",
+		"content": {
+			"removed": "Du wurdest aus dem Sprachkanal entfernt.",
+			"duplicate": "Du wurdest getrennt, da du an einer anderen Stelle beigetreten bist.",
+			"default": "Du wurdest aus dem Sprachkanal getrennt.",
+			"deleted": "Der Sprachkanal wurde gelöscht."
+		},
+		"confirm": "Bestätigen"
+	},
+	"permission": {
+		"cameraTitle": "Kameraberechtigung erteilen",
+		"cameraBody": "Die App hat noch keine Kameraberechtigung. Bitte aktiviere die Kamera in den Systemeinstellungen.",
+		"microphoneTitle": "Mikrofonberechtigung erteilen",
+		"microphoneBody": "Die App hat noch keine Mikrofonberechtigung. Bitte aktiviere das Mikrofon in den Systemeinstellungen.",
+		"cancel": "Abbrechen",
+		"deviceSettings": "Geräteeinstellungen"
+	},
+	"device": {
+		"inputDevice": "Mikrofon",
+		"outputDevice": "Audio",
+		"camera": "Kamera"
+	},
+	"toast": {
+		"connectionConnected": "Verbindung erfolgreich hergestellt",
+		"connectionDisconnected": "Verbindung unterbrochen",
+		"microphonePermissionRequired": "Mikrofonberechtigung erforderlich",
+		"cameraPermissionRequired": "Kameraberechtigung erforderlich",
+		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen."
+	},
+	"usernameScreen": "{{username}}s Bildschirm"
+}

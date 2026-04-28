@@ -144,7 +144,7 @@ const VoiceInfo = React.memo(() => {
 			<div className="flex justify-between items-center">
 				<div className="flex flex-col max-w-[200px]">
 					<div className="flex items-center gap-1">
-						<Icons.NetworkStatus defaultSize="w-4 h-4 dark:text-green-600" />
+						<Icons.NetworkStatus className="w-4 h-4 dark:text-green-600" />
 						<span className="text-green-600 font-medium text-base">{t(showCamera ? 'videoConnected' : 'voiceConnected')}</span>
 					</div>
 					<button className="w-fit" onClick={redirectToVoice}>

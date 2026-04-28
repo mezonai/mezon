@@ -20,7 +20,7 @@ const getErrorConfig = (errMessage?: string) => {
 	const connectionKeywords = ['disconnect', 'socket', 'network', 'timeout', 'connection', 'reconnect'];
 	const permissionKeywords = ['access', 'permission', 'denied', 'unauthorized', 'forbidden'];
 
-	const message = errMessage?.toLowerCase() || '';
+	const message = typeof errMessage === 'string' ? errMessage : 'unknown error';
 	let detectedType = '';
 
 	if (connectionKeywords.some((keyword) => message.includes(keyword))) {

@@ -3,7 +3,7 @@ import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } 
 import { CSS } from '@dnd-kit/utilities';
 import type { CategoriesEntity } from '@mezon/store';
 import { categoriesActions, selectAllCategories, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
-import type { ApiCategoryOrderUpdate } from 'mezon-js/api';
+import type { ApiCategoryOrderUpdate } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

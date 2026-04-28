@@ -1,8 +1,0 @@
-pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
-plugins { id("com.facebook.react.settings") }
-include ':@react-native-firebase_analytics'
-project(':@react-native-firebase_analytics').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/analytics/android')
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
-rootProject.name = 'Mobile'
-include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')

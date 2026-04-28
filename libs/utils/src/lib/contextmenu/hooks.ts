@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { MenuBuilder, MenuBuilderPlugin, MenuBuilderPluginSetup } from './MenuBuilder';
 
-export function useMenuBuilderPlugin(setup: MenuBuilderPluginSetup) {
+export function createMenuBuilderPlugin(setup: MenuBuilderPluginSetup) {
 	return {
 		setup: setup
 	};

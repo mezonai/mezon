@@ -6,9 +6,12 @@ export class BadgeIconGenerator {
 	}
 
 	generate(count: number | null): Promise<string> {
-		const small = count > this.MAX_WIN_COUNT;
-		const text = count > this.MAX_WIN_COUNT ? `'9+'` : `'${count ? count : '•'}'`;
-		return this.mainWindow.webContents.executeJavaScript(`window.drawBadge = function ${this.drawBadge}; window.drawBadge(${text}, ${small});`);
+		const safeCount = typeof count === 'number' && Number.isFinite(count) ? count : 0;
+		const small = safeCount > this.MAX_WIN_COUNT;
+		const text = safeCount > this.MAX_WIN_COUNT ? '9+' : safeCount ? String(safeCount) : '•';
+		return this.mainWindow.webContents.executeJavaScript(
+			`window.drawBadge = function ${this.drawBadge}; window.drawBadge(${JSON.stringify(text)}, ${JSON.stringify(small)});`
+		);
 	}
 
 	drawBadge(text: string, small: boolean) {

@@ -16,7 +16,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
-import type { ApiAccount, ApiPubKey } from 'mezon-js/api';
+import type { ApiAccount, ApiPubKey } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 

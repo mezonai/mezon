@@ -26,10 +26,15 @@ export const MemberProvider = ({ children }: { children: React.ReactNode }) => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isSort, setIsSort] = useState(false);
 	const usersClan = useSelector(selectAllUserClans);
-	const usersWithPrioritizeName = usersClan.map((member: UsersClanEntity) => ({
-		...member,
-		prioritizeName: getNameForPrioritize(member.clan_nick ?? '', member.user?.display_name ?? '', member.user?.username ?? '')
-	}));
+
+	const usersWithPrioritizeName = useMemo(
+		() =>
+			usersClan.map((member: UsersClanEntity) => ({
+				...member,
+				prioritizeName: getNameForPrioritize(member.clan_nick ?? '', member.user?.display_name ?? '', member.user?.username ?? '')
+			})),
+		[usersClan]
+	);
 
 	const filteredMembers = useMemo(() => {
 		const searchLowerCase = normalizeString(searchQuery).toLowerCase();
@@ -48,7 +53,12 @@ export const MemberProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 
 		return filtered;
-	}, [usersWithPrioritizeName, searchQuery]);
+	}, [usersWithPrioritizeName, searchQuery, isSort]);
 
-	return <MemberContext.Provider value={{ searchQuery, setSearchQuery, filteredMembers, isSort, setIsSort }}>{children}</MemberContext.Provider>;
+	const contextValue = useMemo(
+		() => ({ searchQuery, setSearchQuery, filteredMembers, isSort, setIsSort }),
+		[searchQuery, filteredMembers, isSort]
+	);
+
+	return <MemberContext.Provider value={contextValue}>{children}</MemberContext.Provider>;
 };

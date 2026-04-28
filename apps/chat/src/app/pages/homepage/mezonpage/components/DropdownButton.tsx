@@ -43,7 +43,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
 
 	const handleOpenCdnUrl = () => {
 		onDownloadClick?.('Windows', 'CDN Direct');
-		window.open(downloadUrl, '_blank', 'noreferrer');
+		window.open(downloadUrl, '_blank', 'noopener,noreferrer');
 	};
 
 	const handleDownloadClick = (trackingData?: { platform: string; type: string }) => {

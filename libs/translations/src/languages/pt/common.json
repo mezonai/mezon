@@ -467,7 +467,8 @@
 		"failedToRefresh": "Não foi possível atualizar os dados do canvas",
 		"titlePlaceholder": "Título do seu canvas",
 		"typePlaceholder": "Digite / para inserir...",
-		"untitled": "Sem título"
+		"untitled": "Sem título",
+		"deleteMessage": "Este canvas será excluído permanentemente. Esta ação não pode ser desfeita."
 	},
 	"emojiCategories": {
 		"forsale": "À venda",

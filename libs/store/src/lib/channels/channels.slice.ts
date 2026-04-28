@@ -12,16 +12,18 @@ import { ModeResponsive, TypeCheck, checkIsThread, mapChannelToAppEntity } from 
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import isEqual from 'lodash.isequal';
-import type { ChannelCreatedEvent, ChannelDeletedEvent, ChannelUpdatedEvent } from 'mezon-js';
-import { ChannelType } from 'mezon-js';
 import type {
 	ApiAddFavoriteChannelRequest,
 	ApiChangeChannelPrivateRequest,
 	ApiChannelAppResponse,
 	ApiChannelDescription,
 	ApiCreateChannelDescRequest,
-	ApiMarkAsReadRequest
-} from 'mezon-js/api';
+	ApiMarkAsReadRequest,
+	ChannelCreatedEvent,
+	ChannelDeletedEvent,
+	ChannelUpdatedEvent
+} from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { appActions } from '../app/app.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -309,7 +311,7 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const channel = await mezon.socketRef.current?.joinChat(clanId, channelId, channelType, isPublic);
+		const channel = await mezon.clientRef.current?.joinChat(mezon.session, clanId, channelId, channelType, isPublic);
 		return channel;
 	} catch (error) {
 		captureSentryError(error, 'channels/joinChat');
@@ -1198,7 +1200,16 @@ export const channelsSlice = createSlice({
 					state.byClans[clanId] = getInitialClanState();
 				}
 				state.byClans[clanId].idChannelSelected[clanId] = channelId;
-				const rememberChannel = JSON.parse(localStorage.getItem('remember_channel') || '{}');
+				let rememberChannel: Record<string, string> = {};
+				try {
+					const raw = localStorage.getItem('remember_channel');
+					const parsed = raw ? JSON.parse(raw) : {};
+					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+						rememberChannel = parsed as Record<string, string>;
+					}
+				} catch {
+				}
+				
 				rememberChannel[clanId] = channelId;
 				localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
 			}

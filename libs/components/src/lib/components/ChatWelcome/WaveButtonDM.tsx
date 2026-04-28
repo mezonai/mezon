@@ -11,8 +11,8 @@ import {
 } from '@mezon/store';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { EMimeTypes, STICKER_WAVE } from '@mezon/utils';
+import type { ApiChannelDescription } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

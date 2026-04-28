@@ -650,11 +650,11 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				<div className="bg-theme-setting-nav flex flex-col p-[16px]">
 					<div className="flex flex-row items-center justify-between mb-3">
 						<div className="flex flex-row items-center gap-4">
-							<Icons.ImageThumbnail defaultSize="w-4 h-4" />
+							<Icons.ImageThumbnail className="w-4 h-4" />
 							<span className="text-base font-semibold cursor-default">{t('gallery.title')}</span>
 						</div>
 						<button onClick={onClose} className="text-theme-primary-hover">
-							<Icons.Close defaultSize="w-4 h-4" />
+							<Icons.Close className="w-4 h-4" />
 						</button>
 					</div>
 					<div className="flex flex-row items-center justify-between gap-4">
@@ -663,7 +663,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								onClick={() => handleMediaFilterChange('all')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
 									mediaFilter === 'all'
-										? 'bg-theme-primary text-white'
+										? 'bg-buttonPrimary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
 								data-e2e={generateE2eId('clan_page.modal.gallery.tab.all')}
@@ -674,7 +674,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								onClick={() => handleMediaFilterChange('image')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
 									mediaFilter === 'image'
-										? 'bg-theme-primary text-white'
+										? 'bg-buttonPrimary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
 								data-e2e={generateE2eId('clan_page.modal.gallery.tab.image')}
@@ -685,7 +685,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								onClick={() => handleMediaFilterChange('video')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
 									mediaFilter === 'video'
-										? 'bg-theme-primary text-white'
+										? 'bg-buttonPrimary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
 								data-e2e={generateE2eId('clan_page.modal.gallery.tab.video')}
@@ -787,7 +787,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				<div className="flex flex-col gap-4 py-4 px-[16px] min-h-full flex-1 overflow-hidden">
 					{virtualData.length === 0 ? (
 						<div className="flex flex-col items-center justify-center h-64 text-center">
-							<Icons.ImageThumbnail defaultSize="w-12 h-12" className="text-theme-secondary opacity-50 mb-4" />
+							<Icons.ImageThumbnail className="w-12 h-12 text-theme-secondary opacity-50 mb-4" />
 							<p className="text-theme-secondary text-sm">
 								{mediaFilter === 'image'
 									? t('gallery.emptyState.noImages')

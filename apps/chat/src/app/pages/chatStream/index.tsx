@@ -22,13 +22,13 @@ const ChatHeader = () => {
 	return (
 		<div className="flex flex-row items-center justify-between px-4 h-[58px] min-h-[50px] bg-theme-primary">
 			<div className="flex flex-row items-center gap-2">
-				<Icons.Chat defaultSize="w-5 h-5 text-theme-primary" />
+				<Icons.Chat className="w-5 h-5 text-theme-primary" />
 				<span className="text-base font-semibold text-theme-primary">
 					{currentChannelLabel && currentChannelLabel.length > 30 ? `${currentChannelLabel.substring(0, 30)}...` : currentChannelLabel}
 				</span>
 			</div>
 			<button onClick={handleCloseModal} className="text-theme-primary text-theme-primary-hover transition-colors">
-				<Icons.Close defaultSize="w-5 h-5" />
+				<Icons.Close className="w-5 h-5" />
 			</button>
 		</div>
 	);

@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js/api';
+import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -62,7 +62,7 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 	const currentState = getState();
 	const applicationState = currentState[ADMIN_APPLICATIONS];
 
-	const apiKey = createApiKey('fetchApplications', mezon.session.username || '');
+	const apiKey = createApiKey('fetchApplications', mezon.session.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, applicationState.cache, noCache);
 

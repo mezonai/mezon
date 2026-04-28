@@ -71,24 +71,27 @@ export async function captureSentryError(error: unknown, actionName: string, con
 	// });
 }
 
+// Sensitive keys should never reach Sentry/log sinks. Pattern-matches case-insensitively.
+const SENSITIVE_KEY_RE = /(token|authorization|auth|password|passwd|secret|api[_-]?key|refresh[_-]?token|session|cookie|bearer)/i;
+
+function redactValue(key: string, value: unknown): unknown {
+	if (typeof value === 'string' && SENSITIVE_KEY_RE.test(key)) {
+		return '[REDACTED]';
+	}
+	return value;
+}
+
 async function getErrorMessage(error: unknown): Promise<string> {
 	if (error instanceof Error) {
-		return JSON.stringify(
-			{
-				name: error.name,
-				message: error.message,
-				stack: error.stack,
-				...Object.getOwnPropertyNames(error).reduce(
-					(acc, prop) => {
-						acc[prop] = (error as any)[prop];
-						return acc;
-					},
-					{} as Record<string, any>
-				)
-			},
-			null,
-			2
-		);
+		const base: Record<string, unknown> = {
+			name: error.name,
+			message: error.message,
+			stack: error.stack
+		};
+		for (const prop of Object.getOwnPropertyNames(error)) {
+			base[prop] = redactValue(prop, (error as any)[prop]);
+		}
+		return safeJSONStringify(base);
 	} else if (error instanceof Response) {
 		return await handleResponseError(error);
 	} else if (typeof error === 'object' && error !== null) {
@@ -99,6 +102,8 @@ async function getErrorMessage(error: unknown): Promise<string> {
 		return `An unknown error occurred: ${String(error)}`;
 	}
 }
+
+const MAX_BODY_SNIPPET = 500;
 
 async function handleResponseError(response: Response): Promise<string> {
 	try {
@@ -112,16 +117,33 @@ async function handleResponseError(response: Response): Promise<string> {
 			errorData = await clonedResponse.text();
 		}
 
+		// Strip query string (tokens can leak there) and cap body size to avoid spamming sinks with PII.
+		let sanitizedUrl = response.url;
+		try {
+			const u = new URL(response.url);
+			u.search = '';
+			sanitizedUrl = u.toString();
+		} catch {
+			// ignore parse failure
+		}
+
+		let body: unknown = errorData;
+		if (typeof body === 'string' && body.length > MAX_BODY_SNIPPET) {
+			body = body.slice(0, MAX_BODY_SNIPPET) + '…[truncated]';
+		} else if (body && typeof body === 'object') {
+			body = safeJSONStringify(body).slice(0, MAX_BODY_SNIPPET);
+		}
+
 		return JSON.stringify(
 			{
 				status: response.status,
 				statusText: response.statusText,
-				url: response.url,
+				url: sanitizedUrl,
 				headers: {
 					'content-type': response.headers.get('content-type'),
 					'content-length': response.headers.get('content-length')
 				},
-				body: errorData
+				body
 			},
 			null,
 			2
@@ -162,7 +184,7 @@ function deepJSONStringify(obj: unknown): string {
 			if (typeof value === 'function') {
 				return `[Function: ${value.name || 'anonymous'}]`;
 			}
-			return value;
+			return redactValue(key, value);
 		},
 		2
 	);

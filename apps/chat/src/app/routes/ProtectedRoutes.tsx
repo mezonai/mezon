@@ -1,8 +1,8 @@
-import { authActions, selectIsLogin, stickerSettingActions, useAppDispatch } from '@mezon/store';
-import { useEffect } from 'react';
+import { authActions, selectIsLogin, useAppDispatch } from '@mezon/store';
+import isElectron from 'is-electron';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet, useLoaderData, useLocation } from 'react-router-dom';
-import { IAuthLoaderData } from '../loaders/authLoader';
+import type { IAuthLoaderData } from '../loaders/authLoader';
 
 const ProtectedRoutes = () => {
 	const { isLogin: isLoginLoader, redirect } = useLoaderData() as IAuthLoaderData;
@@ -10,10 +10,7 @@ const ProtectedRoutes = () => {
 	const isLogin = isLoginLoader && isLoginStore;
 	const location = useLocation();
 	const dispatch = useAppDispatch();
-	useEffect(() => {
-		dispatch(stickerSettingActions.fetchStickerByUserId({ noCache: false, clanId: '' }));
-	}, [dispatch]);
-	if (!isLogin) {
+	if (!isLogin && isElectron()) {
 		dispatch(authActions.setRedirectUrl(location.pathname));
 		return <Navigate to={redirect || '/desktop/login'} replace />;
 	}

@@ -17,7 +17,7 @@ import {
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
-	useAppSelector
+	useAppSelector,
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser, MenuBuilder } from '@mezon/utils';
@@ -29,12 +29,12 @@ import {
 	SubPanelName,
 	TOKEN_TO_AMOUNT,
 	TypeMessage,
+	createMenuBuilderPlugin,
 	findParentByClass,
 	formatMoney,
 	generateE2eId,
 	isPublicChannel,
 	useMenuBuilder,
-	useMenuBuilderPlugin
 } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import clx from 'classnames';
@@ -196,7 +196,12 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 				builder.when(
 					clanId && clanId !== '0' && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
 					(builder: MenuBuilder) => {
-						builder.addMenuItem('topic', t('topic'), handleCreateTopic, <Icons.TopicIconOption className="w-5 h-5 " />);
+						builder.addMenuItem(
+							'topic',
+							t('topic'),
+							handleCreateTopic,
+							<Icons.TopicIcon className="w-6 h-6 text-theme-primary text-theme-primary-hover" />
+						);
 					}
 				);
 			}
@@ -295,7 +300,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 		}
 	}, [isFocusTopicBox]);
 
-	return useMenuBuilderPlugin((builder) => {
+	return createMenuBuilderPlugin((builder) => {
 		builder.when(
 			userId !== message?.sender_id &&
 				message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
@@ -345,7 +350,7 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 	}, [dispatch, messageId]);
 
-	return useMenuBuilderPlugin((builder) => {
+	return createMenuBuilderPlugin((builder) => {
 		builder.when(userId !== message.sender_id && hasPermission, (builder) => {
 			builder.addMenuItem('reply', t('reply'), handleItemClick, <Icons.Reply />, null, false, false, 'rotate-180');
 		});
@@ -378,7 +383,7 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 		dispatch(messagesActions.setIdMessageToJump(null));
 	}, [dispatch, message, messageId]);
 
-	return useMenuBuilderPlugin((builder) => {
+	return createMenuBuilderPlugin((builder) => {
 		builder.when(
 			userId === message.sender_id &&
 				!message?.content?.callLog?.callLogType &&
@@ -415,7 +420,7 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 		[dispatch]
 	);
 
-	return useMenuBuilderPlugin((builder) => {
+	return createMenuBuilderPlugin((builder) => {
 		builder.addMenuItem('react', t('reactions'), handleItemClick, <Icons.Smile defaultSize="w-5 h-5" />);
 	});
 }
@@ -455,7 +460,7 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 		setValueThread({ ...message, references: [] });
 	}, [dispatch, message, setIsShowCreateThread, setOpenThreadMessageState, setThread, thread, setValueThread]);
 
-	return useMenuBuilderPlugin((builder) => {
+	return createMenuBuilderPlugin((builder) => {
 		builder.when(isShowIconThread && hasPermission && !isAppChannel && !isTopic, (builder) => {
 			builder.addMenuItem('thread', t('createThread'), handleItemClick, <Icons.ThreadIcon isWhite={thread} />);
 		});
@@ -480,12 +485,12 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 		[handleContextMenu]
 	);
 
-	return useMenuBuilderPlugin((builder) => {
+	return createMenuBuilderPlugin((builder) => {
 		builder.addMenuItem(
 			'option',
 			t('option'),
 			useHandleClickOption,
-			<Icons.ThreeDot defaultSize={'w-5 h-5 text-theme-primary text-theme-primary-hover'} />
+			<Icons.ThreeDot className={'w-5 h-5 text-theme-primary text-theme-primary-hover'} />
 		);
 	});
 }

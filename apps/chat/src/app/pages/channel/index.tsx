@@ -60,8 +60,8 @@ import {
 	useBackgroundMode
 } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiOnboardingItem } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiOnboardingItem } from 'mezon-js/api';
 import type { DragEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -258,7 +258,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 						window.electron.launchAppWindow(urlWithHash);
 						return;
 					}
-					window.open(urlWithHash, currentChannel?.channel_label, 'width=900,height=700');
+					window.open(urlWithHash, currentChannel?.channel_label, 'width=900,height=700,noopener,noreferrer');
 				}
 			}
 		}

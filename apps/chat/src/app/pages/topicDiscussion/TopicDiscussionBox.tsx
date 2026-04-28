@@ -36,8 +36,8 @@ import {
 	useBackgroundMode
 } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { DragEvent } from 'react';
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -393,7 +393,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 							</div>
 							{topicAnonymousMode && currentTopicId && (
 								<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>
-									<Icons.HatIcon defaultSize="w-7 h-7" />
+									<Icons.HatIcon className="w-7 h-7" />
 								</div>
 							)}
 						</div>

@@ -14,8 +14,8 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -258,8 +258,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
-			const socket = socketRef.current;
-			if (!client || !session || !socket || !channelOrDirect) {
+			if (!client || !session || !channelOrDirect) {
 				throw new Error('Client is not initialized');
 			}
 			const trimContent: IMessageSendPayload = {

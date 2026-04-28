@@ -3,7 +3,7 @@ import type { RolesClanEntity } from '@mezon/store';
 import { getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission, generateE2eId } from '@mezon/utils';
-import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api';
+import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -135,7 +135,10 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 									data-e2e={generateE2eId('clan_page.settings.role.item.member_count')}
 								>
 									{role.role_user_list?.role_users?.length ?? 0}
-									<Icons.MemberIcon defaultSize="w-5 h-[30px] min-w-5" />
+									<Icons.MemberIcon
+										defaultSize="w-4 h-4 min-w-4"
+										className="shrink-0 text-colorTextLightMode dark:text-zinc-400"
+									/>
 								</p>
 							)}
 						</td>
@@ -176,6 +179,6 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 
 export default ListActiveRole;
 
-export function useCheckHasAdministrator(permissions?: ApiPermission[]) {
+export function checkHasAdministrator(permissions?: ApiPermission[]) {
 	return permissions?.some((permission) => permission.slug === SlugPermission.Admin && permission.active === 1);
 }

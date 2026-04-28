@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Baue eine spaßigere Community auf",
+			"description": "Nicht nur Chat – dies ist der Ort, an dem du organisierst, dich mit Gruppen, Freunden und der Community vernetzt und gemeinsam Spaß hast."
+		},
+		"section2": {
+			"title": "Das beste WFH-Erlebnis für Organisationen",
+			"description": "Homeoffice bedeutet nicht, alleine zu arbeiten. Arbeite, kommuniziere und feiere gemeinsam – auch wenn ihr euch fern seid. Das beste WFH-Erlebnis für dein Unternehmen."
+		},
+		"section3": {
+			"title": "Stärke die Mitgliederbeziehungen",
+			"description": "Wir glauben, dass starke Beziehungen starke Organisationen schaffen. Jedes Feature ist darauf ausgelegt, Mitglieder zu verbinden. Mitgliederbeziehungen, verstärkt."
+		},
+		"section4": {
+			"title": "Beiträge leisten und belohnt werden",
+			"description": "Nimm teil, verdiene Credits und erhalte Token, während du der Community beim Wachsen hilfst. Deine Stimme ist dein Wert. Trage bei und werde belohnt."
+		},
+		"section5": {
+			"title": "Detaillierte und klare Berichte",
+			"description": "Verfolge das Wachstum und die Interaktion der Community mit detaillierten Analysen und Berichten. Bleib immer informiert und triff bessere Entscheidungen."
+		}
+	},
+	"features": [
+		{
+			"title": "Du kannst Emojis, Sticker und Sounds hochladen",
+			"description": "Völlig kostenlos – erstelle deine eigenen Emojis, Sticker und Sounds, um dich in Chats auszudrücken."
+		},
+		{
+			"title": "Berechtigungen für Clan-Mitglieder",
+			"description": "Verwalte Berechtigungen und Rollen deiner Clan-Mitglieder ganz einfach, um ein passendes und sicheres Erlebnis für alle zu gewährleisten."
+		},
+		{
+			"title": "Mitglieder mit gleichen Interessen überall",
+			"description": "Mitglieder treten deinem Clan durch Einladungen oder die öffentliche Entdeckung bei, was eine vielfältige und lebendige Community schafft."
+		},
+		{
+			"title": "Clan-Erstellung war noch nie so einfach",
+			"description": "Antworte schnell auf Nachrichten mit Emojis, ohne tippen zu müssen."
+		}
+	],
+	"featuresTitle": "Baue deine Community spaßiger auf",
+	"download": "Herunterladen",
+	"faq": {
+		"title": "Brauchst du Hilfe?",
+		"seeAll": "Alle FAQs ansehen",
+		"learnMore": "Mehr erfahren",
+		"questions": [
+			{
+				"question": "Was ist ein Clan auf Mezon?",
+				"answer": "Ein Clan ist das Herzstück von Mezon – ein Ort, an dem Menschen über Gemeinschaften mit gemeinsamen Interessen, Zielen oder Leidenschaften vernetzt, zusammenarbeiten und sich austauschen. Ein Clan kann eine kleine Freundesgruppe oder eine große Community mit tausenden Mitgliedern sein. In einem Clan kannst du über organisierte Kanäle chatten, Events über Sprachkanäle veranstalten und die Community mit Bots, Apps und Mezon-Token bereichern."
+			},
+			{
+				"question": "Wie trete ich einem Clan auf Mezon bei?",
+				"answer": "Du kannst Clans auf zwei Arten entdecken und beitreten: über den 'Entdecken'-Button in der App oder über die Clan-Website unter mezon.ai/clans. Alternativ kannst du Einladungslinks nutzen, die von Freunden, Teamkollegen oder Administratoren geteilt wurden. Klicke einfach auf 'Beitreten', um Mitglied der Community zu werden. Jeder Nutzer kann bis zu 50 Clans gleichzeitig beitreten. Entdecke Highlights wie den Student Clan, Gamer Clan oder Business Clan."
+			},
+			{
+				"question": "Wie erstelle ich meinen eigenen Clan?",
+				"answer": "Die Erstellung eines Clans ist einfach und flexibel. Navigiere zum Clan-Bereich und erstelle mit nur wenigen Klicks einen neuen Clan. Du kannst Namen, Icon und Basiseinstellungen festlegen, um deine Community anzupassen. Sobald er erstellt ist, kannst du Freunde und Teamkollegen einladen, um zu chatten, Ideen zu teilen oder zusammenzuarbeiten. Du kannst auch Kanäle verwalten, Berechtigungen festlegen und bei Bedarf die Inhaberschaft übertragen."
+			},
+			{
+				"question": "Kann ich einen Clan verlassen, wenn ich nicht mehr teilnehmen möchte?",
+				"answer": "Ja, wenn du einem Clan nicht mehr angehören möchtest, kannst du in den Clan-Einstellungen 'Clan verlassen' wählen. Nach dem Verlassen werden der gesamte Nachrichtenverlauf und der Zugriff auf die Kanäle dieses Clans von deinem Konto entfernt. Du kannst einem Clan später jederzeit wieder beitreten, sofern du einen Einladungslink hast oder der Clan öffentlich zugänglich ist."
+			}
+		]
+	}
+}

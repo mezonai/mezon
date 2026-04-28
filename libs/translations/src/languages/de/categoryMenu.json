@@ -1,0 +1,39 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Als gelesen markieren"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Einladen"
+		},
+		"notification": {
+			"title": "",
+			"muteCategory": "Benachrichtigungen stummschalten",
+			"notification": "Benachrichtigungseinstellungen"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Kanal erstellen",
+			"edit": "Kategorie bearbeiten",
+			"delete": "Kategorie löschen"
+		},
+		"devMode": {
+			"title": "Entwicklermodus",
+			"copyServerID": "Clan-ID kopieren"
+		},
+		"modalConfirm": {
+			"title": "Kategorie löschen",
+			"content": "Möchtest du diese Kategorie wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+			"confirmText": "Löschen"
+		},
+		"toast": {
+			"systemChannel": "Fehler: {{categoryName}} enthält einen Systemkanal",
+			"error": "Fehler beim Löschen der Kategorie: {{error}}"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "Clan-ID kopiert"
+	}
+}

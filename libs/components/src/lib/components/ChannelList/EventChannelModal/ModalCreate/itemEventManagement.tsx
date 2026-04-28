@@ -15,8 +15,8 @@ import {
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiUserEventRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiUserEventRequest } from 'mezon-js/api';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -236,7 +236,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 			<div className="p-4 border-b-theme-primary cursor-pointer" onClick={() => event && setChooseEvent(event)}>
 				<div className="flex justify-between">
 					<div className="flex items-center gap-x-2 mb-4">
-						<Icons.IconEvents defaultSize={`font-semibold ${cssEventStatus}`} />
+						<Icons.IconEvents className={`font-semibold ${cssEventStatus}`} />
 						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.start_time')}>
 							{displayLabel}
 						</p>
@@ -296,7 +296,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									)}
 								>
 									<span className="text-md">{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}</span>
-									<Icons.MemberList defaultSize="h-4 w-4" />
+									<Icons.MemberList className="h-4 w-4" />
 								</div>
 							</div>
 						</Tooltip>
@@ -421,7 +421,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								onClick={handleToggleUserEvent}
 								className="flex items-center gap-x-1 rounded-lg text-theme-primary-hover px-4 py-2 bg-theme-primary text-theme-primary-active"
 							>
-								{isInterested ? <Icons.MuteBell defaultSize="size-4" /> : <Icons.Bell className="size-4 " />}
+								{isInterested ? <Icons.MuteBell className="size-4" /> : <Icons.Bell className="size-4 " />}
 								<span className="whitespace-nowrap">{isInterested ? t('dashboard.UnInterested') : t('dashboard.Interested')}</span>
 							</button>
 						) : (

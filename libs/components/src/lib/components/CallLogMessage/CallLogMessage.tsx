@@ -17,8 +17,8 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IMessageCallLog, IMessageSendPayload } from '@mezon/utils';
 import { CallLog, IMessageTypeCallLog } from '@mezon/utils';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -34,49 +34,49 @@ type CallLogMessageProps = {
 
 const iconMap: { [key: string]: { icon: JSX.Element; text: string; colorClass: string; bgClass: string } } = {
 	[`${IMessageTypeCallLog.TIMEOUTCALL}_SENDER`]: {
-		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
+		icon: <Icons.OutGoingCall className="w-6 h-6" />,
 		text: CallLog.OUTGOING_CALL,
 		colorClass: 'text-red-500',
 		bgClass: 'from-blue-500 to-indigo-600'
 	},
 	[`${IMessageTypeCallLog.TIMEOUTCALL}_RECEIVER`]: {
-		icon: <Icons.MissedCall defaultSize="w-6 h-6" />,
+		icon: <Icons.MissedCall className="w-6 h-6" />,
 		text: CallLog.MISSED,
 		colorClass: 'text-red-500',
 		bgClass: 'from-red-500 to-orange-600'
 	},
 	[`${IMessageTypeCallLog.FINISHCALL}_SENDER`]: {
-		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
+		icon: <Icons.OutGoingCall className="w-6 h-6" />,
 		text: CallLog.OUTGOING_CALL,
 		colorClass: '',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.FINISHCALL}_RECEIVER`]: {
-		icon: <Icons.IncomingCall defaultSize="w-6 h-6" />,
+		icon: <Icons.IncomingCall className="w-6 h-6" />,
 		text: CallLog.INCOMING_CALL,
 		colorClass: '',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.REJECTCALL}_SENDER`]: {
-		icon: <Icons.CancelCall defaultSize="w-6 h-6" />,
+		icon: <Icons.CancelCall className="w-6 h-6" />,
 		text: CallLog.RECIPIENT_DECLINED,
 		colorClass: 'text-red-500',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.REJECTCALL}_RECEIVER`]: {
-		icon: <Icons.CancelCall defaultSize="w-6 h-6" />,
+		icon: <Icons.CancelCall className="w-6 h-6" />,
 		text: CallLog.YOU_DECLINED,
 		colorClass: 'text-red-500',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.CANCELCALL}_SENDER`]: {
-		icon: <Icons.CancelCall defaultSize="w-6 h-6" />,
+		icon: <Icons.CancelCall className="w-6 h-6" />,
 		text: CallLog.YOU_CANCELED,
 		colorClass: 'text-red-500',
 		bgClass: 'from-yellow-500 to-red-500'
 	},
 	[`${IMessageTypeCallLog.CANCELCALL}_RECEIVER`]: {
-		icon: <Icons.MissedCall defaultSize="w-6 h-6" />,
+		icon: <Icons.MissedCall className="w-6 h-6" />,
 		text: CallLog.MISSED,
 		colorClass: 'text-red-500',
 		bgClass: 'from-yellow-500 to-red-500'
@@ -101,7 +101,7 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	const shouldShowCallBack = callLog.showCallBack !== false && !isBlocked;
 
 	const { icon, text, colorClass, bgClass } = iconMap[key] || {
-		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
+		icon: <Icons.OutGoingCall className="w-6 h-6" />,
 		text: `${username} started ${currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? 'a group' : callLog.isVideo ? 'a video' : 'an audio'} call`,
 		colorClass: '',
 		bgClass: ''

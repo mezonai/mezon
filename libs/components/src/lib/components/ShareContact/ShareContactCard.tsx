@@ -221,7 +221,7 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 					className={`flex-1 py-3 flex text-theme-primary-hover items-center bg-secondary-button-hover justify-center gap-2 text-theme-primary text-sm font-medium  transition-colors ${isInCall ? 'opacity-50 cursor-not-allowed' : ''}`}
 					data-e2e={generateE2eId('chat.share_contact.button.call')}
 				>
-					<Icons.IconPhoneDM defaultSize="size-4" />
+					<Icons.IconPhoneDM className="size-4" />
 					<span>{t('card.call')}</span>
 				</button>
 				<button
@@ -229,7 +229,7 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 					className="flex-1 py-3 text-theme-primary-hover flex items-center bg-secondary-button-hover justify-center gap-2 text-theme-primary text-sm font-medium transition-colors"
 					data-e2e={generateE2eId('chat.share_contact.button.message')}
 				>
-					<Icons.Chat defaultSize="size-4" />
+					<Icons.Chat className="size-4" />
 					<span>{t('card.message')}</span>
 				</button>
 			</div>

@@ -467,7 +467,8 @@
 		"failedToRefresh": "캔버스 데이터 새로고침 실패",
 		"titlePlaceholder": "캔버스 제목",
 		"typePlaceholder": "삽입하려면 / 입력...",
-		"untitled": "제목 없음"
+		"untitled": "제목 없음",
+		"deleteMessage": "이 캔버스는 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다."
 	},
 	"emojiCategories": {
 		"forsale": "판매 중",

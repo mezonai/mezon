@@ -1,8 +1,8 @@
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiChannelDescription, ApiChannelMessageHeader, ChannelMessage } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiChannelMessageHeader, ChannelMessage } from 'mezon-js/api';
 import { selectAllAccount } from '../account/account.slice';
 export const CHANNELMETA_FEATURE_KEY = 'channelmeta';
 
@@ -238,6 +238,10 @@ export const channelMetaSlice = createSlice({
 				lastSeenTimestamp: 0,
 				count_mess_unread: 0
 			});
+		},
+		deleteChannelMeta: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+			channelMetaAdapter.removeOne(state, channelId);
 		}
 	}
 });

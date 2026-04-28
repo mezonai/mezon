@@ -1,0 +1,63 @@
+{
+	"title": "Nachrichten",
+	"addFriend": "Freund hinzufügen",
+	"friends": "Freunde",
+	"blockedUserMessage": "Nachricht blockiert",
+	"menu": {
+		"leaveGroup": "Gruppe verlassen",
+		"deleteGroup": "Gruppe löschen",
+		"profile": "Profil",
+		"closeDm": "Chat schließen",
+		"markAsRead": "Als gelesen markieren",
+		"favorite": "Favorit",
+		"muteConversation": "Chat stummschalten",
+		"unMuteConversation": "Stummschaltung aufheben",
+		"notificationSettings": "Benachrichtigungseinstellungen",
+		"disableE2EE": "E2EE-Verschlüsselung deaktivieren",
+		"enableE2EE": "E2EE-Verschlüsselung aktivieren",
+		"blockUser": "Benutzer blockieren",
+		"unblockUser": "Benutzer entsperren",
+		"removeFriend": "Freund entfernen",
+		"addFriend": "Freund hinzufügen",
+		"pinConversation": "Chat anpinnen",
+		"unpinConversation": "Anpinnen aufheben"
+	},
+	"confirm": {
+		"title": "{{groupName}} verlassen",
+		"content": "Bist du sicher, dass du {{groupName}} verlassen möchtest? Du kannst dieser Gruppe nicht wieder beitreten, es sei denn, du wirst erneut eingeladen.",
+		"confirmText": "Ja"
+	},
+	"pinConfirm": {
+		"title": "Chat anpinnen?",
+		"content": "Dieser Chat wird an den Anfang deiner Nachrichtenliste verschoben, damit du ihn leichter finden kannst.",
+		"confirmText": "Anpinnen"
+	},
+	"unpinConfirm": {
+		"title": "Anpinnen aufheben?",
+		"content": "Dieser Chat wird an seine normale Position in der Nachrichtenliste zurückgesetzt.",
+		"confirmText": "Anpinnen aufheben"
+	},
+	"pinSection": "ANGEPINNT",
+	"allMessagesSection": "ALLE NACHRICHTEN",
+	"maximumPinnedConversationsReached": "Du kannst maximal {{max}} Chats anpinnen.",
+	"notification": {
+		"blockUser": {
+			"success": "Benutzer erfolgreich blockiert",
+			"error": "Benutzer konnte nicht blockiert werden"
+		},
+		"unblockUser": {
+			"success": "Benutzer erfolgreich entsperrt",
+			"error": "Benutzer konnte nicht entsperrt werden"
+		},
+		"muteSuccess": "Chat erfolgreich stummgeschaltet!",
+		"unMuteSuccess": "Stummschaltung erfolgreich aufgehoben!",
+		"muteFailed": "Stummschaltung fehlgeschlagen!",
+		"unMuteFailed": "Stummschaltung aufheben fehlgeschlagen!"
+	},
+	"waveWelcome": "Winke zum Gruß!",
+	"waveWelcomeDM": "Winke {{username}} zu",
+	"members": "Mitglieder",
+	"speaker": "Lautsprecher",
+	"end": "Beenden",
+	"turnedMicOff": "hat das Mikrofon stummgeschaltet"
+}

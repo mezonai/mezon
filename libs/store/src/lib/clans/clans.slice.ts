@@ -3,16 +3,16 @@ import type { IClan, LoadingStatus } from '@mezon/utils';
 import { LIMIT_CLAN_ITEM } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ClanUpdatedEvent } from 'mezon-js';
-import { ChannelType } from 'mezon-js';
 import type {
 	ApiChannelDescription,
 	ApiCheckDuplicateNameRequest,
 	ApiCheckDuplicateNameResponse,
 	ApiClanDesc,
 	ApiUpdateAccountRequest,
+	ClanUpdatedEvent,
 	MezonUpdateClanDescBody
-} from 'mezon-js/api';
+} from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -169,7 +169,7 @@ export const listChannelBadgeCount = createAsyncThunk('clans/listChannelBadgeCou
 					clan_id: clanId
 				}
 			},
-			(session) => mezon.client.listChannelBadgeCount(session, clanId),
+			(session) => Promise.resolve({}),
 			'channel_badge_count'
 		);
 
@@ -237,19 +237,6 @@ export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ 
 		const response = await mezon.client.updateUsername(mezon.session, { username });
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
-		}
-		const sessionState = mezon?.session;
-		if (response?.refresh_token && response?.token) {
-			return await mezon?.refreshSession(
-				{
-					...sessionState,
-					is_remember: sessionState.is_remember ?? false,
-					username,
-					refresh_token: response.refresh_token,
-					token: response.token
-				},
-				true
-			);
 		}
 		return false;
 	} catch (error) {
@@ -462,7 +449,6 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				thunkAPI.dispatch(accountActions.getUserProfile());
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,
@@ -501,7 +487,7 @@ interface JoinClanPayload {
 export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan', async ({ clanId }, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.socketRef.current?.joinClanChat(clanId);
+		await mezon.clientRef.current?.joinClanChat(mezon.session, clanId);
 		const state = thunkAPI.getState() as RootState;
 		if (!state.clans?.checkJoinList?.[clanId] && clanId !== '0') {
 			thunkAPI.dispatch(listChannelBadgeCount({ clanId }));

@@ -2,7 +2,7 @@ import { generateWebhook, selectCurrentClanId, useAppDispatch } from '@mezon/sto
 import { Image } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js/api';
+import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -46,7 +46,7 @@ const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps
 	};
 
 	const openWebhookLearnMore = () => {
-		window.open('https://mezon.ai/docs/en/developer/webhooks/channel-webhook', '_blank');
+		window.open('https://mezon.ai/docs/en/developer/webhooks/channel-webhook', '_blank', 'noopener,noreferrer');
 	};
 
 	return (
