@@ -115,8 +115,6 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	const allTabProps = {
 		messageReplied: topic,
 		subject: subjectTopic,
-		senderId: topic?.last_sent_message?.sender_id,
-		lastMessageTopic: topic?.last_sent_message,
 		topic
 	};
 
@@ -139,26 +137,24 @@ export default TopicNotificationItem;
 interface ITopicTabContent {
 	messageReplied?: ApiChannelMessageHeader;
 	subject?: string;
-	senderId?: string;
-	lastMessageTopic?: ApiChannelMessageHeader;
 	topic?: ApiSdTopic;
 }
 
-function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITopicTabContent) {
+function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
 	const messageRl = useMemo(() => {
 		return messageReplied?.content ? safeJSONParse(messageReplied?.content) : null;
 	}, [messageReplied]);
 
-	const lastMsgTopic = useMemo(() => {
-		return lastMessageTopic?.content ? safeJSONParse(lastMessageTopic?.content) : null;
-	}, [lastMessageTopic]);
-	const [senderId, setSubjectTopic] = useState(topic?.last_sent_message?.sender_id ?? '');
-	useEffect(() => {
-		setSubjectTopic(lastMessageTopic?.sender_id ?? '');
-	}, [lastMessageTopic]);
+	const resolvedSenderId = useMemo(() => {
+		const senderId = topic?.last_sent_message?.sender_id;
+		if (!senderId) {
+			return topic?.creator_id || '';
+		}
+		return senderId;
+	}, [topic?.last_sent_message?.sender_id, topic?.creator_id]);
 
-	const { priorityAvatar, isAnonymous } = useGetPriorityNameFromUserClan(senderId || '');
-	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, lastMessageTopic?.sender_id ?? ''));
+	const { priorityAvatar, isAnonymous } = useGetPriorityNameFromUserClan(resolvedSenderId);
+	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, resolvedSenderId));
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg">
@@ -181,7 +177,7 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 						src={isAnonymous ? '' : priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url}
 					/>
 				</div>
-				<div className="h-full flex-1 max-w-full min-w-0">
+				<div className="h-full flex-1 max-w-full min-w-0 pt-1">
 					<div>
 						<div className="text-[12px] font-bold uppercase">{subject}</div>
 					</div>
@@ -192,15 +188,6 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 						>
 							<b className="font-semibold">Replied to</b>:{' '}
 							{messageRl?.t ? messageRl?.t : messageRl?.embed ? 'Attachment message' : 'Unreachable message'}
-						</div>
-					</div>
-					<div>
-						<div
-							className="text-[13px] w-fit max-w-full break-words whitespace-normal"
-							data-e2e={generateE2eId('chat.channel_message.inbox.topics.last_reply_message')}
-						>
-							<b className="font-semibold">{isAnonymous ? 'Anonymous' : lastSentUser ? lastSentUser?.user?.username : 'Sender'}</b>:{' '}
-							{lastMsgTopic ? lastMsgTopic?.t : 'Unreachable message'}
 						</div>
 					</div>
 				</div>
