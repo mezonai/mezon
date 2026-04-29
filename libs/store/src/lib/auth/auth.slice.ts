@@ -77,7 +77,10 @@ export type AuthenticatePhoneSMSOTPRequestPayload = {
 
 export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', async ({ email, password }: AuthenticateEmailPayload, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	const session = await mezon?.authenticateEmail(email, password);
+	if (!mezon?.clientRef.current) {
+		return thunkAPI.rejectWithValue('Client not initialized');
+	}
+	const session = await mezon?.clientRef.current?.authenticateEmail(email, password);
 	if (session && session?.id_token) {
 		const proofInput = {
 			jwt: session.id_token
@@ -88,16 +91,25 @@ export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', asyn
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
+	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
+	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+		console.warn('Login Email Refresh Session');
+		thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+		mezon.sessionRef.current = {
+			...session,
+			session_id: session.session_id
+		};
+	};
+
 	return normalizeSession(session);
 });
 
 export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', async (code: string, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	const session = await mezon?.authenticateMezon(code).catch(function (err: any) {
-		err.json().then((data: any) => {
-			console.error(data.message);
-		});
-	});
+	if (!mezon?.clientRef.current) {
+		return thunkAPI.rejectWithValue('Client not initialized');
+	}
+	const session = await mezon?.clientRef.current?.authenticateMezon(code);
 	if (session && session.id_token) {
 		const proofInput = {
 			jwt: session.id_token
@@ -109,6 +121,17 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
+	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
+
+	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+		console.warn('Login Mezon Refresh Session');
+		thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+		mezon.sessionRef.current = {
+			...session,
+			session_id: session.session_id
+		};
+	};
+
 	return normalizeSession(session);
 });
 
@@ -139,17 +162,32 @@ export const authenticateEmailOTPRequest = createAsyncThunk(
 	'auth/authenticateEmailOTPRequest',
 	async ({ email }: AuthenticateEmailOTPRequestPayload, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
-		const res = await mezon?.authenticateEmailOTPRequest(email);
+		if (!mezon?.clientRef.current) {
+			return thunkAPI.rejectWithValue('Client not initialized');
+		}
+		const res = await mezon.clientRef.current.authenticateEmailOTPRequest(email);
 		if (!res) {
 			return thunkAPI.rejectWithValue('Invalid session');
 		}
+
+		mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+			console.warn('Login Email OTP Refresh Session');
+			thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+			mezon.sessionRef.current = {
+				...session,
+				session_id: session.session_id
+			};
+		};
 		return res;
 	}
 );
 
 export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticateOTP', async (data: ApiLinkAccountConfirmRequest, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
-	const session = await mezon?.confirmAuthenticateOTP(data);
+	if (!mezon?.clientRef.current) {
+		return thunkAPI.rejectWithValue('Client not initialized');
+	}
+	const session = await mezon.clientRef.current.confirmAuthenticateOTP(data);
 	if (session && session?.id_token) {
 		const proofInput = {
 			jwt: session.id_token
@@ -159,6 +197,16 @@ export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticate
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
+
+	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
+	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+		console.warn('Confirm OTP Refresh Session');
+		thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+		mezon.sessionRef.current = {
+			...session,
+			session_id: session.session_id
+		};
+	};
 	return normalizeSession(session);
 });
 
@@ -166,10 +214,22 @@ export const authenticatePhoneSMSOTPRequest = createAsyncThunk(
 	'auth/authenticatePhoneSMSOTPRequest',
 	async ({ phone }: AuthenticatePhoneSMSOTPRequestPayload, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
-		const res = await mezon?.authenticateSMSOTPRequest(phone);
+		if (!mezon?.clientRef.current) {
+			return thunkAPI.rejectWithValue('Client not initialized');
+		}
+		const res = await mezon.clientRef.current.authenticateSMSOTPRequest(phone);
 		if (!res) {
 			return thunkAPI.rejectWithValue('Invalid session');
 		}
+
+		mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+			console.warn('Phone SMS Refresh Session');
+			thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+			mezon.sessionRef.current = {
+				...session,
+				session_id: session.session_id
+			};
+		};
 		return res;
 	}
 );
@@ -205,8 +265,10 @@ export const checkLoginRequest = createAsyncThunk(
 	'auth/checkLoginRequest',
 	async ({ loginId, isRemember }: { loginId: string; isRemember: boolean }, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
-
-		const session = await mezon?.checkLoginRequest({ login_id: loginId, is_remember: isRemember });
+		if (!mezon?.clientRef.current) {
+			return thunkAPI.rejectWithValue('Client not initialized');
+		}
+		const session = await mezon?.clientRef.current.checkLoginRequest({ login_id: loginId, is_remember: isRemember });
 		if (session) {
 			if (session.id_token) {
 				const proofInput = {
@@ -215,6 +277,15 @@ export const checkLoginRequest = createAsyncThunk(
 
 				await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
 			}
+			mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
+			mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+				console.warn('Login Id Request Refresh Session');
+				thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+				mezon.sessionRef.current = {
+					...session,
+					session_id: session.session_id
+				};
+			};
 			return normalizeSession(session);
 		}
 		return null;

@@ -31,16 +31,14 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 					setConnect(true);
 					return;
 				}
-				await client.connect(
-					sessionRef.current?.session_id || session.session_id || sessionRef.current?.token || session.token || '',
-					`dev-mezon-sock.nccsoft.vn:7305`,
-					true,
-					false
-				);
+				await client.connect(session.session_id || session.token || '', sessionRef.current?.ws_url || session.ws_url || '', true, false);
 
-				client.onrefreshsession = (session: ApiSession) => {
-					store.dispatch(authActions.setSessionId(session.session_id));
-					sessionRef.current = session;
+				client.onrefreshsession = (sessionNew: ApiSession) => {
+					store.dispatch(authActions.setSessionId(sessionNew.session_id));
+					sessionRef.current = {
+						...session,
+						session_id: sessionNew.session_id
+					};
 				};
 				connectRef.current = true;
 				sessionRef.current = session;
