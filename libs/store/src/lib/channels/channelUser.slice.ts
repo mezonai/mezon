@@ -49,7 +49,7 @@ export const fetchListChannelsByUserCached = async (getState: () => RootState, e
 	const currentState = getState();
 	const channelsByUserState = currentState[LIST_CHANNELS_USER_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchChannelsByUser', ensuredMezon.session.token || '');
+	const apiKey = createApiKey('fetchChannelsByUser', ensuredMezon.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelsByUserState?.cache, noCache);
 

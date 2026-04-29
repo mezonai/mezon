@@ -91,6 +91,8 @@ export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', asyn
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
+
+	mezon.sessionRef.current = session;
 	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
 	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
 		console.warn('Login Email Refresh Session');
@@ -121,6 +123,7 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
+	mezon.sessionRef.current = session;
 	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
 
 	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
@@ -197,7 +200,7 @@ export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticate
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
-
+	mezon.sessionRef.current = session;
 	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
 	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
 		console.warn('Confirm OTP Refresh Session');
@@ -238,6 +241,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	const mezon = getMezonCtx(thunkAPI);
 	const sessionState = selectOthersSession(thunkAPI.getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 	await mezon?.logOutMezon(device_id, platform, !sessionState);
+	mezon.createClient();
 	thunkAPI.dispatch(authActions.setLogout());
 	thunkAPI.dispatch(walletActions.setLogout());
 	thunkAPI.dispatch(listChannelsByUserActions.removeAll());
@@ -277,6 +281,7 @@ export const checkLoginRequest = createAsyncThunk(
 
 				await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
 			}
+			mezon.sessionRef.current = session;
 			mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
 			mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
 				console.warn('Login Id Request Refresh Session');

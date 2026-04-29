@@ -82,7 +82,7 @@ export const fetchListFriendsCached = async (
 	const currentState = getState();
 	const friendsState = currentState[FRIEND_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchFriends', state, limit, cursor, ensuredMezon.session.token || '');
+	const apiKey = createApiKey('fetchFriends', state, limit, cursor, ensuredMezon.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, friendsState?.cache, noCache);
 

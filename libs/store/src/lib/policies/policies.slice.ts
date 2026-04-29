@@ -54,7 +54,7 @@ const fetchPermissionsUserCached = async (
 	noCache = false
 ): Promise<FetchPermissionsUserResult> => {
 	const policiesState = (getState() as RootState)[POLICIES_FEATURE_KEY];
-	const apiKey = createApiKey('fetchPermissionsUser', clanId, mezon.session.token || '');
+	const apiKey = createApiKey('fetchPermissionsUser', clanId, mezon.session?.token || (getState() as RootState).auth?.session?.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, policiesState.permissionUserCache, noCache || policiesState.PermissionsUserId !== clanId);
 	if (!shouldForceCall && policiesState.PermissionsUserId === clanId) {
 		return {
@@ -101,7 +101,7 @@ const LIST_PERMISSION_CACHED_TIME = 1000 * 60 * 60;
 export const fetchPermissionCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
 	const currentState = getState();
 	const policiesData = currentState[POLICIES_FEATURE_KEY];
-	const apiKey = createApiKey('fetchPermission', mezon.session.token || '');
+	const apiKey = createApiKey('fetchPermission', mezon.session?.token || currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, policiesData?.cache, noCache);
 

@@ -41,7 +41,7 @@ export const initialAccountState: AccountState = {
 export const fetchUserProfileCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
 	const currentState = getState();
 	const accountData = currentState[ACCOUNT_FEATURE_KEY];
-	const apiKey = createApiKey('fetchUserProfile', mezon.session.token || '');
+	const apiKey = createApiKey('fetchUserProfile', mezon.session?.token || currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, accountData?.cache, noCache);
 

@@ -40,7 +40,7 @@ export const fetchUserChannelsCached = async (
 ) => {
 	const currentState = getState();
 	const userChannelsState = currentState[ALL_USERS_BY_ADD_CHANNEL];
-	const apiKey = createApiKey('fetchUserChannels', channelId, limit, ensuredMezon.session.token || '');
+	const apiKey = createApiKey('fetchUserChannels', channelId, limit, ensuredMezon.session?.token || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, userChannelsState?.cacheByChannels?.[channelId], noCache);
 	if (!shouldForceCall) {
 		const cachedData = userChannelsState.entities[channelId];
