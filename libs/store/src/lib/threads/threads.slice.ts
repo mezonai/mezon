@@ -89,7 +89,14 @@ export const fetchThreadsCached = async (
 	const threadsState = currentState[THREADS_FEATURE_KEY];
 	const channelData = threadsState.byChannels?.[channelId] || getInitialChannelState();
 
-	const apiKey = createApiKey('fetchThreads', channelId, clanId, mezon.session.token || '', threadId || '', page || 1);
+	const apiKey = createApiKey(
+		'fetchThreads',
+		channelId,
+		clanId,
+		mezon.session?.token || currentState.auth?.session?.token || '',
+		threadId || '',
+		page || 1
+	);
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
 

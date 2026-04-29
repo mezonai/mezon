@@ -37,7 +37,7 @@ export interface ListUsersRootState {
 export const fetchListUsersByUserCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
 	const currentState = getState();
 	const usersData = currentState[LIST_USERS_BY_USER_FEATURE_KEY];
-	const apiKey = createApiKey('fetchListUsersByUser', mezon.session.token || '');
+	const apiKey = createApiKey('fetchListUsersByUser', mezon.session?.token || currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, usersData?.cache, noCache);
 
