@@ -65,7 +65,7 @@ export const NotificationTooltip = memo(({ isGridView, isShowMember }: Notificat
 				onContextMenu={(e) => e.preventDefault()}
 				data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 			>
-				<Icons.Inbox className="size-5" />
+				<Icons.Inbox className="w-[22px] h-[22px]" />
 				{badgeCount > 0 && <RedDot />}
 			</button>
 		</Tooltip>

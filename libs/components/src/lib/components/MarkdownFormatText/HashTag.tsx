@@ -85,7 +85,7 @@ const ChannelHashtag = ({
 				!channel.channel_private || channel.channel_private === 0 ? (
 					<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 				) : (
-					<Icons.HashtagLocked defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+					<Icons.HashtagLocked className={`inline-block -mt-[0.2rem] w-4 h-4`} />
 				)
 			) : isThreadChannel ? (
 				(channel && (!channel.channel_private || channel.channel_private === 0)) || parentId ? (
