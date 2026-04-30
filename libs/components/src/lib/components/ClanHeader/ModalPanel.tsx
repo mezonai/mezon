@@ -57,7 +57,13 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						className="text-theme-primary-hover bg-item-theme-hover"
 						onClick={handleShowCreateCategory}
 						children={t('modalPanel.createCategory')}
-						endIcon={<Icons.CreateCategoryIcon />}
+						endIcon={
+							<Icons.CreateCategoryIcon
+								className="w-[18px] h-[18px]"
+								defaultFill1="currentColor"
+								defaultFill2="var(--bg-theme-contexify)"
+							/>
+						}
 					/>
 				)}
 				<ItemModal
@@ -72,13 +78,13 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowInviteClanModal}
 					children={t('modalPanel.invitePeople')}
-					endIcon={<Icons.AddPerson />}
+					endIcon={<Icons.AddPerson className="w-[18px] h-[18px]" defaultFill1="currentColor" defaultFill2="currentColor" />}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowServerSettings}
 					children={t('modalPanel.clanSettings')}
-					endIcon={<Icons.SettingProfile className="text-theme-primary-hover" />}
+					endIcon={<Icons.SettingProfile className="w-[18px] h-[18px] text-theme-primary-hover" />}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
@@ -117,7 +123,12 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 							{t('modalPanel.leaveClan')}
 						</li>
 						<div className="flex items-center justify-center h-[18px] w-[18px]">
-							<Icons.LeaveClanIcon className="text-red-600 group-hover:text-white" />
+							<Icons.LeaveClanIcon
+								className="w-[18px] h-[18px] text-red-600 group-hover:text-white"
+								defaultFill1="currentColor"
+								defaultFill2="currentColor"
+								defaultFill3="currentColor"
+							/>
 						</div>
 					</button>
 				)}
