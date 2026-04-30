@@ -55,17 +55,13 @@ export const NotificationTooltip = memo(({ isGridView, isShowMember }: Notificat
 				offset: [0, 8]
 			}}
 		>
-			<button
-				title={t('inbox')}
-				className={`focus-visible:outline-none relative ${visible ? 'text-theme-primary-active' : ''} ${
-					(isGridView && !isShowMember) || (isGridView && isShowMember) || (isShowMember && !isGridView)
-						? 'text-theme-primary text-theme-primary-hover'
-						: 'text-theme-primary text-theme-primary-hover'
-				}`}
-				onContextMenu={(e) => e.preventDefault()}
-				data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
-			>
-				<Icons.Inbox className="size-5" />
+		<button
+			title={t('inbox')}
+			className={`focus-visible:outline-none relative group text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${visible ? 'text-[var(--bg-icon-theme-active)]' : ''} ${visible ? '[--inbox-fill-1:var(--bg-icon-theme-active)] [--inbox-fill-2:var(--bg-theme-secounnd)]' : '[--inbox-fill-1:var(--bg-icon-theme)] [--inbox-fill-2:var(--bg-theme-secounnd)] hover:[--inbox-fill-1:var(--bg-icon-theme-active)]'}`}
+			onContextMenu={(e) => e.preventDefault()}
+			data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
+		>
+				<Icons.Inbox className="size-5" defaultFill1="var(--inbox-fill-1)" defaultFill2="var(--inbox-fill-2)" />
 				{badgeCount > 0 && <RedDot />}
 			</button>
 		</Tooltip>

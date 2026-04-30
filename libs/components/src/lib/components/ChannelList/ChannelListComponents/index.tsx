@@ -129,7 +129,7 @@ export const Events = memo(() => {
 				>
 					<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.clan_guide')}>
 						<div className="w-5 h-5 relative flex flex-row items-center">
-							<div className="w-5 h-5 left-[1.67px] top-[1.67px] absolute">
+							<div className="w-5 h-5">
 								<Icons.GuideIcon className="w-5 h-5 " defaultFill1="var(--guide-fill-1)" defaultFill2="var(--guide-fill-2)" />
 							</div>
 						</div>

@@ -35,21 +35,30 @@ export const TrackToggle: <T extends ToggleSource>(props: TrackToggleProps<T> & 
 );
 
 const micIconWrapperClass = 'inline-flex items-center justify-center translate-x-[1px]';
+const cameraIconWrapperClass = 'inline-flex items-center justify-center';
 
 export function getSourceIcon(source: Track.Source, enabled: boolean) {
 	switch (source) {
 		case Track.Source.Microphone:
 			return enabled ? (
 				<span className={micIconWrapperClass}>
-					<Icons.VoiceMicIcon className="shrink-0" scale={1.3} />
+					<Icons.VoiceMicIcon className="shrink-0" scale={2.5} />
 				</span>
 			) : (
 				<span className={micIconWrapperClass}>
-					<Icons.VoiceMicDisabledIcon className="shrink-0" scale={1.3} />
+					<Icons.VoiceMicDisabledIcon className="shrink-0" scale={2.5} />
 				</span>
 			);
 		case Track.Source.Camera:
-			return enabled ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />;
+			return enabled ? (
+				<span className={cameraIconWrapperClass}>
+					<Icons.VoiceCameraIcon scale={1.5} />
+				</span>
+			) : (
+				<span className={cameraIconWrapperClass}>
+					<Icons.VoiceCameraDisabledIcon scale={1.5} />
+				</span>
+			);
 		case Track.Source.ScreenShare:
 			return enabled ? <Icons.VoiceScreenShareStopIcon /> : <Icons.VoiceScreenShareIcon />;
 		default:
