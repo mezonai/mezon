@@ -94,6 +94,7 @@
 		"description": "Khôi phục kênh vào thanh bên để kích hoạt lại. Kênh đã lưu trữ vẫn giữ toàn bộ lịch sử tin nhắn nhưng bị ẩn khỏi điều hướng chính.",
 		"archived": "ĐÃ LƯU TRỮ",
 		"restore": "Khôi phục",
-		"restoreSuccess": "Khôi phục kênh thành công."
+		"restoreSuccess": "Khôi phục kênh thành công.",
+		"emptyState": "Không có kênh nào được lưu trữ"
 	}
 }

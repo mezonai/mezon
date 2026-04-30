@@ -95,6 +95,7 @@
 		"description": "Restore channels to the sidebar to make them active again. Archived channels preserve all message history but are hidden from the primary navigation.",
 		"archived": "ARCHIVED",
 		"restore": "Restore",
-		"restoreSuccess": "Channel restored successfully."
+		"restoreSuccess": "Channel restored successfully.",
+		"emptyState": "No archived channels"
 	}
 }
