@@ -485,6 +485,21 @@ export const deleteChannel = createAsyncThunk('channels/deleteChannel', async (b
 	}
 });
 
+export const archiveChannel = createAsyncThunk('channels/archiveChannel', async (body: { clanId: string; channelId: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.archiveChannel(mezon.session, body.clanId, body.channelId);
+		if (response) {
+			thunkAPI.dispatch(channelsActions.remove({ channelId: body.channelId, clanId: body.clanId }));
+			thunkAPI.dispatch(listChannelsByUserActions.remove(body.channelId));
+		}
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'channels/archiveChannel');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export interface IUpdateChannelRequest {
 	channel_id: string;
 	channel_label: string | undefined;
@@ -1508,6 +1523,18 @@ export const channelsSlice = createSlice({
 				state.error = action.error.message;
 			});
 
+		builder
+			.addCase(archiveChannel.pending, (state: ChannelsState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(archiveChannel.fulfilled, (state: ChannelsState, action) => {
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(archiveChannel.rejected, (state: ChannelsState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			});
+
 		builder.addCase(fetchAppChannels.fulfilled, (state: ChannelsState, action) => {
 			const clanId = action.meta.arg.clanId;
 			if (!state.byClans[clanId]) {
@@ -1591,6 +1618,7 @@ export const channelsActions = {
 	joinChat,
 	createNewChannel,
 	deleteChannel,
+	archiveChannel,
 	updateChannel,
 	updateChannelPrivate,
 	fetchAppChannels,

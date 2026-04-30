@@ -25,7 +25,7 @@ const ChannelSetting = () => {
 
 	const debouncedSearchChannel = useDebouncedCallback(async (value: string) => {
 		await dispatch(
-			channelSettingActions.fetchChannelSettingInClan({
+			channelSettingActions.fetchActiveChannelSettingInClan({
 				clanId: selectClanId as string,
 				parentId: '0',
 				typeFetch: ETypeFetchChannelSetting.SEARCH_CHANNEL,
@@ -67,7 +67,7 @@ const ChannelSetting = () => {
 		if (!selectClanId) return;
 
 		await dispatch(
-			channelSettingActions.fetchChannelSettingInClan({
+			channelSettingActions.fetchActiveChannelSettingInClan({
 				clanId: selectClanId as string,
 				parentId: '0',
 				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL,
