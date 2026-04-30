@@ -142,6 +142,7 @@ export const fetchChannelMembers = createAsyncThunk(
 	'channelMembers/fetchChannelMembers',
 	async ({ clanId, channelId, noCache, channelType, repace = false }: fetchChannelMembersPayload, thunkAPI) => {
 		try {
+			const currentState = thunkAPI.getState() as RootState;
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
