@@ -948,21 +948,25 @@ function ThreadButton() {
 
 	const dispatch = useDispatch();
 
+	const threadFillClass = isShowThread
+		? '[--thread-fill-1:var(--bg-icon-theme-active)] [--thread-fill-4:var(--bg-theme-secounnd)]'
+		: '[--thread-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] hover:[--thread-fill-1:var(--bg-icon-theme-active)]';
+
 	const handleToggleThreads = () => {
 		dispatch(threadsActions.toggleThreadModal());
 	};
 
 	return (
-		<div className="relative leading-5 h-5" ref={threadRef} data-e2e={generateE2eId('chat.channel_message.header.button.thread')}>
+		<div className="relative leading-5 h-5 group" ref={threadRef} data-e2e={generateE2eId('chat.channel_message.header.button.thread')}>
 			<button
 				title={t('tooltips.threads')}
 				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
 					isShowThread ? 'text-[var(--bg-icon-theme-active)]' : ''
-				}`}
+				} ${threadFillClass}`}
 				onClick={handleToggleThreads}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.ThreadIcon className="w-6 h-6" />
+				<Icons.ThreadIcon className="w-5 h-5" defaultFill1="var(--thread-fill-1)" defaultFill4="var(--thread-fill-4)" />
 			</button>
 			{isShowThread && <ThreadModal onClose={handleToggleThreads} rootRef={threadRef} />}
 		</div>
@@ -1114,7 +1118,7 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 export function InboxButton() {
 	return (
 		<div
-			className="focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
+			className="focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] group"
 			data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 		>
 			<NotificationTooltip />

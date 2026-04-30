@@ -30,8 +30,8 @@ const InboxType = {
 
 function InboxButton() {
 	return (
-		<div>
-			<Icons.Inbox />
+		<div className="group">
+			<Icons.Inbox className="size-6" />
 		</div>
 	);
 }
@@ -136,7 +136,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 		<div className="flex flex-col bg-theme-setting-primary text-[14px] text-theme-primary rounded-lg w-[480px] max-w-[600px] max-h-[80vh] z-50 overflow-hidden">
 			<div className="py-2 px-3 ">
 				<div className="flex flex-row items-center justify-between gap-2 font-bold text-[16px]">
-					<div className="flex flex-row items-center gap-4 justify-start">
+					<div className="flex flex-row items-center gap-2 justify-start">
 						<InboxButton />
 						<div>{t('inbox')}</div>
 					</div>
