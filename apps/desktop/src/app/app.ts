@@ -477,35 +477,6 @@ export default class App {
 			App.mainWindow.webContents.send('window-focused', true);
 		});
 
-		const gotTheLock = App.application.requestSingleInstanceLock();
-		if (gotTheLock) {
-			App.application.on('second-instance', (e, argv) => {
-				if (process.platform === 'win32' || process.platform === 'linux') {
-					const url = argv.pop().slice(1);
-
-					if (url) {
-						const index = url.indexOf('data=');
-						if (index > 0) {
-							const dataString = url.substring(index + 5);
-
-							if (dataString) {
-								App.loadMainWindow({ deepLinkUrl: dataString });
-							}
-						}
-					}
-				}
-
-				if (App.mainWindow) {
-					if (App.mainWindow.isMinimized()) App.mainWindow.restore();
-					App.mainWindow.show();
-					App.mainWindow.focus();
-				}
-			});
-		} else {
-			App.application.quit();
-			return;
-		}
-
 		if (!App.application.isDefaultProtocolClient('mezonapp')) {
 			App.application.setAsDefaultProtocolClient('mezonapp');
 		}
@@ -666,6 +637,36 @@ export default class App {
 	static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
 		App.BrowserWindow = browserWindow;
 		App.application = app;
+
+		const gotTheLock = App.application.requestSingleInstanceLock();
+
+		if (!gotTheLock) {
+			App.application.quit();
+			return;
+		}
+
+		App.application.on('second-instance', (e, argv) => {
+			if (process.platform === 'win32' || process.platform === 'linux') {
+				const url = argv.pop().slice(1);
+
+				if (url) {
+					const index = url.indexOf('data=');
+					if (index > 0) {
+						const dataString = url.substring(index + 5);
+
+						if (dataString) {
+							App.loadMainWindow({ deepLinkUrl: dataString });
+						}
+					}
+				}
+			}
+
+			if (App.mainWindow) {
+				if (App.mainWindow.isMinimized()) App.mainWindow.restore();
+				App.mainWindow.show();
+				App.mainWindow.focus();
+			}
+		});
 
 		App.application.on('window-all-closed', App.onWindowAllClosed);
 		App.application.on('ready', App.onReady);
