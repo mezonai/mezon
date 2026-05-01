@@ -1192,9 +1192,7 @@ export const channelsSlice = createSlice({
 					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
 						rememberChannel = parsed as Record<string, string>;
 					}
-				} catch {
-				}
-				
+				} catch {}
 				rememberChannel[clanId] = channelId;
 				localStorage.setItem('remember_channel', JSON.stringify(rememberChannel));
 			}
