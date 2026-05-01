@@ -1,5 +1,5 @@
 import { generateE2eId } from '@mezon/utils';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type ItemModalProps = {
 	children: string;
@@ -20,7 +20,7 @@ const ItemModal = ({ children, endIcon, onClick, disabled, className }: ItemModa
 			<li className="text-[14px] text-theme-primary-hover font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none ">
 				{children}
 			</li>
-			{endIcon && <div className="flex items-center justify-center h-[18px] w-[18px]">{endIcon}</div>}
+			{endIcon && <div className="flex shrink-0 items-center justify-center h-[18px] w-[18px]">{endIcon}</div>}
 		</button>
 	);
 };
