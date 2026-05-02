@@ -278,8 +278,6 @@ export interface SocketDataRequest {
 	[key: string]: unknown;
 }
 
-const SOCKET_ONLY_APIS = ['ListLogedDevice', 'ListClanBadgeCount', 'ListChannelBadgeCount'];
-
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,
 	socketRequest: SocketDataRequest,
@@ -287,23 +285,5 @@ export async function fetchDataWithSocketFallback<T>(
 	responseKey?: string,
 	retryConfig?: RetryConfig
 ): Promise<T> {
-	const client = mezon.clientRef?.current;
-	let response: T | undefined;
-
-	const shouldUseSocket = SOCKET_ONLY_APIS.includes(socketRequest.api_name);
-
-	if (shouldUseSocket && client) {
-		try {
-			const data = await client.listDataSocket(mezon.session, socketRequest);
-
-			response = responseKey ? data?.[responseKey] : data;
-		} catch (err) {
-			console.error(err, socketRequest);
-		}
-	}
-
-	if (!response) {
-		response = await withRetry(restApiFallback, { ...retryConfig, scope: socketRequest.api_name, mezon });
-	}
-	return response;
+	return await withRetry(restApiFallback, { ...retryConfig, scope: socketRequest.api_name, mezon });
 }
