@@ -1655,17 +1655,7 @@ export const messagesSlice = createSlice({
 		},
 
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
-			const {
-				code,
-				channel_id: channelId,
-				id: messageId,
-				isSending,
-				isMe,
-				isAnonymous,
-				content,
-				topic_id,
-				referenced_message
-			} = action.payload;
+			const { code, channel_id: channelId, id: messageId, isSending, isMe, isAnonymous, content, topic_id, attachments } = action.payload;
 
 			if (!channelId || !messageId) return state;
 
@@ -1725,7 +1715,12 @@ export const messagesSlice = createSlice({
 									const message = state.channelMessages[channelId].entities[mid];
 									// temporary remove sending message that has the same content
 									// for later update, we could use some kind of id to identify the message
-									if (message?.content?.t === newContent?.t && message?.channel_id === channelId) {
+
+									if (
+										((message?.content?.t === newContent?.t && message?.content?.t) ||
+											message?.attachments?.[0]?.filename === attachments?.[0]?.filename) &&
+										message?.channel_id === channelId
+									) {
 										const tempId = (message as ChannelMessageWithClientMeta | undefined)?.temp_id;
 										if (tempId) {
 											if (sendTimeoutMap.has(tempId)) {
