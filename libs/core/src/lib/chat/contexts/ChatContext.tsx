@@ -103,7 +103,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
+import { extractAndSaveConfig, reconnectMezonSocketWithRetry, resolveSessionWsUrl, useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IUserProfileActivity, NotificationCategory } from '@mezon/utils';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
@@ -2780,20 +2780,57 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const reconnect$ = useMemo(() => new Subject<string>(), []);
 
+	const persistReconnectSession = useCallback(
+		(effectiveSession: ApiSession) => {
+			extractAndSaveConfig(effectiveSession, isMobile);
+		},
+		[isMobile]
+	);
+
+	const onReconnectSessionRefreshed = useCallback((sessionNew: ApiSession, effectiveSession: ApiSession) => {
+		getStore().dispatch(authActions.setSessionId(sessionNew.session_id));
+		sessionRef.current = {
+			...effectiveSession,
+			session_id: sessionNew.session_id
+		};
+	}, [sessionRef]);
+
 	const executeReconnect = useCallback(
 		async (_socketType: string, client: Client) => {
 			socketState.status = 'connecting';
 			const store = getStore();
-			const session = selectSession(store.getState()) as ApiSession;
-			if (!session) {
+			const session = selectSession(store.getState()) as ApiSession | null;
+
+			if (!session?.token?.trim() && !session?.session_id?.trim()) {
 				return;
 			}
+			sessionRef.current = {
+				...session,
+				ws_url: resolveSessionWsUrl(session)
+			} as ApiSession;
+
+			const result = await reconnectMezonSocketWithRetry({
+				client,
+				sessionRef,
+				isFromMobile: isMobile,
+				resolveWsUrl: resolveSessionWsUrl,
+				persistSession: persistReconnectSession,
+				onSessionRefreshed: onReconnectSessionRefreshed
+			});
+			
+			if (result === 'RECONNECTING') {
+				return;
+			}
+			if (result === null) {
+				throw new Error('Socket reconnection failed: missing client or session');
+			}
+
 			setCallbackEventFn(client as Client);
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
 		},
-		[setCallbackEventFn, dispatch]
+		[setCallbackEventFn, dispatch, sessionRef, isMobile, persistReconnectSession, onReconnectSessionRefreshed]
 	);
 
 	useEffect(() => {

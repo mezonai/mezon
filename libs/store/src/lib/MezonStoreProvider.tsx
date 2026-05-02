@@ -1,5 +1,4 @@
-import { extractAndSaveConfig, resolveSessionWsUrl, socketState, useMezon } from '@mezon/transport';
-import type { ApiSession } from 'mezon-js';
+import { connectMezonSocketOnce, extractAndSaveConfig, resolveSessionWsUrl, useMezon } from '@mezon/transport';
 import type { MutableRefObject } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
@@ -93,27 +92,22 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 					return;
 				}
 
-				const wsUrl = resolveSessionWsUrl(session);
-				const effectiveSession: ApiSession = { ...session, ws_url: wsUrl };
-				sessionRef.current = effectiveSession;
-				extractAndSaveConfig(effectiveSession);
+				sessionRef.current = session;
 
-				await client.connect(
-					effectiveSession.session_id || effectiveSession.token || '',
-					wsUrl,
-					true,
-					false
-				);
-
-				client.onrefreshsession = (sessionNew: ApiSession) => {
-					store.dispatch(authActions.setSessionId(sessionNew.session_id));
-					sessionRef.current = {
-						...effectiveSession,
-						session_id: sessionNew.session_id
-					};
-				};
+				await connectMezonSocketOnce({
+					client,
+					sessionRef,
+					resolveWsUrl: resolveSessionWsUrl,
+					persistSession: (effectiveSession) => extractAndSaveConfig(effectiveSession),
+					onSessionRefreshed: (sessionNew, effectiveSession) => {
+						store.dispatch(authActions.setSessionId(sessionNew.session_id));
+						sessionRef.current = {
+							...effectiveSession,
+							session_id: sessionNew.session_id
+						};
+					}
+				});
 				connectRef.current = true;
-				socketState.status = 'connected';
 			} catch (error) {
 				connectRef.current = true;
 				console.error('AppInitializer: Connection failed', error);
