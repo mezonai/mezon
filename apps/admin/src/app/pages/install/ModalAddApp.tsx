@@ -10,8 +10,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import type { ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';

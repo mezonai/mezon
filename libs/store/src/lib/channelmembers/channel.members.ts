@@ -9,9 +9,8 @@ import {
 } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
-import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
+import type { ChannelPresenceEvent, ChannelUserListChannelUser, StatusPresenceEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ChannelUserListChannelUser } from 'mezon-js/api';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -93,7 +92,7 @@ export const fetchChannelMembersCached = async (
 	const currentState = getState();
 	const channelMembersState = currentState[CHANNEL_MEMBERS_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchChannelMembers', clanId, channelId, channelType, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('fetchChannelMembers', clanId, channelId, channelType, ensuredMezon.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelMembersState?.memberChannels?.[channelId]?.cache, noCache);
 
@@ -143,10 +142,17 @@ export const fetchChannelMembers = createAsyncThunk(
 	'channelMembers/fetchChannelMembers',
 	async ({ clanId, channelId, noCache, channelType, repace = false }: fetchChannelMembersPayload, thunkAPI) => {
 		try {
+			const currentState = thunkAPI.getState() as RootState;
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			if (noCache) {
-				const apiKey = createApiKey('fetchChannelMembers', clanId, channelId, channelType, mezon.session.username || '');
+				const apiKey = createApiKey(
+					'fetchChannelMembers',
+					clanId,
+					channelId,
+					channelType,
+					mezon.session?.token || currentState.auth?.session?.token || ''
+				);
 				clearApiCallTracker(apiKey);
 				thunkAPI.dispatch(channelMembersActions.invalidateChannelCache(channelId));
 			}
@@ -359,7 +365,7 @@ export const checkBanInChannelCached = async (
 	const currentState = getState();
 	const clanMemberState = currentState[USERS_CLANS_FEATURE_KEY];
 
-	const apiKey = createApiKey('checkBanInChannel', clanId, channelId, ensuredMezon.session.username || '');
+	const apiKey = createApiKey('checkBanInChannel', clanId, channelId, ensuredMezon.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, clanMemberState.byClans?.[clanId]?.cache, noCache);
 

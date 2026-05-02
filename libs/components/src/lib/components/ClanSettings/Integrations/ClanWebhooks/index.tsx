@@ -1,7 +1,7 @@
 import { generateClanWebhook, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiClanWebhook, ApiGenerateClanWebhookRequest } from 'mezon-js/api';
+import type { ApiClanWebhook, ApiGenerateClanWebhookRequest } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

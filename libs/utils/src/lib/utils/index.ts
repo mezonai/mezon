@@ -12,9 +12,17 @@ import {
 	subDays
 } from 'date-fns';
 import isElectron from 'is-electron';
-import type { Client, Session } from 'mezon-js';
+import type {
+	ApiMessageAttachment,
+	ApiMessageMention,
+	ApiMessageRef,
+	ApiRole,
+	ApiSession,
+	ClanUserListClanUser,
+	Client,
+	RoleUserListRoleUser
+} from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/api';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';
@@ -720,7 +728,7 @@ const fileUploadForeman = new Foreman(MAX_WORKERS);
 export async function getWebUploadedAttachments(payload: {
 	attachments: ApiMessageAttachment[];
 	client: Client;
-	session: Session;
+	session: ApiSession;
 }): Promise<ApiMessageAttachment[]> {
 	const { attachments, client, session } = payload;
 	if (!attachments || attachments?.length === 0) {
@@ -781,7 +789,7 @@ export async function getWebUploadedAttachments(payload: {
 export async function getMobileUploadedAttachments(payload: {
 	attachments: ApiMessageAttachment[];
 	client: Client;
-	session: Session;
+	session: ApiSession;
 }): Promise<ApiMessageAttachment[]> {
 	const { attachments, client, session } = payload;
 	if (!attachments || attachments?.length === 0) {

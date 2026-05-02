@@ -4,10 +4,11 @@ import type { LoadingStatus } from '@mezon/utils';
 import { AMOUNT_TOKEN } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiGiveCoffeeEvent, ApiTokenSentEvent } from 'mezon-js/api';
+import type { ApiGiveCoffeeEvent, ApiTokenSentEvent } from 'mezon-js';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 import { toastActions } from '../toasts/toasts.slice';
 import { walletActions } from '../wallet/wallet.slice';
 
@@ -62,7 +63,7 @@ export const updateGiveCoffee = createAsyncThunk(
 								MessageRefId: message_ref_id || '',
 								UserReceiverId: receiver_id || '',
 								UserSenderId: sender_id || '',
-								UserSenderUsername: mezon.session.username || ''
+								UserSenderUsername: mezon.session?.token || state.auth?.session?.token || ''
 							}
 						})
 					)
@@ -105,6 +106,7 @@ export const sendToken = createAsyncThunk(
 		thunkAPI
 	) => {
 		try {
+			const currentState = thunkAPI.getState() as RootState;
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			const response = await thunkAPI
@@ -118,7 +120,7 @@ export const sendToken = createAsyncThunk(
 							type: ETransferType.TransferToken,
 							UserReceiverId: tokenEvent.receiver_id || '',
 							UserSenderId: tokenEvent.sender_id || '',
-							UserSenderUsername: mezon.session.username || '',
+							UserSenderUsername: mezon.session?.token || currentState.auth?.session?.token || '',
 							ExtraAttribute: tokenEvent?.extra_attribute || ''
 						},
 						isSendByAddress,

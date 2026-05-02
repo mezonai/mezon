@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IUsers, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiUser } from 'mezon-js/api';
+import type { ApiUser } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -37,7 +37,7 @@ export interface ListUsersRootState {
 export const fetchListUsersByUserCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
 	const currentState = getState();
 	const usersData = currentState[LIST_USERS_BY_USER_FEATURE_KEY];
-	const apiKey = createApiKey('fetchListUsersByUser', mezon.session.username || '');
+	const apiKey = createApiKey('fetchListUsersByUser', mezon.session?.token || currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, usersData?.cache, noCache);
 

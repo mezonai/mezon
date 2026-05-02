@@ -94,8 +94,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	}, [callState.localStream, callState.localScreenStream]);
 
 	useEffect(() => {
-		if (isConnected && !hasSyncRemoteMediaRef?.current) {
-			mezon.socketRef.current?.forwardWebrtcSignaling(
+		if (isConnected && !hasSyncRemoteMediaRef?.current && mezon.sessionRef.current) {
+			mezon.clientRef.current?.forwardWebrtcSignaling(
+				mezon.sessionRef.current,
 				dmUserId,
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 				`{"cameraEnabled": ${controlState?.cameraEnabled}, "micEnabled": ${controlState?.micEnabled}}`,
@@ -104,7 +105,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			);
 			hasSyncRemoteMediaRef.current = true;
 		}
-	}, [channelId, dmUserId, isConnected, controlState?.cameraEnabled, controlState?.micEnabled, mezon?.socketRef, userId]);
+	}, [channelId, dmUserId, isConnected, controlState?.cameraEnabled, controlState?.micEnabled, mezon?.clientRef, userId]);
 
 	const clearCallTimeout = () => {
 		if (callTimeout.current) {
@@ -119,8 +120,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 		pc.onicecandidate = async (event) => {
 			if (event.candidate) {
-				if (pc.remoteDescription) {
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
+				if (pc.remoteDescription && mezon.sessionRef.current) {
+					await mezon.clientRef.current?.forwardWebrtcSignaling(
+						mezon.sessionRef.current,
 						dmUserId,
 						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
 						JSON.stringify(event.candidate),
@@ -157,12 +159,19 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		};
 
 		pc.oniceconnectionstatechange = async () => {
-			if (pc.iceConnectionState === 'connected') {
+			if (pc.iceConnectionState === 'connected' && mezon.sessionRef.current) {
 				timeStartConnected.current = new Date();
 				dispatch(toastActions.addToast({ message: t('toast.connectionConnected'), type: 'success', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(true));
 				dispatch(audioCallActions.setIsDialTone(false));
-				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_INIT, '', channelId, userId);
+				await mezon.clientRef.current?.forwardWebrtcSignaling(
+					mezon.sessionRef.current,
+					dmUserId,
+					WebrtcSignalingType.WEBRTC_SDP_INIT,
+					'',
+					channelId,
+					userId
+				);
 				// Just cancel call mobile if I'm the caller
 				if (isMyCaller?.current) {
 					await cancelCallFCMMobile('', true);
@@ -229,6 +238,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	const startCall = async (isVideoCall: boolean, isAnswer: boolean) => {
+		if (!mezon.sessionRef.current) {
+			return;
+		}
 		try {
 			callTimeout?.current && clearTimeout(callTimeout.current);
 			if (!isAnswer) {
@@ -237,7 +249,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				const stream = await navigator.mediaDevices.getUserMedia(constraints);
 				const pc = initializePeerConnection();
 				if (isVideoCall) {
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
+					await mezon.clientRef.current?.forwardWebrtcSignaling(
+						mezon.sessionRef.current,
 						dmUserId,
 						WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 						`{"cameraEnabled": true}`,
@@ -264,7 +277,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				await pc.setLocalDescription(new RTCSessionDescription(offer));
 				// Send offer through signaling server
 				const compressedOffer = await compress(JSON.stringify({ ...offer, callerName, callerAvatar }));
-				await mezon.socketRef.current?.forwardWebrtcSignaling(
+				await mezon.clientRef.current?.forwardWebrtcSignaling(
+					mezon.sessionRef.current,
 					dmUserId,
 					WebrtcSignalingType.WEBRTC_SDP_OFFER,
 					compressedOffer,
@@ -279,7 +293,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					isVideoCall,
 					channelId
 				};
-				await mezon.socketRef.current?.makeCallPush(dmUserId, JSON.stringify(bodyFCMMobile), channelId, userId);
+				await mezon.clientRef.current?.makeCallPush(mezon.sessionRef.current, dmUserId, JSON.stringify(bodyFCMMobile), channelId, userId);
 				// Start a 30-second timeout to end the call if no answer
 				callTimeout.current = setTimeout(() => {
 					dispatch(
@@ -328,9 +342,10 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	const sendPendingLocalCandidates = async () => {
-		if (pendingCandidatesRef?.current?.length) {
+		if (pendingCandidatesRef?.current?.length && mezon.sessionRef.current) {
 			for (const candidateItem of pendingCandidatesRef.current) {
-				await mezon.socketRef.current?.forwardWebrtcSignaling(
+				await mezon.clientRef.current?.forwardWebrtcSignaling(
+					mezon.sessionRef.current,
 					dmUserId,
 					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
 					JSON.stringify(candidateItem),
@@ -353,6 +368,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 	// Handle offer (both initial and renegotiation)
 	const handleOffer = async (signalingData: any) => {
+		if (!mezon.sessionRef.current) {
+			return;
+		}
 		const offer = new RTCSessionDescription({
 			type: 'offer',
 			sdp: signalingData.sdp
@@ -370,7 +388,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			const answer = await pc.createAnswer();
 			await pc.setLocalDescription(answer);
 			const compressedAnswer = await compress(JSON.stringify(answer));
-			await mezon.socketRef.current?.forwardWebrtcSignaling(
+			await mezon.clientRef.current?.forwardWebrtcSignaling(
+				mezon.sessionRef.current,
 				dmUserId,
 				WebrtcSignalingType.WEBRTC_SDP_ANSWER,
 				compressedAnswer,
@@ -385,7 +404,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			const newPc = pc || initializePeerConnection();
 
 			if (isShowMeetDM) {
-				await mezon.socketRef.current?.forwardWebrtcSignaling(
+				await mezon.clientRef.current?.forwardWebrtcSignaling(
+					mezon.sessionRef.current,
 					dmUserId,
 					WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 					`{"cameraEnabled": true}`,
@@ -409,7 +429,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			const answer = await newPc.createAnswer();
 			await newPc.setLocalDescription(answer);
 			const compressedAnswer = await compress(JSON.stringify(answer));
-			await mezon.socketRef.current?.forwardWebrtcSignaling(
+			await mezon.clientRef.current?.forwardWebrtcSignaling(
+				mezon.sessionRef.current,
 				dmUserId,
 				WebrtcSignalingType.WEBRTC_SDP_ANSWER,
 				compressedAnswer,
@@ -525,25 +546,37 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	const handleOtherCall = async (otherCallerId: string, otherChannelId: string) => {
-		await mezon.socketRef.current?.forwardWebrtcSignaling(
-			otherCallerId,
-			WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
-			'',
-			otherChannelId,
-			userId
-		);
+		if (mezon.sessionRef.current) {
+			await mezon.clientRef.current?.forwardWebrtcSignaling(
+				mezon.sessionRef.current,
+				otherCallerId,
+				WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
+				'',
+				otherChannelId,
+				userId
+			);
+		}
 	};
 
 	const cancelCallFCMMobile = async (receiverId: string = dmUserId, isConnected = false) => {
 		const bodyFCMMobile = { offer: 'CANCEL_CALL', isConnected };
-		await mezon.socketRef.current?.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), channelId, userId);
+		if (mezon.sessionRef.current) {
+			await mezon.clientRef.current?.makeCallPush(mezon.sessionRef.current, receiverId, JSON.stringify(bodyFCMMobile), channelId, userId);
+		}
 	};
 
 	// End call and cleanup
 	const handleEndCall = async (isCallerEndCall = false) => {
 		try {
-			if (!isCallerEndCall) {
-				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_QUIT, '', channelId, userId);
+			if (!isCallerEndCall && mezon.sessionRef.current) {
+				await mezon.clientRef.current?.forwardWebrtcSignaling(
+					mezon.sessionRef.current,
+					dmUserId,
+					WebrtcSignalingType.WEBRTC_SDP_QUIT,
+					'',
+					channelId,
+					userId
+				);
 			}
 			clearCallTimeout();
 
@@ -622,13 +655,14 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	const toggleAudio = async () => {
-		if (!callState.localStream) return;
+		if (!callState.localStream || !mezon.sessionRef.current) return;
 		const audioTracks = callState.localStream.getAudioTracks();
 		try {
 			audioTracks.forEach((track) => {
 				track.enabled = !track.enabled;
 			});
-			await mezon.socketRef.current?.forwardWebrtcSignaling(
+			await mezon.clientRef.current?.forwardWebrtcSignaling(
+				mezon.sessionRef.current,
 				dmUserId,
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 				`{"micEnabled": ${!controlState.micEnabled}}`,
@@ -675,14 +709,15 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				}
 
 				// Renegotiation needed when adding video track to voice call
-				if (peerConnection?.current) {
+				if (peerConnection?.current && mezon.sessionRef.current) {
 					// Create new offer with video track
 					const offer = await peerConnection.current.createOffer();
 					await peerConnection.current.setLocalDescription(offer);
 
 					// Send new offer to remote peer
 					const compressedOffer = await compress(JSON.stringify(offer));
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
+					await mezon.clientRef.current?.forwardWebrtcSignaling(
+						mezon.sessionRef.current,
 						dmUserId,
 						WebrtcSignalingType.WEBRTC_SDP_OFFER,
 						compressedOffer,
@@ -701,7 +736,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			});
 
 			// If disabling video completely, may need renegotiation for some browsers
-			if (!newCameraState && peerConnection?.current) {
+			if (!newCameraState && peerConnection?.current && mezon.sessionRef.current) {
 				try {
 					// Create new offer reflecting video disabled state
 					const offer = await peerConnection.current.createOffer();
@@ -709,7 +744,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 					// Send updated offer to remote peer
 					const compressedOffer = await compress(JSON.stringify(offer));
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
+					await mezon.clientRef.current?.forwardWebrtcSignaling(
+						mezon.sessionRef.current,
 						dmUserId,
 						WebrtcSignalingType.WEBRTC_SDP_OFFER,
 						compressedOffer,
@@ -723,13 +759,16 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		}
 
 		// Send signaling with the new state
-		await mezon.socketRef.current?.forwardWebrtcSignaling(
-			dmUserId,
-			WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
-			`{"cameraEnabled": ${newCameraState}}`,
-			channelId,
-			userId
-		);
+		if (mezon.sessionRef.current) {
+			await mezon.clientRef.current?.forwardWebrtcSignaling(
+				mezon.sessionRef.current,
+				dmUserId,
+				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
+				`{"cameraEnabled": ${newCameraState}}`,
+				channelId,
+				userId
+			);
+		}
 
 		// Update video element
 		if (localVideoRef.current) {

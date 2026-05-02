@@ -9,8 +9,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EPermission, MAX_FILE_NAME_EMOJI, getSrcEmoji } from '@mezon/utils';
-import type { ClanEmoji } from 'mezon-js';
-import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api';
+import type { ClanEmoji, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';

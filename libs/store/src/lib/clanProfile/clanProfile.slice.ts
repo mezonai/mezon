@@ -3,8 +3,7 @@ import type { IClanProfile, LoadingStatus } from '@mezon/utils';
 import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiUpdateClanProfileRequest } from 'mezon-js';
-import type { ApiClanProfile } from 'mezon-js/api';
+import type { ApiClanProfile, ApiUpdateClanProfileRequest } from 'mezon-js';
 import { accountActions } from '../account/account.slice';
 import { setUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
 import { ensureClient, ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
@@ -54,10 +53,14 @@ export const checkDuplicateClanNickName = createAsyncThunk(
 	async ({ clanNickName, clanId }: { clanNickName: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clanNickName, clanId, TypeCheck.TYPENICKNAME, clanId);
+			const isDuplicateName = await mezon.clientRef.current?.checkDuplicateName(mezon.session, {
+				name: clanNickName,
+				type: TypeCheck.TYPENICKNAME,
+				condition_id: clanId
+			});
 
-			if (isDuplicateName?.type === TypeCheck.TYPENICKNAME) {
-				return isDuplicateName.exist;
+			if (isDuplicateName?.is_duplicate) {
+				return true;
 			}
 
 			return false;

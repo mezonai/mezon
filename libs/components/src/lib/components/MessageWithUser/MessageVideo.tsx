@@ -1,7 +1,7 @@
 import { Icons } from '@mezon/ui';
 import { calculateMediaDimensions, useIsIntersecting, useResizeObserver, type ObserveFn } from '@mezon/utils';
 import isElectron from 'is-electron';
-import type { ApiMessageAttachment } from 'mezon-js/api';
+import type { ApiMessageAttachment } from 'mezon-js';
 import type { Movie, Track } from 'mp4box';
 import { MP4BoxBuffer, createFile } from 'mp4box';
 import React, { useCallback, useEffect, useRef, useState } from 'react';

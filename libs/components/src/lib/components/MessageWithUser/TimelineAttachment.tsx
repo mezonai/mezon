@@ -10,8 +10,7 @@ import {
 	isMediaTypeNotSupported
 } from '@mezon/utils';
 import isElectron from 'is-electron';
-import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api';
+import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
 import { MessageAudio } from './MessageAudio/MessageAudio';
 

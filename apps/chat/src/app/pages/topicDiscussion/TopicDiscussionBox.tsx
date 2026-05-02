@@ -36,8 +36,8 @@ import {
 	useBackgroundMode
 } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { DragEvent } from 'react';
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

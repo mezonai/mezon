@@ -3,7 +3,7 @@ import type { IUserAccount, LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
-import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUserStatusUpdate } from 'mezon-js/api';
+import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUserStatusUpdate } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -41,7 +41,7 @@ export const initialAccountState: AccountState = {
 export const fetchUserProfileCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
 	const currentState = getState();
 	const accountData = currentState[ACCOUNT_FEATURE_KEY];
-	const apiKey = createApiKey('fetchUserProfile', mezon.session.username || '');
+	const apiKey = createApiKey('fetchUserProfile', mezon.session?.token || currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, accountData?.cache, noCache);
 

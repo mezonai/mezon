@@ -4,7 +4,9 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
 import type { ClaimRedEnvelopeQRResponse, ExtraInfo, IEphemeralKeyPair, IZkProof } from 'mmn-client-js';
+import { selectAllAccount } from '../account/account.slice';
 import { ensureSession, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 import { EErrorType, toastActions } from '../toasts';
 
 export const WALLET_FEATURE_KEY = 'wallet';
@@ -51,22 +53,24 @@ const fetchEphemeralKeyPair = createAsyncThunk('wallet/fetchEphemeralKeyPair', a
 	};
 });
 
-const fetchZkProofs = createAsyncThunk('wallet/fetchZkProofs', async (req: { userId: string; jwt: string }, thunkAPI) => {
+const fetchZkProofs = createAsyncThunk('wallet/fetchZkProofs', async (req: { jwt: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		if (!mezon.zkClient || !mezon.mmnClient) {
 			return;
 		}
 		const ephemeralKeyPair = await mezon.mmnClient.generateEphemeralKeyPair();
-		const address = await mezon.mmnClient.getAddressFromUserId(req.userId);
+		const store = thunkAPI.getState() as RootState;
+		const userId = selectAllAccount(store)?.user?.id || '';
+		const address = await mezon.mmnClient.getAddressFromUserId(userId || '');
 		const response = await mezon.zkClient.getZkProofs({
-			userId: req.userId,
+			userId,
 			jwt: req.jwt,
 			address,
 			ephemeralPublicKey: ephemeralKeyPair.publicKey
 		});
 		if (response) {
-			await thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: req.userId }));
+			await thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId }));
 			thunkAPI.dispatch(walletActions.setIsEnabledWallet(true));
 		}
 

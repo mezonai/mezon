@@ -36,8 +36,8 @@ import {
 	formatMoney,
 	generateE2eId
 } from '@mezon/utils';
+import type { ApiTokenSentEvent } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';

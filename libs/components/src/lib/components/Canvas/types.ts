@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/react';
-import type { Client, Session } from 'mezon-js';
+import type { ApiSession, Client } from 'mezon-js';
 
 export interface CanvasData {
 	id: string;
@@ -35,7 +35,7 @@ export interface CanvasEditorProps {
 
 export interface ImageUploadContext {
 	editor: Editor | null;
-	sessionRef: React.MutableRefObject<Session | null>;
+	sessionRef: React.MutableRefObject<ApiSession | null>;
 	clientRef: React.MutableRefObject<Client | null>;
 	clanId: string;
 	channelId: string;

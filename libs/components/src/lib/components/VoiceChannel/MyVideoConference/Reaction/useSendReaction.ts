@@ -5,7 +5,7 @@ import { useCallback, useRef } from 'react';
 const REACTION_THROTTLE_MS = 150;
 
 export const useSendReaction = () => {
-	const { socketRef } = useMezon();
+	const { clientRef, sessionRef } = useMezon();
 	const lastSentRef = useRef(0);
 
 	const canSend = useCallback(() => {
@@ -20,28 +20,28 @@ export const useSendReaction = () => {
 	const sendEmojiReaction = useCallback(
 		(emoji: string, emojiId: string) => {
 			const channelId = selectVoiceInfo(getStore().getState())?.channelId;
-			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([emojiId], channelId);
+			if (!clientRef.current || !channelId || !canSend() || !sessionRef.current) return;
+			clientRef.current.writeVoiceReaction(sessionRef.current, [emojiId], channelId);
 		},
-		[socketRef, canSend]
+		[clientRef, canSend]
 	);
 
 	const sendSoundReaction = useCallback(
 		(soundId: string) => {
 			const channelId = selectVoiceInfo(getStore().getState())?.channelId;
-			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([`sound:${soundId}`], channelId);
+			if (!clientRef.current || !channelId || !canSend() || !sessionRef.current) return;
+			clientRef.current.writeVoiceReaction(sessionRef.current, [`sound:${soundId}`], channelId);
 		},
-		[socketRef, canSend]
+		[clientRef, canSend]
 	);
 
 	const sendRaisingHand = useCallback(
 		(userId: string, hand: boolean) => {
 			const channelId = selectVoiceInfo(getStore().getState())?.channelId;
-			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([hand ? `raising-up:${userId}` : `raising-down:${userId}`], channelId);
+			if (!clientRef.current || !channelId || !canSend() || !sessionRef.current) return;
+			clientRef.current.writeVoiceReaction(sessionRef.current, [hand ? `raising-up:${userId}` : `raising-down:${userId}`], channelId);
 		},
-		[socketRef, canSend]
+		[clientRef, canSend]
 	);
 
 	return { sendEmojiReaction, sendSoundReaction, sendRaisingHand };

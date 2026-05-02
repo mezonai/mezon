@@ -1,5 +1,4 @@
-import type { Client, Session } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api';
+import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
 
 export class CustomFile extends File {
 	url?: string;
@@ -38,7 +37,7 @@ export function uploadImageToMinIOMobile(url: string, stream: Blob, type: string
 	});
 }
 
-export async function handleUploadEmoticon(client: Client, session: Session, filename: string, file: File): Promise<ApiMessageAttachment> {
+export async function handleUploadEmoticon(client: Client, session: ApiSession, filename: string, file: File): Promise<ApiMessageAttachment> {
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
 		try {
@@ -69,7 +68,7 @@ function getFileType(mimeType: string): string {
 
 export async function handleUploadFile(
 	client: Client,
-	session: Session,
+	session: ApiSession,
 	filename: string,
 	file: CustomFile,
 	index?: number,
@@ -112,7 +111,7 @@ export async function handleUploadFile(
 
 export async function handleUploadFileMobile(
 	client: Client,
-	session: Session,
+	session: ApiSession,
 	filename: string,
 	file: any,
 	isOauth?: boolean
@@ -171,7 +170,7 @@ export function createUploadFilePath(filename: string, isMobile: boolean, index?
 
 export async function uploadFile(
 	client: Client,
-	session: Session,
+	session: ApiSession,
 	filename: string,
 	type: string,
 	size: number,

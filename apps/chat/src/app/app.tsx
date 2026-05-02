@@ -113,7 +113,7 @@ const AppInitializer = () => {
 		if (!clientRef?.current?.setBasePath) return;
 		if (!isLogin) {
 			clearSessionFromStorage();
-			
+
 			clientRef.current.setBasePath(
 				process.env.NX_CHAT_APP_API_GW_HOST as string,
 				process.env.NX_CHAT_APP_API_GW_PORT as string,
@@ -339,10 +339,7 @@ export function App() {
 		return initStore(mezon, preloadedState);
 	}, [mezon]);
 
-	const loadingContextValue = useMemo(
-		() => ({ isLoading, setIsLoading, suspenseLoading, setSuspenseLoading }),
-		[isLoading, suspenseLoading]
-	);
+	const loadingContextValue = useMemo(() => ({ isLoading, setIsLoading, suspenseLoading, setSuspenseLoading }), [isLoading, suspenseLoading]);
 
 	if (!store) {
 		return <LoadingFallbackWrapper />;

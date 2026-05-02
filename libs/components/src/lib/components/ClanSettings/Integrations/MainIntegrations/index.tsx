@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook } from 'mezon-js/api';
+import type { ApiWebhook } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 
 interface IIntegrationProps {

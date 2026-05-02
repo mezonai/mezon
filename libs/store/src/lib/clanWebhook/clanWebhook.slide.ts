@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import i18n from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api';
+import type { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js';
 import { toast } from 'react-toastify';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -46,7 +46,7 @@ export const fetchClanWebhooksCached = async (getState: () => RootState, mezon: 
 	const clanWebhookState = currentState[INTEGRATION_CLAN_WEBHOOK];
 	const clanData = clanWebhookState.byClan[clanId] || getInitialClanState();
 
-	const apiKey = createApiKey('fetchClanWebhooks', clanId, mezon.session.username || '');
+	const apiKey = createApiKey('fetchClanWebhooks', clanId, mezon.session?.token || currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData.cache, noCache);
 

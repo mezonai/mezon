@@ -1,7 +1,6 @@
 import { ID_MENTION_HERE, TypeMessage } from '@mezon/utils';
-import type { ChannelMessage } from 'mezon-js';
+import type { ApiMessageMention, ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/api';
 import { Subject, merge, type Subscription } from 'rxjs';
 import { bufferTime, distinctUntilChanged, filter, groupBy, map, mergeMap } from 'rxjs/operators';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';

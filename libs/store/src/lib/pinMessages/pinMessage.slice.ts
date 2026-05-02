@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IPinMessage, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiMessageAttachment, ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/api';
+import type { ApiMessageAttachment, ApiPinMessage, ApiPinMessageRequest } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions, selectCurrentChannelId } from '../channels/channels.slice';
@@ -209,7 +209,8 @@ export const joinPinMessage = createAsyncThunk(
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
 
-			await mezon.socketRef.current?.writeLastPinMessage(
+			await mezon.clientRef.current?.writeLastPinMessage(
+				mezon.session,
 				clanId || '0',
 				channelId,
 				mode,
