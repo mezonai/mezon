@@ -4,6 +4,7 @@
 			"title": "Kanal namn",
 			"placeholder": "Ange kanal namn",
 			"errorMessage": "Vänligen ange giltigt kanal namn (max 64 tecken, bara ord, siffror, _ eller -).",
+			"emptyError": "Vänligen ange kanal namn (max 64 tecken, bara ord, siffror, _ eller -).",
 			"duplicateError": "Kanal namn finns redan i kategori. Vänligen ange ett annat namn."
 		},
 		"threadName": {

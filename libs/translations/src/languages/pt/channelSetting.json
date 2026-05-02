@@ -4,6 +4,7 @@
 			"title": "Nome do canal",
 			"placeholder": "Digite o nome do canal",
 			"errorMessage": "Por favor, insira o nome do canal (máximo de 64 caracteres, apenas letras, números, _ ou -).",
+			"emptyError": "Por favor, insira o nome do canal (máximo de 64 caracteres, apenas letras, números, _ ou -).",
 			"duplicateError": "Este nome de canal já existe na categoria. Por favor, insira outro nome."
 		},
 		"threadName": {

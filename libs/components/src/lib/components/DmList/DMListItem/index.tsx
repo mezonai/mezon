@@ -2,9 +2,11 @@ import { useMemberStatus } from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
+	selectAllAccount,
 	selectBuzzStateByDirectId,
 	selectDirectById,
 	selectIsUnreadDMById,
+	selectRawDataUserGroup,
 	selectStatusInVoice,
 	useAppDispatch,
 	useAppSelector
@@ -44,6 +46,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const isTypeDMGroup = directMessage?.type === ChannelType.CHANNEL_TYPE_GROUP;
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
+	const userCurrent = useAppSelector(selectAllAccount);
 
 	const [openUnknown, closeUnknown] = useModal(() => {
 		if (isTypeDMGroup) {
@@ -96,9 +99,8 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			onClick={handleClickDM}
 			data-e2e={generateE2eId(`chat.direct_message.chat_list`)}
 		>
-			<DmItemProfile
-				avatar={isTypeDMGroup ? directMessage?.channel_avatar || '/assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
-				name={directMessage?.channel_label || ''}
+			<DmItemProfileWrapper
+				channelId={id}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
 				highlight={isUnReadChannel || currentDmGroupId === id}
@@ -128,6 +130,43 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 export default memo(DMListItem, (prev, cur) => {
 	return prev.id === cur.id && prev.isActive === cur.isActive;
 });
+
+const DmItemProfileWrapper = ({
+	channelId,
+	number,
+	isTypeDMGroup,
+	highlight,
+	direct,
+	t
+}: {
+	channelId: string;
+	highlight: boolean;
+	number: number;
+	isTypeDMGroup: boolean;
+	direct: DirectEntity;
+	t: (key: string) => string;
+}) => {
+	const userGroup = useAppSelector((state) => selectRawDataUserGroup(state, channelId));
+	const currentUserId = useAppSelector(selectAllAccount)?.user?.id || '';
+
+	let avatar = '';
+	let name = '';
+
+	if (isTypeDMGroup) {
+		avatar = direct?.channel_avatar || '/assets/images/avatar-group.png';
+		name = direct?.channel_label || '';
+	} else if (userGroup) {
+		const otherIndex = userGroup.user_ids?.findIndex((uid) => uid !== currentUserId) ?? -1;
+		const idx = otherIndex !== -1 ? otherIndex : (userGroup.user_ids?.length ?? 1) - 1;
+		avatar = userGroup.avatars?.[idx] || '';
+		name = userGroup.display_names?.[idx] || userGroup.usernames?.[idx] || direct?.channel_label || '';
+	} else {
+		avatar = direct?.avatars?.at(-1) ?? '';
+		name = direct?.channel_label || '';
+	}
+
+	return <DmItemProfile avatar={avatar} name={name} number={number} isTypeDMGroup={isTypeDMGroup} highlight={highlight} direct={direct} t={t} />;
+};
 
 const DmItemProfile = ({
 	avatar,

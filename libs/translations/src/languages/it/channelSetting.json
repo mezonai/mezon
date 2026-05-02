@@ -4,6 +4,7 @@
 			"title": "Nome del canale",
 			"placeholder": "Inserisci nome canale",
 			"errorMessage": "Inserisci un nome canale valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+			"emptyError": "Inserisci un nome canale valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
 			"duplicateError": "Questo nome canale esiste già nella categoria. Inseriscine un altro."
 		},
 		"threadName": {
