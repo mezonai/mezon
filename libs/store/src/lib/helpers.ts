@@ -24,27 +24,49 @@ export type MezonValueContext = MezonContextValue & {
 	getLatestSession: () => ApiSession | null;
 };
 
-export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
-	return new Promise((resolve, reject) => {
-		const interval = setInterval(() => {
-			if (mezon?.clientRef?.current) {
-				clearInterval(interval);
-				resolve(ensureClient(mezon));
-			}
-		}, 100);
-	});
+const SESSION_TRANSPORT_TIMEOUT_MS = 60000;
+
+function sessionHasCredentials(s: ApiSession | null | undefined): boolean {
+	if (!s) return false;
+	const token = !!s.token?.trim();
+	const sid = !!s.session_id?.trim();
+	if (!token && !sid) return false;
+	if (token && !sid) return false;
+	return true;
 }
 
+async function awaitMezonClient(mezon: MezonContextValue, deadline: number): Promise<void> {
+	while (!mezon.clientRef?.current) {
+		if (Date.now() > deadline) {
+			throw new Error('Timed out waiting for Mezon client');
+		}
+		await sleep(100);
+	}
+}
+
+export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
+	const deadline = Date.now() + SESSION_TRANSPORT_TIMEOUT_MS;
+	await awaitMezonClient(mezon, deadline);
+	return ensureClient(mezon);
+}
+
+const SOCKET_READY_TIMEOUT_MS = 60000;
+
 export async function ensureSocket(mezon: MezonContextValue): Promise<MezonValueContext> {
-	return new Promise((resolve, reject) => {
-		const interval = setInterval(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			if (mezon.clientRef?.current) {
-				clearInterval(interval);
-				resolve(ensureClient(mezon));
-			}
-		}, 100);
-	});
+	const deadline = Date.now() + SOCKET_READY_TIMEOUT_MS;
+	await awaitMezonClient(mezon, deadline);
+
+	const client = mezon.clientRef.current as Client;
+
+	let waitIterations = 0;
+	while (typeof client.isOpen !== 'function' || !client.isOpen()) {
+		waitIterations += 1;
+		if (Date.now() > deadline) {
+			throw new Error('Socket connection has not been established yet.');
+		}
+		await sleep(100);
+	}
+	return ensureClient(mezon);
 }
 
 export async function ensureClientAsync(mezon: MezonContextValue): Promise<MezonValueContext> {
@@ -195,6 +217,9 @@ export async function withRetry<T>(fn: (() => Promise<T>) | ((session: ApiSessio
 	const executeCall = (): Promise<T> => {
 		if (config.mezon) {
 			const latestSession = config.mezon.sessionRef.current;
+			if (!sessionHasCredentials(latestSession)) {
+				throw new Error('Mezon API called without session credentials');
+			}
 			return (fn as (session: ApiSession) => Promise<T>)(latestSession as ApiSession);
 		}
 		return (fn as () => Promise<T>)();

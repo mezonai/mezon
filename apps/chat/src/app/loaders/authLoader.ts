@@ -27,6 +27,7 @@ const connectNotification = async (dispatch: AppDispatch) => {
 };
 
 export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
+	await dispatch(accountActions.getUserProfile());
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
@@ -36,7 +37,6 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
-	dispatch(accountActions.getUserProfile());
 
 	connectNotification(dispatch);
 
