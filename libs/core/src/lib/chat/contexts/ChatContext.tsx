@@ -964,8 +964,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				if (id === userId) {
 					dispatch(emojiSuggestionActions.invalidateCache());
 					dispatch(stickerSettingActions.invalidateCache());
-					dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: '0' }));
-					dispatch(stickerSettingActions.fetchStickerByUserId({ noCache: true, clanId: '0' }));
 
 					if (clanId === user.clan_id) {
 						if (isMobile) {
@@ -1185,11 +1183,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						clanId: userJoinClan.clan_id
 					} as any)
 				);
-			}
-
-			if (userJoinClan?.user?.user_id === userId) {
-				dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: '0' }));
-				dispatch(stickerSettingActions.fetchStickerByUserId({ noCache: true, clanId: '0' }));
 			}
 		},
 		[userId]

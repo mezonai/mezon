@@ -12,6 +12,7 @@ import {
 	Direction_Mode,
 	EBacktickType,
 	EMessageCode,
+	EMimeTypes,
 	EOgpType,
 	LIMIT_MESSAGE,
 	MessageCrypt,
@@ -1720,7 +1721,8 @@ export const messagesSlice = createSlice({
 
 									if (
 										((message?.content?.t === newContent?.t && message?.content?.t) ||
-											message?.attachments?.[0]?.filename === attachments?.[0]?.filename) &&
+											message?.attachments?.[0]?.filename === attachments?.[0]?.filename ||
+											attachments?.[0].filetype === EMimeTypes.sticker) &&
 										message?.channel_id === channelId
 									) {
 										const tempId = (message as ChannelMessageWithClientMeta | undefined)?.temp_id;
