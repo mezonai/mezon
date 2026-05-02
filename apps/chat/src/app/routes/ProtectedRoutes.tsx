@@ -10,9 +10,13 @@ const ProtectedRoutes = () => {
 	const isLogin = isLoginLoader && isLoginStore;
 	const location = useLocation();
 	const dispatch = useAppDispatch();
-	if (!isLogin && isElectron()) {
-		dispatch(authActions.setRedirectUrl(location.pathname));
-		return <Navigate to={redirect || '/desktop/login'} replace />;
+
+	if (!isLogin) {
+		if (isElectron()) {
+			dispatch(authActions.setRedirectUrl(location.pathname));
+			return <Navigate to={redirect || '/desktop/login'} replace />;
+		}
+		return <Navigate to="/mezon" replace />;
 	}
 	return <Outlet />;
 };

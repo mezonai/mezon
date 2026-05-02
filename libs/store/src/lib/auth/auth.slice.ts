@@ -1,4 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
+import type { MezonContextValue } from '@mezon/transport';
+import { extractAndSaveConfig, resolveSessionWsUrl, socketState } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -54,6 +56,30 @@ function normalizeSession(session: ApiSession): ISession {
 	return session as ISession;
 }
 
+async function persistSessionConnectAfterLogin(mezon: MezonContextValue, session: ApiSession): Promise<ApiSession> {
+	if (!mezon.clientRef.current) {
+		throw new Error('Client not initialized');
+	}
+	const wsUrl = resolveSessionWsUrl(session);
+	const merged: ApiSession = { ...session, ws_url: wsUrl };
+	mezon.sessionRef.current = merged;
+
+	const config = extractAndSaveConfig(merged);
+	if (config) {
+		mezon.clientRef.current.setBasePath(config.host, config.port, config.useSSL);
+	}
+
+	const connectId = (merged.session_id || merged.token || '').trim();
+	if (!connectId) {
+		throw new Error('Mezon connect: missing session_id and token');
+	}
+
+	await mezon.clientRef.current.connect(connectId, wsUrl, true, false);
+	socketState.status = 'connected';
+
+	return merged;
+}
+
 export const authenticateApple = createAsyncThunk('auth/authenticateApple', async (token: string, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon.authenticateMezon(token);
@@ -92,18 +118,24 @@ export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', asyn
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
 
-	mezon.sessionRef.current = session;
-	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
-	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+	let merged: ApiSession;
+	try {
+		merged = await persistSessionConnectAfterLogin(mezon, session);
+	} catch (error) {
+		return thunkAPI.rejectWithValue((error as Error)?.message || 'Connect failed');
+	}
+
+	mezon.clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 		console.warn('Login Email Refresh Session');
-		thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+		thunkAPI.dispatch(authActions.setSessionId(sessionNew.session_id));
 		mezon.sessionRef.current = {
-			...session,
-			session_id: session.session_id
+			...(mezon.sessionRef.current as ApiSession),
+			...sessionNew,
+			session_id: sessionNew.session_id
 		};
 	};
 
-	return normalizeSession(session);
+	return normalizeSession(merged);
 });
 
 export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', async (code: string, thunkAPI) => {
@@ -123,19 +155,25 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
-	mezon.sessionRef.current = session;
-	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
 
-	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+	let merged: ApiSession;
+	try {
+		merged = await persistSessionConnectAfterLogin(mezon, session);
+	} catch (error) {
+		return thunkAPI.rejectWithValue((error as Error)?.message || 'Connect failed');
+	}
+
+	mezon.clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 		console.warn('Login Mezon Refresh Session');
-		thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+		thunkAPI.dispatch(authActions.setSessionId(sessionNew.session_id));
 		mezon.sessionRef.current = {
-			...session,
-			session_id: session.session_id
+			...(mezon.sessionRef.current as ApiSession),
+			...sessionNew,
+			session_id: sessionNew.session_id
 		};
 	};
 
-	return normalizeSession(session);
+	return normalizeSession(merged);
 });
 
 export const checkSessionWithToken = createAsyncThunk('auth/checkSessionWithToken', async (_, thunkAPI) => {
@@ -200,17 +238,24 @@ export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticate
 	if (!session) {
 		return thunkAPI.rejectWithValue('Invalid session');
 	}
-	mezon.sessionRef.current = session;
-	mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
-	mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+
+	let merged: ApiSession;
+	try {
+		merged = await persistSessionConnectAfterLogin(mezon, session);
+	} catch (error) {
+		return thunkAPI.rejectWithValue((error as Error)?.message || 'Connect failed');
+	}
+
+	mezon.clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 		console.warn('Confirm OTP Refresh Session');
-		thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+		thunkAPI.dispatch(authActions.setSessionId(sessionNew.session_id));
 		mezon.sessionRef.current = {
-			...session,
-			session_id: session.session_id
+			...(mezon.sessionRef.current as ApiSession),
+			...sessionNew,
+			session_id: sessionNew.session_id
 		};
 	};
-	return normalizeSession(session);
+	return normalizeSession(merged);
 });
 
 export const authenticatePhoneSMSOTPRequest = createAsyncThunk(
@@ -281,17 +326,24 @@ export const checkLoginRequest = createAsyncThunk(
 
 				await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
 			}
-			mezon.sessionRef.current = session;
-			mezon.clientRef.current.connect(session.session_id || '', session.ws_url || '');
-			mezon.clientRef.current.onrefreshsession = (session: ApiSession) => {
+
+			let merged: ApiSession;
+			try {
+				merged = await persistSessionConnectAfterLogin(mezon, session);
+			} catch (error) {
+				return thunkAPI.rejectWithValue((error as Error)?.message || 'Connect failed');
+			}
+
+			mezon.clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 				console.warn('Login Id Request Refresh Session');
-				thunkAPI.dispatch(authActions.setSessionId(session.session_id));
+				thunkAPI.dispatch(authActions.setSessionId(sessionNew.session_id));
 				mezon.sessionRef.current = {
-					...session,
-					session_id: session.session_id
+					...(mezon.sessionRef.current as ApiSession),
+					...sessionNew,
+					session_id: sessionNew.session_id
 				};
 			};
-			return normalizeSession(session);
+			return normalizeSession(merged);
 		}
 		return null;
 	}

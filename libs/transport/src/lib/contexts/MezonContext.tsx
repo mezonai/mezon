@@ -105,7 +105,9 @@ const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean, a
 			}
 		}
 
-		const finalWsUrl = wsUrl || existingWsUrl;
+		const trimmedIncoming = wsUrl?.trim();
+		const trimmedExisting = typeof existingWsUrl === 'string' ? existingWsUrl.trim() : '';
+		const finalWsUrl = trimmedIncoming || trimmedExisting || DEFAULT_WS_URL;
 
 		localStorage.setItem(
 			SESSION_STORAGE_KEY,
@@ -114,7 +116,7 @@ const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean, a
 				port,
 				ssl: useSSL,
 				api_url: apiUrl,
-				...(finalWsUrl && { ws_url: finalWsUrl })
+				ws_url: finalWsUrl
 			})
 		);
 	} catch (error) {
@@ -159,19 +161,29 @@ const isAllowedHost = (host: string | undefined): boolean => {
 };
 
 export const getMezonConfig = (): MezonConfigResult => {
+	const fallback: MezonConfigResult = {
+		host: process.env.NX_CHAT_APP_API_GW_HOST as string,
+		port: process.env.NX_CHAT_APP_API_GW_PORT as string,
+		key: process.env.NX_CHAT_APP_API_KEY as string,
+		ssl: process.env.NX_CHAT_APP_API_SECURE === 'true',
+		ws_url: DEFAULT_WS_URL
+	};
+
 	try {
-		const storedConfig = localStorage.getItem('mezon_session');
+		const storedConfig = localStorage.getItem(SESSION_STORAGE_KEY);
 
 		if (storedConfig) {
 			const parsedConfig = JSON.parse(storedConfig);
 			if (parsedConfig?.host && isAllowedHost(parsedConfig.host)) {
+				const wsRaw = parsedConfig.ws_url;
+				const wsTrimmed = typeof wsRaw === 'string' ? wsRaw.trim() : '';
 				return {
 					host: parsedConfig.host,
-					port: parsedConfig.port || (process.env.NX_CHAT_APP_API_PORT as string),
+					port: parsedConfig.port || fallback.port,
 					key: process.env.NX_CHAT_APP_API_KEY as string,
 					ssl: parsedConfig.ssl,
 					api_url: parsedConfig.api_url,
-					ws_url: parsedConfig.ws_url
+					ws_url: wsTrimmed || DEFAULT_WS_URL
 				};
 			}
 			if (parsedConfig?.host && !isAllowedHost(parsedConfig.host)) {
@@ -182,29 +194,29 @@ export const getMezonConfig = (): MezonConfigResult => {
 		console.error('Failed to get Mezon config from localStorage:', error);
 	}
 
-	return {
-		host: process.env.NX_CHAT_APP_API_GW_HOST as string,
-		port: process.env.NX_CHAT_APP_API_GW_PORT as string,
-		key: process.env.NX_CHAT_APP_API_KEY as string,
-		ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
-	};
+	return fallback;
 };
+
+export function resolveSessionWsUrl(session: Pick<ApiSession, 'ws_url'>): string {
+	const cfg = getMezonConfig();
+	return ((session.ws_url ?? '').trim() || cfg.ws_url || DEFAULT_WS_URL) as string;
+}
 
 export const extractAndSaveConfig = (session: ApiSession | null, isFromMobile?: boolean) => {
 	if (!session || !session.api_url) return null;
 	try {
 		const url = new URL(session.api_url);
 		const host = url.hostname;
-		const port = url.port;
+		const port = url.port || (process.env.NX_CHAT_APP_API_GW_PORT as string);
 		const useSSL = url.protocol === 'https:';
-		const wsUrl = session.ws_url;
+		const wsUrlResolved = resolveSessionWsUrl(session);
 		const apiUrl = session.api_url;
 
 		if (!isFromMobile) {
-			saveMezonConfigToStorage(host, port, useSSL, apiUrl, wsUrl);
+			saveMezonConfigToStorage(host, port, useSSL, apiUrl, wsUrlResolved);
 		}
 
-		return { host, port, useSSL, wsUrl, apiUrl };
+		return { host, port, useSSL, wsUrl: wsUrlResolved, apiUrl };
 	} catch (error) {
 		console.error('Failed to extract config from session:', error);
 		return null;
@@ -254,23 +266,13 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			sessionRef.current = newSession;
 			extractAndSaveConfig(newSession, isFromMobile);
 			if (isFromMobile) {
-				MobileEventSessionEmitter.emit('mezon:session-refreshed', {
-					session: newSession
-				});
+		
 			} else if (typeof window !== 'undefined') {
 				window.dispatchEvent(
 					new CustomEvent('mezon:session-refreshed', {
 						detail: { session: newSession }
 					})
 				);
-				if ((window as any)?.ReactNativeWebView) {
-					(window as any)?.ReactNativeWebView?.postMessage?.(
-						JSON.stringify({
-							type: 'mezon:session-refreshed',
-							data: { session: newSession }
-						})
-					);
-				}
 			}
 		},
 		[isFromMobile]
@@ -297,13 +299,19 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 		}
 
-		if ((sessionRef.current?.token || sessionRef.current?.session_id) && sessionRef.current.ws_url) {
-			const socket = clientRef.current.connect(sessionRef.current?.session_id || sessionRef.current.token || '', sessionRef.current.ws_url);
+		console.log(sessionRef.current?.session_id, 'sessionRef.current?.session_id');
+
+		if (sessionRef.current?.token || sessionRef.current?.session_id) {
+			const sr = sessionRef.current as ApiSession;
+			const wsUrl = resolveSessionWsUrl(sr);
+			sessionRef.current = { ...sr, ws_url: wsUrl };
+			const socket = clientRef.current.connect(sessionRef.current?.session_id || sessionRef.current.token || '', wsUrl);
 			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 				const authData = JSON.stringify({
 					...sessionRef.current,
 					session_id: sessionNew.session_id
 				} as ApiSession);
+				
 
 				localStorage.setItem('persist:auth', authData);
 			};
@@ -359,6 +367,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 	const createClient = useCallback(async () => {
 		const client = await createMezonClient(mezon);
+		
 		clientRef.current = client;
 
 		client.onrefreshsession = (session: ApiSession) => {
@@ -430,20 +439,22 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 			resetSessionRefreshBlock();
 			const session = await clientRef.current.authenticateMezon(token, undefined, undefined, isFromMobile ? true : (isRemember ?? false));
-			sessionRef.current = session;
+			const wsUrl = resolveSessionWsUrl(session);
+			const merged: ApiSession = { ...session, ws_url: wsUrl };
+			sessionRef.current = merged;
 
-			const config = extractAndSaveConfig(session, isFromMobile);
+			const config = extractAndSaveConfig(merged, isFromMobile);
 			if (config) {
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
-			if ((!session.token && !session.session_id) || !session.ws_url) {
+			if (!merged.token && !merged.session_id) {
 				throw new Error('Mezon connect lost data');
 			}
 			try {
-				await clientRef.current.connect(session.session_id || session.token || '', session.ws_url, true);
+				await clientRef.current.connect(merged.session_id || merged.token || '', wsUrl, true);
 				clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 					const authData = JSON.stringify({
-						...session,
+						...merged,
 						session_id: sessionNew.session_id
 					} as ApiSession);
 
@@ -454,7 +465,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 			socketState.status = 'connected';
 
-			return session;
+			return merged;
 		},
 		[createSocket, isFromMobile]
 	);
@@ -465,26 +476,28 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 			const session = await clientRef.current.authenticateEmail(email, password, undefined, isFromMobile ? { m: 'true' } : undefined);
-			sessionRef.current = session;
+			const wsUrl = resolveSessionWsUrl(session);
+			const merged: ApiSession = { ...session, ws_url: wsUrl };
+			sessionRef.current = merged;
 
-			const config = extractAndSaveConfig(session);
+			const config = extractAndSaveConfig(merged);
 			if (config) {
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
-			if ((!session.token && !session.session_id) || !session.ws_url) {
+			if (!merged.token && !merged.session_id) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url);
+			await clientRef.current.connect(merged.session_id || merged.token || '', wsUrl);
 			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 				const authData = JSON.stringify({
-					...session,
+					...merged,
 					session_id: sessionNew.session_id
 				} as ApiSession);
 
 				localStorage.setItem('persist:auth', authData);
 			};
 			socketState.status = 'connected';
-			return session;
+			return merged;
 		},
 		[createSocket, isFromMobile]
 	);
@@ -507,27 +520,29 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 
 			const session = await clientRef.current.confirmAuthenticateOTP(data);
-			sessionRef.current = session;
+			const wsUrl = resolveSessionWsUrl(session);
+			const merged: ApiSession = { ...session, ws_url: wsUrl };
+			sessionRef.current = merged;
 
-			const config = extractAndSaveConfig(session);
+			const config = extractAndSaveConfig(merged);
 			if (config) {
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
-			if ((!session.token && !session.session_id) || !session.ws_url) {
+			if (!merged.token && !merged.session_id) {
 				throw new Error('Mezon connect lost data');
 			}
-			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url);
+			await clientRef.current.connect(merged.session_id || merged.token || '', wsUrl);
 			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 				const authData = JSON.stringify({
-					...session,
+					...merged,
 					session_id: sessionNew.session_id
 				} as ApiSession);
 
 				localStorage.setItem('persist:auth', authData);
 			};
 			socketState.status = 'connected';
-			return session;
+			return merged;
 		},
 		[createSocket, isFromMobile]
 	);
@@ -577,18 +592,21 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!clientRef.current) {
 				throw new Error('Mezon client not initialized');
 			}
-			extractAndSaveConfig(session, isFromMobile);
+			const wsUrl = resolveSessionWsUrl(session);
+			const merged: ApiSession = { ...session, ws_url: wsUrl };
+			sessionRef.current = merged;
+			extractAndSaveConfig(merged, isFromMobile);
 
-			await clientRef.current.connect(session.session_id || session.token || '', session.ws_url || '');
+			await clientRef.current.connect(merged.session_id || merged.token || '', wsUrl);
 			clientRef.current.onrefreshsession = (sessionNew: ApiSession) => {
 				const authData = JSON.stringify({
-					...session,
+					...merged,
 					session_id: sessionNew.session_id
 				} as ApiSession);
 				localStorage.setItem('persist:auth', authData);
 			};
 			socketState.status = 'connected';
-			return session;
+			return merged;
 		},
 		[clientRef, socketRef, isFromMobile]
 	);
@@ -626,6 +644,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			sessionRef,
 			socketRef,
 			zkRef,
+			dongRef,
 			mmnRef,
 			indexerRef,
 			createClient,
