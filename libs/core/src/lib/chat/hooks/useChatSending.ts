@@ -265,11 +265,13 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				...content,
 				t: content.t?.trim()
 			};
+			const finalTopicId = topic_id || (isTopic ? currentTopicId || '0' : '0');
+			const updateChannelId = finalTopicId !== '0' ? finalTopicId : (channelIdOrDirectId ?? '0');
 			try {
 				await client.updateChannelMessage(
 					session,
 					getClanId || '0',
-					channelIdOrDirectId ?? '0',
+					updateChannelId,
 					mode,
 					isPublic,
 					messageId || '0',
@@ -277,14 +279,14 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					mentions,
 					attachments,
 					hide_editted,
-					topic_id || '0',
+					finalTopicId,
 					!!isTopic
 				);
 			} catch (e) {
 				console.error(e);
 			}
 		},
-		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]
+		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic, currentTopicId]
 	);
 
 	return useMemo(
