@@ -1,4 +1,4 @@
-import { useMezon } from '@mezon/transport';
+import { extractAndSaveConfig, resolveSessionWsUrl, socketState, useMezon } from '@mezon/transport';
 import type { ApiSession } from 'mezon-js';
 import type { MutableRefObject } from 'react';
 import { useEffect, useRef, useState } from 'react';
@@ -7,7 +7,7 @@ import type { Store } from 'redux';
 import type { Persistor } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import { authActions } from './auth/auth.slice';
-import { useAppDispatch, type RootState, type RootState as RootStateMobile } from './store';
+import { useAppDispatch, type AppDispatch, type RootState, type RootState as RootStateMobile } from './store';
 
 type Props = {
 	readonly children: React.ReactNode;
@@ -16,32 +16,104 @@ type Props = {
 	readonly persistor: Persistor;
 };
 
+function waitForPersistorBootstrap(persistor: Persistor): Promise<void> {
+	return new Promise((resolve) => {
+		if (persistor.getState().bootstrapped) {
+			resolve();
+			return;
+		}
+		const unsub = persistor.subscribe(() => {
+			if (persistor.getState().bootstrapped) {
+				unsub();
+				resolve();
+			}
+		});
+	});
+}
+
 export function MezonStoreProvider({ children, store, loading, persistor }: Props) {
 	const { sessionRef, createClient } = useMezon();
 	const [connect, setConnect] = useState(false);
 	const connectRef = useRef(false);
 
 	useEffect(() => {
+		let cancelled = false;
+
 		const initConnection = async () => {
-			const currentState = store.getState();
-			const session = currentState.auth.session;
+			await waitForPersistorBootstrap(persistor);
+
+			if (cancelled) {
+				return;
+			}
+
 			const client = await createClient();
+			if (cancelled) {
+				return;
+			}
+
+			const { auth } = store.getState();
+			const session = auth.session;
+			const persistClaimsLogin = Boolean(auth.isLogin);
+
+			const finishWithoutSocket = () => {
+				setConnect(true);
+			};
+
+			const logoutBrokenPersist = () => {
+				store.dispatch(authActions.resetSession());
+				void (store.dispatch as AppDispatch)(authActions.logOut({}));
+			};
+
 			try {
-				if (!session || !client) {
-					setConnect(true);
+				if (!client) {
+					finishWithoutSocket();
 					return;
 				}
-				await client.connect(session.session_id || session.token || '', sessionRef.current?.ws_url || session.ws_url || '', true, false);
+
+				if (!session) {
+					if (persistClaimsLogin) {
+						logoutBrokenPersist();
+					}
+					finishWithoutSocket();
+					return;
+				}
+
+				const hasToken = !!session.token?.trim();
+				const hasSessionId = !!session.session_id?.trim();
+				if (hasToken && !hasSessionId) {
+					if (persistClaimsLogin) {
+						logoutBrokenPersist();
+					}
+					finishWithoutSocket();
+					return;
+				}
+
+				if (!persistClaimsLogin) {
+					finishWithoutSocket();
+					return;
+				}
+
+				const wsUrl = resolveSessionWsUrl(session);
+				const effectiveSession: ApiSession = { ...session, ws_url: wsUrl };
+				sessionRef.current = effectiveSession;
+				extractAndSaveConfig(effectiveSession);
+
+				await client.connect(
+					effectiveSession.session_id || effectiveSession.token || '',
+					wsUrl,
+					true,
+					false
+				);
 
 				client.onrefreshsession = (sessionNew: ApiSession) => {
 					store.dispatch(authActions.setSessionId(sessionNew.session_id));
 					sessionRef.current = {
-						...session,
+						...effectiveSession,
 						session_id: sessionNew.session_id
 					};
 				};
 				connectRef.current = true;
-				sessionRef.current = session;
+				socketState.status = 'connected';
 			} catch (error) {
 				connectRef.current = true;
 				console.error('AppInitializer: Connection failed', error);
@@ -50,7 +122,11 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 		};
 
 		initConnection();
-	}, []);
+
+		return () => {
+			cancelled = true;
+		};
+	}, [persistor, store, createClient, sessionRef]);
 	if (!connect) return null;
 	return (
 		<Provider store={store}>
@@ -60,6 +136,10 @@ export function MezonStoreProvider({ children, store, loading, persistor }: Prop
 		</Provider>
 	);
 }
+const CONNECT_GATE_POLL_MS = 400;
+const CONNECT_GATE_MAX_WAIT_MS = 60000;
+const CONNECT_GATE_MAX_ATTEMPTS = Math.ceil(CONNECT_GATE_MAX_WAIT_MS / CONNECT_GATE_POLL_MS);
+
 interface ConnectGateProps {
 	children: React.ReactNode;
 	connectRef: MutableRefObject<boolean>;
@@ -70,14 +150,30 @@ const ConnectGate = ({ children, connectRef }: ConnectGateProps) => {
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		if (clientRef.current && connectRef.current) {
-			const isOpen = clientRef.current.isOpen();
-
-			if (!isOpen) {
-				dispatch(authActions.resetSession());
+		if (!clientRef.current || !connectRef.current) {
+			return;
+		}
+		let cancelled = false;
+		let attempts = 0;
+		const intervalId = window.setInterval(() => {
+			if (cancelled) {
 				return;
 			}
-		}
+			if (clientRef.current?.isOpen?.()) {
+				window.clearInterval(intervalId);
+				return;
+			}
+			attempts += 1;
+			if (attempts >= CONNECT_GATE_MAX_ATTEMPTS) {
+				window.clearInterval(intervalId);
+				dispatch(authActions.resetSession());
+			}
+		}, CONNECT_GATE_POLL_MS);
+
+		return () => {
+			cancelled = true;
+			window.clearInterval(intervalId);
+		};
 	}, []);
 
 	return <>{children}</>;

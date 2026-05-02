@@ -55,7 +55,8 @@ export const registFcmDeviceToken = createAsyncThunk(
 export const connectNotificationService = createAsyncThunk('fcm/connectNotificationService', async (_, thunkAPI) => {
 	try {
 		const state = thunkAPI.getState() as RootState;
-		const userId = selectCurrentUserId(state);
+		const userId =
+			selectCurrentUserId(state) || (typeof state.auth?.session?.user_id === 'string' ? state.auth.session.user_id.trim() : '') || '';
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		const response = await withRetry((session) => mezon.client.registFCMDeviceToken(session, state.fcm.deviceId || '', '', 'desktop', ''), {
@@ -65,10 +66,13 @@ export const connectNotificationService = createAsyncThunk('fcm/connectNotificat
 			mezon
 		});
 
-		if (response.token) {
-			notificationService.connect(response.token, userId);
-		} else if (state.fcm.token) {
-			notificationService.connect(state.fcm.token, userId);
+		const notifyToken = `${response.token || state.fcm.token || ''}`.trim();
+		if (!notifyToken) {
+			console.warn('connectNotificationService: no notification token from API or store; WebSocket not started.');
+		} else if (!userId) {
+			console.warn('connectNotificationService: userId missing (profile and session); WebSocket not started.');
+		} else {
+			void notificationService.connect(notifyToken, userId);
 		}
 
 		return {

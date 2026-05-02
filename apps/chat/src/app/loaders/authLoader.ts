@@ -37,8 +37,13 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
-
-	connectNotification(dispatch);
+	void dispatch(accountActions.getUserProfile())
+		.then(() => {
+			void connectNotification(dispatch);
+		})
+		.catch(() => {
+			console.error('Failed to get user profile');
+		});
 
 	if (!isOnline()) {
 		const splashScreen = document.getElementById('splash-screen');
