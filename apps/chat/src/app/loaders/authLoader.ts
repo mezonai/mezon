@@ -27,6 +27,7 @@ const connectNotification = async (dispatch: AppDispatch) => {
 };
 
 export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
+	await dispatch(accountActions.getUserProfile());
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
@@ -36,13 +37,8 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
-	void dispatch(accountActions.getUserProfile())
-		.then(() => {
-			void connectNotification(dispatch);
-		})
-		.catch(() => {
-			console.error('Failed to get user profile');
-		});
+
+	connectNotification(dispatch);
 
 	if (!isOnline()) {
 		const splashScreen = document.getElementById('splash-screen');
