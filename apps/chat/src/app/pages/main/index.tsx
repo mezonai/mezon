@@ -74,7 +74,14 @@ function MyApp() {
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const [openCreateClanModal, closeCreateClanModal] = useModal(() => <ModalCreateClan open={true} onClose={closeCreateClanModal} />);
-	const [openSearchModal, closeSearchModal] = useModal(() => <SearchModal onClose={closeSearchModal} />);
+	const isSearchModalOpenRef = useRef(false);
+	const closeSearchModalRef = useRef<() => void>(() => undefined);
+	const [openSearchModal, closeSearchModalBase] = useModal(() => <SearchModal onClose={() => closeSearchModalRef.current()} />);
+	const closeSearchModal = useCallback(() => {
+		isSearchModalOpenRef.current = false;
+		closeSearchModalBase();
+	}, [closeSearchModalBase]);
+	closeSearchModalRef.current = closeSearchModal;
 	const openModalAttachment = useSelector(selectOpenModalAttachment);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
@@ -88,12 +95,21 @@ function MyApp() {
 	const { currentURL, directId } = useAppParams();
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 
+	const handleOpenSearchModal = useCallback(() => {
+		if (isSearchModalOpenRef.current) {
+			closeSearchModal();
+		} else {
+			isSearchModalOpenRef.current = true;
+			openSearchModal();
+		}
+	}, [openSearchModal, closeSearchModal]);
+
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
 			const prefixKey = PLATFORM_ENV === Platform.MACOS ? 'metaKey' : 'ctrlKey';
 			if (event[prefixKey] && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
-				openSearchModal();
+				handleOpenSearchModal();
 			}
 			if (event[prefixKey] && event.shiftKey && event.key === 'Enter' && !directId) {
 				const store = getStore();
@@ -118,15 +134,17 @@ function MyApp() {
 				window.electron.setRatioWindow(true);
 			}
 		},
-		[openSearchModal, currentURL]
+		[handleOpenSearchModal, currentURL]
 	);
 
 	useEffect(() => {
 		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('open-search-modal', handleOpenSearchModal as EventListener);
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('open-search-modal', handleOpenSearchModal as EventListener);
 		};
-	}, [handleKeyDown]);
+	}, [handleKeyDown, handleOpenSearchModal]);
 
 	const openPopupForward = useSelector(getIsShowPopupForward);
 

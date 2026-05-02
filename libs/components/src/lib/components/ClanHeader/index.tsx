@@ -30,7 +30,6 @@ import { ItemSetting } from '../ClanSettings/ItemObj';
 import ModalInvite from '../ListMemberInvite/modalInvite';
 import ModalConfirm from '../ModalConfirm';
 import ModalNotificationSetting from '../NotificationSetting';
-import SearchModal from '../SearchModal';
 import Header from './Header';
 import ModalCreateCategory from './ModalCreateCategory';
 import ModalPanel from './ModalPanel';
@@ -54,7 +53,6 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const { userProfile } = useAuth();
 	const currentChannelId = useSelector(selectCurrentVoiceChannelId);
 	const navigate = useNavigate();
-	const [openSearchModal, closeSearchModal] = useModal(() => <SearchModal onClose={closeSearchModal} />);
 	const toOnboard = useSelector(selectToOnboard);
 	const [openCreateCate, setOpenCreateCate] = useState(false);
 	const [isShowModalPanelClan, setIsShowModalPanelClan] = useState<boolean>(false);
@@ -94,7 +92,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	};
 
 	const handleInputFocus = () => {
-		openSearchModal();
+		window.dispatchEvent(new CustomEvent('open-search-modal'));
 		inputRef.current?.blur();
 	};
 
