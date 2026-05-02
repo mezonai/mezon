@@ -506,8 +506,10 @@ function ChannelMessages({
 			)}
 			<ScrollDownButton
 				channelId={channelId}
+				parentChannelId={currentChannelId || channelId}
 				effectiveChannelId={effectiveChannelId}
 				clanId={clanId}
+				topicId={topicId}
 				messageIds={messageIds}
 				chatRef={chatRef}
 				lastSeenAtBottomRef={lastSeenAtBottomRef}
@@ -525,8 +527,10 @@ function ChannelMessages({
 const ScrollDownButton = memo(
 	({
 		channelId,
+		parentChannelId,
 		effectiveChannelId,
 		clanId,
+		topicId,
 		messageIds,
 		chatRef,
 		lastSeenAtBottomRef,
@@ -535,8 +539,10 @@ const ScrollDownButton = memo(
 		setAnchor
 	}: {
 		channelId: string;
+		parentChannelId: string;
 		effectiveChannelId: string;
 		clanId: string;
+		topicId?: string;
 		messageIds: string[];
 		chatRef: React.RefObject<HTMLDivElement>;
 		lastSeenAtBottomRef: React.MutableRefObject<string | null>;
@@ -575,10 +581,12 @@ const ScrollDownButton = memo(
 
 		const handleJumpToPresent = async () => {
 			isJumpingToPresentRef.current = true;
+			const isTopicContext = !!topicId;
 			await dispatch(
 				messagesActions.fetchMessages({
 					clanId,
-					channelId,
+					channelId: isTopicContext ? parentChannelId : channelId,
+					topicId: isTopicContext ? topicId : undefined,
 					isFetchingLatestMessages: true,
 					noCache: true,
 					isClearMessage: true,

@@ -82,7 +82,12 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 		if (isRemoveAttachmentNoContent) {
 			const remainingAttachments =
 				attachmentData && mess?.attachments && mess?.attachments.filter((attachment) => attachment.url !== attachmentData.url);
-			await editSendMessage(mess.content, mess.id, mess.mentions ?? [], remainingAttachments, true, '');
+			const topicIdForUpdate =
+				(mess.topic_id && mess.topic_id !== '0' && mess.topic_id) ||
+				(mess?.content?.tp && mess.content.tp !== '0' && mess.content.tp) ||
+				(isTopic && currentTopicId && currentTopicId !== '0' && currentTopicId) ||
+				'0';
+			await editSendMessage(mess.content, mess.id, mess.mentions ?? [], remainingAttachments, true, topicIdForUpdate, !!isTopic);
 		} else {
 			setIsLoading(true);
 			await handleDeleteMessage();

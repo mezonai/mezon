@@ -1,5 +1,5 @@
-import DOMPurify from 'dompurify';
 import type { Config } from 'dompurify';
+import DOMPurify from 'dompurify';
 
 const MESSAGE_HTML_CONFIG: Config = {
 	ALLOWED_TAGS: [
@@ -34,7 +34,6 @@ const MESSAGE_HTML_CONFIG: Config = {
 	ALLOWED_ATTR: ['href', 'target', 'rel', 'title', 'alt', 'class', 'id', 'contenteditable'],
 	ALLOW_DATA_ATTR: true
 };
-
 
 export function sanitizeMessageHtml(html: string): string {
 	if (!html) {
