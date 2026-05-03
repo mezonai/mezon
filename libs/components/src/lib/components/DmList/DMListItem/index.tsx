@@ -165,9 +165,6 @@ const DmItemProfile = ({
 					<span className="one-line text-start" data-e2e={generateE2eId(`chat.direct_message.chat_item.username`)}>
 						{name}
 					</span>
-					<p className="opacity-60 text-theme-primary text-xs text-start">
-						{number} {number === 1 ? t('member') : t('members')}
-					</p>
 				</div>
 			) : (
 				<DmInvoiceProfile name={name} directId={direct?.id} userId={direct?.user_ids?.[0] || ''} status={userStatus.status} />
