@@ -93,6 +93,7 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	currentClanId?: string | null;
+	deletingClanId?: string | null;
 	clanMetadata: EntityState<ClanMeta, string>;
 	clanUnreadStates: EntityState<ClanUnreadState, string>; // Normalized unread state
 	invitePeople: boolean;
@@ -882,16 +883,22 @@ export const clansSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
-		builder.addCase(deleteClan.pending, (state: ClansState) => {
+		builder.addCase(deleteClan.pending, (state: ClansState, action) => {
 			state.loadingStatus = 'loading';
+			state.deletingClanId = action.meta.arg.clanId;
 		});
 		builder.addCase(deleteClan.fulfilled, (state: ClansState, action: PayloadAction<string | null>) => {
+			state.deletingClanId = null;
 			if (action.payload) {
 				clansAdapter.removeOne(state, action.payload);
+				if (state.currentClanId === action.payload) {
+					state.currentClanId = null;
+				}
 				state.loadingStatus = 'loaded';
 			}
 		});
 		builder.addCase(deleteClan.rejected, (state: ClansState, action) => {
+			state.deletingClanId = null;
 			state.loadingStatus = 'error';
 			state.error = action.error.message;
 		});
@@ -1003,6 +1010,7 @@ export const getClansState = (rootState: { [CLANS_FEATURE_KEY]: ClansState }): C
 export const selectAllClans = createSelector(getClansState, selectAll);
 export const selectClanNumber = createSelector(getClansState, (state) => state?.ids?.length || 0);
 export const selectCurrentClanId = createSelector(getClansState, (state) => state.currentClanId);
+export const selectDeletingClanId = createSelector(getClansState, (state) => state.deletingClanId);
 export const selectClansLoadingStatus = createSelector(getClansState, (state) => state.loadingStatus);
 
 export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!(currentClanId && currentClanId !== '0'));

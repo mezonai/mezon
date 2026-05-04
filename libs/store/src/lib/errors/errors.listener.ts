@@ -1,6 +1,7 @@
 import { LIMIT_CLAN_ITEM, trackError } from '@mezon/utils';
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
+import type { RootState } from '../store';
 import type { EErrorType, Toast, ToastPayload } from '../toasts';
 import { toastActions } from '../toasts';
 import { triggerClanLimitModal } from './errors.slice';
@@ -156,6 +157,15 @@ errorListenerMiddleware.startListening({
 		if (toast.type === 'error') {
 			if (toast.message === 'Redirect Login') {
 				return;
+			}
+
+			if (action.type === 'channels/fetchChannels/rejected') {
+				const state = listenerApi.getState() as RootState;
+				const deletingClanId = state.clans?.deletingClanId;
+				const fetchedClanId = (action as any).meta?.arg?.clanId;
+				if (deletingClanId && (!fetchedClanId || fetchedClanId === deletingClanId)) {
+					return;
+				}
 			}
 
 			const isMaxClanLimitError = toast.message && typeof toast.message === 'string' && toast.message.includes('clan limit exceeded');
