@@ -141,17 +141,16 @@ interface ITopicTabContent {
 }
 
 function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
+	const initMessage = useAppSelector((state) => selectMessageByMessageId(state, topic?.channel_id || '', topic?.message_id || ''));
+
 	const messageRl = useMemo(() => {
-		return messageReplied?.content ? safeJSONParse(messageReplied?.content) : null;
-	}, [messageReplied]);
+		const rawContent = initMessage?.content || topic?.last_sent_message?.content;
+		return rawContent ? safeJSONParse(rawContent) : null;
+	}, [topic?.last_sent_message?.content, initMessage?.content]);
 
 	const resolvedSenderId = useMemo(() => {
-		const senderId = topic?.last_sent_message?.sender_id;
-		if (!senderId) {
-			return topic?.creator_id || '';
-		}
-		return senderId;
-	}, [topic?.last_sent_message?.sender_id, topic?.creator_id]);
+		return initMessage?.sender_id || topic?.creator_id || '';
+	}, [initMessage?.sender_id, topic?.creator_id]);
 
 	const { priorityAvatar, isAnonymous } = useGetPriorityNameFromUserClan(resolvedSenderId);
 	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, resolvedSenderId));
