@@ -12,6 +12,7 @@ export const DMCALL_FEATURE_KEY = 'dmcall';
  */
 export interface DMCallEntity extends IDMCall {
 	id: string; // Primary ID
+	isInCall?: boolean;
 }
 
 export interface DMCallState extends EntityState<DMCallEntity, string> {
@@ -80,9 +81,10 @@ export const DMCallSlice = createSlice({
 
 		addOrUpdate: (state, action: PayloadAction<DMCallEntity>) => {
 			const existingEntity = state.entities[action.payload.id];
+			const isInCall = action.payload.isInCall;
 			if (existingEntity) {
 				DMCallAdapter.updateOne(state, { id: action.payload.id, changes: action.payload });
-			} else if (!existingEntity && Object.keys(state.entities).length === 0) {
+			} else if (!existingEntity && (Object.keys(state.entities).length === 0 || !isInCall)) {
 				DMCallAdapter.addOne(state, action);
 			} else {
 				state.otherCall = {
