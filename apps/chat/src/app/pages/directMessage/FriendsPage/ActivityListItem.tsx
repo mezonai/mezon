@@ -1,8 +1,11 @@
 import { AvatarImage } from '@mezon/components';
+import { useAppNavigation, useDirect } from '@mezon/core';
 import type { ActivitiesEntity } from '@mezon/store';
 import { selectActivityByUserId, useAppSelector } from '@mezon/store';
 import type { IUserProfileActivity } from '@mezon/utils';
 import { createImgproxyUrl } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
+import { useCallback } from 'react';
 
 type ActivityProps = {
 	user?: IUserProfileActivity;
@@ -10,10 +13,25 @@ type ActivityProps = {
 
 const ActivityListItem = ({ user }: ActivityProps) => {
 	const activityByUserId = useAppSelector((state) => selectActivityByUserId(state, user?.id || ''));
+	const { createDirectMessageWithUser } = useDirect();
+	const { toDmGroupPageFromFriendPage, navigate } = useAppNavigation();
+
+	const handleClick = useCallback(async () => {
+		if (!user?.id) return;
+		const name = user.display_name || user.username;
+		const res = await createDirectMessageWithUser(user.id, name, user.username, user.avatar_url);
+		if (res.channel_id) {
+			navigate(toDmGroupPageFromFriendPage(res.channel_id, ChannelType.CHANNEL_TYPE_DM));
+		}
+	}, [createDirectMessageWithUser, navigate, toDmGroupPageFromFriendPage, user]);
 
 	return (
 		<div className="border-color-primary group/list_friends">
-			<div key={user?.id} className="flex justify-between items-center rounded-lg">
+			<div
+				key={user?.id}
+				onClick={handleClick}
+				className="flex w-full cursor-pointer justify-between items-center rounded-lg hover:bg-item-hover"
+			>
 				<ActivityItem user={user} activity={activityByUserId} />
 			</div>
 		</div>
