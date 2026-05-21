@@ -127,7 +127,9 @@
 		"basicView": "Основной вид",
 		"advancedView": "Расширенный вид",
 		"roles": "Роли",
+		"role": "Роль",
 		"members": "Участники",
+		"member": "Участник",
 		"edit": "Редактировать",
 		"done": "Готово",
 		"addRole": "Добавить роль",
@@ -137,6 +139,12 @@
 		"addMemberAndRoles": "Добавление участников или ролей",
 		"ChannelCreator": "Создатель",
 		"whoCanAccess": "У кого есть доступ",
+		"confirmRemove": {
+			"title": "Удалить {{type}}",
+			"message": "Вы уверены, что хотите удалить {{name}} из этого канала? Это действие нельзя отменить.",
+			"cancel": "Отмена",
+			"confirm": "Удалить"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Сделать этот канал открытым для всех?",
 			"privateChannelTitle": "Сделать этот канал приватным?",

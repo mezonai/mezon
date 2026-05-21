@@ -127,7 +127,9 @@
 		"basicView": "Basic View",
 		"advancedView": "Advanced View",
 		"roles": "Roles",
+		"role": "Role",
 		"members": "Members",
+		"member": "Member",
 		"edit": "Edit",
 		"done": "Done",
 		"addRole": "Add Role",
@@ -137,6 +139,12 @@
 		"addMemberAndRoles": "Add members or roles",
 		"ChannelCreator": "Creator",
 		"whoCanAccess": "Who can access",
+		"confirmRemove": {
+			"title": "Remove {{type}}",
+			"message": "Are you sure you want to remove {{name}} from this channel? This action cannot be undone.",
+			"cancel": "Cancel",
+			"confirm": "Remove"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Make this channel open to everyone?",
 			"privateChannelTitle": "Make this channel private?",

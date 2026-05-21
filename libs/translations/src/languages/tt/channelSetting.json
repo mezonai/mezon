@@ -126,7 +126,9 @@
 		"basicView": "Төп күренеш",
 		"advancedView": "Киңәйтелгән күренеш",
 		"roles": "Рольләр",
+		"role": "Роль",
 		"members": "Катнашучылар",
+		"member": "Катнашучы",
 		"edit": "Үзгәртү",
 		"done": "Әзер",
 		"addRole": "Роль өстәү",
@@ -136,6 +138,12 @@
 		"addMemberAndRoles": "Катнашучылар яки рольләр өстәү",
 		"ChannelCreator": "Булдыручы",
 		"whoCanAccess": "Кемнең керү мөмкинлеге бар",
+		"confirmRemove": {
+			"title": "{{type}}не бетерү",
+			"message": "Сез чынлап та {{name}}не бу каналдан бетерегезме? Бу гамәл кире кайтарып булмай.",
+			"cancel": "Баш тарту",
+			"confirm": "Бетерергә"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Бу каналны барысы өчен дә ачык ясарга?",
 			"privateChannelTitle": "Бу каналны шәхси ясарга?",

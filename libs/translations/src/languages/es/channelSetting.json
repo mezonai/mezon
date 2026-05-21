@@ -127,7 +127,9 @@
 		"basicView": "Vista Básica",
 		"advancedView": "Vista Avanzada",
 		"roles": "Roles",
+		"role": "Rol",
 		"members": "Miembros",
+		"member": "Miembro",
 		"edit": "Editar",
 		"done": "Listo",
 		"addRole": "Añadir Rol",
@@ -137,6 +139,12 @@
 		"addMemberAndRoles": "Añadir miembros o roles",
 		"ChannelCreator": "Creador",
 		"whoCanAccess": "Quién puede acceder",
+		"confirmRemove": {
+			"title": "Eliminar {{type}}",
+			"message": "¿Estás seguro de que quieres eliminar {{name}} de este canal? Esta acción no se puede deshacer.",
+			"cancel": "Cancelar",
+			"confirm": "Eliminar"
+		},
 		"warningModal": {
 			"publicChannelTitle": "¿Hacer este canal abierto para todos?",
 			"privateChannelTitle": "¿Hacer este canal privado?",

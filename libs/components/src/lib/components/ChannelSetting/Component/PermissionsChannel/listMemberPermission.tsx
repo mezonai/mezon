@@ -4,9 +4,11 @@ import { channelUsersActions, selectCurrentClanId, selectMemberClanByUserId, sel
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
+import ModalConfirm from '../../../ModalConfirm';
 
 type ListMemberPermissionProps = {
 	channel: IChannel;
@@ -23,6 +25,10 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 	const navigate = useCustomNavigate();
 	const userProfile = useAuth();
 	const { toMembersPage } = useAppNavigation();
+
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [memberToRemove, setMemberToRemove] = useState<{ userId: string; name: string } | null>(null);
+
 	const deleteMember = async (userId: string) => {
 		const body: removeChannelUsersPayload = {
 			channelId: channel.id,
@@ -36,35 +42,64 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 		}
 	};
 
-	return idUsers.map((id) => (
-		<ItemMemberPermission
-			key={id}
-			id={id}
-			onDelete={() => deleteMember(id as string)}
-			channelOwner={channel.creator_id === id}
-			selectedUserIds={props.selectedUserIds}
-			setSelectedUserIds={props.setSelectedUserIds}
-		/>
-	));
+	const handleDeleteRequest = (userId: string, name: string) => {
+		setMemberToRemove({ userId, name });
+		setShowConfirmModal(true);
+	};
+
+	const handleConfirmRemove = () => {
+		if (memberToRemove) {
+			deleteMember(memberToRemove.userId);
+		}
+		setShowConfirmModal(false);
+		setMemberToRemove(null);
+	};
+
+	const handleCloseModal = () => {
+		setShowConfirmModal(false);
+		setMemberToRemove(null);
+	};
+
+	const { t } = useTranslation('channelSetting');
+
+	return (
+		<>
+			{idUsers.map((id) => (
+				<ItemMemberPermission
+					key={id}
+					id={id}
+					onDeleteRequest={handleDeleteRequest}
+					channelOwner={channel.creator_id === id}
+					selectedUserIds={props.selectedUserIds}
+					setSelectedUserIds={props.setSelectedUserIds}
+				/>
+			))}
+			{showConfirmModal && memberToRemove && (
+				<ModalConfirm
+					handleCancel={handleCloseModal}
+					handleConfirm={handleConfirmRemove}
+					title={t('channelPermission.confirmRemove.title', { type: t('channelPermission.member') })}
+					message={t('channelPermission.confirmRemove.message', { name: memberToRemove.name })}
+					buttonName={t('channelPermission.confirmRemove.confirm')}
+					buttonColor="bg-red-600 hover:bg-red-700"
+				/>
+			)}
+		</>
+	);
 };
 
 export default ListMemberPermission;
 
 type ItemMemberPermissionProps = {
 	id?: string;
-	username?: string;
-	avatar?: string;
-	displayName?: string;
-	clanName?: string;
-	clanAvatar?: string;
-	onDelete: () => void;
+	onDeleteRequest: (userId: string, name: string) => void;
 	channelOwner?: boolean;
 	selectedUserIds?: string[];
 	setSelectedUserIds?: (userIds: string[]) => void;
 };
 
 const ItemMemberPermission = (props: ItemMemberPermissionProps) => {
-	const { id = '', onDelete, channelOwner, selectedUserIds = [], setSelectedUserIds } = props;
+	const { id = '', onDeleteRequest, channelOwner, selectedUserIds = [], setSelectedUserIds } = props;
 	const user = useSelector((state) => selectMemberClanByUserId(state, id));
 	const namePrioritize = getNameForPrioritize(user?.clan_nick, user?.user?.display_name, user?.user?.username);
 	const avatarPrioritize = getAvatarForPrioritize(user?.clan_avatar, user?.user?.avatar_url);
@@ -75,14 +110,13 @@ const ItemMemberPermission = (props: ItemMemberPermissionProps) => {
 			setSelectedUserIds(newSelectedUserIds);
 		}
 		if (!channelOwner) {
-			onDelete();
+			onDeleteRequest(id as string, namePrioritize || '');
 		}
 	};
 	const { t } = useTranslation('channelSetting');
 	return (
 		<div
 			className={`flex justify-between py-2 rounded text-theme-primary`}
-			key={id}
 			data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.member_list.member_item')}
 		>
 			<div className="flex gap-x-2 items-center">

@@ -125,7 +125,9 @@
 		"basicView": "基本",
 		"advancedView": "詳細",
 		"roles": "ロール",
+		"role": "ロール",
 		"members": "メンバー",
+		"member": "メンバー",
 		"edit": "編集",
 		"done": "完了",
 		"addRole": "ロールを追加",
@@ -135,6 +137,12 @@
 		"ChannelCreator": "クリエーター",
 		"addMemberAndRoles": "メンバーまたはロールを追加",
 		"whoCanAccess": "誰がアクセスできる",
+		"confirmRemove": {
+			"title": "{{type}}を削除",
+			"message": "{{name}}をこのチャンネルから削除してもよろしいですか？この操作は取り消せません。",
+			"cancel": "キャンセル",
+			"confirm": "削除"
+		},
 		"warningModal": {
 			"publicChannelTitle": "このチャンネルを全員に公開しますか？",
 			"privateChannelTitle": "このチャンネルをプライベートに転換しますか？",

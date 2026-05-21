@@ -16,7 +16,7 @@ const ListRole = (props: ListRoleProps) => {
 			key={role.id}
 			data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.role_list.role_item')}
 		>
-			<label className="flex gap-x-2 items-center w-full">
+			<label className="flex gap-x-2 items-center w-full cursor-pointer">
 				<div className="relative flex flex-row justify-center">
 					<input
 						id={`checkbox-item-${index}`}
@@ -24,7 +24,7 @@ const ListRole = (props: ListRoleProps) => {
 						value={role.title}
 						checked={selectedRoleIds.includes(role.id)}
 						onChange={(event) => handleCheckboxRoleChange(event, role?.id || '')}
-						className="peer appearance-none forced-colors:appearance-auto relative w-4 h-4  border-theme-primary rounded-lg focus:outline-none"
+						className="peer appearance-none forced-colors:appearance-auto relative w-4 h-4 border-theme-primary rounded-lg focus:outline-none cursor-pointer"
 						data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.role_list.role_item.input')}
 					/>
 					<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4" />

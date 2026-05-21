@@ -125,7 +125,9 @@
 		"basicView": "기본",
 		"advancedView": "고급",
 		"roles": "역할",
+		"role": "역할",
 		"members": "멤버",
+		"member": "멤버",
 		"edit": "수정",
 		"done": "완료",
 		"addRole": "역할 추가",
@@ -135,6 +137,12 @@
 		"ChannelCreator": "채널 생성자",
 		"addMemberAndRoles": "멤버 또는 역할 추가",
 		"whoCanAccess": "누가 액세스할 수 있습니까",
+		"confirmRemove": {
+			"title": "{{type}} 제거",
+			"message": "{{name}}을(를) 이 채널에서 제거하시겠습니까? 이 작업은 취소할 수 없습니다.",
+			"cancel": "취소",
+			"confirm": "제거"
+		},
 		"warningModal": {
 			"publicChannelTitle": "이 채널을 모두에게 열까요?",
 			"privateChannelTitle": "이 채널을 비공개로 변경할까요?",

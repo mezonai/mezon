@@ -125,7 +125,9 @@
 		"basicView": "Basis",
 		"advancedView": "Erweitert",
 		"roles": "Rollen",
+		"role": "Rolle",
 		"members": "Mitglieder",
+		"member": "Mitglied",
 		"edit": "Bearbeiten",
 		"done": "Fertig",
 		"addRole": "Rolle hinzufügen",
@@ -135,6 +137,12 @@
 		"ChannelCreator": "Ersteller",
 		"addMemberAndRoles": "Mitglieder oder Rollen hinzufügen",
 		"whoCanAccess": "Wer kann zugreifen",
+		"confirmRemove": {
+			"title": "{{type}} entfernen",
+			"message": "Sind Sie sicher, dass Sie {{name}} aus diesem Kanal entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+			"cancel": "Abbrechen",
+			"confirm": "Entfernen"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Diesen Kanal für alle öffnen?",
 			"privateChannelTitle": "Diesen Kanal auf privat stellen?",

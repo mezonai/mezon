@@ -209,7 +209,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal')}
 			>
 				<h2 className="text-[24px] font-semibold text-center text-theme-primary-active">{t('addMembersRoles.title')}</h2>
-				<div className="flex justify-center">
+				<div className="flex justify-center gap-1">
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
 						<Icons.SpeakerLocked className="w-5 h-5" />
 					)}

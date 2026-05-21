@@ -2,9 +2,11 @@ import { channelUsersActions, selectAllRolesClan, selectCurrentClanId, selectRol
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import ModalConfirm from '../../../ModalConfirm';
+
 type ListRolePermissionProps = {
 	channel: IChannel;
 	selectedRoleIds: string[];
@@ -20,6 +22,9 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 	const RolesClan = useSelector(selectAllRolesClan);
 	const RolesAddChannel = RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1);
 	const RolesNotAddChannel = RolesClan.filter((role) => !RolesAddChannel.map((RoleAddChannel) => RoleAddChannel.id).includes(role.id));
+
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [roleToRemove, setRoleToRemove] = useState<{ roleId: string; name: string } | null>(null);
 
 	const listRolesInChannel = useMemo(() => {
 		if (channel.channel_private === 0 || channel.channel_private === undefined) {
@@ -42,36 +47,71 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 		};
 		await dispatch(channelUsersActions.removeChannelRole(body));
 	};
-	return listRolesInChannel.length !== 0 ? (
-		listRolesInChannel.map((role) => (
-			<div
-				className={`flex justify-between text-theme-primary py-2 rounded`}
-				key={role.id}
-				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.role_list.role_item')}
-			>
-				<div className="flex gap-x-2 items-center">
-					{role.role_icon ? (
-						<img src={role.role_icon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
-					) : (
+
+	const handleDeleteRequest = (roleId: string, name: string) => {
+		setRoleToRemove({ roleId, name });
+		setShowConfirmModal(true);
+	};
+
+	const handleConfirmRemove = () => {
+		if (roleToRemove) {
+			deleteRole(roleToRemove.roleId);
+		}
+		setShowConfirmModal(false);
+		setRoleToRemove(null);
+	};
+
+	const handleCloseModal = () => {
+		setShowConfirmModal(false);
+		setRoleToRemove(null);
+	};
+
+	const { t: tChannelSetting } = useTranslation('channelSetting');
+
+	return (
+		<>
+			{listRolesInChannel.length !== 0 ? (
+				listRolesInChannel.map((role) => (
+					<div
+						className={`flex justify-between text-theme-primary py-2 rounded`}
+						key={role.id}
+						data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.role_list.role_item')}
+					>
+						<div className="flex gap-x-2 items-center">
+							{role.role_icon ? (
+								<img src={role.role_icon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
+							) : (
+								<Icons.RoleIcon className="w-5 h-5 min-w-5" />
+							)}
+							<p className="text-sm">{role.title}</p>
+						</div>
+						<div className="flex items-center gap-x-2">
+							<p className="text-xs ">{t('role')}</p>
+							<div onClick={() => handleDeleteRequest(role?.id || '', role.title || '')} role="button">
+								<Icons.EscIcon className="size-[15px] cursor-pointer" />
+							</div>
+						</div>
+					</div>
+				))
+			) : (
+				<div className={`flex justify-between text-theme-primary py-2 rounded`}>
+					<div className="flex gap-x-2 items-center">
 						<Icons.RoleIcon className="w-5 h-5 min-w-5" />
-					)}
-					<p className="text-sm">{role.title}</p>
-				</div>
-				<div className="flex items-center gap-x-2">
-					<p className="text-xs ">{t('role')}</p>
-					<div onClick={() => deleteRole(role?.id || '')} role="button">
-						<Icons.EscIcon className="size-[15px] cursor-pointer" />
+						<p className="text-sm ">{t('noRoles')}</p>
 					</div>
 				</div>
-			</div>
-		))
-	) : (
-		<div className={`flex justify-between text-theme-primary py-2 rounded`}>
-			<div className="flex gap-x-2 items-center">
-				<Icons.RoleIcon className="w-5 h-5 min-w-5" />
-				<p className="text-sm ">{t('noRoles')}</p>
-			</div>
-		</div>
+			)}
+			{showConfirmModal && roleToRemove && (
+				<ModalConfirm
+					handleCancel={handleCloseModal}
+					handleConfirm={handleConfirmRemove}
+					title={tChannelSetting('channelPermission.confirmRemove.title', { type: tChannelSetting('channelPermission.role') })}
+					message={tChannelSetting('channelPermission.confirmRemove.message', { name: roleToRemove.name })}
+					buttonName={tChannelSetting('channelPermission.confirmRemove.confirm')}
+					buttonColor="bg-red-600 hover:bg-red-700"
+				/>
+			)}
+		</>
 	);
 };
 

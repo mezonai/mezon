@@ -46,14 +46,14 @@ const ItemMember = (props: ItemMemberProps) => {
 			className={`flex justify-between py-2 rounded bg-item-hover px-[6px]`}
 			data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item')}
 		>
-			<label className="flex gap-x-2 items-center w-full">
+			<label className="flex gap-x-2 items-center w-full cursor-pointer">
 				<div className="relative flex flex-row justify-center">
 					<input
 						type="checkbox"
 						value={displayName}
 						checked={checked}
 						onChange={onChange}
-						className="peer appearance-none forced-colors:appearance-auto relative w-4 h-4  border-theme-primary rounded-lg focus:outline-none"
+						className="peer appearance-none forced-colors:appearance-auto relative w-4 h-4 border-theme-primary rounded-lg focus:outline-none cursor-pointer"
 						data-e2e={generateE2eId(
 							'channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item.input'
 						)}

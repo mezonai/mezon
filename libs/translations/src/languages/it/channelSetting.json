@@ -125,7 +125,9 @@
 		"basicView": "Base",
 		"advancedView": "Avanzata",
 		"roles": "Ruoli",
+		"role": "Ruolo",
 		"members": "Membri",
+		"member": "Membro",
 		"edit": "Modifica",
 		"done": "Fatto",
 		"addRole": "Aggiungi ruolo",
@@ -135,6 +137,12 @@
 		"ChannelCreator": "Creatore",
 		"addMemberAndRoles": "Aggiungi membri o ruoli",
 		"whoCanAccess": "Chi può accedere",
+		"confirmRemove": {
+			"title": "Rimuovi {{type}}",
+			"message": "Sei sicuro di voler rimuovere {{name}} da questo canale? Questa azione non può essere annullata.",
+			"cancel": "Annulla",
+			"confirm": "Rimuovi"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Aprire questo canale a tutti?",
 			"privateChannelTitle": "Rendere questo canale privato?",

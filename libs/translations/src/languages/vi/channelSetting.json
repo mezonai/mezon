@@ -125,7 +125,9 @@
 		"basicView": "Cơ bản",
 		"advancedView": "Nâng cao",
 		"roles": "Vai trò",
+		"role": "Vai trò",
 		"members": "Thành viên",
+		"member": "Thành viên",
 		"edit": "Chỉnh sửa",
 		"done": "Hoàn tất",
 		"addRole": "Thêm vai trò",
@@ -135,6 +137,12 @@
 		"ChannelCreator": "Người tạo",
 		"addMemberAndRoles": "Thêm thành viên hoặc vai trò",
 		"whoCanAccess": "Ai có thể truy cập",
+		"confirmRemove": {
+			"title": "Xóa {{type}}",
+			"message": "Bạn có chắc chắn muốn xóa {{name}} khỏi kênh này không? Hành động này không thể khôi phục.",
+			"cancel": "Hủy",
+			"confirm": "Xóa"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Mở kênh này cho tất cả mọi người?",
 			"privateChannelTitle": "Chuyển kênh này thành riêng tư?",

@@ -125,7 +125,9 @@
 		"basicView": "Grundläggande",
 		"advancedView": "Avancerad",
 		"roles": "Roller",
+		"role": "Roll",
 		"members": "Medlemmar",
+		"member": "Medlem",
 		"edit": "Redigera",
 		"done": "Klar",
 		"addRole": "Lägg till roll",
@@ -135,6 +137,12 @@
 		"ChannelCreator": "Skapare",
 		"addMemberAndRoles": "Lägg till medlem eller roll",
 		"whoCanAccess": "Vem kan komma åt",
+		"confirmRemove": {
+			"title": "Ta bort {{type}}",
+			"message": "Är du säker på att du vill ta bort {{name}} från denna kanal? Denna åtgärd kan inte ångras.",
+			"cancel": "Avbryt",
+			"confirm": "Ta bort"
+		},
 		"warningModal": {
 			"publicChannelTitle": "Gör denna kanal tillgänglig för alla?",
 			"privateChannelTitle": "Gör denna kanal privat?",
