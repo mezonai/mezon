@@ -635,7 +635,7 @@ export default class App {
 	}
 
 	static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
-		if (process.platform === 'linux') {
+		if (process.platform === 'linux' && process.env.XDG_SESSION_TYPE === 'wayland') {
 			app.commandLine.appendSwitch('ozone-platform', 'wayland');
 			app.commandLine.appendSwitch('disable-features', 'Vulkan');
 		}
