@@ -5,6 +5,7 @@ import {
 	selectAllAccount,
 	selectAudioBusyTone,
 	selectAudioDialTone,
+	selectAudioRingTone,
 	selectCloseMenu,
 	selectDmGroupById,
 	selectIsInCall,
@@ -59,6 +60,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
+	const isPlayRingTone = useSelector(selectAudioRingTone);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
 	const dmUserId = currentDmGroup?.user_ids && currentDmGroup.user_ids.length > 0 ? currentDmGroup?.user_ids[0] : '';
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
@@ -309,6 +311,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		dmCallingDeviceMenuSubtitle(currentInputDevice, systemDefaultLabel) || dmCallingDeviceMenuSubtitle(currentOutputDevice, systemDefaultLabel);
 
 	if (!isInCall && !isInChannelCalled) return <div />;
+
+	if (!isInCall && isPlayRingTone) return <div />;
 
 	return (
 		<div

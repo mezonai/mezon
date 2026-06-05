@@ -14,13 +14,9 @@ export const DmCallManager = memo(({ userId, directId }: DmCallManagerProps) => 
 
 	return (
 		<>
-			{isPlayRingTone &&
-				!!dataCall &&
-				!isInAnyCall &&
-				directId !== dataCall?.channel_id &&
-				dataCall?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && (
-					<ModalCall dataCall={dataCall} userId={userId} triggerCall={triggerCall} clearCallState={clearCallState} />
-				)}
+			{isPlayRingTone && !!dataCall && !isInAnyCall && dataCall?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && (
+				<ModalCall dataCall={dataCall} userId={userId} triggerCall={triggerCall} clearCallState={clearCallState} />
+			)}
 
 			{/* check length make sure groupCallId valid */}
 			<DmCalling ref={dmCallingRef} dmGroupId={!!groupCallId && groupCallId?.length > 1 ? groupCallId : directId} directId={directId || ''} />
