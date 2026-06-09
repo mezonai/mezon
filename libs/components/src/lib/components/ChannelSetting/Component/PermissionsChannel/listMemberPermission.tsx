@@ -31,7 +31,8 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 
 	const deleteMember = async (userId: string) => {
 		if (channel.channel_private !== 1) {
-			props.setSelectedUserIds?.(props.selectedUserIds.filter((selectedId) => selectedId !== userId));
+			const nextSelectedUserIds = props.selectedUserIds.filter((selectedId) => selectedId !== userId);
+			props.setSelectedUserIds?.(nextSelectedUserIds);
 			return;
 		}
 
@@ -45,6 +46,8 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 			clanId: currentClanId as string
 		};
 		await dispatch(channelUsersActions.removeChannelUsers(body));
+		const nextSelectedUserIds = props.selectedUserIds.filter((selectedId) => selectedId !== userId);
+		props.setSelectedUserIds?.(nextSelectedUserIds);
 		if (currentClanId && userId === userProfile.userId) {
 			navigate(toMembersPage(currentClanId));
 		}

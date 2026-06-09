@@ -51,7 +51,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const rolesClan = useSelector(selectAllRolesClan);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const rolesChannel = useSelector(selectRolesByChannelId(channel.id));
-	const [selectedUserIds, setSelectedUserIds] = useState<string[]>(selectUserIds);
+	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(selectRoleIds);
 	const { userProfile } = useAuth();
 	const rolesAddChannel = useMemo(
@@ -74,13 +74,14 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 
 	const listUserInvite = useMemo(() => {
 		if (channel.channel_private !== 1) {
-			return usersClan.filter((user) => user.id !== userProfile?.user?.id && !selectedUserIds.includes(user.id));
+			return usersClan.filter(
+				(user) => user.id !== userProfile?.user?.id && !selectUserIds.includes(user.id) && !selectedUserIds.includes(user.id)
+			);
 		}
 		const channelUserSet = new Set(userChannelIds);
-		const selectedUserSet = new Set(selectedUserIds);
 
-		return usersClan.filter((user) => !channelUserSet.has(user.id) && !selectedUserSet.has(user.id));
-	}, [usersClan, userChannelIds, channel.channel_private, userProfile?.user?.id, selectedUserIds]);
+		return usersClan.filter((user) => !channelUserSet.has(user.id) && !selectedUserIds.includes(user.id));
+	}, [usersClan, userChannelIds, channel.channel_private, userProfile?.user?.id, selectedUserIds, selectUserIds]);
 
 	const initFilter: filterItemProps = useMemo(
 		() => ({
@@ -132,10 +133,10 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 			}
 		} else {
 			if (selectedUserIds.length > 0) {
-				onSelectedUsersChange(selectedUserIds);
+				onSelectedUsersChange([...new Set([...selectUserIds, ...selectedUserIds])]);
 			}
 			if (selectedRoleIds.length > 0) {
-				onSelectedRolesChange(selectedRoleIds);
+				onSelectedRolesChange([...new Set([...selectRoleIds, ...selectedRoleIds])]);
 			}
 		}
 	};
