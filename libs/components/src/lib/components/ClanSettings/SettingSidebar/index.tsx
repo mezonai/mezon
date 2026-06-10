@@ -22,10 +22,11 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [selectedButton, setSelectedButton] = useState<string | null>(currentSetting);
 	const clanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
-	const [isClanOwner, hasClanPermission, hasChannelPermission] = usePermissionChecker([
+	const [isClanOwner, hasClanPermission, hasChannelPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
-		EPermission.manageChannel
+		EPermission.manageChannel,
+		EPermission.administrator
 	]);
 	const userProfile = useSelector(selectAllAccount);
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
@@ -61,8 +62,11 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			if (item.id === ItemSetting.INTEGRATIONS) {
 				return hasClanPermission || hasChannelPermission;
 			}
-			if ([ItemSetting.OVERVIEW, ItemSetting.ROLES, ItemSetting.AUDIT_LOG, ItemSetting.ARCHIVED_CHANNELS].includes(item.id)) {
+			if ([ItemSetting.OVERVIEW, ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
 				return hasClanPermission;
+			}
+			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {
+				return isClanOwner || hasAdminPermission || hasClanPermission;
 			}
 			if (item.id === ItemSetting.ON_BOARDING || item.id === ItemSetting.ON_COMUNITY) {
 				return hasClanPermission;

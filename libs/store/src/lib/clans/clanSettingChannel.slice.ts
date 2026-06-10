@@ -263,14 +263,10 @@ export const fetchArchivedChannelsInClan = createAsyncThunk('channelSetting/fetc
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.listArchivedChannelDescs(mezon.session, clanId);
 
-		if (!response) {
-			return thunkAPI.rejectWithValue('Invalid fetchArchivedChannelsInClan');
-		}
-
-		return response;
+		return { channeldesc: response?.channeldesc || [] };
 	} catch (error) {
 		captureSentryError(error, 'channelSetting/fetchArchivedChannelsInClan');
-		return thunkAPI.rejectWithValue(error);
+		return { channeldesc: [] };
 	}
 });
 

@@ -3,6 +3,7 @@ import { Icons } from '@mezon/ui';
 import { generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
 import type { ApiChannelDescription } from 'mezon-js';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -11,6 +12,12 @@ const SettingArchivedChannels = () => {
 	const { t, i18n } = useTranslation('clanSettings', { keyPrefix: 'archivedChannels' });
 	const currentClanId = useSelector(selectCurrentClanId);
 	const listArchivedChannel = useSelector(selectArchivedChannels);
+
+	useEffect(() => {
+		if (currentClanId) {
+			dispatch(channelSettingActions.fetchArchivedChannelsInClan(currentClanId));
+		}
+	}, [currentClanId, dispatch]);
 
 	const handleRestore = async (channelId: string) => {
 		if (!currentClanId) return;
