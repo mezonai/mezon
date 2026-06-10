@@ -53,6 +53,7 @@ import {
 	ONE_MILISECONDS,
 	ONE_MINUTE_MS,
 	SubPanelName,
+	ThreadStatus,
 	buildChannelAppLaunchUrl,
 	generateE2eId,
 	isBackgroundModeActive,
@@ -111,8 +112,8 @@ function useChannelSeen(channelId: string) {
 
 	const updateChannelSeenState = useCallback(
 		(_channelId: string) => {
-			if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
-				const channelWithActive = { ...currentChannel, active: 1 };
+			if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD && currentChannel.active === ThreadStatus.archived) {
+				const channelWithActive = { ...currentChannel, active: ThreadStatus.activePublic };
 				dispatch(
 					channelsActions.upsertOne({
 						clanId: currentChannel?.clan_id || '0',

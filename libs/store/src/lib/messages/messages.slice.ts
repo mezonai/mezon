@@ -22,7 +22,9 @@ import {
 	getWebUploadedAttachments,
 	isFacebookLink,
 	isTikTokLink,
-	isYouTubeLink
+	isYouTubeLink,
+	revokePreSendAttachmentUrls,
+	toPublicMessageAttachments
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
@@ -1037,6 +1039,13 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 				} else {
 					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
 				}
+				thunkAPI.dispatch(
+					messagesActions.updateSendingMessageAttachments({
+						channelId,
+						messageId: id,
+						attachments: toPublicMessageAttachments(uploadedFiles)
+					})
+				);
 			}
 
 			const messageResult = await doSend(uploadedFiles);
@@ -1182,6 +1191,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					session
 				});
 			}
+			thunkAPI.dispatch(
+				messagesActions.updateSendingMessageAttachments({
+					channelId: channelId as string,
+					messageId: id,
+					attachments: toPublicMessageAttachments(uploadedFiles)
+				})
+			);
 		}
 
 		const state = thunkAPI.getState() as RootState;
@@ -1478,6 +1494,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 				client,
 				session
 			});
+			attachments.forEach(revokePreSendAttachmentUrls);
 		}
 
 		let avatarToUse = avatar;
@@ -1933,6 +1950,22 @@ export const messagesSlice = createSlice({
 					[channelId]: ''
 				};
 			}
+		},
+		updateSendingMessageAttachments: (
+			state,
+			action: PayloadAction<{ channelId: string; messageId: string; attachments: ApiMessageAttachment[] }>
+		) => {
+			const { channelId, messageId, attachments } = action.payload;
+			const channelEntity = state.channelMessages[channelId];
+			const existingMessage = channelEntity?.entities[messageId];
+			if (!existingMessage) {
+				return;
+			}
+			existingMessage.attachments?.forEach(revokePreSendAttachmentUrls);
+			channelMessagesAdapter.updateOne(channelEntity, {
+				id: messageId,
+				changes: { attachments }
+			});
 		},
 		markAsError: (
 			state,
@@ -2581,6 +2614,10 @@ const handleRemoveOneMessage = ({ state, channelId, messageId }: { state: Messag
 	if (Array.isArray(state.channelViewPortMessageIds[channelId])) {
 		state.channelViewPortMessageIds[channelId] = state.channelViewPortMessageIds[channelId].filter((item) => item !== messageId);
 	}
+
+	const removedMessage = channelEntity.entities[messageId];
+	removedMessage?.attachments?.forEach(revokePreSendAttachmentUrls);
+
 	return channelMessagesAdapter.removeOne(channelEntity, messageId);
 };
 

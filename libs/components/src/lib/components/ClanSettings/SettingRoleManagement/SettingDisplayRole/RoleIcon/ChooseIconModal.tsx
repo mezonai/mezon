@@ -7,7 +7,7 @@ import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { EmojiRolePanel } from '../../../../EmojiPicker/EmojiRolePanel';
-import { AttachmentLoader } from '../../../../MessageWithUser/MessageLinkFile';
+import { AttachmentLoader } from '../../../../MessageWithUser/AttachmentLoader';
 import { ELimitSize } from '../../../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 

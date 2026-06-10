@@ -1,5 +1,5 @@
 import type { RootState } from '@mezon/store';
-import { getStore, selectBanMeInChannel, selectCurrentUserId, selectTheme } from '@mezon/store';
+import { getStore, selectBanMeInChannel, selectCurrentUserId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { DOWNLOAD_FILE, EFailAttachment, EMimeTypes, electronBridge } from '@mezon/utils';
@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { ModalDeleteMess, RenderAttachmentThumbnail } from '../../components';
 import { usePopup } from '../DraggablePopup';
 import { PDFFooter, PDFHeader } from '../PDFViewer';
+import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 const PDFViewerModal = lazy(() => import('../PDFViewer').then((module) => ({ default: module.PDFViewerModal })));
 
 export type MessageImage = {
@@ -28,17 +29,7 @@ function formatFileSize(bytes: number) {
 	}
 }
 
-export const AttachmentLoader = ({
-	appearanceTheme
-}: {
-	appearanceTheme: 'light' | 'dark' | 'sunrise' | 'purple_haze' | 'redDark' | 'abyss_dark';
-}) => {
-	return (
-		<div className="w-[30px] h-[30px] flex justify-center items-center">
-			<div className={appearanceTheme === 'light' ? 'light-attachment-loader' : 'dark-attachment-loader'} />
-		</div>
-	);
-};
+export { AttachmentLoader } from './AttachmentLoader';
 
 const PDFLoadingFallback = () => {
 	return (
@@ -124,7 +115,6 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		setHoverShowOptButtonStatus(true);
 	};
 
-	const appearanceTheme = useSelector(selectTheme);
 	const currentUserId = useSelector(selectCurrentUserId);
 	const isOwner = message?.sender_id === currentUserId;
 
@@ -185,11 +175,10 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 			className={`break-all w-full relative cursor-default gap-3 flex items-center mt-[10px] py-3 pl-3 pr-3 rounded-lg max-w-full ${hideTheInformationFile ? 'bg-item-theme border-theme-primary ' : ''}  relative`}
 			role="button"
 		>
-			{message?.isSending ? (
-				<AttachmentLoader appearanceTheme={appearanceTheme} />
-			) : (
-				<div className="flex items-center">{thumbnailAttachment}</div>
-			)}
+			<div className="relative flex items-center shrink-0">
+				{thumbnailAttachment}
+				{message?.isSending && <AttachmentSendingIndicator className="rounded" />}
+			</div>
 			{attachmentData.filename === EFailAttachment.FAIL_ATTACHMENT ? (
 				<div className="text-red-500">Attachment failed to load.</div>
 			) : (

@@ -594,11 +594,24 @@ export const directSlice = createSlice({
 		remove: directAdapter.removeOne,
 		upsertOne: (state, action: PayloadAction<DirectEntity>) => {
 			const { entities } = state;
-			const existLabel = entities[action.payload.id]?.channel_label?.split(',');
-			const existingShowPinBadge = entities[action.payload.id]?.showPinBadge;
+			const existingEntity = entities[action.payload.id];
+			const existingShowPinBadge = existingEntity?.showPinBadge;
 			const dataUpdate = action.payload;
-			if (existLabel && existLabel?.length <= 1) {
-				dataUpdate.channel_label = entities[action.payload.id]?.channel_label;
+
+			if (dataUpdate.channel_label === undefined && existingEntity?.channel_label?.trim()) {
+				dataUpdate.channel_label = existingEntity.channel_label;
+			}
+			if (dataUpdate.avatars === undefined && existingEntity?.avatars?.length) {
+				dataUpdate.avatars = existingEntity.avatars;
+			}
+			if (dataUpdate.display_names === undefined && existingEntity?.display_names?.length) {
+				dataUpdate.display_names = existingEntity.display_names;
+			}
+			if (dataUpdate.usernames === undefined && existingEntity?.usernames?.length) {
+				dataUpdate.usernames = existingEntity.usernames;
+			}
+			if (dataUpdate.user_ids === undefined && existingEntity?.user_ids?.length) {
+				dataUpdate.user_ids = existingEntity.user_ids;
 			}
 
 			if (existingShowPinBadge !== undefined) {

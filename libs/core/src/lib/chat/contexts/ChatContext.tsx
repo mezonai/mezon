@@ -201,7 +201,10 @@ import {
 	beginReconnectWave,
 	consumeReconnectAttempt,
 	markNetworkProbeCompleted,
+	MAX_RECONNECT_WAVES_BEFORE_LOGOUT,
+	noteReconnectWaveExhausted,
 	refundReconnectAttempt,
+	resetExhaustedWaveCount,
 	resetReconnectWave,
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
@@ -214,6 +217,8 @@ const RECONNECT_CONNECT_WATCHDOG_MS = Client.DefaultConnectTimeoutMs + 8000;
 
 const RECONNECT_RETRY_BASE_MS = 500;
 const RECONNECT_RETRY_JITTER_MS = 400;
+
+const RECONNECT_WAVE_COOLDOWN_MS = 10000;
 
 function randomReconnectSpacingMs(): number {
 	return RECONNECT_RETRY_BASE_MS + Math.floor(Math.random() * RECONNECT_RETRY_JITTER_MS);
@@ -248,7 +253,7 @@ function reconnectJitterTicker$(): Observable<number> {
 	});
 }
 
-type ReconnectWaveTickResult = boolean | 'ATTEMPTS_EXHAUSTED' | 'RECONNECTING' | 'NETWORK_DOWN' | 'SKIP';
+type ReconnectWaveTickResult = boolean | 'ATTEMPTS_EXHAUSTED' | 'RECONNECTING' | 'NETWORK_DOWN' | 'WAVE_COOLDOWN' | 'SKIP';
 
 
 type ChatContextProviderProps = {
@@ -2579,6 +2584,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 		reconnectRecoveryPendingRef.current = false;
 		resetReconnectWave();
+		resetExhaustedWaveCount();
 		dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
 		dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
 		dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
@@ -2855,13 +2861,21 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							}
 
 							if (!consumeReconnectAttempt()) {
-								reconnectRecoveryPendingRef.current = false;
+								const exhaustedWaves = noteReconnectWaveExhausted();
+								if (exhaustedWaves >= MAX_RECONNECT_WAVES_BEFORE_LOGOUT) {
+									reconnectRecoveryPendingRef.current = false;
+									socketState.status = 'disconnected';
+									resetRefreshState();
+									dispatch(authActions.setLogout());
+									dispatch(walletActions.setLogout());
+									publishSessionUpdate(null, 'logout');
+									return 'ATTEMPTS_EXHAUSTED';
+								}
+
 								socketState.status = 'disconnected';
-								resetRefreshState();
-								dispatch(authActions.setLogout());
-								dispatch(walletActions.setLogout());
-								publishSessionUpdate(null, 'logout');
-								return 'ATTEMPTS_EXHAUSTED';
+								resetReconnectWave();
+								await new Promise((resolve) => setTimeout(resolve, RECONNECT_WAVE_COOLDOWN_MS));
+								return 'WAVE_COOLDOWN';
 							}
 
 							try {

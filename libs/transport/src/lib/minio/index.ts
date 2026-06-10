@@ -5,6 +5,7 @@ export class CustomFile extends File {
 	width?: number;
 	height?: number;
 	thumbnail?: string;
+	thumbnailBlob?: Blob;
 }
 
 export const isValidUrl = (urlString: string) => {
@@ -22,19 +23,19 @@ export const isContainsUrl = (text: string): boolean => {
 	return /(https?:\/\/[^\s]+)/.test(text);
 };
 
-export function uploadImageToMinIO(url: string, stream: Blob, size: number) {
-	return fetch(url, { method: 'PUT', body: stream });
+function minioPresignedPutBody(stream: Blob): Blob {
+	if (!stream.type) {
+		return stream;
+	}
+	return new Blob([stream], { type: '' });
 }
 
-export function uploadImageToMinIOMobile(url: string, stream: Blob, type: string, size: number) {
-	return fetch(url, {
-		method: 'PUT',
-		body: stream,
-		headers: {
-			'Content-Type': type,
-			'Content-Length': size?.toString() || '1000'
-		}
-	});
+export function uploadImageToMinIO(url: string, stream: Blob, _size: number) {
+	return fetch(url, { method: 'PUT', body: minioPresignedPutBody(stream) });
+}
+
+export function uploadImageToMinIOMobile(url: string, stream: Blob, _type: string, _size: number) {
+	return fetch(url, { method: 'PUT', body: minioPresignedPutBody(stream) });
 }
 
 export async function handleUploadEmoticon(client: Client, session: ApiSession, filename: string, file: File): Promise<ApiMessageAttachment> {
@@ -66,6 +67,84 @@ function getFileType(mimeType: string): string {
 	return mimeTypeMap[mimeType] || mimeType;
 }
 
+function isRemoteUrl(url: string): boolean {
+	return url.startsWith('http://') || url.startsWith('https://');
+}
+
+async function uploadThumbnailBlob(
+	client: Client,
+	session: ApiSession,
+	blob: Blob,
+	index?: number,
+	isOauth?: boolean
+): Promise<string | undefined> {
+	try {
+		const type = blob.type || 'image/jpeg';
+		const ext = type.includes('png') ? 'png' : 'jpg';
+		const { filePath, originalFilename } = createUploadFilePath(`thumb.${ext}`, false, index);
+		const result = await uploadFile(
+			client,
+			session,
+			filePath,
+			getFileType(type),
+			blob.size,
+			blob,
+			false,
+			originalFilename,
+			undefined,
+			undefined,
+			undefined,
+			isOauth
+		);
+		return result.url;
+	} catch {
+		return undefined;
+	}
+}
+
+async function uploadBlobThumbnail(
+	client: Client,
+	session: ApiSession,
+	blobUrl: string,
+	index?: number,
+	isOauth?: boolean
+): Promise<string | undefined> {
+	try {
+		const response = await fetch(blobUrl);
+		const blob = await response.blob();
+		return uploadThumbnailBlob(client, session, blob, index, isOauth);
+	} catch {
+		return undefined;
+	}
+}
+
+async function resolveThumbnailForUpload(
+	client: Client,
+	session: ApiSession,
+	file: CustomFile,
+	isVideo: boolean,
+	index?: number,
+	isOauth?: boolean
+): Promise<string | undefined> {
+	if (!isVideo) {
+		return file.thumbnail;
+	}
+	if (file.thumbnailBlob) {
+		return uploadThumbnailBlob(client, session, file.thumbnailBlob, index, isOauth);
+	}
+	const thumbnail = file.thumbnail;
+	if (!thumbnail) {
+		return undefined;
+	}
+	if (isRemoteUrl(thumbnail)) {
+		return thumbnail;
+	}
+	if (thumbnail.startsWith('blob:')) {
+		return uploadBlobThumbnail(client, session, thumbnail, index, isOauth);
+	}
+	return thumbnail;
+}
+
 export async function handleUploadFile(
 	client: Client,
 	session: ApiSession,
@@ -85,7 +164,28 @@ export async function handleUploadFile(
 			}
 			const shortFileType = getFileType(fileType);
 			const { filePath, originalFilename } = createUploadFilePath(filename, false, index);
-			const buf = await file?.arrayBuffer();
+			const isVideo = fileType.startsWith('video/');
+
+			if (isVideo) {
+				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, isOauth);
+				const videoPromise = uploadFile(
+					client,
+					session,
+					filePath,
+					shortFileType,
+					file.size,
+					file,
+					false,
+					originalFilename,
+					file.width,
+					file.height,
+					undefined,
+					isOauth
+				);
+				const [thumbnail, videoResult] = await Promise.all([thumbPromise, videoPromise]);
+				resolve({ ...videoResult, thumbnail: thumbnail ?? videoResult.thumbnail });
+				return;
+			}
 
 			resolve(
 				uploadFile(
@@ -94,7 +194,7 @@ export async function handleUploadFile(
 					filePath,
 					shortFileType,
 					file.size,
-					new Blob([buf], { type: shortFileType }),
+					file,
 					false,
 					originalFilename,
 					file.width,

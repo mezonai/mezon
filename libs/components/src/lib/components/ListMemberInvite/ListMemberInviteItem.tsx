@@ -100,7 +100,9 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 		<ItemInviteDM
 			channelID={dmGroup.channel_id}
 			type={Number(dmGroup.type)}
-			avatar={dmGroup.type === ChannelType.CHANNEL_TYPE_GROUP ? dmGroup.topic || '/assets/images/avatar-group.png' : dmGroup.avatars?.at(0)}
+			avatar={
+				dmGroup.type === ChannelType.CHANNEL_TYPE_GROUP ? dmGroup.channel_avatar || '/assets/images/avatar-group.png' : dmGroup.avatars?.at(0)
+			}
 			label={dmGroup.channel_label}
 			isInviteSent={isInviteSent}
 			onHandle={() => handleButtonClick(dmGroup.channel_id || '0', dmGroup.type || 0, dmGroup.user_ids?.at(0))}

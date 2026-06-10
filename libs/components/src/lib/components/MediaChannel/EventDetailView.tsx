@@ -1,5 +1,10 @@
-import type { ChannelTimelineAttachment } from '@mezon/store';
-import { channelMediaActions, useAppDispatch } from '@mezon/store';
+import type { ChannelTimeline, ChannelTimelineAttachment } from '@mezon/store';
+import {
+	channelMediaActions,
+	selectChannelTimelineDetailById,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, isImageFileType, isVideoFileType } from '@mezon/utils';
@@ -26,11 +31,11 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 	const dispatch = useAppDispatch();
 	const { sessionRef, clientRef } = useMezon();
 
-	const [isLoading, setIsLoading] = useState(true);
+	const eventFromStore = useAppSelector((state) => selectChannelTimelineDetailById(state, eventId));
+
+	const [isLoading, setIsLoading] = useState(() => !eventFromStore);
 	const [showSkeleton, setShowSkeleton] = useState(false);
-	const [attachments, setAttachments] = useState<ChannelTimelineAttachment[]>([]);
-	const attachmentsRef = useRef<ChannelTimelineAttachment[]>([]);
-	const [_isUploading, setIsUploading] = useState(false);
+	const [isUploading, setIsUploading] = useState(false);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [isEditingDescription, setIsEditingDescription] = useState(false);
 	const [title, setTitle] = useState('');
@@ -46,6 +51,20 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 
 	const months = useMemo(() => (t('monthsShort', { returnObjects: true }) as string[]) || [], [t]);
 
+	const attachments = eventFromStore?.attachments ?? [];
+
+	const formattedDate = useMemo(() => {
+		const startSeconds = eventFromStore?.start_time_seconds ?? startTimeSeconds;
+		if (!startSeconds) {
+			return '';
+		}
+		const d = new Date(startSeconds * 1000);
+		const month = months[d.getMonth()];
+		const day = String(d.getDate()).padStart(2, '0');
+		const year = String(d.getFullYear());
+		return `${month} ${day}, ${year}`;
+	}, [eventFromStore?.start_time_seconds, startTimeSeconds, months]);
+
 	useEffect(() => {
 		if (!isLoading) return;
 		const timer = setTimeout(() => setShowSkeleton(true), 400);
@@ -53,10 +72,14 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 	}, [isLoading]);
 
 	useEffect(() => {
+		let cancelled = false;
+
 		const fetchDetail = async () => {
-			setIsLoading(true);
+			if (!eventFromStore) {
+				setIsLoading(true);
+			}
 			try {
-				const result = await dispatch(
+				await dispatch(
 					channelMediaActions.detailChannelTimeline({
 						id: eventId,
 						clan_id: clanId,
@@ -64,34 +87,37 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 						start_time_seconds: startTimeSeconds
 					})
 				).unwrap();
-
-				const event = result.event;
-				if (event) {
-					setTitle(event.title || '');
-					savedTitleRef.current = event.title || '';
-					setDescription(event.description || '');
-					savedDescriptionRef.current = event.description || '';
-					setAttachments(event.attachments || []);
-					attachmentsRef.current = event.attachments || [];
-
-					if (event.start_time_seconds) {
-						const d = new Date(event.start_time_seconds * 1000);
-						const month = months[d.getMonth()];
-						const day = String(d.getDate()).padStart(2, '0');
-						const year = String(d.getFullYear());
-						setDate(`${month} ${day}, ${year}`);
-					}
-				}
 			} catch {
 				/* handled by loading state */
 			} finally {
-				setIsLoading(false);
-				setShowSkeleton(false);
+				if (!cancelled) {
+					setIsLoading(false);
+					setShowSkeleton(false);
+				}
 			}
 		};
 
 		fetchDetail();
-	}, [dispatch, eventId, clanId, channelId, startTimeSeconds, months]);
+
+		return () => {
+			cancelled = true;
+		};
+	}, [dispatch, eventId, clanId, channelId, startTimeSeconds]);
+
+	useEffect(() => {
+		if (!eventFromStore) {
+			return;
+		}
+		if (!isEditingTitle) {
+			setTitle(eventFromStore.title || '');
+			savedTitleRef.current = eventFromStore.title || '';
+		}
+		if (!isEditingDescription) {
+			setDescription(eventFromStore.description || '');
+			savedDescriptionRef.current = eventFromStore.description || '';
+		}
+		setDate(formattedDate);
+	}, [eventFromStore, isEditingTitle, isEditingDescription, formattedDate]);
 
 	const [showImageModal, hideImageModal] = useModal(
 		() => (
@@ -148,12 +174,31 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 			}));
 
 			const previewIds = new Set(previewItems.map((p) => p.id));
+			const baseAttachments = eventFromStore?.attachments ?? [];
+			const withPreviews = [...baseAttachments, ...previewItems];
 
-			setAttachments((prev) => {
-				const updated = [...prev, ...previewItems];
-				attachmentsRef.current = updated;
-				return updated;
-			});
+			dispatch(
+				channelMediaActions.patchEventDetailCache({
+					event: {
+						...(eventFromStore ?? {
+							id: eventId,
+							clan_id: clanId,
+							channel_id: channelId,
+							start_time_seconds: startTimeSeconds,
+							title: title || '',
+							description: description || '',
+							end_time_seconds: 0,
+							location: '',
+							status: 0,
+							creator_id: '',
+							create_time_seconds: 0,
+							update_time_seconds: 0,
+							preview_imgs: []
+						}),
+						attachments: withPreviews
+					}
+				})
+			);
 
 			try {
 				const uploadResults = await Promise.all(fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx)));
@@ -169,11 +214,9 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 					thumbnail: uploaded.thumbnail || previewItems[idx].thumbnail
 				}));
 
-				const allAttachments = [...attachmentsRef.current.filter((att) => !previewIds.has(att.id)), ...newAttachments];
-				attachmentsRef.current = allAttachments;
-				setAttachments(allAttachments);
+				const allAttachments = [...baseAttachments.filter((att) => !previewIds.has(att.id)), ...newAttachments];
 
-				await dispatch(
+				const { event: updatedEvent } = await dispatch(
 					channelMediaActions.updateChannelTimeline({
 						id: eventId,
 						clan_id: clanId,
@@ -182,12 +225,33 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 						attachments: newAttachments
 					})
 				).unwrap();
-			} catch {
-				setAttachments((prev) => {
-					const updated = prev.filter((att) => isUploaded(att));
-					attachmentsRef.current = updated;
-					return updated;
+
+				previewItems.forEach((item) => {
+					if (item.file_url.startsWith('blob:')) {
+						URL.revokeObjectURL(item.file_url);
+					}
 				});
+
+				dispatch(
+					channelMediaActions.patchEventDetailCache({
+						event: {
+							...(updatedEvent ?? eventFromStore ?? { id: eventId }),
+							attachments:
+								(updatedEvent?.attachments?.length ?? 0) >= allAttachments.length
+									? updatedEvent!.attachments
+									: allAttachments
+						} as ChannelTimeline
+					})
+				);
+			} catch {
+				dispatch(
+					channelMediaActions.patchEventDetailCache({
+						event: {
+							...(eventFromStore ?? { id: eventId }),
+							attachments: baseAttachments.filter((att) => isUploaded(att))
+						} as ChannelTimeline
+					})
+				);
 			} finally {
 				setIsUploading(false);
 				if (fileInputRef.current) {
@@ -195,7 +259,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 				}
 			}
 		},
-		[clientRef, sessionRef, dispatch, eventId, clanId, channelId, startTimeSeconds]
+		[clientRef, sessionRef, dispatch, eventId, clanId, channelId, startTimeSeconds, eventFromStore, title, description]
 	);
 
 	const handleUploadClick = useCallback(() => {
@@ -359,7 +423,11 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 					)}
 				</div>
 				{!isLoading && (
-					<button onClick={handleUploadClick} className="p-2 rounded-lg text-theme-primary text-theme-primary-hover transition-colors">
+					<button
+						onClick={handleUploadClick}
+						disabled={isUploading}
+						className="p-2 rounded-lg text-theme-primary text-theme-primary-hover transition-colors disabled:opacity-50"
+					>
 						<Icons.ImageThumbnail defaultSize="w-5 h-5" />
 					</button>
 				)}
@@ -497,7 +565,8 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 
 							<button
 								onClick={handleUploadClick}
-								className="relative rounded-xl overflow-hidden aspect-square border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 flex flex-col items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors cursor-pointer bg-theme-primary"
+								disabled={isUploading}
+								className="relative rounded-xl overflow-hidden aspect-square border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 flex flex-col items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors cursor-pointer bg-theme-primary disabled:opacity-50"
 								data-e2e={generateE2eId('timeline.buttons.add_media')}
 							>
 								<Icons.PlusIcon defaultSize="w-8 h-8" />

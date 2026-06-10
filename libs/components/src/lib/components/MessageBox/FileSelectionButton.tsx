@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFilesForAttachment } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { useRef, useState } from 'react';
@@ -53,7 +53,7 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 				setOverUploadingState(true, UploadLimitReason.SIZE, limit);
 				return;
 			}
-			const updatedFiles = await Promise.all(fileArr.map(processFile<ApiMessageAttachment>));
+			const updatedFiles = await processFilesForAttachment(fileArr);
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
 					channelId: currentChannelId,

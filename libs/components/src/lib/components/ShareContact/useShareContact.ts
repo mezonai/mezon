@@ -8,6 +8,7 @@ import {
 	selectAllDirectMessages,
 	selectAllFriends,
 	selectBlockedUsers,
+	selectClansEntities,
 	toastActions,
 	useAppDispatch
 } from '@mezon/store';
@@ -74,6 +75,7 @@ export const useShareContact = ({ contactUser, t }: UseShareContactProps) => {
 	const blockedUsers = useSelector(selectBlockedUsers);
 	const allDirectMessages = useSelector(selectAllDirectMessages);
 	const allChannels = useSelector(selectAllChannelsByUser);
+	const clansEntities = useSelector(selectClansEntities);
 
 	const blockedUserIds = useMemo(() => new Set(blockedUsers.map((b) => b?.user?.id)), [blockedUsers]);
 
@@ -118,13 +120,13 @@ export const useShareContact = ({ contactUser, t }: UseShareContactProps) => {
 				type: (ch.type === ChannelType.CHANNEL_TYPE_THREAD ? 'thread' : 'channel') as ShareItemType,
 				channelId: ch.channel_id || ch.id,
 				clanId: ch.clan_id || '',
-				clanName: ch.clan_name || '',
+				clanName: ch.clan_id ? clansEntities?.[ch.clan_id]?.clan_name || '' : '',
 				isPublic: !ch.channel_private,
 				isAgeRestricted: (ch as { age_restricted?: number }).age_restricted === 1
 			}));
 
 		return [...friendItems, ...dmGroupItems, ...channelItems];
-	}, [allFriends, allDirectMessages, allChannels, contactUser, currentUser, blockedUserIds]);
+	}, [allFriends, allDirectMessages, allChannels, contactUser, currentUser, blockedUserIds, clansEntities]);
 
 	const handleToggleItem = (itemId: string) => {
 		setSelectedItemIds((prev) => (prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]));

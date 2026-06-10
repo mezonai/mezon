@@ -1,5 +1,7 @@
 import { CONTENT_TYPES_WITH_PREVIEW } from '../types';
-import { pause } from '../utils';
+import { capturePosterFromVideoElement } from './videoPoster';
+
+export { capturePosterFromVideoElement } from './videoPoster';
 
 // Polyfill for Safari: `File` is not available in web worker
 if (typeof File === 'undefined') {
@@ -68,30 +70,9 @@ export function preloadVideo(url: string): Promise<HTMLVideoElement> {
 export async function createPosterForVideo(url: string): Promise<string | undefined> {
 	try {
 		const video = await preloadVideo(url);
-
-		return await Promise.race([
-			pause(2000) as Promise<undefined>,
-			new Promise<string | undefined>((resolve, reject) => {
-				video.onseeked = () => {
-					if (!video.videoWidth || !video.videoHeight) {
-						resolve(undefined);
-					}
-
-					const canvas = document.createElement('canvas');
-					canvas.width = video.videoWidth;
-					canvas.height = video.videoHeight;
-					const ctx = canvas.getContext('2d')!;
-					ctx.drawImage(video, 0, 0);
-
-					canvas.toBlob((blob) => {
-						resolve(blob ? URL.createObjectURL(blob) : undefined);
-					});
-				};
-				video.onerror = reject;
-				video.currentTime = Math.min(video.duration, 1);
-			})
-		]);
-	} catch (e) {
+		const blob = await capturePosterFromVideoElement(video);
+		return blob ? URL.createObjectURL(blob) : undefined;
+	} catch {
 		return undefined;
 	}
 }

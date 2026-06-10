@@ -1,7 +1,7 @@
 import { useChatSending, useCurrentInbox } from '@mezon/core';
 import { referencesActions } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
-import { blobToFile, getChannelMode, processFile } from '@mezon/utils';
+import { blobToFile, getChannelMode, processFilesForAttachment } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment } from 'mezon-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -79,7 +79,7 @@ const AudioRecorderControl: React.FC<AudioRecorderProps> = React.memo(({ onSendR
 			const blob = new Blob(chunksRef.current, { type: 'audio/mp3; codecs=opus' });
 			const convertedFile = blobToFile(blob);
 			const filesArray = Array.from([convertedFile]);
-			const updatedFiles = await Promise.all(filesArray.map(processFile<ApiMessageAttachment>));
+			const updatedFiles = await processFilesForAttachment(filesArray);
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
 					channelId: currentInbox?.id as string,

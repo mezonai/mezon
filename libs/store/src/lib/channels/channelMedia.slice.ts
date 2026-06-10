@@ -3,7 +3,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { CacheMetadata } from '../cache-metadata';
-import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { ensureSession, getMezonCtx, type MezonValueContext } from '../helpers';
 
 export const CHANNEL_MEDIA_FEATURE_KEY = 'channelMedia';
@@ -170,17 +170,22 @@ export const updateChannelTimeline = createAsyncThunk(
 	}
 );
 
+const selectCachedEventDetail = (state: RootState, eventId: string): ChannelTimeline | undefined =>
+	state[CHANNEL_MEDIA_FEATURE_KEY].eventDetailCache[eventId]?.event;
+
 const detailChannelTimelineCached = async (getState: () => RootState, ensuredMezon: MezonValueContext, payload: detailChannelTimelinePayload) => {
 	const { noCache, ...requestPayload } = payload;
 	const currentState = getState();
-	const channelMediaState = currentState[CHANNEL_MEDIA_FEATURE_KEY];
-	const cached = channelMediaState.eventDetailCache[payload.id];
+	const cachedEvent = selectCachedEventDetail(currentState, payload.id);
+	const cached = currentState[CHANNEL_MEDIA_FEATURE_KEY].eventDetailCache[payload.id];
 	const apiKey = createApiKey('detailChannelTimeline', payload.id);
 
-	if (!noCache && cached && isCacheValid(cached.cache)) {
+	const shouldForceCall = shouldForceApiCall(apiKey, cached?.cache, noCache);
+
+	if (!shouldForceCall && cachedEvent) {
 		return {
 			channelId: payload.channel_id,
-			event: cached.event,
+			event: cachedEvent,
 			fromCache: true
 		};
 	}
@@ -215,6 +220,29 @@ export const initialChannelMediaState: ChannelMediaState = {
 	eventDetailCache: {}
 };
 
+function mergeChannelTimelineEvent(existing: ChannelTimeline | undefined, incoming: ChannelTimeline): ChannelTimeline {
+	if (!existing) {
+		return incoming;
+	}
+	return {
+		...existing,
+		...incoming,
+		attachments: incoming.attachments ?? existing.attachments,
+		preview_imgs: incoming.preview_imgs ?? existing.preview_imgs
+	};
+}
+
+function syncEventDetailCache(state: ChannelMediaState, event: ChannelTimeline) {
+	if (!event?.id) {
+		return;
+	}
+	const merged = mergeChannelTimelineEvent(state.eventDetailCache[event.id]?.event, event);
+	state.eventDetailCache[event.id] = {
+		event: merged,
+		cache: createCacheMetadata(CHANNEL_MEDIA_CACHED_TIME)
+	};
+}
+
 export const channelMediaSlice = createSlice({
 	name: CHANNEL_MEDIA_FEATURE_KEY,
 	initialState: initialChannelMediaState,
@@ -227,6 +255,9 @@ export const channelMediaSlice = createSlice({
 					delete state.eventDetailCache[id];
 				}
 			}
+		},
+		patchEventDetailCache: (state, action: PayloadAction<{ event: ChannelTimeline }>) => {
+			syncEventDetailCache(state, action.payload.event);
 		}
 	},
 	extraReducers: (builder) => {
@@ -272,6 +303,7 @@ export const channelMediaSlice = createSlice({
 				} else {
 					events.splice(insertIndex, 0, event);
 				}
+				syncEventDetailCache(state, event);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(createChannelTimeline.rejected, (state, action) => {
@@ -287,10 +319,12 @@ export const channelMediaSlice = createSlice({
 				if (state.eventsByChannel[channelId]) {
 					const index = state.eventsByChannel[channelId].events.findIndex((e) => e.id === event.id);
 					if (index !== -1) {
-						state.eventsByChannel[channelId].events[index] = event;
+						const existing = state.eventsByChannel[channelId].events[index];
+						state.eventsByChannel[channelId].events[index] = mergeChannelTimelineEvent(existing, event);
 					}
 				}
 
+				syncEventDetailCache(state, event);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(updateChannelTimeline.rejected, (state, action) => {
@@ -309,10 +343,7 @@ export const channelMediaSlice = createSlice({
 				) => {
 					const { event, fromCache } = action.payload;
 					if (!fromCache && event?.id) {
-						state.eventDetailCache[event.id] = {
-							event,
-							cache: createCacheMetadata(CHANNEL_MEDIA_CACHED_TIME)
-						};
+						syncEventDetailCache(state, event);
 					}
 					state.loadingStatus = 'loaded';
 				}
@@ -338,3 +369,8 @@ export const selectChannelMediaByChannelId = createSelector(
 );
 
 export const selectChannelMediaLoadingStatus = createSelector([getChannelMediaState], (state) => state.loadingStatus);
+
+export const selectChannelTimelineDetailById = createSelector(
+	[getChannelMediaState, (_state: unknown, eventId: string) => eventId],
+	(state, eventId) => state.eventDetailCache[eventId]?.event
+);

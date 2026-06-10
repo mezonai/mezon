@@ -43,7 +43,7 @@ import {
 	UploadLimitReason,
 	ValidateSpecialCharacters,
 	generateE2eId,
-	processFile
+	processFilesForAttachment
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -388,7 +388,7 @@ const ThreadBox = () => {
 				return;
 			}
 
-			const updatedFiles = await Promise.all(files.map(processFile<ApiMessageAttachment>));
+			const updatedFiles = await processFilesForAttachment(files);
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
 					channelId: currentInputChannelId,

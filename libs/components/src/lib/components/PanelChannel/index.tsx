@@ -556,12 +556,12 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			) : (
 				<>
 					<GroupPanels>
-						{/* {!isHideArchive && hasManageThreadPermission && (
+						{!isHideArchive && hasManageThreadPermission && (
 							<ItemPanel
 								children={isThread ? t('menu.notification.archiveThread') : t('menu.notification.archiveChannel')}
 								onClick={handleOpenArchiveConfirm}
 							/>
-						)} */}
+						)}
 						{!getNotificationChannelSelected?.time_mute_seconds ? (
 							<Menu
 								trigger="hover"

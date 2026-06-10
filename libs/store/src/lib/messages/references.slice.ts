@@ -1,5 +1,5 @@
 import type { IMessage, PreSendAttachment } from '@mezon/utils';
-import { AttachmentTypeUpload, MAX_FILE_ATTACHMENTS } from '@mezon/utils';
+import { AttachmentTypeUpload, MAX_FILE_ATTACHMENTS, revokePreSendAttachmentUrls } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse, type ApiMessageRef } from 'mezon-js';
@@ -165,7 +165,7 @@ export const referencesSlice = createSlice({
 
 			if (attachment) {
 				if (index >= 0 && index < attachment.files.length) {
-					// Remove the file at the specified index
+					revokePreSendAttachmentUrls(attachment.files[index]);
 					attachment.files.splice(index, 1);
 
 					// If no files are left, remove the attachment entry
@@ -190,6 +190,7 @@ export const referencesSlice = createSlice({
 				const fileIndex = attachment.files.findIndex((file) => file?.filename === fileName);
 
 				if (fileIndex >= 0) {
+					revokePreSendAttachmentUrls(attachment.files[fileIndex]);
 					attachment.files.splice(fileIndex, 1);
 
 					// If no files are left, remove the attachment entry

@@ -1121,6 +1121,13 @@ export enum ENotificationTypes {
 	NOTHING_MESSAGE = NotificationType.NOTHING_MESSAGE
 }
 
+export type PreSendMediaAttachmentFields = {
+	_sourceFile?: File;
+	_thumbnailBlob?: Blob;
+};
+
+export type PreSendMediaAttachment = ApiMessageAttachment & PreSendMediaAttachmentFields;
+
 export type PreSendAttachment = {
 	channelId?: string;
 	mode?: string;

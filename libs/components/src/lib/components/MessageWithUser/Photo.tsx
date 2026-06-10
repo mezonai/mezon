@@ -10,6 +10,7 @@ import {
 } from '@mezon/utils';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
+import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 
 let lastSentUrl: string | null = null;
 
@@ -168,6 +169,7 @@ const Photo = <T,>({
 					isInSearchMessage={isInSearchMessage}
 				/>
 			)}
+			{isSending && <AttachmentSendingIndicator />}
 			{!isSending && shouldRenderSkeleton && (
 				<div
 					style={{ width: displayWidth, height: displayHeight }}
@@ -175,13 +177,6 @@ const Photo = <T,>({
 				/>
 			)}
 			{isProtected && <span className="protector" />}
-			{isSending && (
-				<div
-					style={{ width: displayWidth, height: displayHeight }}
-					className={`${!photo.thumbnail?.dataUri ? 'bg-[#0000001c]' : ''} max-w-full max-h-full absolute bottom-0 left-0 flex items-center justify-center bg-muted/30 backdrop-blur-[2px] rounded-md z-[3]`}
-					aria-hidden="true"
-				></div>
-			)}
 		</div>
 	);
 };

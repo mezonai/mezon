@@ -32,7 +32,7 @@ import {
 	UploadLimitReason,
 	generateE2eId,
 	isBackgroundModeActive,
-	processFile,
+	processFilesForAttachment,
 	useBackgroundMode
 } from '@mezon/utils';
 import isElectron from 'is-electron';
@@ -185,7 +185,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 						setOverUploadingState(true, UploadLimitReason.COUNT);
 						return;
 					}
-					const updatedFiles = await Promise.all(files.map(processFile<ApiMessageAttachment>));
+					const updatedFiles = await processFilesForAttachment(files);
 					dispatch(
 						referencesActions.setAtachmentAfterUpload({
 							channelId: currentInputChannelId,
@@ -240,7 +240,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 			return;
 		}
 
-		const updatedFiles = await Promise.all(filesArray.map(processFile<ApiMessageAttachment>));
+		const updatedFiles = await processFilesForAttachment(filesArray);
 		dispatch(
 			referencesActions.setAtachmentAfterUpload({
 				channelId: currentInputChannelId,

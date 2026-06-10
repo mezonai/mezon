@@ -1,4 +1,5 @@
-import { SearchItemProps, TypeSearch } from '@mezon/utils';
+import type { SearchItemProps } from '@mezon/utils';
+import { TypeSearch } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useContext, useMemo } from 'react';
 import { SuggestItem } from '../../components';
@@ -24,7 +25,7 @@ const ListSearchModal = (props: ListSearchModalProps) => {
 		listSearch.length > 0 &&
 		listSearch.map((item: SearchItemProps) => {
 			const isChannel = item.typeChat === TypeSearch.Channel_Type;
-			const isUnread = item.lastSeenTimeStamp < item.lastSentTimeStamp && !item.count_messsage_unread;
+			const isUnread = item.lastSeenTimeStamp < item.lastSentTimeStamp || !!item.count_messsage_unread;
 			return (
 				<div
 					key={item.id}

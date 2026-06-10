@@ -123,7 +123,12 @@ const Attachments: React.FC<{
 					<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
 						{videos.map((video, index) => (
 							<div key={index} className="gap-y-2 max-w-full min-w-0">
-								<MessageVideo attachmentData={video} isMobile={isMobile} observeIntersection={observeIntersectionForLoading} />
+								<MessageVideo
+									attachmentData={video}
+									isMobile={isMobile}
+									isSending={message.isSending}
+									observeIntersection={observeIntersectionForLoading}
+								/>
 							</div>
 						))}
 					</div>
@@ -151,7 +156,12 @@ const Attachments: React.FC<{
 			</>
 		);
 	},
-	(prev, next) => prev.attachments === next.attachments && prev.message.id === next.message.id && prev.mode === next.mode
+	(prev, next) =>
+		prev.attachments === next.attachments &&
+		prev.message.id === next.message.id &&
+		prev.message.isSending === next.message.isSending &&
+		prev.message.attachments === next.message.attachments &&
+		prev.mode === next.mode
 );
 
 Attachments.displayName = 'Attachments';
@@ -176,7 +186,11 @@ const MessageAttachment = memo(
 			/>
 		);
 	},
-	(prev, next) => prev.message.id === next.message.id && prev.message.attachments === next.message.attachments && prev.mode === next.mode
+	(prev, next) =>
+		prev.message.id === next.message.id &&
+		prev.message.attachments === next.message.attachments &&
+		prev.message.isSending === next.message.isSending &&
+		prev.mode === next.mode
 );
 
 MessageAttachment.displayName = 'MessageAttachment';

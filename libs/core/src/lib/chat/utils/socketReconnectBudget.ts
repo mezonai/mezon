@@ -2,9 +2,12 @@ export const MIN_NETWORK_PROBE_INTERVAL_MS = 4000;
 
 export const MAX_RECONNECT_ATTEMPTS_PER_WAVE = 5;
 
+export const MAX_RECONNECT_WAVES_BEFORE_LOGOUT = 5;
+
 let waveConnectAttempts = 0;
 let reconnectWaveId = 0;
 let lastNetworkProbeAt = 0;
+let exhaustedWaveCount = 0;
 
 export function getReconnectWaveAttempts(): number {
 	return waveConnectAttempts;
@@ -53,6 +56,15 @@ export function refundReconnectAttempt(): void {
 	if (waveConnectAttempts > 0) {
 		waveConnectAttempts -= 1;
 	}
+}
+
+export function noteReconnectWaveExhausted(): number {
+	exhaustedWaveCount += 1;
+	return exhaustedWaveCount;
+}
+
+export function resetExhaustedWaveCount(): void {
+	exhaustedWaveCount = 0;
 }
 
 export function resetReconnectWave(): void {

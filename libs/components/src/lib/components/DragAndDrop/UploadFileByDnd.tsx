@@ -1,6 +1,6 @@
 import { useDragAndDrop } from '@mezon/core';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFilesForAttachment } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import type { DragEvent } from 'react';
 import DragAndDropUI from './DragAndDropUI';
@@ -52,7 +52,7 @@ function FileUploadByDnD({ currentId }: FileUploadByDnDOpt) {
 			return;
 		}
 
-		const updatedFiles = await Promise.all(filesArray.map(processFile<ApiMessageAttachment>));
+		const updatedFiles = await processFilesForAttachment(filesArray);
 		dispatch(
 			referencesActions.setAtachmentAfterUpload({
 				channelId: currentId,

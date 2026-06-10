@@ -1,10 +1,9 @@
 import { Icons } from '@mezon/ui';
-import { EMimeTypes, SHOW_POSITION, fileTypeImage, fileTypeVideo } from '@mezon/utils';
+import { EMimeTypes, SHOW_POSITION, createImgproxyUrl, fileTypeImage, fileTypeVideo } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { MessageAudioControl } from '../MessageWithUser/MessageAudio/MessageAudioControl';
-import MessageVideo from '../MessageWithUser/MessageVideo';
 import { typeFormats } from './TypeFormats';
 
 export interface IRenderAttachmentThumbnailParam {
@@ -47,8 +46,24 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList }:
 			)}
 
 			{hasFileVideo && (
-				<div className="w-[200px] h-[200px] min-w-0 min-h-0 overflow-hidden flex items-center justify-center rounded-md [&_video]:max-h-full [&_video]:max-w-full [&_video]:object-contain">
-					<MessageVideo attachmentData={attachment} isPreview={true} />
+				<div className="relative w-[174px] aspect-square overflow-hidden rounded-md bg-bgLightSecondary dark:bg-bgSecondary">
+					{attachment.thumbnail && (
+						<img
+							src={
+								attachment.thumbnail.startsWith('blob:')
+									? attachment.thumbnail
+									: createImgproxyUrl(attachment.thumbnail, { width: 174, height: 174, resizeType: 'fill' })
+							}
+							role="presentation"
+							className="w-full h-full object-cover"
+							alt=""
+						/>
+					)}
+					<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+						<div className="flex items-center justify-center w-10 h-10 rounded-full bg-black bg-opacity-50">
+							<Icons.PlayButton className="w-5 h-5 text-white" />
+						</div>
+					</div>
 				</div>
 			)}
 

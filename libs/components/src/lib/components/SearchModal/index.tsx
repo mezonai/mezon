@@ -1,5 +1,5 @@
 import { useAppNavigation, useAuth, useDirect } from '@mezon/core';
-import type { DirectEntity } from '@mezon/store';
+import type { ChannelMetaEntity, DirectEntity } from '@mezon/store';
 import {
 	appActions,
 	categoriesActions,
@@ -10,6 +10,9 @@ import {
 	selectAllChannelsByUser,
 	selectAllDirectMessages,
 	selectAllUsesInAllClansEntities,
+	selectChannelMetaEntities,
+	selectClansEntities,
+	selectDmMetaEntities,
 	selectEntitesUserClans,
 	selectPreviousChannels,
 	useAppDispatch,
@@ -22,7 +25,6 @@ import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { ModalLayout } from '../../components';
 import { ListGroupSearchModal } from './ListGroupSeacrhModal';
 
@@ -30,21 +32,47 @@ export type SearchModalProps = {
 	onClose: () => void;
 };
 
+const withChannelMetaUnread = (lastSent: number, lastSeen: number, countUnread: number | undefined, meta?: ChannelMetaEntity) => {
+	const fromList = {
+		lastSentTimeStamp: lastSent,
+		lastSeenTimeStamp: lastSeen,
+		count_messsage_unread: countUnread
+	};
+	if (!meta) {
+		return fromList;
+	}
+	const listSaysUnread = (countUnread ?? 0) > 0 || lastSent > lastSeen;
+	const metaSaysUnread = (meta.count_mess_unread ?? 0) > 0 || (meta.lastSentTimestamp ?? 0) > (meta.lastSeenTimestamp ?? 0);
+	if (listSaysUnread && metaSaysUnread) {
+		return fromList;
+	}
+	return {
+		lastSentTimeStamp: Math.max(lastSent, meta.lastSentTimestamp ?? 0),
+		lastSeenTimeStamp: meta.lastSeenTimestamp ?? 0,
+		count_messsage_unread: meta.count_mess_unread ?? undefined
+	};
+};
+
+const getMetaUnreadSignature = (entities: Record<string, ChannelMetaEntity | undefined>, channelIds: string[]) =>
+	channelIds
+		.map((id) => {
+			const meta = entities[id];
+			return meta ? `${meta.count_mess_unread ?? 0}:${meta.lastSentTimestamp ?? 0}:${meta.lastSeenTimestamp ?? 0}` : '';
+		})
+		.join('|');
+
 function SearchModal({ onClose }: SearchModalProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
-	const allClanUsersEntitiesRef = useRef(useSelector(selectEntitesUserClans));
-	const dmGroupChatListRef = useRef(useAppSelector(selectAllDirectMessages));
-	const listChannelsRef = useRef(useAppSelector(selectAllChannelsByUser));
-	const allUsesInAllClansEntitiesRef = useRef(useSelector(selectAllUsesInAllClansEntities));
-	const previousChannelsRef = useRef(useSelector(selectPreviousChannels));
-
-	const allClanUsersEntities = allClanUsersEntitiesRef.current;
-	const dmGroupChatList = dmGroupChatListRef.current;
-	const listChannels = listChannelsRef.current;
-	const allUsesInAllClansEntities = allUsesInAllClansEntitiesRef.current;
-	const previousChannels = previousChannelsRef.current;
-
+	const allClanUsersEntities = useAppSelector(selectEntitesUserClans);
+	const dmGroupChatList = useAppSelector(selectAllDirectMessages);
+	const listChannels = useAppSelector(selectAllChannelsByUser);
+	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
+	const dmMetaEntities = useAppSelector(selectDmMetaEntities);
+	const allUsesInAllClansEntities = useAppSelector(selectAllUsesInAllClansEntities);
+	const previousChannels = useAppSelector(selectPreviousChannels);
+	const listClansRef = useRef(useAppSelector(selectClansEntities));
+	const listClans = listClansRef.current;
 	const { userProfile } = useAuth();
 	const accountId = userProfile?.user?.id ?? '';
 
@@ -55,23 +83,38 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 200), []);
 	const checkListDM = useRef(new Set<string>());
+	const dmChannelIds = useMemo(
+		() =>
+			dmGroupChatList
+				.filter((item) => item.active === 1)
+				.map((item) => item.channel_id ?? '')
+				.filter(Boolean),
+		[dmGroupChatList]
+	);
+	const dmMetaUnreadSignature = getMetaUnreadSignature(dmMetaEntities, dmChannelIds);
 	const listDirectSearch = useMemo(() => {
 		const listDmSearchMap: SearchItemProps[] = [];
 		if (dmGroupChatList.length) {
 			dmGroupChatList.map((itemDM: DirectEntity) => {
 				if (itemDM.active === 1) {
 					const clanNicks = (itemDM?.user_ids || []).map((uid) => allClanUsersEntities[uid]?.clan_nick).filter(Boolean);
+					const dmMeta = withChannelMetaUnread(
+						Number(itemDM.last_sent_message?.timestamp_seconds || 0),
+						Number(itemDM?.last_seen_message?.timestamp_seconds || 0),
+						itemDM.count_mess_unread,
+						dmMetaEntities[itemDM.channel_id ?? '']
+					);
 					listDmSearchMap.push({
 						id: itemDM.channel_id,
 						name: (itemDM?.usernames?.toString() || itemDM?.display_names?.toString() || itemDM?.channel_label?.toString()) ?? '',
 						displayName: itemDM.channel_label,
 						avatarUser: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? (itemDM?.avatars?.[0] ?? '') : itemDM?.channel_avatar,
 						idDM: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? itemDM?.user_ids?.[0] : itemDM.channel_id,
-						lastSentTimeStamp: itemDM.last_sent_message?.timestamp_seconds,
+						lastSentTimeStamp: dmMeta.lastSentTimeStamp,
 						typeChat: TypeSearch.Dm_Type,
 						type: itemDM.type,
-						count_messsage_unread: itemDM.count_mess_unread,
-						lastSeenTimeStamp: Number(itemDM?.last_seen_message?.timestamp_seconds || 0),
+						count_messsage_unread: dmMeta.count_messsage_unread,
+						lastSeenTimeStamp: dmMeta.lastSeenTimeStamp,
 						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || []), ...clanNicks, itemDM?.channel_label]
 							.filter(Boolean)
 							.join('.')
@@ -84,33 +127,41 @@ function SearchModal({ onClose }: SearchModalProps) {
 		}
 		const addPropsIntoSearchList = addAttributesSearchList(listDmSearchMap, Object.values(allUsesInAllClansEntities) as any);
 		return addPropsIntoSearchList;
-	}, [accountId, dmGroupChatList, allUsesInAllClansEntities, allClanUsersEntities]);
+	}, [dmGroupChatList, allUsesInAllClansEntities, allClanUsersEntities, dmMetaUnreadSignature]);
+	const channelIdsForMeta = useMemo(() => listChannels.map((item) => item?.channel_id ?? '').filter(Boolean), [listChannels]);
+	const channelMetaUnreadSignature = getMetaUnreadSignature(channelMetaEntities, channelIdsForMeta);
 	const listChannelSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
 		listChannels.map((item) => {
 			if (item) {
 				const ageRestricted = (item as { age_restricted?: number }).age_restricted;
+				const meta = withChannelMetaUnread(
+					Number(item?.last_sent_message?.timestamp_seconds || 0),
+					Number(item?.last_seen_message?.timestamp_seconds || 0),
+					item?.count_mess_unread,
+					channelMetaEntities[item?.channel_id ?? '']
+				);
 				list.push({
 					id: item?.channel_id ?? '',
 					name: item?.channel_label ?? '',
-					subText: item?.clan_name ?? '',
+					subText: item?.clan_id ? listClans?.[item.clan_id]?.clan_name || '' : item.clan_name || '',
 					icon: '#',
 					clanId: item?.clan_id ?? '',
 					channelId: item?.channel_id ?? '',
-					lastSentTimeStamp: Number(item?.last_sent_message?.timestamp_seconds || 0),
+					lastSentTimeStamp: meta.lastSentTimeStamp,
 					typeChat: TypeSearch.Channel_Type,
 					prioritizeName: item?.channel_label ?? '',
 					channel_private: item?.channel_private,
 					age_restricted: ageRestricted,
 					type: item?.type,
 					parent_id: item?.parent_id,
-					count_messsage_unread: item?.count_mess_unread,
-					lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
+					count_messsage_unread: meta.count_messsage_unread,
+					lastSeenTimeStamp: meta.lastSeenTimeStamp
 				});
 			}
 		});
 		return list;
-	}, [listChannels]);
+	}, [listChannels, channelMetaUnreadSignature, listClans]);
 
 	const listMemberSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];

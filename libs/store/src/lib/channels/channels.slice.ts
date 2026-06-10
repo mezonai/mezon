@@ -718,7 +718,7 @@ export const addThreadToChannels = createAsyncThunk(
 							clanId,
 							channel: {
 								...matchedThread,
-								active: matchedThread.active ? ThreadStatus.joined : ThreadStatus.activePublic
+								active: matchedThread.active
 							} as ChannelsEntity
 						})
 					);
@@ -809,7 +809,10 @@ export const fetchChannels = createAsyncThunk(
 							)
 							.unwrap();
 						if (data?.threads?.length > 0) {
-							response.channeldesc.push({ ...data.threads[0], active: 1 } as ChannelsEntity);
+							response.channeldesc.push({
+								...data.threads[0],
+								active: data.threads[0].active ? data.threads[0].active : ThreadStatus.activePublic
+							} as ChannelsEntity);
 						}
 					}
 				} catch (error) {

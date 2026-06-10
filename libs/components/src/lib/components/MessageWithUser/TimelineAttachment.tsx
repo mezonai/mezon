@@ -241,18 +241,25 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 							item.filetype?.includes(EMimeTypes.mp4) ||
 							item.filetype?.includes(EMimeTypes.mov);
 
-						const thumbnailUrl =
-							isVideo && item.thumbnail
+						const thumbnailUrl = isVideo
+							? item.thumbnail
 								? createImgproxyUrl(item.thumbnail, {
 										width: 120,
 										height: 120,
 										resizeType: 'fill'
 									})
-								: createImgproxyUrl(item.url || '', {
-										width: 120,
-										height: 120,
-										resizeType: 'fill'
-									});
+								: item.url
+									? createImgproxyUrl(item.url, {
+											width: 120,
+											height: 120,
+											resizeType: 'fill'
+										})
+									: undefined
+							: createImgproxyUrl(item.url || '', {
+									width: 120,
+									height: 120,
+									resizeType: 'fill'
+								});
 
 						return (
 							<div
@@ -260,10 +267,12 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 								className="relative w-[50px] h-[50px] rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
 								onClick={() => handleClick(item)}
 							>
-								{isVideo ? (
+								{thumbnailUrl ? (
+									<img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
+								) : isVideo && item.url ? (
 									<video src={item.url} className="w-full h-full object-cover" muted playsInline />
 								) : (
-									<img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
+									<div className="w-full h-full bg-bgLightSecondary dark:bg-bgSecondary" />
 								)}
 								{isVideo && (
 									<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
