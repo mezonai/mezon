@@ -1,6 +1,15 @@
 import { usePermissionChecker } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { authActions, selectAllAccount, selectCurrentClanId, selectCurrentClanName, selectIsCommunityEnabled, useAppDispatch } from '@mezon/store';
+import {
+	authActions,
+	selectAllAccount,
+	selectAllChannels,
+	selectCurrentClanId,
+	selectCurrentClanName,
+	selectCurrentUserId,
+	selectIsCommunityEnabled,
+	useAppDispatch
+} from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
@@ -28,6 +37,11 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 		EPermission.manageChannel,
 		EPermission.administrator
 	]);
+	const currentUserId = useSelector(selectCurrentUserId);
+	const channels = useSelector(selectAllChannels);
+	const isCreatorOfAnyChannel = !!currentUserId && channels.some((channel) => channel.creator_id === currentUserId);
+	const canViewArchivedChannels = isClanOwner || hasAdminPermission || hasClanPermission || isCreatorOfAnyChannel;
+	const dispatch = useAppDispatch();
 	const userProfile = useSelector(selectAllAccount);
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
 
@@ -66,7 +80,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 				return hasClanPermission;
 			}
 			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {
-				return isClanOwner || hasAdminPermission || hasClanPermission;
+				return canViewArchivedChannels;
 			}
 			if (item.id === ItemSetting.ON_BOARDING || item.id === ItemSetting.ON_COMUNITY) {
 				return hasClanPermission;
@@ -81,7 +95,6 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	});
 
 	const [openModal, setOpenModal] = useState<boolean>(false);
-	const dispatch = useAppDispatch();
 	const handleLogOut = () => {
 		dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
 	};

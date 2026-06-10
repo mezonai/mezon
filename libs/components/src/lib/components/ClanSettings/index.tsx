@@ -5,9 +5,11 @@ import {
 	fetchClanWebhooks,
 	fetchWebhooks,
 	onboardingActions,
+	selectAllChannels,
 	selectCloseMenu,
 	selectCurrentClanId,
 	selectCurrentClanName,
+	selectCurrentUserId,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -72,7 +74,10 @@ const ClanSetting = (props: ModalSettingProps) => {
 		EPermission.manageClan,
 		EPermission.manageChannel
 	]);
-	const canViewArchivedChannels = isClanOwner || hasAdminPermission || canManageClan;
+	const currentUserId = useSelector(selectCurrentUserId);
+	const channels = useSelector(selectAllChannels);
+	const isCreatorOfAnyChannel = !!currentUserId && channels.some((channel) => channel.creator_id === currentUserId);
+	const canViewArchivedChannels = isClanOwner || hasAdminPermission || canManageClan || isCreatorOfAnyChannel;
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
 		setCurrentSettingId(settingItem.id);

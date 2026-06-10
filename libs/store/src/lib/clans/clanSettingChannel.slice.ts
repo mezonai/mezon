@@ -263,10 +263,14 @@ export const fetchArchivedChannelsInClan = createAsyncThunk('channelSetting/fetc
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.listArchivedChannelDescs(mezon.session, clanId);
 
-		return { channeldesc: response?.channeldesc || [] };
+		if (!response) {
+			return thunkAPI.rejectWithValue('Invalid fetchArchivedChannelsInClan');
+		}
+
+		return { channeldesc: response.channeldesc || [] };
 	} catch (error) {
 		captureSentryError(error, 'channelSetting/fetchArchivedChannelsInClan');
-		return { channeldesc: [] };
+		return thunkAPI.rejectWithValue(error);
 	}
 });
 
@@ -467,3 +471,4 @@ export const selectNumberChannelCount = createSelector(getChannelSettingState, (
 export const selectListChannelBySearch = createSelector(getChannelSettingState, (state) => state.listSearchChannel);
 
 export const selectArchivedChannels = createSelector(getChannelSettingState, (state) => state.listArchivedChannel);
+export const selectArchivedChannelsLoadingStatus = createSelector(getChannelSettingState, (state) => state.loadingStatus);

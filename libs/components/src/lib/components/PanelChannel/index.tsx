@@ -151,7 +151,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		channel?.channel_id ?? ''
 	);
 	const isChannelCreator = !!currentUserId && channel.creator_id === currentUserId;
-	const hasArchiveChannelPermission = hasClanOwnerPermission || hasAdminPermission || canManageClan || isChannelCreator;
+	const hasArchiveChannelPermission = hasClanOwnerPermission || hasAdminPermission || canManageClan || canManageChannel || isChannelCreator;
 	const hasManageThreadPermission = (canManageThread && isChannelCreator) || hasClanOwnerPermission || hasAdminPermission;
 	const currentCategory = useAppSelector((state) => selectCategoryById(state, channel?.category_id as string));
 	const hasModalInChild = useSelector(hasGrandchildModal);
