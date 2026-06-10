@@ -1,8 +1,24 @@
-import { channelsActions, isDMStreamMode, messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
+import {
+	channelsActions,
+	isDMStreamMode,
+	messagesActions,
+	pinMessageActions,
+	selectMessagesByChannel,
+	threadsActions,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
-import { ETokenMessage, TypeMessage, convertUnixSecondsToTimeString, generateE2eId, parseThreadInfo } from '@mezon/utils';
+import {
+	ETokenMessage,
+	TypeMessage,
+	convertUnixSecondsToTimeString,
+	generateE2eId,
+	hasThreadDeleteSystemMessage,
+	parseThreadInfo
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MentionUser, PlainText } from '../../components';
@@ -48,6 +64,11 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	const navigate = useNavigate();
 	const { t: translateCommon, i18n } = useTranslation('common');
 	const { t: translateMessage } = useTranslation('message');
+	const channelMessagesState = useAppSelector((state) => selectMessagesByChannel(state, message.channel_id));
+	const channelMessages = useMemo(
+		() => (channelMessagesState?.ids ? channelMessagesState.ids.map((id) => channelMessagesState.entities[id]) : []),
+		[channelMessagesState]
+	);
 
 	const getIdMessageToJump = useCallback(
 		(e: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => {
@@ -65,7 +86,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 		[dispatch, message?.channel_id, message?.clan_id, message?.references]
 	);
 
-	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
+	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.DeleteThread || message.code === TypeMessage.CreatePin;
 
 	let lastindex = 0;
 	const content = (() => {
@@ -107,24 +128,31 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	})();
 
 	const { threadLabel, threadId, threadContent } = (() => {
-		if (message.code === TypeMessage.CreateThread && message.content?.t) {
+		if ((message.code === TypeMessage.CreateThread || message.code === TypeMessage.DeleteThread) && message.content?.t) {
 			return parseThreadInfo(message.content.t);
 		}
 		return { threadLabel: '', threadId: '', threadContent: '' };
 	})();
 
+	const isThreadDeleted = useMemo(
+		() => message.code === TypeMessage.CreateThread && !!threadId && hasThreadDeleteSystemMessage(threadId, channelMessages),
+		[message.code, threadId, channelMessages]
+	);
+
 	const handelJumpToChannel = async () => {
-		if (threadId) {
-			const result = await dispatch(
-				channelsActions.addThreadToChannels({
-					channelId: threadId,
-					clanId: message?.clan_id as string,
-					parentChannelId: message?.channel_id
-				})
-			).unwrap();
-			if (result) {
-				navigate(`/chat/clans/${message?.clan_id}/channels/${threadId}`);
-			}
+		if (isThreadDeleted || !threadId) {
+			return;
+		}
+
+		const result = await dispatch(
+			channelsActions.addThreadToChannels({
+				channelId: threadId,
+				clanId: message?.clan_id as string,
+				parentChannelId: message?.channel_id
+			})
+		).unwrap();
+		if (result) {
+			navigate(`/chat/clans/${message?.clan_id}/channels/${threadId}`);
 		}
 	};
 
@@ -181,7 +209,10 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 					(threadId ? (
 						<>
 							{translateMessage('systemMessages.startedAThread')}{' '}
-							<span onClick={handelJumpToChannel} className="font-semibold cursor-pointer hover:underline">
+							<span
+								onClick={isThreadDeleted ? undefined : handelJumpToChannel}
+								className={`font-semibold ${isThreadDeleted ? 'cursor-default' : 'cursor-pointer hover:underline'}`}
+							>
 								{threadLabel}
 							</span>
 							. {translateMessage('systemMessages.seeAllThreads')}{' '}
@@ -189,6 +220,14 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 								{translateMessage('systemMessages.allThreads')}
 							</span>
 							.
+						</>
+					) : (
+						<>{threadContent}</>
+					))}
+				{message.code === TypeMessage.DeleteThread &&
+					(threadLabel ? (
+						<>
+							{translateMessage('systemMessages.deletedAThread')} <span className="font-semibold">{threadLabel}</span>.
 						</>
 					) : (
 						<>{threadContent}</>

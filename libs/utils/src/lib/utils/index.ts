@@ -1,5 +1,4 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
-import { getPreSendSourceFile, getPreSendThumbnailBlob, revokePreSendAttachmentUrls } from './file';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -58,8 +57,9 @@ import type {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus } from '../types';
+import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus, TypeMessage } from '../types';
 import { getDateLocale } from './dateI18n';
+import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
 import { getPlatform } from './windowEnvironment';
@@ -80,10 +80,10 @@ export * from './forceReflow';
 export * from './heavyAnimation';
 export * from './mediaDimensions';
 export * from './mergeRefs';
-export * from './sanitizeHtml';
 export * from './parseHtmlAsFormattedText';
 export * from './processEntitiesDirectly';
 export * from './resetScroll';
+export * from './sanitizeHtml';
 export * from './schedulers';
 export * from './select';
 export * from './signals';
@@ -1205,6 +1205,20 @@ export const parseThreadInfo = (messageContent: string) => {
 		threadId: '',
 		threadContent: messageContent.replace(/^@\w+\s*/, '')
 	};
+};
+
+export const hasThreadDeleteSystemMessage = (
+	threadId: string,
+	channelMessages: Array<{ code?: number; content?: IMessageSendPayload | null }>
+): boolean => {
+	if (!threadId) {
+		return false;
+	}
+
+	return channelMessages.some(
+		(existingMessage) =>
+			existingMessage.code === TypeMessage.DeleteThread && parseThreadInfo(existingMessage.content?.t ?? '').threadId === threadId
+	);
 };
 
 export const openVoiceChannel = (url: string) => {

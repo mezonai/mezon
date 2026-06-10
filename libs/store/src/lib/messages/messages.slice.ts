@@ -1762,6 +1762,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Welcome:
 				case TypeMessage.UpcomingEvent:
 				case TypeMessage.CreateThread:
+				case TypeMessage.DeleteThread:
 				case TypeMessage.CreatePin:
 				case TypeMessage.MessageBuzz:
 				case TypeMessage.AuditLog:

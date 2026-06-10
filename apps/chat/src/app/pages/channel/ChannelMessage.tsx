@@ -120,6 +120,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 		message?.code === TypeMessage.Welcome ||
 		message?.code === TypeMessage.UpcomingEvent ||
 		message?.code === TypeMessage.CreateThread ||
+		message?.code === TypeMessage.DeleteThread ||
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;
 
