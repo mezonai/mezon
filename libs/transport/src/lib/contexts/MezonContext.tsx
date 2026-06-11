@@ -45,6 +45,7 @@ type MezonContextProviderProps = {
 	mezon: CreateMezonClientOptions;
 	connect?: boolean;
 	isFromMobile?: boolean;
+	requireSocket?: boolean;
 };
 
 const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean, apiUrl: string, wsUrl?: string) => {
@@ -179,11 +180,12 @@ export type MezonContextValue = {
 	createSocket: () => Promise<any>;
 	connectSocket: (options?: ConnectSocketOptions) => Promise<ApiSession | null>;
 	reconnectSocket: () => Promise<ReconnectSocketResult>;
+	requireSocket: boolean;
 };
 
 const MezonContext = React.createContext<MezonContextValue>({} as MezonContextValue);
 
-const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, mezon, connect, isFromMobile = false }) => {
+const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, mezon, connect, isFromMobile = false, requireSocket = true }) => {
 	const clientRef = React.useRef<Client | null>(null);
 	const sessionRef = React.useRef<ApiSession | null>(null);
 	const zkRef = React.useRef<ZkClient | null>(null);
@@ -452,8 +454,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			socketState.status = 'connected';
 			return sessionRef.current;
 		})().finally(() => {
-				connectInFlight = null;
-			});
+			connectInFlight = null;
+		});
 
 		return connectInFlight;
 	}, []);
@@ -546,7 +548,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			confirmAuthenticateOTP,
 			authenticateSMSOTPRequest,
 			connectSocket,
-			reconnectSocket
+			reconnectSocket,
+			requireSocket
 		}),
 		[
 			clientRef,
@@ -572,7 +575,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			confirmAuthenticateOTP,
 			authenticateSMSOTPRequest,
 			connectSocket,
-			reconnectSocket
+			reconnectSocket,
+			requireSocket
 		]
 	);
 

@@ -26,11 +26,15 @@ export type MezonValueContext = MezonContextValue & {
 
 const SESSION_TRANSPORT_TIMEOUT_MS = 60000;
 
-function sessionHasCredentials(s: ApiSession | null | undefined): boolean {
+export function sessionHasCredentials(s: ApiSession | null | undefined, options?: { requireSessionId?: boolean }): boolean {
 	if (!s) return false;
 	const token = !!s.token?.trim();
 	const sid = !!s.session_id?.trim();
+	const refreshToken = !!s.refresh_token?.trim();
 	if (!token && !sid) return false;
+	if (options?.requireSessionId === false) {
+		return token && refreshToken;
+	}
 	if (token && !sid) return false;
 	return true;
 }
@@ -175,7 +179,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 export async function withRetry<T>(fn: (() => Promise<T>) | ((session: ApiSession) => Promise<T>), config: RetryConfig = {}): Promise<T> {
 	const timeoutMs = config.timeout ?? 30000;
 	const mezonCtx = config.mezon;
-	const enforceMezonSocket = !!mezonCtx && config.requireMezonSocket !== false;
+	const enforceMezonSocket = !!mezonCtx && config.requireMezonSocket !== false && mezonCtx.requireSocket !== false;
 
 	const scopeController = createScopeAbortController(config.scope);
 	const signal = config.signal || scopeController?.signal;
@@ -187,7 +191,8 @@ export async function withRetry<T>(fn: (() => Promise<T>) | ((session: ApiSessio
 	const executeCall = (): Promise<T> => {
 		if (config.mezon) {
 			const latestSession = config.mezon.sessionRef.current;
-			if (!sessionHasCredentials(latestSession)) {
+			const requireSessionId = config.mezon.requireSocket !== false;
+			if (!sessionHasCredentials(latestSession, { requireSessionId })) {
 				throw new Error('Mezon API called without session credentials');
 			}
 			return (fn as (session: ApiSession) => Promise<T>)(latestSession as ApiSession);
@@ -246,10 +251,11 @@ export async function fetchDataWithSocketFallback<T>(
 
 	try {
 		const latestSession = mezon.sessionRef.current;
-		if (!sessionHasCredentials(latestSession)) {
+		const requireSessionId = mezon.requireSocket !== false;
+		if (!sessionHasCredentials(latestSession, { requireSessionId })) {
 			throw new Error('Mezon API called without session credentials');
 		}
-		if (!isMezonClientSocketOpen(mezon)) {
+		if (mezon.requireSocket !== false && !isMezonClientSocketOpen(mezon)) {
 			throw new Error('Socket connection not open.');
 		}
 		if (signal?.aborted) {

@@ -1,7 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { AUTH_FEATURE_KEY, AuthState } from '../auth/auth.slice';
-import { selectSession } from '../auth/auth.slice';
+import { dashboardFetch, readDashboardError } from './dashboardAuth';
 
 import type { RootState } from '../store';
 
@@ -19,16 +18,11 @@ export const fetchAllClansMetrics = createAsyncThunk(
 	'dashboard/fetchAllClansMetrics',
 	async ({ start, end, rangeType }: { start: string; end: string; rangeType?: string }, thunkAPI) => {
 		try {
-			const getState = thunkAPI.getState as () => RootState;
 			const base = API_BASE || '';
 			const url = `${base}/dashboard/all-clans/metrics?start_date=${start}&end_date=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`;
-			const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
-			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-			const res = await fetch(url, { headers });
+			const res = await dashboardFetch(url, {}, thunkAPI);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = (await res.json()) as ListResponse<{
 				labels: string[];
@@ -59,10 +53,6 @@ export const fetchClansList = createAsyncThunk(
 	) => {
 		try {
 			const base = API_BASE || '';
-			const state = thunkAPI.getState() as RootState;
-			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
-			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			let url = `${base}/dashboard/list-all-clans/metrics?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}${rangeType ? `&rangeType=${rangeType}` : ''}`;
 			if (sortBy) {
 				url += `&sort_by=${sortBy}`;
@@ -70,10 +60,9 @@ export const fetchClansList = createAsyncThunk(
 					url += `&sort=${sort}`;
 				}
 			}
-			const res = await fetch(url, { headers });
+			const res = await dashboardFetch(url, {}, thunkAPI);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			// convert clan_id from int64 to string
 			const text = await res.text();
@@ -90,20 +79,14 @@ export const fetchClanMetrics = createAsyncThunk(
 	'dashboard/fetchClanMetrics',
 	async ({ clanId, start, end, rangeType }: { clanId: string; start: string; end: string; rangeType?: string }, thunkAPI) => {
 		try {
-			const getState = thunkAPI.getState as () => RootState;
 			const base = API_BASE || '';
-			const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.token;
-			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-			const res = await fetch(
+			const res = await dashboardFetch(
 				`${base}/dashboard/${clanId}/metrics?start_date=${start}&end_date=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`,
-				{
-					headers
-				}
+				{},
+				thunkAPI
 			);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = await res.json();
 			return { ...json, clanId };
@@ -128,12 +111,7 @@ export const fetchClanChannels = createAsyncThunk(
 		thunkAPI
 	) => {
 		try {
-			const getState = thunkAPI.getState as () => RootState;
 			const base = API_BASE || '';
-			const state = getState() as RootState;
-			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
-			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			let url = `${base}/dashboard/${clanId}/channels?start_date=${start}&end_date=${end}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`;
 			if (sortBy) {
 				url += `&sort_by=${sortBy}`;
@@ -141,10 +119,9 @@ export const fetchClanChannels = createAsyncThunk(
 					url += `&sort=${sort}`;
 				}
 			}
-			const res = await fetch(url, { headers });
+			const res = await dashboardFetch(url, {}, thunkAPI);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = await res.json();
 			return { ...json, clanId };
@@ -170,12 +147,7 @@ export const fetchChannelUsers = createAsyncThunk(
 		thunkAPI
 	) => {
 		try {
-			const getState = thunkAPI.getState as () => RootState;
 			const base = API_BASE || '';
-			const state = getState() as RootState;
-			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
-			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			let url = `${base}/dashboard/${clanId}/users?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}`;
 			if (sortBy) {
 				url += `&sort_by=${sortBy}`;
@@ -183,10 +155,9 @@ export const fetchChannelUsers = createAsyncThunk(
 					url += `&sort=${sort}`;
 				}
 			}
-			const res = await fetch(url, { headers });
+			const res = await dashboardFetch(url, {}, thunkAPI);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = await res.json();
 			return { ...json, clanId, channelId };
@@ -211,24 +182,20 @@ export const exportClansCsv = createAsyncThunk(
 	) => {
 		try {
 			const base = API_BASE || '';
-			const state = thunkAPI.getState() as RootState;
-			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.token;
-			const headers: Record<string, string> = {
-				'Content-Type': 'application/json',
-				...(token ? { Authorization: `Bearer ${token}` } : {})
-			};
-			const body: any = { start_date: start, end_date: end, range_type: rangeType, columns };
+			const body: Record<string, unknown> = { start_date: start, end_date: end, range_type: rangeType, columns };
 			if (sortBy) body.sort_by = sortBy;
 			if (sort) body.sort = sort;
-			const res = await fetch(`${base}/dashboard/list-all-clans/export-csv`, {
-				method: 'POST',
-				headers,
-				body: JSON.stringify(body)
-			});
+			const res = await dashboardFetch(
+				`${base}/dashboard/list-all-clans/export-csv`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				},
+				thunkAPI
+			);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = await res.json();
 			return json;
@@ -254,24 +221,20 @@ export const exportChannelsCsv = createAsyncThunk(
 	) => {
 		try {
 			const base = API_BASE || '';
-			const state = thunkAPI.getState() as RootState;
-			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.token;
-			const headers: Record<string, string> = {
-				'Content-Type': 'application/json',
-				...(token ? { Authorization: `Bearer ${token}` } : {})
-			};
-			const body: any = { start_date: start, end_date: end, range_type: rangeType, columns };
+			const body: Record<string, unknown> = { start_date: start, end_date: end, range_type: rangeType, columns };
 			if (sortBy) body.sort_by = sortBy;
 			if (sort) body.sort = sort;
-			const res = await fetch(`${base}/dashboard/${clanId}/channels/export-csv`, {
-				method: 'POST',
-				headers,
-				body: JSON.stringify(body)
-			});
+			const res = await dashboardFetch(
+				`${base}/dashboard/${clanId}/channels/export-csv`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				},
+				thunkAPI
+			);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = await res.json();
 			return json;
@@ -297,24 +260,20 @@ export const exportUsersCsv = createAsyncThunk(
 	) => {
 		try {
 			const base = API_BASE || '';
-			const state = thunkAPI.getState() as RootState;
-			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.token;
-			const headers: Record<string, string> = {
-				'Content-Type': 'application/json',
-				...(token ? { Authorization: `Bearer ${token}` } : {})
-			};
-			const body: any = { clan_id: clanId, start_date: start, end_date: end, range_type: rangeType, columns };
+			const body: Record<string, unknown> = { clan_id: clanId, start_date: start, end_date: end, range_type: rangeType, columns };
 			if (sortBy) body.sort_by = sortBy;
 			if (sort) body.sort = sort;
-			const res = await fetch(`${base}/dashboard/${clanId}/users/export-csv`, {
-				method: 'POST',
-				headers,
-				body: JSON.stringify(body)
-			});
+			const res = await dashboardFetch(
+				`${base}/dashboard/${clanId}/users/export-csv`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				},
+				thunkAPI
+			);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue(text || res.statusText);
+				return thunkAPI.rejectWithValue(await readDashboardError(res));
 			}
 			const json = await res.json();
 			return json;
@@ -437,23 +396,12 @@ function unwrapDashboardJson<T>(json: unknown): T {
 	return json as T;
 }
 
-function authHeadersForDashboard(getState: () => RootState): Record<string, string> {
-	const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-	const token = session?.session_id;
-	return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
 export const fetchRooms = createAsyncThunk<
 	ListRoomsApiResponse,
 	{ status?: string; search?: string; startDate?: string; endDate?: string; limit?: number; page?: number }
 >('dashboard/fetchRooms', async ({ status, search, startDate, endDate, limit = 10, page = 1 }, thunkAPI) => {
 	try {
 		const base = API_BASE || '';
-		const state = thunkAPI.getState() as RootState;
-		const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-		const token = session?.session_id;
-		const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-
 		const params = new URLSearchParams();
 		if (status) params.append('status', status);
 		if (search) params.append('search', search);
@@ -462,10 +410,9 @@ export const fetchRooms = createAsyncThunk<
 		params.append('limit', String(limit));
 		params.append('page', String(page));
 
-		const res = await fetch(`${base}/dashboard/rooms?${params.toString()}`, { headers });
+		const res = await dashboardFetch(`${base}/dashboard/rooms?${params.toString()}`, {}, thunkAPI);
 		if (!res.ok) {
-			const text = await res.text().catch(() => '');
-			return thunkAPI.rejectWithValue(text || res.statusText);
+			return thunkAPI.rejectWithValue(await readDashboardError(res));
 		}
 		return (await res.json()) as ListRoomsApiResponse;
 	} catch (err) {
@@ -479,10 +426,10 @@ export const fetchRoomStatisticsByRoomId = createAsyncThunk(
 		try {
 			const base = API_BASE || '';
 			const url = `${base}/dashboard/rooms/${encodeURIComponent(roomId)}/statistics`;
-			const res = await fetch(url, { headers: authHeadersForDashboard(thunkAPI.getState as () => RootState) });
+			const res = await dashboardFetch(url, {}, thunkAPI);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue({ roomId, message: text || res.statusText });
+				const text = await readDashboardError(res);
+				return thunkAPI.rejectWithValue({ roomId, message: text });
 			}
 			const json = await res.json();
 			const body = unwrapDashboardJson<{ status?: string; statistics?: RoomStatisticsPayload }>(json);
@@ -497,13 +444,13 @@ export const fetchRoomSummaryByRoomId = createAsyncThunk('dashboard/fetchRoomSum
 	try {
 		const base = API_BASE || '';
 		const url = `${base}/dashboard/room/${encodeURIComponent(roomId)}/summary`;
-		const res = await fetch(url, { headers: authHeadersForDashboard(thunkAPI.getState as () => RootState) });
+		const res = await dashboardFetch(url, {}, thunkAPI);
 		if (!res.ok) {
 			if (res.status === 404) {
 				return { roomId, summary: null };
 			}
-			const text = await res.text().catch(() => '');
-			return thunkAPI.rejectWithValue({ roomId, message: text || res.statusText });
+			const text = await readDashboardError(res);
+			return thunkAPI.rejectWithValue({ roomId, message: text });
 		}
 		const json = await res.json();
 		const body = unwrapDashboardJson<RoomSummaryPayload>(json);
@@ -519,10 +466,10 @@ export const fetchRoomParticipantsByRoomId = createAsyncThunk(
 		try {
 			const base = API_BASE || '';
 			const url = `${base}/dashboard/rooms/${encodeURIComponent(roomId)}/participants`;
-			const res = await fetch(url, { headers: authHeadersForDashboard(thunkAPI.getState as () => RootState) });
+			const res = await dashboardFetch(url, {}, thunkAPI);
 			if (!res.ok) {
-				const text = await res.text().catch(() => '');
-				return thunkAPI.rejectWithValue({ roomId, message: text || res.statusText });
+				const text = await readDashboardError(res);
+				return thunkAPI.rejectWithValue({ roomId, message: text });
 			}
 			const json = await res.json();
 			const body = unwrapDashboardJson<GetParticipantsByRoomIdResponse>(json);

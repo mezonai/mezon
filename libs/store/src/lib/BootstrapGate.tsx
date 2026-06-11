@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import type { Persistor } from 'redux-persist';
 import { authActions } from './auth/auth.slice';
+import { sessionHasCredentials } from './helpers';
 import { useAppDispatch } from './store';
 
 const PERSIST_AUTH_KEY = 'persist:auth';
@@ -41,8 +42,10 @@ type Props = {
 	children: ReactNode;
 	persistor: Persistor;
 	fallback?: ReactNode;
+	requireSocket?: boolean;
 };
-export function BootstrapGate({ children, persistor, fallback }: Props) {
+
+export function BootstrapGate({ children, persistor, fallback, requireSocket = true }: Props) {
 	const { sessionRef, createClient, connectSocket } = useMezon();
 	const dispatch = useAppDispatch();
 	const [ready, setReady] = useState(false);
@@ -61,10 +64,18 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 			}
 
 			const persistedSession = readPersistedSession();
-			const hasSessionId = !!persistedSession?.session_id?.trim();
+			const hasCredentials = sessionHasCredentials(persistedSession, { requireSessionId: requireSocket });
 
-			if (!hasSessionId) {
+			if (!hasCredentials) {
 				dispatch(authActions.logOut({}));
+				setReady(true);
+				return;
+			}
+
+			sessionRef.current = persistedSession as ApiSession;
+
+			if (!requireSocket) {
+				await waitForPersistorBootstrap(persistor);
 				setReady(true);
 				return;
 			}
@@ -73,8 +84,6 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 			await Promise.all([
 				(async () => {
-					sessionRef.current = persistedSession as ApiSession;
-					// Retry call connect socket if it fail with MAX_RETRIES time
 					for (let i = 0; i <= MAX_RETRIES; i++) {
 						setRetryCount(i);
 
@@ -98,7 +107,6 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 						} catch (error) {
 							if (i === MAX_RETRIES) break;
 							const baseDelay = INITIAL_DELAY * Math.pow(2, i);
-							// Add jitter time for not all client call in same time
 							const nextDelay = baseDelay + Math.random() * 500;
 							console.error(`Connection failed. Retrying attempt ${i} in ${nextDelay}ms...`);
 							await delay(nextDelay);
@@ -109,7 +117,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				waitForPersistorBootstrap(persistor)
 			]);
 
-			if (!hasSessionId || !connectOk) {
+			if (!connectOk) {
 				dispatch(authActions.logOut({}));
 			}
 
@@ -117,12 +125,12 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 		};
 
 		init();
-	}, []);
+	}, [requireSocket]);
 
-	return <>{ready ? children : (fallback ?? <ConnectingScreen retryCount={retryCount} />)}</>;
+	return <>{ready ? children : (fallback ?? <ConnectingScreen retryCount={retryCount} requireSocket={requireSocket} />)}</>;
 }
 
-const ConnectingScreen = ({ retryCount }: { retryCount: number }) => {
+const ConnectingScreen = ({ retryCount, requireSocket }: { retryCount: number; requireSocket: boolean }) => {
 	const retryDelay = Math.round(2 ** retryCount);
 	const [remainingTime, setRemainingTime] = useState(0);
 
@@ -152,9 +160,9 @@ const ConnectingScreen = ({ retryCount }: { retryCount: number }) => {
 			<div className="flex min-h-[160px] flex-col items-center justify-center">
 				<div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
 
-				<h3 className="text-lg font-semibold text-center">Establishing a connection...</h3>
+				<h3 className="text-lg font-semibold text-center">{requireSocket ? 'Establishing a connection...' : 'Loading...'}</h3>
 
-				{retryCount > 0 && retryCount < MAX_RETRIES && (
+				{requireSocket && retryCount > 0 && retryCount < MAX_RETRIES && (
 					<p className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-gray-300 backdrop-blur-md">
 						<span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
 						<span>

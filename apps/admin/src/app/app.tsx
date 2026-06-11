@@ -64,7 +64,7 @@ export function App() {
 
 	return (
 		<I18nextProvider i18n={i18n}>
-			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
+			<MezonStoreProvider store={store} loading={null} persistor={persistor} requireSocket={false}>
 				<AppInitializer />
 				<Routes />
 			</MezonStoreProvider>
@@ -74,7 +74,7 @@ export function App() {
 
 function AppWrapper() {
 	return (
-		<MezonContextProvider mezon={mezon} connect={true}>
+		<MezonContextProvider mezon={mezon} connect={false} requireSocket={false}>
 			<App />
 		</MezonContextProvider>
 	);

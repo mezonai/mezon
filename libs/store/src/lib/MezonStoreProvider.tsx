@@ -10,12 +10,13 @@ type Props = {
 	readonly store: Store<RootState | RootStateMobile>;
 	readonly loading: React.ReactNode;
 	readonly persistor: Persistor;
+	readonly requireSocket?: boolean;
 };
 
-export function MezonStoreProvider({ children, store, loading, persistor }: Props) {
+export function MezonStoreProvider({ children, store, loading, persistor, requireSocket = true }: Props) {
 	return (
 		<Provider store={store}>
-			<BootstrapGate persistor={persistor}>
+			<BootstrapGate persistor={persistor} requireSocket={requireSocket}>
 				<PersistGate loading={loading} persistor={persistor}>
 					{children}
 				</PersistGate>
