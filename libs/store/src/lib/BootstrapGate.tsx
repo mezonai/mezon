@@ -23,14 +23,21 @@ function readPersistedSession(): ApiSession | null {
 	}
 }
 
-function waitForPersistorBootstrap(persistor: Persistor): Promise<void> {
+function waitForPersistorBootstrap(persistor: Persistor, timeoutMs = 5000): Promise<void> {
 	return new Promise((resolve) => {
 		if (persistor.getState().bootstrapped) {
 			resolve();
 			return;
 		}
+
+		const timeout = setTimeout(() => {
+			unsub();
+			resolve();
+		}, timeoutMs);
+
 		const unsub = persistor.subscribe(() => {
 			if (persistor.getState().bootstrapped) {
+				clearTimeout(timeout);
 				unsub();
 				resolve();
 			}
@@ -63,11 +70,17 @@ export function BootstrapGate({ children, persistor, fallback, requireSocket = t
 				return;
 			}
 
+			await waitForPersistorBootstrap(persistor);
+
+			const isOAuthCallback = typeof window !== 'undefined' && window.location.pathname.includes('/login/callback');
+
 			const persistedSession = readPersistedSession();
 			const hasCredentials = sessionHasCredentials(persistedSession, { requireSessionId: requireSocket });
 
 			if (!hasCredentials) {
-				dispatch(authActions.logOut({}));
+				if (!isOAuthCallback) {
+					dispatch(authActions.logOut({}));
+				}
 				setReady(true);
 				return;
 			}
@@ -75,7 +88,6 @@ export function BootstrapGate({ children, persistor, fallback, requireSocket = t
 			sessionRef.current = persistedSession as ApiSession;
 
 			if (!requireSocket) {
-				await waitForPersistorBootstrap(persistor);
 				setReady(true);
 				return;
 			}

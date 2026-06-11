@@ -1,6 +1,15 @@
-import { accountActions, fetchApplications } from '@mezon/store';
+import { accountActions, fetchApplications, getStore } from '@mezon/store';
 import type { IWithError } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
+
+function hasPersistedToken(): boolean {
+	try {
+		const state = getStore().getState();
+		return Boolean(state.auth?.session?.token);
+	} catch {
+		return false;
+	}
+}
 
 export interface IAuthLoaderData {
 	isLogin: boolean;
@@ -33,6 +42,12 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 			isLogin: true
 		} as IAuthLoaderData;
 	} catch (error) {
+		if (hasPersistedToken()) {
+			return {
+				isLogin: true
+			} as IAuthLoaderData;
+		}
+
 		const redirectTo = getRedirectTo(initialPath);
 		const redirect = redirectTo ? `/login?redirect=${redirectTo}` : '';
 		return {

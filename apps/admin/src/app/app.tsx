@@ -56,7 +56,7 @@ export function App() {
 	const mezon = useMezon();
 	const { store, persistor } = useMemo(() => {
 		return initStore(mezon);
-	}, [mezon]);
+	}, []);
 
 	if (!store) {
 		return <>loading...</>;

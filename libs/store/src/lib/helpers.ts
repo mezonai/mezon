@@ -33,7 +33,7 @@ export function sessionHasCredentials(s: ApiSession | null | undefined, options?
 	const refreshToken = !!s.refresh_token?.trim();
 	if (!token && !sid) return false;
 	if (options?.requireSessionId === false) {
-		return token && refreshToken;
+		return !!token;
 	}
 	if (token && !sid) return false;
 	return true;
@@ -179,7 +179,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 export async function withRetry<T>(fn: (() => Promise<T>) | ((session: ApiSession) => Promise<T>), config: RetryConfig = {}): Promise<T> {
 	const timeoutMs = config.timeout ?? 30000;
 	const mezonCtx = config.mezon;
-	const enforceMezonSocket = !!mezonCtx && config.requireMezonSocket !== false && mezonCtx.requireSocket !== false;
+	const enforceMezonSocket = !!mezonCtx && config.requireMezonSocket !== false && mezonCtx.requireSocket === true;
 
 	const scopeController = createScopeAbortController(config.scope);
 	const signal = config.signal || scopeController?.signal;

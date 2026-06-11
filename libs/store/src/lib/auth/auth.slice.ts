@@ -65,7 +65,9 @@ async function persistSessionConnectAfterLogin(mezon: MezonContextValue, session
 	const merged: ApiSession = { ...session, ws_url: wsUrl };
 	mezon.sessionRef.current = merged;
 
-	await mezon.connectSocket();
+	if (mezon.requireSocket) {
+		await mezon.connectSocket();
+	}
 
 	return mezon.sessionRef.current as ApiSession;
 }
@@ -127,8 +129,13 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 	if (!mezon?.clientRef.current) {
 		return thunkAPI.rejectWithValue('Client not initialized');
 	}
-	const session = await mezon?.clientRef.current?.authenticateMezon(code);
-	if (session && session.id_token) {
+	let session: ApiSession | undefined;
+	try {
+		session = await mezon?.clientRef.current?.authenticateMezon(code);
+	} catch (error) {
+		return thunkAPI.rejectWithValue((error as Error)?.message || 'OAuth code exchange failed');
+	}
+	if (session && session.id_token && mezon.requireSocket) {
 		const proofInput = {
 			jwt: session.id_token
 		};

@@ -4,11 +4,7 @@
     "declaration": true,
     "composite": true,
     "outDir": "../../dist/out-tsc",
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts"
-    ],
+    "types": ["node"]
   },
   "exclude": [
     "jest.config.ts",
@@ -21,5 +17,10 @@
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx",]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
+  "references": [
+    { "path": "../logger/tsconfig.lib.json" },
+    { "path": "../utils/tsconfig.lib.json" },
+    { "path": "../transport/tsconfig.lib.json" }
+  ]
 }
