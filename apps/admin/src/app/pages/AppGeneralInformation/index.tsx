@@ -32,9 +32,13 @@ const GeneralInformation = () => {
 			if (!client || !session) {
 				throw new Error(t('generalInformation.errors.clientNotInitialized'));
 			}
-			handleUploadFile(client, session, e.target.files[0].name, e.target.files[0]).then((attachment: ApiMessageAttachment) => {
-				setAppLogoUrl(attachment.url);
-			});
+			handleUploadFile(client, session, e.target.files[0].name, e.target.files[0])
+				.then((attachment: ApiMessageAttachment) => {
+					setAppLogoUrl(attachment.url);
+				})
+				.catch((error: unknown) => {
+					console.error('[Admin] Logo upload failed:', error);
+				});
 		}
 	};
 

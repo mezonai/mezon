@@ -61,12 +61,8 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 				</Link>
 			</div>
 			<div className="flex flex-row items-center justify-center relative">
-				<button onClick={toggleDarkMode} className="mr-4 max-lg:hidden">
-					<img
-						src={isDarkMode ? 'developers/assets/icons/IconDarkMode.png' : 'developers/assets/icons/IconLightMode.png'}
-						alt="Toggle Dark Mode"
-						className="w-6 h-6 bg-white"
-					/>
+				<button onClick={toggleDarkMode} className="mr-4 max-lg:hidden" aria-label="Toggle dark mode">
+					<Icons.DarkModeIcon className="w-6 h-6" />
 				</button>
 				<div onClick={handleAvatarClick}>
 					{userProfile?.user?.avatar_url ? (
@@ -93,11 +89,7 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 							onClick={toggleDarkMode}
 							className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden"
 						>
-							<img
-								src={isDarkMode ? 'developers/assets/icons/IconDarkMode.png' : 'developers/assets/icons/IconLightMode.png'}
-								alt="Toggle Dark Mode"
-								className="w-5 h-5 bg-white rounded"
-							/>
+							<Icons.DarkModeIcon className="w-5 h-5" />
 							<span>{isDarkMode ? 'Dark mode' : 'Light mode'}</span>
 						</button>
 

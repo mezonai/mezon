@@ -36,6 +36,7 @@
 			"nameRequired": "Tên là bắt buộc để tạo {type} mới của bạn.",
 			"urlRequired": "URL là bắt buộc để tạo ứng dụng mới của bạn.",
 			"invalidUrl": "Vui lòng nhập URL hợp lệ (ví dụ: https://example.com).",
+			"invalidAppName": "Tên app chỉ được dùng chữ, số và . _ + - (không có khoảng trắng, tối đa 32 ký tự).",
 			"createFailed": "Không thể tạo ứng dụng hoặc thiếu ID trong phản hồi",
 			"unexpectedError": "Đã xảy ra lỗi không mong muốn.{message}"
 		},

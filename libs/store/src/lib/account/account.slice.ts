@@ -10,9 +10,10 @@ import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { callMezonClient, ensureSession, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 import { walletActions } from '../wallet/wallet.slice';
+import { getAccountHttpRpc } from './accountHttpRpc';
 export const ACCOUNT_FEATURE_KEY = 'account';
 export interface IAccount {
 	email: string;
@@ -53,12 +54,7 @@ export const fetchUserProfileCached = async (getState: () => RootState, mezon: M
 		};
 	}
 
-	const response = await withRetry((session) => mezon.client.getAccount(session), {
-		maxRetries: 3,
-		initialDelay: 1000,
-		scope: 'account',
-		mezon
-	});
+	const response = await callMezonClient(mezon, (session) => mezon.client.getAccount(session), getAccountHttpRpc());
 
 	markApiFirstCalled(apiKey);
 
@@ -88,7 +84,8 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		}
 
 		const { fromCache, time, ...profileData } = response;
-		if (response?.user?.id) {
+		const mmnApiUrl = process.env.NX_CHAT_APP_MMN_API_URL?.trim();
+		if (response?.user?.id && mmnApiUrl) {
 			thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: response?.user?.id }));
 		}
 		return { ...profileData, fromCache: false };

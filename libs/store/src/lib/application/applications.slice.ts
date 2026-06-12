@@ -6,8 +6,18 @@ import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUp
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { callMezonClient, ensureSession, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
+import {
+	addAppHttpRpc,
+	addAppToClanHttpRpc,
+	deleteAppHttpRpc,
+	getAppHttpRpc,
+	getMezonOauthClientHttpRpc,
+	listAppsHttpRpc,
+	updateAppHttpRpc,
+	updateMezonOauthClientHttpRpc
+} from './applicationHttpRpc';
 
 export const ADMIN_APPLICATIONS = 'adminApplication';
 
@@ -74,12 +84,7 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 		};
 	}
 
-	const response = await withRetry((session) => mezon.client.listApps(session), {
-		maxRetries: 3,
-		initialDelay: 1000,
-		scope: 'apps-list',
-		mezon
-	});
+	const response = await callMezonClient(mezon, (session) => mezon.client.listApps(session), listAppsHttpRpc());
 
 	markApiFirstCalled(apiKey);
 
@@ -104,12 +109,7 @@ export const fetchApplications = createAsyncThunk('adminApplication/fetchApplica
 export const getApplicationDetail = createAsyncThunk('adminApplication/getApplicationDetail', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await withRetry((session) => mezon.client.getApp(session, appId), {
-			maxRetries: 3,
-			initialDelay: 1000,
-			scope: 'app-detail',
-			mezon
-		});
+		const response = await callMezonClient(mezon, (session) => mezon.client.getApp(session, appId), getAppHttpRpc(appId));
 		thunkAPI.dispatch(setCurrentAppId(appId));
 		return response;
 	} catch (error) {
@@ -121,7 +121,7 @@ export const getApplicationDetail = createAsyncThunk('adminApplication/getApplic
 export const createApplication = createAsyncThunk('adminApplication/createApplication', async (data: { request: ApiAddAppRequest }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.addApp(mezon.session, data.request);
+		const response = await callMezonClient(mezon, (session) => mezon.client.addApp(session, data.request), addAppHttpRpc(data.request));
 		if (response) {
 			await thunkAPI.dispatch(fetchApplications({ noCache: true }));
 			return response;
@@ -130,14 +130,25 @@ export const createApplication = createAsyncThunk('adminApplication/createApplic
 		}
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/createApplication');
-		return thunkAPI.rejectWithValue(error);
+		const status = (error as { status?: number })?.status;
+		const message =
+			status === 400
+				? 'Invalid application name or URL. Name must use letters, numbers, and ._-+ only (no spaces, max 32 characters).'
+				: error instanceof Error
+					? error.message
+					: 'Failed to create application';
+		return thunkAPI.rejectWithValue(message);
 	}
 });
 
 export const addBotChat = createAsyncThunk('adminApplication/addBotChat', async (data: { appId: string; clanId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.addAppToClan(mezon.session, data.appId, data.clanId);
+		await callMezonClient(
+			mezon,
+			(session) => mezon.client.addAppToClan(session, data.appId, data.clanId),
+			addAppToClanHttpRpc(data.appId, data.clanId)
+		);
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/addBotChat');
 		return thunkAPI.rejectWithValue(error);
@@ -149,7 +160,11 @@ export const editApplication = createAsyncThunk(
 	async (data: { request: MezonUpdateAppBody; appId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateApp(mezon.session, data.appId, data.request);
+			const response = await callMezonClient(
+				mezon,
+				(session) => mezon.client.updateApp(session, data.appId, data.request),
+				updateAppHttpRpc(data.appId, data.request)
+			);
 			if (response) {
 				return response;
 			}
@@ -163,7 +178,7 @@ export const editApplication = createAsyncThunk(
 export const deleteApplication = createAsyncThunk('adminApplication/deleteApplication', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.deleteApp(mezon.session, appId);
+		const response = await callMezonClient(mezon, (session) => mezon.client.deleteApp(session, appId), deleteAppHttpRpc(appId));
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/deleteApplication');
@@ -176,12 +191,11 @@ export const fetchMezonOauthClient = createAsyncThunk(
 	async ({ appId, appName }: { appId: string; appName?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry((session) => mezon.client.getMezonOauthClient(session, appId, appName), {
-				maxRetries: 3,
-				initialDelay: 1000,
-				scope: '0auth-client',
-				mezon
-			});
+			const response = await callMezonClient(
+				mezon,
+				(session) => mezon.client.getMezonOauthClient(session, appId, appName),
+				getMezonOauthClientHttpRpc(appId, appName)
+			);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'adminApplication/fetchMezonOauthClient');
@@ -195,7 +209,11 @@ export const editMezonOauthClient = createAsyncThunk(
 	async ({ body }: { body: ApiMezonOauthClient }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateMezonOauthClient(mezon.session, body);
+			const response = await callMezonClient(
+				mezon,
+				(session) => mezon.client.updateMezonOauthClient(session, body),
+				updateMezonOauthClientHttpRpc(body)
+			);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'adminApplication/editMezonOauthClient');

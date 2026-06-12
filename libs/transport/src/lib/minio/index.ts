@@ -1,4 +1,6 @@
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
+import { mezonHttpProtobufCall, uploadAttachmentFileHttpRpc, uploadOauthFileHttpRpc } from '../mezonHttpRpc';
+import { withSessionAuthRetry } from '../sessionAuthRetry';
 
 export class CustomFile extends File {
 	url?: string;
@@ -71,13 +73,7 @@ function isRemoteUrl(url: string): boolean {
 	return url.startsWith('http://') || url.startsWith('https://');
 }
 
-async function uploadThumbnailBlob(
-	client: Client,
-	session: ApiSession,
-	blob: Blob,
-	index?: number,
-	isOauth?: boolean
-): Promise<string | undefined> {
+async function uploadThumbnailBlob(client: Client, session: ApiSession, blob: Blob, index?: number, isOauth?: boolean): Promise<string | undefined> {
 	try {
 		const type = blob.type || 'image/jpeg';
 		const ext = type.includes('png') ? 'png' : 'jpg';
@@ -282,45 +278,48 @@ export async function uploadFile(
 	thumbnail?: string,
 	isOauth?: boolean
 ): Promise<ApiMessageAttachment> {
-	// eslint-disable-next-line no-async-promise-executor
-	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
-		try {
-			let fn = client.uploadAttachmentFile.bind(client);
-			if (isOauth) {
-				fn = client.uploadOauthFile.bind(client);
-			}
-			const data = await fn(session, {
-				filename,
-				filetype: type,
-				size,
-				width,
-				height
-			});
-			if (!data?.url) {
-				reject(new Error('Failed to upload file. URL not available.'));
-				return;
-			}
-			const res = await (isMobile ? uploadImageToMinIOMobile(data.url || '', buf, type, size) : uploadImageToMinIO(data.url || '', buf, size));
-			if (res.status !== 200) {
-				throw new Error('Failed to upload file to MinIO.');
-			}
-			let url = `${process.env.NX_BASE_IMG_URL}/${data.filename}`;
-			if (isOauth) {
-				url = `${process.env.NX_PROFILE_IMG_URL}/${data.filename}`;
-			}
-			resolve({
-				filename: originalFilename,
-				url,
-				filetype: type,
-				size,
-				width,
-				height,
-				thumbnail
-			});
-		} catch (error) {
-			reject(new Error(`${error}`));
+	const uploadRequest = {
+		filename,
+		filetype: type,
+		size,
+		width,
+		height
+	};
+	const socketOpen = typeof client.isOpen === 'function' && client.isOpen();
+
+	const doUpload = async (activeSession: ApiSession): Promise<ApiMessageAttachment> => {
+		const data = socketOpen
+			? await (isOauth ? client.uploadOauthFile(activeSession, uploadRequest) : client.uploadAttachmentFile(activeSession, uploadRequest))
+			: await mezonHttpProtobufCall(
+					activeSession,
+					isOauth ? uploadOauthFileHttpRpc(uploadRequest) : uploadAttachmentFileHttpRpc(uploadRequest)
+				);
+		if (!data?.url) {
+			throw new Error('Failed to upload file. URL not available.');
 		}
-	});
+		const res = await (isMobile ? uploadImageToMinIOMobile(data.url || '', buf, type, size) : uploadImageToMinIO(data.url || '', buf, size));
+		if (res.status !== 200) {
+			throw new Error('Failed to upload file to MinIO.');
+		}
+		let url = `${process.env.NX_BASE_IMG_URL}/${data.filename}`;
+		if (isOauth) {
+			url = `${process.env.NX_PROFILE_IMG_URL}/${data.filename}`;
+		}
+		return {
+			filename: originalFilename,
+			url,
+			filetype: type,
+			size,
+			width,
+			height,
+			thumbnail
+		};
+	};
+
+	if (socketOpen) {
+		return doUpload(session);
+	}
+	return withSessionAuthRetry(session, doUpload);
 }
 
 export async function handleUrlInput(url: string): Promise<ApiMessageAttachment> {

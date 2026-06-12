@@ -7,7 +7,7 @@ import {
 	selectApplicationById,
 	setCurrentAppId
 } from '@mezon/store';
-import { CustomLoaderFunction } from './appLoader';
+import type { CustomLoaderFunction } from './appLoader';
 
 interface IBotLoaderData {
 	applicationId: string;
@@ -33,8 +33,15 @@ export const applicationLoader: CustomLoaderFunction = async ({ params, dispatch
 	}
 
 	dispatch(setCurrentAppId(applicationId));
-	await dispatch(getApplicationDetail({ appId: applicationId }));
-	await dispatch(fetchMezonOauthClient({ appId: applicationId, appName: currentApp.appname }));
+	const detailResult = await dispatch(getApplicationDetail({ appId: applicationId }));
+	if (getApplicationDetail.rejected.match(detailResult)) {
+		throw new Error('Failed to load application details');
+	}
+
+	const oauthResult = await dispatch(fetchMezonOauthClient({ appId: applicationId, appName: currentApp.appname }));
+	if (fetchMezonOauthClient.rejected.match(oauthResult)) {
+		console.warn('[Admin] OAuth client not available for app', applicationId, oauthResult.payload);
+	}
 
 	return {
 		applicationId,

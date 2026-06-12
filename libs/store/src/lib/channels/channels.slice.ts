@@ -31,7 +31,7 @@ import { fetchCategoriesCached, mapCategoryToEntity } from '../categories/catego
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectClansEntities } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { callMezonClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
@@ -404,7 +404,7 @@ export const joinChannel = createAsyncThunk(
 export const createNewChannel = createAsyncThunk('channels/createNewChannel', async (body: ApiCreateChannelDescRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createChannelDesc(mezon.session, body);
+		const response = await callMezonClient(mezon, (session) => mezon.client.createChannelDesc(session, body));
 		if (response) {
 			thunkAPI.dispatch(
 				channelsActions.add({ channel: { id: response.channel_id as string, ...response }, clanId: response.clan_id as string })

@@ -1,8 +1,10 @@
 import type { MezonContextValue } from '@mezon/transport';
-import { isOnline, socketState } from '@mezon/transport';
+import { isOnline, socketState, withSessionAuthRetry } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { ApiSession, Client } from 'mezon-js';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
+import type { MezonHttpRpcSpec } from './mezonHttpRpc';
+import { mezonHttpProtobufCall } from './mezonHttpRpc';
 import type { GetThunkAPIWithMezon } from './typings';
 
 export { socketState };
@@ -82,6 +84,24 @@ export async function ensureClientAsync(mezon: MezonContextValue): Promise<Mezon
 			}
 		}, 100);
 	});
+}
+
+export function callMezonClient<T>(mezon: MezonValueContext, fn: (session: ApiSession) => Promise<T>, httpRpc?: MezonHttpRpcSpec<T>): Promise<T> {
+	const latestSession = mezon.sessionRef.current;
+	const socketless = mezon.requireSocket === false;
+	const requireSessionId = !socketless;
+	if (!sessionHasCredentials(latestSession, { requireSessionId })) {
+		throw new Error('Mezon API called without session credentials');
+	}
+
+	if (socketless) {
+		if (httpRpc) {
+			return mezonHttpProtobufCall(latestSession as ApiSession, httpRpc);
+		}
+		return withSessionAuthRetry(latestSession as ApiSession, fn);
+	}
+
+	return fn(latestSession as ApiSession);
 }
 
 export function ensureClient(mezon: MezonContextValue): MezonValueContext {
@@ -191,9 +211,13 @@ export async function withRetry<T>(fn: (() => Promise<T>) | ((session: ApiSessio
 	const executeCall = (): Promise<T> => {
 		if (config.mezon) {
 			const latestSession = config.mezon.sessionRef.current;
-			const requireSessionId = config.mezon.requireSocket !== false;
+			const socketless = config.mezon.requireSocket === false;
+			const requireSessionId = !socketless;
 			if (!sessionHasCredentials(latestSession, { requireSessionId })) {
 				throw new Error('Mezon API called without session credentials');
+			}
+			if (socketless) {
+				return withSessionAuthRetry(latestSession as ApiSession, fn as (session: ApiSession) => Promise<T>);
 			}
 			return (fn as (session: ApiSession) => Promise<T>)(latestSession as ApiSession);
 		}
@@ -260,6 +284,9 @@ export async function fetchDataWithSocketFallback<T>(
 		}
 		if (signal?.aborted) {
 			throw new Error('Request cancelled');
+		}
+		if (mezon.requireSocket === false) {
+			return await withSessionAuthRetry(latestSession as ApiSession, restApiFallback);
 		}
 		return await restApiFallback(latestSession as ApiSession);
 	} finally {

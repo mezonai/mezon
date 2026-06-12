@@ -1,6 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { createApplication, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { isFulfilled, isRejected } from '@reduxjs/toolkit';
 import type { ApiAddAppRequest } from 'mezon-js';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,8 @@ interface ICreateAppPopup {
 }
 
 type CreationType = AppType;
+const APP_NAME_REGEX = /^[a-zA-Z0-9._+-]{1,32}$/;
+
 const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const { t } = useTranslation('adminApplication');
 	const [formValues, setFormValues] = useState({
@@ -22,6 +25,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 		url: ''
 	});
 	const [isUrlValid, setIsUrlValid] = useState(true);
+	const [isNameValid, setIsNameValid] = useState(true);
 	const [isCheckedForPolicy, setIsChecked] = useState(false);
 	const [isShadowBot, setIsShadowBot] = useState(false);
 	const [notification, setNotification] = useState<React.JSX.Element | null>(null);
@@ -32,7 +36,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const typeApplication = creationType === APP_TYPES.APPLICATION;
 	const typeBot = creationType === APP_TYPES.BOT;
 
-	const isFormValid = !!formValues.name && (creationType === 'bot' || (formValues.url !== '' && isUrlValid)) && isCheckedForPolicy;
+	const isFormValid = !!formValues.name && isNameValid && (creationType === 'bot' || (formValues.url !== '' && isUrlValid)) && isCheckedForPolicy;
 	const navigate = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -45,6 +49,12 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 				<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">
 					{t('createPopup.errors.nameRequired', { type: creationType })}
 				</div>
+			);
+			return;
+		}
+		if (!isNameValid) {
+			setNotification(
+				<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">{t('createPopup.errors.invalidAppName')}</div>
 			);
 			return;
 		}
@@ -64,7 +74,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 		}
 
 		setNotification(null);
-		const cleanedName = formValues.name.trim().replace(/\s+/g, ' ');
+		const cleanedName = formValues.name.trim();
 		const cleanedUrl = formValues.url.trim();
 
 		const createRequest: ApiAddAppRequest = {
@@ -77,16 +87,17 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 
 		try {
 			setIsLoading(true);
-			const response = (await dispatch(createApplication({ request: createRequest }))) as { payload?: { id?: string; token?: string } };
+			const result = await dispatch(createApplication({ request: createRequest }));
 
-			if (response?.payload?.id) {
-				if (response?.payload?.token) {
-					localStorage.setItem(`app_token_${response.payload.id}`, response.payload.token);
+			if (isFulfilled(result) && result.payload?.id) {
+				if (result.payload.token) {
+					localStorage.setItem(`app_token_${result.payload.id}`, result.payload.token);
 				}
-				navigate(`/developers/applications/${response?.payload?.id}/information`);
+				navigate(`/developers/applications/${result.payload.id}/information`);
 				togglePopup();
 			} else {
-				toast.error(t('createPopup.errors.createFailed'));
+				const errMsg = isRejected(result) && typeof result.payload === 'string' ? result.payload : t('createPopup.errors.createFailed');
+				toast.error(errMsg);
 			}
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : '';
@@ -130,9 +141,15 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 			[name]: value
 		}));
 
+		if (name === 'name') {
+			const trimmed = value.trim();
+			setIsNameValid(trimmed === '' || APP_NAME_REGEX.test(trimmed));
+		}
+
 		if (name === 'url') {
 			try {
-				new URL(value);
+				const normalized = /^https?:\/\//i.test(value) ? value : `http://${value}`;
+				new URL(normalized);
 				setIsUrlValid(true);
 			} catch {
 				setIsUrlValid(false);
@@ -149,6 +166,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 			setIsUrlValid(true);
 			return;
 		}
+		setIsNameValid(formValues.name.trim() === '' || APP_NAME_REGEX.test(formValues.name.trim()));
 		setIsShadowBot(false);
 	};
 	useEffect(() => {

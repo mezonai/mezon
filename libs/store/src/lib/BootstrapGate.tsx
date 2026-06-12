@@ -1,10 +1,11 @@
-import { probeNetworkReachability, RECONNECT_NETWORK_PROBE_TIMEOUT_MS, useMezon } from '@mezon/transport';
+import { configureSessionAuthRetry, probeNetworkReachability, RECONNECT_NETWORK_PROBE_TIMEOUT_MS, useMezon } from '@mezon/transport';
 import type { ApiSession } from 'mezon-js';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import type { Persistor } from 'redux-persist';
 import { authActions } from './auth/auth.slice';
 import { sessionHasCredentials } from './helpers';
+import { refreshMezonSession } from './sessionAuth';
 import { useAppDispatch } from './store';
 
 const PERSIST_AUTH_KEY = 'persist:auth';
@@ -53,10 +54,20 @@ type Props = {
 };
 
 export function BootstrapGate({ children, persistor, fallback, requireSocket = true }: Props) {
-	const { sessionRef, createClient, connectSocket } = useMezon();
+	const mezon = useMezon();
+	const { sessionRef, createClient, connectSocket } = mezon;
 	const dispatch = useAppDispatch();
 	const [ready, setReady] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
+
+	useEffect(() => {
+		configureSessionAuthRetry({
+			getSession: () => sessionRef.current,
+			refreshSession: () => refreshMezonSession(mezon)
+		});
+
+		return () => configureSessionAuthRetry(null);
+	}, [mezon, sessionRef]);
 
 	useEffect(() => {
 		const INITIAL_DELAY = 1000;

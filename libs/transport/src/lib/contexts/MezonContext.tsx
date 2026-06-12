@@ -163,7 +163,7 @@ export type MezonContextValue = {
 	indexerRef: React.MutableRefObject<IndexerClient | null>;
 	createClient: () => Promise<Client>;
 	createZkClient: () => ZkClient;
-	createMmnClient: () => MmnClient;
+	createMmnClient: () => MmnClient | null;
 	createDongClient: () => DongClient;
 	createIndexerClient: () => IndexerClient;
 	authenticateMezon: (token: string, isRemember?: boolean) => Promise<ApiSession>;
@@ -244,8 +244,13 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 	}, []);
 
 	const createMmnClient = useCallback(() => {
+		const baseUrl = process.env.NX_CHAT_APP_MMN_API_URL?.trim();
+		if (!baseUrl) {
+			mmnRef.current = null;
+			return null;
+		}
 		const mmnClient = createMezonMmnClient({
-			baseUrl: process.env.NX_CHAT_APP_MMN_API_URL || '',
+			baseUrl,
 			timeout: 30000,
 			headers: {
 				'Content-Type': 'application/json'

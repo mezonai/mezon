@@ -36,6 +36,7 @@
 			"nameRequired": "A name is required to create your new {type}.",
 			"urlRequired": "URL is required to create your new application.",
 			"invalidUrl": "Please enter a valid URL (e.g., https://example.com).",
+			"invalidAppName": "App name can only contain letters, numbers, and . _ + - (no spaces, max 32 characters).",
 			"createFailed": "Failed to create application or missing ID in response",
 			"unexpectedError": "An unexpected error occurred.{message}"
 		},
