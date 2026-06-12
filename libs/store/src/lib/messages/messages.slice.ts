@@ -23,6 +23,7 @@ import {
 	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
+	parseThreadInfo,
 	revokePreSendAttachmentUrls,
 	toPublicMessageAttachments
 } from '@mezon/utils';
@@ -2434,6 +2435,19 @@ export const selectMessageEntitiesByChannelId = createCachedSelector([getMessage
 export const selectMessageIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelMessages[channelId]?.ids || emptyArray;
 });
+
+export const selectHasThreadDeleteSystemMessage = createCachedSelector(
+	[selectMessageIdsByChannelId, selectMessageEntitiesByChannelId, (_, __, threadId: string) => threadId],
+	(ids, entities, threadId) => {
+		if (!threadId) {
+			return false;
+		}
+
+		return ids.some(
+			(id) => entities[id]?.code === TypeMessage.DeleteThread && parseThreadInfo(entities[id]?.content?.t ?? '').threadId === threadId
+		);
+	}
+);
 
 export const selectViewportIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelViewPortMessageIds[channelId] || emptyArray;

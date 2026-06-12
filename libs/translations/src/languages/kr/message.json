@@ -183,6 +183,7 @@
 		"allPinned": "모든 메시지",
 		"messages": "메시지 고정됨.",
 		"startedAThread": "스레드 생성:",
+		"deletedAThread": "스레드 삭제:",
 		"seeAllThreads": "보기",
 		"allThreads": "모든 스레드"
 	},

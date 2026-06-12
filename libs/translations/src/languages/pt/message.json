@@ -183,6 +183,7 @@
 		"allPinned": "todas as mensagens",
 		"messages": "fixadas.",
 		"startedAThread": "criou um tópico:",
+		"deletedAThread": "eliminou um tópico:",
 		"seeAllThreads": "Ver",
 		"allThreads": "todos os tópicos"
 	},

@@ -57,7 +57,7 @@ import type {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus, TypeMessage } from '../types';
+import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus } from '../types';
 import { getDateLocale } from './dateI18n';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
@@ -1205,20 +1205,6 @@ export const parseThreadInfo = (messageContent: string) => {
 		threadId: '',
 		threadContent: messageContent.replace(/^@\w+\s*/, '')
 	};
-};
-
-export const hasThreadDeleteSystemMessage = (
-	threadId: string,
-	channelMessages: Array<{ code?: number; content?: IMessageSendPayload | null }>
-): boolean => {
-	if (!threadId) {
-		return false;
-	}
-
-	return channelMessages.some(
-		(existingMessage) =>
-			existingMessage.code === TypeMessage.DeleteThread && parseThreadInfo(existingMessage.content?.t ?? '').threadId === threadId
-	);
 };
 
 export const openVoiceChannel = (url: string) => {
