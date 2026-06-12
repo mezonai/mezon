@@ -1,5 +1,15 @@
 import { useAuth } from '@mezon/core';
-import { channelsActions, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	channelsActions,
+	rolesClanActions,
+	selectAllCategories,
+	selectChannelById,
+	selectRolesByChannelId,
+	selectUserChannelIds,
+	useAppDispatch,
+	useAppSelector,
+	userChannelsActions
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, type IChannel } from '@mezon/utils';
 import type { MutableRefObject, RefObject } from 'react';
@@ -44,6 +54,16 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const resetTriggerRef = useRef<() => void | null>(null);
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
+	const rolesChannel = useSelector(selectRolesByChannelId(channel.id));
+	const channelUserIds = useSelector((state) => selectUserChannelIds(state, channel.id));
+	const currentChannel = useMemo(
+		() =>
+			({
+				...channel,
+				channel_private: realTimeChannel?.channel_private ?? channel.channel_private
+			}) as IChannel,
+		[channel, realTimeChannel?.channel_private]
+	);
 
 	const handleToggle = useCallback(() => {
 		setValueToggle(!valueToggle);
@@ -59,17 +79,42 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	}, [valueToggleInit]);
 	const handleSaveChannelPrivateChanged = useCallback(async () => {
 		setValueToggleInit(valueToggle);
-		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
+		const creatorId = userProfile?.user?.id || channel.creator_id;
+		const userIdsToSave = valueToggle
+			? Array.from(new Set([...selectedUserIds, ...(creatorId ? [creatorId] : [])]))
+			: creatorId
+				? [creatorId]
+				: [];
 		await dispatch(
 			channelsActions.updateChannelPrivate({
 				clan_id: clanId,
 				channel_id: channel.id,
 				channel_private: channel.channel_private || 0,
-				user_ids: updatedUserIds,
-				role_ids: selectedRoleIds
+				user_ids: userIdsToSave,
+				role_ids: valueToggle ? selectedRoleIds : []
 			})
 		);
-	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel]);
+		if (!valueToggle && clanId) {
+			rolesChannel
+				.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1)
+				.forEach((role) => {
+					if (!role.id) return;
+					dispatch(rolesClanActions.removeChannelRole({ channelId: channel.id, clanId, roleId: role.id }));
+				});
+			const usersToRemove = channelUserIds.filter((id) => id !== channel.creator_id && id !== creatorId);
+			if (usersToRemove.length > 0) {
+				dispatch(userChannelsActions.removeUserChannel({ channelId: channel.id, userRemoves: usersToRemove }));
+			}
+		}
+		if (valueToggle) {
+			const usersToRemove = channelUserIds.filter((id) => !userIdsToSave.includes(id));
+			if (usersToRemove.length > 0) {
+				dispatch(userChannelsActions.removeUserChannel({ channelId: channel.id, userRemoves: usersToRemove }));
+			}
+		}
+		setSelectedUserIds([]);
+		setSelectedRoleIds([]);
+	}, [valueToggle, selectedUserIds, selectedRoleIds, rolesChannel, channelUserIds, userProfile, channel, clanId, dispatch]);
 
 	const handleSave = useCallback(() => {
 		if (valueToggle !== valueToggleInit) {
@@ -154,7 +199,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 									<p className="uppercase font-bold text-xs pb-4 text-theme-primary">{t('channelPermission.roles')}</p>
 									<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.role_list')}>
 										<ListRolePermission
-											channel={channel}
+											channel={currentChannel}
 											selectedRoleIds={selectedRoleIds}
 											setSelectedRoleIds={setSelectedRoleIds}
 										/>
@@ -165,7 +210,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 									<p className="uppercase font-bold text-xs pb-4 text-theme-primary">{t('channelPermission.members')}</p>
 									<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.member_list')}>
 										<ListMemberPermission
-											channel={channel}
+											channel={currentChannel}
 											selectedUserIds={selectedUserIds}
 											setSelectedUserIds={setSelectedUserIds}
 										/>
@@ -191,11 +236,11 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			{showAddMemRole && (
 				<AddMemRole
 					onClose={closeAddMemRoleModal}
-					channel={channel}
+					channel={currentChannel}
 					onSelectedUsersChange={handleSelectedUsersChange}
 					onSelectedRolesChange={handleSelectedRolesChange}
-					selectRoleIds={selectedRoleIds}
-					selectUserIds={selectedUserIds}
+					selectRoleIds={currentChannel.channel_private === 1 ? [] : selectedRoleIds}
+					selectUserIds={currentChannel.channel_private === 1 ? [] : selectedUserIds}
 				/>
 			)}
 		</>

@@ -45,6 +45,7 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 			clanId: currentClanId as string
 		};
 		await dispatch(channelUsersActions.removeChannelUsers(body));
+		props.setSelectedUserIds?.(props.selectedUserIds.filter((selectedId) => selectedId !== userId));
 		if (currentClanId && userId === userProfile.userId) {
 			navigate(toMembersPage(currentClanId));
 		}
