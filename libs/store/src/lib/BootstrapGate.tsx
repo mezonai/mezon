@@ -99,6 +99,7 @@ export function BootstrapGate({ children, persistor, fallback, requireSocket = t
 			sessionRef.current = persistedSession as ApiSession;
 
 			if (!requireSocket) {
+				dispatch(authActions.setSession(persistedSession as ApiSession));
 				setReady(true);
 				return;
 			}

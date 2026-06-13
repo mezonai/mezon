@@ -36,34 +36,21 @@ const RootLayout: React.FC = () => {
 	}, [param, t]);
 	const skipOAuthRedirect = process.env.NX_ADMIN_SKIP_OAUTH_REDIRECT === 'true';
 
-	const oauthState = React.useMemo(() => {
-		const randomState = Math.random().toString(36).substring(2, 15);
-		sessionStorage.setItem('oauth_state', randomState);
-		return randomState;
-	}, []);
-
 	useEffect(() => {
 		if (isLogin || redirectStarted.current || skipOAuthRedirect) {
 			return;
 		}
 
-		const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
-		const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;
-		const REDIRECT_URI = process.env.NX_CHAT_APP_OAUTH2_REDIRECT_URI;
-		const RESPONSE_TYPE = process.env.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE;
-		const SCOPE = process.env.NX_CHAT_APP_OAUTH2_SCOPE;
+		const timer = setTimeout(() => {
+			redirectStarted.current = true;
+			dispatch(authActions.setRedirectUrl(location.pathname + location.search));
 
-		if (!OAUTH2_AUTHORIZE_URL || !CLIENT_ID || !REDIRECT_URI || !RESPONSE_TYPE || !SCOPE) {
-			console.error('[Admin OAuth] Missing NX_CHAT_APP_OAUTH2_* environment variables');
-			return;
-		}
+			const chatLoginUrl = process.env.NX_ADMIN_CHAT_LOGIN_URL || '/';
+			window.location.replace(chatLoginUrl);
+		}, 300);
 
-		redirectStarted.current = true;
-		dispatch(authActions.setRedirectUrl(location.pathname + location.search));
-
-		const authUrl = `${OAUTH2_AUTHORIZE_URL}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&state=${oauthState}`;
-		window.location.replace(authUrl);
-	}, [dispatch, isLogin, location.pathname, location.search, oauthState, skipOAuthRedirect]);
+		return () => clearTimeout(timer);
+	}, [dispatch, isLogin, location.pathname, location.search, skipOAuthRedirect]);
 
 	if (!isLogin) {
 		return <LoadingScreen />;
