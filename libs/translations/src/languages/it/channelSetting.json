@@ -240,7 +240,8 @@
 		"invites": "Inviti",
 		"integrations": "Integrazioni",
 		"category": "Categoria",
-		"quickMenu": "Azioni rapide"
+		"quickMenu": "Azioni rapide",
+		"streamThumbnail": "Copertina dello streaming"
 	},
 	"categoryManagement": {
 		"title": "Categoria",

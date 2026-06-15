@@ -34,7 +34,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 
 	const clanId = currentChannel?.clan_id ?? channel?.clan_id ?? clanIdState;
 	const channelLabel = currentChannel?.channel_label ?? channel?.channel_label ?? channelLabelState;
-	const thumbnail = currentChannel?.channel_avatar || null;
+	const thumbnail = currentChannel?.channel_avatar && currentChannel.channel_avatar !== '0' ? currentChannel.channel_avatar : null;
 
 	const { sessionRef, clientRef } = useMezon();
 
@@ -162,7 +162,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 				channelsActions.updateChannel({
 					channel_id: channelId,
 					channel_label: channelLabel,
-					category_id: undefined,
+					category_id: currentChannel?.category_id,
 					app_id: '0',
 					channel_avatar: '0'
 				})
