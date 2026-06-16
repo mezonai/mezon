@@ -37,6 +37,11 @@
 		"content": "Detta samtal återställs till sin vanliga plats i meddelandelistan.",
 		"confirmText": "Avspika"
 	},
+	"closeDmConfirm": {
+		"title": "Stäng direktmeddelande",
+		"content": "Är du säker på att du vill stänga denna konversation? Detta kommer att dölja chatten från din meddelandelista.",
+		"confirmText": "Stäng direktmeddelande"
+	},
 	"pinSection": "SPIKAD",
 	"allMessagesSection": "ALLA MEDELANDEN",
 	"maximumPinnedConversationsReached": "Du kan bara spika max {{max}} samtal.",

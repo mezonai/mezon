@@ -26,6 +26,11 @@
 		"content": "¿Confirmas que deseas salir de {{groupName}}? No podrás volver a unirte a este grupo a menos que seas reinvitado.",
 		"confirmText": "Sí"
 	},
+	"closeDmConfirm": {
+		"title": "Cerrar mensaje directo",
+		"content": "¿Estás seguro de que deseas cerrar esta conversación? Esto ocultará el chat de tu lista de mensajes.",
+		"confirmText": "Cerrar mensaje directo"
+	},
 	"notification": {
 		"blockUser": {
 			"success": "Usuario bloqueado con éxito",

@@ -37,6 +37,11 @@
 		"content": "Questa conversazione tornerà alla sua posizione normale nella lista dei messaggi.",
 		"confirmText": "Rimuovi"
 	},
+	"closeDmConfirm": {
+		"title": "Chiudi messaggio diretto",
+		"content": "Sei sicuro di voler chiudere questa conversazione? Questa azione nasconderà la chat dall'elenco dei messaggi.",
+		"confirmText": "Chiudi messaggio diretto"
+	},
 	"pinSection": "FISSIATI",
 	"allMessagesSection": "TUTTI I MESSAGGI",
 	"maximumPinnedConversationsReached": "Puoi fissare al massimo {{max}} conversazioni.",

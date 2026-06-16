@@ -37,6 +37,11 @@
 		"content": "This conversation will be returned to its normal position in the messages list.",
 		"confirmText": "Unpin"
 	},
+	"closeDmConfirm": {
+		"title": "Close Direct Message",
+		"content": "Are you sure you want to close this conversation? This will hide the chat from your messages list.",
+		"confirmText": "Close Direct Message"
+	},
 	"pinSection": "PINNED",
 	"allMessagesSection": "ALL MESSAGES",
 	"maximumPinnedConversationsReached": "You can only pin up to {{max}} conversations.",

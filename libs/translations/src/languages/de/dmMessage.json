@@ -37,6 +37,11 @@
 		"content": "Dieser Chat wird an seine normale Position in der Nachrichtenliste zurückgesetzt.",
 		"confirmText": "Anpinnen aufheben"
 	},
+	"closeDmConfirm": {
+		"title": "Direktnachricht schließen",
+		"content": "Möchten Sie diese Unterhaltung wirklich schließen? Dadurch wird der Chat aus Ihrer Nachrichtenliste ausgeblendet.",
+		"confirmText": "Direktnachricht schließen"
+	},
 	"pinSection": "ANGEPINNT",
 	"allMessagesSection": "ALLE NACHRICHTEN",
 	"maximumPinnedConversationsReached": "Du kannst maximal {{max}} Chats anpinnen.",

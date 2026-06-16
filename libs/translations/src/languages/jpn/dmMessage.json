@@ -37,6 +37,11 @@
 		"content": "この会話はメッセージリストの通常の位置に戻ります。",
 		"confirmText": "ピン留め解除"
 	},
+	"closeDmConfirm": {
+		"title": "ダイレクトメッセージを閉じる",
+		"content": "この会話を閉じてもよろしいですか？この操作により、チャットがメッセージリストから非表示になります。",
+		"confirmText": "ダイレクトメッセージを閉じる"
+	},
 	"pinSection": "ピン留め済み",
 	"allMessagesSection": "すべてのメッセージ",
 	"maximumPinnedConversationsReached": "最大{{max}}の会話をピン留めできます。",
