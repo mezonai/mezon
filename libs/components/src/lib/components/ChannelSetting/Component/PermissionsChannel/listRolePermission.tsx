@@ -22,13 +22,17 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 		() => RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1),
 		[RolesChannel]
 	);
+	const rolesNotOnChannel = useMemo(
+		() => RolesClan.filter((role) => !activeChannelRoles.some((channelRole) => channelRole.id === role.id)),
+		[RolesClan, activeChannelRoles]
+	);
 
 	const listRolesInChannel = useMemo(() => {
 		if (channel.channel_private === 1) {
 			return activeChannelRoles;
 		}
-		return RolesClan.filter((role) => props.selectedRoleIds.includes(role.id));
-	}, [channel.channel_private, activeChannelRoles, props.selectedRoleIds, RolesClan]);
+		return rolesNotOnChannel.filter((role) => props.selectedRoleIds.includes(role.id));
+	}, [channel.channel_private, activeChannelRoles, rolesNotOnChannel, props.selectedRoleIds]);
 
 	const deleteRole = async (roleId: string) => {
 		setSelectedRoleIds?.(selectedRoleIds.filter((id) => id !== roleId));

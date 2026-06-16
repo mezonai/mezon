@@ -1,15 +1,5 @@
 import { useAuth } from '@mezon/core';
-import {
-	channelsActions,
-	rolesClanActions,
-	selectAllCategories,
-	selectChannelById,
-	selectRolesByChannelId,
-	selectUserChannelIds,
-	useAppDispatch,
-	useAppSelector,
-	userChannelsActions
-} from '@mezon/store';
+import { channelsActions, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, type IChannel } from '@mezon/utils';
 import type { MutableRefObject, RefObject } from 'react';
@@ -54,8 +44,6 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const resetTriggerRef = useRef<() => void | null>(null);
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
-	const rolesChannel = useSelector(selectRolesByChannelId(channel.id));
-	const channelUserIds = useSelector((state) => selectUserChannelIds(state, channel.id));
 	const currentChannel = useMemo(
 		() =>
 			({
@@ -78,8 +66,8 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		}
 	}, [valueToggleInit]);
 	const handleSaveChannelPrivateChanged = useCallback(async () => {
-		setValueToggleInit(valueToggle);
-		const creatorId = userProfile?.user?.id || channel.creator_id;
+		// Always keep the real channel creator in ACL payload.
+		const creatorId = channel.creator_id || userProfile?.user?.id;
 		const userIdsToSave = valueToggle
 			? Array.from(new Set([...selectedUserIds, ...(creatorId ? [creatorId] : [])]))
 			: creatorId
@@ -89,32 +77,15 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			channelsActions.updateChannelPrivate({
 				clan_id: clanId,
 				channel_id: channel.id,
-				channel_private: channel.channel_private || 0,
+				channel_private: valueToggle ? 1 : 0,
 				user_ids: userIdsToSave,
 				role_ids: valueToggle ? selectedRoleIds : []
 			})
-		);
-		if (!valueToggle && clanId) {
-			rolesChannel
-				.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1)
-				.forEach((role) => {
-					if (!role.id) return;
-					dispatch(rolesClanActions.removeChannelRole({ channelId: channel.id, clanId, roleId: role.id }));
-				});
-			const usersToRemove = channelUserIds.filter((id) => id !== channel.creator_id && id !== creatorId);
-			if (usersToRemove.length > 0) {
-				dispatch(userChannelsActions.removeUserChannel({ channelId: channel.id, userRemoves: usersToRemove }));
-			}
-		}
-		if (valueToggle) {
-			const usersToRemove = channelUserIds.filter((id) => !userIdsToSave.includes(id));
-			if (usersToRemove.length > 0) {
-				dispatch(userChannelsActions.removeUserChannel({ channelId: channel.id, userRemoves: usersToRemove }));
-			}
-		}
+		).unwrap();
+		setValueToggleInit(valueToggle);
 		setSelectedUserIds([]);
 		setSelectedRoleIds([]);
-	}, [valueToggle, selectedUserIds, selectedRoleIds, rolesChannel, channelUserIds, userProfile, channel, clanId, dispatch]);
+	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel, clanId, dispatch]);
 
 	const handleSave = useCallback(() => {
 		if (valueToggle !== valueToggleInit) {
