@@ -3,6 +3,7 @@ import {
 	accountActions,
 	channelMembersActions,
 	clansActions,
+	directActions,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectLogoCustom,
@@ -88,6 +89,13 @@ const SettingRightUser = ({
 			if (userProfile?.user?.id) {
 				dispatch(
 					userChannelsActions.updateUserInfo({
+						userId: userProfile.user.id,
+						displayName: valueDisplayName.trim(),
+						avatarUrl: urlImage
+					})
+				);
+				dispatch(
+					directActions.updateCurrentUserInDMs({
 						userId: userProfile.user.id,
 						displayName: valueDisplayName.trim(),
 						avatarUrl: urlImage

@@ -109,17 +109,33 @@ export const createNewDirectMessage = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 			if (response) {
+				const state = thunkAPI.getState() as RootState;
+				const currentUser = selectAllAccount(state)?.user;
+				const targetUserId = body.user_ids?.[0];
+				const isSelfDm = !!targetUserId && targetUserId === currentUser?.id;
+				const resolvedDisplayNames = display_names || (isSelfDm ? currentUser?.display_name || currentUser?.username : undefined);
+				const resolvedUsername = username || (isSelfDm ? currentUser?.username : undefined);
+				const resolvedAvatar = avatar || (isSelfDm ? currentUser?.avatar_url : undefined);
+
 				thunkAPI.dispatch(
 					directActions.upsertOne({
 						id: response.channel_id || '0',
 						...response,
-						usernames: Array.isArray(username) ? username : username ? [username] : [],
-						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : [],
+						usernames: Array.isArray(resolvedUsername) ? resolvedUsername : resolvedUsername ? [resolvedUsername] : [],
+						display_names: Array.isArray(resolvedDisplayNames)
+							? resolvedDisplayNames
+							: resolvedDisplayNames
+								? [resolvedDisplayNames]
+								: [],
 						channel_label:
 							response.channel_label ||
-							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
+							(Array.isArray(resolvedDisplayNames)
+								? resolvedDisplayNames.join(',')
+								: Array.isArray(resolvedUsername)
+									? resolvedUsername.join(',')
+									: resolvedDisplayNames || resolvedUsername || ''),
 						channel_avatar: response.channel_avatar || '/assets/images/avatar-group.png',
-						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
+						avatars: Array.isArray(resolvedAvatar) ? resolvedAvatar : resolvedAvatar ? [resolvedAvatar] : [],
 						user_ids: body.user_ids,
 						active: 1,
 						last_sent_message: {
@@ -753,7 +769,7 @@ export const directSlice = createSlice({
 			state,
 			action: PayloadAction<{ dmId: string; user_id: string; avatar: string; display_name: string; about_me?: string }>
 		) => {
-			const { dmId, user_id, avatar, display_name, about_me } = action.payload;
+			const { dmId, user_id, avatar, display_name } = action.payload;
 			const dmGroup = state.entities?.[dmId];
 
 			if (!dmGroup || !user_id) return;
@@ -763,6 +779,13 @@ export const directSlice = createSlice({
 
 			if (avatar && dmGroup.channel_avatar) dmGroup.channel_avatar = avatar;
 
+			if (avatar) {
+				const avatars = [...(dmGroup.avatars ?? [])];
+				while (avatars.length <= index) avatars.push('');
+				avatars[index] = avatar;
+				dmGroup.avatars = avatars;
+			}
+
 			if (display_name && dmGroup.display_names) {
 				if (dmGroup.channel_label) {
 					const labels = dmGroup.channel_label.split(',');
@@ -771,6 +794,38 @@ export const directSlice = createSlice({
 				}
 				dmGroup.display_names[index] = display_name;
 			}
+		},
+		updateCurrentUserInDMs: (state, action: PayloadAction<{ userId: string; displayName?: string; avatarUrl?: string }>) => {
+			const { userId, displayName, avatarUrl } = action.payload;
+			if (!userId) return;
+
+			Object.keys(state.entities).forEach((dmId) => {
+				const dmGroup = state.entities[dmId];
+				if (!dmGroup?.user_ids?.includes(userId) || dmGroup.type !== ChannelType.CHANNEL_TYPE_DM) return;
+
+				const isSelfDm = dmGroup.user_ids.length > 0 && dmGroup.user_ids.every((id) => id === userId);
+				if (!isSelfDm) return;
+
+				if (displayName !== undefined) {
+					dmGroup.channel_label = displayName;
+					if (dmGroup.display_names) {
+						dmGroup.user_ids.forEach((id, index) => {
+							if (id === userId) dmGroup.display_names![index] = displayName;
+						});
+					}
+				}
+
+				if (avatarUrl !== undefined) {
+					const avatars = [...(dmGroup.avatars ?? [])];
+					dmGroup.user_ids.forEach((id, index) => {
+						if (id === userId) {
+							while (avatars.length <= index) avatars.push('');
+							avatars[index] = avatarUrl;
+						}
+					});
+					dmGroup.avatars = avatars;
+				}
+			});
 		},
 		setDmActiveStatus: (state, action: PayloadAction<{ dmId: string; isActive: boolean }>) => {
 			const { dmId, isActive } = action.payload;

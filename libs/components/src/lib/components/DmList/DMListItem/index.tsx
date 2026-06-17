@@ -125,9 +125,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	);
 }
 
-export default memo(DMListItem, (prev, cur) => {
-	return prev.id === cur.id && prev.isActive === cur.isActive;
-});
+export default DMListItem;
 
 const DmItemProfile = ({
 	avatar,
