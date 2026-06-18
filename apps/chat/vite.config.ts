@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
 		root: path.join(appRoot, 'src'),
 		publicDir: mode === 'production' ? false : path.join(appRoot, 'src/assets'),
 		cacheDir: path.join(workspaceRoot, 'node_modules/.vite/apps/chat'),
-		base: mode === 'production' ? '/' : './',
+		base: mode === 'production' ? '/chat' : './chat',
 
 		server: {
 			port: 4200,

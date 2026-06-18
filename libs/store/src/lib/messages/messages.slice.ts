@@ -17,15 +17,17 @@ import {
 	LIMIT_MESSAGE,
 	MessageCrypt,
 	TypeMessage,
+	getMessageCreateTimeSeconds,
 	getMobileUploadedAttachments,
 	getPublicKeys,
 	getWebUploadedAttachments,
 	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
-	parseThreadInfo,
+	mergePresignFinishContent,
 	revokePreSendAttachmentUrls,
-	toPublicMessageAttachments
+	toPublicMessageAttachments,
+	withCreateTimeSecondsInUpdateContent
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
@@ -827,6 +829,9 @@ async function executeUpdateLastSeenMessageBody(args: UpdateMessageArgs, thunkAP
 		}
 	} catch (e) {
 		console.error(e, 'updateLastSeenMessage writeSocket');
+		if ((e as { error?: { message?: string } })?.error?.message === 'permission denied') {
+			return;
+		}
 		thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count: badgeCount, message_time }));
 	}
 }
@@ -1096,9 +1101,21 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			...content,
 			t: content.t?.trim()
 		};
-		const stringifiedContent = JSON.stringify(trimContent);
+		const state = thunkAPI.getState() as RootState;
+		const existingMessage = selectMessageByMessageId(state, channelId, messageId);
+		const isAttachmentFieldUpdate = attachments !== undefined;
+		const hasExistingAttachments = (existingMessage?.attachments?.length ?? 0) > 0;
+		const messageCreateTimeSeconds = getMessageCreateTimeSeconds(existingMessage ?? {});
+
+		let contentForUpdate = trimContent;
+		if (hasExistingAttachments && !isAttachmentFieldUpdate) {
+			contentForUpdate = withCreateTimeSecondsInUpdateContent(trimContent, messageCreateTimeSeconds);
+		}
+
+		const stringifiedContent = JSON.stringify(contentForUpdate);
 		const finalTopicId = topicId || '0';
 		const updateChannelId = finalTopicId !== '0' ? finalTopicId : channelId || '0';
+		const updateAttachments = isAttachmentFieldUpdate ? attachments : undefined;
 
 		const res = await client.updateChannelMessage(
 			session,
@@ -1109,7 +1126,8 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			messageId || '0',
 			stringifiedContent,
 			mentions,
-			attachments,
+			updateAttachments,
+			messageCreateTimeSeconds,
 			hideEditted,
 			finalTopicId,
 			!!isTopic
@@ -1844,14 +1862,16 @@ export const messagesSlice = createSlice({
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
 					const updateTimeSeconds = action.payload.update_time_seconds;
+					const existingMessage = channelEntity?.entities?.[messageId];
+					const mergedContent = mergePresignFinishContent(existingMessage?.content, action.payload.content);
 					const changes: Partial<MessagesEntity> = {
-						content: action.payload.content,
+						content: mergedContent as MessagesEntity['content'],
 						mentions: action.payload.mentions,
 						hide_editted: action.payload.hide_editted,
 						update_time_seconds: updateTimeSeconds,
 						update_time: action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
 					};
-					if (action.payload.attachments?.length !== channelEntity?.entities?.[messageId]?.attachments?.length) {
+					if (action.payload.attachments?.length) {
 						changes.attachments = action.payload.attachments;
 					}
 					channelMessagesAdapter.updateOne(channelEntity, {

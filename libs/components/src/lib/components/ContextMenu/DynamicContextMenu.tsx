@@ -56,6 +56,12 @@ type Props = {
 	currentChannelId?: string;
 };
 
+const contextSubmenuAlign = {
+	points: ['tl', 'tr'] as [string, string],
+	offset: [8, 0] as [number, number],
+	overflow: { adjustX: 1, adjustY: 1 }
+};
+
 export default function DynamicContextMenu({ menuId, items, messageId, message, isTopic, onQuickMenuExecute, currentChannelId }: Props) {
 	const emojiConverted = useEmojiConverted();
 	const { t } = useTranslation('contextMenu');
@@ -259,7 +265,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 	const dropdownQuickMenus = useMemo(() => {
 		if (isQuickMenu) {
 			return (
-				<div className="w-[320px] p-4 text-center text-gray-500">
+				<div className="w-[240px] p-4 text-center text-gray-500">
 					<div className="flex items-center justify-center gap-2 mb-2">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
 							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="30" strokeDashoffset="30" />
@@ -272,7 +278,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 
 		if (quickMenuOptions.length === 0) {
 			return (
-				<div className="w-[320px] p-4 text-center text-gray-500">
+				<div className="w-[240px] p-4 text-center text-gray-500">
 					<span>{t('noQuickMenusAvailable')}</span>
 				</div>
 			);
@@ -285,7 +291,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 					onChange={handleQuickMenuSelect}
 					placeholder={t('typeToSearchQuickMenus')}
 					isLoading={isQuickMenu}
-					className="w-[320px]"
+					className="w-[240px]"
 					autoFocus={true}
 				/>
 			</Item>
@@ -317,15 +323,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			if (labelQuickMenus && shouldShowQuickMenu) {
 				elements.push(
 					<Dropdown
-						align={{
-							points: ['tl', 'br']
-						}}
+						align={contextSubmenuAlign}
+						getPopupContainer={() => document.body}
 						menu={dropdownQuickMenus}
 						key={item.label}
 						trigger="hover"
 						className="border-none bg-theme-contexify"
 					>
-						<div>
+						<div className="w-full block">
 							<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 								<div
 									data-e2e={generateE2eId('chat.message_action_modal.button.base')}
@@ -343,15 +348,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			} else if (labelAddReaction) {
 				elements.push(
 					<Dropdown
-						align={{
-							points: ['tl', 'br']
-						}}
+						align={contextSubmenuAlign}
+						getPopupContainer={() => document.body}
 						menu={dropdownReact}
 						key={item.label}
 						trigger="hover"
 						className=" border-none bg-theme-contexify"
 					>
-						<div>
+						<div className="w-full block">
 							<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 								<div
 									data-e2e={generateE2eId('chat.message_action_modal.button.base')}

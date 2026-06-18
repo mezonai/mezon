@@ -94,6 +94,9 @@ export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessage) => {
 	return { ...pinMessageRes, id: pinMessageRes.id || '' };
 };
 
+const sortPinMessagesByPinTime = (pinMessages: PinMessageEntity[]) =>
+	[...pinMessages].sort((a, b) => (b.create_time_seconds || 0) - (a.create_time_seconds || 0));
+
 export const fetchChannelPinMessages = createAsyncThunk(
 	'pinmessage/fetchChannelPinMessages',
 	async ({ channelId, noCache, clanId }: fetchChannelPinMessagesPayload, thunkAPI) => {
@@ -126,7 +129,9 @@ export const fetchChannelPinMessages = createAsyncThunk(
 				};
 			}
 
-			const pinMessages = response.pin_messages_list.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
+			const pinMessages = sortPinMessagesByPinTime(
+				response.pin_messages_list.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes))
+			);
 			return {
 				channelId,
 				pinMessages,
@@ -289,9 +294,14 @@ export const pinMessageSlice = createSlice({
 		},
 		addPinMessage: (state: PinMessageState, action: PayloadAction<{ channelId: string; pinMessage: PinMessageEntity }>) => {
 			const { channelId, pinMessage } = action.payload;
+			if (!channelId) return;
+
 			if (!state.byChannels[channelId]) {
-				return;
+				state.byChannels[channelId] = getInitialChannelState();
 			}
+
+			const isAlreadyPinned = state.byChannels[channelId].pinMessages?.some((pin) => pin.message_id === pinMessage.message_id);
+			if (isAlreadyPinned) return;
 
 			state.byChannels[channelId].pinMessages?.unshift(pinMessage);
 		},
@@ -342,7 +352,7 @@ export const pinMessageSlice = createSlice({
 					pinMessageAdapter.setAll(state, pinMessages);
 
 					// Update channel cache
-					state.byChannels[channelId].pinMessages = pinMessages;
+					state.byChannels[channelId].pinMessages = sortPinMessagesByPinTime(pinMessages);
 					state.byChannels[channelId].cache = createCacheMetadata(CHANNEL_PIN_MESSAGES_CACHED_TIME);
 				}
 
@@ -427,6 +437,23 @@ export const selectPinMessageByChannelId = createSelector(
 	(state, channelId) => {
 		if (!channelId) return [];
 		return state.byChannels[channelId]?.pinMessages || [];
+	}
+);
+
+export const selectIsMessagePinned = createSelector(
+	[
+		getPinMessageState,
+		(_state: RootState, channelIds: (string | undefined | null)[]) => channelIds,
+		(_state: RootState, _channelIds: (string | undefined | null)[], messageId: string) => messageId
+	],
+	(state, channelIds, messageId) => {
+		if (!messageId) return false;
+		const normalizedMessageId = String(messageId);
+		const uniqueChannelIds = [...new Set(channelIds.filter((id): id is string => Boolean(id)))];
+
+		return uniqueChannelIds.some((channelId) =>
+			state.byChannels[channelId]?.pinMessages?.some((pin) => String(pin.message_id) === normalizedMessageId)
+		);
 	}
 );
 

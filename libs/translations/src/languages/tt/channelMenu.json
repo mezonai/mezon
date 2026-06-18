@@ -100,5 +100,9 @@
 		"error": "Каналдан чыгу хатасы: {{error}}"
 	},
 	"btnBadgeCount": "Яңа",
-	"favoriteChannel": "КҮҢЕЛДӘГЕ КАНАЛ"
+	"favoriteChannel": "КҮҢЕЛДӘГЕ КАНАЛ",
+	"toastArchiveChannel": "Канал уңышлы архивланды.",
+	"toastArchiveThread": "Ботаклам уңышлы архивланды.",
+	"toastArchivedByAdministrator": "Бу канал администратор тарафыннан архивланды.",
+	"toastArchivedThreadByAdministrator": "Бу ботаклам администратор тарафыннан архивланды."
 }

@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "Настройки уведомлений клана",
 	"notificationOverrides": "Переопределения уведомлений",
 	"addChannelOverride": "Добавить канал для переопределения его настроек уведомлений по умолчанию",
-	"selectOrCreateOption": "Выберите или создайте вариант...",
+	"selectChannelOrCategory": "Выберите канал или категорию...",
 	"headers": {
 		"channelOrCategory": "Канал или категория",
 		"all": "Все",

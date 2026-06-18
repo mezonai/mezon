@@ -42,27 +42,12 @@ const DirectMessageIndex = lazy(() => import(/* webpackChunkName: "dm-index" */ 
 const ChannelAppLayoutMobile = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/ChannelAppLayoutMobile'));
 const PreJoinCalling = lazy(() => import(/* webpackChunkName: "ui-components" */ '../pages/meeting'));
 const MeetPage = lazy(() => import(/* webpackChunkName: "meet-page" */ '../pages/meet'));
-const AppDirectory = lazy(() => import(/* webpackChunkName: "app-pages" */ '../pages/AppDirectory'));
 const ChannelMain = lazy(() => import(/* webpackChunkName: "channel-pages" */ '../pages/channel'));
 const Direct = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pages/directMessage'));
 const DirectMessage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pages/directMessage/DMPage'));
 const FriendsPage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pages/directMessage/FriendsPage'));
 const GuideMain = lazy(() => import(/* webpackChunkName: "guide-pages" */ '../pages/guide'));
-const MezonPage = lazy(() => import(/* webpackChunkName: "homepage" */ '../pages/homepage/mezonpage'));
-const AboutMezon = lazy(() => import(/* webpackChunkName: "about" */ '../pages/aboutmezon'));
 const InvitePage = lazy(() => import(/* webpackChunkName: "invite-pages" */ '../pages/invite'));
-const TextChannelPage = lazy(() => import(/* webpackChunkName: "textchannel-page" */ '../pages/textchannel'));
-const TermOfServivePage = lazy(() => import(/* webpackChunkName: "termofservice-page" */ '../pages/termofservices'));
-const PrivacyMezonPage = lazy(() => import(/* webpackChunkName: "privacymetzon-page" */ '../pages/privacymezon'));
-const BrandCenterPage = lazy(() => import(/* webpackChunkName: "brandcenter-page" */ '../pages/brandcenter'));
-const ContactUsPage = lazy(() => import(/* webpackChunkName: "contactus-page" */ '../pages/contactus'));
-const MezonDongPage = lazy(() => import(/* webpackChunkName: "textchannel-page" */ '../pages/mezondong'));
-const IntegrationsPage = lazy(() => import(/* webpackChunkName: "integrations-page" */ '../pages/integrations'));
-const ClanDetailPage = lazy(() => import(/* webpackChunkName: "clandetail-page" */ '../pages/clandetail'));
-const OrganizePage = lazy(() => import(/* webpackChunkName: "organize-page" */ '../pages/organize'));
-const CustomizePage = lazy(() => import(/* webpackChunkName: "customize-page" */ '../pages/customize'));
-const AIGenerationPage = lazy(() => import(/* webpackChunkName: "aigeneration-page" */ '../pages/aigeneration'));
-const MobileDownload = lazy(() => import(/* webpackChunkName: "mobile-download" */ '../pages/mobile-download'));
 const Login = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/login'));
 const LoginCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/loginCallback'));
 const LogoutCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/logoutCallback'));
@@ -182,145 +167,18 @@ export const Routes = memo(() => {
 							</Suspense>
 						)
 					},
-					// {
-					// 	path: 'popout',
-					// 	element: (
-					// 		<Suspense fallback={<SuspenseFallback />}>
-					// 			<VoicePopout />
-					// 		</Suspense>
-					// 	)
-					// },
-					isElectron()
-						? {
-								path: '/',
-								element: (
-									<Suspense fallback={<SuspenseFallback />}>
-										<InitialRoutes />
-									</Suspense>
-								)
-							}
-						: {
-								path: '/',
-								loader: loaderWithStore(loginLoader),
-								element: (
-									<Suspense fallback={<SuspenseFallback />}>
-										<MezonPage />
-									</Suspense>
-								)
-							},
-					{
-						path: '/apps',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<AppDirectory />
-							</Suspense>
-						)
-					},
-					{
-						path: '/about',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<AboutMezon />
-							</Suspense>
-						)
-					},
-					{
-						path: '/fastmessage',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<TextChannelPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/contact-us',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<ContactUsPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/terms-of-service',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<TermOfServivePage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/privacy-policy',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<PrivacyMezonPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/brand-center',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<BrandCenterPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/mezondong',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<MezonDongPage />
-							</Suspense>
-						)
-					},
-
-					{
-						path: '/integrations',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<IntegrationsPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/clanworld',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<ClanDetailPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/organize',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<OrganizePage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/customize',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<CustomizePage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/aigeneration',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<AIGenerationPage />
-							</Suspense>
-						)
-					},
-					{
-						path: '/mobile-download',
-						element: (
-							<Suspense fallback={<SuspenseFallback />}>
-								<MobileDownload />
-							</Suspense>
-						)
-					},
+					...(isElectron()
+						? [
+								{
+									path: '/',
+									element: (
+										<Suspense fallback={<SuspenseFallback />}>
+											<InitialRoutes />
+										</Suspense>
+									)
+								}
+							]
+						: []),
 					{
 						path: 'desktop',
 						element: (
@@ -549,19 +407,16 @@ export const Routes = memo(() => {
 												children: [
 													{
 														path: ':clanId',
-														loader: loaderWithStore(clanLoader),
 														shouldRevalidate: shouldRevalidateServer,
 														element: <Outlet />,
 														children: [
 															{
 																path: ':channelId',
-																loader: loaderWithStore(channelLoader),
 																shouldRevalidate: shouldRevalidateChannel,
 																element: <Outlet />,
 																children: [
 																	{
 																		path: ':canvasId',
-																		loader: loaderWithStore(canvasLoader),
 																		shouldRevalidate: shouldRevalidateCanvas,
 																		element: (
 																			<Suspense fallback={<SuspenseFallback />}>
@@ -581,13 +436,11 @@ export const Routes = memo(() => {
 												children: [
 													{
 														path: ':clanId',
-														loader: loaderWithStore(clanLoader),
 														shouldRevalidate: shouldRevalidateServer,
 														element: <Outlet />,
 														children: [
 															{
 																path: ':channelId',
-																loader: loaderWithStore(channelLoader),
 																shouldRevalidate: shouldRevalidateChannel,
 																element: (
 																	<Suspense fallback={<SuspenseFallback />}>

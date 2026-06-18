@@ -6,12 +6,13 @@ import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import ChooseIconModal from './ChooseIconModal';
 
-const RoleIcon = () => {
+const RoleIcon = ({ hasPermissionEdit, isEveryoneRole }: { hasPermissionEdit: boolean; isEveryoneRole?: boolean }) => {
 	const { t } = useTranslation('clanRoles');
 	const newRoleIcon = useSelector(getNewRoleIcon);
 	const currentRoleIcon = useSelector(selectCurrentRoleIcon);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const dispatch = useDispatch();
+	const isDisabled = !hasPermissionEdit || isEveryoneRole;
 
 	const [openChooseIconModal, closeChooseIconModal] = useModal(() => {
 		return <ChooseIconModal onClose={closeChooseIconModal} />;
@@ -19,16 +20,20 @@ const RoleIcon = () => {
 	const iconRole = useMemo<string | null>(() => newRoleIcon || currentRoleIcon || '', [newRoleIcon, currentRoleIcon]);
 
 	const handleChooseIconModal = () => {
+		if (isDisabled) return;
 		openChooseIconModal();
 	};
 
 	const handleRemoveIcon = () => {
+		if (isDisabled) return;
 		dispatch(roleSlice.actions.setNewRoleIcon(''));
 		dispatch(roleSlice.actions.setCurrentRoleIcon(''));
 	};
 
 	return (
-		<div className="w-full flex flex-col text-[15px] dark:text-textSecondary text-textSecondary800 pr-0 md:pr-5">
+		<div
+			className={`w-full flex flex-col text-[15px] dark:text-textSecondary text-textSecondary800 pr-0 md:pr-5 ${isDisabled ? 'opacity-60' : ''}`}
+		>
 			<div className="border-t-[1px] h-4 dark:border-borderDividerLight"></div>
 			<div className="text-xs font-bold uppercase mb-2">{t('roleManagement.roleIcon')}</div>
 			<div className="text-xs mb-2">{t('roleManagement.roleIconDescription')}</div>
@@ -46,9 +51,10 @@ const RoleIcon = () => {
 						className={
 							'flex justify-center items-center px-3 py-1.5 md:py-1 rounded border-[1px] ' +
 							'border-theme-primary ' +
-							'text-theme-primary-active bg-item-theme-hover text-sm md:text-base'
+							`text-theme-primary-active bg-item-theme-hover text-sm md:text-base ${isDisabled ? 'cursor-not-allowed opacity-50' : ''}`
 						}
 						onClick={handleChooseIconModal}
+						disabled={isDisabled}
 					>
 						{t('roleManagement.chooseImage')}
 					</button>
@@ -57,9 +63,10 @@ const RoleIcon = () => {
 							className={
 								'flex justify-center items-center px-3 py-1.5 md:py-1 rounded border-[1px] ' +
 								'border-colorDanger hover:bg-colorDangerHover ' +
-								'hover:text-colorDangerHover text-colorDangerHover text-sm md:text-base md:ml-5'
+								`hover:text-colorDangerHover text-colorDangerHover text-sm md:text-base md:ml-5 ${isDisabled ? 'cursor-not-allowed opacity-50' : ''}`
 							}
 							onClick={handleRemoveIcon}
+							disabled={isDisabled}
 						>
 							{t('roleManagement.removeIcon')}
 						</button>

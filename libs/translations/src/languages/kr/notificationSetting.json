@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "클랜 알림 설정",
 	"notificationOverrides": "알림 오버라이드",
 	"addChannelOverride": "기본 알림 설정을 오버라이드할 채널 추가",
-	"selectOrCreateOption": "옵션 선택 또는 생성...",
+	"selectChannelOrCategory": "채널 또는 카테고리 선택...",
 	"headers": {
 		"channelOrCategory": "채널 또는 카테고리",
 		"all": "모두",

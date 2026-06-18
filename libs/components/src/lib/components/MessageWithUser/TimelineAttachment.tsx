@@ -5,8 +5,11 @@ import {
 	EMimeTypes,
 	ETypeLinkMedia,
 	createImgproxyUrl,
+	filterExpiredPresignAttachments,
 	generateAttachmentId,
 	getAttachmentDataForWindow,
+	getMessageCreateTimeSeconds,
+	isAttachmentPresignPendingForMessage,
 	isMediaTypeNotSupported
 } from '@mezon/utils';
 import isElectron from 'is-electron';
@@ -59,9 +62,15 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 
 const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineAttachmentProps) => {
 	const dispatch = useAppDispatch();
-	const validateAttachment = useMemo(
-		() => (message.attachments || [])?.filter((attachment) => Object.keys(attachment).length !== 0),
-		[message.attachments]
+	const messageCreateTimeSeconds = useMemo(() => getMessageCreateTimeSeconds(message), [message]);
+	const validateAttachment = useMemo(() => {
+		const rawAttachments = (message.attachments || []).filter((attachment) => Object.keys(attachment).length !== 0);
+		return filterExpiredPresignAttachments(rawAttachments, message.content, messageCreateTimeSeconds);
+	}, [message.attachments, message.content, messageCreateTimeSeconds]);
+
+	const isPresignPendingForUrl = useCallback(
+		(url?: string) => isAttachmentPresignPendingForMessage(url, message),
+		[message]
 	);
 
 	const { images, videos, audio } = useMemo(() => classifyAttachments(validateAttachment), [validateAttachment]);
@@ -73,6 +82,8 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 
 	const handleClick = useCallback(
 		async (attachmentData: ApiMessageAttachment) => {
+			if (isPresignPendingForUrl(attachmentData.url)) return;
+
 			const state = getStore()?.getState();
 			const currentClanId = selectCurrentClanId(state);
 			const currentDm = selectCurrentDM(state);
@@ -226,7 +237,7 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 
 			dispatch(attachmentActions.setMessageId(message.id));
 		},
-		[message, mode, dispatch]
+		[message, mode, dispatch, isPresignPendingForUrl]
 	);
 
 	if (mediaItems.length === 0 && audio.length === 0) return null;
@@ -240,37 +251,42 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 							item.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
 							item.filetype?.includes(EMimeTypes.mp4) ||
 							item.filetype?.includes(EMimeTypes.mov);
+						const isPresignPending = isPresignPendingForUrl(item.url);
 
-						const thumbnailUrl = isVideo
-							? item.thumbnail
-								? createImgproxyUrl(item.thumbnail, {
-										width: 120,
-										height: 120,
-										resizeType: 'fill'
-									})
-								: item.url
-									? createImgproxyUrl(item.url, {
+						const thumbnailUrl = isPresignPending
+							? undefined
+							: isVideo
+								? item.thumbnail
+									? createImgproxyUrl(item.thumbnail, {
 											width: 120,
 											height: 120,
 											resizeType: 'fill'
 										})
-									: undefined
-							: createImgproxyUrl(item.url || '', {
-									width: 120,
-									height: 120,
-									resizeType: 'fill'
-								});
+									: item.url
+										? createImgproxyUrl(item.url, {
+												width: 120,
+												height: 120,
+												resizeType: 'fill'
+											})
+										: undefined
+								: createImgproxyUrl(item.url || '', {
+										width: 120,
+										height: 120,
+										resizeType: 'fill'
+									});
 
 						return (
 							<div
 								key={`${item.url}-${index}`}
-								className="relative w-[50px] h-[50px] rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+								className={`relative w-[50px] h-[50px] rounded-lg overflow-hidden transition-opacity ${
+									isPresignPending ? 'cursor-default' : 'cursor-pointer hover:opacity-90'
+								}`}
 								onClick={() => handleClick(item)}
 							>
 								{thumbnailUrl ? (
 									<img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
-								) : isVideo && item.url ? (
-									<video src={item.url} className="w-full h-full object-cover" muted playsInline />
+								) : isVideo && item.url && !isPresignPending ? (
+									<video src={item.url} className="w-full h-full object-cover" muted playsInline preload="none" />
 								) : (
 									<div className="w-full h-full bg-bgLightSecondary dark:bg-bgSecondary" />
 								)}
@@ -291,7 +307,10 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 					})}
 				</div>
 			)}
-			{audio.length > 0 && audio.map((audioItem, index) => <MessageAudio key={`${index}_${audioItem.url}`} audioUrl={audioItem.url || ''} />)}
+			{audio.length > 0 &&
+				audio
+					.filter((audioItem) => !isPresignPendingForUrl(audioItem.url))
+					.map((audioItem, index) => <MessageAudio key={`${index}_${audioItem.url}`} audioUrl={audioItem.url || ''} />)}
 		</div>
 	);
 });

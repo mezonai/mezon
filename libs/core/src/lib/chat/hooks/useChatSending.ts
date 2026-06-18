@@ -6,6 +6,7 @@ import {
 	selectCurrentTopicId,
 	selectInitTopicMessageId,
 	selectMemberClanByUserId,
+	selectMessageByMessageId,
 	selectSearchChannelById,
 	selectTopicAnonymousMode,
 	topicsActions,
@@ -14,6 +15,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
+import { getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -261,12 +263,22 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			if (!client || !session || !channelOrDirect) {
 				throw new Error('Client is not initialized');
 			}
-			const trimContent: IMessageSendPayload = {
+			const existingMessage = selectMessageByMessageId(getStore().getState(), channelIdOrDirectId ?? '', messageId);
+			const isAttachmentFieldUpdate = attachments !== undefined;
+			const hasExistingAttachments = (existingMessage?.attachments?.length ?? 0) > 0;
+			const messageCreateTimeSeconds = getMessageCreateTimeSeconds(existingMessage ?? {});
+
+			let trimContent: IMessageSendPayload = {
 				...content,
 				t: content.t?.trim()
 			};
+			if (hasExistingAttachments && !isAttachmentFieldUpdate) {
+				trimContent = withCreateTimeSecondsInUpdateContent(trimContent, messageCreateTimeSeconds);
+			}
+
 			const finalTopicId = topic_id || (isTopic ? currentTopicId || '0' : '0');
 			const updateChannelId = finalTopicId !== '0' ? finalTopicId : (channelIdOrDirectId ?? '0');
+			const updateAttachments = isAttachmentFieldUpdate ? attachments : undefined;
 			try {
 				await client.updateChannelMessage(
 					session,
@@ -277,7 +289,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					messageId || '0',
 					JSON.stringify(trimContent),
 					mentions,
-					attachments,
+					updateAttachments,
+					existingMessage.create_time_seconds,
 					hide_editted,
 					finalTopicId,
 					!!isTopic

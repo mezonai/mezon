@@ -100,5 +100,9 @@
     "error": "채널 나가기 오류: {{error}}"
   },
   "btnBadgeCount": "새로",
-  "favoriteChannel": "즐겨찾기 채널"
+  "favoriteChannel": "즐겨찾기 채널",
+  "toastArchiveChannel": "채널이 성공적으로 보관되었습니다.",
+  "toastArchiveThread": "스레드가 성공적으로 보관되었습니다.",
+  "toastArchivedByAdministrator": "이 채널은 관리자에 의해 보관되었습니다.",
+  "toastArchivedThreadByAdministrator": "이 스레드는 관리자에 의해 보관되었습니다."
 }

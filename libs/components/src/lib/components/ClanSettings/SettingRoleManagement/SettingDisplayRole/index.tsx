@@ -5,14 +5,18 @@ import {
 	getNewRoleIcon,
 	getNewSelectedPermissions,
 	getSelectedRoleId,
+	roleSlice,
 	selectCurrentRoleIcon,
+	setColorRoleNew,
+	setCurrentRoleIcon,
 	setNameRoleNew,
+	setSelectedPermissions,
 	toggleIsShowFalse,
 	toggleIsShowTrue
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import RoleColor from './RoleColor';
@@ -56,10 +60,10 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 	const colorRole = useSelector(getNewColorRole);
 	const selectedPermissions = useSelector(getNewSelectedPermissions);
 	const clickRole = useSelector(getSelectedRoleId);
-	const activeRole = RolesClan.find((role) => role.id === clickRole);
+	const activeRole = useMemo(() => RolesClan.find((role) => role.id === clickRole), [RolesClan, clickRole]);
 	const permissionsRole = activeRole?.permission_list;
-	const permissions = permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [];
-	const permissionIds = permissions.map((permission) => permission.id) || [];
+	const permissions = useMemo(() => permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [], [permissionsRole]);
+	const permissionIds = useMemo(() => permissions.map((permission) => permission.id), [permissions]);
 	const dispatch = useDispatch();
 
 	const handleDisplayName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +71,21 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 	};
 
 	useEffect(() => {
+		if (!hasPermissionEdit && activeRole) {
+			dispatch(setNameRoleNew(activeRole.title));
+			dispatch(setColorRoleNew(activeRole.color));
+			dispatch(setCurrentRoleIcon(activeRole.role_icon || ''));
+			dispatch(roleSlice.actions.setNewRoleIcon(null));
+			dispatch(setSelectedPermissions(permissionIds));
+			dispatch(toggleIsShowFalse());
+		}
+	}, [hasPermissionEdit, activeRole, permissionIds, dispatch]);
+
+	useEffect(() => {
+		if (!hasPermissionEdit) {
+			return;
+		}
+
 		const isSamePermissions =
 			selectedPermissions.length === permissionIds.length && selectedPermissions.every((id) => permissionIds.includes(id));
 
@@ -84,7 +103,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 		} else {
 			dispatch(toggleIsShowFalse());
 		}
-	}, [nameRole, colorRole, selectedPermissions, activeRole, permissionIds, dispatch, newRoleIcon, currentRoleIcon]);
+	}, [nameRole, colorRole, selectedPermissions, activeRole, permissionIds, dispatch, newRoleIcon, currentRoleIcon, hasPermissionEdit]);
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
@@ -105,8 +124,8 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 					disabled={!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clan_id}`}
 				/>
 			</div>
-			<RoleColor />
-			<RoleIcon />
+			<RoleColor hasPermissionEdit={hasPermissionEdit} isEveryoneRole={activeRole?.slug === `everyone-${activeRole?.clan_id}`} />
+			<RoleIcon hasPermissionEdit={hasPermissionEdit} isEveryoneRole={activeRole?.slug === `everyone-${activeRole?.clan_id}`} />
 		</div>
 	);
 };

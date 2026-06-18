@@ -101,5 +101,9 @@
     "error": "Fehler beim Verlassen des Kanals: {{error}}"
   },
   "btnBadgeCount": "Neu",
-  "favoriteChannel": "FAVORITENKANAL"
+  "favoriteChannel": "FAVORITENKANAL",
+  "toastArchiveChannel": "Kanal erfolgreich archiviert.",
+  "toastArchiveThread": "Thread erfolgreich archiviert.",
+  "toastArchivedByAdministrator": "Dieser Kanal wurde vom Administrator archiviert.",
+  "toastArchivedThreadByAdministrator": "Dieser Thread wurde vom Administrator archiviert."
 }

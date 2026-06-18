@@ -316,9 +316,7 @@ const ControlBar = ({
 								isShowMember ? 'bg-zinc-500 dark:bg-zinc-900' : 'bg-zinc-700'
 							} hover:bg-zinc-600 dark:hover:bg-zinc-800`}
 						>
-							<Icons.NoiseSupressionIcon className="w-5 h-5 text-gray-400">
-								<path d="M3 21 L21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-							</Icons.NoiseSupressionIcon>
+							<Icons.NoiseSupressionIcon className="w-5 h-5 text-gray-400" disabled />
 						</button>
 					))}
 				{visibleControls.camera && (

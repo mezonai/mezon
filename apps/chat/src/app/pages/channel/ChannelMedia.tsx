@@ -1,10 +1,21 @@
 import { MediaChannel, ModalInputMessageBuzz } from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
-import { selectBanMeInChannel, selectMediaChannelViewMode, useAppSelector, type ChannelsEntity } from '@mezon/store';
+import {
+	getStore,
+	selectBanMeInChannel,
+	selectClickedOnThreadBoxStatus,
+	selectMediaChannelViewMode,
+	selectThreadCurrentChannel,
+	useAppSelector,
+	type ChannelsEntity
+} from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
 import ChannelMessages from './ChannelMessages';
+
+const THREAD_BOX_SELECTOR = `[data-e2e="${generateE2eId('discussion.box.thread')}"]`;
 
 type ChannelMediaProps = {
 	currentChannel: ChannelsEntity | null;
@@ -51,36 +62,45 @@ type KeyPressListenerProps = {
 };
 
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
-	const isListenerAttached = useRef(false);
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel?.id));
+	const buzzTargetRef = useRef({ channel: currentChannel, mode });
+
+	const [openModalBuzz, closeModalBuzz] = useModal(
+		() => (
+			<EmojiSuggestionProvider>
+				<ModalInputMessageBuzz
+					currentChannel={buzzTargetRef.current.channel}
+					mode={buzzTargetRef.current.mode}
+					closeBuzzModal={closeModalBuzz}
+				/>
+			</EmojiSuggestionProvider>
+		),
+		[]
+	);
 
 	useEffect(() => {
-		if (isListenerAttached.current || isBanned) return;
-		isListenerAttached.current = true;
+		if (isBanned) return;
 
 		const handleKeyPress = (event: KeyboardEvent) => {
 			if (event.ctrlKey && (event.key === 'g' || event.key === 'G')) {
 				event.preventDefault();
+				const state = getStore().getState();
+				const thread = selectThreadCurrentChannel(state);
+				const inThreadBox = document.activeElement?.closest(THREAD_BOX_SELECTOR);
+				if (inThreadBox && !thread) return;
+
+				const useThread = thread && (selectClickedOnThreadBoxStatus(state) || inThreadBox);
+				buzzTargetRef.current = {
+					channel: useThread ? thread : currentChannel,
+					mode: useThread ? ChannelStreamMode.STREAM_MODE_THREAD : mode
+				};
 				openModalBuzz();
 			}
 		};
 
 		window.addEventListener('keydown', handleKeyPress);
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyPress);
-			isListenerAttached.current = false;
-		};
-	}, [isBanned]);
-
-	const [openModalBuzz, closeModalBuzz] = useModal(
-		() => (
-			<EmojiSuggestionProvider>
-				<ModalInputMessageBuzz currentChannel={currentChannel} mode={mode} closeBuzzModal={closeModalBuzz} />
-			</EmojiSuggestionProvider>
-		),
-		[currentChannel]
-	);
+		return () => window.removeEventListener('keydown', handleKeyPress);
+	}, [isBanned, openModalBuzz, currentChannel, mode]);
 
 	return null;
 };

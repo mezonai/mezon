@@ -2,7 +2,7 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage } from '@mezon/utils';
-import { EBacktickType, ETokenMessage, INVITE_URL_REGEX, TypeMessage, convertMarkdown } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, INVITE_URL_REGEX, TypeMessage, convertMarkdown, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -263,6 +263,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 						className="mt-4 w-full h-10 rounded-lg bg-[#0a9f59] text-white font-semibold text-base hover:bg-[#0b8a4f] disabled:opacity-60"
 						onClick={handleJoinOrGoTo}
 						disabled={joining}
+						data-e2e={generateE2eId('invite_card.button.goto_clan')}
 					>
 						{joining ? t('joining') : isJoined ? t('goToClan') : t('join')}
 					</button>

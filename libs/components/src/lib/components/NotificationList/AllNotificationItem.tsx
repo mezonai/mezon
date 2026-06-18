@@ -16,6 +16,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationJump } from '../../hooks/useNotificationJump';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
+import ButtonCopy from '../ButtonSwitchCustom/CopyButtonComponent';
 import MessageAttachment from '../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../MessageWithUser/MessageLine';
 import getPendingNames from '../MessageWithUser/usePendingNames';
@@ -27,6 +28,7 @@ export type NotifyMentionProps = {
 
 function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
+	const { t: tContextMenu } = useTranslation('contextMenu');
 	const channelJump = getTagById(notify?.channel_id);
 	const mode = useMemo<ChannelStreamMode>(() => {
 		if (!channelJump) {
@@ -74,6 +76,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const contentSenderId = notify?.content?.sender_id;
+	const messageContent = notify?.content?.content;
 	const allTabProps = {
 		subject: notify.subject,
 		category: notify.category,
@@ -89,6 +92,19 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 			>
 				✕
 			</button>
+
+			{notify.category === NotificationCategory.MESSAGES && messageContent && (
+				<div
+					className="absolute top-1 right-7 z-50 opacity-0 group-hover:opacity-100 transition-opacity"
+					title={tContextMenu('copyText')}
+					onClick={(event) => event.stopPropagation()}
+				>
+					<ButtonCopy
+						copyText={messageContent}
+						className="flex items-center justify-center w-5 h-5 rounded-full bg-item-theme-hover text-theme-primary hover:text-theme-primary-active p-0 shadow-md hover:scale-110 active:scale-95"
+					/>
+				</div>
+			)}
 
 			{notify.category === NotificationCategory.MENTIONS && (
 				<button
@@ -209,7 +225,10 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 						)}
 					</div>
 					{category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES ? (
-						<div className="w-[85%] max-w-[85%]" data-e2e={generateE2eId('chat.channel_message.inbox.mentions')}>
+						<div
+							className={`w-[85%] max-w-[85%]${category === NotificationCategory.MESSAGES ? ' enableSelectText cursor-text' : ''}`}
+							data-e2e={generateE2eId('chat.channel_message.inbox.mentions')}
+						>
 							<MessageHead
 								message={{
 									id: message.message_id,

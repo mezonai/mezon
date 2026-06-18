@@ -5,8 +5,10 @@ import {
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectCurrentDM,
+	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import type { ApiPhoto, IImageWindowProps, IMessageWithUser, ObserveFn } from '@mezon/utils';
 import {
@@ -14,14 +16,20 @@ import {
 	ETypeLinkMedia,
 	calculateAlbumLayout,
 	createImgproxyUrl,
+	filterExpiredPresignAttachments,
 	generateAttachmentId,
 	getAttachmentDataForWindow,
+	getMessageCreateTimeSeconds,
+	getPresignExpiryDelayMs,
+	hasActivePresignPendingAttachments,
 	isMediaTypeNotSupported,
+	isPresignAttachmentPending,
+	parsePresignFinishKeys,
 	useAppLayout
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Album from './Album';
 import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageLinkFile from './MessageLinkFile';
@@ -30,6 +38,7 @@ import Photo from './Photo';
 
 type MessageAttachmentProps = {
 	message: IMessageWithUser;
+	channelId?: string;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	mode: ChannelStreamMode;
 	observeIntersectionForLoading?: ObserveFn;
@@ -38,15 +47,49 @@ type MessageAttachmentProps = {
 	defaultMaxWidth?: number;
 };
 
-const getMessageCreateTimeSeconds = (message: IMessageWithUser): number | undefined => {
-	if (message.create_time_seconds) return message.create_time_seconds;
-	const createTime = (message as any).create_time;
-	if (createTime) {
-		const parsed = new Date(createTime).getTime();
-		if (!isNaN(parsed)) return Math.floor(parsed / 1000);
-	}
-	return undefined;
-};
+function areAttachmentLiveFieldsEqual(prev: IMessageWithUser, next: IMessageWithUser): boolean {
+	return (
+		prev.attachments === next.attachments &&
+		prev.content === next.content &&
+		prev.isSending === next.isSending &&
+		prev.create_time_seconds === next.create_time_seconds
+	);
+}
+
+/** Redux subscription scoped to attachment/presign fields — re-renders without bumping message row memo. */
+function useLiveMessageForAttachments(messageProp: IMessageWithUser, channelId?: string): IMessageWithUser {
+	const resolvedChannelId = (channelId ?? messageProp.channel_id) as string;
+	const messageId = messageProp.id as string;
+
+	return useAppSelector(
+		(state) => selectMessageByMessageId(state, resolvedChannelId, messageId) ?? messageProp,
+		areAttachmentLiveFieldsEqual
+	);
+}
+
+function usePresignExpiryNow(hasPresignPending: boolean, messageCreateTimeSeconds?: number): number {
+	const [nowSeconds, setNowSeconds] = useState(() => Math.floor(Date.now() / 1000));
+
+	useEffect(() => {
+		if (!hasPresignPending) return;
+
+		const delay = getPresignExpiryDelayMs(messageCreateTimeSeconds);
+		if (delay === null) return;
+
+		if (delay === 0) {
+			setNowSeconds(Math.floor(Date.now() / 1000));
+			return;
+		}
+
+		const timeout = setTimeout(() => {
+			setNowSeconds(Math.floor(Date.now() / 1000));
+		}, delay);
+
+		return () => clearTimeout(timeout);
+	}, [hasPresignPending, messageCreateTimeSeconds]);
+
+	return nowSeconds;
+}
 
 const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMessageWithUser) => {
 	const videos: ApiMessageAttachment[] = [];
@@ -115,6 +158,12 @@ const Attachments: React.FC<{
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
 
 		const { videos, images, documents, audio } = classified;
+		const presignFinishKeys = useMemo(() => parsePresignFinishKeys(message.content), [message.content]);
+		const presignAttachmentSource = message.attachments ?? attachments;
+		const isPresignPendingForUrl = useCallback(
+			(url?: string) => isPresignAttachmentPending(url, presignFinishKeys, presignAttachmentSource),
+			[presignFinishKeys, presignAttachmentSource]
+		);
 
 		const { isMobile } = useAppLayout();
 		return (
@@ -127,6 +176,7 @@ const Attachments: React.FC<{
 									attachmentData={video}
 									isMobile={isMobile}
 									isSending={message.isSending}
+									isPresignPending={isPresignPendingForUrl(video.url)}
 									observeIntersection={observeIntersectionForLoading}
 								/>
 							</div>
@@ -144,15 +194,21 @@ const Attachments: React.FC<{
 						isInSearchMessage={isInSearchMessage}
 						defaultMaxWidth={defaultMaxWidth}
 						isMobile={isMobile}
+						isPresignPendingForUrl={isPresignPendingForUrl}
 					/>
 				)}
 
 				{documents.length > 0 &&
-					documents.map((document, index) => (
-						<MessageLinkFile key={`${index}_${document.url}`} attachmentData={document} mode={mode} message={message} />
-					))}
+					documents
+						.filter((document) => !isPresignPendingForUrl(document.url))
+						.map((document, index) => (
+							<MessageLinkFile key={`${index}_${document.url}`} attachmentData={document} mode={mode} message={message} />
+						))}
 
-				{audio.length > 0 && audio.map((audio, index) => <MessageAudio key={`${index}_${audio.url}`} audioUrl={audio.url || ''} />)}
+				{audio.length > 0 &&
+					audio
+						.filter((audioItem) => !isPresignPendingForUrl(audioItem.url))
+						.map((audioItem, index) => <MessageAudio key={`${index}_${audioItem.url}`} audioUrl={audioItem.url || ''} />)}
 			</>
 		);
 	},
@@ -161,6 +217,7 @@ const Attachments: React.FC<{
 		prev.message.id === next.message.id &&
 		prev.message.isSending === next.message.isSending &&
 		prev.message.attachments === next.message.attachments &&
+		prev.message.content === next.message.content &&
 		prev.mode === next.mode
 );
 
@@ -168,11 +225,35 @@ Attachments.displayName = 'Attachments';
 
 // TODO: refactor component for message lines
 const MessageAttachment = memo(
-	({ message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }: MessageAttachmentProps) => {
-		const validateAttachment = useMemo(
-			() => (message.attachments || [])?.filter((attachment) => Object.keys(attachment).length !== 0),
-			[message.attachments]
+	({
+		message: messageProp,
+		channelId,
+		onContextMenu,
+		mode,
+		observeIntersectionForLoading,
+		isInSearchMessage,
+		defaultMaxWidth
+	}: MessageAttachmentProps) => {
+		const message = useLiveMessageForAttachments(messageProp, channelId);
+		const messageCreateTimeSeconds = useMemo(() => getMessageCreateTimeSeconds(message), [message]);
+		const hasPresignPending = useMemo(
+			() => hasActivePresignPendingAttachments(message.attachments, message.content),
+			[message.attachments, message.content]
 		);
+		const nowSeconds = usePresignExpiryNow(hasPresignPending, messageCreateTimeSeconds);
+
+		const validateAttachment = useMemo(() => {
+			const rawAttachments = (message.attachments || []).filter((attachment) => Object.keys(attachment).length !== 0);
+			if (!rawAttachments.length) return null;
+			const visibleAttachments = filterExpiredPresignAttachments(
+				rawAttachments,
+				message.content,
+				messageCreateTimeSeconds,
+				nowSeconds
+			);
+
+			return visibleAttachments.length ? visibleAttachments : null;
+		}, [message.attachments, message.content, messageCreateTimeSeconds, nowSeconds]);
 		if (!validateAttachment) return null;
 		return (
 			<Attachments
@@ -188,9 +269,10 @@ const MessageAttachment = memo(
 	},
 	(prev, next) =>
 		prev.message.id === next.message.id &&
-		prev.message.attachments === next.message.attachments &&
-		prev.message.isSending === next.message.isSending &&
-		prev.mode === next.mode
+		prev.channelId === next.channelId &&
+		prev.mode === next.mode &&
+		prev.isInSearchMessage === next.isInSearchMessage &&
+		prev.defaultMaxWidth === next.defaultMaxWidth
 );
 
 MessageAttachment.displayName = 'MessageAttachment';
@@ -204,7 +286,8 @@ const ImageAlbum = memo(
 		observeIntersectionForLoading,
 		isInSearchMessage,
 		defaultMaxWidth,
-		isMobile
+		isMobile,
+		isPresignPendingForUrl
 	}: {
 		images: ApiMessageAttachment[];
 		message: IMessageWithUser;
@@ -214,6 +297,7 @@ const ImageAlbum = memo(
 		isInSearchMessage?: boolean;
 		defaultMaxWidth?: number;
 		isMobile?: boolean;
+		isPresignPendingForUrl?: (url?: string) => boolean;
 	}) => {
 		const dispatch = useAppDispatch();
 
@@ -444,6 +528,7 @@ const ImageAlbum = memo(
 						onContextMenu={onContextMenu}
 						isInSearchMessage={isInSearchMessage}
 						isSending={message.isSending}
+						isPresignPendingForUrl={isPresignPendingForUrl}
 						isMobile={isMobile}
 						messageId={message.id}
 						images={images}
@@ -455,6 +540,7 @@ const ImageAlbum = memo(
 		if (images.length === 1 && photoProps) {
 			const firstImage = images[0];
 			const attachmentId = firstImage ? generateAttachmentId(firstImage, message.id) : message.id;
+			const isPresignPending = isPresignPendingForUrl?.(firstImage?.url);
 			return (
 				<div className="w-full py-1">
 					<Photo
@@ -467,6 +553,8 @@ const ImageAlbum = memo(
 						onContextMenu={onContextMenu}
 						isInSearchMessage={isInSearchMessage}
 						isSending={message.isSending}
+						isPresignPending={isPresignPending}
+						loadWhenUnpending={!isPresignPending}
 						isMobile={isMobile}
 					/>
 				</div>
@@ -479,6 +567,7 @@ const ImageAlbum = memo(
 		prev.images === next.images &&
 		prev.message.id === next.message.id &&
 		prev.message.isSending === next.message.isSending &&
+		prev.message.content === next.message.content &&
 		prev.mode === next.mode &&
 		prev.isMobile === next.isMobile &&
 		prev.defaultMaxWidth === next.defaultMaxWidth

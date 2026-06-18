@@ -1,4 +1,4 @@
-import { channelSettingActions, selectArchivedChannels, selectCurrentClanId, threadsActions, toastActions, useAppDispatch } from '@mezon/store';
+import { channelSettingActions, channelsActions, selectArchivedChannels, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -15,7 +15,7 @@ const SettingArchivedChannels = () => {
 	const handleRestore = async (channelId: string) => {
 		if (!currentClanId) return;
 		try {
-			await dispatch(threadsActions.writeActiveArchivedThread({ clanId: currentClanId as string, channelId })).unwrap();
+			await dispatch(channelsActions.restoreChannel({ clanId: currentClanId as string, channelId })).unwrap();
 			dispatch(channelSettingActions.removeArchivedChannel(channelId));
 			dispatch(
 				toastActions.addToast({

@@ -26,6 +26,7 @@ import {
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectClickedOnTopicStatus,
+	selectCurrentChannelChannelId,
 	selectCurrentChannelId,
 	selectCurrentChannelParentId,
 	selectCurrentChannelPrivate,
@@ -38,11 +39,11 @@ import {
 	selectDmCreatorIdById,
 	selectDmGroupCurrentId,
 	selectInitTopicMessageId,
+	selectIsMessagePinned,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
 	selectModeResponsive,
-	selectPinMessageByChannelId,
 	selectQuickMenuByChannelId,
 	selectTheme,
 	selectThreadCurrentChannel,
@@ -138,7 +139,7 @@ function MessageContextMenu({
 	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannelId as string));
+	const currentChannelChannelId = useSelector(selectCurrentChannelChannelId);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const isClanView = useSelector(selectClanView);
 	const currentTopicId = useSelector(selectCurrentTopicId);
@@ -210,9 +211,12 @@ function MessageContextMenu({
 		return message?.content?.t !== '';
 	}, [message?.content?.t]);
 
-	const checkMessageInPinnedList = useMemo(() => {
-		return listPinMessages?.some((pinMessage) => pinMessage?.message_id === messageId);
-	}, [listPinMessages, messageId]);
+	const pinCheckChannelIds = useMemo(
+		() => [currentChannelId, currentChannelChannelId, message?.channel_id, currentDmId],
+		[currentChannelId, currentChannelChannelId, message?.channel_id, currentDmId]
+	);
+
+	const isMessagePinned = useAppSelector((state) => selectIsMessagePinned(state, pinCheckChannelIds, messageId));
 
 	const [canManageThread, canDeleteMessage, canSendMessage] = usePermissionChecker(
 		[EOverriddenPermission.manageThread, EOverriddenPermission.deleteMessage, EOverriddenPermission.sendMessage],
@@ -581,8 +585,8 @@ function MessageContextMenu({
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
-		return !checkMessageInPinnedList;
-	}, [checkMessageInPinnedList, checkPos]);
+		return !isMessagePinned;
+	}, [isMessagePinned, checkPos]);
 
 	const enableSpeakMessageItem = useMemo(() => {
 		if (!checkPos) return false;

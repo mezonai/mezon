@@ -1,4 +1,5 @@
 import { useAppParams, useAttachments } from '@mezon/core';
+import type { AttachmentEntity } from '@mezon/store';
 import {
 	attachmentActions,
 	getStore,
@@ -12,6 +13,7 @@ import {
 	selectDmChannelLabelById,
 	selectMemberClanByUserId,
 	selectMemberGroupByUserId,
+	selectMessageByMessageId,
 	selectMessageIdAttachment,
 	selectModeAttachment,
 	selectModeResponsive,
@@ -20,7 +22,15 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ETypeLinkMedia, ModeResponsive, SHOW_POSITION, createImgproxyUrl, formatDateI18n, handleSaveImage } from '@mezon/utils';
+import {
+	ETypeLinkMedia,
+	ModeResponsive,
+	SHOW_POSITION,
+	createImgproxyUrl,
+	formatDateI18n,
+	handleSaveImage,
+	isAttachmentPresignPendingForMessage
+} from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import type { MessageContextMenuProps } from '../../ContextMenu';
@@ -72,6 +82,41 @@ const MessageModalImage = () => {
 
 	const mode = useAppSelector(selectModeAttachment);
 	const messageId = useAppSelector(selectMessageIdAttachment);
+	const channelIdForAttachments = (directId ?? currentChannelId) as string;
+	const sourceMessage = useAppSelector((state) =>
+		currentAttachment?.message_id && channelIdForAttachments
+			? selectMessageByMessageId(state, channelIdForAttachments, currentAttachment.message_id)
+			: undefined
+	);
+	const isMainPresignPending = isAttachmentPresignPendingForMessage(urlImg ?? currentAttachment?.url, sourceMessage);
+
+	const getSourceMessageForAttachment = useCallback(
+		(att: AttachmentEntity | undefined) => {
+			if (!att?.message_id || !channelIdForAttachments) return undefined;
+			return selectMessageByMessageId(getStore()?.getState(), channelIdForAttachments, att.message_id);
+		},
+		[channelIdForAttachments]
+	);
+
+	const isAttPresignPending = useCallback(
+		(att: AttachmentEntity | undefined) =>
+			isAttachmentPresignPendingForMessage(att?.url, getSourceMessageForAttachment(att)),
+		[getSourceMessageForAttachment]
+	);
+
+	const findSelectableIndex = useCallback(
+		(fromIndex: number, step: number) => {
+			if (!attachments?.length) return fromIndex;
+			let index = fromIndex + step;
+			while (index >= 0 && index < attachments.length) {
+				if (!isAttPresignPending(attachments[index])) return index;
+				index += step;
+			}
+			return fromIndex;
+		},
+		[attachments, isAttPresignPending]
+	);
+
 	const dispatch = useAppDispatch();
 	const handleShowList = () => {
 		setShowList(!showList);
@@ -246,6 +291,7 @@ const MessageModalImage = () => {
 			if (!attachments) {
 				return;
 			}
+			if (isAttPresignPending(attachments[newIndex])) return;
 			setScale(1);
 			setRotate(0);
 			setPosition({ x: 0, y: 0 });
@@ -253,7 +299,7 @@ const MessageModalImage = () => {
 			setCurrentIndexAtt(newIndex);
 			dispatch(attachmentActions.setCurrentAttachment(attachments[newIndex]));
 		},
-		[attachments, dispatch]
+		[attachments, dispatch, isAttPresignPending]
 	);
 
 	const handleSelectNextImage = useCallback(() => {
@@ -261,18 +307,19 @@ const MessageModalImage = () => {
 			return;
 		}
 
-		const newIndex = currentIndexAtt < attachments.length - 1 ? currentIndexAtt + 1 : currentIndexAtt;
+		const newIndex =
+			currentIndexAtt < attachments.length - 1 ? findSelectableIndex(currentIndexAtt, 1) : currentIndexAtt;
 		if (newIndex !== currentIndexAtt) {
 			handleSelectImage(newIndex);
 		}
-	}, [attachments, currentIndexAtt, handleSelectImage]);
+	}, [attachments, currentIndexAtt, findSelectableIndex, handleSelectImage]);
 
 	const handleSelectPreviousImage = useCallback(() => {
-		const newIndex = currentIndexAtt > 0 ? currentIndexAtt - 1 : currentIndexAtt;
+		const newIndex = currentIndexAtt > 0 ? findSelectableIndex(currentIndexAtt, -1) : currentIndexAtt;
 		if (newIndex !== currentIndexAtt) {
 			handleSelectImage(newIndex);
 		}
-	}, [currentIndexAtt, handleSelectImage]);
+	}, [currentIndexAtt, findSelectableIndex, handleSelectImage]);
 
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent) => {
@@ -417,7 +464,17 @@ const MessageModalImage = () => {
 							<span className="sr-only">Loading...</span>
 						</div>
 					)}
-					{isVideo ? (
+					{isMainPresignPending ? (
+						<div
+							className="max-h-full max-w-full rounded-[10px] bg-bgLightSecondary dark:bg-bgSecondary animate-pulse"
+							style={{
+								width: currentAttachment?.width ? `${Math.min(currentAttachment.width, 480)}px` : '60%',
+								height: currentAttachment?.height ? `${Math.min(currentAttachment.height, 360)}px` : '60%',
+								maxWidth: '100%',
+								maxHeight: '100%'
+							}}
+						/>
+					) : isVideo ? (
 						<video
 							ref={videoRef}
 							src={urlImg ?? ''}
@@ -476,6 +533,7 @@ const MessageModalImage = () => {
 				{showList && (
 					<ListAttachment
 						attachments={attachments ? attachments : []}
+						channelId={channelIdForAttachments}
 						urlImg={urlImg}
 						setUrlImg={setUrlImg}
 						handleDrag={handleDrag}

@@ -30,6 +30,7 @@ interface MenuProps {
 	onVisibleChange?: (visible: boolean) => void;
 	visible?: boolean;
 	align?: AlignType;
+	getPopupContainer?: (node: HTMLElement) => HTMLElement;
 }
 
 type DropdownMenuContextValue = {
@@ -59,7 +60,8 @@ const Dropdown = ({
 	trigger = 'click',
 	onVisibleChange,
 	visible,
-	align
+	align,
+	getPopupContainer
 }: MenuProps) => {
 	return (
 		<RcDropdown
@@ -72,6 +74,7 @@ const Dropdown = ({
 			visible={visible}
 			onVisibleChange={onVisibleChange}
 			align={align}
+			getPopupContainer={getPopupContainer}
 		>
 			{children}
 		</RcDropdown>

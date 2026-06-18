@@ -591,7 +591,13 @@ export const directSlice = createSlice({
 	name: DIRECT_FEATURE_KEY,
 	initialState: initialDirectState,
 	reducers: {
-		remove: directAdapter.removeOne,
+		remove: (state, action: PayloadAction<string>) => {
+			const channelId = action.payload;
+			directAdapter.removeOne(state, channelId);
+			if (state.currentDirectMessageId === channelId) {
+				state.currentDirectMessageId = null;
+			}
+		},
 		upsertOne: (state, action: PayloadAction<DirectEntity>) => {
 			const { entities } = state;
 			const existingEntity = entities[action.payload.id];
@@ -959,6 +965,10 @@ export const directSlice = createSlice({
 				toast.error(action.error.message || 'Failed to update group');
 			})
 			.addCase(fetchDirectDetail.fulfilled, (state: DirectState, action) => {
+				const { directId } = action.meta.arg;
+				if (state.currentDirectMessageId !== directId) {
+					return;
+				}
 				directAdapter.upsertOne(state, action.payload);
 			});
 	}

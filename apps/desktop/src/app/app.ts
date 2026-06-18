@@ -626,11 +626,11 @@ export default class App {
 
 	private static loadMainWindow(params?: Record<string, string>) {
 		if (!App.application.isPackaged) {
-			const baseUrl = `http://localhost:${rendererAppPort}`;
+			const baseUrl = `http://localhost:${rendererAppPort}/chat`;
 			const fullUrl = this.generateFullUrl(baseUrl, params);
 			App.mainWindow.loadURL(fullUrl);
 		} else {
-			App.mainWindow.loadURL('https://mezon.ai/');
+			App.mainWindow.loadURL('https://mezon.ai/chat');
 		}
 	}
 

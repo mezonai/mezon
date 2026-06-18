@@ -406,7 +406,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 									<ChannelMedia currentChannel={currentChannel} />
 								</div>
 								<div className="flex-shrink-0">
-									<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+									<ChannelMainContentText canSendMessage={canSendMessage} channelId={channelId} />
 								</div>
 							</div>
 						)}

@@ -81,6 +81,7 @@ export * from './heavyAnimation';
 export * from './mediaDimensions';
 export * from './mergeRefs';
 export * from './parseHtmlAsFormattedText';
+export * from './presignFinish';
 export * from './processEntitiesDirectly';
 export * from './resetScroll';
 export * from './sanitizeHtml';

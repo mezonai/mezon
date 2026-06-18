@@ -78,6 +78,12 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const isDmGroup = mode === ChannelStreamMode.STREAM_MODE_GROUP;
 	const isChatStream = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
 
+	const showAsGroupWelcome = isDmGroup && directChannel?.type === ChannelType.CHANNEL_TYPE_GROUP;
+	const groupWelcomeTitle = useMemo(() => {
+		const creator = selectedChannel?.creator_name;
+		return name || directChannel?.channel_label || (creator ? `${creator}'s Groups` : 'Group');
+	}, [name, directChannel?.channel_label, selectedChannel?.creator_name]);
+
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="space-y-2 px-4 mb-0  flex-1 flex flex-col justify-end" data-e2e={generateE2eId('chat_welcome')}>
@@ -104,12 +110,12 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 						)}
 						{(isDm || isDmGroup) && (
 							<WelComeDm
-								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
+								name={showAsGroupWelcome ? groupWelcomeTitle : name || username}
 								username={username || name}
-								avatar={isDmGroup ? directChannel?.channel_avatar || '/assets/images/avatar-group.png' : avatarDM}
+								avatar={showAsGroupWelcome ? directChannel?.channel_avatar || '/assets/images/avatar-group.png' : avatarDM}
 								classNameSubtext={classNameSubtext}
-								isDmGroup={isDmGroup}
-								onEditGroup={isDmGroup ? handleOpenEditModal : undefined}
+								isDmGroup={showAsGroupWelcome}
+								onEditGroup={showAsGroupWelcome ? handleOpenEditModal : undefined}
 								t={t}
 							/>
 						)}
