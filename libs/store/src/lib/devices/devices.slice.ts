@@ -1,12 +1,12 @@
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiLogedDevice, ApiLogedDeviceList } from 'mezon-js';
+import type { LogedDevice, LogedDeviceList } from 'mezon-js-protobuf';
 import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 
 export const DEVICES_FEATURE_KEY = 'devices';
 
-export type IDevice = ApiLogedDevice;
+export type IDevice = LogedDevice;
 
 export interface DevicesState extends EntityState<IDevice, string> {
 	loadingStatus: LoadingStatus;
@@ -24,10 +24,10 @@ export const initialDevicesState: DevicesState = devicesAdapter.getInitialState(
 	currentDeviceId: null
 });
 
-export const fetchListLoggedDevices = createAsyncThunk('devices/fetchListLoggedDevices', async (_, thunkAPI) => {
+export const fetchListLoggedDevices = createAsyncThunk<IDevice[]>('devices/fetchListLoggedDevices', async (_, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await fetchDataWithSocketFallback<ApiLogedDeviceList>(
+		const response = await fetchDataWithSocketFallback<LogedDeviceList>(
 			mezon,
 			{
 				api_name: 'ListLogedDevice'
