@@ -11,7 +11,15 @@ import {
 } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
+import type {
+	ApiChannelMessageHeader,
+	ApiMessageAttachment,
+	ApiMessageMention,
+	ApiMessageRef,
+	ApiSdTopic,
+	ApiSdTopicRequest,
+	TopicInMessageEvent
+} from 'mezon-js';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { messagesActions, selectMessageEntitiesByChannelId } from '../messages/messages.slice';
@@ -40,10 +48,11 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	isFocusTopicBox: boolean;
 	channelTopics: Record<string, string>;
 	clanTopics: Record<string, EntityState<TopicDiscussionsEntity, string>>;
+	topicMeta: EntityState<TopicInMessageEvent, string>;
 }
 
 export const topicsAdapter = createEntityAdapter({ selectId: (topic: TopicDiscussionsEntity) => topic.id || '' });
-
+export const topicMetaAdapter = createEntityAdapter({ selectId: (topic: TopicInMessageEvent) => topic.message_id || '' });
 export interface FetchTopicDiscussionsArgs {
 	clanId: string;
 	noCache?: boolean;
@@ -101,7 +110,8 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 	isFocusTopicBox: false,
 	channelTopics: {},
 	clanTopics: {},
-	initTopicMessageId: undefined
+	initTopicMessageId: undefined,
+	topicMeta: topicMetaAdapter.getInitialState()
 });
 
 export const createTopic = createAsyncThunk('topics/createTopic', async (body: ApiSdTopicRequest, thunkAPI) => {
@@ -312,6 +322,9 @@ export const topicsSlice = createSlice({
 			if (clanId) {
 				delete state.clanTopics[clanId];
 			}
+		},
+		addTopicMeta: (state, action: PayloadAction<TopicInMessageEvent>) => {
+			state.topicMeta = topicMetaAdapter.upsertOne(state.topicMeta, action.payload);
 		}
 	},
 	extraReducers: (builder) => {
@@ -434,3 +447,8 @@ export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 });
 
 export const selectClickedOnTopicStatus = createSelector(getTopicsState, (state) => state.isFocusTopicBox);
+
+const { selectById } = topicMetaAdapter.getSelectors();
+export const selectTopicMetaById = createSelector([getTopicsState, (_, message_id: string) => message_id], (state, message_id) =>
+	selectById(state.topicMeta, message_id)
+);
