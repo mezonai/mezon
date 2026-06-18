@@ -21,13 +21,13 @@ import {
 	getMobileUploadedAttachments,
 	getPublicKeys,
 	getWebUploadedAttachments,
-	mergePresignFinishContent,
-	withCreateTimeSecondsInUpdateContent,
 	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
+	mergePresignFinishContent,
 	revokePreSendAttachmentUrls,
-	toPublicMessageAttachments
+	toPublicMessageAttachments,
+	withCreateTimeSecondsInUpdateContent
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
@@ -1917,30 +1917,6 @@ export const messagesSlice = createSlice({
 		},
 		setLastMessage: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel>) => {
 			state.lastMessageByChannel[action.payload.channel_id] = action.payload;
-		},
-		updateTopicRplCount: (state, action: PayloadAction<{ channelId: string; topicId: string; increment: boolean; timestamp?: number }>) => {
-			const { channelId, topicId, increment, timestamp } = action.payload;
-
-			const channelMessages = state.channelMessages[channelId];
-			if (!channelMessages) return;
-
-			const topicCreatorMessage = channelMessagesAdapter
-				.getSelectors()
-				.selectAll(channelMessages)
-				.find((message) => message?.content?.tp === topicId);
-
-			if (topicCreatorMessage?.content && topicCreatorMessage.id) {
-				const currentRpl = topicCreatorMessage.content.rpl || 0;
-				const newRpl = increment ? currentRpl + 1 : Math.max(0, currentRpl - 1);
-
-				const messageEntity = channelMessages.entities[topicCreatorMessage.id];
-				if (messageEntity?.content) {
-					messageEntity.content.rpl = newRpl;
-					if (timestamp && increment) {
-						messageEntity.content.lsnt = timestamp;
-					}
-				}
-			}
 		},
 		setViewingOlder: (state, action: PayloadAction<{ channelId: string; status: boolean }>) => {
 			const { channelId, status } = action.payload;

@@ -325,6 +325,28 @@ export const topicsSlice = createSlice({
 		},
 		addTopicMeta: (state, action: PayloadAction<TopicInMessageEvent>) => {
 			state.topicMeta = topicMetaAdapter.upsertOne(state.topicMeta, action.payload);
+		},
+		createTopicMeta: (state, action: PayloadAction<TopicInMessageEvent>) => {
+			state.topicMeta = topicMetaAdapter.addOne(state.topicMeta, action.payload);
+		},
+		updateTopicRplCount: (
+			state,
+			action: PayloadAction<{ channelId: string; topicId: string; increment: boolean; timestamp?: number; messageId: string }>
+		) => {
+			const { increment, timestamp, messageId } = action.payload;
+			const channelMessages = state.topicMeta?.entities?.[messageId];
+			if (!channelMessages) return;
+
+			const currentRpl = channelMessages.rpl || 0;
+			const newRpl = increment ? currentRpl + 1 : Math.max(0, currentRpl - 1);
+
+			state.topicMeta = topicMetaAdapter.updateOne(state.topicMeta, {
+				id: messageId,
+				changes: {
+					lsnt: String(timestamp),
+					rpl: newRpl
+				}
+			});
 		}
 	},
 	extraReducers: (builder) => {
@@ -362,7 +384,6 @@ export const topicsSlice = createSlice({
 						...newTopic,
 						id: newTopic.id
 					};
-
 					topicsAdapter.addOne(state.clanTopics[clanId], topicEntity);
 				}
 			})
