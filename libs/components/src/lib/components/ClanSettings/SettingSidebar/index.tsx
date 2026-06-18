@@ -1,15 +1,6 @@
 import { usePermissionChecker } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import {
-	authActions,
-	selectAllAccount,
-	selectAllChannels,
-	selectCurrentClanId,
-	selectCurrentClanName,
-	selectCurrentUserId,
-	selectIsCommunityEnabled,
-	useAppDispatch
-} from '@mezon/store';
+import { authActions, selectAllAccount, selectCurrentClanId, selectCurrentClanName, selectIsCommunityEnabled, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
@@ -18,6 +9,7 @@ import { useSelector } from 'react-redux';
 import type { ItemObjProps } from '../ItemObj';
 import { ItemSetting, sideBarListItem } from '../ItemObj';
 import SettingItem from '../SettingItem';
+import { useCanViewArchivedChannels } from '../hooks/useCanViewArchivedChannels';
 
 type SettingSidebarProps = {
 	onClickItem?: (settingItem: ItemObjProps) => void;
@@ -31,16 +23,12 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [selectedButton, setSelectedButton] = useState<string | null>(currentSetting);
 	const clanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
-	const [isClanOwner, hasClanPermission, hasChannelPermission, hasAdminPermission] = usePermissionChecker([
+	const [isClanOwner, hasClanPermission, hasChannelPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
-		EPermission.manageChannel,
-		EPermission.administrator
+		EPermission.manageChannel
 	]);
-	const currentUserId = useSelector(selectCurrentUserId);
-	const channels = useSelector(selectAllChannels);
-	const isCreatorOfAnyChannel = !!currentUserId && channels.some((channel) => channel.creator_id === currentUserId);
-	const canViewArchivedChannels = isClanOwner || hasAdminPermission || hasClanPermission || isCreatorOfAnyChannel;
+	const { canViewArchivedChannels } = useCanViewArchivedChannels();
 	const dispatch = useAppDispatch();
 	const userProfile = useSelector(selectAllAccount);
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));

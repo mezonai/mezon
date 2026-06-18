@@ -1,4 +1,3 @@
-import { usePermissionChecker } from '@mezon/core';
 import {
 	channelSettingActions,
 	channelsActions,
@@ -10,12 +9,13 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, generateE2eId, getDateLocale } from '@mezon/utils';
+import { generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
 import type { ApiChannelDescription } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useCanViewArchivedChannels } from './hooks/useCanViewArchivedChannels';
 
 const SettingArchivedChannels = () => {
 	const dispatch = useAppDispatch();
@@ -24,12 +24,7 @@ const SettingArchivedChannels = () => {
 	const currentUserId = useSelector(selectCurrentUserId);
 	const listArchivedChannel = useSelector(selectArchivedChannels);
 	const loadingStatus = useSelector(selectArchivedChannelsLoadingStatus);
-	const [isClanOwner, hasAdminPermission, canManageClan] = usePermissionChecker([
-		EPermission.clanOwner,
-		EPermission.administrator,
-		EPermission.manageClan
-	]);
-	const canViewAllArchivedChannels = isClanOwner || hasAdminPermission || canManageClan;
+	const { canViewAllArchivedChannels } = useCanViewArchivedChannels();
 	const visibleArchivedChannels = useMemo(() => {
 		if (canViewAllArchivedChannels) {
 			return listArchivedChannel ?? [];

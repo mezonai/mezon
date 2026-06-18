@@ -5,11 +5,9 @@ import {
 	fetchClanWebhooks,
 	fetchWebhooks,
 	onboardingActions,
-	selectAllChannels,
 	selectCloseMenu,
 	selectCurrentClanId,
 	selectCurrentClanName,
-	selectCurrentUserId,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -34,6 +32,7 @@ import SettingOnBoarding from './SettingOnBoarding';
 import SettingSidebar from './SettingSidebar';
 import SettingSoundEffect from './SettingSoundEffect';
 import SettingSticker from './SettingSticker';
+import { useCanViewArchivedChannels } from './hooks/useCanViewArchivedChannels';
 
 export type ModalSettingProps = {
 	onClose: () => void;
@@ -68,16 +67,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 	}, [currentSettingId, allSettings]);
 
 	const dispatch = useAppDispatch();
-	const [isClanOwner, hasAdminPermission, canManageClan, canManagerChannel] = usePermissionChecker([
-		EPermission.clanOwner,
-		EPermission.administrator,
-		EPermission.manageClan,
-		EPermission.manageChannel
-	]);
-	const currentUserId = useSelector(selectCurrentUserId);
-	const channels = useSelector(selectAllChannels);
-	const isCreatorOfAnyChannel = !!currentUserId && channels.some((channel) => channel.creator_id === currentUserId);
-	const canViewArchivedChannels = isClanOwner || hasAdminPermission || canManageClan || isCreatorOfAnyChannel;
+	const [canManageClan, canManagerChannel] = usePermissionChecker([EPermission.manageClan, EPermission.manageChannel]);
+	const { canViewArchivedChannels } = useCanViewArchivedChannels();
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
 		setCurrentSettingId(settingItem.id);
