@@ -40,7 +40,8 @@
 	"closeDmConfirm": {
 		"title": "Chiudi messaggio diretto",
 		"content": "Sei sicuro di voler chiudere questa conversazione? Questa azione nasconderà la chat dall'elenco dei messaggi.",
-		"confirmText": "Chiudi messaggio diretto"
+		"confirmText": "Chiudi messaggio diretto",
+		"error": "Impossibile chiudere il messaggio diretto"
 	},
 	"pinSection": "FISSIATI",
 	"allMessagesSection": "TUTTI I MESSAGGI",

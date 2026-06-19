@@ -29,7 +29,8 @@
 	"closeDmConfirm": {
 		"title": "Cerrar mensaje directo",
 		"content": "¿Estás seguro de que deseas cerrar esta conversación? Esto ocultará el chat de tu lista de mensajes.",
-		"confirmText": "Cerrar mensaje directo"
+		"confirmText": "Cerrar mensaje directo",
+		"error": "No se pudo cerrar el mensaje directo"
 	},
 	"notification": {
 		"blockUser": {

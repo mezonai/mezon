@@ -40,7 +40,8 @@
 	"closeDmConfirm": {
 		"title": "Stäng direktmeddelande",
 		"content": "Är du säker på att du vill stänga denna konversation? Detta kommer att dölja chatten från din meddelandelista.",
-		"confirmText": "Stäng direktmeddelande"
+		"confirmText": "Stäng direktmeddelande",
+		"error": "Det gick inte att stänga direktmeddelandet"
 	},
 	"pinSection": "SPIKAD",
 	"allMessagesSection": "ALLA MEDELANDEN",

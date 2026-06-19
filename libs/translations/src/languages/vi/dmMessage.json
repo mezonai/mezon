@@ -40,7 +40,8 @@
 	"closeDmConfirm": {
 		"title": "Đóng cuộc trò chuyện",
 		"content": "Bạn có chắc chắn muốn đóng cuộc trò chuyện này không? Hành động này sẽ ẩn hội thoại khỏi danh sách tin nhắn của bạn.",
-		"confirmText": "Đóng cuộc trò chuyện"
+		"confirmText": "Đóng cuộc trò chuyện",
+		"error": "Không thể đóng cuộc trò chuyện"
 	},
 	"pinSection": "ĐÃ GHIM",
 	"allMessagesSection": "TẤT CẢ TIN NHẮN",

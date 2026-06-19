@@ -17,6 +17,7 @@ import { memo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useDirectMessageContextMenu } from '../../../contexts';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import BuzzBadge from '../../BuzzBadge';
@@ -49,11 +50,11 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 
 	const handleLeave = useCallback(
 		async (directId: string) => {
+			await dispatch(directActions.closeDirectMessage({ channel_id: directId })).unwrap();
 			if (directId === currentDmGroupId) {
-				dispatch(directActions.setDmGroupCurrentId(null));
+				dispatch(directActions.setDmGroupCurrentId(''));
 				navigateToFriends();
 			}
-			await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
 		},
 		[currentDmGroupId, dispatch, navigateToFriends]
 	);
@@ -69,8 +70,12 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			<ModalConfirm
 				handleCancel={closeCloseDmModal}
 				handleConfirm={async () => {
-					await handleLeave(directMessage?.channel_id as string);
 					closeCloseDmModal();
+					try {
+						await handleLeave(directMessage?.channel_id as string);
+					} catch {
+						toast.error(tDm('closeDmConfirm.error'));
+					}
 				}}
 				title={tDm('closeDmConfirm.title')}
 				buttonName={tDm('closeDmConfirm.confirmText')}

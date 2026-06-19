@@ -40,7 +40,8 @@
 	"closeDmConfirm": {
 		"title": "다이렉트 메시지 닫기",
 		"content": "이 대화를 닫으시겠습니까? 이렇게 하면 채팅이 메시지 목록에서 숨겨집니다.",
-		"confirmText": "다이렉트 메시지 닫기"
+		"confirmText": "다이렉트 메시지 닫기",
+		"error": "다이렉트 메시지를 닫지 못했습니다"
 	},
 	"pinSection": "고정됨",
 	"allMessagesSection": "모든 메시지",

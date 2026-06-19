@@ -40,7 +40,8 @@
 	"closeDmConfirm": {
 		"title": "Close Direct Message",
 		"content": "Are you sure you want to close this conversation? This will hide the chat from your messages list.",
-		"confirmText": "Close Direct Message"
+		"confirmText": "Close Direct Message",
+		"error": "Failed to close direct message"
 	},
 	"pinSection": "PINNED",
 	"allMessagesSection": "ALL MESSAGES",

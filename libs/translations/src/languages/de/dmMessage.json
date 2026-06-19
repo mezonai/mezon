@@ -40,7 +40,8 @@
 	"closeDmConfirm": {
 		"title": "Direktnachricht schließen",
 		"content": "Möchten Sie diese Unterhaltung wirklich schließen? Dadurch wird der Chat aus Ihrer Nachrichtenliste ausgeblendet.",
-		"confirmText": "Direktnachricht schließen"
+		"confirmText": "Direktnachricht schließen",
+		"error": "Direktnachricht konnte nicht geschlossen werden"
 	},
 	"pinSection": "ANGEPINNT",
 	"allMessagesSection": "ALLE NACHRICHTEN",
