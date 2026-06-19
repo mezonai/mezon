@@ -78,7 +78,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	const { t, i18n } = useTranslation('message');
 	const dispatch = useAppDispatch();
-	const topicMeata = useAppSelector((state) => selectTopicMetaById(state, message.id));
+	const topicMeata = useAppSelector((state) => selectTopicMetaById(state, message.content.tp || ''));
 	const rplCount = topicMeata?.rpl || 0;
 	const topicCreator = useAppSelector((state) => selectMemberClanByUserId(state, message?.content?.cid as string));
 	const avatarToDisplay = topicCreator?.clan_avatar ? topicCreator?.clan_avatar : topicCreator?.user?.avatar_url;

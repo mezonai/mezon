@@ -52,7 +52,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 }
 
 export const topicsAdapter = createEntityAdapter({ selectId: (topic: TopicDiscussionsEntity) => topic.id || '' });
-export const topicMetaAdapter = createEntityAdapter({ selectId: (topic: TopicInMessageEvent) => topic.message_id || '' });
+export const topicMetaAdapter = createEntityAdapter({ selectId: (topic: TopicInMessageEvent) => topic.tp_id || '' });
 export interface FetchTopicDiscussionsArgs {
 	clanId: string;
 	noCache?: boolean;
@@ -343,7 +343,7 @@ export const topicsSlice = createSlice({
 			state.topicMeta = topicMetaAdapter.updateOne(state.topicMeta, {
 				id: messageId,
 				changes: {
-					lsnt: String(timestamp),
+					lsnt: increment ? String(timestamp) : channelMessages.lsnt,
 					rpl: newRpl
 				}
 			});
