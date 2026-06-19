@@ -806,12 +806,16 @@ export const directSlice = createSlice({
 				const isSelfDm = dmGroup.user_ids.length > 0 && dmGroup.user_ids.every((id) => id === userId);
 				if (!isSelfDm) return;
 
+				const changes: Partial<DirectEntity> = {};
+
 				if (displayName !== undefined) {
-					dmGroup.channel_label = displayName;
+					changes.channel_label = displayName;
 					if (dmGroup.display_names) {
+						const display_names = [...dmGroup.display_names];
 						dmGroup.user_ids.forEach((id, index) => {
-							if (id === userId) dmGroup.display_names![index] = displayName;
+							if (id === userId) display_names[index] = displayName;
 						});
+						changes.display_names = display_names;
 					}
 				}
 
@@ -823,7 +827,11 @@ export const directSlice = createSlice({
 							avatars[index] = avatarUrl;
 						}
 					});
-					dmGroup.avatars = avatars;
+					changes.avatars = avatars;
+				}
+
+				if (Object.keys(changes).length > 0) {
+					directAdapter.updateOne(state, { id: dmId, changes });
 				}
 			});
 		},

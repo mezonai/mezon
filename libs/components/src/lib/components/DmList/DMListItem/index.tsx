@@ -125,7 +125,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	);
 }
 
-export default DMListItem;
+export default memo(DMListItem);
 
 const DmItemProfile = ({
 	avatar,

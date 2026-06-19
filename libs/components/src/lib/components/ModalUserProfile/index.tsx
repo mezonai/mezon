@@ -200,19 +200,9 @@ const ModalUserProfile = ({
 	const handleOnKeyPress = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === 'Enter' && content && onLoading.current === false) {
-				if (isFooterProfile && userProfile?.user) {
-					sendMessage(
-						userId || userProfile.user.id || '',
-						userProfile.user.display_name || userProfile.user.username,
-						userProfile.user.username,
-						userProfile.user.avatar_url
-					);
-					onLoading.current = true;
-					return;
-				}
 				if (userById) {
 					sendMessage(
-						userById?.user?.id || '',
+						isFooterProfile ? userId || userById?.user?.id || '' : userById?.user?.id || '',
 						userById?.user?.display_name || userById?.user?.username,
 						userById?.user?.username,
 						userById.user?.avatar_url
@@ -220,11 +210,13 @@ const ModalUserProfile = ({
 					onLoading.current = true;
 					return;
 				}
-				sendMessage((userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || '');
+				sendMessage(
+					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || ''
+				);
 				onLoading.current = true;
 			}
 		},
-		[userById, content, isFooterProfile, userProfile, userId, userID, message, sendMessage]
+		[userById, content, isFooterProfile]
 	);
 
 	return (
