@@ -17,7 +17,7 @@ export type MezonElectronAPI = {
 	openImageWindow: (
 		currentImage: ApiMessageAttachment & {
 			create_time?: string;
-			uploaderData: { name: string; avatar: string };
+			uploaderData: { name: string; avatar: string; isAnonymous?: boolean };
 			realUrl: string;
 			channelImagesData: IImageWindowProps;
 			isVideo?: boolean;

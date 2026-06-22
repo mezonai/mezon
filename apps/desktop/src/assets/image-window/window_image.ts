@@ -32,6 +32,24 @@ function createImgProxyUrl(sourceImageUrl: string, width = 0, height = 0, resize
 	return `${base}/${key}${path}`;
 }
 
+function createAvatarProxyUrl(sourceImageUrl: string): string {
+	if (!sourceImageUrl) return '';
+	if (!sourceImageUrl.startsWith('https://cdn.mezon') && !sourceImageUrl.startsWith('https://profile.mezon')) {
+		return sanitizeUrl(sourceImageUrl);
+	}
+	return createImgProxyUrl(sourceImageUrl, 32, 32, 'fit');
+}
+
+const ANONYMOUS_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" style="width:80%;height:80%" viewBox="0 0 87.52 112.55" fill="currentColor"><path d="M48.87,39.09c21.15,0,38.3-2.86,38.3-6.39,0-2.36-7.7-4.42-19.11-5.52C67,22.27,65,12.64,63.71,8.28,62,2.61,55.84,5.52,51.15,8S43.91,7,39,6.27c-3.66-.51-5.11,3.38-5.11,3.38L31.33,27C19,28.09,10.57,30.23,10.57,32.7,10.57,36.23,27.72,39.09,48.87,39.09Z" transform="translate(-5.79 -1.01)"/><path d="M72.61,73.16S79.1,65.3,80.18,61.8c1.24-4-15.43-6.42-15.43-6.42s-1.11,8.32-12.39,13a8,8,0,0,1-5.63,0C35.46,63.71,34.12,55.42,34.12,55.42S17.68,57.78,18.92,61.8C20,65.3,26.49,73.16,26.49,73.16c-11.44,0-20.71,8.41-20.71,18.79v3.11H93.31V91.95C93.31,81.57,84,73.16,72.61,73.16Z" transform="translate(-5.79 -1.01)"/><path d="M52.44,42.84a32,32,0,0,1-7.32-.08C40.49,41.13,31.17,41.28,31.17,44c0,3.62,3.69,7.49,8.24,7.49,4.19,0,7.61-2.49,8.14-5.71,0,0,.07,0,.09,0a2.06,2.06,0,0,1,2.55,0c.53,3.21,4,5.7,8.13,5.7,4.55,0,8.24-3.87,8.24-7.49C66.57,41.24,57,41.13,52.44,42.84Z" transform="translate(-5.79 -1.01)"/></svg>`;
+
+export function renderUserAvatarHtml(uploaderData: { avatar: string; isAnonymous?: boolean }): string {
+	if (uploaderData.isAnonymous) {
+		return `<div id="userAvatar" class="user-avatar anonymous-avatar" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#fff;margin-right:8px;flex-shrink:0;color:#000;">${ANONYMOUS_AVATAR_SVG}</div>`;
+	}
+	const avatarSrc = createAvatarProxyUrl(uploaderData.avatar);
+	return `<img id="userAvatar" src="${avatarSrc}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">`;
+}
+
 interface IAttachmentEntity extends ApiChannelAttachment {
 	id: string;
 	channelId?: string;
@@ -42,6 +60,7 @@ interface IAttachmentEntityWithUploader extends IAttachmentEntity {
 	uploaderData: {
 		avatar: string;
 		name: string;
+		isAnonymous?: boolean;
 	};
 	realUrl: string;
 	isVideo?: boolean;
@@ -63,6 +82,7 @@ export type ImageData = {
 	uploaderData: {
 		name: string;
 		avatar: string;
+		isAnonymous?: boolean;
 	};
 	realUrl: string;
 	channelImagesData: IImageWindowProps;
@@ -192,7 +212,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
   </div>
   <div class="bottom-bar">
     <div class="sender-info">
-      <img id="userAvatar" src="${sanitizeUrl(imageData.uploaderData.avatar)}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">
+      <div id="userAvatarContainer">${renderUserAvatarHtml(imageData.uploaderData)}</div>
       <div>
         <div id="username" class="username" style="font-weight: bold;">${escapeHtml(imageData.uploaderData.name)}</div>
         <div id="timestamp" class="timestamp" style="font-size: 0.8em; color: #ccc;">${escapeHtml(formatDateTime(imageData.create_time))}</div>
@@ -579,6 +599,36 @@ const createThumbProxyUrlScript = () => {
 			const key = ${JSON.stringify(key)};
 			if (!base || !key) return sanitized;
 			return base + '/' + key + path;
+		};
+
+		const createAvatarProxyUrl = (sourceImageUrl) => {
+			if (!sourceImageUrl) return '';
+			if (!sourceImageUrl?.startsWith('https://cdn.mezon') && !sourceImageUrl?.startsWith('https://profile.mezon')) {
+				return sanitizeImageUrl(sourceImageUrl);
+			}
+			const sanitized = sanitizeImageUrl(sourceImageUrl);
+			if (!sanitized) return '';
+			const processingOptions = 'rs:fit:32:32:1/mb:2097152';
+			const path = '/' + processingOptions + '/plain/' + sanitized + '@webp';
+			const base = ${JSON.stringify(base)};
+			const key = ${JSON.stringify(key)};
+			if (!base || !key) return sanitized;
+			return base + '/' + key + path;
+		};
+
+		const ANONYMOUS_AVATAR_HTML = ${JSON.stringify(
+			`<div id="userAvatar" class="user-avatar anonymous-avatar" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#fff;margin-right:8px;flex-shrink:0;color:#000;">${ANONYMOUS_AVATAR_SVG}</div>`
+		)};
+
+		const updateUserAvatar = (isAnonymous, avatar) => {
+			const container = document.getElementById('userAvatarContainer');
+			if (!container) return;
+			if (isAnonymous) {
+				container.innerHTML = ANONYMOUS_AVATAR_HTML;
+				return;
+			}
+			const avatarSrc = createAvatarProxyUrl(avatar) || sanitizeImageUrl(avatar);
+			container.innerHTML = '<img id="userAvatar" src="' + avatarSrc + '" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">';
 		};
 	`;
 };
@@ -1188,6 +1238,7 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 		id: escapeHtml(image.id || image.url || ''),
 		url: sanitizeUrl(image.url),
 		avatar: sanitizeUrl(image.uploaderData.avatar),
+		isAnonymous: Boolean(image.uploaderData.isAnonymous),
 		name: escapeHtml(image.uploaderData.name),
 		fileName: escapeHtml(image.filename),
 		realUrl: sanitizeUrl(image.realUrl || ''),
@@ -1319,10 +1370,7 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 						}
 					}
 				}
-				const userAvatar = document.getElementById('userAvatar');
-				if (userAvatar) {
-					userAvatar.src = sanitizeImageUrl(imageData.avatar);
-				}
+				updateUserAvatar(imageData.isAnonymous, imageData.avatar);
 				const username = document.getElementById('username');
 				if (username) {
 					username.textContent = imageData.name;
@@ -1369,6 +1417,7 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 							id: (att.id || att.url || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
 							url: sanitizeImageUrl(att.url),
 							avatar: sanitizeImageUrl(att.uploaderData?.avatar || ''),
+							isAnonymous: Boolean(att.uploaderData?.isAnonymous),
 							name: (att.uploaderData?.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
 							fileName: (att.filename || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
 							realUrl: sanitizeImageUrl(att.realUrl || att.url || ''),

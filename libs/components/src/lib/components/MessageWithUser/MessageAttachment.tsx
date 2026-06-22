@@ -21,6 +21,7 @@ import {
 	getAttachmentDataForWindow,
 	getMessageCreateTimeSeconds,
 	getPresignExpiryDelayMs,
+	getUploaderDataForImageWindow,
 	hasActivePresignPendingAttachments,
 	isMediaTypeNotSupported,
 	isPresignAttachmentPending,
@@ -387,16 +388,7 @@ const ImageAlbum = memo(
 							height: enhancedAttachmentData.height ? (enhancedAttachmentData.height > 900 ? 900 : enhancedAttachmentData.height) : 0,
 							resizeType: 'fit'
 						}),
-						uploaderData: {
-							name:
-								currentImageUploader?.clan_nick ||
-								currentImageUploader?.user?.display_name ||
-								currentImageUploader?.user?.username ||
-								'Anonymous',
-							avatar: (currentImageUploader?.clan_avatar ||
-								currentImageUploader?.user?.avatar_url ||
-								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-						},
+						uploaderData: getUploaderDataForImageWindow(attachmentData.sender_id as string, currentImageUploader),
 						realUrl: enhancedAttachmentData.url || '',
 						channelImagesData: {
 							channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
@@ -433,16 +425,7 @@ const ImageAlbum = memo(
 										: 0,
 									resizeType: 'fill'
 								}),
-								uploaderData: {
-									name:
-										currentImageUploader?.clan_nick ||
-										currentImageUploader?.user?.display_name ||
-										currentImageUploader?.user?.username ||
-										'Anonymous',
-									avatar: (currentImageUploader?.clan_avatar ||
-										currentImageUploader?.user?.avatar_url ||
-										`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-								},
+								uploaderData: getUploaderDataForImageWindow(attachmentData.sender_id as string, currentImageUploader),
 								realUrl: enhancedAttachmentData.url || '',
 								channelImagesData
 							});

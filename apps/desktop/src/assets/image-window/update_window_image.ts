@@ -2,7 +2,7 @@ import type { BrowserWindow } from 'electron';
 import App from '../../app/app';
 import { escapeHtml, sanitizeUrl } from '../../app/utils';
 import type { ImageData } from './window_image';
-import { listThumnails, scriptThumnails } from './window_image';
+import { listThumnails, renderUserAvatarHtml, scriptThumnails } from './window_image';
 
 function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 	const activeIndex = imageData.channelImagesData.selectedImageIndex;
@@ -14,6 +14,7 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 		id: escapeHtml(image.id || image.url || ''),
 		url: sanitizeUrl(image.url),
 		avatar: sanitizeUrl(image.uploaderData.avatar),
+		isAnonymous: Boolean(image.uploaderData.isAnonymous),
 		name: escapeHtml(image.uploaderData.name),
 		fileName: escapeHtml(image.filename),
 		realUrl: sanitizeUrl(image.realUrl || ''),
@@ -88,9 +89,9 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 					selectedImage.src = ${JSON.stringify(sanitizeUrl(imageData.url))};
 				}
 
-				const userAvatar = document.getElementById('userAvatar');
-				if (userAvatar) {
-					userAvatar.src = ${JSON.stringify(sanitizeUrl(imageData.uploaderData.avatar))};
+				const userAvatarContainer = document.getElementById('userAvatarContainer');
+				if (userAvatarContainer) {
+					userAvatarContainer.innerHTML = ${JSON.stringify(renderUserAvatarHtml(imageData.uploaderData))};
 				}
 
 				const username = document.getElementById('username');

@@ -32,7 +32,7 @@ import {
 	REQUEST_PERMISSION_CAMERA,
 	REQUEST_PERMISSION_MICROPHONE
 } from '../bridge/electron/constants';
-import { CURRENCY, ID_MENTION_HERE } from '../constant';
+import { CURRENCY, ID_MENTION_HERE, NX_CHAT_APP_ANNONYMOUS_USER_ID } from '../constant';
 import { Platform } from '../hooks/platform';
 import type {
 	ChannelMembersEntity,
@@ -1287,6 +1287,22 @@ export const getChannelMode = (chatType: number) => {
 	}
 };
 
+type ImageWindowUploader = {
+	clan_nick?: string;
+	clan_avatar?: string;
+	user?: { display_name?: string; username?: string; avatar_url?: string } | null;
+};
+
+export const getUploaderDataForImageWindow = (uploaderId: string | undefined, uploader?: ImageWindowUploader | null) => {
+	const isAnonymous = !uploader?.user || uploaderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+
+	return {
+		name: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username || 'Anonymous',
+		avatar: (uploader?.clan_avatar || uploader?.user?.avatar_url || '') as string,
+		isAnonymous
+	};
+};
+
 export const getAttachmentDataForWindow = (
 	imageList: IAttachmentEntity[],
 	currentChatUsersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
@@ -1295,6 +1311,7 @@ export const getAttachmentDataForWindow = (
 	return imageList.map((image) => {
 		let uploader = currentChatUsersEntities?.[image.uploader as string];
 		const isVideo = image?.isVideo || image?.filetype?.startsWith('video') || image.filetype?.includes('mp4') || image?.filetype?.includes('mov');
+		const uploaderId = image.uploader as string | undefined;
 
 		if (!uploader && currentChatMessageEntities) {
 			uploader = {
@@ -1310,12 +1327,7 @@ export const getAttachmentDataForWindow = (
 		}
 		return {
 			...image,
-			uploaderData: {
-				avatar: (uploader?.clan_avatar ||
-					uploader?.user?.avatar_url ||
-					`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string,
-				name: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username || 'Anonymous'
-			},
+			uploaderData: getUploaderDataForImageWindow(uploaderId, uploader),
 			url: image.url,
 			realUrl: image.url || '',
 			isVideo

@@ -1545,6 +1545,7 @@ export interface IAttachmentEntityWithUploader extends IAttachmentEntity {
 	uploaderData: {
 		avatar: string;
 		name: string;
+		isAnonymous?: boolean;
 	};
 	realUrl: string;
 	isVideo?: boolean;

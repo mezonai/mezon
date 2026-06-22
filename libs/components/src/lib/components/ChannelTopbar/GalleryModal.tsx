@@ -38,6 +38,7 @@ import {
 	createImgproxyUrl,
 	generateE2eId,
 	getAttachmentDataForWindow,
+	getUploaderDataForImageWindow,
 	isAttachmentPresignPendingForMessage,
 	shouldHidePresignAttachment
 } from '@mezon/utils';
@@ -553,16 +554,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 									: 0,
 								resizeType: 'fit'
 							}),
-					uploaderData: {
-						name:
-							currentImageUploader?.clan_nick ||
-							currentImageUploader?.user?.display_name ||
-							currentImageUploader?.user?.username ||
-							'Anonymous',
-						avatar: (currentImageUploader?.clan_avatar ||
-							currentImageUploader?.user?.avatar_url ||
-							`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-					},
+					uploaderData: getUploaderDataForImageWindow(attachmentData.uploader as string, currentImageUploader),
 					realUrl: enhancedAttachmentData.url || '',
 					channelImagesData: {
 						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
@@ -598,16 +590,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 										: 0,
 									resizeType: 'fill'
 								}),
-						uploaderData: {
-							name:
-								currentImageUploader?.clan_nick ||
-								currentImageUploader?.user?.display_name ||
-								currentImageUploader?.user?.username ||
-								'Anonymous',
-							avatar: (currentImageUploader?.clan_avatar ||
-								currentImageUploader?.user?.avatar_url ||
-								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-						},
+						uploaderData: getUploaderDataForImageWindow(attachmentData.uploader as string, currentImageUploader),
 						realUrl: enhancedAttachmentData.url || '',
 						channelImagesData,
 						isVideo
