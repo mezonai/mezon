@@ -1401,14 +1401,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				);
 			}
 		} catch (error) {
-			if (error instanceof Error && error.name === 'SocketTimeoutError') {
+			if (error instanceof Error && (error.name === 'SocketTimeoutError' || error.name === 'SendTimeoutError')) {
 				thunkAPI.dispatch(
 					messagesActions.remove({
 						messageId: fakeMessage.id,
 						channelId: fakeMessage.channel_id
 					})
 				);
-				return;
 			}
 			const payload = originalSendPayload;
 			if (sendTimeoutMap.has(tempId)) {
