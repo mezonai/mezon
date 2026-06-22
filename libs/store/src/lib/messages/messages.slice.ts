@@ -21,13 +21,13 @@ import {
 	getMobileUploadedAttachments,
 	getPublicKeys,
 	getWebUploadedAttachments,
-	mergePresignFinishContent,
-	withCreateTimeSecondsInUpdateContent,
 	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
+	mergePresignFinishContent,
 	revokePreSendAttachmentUrls,
-	toPublicMessageAttachments
+	toPublicMessageAttachments,
+	withCreateTimeSecondsInUpdateContent
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
@@ -1402,6 +1402,12 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		} catch (error) {
 			if (error instanceof Error && error.name === 'SocketTimeoutError') {
+				thunkAPI.dispatch(
+					messagesActions.remove({
+						messageId: fakeMessage.id,
+						channelId: fakeMessage.channel_id
+					})
+				);
 				return;
 			}
 			const payload = originalSendPayload;
