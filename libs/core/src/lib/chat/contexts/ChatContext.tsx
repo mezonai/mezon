@@ -2501,7 +2501,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			topicsActions.createTopicMeta({
 				lsnt: `${sdTopicEvent.last_sent_message?.timestamp_seconds || Date.now() / 1000}`,
 				message_id: sdTopicEvent?.message_id as string,
-				rpl: 1
+				rpl: 1,
+				tp_id: sdTopicEvent.id
 			})
 		);
 		dispatch(
