@@ -13,7 +13,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, useMediaPermissions } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';
@@ -97,10 +97,6 @@ const VoiceInfo = React.memo(() => {
 
 	const { hasCameraAccess, hasMicrophoneAccess } = useMediaPermissions();
 	const handleToggleShareScreen = useCallback(() => {
-		if (isElectron() && !showScreen) {
-			dispatch(voiceActions.setShowSelectScreenModal(true));
-			return;
-		}
 		const btnControl = document.getElementById('btn-meet-screen');
 		if (btnControl) {
 			btnControl.click();

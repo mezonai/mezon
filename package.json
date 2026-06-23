@@ -25,7 +25,6 @@
     "dev:ios": "npx nx run-ios mobile",
     "build:android": "npx nx build-android mobile",
     "build:ios": "npx nx build-ios mobile",
-    "postinstall": "electron-builder install-app-deps",
     "prepare": "husky",
     "ai-scan": "node ./packages/ai-scan/bin/ai-scan.mjs",
     "ai-scan:full": "node ./packages/ai-scan/bin/ai-scan.mjs full --concurrency 3",
