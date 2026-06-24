@@ -28,7 +28,7 @@ export async function callApiAdmin<T>({
 	decodeBody: (data: Uint8Array) => T;
 }): Promise<T> {
 	try {
-		const response = await fetch(`${process.env.NX_CHAT_APP_API_HOST}:${process.env.NX_CHAT_APP_API_PORT}${path}`, {
+		const response = await fetch(`https://${process.env.NX_CHAT_APP_API_HOST}:${process.env.NX_CHAT_APP_API_PORT}${path}`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
