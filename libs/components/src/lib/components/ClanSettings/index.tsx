@@ -153,8 +153,10 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	const handleDeleteCurrentClan = async () => {
-		await dispatch(deleteClan({ clanId: currentClanId || '' }));
-		navigate('/mezon');
+		const result = await dispatch(deleteClan({ clanId: currentClanId || '' }));
+		if (deleteClan.fulfilled.match(result)) {
+			navigate('/mezon');
+		}
 	};
 	return (
 		<div ref={modalRef} tabIndex={-1} className="  flex fixed inset-0  w-screen z-30" data-e2e={generateE2eId('clan_page.settings')}>
