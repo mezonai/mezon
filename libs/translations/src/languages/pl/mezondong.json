@@ -1,0 +1,44 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Transparentność, Bezpieczeństwo, Darmowe",
+			"description": "Mezon Đồng został stworzony, aby uczynić transakcje cyfrowe prostszymi i bardziej transparentnymi – fundamentem dla nowej generacji ekonomii społeczności."
+		},
+		"section2": {
+			"title": "Szybkość, Bez przerwy",
+			"description": "Wyślij Mezon Đồng tak łatwo jak wysłanie wiadomości. Podaruj przyjaciołom, przekaż społeczności lub kupuj – wszystko dzieje się natychmiastowo i bez opłat."
+		},
+		"section3": {
+			"title": "Podnieś środowisko pracy z Mezon Đồng",
+			"description": "Mezon nie jest tylko dla społeczności – przedsiębiorstwa również mogą używać Mezon jako wewnętrznej platformy do komunikacji i płatności. Wynagradzaj pracowników, zarządzaj benefitami lub tworź programy motywacyjne wewnętrzne – wszystko jest obsługiwane płynnie i elastycznie z Mezon Đồng."
+		},
+		"section4": {
+			"title": "Zintegrowany handel",
+			"description": "Partnerzy brandowi mogą akceptować Mezon Đồng za swoje produkty i usługi. Od cyfrowych dóbr po fizyczne towary, społeczność może kupować bezpośrednio tylko jednym kliknięciem."
+		}
+	},
+	"faq": {
+		"title": "Potrzebujesz dodatkowej pomocy?",
+		"seeAll": "Zobacz wszystkie pytania",
+		"learnMore": "Dowiedz się więcej",
+		"questions": [
+			{
+				"question": "Czym jest Mezon Đồng?",
+				"answer": "Mezon Đồng to jednostka wartości cyfrowej używana jako narzędzie wymiany wewnętrzne w platformie Mezon. To system płatności cyfrowej wbudowany, który pozwala wysyłać i przekazywać pieniądze w prosty, transparentny i bezpieczny sposób."
+			},
+			{
+				"question": "Jak wysyłać i przekazywać Mezon Đồng?",
+				"answer": "Mezon Đồng nie służy tylko do wydatków, ale także do dzielenia się. Możesz przekazywać tokeny przyjaciołom, kolegom lub członkom clanu tylko w kilku prostych krokach. Wyślij Mezon Đồng tak łatwo jak wysłanie wiadomości – otwórz konwersację, kliknij ikonę Mezon Đồng, wprowadź kwotę i potwierdź. Transakcja jest przetwarzana natychmiastowo i bez opłat."
+			},
+			{
+				"question": "Jak przedsiębiorstwa mogą używać Mezon Đồng?",
+				"answer": "Przedsiębiorstwa mogą używać Mezon jako wewnętrznej platformy do komunikacji i płatności. Możesz wynagradzać pracowników, zarządzać benefitami lub tworzyć wewnętrzne programy motywacyjne. Wszystko jest obsługiwane płynnie i elastycznie z Mezon Đồng."
+			},
+			{
+				"question": "Jak zaakceptować płatności Mezon Đồng dla sklepu?",
+				"answer": "Partnerzy brandowi mogą akceptować Mezon Đồng za swoje produkty i usługi. Od cyfrowych dóbr po fizyczne towary, społeczność może kupować bezpośrednio tylko jednym kliknięciem. Skontaktuj się z zespołem Mezon, aby skonfigurować konto kupującego i zintegrować Mezon Đồng w swoim sklepie."
+			}
+		]
+	},
+	"download": "Pobierz"
+}

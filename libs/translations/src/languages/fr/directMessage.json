@@ -1,0 +1,63 @@
+{
+	"directMessages": "MESSAGES DIRECTS",
+	"createDM": "Créer un message",
+	"friends": "Amis",
+	"yourMessages": "Vos messages",
+	"selectConversation": "Sélectionnez une conversation pour commencer à discuter",
+	"createMessageGroup": {
+		"selectFriends": "Sélectionnez des amis",
+		"canAddMoreFriends": "Vous pouvez ajouter {{count}} amis de plus.",
+		"searchPlaceholder": "Entrez le nom d'utilisateur de vos amis",
+		"addToGroupChat": "Ajouter au chat de groupe",
+		"createDMOrGroupChat": "Créer un message ou un chat de groupe",
+		"createDM": "Créer un message",
+		"createGroupChat": "Créer un chat de groupe",
+		"noFriendsFound": "Aucun ami trouvé qui n'est pas déjà dans cette conversation.",
+		"creating": "Création en cours..."
+	},
+	"editGroup": {
+		"title": "Modifier le groupe",
+		"uploadImageText": "Cliquez pour télécharger une image",
+		"removeAvatar": "Supprimer l'avatar",
+		"groupNameLabel": "Nom du groupe",
+		"groupNamePlaceholder": "Entrez le nom du groupe",
+		"validationError": "Veuillez entrer un nom de groupe valide (uniquement des lettres, chiffres, _ ou -).",
+		"cancel": "Annuler",
+		"save": "Sauvegarder",
+		"saving": "Sauvegarde en cours..."
+	},
+	"contextMenu": {
+		"editGroup": "Modifier le groupe",
+		"addFriend": "Ajouter un ami",
+		"leaveGroup": "Quitter le groupe",
+		"closeDM": "Fermer le message",
+		"markAsRead": "Marquer comme lu",
+		"invitePeople": "Inviter des gens",
+		"hideConversation": "Masquer la conversation",
+		"profile": "Profil",
+		"message": "Message",
+		"removeFriend": "Supprimer l'ami",
+		"block": "Bloquer",
+		"unblock": "Débloquer",
+		"removeFromGroup": "Supprimer du groupe",
+		"shareContact": "Partager le contact",
+		"mute": "Couper les notifications",
+		"unmute": "Réactiver les notifications",
+		"for15Minutes": "Pendant 15 Minutes",
+		"for1Hour": "Pendant 1 Heure",
+		"for3Hours": "Pendant 3 Heures",
+		"for8Hours": "Pendant 8 Heures",
+		"for24Hours": "Pendant 24 Heures",
+		"untilTurnBackOn": "Jusqu'à ce que je le réactive",
+		"mutedUntil": "Notifications coupées jusqu'au {{time}}",
+		"pinConversation": "Épingler la conversation",
+		"unpinConversation": "Désépingler la conversation",
+		"pinLimitExceeded": "Vous ne pouvez épinglez qu'un maximum de 10 conversations. Veuillez désépingler une autre conversation pour épinglez celle-ci"
+	},
+	"pinned": "ÉPINGLÉES",
+	"remove": {
+		"content": "La conversation dans ce canal n'est plus disponible !",
+		"title": "Conversation non disponible",
+		"button": "Confirmer"
+	}
+}

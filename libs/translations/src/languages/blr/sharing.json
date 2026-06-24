@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Опцыі фільтрацыі",
+	"users": "Карыстальнікі",
+	"channels": "Каналы",
+	"all": "Усе",
+	"selectChannelPlaceholder": "Абярыце канал або карыстальніка...",
+	"selectChannel": "Абярыце канал",
+	"selectUser": "Абярыце карыстальніка",
+	"share": "Падзяліцца",
+	"suggestions": "Парады",
+	"addCommentPlaceholder": "Дадаць каментарый (неабавязкова)",
+	"fileTooLarge": "Файл занадта вялікі",
+	"fileSizeExceeded": "{{fileType}} не можа перавышаць {{maxSize}}МБ!",
+	"bannedChannel": "Вы заблакаваны ў канале {{channelName}}.",
+	"empty": "Пустыя даныя"
+}

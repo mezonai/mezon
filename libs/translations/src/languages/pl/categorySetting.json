@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Nazwa kategorii",
+            "placeholder": "Wpisz nazwę kategorii",
+            "errorMessage": "Proszę wprowadzić poprawną nazwę kategorii (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Uprawnienia kategorii",
+            "description": "Zmień ustawienia prywatności i dostosuj sposób, w jaki członkowie mogą wchodzić w interakcję z tym kanałem."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Usuń kategorię"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Czy na pewno chcesz usunąć {{categoryName}}? Tej akcji nie można cofnąć.",
+            "confirmText": "Usuń",
+            "title": "Usuń kategorię"
+        },
+        "save": "Zapisz"
+    },
+    "toast": {
+        "updated": "Zaktualizowano pomyślnie"
+    }
+}

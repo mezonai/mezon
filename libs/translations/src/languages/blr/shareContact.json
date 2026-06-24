@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Падзяліцца кантактам",
+		"searchPlaceholder": "Пошук...",
+		"noResults": "Вынікаў не знойдзена",
+		"noFriends": "Няма сяброў або каналаў",
+		"contactPreview": "Кантакт будзе перададзены",
+		"cancel": "Скасаваць",
+		"share": "Падзяліцца",
+		"sharing": "Адпраўка...",
+		"group": "Група",
+		"channel": "Канал",
+		"thread": "Трэд"
+	},
+	"card": {
+		"call": "Званок",
+		"message": "Паведамленне",
+		"blockedAction": "Вы не можаце выканаць гэта дзеянне.",
+		"cannotCallSelf": "Вы не можаце пазваніць сабе."
+	},
+	"contactSharedSuccess": "Паспяхова перададзена",
+	"contactSharedError": "Не атрымалася падзяліцца"
+}

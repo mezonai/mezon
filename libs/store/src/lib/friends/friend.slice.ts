@@ -330,6 +330,56 @@ export const friendsSlice = createSlice({
 				}
 			}
 		},
+		restoreFriendAfterUnblock: (
+			state,
+			action: PayloadAction<{
+				myId: string;
+				friendUserId: string;
+				username?: string;
+				avatar?: string;
+				display_name?: string;
+				user_status?: string;
+			}>
+		) => {
+			const { myId, friendUserId, username, avatar, display_name, user_status } = action.payload;
+			const myIdStr = String(myId);
+			const friendId = String(friendUserId);
+
+			if (!friendId || friendId === myIdStr) {
+				return;
+			}
+
+			const directEntity = state.entities[friendId];
+			const existing = directEntity ?? Object.values(state.entities).find((entity) => entity && String(entity.user?.id ?? '') === friendId);
+
+			if (existing) {
+				existing.state = EStateFriend.FRIEND;
+				if (username || avatar || display_name || user_status) {
+					existing.user = {
+						...existing.user,
+						id: friendId,
+						...(username !== undefined ? { username } : {}),
+						...(avatar !== undefined ? { avatar_url: avatar } : {}),
+						...(display_name !== undefined ? { display_name } : {}),
+						...(user_status !== undefined ? { user_status } : {})
+					};
+				}
+				return;
+			}
+
+			friendsAdapter.upsertOne(state, {
+				id: friendId,
+				source_id: myIdStr,
+				state: EStateFriend.FRIEND,
+				user: {
+					id: friendId,
+					username,
+					avatar_url: avatar,
+					display_name,
+					user_status
+				}
+			});
+		},
 		upsertFriend: (state, action: PayloadAction<FriendsEntity>) => {
 			const friendEntity = mapFriendToEntity(action.payload, action.payload.source_id || '');
 			friendsAdapter.upsertOne(state, friendEntity);

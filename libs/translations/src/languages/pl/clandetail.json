@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Zbuduj przyjemniejszą społeczność",
+			"description": "To nie tylko czat – to miejsce, gdzie organizujesz się, łączysz z grupą, przyjaciółmi i społecznością w sposób przyjemny."
+		},
+		"section2": {
+			"title": "Najlepsze doświadczenie WFH dla organizacji",
+			"description": "Praca zdalnie nie oznacza pracy samotnie. Współpracuj, komunikuj się i świętuj razem – czasem z daleka. Najlepsze doświadczenie WFH dla Twojej organizacji."
+		},
+		"section3": {
+			"title": "Ukierunkuj relacje członków",
+			"description": "Wierzymy, że silne relacje budują solidne organizacje. Każda funkcja została zaprojektowana, aby zbliżyć członków. Relacje członków, wzmocnione."
+		},
+		"section4": {
+			"title": "Wkładaj, aby zdobyć nagrody",
+			"description": "Dołączaj, zdobywaj kredyty i odbieraj tokeny, gdy pomagasz społeczności rozwijać się. Twój głos to Twoja wartość. Wkładaj, aby zdobyć nagrody."
+		},
+		"section5": {
+			"title": "Szczegółowe i przejrzyste raporty",
+			"description": "Śledź rozwój i zaangażowanie społeczności dzięki szczegółowej analizie i raportowaniu. Zawsze poinformowany, podejmuj lepsze decyzje."
+		}
+	},
+	"features": [
+		{
+			"title": "Możesz przesyłać emoji, naklejki i dźwięki",
+			"description": "W pełni darmowe – dostosuj własne emoji, naklejki i dźwięki, aby wyrazić siebie w rozmowach."
+		},
+		{
+			"title": "Uprawnienia dla członków w clanie",
+			"description": "Łatwo zarządzaj uprawnieniami i rolami członków w clanie, aby zapewnić wszystkim odpowiednie i bezpieczne doświadczenie."
+		},
+		{
+			"title": "Członkowie z całego świata o tych samych zainteresowaniach",
+			"description": "Członkowie będą dołączać do Twojego clana poprzez zaproszenia lub publiczne odkrywanie, tworząc różnorodną i żywiołową społeczność."
+		},
+		{
+			"title": "Tworzenie clana stało się łatwiejsze niż kiedykolwiek",
+			"description": "Szybko reaguj na wiadomości za pomocą emoji bez pisania tekstu."
+		}
+	],
+	"featuresTitle": "Zbuduj swoją społeczność przyjemniej",
+	"download": "Pobierz",
+	"faq": {
+		"title": "Potrzebujesz dodatkowej pomocy?",
+		"seeAll": "Zobacz wszystkie FAQ",
+		"learnMore": "Dowiedz się więcej",
+		"questions": [
+			{
+				"question": "Czym jest Clan na Mezon?",
+				"answer": "Clan jest sercem Mezon – miejscem, gdzie ludzie łączą się, współpracują i dzielą poprzez społeczności zbudowane wokół wspólnych zainteresowań, celów lub pasji. Clan może być małą grupą przyjaciół lub dużą społecznością z tysiącami członków. W Clanie możesz rozmawiać poprzez zorganizowane kanały, organizować wydarzenia poprzez kanały głosowe i rozwijać społeczność za pomocą Botów, Aplikacji i Tokenów Mezon."
+			},
+			{
+				"question": "Jak dołączyć do Clanu na Mezon?",
+				"answer": "Możesz odkrywać i dołączać do Clanu na dwa sposoby: poprzez przycisk Odkryć w aplikacji lub przez stronę Internetową Clan na mezon.ai/clans, lub poprzez udostępniony link zaproszeniowy od przyjaciół, kolegów lub administratorów. Po prostu kliknij \"Dołącz\", aby zostać członkiem społeczności. Każdy użytkownik może dołączyć do maksymalnie 50 clanów jednocześnie. Zobacz popularne clanów, takie jak Student Clan, Gamer Clan i Business Clan."
+			},
+			{
+				"question": "Jak utworzyć własny clan?",
+				"answer": "Tworzenie clanu jest proste i elastyczne. Przejdź do sekcji Clan i utwórz nowy clan tylko kilkoma kliknięciami. Możesz ustawić nazwę, ikonę i podstawowe ustawienia, aby dostosować swoją społeczność. Po utworzeniu możesz zaprosić przyjaciół i kolegów, aby rozpocząć rozmowy, dzielić się pomysłami lub współpracować razem. Możesz również zarządzać kanałami, ustawiać uprawnienia i przekazać właścicielstwo, jeśli to konieczne."
+			},
+			{
+				"question": "Czy mogę opuścić clan, jeśli nie chcę już w nim uczestniczyć?",
+				"answer": "Tak, jeśli nie chcesz już uczestniczyć w Clanie, możesz wybrać 'Opuść Clan' z ustawień Clanu. Po opuszczeniu cała historia wiadomości i dostęp do kanałów tego Clanu zostanie usunięty z Twojego konta. Możesz zawsze dołączyć ponownie do Clanu później, jeśli masz link zaproszeniowy lub jeśli Clan może być publicznie odkryty."
+			}
+		]
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "Ciemny",
+		"darker": "Bardziej ciemny",
+		"midnight": "Północ",
+		"light": "Jasny",
+		"system": "Systemowy",
+		"sunrise": "Wschód słońca",
+		"redDark": "Ciemna czerwień",
+		"purpleHaze": "Fioletowa mgła",
+		"abyssDark": "Mroczna otchłań",
+		"sunset": "Zachód słońca"
+	},
+	"desc": "Zawsze możesz to później zmienić!"
+}

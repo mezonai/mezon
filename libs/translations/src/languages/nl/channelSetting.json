@@ -1,0 +1,290 @@
+{
+	"fields": {
+		"channelName": {
+			"title": "Kanaalnaam",
+			"placeholder": "Voer kanaalnaam in",
+			"errorMessage": "Voer een geldige kanaalnaam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+			"duplicateError": "Kanaalnaam bestaat al in de categorie. Voer een andere naam in."
+		},
+		"threadName": {
+			"title": "Theman",
+			"placeholder": "Voer themanaam in",
+			"errorMessage": "Voer een geldige themanaam in (maximaal 65 tekens, alleen woorden, cijfers, _ of -).",
+			"emptyError": "Voer een themanaam in (maximaal 65 tekens, alleen woorden, cijfers, _ of -).",
+			"duplicateError": "Theman bestaat al in het kanaal. Voer een andere naam in."
+		},
+		"channelDescription": {
+			"title": "Kanaalonderwerp",
+			"placeholder": "Vertel iedereen hoe je dit kanaal gebruikt!"
+		},
+		"threadDescription": {
+			"title": "Thema beschrijving",
+			"placeholder": "Vertel iedereen hoe je dit thema gebruikt!"
+		},
+		"appUrl": {
+			"title": "App-URL",
+			"invalidError": "Voer een geldige URL in (bijv. https://voorbeeld.nl)."
+		},
+		"channelCategory": {
+			"title": "Kanaalcategorie"
+		},
+		"channelPermission": {
+			"title": "",
+			"permission": "Kanaalrechten",
+			"description": "Pas de privacyscherm in- en aanpas de manier waarop leden met dit kanaal kunnen interacteren."
+		},
+		"quickAction": {
+			"title": "Actie"
+		},
+		"privateChannelInvite": {
+			"addMember": "Lid toevoegen"
+		},
+		"channelNotifications": {
+			"title": "",
+			"notification": "Meldingsinstellingen",
+			"pinned": "Vastgezette berichten",
+			"invite": "Uitnodiging"
+		},
+		"channelSlowMode": {
+			"title": "Langzame modus",
+			"description": "Leden worden beperkt tot slechts één bericht per keer in deze periode, tenzij ze kanaalbeheer of berichtbeheer rechten hebben.",
+			"_5seconds": "5 seconden",
+			"_10seconds": "10 seconden",
+			"_15seconds": "15 seconden",
+			"_30seconds": "30 seconden",
+			"_1minute": "1 minuut",
+			"_2minutes": "2 minuten",
+			"_5minutes": "5 minuten",
+			"_10minutes": "10 minuten",
+			"_15minutes": "15 minuten",
+			"_30minutes": "30 minuten",
+			"_1hour": "1 uur",
+			"_2hours": "2 uur",
+			"_6hours": "6 uur"
+		},
+		"channelHideInactivity": {
+			"title": "Verberg na inactiviteitsperiode",
+			"description": "Nieuwe topics worden niet weergegeven in de kanaallijst na de opgegeven inactiviteitsperiode",
+			"_1hour": "1 Uur",
+			"_24hours": "24 Uur",
+			"_3days": "3 Dagen",
+			"_1Week": "1 Week"
+		},
+		"channelWebhooks": {
+			"title": "",
+			"webhook": "Webhook"
+		},
+		"channelDelete": {
+			"title": "",
+			"delete": "Kanaal verwijderen"
+		},
+		"threadDelete": {
+			"title": "",
+			"delete": "Topic verwijderen"
+		},
+		"threadLeave": {
+			"title": "",
+			"leave": "Topic verlaten"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "Weet je zeker dat je #{{channelName}} wilt verwijderen? Deze actie is onherroepelijk.",
+			"confirmText": "Verwijderen",
+			"title": "Kanaal verwijderen",
+			"systemChannel": "Systeemkanaal kan niet worden verwijderd",
+			"error": "Kanaal verwijderen fout: {{error}}"
+		},
+		"deleteThread": {
+			"content": "Weet je zeker dat je {{channelName}} wilt verwijderen? Deze actie is onherroepelijk.",
+			"confirmText": "Topic verwijderen",
+			"title": "Topic verwijderen"
+		},
+		"deleteChannel": {
+			"content": "Weet je zeker dat je {{channelName}} wilt verwijderen? Deze actie is onherroepelijk.",
+			"confirmText": "Kanaal verwijderen",
+			"title": "Kanaal verwijderen"
+		},
+		"cancel": "Annuleren",
+		"leave": {
+			"content": "Weet je zeker dat je kanaal #{{channelName}} wilt verlaten? Deze actie is onherroepelijk.",
+			"confirmText": "Verlaten",
+			"title": "Kanaal verlaten"
+		},
+		"save": "Opslaan"
+	},
+	"toast": {
+		"updated": "Succesvol bijgewerkt"
+	},
+	"channelPermission": {
+		"permissionOverrides": "Rechten overschrijven",
+		"save": "Opslaan",
+		"generalChannelPermission": "ALGEMENE KANAALRECHTEN",
+		"title": "Toegang",
+		"basicView": "Basics",
+		"advancedView": "Geavanceerd",
+		"roles": "Rollen",
+		"members": "Leden",
+		"edit": "Bewerken",
+		"done": "Gereed",
+		"addRole": "Rol toevoegen",
+		"addMember": "Lid toevoegen",
+		"privateChannel": "Privékanaal",
+		"basicViewDescription": "Wanneer je het kanaal naar privé zet, zien alleen de geselecteerde leden en rollen dit kanaal",
+		"ChannelCreator": "Auteur",
+		"addMemberAndRoles": "Lid of rol toevoegen",
+		"whoCanAccess": "Wie kan toegang krijgen",
+		"warningModal": {
+			"publicChannelTitle": "Dit kanaal voor iedereen openen?",
+			"privateChannelTitle": "Dit kanaal naar privé maken?",
+			"publicChannelContent": "{{channelLabel}} is beschikbaar voor alle leden",
+			"privateChannelContent": "{{channelLabel}} wordt privé en wordt alleen getoond aan geselecteerde leden en rollen",
+			"confirm": "Akkoord"
+		},
+		"warningChangeSettingModal": {
+			"title": "Je hebt niet-opgeslagen wijzigingen",
+			"content": "Wil je de wijzigingen opslaan?",
+			"confirm": "Ja, Opslaan"
+		},
+		"description": {
+			"viewChannel": "Sta leden toe om dit kanaal standaard te zien. Dit uitschakelen voor @everyone maakt dit kanaal privé.",
+			"manageChannel": "Sta leden toe om kanaalnaam, beschrijving en tekstinstellingen van dit kanaal aan te passen. Ze kunnen het kanaal ook verwijderen.",
+			"manageThread": "Sta leden toe om namen, sluiten, vergrendelen en langzame modus in te stellen voor topics in dit kanaal. Ze kunnen ook privé topics bekijken.",
+			"sendMessage": "Sta leden toe om berichten in dit kanaal te verzenden.",
+			"deleteMessage": "Sta leden toe om berichten in dit kanaal te verwijderen."
+		},
+		"bottomSheet": {
+			"addMembersOrRoles": "Leden of rollen toevoegen",
+			"add": "Toevoegen",
+			"roles": "Rollen",
+			"members": "Leden",
+			"rolesMembers": "Rollen/Leden",
+			"roleMemberPlaceholder": "Rol/Lid"
+		},
+		"toast": {
+			"success": "Succesvol opgeslagen",
+			"failed": "Opslaan mislukt"
+		},
+		"roleAndMemberEmpty": "Er zijn nog geen rollen en leden om privé rechten in te stellen",
+		"header": {
+			"title": "Kanaalrechten",
+			"description": "Gebruik rechten om aan te passen wie wat kan doen in dit kanaal.",
+			"syncedWithCategory": "Rechten gesynchroniseerd met categorie:"
+		}
+	},
+	"quickAction": {
+		"title": "Snelmenu",
+		"description": "Beheer snelberichten en snelmenu's voor dit kanaal",
+		"keyTitle": "Voer trefwoord in (bijv. xinchao): ",
+		"valueTitle": "Voer inhoud in (bijv. Goedemorgen, wens je een goede dag!)",
+		"save": "Opslaan",
+		"cancel": "Annuleren",
+		"create": "Aanmaken",
+		"update": "Bijwerken",
+		"delete": "Verwijderen",
+		"deleteModal": "Snelmenu verwijderen",
+		"deleteTitle": "Weet je zeker dat je {{command}} wilt verwijderen? Deze actie is onherroepelijk.",
+		"flashMessage": "Snelle boodschap",
+		"flashMessages": "Snelle berichten",
+		"quickMenu": "Snelmenu",
+		"quickMenus": "Snelmenu's",
+		"menuName": "Menu naam",
+		"commandName": "Commando naam",
+		"menuNameHelper": "Naam voor dit snelmenu item",
+		"commandNameHelper": "Naam die gebruikers zullen typen na het schuine streepje",
+		"botEventTrigger": "Bot-gebeurtenis trigger",
+		"botEventDescription": "Dit snelmenu zal automatisch een bot-gebeurtenis activeren wanneer het wordt geselecteerd.",
+		"createQuickMenu": "Snelmenu aanmaken",
+		"createFlashMessage": "Snelle boodschap aanmaken",
+		"editQuickMenu": "Snelmenu bewerken",
+		"editFlashMessage": "Snelle boodschap bewerken",
+		"emptyFlashMessage": "Geen snelle berichten",
+		"emptyFlashMessageDescription": "Start met het aanmaken van je eerste snelle bericht commando",
+		"emptyQuickMenu": "Geen snelmenu's",
+		"emptyQuickMenuDescription": "Start met het aanmaken van je eerste snelmenu",
+		"addFlashMessage": "Snelle boodschap toevoegen",
+		"addQuickMenu": "Snelmenu toevoegen",
+		"editCommand": "Commando bewerken",
+		"deleteCommand": "Commando verwijderen",
+		"triggersBot": "Activeert bot-gebeurtenis",
+		"messageContent": "Berichtinhoud",
+		"messageContentPlaceholder": "Bericht dat snel zal worden verzonden",
+		"messageContentDescription": "Berichtinhoud die wordt verzonden wanneer dit snelle bericht commando wordt gebruikt",
+		"menuAction": "Menu actie",
+		"menuActionPlaceholder": "Actie die zal worden uitgevoerd",
+		"menuActionDescription": "Actie die wordt uitgevoerd wanneer dit snelmenu wordt geselecteerd"
+	},
+	"changeCategory": {
+		"title": "Categorie wijzigen",
+		"label": "VERPLAATSEN VAN {{currentChannel}} NAAR",
+		"confirmFirstContent": "Weet je zeker dat je wilt verplaatsen",
+		"confirmLastContent": "naar de categorie",
+		"confirm": "Akkoord",
+		"error": "Categorie wijzigen mislukt"
+	},
+	"overview": {
+		"title": "Overzicht",
+		"ageRestricted": {
+			"title": "Leeftijdbeperkt kanaal",
+			"description": "Gebruikers moeten bevestigen dat ze de wettelijke leeftijd hebben om inhoud in dit kanaal te bekijken. Leeftijdbeperkte kanalen zijn vrijgesteld van de gevoelige inhoudfilter."
+		},
+		"e2ee": {
+			"title": "End-to-end encryptie",
+			"description": "Schakel end-to-end encryptie in voor dit kanaal om alle berichten te beveiligen."
+		}
+	},
+	"tabs": {
+		"overview": "Overzicht",
+		"permissions": "Rechten",
+		"invites": "Uitnodigingen",
+		"integrations": "Integraties",
+		"category": "Categorie",
+		"quickMenu": "Snelmenu"
+	},
+	"categoryManagement": {
+		"title": "Categorie",
+		"channelName": "Kanaalnaam",
+		"category": "Categorie"
+	},
+	"unsavedChanges": {
+		"warning": "Pas op — je hebt niet-opgeslagen wijzigingen!",
+		"reset": "Herstellen",
+		"saveChanges": "Wijzigingen opslaan"
+	},
+	"addMembersRoles": {
+		"title": "Lid of rol toevoegen",
+		"placeholder": "Bijv. Beheerder, @wumpus",
+		"instruction": "Voeg individuele leden toe door te beginnen met @ of voer de rol naam in",
+		"roles": "Rollen",
+		"members": "Leden",
+		"cancel": "Annuleren",
+		"done": "Gereed",
+		"searchPlaceholder": "Zoek op Rol & Lid"
+	},
+	"table": {
+		"columnHeaders": {
+			"name": "Naam",
+			"members": "Leden",
+			"messagesCount": "Aantal berichten",
+			"lastSent": "Laatst verzonden",
+			"creator": "Auteur"
+		},
+		"pagination": {
+			"show": "Toon",
+			"channelOf": "kanalen in totaal"
+		},
+		"memberModal": {
+			"listMember": "Ledenlijst"
+		},
+		"threads": {
+			"noThreads": "Geen topics in dit kanaal"
+		},
+		"members": {
+			"allMembers": "(Alle leden)"
+		}
+	},
+	"streamBanner": {
+		"title": "Stream banner afbeelding"
+	},
+	"banList": "Verbannen lijst"
+}

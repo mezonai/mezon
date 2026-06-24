@@ -1,0 +1,25 @@
+{
+	"headerTitle": {
+		"settings": "Налаштування",
+		"Friends": "Друзі",
+		"addFriends": "Додати друзів",
+		"requestFriend": "Запит на дружбу",
+		"friendRequestSettings": "Налаштування запитів на дружбу",
+		"language": "Мова",
+		"profile": "Профіль",
+		"newMessage": "Нове повідомлення",
+		"newGroup": "Нова група",
+		"addMembers": "Додати учасників",
+		"appearance": "Зовнішній вигляд",
+		"topic": "Коротке обговорення",
+		"chat": "Чат"
+	},
+	"headerRight": {
+		"addFriends": "Додати друзів"
+	},
+	"navigationTabs": {
+		"messages": "Повідомлення",
+		"notifications": "Сповіщення",
+		"profile": "Профіль"
+	}
+}

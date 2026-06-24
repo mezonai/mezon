@@ -1,0 +1,31 @@
+{
+	"muteClan": "Вимкнення сповіщень клану приховуватиме індикатори непрочитаних повідомлень та не відображатиме сповіщення, окрім згадувань",
+	"notifySettingOption": {
+		"title": "Налаштування сповіщень клану",
+		"allMessage": "Всі повідомлення",
+		"onlyMentions": "Тільки @згадування",
+		"nothing": "Нічого"
+	},
+	"suppressOption": {
+		"suppressEveryone": "Вимкнути сповіщення @everyone та @here",
+		"suppressAllRole": "Вимкнути сповіщення @згадування всіх ролей",
+		"suppressHighlights": "Вимкнути сповіщення видатного",
+		"subText": "Видатне надає оновлення періодично, коли ваші друзі спілкуються у клані та більше."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Вимкнути сповіщення нових подій",
+		"mobilePushNotifications": "Push-сповіщення на мобільний"
+	},
+	"notificationOverrides": {
+		"title": "Перевизначення сповіщень",
+		"addChannelsAllCategory": "Додати всі канали до категорії"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Ви не будете отримувати сповіщення з вимкнених каналів. Це налаштування застосовується на всіх ваших пристроях.",
+		"youHaveMuted": "Ви вимкнули сповіщення цього каналу до"
+	},
+	"clanNotificationBS": {
+		"title": "Вимкнути сповіщення цього клану"
+	},
+	"resetOverrides": "Скинути перевизначення"
+}

@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Опції фільтрації",
+	"users": "Користувачі",
+	"channels": "Канали",
+	"all": "Всі",
+	"selectChannelPlaceholder": "Оберіть канал або користувача...",
+	"selectChannel": "Оберіть канал",
+	"selectUser": "Оберіть користувача",
+	"share": "Поділитися",
+	"suggestions": "Поради",
+	"addCommentPlaceholder": "Додати коментар (необов'язково)",
+	"fileTooLarge": "Файл занадто великий",
+	"fileSizeExceeded": "{{fileType}} не може перевищувати {{maxSize}}МБ!",
+	"bannedChannel": "Ви заблоковані в каналі {{channelName}}.",
+	"empty": "Порожні дані"
+}

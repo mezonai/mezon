@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Salle vocale",
+		"joinVoice": "Rejoindre la voix"
+	},
+	"chat": "Conversation",
+	"membersWillBeNotified": "{{participantsCount}} membres seront notifiés",
+	"noDisplay": "Ne pas afficher le canal vocal",
+	"videoConnected": "Vidéo connectée",
+	"voiceConnected": "Voix connectée",
+	"turnOffMicrophone": "Couper le micro",
+	"turnOnMicrophone": "Activer le micro",
+	"turnOffCamera": "Couper la caméra",
+	"turnOnCamera": "Activer la caméra",
+	"stopScreenShare": "Arrêter le partage d'écran",
+	"shareYourScreen": "Partager votre écran",
+	"disconnect": "Déconnecter",
+	"muteModal": {
+		"title": "Couper le son du membre",
+		"content": "Êtes-vous sûr de vouloir couper le son de « {{userName}} » ?",
+		"mute": "Couper le son"
+	},
+	"kickModal": {
+		"title": "Supprimer du canal vocal",
+		"content": "Êtes-vous sûr de vouloir supprimer « {{userName}} » du canal vocal ?",
+		"kick": "Supprimer"
+	},
+	"disconnectModal": {
+		"title": "Déconnexion vocale",
+		"content": {
+			"removed": "Vous avez été supprimé du canal vocal",
+			"duplicate": "Vous avez été déconnecté car vous vous êtes joint ailleurs",
+			"default": "Vous avez été déconnecté du canal vocal",
+			"deleted": "Le canal vocal a été supprimé"
+		},
+		"confirm": "Confirmer"
+	},
+	"permission": {
+		"cameraTitle": "Autoriser l'accès à la caméra",
+		"cameraBody": "L'application n'a pas l'autorisation de la caméra. Veuillez activer l'autorisation de la caméra dans les paramètres du système.",
+		"microphoneTitle": "Autoriser l'accès au micro",
+		"microphoneBody": "L'application n'a pas l'autorisation du micro. Veuillez activer l'autorisation du micro dans les paramètres du système.",
+		"cancel": "Annuler",
+		"deviceSettings": "Paramètres de l'appareil"
+	},
+	"device": {
+		"inputDevice": "Microphone",
+		"outputDevice": "Audio",
+		"camera": "Caméra"
+	},
+	"toast": {
+		"connectionConnected": "Connexion réussie",
+		"connectionDisconnected": "Connexion interrompue",
+		"microphonePermissionRequired": "Autorisation du micro requise",
+		"cameraPermissionRequired": "Autorisation de la caméra requise",
+		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel."
+	},
+	"usernameScreen": "Écran de {{username}}"
+}

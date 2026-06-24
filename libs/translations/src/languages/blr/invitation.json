@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Запрасіць сяброў далучыцца да {{target}}",
+		"privateEvent": "Знешняя падзея",
+		"privateRoom": "Прыватны пакой",
+		"clanInvite": "запрашэнне ў клан",
+		"sendLinkText": "Або дашліце {{type}} спасылку ім",
+		"expiresIn": "Ваша запрашэнне сапраўднае на працягу {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 хвілін",
+		"1hour": "1 гадзіна",
+		"6hours": "6 гадзін",
+		"12hours": "12 гадзін",
+		"1day": "1 дзень",
+		"7days": "7 дзён",
+		"never": "Заўсёды"
+	},
+	"maxUses": {
+		"noLimit": "Без ліміту",
+		"1use": "1 выкарыстанне",
+		"5uses": "5 выкарыстанняў",
+		"10uses": "10 выкарыстанняў",
+		"25uses": "25 выкарыстанняў",
+		"50uses": "50 выкарыстанняў",
+		"100uses": "100 выкарыстанняў"
+	},
+	"generateLink": {
+		"expireAfter": "Тэрмін дзеяння пасля",
+		"maxNumberOfUses": "Максімальная колькасць выкарыстанняў"
+	},
+	"buttons": {
+		"copy": "Скапіяваць",
+		"copied": "Скапіявана",
+		"copyQR": "Скапіяваць QR",
+		"editInviteLink": "Рэдагаваць спасылку запрашэння.",
+		"cancel": "Скасаваць",
+		"generateNewLink": "Стварыць новую спасылку",
+		"invite": "Запрасіць",
+		"sent": "Даслана"
+	},
+	"searchPlaceholder": "Пошук сяброў",
+	"privateChannelDescription": "Гэты канал прыватны, толькі абраныя ўдзельнікі і ролі змогуць бачыць яго.",
+	"noResults": "Вынікаў няма",
+	"messages": {
+		"qrCopiedSuccess": "QR-код паспяхова скапіяваны!"
+	},
+	"errors": {
+		"createInviteLink": "Памылка стварэння спасылкі запрашэння",
+		"copyToClipboard": "Не атрымалася скапіяваць у буфер абмену",
+		"copyFailed": "Памылка капіявання"
+	},
+	"acceptModal": {
+		"title": "Далучыцца да клана",
+		"invitedToJoin": "Вы запрошаны далучыцца да",
+		"memberCount": "{{count}} Удзельнік",
+		"memberCount_plural": "{{count}} Удзельнікаў",
+		"clanSettings": "Налады клана",
+		"customizeAnytime": "Вы можаце наладзіць гэта ў любы час",
+		"noThanks": "Не, дзякуй",
+		"acceptInvite": "Прыняць запрашэнне",
+		"joining": "Далучэнне...",
+		"toast": {
+			"alreadyMember": "Вы ўжо ўдзельнік!"
+		}
+	}
+}

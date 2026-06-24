@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Захаваць"
+	},
+	"switch": {
+		"userProfile": "Асабісты",
+		"serverProfile": "Клан"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Адлюстроўванае імя",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Мянушка клана",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Займеннікі",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Біяграфія",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Скасаваць незахаваныя змены?",
+		"description": "Ёсць незахаваныя змены, вы ўпэўнены, што хочаце іх скасаваць?",
+		"discard": "Скасаваць",
+		"keepEditing": "Працягнуць рэдагаванне"
+	},
+	"selectAClan": "Абярыце клан",
+	"searchClanPlaceholder": "Пошук кланаў",
+	"updateProfileSuccess": "Профіль паспяхова абноўлены",
+	"updateProfileError": "Памылка абнаўлення профілю",
+	"updateClanProfileSuccess": "Профіль клана паспяхова абноўлены",
+	"emptyUsername": "Адлюстроўванае імя не можа быць пустым!",
+	"duplicateClannick": "Дубляванне назвы клана",
+	"clanNickname": "МЯНУШКА КЛАНА",
+	"changeAvatar": "Змяніць аватар",
+	"removeAvatar": "Выдаліць",
+	"avatar": "Аватар",
+	"preview": "ПЕРАДПРАГЛЯД",
+	"nickNameExistsError": "Мянушка ўжо існуе ў клане. Увядзіце іншую мянушку.",
+	"unsavedChangesWarning": "Увага - у вас ёсць незахаваныя змены!",
+	"reset": "Скінуць",
+	"saveChanges": "Захаваць змены",
+	"showProfilesDescription": " Пакажыце сябе з рознымі профілямі для кожнага клана",
+	"chooseAClan": "АБЯРЫЦЕ КЛАН",
+	"editImage": "Рэдагаваць выяву",
+	"close": "Зачыніць",
+	"resetChanges": "Скінуць змены",
+	"cancelEditing": "Скасаваць рэдагаванне",
+	"cancel": "Скасаваць",
+	"applyChanges": "Ужыць змены",
+	"apply": "Ужыць",
+	"moveImage": "Перамясціць выяву",
+	"adjustZoom": "Наладзіць маштаб",
+	"profiles": "Профілі",
+	"userProfile": "Профіль карыстальніка",
+	"clanProfiles": "Профілі клана",
+	"directMessageIcon": "Значок прамых паведамленняў",
+	"directMessageIconAction": {
+		"remove": "Выдаліць",
+		"removeTitle": "Выдаліць значок прамых паведамленняў",
+		"removeDescription": "Вы ўпэўнены, што хочаце выдаліць значок прамых паведамленняў?"
+	},
+	"displayName": "АДЛЮСТРОЎВАНАЕ ІМЯ",
+	"emptyClanProfile": {
+		"title": "Вы не далучыліся да ніводнага клана",
+		"description": "Стварыце або далучыцеся да клана для наладкі профілю клана.",
+		"createClan": "Стварыць клан",
+		"joinClan": "Далучыцца да клана"
+	}
+}

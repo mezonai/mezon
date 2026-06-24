@@ -1,0 +1,44 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Transparence, Sécurité, Gratuit",
+			"description": "Mezon Coin est conçu pour rendre les transactions numériques plus simples et plus transparentes - la fondation d'une nouvelle économie communautaire."
+		},
+		"section2": {
+			"title": "Rapide, Sans Interruption",
+			"description": "Envoyez des Mezon Coins aussi facilement qu'un message. Offrez à vos amis, contribuez à la communauté ou faites des achats - tout se déroule instantanément et sans frais."
+		},
+		"section3": {
+			"title": "Élevez L'Environnement De Travail Avec Mezon Coin",
+			"description": "Mezon n'est pas seulement pour la communauté - les entreprises peuvent également utiliser Mezon comme plateforme interne pour communiquer et payer. Récompenser les employés, gérer les avantages ou créer des programmes de récompense internes - tout est traité en toute fluidité et flexibilité avec Mezon Coin."
+		},
+		"section4": {
+			"title": "Commerce Intégré",
+			"description": "Les marques partenaires peuvent accepter des Mezon Coins pour leurs produits et services. Des biens numériques aux produits physiques, la communauté peut faire des achats directs en un seul clic."
+		}
+	},
+	"faq": {
+		"title": "Besoin d'aide supplémentaire ?",
+		"seeAll": "Voir toutes les questions",
+		"learnMore": "En savoir plus",
+		"questions": [
+			{
+				"question": "Qu'est-ce que Mezon Coin ?",
+				"answer": "Mezon Coin est une unité de valeur numérique utilisée comme outil d'échange interne sur la plateforme Mezon. C'est un système de paiement numérique intégré qui vous permet d'envoyer et de transférer de l'argent facilement, en toute transparence et en toute sécurité."
+			},
+			{
+				"question": "Comment envoyer et transférer Mezon Coin ?",
+				"answer": "Mezon Coin n'est pas seulement pour dépenser mais aussi pour partager. Vous pouvez envoyer des tokens à vos amis, collègues ou membres du clan en quelques étapes simples. Envoyez des Mezon Coins aussi facilement qu'un message - ouvrez une conversation, appuyez sur l'icône Mezon Coin, saisissez le montant et confirmez. La transaction est traitée instantanément et sans frais."
+			},
+			{
+				"question": "Comment les entreprises peuvent-elles utiliser Mezon Coin ?",
+				"answer": "Les entreprises peuvent utiliser Mezon comme plateforme interne pour communiquer et payer. Vous pouvez récompenser les employés, gérer les avantages ou créer des programmes de récompense internes. Tout est traité en toute fluidité et flexibilité avec Mezon Coin."
+			},
+			{
+				"question": "Comment accepter les paiements en Mezon Coin pour une boutique ?",
+				"answer": "Les marques partenaires peuvent accepter des Mezon Coins pour leurs produits et services. Des biens numériques aux produits physiques, la communauté peut faire des achats directs en un seul clic. Contactez l'équipe Mezon pour configurer un compte marchand et intégrer Mezon Coin dans votre boutique."
+			}
+		]
+	},
+	"download": "Télécharger"
+}

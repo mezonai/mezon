@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Dziennik kontroli",
+		"filterByUser": "Filtruj według użytkownika",
+		"filterByAction": "Filtruj według działania",
+		"filterBtn": "Filtruj"
+	},
+	"auditLogItem": {
+		"performedAnAction": "wykonał działanie",
+		"toChannel": "do kanału",
+		"remove": "usuń",
+		"add": "dodaj"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Wszystkie działania",
+		"placeholder": "Szukaj działania"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Wszyscy użytkownicy",
+		"placeholder": "Szukaj użytkownika"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "BRAK DZIENNIKÓW",
+		"description": "Po tym, jak moderatorzy wykonają swoje zadania, możesz śledzić ich aktywność tutaj."
+	}
+}

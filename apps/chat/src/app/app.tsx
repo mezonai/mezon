@@ -86,7 +86,7 @@ const LanguageSyncProvider = () => {
 
 	useEffect(() => {
 		const detectedLang = i18n.language;
-		if (detectedLang && (detectedLang === 'vi' || detectedLang === 'en') && detectedLang !== currentLanguage) {
+		if (detectedLang && detectedLang !== currentLanguage) {
 			dispatch(appActions.setLanguage(detectedLang));
 		}
 	}, []);

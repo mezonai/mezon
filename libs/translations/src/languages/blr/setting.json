@@ -1,0 +1,142 @@
+{
+	"accountSettings": {
+		"title": "Налады акаўнта",
+		"account": "Акаўнт",
+		"profiles": "Профілі",
+		"privacySafety": "Прыватнасць і бяспека",
+		"familyCenter": "Сямейны цэнтр",
+		"authorizedApp": "Аўтарызаваныя дадаткі",
+		"device": "Прылада",
+		"connection": "Падключэнне",
+		"clip": "Кліп",
+		"friendRequests": "Запыты на сяброўства",
+		"QRScan": "Сканаванне QR",
+		"MyQRCode": "Мой QR-код",
+		"devices": "Прылады"
+	},
+	"deviceSettings": {
+		"description1": "Гэта ўсе прылады, на якіх вы ўвайшлі ў свой акаўнт. Вы можаце выйсці з кожнай прылады асобна.",
+		"description2": "Калі вы бачыце ўваход, які не пазнаяце, выйдзіце з яго і неадкладна змяніце пароль.",
+		"currentDevice": "Бягучая прылада",
+		"otherDevices": "Іншыя прылады",
+		"noDevices": "Прылады не знойдзены",
+		"loggedIn": "Увайшоў а",
+		"current": "Бягучы",
+		"unknown": "Невядома",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Камп'ютар",
+		"platformWeb": "Вэб",
+		"removeDevice": "Выйсці з гэтай прылады"
+	},
+	"paymentSettings": {
+		"title": "Налады аплаты",
+		"restoreSubscription": "Аднавіць падпіску"
+	},
+	"appSettings": {
+		"title": "Налады дадатку",
+		"voice": "Голас",
+		"appearance": "Знешні выгляд",
+		"accessibility": "Даступнасць",
+		"language": "Мова",
+		"activity": "Дзейнасць",
+		"notifications": "Апавяшчэнні",
+		"chat": "Чат",
+		"webBrowser": "Вэб-браўзер",
+		"appIcon": "Значок",
+		"advanced": "Пашыраныя",
+		"appVersion": "Версія дадатку",
+		"startUp": "Запуск",
+		"quitApp": "Выйсці з дадатку"
+	},
+	"autoStart": {
+		"title": "Аўтаматычны запуск дадатку",
+		"description": "Аўтаматычна адкрываць дадатак пры загрузцы камп'ютара для імгненнага выкарыстання."
+	},
+	"hardwareAcceleration": {
+		"title": "Выкарыстоўваць графічнае паскарэнне, калі даступна",
+		"description": "Калі ўключана, дадатак будзе выкарыстоўваць магутнасць GPU (графічнай карты) для апрацоўкі рэсурсаёмістых графічных задач, такіх як 3D-рэндэрынг і дэкадаванне відэа. Гэта паляпшае частату кадраў і водгук інтэрфейсу. Калі ўзнікаюць праблемы з адлюстраваннем або дадатак завісае, паспрабуйце выключыць гэтую функцыю для паляпшэння стабільнасці."
+	},
+	"autoHidden": {
+		"title": "Аўтаномны запуск разам з АС",
+		"description": "Дадатак аўтаматычна будзе запускацца ў схаваным рэжыме разам з аперацыйнай сістэмай."
+	},
+	"activity": {
+		"title": "Паказваць маю дзейнасць",
+		"description": "Дзяліцеся вашымі бягучымі дзеяннямі з сябрамі. Гэта дапаможа ім даведацца, што вы робіце, і палегчыць зносіны!"
+	},
+	"supportSettings": {
+		"title": "Падтрымка",
+		"support": "Падтрымка",
+		"uploadLog": "Загрузіць лог-справаздачу",
+		"acknowledgement": "Падзяка"
+	},
+	"whatsNew": {
+		"title": "Што новага",
+		"whatsNew": "Што новага"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Новая версія гатовая",
+		"updateExperience": "Патрэбна хуткае абнаўленне для працягу выкарыстання апошніх функцый сямейнага цэнтра.",
+		"updateNow": "Абнавіць зараз",
+		"versionInfo": "ВЕРСІЯ"
+	},
+	"language": {
+		"title": "Мова",
+		"description": "Абярыце мову.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"german": "Deutsch",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"polish": "Polski",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"ukrainian": "Українська",
+		"belarusian": "Беларуская"
+	},
+	"voice": {
+		"title": "Голас",
+		"description": "Наладзьце параметры голасу.",
+		"microphone": "Мікрафон",
+		"speaker": "Дынамік",
+		"microphoneVolume": "Гучнасць мікрафона",
+		"speakerVolume": "Гучнасць дынаміка",
+		"noiseSuppression": {
+			"title": "Прыглушэнне шуму",
+			"toggleAriaLabel": "Уключыць або выключыць прыглушэнне шуму"
+		},
+		"unnamedDevice": "Прылада без назвы",
+		"noDevices": "Прылады не знойдзены",
+		"micTest": {
+			"title": "Праверка мікрафона",
+			"description": "Праблемы з мікрафонам? Пачніце праверку і паспрабуйце гаварыць - мы прайграем ваш голас.",
+			"letsCheck": "Праверыць",
+			"stop": "Спыніць"
+		},
+		"errors": {
+			"permissionDenied": "Патрэбен доступ да мікрафона для праверкі.",
+			"micPermission": "Няма доступу да мікрафона."
+		},
+		"warnings": {
+			"outputNotSupported": "Браўзер не падтрымлівае выбар прылады прайгравання. Выбар дынаміка можа быць праігнараваны."
+		}
+	},
+	"logOut": "Выйсці",
+	"logOutPopup": {
+		"description": "Вы ўпэўнены, што хочаце выйсці?",
+		"noConfirm": "Не",
+		"yesConfirm": "Так"
+	},
+	"removeAccount": "Выдаліць акаўнт",
+	"channelSetting": {
+		"recentChannels": "Апошнія каналы",
+		"searchByChannelLabel": "Пошук па пазнацы канала"
+	},
+	"setting": "Налады"
+}

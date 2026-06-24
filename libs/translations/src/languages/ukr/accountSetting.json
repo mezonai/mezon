@@ -1,0 +1,144 @@
+{
+	"myAccount": "Мій акаунт",
+	"editUserProfile": "Редагувати профіль користувача",
+	"noDisplayName": "Ви ще не додали відображуване ім'я.",
+	"edit": "Редагувати",
+	"password": "Пароль",
+	"phoneNumber": "Номер телефону",
+	"username": "Ім'я користувача",
+	"displayName": "Відображуване ім'я",
+	"users": "Користувачі",
+	"accountManagement": "Управління акаунтом",
+	"blockedUsers": "Заблоковані користувачі",
+	"disableAccount": "Вимкнути акаунт",
+	"deleteAccount": "Видалити акаунт",
+	"accountInformation": "Інформація про акаунт",
+	"doNotHaveBlockedUser": "Немає заблокованих користувачів",
+	"setPassword": "Встановити пароль",
+	"changePassword": "Змінити пароль",
+	"setEmail": "Встановити email",
+	"changeEmail": "Змінити email",
+	"setPhoneNumber": "Встановити номер телефону",
+	"disableAccountAlert": {
+		"title": "Вимкнути акаунт",
+		"description": "Ви впевнені, що хочете вимкнути акаунт?",
+		"noConfirm": "Ні",
+		"yesConfirm": "Так"
+	},
+	"deleteAccountAlert": {
+		"title": "Видалити акаунт",
+		"description": "Ви впевнені, що хочете видалити акаунт?",
+		"noConfirm": "Ні",
+		"yesConfirm": "Так"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Потрібно прив'язати email",
+		"linkEmailRequiredDescription": "Вам потрібно прив'язати email перед встановленням пароля",
+		"goTo": "Перейти до",
+		"title": "Встановити пароль",
+		"email": "Email",
+		"password": "Пароль",
+		"currentPassword": "Поточний пароль",
+		"confirmPassword": "Підтвердити пароль",
+		"confirm": "Зберегти",
+		"changePassword": "Змінити пароль",
+		"description": "Ваш пароль має містити щонайменше 8 символів, включати принаймні одну велику літеру, одну малу літеру, одну цифру та один спеціальний символ (наприклад: !@#$%^&*).",
+		"error": {
+			"characters": "Пароль має містити щонайменше 8 символів",
+			"uppercase": "Пароль має містити щонайменше 1 велику літеру",
+			"lowercase": "Пароль має містити щонайменше 1 малу літеру",
+			"number": "Пароль має містити щонайменше 1 цифру",
+			"symbol": "Пароль має містити щонайменше 1 спеціальний символ",
+			"notEqual": "Підтвердження пароля не збігається",
+			"samePass": "Новий пароль не може збігатися зі старим",
+			"fillOldPass": "Будь ласка, введіть поточний пароль.",
+			"updateFail": "Помилка оновлення акаунту.",
+			"createFail": "Помилка встановлення пароля.",
+			"incorrectCurrent": "Поточний пароль неправильний. Спробуйте ще раз."
+		},
+		"toast": {
+			"success": "Пароль успішно оновлено",
+			"error": "Помилка оновлення пароля"
+		},
+		"placeholder": {
+			"currentPassword": "Введіть поточний пароль",
+			"password": "Введіть новий пароль",
+			"confirmPassword": "Підтвердьте новий пароль"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Встановити пароль",
+		"description": "Будь ласка, створіть новий пароль для вашого акаунту",
+		"emailPlaceholder": "email@example.com",
+		"loading": "Завантаження...",
+		"close": "Закрити"
+	},
+	"setPhoneModal": {
+		"title": "Встановити номер телефону",
+		"phoneNumber": "Номер телефону",
+		"description": "Ви отримаєте SMS з кодом підтвердження.",
+		"loading": "Завантаження...",
+		"close": "Закрити",
+		"sendOTP": "Надіслати OTP",
+		"countryCode": "Код країни",
+		"confirmOtp": "Підтвердити OTP",
+		"invalidPhone": "Недійсний номер телефону",
+		"updatePhoneSuccess": "Номер телефону успішно оновлено",
+		"updatePhoneFail": "Сталася помилка. Спробуйте пізніше",
+		"emptyOtp": "OTP код недійсний!",
+		"resendOtp": "Надіслати OTP повторно!",
+		"tooFast": "Занадто швидко. Зачекайте {{seconds}} секунд перед повторним надсиланням OTP.",
+		"alreadyLinked": "Цей номер вже прив'язаний до вашого акаунту",
+		"alreadyLinkedToAnother": "Цей номер вже прив'язаний до іншого акаунту",
+		"country": "Країна",
+		"otpSentMessage": "Перевірте OTP код, надісланий на номер телефону {{phone}}",
+		"backToPhoneInput": "Змінити номер телефону?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Акаунт успішно видалено",
+			"error": "Ви власник клану"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Номер телефону",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Новий номер телефону",
+			"nextButton": "Далі",
+			"removeButton": "Видалити номер телефону",
+			"failed": "Помилка оновлення номера телефону",
+			"invalidPhoneNumber": "Недійсний номер телефону"
+		},
+		"verifyPhoneNumber": {
+			"description": "Введіть 6-значний код, який ми надіслали",
+			"verifyButton": "Підтвердити",
+			"success": "Номер телефону успішно оновлено"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Скасувати",
+		"currentEmail": "Поточний email",
+		"description": "Будь ласка, введіть email для вашого акаунту",
+		"otpDescription": "OTP код надіслано на новий email",
+		"fillOTP": "Введіть OTP код",
+		"send": "Надіслати OTP",
+		"resendOtp": "Надіслати OTP повторно!",
+		"error": {
+			"notEqual": "Підтвердження пароля не збігається",
+			"required": "Email обов'язковий",
+			"invalid": "Введіть дійсну адресу email"
+		},
+		"updateEmail": {
+			"newEmail": "Новий email",
+			"nextButton": "Далі",
+			"failed": "Помилка оновлення email",
+			"invalidEmail": "Недійсний email",
+			"emailAlreadyLinked": "Цей email ви вже використовуєте"
+		},
+		"verifyEmail": {
+			"description": "Введіть 6-значний код, який ми надіслали",
+			"verifyButton": "Підтвердити",
+			"success": "Email успішно оновлено"
+		}
+	}
+}

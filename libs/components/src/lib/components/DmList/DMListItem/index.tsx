@@ -98,12 +98,12 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 		>
 			<DmItemProfile
 				avatar={isTypeDMGroup ? directMessage?.channel_avatar || '/assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
-				name={directMessage?.channel_label || ''}
+				name={directMessage?.usernames?.[0] || ''}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
 				highlight={isUnReadChannel || currentDmGroupId === id}
 				direct={directMessage}
-				t={t}
+				channel_label={directMessage?.channel_label || ''}
 			/>
 			{buzzStateDM?.isReset ? (
 				<BuzzBadge
@@ -136,7 +136,7 @@ const DmItemProfile = ({
 	isTypeDMGroup,
 	highlight,
 	direct,
-	t
+	channel_label
 }: {
 	highlight: boolean;
 	avatar: string;
@@ -144,7 +144,7 @@ const DmItemProfile = ({
 	number: number;
 	isTypeDMGroup: boolean;
 	direct: DirectEntity;
-	t: (key: string) => string;
+	channel_label: string;
 }) => {
 	const userStatus = useMemberStatus(direct?.user_ids?.[0] || '');
 	return (
@@ -163,7 +163,7 @@ const DmItemProfile = ({
 			{isTypeDMGroup ? (
 				<div className="flex flex-col justify-center ">
 					<span className="one-line text-start" data-e2e={generateE2eId(`chat.direct_message.chat_item.group_name`)}>
-						{name}
+						{channel_label}
 					</span>
 				</div>
 			) : (

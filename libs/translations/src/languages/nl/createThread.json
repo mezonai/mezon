@@ -1,0 +1,24 @@
+{
+	"threads": "Topics",
+	"emptyThread": {
+		"textNoThread": "Geen topics",
+		"textNotify": "Focus op het gesprek met een topic - een tijdelijk tekstkanaal.",
+		"createThreads": "Topic aanmaken"
+	},
+	"otherThreads": "OUDERE TOPICS",
+	"errorMessage": "Voer een geldige themanaam in (maximaal 64 tekens, alleen letters, cijfers, _ of -).",
+	"threadName": "Theman",
+	"privateThread": "Privé topic",
+	"onlyPeopleInviteThread": "Alleen degenen die je uitnodigt en beheerders kunnen dit topic zien",
+	"newThread": "Nieuw topic",
+	"joinedThreads": "deelnemende topics",
+	"joinedThread": "deelnemend topic",
+	"otherActiveThreads": "andere actieve topics",
+	"olderThreads": "oudere topics",
+	"searchThreads": "topic zoeken",
+	"searchThread": "topic zoeken",
+	"threadFailed": {
+		"title": "Topic aanmaken mislukt",
+		"content": "Topic niet gevonden of je hebt geen rechten om bij te werken"
+	}
+}

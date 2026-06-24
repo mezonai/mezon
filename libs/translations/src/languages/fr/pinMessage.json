@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "Aucun message épinglé dans ce canal pour le moment... mais ce sera bientôt le cas.",
+	"PROTIP": "ASTUCE :",
+	"modal": {
+		"title": "Épinglez. Épinglez pour de bon.",
+		"description": "Hé, je voulais juste confirmer une dernière fois que vous voulez vraiment épingler ce message dans #{{channelLabel}} pour le conserver à jamais ?",
+		"descriptionDM": "Hé, je voulais juste confirmer une dernière fois que vous voulez vraiment épingler ce message dans la conversation actuelle pour le conserver à jamais ?",
+		"cancel": "Annuler",
+		"confirm": "Épinglez pour de bon"
+	}
+}
