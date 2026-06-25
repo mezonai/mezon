@@ -39,19 +39,6 @@ export const ColorRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 					map.set(user.id, { color: roleColor, icon: roleIcon, max_level_permission: roleLevel });
 					return;
 				}
-
-				if (roleLevel > existing.max_level_permission) {
-					map.set(user.id, {
-						color: roleColor,
-						icon: roleIcon || existing.icon,
-						max_level_permission: roleLevel
-					});
-					return;
-				}
-
-				if (!existing.icon && roleIcon) {
-					map.set(user.id, { ...existing, icon: roleIcon });
-				}
 			});
 		});
 
