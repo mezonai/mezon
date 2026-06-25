@@ -167,57 +167,37 @@ const DmItemProfile = ({
 					</span>
 				</div>
 			) : (
-				<DmInvoiceProfile
-					name={name}
-					channel_label={channel_label}
-					directId={direct?.id}
-					userId={direct?.user_ids?.[0] || ''}
-					status={userStatus.status}
-				/>
+				<DmInvoiceProfile name={channel_label} directId={direct?.id} userId={direct?.user_ids?.[0] || ''} status={userStatus.status} />
 			)}
 		</div>
 	);
 };
 
-const DmInvoiceProfile = memo(
-	({
-		userId,
-		directId,
-		status,
-		name,
-		channel_label
-	}: {
-		userId: string;
-		directId: string;
-		status: EUserStatus;
-		name: string;
-		channel_label: string;
-	}) => {
-		const { t } = useTranslation('memberPage');
-		const checkUserInvoice = useSelector((state) => selectStatusInVoice(state, userId));
-		return (
-			<>
-				<div
-					className={`rounded-full absolute left-5 -bottom-[3px] p-[3px] inline-flex items-center justify-center gap-1 text-sm text-theme-primary`}
-					data-e2e={generateE2eId('icon.profile_status')}
-				>
-					<UserStatusIconClan channelId={directId} userId={userId} status={status} />
-				</div>
+const DmInvoiceProfile = memo(({ userId, directId, status, name }: { userId: string; directId: string; status: EUserStatus; name: string }) => {
+	const { t } = useTranslation('memberPage');
+	const checkUserInvoice = useSelector((state) => selectStatusInVoice(state, userId));
+	return (
+		<>
+			<div
+				className={`rounded-full absolute left-5 -bottom-[3px] p-[3px] inline-flex items-center justify-center gap-1 text-sm text-theme-primary`}
+				data-e2e={generateE2eId('icon.profile_status')}
+			>
+				<UserStatusIconClan channelId={directId} userId={userId} status={status} />
+			</div>
 
-				<div className="flex flex-col justify-center">
-					<span className="one-line text-start leading-4" data-e2e={generateE2eId(`chat.direct_message.chat_item.username`)}>
-						{channel_label}
-					</span>
-					{!!checkUserInvoice && (
-						<p
-							className="opacity-60 text-theme-primary text-xs text-start flex gap-[2px] items-center"
-							data-e2e={generateE2eId(`chat.direct_message.chat_item.in_voice_status`)}
-						>
-							<Icons.Speaker className="text-green-500 !w-[10px] !h-[10px]" /> {t('inVoice')}
-						</p>
-					)}
-				</div>
-			</>
-		);
-	}
-);
+			<div className="flex flex-col justify-center">
+				<span className="one-line text-start leading-4" data-e2e={generateE2eId(`chat.direct_message.chat_item.username`)}>
+					{name}
+				</span>
+				{!!checkUserInvoice && (
+					<p
+						className="opacity-60 text-theme-primary text-xs text-start flex gap-[2px] items-center"
+						data-e2e={generateE2eId(`chat.direct_message.chat_item.in_voice_status`)}
+					>
+						<Icons.Speaker className="text-green-500 !w-[10px] !h-[10px]" /> {t('inVoice')}
+					</p>
+				)}
+			</div>
+		</>
+	);
+});
