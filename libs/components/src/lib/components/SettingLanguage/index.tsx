@@ -2,7 +2,6 @@ import { appActions, selectCurrentLanguage, useAppDispatch } from '@mezon/store'
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-
 interface ISettingLanguageProps {
 	menuIsOpen: boolean;
 }
@@ -33,6 +32,12 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				flag: <RussiaFlag />
 			},
 			{
+				title: `${t('setting:language.ukrainian')}`,
+				value: 'ukr',
+				contributedBy: 'robits',
+				flag: <UkraineFlag />
+			},
+			{
 				title: `${t('setting:language.spanish')}`,
 				value: 'es',
 				contributedBy: 'robits',
@@ -41,7 +46,7 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 			{
 				title: `${t('setting:language.tatar')}`,
 				value: 'tt',
-				contributedBy: 'reburst',
+				contributedBy: 'deferensed',
 				flag: <TatarFlag />
 			},
 			{
@@ -69,6 +74,12 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				flag: <JapanFlag />
 			},
 			{
+				title: `${t('setting:language.polish')}`,
+				value: 'pl',
+				contributedBy: 'robits',
+				flag: <PolandFlag />
+			},
+			{
 				title: `${t('setting:language.korean')}`,
 				value: 'kr',
 				contributedBy: 'robits',
@@ -79,6 +90,24 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				value: 'swe',
 				contributedBy: 'robits',
 				flag: <SwedenFlag />
+			},
+			{
+				title: `${t('setting:language.belarusian')}`,
+				value: 'blr',
+				contributedBy: 'deferensed',
+				flag: <BelarusFlag />
+			},
+			{
+				title: `${t('setting:language.french')}`,
+				value: 'fr',
+				contributedBy: 'robits',
+				flag: <FranceFlag />
+			},
+			{
+				title: `${t('setting:language.dutch')}`,
+				value: 'nl',
+				contributedBy: 'robits',
+				flag: <NetherlandsFlag />
 			}
 		];
 	}, [t]);
@@ -241,6 +270,24 @@ const JapanFlag = () => (
 	</svg>
 );
 
+const UkraineFlag = () => (
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+		<defs>
+			<clipPath id="ukr-clip">
+				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
+			</clipPath>
+		</defs>
+		<g clipPath="url(#ukr-clip)">
+			<rect x="1" y="4" width="30" height="12" fill="#005BBB" />
+			<rect x="1" y="16" width="30" height="12" fill="#FFD500" />
+		</g>
+		<path
+			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+			opacity=".15"
+		></path>
+	</svg>
+);
+
 const RussiaFlag = () => (
 	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
 		<defs>
@@ -334,6 +381,25 @@ const PortugalFlag = () => (
 		></path>
 	</svg>
 );
+
+const PolandFlag = () => (
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+		<defs>
+			<clipPath id="pl-clip">
+				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
+			</clipPath>
+		</defs>
+		<g clipPath="url(#pl-clip)">
+			<rect x="1" y="4" width="30" height="12" fill="#fff" />
+			<rect x="1" y="16" width="30" height="12" fill="#DC143C" />
+		</g>
+		<path
+			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+			opacity=".15"
+		></path>
+	</svg>
+);
+
 const GermanyFlag = () => (
 	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
 		<defs>
@@ -402,6 +468,63 @@ const SwedenFlag = () => (
 			<rect x="1" y="4" width="30" height="24" fill="#006aa7" />
 			<rect x="8" y="4" width="4" height="24" fill="#fecc00" />
 			<rect x="1" y="14" width="30" height="4" fill="#fecc00" />
+		</g>
+		<path
+			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+			opacity=".15"
+		></path>
+	</svg>
+);
+
+const BelarusFlag = () => (
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+		<defs>
+			<clipPath id="blr-clip">
+				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
+			</clipPath>
+		</defs>
+		<g clipPath="url(#blr-clip)">
+			<rect x="1" y="4" width="30" height="8" fill="#fff" />
+			<rect x="1" y="12" width="30" height="8" fill="#c8313e" />
+			<rect x="1" y="20" width="30" height="8" fill="#fff" />
+		</g>
+		<path
+			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+			opacity=".15"
+		></path>
+	</svg>
+);
+
+const FranceFlag = () => (
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+		<defs>
+			<clipPath id="fr-clip">
+				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
+			</clipPath>
+		</defs>
+		<g clipPath="url(#fr-clip)">
+			<rect x="1" y="4" width="10" height="24" fill="#002395" />
+			<rect x="11" y="4" width="10" height="24" fill="#fff" />
+			<rect x="21" y="4" width="10" height="24" fill="#ED2939" />
+		</g>
+		<path
+			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
+			opacity=".15"
+		></path>
+	</svg>
+);
+
+const NetherlandsFlag = () => (
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+		<defs>
+			<clipPath id="nl-clip">
+				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
+			</clipPath>
+		</defs>
+		<g clipPath="url(#nl-clip)">
+			<rect x="1" y="4" width="30" height="8" fill="#AE1C28" />
+			<rect x="1" y="12" width="30" height="8" fill="#fff" />
+			<rect x="1" y="20" width="30" height="8" fill="#21468B" />
 		</g>
 		<path
 			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"

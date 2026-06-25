@@ -1,0 +1,22 @@
+{
+	"editStatus": "Статус",
+	"save": "Захаваць",
+	"statusDuration": {
+		"label": "Працягласць статусу",
+		"today": "Сёння",
+		"fourHours": "4 гадзіны",
+		"oneHour": "1 гадзіна",
+		"thirtyMinutes": "30 хвілін",
+		"dontClear": "Не ачышчаць"
+	},
+	"placeholder": "Што вы робіце?",
+	"userStatus": {
+		"online": "Анлайн",
+		"idle": "Неактыўны",
+		"doNotDisturb": "Не турбаваць",
+		"invisible": "Афлайн (Непрыкметны)"
+	},
+	"setCustomStatus": "Устанавіць уласны статус",
+	"onlineStatus": "Статус анлайн",
+	"changeOnlineStatus": "Змяніць статус анлайн"
+}

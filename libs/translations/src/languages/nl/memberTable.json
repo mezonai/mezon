@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "Naam",
+		"memberSince": "Lid sinds",
+		"joinedMezon": "Mezon bijgetreden",
+		"roles": "Rollen",
+		"signals": "Signalen"
+	},
+	"topBar": {
+		"recentMembers": "Recente leden",
+		"searchPlaceholder": "Zoeken",
+		"sort": "Sorteren"
+	},
+	"error": "Fout",
+	"profile": "Profiel",
+	"message": "Bericht",
+	"timeAgo": "{{time}} geleden",
+	"transferOwnership": "Eigendom overdragen",
+	"removeMember": "Lid verwijderen"
+}

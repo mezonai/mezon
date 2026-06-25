@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Розпочати подію",
+      "markAsNotInterested": "Позначити як незацікавленого",
+      "markAsInterested": "Позначити як зацікавленого",
+      "editEvent": "Редагувати подію",
+      "cancelEvent": "Скасувати подію",
+      "reportEvent": "Скаржитися на подію",
+      "copyEventLink": "Копіювати посилання на подію",
+      "copyEventID": "Копіювати ID події"
+    },
+    "confirm": {
+        "title": "Скасувати подію",
+        "content": "Ви впевнені, що хочете скасувати цю подію?"
+    },
+    "dashboard": {
+        "title": "Події",
+        "event_one": "Подія",
+        "noEvent": "Немає подій",
+        "noEventDescription": "Запрошуйте інших учасників внести ідеї для майбутніх подій.",
+        "createButton": "Створити",
+        "noti": "Ця подія відкрита для всіх в клані.",
+        "endEvent": "Завершити подію",
+        "UnInterested": "Незацікавлений",
+        "Interested": "Зацікавлений"
+    },
+    "item": {
+      "interested": "Зацікавлений",
+      "uninterested": "Незацікавлений"
+    },
+    "detail": {
+        "eventInfo": "Інформація про подію",
+        "interested": "Зацікавлений",
+        "personInterested": "{{count}} людей зацікавлені",
+        "onePersonInterested": "1 особа зацікавлена",
+        "noOneInterested": "Немає зацікавлених у події.",
+        "createdBy": "Створено "
+    },
+    "share": {
+        "title": "Поділитися подією з друзями",
+        "search": "Пошук",
+        "share": "Поділитися",
+        "copied": "Посилання скопійовано!"
+    },
+     "countdown": {
+        "joinIn_other": "почнеться за {{count}} хвилин",
+        "joinNow": "Подія триває!",
+        "joinIn_one": "почнеться за 1 хвилину"
+    }
+  }

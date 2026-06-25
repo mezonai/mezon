@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "Lid verstuur bericht in kanaal",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "Lid bezoekt kanaal",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "Lees deze taak",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "Wat moeten nieuwe leden doen?",
+    "placeholder": "Bijv: Upload je huisdierfoto",
+    "channelTitle": "Waar moeten ze dit doen?",
+    "channelNote": "Kanaal moet zichtbaar zijn voor @everyone (openbaar kanaal)",
+    "completeWhen": "Deze taak is voltooid wanneer:",
+    "required": "Dit veld is verplicht.",
+    "minCharacters": "Actie moet minimaal 7 tekens bevatten"
+  },
+  "buttons": {
+    "remove": "Verwijderen",
+    "save": "Opslaan",
+    "add": "Toevoegen"
+  }
+}

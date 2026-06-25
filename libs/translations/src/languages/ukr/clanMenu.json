@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Позначити як прочитане",
+			"browseChannels": "Переглянути канали"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Створити канал",
+			"createCategory": "Створити категорію",
+			"createEvent": "Створити подію"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Редагувати профіль клану",
+			"showAllChannels": "Показати всі канали",
+			"hideMutedChannels": "Сховати всі вимкнені канали",
+			"allowDirectMessage": "Дозволити прямі повідомлення",
+			"allowMessageRequest": "Дозволити запити повідомлень",
+			"reportServer": "Скаржитися на клан",
+			"leaveServer": "Покинути клан",
+			"deleteClan": "Видалити клан",
+			"auditLog": "Журнал аудитів"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Показати порожні категорії",
+			"show": "Показати",
+			"hide": "Сховати"
+		},
+		"devMode": {
+			"title": "Режим розробника",
+			"copyServerID": "Копіювати ID клану",
+			"serverIDCopied": "ID клану скопійовано"
+		}
+	},
+	"actions": {
+		"boot": "Boost",
+		"invite": "Запрошення",
+		"notifications": "Сповіщення",
+		"settings": "Налаштування"
+	},
+	"info": {
+		"online": "Онлайн",
+		"members": "Учасники"
+	},
+	"common": {
+		"search": "Пошук",
+		"community": "Спільнота",
+		"searchMembers": "Пошук учасників"
+	},
+	"modalPanel": {
+		"createCategory": "Створити категорію",
+		"markAsRead": "Позначити як прочитане",
+		"processing": "Обробка...",
+		"invitePeople": "Запросити людей",
+		"clanSettings": "Налаштування клану",
+		"notificationSettings": "Налаштування сповіщень",
+		"showEmptyCategories": "Показати порожні категорії",
+		"leaveClan": "Покинути клан"
+	}
+}

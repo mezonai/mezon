@@ -1,0 +1,46 @@
+{
+	"title": "Inviter des amis",
+	"iconTitle": {
+		"shareInvite": "Partager",
+		"copyLink": "Copier",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR Code"
+	},
+	"copyLink": "Lien copié !",
+	"unknownChannel": "CANAL INCONN",
+	"yourLinkInvite": "Le lien expirera dans",
+	"inviteFriendToChannel": "Inviter des amis dans le canal",
+	"inviteFriendToClan": "Inviter des amis dans le clan",
+	"editInviteLink": "Modifier le lien d'invitation",
+	"inviteChannel": "INVITER DANS LE CANAL",
+	"advancedSettings": "PARAMÈTRES AVANCÉS",
+	"expireAfter": "EXPIRERA APRÈS",
+	"maxUsers": "NOMBRE MAXIMAL D'UTILISATEURS",
+	"temporaryMembership": "Membre temporaire",
+	"memberAutoKick": "Les membres seront automatiquement expulsés lorsqu'ils se déconnecteront sauf s'ils sont assignés à un rôle.",
+	"btnInvite": "Inviter",
+	"btnSent": "Invité",
+	"qrModal": {
+		"title": "QR Code",
+		"scanToJoin": "Scannez ce code pour rejoindre {{clanName}} !",
+		"scanToJoinDefault": "Scannez ce code pour rejoindre le clan !",
+		"generating": "Génération du QR Code...",
+		"errorGenerating": "Erreur lors de la génération du QR Code",
+		"downloadSuccess": "QR Code enregistré dans la bibliothèque",
+		"downloadError": "Erreur lors du téléchargement du QR Code",
+		"shareError": "Erreur lors du partage du QR Code",
+		"clanDefaultName": "Clan"
+	},
+	"share": {
+		"title": "Partager",
+		"message": "Rejoignez Mezon avec moi :",
+		"error": "Erreur lors du partage du lien d'invitation",
+		"errorCreateLink": "Erreur lors de la création du lien d'invitation"
+	},
+	"noFriendsToInvite": "Aucun ami à inviter",
+	"addFriendsToInvite": "Ajoutez des amis à votre liste d'amis pour les inviter dans ce clan.",
+	"addSomeFriends": "Ajoutez quelques amis",
+	"loadingInviteLink": "Création du lien d'invitation..."
+}

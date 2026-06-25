@@ -1,0 +1,63 @@
+{
+	"directMessages": "ПРАМЫЯ ПАВЕДАМЛЕННІ",
+	"createDM": "Стварыць паведамленне",
+	"friends": "Сябры",
+	"yourMessages": "Вашы паведамленні",
+	"selectConversation": "Абярыце размову для пачатку зносін",
+	"createMessageGroup": {
+		"selectFriends": "Абярыце сяброў",
+		"canAddMoreFriends": "Вы можаце дадаць яшчэ {{count}} сяброў.",
+		"searchPlaceholder": "Увядзіце імёны сяброў",
+		"addToGroupChat": "Дадаць у групавы чат",
+		"createDMOrGroupChat": "Стварыць паведамленне або групавы чат",
+		"createDM": "Стварыць паведамленне",
+		"createGroupChat": "Стварыць групавы чат",
+		"noFriendsFound": "Сябры, якіх яшчэ няма ў гэтай размове, не знойдзены.",
+		"creating": "Стварэнне..."
+	},
+	"editGroup": {
+		"title": "Рэдагаваць групу",
+		"uploadImageText": "Націсніце для загрузкі выявы",
+		"removeAvatar": "Выдаліць аватар",
+		"groupNameLabel": "Назва групы",
+		"groupNamePlaceholder": "Увядзіце назву групы",
+		"validationError": "Увядзіце сапраўдную назву групы (толькі словы, лічбы, _ або -).",
+		"cancel": "Скасаваць",
+		"save": "Захаваць",
+		"saving": "Захаванне..."
+	},
+	"contextMenu": {
+		"editGroup": "Рэдагаваць групу",
+		"addFriend": "Дадаць сябра",
+		"leaveGroup": "Пакінуць групу",
+		"closeDM": "Зачыніць паведамленне",
+		"markAsRead": "Пазначыць як прачытанае",
+		"invitePeople": "Запрасіць іншых",
+		"hideConversation": "Схаваць размову",
+		"profile": "Профіль",
+		"message": "Паведамленне",
+		"removeFriend": "Выдаліць сябра",
+		"block": "Заблакаваць",
+		"unblock": "Разблакаваць",
+		"removeFromGroup": "Выдаліць з групы",
+		"shareContact": "Падзяліцца кантактам",
+		"mute": "Выключыць апавяшчэнні",
+		"unmute": "Уключыць апавяшчэнні",
+		"for15Minutes": "На 15 хвілін",
+		"for1Hour": "На 1 гадзіну",
+		"for3Hours": "На 3 гадзіны",
+		"for8Hours": "На 8 гадзін",
+		"for24Hours": "На 24 гадзіны",
+		"untilTurnBackOn": "Пакуль не выключу",
+		"mutedUntil": "Апавяшчэнні выключаны да {{time}}",
+		"pinConversation": "Замацаваць размову",
+		"unpinConversation": "Адмацаваць размову",
+		"pinLimitExceeded": "Вы можаце замацаваць максімум 10 размоў. Адмацуйце іншую размову, каб замацаваць гэтую."
+	},
+	"pinned": "ЗАМАЦАВАНЫЯ",
+	"remove": {
+		"content": "Размова ў гэтым канале больш недаступная!",
+		"title": "Размова недаступная",
+		"button": "Пацвердзіць"
+	}
+}

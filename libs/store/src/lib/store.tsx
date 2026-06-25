@@ -1,9 +1,9 @@
-import type { Middleware, ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
+import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { accountReducer } from './account/account.slice';
+import { ACCOUNT_FEATURE_KEY, accountReducer } from './account/account.slice';
 import { appReducer } from './app/app.slice';
 import { authReducer, setupSessionSyncListener } from './auth/auth.slice';
 import { categoriesReducer } from './categories/categories.slice';
@@ -308,10 +308,18 @@ const persistedFcmReducer = persistReducer(
 	fcmReducer
 );
 
+const persistedAccountReducer = persistReducer(
+	{
+		key: ACCOUNT_FEATURE_KEY,
+		storage
+	},
+	accountReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
-	account: accountReducer,
+	account: persistedAccountReducer,
 	auth: persistedReducer,
 	attachments: attachmentReducer,
 	gallery: galleryReducer,
@@ -410,24 +418,6 @@ export type RootState = ReturnType<typeof storeInstance.getState>;
 
 export type PreloadedRootState = RootState | undefined;
 
-const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
-	// Check if the action is of type 'persist/REHYDRATE' and the key is 'messages'
-	if (action.type === 'persist/REHYDRATE' && action.key === 'messages') {
-		const { channelIdLastFetch, channelMessages } = action.payload || {};
-
-		if (channelIdLastFetch && channelMessages?.[channelIdLastFetch]) {
-			// Limit the channelMessages to only include messages for the last fetched channelId
-			action.payload = {
-				...action.payload,
-				channelMessages: {
-					[channelIdLastFetch]: channelMessages[channelIdLastFetch]
-				}
-			};
-		}
-	}
-	// Pass the action to the next middleware or reducer
-	return next(action);
-};
 const isDev = process.env.NX_ENV === 'development';
 
 const thunkNameLogger = () => (next: any) => (action: any) => {

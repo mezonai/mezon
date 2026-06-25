@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Огляд активності",
+		"timePeriod": "Період часу",
+		"totalActiveUsers": "Загальна кількість активних користувачів",
+		"totalActiveUsersTooltip": "Унікальних користувачів, які були активні хоча б один раз",
+		"totalActiveChannels": "Загальна кількість активних каналів",
+		"totalActiveChannelsTooltip": "Унікальних каналів, які були активні хоча б один раз",
+		"totalMessages": "Загальна кількість повідомлень",
+		"totalMessagesTooltip": "Загальна кількість повідомлень, надісланих за обраний період"
+	},
+	"pagination": {
+		"showing": "Показано",
+		"of": "з",
+		"clans": "кланів",
+		"previous": "Попередній",
+		"next": "Наступний"
+	},
+	"chart": {
+		"loadingChartData": "Завантаження даних графіка...",
+		"metricsAvailableForOwnersOnly": "Метрики доступні лише для власників кланів."
+	},
+	"table": {
+		"detailedActivityData": "Детальні дані активності",
+		"channelsActivityData": "Дані активності каналів",
+		"userActivityData": "Дані активності користувачів",
+		"exportCSV": "Експорт CSV",
+		"exporting": "Експорт...",
+		"includedInExport": "Цей стовпець буде включено в експорт CSV",
+		"notIncludedInExport": "Цей стовпець не буде включено в експорт CSV",
+		"clanName": "Назва клану",
+		"channelName": "Назва каналу",
+		"userName": "Ім'я користувача",
+		"activeUsers": "Активні користувачі",
+		"activeChannels": "Активні канали",
+		"messages": "Повідомлення",
+		"noOwnedClans": "У вас немає кланів для створення аналітики.",
+		"noActiveChannels": "Зараз немає активних каналів у цьому клані.",
+		"noActiveUsers": "Зараз немає активних користувачів у цьому каналі.",
+		"selectColumnTooltip": "Оберіть/зніміть для експорту CSV по цьому стовпцю",
+		"selectAtLeastOneColumn": "Потрібно обрати щонайменше 1 стовпець для експорту csv"
+	},
+	"page": {
+		"backToOverview": "Повернутися до огляду використання клану",
+		"clanUsageStatisticsReport": "Звіт статистики використання клану",
+		"dashboardReport": "Панель керування",
+		"report": "Звіт"
+	},
+	"state": {
+		"loadingData": "Завантаження даних...",
+		"noDataFound": "Даних не знайдено",
+		"noDataDescription": "Немає даних використання за обраний період."
+	},
+	"reportControls": {
+		"timePeriod": "Період часу",
+		"rangeType": "Тип діапазону",
+		"startDate": "Дата початку",
+		"endDate": "Дата завершення",
+		"last7Days": "Останні 7 днів",
+		"last30Days": "Останні 30 днів",
+		"last90Days": "Останні 90 днів",
+		"customDateRange": "Користувацький діапазон дати",
+		"daily": "Щодня",
+		"weekly": "Щотижня",
+		"monthly": "Щомісяця",
+		"runReport": "Запустити звіт",
+		"reset": "Скинути"
+	},
+	"sortIcon": {
+		"tooltip": "Сортувати за зростанням/спаданням по цьому стовпцю",
+		"sortedAsc": "Сортовано за зростанням",
+		"sortedDesc": "Сортовано за спаданням"
+	}
+}

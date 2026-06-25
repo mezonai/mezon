@@ -1,5 +1,5 @@
-import { MezonContextValue } from '@mezon/transport';
-import { GetThunkAPI } from '@reduxjs/toolkit';
+import type { MezonAdminContextValue, MezonContextValue } from '@mezon/transport';
+import type { GetThunkAPI } from '@reduxjs/toolkit';
 
 export type AsyncThunkConfigWithMezon = {
 	extra: {
@@ -8,3 +8,11 @@ export type AsyncThunkConfigWithMezon = {
 };
 
 export type GetThunkAPIWithMezon = GetThunkAPI<AsyncThunkConfigWithMezon>;
+
+export type AsyncThunkConfigWithAdmin = {
+	extra: {
+		mezon: MezonAdminContextValue;
+	};
+};
+
+export type GetThunkAPIWithAdmin = GetThunkAPI<AsyncThunkConfigWithAdmin>;

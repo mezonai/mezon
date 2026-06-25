@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Пачаць падзею",
+      "markAsNotInterested": "Пазначыць як незацікаўленага",
+      "markAsInterested": "Пазначыць як зацікаўленага",
+      "editEvent": "Рэдагаваць падзею",
+      "cancelEvent": "Скасаваць падзею",
+      "reportEvent": "Скардзіцца на падзею",
+      "copyEventLink": "Скапіяваць спасылку на падзею",
+      "copyEventID": "Скапіяваць ID падзеі"
+    },
+    "confirm": {
+        "title": "Скасаваць падзею",
+        "content": "Вы ўпэўнены, што хочаце скасаваць гэтую падзею?"
+    },
+    "dashboard": {
+        "title": "Падзеі",
+        "event_one": "Падзея",
+        "noEvent": "Няма падзей",
+        "noEventDescription": "Запрашайце іншых удзельнікаў унесці ідэі для будучых падзей.",
+        "createButton": "Стварыць",
+        "noti": "Гэтая падзея адкрыта для ўсіх у клане.",
+        "endEvent": "Завяршыць падзею",
+        "UnInterested": "Незацікаўлены",
+        "Interested": "Зацікаўлены"
+    },
+    "item": {
+      "interested": "Зацікаўлены",
+      "uninterested": "Незацікаўлены"
+    },
+    "detail": {
+        "eventInfo": "Інфармацыя пра падзею",
+        "interested": "Зацікаўлены",
+        "personInterested": "{{count}} людзей зацікаўлены",
+        "onePersonInterested": "1 асоба зацікаўлена",
+        "noOneInterested": "Няма зацікаўленых у падзеі.",
+        "createdBy": "Створана "
+    },
+    "share": {
+        "title": "Падзяліцца падзеяй з сябрамі",
+        "search": "Пошук",
+        "share": "Падзяліцца",
+        "copied": "Спасылка скапіявана!"
+    },
+     "countdown": {
+        "joinIn_other": "пачнецца праз {{count}} хвілін",
+        "joinNow": "Падзея працягваецца!",
+        "joinIn_one": "пачнецца праз 1 хвіліну"
+    }
+  }

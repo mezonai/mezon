@@ -1,0 +1,9 @@
+{
+	"show": "Toon",
+	"membersOf": "Totaal {{count}} leden",
+	"addedBy": "Toegevoegd door {{name}}",
+	"you": "jij",
+	"inVoice": "In stemkanaal",
+	"onlineCount": "Online - {{count}}",
+	"offlineCount": "Offline - {{count}}"
+}

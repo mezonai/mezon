@@ -482,8 +482,6 @@ export const updateUser = createAsyncThunk(
 					setUserAvatarOverride(currentUser.user.id, avatar_url);
 					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
 				}
-
-				thunkAPI.dispatch(messagesActions.invalidateAllCache());
 			}
 			return response as true;
 		} catch (error) {

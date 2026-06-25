@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Створити"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Назва каналу",
+			"placeholder": "новий-канал",
+			"errorMessage": "Введіть назву каналу (максимум 64 символи, лише слова, цифри, _ або -).",
+			"duplicateChannelName": "Назва каналу вже існує в клані. Введіть іншу назву."
+		},
+		"channelPrivate": {
+			"title": "Приватний канал",
+			"descriptionText": "Створюючи приватний канал, лише обрані учасники та ролі зможуть бачити цей канал.",
+			"descriptionVoice": "Створюючи приватний голосовий канал, лише обрані учасники та ролі зможуть бачити або підключатися до цього каналу."
+		},
+		"channelType": {
+			"title": "Тип каналу",
+			"text": {
+				"title": "Текстовий",
+				"description": "Надсилайте зображення, GIF, значки, думки та графічні жарти"
+			},
+			"voice": {
+				"title": "Голосовий",
+				"description": "Відвідуйте разом голосом, відео та діліться екраном"
+			},
+			"stream": {
+				"title": "Трансляція",
+				"description": "Діліться улюбленою діяльністю"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Тип голосового каналу",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Зображення та видатне",
+			"eventsTitle": "Події",
+			"familyJourney": "Події",
+			"cherishMoment": "Відстежуйте важливі події.",
+			"since": "З",
+			"viewAlbum": "Переглянути альбом",
+			"emptyTitle": "Ваша подорож ще не почалася.",
+			"emptyDescription": "Створіть свою першу подію, щоб почати зберігати спогади.",
+			"createFirstMilestone": "Створити першу подію",
+			"selectYear": "Оберіть рік",
+			"special": "Особливий"
+		},
+		"familyEvents": {
+			"title": "Події",
+			"eventsIn": "Події року",
+			"noEvents": "Немає подій у році",
+			"addToGallery": "Додати до галереї",
+			"inDays": "За {{count}} днів"
+		},
+		"createMilestone": {
+			"headerTitle": "Нова подія",
+			"cancel": "Скасувати",
+			"cancelAlertTitle": "Скасувати",
+			"cancelAlertMessage": "Ви впевнені, що хочете скасувати цю подію?",
+			"continueEditing": "Продовжити редагування",
+			"discard": "Скасувати",
+			"eventTitleLabel": "Назва події",
+			"eventTitlePlaceholder": "Наприклад: Збори, Запуск проєкту",
+			"dateLabel": "Дата",
+			"datePlaceholder": "Оберіть дату",
+			"storyLabel": "Опис",
+			"storyPlaceholder": "Введіть опис події...",
+			"memoriesLabel": "Зображення/Відео",
+			"uploadTitle": "Завантажити зображення або відео",
+			"uploadSubtitle": "Додайте зображення або відео до події",
+			"addMedia": "Додати зображення",
+			"tagMembersLabel": "Позначити учасників",
+			"saveButton": "Зберегти подію",
+			"requiredTitle": "Обов'язкове",
+			"requiredMessage": "Будь ласка, введіть назву події",
+			"successTitle": "Успіх",
+			"successMessage": "Подію успішно створено!",
+			"errorTitle": "Помилка",
+			"errorMessage": "Не вдалося обрати зображення",
+			"required": "Обов'язкове",
+			"optional": "Необов'язкове",
+			"titleHint": "Дайте короткий описовий заголовок події"
+		},
+		"eventDetail": {
+			"defaultTitle": "Деталі події",
+			"featured": "ВИДАТНЕ",
+			"calendar": "Календар",
+			"descriptionPlaceholder": "Додайте опис до цієї події...",
+			"addDescription": "Додати опис",
+			"cancel": "Скасувати",
+			"save": "Зберегти"
+		},
+		"albumDetail": {
+			"eventDetails": "Деталі події",
+			"date": "Дата",
+			"editEvent": "Редагувати подію",
+			"titleLabel": "Заголовок",
+			"titlePlaceholder": "Заголовок події",
+			"descriptionLabel": "Опис",
+			"descriptionPlaceholder": "Опис події",
+			"cancel": "Скасувати",
+			"save": "Зберегти",
+			"errorTitle": "Помилка",
+			"titleRequired": "Заголовок не може бути порожнім",
+			"updateFailed": "Не вдалося оновити подію",
+			"sessionNotAvailable": "Сесія недоступна",
+			"uploadFailed": "Не вдалося завантажити зображення"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Тип голосового каналу",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Зображення та видатне",
+		"familyJourney": "Події",
+		"cherishMoment": "Відстежуйте важливі події.",
+		"since": "З",
+		"viewAlbum": "Переглянути альбом",
+		"emptyTitle": "Ваша подорож ще не почалася.",
+		"emptyDescription": "Створіть свою першу подію, щоб почати зберігати спогади.",
+		"createFirstMilestone": "Створити першу подію",
+		"selectYear": "Оберіть рік",
+		"special": "Особливий"
+	},
+	"familyEvents": {
+		"title": "Події",
+		"eventsIn": "Події року",
+		"noEvents": "Немає подій у році",
+		"addToGallery": "Додати до галереї",
+		"inDays": "За {{count}} днів"
+	},
+	"createMilestone": {
+		"headerTitle": "Нова подія",
+		"cancel": "Скасувати",
+		"cancelAlertTitle": "Скасувати",
+		"cancelAlertMessage": "Ви впевнені, що хочете скасувати цю подію?",
+		"continueEditing": "Продовжити редагування",
+		"discard": "Скасувати",
+		"eventTitleLabel": "Назва події",
+		"eventTitlePlaceholder": "Наприклад: Збори, Запуск проєкту",
+		"dateLabel": "Дата",
+		"datePlaceholder": "Оберіть дату",
+		"storyLabel": "Опис",
+		"storyPlaceholder": "Введіть опис події...",
+		"memoriesLabel": "Зображення/Відео",
+		"uploadTitle": "Завантажити зображення або відео",
+		"uploadSubtitle": "Додайте зображення або відео до події",
+		"addMedia": "Додати зображення",
+		"tagMembersLabel": "Позначити учасників",
+		"saveButton": "Зберегти подію",
+		"requiredTitle": "Обов'язкове",
+		"requiredMessage": "Будь ласка, введіть назву події",
+		"successTitle": "Успіх",
+		"successMessage": "Подію успішно створено!",
+		"errorTitle": "Помилка",
+		"errorMessage": "Не вдалося обрати зображення",
+		"required": "Обов'язкове",
+		"optional": "Необов'язкове",
+		"titleHint": "Дайте короткий описовий заголовок події"
+	},
+	"albumDetail": {
+		"eventDetails": "Деталі події",
+		"date": "Дата",
+		"editEvent": "Редагувати подію",
+		"titleLabel": "Заголовок",
+		"titlePlaceholder": "Заголовок події",
+		"descriptionLabel": "Опис",
+		"descriptionPlaceholder": "Опис події",
+		"cancel": "Скасувати",
+		"save": "Зберегти",
+		"errorTitle": "Помилка",
+		"titleRequired": "Заголовок не може бути порожнім",
+		"updateFailed": "Не вдалося оновити подію",
+		"sessionNotAvailable": "Сесія недоступна",
+		"uploadFailed": "Не вдалося завантажити зображення"
+	},
+	"monthsShort": ["Січ", "Лют", "Бер", "Квіт", "Трав", "Черв", "Лип", "Серп", "Вер", "Жовт", "Лист", "Груд"]
+}

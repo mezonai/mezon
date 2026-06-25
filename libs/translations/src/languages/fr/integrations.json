@@ -1,0 +1,28 @@
+{
+	"title": "Intégrations",
+	"clanWebhooks": "Webhooks de Clan",
+	"webhooks": "Webhooks",
+	"description": "Personnalisez votre clan avec des fonctionnalités intégrées. Gérez les webhooks, les canaux et applications suivis, intégrez des systèmes externes et automatisez les flux de notification dans Mezon.",
+	"learnMore": "En savoir plus sur la gestion des intégrations.",
+	"webhook": "webhook",
+	"webhooksPlural": "webhooks",
+	"createWebhook": "Créer un Webhook",
+	"createClanWebhook": "Créer un Webhook de Clan",
+	"viewWebhook": "Voir le Webhook",
+	"viewClanWebhook": "Voir le Webhook de Clan",
+	"newWebhook": "Nouveau Webhook",
+	"newClanWebhook": "Nouveau Webhook de Clan",
+	"noWebhooks": "Vous n'avez pas encore de webhooks !",
+	"webhookDescription": "Les webhooks sont un moyen simple d'envoyer des messages depuis d'autres applications et sites web vers Mezon en utilisant la technologie internet.",
+	"clanWebhookDescription": "Les webhooks de clan sont un moyen simple d'envoyer des messages depuis d'autres applications et sites web pour chaque utilisateur Mezon en utilisant la technologie internet.",
+	"learnMoreWebhook": "En savoir plus",
+	"orTry": "ou essayez",
+	"buildWebhook": "de construire le vôtre.",
+	"webhookTip": "Astuce: Si vous sentez que le token dans votre URL est compromis ou obsolète, réinitialisez-le et copiez la nouvelle URL.",
+	"webhookCount": "{{count}} webhook",
+	"webhook_other": "{{count}} webhooks",
+	"toast": {
+		"generateSuccess": "{{name}} généré avec succès !",
+		"deleteSuccess": "{{name}} supprimé avec succès !"
+	}
+}

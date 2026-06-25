@@ -1,0 +1,14 @@
+{
+	"selectScreen": "Sélectionner l'écran à partager",
+	"entireScreen": "Écran entier",
+	"applicationWindow": "Fenêtre d'application",
+	"shareAudio": "Partager l'audio",
+	"share": "Partager",
+	"cancel": "Annuler",
+	"chooseWhatToShare": "Choisir ce que vous voulez partager",
+	"window": "Fenêtre",
+	"alsoShareSystemAudio": "Partager également l'audio système",
+	"loadingMore": "Chargement de plus...",
+	"loadMore": "Charger plus",
+	"remaining": "restant"
+}

@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Далучыцца",
+	"textChannels": "Тэкставыя каналы",
+	"voiceChannels": "Галасавыя каналы",
+	"streamingChannels": "Стрымінгавыя каналы",
+	"search": "Пошук",
+	"filterResults": "Фільтраваць вынікі...",
+	"members": "Удзельнікі",
+	"channels": "Каналы",
+	"media": "Медыя",
+	"pins": "Замацаваныя",
+	"in": "у:",
+	"Messages": "Паведамленні",
+	"filterOptions": {
+		"fromUser": "Ад канкрэтнага карыстальніка",
+		"mentionUser": "Згадаць кагосьці",
+		"inChannel": "У канкрэтным канале"
+	},
+	"cancel": "Скасаваць",
+	"searchPlaceholder": "Пошук",
+	"searchFor": "Пошук:",
+	"enter": "Enter",
+	"searchOptions": "Параметры пошуку",
+	"fromUser": "Ад карыстальніка",
+	"inChannel": "У канале",
+	"hasContent": "Мае змесціва",
+	"mentionsUser": "Згадвае кагосьці",
+	"emptySearch": {
+		"title": "Мы шукалі ўсюды. На жаль, вынікаў не знойдзена."
+	},
+	"learnMore": "Даведацца больш",
+	"searchOptionsData": {
+		"fromUserShort": "пошук па адпраўніку",
+		"mentionsUserShort": "пошук па згаданым",
+		"hasContentShort": "пошук па змесціве з укладаннямі",
+		"channelShort": "пошук у канале"
+	},
+	"prefixes": {
+		"from": "ад:",
+		"mentions": "згадванне:",
+		"has": "мае:",
+		"in": "у:"
+	},
+	"mentionPrefixes": {
+		"from": "ад:",
+		"mentions": "згадванне:",
+		"has": "мае:",
+		"in": "у:"
+	},
+	"allChannels": "Усе каналы",
+	"searching": "Пошук...",
+	"noResults": "Вынікаў няма",
+	"resultsCount": "{{count}} вынікаў",
+	"jump": "Перайсці",
+	"hasOptions": {
+		"video": "відэа",
+		"link": "спасылка",
+		"image": "выява"
+	}
+}

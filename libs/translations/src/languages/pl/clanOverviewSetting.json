@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "Zapisz"
+  },
+  "toast": {
+    "saveSuccess": "Zapisano pomyślnie",
+    "notBlank": "Nie może być puste",
+    "saveError": "Wystąpił błąd podczas zapisywania"
+  },
+  "menu": {
+    "serverName": {
+      "title": "Nazwa clanu",
+      "errorMessage": "Proszę wprowadzić poprawną nazwę clanu (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+      "duplicateNameMessage": "Nazwa clanu już istnieje. Proszę wybrać inną nazwę.",
+      "permissionDenied": "Nie masz uprawnień do edycji tła clanu"
+    },
+    "inactive": {
+      "title": "Ustawienia bezczynności",
+      "description": "Automatycznie przenosi członka do tego kanału i wyłącza jego mikrofon, gdy jest nieaktywny przez określony czas. Ta funkcja nie dotyczy wersji webowej.",
+      "inactiveChannel": "Kanał bezczynności",
+      "inactiveTimeout": "Czas bezczynności"
+    },
+    "systemMessage": {
+      "title": "Ustawienia wiadomości systemowych",
+      "description": "To jest kanał, w którym wysyłamy powiadomienia o wydarzeniach systemowych. Możesz je wyłączyć w dowolnym momencie.",
+      "channel": "Kanał",
+      "selectChannel": "Wybierz kanał powiadomień",
+      "channelDescription": "To jest kanał, do którego będą wysyłane wiadomości systemowe",
+      "welcomeRandom": "Wyślos losową wiadomość powitalną, gdy ktoś dołącza do tego clanu",
+      "welcomeSticker": "Poproś członków o odpowiedź na wiadomość powitalną za pomocą naklejki",
+      "boostMessage": "Wyślij wiadomość, gdy ktoś podnosi poziom tego clanu",
+      "setupTips": "Wyślij przydatne wskazówki dotyczące konfiguracji clanu",
+      "hideAuditLog": "Wyślij dziennik, gdy zostanie wykonane działanie z clanem",
+      "anonymousTitle": "Zapobiegaj trybowi anonimowemu",
+      "anonymousDescription": "Zapobiegaj użytkownikom używającym trybu anonimowego"
+    },
+    "deleteServer": {
+      "title": "Usuń clan",
+      "delete": "Usuń clan"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "Domyślne ustawienia powiadomień",
+      "description": "To ustawienie określi, czy członkowie, którzy nie ustawili wyraźnie swoich ustawień powiadomień, otrzymają powiadomienia dla wszystkich wiadomości wysyłanych w tym clanie. Zalecamy, aby społeczności clanu ustawiały powiadomienia tylko dla @wzmianki.",
+      "allMessages": "Wszystkie wiadomości",
+      "onlyMentions": "Tylko @wzmianki"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "Pomyślnie wyrzucono członka",
+      "kickMemberFailed": "Nie można wyrzucić członka",
+      "removeMemberThreadSuccess": "Pomyślnie usunięto członka",
+      "removeMemberThreadFailed": "Nie można usunąć członka",
+      "transferOwnershipSuccess": "Pomyślnie przekazałeś właścicielstwo",
+      "transferOwnershipFailed": "Przekazanie właścicielstwa nie powiodło się"
+    }
+  },
+  "action": {
+    "kick": "Wyrzuć",
+    "removeFromThread": "Usuń z wątku",
+    "manage": "Zarządzaj",
+    "transferOwnership": "Przekaz właścicielstwa",
+    "ban": "Zbanuj",
+    "unban": "Odbanuj"
+  },
+  "threadRemoveModal": {
+    "title": "Usunąć z wątku?",
+    "description": "Czy na pewno chcesz usunąć {{username}} z tego wątku?",
+    "remove": "Usuń",
+    "cancel": "Nie szkodzi"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Czy na pewno?"
+    }
+  }
+}

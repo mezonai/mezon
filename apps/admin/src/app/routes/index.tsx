@@ -8,10 +8,9 @@ import AppLayout from '../layouts/AppLayout';
 import RootLayout from '../layouts/RootLayout';
 //loader
 import type { CustomLoaderFunction } from '../loader/appLoader';
-import { appLoader, shouldRevalidateApp } from '../loader/appLoader';
-import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 // Pages
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
+import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 import InitialRoutes from './InititalRoutes';
 
 const DashboardPage = lazy(() => import('../pages/dashboard'));
@@ -53,8 +52,6 @@ export const Routes = () => {
 				},
 				{
 					path: '/developers',
-					loader: loaderWithStore(appLoader),
-					shouldRevalidate: shouldRevalidateApp,
 					element: <AppLayout />,
 					children: [
 						{

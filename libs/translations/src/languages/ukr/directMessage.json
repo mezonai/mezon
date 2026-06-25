@@ -1,0 +1,63 @@
+{
+	"directMessages": "ПРЯМІ ПОВІДОМЛЕННЯ",
+	"createDM": "Створити повідомлення",
+	"friends": "Друзі",
+	"yourMessages": "Ваші повідомлення",
+	"selectConversation": "Оберіть розмову для початку спілкування",
+	"createMessageGroup": {
+		"selectFriends": "Оберіть друзів",
+		"canAddMoreFriends": "Ви можете додати ще {{count}} друзів.",
+		"searchPlaceholder": "Введіть імена друзів",
+		"addToGroupChat": "Додати до групового чату",
+		"createDMOrGroupChat": "Створити повідомлення або груповий чат",
+		"createDM": "Створити повідомлення",
+		"createGroupChat": "Створити груповий чат",
+		"noFriendsFound": "Друзів, яких ще немає в цій розмові, не знайдено.",
+		"creating": "Створення..."
+	},
+	"editGroup": {
+		"title": "Редагувати групу",
+		"uploadImageText": "Натисніть для завантаження зображення",
+		"removeAvatar": "Видалити аватар",
+		"groupNameLabel": "Назва групи",
+		"groupNamePlaceholder": "Введіть назву групи",
+		"validationError": "Введіть дійсну назву групи (тільки слова, цифри, _ або -).",
+		"cancel": "Скасувати",
+		"save": "Зберегти",
+		"saving": "Збереження..."
+	},
+	"contextMenu": {
+		"editGroup": "Редагувати групу",
+		"addFriend": "Додати друга",
+		"leaveGroup": "Покинути групу",
+		"closeDM": "Закрити повідомлення",
+		"markAsRead": "Позначити як прочитане",
+		"invitePeople": "Запросити інших",
+		"hideConversation": "Сховати розмову",
+		"profile": "Профіль",
+		"message": "Повідомлення",
+		"removeFriend": "Видалити друга",
+		"block": "Заблокувати",
+		"unblock": "Розблокувати",
+		"removeFromGroup": "Видалити з групи",
+		"shareContact": "Поділитися контактом",
+		"mute": "Вимкнути сповіщення",
+		"unmute": "Увімкнути сповіщення",
+		"for15Minutes": "На 15 хвилин",
+		"for1Hour": "На 1 годину",
+		"for3Hours": "На 3 години",
+		"for8Hours": "На 8 годин",
+		"for24Hours": "На 24 години",
+		"untilTurnBackOn": "Доки не вимкну",
+		"mutedUntil": "Сповіщення вимкнено до {{time}}",
+		"pinConversation": "Закріпити розмову",
+		"unpinConversation": "Відкріпити розмову",
+		"pinLimitExceeded": "Ви можете закріпити максимум 10 розмов. Відкріпіть іншу розмову, щоб закріпити цю."
+	},
+	"pinned": "ЗАКРІПЛЕНІ",
+	"remove": {
+		"content": "Розмова в цьому каналі більше недоступна!",
+		"title": "Розмова недоступна",
+		"button": "Підтвердити"
+	}
+}

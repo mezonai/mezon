@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Запросити друзів приєднатися до {{target}}",
+		"privateEvent": "Зовнішня подія",
+		"privateRoom": "Приватна кімната",
+		"clanInvite": "запрошення в клан",
+		"sendLinkText": "Або надішліть {{type}} посилання їм",
+		"expiresIn": "Ваше запрошення дійсне протягом {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 хвилин",
+		"1hour": "1 година",
+		"6hours": "6 годин",
+		"12hours": "12 годин",
+		"1day": "1 день",
+		"7days": "7 днів",
+		"never": "Завжди"
+	},
+	"maxUses": {
+		"noLimit": "Без ліміту",
+		"1use": "1 використання",
+		"5uses": "5 використань",
+		"10uses": "10 використань",
+		"25uses": "25 використань",
+		"50uses": "50 використань",
+		"100uses": "100 використань"
+	},
+	"generateLink": {
+		"expireAfter": "Термін дії після",
+		"maxNumberOfUses": "Максимальна кількість використань"
+	},
+	"buttons": {
+		"copy": "Копіювати",
+		"copied": "Скопійовано",
+		"copyQR": "Копіювати QR",
+		"editInviteLink": "Редагувати посилання запрошення.",
+		"cancel": "Скасувати",
+		"generateNewLink": "Створити нове посилання",
+		"invite": "Запросити",
+		"sent": "Надіслано"
+	},
+	"searchPlaceholder": "Пошук друзів",
+	"privateChannelDescription": "Цей канал приватний, лише обрані учасники та ролі зможуть бачити його.",
+	"noResults": "Результатів немає",
+	"messages": {
+		"qrCopiedSuccess": "QR-код успішно скопійовано!"
+	},
+	"errors": {
+		"createInviteLink": "Помилка створення посилання запрошення",
+		"copyToClipboard": "Не вдалося скопіювати в буфер обміну",
+		"copyFailed": "Помилка копіювання"
+	},
+	"acceptModal": {
+		"title": "Приєднатися до клану",
+		"invitedToJoin": "Ви запрошені приєднатися до",
+		"memberCount": "{{count}} Учасник",
+		"memberCount_plural": "{{count}} Учасників",
+		"clanSettings": "Налаштування клану",
+		"customizeAnytime": "Ви можете налаштувати це будь-коли",
+		"noThanks": "Ні, дякую",
+		"acceptInvite": "Прийняти запрошення",
+		"joining": "Приєднання...",
+		"toast": {
+			"alreadyMember": "Ви вже учасник!"
+		}
+	}
+}

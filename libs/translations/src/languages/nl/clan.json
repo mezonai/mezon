@@ -1,0 +1,76 @@
+{
+	"title": "Pas je clan aan",
+	"subTitle": "Geef je nieuwe clan een eigen stijl met een naam en embleem. Je kunt dit later altijd aanpassen.",
+	"clanName": "Clan naam",
+	"createServer": "Clan maken",
+	"byCreatingClan": "Door een clan te maken, ga je akkoord met",
+	"upload": "UPLOADEN",
+	"addClan": "Clan toevoegen",
+	"placeholderClan": "Voer clan naam in",
+	"errorMessage": "Voer een geldige clan naam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+	"duplicateNameMessage": "Clan naam bestaat al. Kies een andere naam.",
+	"commutityGuide": "Mezon Community richtlijnen.",
+	"busy": "Bezig",
+	"findOrStartConversation": "Vind of start een gesprek",
+	"createCategoryModal": {
+		"title": "Categorie aanmaken",
+		"nameLabel": "Wat is de naam van de categorie?",
+		"namePlaceholder": "Voer categorie naam in",
+		"privateCategory": "Prive categorie",
+		"privateDescription": "Door een privé categorie te maken, zien alleen de geselecteerde leden en rollen deze categorie. Kanalen die in deze categorie worden gesynchroniseerd, worden automatisch met deze instelling gekoppeld",
+		"invalidName": "Voer een geldige categorie naam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+		"duplicateName": "Categorie naam bestaat al in de clan. Voer een andere naam in.",
+		"cancel": "Annuleren",
+		"create": "Categorie aanmaken"
+	},
+	"leaveClanModal": {
+		"title": "{{clanName}} verlaten",
+		"description": "Weet je zeker dat je <strong>{{clanName}}</strong> wilt verlaten? Je kunt niet terugkeren tenzij je opnieuw wordt uitgenodigd.",
+		"cancel": "Annuleren"
+	},
+	"leaveClan": "Clan verlaten",
+	"leaveClanTitle": "Verlaten",
+	"categoryOverview": {
+		"categoryName": "Categorie naam",
+		"categoryNamePlaceholder": "Voer hier je categorie naam in...",
+		"hasWelcomeChannelError": "Deze categorie heeft een welkomstkanaal",
+		"deleteCategory": "Categorie verwijderen",
+		"deleteCategoryTitle": "Categorie verwijderen",
+		"deleteCategoryButton": "Categorie verwijderen",
+		"cannotBeUndone": "Deze actie is onherroepelijk",
+		"categoryLabel": "Categorie"
+	},
+	"createClanModal": {
+		"title": "Pas je clan aan",
+		"description": "Geef je nieuwe clan kleur door een naam en embleem te kiezen! Je kunt het later wijzigen als je wilt!",
+		"upload": "Uploaden",
+		"clanName": "CLAN NAAM",
+		"placeholder": "Voer clan naam in",
+		"invalidName": "Voer een geldige clan naam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+		"duplicateName": "Clan naam bestaat al. Kies een andere naam.",
+		"agreement": "Door een clan te maken, ga je akkoord met",
+		"communityGuidelines": "Mezon Community richtlijnen",
+		"back": "Terug",
+		"create": "Maken",
+		"toast": {
+			"limitImageSize": "Afbeeldingsgrootte moet minder zijn dan {{size}}MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Maak je clan",
+		"description": "Je clan is waar je met je vrienden communiceert. Maak je eigen clan en begin met chatten.",
+		"createMyOwn": "Eigen sjabloon maken",
+		"startFromTemplate": "Start vanuit een sjabloon",
+		"gamingTemplate": "Gaming",
+		"friendsTemplate": "Vrienden",
+		"studyGroupTemplate": "Studygroep",
+		"schoolClubTemplate": "Schoolclub",
+		"localCommunityTemplate": "Lokale gemeenschap",
+		"artistsCreatorsTemplate": "Artiesten & makers"
+	},
+	"limitModal": {
+		"title": "Limiet bereikt!",
+		"message": "Je bent 50 clans binnengetreden. Je moet een clan verlaten voordat je een andere kunt joinen of maken.",
+		"okayButton": "Oké"
+	}
+}

@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Загаловак вашага канваса"
+	},
+	"editor": {
+		"placeholder": "Пачніце ўводзіць...",
+		"uploadingImage": "Загрузка выявы..."
+	},
+	"actions": {
+		"save": "Захаваць",
+		"saving": "Захаванне...",
+		"discardChanges": "Скасаваць змены"
+	},
+	"error": {
+		"title": "Памылка"
+	},
+	"toolbar": {
+		"blockFormat": "Фарматаванне блока",
+		"addLink": "Дадаць спасылку",
+		"removeLink": "Видаліць спасылку",
+		"codeBlock": "Блок кода",
+		"cancel": "Скасаваць",
+		"apply": "Ужыць"
+	},
+	"blocks": {
+		"paragraph": "Абзац",
+		"h1": "H1 Загаловак",
+		"h2": "H2 Падзагаловак",
+		"h3": "H3 Маленькі загаловак",
+		"checkedList": "Пазначаны спіс",
+		"orderedList": "Нумараваны спіс",
+		"bulletedList": "Маркіраваны спіс",
+		"blockquote": "Цытата"
+	}
+}

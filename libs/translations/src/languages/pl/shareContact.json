@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Udostępnij kontakt",
+		"searchPlaceholder": "Szukaj...",
+		"noResults": "Brak wyników",
+		"noFriends": "Brak przyjaciół lub kanałów",
+		"contactPreview": "Kontakt, który zostanie udostępniony",
+		"cancel": "Anuluj",
+		"share": "Udostępnij",
+		"sharing": "Wysyłanie...",
+		"group": "Grupa",
+		"channel": "Kanał",
+		"thread": "Wątek"
+	},
+	"card": {
+		"call": "Zadzwoń",
+		"message": "Wyślij wiadomość",
+		"blockedAction": "Nie możesz wykonać tej akcji.",
+		"cannotCallSelf": "Nie możesz zadzwonić do siebie."
+	},
+	"contactSharedSuccess": "Udostępniono pomyślnie",
+	"contactSharedError": "Nie można udostępnić"
+}

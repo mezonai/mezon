@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Rozpocznij wydarzenie",
+      "markAsNotInterested": "Oznacz jako niezainteresowany",
+      "markAsInterested": "Oznacz jako zainteresowany",
+      "editEvent": "Edytuj wydarzenie",
+      "cancelEvent": "Anuluj wydarzenie",
+      "reportEvent": "Zgłoś wydarzenie",
+      "copyEventLink": "Kopiuj link wydarzenia",
+      "copyEventID": "Kopiuj ID wydarzenia"
+    },
+    "confirm": {
+        "title": "Anuluj wydarzenie",
+        "content": "Czy na pewno chcesz anulować to wydarzenie?"
+    },
+    "dashboard": {
+        "title": "Wydarzenia",
+        "event_one": "Wydarzenie",
+        "noEvent": "Brak wydarzeń",
+        "noEventDescription": "Zapraszamy innych członków do współtworzenia pomysłów na nadchodzące wydarzenia.",
+        "createButton": "Utwórz",
+        "noti": "To wydarzenie jest otwarte dla wszystkich w clanie.",
+        "endEvent": "Zakończ wydarzenie",
+        "UnInterested": "Nie zainteresowany",
+        "Interested": "Zainteresowany"
+    },
+    "item": {
+      "interested": "Zainteresowany",
+      "uninterested": "Nie zainteresowany"
+    },
+    "detail": {
+        "eventInfo": "Informacje o wydarzeniu",
+        "interested": "Zainteresowany",
+        "personInterested": "{{count}} osób zainteresowanych",
+        "onePersonInterested": "1 osoba zainteresowana",
+        "noOneInterested": "Nikt nie jest zainteresowany wydarzeniem.",
+        "createdBy": "Utworzone przez "
+    },
+    "share": {
+        "title": "Udostępnij wydarzenie przyjaciółom",
+        "search": "Szukaj",
+        "share": "Udostępnij",
+        "copied": "Link skopiowano!"
+    },
+     "countdown": {
+        "joinIn_other": "zacznie się za {{count}} minut",
+        "joinNow": "Wydarzenie trwa!",
+        "joinIn_one": "zacznie się za 1 minutę"
+    }
+  }

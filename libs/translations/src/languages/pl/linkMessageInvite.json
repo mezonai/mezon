@@ -1,0 +1,18 @@
+{
+	"title": "ZAPROŚ DO DOŁĄCZENIA CLANU",
+	"offline": "offline",
+	"online": "online",
+	"join": "Dołącz",
+	"joining": "Dołączanie...",
+	"goToClan": "Idź do Clanu",
+	"unknownClan": "Nieznany clan",
+	"memberCount": "{{count}} Członek",
+	"memberCount_plural": "{{count}} Członków",
+	"failedToJoin": "Nie można dołączyć do tego clanu.",
+	"inviteTo": "ZAPROŚ DO DOŁĄCZENIA {{clanName}}",
+	"noThanks": "Nie, dziękuję",
+	"invalidInvite": {
+		"title": "Nieprawidłowe zaproszenie",
+		"message": "Spróbuj wysłać inne zaproszenie!"
+	}
+}

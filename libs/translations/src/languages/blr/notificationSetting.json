@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Налады апавяшчэнняў",
+		"muteUntil": "Вы выключылі апавяшчэнні для гэтага канала да",
+		"unMute": "Уключыць апавяшчэнні",
+		"mute": "Выключыць апавяшчэнні",
+		"labelOptions": {
+			"reactionMessage": "Рэакцыі на паведамленне",
+			"categoryDefault": "Выкарыстоўваць тыповыя налады",
+			"allMessage": "Усе",
+			"notThingMessage": "Нічога",
+			"mentionMessage": "Толькі @згадванні"
+		},
+		"muteCategoryUntil": "Вы выключылі апавяшчэнні для гэтай катэгорыі да"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Выключыць апавяшчэнні трэда",
+		"headerTitleMuteChannel": "Выключыць апавяшчэнні канала",
+		"muteThisConversation": "Выключыць апавяшчэнні для гэтай размовы",
+		"muteDuration": {
+			"forFifteenMinutes": "На 15 хвілін",
+			"forOneHour": "На 1 гадзіну",
+			"forThreeHours": "На 3 гадзіны",
+			"forEightHours": "На 8 гадзін",
+			"forTwentyFourHours": "На 24 гадзіны",
+			"untilTurnItBackOn": "Пакуль не выключу"
+		},
+		"description": "Вы атрымліваеце апавяшчэнні з усіх паведамленняў у гэтым клане, але можаце змяніць налады тут",
+		"muteSuccess": "Апавяшчэнні паспяхова выключаны!",
+		"unMuteSuccess": "Апавяшчэнні паспяхова ўключаны!",
+		"muteFailed": "Памылка выключэння апавяшчэнняў!",
+		"unMuteFailed": "Памылка ўключэння апавяшчэнняў!"
+	},
+	"toast": {
+		"error": "Памылка абнаўлення апавяшчэння: {{error}}"
+	},
+	"title": "Налады апавяшчэнняў",
+	"clanNotificationSettings": "НАЛАДЫ АПАВЯШЧЭННЯЎ КЛАНА",
+	"notificationOverrides": "ПЕРАВЫЗНАЧЭННЕ АПАВЯШЧЭННЯЎ",
+	"addChannelOverride": "Дадаць канал для перавызначэння тыповых налад апавяшчэнняў",
+	"selectOrCreateOption": "Абярыце або стварыце опцыю...",
+	"headers": {
+		"channelOrCategory": "КАНАЛ АБО КАТЭГОРЫЯ",
+		"all": "УСЕ",
+		"mentions": "ЗГАДВАННІ",
+		"nothing": "НІЧОГА",
+		"mute": "ВЫКЛЮЧЫЦЬ АПАВЯШЧЭННІ"
+	},
+	"menu": {
+		"notification": {
+			"all": "Усе",
+			"onlyMention": "Толькі @згадванні",
+			"nothing": "Нічога"
+		}
+	}
+}

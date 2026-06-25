@@ -11,6 +11,7 @@ import {
 	selectCurrentClanId,
 	selectCurrentClanIsOnboarding,
 	selectCurrentClanName,
+	selectCurrentTopicId,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
@@ -91,6 +92,7 @@ const ClanLayout = () => {
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannelId as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
+	const currentTopicId = useSelector(selectCurrentTopicId);
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
 	const dispatch = useAppDispatch();
 	const { setSubPanelActive } = useGifsStickersEmoji();
@@ -113,6 +115,15 @@ const ClanLayout = () => {
 			dispatch(onboardingActions.fetchProcessingOnboarding({ clan_id: currentClanId }));
 		}
 	}, [currentClanIsOnboarding, currentClanId, dispatch]);
+
+	useEffect(() => {
+		if (isShowCreateTopic && currentTopicId) {
+			dispatch(topicsActions.setFocusTopicBox(true));
+			dispatch(threadsActions.setFocusThreadBox(false));
+		} else {
+			dispatch(topicsActions.setFocusTopicBox(false));
+		}
+	}, [isShowCreateTopic, currentTopicId, dispatch]);
 
 	return (
 		<>

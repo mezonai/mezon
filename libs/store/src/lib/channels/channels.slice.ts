@@ -505,13 +505,6 @@ export const applyChannelArchiveState = createAsyncThunk(
 			return { channelId, parentChannelId, isArchive };
 		}
 
-		if (isThread) {
-			thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId, activeCode: ThreadStatus.joined }));
-			await thunkAPI.dispatch(threadsActions.fetchThreads({ channelId: parentChannelId, clanId, noCache: true })).unwrap();
-		} else {
-			await thunkAPI.dispatch(fetchChannels({ clanId, noCache: true })).unwrap();
-		}
-
 		return { channelId, parentChannelId, isArchive };
 	}
 );

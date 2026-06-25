@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Часопіс аўдыту",
+		"filterByUser": "Фільтраваць па карыстальніку",
+		"filterByAction": "Фільтраваць па дзеянні",
+		"filterBtn": "Фільтраваць"
+	},
+	"auditLogItem": {
+		"performedAnAction": "выканаў дзеянне",
+		"toChannel": "у канал",
+		"remove": "выдаліць",
+		"add": "дадаць"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Усе дзеянні",
+		"placeholder": "Пошук дзеяння"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Усе карыстальнікі",
+		"placeholder": "Пошук карыстальніка"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "ЯШЧЭ НЯМА ЧАСОПІСА",
+		"description": "Пасля таго як мадэратары выконваюць свае задачы, вы можаце адсочваць іх актыўнасць тут."
+	}
+}

@@ -1,0 +1,84 @@
+{
+	"friend": "Vriend",
+	"addFriend": "Vriend toevoegen",
+	"friends": "Vrienden",
+	"clearSearch": "Zoeking wissen",
+	"search": "Zoeken",
+	"tabs": {
+		"all": "Alle",
+		"online": "Online",
+		"pending": "Wachten",
+		"block": "Geblokkeerd"
+	},
+	"addFriendModal": {
+		"title": "VRIEND TOEVOEGEN",
+		"description": "Je kunt een vriend toevoegen met hun Mezon-gebruikersnaam",
+		"placeholder": "Voer gebruikersnaam in",
+		"tooltip": "Je kunt een vriend toevoegen met hun Mezon-gebruikersnaam",
+		"sendRequest": "Vriendenverzoek sturen",
+		"add": "Toevoegen",
+		"alreadyFriends": "Je bent al vrienden met deze gebruiker!",
+		"waitAccept": "Je hebt al een vriendenverzoek naar deze gebruiker gestuurd!",
+		"invalidInput": "Gebruik alleen cijfers, letters, onderstrepingsteken _ of punt.",
+		"blockedUser": "Je hebt deze gebruiker geblokkeerd. Onblokkeer om een vriendverzoek te sturen.",
+		"blockedUserMobile": "Je hebt deze gebruiker geblokkeerd. Onblokkeer om een vriendverzoek te sturen.",
+		"waitingMessage": "Mezon wacht op jou. Maar je hoeft niet te wachten!"
+	},
+	"requestFailedPopup": {
+		"title": "Vriendenverzoek verzenden mislukt",
+		"message": "Je bent al vrienden met deze gebruiker!",
+		"okay": "Oké"
+	},
+	"activity": {
+		"coding": "Activiteit - Werken",
+		"music": "Activiteit - Leven",
+		"gaming": "Activiteit - Spelen"
+	},
+	"friendMenu": {
+		"startVideoCall": "Videobellen starten",
+		"startVoiceCall": "Stembellen starten",
+		"removeFriend": "Vriend verwijderen",
+		"block": "Blokken",
+		"unblock": "Blok opheffen",
+		"more": "Meer",
+		"cancel": "Annuleren",
+		"accept": "Accepteren",
+		"reject": "Afwijzen"
+	},
+	"removeFriendModal": {
+		"title": "'{{username}}' verwijderen",
+		"description": "Weet je zeker dat je <bold>{{username}}</bold> wilt verwijderen uit je vriendlijst?",
+		"cancel": "Annuleren",
+		"confirm": "Vriend verwijderen"
+	},
+	"cancelRequestModal": {
+		"title": "Verzoek annuleren '{{username}}'",
+		"description": "Weet je zeker dat je het vriendenverzoek naar <bold>{{username}}</bold> wilt annuleren?",
+		"cancel": "Annuleren",
+		"confirm": "Verzoek annuleren"
+	},
+	"rejectRequestModal": {
+		"title": "'{{username}}' afwijzen",
+		"description": "Weet je zeker dat je het vriendenverzoek van <bold>{{username}}</bold> wilt afwijzen?",
+		"cancel": "Annuleren",
+		"confirm": "Afwijzen"
+	},
+	"toast": {
+		"userBlockedSuccess": "Gebruiker succesvol geblokkeerd",
+		"userBlockedFailed": "Gebruiker kon niet worden geblokkeerd",
+		"userUnblockedSuccess": "Gebruiker succesvol ontgrendeld",
+		"userUnblockedFailed": "Gebruiker kon niet worden ontgrendeld"
+	},
+	"statusTapListFriends": {
+		"all": "Het lijkt erop dat het hier leeg is! Begin met een paar vrienden om te chatten.",
+		"online": "Heel rustig! Waarom start je geen gesprek en kijk wie er is?",
+		"pending": "Hier vind je de vriendenverzoeken die je hebt verzonden en ontvangen.",
+		"block": "Je hebt niemand geblokkeerd."
+	},
+	"statusTapSearchFriends": {
+		"all": "Geen vrienden die passen bij je zoekopdracht. Probeer een andere naam.",
+		"online": "Niemand online die past bij je zoekopdracht. Probeer een andere naam.",
+		"pending": "Geen vriendenverzoeken die passen bij je zoekopdracht. Controleer de naam of probeer opnieuw.",
+		"block": "Geen geblokkeerde gebruikers die passen bij je zoekopdracht. Probeer een andere naam."
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Notifications",
+	"tabNotify": {
+		"forYou": "Pour vous",
+		"mention": "Mentions",
+		"messages": "Messages",
+		"topics": "Discussions de fil",
+		"notificationSettings": "Paramètres de notification"
+	},
+	"removeNotification": "Supprimer la notification",
+	"nothingHere": "Rien ici pour le moment",
+	"comeBackNotify": "Revenez pour recevoir des notifications sur les événements et plus encore",
+	"repliedTo": "Répondu : ",
+	"sender": "Expéditeur : ",
+	"seeWhenAnswersAppear": "Voir quand les réponses apparaissent",
+	"enablePushNotifications": "Activer les notifications push",
+	"permissionAlert": {
+		"turnOnNotifications": "Activer les notifications",
+		"permissionDescription": "Veuillez autoriser Mezon à envoyer des notifications pour rester en contact avec vos amis et votre famille.",
+		"openSettings": "Ouvrir les Paramètres",
+		"features": {
+			"newMessages": {
+				"title": "Recevoir des notifications pour les nouveaux messages",
+				"description": "Mises à jour lorsque vos amis vous envoient des messages"
+			},
+			"mentions": {
+				"title": "Sachez quand vous êtes mentionné dans un groupe",
+				"description": "Ne manquez jamais quand quelqu'un vous mentionne"
+			},
+			"muteControl": {
+				"title": "Couper les notifications pour des conversations spécifiques et des types de conversation",
+				"description": "Contrôlez quelles notifications vous recevez"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Autorisation de notification",
+		"permissionDenied": "L'autorisation de notification a été refusée.",
+		"cancel": "Annuler",
+		"ok": "OK"
+	},
+	"andYou": "et vous",
+	"topicAndYou": "Discussion de fil et vous",
+	"unknowClan": "Vous ne faites plus partie de cette conversation"
+}

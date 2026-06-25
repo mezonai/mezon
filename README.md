@@ -142,7 +142,7 @@ The application will be available at http://localhost:4200/
 | ----------- | ----------------------------------------------------------------------------- | --------- |
 | **Windows** | [Download](https://apps.microsoft.com/detail/9pf25lf1fj17)                    | ✅ Stable |
 | **macOS**   | [Download](https://apps.apple.com/vn/app/mezon-desktop/id6756601798)          | ✅ Stable |
-| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.71-linux-amd64.deb)         | ✅ Stable |
+| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.72-linux-amd64.deb)         | ✅ Stable |
 | **iOS**     | [App Store](https://apps.apple.com/vn/app/mezon/id6502750046)                 | ✅ Stable |
 | **Android** | [Google Play](https://play.google.com/store/apps/details?id=com.mezon.mobile) | ✅ Stable |
 | **Web**     | [mezon.ai](https://mezon.ai)                                                  | ✅ Stable |

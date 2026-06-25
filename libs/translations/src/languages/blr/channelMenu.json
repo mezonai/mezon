@@ -1,0 +1,104 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Пазначыць як прачытанае"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Запрасіць",
+			"markFavorite": "Дадаць у ўлюбёныя",
+			"unMarkFavorite": "Выдаліць з ўлюбёных",
+			"copyLink": "Скапіяваць спасылку"
+		},
+		"notification": {
+			"title": "",
+			"muteChannel": "Выключыць апавяшчэнні канала",
+			"unMuteChannel": "Уключыць апавяшчэнні канала",
+			"muteThread": "Выключыць апавяшчэнні трэда",
+			"unMuteThread": "Уключыць апавяшчэнні трэда",
+			"notification": "Налады апавяшчэнняў",
+			"for15Minutes": "На 15 хвілін",
+			"for1Hour": "На 1 гадзіну",
+			"for3Hours": "На 3 гадзіны",
+			"for8Hours": "На 8 гадзін",
+			"for24Hours": "На 24 гадзіны",
+			"untilTurnedBackOn": "Пакуль я не выключу",
+			"useCategoryDefault": "Выкарыстоўваць тыповыя налады катэгорыі",
+			"all": "Усе",
+			"onlyMention": "Толькі @згадванні",
+			"nothing": "Нічога",
+			"processing": "Апрацоўка...",
+			"muteChannelStatus": "Апавяшчэнні канала выключаны",
+			"muteThreadStatus": "Апавяшчэнні трэда выключаны",
+			"unmuteChannelStatus": "Апавяшчэнні канала ўключаны",
+			"unmuteThreadStatus": "Апавяшчэнні трэда ўключаны",
+			"mutedUntil": "Апавяшчэнні выключаны да",
+			"muteSuccess": "Апавяшчэнні паспяхова выключаны!",
+			"unMuteSuccess": "Апавяшчэнні паспяхова ўключаны!",
+			"muteFailed": "Памылка выключэння апавяшчэнняў!",
+			"unMuteFailed": "Памылка ўключэння апавяшчэнняў!"
+		},
+		"thread": {
+			"title": "",
+			"threads": "Трэды",
+			"searchThreads": "Пошук назваў трэдаў",
+			"searchFiles": "Пошук файлаў",
+			"searchCanvas": "Пошук назваў канвасаў"
+		},
+		"organizationMenu": {
+			"title": "",
+			"edit": "Рэдагаваць канал",
+			"deleteChannel": "Выдаліць канал",
+			"duplicateChannel": "Дубляваць канал",
+			"leaveChannel": "Пакінуць канал",
+			"createTextChannel": "Стварыць тэкставы канал",
+			"createVoiceChannel": "Стварыць галасавы канал",
+			"openChat": "Адкрыць размову",
+			"hideNames": "Схаваць назвы",
+			"createThread": "Стварыць трэд"
+		},
+		"devMode": {
+			"title": "Рэжым распрацоўшчыка",
+			"copyChannelID": "Скапіяваць ID канала"
+		},
+		"manageThreadMenu": {
+			"editThread": "Рэдагаваць трэд",
+			"deleteThread": "Выдаліць трэд",
+			"leaveThread": "Пакінуць трэд",
+			"closeThread": "Закрыць трэд",
+			"lockThread": "Заблакаваць трэд",
+			"copyLink": "Скапіяваць спасылку"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "ID канала скапіяваны"
+	},
+	"modalConfirm": {
+		"thread": {
+			"title": "Выдаліць трэд {{threadName}}",
+			"content": "Вы ўпэўнены, што хочаце выдаліць гэты трэд?",
+			"confirmText": "Так"
+		},
+		"channel": {
+			"title": "Выдаліць канал {{channelName}}",
+			"content": "Вы ўпэўнены, што хочаце выдаліць гэты канал?",
+			"confirmText": "Так",
+			"systemChannel": "Сістэмны канал нельга выдаліць",
+			"error": "Памылка выдалення канала: {{error}}"
+		}
+	},
+	"modalConFirmLeaveThread": {
+		"title": "Пакінуць трэд",
+		"yesButton": "Пакінуць трэд",
+		"textConfirm": "Вы ўпэўнены, што хочаце пакінуць гэты трэд? Вы не зможаце атрымліваць паведамленні з яго пасля выхаду."
+	},
+	"modalConFirmLeaveChannel": {
+		"title": "Пакінуць канал",
+		"yesButton": "Пакінуць канал",
+		"textConfirm": "Вы ўпэўнены, што хочаце пакінуць гэты канал? Вы не зможаце атрымліваць паведамленні з яго пасля выхаду.",
+		"error": "Памылка выхаду з канала: {{error}}"
+	},
+	"btnBadgeCount": "Новае",
+	"favoriteChannel": "УЛЮБЁНЫЯ КАНАЛЫ"
+}

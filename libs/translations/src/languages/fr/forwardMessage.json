@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Transférer le message",
+		"searchPlaceholder": "Rechercher",
+		"noResults": "Impossible de trouver ce que vous cherchez ?",
+		"searchFriendsUsers": "Rechercher des amis et des utilisateurs",
+		"searchingChannel": "Recherche dans le canal",
+		"sharedContent": "Contenu partagé",
+		"cancel": "Annuler",
+		"send": "Envoyer",
+		"sending": "Envoi en cours...",
+		"sendingProgress": "Envoi ({{current}}/{{total}})...",
+		"image": "image",
+		"images": "images",
+		"video": "vidéo",
+		"videos": "vidéos",
+		"file": "fichier",
+		"files": "fichiers",
+		"additionalMessage": "Message joint (facultatif)",
+		"additionalMessagePlaceholder": "Entrez le message que vous souhaitez envoyer en plus..."
+	},
+	"successMessage": "Message transféré avec succès",
+	"errorMessage": "Impossible de transférer le message"
+}
