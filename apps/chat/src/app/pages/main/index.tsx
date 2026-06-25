@@ -200,6 +200,7 @@ function MyApp() {
 				<Topbar isHidden={currentClanId !== '0' ? false : !directId} />
 				<MainContent />
 				<FooterProfile
+					username={userProfile?.user?.username || ''}
 					name={userProfile?.user?.display_name || userProfile?.user?.username || ''}
 					status={userProfile?.user?.online}
 					avatar={userProfile?.user?.avatar_url || ''}

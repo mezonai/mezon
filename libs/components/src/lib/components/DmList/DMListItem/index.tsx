@@ -167,7 +167,7 @@ const DmItemProfile = ({
 					</span>
 				</div>
 			) : (
-				<DmInvoiceProfile name={name} directId={direct?.id} userId={direct?.user_ids?.[0] || ''} status={userStatus.status} />
+				<DmInvoiceProfile name={channel_label} directId={direct?.id} userId={direct?.user_ids?.[0] || ''} status={userStatus.status} />
 			)}
 		</div>
 	);
