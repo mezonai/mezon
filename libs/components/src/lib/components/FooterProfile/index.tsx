@@ -57,9 +57,10 @@ export type FooterProfileProps = {
 	userId?: string;
 	channelCurrent?: ChannelsEntity | null;
 	isDM: boolean;
+	username: string;
 };
 
-function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProps) {
+function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterProfileProps) {
 	const dispatch = useAppDispatch();
 	const showModalCustomStatus = useSelector(selectShowModalCustomStatus);
 	const showModalSendToken = useSelector(selectShowModalSendToken);
@@ -337,7 +338,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 					>
 						<AvatarImage
 							alt={''}
-							username={name}
+							username={username}
 							className="min-w-8 min-h-8 max-w-8 max-h-8 flex-shrink-0"
 							classNameText="font-semibold"
 							srcImgProxy={createImgproxyUrl(avatar ?? '')}

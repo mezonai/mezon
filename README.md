@@ -26,7 +26,7 @@
 
 [Mezon Bug Report Community](https://mezon.ai/invite/1840696977034055680)
 
-## The Live, Work, and Play Platform the best Discord Alternative
+## high-performance, lightweight alternative to Discord
 
 Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling with friends, or even building a global community. Customize your own space to talk, play, and hang out. Mezon also delivers enterprise-grade performance with sub-millisecond response times and support for millions of concurrent connections.
 
@@ -227,8 +227,6 @@ mezon/
 ├── apps/              # Applications
 │   ├── chat/          # Main web chat application
 │   ├── admin/         # Admin dashboard
-│   ├── desktop/       # Electron desktop app
-│   ├── mobile/        # React Native mobile app
 │   └── discover/      # Community discovery app
 ├── libs/              # Shared libraries
 │   ├── components/    # Reusable UI components
