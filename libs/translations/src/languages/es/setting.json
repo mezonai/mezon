@@ -86,7 +86,13 @@
 		"english": "English",
 		"vietnamese": "Tiếng Việt",
 		"russian": "Русский",
-		"spanish": "Español"
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"ukrainian": "Українська"
 	},
 	"voice": {
 		"title": "Voz",

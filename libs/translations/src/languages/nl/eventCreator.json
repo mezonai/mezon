@@ -1,0 +1,152 @@
+{
+	"screens": {
+		"eventType": {
+			"headerTitle": "Stap 1 van 3",
+			"title": "Waar is je evenement?",
+			"subtitle": "Zodat niemand verdwaalt naar de plek",
+			"description": "Je kunt anderen het recht geven om evenementen in Clan > Instellingen > Rollen te maken"
+		},
+		"eventDetails": {
+			"headerTitle": "Stap 2 van 3",
+			"title": "Waar gaat je evenement over?",
+			"subtitle": "Vul gedetailleerde informatie over je evenement in"
+		},
+		"eventPreview": {
+			"headerTitle": "Stap 3 van 3",
+			"title": "Hier is een voorvertoning van je evenement",
+			"subtitle": "Dit evenement begint automatisch op het juiste moment",
+			"subtitleVoice": "Wanneer het tijd is, ga naar het stemkanaal om het evenement te starten!"
+		},
+		"channelSelection": {
+			"title": "Wie is het publiek?",
+			"description": "Selecteer leden in het geselecteerde kanaal.",
+			"channel": "Publiek omvat leden van {{channel}}: "
+		},
+		"isPrivate": "Alleen uitgenodigden kunnen deelnemen"
+	},
+	"fields": {
+		"channelType": {
+			"voiceChannel": {
+				"title": "Stemkanaal",
+				"description": "Spraak, video, schermdeling en streaming."
+			},
+			"somewhere": {
+				"title": "Ergens anders",
+				"description": "Tekstkanaal, externe link of directe locatie."
+			},
+			"privateEvent": {
+				"title": "Extern evenement aanmaken",
+				"description": "Gebruikers kunnen deelneemen aan de vergadering via de link zonder in te loggen."
+			}
+		},
+		"channel": {
+			"title": "Kanaal kiezen"
+		},
+		"address": {
+			"title": "Locatie",
+			"placeholder": "Voeg locatie, link of iets toe"
+		},
+		"eventName": {
+			"title": "Evenementsthema",
+			"placeholder": "Wat is je evenement?",
+			"errorMessage": "Een onderwerp is vereist voor het evenement"
+		},
+		"startDate": {
+			"title": "Startdatum",
+			"errorMessage": "Kies een huidige of toekomstige datum"
+		},
+		"startTime": {
+			"title": "Starttijd",
+			"errorMessage": "Kies een geldige starttijd"
+		},
+		"endDate": {
+			"title": "Einddatum",
+			"errorMessage": "Kies een huidige of toekomstige datum"
+		},
+		"endTime": {
+			"title": "Eindtijd",
+			"errorMessage": "Kies een geldige eindtijd"
+		},
+		"eventFrequency": {
+			"title": "Evenement frequentie",
+			"noRepeat": "Niet herhalen",
+			"weeklyOn": "Wekelijks op {{name}}",
+			"everyOther": "Elke andere week {{name}}",
+			"monthlyOn": "Maandelijks op {{name}}",
+			"annuallyOn": "Jaarlijks op {{name}}",
+			"everyWeekday": "Elke werkdag (Maandag tot Vrijdag)"
+		},
+		"description": {
+			"title": "Beschrijving",
+			"description": "Vertel ons iets meer over je evenement."
+		},
+		"cover": "Banner"
+	},
+	"actions": {
+		"next": "Volgende",
+		"create": "Evenement aanmaken",
+		"edit": "Evenement bijwerken",
+		"event_one": "1 Evenement",
+		"event_other": "{{count}} Evenementen",
+		"noEvent": "Evenement",
+		"clearAudiences": "Publiek wissen",
+		"startEvent": "Evenement starten",
+		"editEvent": "Evenement bewerken",
+		"cancelEvent": "Evenement annuleren",
+		"copyEventLink": "Evenementslink kopiëren",
+		"uploadImage": "Banner uploaden",
+		"neverMind": "Niet erg",
+		"cancelEventQuestion": "Evenement annuleren?",
+		"confirmCancelEvent": "Weet je zeker dat je dit evenement wilt annuleren?",
+		"back": "Terug",
+		"cancel": "Annuleren"
+	},
+	"tabs": {
+		"location": "Locatie",
+		"eventInfo": "Evenement info",
+		"review": "Voorvertoning"
+	},
+	"notify": {
+		"locationBlank": "Een locatie is vereist",
+		"titleBlank": "Een onderwerp is vereist voor het evenement",
+		"time": "Ongeldige start- of eindtijd",
+		"type": "Evenementstype moet worden geselecteerd"
+	},
+	"eventDetail": {
+		"eventIsTaking": "Evenement is gaande!",
+		"tenMinutesLeft": "Nog {{minutes}} minuten. Neem deel nu!",
+		"eventInfo": "Evenement info",
+		"interested": "{{count}} Geïnteresseerd",
+		"personInterested": "{{count}} persoon geïnteresseerd",
+		"personInteresteds": "{{count}} personen geïnteresseerd",
+		"createdBy": "Gemaakt door {{username}}",
+		"inviteFriends": "Vrienden uitnodigen om deel te nemen aan het evenement?",
+		"shareLink": "Deel deze link met anderen om toegang te krijgen tot deze server",
+		"onlyInvitedMembers": "Gebruikers kunnen deelnemen aan de vergadering via de link zonder in te loggen.",
+		"openLink": "Link openen",
+		"invite": "Uitnodigen",
+		"copyLink": "Link kopiëren",
+		"audienceConsists": "Publiek omvat leden van",
+		"thread": "discussiereeks:",
+		"channel": "kanaal:",
+		"clanEvent": "Clan Evenement",
+		"channelEvent": "Kanaal Evenement",
+		"privateEvent": "Extern Evenement",
+		"privateRoom": "Externe Vergaderkamer",
+		"newEvent": "Nieuw",
+		"share": "Delen",
+		"noOneInterested": "Nog niemand is geïnteresseerd in dit evenement."
+	},
+	"errorMessages": {
+		"startTimeFuture": "Starttijd moet in de toekomst zijn.",
+		"endTimeAfterStart": "Eindtijd moet later zijn dan starttijd.",
+		"invalidTopic": "Ongeldig evenementsthema. Karakterters '`', '<', '>', ',', '/', '\"', '\\', en ''' zijn niet toegestaan."
+	},
+	"selectUser": "Kies een kanaal of topic om een evenement aan te maken",
+	"emptyState": {
+		"title": "Geen aankomende evenementen.",
+		"description1": "Plan een evenement voor elke activiteit in",
+		"clan": "clan",
+		"description2": "Nodig andere leden uit om ideeën bij te dragen aan aankomende evenementen."
+	}
+}

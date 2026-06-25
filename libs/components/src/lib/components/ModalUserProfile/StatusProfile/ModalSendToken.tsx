@@ -119,7 +119,17 @@ const ModalSendToken = ({
 
 	const mergeUniqueUsers = (usersClan: UsersEntity[], directMessages: FriendsEntity[]) => {
 		const userMap: Map<string, User> = new Map();
-
+		directMessages.forEach((itemDM: FriendsEntity) => {
+			const userId = itemDM?.user?.id ?? '';
+			if (userId && !userMap.has(userId)) {
+				userMap.set(userId, {
+					id: userId,
+					username: itemDM?.user?.username ?? '',
+					avatar_url: itemDM?.user?.avatar_url ?? '',
+					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? ''
+				});
+			}
+		});
 		usersClan.forEach((itemUserClan) => {
 			const userId = itemUserClan?.id ?? '';
 			if (userId && !userMap.has(userId)) {
@@ -129,18 +139,6 @@ const ModalSendToken = ({
 					avatar_url: itemUserClan?.avatar_url ?? '',
 					search_key: itemUserClan.list_nick_names?.join('./'),
 					display_name: itemUserClan.display_name
-				});
-			}
-		});
-
-		directMessages.forEach((itemDM: FriendsEntity) => {
-			const userId = itemDM?.user?.id ?? '';
-			if (userId && !userMap.has(userId)) {
-				userMap.set(userId, {
-					id: userId,
-					username: itemDM?.user?.username ?? '',
-					avatar_url: itemDM?.user?.avatar_url ?? '',
-					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? ''
 				});
 			}
 		});

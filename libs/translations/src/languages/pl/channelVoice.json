@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Pokój głosowy",
+		"joinVoice": "Dołącz do rozmowy głosowej"
+	},
+	"chat": "Czat",
+	"membersWillBeNotified": "{{participantsCount}} członków zostanie powiadomionych",
+	"noDisplay": "Nie wyświetlaj kanału głosowego",
+	"videoConnected": "Połączono wideo",
+	"voiceConnected": "Połączono głos",
+	"turnOffMicrophone": "Wyłącz mikrofon",
+	"turnOnMicrophone": "Włącz mikrofon",
+	"turnOffCamera": "Wyłącz kamerę",
+	"turnOnCamera": "Włącz kamerę",
+	"stopScreenShare": "Zatrzymaj udostępnianie ekranu",
+	"shareYourScreen": "Udostępnij swój ekran",
+	"disconnect": "Rozłącz",
+	"muteModal": {
+		"title": "Wycisz członka",
+		"content": "Czy na pewno chcesz wyciszyć \"{{userName}}\"?",
+		"mute": "Wycisz"
+	},
+	"kickModal": {
+		"title": "Usuń z kanału głosowego",
+		"content": "Czy na pewno chcesz usunąć \"{{userName}}\" z kanału głosowego?",
+		"kick": "Usuń"
+	},
+	"disconnectModal": {
+		"title": "Rozłączono z rozmowy głosowej",
+		"content": {
+			"removed": "Zostałeś usunięty z kanału głosowego",
+			"duplicate": "Zostałeś rozłączony, ponieważ dołączyłeś w innym miejscu",
+			"default": "Zostałeś rozłączony z kanału głosowego",
+			"deleted": "Kanał głosowy został usunięty"
+		},
+		"confirm": "Potwierdź"
+	},
+	"permission": {
+		"cameraTitle": "Udziel uprawnienia kamery",
+		"cameraBody": "Aplikacja nie otrzymała uprawnienia kamery. Proszę włączyć uprawnienie kamery w ustawieniach systemowych.",
+		"microphoneTitle": "Udziel uprawnienia mikrofonu",
+		"microphoneBody": "Aplikacja nie otrzymała uprawnienia mikrofonu. Proszę włączyć uprawnienie mikrofonu w ustawieniach systemowych.",
+		"cancel": "Anuluj",
+		"deviceSettings": "Ustawienia urządzenia"
+	},
+	"device": {
+		"inputDevice": "Mikrofon",
+		"outputDevice": "Audio",
+		"camera": "Kamera"
+	},
+	"toast": {
+		"connectionConnected": "Połączono pomyślnie",
+		"connectionDisconnected": "Połączenie zostało przerwane",
+		"microphonePermissionRequired": "Wymagane uprawnienie mikrofonu",
+		"cameraPermissionRequired": "Wymagane uprawnienie kamery",
+		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia."
+	},
+	"usernameScreen": "Ekran {{username}}"
+}

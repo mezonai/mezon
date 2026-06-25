@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Зберегти"
+	},
+	"switch": {
+		"userProfile": "Особистий",
+		"serverProfile": "Клан"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Відображуване ім'я",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Прізвисько клану",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Займенники",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Біографія",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Скасувати незбережені зміни?",
+		"description": "Є незбережені зміни, ви впевнені, що хочете їх скасувати?",
+		"discard": "Скасувати",
+		"keepEditing": "Продовжити редагування"
+	},
+	"selectAClan": "Оберіть клан",
+	"searchClanPlaceholder": "Пошук кланів",
+	"updateProfileSuccess": "Профіль успішно оновлено",
+	"updateProfileError": "Помилка оновлення профілю",
+	"updateClanProfileSuccess": "Профіль клану успішно оновлено",
+	"emptyUsername": "Відображуване ім'я не може бути порожнім!",
+	"duplicateClannick": "Дублювання назви клану",
+	"clanNickname": "ПРИЗВИЩЕ КЛАНУ",
+	"changeAvatar": "Змінити аватар",
+	"removeAvatar": "Видалити",
+	"avatar": "Аватар",
+	"preview": "ПЕРЕДПЕРЕГЛЯД",
+	"nickNameExistsError": "Прізвисько вже існує в клані. Введіть інше прізвисько.",
+	"unsavedChangesWarning": "Увага - у вас є незбережені зміни!",
+	"reset": "Скинути",
+	"saveChanges": "Зберегти зміни",
+	"showProfilesDescription": " Покажіть себе з різними профілями для кожного клану",
+	"chooseAClan": "ОБЕРІТЬ КЛАН",
+	"editImage": "Редагувати зображення",
+	"close": "Закрити",
+	"resetChanges": "Скинути зміни",
+	"cancelEditing": "Скасувати редагування",
+	"cancel": "Скасувати",
+	"applyChanges": "Застосувати зміни",
+	"apply": "Застосувати",
+	"moveImage": "Перемістити зображення",
+	"adjustZoom": "Налаштувати масштаб",
+	"profiles": "Профілі",
+	"userProfile": "Профіль користувача",
+	"clanProfiles": "Профілі клану",
+	"directMessageIcon": "Значок прямих повідомлень",
+	"directMessageIconAction": {
+		"remove": "Видалити",
+		"removeTitle": "Видалити значок прямих повідомлень",
+		"removeDescription": "Ви впевнені, що хочете видалити значок прямих повідомлень?"
+	},
+	"displayName": "ВІДОБРАЖУВАНЕ ІМ'Я",
+	"emptyClanProfile": {
+		"title": "Ви не приєдналися до жодного клану",
+		"description": "Створіть або приєднайтеся до клану для налаштування профілю клану.",
+		"createClan": "Створити клан",
+		"joinClan": "Приєднатися до клану"
+	}
+}

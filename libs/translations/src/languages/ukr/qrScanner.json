@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Доступ до камери відхилено",
+	"pleaseAllowCamera": "Дозвольте доступ до камери в налаштуваннях пристрою.",
+	"cancel": "Скасувати",
+	"openSettings": "Відкрити налаштування",
+	"anErrorOccurred": "Сталася помилка, спробуйте ще раз",
+	"youAreIn": "Ви увійшли!",
+	"logInOnNewDevice": "Увійти на новому пристрої?",
+	"youAreLoggedInOnDesktop": "Тепер ви увійшли на десктопі",
+	"neverScanALoginQRCodeFromAnotherUser": "Ніколи не скануйте QR-код входу від іншого користувача.",
+	"startTalking": "Почати спілкування",
+	"logIn": "Увійти",
+	"requestCameraPermission": "Запитати доступ до камери",
+	"myQRCode": "Мій QR-код",
+	"selectPhotoWithQRCode": "Оберіть зображення з QR-кодом",
+	"qrCodeNotValid": "QR-код недійсний"
+}

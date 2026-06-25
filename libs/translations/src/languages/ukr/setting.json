@@ -1,0 +1,142 @@
+{
+	"accountSettings": {
+		"title": "Налаштування акаунту",
+		"account": "Акаунт",
+		"profiles": "Профілі",
+		"privacySafety": "Приватність та безпека",
+		"familyCenter": "Сімейний центр",
+		"authorizedApp": "Авторизовані додатки",
+		"device": "Пристрій",
+		"connection": "Підключення",
+		"clip": "Кліп",
+		"friendRequests": "Запити на дружбу",
+		"QRScan": "Сканування QR",
+		"MyQRCode": "Мій QR-код",
+		"devices": "Пристрої"
+	},
+	"deviceSettings": {
+		"description1": "Це всі пристрої, на яких ви увійшли в свій акаунт. Ви можете вийти з кожного пристрою окремо.",
+		"description2": "Якщо ви бачите вхід, який не впізнаєте, вийдіть з нього та негайно змініть пароль.",
+		"currentDevice": "Поточний пристрій",
+		"otherDevices": "Інші пристрої",
+		"noDevices": "Пристроїв не знайдено",
+		"loggedIn": "Увійшов о",
+		"current": "Поточний",
+		"unknown": "Невідомо",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Комп'ютер",
+		"platformWeb": "Веб",
+		"removeDevice": "Вийти з цього пристрою"
+	},
+	"paymentSettings": {
+		"title": "Налаштування оплати",
+		"restoreSubscription": "Відновити підписку"
+	},
+	"appSettings": {
+		"title": "Налаштування додатку",
+		"voice": "Голос",
+		"appearance": "Зовнішній вигляд",
+		"accessibility": "Доступність",
+		"language": "Мова",
+		"activity": "Діяльність",
+		"notifications": "Сповіщення",
+		"chat": "Чат",
+		"webBrowser": "Веб-браузер",
+		"appIcon": "Значок",
+		"advanced": "Розширені",
+		"appVersion": "Версія додатку",
+		"startUp": "Запуск",
+		"quitApp": "Вийти з додатку"
+	},
+	"autoStart": {
+		"title": "Автоматичний запуск додатку",
+		"description": "Автоматично відкривати додаток при завантаженні комп'ютера для миттєвого використання."
+	},
+	"hardwareAcceleration": {
+		"title": "Використовувати графічне прискорення, якщо доступно",
+		"description": "Коли увімкнено, додаток використовуватиме потужність GPU (графічної карти) для обробки ресурсомістких графічних завдань, таких як 3D-рендеринг та декодування відео. Це покращує частоту кадрів та відгук інтерфейсу. Якщо виникають проблеми з відображенням або додаток зависає, спробуйте вимкнути цю функцію для покращення стабільності."
+	},
+	"autoHidden": {
+		"title": "Автономний запуск разом з ОС",
+		"description": "Додаток автоматично запускатиметься у прихованому режимі разом з операційною системою."
+	},
+	"activity": {
+		"title": "Показувати мою діяльність",
+		"description": "Діліться вашими поточними діями з друзями. Це допоможе їм дізнатися, що ви робите, та полегшить спілкування!"
+	},
+	"supportSettings": {
+		"title": "Підтримка",
+		"support": "Підтримка",
+		"uploadLog": "Завантажити лог звіт",
+		"acknowledgement": "Подяка"
+	},
+	"whatsNew": {
+		"title": "Що нового",
+		"whatsNew": "Що нового"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Нова версія готова",
+		"updateExperience": "Потрібне швидке оновлення для продовження використання останніх функцій сімейного центру.",
+		"updateNow": "Оновити зараз",
+		"versionInfo": "ВЕРСІЯ"
+	},
+	"language": {
+		"title": "Мова",
+		"description": "Оберіть мову.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"german": "Deutsch",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"german": "Deutsch",
+		"polish": "Polski",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"ukrainian": "Українська"
+	},
+	"voice": {
+		"title": "Голос",
+		"description": "Налаштуйте параметри голосу.",
+		"microphone": "Мікрофон",
+		"speaker": "Динамік",
+		"microphoneVolume": "Гучність мікрофона",
+		"speakerVolume": "Гучність динаміка",
+		"noiseSuppression": {
+			"title": "Пригнічення шуму",
+			"toggleAriaLabel": "Увімкнути або вимкнути пригнічення шуму"
+		},
+		"unnamedDevice": "Пристрій без назви",
+		"noDevices": "Пристроїв не знайдено",
+		"micTest": {
+			"title": "Перевірка мікрофона",
+			"description": "Проблеми з мікрофоном? Почніть перевірку та спробуйте говорити - ми відтворемо ваш голос.",
+			"letsCheck": "Перевірити",
+			"stop": "Зупинити"
+		},
+		"errors": {
+			"permissionDenied": "Потрібен доступ до мікрофона для перевірки.",
+			"micPermission": "Немає доступу до мікрофона."
+		},
+		"warnings": {
+			"outputNotSupported": "Браузер не підтримує вибір пристрою відтворення. Вибір динаміка може бути проігнорований."
+		}
+	},
+	"logOut": "Вийти",
+	"logOutPopup": {
+		"description": "Ви впевнені, що хочете вийти?",
+		"noConfirm": "Ні",
+		"yesConfirm": "Так"
+	},
+	"removeAccount": "Видалити акаунт",
+	"channelSetting": {
+		"recentChannels": "Останні канали",
+		"searchByChannelLabel": "Пошук за міткою каналу"
+	},
+	"setting": "Налаштування"
+}

@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Controlelog",
+		"filterByUser": "Filteren op gebruiker",
+		"filterByAction": "Filteren op actie",
+		"filterBtn": "Filteren"
+	},
+	"auditLogItem": {
+		"performedAnAction": "heeft een actie uitgevoerd",
+		"toChannel": "naar kanaal",
+		"remove": "verwijderd",
+		"add": "toegevoegd"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Alle acties",
+		"placeholder": "Actie zoeken"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Alle gebruikers",
+		"placeholder": "Gebruiker zoeken"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "Nog geen logboeken",
+		"description": "Nadat moderators taken hebben uitgevoerd, kun je hun activiteiten hier volgen."
+	}
+}

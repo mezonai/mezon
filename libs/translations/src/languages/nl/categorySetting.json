@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Categorie naam",
+            "placeholder": "Voer categorie naam in",
+            "errorMessage": "Voer een geldige categorie naam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Categorie rechten",
+            "description": "Verander privacyscherm instellingen en pas aan hoe leden met dit kanaal kunnen interacteren."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Categorie verwijderen"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Weet je zeker dat je kanaal {{categoryName}} wilt verwijderen? Deze actie is onherroepelijk.",
+            "confirmText": "Verwijderen",
+            "title": "Categorie verwijderen"
+        },
+        "save": "Opslaan"
+    },
+    "toast": {
+        "updated": "Succesvol bijgewerkt"
+    }
+}

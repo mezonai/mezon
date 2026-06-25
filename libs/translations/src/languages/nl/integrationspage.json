@@ -1,0 +1,46 @@
+{
+	"download": "Downloaden",
+	"sections": {
+		"section1": {
+			"title": "Alles wat je nodig hebt, op één plek",
+			"description": "Met Mezon, de app die al je benodigde tools in één ruimte bundelt. Geen wisselen tussen losse bronnen - alleen prestatie en efficiëntie."
+		},
+		"section2": {
+			"title": "Onleash de Kracht van Je Bedrijf met Vlotte Low-Code Integratie",
+			"description": "Met minimale kosten en tijd, verbeteren wij integratie met ondernemingen die kosten voor competentie-ontwikkeling willen verminderen - alleen snelheid en flexibiliteit"
+		},
+		"section3": {
+			"title": "Automatiseer Processen voor Individuele en Organisaties: ",
+			"titleHighlight": "Bot/App Integratie",
+			"titleEnd": "",
+			"description": "Verbind bots en apps om taken van werknemers tot productie te automatiseren. Sneller, nauwkeuriger en zonder ingewikkelde algoritmen."
+		},
+		"section4": {
+			"title": "ERP Systeem",
+			"description": "Met eenvoud aanpasbare modules en functies, voldoet ERP volledig aan de behoeften van het bedrijf en kan activiteiten gerelateerd aan bronbeheer automatiseren om verwerkingstijd te verminderen en bronbeheer te optimaliseren"
+		}
+	},
+	"faq": {
+		"title": "Veelgestelde Vragen",
+		"seeAll": "Bekijk alle FAQ's",
+		"learnMore": "Lees meer",
+		"questions": [
+			{
+				"question": "Hoe begin ik met het integreren van mijn tool met Mezon?",
+				"answer": "Starten is heel eenvoudig. Navigeer naar de integratiepagina, kies je gewenste service en volg de stap-voor-stap setup-instructies."
+			},
+			{
+				"question": "Welke soorten integraties worden ondersteund?",
+				"answer": "Mezon ondersteunt diverse soorten integraties waaronder webhooks, bots, derde-partij apps en ERP-systemen. Controleer onze documentatie voor een volledige lijst."
+			},
+			{
+				"question": "Kan ik een aangepaste integratie maken?",
+				"answer": "Ja! Ons platform biedt API's en SDK's waardoor je aangepaste integraties kunt bouwen die passen bij je specifieke behoeften."
+			},
+			{
+				"question": "Zijn er limieten aan het aantal integraties dat ik kan toevoegen?",
+				"answer": "Het aantal integraties dat je kunt toevoegen is afhankelijk van je pakket. Ondernemingspakketten bieden onbeperkte integraties."
+			}
+		]
+	}
+}

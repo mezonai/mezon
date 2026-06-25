@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Evenement starten",
+      "markAsNotInterested": "Markeer als niet geïnteresseerd",
+      "markAsInterested": "Markeer als geïnteresseerd",
+      "editEvent": "Evenement bewerken",
+      "cancelEvent": "Evenement annuleren",
+      "reportEvent": "Evenement rapporteren",
+      "copyEventLink": "Evenementslink kopiëren",
+      "copyEventID": "Evenement ID kopiëren"
+    },
+    "confirm": {
+        "title": "Evenement annuleren",
+        "content": "Weet je zeker dat je dit evenement wilt annuleren?"
+    },
+    "dashboard": {
+        "title": "Evenementen",
+        "event_one": "Evenement",
+        "noEvent": "Geen evenementen",
+        "noEventDescription": "Nodig andere leden uit om ideeën bij te dragen aan aankomende evenementen.",
+        "createButton": "Aanmaken",
+        "noti": "Dit evenement is open voor iedereen in de clan.",
+        "endEvent": "Evenement beëindigen",
+        "UnInterested": "Niet geïnteresseerd",
+        "Interested": "Geïnteresseerd"
+    },
+    "item": {
+      "interested": "Geïnteresseerd",
+      "uninterested": "Niet geïnteresseerd"
+    },
+    "detail": {
+        "eventInfo": "Evenement info",
+        "interested": "Geïnteresseerd",
+        "personInterested": "{{count}} persoon geïnteresseerd",
+        "onePersonInterested": "1 persoon geïnteresseerd",
+        "noOneInterested": "Nog niemand is geïnteresseerd in het evenement.",
+        "createdBy": "Gemaakt door "
+    },
+    "share": {
+        "title": "Deel evenement met vrienden",
+        "search": "Zoeken",
+        "share": "Delen",
+        "copied": "Link is gekopieerd!"
+    },
+     "countdown": {
+        "joinIn_other": "start over {{count}} minuten",
+        "joinNow": "Evenement is gaande!",
+        "joinIn_one": "start over 1 minuut"
+    }
+  }

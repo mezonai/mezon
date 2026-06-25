@@ -109,8 +109,6 @@ export const createNewDirectMessage = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 
-			console.log('display_names: ', display_names);
-
 			if (response) {
 				thunkAPI.dispatch(
 					directActions.upsertOne({

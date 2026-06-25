@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Голосова кімната",
+		"joinVoice": "Приєднатися до голосового"
+	},
+	"chat": "Чат",
+	"membersWillBeNotified": "{{participantsCount}} учасників буде повідомлено",
+	"noDisplay": "Не відображати голосовий канал",
+	"videoConnected": "Відео підключено",
+	"voiceConnected": "Голос підключено",
+	"turnOffMicrophone": "Вимкнути мікрофон",
+	"turnOnMicrophone": "Увімкнути мікрофон",
+	"turnOffCamera": "Вимкнути камеру",
+	"turnOnCamera": "Увімкнути камеру",
+	"stopScreenShare": "Зупинити ділення екраном",
+	"shareYourScreen": "Поділитися екраном",
+	"disconnect": "Відключитися",
+	"muteModal": {
+		"title": "Заглушити учасника",
+		"content": "Ви впевнені, що хочете заглушити \"{{userName}}\"?",
+		"mute": "Заглушити"
+	},
+	"kickModal": {
+		"title": "Викинути з голосового каналу",
+		"content": "Ви впевнені, що хочете викинути \"{{userName}}\" з голосового каналу?",
+		"kick": "Викинути"
+	},
+	"disconnectModal": {
+		"title": "Втрата голосового підключення",
+		"content": {
+			"removed": "Вас викинули з голосового каналу",
+			"duplicate": "Ви відключилися через підключення з іншого місця",
+			"default": "Ви відключилися від голосового каналу",
+			"deleted": "Голосовий канал видалено"
+		},
+		"confirm": "Підтвердити"
+	},
+	"permission": {
+		"cameraTitle": "Надати доступ до камери",
+		"cameraBody": "Додатку не надано доступ до камери. Увімкніть доступ до камери в системних налаштуваннях.",
+		"microphoneTitle": "Надати доступ до мікрофона",
+		"microphoneBody": "Додатку не надано доступ до мікрофона. Увімкніть доступ до мікрофона в системних налаштуваннях.",
+		"cancel": "Скасувати",
+		"deviceSettings": "Налаштування пристрою"
+	},
+	"device": {
+		"inputDevice": "Мікрофон",
+		"outputDevice": "Аудіо",
+		"camera": "Камера"
+	},
+	"toast": {
+		"connectionConnected": "Підключення успішне",
+		"connectionDisconnected": "Підключення перервано",
+		"microphonePermissionRequired": "Потрібен доступ до мікрофона",
+		"cameraPermissionRequired": "Потрібен доступ до камери",
+		"recipientDidNotAnswer": "Отримувач не відповів на дзвінок."
+	},
+	"usernameScreen": "Екран {{username}}"
+}

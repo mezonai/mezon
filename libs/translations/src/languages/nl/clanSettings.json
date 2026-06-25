@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Community-overzicht",
+		"deleteClan": "Clan verwijderen",
+		"sectionTitles": {
+			"apps": "Apps",
+			"moderation": "Moderatie",
+			"emotions": "Emoties"
+		},
+		"items": {
+			"overview": "Overzicht",
+			"roles": "Rollen",
+			"emoji": "Emoji's",
+			"imageStickers": "Stickerafbeeldingen",
+			"voiceStickers": "Geluidsstickers",
+			"categoryOrder": "Categorievolgorde",
+			"integrations": "Integraties",
+			"auditLog": "Controlelog",
+			"onboarding": "Inleiding",
+			"enableCommunity": "Community activeren"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Minimumgrootte: 128x128",
+		"recommendedSize": "Wij adviseren een afbeelding van minimaal 512x512 voor de clan.",
+		"uploadImage": "Afbeelding uploaden",
+		"clanName": "Clan naam",
+		"namePlaceholder": "Clan naam...",
+		"validationError": "Voer een geldige kanaalnaam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
+		"modal": {
+			"title": "Alleen beeldbestanden toegestaan",
+			"content": "Alleen bestanden van het formaat (JPEG, PNG) uploaden, bedankt!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Pas op — je hebt niet-opgeslagen wijzigingen!",
+		"reset": "Herstellen",
+		"saveChanges": "Wijzigingen opslaan"
+	},
+	"clanBanner": {
+		"title": "Clan banner achtergrond",
+		"description": "Deze afbeelding wordt getoond bovenaan je kanaallijst.",
+		"recommendedSize": "Aanbevolen minimumgrootte is 960x540 met een 16:9 formaatverhouding.",
+		"uploadBackground": "Achtergrond uploaden",
+		"chooseImage": "Afbeelding kiezen",
+		"modal": {
+			"title": "Alleen beeldbestanden toegestaan",
+			"content": "Alleen bestanden van het formaat (JPEG, PNG) uploaden, bedankt!"
+		}
+	},
+	"systemMessages": {
+		"title": "Systeemberichtkanaal",
+		"description": "Dit is het kanaal waar we systeemgebeurtenisberichten naar sturen. Kan op elk moment worden uitgeschakeld",
+		"welcomeRandom": "Verstuur willekeurige welkomstberichten wanneer iemand deze server betreedt.",
+		"welcomeSticker": "Herinner leden om welkomstberichten te beantwoorden met een sticker.",
+		"boostMessage": "Verstuur bericht wanneer iemand deze server boost.",
+		"setupTips": "Verstuur handige tips voor serveropstelling.",
+		"auditLog": "Verstuur log wanneer een actie wordt toegepast op de clan",
+		"anoTitle": "Anonieme modus",
+		"anoDesc": "Voorkom dat gebruikers de anonieme modus gebruiken"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Gaming Companion Apps",
+			"popularTrending": "Populaire & trending apps",
+			"serverMiniGames": "Server mini-games",
+			"rolePlayingFavorites": "RPG favorieten"
+		},
+		"inServers": "in {{count}} servers"
+	},
+	"emoji": {
+		"uploadInstructions": "UPLOADINSTRUCTIES",
+		"title": "Emoji's",
+		"description": "Voeg maximaal 250 aangepaste emoji's toe die mensen kunnen gebruiken in deze server.",
+		"uploadRequirements": "UPLOAD EISEN",
+		"requirements": {
+			"fileType": "Bestandstype: JPEG, PNG, GIF",
+			"fileSize": "Aanbevolen bestandsgrootte: 256 KB",
+			"dimensions": "Aanbevolen afmetingen: 128x128",
+			"naming": "Naamgeving: Emoji-naam moet minimaal 2 tekens bevatten en alleen lettercijfers en onderstrepingsteken bevatten"
+		},
+		"uploadEmoji": "Emoji uploaden"
+	},
+	"stickers": {
+		"uploadInstructions": "UPLOADINSTRUCTIES",
+		"description": "Stickers kunnen statisch (PNG) of dynamisch (APNG, GIF) zijn. Stickers moeten precies 320 x 320 pixels zijn en niet groter dan 512KB. Wij passen de grootte automatisch aan voor statische PNG's en dynamische GIF's.",
+		"uploadHere": "Uploaden hier!",
+		"customizeMessage": "Pas deze geweldige stickers aan op jouw voorkeur",
+		"uploadSticker": "Sticker uploaden"
+	},
+	"deleteClanTitle": "'{{clanName}}' verwijderen"
+}

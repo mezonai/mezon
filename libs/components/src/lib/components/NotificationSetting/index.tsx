@@ -112,12 +112,10 @@ const ModalNotificationSetting = (props: ModalParam) => {
 	};
 	const getIsMuted = useCallback(
 		(setting: (typeof channelCategorySettings)[number]) => {
-			const muteTime =
-				setting.channel_category_title === 'category'
-					? categoryNotificationSettings[setting.id]?.time_mute
-					: channelNotificationMuteSeconds[setting.id];
+			const isCategory = setting.channel_category_title === 'category';
+			const muteTime = isCategory ? categoryNotificationSettings[setting.id]?.time_mute : channelNotificationMuteSeconds[setting.id];
 
-			if (muteTime !== undefined && muteTime !== null && muteTime !== EMuteState.UN_MUTE) {
+			if (muteTime !== undefined && muteTime !== null) {
 				return isMutedFromMuteTime(muteTime);
 			}
 

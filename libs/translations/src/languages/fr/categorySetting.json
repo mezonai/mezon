@@ -1,0 +1,29 @@
+{
+    "fields": {
+        "categoryName": {
+            "title": "Nom de la catégorie",
+            "placeholder": "Entrez le nom de la catégorie",
+            "errorMessage": "Veuillez entrer un nom de catégorie valide (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -)."
+        },
+        "categoryPermission": {
+            "title": "",
+            "permission": "Permissions de la catégorie",
+            "description": "Modifier les paramètres de confidentialité et personnaliser la manière dont les membres peuvent interagir avec ce canal."
+        },
+        "categoryDelete": {
+            "title": "",
+            "delete": "Supprimer la catégorie"
+        }
+    },
+    "confirm": {
+        "delete": {
+            "content": "Êtes-vous sûr de vouloir supprimer le canal {{categoryName}} ? Cette action ne peut pas être annulée.",
+            "confirmText": "Supprimer",
+            "title": "Supprimer la catégorie"
+        },
+        "save": "Sauvegarder"
+    },
+    "toast": {
+        "updated": "Mis à jour avec succès"
+    }
+}

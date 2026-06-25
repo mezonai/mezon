@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "Учасник надсилає повідомлення в каналі",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "Учасник відвідує канал",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "Прочитайте це завдання",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "Що мають робити нові учасники?",
+    "placeholder": "Наприклад: Поділіться фото вашого улюбленця",
+    "channelTitle": "Де вони мають це робити?",
+    "channelNote": "Канал має бути видимим для @everyone (публічний канал)",
+    "completeWhen": "Це завдання завершується, коли:",
+    "required": "Це поле обов'язкове.",
+    "minCharacters": "Дія має містити щонайменше 7 символів"
+  },
+  "buttons": {
+    "remove": "Видалити",
+    "save": "Зберегти",
+    "add": "Додати"
+  }
+}

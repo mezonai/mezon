@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "DM-bericht preview",
+            "AllMessages": "Alle berichten",
+            "UnreadDMOnly": "Alleen ongelezen DM-berichten",
+            "None": "Geen"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Uiterlijk",
+            "theme": "Thema",
+            "syncAcrossClients": {
+                "title": "Synchroniseren op alle clients",
+                "description": "Wanneer deze optie is ingeschakeld, worden de bovenstaande thema-instellingen op alle andere clients overschreven, inclusief desktop en browser."
+            }
+        },
+        "search": {
+            "title": "Zoeken",
+            "showResultCount": {
+                "title": "Toon exact zoekresultaattelling",
+                "description": "Wanneer ingeschakeld, kan de weergavetijd van zoekresultaten toenemen."
+            }
+        }
+    }
+}

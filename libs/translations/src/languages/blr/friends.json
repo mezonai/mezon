@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Запыты на сяброўства",
+		"received": "Атрыманыя",
+		"sent": "Дасланыя",
+		"emptyReceived": {
+			"title": "Няма ўваходных запытаў на сяброўства",
+			"description": "Тут вы ўбачыце ўсе запыты на сяброўства, якія паступілі да вас."
+		},
+		"emptySent": {
+			"title": "Няма выходных запытаў на сяброўства",
+			"description": "Тут вы ўбачыце ўсе запыты на сяброўства, якія вы даслалі іншым."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Атрыманы запыт на сяброўства",
+		"findYourFriend": "Знайсці сябра",
+		"addByUserName": "Дадаць па імені карыстальніка або нумары тэлефона",
+		"addByUsername": "Дадаць па {{username}}",
+		"searchUsernamePlaceholder": "Увядзіце імя карыстальніка або нумар тэлефона",
+		"whoYouWantToAddFriend": "Каго вы хочаце дадаць у сябры?",
+		"byTheWay": "Дарэчы, ваша імя карыстальніка -",
+		"sendRequestButton": "Даслаць запыт на сяброўства",
+		"addFriendToast": "Запыт на сяброўства дасланы"
+	},
+	"friends": "Сябры",
+	"noFriendsResultsFound": "Вынікаў пошуку сяброў не знойдзена",
+	"toast": {
+		"sendAddFriendSuccess": "Запыт на сяброўства паспяхова дасланы!",
+		"acceptAddFriendSuccess": "Запрашэнне на сяброўства прынята!",
+		"sendAddFriendFail": "Хм, адбылася памылка. Праверце правільнасць імені карыстальніка.",
+		"somethingWentWrong": "Нешта пайшло не так",
+		"friendRequestAlreadySent": "Запыт на сяброўства ўжо дасланы, чакае прыняцця."
+	},
+	"you": "вы"
+}

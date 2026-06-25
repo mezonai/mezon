@@ -1,0 +1,112 @@
+{
+	"roleDescription": "Utilisez les rôles pour grouper les membres de votre clan et attribuer des permissions",
+	"defaultRole": "Permissions par défaut pour tous les membres du clan",
+	"roles": "Rôles",
+	"members": "Membres",
+	"noRole": "Aucun rôle pour le moment",
+	"skipStep": "Passer cette étape",
+	"failed": "Échec",
+	"createNewRole": {
+		"title": "Étape 1 sur 3",
+		"createANewRole": "Créer un nouveau rôle",
+		"description": "Définissez un nom et une couleur uniques pour ce rôle. Vous pouvez toujours changer cela plus tard.",
+		"create": "Créer",
+		"newRole": "Entrez le nom du nouveau rôle...",
+		"roleName": "Nom du rôle",
+		"createSuccess": "Rôle {{roleName}} créé avec succès",
+		"cannotCreate": "Impossible de créer {{roleName}}"
+	},
+	"setupPermission": {
+		"title": "Étape 2 sur 3",
+		"setupPermissionTitle": "Configurer les permissions",
+		"setupPermissionSuccessfully": "Permissions configurées avec succès",
+		"next": "Suivant",
+		"searchPermission": "Rechercher une permission"
+	},
+	"setupMember": {
+		"title": "Étape 3 sur 3",
+		"addMember": "Ajouter un membre",
+		"description": "Attribuez ce rôle aux membres de votre clan. Les membres peuvent avoir plusieurs rôles.",
+		"finish": "Terminer",
+		"addedMember": "Membre ajouté avec succès",
+		"searchMembers": "Rechercher des membres",
+		"deletedMember": "{{memberName}} supprimé avec succès",
+		"add": "Ajouter",
+		"noMembersFound": "Aucun membre trouvé"
+	},
+	"roleDetail": {
+		"permissions": "Permissions",
+		"members": "Membres",
+		"role": "Rôle",
+		"roleName": "Nom du rôle",
+		"deleteRole": "Supprimer le rôle",
+		"deleteRoleSuccessfully": "Rôle {{roleName}} supprimé avec succès",
+		"changesSaved": "Modifications sauvegardées",
+		"save": "Sauvegarder",
+		"confirmSaveTitle": "Sauvegarder les modifications ?",
+		"confirmSaveContent": "Vous avez apporté des modifications. Voulez-vous les sauvegarder ?",
+		"yes": "Oui",
+		"doNotSave": "Ne pas sauvegarder"
+	},
+	"roleColorPicker": {
+		"textBtnRole": "Couleur du rôle",
+		"titleBS": "Choisir une couleur",
+		"reset": "Réinitialiser",
+		"save": "Sauvegarder"
+	},
+	"roleImagePicker": "Icône du rôle",
+	"notifyEveryone": "Notifier tous ceux qui ont la permission de voir ce canal.",
+	"removeImage": "Supprimer",
+	"allMembers": "Tous les membres",
+	"permissionTitles": {
+		"administrator": "Administrateur",
+		"view-channel": "Voir le canal",
+		"manage-channel": "Gérer le canal",
+		"manage-clan": "Gérer le Clan",
+		"manage-thread": "Gérer le fil",
+		"send-message": "Envoyer un message",
+		"delete-message": "Supprimer un message",
+		"clan-owner": "Propriétaire du Clan"
+	},
+	"permissionDescriptions": {
+		"administrator": "Permet aux membres de gérer l'intégralité du clan (permission inférieure seulement au propriétaire).",
+		"view-channel": "Permet aux membres de voir les canaux publics.",
+		"manage-channel": "Permet aux membres de créer, modifier ou supprimer des canaux.",
+		"manage-clan": "Permet aux membres de contrôler les paramètres du clan, de gérer les rôles et les canaux, de surveiller les activités des membres, assurant ainsi une gestion efficace et une communauté bien organisée.",
+		"manage-thread": "Permet aux membres de créer, modifier, supprimer les fils dans les canaux (y compris les fils privés).",
+		"send-message": "Permet aux membres d'envoyer des messages dans les canaux publics (y compris les fils et les discussions de fils dans ces canaux).",
+		"delete-message": "Permet aux membres de supprimer des messages dans les canaux publics (y compris les fils et les discussions de fils dans ces canaux).",
+		"notAvailable": "Description de la permission non disponible"
+	},
+	"mainRoles": {
+		"useRolesToGroup": "Utilisez les rôles pour grouper les membres de votre clan et attribuer des permissions.",
+		"defaultPermissions": "Permissions par défaut",
+		"everyoneDescription": "@everyone • s'applique à tous les membres du clan",
+		"searchRoles": "Rechercher des rôles",
+		"createRole": "Créer un rôle",
+		"membersUseColor": "Les membres utilisent la couleur du rôle le plus élevé qu'ils ont dans cette liste. Faites glisser les rôles pour les réorganiser.",
+		"noRoles": "Aucun rôle"
+	},
+	"roleManagement": {
+		"newRole": "NOUVEAU RÔLE",
+		"editRole": "MODIFIER LE RÔLE",
+		"back": "RETOUR",
+		"display": "Affichage",
+		"permissions": "Permissions",
+		"manageMembers": "Gérer les membres",
+		"searchPermissions": "Rechercher des permissions",
+		"failedToUpdateRoleOrder": "Impossible de mettre à jour l'ordre des rôles.",
+		"newRoleDefault": "Nouveau rôle",
+		"roleName": "Nom du rôle",
+		"roleColour": "Couleur du rôle",
+		"membersUseColour": "Les membres utilisent la couleur du rôle le plus élevé qu'ils ont dans la liste des rôles.",
+		"roleIcon": "Icône du rôle",
+		"roleIconDescription": "Téléchargez une image de moins de 256 Ko ou choisissez un emoji personnalisé de ce clan. Nous recommandons au moins 64x64 pixels. Les membres verront l'icône du rôle le plus élevé s'ils ont plusieurs rôles",
+		"chooseImage": "Choisir une image",
+		"removeIcon": "Supprimer l'icône",
+		"edit": "Modifier",
+		"view": "Voir",
+		"delete": "Supprimer",
+		"roleNameIsRequired": "Le nom du rôle est requis"
+	}
+}

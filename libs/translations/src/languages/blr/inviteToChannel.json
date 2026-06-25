@@ -1,0 +1,46 @@
+{
+	"title": "Запрасіць сяброў",
+	"iconTitle": {
+		"shareInvite": "Падзяліцца",
+		"copyLink": "Скапіяваць",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR-код"
+	},
+	"copyLink": "Спасылка скапіявана!",
+	"unknownChannel": "НЕВЯДОМЫ КАНАЛ",
+	"yourLinkInvite": "Спасылка сапраўдная на працягу",
+	"inviteFriendToChannel": "Запрасіць сябра ў канал",
+	"inviteFriendToClan": "Запрасіць сябра ў клан",
+	"editInviteLink": "Рэдагаваць спасылку запрашэння",
+	"inviteChannel": "ЗАПРАСІЦЬ У КАНАЛ",
+	"advancedSettings": "ПАШЫРАНЫЯ НАЛАДЫ",
+	"expireAfter": "ТЭРМІН ДЗЕЯННЯ ПАСЛЯ",
+	"maxUsers": "МАКС. КОЛЬКАСЦЬ",
+	"temporaryMembership": "Часовае сяброўства",
+	"memberAutoKick": "Удзельнік будзе аўтаматычна выкінуты пры адключэнні, калі не прызначана роля.",
+	"btnInvite": "Запрасіць",
+	"btnSent": "Запыт дасланы",
+	"qrModal": {
+		"title": "QR-код",
+		"scanToJoin": "Скануйце гэты QR-код для далучэння да {{clanName}}!",
+		"scanToJoinDefault": "Скануйце гэты QR-код для далучэння да клана!",
+		"generating": "Генерацыя QR-кода...",
+		"errorGenerating": "Памылка генерацыі QR-кода",
+		"downloadSuccess": "QR-код захаваны ў бібліятэку",
+		"downloadError": "Памылка загрузкі QR-кода",
+		"shareError": "Памылка перадачы QR-кода",
+		"clanDefaultName": "Клан"
+	},
+	"share": {
+		"title": "падзяліцца",
+		"message": "Далучайцеся да Mezon са мной:",
+		"error": "Памылка перадачы спасылкі запрашэння",
+		"errorCreateLink": "Памылка стварэння спасылкі запрашэння"
+	},
+	"noFriendsToInvite": "Няма сяброў для запрашэння",
+	"addFriendsToInvite": "Дадайце сяброў у свой спіс, каб запрасіць іх у гэты клан.",
+	"addSomeFriends": "Дадайце некалькіх сяброў",
+	"loadingInviteLink": "Стварэнне спасылкі запрашэння..."
+}

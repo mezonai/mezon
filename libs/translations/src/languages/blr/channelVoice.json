@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Галасавы пакой",
+		"joinVoice": "Далучыцца да галасавога"
+	},
+	"chat": "Чат",
+	"membersWillBeNotified": "{{participantsCount}} удзельнікаў будзе апавешчана",
+	"noDisplay": "Не адлюстроўваць галасавы канал",
+	"videoConnected": "Відэа падключана",
+	"voiceConnected": "Голас падключаны",
+	"turnOffMicrophone": "Выключыць мікрафон",
+	"turnOnMicrophone": "Уключыць мікрафон",
+	"turnOffCamera": "Выключыць камеру",
+	"turnOnCamera": "Уключыць камеру",
+	"stopScreenShare": "Спыніць дзяленне экранам",
+	"shareYourScreen": "Падзяліцца экранам",
+	"disconnect": "Адключыцца",
+	"muteModal": {
+		"title": "Заглушыць удзельніка",
+		"content": "Вы ўпэўнены, што хочаце заглушыць \"{{userName}}\"?",
+		"mute": "Заглушыць"
+	},
+	"kickModal": {
+		"title": "Выкінуць з галасавога канала",
+		"content": "Вы ўпэўнены, што хочаце выкінуць \"{{userName}}\" з галасавога канала?",
+		"kick": "Выкінуць"
+	},
+	"disconnectModal": {
+		"title": "Страта галасавога падключэння",
+		"content": {
+			"removed": "Вас выкінулі з галасавога канала",
+			"duplicate": "Вы адключыліся праз падключэнне з іншага месца",
+			"default": "Вы адключыліся ад галасавога канала",
+			"deleted": "Галасавы канал выдалены"
+		},
+		"confirm": "Пацвердзіць"
+	},
+	"permission": {
+		"cameraTitle": "Надаць доступ да камеры",
+		"cameraBody": "Дадатку не нададзены доступ да камеры. Уключыце доступ да камеры ў сістэмных наладах.",
+		"microphoneTitle": "Надаць доступ да мікрафона",
+		"microphoneBody": "Дадатку не нададзены доступ да мікрафона. Уключыце доступ да мікрафона ў сістэмных наладах.",
+		"cancel": "Скасаваць",
+		"deviceSettings": "Налады прылады"
+	},
+	"device": {
+		"inputDevice": "Мікрафон",
+		"outputDevice": "Аўдыё",
+		"camera": "Камера"
+	},
+	"toast": {
+		"connectionConnected": "Падключэнне паспяховае",
+		"connectionDisconnected": "Падключэнне перарвана",
+		"microphonePermissionRequired": "Патрэбен доступ да мікрафона",
+		"cameraPermissionRequired": "Патрэбен доступ да камеры",
+		"recipientDidNotAnswer": "Атрымальнік не адказаў на званок."
+	},
+	"usernameScreen": "Экран {{username}}"
+}

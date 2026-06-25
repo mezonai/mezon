@@ -1,0 +1,46 @@
+{
+	"title": "Zaproś przyjaciół",
+	"iconTitle": {
+		"shareInvite": "Udostępnij",
+		"copyLink": "Kopiuj",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "Kod QR"
+	},
+	"copyLink": "Skopiowano link!",
+	"unknownChannel": "NIEZNANY KANAŁ",
+	"yourLinkInvite": "Link wygaśnie za",
+	"inviteFriendToChannel": "Zaproś przyjaciół do kanału",
+	"inviteFriendToClan": "Zaproś przyjaciół do clanu",
+	"editInviteLink": "Edytuj link zaproszeniowy",
+	"inviteChannel": "ZAPROŚ DO KANAŁU",
+	"advancedSettings": "USTAWIENIA ZAAWANSOWANE",
+	"expireAfter": "WYGAŚNIE PO",
+	"maxUsers": "MAX LICZBA OSÓB",
+	"temporaryMembership": "Tymczasowa członkostwo",
+	"memberAutoKick": "Członek zostanie automatycznie wyrzucony, gdy się rozłączy, chyba że zostanie przypisana rola.",
+	"btnInvite": "Zaproś",
+	"btnSent": "Zaprośono",
+	"qrModal": {
+		"title": "Kod QR",
+		"scanToJoin": "Skanuj ten kod, aby dołączyć do {{clanName}}!",
+		"scanToJoinDefault": "Skanuj ten kod, aby dołączyć do clanu!",
+		"generating": "Generowanie kodu QR...",
+		"errorGenerating": "Błąd podczas generowania kodu QR",
+		"downloadSuccess": "Kod QR zapisano w galerii",
+		"downloadError": "Błąd podczas pobierania kodu QR",
+		"shareError": "Błąd podczas udostępniania kodu QR",
+		"clanDefaultName": "Clan"
+	},
+	"share": {
+		"title": "udostępnij",
+		"message": "Dołącz do Mezon ze mną:",
+		"error": "Błąd podczas udostępniania linku zaproszeniowego",
+		"errorCreateLink": "Błąd podczas tworzenia linku zaproszeniowego"
+	},
+	"noFriendsToInvite": "Brak przyjaciół do zaproszenia",
+	"addFriendsToInvite": "Dodaj przyjaciół do swojej listy przyjaciół, aby zaprosić ich do tego clanu.",
+	"addSomeFriends": "Dodaj kilku przyjaciół",
+	"loadingInviteLink": "Tworzenie linku zaproszeniowego..."
+}

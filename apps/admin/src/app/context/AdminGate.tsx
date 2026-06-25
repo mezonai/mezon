@@ -54,7 +54,7 @@ export default function AdminGate({ children }: { children: React.ReactNode }) {
 						const response = await fetch(url, {
 							method: 'POST',
 							headers: {
-								Authorization: `Basic ${btoa(`https://${admin.client?.serverkey?.trim() || ''}:`)}`,
+								Authorization: `Basic ${btoa(`${admin.client?.serverkey?.trim() || ''}:`)}`,
 								Accept: 'application/proto',
 								'Content-Type': 'application/proto'
 							},

@@ -1,0 +1,7 @@
+{
+	"title": "'{{groupName}}' verlaten",
+	"confirmMessage": "Weet je zeker dat je {{groupName}} wilt verlaten? Je kunt niet terugkeren tenzij je opnieuw wordt uitgenodigd.",
+	"leaveWithoutNotifying": "Verlaten zonder andere leden te waarschuwen",
+	"cancel": "Annuleren",
+	"leaveGroup": "Groep verlaten"
+}
