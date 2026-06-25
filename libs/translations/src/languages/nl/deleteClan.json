@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Clan verwijderen",
+    "description": "Weet je zeker dat je {{currentClan}} wilt verwijderen? Deze actie is onherroepelijk.",
+    "confirm": "Ja",
+    "cancel": "Nee",
+     "titleLeaveClan": "Clan verlaten",
+    "descriptionLeaveClan": "Weet je zeker dat je {{currentClan}} wilt verlaten? Je kunt niet terugkeren tenzij je opnieuw wordt uitgenodigd.",
+    "error": "Er is een fout opgetreden bij het proberen te verwijderen/verlaten van de clan"
+  },
+  "confirmMessage": "Weet je zeker dat je deze clan wilt verwijderen? Deze actie is onherroepelijk.",
+  "enterClanName": "Voer clan naam in",
+  "incorrectName": "Je hebt de clan naam verkeerd ingevoerd",
+  "cancel": "Annuleren"
+}

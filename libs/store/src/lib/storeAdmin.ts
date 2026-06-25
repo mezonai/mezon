@@ -9,6 +9,7 @@ import type { MezonAdminContextValue } from '@mezon/transport';
 import { publishSessionUpdate } from '@mezon/transport';
 import { safeJSONParse } from 'mezon-js';
 import { adminApplicationReducer } from './application/applications.slice';
+import { clansReducer } from './clans/clans.slice';
 import { dashboardReducer } from './dashboard/dashboard.slice';
 import { ERRORS_FEATURE_KEY, errorsReducer } from './errors';
 import { errorListenerMiddleware } from './errors/errors.listener';
@@ -50,6 +51,15 @@ const persistedAccountReducer = persistReducer(
 	accountReducer
 );
 
+const persistedClansReducer = persistReducer(
+	{
+		key: 'clans',
+		storage,
+		blacklist: ['invitePeople', 'checkJoinList']
+	},
+	clansReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
@@ -57,7 +67,8 @@ const reducer = {
 	auth: persistedReducer,
 	adminApplication: adminApplicationReducer,
 	[ERRORS_FEATURE_KEY]: errorsReducer,
-	[TOASTS_FEATURE_KEY]: toastsReducer
+	[TOASTS_FEATURE_KEY]: toastsReducer,
+	clans: persistedClansReducer
 };
 let storeInstance = configureStore({
 	reducer

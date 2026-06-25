@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "Налаштування",
+			"overview": "Огляд",
+			"moderation": "Модерація",
+			"auditLog": "Журнал змін",
+			"channels": "Канали",
+			"integrations": "Інтеграції",
+			"emoji": "Емодзі",
+			"sticker": "Стикери",
+			"webhooks": "Вебхуки",
+			"security": "Безпека",
+			"permissionDenied": "У вас немає права редагувати",
+			"sound": "Звуки",
+			"enableCommunity": "Увімкнути спільноту"
+		},
+		"community": {
+			"title": "Спільнота",
+			"enableCommunity": "Увімкнути спільноту"
+		},
+		"subscriptions": {
+			"title": "Пакети підписки клану",
+			"getStarted": "Розпочати"
+		},
+		"userManagement": {
+			"title": "Управління користувачами",
+			"members": "Учасники",
+			"role": "Роль",
+			"invite": "Запрошення",
+			"bans": "Бани"
+		}
+	}
+}

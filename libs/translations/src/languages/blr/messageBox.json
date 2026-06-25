@@ -1,0 +1,19 @@
+{
+	"placeholder": "Пішыце тут свае думкі...",
+	"ephemeralMessage": "Часовае паведамленне для {{username}}...",
+	"mentionCategories": {
+		"members": "УДЗЕЛЬНІКІ",
+		"textChannels": "ТЭКСТАВЫЯ КАНАЛЫ",
+		"emojiMatching": "Знойдзена эмодзі",
+		"commands": "КАМАНДЫ"
+	},
+	"suggestions": {
+		"notifyEveryone": "Паведаміць усіх, хто мае права бачыць гэты канал",
+		"loadingCommands": "Загрузка каманд..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Даслаць часовае паведамленне (бачна толькі абранаму карыстальніку)"
+		}
+	}
+}

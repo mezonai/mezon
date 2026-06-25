@@ -1,4 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
+import type { SupportedLanguage } from '@mezon/translations';
+import { SUPPORTED_LANGUAGES } from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -66,7 +68,7 @@ export interface showSettingFooterProps {
 
 export interface AppState {
 	themeApp: 'light' | 'dark' | 'sunrise' | 'purple_haze' | 'redDark' | 'abyss_dark';
-	currentLanguage: 'en' | 'vi';
+	currentLanguage: SupportedLanguage;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	isShowMemberList: boolean;
@@ -100,10 +102,13 @@ export interface AppState {
 	autoHidden: boolean;
 }
 
-const getInitialLanguage = (): 'en' | 'vi' => {
+const isStoredLanguage = (value: string | null): value is SupportedLanguage =>
+	value !== null && (SUPPORTED_LANGUAGES as readonly string[]).includes(value);
+
+const getInitialLanguage = (): SupportedLanguage => {
 	if (typeof window !== 'undefined') {
 		const storedLang = localStorage.getItem('i18nextLng');
-		if (storedLang === 'vi' || storedLang === 'en') {
+		if (isStoredLanguage(storedLang)) {
 			return storedLang;
 		}
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;

@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "We hebben ver gezocht. Helaas zijn er geen resultaten gevonden",
+	"video": {
+		"error": {
+			"title": "Video niet beschikbaar",
+			"cannotPlay": "Video kan niet worden afgespeeld",
+			"loadingAborted": "Video laden geannuleerd",
+			"networkError": "Netwerkfout bij video laden",
+			"codecNotSupported": "Video codec niet ondersteund op dit platform",
+			"codecNotSupportedElectron": "Video codec niet ondersteund op dit platform. Probeer video te downloaden om af te spelen met systeemspeler.",
+			"formatNotSupported": "Video formaat niet ondersteund",
+			"downloadButton": "Video downloaden",
+			"browserNotSupported": "Je browser ondersteunt het videobegrip."
+		}
+	}
+}

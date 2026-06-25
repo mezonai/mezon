@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Журнал аудитів",
+		"filterByUser": "Фільтрувати за користувачем",
+		"filterByAction": "Фільтрувати за дією",
+		"filterBtn": "Фільтрувати"
+	},
+	"auditLogItem": {
+		"performedAnAction": "виконав дію",
+		"toChannel": "в канал",
+		"remove": "видалити",
+		"add": "додати"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Всі дії",
+		"placeholder": "Пошук дії"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Всі користувачі",
+		"placeholder": "Пошук користувача"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "ЩЕ НЕМАЄ ЖУРНАЛУ",
+		"description": "Після того, як модератори виконують свої завдання, ви можете відстежувати їхню активність тут."
+	}
+}

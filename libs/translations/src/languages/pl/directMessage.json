@@ -1,0 +1,63 @@
+{
+	"directMessages": "WIADOMOŚCI BEZPOŚREDNIE",
+	"createDM": "Utwórz wiadomość",
+	"friends": "Przyjaciele",
+	"yourMessages": "Twoje wiadomości",
+	"selectConversation": "Wybierz konwersację, aby rozpocząć rozmowę",
+	"createMessageGroup": {
+		"selectFriends": "Wybierz przyjaciół",
+		"canAddMoreFriends": "Możesz dodać jeszcze {{count}} przyjaciół.",
+		"searchPlaceholder": "Wpisz nazwę użytkownika swojego przyjaciela",
+		"addToGroupChat": "Dodaj do czatu grupowego",
+		"createDMOrGroupChat": "Utwórz wiadomość lub czat grupowy",
+		"createDM": "Utwórz wiadomość",
+		"createGroupChat": "Utwórz czat grupowy",
+		"noFriendsFound": "Nie znaleziono przyjaciół, których nie ma jeszcze w tej konwersacji.",
+		"creating": "Tworzenie..."
+	},
+	"editGroup": {
+		"title": "Edytuj grupę",
+		"uploadImageText": "Kliknij, aby przesłać obraz",
+		"removeAvatar": "Usuń awatar",
+		"groupNameLabel": "Nazwa grupy",
+		"groupNamePlaceholder": "Wpisz nazwę grupy",
+		"validationError": "Proszę wprowadzić poprawną nazwę grupy (tylko litery, cyfry, _ lub -).",
+		"cancel": "Anuluj",
+		"save": "Zapisz",
+		"saving": "Zapisywanie..."
+	},
+	"contextMenu": {
+		"editGroup": "Edytuj grupę",
+		"addFriend": "Dodaj przyjaciela",
+		"leaveGroup": "Opuść grupę",
+		"closeDM": "Zamknij wiadomość",
+		"markAsRead": "Oznacz jako przeczytane",
+		"invitePeople": "Zaproś ludzi",
+		"hideConversation": "Ukryj konwersację",
+		"profile": "Profil",
+		"message": "Wiadomość",
+		"removeFriend": "Usuń przyjaciela",
+		"block": "Zablokuj",
+		"unblock": "Odblokuj",
+		"removeFromGroup": "Usuń z grupy",
+		"shareContact": "Udostępnij kontakt",
+		"mute": "Wycisz",
+		"unmute": "Odcisz",
+		"for15Minutes": "Przez 15 minut",
+		"for1Hour": "Przez 1 godzinę",
+		"for3Hours": "Przez 3 godziny",
+		"for8Hours": "Przez 8 godzin",
+		"for24Hours": "Przez 24 godziny",
+		"untilTurnBackOn": "Do momentu ponownego włączenia",
+		"mutedUntil": "Wyciszone do {{time}}",
+		"pinConversation": "Przypnij konwersację",
+		"unpinConversation": "Odepnij konwersację",
+		"pinLimitExceeded": "Możesz przypiąć maksymalnie 10 konwersacji. Proszę odpiąć inną konwersację, aby przypiąć tę"
+	},
+	"pinned": "PRZYPINANE",
+	"remove": {
+		"content": "Konwersacja w tym kanale nie jest już dostępna!",
+		"title": "Konwersacja niedostępna",
+		"button": "Potwierdź"
+	}
+}

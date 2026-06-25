@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Filteropties",
+	"users": "Gebruikers",
+	"channels": "Kanalen",
+	"all": "Alle",
+	"selectChannelPlaceholder": "Kies een kanaal of gebruiker...",
+	"selectChannel": "Kies een kanaal",
+	"selectUser": "Kies een gebruiker",
+	"share": "Delen",
+	"suggestions": "Suggesties",
+	"addCommentPlaceholder": "Commentaar toevoegen (Optioneel)",
+	"fileTooLarge": "Bestand is te groot",
+	"fileSizeExceeded": "{{fileType}} kan niet groter zijn dan {{maxSize}}MB!",
+	"bannedChannel": "Je bent verbannen in kanaal {{channelName}}.",
+	"empty": "Lege gegevens"
+}

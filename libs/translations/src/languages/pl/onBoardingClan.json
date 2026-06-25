@@ -1,0 +1,165 @@
+{
+	"title": "Ukończ wprowadzenie",
+	"description": "Krok {{step}} z {{total}}",
+	"action": {
+		"title": "Ukończ wprowadzenie dla swojego clanu",
+		"description": "Ukończono {{step}} z {{total}} kroków",
+		"createChannel": "Utwórz swój kanał",
+		"invite": "Zaproś kilku przyjaciół",
+		"sendMessage": "Wyślij swoją pierwszą wiadomość"
+	},
+	"modal": {
+		"title": "Ustawienia wprowadzenia"
+	},
+	"buttons": {
+		"back": "Wstecz",
+		"cancel": "Anuluj",
+		"confirm": "Potwierdź",
+		"save": "Zapisz",
+		"saving": "Zapisywanie...",
+		"setup": "Konfiguracja",
+		"edit": "Edytuj",
+		"preview": "Podgląd",
+		"disable": "Wyłącz wprowadzenie"
+	},
+	"onboarding": {
+		"title": "Wprowadzenie",
+		"description": "Stwórz proste doświadczenie początkowe dla członków z kanałami, rolami i pierwszymi krokami dostosowania.",
+		"enabledTitle": "Wprowadzenie zostało włączone",
+		"enabledDescription": "Zmiany nie będą obowiązywać, dopóki nie zapiszesz.",
+		"featuresEnabled": "Funkcje wprowadzenia zostały włączone"
+	},
+	"questions": {
+		"title": "Pytania",
+		"description": "Publiczne kanały mogą być przypisywane przez Pytania."
+	},
+	"clanGuide": {
+		"title": "Przewodnik Clanu",
+		"description": "Powitania, Baner, misje do wykonania i zasoby zostały skonfigurowane"
+	},
+	"messages": {
+		"communityEnabledSuccess": "Społeczność została włączona pomyślnie",
+		"changesSavedSuccess": "Zmiany zostały zapisane pomyślnie"
+	},
+	"errors": {
+		"needAtLeastOneItem": "Należy mieć co najmniej jeden element, aby włączyć wprowadzenie",
+		"failedToEnableCommunity": "Nie można włączyć społeczności",
+		"failedToSaveChanges": "Nie można zapisać zmian",
+		"questionRequired": "Pytanie jest wymagane."
+	},
+	"questionsPage": {
+		"title": "Pytania",
+		"description": "Utwórz pytania, aby pomóc członkom wybierać dodatkowe kanały i role. Lista kanałów zostanie dostosowana na podstawie ich odpowiedzi.",
+		"noChannelsMissing": "Brak publicznych kanałów brakujących z Pytań i Domyślnych Kanałów.",
+		"channelNotAssigned": "Kanał nie został przypisany",
+		"noChannelsHere": "Brak kanałów tutaj",
+		"preJoinQuestions": {
+			"title": "Pytania przed dołączeniem",
+			"description": "Członkowie zostaną zapytani o te pytania przed dołączeniem do Twojego serwera. Użyj ich do przypisywania kanałów i ról. Pytania przed dołączeniem będą również dostępne na stronie Kanały & Role."
+		},
+		"addQuestion": "Dodaj pytanie",
+		"questionNumber": "Pytanie {{number}}",
+		"enterQuestion": "Wpisz pytanie...",
+		"availableAnswers": "Dostępne odpowiedzi - {{count}} z 50",
+		"addAnswer": "Dodaj odpowiedź",
+		"questionPlaceholder": "Jeste Twoje pytanie",
+		"answerTitle": "Dodaj tytuł odpowiedzi",
+		"answerDescription": "Dodaj opis odpowiedzi",
+		"enterAnswer": "Wpisz odpowiedź...",
+		"enterDescription": "Wpisz opis... (opcjonalnie)",
+		"titleRequired": "Tytuł jest wymagany",
+		"remove": "Usuń"
+	},
+	"enableOnboarding": {
+		"title": "Czy chcesz włączyć Onboarding?",
+		"description": "Przełącz na Wprowadzenie, aby uzyskać dostęp do dodatkowych narzędzi administracyjnych",
+		"subtitle": "pomoże Ci moderować i rozwijać swój Clan w sposób efektywny.",
+		"button": "Włącz Wprowadzenie",
+		"note": "To działanie odblokuje zaawansowane funkcje wprowadzenia"
+	},
+	"enableCommunity": {
+		"title": "Włączyć Społeczność?",
+		"description": "Przekształć swoją społeczność w pełnoprawne doświadczenie Społeczności.",
+		"subtitle": "Uzyskaj dostęp do potężnych narzędzi administracyjnych, aby moderować i rozwijać swój Clan w sposób efektywny.",
+		"button": "Włącz Społeczność",
+		"note": "To działanie odblokuje zaawansowane funkcje społeczności"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Pola z * są wymagane",
+		"title": "Ustawienia Społeczności",
+		"subtitle": "Zarządzaj informacjami swojej społeczności",
+		"enableTitle": "Włącz Społeczność",
+		"enableSubtitle": "Stwórz wspaniałą przestrzeń, aby członkowie mogli się łączyć",
+		"loading": "Ładowanie ustawień społeczności...",
+		"banner": {
+			"title": "Baner Społeczności",
+			"uploadTitle": "Prześlij Baner",
+			"uploadDescription": "Przeciągnij i upuść lub kliknij, aby wybrać obraz",
+			"changeBanner": "Zmień Baner",
+			"removeBanner": "Usuń Baner"
+		},
+		"description": {
+			"title": "Opis Społeczności",
+			"placeholder": "Wpisz krótki opis swojej społeczności..."
+		},
+		"about": {
+			"title": "O Społeczności",
+			"placeholder": "Powiedz nam o swojej społeczności... Co ją wyróżnia?"
+		},
+		"vanityUrl": {
+			"title": "URL niestandardowy",
+			"description": "Utwórz niestandardowy URL dla swojej społeczności. Używaj tylko małych liter, cyfr i myślników.",
+			"placeholder": "moja-wspaniala-spolecznosc",
+			"previewLabel": "Podgląd URL:"
+		},
+		"buttons": {
+			"enableAndSave": "Włącz & Zapisz",
+			"saving": "Zapisywanie...",
+			"save": "Zapisz zmiany",
+			"disable": "Wyłącz Społeczność",
+			"reset": "Zresetuj"
+		},
+		"messages": {
+			"aboutUpdated": "Informacje zaktualizowane!",
+			"aboutUpdateFailed": "Aktualizacja informacji nie powiodła się!",
+			"descriptionUpdated": "Opis zaktualizowany!",
+			"descriptionUpdateFailed": "Aktualizacja opisu nie powiodła się!",
+			"vanityUrlUpdated": "URL niestandardowy zaktualizowany!",
+			"vanityUrlUpdateFailed": "Aktualizacja URL niestandardowego nie powiodła się!",
+			"communityEnabledAndSaved": "Społeczność włączona i zapisana!",
+			"saveFailed": "Zapisanie nie powiodło się!",
+			"changesSaved": "Zapisano zmiany!",
+			"communityDisabled": "Społeczność wyłączona.",
+			"disableFailed": "Wyłączenie nie powiodło się!",
+			"bannerRemoved": "Baner usunięty!",
+			"fillAllRequiredFields": "Proszę wypełnić wszystkie wymagane pola: Baner, O nas, Opis, URL niestandardowy!",
+			"bannerUpdateFailed": "Aktualizacja baneru nie powiodła się!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Powitanie",
+			"description": "Poinformuj nowych członków, co jest wyjątkowego w Twojej społeczności i dlaczego cieszy Cię ich spotkanie!"
+		},
+		"newMemberToDos": {
+			"title": "Co powinni robić nowi członkowie?",
+			"description": "Ustaw 3-5 zadań, które nowi członkowie Twojej społeczności powinni wykonać. Spraw, aby <strong>rozmawiali i uczestniczyli w Twoich kanałach.</strong>"
+		},
+		"dontDoThis": "Nie rób tego: zbyt ogólny",
+		"exampleTask": {
+			"title": "rozmawiać ze społecznością",
+			"description": "w #ogólny"
+		},
+		"readTheRules": "Przeczytaj Zasady",
+		"addTask": "Dodaj zadanie",
+		"resourcePages": {
+			"title": "Strony zasobów",
+			"description": "Zmień kanały tylko do odczytu w piękne strony zasobów w przewodniku serwera. Nie będą już wyświetlane na liście kanałów, chyba że włączysz Wszystkie Kanały. Zasoby mają kilka zalet:",
+			"perk1": "Członkowie zaczynają na górze strony, a nie na końcu kolejki wiadomości",
+			"perk2": "Pasek czatu i awatary są usuwane, aby wyglądały bardziej schludnie",
+			"perk3": "Wszystka zawartość, embedy, multimedia i formatowanie pozostają takie same"
+		},
+		"addResource": "Dodaj zasób",
+		"ownerGreeting": "Cześć, to jest powitanie od właściciela clanu. Zobaczysz tę wiadomość przy pierwszym dołączeniu do clanu!"
+	}
+}

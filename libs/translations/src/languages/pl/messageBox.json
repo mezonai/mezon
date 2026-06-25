@@ -1,0 +1,19 @@
+{
+	"placeholder": "Napisz swoje myśli tutaj...",
+	"ephemeralMessage": "Tymczasowa wiadomość dla {{username}}...",
+	"mentionCategories": {
+		"members": "CZŁONKOWIE",
+		"textChannels": "KANAŁY TEKSTOWE",
+		"emojiMatching": "Znaleziono emoji",
+		"commands": "POLECENIA"
+	},
+	"suggestions": {
+		"notifyEveryone": "Powiadom wszystkich, którzy mają uprawnienia do widzenia tego kanału",
+		"loadingCommands": "Ładowanie poleceń..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Wyślij tymczasową wiadomość (tylko dla wybranego użytkownika)"
+		}
+	}
+}

@@ -42,7 +42,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 		isTopic ? currentChannelId || '' : channelId,
 		channelLabel,
 		mode,
-		message
+		message,
+		isTopic ? channelId : undefined
 	);
 	const { emojis } = useEmojiSuggestionContext();
 	const editorRef = useRef<MentionsInputHandle | null>(null);

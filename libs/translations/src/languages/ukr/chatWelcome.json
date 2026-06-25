@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Натисніть Запустити додаток для початку",
+		"inviteFriends": "Запросіть ваших друзів",
+		"sendFirstMessage": "Надішліть ваше перше повідомлення",
+		"downloadApp": "Завантажити додаток Mezon",
+		"createChannel": "Створіть свій канал"
+	},
+	"welcome": {
+		"welcomeToChannel": "Ласкаво просимо до #{{channelName}}",
+		"startOfChannel": "Це початок #{{channelName}} {{channelType}} каналу",
+		"startOfThread": "Розпочато {{username}}",
+		"welcomeToGroup": "Ласкаво просимо до групи {{groupName}}.",
+		"beginningOfDM": "Тут починається ваша розмова з {{userName}}",
+		"editGroup": "Редагувати групу",
+		"private": "приватний",
+		"friendRequestSent": "Вам надіслано запит на дружбу:",
+		"addFriend": "Додати друга",
+		"removeFriend": "Видалити друга",
+		"accept": "Прийняти",
+		"ignore": "Ігнорувати",
+		"friendRequestSentButton": "Запит на дружбу надіслано",
+		"block": "Заблокувати",
+		"unblock": "Розблокувати"
+	},
+	"toast": {
+		"userBlockedSuccess": "Користувача успішно заблоковано",
+		"failedToBlock": "Не вдалося заблокувати користувача",
+		"userUnblockedSuccess": "Користувача успішно розблоковано",
+		"failedToUnblock": "Не вдалося розблокувати користувача"
+	}
+}

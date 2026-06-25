@@ -9,17 +9,16 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8'));
 const APP_VERSION = packageJson.version;
-const CHAT_BASE_HREF = '/chat/';
 
-function chatAssetPathsPlugin(): PluginOption {
+function chatAssetPathsPlugin(path: string): PluginOption {
 	return {
 		name: 'chat-asset-paths',
 		transform(code) {
-			if (!code.includes('/assets/')) {
+			if (!code.includes('/chat/assets/')) {
 				return;
 			}
 
-			const rewritten = code.replace(/(?<!\/chat)\/assets\//g, `${CHAT_BASE_HREF}assets/`);
+			const rewritten = code.replace(/(?<!\/chat)\/assets\//g, `${path}assets/`);
 			if (rewritten === code) {
 				return;
 			}
@@ -37,7 +36,7 @@ export default defineConfig(({ mode }) => {
 		root: path.join(appRoot, 'src'),
 		publicDir: mode === 'production' ? false : path.join(appRoot, 'src/assets'),
 		cacheDir: path.join(workspaceRoot, 'node_modules/.vite/apps/chat'),
-		base: CHAT_BASE_HREF,
+		base: mode === 'production' ? '/chat' : './chat',
 
 		server: {
 			port: 4200,
@@ -75,7 +74,7 @@ export default defineConfig(({ mode }) => {
 		},
 
 		plugins: [
-			chatAssetPathsPlugin(),
+			chatAssetPathsPlugin(mode === 'production' ? '/chat' : './chat'),
 			react({
 				babel: {
 					plugins: [
@@ -265,11 +264,8 @@ export default defineConfig(({ mode }) => {
 						if (normalizedId.includes('libs/translations/src/languages/jpn')) {
 							return 'i18n-jpn';
 						}
-						if (normalizedId.includes('libs/translations/src/languages/kr')) {
-							return 'i18n-kr';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/swe')) {
-							return 'i18n-swe';
+						if (normalizedId.includes('libs/translations/src/languages/pl')) {
+							return 'i18n-pl';
 						}
 					}
 				}

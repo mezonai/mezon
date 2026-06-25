@@ -19,6 +19,7 @@ const TopicDiscussionMain = () => {
 	useEscapeKey(() => {
 		setIsShowCreateTopic(false);
 		dispatch(topicsActions.setCurrentTopicId(''));
+		dispatch(topicsActions.setFocusTopicBox(false));
 	});
 
 	return (

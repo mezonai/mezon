@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Vrienden uitnodigen om {{target}} te betreden",
+		"privateEvent": "Extern evenement",
+		"privateRoom": "Vergaderkamer",
+		"clanInvite": "clan uitnodiging",
+		"sendLinkText": "Of, stuur hun {{type}}-link",
+		"expiresIn": "Je uitnodigingslink verloopt over {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 minuten",
+		"1hour": "1 uur",
+		"6hours": "6 uur",
+		"12hours": "12 uur",
+		"1day": "1 dag",
+		"7days": "7 dagen",
+		"never": "Nooit"
+	},
+	"maxUses": {
+		"noLimit": "Onbeperkt",
+		"1use": "1 gebruik",
+		"5uses": "5 keer gebruikt",
+		"10uses": "10 keer gebruikt",
+		"25uses": "25 keer gebruikt",
+		"50uses": "50 keer gebruikt",
+		"100uses": "100 keer gebruikt"
+	},
+	"generateLink": {
+		"expireAfter": "Verloopt na",
+		"maxNumberOfUses": "Maximaal aantal uses"
+	},
+	"buttons": {
+		"copy": "Kopiëren",
+		"copied": "Gekopieerd",
+		"copyQR": "QR kopiëren",
+		"editInviteLink": "Uitnodigingslink bewerken.",
+		"cancel": "Annuleren",
+		"generateNewLink": "Nieuwe link aanmaken",
+		"invite": "Uitnodigen",
+		"sent": "Verzonden"
+	},
+	"searchPlaceholder": "Vrienden zoeken",
+	"privateChannelDescription": "Dit kanaal is privé, alleen geselecteerde leden en rollen kunnen dit kanaal zien.",
+	"noResults": "Geen resultaten",
+	"messages": {
+		"qrCopiedSuccess": "QR succesvol gekopieerd!"
+	},
+	"errors": {
+		"createInviteLink": "Fout bij aanmaken uitnodigingslink",
+		"copyToClipboard": "Kon niet naar klembord kopiëren",
+		"copyFailed": "Kopiëren mislukt"
+	},
+	"acceptModal": {
+		"title": "Clan betreden",
+		"invitedToJoin": "Je bent uitgenodigd om te joinen",
+		"memberCount": "{{count}} Leden",
+		"memberCount_plural": "{{count}} Leden",
+		"clanSettings": "Clan instellingen",
+		"customizeAnytime": "Je kunt deze op elk moment aanpassen",
+		"noThanks": "Nee, bedankt",
+		"acceptInvite": "Uitnodiging accepteren",
+		"joining": "Aan het joinen...",
+		"toast": {
+			"alreadyMember": "Je bent al lid!"
+		}
+	}
+}

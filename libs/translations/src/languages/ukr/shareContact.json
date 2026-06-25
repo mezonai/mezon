@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "Поділитися контактом",
+		"searchPlaceholder": "Пошук...",
+		"noResults": "Результатів не знайдено",
+		"noFriends": "Немає друзів або каналів",
+		"contactPreview": "Контакт буде поділено",
+		"cancel": "Скасувати",
+		"share": "Поділитися",
+		"sharing": "Надсилання...",
+		"group": "Група",
+		"channel": "Канал",
+		"thread": "Тред"
+	},
+	"card": {
+		"call": "Дзвінок",
+		"message": "Повідомлення",
+		"blockedAction": "Ви не можете виконати цю дію.",
+		"cannotCallSelf": "Ви не можете подзвонити собі."
+	},
+	"contactSharedSuccess": "Успішно поділено",
+	"contactSharedError": "Не вдалося поділити"
+}

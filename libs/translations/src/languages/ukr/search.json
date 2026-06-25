@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Пошук учасників",
+  "searchActions": "Пошук дій",
+  "allUsers": "Всі користувачі",
+  "noResults": {
+    "title": "Немає!",
+    "description": "Ви помилились?"
+  }
+}

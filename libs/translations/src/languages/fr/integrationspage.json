@@ -1,0 +1,46 @@
+{
+	"download": "Télécharger",
+	"sections": {
+		"section1": {
+			"title": "Tout Ce Dont Vous Avez Besoin, En Un Seul Endroit",
+			"description": "Avec Mezon, l'application concentre tous les outils dont vous avez besoin dans un seul espace. Plus besoin de naviguer entre plusieurs ressources disparates - juste la performance et l'efficacité."
+		},
+		"section2": {
+			"title": "Libérez La Puissance De Votre Entreprise Avec Une Intégration Low-Code Fluid",
+			"description": "Avec des coûts et du temps réduits au minimum, nous améliorons l'intégration pour les entreprises qui souhaitent réduire les coûts de développement de capacités - juste la vitesse et la flexibilité"
+		},
+		"section3": {
+			"title": "Automatisez Les Processus Pour Les Particuliers Et Les Organisations : ",
+			"titleHighlight": "Intégration Bot/App",
+			"titleEnd": "",
+			"description": "Connectez les bots et applications pour automatiser les tâches du personnel à la production. Plus rapide, plus précis et sans avoir à résoudre des algorithmes complexes."
+		},
+		"section4": {
+			"title": "Système ERP",
+			"description": "Avec des modules et fonctionnalités facilement personnalisables, l'ERP répondra pleinement aux besoins de l'entreprise et pourra automatiser les activités liées aux ressources d'entreprise pour réduire le temps de traitement et optimiser la gestion des ressources"
+		}
+	},
+	"faq": {
+		"title": "Questions Fréquemment Posées",
+		"seeAll": "Voir Toutes les FAQ",
+		"learnMore": "En savoir plus",
+		"questions": [
+			{
+				"question": "Comment commencer à intégrer mon outil avec Mezon ?",
+				"answer": "Commencer est très simple. Naviguez vers la page d'intégration, sélectionnez le service souhaité et suivez les instructions d'installation étape par étape."
+			},
+			{
+				"question": "Quels types d'intégrations sont pris en charge ?",
+				"answer": "Mezon prend en charge de nombreux types d'intégrations incluant webhooks, bots, applications tierces et systèmes ERP. Consultez notre documentation pour une liste complète."
+			},
+			{
+				"question": "Puis-je créer des intégrations personnalisées ?",
+				"answer": "Oui ! Notre plateforme offre des API et SDK qui vous permettent de construire des intégrations personnalisées adaptées à vos besoins spécifiques."
+			},
+			{
+				"question": "Y a-t-il une limite au nombre d'intégrations que je peux ajouter ?",
+				"answer": "Le nombre d'intégrations que vous pouvez ajouter dépend de votre forfait. Les forfaits entreprise offrent des intégrations illimitées."
+			}
+		]
+	}
+}

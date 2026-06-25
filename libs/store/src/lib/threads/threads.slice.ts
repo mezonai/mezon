@@ -122,23 +122,6 @@ export const fetchThreadsCached = async (
 	};
 };
 
-const updateCacheOnThreadCreation = createAsyncThunk(
-	'threads/updateCache',
-	async (
-		{ clanId, channelId, defaultThreadList }: { clanId: string; channelId: string; defaultThreadList: Array<ApiChannelDescription> },
-		thunkAPI
-	) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const threads = await fetchThreadsCached(thunkAPI.getState as () => RootState, mezon, channelId, clanId, undefined, undefined);
-
-			return mapToThreadEntity((threads.channeldesc as ApiChannelDescription[]) || []);
-		} catch (e) {
-			console.error(e);
-		}
-	}
-);
-
 const mapToThreadEntity = (threads: ApiChannelDescription[] | ThreadsEntity[] | undefined | null) => {
 	if (!Array.isArray(threads)) {
 		return [];
@@ -511,11 +494,6 @@ export const threadsSlice = createSlice({
 			.addCase(checkDuplicateThread.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.payload as string;
-			})
-			.addCase(updateCacheOnThreadCreation.fulfilled, (state, action) => {
-				if (!action.payload) return;
-				threadsAdapter.addMany(state, action.payload);
-				state.loadingStatus = 'loaded';
 			});
 		builder
 			.addCase(searchedThreads.pending, (state: ThreadsState) => {
@@ -566,7 +544,6 @@ export const threadsActions = {
 	fetchThreads,
 	fetchThread,
 	leaveThread,
-	updateCacheOnThreadCreation,
 	searchedThreads,
 	writeActiveArchivedThread
 };

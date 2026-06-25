@@ -1,0 +1,76 @@
+{
+	"title": "Dostosuj swój clan",
+	"subTitle": "Stwórz własny styl dla swojego nowego clana z nazwą i ikoną. Możesz to zawsze później zmienić.",
+	"clanName": "Nazwa clanu",
+	"createServer": "Utwórz clan",
+	"byCreatingClan": "Tworząc clan, zgadzasz się na",
+	"upload": "PRZEŠLIJ",
+	"addClan": "Utwórz clan",
+	"placeholderClan": "Wpisz nazwę clanu",
+	"errorMessage": "Proszę wprowadzić poprawną nazwę clanu (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+	"duplicateNameMessage": "Nazwa clanu już istnieje. Proszę wybrać inną nazwę.",
+	"commutityGuide": "Wytyczne społeczności Mezon.",
+	"busy": "Zajęty",
+	"findOrStartConversation": "Znajdź lub rozpocznij konwersację",
+	"createCategoryModal": {
+		"title": "Utwórz kategorię",
+		"nameLabel": "Jak nazywa się kategoria?",
+		"namePlaceholder": "Wpisz nazwę kategorii",
+		"privateCategory": "Prywatna kategoria",
+		"privateDescription": "Tworząc prywatną kategorię, tylko wybrani członkowie i role będą mogli zobaczyć tę kategorię. Kanały zsynchronizowane w tej kategorii będą automatycznie dopasowane do tego ustawienia",
+		"invalidName": "Proszę wprowadzić poprawną nazwę kategorii (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+		"duplicateName": "Nazwa kategorii już istnieje w clanie. Proszę wprowadzić inną nazwę.",
+		"cancel": "Anuluj",
+		"create": "Utwórz kategorię"
+	},
+	"leaveClanModal": {
+		"title": "Opuść {{clanName}}",
+		"description": "Czy na pewno chcesz opuścić <strong>{{clanName}}</strong>? Nie będziesz mógł dołączyć ponownie do tego serwera, chyba że zostaniesz ponownie zaproszony.",
+		"cancel": "Anuluj"
+	},
+	"leaveClan": "Opuść Clan",
+	"leaveClanTitle": "Opuść",
+	"categoryOverview": {
+		"categoryName": "Nazwa kategorii",
+		"categoryNamePlaceholder": "Wpisz nazwę swojej kategorii tutaj...",
+		"hasWelcomeChannelError": "Ta kategoria ma kanał powitalny",
+		"deleteCategory": "Usuń kategorię",
+		"deleteCategoryTitle": "Usuń kategorię",
+		"deleteCategoryButton": "Usuń kategorię",
+		"cannotBeUndone": "Tej akcji nie można cofnąć",
+		"categoryLabel": "Kategoria"
+	},
+	"createClanModal": {
+		"title": "Dostosuj swój Clan",
+		"description": "Użyj kolorów dla swojego nowego clana, wybierając nazwę i ikonę! Możesz to zmienić później, jeśli chcesz!",
+		"upload": "Prześlij",
+		"clanName": "NAZWA CLANU",
+		"placeholder": "Wpisz nazwę clanu",
+		"invalidName": "Proszę wprowadzić poprawną nazwę clanu (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+		"duplicateName": "Nazwa clanu już istnieje. Proszę wybrać inną nazwę.",
+		"agreement": "Tworząc clan, zgadzasz się na",
+		"communityGuidelines": "Wytyczne społeczności Mezon",
+		"back": "Wstecz",
+		"create": "Utwórz",
+		"toast": {
+			"limitImageSize": "Rozmiar obrazu musi być mniejszy niż {{size}}MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Utwórz swój Clan",
+		"description": "Clan to miejsce, gdzie spotykasz się ze swoimi przyjaciółmi. Utwórz swój własny clan i zacznij rozmawiać.",
+		"createMyOwn": "Utwórz własny szablon",
+		"startFromTemplate": "Rozpocznij od szablonu",
+		"gamingTemplate": "Gry",
+		"friendsTemplate": "Przyjaciele",
+		"studyGroupTemplate": "Grupa studialna",
+		"schoolClubTemplate": "Klub szkolny",
+		"localCommunityTemplate": "Społeczność lokalna",
+		"artistsCreatorsTemplate": "Artyści i twórcy"
+	},
+	"limitModal": {
+		"title": "Osiągnięto limit!",
+		"message": "Dołączyłeś do 50 clanów. Musisz opuścić jeden clan, zanim będziesz mógł dołączyć lub utworzyć inny clan.",
+		"okayButton": "Dobrze"
+	}
+}

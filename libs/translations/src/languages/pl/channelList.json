@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Przewodnik",
+		"events": "Wydarzenia",
+		"events_one": "{{count}} Wydarzenie",
+		"events_other": "{{count}} Wydarzeń",
+		"members": "Członkowie",
+		"channels": "Kanały"
+	},
+	"ongoingEvent": {
+		"title": "Trwające wydarzenie",
+		"eventDetail": "Szczegóły wydarzenia"
+	},
+	"onboarding": {
+		"getStarted": "Rozpocznij",
+		"of": "z"
+	},
+	"favoriteChannel": "Ulubiony kanał",
+	"publicChannels": "Publiczne kanały",
+	"channelApps": "Aplikacje kanału",
+	"dragMode": {
+		"enable": "Kliknij, aby włączyć tryb przeciągania kategorii",
+		"disable": "Kliknij, aby wyłączyć tryb przeciągania kategorii"
+	}
+}

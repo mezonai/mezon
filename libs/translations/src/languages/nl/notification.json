@@ -1,0 +1,45 @@
+{
+	"headerTitle": "Meldingen",
+	"tabNotify": {
+		"forYou": "Voor jou",
+		"mention": "Vermeldingen",
+		"messages": "Berichten",
+		"topics": "Korte discussies",
+		"notificationSettings": "Meldingsinstellingen"
+	},
+	"removeNotification": "Melding verwijderen",
+	"nothingHere": "Nog niets hier",
+	"comeBackNotify": "Kom terug om meldingen over evenementen en meer te ontvangen",
+	"repliedTo": "Antwoord: ",
+	"sender": "Afzender: ",
+	"seeWhenAnswersAppear": "Bekijk wanneer antwoorden verschijnen",
+	"enablePushNotifications": "Push-meldingen inschakelen",
+	"permissionAlert": {
+		"turnOnNotifications": "Meldingen inschakelen",
+		"permissionDescription": "Laat Mezon toe om meldingen te verzenden om contact te houden met vrienden en familie.",
+		"openSettings": "Instellingen openen",
+		"features": {
+			"newMessages": {
+				"title": "Ontvang meldingen over nieuwe berichten",
+				"description": "Updates wanneer vrienden berichten naar je sturen"
+			},
+			"mentions": {
+				"title": "Weet wanneer je wordt vermeld in groepen",
+				"description": "Mis nooit wanneer iemand je vermeldt"
+			},
+			"muteControl": {
+				"title": "Schakel meldingen uit voor specifieke gesprekken en gesprekstypen",
+				"description": "Controleer welke meldingen je ontvangt"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Meldingsrechten",
+		"permissionDenied": "Meldingsrechten zijn geweigerd.",
+		"cancel": "Annuleren",
+		"ok": "OK"
+	},
+	"andYou": "en jij",
+	"topicAndYou": "Korte discussie en jij",
+	"unknowClan": "Je bent niet langer lid van dit gesprek"
+}

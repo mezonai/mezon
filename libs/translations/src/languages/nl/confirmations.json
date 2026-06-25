@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+		"title": "ROL VERWIJDEREN",
+		"message": "Weet je zeker dat je deze rol wilt verwijderen? Deze actie is onherroepelijk",
+		"confirm": "Verwijderen",
+		"cancel": "Annuleren"
+  },
+  "common": {
+    "areYouSure": "Weet je het zeker?",
+    "cannotUndo": "Deze actie is onherroepelijk",
+    "confirm": "Bevestigen",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "remove": "Verwijderen",
+    "yes": "Ja",
+    "no": "Nee"
+  }
+}

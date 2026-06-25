@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Activiteitsoverzicht",
+		"timePeriod": "Tijdsperiode",
+		"totalActiveUsers": "Totaal actieve gebruikers",
+		"totalActiveUsersTooltip": "Unieke gebruikers die minstens één keer actief zijn",
+		"totalActiveChannels": "Totaal actieve kanalen",
+		"totalActiveChannelsTooltip": "Unieke kanalen die minstens één keer actief zijn",
+		"totalMessages": "Totaal berichten",
+		"totalMessagesTooltip": "Totaal aantal berichten verzonden in de geselecteerde periode"
+	},
+	"pagination": {
+		"showing": "Toont",
+		"of": "van totaal",
+		"clans": "clans",
+		"previous": "Vorige",
+		"next": "Volgende"
+	},
+	"chart": {
+		"loadingChartData": "Grafiekgegevens laden...",
+		"metricsAvailableForOwnersOnly": "Métrieken zijn alleen beschikbaar voor clan-eigenaren."
+	},
+	"table": {
+		"detailedActivityData": "Detailgegevens activiteit",
+		"channelsActivityData": "Kanaalactiviteitsgegevens",
+		"userActivityData": "Gebruikersactiviteitsgegevens",
+		"exportCSV": "Exporteren naar CSV",
+		"exporting": "Aan het exporteren...",
+		"includedInExport": "Deze kolom wordt geëxporteerd naar CSV-bestand",
+		"notIncludedInExport": "Deze kolom wordt niet geëxporteerd naar CSV-bestand",
+		"clanName": "Clan naam",
+		"channelName": "Kanaalnaam",
+		"userName": "Gebruikersnaam",
+		"activeUsers": "Actieve gebruikers",
+		"activeChannels": "Actieve kanalen",
+		"messages": "Berichten",
+		"noOwnedClans": "Je bezit geen clans om analyses te creëren.",
+		"noActiveChannels": "Op dit moment zijn er geen actieve kanalen in deze clan.",
+		"noActiveUsers": "Op dit moment zijn er geen actieve gebruikers in dit kanaal.",
+		"selectColumnTooltip": "Selecteren/deselecteren voor CSV-export volgens deze kolom",
+		"selectAtLeastOneColumn": "Moet minimaal 1 kolom selecteren voor CSV-export"
+	},
+	"page": {
+		"backToOverview": "Terug naar clan gebruiksoverzicht",
+		"clanUsageStatisticsReport": "Clan Gebruiksstatistieken Rapport",
+		"dashboardReport": "Dashboard",
+		"report": "Rapport"
+	},
+	"state": {
+		"loadingData": "Gegevens laden...",
+		"noDataFound": "Geen gegevens gevonden",
+		"noDataDescription": "Geen gebruiksgegevens voor de geselecteerde periode."
+	},
+	"reportControls": {
+		"timePeriod": "Tijdsperiode",
+		"rangeType": "Bereik type",
+		"startDate": "Startdatum",
+		"endDate": "Einddatum",
+		"last7Days": "Afgelopen 7 dagen",
+		"last30Days": "Afgelopen 30 dagen",
+		"last90Days": "Afgelopen 90 dagen",
+		"customDateRange": "Aangepaste datumreeks",
+		"daily": "Dagelijks",
+		"weekly": "Wekelijks",
+		"monthly": "Maandelijks",
+		"runReport": "Rapport uitvoeren",
+		"reset": "Herstellen"
+	},
+	"sortIcon": {
+		"tooltip": "Sorteren oplopend/aflopend volgens deze kolom",
+		"sortedAsc": "Oplopend gesorteerd",
+		"sortedDesc": "Aflopend gesorteerd"
+	}
+}
