@@ -1,9 +1,0 @@
-{
-	"name": "mobile-components",
-	"$schema": "../../node_modules/nx/schemas/project-schema.json",
-	"sourceRoot": "libs/mobile-components/src",
-	"projectType": "library",
-	"tags": [],
-	"// targets": "to see all targets run: nx show project mobile-components --web",
-	"targets": {}
-}

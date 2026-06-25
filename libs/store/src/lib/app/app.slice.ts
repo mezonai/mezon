@@ -4,7 +4,7 @@ import { SUPPORTED_LANGUAGES } from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import isElectron from 'is-electron';
+
 import { ChannelType } from 'mezon-js';
 import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
@@ -182,7 +182,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		const currentChannelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
 		const currentDirectId = state.direct?.currentDirectMessageId;
 		const currentClanId = state.clans?.currentClanId;
-		const path = isElectron() ? window.location.hash : window.location.pathname;
+		const path = window.location.pathname;
 
 		let channelId = null;
 		let clanId = null;

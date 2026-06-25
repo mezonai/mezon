@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import type { ApiUserEventRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
@@ -150,7 +150,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	const handleOpenPanel = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
-		const mouseY = event.clientY + (isElectron() ? 0 : window.screenY);
+		const mouseY = event.clientY + window.screenY;
 		const windowHeight = window.innerHeight;
 		const distanceToBottom = windowHeight - event.clientY;
 		setCoords({ mouseX, mouseY, distanceToBottom });
@@ -394,7 +394,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							handleStopPropagation(e);
 						}}
 					>
-						<div className="text-theme-primary-hover cursor-pointer" onClick={(e) => handleOpenPanel(e)} data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_panel')}>
+						<div
+							className="text-theme-primary-hover cursor-pointer"
+							onClick={(e) => handleOpenPanel(e)}
+							data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_panel')}
+						>
 							<Icons.IconEditThreeDot className="rotate-90" />
 						</div>
 
