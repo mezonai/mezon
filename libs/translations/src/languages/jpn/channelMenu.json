@@ -100,5 +100,9 @@
     "error": "チャンネル退出エラー：{{error}}"
   },
   "btnBadgeCount": "新着",
-  "favoriteChannel": "お気に入りチャンネル"
+  "favoriteChannel": "お気に入りチャンネル",
+  "toastArchiveChannel": "チャンネルをアーカイブしました。",
+  "toastArchiveThread": "スレッドをアーカイブしました。",
+  "toastArchivedByAdministrator": "このチャンネルは管理者によってアーカイブされました。",
+  "toastArchivedThreadByAdministrator": "このスレッドは管理者によってアーカイブされました。"
 }

@@ -15,7 +15,8 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';
 
-export const useEditMessage = (channelId: string, channelLabel: string, mode: number, message: IMessageWithUser) => {
+export const useEditMessage = (channelId: string, channelLabel: string, mode: number, message: IMessageWithUser, messageStoreChannelId?: string) => {
+	const storeChannelId = messageStoreChannelId || channelId;
 	const attachmentsOnMessage = useMemo(() => {
 		return message.attachments;
 	}, [message.attachments]);
@@ -34,7 +35,7 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 	const dispatch = useDispatch();
 	const { editSendMessage } = useChatSending({ channelOrDirect: currentDirectOrChannel, mode });
 	const oldMentionsString = useAppSelector((state) => {
-		const entity = selectMessageByMessageId(state, channelId, message?.id || '');
+		const entity = selectMessageByMessageId(state, storeChannelId, message?.id || '');
 		return entity?.mentions ? JSON.stringify(entity.mentions) : '';
 	});
 	const openEditMessageState = useSelector(selectOpenEditMessageState);
@@ -42,9 +43,9 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 
 	const handleCancelEdit = useCallback(() => {
 		dispatch(referencesActions.setIdReferenceMessageEdit(''));
-		dispatch(messagesActions.deleteChannelDraftMessage({ channelId }));
+		dispatch(messagesActions.deleteChannelDraftMessage({ channelId: storeChannelId }));
 		dispatch(referencesActions.setOpenEditMessageState(false));
-	}, [channelId, dispatch]);
+	}, [storeChannelId, dispatch]);
 
 	const setChannelDraftMessage = useCallback(
 		(
@@ -73,11 +74,11 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 
 	const handleSend = useCallback(
 		(editMessage: IMessageSendPayload, messageId: string, draftMention: ApiMessageMention[], topic_id: string, isTopic?: boolean) => {
-			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id, isTopic);
-			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topic_id as string);
+			editSendMessage(editMessage, messageId, draftMention, undefined, false, topic_id, isTopic);
+			setChannelDraftMessage(storeChannelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topic_id as string);
 			dispatch(referencesActions.setOpenEditMessageState(false));
 		},
-		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, oldMentionsString]
+		[editSendMessage, setChannelDraftMessage, storeChannelId, dispatch, oldMentionsString]
 	);
 
 	return {

@@ -1,4 +1,4 @@
-import { channelsActions, clansActions, topicsActions } from '@mezon/store';
+import { channelsActions, clansActions, threadsActions, topicsActions } from '@mezon/store';
 import { ModeResponsive } from '@mezon/utils';
 import type { ShouldRevalidateFunction } from 'react-router-dom';
 import type { CustomLoaderFunction } from './appLoader';
@@ -18,6 +18,8 @@ export const clanLoader: CustomLoaderFunction = async ({ params, dispatch }) => 
 	dispatch(channelsActions.setModeResponsive({ clanId, mode: ModeResponsive.MODE_CLAN }));
 	dispatch(topicsActions.setIsShowCreateTopic(false));
 	dispatch(topicsActions.setCurrentTopicId(''));
+	dispatch(topicsActions.setFocusTopicBox(false));
+	dispatch(threadsActions.setFocusThreadBox(false));
 	return {
 		clanId
 	} as ClanLoaderData;

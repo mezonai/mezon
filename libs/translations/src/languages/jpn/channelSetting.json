@@ -240,7 +240,8 @@
 		"invites": "招待",
 		"integrations": "統合",
 		"category": "カテゴリ",
-		"quickMenu": "クイックアクション"
+		"quickMenu": "クイックアクション",
+		"streamThumbnail": "ストリームサムネイル"
 	},
 	"categoryManagement": {
 		"title": "カテゴリ",

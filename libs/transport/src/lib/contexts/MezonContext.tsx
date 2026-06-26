@@ -452,8 +452,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			socketState.status = 'connected';
 			return sessionRef.current;
 		})().finally(() => {
-				connectInFlight = null;
-			});
+			connectInFlight = null;
+		});
 
 		return connectInFlight;
 	}, []);

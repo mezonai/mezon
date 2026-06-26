@@ -27,7 +27,7 @@ import {
 } from '@mezon/store';
 
 import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
-import { isLinuxDesktop, isWindowsDesktop, useLastCallback } from '@mezon/utils';
+import { useLastCallback } from '@mezon/utils';
 import type { RoomConnectOptions } from 'livekit-client';
 import { Room } from 'livekit-client';
 import { ChannelType } from 'mezon-js';
@@ -291,12 +291,8 @@ const ChannelVoiceInner = () => {
 	return (
 		<Suspense fallback={<div>loading ...</div>}>
 			<div
-				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
-				style={
-					!isVoiceFullScreen
-						? { width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }
-						: { width: '100vw', height: '100vh' }
-				}
+				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute bottom-0 right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
+				style={!isVoiceFullScreen ? { width: 'calc(100% - 72px - 272px)', height: '100%' } : { width: '100vw', height: '100vh' }}
 			>
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
 					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />

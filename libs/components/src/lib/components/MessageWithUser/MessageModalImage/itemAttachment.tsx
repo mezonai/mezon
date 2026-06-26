@@ -1,9 +1,10 @@
 import type { AttachmentEntity } from '@mezon/store';
-import { attachmentActions, useAppDispatch } from '@mezon/store';
-import { EMimeTypes, ETypeLinkMedia, createImgproxyUrl } from '@mezon/utils';
+import { attachmentActions, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
+import { EMimeTypes, ETypeLinkMedia, createImgproxyUrl, isAttachmentPresignPendingForMessage } from '@mezon/utils';
 
 type ItemAttachmentProps = {
 	attachment: AttachmentEntity;
+	channelId: string;
 	previousDate: any;
 	selectedImageRef: React.MutableRefObject<HTMLDivElement | null>;
 	showDate: boolean;
@@ -15,10 +16,17 @@ type ItemAttachmentProps = {
 };
 
 const ItemAttachment = (props: ItemAttachmentProps) => {
-	const { attachment, previousDate, selectedImageRef, showDate, setUrlImg, handleDrag, setCurrentIndexAtt, index, currentIndexAtt } = props;
+	const { attachment, channelId, previousDate, selectedImageRef, showDate, setUrlImg, handleDrag, setCurrentIndexAtt, index, currentIndexAtt } =
+		props;
 	const dispatch = useAppDispatch();
 	const isSelected = index === currentIndexAtt;
+	const sourceMessage = useAppSelector((state) =>
+		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
+	);
+	const isPresignPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage);
+
 	const handleSelectImage = () => {
+		if (isPresignPending) return;
 		setUrlImg(attachment.url || '');
 		setCurrentIndexAtt(index);
 		dispatch(attachmentActions.setCurrentAttachment(attachment));
@@ -30,21 +38,27 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 		attachment.filetype?.includes(EMimeTypes.mp4) ||
 		attachment.filetype?.includes(EMimeTypes.mov);
 
+	const thumbnailClassName = `size-[88px] max-w-[88px] max-h-[88px] max-[480px]:size-16 w-full mx-auto gap-5 object-cover rounded-md ${
+		isPresignPending ? 'cursor-default' : 'cursor-pointer'
+	} ${isSelected ? '' : 'overlay'} border-2 ${isSelected ? 'dark:bg-slate-700 bg-bgLightModeButton border-colorTextLightMode' : 'border-transparent'}`;
+
 	return (
 		<div className={`attachment-item`} ref={isSelected ? selectedImageRef : null}>
 			{showDate && <div className={`dark:text-white text-black mb-1 text-center`}>{previousDate}</div>}
 			<div
-				className={`rounded-md cursor-pointer ${isSelected ? 'flex items-center border-2 border-white' : 'relative'}`}
+				className={`rounded-md ${isPresignPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'flex items-center border-2 border-white' : 'relative'}`}
 				onClick={handleSelectImage}
 			>
-				{isVideo ? (
+				{isPresignPending ? (
+					<div className={`${thumbnailClassName} bg-bgLightSecondary dark:bg-bgSecondary`} />
+				) : isVideo ? (
 					<div className="relative">
 						<video
 							src={attachment.url ?? ''}
-							className={`size-[88px] max-w-[88px] max-h-[88px] max-[480px]:size-16 w-full mx-auto gap-5 object-cover rounded-md cursor-pointer ${isSelected ? '' : 'overlay'} border-2 ${isSelected ? 'dark:bg-slate-700 bg-bgLightModeButton border-colorTextLightMode' : 'border-transparent'}`}
+							className={thumbnailClassName}
 							muted
 							playsInline
-							preload="metadata"
+							preload="none"
 							onDragStart={handleDrag}
 							onKeyDown={(event) => {
 								if (event.key === 'Enter') {
@@ -62,7 +76,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 					<img
 						src={createImgproxyUrl(attachment.url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 						alt={attachment.url}
-						className={`size-[88px] max-w-[88px] max-h-[88px] max-[480px]:size-16 w-full mx-auto gap-5 object-cover rounded-md cursor-pointer ${isSelected ? '' : 'overlay'} border-2 ${isSelected ? 'dark:bg-slate-700 bg-bgLightModeButton border-colorTextLightMode' : 'border-transparent'}`}
+						className={thumbnailClassName}
 						onDragStart={handleDrag}
 						onKeyDown={(event) => {
 							if (event.key === 'Enter') {

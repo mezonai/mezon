@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "Dit kanaal heeft nog geen vastgezette berichten... maar dat komt binnenkort.",
+	"PROTIP": "TIPTIP:",
+	"modal": {
+		"title": "Vastzetten. Zeker weten vastzetten.",
+		"description": "Nou, we willen nog eens bevestigen dat je dit bericht in #{{channelLabel}} wilt vastzetten voor altijd.",
+		"descriptionDM": "Nou, we willen nog eens bevestigen dat je dit bericht in het huidige gesprek wilt vastzetten voor altijd.",
+		"cancel": "Annuleren",
+		"confirm": "Vastzetten"
+	}
+}

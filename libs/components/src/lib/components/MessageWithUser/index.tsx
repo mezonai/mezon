@@ -401,6 +401,7 @@ function MessageWithUser({
 								observeIntersectionForLoading={observeIntersectionForLoading}
 								mode={mode}
 								message={message}
+								channelId={channelId || message.channel_id}
 								onContextMenu={onContextMenu}
 								isInSearchMessage={isSearchMessage}
 								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}

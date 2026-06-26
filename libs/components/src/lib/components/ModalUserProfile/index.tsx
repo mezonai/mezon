@@ -303,7 +303,11 @@ const ModalUserProfile = ({
 									className={`w-full border-theme-primary text-theme-primary color-text-secondary rounded-[5px] bg-theme-contexify p-[5px] `}
 									placeholder={t('placeholders.messageUser', {
 										username: isFooterProfile
-											? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
+											? userById?.user?.display_name ||
+												userProfile?.user?.display_name ||
+												userById?.user?.username ||
+												userProfile?.user?.username ||
+												usernameShow
 											: !isDM
 												? userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || usernameShow
 												: userById?.user?.display_name || userById?.user?.username || usernameShow
@@ -352,6 +356,7 @@ const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
 		<div
 			className="group flex min-w-8 w-fit h-8 items-center text-sm justify-end bg bg-buttonMore hover:bg-buttonMoreHover cursor-pointer py-1 px-2 text-white rounded-full"
 			onClick={handleNavigateRoom}
+			data-e2e={generateE2eId('invoice.button.component')}
 		>
 			<div className="opacity-0 truncate w-0 group-hover:animate-expand flex items-center justify-center leading-4 font-medium">
 				{channelData?.channel_label}

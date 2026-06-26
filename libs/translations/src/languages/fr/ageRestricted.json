@@ -1,0 +1,14 @@
+{
+  "title": "Canal restreint aux adultes",
+  "description": "Ce canal contient du contenu pour adultes et est marqué comme restreint aux adultes. Voulez-vous continuer ?",
+  "continue": "Continuer",
+  "nope": "Non",
+  "confirmBirthdayTitle": "Veuillez confirmer votre date de naissance",
+  "confirmBirthdayMessage": "Pour garantir la sécurité des utilisateurs, nous devons vérifier votre âge. Nous vous poserons cette question une seule fois.",
+  "submit": "Confirmer",
+  "ageRestrictedForm": {
+    "title": "Veuillez confirmer votre date de naissance",
+    "description": "Pour garantir la sécurité des utilisateurs, nous devons vérifier votre âge. Nous vous poserons cette question une seule fois.",
+    "submit": "Confirmer"
+  }
+}

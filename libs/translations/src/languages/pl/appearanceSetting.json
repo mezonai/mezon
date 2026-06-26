@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "Podgląd wiadomości DM",
+            "AllMessages": "Wszystkie wiadomości",
+            "UnreadDMOnly": "Tylko nieprzeczytane wiadomości DM",
+            "None": "Brak"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Wygląd",
+            "theme": "Motyw",
+            "syncAcrossClients": {
+                "title": "Synchronizuj na wszystkich urządzeniach",
+                "description": "Włączenie tej funkcji zastąpi powyższe ustawienia wyglądu na wszystkich innych urządzeniach, w tym na komputerze i w przeglądarce."
+            }
+        },
+        "search": {
+            "title": "Szukaj",
+            "showResultCount": {
+                "title": "Pokaż dokładną liczbę wyników wyszukiwania",
+                "description": "Włączenie tej opcji może wydłużyć czas wyświetlania wyników wyszukiwania."
+            }
+        }
+    }
+}

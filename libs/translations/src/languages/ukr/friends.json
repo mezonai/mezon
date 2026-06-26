@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Запити на дружбу",
+		"received": "Отримані",
+		"sent": "Надіслані",
+		"emptyReceived": {
+			"title": "Немає вхідних запитів на дружбу",
+			"description": "Тут ви побачите всі запити на дружбу, які надійшли до вас."
+		},
+		"emptySent": {
+			"title": "Немає вихідних запитів на дружбу",
+			"description": "Тут ви побачите всі запити на дружбу, які ви надіслали іншим."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Отриманий запит на дружбу",
+		"findYourFriend": "Знайти друга",
+		"addByUserName": "Додати за ім'ям користувача або номером телефону",
+		"addByUsername": "Додати за {{username}}",
+		"searchUsernamePlaceholder": "Введіть ім'я користувача або номер телефону",
+		"whoYouWantToAddFriend": "Кого ви хочете додати в друзі?",
+		"byTheWay": "До речі, ваше ім'я користувача -",
+		"sendRequestButton": "Надіслати запит на дружбу",
+		"addFriendToast": "Запит на дружбу надіслано"
+	},
+	"friends": "Друзі",
+	"noFriendsResultsFound": "Результатів пошуку друзів не знайдено",
+	"toast": {
+		"sendAddFriendSuccess": "Запит на дружбу успішно надіслано!",
+		"acceptAddFriendSuccess": "Запрошення на дружбу прийнято!",
+		"sendAddFriendFail": "Хм, сталася помилка. Перевірте правильність імені користувача.",
+		"somethingWentWrong": "Щось пішло не так",
+		"friendRequestAlreadySent": "Запит на дружбу вже надіслано, очікує на прийняття."
+	},
+	"you": "ви"
+}

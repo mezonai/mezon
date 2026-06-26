@@ -101,5 +101,9 @@
     "error": "Erro ao sair do canal: {{error}}"
   },
   "btnBadgeCount": "Novo",
-  "favoriteChannel": "CANAL FAVORITO"
+  "favoriteChannel": "CANAL FAVORITO",
+  "toastArchiveChannel": "Canal arquivado com sucesso.",
+  "toastArchiveThread": "Tópico arquivado com sucesso.",
+  "toastArchivedByAdministrator": "Este canal foi arquivado pelo administrador.",
+  "toastArchivedThreadByAdministrator": "Este tópico foi arquivado pelo administrador."
 }

@@ -11,8 +11,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EUserStatus, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, useWindowSize } from '@mezon/utils';
-import isElectron from 'is-electron';
+import { EUserStatus, createImgproxyUrl, generateE2eId, useWindowSize } from '@mezon/utils';
+
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ import { UserStatusIconClan } from '../MemberProfile';
 import { BaseMemberProfile, ClanUserName } from '../MemberProfile/MemberProfile';
 
 const heightTopBar = 50;
-const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
+const titleBarHeight = 0;
 
 type TempMemberItemProps = {
 	id: string;
@@ -213,7 +213,7 @@ const ListMember = () => {
 	return (
 		<div
 			ref={parentRef}
-			className={`custom-member-list ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'} ${isElectron() ? 'scroll-big' : ''} `}
+			className={`custom-member-list ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'} `}
 			style={{
 				height,
 				overflow: 'auto'

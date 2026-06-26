@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "Inviter des amis à rejoindre {{target}}",
+		"privateEvent": "Événement externe",
+		"privateRoom": "Salle de réunion",
+		"clanInvite": "invitation au clan",
+		"sendLinkText": "Ou, envoyez-leur le lien {{type}}",
+		"expiresIn": "Votre lien d'invitation expirera dans {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 minutes",
+		"1hour": "1 heure",
+		"6hours": "6 heures",
+		"12hours": "12 heures",
+		"1day": "1 jour",
+		"7days": "7 jours",
+		"never": "Jamais"
+	},
+	"maxUses": {
+		"noLimit": "Illimité",
+		"1use": "1 utilisation",
+		"5uses": "5 utilisations",
+		"10uses": "10 utilisations",
+		"25uses": "25 utilisations",
+		"50uses": "50 utilisations",
+		"100uses": "100 utilisations"
+	},
+	"generateLink": {
+		"expireAfter": "Expirera après",
+		"maxNumberOfUses": "Nombre maximal d'utilisations"
+	},
+	"buttons": {
+		"copy": "Copier",
+		"copied": "Copié",
+		"copyQR": "Copier le QR",
+		"editInviteLink": "Modifier le lien d'invitation.",
+		"cancel": "Annuler",
+		"generateNewLink": "Générer un nouveau lien",
+		"invite": "Inviter",
+		"sent": "Envoyé"
+	},
+	"searchPlaceholder": "Rechercher des amis",
+	"privateChannelDescription": "Ce canal est privé, seuls les membres et rôles sélectionnés peuvent le voir.",
+	"noResults": "Aucun résultat",
+	"messages": {
+		"qrCopiedSuccess": "QR copié avec succès !"
+	},
+	"errors": {
+		"createInviteLink": "Erreur lors de la création du lien d'invitation",
+		"copyToClipboard": "Impossible de copier dans le presse-papiers",
+		"copyFailed": "Échec de la copie"
+	},
+	"acceptModal": {
+		"title": "Rejoindre le Clan",
+		"invitedToJoin": "Vous êtes invité à rejoindre",
+		"memberCount": "{{count}} Membre",
+		"memberCount_plural": "{{count}} Membres",
+		"clanSettings": "Paramètres du Clan",
+		"customizeAnytime": "Vous pouvez personnaliser ces paramètres à tout moment",
+		"noThanks": "Non, merci",
+		"acceptInvite": "Accepter l'invitation",
+		"joining": "Rejoindre...",
+		"toast": {
+			"alreadyMember": "Vous êtes déjà membre !"
+		}
+	}
+}

@@ -107,6 +107,7 @@
 		"edit": "Chỉnh sửa",
 		"view": "Xem",
 		"delete": "Xóa",
-		"roleNameIsRequired": "Tên vai trò là bắt buộc"
+		"roleNameIsRequired": "Tên vai trò là bắt buộc",
+		"noPermissionToEditRole": "Bạn không có quyền chỉnh sửa role này."
 	}
 }

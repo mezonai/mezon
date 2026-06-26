@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Канали",
+		"members": "Учасники",
+		"guideClan": "Посібник"
+	},
+	"tooltips": {
+		"clickToEdit": "Натисніть для редагування каналу",
+		"startVoiceCall": "Розпочати голосовий дзвінок",
+		"startVideoCall": "Розпочати відеодзвінок",
+		"showMemberList": "Показати список учасників",
+		"hideMemberList": "Сховати список учасників",
+		"showUserProfile": "Показати профіль користувача",
+		"hideUserProfile": "Сховати профіль користувача",
+		"files": "Файли",
+		"canvas": "Канвас",
+		"threads": "Треди",
+		"notificationSettings": "Налаштування сповіщень",
+		"pinnedMessages": "Закріплені повідомлення",
+		"members": "Учасники",
+		"showChat": "Показати розмову",
+		"hideChat": "Сховати розмову",
+		"addFriendsToDM": "Додати друзів до ЛС",
+		"jump": "Перейти",
+		"gallery": "Галерея",
+		"timelineView": "Перейти в режим Хронології",
+		"defaultView": "Перейти в режим Чату"
+	},
+	"directMessage": "Прямі повідомлення",
+	"activeThreads": "Активні треди",
+	"joinedThreadsLast30Days": "Треди, до яких приєдналися (останні 30 днів)",
+	"olderThreads": "Старіші треди",
+	"loading": "Завантаження...",
+	"topic": "Тема",
+	"invoice": "У голосовому каналі",
+	"reactions": "Реакції",
+	"callMessages": {
+		"startedVoiceCall": "Розпочато голосовий дзвінок",
+		"startedVideoCall": "Розпочато відеодзвінок"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "Відсутній ID групового каналу",
+		"dmChannelIdMissing": "Відсутній ID каналу прямих повідомлень",
+		"youAreOnAnotherCall": "Ви вже в іншому дзвінку"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "У цьому каналі ще немає закріплених повідомлень.",
+		"protip": "ПОРАДА:",
+		"emptyDescription": "Користувачі з правом 'Керувати повідомленнями' можуть закріплювати повідомлення з контекстного меню.",
+		"unpinMessage": "Відкріпити повідомлення",
+		"unpinConfirmation": "Ви впевнені, що хочете видалити це закріплене повідомлення?",
+		"cancel": "Скасувати",
+		"unpinIt": "Відкріпити"
+	},
+	"threads": {
+		"emptyTitle": "Немає тредів.",
+		"emptyDescription": "Сфокусуйтесь на розмові з тредом - тимчасовим текстовим каналом.",
+		"createThread": "Створити тред"
+	},
+	"canvas": {
+		"emptyTitle": "Немає канвасів.",
+		"emptyDescription": "Сфокусуйтесь на розмові з канвасом - тимчасовим текстовим каналом.",
+		"createCanvas": "Створити Канвас"
+	},
+	"files": {
+		"emptyTitle": "Немає файлів.",
+		"emptyDescription": "Зараз у цьому каналі немає спільних файлів.",
+		"searchPlaceholder": "Пошук за назвою файлу"
+	},
+	"fileItem": {
+		"download": "Завантажити",
+		"sharedBy": "Поділено {{username}} {{time}}",
+		"attachmentFailed": "Не вдалося завантажити вкладення."
+	},
+	"notificationSetting": {
+		"muteChannel": "Вимкнути сповіщення каналу",
+		"unmuteChannel": "Увімкнути сповіщення каналу",
+		"mutedUntil": "Сповіщення вимкнено до {{date}}",
+		"useCategoryDefault": "Використовувати типові налаштування категорії",
+		"muteOptions": {
+			"for15Minutes": "На 15 хвилин",
+			"for1Hour": "На 1 годину",
+			"for3Hours": "На 3 години",
+			"for8Hours": "На 8 годин",
+			"for24Hours": "На 24 години",
+			"untilTurnedBackOn": "Доки я не вимкну"
+		}
+	},
+	"gallery": {
+		"title": "Галерея",
+		"sentDate": "Дата відправки",
+		"fromDate": "З дати",
+		"toDate": "До дати",
+		"filters": {
+			"all": "Всі",
+			"images": "Зображення",
+			"videos": "Відео"
+		},
+		"dateRange": {
+			"from": "З {{date}}",
+			"to": "До {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Дата початку має бути до або дорівнювати даті завершення"
+		},
+		"buttons": {
+			"clearAll": "Очистити все",
+			"apply": "Застосувати",
+			"clearDateFilter": "Очистити фільтр дати"
+		},
+		"emptyState": {
+			"noMediaFiles": "Медіа файлів не знайдено",
+			"noMediaFilesDateRange": "Медіа файлів за обраний період не знайдено",
+			"noImages": "Зображень не знайдено",
+			"noVideos": "Відео не знайдено"
+		},
+		"loading": {
+			"olderImages": "Завантаження старіших зображень...",
+			"newerImages": "Завантаження новіших зображень...",
+			"filterChange": "Завантаження медіа..."
+		},
+		"filesCount": "{{count}} файлів",
+		"imageError": "Помилка"
+	},
+	"modals": {
+		"threads": {
+			"title": "Треди",
+			"create": "Створити",
+			"results": "Результати"
+		},
+		"canvas": {
+			"title": "Канвас",
+			"create": "Створити"
+		},
+		"files": {
+			"title": "Файли"
+		},
+		"pinnedMessages": {
+			"title": "Закріплені повідомлення"
+		}
+	},
+	"createThread": {
+		"newThread": "Новий тред",
+		"inviteMessage": "Ви можете запросити нових користувачів, згадавши їх через @.",
+		"validation": {
+			"invalidChannelName": "Введіть дійсну назву треду (максимум 65 символів, лише літери, цифри, _ або -).",
+			"threadNameRequired": "Назва треду обов'язкова.",
+			"starterMessageRequired": "Початкове повідомлення обов'язкове."
+		},
+		"threadName": "Назва треду",
+		"enterThreadName": "Введіть назву треду",
+		"privateThread": "Приватний тред",
+		"privateThreadDescription": "Тільки запрошені користувачі та модератори можуть бачити",
+		"toast": {
+			"threadNameTooShort": "Назва треду має бути довшою за 3 символи",
+			"threadNameExists": "Назва треду вже існує",
+			"initialMessageRequired": "Потрібне початкове повідомлення для створення треду.",
+			"messageTooLong": "Повідомлення перевищує ліміт у 4000 символів",
+			"messageLimitExceeded": "Повідомлення перевищує ліміт у {{limit}} символів"
+		},
+		"placeholder": {
+			"threadName": "Введіть назву треду"
+		}
+	},
+	"moreFile": "ще файлів",
+	"moreFiles": "ще файлів"
+}

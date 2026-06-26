@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "IMPOSTAZIONI NOTIFICHE CLAN",
 	"notificationOverrides": "SOVRASCRITTURA NOTIFICHE",
 	"addChannelOverride": "Aggiungi un canale per personalizzare le impostazioni di notifica predefinite",
-	"selectOrCreateOption": "Seleziona o crea un'opzione...",
+	"selectChannelOrCategory": "Seleziona un canale o una categoria...",
 	"headers": {
 		"channelOrCategory": "CANALE O CATEGORIA",
 		"all": "TUTTO",

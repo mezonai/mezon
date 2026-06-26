@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Opslaan"
+	},
+	"switch": {
+		"userProfile": "Persoonlijk",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Weergavenaam",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Clan Bijnaam",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Voorvoegsel",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Biografie",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Niet-opgeslagen wijzigingen verwijderen?",
+		"description": "Er zijn niet-opgeslagen wijzigingen, wil je ze verwijderen?",
+		"discard": "Weggooien",
+		"keepEditing": "Verder bewerken"
+	},
+	"selectAClan": "Kies een clan",
+	"searchClanPlaceholder": "Clan zoeken",
+	"updateProfileSuccess": "Persoonlijk profiel succesvol bijgewerkt",
+	"updateProfileError": "Persoonlijk profiel bijwerken mislukt",
+	"updateClanProfileSuccess": "Clanprofiel succesvol bijgewerkt",
+	"emptyUsername": "Weergavenaam mag niet leeg zijn!",
+	"duplicateClannick": "Clan bijnaam is dubbel",
+	"clanNickname": "CLAN BIJNAAM",
+	"changeAvatar": "Profielfoto wijzigen",
+	"removeAvatar": "Verwijderen",
+	"avatar": "Profielfoto",
+	"preview": "VOORBEELD",
+	"nickNameExistsError": "Bijnaam bestaat al in de clan. Voer een andere bijnaam in.",
+	"unsavedChangesWarning": "Pas op — je hebt niet-opgeslagen wijzigingen!",
+	"reset": "Herstellen",
+	"saveChanges": "Wijzigingen opslaan",
+	"showProfilesDescription": "Toon jezelf met verschillende profielen voor elke clan",
+	"chooseAClan": "EEN CLAN KIEZEN",
+	"editImage": "Afbeelding bewerken",
+	"close": "Sluiten",
+	"resetChanges": "Wijzigingen resetten",
+	"cancelEditing": "Bewerking annuleren",
+	"cancel": "Annuleren",
+	"applyChanges": "Wijzigingen toepassen",
+	"apply": "Toepassen",
+	"moveImage": "Afbeelding verplaatsen",
+	"adjustZoom": "Zoom aanpassen",
+	"profiles": "Profielen",
+	"userProfile": "Gebruikersprofiel",
+	"clanProfiles": "Clanprofielen",
+	"directMessageIcon": "Privéberichtpictogram",
+	"directMessageIconAction": {
+		"remove": "Verwijderen",
+		"removeTitle": "Privéberichtpictogram verwijderen",
+		"removeDescription": "Weet je zeker dat je het privéberichtpictogram wilt verwijderen?"
+	},
+	"displayName": "WEERGAVENAAAM",
+	"emptyClanProfile": {
+		"title": "Je bent nog geen lid van een clan",
+		"description": "Maak of join een clan om je clanprofiel in te stellen.",
+		"createClan": "Clan aanmaken",
+		"joinClan": "Clan betreden"
+	}
+}

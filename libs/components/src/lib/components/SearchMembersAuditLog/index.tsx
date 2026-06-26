@@ -1,6 +1,7 @@
 import {
 	auditLogFilterActions,
 	auditLogList,
+	selectActionAuditLog,
 	selectAllUserClans,
 	selectMemberClanByUserId,
 	selectTheme,
@@ -9,7 +10,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IUserAuditLog, UsersClanEntity } from '@mezon/utils';
-import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
+import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -70,6 +71,7 @@ const SearchMemberAuditLogModal = ({
 	const { t } = useTranslation('search');
 	const dispatch = useAppDispatch();
 	const appearanceTheme = useSelector(selectTheme);
+	const actionFilterFromStore = useSelector(selectActionAuditLog);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedUser, setSelectedUser] = useState<string>(userFilter?.userId || '');
 	const usersClan = useSelector(selectAllUserClans);
@@ -77,9 +79,9 @@ const SearchMemberAuditLogModal = ({
 	const users: Users[] = [
 		{ name: t('allUsers'), icon: <Icons.MemberList isWhite={true} />, userId: '' },
 		...usersClan.map((item: UsersClanEntity) => ({
-			name: item?.user?.display_name || '',
+			name: getNameForPrioritize(item?.clan_nick, item?.user?.display_name, item?.user?.username) || '',
 			icon: <AvatarUser user={item} />,
-			userId: item?.user?.id || ''
+			userId: item?.id || item?.user?.id || ''
 		}))
 	];
 
@@ -94,10 +96,11 @@ const SearchMemberAuditLogModal = ({
 
 		if (currentClanId) {
 			const body = {
-				actionLog: actionFilter ? actionFilter : '',
+				actionLog: actionFilterFromStore || actionFilter || '',
 				userId: user?.userId ?? '',
 				clanId: currentClanId ?? '',
-				date_log: selectedDate
+				date_log: selectedDate,
+				noCache: true
 			};
 			dispatch(auditLogList(body));
 		}
@@ -107,8 +110,8 @@ const SearchMemberAuditLogModal = ({
 	const handleClearSearch = () => setSearchTerm('');
 
 	return (
-		<div className="absolute border sm:left-0 max-sm:right-0 max-sm:left-[unset] top-8 pb-3 rounded border-solid border-theme-primary bg-theme-setting-nav z-[9999] shadow w-72">
-			<div className="bg-theme-setting-primary rounded-lg w-full max-w-xs">
+		<div className="absolute border sm:left-0 max-sm:right-0 max-sm:left-[unset] top-8 rounded border-solid border-theme-primary bg-theme-setting-nav z-[9999] shadow w-72 overflow-visible">
+			<div className="bg-theme-setting-primary rounded-lg w-full max-w-xs pb-2">
 				<div className="relative m-2">
 					<input
 						type="text"
@@ -122,7 +125,9 @@ const SearchMemberAuditLogModal = ({
 					</span>
 				</div>
 
-				<div className={`h-64 ml-2 pr-1 overflow-y-scroll ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}>
+				<div
+					className={`max-h-64 ml-2 mr-2 pr-1 pb-2 overflow-y-auto ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
+				>
 					{users.filter((user) => user?.name?.toLowerCase().includes(searchTerm.toLowerCase())).length > 0 ? (
 						users
 							.filter((user) => user?.name?.toLowerCase().includes(searchTerm.toLowerCase()))

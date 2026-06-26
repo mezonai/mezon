@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Наладзіць групу",
+  "inviteLinks": "Спасылкі для запрашэння",
+  "leaveGroup": "Пакінуць групу",
+  "closeDM": "Зачыніць паведамленне",
+  "groupName": "Назва групы",
+  "save": "Захаваць",
+  "removeAvatar": "Выдаліць выяву",
+  "invalidGroupName": "Несапраўдная назва групы",
+  "uploadImage": "Загрузіць выяву",
+  "toast": {
+    "leaveGroupError": "Памылка выхаду з групы: {{error}}"
+  }
+}

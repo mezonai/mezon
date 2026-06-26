@@ -1,0 +1,14 @@
+{
+  "title": "Leeftijdbeperkt kanaal",
+  "description": "Dit kanaal bevat volwassen inhoud en is gemarkeerd als leeftijdsbeperkt. Wil je doorgaan?",
+  "continue": "Doorgaan",
+  "nope": "Nee",
+  "confirmBirthdayTitle": "Bevestig je geboortedatum",
+  "confirmBirthdayMessage": "Om gebruikersveiligheid te waarborgen, moeten we je leeftijd verifiëren. We vragen dit maar één keer.",
+  "submit": "Bevestigen",
+  "ageRestrictedForm": {
+    "title": "Bevestig je geboortedatum",
+    "description": "Om gebruikersveiligheid te waarborgen, moeten we je leeftijd verifiëren. We vragen dit maar één keer.",
+    "submit": "Bevestigen"
+  }
+}

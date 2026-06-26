@@ -100,6 +100,10 @@
 		"error": "Ошибка выхода из канала: {{error}}"
 	},
 	"btnBadgeCount": "Новый",
-	"favoriteChannel": "ИЗБРАННЫЙ КАНАЛ"
+	"favoriteChannel": "ИЗБРАННЫЙ КАНАЛ",
+	"toastArchiveChannel": "Канал успешно архивирован.",
+	"toastArchiveThread": "Ветка успешно архивирована.",
+	"toastArchivedByAdministrator": "Этот канал был архивирован администратором.",
+	"toastArchivedThreadByAdministrator": "Эта ветка была архивирована администратором."
 }
 

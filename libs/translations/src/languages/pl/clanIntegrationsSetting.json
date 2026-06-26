@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "Wiadomości i aktualizacje automatyczne",
+		"description": "Dostosuj swój clan z integracjami. Zarządzaj webhookami, kanałami monitorowanymi i aplikacjami, a także ustawieniami Twitch i YouTube dla twórców.",
+		"learnMore": "Dowiedz się więcej o zarządzaniu integracjami."
+	},
+	"webhooks": {
+		"description": "Webhook to narzędzie, które pomaga otrzymywać automatyczne wiadomości i aktualizacje danych wysyłane do kanału tekstowego w Twoim clanie poprzez połączenia internetowe.",
+		"learnMore": "Dowiedz się więcej",
+		"try": "lub spróbuj",
+		"buildOne": "zbuduj własnego."
+	},
+	"clanWebhooks": {
+		"description": "Webhook Clan to prosty sposób na publikowanie wiadomości z innych aplikacji i stron internetowych dla każdego użytkownika Mezon, używając technologii internetowej.",
+		"tips": "Porada: Jeśli czujesz, że token na Twoim URL został naruszony lub jest przestarzały, zresetuj i skopiuj nowy URL."
+	},
+	"webhooksEdit": {
+		"title": "Edytuj webhook",
+		"save": "Zapisz",
+		"cancel": "Anuluj",
+		"channel": "Kanał",
+		"nameLabel": "Nazwa",
+		"recommendImage": "Zalecamy użycie obrazu o minimalnym rozmiarze 128x128 px",
+		"webhookURL": "URL webhooka",
+		"copy": "Kopiuj",
+		"copied": "Skopiowano",
+		"delete": "Usuń",
+		"selectAChannel": "Wybierz kanał",
+		"yes": "Tak",
+		"deleteCaptionHook": "Usuń {{webhookName}}",
+		"deleteWebhookTitle": "Usuń {{webhookName}}",
+		"deleteWebhookConfirmation": "Czy na pewno chcesz usunąć webhook {{webhookName}}? Tej akcji nie można cofnąć.",
+		"resetToken": "Zresetuj token",
+		"name": "Nazwa webhooka",
+		"nameMaxLengthError": "Długość musi wynosić do 64 znaków."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Brak webhooków"
+	},
+	"webhooksItem": {
+		"createdBy": "Utworzono {{webhookCreateTime}} przez {{webhookUserOwnerName}}"
+	},
+	"webhookChannelSelect": {
+		"title": "Wybierz Kanał",
+		"description": "Wybierz kanał, w którym chcesz utworzyć webhook",
+		"selectChannel": "Kanał",
+		"placeholder": "Wybierz kanał",
+		"create": "Utwórz"
+	},
+	"toast": {
+		"addSuccess": "Utworzono webhook pomyślnie!",
+		"addError": "Wystąpił błąd podczas tworzenia webhooka",
+		"saveSuccess": "Zapisano pomyślnie!",
+		"saveError": "Wystąpił błąd podczas zapisywania",
+		"deleteSuccess": "Usunięto webhook pomyślnie!",
+		"deleteError": "Wystąpił błąd podczas usuwania webhooka",
+		"resetTokenSuccess": "Zresetowano token pomyślnie!",
+		"resetTokenError": "Wystąpił błąd podczas resetowania tokena",
+		"copyError": "Nie można skopiować URL",
+		"webhookGeneratedSuccess": "Utworzono {{webhookName}} pomyślnie!",
+		"webhookDeletedSuccess": "Usunięto {{webhookName}} pomyślnie!"
+	}
+}

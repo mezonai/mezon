@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Télécharger un effet sonore",
+		"delete": "Supprimer",
+		"uploadDetailScreen": "Télécharger"
+	},
+	"content": {
+		"description": "•  Seuls les fichiers .mp3, .wav sont acceptés, taille maximale 1 Mo. \\n•  Donnez un nom facile à retenir à l'effet sonore. \\n•  L'effet sonore sera utilisé dans les notifications ou les événements du clan.",
+		"requirements": "EXIGENCES DE TÉLÉCHARGEMENT",
+		"reqSize": "- Ne pas dépasser 1024 Ko.",
+		"audioFile": "Fichier audio",
+		"audioName": "Nom audio",
+		"preview": "Aperçu",
+		"chooseAudioFile": "Choisir un fichier audio"
+	},
+	"toast": {
+		"errorSizeLimit": "Dépassement de la limite de taille de 1 Mo",
+		"errorFileType": "Format de fichier invalide. Seuls les fichiers .mp3, .mpeg et .wav sont acceptés."
+	},
+	"main": {
+		"uploadInstructions": "INSTRUCTIONS DE TÉLÉCHARGEMENT",
+		"fileRequirements": "Seuls les fichiers .mp3, .wav sont acceptés, taille maximale 1 Mo. Donnez un nom facile à retenir à l'effet sonore. L'effet sonore sera utilisé dans les notifications ou les événements du clan.",
+		"uploadHere": "Télécharger ici !",
+		"personalizeDescription": "Personnalisez les effets sonores pour votre clan !",
+		"uploadSound": "Télécharger un son",
+		"soundEffectList": "Liste des effets sonores",
+		"noSoundEffects": "Aucun effet sonore pour le moment. Cliquez sur \\\"Télécharger un son\\\" pour ajouter !"
+	},
+	"modal": {
+		"titleEdit": "Modifier l'effet sonore",
+		"titleUpload": "Télécharger un effet sonore",
+		"subtitle": "Prise en charge des formats MP3, WAV • Maximum 1 Mo",
+		"preview": "Aperçu",
+		"audioFile": "Fichier audio",
+		"soundName": "Nom du son",
+		"soundVolume": "Volume",
+		"chooseOrDrop": "Choisir ou glisser-déposer un fichier",
+		"browse": "Parcourir",
+		"placeholder": "Exemple: miaulement de chat",
+		"cancel": "Annuler",
+		"uploading": "Téléchargement en cours...",
+		"update": "Mettre à jour",
+		"upload": "Télécharger",
+		"errorFileType": "Prise en charge des fichiers .mp3 ou .wav",
+		"errorFileSize": "Fichier trop volumineux, maximum 1 Mo",
+		"errorUploadFailed": "Impossible de télécharger le son",
+		"characters": "Le nom doit contenir entre 3 et 64 caractères",
+		"errorName": "Le nom de l'effet sonore doit contenir entre {{min}} et {{max}} caractères, uniquement des lettres, chiffres, _ et -"
+	}
+}

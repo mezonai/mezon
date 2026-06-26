@@ -56,6 +56,14 @@ type Props = {
 	currentChannelId?: string;
 };
 
+const HIDDEN_CALL_LOG_MENU_ITEM_IDS = new Set(['reply', 'forwardMessage', 'forwardAll', 'copyText', 'addToInbox']);
+
+const contextSubmenuAlign = {
+	points: ['tl', 'tr'] as [string, string],
+	offset: [8, 0] as [number, number],
+	overflow: { adjustX: 1, adjustY: 1 }
+};
+
 export default function DynamicContextMenu({ menuId, items, messageId, message, isTopic, onQuickMenuExecute, currentChannelId }: Props) {
 	const emojiConverted = useEmojiConverted();
 	const { t } = useTranslation('contextMenu');
@@ -206,6 +214,8 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		return quickMenuItems.length > 0 || isQuickMenu;
 	}, [quickMenuItems, isQuickMenu]);
 
+	const isCallLogMessage = !!message?.content?.callLog?.callLogType;
+
 	const dropdownReact = useMemo(() => {
 		const reactItems: ReactElement[] = [];
 		const addReactionFunction = items.find((item) => item.id === 'addReaction');
@@ -259,7 +269,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 	const dropdownQuickMenus = useMemo(() => {
 		if (isQuickMenu) {
 			return (
-				<div className="w-[320px] p-4 text-center text-gray-500">
+				<div className="w-[240px] p-4 text-center text-gray-500">
 					<div className="flex items-center justify-center gap-2 mb-2">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
 							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="30" strokeDashoffset="30" />
@@ -272,7 +282,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 
 		if (quickMenuOptions.length === 0) {
 			return (
-				<div className="w-[320px] p-4 text-center text-gray-500">
+				<div className="w-[240px] p-4 text-center text-gray-500">
 					<span>{t('noQuickMenusAvailable')}</span>
 				</div>
 			);
@@ -285,7 +295,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 					onChange={handleQuickMenuSelect}
 					placeholder={t('typeToSearchQuickMenus')}
 					isLoading={isQuickMenu}
-					className="w-[320px]"
+					className="w-[240px]"
 					autoFocus={true}
 				/>
 			</Item>
@@ -298,6 +308,9 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			const item = items[index];
 
 			if (item.label === t('deleteMessage') && !isTopic && message?.content?.tp && message?.content?.tp !== '0') {
+				continue;
+			}
+			if (isCallLogMessage && item.id && HIDDEN_CALL_LOG_MENU_ITEM_IDS.has(item.id)) {
 				continue;
 			}
 			const hasEdit = items.some((i) => i.label === t('editMessage'));
@@ -317,15 +330,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			if (labelQuickMenus && shouldShowQuickMenu) {
 				elements.push(
 					<Dropdown
-						align={{
-							points: ['tl', 'br']
-						}}
+						align={contextSubmenuAlign}
+						getPopupContainer={() => document.body}
 						menu={dropdownQuickMenus}
 						key={item.label}
 						trigger="hover"
 						className="border-none bg-theme-contexify"
 					>
-						<div>
+						<div className="w-full block">
 							<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 								<div
 									data-e2e={generateE2eId('chat.message_action_modal.button.base')}
@@ -343,15 +355,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			} else if (labelAddReaction) {
 				elements.push(
 					<Dropdown
-						align={{
-							points: ['tl', 'br']
-						}}
+						align={contextSubmenuAlign}
+						getPopupContainer={() => document.body}
 						menu={dropdownReact}
 						key={item.label}
 						trigger="hover"
 						className=" border-none bg-theme-contexify"
 					>
-						<div>
+						<div className="w-full block">
 							<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 								<div
 									data-e2e={generateE2eId('chat.message_action_modal.button.base')}
@@ -367,6 +378,11 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 					</Dropdown>
 				);
 			} else if (!labelQuickMenus) {
+				const isCreateThreadItem = item.id === 'createThread';
+				const threadIconHoverClass = isCreateThreadItem
+					? '[--thread-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] hover:[--thread-fill-1:var(--bg-icon-theme-active)]'
+					: '';
+
 				elements.push(
 					<Item
 						key={item.label}
@@ -385,10 +401,16 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 					>
 						<div
 							data-e2e={generateE2eId('chat.message_action_modal.button.base')}
-							className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542]  ' : 'text-theme-primary text-theme-primary-hover'}`}
+							className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542]  ' : 'text-theme-primary text-theme-primary-hover'} ${threadIconHoverClass}`}
 						>
 							<span>{item.label}</span>
-							<span> {item.icon}</span>
+							<span>
+								{isCreateThreadItem ? (
+									<Icons.ThreadIcon className="w-4 h-4" defaultFill1="var(--thread-fill-1)" defaultFill4="var(--thread-fill-4)" />
+								) : (
+									item.icon
+								)}
+							</span>
 						</div>
 					</Item>
 				);
@@ -420,6 +442,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		shouldShowQuickMenu,
 		dropdownReact,
 		dropdownQuickMenus,
+		isCallLogMessage,
 		t
 	]);
 

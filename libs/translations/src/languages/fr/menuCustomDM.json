@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Personnaliser le groupe",
+  "inviteLinks": "Liens d'invitation",
+  "leaveGroup": "Quitter le groupe",
+  "closeDM": "Fermer le message",
+  "groupName": "Nom du groupe",
+  "save": "Sauvegarder",
+  "removeAvatar": "Supprimer l'avatar",
+  "invalidGroupName": "Nom de groupe invalide",
+  "uploadImage": "Télécharger une image",
+  "toast": {
+    "leaveGroupError": "Erreur lors de la sortie du groupe: {{error}}"
+  }
+}

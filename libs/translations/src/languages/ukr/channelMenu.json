@@ -1,0 +1,104 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Позначити як прочитане"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Запросити",
+			"markFavorite": "Додати до улюблених",
+			"unMarkFavorite": "Видалити з улюблених",
+			"copyLink": "Копіювати посилання"
+		},
+		"notification": {
+			"title": "",
+			"muteChannel": "Вимкнути сповіщення каналу",
+			"unMuteChannel": "Увімкнути сповіщення каналу",
+			"muteThread": "Вимкнути сповіщення треду",
+			"unMuteThread": "Увімкнути сповіщення треду",
+			"notification": "Налаштування сповіщень",
+			"for15Minutes": "На 15 хвилин",
+			"for1Hour": "На 1 годину",
+			"for3Hours": "На 3 години",
+			"for8Hours": "На 8 годин",
+			"for24Hours": "На 24 години",
+			"untilTurnedBackOn": "Доки я не вимкну",
+			"useCategoryDefault": "Використовувати типові налаштування категорії",
+			"all": "Всі",
+			"onlyMention": "Тільки @згадування",
+			"nothing": "Нічого",
+			"processing": "Обробка...",
+			"muteChannelStatus": "Сповіщення каналу вимкнено",
+			"muteThreadStatus": "Сповіщення треду вимкнено",
+			"unmuteChannelStatus": "Сповіщення каналу увімкнено",
+			"unmuteThreadStatus": "Сповіщення треду увімкнено",
+			"mutedUntil": "Сповіщення вимкнено до",
+			"muteSuccess": "Сповіщення успішно вимкнено!",
+			"unMuteSuccess": "Сповіщення успішно увімкнено!",
+			"muteFailed": "Помилка вимкнення сповіщення!",
+			"unMuteFailed": "Помилка увімкнення сповіщення!"
+		},
+		"thread": {
+			"title": "",
+			"threads": "Треди",
+			"searchThreads": "Пошук назв тредів",
+			"searchFiles": "Пошук файлів",
+			"searchCanvas": "Пошук назв канвасів"
+		},
+		"organizationMenu": {
+			"title": "",
+			"edit": "Редагувати канал",
+			"deleteChannel": "Видалити канал",
+			"duplicateChannel": "Дублювати канал",
+			"leaveChannel": "Покинути канал",
+			"createTextChannel": "Створити текстовий канал",
+			"createVoiceChannel": "Створити голосовий канал",
+			"openChat": "Відкрити розмову",
+			"hideNames": "Сховати назви",
+			"createThread": "Створити тред"
+		},
+		"devMode": {
+			"title": "Режим розробника",
+			"copyChannelID": "Копіювати ID каналу"
+		},
+		"manageThreadMenu": {
+			"editThread": "Редагувати тред",
+			"deleteThread": "Видалити тред",
+			"leaveThread": "Покинути тред",
+			"closeThread": "Закрити тред",
+			"lockThread": "Заблокувати тред",
+			"copyLink": "Копіювати посилання"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "ID каналу скопійовано"
+	},
+	"modalConfirm": {
+		"thread": {
+			"title": "Видалити тред {{threadName}}",
+			"content": "Ви впевнені, що хочете видалити цей тред?",
+			"confirmText": "Так"
+		},
+		"channel": {
+			"title": "Видалити канал {{channelName}}",
+			"content": "Ви впевнені, що хочете видалити цей канал?",
+			"confirmText": "Так",
+			"systemChannel": "Системний канал не можна видалити",
+			"error": "Помилка видалення каналу: {{error}}"
+		}
+	},
+	"modalConFirmLeaveThread": {
+		"title": "Покинути тред",
+		"yesButton": "Покинути тред",
+		"textConfirm": "Ви впевнені, що хочете покинути цей тред? Ви не зможете отримувати повідомлення з нього після виходу."
+	},
+	"modalConFirmLeaveChannel": {
+		"title": "Покинути канал",
+		"yesButton": "Покинути канал",
+		"textConfirm": "Ви впевнені, що хочете покинути цей канал? Ви не зможете отримувати повідомлення з нього після виходу.",
+		"error": "Помилка виходу з каналу: {{error}}"
+	},
+	"btnBadgeCount": "Нове",
+	"favoriteChannel": "УЛЮБЛЕНІ КАНАЛИ"
+}

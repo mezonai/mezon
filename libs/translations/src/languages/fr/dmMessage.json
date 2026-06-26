@@ -1,0 +1,63 @@
+{
+	"title": "Messages",
+	"addFriend": "Ajouter un ami",
+	"friends": "Amis",
+	"blockedUserMessage": "Message bloqué",
+	"menu": {
+		"leaveGroup": "Quitter le groupe",
+		"deleteGroup": "Supprimer le groupe",
+		"profile": "Profil",
+		"closeDm": "Fermer le message",
+		"markAsRead": "Marquer comme lu",
+		"favorite": "Favori",
+		"muteConversation": "Couper les notifications",
+		"unMuteConversation": "Réactiver les notifications",
+		"notificationSettings": "Paramètres de notification",
+		"disableE2EE": "Désactiver le chiffrement E2EE",
+		"enableE2EE": "Activer le chiffrement E2EE",
+		"blockUser": "Bloquer l'utilisateur",
+		"unblockUser": "Débloquer l'utilisateur",
+		"removeFriend": "Supprimer l'ami",
+		"addFriend": "Ajouter un ami",
+		"pinConversation": "Épingler la conversation",
+		"unpinConversation": "Désépingler la conversation"
+	},
+	"confirm": {
+		"title": "Quitter {{groupName}}",
+		"content": "Êtes-vous sûr de vouloir quitter {{groupName}} ? Vous ne pourrez pas rejoindre ce groupe sans être invité.",
+		"confirmText": "Oui"
+	},
+	"pinConfirm": {
+		"title": "Épingler la conversation ?",
+		"content": "Cette conversation sera déplacée en haut de la liste des messages pour un accès facile.",
+		"confirmText": "Épingler"
+	},
+	"unpinConfirm": {
+		"title": "Désépingler la conversation ?",
+		"content": "Cette conversation reviendra à sa position normale dans la liste des messages.",
+		"confirmText": "Désépingler"
+	},
+	"pinSection": "ÉPINGLEES",
+	"allMessagesSection": "TOUS LES MESSAGES",
+	"maximumPinnedConversationsReached": "Vous ne pouvez épinglez qu'un maximum de {{max}} conversations.",
+	"notification": {
+		"blockUser": {
+			"success": "Utilisateur bloqué avec succès",
+			"error": "Impossible de bloquer l'utilisateur"
+		},
+		"unblockUser": {
+			"success": "Utilisateur débloqué avec succès",
+			"error": "Impossible de débloquer l'utilisateur"
+		},
+		"muteSuccess": "Notifications coupées avec succès !",
+		"unMuteSuccess": "Notifications réactivées avec succès !",
+		"muteFailed": "Échec de la coupure des notifications !",
+		"unMuteFailed": "Échec de la réactivation des notifications !"
+	},
+	"waveWelcome": "Faites un signe de main pour dire bonjour !",
+	"waveWelcomeDM": "Faites un signe de main à {{username}}",
+	"members": "membres",
+	"speaker": "Haut-parleur",
+	"end": "Finir",
+	"turnedMicOff": "a coupé le micro"
+}

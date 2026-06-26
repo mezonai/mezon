@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Приєднатися",
+	"textChannels": "Текстові канали",
+	"voiceChannels": "Голосові канали",
+	"streamingChannels": "Стримингові канали",
+	"search": "Пошук",
+	"filterResults": "Фільтрувати результати...",
+	"members": "Учасники",
+	"channels": "Канали",
+	"media": "Медіа",
+	"pins": "Закріплені",
+	"in": "в:",
+	"Messages": "Повідомлення",
+	"filterOptions": {
+		"fromUser": "Від конкретного користувача",
+		"mentionUser": "Згадати когось",
+		"inChannel": "В конкретному каналі"
+	},
+	"cancel": "Скасувати",
+	"searchPlaceholder": "Пошук",
+	"searchFor": "Пошук:",
+	"enter": "Enter",
+	"searchOptions": "Параметри пошуку",
+	"fromUser": "Від користувача",
+	"inChannel": "В каналі",
+	"hasContent": "Має вміст",
+	"mentionsUser": "Згадує когось",
+	"emptySearch": {
+		"title": "Ми шукали всюди. На жаль, результатів не знайдено."
+	},
+	"learnMore": "Дізнатися більше",
+	"searchOptionsData": {
+		"fromUserShort": "пошук за відправником",
+		"mentionsUserShort": "пошук за згаданим",
+		"hasContentShort": "пошук за вмістом з вкладеннями",
+		"channelShort": "пошук в каналі"
+	},
+	"prefixes": {
+		"from": "від:",
+		"mentions": "згадування:",
+		"has": "має:",
+		"in": "в:"
+	},
+	"mentionPrefixes": {
+		"from": "від:",
+		"mentions": "згадування:",
+		"has": "має:",
+		"in": "в:"
+	},
+	"allChannels": "Всі канали",
+	"searching": "Пошук...",
+	"noResults": "Результатів немає",
+	"resultsCount": "{{count}} результатів",
+	"jump": "Перейти",
+	"hasOptions": {
+		"video": "відео",
+		"link": "посилання",
+		"image": "зображення"
+	}
+}

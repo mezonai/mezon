@@ -12,7 +12,7 @@
         "compiler": "babel",
         "outputPath": "dist/apps/admin",
         "index": "apps/admin/src/index.html",
-        "baseHref": "/",
+        "baseHref": "/developers/",
         "main": "apps/admin/src/main.tsx",
         "tsConfig": "apps/admin/tsconfig.app.json",
         				"assets": [
@@ -64,7 +64,10 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "admin:build",
-        "hmr": true
+        "hmr": true,
+        "host": "127.0.0.1",
+        "port": 4200,
+        "open": true
       },
       "configurations": {
         "development": {

@@ -14,14 +14,16 @@ import { ThemeApp, createImgproxyUrl, getAvatarForPrioritize, getNameForPrioriti
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 interface ModalProps {
 	isOpen: boolean;
 	RolesClan: RolesClanEntity[];
 	onClose: () => void;
+	hasPermissionEdit: boolean;
 }
 
-export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClose }) => {
+export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClose, hasPermissionEdit }) => {
 	const { t } = useTranslation('clanRoles');
 	const dispatch = useDispatch();
 	const appearanceTheme = useSelector(selectTheme);
@@ -77,6 +79,10 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 	}, []);
 
 	const handleUpdateRole = useCallback(async () => {
+		if (!hasPermissionEdit) {
+			toast.error(t('roleManagement.noPermissionToEditRole'));
+			return;
+		}
 		const userIds = Object.keys(selectedUserIds);
 
 		if (selectedRoleId === t('roleManagement.newRoleDefault')) {
@@ -101,7 +107,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 			})
 		);
 		onClose();
-	}, [selectedRoleId, currentClanId, selectedRole, selectedUserIds]);
+	}, [selectedRoleId, currentClanId, selectedRole, selectedUserIds, hasPermissionEdit, t]);
 
 	useEffect(() => {
 		if (!isOpen) {

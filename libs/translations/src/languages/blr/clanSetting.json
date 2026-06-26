@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"settings": {
+			"title": "Налады",
+			"overview": "Агляд",
+			"moderation": "Мадэрацыя",
+			"auditLog": "Журнал змен",
+			"channels": "Каналы",
+			"integrations": "Інтэграцыі",
+			"emoji": "Эмодзі",
+			"sticker": "Стыкеры",
+			"webhooks": "Вэбхукі",
+			"security": "Бяспека",
+			"permissionDenied": "У вас няма права рэдагаваць",
+			"sound": "Гукі",
+			"enableCommunity": "Уключыць супольнасць"
+		},
+		"community": {
+			"title": "Супольнасць",
+			"enableCommunity": "Уключыць супольнасць"
+		},
+		"subscriptions": {
+			"title": "Пакеты падпіскі клана",
+			"getStarted": "Пачаць"
+		},
+		"userManagement": {
+			"title": "Кіраванне карыстальнікамі",
+			"members": "Удзельнікі",
+			"role": "Роля",
+			"invite": "Запрашэнні",
+			"bans": "Баны"
+		}
+	}
+}

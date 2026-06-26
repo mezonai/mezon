@@ -100,5 +100,9 @@
     "error": "Misslyckades lämna kanal: {{error}}"
   },
   "btnBadgeCount": "NY",
-  "favoriteChannel": "FAVORIT KANAL"
+  "favoriteChannel": "FAVORIT KANAL",
+  "toastArchiveChannel": "Kanalen har arkiverats.",
+  "toastArchiveThread": "Tråden har arkiverats.",
+  "toastArchivedByAdministrator": "Denna kanal har arkiverats av administratören.",
+  "toastArchivedThreadByAdministrator": "Denna tråd har arkiverats av administratören."
 }

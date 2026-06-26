@@ -6,7 +6,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 import type { ApiChannelDescription } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { channelsActions, selectCurrentChannel } from '../channels/channels.slice';
+import { applyChannelArchiveState, channelsActions, selectChannelById, selectCurrentChannel } from '../channels/channels.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -121,23 +121,6 @@ export const fetchThreadsCached = async (
 		time: Date.now()
 	};
 };
-
-const updateCacheOnThreadCreation = createAsyncThunk(
-	'threads/updateCache',
-	async (
-		{ clanId, channelId, defaultThreadList }: { clanId: string; channelId: string; defaultThreadList: Array<ApiChannelDescription> },
-		thunkAPI
-	) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const threads = await fetchThreadsCached(thunkAPI.getState as () => RootState, mezon, channelId, clanId, undefined, undefined);
-
-			return mapToThreadEntity((threads.channeldesc as ApiChannelDescription[]) || []);
-		} catch (e) {
-			console.error(e);
-		}
-	}
-);
 
 const mapToThreadEntity = (threads: ApiChannelDescription[] | ThreadsEntity[] | undefined | null) => {
 	if (!Array.isArray(threads)) {
@@ -302,7 +285,20 @@ export const writeActiveArchivedThread = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.activeArchivedThread(mezon.session, clanId, channelId);
-			thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId, activeCode: ThreadStatus.joined }));
+			const state = thunkAPI.getState() as RootState;
+			const threadChannel = selectChannelById(state, channelId);
+			thunkAPI.dispatch(channelsActions.update({ clanId, update: { id: channelId, changes: { active: ThreadStatus.joined } } }));
+
+			await thunkAPI
+				.dispatch(
+					applyChannelArchiveState({
+						clanId,
+						channelId,
+						parentId: threadChannel?.parent_id ?? '0',
+						isArchive: false
+					})
+				)
+				.unwrap();
 
 			return { channelId, activeCode: ThreadStatus.joined };
 		} catch (error) {
@@ -498,11 +494,6 @@ export const threadsSlice = createSlice({
 			.addCase(checkDuplicateThread.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.payload as string;
-			})
-			.addCase(updateCacheOnThreadCreation.fulfilled, (state, action) => {
-				if (!action.payload) return;
-				threadsAdapter.addMany(state, action.payload);
-				state.loadingStatus = 'loaded';
 			});
 		builder
 			.addCase(searchedThreads.pending, (state: ThreadsState) => {
@@ -553,7 +544,6 @@ export const threadsActions = {
 	fetchThreads,
 	fetchThread,
 	leaveThread,
-	updateCacheOnThreadCreation,
 	searchedThreads,
 	writeActiveArchivedThread
 };

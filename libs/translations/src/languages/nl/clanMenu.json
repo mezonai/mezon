@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Als gelezen markeren",
+			"browseChannels": "Kanalen zoeken"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Kanaal aanmaken",
+			"createCategory": "Categorie aanmaken",
+			"createEvent": "Evenement aanmaken"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Clanprofiel bewerken",
+			"showAllChannels": "Alle kanalen tonen",
+			"hideMutedChannels": "Alle gedempte kanalen verbergen",
+			"allowDirectMessage": "Toestaan dat privé berichten worden verzonden",
+			"allowMessageRequest": "Toestaan dat berichtverzoeken worden verzonden",
+			"reportServer": "Clan rapporteren",
+			"leaveServer": "Clan verlaten",
+			"deleteClan": "Clan verwijderen",
+			"auditLog": "Controlelog"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Lege categorieën tonen",
+			"show": "Tonen",
+			"hide": "Verbergen"
+		},
+		"devMode": {
+			"title": "Ontwikkelaarsmodus",
+			"copyServerID": "Clan-ID kopiëren",
+			"serverIDCopied": "Clan-ID gekopieerd"
+		}
+	},
+	"actions": {
+		"boot": "Boosten",
+		"invite": "Uitnodigen",
+		"notifications": "Meldingen",
+		"settings": "Instellingen"
+	},
+	"info": {
+		"online": "Online",
+		"members": "Leden"
+	},
+	"common": {
+		"search": "Zoeken",
+		"community": "Community",
+		"searchMembers": "Leden zoeken"
+	},
+	"modalPanel": {
+		"createCategory": "Categorie aanmaken",
+		"markAsRead": "Als gelezen markeren",
+		"processing": "Aan het verwerken...",
+		"invitePeople": "Mensen uitnodigen",
+		"clanSettings": "Claninstellingen",
+		"notificationSettings": "Meldingsinstellingen",
+		"showEmptyCategories": "Lege categorieën tonen",
+		"leaveClan": "Clan verlaten"
+	}
+}

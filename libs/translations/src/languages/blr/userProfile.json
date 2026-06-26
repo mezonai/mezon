@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "Перавесці токены",
+		"sendMessage": "Даслаць паведамленне",
+		"voiceCall": "Галасавы званок",
+		"videoCall": "Відэазванок",
+		"addFriend": "Дадаць сябра",
+		"pending": "Чакае",
+		"removeFriend": "Выдаліць сябра"
+	},
+	"aboutMe": {
+		"headerTitle": "ПРА МЯНЕ",
+		"roles": {
+			"headerTitle": "РОЛІ"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Выкінуць удзельніка",
+		"kickFromServer": "Выкінуць {{username}} з клана",
+		"description": "Вы ўпэўнены, што хочаце выкінуць {{username}} з клана? Яны могуць далучыцца зноў з новым запрашэннем.",
+		"reasonKick": "Прычына выкідання",
+		"buttonName": "Выкінуць"
+	},
+	"transferOwnershipModal": {
+		"warning": "Гэта перадасць уласнасць <highlightClan>{{clanName}}</highlightClan> карыстальніку <highlightUser>{{username}}</highlightUser>. Гэта дзеянне нельга адмяніць!",
+		"sectionTitle": "Перадаць уласнасць",
+		"acknowledgment": "Я пацвярджаю, што, перадаючы ўласнасць гэтага клана {{username}}, яна афіцыйна належыць ім.",
+		"transferButton": "Перадаць",
+		"confirmTitle": "Перадаць уласнасць?",
+		"confirmDescription": "Вы ўпэўнены, што хочаце перадаць уласнасць {{clanName}} карыстальніку {{username}}? Гэта дзеянне нельга адмяніць.",
+		"confirmButton": "Перадаць"
+	},
+	"pendingContent": {
+		"block": "Заблакаваць",
+		"unblock": "Разблакаваць",
+		"reportUserProfile": "Скардзіцца на профіль карыстальніка",
+		"acceptFriend": "Прыняць сяброўства",
+		"rejectFriend": "Адхіліць запыт на сяброўства",
+		"cancelFriendRequest": "Скасаваць запыт на сяброўства",
+		"copyUsername": "Скапіяваць імя карыстальніка",
+		"copiedUserName": "{{username}} скапіявана",
+		"removeFriend": "Выдаліць сябра",
+		"viewFullProfile": "Прагледзець поўны профіль"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Выдаліць з групы",
+			"removeSuccess": "Удзельнік паспяхова выдалены з групы",
+			"removeFailed": "Не атрымалася выдаліць удзельніка з групы"
+		},
+		"mezonMemberSince": "Удзельнік Mezon з"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Карыстальнік паспяхова заблакаваны",
+			"error": "Не атрымалася заблакаваць карыстальніка"
+		},
+		"unblockUser": {
+			"success": "Карыстальнік паспяхова разблакаваны",
+			"error": "Не атрымалася разблакаваць карыстальніка"
+		}
+	},
+	"incomingFriendRequest": "УВАХОДНЫ ЗАПЫТ НА СЯБРОЎСТВА",
+	"sendAddFriendSuccess": "Запыт на сяброўства дасланы",
+	"accept": "Прыняць",
+	"ignore": "Ігнараваць",
+	"labels": {
+		"aboutMe": "Пра мяне",
+		"memberSince": "Удзельнік з",
+		"activity": "Дзейнасць",
+		"unknownUser": "Невядомы карыстальнік",
+		"anonymous": "Ананімны",
+		"editProfile": "Рэдагаваць профіль",
+		"note": "НАТАТКА",
+		"addNote": "Націсніце, каб дадаць нататку",
+		"showLess": "Паказаць менш",
+		"addRole": "Дадаць ролю",
+		"addRoles": "Дадаць ролі",
+		"removeRole": "Выдаліць ролю",
+		"role": "Роля",
+		"nope": "Няма!",
+		"typoError": "Вы памыліліся?",
+		"userNotFound": "Карыстальнік не знойдзены ў клане"
+	},
+	"placeholders": {
+		"messageUser": "Даслаць паведамленне @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Баланс",
+		"transferFunds": "Перавесці токены",
+		"editCustomStatus": "Рэдагаваць уласны статус",
+		"setCustomStatus": "Устанавіць уласны статус",
+		"manageAccounts": "Кіраваць акаўнтамі",
+		"switchAccounts": "Пераключыць акаўнты",
+		"copyUserId": "Скапіяваць ID карыстальніка",
+		"statusOptions": {
+			"online": "Анлайн",
+			"idle": "Неактыўны",
+			"doNotDisturb": "Не турбаваць",
+			"invisible": "Непрыкметны"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Вы не будзеце атрымліваць апавяшчэнні на камп'ютары",
+			"invisible": "Вы будзеце адлюстроўвацца як афлайн"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 хвілін",
+			"for1Hour": "1 гадзіна",
+			"for3Hours": "3 гадзіны",
+			"for8Hours": "8 гадзін",
+			"for24Hours": "24 гадзіны",
+			"forever": "Заўсёды"
+		},
+		"addAccountModal": {
+			"email": "Email",
+			"password": "Пароль",
+			"emailPlaceholder": "Увядзіце вашу электронную пошту",
+			"passwordPlaceholder": "Увядзіце ваш пароль",
+			"cancel": "Скасаваць",
+			"logIn": "Увайсці"
+		},
+		"sendTokenModal": {
+			"title": "Даслаць токены",
+			"description": "Перавесці токены іншаму карыстальніку",
+			"fields": {
+				"to": "Каму",
+				"amount": "Колькасць",
+				"note": "Нататка (неабавязкова)"
+			},
+			"placeholders": {
+				"searchUsers": "Пошук карыстальнікаў...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Дадаць нататку..."
+			},
+			"noUsersFound": "Карыстальнікі не знойдзены",
+			"currency": "UAH",
+			"buttons": {
+				"cancel": "Скасаваць",
+				"sendTokens": "Даслаць токены"
+			},
+			"errors": {
+				"exceedWalletBalance": "Сума перавышае баланс кашалька",
+				"maximumLimit": "Максімум 100 000 000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Гісторыя транзакцый",
+			"subtitle": "Прагледзець усе вашы транзакцыі",
+			"tabs": {
+				"all": "Усе транзакцыі",
+				"sent": "Адпраўленыя транзакцыі",
+				"received": "Атрыманыя транзакцыі"
+			},
+			"transactionTypes": {
+				"sent": "Адпраўлена",
+				"received": "Атрымана"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Транзакцый не знойдзена",
+					"description": "Вы яшчэ не здзейснілі ніводнай транзакцыі. Гісторыя транзакцый з'явіцца тут, калі вы пачняце дасылаць або атрымліваць токены."
+				},
+				"noFilteredTransactions": {
+					"title": "Транзакцый не знойдзена",
+					"description": "Транзакцый па абраным фільтры не знойдзена. Паспрабуйце іншы фільтр або праверце пазней."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Транзакцыя #"
+			},
+			"loading": {
+				"fetching": "Загрузка транзакцый...",
+				"fetchingMore": "Загрузка дадатковых транзакцый...",
+				"scrollMore": "Пракруціце ўніз для загрузкі",
+				"allLoaded": "Вы загрузілі ўсе {{count}} транзакцый"
+			}
+		},
+		"customStatusModal": {
+			"title": "Устанавіць уласны статус",
+			"whatsCookin": "Пра што думаеш, {{name}}",
+			"placeholder": "Пра што ты думаеш?",
+			"clearAfter": "Ачысціць праз",
+			"timeOptions": {
+				"today": "Сёння",
+				"fourHours": "4 гадзіны",
+				"oneHour": "1 гадзіна",
+				"thirtyMinutes": "30 хвілін",
+				"dontClear": "Не ачышчаць"
+			},
+			"buttons": {
+				"cancel": "Скасаваць",
+				"save": "Захаваць"
+			}
+		}
+	},
+	"channelVoiceSettings": "Налады галасавога канала",
+	"muteVoice": "Заглушыць",
+	"kickVoice": "Выкінуць з галасавога канала",
+	"voiceInfo": {
+		"inVoice": "У галасавым канале",
+		"joinVoice": "Далучыцца да галасавога"
+	},
+	"ban": {
+		"title": "Заблакаваць карыстальніка",
+		"unbanTitle": "Разблакаваць карыстальніка",
+		"content": "Заблакаваць карыстальніка \"{{userName}}\"?",
+		"banButton": "Заблакаваць",
+		"unBanButton": "Разблакаваць",
+		"reasonBan": "Прычына блакавання",
+		"unBanDescription": "Вы хочаце разблакаваць карыстальніка \"{{userName}}\"?",
+		"time": {
+			"title": "Перыяд",
+			"tenMinutes": "10 хвілін",
+			"thirtyMinutes": "30 хвілін",
+			"oneHour": "1 гадзіна",
+			"sixHours": "6 гадзін",
+			"twelveHours": "12 гадзін",
+			"oneDay": "1 дзень",
+			"threeDays": "3 дні"
+		},
+		"banList": "Спіс банаў",
+		"search": "Пошук заблакаваных карыстальнікаў",
+		"banListEmpty": "Заблакаваных карыстальнікаў не знойдзена"
+	}
+}

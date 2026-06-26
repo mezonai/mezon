@@ -1,0 +1,18 @@
+{
+	"title": "ЗАПРАСІЦЬ У КЛАН",
+	"offline": "афлайн",
+	"online": "анлайн",
+	"join": "Далучыцца",
+	"joining": "Далучэнне...",
+	"goToClan": "Перайсці да клана",
+	"unknownClan": "Невядомы клан",
+	"memberCount": "{{count}} Удзельнікаў",
+	"memberCount_plural": "{{count}} Удзельнікаў",
+	"failedToJoin": "Не атрымалася далучыцца да гэтага клана.",
+	"inviteTo": "ЗАПРАСІЦЬ У {{clanName}}",
+	"noThanks": "Не, дзякуй",
+	"invalidInvite": {
+		"title": "Несапраўднае запрашэнне",
+		"message": "Паспрабуйце даслаць іншае запрашэнне!"
+	}
+}

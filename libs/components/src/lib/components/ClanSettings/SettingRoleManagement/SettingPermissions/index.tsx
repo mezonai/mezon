@@ -25,7 +25,15 @@ export type ModalSettingSave = {
 	handleUpdateUser: () => void;
 };
 
-const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: RolesClanEntity[]; hasPermissionEdit: boolean }) => {
+const SettingPermissions = ({
+	RolesClan,
+	hasPermissionEdit,
+	userMaxPermissionLevel
+}: {
+	RolesClan: RolesClanEntity[];
+	hasPermissionEdit: boolean;
+	userMaxPermissionLevel: number;
+}) => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation('clanRoles');
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -60,6 +68,11 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 	};
 
 	useEffect(() => {
+		if (!hasPermissionEdit) {
+			dispatch(toggleIsShowFalse());
+			return;
+		}
+
 		const isSamePermissions =
 			selectedPermissions.length === permissionIds.length && selectedPermissions.every((id) => permissionIds.includes(id));
 
@@ -68,7 +81,7 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 		} else {
 			dispatch(toggleIsShowFalse());
 		}
-	}, [nameRole, colorRole, selectedPermissions, activeRole, permissionIds, dispatch]);
+	}, [nameRole, colorRole, selectedPermissions, activeRole, permissionIds, dispatch, hasPermissionEdit]);
 
 	const isClanOwner = useClanOwner();
 	const hiddenPermissionAdmin = (slug: string) => {
@@ -104,7 +117,7 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 					{searchResults.map((permission) => (
 						<li
 							key={permission.id}
-							className={`flex items-start justify-between p-3 rounded-lg border border-color-theme ${hasPermissionEdit ? 'cursor-pointer bg-item-hover' : 'cursor-not-allowed bg-item-hover'}`}
+							className={`flex items-start justify-between p-3 rounded-lg border border-color-theme ${(hasPermissionEdit && permission.level !== undefined && permission.level < userMaxPermissionLevel) || isClanOwner ? 'cursor-pointer bg-item-hover' : 'cursor-not-allowed bg-item-hover'}`}
 							data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item')}
 						>
 							<div className="flex-1 pr-4">
@@ -126,8 +139,11 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 									checked={selectedPermissions.includes(permission.id)}
 									onChange={() => {
 										if (
-											hasPermissionEdit &&
-											!(activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage)
+											(hasPermissionEdit &&
+												!(
+													activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage
+												)) ||
+											isClanOwner
 										) {
 											handlePermissionToggle(permission.id);
 										}
@@ -142,6 +158,7 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 									disabled={
 										hiddenPermissionAdmin(permission.slug || '') ||
 										!hasPermissionEdit ||
+										(permission.level !== undefined && permission.level >= userMaxPermissionLevel && !isClanOwner) ||
 										(activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage)
 									}
 									data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item.switch')}

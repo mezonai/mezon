@@ -1,7 +1,7 @@
 import { CustomCookieConsent } from '@mezon/components';
 import mezonPackage from '@mezon/package-js';
 import { Platform, getPlatform } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import Footer from './footer';
 import HeaderMezon from './header';
@@ -156,7 +156,7 @@ function MezonPage() {
 			</div>
 
 			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
-			{!isElectron() && <CustomCookieConsent />}
+			{<CustomCookieConsent />}
 		</div>
 	);
 }

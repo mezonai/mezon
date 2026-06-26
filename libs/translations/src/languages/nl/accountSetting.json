@@ -1,0 +1,144 @@
+{
+	"myAccount": "Mijn account",
+	"editUserProfile": "Gebruikersprofiel bewerken",
+	"noDisplayName": "Je hebt nog geen weergavenaam toegevoegd.",
+	"edit": "Bewerken",
+	"password": "Wachtwoord",
+	"phoneNumber": "Telefoonnummer",
+	"username": "Gebruikersnaam",
+	"displayName": "Weergavenaam",
+	"users": "Gebruikers",
+	"accountManagement": "Accountbeheer",
+	"blockedUsers": "Geblokkeerde gebruikers",
+	"disableAccount": "Account uitschakelen",
+	"deleteAccount": "Account verwijderen",
+	"accountInformation": "Accountinformatie",
+	"doNotHaveBlockedUser": "Geen geblokkeerde gebruikers",
+	"setPassword": "Wachtwoord instellen",
+	"changePassword": "Wachtwoord wijzigen",
+	"setEmail": "E-mail instellen",
+	"changeEmail": "E-mail wijzigen",
+	"setPhoneNumber": "Telefoonnummer instellen",
+	"disableAccountAlert": {
+		"title": "Account uitschakelen",
+		"description": "Weet je zeker dat je je account wilt uitschakelen?",
+		"noConfirm": "Nee",
+		"yesConfirm": "Ja"
+	},
+	"deleteAccountAlert": {
+		"title": "Account verwijderen",
+		"description": "Weet je zeker dat je je account wilt verwijderen?",
+		"noConfirm": "Nee",
+		"yesConfirm": "Ja"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "E-mailkoppeling vereist",
+		"linkEmailRequiredDescription": "Je moet eerst een e-mail koppelen voordat je een wachtwoord instelt",
+		"goTo": "Ga naar",
+		"title": "Wachtwoord instellen",
+		"email": "E-mail",
+		"password": "Wachtwoord",
+		"currentPassword": "Huidig wachtwoord",
+		"confirmPassword": "Wachtwoord bevestigen",
+		"confirm": "Opslaan",
+		"changePassword": "Wachtwoord wijzigen",
+		"description": "Je wachtwoord moet minstens 8 tekens bevatten en ten minste één hoofdletter, één kleine letter, één cijfer en één speciaal teken bevatten (bijv. !@#$%^&*).",
+		"error": {
+			"characters": "Wachtwoord moet minstens 8 tekens bevatten",
+			"uppercase": "Wachtwoord moet ten minste 1 hoofdletter bevatten",
+			"lowercase": "Wachtwoord moet ten minste 1 kleine letter bevatten",
+			"number": "Wachtwoord moet ten minste 1 cijfer bevatten",
+			"symbol": "Wachtwoord moet ten minste 1 speciaal teken bevatten",
+			"notEqual": "Bevestigend wachtwoord komt niet overeen",
+			"samePass": "Nieuw wachtwoord kan hetzelfde zijn als het oude wachtwoord",
+			"fillOldPass": "Voer het huidige wachtwoord in.",
+			"updateFail": "Account bijwerken mislukt.",
+			"createFail": "Wachtwoord instellen mislukt.",
+			"incorrectCurrent": "Huidig wachtwoord is onjuist. Probeer opnieuw"
+		},
+		"toast": {
+			"success": "Wachtwoord succesvol bijgewerkt",
+			"error": "Wachtwoord bijwerken mislukt"
+		},
+		"placeholder": {
+			"currentPassword": "Voer huidig wachtwoord in",
+			"password": "Voer nieuw wachtwoord in",
+			"confirmPassword": "Bevestig nieuw wachtwoord"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Wachtwoord instellen",
+		"description": "Maak een nieuw wachtwoord voor je account aan",
+		"emailPlaceholder": "jouw.email@voorbeeld.nl",
+		"loading": "Laden...",
+		"close": "Sluiten"
+	},
+	"setPhoneModal": {
+		"title": "Telefoonnummer instellen",
+		"phoneNumber": "Telefoonnummer",
+		"description": "Je ontvangt een bericht met een verificatiecode.",
+		"loading": "Laden...",
+		"close": "Sluiten",
+		"sendOTP": "Stuur OTP-code",
+		"countryCode": "Landcode",
+		"confirmOtp": "OTP-code bevestigen",
+		"invalidPhone": "Telefoonnummer is niet geldig",
+		"updatePhoneSuccess": "Telefoonnummer succesvol bijgewerkt",
+		"updatePhoneFail": "Er is een fout opgetreden. Probeer het later opnieuw",
+		"emptyOtp": "OTP-code is niet geldig!",
+		"resendOtp": "OTP-code opnieuw verzenden!",
+		"tooFast": "Te snel. Wacht {{seconds}} seconden voordat je de OTP-code opnieuw stuurt.",
+		"alreadyLinked": "Dit nummer is al gekoppeld aan je account",
+		"alreadyLinkedToAnother": "Dit nummer is al gekoppeld aan een ander account",
+		"country": "Land",
+		"otpSentMessage": "Controleer de OTP-code die is verzonden naar nummer {{phone}}",
+		"backToPhoneInput": "Telefoonnummer wijzigen?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Account succesvol verwijderd",
+			"error": "Jij bent de clan-eigenaar"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Telefoonnummer",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Nieuw telefoonnummer",
+			"nextButton": "Volgende",
+			"removeButton": "Telefoonnummer verwijderen",
+			"failed": "Telefoonnummer bijwerken mislukt",
+			"invalidPhoneNumber": "Ongeldig telefoonnummer"
+		},
+		"verifyPhoneNumber": {
+			"description": "Voer de 6-cijferige code in die naar je is verzonden",
+			"verifyButton": "Verifiëren",
+			"success": "Telefoonnummer succesvol bijgewerkt"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Annuleren",
+		"currentEmail": "Huidige e-mail",
+		"description": "Voer je e-mail in voor je account",
+		"otpDescription": "De OTP-code is verzonden naar je nieuwe e-mail",
+		"fillOTP": "OTP-code invoeren",
+		"send": "OTP verzenden",
+		"resendOtp": "OTP-code opnieuw verzenden!",
+		"error": {
+			"notEqual": "Bevestigend wachtwoord komt niet overeen",
+			"required": "E-mail is verplicht",
+			"invalid": "Voer een geldig e-mailadres in"
+		},
+		"updateEmail": {
+			"newEmail": "Nieuwe e-mail",
+			"nextButton": "Volgende",
+			"failed": "E-mail bijwerken mislukt",
+			"invalidEmail": "E-mail is niet geldig",
+			"emailAlreadyLinked": "Deze e-mail die je al gebruikt"
+		},
+		"verifyEmail": {
+			"description": "Voer de 6-cijferige code in die naar je is verzonden",
+			"verifyButton": "Verifiëren",
+			"success": "E-mail succesvol bijgewerkt"
+		}
+	}
+}

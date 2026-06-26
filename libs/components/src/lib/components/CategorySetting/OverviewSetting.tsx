@@ -1,7 +1,7 @@
 import { useEscapeKey } from '@mezon/core';
 import { categoriesActions, checkDuplicateCategoryInClan, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import type { ICategory } from '@mezon/utils';
-import { KEY_KEYBOARD, ValidateSpecialCharacters } from '@mezon/utils';
+import { KEY_KEYBOARD, ValidateSpecialCharacters, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ApiUpdateCategoryDescRequest } from 'mezon-js';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -112,6 +112,7 @@ const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, o
 						placeholder={t('categoryOverview.categoryNamePlaceholder')}
 						maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
 						onKeyDown={handlePressEnter}
+						data-e2e={generateE2eId('clan_page.settings.category.input.category_name')}
 					/>
 				</div>
 				{checkValidate && <p className="text-[#e44141] text-xs italic font-thin">{checkValidate}</p>}
