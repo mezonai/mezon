@@ -1,6 +1,5 @@
 import { useAppNavigation } from '@mezon/core';
 import { Check } from '@mezon/ui/lib/Icons/icons';
-import { useNavigate } from 'react-router-dom';
 import type { TypeSelectClan } from './types';
 
 type ModalSuccessProps = {
@@ -11,7 +10,6 @@ type ModalSuccessProps = {
 
 const ModalSuccess = ({ name, clan }: ModalSuccessProps) => {
 	const { toChannelPage, toClanPage } = useAppNavigation();
-	const navigate = useNavigate();
 
 	const handleNavigate = () => {
 		if (clan?.clanId) {
