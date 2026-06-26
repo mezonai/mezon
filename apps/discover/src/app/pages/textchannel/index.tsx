@@ -23,10 +23,14 @@ const TextChannelPage = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
 
-	const slides = (t('discover.slides', { returnObjects: true }) as Array<{ title: string; description: string }>).map((slide, index) => ({
+	const rawSlides = t('discover.slides', { returnObjects: true });
+	const slides = (Array.isArray(rawSlides) ? rawSlides : []).map((slide: { title: string; description: string }, index: number) => ({
 		...slide,
 		image: `https://cdn.mezon.ai/landing-page-mezon/feat${index + 1}.webp`
 	}));
+
+	const rawFaqQuestions = t('faq.questions', { returnObjects: true });
+	const faqQuestions: Array<{ question: string; answer: string }> = Array.isArray(rawFaqQuestions) ? rawFaqQuestions : [];
 
 	const downloadUrl: string =
 		platform === Platform.MACOS
@@ -525,7 +529,7 @@ const TextChannelPage = () => {
 						</div>
 
 						<div className="space-y-0 border-t border-gray-200">
-							{(t('faq.questions', { returnObjects: true }) as Array<{ question: string; answer: string }>).map((faq, index) => (
+							{faqQuestions.map((faq, index) => (
 								<div key={index} className="border-b border-gray-200">
 									<button
 										onClick={() => setOpenFAQ(openFAQ === index ? null : index)}

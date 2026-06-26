@@ -90,8 +90,7 @@ const Photo = <T,>({
 
 	const isRecentlySent = !!(photo?.url && photo.url === lastSentUrl);
 	const isUploading = isSending || isPresignPending;
-	const shouldLoad =
-		canAutoLoad && !isPresignPending && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
+	const shouldLoad = canAutoLoad && !isPresignPending && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
 
 	if (isSending && photo?.url) {
 		lastSentUrl = photo.url;
