@@ -4,7 +4,6 @@ import {
 	selectArchivedChannels,
 	selectArchivedChannelsLoadingStatus,
 	selectCurrentClanId,
-	selectCurrentUserId,
 	toastActions,
 	useAppDispatch
 } from '@mezon/store';
@@ -12,25 +11,15 @@ import { Icons } from '@mezon/ui';
 import { generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
 import type { ApiChannelDescription } from 'mezon-js';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useCanViewArchivedChannels } from './hooks/useCanViewArchivedChannels';
 
 const SettingArchivedChannels = () => {
 	const dispatch = useAppDispatch();
 	const { t, i18n } = useTranslation('clanSettings', { keyPrefix: 'archivedChannels' });
 	const currentClanId = useSelector(selectCurrentClanId);
-	const currentUserId = useSelector(selectCurrentUserId);
 	const listArchivedChannel = useSelector(selectArchivedChannels);
 	const loadingStatus = useSelector(selectArchivedChannelsLoadingStatus);
-	const { canViewAllArchivedChannels } = useCanViewArchivedChannels();
-	const visibleArchivedChannels = useMemo(() => {
-		if (canViewAllArchivedChannels) {
-			return listArchivedChannel ?? [];
-		}
-		return (listArchivedChannel ?? []).filter((channel) => channel.creator_id === currentUserId);
-	}, [canViewAllArchivedChannels, currentUserId, listArchivedChannel]);
 
 	const handleRestore = async (channelId: string) => {
 		if (!currentClanId) return;
@@ -56,14 +45,14 @@ const SettingArchivedChannels = () => {
 				<div className="flex flex-col items-center justify-center py-12 text-theme-primary opacity-60">
 					<p className="text-base font-medium">{t('fetchError')}</p>
 				</div>
-			) : visibleArchivedChannels.length === 0 ? (
+			) : listArchivedChannel.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-12 text-theme-primary opacity-60">
 					<Icons.Hashtag defaultSize="w-12 h-12 mb-3" />
 					<p className="text-base font-medium">{t('emptyState')}</p>
 				</div>
 			) : (
 				<div className="flex flex-col gap-3">
-					{visibleArchivedChannels.map((ch: ApiChannelDescription) => {
+					{listArchivedChannel.map((ch: ApiChannelDescription) => {
 						const archivedAgoText = ch.last_sent_message?.timestamp_seconds
 							? formatDistanceToNow(Number(ch.last_sent_message.timestamp_seconds) * 1000, {
 									addSuffix: true,
