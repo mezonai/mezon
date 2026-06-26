@@ -9,6 +9,8 @@ import type { MezonAdminContextValue } from '@mezon/transport';
 import { publishSessionUpdate } from '@mezon/transport';
 import { safeJSONParse } from 'mezon-js';
 import { adminApplicationReducer } from './application/applications.slice';
+import { categoriesReducer } from './categories/categories.slice';
+import { channelsReducer } from './channels/channels.slice';
 import { clansReducer } from './clans/clans.slice';
 import { dashboardReducer } from './dashboard/dashboard.slice';
 import { ERRORS_FEATURE_KEY, errorsReducer } from './errors';
@@ -60,6 +62,21 @@ const persistedClansReducer = persistReducer(
 	clansReducer
 );
 
+const persistedCatReducer = persistReducer(
+	{
+		key: 'categories',
+		storage
+	},
+	categoriesReducer
+);
+const persistedChannelReducer = persistReducer(
+	{
+		key: 'channels',
+		storage,
+		blacklist: ['request', 'previousChannels', 'showScrollDownButton', 'scrollPosition']
+	},
+	channelsReducer
+);
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
@@ -68,7 +85,9 @@ const reducer = {
 	adminApplication: adminApplicationReducer,
 	[ERRORS_FEATURE_KEY]: errorsReducer,
 	[TOASTS_FEATURE_KEY]: toastsReducer,
-	clans: persistedClansReducer
+	clans: persistedClansReducer,
+	categories: persistedCatReducer,
+	channels: persistedChannelReducer
 };
 let storeInstance = configureStore({
 	reducer

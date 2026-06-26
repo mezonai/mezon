@@ -240,7 +240,8 @@
 		"invites": "Inbjudan",
 		"integrations": "Integrationer",
 		"category": "Kategori",
-		"quickMenu": "Snabbåtgärder"
+		"quickMenu": "Snabbåtgärder",
+		"streamThumbnail": "Stream banner"
 	},
 	"categoryManagement": {
 		"title": "Kategori",

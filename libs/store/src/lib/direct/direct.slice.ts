@@ -607,7 +607,7 @@ export const directSlice = createSlice({
 			const existingShowPinBadge = existingEntity?.showPinBadge;
 			const dataUpdate = action.payload;
 
-			if (dataUpdate.channel_label === undefined && existingEntity?.channel_label?.trim()) {
+			if ((dataUpdate.channel_label === undefined || dataUpdate.channel_label.trim()) && existingEntity?.channel_label?.trim()) {
 				dataUpdate.channel_label = existingEntity.channel_label;
 			}
 			if (dataUpdate.avatars === undefined && existingEntity?.avatars?.length) {
