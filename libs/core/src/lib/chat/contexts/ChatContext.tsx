@@ -491,10 +491,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (message.code === TypeMessage.ChatRemove && message.topic_id && message.topic_id !== '0' && message?.message_id) {
 						dispatch(
-							messagesActions.updateTopicRplCount({
+							topicsActions.updateTopicRplCount({
 								topicId: message?.topic_id,
 								channelId: message?.channel_id,
-								increment: false
+								increment: false,
+								messageId: message?.topic_id
 							})
 						);
 					}
@@ -503,11 +504,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (message.topic_id && message.topic_id !== '0' && message?.message_id) {
 						dispatch(
-							messagesActions.updateTopicRplCount({
+							topicsActions.updateTopicRplCount({
 								topicId: message?.topic_id,
 								channelId: message?.channel_id,
 								increment: true,
-								timestamp: message.create_time_seconds
+								timestamp: message.create_time_seconds,
+								messageId: message?.topic_id
 							})
 						);
 					}
@@ -2464,6 +2466,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				messageId: sdTopicEvent?.message_id as string,
 				topicId: sdTopicEvent?.id as string,
 				creatorId: sdTopicEvent?.user_id as string
+			})
+		);
+		dispatch(
+			topicsActions.createTopicMeta({
+				lsnt: `${sdTopicEvent.last_sent_message?.timestamp_seconds || Date.now() / 1000}`,
+				message_id: sdTopicEvent?.message_id as string,
+				rpl: 1,
+				tp_id: sdTopicEvent.id
 			})
 		);
 		dispatch(

@@ -15,13 +15,7 @@ import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';
 
-export const useEditMessage = (
-	channelId: string,
-	channelLabel: string,
-	mode: number,
-	message: IMessageWithUser,
-	messageStoreChannelId?: string
-) => {
+export const useEditMessage = (channelId: string, channelLabel: string, mode: number, message: IMessageWithUser, messageStoreChannelId?: string) => {
 	const storeChannelId = messageStoreChannelId || channelId;
 	const attachmentsOnMessage = useMemo(() => {
 		return message.attachments;

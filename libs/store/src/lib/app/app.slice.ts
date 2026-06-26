@@ -186,10 +186,10 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		let channelId = null;
 		let clanId = null;
-		if (currentChannelId && path.includes('/' + currentChannelId)) {
+		if (currentChannelId && path.includes(`/${currentChannelId}`)) {
 			clanId = currentClanId;
 			channelId = currentChannelId;
-		} else if (currentDirectId && path.includes('/' + currentDirectId)) {
+		} else if (currentDirectId && path.includes(`/${currentDirectId}`)) {
 			clanId = '0';
 			channelId = currentDirectId;
 		}
