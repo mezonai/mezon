@@ -1,6 +1,5 @@
 import {
 	addBotChat,
-	fetchChannels,
 	fetchClans,
 	getApplicationDetail,
 	selectAllAccount,
@@ -98,12 +97,6 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 			);
 
 			if (resp.meta.requestStatus === RequestStatusSuccess.Fulfill) {
-				try {
-					await dispatch(fetchChannels({ clanId: cleanClanId, noCache: false })).unwrap();
-				} catch (channelError) {
-					console.error('Failed to fetch channels:', channelError);
-				}
-
 				toggleSuccess();
 			} else {
 				toast.error('You are not the owner of this clan. Please choose your own clan.');

@@ -1,6 +1,6 @@
 import {
 	categoriesActions,
-	createNewChannel,
+	createChannelApp,
 	fetchClans,
 	getApplicationDetail,
 	selectAllAccount,
@@ -120,7 +120,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		};
 
 		try {
-			const resp = await dispatch(createNewChannel(data)).unwrap();
+			const resp = await dispatch(createChannelApp(data)).unwrap();
 			if (resp?.channel_id) {
 				setCreatedChannelId(resp.channel_id as string);
 			}
