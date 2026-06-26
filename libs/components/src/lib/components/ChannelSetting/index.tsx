@@ -49,7 +49,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 				[EChannelSettingTab.INTEGRATIONS]: t('tabs.integrations'),
 				[EChannelSettingTab.CATEGORY]: t('tabs.category'),
 				[EChannelSettingTab.QUICK_MENU]: t('tabs.quickMenu'),
-				[EChannelSettingTab.STREAM_THUMBNAIL]: t('streamThumbnail:title')
+				[EChannelSettingTab.STREAM_THUMBNAIL]: t('tabs.streamThumbnail')
 			};
 			return translations[tabKey] || tabKey;
 		},

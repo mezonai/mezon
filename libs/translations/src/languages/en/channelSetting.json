@@ -242,7 +242,8 @@
 		"invites": "Invites",
 		"integrations": "Integrations",
 		"category": "Category",
-		"quickMenu": "Quick Actions"
+		"quickMenu": "Quick Actions",
+		"streamThumbnail": "Stream Thumbnail"
 	},
 	"categoryManagement": {
 		"title": "Category",
