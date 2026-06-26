@@ -1,0 +1,11 @@
+{
+  "description": "Aplikacja zewnętrzna",
+  "subDescription": "chce uzyskać dostęp do Twojego konta Mezon",
+  "addToClan": "Dodaj do Clanu",
+  "invite": "Uzgodnij",
+  "back": "Wróć",
+  "successInstall": "Dodano aplikację do clanu pomyślnie",
+  "errorInstall": "Błąd podczas dodawania aplikacji do clanu",
+  "selectClan": "Szukaj Clanu",
+  "placeholder": "Wybierz clan, aby zaprosić bota/aplikację"
+}

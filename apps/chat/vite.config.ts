@@ -10,6 +10,24 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8'));
 const APP_VERSION = packageJson.version;
 
+function chatAssetPathsPlugin(path: string): PluginOption {
+	return {
+		name: 'chat-asset-paths',
+		transform(code) {
+			if (!code.includes('/chat/assets/')) {
+				return;
+			}
+
+			const rewritten = code.replace(/(?<!\/chat)\/assets\//g, `${path}assets/`);
+			if (rewritten === code) {
+				return;
+			}
+
+			return { code: rewritten, map: null };
+		}
+	};
+}
+
 export default defineConfig(({ mode }) => {
 	const workspaceRoot = path.resolve(__dirname, '../..');
 	const env = loadEnv(mode, workspaceRoot, 'NX_');
@@ -18,12 +36,12 @@ export default defineConfig(({ mode }) => {
 		root: path.join(appRoot, 'src'),
 		publicDir: mode === 'production' ? false : path.join(appRoot, 'src/assets'),
 		cacheDir: path.join(workspaceRoot, 'node_modules/.vite/apps/chat'),
-		base: mode === 'production' ? '/' : './',
+		base: mode === 'production' ? '/chat' : './chat',
 
 		server: {
 			port: 4200,
 			host: '127.0.0.1',
-			open: false,
+			open: '/chat/',
 			proxy: JSON.parse(fs.readFileSync(path.resolve(__dirname, 'proxy.conf.json'), 'utf-8')),
 			fs: {
 				allow: [workspaceRoot, path.join(workspaceRoot, 'libs/assets/src/assets')]
@@ -51,10 +69,12 @@ export default defineConfig(({ mode }) => {
 
 		preview: {
 			port: 4300,
-			host: 'localhost'
+			host: '127.0.0.1',
+			open: '/chat/'
 		},
 
 		plugins: [
+			chatAssetPathsPlugin(mode === 'production' ? '/chat' : './chat'),
 			react({
 				babel: {
 					plugins: [
@@ -244,11 +264,8 @@ export default defineConfig(({ mode }) => {
 						if (normalizedId.includes('libs/translations/src/languages/jpn')) {
 							return 'i18n-jpn';
 						}
-						if (normalizedId.includes('libs/translations/src/languages/kr')) {
-							return 'i18n-kr';
-						}
-						if (normalizedId.includes('libs/translations/src/languages/swe')) {
-							return 'i18n-swe';
+						if (normalizedId.includes('libs/translations/src/languages/pl')) {
+							return 'i18n-pl';
 						}
 					}
 				}

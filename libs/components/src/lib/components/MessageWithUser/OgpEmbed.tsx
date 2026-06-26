@@ -2,6 +2,7 @@ import { getStore, selectCurrentChannel, selectCurrentDM, selectCurrentUserId, s
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
+import { getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -97,11 +98,14 @@ const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
 							? ChannelStreamMode.STREAM_MODE_GROUP
 							: ChannelStreamMode.STREAM_MODE_CHANNEL;
 
-			const trimContent: IMessageSendPayload = {
+			let trimContent: IMessageSendPayload = {
 				...(message.content as IMessageSendPayload),
 				t: message.content?.t?.trim(),
 				mk: message.content?.mk?.slice(0, -1)
 			};
+			if (message.attachments?.length) {
+				trimContent = withCreateTimeSecondsInUpdateContent(trimContent, getMessageCreateTimeSeconds(message));
+			}
 
 			await client.updateChatMessage(
 				session,
@@ -112,7 +116,8 @@ const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
 				messageId,
 				trimContent,
 				message.mentions,
-				message.attachments,
+				undefined,
+				getMessageCreateTimeSeconds(message),
 				message.hide_editted,
 				message.topic_id || '0',
 				false

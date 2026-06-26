@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "Ten kanał nie ma jeszcze żadnych przypiętych wiadomości... ale będą wkrótce.",
+	"PROTIP": "PORADA:",
+	"modal": {
+		"title": "Przypnij. Przypnij, na wszelki wypadek.",
+		"description": "Hej, chcę tylko potwierdzić ponownie, czy na pewno chcesz przypiąć tę wiadomość do #{{channelLabel}}, aby zachować ją na zawsze?",
+		"descriptionDM": "Hej, chcę tylko potwierdzić ponownie, czy na pewno chcesz przypiąć tę wiadomość do obecnej konwersacji, aby zachować ją na zawsze?",
+		"cancel": "Anuluj",
+		"confirm": "Przypnij na zawsze"
+	}
+}

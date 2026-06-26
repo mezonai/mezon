@@ -9,7 +9,16 @@ import {
 	ModalUserProfile,
 	SearchMessageChannelRender
 } from '@mezon/components';
-import { EmojiSuggestionProvider, useApp, useAuth, useDragAndDrop, useGifsStickersEmoji, useSearchMessages, useSeenMessagePool } from '@mezon/core';
+import {
+	EmojiSuggestionProvider,
+	useApp,
+	useAppParams,
+	useAuth,
+	useDragAndDrop,
+	useGifsStickersEmoji,
+	useSearchMessages,
+	useSeenMessagePool
+} from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
@@ -43,13 +52,14 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { EmojiPlaces, generateE2eId, isBackgroundModeActive, isLinuxDesktop, isWindowsDesktop, SubPanelName, useBackgroundMode } from '@mezon/utils';
+import { EmojiPlaces, generateE2eId, isBackgroundModeActive, SubPanelName, useBackgroundMode } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { DragEvent } from 'react';
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import ChannelMessages from '../../channel/ChannelMessages';
 import { ChannelTyping } from '../../channel/ChannelTyping';
 
@@ -68,7 +78,7 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 		const store = getStore();
 		const state = store.getState();
 		const currentDmGroup = selectDmGroupById(state, channelId ?? '');
-		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? ChannelStreamMode.STREAM_MODE_GROUP : ChannelStreamMode.STREAM_MODE_DM;
 		if (lastSeenMessageId && lastMessageViewport?.id) {
 			try {
 				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
@@ -126,7 +136,7 @@ function DirectSeenListener({
 }: {
 	channelId: string;
 	mode: number;
-	currentChannel: DirectEntity;
+	currentChannel: DirectEntity | null;
 	isBlocked: boolean;
 }) {
 	return (
@@ -142,15 +152,17 @@ const DirectMessage = () => {
 	// TODO: move selector to store
 	const currentDirect = useSelector(selectCurrentDM);
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
+	const { directId: routeDirectId = '', type: routeType } = useAppParams();
 	const directId = currentDirect?.id;
-	const type = currentDirect?.type;
+	const resolvedDirectId = directId ?? currentDirectId ?? routeDirectId;
 	const { draggingState, setDraggingState } = useDragAndDrop();
 	const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
-	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, directId));
+	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, resolvedDirectId));
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 	const { userId } = useAuth();
-	const directMessage = useAppSelector((state) => selectDirectById(state, directId));
+	const directMessage = useAppSelector((state) => selectDirectById(state, resolvedDirectId));
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
 	const loadingStatus = useSelector(selectDirectLoadingStatus);
 	const loadedChannelsRef = useRef<Set<string>>(new Set());
@@ -158,7 +170,49 @@ const DirectMessage = () => {
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 
 	// check
-	const currentDmGroup = useSelector((state) => selectDmGroupById(state, directId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, resolvedDirectId));
+
+	const resolvedChannelType = useMemo(() => {
+		const fromEntity = currentDmGroup?.type;
+		if (fromEntity !== undefined && fromEntity !== null) return fromEntity;
+		const parsed = Number(routeType);
+		return Number.isFinite(parsed) ? parsed : ChannelType.CHANNEL_TYPE_DM;
+	}, [currentDmGroup?.type, routeType]);
+
+	const [detailLoadFailed, setDetailLoadFailed] = useState(false);
+
+	useEffect(() => {
+		if (!resolvedDirectId) {
+			setDetailLoadFailed(false);
+			return;
+		}
+		if (currentDmGroup) {
+			setDetailLoadFailed(false);
+			return;
+		}
+		if (loadingStatus !== 'loaded') {
+			return;
+		}
+		const isActiveDmSelection = Boolean(currentDirectId) && currentDirectId === resolvedDirectId;
+		if (!isActiveDmSelection) {
+			setDetailLoadFailed(true);
+			if (routeDirectId) {
+				navigate('/chat/direct/friends', { replace: true });
+			}
+			return;
+		}
+		setDetailLoadFailed(false);
+		let cancelled = false;
+		void dispatch(directActions.fetchDirectDetail({ directId: resolvedDirectId }))
+			.unwrap()
+			.catch(() => {
+				if (!cancelled) setDetailLoadFailed(true);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [resolvedDirectId, currentDmGroup, currentDirectId, dispatch, loadingStatus, navigate, routeDirectId]);
+
 	const reactionTopState = useSelector(selectReactionTopState);
 	const { subPanelActive } = useGifsStickersEmoji();
 	const closeMenu = useSelector(selectCloseMenu);
@@ -195,20 +249,23 @@ const DirectMessage = () => {
 		}
 	};
 	const checkTypeDm = useMemo(
-		() => (Number(type) === ChannelType.CHANNEL_TYPE_GROUP ? isShowMemberListDM : isUseProfileDM),
-		[isShowMemberListDM, isUseProfileDM, type]
+		() => (resolvedChannelType === ChannelType.CHANNEL_TYPE_GROUP ? isShowMemberListDM : isUseProfileDM),
+		[isShowMemberListDM, isUseProfileDM, resolvedChannelType]
 	);
 	useEffect(() => {
 		if (isShowCreateThread) {
 			setIsShowMemberList(false);
 		}
-	}, [isShowCreateThread]);
+	}, [isShowCreateThread, setIsShowMemberList]);
 
 	const setMarginleft = messagesContainerRef?.current?.getBoundingClientRect()
 		? window.innerWidth - messagesContainerRef?.current?.getBoundingClientRect().right + 155
 		: 0;
 
-	const isDmChannel = useMemo(() => currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM, [currentDmGroup?.type]);
+	const isDmChannel = useMemo(
+		() => (currentDmGroup?.type ?? resolvedChannelType) !== ChannelType.CHANNEL_TYPE_GROUP,
+		[currentDmGroup?.type, resolvedChannelType]
+	);
 	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''))?.state === EStateFriend.BLOCK;
 
 	const isDmWithoutParticipants = useMemo(() => {
@@ -218,7 +275,17 @@ const DirectMessage = () => {
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	const handleClose = useCallback(() => {}, []);
 
-	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+	const mode = useMemo(() => {
+		const t = currentDmGroup?.type ?? resolvedChannelType;
+		return t === ChannelType.CHANNEL_TYPE_GROUP ? ChannelStreamMode.STREAM_MODE_GROUP : ChannelStreamMode.STREAM_MODE_DM;
+	}, [currentDmGroup?.type, resolvedChannelType]);
+
+	const dmUploadChannelId = useMemo(() => {
+		if (!currentDmGroup) {
+			return '';
+		}
+		return currentDmGroup.channel_id || currentDmGroup.id || '';
+	}, [currentDmGroup]);
 
 	useEffect(() => {
 		if (directMessage && directMessage?.e2ee && !hasKeyE2ee) {
@@ -226,17 +293,25 @@ const DirectMessage = () => {
 		}
 	}, [directMessage, dispatch, hasKeyE2ee]);
 
-	if (loadingStatus === 'loaded' && directId) {
-		loadedChannelsRef.current.add(directId);
+	if (loadingStatus === 'loaded' && resolvedDirectId) {
+		loadedChannelsRef.current.add(resolvedDirectId);
 	}
 
-	if ((loadingStatus === 'loading' || loadingStatus === 'not loaded') && !loadedChannelsRef.current.has(directId ?? '')) {
+	const isWaitingForDmListOnly =
+		(loadingStatus === 'loading' || loadingStatus === 'not loaded') && !loadedChannelsRef.current.has(resolvedDirectId) && !resolvedDirectId;
+
+	if (isWaitingForDmListOnly) {
+		return null;
+	}
+
+	const waitingForDmHydration = Boolean(resolvedDirectId) && !currentDmGroup && loadingStatus === 'loaded' && !detailLoadFailed;
+	if (waitingForDmHydration) {
 		return null;
 	}
 
 	return (
 		<>
-			{draggingState && <FileUploadByDnD currentId={currentDmGroup?.channel_id ?? ''} />}
+			{draggingState && dmUploadChannelId ? <FileUploadByDnD currentId={dmUploadChannelId} /> : null}
 			<div
 				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible relative mt-[50px] bg-theme-chat text-theme-text`}
 				onDragEnter={handleDragEnter}
@@ -245,22 +320,19 @@ const DirectMessage = () => {
 					className={`cotain-strict flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : 'h-heightWithoutTopBar'}`}
 				>
 					<div
-						className={`flex-col flex-1 h-full ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : isSearchMessage ? 'w-widthSearchMessage' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
+						className={`flex-col flex-1 h-full max-h-messageViewChatDM ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : isSearchMessage ? 'w-widthSearchMessage' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
-						<div
-							className={`relative overflow-y-auto  ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink`}
-							ref={messagesContainerRef}
-						>
+						<div className={`relative overflow-y-auto h-heightMessageViewChatDM flex-shrink`} ref={messagesContainerRef}>
 							{
 								<ChannelMessages
 									clanId="0"
 									isDM={true}
-									channelId={directId || currentDirectId || ''}
+									channelId={resolvedDirectId}
 									isPrivate={currentDmGroup?.channel_private}
 									channelLabel={currentDmGroup?.channel_label}
 									username={isDmChannel ? currentDmGroup?.usernames?.at(-1) : undefined}
 									type={isDmChannel ? ChannelType.CHANNEL_TYPE_DM : ChannelType.CHANNEL_TYPE_GROUP}
-									mode={isDmChannel ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
+									mode={mode}
 									avatarDM={isDmChannel ? currentDmGroup?.avatars?.at(-1) : '/assets/images/avatar-group.png'}
 								/>
 							}
@@ -275,14 +347,7 @@ const DirectMessage = () => {
 								}}
 							>
 								<div className="mb-0 z-10 h-full">
-									<GifStickerEmojiPopup
-										mode={
-											currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-												? ChannelStreamMode.STREAM_MODE_DM
-												: ChannelStreamMode.STREAM_MODE_GROUP
-										}
-										emojiAction={EmojiPlaces.EMOJI_REACTION}
-									/>
+									<GifStickerEmojiPopup mode={mode} emojiAction={EmojiPlaces.EMOJI_REACTION} />
 								</div>
 							</div>
 						)}
@@ -299,14 +364,7 @@ const DirectMessage = () => {
 								}}
 							>
 								<div className="mb-0 z-50 h-full ">
-									<GifStickerEmojiPopup
-										mode={
-											currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-												? ChannelStreamMode.STREAM_MODE_DM
-												: ChannelStreamMode.STREAM_MODE_GROUP
-										}
-										emojiAction={EmojiPlaces.EMOJI_REACTION}
-									/>
+									<GifStickerEmojiPopup mode={mode} emojiAction={EmojiPlaces.EMOJI_REACTION} />
 								</div>
 							</div>
 						)}
@@ -321,31 +379,13 @@ const DirectMessage = () => {
 								</div>
 							) : (
 								<>
-									<DirectMessageBox
-										direct={currentDmGroup}
-										mode={
-											currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-												? ChannelStreamMode.STREAM_MODE_DM
-												: ChannelStreamMode.STREAM_MODE_GROUP
-										}
-									/>
-									{directId && (
-										<ChannelTyping
-											channelId={directId}
-											mode={
-												currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM
-													? ChannelStreamMode.STREAM_MODE_DM
-													: ChannelStreamMode.STREAM_MODE_GROUP
-											}
-											isPublic={false}
-											isDM={true}
-										/>
-									)}
+									<DirectMessageBox direct={currentDmGroup} mode={mode} />
+									{resolvedDirectId && <ChannelTyping channelId={resolvedDirectId} mode={mode} isPublic={false} isDM={true} />}
 								</>
 							)}
 						</div>
 					</div>
-					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
+					{resolvedChannelType === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
 						<DirectMessageContextMenuProvider
 							contextMenuId={DMCT_GROUP_CHAT_ID}
 							dataMemberCreate={{ createId: currentDmGroup?.creator_id || '' }}
@@ -353,12 +393,12 @@ const DirectMessage = () => {
 							<div
 								className={`contain-strict text-theme-primary bg-active-friend-list overflow-y-scroll h-[calc(100vh_-_50px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
 							>
-								<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
+								<MemberListGroupChat directMessageId={resolvedDirectId} createId={currentDmGroup?.creator_id} />
 							</div>
 						</DirectMessageContextMenuProvider>
 					)}
 
-					{Number(type) === ChannelType.CHANNEL_TYPE_DM && isUseProfileDM && (
+					{resolvedChannelType === ChannelType.CHANNEL_TYPE_DM && isUseProfileDM && (
 						<div className={`bg-active-friend-list ${isUseProfileDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-widthDmProfile'}`}>
 							<ModalUserProfile
 								onClose={handleClose}
@@ -368,18 +408,18 @@ const DirectMessage = () => {
 								showNote={true}
 								showPopupLeft={true}
 								avatar={
-									Number(type) === ChannelType.CHANNEL_TYPE_GROUP
-										? currentDmGroup?.channel_avatar?.[0]
+									(currentDmGroup?.type ?? resolvedChannelType) === ChannelType.CHANNEL_TYPE_GROUP
+										? currentDmGroup?.channel_avatar
 										: currentDmGroup?.avatars?.at(-1)
 								}
 								isDM={true}
 							/>
 						</div>
 					)}
-					{isSearchMessage && <SearchMessageChannel channelId={directId} />}
+					{isSearchMessage && <SearchMessageChannel channelId={resolvedDirectId} />}
 				</div>
 			</div>
-			<DirectSeenListener channelId={directId as string} mode={mode} currentChannel={currentDmGroup} isBlocked={isBlocked} />
+			<DirectSeenListener channelId={resolvedDirectId} mode={mode} currentChannel={currentDmGroup ?? null} isBlocked={isBlocked} />
 		</>
 	);
 };

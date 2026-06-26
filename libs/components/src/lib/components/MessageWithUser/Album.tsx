@@ -15,6 +15,7 @@ type OwnProps = {
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	isInSearchMessage?: boolean;
 	isSending?: boolean;
+	isPresignPendingForUrl?: (url?: string) => boolean;
 	isMobile?: boolean;
 	messageId?: string;
 	images?: ApiMessageAttachment[];
@@ -31,6 +32,7 @@ const Album: FC<OwnProps> = ({
 	onContextMenu,
 	isInSearchMessage,
 	isSending,
+	isPresignPendingForUrl,
 	isMobile,
 	messageId,
 	images
@@ -61,6 +63,7 @@ const Album: FC<OwnProps> = ({
 				});
 
 			const attachmentId = messageId && images?.[index] ? generateAttachmentId(images[index], messageId) : `album-media-${index}`;
+			const isPresignPending = isPresignPendingForUrl?.(attachment?.url);
 			return (
 				<Photo
 					id={attachmentId}
@@ -74,6 +77,8 @@ const Album: FC<OwnProps> = ({
 					onClick={onClick}
 					onContextMenu={onContextMenu}
 					isSending={isSending}
+					isPresignPending={isPresignPending}
+					loadWhenUnpending={!isPresignPending}
 					isInSearchMessage={isInSearchMessage}
 				/>
 			);

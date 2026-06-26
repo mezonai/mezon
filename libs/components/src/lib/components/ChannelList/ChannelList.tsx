@@ -26,7 +26,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
-import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { EPermission, createImgproxyUrl, generateE2eId, toggleDisableHover } from '@mezon/utils';
 import type { ApiCategoryOrderUpdate } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -191,7 +191,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 			const mdBottomMargin = window.innerWidth >= 768 ? 16 : 0;
 			const totalHeight = clanTopbarEle + clanFooterHeight + mdBottomMargin - 3;
 			const outsideHeight = totalHeight;
-			const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
+			const titleBarHeight = 0;
 
 			setHeight(window.innerHeight - outsideHeight - titleBarHeight);
 		};

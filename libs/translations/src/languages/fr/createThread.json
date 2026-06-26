@@ -1,0 +1,24 @@
+{
+	"threads": "Fils de discussion",
+	"emptyThread": {
+		"textNoThread": "Aucun fil",
+		"textNotify": "Concentrez-vous sur la conversation avec un fil - un canal texte temporaire.",
+		"createThreads": "Créer un fil"
+	},
+	"otherThreads": "FILS PLUS ANCIENS",
+	"errorMessage": "Veuillez entrer un nom de fil valide (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -).",
+	"threadName": "Nom du fil",
+	"privateThread": "Fil privé",
+	"onlyPeopleInviteThread": "Seules les personnes que vous invitez et les modérateurs peuvent voir ce fil",
+	"newThread": "Nouveau fil",
+	"joinedThreads": "fils joints",
+	"joinedThread": "fil joint",
+	"otherActiveThreads": "autres fils actifs",
+	"olderThreads": "fils plus anciens",
+	"searchThreads": "rechercher des fils",
+	"searchThread": "rechercher un fil",
+	"threadFailed": {
+		"title": "Échec de création du fil",
+		"content": "Fil introuvable ou vous n'avez pas la permission de mettre à jour"
+	}
+}

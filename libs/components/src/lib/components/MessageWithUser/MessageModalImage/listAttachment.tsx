@@ -7,6 +7,7 @@ import ItemAttachment from './itemAttachment';
 
 type ListAttachmentProps = {
 	attachments: AttachmentEntity[];
+	channelId: string;
 	urlImg: string;
 	setUrlImg: React.Dispatch<React.SetStateAction<string>>;
 	handleDrag: (e: any) => void;
@@ -28,6 +29,7 @@ type ListAttachmentProps = {
 const ListAttachment = (props: ListAttachmentProps) => {
 	const {
 		attachments,
+		channelId,
 		urlImg,
 		setUrlImg,
 		setScale,
@@ -182,6 +184,7 @@ const ListAttachment = (props: ListAttachmentProps) => {
 							<ItemAttachment
 								key={attachment.id}
 								attachment={attachment}
+								channelId={channelId}
 								previousDate={currentDate}
 								selectedImageRef={selectedImageRef}
 								showDate={showDate}

@@ -129,7 +129,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, selectedChannel ?? '')) || {};
 
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || ''));
+	const channelId = channel?.id || channel?.channel_id || '';
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channelId));
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -276,7 +277,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenMute.current = false;
 
 		const body: MuteChannelPayload = {
-			channel_id: channel.channel_id || '0',
+			channel_id: channelId || '0',
 			mute_time: duration !== Infinity ? duration : EMuteState.MUTED_INFINITY,
 			clan_id: currentClanId || ''
 		};
@@ -285,7 +286,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 
 	const muteOrUnMuteChannel = (active: number) => {
 		const body: MuteChannelPayload = {
-			channel_id: channel.channel_id || '0',
+			channel_id: channelId || '0',
 			clan_id: currentClanId || '',
 			mute_time: active
 		};
@@ -296,18 +297,18 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenNoti.current = false;
 		if (notificationType) {
 			const body = {
-				channel_id: channel.channel_id || '0',
+				channel_id: channelId || '0',
 				notification_type: notificationType || 0,
 				clan_id: currentClanId || '',
-				is_current_channel: channel.channel_id === currentChannelId
+				is_current_channel: channelId === currentChannelId
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
 		} else {
 			dispatch(
 				notificationSettingActions.deleteNotiChannelSetting({
-					channel_id: channel.channel_id || '0',
+					channel_id: channelId || '0',
 					clan_id: currentClanId || '',
-					is_current_channel: channel.channel_id === currentChannelId
+					is_current_channel: channelId === currentChannelId
 				})
 			);
 		}
@@ -433,7 +434,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		);
 
 		return <>{menuItems}</>;
-	}, [notificationTypesListTranslated, t]);
+	}, [notificationTypesListTranslated, t, getNotificationChannelSelected, defaultNotifiName]);
 
 	const handleOpenMenuMute = useCallback((visible: boolean) => {
 		menuOpenMute.current = visible;

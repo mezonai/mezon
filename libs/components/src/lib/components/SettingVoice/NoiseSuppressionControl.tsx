@@ -2,8 +2,8 @@ import { Icons } from '@mezon/ui';
 import { NOISE_SUPPRESSION_NORMALIZATION_FACTOR } from '@mezon/utils';
 import { DeepFilterNet3Core, DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
 import type { ChangeEvent } from 'react';
-import { useTranslation } from 'react-i18next';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface NoiseSuppressionControlRef {
 	applyNoiseSuppression: (enabled: boolean) => Promise<void>;
@@ -224,24 +224,21 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 		};
 		return (
 			<div className={`space-y-4 ${className}`.trim()}>
-				<div className="text-lg font-bold pt-4 text-theme-primary-active tracking-wide">
-					{t('setting:voice.noiseSuppression.title')}
-				</div>
+				<div className="text-lg font-bold pt-4 text-theme-primary-active tracking-wide">{t('setting:voice.noiseSuppression.title')}</div>
 				<div className="flex items-center gap-3">
 					<button
 						onClick={toggleNoiseSuppression}
 						disabled={!isSupported}
-						className={`w-10 h-10 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed ${isSupported
+						className={`w-10 h-10 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed ${
+							isSupported
 								? isEnabled
 									? 'bg-item-theme-hover text-theme-primary-active'
 									: 'bg-item-theme-hover text-red-500'
 								: 'bg-item-theme-hover text-theme-primary-hover'
-							}`}
+						}`}
 						aria-label={t('setting:voice.noiseSuppression.toggleAriaLabel')}
 					>
-						<Icons.NoiseSupressionIcon className="w-5 h-5">
-							{!isEnabled && <path d="M3 21 L21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />}
-						</Icons.NoiseSupressionIcon>
+						<Icons.NoiseSupressionIcon className="w-5 h-5" disabled={!isEnabled} />
 					</button>
 					<input
 						type="range"

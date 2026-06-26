@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Prześlij efekt dźwiękowy",
+		"delete": "Usuń",
+		"uploadDetailScreen": "Prześlij"
+	},
+	"content": {
+		"description": "•  Akceptowane są tylko pliki .mp3, .wav, maksymalnie 1MB. \\n•  Nadaj efektom dźwiękowym łatwe do zapamiętania nazwy. \\n•  Efekty dźwiękowe będą używane w powiadomieniach lub wydarzeniach clanu.",
+		"requirements": "WYMAGANIA PRZEKAZYWANIA",
+		"reqSize": "- Nie większe niż 1024KB.",
+		"audioFile": "Plik audio",
+		"audioName": "Nazwa dźwięku",
+		"preview": "Podgląd",
+		"chooseAudioFile": "Wybierz plik audio"
+	},
+	"toast": {
+		"errorSizeLimit": "Przekroczono limit rozmiaru 1MB",
+		"errorFileType": "Nieprawidłowy format pliku. Akceptowane są tylko pliki .mp3, .mpeg i .wav."
+	},
+	"main": {
+		"uploadInstructions": "INSTRUKCJE PRZEKAZYWANIA",
+		"fileRequirements": "Tylko pliki .mp3, .wav, maksymalnie 1MB. Nadaj efektom dźwiękowym łatwe do zapamiętania nazwy. Efekty dźwiękowe będą używane w powiadomieniach lub wydarzeniach clanu.",
+		"uploadHere": "Prześlij tutaj!",
+		"personalizeDescription": "Dostosuj efekty dźwiękowe dla swojego clanu!",
+		"uploadSound": "Prześlij dźwięk",
+		"soundEffectList": "Lista efektów dźwiękowych",
+		"noSoundEffects": "Nie ma jeszcze efektów dźwiękowych. Kliknij \"Prześlij dźwięk\", aby dodać!"
+	},
+	"modal": {
+		"titleEdit": "Edytuj efekt dźwiękowy",
+		"titleUpload": "Prześlij efekt dźwiękowy",
+		"subtitle": "Obsługa formatów MP3, WAV • Maksymalnie 1MB",
+		"preview": "Podgląd",
+		"audioFile": "Plik audio",
+		"soundName": "Nazwa dźwięku",
+		"soundVolume": "Głośność",
+		"chooseOrDrop": "Wybierz lub przeciągnij plik",
+		"browse": "Przeglądaj",
+		"placeholder": "NP: miau kota",
+		"cancel": "Anuluj",
+		"uploading": "Przekazywanie...",
+		"update": "Aktualizuj",
+		"upload": "Prześlij",
+		"errorFileType": "Obsługa plików .mp3 lub .wav",
+		"errorFileSize": "Plik jest zbyt duży, maksymalnie 1MB",
+		"errorUploadFailed": "Nie można przesłać dźwięku",
+		"characters": "Nazwa musi mieć od 3 do 64 znaków",
+		"errorName": "Nazwa efektu dźwiękowego musi mieć od {{min}} do {{max}} znaków, może zawierać tylko litery, cyfry, _ i -"
+	}
+}

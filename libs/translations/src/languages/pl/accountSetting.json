@@ -1,0 +1,144 @@
+{
+	"myAccount": "Moje konto",
+	"editUserProfile": "Edytuj profil użytkownika",
+	"noDisplayName": "Nie dodałeś jeszcze nazwy wyświetlanej.",
+	"edit": "Edytuj",
+	"password": "Hasło",
+	"phoneNumber": "Numer telefonu",
+	"username": "Nazwa użytkownika",
+	"displayName": "Nazwa wyświetlana",
+	"users": "Użytkownicy",
+	"accountManagement": "Zarządzanie kontem",
+	"blockedUsers": "Zablokowani użytkownicy",
+	"disableAccount": "Wyłącz konto",
+	"deleteAccount": "Usuń konto",
+	"accountInformation": "Informacje o koncie",
+	"doNotHaveBlockedUser": "Nie masz zablokowanych użytkowników",
+	"setPassword": "Ustaw hasło",
+	"changePassword": "Zmień hasło",
+	"setEmail": "Ustaw email",
+	"changeEmail": "Zmień email",
+	"setPhoneNumber": "Ustaw numer telefonu",
+	"disableAccountAlert": {
+		"title": "Wyłącz konto",
+		"description": "Czy na pewno chcesz wyłączyć konto?",
+		"noConfirm": "Nie",
+		"yesConfirm": "Tak"
+	},
+	"deleteAccountAlert": {
+		"title": "Usuń konto",
+		"description": "Czy na pewno chcesz usunąć konto?",
+		"noConfirm": "Nie",
+		"yesConfirm": "Tak"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Wymagane połączenie z emailem",
+		"linkEmailRequiredDescription": "Musisz połączyć email przed ustawieniem hasła",
+		"goTo": "Idź do",
+		"title": "Ustaw hasło",
+		"email": "Email",
+		"password": "Hasło",
+		"currentPassword": "Aktualne hasło",
+		"confirmPassword": "Potwierdź hasło",
+		"confirm": "Zapisz",
+		"changePassword": "Zmień hasło",
+		"description": "Twoje hasło musi mieć co najmniej 8 znaków i zawierać co najmniej jedną wielką literę, jedną małą literę, jedną cyfrę i jeden znak specjalny (np. !@#$%^&*).",
+		"error": {
+			"characters": "Hasło musi mieć co najmniej 8 znaków",
+			"uppercase": "Hasło musi zawierać co najmniej 1 wielką literę",
+			"lowercase": "Hasło musi zawierać co najmniej 1 małą literę",
+			"number": "Hasło musi zawierać co najmniej 1 cyfrę",
+			"symbol": "Hasło musi zawierać co najmniej 1 znak specjalny",
+			"notEqual": "Potwierdzenie hasła nie pasuje",
+			"samePass": "Nowe hasło nie może być takie samo jak stare",
+			"fillOldPass": "Wpisz obecne hasło.",
+			"updateFail": "Aktualizacja konta nie powiodła się.",
+			"createFail": "Ustawianie hasła nie powiodło się.",
+			"incorrectCurrent": "Aktualne hasło jest nieprawidłowe. Spróbuj ponownie"
+		},
+		"toast": {
+			"success": "Pomyślnie zaktualizowano hasło",
+			"error": "Aktualizacja hasła nie powiodła się"
+		},
+		"placeholder": {
+			"currentPassword": "Wpisz aktualne hasło",
+			"password": "Wpisz nowe hasło",
+			"confirmPassword": "Potwierdź nowe hasło"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Ustaw hasło",
+		"description": "Proszę utworzyć nowe hasło dla swojego konta",
+		"emailPlaceholder": "twoj.email@example.com",
+		"loading": "Ładowanie...",
+		"close": "Zamknij"
+	},
+	"setPhoneModal": {
+		"title": "Ustaw numer telefonu",
+		"phoneNumber": "Numer telefonu",
+		"description": "Otrzymasz wiadomość SMS zawierającą kod weryfikacyjny.",
+		"loading": "Ładowanie...",
+		"close": "Zamknij",
+		"sendOTP": "Wyślij kod OTP",
+		"countryCode": "Kod kraju",
+		"confirmOtp": "Potwierdź kod OTP",
+		"invalidPhone": "Nieprawidłowy numer telefonu",
+		"updatePhoneSuccess": "Pomyślnie zaktualizowano numer telefonu",
+		"updatePhoneFail": "Wystąpił błąd. Spróbuj ponownie później",
+		"emptyOtp": "Kod OTP jest nieprawidłowy!",
+		"resendOtp": "Wyślij ponownie kod OTP!",
+		"tooFast": "Zbyt szybko. Proszę poczekać {{seconds}} sekund przed ponownym wysłaniem kodu OTP.",
+		"alreadyLinked": "Ten numer jest już połączony z Twoim kontem",
+		"alreadyLinkedToAnother": "Ten numer jest już połączony z innym kontem",
+		"country": "Kraj",
+		"otpSentMessage": "Proszę sprawdzić kod OTP wysłany na numer telefonu {{phone}}",
+		"backToPhoneInput": "Zmienić numer telefonu?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Pomyślnie usunięto konto",
+			"error": "Jesteś właścicielem clanu"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Numer telefonu",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Nowy numer telefonu",
+			"nextButton": "Dalej",
+			"removeButton": "Usuń numer telefonu",
+			"failed": "Aktualizacja numeru telefonu nie powiodła się",
+			"invalidPhoneNumber": "Nieprawidłowy numer telefonu"
+		},
+		"verifyPhoneNumber": {
+			"description": "Wprowadź 6-cyfrowy kod, który wysłaliśmy",
+			"verifyButton": "Potwierdź",
+			"success": "Pomyślnie zaktualizowano numer telefonu"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Anuluj",
+		"currentEmail": "Aktualny email",
+		"description": "Proszę wpisać email dla swojego konta",
+		"otpDescription": "Kod OTP został wysłany na nowy email",
+		"fillOTP": "Wpisz kod OTP",
+		"send": "Wyślij OTP",
+		"resendOtp": "Wyślij ponownie kod OTP!",
+		"error": {
+			"notEqual": "Potwierdzenie hasła nie pasuje",
+			"required": "Email jest wymagany",
+			"invalid": "Proszę wprowadzić poprawny adres email"
+		},
+		"updateEmail": {
+			"newEmail": "Nowy email",
+			"nextButton": "Dalej",
+			"failed": "Aktualizacja emaila nie powiodła się",
+			"invalidEmail": "Nieprawidłowy email",
+			"emailAlreadyLinked": "Ten email już używasz"
+		},
+		"verifyEmail": {
+			"description": "Wprowadź 6-cyfrowy kod, który wysłaliśmy",
+			"verifyButton": "Potwierdź",
+			"success": "Pomyślnie zaktualizowano email"
+		}
+	}
+}

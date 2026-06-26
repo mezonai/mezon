@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Aperçu de la communauté",
+		"deleteClan": "Supprimer le clan",
+		"sectionTitles": {
+			"apps": "Applications",
+			"moderation": "Modération",
+			"emotions": "Émojis"
+		},
+		"items": {
+			"overview": "Aperçu",
+			"roles": "Rôles",
+			"emoji": "Émojis",
+			"imageStickers": "Autocollants image",
+			"voiceStickers": "Effets sonores",
+			"categoryOrder": "Ordre des catégories",
+			"integrations": "Intégrations",
+			"auditLog": "Journal d'audit",
+			"onboarding": "Initialisation",
+			"enableCommunity": "Activer la communauté"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Taille minimale: 128x128",
+		"recommendedSize": "Nous vous recommandons d'utiliser une image d'au moins 512x512 pour le clan.",
+		"uploadImage": "Télécharger une image",
+		"clanName": "Nom du Clan",
+		"namePlaceholder": "Nom du clan...",
+		"validationError": "Veuillez entrer un nom de canal valide (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -).",
+		"modal": {
+			"title": "Seuls les fichiers image sont autorisés",
+			"content": "Seuls les fichiers au format (JPEG, PNG) sont autorisés, merci !"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Attention - vous avez des modifications non sauvegardées !",
+		"reset": "Réinitialiser",
+		"saveChanges": "Sauvegarder les modifications"
+	},
+	"clanBanner": {
+		"title": "Bannière du Clan",
+		"description": "Cette image s'affichera en haut de votre liste de canaux.",
+		"recommendedSize": "La taille minimale recommandée est de 960x540 avec un ratio d'aspect de 16:9.",
+		"uploadBackground": "Télécharger l'arrière-plan",
+		"chooseImage": "Choisir une image",
+		"modal": {
+			"title": "Seuls les fichiers image sont autorisés",
+			"content": "Seuls les fichiers au format (JPEG, PNG) sont autorisés, merci !"
+		}
+	},
+	"systemMessages": {
+		"title": "Canal de messages système",
+		"description": "Ceci est le canal où nous envoyons les notifications d'événements système. Peut être désactivé à tout moment",
+		"welcomeRandom": "Envoyer un message de bienvenue aléatoire lorsqu'une personne rejoint ce clan.",
+		"welcomeSticker": "Demander aux membres de répondre aux messages de bienvenue avec un autocollant.",
+		"boostMessage": "Envoyer un message lorsqu'une personne booste ce clan.",
+		"setupTips": "Envoyer des conseils utiles pour la configuration du clan.",
+		"auditLog": "Envoyer le journal lorsqu'une action est effectuée avec le clan",
+		"anoTitle": "Mode anonyme",
+		"anoDesc": "Empêcher les utilisateurs d'utiliser le mode anonyme"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Applications compagnon de jeu",
+			"popularTrending": "Applications populaires et tendances",
+			"serverMiniGames": "Mini-jeux de serveur",
+			"rolePlayingFavorites": "Favoris de rôle"
+		},
+		"inServers": "dans {{count}} serveurs"
+	},
+	"emoji": {
+		"uploadInstructions": "INSTRUCTIONS DE TÉLÉCHARGEMENT",
+		"title": "Émojis",
+		"description": "Ajoutez jusqu'à 250 émojis personnalisés que les gens peuvent utiliser dans ce clan.",
+		"uploadRequirements": "EXIGENCES DE TÉLÉCHARGEMENT",
+		"requirements": {
+			"fileType": "Type de fichier: JPEG, PNG, GIF",
+			"fileSize": "Taille recommandée: 256 Ko",
+			"dimensions": "Dimensions recommandées: 128x128",
+			"naming": "Nommer: Le nom de l'emoji doit comporter au moins 2 caractères et ne peut contenir que des caractères alphabétiques et numériques ainsi que des underscores"
+		},
+		"uploadEmoji": "Télécharger un emoji"
+	},
+	"stickers": {
+		"uploadInstructions": "INSTRUCTIONS DE TÉLÉCHARGEMENT",
+		"description": "Les autocollants peuvent être statiques (PNG) ou animés (APNG, GIF). Les autocollants doivent avoir une taille exacte de 320 x 320 pixels et ne pas dépasser 512 Ko. Nous redimensionnerons automatiquement les autocollants PNG statiques et GIF animés pour vous.",
+		"uploadHere": "Télécharger ici !",
+		"customizeMessage": "Personnalisez ces autocollants géniaux selon vos préférences",
+		"uploadSticker": "Télécharger un autocollant"
+	},
+	"deleteClanTitle": "Supprimer '{{clanName}}'"
+}

@@ -1,0 +1,152 @@
+{
+	"screens": {
+		"eventType": {
+			"headerTitle": "Krok 1 z 3",
+			"title": "Gdzie jest Twoje wydarzenie?",
+			"subtitle": "Żeby nikt się nie zgubił w drodze do miejsca",
+			"description": "Możesz pozwolić użytkownikom tworzyć wydarzenia w Clanie > Ustawienia > Role"
+		},
+		"eventDetails": {
+			"headerTitle": "Krok 2 z 3",
+			"title": "O czym jest Twoje wydarzenie?",
+			"subtitle": "Wypełnij szczegółowe informacje o Twoim wydarzeniu"
+		},
+		"eventPreview": {
+			"headerTitle": "Krok 3 z 3",
+			"title": "Poniżej masz podgląd Twojego wydarzenia",
+			"subtitle": "To wydarzenie automatycznie zacznie się o wyznaczonej porze",
+			"subtitleVoice": "Gdy nadejdzie czas, przejdź do kanału głosowego, aby rozpocząć wydarzenie!"
+		},
+		"channelSelection": {
+			"title": "Kim są widzowie?",
+			"description": "Wybierz członków w określonym kanale.",
+			"channel": "Publika składa się z członków z {{channel}}: "
+		},
+		"isPrivate": "Tylko zaproszeni mogą dołączyć"
+	},
+	"fields": {
+		"channelType": {
+			"voiceChannel": {
+				"title": "Kanał głosowy",
+				"description": "Rozmawiaj głosowo, wideo, udostępniaj ekran i streamuj."
+			},
+			"somewhere": {
+				"title": "Gdzie indziej",
+				"description": "Kanał tekstowy, link zewnętrzny lub lokalizacja na żywo."
+			},
+			"privateEvent": {
+				"title": "Utwórz wydarzenie zewnętrzne",
+				"description": "Użytkownicy mogą dołączyć do spotkania za pomocą linku bez logowania."
+			}
+		},
+		"channel": {
+			"title": "Wybierz kanał"
+		},
+		"address": {
+			"title": "Lokalizacja",
+			"placeholder": "Dodaj lokalizację, link lub coś innego"
+		},
+		"eventName": {
+			"title": "Temat wydarzenia",
+			"placeholder": "Co to jest Twoje wydarzenie?",
+			"errorMessage": "Temat jest wymagany dla wydarzenia"
+		},
+		"startDate": {
+			"title": "Data rozpoczęcia",
+			"errorMessage": "Proszę wybrać datę obecną lub w przyszłości"
+		},
+		"startTime": {
+			"title": "Czas rozpoczęcia",
+			"errorMessage": "Proszę wybrać poprawny czas rozpoczęcia"
+		},
+		"endDate": {
+			"title": "Data zakończenia",
+			"errorMessage": "Proszę wybrać datę obecną lub w przyszłości"
+		},
+		"endTime": {
+			"title": "Czas zakończenia",
+			"errorMessage": "Proszę wybrać poprawny czas zakończenia"
+		},
+		"eventFrequency": {
+			"title": "Częstotliwość wydarzenia",
+			"noRepeat": "Bez powtórzeń",
+			"weeklyOn": "Co tydzień w {{name}}",
+			"everyOther": "Co drugi tydzień w {{name}}",
+			"monthlyOn": "Co miesiąc w dniu {{name}}",
+			"annuallyOn": "Co roku w dniu {{name}}",
+			"everyWeekday": "W każdy dzień roboczy (Poniedziałek do Piątku)"
+		},
+		"description": {
+			"title": "Opis",
+			"description": "Poinformuj wszystkich nieco więcej o Twoim wydarzeniu."
+		},
+		"cover": "Okładka"
+	},
+	"actions": {
+		"next": "Dalej",
+		"create": "Utwórz wydarzenie",
+		"edit": "Aktualizuj wydarzenie",
+		"event_one": "1 Wydarzenie",
+		"event_other": "{{count}} Wydarzeń",
+		"noEvent": "Wydarzenie",
+		"clearAudiences": "Wyczyść widzów",
+		"startEvent": "Rozpocznij wydarzenie",
+		"editEvent": "Edytuj wydarzenie",
+		"cancelEvent": "Anuluj wydarzenie",
+		"copyEventLink": "Kopiuj link wydarzenia",
+		"uploadImage": "Prześlij okładkę",
+		"neverMind": "Nie szkodzi",
+		"cancelEventQuestion": "Anulować wydarzenie?",
+		"confirmCancelEvent": "Czy na pewno chcesz anulować to wydarzenie?",
+		"back": "Wróć",
+		"cancel": "Anuluj"
+	},
+	"tabs": {
+		"location": "Lokalizacja",
+		"eventInfo": "Informacje o wydarzeniu",
+		"review": "Przegląd"
+	},
+	"notify": {
+		"locationBlank": "Lokalizacja jest wymagana",
+		"titleBlank": "Temat jest wymagany dla wydarzenia",
+		"time": "Nieprawidłowy czas rozpoczęcia lub zakończenia",
+		"type": "Należy wybrać typ wydarzenia, który ma zostać zorganizowany"
+	},
+	"eventDetail": {
+		"eventIsTaking": "Wydarzenie trwa!",
+		"tenMinutesLeft": "Pozostało {{minutes}} minut. Dołącz teraz!",
+		"eventInfo": "Informacje o wydarzeniu",
+		"interested": "{{count}} Zainteresowanych",
+		"personInterested": "{{count}} osób zainteresowanych",
+		"personInteresteds": "{{count}} osób zainteresowanych",
+		"createdBy": "Utworzone przez {{username}}",
+		"inviteFriends": "Zaprosić przyjaciół do wydarzenia?",
+		"shareLink": "Udostępnij ten link innym, aby udzielić im dostępu do tego serwera",
+		"onlyInvitedMembers": "Użytkownicy mogą dołączyć do spotkania za pomocą linku bez logowania.",
+		"openLink": "Otwórz link",
+		"invite": "Zaproszenie",
+		"copyLink": "Kopiuj link",
+		"audienceConsists": "Publika składa się z członków z",
+		"thread": "wątku:",
+		"channel": "kanału:",
+		"clanEvent": "Wydarzenie Clanu",
+		"channelEvent": "Wydarzenie Kanału",
+		"privateEvent": "Wydarzenie zewnętrzne",
+		"privateRoom": "Pomieszczenie zewnętrzne",
+		"newEvent": "Nowe",
+		"share": "Udostępnij",
+		"noOneInterested": "Nikt jeszcze nie jest zainteresowany tym wydarzeniem."
+	},
+	"errorMessages": {
+		"startTimeFuture": "Czas rozpoczęcia musi być w przyszłości.",
+		"endTimeAfterStart": "Czas zakończenia musi być większy niż czas rozpoczęcia.",
+		"invalidTopic": "Temat wydarzenia jest nieprawidłowy. Znaki '`', '<', '>', ',', '/', '\"', '\\\\' i ''' nie są dozwolone."
+	},
+	"selectUser": "Wybierz kanał lub wątek, aby utworzyć wydarzenie",
+	"emptyState": {
+		"title": "Brak nadchodzących wydarzeń.",
+		"description1": "Zaplanuj wydarzenie dla dowolnej aktywności w",
+		"clan": "clanie",
+		"description2": "Zapraszamy innych członków do współtworzenia pomysłów na nadchodzące wydarzenia."
+	}
+}

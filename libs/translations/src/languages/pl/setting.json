@@ -1,0 +1,138 @@
+{
+	"accountSettings": {
+		"title": "Ustawienia konta",
+		"account": "Konto",
+		"profiles": "Profile",
+		"privacySafety": "Bezpieczeństwo i prywatność",
+		"familyCenter": "Centrum rodziny",
+		"authorizedApp": "Autoryzowane aplikacje",
+		"device": "Urządzenie",
+		"connection": "Połączenie",
+		"clip": "Klip",
+		"friendRequests": "Prośby o zaprzyjaźnienie",
+		"QRScan": "Skanowanie kodu QR",
+		"MyQRCode": "Mój kod QR",
+		"devices": "Urządzenia"
+	},
+	"deviceSettings": {
+		"description1": "To są wszystkie urządzenia zalogowane na Twoim koncie. Możesz się wylogować z każdego urządzenia.",
+		"description2": "Jeśli widzisz logowanie, którego nie rozpoznajesz, wyloguj się z tego urządzenia i natychmiast zmień hasło swojego konta.",
+		"currentDevice": "Aktualne urządzenie",
+		"otherDevices": "Inne urządzenia",
+		"noDevices": "Nie znaleziono urządzeń",
+		"loggedIn": "Zalogowano o",
+		"current": "Aktualne",
+		"unknown": "Nieznany",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Komputer",
+		"platformWeb": "Web",
+		"removeDevice": "Wyloguj się z tego urządzenia"
+	},
+	"paymentSettings": {
+		"title": "Ustawienia płatności",
+		"restoreSubscription": "Przywróć subskrypcję"
+	},
+	"appSettings": {
+		"title": "Ustawienia aplikacji",
+		"voice": "Głos",
+		"appearance": "Wygląd",
+		"accessibility": "Ułatwienia dostępu",
+		"language": "Język",
+		"activity": "Aktywność",
+		"notifications": "Powiadomienia",
+		"chat": "Czat",
+		"webBrowser": "Przeglądarka internetowa",
+		"appIcon": "Ikona",
+		"advanced": "Zaawansowane",
+		"appVersion": "Wersja aplikacji",
+		"startUp": "Uruchamianie",
+		"quitApp": "Wyjdź z aplikacji"
+	},
+	"autoStart": {
+		"title": "Automatyczne uruchamianie aplikacji",
+		"description": "Automatycznie otwiera aplikację podczas uruchamiania komputera, abyś mógł jej używać natychmiast."
+	},
+	"hardwareAcceleration": {
+		"title": "Użyj akceleracji graficznej, gdy dostępna",
+		"description": "Gdy jest włączona, aplikacja wykorzysta moc GPU (karty graficznej) do przetwarzania zaawansowanych zadań graficznych, takich jak renderowanie grafiki 3D i dekodowanie wideo. To przyspiesza liczbę klatek na sekundę i responsywność interfejsu. W przypadku wystąpienia błędów wyświetlania lub zawieszania aplikacji, spróbuj wyłączyć tę funkcję, aby poprawić stabilność."
+	},
+	"autoHidden": {
+		"title": "Uruchomienie ukryte razem z systemem operacyjnym",
+		"description": "Aplikacja będzie uruchamiać się w trybie ukrytym, gdy działa razem z systemem operacyjnym."
+	},
+	"activity": {
+		"title": "Pokaż moją aktywność",
+		"description": "Udzielaj się w swoich bieżących aktywnościach z przyjaciółmi. To pomaga im wiedzieć, co robisz i łatwiej się łączyć!"
+	},
+	"supportSettings": {
+		"title": "Wsparcie",
+		"support": "Wsparcie",
+		"uploadLog": "Prześlij dziennik błędów",
+		"acknowledgement": "Podziękowania"
+	},
+	"whatsNew": {
+		"title": "Co nowego",
+		"whatsNew": "Co nowego"
+	},
+	"updateGate": {
+		"outOfDateVersion": "NOWA WERSJA JEST DOSTĘPNA",
+		"updateExperience": "Wymaga szybkiej aktualizacji, aby kontynuować korzystanie z najnowszych funkcji rodzinnych.",
+		"updateNow": "Zaktualizuj teraz",
+		"versionInfo": "WERSJA"
+	},
+	"language": {
+		"title": "Język",
+		"description": "Wybierz język.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"german": "Deutsch",
+		"polish": "Polski"
+	},
+	"voice": {
+		"title": "Głos",
+		"description": "Konfiguruj ustawienia głosu.",
+		"microphone": "Mikrofon",
+		"speaker": "Głośnik",
+		"microphoneVolume": "Głośność mikrofonu",
+		"speakerVolume": "Głośność głośnika",
+		"noiseSuppression": {
+			"title": "Redukcja szumów",
+			"toggleAriaLabel": "Włącz lub wyłącz redukcję szumów"
+		},
+		"unnamedDevice": "Nazwane urządzenie",
+		"noDevices": "Nie znaleziono urządzeń",
+		"micTest": {
+			"title": "Test mikrofonu",
+			"description": "Masz problemy z mikrofonem? Rozpocznij test i powiedz coś – odtworzymy Twój głos.",
+			"letsCheck": "Sprawdź",
+			"stop": "Zatrzymaj"
+		},
+		"errors": {
+			"permissionDenied": "Wymagane uprawnienie mikrofonu do testu mikrofonu.",
+			"micPermission": "Nie można uzyskać dostępu do mikrofonu."
+		},
+		"warnings": {
+			"outputNotSupported": "Przeglądarka nie obsługuje wyboru urządzenia wyjściowego. Wybór głośnika może zostać pominięty."
+		}
+	},
+	"logOut": "Wyloguj",
+	"logOutPopup": {
+		"description": "Czy na pewno chcesz się wylogować?",
+		"noConfirm": "Nie",
+		"yesConfirm": "Tak"
+	},
+	"removeAccount": "Usuń konto",
+	"channelSetting": {
+		"recentChannels": "Ostatnie kanały",
+		"searchByChannelLabel": "Szukaj według etykiety kanału"
+	},
+	"setting": "Ustawienia"
+}

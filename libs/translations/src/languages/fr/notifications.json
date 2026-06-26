@@ -1,0 +1,25 @@
+{
+  "inbox": "Boîte de réception",
+  "tabs": {
+    "forYou": "Pour vous",
+    "messages": "Messages",
+    "mentions": "Mentions",
+    "topics": "Discussions de fil"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Rien ici pour le moment",
+      "description": "Revenez pour recevoir des notifications sur les événements, les flux et plus encore."
+    },
+    "messages": {
+      "title": "Vous avez tout vu !",
+      "protip": "Astuce :",
+      "description": "Ouvrez la boîte de réception en appuyant sur CTRL+I et marquez le premier message comme lu avec CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Vous avez tout vu !",
+      "protip": "Astuce :",
+      "description": "Chaque fois que quelqu'un vous mentionne, cela est enregistré ici pendant 7 jours."
+    }
+  }
+}

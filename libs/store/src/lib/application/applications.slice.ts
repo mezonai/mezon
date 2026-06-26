@@ -1,13 +1,24 @@
 import { captureSentryError } from '@mezon/logger';
+import type { MezonAdminContextValue } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js';
+import {
+	AddAppRequest,
+	App,
+	AppClan,
+	AppList,
+	GetMezonOauthClientRequest,
+	ListAppsRequest,
+	MezonOauthClient,
+	UpdateAppRequest
+} from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { getAdminCtx } from '../helpers';
 import type { RootState } from '../store';
+import { callApiAdmin } from './adminAPI.slice';
 
 export const ADMIN_APPLICATIONS = 'adminApplication';
 
@@ -58,11 +69,14 @@ export interface IFetchAppsArg {
 	noCache?: boolean;
 }
 
-export const fetchApplicationsCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
+export const fetchApplicationsCached = async (getState: () => RootState, mezon: MezonAdminContextValue, noCache = false) => {
 	const currentState = getState();
 	const applicationState = currentState[ADMIN_APPLICATIONS];
 
-	const apiKey = createApiKey('fetchApplications', mezon.session?.token || currentState.auth?.session?.token || '');
+	if (!currentState?.auth?.session) {
+		throw 'Session Empty';
+	}
+	const apiKey = createApiKey('fetchApplications', currentState.auth?.session?.token || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, applicationState.cache, noCache);
 
@@ -74,11 +88,11 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 		};
 	}
 
-	const response = await withRetry((session) => mezon.client.listApps(session), {
-		maxRetries: 3,
-		initialDelay: 1000,
-		scope: 'apps-list',
-		mezon
+	const response = await callApiAdmin({
+		path: '/mezon.api.Mezon/ListApps',
+		data: ListAppsRequest.encode(ListAppsRequest.fromPartial({})).finish(),
+		token: currentState?.auth?.session.token,
+		decodeBody: (bytes) => AppList.decode(bytes) as ApiAppList
 	});
 
 	markApiFirstCalled(apiKey);
@@ -92,7 +106,7 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 
 export const fetchApplications = createAsyncThunk('adminApplication/fetchApplications', async ({ noCache }: IFetchAppsArg = {}, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const mezon = await getAdminCtx(thunkAPI);
 		const response = await fetchApplicationsCached(thunkAPI.getState as () => RootState, mezon, Boolean(noCache));
 		return response;
 	} catch (error) {
@@ -103,13 +117,17 @@ export const fetchApplications = createAsyncThunk('adminApplication/fetchApplica
 
 export const getApplicationDetail = createAsyncThunk('adminApplication/getApplicationDetail', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await withRetry((session) => mezon.client.getApp(session, appId), {
-			maxRetries: 3,
-			initialDelay: 1000,
-			scope: 'app-detail',
-			mezon
+		const state = thunkAPI.getState() as RootState;
+		if (!state.auth.session) {
+			throw 'Empty Session';
+		}
+		const response = await callApiAdmin({
+			path: '/mezon.api.Mezon/GetApp',
+			data: App.encode(App.fromPartial({ id: appId })).finish(),
+			decodeBody: (bytes) => App.decode(bytes) as ApiApp,
+			token: state.auth.session.token
 		});
+
 		thunkAPI.dispatch(setCurrentAppId(appId));
 		return response;
 	} catch (error) {
@@ -120,8 +138,24 @@ export const getApplicationDetail = createAsyncThunk('adminApplication/getApplic
 
 export const createApplication = createAsyncThunk('adminApplication/createApplication', async (data: { request: ApiAddAppRequest }, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.addApp(mezon.session, data.request);
+		const state = thunkAPI.getState() as RootState;
+		if (!state.auth.session) {
+			throw 'Empty Session';
+		}
+		if (!data.request.appname?.trim()) {
+			throw 'Empty Appname ';
+		}
+		const response = await callApiAdmin({
+			path: '/mezon.api.Mezon/AddApp',
+			data: AddAppRequest.encode(
+				AddAppRequest.fromPartial({
+					...data.request,
+					creator_id: data.request.creator_id && data.request.creator_id !== '0' ? data.request.creator_id : '0'
+				})
+			).finish(),
+			decodeBody: (bytes) => App.decode(bytes) as ApiApp,
+			token: state.auth.session.token
+		});
 		if (response) {
 			await thunkAPI.dispatch(fetchApplications({ noCache: true }));
 			return response;
@@ -136,8 +170,16 @@ export const createApplication = createAsyncThunk('adminApplication/createApplic
 
 export const addBotChat = createAsyncThunk('adminApplication/addBotChat', async (data: { appId: string; clanId: string }, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.addAppToClan(mezon.session, data.appId, data.clanId);
+		const state = thunkAPI.getState() as RootState;
+		if (!state.auth.session) {
+			throw 'Empty Session';
+		}
+		await callApiAdmin({
+			path: '/mezon.api.Mezon/AddAppToClan',
+			data: AppClan.encode(AppClan.fromPartial({ app_id: data.appId, clan_id: data.clanId })).finish(),
+			decodeBody: () => ({}),
+			token: state.auth.session.token
+		});
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/addBotChat');
 		return thunkAPI.rejectWithValue(error);
@@ -148,8 +190,16 @@ export const editApplication = createAsyncThunk(
 	'adminApplication/editApplication',
 	async (data: { request: MezonUpdateAppBody; appId: string }, thunkAPI) => {
 		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateApp(mezon.session, data.appId, data.request);
+			const state = thunkAPI.getState() as RootState;
+			if (!state.auth.session) {
+				throw 'Empty Session';
+			}
+			const response = await callApiAdmin({
+				path: '/mezon.api.Mezon/UpdateApp',
+				data: UpdateAppRequest.encode(UpdateAppRequest.fromPartial({ ...data.request, id: data.appId })).finish(),
+				decodeBody: (bytes) => App.decode(bytes) as ApiApp,
+				token: state.auth.session.token
+			});
 			if (response) {
 				return response;
 			}
@@ -162,8 +212,16 @@ export const editApplication = createAsyncThunk(
 
 export const deleteApplication = createAsyncThunk('adminApplication/deleteApplication', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.deleteApp(mezon.session, appId);
+		const state = thunkAPI.getState() as RootState;
+		if (!state.auth.session) {
+			throw 'Empty Session';
+		}
+		const response = await callApiAdmin({
+			path: '/mezon.api.Mezon/DeleteApp',
+			data: App.encode(App.fromPartial({ id: appId })).finish(),
+			decodeBody: () => true,
+			token: state.auth.session.token
+		});
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/deleteApplication');
@@ -175,12 +233,20 @@ export const fetchMezonOauthClient = createAsyncThunk(
 	'adminApplication/fetchMezonOauthClient',
 	async ({ appId, appName }: { appId: string; appName?: string }, thunkAPI) => {
 		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry((session) => mezon.client.getMezonOauthClient(session, appId, appName), {
-				maxRetries: 3,
-				initialDelay: 1000,
-				scope: '0auth-client',
-				mezon
+			const state = thunkAPI.getState() as RootState;
+			if (!state.auth.session) {
+				throw 'Empty Session';
+			}
+			const response = await callApiAdmin({
+				path: '/mezon.api.Mezon/GetMezonOauthClient',
+				data: GetMezonOauthClientRequest.encode(
+					GetMezonOauthClientRequest.fromPartial({
+						client_id: appId,
+						client_name: appName
+					})
+				).finish(),
+				decodeBody: (bytes) => MezonOauthClient.decode(bytes) as ApiMezonOauthClient,
+				token: state.auth.session.token
 			});
 			return response;
 		} catch (error) {
@@ -194,8 +260,16 @@ export const editMezonOauthClient = createAsyncThunk(
 	'adminApplication/editMezonOauthClient',
 	async ({ body }: { body: ApiMezonOauthClient }, thunkAPI) => {
 		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateMezonOauthClient(mezon.session, body);
+			const state = thunkAPI.getState() as RootState;
+			if (!state.auth.session) {
+				throw 'Empty Session';
+			}
+			const response = await callApiAdmin({
+				path: '/mezon.api.Mezon/UpdateMezonOauthClient',
+				data: MezonOauthClient.encode(MezonOauthClient.fromPartial(body)).finish(),
+				decodeBody: (bytes) => MezonOauthClient.decode(bytes) as ApiMezonOauthClient,
+				token: state.auth.session.token
+			});
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'adminApplication/editMezonOauthClient');

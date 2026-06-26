@@ -1,0 +1,25 @@
+{
+  "inbox": "Skrzynka",
+  "tabs": {
+		"forYou": "Dla Ciebie",
+		"messages": "Wiadomości",
+		"mentions": "Wzmianki",
+		"topics": "Dyskusje tematyczne"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Nic tu nie ma",
+      "description": "Wróć, aby otrzymywać powiadomienia o wydarzeniach, streamach i więcej."
+    },
+    "messages": {
+      "title": "Przeczytałeś wszystko!",
+      "protip": "Porada:",
+      "description": "Otwórz skrzynkę, naciskając CTRL+I i oznacz pierwszą wiadomość jako przeczytaną za pomocą CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Przeczytałeś wszystko!",
+      "protip": "Porada:",
+      "description": "Za każdym razem, gdy ktoś Cię wzmiankuje, jest to zapisywane tutaj przez 7 dni."
+    }
+  }
+}

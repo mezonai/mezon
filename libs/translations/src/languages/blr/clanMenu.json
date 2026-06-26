@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Пазначыць як прачытанае",
+			"browseChannels": "Прагледзець каналы"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Стварыць канал",
+			"createCategory": "Стварыць катэгорыю",
+			"createEvent": "Стварыць падзею"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Рэдагаваць профіль клана",
+			"showAllChannels": "Паказаць усе каналы",
+			"hideMutedChannels": "Схаваць усе выключаныя каналы",
+			"allowDirectMessage": "Дазволіць прамыя паведамленні",
+			"allowMessageRequest": "Дазволіць запыты паведамленняў",
+			"reportServer": "Скардзіцца на клан",
+			"leaveServer": "Пакінуць клан",
+			"deleteClan": "Выдаліць клан",
+			"auditLog": "Журнал аўдытаў"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Паказаць пустыя катэгорыі",
+			"show": "Паказаць",
+			"hide": "Схаваць"
+		},
+		"devMode": {
+			"title": "Рэжым распрацоўшчыка",
+			"copyServerID": "Скапіяваць ID клана",
+			"serverIDCopied": "ID клана скапіяваны"
+		}
+	},
+	"actions": {
+		"boot": "Boost",
+		"invite": "Запрашэнні",
+		"notifications": "Апавяшчэнні",
+		"settings": "Налады"
+	},
+	"info": {
+		"online": "Анлайн",
+		"members": "Удзельнікі"
+	},
+	"common": {
+		"search": "Пошук",
+		"community": "Супольнасць",
+		"searchMembers": "Пошук удзельнікаў"
+	},
+	"modalPanel": {
+		"createCategory": "Стварыць катэгорыю",
+		"markAsRead": "Пазначыць як прачытанае",
+		"processing": "Апрацоўка...",
+		"invitePeople": "Запрасіць людзей",
+		"clanSettings": "Налады клана",
+		"notificationSettings": "Налады апавяшчэнняў",
+		"showEmptyCategories": "Паказаць пустыя катэгорыі",
+		"leaveClan": "Пакінуць клан"
+	}
+}

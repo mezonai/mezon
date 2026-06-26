@@ -26,7 +26,7 @@
 
 [Mezon Bug Report Community](https://mezon.ai/invite/1840696977034055680)
 
-## The Live, Work, and Play Platform the best Discord Alternative
+## high-performance, lightweight alternative to Discord
 
 Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling with friends, or even building a global community. Customize your own space to talk, play, and hang out. Mezon also delivers enterprise-grade performance with sub-millisecond response times and support for millions of concurrent connections.
 
@@ -142,7 +142,7 @@ The application will be available at http://localhost:4200/
 | ----------- | ----------------------------------------------------------------------------- | --------- |
 | **Windows** | [Download](https://apps.microsoft.com/detail/9pf25lf1fj17)                    | ✅ Stable |
 | **macOS**   | [Download](https://apps.apple.com/vn/app/mezon-desktop/id6756601798)          | ✅ Stable |
-| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.71-linux-amd64.deb)         | ✅ Stable |
+| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.72-linux-amd64.deb)         | ✅ Stable |
 | **iOS**     | [App Store](https://apps.apple.com/vn/app/mezon/id6502750046)                 | ✅ Stable |
 | **Android** | [Google Play](https://play.google.com/store/apps/details?id=com.mezon.mobile) | ✅ Stable |
 | **Web**     | [mezon.ai](https://mezon.ai)                                                  | ✅ Stable |
@@ -227,8 +227,6 @@ mezon/
 ├── apps/              # Applications
 │   ├── chat/          # Main web chat application
 │   ├── admin/         # Admin dashboard
-│   ├── desktop/       # Electron desktop app
-│   ├── mobile/        # React Native mobile app
 │   └── discover/      # Community discovery app
 ├── libs/              # Shared libraries
 │   ├── components/    # Reusable UI components

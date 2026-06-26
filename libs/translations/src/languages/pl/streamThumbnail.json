@@ -1,0 +1,50 @@
+{
+	"title": "Baner Streamu",
+	"uploadThumbnail": "Prześlij miniaturkę",
+	"currentThumbnail": "Aktualna miniaturka",
+	"requirementsTitle": "Wymagania",
+	"buttons": {
+		"change": "Zmień",
+		"remove": "Usuń",
+		"selectFile": "Wybierz plik",
+		"uploading": "Przekazywanie...",
+		"cancel": "Anuluj",
+		"confirmUpload": "Potwierdź",
+		"removing": "Usuwanie...",
+		"removeThumbnail": "Usuń miniaturkę"
+	},
+	"upload": {
+		"title": "Prześlij swoją miniaturkę",
+		"description": "Kliknij, aby przeglądać lub przeciągnij i upuść swój obraz"
+	},
+	"confirmModal": {
+		"uploadTitle": "Potwierdź przesyłanie",
+		"uploadDescription": "Ustawić ten obraz jako miniaturkę streamu?",
+		"uploadMessage": "Ten baner będzie wyświetlany, gdy Twój stream będzie offline. Wszyscy członkowie zobaczą tę aktualizację natychmiast.",
+		"removeTitle": "Usuń miniaturkę",
+		"removeQuestion": "Czy na pewno?",
+		"removeMessage": "To usunie miniaturkę streamu. Domyślny ekran powitalny będzie wyświetlany zamiast niego, gdy Twój stream będzie offline.",
+		"removeWarning": "Tej akcji nie można cofnąć."
+	},
+	"requirements": {
+		"format": {
+			"title": "Format",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Rozdzielczość",
+			"value": "Zalecane 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Limit rozmiaru",
+			"value": "Maksymalnie 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Kanał nie został znaleziony",
+		"clientNotReady": "Klient/sesja nie jest gotowy",
+		"uploadFailed": "Przekazywanie miniaturki nie powiodło się. Proszę spróbować ponownie.",
+		"removeFailed": "Usuwanie miniaturki nie powiodło się. Proszę spróbować ponownie."
+	},
+	"saved": "Zapisano miniaturkę"
+}

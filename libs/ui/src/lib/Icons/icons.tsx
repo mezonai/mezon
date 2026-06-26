@@ -6580,7 +6580,13 @@ export function VoiceEmojiControlIcon({ defaultSize = 'w-5 h-5 ', defaultFill1 =
 	);
 }
 
-export function NoiseSupressionIcon({ defaultSize = 'w-5 h-5 ', defaultFill1 = 'currentColor', ...props }: IconProps) {
+export function NoiseSupressionIcon({
+	defaultSize = 'w-5 h-5 ',
+	defaultFill1 = 'currentColor',
+	disabled,
+	children,
+	...props
+}: IconProps & { disabled?: boolean }) {
 	return (
 		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
 			{' '}
@@ -6592,7 +6598,7 @@ export function NoiseSupressionIcon({ defaultSize = 'w-5 h-5 ', defaultFill1 = '
 				strokeLinejoin="round"
 				className="icon-NoiseSupressionIcon-stroke-1"
 			/>{' '}
-			{props.children}{' '}
+			{disabled && <path d="M3 3 L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />} {children}{' '}
 		</svg>
 	);
 }

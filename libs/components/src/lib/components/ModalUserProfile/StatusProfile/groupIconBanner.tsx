@@ -160,6 +160,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				<div
 					className="p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
 					onClick={handleOpenShareContactModal}
+					data-e2e={generateE2eId('short_profile.action.button.share_contact')}
 				>
 					<span title={t('shareContact')}>
 						<Icons.IconShareContact className="size-4 iconWhiteImportant" />

@@ -14,6 +14,15 @@ import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 
 let lastSentUrl: string | null = null;
 
+function ImageAttachmentSkeleton({ width, height }: { width: number; height: number }) {
+	return (
+		<div
+			style={{ width, height }}
+			className="max-w-full max-h-full absolute bottom-0 left-0 z-[1] rounded-md bg-bgLightSecondary dark:bg-bgSecondary"
+		/>
+	);
+}
+
 export type OwnProps<T> = {
 	id?: string;
 	photo: ApiPhoto | ApiMediaExtendedPreview;
@@ -41,6 +50,8 @@ export type OwnProps<T> = {
 	onCancelUpload?: (arg: T) => void;
 	isInSearchMessage?: boolean;
 	isSending?: boolean;
+	isPresignPending?: boolean;
+	loadWhenUnpending?: boolean;
 	isMobile?: boolean;
 };
 const Photo = <T,>({
@@ -69,6 +80,8 @@ const Photo = <T,>({
 	onContextMenu,
 	isInSearchMessage,
 	isSending,
+	isPresignPending = false,
+	loadWhenUnpending = false,
 	isMobile
 }: OwnProps<T>) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -76,7 +89,8 @@ const Photo = <T,>({
 	const isIntersecting = useIsIntersecting(ref, observeIntersection);
 
 	const isRecentlySent = !!(photo?.url && photo.url === lastSentUrl);
-	const shouldLoad = canAutoLoad && (isSending || isIntersecting || isRecentlySent);
+	const isUploading = isSending || isPresignPending;
+	const shouldLoad = canAutoLoad && !isPresignPending && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
 
 	if (isSending && photo?.url) {
 		lastSentUrl = photo.url;
@@ -114,11 +128,12 @@ const Photo = <T,>({
 		return 'fill';
 	})();
 
-	const shouldRenderSkeleton = !shouldLoad && !isSending;
+	const shouldRenderSkeleton = !shouldLoad && !isUploading;
+	const isNonInteractive = nonInteractive || isPresignPending;
 
 	const componentClassName = buildClassName(
 		'media-inner',
-		!nonInteractive && 'interactive',
+		!isNonInteractive && 'interactive',
 		isSmall && 'small-image',
 		(width === height || size === 'pictogram') && 'square-image',
 		height < MIN_MEDIA_HEIGHT && 'fix-min-height',
@@ -145,6 +160,11 @@ const Photo = <T,>({
 		return photo?.url?.endsWith('.gif') || photo?.url?.includes('.gif');
 	}, [photo?.url]);
 
+	const thumbnailDataUri = photo.thumbnail?.dataUri;
+	const hasThumbnail = !!thumbnailDataUri;
+	const showPresignSkeleton = isPresignPending && !hasThumbnail;
+	const canOpenViewer = !isPresignPending;
+
 	return (
 		<div
 			id={id}
@@ -152,6 +172,7 @@ const Photo = <T,>({
 			className={`relative max-w-full ${componentClassName}`}
 			style={style}
 			onClick={() => {
+				if (!canOpenViewer) return;
 				if ((photo as ApiPhoto & { filetype?: string })?.filetype === EMimeTypes.sticker) return;
 				onClick?.(photo?.url, id);
 			}}
@@ -169,8 +190,17 @@ const Photo = <T,>({
 					isInSearchMessage={isInSearchMessage}
 				/>
 			)}
+			{isPresignPending && hasThumbnail && (
+				<img
+					src={thumbnailDataUri}
+					alt=""
+					className="max-w-full max-h-full w-full h-full block object-cover absolute bottom-0 left-0 z-[1] rounded overflow-hidden"
+					style={{ width: displayWidth, height: displayHeight }}
+				/>
+			)}
+			{showPresignSkeleton && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
 			{isSending && <AttachmentSendingIndicator />}
-			{!isSending && shouldRenderSkeleton && (
+			{!isUploading && shouldRenderSkeleton && (
 				<div
 					style={{ width: displayWidth, height: displayHeight }}
 					className="max-w-full max-h-full absolute bottom-0 left-0 rounded-md bg-[#0000001c] animate-pulse"

@@ -4,7 +4,7 @@ import {
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
-	selectMessageByMessageId,
+	selectTopicMetaById,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -20,7 +20,8 @@ import {
 	EMimeTypes,
 	ETypeLinkMedia,
 	generateE2eId,
-	isValidEmojiData
+	isValidEmojiData,
+	patchLinkTokens
 } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback, useEffect } from 'react';
@@ -78,9 +79,9 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	const { t, i18n } = useTranslation('message');
 	const dispatch = useAppDispatch();
-	const latestMessage = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
-	const rplCount = latestMessage?.content?.rpl || 0;
-	const topicCreator = useAppSelector((state) => selectMemberClanByUserId(state, latestMessage?.content?.cid as string));
+	const topicMeata = useAppSelector((state) => selectTopicMetaById(state, message.content.tp || ''));
+	const rplCount = topicMeata?.rpl || 0;
+	const topicCreator = useAppSelector((state) => selectMemberClanByUserId(state, message?.content?.cid as string));
 	const avatarToDisplay = topicCreator?.clan_avatar ? topicCreator?.clan_avatar : topicCreator?.user?.avatar_url;
 	const handleOpenTopic = useCallback(() => {
 		dispatch(topicsActions.setIsShowCreateTopic(true));
@@ -90,7 +91,6 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	}, [dispatch, message]);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channel_id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
-
 	return (
 		<div
 			className={`border-theme-primary min-w-250 text-theme-primary bg-item-theme text-theme-primary-hover rounded-lg gap-1 my-1 p-1  flex justify-between items-center cursor-pointer group/view-topic-btn  ${isShowCreateThread || isShowCreateTopic ? '' : 'w-fit'}`}
@@ -110,8 +110,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 						{rplCount > 0 &&
 							(rplCount === 1 ? t('reply', { number: 1 }) : t('numberReplies', { number: rplCount > 99 ? '99+' : rplCount }))}
 					</p>
-					{(latestMessage?.content?.lsnt ?? message.content?.lsnt) &&
-						convertTimeMessage(latestMessage?.content?.lsnt ?? message.content?.lsnt ?? 0, i18n.language)}
+					{topicMeata?.lsnt && convertTimeMessage(Number(topicMeata.lsnt) ?? 0, i18n.language)}
 					<NumberTopicBadge channel_id={message.content.tp as string} />
 				</div>
 			</div>
@@ -175,13 +174,7 @@ const MessageText = ({
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
-	let patchedContent = content;
-	if ((!content?.mk || content.mk.length === 0) && Array.isArray(content?.lk) && content.lk.length > 0) {
-		patchedContent = {
-			...content,
-			mk: content.lk.map((lkItem) => ({ ...lkItem, type: EBacktickType.LINK }))
-		};
-	}
+	const patchedContent = patchLinkTokens(content);
 
 	const attachmentOnMessage = message.attachments;
 	const contentToMessage = message.content?.t;

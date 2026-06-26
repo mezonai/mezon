@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Налаштування сповіщень",
+		"muteUntil": "Ви вимкнули сповіщення для цього каналу до",
+		"unMute": "Увімкнути сповіщення",
+		"mute": "Вимкнути сповіщення",
+		"labelOptions": {
+			"reactionMessage": "Реакції на повідомлення",
+			"categoryDefault": "Використовувати типові налаштування",
+			"allMessage": "Всі",
+			"notThingMessage": "Нічого",
+			"mentionMessage": "Тільки @згадування"
+		},
+		"muteCategoryUntil": "Ви вимкнули сповіщення для цієї категорії до"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Вимкнути сповіщення треду",
+		"headerTitleMuteChannel": "Вимкнути сповіщення каналу",
+		"muteThisConversation": "Вимкнути сповіщення для цієї розмови",
+		"muteDuration": {
+			"forFifteenMinutes": "На 15 хвилин",
+			"forOneHour": "На 1 годину",
+			"forThreeHours": "На 3 години",
+			"forEightHours": "На 8 годин",
+			"forTwentyFourHours": "На 24 години",
+			"untilTurnItBackOn": "Доки не вимкну"
+		},
+		"description": "Ви отримуєте сповіщення з усіх повідомлень у цьому клані, але можете змінити налаштування тут",
+		"muteSuccess": "Сповіщення успішно вимкнено!",
+		"unMuteSuccess": "Сповіщення успішно увімкнено!",
+		"muteFailed": "Помилка вимкнення сповіщення!",
+		"unMuteFailed": "Помилка увімкнення сповіщення!"
+	},
+	"toast": {
+		"error": "Помилка оновлення сповіщення: {{error}}"
+	},
+	"title": "Налаштування сповіщень",
+	"clanNotificationSettings": "НАЛАШТУВАННЯ СПОВІЩЕНЬ КЛАНУ",
+	"notificationOverrides": "ПЕРЕВИЗНАЧЕННЯ СПОВІЩЕНЬ",
+	"addChannelOverride": "Додати канал для перевизначення типових налаштувань сповіщень",
+	"selectOrCreateOption": "Оберіть або створіть опцію...",
+	"headers": {
+		"channelOrCategory": "КАНАЛ АБО КАТЕГОРІЯ",
+		"all": "ВСІ",
+		"mentions": "ЗГАДУВАННЯ",
+		"nothing": "НІЧОГО",
+		"mute": "ВИМКНУТИ СПОВІЩЕННЯ"
+	},
+	"menu": {
+		"notification": {
+			"all": "Всі",
+			"onlyMention": "Тільки @згадування",
+			"nothing": "Нічого"
+		}
+	}
+}

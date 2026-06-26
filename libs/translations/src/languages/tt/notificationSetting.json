@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "Клан белдермә көйләнмәләре",
 	"notificationOverrides": "Белдермәләрне яңадан билгеләү",
 	"addChannelOverride": "Аның килешү буенча белдермә көйләнмәләрен яңадан билгеләү өчен канал өстәгез",
-	"selectOrCreateOption": "Сайлагыз яки вариант булдырыгыз...",
+	"selectChannelOrCategory": "Канал яки категорияне сайлагыз...",
 	"headers": {
 		"channelOrCategory": "Канал яки төркемчә",
 		"all": "Барысы",

@@ -6,15 +6,16 @@ import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../help
 export const DEVICES_FEATURE_KEY = 'devices';
 
 export interface IDevice {
-	device_id: string;
-	device_name?: string;
-	ip?: string;
-	last_active?: string;
-	login_at?: string;
+	device_id?: string;
+	is_current?: boolean;
 	platform?: string;
-	status?: number;
-	is_current_device?: boolean;
+	device_name?: string;
 	location?: string;
+	last_active_seconds?: number | string;
+}
+
+interface LogedDeviceList {
+	devices?: IDevice[];
 }
 
 export interface DevicesState extends EntityState<IDevice, string> {
@@ -24,7 +25,7 @@ export interface DevicesState extends EntityState<IDevice, string> {
 }
 
 export const devicesAdapter = createEntityAdapter<IDevice, string>({
-	selectId: (device) => device.device_id
+	selectId: (device) => device.device_id || ''
 });
 
 export const initialDevicesState: DevicesState = devicesAdapter.getInitialState({
@@ -36,22 +37,16 @@ export const initialDevicesState: DevicesState = devicesAdapter.getInitialState(
 export const fetchListLoggedDevices = createAsyncThunk('devices/fetchListLoggedDevices', async (_, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await fetchDataWithSocketFallback(
+		const response = await fetchDataWithSocketFallback<LogedDeviceList>(
 			mezon,
 			{
 				api_name: 'ListLogedDevice'
 			},
-			(): Promise<{
-				devices: Array<IDevice>;
-			}> => {
-				return Promise.resolve({
-					devices: []
-				});
-			},
+			(session) => mezon.client.listLogedDevice(session),
 			'list_loged_device'
 		);
 
-		return (response?.devices || []) as IDevice[];
+		return response?.devices ?? [];
 	} catch (error: unknown) {
 		const errorMessage = error instanceof Error ? error.message : 'Failed to fetch devices';
 		return thunkAPI.rejectWithValue(errorMessage);
@@ -84,8 +79,8 @@ export const devicesSlice = createSlice({
 				state.loadingStatus = 'loaded';
 				devicesAdapter.setAll(state, action.payload);
 
-				const currentDevice = action.payload.find((device) => device.is_current_device);
-				if (currentDevice) {
+				const currentDevice = action.payload.find((device) => device.is_current);
+				if (currentDevice?.device_id) {
 					state.currentDeviceId = currentDevice.device_id;
 				}
 			})

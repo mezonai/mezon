@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Oznacz jako przeczytane",
+			"browseChannels": "Przeglądaj kanały"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Utwórz kanał",
+			"createCategory": "Utwórz kategorię",
+			"createEvent": "Utwórz wydarzenie"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "Edytuj profil clanu",
+			"showAllChannels": "Pokaż wszystkie kanały",
+			"hideMutedChannels": "Ukryj wszystkie wyciszone kanały",
+			"allowDirectMessage": "Pozwól na wiadomość bezpośrednią",
+			"allowMessageRequest": "Pozwól na żądanie wiadomości",
+			"reportServer": "Zgłoś clan",
+			"leaveServer": "Opuść clan",
+			"deleteClan": "Usuń clan",
+			"auditLog": "Dziennik kontroli"
+		},
+		"optionShowEmptyCategories": {
+			"title": "Pokaż puste kategorie",
+			"show": "Pokaż",
+			"hide": "Ukryj"
+		},
+		"devMode": {
+			"title": "Tryb dewelopera",
+			"copyServerID": "Kopiuj ID clanu",
+			"serverIDCopied": "Skopiowano ID clanu"
+		}
+	},
+	"actions": {
+		"boot": "Podnieś",
+		"invite": "Zaproszenie",
+		"notifications": "Powiadomienia",
+		"settings": "Ustawienia"
+	},
+	"info": {
+		"online": "Online",
+		"members": "Członkowie"
+	},
+	"common": {
+		"search": "Szukaj",
+		"community": "Społeczność",
+		"searchMembers": "Szukaj członków"
+	},
+	"modalPanel": {
+		"createCategory": "Utwórz kategorię",
+		"markAsRead": "Oznacz jako przeczytane",
+		"processing": "Przetwarzanie...",
+		"invitePeople": "Zaproś ludzi",
+		"clanSettings": "Ustawienia Clanu",
+		"notificationSettings": "Ustawienia powiadomień",
+		"showEmptyCategories": "Pokaż puste kategorie",
+		"leaveClan": "Opuść Clan"
+	}
+}

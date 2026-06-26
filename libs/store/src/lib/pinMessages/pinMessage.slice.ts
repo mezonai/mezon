@@ -94,6 +94,9 @@ export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessage) => {
 	return { ...pinMessageRes, id: pinMessageRes.id || '' };
 };
 
+const sortPinMessagesByPinTime = (pinMessages: PinMessageEntity[]) =>
+	[...pinMessages].sort((a, b) => (b.create_time_seconds || 0) - (a.create_time_seconds || 0));
+
 export const fetchChannelPinMessages = createAsyncThunk(
 	'pinmessage/fetchChannelPinMessages',
 	async ({ channelId, noCache, clanId }: fetchChannelPinMessagesPayload, thunkAPI) => {
@@ -126,7 +129,9 @@ export const fetchChannelPinMessages = createAsyncThunk(
 				};
 			}
 
-			const pinMessages = response.pin_messages_list.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
+			const pinMessages = sortPinMessagesByPinTime(
+				response.pin_messages_list.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes))
+			);
 			return {
 				channelId,
 				pinMessages,
@@ -347,7 +352,7 @@ export const pinMessageSlice = createSlice({
 					pinMessageAdapter.setAll(state, pinMessages);
 
 					// Update channel cache
-					state.byChannels[channelId].pinMessages = pinMessages;
+					state.byChannels[channelId].pinMessages = sortPinMessagesByPinTime(pinMessages);
 					state.byChannels[channelId].cache = createCacheMetadata(CHANNEL_PIN_MESSAGES_CACHED_TIME);
 				}
 

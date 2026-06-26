@@ -1,0 +1,72 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Chill met Vrienden, Vergader in Stemkanaal",
+			"description": "Mezon is geweldig voor vrienden om samen te komen en tijd met elkaar door te brengen, of het nu een middagpauze is of laat in de nacht."
+		},
+		"section2": {
+			"title": "Eenvoudig Verbinden, Vlot Communiceren met Stemkanaal",
+			"description": "Je kunt eenvoudig met vrienden verbinden door een stemkanaal te openen – en dit is voor altijd gratis. Hoe meer je Mezon gebruikt, hoe makkelijker het wordt om de hele dag verbinding te houden."
+		},
+		"section3": {
+			"title": "Stream en Meldingen voor Volgers",
+			"description": "Update meldingen en livestream zo snel mogelijk. Neem deel aan een livestream op elk moment of reageer op belangrijke nieuws uit kanaal of groep."
+		},
+		"section4": {
+			"title": "Kanaal Apps Helpen Je Leven Mager",
+			"description": "Kanaal Apps helpen je up-to-date te blijven – van meldingen, notities, agenda tot takenlijstbeheer. Mezon biedt een unieke App-systeem met rijke opties voor elke levensstijl."
+		},
+		"section5": {
+			"title": "Slimme Bots voor de Hele Clan",
+			"description": "Bots helpen je sneller en efficiënter taken voltooien, van agenda-beheer tot snelle reacties. Mezon Bots zijn gebouwd om de hele clan te bedienen, waardoor werk gemakkelijker en georganiseerder wordt."
+		}
+	},
+	"discover": {
+		"title": "Ontdek meer Mezon Functies",
+		"description": "Ontdek andere Mezon functies. Praat met vrienden, Stemkanalen, Streams, Apps, Bots ... en nog veel meer",
+		"viewAll": "Bekijk Alle",
+		"buttonText": "Ontdekken",
+		"slides": [
+			{
+				"title": "Relaties voorop – Teamleden Verbinden via Clan, Evenement, Chat & Stem",
+				"description": "Houd contact met de belangrijkste mensen via gesprekken"
+			},
+			{
+				"title": "Bouw Cultuur – Creëer Eenvoudig Werkomgeving",
+				"description": "Bouw unieke werkcultuur met aangepaste kanalen en integraties"
+			},
+			{
+				"title": "Werk Overal, Elke Tijd, Onbeperkt",
+				"description": "Naadloos werken op elk apparaat en op elke locatie"
+			},
+			{
+				"title": "Bescherm Privacy – Anoniem Berichten",
+				"description": "Jouw privacy wordt beschermd met end-to-end encryptie"
+			}
+		]
+	},
+	"faq": {
+		"title": "Meer hulp nodig?",
+		"seeAll": "Bekijk alle vragen",
+		"learnMore": "Lees meer",
+		"questions": [
+			{
+				"question": "Hoe voeg ik vrienden toe op Mezon?",
+				"answer": "Om vrienden toe te voegen op Mezon, ga naar de Vrienden-pagina en voer de Mezon-gebruikersnaam in het deel 'Vriend toevoegen' in. Je kunt je vriendlijst beheren met filters zoals Alle, Online, Wachten (vriendenverzoeken) en Geblokkeerd (geblokkeerde gebruikers). Je kunt ook de online status van vrienden in realtime bekijken en zien wat ze doen via het Actieve-gedeelte, wat aangeeft dat ze code, muziek luisteren of gamen."
+			},
+			{
+				"question": "Welke berichtfuncties biedt Mezon?",
+				"answer": "Mezon biedt uitgebreide berichtfuncties inclusief: tekst, emoji, stickers, afbeeldingen, video, bestanden en audio-opnames verzenden; belangrijke berichten vastzetten voor snelle toegang; kleine groepschat aanmaken met maximaal 10 leden; 1-1 of groepsstem- en videogesprekken met HD-kwaliteit; scherm delen tijdens gesprekken; en berichten zoeken. Alle communicatiefuncties zijn volledig gratis en onbeperkt."
+			},
+			{
+				"question": "Hoe werken stem- en videogesprekken op Mezon?",
+				"answer": "Mezon stelt je in staat om 1-1 of kleine groepsstem- en videogesprekken direct in de app uit te voeren. Tijdens het gesprek kun je microfoon of camera op elk moment in- of uitschakelen, scherm delen en genieten van stabiele verbinding met HD-video en low-latency audio. Wanneer iemand je belt, ringt je telefoon of computer net als een normaal gesprek. Alle gesprekken zijn gratis en gebruiken je internetverbinding."
+			},
+			{
+				"question": "Is communicatie op Mezon privé en beveiligd?",
+				"answer": "Ja, Mezon plaatst privacy en beveiliging op de eerste plaats. Je kunt alleen berichten sturen naar vrienden of mensen die minstens één clan met je delen, wat spam voorkomt en een privéruimte waarborgt. Berichten worden in realtime gesynchroniseerd op Web, Desktop en Mobiel, zodat je niets mist. Wanneer je team dynamischer wordt, kun je upgraden naar een Clan om extra functies te ontgrendelen zoals meer kanalen en beheerdersrechten."
+			}
+		]
+	},
+	"download": "Downloaden"
+}

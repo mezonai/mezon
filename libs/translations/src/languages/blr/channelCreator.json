@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Стварыць"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Назва канала",
+			"placeholder": "новы-канал",
+			"errorMessage": "Увядзіце назву канала (максімум 64 сімвалы, толькі словы, лічбы, _ або -).",
+			"duplicateChannelName": "Назва канала ўжо існуе ў клане. Увядзіце іншую назву."
+		},
+		"channelPrivate": {
+			"title": "Прыватны канал",
+			"descriptionText": "Ствараючы прыватны канал, толькі абраныя ўдзельнікі і ролі змогуць бачыць гэты канал.",
+			"descriptionVoice": "Ствараючы прыватны галасавы канал, толькі абраныя ўдзельнікі і ролі змогуць бачыць або падключацца да гэтага канала."
+		},
+		"channelType": {
+			"title": "Тып канала",
+			"text": {
+				"title": "Тэкставы",
+				"description": "Дасылайце выявы, GIF, значкі, думкі і графічныя жарты"
+			},
+			"voice": {
+				"title": "Галасавы",
+				"description": "Будзьце разам голасам, відэа і дзяліцеся экранам"
+			},
+			"stream": {
+				"title": "Трансляцыя",
+				"description": "Дзяліцеся любімай дзейнасцю"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Тып галасавога канала",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Выявы і выдатнае",
+			"eventsTitle": "Падзеі",
+			"familyJourney": "Падзеі",
+			"cherishMoment": "Адсочвайце важныя падзеі.",
+			"since": "З",
+			"viewAlbum": "Прагледзець альбом",
+			"emptyTitle": "Ваша падарожжа яшчэ не пачалося.",
+			"emptyDescription": "Стварыце сваю першую падзею, каб пачаць захоўваць успаміны.",
+			"createFirstMilestone": "Стварыць першую падзею",
+			"selectYear": "Абярыце год",
+			"special": "Асаблівы"
+		},
+		"familyEvents": {
+			"title": "Падзеі",
+			"eventsIn": "Падзеі года",
+			"noEvents": "Няма падзей у годзе",
+			"addToGallery": "Дадаць у галерэю",
+			"inDays": "Праз {{count}} дзён"
+		},
+		"createMilestone": {
+			"headerTitle": "Новая падзея",
+			"cancel": "Скасаваць",
+			"cancelAlertTitle": "Скасаваць",
+			"cancelAlertMessage": "Вы ўпэўнены, што хочаце скасаваць гэтую падзею?",
+			"continueEditing": "Працягнуць рэдагаванне",
+			"discard": "Скасаваць",
+			"eventTitleLabel": "Назва падзеі",
+			"eventTitlePlaceholder": "Напрыклад: Зборы, Запуск праекта",
+			"dateLabel": "Дата",
+			"datePlaceholder": "Абярыце дату",
+			"storyLabel": "Апісанне",
+			"storyPlaceholder": "Увядзіце апісанне падзеі...",
+			"memoriesLabel": "Выявы/Відэа",
+			"uploadTitle": "Загрузіць выяву або відэа",
+			"uploadSubtitle": "Дадайце выяву або відэа да падзеі",
+			"addMedia": "Дадаць выяву",
+			"tagMembersLabel": "Пазначыць удзельнікаў",
+			"saveButton": "Захаваць падзею",
+			"requiredTitle": "Абавязковае",
+			"requiredMessage": "Калі ласка, увядзіце назву падзеі",
+			"successTitle": "Поспех",
+			"successMessage": "Падзея паспяхова створана!",
+			"errorTitle": "Памылка",
+			"errorMessage": "Не атрымалася абраць выяву",
+			"required": "Абавязковае",
+			"optional": "Неабавязковае",
+			"titleHint": "Дайце кароткі апісальны загаловак падзеі"
+		},
+		"eventDetail": {
+			"defaultTitle": "Дэталі падзеі",
+			"featured": "ВЫДАТНАЕ",
+			"calendar": "Каляндар",
+			"descriptionPlaceholder": "Дадайце апісанне да гэтай падзеі...",
+			"addDescription": "Дадаць апісанне",
+			"cancel": "Скасаваць",
+			"save": "Захаваць"
+		},
+		"albumDetail": {
+			"eventDetails": "Дэталі падзеі",
+			"date": "Дата",
+			"editEvent": "Рэдагаваць падзею",
+			"titleLabel": "Загаловак",
+			"titlePlaceholder": "Загаловак падзеі",
+			"descriptionLabel": "Апісанне",
+			"descriptionPlaceholder": "Апісанне падзеі",
+			"cancel": "Скасаваць",
+			"save": "Захаваць",
+			"errorTitle": "Памылка",
+			"titleRequired": "Загаловак не можа быць пустым",
+			"updateFailed": "Не атрымалася абнавіць падзею",
+			"sessionNotAvailable": "Сесія недаступная",
+			"uploadFailed": "Не атрымалася загрузіць выяву"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Тып галасавога канала",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Выявы і выдатнае",
+		"familyJourney": "Падзеі",
+		"cherishMoment": "Адсочвайце важныя падзеі.",
+		"since": "З",
+		"viewAlbum": "Прагледзець альбом",
+		"emptyTitle": "Ваша падарожжа яшчэ не пачалося.",
+		"emptyDescription": "Стварыце сваю першую падзею, каб пачаць захоўваць успаміны.",
+		"createFirstMilestone": "Стварыць першую падзею",
+		"selectYear": "Абярыце год",
+		"special": "Асаблівы"
+	},
+	"familyEvents": {
+		"title": "Падзеі",
+		"eventsIn": "Падзеі года",
+		"noEvents": "Няма падзей у годзе",
+		"addToGallery": "Дадаць у галерэю",
+		"inDays": "Праз {{count}} дзён"
+	},
+	"createMilestone": {
+		"headerTitle": "Новая падзея",
+		"cancel": "Скасаваць",
+		"cancelAlertTitle": "Скасаваць",
+		"cancelAlertMessage": "Вы ўпэўнены, што хочаце скасаваць гэтую падзею?",
+		"continueEditing": "Працягнуць рэдагаванне",
+		"discard": "Скасаваць",
+		"eventTitleLabel": "Назва падзеі",
+		"eventTitlePlaceholder": "Напрыклад: Зборы, Запуск праекта",
+		"dateLabel": "Дата",
+		"datePlaceholder": "Абярыце дату",
+		"storyLabel": "Апісанне",
+		"storyPlaceholder": "Увядзіце апісанне падзеі...",
+		"memoriesLabel": "Выявы/Відэа",
+		"uploadTitle": "Загрузіць выяву або відэа",
+		"uploadSubtitle": "Дадайце выяву або відэа да падзеі",
+		"addMedia": "Дадаць выяву",
+		"tagMembersLabel": "Пазначыць удзельнікаў",
+		"saveButton": "Захаваць падзею",
+		"requiredTitle": "Абавязковае",
+		"requiredMessage": "Калі ласка, увядзіце назву падзеі",
+		"successTitle": "Поспех",
+		"successMessage": "Падзея паспяхова створана!",
+		"errorTitle": "Памылка",
+		"errorMessage": "Не атрымалася абраць выяву",
+		"required": "Абавязковае",
+		"optional": "Неабавязковае",
+		"titleHint": "Дайце кароткі апісальны загаловак падзеі"
+	},
+	"albumDetail": {
+		"eventDetails": "Дэталі падзеі",
+		"date": "Дата",
+		"editEvent": "Рэдагаваць падзею",
+		"titleLabel": "Загаловак",
+		"titlePlaceholder": "Загаловак падзеі",
+		"descriptionLabel": "Апісанне",
+		"descriptionPlaceholder": "Апісанне падзеі",
+		"cancel": "Скасаваць",
+		"save": "Захаваць",
+		"errorTitle": "Памылка",
+		"titleRequired": "Загаловак не можа быць пустым",
+		"updateFailed": "Не атрымалася абнавіць падзею",
+		"sessionNotAvailable": "Сесія недаступная",
+		"uploadFailed": "Не атрымалася загрузіць выяву"
+	},
+	"monthsShort": ["Сту", "Лют", "Сак", "Кра", "Тра", "Чэр", "Ліп", "Жні", "Вер", "Кас", "Ліс", "Сне"]
+}

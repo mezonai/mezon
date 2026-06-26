@@ -1,4 +1,3 @@
-import isElectron from 'is-electron';
 import { useCallback, useEffect, useState } from 'react';
 import { checkMediaPermission } from '../utils';
 
@@ -26,7 +25,7 @@ export function useMediaPermissions() {
 
 	useEffect(() => {
 		refreshPermissions();
-		if (!isElectron() && navigator.permissions && navigator.permissions.query) {
+		if (navigator.permissions && navigator.permissions.query) {
 			const setupPermissionListeners = async () => {
 				try {
 					const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });

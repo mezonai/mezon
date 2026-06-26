@@ -1,3 +1,4 @@
+import type { MessagesEntity } from '@mezon/store';
 import {
 	getStore,
 	messagesActions,
@@ -6,6 +7,7 @@ import {
 	selectCurrentTopicId,
 	selectInitTopicMessageId,
 	selectMemberClanByUserId,
+	selectMessageByMessageId,
 	selectSearchChannelById,
 	selectTopicAnonymousMode,
 	topicsActions,
@@ -14,6 +16,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
+import { TypeMessage, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -261,12 +264,22 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			if (!client || !session || !channelOrDirect) {
 				throw new Error('Client is not initialized');
 			}
-			const trimContent: IMessageSendPayload = {
+			const finalTopicId = topic_id || (isTopic ? currentTopicId || '0' : '0');
+			const messageLookupChannelId = finalTopicId !== '0' ? finalTopicId : (channelIdOrDirectId ?? '');
+			const existingMessage = selectMessageByMessageId(getStore().getState(), messageLookupChannelId, messageId);
+			const isAttachmentFieldUpdate = attachments !== undefined;
+			const hasExistingAttachments = (existingMessage?.attachments?.length ?? 0) > 0;
+			const messageCreateTimeSeconds = getMessageCreateTimeSeconds(existingMessage ?? {});
+
+			let trimContent: IMessageSendPayload = {
 				...content,
 				t: content.t?.trim()
 			};
-			const finalTopicId = topic_id || (isTopic ? currentTopicId || '0' : '0');
+			if (hasExistingAttachments && !isAttachmentFieldUpdate) {
+				trimContent = withCreateTimeSecondsInUpdateContent(trimContent, messageCreateTimeSeconds);
+			}
 			const updateChannelId = finalTopicId !== '0' ? finalTopicId : (channelIdOrDirectId ?? '0');
+			const updateAttachments = isAttachmentFieldUpdate ? attachments : undefined;
 			try {
 				await client.updateChannelMessage(
 					session,
@@ -277,16 +290,34 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					messageId || '0',
 					JSON.stringify(trimContent),
 					mentions,
-					attachments,
+					updateAttachments,
+					messageCreateTimeSeconds,
 					hide_editted,
 					finalTopicId,
 					!!isTopic
 				);
+
+				if (existingMessage) {
+					const updateTimeSeconds = Math.floor(Date.now() / 1000);
+					dispatch(
+						messagesActions.newMessage({
+							...existingMessage,
+							code: TypeMessage.ChatUpdate,
+							content: trimContent,
+							mentions,
+							channel_id: messageLookupChannelId,
+							topic_id: finalTopicId !== '0' ? finalTopicId : existingMessage.topic_id,
+							hide_editted: hide_editted ?? false,
+							update_time_seconds: updateTimeSeconds,
+							update_time: new Date(updateTimeSeconds * 1000).toISOString()
+						} as MessagesEntity)
+					);
+				}
 			} catch (e) {
 				console.error(e);
 			}
 		},
-		[sessionRef, clientRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic, currentTopicId]
+		[sessionRef, clientRef, channelOrDirect, dispatch, getClanId, channelIdOrDirectId, mode, isPublic, currentTopicId]
 	);
 
 	return useMemo(

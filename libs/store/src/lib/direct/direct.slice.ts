@@ -108,6 +108,7 @@ export const createNewDirectMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
+
 			if (response) {
 				thunkAPI.dispatch(
 					directActions.upsertOne({
@@ -115,10 +116,12 @@ export const createNewDirectMessage = createAsyncThunk(
 						...response,
 						usernames: Array.isArray(username) ? username : username ? [username] : [],
 						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : [],
-						channel_label:
-							response.channel_label ||
-							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
-						channel_avatar: response.channel_avatar || '/assets/images/avatar-group.png',
+						channel_label: Array.isArray(display_names)
+							? display_names.join(',')
+							: Array.isArray(username)
+								? username.join(',')
+								: display_names || username,
+						channel_avatar: Array.isArray(avatar) ? avatar[0] : avatar || '/assets/images/avatar-group.png',
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
 						user_ids: body.user_ids,
 						active: 1,
@@ -591,14 +594,20 @@ export const directSlice = createSlice({
 	name: DIRECT_FEATURE_KEY,
 	initialState: initialDirectState,
 	reducers: {
-		remove: directAdapter.removeOne,
+		remove: (state, action: PayloadAction<string>) => {
+			const channelId = action.payload;
+			directAdapter.removeOne(state, channelId);
+			if (state.currentDirectMessageId === channelId) {
+				state.currentDirectMessageId = null;
+			}
+		},
 		upsertOne: (state, action: PayloadAction<DirectEntity>) => {
 			const { entities } = state;
 			const existingEntity = entities[action.payload.id];
 			const existingShowPinBadge = existingEntity?.showPinBadge;
 			const dataUpdate = action.payload;
 
-			if (dataUpdate.channel_label === undefined && existingEntity?.channel_label?.trim()) {
+			if ((dataUpdate.channel_label === undefined || dataUpdate.channel_label.trim()) && existingEntity?.channel_label?.trim()) {
 				dataUpdate.channel_label = existingEntity.channel_label;
 			}
 			if (dataUpdate.avatars === undefined && existingEntity?.avatars?.length) {
@@ -959,6 +968,10 @@ export const directSlice = createSlice({
 				toast.error(action.error.message || 'Failed to update group');
 			})
 			.addCase(fetchDirectDetail.fulfilled, (state: DirectState, action) => {
+				const { directId } = action.meta.arg;
+				if (state.currentDirectMessageId !== directId) {
+					return;
+				}
 				directAdapter.upsertOne(state, action.payload);
 			});
 	}

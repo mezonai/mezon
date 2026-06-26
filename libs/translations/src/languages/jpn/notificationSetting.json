@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "クラン通知設定",
 	"notificationOverrides": "通知のオーバーライド",
 	"addChannelOverride": "デフォルト通知設定をオーバーライドするチャンネルを追加",
-	"selectOrCreateOption": "オプションを選択または作成...",
+	"selectChannelOrCategory": "チャンネルまたはカテゴリを選択...",
 	"headers": {
 		"channelOrCategory": "チャンネルまたはカテゴリ",
 		"all": "すべて",

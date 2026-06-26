@@ -1,7 +1,7 @@
 import { restoreLocalStorage } from '@mezon/store';
 import { isOnline, isOnline$ } from '@mezon/transport';
 import { Image } from '@mezon/ui';
-import isElectron from 'is-electron';
+
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouteError } from 'react-router-dom';
@@ -34,11 +34,7 @@ const ErrorRoutes = () => {
 			'persist:wallet'
 		]);
 
-		if (isElectron()) {
-			window.location.href = window.location.pathname;
-		} else {
-			window.location.href = '/chat/direct/friends';
-		}
+		window.location.href = '/chat/direct/friends';
 	}, []);
 
 	const showToast = useCallback((message: string) => {

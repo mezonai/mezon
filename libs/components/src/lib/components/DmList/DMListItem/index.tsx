@@ -65,11 +65,11 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 
 	const handleLeave = async (e: React.MouseEvent, directId: string, currentDmGroupId: string) => {
 		e.stopPropagation();
-		await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
 		if (directId === currentDmGroupId) {
-			dispatch(directActions.setDmGroupCurrentId(''));
+			dispatch(directActions.setDmGroupCurrentId(null));
 			navigateToFriends();
 		}
+		await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
 	};
 
 	const ref = useRef<HTMLDivElement>(null);
@@ -98,12 +98,12 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 		>
 			<DmItemProfile
 				avatar={isTypeDMGroup ? directMessage?.channel_avatar || '/assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
-				name={directMessage?.channel_label || ''}
+				name={directMessage?.usernames?.[0] || ''}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
 				highlight={isUnReadChannel || currentDmGroupId === id}
 				direct={directMessage}
-				t={t}
+				channel_label={directMessage?.channel_label || ''}
 			/>
 			{buzzStateDM?.isReset ? (
 				<BuzzBadge
@@ -136,7 +136,7 @@ const DmItemProfile = ({
 	isTypeDMGroup,
 	highlight,
 	direct,
-	t
+	channel_label
 }: {
 	highlight: boolean;
 	avatar: string;
@@ -144,7 +144,7 @@ const DmItemProfile = ({
 	number: number;
 	isTypeDMGroup: boolean;
 	direct: DirectEntity;
-	t: (key: string) => string;
+	channel_label: string;
 }) => {
 	const userStatus = useMemberStatus(direct?.user_ids?.[0] || '');
 	return (
@@ -163,11 +163,11 @@ const DmItemProfile = ({
 			{isTypeDMGroup ? (
 				<div className="flex flex-col justify-center ">
 					<span className="one-line text-start" data-e2e={generateE2eId(`chat.direct_message.chat_item.group_name`)}>
-						{name}
+						{channel_label}
 					</span>
 				</div>
 			) : (
-				<DmInvoiceProfile name={name} directId={direct?.id} userId={direct?.user_ids?.[0] || ''} status={userStatus.status} />
+				<DmInvoiceProfile name={channel_label} directId={direct?.id} userId={direct?.user_ids?.[0] || ''} status={userStatus.status} />
 			)}
 		</div>
 	);

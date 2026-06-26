@@ -1,13 +1,6 @@
 import type { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
 import { EBacktickType } from '../types';
-import { isFacebookLink, isTikTokLink, isYouTubeLink } from './embed-social';
-
-const getLinkType = (url: string): EBacktickType => {
-	if (isYouTubeLink(url)) return EBacktickType.LINKYOUTUBE;
-	if (isFacebookLink(url)) return EBacktickType.LINKFACEBOOK;
-	if (isTikTokLink(url)) return EBacktickType.LINKTIKTOK;
-	return EBacktickType.LINK;
-};
+import { getLinkType } from './embed-social';
 
 export const processEntitiesDirectly = (entities: any[], content: string, rolesClan: any[]) => {
 	const mentions: IMentionOnMessage[] = [];

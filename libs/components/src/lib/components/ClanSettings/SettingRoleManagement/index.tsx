@@ -1,4 +1,4 @@
-import { useRoles } from '@mezon/core';
+import { useClanOwner, useRoles } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import {
 	getIsShow,
@@ -12,6 +12,7 @@ import {
 	roleSlice,
 	selectCurrentClanId,
 	selectCurrentRoleIcon,
+	selectUserMaxPermissionLevel,
 	setColorRoleNew,
 	setCurrentRoleIcon,
 	setNameRoleNew,
@@ -23,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { SettingUserClanProfileSave } from '../../SettingProfile/SettingRightClanProfile/SettingUserClanProfileSave';
+import { checkHasPermissionEditRole } from '../SettingMainRoles/listActiveRole';
 import SettingListRole from './SettingListRole';
 import SettingValueDisplayRole from './SettingOptionRole';
 type EditNewRole = {
@@ -39,6 +41,8 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	const { t } = useTranslation('clanRoles');
 	const { rolesClan, flagOption } = props;
 	const { createRole, updateRole } = useRoles();
+	const isClanOwner = useClanOwner();
+	const userMaxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
 	const clickRole = useSelector(getSelectedRoleId);
 	const nameRole = useSelector(getNewNameRole);
 	const colorRole = useSelector(getNewColorRole);
@@ -49,6 +53,8 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isChange = useSelector(getIsShow);
 	const isCreateNewRole = clickRole === t('roleManagement.newRoleDefault');
+	const activeRole = rolesClan.find((role) => role.id === clickRole);
+	const hasPermissionEdit = checkHasPermissionEditRole(isClanOwner, userMaxPermissionLevel, activeRole);
 
 	const newRoleIcon = useSelector(getNewRoleIcon);
 	const currentRoleIcon = useSelector(selectCurrentRoleIcon);
@@ -72,6 +78,10 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	const handleUpdateUser = async (hasChangeRole?: boolean) => {
 		if (!nameRole || nameRole.trim() === '') {
 			toast.error(t('roleManagement.roleNameIsRequired'));
+			return;
+		}
+		if (!isCreateNewRole && !hasPermissionEdit) {
+			toast.error(t('roleManagement.noPermissionToEditRole'));
 			return;
 		}
 		if (isCreateNewRole) {

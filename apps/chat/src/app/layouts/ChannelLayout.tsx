@@ -9,7 +9,7 @@ import {
 	threadsActions,
 	topicsActions
 } from '@mezon/store';
-import { SubPanelName, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { SubPanelName } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -47,7 +47,7 @@ const ChannelLayout = () => {
 			className={`flex flex-col ${openEmojiPanelOnTopic || subPanelActive !== SubPanelName.NONE || isFocusThreadBox ? 'z-20 relative' : 'z-0'} flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible justify-end relative`}
 		>
 			<div
-				className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'}`} ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}
+				className={`flex flex-row ${closeMenu ? 'h-heightWithoutTopBarMobile' : 'h-heightWithoutTopBar'} ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}
 			>
 				<Outlet />
 			</div>

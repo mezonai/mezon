@@ -1,0 +1,143 @@
+{
+	"description": {
+		"part1": "Een geweldige plek om te gamen, met vrienden te chatten of een wereldwijde community op te bouwen.",
+		"part2": "Pas je eigen ruimte aan om",
+		"talk": "Te Praten",
+		"play": "Te Spelen",
+		"and": "En",
+		"hangOut": "Te Verbindingen"
+	},
+	"download": {
+		"getItFrom": "Downloaden van",
+		"cdnUrl": "CDN URL"
+	},
+	"header": {
+		"home": "Thuis",
+		"overview": "Overzicht",
+		"features": "Functies",
+		"developers": "Ontwikkelaars",
+		"botsApps": "Bots/Apps",
+		"documents": "Documenten",
+		"discover": "Ontdekken",
+		"blogs": "Blogs",
+		"openMezon": "Open Mezon",
+		"login": "Inloggen",
+		"quickMeeting": "Mezon Meet"
+	},
+	"layout": {
+		"overview": {
+			"title": "Overzicht",
+			"subtitle": "De nieuwe manier om met je team te communiceren.",
+			"description": "Sneller, beter georganiseerd, perfect voor remote werken."
+		},
+		"features": {
+			"title": "Onze Functies",
+			"subtitle": "Uitgebreide Communicatie Gereedschap"
+		},
+		"cards": {
+			"workstation": {
+				"title": "Werkruimte",
+				"description": "Gedigitaliseerde werkruimte die communicatie, samenwerking en werkbeheer optimaliseert door integratie met diverse systemen en tools. Biedt gestructureerde ruimte voor teams, projecten en afdelingen terwijl het toegang tot informatie en workflow zorgt."
+			},
+			"ecosystem": {
+				"title": "Ecosysteem",
+				"description": "Dynamische digitale omgeving die werk- en sociale elementen combineert, met rijke interactieve en entertainmentfuncties. Ondersteunt virtuele transacties, community-activiteiten en relatieopbouw om de gebruikerservaring te verbeteren."
+			},
+			"aiAgent": {
+				"title": "AI Agent",
+				"description": "Slim systeem dat taken automatiseert, informatiebeheer ondersteunt en werkprocessen optimaliseert. Productiviteit verhogen met functies zoals herinneringen, monitoring en automatische communicatie."
+			}
+		},
+		"featureCards": {
+			"mezonMainnet": {
+				"title": "Mezon Mainnet",
+				"subtitle": "Snel Layer 1, Geen Kosten",
+				"description": "Blockchain"
+			},
+			"developerApi": {
+				"title": "Geavanceerde API",
+				"subtitle": "Voor Ontwikkelaars"
+			},
+			"gaming": {
+				"title": "Spellen",
+				"subtitle": "& Entertainment"
+			},
+			"customizable": {
+				"title": "Flexibele Aanpasbaarheid",
+				"subtitle": "& Eenvoudige Uitbreiding"
+			}
+		}
+	},
+	"sections": {
+		"hero": {
+			"title": {
+				"your": "Platform",
+				"live": "Verbinding",
+				"work": "Werken",
+				"play": "Spelen ",
+				"platform": "Nummer 1",
+				"theBest": "Voor",
+				"yourCommunity": "Jouw Community"
+			},
+			"description": "Een geweldige plek om te gamen, met vrienden te chatten of een wereldwijde community op te bouwen. Pas je eigen ruimte aan om",
+			"talk": "Te Praten",
+			"play": "Te Spelen ",
+			"and": "En",
+			"hangOut": "Te Verbindingen",
+			"tryButton": "Probeer Mezon, Gratis!",
+			"choosePlatform": "Kies Jouw Platform"
+		},
+		"textChannel": {
+			"titlesuper": "Berichten ",
+			"titlemessage": "Super Snel",
+			"description": "Gebouwd om Te Praten, Samen Werken en Te Verbinden.",
+			"description2": "Super snel berichten. Geen limieten. Direct verzenden.",
+			"learnMore": "Meer informatie"
+		},
+		"clanDiscover": {
+			"title": "Jouw Clan, Jouw Wereld",
+			"description": "Van hobbies, discussies tot nieuws en trends, er is een clan voor alles.",
+			"learnMore": "Meer informatie"
+		},
+		"aiAgent": {
+			"title": "AI Agent voor Clan en 24/7 Ondersteuning",
+			"description": "Stem-AI Agent (inhoudsamenvatting in voice-kanaal, of interviewrol), AI-assistent, Anonieme Modus BOT (inhoudsamenvatting in text-kanaal).",
+			"learnMore": "Meer informatie"
+		},
+		"communityPayments": {
+			"title": "Betalingen in Community",
+			"description": "Verstuur Mezon Coins, beloon makers en shop met partnermerken — allemaal zonder platformkosten. Gebaseerd op transparantie en beveiliging.",
+			"learnMore": "Meer informatie"
+		},
+		"enterpriseIntegrations": {
+			"title": "Ondernemingsintegraties",
+			"description": "Mezon stelt je in staat om met klanten wereldwijd te verbinden en indrukwekkende grootschalige ervaringen te bieden.",
+			"learnMore": "Meer informatie"
+		}
+	},
+	"footer": {
+		"description": "Mezon is een geweldige plek om te gamen en te ontspannen met vrienden, of om een wereldwijde community op te bouwen.",
+		"getTheApp": "App Downloaden",
+		"copyright": "© 2024 Mezon. Alle Rechten Voorbehouden.",
+		"links": {
+			"executiveSummary": "Uitvoeringsoverzicht",
+			"problemStatement": "Probleemstelling",
+			"solution": "Oplossing",
+			"blockchainEconomy": "Blockchain & Token Economie",
+			"developerApi": "API-Integratie voor Ontwikkelaars",
+			"technicalArchitecture": "Technische Architectuur",
+			"productRoadmap": "Product Roadmap",
+			"tokenomics": "Tokenomics",
+			"team": "Team"
+		}
+	},
+	"externalMeet": {
+		"title": "Vergadering",
+		"creatingMeeting": "Vergadering succesvol aangemaakt!",
+		"invite": "Uitnodigen",
+		"joinMeeting": "Vergadering Bijwonen",
+		"copyLink": "Link Kopiëren",
+		"toastSuccess": "Link is gekopieerd!",
+		"toastFail": "Kopiëren mislukt."
+	}
+}

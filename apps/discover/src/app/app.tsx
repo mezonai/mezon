@@ -1,11 +1,25 @@
-import { lazy, Suspense, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import HeaderMezon from './components/HeaderMezon';
+import { lazy, Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { DiscoverProvider } from './context/DiscoverContext';
 import { useMezonDiscover } from './hooks/useMezonDiscover';
-import ClanDetailPage from './pages/ClanDetailPage';
+import AboutMezon from './pages/aboutmezon';
+import AIGenerationPage from './pages/aigeneration';
+import AppDirectory from './pages/AppDirectory';
+import BrandCenterPage from './pages/brandcenter';
+import ClanWorld from './pages/clandetail';
+import ContactUsPage from './pages/contactus';
+import CustomizePage from './pages/customize';
+import ClanDetailPage from './pages/dicoverpage/ClanDetailPage';
+import IntegrationsPage from './pages/integrations';
+import MezonDongPage from './pages/mezondong';
+import MezonPage from './pages/mezonpage';
+import MobileDownload from './pages/mobile-download';
+import OrganizePage from './pages/organize';
+import PrivacyMezonPage from './pages/privacymezon';
+import TermOfServivePage from './pages/termofservices';
+import TextChannelPage from './pages/textchannel';
 
-const DiscoverPage = lazy(() => import('./pages/DiscoverPage'));
+const DiscoverPage = lazy(() => import('./pages/dicoverpage/DiscoverPage'));
 
 const LoadingSpinner = () => (
 	<div className="flex items-center justify-center min-h-screen">
@@ -16,25 +30,29 @@ const LoadingSpinner = () => (
 /**
  */
 function AppWithStore() {
-	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
-
-	const toggleSideBar = () => {
-		setSideBarIsOpen(!sideBarIsOpen);
-	};
-
 	return (
 		<div className="min-h-screen bg-[#F4F7F9]">
-			<HeaderMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} />
-
-			<div className="pt-[80px]">
-				<Suspense fallback={<LoadingSpinner />}>
-					<Routes>
-						<Route path="/" element={<Navigate to="/clans" replace />} />
-						<Route path="/clans" element={<DiscoverPage />} />
-						<Route path="/clans/clan/:id" element={<ClanDetailPage />} />
-					</Routes>
-				</Suspense>
-			</div>
+			<Suspense fallback={<LoadingSpinner />}>
+				<Routes>
+					<Route path="/" element={<MezonPage />} />
+					<Route path="/clans" element={<DiscoverPage />} />
+					<Route path="/clans/clan/:id" element={<ClanDetailPage />} />
+					<Route path="/about" element={<AboutMezon />} />
+					<Route path="/contact-us" element={<ContactUsPage />} />
+					<Route path="/terms-of-service" element={<TermOfServivePage />} />
+					<Route path="/integrations" element={<IntegrationsPage />} />
+					<Route path="/clanworld" element={<ClanWorld />} />
+					<Route path="/organize" element={<OrganizePage />} />
+					<Route path="/customize" element={<CustomizePage />} />
+					<Route path="/aigeneration" element={<AIGenerationPage />} />
+					<Route path="/mobile-download" element={<MobileDownload />} />
+					<Route path="/apps" element={<AppDirectory />} />
+					<Route path="/fastmessage" element={<TextChannelPage />} />
+					<Route path="/privacy-policy" element={<PrivacyMezonPage />} />
+					<Route path="/brand-center" element={<BrandCenterPage />} />
+					<Route path="/mezondong" element={<MezonDongPage />} />
+				</Routes>
+			</Suspense>
 		</div>
 	);
 }

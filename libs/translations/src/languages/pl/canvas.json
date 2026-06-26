@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Tytuł twojego płótna"
+	},
+	"editor": {
+		"placeholder": "Zacznij pisać...",
+		"uploadingImage": "Przekazywanie obrazu..."
+	},
+	"actions": {
+		"save": "Zapisz",
+		"saving": "Zapisywanie...",
+		"discardChanges": "Odrzuć zmiany"
+	},
+	"error": {
+		"title": "Błąd"
+	},
+	"toolbar": {
+		"blockFormat": "Format bloku",
+		"addLink": "Dodaj link",
+		"removeLink": "Usuń link",
+		"codeBlock": "Blok kodu",
+		"cancel": "Anuluj",
+		"apply": "Zastosuj"
+	},
+	"blocks": {
+		"paragraph": "Akapit",
+		"h1": "Nagłówek H1",
+		"h2": "Nagłówek H2",
+		"h3": "Nagłówek H3",
+		"checkedList": "Lista zaznaczona",
+		"orderedList": "Lista numerowana",
+		"bulletedList": "Lista wypunktowana",
+		"blockquote": "Cytat"
+	}
+}

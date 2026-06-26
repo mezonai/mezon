@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "CÀI ĐẶT THÔNG BÁO CLAN",
 	"notificationOverrides": "GHI ĐÈ THÔNG BÁO",
 	"addChannelOverride": "Thêm kênh để ghi đè cài đặt thông báo mặc định",
-	"selectOrCreateOption": "Chọn hoặc tạo tùy chọn...",
+	"selectChannelOrCategory": "Chọn kênh hoặc danh mục...",
 	"headers": {
 		"channelOrCategory": "KÊNH HOẶC DANH MỤC",
 		"all": "TẤT CẢ",

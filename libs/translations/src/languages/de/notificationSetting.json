@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "CLAN-BENACHRICHTIGUNGSEINSTELLUNGEN",
 	"notificationOverrides": "BENACHRICHTIGUNGS-ÜBERSCHREIBUNGEN",
 	"addChannelOverride": "Kanal hinzufügen, um die Standard-Benachrichtigungseinstellungen zu überschreiben",
-	"selectOrCreateOption": "Option auswählen oder erstellen...",
+	"selectChannelOrCategory": "Kanal oder Kategorie auswählen...",
 	"headers": {
 		"channelOrCategory": "KANAL ODER KATEGORIE",
 		"all": "ALLE",

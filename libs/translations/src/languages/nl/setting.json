@@ -1,0 +1,138 @@
+{
+	"accountSettings": {
+		"title": "Accountinstellingen",
+		"account": "Account",
+		"profiles": "Profielen",
+		"privacySafety": "Privacy en veiligheid",
+		"familyCenter": "Familiebeheer",
+		"authorizedApp": "Geautoriseerde app",
+		"device": "Apparaat",
+		"connection": "Verbinding",
+		"clip": "Clip",
+		"friendRequests": "Vriendenverzoeken",
+		"QRScan": "QR-scan",
+		"MyQRCode": "Mijn QR-code",
+		"devices": "Apparaten"
+	},
+	"deviceSettings": {
+		"description1": "Dit zijn alle apparaten die ingelogd zijn op je account. Je kunt elk apparaat afzonderlijk uitloggen.",
+		"description2": "Als je een inlogbeurt ziet die je niet kent, log dan uit op dat apparaat en wijzig je account wachtwoord onmiddellijk.",
+		"currentDevice": "Huidig apparaat",
+		"otherDevices": "Andere apparaten",
+		"noDevices": "Geen apparaten gevonden",
+		"loggedIn": "Ingelogd om",
+		"current": "Huidig",
+		"unknown": "Onbekend",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Desktop",
+		"platformWeb": "Web",
+		"removeDevice": "Van dit apparaat uitloggen"
+	},
+	"paymentSettings": {
+		"title": "Betalingsinstellingen",
+		"restoreSubscription": "Abonnement herstellen"
+	},
+	"appSettings": {
+		"title": "App-instellingen",
+		"voice": "Stem",
+		"appearance": "Uiterlijk",
+		"accessibility": "Toegankelijkheid",
+		"language": "Taal",
+		"activity": "Activiteit",
+		"notifications": "Meldingen",
+		"chat": "Chat",
+		"webBrowser": "Webbrowser",
+		"appIcon": "App-icoon",
+		"advanced": "Geavanceerd",
+		"appVersion": "App-versie",
+		"startUp": "Opstarten",
+		"quitApp": "App afsluiten"
+	},
+	"autoStart": {
+		"title": "App automatisch starten",
+		"description": "App opent automatisch bij het opstarten van de computer zodat je direct gebruik kunt maken."
+	},
+	"hardwareAcceleration": {
+		"title": "Gebruik hardware-versnelling wanneer beschikbaar",
+		"description": "Wanneer ingeschakeld, gebruikt de app de kracht van de GPU (grafische kaart) voor geavanceerde grafische taken zoals 3D-rendering en video-decoding. Dit helpt de frame-rate en de responsiviteit van de interface te verhogen. In het geval van visuele fouten of app-stuwing, probeer deze functie uit te schakelen om de stabiliteit te verbeteren."
+	},
+	"autoHidden": {
+		"title": "Gestart samen met het besturingssysteem in de schaduw",
+		"description": "App start automatisch in schaduw-modus wanneer het samen met het besturingssysteem wordt gestart."
+	},
+	"activity": {
+		"title": "Toon mijn activiteit",
+		"description": "Deel je huidige activiteiten met je vrienden. Dit helpt hen te weten wat je doet en vergemakkelijkt de connectie!"
+	},
+	"supportSettings": {
+		"title": "Ondersteuning",
+		"support": "Ondersteuning",
+		"uploadLog": "Log-bestand uploaden",
+		"acknowledgement": "Acknowledgement"
+	},
+	"whatsNew": {
+		"title": "Wat is er nieuw",
+		"whatsNew": "Wat is er nieuw"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Nieuwe Versie Gereed",
+		"updateExperience": "Snelle update nodig om door te gaan met onze nieuwste familiefuncties.",
+		"updateNow": "Nu updaten",
+		"versionInfo": "VERSIE"
+	},
+	"language": {
+		"title": "Taal",
+		"description": "Kies een taal.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"german": "Deutsch",
+		"dutch": "Nederlands"
+	},
+	"voice": {
+		"title": "Stem",
+		"description": "Configureer je steminstellingen.",
+		"microphone": "Microfoon",
+		"speaker": "Luidspreker",
+		"microphoneVolume": "Microfoonvolume",
+		"speakerVolume": "Luidsprekervolume",
+		"noiseSuppression": {
+			"title": "Ruisonderdrukking",
+			"toggleAriaLabel": "Ruisonderdrukking in- of uitschakelen"
+		},
+		"unnamedDevice": "Naamloos apparaat",
+		"noDevices": "Geen apparaten gevonden",
+		"micTest": {
+			"title": "Microfoon testen",
+			"description": "Probleem met de microfoon? Start de test en zeg iets — wij spelen je stem af.",
+			"letsCheck": "Testen",
+			"stop": "Stoppen"
+		},
+		"errors": {
+			"permissionDenied": "Microfoonrequisiet nodig om microfoon te testen.",
+			"micPermission": "Kon microfoon niet bereiken."
+		},
+		"warnings": {
+			"outputNotSupported": "Browser ondersteunt apparaatkeuze voor output. Luidsprekerkeuze kan worden overgeslagen."
+		}
+	},
+	"logOut": "Uitloggen",
+	"logOutPopup": {
+		"description": "Weet je zeker dat je wilt uitloggen?",
+		"noConfirm": "Nee",
+		"yesConfirm": "Ja"
+	},
+	"removeAccount": "Account verwijderen",
+	"channelSetting": {
+		"recentChannels": "Recente kanalen",
+		"searchByChannelLabel": "Zoeken op kanaalletiket"
+	},
+	"setting": "Instellingen"
+}
