@@ -17,11 +17,13 @@ import { memo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useDirectMessageContextMenu } from '../../../contexts';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import BuzzBadge from '../../BuzzBadge';
 import LeaveGroupModal from '../../LeaveGroupModal';
 import { UserStatusIconClan } from '../../MemberProfile';
+import ModalConfirm from '../../ModalConfirm';
 export type DirectMessProp = {
 	id: string;
 	currentDmGroupId: string;
@@ -39,38 +41,60 @@ export type directMessageValueProps = {
 
 function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFriends, isActive }: DirectMessProp) {
 	const { t } = useTranslation('common');
+	const { t: tDm } = useTranslation('dmMessage');
 	const dispatch = useAppDispatch();
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
 	const isTypeDMGroup = directMessage?.type === ChannelType.CHANNEL_TYPE_GROUP;
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
 
+	const handleLeave = useCallback(
+		async (directId: string) => {
+			await dispatch(directActions.closeDirectMessage({ channel_id: directId })).unwrap();
+			if (directId === currentDmGroupId) {
+				dispatch(directActions.setDmGroupCurrentId(''));
+				navigateToFriends();
+			}
+		},
+		[currentDmGroupId, dispatch, navigateToFriends]
+	);
+
 	const [openUnknown, closeUnknown] = useModal(() => {
 		if (isTypeDMGroup) {
 			return <LeaveGroupModal navigateToFriends={navigateToFriends} groupWillBeLeave={directMessage} onClose={closeUnknown} />;
 		}
-	}, [directMessage]);
+	}, [directMessage, isTypeDMGroup, navigateToFriends]);
+
+	const [openCloseDmModal, closeCloseDmModal] = useModal(() => {
+		return (
+			<ModalConfirm
+				handleCancel={closeCloseDmModal}
+				handleConfirm={async () => {
+					closeCloseDmModal();
+					try {
+						await handleLeave(directMessage?.channel_id as string);
+					} catch {
+						toast.error(tDm('closeDmConfirm.error'));
+					}
+				}}
+				title={tDm('closeDmConfirm.title')}
+				buttonName={tDm('closeDmConfirm.confirmText')}
+				customTitle={tDm('closeDmConfirm.content')}
+			/>
+		);
+	}, [directMessage, handleLeave, tDm]);
 
 	const handleCloseClick = useCallback(
-		async (e: React.MouseEvent) => {
+		(e: React.MouseEvent) => {
 			e.stopPropagation();
 			if (isTypeDMGroup) {
 				openUnknown();
 			} else {
-				handleLeave(e, directMessage?.channel_id as string, currentDmGroupId);
+				openCloseDmModal();
 			}
 		},
-		[isTypeDMGroup, directMessage?.channel_id, currentDmGroupId]
+		[isTypeDMGroup, openUnknown, openCloseDmModal]
 	);
-
-	const handleLeave = async (e: React.MouseEvent, directId: string, currentDmGroupId: string) => {
-		e.stopPropagation();
-		if (directId === currentDmGroupId) {
-			dispatch(directActions.setDmGroupCurrentId(null));
-			navigateToFriends();
-		}
-		await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
-	};
 
 	const ref = useRef<HTMLDivElement>(null);
 	const { showContextMenu } = useDirectMessageContextMenu();
