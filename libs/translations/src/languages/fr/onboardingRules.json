@@ -1,0 +1,18 @@
+{
+  "editResources": "Modifier les ressources",
+  "form": {
+    "nameTitle": "Donnez un nom à cette ressource",
+    "namePlaceholder": "#rules peut être Règles",
+    "descriptionTitle": "Décrivez cette ressource",
+    "descriptionPlaceholder": "Exemple : Règles pour le clan",
+    "imageTitle": "Image des règles",
+    "browse": "Parcourir",
+    "required": "Ce champ est requis.",
+    "minCharacters": "Le titre des règles doit avoir au moins 7 caractères"
+  },
+  "buttons": {
+    "remove": "Supprimer",
+    "save": "Sauvegarder",
+    "add": "Ajouter"
+  }
+}

@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { calculateMediaDimensions, createImgproxyUrl, useIsIntersecting, useResizeObserver, type ObserveFn } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import type { ApiMessageAttachment } from 'mezon-js';
 import type { Movie, Track } from 'mp4box';
 import { MP4BoxBuffer, createFile } from 'mp4box';
@@ -57,10 +57,6 @@ interface ParsedContentRange {
 	start: number;
 	end: number;
 	totalSize: number | null;
-}
-
-function isElectronMac(): boolean {
-	return isElectron() && navigator.platform?.toLowerCase().includes('mac');
 }
 
 function parseContentRangeHeader(contentRange: string | null): ParsedContentRange | null {
@@ -242,7 +238,6 @@ function useVideoProbe(url: string | undefined, shouldProbe: boolean, filename?:
 	const [errorMessage, setErrorMessage] = useState('');
 	const [codecInfo, setCodecInfo] = useState<VideoCodecInfo | null>(null);
 	const { t } = useTranslation('media');
-	const strictProbe = isElectronMac();
 
 	useEffect(() => {
 		if (!shouldProbe) {
@@ -262,7 +257,7 @@ function useVideoProbe(url: string | undefined, shouldProbe: boolean, filename?:
 
 		const abortController = new AbortController();
 		let cancelled = false;
-		const unsupportedMessage = strictProbe ? t('video.error.codecNotSupportedElectron') : t('video.error.codecNotSupported');
+		const unsupportedMessage = t('video.error.codecNotSupported');
 
 		const runProbe = async () => {
 			const { codec: info, isFastStart } = await probeVideoCodec(url, abortController.signal);
@@ -279,19 +274,6 @@ function useVideoProbe(url: string | undefined, shouldProbe: boolean, filename?:
 				return;
 			}
 
-			if (strictProbe && isFastStart === false) {
-				setStatus('unsupported');
-				setErrorMessage(unsupportedMessage);
-				return;
-			}
-
-			const quicktimeFallback = strictProbe && !info && isLikelyQuickTimeUrl(url, filename);
-			if (quicktimeFallback) {
-				setStatus('unsupported');
-				setErrorMessage(unsupportedMessage);
-				return;
-			}
-
 			setStatus('ready');
 		};
 
@@ -301,7 +283,7 @@ function useVideoProbe(url: string | undefined, shouldProbe: boolean, filename?:
 			cancelled = true;
 			abortController.abort();
 		};
-	}, [url, filename, t, shouldProbe, strictProbe]);
+	}, [url, filename, t, shouldProbe]);
 
 	return { status, errorMessage, codecInfo };
 }
@@ -481,11 +463,11 @@ function MacElectronVideo({
 	const isIntersecting = useIsIntersecting(containerRef, observeIntersection);
 	const [activated, setActivated] = useState(false);
 	const isUploading = isSending || isPresignPending;
-	const { status: probeStatus, errorMessage, codecInfo } = useVideoProbe(
-		attachmentData.url,
-		isIntersecting && activated && !isPresignPending,
-		attachmentData.filename
-	);
+	const {
+		status: probeStatus,
+		errorMessage,
+		codecInfo
+	} = useVideoProbe(attachmentData.url, isIntersecting && activated && !isPresignPending, attachmentData.filename);
 	const { width, height, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
 
@@ -732,9 +714,6 @@ function DefaultVideo({
 }
 
 function MessageVideo(props: MessageImage) {
-	if (isElectronMac()) {
-		return <MacElectronVideo {...props} />;
-	}
 	return <DefaultVideo {...props} />;
 }
 

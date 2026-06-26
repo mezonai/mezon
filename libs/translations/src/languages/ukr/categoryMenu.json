@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Позначити як прочитане"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "Запросити"
+        },
+        "notification": {
+			"title": "",
+			"muteCategory": "Вимкнути сповіщення",
+			"notification": "Налаштування сповіщень"
+		},
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Створити канал",
+            "edit": "Редагувати категорію",
+            "delete": "Видалити категорію"
+        },
+        "devMode": {
+            "title": "Режим розробника",
+            "copyServerID": "Копіювати ID клану"
+        },
+        "modalConfirm": {
+            "title": "Видалити категорію",
+            "content": "Ви впевнені, що хочете видалити цю категорію? Цю дію не можна скасувати.",
+            "confirmText": "Видалити"
+        },
+        "toast": {
+            "systemChannel": "Помилка: {{categoryName}} містить системний канал",
+            "error": "Помилка видалення категорії: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "ID клану скопійовано"
+    }
+}

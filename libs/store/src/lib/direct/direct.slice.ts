@@ -108,6 +108,7 @@ export const createNewDirectMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
+
 			if (response) {
 				thunkAPI.dispatch(
 					directActions.upsertOne({
@@ -115,10 +116,12 @@ export const createNewDirectMessage = createAsyncThunk(
 						...response,
 						usernames: Array.isArray(username) ? username : username ? [username] : [],
 						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : [],
-						channel_label:
-							response.channel_label ||
-							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
-						channel_avatar: response.channel_avatar || '/assets/images/avatar-group.png',
+						channel_label: Array.isArray(display_names)
+							? display_names.join(',')
+							: Array.isArray(username)
+								? username.join(',')
+								: display_names || username,
+						channel_avatar: Array.isArray(avatar) ? avatar[0] : avatar || '/assets/images/avatar-group.png',
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
 						user_ids: body.user_ids,
 						active: 1,
@@ -604,7 +607,7 @@ export const directSlice = createSlice({
 			const existingShowPinBadge = existingEntity?.showPinBadge;
 			const dataUpdate = action.payload;
 
-			if (dataUpdate.channel_label === undefined && existingEntity?.channel_label?.trim()) {
+			if ((dataUpdate.channel_label === undefined || dataUpdate.channel_label.trim()) && existingEntity?.channel_label?.trim()) {
 				dataUpdate.channel_label = existingEntity.channel_label;
 			}
 			if (dataUpdate.avatars === undefined && existingEntity?.avatars?.length) {

@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Посібник клану",
+		"events": "Події",
+		"events_one": "{{count}} Подія",
+		"events_other": "{{count}} Подій",
+		"members": "Учасники",
+		"channels": "Канали"
+	},
+	"ongoingEvent": {
+		"title": "Поточні події",
+		"eventDetail": "Деталі події"
+	},
+	"onboarding": {
+		"getStarted": "Розпочати",
+		"of": "з"
+	},
+	"favoriteChannel": "Улюблені канали",
+	"publicChannels": "Публічні канали",
+	"channelApps": "Додатки каналів",
+	"dragMode": {
+		"enable": "Натисніть, щоб увімкнути режим перетягування категорій",
+		"disable": "Натисніть, щоб вимкнути режим перетягування категорій"
+	}
+}

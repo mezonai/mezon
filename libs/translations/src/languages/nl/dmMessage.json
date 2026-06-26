@@ -1,0 +1,63 @@
+{
+	"title": "Berichten",
+	"addFriend": "Vriend toevoegen",
+	"friends": "Vrienden",
+	"blockedUserMessage": "Berichten geblokkeerd",
+	"menu": {
+		"leaveGroup": "Groep verlaten",
+		"deleteGroup": "Groep verwijderen",
+		"profile": "Profiel",
+		"closeDm": "Bericht sluiten",
+		"markAsRead": "Als gelezen markeren",
+		"favorite": "Favoriet",
+		"muteConversation": "Melding uitschakelen",
+		"unMuteConversation": "Melding inschakelen",
+		"notificationSettings": "Meldingsinstellingen",
+		"disableE2EE": "E2EE encryptie uitschakelen",
+		"enableE2EE": "E2EE encryptie inschakelen",
+		"blockUser": "Gebruiker blokkeren",
+		"unblockUser": "Gebruiker onblokkeren",
+		"removeFriend": "Vriend verwijderen",
+		"addFriend": "Vriend toevoegen",
+		"pinConversation": "Gesprek vastzetten",
+		"unpinConversation": "Gesprek losmaken"
+	},
+	"confirm": {
+		"title": "{{groupName}} verlaten",
+		"content": "Weet je zeker dat je {{groupName}} wilt verlaten? Je kunt niet terugkeren tenzij je opnieuw wordt uitgenodigd.",
+		"confirmText": "Ja"
+	},
+	"pinConfirm": {
+		"title": "Gesprek vastzetten?",
+		"content": "Dit gesprek wordt naar boven verplaatst in de berichtenlijst voor eenvoudige toegang.",
+		"confirmText": "Vastzetten"
+	},
+	"unpinConfirm": {
+		"title": "Gesprek losmaken?",
+		"content": "Dit gesprek wordt teruggebracht naar de normale positie in de berichtenlijst.",
+		"confirmText": "Losmaken"
+	},
+	"pinSection": "VASTGEZET",
+	"allMessagesSection": "ALLE BERICHTEN",
+	"maximumPinnedConversationsReached": "Je kunt maximaal {{max}} gesprekken vastzetten.",
+	"notification": {
+		"blockUser": {
+			"success": "Gebruiker succesvol geblokkeerd",
+			"error": "Gebruiker kon niet worden geblokkeerd"
+		},
+		"unblockUser": {
+			"success": "Gebruiker succesvol ontgrendeld",
+			"error": "Gebruiker kon niet worden ontgrendeld"
+		},
+		"muteSuccess": "Melding succesvol uitgeschakeld!",
+		"unMuteSuccess": "Melding succesvol ingeschakeld!",
+		"muteFailed": "Melding uitschakelen mislukt!",
+		"unMuteFailed": "Melding inschakelen mislukt!"
+	},
+	"waveWelcome": "Wenk om te groeten!",
+	"waveWelcomeDM": "Wenk naar {{username}}",
+	"members": "leden",
+	"speaker": "Luidspreker",
+	"end": "Einde",
+	"turnedMicOff": "heeft microfoon uitgeschakeld"
+}

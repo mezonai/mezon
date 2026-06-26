@@ -20,7 +20,8 @@ import {
 	EMimeTypes,
 	ETypeLinkMedia,
 	generateE2eId,
-	isValidEmojiData
+	isValidEmojiData,
+	patchLinkTokens
 } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback, useEffect } from 'react';
@@ -173,13 +174,7 @@ const MessageText = ({
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
-	let patchedContent = content;
-	if ((!content?.mk || content.mk.length === 0) && Array.isArray(content?.lk) && content.lk.length > 0) {
-		patchedContent = {
-			...content,
-			mk: content.lk.map((lkItem) => ({ ...lkItem, type: EBacktickType.LINK }))
-		};
-	}
+	const patchedContent = patchLinkTokens(content);
 
 	const attachmentOnMessage = message.attachments;
 	const contentToMessage = message.content?.t;

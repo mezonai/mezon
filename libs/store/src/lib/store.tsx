@@ -1,9 +1,9 @@
-import type { Middleware, ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
+import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { accountReducer } from './account/account.slice';
+import { ACCOUNT_FEATURE_KEY, accountReducer } from './account/account.slice';
 import { appReducer } from './app/app.slice';
 import { authReducer, setupSessionSyncListener } from './auth/auth.slice';
 import { categoriesReducer } from './categories/categories.slice';
@@ -85,7 +85,6 @@ import { voiceReducer } from './voice/voice.slice';
 import { TRANSACTION_HISTORY_FEATURE_KEY, transactionHistoryReducer } from './wallet/transactionHistory.slice';
 import { WALLET_FEATURE_KEY, walletReducer } from './wallet/wallet.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
-import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowControls/windowControls.slice';
 const persistedPollsReducer = persistReducer(
 	{
 		key: 'polls',
@@ -308,10 +307,18 @@ const persistedFcmReducer = persistReducer(
 	fcmReducer
 );
 
+const persistedAccountReducer = persistReducer(
+	{
+		key: ACCOUNT_FEATURE_KEY,
+		storage
+	},
+	accountReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
-	account: accountReducer,
+	account: persistedAccountReducer,
 	auth: persistedReducer,
 	attachments: attachmentReducer,
 	gallery: galleryReducer,
@@ -382,7 +389,6 @@ const reducer = {
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
 	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
-	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer,
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
@@ -410,24 +416,6 @@ export type RootState = ReturnType<typeof storeInstance.getState>;
 
 export type PreloadedRootState = RootState | undefined;
 
-const limitDataMiddleware: Middleware = () => (next) => (action: any) => {
-	// Check if the action is of type 'persist/REHYDRATE' and the key is 'messages'
-	if (action.type === 'persist/REHYDRATE' && action.key === 'messages') {
-		const { channelIdLastFetch, channelMessages } = action.payload || {};
-
-		if (channelIdLastFetch && channelMessages?.[channelIdLastFetch]) {
-			// Limit the channelMessages to only include messages for the last fetched channelId
-			action.payload = {
-				...action.payload,
-				channelMessages: {
-					[channelIdLastFetch]: channelMessages[channelIdLastFetch]
-				}
-			};
-		}
-	}
-	// Pass the action to the next middleware or reducer
-	return next(action);
-};
 const isDev = process.env.NX_ENV === 'development';
 
 const thunkNameLogger = () => (next: any) => (action: any) => {

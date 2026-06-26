@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Агляд актыўнасці",
+		"timePeriod": "Перыяд часу",
+		"totalActiveUsers": "Агульная колькасць актыўных карыстальнікаў",
+		"totalActiveUsersTooltip": "Унікальных карыстальнікаў, якія былі актыўныя хоць бы адзін раз",
+		"totalActiveChannels": "Агульная колькасць актыўных каналаў",
+		"totalActiveChannelsTooltip": "Унікальных каналаў, якія былі актыўныя хоць бы адзін раз",
+		"totalMessages": "Агульная колькасць паведамленняў",
+		"totalMessagesTooltip": "Агульная колькасць паведамленняў, дасланых за абраны перыяд"
+	},
+	"pagination": {
+		"showing": "Паказана",
+		"of": "з",
+		"clans": "кланаў",
+		"previous": "Папярэдні",
+		"next": "Наступны"
+	},
+	"chart": {
+		"loadingChartData": "Загрузка даных графіка...",
+		"metricsAvailableForOwnersOnly": "Метрыкі даступныя толькі для ўласнікаў кланаў."
+	},
+	"table": {
+		"detailedActivityData": "Дэталёвыя даныя актыўнасці",
+		"channelsActivityData": "Даныя актыўнасці каналаў",
+		"userActivityData": "Даныя актыўнасці карыстальнікаў",
+		"exportCSV": "Экспарт CSV",
+		"exporting": "Экспарт...",
+		"includedInExport": "Гэты слупок будзе ўключаны ў экспарт CSV",
+		"notIncludedInExport": "Гэты слупок не будзе ўключаны ў экспарт CSV",
+		"clanName": "Назва клана",
+		"channelName": "Назва канала",
+		"userName": "Імя карыстальніка",
+		"activeUsers": "Актыўныя карыстальнікі",
+		"activeChannels": "Актыўныя каналы",
+		"messages": "Паведамленні",
+		"noOwnedClans": "У вас няма кланаў для стварэння аналітыкі.",
+		"noActiveChannels": "Зараз няма актыўных каналаў у гэтым клане.",
+		"noActiveUsers": "Зараз няма актыўных карыстальнікаў у гэтым канале.",
+		"selectColumnTooltip": "Абярыце/зніміце для экспарту CSV па гэтым слупку",
+		"selectAtLeastOneColumn": "Трэба абраць як мінімум 1 слупок для экспарту csv"
+	},
+	"page": {
+		"backToOverview": "Вярнуцца да агляду выкарыстання клана",
+		"clanUsageStatisticsReport": "Справаздача статыстыкі выкарыстання клана",
+		"dashboardReport": "Панэль кіравання",
+		"report": "Справаздача"
+	},
+	"state": {
+		"loadingData": "Загрузка даных...",
+		"noDataFound": "Даныя не знойдзены",
+		"noDataDescription": "Няма даных выкарыстання за абраны перыяд."
+	},
+	"reportControls": {
+		"timePeriod": "Перыяд часу",
+		"rangeType": "Тып дыяпазону",
+		"startDate": "Дата пачатку",
+		"endDate": "Дата завяршэння",
+		"last7Days": "Апошнія 7 дзён",
+		"last30Days": "Апошнія 30 дзён",
+		"last90Days": "Апошнія 90 дзён",
+		"customDateRange": "Карыстальніцкі дыяпазон даты",
+		"daily": "Штодня",
+		"weekly": "Штотыдзень",
+		"monthly": "Штомесяц",
+		"runReport": "Запусціць справаздачу",
+		"reset": "Скінуць"
+	},
+	"sortIcon": {
+		"tooltip": "Сартаваць па нарастанні/спаданні па гэтым слупку",
+		"sortedAsc": "Сартавана па нарастанні",
+		"sortedDesc": "Сартавана па спаданні"
+	}
+}

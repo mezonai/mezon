@@ -1,0 +1,18 @@
+{
+	"title": "CLAN UITNODIGING",
+	"offline": "offline",
+	"online": "online",
+	"join": "Betreden",
+	"joining": "Aan het joinen...",
+	"goToClan": "Ga naar Clan",
+	"unknownClan": "Onbekende clan",
+	"memberCount": "{{count}} Leden",
+	"memberCount_plural": "{{count}} Leden",
+	"failedToJoin": "Kon clan niet betreden.",
+	"inviteTo": "UITNODIGING OM {{clanName}} TE BETREDEN",
+	"noThanks": "Nee bedankt",
+	"invalidInvite": {
+		"title": "Ongeldige uitnodiging",
+		"message": "Probeer een andere uitnodiging te sturen!"
+	}
+}

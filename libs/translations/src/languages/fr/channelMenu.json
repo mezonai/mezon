@@ -1,0 +1,105 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Marquer comme lu"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Inviter",
+          "markFavorite": "Ajouter aux favoris",
+          "unMarkFavorite": "Supprimer des favoris",
+          "copyLink": "Copier le lien"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Couper les notifications du canal",
+          "unMuteChannel": "Réactiver les notifications du canal",
+          "muteThread": "Couper les notifications du fil",
+          "unMuteThread": "Réactiver les notifications du fil",
+          "notification": "Paramètres de notification",
+          "for15Minutes": "Pendant 15 minutes",
+          "for1Hour": "Pendant 1 heure",
+          "for3Hours": "Pendant 3 heures", 
+          "for8Hours": "Pendant 8 heures",
+          "for24Hours": "Pendant 24 heures",
+          "untilTurnedBackOn": "Jusqu'à ce que je le réactive",
+          "useCategoryDefault": "Utiliser le défaut de la catégorie",
+          "all": "Tous",
+          "onlyMention": "Seulement @mention",
+          "nothing": "Rien",
+          "processing": "Traitement en cours...",
+          "muteChannelStatus": "Notifications du canal coupées",
+          "muteThreadStatus": "Notifications du fil coupées",
+          "unmuteChannelStatus": "Notifications du canal réactivées", 
+          "unmuteThreadStatus": "Notifications du fil réactivées",
+          "mutedUntil": "Notifications coupées jusqu'au",
+          "muteSuccess": "Notifications coupées avec succès !",
+          "unMuteSuccess": "Notifications réactivées avec succès !",
+          "muteFailed": "Échec de la coupure des notifications !",
+          "unMuteFailed": "Échec de la réactivation des notifications !"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Fils de discussion",
+        "searchThreads": "Rechercher le nom du fil",
+        "searchFiles": "Rechercher des fichiers",
+        "searchCanvas": "Rechercher le nom du canvas"
+
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Modifier le canal",
+          "deleteChannel": "Supprimer le canal",
+          "duplicateChannel": "Dupliquer le canal",
+          "leaveChannel": "Quitter le canal",
+          "createTextChannel": "Créer un canal texte",
+          "createVoiceChannel": "Créer un canal vocal",
+          "openChat": "Ouvrir la conversation",
+          "hideNames": "Masquer les noms",
+          "createThread": "Créer un fil"
+      },
+      "devMode": {
+          "title": "Mode développeur",
+          "copyChannelID": "Copier l'ID du canal"
+      },
+      "manageThreadMenu": {
+          "editThread": "Modifier le fil",
+          "deleteThread": "Supprimer le fil",
+          "leaveThread": "Quitter le fil",
+          "closeThread": "Fermer le fil",
+          "lockThread": "Verrouiller le fil",
+          "copyLink": "Copier le lien"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "ID du canal copié"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Supprimer le fil {{threadName}}",
+          "content": "Êtes-vous sûr de vouloir supprimer ce fil ?",
+          "confirmText": "Oui"
+      },
+      "channel": {
+          "title": "Supprimer le canal {{channelName}}",
+          "content": "Êtes-vous sûr de vouloir supprimer ce canal ?",
+          "confirmText": "Oui",
+          "systemChannel": "Impossible de supprimer le canal système",
+          "error": "Erreur de suppression du canal: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Quitter le fil",
+    "yesButton": "Quitter le fil",
+    "textConfirm": "Êtes-vous sûr de vouloir quitter ce fil ? Vous ne pourrez pas recevoir de messages de cette chaîne une fois que vous aurez quitté."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Quitter le canal",
+    "yesButton": "Quitter le canal",
+    "textConfirm": "Êtes-vous sûr de vouloir quitter ce canal ? Vous ne pourrez pas recevoir de messages de ce canal une fois que vous aurez quitté.",
+    "error": "Erreur de quitter le canal: {{error}}"
+  },
+  "btnBadgeCount": "Nouveau",
+  "favoriteChannel": "CANAL FAVORI"
+}

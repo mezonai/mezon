@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Пазначыць як прачытанае"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "Запрасіць"
+        },
+        "notification": {
+            "title": "",
+            "muteCategory": "Выключыць апавяшчэнні",
+            "notification": "Налады апавяшчэнняў"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Стварыць канал",
+            "edit": "Рэдагаваць катэгорыю",
+            "delete": "Выдаліць катэгорыю"
+        },
+        "devMode": {
+            "title": "Рэжым распрацоўшчыка",
+            "copyServerID": "Скапіяваць ID клана"
+        },
+        "modalConfirm": {
+            "title": "Выдаліць катэгорыю",
+            "content": "Вы ўпэўнены, што хочаце выдаліць гэтую катэгорыю? Гэта дзеянне нельга адмяніць.",
+            "confirmText": "Выдаліць"
+        },
+        "toast": {
+            "systemChannel": "Памылка: {{categoryName}} змяшчае сістэмны канал",
+            "error": "Памылка выдалення катэгорыі: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "ID клана скапіяваны"
+    }
+}

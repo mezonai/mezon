@@ -1,0 +1,46 @@
+{
+	"download": "Pobierz",
+	"sections": {
+		"section1": {
+			"title": "Everything You Need, In One Place",
+			"description": "Z Mezon, aplikacja koncentruje wszystkie narzędzia, których potrzebujesz w jednym miejscu. Nie przełączaj się między rozłącznymi zasobami - tylko wydajność i efektywność."
+		},
+		"section2": {
+			"title": "Unleash The Power Of Your Business With Seamless Low-Code Integration",
+			"description": "Z minimalnym kosztem i czasem, podnosimy integracje z biznesem, który chce zmniejszyć koszty rozwoju kompetencji - tylko prędkość i elastyczność"
+		},
+		"section3": {
+			"title": "Automate Processes For Individuals And Organizations: ",
+			"titleHighlight": "Integracja Bot/Aplikacja",
+			"titleEnd": "",
+			"description": "Połącz bota i aplikację, aby zautomatyzować zadania od pracowników do produkcji. Szybciej, dokładniej i bez rozwiązywania złożonych algorytmów."
+		},
+		"section4": {
+			"title": "System ERP",
+			"description": "Z modułami i funkcjami łatwymi do dostosowania, ERP spełni w pełni potrzeby przedsiębiorstwa i może zautomatyzować działania związane z zasobami przedsiębiorstwa, aby zmniejszyć czas przetwarzania i zoptymalizować zarządzanie zasobami"
+		}
+	},
+	"faq": {
+		"title": "Częste pytania",
+		"seeAll": "Zobacz wszystkie FAQ",
+		"learnMore": "Dowiedz się więcej",
+		"questions": [
+			{
+				"question": "Jak rozpocząć integrację mojego narzędzia z Mezon?",
+				"answer": "Rozpoczęcie jest bardzo proste. Przejdź do strony integracji, wybierz żądaną usługę i postępuj zgodnie z instrukcjami krok po kroku."
+			},
+			{
+				"question": "Jakie typy integracji są obsługiwane?",
+				"answer": "Mezon obsługuje wiele typów integracji, w tym webhooki, boty, aplikacje osób trzecich i systemy ERP. Sprawdź naszą dokumentację, aby uzyskać pełną listę."
+			},
+			{
+				"question": "Czy mogę utworzyć własną integrację?",
+				"answer": "Tak! Nasza platforma dostarcza API i SDK, które pozwalają budować własne integracje dopasowane do Twoich konkretnych potrzeb."
+			},
+			{
+				"question": "Czy istnieje ograniczenie liczby integracji, które mogę dodać?",
+				"answer": "Liczba integracji, które możesz dodać, zależy od Twojego pakietu. Pakiety korporacyjne oferują integracje bez limitu."
+			}
+		]
+	}
+}

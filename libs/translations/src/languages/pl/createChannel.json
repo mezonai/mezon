@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "UTWÓRZ NOWY KANAŁ W"
+	},
+	"channelType": {
+		"text": "Tekstowy",
+		"voice": "Głosowy",
+		"forum": "Forum",
+		"announcement": "Ogłoszenie",
+		"apps": "Aplikacje",
+		"stream": "Transmisja",
+		"descriptions": {
+			"text": "Wyślij wiadomości, obrazy, GIF-y, emoji, opinie i żarty",
+			"voice": "Rozmawiaj razem z głosem, wideo i udostępnianiem ekranu",
+			"forum": "Utwórz przestrzeń dla zorganizowanych dyskusji",
+			"announcement": "Ważne aktualizacje dla wszystkich w i poza clanem",
+			"apps": "Aplikacje",
+			"stream": "Udostępnij hobby"
+		}
+	},
+	"validation": {
+		"invalidName": "Proszę wprowadzić nazwę kanału (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
+		"duplicateName": "Nazwa kanału już istnieje w kategorii. Proszę wprowadzić inną nazwę."
+	},
+	"privacy": {
+		"private": "Prywatny kanał",
+		"description": "Tylko wybrani członkowie i role będą mogli zobaczyć ten kanał."
+	},
+	"labels": {
+		"description": "Proszę skonfigurować kanał według swoich preferencji.",
+		"chooseType": "Wybierz typ kanału:",
+		"channelName": "Jak nazywa się kanał?",
+		"isPrivate": "Prywatny kanał?",
+		"placeholder": "Wpisz nazwę kanału"
+	},
+	"errors": {
+		"typeRequired": "Typ kanału jest wymagany",
+		"nameRequired": "Nazwa kanału jest wymagana",
+		"selectApp": "Proszę wybrać aplikację",
+		"validName": "Proszę wprowadzić poprawną nazwę kanału"
+	},
+	"buttons": {
+		"cancel": "Anuluj",
+		"create": "Utwórz kanał",
+		"creating": "Tworzenie"
+	}
+}

@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Als gelezen markeren"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "Uitnodigen"
+        },
+        "notification": {
+			"title": "",
+			"muteCategory": "Categorie melding uitschakelen",
+			"notification": "Meldingsinstellingen"
+		},
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Kanaal aanmaken",
+            "edit": "Categorie bewerken",
+            "delete": "Categorie verwijderen"
+        },
+        "devMode": {
+            "title": "Ontwikkelmodus",
+            "copyServerID": "Clan-ID kopiëren"
+        },
+        "modalConfirm": {
+            "title": "Categorie verwijderen",
+            "content": "Weet je zeker dat je deze categorie wilt verwijderen? Deze actie is onherroepelijk.",
+            "confirmText": "Verwijderen"
+        },
+        "toast": {
+            "systemChannel": "Fout: {{categoryName}} bevat systeemkanaal",
+            "error": "Categorie verwijderen fout: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "Clan-ID gekopieerd"
+    }
+}

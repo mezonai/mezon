@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Historia transakcji",
+		"subtitle": "Zobacz wszystkie swoje działania transakcyjne"
+	},
+	"footers": {
+		"noti": "Pobrałeś wszystkie {{count}} transakcje",
+		"fetching": "Ładowanie dodatkowych transakcji..."
+	},
+	"filters": {
+		"all": "Wszystkie transakcje",
+		"sent": "Transakcje wysłane",
+		"received": "Transakcje otrzymane"
+	},
+	"transactionTypes": {
+		"sent": "Wysłano",
+		"received": "Otrzymano"
+	},
+	"currency": {
+		"code": "vi-VN",
+		"symbol": "Đồng"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Nie znaleziono transakcji",
+			"description": "Nie przeprowadziłeś jeszcze żadnych transakcji. Twoja historia transakcji pojawi się tutaj, gdy zaczniesz wysyłać lub otrzymywać tokeny."
+		},
+		"noFilteredTransactions": {
+			"title": "Nie znaleziono transakcji",
+			"description": "Nie znaleziono transakcji dla wybranego filtra. Proszę spróbować innego filtra lub sprawdzić ponownie później."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "ID transakcji",
+			"sender": "Nadawca",
+			"amount": "Kwota",
+			"receiver": "Odbiorca",
+			"note": "Notatka",
+			"created": "Data utworzenia"
+		},
+		"defaultNote": "Brak notatki",
+		"unknownUser": "Nieznany użytkownik"
+	},
+	"transactionItem": {
+		"idPrefix": "Transakcja #"
+	}
+}

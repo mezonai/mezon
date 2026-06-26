@@ -1,0 +1,25 @@
+{
+    "headerTitle": {
+		"settings": "Instellingen",
+		"Friends": "Vrienden",
+		"addFriends": "Vrienden toevoegen",
+		"requestFriend": "Vriendenverzoek",
+		"friendRequestSettings": "Vriendenverzoekinstellingen",
+		"language": "Taal",
+		"profile": "Profiel",
+		"newMessage": "Nieuw bericht",
+		"newGroup": "Nieuwe groep",
+		"addMembers": "Leden toevoegen",
+		"appearance": "Uiterlijk",
+		"topic": "Korte discussie",
+		"chat": "Chat"
+	},
+    "headerRight": {
+        "addFriends": "Vrienden toevoegen"
+    },
+    "navigationTabs": {
+        "messages": "Berichten",
+        "notifications": "Meldingen",
+        "profile": "Profiel"
+    }
+}

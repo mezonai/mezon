@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { Button } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
@@ -69,7 +69,7 @@ const ModalInvite = (props: ModalParam) => {
 					channel_id: channelID ? channelID : welcomeChannel.channel_id || '',
 					image: currentClan?.logo || '',
 					index: 0,
-					url: `${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.invite_link}`,
+					url: `${window.location.origin}/invite/${res.invite_link}`,
 					banner: currentClan?.banner || '',
 					member_count: membersCount,
 					clan_id: effectiveClanId || '',
@@ -80,7 +80,7 @@ const ModalInvite = (props: ModalParam) => {
 			);
 
 			if (res && res?.invite_link) {
-				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.invite_link}`);
+				setUrlInvite(`${window.location.origin}/invite/${res.invite_link}`);
 			}
 		} catch {
 			console.error(t('errors.createInviteLink'));

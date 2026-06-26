@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "Перевести токени",
+		"sendMessage": "Надіслати повідомлення",
+		"voiceCall": "Голосовий дзвінок",
+		"videoCall": "Відеодзвінок",
+		"addFriend": "Додати друга",
+		"pending": "Очікує",
+		"removeFriend": "Видалити друга"
+	},
+	"aboutMe": {
+		"headerTitle": "ПРО МЕНЕ",
+		"roles": {
+			"headerTitle": "РОЛІ"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Викинути учасника",
+		"kickFromServer": "Викинути {{username}} з клану",
+		"description": "Ви впевнені, що хочете викинути {{username}} з клану? Вони можуть приєднатися знову з новим запрошенням.",
+		"reasonKick": "Причина викидання",
+		"buttonName": "Викинути"
+	},
+	"transferOwnershipModal": {
+		"warning": "Це передасть власність <highlightClan>{{clanName}}</highlightClan> користувачеві <highlightUser>{{username}}</highlightUser>. Цю дію не можна скасувати!",
+		"sectionTitle": "Передати власність",
+		"acknowledgment": "Я підтверджую, що, передаючи власність цього клану {{username}}, вона офіційно належить їм.",
+		"transferButton": "Передати",
+		"confirmTitle": "Передати власність?",
+		"confirmDescription": "Ви впевнені, що хочете передати власність {{clanName}} користувачеві {{username}}? Цю дію не можна скасувати.",
+		"confirmButton": "Передати"
+	},
+	"pendingContent": {
+		"block": "Заблокувати",
+		"unblock": "Розблокувати",
+		"reportUserProfile": "Скаржитися на профіль користувача",
+		"acceptFriend": "Прийняти дружбу",
+		"rejectFriend": "Відхилити запит на дружбу",
+		"cancelFriendRequest": "Скасувати запит на дружбу",
+		"copyUsername": "Копіювати ім'я користувача",
+		"copiedUserName": "{{username}} скопійовано",
+		"removeFriend": "Видалити друга",
+		"viewFullProfile": "Переглянути повний профіль"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Видалити з групи",
+			"removeSuccess": "Учасника успішно видалено з групи",
+			"removeFailed": "Не вдалося видалити учасника з групи"
+		},
+		"mezonMemberSince": "Учасник Mezon з"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Користувача успішно заблоковано",
+			"error": "Не вдалося заблокувати користувача"
+		},
+		"unblockUser": {
+			"success": "Користувача успішно розблоковано",
+			"error": "Не вдалося розблокувати користувача"
+		}
+	},
+	"incomingFriendRequest": "ВХОДЯЧИЙ ЗАПИТ НА ДРУЖБУ",
+	"sendAddFriendSuccess": "Запит на дружбу надіслано",
+	"accept": "Прийняти",
+	"ignore": "Ігнорувати",
+	"labels": {
+		"aboutMe": "Про мене",
+		"memberSince": "Учасник з",
+		"activity": "Діяльність",
+		"unknownUser": "Невідомий користувач",
+		"anonymous": "Анонімний",
+		"editProfile": "Редагувати профіль",
+		"note": "ПРИМІТКА",
+		"addNote": "Натисніть, щоб додати примітку",
+		"showLess": "Показати менше",
+		"addRole": "Додати роль",
+		"addRoles": "Додати ролі",
+		"removeRole": "Видалити роль",
+		"role": "Роль",
+		"nope": "Немає!",
+		"typoError": "Ви помилились?",
+		"userNotFound": "Користувач не знайдений в клані"
+	},
+	"placeholders": {
+		"messageUser": "Надіслати повідомлення @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Баланс",
+		"transferFunds": "Перевести токени",
+		"editCustomStatus": "Редагувати власний статус",
+		"setCustomStatus": "Встановити власний статус",
+		"manageAccounts": "Керувати акаунтами",
+		"switchAccounts": "Перемкнути акаунти",
+		"copyUserId": "Копіювати ID користувача",
+		"statusOptions": {
+			"online": "Онлайн",
+			"idle": "Неактивний",
+			"doNotDisturb": "Не турбувати",
+			"invisible": "Непомітний"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Ви не отримуватимете сповіщення на комп'ютері",
+			"invisible": "Ви будете відображатися як офлайн"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 хвилин",
+			"for1Hour": "1 година",
+			"for3Hours": "3 години",
+			"for8Hours": "8 годин",
+			"for24Hours": "24 години",
+			"forever": "Завжди"
+		},
+		"addAccountModal": {
+			"email": "Email",
+			"password": "Пароль",
+			"emailPlaceholder": "Введіть вашу електронну пошту",
+			"passwordPlaceholder": "Введіть ваш пароль",
+			"cancel": "Скасувати",
+			"logIn": "Увійти"
+		},
+		"sendTokenModal": {
+			"title": "Надіслати токени",
+			"description": "Перевести токени іншому користувачеві",
+			"fields": {
+				"to": "Кому",
+				"amount": "Кількість",
+				"note": "Примітка (необов'язково)"
+			},
+			"placeholders": {
+				"searchUsers": "Пошук користувачів...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Додати примітку..."
+			},
+			"noUsersFound": "Користувачів не знайдено",
+			"currency": "UAH",
+			"buttons": {
+				"cancel": "Скасувати",
+				"sendTokens": "Надіслати токени"
+			},
+			"errors": {
+				"exceedWalletBalance": "Сума перевищує баланс гаманця",
+				"maximumLimit": "Максимум 100 000 000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Історія транзакцій",
+			"subtitle": "Переглянути всі ваші транзакції",
+			"tabs": {
+				"all": "Всі транзакції",
+				"sent": "Відправлені транзакції",
+				"received": "Отримані транзакції"
+			},
+			"transactionTypes": {
+				"sent": "Відправлено",
+				"received": "Отримано"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Транзакцій не знайдено",
+					"description": "Ви ще не здійснили жодної транзакції. Історія транзакцій з'явиться тут, коли ви почнете надсилати або отримувати токени."
+				},
+				"noFilteredTransactions": {
+					"title": "Транзакцій не знайдено",
+					"description": "Транзакцій за обраним фільтром не знайдено. Спробуйте інший фільтр або перевірте пізніше."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Транзакція #"
+			},
+			"loading": {
+				"fetching": "Завантаження транзакцій...",
+				"fetchingMore": "Завантаження додаткових транзакцій...",
+				"scrollMore": "Прокрутіть вниз для завантаження",
+				"allLoaded": "Ви завантажили всі {{count}} транзакцій"
+			}
+		},
+		"customStatusModal": {
+			"title": "Встановити власний статус",
+			"whatsCookin": "Про що думаєш, {{name}}",
+			"placeholder": "Про що ти думаєш?",
+			"clearAfter": "Очистити через",
+			"timeOptions": {
+				"today": "Сьогодні",
+				"fourHours": "4 години",
+				"oneHour": "1 година",
+				"thirtyMinutes": "30 хвилин",
+				"dontClear": "Не очищати"
+			},
+			"buttons": {
+				"cancel": "Скасувати",
+				"save": "Зберегти"
+			}
+		}
+	},
+	"channelVoiceSettings": "Налаштування голосового каналу",
+	"muteVoice": "Заглушити",
+	"kickVoice": "Викинути з голосового каналу",
+	"voiceInfo": {
+		"inVoice": "У голосовому каналі",
+		"joinVoice": "Приєднатися до голосового"
+	},
+	"ban": {
+		"title": "Заблокувати користувача",
+		"unbanTitle": "Розблокувати користувача",
+		"content": "Заблокувати користувача \"{{userName}}\"?",
+		"banButton": "Заблокувати",
+		"unBanButton": "Розблокувати",
+		"reasonBan": "Причина блокування",
+		"unBanDescription": "Ви хочете розблокувати користувача \"{{userName}}\"?",
+		"time": {
+			"title": "Період",
+			"tenMinutes": "10 хвилин",
+			"thirtyMinutes": "30 хвилин",
+			"oneHour": "1 година",
+			"sixHours": "6 годин",
+			"twelveHours": "12 годин",
+			"oneDay": "1 день",
+			"threeDays": "3 дні"
+		},
+		"banList": "Список банів",
+		"search": "Пошук заблокованих користувачів",
+		"banListEmpty": "Заблокованих користувачів не знайдено"
+	}
+}

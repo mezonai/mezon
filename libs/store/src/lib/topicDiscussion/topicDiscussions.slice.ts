@@ -276,6 +276,9 @@ export const topicsSlice = createSlice({
 
 		setIsShowCreateTopic: (state: TopicDiscussionsState, action: PayloadAction<boolean>) => {
 			state.isShowCreateTopic = action.payload;
+			if (!action.payload) {
+				state.isFocusTopicBox = false;
+			}
 		},
 		setCurrentTopicInitMessage: (state, action: PayloadAction<IMessageWithUser | null>) => {
 			state.currentTopicInitMessage = action.payload;

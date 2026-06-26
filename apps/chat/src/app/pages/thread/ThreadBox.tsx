@@ -45,7 +45,7 @@ import {
 	generateE2eId,
 	processFilesForAttachment
 } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -540,9 +540,7 @@ const ThreadBox = () => {
 				</div>
 			)}
 			<PreviewOgp contextId={currentInputChannelId} />
-			<div
-				className={`flex-shrink-0 flex flex-col ${isElectron() ? 'pb-[36px]' : 'pb-4'} px-3  h-auto relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
-			>
+			<div className={`flex-shrink-0 flex flex-col pb-4 px-3  h-auto relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}>
 				<div
 					className={`h-fit w-full bg-transparent shadow-md rounded-lg min-h-[45px] ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'} ${messageThreadError && !threadCurrentChannel ? 'border-[#B91C1C]' : ''}`}
 				>
