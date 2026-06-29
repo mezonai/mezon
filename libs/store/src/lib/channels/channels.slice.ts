@@ -739,46 +739,54 @@ type fetchChannelsArgs = {
 export const addThreadToChannels = createAsyncThunk(
 	'channels/addThreadToChannels',
 	async ({ clanId, channelId, parentChannelId }: { clanId: string; channelId: string; parentChannelId?: string }, thunkAPI) => {
+		if (!channelId) {
+			return false;
+		}
+
 		const state = thunkAPI.getState() as RootState;
 		const channelData = selectChannelByIdAndClanId(state, clanId, channelId);
-		if (channelId && !channelData) {
-			const currentChannelId = state.channels?.byClans?.[clanId]?.currentChannelId;
-			const channelIdToFetch = parentChannelId || currentChannelId;
 
-			if (!channelIdToFetch || channelIdToFetch === channelId) {
-				return true;
-			}
+		if (channelData) {
+			return true;
+		}
 
-			try {
-				const data = await thunkAPI
-					.dispatch(
-						threadsActions.fetchThread({
-							channelId: channelIdToFetch,
-							clanId,
-							threadId: channelId
-						})
-					)
-					.unwrap();
+		const currentChannelId = state.channels?.byClans?.[clanId]?.currentChannelId;
+		const channelIdToFetch = parentChannelId || currentChannelId;
 
-				const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+		if (!channelIdToFetch || channelIdToFetch === channelId) {
+			return false;
+		}
 
-				if (matchedThread) {
-					thunkAPI.dispatch(
-						channelsActions.upsertOne({
-							clanId,
-							channel: {
-								...matchedThread,
-								active: matchedThread.active
-							} as ChannelsEntity
-						})
-					);
-				}
-				return true;
-			} catch (error) {
+		try {
+			const data = await thunkAPI
+				.dispatch(
+					threadsActions.fetchThread({
+						channelId: channelIdToFetch,
+						clanId,
+						threadId: channelId
+					})
+				)
+				.unwrap();
+
+			const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+
+			if (!matchedThread) {
 				return false;
 			}
+
+			thunkAPI.dispatch(
+				channelsActions.upsertOne({
+					clanId,
+					channel: {
+						...matchedThread,
+						active: matchedThread.active
+					} as ChannelsEntity
+				})
+			);
+			return true;
+		} catch (error) {
+			return false;
 		}
-		return true;
 	}
 );
 
