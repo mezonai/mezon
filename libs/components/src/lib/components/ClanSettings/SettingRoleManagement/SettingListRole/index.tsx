@@ -1,4 +1,4 @@
-import { useDragAndDropRole } from '@mezon/core';
+import { useClanOwner, useDragAndDropRole } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import {
 	getIsShow,
@@ -10,6 +10,7 @@ import {
 	rolesClanActions,
 	selectCurrentClanId,
 	selectTheme,
+	selectUserMaxPermissionLevel,
 	setAddMemberRoles,
 	setColorRoleNew,
 	setNameRoleNew,
@@ -26,6 +27,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import ModalSaveChanges from '../../ClanSettingOverview/ModalSaveChanges';
+import { checkHasPermissionEditRole } from '../../SettingMainRoles/listActiveRole';
 
 type closeEditRole = {
 	RolesClan: RolesClanEntity[];
@@ -36,6 +38,8 @@ const SettingListRole = (props: closeEditRole) => {
 	const { t } = useTranslation('clanRoles');
 	const { RolesClan, handleClose, handleUpdateUser } = props;
 	const dispatch = useAppDispatch();
+	const isClanOwner = useClanOwner();
+	const userMaxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
 	const appearanceTheme = useSelector(selectTheme);
 	const isChange = useSelector(getIsShow);
 
@@ -144,10 +148,12 @@ const SettingListRole = (props: closeEditRole) => {
 				ref={containerRef}
 				className={`overflow-y-scroll flex flex-col gap-y-2 hide-scrollbar  ${appearanceTheme === 'light' ? 'customScrollLightMode' : ''}`}
 			>
-				{rolesList.map((role, index) => (
-					<div
-						key={role.id}
-						className={`cursor-grab
+				{rolesList.map((role, index) => {
+					const hasPermissionEdit = checkHasPermissionEditRole(isClanOwner, userMaxPermissionLevel, role);
+					return (
+						<div
+							key={role.id}
+							className={`cursor-grab
 						${
 							hoveredIndex === index
 								? dragBorderPosition === EDragBorderPosition.BOTTOM
@@ -155,21 +161,23 @@ const SettingListRole = (props: closeEditRole) => {
 									: '!border-t-2 !border-t-green-500'
 								: ''
 						}`}
-						draggable
-						onDragStart={() => handleDragStart(index)}
-						onDragOver={handleDragOver}
-						onDragEnd={handleDragEnd}
-						onDragEnter={() => handleDragEnter(index)}
-					>
-						<ItemRole
-							title={role.title || ''}
-							color={role.color || ''}
-							onHandle={() => handleRoleClick(role.id)}
-							isChoose={clickedRole === role.id}
-							iconUrl={role.role_icon}
-						/>
-					</div>
-				))}
+							draggable={hasPermissionEdit}
+							onDragStart={() => handleDragStart(index)}
+							onDragOver={handleDragOver}
+							onDragEnd={handleDragEnd}
+							onDragEnter={() => handleDragEnter(index)}
+						>
+							<ItemRole
+								title={role.title || ''}
+								color={role.color || ''}
+								onHandle={() => handleRoleClick(role.id)}
+								isChoose={clickedRole === role.id}
+								iconUrl={role.role_icon}
+								showLock={!hasPermissionEdit}
+							/>
+						</div>
+					);
+				})}
 				{isNewRole && (
 					<ItemRole ref={newRoleRef} title={nameRoleNew ?? t('roleManagement.newRoleDefault')} color={colorRoleNew ?? ''} isChoose />
 				)}
@@ -186,9 +194,10 @@ type ItemRoleProps = {
 	isChoose?: boolean;
 	onHandle?: () => void;
 	iconUrl?: string;
+	showLock?: boolean;
 };
 
-const ItemRole = forwardRef<HTMLDivElement, ItemRoleProps>(({ title, color, isChoose, onHandle, iconUrl }, ref) => {
+const ItemRole = forwardRef<HTMLDivElement, ItemRoleProps>(({ title, color, isChoose, onHandle, iconUrl, showLock }, ref) => {
 	return (
 		<div ref={ref} onClick={onHandle}>
 			<button
@@ -198,7 +207,7 @@ const ItemRole = forwardRef<HTMLDivElement, ItemRoleProps>(({ title, color, isCh
 			>
 				<div className="size-3 rounded-full min-w-3" style={{ backgroundColor: color || DEFAULT_ROLE_COLOR }}></div>
 				{iconUrl && <img src={iconUrl} alt="" className={'w-5 h-5'} />}
-
+				{showLock && <Icons.IconLock defaultSize="size-3 text-contentTertiary" />}
 				<span className="one-line">{title}</span>
 			</button>
 		</div>

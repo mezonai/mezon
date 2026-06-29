@@ -240,7 +240,8 @@
 		"invites": "Lời mời",
 		"integrations": "Tích hợp",
 		"category": "Danh mục",
-		"quickMenu": "Hành động nhanh"
+		"quickMenu": "Hành động nhanh",
+		"streamThumbnail": "Ảnh bìa Stream"
 	},
 	"categoryManagement": {
 		"title": "Danh mục",

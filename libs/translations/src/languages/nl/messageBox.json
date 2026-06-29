@@ -1,0 +1,19 @@
+{
+	"placeholder": "Schrijf hier je gedachten...",
+	"ephemeralMessage": "Tijdelijk bericht voor {{username}}...",
+	"mentionCategories": {
+		"members": "LEDEN",
+		"textChannels": "TEKSTKANALEN",
+		"emojiMatching": "Emoji's gevonden",
+		"commands": "COMMANDO'S"
+	},
+	"suggestions": {
+		"notifyEveryone": "Stel iedereen op de hoogte met toegang tot dit kanaal",
+		"loadingCommands": "Commando's laden..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Tijdelijk bericht versturen (alleen zichtbaar voor geselecteerde gebruiker)"
+		}
+	}
+}

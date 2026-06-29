@@ -7,6 +7,7 @@ import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import { AddMembersModal } from '../AddMembersModal';
 
@@ -53,6 +54,10 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 	}, [activeRole, clickRole, dispatchRole]);
 
 	const handleRemoveMember = async (userID: string) => {
+		if (!hasPermissionEdit) {
+			toast.error(t('roleManagement.noPermissionToEditRole'));
+			return;
+		}
 		const userIDArray = userID?.split(',');
 		await updateRole(currentClanId ?? '', clickRole, activeRole?.title ?? '', activeRole?.color ?? '', [], [], userIDArray, [], currentRoleIcon);
 	};
@@ -68,10 +73,17 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
 				<button
-					className="flex-shrink-0 sbm:flex-grow text-[11px] sbm:text-[15px] bg-indigo-500 hover:bg-indigo-600 rounded-lg py-[5px] px-1.5 sbm:py-[3px] sbm:px-2 text-nowrap font-medium text-white"
+					className={`flex-shrink-0 sbm:flex-grow text-[11px] sbm:text-[15px] rounded-lg py-[5px] px-1.5 sbm:py-[3px] sbm:px-2 text-nowrap font-medium text-white ${
+						hasPermissionEdit ? 'bg-indigo-500 hover:bg-indigo-600 cursor-pointer' : 'bg-indigo-500 opacity-50 cursor-not-allowed'
+					}`}
 					onClick={() => {
+						if (!hasPermissionEdit) {
+							toast.error(t('roleManagement.noPermissionToEditRole'));
+							return;
+						}
 						handleOpenModal();
 					}}
+					disabled={!hasPermissionEdit}
 				>
 					{t('setupMember.addMember')}
 				</button>
@@ -90,6 +102,7 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 							clanAvatar={member.clan_avatar}
 							avatar={member?.user?.avatar_url}
 							isNewRole={isNewRole}
+							hasPermissionEdit={hasPermissionEdit}
 							onRemove={() => handleRemoveMember(member?.user?.id || '')}
 						/>
 					))}
@@ -99,7 +112,7 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 					<p className="text-theme-primary">{t('setupMember.noMembersFound')}</p>
 				</div>
 			)}
-			<AddMembersModal isOpen={openModal} onClose={handleCloseModal} RolesClan={RolesClan} />
+			<AddMembersModal isOpen={openModal} onClose={handleCloseModal} RolesClan={RolesClan} hasPermissionEdit={hasPermissionEdit} />
 		</div>
 	);
 };
@@ -114,11 +127,12 @@ type ItemMemberProps = {
 	clanAvatar?: string;
 	avatar?: string;
 	isNewRole: boolean;
+	hasPermissionEdit: boolean;
 	onRemove: () => void;
 };
 
 const ItemMember = (props: ItemMemberProps) => {
-	const { id = '', username = '', displayName = '', clanName = '', clanAvatar = '', avatar = '', isNewRole, onRemove } = props;
+	const { id = '', username = '', displayName = '', clanName = '', clanAvatar = '', avatar = '', isNewRole, hasPermissionEdit, onRemove } = props;
 	const namePrioritize = getNameForPrioritize(clanName, displayName, username);
 	const avatarPrioritize = getAvatarForPrioritize(clanAvatar, avatar);
 	return (
@@ -134,8 +148,8 @@ const ItemMember = (props: ItemMemberProps) => {
 				<span className="font-medium one-line">{namePrioritize}</span>
 				<span className="font-light">{username}</span>
 			</div>
-			{!isNewRole ? (
-				<div onClick={onRemove} className="w-4 h-4 rounded-full flex justify-center items-center mr-5 cursor-pointer  hover:text-red-500">
+			{!isNewRole && hasPermissionEdit ? (
+				<div onClick={onRemove} className="w-4 h-4 rounded-full flex justify-center items-center mr-5 cursor-pointer hover:text-red-500">
 					<Icons.Close defaultSize="size-2 " />
 				</div>
 			) : null}

@@ -133,15 +133,15 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 	}, []);
 
 	return (
-		<div className=" overflow-hidden ">
-			<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between sbm:mt-[60px] mt-[10px] max-sm:gap-2">
-				<h2 className="text-xl max-sm:text-lg text-theme-primary-active font-semibold flex">
+		<div>
+			<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between sbm:mt-[60px] mt-[10px] max-sm:gap-2 overflow-visible">
+				<h2 className="text-xl max-sm:text-lg text-theme-primary-active font-semibold flex whitespace-nowrap">
 					<div>{t('title')}</div>
 				</h2>
 				<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center max-sm:gap-2 max-sm:w-full">
-					<div className="relative">
+					<div className="relative overflow-visible">
 						<div onClick={handleSearchMemberClick} className="flex items-center gap-3 w-full text-[13px] line-clamp-1 break-all">
-							<div className="max-sm:hidden">{t('filterByUser')}</div>
+							<div className="whitespace-nowrap max-sm:hidden">{t('filterByUser')}</div>
 							<div className="flex items-center gap-1 cursor-pointer bg-input-theme border border-theme-primary rounded-lg px-3 py-2 sm:px-0 sm:py-0 sm:bg-transparent sm:border-0">
 								<div className="sm:hidden text-sm font-medium">{t('filterByUser')}:</div>
 								<div className="one-line">
@@ -164,9 +164,9 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 							</div>
 						)}
 					</div>
-					<div className="relative">
+					<div className="relative overflow-visible">
 						<div onClick={handleSearchActionClick} className="flex items-center gap-3 w-full text-[13px] line-clamp-1 break-all">
-							<div className="max-sm:hidden">{t('filterByAction')}</div>
+							<div className="whitespace-nowrap max-sm:hidden">{t('filterByAction')}</div>
 							<div className="flex items-center gap-1 cursor-pointer bg-input-theme border border-theme-primary rounded-lg px-3 py-2 sm:px-0 sm:py-0 sm:bg-transparent sm:border-0">
 								<div className="sm:hidden text-sm font-medium">{t('filterByAction')}:</div>
 								<div className="one-line">{getTranslatedActionName(actionFilter)}</div>
@@ -179,6 +179,7 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 									key={actionFilter}
 									currentClanId={currentClanId}
 									actionFilter={actionFilter}
+									userFilter={userFilter}
 									closeModal={closeModal}
 									pageSize={pageSize}
 									currentPage={currentPage}

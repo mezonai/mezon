@@ -1,0 +1,22 @@
+{
+	"editStatus": "Статус",
+	"save": "Зберегти",
+	"statusDuration": {
+		"label": "Тривалість статусу",
+		"today": "Сьогодні",
+		"fourHours": "4 години",
+		"oneHour": "1 година",
+		"thirtyMinutes": "30 хвилин",
+		"dontClear": "Не очищати"
+	},
+	"placeholder": "Що ви робите?",
+	"userStatus": {
+		"online": "Онлайн",
+		"idle": "Неактивний",
+		"doNotDisturb": "Не турбувати",
+		"invisible": "Офлайн (Непомітний)"
+	},
+	"setCustomStatus": "Встановити власний статус",
+	"onlineStatus": "Статус онлайн",
+	"changeOnlineStatus": "Змінити статус онлайн"
+}

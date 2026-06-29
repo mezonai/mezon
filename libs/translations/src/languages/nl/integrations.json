@@ -1,0 +1,28 @@
+{
+	"title": "Integraties",
+	"clanWebhooks": "Clan Webhooks",
+	"webhooks": "Webhooks",
+	"description": "Pas je clan aan met geïntegreerde functies. Beheer webhooks, geïndiceerde kanalen en apps, integreer externe systemen en automatiseer notificatieprocessen in Mezon.",
+	"learnMore": "Lees meer over integratiebeheer.",
+	"webhook": "webhook",
+	"webhooksPlural": "webhooks",
+	"createWebhook": "Webhook aanmaken",
+	"createClanWebhook": "Clan Webhook aanmaken",
+	"viewWebhook": "Webhook bekijken",
+	"viewClanWebhook": "Clan Webhook bekijken",
+	"newWebhook": "Nieuwe Webhook",
+	"newClanWebhook": "Nieuwe Clan Webhook",
+	"noWebhooks": "Je hebt nog geen webhooks!",
+	"webhookDescription": "Webhooks zijn een eenvoudige manier om berichten van andere apps en websites naar Mezon te sturen met behulp van internettechnologie.",
+	"clanWebhookDescription": "Clan Webhooks zijn een eenvoudige manier om berichten van andere apps en websites naar elke Mezon-gebruiker te sturen met behulp van internettechnologie.",
+	"learnMoreWebhook": "Lees meer",
+	"orTry": "of probeer",
+	"buildWebhook": "zelf te bouwen.",
+	"webhookTip": "Tip: Als je token op je URL verstoord of verouderd lijkt, reset en kopieer de nieuwe URL.",
+	"webhookCount": "{{count}} webhook",
+	"webhook_other": "{{count}} webhooks",
+	"toast": {
+		"generateSuccess": "{{name}} succesvol aangemaakt!",
+		"deleteSuccess": "{{name}} succesvol verwijderd!"
+	}
+}

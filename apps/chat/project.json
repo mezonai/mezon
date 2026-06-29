@@ -43,7 +43,9 @@
 			"defaultConfiguration": "development",
 			"options": {
 				"buildTarget": "chat:build",
-				"hmr": true
+				"hmr": true,
+				"host": "127.0.0.1",
+				"port": 4200
 			},
 			"configurations": {
 				"development": {

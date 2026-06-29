@@ -261,7 +261,7 @@ const TopBarChannelText = memo(() => {
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={dmUserAvatar}
-							avatarName={currentDmGroup?.channel_label?.at(0)}
+							avatarName={currentDmGroup?.usernames?.at(0)}
 						/>
 						{currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_GROUP && (
 							<div className="absolute top-6 left-5 w-3 h-3" data-e2e={generateE2eId('icon.profile_status')}>

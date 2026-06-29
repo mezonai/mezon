@@ -23,7 +23,7 @@ export const fetchAllClansMetrics = createAsyncThunk(
 			const base = API_BASE || '';
 			const url = `${base}/dashboard/all-clans/metrics?start_date=${start}&end_date=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`;
 			const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
+			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
@@ -61,7 +61,7 @@ export const fetchClansList = createAsyncThunk(
 			const base = API_BASE || '';
 			const state = thunkAPI.getState() as RootState;
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
+			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			let url = `${base}/dashboard/list-all-clans/metrics?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}${rangeType ? `&rangeType=${rangeType}` : ''}`;
 			if (sortBy) {
@@ -132,7 +132,7 @@ export const fetchClanChannels = createAsyncThunk(
 			const base = API_BASE || '';
 			const state = getState() as RootState;
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
+			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			let url = `${base}/dashboard/${clanId}/channels?start_date=${start}&end_date=${end}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`;
 			if (sortBy) {
@@ -174,7 +174,7 @@ export const fetchChannelUsers = createAsyncThunk(
 			const base = API_BASE || '';
 			const state = getState() as RootState;
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-			const token = session?.session_id;
+			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 			let url = `${base}/dashboard/${clanId}/users?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}`;
 			if (sortBy) {
@@ -439,7 +439,7 @@ function unwrapDashboardJson<T>(json: unknown): T {
 
 function authHeadersForDashboard(getState: () => RootState): Record<string, string> {
 	const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-	const token = session?.session_id;
+	const token = session?.token;
 	return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -451,7 +451,7 @@ export const fetchRooms = createAsyncThunk<
 		const base = API_BASE || '';
 		const state = thunkAPI.getState() as RootState;
 		const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-		const token = session?.session_id;
+		const token = session?.token;
 		const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
 		const params = new URLSearchParams();

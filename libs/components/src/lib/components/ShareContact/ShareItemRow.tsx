@@ -36,33 +36,43 @@ export const ShareItemRow = ({ item, isSelected, onToggle, searchText, t }: Shar
 			data-e2e={generateE2eId('suggest_item')}
 		>
 			{isChannelOrThread ? (
-				<div className="flex items-center flex-1 mr-1 gap-2">
+				<div className="flex items-center flex-1 min-w-0 mr-1 gap-2 overflow-hidden">
 					{item.type === 'channel' ? (
 						item.isAgeRestricted ? (
-							<Icons.HashtagWarning className="w-5 h-5 text-theme-secondary" />
+							<Icons.HashtagWarning className="w-5 h-5 shrink-0 text-theme-secondary" />
 						) : item.isPublic ? (
-							<Icons.Hashtag className="w-5 h-5 text-theme-secondary" />
+							<Icons.Hashtag className="w-5 h-5 shrink-0 text-theme-secondary" />
 						) : (
-							<Icons.HashtagLocked className="w-5 h-5" defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />
+							<Icons.HashtagLocked
+								className="w-5 h-5 shrink-0"
+								defaultFill1="var(--bg-icon-theme)"
+								defaultFill2="var(--bg-icon-theme-active)"
+							/>
 						)
 					) : item.isPublic ? (
 						<Icons.ThreadIcon
-							className="w-5 h-5"
+							className="w-5 h-5 shrink-0"
 							defaultFill1="var(--bg-icon-theme)"
 							defaultFill4="var(--bg-theme-secounnd)"
 							defaultFill5="var(--bg-icon-theme)"
 						/>
 					) : (
 						<Icons.ThreadIconLocker
-							className="w-5 h-5"
+							className="w-5 h-5 shrink-0"
 							defaultFill1="var(--bg-icon-theme)"
 							defaultFill4="var(--bg-theme-secounnd)"
 							defaultFill5="var(--bg-icon-theme-active)"
 						/>
 					)}
-					<span className="text-theme-primary text-sm flex-1">{item.displayName}</span>
+					<span className="text-theme-primary text-sm flex-1 min-w-0 truncate" title={item.displayName}>
+						{item.displayName}
+					</span>
 					{item.clanName && (
-						<span className="text-theme-primary text-xs uppercase ml-2" data-e2e={generateE2eId('suggest_item.clan_name')}>
+						<span
+							className="text-theme-primary text-xs uppercase ml-2 shrink-0 truncate max-w-[140px]"
+							title={item.clanName}
+							data-e2e={generateE2eId('suggest_item.clan_name')}
+						>
 							{item.clanName}
 						</span>
 					)}

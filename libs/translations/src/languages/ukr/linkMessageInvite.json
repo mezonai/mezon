@@ -1,0 +1,18 @@
+{
+	"title": "ЗАПРОШИТИ ДО КЛАНУ",
+	"offline": "офлайн",
+	"online": "онлайн",
+	"join": "Приєднатися",
+	"joining": "Приєднання...",
+	"goToClan": "Перейти до клану",
+	"unknownClan": "Невідомий клан",
+	"memberCount": "{{count}} Учасників",
+	"memberCount_plural": "{{count}} Учасників",
+	"failedToJoin": "Не вдалося приєднатися до цього клану.",
+	"inviteTo": "ЗАПРОСИТИ ДО {{clanName}}",
+	"noThanks": "Ні, дякую",
+	"invalidInvite": {
+		"title": "Недійсне запрошення",
+		"message": "Спробуйте надіслати інше запрошення!"
+	}
+}

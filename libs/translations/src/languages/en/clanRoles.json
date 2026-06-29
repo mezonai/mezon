@@ -107,6 +107,7 @@
 		"edit": "Edit",
 		"view": "View",
 		"delete": "Delete",
-		"roleNameIsRequired": "Role name is required"
+		"roleNameIsRequired": "Role name is required",
+		"noPermissionToEditRole": "You do not have permission to edit this role."
 	}
 }

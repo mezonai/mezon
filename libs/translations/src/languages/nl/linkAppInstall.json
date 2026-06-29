@@ -1,0 +1,11 @@
+{
+  "description": "Een externe app",
+  "subDescription": "wil toegang tot je Mezon-account",
+  "addToClan": "Toevoegen aan Clan",
+  "invite": "Machtigen",
+  "back": "Terug",
+  "successInstall": "App succesvol aan clan toegevoegd",
+  "errorInstall": "Fout bij toevoegen app aan clan",
+  "selectClan": "Clan zoeken",
+  "placeholder": "Kies een clan om je bot/app uit te nodigen"
+}

@@ -1,10 +1,10 @@
 import type { IDMCall, IMessageSendPayload, IOtherCall, LoadingStatus } from '@mezon/utils';
-import { getMessageCreateTimeSeconds } from '@mezon/utils';
+import { TypeMessage, getMessageCreateTimeSeconds } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { WebrtcSignalingFwd } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
-import { selectMessageByMessageId } from '../messages/messages.slice';
+import { messagesActions, selectMessageByMessageId, type MessagesEntity } from '../messages/messages.slice';
 import type { RootState } from '../store';
 
 export const DMCALL_FEATURE_KEY = 'dmcall';
@@ -43,7 +43,7 @@ export const updateCallLog = createAsyncThunk(
 			const messageId = selectCallMessageId(state);
 			if (messageId) {
 				const callMessage = selectMessageByMessageId(state, channelId ?? '', messageId);
-				mezon.clientRef.current?.updateChatMessage(
+				await mezon.clientRef.current?.updateChatMessage(
 					mezon.session,
 					'0',
 					channelId ?? '',
@@ -56,6 +56,19 @@ export const updateCallLog = createAsyncThunk(
 					getMessageCreateTimeSeconds(callMessage ?? {}),
 					true
 				);
+
+				if (callMessage) {
+					const updateTimeSeconds = Date.now() / 1000;
+					thunkAPI.dispatch(
+						messagesActions.newMessage({
+							...callMessage,
+							code: TypeMessage.ChatUpdate,
+							content,
+							update_time_seconds: updateTimeSeconds,
+							update_time: new Date(updateTimeSeconds * 1000).toISOString()
+						} as MessagesEntity)
+					);
+				}
 			}
 		} catch (error) {
 			return thunkAPI.rejectWithValue(error);

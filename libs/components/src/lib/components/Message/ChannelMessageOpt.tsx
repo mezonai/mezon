@@ -17,7 +17,7 @@ import {
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
-	useAppSelector,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser, MenuBuilder } from '@mezon/utils';
@@ -34,7 +34,7 @@ import {
 	formatMoney,
 	generateE2eId,
 	isPublicChannel,
-	useMenuBuilder,
+	useMenuBuilder
 } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import clx from 'classnames';

@@ -2,6 +2,7 @@ import { useChatSending, useOnClickOutside } from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import { selectTheme } from '@mezon/store';
 import { CHANNEL_INPUT_ID, GENERAL_INPUT_ID, MAX_LENGTH_MESSAGE_BUZZ, ThemeApp, TypeMessage, generateE2eId } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -30,7 +31,10 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, closeBuzzModal }: ModalIn
 	}, [closeBuzzModal]);
 
 	const focusChatInput = useCallback(() => {
-		const editor = document.getElementById(CHANNEL_INPUT_ID) || document.getElementById(GENERAL_INPUT_ID);
+		const editor =
+			mode === ChannelStreamMode.STREAM_MODE_THREAD
+				? document.querySelector(`[data-e2e="${generateE2eId('discussion.box.thread')}"]`)?.querySelector<HTMLElement>(`#${CHANNEL_INPUT_ID}`)
+				: document.getElementById(CHANNEL_INPUT_ID) || document.getElementById(GENERAL_INPUT_ID);
 		if (!editor) return;
 
 		editor.focus();
@@ -46,7 +50,7 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, closeBuzzModal }: ModalIn
 				// ignore
 			}
 		}
-	}, []);
+	}, [mode]);
 
 	const handleSendBuzzMsg = useCallback(() => {
 		const trimmedMessage = message.trim();

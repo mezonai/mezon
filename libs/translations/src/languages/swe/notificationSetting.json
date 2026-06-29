@@ -38,7 +38,7 @@
 	"clanNotificationSettings": "CLAN NOTIS INSTÄLLNINGAR",
 	"notificationOverrides": "NOTIS ÖVERSKRIDNING",
 	"addChannelOverride": "Lägg till kanal för att överskrida standard notisinställning",
-	"selectOrCreateOption": "Välj eller skapa alternativ...",
+	"selectChannelOrCategory": "Välj en kanal eller kategori...",
 	"headers": {
 		"channelOrCategory": "KANAL ELLER KATEGORI",
 		"all": "ALLA",

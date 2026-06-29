@@ -1,8 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
+import type { SupportedLanguage } from '@mezon/translations';
+import { SUPPORTED_LANGUAGES } from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import isElectron from 'is-electron';
+
 import { ChannelType } from 'mezon-js';
 import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
@@ -66,7 +68,7 @@ export interface showSettingFooterProps {
 
 export interface AppState {
 	themeApp: 'light' | 'dark' | 'sunrise' | 'purple_haze' | 'redDark' | 'abyss_dark';
-	currentLanguage: 'en' | 'vi';
+	currentLanguage: SupportedLanguage;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	isShowMemberList: boolean;
@@ -100,10 +102,13 @@ export interface AppState {
 	autoHidden: boolean;
 }
 
-const getInitialLanguage = (): 'en' | 'vi' => {
+const isStoredLanguage = (value: string | null): value is SupportedLanguage =>
+	value !== null && (SUPPORTED_LANGUAGES as readonly string[]).includes(value);
+
+const getInitialLanguage = (): SupportedLanguage => {
 	if (typeof window !== 'undefined') {
 		const storedLang = localStorage.getItem('i18nextLng');
-		if (storedLang === 'vi' || storedLang === 'en') {
+		if (isStoredLanguage(storedLang)) {
 			return storedLang;
 		}
 		const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -177,14 +182,14 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		const currentChannelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
 		const currentDirectId = state.direct?.currentDirectMessageId;
 		const currentClanId = state.clans?.currentClanId;
-		const path = isElectron() ? window.location.hash : window.location.pathname;
+		const path = window.location.pathname;
 
 		let channelId = null;
 		let clanId = null;
-		if (currentChannelId && path.includes('/' + currentChannelId)) {
+		if (currentChannelId && path.includes(`/${currentChannelId}`)) {
 			clanId = currentClanId;
 			channelId = currentChannelId;
-		} else if (currentDirectId && path.includes('/' + currentDirectId)) {
+		} else if (currentDirectId && path.includes(`/${currentDirectId}`)) {
 			clanId = '0';
 			channelId = currentDirectId;
 		}

@@ -1,0 +1,63 @@
+{
+	"title": "Повідомлення",
+	"addFriend": "Додати друга",
+	"friends": "Друзі",
+	"blockedUserMessage": "Повідомлення заблоковано",
+	"menu": {
+		"leaveGroup": "Покинути групу",
+		"deleteGroup": "Видалити групу",
+		"profile": "Профіль",
+		"closeDm": "Закрити повідомлення",
+		"markAsRead": "Позначити як прочитане",
+		"favorite": "Улюблене",
+		"muteConversation": "Вимкнути сповіщення",
+		"unMuteConversation": "Увімкнути сповіщення",
+		"notificationSettings": "Налаштування сповіщень",
+		"disableE2EE": "Вимкнути ск кріпте E2EE",
+		"enableE2EE": "Увімкнути ск кріпте E2EE",
+		"blockUser": "Заблокувати користувача",
+		"unblockUser": "Розблокувати користувача",
+		"removeFriend": "Видалити друга",
+		"addFriend": "Додати друга",
+		"pinConversation": "Закріпити розмову",
+		"unpinConversation": "Відкріпити розмову"
+	},
+	"confirm": {
+		"title": "Покинути {{groupName}}",
+		"content": "Ви впевнені, що хочете покинути {{groupName}}? Ви не зможете приєднатися знову, поки вас не запросять.",
+		"confirmText": "Так"
+	},
+	"pinConfirm": {
+		"title": "Закріпити розмову?",
+		"content": "Ця розмова буде переміщена на початок списку повідомлень для зручного доступу.",
+		"confirmText": "Закріпити"
+	},
+	"unpinConfirm": {
+		"title": "Відкріпити розмову?",
+		"content": "Ця розмова повернеться до звичайного місця в списку повідомлень.",
+		"confirmText": "Відкріпити"
+	},
+	"pinSection": "ЗАКРІПЛЕНІ",
+	"allMessagesSection": "ВСІ ПОВІДОМЛЕННЯ",
+	"maximumPinnedConversationsReached": "Ви можете закріпити максимум {{max}} розмов.",
+	"notification": {
+		"blockUser": {
+			"success": "Користувача успішно заблоковано",
+			"error": "Не вдалося заблокувати користувача"
+		},
+		"unblockUser": {
+			"success": "Користувача успішно розблоковано",
+			"error": "Не вдалося розблокувати користувача"
+		},
+		"muteSuccess": "Сповіщення успішно вимкнено!",
+		"unMuteSuccess": "Сповіщення успішно увімкнено!",
+		"muteFailed": "Помилка вимкнення сповіщення!",
+		"unMuteFailed": "Помилка увімкнення сповіщення!"
+	},
+	"waveWelcome": "Покличіть на привітання!",
+	"waveWelcomeDM": "Покличіть на привітання до {{username}}",
+	"members": "учасників",
+	"speaker": "Динамік",
+	"end": "Кінець",
+	"turnedMicOff": "вимкнув мікрофон"
+}

@@ -21,13 +21,13 @@ import {
 	getMobileUploadedAttachments,
 	getPublicKeys,
 	getWebUploadedAttachments,
-	mergePresignFinishContent,
-	withCreateTimeSecondsInUpdateContent,
 	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
+	mergePresignFinishContent,
 	revokePreSendAttachmentUrls,
-	toPublicMessageAttachments
+	toPublicMessageAttachments,
+	withCreateTimeSecondsInUpdateContent
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
@@ -828,6 +828,9 @@ async function executeUpdateLastSeenMessageBody(args: UpdateMessageArgs, thunkAP
 		}
 	} catch (e) {
 		console.error(e, 'updateLastSeenMessage writeSocket');
+		if ((e as { error?: { message?: string } })?.error?.message === 'permission denied') {
+			return;
+		}
 		thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count: badgeCount, message_time }));
 	}
 }
@@ -1538,8 +1541,9 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 
 	const state = thunkAPI.getState() as RootState;
 	const channelId = message.channel_id;
+	const channelData = state.messages.channelMessages?.[channelId];
 
-	if (!state.messages.channelMessages?.[channelId]?.cache) {
+	if (!channelData?.cache && !channelData?.ids?.length) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));
 		return;
 	}
@@ -1856,24 +1860,35 @@ export const messagesSlice = createSlice({
 				}
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
+					const resolvedChannelId = resolveMessageStoreChannelId(state, messageId, messageChannelId);
+					if (!state.channelMessages[resolvedChannelId]) {
+						state.channelMessages[resolvedChannelId] = channelMessagesAdapter.getInitialState({
+							id: resolvedChannelId
+						});
+					}
+					const targetEntity = state.channelMessages[resolvedChannelId];
+					const existingMessage = targetEntity?.entities?.[messageId];
+					if (!existingMessage) break;
+
 					const updateTimeSeconds = action.payload.update_time_seconds;
-					const existingMessage = channelEntity?.entities?.[messageId];
-					const mergedContent = mergePresignFinishContent(existingMessage?.content, action.payload.content);
+					const mergedContent = mergePresignFinishContent(existingMessage.content, action.payload.content);
 					const changes: Partial<MessagesEntity> = {
 						content: mergedContent as MessagesEntity['content'],
 						mentions: action.payload.mentions,
-						hide_editted: action.payload.hide_editted,
 						update_time_seconds: updateTimeSeconds,
 						update_time: action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
 					};
+					if (action.payload.hide_editted !== undefined) {
+						changes.hide_editted = action.payload.hide_editted;
+					}
 					if (action.payload.attachments?.length) {
 						changes.attachments = action.payload.attachments;
 					}
-					channelMessagesAdapter.updateOne(channelEntity, {
+					channelMessagesAdapter.updateOne(targetEntity, {
 						id: action.payload.id,
 						changes
 					});
-					const replyList = handleUpdateReplyMessage(channelEntity, action.payload.id);
+					const replyList = handleUpdateReplyMessage(targetEntity, action.payload.id);
 					if (replyList.length > 0) {
 						const updates: { id: string; changes: MessagesEntity }[] = replyList.map((message) => {
 							return {
@@ -1891,19 +1906,20 @@ export const messagesSlice = createSlice({
 								}
 							};
 						});
-						channelMessagesAdapter.updateMany(channelEntity, updates);
+						channelMessagesAdapter.updateMany(targetEntity, updates);
 					}
 					break;
 				}
 
 				case TypeMessage.DeleteEphemeralMsg:
 				case TypeMessage.ChatRemove: {
+					const resolvedChannelId = resolveMessageStoreChannelId(state, messageId, messageChannelId);
 					updateReferenceMessage({
 						state,
-						channelId,
+						channelId: resolvedChannelId,
 						deletedMessageId: messageId
 					});
-					handleRemoveOneMessage({ state, channelId, messageId });
+					handleRemoveOneMessage({ state, channelId: resolvedChannelId, messageId });
 					break;
 				}
 				default:
@@ -1917,30 +1933,6 @@ export const messagesSlice = createSlice({
 		},
 		setLastMessage: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel>) => {
 			state.lastMessageByChannel[action.payload.channel_id] = action.payload;
-		},
-		updateTopicRplCount: (state, action: PayloadAction<{ channelId: string; topicId: string; increment: boolean; timestamp?: number }>) => {
-			const { channelId, topicId, increment, timestamp } = action.payload;
-
-			const channelMessages = state.channelMessages[channelId];
-			if (!channelMessages) return;
-
-			const topicCreatorMessage = channelMessagesAdapter
-				.getSelectors()
-				.selectAll(channelMessages)
-				.find((message) => message?.content?.tp === topicId);
-
-			if (topicCreatorMessage?.content && topicCreatorMessage.id) {
-				const currentRpl = topicCreatorMessage.content.rpl || 0;
-				const newRpl = increment ? currentRpl + 1 : Math.max(0, currentRpl - 1);
-
-				const messageEntity = channelMessages.entities[topicCreatorMessage.id];
-				if (messageEntity?.content) {
-					messageEntity.content.rpl = newRpl;
-					if (timestamp && increment) {
-						messageEntity.content.lsnt = timestamp;
-					}
-				}
-			}
 		},
 		setViewingOlder: (state, action: PayloadAction<{ channelId: string; status: boolean }>) => {
 			const { channelId, status } = action.payload;
@@ -2664,6 +2656,20 @@ const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: Mess
 	if (state.channelMessages[channelId]) {
 		state.channelMessages[channelId] = channelMessagesAdapter.addOne(state.channelMessages[channelId], adapterPayload);
 	}
+};
+
+const resolveMessageStoreChannelId = (state: MessagesState, messageId: string, preferredChannelId: string): string => {
+	if (state.channelMessages[preferredChannelId]?.entities?.[messageId]) {
+		return preferredChannelId;
+	}
+
+	for (const [channelId, channelData] of Object.entries(state.channelMessages)) {
+		if (channelData?.entities?.[messageId]) {
+			return channelId;
+		}
+	}
+
+	return preferredChannelId;
 };
 
 const handleUpdateReplyMessage = (channelEntity: EntityState<MessagesEntity, string> & { id: string }, message_ref_id: string) => {

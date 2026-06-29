@@ -39,16 +39,17 @@ type DeviceItemProps = {
 	onRemove?: (deviceId: string) => void;
 };
 
-const formatDeviceDate = (date: string | Date | undefined, t: (key: string) => string): string => {
-	if (!date) return '';
-	const dateStr = date instanceof Date ? date.toISOString() : String(date);
-	return convertTimeString(dateStr, t);
+const formatDeviceDate = (timestampSeconds: number | string | undefined, t: (key: string) => string): string => {
+	if (!timestampSeconds) return '';
+	const seconds = typeof timestampSeconds === 'string' ? Number(timestampSeconds) : timestampSeconds;
+	if (!seconds) return '';
+	return convertTimeString(new Date(seconds * 1000).toISOString(), t);
 };
 
 const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
-	const { platform, device_name, location, last_active } = device;
+	const { platform, device_name, location, last_active_seconds } = device;
 
-	const formattedLastActive = formatDeviceDate(last_active, t);
+	const formattedLastActive = formatDeviceDate(last_active_seconds, t);
 	const platformLabel = getPlatformLabel(platform);
 
 	return (
@@ -73,7 +74,7 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 			</div>
 			{!isCurrent && onRemove && (
 				<button
-					onClick={() => onRemove(device.device_id)}
+					onClick={() => device.device_id && onRemove(device.device_id)}
 					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors"
 					title={t('deviceSettings.removeDevice')}
 				>

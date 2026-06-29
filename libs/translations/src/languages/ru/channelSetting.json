@@ -242,7 +242,8 @@
 		"invites": "Приглашения",
 		"integrations": "Интеграции",
 		"category": "Категория",
-		"quickMenu": "Быстрые действия"
+		"quickMenu": "Быстрые действия",
+		"streamThumbnail": "Миниатюра стримов"
 	},
 	"categoryManagement": {
 		"title": "Категория",

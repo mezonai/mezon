@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Item } from 'react-contexify';
 import { useTranslation } from 'react-i18next';
 
 export interface CommandOption {
@@ -23,6 +24,17 @@ interface SearchableCommandListProps {
 	filterOption?: (option: CommandOption, inputValue: string) => boolean;
 	formatOptionLabel?: (option: CommandOption) => React.ReactNode;
 }
+
+const contextSubmenuActiveStyle = {
+	'--contexify-activeItem-color': '#fff',
+	'--contexify-activeItem-bgColor': '#3498db',
+	'--contexify-activeItem-radius': '8px',
+	'--contexify-item-color': 'var(--text-theme-primary)',
+	'--contexify-itemContent-padding': '0'
+} as React.CSSProperties;
+
+const optionContentClassName =
+	"flex items-center gap-2 w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium text-theme-primary p-2 border border-theme-primary rounded transition-colors hover:bg-[#3498db] hover:text-white";
 
 export const SearchableCommandList: React.FC<SearchableCommandListProps> = ({
 	options,
@@ -71,23 +83,17 @@ export const SearchableCommandList: React.FC<SearchableCommandListProps> = ({
 
 	const defaultFormatOptionLabel = useCallback(
 		(option: CommandOption) => (
-			<div className="flex items-start gap-2 w-full">
-				<div className="flex-1 min-w-0">
-					<div className="flex items-center gap-2 mb-1">
-						{option.command?.menu_type === 2 && (
-							<span className="px-1.5 py-0.5 text-xs bg-green-500 text-white rounded font-medium">BOT</span>
-						)}
-						<span className="font-medium text-sm text-theme-primary">{option.command?.display}</span>
-					</div>
-				</div>
-			</div>
+			<>
+				{option.command?.menu_type === 2 && <span className="px-1.5 py-0.5 text-xs bg-green-500 text-white rounded font-medium">BOT</span>}
+				<span className="font-medium text-sm">{option.command?.display}</span>
+			</>
 		),
 		[]
 	);
 
 	return (
-		<div className={`bg-theme-contexify border-none rounded-md shadow-lg ${className}`}>
-			<div className="p-2">
+		<div style={contextSubmenuActiveStyle} className={`bg-theme-contexify border border-theme-primary rounded-md shadow-lg ${className}`}>
+			<div className="p-2 border-b border-theme-primary">
 				<input
 					onClick={(e) => e.stopPropagation()}
 					ref={inputRef}
@@ -100,7 +106,7 @@ export const SearchableCommandList: React.FC<SearchableCommandListProps> = ({
 				/>
 			</div>
 
-			<div ref={listRef} className="h-60 overflow-y-auto pb-1 thread-scroll" role="listbox">
+			<div ref={listRef} className="h-60 overflow-y-auto p-2 thread-scroll space-y-1" role="listbox">
 				{isLoading ? (
 					<div className="p-4 text-center text-theme-secondary">
 						<div className="flex items-center justify-center gap-2">
@@ -115,14 +121,12 @@ export const SearchableCommandList: React.FC<SearchableCommandListProps> = ({
 						<span className="text-sm">{t('noCommandsFound')}</span>
 					</div>
 				) : (
-					filteredOptions.map((option, index) => (
-						<div
-							key={option.value}
-							className={`cursor-pointer px-2 py-2 mx-1 rounded transition-colors hover:bg-[var(--bg-item-hover)] text-theme-primary`}
-							onClick={() => handleOptionClick(option)}
-						>
-							{formatOptionLabel ? formatOptionLabel(option) : defaultFormatOptionLabel(option)}
-						</div>
+					filteredOptions.map((option) => (
+						<Item key={option.value} className="w-full px-2 py-1" onClick={() => handleOptionClick(option)}>
+							<div className={optionContentClassName}>
+								{formatOptionLabel ? formatOptionLabel(option) : defaultFormatOptionLabel(option)}
+							</div>
+						</Item>
 					))
 				)}
 			</div>

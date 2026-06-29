@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "Назва",
+		"memberSince": "Учасник з",
+		"joinedMezon": "Приєднання до Mezon",
+		"roles": "Ролі",
+		"signals": "Сигнали"
+	},
+	"topBar": {
+		"recentMembers": "Останні учасники",
+		"searchPlaceholder": "Пошук",
+		"sort": "Сортувати"
+	},
+	"error": "Помилка",
+	"profile": "Профіль",
+	"message": "Повідомлення",
+	"timeAgo": "{{time}} тому",
+	"transferOwnership": "Передати власність",
+	"removeMember": "Видалити учасника"
+}

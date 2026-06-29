@@ -1,0 +1,63 @@
+{
+	"title": "Wiadomości",
+	"addFriend": "Dodaj przyjaciela",
+	"friends": "Przyjaciele",
+	"blockedUserMessage": "Wiadomość została zablokowana",
+	"menu": {
+		"leaveGroup": "Opuść grupę",
+		"deleteGroup": "Usuń grupę",
+		"profile": "Profil",
+		"closeDm": "Zamknij wiadomość",
+		"markAsRead": "Oznacz jako przeczytane",
+		"favorite": "Ulubione",
+		"muteConversation": "Wycisz konwersację",
+		"unMuteConversation": "Odcisz konwersację",
+		"notificationSettings": "Ustawienia powiadomień",
+		"disableE2EE": "Wyłącz szyfrowanie E2EE",
+		"enableE2EE": "Włącz szyfrowanie E2EE",
+		"blockUser": "Zablokuj użytkownika",
+		"unblockUser": "Odblokuj użytkownika",
+		"removeFriend": "Usuń przyjaciela",
+		"addFriend": "Dodaj przyjaciela",
+		"pinConversation": "Przypnij konwersację",
+		"unpinConversation": "Odepnij konwersację"
+	},
+	"confirm": {
+		"title": "Opuść {{groupName}}",
+		"content": "Czy na pewno chcesz opuścić {{groupName}}? Nie będziesz mógł dołączyć ponownie do tej grupy, chyba że zostaniesz ponownie zaproszony.",
+		"confirmText": "Tak"
+	},
+	"pinConfirm": {
+		"title": "Przypiąć konwersację?",
+		"content": "Ta konwersacja zostanie przeniesiona na górę listy wiadomości, abyś mógł ją łatwo uzyskać.",
+		"confirmText": "Przypnij"
+	},
+	"unpinConfirm": {
+		"title": "Odepnij konwersację?",
+		"content": "Ta konwersacja zostanie przywrócona do normalnej pozycji na liście wiadomości.",
+		"confirmText": "Odepnij"
+	},
+	"pinSection": "PRZYPINANE",
+	"allMessagesSection": "WSZYSTKIE WIADOMOŚCI",
+	"maximumPinnedConversationsReached": "Możesz przypiąć maksymalnie {{max}} konwersacji.",
+	"notification": {
+		"blockUser": {
+			"success": "Pomyślnie zablokowano użytkownika",
+			"error": "Nie można zablokować użytkownika"
+		},
+		"unblockUser": {
+			"success": "Pomyślnie odblokowano użytkownika",
+			"error": "Nie można odblokować użytkownika"
+		},
+		"muteSuccess": "Pomyślnie wyciszono!",
+		"unMuteSuccess": "Pomyślnie odciszono!",
+		"muteFailed": "Nie udało się wyciszyć!",
+		"unMuteFailed": "Nie udało się odciszyć!"
+	},
+	"waveWelcome": "Machnij, aby powitać!",
+	"waveWelcomeDM": "Machnij do {{username}}",
+	"members": "członkowie",
+	"speaker": "Głośnik",
+	"end": "Zakończ",
+	"turnedMicOff": "wyłączył mikrofon"
+}

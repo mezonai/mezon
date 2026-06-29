@@ -1,0 +1,7 @@
+{
+	"joinStreamingRoomBS": {
+		"stream": "Стрим кімната",
+		"joinStream": "Приєднатися до стриму"
+	},
+	"noDisplay": "Не відображати стрим"
+}

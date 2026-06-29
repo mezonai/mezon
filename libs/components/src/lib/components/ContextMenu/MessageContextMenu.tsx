@@ -415,6 +415,7 @@ function MessageContextMenu({
 		(isShowCreateThread: boolean, channelId?: string) => {
 			dispatch(threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannelId as string), isShowCreateThread }));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
+			dispatch(topicsActions.setFocusTopicBox(false));
 		},
 		[currentChannelId, dispatch]
 	);

@@ -44,20 +44,20 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
 
-	const getValidCreateTime = () => {
-		if (pinMessage?.create_time_seconds) return new Date(pinMessage.create_time_seconds * 1000).toISOString();
-		return new Date().toISOString();
-	};
 	const isShowCanvas = useSelector(selectIsShowCanvas);
-
-	const validCreateTime = getValidCreateTime();
-	const messageTime = convertTimeString(validCreateTime);
 	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(state, String(pinMessage?.channel_id || '0'), String(pinMessage?.message_id || '0'))
 	);
+
+	const validCreateTime = useMemo(() => {
+		const createTimeSeconds = message?.create_time_seconds ?? pinMessage?.create_time_seconds;
+		if (createTimeSeconds) return new Date(createTimeSeconds * 1000).toISOString();
+		return '';
+	}, [message?.create_time_seconds, pinMessage?.create_time_seconds]);
+	const messageTime = validCreateTime ? convertTimeString(validCreateTime) : '';
 
 	const directChannel = useAppSelector((state) => selectDirectById(state, String(pinMessage?.channel_id || '')));
 

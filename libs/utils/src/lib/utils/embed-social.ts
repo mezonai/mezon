@@ -1,5 +1,14 @@
+import { EBacktickType } from '../types';
+
 export function isYouTubeLink(url: string): boolean {
 	return /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|e\/|shorts\/)|youtu\.be\/)/.test(url);
+}
+
+export function getLinkType(url: string): EBacktickType {
+	if (isYouTubeLink(url)) return EBacktickType.LINKYOUTUBE;
+	if (isFacebookLink(url)) return EBacktickType.LINKFACEBOOK;
+	if (isTikTokLink(url)) return EBacktickType.LINKTIKTOK;
+	return EBacktickType.LINK;
 }
 
 export function getYouTubeEmbedUrl(url: string): string {

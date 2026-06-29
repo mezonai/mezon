@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "reset": "Réinitialiser",
+    "close": "Fermer",
+    "kick": "Expulser"
+  },
+  "form": {
+    "required": "Champ requis",
+    "error": "Erreur"
+  },
+  "kickMember": {
+    "title": "Expulser {{username}} de {{clanName}}",
+    "description": "Êtes-vous sûr de vouloir expulser @{{username}} de {{clanName}} ? Il pourra rejoindre avec une nouvelle invitation.",
+    "reasonLabel": "Raison de l'expulsion"
+  }
+}

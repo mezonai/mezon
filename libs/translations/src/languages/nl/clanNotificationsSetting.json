@@ -1,0 +1,31 @@
+{
+	"muteClan": "Clan melding uitschakelen verbergt ongelezen indicator en meldingen, tenzij je wordt vermeld",
+	"notifySettingOption": {
+		"title": "Clan meldingsinstellingen",
+		"allMessage": "Alle berichten",
+		"onlyMentions": "Alleen @vermelding",
+		"nothing": "Niets"
+	},
+	"suppressOption": {
+		"suppressEveryone": "@everyone en @here meldingen uitschakelen",
+		"suppressAllRole": "Alle rol @vermeldingen uitschakelen",
+		"suppressHighlights": "Highlight meldingen uitschakelen",
+		"subText": "Highlights bieden sporadische updates wanneer je vrienden chatten in de clan, kopen en meer."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Nieuwe evenement meldingen uitschakelen",
+		"mobilePushNotifications": "Mobiele push-meldingen"
+	},
+	"notificationOverrides": {
+		"title": "Meldingsoverschrijving",
+		"addChannelsAllCategory": "Alle kanalen toevoegen aan categorie"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Je ontvangt geen meldingen van gedempte kanalen. Deze instelling geldt voor alle je apparaten.",
+		"youHaveMuted": "Je hebt dit kanaal uitgeschakeld tot"
+	},
+	"clanNotificationBS": {
+		"title": "Deze clan uitschakelen"
+	},
+	"resetOverrides": "Overschrijvingen resetten"
+}

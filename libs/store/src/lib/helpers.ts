@@ -3,11 +3,18 @@ import { isOnline, socketState } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { ApiSession, Client } from 'mezon-js';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
-import type { GetThunkAPIWithMezon } from './typings';
+import type { AsyncThunkConfigWithAdmin, GetThunkAPIWithMezon } from './typings';
 
 export { socketState };
 
 export const getMezonCtx = (thunkAPI: GetThunkAPI<unknown>) => {
+	if (!isMezonThunk(thunkAPI)) {
+		throw new Error('Not Mezon Thunk');
+	}
+	return thunkAPI.extra.mezon;
+};
+
+export const getAdminCtx = (thunkAPI: GetThunkAPI<AsyncThunkConfigWithAdmin>) => {
 	if (!isMezonThunk(thunkAPI)) {
 		throw new Error('Not Mezon Thunk');
 	}

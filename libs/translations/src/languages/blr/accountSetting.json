@@ -1,0 +1,144 @@
+{
+	"myAccount": "Мой рахунак",
+	"editUserProfile": "Рэдагаваць профіль карыстальніка",
+	"noDisplayName": "Вы яшчэ не дадалі імя для адлюстравання.",
+	"edit": "Рэдагаваць",
+	"password": "Пароль",
+	"phoneNumber": "Нумар тэлефона",
+	"username": "Імя карыстальніка",
+	"displayName": "Імя для адлюстравання",
+	"users": "Карыстальнікі",
+	"accountManagement": "Кіраванне рахункам",
+	"blockedUsers": "Заблакаваныя карыстальнікі",
+	"disableAccount": "Адключыць рахунак",
+	"deleteAccount": "Выдаліць рахунак",
+	"accountInformation": "Інфармацыя пра рахунак",
+	"doNotHaveBlockedUser": "Няма заблакаваных карыстальнікаў",
+	"setPassword": "Усталяваць пароль",
+	"changePassword": "Змяніць пароль",
+	"setEmail": "Усталяваць email",
+	"changeEmail": "Змяніць email",
+	"setPhoneNumber": "Усталяваць нумар тэлефона",
+	"disableAccountAlert": {
+		"title": "Адключыць рахунак",
+		"description": "Вы ўпэўнены, што хочаце адключыць рахунак?",
+		"noConfirm": "Не",
+		"yesConfirm": "Так"
+	},
+	"deleteAccountAlert": {
+		"title": "Видаліць рахунак",
+		"description": "Вы ўпэўнены, што хочаце выдаліць рахунак?",
+		"noConfirm": "Не",
+		"yesConfirm": "Так"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Патрабуецца прывязаць email",
+		"linkEmailRequiredDescription": "Вам трэба прывязаць email перад усталяваннем пароля",
+		"goTo": "Перайсці да",
+		"title": "Усталяваць пароль",
+		"email": "Email",
+		"password": "Пароль",
+		"currentPassword": "Бягучы пароль",
+		"confirmPassword": "Падцвердзіць пароль",
+		"confirm": "Захаваць",
+		"changePassword": "Змяніць пароль",
+		"description": "Ваш пароль павінен утрымліваць не менш за 8 сімвалаў, уключаць прынамсі адну вялікую літару, адну малую літару, адну лічбу і адзін спецыяльны сімвал (напрыклад: !@#$%^&*).",
+		"error": {
+			"characters": "Пароль павінен утрымліваць не менш за 8 сімвалаў",
+			"uppercase": "Пароль павінен утрымліваць прынамсі 1 вялікую літару",
+			"lowercase": "Пароль павінен утрымліваць прынамсі 1 малую літару",
+			"number": "Пароль павінен утрымліваць прынамсі 1 лічбу",
+			"symbol": "Пароль павінен утрымліваць прынамсі 1 спецыяльны сімвал",
+			"notEqual": "Падцвярджэнне пароля не супадае",
+			"samePass": "Новы пароль не можа супадаць са старым",
+			"fillOldPass": "Калі ласка, увядзіце бягучы пароль.",
+			"updateFail": "Памылка абнаўлення рахунку.",
+			"createFail": "Памылка ўсталявання пароля.",
+			"incorrectCurrent": "Бягучы пароль няправільны. Паспрабуйце яшчэ раз."
+		},
+		"toast": {
+			"success": "Пароль паспяхова абноўлены",
+			"error": "Памылка абнаўлення пароля"
+		},
+		"placeholder": {
+			"currentPassword": "Увядзіце бягучы пароль",
+			"password": "Увядзіце новы пароль",
+			"confirmPassword": "Падцвердзіце новы пароль"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Усталяваць пароль",
+		"description": "Калі ласка, стварыце новы пароль для вашага рахунку",
+		"emailPlaceholder": "email@example.com",
+		"loading": "Загрузка...",
+		"close": "Закрыць"
+	},
+	"setPhoneModal": {
+		"title": "Усталяваць нумар тэлефона",
+		"phoneNumber": "Нумар тэлефона",
+		"description": "Вы атрымаеце SMS з кодам падцвярджэння.",
+		"loading": "Загрузка...",
+		"close": "Закрыць",
+		"sendOTP": "Адправіць OTP",
+		"countryCode": "Код краіны",
+		"confirmOtp": "Підцвердзіць OTP",
+		"invalidPhone": "Несапраўдны нумар тэлефона",
+		"updatePhoneSuccess": "Нумар тэлефона паспяхова абноўлены",
+		"updatePhoneFail": "Сталася памылка. Паспрабуйце пазней",
+		"emptyOtp": "OTP код несапраўдны!",
+		"resendOtp": "Адправіць OTP паўторна!",
+		"tooFast": "Занадта хутка. Пачакайце {{seconds}} секунд перад паўторнай адпраўкай OTP.",
+		"alreadyLinked": "Гэты нумар ужо прывязаны да вашага рахунку",
+		"alreadyLinkedToAnother": "Гэты нумар ужо прывязаны да іншага рахунку",
+		"country": "Краіна",
+		"otpSentMessage": "Праверце OTP код, адпраўлены на нумар тэлефона {{phone}}",
+		"backToPhoneInput": "Змяніць нумар тэлефона?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Рахунак паспяхова выдалены",
+			"error": "Вы з'яўляецеся ўладальнікам клана"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Нумар тэлефона",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Новы нумар тэлефона",
+			"nextButton": "Далей",
+			"removeButton": "Выдаліць нумар тэлефона",
+			"failed": "Памылка абнаўлення нумара тэлефона",
+			"invalidPhoneNumber": "Несапраўдны нумар тэлефона"
+		},
+		"verifyPhoneNumber": {
+			"description": "Увядзіце 6-значны код, які мы адправілі",
+			"verifyButton": "Падцвердзіць",
+			"success": "Нумар тэлефона паспяхова абноўлены"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Скасаваць",
+		"currentEmail": "Бягучы email",
+		"description": "Калі ласка, увядзіце email для вашага рахунку",
+		"otpDescription": "OTP код адпраўлены на новы email",
+		"fillOTP": "Увядзіце OTP код",
+		"send": "Адправіць OTP",
+		"resendOtp": "Адправіць OTP паўторна!",
+		"error": {
+			"notEqual": "Падцвярджэнне пароля не супадае",
+			"required": "Email абавязковы",
+			"invalid": "Увядзіце сапраўдны адрас email"
+		},
+		"updateEmail": {
+			"newEmail": "Новы email",
+			"nextButton": "Далей",
+			"failed": "Памылка абнаўлення email",
+			"invalidEmail": "Несапраўдны email",
+			"emailAlreadyLinked": "Гэты email вы ўжо выкарыстоўваеце"
+		},
+		"verifyEmail": {
+			"description": "Увядзіце 6-значний код, які мы адправілі",
+			"verifyButton": "Падцвердзіць",
+			"success": "Email паспяхова абноўлены"
+		}
+	}
+}

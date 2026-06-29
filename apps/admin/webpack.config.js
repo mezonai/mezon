@@ -29,6 +29,7 @@ envVars['process.env.NODE_ENV'] = JSON.stringify(process.env.NODE_ENV || 'develo
 envVars['process.env.BABEL_ENV'] = JSON.stringify(process.env.BABEL_ENV || '');
 
 const EXTERNALS_SCRIPTS = [];
+const ADMIN_BASE_HREF = '/developers/';
 
 // Nx plugins for webpack.
 module.exports = composePlugins(
@@ -67,9 +68,25 @@ module.exports = composePlugins(
 
 		config.devServer = config.devServer || {};
 
+		config.devServer.historyApiFallback = {
+			index: `${ADMIN_BASE_HREF}index.html`,
+			rewrites: [{ from: /^\/developers/, to: `${ADMIN_BASE_HREF}index.html` }]
+		};
+
 		config.devServer.static = {
 			directory: path.join(__dirname, 'src/assets'),
-			publicPath: '/'
+			publicPath: `${ADMIN_BASE_HREF}assets/`
+		};
+
+		const previousSetupMiddlewares = config.devServer.setupMiddlewares;
+		config.devServer.setupMiddlewares = (middlewares, devServer) => {
+			const nextMiddlewares = previousSetupMiddlewares ? previousSetupMiddlewares(middlewares, devServer) : middlewares;
+
+			devServer.app.get('/', (_req, res) => {
+				res.redirect(302, ADMIN_BASE_HREF);
+			});
+
+			return nextMiddlewares;
 		};
 
 		return merge(config, {

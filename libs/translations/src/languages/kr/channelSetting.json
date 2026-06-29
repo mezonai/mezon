@@ -240,7 +240,8 @@
 		"invites": "초대",
 		"integrations": "통합",
 		"category": "카테고리",
-		"quickMenu": "빠른 작업"
+		"quickMenu": "빠른 작업",
+		"streamThumbnail": "스트림 썸네일"
 	},
 	"categoryManagement": {
 		"title": "카테고리",

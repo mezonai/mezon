@@ -90,7 +90,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 	return (
 		<>
 			{rolesList.map((role, index) => {
-				const hasPermissionEdit = isClanOwner || Number(userMaxPermissionLevel) > Number(role.max_level_permission);
+				const hasPermissionEdit = checkHasPermissionEditRole(isClanOwner, userMaxPermissionLevel, role);
 				return (
 					<tr
 						key={role.id}
@@ -103,7 +103,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								: ''
 						}`}
 						onClick={() => handleOpenEditRole(role.id)}
-						draggable
+						draggable={hasPermissionEdit}
 						onDragStart={() => handleDragStart(index)}
 						onDragOver={handleDragOver}
 						onDragEnd={handleDragEnd}
@@ -178,4 +178,12 @@ export default ListActiveRole;
 
 export function checkHasAdministrator(permissions?: ApiPermission[]) {
 	return permissions?.some((permission) => permission.slug === SlugPermission.Admin && permission.active === 1);
+}
+
+export function checkHasPermissionEditRole(
+	isClanOwner: boolean,
+	userMaxPermissionLevel: number,
+	role?: Pick<RolesClanEntity, 'max_level_permission'>
+) {
+	return isClanOwner || Number(userMaxPermissionLevel ?? -1) > Number(role?.max_level_permission);
 }

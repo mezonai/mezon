@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Druk op Start om te beginnen",
+		"inviteFriends": "Nodig je vrienden uit",
+		"sendFirstMessage": "Verstuur je eerste bericht",
+		"downloadApp": "Mezon app downloaden",
+		"createChannel": "Maak je kanaal"
+	},
+	"welcome": {
+		"welcomeToChannel": "Welkom bij #{{channelName}}",
+		"startOfChannel": "Dit is de start van kanaal #{{channelName}} {{channelType}}",
+		"startOfThread": "Gestart door {{username}}",
+		"welcomeToGroup": "Welkom bij groep {{groupName}}.",
+		"beginningOfDM": "Dit is de start van je gesprek met {{userName}}",
+		"editGroup": "Groep bewerken",
+		"private": "privé",
+		"friendRequestSent": "Je vriend verzoek is verzonden:",
+		"addFriend": "Vriend toevoegen",
+		"removeFriend": "Vriend verwijderen",
+		"accept": "Accepteren",
+		"ignore": "Negeren",
+		"friendRequestSentButton": "Vriend verzoek verzonden",
+		"block": "Blokken",
+		"unblock": "Blok opheffen"
+	},
+	"toast": {
+		"userBlockedSuccess": "Gebruiker succesvol geblokkeerd",
+		"failedToBlock": "Gebruiker kon niet worden geblokkeerd",
+		"userUnblockedSuccess": "Gebruiker succesvol ontgrendeld",
+		"failedToUnblock": "Gebruiker kon niet worden ontgrendeld"
+	}
+}

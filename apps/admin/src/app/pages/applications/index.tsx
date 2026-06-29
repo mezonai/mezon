@@ -1,9 +1,9 @@
-import { authActions, getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
+import { getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
-import isElectron from 'is-electron';
+
 import type { ApiApp } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -18,14 +18,6 @@ function ApplicationsPage() {
 	const toggleCreatePopup = () => {
 		setIsShowCreatePopup(!isShowCreatePopup);
 	};
-
-	useEffect(() => {
-		if (deepLinkUrl && isElectron()) {
-			const data = safeJSONParse(decodeURIComponent(deepLinkUrl));
-			dispatch(authActions.setSession(data));
-			localStorage.removeItem('deepLinkUrl');
-		}
-	}, [deepLinkUrl, dispatch]);
 
 	return (
 		<>

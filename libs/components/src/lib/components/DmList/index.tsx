@@ -68,7 +68,7 @@ function DirectMessageList() {
 					</>
 				)}
 
-				<div className="text-xs font-semibold tracking-wide left-sp text-theme-primary mt-6 flex flex-row items-center w-full justify-between px-2 pb-0 h-5 cursor-default text-theme-primary-hover">
+				<div className="text-xs font-semibold tracking-wide left-sp text-theme-primary mt-2 flex flex-row items-center w-full justify-between px-2 pb-0 h-5 cursor-default text-theme-primary-hover">
 					<p>{t('directMessages')}</p>
 					<CreateMessageGroupModal />
 				</div>
