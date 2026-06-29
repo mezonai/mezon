@@ -110,14 +110,6 @@ export const createNewDirectMessage = createAsyncThunk(
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
 
 			if (response) {
-				const state = thunkAPI.getState() as RootState;
-				const currentUser = selectAllAccount(state)?.user;
-				const targetUserId = body.user_ids?.[0];
-				const isSelfDm = !!targetUserId && targetUserId === currentUser?.id;
-				const resolvedDisplayNames = display_names || (isSelfDm ? currentUser?.display_name || currentUser?.username : undefined);
-				const resolvedUsername = username || (isSelfDm ? currentUser?.username : undefined);
-				const resolvedAvatar = avatar || (isSelfDm ? currentUser?.avatar_url : undefined);
-
 				thunkAPI.dispatch(
 					directActions.upsertOne({
 						id: response.channel_id || '0',
