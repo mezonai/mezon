@@ -96,6 +96,7 @@
 		"archived": "ACTIVE",
 		"restore": "Restore",
 		"restoreSuccess": "Channel restored successfully.",
-		"emptyState": "No archived channels"
+		"emptyState": "No archived channels",
+		"fetchError": "Failed to load archived channels. Please try again."
 	}
 }

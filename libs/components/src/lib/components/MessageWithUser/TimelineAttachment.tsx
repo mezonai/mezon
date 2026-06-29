@@ -1,18 +1,16 @@
-import { getCurrentChatData } from '@mezon/core';
 import { attachmentActions, getStore, selectCurrentChannel, selectCurrentClanId, selectCurrentDM, useAppDispatch } from '@mezon/store';
-import type { IImageWindowProps, IMessageWithUser } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
 import {
 	EMimeTypes,
 	ETypeLinkMedia,
 	createImgproxyUrl,
 	filterExpiredPresignAttachments,
 	generateAttachmentId,
-	getAttachmentDataForWindow,
 	getMessageCreateTimeSeconds,
 	isAttachmentPresignPendingForMessage,
 	isMediaTypeNotSupported
 } from '@mezon/utils';
-import isElectron from 'is-electron';
+
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
 import { MessageAudio } from './MessageAudio/MessageAudio';
@@ -68,10 +66,7 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 		return filterExpiredPresignAttachments(rawAttachments, message.content, messageCreateTimeSeconds);
 	}, [message.attachments, message.content, messageCreateTimeSeconds]);
 
-	const isPresignPendingForUrl = useCallback(
-		(url?: string) => isAttachmentPresignPendingForMessage(url, message),
-		[message]
-	);
+	const isPresignPendingForUrl = useCallback((url?: string) => isAttachmentPresignPendingForMessage(url, message), [message]);
 
 	const { images, videos, audio } = useMemo(() => classifyAttachments(validateAttachment), [validateAttachment]);
 
@@ -98,113 +93,6 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 				create_time_seconds: attachmentData?.create_time_seconds || message.create_time_seconds || Date.now() / 1000
 			};
 
-			if (isElectron()) {
-				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
-				const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
-
-				const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
-				const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
-				const data = await dispatch(
-					attachmentActions.fetchChannelAttachments({
-						clanId,
-						channelId,
-						limit: 100,
-						before: beforeTimestamp
-					})
-				).unwrap();
-
-				const currentChatUsersEntities = getCurrentChatData()?.currentChatUsersEntities;
-				const listAttachmentsByChannel = data?.attachments
-					?.filter(
-						(att) =>
-							att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) ||
-							att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
-							att?.filetype?.includes(EMimeTypes.mp4) ||
-							att?.filetype?.includes(EMimeTypes.mov)
-					)
-					.map((attachmentRes) => ({
-						...attachmentRes,
-						id: attachmentRes.id || '',
-						channelId,
-						clanId,
-						isVideo:
-							attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
-							attachmentRes?.filetype?.includes(EMimeTypes.mp4) ||
-							attachmentRes?.filetype?.includes(EMimeTypes.mov)
-					}))
-					.sort((a, b) => {
-						if (a.create_time_seconds && b.create_time_seconds) {
-							return b.create_time_seconds - a.create_time_seconds;
-						}
-						return 0;
-					});
-
-				const currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
-
-				window.electron.openImageWindow({
-					...enhancedAttachmentData,
-					url: createImgproxyUrl(enhancedAttachmentData.url || '', {
-						width: enhancedAttachmentData.width ? (enhancedAttachmentData.width > 1600 ? 1600 : enhancedAttachmentData.width) : 0,
-						height: enhancedAttachmentData.height ? (enhancedAttachmentData.height > 900 ? 900 : enhancedAttachmentData.height) : 0,
-						resizeType: 'fit'
-					}),
-					uploaderData: {
-						name:
-							currentImageUploader?.clan_nick ||
-							currentImageUploader?.user?.display_name ||
-							currentImageUploader?.user?.username ||
-							'Anonymous',
-						avatar: (currentImageUploader?.clan_avatar ||
-							currentImageUploader?.user?.avatar_url ||
-							`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-					},
-					realUrl: enhancedAttachmentData.url || '',
-					channelImagesData: {
-						channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
-						images: [],
-						selectedImageIndex: 0
-					}
-				});
-				if ((currentClanId && currentChannelId) || currentDmGroupId) {
-					if (listAttachmentsByChannel) {
-						const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
-						const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
-						const channelImagesData: IImageWindowProps = {
-							channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
-							images: imageListWithUploaderInfo,
-							selectedImageIndex
-						};
-
-						window.electron.openImageWindow({
-							...enhancedAttachmentData,
-							url: createImgproxyUrl(enhancedAttachmentData.url || '', {
-								width: enhancedAttachmentData.width ? (enhancedAttachmentData.width > 1600 ? 1600 : enhancedAttachmentData.width) : 0,
-								height: enhancedAttachmentData.height
-									? (enhancedAttachmentData.width || 0) > 1600
-										? Math.round((1600 * enhancedAttachmentData.height) / (enhancedAttachmentData.width || 1))
-										: enhancedAttachmentData.height
-									: 0,
-								resizeType: 'fill'
-							}),
-							uploaderData: {
-								name:
-									currentImageUploader?.clan_nick ||
-									currentImageUploader?.user?.display_name ||
-									currentImageUploader?.user?.username ||
-									'Anonymous',
-								avatar: (currentImageUploader?.clan_avatar ||
-									currentImageUploader?.user?.avatar_url ||
-									`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-							},
-							realUrl: enhancedAttachmentData.url || '',
-							channelImagesData
-						});
-						return;
-					}
-				}
-
-				return;
-			}
 			dispatch(attachmentActions.setMode(mode));
 
 			dispatch(

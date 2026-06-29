@@ -241,7 +241,8 @@
 		"invites": "Чакырулар",
 		"integrations": "Интеграцияләр",
 		"category": "Төркемчә",
-		"quickMenu": "Тиз гәмаә"
+		"quickMenu": "Тиз гәмаә",
+		"streamThumbnail": "Стримнар миниатюрасы"
 	},
 	"categoryManagement": {
 		"title": "Төркемчә",

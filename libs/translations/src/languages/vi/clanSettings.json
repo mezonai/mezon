@@ -95,6 +95,7 @@
 		"archived": "ĐÃ LƯU TRỮ",
 		"restore": "Khôi phục",
 		"restoreSuccess": "Khôi phục kênh thành công.",
-		"emptyState": "Không có kênh nào được lưu trữ"
+		"emptyState": "Không có kênh nào được lưu trữ",
+		"fetchError": "Không thể tải danh sách kênh đã lưu trữ. Vui lòng thử lại."
 	}
 }

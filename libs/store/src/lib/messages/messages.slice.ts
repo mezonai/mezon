@@ -51,6 +51,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, isMezonClientSocketOpen, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
+import { getThreadsState } from '../threads/threads.slice';
 import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
@@ -1404,8 +1405,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				);
 			}
 		} catch (error) {
-			if (error instanceof Error && error.name === 'SocketTimeoutError') {
-				return;
+			if (error instanceof Error && (error.name === 'SocketTimeoutError' || error.name === 'SendTimeoutError')) {
+				thunkAPI.dispatch(
+					messagesActions.remove({
+						messageId: fakeMessage.id,
+						channelId: fakeMessage.channel_id
+					})
+				);
 			}
 			const payload = originalSendPayload;
 			if (sendTimeoutMap.has(tempId)) {
@@ -1782,6 +1788,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Welcome:
 				case TypeMessage.UpcomingEvent:
 				case TypeMessage.CreateThread:
+				case TypeMessage.DeleteThread:
 				case TypeMessage.CreatePin:
 				case TypeMessage.MessageBuzz:
 				case TypeMessage.AuditLog:
@@ -1933,30 +1940,6 @@ export const messagesSlice = createSlice({
 		},
 		setLastMessage: (state, action: PayloadAction<ApiChannelMessageHeaderWithChannel>) => {
 			state.lastMessageByChannel[action.payload.channel_id] = action.payload;
-		},
-		updateTopicRplCount: (state, action: PayloadAction<{ channelId: string; topicId: string; increment: boolean; timestamp?: number }>) => {
-			const { channelId, topicId, increment, timestamp } = action.payload;
-
-			const channelMessages = state.channelMessages[channelId];
-			if (!channelMessages) return;
-
-			const topicCreatorMessage = channelMessagesAdapter
-				.getSelectors()
-				.selectAll(channelMessages)
-				.find((message) => message?.content?.tp === topicId);
-
-			if (topicCreatorMessage?.content && topicCreatorMessage.id) {
-				const currentRpl = topicCreatorMessage.content.rpl || 0;
-				const newRpl = increment ? currentRpl + 1 : Math.max(0, currentRpl - 1);
-
-				const messageEntity = channelMessages.entities[topicCreatorMessage.id];
-				if (messageEntity?.content) {
-					messageEntity.content.rpl = newRpl;
-					if (timestamp && increment) {
-						messageEntity.content.lsnt = timestamp;
-					}
-				}
-			}
 		},
 		setViewingOlder: (state, action: PayloadAction<{ channelId: string; status: boolean }>) => {
 			const { channelId, status } = action.payload;
@@ -2467,6 +2450,37 @@ export const selectMessageEntitiesByChannelId = createCachedSelector([getMessage
 export const selectMessageIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelMessages[channelId]?.ids || emptyArray;
 });
+
+export const selectHasThreadDeleteSystemMessage = createCachedSelector(
+	[
+		(state: RootState, _: string, threadId: string) => selectChannelById(state, threadId),
+		getThreadsState,
+		getChannelIdAsSecondParam,
+		(_: RootState, __: string, threadId: string) => threadId
+	],
+	(threadChannel, threadsState, parentChannelId, threadId) => {
+		if (!threadId) {
+			return false;
+		}
+
+		if (threadChannel) {
+			return false;
+		}
+
+		const threadsCache = threadsState.byChannels?.[parentChannelId];
+		if (threadsCache?.cache) {
+			const existsInCache = threadsCache.ids.some((id) => {
+				const thread = threadsCache.entities[id];
+				return thread?.id === threadId || thread?.channel_id === threadId;
+			});
+			if (!existsInCache) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+);
 
 export const selectViewportIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelViewPortMessageIds[channelId] || emptyArray;

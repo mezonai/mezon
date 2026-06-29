@@ -21,8 +21,8 @@ import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/uti
 import { TooManyUpload, WebRTCStreamProvider, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
 import { MezonSuspense } from '@mezon/transport';
-import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
-import isElectron from 'is-electron';
+import { SubPanelName } from '@mezon/utils';
+
 import { memo, useContext, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -42,7 +42,6 @@ const GlobalEventListener = () => {
 	const { quantityPendingRequest } = useFriends();
 
 	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
-
 
 	useReconnectOnForeground({
 		scheduleReconnect: handleReconnect,
@@ -82,16 +81,7 @@ const GlobalEventListener = () => {
 		notificationCountAllClan = allNotificationReplyMentionAllClan < 0 ? 0 : allNotificationReplyMentionAllClan;
 		const notificationCount = notificationCountAllClan + totalUnreadMessages + quantityPendingRequest;
 		const displayCountBrowser = notificationCount > 99 ? '99+' : notificationCount.toString();
-
-		if (isElectron()) {
-			if (hasUnreadChannel && !notificationCount) {
-				electronBridge?.setBadgeCount(null);
-				return;
-			}
-			electronBridge?.setBadgeCount(notificationCount);
-		} else {
-			document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
-		}
+		document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
 	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
 
 	useEffect(() => {
@@ -165,7 +155,7 @@ const MainLayout = memo(
 		return (
 			<div
 				id="main-layout"
-				className={`${isWindowsDesktop || isLinuxDesktop ? 'top-[21px] fixed' : ''} w-full bg-theme-primary`}
+				className={`w-full bg-theme-primary`}
 				onClick={handleClickingOutside}
 				onContextMenu={(event: React.MouseEvent) => {
 					event.preventDefault();

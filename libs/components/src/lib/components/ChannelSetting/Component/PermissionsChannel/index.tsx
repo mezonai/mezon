@@ -1,7 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { channelsActions, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId, type IChannel } from '@mezon/utils';
+import { generateE2eId } from '@mezon/utils';
 import type { MutableRefObject, RefObject } from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,26 +13,26 @@ import ListMemberPermission from './listMemberPermission';
 import ListRolePermission from './listRolePermission';
 
 export type PermissionsChannelProps = {
-	channel: IChannel;
+	channel_id: string;
 	openModalAdd: MutableRefObject<boolean>;
 	parentRef: RefObject<HTMLDivElement>;
 	clanId?: string;
 };
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
-	const { channel, openModalAdd, parentRef, clanId } = props;
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || '0'));
+	const { channel_id, openModalAdd, parentRef, clanId } = props;
+	const channel = useAppSelector((state) => selectChannelById(state, channel_id || '0'));
 	const listCategory = useSelector(selectAllCategories);
 	const categoryName = useMemo(() => {
-		if (realTimeChannel?.category_name) {
-			return realTimeChannel.category_name;
+		if (channel?.category_name) {
+			return channel.category_name;
 		}
-		if (realTimeChannel?.category_id) {
-			const category = listCategory.find((cat) => cat.id === realTimeChannel.category_id);
+		if (channel?.category_id) {
+			const category = listCategory.find((cat) => cat.id === channel.category_id);
 			return category?.category_name || '';
 		}
 		return '';
-	}, [realTimeChannel?.category_name, realTimeChannel?.category_id, listCategory]);
+	}, [channel?.category_name, channel?.category_id, listCategory]);
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
 	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
@@ -58,18 +58,26 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		}
 	}, [valueToggleInit]);
 	const handleSaveChannelPrivateChanged = useCallback(async () => {
-		setValueToggleInit(valueToggle);
-		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
+		// Always keep the real channel creator in ACL payload.
+		const creatorId = channel.creator_id || userProfile?.user?.id;
+		const userIdsToSave = valueToggle
+			? Array.from(new Set([...selectedUserIds, ...(creatorId ? [creatorId] : [])]))
+			: creatorId
+				? [creatorId]
+				: [];
 		await dispatch(
 			channelsActions.updateChannelPrivate({
 				clan_id: clanId,
 				channel_id: channel.id,
-				channel_private: channel.channel_private || 0,
-				user_ids: updatedUserIds,
-				role_ids: selectedRoleIds
+				channel_private: valueToggle ? 1 : 0,
+				user_ids: userIdsToSave,
+				role_ids: valueToggle ? selectedRoleIds : []
 			})
-		);
-	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel]);
+		).unwrap();
+		setValueToggleInit(valueToggle);
+		setSelectedUserIds([]);
+		setSelectedRoleIds([]);
+	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel, clanId, dispatch]);
 
 	const handleSave = useCallback(() => {
 		if (valueToggle !== valueToggleInit) {

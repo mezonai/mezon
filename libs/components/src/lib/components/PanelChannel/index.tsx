@@ -147,6 +147,13 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const isThread = !!channel?.parent_id && channel?.parent_id !== '0';
 
 	const currentUserId = useSelector(selectCurrentUserId);
+	const [hasClanOwnerPermission, hasAdminPermission, canManageClan, canManageThread, canManageChannel] = usePermissionChecker(
+		[EPermission.clanOwner, EPermission.administrator, EPermission.manageClan, EOverriddenPermission.manageThread, EPermission.manageChannel],
+		channel?.channel_id ?? ''
+	);
+	const isChannelCreator = !!currentUserId && channel.creator_id === currentUserId;
+	const hasArchiveChannelPermission = hasClanOwnerPermission || hasAdminPermission || canManageClan || canManageChannel || isChannelCreator;
+	const hasManageThreadPermission = (canManageThread && isChannelCreator) || hasClanOwnerPermission || hasAdminPermission;
 	const currentCategory = useAppSelector((state) => selectCategoryById(state, channel?.category_id as string));
 	const hasModalInChild = useSelector(hasGrandchildModal);
 	const favoriteChannel = useSelector(selectAllChannelsFavorite);
@@ -344,12 +351,6 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			setDefaultNotifiName(notiLabelsTranslated[defaultNotificationClan.notification_setting_type]);
 		}
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan, notiLabelsTranslated]);
-	const [hasClanOwnerPermission, hasAdminPermission, canManageThread, canManageChannel] = usePermissionChecker(
-		[EPermission.clanOwner, EPermission.administrator, EOverriddenPermission.manageThread, EPermission.manageChannel],
-		channel?.channel_id ?? ''
-	);
-
-	const hasManageThreadPermission = (canManageThread && channel.creator_id === currentUserId) || hasClanOwnerPermission || hasAdminPermission;
 	const handClosePannel = useCallback(() => {
 		setIsShowPanelChannel(false);
 	}, []);
@@ -484,11 +485,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			{channel.parent_id === '0' || !channel.parent_id ? (
 				<>
 					<GroupPanels>
-						{!isHideArchive && canManageChannel && (
-							<ItemPanel
-								children={isThread ? t('menu.notification.archiveThread') : t('menu.notification.archiveChannel')}
-								onClick={handleOpenArchiveConfirm}
-							/>
+						{!isHideArchive && hasArchiveChannelPermission && (
+							<ItemPanel children={t('menu.notification.archiveChannel')} onClick={handleOpenArchiveConfirm} />
 						)}
 						{!getNotificationChannelSelected?.time_mute_seconds ? (
 							<Menu

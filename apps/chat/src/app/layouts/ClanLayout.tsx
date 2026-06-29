@@ -21,8 +21,8 @@ import {
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
-import { SubPanelName, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
-import isElectron from 'is-electron';
+import { SubPanelName } from '@mezon/utils';
+
 import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -86,7 +86,7 @@ const ClanLayout = () => {
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 	const location = useLocation();
-	const currentURL = isElectron() ? location.hash : location.pathname;
+	const currentURL = location.pathname;
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentChannelType = useSelector(selectCurrentChannelType);
@@ -128,7 +128,7 @@ const ClanLayout = () => {
 	return (
 		<>
 			<div
-				className={`select-none h-dvh flex-col flex max-w-[272px] bg-theme-direct-message  relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
+				className={`select-none h-dvh flex-col flex max-w-[272px] bg-theme-direct-message  relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
 			>
 				<ClanHeader name={currentClanName} type="CHANNEL" bannerImage={currentClanBanner} />
 				<ChannelList />

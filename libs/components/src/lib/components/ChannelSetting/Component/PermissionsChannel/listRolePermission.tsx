@@ -18,21 +18,29 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 	const RolesChannel = useSelector(selectRolesByChannelId(channel.id));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const RolesClan = useSelector(selectAllRolesClan);
-	const RolesAddChannel = RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1);
-	const RolesNotAddChannel = RolesClan.filter((role) => !RolesAddChannel.map((RoleAddChannel) => RoleAddChannel.id).includes(role.id));
+	const activeChannelRoles = useMemo(
+		() => RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1),
+		[RolesChannel]
+	);
+	const rolesNotOnChannel = useMemo(
+		() => RolesClan.filter((role) => !activeChannelRoles.some((channelRole) => channelRole.id === role.id)),
+		[RolesClan, activeChannelRoles]
+	);
 
 	const listRolesInChannel = useMemo(() => {
-		if (channel.channel_private === 0 || channel.channel_private === undefined) {
-			const filteredRoles = RolesNotAddChannel.filter((role) => props.selectedRoleIds.includes(role.id));
-			return filteredRoles;
+		if (channel.channel_private === 1) {
+			return activeChannelRoles;
 		}
-		return RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1);
-	}, [RolesChannel, props.selectedRoleIds]);
+		return rolesNotOnChannel.filter((role) => props.selectedRoleIds.includes(role.id));
+	}, [channel.channel_private, activeChannelRoles, rolesNotOnChannel, props.selectedRoleIds]);
 
 	const deleteRole = async (roleId: string) => {
-		if (setSelectedRoleIds && selectedRoleIds) {
-			const newSelectedRoleIds = selectedRoleIds.filter((id) => id !== roleId);
-			setSelectedRoleIds(newSelectedRoleIds);
+		setSelectedRoleIds?.(selectedRoleIds.filter((id) => id !== roleId));
+		if (channel.channel_private !== 1) {
+			return;
+		}
+		if (!activeChannelRoles.some((role) => role.id === roleId)) {
+			return;
 		}
 		const body = {
 			channelId: channel.id,

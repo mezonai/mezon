@@ -242,7 +242,8 @@
 		"invites": "Invitaciones",
 		"integrations": "Integraciones",
 		"category": "Categoría",
-		"quickMenu": "Acciones rápidas"
+		"quickMenu": "Acciones rápidas",
+		"streamThumbnail": "Miniatura de retransmisión"
 	},
 	"categoryManagement": {
 		"title": "Categoría",

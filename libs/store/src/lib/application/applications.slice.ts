@@ -3,12 +3,14 @@ import type { MezonAdminContextValue } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js';
+import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiCreateChannelDescRequest, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js';
 import {
 	AddAppRequest,
 	App,
 	AppClan,
 	AppList,
+	ChannelDescription,
+	CreateChannelDescRequest,
 	GetMezonOauthClientRequest,
 	ListAppsRequest,
 	MezonOauthClient,
@@ -129,6 +131,26 @@ export const getApplicationDetail = createAsyncThunk('adminApplication/getApplic
 		});
 
 		thunkAPI.dispatch(setCurrentAppId(appId));
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'adminApplication/getApplicationDetail');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const createChannelApp = createAsyncThunk('adminApplication/getApplicationDetail', async (body: ApiCreateChannelDescRequest, thunkAPI) => {
+	try {
+		const state = thunkAPI.getState() as RootState;
+		if (!state.auth.session) {
+			throw 'Empty Session';
+		}
+		const response = await callApiAdmin({
+			path: '/mezon.api.Mezon/CreateChannelDesc',
+			data: CreateChannelDescRequest.encode(CreateChannelDescRequest.fromPartial(body)).finish(),
+			decodeBody: (bytes) => ChannelDescription.decode(bytes),
+			token: state.auth.session.token
+		});
+
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/getApplicationDetail');

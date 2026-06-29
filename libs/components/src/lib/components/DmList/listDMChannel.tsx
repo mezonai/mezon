@@ -12,7 +12,7 @@ import {
 	selectVoiceJoined,
 	useAppDispatch
 } from '@mezon/store';
-import { generateE2eId, isLinuxDesktop, isMacDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { generateE2eId, toggleDisableHover } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -25,11 +25,10 @@ type ListDMChannelProps = {
 	pinnedCount?: number;
 };
 
-const isDesktop = isWindowsDesktop || isLinuxDesktop || isMacDesktop;
 const heightAroundComponentDesktop = 232;
 const heightAroundComponentWeb = 232;
 const heightAppUpdate = 40;
-const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
+const titleBarHeight = 0;
 const SCROLL_THRESHOLD = 100;
 
 const PaginationLoadingIndicator = memo(({ isFetchingRef }: { isFetchingRef: MutableRefObject<boolean> }) => {
@@ -59,11 +58,11 @@ const ListDMChannel = ({ listDM, isPinnedList, pinnedCount = 0 }: ListDMChannelP
 	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
 	const calculateHeight = useCallback(() => {
-		const heightAroundComponent = isDesktop ? heightAroundComponentDesktop : heightAroundComponentWeb;
+		const heightAroundComponent = heightAroundComponentWeb;
 		const streamAdjustment = streamPlay ? 56 : 0;
 		const callAdjustment = isInCall ? 56 : 0;
 		const voiceAdjustment = isVoiceJoined ? 96 : 0;
-		const electronAdjustment = isDesktop && (IsElectronDownloading || isElectronUpdateAvailable) ? heightAppUpdate : 0;
+		const electronAdjustment = 0;
 		const pinnedSectionHeight = pinnedCount > 0 ? Math.min(48 + pinnedCount * 43, 48 + 215) : 0;
 
 		const totalAdjustment =
