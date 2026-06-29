@@ -1,9 +1,8 @@
 import { useAccount, useAuth } from '@mezon/core';
 import {
 	accountActions,
-	channelMembersActions,
 	clansActions,
-	selectCurrentChannelId,
+	directActions,
 	selectCurrentClanId,
 	selectLogoCustom,
 	selectTheme,
@@ -16,7 +15,6 @@ import { handleUploadFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
 import type { ImageSourceObject } from '@mezon/utils';
 import { MAX_FILE_SIZE_10MB, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +63,6 @@ const SettingRightUser = ({
 	const [openModalType, setOpenModalType] = useState(false);
 	const logoCustom = useSelector(selectLogoCustom);
 	const dispatch = useAppDispatch();
-	const currentChannelId = useSelector(selectCurrentChannelId) || '';
 	const currentClanId = useSelector(selectCurrentClanId) || '';
 	const sizeWarning = useRef<ELimitSize | null>(null);
 
@@ -93,15 +90,11 @@ const SettingRightUser = ({
 						avatarUrl: urlImage
 					})
 				);
-			}
-			if (currentChannelId && currentClanId) {
-				await dispatch(
-					channelMembersActions.fetchChannelMembers({
-						clanId: currentClanId || '',
-						channelId: currentChannelId || '',
-						channelType: ChannelType.CHANNEL_TYPE_CHANNEL,
-						noCache: true,
-						repace: true
+				dispatch(
+					directActions.updateCurrentUserInDMs({
+						userId: userProfile.user.id,
+						displayName: valueDisplayName.trim(),
+						avatarUrl: urlImage
 					})
 				);
 			}

@@ -756,7 +756,7 @@ export const directSlice = createSlice({
 			state,
 			action: PayloadAction<{ dmId: string; user_id: string; avatar: string; display_name: string; about_me?: string }>
 		) => {
-			const { dmId, user_id, avatar, display_name, about_me } = action.payload;
+			const { dmId, user_id, avatar, display_name } = action.payload;
 			const dmGroup = state.entities?.[dmId];
 
 			if (!dmGroup || !user_id) return;
@@ -766,6 +766,13 @@ export const directSlice = createSlice({
 
 			if (avatar && dmGroup.channel_avatar) dmGroup.channel_avatar = avatar;
 
+			if (avatar) {
+				const avatars = [...(dmGroup.avatars ?? [])];
+				while (avatars.length <= index) avatars.push('');
+				avatars[index] = avatar;
+				dmGroup.avatars = avatars;
+			}
+
 			if (display_name && dmGroup.display_names) {
 				if (dmGroup.channel_label) {
 					const labels = dmGroup.channel_label.split(',');
@@ -774,6 +781,46 @@ export const directSlice = createSlice({
 				}
 				dmGroup.display_names[index] = display_name;
 			}
+		},
+		updateCurrentUserInDMs: (state, action: PayloadAction<{ userId: string; displayName?: string; avatarUrl?: string }>) => {
+			const { userId, displayName, avatarUrl } = action.payload;
+			if (!userId) return;
+
+			Object.keys(state.entities).forEach((dmId) => {
+				const dmGroup = state.entities[dmId];
+				if (!dmGroup?.user_ids?.includes(userId) || dmGroup.type !== ChannelType.CHANNEL_TYPE_DM) return;
+
+				const isSelfDm = dmGroup.user_ids.length > 0 && dmGroup.user_ids.every((id) => id === userId);
+				if (!isSelfDm) return;
+
+				const changes: Partial<DirectEntity> = {};
+
+				if (displayName !== undefined) {
+					changes.channel_label = displayName;
+					if (dmGroup.display_names) {
+						const display_names = [...dmGroup.display_names];
+						dmGroup.user_ids.forEach((id, index) => {
+							if (id === userId) display_names[index] = displayName;
+						});
+						changes.display_names = display_names;
+					}
+				}
+
+				if (avatarUrl !== undefined) {
+					const avatars = [...(dmGroup.avatars ?? [])];
+					dmGroup.user_ids.forEach((id, index) => {
+						if (id === userId) {
+							while (avatars.length <= index) avatars.push('');
+							avatars[index] = avatarUrl;
+						}
+					});
+					changes.avatars = avatars;
+				}
+
+				if (Object.keys(changes).length > 0) {
+					directAdapter.updateOne(state, { id: dmId, changes });
+				}
+			});
 		},
 		setDmActiveStatus: (state, action: PayloadAction<{ dmId: string; isActive: boolean }>) => {
 			const { dmId, isActive } = action.payload;
