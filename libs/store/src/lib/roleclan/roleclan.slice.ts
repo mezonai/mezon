@@ -496,6 +496,7 @@ export const RolesClanSlice = createSlice({
 				if (!channels?.includes(channelId)) {
 					role.channel_ids = [...channels, channelId];
 				}
+				role.role_channel_active = 1;
 			}
 		},
 		removeChannelRole: (state, action: PayloadAction<{ channelId: string; roleId: string; clanId: string }>) => {
@@ -504,6 +505,16 @@ export const RolesClanSlice = createSlice({
 			if (!role) return;
 
 			role.channel_ids = Array.isArray(role?.channel_ids) ? role?.channel_ids?.filter((id) => id && id !== channelId) : [];
+		},
+		removeAllRolesFromChannel: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
+			const { channelId, clanId } = action.payload;
+			const clanData = state?.byClans?.[clanId];
+			if (!clanData?.roles) return;
+
+			for (const role of Object.values(clanData.roles)) {
+				if (!role) continue;
+				role.channel_ids = Array.isArray(role.channel_ids) ? role.channel_ids.filter((id) => id && id !== channelId) : [];
+			}
 		},
 		addUsersToRoleUserList: (state, action: PayloadAction<{ clanId: string; roleId: string; userIds: string[] }>) => {
 			const { clanId, roleId, userIds } = action.payload;

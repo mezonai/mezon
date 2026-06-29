@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { selectCurrentUserId } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
+import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectChannelByChannelId } from '../channels/channels.slice';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
@@ -25,6 +26,8 @@ export const addChannelUsers = createAsyncThunk(
 			}
 			if (channelId && channelType) {
 				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: userIds }));
+				thunkAPI.dispatch(channelMembersActions.addNewMember({ channel_id: channelId, user_ids: userIds }));
+				thunkAPI.dispatch(channelMembersActions.invalidateChannelCache(channelId));
 			}
 			if (channelType !== ChannelType.CHANNEL_TYPE_THREAD) return response;
 
@@ -69,6 +72,8 @@ export const removeChannelUsers = createAsyncThunk(
 			}
 			if (channelId) {
 				thunkAPI.dispatch(userChannelsActions.removeUserChannel({ channelId, userRemoves: userIds }));
+				thunkAPI.dispatch(channelMembersActions.remove({ channelId, userId }));
+				thunkAPI.dispatch(channelMembersActions.invalidateChannelCache(channelId));
 			}
 
 			return response;
