@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import isElectron from 'is-electron';
+
 import { Track } from 'livekit-client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +69,6 @@ const ControlBar = ({
 	const { t } = useTranslation('channelVoice');
 
 	const isGroupCall = useSelector(selectGroupCallJoined);
-	const isDesktop = isElectron();
 
 	const showScreen = useSelector(selectShowScreen);
 	const isFullScreen = useSelector(selectVoiceFullScreen);
@@ -97,26 +96,7 @@ const ControlBar = ({
 		onLeaveRoom(true);
 	}, [onLeaveRoom]);
 
-	const handleOpenScreenSelection = useCallback(async () => {
-		if (isDesktop) {
-			if (typeof document !== 'undefined' && document.fullscreenElement) {
-				try {
-					await document.exitFullscreen();
-				} catch (_e) {
-					void 0;
-				}
-				dispatch(voiceActions.setFullScreen(false));
-			} else if (isFullScreen) {
-				onFullScreen?.();
-			}
-
-			if (!showScreen) {
-				dispatch(voiceActions.setShowSelectScreenModal(true));
-			} else {
-				dispatch(voiceActions.setShowScreen(false));
-			}
-		}
-	}, [dispatch, isDesktop, isFullScreen, onFullScreen, showScreen]);
+	const handleOpenScreenSelection = useCallback(async () => {}, [openScreenSelection]);
 
 	const toggleNoiseSuppression = useCallback(() => {
 		dispatch(voiceActions.setNoiseSuppressionEnabled(!noiseSuppressionEnabled));

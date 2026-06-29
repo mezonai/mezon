@@ -33,6 +33,7 @@ const TopicHeader = () => {
 			setTurnOffThreadMessage();
 			setIsShowCreateTopic(false);
 			dispatch(topicsActions.setCurrentTopicId(''));
+			dispatch(topicsActions.setFocusTopicBox(false));
 			setRequestInput({ ...request, valueTextInput: '' }, true);
 		},
 		[dispatch]

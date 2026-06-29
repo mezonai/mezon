@@ -464,7 +464,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					);
 					setMentionEveryone(false);
 				}
-				await handleThreadActivation(currentChannel);
 				updateDraft?.({
 					valueTextInput: '',
 					content: '',
@@ -493,6 +492,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setIsPasteMulti(false);
 				setSubPanelActive(SubPanelName.NONE);
 
+				await handleThreadActivation(currentChannel);
 				if (ephemeralTargetUserId) {
 					setEphemeralTargetUserId(null);
 					setEphemeralTargetUserDisplay(null);
@@ -667,7 +667,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setEphemeralTargetUserId(null);
 				setEphemeralTargetUserDisplay(null);
 			}
-			await handleThreadActivation(currentChannel);
 
 			updateDraft?.({
 				valueTextInput: '',
@@ -693,6 +692,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setDisplayPlaintext('');
 			setIsPasteMulti(false);
 			setSubPanelActive(SubPanelName.NONE);
+			await handleThreadActivation(currentChannel);
 		},
 		[
 			mentionData,

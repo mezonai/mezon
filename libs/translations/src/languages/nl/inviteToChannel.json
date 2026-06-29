@@ -1,0 +1,46 @@
+{
+	"title": "Vrienden uitnodigen",
+	"iconTitle": {
+		"shareInvite": "Delen",
+		"copyLink": "Kopiëren",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR-code"
+	},
+	"copyLink": "Link gekopieerd!",
+	"unknownChannel": "ONBEKENDE KANAAL",
+	"yourLinkInvite": "Link verloopt in",
+	"inviteFriendToChannel": "Vrienden uitnodigen naar kanaal",
+	"inviteFriendToClan": "Vrienden uitnodigen naar clan",
+	"editInviteLink": "Uitnodigingslink bewerken",
+	"inviteChannel": "NAAR KANAAL UITNODIGEN",
+	"advancedSettings": "GEVORDERDE INSTELLINGEN",
+	"expireAfter": "VERLOOPT NA",
+	"maxUsers": "MAXIMUM AANTAL GEBRUIKERS",
+	"temporaryMembership": "Tijdelijke lidmaatschap",
+	"memberAutoKick": "Lid wordt automatisch uitgeworpen wanneer ze de verbinding verbreken tenzij een rol wordt toegewezen.",
+	"btnInvite": "Uitnodigen",
+	"btnSent": "Uitgenodigd",
+	"qrModal": {
+		"title": "QR-code",
+		"scanToJoin": "Scan deze QR om {{clanName}} te betreden!",
+		"scanToJoinDefault": "Scan deze QR om clan te betreden!",
+		"generating": "QR-code aan het genereren...",
+		"errorGenerating": "Fout bij QR-code generatie",
+		"downloadSuccess": "QR-code opgeslagen in bibliotheek",
+		"downloadError": "Fout bij QR-code download",
+		"shareError": "Fout bij QR-code delen",
+		"clanDefaultName": "Clan"
+	},
+	"share": {
+		"title": "delen",
+		"message": "Join Mezon met mij:",
+		"error": "Fout bij delen uitnodigingslink",
+		"errorCreateLink": "Fout bij aanmaken uitnodigingslink"
+	},
+	"noFriendsToInvite": "Geen vrienden om uit te nodigen",
+	"addFriendsToInvite": "Voeg vrienden toe aan je vriendlijst om hen uit te nodigen voor deze clan.",
+	"addSomeFriends": "Voeg een paar vrienden toe",
+	"loadingInviteLink": "Uitnodigingslink aan het genereren..."
+}

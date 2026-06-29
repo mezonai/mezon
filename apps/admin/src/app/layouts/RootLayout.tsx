@@ -2,7 +2,7 @@ import { selectAppsFetchingLoading, selectIsLogin } from '@mezon/store';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { Outlet, useLoaderData, useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { getAppDetailTabs } from '../common/constants/appDetailTabs';
 import { getSidebarTabs } from '../common/constants/tabSideBar';
 import AppDetailLeftMenu from '../components/AppDetailLeftMenu';
@@ -10,13 +10,11 @@ import CollapseSideBar from '../components/CollapseSideBar';
 import Header from '../components/Header';
 import SideBar from '../components/SideBar';
 import { useAppearance } from '../context/AppearanceContext';
-import type { IAuthLoaderData } from '../loader/authLoader';
 
 const RootLayout: React.FC = () => {
 	const { t } = useTranslation('adminApplication');
-	const { isLogin: isLoginLoader } = useLoaderData() as IAuthLoaderData;
 	const isLoginStore = useSelector(selectIsLogin);
-	const isLogin = isLoginLoader && isLoginStore;
+	const isLogin = isLoginStore;
 	const { isDarkMode } = useAppearance();
 	const applicationLoading = useSelector(selectAppsFetchingLoading);
 	const [showCollapseSideBar, setShowCollapseSideBar] = useState(false);

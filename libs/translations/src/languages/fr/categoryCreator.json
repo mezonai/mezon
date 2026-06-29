@@ -1,0 +1,17 @@
+{
+    "actions": {
+        "create": "Créer",
+        "cancel": "Annuler"
+    },
+    "fields": {
+        "cateName": {
+            "title": "Nouvelle catégorie",
+            "placeholder": "Nom de la catégorie",
+            "errorMessage": "Veuillez entrer un nom de catégorie valide (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -)."
+        },
+        "catePrivate": {
+            "title": "Catégorie privée",
+            "description": "Si la catégorie est en mode privé, seuls les membres et les rôles sélectionnés peuvent voir cette catégorie. Les canaux synchronisés dans cette catégorie seront automatiquement passés en privé."
+        }
+    }
+}

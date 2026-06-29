@@ -37,7 +37,7 @@ function MessageWithSystem({
 	mode = ChannelStreamMode.STREAM_MODE_CHANNEL
 }: Readonly<MessageWithSystemProps>) {
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
-	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
+	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.DeleteThread || message.code === TypeMessage.CreatePin;
 
 	return (
 		<>
@@ -57,7 +57,7 @@ function MessageWithSystem({
 					>
 						{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8 flex-shrink-0" />}
 						{message?.code === TypeMessage.UpcomingEvent && <Icons.UpcomingEventIcon defaultSize="size-8 flex-shrink-0" />}
-						{message?.code === TypeMessage.CreateThread && (
+						{(message?.code === TypeMessage.CreateThread || message?.code === TypeMessage.DeleteThread) && (
 							<Icons.ThreadIcon
 								defaultSize="size-6 flex-shrink-0"
 								defaultFill1="var(--bg-icon-theme)"

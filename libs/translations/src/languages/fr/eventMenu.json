@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "Démarrer l'événement",
+      "markAsNotInterested": "Marquer comme non intéressé",
+      "markAsInterested": "Marquer comme intéressé",
+      "editEvent": "Modifier l'événement",
+      "cancelEvent": "Annuler l'événement",
+      "reportEvent": "Signaler l'événement",
+      "copyEventLink": "Copier le lien de l'événement",
+      "copyEventID": "Copier l'ID de l'événement"
+    },
+    "confirm": {
+        "title": "Annuler l'événement",
+        "content": "Êtes-vous sûr de vouloir annuler cet événement ?"
+    },
+    "dashboard": {
+        "title": "Événements",
+        "event_one": "Événement",
+        "noEvent": "Aucun événement",
+        "noEventDescription": "N'hésitez pas à inviter d'autres membres à participer et à proposer des idées pour les événements à venir.",
+        "createButton": "Créer",
+        "noti": "Cet événement est ouvert à tous les membres du clan.",
+        "endEvent": "Terminer l'événement",
+        "UnInterested": "Non intéressé",
+        "Interested": "Intéressé"
+    },
+    "item": {
+      "interested": "Intéressé",
+      "uninterested": "Non intéressé"
+    },
+    "detail": {
+        "eventInfo": "Informations sur l'événement",
+        "interested": "Intéressé",
+        "personInterested": "{{count}} personne intéressée",
+        "onePersonInterested": "1 personne intéressée",
+        "noOneInterested": "Personne n'est intéressé par cet événement.",
+        "createdBy": "Créé par "
+    },
+    "share": {
+        "title": "Partager l'événement avec vos amis",
+        "search": "Rechercher",
+        "share": "Partager",
+        "copied": "Lien copié !"
+    },
+     "countdown": {
+        "joinIn_other": "démarrera dans {{count}} minutes",
+        "joinNow": "L'événement est en cours !",
+        "joinIn_one": "démarrera dans 1 minute"
+    }
+  }

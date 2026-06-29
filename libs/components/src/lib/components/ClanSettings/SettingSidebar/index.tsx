@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import type { ItemObjProps } from '../ItemObj';
 import { ItemSetting, sideBarListItem } from '../ItemObj';
 import SettingItem from '../SettingItem';
+import { useCanViewArchivedChannels } from '../hooks/useCanViewArchivedChannels';
 
 type SettingSidebarProps = {
 	onClickItem?: (settingItem: ItemObjProps) => void;
@@ -27,6 +28,8 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 		EPermission.manageClan,
 		EPermission.manageChannel
 	]);
+	const { canViewArchivedChannels } = useCanViewArchivedChannels();
+	const dispatch = useAppDispatch();
 	const userProfile = useSelector(selectAllAccount);
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
 
@@ -61,8 +64,11 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			if (item.id === ItemSetting.INTEGRATIONS) {
 				return hasClanPermission || hasChannelPermission;
 			}
-			if ([ItemSetting.OVERVIEW, ItemSetting.ROLES, ItemSetting.AUDIT_LOG, ItemSetting.ARCHIVED_CHANNELS].includes(item.id)) {
+			if ([ItemSetting.OVERVIEW, ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
 				return hasClanPermission;
+			}
+			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {
+				return canViewArchivedChannels;
 			}
 			if (item.id === ItemSetting.ON_BOARDING || item.id === ItemSetting.ON_COMUNITY) {
 				return hasClanPermission;
@@ -77,7 +83,6 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	});
 
 	const [openModal, setOpenModal] = useState<boolean>(false);
-	const dispatch = useAppDispatch();
 	const handleLogOut = () => {
 		dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
 	};

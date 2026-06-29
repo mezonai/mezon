@@ -1,5 +1,4 @@
 import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
-import { getPreSendSourceFile, getPreSendThumbnailBlob, revokePreSendAttachmentUrls } from './file';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -12,7 +11,7 @@ import {
 	startOfDay,
 	subDays
 } from 'date-fns';
-import isElectron from 'is-electron';
+
 import type {
 	ApiMessageAttachment,
 	ApiMessageMention,
@@ -26,15 +25,7 @@ import type {
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
-import { electronBridge } from '../bridge';
-import {
-	CHECK_PERMISSION_CAMERA,
-	CHECK_PERMISSION_MICROPHONE,
-	REQUEST_PERMISSION_CAMERA,
-	REQUEST_PERMISSION_MICROPHONE
-} from '../bridge/electron/constants';
 import { CURRENCY, ID_MENTION_HERE } from '../constant';
-import { Platform } from '../hooks/platform';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -60,9 +51,10 @@ import type {
 } from '../types';
 import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus } from '../types';
 import { getDateLocale } from './dateI18n';
+import { getLinkType } from './embed-social';
+import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
-import { getPlatform } from './windowEnvironment';
 export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
@@ -80,11 +72,11 @@ export * from './forceReflow';
 export * from './heavyAnimation';
 export * from './mediaDimensions';
 export * from './mergeRefs';
-export * from './sanitizeHtml';
 export * from './parseHtmlAsFormattedText';
 export * from './presignFinish';
 export * from './processEntitiesDirectly';
 export * from './resetScroll';
+export * from './sanitizeHtml';
 export * from './schedulers';
 export * from './select';
 export * from './signals';
@@ -626,6 +618,63 @@ export function addMention(obj: IMessageSendPayload | string, mentionValue: IMen
 	return updatedObj;
 }
 
+export const NOTIFICATION_MARKER_REGEX = /\[(?:lk|pre|b|c|s|t|vk|lk_yt|lk_fb|lk_tt|lk_ogp)\]\s?/g;
+
+function getNotificationMarkerShiftBeforeIndex(content: string, index: number): number {
+	let shift = 0;
+	const regex = new RegExp(NOTIFICATION_MARKER_REGEX.source, 'g');
+
+	for (const match of content.matchAll(regex)) {
+		if (match.index !== undefined && match.index < index) {
+			shift += match[0].length;
+		} else {
+			break;
+		}
+	}
+
+	return shift;
+}
+
+export function stripNotificationMarkers(content: string): string {
+	return content.replace(NOTIFICATION_MARKER_REGEX, '');
+}
+
+export function adjustMentionsForStrippedMarkers(contentWithMarkers: string, mentions: IMentionOnMessage[]): IMentionOnMessage[] {
+	return mentions.map((mention) => {
+		if (mention.s === undefined || mention.e === undefined) {
+			return mention;
+		}
+
+		return {
+			...mention,
+			s: mention.s - getNotificationMarkerShiftBeforeIndex(contentWithMarkers, mention.s),
+			e: mention.e - getNotificationMarkerShiftBeforeIndex(contentWithMarkers, mention.e)
+		};
+	});
+}
+
+export function patchLinkTokens(content: IExtendedMessage): IExtendedMessage;
+export function patchLinkTokens(content: IExtendedMessage | undefined): IExtendedMessage | undefined;
+export function patchLinkTokens(content: IExtendedMessage | undefined): IExtendedMessage | undefined {
+	if (!content) {
+		return content;
+	}
+
+	if ((!content.mk || content.mk.length === 0) && Array.isArray(content.lk) && content.lk.length > 0) {
+		const text = typeof content.t === 'string' ? content.t : '';
+
+		return {
+			...content,
+			mk: content.lk.map((lkItem) => {
+				const url = lkItem.s !== undefined && lkItem.e !== undefined ? text.substring(lkItem.s, lkItem.e) : '';
+				return { ...lkItem, type: getLinkType(url) };
+			})
+		};
+	}
+
+	return content;
+}
+
 export function isValidEmojiData(data: IExtendedMessage): boolean | undefined {
 	if (data?.mentions && data.mentions.length !== 0) {
 		return false;
@@ -925,10 +974,6 @@ export const checkIsThread = (channel?: IChannel) => {
 	return channel?.type === ChannelType.CHANNEL_TYPE_THREAD || (channel?.parent_id && channel?.parent_id !== '0');
 };
 
-export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();
-export const isMacDesktop = getPlatform() === Platform.MACOS && isElectron();
-export const isLinuxDesktop = getPlatform() === Platform.LINUX && isElectron();
-
 type ImgproxyOptions = {
 	width?: number;
 	height?: number;
@@ -948,7 +993,7 @@ export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptio
 };
 
 export function copyChannelLink(clanId: string, channelId: string) {
-	const origin = isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin;
+	const origin = window.location.origin;
 	const link = `${origin}/chat/clans/${clanId}/channels/${channelId}`;
 	if (navigator.clipboard) {
 		navigator.clipboard
@@ -973,24 +1018,6 @@ export function copyChannelLink(clanId: string, channelId: string) {
 
 export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
 	try {
-		if (isMacDesktop) {
-			const response =
-				mediaType === 'audio'
-					? await electronBridge.invoke(REQUEST_PERMISSION_MICROPHONE)
-					: await electronBridge.invoke(REQUEST_PERMISSION_CAMERA);
-
-			const status =
-				typeof response === 'string'
-					? response
-					: typeof response === 'object' && response !== null && 'status' in response
-						? ((response as { status?: string }).status ?? 'denied')
-						: 'denied';
-
-			if (isMacDesktop && status !== 'granted') {
-				return 'denied';
-			}
-		}
-
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 			const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
 			stream.getTracks().forEach((track) => track.stop());
@@ -1010,27 +1037,6 @@ export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Prom
 
 export const checkMediaPermission = async (mediaType: 'audio' | 'video'): Promise<'granted' | 'denied' | 'prompt' | null> => {
 	try {
-		if (isMacDesktop) {
-			try {
-				const response =
-					mediaType === 'audio'
-						? await electronBridge.invoke(CHECK_PERMISSION_MICROPHONE)
-						: await electronBridge.invoke(CHECK_PERMISSION_CAMERA);
-
-				if (typeof response === 'string') {
-					if (response === 'granted') {
-						return 'granted';
-					} else if (response === 'denied' || response === 'restricted') {
-						return 'denied';
-					} else if (response === 'not-determined') {
-						return 'prompt';
-					}
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
 		if (typeof navigator !== 'undefined' && navigator.permissions && navigator.permissions.query) {
 			try {
 				const permissionName = mediaType === 'audio' ? ('microphone' as PermissionName) : ('camera' as PermissionName);

@@ -1,0 +1,10 @@
+{
+	"streamThumbnail": "Vignette du Stream",
+	"videoError": "Impossible de lire la vidéo. Veuillez réessayer plus tard.",
+	"everyoneWaiting": "Tout le monde vous attend à l'intérieur",
+	"noOneInStream": "Personne n'est présent dans le streaming pour le moment",
+	"joinStream": "Rejoindre le streaming",
+	"noStreamToday": "Aucun streaming aujourd'hui",
+	"hideMembers": "Masquer les membres",
+	"showMembers": "Afficher les membres"
+}

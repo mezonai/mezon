@@ -56,6 +56,8 @@ type Props = {
 	currentChannelId?: string;
 };
 
+const HIDDEN_CALL_LOG_MENU_ITEM_IDS = new Set(['reply', 'forwardMessage', 'forwardAll', 'copyText', 'addToInbox']);
+
 const contextSubmenuAlign = {
 	points: ['tl', 'tr'] as [string, string],
 	offset: [8, 0] as [number, number],
@@ -212,6 +214,8 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		return quickMenuItems.length > 0 || isQuickMenu;
 	}, [quickMenuItems, isQuickMenu]);
 
+	const isCallLogMessage = !!message?.content?.callLog?.callLogType;
+
 	const dropdownReact = useMemo(() => {
 		const reactItems: ReactElement[] = [];
 		const addReactionFunction = items.find((item) => item.id === 'addReaction');
@@ -304,6 +308,9 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			const item = items[index];
 
 			if (item.label === t('deleteMessage') && !isTopic && message?.content?.tp && message?.content?.tp !== '0') {
+				continue;
+			}
+			if (isCallLogMessage && item.id && HIDDEN_CALL_LOG_MENU_ITEM_IDS.has(item.id)) {
 				continue;
 			}
 			const hasEdit = items.some((i) => i.label === t('editMessage'));
@@ -435,6 +442,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		shouldShowQuickMenu,
 		dropdownReact,
 		dropdownQuickMenus,
+		isCallLogMessage,
 		t
 	]);
 

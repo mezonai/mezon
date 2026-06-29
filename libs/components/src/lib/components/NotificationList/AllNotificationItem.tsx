@@ -1,17 +1,21 @@
 import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification } from '@mezon/core';
 import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
-import type { IEmbedProps, IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
+import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
 	NotificationCategory,
 	TOPBARS_MAX_WIDTH,
+	adjustMentionsForStrippedMarkers,
 	convertTimeString,
 	createImgproxyUrl,
 	generateE2eId,
-	getShareContactInfo
+	getShareContactInfo,
+	patchLinkTokens,
+	processText,
+	stripNotificationMarkers
 } from '@mezon/utils';
 import type { ApiDirectFcmProto } from 'mezon-js';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationJump } from '../../hooks/useNotificationJump';
@@ -25,6 +29,54 @@ export type NotifyMentionProps = {
 	readonly notify: INotification;
 	onCloseTooltip?: () => void;
 };
+
+function buildNotificationMessageContent(contentRaw: string | undefined, mentions: IMentionOnMessage[]): IExtendedMessage {
+	if (!contentRaw) {
+		return { t: '', mentions };
+	}
+
+	if (contentRaw.startsWith('{')) {
+		try {
+			const parsed = safeJSONParse(contentRaw) as IExtendedMessage;
+			if (parsed && typeof parsed === 'object' && (parsed.t !== undefined || parsed.lk || parsed.mk)) {
+				return patchLinkTokens({ ...parsed, mentions });
+			}
+		} catch {
+			// fall through to plain-text parsing
+		}
+	}
+
+	const text = stripNotificationMarkers(contentRaw);
+	const adjustedMentions = adjustMentionsForStrippedMarkers(contentRaw, mentions);
+	const { links, voiceRooms, markdowns } = processText(text);
+
+	return patchLinkTokens({
+		t: text,
+		mentions: adjustedMentions,
+		...(links.length > 0 ? { lk: links } : {}),
+		...(voiceRooms.length > 0 ? { vk: voiceRooms } : {}),
+		...(markdowns.length > 0 ? { mk: markdowns } : {})
+	});
+}
+
+function getNotificationCopyText(contentRaw: string | undefined): string {
+	if (!contentRaw) {
+		return '';
+	}
+
+	if (contentRaw.startsWith('{')) {
+		try {
+			const parsed = safeJSONParse(contentRaw) as IExtendedMessage;
+			if (parsed?.t) {
+				return parsed.t;
+			}
+		} catch {
+			// fall through
+		}
+	}
+
+	return stripNotificationMarkers(contentRaw);
+}
 
 function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
@@ -76,7 +128,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const contentSenderId = notify?.content?.sender_id;
-	const messageContent = notify?.content?.content;
+	const messageContent = getNotificationCopyText(notify?.content?.content);
 	const allTabProps = {
 		subject: notify.subject,
 		category: notify.category,
@@ -171,7 +223,9 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 			};
 		});
 		return mention || [];
-	}, [message.mention_ids]);
+	}, [message.mention_ids, message.position_e, message.position_s, message.is_mention_role]);
+
+	const messageLineContent = useMemo(() => buildNotificationMessageContent(message.content, mentions), [message.content, mentions]);
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg overflow-hidden">
@@ -256,10 +310,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 								<MessageLine
 									messageId={message.message_id}
 									isEditted={false}
-									content={{
-										mentions: mentions || [],
-										t: message.content
-									}}
+									content={messageLineContent}
 									isTokenClickAble={false}
 									isJumMessageEnabled={false}
 								/>

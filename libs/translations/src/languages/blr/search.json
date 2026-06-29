@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Пошук удзельнікаў",
+  "searchActions": "Пошук дзеянняў",
+  "allUsers": "Усе карыстальнікі",
+  "noResults": {
+    "title": "Няма!",
+    "description": "Вы памыліліся?"
+  }
+}

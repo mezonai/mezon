@@ -1,0 +1,9 @@
+{
+	"show": "Показати",
+	"membersOf": "Всього учасників {{count}}",
+	"addedBy": "Додано {{name}}",
+	"you": "ви",
+	"inVoice": "У голосовому каналі",
+	"onlineCount": "Онлайн - {{count}}",
+	"offlineCount": "Офлайн - {{count}}"
+}

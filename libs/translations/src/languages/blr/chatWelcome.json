@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Націсніце Запусціць дадатак для пачатку",
+		"inviteFriends": "Запрасіце вашых сяброў",
+		"sendFirstMessage": "Дашліце ваша першае паведамленне",
+		"downloadApp": "Загрузіць дадатак Mezon",
+		"createChannel": "Стварыце свой канал"
+	},
+	"welcome": {
+		"welcomeToChannel": "Сардэчна запрашаем у #{{channelName}}",
+		"startOfChannel": "Гэта пачатак #{{channelName}} {{channelType}} канала",
+		"startOfThread": "Распачата {{username}}",
+		"welcomeToGroup": "Сардэчна запрашаем у групу {{groupName}}.",
+		"beginningOfDM": "Тут пачынаецца ваша размова з {{userName}}",
+		"editGroup": "Рэдагаваць групу",
+		"private": "прыватны",
+		"friendRequestSent": "Вам дасланы запыт на сяброўства:",
+		"addFriend": "Дадаць сябра",
+		"removeFriend": "Выдаліць сябра",
+		"accept": "Прыняць",
+		"ignore": "Ігнараваць",
+		"friendRequestSentButton": "Запыт на сяброўства дасланы",
+		"block": "Заблакаваць",
+		"unblock": "Разблакаваць"
+	},
+	"toast": {
+		"userBlockedSuccess": "Карыстальнік паспяхова заблакаваны",
+		"failedToBlock": "Не атрымалася заблакаваць карыстальніка",
+		"userUnblockedSuccess": "Карыстальнік паспяхова разблакаваны",
+		"failedToUnblock": "Не атрымалася разблакаваць карыстальніка"
+	}
+}

@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "Webhook",
+		"automatedMessage": "Automatische berichten en updates",
+		"description": "Pas je clan aan met integraties. Beheer webhooks, geïndiceerde kanalen en apps, evenals Twitch en YouTube instellingen voor makers.",
+		"learnMore": "Lees meer over integratiebeheer."
+	},
+	"webhooks": {
+		"description": "Webhooks zijn tools waarmee je automatisch berichten en gegevensupdates naar je clan tekstkanalen ontvangt via internetverbindingen.",
+		"learnMore": "Lees meer",
+		"try": "of probeer",
+		"buildOne": "een van je eigen te bouwen."
+	},
+	"clanWebhooks": {
+		"description": "Clan Webhooks zijn een eenvoudige manier om berichten van andere apps en websites naar elke Mezon-gebruiker te sturen met behulp van internettechnologie.",
+		"tips": "Tip: Als je token op je URL verstoord of verouderd lijkt, reset en kopieer de nieuwe URL."
+	},
+	"webhooksEdit": {
+		"title": "Webhook bewerken",
+		"save": "Opslaan",
+		"cancel": "Annuleren",
+		"channel": "Kanaal",
+		"nameLabel": "Naam",
+		"recommendImage": "Aanbevolen om een afbeelding van minimaal 128x128 px te gebruiken",
+		"webhookURL": "Webhook URL",
+		"copy": "Kopiëren",
+		"copied": "Gekopieerd",
+		"delete": "Verwijderen",
+		"selectAChannel": "Kies een kanaal",
+		"yes": "Ja",
+		"deleteCaptionHook": "{{webhookName}} verwijderen",
+		"deleteWebhookTitle": "{{webhookName}} verwijderen",
+		"deleteWebhookConfirmation": "Weet je zeker dat je webhook {{webhookName}} wilt verwijderen? Deze actie is onherroepelijk.",
+		"resetToken": "Token resetten",
+		"name": "Webhook naam",
+		"nameMaxLengthError": "Lengte moet maximaal 64 tekens zijn."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "Geen webhooks"
+	},
+	"webhooksItem": {
+		"createdBy": "Aangemaakt op {{webhookCreateTime}} door {{webhookUserOwnerName}}"
+	},
+	"webhookChannelSelect": {
+		"title": "Kanaal kiezen",
+		"description": "Selecteer een kanaal waar je de webhook wilt aanmaken",
+		"selectChannel": "Kanaal",
+		"placeholder": "Kies een kanaal",
+		"create": "Aanmaken"
+	},
+	"toast": {
+		"addSuccess": "Webhook succesvol aangemaakt!",
+		"addError": "Er is een fout opgetreden bij het aanmaken van de webhook",
+		"saveSuccess": "Succesvol opgeslagen!",
+		"saveError": "Er is een fout opgetreden bij het opslaan",
+		"deleteSuccess": "Webhook succesvol verwijderd!",
+		"deleteError": "Er is een fout opgetreden bij het verwijderen van de webhook",
+		"resetTokenSuccess": "Token succesvol gereset!",
+		"resetTokenError": "Er is een fout opgetreden bij het resetten van de token",
+		"copyError": "URL kon niet worden gekopieerd",
+		"webhookGeneratedSuccess": "{{webhookName}} succesvol aangemaakt!",
+		"webhookDeletedSuccess": "{{webhookName}} succesvol verwijderd!"
+	}
+}

@@ -1,0 +1,67 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Construire une Communauté Plus Amusante",
+			"description": "Pas seulement du chat — c'est l'endroit où vous organisez, connectez-vous avec votre groupe, vos amis et votre communauté d'une manière amusante."
+		},
+		"section2": {
+			"title": "La Meilleure Expérience WFH pour les Organisations",
+			"description": "Travailler à distance ne signifie pas travailler seul. Collaborer, communiquer et célébrer ensemble — parfois à distance. La meilleure expérience WFH pour votre organisation."
+		},
+		"section3": {
+			"title": "Guider les Relations Membres",
+			"description": "Nous croyons que des relations solides construisent des organisations fortes. Chaque fonctionnalité est conçue pour rassembler les membres. Les relations membres, amplifiées."
+		},
+		"section4": {
+			"title": "Contribuer Pour Gagner Des Récompenses",
+			"description": "Participez, gagnez des crédits et recevez des tokens lorsque vous aidez votre communauté à se développer. Votre voix est votre valeur. Contribuez pour gagner des récompenses."
+		},
+		"section5": {
+			"title": "Rapports Détaillés et Clairs",
+			"description": "Suivez la croissance et l'engagement de votre communauté avec des analyses et rapports détaillés. Restez informé, prenez de meilleures décisions."
+		}
+	},
+	"features": [
+		{
+			"title": "Vous Pouvez Télécharger des Émojis, Autocollants et Sons",
+			"description": "Totalement Gratuit Personnalisez vos Émojis, Autocollants et Sons Propres pour Vous Exprimer dans les Conversations."
+		},
+		{
+			"title": "Contrôler les Permissions Membres au Sein du Clan",
+			"description": "Gérez facilement les permissions et rôles des membres du clan pour garantir que chacun a une expérience adaptée et sécurisée."
+		},
+		{
+			"title": "Des Membres Du Monde Entier avec les Mêmes Intérêts",
+			"description": "Les membres rejoindront votre clan via des invitations ou une découverte publique, créant une communauté diversifiée et dynamique."
+		},
+		{
+			"title": "Créer un Clan Est Plus Facile Que Jamais",
+			"description": "Répondez rapidement aux messages avec des émojis sans avoir à taper de texte."
+		}
+	],
+	"featuresTitle": "Construisez Votre Communauté Plus Amusante",
+	"download": "Télécharger",
+	"faq": {
+		"title": "Besoin d'Aide Supplémentaire ?",
+		"seeAll": "Voir Toutes les FAQ",
+		"learnMore": "En savoir plus",
+		"questions": [
+			{
+				"question": "Qu'est-ce Qu'un Clan Sur Mezon ?",
+				"answer": "Le clan est le cœur de Mezon — l'endroit où les gens se connectent, collaborent et partagent via des communautés construites autour d'intérêts, d'objectifs ou de passions communs. Un clan peut être un petit groupe d'amis ou une grande communauté avec des milliers de membres. Dans un clan, vous pouvez discuter via des Canaux organisés, organiser des événements via des Salles vocales et améliorer la communauté avec des Bots, des Applications et des Tokens Mezon."
+			},
+			{
+				"question": "Comment Rejoindre un Clan Sur Mezon ?",
+				"answer": "Vous pouvez découvrir et rejoindre un Clan de deux façons : via le bouton Découvrir dans l'application ou via la Page Web du Clan à mezon.ai/clans, ou en utilisant un lien d'invitation partagé par des amis, des collègues ou un administrateur. Cliquez simplement sur 'Rejoindre' pour devenir membre de la communauté. Chaque utilisateur peut rejoindre jusqu'à 50 Clans en même temps. Consultez les Clans en vedette comme Student Clan, Gamer Clan et Business Clan."
+			},
+			{
+				"question": "Comment Créer Mon Propre Clan ?",
+				"answer": "Créer un clan est simple et flexible. Naviguez vers la section Clan et créez un nouveau clan en quelques clics. Vous pouvez définir un nom, un icône et des paramètres de base pour personnaliser votre communauté. Une fois créé, vous pouvez inviter vos amis et collègues pour commencer à discuter, partager des idées ou collaborer ensemble. Vous pouvez également gérer les canaux, définir des permissions et transférer la propriété si nécessaire."
+			},
+			{
+				"question": "Puis-Je Quitter un Clan Si Je Ne Veux Plus Participer ?",
+				"answer": "Oui, si vous ne souhaitez plus participer à un clan, vous pouvez sélectionner 'Quitter le clan' depuis les paramètres du clan. Après avoir quitté, tous les historiques de messages et l'accès aux canaux de ce clan seront supprimés de votre compte. Vous pouvez toujours rejoindre à nouveau le clan plus tard si vous avez un lien d'invitation ou si le clan est en découverte publique."
+			}
+		]
+	}
+}

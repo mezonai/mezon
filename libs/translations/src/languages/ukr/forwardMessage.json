@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Переслати повідомлення",
+		"searchPlaceholder": "Пошук",
+		"noResults": "Не можете знайти те, що шукаєте?",
+		"searchFriendsUsers": "Пошук друзів та користувачів",
+		"searchingChannel": "Пошук каналу",
+		"sharedContent": "Поділений вміст",
+		"cancel": "Скасувати",
+		"send": "Надіслати",
+		"sending": "Насилання...",
+		"sendingProgress": "Насилання ({{current}}/{{total}})...",
+		"image": "зображення",
+		"images": "зображення",
+		"video": "відео",
+		"videos": "відео",
+		"file": "файл",
+		"files": "файли",
+		"additionalMessage": "Додаткове повідомлення (необов'язково)",
+		"additionalMessagePlaceholder": "Введіть додаткове повідомлення..."
+	},
+	"successMessage": "Повідомлення успішно переслано",
+	"errorMessage": "Не вдалося переслати повідомлення"
+}

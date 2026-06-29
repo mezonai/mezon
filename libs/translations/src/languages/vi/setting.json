@@ -96,8 +96,12 @@
 		"french": "Français",
 		"german": "Deutsch",
 		"polish": "Polski",
+		"dutch": "Nederlands",
+		"polish": "Polski",
 		"korean": "한국어",
-		"swedish": "Svenska"
+		"swedish": "Svenska",
+		"ukrainian": "Українська",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Giọng nói",

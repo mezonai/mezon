@@ -1,0 +1,19 @@
+{
+	"placeholder": "Напишіть тут свої думки...",
+	"ephemeralMessage": "Тимчасове повідомлення для {{username}}...",
+	"mentionCategories": {
+		"members": "УЧАСНИКИ",
+		"textChannels": "ТЕКСТОВІ КАНАЛИ",
+		"emojiMatching": "Знайдено емодзі",
+		"commands": "КОМАНДИ"
+	},
+	"suggestions": {
+		"notifyEveryone": "Повідомити всіх, хто має право бачити цей канал",
+		"loadingCommands": "Завантаження команд..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Надіслати тимчасове повідомлення (видно лише обраному користувачеві)"
+		}
+	}
+}

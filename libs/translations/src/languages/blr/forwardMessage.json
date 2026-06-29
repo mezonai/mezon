@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Пераслаць паведамленне",
+		"searchPlaceholder": "Пошук",
+		"noResults": "Не можаце знайсці тое, што шукаеце?",
+		"searchFriendsUsers": "Пошук сяброў і карыстальнікаў",
+		"searchingChannel": "Пошук канала",
+		"sharedContent": "Апублікаванае змесціва",
+		"cancel": "Скасаваць",
+		"send": "Даслаць",
+		"sending": "Адпраўка...",
+		"sendingProgress": "Адпраўка ({{current}}/{{total}})...",
+		"image": "выява",
+		"images": "выявы",
+		"video": "відэа",
+		"videos": "відэа",
+		"file": "файл",
+		"files": "файлы",
+		"additionalMessage": "Дадатковае паведамленне (неабавязкова)",
+		"additionalMessagePlaceholder": "Увядзіце дадатковае паведамленне..."
+	},
+	"successMessage": "Паведамленне паспяхова пераслана",
+	"errorMessage": "Не атрымалася пераслаць паведамленне"
+}

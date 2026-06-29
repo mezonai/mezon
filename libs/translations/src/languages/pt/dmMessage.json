@@ -37,6 +37,12 @@
 		"content": "Esta conversa retornará à sua posição normal na lista de mensagens.",
 		"confirmText": "Desafixar"
 	},
+	"closeDmConfirm": {
+		"title": "Fechar mensagem direta",
+		"content": "Tem certeza de que deseja fechar esta conversa? Isso ocultará o chat da sua lista de mensagens.",
+		"confirmText": "Fechar mensagem direta",
+		"error": "Falha ao fechar mensagem direta"
+	},
 	"pinSection": "FIXADO",
 	"allMessagesSection": "TODAS AS MENSAGENS",
 	"maximumPinnedConversationsReached": "Você pode fixar no máximo {{max}} conversas.",

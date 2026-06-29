@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Дапаможнік клана",
+		"events": "Падзеі",
+		"events_one": "{{count}} Падзея",
+		"events_other": "{{count}} Падзей",
+		"members": "Удзельнікі",
+		"channels": "Каналы"
+	},
+	"ongoingEvent": {
+		"title": "Бягучыя падзеі",
+		"eventDetail": "Дэталі падзеі"
+	},
+	"onboarding": {
+		"getStarted": "Пачаць",
+		"of": "з"
+	},
+	"favoriteChannel": "Улюбёныя каналы",
+	"publicChannels": "Публічныя каналы",
+	"channelApps": "Дадаткі каналаў",
+	"dragMode": {
+		"enable": "Націсніце, каб уключыць рэжым перацягвання катэгорый",
+		"disable": "Націсніце, каб выключыць рэжым перацягвання катэгорый"
+	}
+}

@@ -41,10 +41,7 @@ export function countPresignableAttachments(attachments: ApiMessageAttachment[] 
 	return attachments.filter((attachment) => isMezonCdnUrl(attachment.url)).length;
 }
 
-export function areAllPresignAttachmentsFinished(
-	attachments: ApiMessageAttachment[] | undefined,
-	presignFinishKeys: string[] | null
-): boolean {
+export function areAllPresignAttachmentsFinished(attachments: ApiMessageAttachment[] | undefined, presignFinishKeys: string[] | null): boolean {
 	if (presignFinishKeys === null) return false;
 	const presignableCount = countPresignableAttachments(attachments);
 	if (presignableCount === 0) return false;
@@ -118,15 +115,10 @@ export function filterExpiredPresignAttachments(
 	const presignFinishKeys = parsePresignFinishKeys(content);
 	if (presignFinishKeys === null || !messageCreateTimeSeconds) return attachments;
 
-	return attachments.filter(
-		(attachment) => !isExpiredPresignAttachment(attachment.url, presignFinishKeys, messageCreateTimeSeconds, nowSeconds)
-	);
+	return attachments.filter((attachment) => !isExpiredPresignAttachment(attachment.url, presignFinishKeys, messageCreateTimeSeconds, nowSeconds));
 }
 
-export function hasActivePresignPendingAttachments(
-	attachments: ApiMessageAttachment[] | undefined,
-	content: unknown
-): boolean {
+export function hasActivePresignPendingAttachments(attachments: ApiMessageAttachment[] | undefined, content: unknown): boolean {
 	const presignFinishKeys = parsePresignFinishKeys(content);
 	if (presignFinishKeys === null || !attachments?.length) return false;
 
@@ -175,22 +167,22 @@ export function getMessageCreateTimeSeconds(message: {
 	return undefined;
 }
 
-export function isAttachmentPresignPendingForMessage(
-	url: string | undefined,
-	message: { content?: unknown } | null | undefined
-): boolean {
+export function isAttachmentPresignPendingForMessage(url: string | undefined, message: { content?: unknown } | null | undefined): boolean {
 	if (!message) return false;
 	return isPresignAttachmentPending(url, parsePresignFinishKeys(message.content));
 }
 
 export function shouldHidePresignAttachment(
 	url: string | undefined,
-	message: {
-		content?: unknown;
-		create_time_seconds?: number | string;
-		create_time?: string;
-		update_time_seconds?: number | string;
-	} | null | undefined,
+	message:
+		| {
+				content?: unknown;
+				create_time_seconds?: number | string;
+				create_time?: string;
+				update_time_seconds?: number | string;
+		  }
+		| null
+		| undefined,
 	nowSeconds = Math.floor(Date.now() / 1000)
 ): boolean {
 	if (!message) return false;
