@@ -1,4 +1,12 @@
-import { channelSettingActions, channelsActions, selectArchivedChannels, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
+import {
+	channelSettingActions,
+	channelsActions,
+	selectArchivedChannels,
+	selectArchivedChannelsLoadingStatus,
+	selectCurrentClanId,
+	toastActions,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -11,6 +19,7 @@ const SettingArchivedChannels = () => {
 	const { t, i18n } = useTranslation('clanSettings', { keyPrefix: 'archivedChannels' });
 	const currentClanId = useSelector(selectCurrentClanId);
 	const listArchivedChannel = useSelector(selectArchivedChannels);
+	const loadingStatus = useSelector(selectArchivedChannelsLoadingStatus);
 
 	const handleRestore = async (channelId: string) => {
 		if (!currentClanId) return;
@@ -32,14 +41,18 @@ const SettingArchivedChannels = () => {
 	return (
 		<div className="pt-2">
 			<div className="text-base text-theme-primary mb-6 max-w-2xl">{t('description')}</div>
-			{listArchivedChannel?.length === 0 ? (
+			{loadingStatus === 'error' ? (
+				<div className="flex flex-col items-center justify-center py-12 text-theme-primary opacity-60">
+					<p className="text-base font-medium">{t('fetchError')}</p>
+				</div>
+			) : listArchivedChannel.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-12 text-theme-primary opacity-60">
 					<Icons.Hashtag defaultSize="w-12 h-12 mb-3" />
 					<p className="text-base font-medium">{t('emptyState')}</p>
 				</div>
 			) : (
 				<div className="flex flex-col gap-3">
-					{listArchivedChannel?.map((ch: ApiChannelDescription) => {
+					{listArchivedChannel.map((ch: ApiChannelDescription) => {
 						const archivedAgoText = ch.last_sent_message?.timestamp_seconds
 							? formatDistanceToNow(Number(ch.last_sent_message.timestamp_seconds) * 1000, {
 									addSuffix: true,
