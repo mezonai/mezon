@@ -161,7 +161,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 									)}
 									{currentSetting === EChannelSettingTab.PREMISSIONS && (
 										<PermissionsChannel
-											channel={channel}
+											channel_id={channel.id}
 											openModalAdd={openModalAdd}
 											parentRef={modalRef}
 											clanId={channel.clan_id}
