@@ -28,7 +28,6 @@ import { appActions } from '../app/app.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { fetchCategoriesCached, mapCategoryToEntity } from '../categories/categories.slice';
-import { selectUserChannelIds, userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectClansEntities } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
@@ -37,7 +36,6 @@ import { messagesActions, processQueuedLastSeenMessages } from '../messages/mess
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
 import { reactionActions } from '../reactionMessage/reactionMessage.slice';
-import { rolesClanActions } from '../roleclan/roleclan.slice';
 import type { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import { bulkUpdateClanBadgeRender } from './channelListBadgeThunks';
@@ -628,51 +626,7 @@ export const updateChannelPrivate = createAsyncThunk('channels/updateChannelPriv
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.updateChannelPrivate(mezon.session, body);
-
-		if (response) {
-			const clanId = body.clan_id as string;
-			const channelId = body.channel_id as string;
-			const roleIds = body.role_ids || [];
-
-			thunkAPI.dispatch(
-				channelsActions.updateChannelPrivateState({
-					clanId,
-					channelId,
-					channelPrivate: body.channel_private ?? 0
-				})
-			);
-
-			if (roleIds.length === 0) {
-				thunkAPI.dispatch(rolesClanActions.removeAllRolesFromChannel({ clanId, channelId }));
-			} else {
-				thunkAPI.dispatch(
-					rolesClanActions.addRoleByChannel({
-						roleIds,
-						channelId,
-						clanId
-					})
-				);
-			}
-
-			const state = thunkAPI.getState() as RootState;
-			const currentUserIds = selectUserChannelIds(state, channelId);
-			const savedUserIds = body.user_ids || [];
-			const usersToAdd = savedUserIds.filter((id) => !currentUserIds.includes(id));
-			if (usersToAdd.length > 0) {
-				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: usersToAdd }));
-				thunkAPI.dispatch(channelMembersActions.addNewMember({ channel_id: channelId, user_ids: usersToAdd }));
-			}
-			const usersToRemove = currentUserIds.filter((id) => !savedUserIds.includes(id));
-			if (usersToRemove.length > 0) {
-				thunkAPI.dispatch(userChannelsActions.removeUserChannel({ channelId, userRemoves: usersToRemove }));
-				usersToRemove.forEach((userId) => {
-					thunkAPI.dispatch(channelMembersActions.remove({ channelId, userId }));
-				});
-			}
-			if (usersToAdd.length > 0 || usersToRemove.length > 0) {
-				thunkAPI.dispatch(channelMembersActions.invalidateChannelCache(channelId));
-			}
-		}
+		return response;
 	} catch (error) {
 		captureSentryError(error, 'channels/updateChannelPrivate');
 		return thunkAPI.rejectWithValue(error);
