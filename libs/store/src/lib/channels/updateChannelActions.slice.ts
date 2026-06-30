@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { ChannelUpdatedEvent } from 'mezon-js';
 import { channelMembersActions } from '../channelmembers/channel.members';
-import { selectRolesByClanId } from '../roleclan/roleclan.slice';
+import { rolesClanActions, selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
 import { channelMetaActions } from './channelmeta.slice';
 import type { ChannelsEntity } from './channels.slice';
@@ -39,6 +39,16 @@ export const switchPublicToPrivate = createAsyncThunk(
 					channelPrivate: channel.channel_private
 				})
 			);
+
+			if (channel.role_ids && channel.role_ids.length) {
+				thunkAPI.dispatch(
+					rolesClanActions.addRoleByChannel({
+						roleIds: channel.role_ids,
+						channelId: channel.channel_id,
+						clanId
+					})
+				);
+			}
 			return false;
 		}
 		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channel_id }));
@@ -56,6 +66,8 @@ export const switchPrivateToPublic = createAsyncThunk(
 				channelPrivate: channel.channel_private
 			})
 		);
+		thunkAPI.dispatch(channelMembersActions.switchChannelOutPrivate(channel.channel_id));
+		thunkAPI.dispatch(rolesClanActions.removeAllRolesFromChannel({ clanId: channel.clan_id, channelId: channel.channel_id }));
 	}
 );
 

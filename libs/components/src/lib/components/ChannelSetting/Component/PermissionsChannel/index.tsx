@@ -69,7 +69,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			channelsActions.updateChannelPrivate({
 				clan_id: clanId,
 				channel_id: channel.id,
-				channel_private: valueToggle ? 1 : 0,
+				channel_private: valueToggle ? 0 : 1,
 				user_ids: userIdsToSave,
 				role_ids: valueToggle ? selectedRoleIds : []
 			})
