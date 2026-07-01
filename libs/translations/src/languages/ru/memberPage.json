@@ -4,7 +4,7 @@
 	"addedBy": "Добавлен {{name}}",
 	"you": "Вы",
 	"inVoice": "В звонке",
+	"shareScreen": "Демонстрация экрана",
 	"onlineCount": "Онлайн - {{count}}",
 	"offlineCount": "Оффлайн - {{count}}"
 }
-

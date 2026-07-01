@@ -33,6 +33,7 @@
 	"loading": "Aan het laden...",
 	"topic": "Topic",
 	"invoice": "In stemkanaal",
+	"shareScreen": "Scherm delen",
 	"reactions": "Reacties",
 	"callMessages": {
 		"startedVoiceCall": "Stembellen is gestart",

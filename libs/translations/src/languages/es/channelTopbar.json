@@ -33,6 +33,7 @@
 	"topic": "Tema",
 	"reactions": "Reacciones",
 	"invoice": "En voz",
+	"shareScreen": "Compartiendo pantalla",
 	"callMessages": {
 		"startedVoiceCall": "Inició llamada de voz",
 		"startedVideoCall": "Inició llamada de video"

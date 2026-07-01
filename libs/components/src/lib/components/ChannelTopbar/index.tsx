@@ -11,6 +11,7 @@ import {
 import type { ChannelMembersEntity, DirectEntity, RootState } from '@mezon/store';
 import {
 	DMCallActions,
+	EInvoice,
 	EStateFriend,
 	appActions,
 	audioCallActions,
@@ -290,7 +291,17 @@ const TopBarChannelText = memo(() => {
 										onClick={handleJoinVoice}
 										data-e2e={generateE2eId(`chat.direct_message.header.left_container.in_voice_status`)}
 									>
-										<Icons.Speaker className="text-green-500 !w-3 !h-3" /> {t('invoice')}
+										{checkInvoice?.status === EInvoice.INVOICE ? (
+											<>
+												<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+												{t('inVoice')}
+											</>
+										) : (
+											<>
+												<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
+												{t('shareScreen')}
+											</>
+										)}
 									</span>
 								)}
 							</div>

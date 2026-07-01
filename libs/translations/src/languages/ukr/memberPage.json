@@ -4,6 +4,7 @@
 	"addedBy": "Додано {{name}}",
 	"you": "ви",
 	"inVoice": "У голосовому каналі",
+	"shareScreen": "Ділиться екраном",
 	"onlineCount": "Онлайн - {{count}}",
 	"offlineCount": "Офлайн - {{count}}"
 }

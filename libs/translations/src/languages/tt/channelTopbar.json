@@ -33,6 +33,7 @@
 	"topic": "Тема",
 	"reactions": "Реакцияләр",
 	"invoice": "Шалтыратуда",
+	"shareScreen": "Экран белән бүлешә",
 	"callMessages": {
 		"startedVoiceCall": "Тавышлы шалтырату башлады",
 		"startedVideoCall": "Видео-шалтырату башлады"

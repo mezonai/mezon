@@ -4,6 +4,8 @@
 	"addedBy": "Aggiunto da {{name}}",
 	"you": "tu",
 	"inVoice": "Nel canale vocale",
+	"shareScreen": "Condivisione dello schermo",
+
 	"onlineCount": "Online - {{count}}",
 	"offlineCount": "Offline - {{count}}"
 }

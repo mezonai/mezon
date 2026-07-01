@@ -4,6 +4,7 @@
 	"addedBy": "Adicionado por {{name}}",
 	"you": "você",
 	"inVoice": "No canal de voz",
+	"shareScreen": "Compartilhando tela",
 	"onlineCount": "Online - {{count}}",
 	"offlineCount": "Offline - {{count}}"
 }
