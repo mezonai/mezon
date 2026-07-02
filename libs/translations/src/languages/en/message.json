@@ -183,6 +183,7 @@
 		"allPinned": "all pinned",
 		"messages": "messages.",
 		"startedAThread": "started a thread:",
+		"deletedAThread": "deleted a thread:",
 		"seeAllThreads": "See",
 		"allThreads": "all threads"
 	},

@@ -85,7 +85,6 @@ import { voiceReducer } from './voice/voice.slice';
 import { TRANSACTION_HISTORY_FEATURE_KEY, transactionHistoryReducer } from './wallet/transactionHistory.slice';
 import { WALLET_FEATURE_KEY, walletReducer } from './wallet/wallet.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
-import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowControls/windowControls.slice';
 const persistedPollsReducer = persistReducer(
 	{
 		key: 'polls',
@@ -390,7 +389,6 @@ const reducer = {
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
 	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
-	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer,
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,

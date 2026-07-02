@@ -1248,7 +1248,8 @@ export enum TypeMessage {
 	DeleteEphemeralMsg = 15,
 	ShareContact = 16,
 	Location = 17,
-	Poll = 18
+	Poll = 18,
+	DeleteThread = 19
 }
 
 export enum ServerSettingsMenuValue {

@@ -36,7 +36,6 @@ import { messagesActions, processQueuedLastSeenMessages } from '../messages/mess
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
 import { reactionActions } from '../reactionMessage/reactionMessage.slice';
-import { rolesClanActions } from '../roleclan/roleclan.slice';
 import type { RootState } from '../store';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import { bulkUpdateClanBadgeRender } from './channelListBadgeThunks';
@@ -627,16 +626,7 @@ export const updateChannelPrivate = createAsyncThunk('channels/updateChannelPriv
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.updateChannelPrivate(mezon.session, body);
-
-		if (response) {
-			thunkAPI.dispatch(
-				rolesClanActions.addRoleByChannel({
-					roleIds: body.role_ids || [],
-					channelId: body.channel_id as string,
-					clanId: body.clan_id as string
-				})
-			);
-		}
+		return response;
 	} catch (error) {
 		captureSentryError(error, 'channels/updateChannelPrivate');
 		return thunkAPI.rejectWithValue(error);
@@ -739,46 +729,54 @@ type fetchChannelsArgs = {
 export const addThreadToChannels = createAsyncThunk(
 	'channels/addThreadToChannels',
 	async ({ clanId, channelId, parentChannelId }: { clanId: string; channelId: string; parentChannelId?: string }, thunkAPI) => {
+		if (!channelId) {
+			return false;
+		}
+
 		const state = thunkAPI.getState() as RootState;
 		const channelData = selectChannelByIdAndClanId(state, clanId, channelId);
-		if (channelId && !channelData) {
-			const currentChannelId = state.channels?.byClans?.[clanId]?.currentChannelId;
-			const channelIdToFetch = parentChannelId || currentChannelId;
 
-			if (!channelIdToFetch || channelIdToFetch === channelId) {
-				return true;
-			}
+		if (channelData) {
+			return true;
+		}
 
-			try {
-				const data = await thunkAPI
-					.dispatch(
-						threadsActions.fetchThread({
-							channelId: channelIdToFetch,
-							clanId,
-							threadId: channelId
-						})
-					)
-					.unwrap();
+		const currentChannelId = state.channels?.byClans?.[clanId]?.currentChannelId;
+		const channelIdToFetch = parentChannelId || currentChannelId;
 
-				const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+		if (!channelIdToFetch || channelIdToFetch === channelId) {
+			return false;
+		}
 
-				if (matchedThread) {
-					thunkAPI.dispatch(
-						channelsActions.upsertOne({
-							clanId,
-							channel: {
-								...matchedThread,
-								active: matchedThread.active
-							} as ChannelsEntity
-						})
-					);
-				}
-				return true;
-			} catch (error) {
+		try {
+			const data = await thunkAPI
+				.dispatch(
+					threadsActions.fetchThread({
+						channelId: channelIdToFetch,
+						clanId,
+						threadId: channelId
+					})
+				)
+				.unwrap();
+
+			const matchedThread = data?.threads?.find((thread) => thread.id === channelId || thread.channel_id === channelId);
+
+			if (!matchedThread) {
 				return false;
 			}
+
+			thunkAPI.dispatch(
+				channelsActions.upsertOne({
+					clanId,
+					channel: {
+						...matchedThread,
+						active: matchedThread.active
+					} as ChannelsEntity
+				})
+			);
+			return true;
+		} catch (error) {
+			return false;
 		}
-		return true;
 	}
 );
 

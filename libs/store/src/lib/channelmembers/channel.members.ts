@@ -541,6 +541,12 @@ export const channelMembers = createSlice({
 				delete state.memberChannels[channelId].cache;
 			}
 		},
+		switchChannelOutPrivate: (state, action: PayloadAction<string>) => {
+			const channelId = action.payload;
+			if (state.memberChannels[channelId]) {
+				delete state.memberChannels[channelId];
+			}
+		},
 		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string; time_reset?: number }>) => {
 			const { userId, status, time_reset } = action.payload;
 			state.customStatusUser[userId] = { status, time_reset };

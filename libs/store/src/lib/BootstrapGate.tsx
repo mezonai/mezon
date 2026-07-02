@@ -1,10 +1,11 @@
 import { probeNetworkReachability, RECONNECT_NETWORK_PROBE_TIMEOUT_MS, useMezon } from '@mezon/transport';
-import type { ApiSession } from 'mezon-js';
+import type { ApiSession, TopicInMessageEvent } from 'mezon-js';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import type { Persistor } from 'redux-persist';
 import { authActions } from './auth/auth.slice';
 import { useAppDispatch } from './store';
+import { topicsActions } from './topicDiscussion/topicDiscussions.slice';
 
 const PERSIST_AUTH_KEY = 'persist:auth';
 const MAX_RETRIES = 4;
@@ -55,6 +56,9 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 		const init = async () => {
 			const client = await createClient();
+			client.ontopicinmessage = (event: TopicInMessageEvent) => {
+				dispatch(topicsActions.addTopicMeta(event));
+			};
 			if (!client) {
 				setReady(true);
 				return;

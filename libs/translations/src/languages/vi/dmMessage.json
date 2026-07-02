@@ -37,6 +37,12 @@
 		"content": "Hội thoại này sẽ được trả về vị trí bình thường trong danh sách tin nhắn.",
 		"confirmText": "Bỏ ghim"
 	},
+	"closeDmConfirm": {
+		"title": "Đóng cuộc trò chuyện",
+		"content": "Bạn có chắc chắn muốn đóng cuộc trò chuyện này không? Hành động này sẽ ẩn hội thoại khỏi danh sách tin nhắn của bạn.",
+		"confirmText": "Đóng cuộc trò chuyện",
+		"error": "Không thể đóng cuộc trò chuyện"
+	},
 	"pinSection": "ĐÃ GHIM",
 	"allMessagesSection": "TẤT CẢ TIN NHẮN",
 	"maximumPinnedConversationsReached": "Bạn chỉ có thể ghim tối đa {{max}} cuộc hội thoại.",

@@ -267,7 +267,7 @@ export const fetchArchivedChannelsInClan = createAsyncThunk('channelSetting/fetc
 			return thunkAPI.rejectWithValue('Invalid fetchArchivedChannelsInClan');
 		}
 
-		return response;
+		return { channeldesc: response.channeldesc || [] };
 	} catch (error) {
 		captureSentryError(error, 'channelSetting/fetchArchivedChannelsInClan');
 		return thunkAPI.rejectWithValue(error);
@@ -471,3 +471,4 @@ export const selectNumberChannelCount = createSelector(getChannelSettingState, (
 export const selectListChannelBySearch = createSelector(getChannelSettingState, (state) => state.listSearchChannel);
 
 export const selectArchivedChannels = createSelector(getChannelSettingState, (state) => state.listArchivedChannel);
+export const selectArchivedChannelsLoadingStatus = createSelector(getChannelSettingState, (state) => state.loadingStatus);

@@ -285,10 +285,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 								/>
 							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_APP && (
-								<AppChannelListIcon
-									isEmphasized={isActive || isUnReadChannel || Boolean(numberNotification)}
-									className="w-5 h-5"
-								/>
+								<AppChannelListIcon isEmphasized={isActive || isUnReadChannel || Boolean(numberNotification)} className="w-5 h-5" />
 							)}
 							{isPrivate && channel.type === ChannelType.CHANNEL_TYPE_APP ? (
 								<Icons.PrivateAppChannelIcon

@@ -48,11 +48,12 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 }) => {
 	const { t } = useTranslation('channelSetting');
 	const isPrivate = channel.channel_private;
+	const isPrivateChannel = channel.channel_private === 1;
 	const rolesClan = useSelector(selectAllRolesClan);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const rolesChannel = useSelector(selectRolesByChannelId(channel.id));
-	const [selectedUserIds, setSelectedUserIds] = useState<string[]>(selectUserIds);
-	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(selectRoleIds);
+	const [selectedUserIds, setSelectedUserIds] = useState<string[]>(isPrivateChannel ? [] : selectUserIds);
+	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(isPrivateChannel ? [] : selectRoleIds);
 	const { userProfile } = useAuth();
 	const rolesAddChannel = useMemo(
 		() => rolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1),
@@ -73,14 +74,12 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const userChannelIds = getUserChannelIdsFromStore(channel.id);
 
 	const listUserInvite = useMemo(() => {
-		if (channel.channel_private !== 1) {
+		if (!isPrivateChannel) {
 			return usersClan.filter((user) => user.id !== userProfile?.user?.id && !selectedUserIds.includes(user.id));
 		}
 		const channelUserSet = new Set(userChannelIds);
-		const selectedUserSet = new Set(selectedUserIds);
-
-		return usersClan.filter((user) => !channelUserSet.has(user.id) && !selectedUserSet.has(user.id));
-	}, [usersClan, userChannelIds, channel.channel_private, userProfile?.user?.id, selectedUserIds]);
+		return usersClan.filter((user) => !channelUserSet.has(user.id) && !selectedUserIds.includes(user.id));
+	}, [usersClan, userChannelIds, isPrivateChannel, userProfile?.user?.id, selectedUserIds]);
 
 	const initFilter: filterItemProps = useMemo(
 		() => ({
@@ -111,7 +110,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 
 	const handleAddMember = async () => {
 		onClose();
-		if (channel.channel_private === 1) {
+		if (isPrivateChannel) {
 			if (selectedUserIds.length > 0) {
 				const body = {
 					channelId: channel.id,

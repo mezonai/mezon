@@ -32,6 +32,7 @@ import SettingOnBoarding from './SettingOnBoarding';
 import SettingSidebar from './SettingSidebar';
 import SettingSoundEffect from './SettingSoundEffect';
 import SettingSticker from './SettingSticker';
+import { useCanViewArchivedChannels } from './hooks/useCanViewArchivedChannels';
 
 export type ModalSettingProps = {
 	onClose: () => void;
@@ -67,6 +68,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 
 	const dispatch = useAppDispatch();
 	const [canManageClan, canManagerChannel] = usePermissionChecker([EPermission.manageClan, EPermission.manageChannel]);
+	const { canViewArchivedChannels } = useCanViewArchivedChannels();
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
 		setCurrentSettingId(settingItem.id);
@@ -81,7 +83,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 				dispatch(fetchWebhooks({ channelId: '0', clanId: currentClanId }));
 			}
 		}
-		if (settingItem.id === ItemSetting.ARCHIVED_CHANNELS) {
+		if (settingItem.id === ItemSetting.ARCHIVED_CHANNELS && canViewArchivedChannels) {
 			dispatch(channelSettingActions.fetchArchivedChannelsInClan(currentClanId));
 		}
 	};
@@ -131,7 +133,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 			case ItemSetting.CATEGORY_ORDER:
 				return <CategoryOrderSetting />;
 			case ItemSetting.ARCHIVED_CHANNELS:
-				return <SettingArchivedChannels />;
+				return canViewArchivedChannels ? <SettingArchivedChannels /> : null;
 			case ItemSetting.AUDIT_LOG:
 				return <AuditLog currentClanId={currentClanId} />;
 			case ItemSetting.ON_BOARDING:
