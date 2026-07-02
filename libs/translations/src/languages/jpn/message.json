@@ -183,6 +183,7 @@
 		"allPinned": "すべてのメッセージ",
 		"messages": "ピン留め。",
 		"startedAThread": "スレッドを開始",
+		"deletedAThread": "スレッドを削除",
 		"seeAllThreads": "見る",
 		"allThreads": "すべてのスレッド"
 	},

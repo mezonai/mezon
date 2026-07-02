@@ -188,6 +188,7 @@
 		"allPinned": "todos los fijados",
 		"messages": "mensajes.",
 		"startedAThread": "inició un hilo:",
+		"deletedAThread": "eliminó un hilo:",
 		"seeAllThreads": "Ver",
 		"allThreads": "todos los hilos"
 	},

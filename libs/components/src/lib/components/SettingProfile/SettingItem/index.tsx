@@ -1,9 +1,9 @@
 import { useAppNavigation } from '@mezon/core';
 import mezonPackage from '@mezon/package-js';
-import { appActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
+import { selectAllAccount, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
-import { EUserSettings, QUIT_APP, generateE2eId } from '@mezon/utils';
-import isElectron from 'is-electron';
+import { EUserSettings, generateE2eId } from '@mezon/utils';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -23,15 +23,8 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 	const { navigate } = useAppNavigation();
 
 	const handleLogOut = async () => {
-		if (!isElectron()) {
-			window.location.href = `${process.env.NX_CHAT_APP_OAUTH2_LOG_OUT}`;
-			return;
-		} else {
-			await dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
-			dispatch(appActions.setIsShowSettingFooterStatus(false));
-			dispatch(appActions.clearHistory());
-			navigate('/login');
-		}
+		window.location.href = `${process.env.NX_CHAT_APP_OAUTH2_LOG_OUT}`;
+		return;
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);
@@ -145,20 +138,6 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				>
 					{t('setting:appSettings.voice')}
 				</button>
-				{isElectron() && (
-					<>
-						<br />
-						<button
-							className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.ADVANCED ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
-							onClick={() => {
-								handleButtonClick(EUserSettings.ADVANCED);
-								onItemClick && onItemClick(EUserSettings.ADVANCED);
-							}}
-						>
-							{t('setting:appSettings.advanced')}
-						</button>
-					</>
-				)}
 				<div className="hidden">
 					<br />
 					<button className="p-2 text-[16px] font-medium w-[170px] rounded-[5px] text-left mt-1 ml-[-8px] ">Accessibility</button>
@@ -192,19 +171,6 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					{t('setting:logOut')}
 				</button>
 				{openModal && <LogoutModal handleLogOut={handleLogOut} onClose={handleCloseModal} />}
-				{isElectron() && (
-					<>
-						<br />
-						<button
-							className={`p-2 text-[16px] font-medium text-red-500 mt-1 w-[170px] text-left rounded-[5px] ml-[-8px]`}
-							onClick={() => {
-								window.electron.send(QUIT_APP);
-							}}
-						>
-							{t('setting:appSettings.quitApp')}
-						</button>
-					</>
-				)}
 				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.version}</div>
 			</div>
 		</div>

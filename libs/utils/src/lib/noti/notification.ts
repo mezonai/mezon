@@ -1,10 +1,7 @@
-import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
-import { MessageCrypt } from '../../e2ee';
-import { isBackgroundModeActive } from '../../hooks/useBackgroundMode';
-import { EUserStatus } from '../../types';
-import { electronBridge } from './electron';
-import type { MezonNotificationOptions } from './types';
+import { MessageCrypt } from '../e2ee';
+import { isBackgroundModeActive } from '../hooks/useBackgroundMode';
+import { EUserStatus } from '../types';
 
 export interface IMessageExtras {
 	link: string; // link for navigating
@@ -30,6 +27,14 @@ export enum NotificationPermissionStatus {
 	DEFAULT = 'default',
 	DENIED = 'denied',
 	GRANTED = 'granted'
+}
+
+export interface MezonNotificationOptions extends NotificationOptions {
+	data: {
+		link: string;
+		channelId?: string;
+	};
+	tag?: string;
 }
 
 const DEFAULT_MAX_RECONNECT_ATTEMPTS = 10;
@@ -170,10 +175,6 @@ export class MezonNotificationService {
 						msgContent = await MessageCrypt.mapE2EEcontent(message, userId, true);
 					}
 					this.pushNotification(title, msgContent, image, link, msg, connection);
-					if (isElectron() && msg?.appid && msg.appid !== connection.previousAppId) {
-						connection.previousAppId = msg.appid;
-						electronBridge.invoke('APP::CHECK_UPDATE');
-					}
 				}
 			} catch (err) {
 				// eslint-disable-next-line no-console
@@ -256,21 +257,6 @@ export class MezonNotificationService {
 
 		const hideContent = localStorage.getItem('hideNotificationContent') === 'true';
 		const notificationBody = hideContent ? '' : message;
-
-		if (isElectron()) {
-			const options: MezonNotificationOptions = {
-				body: notificationBody,
-				icon: image ?? '',
-				data: {
-					link: link ?? '',
-					channelId: msg?.channel_id
-				},
-				tag: msg?.channel_id
-			};
-
-			electronBridge.pushNotification(title, options, msg);
-			return;
-		}
 
 		// Web notification handling
 		if (!('Notification' in window)) {

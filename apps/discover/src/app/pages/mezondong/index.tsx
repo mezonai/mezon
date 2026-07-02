@@ -19,6 +19,9 @@ const MezonDongPage = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
 
+	const rawFaqQuestions = t('faq.questions', { returnObjects: true });
+	const faqQuestions: Array<{ question: string; answer: string }> = Array.isArray(rawFaqQuestions) ? rawFaqQuestions : [];
+
 	const downloadUrl: string =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
@@ -333,7 +336,7 @@ const MezonDongPage = () => {
 						</div>
 
 						<div className="space-y-0 border-t border-gray-200">
-							{(t('faq.questions', { returnObjects: true }) as Array<{ question: string; answer: string }>).map((faq, index) => (
+							{faqQuestions.map((faq, index) => (
 								<div key={index} className="border-b border-gray-200">
 									<button
 										onClick={() => setOpenFAQ(openFAQ === index ? null : index)}

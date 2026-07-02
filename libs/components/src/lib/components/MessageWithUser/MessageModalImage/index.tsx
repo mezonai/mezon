@@ -99,8 +99,7 @@ const MessageModalImage = () => {
 	);
 
 	const isAttPresignPending = useCallback(
-		(att: AttachmentEntity | undefined) =>
-			isAttachmentPresignPendingForMessage(att?.url, getSourceMessageForAttachment(att)),
+		(att: AttachmentEntity | undefined) => isAttachmentPresignPendingForMessage(att?.url, getSourceMessageForAttachment(att)),
 		[getSourceMessageForAttachment]
 	);
 
@@ -307,8 +306,7 @@ const MessageModalImage = () => {
 			return;
 		}
 
-		const newIndex =
-			currentIndexAtt < attachments.length - 1 ? findSelectableIndex(currentIndexAtt, 1) : currentIndexAtt;
+		const newIndex = currentIndexAtt < attachments.length - 1 ? findSelectableIndex(currentIndexAtt, 1) : currentIndexAtt;
 		if (newIndex !== currentIndexAtt) {
 			handleSelectImage(newIndex);
 		}

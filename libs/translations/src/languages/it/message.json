@@ -183,6 +183,7 @@
 		"allPinned": "tutti i messaggi",
 		"messages": "fissati.",
 		"startedAThread": "ha creato una discussione:",
+		"deletedAThread": "ha eliminato una discussione:",
 		"seeAllThreads": "Vedi",
 		"allThreads": "tutte le discussioni"
 	},

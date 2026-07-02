@@ -183,6 +183,7 @@
 		"allPinned": "alle angepinnten",
 		"messages": "Nachrichten angepinnt.",
 		"startedAThread": "hat einen Thread erstellt:",
+		"deletedAThread": "hat einen Thread gelöscht:",
 		"seeAllThreads": "Anzeigen:",
 		"allThreads": "alle Threads"
 	},

@@ -124,13 +124,12 @@ import {
 	addBigInt,
 	checkIsThread,
 	isBackgroundModeActive,
-	isLinuxDesktop,
 	isUiActive,
 	subBigInt
 } from '@mezon/utils';
 import type { Update } from '@reduxjs/toolkit';
 import EventEmitter from 'events';
-import isElectron from 'is-electron';
+
 import type {
 	AddClanUserEvent,
 	AddFriend,
@@ -492,10 +491,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (message.code === TypeMessage.ChatRemove && message.topic_id && message.topic_id !== '0' && message?.message_id) {
 						dispatch(
-							messagesActions.updateTopicRplCount({
+							topicsActions.updateTopicRplCount({
 								topicId: message?.topic_id,
 								channelId: message?.channel_id,
-								increment: false
+								increment: false,
+								messageId: message?.topic_id
 							})
 						);
 					}
@@ -504,11 +504,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (message.topic_id && message.topic_id !== '0' && message?.message_id) {
 						dispatch(
-							messagesActions.updateTopicRplCount({
+							topicsActions.updateTopicRplCount({
 								topicId: message?.topic_id,
 								channelId: message?.channel_id,
 								increment: true,
-								timestamp: message.create_time_seconds
+								timestamp: message.create_time_seconds,
+								messageId: message?.topic_id
 							})
 						);
 					}
@@ -527,7 +528,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					const isSameDirect = !!currentDirectId && currentDirectId === message?.channel_id;
 
-					const path = isElectron() ? window.location.hash : window.location.pathname;
+					const path = window.location.pathname;
 					const isFriendPageView = path.includes('/chat/direct/friends');
 					const isFocus = !isBackgroundModeActive();
 
@@ -718,7 +719,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			if (notification.topic_id !== '0') {
 				dispatch(topicsActions.setChannelTopic({ channelId: notification.channel_id || '0', topicId: notification.topic_id || '0' }));
 			}
-			const path = isElectron() ? window.location.hash : window.location.pathname;
+			const path = window.location.pathname;
 			const isFriendPageView = path.includes('/chat/direct/friends');
 			const isDirectViewPage = path.includes('/chat/direct/message/');
 
@@ -786,28 +787,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				if (notification.code === NotificationCode.FRIEND_ACCEPT) {
 					dispatch(friendsActions.acceptFriend(`${userId}_${notification.sender_id}`));
 				}
-			}
-
-			if (isLinuxDesktop) {
-				const notiSoundElement = document.createElement('audio');
-				notiSoundElement.src = '/assets/audio/noti-linux.mp3';
-				notiSoundElement.preload = 'auto';
-				notiSoundElement.style.display = 'none';
-				const cleanupNoti = () => {
-					notiSoundElement.removeEventListener('ended', cleanupNoti);
-					notiSoundElement.removeEventListener('error', cleanupNoti);
-					if (document.body.contains(notiSoundElement)) {
-						document.body.removeChild(notiSoundElement);
-					}
-					notiSoundElement.src = '';
-				};
-				notiSoundElement.addEventListener('ended', cleanupNoti);
-				notiSoundElement.addEventListener('error', cleanupNoti);
-				document.body.appendChild(notiSoundElement);
-				notiSoundElement.play().catch((err) => {
-					console.warn('cant play sound noti:', err?.message || err);
-					cleanupNoti();
-				});
 			}
 		},
 		[userId]
@@ -2213,7 +2192,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const store = await getStoreAsync();
 		const isReceiverGiveCoffee = coffeeEvent.receiver_id === userId;
 
-		if (isReceiverGiveCoffee && isElectron()) {
+		if (isReceiverGiveCoffee) {
 			const senderToken = coffeeEvent.sender_id;
 			const allMembersClan = selectAllUserClans(store.getState() as unknown as RootState);
 			let member = null;
@@ -2487,6 +2466,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				messageId: sdTopicEvent?.message_id as string,
 				topicId: sdTopicEvent?.id as string,
 				creatorId: sdTopicEvent?.user_id as string
+			})
+		);
+		dispatch(
+			topicsActions.createTopicMeta({
+				lsnt: `${sdTopicEvent.last_sent_message?.timestamp_seconds || Date.now() / 1000}`,
+				message_id: sdTopicEvent?.message_id as string,
+				rpl: 1,
+				tp_id: sdTopicEvent.id
 			})
 		);
 		dispatch(
