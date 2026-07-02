@@ -139,7 +139,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 					channel_label: channelLabel,
 					category_id: categoryId,
 					app_id: '0',
-					channel_avatar: { value: attachment.url } as unknown as string
+					channel_avatar: attachment.url
 				})
 			);
 
