@@ -33,6 +33,7 @@
 	"topic": "Тема",
 	"reactions": "Реакции",
 	"invoice": "В звонке",
+	"shareScreen": "Демонстрация экрана",
 	"callMessages": {
 		"startedVoiceCall": "Начал голосовой вызов",
 		"startedVideoCall": "Начал видео-звонок"

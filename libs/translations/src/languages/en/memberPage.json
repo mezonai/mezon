@@ -4,6 +4,7 @@
 	"addedBy": "Added by {{name}}",
 	"you": "you",
 	"inVoice": "In voice",
+	"shareScreen": "Sharing screen",
 	"onlineCount": "Online - {{count}}",
 	"offlineCount": "Offline - {{count}}"
 }

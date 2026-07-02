@@ -4,6 +4,7 @@
 	"addedBy": "Toegevoegd door {{name}}",
 	"you": "jij",
 	"inVoice": "In stemkanaal",
+	"shareScreen": "Scherm delen",
 	"onlineCount": "Online - {{count}}",
 	"offlineCount": "Offline - {{count}}"
 }

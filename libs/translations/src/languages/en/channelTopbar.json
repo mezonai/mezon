@@ -34,6 +34,7 @@
 	"topic": "Topic",
 	"reactions": "React",
 	"invoice": "In voice",
+	"shareScreen": "Sharing screen",
 	"callMessages": {
 		"startedVoiceCall": "Started voice call",
 		"startedVideoCall": "Started video call"

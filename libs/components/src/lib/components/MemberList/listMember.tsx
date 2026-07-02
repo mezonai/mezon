@@ -1,5 +1,6 @@
 import { useMemberStatus } from '@mezon/core';
 import {
+	EInvoice,
 	selectChannelMembersSortedByStatus,
 	selectCurrentChannelId,
 	selectCurrentClanCreatorId,
@@ -43,7 +44,7 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 		userVoiceStatus && userMeta?.online ? (
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
 				<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-				{t('inVoice')}
+				{userVoiceStatus?.status === EInvoice.INVOICE ? t('inVoice') : t('shareScreen')}
 			</span>
 		) : (
 			userMeta?.user_status || userCustomStatus
@@ -107,8 +108,17 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			userStatus={
 				userVoiceStatus && userMeta.online ? (
 					<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
-						<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-						{t('inVoice')}
+						{userVoiceStatus?.status === EInvoice.INVOICE ? (
+							<>
+								<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+								{t('inVoice')}
+							</>
+						) : (
+							<>
+								<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
+								{t('shareScreen')}
+							</>
+						)}
 					</span>
 				) : (
 					userMeta?.user_status || userCustomStatus

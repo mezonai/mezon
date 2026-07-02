@@ -4,6 +4,7 @@
 	"addedBy": "{{name}} өстәде",
 	"you": "Сез",
 	"inVoice": "Шалтыратуда",
+	"shareScreen": "Экран белән бүлешә",
 	"onlineCount": "Онлайн - {{count}}",
 	"offlineCount": "Оффлайн - {{count}}"
 }

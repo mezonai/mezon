@@ -33,6 +33,7 @@
 	"loading": "Завантаження...",
 	"topic": "Тема",
 	"invoice": "У голосовому каналі",
+	"shareScreen": "Ділиться екраном",
 	"reactions": "Реакції",
 	"callMessages": {
 		"startedVoiceCall": "Розпочато голосовий дзвінок",

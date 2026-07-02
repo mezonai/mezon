@@ -33,6 +33,7 @@
 	"loading": "Chargement...",
 	"topic": "Sujet",
 	"invoice": "Dans le canal vocal",
+	"shareScreen": "Partage de l’écran",
 	"reactions": "Réactions",
 	"callMessages": {
 		"startedVoiceCall": "Appel vocal commencé",
