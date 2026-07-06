@@ -47,7 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
 				disabled={currentPage === 1}
 				onClick={() => onPageChange(currentPage - 1)}
 			>
-				<Icons.ArrowRight defaultSize="rotate-180 w-5 h-5 min-w-4" />
+				<Icons.ArrowRight className="rotate-180" />
 			</button>
 
 			{pages.map((p, idx) =>
@@ -74,3 +74,4 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
 };
 
 export default Pagination;
+   
