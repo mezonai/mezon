@@ -87,7 +87,7 @@ export const fetchGifTrending = createAsyncThunk<GifEntity[]>('gifs/fetchDataTre
 			throw new Error('Failed to fetch gifs data');
 		}
 		const data = await response.json();
-		return data;
+		return data?.data || [];
 	} catch (error) {
 		captureSentryError(error, 'gifs/fetchGifTrending');
 		return thunkAPI.rejectWithValue(error);
@@ -150,7 +150,15 @@ export const gifsSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchGifTrending.fulfilled, (state: GifsState, action: PayloadAction<any>) => {
-				state.dataGifsFeatured = action.payload.results;
+				const dataGif: GifEntity[] = action.payload.data.map((item: any) => {
+					return {
+						id: `${item.id}`,
+						slug: item.slug,
+						blur_preview: item?.blur_preview,
+						url: item?.file?.xs?.gif?.url
+					};
+				});
+				state.dataGifsSearch = dataGif;
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchGifTrending.rejected, (state: GifsState, action) => {

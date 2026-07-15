@@ -5,6 +5,7 @@ import {
 	getStore,
 	messagesActions,
 	notificationActions,
+	selectChannelById,
 	selectCurrentChannelId,
 	selectIsShowCanvas,
 	selectIsShowInbox,
@@ -24,11 +25,16 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
-import ChannelHashtag from '../MarkdownFormatText/HashTag';
 import { extractIdsFromUrl } from '../MessageWithUser/MessageLine';
+
 export type TopicProps = {
 	readonly topic: ApiSdTopic;
 	onCloseTooltip?: () => void;
+};
+
+const PlainChannelName = ({ channelId }: { channelId: string }) => {
+	const channel = useAppSelector((state) => selectChannelById(state, channelId));
+	return <span>#{channel?.channel_label || 'unknown'}</span>;
 };
 
 function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
@@ -206,19 +212,7 @@ function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
 				{parts.map((part: string, index: number) => {
 					const ids = extractIdsFromUrl(part);
 					if (ids) {
-						return (
-							<ChannelHashtag
-								key={index}
-								isTokenClickAble={false}
-								isJumMessageEnabled={false}
-								channelHastagId={ids.channelId}
-								channelLabel={''}
-								clanId={ids.clanId}
-								parentId={''}
-								channelId={ids.channelId}
-								isLink={true}
-							/>
-						);
+						return <PlainChannelName key={index} channelId={ids.channelId} />;
 					}
 					return <span key={index}>{part}</span>;
 				})}

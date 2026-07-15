@@ -55,6 +55,7 @@ export const InputSearch: React.FC = () => {
 		setShowCategories(true);
 		setClickedTrendingGif(false);
 		setValueInputSearch('');
+		setValueInput('');
 		setButtonArrowBack(false);
 	};
 	const placeHolder = useMemo(() => {
