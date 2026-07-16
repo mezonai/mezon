@@ -732,7 +732,8 @@ function MessageContextMenu({
 			builder.addMenuItem(
 				'addReaction', // id
 				t('addReaction'), // label
-				handleItemClick
+				handleItemClick,
+				<Icons.Smile className="w-4 h-4" />
 			);
 		});
 

@@ -64,7 +64,8 @@ export function useGifs() {
 			categoriesStatus,
 			setShowCategories,
 			buttonArrowBackStatus,
-			setButtonArrowBack
+			setButtonArrowBack,
+			fetchGifsDataSearch
 		}),
 		[
 			dataGifCategories,
@@ -77,7 +78,8 @@ export function useGifs() {
 			categoriesStatus,
 			setShowCategories,
 			buttonArrowBackStatus,
-			setButtonArrowBack
+			setButtonArrowBack,
+			fetchGifsDataSearch
 		]
 	);
 }

@@ -361,6 +361,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 								className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}`}
 							>
 								<span>{t('addReaction')}</span>
+								<span>{item.icon}</span>
 							</div>
 						</Item>
 					</div>
