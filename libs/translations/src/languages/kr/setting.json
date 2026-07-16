@@ -96,7 +96,10 @@
 		"german": "Deutsch",
 		"polish": "Polski",
 		"korean": "한국어",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"dutch": "Nederlands",
+		"swedish": "Svenska",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "음성",

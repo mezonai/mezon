@@ -107,6 +107,7 @@
 		"edit": "Redigera",
 		"view": "Visa",
 		"delete": "Ta bort",
-		"roleNameIsRequired": "Roll namn är obligatoriskt"
+		"roleNameIsRequired": "Roll namn är obligatoriskt",
+		"noPermissionToEditRole": "Du har inte behörighet att redigera den här rollen."
 	}
 }

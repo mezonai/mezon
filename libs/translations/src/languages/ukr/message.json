@@ -184,7 +184,8 @@
 		"messages": "закріплено.",
 		"startedAThread": "розпочав тред:",
 		"seeAllThreads": "Переглянути",
-		"allThreads": "всі треди"
+		"allThreads": "всі треди",
+		"deletedAThread": "видалив тред:"
 	},
 	"removeFromChannel": {
 		"title": "Розмова недоступна",

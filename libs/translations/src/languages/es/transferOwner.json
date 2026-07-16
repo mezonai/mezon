@@ -1,5 +1,4 @@
 {
-	"addReaction": "Añadir reacción",
 	"title": "Transferir propiedad del clan",
 	"description": "Esto transferirá la propiedad de {{clanName}} a {{memberName}}",
 	"confirmation": "Reconozco que al transferir la propiedad de este clan a {{memberName}}, oficialmente pertenece a ellos.",

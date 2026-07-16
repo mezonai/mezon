@@ -41,5 +41,8 @@
 	},
 	"andYou": "en jij",
 	"topicAndYou": "ONDERWERPDISCUSSIE",
-	"unknowClan": "Je bent niet langer lid van dit gesprek"
+	"unknowClan": "Je bent niet langer lid van dit gesprek",
+	"contactMessage": "[Contact]",
+	"attachmentMessage": "[Bijlage]",
+	"interactiveMessage": "Interactief bericht"
 }

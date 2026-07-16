@@ -1,5 +1,4 @@
 {
-	"addReaction": "Añadir reacción",
 	"title": "Mensajes",
 	"addFriend": "Añadir Amigo",
 	"friends": "Amigos",
@@ -19,7 +18,9 @@
 		"blockUser": "Bloquear usuario",
 		"unblockUser": "Desbloquear usuario",
 		"removeFriend": "Eliminar amigo",
-		"addFriend": "Añadir amigo"
+		"addFriend": "Añadir amigo",
+		"pinConversation": "Fijar conversación",
+		"unpinConversation": "Desfijar conversación"
 	},
 	"confirm": {
 		"title": "Salir de {{groupName}}",
@@ -51,5 +52,18 @@
 	"members": "miembros",
 	"speaker": "Altavoz",
 	"end": "Terminar",
-	"turnedMicOff": "micrófono desactivado"
+	"turnedMicOff": "micrófono desactivado",
+	"pinConfirm": {
+		"title": "¿Fijar conversación?",
+		"content": "Esta conversación se moverá a la parte superior de tu lista de mensajes para facilitar el acceso.",
+		"confirmText": "Fijar"
+	},
+	"unpinConfirm": {
+		"title": "¿Desfijar conversación?",
+		"content": "Esta conversación volverá a su posición normal en la lista de mensajes.",
+		"confirmText": "Desfijar"
+	},
+	"pinSection": "FIJADAS",
+	"allMessagesSection": "TODOS LOS MENSAJES",
+	"maximumPinnedConversationsReached": "Solo puedes fijar hasta {{max}} conversaciones."
 }

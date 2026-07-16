@@ -44,7 +44,8 @@
 		"backToOverview": "Terug naar clan gebruiksoverzicht",
 		"clanUsageStatisticsReport": "Clan Gebruiksstatistieken Rapport",
 		"dashboardReport": "Dashboard",
-		"report": "Rapport"
+		"report": "Rapport",
+		"meetingRooms": "Vergaderruimtes"
 	},
 	"state": {
 		"loadingData": "Gegevens laden...",
@@ -70,5 +71,27 @@
 		"tooltip": "Sorteren oplopend/aflopend volgens deze kolom",
 		"sortedAsc": "Oplopend gesorteerd",
 		"sortedDesc": "Aflopend gesorteerd"
+	},
+	"meetingRoomsFilter": {
+		"allStatuses": "Alle statussen",
+		"pending": "In afwachting",
+		"completed": "Voltooid",
+		"finalRoom": "Eindruimte",
+		"failed": "Mislukt",
+		"noTimeFilter": "Geen tijdsfilter",
+		"last12Hours": "Afgelopen 12 uur",
+		"last24Hours": "Afgelopen 24 uur",
+		"last2Days": "Afgelopen 2 dagen",
+		"last7Days": "Afgelopen 7 dagen",
+		"searchByRoomNameOrParticipant": "Zoek op ruimtenaam of deelnemer..."
+	},
+	"meetingRoomsTable": {
+		"roomName": "Ruimtenaam",
+		"status": "Status",
+		"createdAt": "Aangemaakt op",
+		"completedAt": "Voltooid op",
+		"actions": "Acties",
+		"viewDetails": "Details bekijken",
+		"noRoomsFound": "Geen ruimtes gevonden."
 	}
 }

@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "Помилка надсилання швидкого меню",
 		"failedToResendMessage": "Не вдалося надіслати повідомлення повторно",
 		"failedToClosePoll": "Не вдалося завершити опитування"
-	}
+	},
+	"copyUserId": "Скопіювати ID користувача"
 }

@@ -37,7 +37,9 @@
 			"muteSuccess": "¡Silenciado con éxito!",
 			"unMuteSuccess": "¡Desilenciado con éxito!",
 			"muteFailed": "Error al silenciar",
-			"unMuteFailed": "Error al desilenciar"
+			"unMuteFailed": "Error al desilenciar",
+			"archiveChannel": "Archivar canal",
+			"archiveThread": "Archivar hilo"
 		},
 		"thread": {
 			"title": "",
@@ -104,5 +106,15 @@
 	"toastArchiveChannel": "Canal archivado correctamente.",
 	"toastArchiveThread": "Hilo archivado correctamente.",
 	"toastArchivedByAdministrator": "Este canal ha sido archivado por el administrador.",
-	"toastArchivedThreadByAdministrator": "Este hilo ha sido archivado por el administrador."
+	"toastArchivedThreadByAdministrator": "Este hilo ha sido archivado por el administrador.",
+	"modalConfirmArchiveChannel": {
+		"title": "Archivar canal",
+		"button": "Archivar",
+		"textConfirm": "¿Seguro que deseas archivar este canal? Se ocultará de la barra lateral para todos los miembros."
+	},
+	"modalConfirmArchiveThread": {
+		"title": "Archivar hilo",
+		"button": "Archivar",
+		"textConfirm": "¿Seguro que deseas archivar este hilo? Se ocultará de la barra lateral para todos los miembros."
+	}
 }

@@ -41,5 +41,8 @@
 	},
 	"andYou": "und du",
 	"topicAndYou": "THEMENDISKUSSION",
-	"unknowClan": "Du bist kein Mitglied dieses Chats mehr"
+	"unknowClan": "Du bist kein Mitglied dieses Chats mehr",
+	"contactMessage": "[Kontakt]",
+	"attachmentMessage": "[Anhang]",
+	"interactiveMessage": "Interaktive Nachricht"
 }

@@ -80,7 +80,10 @@
 			"title": "Beskrivning",
 			"description": "Låt alla veta lite mer om din händelse."
 		},
-		"cover": "Omslagsbild"
+		"cover": "Omslagsbild",
+		"VoiceChannel": {
+			"title": "Välj röstkanal"
+		}
 	},
 	"actions": {
 		"next": "Nästa",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "Starttid måste vara i framtiden.",
 		"endTimeAfterStart": "Sluttid måste vara större än starttid.",
-		"invalidTopic": "Ogiltigt händelseämne. Tecken '`', '<', '>', ',', '/', '\"', '\\', och ''' är inte tillåtna."
+		"invalidTopic": "Ogiltigt händelseämne. Tecken '`', '<', '>', ',', '/', '\"', '\\', och ''' är inte tillåtna.",
+		"locationMaxLength": "Får vara högst 100 tecken långt."
 	},
 	"selectUser": "Välj kanal eller tråd för att skapa händelse",
 	"emptyState": {

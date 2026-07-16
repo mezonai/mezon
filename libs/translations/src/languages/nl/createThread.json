@@ -14,11 +14,13 @@
 	"joinedThreads": "deelnemende topics",
 	"joinedThread": "deelnemend topic",
 	"otherActiveThreads": "andere actieve topics",
-	"olderThreads": "oudere topics",
 	"searchThreads": "topic zoeken",
 	"searchThread": "topic zoeken",
 	"threadFailed": {
 		"title": "Topic aanmaken mislukt",
 		"content": "Topic niet gevonden of je hebt geen rechten om bij te werken"
-	}
+	},
+	"otherActiveThread": "ander actief onderwerp",
+	"archivedThreads": "oudere onderwerpen",
+	"olderThread": "ouder onderwerp"
 }

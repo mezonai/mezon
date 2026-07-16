@@ -10,6 +10,7 @@
 	"reply": "Trả lời",
 	"createThread": "Tạo chủ đề",
 	"copyText": "Sao chép văn bản",
+	"copyTextSelected": "Sao chép văn bản đã chọn",
 	"quickMenus": "Tuỳ chọn nhanh",
 	"addToInbox": "Thêm vào hộp thư",
 	"markUnread": "Đánh dấu chưa đọc",
@@ -120,5 +121,6 @@
 		"errorSendingQuickMenu": "Lỗi gửi tuỳ chọn nhanh",
 		"failedToResendMessage": "Không thể gửi lại tin nhắn",
 		"failedToClosePoll": "Không thể kết thúc bình chọn"
-	}
+	},
+	"copyUserId": "Sao chép ID người dùng"
 }

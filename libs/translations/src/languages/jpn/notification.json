@@ -41,5 +41,8 @@
 	},
 	"andYou": "とあなた",
 	"topicAndYou": "トピックの議論",
-	"unknowClan": "あなたはもはやこの会話のメンバーではありません"
+	"unknowClan": "あなたはもはやこの会話のメンバーではありません",
+	"contactMessage": "[連絡先]",
+	"attachmentMessage": "[添付ファイル]",
+	"interactiveMessage": "インタラクティブメッセージ"
 }

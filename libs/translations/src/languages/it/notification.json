@@ -41,5 +41,8 @@
 	},
 	"andYou": "e tu",
 	"topicAndYou": "DISCUSSIONE ARGOMENTO",
-	"unknowClan": "Non fai più parte di questa conversazione"
+	"unknowClan": "Non fai più parte di questa conversazione",
+	"contactMessage": "[Contatto]",
+	"attachmentMessage": "[Allegato]",
+	"interactiveMessage": "Messaggio interattivo"
 }

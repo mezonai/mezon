@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "빠른 메뉴 전송 오류",
 		"failedToResendMessage": "메시지 재전송 실패",
 		"failedToClosePoll": "투표 종료 실패"
-	}
+	},
+	"copyUserId": "사용자 ID 복사"
 }

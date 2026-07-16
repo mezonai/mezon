@@ -1,17 +1,15 @@
 {
-    "fields": {
-        "dark": "Oscuro",
-        "darker": "Más Oscuro",
-        "light": "Claro",
-        "midnight": "Medianoche",
-        "system": "Automático",
-        "sunrise": "Amanecer",
-        "redDark": "Rojo Oscuro",
-        "purpleHaze": "Bruma Morada",
-        "purple_haze": "Bruma Morada",
-        "abyssDark": "Abismo Oscuro",
-        "abyss_dark": "Abismo Oscuro",
-        "sunset": "Atardecer"
-    },
-    "desc": "¡Siempre podrás cambiarlo después!"
+	"fields": {
+		"dark": "Oscuro",
+		"darker": "Más Oscuro",
+		"light": "Claro",
+		"midnight": "Medianoche",
+		"system": "Automático",
+		"sunrise": "Amanecer",
+		"redDark": "Rojo Oscuro",
+		"purpleHaze": "Bruma Morada",
+		"abyssDark": "Abismo Oscuro",
+		"sunset": "Atardecer"
+	},
+	"desc": "¡Siempre podrás cambiarlo después!"
 }

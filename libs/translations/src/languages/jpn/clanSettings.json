@@ -17,7 +17,8 @@
 			"integrations": "統合",
 			"auditLog": "監査ログ",
 			"onboarding": "オンボーディング",
-			"enableCommunity": "コミュニティを有効化"
+			"enableCommunity": "コミュニティを有効化",
+			"archivedChannels": "アーカイブ済みチャンネル"
 		}
 	},
 	"clanLogo": {
@@ -86,7 +87,16 @@
 		"description": "スタンプは静的（PNG, JPG）またはアニメーション（APNG、GIF）である可能性があります。スタンプは正確に320 x 320ピクセルであり、512KBを超えてはなりません。静的PNGスタンプとアニメーション(PNG, JPG)スタンプのサイズを自動的に変更します。",
 		"uploadHere": "ここでアップロード!",
 		"customizeMessage": "あなたの好みに合わせてこれらの素晴らしいスタンプをカスタマイズしましょう",
-		"uploadSticker": "スタンプをアップロード"
+		"uploadSticker": "スタンプをアップロード",
+		"title": "画像スタンプ"
 	},
-	"deleteClanTitle": "'{{clanName}}'を削除"
+	"deleteClanTitle": "'{{clanName}}'を削除",
+	"archivedChannels": {
+		"description": "チャンネルをサイドバーに復元して、再び有効にします。アーカイブされたチャンネルはすべてのメッセージ履歴を保持しますが、メインナビゲーションには表示されません。",
+		"archived": "アーカイブ済み",
+		"restore": "復元",
+		"restoreSuccess": "チャンネルを正常に復元しました。",
+		"emptyState": "アーカイブされたチャンネルはありません。",
+		"fetchError": "アーカイブされたチャンネルを読み込めませんでした。もう一度お試しください。"
+	}
 }

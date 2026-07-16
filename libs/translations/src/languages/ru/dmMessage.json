@@ -18,7 +18,9 @@
 		"blockUser": "Заблокировать пользователя",
 		"unblockUser": "Разблокировать пользователя",
 		"removeFriend": "Убрать друга",
-		"addFriend": "Добавить друга"
+		"addFriend": "Добавить друга",
+		"pinConversation": "Закрепить беседу",
+		"unpinConversation": "Открепить беседу"
 	},
 	"confirm": {
 		"title": "Покинуть {{groupName}}",
@@ -50,6 +52,18 @@
 	"members": "участники",
 	"speaker": "Оратор",
 	"end": "Конец",
-	"turnedMicOff": "Микрофон выключен"
+	"turnedMicOff": "Микрофон выключен",
+	"pinConfirm": {
+		"title": "Закрепить разговор?",
+		"content": "Этот разговор будет перемещён в начало списка сообщений для быстрого доступа.",
+		"confirmText": "Закрепить"
+	},
+	"unpinConfirm": {
+		"title": "Открепить разговор?",
+		"content": "Этот разговор будет возвращён на своё обычное место в списке сообщений.",
+		"confirmText": "Открепить"
+	},
+	"pinSection": "ЗАКРЕПЛЕНО",
+	"allMessagesSection": "ВСЕ СООБЩЕНИЯ",
+	"maximumPinnedConversationsReached": "Вы можете закрепить не более {{max}} разговоров."
 }
-

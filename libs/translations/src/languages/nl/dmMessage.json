@@ -59,5 +59,11 @@
 	"members": "leden",
 	"speaker": "Luidspreker",
 	"end": "Einde",
-	"turnedMicOff": "heeft microfoon uitgeschakeld"
+	"turnedMicOff": "heeft microfoon uitgeschakeld",
+	"closeDmConfirm": {
+		"title": "Direct bericht sluiten",
+		"content": "Weet je zeker dat je dit gesprek wilt sluiten? Hierdoor wordt de chat verborgen uit je berichtenlijst.",
+		"confirmText": "Direct bericht sluiten",
+		"error": "Kan direct bericht niet sluiten"
+	}
 }

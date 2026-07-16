@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "Webhook",
 		"automatedMessage": "Wiadomości i aktualizacje automatyczne",
 		"description": "Dostosuj swój clan z integracjami. Zarządzaj webhookami, kanałami monitorowanymi i aplikacjami, a także ustawieniami Twitch i YouTube dla twórców.",
-		"learnMore": "Dowiedz się więcej o zarządzaniu integracjami."
+		"learnMore": "Dowiedz się więcej o zarządzaniu integracjami.",
+		"channelWebhooks": "Webhooks",
+		"clanWebhooks": "Webhooki klanu"
 	},
 	"webhooks": {
 		"description": "Webhook to narzędzie, które pomaga otrzymywać automatyczne wiadomości i aktualizacje danych wysyłane do kanału tekstowego w Twoim clanie poprzez połączenia internetowe.",

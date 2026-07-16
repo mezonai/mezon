@@ -1,5 +1,5 @@
 {
-    "headerTitle": {
+	"headerTitle": {
 		"settings": "Cài đặt",
 		"Friends": "Bạn bè",
 		"addFriends": "Thêm bạn bè",
@@ -12,14 +12,15 @@
 		"addMembers": "Thêm thành viên",
 		"appearance": "Giao diện",
 		"topic": "Thảo luận ngắn",
-		"chat": "Trò chuyện"
+		"chat": "Trò chuyện",
+		"share": "Chia sẻ"
 	},
-    "headerRight": {
-        "addFriends": "Thêm bạn bè"
-    },
-    "navigationTabs": {
-        "messages": "Tin nhắn",
-        "notifications": "Thông báo",
-        "profile": "Hồ sơ"
-    }
+	"headerRight": {
+		"addFriends": "Thêm bạn bè"
+	},
+	"navigationTabs": {
+		"messages": "Tin nhắn",
+		"notifications": "Thông báo",
+		"profile": "Hồ sơ"
+	}
 }

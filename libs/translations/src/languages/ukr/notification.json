@@ -41,5 +41,8 @@
 	},
 	"andYou": "та ви",
 	"topicAndYou": "ОБГОВОРЕННЯ ТЕМИ",
-	"unknowClan": "Ви більше не є учасником цього клану"
+	"unknowClan": "Ви більше не є учасником цього клану",
+	"contactMessage": "[Контакт]",
+	"attachmentMessage": "[Вкладення]",
+	"interactiveMessage": "Інтерактивне повідомлення"
 }

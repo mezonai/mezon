@@ -107,6 +107,7 @@
 		"edit": "Рэдагаваць",
 		"view": "Прагляд",
 		"delete": "Выдаліць",
-		"roleNameIsRequired": "Назва ролі абавязковая"
+		"roleNameIsRequired": "Назва ролі абавязковая",
+		"noPermissionToEditRole": "У вас няма дазволу на рэдагаванне гэтай ролі."
 	}
 }

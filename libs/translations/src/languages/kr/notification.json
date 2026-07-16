@@ -41,5 +41,8 @@
 	},
 	"andYou": "그리고 당신",
 	"topicAndYou": "주제 토론",
-	"unknowClan": "더 이상 이 대화의 멤버가 아닙니다"
+	"unknowClan": "더 이상 이 대화의 멤버가 아닙니다",
+	"contactMessage": "[연락처]",
+	"attachmentMessage": "[첨부파일]",
+	"interactiveMessage": "인터랙티브 메시지"
 }

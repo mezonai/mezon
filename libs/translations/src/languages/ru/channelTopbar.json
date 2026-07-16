@@ -23,7 +23,8 @@
 		"jump": "Перейти",
 		"gallery": "Галерея",
 		"timelineView": "Переключиться к временной шкале",
-		"defaultView": "Переключиться к чату"
+		"defaultView": "Переключиться к чату",
+		"hideChat": "Скрыть чат"
 	},
 	"directMessage": "Личное сообщение",
 	"activeThreads": "Активные ветки",

@@ -1,5 +1,5 @@
 {
-    "headerTitle": {
+	"headerTitle": {
 		"settings": "Instellingen",
 		"Friends": "Vrienden",
 		"addFriends": "Vrienden toevoegen",
@@ -12,14 +12,15 @@
 		"addMembers": "Leden toevoegen",
 		"appearance": "Uiterlijk",
 		"topic": "Korte discussie",
-		"chat": "Chat"
+		"chat": "Chat",
+		"share": "Delen"
 	},
-    "headerRight": {
-        "addFriends": "Vrienden toevoegen"
-    },
-    "navigationTabs": {
-        "messages": "Berichten",
-        "notifications": "Meldingen",
-        "profile": "Profiel"
-    }
+	"headerRight": {
+		"addFriends": "Vrienden toevoegen"
+	},
+	"navigationTabs": {
+		"messages": "Berichten",
+		"notifications": "Meldingen",
+		"profile": "Profiel"
+	}
 }

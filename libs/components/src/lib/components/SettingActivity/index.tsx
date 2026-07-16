@@ -13,6 +13,15 @@ const SettingActivity = ({ menuIsOpen }: SettingActivityProps) => {
 
 	const handleToggleActivity = (checked: boolean) => {
 		dispatch(acitvitiesActions.setActivityTrackingEnabled(checked));
+		if (!checked) {
+			dispatch(
+				acitvitiesActions.createActivity({
+					activity_name: '',
+					activity_type: 0,
+					status: 0
+				})
+			);
+		}
 	};
 
 	return (

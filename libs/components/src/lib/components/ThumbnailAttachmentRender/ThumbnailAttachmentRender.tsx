@@ -93,23 +93,26 @@ export const AudioAttachment = ({ attachment, size, isFileList }: IAudioAttachme
 		}
 	};
 
-	const positionAndPadding = useMemo(() => {
+	const overlayStyle = useMemo(() => {
 		if (isFileList) {
-			return `border-[2px] top-[10px] right-[3.5px] p-[5px] ${isPlaying ? '' : 'pr-[3px] pl-[7px]'}`;
+			return { container: 'w-5 h-5', icon: 'w-2 h-2' };
 		}
-		return `border-[4px] top-[23px] right-[8px] p-[10px] ${isPlaying ? '' : 'pr-[8px] pl-[12px]'}`;
-	}, [isFileList, isPlaying]);
+		return { container: 'w-12 h-12', icon: 'w-5 h-5' };
+	}, [isFileList]);
 
 	return (
-		<div className="relative">
-			<div onClick={(e) => handleTogglePlay(e)} className={`absolute border-gray-600 bg-gray-400 rounded-full ${positionAndPadding}`}>
+		<div className="relative inline-flex items-center justify-center group">
+			<Icons.EmptyType defaultSize={size} />
+			<div
+				onClick={(e) => handleTogglePlay(e)}
+				className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/40 group-hover:bg-black/60 text-white rounded-full flex items-center justify-center cursor-pointer transition-all ${overlayStyle.container}`}
+			>
 				{isPlaying ? (
-					<Icons.PauseButton className={isFileList ? 'w-3' : 'w-7'} />
+					<Icons.PauseButton className={overlayStyle.icon} />
 				) : (
-					<Icons.PlayButton className={isFileList ? 'w-3' : 'w-7'} />
+					<Icons.PlayButton className={`${overlayStyle.icon} ml-0.5`} />
 				)}
 			</div>
-			<Icons.EmptyType defaultSize={size} />
 			<MessageAudioControl
 				ref={audioControlRef}
 				audioUrl={attachment.url || ''}

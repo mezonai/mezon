@@ -403,7 +403,7 @@
 		"upload": "업로드",
 		"sticker": "스티커",
 		"emoji": "이모지",
-		"lenghtError": "{{type}} 이름은 {{min}}~{{max}} 자여야 하며 문자, 숫자, _ 및 - 만 포함"
+		"lengthError": "{{type}} 이름은 {{min}}~{{max}} 자여야 하며 문자, 숫자, _ 및 - 만 포함"
 	},
 	"openSettings": "설정 열기",
 	"permissionNotification": {

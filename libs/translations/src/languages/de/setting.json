@@ -90,7 +90,16 @@
 		"spanish": "Español",
 		"tatar": "Tatarça",
 		"german": "Deutsch",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Audio",

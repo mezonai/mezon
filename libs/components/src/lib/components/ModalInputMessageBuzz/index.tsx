@@ -111,7 +111,7 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, closeBuzzModal }: ModalIn
 					/>
 					<button
 						onClick={handleSendBuzzMsg}
-						className="w-[70px] flex justify-center items-center px-4 py-2 btn-primary btn-primary-hover rounded-lg"
+						className="flex-shrink-0 flex justify-center items-center px-4 py-2 btn-primary btn-primary-hover rounded-lg whitespace-nowrap"
 						data-e2e={generateE2eId('chat.direct_message.message_buzz.button.send')}
 					>
 						{t('send')}

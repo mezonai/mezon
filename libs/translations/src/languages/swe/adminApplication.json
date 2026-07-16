@@ -208,8 +208,60 @@
 		"title": "Team"
 	},
 	"embed": {
-		"title": "Embed Debugger"
+		"title": "Embed-felsökare"
 	},
 	"small": "Liten",
-	"large": "Stor"
+	"large": "Stor",
+	"transcriptCalls": {
+		"title": "Samtalsutskrifter",
+		"subtitle": "Visa och hantera dina samtalsutskrifter.",
+		"loading": "Läser in…",
+		"results": "rum",
+		"page": "Sida",
+		"prev": "Föregående",
+		"next": "Nästa",
+		"columns": {
+			"callId": "Samtals-ID",
+			"roomName": "Rumsnamn",
+			"status": "Status",
+			"totalTracks": "Totalt antal spår",
+			"completedTracks": "Slutförda",
+			"duration": "Längd",
+			"createdAt": "Skapad",
+			"completedAt": "Slutförd"
+		},
+		"status": {
+			"pending": "Väntande",
+			"processing": "Bearbetar",
+			"completed": "Slutförd",
+			"failed": "Misslyckades"
+		},
+		"tabs": {
+			"overview": "Översikt",
+			"fullTranscript": "Fullständig utskrift",
+			"summary": "Sammanfattning",
+			"participants": "Deltagare"
+		},
+		"detail": {
+			"title": "Information om samtalsutskrift",
+			"back": "Tillbaka",
+			"refresh": "Uppdatera",
+			"loadError": "Det gick inte att läsa in detta rum.",
+			"summaryEmpty": "Ingen sammanfattning tillgänglig.",
+			"transcriptEmpty": "Ingen utskrift tillgänglig.",
+			"actionItems": "Åtgärdspunkter",
+			"participants": "Deltagare",
+			"participantsEmpty": "Inga deltagare finns listade för detta rum.",
+			"metrics": {
+				"totalTracks": "Totalt antal spår",
+				"completed": "Slutförd",
+				"duration": "Längd",
+				"segments": "Segment"
+			},
+			"notFound": "Samtalsutskriften hittades inte",
+			"unknown": "okänd",
+			"username": "Användarnamn",
+			"displayName": "Visningsnamn"
+		}
+	}
 }

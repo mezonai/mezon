@@ -192,7 +192,7 @@ interface IMentionTabContent {
 
 function AllTabContent({ message, subject, category, senderId, embed }: IMentionTabContent) {
 	const { t } = useTranslation('channelTopbar');
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id || '');
+	const { priorityAvatar, namePriority, usernameSender } = useGetPriorityNameFromUserClan(senderId || message.sender_id || '');
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id || '0')) || {};
 	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parent_id || '')) || {};
@@ -200,10 +200,10 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
 
-	const username = message.username || user?.username || '';
+	const username = message.username || user?.username || usernameSender || '';
 	let subjectText = subject;
 
-	if (username) {
+	if (username && subject?.startsWith(username)) {
 		const usernameLenght = username.length;
 		subjectText = subject?.slice(usernameLenght);
 	}
@@ -352,7 +352,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 					) : (
 						<div className="flex flex-col gap-1 justify-center">
 							<div>
-								<span className="font-bold">{user?.display_name || username}</span>
+								<span className="font-bold">{namePriority || user?.display_name || username}</span>
 								<span>{subjectText}</span>
 							</div>
 							{!!message?.create_time_seconds && (

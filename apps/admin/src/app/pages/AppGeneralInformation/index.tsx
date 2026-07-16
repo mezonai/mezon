@@ -1,8 +1,8 @@
 import { ModalSaveChanges } from '@mezon/components';
-import { editApplication, selectAppDetail, useAppDispatch } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { editApplication, selectAppDetail, uploadAttachmentAdmin, useAppDispatch } from '@mezon/store';
+import { uploadImageToMinIO } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js';
+import type { ApiApp, MezonUpdateAppBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,27 +14,46 @@ import DeleteAppPopup from '../applications/DeleteAppPopup';
 
 const GeneralInformation = () => {
 	const { t } = useTranslation('adminApplication');
-	const { sessionRef, clientRef } = useMezon();
 	const appId = useParams().applicationId as string;
 	const appDetail = useSelector(selectAppDetail);
 
 	const [appLogoUrl, setAppLogoUrl] = useState(appDetail.applogo);
 	const appLogoRef = useRef<HTMLInputElement>(null);
-
+	const dispatch = useAppDispatch();
 	useEffect(() => {
 		setAppLogoUrl(appDetail.applogo);
 	}, [appId, appDetail.applogo]);
 
-	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleChooseFile = async (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
-			const client = clientRef.current;
-			const session = sessionRef.current;
-			if (!client || !session) {
-				throw new Error(t('generalInformation.errors.clientNotInitialized'));
+			const file = e.target.files[0];
+			let filename = file.name;
+			const ms = Date.now();
+			filename = `${ms}_${filename}`;
+			filename = filename.replace(/[^a-zA-Z0-9.]/g, '_');
+
+			const result = await dispatch(
+				uploadAttachmentAdmin({
+					filename,
+					filetype: file.type,
+					size: file.size,
+					width: 0,
+					height: 0,
+					part_count: 1
+				})
+			).unwrap();
+
+			if (result.url) {
+				try {
+					const response = await uploadImageToMinIO(result.url, file, file.size);
+					if (response) {
+						const url = `${process.env.NX_BASE_IMG_URL}/${result.filename}`;
+						setAppLogoUrl(url);
+					}
+				} catch (error) {
+					console.error(error);
+				}
 			}
-			handleUploadFile(client, session, e.target.files[0].name, e.target.files[0]).then((attachment: ApiMessageAttachment) => {
-				setAppLogoUrl(attachment.url);
-			});
 		}
 	};
 

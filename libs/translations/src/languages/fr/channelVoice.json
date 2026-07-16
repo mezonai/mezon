@@ -46,7 +46,8 @@
 	"device": {
 		"inputDevice": "Microphone",
 		"outputDevice": "Audio",
-		"camera": "Caméra"
+		"camera": "Caméra",
+		"systemDefault": "Par défaut du système"
 	},
 	"toast": {
 		"connectionConnected": "Connexion réussie",

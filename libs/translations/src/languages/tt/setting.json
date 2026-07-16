@@ -10,8 +10,8 @@
 		"connection": "Бәйләнешләр",
 		"clip": "Клиплар",
 		"friendRequests": "Дуслык сораулары",
-		"qrScan": "QR-код сканерлау",
-		"myQRCode": "Минем QR-код",
+		"QRScan": "QR-код сканерлау",
+		"MyQRCode": "Минем QR-код",
 		"devices": "Корамалар"
 	},
 	"deviceSettings": {
@@ -46,7 +46,8 @@
 		"appIcon": "Кушымта иконасы",
 		"advanced": "Киңәйтелгән",
 		"appVersion": "Кушымта версиясе",
-		"startUp": "Автоҗөкләү"
+		"startUp": "Автоҗөкләү",
+		"quitApp": "Кушымтадан чыгу"
 	},
 	"autoStart": {
 		"title": "Кушымтаны автоҗөкләү",
@@ -91,7 +92,14 @@
 		"portuguese": "Português",
 		"italian": "Italiano",
 		"japanese": "日本語",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"german": "Deutsch",
+		"french": "Français",
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Тавыш",
@@ -114,6 +122,10 @@
 		},
 		"warnings": {
 			"outputNotSupported": "Сезнең браузерыгыз чыгару корамасын сайлауны тотмый. Динамик сайлау игътибарсыз калдырылырга мөмкин."
+		},
+		"noiseSuppression": {
+			"title": "Тавышны басу",
+			"toggleAriaLabel": "Тавышны басуны кабызу/сүндерү"
 		}
 	},
 	"logOut": "Чыгу",

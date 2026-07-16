@@ -80,7 +80,10 @@
 			"title": "설명",
 			"description": "이벤트에 대해 조금 더 알려주세요."
 		},
-		"cover": "표지"
+		"cover": "표지",
+		"VoiceChannel": {
+			"title": "음성 채널 선택"
+		}
 	},
 	"actions": {
 		"next": "다음",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "시작 시간은 미래여야 합니다.",
 		"endTimeAfterStart": "종료 시간은 시작 시간보다 커야 합니다.",
-		"invalidTopic": "이벤트 제목이 유효하지 않습니다. '`', '<', '>', ',', '/', '\"', '\\', 및 ''' 문자이 허용되지 않습니다."
+		"invalidTopic": "이벤트 제목이 유효하지 않습니다. '`', '<', '>', ',', '/', '\"', '\\', 및 ''' 문자이 허용되지 않습니다.",
+		"locationMaxLength": "100자 이하여야 합니다."
 	},
 	"selectUser": "이벤트를 만들 채널 또는 스레드를 선택하세요",
 	"emptyState": {

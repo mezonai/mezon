@@ -10,6 +10,7 @@
 	"reply": "Reply",
 	"createThread": "Create Thread",
 	"copyText": "Copy Text",
+	"copyTextSelected": "Copy Selected Text",
 	"quickMenus": "Quick Menu",
 	"addToInbox": "Add To Inbox",
 	"markUnread": "Mark Unread",

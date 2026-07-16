@@ -211,5 +211,57 @@
 		"title": "Группы"
 	},
 	"small": "Маленький",
-	"large": "Большой"
+	"large": "Большой",
+	"transcriptCalls": {
+		"title": "Транскрипции звонков",
+		"subtitle": "Просматривайте и управляйте транскрипциями ваших звонков.",
+		"loading": "Загрузка…",
+		"results": "комнаты",
+		"page": "Страница",
+		"prev": "Назад",
+		"next": "Далее",
+		"columns": {
+			"callId": "ID звонка",
+			"roomName": "Название комнаты",
+			"status": "Статус",
+			"totalTracks": "Всего дорожек",
+			"completedTracks": "Завершено",
+			"duration": "Длительность",
+			"createdAt": "Создано",
+			"completedAt": "Завершено"
+		},
+		"status": {
+			"pending": "В ожидании",
+			"processing": "Обработка",
+			"completed": "Завершено",
+			"failed": "Не удалось"
+		},
+		"tabs": {
+			"overview": "Обзор",
+			"fullTranscript": "Полная транскрипция",
+			"summary": "Сводка",
+			"participants": "Участники"
+		},
+		"detail": {
+			"title": "Детали транскрипции звонка",
+			"back": "Назад",
+			"refresh": "Обновить",
+			"loadError": "Не удалось загрузить эту комнату.",
+			"summaryEmpty": "Нет доступной сводки.",
+			"transcriptEmpty": "Нет текста транскрипции.",
+			"actionItems": "Задачи",
+			"participants": "Участники",
+			"participantsEmpty": "Для этой комнаты нет участников.",
+			"metrics": {
+				"totalTracks": "Всего дорожек",
+				"completed": "Завершено",
+				"duration": "Длительность",
+				"segments": "Сегменты"
+			},
+			"notFound": "Транскрипция звонка не найдена",
+			"unknown": "неизвестно",
+			"username": "Имя пользователя",
+			"displayName": "Отображаемое имя"
+		}
+	}
 }

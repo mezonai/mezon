@@ -107,6 +107,7 @@
 		"edit": "수정",
 		"view": "보기",
 		"delete": "삭제",
-		"roleNameIsRequired": "역할 이름이 필요합니다"
+		"roleNameIsRequired": "역할 이름이 필요합니다",
+		"noPermissionToEditRole": "이 역할을 편집할 권한이 없습니다."
 	}
 }

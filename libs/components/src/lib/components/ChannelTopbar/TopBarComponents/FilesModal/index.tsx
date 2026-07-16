@@ -32,7 +32,7 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 
 	useEffect(() => {
 		if (!channelId || !clanId) return;
-		dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId, limit: 100 }));
+		dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId, limit: 100, fileType: 'FILE' }));
 	}, [channelId, clanId, dispatch]);
 
 	const filteredAttachments = allAttachments.filter(

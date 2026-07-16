@@ -120,7 +120,7 @@ export const Events = memo(() => {
 					to={serverGuidePath}
 					onClick={handleClose}
 					className={`self-stretch inline-flex cursor-pointer px-2 rounded h-[34px] ${
-						isGuidePath ? 'bg-button-secondary text-theme-primary-active' : ''
+						isGuidePath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''
 					} bg-item-hover text-theme-primary text-theme-primary-hover ${
 						isGuidePath
 							? '[--guide-fill-1:var(--bg-icon-theme-active)] [--guide-fill-2:var(--bg-theme-secounnd)]'
@@ -167,7 +167,7 @@ export const Events = memo(() => {
 			<Link
 				to={memberPath}
 				onClick={handleClose}
-				className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${isMemberPath ? 'bg-button-secondary border-theme-primary text-theme-primary-active' : ''} bg-item-hover text-theme-primary text-theme-primary-hover`}
+				className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${isMemberPath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''} bg-item-hover text-theme-primary text-theme-primary-hover`}
 			>
 				<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.members')}>
 					<div className="w-5 h-5 relative flex flex-row items-center">
@@ -183,7 +183,7 @@ export const Events = memo(() => {
 					to={channelSettingPath}
 					onClick={handleClose}
 					className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
-						isSettingPath ? 'bg-button-secondary border-theme-primary text-theme-primary-active' : ''
+						isSettingPath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''
 					} bg-item-hover text-theme-primary text-theme-primary-hover ${
 						isSettingPath
 							? '[--channel-browser-fill-1:var(--bg-icon-theme-active)] [--channel-browser-fill-2:var(--bg-theme-secounnd)]'

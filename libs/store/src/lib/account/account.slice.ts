@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IUserAccount, LoadingStatus } from '@mezon/utils';
+import { notificationService, type IUserAccount, type LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
@@ -76,6 +76,9 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		const noCache = arg?.noCache ?? false;
 
 		const response = await fetchUserProfileCached(thunkAPI.getState as () => RootState, mezon, Boolean(noCache));
+		if (response?.user?.id && response?.user?.status) {
+			notificationService.setUserStatus(response?.user?.id, response.user?.status);
+		}
 
 		if (!response) {
 			return thunkAPI.rejectWithValue('Invalid getUserProfile');

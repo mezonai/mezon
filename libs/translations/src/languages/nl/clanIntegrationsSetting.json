@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "Webhook",
 		"automatedMessage": "Automatische berichten en updates",
-		"description": "Pas je clan aan met integraties. Beheer webhooks, geïndiceerde kanalen en apps, evenals Twitch en YouTube instellingen voor makers.",
-		"learnMore": "Lees meer over integratiebeheer."
+		"description": "Pas je clan aan met integraties. Beheer webhooks, geïndiceerde kanalen en apps, evenals Twitch- en YouTube-instellingen voor makers.",
+		"learnMore": "Lees meer over integratiebeheer.",
+		"channelWebhooks": "Webhooks",
+		"clanWebhooks": "Clan-webhooks"
 	},
 	"webhooks": {
 		"description": "Webhooks zijn tools waarmee je automatisch berichten en gegevensupdates naar je clan tekstkanalen ontvangt via internetverbindingen.",

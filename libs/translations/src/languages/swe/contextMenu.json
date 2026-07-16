@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "Fel vid skicka snabb meny",
 		"failedToResendMessage": "Kunde inte skicka om meddelande",
 		"failedToClosePoll": "Kunde inte avsluta röstning"
-	}
+	},
+	"copyUserId": "Kopiera användar-ID"
 }

@@ -117,6 +117,9 @@
 		"failedToSaveImage": "Рәсемне саклап булмады:",
 		"failedToGiveCoffee": "«Кофе» җибәреп булмады",
 		"errorSendingQuickMenu": "Тиз менюдан хәбәр җибәрүдә хата:",
-		"failedToResendMessage": "Хәбәрне кабат җибәреп булмады"
-	}
+		"failedToResendMessage": "Хәбәрне кабат җибәреп булмады",
+		"failedToClosePoll": "Сораштыруны тәмамлап булмады"
+	},
+	"endPollNow": "Сораштыруны хәзер тәмамлау",
+	"pollEnded": "Сораштыру уңышлы тәмамланды"
 }

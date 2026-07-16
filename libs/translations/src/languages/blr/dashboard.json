@@ -44,7 +44,8 @@
 		"backToOverview": "Вярнуцца да агляду выкарыстання клана",
 		"clanUsageStatisticsReport": "Справаздача статыстыкі выкарыстання клана",
 		"dashboardReport": "Панэль кіравання",
-		"report": "Справаздача"
+		"report": "Справаздача",
+		"meetingRooms": "Пакой нарад"
 	},
 	"state": {
 		"loadingData": "Загрузка даных...",
@@ -70,5 +71,27 @@
 		"tooltip": "Сартаваць па нарастанні/спаданні па гэтым слупку",
 		"sortedAsc": "Сартавана па нарастанні",
 		"sortedDesc": "Сартавана па спаданні"
+	},
+	"meetingRoomsFilter": {
+		"allStatuses": "Усе статусы",
+		"pending": "У чаканні",
+		"completed": "Завершана",
+		"finalRoom": "Фінальны пакой",
+		"failed": "Не атрымалася",
+		"noTimeFilter": "Без фільтра па часе",
+		"last12Hours": "За апошнія 12 гадзін",
+		"last24Hours": "За апошнія 24 гадзіны",
+		"last2Days": "За апошнія 2 дні",
+		"last7Days": "За апошнія 7 дзён",
+		"searchByRoomNameOrParticipant": "Пошук па назве пакоя або ўдзельніку..."
+	},
+	"meetingRoomsTable": {
+		"roomName": "Назва пакоя",
+		"status": "Статус",
+		"createdAt": "Створана",
+		"completedAt": "Завершана",
+		"actions": "Дзеянні",
+		"viewDetails": "Праглядзець падрабязнасці",
+		"noRoomsFound": "Пакоі не знойдзены."
 	}
 }

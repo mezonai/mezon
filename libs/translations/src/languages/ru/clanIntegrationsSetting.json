@@ -33,7 +33,8 @@
 		"deleteWebhookConfirmation": "Пожалуйста, подтвердите, хотите ли Вы удалить веб-хук {{webhookName}}? Это действие не может быть отменено.",
 		"resetToken": "Сбросить токен",
 		"name": "Название вебхука",
-		"nameMaxLengthError": "Длина не должна превышать 64 символа."
+		"nameMaxLengthError": "Длина не должна превышать 64 символа.",
+		"deleteWebhookTitle": "Удалить {{webhookName}}"
 	},
 	"webhooksEmpty": {
 		"noWebhooks": "Вебхуков нет"

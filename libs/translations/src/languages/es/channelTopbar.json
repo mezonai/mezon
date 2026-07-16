@@ -23,7 +23,8 @@
 		"jump": "Saltar",
 		"gallery": "Galería",
 		"timelineView": "Cambiar a vista de línea de tiempo",
-		"defaultView": "Cambiar a vista de chat"
+		"defaultView": "Cambiar a vista de chat",
+		"hideChat": "Ocultar chat"
 	},
 	"directMessage": "Mensaje directo",
 	"activeThreads": "Hilos activos",

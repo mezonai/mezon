@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "Thread-Erstellung fehlgeschlagen",
 		"content": "Thread nicht gefunden oder du hast keine Berechtigung zum Aktualisieren"
-	}
+	},
+	"otherActiveThread": "Anderer aktiver Thread",
+	"olderThread": "Älterer Thread"
 }

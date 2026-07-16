@@ -211,5 +211,57 @@
 		"title": "Embed-Debugger"
 	},
 	"small": "Klein",
-	"large": "Groß"
+	"large": "Groß",
+	"transcriptCalls": {
+		"title": "Anruftranskripte",
+		"subtitle": "Anruftranskripte anzeigen und verwalten.",
+		"loading": "Wird geladen…",
+		"results": "Räume",
+		"page": "Seite",
+		"prev": "Zurück",
+		"next": "Weiter",
+		"columns": {
+			"callId": "Anruf-ID",
+			"roomName": "Raumname",
+			"status": "Status",
+			"totalTracks": "Gesamtzahl der Spuren",
+			"completedTracks": "Abgeschlossen",
+			"duration": "Dauer",
+			"createdAt": "Erstellt am",
+			"completedAt": "Abgeschlossen am"
+		},
+		"status": {
+			"pending": "Ausstehend",
+			"processing": "Wird verarbeitet",
+			"completed": "Abgeschlossen",
+			"failed": "Fehlgeschlagen"
+		},
+		"tabs": {
+			"overview": "Übersicht",
+			"fullTranscript": "Vollständiges Transkript",
+			"summary": "Zusammenfassung",
+			"participants": "Teilnehmer"
+		},
+		"detail": {
+			"title": "Details zum Anruftranskript",
+			"back": "Zurück",
+			"refresh": "Aktualisieren",
+			"loadError": "Dieser Raum konnte nicht geladen werden.",
+			"summaryEmpty": "Keine Zusammenfassung verfügbar.",
+			"transcriptEmpty": "Kein Transkript verfügbar.",
+			"actionItems": "Aktionspunkte",
+			"participants": "Teilnehmer",
+			"participantsEmpty": "Für diesen Raum sind keine Teilnehmer aufgeführt.",
+			"metrics": {
+				"totalTracks": "Gesamtzahl der Spuren",
+				"completed": "Abgeschlossen",
+				"duration": "Dauer",
+				"segments": "Segmente"
+			},
+			"notFound": "Anruftranskript nicht gefunden",
+			"unknown": "Unbekannt",
+			"username": "Benutzername",
+			"displayName": "Anzeigename"
+		}
+	}
 }

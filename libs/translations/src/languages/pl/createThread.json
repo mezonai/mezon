@@ -14,11 +14,13 @@
 	"joinedThreads": "dołączono wątków",
 	"joinedThread": "dołączono wątek",
 	"otherActiveThreads": "inne aktywne wątki",
-	"olderThreads": "starsze wątki",
 	"searchThreads": "wyszukaj wątki",
 	"searchThread": "wyszukaj wątek",
 	"threadFailed": {
 		"title": "Tworzenie wątku nie powiodło się",
 		"content": "Nie znaleziono wątku lub nie masz uprawnień do aktualizacji"
-	}
+	},
+	"otherActiveThread": "inny aktywny wątek",
+	"archivedThreads": "starsze wątki",
+	"olderThread": "starszy wątek"
 }

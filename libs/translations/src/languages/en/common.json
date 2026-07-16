@@ -403,7 +403,7 @@
 		"upload": "Upload",
 		"sticker": "Sticker",
 		"emoji": "Emoji",
-		"lenghtError": "{{type}} name must be between {{min}} and {{max}} characters, only letters, numbers, _ and - are allowed"
+		"lengthError": "{{type}} name must be between {{min}} and {{max}} characters, only letters, numbers, _ and - are allowed"
 	},
 	"openSettings": "Open Settings",
 	"permissionNotification": {

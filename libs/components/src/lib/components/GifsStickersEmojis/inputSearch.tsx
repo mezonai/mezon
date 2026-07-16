@@ -11,8 +11,15 @@ export const InputSearch: React.FC = () => {
 	const [valueSearchGif, setValueSearchGif] = useState('');
 	const [valueInput, setValueInput] = useState<string>('');
 	const searchInputRef = useRef<HTMLInputElement | null>(null);
-	const { trendingClickingStatus, setClickedTrendingGif, categoriesStatus, setShowCategories, buttonArrowBackStatus, setButtonArrowBack } =
-		useGifs();
+	const {
+		trendingClickingStatus,
+		setClickedTrendingGif,
+		fetchGifsDataSearch,
+		categoriesStatus,
+		setShowCategories,
+		buttonArrowBackStatus,
+		setButtonArrowBack
+	} = useGifs();
 
 	const { setValueInputSearch, valuePlaceHolder } = useGifsStickersEmoji();
 
@@ -48,6 +55,7 @@ export const InputSearch: React.FC = () => {
 		setShowCategories(true);
 		setClickedTrendingGif(false);
 		setValueInputSearch('');
+		setValueInput('');
 		setButtonArrowBack(false);
 	};
 	const placeHolder = useMemo(() => {
@@ -67,6 +75,12 @@ export const InputSearch: React.FC = () => {
 				break;
 		}
 	}, [subPanelActive, valuePlaceHolder]);
+
+	useEffect(() => {
+		if (subPanelActive === SubPanelName.GIFS) {
+			fetchGifsDataSearch(valueSearchGif);
+		}
+	}, [valueSearchGif, subPanelActive]);
 
 	return (
 		<div className="flex flex-row items-center pt-4">

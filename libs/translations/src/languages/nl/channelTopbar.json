@@ -28,8 +28,6 @@
 	},
 	"directMessage": "Directe bericht",
 	"activeThreads": "Actieve topics",
-	"joinedThreadsLast30Days": "Deelnemende topics (laatste 30 dagen)",
-	"olderThreads": "Oudere topics",
 	"loading": "Aan het laden...",
 	"topic": "Topic",
 	"invoice": "In stemkanaal",
@@ -165,5 +163,7 @@
 		}
 	},
 	"moreFile": "meer bestand",
-	"moreFiles": "meer bestanden"
+	"moreFiles": "meer bestanden",
+	"joinedThreads": "Deelgenomen threads",
+	"archivedThreads": "Oudere threads"
 }

@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "스레드 생성 실패",
 		"content": "스레드를 찾지 못하거나 업데이트할 권한이 없음"
-	}
+	},
+	"otherActiveThread": "다른 활성 스레드",
+	"olderThread": "이전 스레드"
 }

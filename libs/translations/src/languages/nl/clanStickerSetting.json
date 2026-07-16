@@ -15,7 +15,8 @@
 		"exCatHug": "Bijv: kat_oorknuffel",
 		"thisIsForSale": "Dit is te koop",
 		"neverMind": "Niet erg",
-		"characters": "Naam moet van 3 tot 64 tekens zijn"
+		"characters": "Naam moet van 3 tot 64 tekens zijn",
+		"required": "Dit veld is verplicht"
 	},
 	"content": {
 		"description": "Voeg maximaal 250 aangepaste stickers toe die iedereen kan gebruiken in deze clan.",

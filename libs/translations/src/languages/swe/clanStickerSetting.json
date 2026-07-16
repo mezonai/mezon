@@ -15,7 +15,8 @@
 		"exCatHug": "T.ex. cat_hug",
 		"thisIsForSale": "Detta är till salu",
 		"neverMind": "Glöm det",
-		"characters": "Namn måste vara från 3 till 64 tecken"
+		"characters": "Namn måste vara från 3 till 64 tecken",
+		"required": "Detta fält är obligatoriskt"
 	},
 	"content": {
 		"description": "Lägg till max 250 anpassade stickers som alla kan använda i denna clan.",

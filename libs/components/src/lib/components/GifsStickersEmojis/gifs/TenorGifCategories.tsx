@@ -1,11 +1,11 @@
 import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifs, useGifsStickersEmoji } from '@mezon/core';
-import { referencesActions, selectDataReferences, useAppSelector } from '@mezon/store';
+import type { GifEntity } from '@mezon/store';
+import { gifsActions, referencesActions, selectDataReferences, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Loading } from '@mezon/ui';
 import type { IGifCategory } from '@mezon/utils';
 import { EMimeTypes, SubPanelName, blankReferenceObj, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import FeaturedGifs from './FeaturedGifs';
 import GifCategory from './GifCategory';
 
@@ -27,19 +27,20 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 		dataGifCategories,
 		dataGifsSearch,
 		loadingStatusGifs,
-		dataGifsFeartured,
 		trendingClickingStatus,
 		setClickedTrendingGif,
 		categoriesStatus,
 		setShowCategories,
-		setButtonArrowBack
+		setButtonArrowBack,
+		fetchGifTrending
 	} = useGifs();
 
 	const { valueInputToCheckHandleSearch } = useGifsStickersEmoji();
-	const [dataToRenderGifs, setDataToRenderGifs] = useState<any>();
+	const [dataToRenderGifs, setDataToRenderGifs] = useState<GifEntity[]>();
 	const { setSubPanelActive } = useGifsStickersEmoji();
 
 	const ontrendingClickingStatus = () => {
+		fetchGifTrending();
 		setClickedTrendingGif(true);
 		setShowCategories(false);
 		setButtonArrowBack(true);
@@ -48,7 +49,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 	const currentId = useCurrentInbox()?.channel_id;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
 	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		if (dataGifsSearch.length > 0 && valueInputToCheckHandleSearch !== '') {
@@ -56,7 +57,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 			setShowCategories(false);
 			setButtonArrowBack(true);
 		} else if (trendingClickingStatus) {
-			setDataToRenderGifs(dataGifsFeartured);
+			setDataToRenderGifs(dataGifsSearch);
 		} else if (valueInputToCheckHandleSearch === '') {
 			setButtonArrowBack(false);
 		}
@@ -91,10 +92,16 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 				/>
 
 				{Array.isArray(dataGifCategories) &&
-					dataGifCategories.map((item: IGifCategory, index: number) => <GifCategory gifCategory={item} key={index + item.name} />)}
+					dataGifCategories.map((item: IGifCategory, index: number) => <GifCategory gifCategory={item} key={index + item.category} />)}
 			</div>
 		);
 	};
+
+	useEffect(() => {
+		if (loadingStatusGifs === 'not loaded') {
+			dispatch(gifsActions.fetchGifCategories());
+		}
+	}, [loadingStatusGifs]);
 
 	const renderGifs = () => {
 		if (loadingStatusGifs === 'loading') {
@@ -102,19 +109,19 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 		}
 		return (
 			<div className="mx-2 flex justify-center h-[400px] overflow-y-scroll hide-scrollbar flex-wrap">
-				<div className="grid grid-cols-3  gap-1">
+				<div className="grid grid-cols-[repeat(3,minmax(0,1fr))] gap-1 w-full">
 					{dataToRenderGifs &&
-						dataToRenderGifs.map((gif: any, index: number) => {
-							const gifUrl = gif.media_formats?.gif?.url || '';
+						dataToRenderGifs.map((gif: GifEntity, index: number) => {
+							const gifUrl = gif.url || '';
 							return (
 								<div
 									key={gif.id}
-									className={`order-${index} overflow-hidden cursor-pointer flex items-center justify-center bg-bgIconLight rounded-lg`}
+									className={`overflow-hidden aspect-square cursor-pointer flex items-center justify-center bg-bgIconLight rounded-lg`}
 									onClick={() => handleClickGif(gifUrl)}
 									role="button"
 									data-e2e={generateE2eId('mention.popover.gifs.item')}
 								>
-									<img src={gifUrl} alt={gifUrl} className="w-full h-auto object-contain max-h-full" />
+									<img src={gifUrl} alt={gifUrl} className="w-full h-full object-cover max-h-full" />
 								</div>
 							);
 						})}
@@ -125,7 +132,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	return (
-		<div ref={modalRef} tabIndex={-1} className="outline-none">
+		<div ref={modalRef} tabIndex={-1} className="outline-none w-full">
 			{categoriesStatus || (valueInputToCheckHandleSearch === '' && trendingClickingStatus === false) ? renderGifCategories() : renderGifs()}
 		</div>
 	);

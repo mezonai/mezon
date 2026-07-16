@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "Falha ao criar tópico",
 		"content": "Tópico não encontrado ou você não tem permissão para atualizar"
-	}
+	},
+	"otherActiveThread": "outro tópico ativo",
+	"olderThread": "tópico mais antigo"
 }

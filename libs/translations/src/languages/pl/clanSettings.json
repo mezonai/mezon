@@ -17,7 +17,8 @@
 			"integrations": "Integracje",
 			"auditLog": "Dziennik kontroli",
 			"onboarding": "Wprowadzenie",
-			"enableCommunity": "Włącz społeczność"
+			"enableCommunity": "Włącz społeczność",
+			"archivedChannels": "Zarchiwizowane kanały"
 		}
 	},
 	"clanLogo": {
@@ -86,7 +87,16 @@
 		"description": "Naklejki mogą być statyczne (PNG) lub animowane (APNG, GIF). Naklejki muszą mieć dokładnie 320 x 320 pikseli i nie mogą być większe niż 512KB. Automatycznie zmniejszymy rozmiar Twoich statycznych naklejek PNG i animowanych GIF.",
 		"uploadHere": "Prześlij tutaj!",
 		"customizeMessage": "Dostosuj te wspaniałe naklejki do swoich preferencji",
-		"uploadSticker": "Prześlij naklejkę"
+		"uploadSticker": "Prześlij naklejkę",
+		"title": "Image Stickers"
 	},
-	"deleteClanTitle": "Usuń '{{clanName}}'"
+	"deleteClanTitle": "Usuń '{{clanName}}'",
+	"archivedChannels": {
+		"description": "Przywróć kanały do paska bocznego, aby ponownie stały się aktywne. Zarchiwizowane kanały zachowują całą historię wiadomości, ale są ukryte w głównej nawigacji.",
+		"archived": "AKTYWNE",
+		"restore": "Przywróć",
+		"restoreSuccess": "Kanał został pomyślnie przywrócony.",
+		"emptyState": "Brak zarchiwizowanych kanałów",
+		"fetchError": "Nie udało się załadować zarchiwizowanych kanałów. Spróbuj ponownie."
+	}
 }

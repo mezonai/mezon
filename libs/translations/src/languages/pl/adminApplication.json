@@ -211,5 +211,57 @@
 		"title": "Debugowanie osadzania"
 	},
 	"small": "Mały",
-	"large": "Duży"
+	"large": "Duży",
+	"transcriptCalls": {
+		"title": "Transkrypcje połączeń",
+		"subtitle": "Przeglądaj i zarządzaj transkrypcjami swoich połączeń.",
+		"loading": "Ładowanie…",
+		"results": "pokoi",
+		"page": "Strona",
+		"prev": "Poprzednia",
+		"next": "Następna",
+		"columns": {
+			"callId": "ID połączenia",
+			"roomName": "Nazwa pokoju",
+			"status": "Status",
+			"totalTracks": "Łączna liczba ścieżek",
+			"completedTracks": "Zakończone",
+			"duration": "Czas trwania",
+			"createdAt": "Utworzono",
+			"completedAt": "Zakończono"
+		},
+		"status": {
+			"pending": "Oczekujące",
+			"processing": "Przetwarzanie",
+			"completed": "Zakończone",
+			"failed": "Niepowodzenie"
+		},
+		"tabs": {
+			"overview": "Przegląd",
+			"fullTranscript": "Pełna transkrypcja",
+			"summary": "Podsumowanie",
+			"participants": "Uczestnicy"
+		},
+		"detail": {
+			"title": "Szczegóły transkrypcji połączenia",
+			"back": "Wstecz",
+			"refresh": "Odśwież",
+			"loadError": "Nie udało się załadować tego pokoju.",
+			"summaryEmpty": "Brak dostępnego podsumowania.",
+			"transcriptEmpty": "Brak dostępnego tekstu transkrypcji.",
+			"actionItems": "Elementy do wykonania",
+			"participants": "Uczestnicy",
+			"participantsEmpty": "Brak uczestników przypisanych do tego pokoju.",
+			"metrics": {
+				"totalTracks": "Łączna liczba ścieżek",
+				"completed": "Zakończone",
+				"duration": "Czas trwania",
+				"segments": "Segmenty"
+			},
+			"notFound": "Nie znaleziono transkrypcji połączenia",
+			"unknown": "Nieznane",
+			"username": "Nazwa użytkownika",
+			"displayName": "Wyświetlana nazwa"
+		}
+	}
 }

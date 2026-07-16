@@ -202,8 +202,6 @@
 		"enableWallet": "Активировать кошелёк",
 		"cancel": "Отменить"
 	},
-	"creator": "Создатель",
-	"viewTopic": "Просмотреть топик",
 	"reply": "{{number}} ответить",
 	"numberReplies": "{{number}} ответы",
 	"replies": "Ответы",

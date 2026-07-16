@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "Fout bij verzenden snelle optie",
 		"failedToResendMessage": "Kon bericht niet opnieuw verzenden",
 		"failedToClosePoll": "Kon enquête niet beëindigen"
-	}
+	},
+	"copyUserId": "Gebruikers-ID kopiëren"
 }

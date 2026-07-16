@@ -29,7 +29,8 @@
 		"sendAddFriendSuccess": "Дуслык соравы уңышлы җибәрелде!",
 		"acceptAddFriendSuccess": "Дуслык соравы кабул ителде!",
 		"sendAddFriendFail": "Хм, эшләмәде. Кулланучы исеме дөрес кертелгәнме, тикшерегез.",
-		"somethingWentWrong": "Нәрсәдер дөрес түгел"
+		"somethingWentWrong": "Нәрсәдер дөрес түгел",
+		"friendRequestAlreadySent": "Дуслык соравы инде җибәрелгән, кабул итүне көтә."
 	},
 	"you": "Сез"
 }

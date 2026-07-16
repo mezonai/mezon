@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "Памылка адпраўкі хуткага меню",
 		"failedToResendMessage": "Не атрымалася даслаць паведамленне паўторна",
 		"failedToClosePoll": "Не атрымалася завяршыць апытанне"
-	}
+	},
+	"copyUserId": "Скапіяваць ID карыстальніка"
 }

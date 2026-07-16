@@ -168,7 +168,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 	const showWhiteDot = isUnReadChannel && !isActive && notVoiceOrAppOrStreamChannel;
 	const hightLightTextChannel = (isActive || isUnReadChannel) && notVoiceOrAppOrStreamChannel;
 	const iconFillClasses = useMemo(() => {
-		const isIconActive = isActive || isUnReadChannel || Boolean(numberNotification);
+		const isIconActive = isActive || (isUnReadChannel && notVoiceOrAppOrStreamChannel) || Boolean(numberNotification);
 		return {
 			hashtagWarning: isIconActive
 				? '[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]'

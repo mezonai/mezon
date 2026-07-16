@@ -87,7 +87,19 @@
 		"english": "English",
 		"vietnamese": "Tiếng Việt",
 		"russian": "Русский",
-		"spanish": "Español"
+		"spanish": "Español",
+		"tatar": "Tatarça",
+		"german": "Deutsch",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"ukrainian": "Українська",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Voix",

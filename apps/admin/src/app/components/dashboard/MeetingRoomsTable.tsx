@@ -176,7 +176,7 @@ const MeetingRoomsTable: React.FC<MeetingRoomsTableProps> = ({ onViewDetails }) 
 											</td>
 											<td className="px-4 py-4 text-gray-500 dark:text-gray-400">{formatDate(room.createdAt)}</td>
 											<td className="px-4 py-4 text-gray-500 dark:text-gray-400">
-												{room.completedAt ? formatDate(room.completedAt) : 'N/A'}
+												{room.finalizedAt ? formatDate(room.finalizedAt) : 'N/A'}
 											</td>
 											<td className="px-4 py-4">
 												<button
