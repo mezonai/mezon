@@ -1,6 +1,6 @@
 import { useLocalParticipant, useRoomContext } from '@livekit/components-react';
 import { selectNoiseSuppressionEnabled, selectNoiseSuppressionLevel, useAppSelector } from '@mezon/store';
-import { NOISE_SUPPRESSION_NORMALIZATION_FACTOR } from '@mezon/utils';
+import { NOISE_SUPPRESSION_NORMALIZATION_FACTOR, getNoiseSuppressionAudioCaptureOptions } from '@mezon/utils';
 import { DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
 import type { LocalParticipant, LocalTrackPublication, Participant, TrackPublication } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
@@ -15,11 +15,20 @@ interface ProcessorData {
 	track: LocalTrackPublication;
 }
 
+const applyAudioCaptureConstraints = async (publication: LocalTrackPublication, isEnabled: boolean) => {
+	const mediaStreamTrack = publication.track?.mediaStreamTrack;
+	if (!mediaStreamTrack) {
+		return;
+	}
+
+	await mediaStreamTrack.applyConstraints(getNoiseSuppressionAudioCaptureOptions(isEnabled) as MediaTrackConstraints);
+};
+
 export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 	const noiseSuppressionEnabled = useAppSelector(selectNoiseSuppressionEnabled);
 	const level = useAppSelector(selectNoiseSuppressionLevel);
-    const normalizedLevel = level * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
-	
+	const normalizedLevel = level * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
+
 	const enabled = options?.enabled === false ? false : noiseSuppressionEnabled;
 	const sampleRate = 48000;
 	const room = useRoomContext();
@@ -57,6 +66,7 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 			}
 
 			try {
+				await applyAudioCaptureConstraints(publication, true);
 				const processor = new DeepFilterNoiseFilterProcessor({
 					sampleRate: publication.track?.mediaStreamTrack?.getSettings().sampleRate ?? sampleRate,
 					noiseReductionLevel: levelRef.current,
@@ -142,6 +152,7 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 				try {
 					const track = processorData.track.track;
 					if (track) {
+						applyAudioCaptureConstraints(processorData.track, false).catch(() => {});
 						track.stopProcessor().catch(() => {});
 					}
 				} catch (error) {
@@ -171,6 +182,7 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 				const track = processorData.track.track;
 				if (!track) return;
 
+				await applyAudioCaptureConstraints(processorData.track, enabled);
 				if (enabled) {
 					await track.setProcessor(processorData.processor);
 				} else {

@@ -732,8 +732,7 @@ function MessageContextMenu({
 			builder.addMenuItem(
 				'addReaction', // id
 				t('addReaction'), // label
-				handleItemClick,
-				<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
+				handleItemClick
 			);
 		});
 

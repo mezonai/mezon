@@ -207,14 +207,12 @@ const ChannelVoiceInner = () => {
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
 		dispatch(voiceActions.setStreamScreen(null));
-		dispatch(voiceActions.setNoiseSuppressionEnabled(false));
 		dispatch(voiceActions.setShowMicrophone(false));
 
 		const storeState = getStore().getState();
 		const currentClanId = selectCurrentClanId(storeState);
 		const currentClanName = selectCurrentClanName(storeState);
 		const currentChannelId = selectCurrentChannelId(storeState);
-		const currentChannelClanId = selectCurrentChannelClanId(storeState);
 		const currentChannelLabel = selectCurrentChannelLabel(storeState);
 		const currentChannelPrivate = selectCurrentChannelPrivate(storeState);
 

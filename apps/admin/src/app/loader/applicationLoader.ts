@@ -1,4 +1,11 @@
-import { fetchMezonOauthClient, getApplicationDetail, getStoreAdminAsync, selectApplicationById, setCurrentAppId } from '@mezon/store';
+import {
+	fetchApplications,
+	fetchMezonOauthClient,
+	getApplicationDetail,
+	getStoreAdminAsync,
+	selectApplicationById,
+	setCurrentAppId
+} from '@mezon/store';
 import type { CustomLoaderFunction } from './appLoader';
 
 interface IBotLoaderData {
@@ -14,6 +21,7 @@ export const applicationLoader: CustomLoaderFunction = async ({ params, dispatch
 
 	const store = await getStoreAdminAsync();
 
+	await dispatch(fetchApplications({}));
 	const currentApp = selectApplicationById(store.getState(), applicationId);
 	if (!currentApp) {
 		throw new Error('Application not found');

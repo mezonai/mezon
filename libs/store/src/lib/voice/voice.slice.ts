@@ -231,7 +231,7 @@ export const initialVoiceState: VoiceState = {
 	showMicrophone: false,
 	showCamera: false,
 	showScreen: false,
-	noiseSuppressionEnabled: false,
+	noiseSuppressionEnabled: true,
 	noiseSuppressionLevel: INITIAL_NOISE_SUPPRESSION_PERCENTAGE,
 	statusCall: false,
 	voiceConnectionState: false,
@@ -393,7 +393,7 @@ export const voiceSlice = createSlice({
 			state.showMicrophone = false;
 			state.showCamera = false;
 			state.showScreen = false;
-			state.noiseSuppressionEnabled = false;
+			state.noiseSuppressionEnabled = true;
 			state.noiseSuppressionLevel = INITIAL_NOISE_SUPPRESSION_PERCENTAGE;
 			state.voiceConnectionState = false;
 			state.voiceInfo = null;

@@ -1,4 +1,4 @@
-import { requestMediaPermission } from '@mezon/utils';
+import { getNoiseSuppressionAudioCaptureOptions, requestMediaPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceSelector } from './DeviceSelector';
@@ -213,7 +213,10 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, nois
 			const currentMicVolume = micVolumeRef.current;
 
 			const constraints: MediaStreamConstraints = {
-				audio: currentInputDeviceId ? { deviceId: { exact: currentInputDeviceId } } : true,
+				audio: {
+					...getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+					...(currentInputDeviceId ? { deviceId: { exact: currentInputDeviceId } } : {})
+				} as MediaTrackConstraints,
 				video: false
 			};
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);

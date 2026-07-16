@@ -193,6 +193,7 @@ export class MezonNotificationService {
 
 		// Store the connection
 		this.userConnections.set(userId, connection);
+		this.setCurrentActiveUserId(userId);
 	};
 
 	public disconnect = (userId: string) => {
