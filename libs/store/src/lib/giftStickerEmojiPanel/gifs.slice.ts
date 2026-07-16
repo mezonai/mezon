@@ -41,12 +41,12 @@ export const initialGifsState: GifsState = {
 	buttonArrowBackStatus: false
 };
 
-const apiKey = process.env.NX_CHAT_APP_API_TENOR_KEY;
+const apiKey = process.env.NX_CHAT_APP_API_KLIPY_KEY;
+const baseUrl = process.env.NX_CHAT_APP_API_KLIPY_URL ?? '';
 const limit = 30;
 
 export const fetchGifCategories = createAsyncThunk<GifCategoriesResponse>('gifs/fetchStatus', async (_, thunkAPI) => {
-	const baseUrl = process.env.NX_CHAT_APP_API_TENOR_URL_CATEGORIES ?? '';
-	const categoriesUrl = `${baseUrl}`;
+	const categoriesUrl = `${baseUrl}/${apiKey}/gifs/categories`;
 
 	try {
 		const response = await fetch(`${categoriesUrl}`);
@@ -62,7 +62,7 @@ export const fetchGifCategories = createAsyncThunk<GifCategoriesResponse>('gifs/
 });
 
 export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchDataSearch', async (valueSearch, thunkAPI) => {
-	const searchUrl = `https://api.klipy.com/api/v1/j8Mh0W38PmhdHoX7mQYJ0VSwkHNMJZ9tkPeeZuz3hukOcAxueqUjOuTpiJdrar6p/gifs/search??page=1&per_page=${limit}&q=${valueSearch}&format_filter=gif`;
+	const searchUrl = `${baseUrl}/${apiKey}/gifs/search?page=1&per_page=${limit}&q=${valueSearch}&format_filter=gif`;
 
 	try {
 		const response = await fetch(`${searchUrl}`);
@@ -79,7 +79,7 @@ export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchData
 });
 
 export const fetchGifTrending = createAsyncThunk<GifEntity[]>('gifs/fetchDataTrending', async (_, thunkAPI) => {
-	const searchUrl = `https://api.klipy.com/api/v1/${apiKey}/stickers/trending?page=1&per_page=30&format_filter=gif`;
+	const searchUrl = `${baseUrl}/${apiKey}/stickers/trending?page=1&per_page=30&format_filter=gif`;
 
 	try {
 		const response = await fetch(`${searchUrl}`);
