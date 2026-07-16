@@ -16,7 +16,7 @@ import {
 	selectBadgeCountAllClan,
 	useAppDispatch
 } from '@mezon/store';
-import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/utils';
+import { IS_SAFARI, MessageCrypt, UploadLimitReason, electronBridge, isElectron, throttle } from '@mezon/utils';
 
 import { TooManyUpload, WebRTCStreamProvider, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
@@ -82,7 +82,16 @@ const GlobalEventListener = () => {
 		notificationCountAllClan = allNotificationReplyMentionAllClan < 0 ? 0 : allNotificationReplyMentionAllClan;
 		const notificationCount = notificationCountAllClan + totalUnreadMessages + quantityPendingRequest;
 		const displayCountBrowser = notificationCount > 99 ? '99+' : notificationCount.toString();
-		document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
+
+		if (isElectron()) {
+			if (hasUnreadChannel && !notificationCount) {
+				electronBridge?.setBadgeCount(null);
+				return;
+			}
+			electronBridge?.setBadgeCount(notificationCount);
+		} else {
+			document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
+		}
 	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
 
 	useEffect(() => {

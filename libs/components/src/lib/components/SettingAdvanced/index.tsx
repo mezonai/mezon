@@ -1,4 +1,6 @@
+import { appActions, selectHardwareAcceleration, useAppDispatch } from '@mezon/store';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 type SettingAdvancedProps = {
 	menuIsOpen: boolean;
@@ -6,6 +8,17 @@ type SettingAdvancedProps = {
 
 const SettingAdvanced = ({ menuIsOpen }: SettingAdvancedProps) => {
 	const { t } = useTranslation(['setting', 'common']);
+	const dispatch = useAppDispatch();
+	const hardwareAcceleration = useSelector(selectHardwareAcceleration);
+
+	const handleHardwareAcceleration = () => {
+		try {
+			dispatch(appActions.toggleHardwareAcceleration());
+			window.electron.toggleHardwareAcceleration(!hardwareAcceleration);
+		} catch (error) {
+			console.error('Error toggling hardware acceleration:', error);
+		}
+	};
 
 	return (
 		<div
@@ -21,7 +34,7 @@ const SettingAdvanced = ({ menuIsOpen }: SettingAdvancedProps) => {
 					</div>
 					<div className="ml-4 flex-shrink-0">
 						<label className="relative inline-flex items-center cursor-pointer">
-							<input type="checkbox" checked={false} className="sr-only peer" />
+							<input type="checkbox" checked={hardwareAcceleration} onChange={handleHardwareAcceleration} className="sr-only peer" />
 							<div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
 						</label>
 					</div>

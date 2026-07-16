@@ -1,8 +1,9 @@
 import { useLocalParticipantPermissions } from '@livekit/components-react';
+import { isElectron } from '@mezon/utils';
 import { useAppDispatch, voiceActions } from '@mezon/store';
-
 import { Track, VideoPresets } from 'livekit-client';
 import { memo, useCallback } from 'react';
+import { ScreenShareToggleButton } from './TrackToggle/ScreenShareToggleButton';
 import { TrackToggle } from './TrackToggle/TrackToggle';
 import { trackSourceToProtocol } from './hooks/useControlBarPermissions';
 
@@ -19,6 +20,7 @@ const SCREEN_SHARE_PRESET = VideoPresets.h1080;
 export const ScreenShareControl = memo(
 	({ showScreen, isShowMember, saveUserChoices = true, onDeviceError, onDesktopScreenShare }: ScreenShareControlProps) => {
 		const dispatch = useAppDispatch();
+		const isDesktop = isElectron();
 		const localPermissions = useLocalParticipantPermissions();
 
 		const canPublishScreenShare = useCallback(() => {
@@ -45,6 +47,16 @@ export const ScreenShareControl = memo(
 			},
 			[dispatch, canPublishScreenShare]
 		);
+
+		if (isDesktop) {
+			return (
+				<ScreenShareToggleButton
+					id="btn-meet-screen"
+					onClick={onDesktopScreenShare}
+					className={`w-14 h-14 max-md:w-10 max-md:h-10 max-md:p-2 !rounded-full flex justify-center items-center ${!isShowMember && 'text-white'}`}
+				/>
+			);
+		}
 
 		return (
 			<TrackToggle

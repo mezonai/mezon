@@ -11,7 +11,6 @@ import {
 	selectCurrentClanId,
 	selectCurrentClanIsOnboarding,
 	selectCurrentClanName,
-	selectCurrentTopicId,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
@@ -21,13 +20,11 @@ import {
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
-import { SubPanelName } from '@mezon/utils';
-
+import { isElectron, isLinuxDesktop, isWindowsDesktop, SubPanelName } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
-import { getChannelListColumnHeightClass } from './desktopWindowChrome';
 import ChatStream from '../pages/chatStream';
 import Setting from '../pages/setting';
 import ThreadsMain from '../pages/thread';
@@ -87,13 +84,12 @@ const ClanLayout = () => {
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 	const location = useLocation();
-	const currentURL = location.pathname;
+	const currentURL = isElectron() ? location.hash : location.pathname;
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannelId as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
-	const currentTopicId = useSelector(selectCurrentTopicId);
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
 	const dispatch = useAppDispatch();
 	const { setSubPanelActive } = useGifsStickersEmoji();
@@ -117,21 +113,10 @@ const ClanLayout = () => {
 		}
 	}, [currentClanIsOnboarding, currentClanId, dispatch]);
 
-	useEffect(() => {
-		if (isShowCreateTopic && currentTopicId) {
-			dispatch(topicsActions.setFocusTopicBox(true));
-			dispatch(threadsActions.setFocusThreadBox(false));
-		} else {
-			dispatch(topicsActions.setFocusTopicBox(false));
-		}
-	}, [isShowCreateTopic, currentTopicId, dispatch]);
-
-	const channelListColumnHeightClass = getChannelListColumnHeightClass();
-
 	return (
 		<>
 			<div
-				className={`select-none h-dvh flex-col flex max-w-[272px] bg-theme-direct-message  relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px] ${channelListColumnHeightClass} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
+				className={`select-none h-dvh flex-col flex max-w-[272px] bg-theme-direct-message  relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
 			>
 				<ClanHeader name={currentClanName} type="CHANNEL" bannerImage={currentClanBanner} />
 				<ChannelList />

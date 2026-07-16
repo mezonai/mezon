@@ -1,6 +1,5 @@
 import { useMemberStatus } from '@mezon/core';
 import {
-	EInvoice,
 	selectChannelMembersSortedByStatus,
 	selectCurrentChannelId,
 	selectCurrentClanCreatorId,
@@ -12,8 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EUserStatus, createImgproxyUrl, generateE2eId, useWindowSize } from '@mezon/utils';
-
+import { createImgproxyUrl, EUserStatus, generateE2eId, isElectron, isLinuxDesktop, isWindowsDesktop, useWindowSize } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -23,7 +21,7 @@ import { UserStatusIconClan } from '../MemberProfile';
 import { BaseMemberProfile, ClanUserName } from '../MemberProfile/MemberProfile';
 
 const heightTopBar = 50;
-const titleBarHeight = 0;
+const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
 
 type TempMemberItemProps = {
 	id: string;
@@ -44,7 +42,7 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 		userVoiceStatus && userMeta?.online ? (
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
 				<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-				{userVoiceStatus?.status === EInvoice.INVOICE ? t('inVoice') : t('shareScreen')}
+				{t('inVoice')}
 			</span>
 		) : (
 			userMeta?.user_status || userCustomStatus
@@ -108,17 +106,8 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			userStatus={
 				userVoiceStatus && userMeta.online ? (
 					<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
-						{userVoiceStatus?.status === EInvoice.INVOICE ? (
-							<>
-								<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-								{t('inVoice')}
-							</>
-						) : (
-							<>
-								<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
-								{t('shareScreen')}
-							</>
-						)}
+						<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+						{t('inVoice')}
 					</span>
 				) : (
 					userMeta?.user_status || userCustomStatus
@@ -223,7 +212,7 @@ const ListMember = () => {
 	return (
 		<div
 			ref={parentRef}
-			className={`custom-member-list ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'} `}
+			className={`custom-member-list ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'} ${isElectron() ? 'scroll-big' : ''} `}
 			style={{
 				height,
 				overflow: 'auto'

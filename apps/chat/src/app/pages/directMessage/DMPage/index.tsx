@@ -52,7 +52,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { EmojiPlaces, generateE2eId, isBackgroundModeActive, SubPanelName, useBackgroundMode } from '@mezon/utils';
+import { EmojiPlaces, generateE2eId, isBackgroundModeActive, isLinuxDesktop, isWindowsDesktop, SubPanelName, useBackgroundMode } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { DragEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -310,9 +310,6 @@ const DirectMessage = () => {
 		return null;
 	}
 
-	const messageViewChatDMMaxHeightClass = getMessageViewChatDMMaxHeightClass();
-	const messageViewChatDMHeightClass = getMessageViewChatDMHeightClass();
-
 	return (
 		<>
 			{draggingState && dmUploadChannelId ? <FileUploadByDnD currentId={dmUploadChannelId} /> : null}
@@ -324,9 +321,12 @@ const DirectMessage = () => {
 					className={`cotain-strict flex flex-row flex-1 w-full ${isHaveCallInChannel || isPlayDialTone ? 'h-heightCallDm' : 'h-heightWithoutTopBar'}`}
 				>
 					<div
-						className={`flex-col flex-1 h-full ${messageViewChatDMMaxHeightClass} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : isSearchMessage ? 'w-widthSearchMessage' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
+						className={`flex-col flex-1 h-full ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : isSearchMessage ? 'w-widthSearchMessage' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
-						<div className={`relative overflow-y-auto ${messageViewChatDMHeightClass} flex-shrink`} ref={messagesContainerRef}>
+						<div
+							className={`relative overflow-y-auto  ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink`}
+							ref={messagesContainerRef}
+						>
 							{
 								<ChannelMessages
 									clanId="0"
