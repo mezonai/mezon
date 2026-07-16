@@ -101,7 +101,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 			return listManageNotInChannel;
 		}
 		return listManageNotInChannel.filter((role) => searchNormalizeText(role.title, search));
-	}, [search]);
+	}, [search, listManageNotInChannel]);
 
 	const listMemberCanAdd = useMemo(() => {
 		if (!search) {
@@ -113,41 +113,43 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 				searchNormalizeText(user.user?.display_name || '', search) ||
 				searchNormalizeText(user.user?.username || '', search)
 		);
-	}, [search]);
+	}, [search, usersClan]);
 
 	return (
-		<div ref={panelRef} className="flex justify-between items-center relative" onClick={() => setShowPopup(!showPopup)}>
+		<div ref={panelRef} className="flex justify-between items-center relative cursor-pointer" onClick={() => setShowPopup(!showPopup)}>
 			<h4 className="uppercase font-bold text-xs text-theme-primary-active">{t('channelPermission.bottomSheet.rolesMembers')}</h4>
 			{channel?.channel_private === 1 && <Icons.PlusIcon className="size-4  cursor-pointer" />}
 			{showPopup && (
-				<div
-					className="absolute bottom-5 w-64 rounded-lg overflow-hidden bg-theme-setting-primary border-theme-primary"
-					onClick={(e) => e.stopPropagation()}
-				>
-					<div className=" flex gap-x-1 p-4 text-sm bg-theme-setting-nav">
-						<p className="font-bold text-theme-primary-active">{t('channelPermission.bottomSheet.add')}:</p>
-						<input
-							type="text"
-							className="bg-transparent outline-none font-medium"
-							placeholder={t('channelPermission.bottomSheet.roleMemberPlaceholder')}
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-					</div>
+				<>
+					<div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setShowPopup(false); }} />
 					<div
-						className=" p-2 h-64 overflow-y-scroll hide-scrollbar text-theme-primary text-theme-primary-hover"
-						onClick={() => setShowPopup(!showPopup)}
+						className="absolute bottom-5 w-64 rounded-lg overflow-hidden bg-theme-setting-primary border-theme-primary z-50 cursor-default"
+						onClick={(e) => e.stopPropagation()}
 					>
-						{Boolean(listRoleCanAdd.length) && (
-							<div>
-								<p className="px-3 py-2 uppercase text-[11px] font-bold">{t('channelPermission.bottomSheet.roles')}</p>
-								{listRoleCanAdd.map((item) => (
-									<div key={item.id} className="rounded px-3 py-2 font-semibold bg-item-hover" onClick={() => addRole(item.id)}>
-										{item.title}
-									</div>
-								))}
-							</div>
-						)}
+						<div className=" flex gap-x-1 p-4 text-sm bg-theme-setting-nav">
+							<p className="font-bold text-theme-primary-active">{t('channelPermission.bottomSheet.add')}:</p>
+							<input
+								type="text"
+								className="bg-transparent outline-none font-medium"
+								placeholder={t('channelPermission.bottomSheet.roleMemberPlaceholder')}
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+							/>
+						</div>
+						<div
+							className=" p-2 h-64 overflow-y-scroll hide-scrollbar text-theme-primary"
+							onClick={() => setShowPopup(!showPopup)}
+						>
+							{Boolean(listRoleCanAdd.length) && (
+								<div>
+									<p className="px-3 py-2 uppercase text-[11px] font-bold">{t('channelPermission.bottomSheet.roles')}</p>
+									{listRoleCanAdd.map((item) => (
+										<div key={item.id} className="rounded px-3 py-2 font-semibold bg-item-hover text-theme-primary-hover cursor-pointer" onClick={() => addRole(item.id)}>
+											{item.title}
+										</div>
+									))}
+								</div>
+							)}
 						{Boolean(listMemberCanAdd.length) && (
 							<div>
 								<p className="px-3 py-2 uppercase text-[11px] font-bold">{t('channelPermission.bottomSheet.members')}</p>
@@ -166,6 +168,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 						)}
 					</div>
 				</div>
+				</>
 			)}
 		</div>
 	);

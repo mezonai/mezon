@@ -3,5 +3,6 @@
 		"stream": "Phòng phát trực tiếp",
 		"joinStream": "Tham gia phát trực tiếp"
 	},
-	"noDisplay": "Không hiển thị phát trực tiếp"
+	"noDisplay": "Không hiển thị phát trực tiếp",
+	"chat": "Trò chuyện"
 }

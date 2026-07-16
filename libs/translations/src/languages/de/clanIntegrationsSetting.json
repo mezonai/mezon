@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "Webhook",
 		"automatedMessage": "Automatische Nachrichten und Updates",
-		"description": "Personalisiere deinen Clan mit Integrationen. Verwalte Webhooks, Watch-Kanäle und Apps sowie Twitch- und YouTube-Einstellungen für Creator.",
-		"learnMore": "Erfahre mehr über die Verwaltung von Integrationen."
+		"description": "Personalisiere deinen Clan mit Integrationen. Verwalte Webhooks, Beobachtungskanäle, Apps sowie Twitch- und YouTube-Einstellungen für Creator.",
+		"learnMore": "Erfahre mehr über die Verwaltung von Integrationen.",
+		"channelWebhooks": "Kanal-Webhooks",
+		"clanWebhooks": "Clan-Webhooks"
 	},
 	"webhooks": {
 		"description": "Ein Webhook ist ein Werkzeug, das dir hilft, automatische Nachrichten und Daten-Updates über Internetverbindungen an Textkanäle in deinem Clan zu senden.",

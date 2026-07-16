@@ -15,7 +15,8 @@
 		"exCatHug": "Es: cat_hug",
 		"thisIsForSale": "Questo è un prodotto in vendita",
 		"neverMind": "Ignora",
-		"characters": "Il nome deve avere da 3 a 64 caratteri"
+		"characters": "Il nome deve avere da 3 a 64 caratteri",
+		"required": "Questo campo è obbligatorio"
 	},
 	"content": {
 		"description": "Aggiungi fino a 250 sticker personalizzati che chiunque può usare in questo clan.",

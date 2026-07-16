@@ -1,5 +1,4 @@
 {
-	"addReaction": "Añadir reacción:",
 	"roleDescription": "Usa roles para agrupar miembros de tu clan y asignar permisos",
 	"defaultRole": "Permiso predeterminado para todos los miembros del clan",
 	"roles": "Roles",
@@ -108,6 +107,7 @@
 		"edit": "Editar",
 		"view": "Ver",
 		"delete": "Eliminar",
-		"roleNameIsRequired": "El nombre del rol es requerido"
+		"roleNameIsRequired": "El nombre del rol es requerido",
+		"noPermissionToEditRole": "No tienes permiso para editar este rol."
 	}
 }

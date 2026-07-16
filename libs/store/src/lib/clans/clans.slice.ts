@@ -380,6 +380,9 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 			return thunkAPI.rejectWithValue([]);
 		}
 		thunkAPI.dispatch(usersClanActions.removeUsersAndClearCache({ clanId, userIds }));
+		userIds.forEach(userId => {
+			thunkAPI.dispatch(rolesClanActions.updateRemoveUserRole({ userId, clanId }));
+		});
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'clans/removeClanUsers');

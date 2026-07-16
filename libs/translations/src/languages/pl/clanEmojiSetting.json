@@ -11,7 +11,8 @@
 		"exCatHug": "NP: cat_hug",
 		"thisIsForSale": "To jest na sprzedaż",
 		"neverMind": "Nie szkodzi",
-		"characters": "Nazwa musi mieć od 3 do 64 znaków"
+		"characters": "Nazwa musi mieć od 3 do 64 znaków",
+		"required": "Dit veld is verplicht"
 	},
 	"header": {
 		"save": "Zapisz"

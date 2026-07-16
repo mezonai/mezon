@@ -1,6 +1,7 @@
+import { captureSentryError } from '@mezon/logger';
 import type { IGif, IGifCategory } from '@mezon/utils';
-import type { EntityState } from '@reduxjs/toolkit';
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 export const GIFS_FEATURE_KEY = 'gifs';
 
@@ -13,12 +14,11 @@ export interface GifEntity extends IGif {
 }
 
 export interface GifCategoriesResponse {
-	locale: string;
-	tags: GifCategoriesEntity[];
+	categories: GifCategoriesEntity[];
 }
 
 export const gifsAdapter = createEntityAdapter<GifCategoriesEntity>({
-	selectId: (emo: GifCategoriesEntity) => emo.id || emo.path || ''
+	selectId: (emo: GifCategoriesEntity) => emo.category || emo.preview_url || ''
 } as any);
 
 export interface GifsState extends EntityState<GifCategoriesEntity, string> {
@@ -42,8 +42,57 @@ export const initialGifsState: GifsState = {
 };
 
 const apiKey = process.env.NX_CHAT_APP_API_TENOR_KEY;
-const clientKey = process.env.NX_CHAT_APP_API_CLIENT_KEY_CUSTOM;
 const limit = 30;
+
+export const fetchGifCategories = createAsyncThunk<GifCategoriesResponse>('gifs/fetchStatus', async (_, thunkAPI) => {
+	const baseUrl = process.env.NX_CHAT_APP_API_TENOR_URL_CATEGORIES ?? '';
+	const categoriesUrl = `${baseUrl}`;
+
+	try {
+		const response = await fetch(`${categoriesUrl}`);
+		if (!response.ok) {
+			throw new Error('Failed to fetch gifs data');
+		}
+		const data = await response.json();
+		return data?.data || [];
+	} catch (error) {
+		captureSentryError(error, 'gifs/fetchStatus');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchDataSearch', async (valueSearch, thunkAPI) => {
+	const searchUrl = `https://api.klipy.com/api/v1/j8Mh0W38PmhdHoX7mQYJ0VSwkHNMJZ9tkPeeZuz3hukOcAxueqUjOuTpiJdrar6p/gifs/search??page=1&per_page=${limit}&q=${valueSearch}&format_filter=gif`;
+
+	try {
+		const response = await fetch(`${searchUrl}`);
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch gifs data search');
+		}
+		const data = await response.json();
+		return data?.data || [];
+	} catch (error) {
+		captureSentryError(error, 'gifs/fetchDataSearch');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const fetchGifTrending = createAsyncThunk<GifEntity[]>('gifs/fetchDataTrending', async (_, thunkAPI) => {
+	const searchUrl = `https://api.klipy.com/api/v1/${apiKey}/stickers/trending?page=1&per_page=30&format_filter=gif`;
+
+	try {
+		const response = await fetch(`${searchUrl}`);
+		if (!response.ok) {
+			throw new Error('Failed to fetch gifs data');
+		}
+		const data = await response.json();
+		return data?.data || [];
+	} catch (error) {
+		captureSentryError(error, 'gifs/fetchGifTrending');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
 
 export const gifsSlice = createSlice({
 	name: GIFS_FEATURE_KEY,
@@ -61,13 +110,71 @@ export const gifsSlice = createSlice({
 		setButtonArrowBack: (state, action) => {
 			state.buttonArrowBackStatus = action.payload;
 		}
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(fetchGifCategories.pending, (state: GifsState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(fetchGifCategories.fulfilled, (state: GifsState, action: PayloadAction<GifCategoriesResponse>) => {
+				gifsAdapter.setAll(state, action.payload.categories);
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(fetchGifCategories.rejected, (state: GifsState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			});
+		builder
+			.addCase(fetchGifsDataSearch.pending, (state: GifsState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(fetchGifsDataSearch.fulfilled, (state: GifsState, action: PayloadAction<any>) => {
+				const dataGif: GifEntity[] = action.payload.data.map((item: any) => {
+					return {
+						id: `${item.id}`,
+						slug: item.slug,
+						blur_preview: item?.blur_preview,
+						url: item?.file?.xs?.gif?.url
+					};
+				});
+
+				state.dataGifsSearch = dataGif;
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(fetchGifsDataSearch.rejected, (state: GifsState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			});
+		builder
+			.addCase(fetchGifTrending.pending, (state: GifsState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(fetchGifTrending.fulfilled, (state: GifsState, action: PayloadAction<any>) => {
+				const dataGif: GifEntity[] = action.payload.data.map((item: any) => {
+					return {
+						id: `${item.id}`,
+						slug: item.slug,
+						blur_preview: item?.blur_preview,
+						url: item?.file?.xs?.gif?.url
+					};
+				});
+				state.dataGifsSearch = dataGif;
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(fetchGifTrending.rejected, (state: GifsState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			});
 	}
 });
 
 export const gifsReducer = gifsSlice.reducer;
 
 export const gifsActions = {
-	...gifsSlice.actions
+	...gifsSlice.actions,
+	fetchGifCategories,
+	fetchGifsDataSearch,
+	fetchGifTrending
 };
 
 const { selectAll } = gifsAdapter.getSelectors();

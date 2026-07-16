@@ -108,7 +108,6 @@ export { default as AgeRestricted } from './components/AgeRestricted';
 export { default as BuzzBadge } from './components/BuzzBadge';
 export { default as Canvas } from './components/Canvas';
 export { default as GuideItemLayout } from './components/ClanSettings/SettingOnBoarding/GuideItemLayout';
-export * from './components/ClanSettings/SettingOnBoarding/ModalControlRule';
 export { default as DmCalling } from './components/DmCalling';
 export { default as EventSchedule } from './components/EventSchedule';
 export { default as ModalCall } from './components/ModalCall';

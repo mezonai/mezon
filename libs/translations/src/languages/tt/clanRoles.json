@@ -107,6 +107,7 @@
 		"edit": "Үзгәртү",
 		"view": "Карау",
 		"delete": "Бетерү",
-		"roleNameIsRequired": "Роль исеме мәҗбүри."
+		"roleNameIsRequired": "Роль исеме мәҗбүри.",
+		"noPermissionToEditRole": "Сезнең бу рольне үзгәртергә хокукыгыз юк."
 	}
 }

@@ -80,7 +80,10 @@
 			"title": "Beschrijving",
 			"description": "Vertel ons iets meer over je evenement."
 		},
-		"cover": "Banner"
+		"cover": "Banner",
+		"VoiceChannel": {
+			"title": "Spraakkanaal selecteren"
+		}
 	},
 	"actions": {
 		"next": "Volgende",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "Starttijd moet in de toekomst zijn.",
 		"endTimeAfterStart": "Eindtijd moet later zijn dan starttijd.",
-		"invalidTopic": "Ongeldig evenementsthema. Karakterters '`', '<', '>', ',', '/', '\"', '\\', en ''' zijn niet toegestaan."
+		"invalidTopic": "Ongeldig evenementsthema. Karakterters '`', '<', '>', ',', '/', '\"', '\\', en ''' zijn niet toegestaan.",
+		"locationMaxLength": "Mag maximaal 100 tekens bevatten."
 	},
 	"selectUser": "Kies een kanaal of topic om een evenement aan te maken",
 	"emptyState": {

@@ -3,5 +3,6 @@
 		"stream": "Pokój streamu",
 		"joinStream": "Dołącz do streamu"
 	},
-	"noDisplay": "Nie wyświetlaj streamu"
+	"noDisplay": "Nie wyświetlaj streamu",
+	"chat": "Czat"
 }

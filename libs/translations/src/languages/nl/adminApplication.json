@@ -211,5 +211,57 @@
 		"title": "Embed Debugger"
 	},
 	"small": "Klein",
-	"large": "Groot"
+	"large": "Groot",
+	"transcriptCalls": {
+		"title": "Gespreksopnames",
+		"subtitle": "Bekijk en beheer uw gesprekstranscripten.",
+		"loading": "Laden…",
+		"results": "ruimtes",
+		"page": "Pagina",
+		"prev": "Vorige",
+		"next": "Volgende",
+		"columns": {
+			"callId": "Bel-ID",
+			"roomName": "Ruimtenaam",
+			"status": "Status",
+			"totalTracks": "Totaal aantal tracks",
+			"completedTracks": "Voltooid",
+			"duration": "Duur",
+			"createdAt": "Aangemaakt op",
+			"completedAt": "Voltooid op"
+		},
+		"status": {
+			"pending": "In afwachting",
+			"processing": "Verwerken",
+			"completed": "Voltooid",
+			"failed": "Mislukt"
+		},
+		"tabs": {
+			"overview": "Overzicht",
+			"fullTranscript": "Volledig transcript",
+			"summary": "Samenvatting",
+			"participants": "Deelnemer"
+		},
+		"detail": {
+			"title": "Beltranscriptdetails",
+			"back": "Terug",
+			"refresh": "Vernieuwen",
+			"loadError": "Kan deze ruimte niet laden.",
+			"summaryEmpty": "Geen samenvatting beschikbaar.",
+			"transcriptEmpty": "Geen transcripttekst beschikbaar.",
+			"actionItems": "Actiepunten",
+			"participants": "Deelnemers",
+			"participantsEmpty": "Geen deelnemers vermeld voor deze ruimte.",
+			"metrics": {
+				"totalTracks": "Totaal aantal tracks",
+				"completed": "Voltooid",
+				"duration": "Duur",
+				"segments": "Segmenten"
+			},
+			"notFound": "Beltranscript niet gevonden",
+			"unknown": "onbekend",
+			"username": "Gebruikersnaam",
+			"displayName": "Weergavenaam"
+		}
+	}
 }

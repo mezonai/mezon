@@ -28,8 +28,6 @@
 	},
 	"directMessage": "Прямі повідомлення",
 	"activeThreads": "Активні треди",
-	"joinedThreadsLast30Days": "Треди, до яких приєдналися (останні 30 днів)",
-	"olderThreads": "Старіші треди",
 	"loading": "Завантаження...",
 	"topic": "Тема",
 	"invoice": "У голосовому каналі",
@@ -165,5 +163,7 @@
 		}
 	},
 	"moreFile": "ще файлів",
-	"moreFiles": "ще файлів"
+	"moreFiles": "ще файлів",
+	"joinedThreads": "Приєднані теми",
+	"archivedThreads": "Старі теми"
 }

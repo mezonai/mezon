@@ -80,7 +80,10 @@
 			"title": "Descrição",
 			"description": "Conte um pouco mais sobre o seu evento para as pessoas."
 		},
-		"cover": "Capa"
+		"cover": "Capa",
+		"VoiceChannel": {
+			"title": "Selecionar canal de voz"
+		}
 	},
 	"actions": {
 		"next": "Próximo",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "A hora de início deve ser no futuro.",
 		"endTimeAfterStart": "A hora de término deve ser após a hora de início.",
-		"invalidTopic": "Título do evento inválido. Os caracteres '`', '<', '>', ',', '/', '\"', '\\', e ''' não são permitidos."
+		"invalidTopic": "Título do evento inválido. Os caracteres '`', '<', '>', ',', '/', '\"', '\\', e ''' não são permitidos.",
+		"locationMaxLength": "Deve conter no máximo 100 caracteres."
 	},
 	"selectUser": "Selecione um canal ou tópico para criar o evento",
 	"emptyState": {

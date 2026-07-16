@@ -403,7 +403,7 @@
 		"upload": "Carregar",
 		"sticker": "figurinha",
 		"emoji": "emoji",
-		"lenghtError": "O nome do {{type}} deve ter entre {{min}} e {{max}} caracteres, contendo apenas letras, números, _ e -"
+		"lengthError": "O nome do {{type}} deve ter entre {{min}} e {{max}} caracteres, contendo apenas letras, números, _ e -"
 	},
 	"openSettings": "Abrir configurações",
 	"permissionNotification": {

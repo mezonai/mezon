@@ -3,7 +3,15 @@ import type { MezonAdminContextValue } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiCreateChannelDescRequest, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js';
+import type {
+	ApiAddAppRequest,
+	ApiApp,
+	ApiAppList,
+	ApiCreateChannelDescRequest,
+	ApiMezonOauthClient,
+	ApiUploadAttachment,
+	MezonUpdateAppBody
+} from 'mezon-js';
 import {
 	AddAppRequest,
 	App,
@@ -14,7 +22,9 @@ import {
 	GetMezonOauthClientRequest,
 	ListAppsRequest,
 	MezonOauthClient,
-	UpdateAppRequest
+	UpdateAppRequest,
+	UploadAttachment,
+	UploadAttachmentRequest
 } from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -106,6 +116,26 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 	};
 };
 
+export const uploadAttachmentAdmin = createAsyncThunk('adminApplication/getApplicationDetail', async (body: UploadAttachmentRequest, thunkAPI) => {
+	const state = thunkAPI.getState() as RootState;
+
+	if (!state?.auth?.session) {
+		throw 'Session Empty';
+	}
+
+	const response = await callApiAdmin({
+		path: '/mezon.api.Mezon/UploadAttachmentFile',
+		data: UploadAttachmentRequest.encode(UploadAttachmentRequest.fromPartial(body)).finish(),
+		token: state?.auth?.session.token,
+		decodeBody: (bytes) => UploadAttachment.decode(bytes) as ApiUploadAttachment
+	});
+
+	return {
+		...response,
+		fromCache: false,
+		time: Date.now()
+	};
+});
 export const fetchApplications = createAsyncThunk('adminApplication/fetchApplications', async ({ noCache }: IFetchAppsArg = {}, thunkAPI) => {
 	try {
 		const mezon = await getAdminCtx(thunkAPI);

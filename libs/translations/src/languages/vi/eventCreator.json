@@ -80,7 +80,10 @@
 			"title": "Mô tả",
 			"description": "Hãy cho mọi người biết thêm một chút về sự kiện của bạn."
 		},
-		"cover": "Ảnh bìa"
+		"cover": "Ảnh bìa",
+		"VoiceChannel": {
+			"title": "Chọn kênh thoại"
+		}
 	},
 	"actions": {
 		"next": "Tiếp theo",

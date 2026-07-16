@@ -37,7 +37,9 @@
 			"muteSuccess": "Апавяшчэнні паспяхова выключаны!",
 			"unMuteSuccess": "Апавяшчэнні паспяхова ўключаны!",
 			"muteFailed": "Памылка выключэння апавяшчэнняў!",
-			"unMuteFailed": "Памылка ўключэння апавяшчэнняў!"
+			"unMuteFailed": "Памылка ўключэння апавяшчэнняў!",
+			"archiveChannel": "Архіваваць канал",
+			"archiveThread": "Архіваваць трэд"
 		},
 		"thread": {
 			"title": "",
@@ -100,5 +102,19 @@
 		"error": "Памылка выхаду з канала: {{error}}"
 	},
 	"btnBadgeCount": "Новае",
-	"favoriteChannel": "УЛЮБЁНЫЯ КАНАЛЫ"
+	"favoriteChannel": "УЛЮБЁНЫЯ КАНАЛЫ",
+	"modalConfirmArchiveChannel": {
+		"title": "Архіваваць канал",
+		"button": "Архіваваць",
+		"textConfirm": "Вы ўпэўнены, што хочаце архіваваць гэты канал? Ён будзе схаваны з бакавой панэлі для ўсіх удзельнікаў."
+	},
+	"modalConfirmArchiveThread": {
+		"title": "Архіваваць трэд",
+		"button": "Архіваваць",
+		"textConfirm": "Вы ўпэўнены, што хочаце архіваваць гэты трэд? Ён будзе схаваны з бакавой панэлі для ўсіх удзельнікаў."
+	},
+	"toastArchiveChannel": "Канал паспяхова архіваваны.",
+	"toastArchiveThread": "Трэд паспяхова архіваваны.",
+	"toastArchivedByAdministrator": "Гэты канал быў архіваваны адміністратарам.",
+	"toastArchivedThreadByAdministrator": "Гэты трэд быў архіваваны адміністратарам."
 }

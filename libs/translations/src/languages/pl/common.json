@@ -403,7 +403,7 @@
 		"upload": "Prześlij",
 		"sticker": "naklejka",
 		"emoji": "emoji",
-		"lenghtError": "Nazwa {{type}} musi mieć od {{min}} do {{max}} znaków, może zawierać tylko litery, cyfry, _ i -"
+		"lengthError": "Nazwa {{type}} musi mieć od {{min}} do {{max}} znaków, może zawierać tylko litery, cyfry, _ i -"
 	},
 	"openSettings": "Otwórz ustawienia",
 	"permissionNotification": {
@@ -467,7 +467,8 @@
 		"failedToRefresh": "Nie można odświeżyć danych płótna",
 		"titlePlaceholder": "Tytuł twojego płótna",
 		"typePlaceholder": "Wpisz /, aby wstawić...",
-		"untitled": "Bez tytułu"
+		"untitled": "Bez tytułu",
+		"deleteMessage": "To płótno zostanie trwale usunięte. Tej operacji nie można cofnąć."
 	},
 	"emojiCategories": {
 		"forsale": "Na sprzedaż",

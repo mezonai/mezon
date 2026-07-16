@@ -1,5 +1,5 @@
 {
-    "headerTitle": {
+	"headerTitle": {
 		"settings": "Inställningar",
 		"Friends": "Vänner",
 		"addFriends": "Lägg till vänner",
@@ -12,14 +12,15 @@
 		"addMembers": "Lägg till medlemmar",
 		"appearance": "Utseende",
 		"topic": "Snabbt ämne",
-		"chat": "Chatt"
+		"chat": "Chatt",
+		"share": "Dela"
 	},
-    "headerRight": {
-        "addFriends": "Lägg till vänner"
-    },
-    "navigationTabs": {
-        "messages": "Meddelanden",
-        "notifications": "Notiser",
-        "profile": "Profil"
-    }
+	"headerRight": {
+		"addFriends": "Lägg till vänner"
+	},
+	"navigationTabs": {
+		"messages": "Meddelanden",
+		"notifications": "Notiser",
+		"profile": "Profil"
+	}
 }

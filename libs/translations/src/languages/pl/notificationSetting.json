@@ -38,7 +38,6 @@
 	"clanNotificationSettings": "USTAWIENIA POWIADOMIEŃ CLANU",
 	"notificationOverrides": "NADPISANIA POWIADOMIEŃ",
 	"addChannelOverride": "Dodaj kanał, aby nadpisać domyślne ustawienia powiadomień",
-	"selectOrCreateOption": "Wybierz lub utwórz opcję...",
 	"headers": {
 		"channelOrCategory": "KANAŁ LUB KATEGORIA",
 		"all": "WSZYSTKIE",
@@ -52,5 +51,6 @@
 			"onlyMention": "Tylko @wzmianki",
 			"nothing": "Nic"
 		}
-	}
+	},
+	"selectChannelOrCategory": "Wybierz kanał lub kategorię..."
 }

@@ -294,7 +294,7 @@ const TopBarChannelText = memo(() => {
 										{checkInvoice?.status === EInvoice.INVOICE ? (
 											<>
 												<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-												{t('inVoice')}
+												{t('invoice')}
 											</>
 										) : (
 											<>

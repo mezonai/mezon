@@ -80,7 +80,10 @@
 			"title": "Descrizione",
 			"description": "Racconta agli altri qualcosa in più sul tuo evento."
 		},
-		"cover": "Copertina"
+		"cover": "Copertina",
+		"VoiceChannel": {
+			"title": "Seleziona canale vocale"
+		}
 	},
 	"actions": {
 		"next": "Avanti",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "L'orario di inizio deve essere nel futuro.",
 		"endTimeAfterStart": "L'orario di fine deve essere successivo a quello di inizio.",
-		"invalidTopic": "Titolo evento non valido. I caratteri '`', '<', '>', ',', '/', '\"', '\\', e ''' non sono consentiti."
+		"invalidTopic": "Titolo evento non valido. I caratteri '`', '<', '>', ',', '/', '\"', '\\', e ''' non sono consentiti.",
+		"locationMaxLength": "Deve contenere al massimo 100 caratteri."
 	},
 	"selectUser": "Seleziona un canale o un titolo per creare l'evento",
 	"emptyState": {

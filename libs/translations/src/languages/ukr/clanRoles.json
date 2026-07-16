@@ -107,6 +107,7 @@
 		"edit": "Редагувати",
 		"view": "Перегляд",
 		"delete": "Видалити",
-		"roleNameIsRequired": "Назва ролі обов'язкова"
+		"roleNameIsRequired": "Назва ролі обов'язкова",
+		"noPermissionToEditRole": "У вас немає дозволу на редагування цієї ролі."
 	}
 }

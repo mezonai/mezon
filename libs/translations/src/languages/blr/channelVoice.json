@@ -46,7 +46,8 @@
 	"device": {
 		"inputDevice": "Мікрафон",
 		"outputDevice": "Аўдыё",
-		"camera": "Камера"
+		"camera": "Камера",
+		"systemDefault": "Сістэмны па змаўчанні"
 	},
 	"toast": {
 		"connectionConnected": "Падключэнне паспяховае",

@@ -23,7 +23,8 @@
 		"jump": "Күчү",
 		"gallery": "Галерея",
 		"timelineView": "Вакыт сызыгына күчү",
-		"defaultView": "Чатка күчү"
+		"defaultView": "Чатка күчү",
+		"hideChat": "Чатны яшерү"
 	},
 	"directMessage": "Шәхси хәбәр",
 	"activeThreads": "Актив ботакламалар",

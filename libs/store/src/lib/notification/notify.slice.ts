@@ -254,7 +254,13 @@ export const notificationSlice = createSlice({
 									content:
 										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content,
 									embed:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed,
+									tp:
+										typeof item.content?.content === 'string'
+											? safeJSONParse(item.content?.content)?.tp
+												? safeJSONParse(item.content?.content)?.tp
+												: null
+											: null
 								}
 							};
 						});

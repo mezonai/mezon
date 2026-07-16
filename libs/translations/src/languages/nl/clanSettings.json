@@ -17,7 +17,8 @@
 			"integrations": "Integraties",
 			"auditLog": "Controlelog",
 			"onboarding": "Inleiding",
-			"enableCommunity": "Community activeren"
+			"enableCommunity": "Community activeren",
+			"archivedChannels": "Gearchiveerde kanalen"
 		}
 	},
 	"clanLogo": {
@@ -86,7 +87,16 @@
 		"description": "Stickers kunnen statisch (PNG) of dynamisch (APNG, GIF) zijn. Stickers moeten precies 320 x 320 pixels zijn en niet groter dan 512KB. Wij passen de grootte automatisch aan voor statische PNG's en dynamische GIF's.",
 		"uploadHere": "Uploaden hier!",
 		"customizeMessage": "Pas deze geweldige stickers aan op jouw voorkeur",
-		"uploadSticker": "Sticker uploaden"
+		"uploadSticker": "Sticker uploaden",
+		"title": "Afbeeldingsstickers"
 	},
-	"deleteClanTitle": "'{{clanName}}' verwijderen"
+	"deleteClanTitle": "'{{clanName}}' verwijderen",
+	"archivedChannels": {
+		"description": "Herstel kanalen naar de zijbalk om ze weer actief te maken. Gearchiveerde kanalen bewaren de volledige berichtgeschiedenis, maar worden verborgen in de primaire navigatie.",
+		"archived": "ACTIEF",
+		"restore": "Herstellen",
+		"restoreSuccess": "Kanaal is succesvol hersteld.",
+		"emptyState": "Geen gearchiveerde kanalen",
+		"fetchError": "Kan gearchiveerde kanalen niet laden. Probeer het opnieuw."
+	}
 }

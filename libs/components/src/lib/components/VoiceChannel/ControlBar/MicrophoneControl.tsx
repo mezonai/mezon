@@ -1,7 +1,9 @@
 import { usePersistentUserChoices } from '@livekit/components-react';
-import { useAppDispatch, voiceActions } from '@mezon/store';
+import { selectNoiseSuppressionEnabled, useAppDispatch, voiceActions } from '@mezon/store';
+import { getNoiseSuppressionAudioCaptureOptions } from '@mezon/utils';
 import { Track } from 'livekit-client';
 import { memo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { MICROPHONE_DEVICE_KINDS, MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
 import { TrackToggle } from './TrackToggle/TrackToggle';
 
@@ -16,6 +18,7 @@ interface MicrophoneControlProps {
 export const MicrophoneControl = memo(
 	({ isShowMember, saveUserChoices = true, onDeviceError, permissionState, onPermissionRequest }: MicrophoneControlProps) => {
 		const dispatch = useAppDispatch();
+		const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
 		const { saveAudioInputDeviceId, saveAudioInputEnabled } = usePersistentUserChoices({
 			preventSave: !saveUserChoices
 		});
@@ -54,6 +57,7 @@ export const MicrophoneControl = memo(
 						isShowMember ? 'bg-zinc-700 dark:bg-zinc-900' : 'bg-zinc-900'
 					}`}
 					source={Track.Source.Microphone}
+					captureOptions={getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled)}
 					onChange={handleChange}
 					onDeviceError={onDeviceError}
 				/>

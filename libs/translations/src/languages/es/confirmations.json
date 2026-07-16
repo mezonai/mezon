@@ -1,10 +1,4 @@
 {
-	"titledeleteRole": {
-		"title": "Eliminar Rol",
-		"message": "¿Confirmas que deseas eliminar este rol? Esta acción no tiene vuelta atrás",
-		"confirm": "Eliminar",
-		"cancel": "Cancelar"
-	},
 	"common": {
 		"areYouSure": "¿Estás seguro?",
 		"cannotUndo": "Esta acción no tiene vuelta atrás",
@@ -14,5 +8,11 @@
 		"remove": "Remover",
 		"yes": "Sí",
 		"no": "No"
+	},
+	"deleteRole": {
+		"title": "Eliminar Rol",
+		"message": "¿Confirmas que deseas eliminar este rol? Esta acción no tiene vuelta atrás",
+		"confirm": "Eliminar",
+		"cancel": "Cancelar"
 	}
 }

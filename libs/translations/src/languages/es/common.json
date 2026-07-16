@@ -403,7 +403,7 @@
 		"upload": "Subir",
 		"sticker": "Sticker",
 		"emoji": "Emoji",
-		"lenghtError": "El nombre de {{type}} debe tener entre {{min}} y {{max}} caracteres, solo letras, números, _ y - son permitidos"
+		"lengthError": "El nombre de {{type}} debe tener entre {{min}} y {{max}} caracteres, solo letras, números, _ y - son permitidos"
 	},
 	"openSettings": "Abrir Configuración",
 	"permissionNotification": {
@@ -482,18 +482,7 @@
 		"Objects": "Objetos",
 		"Symbols": "Símbolos",
 		"Flags": "Banderas",
-		"Custom": "Personalizado",
-		"FORSALE": "En venta",
-		"RECENT": "Recientes",
-		"FREQUENTLY": "Frecuente",
-		"PEOPLE": "Personas",
-		"NATURE": "Naturaleza",
-		"FOOD": "Comida",
-		"ACTIVITIES": "Actividades",
-		"TRAVEL": "Viajes",
-		"OBJECTS": "Objetos",
-		"SYMBOLS": "Símbolos",
-		"FLAGS": "Banderas"
+		"Custom": "Personalizado"
 	},
 	"openCanvas": "Abrir canvas",
 	"successBuyItem": "¡Ítem comprado con éxito!",

@@ -17,7 +17,8 @@
 			"integrations": "Intégrations",
 			"auditLog": "Journal d'audit",
 			"onboarding": "Initialisation",
-			"enableCommunity": "Activer la communauté"
+			"enableCommunity": "Activer la communauté",
+			"archivedChannels": "Canaux archivés"
 		}
 	},
 	"clanLogo": {
@@ -86,7 +87,16 @@
 		"description": "Les autocollants peuvent être statiques (PNG) ou animés (APNG, GIF). Les autocollants doivent avoir une taille exacte de 320 x 320 pixels et ne pas dépasser 512 Ko. Nous redimensionnerons automatiquement les autocollants PNG statiques et GIF animés pour vous.",
 		"uploadHere": "Télécharger ici !",
 		"customizeMessage": "Personnalisez ces autocollants géniaux selon vos préférences",
-		"uploadSticker": "Télécharger un autocollant"
+		"uploadSticker": "Télécharger un autocollant",
+		"title": "Autocollants d'image"
 	},
-	"deleteClanTitle": "Supprimer '{{clanName}}'"
+	"deleteClanTitle": "Supprimer '{{clanName}}'",
+	"archivedChannels": {
+		"description": "Restaurez les canaux dans la barre latérale pour les réactiver. Les canaux archivés conservent tout l'historique des messages, mais sont masqués de la navigation principale.",
+		"archived": "ARCHIVÉ",
+		"restore": "Restaurer",
+		"restoreSuccess": "Canal restauré avec succès.",
+		"emptyState": "Aucun canal archivé",
+		"fetchError": "Impossible de charger les canaux archivés. Veuillez réessayer."
+	}
 }

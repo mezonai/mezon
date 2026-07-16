@@ -403,7 +403,7 @@
 		"upload": "アップロード",
 		"sticker": "スタンプ",
 		"emoji": "絵文字",
-		"lenghtError": "{{type}}名は{{min}}から{{max}}文字、文字、数字、_および-のみを含む必要があります"
+		"lengthError": "{{type}}名は{{min}}から{{max}}文字、文字、数字、_および-のみを含む必要があります"
 	},
 	"openSettings": "設定を開く",
 	"permissionNotification": {

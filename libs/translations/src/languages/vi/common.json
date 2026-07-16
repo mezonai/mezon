@@ -403,7 +403,7 @@
 		"upload": "Tải lên",
 		"sticker": "nhãn dán",
 		"emoji": "biểu cảm",
-		"lenghtError": "Tên {{type}} phải từ {{min}} đến {{max}} kí tự, chỉ bao gồm chữ cái, chữ số, _ và -"
+		"lengthError": "Tên {{type}} phải từ {{min}} đến {{max}} kí tự, chỉ bao gồm chữ cái, chữ số, _ và -"
 	},
 	"openSettings": "Mở cài đặt",
 	"permissionNotification": {

@@ -1,11 +1,14 @@
-import { acitvitiesActions, useAppDispatch } from '@mezon/store';
+import { acitvitiesActions, selectIsActivityTrackingEnabled, useAppDispatch, useAppSelector } from '@mezon/store';
 import type { ActivitiesInfo } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 
 export function useActivities() {
 	const dispatch = useAppDispatch();
+	const isActivityTrackingEnabled = useAppSelector(selectIsActivityTrackingEnabled);
+
 	const setUserActivity = useCallback(
 		(info: ActivitiesInfo) => {
+			if (!isActivityTrackingEnabled) return;
 			const body = {
 				activity_description: info?.windowTitle,
 				activity_name: info?.appName,
@@ -16,10 +19,11 @@ export function useActivities() {
 			};
 			dispatch(acitvitiesActions.createActivity(body));
 		},
-		[dispatch]
+		[dispatch, isActivityTrackingEnabled]
 	);
 	const setUserAFK = useCallback(
 		(status: number) => {
+			if (!isActivityTrackingEnabled) return;
 			const body = {
 				activity_name: 'AFK',
 				activity_type: 4,
@@ -27,7 +31,7 @@ export function useActivities() {
 			};
 			dispatch(acitvitiesActions.createActivity(body));
 		},
-		[dispatch]
+		[dispatch, isActivityTrackingEnabled]
 	);
 	return useMemo(
 		() => ({

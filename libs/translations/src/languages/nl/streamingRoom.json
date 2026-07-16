@@ -3,5 +3,6 @@
 		"stream": "Streaming kamer",
 		"joinStream": "Bij streaming betreden"
 	},
-	"noDisplay": "Streaming niet weergeven"
+	"noDisplay": "Streaming niet weergeven",
+	"chat": "Chat"
 }

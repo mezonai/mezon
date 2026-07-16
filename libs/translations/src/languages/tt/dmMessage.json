@@ -18,7 +18,9 @@
 		"blockUser": "Кулланучыны блоклау",
 		"unblockUser": "Кулланучыны блоктан алу",
 		"removeFriend": "Дустан бетерү",
-		"addFriend": "Дус итеп өстәү"
+		"addFriend": "Дус итеп өстәү",
+		"pinConversation": "Әңгәмәне беркетеп кую",
+		"unpinConversation": "Әңгәмәне ачу"
 	},
 	"confirm": {
 		"title": "{{groupName}} төркеменнән чыгу",
@@ -50,5 +52,18 @@
 	"members": "катнашучылар",
 	"speaker": "Сөйләүче",
 	"end": "Ахыр",
-	"turnedMicOff": "Микрофон сүндерелгән"
+	"turnedMicOff": "Микрофон сүндерелгән",
+	"pinConfirm": {
+		"title": "Әңгәмәне беркетергәме?",
+		"content": "Бу әңгәмә тизрәк керү өчен хәбәрләр исемлегенең өске өлешенә күчереләчәк.",
+		"confirmText": "Беркетү"
+	},
+	"unpinConfirm": {
+		"title": "Әңгәмәнең беркетүен алыргамы?",
+		"content": "Бу әңгәмә хәбәрләр исемлегендәге гадәти урынына кайтарылачак.",
+		"confirmText": "Беркетүдән алу"
+	},
+	"pinSection": "БЕРКЕТЕЛГӘН",
+	"allMessagesSection": "БАРЛЫК ХӘБӘРЛӘР",
+	"maximumPinnedConversationsReached": "Сез иң күбе {{max}} әңгәмәне генә беркетә аласыз."
 }

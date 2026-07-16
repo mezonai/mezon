@@ -3,5 +3,6 @@
 		"stream": "Sala de transmissão",
 		"joinStream": "Entrar na transmissão"
 	},
-	"noDisplay": "Ocultar transmissões ao vivo"
+	"noDisplay": "Ocultar transmissões ao vivo",
+	"chat": "Chat"
 }

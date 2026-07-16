@@ -92,7 +92,10 @@
 		"alreadyLinkedToAnother": "Số này đã liên kết với tài khoản khác",
 		"country": "Quốc gia",
 		"otpSentMessage": "Vui lòng kiểm tra mã OTP đã được gửi đến số điện thoại {{phone}}",
-		"backToPhoneInput": "Thay đổi số điện thoại?"
+		"backToPhoneInput": "Thay đổi số điện thoại?",
+		"emailPlaceholder": "your.email@example.com",
+		"otp": "Xác minh số điện thoại của bạn",
+		"verifyOtpMessage": "Vui lòng xác minh mã OTP đã gửi tới"
 	},
 	"toast": {
 		"deleteAccount": {

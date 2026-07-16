@@ -417,7 +417,11 @@ function MessageWithUser({
 								code={message?.code}
 							/>
 						)}
-						{!isTopic && message?.code === TypeMessage.Topic && <TopicViewButton message={message} />}
+						{!isTopic && message?.code === TypeMessage.Topic && (
+							<div className="w-full flex">
+								<TopicViewButton message={message} />
+							</div>
+						)}
 						{!!message?.content?.callLog?.callLogType && (
 							<CallLogMessage
 								userId={userId || ''}

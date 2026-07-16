@@ -25,11 +25,11 @@ function FeaturedGifs({ onClickToTrending }: FeaturedGifsProps) {
 				<Icons.TrendingGifs />
 				<span className="text-white text-lg font-manrope">Trending GIFs</span>
 			</div>
-			{dataGifsFeartured[0]?.media_formats?.gif?.url && (
+			{dataGifsFeartured[0]?.url && (
 				<img
 					className="w-full h-full object-cover brightness-100 rounded-sm"
-					src={createImgproxyUrl(dataGifsFeartured[0].media_formats.gif.url)}
-					alt={dataGifsFeartured[0].media_formats.gif.url}
+					src={createImgproxyUrl(dataGifsFeartured[0].url)}
+					alt={dataGifsFeartured[0].url}
 				/>
 			)}
 			<div className="absolute inset-0 border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-md z-30"></div>

@@ -1,45 +1,48 @@
 {
-  "headerTitle": "Notificaciones",
-  "tabNotify": {
-    "forYou": "Para ti",
-    "mention": "Menciones",
-    "messages": "Mensajes",
-    "topics": "Temas",
-    "notificationSettings": "Configuración de notificaciones"
-  },
-  "removeNotification": "Eliminar notificación",
-  "nothingHere": "Aún no hay nada aquí",
-  "comeBackNotify": "Vuelve para ver notificaciones de eventos, transmisiones y más",
-  "repliedTo": "Mensaje original: ",
-  "sender": "Remitente: ",
-  "seeWhenAnswersAppear": "Ver cuándo aparecen las respuestas",
-  "enablePushNotifications": "Activar notificaciones push",
-  "permissionAlert": {
-    "turnOnNotifications": "Activar notificaciones",
-    "permissionDescription": "Permite que Mezon te envíe notificaciones para mantener contacto con tus amigos y familia.",
-    "openSettings": "Abrir Configuración",
-    "features": {
-      "newMessages": {
-        "title": "Recibe notificaciones de nuevos mensajes",
-        "description": "Mantente al corriente cuando amigos te envían mensajes"
-      },
-      "mentions": {
-        "title": "Saber cuándo eres mencionado en grupos",
-        "description": "Que nunca pierdas cuándo alguien te menciona"
-      },
-      "muteControl": {
-        "title": "Silencia chats específicos y tipos de chat",
-        "description": "Controla qué notificaciones recibes"
-      }
-    }
-  },
-  "permissionRequest": {
-    "title": "Permiso de Notificaciones",
-    "permissionDenied": "Permiso de notificación denegado.",
-    "cancel": "Cancelar",
-    "ok": "OK"
-  },
-  "andYou": "y tú",
-  "topicAndYou": "DISCUSIÓN DE TEMA",
-  "unknowClan": "Ya no eres miembro de esta conversación"
+	"headerTitle": "Notificaciones",
+	"tabNotify": {
+		"forYou": "Para ti",
+		"mention": "Menciones",
+		"messages": "Mensajes",
+		"topics": "Temas",
+		"notificationSettings": "Configuración de notificaciones"
+	},
+	"removeNotification": "Eliminar notificación",
+	"nothingHere": "Aún no hay nada aquí",
+	"comeBackNotify": "Vuelve para ver notificaciones de eventos, transmisiones y más",
+	"repliedTo": "Mensaje original: ",
+	"sender": "Remitente: ",
+	"seeWhenAnswersAppear": "Ver cuándo aparecen las respuestas",
+	"enablePushNotifications": "Activar notificaciones push",
+	"permissionAlert": {
+		"turnOnNotifications": "Activar notificaciones",
+		"permissionDescription": "Permite que Mezon te envíe notificaciones para mantener contacto con tus amigos y familia.",
+		"openSettings": "Abrir Configuración",
+		"features": {
+			"newMessages": {
+				"title": "Recibe notificaciones de nuevos mensajes",
+				"description": "Mantente al corriente cuando amigos te envían mensajes"
+			},
+			"mentions": {
+				"title": "Saber cuándo eres mencionado en grupos",
+				"description": "Que nunca pierdas cuándo alguien te menciona"
+			},
+			"muteControl": {
+				"title": "Silencia chats específicos y tipos de chat",
+				"description": "Controla qué notificaciones recibes"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "Permiso de Notificaciones",
+		"permissionDenied": "Permiso de notificación denegado.",
+		"cancel": "Cancelar",
+		"ok": "OK"
+	},
+	"andYou": "y tú",
+	"topicAndYou": "DISCUSIÓN DE TEMA",
+	"unknowClan": "Ya no eres miembro de esta conversación",
+	"contactMessage": "[Contacto]",
+	"attachmentMessage": "[Archivo adjunto]",
+	"interactiveMessage": "Mensaje interactivo"
 }

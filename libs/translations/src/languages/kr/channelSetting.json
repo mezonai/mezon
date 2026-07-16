@@ -61,7 +61,8 @@
 			"_30minutes": "30 분",
 			"_1hour": "1 시간",
 			"_2hours": "2 시간",
-			"_6hours": "6 시간"
+			"_6hours": "6 시간",
+			"slowModeOff": "느린 모드가 꺼져 있습니다"
 		},
 		"channelHideInactivity": {
 			"title": "비활성 기간 후 숨기기",
@@ -77,7 +78,8 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "채널 삭제"
+			"delete": "채널 삭제",
+			"leave": "채널 나가기"
 		},
 		"threadDelete": {
 			"title": "",
@@ -217,7 +219,7 @@
 	},
 	"changeCategory": {
 		"title": "카테고리 변경",
-		"label": "{{currentChannel}} 에서 {{toChannel}} 으로 전환",
+		"label": "{{currentChannel}} 으로 전환",
 		"confirmFirstContent": "이 카테고리로 전환하시겠습니까",
 		"confirmLastContent": "으로",
 		"confirm": "동의함",

@@ -7,10 +7,11 @@ type GifCategoryProps = {
 };
 
 function GifCategory({ gifCategory }: GifCategoryProps) {
-	const { setButtonArrowBack, setShowCategories, setClickedTrendingGif } = useGifs();
+	const { setButtonArrowBack, setShowCategories, setClickedTrendingGif, fetchGifsDataSearch } = useGifs();
 	const { setValueInputSearch } = useGifsStickersEmoji();
 	const clickedCategory = () => {
-		setValueInputSearch(gifCategory.searchterm);
+		fetchGifsDataSearch(gifCategory.category);
+		setValueInputSearch(gifCategory.category);
 		setShowCategories(false);
 		setClickedTrendingGif(false);
 		setButtonArrowBack(true);
@@ -25,12 +26,12 @@ function GifCategory({ gifCategory }: GifCategoryProps) {
 		>
 			<div className="absolute inset-0 bg-black opacity-80 z-20 transition-opacity group-hover:opacity-70"></div>
 			<div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-				<span className="text-white text-lg font-manrope">{gifCategory.searchterm}</span>
+				<span className="text-white text-lg font-manrope">{gifCategory.category}</span>
 			</div>
 			<img
 				className="w-full h-full object-cover brightness-100 rounded-sm"
-				src={createImgproxyUrl(gifCategory.image || '')}
-				alt={gifCategory.image}
+				src={createImgproxyUrl(gifCategory.preview_url || '')}
+				alt={gifCategory.preview_url}
 			/>
 			<div className="absolute inset-0 border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-md z-30"></div>
 		</div>

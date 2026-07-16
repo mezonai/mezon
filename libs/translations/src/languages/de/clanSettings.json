@@ -17,7 +17,8 @@
 			"integrations": "Integrationen",
 			"auditLog": "Audit-Log",
 			"onboarding": "Leitfaden",
-			"enableCommunity": "Community aktivieren"
+			"enableCommunity": "Community aktivieren",
+			"archivedChannels": "Archivierte Kanäle"
 		}
 	},
 	"clanLogo": {
@@ -82,11 +83,20 @@
 		"uploadEmoji": "Emoji hochladen"
 	},
 	"stickers": {
-		"uploadInstructions": "UPLOAD-ANLEITUNG",
-		"description": "Sticker können statisch (PNG) oder animiert (APNG, GIF) sein. Sticker müssen exakt 320 x 320 Pixel groß sein und dürfen nicht größer als 512 KB sein. Wir passen die Größe von statischen PNG- und animierten GIF-Stickern automatisch für dich an.",
+		"uploadInstructions": "HOCHLADEANLEITUNG",
+		"description": "Sticker können statisch (PNG) oder animiert (APNG, GIF) sein. Sticker müssen genau 320 × 320 Pixel groß sein und dürfen nicht größer als 512 KB sein. Die Größe statischer PNG- und animierter GIF-Sticker wird automatisch für dich angepasst.",
 		"uploadHere": "Hier hochladen!",
-		"customizeMessage": "Personalisiere diese tollen Sticker nach deinem Geschmack",
-		"uploadSticker": "Sticker hochladen"
+		"customizeMessage": "Personalisiere diese tollen Sticker nach deinem Geschmack.",
+		"uploadSticker": "Sticker hochladen",
+		"title": "Bildsticker"
 	},
-	"deleteClanTitle": "'{{clanName}}' löschen"
+	"deleteClanTitle": "'{{clanName}}' löschen",
+	"archivedChannels": {
+		"description": "Stelle Kanäle in der Seitenleiste wieder her, um sie erneut zu aktivieren. Archivierte Kanäle behalten den gesamten Nachrichtenverlauf, sind jedoch in der Hauptnavigation ausgeblendet.",
+		"archived": "AKTIV",
+		"restore": "Wiederherstellen",
+		"restoreSuccess": "Kanal erfolgreich wiederhergestellt.",
+		"emptyState": "Keine archivierten Kanäle",
+		"fetchError": "Archivierte Kanäle konnten nicht geladen werden. Bitte versuche es erneut."
+	}
 }

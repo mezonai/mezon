@@ -211,5 +211,57 @@
 		"title": "Débogueur Embed"
 	},
 	"small": "Petit",
-	"large": "Grand"
+	"large": "Grand",
+	"transcriptCalls": {
+		"title": "Transcriptions des appels",
+		"subtitle": "Consultez et gérez les transcriptions de vos appels.",
+		"loading": "Chargement…",
+		"results": "salles",
+		"page": "Page",
+		"prev": "Précédent",
+		"next": "Suivant",
+		"columns": {
+			"callId": "ID d'appel",
+			"roomName": "Nom de la salle",
+			"status": "Statut",
+			"totalTracks": "Nombre total de pistes",
+			"completedTracks": "Terminées",
+			"duration": "Durée",
+			"createdAt": "Créé le",
+			"completedAt": "Terminé le"
+		},
+		"status": {
+			"pending": "En attente",
+			"processing": "En cours de traitement",
+			"completed": "Terminé",
+			"failed": "Échec"
+		},
+		"tabs": {
+			"overview": "Aperçu",
+			"fullTranscript": "Transcription complète",
+			"summary": "Résumé",
+			"participants": "Participants"
+		},
+		"detail": {
+			"title": "Détails de la transcription d'appel",
+			"back": "Retour",
+			"refresh": "Actualiser",
+			"loadError": "Impossible de charger cette salle.",
+			"summaryEmpty": "Aucun résumé disponible.",
+			"transcriptEmpty": "Aucune transcription disponible.",
+			"actionItems": "Actions à entreprendre",
+			"participants": "Participants",
+			"participantsEmpty": "Aucun participant n'est répertorié pour cette salle.",
+			"metrics": {
+				"totalTracks": "Nombre total de pistes",
+				"completed": "Terminé",
+				"duration": "Durée",
+				"segments": "Segments"
+			},
+			"notFound": "Transcription d'appel introuvable",
+			"unknown": "Inconnu",
+			"username": "Nom d'utilisateur",
+			"displayName": "Nom d'affichage"
+		}
+	}
 }

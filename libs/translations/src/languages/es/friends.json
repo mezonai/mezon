@@ -29,7 +29,8 @@
 		"sendAddFriendSuccess": "¡Solicitud de amigo enviada con éxito!",
 		"acceptAddFriendSuccess": "¡Solicitud de amigo aceptada!",
 		"sendAddFriendFail": "Mmm, eso no funcionó. Verifica que el nombre de usuario sea correcto.",
-		"somethingWentWrong": "Algo salió mal"
+		"somethingWentWrong": "Algo salió mal",
+		"friendRequestAlreadySent": "La solicitud de amistad ya fue enviada y está esperando aceptación."
 	},
 	"you": "tú"
 }

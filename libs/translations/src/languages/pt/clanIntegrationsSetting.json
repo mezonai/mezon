@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "Webhook",
 		"automatedMessage": "Mensagens e atualizações automáticas",
 		"description": "Personalize seu clã com integrações. Gerencie webhooks, canais de monitoramento e aplicativos, bem como configurações de Twitch e YouTube para criadores.",
-		"learnMore": "Saiba mais sobre o gerenciamento de integrações."
+		"learnMore": "Saiba mais sobre o gerenciamento de integrações.",
+		"channelWebhooks": "Webhooks",
+		"clanWebhooks": "Webhooks do clã"
 	},
 	"webhooks": {
 		"description": "Webhooks são ferramentas que ajudam você a receber mensagens automáticas e atualizações de dados enviadas para os canais de texto no seu clã por meio de conexões de internet.",

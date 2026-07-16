@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "Errore nell'invio del menu rapido",
 		"failedToResendMessage": "Impossibile reinviare il messaggio",
 		"failedToClosePoll": "Impossibile terminare il sondaggio"
-	}
+	},
+	"copyUserId": "Copia ID utente"
 }

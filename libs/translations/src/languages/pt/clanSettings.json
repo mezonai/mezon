@@ -17,7 +17,8 @@
 			"integrations": "Integrações",
 			"auditLog": "Log de auditoria",
 			"onboarding": "Guia",
-			"enableCommunity": "Ativar comunidade"
+			"enableCommunity": "Ativar comunidade",
+			"archivedChannels": "Canais arquivados"
 		}
 	},
 	"clanLogo": {
@@ -86,7 +87,16 @@
 		"description": "As figurinhas podem ser estáticas (PNG, JPG) ou animadas (APNG, GIF). As figurinhas devem ter exatamente 320 x 320 pixels e não podem ultrapassar 512 KB. Redimensionaremos automaticamente as figurinhas (PNG, JPG) estáticas e GIFs animados para você.",
 		"uploadHere": "Carregue aqui!",
 		"customizeMessage": "Personalize suas figurinhas incríveis conforme seu gosto",
-		"uploadSticker": "Carregar figurinha"
+		"uploadSticker": "Carregar figurinha",
+		"title": "Figurinhas de imagem"
 	},
-	"deleteClanTitle": "Excluir '{{clanName}}'"
+	"deleteClanTitle": "Excluir '{{clanName}}'",
+	"archivedChannels": {
+		"description": "Restaure os canais para a barra lateral para torná-los ativos novamente. Os canais arquivados preservam todo o histórico de mensagens, mas ficam ocultos na navegação principal.",
+		"archived": "ATIVO",
+		"restore": "Restaurar",
+		"restoreSuccess": "Canal restaurado com sucesso.",
+		"emptyState": "Nenhum canal arquivado",
+		"fetchError": "Falha ao carregar canais arquivados. Tente novamente."
+	}
 }

@@ -64,11 +64,11 @@
 	"edited": "(編集済み)",
 	"newMessage": {
 		"to": "宛先",
-		"groupNew": "新しいグループ",
 		"addFriend": "友達を追加",
 		"create": "作成",
 		"add": "追加",
-		"createGroupWith": "新しいグループを作成"
+		"createGroupWith": "新しいグループを作成",
+		"newGroup": "新しいグループ"
 	},
 	"reactions": {
 		"noActionTitle": "まだリアクションはありません",

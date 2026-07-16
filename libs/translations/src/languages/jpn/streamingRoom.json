@@ -3,5 +3,6 @@
 		"stream": "ストリームルーム",
 		"joinStream": "ストリームに参加"
 	},
-	"noDisplay": "ストリームを表示しない"
+	"noDisplay": "ストリームを表示しない",
+	"chat": "チャット"
 }

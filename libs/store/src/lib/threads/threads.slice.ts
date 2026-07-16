@@ -218,6 +218,23 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 	}
 });
 
+export const fetchThreadDetail = createAsyncThunk('direct/fetchThreadDetail', async ({ threadId }: { threadId: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await withRetry((session) => mezon.client.listChannelDetail(session, threadId), {
+			maxRetries: 3,
+			initialDelay: 1000,
+			scope: 'thread-detail',
+			mezon
+		});
+
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'direct/fetchThreadDetail');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 const getInitialChannelState = () => {
 	return threadsAdapter.getInitialState();
 };
@@ -545,7 +562,8 @@ export const threadsActions = {
 	fetchThread,
 	leaveThread,
 	searchedThreads,
-	writeActiveArchivedThread
+	writeActiveArchivedThread,
+	fetchThreadDetail
 };
 
 /*

@@ -1,7 +1,7 @@
 import { channelUsersActions, selectAllRolesClan, selectCurrentClanId, selectRolesByChannelId, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
-import { generateE2eId } from '@mezon/utils';
+import { generateE2eId, DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -61,7 +61,7 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 					{role.role_icon ? (
 						<img src={role.role_icon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
 					) : (
-						<Icons.RoleIcon className="w-5 h-5 min-w-5" />
+						<Icons.RoleIcon className="w-5 h-5 min-w-5" defaultFill1={role.color || DEFAULT_ROLE_COLOR} />
 					)}
 					<p className="text-sm">{role.title}</p>
 				</div>

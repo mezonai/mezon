@@ -41,5 +41,8 @@
 	},
 	"andYou": "och du",
 	"topicAndYou": "ÄMNESDISKUSSION",
-	"unknowClan": "Du är inte längre medlem av denna samtal"
+	"unknowClan": "Du är inte längre medlem av denna samtal",
+	"contactMessage": "[Kontakt]",
+	"attachmentMessage": "[Bilaga]",
+	"interactiveMessage": "Interaktivt meddelande"
 }

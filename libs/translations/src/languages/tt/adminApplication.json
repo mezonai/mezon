@@ -33,11 +33,11 @@
 			"confirm": "Раслау"
 		},
 		"errors": {
-			"nameRequired": "Яңа {type} булдыру өчен исем кирәк.",
+			"nameRequired": "Яңа {{type}} булдыру өчен исем кирәк.",
 			"urlRequired": "Яңа кушымта булдыру өчен сылтама кирәк.",
 			"invalidUrl": "Дөрес сылтама адресын керетегез (мәсәлән, https://домен.ком).",
 			"createFailed": "Кушымтаны булдырып булмады яки җавапта идентификация коды юк.",
-			"unexpectedError": "Көтелмәгән хата килеп чыкты. {message}"
+			"unexpectedError": "Көтелмәгән хата килеп чыкты. {{message}}"
 		},
 		"notifications": {
 			"shadowModeInfo": "Күләгә режимында бот булдыручыга җибәрелгән барлык хәбәрләрне ала ала, ләкин хәбәрләр җибәрә алмый."
@@ -68,7 +68,7 @@
 		"appIcon": {
 			"label": "Кушымта тамгасы",
 			"remove": "Бетерү",
-			"size": "Зурлык: {size}"
+			"size": "Зурлык: {{size}}"
 		},
 		"form": {
 			"name": "ИСЕМЕ",
@@ -189,7 +189,7 @@
 		}
 	},
 	"backToApps": "Кушымталарга кире кайту",
-	"selectLabel": "{type} САЙЛАУ",
+	"selectLabel": "{{type}} САЙЛАУ",
 	"settings": "КОЙЛАНМАЛАР",
 	"flows": {
 		"title": "Чат агымнары",
@@ -211,5 +211,57 @@
 		"title": "Төркемнәр"
 	},
 	"small": "Кечкенә",
-	"large": "Зур"
+	"large": "Зур",
+	"transcriptCalls": {
+		"title": "Шалтырату транскриптлары",
+		"subtitle": "Шалтырату транскриптларын карагыз һәм идарә итегез.",
+		"loading": "Йөкләнә…",
+		"results": "бүлмәләр",
+		"page": "Бит",
+		"prev": "Алдагы",
+		"next": "Киләсе",
+		"columns": {
+			"callId": "Шалтырату IDсы",
+			"roomName": "Бүлмә исеме",
+			"status": "Халәт",
+			"totalTracks": "Гомуми треклар",
+			"completedTracks": "Тәмамланган",
+			"duration": "Озынлык",
+			"createdAt": "Булдырылган",
+			"completedAt": "Тәмамланган"
+		},
+		"status": {
+			"pending": "Көтүдә",
+			"processing": "Эшкәртелә",
+			"completed": "Тәмамланган",
+			"failed": "Уңышсыз"
+		},
+		"tabs": {
+			"overview": "Гомуми күзәтү",
+			"fullTranscript": "Тулы транскрипт",
+			"summary": "Йомгаклау",
+			"participants": "Катнашучылар"
+		},
+		"detail": {
+			"title": "Шалтырату транскрипты турында мәгълүмат",
+			"back": "Кире",
+			"refresh": "Яңарту",
+			"loadError": "Бу бүлмәне йөкләп булмады.",
+			"summaryEmpty": "Йомгаклау юк.",
+			"transcriptEmpty": "Транскрипт тексты юк.",
+			"actionItems": "Эш пунктлары",
+			"participants": "Катнашучылар",
+			"participantsEmpty": "Бу бүлмә өчен катнашучылар күрсәтелмәгән.",
+			"metrics": {
+				"totalTracks": "Гомуми треклар",
+				"completed": "Тәмамланган",
+				"duration": "Озынлык",
+				"segments": "Сегментлар"
+			},
+			"notFound": "Шалтырату транскрипты табылмады",
+			"unknown": "билгесез",
+			"username": "Кулланучы исеме",
+			"displayName": "Күрсәтелә торган исем"
+		}
+	}
 }

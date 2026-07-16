@@ -403,7 +403,7 @@
 		"upload": "Télécharger",
 		"sticker": "autocollant",
 		"emoji": "emoji",
-		"lenghtError": "Le nom {{type}} doit contenir entre {{min}} et {{max}} caractères, uniquement des lettres, des chiffres, _ et -"
+		"lengthError": "Le nom {{type}} doit contenir entre {{min}} et {{max}} caractères, uniquement des lettres, des chiffres, _ et -"
 	},
 	"openSettings": "Ouvrir les paramètres",
 	"permissionNotification": {
@@ -439,15 +439,15 @@
 			"jan": "janv",
 			"feb": "févr",
 			"mar": "mars",
-			"avr": "avr",
-			"mai": "mai",
-			"juin": "juin",
-			"juil": "juil",
-			"août": "août",
 			"sep": "sept",
 			"oct": "oct",
 			"nov": "nov",
-			"déc": "déc"
+			"apr": "Apr",
+			"may": "May",
+			"jun": "Jun",
+			"jul": "Jul",
+			"aug": "Aug",
+			"dec": "Dec"
 		}
 	},
 	"quickMenu": {
@@ -467,7 +467,8 @@
 		"failedToRefresh": "Échec de l'actualisation des données du canvas",
 		"titlePlaceholder": "Titre de votre canvas",
 		"typePlaceholder": "Entrez / pour insérer...",
-		"untitled": "Sans titre"
+		"untitled": "Sans titre",
+		"deleteMessage": "Ce canvas sera supprimé définitivement. Cette action est irréversible."
 	},
 	"emojiCategories": {
 		"forsale": "En vente",

@@ -120,5 +120,6 @@
 		"errorSendingQuickMenu": "クイックメニュー送信中にエラー",
 		"failedToResendMessage": "メッセージを再送信できません",
 		"failedToClosePoll": "投票を終了できません"
-	}
+	},
+	"copyUserId": "ユーザーIDをコピー"
 }

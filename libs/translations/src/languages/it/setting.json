@@ -93,7 +93,13 @@
 		"portuguese": "Português",
 		"japanese": "日本語",
 		"french": "Français",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"german": "Deutsch",
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Voce",

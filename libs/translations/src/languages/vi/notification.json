@@ -41,5 +41,8 @@
 	},
 	"andYou": "và bạn",
 	"topicAndYou": "THẢO LUẬN CHỦ ĐỀ",
-	"unknowClan": "Bạn không còn là thành viên của đoạn hội thoại này nữa"
+	"unknowClan": "Bạn không còn là thành viên của đoạn hội thoại này nữa",
+	"contactMessage": "[Danh thiếp]",
+	"attachmentMessage": "[Tệp đính kèm]",
+	"interactiveMessage": "Tin nhắn tương tác"
 }

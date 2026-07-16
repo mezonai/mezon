@@ -41,5 +41,8 @@
 	},
 	"andYou": "et vous",
 	"topicAndYou": "DISCUSSION DE SUJET",
-	"unknowClan": "Vous ne faites plus partie de cette conversation"
+	"unknowClan": "Vous ne faites plus partie de cette conversation",
+	"contactMessage": "[Contact]",
+	"attachmentMessage": "[Pièce jointe]",
+	"interactiveMessage": "Message interactif"
 }

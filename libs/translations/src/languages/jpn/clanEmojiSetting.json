@@ -11,7 +11,8 @@
 		"exCatHug": "例：cat_hug",
 		"thisIsForSale": "これは販売用です",
 		"neverMind": "なし",
-		"characters": "名前は3〜64文字である必要があります"
+		"characters": "名前は3〜64文字である必要があります",
+		"required": "このフィールドは必須です"
 	},
 	"header": {
 		"save": "保存"

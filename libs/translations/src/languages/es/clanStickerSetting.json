@@ -1,9 +1,4 @@
 {
-	"addReaction": "Añadir reacción",
-	"titlebtn": {
-		"upload": "Subir Sticker",
-		"delete": "Eliminar"
-	},
 	"modal": {
 		"uploadAFile": "Subir un archivo",
 		"fileShouldBeAPNGPNGOrGIF256KBMax": "El archivo debe ser PNG o GIF, máximo 512KB",
@@ -16,7 +11,8 @@
 		"exCatHug": "Ej: gato_abrazo",
 		"thisIsForSale": "Esto está a la venta",
 		"neverMind": "Nada más",
-		"characters": "El nombre debe tener entre 3 y 64 caracteres"
+		"characters": "El nombre debe tener entre 3 y 64 caracteres",
+		"required": "Este campo es obligatorio"
 	},
 	"content": {
 		"description": "Añade hasta 250 stickers personalizados que cualquiera pueda usar en este clan.",
@@ -39,5 +35,9 @@
 		"sticker": {
 			"title": "No se encontró sticker"
 		}
+	},
+	"btn": {
+		"upload": "Subir sticker",
+		"delete": "Eliminar"
 	}
 }

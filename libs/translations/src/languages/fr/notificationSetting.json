@@ -38,7 +38,6 @@
 	"clanNotificationSettings": "PARAMÈTRES DE NOTIFICATION DU CLAN",
 	"notificationOverrides": "RÉÉCRITURE DES NOTIFICATIONS",
 	"addChannelOverride": "Ajouter un canal pour écraser les paramètres de notification par défaut",
-	"selectOrCreateOption": "Sélectionner ou créer une option...",
 	"headers": {
 		"channelOrCategory": "CANAL OU CATÉGORIE",
 		"all": "TOUS",
@@ -52,5 +51,6 @@
 			"onlyMention": "Seulement @mention",
 			"nothing": "Rien"
 		}
-	}
+	},
+	"selectChannelOrCategory": "Sélectionnez un canal ou une catégorie..."
 }

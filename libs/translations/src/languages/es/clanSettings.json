@@ -17,7 +17,8 @@
 			"integrations": "Integraciones",
 			"auditLog": "Registro de Auditoría",
 			"onboarding": "Onboarding",
-			"enableCommunity": "Activar Comunidad"
+			"enableCommunity": "Activar Comunidad",
+			"archivedChannels": "Canales archivados"
 		}
 	},
 	"clanLogo": {
@@ -89,5 +90,13 @@
 		"customizeMessage": "Personalicemos los stickers increíbles con tus intereses",
 		"uploadSticker": "subir sticker"
 	},
-	"deleteClanTitle": "Eliminar '{{clanName}}'"
+	"deleteClanTitle": "Eliminar '{{clanName}}'",
+	"archivedChannels": {
+		"description": "Restaura los canales a la barra lateral para volver a activarlos. Los canales archivados conservan todo el historial de mensajes, pero permanecen ocultos en la navegación principal.",
+		"archived": "ARCHIVADO",
+		"restore": "Restaurar",
+		"restoreSuccess": "Canal restaurado correctamente.",
+		"emptyState": "No hay canales archivados",
+		"fetchError": "No se pudieron cargar los canales archivados. Inténtalo de nuevo."
+	}
 }

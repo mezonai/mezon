@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "Creazione thread fallita",
 		"content": "Thread non trovato o non hai i permessi per aggiornarlo"
-	}
+	},
+	"otherActiveThread": "altro thread attivo",
+	"olderThread": "thread precedente"
 }

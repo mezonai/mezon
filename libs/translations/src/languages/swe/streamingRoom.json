@@ -3,5 +3,6 @@
 		"stream": "Streaming rum",
 		"joinStream": "Gå med i stream"
 	},
-	"noDisplay": "Ingen stream visning"
+	"noDisplay": "Ingen stream visning",
+	"chat": "Chatt"
 }

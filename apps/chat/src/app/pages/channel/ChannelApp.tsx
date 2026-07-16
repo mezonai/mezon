@@ -12,12 +12,13 @@ import {
 	selectEnableVideo,
 	selectGetRoomId,
 	selectLiveToken,
+	selectNoiseSuppressionEnabled,
 	selectSendTokenEvent,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import type { ApiChannelAppResponseExtend } from '@mezon/utils';
+import { getNoiseSuppressionAudioCaptureOptions, type ApiChannelAppResponseExtend } from '@mezon/utils';
 import { Track } from 'livekit-client';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -33,11 +34,12 @@ function AudioConference() {
 
 export function AudiRoom({ token, serverUrl }: { token: string; serverUrl: string | undefined }) {
 	const enableMic = useSelector(selectEnableMic);
+	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
 
 	return (
 		<LiveKitRoom
 			video={false}
-			audio={enableMic}
+			audio={enableMic ? getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled) : false}
 			token={token}
 			serverUrl={serverUrl}
 			data-lk-theme="empty"
@@ -152,14 +154,15 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 function AudioControls() {
 	const enableVideo = useSelector(selectEnableVideo);
 	const enableMic = useSelector(selectEnableMic);
+	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
 	const { localParticipant } = useLocalParticipant();
 
 	useEffect(() => {
 		if (localParticipant) {
 			localParticipant.setCameraEnabled(enableVideo).catch(console.error);
-			localParticipant.setMicrophoneEnabled(enableMic).catch(console.error);
+			localParticipant.setMicrophoneEnabled(enableMic, getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled)).catch(console.error);
 		}
-	}, [enableVideo, enableMic, localParticipant]);
+	}, [enableVideo, enableMic, noiseSuppressionEnabled, localParticipant]);
 
 	return null;
 }

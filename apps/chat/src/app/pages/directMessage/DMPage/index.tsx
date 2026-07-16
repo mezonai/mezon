@@ -60,6 +60,7 @@ import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { getMessageViewChatDMHeightClass, getMessageViewChatDMMaxHeightClass } from '../../../layouts/desktopWindowChrome';
 import ChannelMessages from '../../channel/ChannelMessages';
 import { ChannelTyping } from '../../channel/ChannelTyping';
 
@@ -82,7 +83,7 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 		if (lastSeenMessageId && lastMessageViewport?.id) {
 			try {
 				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
-				if (distance >= 0) {
+				if (distance > 0) {
 					dispatch(directMetaActions.updateLastSeenTime(lastMessageViewport));
 					markAsReadSeen(lastMessageViewport, mode, 0);
 					return;
@@ -94,7 +95,7 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 
 		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
 
-		if (isLastMessage) {
+		if (isLastMessage || lastSeenMessageId === undefined) {
 			dispatch(directMetaActions.updateLastSeenTime(lastMessageViewport));
 			markAsReadSeen(lastMessageViewport, mode, 0);
 		}

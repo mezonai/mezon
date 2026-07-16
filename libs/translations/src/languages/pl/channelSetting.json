@@ -4,7 +4,8 @@
 			"title": "Nazwa kanału",
 			"placeholder": "Wpisz nazwę kanału",
 			"errorMessage": "Proszę wprowadzić nazwę kanału (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -).",
-			"duplicateError": "Nazwa kanału już istnieje w kategorii. Proszę wprowadzić inną nazwę."
+			"duplicateError": "Nazwa kanału już istnieje w kategorii. Proszę wprowadzić inną nazwę.",
+			"emptyError": "Proszę wprowadzić nazwę kanału (maksymalnie 64 znaki, tylko litery, cyfry, _ lub -)."
 		},
 		"threadName": {
 			"title": "Nazwa wątku",
@@ -60,7 +61,8 @@
 			"_30minutes": "30 minut",
 			"_1hour": "1 godzina",
 			"_2hours": "2 godziny",
-			"_6hours": "6 godzin"
+			"_6hours": "6 godzin",
+			"slowModeOff": "Wolny tryb jest wyłączony"
 		},
 		"channelHideInactivity": {
 			"title": "Ukryj po okresie bezczynności",
@@ -76,7 +78,8 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "Usuń kanał"
+			"delete": "Usuń kanał",
+			"leave": "Opuść kanał"
 		},
 		"threadDelete": {
 			"title": "",
@@ -239,7 +242,8 @@
 		"invites": "Zaproszenia",
 		"integrations": "Integracje",
 		"category": "Kategoria",
-		"quickMenu": "Menu szybkie"
+		"quickMenu": "Menu szybkie",
+		"streamThumbnail": "Miniatura strumienia"
 	},
 	"categoryManagement": {
 		"title": "Kategorie",

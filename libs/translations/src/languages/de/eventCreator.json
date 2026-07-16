@@ -80,7 +80,10 @@
 			"title": "Beschreibung",
 			"description": "Erzähle den Leuten ein wenig mehr über dein Event."
 		},
-		"cover": "Titelbild"
+		"cover": "Titelbild",
+		"VoiceChannel": {
+			"title": "Sprachkanal auswählen"
+		}
 	},
 	"actions": {
 		"next": "Weiter",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "Die Startzeit muss in der Zukunft liegen.",
 		"endTimeAfterStart": "Die Endzeit muss nach der Startzeit liegen.",
-		"invalidTopic": "Ungültiges Event-Thema. Die Zeichen '`', '<', '>', ',', '/', '\"', '\\' und ''' sind nicht erlaubt."
+		"invalidTopic": "Ungültiges Event-Thema. Die Zeichen '`', '<', '>', ',', '/', '\"', '\\' und ''' sind nicht erlaubt.",
+		"locationMaxLength": "Der Standort darf höchstens 100 Zeichen lang sein."
 	},
 	"selectUser": "Wähle einen Kanal oder Thread, um ein Event zu erstellen",
 	"emptyState": {

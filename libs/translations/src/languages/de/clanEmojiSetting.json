@@ -11,7 +11,8 @@
 		"exCatHug": "z. B.: cat_hug",
 		"thisIsForSale": "Dies ist ein Verkaufsartikel",
 		"neverMind": "Ignorieren",
-		"characters": "Der Name muss zwischen 3 und 64 Zeichen lang sein"
+		"characters": "Der Name muss zwischen 3 und 64 Zeichen lang sein",
+		"required": "Dieses Feld ist erforderlich"
 	},
 	"header": {
 		"save": "Speichern"

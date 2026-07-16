@@ -198,8 +198,6 @@
 		"enableWallet": "Enable Wallet",
 		"cancel": "Cancel"
 	},
-	"creator": "Creator",
-	"viewTopic": "View topic",
 	"reply": "{{number}} reply",
 	"numberReplies": "{{number}} replies",
 	"replies": "Replies",

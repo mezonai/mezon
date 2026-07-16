@@ -4,7 +4,8 @@
 			"title": "Kanaalnaam",
 			"placeholder": "Voer kanaalnaam in",
 			"errorMessage": "Voer een geldige kanaalnaam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -).",
-			"duplicateError": "Kanaalnaam bestaat al in de categorie. Voer een andere naam in."
+			"duplicateError": "Kanaalnaam bestaat al in de categorie. Voer een andere naam in.",
+			"emptyError": "Voer een kanaalnaam in (maximaal 64 tekens, alleen woorden, cijfers, _ of -)."
 		},
 		"threadName": {
 			"title": "Theman",
@@ -60,7 +61,8 @@
 			"_30minutes": "30 minuten",
 			"_1hour": "1 uur",
 			"_2hours": "2 uur",
-			"_6hours": "6 uur"
+			"_6hours": "6 uur",
+			"slowModeOff": "Langzame modus is uit"
 		},
 		"channelHideInactivity": {
 			"title": "Verberg na inactiviteitsperiode",
@@ -76,7 +78,8 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "Kanaal verwijderen"
+			"delete": "Kanaal verwijderen",
+			"leave": "Kanaal verlaten"
 		},
 		"threadDelete": {
 			"title": "",
@@ -239,7 +242,8 @@
 		"invites": "Uitnodigingen",
 		"integrations": "Integraties",
 		"category": "Categorie",
-		"quickMenu": "Snelmenu"
+		"quickMenu": "Snelmenu",
+		"streamThumbnail": "Streamminiatuur"
 	},
 	"categoryManagement": {
 		"title": "Categorie",

@@ -92,7 +92,10 @@
 		"alreadyLinkedToAnother": "この番号は他のアカウントにリンクされています",
 		"country": "国",
 		"otpSentMessage": "確認コード{{phone}}に送信されました。メールボックスを確認してください",
-		"backToPhoneInput": "電話番号を変更しますか？"
+		"backToPhoneInput": "電話番号を変更しますか？",
+		"emailPlaceholder": "your.email@example.com",
+		"otp": "電話番号を確認",
+		"verifyOtpMessage": "に送信されたOTPコードを確認してください"
 	},
 	"toast": {
 		"deleteAccount": {

@@ -44,7 +44,8 @@
 		"backToOverview": "Wróć do przeglądu użytkowania Clanu",
 		"clanUsageStatisticsReport": "Raport statystyk użytkowania Clanu",
 		"dashboardReport": "Panel",
-		"report": "Raport"
+		"report": "Raport",
+		"meetingRooms": "Pokoje spotkań"
 	},
 	"state": {
 		"loadingData": "Ładowanie danych...",
@@ -70,5 +71,27 @@
 		"tooltip": "Sortuj rosnąco/spadająco według tej kolumny",
 		"sortedAsc": "Posortowano rosnąco",
 		"sortedDesc": "Posortowano spadająco"
+	},
+	"meetingRoomsFilter": {
+		"allStatuses": "Wszystkie statusy",
+		"pending": "Oczekujące",
+		"completed": "Zakończone",
+		"finalRoom": "Pokój końcowy",
+		"failed": "Nieudane",
+		"noTimeFilter": "Brak filtra czasu",
+		"last12Hours": "Ostatnie 12 godzin",
+		"last24Hours": "Ostatnie 24 godziny",
+		"last2Days": "Ostatnie 2 dni",
+		"last7Days": "Ostatnie 7 dni",
+		"searchByRoomNameOrParticipant": "Szukaj według nazwy pokoju lub uczestnika..."
+	},
+	"meetingRoomsTable": {
+		"roomName": "Nazwa pokoju",
+		"status": "Status",
+		"createdAt": "Utworzono",
+		"completedAt": "Zakończono",
+		"actions": "Akcje",
+		"viewDetails": "Wyświetl szczegóły",
+		"noRoomsFound": "Nie znaleziono pokoi."
 	}
 }

@@ -184,7 +184,8 @@
 		"messages": "épinglés.",
 		"startedAThread": "a créé un fil :",
 		"seeAllThreads": "Voir",
-		"allThreads": "tous les fils"
+		"allThreads": "tous les fils",
+		"deletedAThread": "a supprimé un fil :"
 	},
 	"removeFromChannel": {
 		"title": "Conversation non disponible",

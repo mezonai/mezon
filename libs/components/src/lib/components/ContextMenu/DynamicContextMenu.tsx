@@ -354,28 +354,16 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				);
 			} else if (labelAddReaction) {
 				elements.push(
-					<Dropdown
-						align={contextSubmenuAlign}
-						getPopupContainer={() => document.body}
-						menu={dropdownReact}
-						key={item.label}
-						trigger="hover"
-						className=" border-none bg-theme-contexify"
-					>
-						<div className="w-full block">
-							<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
-								<div
-									data-e2e={generateE2eId('chat.message_action_modal.button.base')}
-									className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}`}
-								>
-									<span>{t('addReaction')}</span>
-									<span>
-										<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
-									</span>
-								</div>
-							</Item>
-						</div>
-					</Dropdown>
+					<div className="w-full block">
+						<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
+							<div
+								data-e2e={generateE2eId('chat.message_action_modal.button.base')}
+								className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}`}
+							>
+								<span>{t('addReaction')}</span>
+							</div>
+						</Item>
+					</div>
 				);
 			} else if (!labelQuickMenus) {
 				const isCreateThreadItem = item.id === 'createThread';
