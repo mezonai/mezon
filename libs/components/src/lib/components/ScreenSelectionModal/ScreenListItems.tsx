@@ -41,14 +41,41 @@ const ScreenListItems = memo(({ source, onClose, audio, onSelect, selectedId }: 
 	const getListScreen = useCallback(async () => {
 		setIsLoading(true);
 		setVisibleScreens([]);
+		setHasMore(false);
 		setTotalCount(0);
-	}, []);
+		try {
+			const response = await window.electron.getScreenSources(source);
+			setVisibleScreens(response.sources);
+			setHasMore(response.hasMore);
+			setTotalCount(response.total);
+		} catch (error) {
+			console.error('Failed to get screen sources:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [source]);
 
 	const loadMore = useCallback(async () => {
 		if (isLoading || !hasMore) return;
 
-		setHasMore(false);
-	}, [isLoading, hasMore]);
+		setIsLoading(true);
+		try {
+			const offset = visibleScreens.length;
+			const response = await window.electron.loadMoreScreenSources(source, offset);
+
+			if (response.sources.length > 0) {
+				setVisibleScreens((prev) => [...prev, ...response.sources]);
+				setHasMore(response.hasMore);
+			} else {
+				setHasMore(false);
+			}
+		} catch (error) {
+			console.error('Failed to load more screen sources:', error);
+			setHasMore(false);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [isLoading, hasMore, visibleScreens.length, source]);
 
 	useEffect(() => {
 		if (!hasMore) return;
@@ -76,6 +103,16 @@ const ScreenListItems = memo(({ source, onClose, audio, onSelect, selectedId }: 
 	useEffect(() => {
 		getListScreen();
 	}, [getListScreen]);
+
+	useEffect(() => {
+		return () => {
+			if (typeof window?.electron?.clearScreenSourcesCache === 'function') {
+				window.electron.clearScreenSourcesCache().catch((error) => {
+					console.error('Failed to clear window sources cache on unmount:', error);
+				});
+			}
+		};
+	}, []);
 
 	const skeletonCount = source === 'screen' ? 2 : 6;
 

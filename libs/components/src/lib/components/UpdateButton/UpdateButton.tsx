@@ -1,3 +1,4 @@
+import { electronBridge, INSTALL_UPDATE } from '@mezon/utils';
 import React from 'react';
 
 type UpdateButtonProps = {
@@ -6,9 +7,14 @@ type UpdateButtonProps = {
 };
 
 const UpdateButton: React.FC<UpdateButtonProps> = ({ className = '', isDownloading }) => {
+	const handleUpdate = async () => {
+		await electronBridge.invoke(INSTALL_UPDATE);
+	};
+
 	return (
 		<button
 			id="update-process"
+			onClick={handleUpdate}
 			className={`bg-gradient-to-r from-custom-purple to-custom-pink hover:from-custom-purple-dark hover:to-custom-pink-dark active:from-custom-purple-active active:to-custom-pink-active transition duration-300 w-full flex items-center justify-center text-white py-2 px-4 ${isDownloading ? 'cursor-not-allowed' : ''}`}
 			disabled={isDownloading}
 		>

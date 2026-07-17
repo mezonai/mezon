@@ -1,8 +1,7 @@
 import type { AttachmentEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EFailAttachment, convertTimeString } from '@mezon/utils';
-
+import { convertTimeString, DOWNLOAD_FILE, EFailAttachment, electronBridge, isElectron } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,16 +33,29 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 		if (!response.ok) {
 			return;
 		}
-
-		try {
-			const blob = await response.blob();
-			const dataUrl = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = dataUrl;
-			a.download = attachmentData.filename as string;
-			a.click();
-		} catch (error) {
-			console.error('Error during download:', error);
+		if (isElectron()) {
+			const fileName = !attachmentData.filename?.includes('.')
+				? `${attachmentData.filename}.${attachmentData.filetype}`
+				: attachmentData.filename;
+			try {
+				await electronBridge.invoke(DOWNLOAD_FILE, {
+					url: attachmentData.url as string,
+					defaultFileName: fileName
+				});
+			} catch (error) {
+				console.error('Error during download:', error);
+			}
+		} else {
+			try {
+				const blob = await response.blob();
+				const dataUrl = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = dataUrl;
+				a.download = attachmentData.filename as string;
+				a.click();
+			} catch (error) {
+				console.error('Error during download:', error);
+			}
 		}
 	};
 	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment: attachmentData, size: 'w-8 h-10', isFileList: true });

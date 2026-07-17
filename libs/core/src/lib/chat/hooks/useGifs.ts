@@ -54,7 +54,6 @@ export function useGifs() {
 	);
 	return useMemo(
 		() => ({
-			fetchGifsDataSearch,
 			dataGifCategories,
 			dataGifsSearch,
 			loadingStatusGifs,
@@ -65,11 +64,11 @@ export function useGifs() {
 			categoriesStatus,
 			setShowCategories,
 			buttonArrowBackStatus,
-			setButtonArrowBack
+			setButtonArrowBack,
+			fetchGifsDataSearch
 		}),
 		[
 			dataGifCategories,
-			fetchGifsDataSearch,
 			dataGifsSearch,
 			loadingStatusGifs,
 			fetchGifTrending,
@@ -79,7 +78,8 @@ export function useGifs() {
 			categoriesStatus,
 			setShowCategories,
 			buttonArrowBackStatus,
-			setButtonArrowBack
+			setButtonArrowBack,
+			fetchGifsDataSearch
 		]
 	);
 }

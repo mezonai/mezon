@@ -58,13 +58,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId } from '@mezon/utils';
-import {
-	getFixedStreamPanelHeightClass,
-	getSidebarScrollHeightClass,
-	shouldInsetClanSidebar
-} from '../../layouts/desktopWindowChrome';
-
+import { generateE2eId, isElectron, isLinuxDesktop, isMacDesktop, isWindowsDesktop, Platform, PLATFORM_ENV, TIME_OF_SHOWING_FIRST_POPUP } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -129,6 +123,14 @@ function MyApp() {
 				}
 				if (!currentClanId) return;
 				dispatch(accountActions.setAnonymousMode(currentClanId));
+			}
+			if (event[prefixKey] && event.key === '-' && isElectron()) {
+				event.preventDefault();
+				window.electron.setRatioWindow(false);
+			}
+			if (event[prefixKey] && event.shiftKey && event.key === '+' && isElectron()) {
+				event.preventDefault();
+				window.electron.setRatioWindow(true);
 			}
 		},
 		[handleOpenSearchModal, currentURL]
@@ -213,7 +215,7 @@ function MyApp() {
 					isDM={currentClanId === '0'}
 				/>
 				<div
-					className={`fixed ${getFixedStreamPanelHeightClass()} bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && currentClanId !== '0' && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
+					className={`fixed ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'} bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && currentClanId !== '0' && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
 					style={streamStyle}
 				>
 					{isStream || currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? (
@@ -347,18 +349,15 @@ const SidebarMenu = memo(
 			}
 		};
 
-		const sidebarScrollHeightClass = getSidebarScrollHeightClass();
-		const clanSidebarInsetClass = shouldInsetClanSidebar() ? 'mt-[21px]' : '';
-
 		return (
 			<div
-				className={`contain-strict h-dvh fixed z-10 left-0 top-0 w-[72px] duration-100 ${clanSidebarInsetClass} ${closeMenu ? (statusMenu ? '' : 'max-sm:hidden') : ''}`}
+				className={`contain-strict h-dvh fixed z-10 left-0 top-0 w-[72px] duration-100 ${isWindowsDesktop || isLinuxDesktop || isMacDesktop ? 'mt-[21px]' : ''} ${closeMenu ? (statusMenu ? '' : 'max-sm:hidden') : ''}`}
 				onClick={() => handleMenu}
 				id="menu"
 			>
 				<div className="relative h-full w-full overflow-hidden">
 					<div
-						className={`top-0 left-0 right-0 flex flex-col items-center pt-0 pb-[68px] overflow-y-auto hide-scrollbar ${sidebarScrollHeightClass}`}
+						className={`top-0 left-0 right-0 flex flex-col items-center pt-0 pb-[68px] overflow-y-auto hide-scrollbar ${isWindowsDesktop || isLinuxDesktop ? 'h-[calc(100%-80px)]' : 'h-[calc(100dvh_-_10px_-_80px)]'} `}
 						onScroll={(e) => setIsAtTop(e.currentTarget.scrollTop === 0)}
 					>
 						<div className={`flex flex-col items-center sticky top-0 z-50 bg-theme-primary w-full ${isAtTop ? 'pt-3' : 'py-3'}`}>

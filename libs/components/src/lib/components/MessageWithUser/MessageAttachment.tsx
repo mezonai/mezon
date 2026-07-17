@@ -1,3 +1,4 @@
+import { getCurrentChatData } from '@mezon/core';
 import {
 	attachmentActions,
 	getStore,
@@ -5,25 +6,12 @@ import {
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectMessageByMessageId,
+	selectMessageEntitiesByChannelId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ApiPhoto, IMessageWithUser, ObserveFn } from '@mezon/utils';
-import {
-	EMimeTypes,
-	ETypeLinkMedia,
-	calculateAlbumLayout,
-	filterExpiredPresignAttachments,
-	generateAttachmentId,
-	getMessageCreateTimeSeconds,
-	getPresignExpiryDelayMs,
-	hasActivePresignPendingAttachments,
-	isMediaTypeNotSupported,
-	isPresignAttachmentPending,
-	parsePresignFinishKeys,
-	useAppLayout
-} from '@mezon/utils';
-
+import type { ApiPhoto, IImageWindowProps, IMessageWithUser, ObserveFn } from '@mezon/utils';
+import { calculateAlbumLayout, createImgproxyUrl, EMimeTypes, ETypeLinkMedia, filterExpiredPresignAttachments, generateAttachmentId, getAttachmentDataForWindow, getMessageCreateTimeSeconds, getPresignExpiryDelayMs, hasActivePresignPendingAttachments, isElectron, isMediaTypeNotSupported, isPresignAttachmentPending, parsePresignFinishKeys, useAppLayout } from '@mezon/utils';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Album from './Album';
@@ -57,7 +45,10 @@ function useLiveMessageForAttachments(messageProp: IMessageWithUser, channelId?:
 	const resolvedChannelId = (channelId ?? messageProp.channel_id) as string;
 	const messageId = messageProp.id as string;
 
-	return useAppSelector((state) => selectMessageByMessageId(state, resolvedChannelId, messageId) ?? messageProp, areAttachmentLiveFieldsEqual);
+	return useAppSelector(
+		(state) => selectMessageByMessageId(state, resolvedChannelId, messageId) ?? messageProp,
+		areAttachmentLiveFieldsEqual
+	);
 }
 
 function usePresignExpiryNow(hasPresignPending: boolean, messageCreateTimeSeconds?: number): number {
@@ -238,7 +229,12 @@ const MessageAttachment = memo(
 		const validateAttachment = useMemo(() => {
 			const rawAttachments = (message.attachments || []).filter((attachment) => Object.keys(attachment).length !== 0);
 			if (!rawAttachments.length) return null;
-			const visibleAttachments = filterExpiredPresignAttachments(rawAttachments, message.content, messageCreateTimeSeconds, nowSeconds);
+			const visibleAttachments = filterExpiredPresignAttachments(
+				rawAttachments,
+				message.content,
+				messageCreateTimeSeconds,
+				nowSeconds
+			);
 
 			return visibleAttachments.length ? visibleAttachments : null;
 		}, [message.attachments, message.content, messageCreateTimeSeconds, nowSeconds]);
@@ -311,6 +307,135 @@ const ImageAlbum = memo(
 					create_time_seconds: resolvedCreateTimeSeconds
 				};
 
+				if (isElectron()) {
+					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
+					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
+
+					const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
+					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
+					const data = await dispatch(
+						attachmentActions.fetchChannelAttachments({
+							clanId,
+							channelId,
+							limit: 100,
+							before: beforeTimestamp
+						})
+					).unwrap();
+
+					const currentChatUsersEntities = getCurrentChatData()?.currentChatUsersEntities;
+					const currentChatMessageEntities = selectMessageEntitiesByChannelId(state, channelId);
+					const listAttachmentsByChannel = data?.attachments
+						?.filter(
+							(att) =>
+								att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) ||
+								att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
+								att?.filetype?.includes(EMimeTypes.mp4) ||
+								att?.filetype?.includes(EMimeTypes.mov)
+						)
+						.map((attachmentRes) => ({
+							...attachmentRes,
+							id: attachmentRes.id || '',
+							channelId,
+							clanId,
+							isVideo:
+								attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
+								attachmentRes?.filetype?.includes(EMimeTypes.mp4) ||
+								attachmentRes?.filetype?.includes(EMimeTypes.mov)
+						}))
+						.sort((a, b) => {
+							if (a.create_time_seconds && b.create_time_seconds) {
+								return b.create_time_seconds - a.create_time_seconds;
+							}
+							return 0;
+						});
+
+					let currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
+
+					if (!currentImageUploader) {
+						currentImageUploader = {
+							clan_nick: currentChatMessageEntities[attachmentData?.message_id as string]?.clan_nick,
+							id: attachmentData?.sender_id as string,
+							clan_avatar: currentChatMessageEntities[attachmentData?.message_id as string]?.clan_avatar,
+							user: {
+								display_name: currentChatMessageEntities[attachmentData?.message_id as string]?.display_name,
+								username: currentChatMessageEntities[attachmentData?.message_id as string]?.username,
+								avatar_url: currentChatMessageEntities[attachmentData?.message_id as string]?.avatar
+							}
+						};
+					}
+
+					window.electron.openImageWindow({
+						...enhancedAttachmentData,
+						url: createImgproxyUrl(enhancedAttachmentData.url || '', {
+							width: enhancedAttachmentData.width ? (enhancedAttachmentData.width > 1600 ? 1600 : enhancedAttachmentData.width) : 0,
+							height: enhancedAttachmentData.height ? (enhancedAttachmentData.height > 900 ? 900 : enhancedAttachmentData.height) : 0,
+							resizeType: 'fit'
+						}),
+						uploaderData: {
+							name:
+								currentImageUploader?.clan_nick ||
+								currentImageUploader?.user?.display_name ||
+								currentImageUploader?.user?.username ||
+								'Anonymous',
+							avatar: (currentImageUploader?.clan_avatar ||
+								currentImageUploader?.user?.avatar_url ||
+								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
+						},
+						realUrl: enhancedAttachmentData.url || '',
+						channelImagesData: {
+							channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+							images: [],
+							selectedImageIndex: 0
+						}
+					});
+					if ((currentClanId && currentChannelId) || currentDmGroupId) {
+						if (listAttachmentsByChannel) {
+							const imageListWithUploaderInfo = getAttachmentDataForWindow(
+								listAttachmentsByChannel,
+								currentChatUsersEntities,
+								currentChatMessageEntities
+							);
+							const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
+							const channelImagesData: IImageWindowProps = {
+								channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+								images: imageListWithUploaderInfo,
+								selectedImageIndex
+							};
+
+							window.electron.openImageWindow({
+								...enhancedAttachmentData,
+								url: createImgproxyUrl(enhancedAttachmentData.url || '', {
+									width: enhancedAttachmentData.width
+										? enhancedAttachmentData.width > 1600
+											? 1600
+											: enhancedAttachmentData.width
+										: 0,
+									height: enhancedAttachmentData.height
+										? (enhancedAttachmentData.width || 0) > 1600
+											? Math.round((1600 * enhancedAttachmentData.height) / (enhancedAttachmentData.width || 1))
+											: enhancedAttachmentData.height
+										: 0,
+									resizeType: 'fill'
+								}),
+								uploaderData: {
+									name:
+										currentImageUploader?.clan_nick ||
+										currentImageUploader?.user?.display_name ||
+										currentImageUploader?.user?.username ||
+										'Anonymous',
+									avatar: (currentImageUploader?.clan_avatar ||
+										currentImageUploader?.user?.avatar_url ||
+										`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
+								},
+								realUrl: enhancedAttachmentData.url || '',
+								channelImagesData
+							});
+							return;
+						}
+					}
+
+					return;
+				}
 				dispatch(attachmentActions.setMode(mode));
 
 				dispatch(
