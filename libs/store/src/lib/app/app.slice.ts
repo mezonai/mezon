@@ -1,16 +1,16 @@
 import { captureSentryError } from '@mezon/logger';
-import { isElectron } from '@mezon/utils';
 import type { LoadingStatus } from '@mezon/utils';
+import { checkIsThread, isElectron } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
-import { channelsActions } from '../channels/channels.slice';
+import { channelsActions, selectChannelById, type ChannelsEntity } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
-import { directActions } from '../direct/direct.slice';
+import { directActions, selectDirectById } from '../direct/direct.slice';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
 import { voiceActions } from '../voice/voice.slice';
@@ -55,6 +55,114 @@ const canRefreshApp = (): { allowed: boolean; reason?: string } => {
 const trackRefreshAttempt = () => {
 	refreshAttempts.push(Date.now());
 };
+
+const RECONNECT_JOIN_STAGGER_MS = 400;
+
+export type RefreshAppPayload = {
+	skipReconnectWarmup?: boolean;
+};
+
+const delay = (ms: number): Promise<void> =>
+	new Promise((resolve) => {
+		if (typeof window === 'undefined') {
+			resolve();
+			return;
+		}
+		window.setTimeout(resolve, ms);
+	});
+
+type ActiveChannelContext = {
+	clanId: string;
+	channelId: string;
+};
+
+type ReconnectSyncThunkApi = {
+	dispatch: (action: unknown) => unknown;
+	getState: () => unknown;
+};
+
+function resolveActiveChannelContext(state: RootState): ActiveChannelContext | null {
+	const path = isElectron() ? window.location.hash : window.location.pathname;
+	const currentClanId = state.clans?.currentClanId;
+	const currentChannelId = state.channels?.byClans[currentClanId as string]?.currentChannelId;
+	const currentDirectId = state.direct?.currentDirectMessageId;
+
+	if (currentChannelId && path.includes(`/${currentChannelId}`)) {
+		return { clanId: currentClanId || '0', channelId: currentChannelId };
+	}
+	if (currentDirectId && path.includes(`/${currentDirectId}`)) {
+		return { clanId: '0', channelId: currentDirectId };
+	}
+	return null;
+}
+
+function dispatchJoinChatForChannel(thunkAPI: ReconnectSyncThunkApi, clanId: string, channelId: string): void {
+	const state = thunkAPI.getState() as RootState;
+	const channel = selectChannelById(state, channelId) || (selectDirectById(state, channelId) as ChannelsEntity | null | undefined);
+	if (!channel) {
+		return;
+	}
+
+	const resolvedClanId = channel.clan_id ?? clanId;
+	const resolvedChannelId = channel.channel_id ?? channelId;
+	const channelType = channel.type ?? ChannelType.CHANNEL_TYPE_CHANNEL;
+	const isDirect = channelType === ChannelType.CHANNEL_TYPE_DM || channelType === ChannelType.CHANNEL_TYPE_GROUP;
+	const isPublic = !isDirect && !checkIsThread(channel as ChannelsEntity) && !channel.channel_private;
+
+	thunkAPI.dispatch(
+		channelsActions.joinChat({
+			clanId: resolvedClanId,
+			channelId: resolvedChannelId,
+			channelType,
+			isPublic
+		})
+	);
+}
+
+async function syncActiveChannelAfterReconnect(thunkAPI: ReconnectSyncThunkApi, state: RootState): Promise<void> {
+	const activeChannel = resolveActiveChannelContext(state);
+	if (!activeChannel) {
+		return;
+	}
+
+	const { clanId, channelId } = activeChannel;
+
+	await thunkAPI.dispatch(
+		messagesActions.fetchMessages({
+			clanId,
+			channelId,
+			isFetchingLatestMessages: true,
+			isClearMessage: true,
+			noCache: true
+		})
+	);
+
+	dispatchJoinChatForChannel(thunkAPI, clanId, channelId);
+}
+
+async function dispatchStaggeredJoinClans(thunkAPI: ReconnectSyncThunkApi, currentClanId: string | null | undefined): Promise<void> {
+	await delay(RECONNECT_JOIN_STAGGER_MS);
+	thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
+
+	if (currentClanId && currentClanId !== '0') {
+		await delay(RECONNECT_JOIN_STAGGER_MS);
+		thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
+	}
+}
+
+async function syncMinimalAfterReconnect(thunkAPI: ReconnectSyncThunkApi, state: RootState): Promise<void> {
+	clearApiCallTracker();
+	thunkAPI.dispatch(clansActions.clearJoinList());
+	await syncActiveChannelAfterReconnect(thunkAPI, state);
+
+	const currentClanId = state.clans?.currentClanId;
+	await dispatchStaggeredJoinClans(thunkAPI, currentClanId);
+
+	badgeService.onReconnect();
+	if (currentClanId && currentClanId !== '0') {
+		badgeService.syncClanBadge(currentClanId);
+	}
+}
 
 export interface showSettingFooterProps {
 	status: boolean;
@@ -154,54 +262,58 @@ export const initialAppState: AppState = {
 	autoHidden: false
 };
 
-export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
+export const reconnectSync = createAsyncThunk('app/reconnectSync', async (_, thunkAPI) => {
+	const state = thunkAPI.getState() as RootState;
+
+	if (!state) {
+		throw Error('reconnect sync error: state does not init');
+	}
+
+	try {
+		await syncMinimalAfterReconnect(thunkAPI, state);
+	} catch (error) {
+		captureSentryError(error, 'app/reconnectSync');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const refreshApp = createAsyncThunk('app/refreshApp', async (payload: RefreshAppPayload | undefined, thunkAPI) => {
+	const state = thunkAPI.getState() as RootState;
+
+	if (!state) {
+		throw Error('refresh app error: state does not init');
+	}
+
+	const skipReconnectWarmup = payload?.skipReconnectWarmup ?? false;
+
 	const { allowed, reason } = canRefreshApp();
 
 	if (!allowed) {
 		console.warn('[refreshApp] Rate limited:', reason);
+		if (!skipReconnectWarmup) {
+			try {
+				await syncMinimalAfterReconnect(thunkAPI, state);
+			} catch (error) {
+				captureSentryError(error, 'app/refreshApp/minimal');
+			}
+		}
 		return thunkAPI.rejectWithValue({ rateLimited: true, reason });
 	}
 
 	trackRefreshAttempt();
 
 	try {
-		const state = thunkAPI.getState() as RootState;
-
-		if (!state) {
-			throw Error('refresh app error: state does not init');
-		}
-
 		clearApiCallTracker();
 
 		const isClanView = state?.clans?.currentClanId && state.clans.currentClanId !== '0';
-		const currentChannelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
-		const currentDirectId = state.direct?.currentDirectMessageId;
 		const currentClanId = state.clans?.currentClanId;
-		const path = isElectron() ? window.location.hash : window.location.pathname;
 
-		let channelId = null;
-		let clanId = null;
-		if (currentChannelId && path.includes('/' + currentChannelId)) {
-			clanId = currentClanId;
-			channelId = currentChannelId;
-		} else if (currentDirectId && path.includes('/' + currentDirectId)) {
-			clanId = '0';
-			channelId = currentDirectId;
+		if (!skipReconnectWarmup) {
+			thunkAPI.dispatch(clansActions.clearJoinList());
+			await syncActiveChannelAfterReconnect(thunkAPI, state);
+			await dispatchStaggeredJoinClans(thunkAPI, currentClanId);
 		}
-		thunkAPI.dispatch(clansActions.clearJoinList());
 
-		channelId &&
-			thunkAPI.dispatch(
-				messagesActions.fetchMessages({
-					clanId: clanId || '',
-					channelId,
-					isFetchingLatestMessages: true,
-					isClearMessage: true,
-					noCache: true
-				})
-			);
-
-		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
 		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
@@ -209,7 +321,6 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		if (isClanView && currentClanId) {
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
 			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
-			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
 					clanId: currentClanId ?? '',
@@ -224,9 +335,11 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
 		await Promise.allSettled(settledPromises);
 
-		badgeService.onReconnect();
-		if (currentClanId && currentClanId !== '0') {
-			badgeService.syncClanBadge(currentClanId);
+		if (!skipReconnectWarmup) {
+			badgeService.onReconnect();
+			if (currentClanId && currentClanId !== '0') {
+				badgeService.syncClanBadge(currentClanId);
+			}
 		}
 	} catch (error) {
 		captureSentryError(error, 'app/refreshApp');
@@ -454,7 +567,7 @@ export const appSlice = createSlice({
  */
 export const appReducer = appSlice.reducer;
 
-export const appActions = { ...appSlice.actions, refreshApp };
+export const appActions = { ...appSlice.actions, reconnectSync, refreshApp };
 
 export const getAppState = (rootState: { [APP_FEATURE_KEY]: AppState }): AppState => rootState[APP_FEATURE_KEY];
 

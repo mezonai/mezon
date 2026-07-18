@@ -53,6 +53,6 @@ export type MezonAudioCaptureOptions = AudioCaptureOptions;
 export const getNoiseSuppressionAudioCaptureOptions = (enabled: boolean): MezonAudioCaptureOptions => ({
 	echoCancellation: true,
 	noiseSuppression: !enabled,
-	autoGainControl: !enabled,
+	autoGainControl: true,
 	voiceIsolation: !enabled
 });
