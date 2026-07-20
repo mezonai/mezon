@@ -134,7 +134,7 @@ export const gifsSlice = createSlice({
 						id: `${item.id}`,
 						slug: item.slug,
 						blur_preview: item?.blur_preview,
-						url: item?.file?.xs?.gif?.url
+						url: item?.file?.hd?.gif?.url ?? item?.file?.md?.gif?.url
 					};
 				});
 
@@ -155,7 +155,7 @@ export const gifsSlice = createSlice({
 						id: `${item.id}`,
 						slug: item.slug,
 						blur_preview: item?.blur_preview,
-						url: item?.file?.xs?.gif?.url
+						url: item?.file?.hd?.gif?.url ?? item?.file?.md?.gif?.url
 					};
 				});
 				state.dataGifsSearch = dataGif;
