@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
-import { isElectron } from '@mezon/utils';
 import type { LoadingStatus } from '@mezon/utils';
+import { isElectron } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
@@ -26,6 +26,28 @@ const REFRESH_APP_CONFIG = {
 
 let refreshAttempts: number[] = [];
 let cooldownUntil: number | null = null;
+
+/** Reset rate-limit counters (e.g. logout). */
+export function resetRefreshAppRateLimit() {
+	refreshAttempts = [];
+	cooldownUntil = null;
+}
+
+/**
+ * Called when socket reconnect succeeds. Clears counters after cooldown has elapsed
+ * so the next refresh gets a fresh quota.
+ */
+export function notifyReconnectSucceeded() {
+	const now = Date.now();
+	if (cooldownUntil !== null && now >= cooldownUntil) {
+		resetRefreshAppRateLimit();
+	}
+}
+
+/** Read-only gate for scheduling refreshApp (avoids dispatching while rate-limited). */
+export function isRefreshAppAllowed(): boolean {
+	return canRefreshApp().allowed;
+}
 
 const canRefreshApp = (): { allowed: boolean; reason?: string } => {
 	const now = Date.now();
@@ -162,8 +184,6 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		return thunkAPI.rejectWithValue({ rateLimited: true, reason });
 	}
 
-	trackRefreshAttempt();
-
 	try {
 		const state = thunkAPI.getState() as RootState;
 
@@ -181,10 +201,10 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		let channelId = null;
 		let clanId = null;
-		if (currentChannelId && path.includes('/' + currentChannelId)) {
+		if (currentChannelId && path.includes(`/${currentChannelId}`)) {
 			clanId = currentClanId;
 			channelId = currentChannelId;
-		} else if (currentDirectId && path.includes('/' + currentDirectId)) {
+		} else if (currentDirectId && path.includes(`/${currentDirectId}`)) {
 			clanId = '0';
 			channelId = currentDirectId;
 		}
@@ -228,6 +248,8 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		if (currentClanId && currentClanId !== '0') {
 			badgeService.syncClanBadge(currentClanId);
 		}
+
+		trackRefreshAttempt();
 	} catch (error) {
 		captureSentryError(error, 'app/refreshApp');
 		return thunkAPI.rejectWithValue(error);

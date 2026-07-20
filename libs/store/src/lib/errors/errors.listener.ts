@@ -1,6 +1,7 @@
 import { LIMIT_CLAN_ITEM, trackError } from '@mezon/utils';
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
+import { resetRefreshAppRateLimit } from '../app/app.slice';
 import type { EErrorType, Toast, ToastPayload } from '../toasts';
 import { toastActions } from '../toasts';
 import { triggerClanLimitModal } from './errors.slice';
@@ -33,6 +34,7 @@ let isRefreshing = false;
 export function resetRefreshState() {
 	hasDispatchedRefreshOnce = false;
 	isRefreshing = false;
+	resetRefreshAppRateLimit();
 }
 
 function isErrorPredicate(action: ErrorAction) {

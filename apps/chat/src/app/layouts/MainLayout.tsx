@@ -11,12 +11,14 @@ import {
 	appActions,
 	e2eeActions,
 	gifsStickerEmojiActions,
+	isRefreshAppAllowed,
+	notifyReconnectSucceeded,
 	selectAllAccount,
 	selectAnyUnreadChannel,
 	selectBadgeCountAllClan,
 	useAppDispatch
 } from '@mezon/store';
-import { IS_SAFARI, MessageCrypt, UploadLimitReason, electronBridge, isElectron, throttle } from '@mezon/utils';
+import { IS_SAFARI, MessageCrypt, UploadLimitReason, debounce, electronBridge, isElectron } from '@mezon/utils';
 
 import { TooManyUpload, WebRTCStreamProvider, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
@@ -49,13 +51,35 @@ const GlobalEventListener = () => {
 		debouncedScheduleMs: 3000
 	});
 
-	const handleReconnectSuccess = useMemo(
+	const scheduleRefreshAfterReconnect = useMemo(
 		() =>
-			throttle(() => {
-				dispatch(appActions.refreshApp());
-			}, 2000),
+			debounce(
+				() => {
+					if (!isRefreshAppAllowed()) {
+						return;
+					}
+					dispatch(appActions.refreshApp());
+				},
+				2000,
+				false,
+				true
+			),
 		[dispatch]
 	);
+
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+
+		const onSocketReconnect = () => {
+			notifyReconnectSucceeded();
+			scheduleRefreshAfterReconnect();
+		};
+
+		window.addEventListener('mezon:socket-reconnect', onSocketReconnect);
+		return () => {
+			window.removeEventListener('mezon:socket-reconnect', onSocketReconnect);
+		};
+	}, [scheduleRefreshAfterReconnect]);
 
 	useEffect(() => {
 		const mainLayout = document.getElementById('main-layout');
@@ -67,15 +91,6 @@ const GlobalEventListener = () => {
 			mainLayout.classList.remove('is-safari');
 		};
 	}, []);
-
-	useEffect(() => {
-		if (typeof window === 'undefined') return;
-
-		window.addEventListener('mezon:socket-reconnect', handleReconnectSuccess);
-		return () => {
-			window.removeEventListener('mezon:socket-reconnect', handleReconnectSuccess);
-		};
-	}, [handleReconnectSuccess]);
 
 	useEffect(() => {
 		let notificationCountAllClan = 0;
