@@ -11,6 +11,7 @@ import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directActions } from '../direct/direct.slice';
+import { sleep } from '../helpers';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
 import { voiceActions } from '../voice/voice.slice';
@@ -23,6 +24,8 @@ const REFRESH_APP_CONFIG = {
 	windowMs: 60000,
 	cooldownMs: 30000
 };
+
+const JOIN_CLAN_SETTLE_MS = 2000;
 
 let refreshAttempts: number[] = [];
 let cooldownUntil: number | null = null;
@@ -55,6 +58,20 @@ const canRefreshApp = (): { allowed: boolean; reason?: string } => {
 const trackRefreshAttempt = () => {
 	refreshAttempts.push(Date.now());
 };
+
+const yieldToMain = (): Promise<void> =>
+	new Promise((resolve) => {
+		if (typeof MessageChannel === 'undefined') {
+			resolve();
+			return;
+		}
+		const channel = new MessageChannel();
+		channel.port1.onmessage = () => {
+			channel.port1.close();
+			resolve();
+		};
+		channel.port2.postMessage(undefined);
+	});
 
 export interface showSettingFooterProps {
 	status: boolean;
@@ -190,6 +207,13 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 		thunkAPI.dispatch(clansActions.clearJoinList());
 
+		const joinPromises = [thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }))];
+		if (isClanView && currentClanId) {
+			joinPromises.push(thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId })));
+		}
+		await Promise.allSettled(joinPromises);
+		await sleep(JOIN_CLAN_SETTLE_MS);
+
 		channelId &&
 			thunkAPI.dispatch(
 				messagesActions.fetchMessages({
@@ -201,15 +225,20 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 				})
 			);
 
-		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
+		await yieldToMain();
+
 		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
 		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
+			await yieldToMain();
+
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
 			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
-			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
+
+			await yieldToMain();
+
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
 					clanId: currentClanId ?? '',
@@ -218,6 +247,8 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 				})
 			);
 		}
+
+		await yieldToMain();
 
 		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
 
