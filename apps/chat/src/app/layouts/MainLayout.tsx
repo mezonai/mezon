@@ -23,14 +23,11 @@ import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
 import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName } from '@mezon/utils';
 
-import { memo, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import { memo, useContext, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import ChannelVoice from '../pages/channel/ChannelVoice';
 import { getMainLayoutClassName } from './desktopWindowChrome';
-
-const RECONNECT_SETTLE_MS = 750;
-const RECONNECT_FULL_REFRESH_DELAY_MS = 3000;
 
 const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
@@ -52,34 +49,12 @@ const GlobalEventListener = () => {
 		debouncedScheduleMs: 3000
 	});
 
-	const reconnectTimersRef = useRef<{ settle?: number; full?: number }>({});
-
-	const clearReconnectTimers = useCallback(() => {
-		const timers = reconnectTimersRef.current;
-		if (timers.settle !== undefined) {
-			window.clearTimeout(timers.settle);
-			timers.settle = undefined;
-		}
-		if (timers.full !== undefined) {
-			window.clearTimeout(timers.full);
-			timers.full = undefined;
-		}
-	}, []);
-
 	const handleReconnectSuccess = useMemo(
 		() =>
 			throttle(() => {
-				clearReconnectTimers();
-				reconnectTimersRef.current.settle = window.setTimeout(() => {
-					reconnectTimersRef.current.settle = undefined;
-					dispatch(appActions.reconnectSync());
-					reconnectTimersRef.current.full = window.setTimeout(() => {
-						reconnectTimersRef.current.full = undefined;
-						dispatch(appActions.refreshApp({ skipReconnectWarmup: true }));
-					}, RECONNECT_FULL_REFRESH_DELAY_MS);
-				}, RECONNECT_SETTLE_MS);
+				dispatch(appActions.refreshApp());
 			}, 2000),
-		[dispatch, clearReconnectTimers]
+		[dispatch]
 	);
 
 	useEffect(() => {
@@ -99,9 +74,8 @@ const GlobalEventListener = () => {
 		window.addEventListener('mezon:socket-reconnect', handleReconnectSuccess);
 		return () => {
 			window.removeEventListener('mezon:socket-reconnect', handleReconnectSuccess);
-			clearReconnectTimers();
 		};
-	}, [handleReconnectSuccess, clearReconnectTimers]);
+	}, [handleReconnectSuccess]);
 
 	useEffect(() => {
 		let notificationCountAllClan = 0;
