@@ -10,6 +10,7 @@
 	"reply": "Svara",
 	"createThread": "Skapa tråd",
 	"copyText": "Kopiera text",
+	"copyTextSelected": "Kopiera markerad text",
 	"quickMenus": "Snabba alternativ",
 	"addToInbox": "Lägg till i inkorg",
 	"markUnread": "Markera som oläst",

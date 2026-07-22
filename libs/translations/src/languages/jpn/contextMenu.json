@@ -10,6 +10,7 @@
 	"reply": "返信",
 	"createThread": "スレッドを作成",
 	"copyText": "テキストをコピー",
+	"copyTextSelected": "選択したテキストをコピー",
 	"quickMenus": "クイックメニュー",
 	"addToInbox": "受信トレイに追加",
 	"markUnread": "未読にする",
