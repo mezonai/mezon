@@ -10,6 +10,7 @@
 	"reply": "Responder",
 	"createThread": "Crear Hilo",
 	"copyText": "Copiar Texto",
+	"copyTextSelected": "Copiar texto seleccionado",
 	"quickMenus": "Menú Rápido",
 	"addToInbox": "Añadir a la Bandeja",
 	"markUnread": "Marcar como no leído",
