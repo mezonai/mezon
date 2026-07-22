@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
-import { isElectron } from '@mezon/utils';
 import type { LoadingStatus } from '@mezon/utils';
+import { isElectron } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
@@ -193,7 +193,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 	trackRefreshAttempt();
 	refreshInFlight = true;
-	const myGen = ++refreshGeneration;
+	const currentGeneration = ++refreshGeneration;
 
 	try {
 		const state = thunkAPI.getState() as RootState;
@@ -212,10 +212,10 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		let channelId = null;
 		let clanId = null;
-		if (currentChannelId && path.includes('/' + currentChannelId)) {
+		if (currentChannelId && path.includes(`/${currentChannelId}`)) {
 			clanId = currentClanId;
 			channelId = currentChannelId;
-		} else if (currentDirectId && path.includes('/' + currentDirectId)) {
+		} else if (currentDirectId && path.includes(`/${currentDirectId}`)) {
 			clanId = '0';
 			channelId = currentDirectId;
 		}
@@ -226,13 +226,13 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			joinPromises.push(thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId })));
 		}
 		await Promise.allSettled(joinPromises);
-		if (isStaleRefresh(myGen)) {
+		if (isStaleRefresh(currentGeneration)) {
 			console.warn('[refreshApp] aborted stale generation');
 			return { skipped: true, reason: 'stale' as const };
 		}
 
 		await sleep(JOIN_CLAN_SETTLE_MS);
-		if (isStaleRefresh(myGen)) {
+		if (isStaleRefresh(currentGeneration)) {
 			console.warn('[refreshApp] aborted stale generation');
 			return { skipped: true, reason: 'stale' as const };
 		}
@@ -250,7 +250,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 
 		await yieldToMain();
-		if (isStaleRefresh(myGen)) {
+		if (isStaleRefresh(currentGeneration)) {
 			console.warn('[refreshApp] aborted stale generation');
 			return { skipped: true, reason: 'stale' as const };
 		}
@@ -261,7 +261,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
 			await yieldToMain();
-			if (isStaleRefresh(myGen)) {
+			if (isStaleRefresh(currentGeneration)) {
 				console.warn('[refreshApp] aborted stale generation');
 				return { skipped: true, reason: 'stale' as const };
 			}
@@ -270,7 +270,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
 
 			await yieldToMain();
-			if (isStaleRefresh(myGen)) {
+			if (isStaleRefresh(currentGeneration)) {
 				console.warn('[refreshApp] aborted stale generation');
 				return { skipped: true, reason: 'stale' as const };
 			}
@@ -285,7 +285,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 
 		await yieldToMain();
-		if (isStaleRefresh(myGen)) {
+		if (isStaleRefresh(currentGeneration)) {
 			console.warn('[refreshApp] aborted stale generation');
 			return { skipped: true, reason: 'stale' as const };
 		}
@@ -294,7 +294,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
 		await Promise.allSettled(settledPromises);
-		if (isStaleRefresh(myGen)) {
+		if (isStaleRefresh(currentGeneration)) {
 			console.warn('[refreshApp] aborted stale generation');
 			return { skipped: true, reason: 'stale' as const };
 		}
