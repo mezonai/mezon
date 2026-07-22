@@ -12,13 +12,11 @@ import {
 	Direction_Mode,
 	EBacktickType,
 	EMessageCode,
-	EMimeTypes,
 	EOgpType,
 	LIMIT_MESSAGE,
 	MessageCrypt,
 	TypeMessage,
 	getMessageCreateTimeSeconds,
-	getMobileUploadedAttachments,
 	getPublicKeys,
 	getWebUploadedAttachments,
 	isFacebookLink,
@@ -34,6 +32,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCr
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
+import type { ChannelMessageAck } from 'mezon-js-protobuf';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -1028,11 +1027,7 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 
 			let uploadedFiles: ApiMessageAttachment[] = [];
 			if (attachments && attachments.length > 0) {
-				if (isMobile) {
-					uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
-				} else {
-					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-				}
+				uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
 				thunkAPI.dispatch(
 					messagesActions.updateSendingMessageAttachments({
 						channelId,
@@ -1185,19 +1180,12 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		let uploadedFiles: ApiMessageAttachment[] = [];
 		if (attachments && attachments.length > 0) {
-			if (isMobile) {
-				uploadedFiles = await getMobileUploadedAttachments({
-					attachments,
-					client,
-					session
-				});
-			} else {
-				uploadedFiles = await getWebUploadedAttachments({
-					attachments,
-					client,
-					session
-				});
-			}
+			uploadedFiles = await getWebUploadedAttachments({
+				attachments,
+				client,
+				session
+			});
+
 			thunkAPI.dispatch(
 				messagesActions.updateSendingMessageAttachments({
 					channelId: channelId as string,
@@ -1255,7 +1243,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 
 		let res;
-
 		try {
 			if (client) {
 				res = await client.writeChatMessage(
@@ -1273,6 +1260,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					'',
 					code
 				);
+				console.warn(res);
 			} else {
 				throw new Error('Socket not connected');
 			}
@@ -1292,6 +1280,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				avatar,
 				code
 			);
+			console.warn(res);
 		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
 
@@ -1301,7 +1290,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	async function sendWithRetry(retryCount: number): ReturnType<typeof doSend> {
 		try {
 			const res = await doSend();
-			if (res?.message_id === '0') {
+			if (!res?.message_id || res?.message_id === '0') {
 				const timeoutError = new Error('MESSAGE_INVALID');
 				timeoutError.name = 'MessageInvalid';
 				throw timeoutError;
@@ -1372,7 +1361,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
 
 		if (!isViewingOlderMessages) {
-			thunkAPI.dispatch(messagesActions.addNewMessage(fakeMess));
+			thunkAPI.dispatch(messagesActions.addFakeMessage(fakeMess));
 		}
 
 		try {
@@ -1392,13 +1381,14 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						sendTimeoutMap.set(tempId, timeoutId);
 					}
 				})
-			])) as { message_id?: string };
+			])) as ChannelMessageAck;
+
 			if (timeoutId) {
 				clearTimeout(timeoutId);
 				sendTimeoutMap.delete(tempId);
 			}
 
-			if (!isViewingOlderMessages && messageResult?.message_id) {
+			if (!isViewingOlderMessages && messageResult?.message_id && messageResult?.channel_id) {
 				const timestamp = Date.now() / 1000;
 				thunkAPI.dispatch(
 					channelMetaActions.setChannelLastSeenTimestamp({
@@ -1406,6 +1396,12 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						timestamp,
 						messageId: messageResult.message_id,
 						clanId
+					})
+				);
+				thunkAPI.dispatch(
+					messagesActions.removeFakeMessage({
+						channelId: fakeMess.channel_id,
+						fakeId: fakeMess.id
 					})
 				);
 			}
@@ -1776,7 +1772,15 @@ export const messagesSlice = createSlice({
 				message.reactions.push(action.payload);
 			}
 		},
-
+		addFakeMessage: (state, action: PayloadAction<MessagesEntity>) => {
+			const message = action.payload;
+			state.channelMessages[message.channel_id] = channelMessagesAdapter.addOne(state.channelMessages[message.channel_id], message);
+		},
+		removeFakeMessage: (state, action: PayloadAction<{ channelId: string; fakeId: string }>) => {
+			const { channelId, fakeId } = action.payload;
+			const entity = state.channelMessages[channelId];
+			state.channelMessages[channelId] = channelMessagesAdapter.removeOne(entity, fakeId);
+		},
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
 			const { code, channel_id: channelId, id: messageId, isSending, isMe, isAnonymous, content, topic_id, attachments } = action.payload;
 
@@ -1828,45 +1832,6 @@ export const messagesSlice = createSlice({
 						// remove sending message when receive new message by the same user
 						// potential bug: if the user send the same message multiple times
 						// or the sending message is the same as the received message from the server
-						if (!isSending && (isMe || isAnonymous)) {
-							const newContent = content;
-
-							const sendingMessages = state.channelMessages[channelId].ids.filter(
-								(id) => state.channelMessages[channelId].entities[id].isSending
-							);
-							if (sendingMessages && sendingMessages.length) {
-								for (const mid of sendingMessages) {
-									const message = state.channelMessages[channelId].entities[mid];
-									// temporary remove sending message that has the same content
-									// for later update, we could use some kind of id to identify the message
-
-									if (
-										((message?.content?.t === newContent?.t && message?.content?.t) ||
-											message?.attachments?.[0]?.filename === attachments?.[0]?.filename ||
-											attachments?.[0].filetype === EMimeTypes.sticker) &&
-										message?.channel_id === channelId
-									) {
-										const tempId = (message as ChannelMessageWithClientMeta | undefined)?.temp_id;
-										if (tempId) {
-											if (sendTimeoutMap.has(tempId)) {
-												clearTimeout(sendTimeoutMap.get(tempId));
-												sendTimeoutMap.delete(tempId);
-											}
-										}
-
-										state.channelMessages[channelId] = handleRemoveOneMessage({
-											state,
-											channelId,
-											messageId: mid
-										});
-
-										// remove the first one and break
-										// prevent removing all sending messages with the same content
-										break;
-									}
-								}
-							}
-						}
 					}
 
 					break;

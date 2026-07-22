@@ -4,6 +4,7 @@ import { EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelAttachment, ChannelStreamMode } from 'mezon-js';
+import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -175,6 +176,81 @@ export const fetchChannelAttachments = createAsyncThunk(
 		} catch (error) {
 			captureSentryError(error, 'attachment/fetchChannelAttachments');
 			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const multipartUploadAttachmentFileStart = createAsyncThunk(
+	'attachment/multipartUploadAttachmentFileStart',
+	async (
+		{
+			filename,
+			filetype,
+			size,
+			width = 0,
+			height = 0,
+			partCount = 1
+		}: {
+			filename: string;
+			filetype: string;
+			size: number;
+			width?: number;
+			height?: number;
+			partCount?: number;
+		},
+		thunkAPI
+	) => {
+		const request = {
+			filename,
+			filetype,
+			size,
+			...(width > 0 ? { width } : {}),
+			...(height > 0 ? { height } : {}),
+			...(partCount > 0 ? { part_count: partCount } : {})
+		};
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+			const response = await mezon.client.multipartUploadAttachmentFile(mezon.session, request);
+			return response;
+		} catch (error) {
+			console.error('error: ', error);
+			captureSentryError(error, 'attachment/multipartUploadAttachmentFileFinish');
+		}
+
+		return request;
+	}
+);
+
+export const multipartUploadAttachmentFileFinish = createAsyncThunk(
+	'attachment/multipartUploadAttachmentFileFinish',
+	async (
+		{
+			upload_id,
+			parts,
+			filename = ''
+		}: {
+			upload_id: string;
+			parts: [number, string][];
+			filename?: string;
+		},
+		thunkAPI
+	) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const partResults: MultipartUploadAttachmentPart[] = parts.map(([partNumber, eTag]) => ({
+				part_number: partNumber,
+				e_tag: eTag
+			}));
+			const response = await mezon.client.multipartUploadAttachmentFileFinish(mezon.session, {
+				filename,
+				parts: partResults,
+				upload_id
+			});
+			return response;
+		} catch (error) {
+			console.error('error: ', error);
+			captureSentryError(error, 'attachment/multipartUploadAttachmentFileFinish');
 		}
 	}
 );
