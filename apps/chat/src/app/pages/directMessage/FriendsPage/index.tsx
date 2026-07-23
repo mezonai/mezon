@@ -344,7 +344,7 @@ const FriendsPage = () => {
 							</div>
 							<div className="flex flex-col items-center gap-7">
 								<Image
-									src={'https://cdn.mezon.ai/landing-page-mezon/addfriends.webp'}
+									src={'https://cdn.komu.vn/landing-page-mezon/addfriends.webp'}
 									width={100}
 									height={100}
 									className="object-cover w-[646px] opacity-45"

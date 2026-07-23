@@ -429,7 +429,7 @@ export default ModalSticker;
 const PreviewStickerBox = ({ preview }: { preview: string }) => {
 	const sanitizedPreview = sanitizeUrlSecure(preview, {
 		allowedProtocols: ['https:', 'http:', 'data:', 'blob:'],
-		allowedDomains: ['cdn.mezon.ai', 'tenor.com'],
+		allowedDomains: ['cdn.komu.vn', 'tenor.com'],
 		maxLength: 2048
 	});
 

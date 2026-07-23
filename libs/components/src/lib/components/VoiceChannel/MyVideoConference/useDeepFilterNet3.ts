@@ -72,7 +72,7 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 					noiseReductionLevel: levelRef.current,
 					enabled,
 					assetConfig: {
-						cdnUrl: 'https://cdn.mezon.ai/AI/models/datas/noise_suppression/deepfilternet3'
+						cdnUrl: 'https://cdn.komu.vn/AI/models/datas/noise_suppression/deepfilternet3'
 					}
 				});
 				await track.setProcessor(processor);

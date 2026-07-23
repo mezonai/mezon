@@ -75,8 +75,8 @@ jobs:
           envkey_NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD: ${{ secrets.NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD }}
           envkey_NX_CHAT_APP_API_KLIPY_URL: https://api.klipy.com/api/v1
           envkey_NX_MAX_LENGTH_NAME_ALLOWED: 64
-          envkey_NX_LOGO_MEZON: https://cdn.mezon.ai/images/mezon_logo.png
-          envkey_NX_BASE_IMG_URL: https://cdn.mezon.ai
+          envkey_NX_LOGO_MEZON: https://cdn.komu.vn/images/mezon_logo.png
+          envkey_NX_BASE_IMG_URL: https://cdn.komu.vn
           envkey_NX_PROFILE_IMG_URL: https://profile.mezon.ai
           envkey_NX_CHAT_APP_OAUTH2_LOG_OUT_CALLBACK: https://mezon.ai/logout/callback
           envkey_NX_CHAT_APP_OAUTH2_LOG_OUT: https://oauth2.mezon.ai/oauth2/sessions/logout
