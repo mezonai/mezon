@@ -206,28 +206,28 @@ export enum EMuteState {
 export const STICKER_WAVE = {
 	NAME: 'hello',
 	LIST_STICKER: [
-		'https://cdn.mezon.ai/stickers/hellomezon.gif',
-		'https://cdn.mezon.ai/stickers/music_boy.gif',
-		'https://cdn.mezon.ai/stickers/music_girl.gif',
-		'https://cdn.mezon.ai/stickers/d1.gif',
-		'https://cdn.mezon.ai/stickers/d2.gif',
-		'https://cdn.mezon.ai/stickers/d3.gif',
-		'https://cdn.mezon.ai/stickers/d4.gif',
-		'https://cdn.mezon.ai/stickers/d5.gif',
-		'https://cdn.mezon.ai/stickers/whatsapp.gif',
-		'https://cdn.mezon.ai/stickers/zalo.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'https://cdn.mezon.ai/stickers/telegram.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'https://cdn.mezon.ai/stickers/slack.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'https://cdn.mezon.ai/stickers/discord.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'http://cdn.mezon.ai/landing-page-mezon/2021919345600368640.gif'
+		'https://cdn.komu.vn/stickers/hellomezon.gif',
+		'https://cdn.komu.vn/stickers/music_boy.gif',
+		'https://cdn.komu.vn/stickers/music_girl.gif',
+		'https://cdn.komu.vn/stickers/d1.gif',
+		'https://cdn.komu.vn/stickers/d2.gif',
+		'https://cdn.komu.vn/stickers/d3.gif',
+		'https://cdn.komu.vn/stickers/d4.gif',
+		'https://cdn.komu.vn/stickers/d5.gif',
+		'https://cdn.komu.vn/stickers/whatsapp.gif',
+		'https://cdn.komu.vn/stickers/zalo.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'https://cdn.komu.vn/stickers/telegram.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'https://cdn.komu.vn/stickers/slack.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'https://cdn.komu.vn/stickers/discord.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'http://cdn.komu.vn/landing-page-mezon/2021919345600368640.gif'
 	]
 };
 
-export const MEZON_AVATAR_URL = 'https://cdn.mezon.ai/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
+export const MEZON_AVATAR_URL = 'https://cdn.komu.vn/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
 export const WAVE_SENDER_NAME = 'Mezon';
 
 export const CURRENCY = {
