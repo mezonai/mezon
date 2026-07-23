@@ -88,7 +88,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 					<div className="hidden lg:flex items-center flex-shrink-0 min-w-[200px] lg:min-w-[220px] xl:min-w-[260px]">
 						<Link to="/" className="flex items-center hover:scale-110 transition-transform duration-300 active:scale-95">
 							<Image
-								src="https://cdn.mezon.ai/landing-page-mezon/mezonlogonew.png"
+								src="https://cdn.komu.vn/landing-page-mezon/mezonlogonew.png"
 								width={40}
 								height={40}
 								className="object-cover drop-shadow-md"

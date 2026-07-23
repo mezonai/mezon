@@ -238,7 +238,7 @@ const AboutMezon = () => {
 					</div>
 					<div className="w-full">
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/about-1.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/about-1.webp"
 							alt="Mezon interface preview"
 							className="w-full rounded-[32px] "
 							loading="lazy"
@@ -258,7 +258,7 @@ const AboutMezon = () => {
 					</div>
 					<div className="w-full flex justify-start">
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/about-2.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/about-2.webp"
 							alt="Mezon team collaborating"
 							className="w-full rounded-[32px] shadow-2xl"
 							loading="lazy"
@@ -282,19 +282,19 @@ const AboutMezon = () => {
 							title: 'Always Free',
 							description:
 								'We believe conversations, connections, and creations should always stay free and open — empowering communities to grow together.',
-							image: 'https://cdn.mezon.ai/landing-page-mezon/aboutmenu-1.webp'
+							image: 'https://cdn.komu.vn/landing-page-mezon/aboutmenu-1.webp'
 						},
 						{
 							title: 'Safe & Transparent',
 							description:
 								'You own your data, your rules, your community — so every interaction feels secure and trustworthy inside Mezon.',
-							image: 'https://cdn.mezon.ai/landing-page-mezon/aboutmenu-2.webp'
+							image: 'https://cdn.komu.vn/landing-page-mezon/aboutmenu-2.webp'
 						},
 						{
 							title: 'Powered by Creativity',
 							description:
 								'We celebrate expression and innovation — from chats to creations. Mezon gives you the tools to bring your ideas to life.',
-							image: 'https://cdn.mezon.ai/landing-page-mezon/aboutmenu-3.webp'
+							image: 'https://cdn.komu.vn/landing-page-mezon/aboutmenu-3.webp'
 						}
 					].map((value) => (
 						<div

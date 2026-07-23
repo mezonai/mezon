@@ -26,7 +26,7 @@ const TextChannelPage = () => {
 	const rawSlides = t('discover.slides', { returnObjects: true });
 	const slides = (Array.isArray(rawSlides) ? rawSlides : []).map((slide: { title: string; description: string }, index: number) => ({
 		...slide,
-		image: `https://cdn.mezon.ai/landing-page-mezon/feat${index + 1}.webp`
+		image: `https://cdn.komu.vn/landing-page-mezon/feat${index + 1}.webp`
 	}));
 
 	const rawFaqQuestions = t('faq.questions', { returnObjects: true });
@@ -215,7 +215,7 @@ const TextChannelPage = () => {
 								className={`absolute inset-0 bg-gradient-to-br from-[#8761df5f] to-[#7979ed4f] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 							/>
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/friendinclan.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/friendinclan.webp"
 								alt="Chill with friends"
 								className="max-w-[68vw] lg:max-w-[37vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 								loading="lazy"
@@ -250,7 +250,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/voicechannel.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/voicechannel.webp"
 								alt="Voice Channels"
 								className="max-w-[80vw] lg:max-w-[51vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -285,7 +285,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/dtcalnvoice.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/dtcalnvoice.webp"
 								alt="Stream and Announcements"
 								className="max-w-[74vw] lg:max-w-[39vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -320,7 +320,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/channelApp.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/channelApp.webp"
 								alt="Channel Apps"
 								className="max-w-[75vw] lg:max-w-[51vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -355,7 +355,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/supperbot.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/supperbot.webp"
 								alt="Super Intelligent Bot"
 								className="max-w-[74vw] lg:max-w-[57vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"

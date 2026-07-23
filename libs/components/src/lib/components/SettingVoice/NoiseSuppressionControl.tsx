@@ -106,7 +106,7 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 					sampleRate: ctx.sampleRate,
 					noiseReductionLevel: 0,
 					assetConfig: {
-						cdnUrl: 'https://cdn.mezon.ai/AI/models/datas/noise_suppression/deepfilternet3'
+						cdnUrl: 'https://cdn.komu.vn/AI/models/datas/noise_suppression/deepfilternet3'
 					}
 				});
 				await processor.initialize();
