@@ -1,5 +1,6 @@
 import { useMemberStatus } from '@mezon/core';
 import {
+	EInvoice,
 	selectChannelMembersSortedByStatus,
 	selectCurrentChannelId,
 	selectCurrentClanCreatorId,
@@ -11,7 +12,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, EUserStatus, generateE2eId, isElectron, isLinuxDesktop, isWindowsDesktop, useWindowSize } from '@mezon/utils';
+import { EUserStatus, createImgproxyUrl, generateE2eId, isElectron, isLinuxDesktop, isWindowsDesktop, useWindowSize } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -41,8 +42,17 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 	const secondaryLine =
 		userVoiceStatus && userMeta?.online ? (
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
-				<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-				{t('inVoice')}
+				{userVoiceStatus?.status === EInvoice.INVOICE ? (
+					<>
+						<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+						{t('inVoice')}
+					</>
+				) : (
+					<>
+						<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
+						{t('shareScreen')}
+					</>
+				)}
 			</span>
 		) : (
 			userMeta?.user_status || userCustomStatus
@@ -106,8 +116,17 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			userStatus={
 				userVoiceStatus && userMeta.online ? (
 					<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
-						<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-						{t('inVoice')}
+						{userVoiceStatus?.status === EInvoice.INVOICE ? (
+							<>
+								<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+								{t('inVoice')}
+							</>
+						) : (
+							<>
+								<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
+								{t('shareScreen')}
+							</>
+						)}
 					</span>
 				) : (
 					userMeta?.user_status || userCustomStatus
