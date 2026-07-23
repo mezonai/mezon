@@ -34,7 +34,7 @@ export const TextChannelSection = () => {
 							className={`absolute inset-0 bg-gradient-to-br from-[#8661df] to-[#7979ed] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 						/>
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/messapage.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/messapage.webp"
 							alt="Text Channel"
 							className="w-auto h-auto max-w-[81vw] lg:max-w-[50vw] 3xl:max-w-[30vw] object-contain  rounded-2xl relative z-10"
 							loading="lazy"

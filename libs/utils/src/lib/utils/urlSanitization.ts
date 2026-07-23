@@ -15,7 +15,7 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 
 		return allowedDomains.some((domain) => {
 			const normalizedDomain = domain.toLowerCase();
-			return hostname === normalizedDomain || hostname.endsWith('.' + normalizedDomain);
+			return hostname === normalizedDomain || hostname.endsWith(`.${normalizedDomain}`);
 		});
 	} catch (error) {
 		return false;
@@ -27,7 +27,7 @@ export function isTenorUrl(url: string | undefined): boolean {
 }
 
 export function isMezonCdnUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['cdn.mezon.ai']);
+	return isFromAllowedDomain(url, ['cdn.komu.vn']);
 }
 
 export function sanitizeUrl(url: string | undefined, options: SecureURLOptions = {}): string {
@@ -69,7 +69,6 @@ export function sanitizeUrl(url: string | undefined, options: SecureURLOptions =
 		return '';
 	}
 }
-
 
 export function sanitizeHref(url: string | undefined): string | undefined {
 	if (!url) return undefined;

@@ -26,7 +26,7 @@ const SidebarLogoItem = () => {
 	const currentDmId = useAppSelector(selectDmGroupCurrentId);
 	const currentDmIType = useAppSelector(selectDmGroupCurrentType);
 	const logoCustom = useAppSelector(selectLogoCustom);
-	const DEFAULT_LOGO_DM = 'https://cdn.mezon.ai/landing-page-mezon/logodefault.webp';
+	const DEFAULT_LOGO_DM = 'https://cdn.komu.vn/landing-page-mezon/logodefault.webp';
 	const setModeResponsive = useCallback(
 		(value: ModeResponsive) => {
 			dispatch(channelsActions.setModeResponsive({ clanId: currentClanId as string, mode: value }));

@@ -10,6 +10,7 @@
 	"reply": "답장",
 	"createThread": "스레드 만들기",
 	"copyText": "텍스트 복사",
+	"copyTextSelected": "선택한 텍스트 복사",
 	"quickMenus": "빠른 메뉴",
 	"addToInbox": " Inbox 추가",
 	"markUnread": "읽지 않음으로 표시",
