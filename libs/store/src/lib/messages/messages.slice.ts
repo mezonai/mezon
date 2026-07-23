@@ -1134,6 +1134,11 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 	}
 });
 
+export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (payload: MessagesEntity, thunkAPI) => {
+	thunkAPI.dispatch(messagesActions.addFakeMessage(payload));
+	return true;
+});
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -1402,6 +1407,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					messagesActions.removeFakeMessage({
 						channelId: fakeMess.channel_id,
 						fakeId: fakeMess.id
+					})
+				);
+				thunkAPI.dispatch(
+					addRealMessage({
+						...fakeMess,
+						id: messageResult.message_id,
+						isSending: false
 					})
 				);
 			}
@@ -1808,6 +1820,12 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Location:
 				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
+					if (isMe) {
+						const existMessage = state.channelMessages[channelId].entities[messageId];
+						if (existMessage.id === messageId) {
+							return;
+						}
+					}
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({
 							state,
