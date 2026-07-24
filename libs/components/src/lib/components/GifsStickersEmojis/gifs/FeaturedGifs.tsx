@@ -20,8 +20,15 @@ function FeaturedGifs({ onClickToTrending }: FeaturedGifsProps) {
 			role="button"
 			data-e2e={generateE2eId('mention.popover.gifs.trending')}
 		>
-			<div className="absolute inset-0 bg-black opacity-80 z-20 transition-opacity group-hover:opacity-70"></div>
 			<div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none gap-2">
+				<img
+					className="absolute inset-0 w-full h-full object-cover brightness-100 rounded-sm -z-10"
+					src={createImgproxyUrl(
+						'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmpwYWRtdDkzZjBuMXpnZjFwMDJmYzhuaHd6NWVoMzN4Z3p4YnpsMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PmUWM1rLqrThe7iBMd/giphy.gif'
+					)}
+					alt={'Trending gifs alt'}
+				/>
+				<div className="absolute inset-0 bg-black opacity-80 transition-opacity group-hover:opacity-70 -z-10"></div>
 				<Icons.TrendingGifs />
 				<span className="text-white text-lg font-manrope">Trending GIFs</span>
 			</div>
