@@ -181,7 +181,7 @@ const IntegrationsPage = () => {
 								className={`absolute inset-0 bg-gradient-to-br from-[#8761df5f] to-[#7979ed4f] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 							/>
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/inter1.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/inter1.webp"
 								alt="Everything You Need"
 								className="max-w-[68vw] lg:max-w-[43vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 								loading="lazy"
@@ -217,7 +217,7 @@ const IntegrationsPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/inter2.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/inter2.webp"
 								alt="Low-Code Integration"
 								className="max-w-[80vw] lg:max-w-[51vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -252,7 +252,7 @@ const IntegrationsPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/mznn.png"
+								src="https://cdn.komu.vn/landing-page-mezon/mznn.png"
 								alt="Bot and App Integration"
 								className="max-w-[74vw] lg:max-w-[37vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -291,7 +291,7 @@ const IntegrationsPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/inter4.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/inter4.webp"
 								alt="ERP System"
 								className="max-w-[75vw] lg:max-w-[46vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
