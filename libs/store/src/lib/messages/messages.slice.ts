@@ -1134,6 +1134,11 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 	}
 });
 
+export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (payload: MessagesEntity, thunkAPI) => {
+	thunkAPI.dispatch(messagesActions.addOneMessage(payload));
+	return true;
+});
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -1361,7 +1366,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
 
 		if (!isViewingOlderMessages) {
-			thunkAPI.dispatch(messagesActions.addFakeMessage(fakeMess));
+			thunkAPI.dispatch(messagesActions.addOneMessage(fakeMess));
 		}
 
 		try {
@@ -1402,6 +1407,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					messagesActions.removeFakeMessage({
 						channelId: fakeMess.channel_id,
 						fakeId: fakeMess.id
+					})
+				);
+				thunkAPI.dispatch(
+					addRealMessage({
+						...fakeMess,
+						id: messageResult.message_id,
+						isSending: false
 					})
 				);
 			}
@@ -1772,7 +1784,7 @@ export const messagesSlice = createSlice({
 				message.reactions.push(action.payload);
 			}
 		},
-		addFakeMessage: (state, action: PayloadAction<MessagesEntity>) => {
+		addOneMessage: (state, action: PayloadAction<MessagesEntity>) => {
 			const message = action.payload;
 			state.channelMessages[message.channel_id] = channelMessagesAdapter.addOne(state.channelMessages[message.channel_id], message);
 		},
@@ -1808,6 +1820,13 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Location:
 				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
+					if (isMe) {
+						const targetChannelId = topic_id && topic_id !== '0' ? topic_id : channelId;
+						const existMessage = state.channelMessages[targetChannelId].entities[messageId];
+						if (existMessage) {
+							return;
+						}
+					}
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({
 							state,
