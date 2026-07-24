@@ -150,7 +150,7 @@ export const checkSameDay = (startTimeString: string, endTimeString: string) => 
 export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] | null, rolesClan: IRolesClan[], refereceSenderId: string[]) => {
 	const uniqueUserId1s = Array.from(
 		new Set(
-			mentions.reduce<string[]>((acc, mention) => {
+			mentions?.reduce<string[]>((acc, mention) => {
 				if (mention.user_id && mention.user_id !== ID_MENTION_HERE) {
 					acc.push(mention.user_id);
 				}
