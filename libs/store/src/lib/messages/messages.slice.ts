@@ -1413,6 +1413,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					addRealMessage({
 						...fakeMess,
 						id: messageResult.message_id,
+						mentions,
 						isSending: false
 					})
 				);
