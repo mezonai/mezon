@@ -23,11 +23,11 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 }
 
 export function isTenorUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['tenor.com']);
+	return isFromAllowedDomain(url, ['tenor.com', 'static.klipy.com']);
 }
 
 export function isMezonCdnUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['cdn.komu.vn']);
+	return isFromAllowedDomain(url, ['cdn.komu.vn', 'cdn.komu.ai', 'cdn.mezon.ai']);
 }
 
 export function sanitizeUrl(url: string | undefined, options: SecureURLOptions = {}): string {
