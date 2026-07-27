@@ -23,7 +23,7 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 }
 
 export function isTenorUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['tenor.com', 'static.klipy.com']);
+	return isFromAllowedDomain(url, ['static.klipy.com']);
 }
 
 export function isMezonCdnUrl(url: string | undefined): boolean {
