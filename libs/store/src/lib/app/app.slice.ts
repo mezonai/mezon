@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
-import { isElectron } from '@mezon/utils';
 import type { LoadingStatus } from '@mezon/utils';
+import { isElectron } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
@@ -11,6 +11,7 @@ import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directActions } from '../direct/direct.slice';
+import { sleep } from '../helpers';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
 import { voiceActions } from '../voice/voice.slice';
@@ -24,8 +25,13 @@ const REFRESH_APP_CONFIG = {
 	cooldownMs: 30000
 };
 
+const JOIN_CLAN_SETTLE_MS = 2000;
+
 let refreshAttempts: number[] = [];
 let cooldownUntil: number | null = null;
+let refreshInFlight = false;
+let refreshCoalesceRequested = false;
+let refreshGeneration = 0;
 
 const canRefreshApp = (): { allowed: boolean; reason?: string } => {
 	const now = Date.now();
@@ -55,6 +61,22 @@ const canRefreshApp = (): { allowed: boolean; reason?: string } => {
 const trackRefreshAttempt = () => {
 	refreshAttempts.push(Date.now());
 };
+
+const isStaleRefresh = (gen: number) => gen !== refreshGeneration;
+
+const yieldToMain = (): Promise<void> =>
+	new Promise((resolve) => {
+		if (typeof MessageChannel === 'undefined') {
+			resolve();
+			return;
+		}
+		const channel = new MessageChannel();
+		channel.port1.onmessage = () => {
+			channel.port1.close();
+			resolve();
+		};
+		channel.port2.postMessage(undefined);
+	});
 
 export interface showSettingFooterProps {
 	status: boolean;
@@ -155,6 +177,13 @@ export const initialAppState: AppState = {
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
+	if (refreshInFlight) {
+		refreshCoalesceRequested = true;
+		refreshGeneration += 1;
+		console.warn('[refreshApp] coalesced');
+		return { skipped: true, reason: 'coalesced' as const };
+	}
+
 	const { allowed, reason } = canRefreshApp();
 
 	if (!allowed) {
@@ -163,6 +192,8 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 	}
 
 	trackRefreshAttempt();
+	refreshInFlight = true;
+	const currentGeneration = ++refreshGeneration;
 
 	try {
 		const state = thunkAPI.getState() as RootState;
@@ -181,16 +212,32 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		let channelId = null;
 		let clanId = null;
-		if (currentChannelId && path.includes('/' + currentChannelId)) {
+		if (currentChannelId && path.includes(`/${currentChannelId}`)) {
 			clanId = currentClanId;
 			channelId = currentChannelId;
-		} else if (currentDirectId && path.includes('/' + currentDirectId)) {
+		} else if (currentDirectId && path.includes(`/${currentDirectId}`)) {
 			clanId = '0';
 			channelId = currentDirectId;
 		}
 		thunkAPI.dispatch(clansActions.clearJoinList());
 
-		channelId &&
+		const joinPromises = [thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }))];
+		if (isClanView && currentClanId) {
+			joinPromises.push(thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId })));
+		}
+		await Promise.allSettled(joinPromises);
+		if (isStaleRefresh(currentGeneration)) {
+			console.warn('[refreshApp] aborted stale generation');
+			return { skipped: true, reason: 'stale' as const };
+		}
+
+		await sleep(JOIN_CLAN_SETTLE_MS);
+		if (isStaleRefresh(currentGeneration)) {
+			console.warn('[refreshApp] aborted stale generation');
+			return { skipped: true, reason: 'stale' as const };
+		}
+
+		if (channelId) {
 			thunkAPI.dispatch(
 				messagesActions.fetchMessages({
 					clanId: clanId || '',
@@ -200,16 +247,34 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 					noCache: true
 				})
 			);
+		}
 
-		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
+		await yieldToMain();
+		if (isStaleRefresh(currentGeneration)) {
+			console.warn('[refreshApp] aborted stale generation');
+			return { skipped: true, reason: 'stale' as const };
+		}
+
 		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
 		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
+			await yieldToMain();
+			if (isStaleRefresh(currentGeneration)) {
+				console.warn('[refreshApp] aborted stale generation');
+				return { skipped: true, reason: 'stale' as const };
+			}
+
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
 			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
-			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
+
+			await yieldToMain();
+			if (isStaleRefresh(currentGeneration)) {
+				console.warn('[refreshApp] aborted stale generation');
+				return { skipped: true, reason: 'stale' as const };
+			}
+
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
 					clanId: currentClanId ?? '',
@@ -219,18 +284,36 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			);
 		}
 
+		await yieldToMain();
+		if (isStaleRefresh(currentGeneration)) {
+			console.warn('[refreshApp] aborted stale generation');
+			return { skipped: true, reason: 'stale' as const };
+		}
+
 		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
 
 		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
 		await Promise.allSettled(settledPromises);
+		if (isStaleRefresh(currentGeneration)) {
+			console.warn('[refreshApp] aborted stale generation');
+			return { skipped: true, reason: 'stale' as const };
+		}
 
 		badgeService.onReconnect();
 		if (currentClanId && currentClanId !== '0') {
 			badgeService.syncClanBadge(currentClanId);
 		}
+
+		return { skipped: false as const };
 	} catch (error) {
 		captureSentryError(error, 'app/refreshApp');
 		return thunkAPI.rejectWithValue(error);
+	} finally {
+		refreshInFlight = false;
+		if (refreshCoalesceRequested) {
+			refreshCoalesceRequested = false;
+			thunkAPI.dispatch(refreshApp());
+		}
 	}
 });
 

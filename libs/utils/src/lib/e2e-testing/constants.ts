@@ -506,7 +506,9 @@ export const DATA_E2E_IDENTIFIER = {
 				},
 				name: '',
 				user_list: {
-					item: ''
+					item: {
+						screen_share: ''
+					}
 				},
 				user_list_collapsed: {
 					item: '',
@@ -1039,7 +1041,8 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	suggest_item: {
 		username: '',
-		clan_name: ''
+		clan_name: '',
+		count_badge: ''
 	},
 	badge: {
 		friend_pending: ''

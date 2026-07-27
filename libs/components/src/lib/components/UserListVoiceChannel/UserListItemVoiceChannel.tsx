@@ -29,7 +29,13 @@ function UserListItem({ id }: { id: string }) {
 				</div>
 				<div>{userStream ? <NameComponent id={userStream.id || ''} name={name || ''} /> : null}</div>
 			</div>
-			{invoiceStatus?.status === EInvoice.SHARING_SCREEN ? <Icons.VoiceScreenShareIcon color="#22c55e" className="w-4 h-4" /> : null}
+			{invoiceStatus?.status === EInvoice.SHARING_SCREEN ? (
+				<Icons.VoiceScreenShareIcon
+					color="#22c55e"
+					className="w-4 h-4"
+					data-e2e={generateE2eId('clan_page.channel_list.item.user_list.item.screen_share')}
+				/>
+			) : null}
 		</div>
 	);
 }

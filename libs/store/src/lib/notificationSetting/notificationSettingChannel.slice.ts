@@ -14,18 +14,6 @@ import type { RootState } from '../store';
 
 export const NOTIFICATION_SETTING_FEATURE_KEY = 'notificationsetting';
 
-const toStoredTimeMuteSeconds = (timeMuteSeconds?: number | null) => {
-	if (timeMuteSeconds === undefined || timeMuteSeconds === null || timeMuteSeconds === EMuteState.UN_MUTE) {
-		return timeMuteSeconds ?? undefined;
-	}
-
-	if (timeMuteSeconds === EMuteState.MUTED_INFINITY) {
-		return EMuteState.MUTED_INFINITY;
-	}
-
-	return Date.now() + timeMuteSeconds * 1000;
-};
-
 export const getMuteActionFromMuteTime = (muteTime?: number | null): number => {
 	if (muteTime === undefined || muteTime === null || muteTime === EMuteState.UN_MUTE) {
 		return 1;
@@ -352,7 +340,7 @@ export const notificationSettingSlice = createSlice({
 				id: channel_id,
 				channel_id,
 				...(active !== undefined && { active }),
-				...(time_mute_seconds !== undefined && { time_mute_seconds: toStoredTimeMuteSeconds(time_mute_seconds) })
+				...(time_mute_seconds !== undefined && { time_mute_seconds })
 			} as INotificationUserChannel;
 
 			NotificationSettingsAdapter.upsertOne(state, notificationEntity);
@@ -432,7 +420,7 @@ export const notificationSettingSlice = createSlice({
 						const notificationEntity = {
 							id: channelId,
 							...notifiSetting,
-							time_mute_seconds: toStoredTimeMuteSeconds(notifiSetting.time_mute_seconds)
+							time_mute_seconds: Date.now() / 1000 + (notifiSetting?.time_mute_seconds || 0)
 						} as INotificationUserChannel;
 
 						NotificationSettingsAdapter.upsertOne(state, notificationEntity);
