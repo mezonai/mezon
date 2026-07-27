@@ -15,7 +15,7 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 
 		return allowedDomains.some((domain) => {
 			const normalizedDomain = domain.toLowerCase();
-			return hostname === normalizedDomain || hostname.endsWith('.' + normalizedDomain);
+			return hostname === normalizedDomain || hostname.endsWith(`.${normalizedDomain}`);
 		});
 	} catch (error) {
 		return false;
