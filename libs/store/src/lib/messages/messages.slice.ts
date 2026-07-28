@@ -1220,33 +1220,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
-		const ogpData = selectOgpData(state);
-
-		const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
-
-		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0 && !isSocialMediaLink) {
-			const mk = [...(content.mk ?? [])];
-
-			mk.push({
-				description: ogpData?.description?.slice(0, 200) || '',
-				image: ogpData?.image || '',
-				title: ogpData.type !== EOgpType.image ? ogpData?.title || '' : '',
-				s: content.t?.length || 0,
-				e: (content.t?.length || 0) + 1,
-				type: EBacktickType.OGP_PREVIEW,
-				index: ogpData.index,
-				clanId: ogpData.clan_id,
-				url: ogpData.url,
-				member_count: ogpData.member_count,
-				banner: ogpData.banner,
-				is_community: ogpData.is_community
-			});
-			content = {
-				...content,
-				mk
-			};
-		}
-
 		let res;
 		try {
 			if (client) {
@@ -1331,6 +1304,33 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 
 		const finalAvatar = overrideAvatar || avatar;
+
+		const ogpData = selectOgpData(rootState);
+
+		const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
+
+		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0 && !isSocialMediaLink) {
+			const mk = [...(content.mk ?? [])];
+
+			mk.push({
+				description: ogpData?.description?.slice(0, 200) || '',
+				image: ogpData?.image || '',
+				title: ogpData.type !== EOgpType.image ? ogpData?.title || '' : '',
+				s: content.t?.length || 0,
+				e: (content.t?.length || 0) + 1,
+				type: EBacktickType.OGP_PREVIEW,
+				index: ogpData.index,
+				clanId: ogpData.clan_id,
+				url: ogpData.url,
+				member_count: ogpData.member_count,
+				banner: ogpData.banner,
+				is_community: ogpData.is_community
+			});
+			content = {
+				...content,
+				mk
+			};
+		}
 
 		const fakeMessage: ChannelMessageWithClientMeta = {
 			id,
