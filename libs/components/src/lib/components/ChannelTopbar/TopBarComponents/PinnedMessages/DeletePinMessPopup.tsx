@@ -2,7 +2,7 @@ import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TOPBARS_MAX_WIDTH, getShareContactInfo } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TOPBARS_MAX_WIDTH, generateE2eId, getShareContactInfo } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
@@ -103,7 +103,11 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 					</div>
 				</div>
 				<div className="w-full bg-theme-setting-primary p-4 flex justify-end gap-x-4">
-					<button onClick={closeModal} className="px-4 py-2 hover:underline rounded">
+					<button
+						onClick={closeModal}
+						data-e2e={generateE2eId('modal.unpin_message.button.cancel')}
+						className="px-4 py-2 hover:underline rounded"
+					>
 						{t('pinnedMessages.cancel')}
 					</button>
 					<button
@@ -111,6 +115,7 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 							handlePinMessage();
 							closeModal();
 						}}
+						data-e2e={generateE2eId('modal.unpin_message.button.unpin')}
 						className="px-4 py-2 hover:bg-opacity-85 rounded bg-[#DA363C] text-white font-medium"
 					>
 						{t('pinnedMessages.unpinIt')}
