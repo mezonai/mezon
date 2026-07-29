@@ -992,6 +992,12 @@ export const DATA_E2E_IDENTIFIER = {
 				cancel: '',
 				share: ''
 			}
+		},
+		unpin_message: {
+			button: {
+				cancel: '',
+				unpin: ''
+			}
 		}
 	},
 	icon: {
