@@ -13,7 +13,6 @@ import type { RemoteParticipant } from 'livekit-client';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-const EXTERNAL_CHANNEL_ID = '0';
 const LOADING_TIMEOUT_MS = 5000;
 const RATE_LIMIT_THRESHOLD = 10;
 const RATE_LIMIT_COOLDOWN_MS = 20000;
@@ -55,7 +54,7 @@ const ButtonAgent = ({ isExternalCalling, isShowMember }: AgentControlProps) => 
 
 	const handleAddAgent = async () => {
 		if (isExternalCalling) {
-			dispatchToggleAgent(EXTERNAL_CHANNEL_ID, room?.name || '');
+			dispatchToggleAgent('0', room?.name || '');
 		}
 
 		if (!currentVoice || disable) {
