@@ -1252,11 +1252,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	async function sendWithRetry(retryCount: number): ReturnType<typeof doSend> {
 		try {
 			const res = await doSend();
-			if (!res?.message_id || res?.message_id === '0') {
-				const timeoutError = new Error('MESSAGE_INVALID');
-				timeoutError.name = 'MessageInvalid';
-				throw timeoutError;
-			}
 			return res;
 		} catch (error) {
 			if (error === 'The socket timed out while waiting for a response.') {
