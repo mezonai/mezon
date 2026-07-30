@@ -1388,33 +1388,33 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						clanId
 					})
 				);
+			}
 
-				if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
-					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+			if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
+				const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
 
-					thunkAPI.dispatch(
-						messagesActions.updateSendingMessageAttachments({
-							channelId: channelId as string,
-							messageId: id,
-							attachments: toPublicMessageAttachments(attachments)
-						})
-					);
-					await new Promise((resolve) => setTimeout(resolve, 1000));
-					thunkAPI.dispatch(
-						editMessageViaApi({
-							content: {
-								...content,
-								presign_finish
-							},
-							channelId,
-							clanId,
-							isPublic,
-							messageId: messageResult?.message_id,
-							mode,
-							hideEditted: true
-						})
-					);
-				}
+				thunkAPI.dispatch(
+					messagesActions.updateSendingMessageAttachments({
+						channelId: channelId as string,
+						messageId: id,
+						attachments: toPublicMessageAttachments(attachments)
+					})
+				);
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				thunkAPI.dispatch(
+					editMessageViaApi({
+						content: {
+							...content,
+							presign_finish
+						},
+						channelId,
+						clanId,
+						isPublic,
+						messageId: messageResult?.message_id,
+						mode,
+						hideEditted: true
+					})
+				);
 			}
 		} catch (error) {
 			const payload = originalSendPayload;
