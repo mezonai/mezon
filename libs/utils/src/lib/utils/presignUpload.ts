@@ -5,6 +5,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 	const result = await Promise.all(
 		attachments.map(async (attach) => {
 			const nonDirectAttachments = !isTenorUrl(attach.url) && !isMezonCdnUrl(attach.url);
+			console.warn('attach.url: ', attach.url, nonDirectAttachments);
 
 			if (!nonDirectAttachments) {
 				return attach;
@@ -27,5 +28,6 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 		})
 	);
 
+	console.warn('result: ', result);
 	return result;
 }
