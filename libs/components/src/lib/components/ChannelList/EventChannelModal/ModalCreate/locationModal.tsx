@@ -67,7 +67,7 @@ const LocationModal = (props: LocationModalProps) => {
 		});
 	};
 
-	const LOCATION_MAX_LENGTH = 100;
+	const LOCATION_MAX_LENGTH = 500;
 	const locationTooLong = (contentSubmit.address?.length ?? 0) > LOCATION_MAX_LENGTH;
 
 	const onChangeAddress = (e: any) => {
