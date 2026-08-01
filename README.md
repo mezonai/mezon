@@ -405,7 +405,7 @@ Mezon is built on top of amazing open-source technologies:
 <div align="center">
   <p>
     <strong>Made with ❤️ by the Mezon Team</strong><br>
-    <em>Connecting communities worldwide</em>
+    <em>Your world, your clan</em>
   </p>
   
   <p>
