@@ -391,9 +391,9 @@ We welcome contributions from the community! Here's how you can help:
 Mezon is built on top of amazing open-source technologies:
 
 -   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
--   [livekit](https://livekit.io) - Livekit
+-   [mezon-sfu](https://github.com/mezonai) - mezon-sfu
 -   [ScyllaDB](https://www.scylladb.com) - ScyllaDB
--   [Redis](https://redis.io) - Redis
+-   [Valkey](https://github.com/valkey-io/valkey) - Valkey
 -   [imgproxy](https://imgproxy.net) - imgproxy
 -   [minio](https://min.io) - minio
 -   [Ory Hydra](https://www.ory.sh/hydra) - OAuth 2.0 and OpenID Connect server
