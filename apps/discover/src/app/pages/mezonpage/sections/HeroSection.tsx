@@ -13,7 +13,7 @@ interface HeroSectionProps {
 export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isImageLoaded, setIsImageLoaded] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);

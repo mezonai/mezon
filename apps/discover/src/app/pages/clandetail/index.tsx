@@ -13,7 +13,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const ClanWorld = () => {
 	const { t } = useTranslation('clandetail');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [openFAQ, setOpenFAQ] = useState<number | null>(0);
 	const [isModalOpen, setIsModalOpen] = useState(false);
