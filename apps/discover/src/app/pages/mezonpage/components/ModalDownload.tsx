@@ -13,10 +13,10 @@ export const ModalDownload: React.FC<ModalDownloadProps> = ({ isOpen, onClose })
 
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
-		windowsPortable: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`,
+		windowsPortable: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest-${version}-win-x64-portable.exe`,
 		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
 		macosIntel: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
-		linux: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
+		linux: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest-${version}-linux-amd64.deb`
 	};
 
 	useEffect(() => {
