@@ -54,7 +54,7 @@ const AnimatedSection = ({ className = '', children }: AnimatedSectionProps) => 
 
 const AboutMezon = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 	const [openAboutUs, setOpenAboutUs] = useState(false);

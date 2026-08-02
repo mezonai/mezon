@@ -61,7 +61,7 @@ function MezonPage() {
 		setSideBarIsOpen(!sideBarIsOpen);
 	};
 
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const downloadUrl: string = useMemo(() => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';

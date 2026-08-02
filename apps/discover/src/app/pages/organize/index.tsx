@@ -9,7 +9,7 @@ import HeaderMezon from '../mezonpage/header';
 
 const OrganizePage = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const downloadUrl: string =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'

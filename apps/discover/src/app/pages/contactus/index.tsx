@@ -8,7 +8,7 @@ import HeaderMezon from '../mezonpage/header';
 
 const ContactUsPage = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
 	const downloadUrl: string =
