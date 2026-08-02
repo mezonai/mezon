@@ -66,13 +66,13 @@ function MezonPage() {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`;
+			return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-linux-amd64.deb`;
 		}
-		return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
+		return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64.exe`;
 	}, [platform, version]);
 
 	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64-portable.exe`;
 	const scrollToSection = (id: string, event: React.MouseEvent) => {
 		event.preventDefault();
 
