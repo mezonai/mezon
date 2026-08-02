@@ -14,7 +14,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const TextChannelPage = () => {
 	const { t } = useTranslation('textchannel');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});

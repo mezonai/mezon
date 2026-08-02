@@ -256,5 +256,6 @@
   "build": {
     "npmRebuild": false
   },
-  "author": "Mezon App <hello@mezon.vn>"
+  "author": "Mezon App <hello@mezon.vn>",
+  "desktopVersion": "2.0.1"
 }

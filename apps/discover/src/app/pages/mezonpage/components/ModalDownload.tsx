@@ -8,7 +8,7 @@ interface ModalDownloadProps {
 }
 
 export const ModalDownload: React.FC<ModalDownloadProps> = ({ isOpen, onClose }) => {
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	const downloadLinks = {
