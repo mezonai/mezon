@@ -14,7 +14,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const TextChannelPage = () => {
 	const { t } = useTranslation('textchannel');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
@@ -36,10 +36,10 @@ const TextChannelPage = () => {
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
+				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-linux-amd64.deb`
+				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64.exe`;
 	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64-portable.exe`;
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);

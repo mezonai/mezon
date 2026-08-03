@@ -54,7 +54,7 @@ const AnimatedSection = ({ className = '', children }: AnimatedSectionProps) => 
 
 const AboutMezon = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 	const [openAboutUs, setOpenAboutUs] = useState(false);
@@ -64,9 +64,9 @@ const AboutMezon = () => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`;
+			return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-linux-amd64.deb`;
 		}
-		return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
+		return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64.exe`;
 	}, [platform, version]);
 	const trackHeaderLoginClick = (action: string) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
@@ -78,7 +78,7 @@ const AboutMezon = () => {
 		}
 	};
 	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64-portable.exe`;
 
 	const handleDownloadDesktop = () => {
 		if (platform === Platform.IOS) {
@@ -189,7 +189,7 @@ const AboutMezon = () => {
 										<span className="text-gray-700 font-svnAvo">macOS (Intel)</span>
 									</a>
 									<a
-										href={`${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`}
+										href={`${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-linux-amd64.deb`}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-purple-600 hover:text-pink-600"
