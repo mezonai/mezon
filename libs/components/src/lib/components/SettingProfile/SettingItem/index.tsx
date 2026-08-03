@@ -2,7 +2,7 @@ import { useAppNavigation } from '@mezon/core';
 import mezonPackage from '@mezon/package-js';
 import { appActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
-import { EUserSettings, generateE2eId, isElectron, QUIT_APP } from '@mezon/utils';
+import { EUserSettings, QUIT_APP, generateE2eId, isElectron } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -131,6 +131,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleButtonClick(EUserSettings.LANGUAGE);
 						onItemClick && onItemClick(EUserSettings.LANGUAGE);
 					}}
+					data-e2e={generateE2eId(`user_setting.language.tab_language`)}
 				>
 					{t('setting:language.title')}
 				</button>
@@ -204,7 +205,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						</button>
 					</>
 				)}
-				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.version}</div>
+				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.desktopVersion}</div>
 			</div>
 		</div>
 	);

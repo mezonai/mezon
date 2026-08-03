@@ -221,6 +221,9 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 	const previewMode = useSelector(selectOnboardingMode);
 	const showPreviewMode = useMemo(() => {
+		if (selectUserProcessing?.onboarding_step === undefined) {
+			return false;
+		}
 		if (previewMode?.open && previewMode.clanId === currentClanId) {
 			return true;
 		}

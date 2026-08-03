@@ -32,7 +32,6 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCr
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
-import type { ChannelMessageAck } from 'mezon-js-protobuf';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -114,7 +113,7 @@ export type FetchMessageParam = {
 export interface MessagesState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	isSending?: boolean;
+	queueSending: Record<string, string>;
 	unreadMessagesEntries?: Record<string, string>;
 	typingUsers?: Record<string, ChannelTypingState>;
 	openOptionMessageState: boolean;
@@ -878,7 +877,7 @@ type SendMessagePayload = {
 	channelId: string;
 	content: IMessageSendPayload;
 	mentions?: Array<ApiMessageMention>;
-	attachments?: Array<ApiMessageAttachment>;
+	attachments?: Array<ApiMessageAttachment & { uploadPath?: string }>;
 	references?: Array<ApiMessageRef>;
 	anonymous?: boolean;
 	mentionEveryone?: boolean;
@@ -1025,19 +1024,18 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 				throw new Error('Client is not initialized');
 			}
 
-			let uploadedFiles: ApiMessageAttachment[] = [];
 			if (attachments && attachments.length > 0) {
-				uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
+				thunkAPI.dispatch(handleUploadFileToMinIO(attachments));
 				thunkAPI.dispatch(
 					messagesActions.updateSendingMessageAttachments({
 						channelId,
 						messageId: id,
-						attachments: toPublicMessageAttachments(uploadedFiles)
+						attachments: toPublicMessageAttachments(attachments)
 					})
 				);
 			}
 
-			const messageResult = await doSend(uploadedFiles);
+			const messageResult = await doSend(attachments || []);
 
 			if (!isViewingOlderMessages && messageResult?.channel_id) {
 				const timestamp = Date.now() / 1000;
@@ -1134,8 +1132,25 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 	}
 });
 
+export const handleUploadFileToMinIO = createAsyncThunk(
+	'chat/handleUploadFileToMinIO',
+	async (attachments: (ApiMessageAttachment & { uploadPath?: string })[], thunkAPI) => {
+		const uploadedFiles = (await getWebUploadedAttachments({ attachments })).filter((attachment) => Boolean(attachment));
+		return uploadedFiles as string[];
+	}
+);
+
 export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (payload: MessagesEntity, thunkAPI) => {
+	const state = thunkAPI.getState() as RootState;
+	const isBottom = !selectShowScrollDownButton(state, payload.channel_id);
 	thunkAPI.dispatch(messagesActions.addOneMessage(payload));
+	thunkAPI.dispatch(
+		messagesActions.addMessageToViewport({
+			channelId: payload.channel_id,
+			messageId: payload.id,
+			keep50items: isBottom
+		})
+	);
 	return true;
 });
 
@@ -1183,23 +1198,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			throw new Error('Client is not initialized');
 		}
 
-		let uploadedFiles: ApiMessageAttachment[] = [];
-		if (attachments && attachments.length > 0) {
-			uploadedFiles = await getWebUploadedAttachments({
-				attachments,
-				client,
-				session
-			});
-
-			thunkAPI.dispatch(
-				messagesActions.updateSendingMessageAttachments({
-					channelId: channelId as string,
-					messageId: id,
-					attachments: toPublicMessageAttachments(uploadedFiles)
-				})
-			);
-		}
-
 		const state = thunkAPI.getState() as RootState;
 		if (checkEnableE2EE) {
 			const currentDM = selectCurrentDM(state);
@@ -1221,6 +1219,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 
 		let res;
+
 		try {
 			if (client) {
 				res = await client.writeChatMessage(
@@ -1231,14 +1230,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					isPublic,
 					content,
 					anonymous ? undefined : mentions,
-					uploadedFiles,
+					attachments,
 					references,
 					anonymous,
 					mentionEveryone,
 					'',
 					code
 				);
-				console.warn(res);
 			} else {
 				throw new Error('Socket not connected');
 			}
@@ -1251,14 +1249,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				isPublic,
 				typeof content === 'object' ? JSON.stringify(content) : content,
 				anonymous ? undefined : mentions,
-				uploadedFiles,
+				attachments,
 				references,
 				anonymous,
 				mentionEveryone,
 				avatar,
 				code
 			);
-			console.warn(res);
 		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
 
@@ -1268,11 +1265,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	async function sendWithRetry(retryCount: number): ReturnType<typeof doSend> {
 		try {
 			const res = await doSend();
-			if (!res?.message_id || res?.message_id === '0') {
-				const timeoutError = new Error('MESSAGE_INVALID');
-				timeoutError.name = 'MessageInvalid';
-				throw timeoutError;
-			}
 			return res;
 		} catch (error) {
 			if (error === 'The socket timed out while waiting for a response.') {
@@ -1331,6 +1323,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mk
 			};
 		}
+		const needUpload = attachments?.some((attachment) => attachment.uploadPath);
+		if (needUpload) {
+			content = {
+				...content,
+				presign_finish: []
+			};
+		}
 
 		const fakeMessage: ChannelMessageWithClientMeta = {
 			id,
@@ -1353,7 +1352,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			references: references?.filter((item) => item) || [],
 			isMe: true,
 			hide_editted: true,
-			isAnonymous: anonymous
+			isAnonymous: anonymous,
+			mentions
 		};
 		const fakeMess = await thunkAPI
 			.dispatch(
@@ -1366,7 +1366,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
 
 		if (!isViewingOlderMessages) {
-			thunkAPI.dispatch(messagesActions.addOneMessage(fakeMess));
+			thunkAPI.dispatch(addRealMessage(fakeMess));
+			thunkAPI.dispatch(messagesActions.addQueueSending(fakeMess.id));
 		}
 
 		try {
@@ -1386,14 +1387,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						sendTimeoutMap.set(tempId, timeoutId);
 					}
 				})
-			])) as ChannelMessageAck;
-
+			])) as { message_id?: string };
 			if (timeoutId) {
 				clearTimeout(timeoutId);
 				sendTimeoutMap.delete(tempId);
 			}
 
-			if (!isViewingOlderMessages && messageResult?.message_id && messageResult?.channel_id) {
+			if (!isViewingOlderMessages && messageResult?.message_id) {
 				const timestamp = Date.now() / 1000;
 				thunkAPI.dispatch(
 					channelMetaActions.setChannelLastSeenTimestamp({
@@ -1405,7 +1405,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				);
 				thunkAPI.dispatch(
 					messagesActions.removeFakeMessage({
-						channelId: fakeMess.channel_id,
+						channelId,
 						fakeId: fakeMess.id
 					})
 				);
@@ -1413,13 +1413,41 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					addRealMessage({
 						...fakeMess,
 						id: messageResult.message_id,
-						mentions,
+						message_id: messageResult.message_id,
 						isSending: false
+					})
+				);
+			}
+
+			if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
+				const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+
+				thunkAPI.dispatch(
+					messagesActions.updateSendingMessageAttachments({
+						channelId: channelId as string,
+						messageId: id,
+						attachments: toPublicMessageAttachments(attachments)
+					})
+				);
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				thunkAPI.dispatch(
+					editMessageViaApi({
+						content: {
+							...content,
+							presign_finish
+						},
+						channelId,
+						clanId,
+						isPublic,
+						messageId: messageResult?.message_id,
+						mode,
+						hideEditted: true
 					})
 				);
 			}
 		} catch (error) {
 			const payload = originalSendPayload;
+			delete state.queueSending[fakeMess.id];
 			if (sendTimeoutMap.has(tempId)) {
 				clearTimeout(sendTimeoutMap.get(tempId));
 				sendTimeoutMap.delete(tempId);
@@ -1514,13 +1542,9 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 			throw new Error('Client is not initialized');
 		}
 
-		let uploadedFiles: ApiMessageAttachment[] = [];
 		if (attachments && attachments.length > 0) {
-			uploadedFiles = await getWebUploadedAttachments({
-				attachments,
-				client,
-				session
-			});
+			thunkAPI.dispatch(handleUploadFileToMinIO(attachments));
+
 			attachments.forEach(revokePreSendAttachmentUrls);
 		}
 
@@ -1538,7 +1562,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 			isPublic,
 			content,
 			mentions,
-			uploadedFiles,
+			attachments,
 			references,
 			false,
 			false,
@@ -1723,7 +1747,7 @@ const channelMessagesAdapter = createEntityAdapter({
 export const initialMessagesState: MessagesState = {
 	loadingStatus: 'not loaded',
 	error: null,
-	isSending: false,
+	queueSending: {},
 	unreadMessagesEntries: {},
 	typingUsers: {},
 	openOptionMessageState: false,
@@ -1793,6 +1817,13 @@ export const messagesSlice = createSlice({
 			const { channelId, fakeId } = action.payload;
 			const entity = state.channelMessages[channelId];
 			state.channelMessages[channelId] = channelMessagesAdapter.removeOne(entity, fakeId);
+			delete state.queueSending[fakeId];
+		},
+		addQueueSending: (state, action: PayloadAction<string>) => {
+			state.queueSending[action.payload] = action.payload;
+		},
+		deleteQueueSending: (state, action: PayloadAction<string>) => {
+			delete state.queueSending[action.payload];
 		},
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
 			const { code, channel_id: channelId, id: messageId, isSending, isMe, isAnonymous, content, topic_id, attachments } = action.payload;
@@ -1822,9 +1853,8 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
 					if (isMe) {
-						const targetChannelId = topic_id && topic_id !== '0' ? topic_id : channelId;
-						const existMessage = state.channelMessages[targetChannelId].entities[messageId];
-						if (existMessage) {
+						const existSendingMessage = Object.keys(state.queueSending).length > 0;
+						if (existSendingMessage) {
 							return;
 						}
 					}

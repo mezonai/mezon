@@ -53,7 +53,7 @@ export function isPresignAttachmentPending(
 	presignFinishKeys: string[] | null,
 	attachments?: ApiMessageAttachment[]
 ): boolean {
-	if (presignFinishKeys === null || !url || !isMezonCdnUrl(url)) return false;
+	if (presignFinishKeys === null || !url) return false;
 	if (attachments && areAllPresignAttachmentsFinished(attachments, presignFinishKeys)) return false;
 
 	const presignKey = getPresignKeyFromAttachmentUrl(url);

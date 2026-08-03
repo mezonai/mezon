@@ -816,7 +816,15 @@ export const DATA_E2E_IDENTIFIER = {
 					}
 				},
 				message: '',
-				for_you: '',
+				for_you: {
+					username: '',
+					message: '',
+					timestamp: '',
+					button: {
+						remove: '',
+						jump: ''
+					}
+				},
 				action_tabs: ''
 			}
 		},
@@ -902,6 +910,12 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		devices: {
 			tab_devices: ''
+		},
+		language: {
+			tab_language: '',
+			language_item: {
+				language_name: ''
+			}
 		},
 		profile: {
 			button_setting: '',
@@ -991,6 +1005,12 @@ export const DATA_E2E_IDENTIFIER = {
 			button: {
 				cancel: '',
 				share: ''
+			}
+		},
+		unpin_message: {
+			button: {
+				cancel: '',
+				unpin: ''
 			}
 		}
 	},
