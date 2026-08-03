@@ -96,7 +96,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 						}
 
 						try {
-							const result = await connectSocket();
+							await connectSocket();
 							connectOk = true;
 							break;
 						} catch (error) {
