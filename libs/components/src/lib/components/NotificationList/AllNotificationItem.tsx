@@ -163,6 +163,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 				<button
 					className="absolute py-1 px-2 bottom-[10px] z-50 right-3 text-[10px] rounded-lg border-theme-primary transition-all duration-300 group-hover:block hidden bg-item-theme"
 					onClick={handleClickJump}
+					data-e2e={generateE2eId('chat.channel_message.inbox.for_you.button.jump')}
 				>
 					{t('tooltips.jump')}
 				</button>
