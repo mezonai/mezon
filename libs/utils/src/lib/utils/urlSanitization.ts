@@ -26,8 +26,16 @@ export function isTenorUrl(url: string | undefined): boolean {
 	return isFromAllowedDomain(url, ['static.klipy.com']);
 }
 
+/**
+ * Hosts that serve attachments uploaded through a presigned URL. Keep this in
+ * step with `createImgproxyUrl`: an attachment the proxy is willing to fetch but
+ * this list does not cover would slip past the presign gate and let imgproxy
+ * cache a not-found for an object that has not finished uploading.
+ */
+export const MEZON_CDN_DOMAINS = ['cdn.komu.vn', 'cdn.komu.ai', 'cdn.mezon.ai', 'cdn.mezon.vn'];
+
 export function isMezonCdnUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['cdn.komu.vn', 'cdn.komu.ai', 'cdn.mezon.ai']);
+	return isFromAllowedDomain(url, MEZON_CDN_DOMAINS);
 }
 
 export function sanitizeUrl(url: string | undefined, options: SecureURLOptions = {}): string {

@@ -28,6 +28,7 @@ import {
 	addAttributesSearchList,
 	generateE2eId,
 	getAvatarForPrioritize,
+	isAttachmentPresignPendingForMessage,
 	isFileAttachment,
 	isImageFileType,
 	isVideoFileType,
@@ -534,6 +535,10 @@ const ForwardMessageModal = () => {
 		return { attachmentStats: stats, previewAttachment: preview };
 	}, [allForwardAttachments]);
 
+	// The message being forwarded may still be uploading; requesting its CDN url
+	// now would only cache a not-found.
+	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(previewAttachment?.attachment?.url, selectedMessage);
+
 	return (
 		<ModalLayout onClose={handleCloseModal}>
 			<div className="bg-theme-setting-primary w-[550px] text-theme-primary pt-4 rounded" data-e2e={generateE2eId('modal.forward_message')}>
@@ -636,7 +641,9 @@ const ForwardMessageModal = () => {
 						</div>
 						{previewAttachment && (
 							<div className="relative w-20 h-20 rounded overflow-hidden bg-theme-input flex-shrink-0">
-								{previewAttachment.isVideo ? (
+								{isPreviewPresignPending ? (
+									<div className="w-full h-full" />
+								) : previewAttachment.isVideo ? (
 									<>
 										<video src={previewAttachment.attachment.url} className="w-full h-full object-cover" />
 										<div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">

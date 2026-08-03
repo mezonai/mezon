@@ -63,7 +63,7 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 				</div>
 				<div className={`flex flex-col gap-2 py-2  px-[16px] min-h-full flex-1 overflow-y-auto thread-scroll`}>
 					{filteredAttachments.map((attachment) => (
-						<FileItem key={attachment.id} attachmentData={attachment} />
+						<FileItem key={attachment.id} attachmentData={attachment} channelId={channelId} />
 					))}
 
 					{!filteredAttachments.length && <EmptyFile />}

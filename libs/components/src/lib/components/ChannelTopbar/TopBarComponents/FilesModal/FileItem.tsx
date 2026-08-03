@@ -1,7 +1,15 @@
 import type { AttachmentEntity } from '@mezon/store';
-import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
+import { selectMemberClanByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { convertTimeString, DOWNLOAD_FILE, EFailAttachment, electronBridge, isElectron } from '@mezon/utils';
+import {
+	convertTimeString,
+	DOWNLOAD_FILE,
+	EFailAttachment,
+	electronBridge,
+	isAttachmentPresignPendingForMessage,
+	isElectron,
+	shouldHidePresignAttachment
+} from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +18,16 @@ import { RenderAttachmentThumbnail } from '../../../ThumbnailAttachmentRender';
 type FileItemProps = {
 	readonly attachmentData: AttachmentEntity;
 	readonly mode?: ChannelStreamMode;
+	readonly channelId?: string;
 };
 
-const FileItem = ({ attachmentData, mode }: FileItemProps) => {
+const FileItem = ({ attachmentData, mode, channelId }: FileItemProps) => {
 	const { t } = useTranslation('channelTopbar');
+	const sourceMessage = useAppSelector((state) =>
+		attachmentData.message_id && channelId ? selectMessageByMessageId(state, channelId, attachmentData.message_id) : undefined
+	);
+	const isPresignPending = isAttachmentPresignPendingForMessage(attachmentData.url, sourceMessage);
+	const isHidden = shouldHidePresignAttachment(attachmentData.url, sourceMessage);
 	const userSendAttachment = useAppSelector((state) => selectMemberClanByUserId(state, attachmentData?.uploader ?? ''));
 	const username = userSendAttachment?.user?.username;
 	const attachmentSendTime = attachmentData?.create_time_seconds ? convertTimeString(attachmentData?.create_time_seconds * 1000) : '';
@@ -58,7 +72,12 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 			}
 		}
 	};
-	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment: attachmentData, size: 'w-8 h-10', isFileList: true });
+	const thumbnailAttachment = RenderAttachmentThumbnail({
+		attachment: attachmentData,
+		size: 'w-8 h-10',
+		isFileList: true,
+		isPresignPending
+	});
 
 	const hideTheInformationFile =
 		attachmentData.filetype !== 'image/gif' &&
@@ -70,6 +89,8 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 	const hoverOptButton = () => {
 		setHoverShowOptButtonStatus(true);
 	};
+
+	if (isHidden) return null;
 
 	return (
 		<div
