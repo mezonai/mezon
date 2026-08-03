@@ -15,6 +15,7 @@ import {
 	selectCurrentChannelId,
 	selectDmGroupCurrentId,
 	selectLoadingStatus,
+	selectMessageByMessageId,
 	selectModeResponsive,
 	toggleIsShowPopupForwardFalse,
 	useAppDispatch,
@@ -535,9 +536,21 @@ const ForwardMessageModal = () => {
 		return { attachmentStats: stats, previewAttachment: preview };
 	}, [allForwardAttachments]);
 
+	// Forwarding a whole run of messages means the preview can belong to a sibling
+	// of the selected one, so gate against whichever message actually carries it.
+	const previewMessageId = previewAttachment?.attachment?.message_id;
+	const previewChannelId = (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) || '';
+	const previewOwnerMessage = useAppSelector((state) =>
+		previewMessageId && previewMessageId !== selectedMessage?.id && previewChannelId
+			? selectMessageByMessageId(state, previewChannelId, previewMessageId)
+			: undefined
+	);
 	// The message being forwarded may still be uploading; requesting its CDN url
 	// now would only cache a not-found.
-	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(previewAttachment?.attachment?.url, selectedMessage);
+	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(
+		previewAttachment?.attachment?.url,
+		previewOwnerMessage ?? selectedMessage
+	);
 
 	return (
 		<ModalLayout onClose={handleCloseModal}>

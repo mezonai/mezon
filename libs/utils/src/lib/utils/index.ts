@@ -952,9 +952,11 @@ type ImgproxyOptions = {
 
 export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptions = { width: 100, height: 100, resizeType: 'fit' }) => {
 	if (!sourceImageUrl) return '';
-	// Must stay in step with isMezonCdnUrl: proxying a host the presign gate does
-	// not recognise lets imgproxy cache a not-found for an unfinished upload.
-	if (!isMezonCdnUrl(sourceImageUrl) && !sourceImageUrl?.startsWith('https://profile.mezon')) {
+	// The host list must stay in step with isMezonCdnUrl: proxying a host the
+	// presign gate does not recognise lets imgproxy cache a not-found for an
+	// upload that has not finished. Still https-only, as before.
+	const isProxyableCdn = sourceImageUrl.startsWith('https://') && isMezonCdnUrl(sourceImageUrl);
+	if (!isProxyableCdn && !sourceImageUrl?.startsWith('https://profile.mezon')) {
 		return sourceImageUrl;
 	}
 	const { width, height, resizeType } = options;
