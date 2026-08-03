@@ -131,6 +131,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleButtonClick(EUserSettings.LANGUAGE);
 						onItemClick && onItemClick(EUserSettings.LANGUAGE);
 					}}
+					data-e2e={generateE2eId(`user_setting.language.tab_language`)}
 				>
 					{t('setting:language.title')}
 				</button>
