@@ -18,7 +18,7 @@ import {
 } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import type { ICategoryChannel, IChannel } from '@mezon/utils';
-import { EMuteState } from '@mezon/utils';
+import { EMuteState, generateE2eId } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -292,7 +292,11 @@ const ModalNotificationSetting = (props: ModalParam) => {
 					<div className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active">{t('clanNotificationSettings')}</div>
 					<div className="space-y-2">
 						{notificationTypesListTranslated.map((notificationType, index) => (
-							<div key={index} className="flex items-center gap-x-3 p-[12px]  rounded text-xs md:text-sm">
+							<div
+								key={index}
+								className="flex items-center gap-x-3 p-[12px]  rounded text-xs md:text-sm"
+								data-e2e={generateE2eId('modal.notification_setting.select.item')}
+							>
 								<input
 									type="radio"
 									id={`notification-${index}`}
@@ -325,6 +329,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 								menuList: () => 'thread-scroll'
 							}}
 							menuPlacement="top"
+							data-e2e={generateE2eId('modal.notification_setting.override.select_trigger')}
 						/>
 					</div>
 					<div className="mt-4 overflow-hidden bg-theme-setting-primary">
@@ -356,7 +361,11 @@ const ModalNotificationSetting = (props: ModalParam) => {
 											key={channelCategorySetting.id}
 											className="group relative grid min-w-0 grid-cols-7 items-center mb-2.5 rounded p-[10px]"
 										>
-											<td className="col-span-3 min-w-0 truncate text-left text-xs md:text-sm" title={channelCategoryLabel}>
+											<td
+												className="col-span-3 min-w-0 truncate text-left text-xs md:text-sm"
+												title={channelCategoryLabel}
+												data-e2e={generateE2eId('modal.notification_setting.override.channel_item.title')}
+											>
 												{channelCategoryLabel}
 											</td>
 											{notificationTypesListTranslated.map((notificationType) => (
@@ -373,6 +382,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 																channelCategorySetting.channel_category_title || ''
 															)
 														}
+														data-e2e={generateE2eId('modal.notification_setting.override.channel_item.checkbox')}
 													/>
 												</td>
 											))}
@@ -388,6 +398,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 															getIsMuted(channelCategorySetting) ? 1 : 0
 														)
 													}
+													data-e2e={generateE2eId('modal.notification_setting.override.channel_item.checkbox')}
 												/>
 												<button
 													type="button"
@@ -399,6 +410,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 															channelCategorySetting.id || ''
 														)
 													}
+													data-e2e={generateE2eId('modal.notification_setting.override.button.remove')}
 												>
 													<Icons.Close className="h-2.5 w-2.5" defaultFill1="currentColor" />
 												</button>
