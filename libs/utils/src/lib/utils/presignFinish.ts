@@ -84,7 +84,19 @@ export function mergePresignFinishContent(existingContent: unknown, incomingCont
 
 	const mergedKeys = mergePresignFinishKeys(existingContent, incomingParsed);
 	if (mergedKeys === null) {
-		return incomingContent;
+		// The update carries no presign_finish of its own (a plain edit, for
+		// instance). Dropping the keys we already collected would turn the gate
+		// off and let every still-uploading attachment hit imgproxy, so carry
+		// them over untouched.
+		const existingKeys = parsePresignFinishKeys(existingContent);
+		if (existingKeys === null) {
+			return incomingContent;
+		}
+		const carried = {
+			...(incomingParsed as Record<string, unknown>),
+			presign_finish: existingKeys
+		};
+		return typeof incomingContent === 'string' ? JSON.stringify(carried) : carried;
 	}
 
 	const merged = {
