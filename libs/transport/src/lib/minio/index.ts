@@ -1,11 +1,12 @@
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
-
+import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
 export class CustomFile extends File {
 	url?: string;
 	width?: number;
 	height?: number;
 	thumbnail?: string;
 	thumbnailBlob?: Blob;
+	uploadPath?: string;
 }
 
 export const isValidUrl = (urlString: string) => {
@@ -71,17 +72,11 @@ function isRemoteUrl(url: string): boolean {
 	return url.startsWith('http://') || url.startsWith('https://');
 }
 
-async function uploadThumbnailBlob(
-	client: Client,
-	session: ApiSession,
-	blob: Blob,
-	index?: number,
-	isOauth?: boolean
-): Promise<string | undefined> {
+async function uploadThumbnailBlob(client: Client, session: ApiSession, blob: Blob, index?: number, isOauth?: boolean): Promise<string | undefined> {
 	try {
 		const type = blob.type || 'image/jpeg';
 		const ext = type.includes('png') ? 'png' : 'jpg';
-		const { filePath, originalFilename } = createUploadFilePath(`thumb.${ext}`, false, index);
+		const { filePath, originalFilename } = createUploadFilePath(`thumb.${ext}`, index);
 		const result = await uploadFile(
 			client,
 			session,
@@ -145,6 +140,64 @@ async function resolveThumbnailForUpload(
 	return thumbnail;
 }
 
+const MULTIPART_MIN_FILE_SIZE = 50 * 1024 * 1024;
+
+const MULTIPART_PART_SIZE = 10 * 1024 * 1024;
+
+function multipartPartCount(fileSize: number) {
+	return Math.max(1, Math.floor((fileSize + MULTIPART_PART_SIZE - 1) / MULTIPART_PART_SIZE));
+}
+
+async function putFilePartToPresignedUrl(presignedUrl: string, partBytes: Blob, contentType: string) {
+	const response = await fetch(presignedUrl, {
+		method: 'PUT',
+		headers: {
+			'Content-Type': contentType
+		},
+		body: partBytes
+	});
+
+	if (!response.ok) {
+		throw new Error(`File part upload failed (${response.status})`);
+	}
+
+	const etag = response.headers.get('ETag')?.trim()?.replace(/^"|"$/g, '');
+
+	if (!etag) {
+		throw new Error('File part upload missing ETag');
+	}
+
+	return etag;
+}
+
+type UploadMultipartParams = {
+	file: Blob;
+	urls: string[];
+	partSize: number;
+	mimeType: string;
+};
+
+export async function uploadMultipart({ file, urls, partSize, mimeType }: UploadMultipartParams): Promise<MultipartUploadAttachmentPart[]> {
+	const partCount = urls.length;
+
+	const results: MultipartUploadAttachmentPart[] = [];
+
+	for (let index = 0; index < partCount; index++) {
+		const offset = index * partSize;
+		const end = index === partCount - 1 ? file.size : offset + partSize;
+
+		const chunk = file.slice(offset, end);
+
+		const etag = await putFilePartToPresignedUrl(urls[index], chunk, mimeType);
+
+		results.push({
+			part_number: index + 1,
+			e_tag: etag
+		});
+	}
+
+	return results.sort((a, b) => a.part_number - b.part_number);
+}
 export async function handleUploadFile(
 	client: Client,
 	session: ApiSession,
@@ -163,11 +216,23 @@ export async function handleUploadFile(
 				fileType = `text/${fileExtension}`;
 			}
 			const shortFileType = getFileType(fileType);
-			const { filePath, originalFilename } = createUploadFilePath(filename, false, index);
+			const { filePath, originalFilename } = createUploadFilePath(filename, index);
 			const isVideo = fileType.startsWith('video/');
 
 			if (isVideo) {
 				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, isOauth);
+
+				if (file.size > MULTIPART_MIN_FILE_SIZE) {
+					const start = await client.multipartUploadAttachmentFile(session, {
+						filename,
+						filetype: file.type,
+						height: file.height,
+						size: file.size,
+						width: file.width,
+						part_count: multipartPartCount(file.size)
+					});
+				}
+
 				const videoPromise = uploadFile(
 					client,
 					session,
@@ -185,6 +250,37 @@ export async function handleUploadFile(
 				const [thumbnail, videoResult] = await Promise.all([thumbPromise, videoPromise]);
 				resolve({ ...videoResult, thumbnail: thumbnail ?? videoResult.thumbnail });
 				return;
+			}
+
+			if (file.size > MULTIPART_MIN_FILE_SIZE) {
+				const start = await client.multipartUploadAttachmentFile(session, {
+					filename,
+					filetype: file.type,
+					height: file.height,
+					size: file.size,
+					width: file.width,
+					part_count: multipartPartCount(file.size)
+				});
+
+				const updaloadMultipeFile = await uploadMultipart({
+					file,
+					urls: start.urls,
+					partSize: MULTIPART_MIN_FILE_SIZE,
+					mimeType: file.type
+				});
+
+				const finish = await client.multipartUploadAttachmentFileFinish(session, {
+					filename,
+					parts: updaloadMultipeFile,
+					upload_id: start.upload_id
+				});
+				resolve({
+					url: filePath,
+					size: file.size,
+					filename,
+					height: file.height,
+					width: file.width
+				});
 			}
 
 			resolve(
@@ -209,63 +305,26 @@ export async function handleUploadFile(
 	});
 }
 
-export async function handleUploadFileMobile(
-	client: Client,
-	session: ApiSession,
-	filename: string,
-	file: any,
-	isOauth?: boolean
-): Promise<ApiMessageAttachment> {
-	// eslint-disable-next-line no-async-promise-executor
-	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
-		try {
-			let fileType = file.type;
-			if (!fileType) {
-				const fileNameParts = file.name.split('.');
-				const fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
-				fileType = `text/${fileExtension}`;
-			}
-			if (file?.uri) {
-				const binaryStr = atob(file.fileData);
-				const bytes = new Uint8Array(binaryStr.length);
-				for (let i = 0; i < binaryStr.length; i++) {
-					bytes[i] = binaryStr.charCodeAt(i);
-				}
-				const blob = new Blob([bytes], { type: fileType });
-				const { filePath, originalFilename } = createUploadFilePath(filename, true);
-				resolve(
-					uploadFile(
-						client,
-						session,
-						filePath,
-						fileType,
-						file.size,
-						blob,
-						true,
-						originalFilename,
-						file?.width,
-						file?.height,
-						'', // thumbnail
-						isOauth
-					)
-				);
-			}
-		} catch (error) {
-			reject(new Error(`${error}`));
-		}
-	});
-}
-
-export function createUploadFilePath(filename: string, isMobile: boolean, index?: number): { filePath: string; originalFilename: string } {
+export function createUploadFilePath(filename: string, index?: number): { filePath: string; originalFilename: string } {
 	const originalFilename = filename;
 	// Append milliseconds timestamp to filename
 	const ms = Date.now();
-	filename = isMobile ? ms + filename : `${ms}_${index || ''}${filename}`;
+	filename = `${ms}_${index || ''}${filename}`;
 	filename = filename.replace(/[^a-zA-Z0-9.]/g, '_');
 	// Ensure valid clan and channel IDs
 
 	const filePath = `${filename}`;
 	return { filePath, originalFilename };
+}
+
+export async function uploadFileToPath(uploadPath: string, file: Blob, size: number) {
+	try {
+		const res = await uploadImageToMinIO(uploadPath, file, size);
+		return res;
+	} catch (error) {
+		console.error('error: ', error);
+		return false;
+	}
 }
 
 export async function uploadFile(
@@ -300,7 +359,7 @@ export async function uploadFile(
 				reject(new Error('Failed to upload file. URL not available.'));
 				return;
 			}
-			const res = await (isMobile ? uploadImageToMinIOMobile(data.url || '', buf, type, size) : uploadImageToMinIO(data.url || '', buf, size));
+			const res = await uploadImageToMinIO(data.url || '', buf, size);
 			if (res.status !== 200) {
 				throw new Error('Failed to upload file to MinIO.');
 			}

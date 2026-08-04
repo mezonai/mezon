@@ -2313,7 +2313,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				const roleToUpdate = { ...role };
 				delete roleToUpdate.role_user_list;
-				
+
 				dispatch(rolesClanActions.update({ role: roleToUpdate, clanId: role.clan_id as string }));
 				return;
 			}
@@ -2980,13 +2980,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const ondisconnect = useCallback(() => {
+		console.error('SOCKET DISCONNECTED');
 		socketState.status = 'disconnected';
 		handleReconnect('Socket disconnected, attempting to reconnect...');
 	}, [handleReconnect]);
 
 	const onHeartbeatTimeout = useCallback(() => {
+		console.error('HEARTBEATTIMEOUT');
 		socketState.status = 'disconnected';
-		handleReconnect('Socket hearbeat timeout, attempting to reconnect...');
 	}, [handleReconnect]);
 
 	useEffect(() => {

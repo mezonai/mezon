@@ -21,7 +21,7 @@ import {
 	CREATING_THREAD,
 	EBacktickType,
 	INVITE_URL_REGEX,
-	getMobileUploadedAttachments,
+	generatePathAttachments,
 	getWebUploadedAttachments,
 	isFacebookLink,
 	isTikTokLink,
@@ -78,21 +78,10 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				throw new Error('Client is not initialized');
 			}
 
-			let uploadedFiles: ApiMessageAttachment[] = [];
 			// Check if there are attachments
 			if (attachments && attachments.length > 0) {
-				if (isMobile) {
-					try {
-						uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
-					} catch (error: any) {
-						console.error('Error uploading attachments:', error);
-						if (error?.code === 'ENOENT') {
-							uploadedFiles = attachments;
-						}
-					}
-				} else {
-					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-				}
+				const attachmentsPath = await generatePathAttachments(client, session, attachments);
+				await getWebUploadedAttachments({ attachments: attachmentsPath });
 			}
 
 			let threadContent = content;
@@ -166,7 +155,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				thread.channel_private === 0,
 				threadContent,
 				mentions,
-				uploadedFiles,
+				attachments,
 				references
 			);
 			dispatch(referencesActions.clearOgpData());

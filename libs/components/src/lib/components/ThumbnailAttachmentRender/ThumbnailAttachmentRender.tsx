@@ -11,9 +11,11 @@ export interface IRenderAttachmentThumbnailParam {
 	size?: string;
 	pos?: string;
 	isFileList?: boolean;
+	/** The upload has not been confirmed yet, so its CDN object may not exist. */
+	isPresignPending?: boolean;
 }
 
-export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList }: IRenderAttachmentThumbnailParam) => {
+export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, isPresignPending }: IRenderAttachmentThumbnailParam) => {
 	const fileType = attachment.filetype;
 
 	const renderIcon = typeFormats.find((typeFormat: any) => typeFormat.type === fileType);
@@ -35,7 +37,11 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList }:
 		<div onContextMenu={handleContextMenu}>
 			{isAudioFile && <AudioAttachment attachment={attachment} size={size} isFileList={isFileList} />}
 
-			{hasFileImage && (
+			{hasFileImage && isPresignPending && (
+				<div key="image-thumbnail-pending" className="w-[174px] aspect-square bg-bgLightSecondary dark:bg-bgSecondary" />
+			)}
+
+			{hasFileImage && !isPresignPending && (
 				<img
 					key="image-thumbnail"
 					src={attachment.url}
@@ -47,7 +53,7 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList }:
 
 			{hasFileVideo && (
 				<div className="relative w-[174px] aspect-square overflow-hidden rounded-md bg-bgLightSecondary dark:bg-bgSecondary">
-					{attachment.thumbnail && (
+					{attachment.thumbnail && !isPresignPending && (
 						<img
 							src={
 								attachment.thumbnail.startsWith('blob:')

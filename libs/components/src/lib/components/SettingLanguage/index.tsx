@@ -1,4 +1,5 @@
 import { appActions, selectCurrentLanguage, useAppDispatch } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -139,6 +140,7 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 									: 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
 							}`}
 							onClick={() => changeLanguage(language.value)}
+							data-e2e={generateE2eId(`user_setting.language.language_item.language_name`)}
 						>
 							<div className="flex items-center gap-2">
 								{language.flag && <span className="flex items-center justify-center w-6 h-6">{language.flag}</span>}

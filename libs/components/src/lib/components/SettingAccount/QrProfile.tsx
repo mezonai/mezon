@@ -53,7 +53,7 @@ const QrProfile = ({ onClose, qrData }: { onClose: () => void; qrData: string })
 			<div className="p-4 rounded-lg bg-white flex items-center justify-center relative w-[360px] h-[360px]" ref={containerRef}>
 				<QRCode level="L" value={qrData} className="w-full h-full" />
 				<div className="absolute p-2 rounded-md">
-					<img src="./assets/images/icon-logo-mezon.svg" className="cursor-default pointer-events-none" />
+					<img src="https://cdn.komu.vn/images/mezon_logo.png" className="cursor-default pointer-events-none" />
 				</div>
 
 				<ButtonSwitch
