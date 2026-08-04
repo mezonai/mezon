@@ -1012,6 +1012,24 @@ export const DATA_E2E_IDENTIFIER = {
 				cancel: '',
 				unpin: ''
 			}
+		},
+		notification_setting: {
+			select: {
+				item: ''
+			},
+			override: {
+				select_trigger: {
+					item: ''
+				},
+				button: {
+					exit: '',
+					remove: ''
+				},
+				channel_item: {
+					title: '',
+					checkbox: ''
+				}
+			}
 		}
 	},
 	icon: {
