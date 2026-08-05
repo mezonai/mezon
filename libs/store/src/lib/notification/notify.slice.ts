@@ -305,20 +305,22 @@ export const notificationSlice = createSlice({
 						const position_s: number[] = [];
 						const position_e: number[] = [];
 						const is_mention_role: boolean[] = [];
-						(message.mentions || []).map((item: ApiMessageMention) => {
-							if (item.user_id && item.s && item.e) {
-								mention_ids.push(item.user_id);
-								is_mention_role.push(false);
-								position_s.push(item.s);
-								position_e.push(item.e);
-							}
-							if (item.role_id && item.s && item.e) {
-								mention_ids.push(item.role_id);
-								is_mention_role.push(true);
-								position_s.push(item.s);
-								position_e.push(item.e);
-							}
-						});
+						if (Array.isArray(message?.mentions)) {
+							(message?.mentions || []).map((item: ApiMessageMention) => {
+								if (item.user_id && item.s && item.e) {
+									mention_ids.push(item.user_id);
+									is_mention_role.push(false);
+									position_s.push(item.s);
+									position_e.push(item.e);
+								}
+								if (item.role_id && item.s && item.e) {
+									mention_ids.push(item.role_id);
+									is_mention_role.push(true);
+									position_s.push(item.s);
+									position_e.push(item.e);
+								}
+							});
+						}
 						const notiMark: INotification = {
 							...message,
 							id: noti.id || '',
