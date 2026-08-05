@@ -250,7 +250,7 @@ mezon/
 
 #### Backend & Infrastructure
 
--   **Core**: We built a custom server using Redis, ScyllaDB, and sockets to enable real-time communication.
+-   **Core**: We built a custom server using Valkey, ScyllaDB, and IOUring to enable real-time communication.
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) - High-performance and zero free blockchain layer 1
 -   **Real-time**: WebSocket with binary protocol
 -   **Security**: E2E encryption, TLS 1.3
