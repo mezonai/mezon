@@ -252,7 +252,7 @@ mezon/
 
 -   **Core**: We built a custom server using Valkey, ScyllaDB, and IOUring to enable real-time communication.
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) - High-performance and zero free blockchain layer 1
--   **Real-time**: WebSocket with binary protocol
+-   **Real-time**: WebSocket and TCP Abridged protocol with binary protocol
 -   **Security**: E2E encryption, TLS 1.3
 -   **Performance**: Sub-millisecond latency, horizontal scaling
 
