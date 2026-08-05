@@ -136,6 +136,14 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		embed: notify?.content?.embed as IEmbedProps[] | undefined
 	};
 
+	const isShowJump =
+		notify.category === NotificationCategory.MENTIONS ||
+		(notify.category === NotificationCategory.MESSAGES &&
+			notify?.content?.channel_id &&
+			notify?.content?.channel_id !== '0' &&
+			notify?.content?.clan_id &&
+			notify?.content?.message_id);
+
 	return (
 		<div className=" bg-transparent rounded-[8px] relative group">
 			<button
@@ -159,7 +167,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 				</div>
 			)}
 
-			{notify.category === NotificationCategory.MENTIONS && (
+			{isShowJump && (
 				<button
 					className="absolute py-1 px-2 bottom-[10px] z-50 right-3 text-[10px] rounded-lg border-theme-primary transition-all duration-300 group-hover:block hidden bg-item-theme"
 					onClick={handleClickJump}
