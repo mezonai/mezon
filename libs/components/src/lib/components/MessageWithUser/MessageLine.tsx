@@ -2,7 +2,7 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage } from '@mezon/utils';
-import { EBacktickType, ETokenMessage, INVITE_URL_REGEX, TypeMessage, convertMarkdown, generateE2eId } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, TypeMessage, checkInviteLinkValid, convertMarkdown, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -176,7 +176,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 	const navigate = useNavigate();
 	const [joining, setJoining] = useState(false);
 	const [error, setError] = useState('');
-	const inviteId = url.match(INVITE_URL_REGEX)?.[1] || '';
+	const inviteId = url.slice(-19);
 	const joinedClan = useSelector(selectClanById(element?.clanId || ''));
 
 	const clanTitle = element.title || t('unknownClan');
@@ -546,8 +546,8 @@ export const MessageLine = ({
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
 					if (!isSending) {
 						const url = element.url || '';
-
-						if (INVITE_URL_REGEX.test(url || '')) {
+						const isInviteLink = checkInviteLinkValid(url);
+						if (isInviteLink) {
 							formattedContent.push(<InvitePreviewCard key={`invite-${s}-${messageId}`} element={element} url={url} />);
 						} else {
 							formattedContent.push(

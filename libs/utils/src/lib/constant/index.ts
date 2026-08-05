@@ -33,7 +33,7 @@ export const FOR_SALE_CATE = 'forsale';
 
 export const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
-export const INVITE_URL_REGEX = /^https:\/\/mezon\.ai\/invite\/(\d{19})$/i;
+export const INVITE_URL_REGEX = `${process.env.NX_DOMAIN_URL}/invite/`;
 
 export const PREDEFINED_EMOJI_CATEGORIES = [
 	'Recent',

@@ -108,7 +108,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 						{isError ? (
 							<div className="space-y-2">
 								<h3 className="text-xl font-semibold text-theme-primary-active">
-									{errMessage?.trim() || t('modalUnknowChannel.defaultError')}
+									{String(errMessage)?.trim() || t('modalUnknowChannel.defaultError')}
 								</h3>
 								<p className="text-theme-primary text-sm leading-relaxed">
 									{errorConfig.type === 'permission'
