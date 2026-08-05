@@ -68,7 +68,7 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 		const mutedText =
 			timeMute && timeMute !== EMuteState.MUTED_INFINITY
 				? t('contextMenu.mutedUntil', {
-						time: format(new Date(timeMute), 'dd/MM, HH:mm')
+						time: format(new Date(timeMute * 1000), 'dd/MM, HH:mm')
 					})
 				: '';
 
