@@ -13,8 +13,8 @@ export const clanLoader: CustomLoaderFunction = async ({ params, dispatch }) => 
 		throw new Error('Clan ID null');
 	}
 
+	await dispatch(clansActions.changeCurrentClan({ clanId }));
 	dispatch(clansActions.joinClan({ clanId }));
-	dispatch(clansActions.changeCurrentClan({ clanId }));
 	dispatch(channelsActions.setModeResponsive({ clanId, mode: ModeResponsive.MODE_CLAN }));
 	dispatch(topicsActions.setIsShowCreateTopic(false));
 	dispatch(topicsActions.setCurrentTopicId(''));
