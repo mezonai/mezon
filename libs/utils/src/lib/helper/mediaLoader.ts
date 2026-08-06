@@ -1,5 +1,5 @@
 import type { ApiPreparedMedia } from '../types';
-import { ApiMediaFormat, ELECTRON_HOST_URL, IS_PACKAGED_ELECTRON } from '../types';
+import { ApiMediaFormat } from '../types';
 
 export interface ApiOnProgress {
 	(progress: number, ...args: any[]): void;
@@ -7,7 +7,7 @@ export interface ApiOnProgress {
 	isCanceled?: boolean;
 }
 
-const PROGRESSIVE_URL_PREFIX = `${IS_PACKAGED_ELECTRON ? ELECTRON_HOST_URL : '.'}/progressive/`;
+const PROGRESSIVE_URL_PREFIX = `./progressive/`;
 
 const MAX_MEDIA_CACHE_SIZE = 200;
 const CACHE_CLEANUP_THRESHOLD = 0.8;

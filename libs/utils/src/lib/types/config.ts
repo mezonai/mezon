@@ -457,6 +457,3 @@ export const PREMIUM_FEATURE_SECTIONS = [
 	'message_privacy',
 	'effects'
 ] as const;
-
-export const ELECTRON_HOST_URL = process.env.ELECTRON_HOST_URL!;
-export const IS_PACKAGED_ELECTRON = process.env.IS_PACKAGED_ELECTRON;

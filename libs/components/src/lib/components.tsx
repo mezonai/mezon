@@ -25,7 +25,6 @@ export { default as MarkdownContent } from './components/MarkdownFormatText/Mark
 export { default as PlainText } from './components/MarkdownFormatText/PlainText';
 export { default as PreClass } from './components/MarkdownFormatText/PreClass';
 export { default as StreamInfo } from './components/StreamInfo';
-export { default as UpdateButton } from './components/UpdateButton/UpdateButton';
 
 export * from './components/AvatarImage/AvatarImage';
 export { default as AppDirectoryList } from './components/ClanSettings/AppDirectory/AppDirectoryList';

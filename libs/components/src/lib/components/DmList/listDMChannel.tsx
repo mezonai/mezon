@@ -5,8 +5,6 @@ import {
 	selectCloseMenu,
 	selectDirectHasMore,
 	selectDirectPaginationLoading,
-	selectIsElectronDownloading,
-	selectIsElectronUpdateAvailable,
 	selectIsInCall,
 	selectStatusStream,
 	selectVoiceJoined,
@@ -25,9 +23,7 @@ type ListDMChannelProps = {
 	pinnedCount?: number;
 };
 
-const heightAroundComponentDesktop = 232;
 const heightAroundComponentWeb = 232;
-const heightAppUpdate = 40;
 const titleBarHeight = 0;
 const SCROLL_THRESHOLD = 100;
 
@@ -54,22 +50,18 @@ const ListDMChannel = ({ listDM, isPinnedList, pinnedCount = 0 }: ListDMChannelP
 	const closeMenu = useSelector(selectCloseMenu);
 	const streamPlay = useSelector(selectStatusStream);
 	const isInCall = useSelector(selectIsInCall);
-	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
-	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
 	const calculateHeight = useCallback(() => {
 		const heightAroundComponent = heightAroundComponentWeb;
 		const streamAdjustment = streamPlay ? 56 : 0;
 		const callAdjustment = isInCall ? 56 : 0;
 		const voiceAdjustment = isVoiceJoined ? 96 : 0;
-		const electronAdjustment = 0;
 		const pinnedSectionHeight = pinnedCount > 0 ? Math.min(48 + pinnedCount * 43, 48 + 215) : 0;
 
-		const totalAdjustment =
-			heightAroundComponent + streamAdjustment + callAdjustment + titleBarHeight + electronAdjustment + voiceAdjustment + pinnedSectionHeight;
+		const totalAdjustment = heightAroundComponent + streamAdjustment + callAdjustment + titleBarHeight + voiceAdjustment + pinnedSectionHeight;
 
 		return `calc(100dvh - ${totalAdjustment}px)`;
-	}, [IsElectronDownloading, isElectronUpdateAvailable, streamPlay, isInCall, isVoiceJoined, pinnedCount]);
+	}, [streamPlay, isInCall, isVoiceJoined, pinnedCount]);
 
 	const [height, setHeight] = useState<string | number>(calculateHeight());
 
