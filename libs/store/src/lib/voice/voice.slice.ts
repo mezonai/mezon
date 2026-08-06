@@ -499,6 +499,10 @@ export const voiceSlice = createSlice({
 							};
 						}
 					}
+					if (!state.listVoiceMemberByClan[clanId][channelId]) {
+						state.listVoiceMemberByClan[clanId][channelId] = UsersInVoiceAdapter.getInitialState();
+					}
+
 					state.listVoiceMemberByClan[clanId][channelId] = UsersInVoiceAdapter.setAll(
 						state.listVoiceMemberByClan[clanId][channelId],
 						listIdInVoice
