@@ -18,7 +18,7 @@ import {
 	useParticipantTile
 } from '@livekit/components-react';
 import { useAuth, usePermissionChecker } from '@mezon/core';
-import { selectMemberClanByUserId, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import { selectMemberClanByUserId, selectUserInvoiceData, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { EPermission, createImgproxyUrl } from '@mezon/utils';
@@ -136,6 +136,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	const extAvatar = parsedUsername?.extAvatar ? parsedUsername?.extAvatar : undefined;
 
 	const clanMember = useAppSelector((state) => selectMemberClanByUserId(state, participantId));
+	const voiceMemberData = useAppSelector((state) => selectUserInvoiceData(state, participantId));
 
 	const member = useMemo(() => {
 		if (groupMembers) {
@@ -144,7 +145,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		return clanMember;
 	}, [groupMembers, clanMember, participantId]);
 
-	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || usernameString;
+	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || voiceMemberData?.user_name || usernameString;
 
 	const avatar = useMemo(() => {
 		if (trackReference.participant.isAgent) {
@@ -153,7 +154,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		return member?.clan_avatar || member?.user?.avatar_url || null;
 	}, [member]);
 
-	const resolvedAvatar = extAvatar ?? avatar;
+	const resolvedAvatar = extAvatar || avatar || voiceMemberData?.user_avatar;
 	const isAvatarResolved = parsedUsername !== undefined || member !== undefined;
 
 	const activeSoundReaction = useActiveSoundReaction(usernameString);

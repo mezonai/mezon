@@ -141,8 +141,8 @@ const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMembe
 	}, [channelType, voiceChannelMembers, streamChannelMembers]);
 	return (
 		<AvatarGroup className={'px-6'}>
-			{[...channelMemberList].slice(0, 5).map((id, index) => (
-				<AvatarUserShort id={id || ''} key={(id || '') + index} />
+			{[...channelMemberList].slice(0, 5).map((user, index) => (
+				<AvatarUserShort id={user.user_id || ''} key={(user.user_id || '') + index} />
 			))}
 			{channelMemberList && channelMemberList.length > 5 && (
 				<AvatarCount number={channelMemberList?.length - 5 > 99 ? 99 : channelMemberList?.length - 5} />
@@ -170,10 +170,10 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 		return null;
 	}
 
-	return channelMemberList?.map((id) => {
+	return channelMemberList?.map((user) => {
 		return (
-			<div key={id} className={'mt-[1px]'}>
-				<UserListItem id={id} />
+			<div key={user.user_id} className={'mt-[1px]'}>
+				<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} />
 			</div>
 		);
 	});
