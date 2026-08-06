@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { checkMediaPermission } from '../utils';
-import { isElectron } from '../utils/windowEnvironment';
-
 export function useMediaPermissions() {
 	const [hasCameraAccess, setHasCameraAccess] = useState<boolean | null>(null);
 	const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState<boolean | null>(null);
@@ -26,7 +24,7 @@ export function useMediaPermissions() {
 
 	useEffect(() => {
 		refreshPermissions();
-		if (!isElectron() && navigator.permissions && navigator.permissions.query) {
+		if (navigator.permissions && navigator.permissions.query) {
 			const setupPermissionListeners = async () => {
 				try {
 					const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });

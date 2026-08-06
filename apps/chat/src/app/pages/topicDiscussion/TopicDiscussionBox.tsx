@@ -33,7 +33,6 @@ import {
 	UploadLimitReason,
 	generateE2eId,
 	isBackgroundModeActive,
-	isElectron,
 	processFilesForAttachment,
 	useBackgroundMode
 } from '@mezon/utils';
@@ -66,7 +65,6 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 	const [topicDraggingState, setTopicDraggingState] = useState(false);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
-	const isDesktop = isElectron();
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannelId));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
 
@@ -322,7 +320,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 				</div>
 			)}
 			{(isFetchMessageDone || initTopicMessageId) && (
-				<div className={`relative flex-1 ${isElectron() ? 'h-[calc(100%_-_50px_-_30px)]' : 'h-full'}`}>
+				<div className={`relative flex-1 h-full`}>
 					<MemoizedChannelMessages
 						isPrivate={currentChannelPrivate}
 						channelId={currentTopicId as string}
@@ -343,7 +341,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 					{t('noPermissionToSendMessage')}
 				</div>
 			) : (
-				<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isDesktop && 'pb-5'}`}>
+				<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative`}>
 					{isBanned ? (
 						<BanCountDown
 							banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}

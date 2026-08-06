@@ -82,7 +82,6 @@ import { toastListenerMiddleware } from './toasts/toasts.listener';
 import { TOASTS_FEATURE_KEY, toastsReducer } from './toasts/toasts.slice';
 import { topicsReducer } from './topicDiscussion/topicDiscussions.slice';
 import { voiceReducer } from './voice/voice.slice';
-import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowControls/windowControls.slice';
 import { TRANSACTION_HISTORY_FEATURE_KEY, transactionHistoryReducer } from './wallet/transactionHistory.slice';
 import { WALLET_FEATURE_KEY, walletReducer } from './wallet/wallet.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
@@ -390,7 +389,6 @@ const reducer = {
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
 	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
-	[WINDOW_CONTROLS_FEATURE_KEY]: windowControlsReducer,
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,

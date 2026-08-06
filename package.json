@@ -3,7 +3,6 @@
   "version": "1.4.74",
   "license": "MIT",
   "description": "Mezon application",
-  "productName": "mezon",
   "repository": "https://github.com/mezonai/mezon",
   "scripts": {
     "dev:chat": "nx run chat:serve --host=127.0.0.1 --port=4200",
@@ -79,7 +78,6 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
-    "mezon-active-windows": "0.1.38",
     "mezon-js": "2.15.68",
     "mezon-js-protobuf": "1.10.63",
     "mmn-client-js": "1.0.16",
@@ -252,9 +250,6 @@
     "node": "^20.19.0 || >=22.12.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
-  },
-  "build": {
-    "npmRebuild": false
   },
   "author": "Mezon App <hello@mezon.vn>",
   "desktopVersion": "2.0.0"

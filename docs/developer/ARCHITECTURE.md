@@ -22,10 +22,7 @@ This document provides a detailed overview of Mezon's technical architecture and
 - **Features**: User management, analytics, system monitoring
 - **Security**: Role-based access control with JWT authentication
 
-#### Desktop Application (`apps/desktop`)
-- **Framework**: Electron
-- **Features**: Native system integration, auto-updates, offline support
-- **Platform**: Cross-platform (Windows, macOS, Linux)
+Desktop builds live in the separate [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository.
 
 ### Core Libraries
 
@@ -90,7 +87,7 @@ WebSocket Events → Socket Middleware → Action Dispatch → State Update → 
 ```
 apps/chat      → libs/*
 apps/admin     → libs/*
-apps/desktop   → libs/*
+apps/discover  → libs/*
 
 libs/components → libs/ui
 libs/components → libs/store

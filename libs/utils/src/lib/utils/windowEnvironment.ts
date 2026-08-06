@@ -1,24 +1,3 @@
-type ElectronRendererWindow = Window & { process?: { type?: string } };
-
-export function isElectron(): boolean {
-	if (typeof window !== 'undefined') {
-		const rendererWindow = window as ElectronRendererWindow;
-		if (typeof rendererWindow.process === 'object' && rendererWindow.process?.type === 'renderer') {
-			return true;
-		}
-	}
-
-	if (typeof process !== 'undefined' && typeof process.versions === 'object' && process.versions.electron) {
-		return true;
-	}
-
-	if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.includes('Electron')) {
-		return true;
-	}
-
-	return false;
-}
-
 export function getPlatform(): any {
 	const { userAgent, platform } = window.navigator;
 

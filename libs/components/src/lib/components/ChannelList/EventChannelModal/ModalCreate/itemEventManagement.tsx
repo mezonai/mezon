@@ -13,7 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, EEventStatus, EPermission, generateE2eId, isElectron, ONE_MINUTE_MS, OptionEvent } from '@mezon/utils';
+import { createImgproxyUrl, EEventStatus, EPermission, generateE2eId, ONE_MINUTE_MS, OptionEvent } from '@mezon/utils';
 import type { ApiUserEventRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
@@ -149,7 +149,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	const handleOpenPanel = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
-		const mouseY = event.clientY + (isElectron() ? 0 : window.screenY);
+		const mouseY = event.clientY + window.screenY;
 		const windowHeight = window.innerHeight;
 		const distanceToBottom = windowHeight - event.clientY;
 		setCoords({ mouseX, mouseY, distanceToBottom });
