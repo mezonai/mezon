@@ -1,6 +1,7 @@
 import { EInvoice, selectMemberClanByUserId, selectStatusInVoice, useAppSelector } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
+import { memo } from 'react';
 import { AvatarImage } from '../../components';
 
 function UserListItem({ id, user_name, user_avatar }: { id: string; user_name: string; user_avatar: string }) {
@@ -40,4 +41,4 @@ function UserListItem({ id, user_name, user_avatar }: { id: string; user_name: s
 	);
 }
 
-export default UserListItem;
+export default memo(UserListItem, (prevProps, nextProps) => prevProps.id === nextProps.id);
