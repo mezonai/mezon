@@ -16,6 +16,8 @@ export const USERS_STREAM_FEATURE_KEY = 'usersstream';
  */
 export interface UsersStreamEntity extends IUserStream {
 	id: string; // Primary ID
+	user_avatar: string;
+	user_name: string;
 }
 
 export interface UsersStreamState extends EntityState<UsersStreamEntity, string> {
@@ -125,7 +127,9 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 					clan_name: '',
 					participant: channelRes.participant || '',
 					streaming_channel_label: '',
-					id: channelRes.id || ''
+					id: channelRes.id || '',
+					user_name: '',
+					user_avatar: ''
 				};
 			});
 
@@ -245,6 +249,6 @@ export const getUsersStreamState = (rootState: { [USERS_STREAM_FEATURE_KEY]: Use
 export const selectAllUsersStream = createSelector(getUsersStreamState, selectAllUsersStreamEntities);
 
 export const selectStreamMembersByChannelId = createSelector([selectAllUsersStream, (_, channelId: string) => channelId], (entities, channelId) => {
-	const listStreamChannelUser = entities.filter((member) => member && member.streaming_channel_id === channelId).map((user) => user.user_id);
+	const listStreamChannelUser = entities.filter((member) => member && member.streaming_channel_id === channelId);
 	return listStreamChannelUser;
 });
