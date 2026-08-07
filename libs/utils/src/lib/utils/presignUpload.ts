@@ -11,7 +11,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 			}
 			try {
 				const data = await client.uploadAttachmentFile(session, {
-					filename: attach.filename,
+					filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
 					filetype: attach.filetype,
 					size: attach.size,
 					width: attach.width,
@@ -21,7 +21,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 				if (attach.filetype?.startsWith('video') && (attach as File & { _thumbnailBlob?: Blob })?._thumbnailBlob) {
 					const thumbnailBlob = (attach as File & { _thumbnailBlob?: Blob })._thumbnailBlob as Blob;
 					const ms = Date.now();
-					const filename = `${ms}_${attach.filename}`;
+					const filename = `${ms}_thumbnail.png`;
 					thumbnail = await client.uploadAttachmentFile(session, {
 						filename,
 						filetype: thumbnailBlob.type,
@@ -34,7 +34,8 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					filename: data.filename,
 					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
 					uploadPath: data.url,
-					...(thumbnail && { thumbnail })
+					...(thumbnail && thumbnail?.filename && { thumbnail: `${process.env.NX_BASE_IMG_URL}/${thumbnail.filename}` }),
+					...(thumbnail && thumbnail?.url && { thumbnailUpload: thumbnail.url })
 				};
 			} catch (error) {
 				console.error('error: ', error);
@@ -46,5 +47,6 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 	return result.filter((attachment) => Boolean(attachment) && attachment !== null) as (ApiMessageAttachment & {
 		uploadPath?: string;
 		thumbnail?: string;
+		thumbnailUpload?: string;
 	})[];
 }

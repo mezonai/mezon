@@ -778,7 +778,9 @@ export async function fetchAndCreateFiles(fileData: ApiMessageAttachment[] | nul
 const MAX_WORKERS = 4;
 const fileUploadForeman = new Foreman(MAX_WORKERS);
 
-export async function getWebUploadedAttachments(payload: { attachments: (ApiMessageAttachment & { uploadPath?: string })[] }) {
+export async function getWebUploadedAttachments(payload: {
+	attachments: (ApiMessageAttachment & { uploadPath?: string; thumbnailUpload?: string })[];
+}) {
 	const { attachments } = payload;
 	if (!attachments || attachments?.length === 0) {
 		return [];
@@ -826,8 +828,8 @@ export async function getWebUploadedAttachments(payload: { attachments: (ApiMess
 			}
 
 			const result = await uploadFileToPath(createdFile.uploadPath, createdFile, createdFile.size);
-			if (result && createdFile.thumbnailBlob && createdFile.thumbnail && createdFile.type.startsWith('video')) {
-				await uploadFileToPath(createdFile.thumbnail, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
+			if (result && createdFile.thumbnailBlob && attachment?.thumbnailUpload && createdFile.thumbnail && createdFile.type.startsWith('video')) {
+				await uploadFileToPath(attachment.thumbnailUpload, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
 			}
 			fileUploadForeman.releaseWorker();
 			const id = attachment.filename?.split('/').pop()?.split('.')[0];
