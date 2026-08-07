@@ -47,6 +47,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 	const { sessionRef, createClient, connectSocket } = useMezon();
 	const dispatch = useAppDispatch();
 	const [ready, setReady] = useState(false);
+	const [checkConnect, setCheckConnect] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
 
 	useEffect(() => {
@@ -56,9 +57,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 		const init = async () => {
 			const client = await createClient();
-			client.ontopicinmessage = (event: TopicInMessageEvent) => {
-				dispatch(topicsActions.addTopicMeta(event));
-			};
+
 			if (!client) {
 				setReady(true);
 				return;
@@ -72,8 +71,15 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				setReady(true);
 				return;
 			}
+			client.ontopicinmessage = (event: TopicInMessageEvent) => {
+				dispatch(topicsActions.addTopicMeta(event));
+			};
 
-			let connectOk = false;
+			client.onrefreshsession = (session: ApiSession) => {
+				dispatch(authActions.setSessionId(session.session_id));
+			};
+
+			let shouldLogout = false;
 
 			await Promise.all([
 				(async () => {
@@ -88,7 +94,10 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 							});
 							if (!reachable) {
 								console.error(`Network probe failed before bootstrap retry ${i}`);
-								if (i === MAX_RETRIES_NETWORK) break;
+								if (i === MAX_RETRIES_NETWORK) {
+									setCheckConnect(true);
+									break;
+								}
 								const baseDelay = INITIAL_DELAY * Math.pow(2, i);
 								await delay(baseDelay + Math.random() * 500);
 								continue;
@@ -97,9 +106,13 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 						try {
 							await connectSocket();
-							connectOk = true;
 							break;
 						} catch (error) {
+							try {
+								await connectSocket({ useToken: true });
+							} catch (error) {
+								shouldLogout = true;
+							}
 							console.error('ERROR_CONNECT', error);
 							break;
 						}
@@ -109,7 +122,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				waitForPersistorBootstrap(persistor)
 			]);
 
-			if (!hasSessionId || !connectOk) {
+			if (!hasSessionId || shouldLogout) {
 				dispatch(authActions.logOut({}));
 			}
 
@@ -118,6 +131,9 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 		init();
 	}, []);
+	if (checkConnect) {
+		return <NetworkErrorScreen />;
+	}
 
 	return <>{ready ? children : (fallback ?? <ConnectingScreen retryCount={retryCount} />)}</>;
 }
@@ -164,6 +180,18 @@ const ConnectingScreen = ({ retryCount }: { retryCount: number }) => {
 					</p>
 				)}
 			</div>
+		</div>
+	);
+};
+
+const NetworkErrorScreen = () => {
+	return (
+		<div className=" fixed flex h-screen w-full text-white bg-black z-[10000] flex-col items-center justify-center gap-4 bg-background text-center">
+			<div className="text-5xl">🌐</div>
+
+			<h1 className="text-xl font-semibold">Lost Internet Connection</h1>
+
+			<p className="max-w-sm text-sm text-muted-foreground">Please check your internet connection and try again.</p>
 		</div>
 	);
 };
