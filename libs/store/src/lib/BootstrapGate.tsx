@@ -56,9 +56,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 		const init = async () => {
 			const client = await createClient();
-			client.ontopicinmessage = (event: TopicInMessageEvent) => {
-				dispatch(topicsActions.addTopicMeta(event));
-			};
+
 			if (!client) {
 				setReady(true);
 				return;
@@ -72,8 +70,15 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				setReady(true);
 				return;
 			}
+			client.ontopicinmessage = (event: TopicInMessageEvent) => {
+				dispatch(topicsActions.addTopicMeta(event));
+			};
 
-			let connectOk = false;
+			client.onrefreshsession = (session: ApiSession) => {
+				dispatch(authActions.setSessionId(session.session_id));
+			};
+
+			let shouldLogout = false;
 
 			await Promise.all([
 				(async () => {
@@ -97,9 +102,13 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 						try {
 							await connectSocket();
-							connectOk = true;
 							break;
 						} catch (error) {
+							try {
+								await connectSocket({ useToken: true });
+							} catch (error) {
+								shouldLogout = true;
+							}
 							console.error('ERROR_CONNECT', error);
 							break;
 						}
@@ -109,7 +118,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				waitForPersistorBootstrap(persistor)
 			]);
 
-			if (!hasSessionId || !connectOk) {
+			if (!hasSessionId || shouldLogout) {
 				dispatch(authActions.logOut({}));
 			}
 
