@@ -122,7 +122,7 @@ const SearchInput = ({
 				}
 			}}
 			onChange={onChange}
-			className="none-draggable-area w-full mr-[10px] bg-transparent text-theme-primary rounded-md focus-visible:!border-0 focus-visible:!outline-none focus-visible:[&>*]:!outline-none"
+			className="w-full mr-[10px] bg-transparent text-theme-primary rounded-md focus-visible:!border-0 focus-visible:!outline-none focus-visible:[&>*]:!outline-none"
 			allowSpaceInQuery={true}
 			singleLine={true}
 			onClick={onInputClick}

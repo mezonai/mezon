@@ -253,7 +253,7 @@ const DraggablePopup = forwardRef<HTMLDivElement, DraggablePopupProps>(
 			<div
 				ref={ref}
 				onClick={handlePopupClick}
-				className={`contain-strict none-draggable-area fixed rounded-md shadow-lg overflow-hidden flex flex-col ${
+				className={`contain-strict fixed rounded-md shadow-lg overflow-hidden flex flex-col ${
 					isMaximized ? 'bg-[#36393f]' : 'bg-[#36393f]'
 				}`}
 				style={{

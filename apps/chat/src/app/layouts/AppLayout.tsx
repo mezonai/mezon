@@ -1,91 +1,12 @@
 import { ToastController } from '@mezon/components';
 import { useCustomNavigate, useMezonNavigateEvent } from '@mezon/core';
 import { selectIsLogin } from '@mezon/store';
-import { Icons, MezonUiProvider } from '@mezon/ui';
-import {
-	CLOSE_APP,
-	IMAGE_WINDOW_TITLE_BAR_ACTION,
-	MAXIMIZE_WINDOW,
-	MINIMIZE_WINDOW,
-	TITLE_BAR_ACTION,
-	UNMAXIMIZE_WINDOW,
-	isElectron
-} from '@mezon/utils';
-import React, { useEffect } from 'react';
+import { MezonUiProvider } from '@mezon/ui';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
+import { Outlet, useLoaderData } from 'react-router-dom';
 import { useNotificationDisconnect } from '../hooks/useNotificationManagement';
 import type { IAppLoaderData } from '../loaders/appLoader';
-import { MacOSWindowControls } from './MacWindowsControl';
-import { shouldShowMacWindowControls, shouldShowWinLinuxTitleBar } from './desktopWindowChrome';
-
-type TitleBarProps = {
-	eventName: string;
-};
-
-const TitleBar: React.FC<TitleBarProps> = ({ eventName }) => {
-	const sendWindowAction = (action: string) => {
-		window.electron?.send?.(eventName, action);
-	};
-
-	const handleMinimize = () => {
-		sendWindowAction(MINIMIZE_WINDOW);
-	};
-
-	useEffect(() => {
-		document.body.classList.add('overflow-hidden');
-	}, []);
-
-	const handleMaximize = () => {
-		window.dispatchEvent(new Event('resize'));
-		sendWindowAction(MAXIMIZE_WINDOW);
-	};
-
-	const handleClose = () => {
-		sendWindowAction(CLOSE_APP);
-	};
-
-	const handleDoubleClick = () => {
-		sendWindowAction(UNMAXIMIZE_WINDOW);
-	};
-
-	return (
-		<header id="titlebar" className="bg-theme-primary" onDoubleClick={handleDoubleClick}>
-			<div id="drag-region">
-				<div className="text-theme-primary-active ml-3 truncate text-[13px] font-semibold leading-[21px]">Mezon</div>
-				<div id="window-controls">
-					<div
-						className="button window-hover cursor-pointer dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton"
-						id="min-button"
-						onClick={handleMinimize}
-					>
-						<div className="w-fit flex flex-col items-center gap-2 text-textPrimaryLight dark:text-[#a8a6a6] group">
-							<Icons.WindowMinimize className="w-[14px]" />
-						</div>
-					</div>
-					<div
-						className="button window-hover cursor-pointer dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton"
-						id="restore-button"
-						onClick={handleMaximize}
-					>
-						<div className="w-fit flex flex-col items-center gap-2 text-textPrimaryLight dark:text-[#a8a6a6] group">
-							<Icons.WindowZoom className="w-[10px]" />
-						</div>
-					</div>
-					<div
-						className="button window-hover-close cursor-pointer dark:hover:bg-bgModifierHover hover:bg-bgLightModeButton"
-						id="close-button"
-						onClick={handleClose}
-					>
-						<div className="w-fit flex flex-col items-center gap-2 text-textPrimaryLight dark:text-[#a8a6a6] group">
-							<Icons.CloseButton className="w-[14px]" />
-						</div>
-					</div>
-				</div>
-			</div>
-		</header>
-	);
-};
 
 const AppLayout = () => {
 	const isLogin = useSelector(selectIsLogin) ?? false;
@@ -96,17 +17,15 @@ const AppLayout = () => {
 
 	return (
 		<MezonUiProvider>
-			<ViewModeHandler />
+			<RedirectHandler />
 			<ToastController />
 			<Outlet />
 		</MezonUiProvider>
 	);
 };
 
-const ViewModeHandler: React.FC = () => {
+const RedirectHandler = () => {
 	const navigate = useCustomNavigate();
-	const location = useLocation();
-	const viewMode = new URLSearchParams(location.search).get('viewMode');
 	const { redirectTo } = useLoaderData() as IAppLoaderData;
 
 	useEffect(() => {
@@ -114,29 +33,6 @@ const ViewModeHandler: React.FC = () => {
 			navigate(redirectTo);
 		}
 	}, [redirectTo, navigate]);
-
-	useEffect(() => {
-		if (!isElectron() || viewMode !== 'image') {
-			return;
-		}
-
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
-				window.electron.send(IMAGE_WINDOW_TITLE_BAR_ACTION, CLOSE_APP);
-			}
-		};
-
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [viewMode]);
-
-	if (shouldShowWinLinuxTitleBar()) {
-		return <TitleBar eventName={viewMode === 'image' ? IMAGE_WINDOW_TITLE_BAR_ACTION : TITLE_BAR_ACTION} />;
-	}
-
-	if (shouldShowMacWindowControls()) {
-		return <MacOSWindowControls />;
-	}
 
 	return null;
 };

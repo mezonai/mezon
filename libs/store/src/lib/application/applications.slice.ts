@@ -45,8 +45,6 @@ export interface IApplicationState extends EntityState<IApplicationEntity, strin
 	appsData: ApiAppList;
 	appDetail: ApiApp;
 	currentAppId?: string;
-	isElectronDownLoading: boolean;
-	isElectronUpdateAvailable: boolean;
 	cache?: CacheMetadata;
 }
 
@@ -72,9 +70,7 @@ export const applicationInitialState: IApplicationState = applicationAdapter.get
 		role: undefined,
 		token: undefined
 	},
-	currentAppId: undefined,
-	isElectronUpdateAvailable: false,
-	isElectronDownLoading: false
+	currentAppId: undefined
 });
 
 export interface IFetchAppsArg {
@@ -336,12 +332,6 @@ export const adminApplicationSlice = createSlice({
 	reducers: {
 		setCurrentAppId: (state, action) => {
 			state.currentAppId = action.payload;
-		},
-		setIsElectronUpdateAvailable: (state, action) => {
-			state.isElectronUpdateAvailable = action.payload;
-		},
-		setIsElectronDownloading: (state, action) => {
-			state.isElectronDownLoading = action.payload;
 		}
 	},
 	extraReducers(builder) {
@@ -459,8 +449,6 @@ export const getApplicationState = (rootState: { [ADMIN_APPLICATIONS]: IApplicat
 export const selectAllApps = createSelector(getApplicationState, (state) => state.appsData || []);
 export const selectAppDetail = createSelector(getApplicationState, (state) => state.appDetail);
 export const selectCurrentAppId = createSelector(getApplicationState, (state) => state.currentAppId);
-export const selectIsElectronUpdateAvailable = createSelector(getApplicationState, (state) => state.isElectronUpdateAvailable);
-export const selectIsElectronDownloading = createSelector(getApplicationState, (state) => state.isElectronDownLoading);
 
 export const selectApplicationById = createSelector(
 	[getApplicationState, (state, appId: string) => appId],
@@ -470,4 +458,4 @@ export const selectApplicationById = createSelector(
 export const selectAppsFetchingLoading = createSelector(getApplicationState, (state) => state.loadingStatus);
 
 export const adminApplicationReducer = adminApplicationSlice.reducer;
-export const { setCurrentAppId, setIsElectronUpdateAvailable, setIsElectronDownloading } = adminApplicationSlice.actions;
+export const { setCurrentAppId } = adminApplicationSlice.actions;

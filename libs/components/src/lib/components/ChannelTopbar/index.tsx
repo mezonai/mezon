@@ -115,7 +115,7 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`draggable-area max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink   ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink   ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
 		</div>
@@ -271,7 +271,7 @@ const TopBarChannelText = memo(() => {
 						)}
 						<div
 							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
-							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area group ${
+							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis group ${
 								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
 									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg pl-2 pr-4'
 									: 'pointer-events-none cursor-default'
@@ -432,7 +432,7 @@ const ChannelTopbarLabel = memo(
 		};
 
 		return (
-			<div className="none-draggable-area flex items-center text-lg gap-3 min-w-0" onClick={onClick}>
+			<div className="flex items-center text-lg gap-3 min-w-0" onClick={onClick}>
 				<div className="flex flex-shrink-0 items-center justify-center text-theme-message">{renderIcon()}</div>
 				<p className="flex-1 min-w-0 text-base font-semibold leading-5 truncate text-theme-message">{label}</p>
 			</div>
@@ -1215,7 +1215,7 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 		<div
 			onClick={handleOpenAddToGroupModal}
 			ref={rootRef}
-			className="none-draggable-area cursor-pointer"
+			className="cursor-pointer"
 			data-e2e={generateE2eId(`chat.direct_message.header.right_container.add_member`)}
 		>
 			{openAddToGroup && (

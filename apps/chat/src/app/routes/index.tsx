@@ -1,7 +1,6 @@
 import { Suspense, lazy, memo, useCallback, useEffect, useMemo } from 'react';
-import { isElectron } from '@mezon/utils';
 import type { LoaderFunctionArgs } from 'react-router-dom';
-import { Navigate, Outlet, RouterProvider, createBrowserRouter, createHashRouter, useNavigation } from 'react-router-dom';
+import { Navigate, Outlet, RouterProvider, createBrowserRouter, useNavigation } from 'react-router-dom';
 
 import type { CustomLoaderFunction } from '../loaders/appLoader';
 import { appLoader, shouldRevalidateApp } from '../loaders/appLoader';
@@ -108,7 +107,7 @@ export const Routes = memo(() => {
 	}, [dispatch]);
 
 	const routes = useMemo(() => {
-		return (isElectron() ? createHashRouter : createBrowserRouter)([
+		return createBrowserRouter([
 			{
 				path: '',
 				loader: loaderWithStore(appLoader),
@@ -167,18 +166,6 @@ export const Routes = memo(() => {
 							</Suspense>
 						)
 					},
-					...(isElectron()
-						? [
-								{
-									path: '/',
-									element: (
-										<Suspense fallback={<SuspenseFallback />}>
-											<InitialRoutes />
-										</Suspense>
-									)
-								}
-							]
-						: []),
 					{
 						path: 'desktop',
 						element: (
@@ -187,24 +174,14 @@ export const Routes = memo(() => {
 							</Suspense>
 						),
 						children: [
-							isElectron()
-								? {
-										path: 'login',
-										loader: loaderWithStore(loginLoader),
-										element: (
-											<Suspense fallback={<SuspenseFallback />}>
-												<Login />
-											</Suspense>
-										)
-									}
-								: {
-										path: 'mezon',
-										element: (
-											<Suspense fallback={<SuspenseFallback />}>
-												<InitialRoutes />
-											</Suspense>
-										)
-									}
+							{
+								path: 'mezon',
+								element: (
+									<Suspense fallback={<SuspenseFallback />}>
+										<InitialRoutes />
+									</Suspense>
+								)
+							}
 						]
 					},
 					{

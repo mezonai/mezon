@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { appActions, selectChannelsEntitiesByClanId, selectClanById, selectDirectMessageEntities, selectHistory, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, isElectron } from '@mezon/utils';
+import { createImgproxyUrl } from '@mezon/utils';
 
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -65,9 +65,6 @@ const SideBarHistory = () => {
 		}
 	};
 
-	if (!isElectron()) {
-		return null;
-	}
 
 	return (
 		<div className="flex pb-1 text-theme-primary-active">
