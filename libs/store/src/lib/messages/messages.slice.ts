@@ -1171,8 +1171,25 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		username,
 		code
 	} = payload;
+	const attachmentsMessage: ApiMessageAttachment[] =
+		attachments?.map((attach) => ({
+			filename: attach.filename,
+			filetype: attach.filetype,
+			size: attach.size,
+			duration: attach.duration,
+			url: attach.url,
+			thumbnail: attach.thumbnail,
+			height: attach.height,
+			width: attach.width
+		})) ?? [];
 
-	const payloadSizeInBytes = Buffer.byteLength(JSON.stringify(payload), 'utf8');
+	const payloadSizeInBytes = Buffer.byteLength(
+		JSON.stringify({
+			...payload,
+			attachments: attachmentsMessage
+		}),
+		'utf8'
+	);
 	if (payloadSizeInBytes > 4 * 1024) {
 		toast.error(t(`message:tooLongMessage`));
 		return;
@@ -1338,7 +1355,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			content,
-			attachments,
+			attachments: attachmentsMessage,
 			create_time_seconds: clientSendTime / 1000,
 			create_time: new Date(clientSendTime).toISOString(),
 			client_send_time: clientSendTime,
