@@ -24,7 +24,6 @@ import {
 	REQUEST_PERMISSION_MICROPHONE
 } from '../bridge/electron/constants';
 import { CURRENCY, ID_MENTION_HERE } from '../constant';
-import { Platform } from '../hooks/platform';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -54,7 +53,6 @@ import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
-import { getPlatform, isElectron } from './windowEnvironment';
 export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
@@ -785,7 +783,9 @@ export async function getWebUploadedAttachments(payload: {
 	if (!attachments || attachments?.length === 0) {
 		return [];
 	}
-	const nonDirectAttachments = attachments.filter((att) => !isTenorUrl(att.url) && !isMezonCdnUrl(att.url));
+	const nonDirectAttachments = attachments.filter((att) => {
+		return att.uploadPath && !isTenorUrl(att.uploadPath) && !isMezonCdnUrl(att.uploadPath);
+	});
 
 	if (!nonDirectAttachments.length) {
 		return [];
