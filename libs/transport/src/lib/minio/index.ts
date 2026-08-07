@@ -7,6 +7,7 @@ export class CustomFile extends File {
 	thumbnail?: string;
 	thumbnailBlob?: Blob;
 	uploadPath?: string;
+	thumbnailUpload?: string;
 }
 
 export const isValidUrl = (urlString: string) => {

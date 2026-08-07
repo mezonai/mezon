@@ -3,11 +3,8 @@ import { selectMemberClanByUserId, selectMessageByMessageId, useAppSelector } fr
 import { Icons } from '@mezon/ui';
 import {
 	convertTimeString,
-	DOWNLOAD_FILE,
 	EFailAttachment,
-	electronBridge,
 	isAttachmentPresignPendingForMessage,
-	isElectron,
 	shouldHidePresignAttachment
 } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
@@ -47,29 +44,15 @@ const FileItem = ({ attachmentData, mode, channelId }: FileItemProps) => {
 		if (!response.ok) {
 			return;
 		}
-		if (isElectron()) {
-			const fileName = !attachmentData.filename?.includes('.')
-				? `${attachmentData.filename}.${attachmentData.filetype}`
-				: attachmentData.filename;
-			try {
-				await electronBridge.invoke(DOWNLOAD_FILE, {
-					url: attachmentData.url as string,
-					defaultFileName: fileName
-				});
-			} catch (error) {
-				console.error('Error during download:', error);
-			}
-		} else {
-			try {
-				const blob = await response.blob();
-				const dataUrl = URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = dataUrl;
-				a.download = attachmentData.filename as string;
-				a.click();
-			} catch (error) {
-				console.error('Error during download:', error);
-			}
+		try {
+			const blob = await response.blob();
+			const dataUrl = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = dataUrl;
+			a.download = attachmentData.filename as string;
+			a.click();
+		} catch (error) {
+			console.error('Error during download:', error);
 		}
 	};
 	const thumbnailAttachment = RenderAttachmentThumbnail({

@@ -1,5 +1,4 @@
 import { selectIsLogin } from '@mezon/store';
-import { isElectron } from '@mezon/utils';
 import { useSelector } from 'react-redux';
 
 import React from 'react';
@@ -12,9 +11,7 @@ const InitialRoutes = () => {
 		sessionStorage.setItem('oauth_state', randomState);
 		return randomState;
 	}, []);
-	if (!isLogin && isElectron()) {
-		return <Navigate to="/desktop/login" replace />;
-	} else if (!isLogin && !isElectron()) {
+	if (!isLogin) {
 		const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
 		const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;
 		const REDIRECT_URI = encodeURIComponent(process.env.NX_CHAT_APP_OAUTH2_REDIRECT_URI as string);
