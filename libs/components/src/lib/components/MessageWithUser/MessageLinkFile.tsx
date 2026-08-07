@@ -2,7 +2,7 @@ import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, selectCurrentUserId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { DOWNLOAD_FILE, EFailAttachment, electronBridge, EMimeTypes, isElectron } from '@mezon/utils';
+import { EFailAttachment, EMimeTypes } from '@mezon/utils';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { Suspense, lazy, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -72,13 +72,7 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		setIsDownloading(true);
 
 		try {
-			if (isElectron()) {
-				await electronBridge.invoke(DOWNLOAD_FILE, {
-					url: url as string,
-					defaultFileName: filename
-				});
-			} else {
-				const response = await fetch(url);
+			const response = await fetch(url);
 				if (!response.ok) {
 					return;
 				}
@@ -91,7 +85,6 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 				a.click();
 
 				URL.revokeObjectURL(dataUrl);
-			}
 		} catch (error) {
 			console.error('Error during download:', error);
 		} finally {

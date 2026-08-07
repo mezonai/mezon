@@ -7,7 +7,6 @@
 			"loadingAborted": "ビデオのロードが取り消されました",
 			"networkError": "ビデオをロードする際のネットワークエラー",
 			"codecNotSupported": "このプラットフォームではビデオコーデックがサポートされていません",
-			"codecNotSupportedElectron": "このプラットフォームではビデオコーデックがサポートされていません。システムプレーヤーでビデオをダウンロードして再生してください。",
 			"formatNotSupported": "ビデオ形式がサポートされていません",
 			"downloadButton": "ビデオをダウンロード",
 			"browserNotSupported": "ブラウザはビデオタグをサポートしていません。"

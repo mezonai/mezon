@@ -1,4 +1,4 @@
-import { AnyLiteral, ELECTRON_HOST_URL, IS_PACKAGED_ELECTRON } from '../types';
+import { AnyLiteral } from '../types';
 
 // eslint-disable-next-line no-restricted-globals
 const cacheApi = self.caches;
@@ -31,7 +31,7 @@ export async function fetch(cacheName: string, key: string, type: Type, isHtmlAl
 
 	try {
 		// To avoid the error "Request scheme 'webdocument' is unsupported"
-		const request = IS_PACKAGED_ELECTRON ? `${ELECTRON_HOST_URL}/${key.replace(/:/g, '_')}` : new Request(key.replace(/:/g, '_'));
+		const request = new Request(key.replace(/:/g, '_'));
 		const cache = await cacheApi.open(cacheName);
 		const response = await cache.match(request);
 		if (!response) {
@@ -87,7 +87,7 @@ export async function save(cacheName: string, key: string, data: AnyLiteral | Bl
 	try {
 		const cacheData = typeof data === 'string' || data instanceof Blob || data instanceof ArrayBuffer ? data : JSON.stringify(data);
 		// To avoid the error "Request scheme 'webdocument' is unsupported"
-		const request = IS_PACKAGED_ELECTRON ? `${ELECTRON_HOST_URL}/${key.replace(/:/g, '_')}` : new Request(key.replace(/:/g, '_'));
+		const request = new Request(key.replace(/:/g, '_'));
 		const response = new Response(cacheData);
 		const cache = await cacheApi.open(cacheName);
 		await cache.put(request, response);

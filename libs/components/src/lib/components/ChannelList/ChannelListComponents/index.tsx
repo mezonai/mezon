@@ -25,7 +25,7 @@ import {
 } from '@mezon/store';
 
 import { Icons } from '@mezon/ui';
-import { buildChannelAppLaunchUrl, DONE_ONBOARDING_STATUS, EPermission, generateE2eId, isElectron } from '@mezon/utils';
+import { buildChannelAppLaunchUrl, DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
 import type { ApiChannelAppResponse } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -305,10 +305,6 @@ const ChannelAppList = memo(() => {
 					clanId: currentClanId ?? '',
 					clanName: currentClanName
 				});
-				if (isElectron()) {
-					window.electron.launchAppWindow(urlWithHash);
-					return;
-				}
 				window.open(urlWithHash, channel?.channel_label, 'width=900,height=700,noopener,noreferrer');
 			}
 		}

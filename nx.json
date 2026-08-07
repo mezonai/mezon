@@ -89,7 +89,7 @@
 			}
 		}
 	],
-	"defaultProject": "desktop",
+	"defaultProject": "chat",
 	"neverConnectToCloud": true,
 	"tasksRunnerOptions": {
 		"default": {

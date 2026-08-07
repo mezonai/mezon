@@ -1,5 +1,5 @@
 import { AttachmentPreviewThumbnail, FileSelectionButton, MentionReactInput, PreviewOgp, ReplyMessageBox, UserMentionList } from '@mezon/components';
-import { useChatSending, useDragAndDrop, useReference, useSeenMessagePool } from '@mezon/core';
+import { useChatSending, useDragAndDrop, usePermissionChecker, useReference, useSeenMessagePool } from '@mezon/core';
 import {
 	fetchMessages,
 	referencesActions,
@@ -24,7 +24,18 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { CREATING_TOPIC, generateE2eId, IMAGE_MAX_FILE_SIZE, isBackgroundModeActive, isElectron, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, processFilesForAttachment, UploadLimitReason, useBackgroundMode } from '@mezon/utils';
+import {
+	CREATING_TOPIC,
+	EOverriddenPermission,
+	IMAGE_MAX_FILE_SIZE,
+	MAX_FILE_ATTACHMENTS,
+	MAX_FILE_SIZE,
+	UploadLimitReason,
+	generateE2eId,
+	isBackgroundModeActive,
+	processFilesForAttachment,
+	useBackgroundMode
+} from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { DragEvent } from 'react';
@@ -54,7 +65,6 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 	const [topicDraggingState, setTopicDraggingState] = useState(false);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
-	const isDesktop = isElectron();
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannelId));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
 
@@ -64,6 +74,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 	const { markAsReadSeen } = useSeenMessagePool();
 	const isTopicMounted = useRef(false);
 	const isWindowFocused = !isBackgroundModeActive();
+	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], currentChannelId || '0');
 
 	const mode =
 		currentChannelType === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -309,7 +320,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 				</div>
 			)}
 			{(isFetchMessageDone || initTopicMessageId) && (
-				<div className={`relative flex-1 ${isElectron() ? 'h-[calc(100%_-_50px_-_30px)]' : 'h-full'}`}>
+				<div className={`relative flex-1 h-full`}>
 					<MemoizedChannelMessages
 						isPrivate={currentChannelPrivate}
 						channelId={currentTopicId as string}
@@ -322,78 +333,88 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 					/>
 				</div>
 			)}
-
-			<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isDesktop && 'pb-5'}`}>
-				{isBanned ? (
-					<BanCountDown
-						banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}
-						channelId={currentChannelId || ''}
-						clanId={currentClanId || ''}
-						userId={sessionUser?.user_id || ''}
-					/>
-				) : (
-					<>
-						{checkAttachment && (
-							<div
-								className={`${checkAttachment ? 'px-3  pb-1 pt-5  border-b-[1px] border-color-primary' : ''} bg-item-theme max-h-full`}
-							>
-								<div className={`max-h-full flex gap-6 !overflow-y-hidden !overflow-x-auto thread-scroll `}>
-									{attachmentFilteredByChannelId?.files?.map((item: ApiMessageAttachment, index: number) => {
-										return (
-											<Fragment key={index}>
-												<AttachmentPreviewThumbnail
-													attachment={item}
-													channelId={currentInputChannelId}
-													onRemove={removeAttachmentByIndex}
-													indexOfItem={index}
-												/>
-											</Fragment>
-										);
-									})}
-								</div>
-							</div>
-						)}
-						<PreviewOgp contextId={currentInputChannelId} />
-						<div className="mx-3 relative">
-							{dataReferences.message_ref_id && <ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />}
-							<div
-								className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
-						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}
-						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
-							>
-								<FileSelectionButton currentChannelId={currentInputChannelId} />
-
-								<div className={`w-[calc(100%_-_58px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
-									<div
-										className={`w-full border-none rounded-r-lg gap-3 relative whitespace-pre-wrap`}
-										onContextMenu={handleChildContextMenu}
-									>
-										<MentionReactInput
-											handlePaste={onPastedFiles}
-											onSend={handleSend}
-											onTyping={handleTypingDebounced}
-											listMentions={mentionsList}
-											isTopic
-											handleConvertToFile={onConvertToFiles}
-											currentChannelId={currentInputChannelId}
-										/>
+			{canSendMessage === false ? (
+				<div
+					className="h-11 opacity-80 bg-theme-input text-theme-primary ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission rounded one-line"
+					data-e2e={generateE2eId('chat.message_box.input.no_permission')}
+				>
+					{t('noPermissionToSendMessage')}
+				</div>
+			) : (
+				<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative`}>
+					{isBanned ? (
+						<BanCountDown
+							banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}
+							channelId={currentChannelId || ''}
+							clanId={currentClanId || ''}
+							userId={sessionUser?.user_id || ''}
+						/>
+					) : (
+						<>
+							{checkAttachment && (
+								<div
+									className={`${checkAttachment ? 'px-3  pb-1 pt-5  border-b-[1px] border-color-primary' : ''} bg-item-theme max-h-full`}
+								>
+									<div className={`max-h-full flex gap-6 !overflow-y-hidden !overflow-x-auto thread-scroll `}>
+										{attachmentFilteredByChannelId?.files?.map((item: ApiMessageAttachment, index: number) => {
+											return (
+												<Fragment key={index}>
+													<AttachmentPreviewThumbnail
+														attachment={item}
+														channelId={currentInputChannelId}
+														onRemove={removeAttachmentByIndex}
+														indexOfItem={index}
+													/>
+												</Fragment>
+											);
+										})}
 									</div>
 								</div>
-							</div>
-							{topicAnonymousMode && currentTopicId && (
-								<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>
-									<Icons.HatIcon className="w-7 h-7" />
-								</div>
 							)}
-						</div>
-						{currentTopicId ? (
-							<ChannelTyping channelId={currentTopicId || ''} mode={mode} isPublic isDM={false} />
-						) : (
-							<div className="h-4"></div>
-						)}
-					</>
-				)}
-			</div>
+							<PreviewOgp contextId={currentInputChannelId} />
+							<div className="mx-3 relative">
+								{dataReferences.message_ref_id && (
+									<ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />
+								)}
+								<div
+									className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
+						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}
+						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
+								>
+									<FileSelectionButton currentChannelId={currentInputChannelId} />
+
+									<div className={`w-[calc(100%_-_58px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
+										<div
+											className={`w-full border-none rounded-r-lg gap-3 relative whitespace-pre-wrap`}
+											onContextMenu={handleChildContextMenu}
+										>
+											<MentionReactInput
+												handlePaste={onPastedFiles}
+												onSend={handleSend}
+												onTyping={handleTypingDebounced}
+												listMentions={mentionsList}
+												isTopic
+												handleConvertToFile={onConvertToFiles}
+												currentChannelId={currentInputChannelId}
+											/>
+										</div>
+									</div>
+								</div>
+								{topicAnonymousMode && currentTopicId && (
+									<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>
+										<Icons.HatIcon className="w-7 h-7" />
+									</div>
+								)}
+							</div>
+							{currentTopicId ? (
+								<ChannelTyping channelId={currentTopicId || ''} mode={mode} isPublic isDM={false} />
+							) : (
+								<div className="h-4"></div>
+							)}
+						</>
+					)}
+				</div>
+			)}
 		</div>
 	);
 };

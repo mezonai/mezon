@@ -13826,13 +13826,6 @@ metro@0.80.12:
     ws "^7.5.10"
     yargs "^17.6.2"
 
-mezon-active-windows@0.1.38:
-  version "0.1.38"
-  resolved "https://registry.yarnpkg.com/mezon-active-windows/-/mezon-active-windows-0.1.38.tgz#63241830b7f757caff3965869c8dcf620d2bddee"
-  integrity sha512-WTimM1m3jz4d0yS2edSqSdxxHPPceFAtI+Zxe1A7kBm1Px6TWB136GKNQSgn4OVRJ+ol9wHiwqRwjdHlSP+VMQ==
-  dependencies:
-    node-addon-api "^1.7.2"
-
 mezon-js-protobuf@1.10.62:
   version "1.10.62"
   resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.10.62.tgz#92750f11d03e64700f83b6c009433f5c300e5f93"

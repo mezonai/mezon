@@ -7,7 +7,6 @@
 			"loadingAborted": "Video laden geannuleerd",
 			"networkError": "Netwerkfout bij video laden",
 			"codecNotSupported": "Video codec niet ondersteund op dit platform",
-			"codecNotSupportedElectron": "Video codec niet ondersteund op dit platform. Probeer video te downloaden om af te spelen met systeemspeler.",
 			"formatNotSupported": "Video formaat niet ondersteund",
 			"downloadButton": "Video downloaden",
 			"browserNotSupported": "Je browser ondersteunt het videobegrip."

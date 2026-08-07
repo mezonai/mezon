@@ -26,10 +26,10 @@ const IntegrationsPage = () => {
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-linux-amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64.exe`;
+				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
 	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/${version}-win-x64-portable.exe`;
+	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);

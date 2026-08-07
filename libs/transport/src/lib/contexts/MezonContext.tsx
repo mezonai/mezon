@@ -26,6 +26,7 @@ export type ReconnectSocketResult = {
 export type ConnectSocketOptions = {
 	createStatus?: boolean;
 	verbose?: boolean;
+	useToken?: boolean;
 };
 
 let sessionRefreshFailCount = 0;
@@ -442,7 +443,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			const wsUrl = resolveSessionWsUrl(sr);
 			sessionRef.current = { ...sr, ws_url: wsUrl };
 
-			const credential = sessionRef.current.session_id?.trim();
+			const credential = options.useToken ? sessionRef.current.token : sessionRef.current.session_id?.trim();
 			if (!credential) {
 				throw new Error('Missing Mezon session credential');
 			}
