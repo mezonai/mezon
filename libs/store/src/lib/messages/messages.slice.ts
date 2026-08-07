@@ -1323,7 +1323,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mk
 			};
 		}
-		const needUpload = attachments?.some((attachment) => attachment.uploadPath);
+		const needUpload = attachments?.some((attachment) => attachment?.uploadPath);
 		if (needUpload) {
 			content = {
 				...content,
@@ -1420,30 +1420,34 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 
 			if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
-				const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+				try {
+					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
 
-				thunkAPI.dispatch(
-					messagesActions.updateSendingMessageAttachments({
-						channelId: channelId as string,
-						messageId: id,
-						attachments: toPublicMessageAttachments(attachments)
-					})
-				);
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				thunkAPI.dispatch(
-					editMessageViaApi({
-						content: {
-							...content,
-							presign_finish
-						},
-						channelId,
-						clanId,
-						isPublic,
-						messageId: messageResult?.message_id,
-						mode,
-						hideEditted: true
-					})
-				);
+					thunkAPI.dispatch(
+						messagesActions.updateSendingMessageAttachments({
+							channelId: channelId as string,
+							messageId: id,
+							attachments: toPublicMessageAttachments(attachments)
+						})
+					);
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					thunkAPI.dispatch(
+						editMessageViaApi({
+							content: {
+								...content,
+								presign_finish
+							},
+							channelId,
+							clanId,
+							isPublic,
+							messageId: messageResult?.message_id,
+							mode,
+							hideEditted: true
+						})
+					);
+				} catch (error) {
+					console.error('error: ', error);
+				}
 			}
 		} catch (error) {
 			const payload = originalSendPayload;

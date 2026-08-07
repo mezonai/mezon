@@ -826,7 +826,9 @@ export async function getWebUploadedAttachments(payload: { attachments: (ApiMess
 			}
 
 			const result = await uploadFileToPath(createdFile.uploadPath, createdFile, createdFile.size);
-
+			if (result && createdFile.thumbnailBlob && createdFile.thumbnail && createdFile.type.startsWith('video')) {
+				await uploadFileToPath(createdFile.thumbnail, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
+			}
 			fileUploadForeman.releaseWorker();
 			const id = attachment.filename?.split('/').pop()?.split('.')[0];
 			return id;
