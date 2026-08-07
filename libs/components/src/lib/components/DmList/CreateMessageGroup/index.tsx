@@ -263,7 +263,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			ref={modalRef}
 			tabIndex={-1}
 			onMouseDown={(e) => e.stopPropagation()}
-			className={`absolute top-8 right-0 z-50 outline-none bg-theme-setting-primary border-theme-primary w-[calc(100vw-2rem)] md:w-[440px] text-theme-primary rounded shadow shadow-neutral-800 ${classNames}`}
+			className={`absolute max-sbm:fixed max-sbm:top-14 max-sbm:left-4 max-sbm:right-4 max-sbm:w-auto top-8 right-0 z-50 outline-none bg-theme-setting-primary border-theme-primary w-[calc(100vw-2rem)] md:w-[440px] text-theme-primary rounded shadow shadow-neutral-800 ${classNames}`}
 			onClick={(e) => {
 				e.stopPropagation();
 			}}

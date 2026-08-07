@@ -33,6 +33,7 @@
 	"loading": "로딩 중...",
 	"topic": "주제",
 	"invoice": "음성 채널에서",
+	"shareScreen": "화면 공유 중",
 	"reactions": "반응",
 	"callMessages": {
 		"startedVoiceCall": "음성 통화 시작",

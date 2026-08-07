@@ -65,7 +65,33 @@ const SideBarHistory = () => {
 		}
 	};
 
-	return null;
+
+	return (
+		<div className="flex pb-1 text-theme-primary-active">
+			<div
+				className={`rotate-180 rounded-full aspect-square p-1 bg-item-theme-hover cursor-pointer  ${history?.current === 0 || !history?.url?.length ? 'opacity-40' : ''}`}
+				onContextMenu={(e) => {
+					e.preventDefault();
+					onOpenHistoryList(true);
+				}}
+				onMouseDown={handleMouseDown}
+				onMouseUp={(e) => handleMouseUp(e, true)}
+			>
+				<Icons.LongArrowRight className="w-5" />
+			</div>
+			<div
+				onContextMenu={(e) => {
+					e.preventDefault();
+					onOpenHistoryList(false);
+				}}
+				onMouseDown={handleMouseDown}
+				onMouseUp={(e) => handleMouseUp(e, false)}
+				className={`rounded-full aspect-square bg-item-theme-hover p-1 cursor-pointer ${history?.current !== null && history?.current < history?.url?.length - 1 ? '' : 'opacity-40 pointer-events-none'}`}
+			>
+				<Icons.LongArrowRight className="w-5" />
+			</div>
+		</div>
+	);
 };
 
 const ListHistory = ({

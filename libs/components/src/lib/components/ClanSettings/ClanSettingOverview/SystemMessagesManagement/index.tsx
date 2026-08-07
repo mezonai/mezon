@@ -81,7 +81,7 @@ const SystemMessagesManagement = ({
 					menuItems.push(
 						<Menu.Item
 							key={channel.id}
-							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer"
+							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer bg-item-hover transition-colors"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
 							{renderChannelIcon(channel)}
@@ -103,9 +103,9 @@ const SystemMessagesManagement = ({
 	return (
 		<div className={'border-t-theme-primary mt-10 pt-10 flex flex-col '}>
 			<h3 className="text-sm font-bold uppercase mb-2">{t('systemMessages.title')}</h3>
-			<Menu menu={menu} className={'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode bg-theme-input px-2'}>
+			<Menu menu={menu} className={'h-fit max-h-[200px] text-xs overflow-y-auto customSmallScrollLightMode '}>
 				<div
-					className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm border border-theme-primary bg-theme-input "
+					className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm border border-theme-primary "
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
 				>
 					<div className={' flex flex-row items-center'}>

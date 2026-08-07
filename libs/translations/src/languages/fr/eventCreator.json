@@ -80,7 +80,10 @@
 			"title": "Description",
 			"description": "Faites connaître un peu plus votre événement à tout le monde."
 		},
-		"cover": "Bannière"
+		"cover": "Bannière",
+		"VoiceChannel": {
+			"title": "Sélectionner un salon vocal"
+		}
 	},
 	"actions": {
 		"next": "Suivant",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "L'heure de début doit être dans le futur.",
 		"endTimeAfterStart": "L'heure de fin doit être supérieure à l'heure de début.",
-		"invalidTopic": "Sujet d'événement invalide. Les caractères '`', '<', '>', ',', '/', '\\\"', '\\\\', et ''' ne sont pas autorisés."
+		"invalidTopic": "Sujet d'événement invalide. Les caractères '`', '<', '>', ',', '/', '\\\"', '\\\\', et ''' ne sont pas autorisés.",
+		"locationMaxLength": "Le lieu doit comporter au maximum 100 caractères."
 	},
 	"selectUser": "Sélectionnez un canal ou un fil pour créer un événement",
 	"emptyState": {

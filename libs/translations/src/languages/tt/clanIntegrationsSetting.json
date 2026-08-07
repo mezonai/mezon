@@ -29,10 +29,12 @@
 		"delete": "Бетерү",
 		"selectAChannel": "Канал сайлау",
 		"yes": "Әйе",
-		"deleteCaptionHook": "Башлык ачкычын бетерү",
+		"deleteCaptionHook": "{{webhookName}} бетерү",
 		"deleteWebhookConfirmation": "Зинһар, {{webhookName}} вебхукын бетерәсегез килүен раслагыз? Бу гамәлне кире кайтарып булмый.",
 		"resetToken": "Токенны сброслау",
-		"name": "Вебхук исеме"
+		"name": "Вебхук исеме",
+		"deleteWebhookTitle": "{{webhookName}} бетерү",
+		"nameMaxLengthError": "Исем озынлыгы 64 символдан артмаска тиеш."
 	},
 	"webhooksEmpty": {
 		"noWebhooks": "Вебхуклар юк"

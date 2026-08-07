@@ -1,5 +1,5 @@
 {
-    "headerTitle": {
+	"headerTitle": {
 		"settings": "설정",
 		"Friends": "친구",
 		"addFriends": "친구 추가",
@@ -12,14 +12,15 @@
 		"addMembers": "멤버 추가",
 		"appearance": "외관",
 		"topic": "토론",
-		"chat": "채팅"
+		"chat": "채팅",
+		"share": "공유"
 	},
-    "headerRight": {
-        "addFriends": "친구 추가"
-    },
-    "navigationTabs": {
-        "messages": "메시지",
-        "notifications": "알림",
-        "profile": "프로필"
-    }
+	"headerRight": {
+		"addFriends": "친구 추가"
+	},
+	"navigationTabs": {
+		"messages": "메시지",
+		"notifications": "알림",
+		"profile": "프로필"
+	}
 }

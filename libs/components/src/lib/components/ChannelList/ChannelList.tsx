@@ -15,8 +15,6 @@ import {
 	selectCurrentClanId,
 	selectCurrentUserId,
 	selectFirstChannelWithBadgeByClanId,
-	selectIsElectronDownloading,
-	selectIsElectronUpdateAvailable,
 	selectIsOpenCreateNewChannel,
 	selectIsShowEmptyCategory,
 	selectListChannelRenderByClanId,
@@ -139,8 +137,6 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const streamPlay = useSelector(selectStatusStream);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
-	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
-	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
 	const dispatch = useAppDispatch();
 
@@ -191,14 +187,13 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 			const mdBottomMargin = window.innerWidth >= 768 ? 16 : 0;
 			const totalHeight = clanTopbarEle + clanFooterHeight + mdBottomMargin - 3;
 			const outsideHeight = totalHeight;
-			const titleBarHeight = 0;
 
-			setHeight(window.innerHeight - outsideHeight - titleBarHeight);
+			setHeight(window.innerHeight - outsideHeight);
 		};
 		calculateHeight();
 		window.addEventListener('resize', calculateHeight);
 		return () => window.removeEventListener('resize', calculateHeight);
-	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
+	}, [data, streamPlay, isVoiceJoined]);
 
 	useEffect(() => {
 		const idleCallback = window.requestIdleCallback(

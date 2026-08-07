@@ -82,7 +82,7 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 		if (lastSeenMessageId && lastMessageViewport?.id) {
 			try {
 				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
-				if (distance >= 0) {
+				if (distance > 0) {
 					dispatch(directMetaActions.updateLastSeenTime(lastMessageViewport));
 					markAsReadSeen(lastMessageViewport, mode, 0);
 					return;
@@ -94,7 +94,7 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 
 		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
 
-		if (isLastMessage) {
+		if (isLastMessage || lastSeenMessageId === undefined) {
 			dispatch(directMetaActions.updateLastSeenTime(lastMessageViewport));
 			markAsReadSeen(lastMessageViewport, mode, 0);
 		}
@@ -322,7 +322,10 @@ const DirectMessage = () => {
 					<div
 						className={`flex-col flex-1 h-full max-h-messageViewChatDM ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : isSearchMessage ? 'w-widthSearchMessage' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
-						<div className={`relative overflow-y-auto h-heightMessageViewChatDM flex-shrink`} ref={messagesContainerRef}>
+						<div
+							className={`relative overflow-y-auto  h-heightMessageViewChatDM flex-shrink`}
+							ref={messagesContainerRef}
+						>
 							{
 								<ChannelMessages
 									clanId="0"

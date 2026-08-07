@@ -265,7 +265,7 @@ const getInitialClanState = () => {
 		entities: categoriesAdapter.getInitialState(),
 		sortChannelByCategoryId: {},
 		categoryExpandState: {},
-		showEmptyCategory: false
+		showEmptyCategory: true
 	};
 };
 
@@ -504,7 +504,7 @@ export const selectCategoryIdSortChannel = createSelector(
 
 export const selectIsShowEmptyCategory = createSelector(
 	[getCategoriesState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => state.byClans[clanId]?.showEmptyCategory ?? false
+	(state, clanId) => state.byClans[clanId]?.showEmptyCategory ?? true
 );
 
 export const selectCategoryById = createSelector(

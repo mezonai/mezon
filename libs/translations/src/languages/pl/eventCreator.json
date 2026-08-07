@@ -80,7 +80,10 @@
 			"title": "Opis",
 			"description": "Poinformuj wszystkich nieco więcej o Twoim wydarzeniu."
 		},
-		"cover": "Okładka"
+		"cover": "Okładka",
+		"VoiceChannel": {
+			"title": "Wybierz kanał głosowy"
+		}
 	},
 	"actions": {
 		"next": "Dalej",
@@ -140,7 +143,8 @@
 	"errorMessages": {
 		"startTimeFuture": "Czas rozpoczęcia musi być w przyszłości.",
 		"endTimeAfterStart": "Czas zakończenia musi być większy niż czas rozpoczęcia.",
-		"invalidTopic": "Temat wydarzenia jest nieprawidłowy. Znaki '`', '<', '>', ',', '/', '\"', '\\\\' i ''' nie są dozwolone."
+		"invalidTopic": "Temat wydarzenia jest nieprawidłowy. Znaki '`', '<', '>', ',', '/', '\"', '\\\\' i ''' nie są dozwolone.",
+		"locationMaxLength": "Musi zawierać maksymalnie 100 znaków."
 	},
 	"selectUser": "Wybierz kanał lub wątek, aby utworzyć wydarzenie",
 	"emptyState": {

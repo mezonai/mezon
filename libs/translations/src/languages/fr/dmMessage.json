@@ -59,5 +59,11 @@
 	"members": "membres",
 	"speaker": "Haut-parleur",
 	"end": "Finir",
-	"turnedMicOff": "a coupé le micro"
+	"turnedMicOff": "a coupé le micro",
+	"closeDmConfirm": {
+		"title": "Fermer la conversation privée",
+		"content": "Êtes-vous sûr de vouloir fermer cette conversation ? Elle sera masquée de votre liste de messages.",
+		"confirmText": "Fermer la conversation privée",
+		"error": "Échec de la fermeture de la conversation privée"
+	}
 }

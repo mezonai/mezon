@@ -211,5 +211,57 @@
 		"title": "Зневадження Embed"
 	},
 	"small": "Малий",
-	"large": "Великий"
+	"large": "Великий",
+	"transcriptCalls": {
+		"title": "Стенограми дзвінків",
+		"subtitle": "Переглядайте та керуйте стенограмами своїх дзвінків.",
+		"loading": "Завантаження…",
+		"results": "кімнат",
+		"page": "Сторінка",
+		"prev": "Назад",
+		"next": "Далі",
+		"columns": {
+			"callId": "ID дзвінка",
+			"roomName": "Назва кімнати",
+			"status": "Статус",
+			"totalTracks": "Усього треків",
+			"completedTracks": "Завершено",
+			"duration": "Тривалість",
+			"createdAt": "Створено",
+			"completedAt": "Завершено"
+		},
+		"status": {
+			"pending": "В очікуванні",
+			"processing": "Обробка",
+			"completed": "Завершено",
+			"failed": "Не вдалося"
+		},
+		"tabs": {
+			"overview": "Огляд",
+			"fullTranscript": "Повна стенограма",
+			"summary": "Короткий зміст",
+			"participants": "Учасники"
+		},
+		"detail": {
+			"title": "Деталі стенограми дзвінка",
+			"back": "Назад",
+			"refresh": "Оновити",
+			"loadError": "Не вдалося завантажити цю кімнату.",
+			"summaryEmpty": "Короткий зміст недоступний.",
+			"transcriptEmpty": "Текст стенограми недоступний.",
+			"actionItems": "Пункти дій",
+			"participants": "Учасники",
+			"participantsEmpty": "Для цієї кімнати немає списку учасників.",
+			"metrics": {
+				"totalTracks": "Усього треків",
+				"completed": "Завершено",
+				"duration": "Тривалість",
+				"segments": "Сегменти"
+			},
+			"notFound": "Стенограму дзвінка не знайдено",
+			"unknown": "невідомо",
+			"username": "Ім'я користувача",
+			"displayName": "Відображуване ім'я"
+		}
+	}
 }

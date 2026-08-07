@@ -211,5 +211,57 @@
 		"title": "埋め込みデバッガー"
 	},
 	"small": "小",
-	"large": "大"
+	"large": "大",
+	"transcriptCalls": {
+		"title": "通話文字起こし",
+		"subtitle": "通話の文字起こしを表示・管理できます。",
+		"loading": "読み込み中…",
+		"results": "ルーム",
+		"page": "ページ",
+		"prev": "前へ",
+		"next": "次へ",
+		"columns": {
+			"callId": "通話ID",
+			"roomName": "ルーム名",
+			"status": "ステータス",
+			"totalTracks": "総トラック数",
+			"completedTracks": "完了",
+			"duration": "時間",
+			"createdAt": "作成日時",
+			"completedAt": "完了日時"
+		},
+		"status": {
+			"pending": "保留中",
+			"processing": "処理中",
+			"completed": "完了",
+			"failed": "失敗"
+		},
+		"tabs": {
+			"overview": "概要",
+			"fullTranscript": "完全な文字起こし",
+			"summary": "要約",
+			"participants": "参加者"
+		},
+		"detail": {
+			"title": "通話文字起こし詳細",
+			"back": "戻る",
+			"refresh": "更新",
+			"loadError": "このルームを読み込めませんでした。",
+			"summaryEmpty": "要約はありません。",
+			"transcriptEmpty": "文字起こしテキストはありません。",
+			"actionItems": "アクション項目",
+			"participants": "参加者",
+			"participantsEmpty": "このルームに参加者はいません。",
+			"metrics": {
+				"totalTracks": "総トラック数",
+				"completed": "完了",
+				"duration": "時間",
+				"segments": "セグメント"
+			},
+			"notFound": "通話文字起こしが見つかりません",
+			"unknown": "不明",
+			"username": "ユーザー名",
+			"displayName": "表示名"
+		}
+	}
 }

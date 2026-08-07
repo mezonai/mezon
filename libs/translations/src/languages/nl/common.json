@@ -403,7 +403,7 @@
 		"upload": "Uploaden",
 		"sticker": "sticker",
 		"emoji": "emoji",
-		"lenghtError": "Naam {{type}} moet tussen {{min}} en {{max}} tekens zijn, alleen letters, cijfers, _ en -"
+		"lengthError": "Naam {{type}} moet tussen {{min}} en {{max}} tekens zijn, alleen letters, cijfers, _ en -"
 	},
 	"openSettings": "Instellingen openen",
 	"permissionNotification": {
@@ -467,7 +467,8 @@
 		"failedToRefresh": "Canvas-gegevens vernieuwen mislukt",
 		"titlePlaceholder": "Je canvas-titel",
 		"typePlaceholder": "Typ / om in te voegen...",
-		"untitled": "Naamloos"
+		"untitled": "Naamloos",
+		"deleteMessage": "Dit canvas wordt permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt."
 	},
 	"emojiCategories": {
 		"forsale": "Te koop",

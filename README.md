@@ -142,7 +142,7 @@ The application will be available at http://localhost:4200/
 | ----------- | ----------------------------------------------------------------------------- | --------- |
 | **Windows** | [Download](https://apps.microsoft.com/detail/9pf25lf1fj17)                    | ✅ Stable |
 | **macOS**   | [Download](https://apps.apple.com/vn/app/mezon-desktop/id6756601798)          | ✅ Stable |
-| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.72-linux-amd64.deb)         | ✅ Stable |
+| **Linux**   | [Download](https://cdn.komu.vn/release/mezon-2.0.1-linux-amd64.deb)           | ✅ Stable |
 | **iOS**     | [App Store](https://apps.apple.com/vn/app/mezon/id6502750046)                 | ✅ Stable |
 | **Android** | [Google Play](https://play.google.com/store/apps/details?id=com.mezon.mobile) | ✅ Stable |
 | **Web**     | [mezon.ai](https://mezon.ai)                                                  | ✅ Stable |
@@ -165,11 +165,9 @@ yarn install
 yarn dev:chat          # Start chat app (port 4200)
 yarn dev:admin         # Start admin dashboard (port 4200)
 yarn dev:mobile        # Start mobile development
-yarn dev:desktop       # Start desktop app
 
 # Build for production
 yarn build:chat        # Build web chat app
-yarn build:desktop     # Build desktop app
 yarn build:mobile      # Build mobile apps
 
 # Code quality
@@ -246,7 +244,7 @@ mezon/
 -   **Styling**: Tailwind CSS
 -   **Build Tool**: Nx Monorepo with Webpack
 -   **Mobile**: React Native
--   **Desktop**: Electron
+-   **Desktop**: Separate [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
 
 #### Backend & Infrastructure
 

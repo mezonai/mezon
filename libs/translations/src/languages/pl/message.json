@@ -184,7 +184,8 @@
 		"messages": "przypięte.",
 		"startedAThread": "utworzył wątek:",
 		"seeAllThreads": "Zobacz",
-		"allThreads": "wszystkie wątki"
+		"allThreads": "wszystkie wątki",
+		"deletedAThread": "heeft een onderwerp verwijderd:"
 	},
 	"removeFromChannel": {
 		"title": "Konwersacja niedostępna",

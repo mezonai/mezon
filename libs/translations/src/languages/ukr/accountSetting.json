@@ -92,7 +92,10 @@
 		"alreadyLinkedToAnother": "Цей номер вже прив'язаний до іншого акаунту",
 		"country": "Країна",
 		"otpSentMessage": "Перевірте OTP код, надісланий на номер телефону {{phone}}",
-		"backToPhoneInput": "Змінити номер телефону?"
+		"backToPhoneInput": "Змінити номер телефону?",
+		"emailPlaceholder": "your.email@example.com",
+		"otp": "Підтвердьте номер",
+		"verifyOtpMessage": "Будь ласка, підтвердьте OTP-код, надісланий на"
 	},
 	"toast": {
 		"deleteAccount": {

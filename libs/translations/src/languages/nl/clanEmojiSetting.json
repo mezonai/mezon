@@ -11,7 +11,8 @@
 		"exCatHug": "Bijv: kat_omhelzing",
 		"thisIsForSale": "Dit is te koop",
 		"neverMind": "Niet erg",
-		"characters": "Naam moet van 3 tot 64 tekens zijn"
+		"characters": "Naam moet van 3 tot 64 tekens zijn",
+		"required": "Dit veld is verplicht"
 	},
 	"header": {
 		"save": "Opslaan"

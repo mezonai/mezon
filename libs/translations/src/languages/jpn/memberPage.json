@@ -4,6 +4,7 @@
 	"addedBy": "{{name}}によって追加",
 	"you": "あなた",
 	"inVoice": "ボイスチャンネル内",
+	"shareScreen": "画面共有中",
 	"onlineCount": "オンライン - {{count}}",
 	"offlineCount": "オフライン - {{count}}"
 }

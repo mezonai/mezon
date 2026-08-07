@@ -57,7 +57,7 @@ export const CATEGORY_TYPES = {
 
 export const DEFAULT_IMAGES = {
 	BANNER: No_Banner,
-	LOGO: 'https://cdn.mezon.ai/landing-page-mezon/logodefault.webp'
+	LOGO: 'https://cdn.komu.vn/landing-page-mezon/logodefault.webp'
 };
 
 export const PAGINATION = {

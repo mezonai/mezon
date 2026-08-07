@@ -14,11 +14,13 @@
 	"joinedThreads": "fils joints",
 	"joinedThread": "fil joint",
 	"otherActiveThreads": "autres fils actifs",
-	"olderThreads": "fils plus anciens",
 	"searchThreads": "rechercher des fils",
 	"searchThread": "rechercher un fil",
 	"threadFailed": {
 		"title": "Échec de création du fil",
 		"content": "Fil introuvable ou vous n'avez pas la permission de mettre à jour"
-	}
+	},
+	"otherActiveThread": "autre fil actif",
+	"archivedThreads": "anciens fils",
+	"olderThread": "ancien fil"
 }

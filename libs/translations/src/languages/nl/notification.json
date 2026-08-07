@@ -10,7 +10,7 @@
 	"removeNotification": "Melding verwijderen",
 	"nothingHere": "Nog niets hier",
 	"comeBackNotify": "Kom terug om meldingen over evenementen en meer te ontvangen",
-	"repliedTo": "Antwoord: ",
+	"repliedTo": "Oorspronkelijk bericht: ",
 	"sender": "Afzender: ",
 	"seeWhenAnswersAppear": "Bekijk wanneer antwoorden verschijnen",
 	"enablePushNotifications": "Push-meldingen inschakelen",
@@ -40,6 +40,9 @@
 		"ok": "OK"
 	},
 	"andYou": "en jij",
-	"topicAndYou": "Korte discussie en jij",
-	"unknowClan": "Je bent niet langer lid van dit gesprek"
+	"topicAndYou": "ONDERWERPDISCUSSIE",
+	"unknowClan": "Je bent niet langer lid van dit gesprek",
+	"contactMessage": "[Contact]",
+	"attachmentMessage": "[Bijlage]",
+	"interactiveMessage": "Interactief bericht"
 }

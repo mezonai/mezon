@@ -37,7 +37,9 @@
 			"muteSuccess": "Сповіщення успішно вимкнено!",
 			"unMuteSuccess": "Сповіщення успішно увімкнено!",
 			"muteFailed": "Помилка вимкнення сповіщення!",
-			"unMuteFailed": "Помилка увімкнення сповіщення!"
+			"unMuteFailed": "Помилка увімкнення сповіщення!",
+			"archiveChannel": "Архівувати канал",
+			"archiveThread": "Архівувати тему"
 		},
 		"thread": {
 			"title": "",
@@ -100,5 +102,19 @@
 		"error": "Помилка виходу з каналу: {{error}}"
 	},
 	"btnBadgeCount": "Нове",
-	"favoriteChannel": "УЛЮБЛЕНІ КАНАЛИ"
+	"favoriteChannel": "УЛЮБЛЕНІ КАНАЛИ",
+	"modalConfirmArchiveChannel": {
+		"title": "Архівувати канал",
+		"button": "Архівувати",
+		"textConfirm": "Ви впевнені, що хочете архівувати цей канал? Він буде прихований із бічної панелі для всіх учасників."
+	},
+	"modalConfirmArchiveThread": {
+		"title": "Архівувати тему",
+		"button": "Архівувати",
+		"textConfirm": "Ви впевнені, що хочете архівувати цю тему? Вона буде прихована з бічної панелі для всіх учасників."
+	},
+	"toastArchiveChannel": "Канал успішно архівовано.",
+	"toastArchiveThread": "Тему успішно архівовано.",
+	"toastArchivedByAdministrator": "Цей канал було архівовано адміністратором.",
+	"toastArchivedThreadByAdministrator": "Цю тему було архівовано адміністратором."
 }

@@ -190,7 +190,10 @@ const SuggestItem = ({
 							{isHightLight ? HighlightMatchBold(display ?? '', valueHightLight ?? '') : display}
 						</span>
 						{Number(count) > 0 && (
-							<span className="h-8 px-2 bg-red-500 rounded-sm font-semibold text-white ml-2">
+							<span
+								className="h-8 px-2 bg-red-500 rounded-sm font-semibold text-white ml-2"
+								data-e2e={generateE2eId('suggest_item.count_badge')}
+							>
 								{Number(count) > 99 ? '99+' : Number(count)}
 							</span>
 						)}{' '}

@@ -92,7 +92,10 @@
 		"alreadyLinkedToAnother": "이 번호가 다른 계정에 연결되었습니다",
 		"country": "국가",
 		"otpSentMessage": "OTP 코드가 {{phone}} 로 전송되었습니다. 확인해 보세요",
-		"backToPhoneInput": "전화번호 변경?"
+		"backToPhoneInput": "전화번호 변경?",
+		"emailPlaceholder": "your.email@example.com",
+		"otp": "전화번호 인증",
+		"verifyOtpMessage": "로 전송된 OTP 코드를 확인해주세요"
 	},
 	"toast": {
 		"deleteAccount": {

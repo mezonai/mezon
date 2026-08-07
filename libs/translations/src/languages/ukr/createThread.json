@@ -14,11 +14,13 @@
 	"joinedThreads": "приєднаних тредів",
 	"joinedThread": "приєднаний тред",
 	"otherActiveThreads": "інших активних тредів",
-	"olderThreads": "старіших тредів",
 	"searchThreads": "пошук тредів",
 	"searchThread": "пошук треду",
 	"threadFailed": {
 		"title": "Не вдалося створити тред",
 		"content": "Тред не знайдено або у вас немає права оновлювати"
-	}
+	},
+	"otherActiveThread": "інший активний тред",
+	"archivedThreads": "старіші треди",
+	"olderThread": "старіший тред"
 }

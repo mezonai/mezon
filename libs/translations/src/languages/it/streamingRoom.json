@@ -3,5 +3,6 @@
 		"stream": "Stanza streaming",
 		"joinStream": "Unisciti allo streaming"
 	},
-	"noDisplay": "Nascondi lo streaming"
+	"noDisplay": "Nascondi lo streaming",
+	"chat": "Chat"
 }

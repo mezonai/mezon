@@ -10,6 +10,7 @@ import { clanLoader, shouldRevalidateServer } from '../loaders/clanLoader';
 import { directLoader } from '../loaders/directLoader';
 import { directMessageLoader, shouldRevalidateDirect } from '../loaders/directMessageLoader';
 import { friendsLoader } from '../loaders/friendsLoader';
+import { loginLoader } from '../loaders/loginLoader';
 import { mainLoader, shouldRevalidateMain } from '../loaders/mainLoader';
 
 import { MemberProvider } from '@mezon/core';

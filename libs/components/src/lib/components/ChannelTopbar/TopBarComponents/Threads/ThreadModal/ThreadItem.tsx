@@ -111,11 +111,13 @@ const ThreadItem = ({ thread, isPublicThread = false, preventClosePannel }: Thre
 						<div className="min-w-0 flex-1">
 							<ThreadModalContent message={message} thread={thread as ChannelsEntity} />
 						</div>
-						<div className="overflow-x-hidden shrink-0">
-							<p className="text-xs font-medium leading-4 ml-2">
-								<span className="truncate text-theme-primary">•&nbsp;{timeMessage}</span>
-							</p>
-						</div>
+						{!!timeMessage && (
+							<div className="overflow-x-hidden shrink-0">
+								<p className="text-xs font-medium leading-4 ml-2">
+									<span className="truncate text-theme-primary">•&nbsp;{timeMessage}</span>
+								</p>
+							</div>
+						)}
 					</div>
 				</div>
 				<div className="w-[120px] shrink-0">

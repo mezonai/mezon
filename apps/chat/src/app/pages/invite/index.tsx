@@ -1,7 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { channelsActions, clansActions, inviteActions, selectInviteById, useAppDispatch } from '@mezon/store';
+import { channelsActions, inviteActions, selectInviteById, useAppDispatch } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,28 +33,32 @@ export default function InvitePage() {
 			setLoading(true);
 			setError(null);
 			try {
-				await inviteUser(inviteIdParam).then((res) => {
+				await inviteUser(inviteIdParam).then(async (res) => {
 					if (res?.channel_id && res?.clan_id) {
+						await new Promise((resolve) => setTimeout(resolve, 1000));
 						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
 					}
 				});
-				dispatch(clansActions.fetchClans({ noCache: true }));
 				if (selectInvite.channel_desc) {
 					const channel = { ...selectInvite, id: selectInvite.channel_id as string };
 					dispatch(channelsActions.add({ clanId: selectInvite.channel_desc?.clan_id as string, channel: { ...channel, active: 1 } }));
 				}
+				return true;
 			} catch (err) {
 				setError(t('invite.failedToJoin'));
 			} finally {
 				setLoading(false);
 			}
 		}
+		return false;
 	};
 
-	const handleJoinChannel = () => {
-		joinChannel();
+	const handleJoinChannel = async () => {
+		const result = await joinChannel();
 		handleBackNavigate();
-		navigate(`/mezon`);
+		if (!result) {
+			navigate(`/mezon`);
+		}
 		try {
 			window.location.href = `mezon.ai://invite/${inviteIdParam}`;
 			setLoading(false);

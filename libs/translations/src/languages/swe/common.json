@@ -403,7 +403,7 @@
 		"upload": "Ladda upp",
 		"sticker": "sticker",
 		"emoji": "uttryck",
-		"lenghtError": "{{type}} namn måste vara från {{min}} till {{max}} tecken, bara bokstäver, siffror, _ och -"
+		"lengthError": "{{type}} namn måste vara från {{min}} till {{max}} tecken, bara bokstäver, siffror, _ och -"
 	},
 	"openSettings": "Öppna inställningar",
 	"permissionNotification": {

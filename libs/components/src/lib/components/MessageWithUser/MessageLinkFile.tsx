@@ -3,7 +3,6 @@ import { getStore, selectBanMeInChannel, selectCurrentUserId } from '@mezon/stor
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { EFailAttachment, EMimeTypes } from '@mezon/utils';
-
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { Suspense, lazy, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -74,18 +73,18 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 
 		try {
 			const response = await fetch(url);
-			if (!response.ok) {
-				return;
-			}
+				if (!response.ok) {
+					return;
+				}
 
-			const blob = await response.blob();
-			const dataUrl = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = dataUrl;
-			a.download = filename;
-			a.click();
+				const blob = await response.blob();
+				const dataUrl = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = dataUrl;
+				a.download = filename;
+				a.click();
 
-			URL.revokeObjectURL(dataUrl);
+				URL.revokeObjectURL(dataUrl);
 		} catch (error) {
 			console.error('Error during download:', error);
 		} finally {

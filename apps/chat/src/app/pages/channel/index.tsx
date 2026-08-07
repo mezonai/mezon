@@ -60,7 +60,6 @@ import {
 	titleMission,
 	useBackgroundMode
 } from '@mezon/utils';
-
 import type { ApiOnboardingItem } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type { DragEvent } from 'react';
@@ -219,6 +218,9 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 	const previewMode = useSelector(selectOnboardingMode);
 	const showPreviewMode = useMemo(() => {
+		if (selectUserProcessing?.onboarding_step === undefined) {
+			return false;
+		}
 		if (previewMode?.open && previewMode.clanId === currentClanId) {
 			return true;
 		}
@@ -381,19 +383,21 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const isChannelStream = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
 
 	return (
-		<div className={`w-full h-full max-h-full overflow-hidden}`}>
+		<div className={`w-full h-full max-h-full overflow-hidden`}>
 			<div
 				className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-full max-h-full overflow-hidden z-10"
 				id="mainChat"
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
 			>
-				<div className={`flex flex-row ${closeMenu ? 'h-heightWithoutTopBarMobile' : 'h-heightWithoutTopBar'}`}>
+				<div
+					className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`}`}
+				>
 					{!isShowCanvas &&
 						!isShowAgeRestricted &&
 						(isShowChatInVoice || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
 							<div
-								className={`flex flex-col flex-1 min-w-60 max-h-messageViewChatDM'} ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+								className={`flex flex-col flex-1 min-w-60 max-h-messageViewChatDM ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 							>
 								<div className={`relative overflow-y-auto flex-1 min-h-0`}>
 									<ChannelMedia currentChannel={currentChannel} />
@@ -404,7 +408,9 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							</div>
 						)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
-						<div className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big`}>
+						<div
+							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big`}
+						>
 							<Canvas />
 						</div>
 					)}

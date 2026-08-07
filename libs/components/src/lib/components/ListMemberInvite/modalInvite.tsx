@@ -14,7 +14,6 @@ import {
 } from '@mezon/store';
 import { Button } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';

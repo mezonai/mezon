@@ -506,7 +506,9 @@ export const DATA_E2E_IDENTIFIER = {
 				},
 				name: '',
 				user_list: {
-					item: ''
+					item: {
+						screen_share: ''
+					}
 				},
 				user_list_collapsed: {
 					item: '',
@@ -814,7 +816,15 @@ export const DATA_E2E_IDENTIFIER = {
 					}
 				},
 				message: '',
-				for_you: '',
+				for_you: {
+					username: '',
+					message: '',
+					timestamp: '',
+					button: {
+						remove: '',
+						jump: ''
+					}
+				},
 				action_tabs: ''
 			}
 		},
@@ -900,6 +910,12 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		devices: {
 			tab_devices: ''
+		},
+		language: {
+			tab_language: '',
+			language_item: {
+				language_name: ''
+			}
 		},
 		profile: {
 			button_setting: '',
@@ -990,6 +1006,30 @@ export const DATA_E2E_IDENTIFIER = {
 				cancel: '',
 				share: ''
 			}
+		},
+		unpin_message: {
+			button: {
+				cancel: '',
+				unpin: ''
+			}
+		},
+		notification_setting: {
+			select: {
+				item: ''
+			},
+			override: {
+				select_trigger: {
+					item: ''
+				},
+				button: {
+					exit: '',
+					remove: ''
+				},
+				channel_item: {
+					title: '',
+					checkbox: ''
+				}
+			}
 		}
 	},
 	icon: {
@@ -1039,7 +1079,8 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	suggest_item: {
 		username: '',
-		clan_name: ''
+		clan_name: '',
+		count_badge: ''
 	},
 	badge: {
 		friend_pending: ''

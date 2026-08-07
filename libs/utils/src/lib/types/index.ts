@@ -747,22 +747,14 @@ export type ChannelDraftMessages = {
 };
 
 export interface IGifCategory {
-	image: string;
-	name: string;
-	path: string;
-	searchterm: string;
+	category: string;
+	preview_url: string;
 }
 
 export interface IGif {
-	itemurl: string;
-	media_formats: {
-		gif: {
-			url: string;
-		};
-		tinygif: {
-			url: string;
-		};
-	};
+	slug: string;
+	blur_preview: string;
+	url: string;
 }
 
 export type MentionDataProps = {

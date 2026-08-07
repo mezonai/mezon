@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "웹훅",
 		"automatedMessage": "자동 메시지와 업데이트",
 		"description": "웹훅, 모니터링 채널 및 애플리케이션을 관리하고, 크리에이터를 위한 Twitch 와 YouTube 설정을 통해 클랜을 커스터마이징하세요.",
-		"learnMore": "통합 관리에 대해 자세히 알아보기."
+		"learnMore": "통합 관리에 대해 자세히 알아보기.",
+		"channelWebhooks": "채널 Webhook",
+		"clanWebhooks": "클랜 Webhook"
 	},
 	"webhooks": {
 		"description": "웹훅은 인터넷 기술을 사용하여 클랜의 텍스트 채널로 자동 메시지와 데이터 업데이트를 받는 도구입니다.",

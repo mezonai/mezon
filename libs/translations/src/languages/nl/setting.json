@@ -94,7 +94,12 @@
 		"japanese": "日本語",
 		"french": "Français",
 		"german": "Deutsch",
-		"dutch": "Nederlands"
+		"dutch": "Nederlands",
+		"polish": "Polski",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"ukrainian": "Українська",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Stem",

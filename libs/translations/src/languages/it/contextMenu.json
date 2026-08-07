@@ -10,6 +10,7 @@
 	"reply": "Rispondi",
 	"createThread": "Crea thread",
 	"copyText": "Copia testo",
+	"copyTextSelected": "Copia testo selezionato",
 	"quickMenus": "Menu rapidi",
 	"addToInbox": "Aggiungi alla posta in arrivo",
 	"markUnread": "Segna come non letto",
@@ -120,5 +121,6 @@
 		"errorSendingQuickMenu": "Errore nell'invio del menu rapido",
 		"failedToResendMessage": "Impossibile reinviare il messaggio",
 		"failedToClosePoll": "Impossibile terminare il sondaggio"
-	}
+	},
+	"copyUserId": "Copia ID utente"
 }

@@ -10,6 +10,7 @@
 	"reply": "Ответить",
 	"createThread": "Создать ветку",
 	"copyText": "Скопировать текст",
+	"copyTextSelected": "Скопировать выделенный текст",
 	"quickMenus": "Быстрое меню",
 	"addToInbox": "Добавить в почтовый ящик",
 	"markUnread": "Отметить как непрочитанное",
@@ -117,7 +118,9 @@
 		"failedToSaveImage": "Не удалось сохранить изображение:",
 		"failedToGiveCoffee": "Не удалось отправить «кофе»",
 		"errorSendingQuickMenu": "Ошибка при отправке сообщения из быстрого меню:",
-		"failedToResendMessage": "Не удалось отправить сообщение повторно"
-	}
+		"failedToResendMessage": "Не удалось отправить сообщение повторно",
+		"failedToClosePoll": "Не удалось закрыть опрос"
+	},
+	"endPollNow": "Завершить опрос сейчас",
+	"pollEnded": "Опрос успешно завершён"
 }
-

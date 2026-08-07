@@ -107,6 +107,7 @@
 		"edit": "Bearbeiten",
 		"view": "Ansehen",
 		"delete": "Löschen",
-		"roleNameIsRequired": "Rollenname ist erforderlich"
+		"roleNameIsRequired": "Der Rollenname ist erforderlich",
+		"noPermissionToEditRole": "Du hast keine Berechtigung, diese Rolle zu bearbeiten."
 	}
 }

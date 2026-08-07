@@ -92,7 +92,10 @@
 		"alreadyLinkedToAnother": "Dit nummer is al gekoppeld aan een ander account",
 		"country": "Land",
 		"otpSentMessage": "Controleer de OTP-code die is verzonden naar nummer {{phone}}",
-		"backToPhoneInput": "Telefoonnummer wijzigen?"
+		"backToPhoneInput": "Telefoonnummer wijzigen?",
+		"emailPlaceholder": "your.email@example.com",
+		"otp": "Verifieer je nummer",
+		"verifyOtpMessage": "Verifieer de OTP-code die is verzonden naar"
 	},
 	"toast": {
 		"deleteAccount": {

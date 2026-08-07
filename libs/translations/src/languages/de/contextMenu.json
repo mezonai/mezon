@@ -10,6 +10,7 @@
 	"reply": "Antworten",
 	"createThread": "Thread erstellen",
 	"copyText": "Text kopieren",
+	"copyTextSelected": "Ausgewählten Text kopieren",
 	"quickMenus": "Schnellmenüs",
 	"addToInbox": "Zum Posteingang hinzufügen",
 	"markUnread": "Als ungelesen markieren",
@@ -120,5 +121,6 @@
 		"errorSendingQuickMenu": "Fehler beim Senden des Schnellmenüs",
 		"failedToResendMessage": "Nachricht konnte nicht erneut gesendet werden",
 		"failedToClosePoll": "Umfrage konnte nicht beendet werden"
-	}
+	},
+	"copyUserId": "Benutzer-ID kopieren"
 }

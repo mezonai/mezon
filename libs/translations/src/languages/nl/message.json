@@ -64,11 +64,11 @@
 	"edited": "(bewerkt)",
 	"newMessage": {
 		"to": "Naar",
-		"groupCreated": "Nieuwe groep",
 		"addFriend": "Vriend toevoegen",
 		"create": "Aanmaken",
 		"add": "Toevoegen",
-		"createGroupWith": "Nieuwe groep maken met"
+		"createGroupWith": "Nieuwe groep maken met",
+		"newGroup": "Nieuwe groep"
 	},
 	"reactions": {
 		"noActionTitle": "Geen reacties",
@@ -184,7 +184,8 @@
 		"messages": "vastgezet.",
 		"startedAThread": "heeft een topic gestart:",
 		"seeAllThreads": "Bekijk",
-		"allThreads": "alle topics"
+		"allThreads": "alle topics",
+		"deletedAThread": "heeft een onderwerp verwijderd:"
 	},
 	"removeFromChannel": {
 		"title": "Conversatie niet beschikbaar",

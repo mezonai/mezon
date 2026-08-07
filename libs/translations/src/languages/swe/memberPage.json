@@ -4,6 +4,7 @@
 	"addedBy": "Lades till av {{name}}",
 	"you": "du",
 	"inVoice": "I röstkanal",
+	"shareScreen": "Delar skärm",
 	"onlineCount": "Online - {{count}}",
 	"offlineCount": "Offline - {{count}}"
 }

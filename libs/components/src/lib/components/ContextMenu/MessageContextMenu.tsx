@@ -713,6 +713,7 @@ function MessageContextMenu({
 
 	const quickMenuItems = useAppSelector((state) => selectQuickMenuByChannelId(state, currentChannelId || ''));
 	const isForwardedMessage = Boolean(message?.content?.fwd);
+	const hasSelectedText = !!window.getSelection?.()?.toString().length;
 	const items = useMemo<ContextMenuItem[]>(() => {
 		const builder = new MenuBuilder();
 
@@ -732,7 +733,7 @@ function MessageContextMenu({
 				'addReaction', // id
 				t('addReaction'), // label
 				handleItemClick,
-				<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
+				<Icons.Smile className="w-4 h-4" />
 			);
 		});
 
@@ -846,6 +847,7 @@ function MessageContextMenu({
 				<Icons.ThreadIcon className="w-4 h-4" defaultFill1="var(--thread-fill-1)" defaultFill4="var(--thread-fill-4)" />
 			);
 		});
+
 		builder.when(checkPos && !isPollMessage, (builder) => {
 			builder.addMenuItem(
 				'copyText',
@@ -853,6 +855,21 @@ function MessageContextMenu({
 				async () => {
 					try {
 						await handleCopyLink(message?.content?.t ?? '');
+					} catch (error) {
+						console.error(t('errors.failedToCopyText'), error);
+					}
+				},
+				<Icons.CopyTextRightClick />
+			);
+		});
+		builder.when(checkPos && !isPollMessage && hasSelectedText, (builder) => {
+			builder.addMenuItem(
+				'copyTextSelected',
+				t('copyTextSelected'),
+				async () => {
+					try {
+						const selectedText = window.getSelection?.()?.toString() || '';
+						await handleCopyLink(selectedText || message?.content?.t || '');
 					} catch (error) {
 						console.error(t('errors.failedToCopyText'), error);
 					}
@@ -1025,7 +1042,8 @@ function MessageContextMenu({
 		isTopic,
 		isErrorMessage,
 		handleResendMessage,
-		handleDeleteErrorMessage
+		handleDeleteErrorMessage,
+		hasSelectedText
 	]);
 	/* eslint-disable no-console */
 

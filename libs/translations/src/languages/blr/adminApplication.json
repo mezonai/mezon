@@ -211,5 +211,57 @@
 		"title": "Адладка Embed"
 	},
 	"small": "Малы",
-	"large": "Вялікі"
+	"large": "Вялікі",
+	"transcriptCalls": {
+		"title": "Стэнаграмы званкоў",
+		"subtitle": "Праглядайце і кіруйце стэнаграмамі сваіх званкоў.",
+		"loading": "Загрузка…",
+		"results": "пакояў",
+		"page": "Старонка",
+		"prev": "Назад",
+		"next": "Далей",
+		"columns": {
+			"callId": "ID званка",
+			"roomName": "Назва пакоя",
+			"status": "Статус",
+			"totalTracks": "Усяго трэкаў",
+			"completedTracks": "Завершана",
+			"duration": "Працягласць",
+			"createdAt": "Створана",
+			"completedAt": "Завершана"
+		},
+		"status": {
+			"pending": "У чаканні",
+			"processing": "Апрацоўваецца",
+			"completed": "Завершана",
+			"failed": "Не ўдалося"
+		},
+		"tabs": {
+			"overview": "Агляд",
+			"fullTranscript": "Поўная стэнаграма",
+			"summary": "Кароткі змест",
+			"participants": "Удзельнікі"
+		},
+		"detail": {
+			"title": "Падрабязнасці стэнаграмы званка",
+			"back": "Назад",
+			"refresh": "Абнавіць",
+			"loadError": "Не ўдалося загрузіць гэты пакой.",
+			"summaryEmpty": "Кароткі змест адсутнічае.",
+			"transcriptEmpty": "Тэкст стэнаграмы адсутнічае.",
+			"actionItems": "Пункты дзеянняў",
+			"participants": "Удзельнікі",
+			"participantsEmpty": "Для гэтага пакоя няма спісу ўдзельнікаў.",
+			"metrics": {
+				"totalTracks": "Усяго трэкаў",
+				"completed": "Завершана",
+				"duration": "Працягласць",
+				"segments": "Сегменты"
+			},
+			"notFound": "Стэнаграма званка не знойдзена",
+			"unknown": "невядома",
+			"username": "Імя карыстальніка",
+			"displayName": "Адлюстроўванае імя"
+		}
+	}
 }

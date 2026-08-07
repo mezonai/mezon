@@ -10,7 +10,7 @@
 	"removeNotification": "Выдаліць апавяшчэнне",
 	"nothingHere": "Тут яшчэ нічога няма",
 	"comeBackNotify": "Вярніцеся, каб атрымліваць апавяшчэнні пра падзеі і іншае",
-	"repliedTo": "Адказаў: ",
+	"repliedTo": "Арыгінальнае паведамленне: ",
 	"sender": "Адпраўнік: ",
 	"seeWhenAnswersAppear": "Праглядаць, калі з'явяцца адказы",
 	"enablePushNotifications": "Уключыць push-апавяшчэнні",
@@ -40,6 +40,9 @@
 		"ok": "Добра"
 	},
 	"andYou": "і вы",
-	"topicAndYou": "Кароткае абмеркаванне і вы",
-	"unknowClan": "Вы больш не з'яўляецеся ўдзельнікам гэтага клана"
+	"topicAndYou": "АБМЕРКАВАННЕ ТЭМЫ",
+	"unknowClan": "Вы больш не з'яўляецеся ўдзельнікам гэтага клана",
+	"contactMessage": "[Кантакт]",
+	"attachmentMessage": "[Укладанне]",
+	"interactiveMessage": "Інтэрактыўнае паведамленне"
 }

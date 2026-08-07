@@ -58,8 +58,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId } from '@mezon/utils';
-
+import { generateE2eId, Platform, PLATFORM_ENV, TIME_OF_SHOWING_FIRST_POPUP } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -350,7 +349,7 @@ const SidebarMenu = memo(
 			>
 				<div className="relative h-full w-full overflow-hidden">
 					<div
-						className={`top-0 left-0 right-0 flex flex-col items-center pt-0 pb-[68px] overflow-y-auto hide-scrollbar h-[calc(100dvh_-_10px_-_80px)]`}
+						className={`top-0 left-0 right-0 flex flex-col items-center pt-0 pb-[68px] overflow-y-auto hide-scrollbar h-[calc(100dvh_-_10px_-_80px)] `}
 						onScroll={(e) => setIsAtTop(e.currentTarget.scrollTop === 0)}
 					>
 						<div className={`flex flex-col items-center sticky top-0 z-50 bg-theme-primary w-full ${isAtTop ? 'pt-3' : 'py-3'}`}>

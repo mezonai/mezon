@@ -3,7 +3,15 @@ import type { MezonAdminContextValue } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiCreateChannelDescRequest, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js';
+import type {
+	ApiAddAppRequest,
+	ApiApp,
+	ApiAppList,
+	ApiCreateChannelDescRequest,
+	ApiMezonOauthClient,
+	ApiUploadAttachment,
+	MezonUpdateAppBody
+} from 'mezon-js';
 import {
 	AddAppRequest,
 	App,
@@ -14,7 +22,9 @@ import {
 	GetMezonOauthClientRequest,
 	ListAppsRequest,
 	MezonOauthClient,
-	UpdateAppRequest
+	UpdateAppRequest,
+	UploadAttachment,
+	UploadAttachmentRequest
 } from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -35,8 +45,6 @@ export interface IApplicationState extends EntityState<IApplicationEntity, strin
 	appsData: ApiAppList;
 	appDetail: ApiApp;
 	currentAppId?: string;
-	isElectronDownLoading: boolean;
-	isElectronUpdateAvailable: boolean;
 	cache?: CacheMetadata;
 }
 
@@ -62,9 +70,7 @@ export const applicationInitialState: IApplicationState = applicationAdapter.get
 		role: undefined,
 		token: undefined
 	},
-	currentAppId: undefined,
-	isElectronUpdateAvailable: false,
-	isElectronDownLoading: false
+	currentAppId: undefined
 });
 
 export interface IFetchAppsArg {
@@ -106,6 +112,26 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 	};
 };
 
+export const uploadAttachmentAdmin = createAsyncThunk('adminApplication/getApplicationDetail', async (body: UploadAttachmentRequest, thunkAPI) => {
+	const state = thunkAPI.getState() as RootState;
+
+	if (!state?.auth?.session) {
+		throw 'Session Empty';
+	}
+
+	const response = await callApiAdmin({
+		path: '/mezon.api.Mezon/UploadAttachmentFile',
+		data: UploadAttachmentRequest.encode(UploadAttachmentRequest.fromPartial(body)).finish(),
+		token: state?.auth?.session.token,
+		decodeBody: (bytes) => UploadAttachment.decode(bytes) as ApiUploadAttachment
+	});
+
+	return {
+		...response,
+		fromCache: false,
+		time: Date.now()
+	};
+});
 export const fetchApplications = createAsyncThunk('adminApplication/fetchApplications', async ({ noCache }: IFetchAppsArg = {}, thunkAPI) => {
 	try {
 		const mezon = await getAdminCtx(thunkAPI);
@@ -306,12 +332,6 @@ export const adminApplicationSlice = createSlice({
 	reducers: {
 		setCurrentAppId: (state, action) => {
 			state.currentAppId = action.payload;
-		},
-		setIsElectronUpdateAvailable: (state, action) => {
-			state.isElectronUpdateAvailable = action.payload;
-		},
-		setIsElectronDownloading: (state, action) => {
-			state.isElectronDownLoading = action.payload;
 		}
 	},
 	extraReducers(builder) {
@@ -429,8 +449,6 @@ export const getApplicationState = (rootState: { [ADMIN_APPLICATIONS]: IApplicat
 export const selectAllApps = createSelector(getApplicationState, (state) => state.appsData || []);
 export const selectAppDetail = createSelector(getApplicationState, (state) => state.appDetail);
 export const selectCurrentAppId = createSelector(getApplicationState, (state) => state.currentAppId);
-export const selectIsElectronUpdateAvailable = createSelector(getApplicationState, (state) => state.isElectronUpdateAvailable);
-export const selectIsElectronDownloading = createSelector(getApplicationState, (state) => state.isElectronDownLoading);
 
 export const selectApplicationById = createSelector(
 	[getApplicationState, (state, appId: string) => appId],
@@ -440,4 +458,4 @@ export const selectApplicationById = createSelector(
 export const selectAppsFetchingLoading = createSelector(getApplicationState, (state) => state.loadingStatus);
 
 export const adminApplicationReducer = adminApplicationSlice.reducer;
-export const { setCurrentAppId, setIsElectronUpdateAvailable, setIsElectronDownloading } = adminApplicationSlice.actions;
+export const { setCurrentAppId } = adminApplicationSlice.actions;

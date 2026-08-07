@@ -15,7 +15,8 @@
 		"exCatHug": "예: cat_hug",
 		"thisIsForSale": "판매 중입니다",
 		"neverMind": "괜찮음",
-		"characters": "이름은 3~64 자여야 합니다"
+		"characters": "이름은 3~64 자여야 합니다",
+		"required": "이 필드는 필수입니다"
 	},
 	"content": {
 		"description": "이 클랜에서 누구나 사용할 수 있는 최대 250 개의 커스터마이징 스티커를 추가하세요.",

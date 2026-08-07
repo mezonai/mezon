@@ -1,5 +1,5 @@
 {
-    "headerTitle": {
+	"headerTitle": {
 		"settings": "Ustawienia",
 		"Friends": "Przyjaciele",
 		"addFriends": "Dodaj przyjaciół",
@@ -12,14 +12,15 @@
 		"addMembers": "Dodaj członków",
 		"appearance": "Wygląd",
 		"topic": "Dyskusja tematyczna",
-		"chat": "Czat"
+		"chat": "Czat",
+		"share": "Udostępnij"
 	},
-    "headerRight": {
-        "addFriends": "Dodaj przyjaciół"
-    },
-    "navigationTabs": {
-        "messages": "Wiadomości",
-        "notifications": "Powiadomienia",
-        "profile": "Profil"
-    }
+	"headerRight": {
+		"addFriends": "Dodaj przyjaciół"
+	},
+	"navigationTabs": {
+		"messages": "Wiadomości",
+		"notifications": "Powiadomienia",
+		"profile": "Profil"
+	}
 }

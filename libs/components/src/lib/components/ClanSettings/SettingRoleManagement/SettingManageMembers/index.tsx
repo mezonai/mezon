@@ -1,6 +1,6 @@
 import { useRoles } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
-import { getNewAddMembers, getSelectedRoleId, selectAllUserClans, selectCurrentClanId, selectCurrentRoleIcon, setAddMemberRoles } from '@mezon/store';
+import { getNewAddMembers, getSelectedRoleId, selectAllUserClans, selectCurrentClanId, selectCurrentRoleIcon, setAddMemberRoles, usersClanActions } from '@mezon/store';
 import { Icons, InputField } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
@@ -60,6 +60,18 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 		}
 		const userIDArray = userID?.split(',');
 		await updateRole(currentClanId ?? '', clickRole, activeRole?.title ?? '', activeRole?.color ?? '', [], [], userIDArray, [], currentRoleIcon);
+		
+		userIDArray?.forEach((id) => {
+			if (id) {
+				dispatchRole(
+					usersClanActions.removeRoleIdUser({
+						clanId: currentClanId as string,
+						id: clickRole,
+						userId: id
+					})
+				);
+			}
+		});
 	};
 	return (
 		<div>

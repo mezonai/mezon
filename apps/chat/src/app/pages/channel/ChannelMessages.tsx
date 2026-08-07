@@ -1267,6 +1267,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 	},
 	(prev, curr) => {
 		return (
+			prev.channelId === curr.channelId &&
 			prev.messageIds === curr.messageIds &&
 			prev.lastMessageId === curr.lastMessageId &&
 			prev.dataReferences === curr.dataReferences &&

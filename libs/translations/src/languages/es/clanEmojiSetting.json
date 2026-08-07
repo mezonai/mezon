@@ -11,7 +11,8 @@
 		"exCatHug": "Ej: gato_abrazo",
 		"thisIsForSale": "Esto está a la venta",
 		"neverMind": "Nada más",
-		"characters": "El nombre debe tener entre 3 y 64 caracteres"
+		"characters": "El nombre debe tener entre 3 y 64 caracteres",
+		"required": "Este campo es obligatorio"
 	},
 	"header": {
 		"save": "Guardar"

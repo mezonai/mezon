@@ -10,7 +10,7 @@
 	"removeNotification": "Xóa thông báo",
 	"nothingHere": "Chưa có gì ở đây",
 	"comeBackNotify": "Quay lại để nhận thông báo về sự kiện và nhiều hơn thế nữa",
-	"repliedTo": "Trả lời: ",
+	"repliedTo": "Tin nhắn gốc: ",
 	"sender": "Người gửi: ",
 	"seeWhenAnswersAppear": "Xem khi nào câu trả lời xuất hiện",
 	"enablePushNotifications": "Bật thông báo đẩy",
@@ -40,6 +40,9 @@
 		"ok": "OK"
 	},
 	"andYou": "và bạn",
-	"topicAndYou": "Thảo luận ngắn và bạn",
-	"unknowClan": "Bạn không còn là thành viên của đoạn hội thoại này nữa"
+	"topicAndYou": "THẢO LUẬN CHỦ ĐỀ",
+	"unknowClan": "Bạn không còn là thành viên của đoạn hội thoại này nữa",
+	"contactMessage": "[Danh thiếp]",
+	"attachmentMessage": "[Tệp đính kèm]",
+	"interactiveMessage": "Tin nhắn tương tác"
 }

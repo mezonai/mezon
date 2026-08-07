@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "Webhook",
 		"automatedMessage": "自動化されたメッセージとアップデート",
 		"description": "統合でクランをカスタマイズ。Webhook、トラッキングチャンネル、アプリを管理し、クリエイターのためのTwitchとYouTubeの設定を行います。",
-		"learnMore": "統合管理について詳しく学ぶ。"
+		"learnMore": "統合管理について詳しく学ぶ。",
+		"channelWebhooks": "チャンネルWebhook",
+		"clanWebhooks": "クランWebhook"
 	},
 	"webhooks": {
 		"description": "Webhookは、インターネット接続を介して、クランのテキストチャンネルに自動的にメッセージとデータアップデートを受信させるツールです。",

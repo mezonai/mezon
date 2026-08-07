@@ -15,7 +15,8 @@
 		"exCatHug": "Ex: chat_câlin",
 		"thisIsForSale": "Ceci est en vente",
 		"neverMind": "Bof",
-		"characters": "Le nom doit contenir entre 3 et 64 caractères"
+		"characters": "Le nom doit contenir entre 3 et 64 caractères",
+		"required": "Ce champ est obligatoire"
 	},
 	"content": {
 		"description": "Ajoutez jusqu'à 250 autocollants personnalisés que tout le monde peut utiliser dans ce clan.",

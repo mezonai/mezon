@@ -38,7 +38,6 @@
 	"clanNotificationSettings": "НАЛАШТУВАННЯ СПОВІЩЕНЬ КЛАНУ",
 	"notificationOverrides": "ПЕРЕВИЗНАЧЕННЯ СПОВІЩЕНЬ",
 	"addChannelOverride": "Додати канал для перевизначення типових налаштувань сповіщень",
-	"selectOrCreateOption": "Оберіть або створіть опцію...",
 	"headers": {
 		"channelOrCategory": "КАНАЛ АБО КАТЕГОРІЯ",
 		"all": "ВСІ",
@@ -52,5 +51,6 @@
 			"onlyMention": "Тільки @згадування",
 			"nothing": "Нічого"
 		}
-	}
+	},
+	"selectChannelOrCategory": "Виберіть канал або категорію..."
 }

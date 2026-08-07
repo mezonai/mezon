@@ -4,6 +4,7 @@
 	"addedBy": "Được thêm bởi {{name}}",
 	"you": "bạn",
 	"inVoice": "Trong kênh thoại",
+	"shareScreen": "Đang chia sẻ màn hình",
 	"onlineCount": "Trực tuyến - {{count}}",
 	"offlineCount": "Ngoại tuyến - {{count}}"
 }

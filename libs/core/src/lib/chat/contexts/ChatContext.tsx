@@ -192,6 +192,7 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, Client, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import type { ScreenShareEvent } from 'node_modules/mezon-js-protobuf/dist/rtapi/realtime';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Observable, Subject } from 'rxjs';
@@ -2310,7 +2311,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 				}
 
-				dispatch(rolesClanActions.update({ role, clanId: role.clan_id as string }));
+				const roleToUpdate = { ...role };
+				delete roleToUpdate.role_user_list;
+
+				dispatch(rolesClanActions.update({ role: roleToUpdate, clanId: role.clan_id as string }));
 				return;
 			}
 
@@ -2472,7 +2476,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			topicsActions.createTopicMeta({
 				lsnt: `${sdTopicEvent.last_sent_message?.timestamp_seconds || Date.now() / 1000}`,
 				message_id: sdTopicEvent?.message_id as string,
-				rpl: 1,
+				rpl: 0,
 				tp_id: sdTopicEvent.id
 			})
 		);
@@ -2649,6 +2653,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
+	const onscreenshare = useCallback(
+		(event: ScreenShareEvent) => {
+			dispatch(voiceActions.updateShareStatus(event));
+		},
+		[dispatch]
+	);
+
 	const setCallbackEventFn = React.useCallback(
 		(socket: Client) => {
 			socket.onconnect = (_evt: Event) => {
@@ -2775,6 +2786,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onaddfriend = onaddfriend;
 
 			socket.onbanneduser = onbanneduser;
+
+			socket.onscreenshare = onscreenshare;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -2833,7 +2846,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onaddfriend,
 			onbanneduser,
 			runPostReconnectActions,
-			onServerDisconnectStreakLogout
+			onServerDisconnectStreakLogout,
+			onscreenshare
 		]
 	);
 
@@ -2966,13 +2980,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const ondisconnect = useCallback(() => {
+		console.error('SOCKET DISCONNECTED');
 		socketState.status = 'disconnected';
 		handleReconnect('Socket disconnected, attempting to reconnect...');
 	}, [handleReconnect]);
 
 	const onHeartbeatTimeout = useCallback(() => {
+		console.error('HEARTBEATTIMEOUT');
 		socketState.status = 'disconnected';
-		handleReconnect('Socket hearbeat timeout, attempting to reconnect...');
 	}, [handleReconnect]);
 
 	useEffect(() => {
@@ -3058,6 +3073,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onreconnect = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onchannelarchive = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.onscreenshare = () => {};
 		};
 	}, [
 		onchannelmessage,
@@ -3113,7 +3130,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onsdtopicevent,
 		onUnpinMessageEvent,
 		onblockfriend,
-		onunblockfriend
+		onunblockfriend,
+		onscreenshare
 	]);
 
 	const value = React.useMemo<ChatContextValue>(

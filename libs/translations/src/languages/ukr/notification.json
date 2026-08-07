@@ -10,7 +10,7 @@
 	"removeNotification": "Видалити сповіщення",
 	"nothingHere": "Тут ще нічого немає",
 	"comeBackNotify": "Поверніться, щоб отримувати сповіщення про події та інше",
-	"repliedTo": "Відповів: ",
+	"repliedTo": "Оригінальне повідомлення: ",
 	"sender": "Відправник: ",
 	"seeWhenAnswersAppear": "Переглядати, коли з'являться відповіді",
 	"enablePushNotifications": "Увімкнути push-сповіщення",
@@ -40,6 +40,9 @@
 		"ok": "Гаразд"
 	},
 	"andYou": "та ви",
-	"topicAndYou": "Коротке обговорення та ви",
-	"unknowClan": "Ви більше не є учасником цього клану"
+	"topicAndYou": "ОБГОВОРЕННЯ ТЕМИ",
+	"unknowClan": "Ви більше не є учасником цього клану",
+	"contactMessage": "[Контакт]",
+	"attachmentMessage": "[Вкладення]",
+	"interactiveMessage": "Інтерактивне повідомлення"
 }

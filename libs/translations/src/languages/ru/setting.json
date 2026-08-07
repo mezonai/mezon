@@ -10,8 +10,8 @@
 		"connection": "Соединения",
 		"clip": "Клипы",
 		"friendRequests": "Запросы дружбы",
-		"qrScan": "Сканировать QR-код",
-		"myQRCode": "Мой QR-код",
+		"QRScan": "Сканировать QR-код",
+		"MyQRCode": "Мой QR-код",
 		"devices": "Устройства"
 	},
 	"deviceSettings": {
@@ -46,7 +46,8 @@
 		"appIcon": "Иконка приложения",
 		"advanced": "Расширенные",
 		"appVersion": "Версия приложения",
-		"startUp": "Автозагрузка"
+		"startUp": "Автозагрузка",
+		"quitApp": "Выйти из приложения"
 	},
 	"autoStart": {
 		"title": "Автозагрузка приложения",
@@ -92,7 +93,13 @@
 		"spanish": "Español",
 		"japanese": "日本語",
 		"french": "Français",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"german": "Deutsch",
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Голос",

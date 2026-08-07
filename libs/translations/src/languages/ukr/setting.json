@@ -94,11 +94,12 @@
 		"italian": "Italiano",
 		"japanese": "日本語",
 		"french": "Français",
-		"german": "Deutsch",
 		"polish": "Polski",
 		"korean": "한국어",
 		"swedish": "Svenska",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"dutch": "Nederlands",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Голос",

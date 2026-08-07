@@ -61,7 +61,8 @@
 			"_30minutes": "30 minutos",
 			"_1hour": "1 hora",
 			"_2hours": "2 horas",
-			"_6hours": "6 horas"
+			"_6hours": "6 horas",
+			"slowModeOff": "O modo lento está desativado"
 		},
 		"channelHideInactivity": {
 			"title": "Ocultar após inatividade",
@@ -77,7 +78,8 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "Excluir canal"
+			"delete": "Excluir canal",
+			"leave": "Sair do canal"
 		},
 		"threadDelete": {
 			"title": "",

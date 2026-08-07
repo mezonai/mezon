@@ -25,7 +25,6 @@ export { default as MarkdownContent } from './components/MarkdownFormatText/Mark
 export { default as PlainText } from './components/MarkdownFormatText/PlainText';
 export { default as PreClass } from './components/MarkdownFormatText/PreClass';
 export { default as StreamInfo } from './components/StreamInfo';
-export { default as UpdateButton } from './components/UpdateButton/UpdateButton';
 
 export * from './components/AvatarImage/AvatarImage';
 export { default as AppDirectoryList } from './components/ClanSettings/AppDirectory/AppDirectoryList';
@@ -76,7 +75,6 @@ export { default as SearchMessageChannelRender } from './components/SearchMessag
 export { default as SearchModal } from './components/SearchModal';
 export { default as SettingAccount } from './components/SettingAccount';
 export { default as SettingActivity } from './components/SettingActivity';
-export { default as SettingAdvanced } from './components/SettingAdvanced';
 export { default as SettingAppearance } from './components/SettingAppearance';
 export { default as SettingDevices } from './components/SettingDevices';
 export { SettingLanguage } from './components/SettingLanguage';
@@ -108,7 +106,6 @@ export { default as AgeRestricted } from './components/AgeRestricted';
 export { default as BuzzBadge } from './components/BuzzBadge';
 export { default as Canvas } from './components/Canvas';
 export { default as GuideItemLayout } from './components/ClanSettings/SettingOnBoarding/GuideItemLayout';
-export * from './components/ClanSettings/SettingOnBoarding/ModalControlRule';
 export { default as DmCalling } from './components/DmCalling';
 export { default as EventSchedule } from './components/EventSchedule';
 export { default as ModalCall } from './components/ModalCall';

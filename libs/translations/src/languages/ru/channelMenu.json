@@ -37,7 +37,9 @@
 			"muteSuccess": "Канал успешно заглушён!",
 			"unMuteSuccess": "Канал успешно разглушён!",
 			"muteFailed": "Не удалось заглушить канал!",
-			"unMuteFailed": "Не удалось разглушить канал!"
+			"unMuteFailed": "Не удалось разглушить канал!",
+			"archiveChannel": "Архивировать канал",
+			"archiveThread": "Архивировать тред"
 		},
 		"thread": {
 			"title": "",
@@ -88,12 +90,12 @@
 			"error": "Ошибка удаления канала: {{error}}"
 		}
 	},
-	"modalConfirmLeaveThread": {
+	"modalConFirmLeaveThread": {
 		"title": "Покинуть ветку",
 		"yesButton": "Покинуть ветку",
 		"textConfirm": "Пожалуйста, подтвердите, хотите ли Вы покинуть ветку? Вы не сможете получать сообщения из этой ветки, когда её покинете."
 	},
-	"modalConfirmLeaveChannel": {
+	"modalConFirmLeaveChannel": {
 		"title": "Покинуть канал",
 		"yesButton": "Покинуть канал",
 		"textConfirm": "Пожалуйста, подтвердите, хотите ли Вы покинуть канал? Вы не сможете получать сообщения из этого канала, когда его покинете.",
@@ -104,6 +106,15 @@
 	"toastArchiveChannel": "Канал успешно архивирован.",
 	"toastArchiveThread": "Ветка успешно архивирована.",
 	"toastArchivedByAdministrator": "Этот канал был архивирован администратором.",
-	"toastArchivedThreadByAdministrator": "Эта ветка была архивирована администратором."
+	"toastArchivedThreadByAdministrator": "Эта ветка была архивирована администратором.",
+	"modalConfirmArchiveChannel": {
+		"title": "Архивировать канал",
+		"button": "Архивировать",
+		"textConfirm": "Вы уверены, что хотите архивировать этот канал? Он будет скрыт на боковой панели для всех участников."
+	},
+	"modalConfirmArchiveThread": {
+		"title": "Архивировать ветку",
+		"button": "Архивировать",
+		"textConfirm": "Вы уверены, что хотите архивировать эту ветку? Она будет скрыта на боковой панели для всех участников."
+	}
 }
-

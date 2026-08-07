@@ -21,7 +21,8 @@
 		"waitAccept": "¡Ya has enviado una solicitud de amistad a este usuario!",
 		"invalidInput": "Usa solo números, letras, guiones bajos _ o puntos.",
 		"blockedUser": "Has bloqueado a este usuario. Desbloquéalo antes de enviar la solicitud.",
-		"waitingMessage": "Mezon está esperando a amigos. ¡Tú no tienes que!"
+		"waitingMessage": "Mezon está esperando a amigos. ¡Tú no tienes que!",
+		"blockedUserMobile": "Has bloqueado a este usuario. Desbloquéalo para enviar una solicitud de amistad."
 	},
 	"requestFailedPopup": {
 		"title": "Solicitud de amistad fallida",
@@ -61,5 +62,23 @@
 		"online": "Nadie en línea coincide con tu búsqueda. Prueba otro nombre.",
 		"pending": "Ninguna solicitud coincide con tu búsqueda. Revisa el nombre o inténtalo de nuevo.",
 		"block": "Ningún usuario bloqueado coincide con tu búsqueda. Prueba otro nombre."
+	},
+	"removeFriendModal": {
+		"title": "Eliminar a '{{username}}'",
+		"description": "¿Estás seguro de que quieres eliminar a <bold>{{username}}</bold> de tus amigos?",
+		"cancel": "Cancelar",
+		"confirm": "Eliminar amigo"
+	},
+	"cancelRequestModal": {
+		"title": "Cancelar '{{username}}'",
+		"description": "¿Estás seguro de que quieres cancelar tu solicitud de amistad a <bold>{{username}}</bold>?",
+		"cancel": "Cancelar",
+		"confirm": "Cancelar solicitud"
+	},
+	"rejectRequestModal": {
+		"title": "Rechazar '{{username}}'",
+		"description": "¿Estás seguro de que quieres rechazar la solicitud de amistad de <bold>{{username}}</bold>?",
+		"cancel": "Cancelar",
+		"confirm": "Rechazar solicitud"
 	}
 }

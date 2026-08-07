@@ -33,6 +33,7 @@
 	"loading": "Laddar...",
 	"topic": "Ämne",
 	"invoice": "I röstkanal",
+	"shareScreen": "Delar skärm",
 	"reactions": "Reaktioner",
 	"callMessages": {
 		"startedVoiceCall": "Började röstsamtal",

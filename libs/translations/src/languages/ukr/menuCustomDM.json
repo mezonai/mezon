@@ -1,14 +1,14 @@
 {
-  "customiseGroup": "Налаштувати групу",
-  "inviteLinks": "Посилання для запрошення",
-  "leaveGroup": "Покинути групу",
-  "closeDM": "Закрити повідомлення",
-  "groupName": "Назва групи",
-  "save": "Зберегти",
-  "removeAvatar": "Видалити зображення",
-  "invalidGroupName": "Недійсна назва групи",
-  "uploadImage": "Завантажити зображення",
-  "toast": {
-    "leaveGroupError": "Помилка виходу з групи: {{error}}"
-  }
+	"customiseGroup": "Налаштувати групу",
+	"inviteLinks": "Посилання для запрошення",
+	"leaveGroup": "Покинути групу",
+	"closeDM": "Закрити повідомлення",
+	"groupName": "Назва групи",
+	"save": "Зберегти",
+	"removeAvatar": "Видалити зображення",
+	"invalidGroupName": "Недійсна назва групи",
+	"uploadImage": "Завантажити зображення",
+	"toast": {
+		"leaveGroupError": "Помилка виходу з групи: {{error}}"
+	}
 }

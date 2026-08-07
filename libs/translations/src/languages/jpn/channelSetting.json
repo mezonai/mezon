@@ -61,7 +61,8 @@
 			"_30minutes": "30分",
 			"_1hour": "1時間",
 			"_2hours": "2時間",
-			"_6hours": "6時間"
+			"_6hours": "6時間",
+			"slowModeOff": "スローモードはオフです"
 		},
 		"channelHideInactivity": {
 			"title": "アクティビティなしで非表示",
@@ -77,7 +78,8 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "チャンネルを削除"
+			"delete": "チャンネルを削除",
+			"leave": "チャンネルを退出"
 		},
 		"threadDelete": {
 			"title": "",

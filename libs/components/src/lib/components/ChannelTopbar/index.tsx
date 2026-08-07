@@ -11,6 +11,7 @@ import {
 import type { ChannelMembersEntity, DirectEntity, RootState } from '@mezon/store';
 import {
 	DMCallActions,
+	EInvoice,
 	EStateFriend,
 	appActions,
 	audioCallActions,
@@ -114,7 +115,7 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`draggable-area max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink   ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink   ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
 		</div>
@@ -270,7 +271,7 @@ const TopBarChannelText = memo(() => {
 						)}
 						<div
 							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
-							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area group ${
+							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis group ${
 								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
 									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg pl-2 pr-4'
 									: 'pointer-events-none cursor-default'
@@ -290,7 +291,17 @@ const TopBarChannelText = memo(() => {
 										onClick={handleJoinVoice}
 										data-e2e={generateE2eId(`chat.direct_message.header.left_container.in_voice_status`)}
 									>
-										<Icons.Speaker className="text-green-500 !w-3 !h-3" /> {t('invoice')}
+										{checkInvoice?.status === EInvoice.INVOICE ? (
+											<>
+												<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+												{t('invoice')}
+											</>
+										) : (
+											<>
+												<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
+												{t('shareScreen')}
+											</>
+										)}
 									</span>
 								)}
 							</div>
@@ -421,7 +432,7 @@ const ChannelTopbarLabel = memo(
 		};
 
 		return (
-			<div className="none-draggable-area flex items-center text-lg gap-3 min-w-0" onClick={onClick}>
+			<div className="flex items-center text-lg gap-3 min-w-0" onClick={onClick}>
 				<div className="flex flex-shrink-0 items-center justify-center text-theme-message">{renderIcon()}</div>
 				<p className="flex-1 min-w-0 text-base font-semibold leading-5 truncate text-theme-message">{label}</p>
 			</div>
@@ -769,8 +780,8 @@ const DmTopbarTools = memo(() => {
 	}, [currentDmGroup?.type, currentDmGroup?.user_ids, userCurrent?.user?.id]);
 
 	return (
-		<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">
-			<div className=" items-center gap-2 flex">
+		<div className="items-center h-full ml-auto flex justify-end max-sbm:mr-5">
+			<div className="items-center gap-2 flex">
 				<div className="justify-start items-center gap-[15px] flex ">
 					{canShowCallButtons && !isBlockUser && !isMe && (
 						<>
@@ -825,20 +836,6 @@ const DmTopbarTools = memo(() => {
 					)}
 				</div>
 			</div>
-			{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-				<button title={t('tooltips.showMemberList')} onClick={() => setIsShowMemberListDM(!isShowMemberListDM)} className="sbm:hidden">
-					<span>
-						<Icons.MemberList className="w-5 h-5" />
-					</span>
-				</button>
-			)}
-			{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
-				<button title={t('tooltips.showUserProfile')} onClick={() => setIsUseProfileDM(!isUseProfileDM)} className="sbm:hidden">
-					<span>
-						<Icons.IconUserProfileDM className="w-5 h-5" />
-					</span>
-				</button>
-			)}
 		</div>
 	);
 });
@@ -1218,7 +1215,7 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 		<div
 			onClick={handleOpenAddToGroupModal}
 			ref={rootRef}
-			className="none-draggable-area cursor-pointer"
+			className="cursor-pointer"
 			data-e2e={generateE2eId(`chat.direct_message.header.right_container.add_member`)}
 		>
 			{openAddToGroup && (

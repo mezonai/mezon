@@ -1,9 +1,10 @@
 {
 	"integration": {
-		"title": "Webhook",
 		"automatedMessage": "Automatiska meddelanden och uppdateringar",
 		"description": "Anpassa din clan med funktioner integrationer. Hantera webhook, kanal-spårning och applikationer, samt Twitch och YouTube-inställningar för skapare.",
-		"learnMore": "Läs mer om hantering av integrationer."
+		"learnMore": "Läs mer om hantering av integrationer.",
+		"channelWebhooks": "Webhooks",
+		"clanWebhooks": "Clan-webhooks"
 	},
 	"webhooks": {
 		"description": "Webhooks är verktyg som hjälper dig att ta emot automatiska meddelanden och uppdaterade data skickade till din textkanal i clan via internet-anslutningar.",

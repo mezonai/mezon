@@ -38,7 +38,6 @@
 	"clanNotificationSettings": "CLAN MELDINGSINSTELLINGEN",
 	"notificationOverrides": "MELDINGEN OMSCHRIJVEN",
 	"addChannelOverride": "Kanaal toevoegen om standaard meldingsinstellingen te overschrijven",
-	"selectOrCreateOption": "Selecteer of maak optie...",
 	"headers": {
 		"channelOrCategory": "KANAAL OF CATEGORIE",
 		"all": "ALLE",
@@ -52,5 +51,6 @@
 			"onlyMention": "Alleen @vermelding",
 			"nothing": "Niets"
 		}
-	}
+	},
+	"selectChannelOrCategory": "Selecteer een kanaal of categorie..."
 }

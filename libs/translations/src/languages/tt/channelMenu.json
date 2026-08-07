@@ -37,7 +37,9 @@
 			"muteSuccess": "Канал уңышлы тындырылды!",
 			"unMuteSuccess": "Канал уңышлы тындырылмады!",
 			"muteFailed": "Каналны тындырып булмады!",
-			"unMuteFailed": "Каналны тындырылудан алып булмады!"
+			"unMuteFailed": "Каналны тындырылудан алып булмады!",
+			"archiveChannel": "Каналны архивка кую",
+			"archiveThread": "Теманы архивка кую"
 		},
 		"thread": {
 			"title": "",
@@ -88,12 +90,12 @@
 			"error": "Каналны бетерү хатасы: {{error}}"
 		}
 	},
-	"modalConfirmLeaveThread": {
+	"modalConFirmLeaveThread": {
 		"title": "Ботакламадан чыгу",
 		"yesButton": "Ботакламадан чыгу",
 		"textConfirm": "Зинһар, ботакламадан чыгарга теләвегезне раслагыз? Ботакламадан чыккач, сез аннан хәбәрләр ала алмаячаксыз."
 	},
-	"modalConfirmLeaveChannel": {
+	"modalConFirmLeaveChannel": {
 		"title": "Каналдан чыгу",
 		"yesButton": "Каналдан чыгу",
 		"textConfirm": "Зинһар, каналдан чыгарга теләвегезне раслагыз? Каналдан чыккач, сез аннан хәбәрләр ала алмаячаксыз.",
@@ -104,5 +106,15 @@
 	"toastArchiveChannel": "Канал уңышлы архивланды.",
 	"toastArchiveThread": "Ботаклам уңышлы архивланды.",
 	"toastArchivedByAdministrator": "Бу канал администратор тарафыннан архивланды.",
-	"toastArchivedThreadByAdministrator": "Бу ботаклам администратор тарафыннан архивланды."
+	"toastArchivedThreadByAdministrator": "Бу ботаклам администратор тарафыннан архивланды.",
+	"modalConfirmArchiveChannel": {
+		"title": "Каналны архивка кую",
+		"button": "Архивлау",
+		"textConfirm": "Бу каналны архивларга телисезме? Ул барлык әгъзалар өчен ян-як панеленнән яшереләчәк."
+	},
+	"modalConfirmArchiveThread": {
+		"title": "Ботакламаны архивка кую",
+		"button": "Архивлау",
+		"textConfirm": "Бу ботакламаны архивларга телисезме? Ул барлык әгъзалар өчен ян-як панеленнән яшереләчәк."
+	}
 }

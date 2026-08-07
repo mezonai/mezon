@@ -254,7 +254,13 @@ export const notificationSlice = createSlice({
 									content:
 										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content,
 									embed:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed,
+									tp:
+										typeof item.content?.content === 'string'
+											? safeJSONParse(item.content?.content)?.tp
+												? safeJSONParse(item.content?.content)?.tp
+												: null
+											: null
 								}
 							};
 						});
@@ -299,20 +305,22 @@ export const notificationSlice = createSlice({
 						const position_s: number[] = [];
 						const position_e: number[] = [];
 						const is_mention_role: boolean[] = [];
-						(message.mentions || []).map((item: ApiMessageMention) => {
-							if (item.user_id && item.s && item.e) {
-								mention_ids.push(item.user_id);
-								is_mention_role.push(false);
-								position_s.push(item.s);
-								position_e.push(item.e);
-							}
-							if (item.role_id && item.s && item.e) {
-								mention_ids.push(item.role_id);
-								is_mention_role.push(true);
-								position_s.push(item.s);
-								position_e.push(item.e);
-							}
-						});
+						if (Array.isArray(message?.mentions)) {
+							(message?.mentions || []).map((item: ApiMessageMention) => {
+								if (item.user_id && item.s && item.e) {
+									mention_ids.push(item.user_id);
+									is_mention_role.push(false);
+									position_s.push(item.s);
+									position_e.push(item.e);
+								}
+								if (item.role_id && item.s && item.e) {
+									mention_ids.push(item.role_id);
+									is_mention_role.push(true);
+									position_s.push(item.s);
+									position_e.push(item.e);
+								}
+							});
+						}
 						const notiMark: INotification = {
 							...message,
 							id: noti.id || '',
@@ -334,7 +342,7 @@ export const notificationSlice = createSlice({
 								mention_ids,
 								position_s,
 								position_e,
-								attachment_type: message.attachments?.[0].filetype || '',
+								attachment_type: message?.attachments?.[0]?.filetype || '',
 								has_more_attachment: (message.attachments?.length || 0) > 2,
 								is_mention_role,
 								message_id: message.message_id

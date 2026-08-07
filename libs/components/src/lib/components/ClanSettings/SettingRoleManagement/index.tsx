@@ -17,7 +17,8 @@ import {
 	setCurrentRoleIcon,
 	setNameRoleNew,
 	setSelectedPermissions,
-	setSelectedRoleId
+	setSelectedRoleId,
+	usersClanActions
 } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
@@ -87,6 +88,14 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 		if (isCreateNewRole) {
 			const respond = await createRole(currentClanId || '', nameRole, colorRole, addUsers, addPermissions);
 			if (!hasChangeRole) dispatch(setSelectedRoleId(respond?.id || ''));
+			if (addUsers.length > 0 && respond?.id) {
+				dispatch(
+					usersClanActions.updateManyRoleIds({
+						clanId: currentClanId as string,
+						updates: addUsers.map((id) => ({ userId: id, roleId: respond.id || '', clanId: currentClanId }))
+					})
+				);
+			}
 		} else {
 			const roleIcon = newRoleIcon || currentRoleIcon || '';
 			await updateRole(currentClanId ?? '', clickRole, nameRole, colorRole, [], addPermissions, [], removePermissions, roleIcon);

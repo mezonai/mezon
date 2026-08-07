@@ -94,7 +94,12 @@
 		"japanese": "日本語",
 		"french": "Français",
 		"german": "Deutsch",
-		"polish": "Polski"
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"swedish": "Svenska",
+		"ukrainian": "Українська",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Głos",

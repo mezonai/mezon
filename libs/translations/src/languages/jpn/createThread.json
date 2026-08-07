@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "スレッドの作成に失敗",
 		"content": "スレッドが見つかりません、または更新する権限がありません"
-	}
+	},
+	"otherActiveThread": "その他のアクティブなスレッド",
+	"olderThread": "古いスレッド"
 }

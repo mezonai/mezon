@@ -4,7 +4,8 @@
 			"title": "Nom du canal",
 			"placeholder": "Entrez le nom du canal",
 			"errorMessage": "Veuillez entrer un nom de canal (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -).",
-			"duplicateError": "Ce nom de canal existe déjà dans la catégorie. Veuillez entrer un autre nom."
+			"duplicateError": "Ce nom de canal existe déjà dans la catégorie. Veuillez entrer un autre nom.",
+			"emptyError": "Veuillez entrer un nom de canal (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -)."
 		},
 		"threadName": {
 			"title": "Nom du fil",
@@ -60,7 +61,8 @@
 			"_30minutes": "30 minutes",
 			"_1hour": "1 heure",
 			"_2hours": "2 heures",
-			"_6hours": "6 heures"
+			"_6hours": "6 heures",
+			"slowModeOff": "Le mode lent est désactivé"
 		},
 		"channelHideInactivity": {
 			"title": "Masquer après période d'inactivité",
@@ -76,7 +78,8 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "Supprimer le canal"
+			"delete": "Supprimer le canal",
+			"leave": "Quitter le canal"
 		},
 		"threadDelete": {
 			"title": "",
@@ -239,7 +242,8 @@
 		"invites": "Invitations",
 		"integrations": "Intégrations",
 		"category": "Catégorie",
-		"quickMenu": "Menu rapide"
+		"quickMenu": "Menu rapide",
+		"streamThumbnail": "Vignette du flux"
 	},
 	"categoryManagement": {
 		"title": "Catégorie",

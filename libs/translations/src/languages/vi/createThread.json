@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "Tạo chủ đề thất bại",
 		"content": "Không tìm thấy chủ đề hoặc bạn không có quyền cập nhật"
-	}
+	},
+	"otherActiveThread": "chủ đề đang hoạt động khác",
+	"olderThread": "chủ đề cũ hơn"
 }

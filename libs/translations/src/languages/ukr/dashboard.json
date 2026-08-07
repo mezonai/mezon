@@ -44,7 +44,8 @@
 		"backToOverview": "Повернутися до огляду використання клану",
 		"clanUsageStatisticsReport": "Звіт статистики використання клану",
 		"dashboardReport": "Панель керування",
-		"report": "Звіт"
+		"report": "Звіт",
+		"meetingRooms": "Кімнати для зустрічей"
 	},
 	"state": {
 		"loadingData": "Завантаження даних...",
@@ -70,5 +71,27 @@
 		"tooltip": "Сортувати за зростанням/спаданням по цьому стовпцю",
 		"sortedAsc": "Сортовано за зростанням",
 		"sortedDesc": "Сортовано за спаданням"
+	},
+	"meetingRoomsFilter": {
+		"allStatuses": "Усі статуси",
+		"pending": "В очікуванні",
+		"completed": "Завершено",
+		"finalRoom": "Фінальна кімната",
+		"failed": "Не вдалося",
+		"noTimeFilter": "Без фільтра часу",
+		"last12Hours": "Останні 12 годин",
+		"last24Hours": "Останні 24 години",
+		"last2Days": "Останні 2 дні",
+		"last7Days": "Останні 7 днів",
+		"searchByRoomNameOrParticipant": "Пошук за назвою кімнати або учасником..."
+	},
+	"meetingRoomsTable": {
+		"roomName": "Назва кімнати",
+		"status": "Статус",
+		"createdAt": "Створено",
+		"completedAt": "Завершено",
+		"actions": "Дії",
+		"viewDetails": "Переглянути деталі",
+		"noRoomsFound": "Кімнат не знайдено."
 	}
 }

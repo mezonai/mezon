@@ -135,5 +135,91 @@
 		"banList": "Блокланганнар исемлеге",
 		"search": "Блокланган кулланучыларны эзләү",
 		"banListEmpty": "Блокланган кулланучылар табылмады"
+	},
+	"userAction": {
+		"transferFunds": "Күчерү фондлары",
+		"sendMessage": "Хәбәр",
+		"voiceCall": "Шалтыратыгыз",
+		"videoCall": "Видео шалтырату",
+		"addFriend": "Дус өстәү",
+		"pending": "Көтү",
+		"removeFriend": "Дусны бетер"
+	},
+	"aboutMe": {
+		"headerTitle": "МИНЕМ",
+		"roles": {
+			"headerTitle": "Рольләр"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Кик әгъзасы",
+		"kickFromServer": "Клан {{кулланучы исеме}} Кланнан{{username}}",
+		"description": "Зинһар, кланнан {{кулланучы исеме} kick тибәргә телисезме? Алар яңа чакыру белән кабат кушыла алачаклар.{{username}}",
+		"reasonKick": "Кик өчен сәбәп",
+		"buttonName": "Кик"
+	},
+	"transferOwnershipModal": {
+		"warning": "Бу <highlightClan> {{clanName}} </highlightClan> милеген <highlightUser> {{кулланучы исеме}} </highlightUser> ка күчерәчәк. Моны кире кайтарып булмый!{{username}}",
+		"sectionTitle": "Күчерү",
+		"acknowledgment": "Бу кланның милеген {{кулланучы исеменә} күчереп, ул рәсми рәвештә аларныкы икәнен таныйм.{{username}}",
+		"transferButton": "Күчерү",
+		"confirmTitle": "Милекне күчерү?",
+		"confirmDescription": "Милекне күчерергә телисезме, зинһар{{clanName}}to{{username}}? Бу гамәлне кире кайтарып булмый.",
+		"confirmButton": "Күчерү"
+	},
+	"pendingContent": {
+		"block": "Блок",
+		"unblock": "Блокны ачу",
+		"reportUserProfile": "Кулланучының профиле турында хәбәр итү",
+		"acceptFriend": "Дусны кабул ит",
+		"rejectFriend": "Дус соравына игътибар итмә",
+		"cancelFriendRequest": "Дус соравын кире кагу",
+		"copyUsername": "Кулланучының исемен күчерү",
+		"copiedUserName": "Күчерелгән {{кулланучы исеме}}{{username}}",
+		"removeFriend": "Дусны бетер",
+		"viewFullProfile": "Тулы профильне карау"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Төркемнән чыгару",
+			"removeSuccess": "Төркемнән алынды",
+			"removeFailed": "Төркемнән бетерә алмады"
+		},
+		"mezonMemberSince": "МЕЗОН ОЧЫРЫШЫ"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Кулланучы уңышлы блокланды",
+			"error": "Кулланучыны блоклый алмады"
+		},
+		"unblockUser": {
+			"success": "Кулланучы уңышлы блокны ачты",
+			"error": "Кулланучыны блоклый алмады"
+		}
+	},
+	"incomingFriendRequest": "ДУСЛЫК СОРАУ",
+	"sendAddFriendSuccess": "Дус соравы җибәрелде",
+	"accept": "Кабул ит",
+	"ignore": "Игътибар итмә",
+	"labels": {
+		"aboutMe": "Минем турында",
+		"memberSince": "Шуннан әгъза",
+		"activity": "Эшчәнлек",
+		"unknownUser": "Билгесез кулланучы",
+		"anonymous": "Аноним",
+		"editProfile": "Профильне үзгәртү",
+		"note": "Искәрмә",
+		"addNote": "Искәрмә өстәү өчен басыгыз",
+		"showLess": "Азрак күрсәт",
+		"addRole": "Роль өстәргә",
+		"addRoles": "Рольләр өстәгез",
+		"removeRole": "Рольне бетерегез",
+		"role": "Роль",
+		"nope": "Opeк!",
+		"typoError": "Сез хат яздыгызмы?",
+		"userNotFound": "Кулланучы Кланда түгел"
+	},
+	"placeholders": {
+		"messageUser": "Хәбәр @ {{кулланучы исеме}}{{username}}"
 	}
 }

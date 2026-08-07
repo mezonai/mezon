@@ -17,7 +17,8 @@
 			"integrations": "Integrationer",
 			"auditLog": "Granskningslogg",
 			"onboarding": "Påfyllning",
-			"enableCommunity": "Aktivera gemenskap"
+			"enableCommunity": "Aktivera gemenskap",
+			"archivedChannels": "Arkiverade kanaler"
 		}
 	},
 	"clanLogo": {
@@ -86,7 +87,16 @@
 		"description": "Stickers kan vara statiskt (PNG, JPG) eller dynamisk (APNG, GIF). Sticker måste vara exakt 320 x 320 pixel och inte större än 512KB. Vi kommer automatiskt ändra storlek på statisk (PNG, JPG) -stickers och dynamisk GIF för dig.",
 		"uploadHere": "Ladda upp här!",
 		"customizeMessage": "Anpassa dessa underbara stickers efter dina preferenser",
-		"uploadSticker": "Ladda upp sticker"
+		"uploadSticker": "Ladda upp sticker",
+		"title": "Bildstickers"
 	},
-	"deleteClanTitle": "Ta bort '{{clanName}}'"
+	"deleteClanTitle": "Ta bort '{{clanName}}'",
+	"archivedChannels": {
+		"description": "Återställ kanaler till sidofältet för att göra dem aktiva igen. Arkiverade kanaler bevarar hela meddelandehistoriken men är dolda från den primära navigeringen.",
+		"archived": "AKTIV",
+		"restore": "Återställ",
+		"restoreSuccess": "Kanalen har återställts.",
+		"emptyState": "Inga arkiverade kanaler",
+		"fetchError": "Det gick inte att läsa in arkiverade kanaler. Försök igen."
+	}
 }

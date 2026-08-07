@@ -107,6 +107,7 @@
 		"edit": "Modifica",
 		"view": "Visualizza",
 		"delete": "Elimina",
-		"roleNameIsRequired": "Il nome del ruolo è obbligatorio"
+		"roleNameIsRequired": "Il nome del ruolo è obbligatorio",
+		"noPermissionToEditRole": "Non hai l'autorizzazione per modificare questo ruolo."
 	}
 }

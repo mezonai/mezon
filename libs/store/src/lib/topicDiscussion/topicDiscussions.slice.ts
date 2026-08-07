@@ -3,7 +3,7 @@ import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezo
 import {
 	CREATING_TOPIC,
 	EBacktickType,
-	getMobileUploadedAttachments,
+	generatePathAttachments,
 	getWebUploadedAttachments,
 	isFacebookLink,
 	isTikTokLink,
@@ -48,6 +48,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	isFocusTopicBox: boolean;
 	channelTopics: Record<string, string>;
 	clanTopics: Record<string, EntityState<TopicDiscussionsEntity, string>>;
+	clanTopicsHasMore: Record<string, boolean>;
 	topicMeta: EntityState<TopicInMessageEvent, string>;
 }
 
@@ -56,10 +57,17 @@ export const topicMetaAdapter = createEntityAdapter({ selectId: (topic: TopicInM
 export interface FetchTopicDiscussionsArgs {
 	clanId: string;
 	noCache?: boolean;
+	page?: number;
 }
 
-const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string) => {
-	const response = await mezon.client.listSdTopic(mezon.session, clanId, 50);
+export interface LoadMoreTopicDiscussionsArgs {
+	clanId: string;
+	limit: number;
+	page?: number;
+}
+
+const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string, limit = 50, page?: number) => {
+	const response = await mezon.client.listSdTopic(mezon.session, clanId, limit, page);
 	return { ...response, time: Date.now() };
 };
 
@@ -84,21 +92,55 @@ export const getFirstMessageOfTopic = createAsyncThunk(
 	}
 );
 
-export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanId, noCache }: FetchTopicDiscussionsArgs, thunkAPI) => {
+export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanId, noCache, page }: FetchTopicDiscussionsArgs, thunkAPI) => {
 	try {
+		const limit = 50;
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await fetchTopicsCached(mezon, clanId);
+		const calculatedPage = page ?? 1;
+		const response = await fetchTopicsCached(mezon, clanId, limit, calculatedPage);
 
 		const topics = mapToTopicEntity(response.topics || []);
 		return {
 			clan_id: clanId,
-			topics
+			topics,
+			limit
 		};
 	} catch (error) {
 		captureSentryError(error, 'topics/fetchTopics');
 		return thunkAPI.rejectWithValue(error);
 	}
 });
+
+export const loadMoreTopics = createAsyncThunk(
+	'topics/loadMoreTopics',
+	async ({ clanId, limit, page }: LoadMoreTopicDiscussionsArgs, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const currentLength = state.topicdiscussions.clanTopics[clanId]?.ids.length || 0;
+			const actualLimit = 50;
+			const calculatedPage = page ?? Math.ceil(currentLength / actualLimit) + 1;
+			const response = await mezon.client.listSdTopic(mezon.session, clanId, actualLimit, calculatedPage);
+			const topics = mapToTopicEntity(response.topics || []);
+			return {
+				clan_id: clanId,
+				topics,
+				limit: actualLimit
+			};
+		} catch (error) {
+			captureSentryError(error, 'topics/loadMoreTopics');
+			return thunkAPI.rejectWithValue(error);
+		}
+	},
+	{
+		condition: (arg, thunkAPI) => {
+			const state = thunkAPI.getState() as RootState;
+			if (state.topicdiscussions.loadingStatus === 'loading') {
+				return false;
+			}
+		}
+	}
+);
 
 export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitialState({
 	loadingStatus: 'not loaded',
@@ -110,6 +152,7 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 	isFocusTopicBox: false,
 	channelTopics: {},
 	clanTopics: {},
+	clanTopicsHasMore: {},
 	initTopicMessageId: undefined,
 	topicMeta: topicMetaAdapter.getInitialState()
 });
@@ -209,14 +252,11 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		throw new Error('Client is not initialized');
 	}
 
-	let uploadedFiles: ApiMessageAttachment[] = [];
+	const uploadedFiles: ApiMessageAttachment[] = [];
 
 	if (attachments && attachments.length > 0) {
-		if (isMobile) {
-			uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
-		} else {
-			uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-		}
+		const attachmentsPath = await generatePathAttachments(client, session, attachments);
+		await getWebUploadedAttachments({ attachments: attachmentsPath });
 	}
 
 	let topicContent = content;
@@ -244,6 +284,12 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		topicContent = {
 			...topicContent,
 			mk
+		};
+	}
+	if (mentions?.length) {
+		topicContent = {
+			...topicContent,
+			tp: topicId
 		};
 	}
 
@@ -368,7 +414,35 @@ export const topicsSlice = createSlice({
 					state.clanTopics[clanId] = topicsAdapter.getInitialState();
 				}
 				state.clanTopics[clanId] = topicsAdapter.setAll(state.clanTopics[clanId], action.payload.topics);
+				state.clanTopicsHasMore[clanId] = action.payload.topics.length >= action.payload.limit;
 				state.loadingStatus = 'loaded';
+			})
+			.addCase(loadMoreTopics.pending, (state: TopicDiscussionsState) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(loadMoreTopics.fulfilled, (state: TopicDiscussionsState, action: PayloadAction<any>) => {
+				const clanId = action.payload.clan_id;
+				if (!clanId) {
+					return;
+				}
+
+				if (!state.clanTopics[clanId]) {
+					state.clanTopics[clanId] = topicsAdapter.getInitialState();
+				}
+
+				state.clanTopics[clanId] = topicsAdapter.upsertMany(state.clanTopics[clanId], action.payload.topics);
+
+				if (action.payload.topics.length === 0) {
+					state.clanTopicsHasMore[clanId] = false;
+				} else {
+					state.clanTopicsHasMore[clanId] = action.payload.topics.length >= action.payload.limit;
+				}
+
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(loadMoreTopics.rejected, (state: TopicDiscussionsState, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
 			})
 			.addCase(fetchTopics.rejected, (state: TopicDiscussionsState, action) => {
 				state.loadingStatus = 'error';
@@ -419,7 +493,7 @@ export const topicsReducer = topicsSlice.reducer;
  *
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
-export const topicsActions = { ...topicsSlice.actions, createTopic, fetchTopics, handleSendTopic };
+export const topicsActions = { ...topicsSlice.actions, createTopic, fetchTopics, loadMoreTopics, handleSendTopic };
 
 /*
  * Export selectors to query state. For use with the `useSelector` hook.
@@ -476,3 +550,8 @@ const { selectById } = topicMetaAdapter.getSelectors();
 export const selectTopicMetaById = createSelector([getTopicsState, (_, message_id: string) => message_id], (state, message_id) =>
 	selectById(state.topicMeta, message_id)
 );
+
+export const selectHasMoreTopics = createSelector([getTopicsState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) => {
+	if (!clanId) return false;
+	return state.clanTopicsHasMore[clanId] !== false;
+});

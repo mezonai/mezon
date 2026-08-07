@@ -98,6 +98,15 @@
 			"updateFailed": "이벤트 업데이트 실패",
 			"sessionNotAvailable": "세션 사용 가능",
 			"uploadFailed": "이미지 업로드 실패"
+		},
+		"eventDetail": {
+			"defaultTitle": "이벤트 세부정보",
+			"featured": "추천",
+			"calendar": "캘린더",
+			"descriptionPlaceholder": "이벤트 설명을 추가하세요...",
+			"addDescription": "설명 추가",
+			"cancel": "취소",
+			"save": "저장"
 		}
 	},
 	"channelVoiceType": {

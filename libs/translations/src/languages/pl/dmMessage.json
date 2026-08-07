@@ -59,5 +59,11 @@
 	"members": "członkowie",
 	"speaker": "Głośnik",
 	"end": "Zakończ",
-	"turnedMicOff": "wyłączył mikrofon"
+	"turnedMicOff": "wyłączył mikrofon",
+	"closeDmConfirm": {
+		"title": "Zamknij wiadomość prywatną",
+		"content": "Czy na pewno chcesz zamknąć tę rozmowę? Czat zostanie ukryty na liście wiadomości.",
+		"confirmText": "Zamknij wiadomość prywatną",
+		"error": "Nie udało się zamknąć wiadomości prywatnej"
+	}
 }

@@ -11,7 +11,8 @@
 		"exCatHug": "Ex: chat_câlin",
 		"thisIsForSale": "Ceci est en vente",
 		"neverMind": "Bof",
-		"characters": "Le nom doit contenir entre 3 et 64 caractères"
+		"characters": "Le nom doit contenir entre 3 et 64 caractères",
+		"required": "Ce champ est obligatoire"
 	},
 	"header": {
 		"save": "Sauvegarder"

@@ -12,14 +12,15 @@
 		"addMembers": "Aggiungi membri",
 		"appearance": "Aspetto",
 		"topic": "Discussioni",
-		"chat": "Chat"
+		"chat": "Chat",
+		"share": "Condividi"
 	},
-    "headerRight": {
-        "addFriends": "Aggiungi amici"
-    },
-    "navigationTabs": {
-        "messages": "Messaggi",
-        "notifications": "Notifiche",
-        "profile": "Profilo"
-    }
+	"headerRight": {
+		"addFriends": "Aggiungi amici"
+	},
+	"navigationTabs": {
+		"messages": "Messaggi",
+		"notifications": "Notifiche",
+		"profile": "Profilo"
+	}
 }

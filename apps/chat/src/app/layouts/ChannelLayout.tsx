@@ -47,7 +47,7 @@ const ChannelLayout = () => {
 			className={`flex flex-col ${openEmojiPanelOnTopic || subPanelActive !== SubPanelName.NONE || isFocusThreadBox ? 'z-20 relative' : 'z-0'} flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible justify-end relative`}
 		>
 			<div
-				className={`flex flex-row ${closeMenu ? 'h-heightWithoutTopBarMobile' : 'h-heightWithoutTopBar'} ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}
+				className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`} ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}
 			>
 				<Outlet />
 			</div>

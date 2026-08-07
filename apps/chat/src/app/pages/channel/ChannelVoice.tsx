@@ -207,14 +207,12 @@ const ChannelVoiceInner = () => {
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
 		dispatch(voiceActions.setStreamScreen(null));
-		dispatch(voiceActions.setNoiseSuppressionEnabled(false));
 		dispatch(voiceActions.setShowMicrophone(false));
 
 		const storeState = getStore().getState();
 		const currentClanId = selectCurrentClanId(storeState);
 		const currentClanName = selectCurrentClanName(storeState);
 		const currentChannelId = selectCurrentChannelId(storeState);
-		const currentChannelClanId = selectCurrentChannelClanId(storeState);
 		const currentChannelLabel = selectCurrentChannelLabel(storeState);
 		const currentChannelPrivate = selectCurrentChannelPrivate(storeState);
 
@@ -292,7 +290,11 @@ const ChannelVoiceInner = () => {
 		<Suspense fallback={<div>loading ...</div>}>
 			<div
 				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute bottom-0 right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
-				style={!isVoiceFullScreen ? { width: 'calc(100% - 72px - 272px)', height: '100%' } : { width: '100vw', height: '100vh' }}
+				style={
+					!isVoiceFullScreen
+						? { width: 'calc(100% - 72px - 272px)', height: '100%' }
+						: { width: '100vw', height: '100vh' }
+				}
 			>
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
 					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />

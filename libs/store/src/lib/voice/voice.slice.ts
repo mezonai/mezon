@@ -3,6 +3,7 @@ import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, LENGHT_USER_ID, type IvoiceInfo, 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, ChannelType, VoiceLeavedEvent } from 'mezon-js';
+import type { ScreenShareEvent } from 'node_modules/mezon-js-protobuf/dist/rtapi/realtime';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -18,9 +19,14 @@ export interface VoiceEntity extends ApiVoiceChannelUser {
 	id: string; // Primary ID
 }
 
+export enum EInvoice {
+	INVOICE,
+	SHARING_SCREEN
+}
 export interface InVoiceInfor {
 	clanId: string;
 	channelId: string;
+	status: EInvoice;
 }
 export interface VoiceState {
 	voiceInfo: IvoiceInfo | null;
@@ -38,7 +44,6 @@ export interface VoiceState {
 	isGroupCallJoined: boolean;
 	token: string;
 	stream: MediaStream | null | undefined;
-	showSelectScreenModal: boolean;
 	externalToken: string | undefined;
 	guestUserId: string | undefined;
 	guestAccessToken: string | undefined;
@@ -49,11 +54,6 @@ export interface VoiceState {
 	externalGroup?: boolean;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
 	cache?: CacheMetadata;
-	screenSource?: {
-		id: string;
-		audio: boolean;
-		mode: 'electron';
-	} | null;
 	contextMenu: {
 		openedParticipantId: string | null;
 		position: { x: number; y: number };
@@ -234,7 +234,6 @@ export const initialVoiceState: VoiceState = {
 	isGroupCallJoined: false,
 	token: '',
 	stream: null,
-	showSelectScreenModal: false,
 	externalToken: undefined,
 	guestUserId: undefined,
 	guestAccessToken: undefined,
@@ -272,7 +271,8 @@ export const voiceSlice = createSlice({
 			if (user_id) {
 				state.listInVoiceStatus[user_id] = {
 					clanId: clan_id,
-					channelId: channel_id
+					channelId: channel_id,
+					status: EInvoice.INVOICE
 				};
 			}
 		},
@@ -353,9 +353,6 @@ export const voiceSlice = createSlice({
 		setNoiseSuppressionLevel: (state, action: PayloadAction<number>) => {
 			state.noiseSuppressionLevel = action.payload;
 		},
-		setShowSelectScreenModal: (state, action: PayloadAction<boolean>) => {
-			state.showSelectScreenModal = action.payload;
-		},
 		setStatusCall: (state, action: PayloadAction<boolean>) => {
 			state.statusCall = action.payload;
 		},
@@ -364,20 +361,6 @@ export const voiceSlice = createSlice({
 		},
 		setStreamScreen: (state, action: PayloadAction<MediaStream | null | undefined>) => {
 			state.stream = action.payload;
-		},
-		setScreenSource: (
-			state,
-			action: PayloadAction<
-				| {
-						id: string;
-						audio: boolean;
-						mode: 'electron';
-				  }
-				| null
-				| undefined
-			>
-		) => {
-			state.screenSource = action.payload ?? null;
 		},
 		setFullScreen: (state, action: PayloadAction<boolean>) => {
 			state.fullScreen = action.payload;
@@ -429,6 +412,15 @@ export const voiceSlice = createSlice({
 					delete state.listInVoiceStatus[key];
 				}
 			}
+		},
+		updateShareStatus: (state, action: PayloadAction<ScreenShareEvent>) => {
+			const event = action.payload;
+			if (state.listInVoiceStatus[event.user_id]) {
+				state.listInVoiceStatus[event.user_id] = {
+					...state.listInVoiceStatus[event.user_id],
+					status: event.is_sharing ? EInvoice.SHARING_SCREEN : EInvoice.INVOICE
+				};
+			}
 		}
 		// ...
 	},
@@ -453,6 +445,7 @@ export const voiceSlice = createSlice({
 				users.forEach((list) => {
 					const listUser = list.user_ids;
 					const channelId = list.channel_id;
+					const listShare = new Set(list.share_screen_ids);
 
 					if (!listUser || !channelId) return;
 
@@ -460,7 +453,11 @@ export const voiceSlice = createSlice({
 					for (const id of listUser) {
 						if (id.length === LENGHT_USER_ID) {
 							listIdInVoice.push(id);
-							state.listInVoiceStatus[id] = { clanId, channelId };
+							state.listInVoiceStatus[id] = {
+								clanId,
+								channelId,
+								status: list.share_screen_ids?.length && listShare.has(id) ? EInvoice.SHARING_SCREEN : EInvoice.INVOICE
+							};
 						}
 					}
 					state.listVoiceMemberByClan[clanId][channelId] = listIdInVoice;
@@ -579,9 +576,6 @@ export const selectVoiceChannelMembersByChannelId = createSelector(
 	}
 );
 
-export const selectScreenSource = createSelector(getVoiceState, (state) => state.screenSource);
-
-export const selectShowSelectScreenModal = createSelector(getVoiceState, (state) => state.showSelectScreenModal);
 
 export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 

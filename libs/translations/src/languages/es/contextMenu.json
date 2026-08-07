@@ -10,6 +10,7 @@
 	"reply": "Responder",
 	"createThread": "Crear Hilo",
 	"copyText": "Copiar Texto",
+	"copyTextSelected": "Copiar texto seleccionado",
 	"quickMenus": "Menú Rápido",
 	"addToInbox": "Añadir a la Bandeja",
 	"markUnread": "Marcar como no leído",
@@ -117,6 +118,9 @@
 		"failedToSaveImage": "Error al guardar imagen:",
 		"failedToGiveCoffee": "Error al enviar mensaje de café",
 		"errorSendingQuickMenu": "Error al enviar mensaje de menú rápido:",
-		"failedToResendMessage": "Error al reenviar mensaje"
-	}
+		"failedToResendMessage": "Error al reenviar mensaje",
+		"failedToClosePoll": "Error al cerrar la encuesta"
+	},
+	"endPollNow": "Finalizar encuesta ahora",
+	"pollEnded": "La encuesta se cerró correctamente"
 }

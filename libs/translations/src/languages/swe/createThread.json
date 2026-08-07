@@ -20,5 +20,7 @@
 	"threadFailed": {
 		"title": "Tråd skapande misslyckades",
 		"content": "Tråd hittades inte eller du har inte behörighet att uppdatera"
-	}
+	},
+	"otherActiveThread": "annan aktiv tråd",
+	"olderThread": "äldre tråd"
 }

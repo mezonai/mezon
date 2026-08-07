@@ -1,20 +1,21 @@
 import {
-    badgeService,
-    fetchListNotification,
-    notificationActions,
-    selectCurrentClanId,
-    selectNotificationClan,
-    selectNotificationForYou,
-    selectNotificationMentions,
-    selectTopicsSort,
-    topicsActions,
-    useAppDispatch
+	badgeService,
+	fetchListNotification,
+	notificationActions,
+	selectCurrentClanId,
+	selectHasMoreTopics,
+	selectNotificationClan,
+	selectNotificationForYou,
+	selectNotificationMentions,
+	selectTopicsSort,
+	topicsActions,
+	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
 import type { ApiSdTopic } from 'mezon-js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import AllNotification from './AllNotification';
@@ -67,6 +68,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const allNotificationMentions = useSelector(selectNotificationMentions);
 	const allNotificationClan = useSelector(selectNotificationClan);
 	const getAllTopic = useSelector(selectTopicsSort);
+	const hasMoreTopics = useSelector(selectHasMoreTopics);
 
 	const getAllNotificationForYou = useMemo(() => {
 		return sortNotificationsByDate([...allNotificationForYou.data]);
@@ -112,6 +114,39 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const listRefForYou = useRef<HTMLDivElement | null>(null);
 	const listRefMentions = useRef<HTMLDivElement | null>(null);
 	const listRefMessages = useRef<HTMLDivElement | null>(null);
+	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+	const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+	const observer = useRef<IntersectionObserver | null>(null);
+
+	useEffect(() => {
+		if (currentTabNotify !== InboxType.TOPICS || !hasMoreTopics || !sentinelRef.current || !scrollContainerRef.current) {
+			return;
+		}
+
+		observer.current = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && currentClanId) {
+					dispatch(
+						topicsActions.loadMoreTopics({
+							clanId: currentClanId as string,
+							limit: 50
+						})
+					);
+				}
+			},
+			{
+				root: scrollContainerRef.current,
+				rootMargin: '100px'
+			}
+		);
+
+		observer.current.observe(sentinelRef.current);
+
+		return () => {
+			if (observer.current) observer.current.disconnect();
+		};
+	}, [currentClanId, getAllTopic.length, hasMoreTopics, currentTabNotify, dispatch]);
 
 	const handleScroll = (category: NotificationCategory, lastId: string | null) => {
 		return (event: React.UIEvent<HTMLDivElement>) => {
@@ -162,7 +197,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				</div>
 			</div>
 
-			<div className={` flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden app-scroll`}>
+			<div ref={scrollContainerRef} className={` flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden app-scroll`}>
 				{currentTabNotify === InboxType.INDIVIDUAL && (
 					<div
 						ref={listRefForYou}
@@ -218,9 +253,12 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				{currentTabNotify === InboxType.TOPICS && (
 					<div>
 						{getAllTopic.length > 0 ? (
-							getAllTopic.map((topic: ApiSdTopic, index: number) => (
-								<TopicNotification topic={topic} key={`topic-${topic?.id}-${index}`} onCloseTooltip={onCloseTooltip} />
-							))
+							<>
+								{getAllTopic.map((topic: ApiSdTopic, index: number) => (
+									<TopicNotification topic={topic} key={`topic-${topic?.id}-${index}`} onCloseTooltip={onCloseTooltip} />
+								))}
+								{hasMoreTopics && <div ref={sentinelRef} className="h-4 w-full" />}
+							</>
 						) : (
 							<EmptyNotification isEmptyMentions />
 						)}

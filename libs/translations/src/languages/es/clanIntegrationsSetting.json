@@ -1,5 +1,4 @@
 {
-	"addReaction": "Añadir reacción",
 	"integration": {
 		"channelWebhooks": "Webhooks de Canal",
 		"clanWebhooks": "Webhooks del Clan",
@@ -30,11 +29,12 @@
 		"delete": "Eliminar",
 		"selectAChannel": "seleccionar un canal",
 		"yes": "Sí",
-		"deleteCaptionHook": "Eliminar Webhook de Caption",
+		"deleteCaptionHook": "Eliminar {{webhookName}}",
 		"deleteWebhookConfirmation": "¿Confirmas que deseas eliminar el webhook {{webhookName}}? Esta acción no tiene vuelta atrás.",
 		"resetToken": "Restablecer Token",
 		"name": "Nombre del Webhook",
-		"nameMaxLengthError": "Debe tener 64 caracteres o menos."
+		"nameMaxLengthError": "Debe tener 64 caracteres o menos.",
+		"deleteWebhookTitle": "Delete {{webhookName}}"
 	},
 	"webhooksEmpty": {
 		"noWebhooks": "Sin webhooks"

@@ -2,7 +2,7 @@ import { ToastController } from '@mezon/components';
 import { useCustomNavigate, useMezonNavigateEvent } from '@mezon/core';
 import { selectIsLogin } from '@mezon/store';
 import { MezonUiProvider } from '@mezon/ui';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLoaderData } from 'react-router-dom';
 import { useNotificationDisconnect } from '../hooks/useNotificationManagement';
@@ -17,17 +17,17 @@ const AppLayout = () => {
 
 	return (
 		<MezonUiProvider>
-			<ViewModeHandler />
+			<RedirectHandler />
 			<ToastController />
 			<Outlet />
 		</MezonUiProvider>
 	);
 };
 
-const ViewModeHandler: React.FC = () => {
+const RedirectHandler = () => {
 	const navigate = useCustomNavigate();
-
 	const { redirectTo } = useLoaderData() as IAppLoaderData;
+
 	useEffect(() => {
 		if (redirectTo) {
 			navigate(redirectTo);

@@ -10,7 +10,7 @@
 	"removeNotification": "通知を削除",
 	"nothingHere": "まだここには何もない",
 	"comeBackNotify": "イベントとそれ以上の通知を受け取るために戻ってきてください",
-	"repliedTo": "返信: ",
+	"repliedTo": "元のメッセージ: ",
 	"sender": "送信者: ",
 	"seeWhenAnswersAppear": "答えが表示されたときに見る",
 	"enablePushNotifications": "プッシュ通知を有効化",
@@ -40,6 +40,9 @@
 		"ok": "OK"
 	},
 	"andYou": "とあなた",
-	"topicAndYou": "短いディスカッションとあなた",
-	"unknowClan": "あなたはもはやこの会話のメンバーではありません"
+	"topicAndYou": "トピックの議論",
+	"unknowClan": "あなたはもはやこの会話のメンバーではありません",
+	"contactMessage": "[連絡先]",
+	"attachmentMessage": "[添付ファイル]",
+	"interactiveMessage": "インタラクティブメッセージ"
 }

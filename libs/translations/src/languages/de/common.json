@@ -403,7 +403,7 @@
 		"upload": "Hochladen",
 		"sticker": "Sticker",
 		"emoji": "Emoji",
-		"lenghtError": "{{type}}-Name muss zwischen {{min}} und {{max}} Zeichen lang sein und darf nur Buchstaben, Zahlen, _ und - enthalten"
+		"lengthError": "{{type}}-Name muss zwischen {{min}} und {{max}} Zeichen lang sein und darf nur Buchstaben, Zahlen, _ und - enthalten"
 	},
 	"openSettings": "Einstellungen öffnen",
 	"permissionNotification": {

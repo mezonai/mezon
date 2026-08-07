@@ -12,7 +12,8 @@
 		"addMembers": "Adicionar membros",
 		"appearance": "Aparência",
 		"topic": "Tópicos",
-		"chat": "Chat"
+		"chat": "Chat",
+		"share": "Compartilhar"
 	},
 	"headerRight": {
 		"addFriends": "Adicionar amigos"

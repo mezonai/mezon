@@ -1,6 +1,6 @@
 import type { RolesClanEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId } from '@mezon/utils';
+import { generateE2eId, DEFAULT_ROLE_COLOR } from '@mezon/utils';
 
 type ListRoleProps = {
 	listItem: RolesClanEntity[];
@@ -29,7 +29,7 @@ const ListRole = (props: ListRoleProps) => {
 					/>
 					<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4" />
 				</div>
-				{role.role_icon ? <img src={role.role_icon} alt="" className={'size-5'} /> : <Icons.RoleIcon className="w-5 h-5 min-w-5" />}
+				{role.role_icon ? <img src={role.role_icon} alt="" className={'size-5'} /> : <Icons.RoleIcon className="w-5 h-5 min-w-5" defaultFill1={role.color || DEFAULT_ROLE_COLOR} />}
 				<p
 					className="text-sm one-line"
 					data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.role_list.role_item.title')}

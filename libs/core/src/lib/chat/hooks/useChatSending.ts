@@ -16,7 +16,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { TypeMessage, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import { TypeMessage, generatePathAttachments, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -196,6 +196,16 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				);
 				return;
 			}
+
+			let attachmentsPath;
+			if (attachments) {
+				const session = sessionRef.current;
+				const client = clientRef.current;
+				if (client && session) {
+					attachmentsPath = await generatePathAttachments(client, session, attachments);
+				}
+			}
+
 			await dispatch(
 				messagesActions.sendMessage({
 					channelId: channelIdOrDirectId ?? '',
@@ -204,7 +214,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					isPublic,
 					content,
 					mentions,
-					attachments,
+					attachments: attachmentsPath,
 					references,
 					anonymous: getClanId !== '0' ? anonymousMode : false,
 					mentionEveryone,

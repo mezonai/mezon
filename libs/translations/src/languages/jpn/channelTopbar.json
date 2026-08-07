@@ -33,6 +33,7 @@
 	"loading": "読み込み中...",
 	"topic": "トピック",
 	"invoice": "音声チャンネル内",
+	"shareScreen": "画面共有中",
 	"reactions": "リアクション",
 	"callMessages": {
 		"startedVoiceCall": "音声通話を開始しました",

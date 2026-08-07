@@ -8,7 +8,7 @@ import { useAppDispatch } from './store';
 import { topicsActions } from './topicDiscussion/topicDiscussions.slice';
 
 const PERSIST_AUTH_KEY = 'persist:auth';
-const MAX_RETRIES = 4;
+const MAX_RETRIES_NETWORK = 4;
 
 function readPersistedSession(): ApiSession | null {
 	try {
@@ -79,7 +79,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				(async () => {
 					sessionRef.current = persistedSession as ApiSession;
 					// Retry call connect socket if it fail with MAX_RETRIES time
-					for (let i = 0; i <= MAX_RETRIES; i++) {
+					for (let i = 0; i <= MAX_RETRIES_NETWORK; i++) {
 						setRetryCount(i);
 
 						if (i > 0) {
@@ -88,7 +88,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 							});
 							if (!reachable) {
 								console.error(`Network probe failed before bootstrap retry ${i}`);
-								if (i === MAX_RETRIES) break;
+								if (i === MAX_RETRIES_NETWORK) break;
 								const baseDelay = INITIAL_DELAY * Math.pow(2, i);
 								await delay(baseDelay + Math.random() * 500);
 								continue;
@@ -100,12 +100,8 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 							connectOk = true;
 							break;
 						} catch (error) {
-							if (i === MAX_RETRIES) break;
-							const baseDelay = INITIAL_DELAY * Math.pow(2, i);
-							// Add jitter time for not all client call in same time
-							const nextDelay = baseDelay + Math.random() * 500;
-							console.error(`Connection failed. Retrying attempt ${i} in ${nextDelay}ms...`);
-							await delay(nextDelay);
+							console.error('ERROR_CONNECT', error);
+							break;
 						}
 					}
 				})(),
@@ -158,7 +154,7 @@ const ConnectingScreen = ({ retryCount }: { retryCount: number }) => {
 
 				<h3 className="text-lg font-semibold text-center">Establishing a connection...</h3>
 
-				{retryCount > 0 && retryCount < MAX_RETRIES && (
+				{retryCount > 0 && retryCount < MAX_RETRIES_NETWORK && (
 					<p className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-gray-300 backdrop-blur-md">
 						<span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
 						<span>

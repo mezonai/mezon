@@ -2,6 +2,7 @@ import { useMemberStatus } from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
+	EInvoice,
 	selectBuzzStateByDirectId,
 	selectDirectById,
 	selectIsUnreadDMById,
@@ -216,7 +217,17 @@ const DmInvoiceProfile = memo(({ userId, directId, status, name }: { userId: str
 						className="opacity-60 text-theme-primary text-xs text-start flex gap-[2px] items-center"
 						data-e2e={generateE2eId(`chat.direct_message.chat_item.in_voice_status`)}
 					>
-						<Icons.Speaker className="text-green-500 !w-[10px] !h-[10px]" /> {t('inVoice')}
+						{checkUserInvoice.status === EInvoice.INVOICE ? (
+							<>
+								<Icons.Speaker className="text-green-500 !w-[10px] !h-[10px]" />
+								{t('inVoice')}
+							</>
+						) : (
+							<>
+								<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-[10px] !h-[10px]" />
+								{t('shareScreen')}
+							</>
+						)}
 					</p>
 				)}
 			</div>

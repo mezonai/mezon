@@ -11,7 +11,8 @@
 		"exCatHug": "T.ex. katt_grym",
 		"thisIsForSale": "Detta är till salu",
 		"neverMind": "Glöm det",
-		"characters": "Namn måste vara från 3 till 64 tecken"
+		"characters": "Namn måste vara från 3 till 64 tecken",
+		"required": "Detta fält är obligatoriskt"
 	},
 	"header": {
 		"save": "Spara"

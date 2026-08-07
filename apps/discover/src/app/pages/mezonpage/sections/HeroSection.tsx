@@ -13,17 +13,17 @@ interface HeroSectionProps {
 export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isImageLoaded, setIsImageLoaded] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
-		windowsPortable: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`,
+		windowsPortable: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`,
 		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
 		macosIntel: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
-		linux: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
+		linux: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
 	};
 
 	const handleTryMezon = () => {
@@ -130,7 +130,7 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 							className={`absolute inset-0 bg-purple-600 rounded-lg transition-opacity duration-300 ${isImageLoaded ? 'opacity-0' : 'opacity-100'}`}
 						/>
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/herosectionmezon.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/herosectionmezon.webp"
 							alt="Mezon Platform Preview"
 							className="w-full h-auto relative"
 							onLoad={() => setIsImageLoaded(true)}

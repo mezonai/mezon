@@ -89,7 +89,17 @@
 		"russian": "Русский",
 		"spanish": "Español",
 		"swedish": "Svenska",
-		"ukrainian": "Українська"
+		"ukrainian": "Українська",
+		"tatar": "Tatarça",
+		"german": "Deutsch",
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"japanese": "日本語",
+		"french": "Français",
+		"polish": "Polski",
+		"dutch": "Nederlands",
+		"korean": "한국어",
+		"belarusian": "Беларуская"
 	},
 	"voice": {
 		"title": "Röst",

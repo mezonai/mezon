@@ -8,7 +8,7 @@ export default function ChannelIndex() {
 			<div className={`flex h-heightWithoutTopBar flex-row `}>
 				<div className="flex flex-col flex-1 w-full h-full">
 					<div
-						className={`overflow-y-auto bg-transparent max-w-widthMessageViewChat overflow-x-hidden max-h-heightMessageViewChat h-heightMessageViewChat`}
+						className={`overflow-y-auto bg-transparent max-w-widthMessageViewChat overflow-x-hidden  max-h-heightMessageViewChat h-heightMessageViewChat`}
 					></div>
 					<div className="flex-shrink-0 flex flex-col bg-transparent h-auto"></div>
 				</div>

@@ -10,6 +10,7 @@
 	"reply": "Responder",
 	"createThread": "Criar tópico",
 	"copyText": "Copiar texto",
+	"copyTextSelected": "Copiar texto selecionado",
 	"quickMenus": "Opções rápidas",
 	"addToInbox": "Adicionar à caixa de entrada",
 	"markUnread": "Marcar como não lida",
@@ -120,5 +121,6 @@
 		"errorSendingQuickMenu": "Erro ao enviar opção rápida",
 		"failedToResendMessage": "Não foi possível reenviar a mensagem",
 		"failedToClosePoll": "Não foi possível encerrar a enquete"
-	}
+	},
+	"copyUserId": "Copiar ID do usuário"
 }

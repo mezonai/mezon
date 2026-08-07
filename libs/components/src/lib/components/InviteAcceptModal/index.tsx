@@ -25,6 +25,7 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	const clanId = selectInvite?.clan_id || '0';
 	const channelId = selectInvite?.channel_id || '0';
 
+	const clan = useSelector(selectClanById(clanId));
 	const userJoined = selectInvite?.user_joined;
 
 	const joinChannel = async () => {
@@ -32,8 +33,9 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 			setLoading(true);
 			setError(null);
 			try {
-				await inviteUser(inviteId).then((res) => {
+				await inviteUser(inviteId).then(async (res) => {
 					if (res?.channel_id && res?.clan_id) {
+						await new Promise((resolve) => setTimeout(resolve, 1000));
 						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
 						onClose();
 					}
@@ -51,14 +53,14 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	};
 
 	const handleJoinChannel = () => {
-		joinChannel();
 		dispatch(inviteActions.setIsClickInvite(false));
-		const clan = selectClanById(clanId);
 		if (userJoined || !!clan) {
 			toast.info(t('acceptModal.toast.alreadyMember'));
 			navigate(`/chat/clans/${clanId}/channels/${channelId}`);
 			onClose();
+			return;
 		}
+		joinChannel();
 	};
 
 	const handleClose = () => {

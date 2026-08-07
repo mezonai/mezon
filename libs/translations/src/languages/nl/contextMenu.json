@@ -10,6 +10,7 @@
 	"reply": "Antwoorden",
 	"createThread": "Topic aanmaken",
 	"copyText": "Tekst kopiëren",
+	"copyTextSelected": "Geselecteerde tekst kopiëren",
 	"quickMenus": "Snelle opties",
 	"addToInbox": "Toevoegen aan inbox",
 	"markUnread": "Ongelezen markeren",
@@ -120,5 +121,6 @@
 		"errorSendingQuickMenu": "Fout bij verzenden snelle optie",
 		"failedToResendMessage": "Kon bericht niet opnieuw verzenden",
 		"failedToClosePoll": "Kon enquête niet beëindigen"
-	}
+	},
+	"copyUserId": "Gebruikers-ID kopiëren"
 }

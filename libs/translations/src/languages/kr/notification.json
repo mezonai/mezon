@@ -10,7 +10,7 @@
 	"removeNotification": "알림 제거",
 	"nothingHere": "여기에 아무것도 없음",
 	"comeBackNotify": "이벤트 및 더 많은 알림을 받기 위해 돌아오세요",
-	"repliedTo": "답장: ",
+	"repliedTo": "원본 메시지: ",
 	"sender": "발신자: ",
 	"seeWhenAnswersAppear": "답변이 나타날 때 보기",
 	"enablePushNotifications": "푸시 알림 켜기",
@@ -40,6 +40,9 @@
 		"ok": "OK"
 	},
 	"andYou": "그리고 당신",
-	"topicAndYou": "토론 및 당신",
-	"unknowClan": "더 이상 이 대화의 멤버가 아닙니다"
+	"topicAndYou": "주제 토론",
+	"unknowClan": "더 이상 이 대화의 멤버가 아닙니다",
+	"contactMessage": "[연락처]",
+	"attachmentMessage": "[첨부파일]",
+	"interactiveMessage": "인터랙티브 메시지"
 }

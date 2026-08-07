@@ -13,7 +13,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const MezonDongPage = () => {
 	const { t } = useTranslation('mezondong');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [openFAQ, setOpenFAQ] = useState<number | null>(0);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,10 +26,10 @@ const MezonDongPage = () => {
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
+				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
 	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);
@@ -181,7 +181,7 @@ const MezonDongPage = () => {
 								className={`absolute inset-0 bg-gradient-to-br from-[#8761df5f] to-[#7979ed4f] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 							/>
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/mezondong1.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/mezondong1.webp"
 								alt="Minh bạch, An toàn, Miễn phí"
 								className="max-w-[68vw] lg:max-w-[43vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 								loading="lazy"
@@ -217,7 +217,7 @@ const MezonDongPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/mezondong2.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/mezondong2.webp"
 								alt="Nhanh chóng Không gián đoạn"
 								className="max-w-[80vw] lg:max-w-[39vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -252,7 +252,7 @@ const MezonDongPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/mezondong3.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/mezondong3.webp"
 								alt="Nâng Tầm Môi Trường Làm Việc"
 								className="max-w-[74vw] lg:max-w-[29vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -287,7 +287,7 @@ const MezonDongPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/mezondong4.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/mezondong4.webp"
 								alt="Thương Mại Tích Hợp"
 								className="max-w-[75vw] lg:max-w-[36vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"

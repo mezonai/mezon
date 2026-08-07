@@ -107,6 +107,7 @@
 		"edit": "Editar",
 		"view": "Visualizar",
 		"delete": "Excluir",
-		"roleNameIsRequired": "O nome do cargo é obrigatório"
+		"roleNameIsRequired": "O nome do cargo é obrigatório",
+		"noPermissionToEditRole": "Você não tem permissão para editar esta função."
 	}
 }

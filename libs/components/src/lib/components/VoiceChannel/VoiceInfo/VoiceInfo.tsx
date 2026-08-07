@@ -13,7 +13,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, useMediaPermissions } from '@mezon/utils';
-
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';

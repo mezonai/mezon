@@ -1,6 +1,6 @@
 export * from './lib/async';
-export * from './lib/channel-app-launch';
 export * from './lib/clan';
+export * from './lib/channel-app-launch';
 export * from './lib/constant';
 export * from './lib/constants/quickMenu';
 export * from './lib/constants/webrtc';

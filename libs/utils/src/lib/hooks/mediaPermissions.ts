@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { checkMediaPermission } from '../utils';
-
 export function useMediaPermissions() {
 	const [hasCameraAccess, setHasCameraAccess] = useState<boolean | null>(null);
 	const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState<boolean | null>(null);

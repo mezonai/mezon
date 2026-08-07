@@ -38,7 +38,9 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 			'yaml',
 			'json',
 			'php',
-			'jsx'
+			'jsx',
+			'bash',
+			'BASH'
 		]);
 		let language = undefined;
 		switch (type) {

@@ -211,5 +211,57 @@
 		"title": "Debugger Embed"
 	},
 	"small": "Piccolo",
-	"large": "Grande"
+	"large": "Grande",
+	"transcriptCalls": {
+		"title": "Trascrizioni delle chiamate",
+		"subtitle": "Visualizza e gestisci le trascrizioni delle tue chiamate.",
+		"loading": "Caricamento…",
+		"results": "stanze",
+		"page": "Pagina",
+		"prev": "Precedente",
+		"next": "Successivo",
+		"columns": {
+			"callId": "ID chiamata",
+			"roomName": "Nome stanza",
+			"status": "Stato",
+			"totalTracks": "Totale tracce",
+			"completedTracks": "Completato",
+			"duration": "Durata",
+			"createdAt": "Creato il",
+			"completedAt": "Completato il"
+		},
+		"status": {
+			"pending": "In sospeso",
+			"processing": "In elaborazione",
+			"completed": "Completato",
+			"failed": "Fallito"
+		},
+		"tabs": {
+			"overview": "Panoramica",
+			"fullTranscript": "Trascrizione completa",
+			"summary": "Riepilogo",
+			"participants": "Partecipante"
+		},
+		"detail": {
+			"title": "Dettaglio trascrizione chiamata",
+			"back": "Indietro",
+			"refresh": "Aggiorna",
+			"loadError": "Impossibile caricare questa stanza.",
+			"summaryEmpty": "Nessun riepilogo disponibile.",
+			"transcriptEmpty": "Nessun testo di trascrizione disponibile.",
+			"actionItems": "Elementi di azione",
+			"participants": "Partecipanti",
+			"participantsEmpty": "Nessun partecipante elencato per questa stanza.",
+			"metrics": {
+				"totalTracks": "Totale tracce",
+				"completed": "Completato",
+				"duration": "Durata",
+				"segments": "Segmenti"
+			},
+			"notFound": "Trascrizione chiamata non trovata",
+			"unknown": "Sconosciuto",
+			"username": "Nome utente",
+			"displayName": "Nome visualizzato"
+		}
+	}
 }

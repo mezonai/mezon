@@ -28,11 +28,10 @@
 	},
 	"directMessage": "Message direct",
 	"activeThreads": "Fils actifs",
-	"joinedThreadsLast30Days": "Fils joints (30 derniers jours)",
-	"olderThreads": "Fils plus anciens",
 	"loading": "Chargement...",
 	"topic": "Sujet",
 	"invoice": "Dans le canal vocal",
+	"shareScreen": "Partage de l’écran",
 	"reactions": "Réactions",
 	"callMessages": {
 		"startedVoiceCall": "Appel vocal commencé",
@@ -164,5 +163,7 @@
 		}
 	},
 	"moreFile": "autre fichier",
-	"moreFiles": "autres fichiers"
+	"moreFiles": "autres fichiers",
+	"joinedThreads": "Fils rejoints",
+	"archivedThreads": "Fils plus anciens"
 }

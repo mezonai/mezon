@@ -10,7 +10,7 @@
 	"removeNotification": "Supprimer la notification",
 	"nothingHere": "Rien ici pour le moment",
 	"comeBackNotify": "Revenez pour recevoir des notifications sur les événements et plus encore",
-	"repliedTo": "Répondu : ",
+	"repliedTo": "Message d'origine: ",
 	"sender": "Expéditeur : ",
 	"seeWhenAnswersAppear": "Voir quand les réponses apparaissent",
 	"enablePushNotifications": "Activer les notifications push",
@@ -40,6 +40,9 @@
 		"ok": "OK"
 	},
 	"andYou": "et vous",
-	"topicAndYou": "Discussion de fil et vous",
-	"unknowClan": "Vous ne faites plus partie de cette conversation"
+	"topicAndYou": "DISCUSSION DE SUJET",
+	"unknowClan": "Vous ne faites plus partie de cette conversation",
+	"contactMessage": "[Contact]",
+	"attachmentMessage": "[Pièce jointe]",
+	"interactiveMessage": "Message interactif"
 }

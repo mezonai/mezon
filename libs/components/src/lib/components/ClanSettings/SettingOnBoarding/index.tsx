@@ -77,7 +77,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				formOnboarding.greeting !== null;
 
 			if (hasNewData) {
-				await handleCreateOnboarding();
+				await handleCreateOnboarding(true);
 			}
 
 			await dispatch(
@@ -85,7 +85,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 					clan_id: currentClanId as string,
 					onboarding: true
 				})
-			);
+			).unwrap();
 			setIsCommunityEnabled(true);
 			setIsModalOpen(false);
 			setInitialDescription(description);
@@ -106,7 +106,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 	const onboardingByClan = useAppSelector((state) => selectOnboardingByClan(state, currentClanId as string));
 	const { sessionRef, clientRef } = useMezon();
 
-	const handleCreateOnboarding = async () => {
+	const handleCreateOnboarding = async (throwOnError = false) => {
 		setIsSaving(true);
 		try {
 			const uploadImageRule = formOnboarding.rules.map((item) => {
@@ -140,12 +140,14 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				formOnboardingData.unshift(formOnboarding.greeting);
 			}
 
-			await dispatch(
-				onboardingActions.createOnboardingTask({
-					clan_id: currentClanId as string,
-					content: formOnboardingData
-				})
-			);
+			if (formOnboardingData.length > 0) {
+				await dispatch(
+					onboardingActions.createOnboardingTask({
+						clan_id: currentClanId as string,
+						content: formOnboardingData
+					})
+				).unwrap();
+			}
 
 			setInitialDescription(description);
 			setInitialAbout(about);
@@ -154,6 +156,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 		} catch (error) {
 			console.error('Error saving changes:', error);
 			toast.error(t('errors.failedToSaveChanges'));
+			if (throwOnError) throw error;
 		} finally {
 			setIsSaving(false);
 		}

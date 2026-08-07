@@ -28,11 +28,10 @@
 	},
 	"directMessage": "Wiadomość bezpośrednia",
 	"activeThreads": "Aktywne wątki",
-	"joinedThreadsLast30Days": "Dołączone wątki (ostatnie 30 dni)",
-	"olderThreads": "Starsze wątki",
 	"loading": "Ładowanie...",
 	"topic": "Temat",
 	"invoice": "W kanale głosowym",
+	"shareScreen": "Udostępnia ekran",
 	"reactions": "Reakcje",
 	"callMessages": {
 		"startedVoiceCall": "Rozpoczęto połączenie głosowe",
@@ -164,5 +163,7 @@
 		}
 	},
 	"moreFile": "kolejny plik",
-	"moreFiles": "kolejne pliki"
+	"moreFiles": "kolejne pliki",
+	"joinedThreads": "Dołączone wątki",
+	"archivedThreads": "Starsze wątki"
 }

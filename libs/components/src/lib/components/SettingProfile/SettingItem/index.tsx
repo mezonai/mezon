@@ -1,30 +1,21 @@
-import { useAppNavigation } from '@mezon/core';
 import mezonPackage from '@mezon/package-js';
-import { selectAllAccount, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EUserSettings, generateE2eId } from '@mezon/utils';
-
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName: string) => void; initSetting: string }) => {
 	const [selectedButton, setSelectedButton] = useState<string | null>(initSetting);
-	const userProfile = useSelector(selectAllAccount);
 	const { t } = useTranslation(['setting']);
 	const handleButtonClick = (buttonName: string) => {
 		setSelectedButton(buttonName);
 	};
 	const [openModal, setOpenModal] = useState<boolean>(false);
-	const dispatch = useAppDispatch();
 	const handleOpenModal = () => {
 		setOpenModal(true);
 	};
 
-	const { navigate } = useAppNavigation();
-
 	const handleLogOut = async () => {
 		window.location.href = `${process.env.NX_CHAT_APP_OAUTH2_LOG_OUT}`;
-		return;
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);
@@ -125,6 +116,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleButtonClick(EUserSettings.LANGUAGE);
 						onItemClick && onItemClick(EUserSettings.LANGUAGE);
 					}}
+					data-e2e={generateE2eId(`user_setting.language.tab_language`)}
 				>
 					{t('setting:language.title')}
 				</button>
@@ -171,7 +163,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					{t('setting:logOut')}
 				</button>
 				{openModal && <LogoutModal handleLogOut={handleLogOut} onClose={handleCloseModal} />}
-				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.version}</div>
+				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.desktopVersion}</div>
 			</div>
 		</div>
 	);

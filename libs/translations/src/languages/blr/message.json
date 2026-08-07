@@ -184,7 +184,8 @@
 		"messages": "замацавана.",
 		"startedAThread": "пачаў трэд:",
 		"seeAllThreads": "Прагледзець",
-		"allThreads": "усе трэды"
+		"allThreads": "усе трэды",
+		"deletedAThread": "выдаліў трэд:"
 	},
 	"removeFromChannel": {
 		"title": "Размова недаступная",

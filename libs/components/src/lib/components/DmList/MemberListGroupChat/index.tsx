@@ -2,7 +2,6 @@ import { useAppParams, useAuth } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
 import { selectMemberByGroupId, useAppSelector } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
-
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MemberContextMenuProvider } from '../../../contexts';

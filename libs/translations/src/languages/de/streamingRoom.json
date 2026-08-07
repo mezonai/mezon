@@ -3,5 +3,6 @@
 		"stream": "Live-Streaming-Raum",
 		"joinStream": "Live-Stream beitreten"
 	},
-	"noDisplay": "Live-Streams nicht anzeigen"
+	"noDisplay": "Live-Streams nicht anzeigen",
+	"chat": "Chat"
 }

@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import ActivityListItem from './ActivityListItem';
 
 const heightTopBar = 50;
-const titleBarHeight = 0;
 
 type ListActivityProps = {
 	listFriend: FriendsEntity[];
@@ -87,12 +86,12 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 		};
 	}, [activities, listUser]);
 
-	const [height, setHeight] = useState(window.innerHeight - heightTopBar - titleBarHeight);
+	const [height, setHeight] = useState(window.innerHeight - heightTopBar);
 
 	const appearanceTheme = useSelector(selectTheme);
 
 	useEffect(() => {
-		const handleResize = () => setHeight(window.innerHeight - heightTopBar - titleBarHeight);
+		const handleResize = () => setHeight(window.innerHeight - heightTopBar);
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);

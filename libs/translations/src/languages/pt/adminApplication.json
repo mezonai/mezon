@@ -211,5 +211,57 @@
 		"title": "Depurador de Embed"
 	},
 	"small": "Pequeno",
-	"large": "Grande"
+	"large": "Grande",
+	"transcriptCalls": {
+		"title": "Transcrições de chamadas",
+		"subtitle": "Visualize e gerencie suas transcrições de chamadas.",
+		"loading": "Carregando…",
+		"results": "salas",
+		"page": "Página",
+		"prev": "Anterior",
+		"next": "Próximo",
+		"columns": {
+			"callId": "ID da chamada",
+			"roomName": "Nome da sala",
+			"status": "Status",
+			"totalTracks": "Total de faixas",
+			"completedTracks": "Concluído",
+			"duration": "Duração",
+			"createdAt": "Criado em",
+			"completedAt": "Concluído em"
+		},
+		"status": {
+			"pending": "Pendente",
+			"processing": "Processando",
+			"completed": "Concluído",
+			"failed": "Falhou"
+		},
+		"tabs": {
+			"overview": "Visão geral",
+			"fullTranscript": "Transcrição completa",
+			"summary": "Resumo",
+			"participants": "Participantes"
+		},
+		"detail": {
+			"title": "Detalhes da transcrição da chamada",
+			"back": "Voltar",
+			"refresh": "Atualizar",
+			"loadError": "Não foi possível carregar esta sala.",
+			"summaryEmpty": "Nenhum resumo disponível.",
+			"transcriptEmpty": "Nenhum texto de transcrição disponível.",
+			"actionItems": "Itens de ação",
+			"participants": "Participantes",
+			"participantsEmpty": "Nenhum participante listado para esta sala.",
+			"metrics": {
+				"totalTracks": "Total de faixas",
+				"completed": "Concluído",
+				"duration": "Duração",
+				"segments": "Segmentos"
+			},
+			"notFound": "Transcrição de chamada não encontrada",
+			"unknown": "desconhecido",
+			"username": "Nome de usuário",
+			"displayName": "Nome de exibição"
+		}
+	}
 }

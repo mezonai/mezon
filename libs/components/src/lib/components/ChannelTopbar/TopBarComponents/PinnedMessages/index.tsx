@@ -86,8 +86,8 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 	useOnClickOutside(modalRef, handleClosePinnedModal, rootRef);
 
 	return (
-		<div ref={modalRef} tabIndex={-1} className="absolute top-8 right-0 shadow z-50 origin-top-right text-theme-primary">
-			<div className="flex flex-col rounded-md w-[420px] max-h-[80vh] overflow-hidden shadow-shadowBorder bg-theme-setting-primary">
+		<div ref={modalRef} tabIndex={-1} className="absolute max-sbm:fixed max-sbm:top-14 max-sbm:left-4 max-sbm:right-4 top-8 right-0 shadow z-50 origin-top-right text-theme-primary">
+			<div className="flex flex-col rounded-md w-[420px] max-sbm:w-auto max-h-[80vh] overflow-hidden shadow-shadowBorder bg-theme-setting-primary">
 				<div className=" flex flex-row items-center justify-between p-[16px] h-12 border-b-theme-primary bg-theme-setting-nav">
 					<div className="flex flex-row items-center pr-[16px] gap-4 bg-theme-primary-nav">
 						<Icons.PinRight />

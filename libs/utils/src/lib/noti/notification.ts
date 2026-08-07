@@ -29,14 +29,6 @@ export enum NotificationPermissionStatus {
 	GRANTED = 'granted'
 }
 
-export interface MezonNotificationOptions extends NotificationOptions {
-	data: {
-		link: string;
-		channelId?: string;
-	};
-	tag?: string;
-}
-
 const DEFAULT_MAX_RECONNECT_ATTEMPTS = 10;
 const DEFAULT_RECONNECT_INTERVAL = 1000; // 1s
 const DEFAULT_MAX_RECONNECT_INTERVAL = 32000; // 32s (after 5 reconnect attempts)
@@ -193,6 +185,7 @@ export class MezonNotificationService {
 
 		// Store the connection
 		this.userConnections.set(userId, connection);
+		this.setCurrentActiveUserId(userId);
 	};
 
 	public disconnect = (userId: string) => {

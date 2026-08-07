@@ -3,18 +3,15 @@ import {
 	selectNoiseSuppressionEnabled,
 	selectNoiseSuppressionLevel,
 	selectShowScreen,
-	selectShowSelectScreenModal,
 	selectVoiceFullScreen,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-
 import { Track } from 'livekit-client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
 import { CameraControl } from './CameraControl';
 import { FullscreenControl } from './FullscreenControl';
 import { LeaveButton } from './LeaveButton';
@@ -74,7 +71,6 @@ const ControlBar = ({
 	const isFullScreen = useSelector(selectVoiceFullScreen);
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
 	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
-	const isShowSelectScreenModal = useSelector(selectShowSelectScreenModal);
 
 	const visibleControls = useControlBarPermissions(controls);
 	const { isOpenPopOut, togglePopout } = useViewControls();
@@ -82,21 +78,10 @@ const ControlBar = ({
 	const { cameraPermissionState, microphonePermissionState, refreshPermissions } = useMediaPermissions();
 
 	const browserSupportsScreenSharing = supportsScreenSharing();
-	const [openScreenSelection, closeScreenSelection] = useModal(() => {
-		return <ScreenSelectionModal onClose={closeScreenSelection} />;
-	});
-
-	useEffect(() => {
-		if (isShowSelectScreenModal) {
-			openScreenSelection();
-		}
-	}, [isShowSelectScreenModal, openScreenSelection]);
 
 	const handleLeaveRoom = useCallback(() => {
 		onLeaveRoom(true);
 	}, [onLeaveRoom]);
-
-	const handleOpenScreenSelection = useCallback(async () => {}, [openScreenSelection]);
 
 	const toggleNoiseSuppression = useCallback(() => {
 		dispatch(voiceActions.setNoiseSuppressionEnabled(!noiseSuppressionEnabled));
@@ -316,7 +301,6 @@ const ControlBar = ({
 						isShowMember={isShowMember}
 						saveUserChoices={saveUserChoices}
 						onDeviceError={handleScreenShareDeviceError}
-						onDesktopScreenShare={handleOpenScreenSelection}
 					/>
 				)}
 

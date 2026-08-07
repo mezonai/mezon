@@ -107,6 +107,7 @@
 		"edit": "Bewerken",
 		"view": "Bekijken",
 		"delete": "Verwijderen",
-		"roleNameIsRequired": "Rol naam is vereist"
+		"roleNameIsRequired": "Rol naam is vereist",
+		"noPermissionToEditRole": "Je hebt geen toestemming om deze rol te bewerken."
 	}
 }

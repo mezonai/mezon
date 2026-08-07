@@ -10,7 +10,7 @@
 	"removeNotification": "Benachrichtigung löschen",
 	"nothingHere": "Hier ist noch nichts",
 	"comeBackNotify": "Komm zurück, um Benachrichtigungen über Ereignisse und mehr zu erhalten",
-	"repliedTo": "Geantwortet auf: ",
+	"repliedTo": "Ursprüngliche Nachricht: ",
 	"sender": "Absender: ",
 	"seeWhenAnswersAppear": "Sehen, wenn Antworten erscheinen",
 	"enablePushNotifications": "Push-Benachrichtigungen aktivieren",
@@ -40,6 +40,9 @@
 		"ok": "OK"
 	},
 	"andYou": "und du",
-	"topicAndYou": "Diskussionen und du",
-	"unknowClan": "Du bist kein Mitglied dieses Chats mehr"
+	"topicAndYou": "THEMENDISKUSSION",
+	"unknowClan": "Du bist kein Mitglied dieses Chats mehr",
+	"contactMessage": "[Kontakt]",
+	"attachmentMessage": "[Anhang]",
+	"interactiveMessage": "Interaktive Nachricht"
 }
