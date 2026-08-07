@@ -877,7 +877,7 @@ type SendMessagePayload = {
 	channelId: string;
 	content: IMessageSendPayload;
 	mentions?: Array<ApiMessageMention>;
-	attachments?: Array<ApiMessageAttachment & { uploadPath?: string }>;
+	attachments?: Array<ApiMessageAttachment & { uploadPath?: string; uploadName?: string }>;
 	references?: Array<ApiMessageRef>;
 	anonymous?: boolean;
 	mentionEveryone?: boolean;

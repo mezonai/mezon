@@ -31,7 +31,8 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 
 				return {
 					...attach,
-					filename: data.filename,
+					filename: attach.filename,
+					uploadName: data.filename,
 					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
 					uploadPath: data.url,
 					...(thumbnail && thumbnail?.filename && { thumbnail: `${process.env.NX_BASE_IMG_URL}/${thumbnail.filename}` }),
@@ -48,5 +49,6 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 		uploadPath?: string;
 		thumbnail?: string;
 		thumbnailUpload?: string;
+		uploadName?: string;
 	})[];
 }

@@ -779,7 +779,7 @@ const MAX_WORKERS = 4;
 const fileUploadForeman = new Foreman(MAX_WORKERS);
 
 export async function getWebUploadedAttachments(payload: {
-	attachments: (ApiMessageAttachment & { uploadPath?: string; thumbnailUpload?: string })[];
+	attachments: (ApiMessageAttachment & { uploadPath?: string; thumbnailUpload?: string; uploadName?: string })[];
 }) {
 	const { attachments } = payload;
 	if (!attachments || attachments?.length === 0) {
@@ -813,7 +813,7 @@ export async function getWebUploadedAttachments(payload: {
 				const response = await fetch(attachment.url);
 				const arrayBuffer = await response.arrayBuffer();
 				const blob = new Blob([arrayBuffer], { type: attachment.filetype || 'application/octet-stream' });
-				createdFile = new CustomFile([blob], attachment.filename ?? 'untitled', {
+				createdFile = new CustomFile([blob], attachment.uploadName ?? 'untitled', {
 					type: attachment.filetype || 'application/octet-stream'
 				});
 				createdFile.url = attachment.url;
@@ -832,7 +832,7 @@ export async function getWebUploadedAttachments(payload: {
 				await uploadFileToPath(attachment.thumbnailUpload, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
 			}
 			fileUploadForeman.releaseWorker();
-			const id = attachment.filename?.split('/').pop()?.split('.')[0];
+			const id = attachment.uploadName?.split('/').pop()?.split('.')[0];
 			return id;
 		} catch (error) {
 			fileUploadForeman.releaseWorker();
