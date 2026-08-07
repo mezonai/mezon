@@ -9,23 +9,46 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 			if (!nonDirectAttachments) {
 				return attach;
 			}
+			try {
+				const data = await client.uploadAttachmentFile(session, {
+					filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
+					filetype: attach.filetype,
+					size: attach.size,
+					width: attach.width,
+					height: attach.height
+				});
+				let thumbnail;
+				if (attach.filetype?.startsWith('video') && (attach as File & { _thumbnailBlob?: Blob })?._thumbnailBlob) {
+					const thumbnailBlob = (attach as File & { _thumbnailBlob?: Blob })._thumbnailBlob as Blob;
+					const ms = Date.now();
+					const filename = `${ms}_thumbnail.png`;
+					thumbnail = await client.uploadAttachmentFile(session, {
+						filename,
+						filetype: thumbnailBlob.type,
+						size: thumbnailBlob.size
+					});
+				}
 
-			const data = await client.uploadAttachmentFile(session, {
-				filename: attach.filename,
-				filetype: attach.filetype,
-				size: attach.size,
-				width: attach.width,
-				height: attach.height
-			});
-
-			return {
-				...attach,
-				filename: data.filename,
-				url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
-				uploadPath: data.url
-			};
+				return {
+					...attach,
+					filename: attach.filename,
+					uploadName: data.filename,
+					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
+					uploadPath: data.url,
+					...(thumbnail && thumbnail?.filename && { thumbnail: `${process.env.NX_BASE_IMG_URL}/${thumbnail.filename}` }),
+					...(thumbnail && thumbnail?.url && { thumbnailUpload: thumbnail.url })
+				};
+			} catch (error) {
+				console.error('error: ', error);
+				return null;
+			}
 		})
 	);
 
-	return result;
+	return result.filter((attachment) => Boolean(attachment) && attachment !== null) as (ApiMessageAttachment & {
+		uploadPath?: string;
+		thumbnail?: string;
+		thumbnailUpload?: string;
+		uploadName?: string;
+	})[];
 }
