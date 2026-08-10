@@ -29,10 +29,7 @@ const maxNumberofUsesKeys = ['noLimit', '1use', '5uses', '10uses', '25uses', '50
 export type ModalParam = {
 	onClose: () => void;
 	open: boolean;
-	// url:string;
-	channelID?: string;
 	confirmButton?: () => void;
-	clanId?: string;
 	setShowClanListMenuContext?: () => void;
 	isInviteExternalCalling?: boolean;
 	privateRoomLink?: string;
@@ -47,31 +44,34 @@ const ModalInvite = (props: ModalParam) => {
 	const [urlInvite, setUrlInvite] = useState('');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { createLinkInviteUser } = useInvite();
-	const { onClose, channelID, clanId, setShowClanListMenuContext, isInviteExternalCalling = false } = props;
+	const { onClose, setShowClanListMenuContext, isInviteExternalCalling = false } = props;
 	const dispatch = useAppDispatch();
 
-	const effectiveClanId = clanId && clanId !== '0' ? clanId : currentClanId;
-
-	const clan = useSelector(selectClanById(effectiveClanId ?? ''));
+	const clan = useSelector(selectClanById(currentClanId ?? ''));
 	const handleOpenInvite = useCallback(async () => {
 		try {
 			const welcomeChannel = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId as string })).unwrap();
 
-			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channel_id) as string;
-			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
+			if (!welcomeChannel.channel_id) {
+				console.error(t('errors.createInviteLink'));
+				return;
+			}
+
+			const intiveIdChannel = welcomeChannel.channel_id;
+			const res = await createLinkInviteUser(currentClanId ?? '', intiveIdChannel, 10);
 
 			const state = getStore().getState();
 			const currentClan = selectCurrentClan(state);
 			const membersCount = selectMembersClanCount(state);
 			dispatch(
 				referencesActions.setOgpData({
-					channel_id: channelID ? channelID : welcomeChannel.channel_id || '',
+					channel_id: welcomeChannel.channel_id,
 					image: currentClan?.logo || '',
 					index: 0,
 					url: `${window.location.origin}/invite/${res.invite_link}`,
 					banner: currentClan?.banner || '',
 					member_count: membersCount,
-					clan_id: effectiveClanId || '',
+					clan_id: currentClanId || '',
 					is_community: currentClan?.is_community,
 					type: 'invite',
 					title: currentClan?.clan_name || ''
@@ -84,7 +84,7 @@ const ModalInvite = (props: ModalParam) => {
 		} catch {
 			console.error(t('errors.createInviteLink'));
 		}
-	}, [channelID, effectiveClanId]);
+	}, [currentClanId]);
 
 	useEffect(() => {
 		if (!isInviteExternalCalling) {
@@ -136,7 +136,7 @@ const ModalInvite = (props: ModalParam) => {
 		return <ModalQR closeModalEdit={closeModalEdit} data={urlInvite} />;
 	}
 	return (
-		<ModalLayout onClose={props.onClose}>
+		<ModalLayout onClose={onClose}>
 			<div
 				className="bg-theme-setting-primary rounded-xl flex flex-col md:w-[480px]"
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
@@ -148,7 +148,7 @@ const ModalInvite = (props: ModalParam) => {
 
 					<Button
 						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover flex-shrink-0"
-						onClick={props.onClose}
+						onClick={onClose}
 					>
 						×
 					</Button>
@@ -157,7 +157,6 @@ const ModalInvite = (props: ModalParam) => {
 					<ListMemberInvite
 						isInviteExternalCalling={isInviteExternalCalling}
 						url={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
-						channelID={channelID}
 					/>
 					<div className="relative w-full">
 						<p className="pt-4 pb-1 text-[12px] mb-12px cursor-default uppercase font-semibold text-theme-primary-active">
@@ -200,66 +199,6 @@ const ModalInvite = (props: ModalParam) => {
 							</button>
 						</div>
 					</div>
-				</div>
-			</div>
-		</ModalLayout>
-	);
-};
-
-interface ModalGenerateLinkOptionProps {
-	expire: string;
-	setExpire: React.Dispatch<React.SetStateAction<string>>;
-	closeModalEdit: () => void;
-	max: string;
-	setMax: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const ModalGenerateLinkOption = ({ setExpire, expire, closeModalEdit, max, setMax }: ModalGenerateLinkOptionProps) => {
-	const { t } = useTranslation('invitation');
-	return (
-		<ModalLayout onClose={closeModalEdit}>
-			<div className="bg-theme-setting-primary rounded-xl flex flex-col w-[480px] px-5 py-5 gap-2">
-				<div className="space-y-2">
-					<h3 className="text-xs font-bold text-theme-primary">{t('generateLink.expireAfter')}</h3>
-					<select
-						name="expireAfter"
-						className={`block w-full  border  rounded p-2 font-normal text-sm tracking-wide outline-none border-none`}
-						onChange={(e) => {
-							setExpire(e.target.value);
-						}}
-						value={expire}
-					>
-						{expireAfterKeys.map((item) => (
-							<option key={item} value={item}>
-								{t(`expiration.${item}`)}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="space-y-2">
-					<h3 className="text-xs font-bold text-theme-primary">{t('generateLink.maxNumberOfUses')}</h3>
-					<select
-						name="maxNumberofUses"
-						className={`block w-full  rounded p-2 font-normal text-sm tracking-wide outline-none border-none `}
-						onChange={(e) => {
-							setMax(e.target.value);
-						}}
-						value={max}
-					>
-						{maxNumberofUsesKeys.map((item) => (
-							<option key={item} value={item}>
-								{t(`maxUses.${item}`)}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="flex justify-end gap-x-4">
-					<button className="px-4 py-2 rounded-lg  border-theme-primary hover:bg-opacity-85" onClick={closeModalEdit}>
-						{t('buttons.cancel')}
-					</button>
-					<button className="px-4 py-2 rounded-lg text-white bg-primary hover:bg-opacity-85" onClick={closeModalEdit}>
-						{t('buttons.generateNewLink')}
-					</button>
 				</div>
 			</div>
 		</ModalLayout>

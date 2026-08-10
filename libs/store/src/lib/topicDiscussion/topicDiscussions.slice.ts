@@ -252,10 +252,11 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		throw new Error('Client is not initialized');
 	}
 
-	const uploadedFiles: ApiMessageAttachment[] = [];
+	let uploadedFiles: ApiMessageAttachment[] = [];
 
 	if (attachments && attachments.length > 0) {
 		const attachmentsPath = await generatePathAttachments(client, session, attachments);
+		uploadedFiles = attachmentsPath;
 		await getWebUploadedAttachments({ attachments: attachmentsPath });
 	}
 

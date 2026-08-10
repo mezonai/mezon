@@ -5,7 +5,7 @@
 		"textNotify": "Сосредоточьтесь на разговоре с ветками — временным текстовым каналом.",
 		"createThreads": "Создать ветку"
 	},
-	"otherThreads": "Старые ветки",
+	"otherThreads": "архивные ветки",
 	"errorMessage": "Введите корректное имя ветки (макс. 64 символа, только буквы, цифры, _ или -).",
 	"threadName": "Название ветки",
 	"privateThread": "Приватная ветка",
@@ -15,8 +15,8 @@
 	"joinedThread": "вступившая в ветку",
 	"otherActiveThreads": "другие активные ветки",
 	"otherActiveThread": "другая активная ветка",
-	"archivedThreads": "старые ветки",
-	"olderThread": "старая ветка",
+	"archivedThreads": "архивные ветки",
+	"olderThread": "архивная ветка",
 	"searchThreads": "искать ветки",
 	"searchThread": "искать ветку",
 	"threadFailed": {

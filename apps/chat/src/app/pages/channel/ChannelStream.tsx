@@ -1,6 +1,6 @@
 import { AvatarImage } from '@mezon/components';
 import { useAuth } from '@mezon/core';
-import type { ChannelsEntity } from '@mezon/store';
+import type { ChannelsEntity, UsersStreamEntity } from '@mezon/store';
 import {
 	appActions,
 	selectCurrentClanId,
@@ -182,13 +182,13 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 }
 
 export type UserListStreamChannelProps = {
-	readonly memberJoin: string[];
+	readonly memberJoin: UsersStreamEntity[];
 	readonly isShowChat?: boolean;
 	readonly maxMember?: number;
 };
 
 export function UserListStreamChannel({ memberJoin = [], isShowChat, maxMember }: UserListStreamChannelProps) {
-	const [displayedMembers, setDisplayedMembers] = useState<string[]>(memberJoin);
+	const [displayedMembers, setDisplayedMembers] = useState<UsersStreamEntity[]>(memberJoin);
 	const [remainingCount, setRemainingCount] = useState(0);
 
 	const handleSizeWidth = useCallback(() => {
@@ -224,9 +224,9 @@ export function UserListStreamChannel({ memberJoin = [], isShowChat, maxMember }
 
 	return (
 		<div className="flex items-center gap-2">
-			{displayedMembers.map((id: string) => (
-				<div key={id} className="flex items-center">
-					<UserItem id={id} />
+			{displayedMembers.map((user) => (
+				<div key={user.user_id} className="flex items-center">
+					<UserItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} />
 				</div>
 			))}
 			{remainingCount > 0 && (
@@ -238,18 +238,18 @@ export function UserListStreamChannel({ memberJoin = [], isShowChat, maxMember }
 	);
 }
 
-function UserItem({ id }: { id: string }) {
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, id ?? ''));
-	const avatar = getAvatarForPrioritize(userStream?.clan_avatar, userStream?.user?.avatar_url);
+function UserItem({ id, user_name, user_avatar }: { id: string; user_name: string; user_avatar: string }) {
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, id ?? '')) || user_name;
+	const avatar = getAvatarForPrioritize(userStream?.clan_avatar, userStream?.user?.avatar_url) || user_avatar;
 
 	return (
 		<div className="w-14 h-14 rounded-full">
 			<div className="w-14 h-14">
-				{userStream ? (
+				{avatar ? (
 					<AvatarImage
 						alt={userStream?.user?.username || ''}
 						username={userStream?.user?.username}
-						className="min-w-14 min-h-14 max-w-14 max-h-14"
+						className="min-w-14 min-h-14 max-w-14 max-h-14 size-14"
 						srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 						src={avatar}
 					/>
@@ -314,8 +314,8 @@ export default function ChannelStream({
 		}
 		dispatch(videoStreamActions.setIsJoin(false));
 		disconnect();
-		const idStreamByMe = memberJoin?.find((id) => id === userProfile?.user?.id);
-		dispatch(usersStreamActions.remove(idStreamByMe || ''));
+		const idStreamByMe = memberJoin?.find((user) => user.user_id === userProfile?.user?.id);
+		dispatch(usersStreamActions.remove(idStreamByMe?.user_id || ''));
 		dispatch(appActions.setIsShowChatStream(false));
 		setShowMembers(true);
 	};
