@@ -75,10 +75,6 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				dispatch(topicsActions.addTopicMeta(event));
 			};
 
-			client.onrefreshsession = (session: ApiSession) => {
-				dispatch(authActions.setSessionId(session.session_id));
-			};
-
 			let shouldLogout = false;
 
 			await Promise.all([
