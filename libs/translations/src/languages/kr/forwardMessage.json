@@ -1,6 +1,6 @@
 {
 	"modal": {
-		"title": "메시지轉送",
+		"title": "메시지 전달",
 		"searchPlaceholder": "검색",
 		"noResults": "무엇을 찾고 계신가요?",
 		"searchFriendsUsers": "친구와 사용자 검색",
@@ -19,6 +19,6 @@
 		"additionalMessage": "동봉 메시지 (선택)",
 		"additionalMessagePlaceholder": "동봉할 메시지 입력..."
 	},
-	"successMessage": "메시지 성공적으로轉送",
-	"errorMessage": "메시지轉送 실패"
+	"successMessage": "메시지가 성공적으로 전달되었습니다",
+	"errorMessage": "메시지 전달에 실패했습니다"
 }
