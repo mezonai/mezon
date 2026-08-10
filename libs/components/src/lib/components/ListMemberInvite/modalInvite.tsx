@@ -29,10 +29,7 @@ const maxNumberofUsesKeys = ['noLimit', '1use', '5uses', '10uses', '25uses', '50
 export type ModalParam = {
 	onClose: () => void;
 	open: boolean;
-	// url:string;
-	channelID?: string;
 	confirmButton?: () => void;
-	clanId?: string;
 	setShowClanListMenuContext?: () => void;
 	isInviteExternalCalling?: boolean;
 	privateRoomLink?: string;
@@ -47,12 +44,10 @@ const ModalInvite = (props: ModalParam) => {
 	const [urlInvite, setUrlInvite] = useState('');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { createLinkInviteUser } = useInvite();
-	const { onClose, channelID, clanId, setShowClanListMenuContext, isInviteExternalCalling = false } = props;
+	const { onClose, setShowClanListMenuContext, isInviteExternalCalling = false } = props;
 	const dispatch = useAppDispatch();
 
-	const effectiveClanId = clanId && clanId !== '0' ? clanId : currentClanId;
-
-	const clan = useSelector(selectClanById(effectiveClanId ?? ''));
+	const clan = useSelector(selectClanById(currentClanId ?? ''));
 	const handleOpenInvite = useCallback(async () => {
 		try {
 			const welcomeChannel = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId as string })).unwrap();
@@ -63,20 +58,20 @@ const ModalInvite = (props: ModalParam) => {
 			}
 
 			const intiveIdChannel = welcomeChannel.channel_id;
-			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
+			const res = await createLinkInviteUser(currentClanId ?? '', intiveIdChannel, 10);
 
 			const state = getStore().getState();
 			const currentClan = selectCurrentClan(state);
 			const membersCount = selectMembersClanCount(state);
 			dispatch(
 				referencesActions.setOgpData({
-					channel_id: channelID ? channelID : welcomeChannel.channel_id || '',
+					channel_id: welcomeChannel.channel_id,
 					image: currentClan?.logo || '',
 					index: 0,
 					url: `${window.location.origin}/invite/${res.invite_link}`,
 					banner: currentClan?.banner || '',
 					member_count: membersCount,
-					clan_id: effectiveClanId || '',
+					clan_id: currentClanId || '',
 					is_community: currentClan?.is_community,
 					type: 'invite',
 					title: currentClan?.clan_name || ''
@@ -89,7 +84,7 @@ const ModalInvite = (props: ModalParam) => {
 		} catch {
 			console.error(t('errors.createInviteLink'));
 		}
-	}, [effectiveClanId]);
+	}, [currentClanId]);
 
 	useEffect(() => {
 		if (!isInviteExternalCalling) {
@@ -162,7 +157,6 @@ const ModalInvite = (props: ModalParam) => {
 					<ListMemberInvite
 						isInviteExternalCalling={isInviteExternalCalling}
 						url={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
-						channelID={channelID}
 					/>
 					<div className="relative w-full">
 						<p className="pt-4 pb-1 text-[12px] mb-12px cursor-default uppercase font-semibold text-theme-primary-active">

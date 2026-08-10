@@ -97,8 +97,6 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	clanMetadata: EntityState<ClanMeta, string>;
 	clanUnreadStates: EntityState<ClanUnreadState, string>; // Normalized unread state
 	invitePeople: boolean;
-	inviteChannelId?: string;
-	inviteClanId?: string;
 	clansOrder?: string[];
 	// Add clan groups state
 	clanGroups: EntityState<ClanGroup, string>;
@@ -380,7 +378,7 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 			return thunkAPI.rejectWithValue([]);
 		}
 		thunkAPI.dispatch(usersClanActions.removeUsersAndClearCache({ clanId, userIds }));
-		userIds.forEach(userId => {
+		userIds.forEach((userId) => {
 			thunkAPI.dispatch(rolesClanActions.updateRemoveUserRole({ userId, clanId }));
 		});
 		return response;
@@ -744,15 +742,8 @@ export const clansSlice = createSlice({
 			}
 		},
 
-		toggleInvitePeople: (state, action: PayloadAction<{ status: boolean; clanId?: string; channelId?: string }>) => {
+		toggleInvitePeople: (state, action: PayloadAction<{ status: boolean }>) => {
 			state.invitePeople = action.payload.status;
-			if (action.payload.status) {
-				state.inviteChannelId = action.payload.channelId;
-				state.inviteClanId = action.payload.clanId;
-			} else {
-				state.inviteChannelId = undefined;
-				state.inviteClanId = undefined;
-			}
 		},
 		updateBulkClanMetadata: (state, action: PayloadAction<ClanMeta[]>) => {
 			state.clanMetadata = clanMetaAdapter.upsertMany(state.clanMetadata, action.payload);
@@ -1064,8 +1055,6 @@ export const selectBadgeCountAllClan = createSelector(getClansState, (state) => 
 });
 
 export const selectInvitePeopleStatus = createSelector(getClansState, (state) => state.invitePeople);
-export const selectInviteChannelId = createSelector(getClansState, (state) => state.inviteChannelId);
-export const selectInviteClanId = createSelector(getClansState, (state) => state.inviteClanId);
 export const selectWelcomeChannelByClanId = createSelector([getClansState, (state, clanId: string) => clanId], (state, clanId) => {
 	return selectById(state, clanId)?.welcome_channel_id || null;
 });
