@@ -5,7 +5,7 @@
 		"textNotify": "Foque na conversa com um tópico - um canal de texto temporário.",
 		"createThreads": "Criar tópico"
 	},
-	"otherThreads": "TÓPICOS MAIS ANTIGOS",
+	"otherThreads": "tópicos arquivados",
 	"errorMessage": "Por favor, insira um nome de tópico válido (máximo de 64 caracteres, apenas letras, números, _ ou -).",
 	"threadName": "Nome do tópico",
 	"privateThread": "Tópico privado",
@@ -14,7 +14,7 @@
 	"joinedThreads": "tópicos participados",
 	"joinedThread": "tópico participado",
 	"otherActiveThreads": "outros tópicos ativos",
-	"archivedThreads": "tópicos mais antigos",
+	"archivedThreads": "tópicos arquivados",
 	"searchThreads": "pesquisar tópicos",
 	"searchThread": "pesquisar tópico",
 	"threadFailed": {
@@ -22,5 +22,5 @@
 		"content": "Tópico não encontrado ou você não tem permissão para atualizar"
 	},
 	"otherActiveThread": "outro tópico ativo",
-	"olderThread": "tópico mais antigo"
+	"olderThread": "tópico arquivado"
 }
