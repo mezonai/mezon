@@ -877,7 +877,7 @@ type SendMessagePayload = {
 	channelId: string;
 	content: IMessageSendPayload;
 	mentions?: Array<ApiMessageMention>;
-	attachments?: Array<ApiMessageAttachment & { uploadPath?: string }>;
+	attachments?: Array<ApiMessageAttachment & { uploadPath?: string; uploadName?: string }>;
 	references?: Array<ApiMessageRef>;
 	anonymous?: boolean;
 	mentionEveryone?: boolean;
@@ -1171,8 +1171,25 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		username,
 		code
 	} = payload;
+	const attachmentsMessage: ApiMessageAttachment[] =
+		attachments?.map((attach) => ({
+			filename: attach.filename,
+			filetype: attach.filetype,
+			size: attach.size,
+			duration: attach.duration,
+			url: attach.url,
+			thumbnail: attach.thumbnail,
+			height: attach.height,
+			width: attach.width
+		})) ?? [];
 
-	const payloadSizeInBytes = Buffer.byteLength(JSON.stringify(payload), 'utf8');
+	const payloadSizeInBytes = Buffer.byteLength(
+		JSON.stringify({
+			...payload,
+			attachments: attachmentsMessage
+		}),
+		'utf8'
+	);
 	if (payloadSizeInBytes > 4 * 1024) {
 		toast.error(t(`message:tooLongMessage`));
 		return;
@@ -1323,7 +1340,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mk
 			};
 		}
-		const needUpload = attachments?.some((attachment) => attachment.uploadPath);
+		const needUpload = attachments?.some((attachment) => attachment?.uploadPath);
 		if (needUpload) {
 			content = {
 				...content,
@@ -1338,7 +1355,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			content,
-			attachments,
+			attachments: attachmentsMessage,
 			create_time_seconds: clientSendTime / 1000,
 			create_time: new Date(clientSendTime).toISOString(),
 			client_send_time: clientSendTime,
@@ -1420,30 +1437,34 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 
 			if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
-				const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+				try {
+					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
 
-				thunkAPI.dispatch(
-					messagesActions.updateSendingMessageAttachments({
-						channelId: channelId as string,
-						messageId: id,
-						attachments: toPublicMessageAttachments(attachments)
-					})
-				);
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				thunkAPI.dispatch(
-					editMessageViaApi({
-						content: {
-							...content,
-							presign_finish
-						},
-						channelId,
-						clanId,
-						isPublic,
-						messageId: messageResult?.message_id,
-						mode,
-						hideEditted: true
-					})
-				);
+					thunkAPI.dispatch(
+						messagesActions.updateSendingMessageAttachments({
+							channelId: channelId as string,
+							messageId: id,
+							attachments: toPublicMessageAttachments(attachments)
+						})
+					);
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					thunkAPI.dispatch(
+						editMessageViaApi({
+							content: {
+								...content,
+								presign_finish
+							},
+							channelId,
+							clanId,
+							isPublic,
+							messageId: messageResult?.message_id,
+							mode,
+							hideEditted: true
+						})
+					);
+				} catch (error) {
+					console.error('error: ', error);
+				}
 			}
 		} catch (error) {
 			const payload = originalSendPayload;

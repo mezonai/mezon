@@ -8,8 +8,6 @@ import {
 	selectAccountCustomStatus,
 	selectGroupCallJoined,
 	selectInfoSendToken,
-	selectIsElectronDownloading,
-	selectIsElectronUpdateAvailable,
 	selectIsInCall,
 	selectIsJoin,
 	selectMemberCustomStatusById,
@@ -47,7 +45,6 @@ import { UserStatusIconDM } from '../MemberProfile';
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
 import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
 import StreamInfo from '../StreamInfo';
-import UpdateButton from '../UpdateButton/UpdateButton';
 import { VoiceInfo } from '../VoiceChannel';
 import ModalFooterProfile from './ModalFooterProfile';
 export type FooterProfileProps = {
@@ -230,8 +227,6 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 
 	const rootRef = useRef<HTMLDivElement>(null);
 	const modalControlRef = useRef<HTMLDivElement>(null);
-	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
-	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
@@ -322,7 +317,6 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 			{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 			{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
 			{(isVoiceJoined || GroupCallJoined) && <VoiceInfo />}
-			{(isElectronUpdateAvailable || IsElectronDownloading) && <UpdateButton isDownloading={!isElectronUpdateAvailable} />}
 			<div
 				className={`flex items-center gap-2 pr-4 pl-2 py-2 font-title text-[15px]
 			 font-[500]

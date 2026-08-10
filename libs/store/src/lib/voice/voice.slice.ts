@@ -56,7 +56,6 @@ export interface VoiceState {
 	isGroupCallJoined: boolean;
 	token: string;
 	stream: MediaStream | null | undefined;
-	showSelectScreenModal: boolean;
 	externalToken: string | undefined;
 	guestUserId: string | undefined;
 	guestAccessToken: string | undefined;
@@ -67,11 +66,6 @@ export interface VoiceState {
 	externalGroup?: boolean;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
 	cache?: CacheMetadata;
-	screenSource?: {
-		id: string;
-		audio: boolean;
-		mode: 'electron';
-	} | null;
 	contextMenu: {
 		openedParticipantId: string | null;
 		position: { x: number; y: number };
@@ -252,7 +246,6 @@ export const initialVoiceState: VoiceState = {
 	isGroupCallJoined: false,
 	token: '',
 	stream: null,
-	showSelectScreenModal: false,
 	externalToken: undefined,
 	guestUserId: undefined,
 	guestAccessToken: undefined,
@@ -371,9 +364,6 @@ export const voiceSlice = createSlice({
 		setNoiseSuppressionLevel: (state, action: PayloadAction<number>) => {
 			state.noiseSuppressionLevel = action.payload;
 		},
-		setShowSelectScreenModal: (state, action: PayloadAction<boolean>) => {
-			state.showSelectScreenModal = action.payload;
-		},
 		setStatusCall: (state, action: PayloadAction<boolean>) => {
 			state.statusCall = action.payload;
 		},
@@ -382,20 +372,6 @@ export const voiceSlice = createSlice({
 		},
 		setStreamScreen: (state, action: PayloadAction<MediaStream | null | undefined>) => {
 			state.stream = action.payload;
-		},
-		setScreenSource: (
-			state,
-			action: PayloadAction<
-				| {
-						id: string;
-						audio: boolean;
-						mode: 'electron';
-				  }
-				| null
-				| undefined
-			>
-		) => {
-			state.screenSource = action.payload ?? null;
 		},
 		setFullScreen: (state, action: PayloadAction<boolean>) => {
 			state.fullScreen = action.payload;
@@ -636,10 +612,6 @@ export const selectUserInvoiceData = createSelector(
 		return null;
 	}
 );
-
-export const selectScreenSource = createSelector(getVoiceState, (state) => state.screenSource);
-
-export const selectShowSelectScreenModal = createSelector(getVoiceState, (state) => state.showSelectScreenModal);
 
 export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 

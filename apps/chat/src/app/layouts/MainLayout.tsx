@@ -12,11 +12,10 @@ import {
 	e2eeActions,
 	gifsStickerEmojiActions,
 	selectAllAccount,
-	selectAnyUnreadChannel,
 	selectBadgeCountAllClan,
 	useAppDispatch
 } from '@mezon/store';
-import { IS_SAFARI, MessageCrypt, UploadLimitReason, electronBridge, isElectron, throttle } from '@mezon/utils';
+import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/utils';
 
 import { TooManyUpload, WebRTCStreamProvider, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
@@ -24,25 +23,22 @@ import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName } from '@mezon/utils';
 
 import { memo, useContext, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import ChannelVoice from '../pages/channel/ChannelVoice';
-import { getMainLayoutClassName } from './desktopWindowChrome';
 
 const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
 	const dispatch = useAppDispatch();
 	useClanLimitModalErrorHandler();
 
-	const allNotificationReplyMentionAllClan = useSelector(selectBadgeCountAllClan);
+	const allNotificationReplyMentionAllClan = useAppSelector(selectBadgeCountAllClan);
 
-	const totalUnreadMessages = useSelector(selectTotalUnreadDM);
+	const totalUnreadMessages = useAppSelector(selectTotalUnreadDM);
 
 	const user = useAppSelector(selectAllAccount);
 
 	const { quantityPendingRequest } = useFriends();
-
-	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
 
 	useReconnectOnForeground({
 		scheduleReconnect: handleReconnect,
@@ -83,16 +79,8 @@ const GlobalEventListener = () => {
 		const notificationCount = notificationCountAllClan + totalUnreadMessages + quantityPendingRequest;
 		const displayCountBrowser = notificationCount > 99 ? '99+' : notificationCount.toString();
 
-		if (isElectron()) {
-			if (hasUnreadChannel && !notificationCount) {
-				electronBridge?.setBadgeCount(null);
-				return;
-			}
-			electronBridge?.setBadgeCount(notificationCount);
-		} else {
-			document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
-		}
-	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
+		document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
+	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest]);
 
 	useEffect(() => {
 		const userId = user?.user?.id;
@@ -162,12 +150,10 @@ const MainLayout = memo(
 		};
 		const shouldRender = useIdleRender();
 
-		const mainLayoutClassName = getMainLayoutClassName();
-
 		return (
 			<div
 				id="main-layout"
-				className={mainLayoutClassName}
+				className="w-full bg-theme-primary"
 				onClick={handleClickingOutside}
 				onContextMenu={(event: React.MouseEvent) => {
 					event.preventDefault();

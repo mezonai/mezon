@@ -3,7 +3,6 @@ import {
 	selectNoiseSuppressionEnabled,
 	selectNoiseSuppressionLevel,
 	selectShowScreen,
-	selectShowSelectScreenModal,
 	selectVoiceFullScreen,
 	useAppDispatch,
 	voiceActions
@@ -13,7 +12,6 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
 import { CameraControl } from './CameraControl';
 import { FullscreenControl } from './FullscreenControl';
 import { LeaveButton } from './LeaveButton';
@@ -23,7 +21,7 @@ import { ReactionControls } from './ReactionControls';
 import { ScreenShareControl } from './ScreenShareControl';
 
 import { Icons } from '@mezon/ui';
-import { isElectron, requestMediaPermission, useMediaPermissions } from '@mezon/utils';
+import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import { AgentControl } from './AgentControl';
 import { RaisingHandControls } from './RaisingHandControl';
@@ -68,13 +66,11 @@ const ControlBar = ({
 	const { t } = useTranslation('channelVoice');
 
 	const isGroupCall = useSelector(selectGroupCallJoined);
-	const isDesktop = isElectron();
 
 	const showScreen = useSelector(selectShowScreen);
 	const isFullScreen = useSelector(selectVoiceFullScreen);
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
 	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
-	const isShowSelectScreenModal = useSelector(selectShowSelectScreenModal);
 
 	const visibleControls = useControlBarPermissions(controls);
 	const { isOpenPopOut, togglePopout } = useViewControls();
@@ -82,40 +78,10 @@ const ControlBar = ({
 	const { cameraPermissionState, microphonePermissionState, refreshPermissions } = useMediaPermissions();
 
 	const browserSupportsScreenSharing = supportsScreenSharing();
-	const [openScreenSelection, closeScreenSelection] = useModal(() => {
-		return <ScreenSelectionModal onClose={closeScreenSelection} />;
-	});
-
-	useEffect(() => {
-		if (isShowSelectScreenModal) {
-			openScreenSelection();
-		}
-	}, [isShowSelectScreenModal, openScreenSelection]);
 
 	const handleLeaveRoom = useCallback(() => {
 		onLeaveRoom(true);
 	}, [onLeaveRoom]);
-
-	const handleOpenScreenSelection = useCallback(async () => {
-		if (isDesktop) {
-			if (typeof document !== 'undefined' && document.fullscreenElement) {
-				try {
-					await document.exitFullscreen();
-				} catch (_e) {
-					void 0;
-				}
-				dispatch(voiceActions.setFullScreen(false));
-			} else if (isFullScreen) {
-				onFullScreen?.();
-			}
-
-			if (!showScreen) {
-				dispatch(voiceActions.setShowSelectScreenModal(true));
-			} else {
-				dispatch(voiceActions.setShowScreen(false));
-			}
-		}
-	}, [dispatch, isDesktop, isFullScreen, onFullScreen, showScreen]);
 
 	const toggleNoiseSuppression = useCallback(() => {
 		dispatch(voiceActions.setNoiseSuppressionEnabled(!noiseSuppressionEnabled));
@@ -335,7 +301,6 @@ const ControlBar = ({
 						isShowMember={isShowMember}
 						saveUserChoices={saveUserChoices}
 						onDeviceError={handleScreenShareDeviceError}
-						onDesktopScreenShare={handleOpenScreenSelection}
 					/>
 				)}
 

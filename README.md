@@ -165,11 +165,9 @@ yarn install
 yarn dev:chat          # Start chat app (port 4200)
 yarn dev:admin         # Start admin dashboard (port 4200)
 yarn dev:mobile        # Start mobile development
-yarn dev:desktop       # Start desktop app
 
 # Build for production
 yarn build:chat        # Build web chat app
-yarn build:desktop     # Build desktop app
 yarn build:mobile      # Build mobile apps
 
 # Code quality
@@ -246,7 +244,7 @@ mezon/
 -   **Styling**: Tailwind CSS
 -   **Build Tool**: Nx Monorepo with Webpack
 -   **Mobile**: React Native
--   **Desktop**: Electron
+-   **Desktop**: Separate [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
 
 #### Backend & Infrastructure
 
