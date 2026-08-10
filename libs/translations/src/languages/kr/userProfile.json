@@ -194,7 +194,7 @@
 		}
 	},
 	"channelVoiceSettings": "음성 채널 설정",
-	"muteVoice": "음성ミュート",
+	"muteVoice": "음성 음소거",
 	"kickVoice": "음성 채널에서 킥",
 	"voiceInfo": {
 		"inVoice": "음성 채널에서",

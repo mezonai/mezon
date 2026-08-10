@@ -45,6 +45,6 @@
 	"countdown": {
 		"joinIn_other": "will start in {{count}} minutes",
 		"joinNow": "Event is taking place!",
-		"joinIn_one": "sẽ bắt đầu trong 1 phút"
+		"joinIn_one": "will start in 1 minute"
 	}
 }
