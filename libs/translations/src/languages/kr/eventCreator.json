@@ -71,7 +71,7 @@
 			"title": "이벤트 빈도",
 			"noRepeat": "반복 안 함",
 			"weeklyOn": "매주 {{name}} 에",
-			"everyOther": "隔週 {{name}} 에",
+			"everyOther": "격주 {{name}} 에",
 			"monthlyOn": "매월 {{name}} 에",
 			"annuallyOn": "매년 {{name}} 에",
 			"everyWeekday": "매 평일 (월요일~금요일)"

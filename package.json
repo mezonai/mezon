@@ -252,5 +252,5 @@
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "author": "Mezon App <hello@mezon.vn>",
-  "desktopVersion": "2.0.6"
+  "desktopVersion": "2.0.9"
 }

@@ -87,8 +87,8 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			disconnect();
 			dispatch(videoStreamActions.stopStream());
 			dispatch(videoStreamActions.setIsJoin(false));
-			const userStreamId = streamChannelMember?.find((id) => id === userProfile?.user?.id);
-			dispatch(usersStreamActions.remove(userStreamId || ''));
+			const userStreamId = streamChannelMember?.find((stream) => stream.user_id === userProfile?.user?.id);
+			dispatch(usersStreamActions.remove(userStreamId?.user_id || ''));
 		}
 	};
 

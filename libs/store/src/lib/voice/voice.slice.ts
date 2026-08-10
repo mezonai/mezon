@@ -1,11 +1,13 @@
 import { captureSentryError } from '@mezon/logger';
 import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, ChannelType, VoiceLeavedEvent } from 'mezon-js';
 import type { ScreenShareEvent } from 'node_modules/mezon-js-protobuf/dist/rtapi/realtime';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { selectCurrentChannelId } from '../channels/channels.slice';
+import { selectCurrentClanId } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
@@ -28,6 +30,16 @@ export interface InVoiceInfor {
 	channelId: string;
 	status: EInvoice;
 }
+
+export interface VoiceUserData {
+	user_id: string;
+	user_name: string;
+	user_avatar: string;
+}
+
+export const UsersInVoiceAdapter = createEntityAdapter({
+	selectId: (user: VoiceUserData) => user.user_id
+});
 export interface VoiceState {
 	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
@@ -58,7 +70,7 @@ export interface VoiceState {
 		openedParticipantId: string | null;
 		position: { x: number; y: number };
 	} | null;
-	listVoiceMemberByClan: Record<string, Record<string, string[]>>;
+	listVoiceMemberByClan: Record<string, Record<string, EntityState<VoiceUserData, string>>>;
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -251,23 +263,25 @@ export const voiceSlice = createSlice({
 	name: VOICE_FEATURE_KEY,
 	initialState: initialVoiceState,
 	reducers: {
-		add: (state, action: PayloadAction<{ clan_id: string; channel_id: string; user_id: string }>) => {
-			const { clan_id, channel_id, user_id } = action.payload;
+		add: (state, action: PayloadAction<{ clan_id: string; channel_id: string; user_id: string; user_name: string; user_avatar: string }>) => {
+			const { clan_id, channel_id, user_id, user_name, user_avatar } = action.payload;
 			if (!state.listVoiceMemberByClan[clan_id]) {
 				state.listVoiceMemberByClan[clan_id] = {};
 			}
-
-			if (state.listVoiceMemberByClan[clan_id][channel_id]) {
-				const duplicateEntry = state.listVoiceMemberByClan[clan_id][channel_id].find((id) => id === user_id);
+			const entities = state.listVoiceMemberByClan[clan_id][channel_id];
+			if (entities) {
+				const duplicateEntry = UsersInVoiceAdapter.getSelectors().selectById(entities, user_id);
 				if (duplicateEntry) {
-					state.listVoiceMemberByClan[clan_id][channel_id] = state.listVoiceMemberByClan[clan_id][channel_id].filter(
-						(id) => id !== user_id
-					);
+					state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.removeOne(entities, user_id);
 				}
 			} else {
-				state.listVoiceMemberByClan[clan_id][channel_id] = [];
+				state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.getInitialState();
 			}
-			state.listVoiceMemberByClan[clan_id][channel_id] = [...state.listVoiceMemberByClan[clan_id][channel_id], user_id];
+			state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.addOne(state.listVoiceMemberByClan[clan_id][channel_id], {
+				user_id,
+				user_name,
+				user_avatar
+			});
 			if (user_id) {
 				state.listInVoiceStatus[user_id] = {
 					clanId: clan_id,
@@ -283,13 +297,10 @@ export const voiceSlice = createSlice({
 
 			const channalState = clanState[voice.voice_channel_id];
 			if (!channalState) return;
-			if (channalState.includes(voice.voice_user_id)) {
-				state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id] = channalState.filter((id) => id !== voice.voice_user_id);
-			}
+			const duplicateEntry = UsersInVoiceAdapter.getSelectors().selectById(channalState, voice.voice_user_id);
 
-			const entitiesAfter = state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id];
-			const userStillInVoice = entitiesAfter.some((id) => id === voice.voice_user_id);
-			if (!userStillInVoice) {
+			if (duplicateEntry) {
+				state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id] = UsersInVoiceAdapter.removeOne(channalState, voice.voice_user_id);
 				delete state.listInVoiceStatus[voice.voice_user_id];
 			}
 		},
@@ -449,10 +460,14 @@ export const voiceSlice = createSlice({
 
 					if (!listUser || !channelId) return;
 
-					const listIdInVoice = [];
+					const listIdInVoice: VoiceUserData[] = [];
 					for (const id of listUser) {
 						if (id.length === LENGHT_USER_ID) {
-							listIdInVoice.push(id);
+							listIdInVoice.push({
+								user_id: id,
+								user_avatar: '',
+								user_name: ''
+							});
 							state.listInVoiceStatus[id] = {
 								clanId,
 								channelId,
@@ -460,7 +475,14 @@ export const voiceSlice = createSlice({
 							};
 						}
 					}
-					state.listVoiceMemberByClan[clanId][channelId] = listIdInVoice;
+					if (!state.listVoiceMemberByClan[clanId][channelId]) {
+						state.listVoiceMemberByClan[clanId][channelId] = UsersInVoiceAdapter.getInitialState();
+					}
+
+					state.listVoiceMemberByClan[clanId][channelId] = UsersInVoiceAdapter.setAll(
+						state.listVoiceMemberByClan[clanId][channelId],
+						listIdInVoice
+					);
 				});
 
 				state.cache = createCacheMetadata();
@@ -532,6 +554,8 @@ export const voiceActions = {
  */
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
+const { selectAll, selectIds, selectById } = UsersInVoiceAdapter.getSelectors();
+
 export const selectStatusInVoice = createSelector(
 	[getVoiceState, (state, userId: string) => userId],
 	(state, userId) => state.listInVoiceStatus[userId]
@@ -570,12 +594,24 @@ export const selectVoiceChannelMembersByChannelId = createSelector(
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {
-			return listByClan[channelId];
+			return selectAll(listByClan[channelId]);
 		}
 		return [];
 	}
 );
 
+export const selectUserInvoiceData = createSelector(
+	[getVoiceState, (_, userId: string) => userId, selectCurrentChannelId, selectCurrentClanId],
+	(state, userId, channelId, clanId) => {
+		if (!clanId || clanId === '0' || !channelId) return null;
+		const listByClan = state.listVoiceMemberByClan[clanId];
+
+		if (listByClan && listByClan[channelId]) {
+			return selectById(listByClan[channelId], userId);
+		}
+		return null;
+	}
+);
 
 export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 

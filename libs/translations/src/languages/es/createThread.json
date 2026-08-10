@@ -5,7 +5,7 @@
 		"textNotify": "Mantén el enfoque en la conversación con un hilo - un canal de texto temporal.",
 		"createThreads": "Crear Hilo"
 	},
-	"otherThreads": "HILOS ANTERIORES",
+	"otherThreads": "hilos archivados",
 	"errorMessage": "Introduce un nombre de hilo válido (máximo 64 caracteres, solo letras, números, _ o -).",
 	"threadName": "Nombre del Hilo",
 	"privateThread": "Hilo Privado",
@@ -15,8 +15,8 @@
 	"joinedThread": "Hilo unido",
 	"otherActiveThreads": "otros hilos activos",
 	"otherActiveThread": "otro hilo activo",
-	"archivedThreads": "hilos anteriores",
-	"olderThread": "hilo anterior",
+	"archivedThreads": "hilos archivados",
+	"olderThread": "hilo archivado",
 	"searchThreads": "buscar hilos",
 	"searchThread": "buscar hilo",
 	"threadFailed": {

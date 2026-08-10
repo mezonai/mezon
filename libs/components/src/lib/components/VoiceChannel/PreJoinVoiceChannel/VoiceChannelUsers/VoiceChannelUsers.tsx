@@ -1,3 +1,4 @@
+import type { VoiceUserData } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize, useSyncEffect, useWindowSize } from '@mezon/utils';
@@ -5,11 +6,11 @@ import { useCallback, useState } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 
 export type VoiceChannelUsersProps = {
-	voiceChannelMembers: string[];
+	voiceChannelMembers: VoiceUserData[];
 };
 
 export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProps) {
-	const [displayedMembers, setDisplayedMembers] = useState<string[]>([]);
+	const [displayedMembers, setDisplayedMembers] = useState<VoiceUserData[]>([]);
 	const [remainingCount, setRemainingCount] = useState(0);
 
 	const handleSizeWidth = useCallback(() => {
@@ -44,9 +45,9 @@ export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProp
 
 	return (
 		<div className="flex items-center gap-2">
-			{displayedMembers.map((id) => (
-				<div key={id} className="flex items-center">
-					<VoiceUserItem userId={id || ''} />
+			{displayedMembers.map((user) => (
+				<div key={user.user_id} className="flex items-center">
+					<VoiceUserItem userId={user.user_id || ''} userAvatar={user.user_avatar} userName={user.user_name} />
 				</div>
 			))}
 			{remainingCount > 0 && (
@@ -58,10 +59,10 @@ export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProp
 	);
 }
 
-export function VoiceUserItem({ userId }: { userId: string }) {
+export function VoiceUserItem({ userId, userName, userAvatar }: { userId: string; userName: string; userAvatar: string }) {
 	const userVoice = useAppSelector((state) => selectMemberClanByUserId(state, userId));
-	const username = userVoice?.user?.username;
-	const avatar = getAvatarForPrioritize(userVoice?.clan_avatar, userVoice?.user?.avatar_url);
+	const username = userVoice?.user?.username || userName;
+	const avatar = getAvatarForPrioritize(userVoice?.clan_avatar, userVoice?.user?.avatar_url) || userAvatar;
 	const avatarUrl = createImgproxyUrl(avatar ?? '', {
 		width: 300,
 		height: 300,
@@ -70,7 +71,7 @@ export function VoiceUserItem({ userId }: { userId: string }) {
 
 	return (
 		<div className="size-14 rounded-full">
-			{userVoice ? (
+			{avatar ? (
 				<AvatarImage alt={username || ''} username={username} className="size-14" srcImgProxy={avatarUrl} src={avatar} />
 			) : (
 				<Icons.AvatarUser />
