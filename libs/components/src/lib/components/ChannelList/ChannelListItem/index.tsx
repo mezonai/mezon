@@ -3,7 +3,6 @@ import React, { memo, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-	clansActions,
 	selectCategoryExpandStateByCategoryId,
 	selectCurrentChannelId,
 	selectCurrentChannelParentId,
@@ -51,17 +50,12 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
 
-	const handleOpenInvite = () => {
-		dispatch(clansActions.toggleInvitePeople({ status: true, channelId: channel.id }));
-	};
-
 	const renderChannelLink = () => {
 		return (
 			<ChannelLink
 				clanId={channel?.clan_id}
 				channel={channel}
 				key={channel.channel_id}
-				createInviteLink={handleOpenInvite}
 				isPrivate={channel.channel_private}
 				isUnReadChannel={isUnreadChannel}
 				numberNotification={channel.count_mess_unread}
