@@ -57,7 +57,12 @@ const ModalInvite = (props: ModalParam) => {
 		try {
 			const welcomeChannel = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId as string })).unwrap();
 
-			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channel_id) as string;
+			if (!welcomeChannel.channel_id) {
+				console.error(t('errors.createInviteLink'));
+				return;
+			}
+
+			const intiveIdChannel = welcomeChannel.channel_id;
 			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
 
 			const state = getStore().getState();
@@ -84,7 +89,7 @@ const ModalInvite = (props: ModalParam) => {
 		} catch {
 			console.error(t('errors.createInviteLink'));
 		}
-	}, [channelID, effectiveClanId]);
+	}, [effectiveClanId]);
 
 	useEffect(() => {
 		if (!isInviteExternalCalling) {
@@ -136,7 +141,7 @@ const ModalInvite = (props: ModalParam) => {
 		return <ModalQR closeModalEdit={closeModalEdit} data={urlInvite} />;
 	}
 	return (
-		<ModalLayout onClose={props.onClose}>
+		<ModalLayout onClose={onClose}>
 			<div
 				className="bg-theme-setting-primary rounded-xl flex flex-col md:w-[480px]"
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
@@ -148,7 +153,7 @@ const ModalInvite = (props: ModalParam) => {
 
 					<Button
 						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover flex-shrink-0"
-						onClick={props.onClose}
+						onClick={onClose}
 					>
 						×
 					</Button>
@@ -200,66 +205,6 @@ const ModalInvite = (props: ModalParam) => {
 							</button>
 						</div>
 					</div>
-				</div>
-			</div>
-		</ModalLayout>
-	);
-};
-
-interface ModalGenerateLinkOptionProps {
-	expire: string;
-	setExpire: React.Dispatch<React.SetStateAction<string>>;
-	closeModalEdit: () => void;
-	max: string;
-	setMax: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const ModalGenerateLinkOption = ({ setExpire, expire, closeModalEdit, max, setMax }: ModalGenerateLinkOptionProps) => {
-	const { t } = useTranslation('invitation');
-	return (
-		<ModalLayout onClose={closeModalEdit}>
-			<div className="bg-theme-setting-primary rounded-xl flex flex-col w-[480px] px-5 py-5 gap-2">
-				<div className="space-y-2">
-					<h3 className="text-xs font-bold text-theme-primary">{t('generateLink.expireAfter')}</h3>
-					<select
-						name="expireAfter"
-						className={`block w-full  border  rounded p-2 font-normal text-sm tracking-wide outline-none border-none`}
-						onChange={(e) => {
-							setExpire(e.target.value);
-						}}
-						value={expire}
-					>
-						{expireAfterKeys.map((item) => (
-							<option key={item} value={item}>
-								{t(`expiration.${item}`)}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="space-y-2">
-					<h3 className="text-xs font-bold text-theme-primary">{t('generateLink.maxNumberOfUses')}</h3>
-					<select
-						name="maxNumberofUses"
-						className={`block w-full  rounded p-2 font-normal text-sm tracking-wide outline-none border-none `}
-						onChange={(e) => {
-							setMax(e.target.value);
-						}}
-						value={max}
-					>
-						{maxNumberofUsesKeys.map((item) => (
-							<option key={item} value={item}>
-								{t(`maxUses.${item}`)}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="flex justify-end gap-x-4">
-					<button className="px-4 py-2 rounded-lg  border-theme-primary hover:bg-opacity-85" onClick={closeModalEdit}>
-						{t('buttons.cancel')}
-					</button>
-					<button className="px-4 py-2 rounded-lg text-white bg-primary hover:bg-opacity-85" onClick={closeModalEdit}>
-						{t('buttons.generateNewLink')}
-					</button>
 				</div>
 			</div>
 		</ModalLayout>

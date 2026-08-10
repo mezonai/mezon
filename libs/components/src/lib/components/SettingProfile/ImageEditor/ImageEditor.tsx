@@ -33,8 +33,9 @@ const ImageEditor = React.memo(({ imageSource, onClose, setImageObject, setImage
 		const img = new Image();
 		img.src = imageSource?.url;
 		img.onload = () => {
-			bgCanvas.width = overlayCanvas.width = 500;
-			bgCanvas.height = overlayCanvas.height = 500;
+			bgCanvas.width = overlayCanvas.width = 450;
+			bgCanvas.height = overlayCanvas.height = 450;
+
 			setupCanvases(bgCanvas, overlayCanvas, img, zoom, rotation, offset);
 		};
 	}, [imageSource, zoom, rotation, offset]);
@@ -218,9 +219,9 @@ type ImageEditorHeaderProps = {
 };
 
 const ImageEditorHeader = React.memo(({ handleClose, t }: ImageEditorHeaderProps) => (
-	<div className="flex items-center justify-between px-4 py-5 rounded-t-lg w-full font-semibold text-lg">
+	<div className="flex items-center justify-between px-4 py-4 rounded-t-lg w-full font-semibold text-base">
 		<span>{t('editImage')}</span>
-		<button onClick={handleClose} className="text-gray-400 hover:text-white text-xl" title={t('close')}>
+		<button onClick={handleClose} className="text-gray-400 hover:text-white text-base" title={t('close')}>
 			✕
 		</button>
 	</div>
@@ -237,7 +238,7 @@ type ImageEditorCanvasProps = {
 
 const ImageEditorCanvas = React.memo(
 	({ bgCanvasRef, overlayCanvasRef, handleMouseDown, handleMouseMove, handleMouseUp, t }: ImageEditorCanvasProps) => (
-		<div className="relative flex justify-center items-center w-[500px] h-[500px]">
+		<div className="relative flex justify-center items-center w-[450px] h-[450px]">
 			<canvas
 				ref={bgCanvasRef}
 				className="cursor-move absolute"
@@ -285,7 +286,7 @@ type ImageEditorFooterProps = {
 };
 
 const ImageEditorFooter = React.memo(({ handleReset, handleClose, handleApply, t }: ImageEditorFooterProps) => (
-	<div className="flex items-center justify-between px-4 py-5 bg-[#2B2D31] rounded-b-lg w-full">
+	<div className="flex items-center justify-between px-4 py-4 bg-[#2B2D31] rounded-b-lg w-full">
 		<button onClick={handleReset} className="text-gray-400 hover:text-gray-300 text-sm" title={t('resetChanges')} data-e2e={'button.base'}>
 			{t('reset')}
 		</button>
