@@ -42,7 +42,6 @@ import {
 	selectDefaultNotificationCategory,
 	selectDefaultNotificationClanByClanId,
 	selectFriendById,
-	selectGalleryAttachmentsByChannel,
 	selectIsInCall,
 	selectIsPinModalOpenFor,
 	selectIsShowChatStream,
@@ -1248,7 +1247,6 @@ function GalleryButton() {
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
 	const currentClanId = useSelector(selectCurrentClanId) ?? '';
-	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
 	const galleryFillClass = isShowGallery
 		? '[--gallery-fill-1:var(--bg-icon-theme-active)] [--gallery-fill-2:var(--bg-theme-secounnd)]'
 		: '[--gallery-fill-1:var(--bg-icon-theme)] [--gallery-fill-2:var(--bg-theme-secounnd)] hover:[--gallery-fill-1:var(--bg-icon-theme-active)] hover:[--gallery-fill-2:var(--bg-theme-secounnd)]';
@@ -1256,7 +1254,7 @@ function GalleryButton() {
 	const galleryRef = useRef<HTMLDivElement | null>(null);
 
 	const handleShowGallery = async () => {
-		if (!isShowGallery && (!attachments || attachments.length === 0)) {
+		if (!isShowGallery) {
 			await dispatch(
 				galleryActions.fetchGalleryAttachments({
 					clanId: currentClanId,
