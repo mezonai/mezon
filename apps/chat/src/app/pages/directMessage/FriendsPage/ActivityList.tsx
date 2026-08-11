@@ -2,14 +2,12 @@ import { useVirtualizer } from '@mezon/components';
 import type { FriendsEntity } from '@mezon/store';
 import { selectAllActivities, selectAllUserDM, selectTheme } from '@mezon/store';
 import type { IUserProfileActivity } from '@mezon/utils';
-import { isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ActivityListItem from './ActivityListItem';
 
 const heightTopBar = 50;
-const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
 
 type ListActivityProps = {
 	listFriend: FriendsEntity[];
@@ -88,12 +86,12 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 		};
 	}, [activities, listUser]);
 
-	const [height, setHeight] = useState(window.innerHeight - heightTopBar - titleBarHeight);
+	const [height, setHeight] = useState(window.innerHeight - heightTopBar);
 
 	const appearanceTheme = useSelector(selectTheme);
 
 	useEffect(() => {
-		const handleResize = () => setHeight(window.innerHeight - heightTopBar - titleBarHeight);
+		const handleResize = () => setHeight(window.innerHeight - heightTopBar);
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);

@@ -7,7 +7,6 @@
 			"loadingAborted": "Carga del video cancelada",
 			"networkError": "Error de red al cargar el video",
 			"codecNotSupported": "Códec de video no compatible con esta plataforma",
-			"codecNotSupportedElectron": "Códec de video no compatible. Descarga el video para verlo en tu reproductor.",
 			"formatNotSupported": "Formato de video no compatible",
 			"downloadButton": "Descargar video",
 			"browserNotSupported": "Tu navegador no soporta el reproductor de video"

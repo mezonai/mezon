@@ -16,15 +16,7 @@ import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, C
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
-import { electronBridge } from '../bridge';
-import {
-	CHECK_PERMISSION_CAMERA,
-	CHECK_PERMISSION_MICROPHONE,
-	REQUEST_PERMISSION_CAMERA,
-	REQUEST_PERMISSION_MICROPHONE
-} from '../bridge/electron/constants';
-import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
-import { Platform } from '../hooks/platform';
+import { CURRENCY, ID_MENTION_HERE } from '../constant';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -54,7 +46,6 @@ import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
-import { getPlatform, isElectron } from './windowEnvironment';
 export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
@@ -778,12 +769,16 @@ export async function fetchAndCreateFiles(fileData: ApiMessageAttachment[] | nul
 const MAX_WORKERS = 4;
 const fileUploadForeman = new Foreman(MAX_WORKERS);
 
-export async function getWebUploadedAttachments(payload: { attachments: (ApiMessageAttachment & { uploadPath?: string })[] }) {
+export async function getWebUploadedAttachments(payload: {
+	attachments: (ApiMessageAttachment & { uploadPath?: string; thumbnailUpload?: string; uploadName?: string })[];
+}) {
 	const { attachments } = payload;
 	if (!attachments || attachments?.length === 0) {
 		return [];
 	}
-	const nonDirectAttachments = attachments.filter((att) => !isTenorUrl(att.url) && !isMezonCdnUrl(att.url));
+	const nonDirectAttachments = attachments.filter((att) => {
+		return att.uploadPath && !isTenorUrl(att.uploadPath) && !isMezonCdnUrl(att.uploadPath);
+	});
 
 	if (!nonDirectAttachments.length) {
 		return [];
@@ -811,7 +806,7 @@ export async function getWebUploadedAttachments(payload: { attachments: (ApiMess
 				const response = await fetch(attachment.url);
 				const arrayBuffer = await response.arrayBuffer();
 				const blob = new Blob([arrayBuffer], { type: attachment.filetype || 'application/octet-stream' });
-				createdFile = new CustomFile([blob], attachment.filename ?? 'untitled', {
+				createdFile = new CustomFile([blob], attachment.uploadName ?? 'untitled', {
 					type: attachment.filetype || 'application/octet-stream'
 				});
 				createdFile.url = attachment.url;
@@ -826,9 +821,11 @@ export async function getWebUploadedAttachments(payload: { attachments: (ApiMess
 			}
 
 			const result = await uploadFileToPath(createdFile.uploadPath, createdFile, createdFile.size);
-
+			if (result && createdFile.thumbnailBlob && attachment?.thumbnailUpload && createdFile.thumbnail && createdFile.type.startsWith('video')) {
+				await uploadFileToPath(attachment.thumbnailUpload, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
+			}
 			fileUploadForeman.releaseWorker();
-			const id = attachment.filename?.split('/').pop()?.split('.')[0];
+			const id = attachment.uploadName?.split('/').pop()?.split('.')[0];
 			return id;
 		} catch (error) {
 			fileUploadForeman.releaseWorker();
@@ -940,10 +937,6 @@ export const checkIsThread = (channel?: IChannel) => {
 	return channel?.type === ChannelType.CHANNEL_TYPE_THREAD || (channel?.parent_id && channel?.parent_id !== '0');
 };
 
-export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();
-export const isMacDesktop = getPlatform() === Platform.MACOS && isElectron();
-export const isLinuxDesktop = getPlatform() === Platform.LINUX && isElectron();
-
 type ImgproxyOptions = {
 	width?: number;
 	height?: number;
@@ -967,7 +960,7 @@ export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptio
 };
 
 export function copyChannelLink(clanId: string, channelId: string) {
-	const origin = isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin;
+	const origin = window.location.origin;
 	const link = `${origin}/chat/clans/${clanId}/channels/${channelId}`;
 	if (navigator.clipboard) {
 		navigator.clipboard
@@ -992,24 +985,6 @@ export function copyChannelLink(clanId: string, channelId: string) {
 
 export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
 	try {
-		if (isMacDesktop) {
-			const response =
-				mediaType === 'audio'
-					? await electronBridge.invoke(REQUEST_PERMISSION_MICROPHONE)
-					: await electronBridge.invoke(REQUEST_PERMISSION_CAMERA);
-
-			const status =
-				typeof response === 'string'
-					? response
-					: typeof response === 'object' && response !== null && 'status' in response
-						? ((response as { status?: string }).status ?? 'denied')
-						: 'denied';
-
-			if (isMacDesktop && status !== 'granted') {
-				return 'denied';
-			}
-		}
-
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 			const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
 			stream.getTracks().forEach((track) => track.stop());
@@ -1029,27 +1004,6 @@ export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Prom
 
 export const checkMediaPermission = async (mediaType: 'audio' | 'video'): Promise<'granted' | 'denied' | 'prompt' | null> => {
 	try {
-		if (isMacDesktop) {
-			try {
-				const response =
-					mediaType === 'audio'
-						? await electronBridge.invoke(CHECK_PERMISSION_MICROPHONE)
-						: await electronBridge.invoke(CHECK_PERMISSION_CAMERA);
-
-				if (typeof response === 'string') {
-					if (response === 'granted') {
-						return 'granted';
-					} else if (response === 'denied' || response === 'restricted') {
-						return 'denied';
-					} else if (response === 'not-determined') {
-						return 'prompt';
-					}
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
 		if (typeof navigator !== 'undefined' && navigator.permissions && navigator.permissions.query) {
 			try {
 				const permissionName = mediaType === 'audio' ? ('microphone' as PermissionName) : ('camera' as PermissionName);

@@ -8,8 +8,6 @@ import {
 	selectCurrentClanId,
 	selectCurrentClanName,
 	selectCurrentVoiceChannelId,
-	selectInviteChannelId,
-	selectInviteClanId,
 	selectInvitePeopleStatus,
 	selectIsShowEmptyCategory,
 	selectToOnboard,
@@ -229,20 +227,16 @@ export default React.memo(ClanHeader, (prevProps, nextProps) => {
 const InviteClanModal: React.FC = () => {
 	const dispatch = useDispatch();
 	const invitePeopleStatus = useSelector(selectInvitePeopleStatus);
-	const invitePeopleChannelId = useSelector(selectInviteChannelId);
-	const invitePeopleClanId = useSelector(selectInviteClanId);
 	const [openInviteClanModal, closeInviteClanModal] = useModal(
 		() => (
 			<ModalInvite
 				onClose={() => {
 					dispatch(clansActions.toggleInvitePeople({ status: false }));
 				}}
-				channelID={invitePeopleChannelId}
 				open={true}
-				clanId={invitePeopleClanId}
 			/>
 		),
-		[invitePeopleChannelId, invitePeopleClanId]
+		[]
 	);
 
 	useEffect(() => {

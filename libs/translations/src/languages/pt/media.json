@@ -7,7 +7,6 @@
 			"loadingAborted": "Carregamento do vídeo cancelado",
 			"networkError": "Erro de rede ao carregar o vídeo",
 			"codecNotSupported": "Codec de vídeo não suportado nesta plataforma",
-			"codecNotSupportedElectron": "Codec de vídeo não suportado nesta plataforma. Tente baixar o vídeo para reproduzi-lo em um player do sistema.",
 			"formatNotSupported": "Formato de vídeo não suportado",
 			"downloadButton": "Baixar vídeo",
 			"browserNotSupported": "Seu navegador não suporta a tag de vídeo."

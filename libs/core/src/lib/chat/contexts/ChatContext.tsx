@@ -13,7 +13,6 @@ import {
 	badgeService,
 	canvasAPIActions,
 	categoriesActions,
-	channelAppSlice,
 	channelMembers,
 	channelMembersActions,
 	channelMetaActions,
@@ -160,7 +159,6 @@ import type {
 	CustomStatusEvent,
 	DeleteAccountEvent,
 	EventEmoji,
-	JoinChannelAppData,
 	LastPinMessageEvent,
 	LastSeenMessageEvent,
 	ListActivity,
@@ -327,7 +325,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					voiceActions.add({
 						channel_id: voice.voice_channel_id,
 						clan_id: voice.clan_id,
-						user_id: voice.user_id
+						user_id: voice.user_id,
+						user_name: voice.participant,
+						user_avatar: voice.last_screenshot
 					})
 				);
 			}
@@ -352,11 +352,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const currentStreamInfo = selectCurrentStreamInfo(store.getState());
 		const streamChannelMember = selectStreamMembersByChannelId(store.getState(), currentStreamInfo?.streamId || '');
 
-		const existingMember = streamChannelMember?.find((id) => id === user?.user_id);
+		const existingMember = streamChannelMember?.find((user) => user.user_id === user?.user_id);
 		if (existingMember) {
-			dispatch(usersStreamActions.remove(existingMember));
+			dispatch(usersStreamActions.remove(existingMember.user_id));
 		}
-		dispatch(usersStreamActions.add(user));
+		dispatch(
+			usersStreamActions.add({
+				...user,
+				user_avatar: '',
+				user_name: ''
+			})
+		);
 	}, []);
 
 	const onstreamingchannelleaved = useCallback(
@@ -2456,11 +2462,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 	}, []);
 
-	const onJoinChannelAppEvent = useCallback(async (joinChannelAppData: JoinChannelAppData) => {
-		if (!joinChannelAppData) return;
-		dispatch(channelAppSlice.actions.setJoinChannelAppData({ dataUpdate: joinChannelAppData }));
-	}, []);
-
 	const onsdtopicevent = useCallback(async (sdTopicEvent: SdTopicEvent) => {
 		if (!sdTopicEvent) return;
 
@@ -2771,8 +2772,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onclanupdated = onclanupdated;
 
-			socket.onjoinchannelappevent = onJoinChannelAppEvent;
-
 			socket.onsdtopicevent = onsdtopicevent;
 
 			socket.onunpinmessageevent = onUnpinMessageEvent;
@@ -2837,7 +2836,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onmessagebuttonclicked,
 			onwebrtcsignalingfwd,
 			onclanupdated,
-			onJoinChannelAppEvent,
 			onsdtopicevent,
 			onUnpinMessageEvent,
 			onblockfriend,
@@ -3126,7 +3124,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onuserstatusevent,
 		oneventwebhook,
 		ontokensent,
-		onJoinChannelAppEvent,
 		onsdtopicevent,
 		onUnpinMessageEvent,
 		onblockfriend,

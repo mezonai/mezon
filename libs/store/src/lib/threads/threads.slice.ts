@@ -477,14 +477,7 @@ export const threadsSlice = createSlice({
 					}
 
 					if (!fromCache) {
-						const validThreads = threads.filter((thread) => {
-							if (thread.channel_private) {
-								const shouldKeep = thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate;
-								return shouldKeep;
-							}
-							return true;
-						});
-						state.byChannels[channelId] = threadsAdapter.setMany(state.byChannels[channelId], validThreads);
+						state.byChannels[channelId] = threadsAdapter.setMany(state.byChannels[channelId], threads);
 						state.byChannels[channelId].cache = createCacheMetadata();
 					} else {
 						console.error('Error when load data from cache');

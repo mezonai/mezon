@@ -40,7 +40,6 @@ import PanelChannel from '../PanelChannel';
 export type ChannelLinkProps = {
 	clanId?: string;
 	channel: IChannel;
-	createInviteLink: (clanId: string, channelId: string) => void;
 	isPrivate?: number;
 	isUnReadChannel?: boolean;
 	numberNotification?: number;

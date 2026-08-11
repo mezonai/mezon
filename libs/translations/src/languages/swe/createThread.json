@@ -5,7 +5,7 @@
 		"textNotify": "Fokusera på chatt med tråd - en tillfällig textkanal.",
 		"createThreads": "Skapa tråd"
 	},
-	"otherThreads": "ÄLDRRE TRÅDAR",
+	"otherThreads": "arkiverade trådar",
 	"errorMessage": "Vänligen ange giltig tråd namn (max 64 tecken, bara bokstäver, siffror, _ eller -).",
 	"threadName": "Tråd namn",
 	"privateThread": "Privat tråd",
@@ -14,7 +14,7 @@
 	"joinedThreads": "anvuxna trådar",
 	"joinedThread": "anvuxen tråd",
 	"otherActiveThreads": "andra aktiva trådar",
-	"archivedThreads": "äldre trådar",
+	"archivedThreads": "arkiverade trådar",
 	"searchThreads": "tråd sökning",
 	"searchThread": "tråd sökning",
 	"threadFailed": {
@@ -22,5 +22,5 @@
 		"content": "Tråd hittades inte eller du har inte behörighet att uppdatera"
 	},
 	"otherActiveThread": "annan aktiv tråd",
-	"olderThread": "äldre tråd"
+	"olderThread": "arkiverad tråd"
 }

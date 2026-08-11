@@ -5,7 +5,7 @@
 		"textNotify": "Stay focus on conversation with a thread - a temporary text channel.",
 		"createThreads": "Create Thread"
 	},
-	"otherThreads": "OLDER THREADS",
+	"otherThreads": "archived threads",
 	"errorMessage": "Please enter a valid thread name (max 64 characters, only words, numbers, _ or -).",
 	"threadName": "Thread Name",
 	"privateThread": "Private Thread",
@@ -15,8 +15,8 @@
 	"joinedThread": "joined thread",
 	"otherActiveThreads": "other active threads",
 	"otherActiveThread": "other active thread",
-	"archivedThreads": "older threads",
-	"olderThread": "older thread",
+	"archivedThreads": "archived threads",
+	"olderThread": "archived thread",
 	"searchThreads": "search threads",
 	"searchThread": "search thread",
 	"threadFailed": {

@@ -93,4 +93,3 @@ export * from './lib/wallet/transactionHistory.slice';
 export * from './lib/wallet/useWallet';
 export * from './lib/wallet/wallet.slice';
 export * from './lib/webhook/webhook.slice';
-export * from './lib/windowControls/windowControls.slice';

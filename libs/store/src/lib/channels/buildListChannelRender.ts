@@ -189,24 +189,27 @@ export function buildListChannelRender(payload: DataChannelAndCate): Array<ICate
 		}
 	}
 
-	const favorCate: ICategoryChannel = {
-		channels: listChannelFavor,
-		id: FAVORITE_CATEGORY_ID,
-		category_id: FAVORITE_CATEGORY_ID,
-		category_name: FAVORITE_CATEGORY_NAME,
-		clan_id: clanId,
-		creator_id: '0',
-		category_order: 1,
-		isFavor: true
-	} as ICategoryChannel;
-
-	const totalSize = 1 + listFavorChannel.length + categoryRows.length;
+	const haveFavorChannel = favorIdSet ? 1 : 0;
+	const totalSize = (favorIdSet ? 1 : 0) + listFavorChannel.length + categoryRows.length;
 	const result = new Array<ICategoryChannel | IChannel>(totalSize);
-	result[0] = favorCate;
-	for (let i = 0; i < listFavorChannel.length; i++) {
-		result[1 + i] = listFavorChannel[i];
+	if (haveFavorChannel) {
+		const favorCate: ICategoryChannel = {
+			channels: listChannelFavor,
+			id: FAVORITE_CATEGORY_ID,
+			category_id: FAVORITE_CATEGORY_ID,
+			category_name: FAVORITE_CATEGORY_NAME,
+			clan_id: clanId,
+			creator_id: '0',
+			category_order: 1,
+			isFavor: true
+		} as ICategoryChannel;
+
+		result[0] = favorCate;
 	}
-	const offset = 1 + listFavorChannel.length;
+	for (let i = 0; i < listFavorChannel.length; i++) {
+		result[haveFavorChannel + i] = listFavorChannel[i];
+	}
+	const offset = haveFavorChannel + listFavorChannel.length;
 	for (let i = 0; i < categoryRows.length; i++) {
 		result[offset + i] = categoryRows[i];
 	}
