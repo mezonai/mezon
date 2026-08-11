@@ -13,6 +13,12 @@ import type { RootState } from '../store';
 
 export const SETTING_CLAN_CHANNEL = 'settingClanChannel';
 
+interface CachedChannelSettingData {
+	channel_setting_list: ApiChannelSettingItem[];
+	channel_count: number;
+	thread_count: number;
+}
+
 export interface SettingClanChannelState extends EntityState<ApiChannelSettingItem, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -21,7 +27,8 @@ export interface SettingClanChannelState extends EntityState<ApiChannelSettingIt
 	threadsByChannel: Record<string, ApiChannelSettingItem[]>;
 	listSearchChannel: ApiChannelSettingItem[];
 	listArchivedChannel: ApiChannelDescription[];
-	cache?: CacheMetadata;
+	cacheByKey: Record<string, CacheMetadata>;
+	dataByKey: Record<string, CachedChannelSettingData>;
 }
 
 export const channelSettingAdapter = createEntityAdapter({
@@ -38,7 +45,9 @@ export const initialSettingClanChannelState: SettingClanChannelState = channelSe
 	threadCount: 0,
 	threadsByChannel: {},
 	listSearchChannel: [],
-	listArchivedChannel: []
+	listArchivedChannel: [],
+	cacheByKey: {},
+	dataByKey: {}
 });
 
 const resetSettingClanChannelState = (state: SettingClanChannelState) => {
@@ -50,7 +59,8 @@ const resetSettingClanChannelState = (state: SettingClanChannelState) => {
 	state.threadsByChannel = {};
 	state.listSearchChannel = [];
 	state.listArchivedChannel = [];
-	state.cache = undefined;
+	state.cacheByKey = {};
+	state.dataByKey = {};
 };
 
 export enum ETypeFetchChannelSetting {
@@ -74,19 +84,18 @@ export const fetchChannelSettingInClanCached = async (
 	const channelSettingState = currentState[SETTING_CLAN_CHANNEL];
 	const apiKey = createApiKey('fetchChannelSettingInClan', clanId, parentId, page, limit, channel_label);
 
-	const shouldForceCall = shouldForceApiCall(apiKey, channelSettingState.cache, noCache);
+	const cacheForKey = channelSettingState.cacheByKey?.[apiKey];
+	const shouldForceCall = shouldForceApiCall(apiKey, cacheForKey, noCache);
 
 	if (!shouldForceCall) {
-		const cachedList =
-			parentId && parentId !== '0' ? channelSettingState.threadsByChannel[parentId] : Object.values(channelSettingState.entities);
+		const cachedData = channelSettingState.dataByKey?.[apiKey];
 
-		if (cachedList) {
+		if (cachedData) {
 			return {
-				channel_setting_list: cachedList,
-				channel_count: channelSettingState.channelCount,
-				thread_count: channelSettingState.threadCount,
+				...cachedData,
 				fromCache: true,
-				time: channelSettingState.cache?.lastFetched || Date.now()
+				apiKey,
+				time: cacheForKey?.lastFetched || Date.now()
 			};
 		}
 	}
@@ -109,6 +118,7 @@ export const fetchChannelSettingInClanCached = async (
 	return {
 		...response,
 		fromCache: false,
+		apiKey,
 		time: Date.now()
 	};
 };
@@ -137,19 +147,18 @@ export const fetchActiveChannelSettingInClanCached = async (
 	const channelSettingState = currentState[SETTING_CLAN_CHANNEL];
 	const apiKey = createApiKey('fetchActiveChannelSettingInClan', clanId, parentId, page, limit, channel_label);
 
-	const shouldForceCall = shouldForceApiCall(apiKey, channelSettingState.cache, noCache);
+	const cacheForKey = channelSettingState.cacheByKey?.[apiKey];
+	const shouldForceCall = shouldForceApiCall(apiKey, cacheForKey, noCache);
 
 	if (!shouldForceCall) {
-		const cachedList =
-			parentId && parentId !== '0' ? channelSettingState.threadsByChannel[parentId] : Object.values(channelSettingState.entities);
+		const cachedData = channelSettingState.dataByKey?.[apiKey];
 
-		if (cachedList) {
+		if (cachedData) {
 			return {
-				channel_setting_list: cachedList,
-				channel_count: channelSettingState.channelCount,
-				thread_count: channelSettingState.threadCount,
+				...cachedData,
 				fromCache: true,
-				time: channelSettingState.cache?.lastFetched || Date.now()
+				apiKey,
+				time: cacheForKey?.lastFetched || Date.now()
 			};
 		}
 	}
@@ -172,6 +181,7 @@ export const fetchActiveChannelSettingInClanCached = async (
 	return {
 		...response,
 		fromCache: false,
+		apiKey,
 		time: Date.now()
 	};
 };
@@ -197,18 +207,12 @@ export const fetchActiveChannelSettingInClan = createAsyncThunk(
 				return thunkAPI.rejectWithValue('Invalid fetchActiveChannelSettingInClan');
 			}
 
-			if (response.fromCache) {
-				return {
-					fromCache: true,
-					parentId,
-					typeFetch
-				};
-			}
-
 			return {
 				parentId,
 				response,
-				typeFetch
+				typeFetch,
+				apiKey: response.apiKey,
+				fromCache: Boolean(response.fromCache)
 			};
 		} catch (error) {
 			captureSentryError(error, 'channelSetting/fetchActiveChannelSettingInClan');
@@ -238,18 +242,12 @@ export const fetchChannelSettingInClan = createAsyncThunk(
 				return thunkAPI.rejectWithValue('Invalid fetchChannelSettingInClan');
 			}
 
-			if (response.fromCache) {
-				return {
-					fromCache: true,
-					parentId,
-					typeFetch
-				};
-			}
-
 			return {
 				parentId,
 				response,
-				typeFetch
+				typeFetch,
+				apiKey: response.apiKey,
+				fromCache: Boolean(response.fromCache)
 			};
 		} catch (error) {
 			captureSentryError(error, 'channelSetting/fetchClanChannelSetting');
@@ -273,6 +271,59 @@ export const fetchArchivedChannelsInClan = createAsyncThunk('channelSetting/fetc
 		return thunkAPI.rejectWithValue(error);
 	}
 });
+
+const applyChannelSettingFulfilled = (
+	state: SettingClanChannelState,
+	payload: {
+		response?: {
+			fromCache: boolean;
+			apiKey: string;
+			time: number;
+			channel_count?: number;
+			channel_setting_list?: Array<ApiChannelSettingItem>;
+			clan_id?: string;
+			thread_count?: number;
+		};
+		typeFetch: ETypeFetchChannelSetting;
+		parentId: string;
+		apiKey?: string;
+		fromCache?: boolean;
+	}
+) => {
+	const { response, typeFetch, parentId, apiKey, fromCache } = payload;
+	if (!response) return;
+
+	state.loadingStatus = 'loaded';
+	const cleanedList = (response.channel_setting_list || []).map(cleanUndefinedFields);
+
+	switch (typeFetch) {
+		case ETypeFetchChannelSetting.FETCH_CHANNEL:
+			channelSettingAdapter.setAll(state, cleanedList);
+			break;
+		case ETypeFetchChannelSetting.MORE_CHANNEL:
+			channelSettingAdapter.upsertMany(state, cleanedList);
+			break;
+		case ETypeFetchChannelSetting.FETCH_THREAD:
+			state.threadsByChannel[parentId] = response.channel_setting_list || [];
+			break;
+		case ETypeFetchChannelSetting.SEARCH_CHANNEL:
+			state.listSearchChannel = response.channel_setting_list || [];
+			break;
+		default:
+			channelSettingAdapter.setAll(state, response.channel_setting_list || []);
+	}
+	state.channelCount = response.channel_count || 0;
+	state.threadCount = response.thread_count || 0;
+
+	if (!fromCache && apiKey) {
+		state.cacheByKey[apiKey] = createCacheMetadata();
+		state.dataByKey[apiKey] = {
+			channel_setting_list: cleanedList,
+			channel_count: response.channel_count || 0,
+			thread_count: response.thread_count || 0
+		};
+	}
+};
 
 export const settingClanChannelSlice = createSlice({
 	name: SETTING_CLAN_CHANNEL,
@@ -360,32 +411,7 @@ export const settingClanChannelSlice = createSlice({
 	extraReducers(builder) {
 		builder
 			.addCase(fetchChannelSettingInClan.fulfilled, (state: SettingClanChannelState, actions) => {
-				const { fromCache, response, typeFetch } = actions.payload;
-
-				if (!fromCache && response) {
-					state.loadingStatus = 'loaded';
-					const cleanedList = (response.channel_setting_list || []).map(cleanUndefinedFields);
-					switch (typeFetch) {
-						case ETypeFetchChannelSetting.FETCH_CHANNEL:
-							channelSettingAdapter.setAll(state, cleanedList);
-							break;
-						case ETypeFetchChannelSetting.MORE_CHANNEL:
-							channelSettingAdapter.upsertMany(state, cleanedList);
-							break;
-						case ETypeFetchChannelSetting.FETCH_THREAD:
-							state.threadsByChannel[actions.payload.parentId] = response.channel_setting_list || [];
-							break;
-						case ETypeFetchChannelSetting.SEARCH_CHANNEL:
-							state.listSearchChannel = response.channel_setting_list || [];
-							break;
-						default:
-							channelSettingAdapter.setAll(state, response.channel_setting_list || []);
-					}
-					state.channelCount = response.channel_count || 0;
-					state.threadCount = response.thread_count || 0;
-					state.cache = createCacheMetadata();
-				}
-
+				applyChannelSettingFulfilled(state, actions.payload);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchChannelSettingInClan.pending, (state: SettingClanChannelState) => {
@@ -411,32 +437,7 @@ export const settingClanChannelSlice = createSlice({
 				state.error = action.error.message;
 			})
 			.addCase(fetchActiveChannelSettingInClan.fulfilled, (state: SettingClanChannelState, actions) => {
-				const { fromCache, response, typeFetch } = actions.payload;
-
-				if (!fromCache && response) {
-					state.loadingStatus = 'loaded';
-					const cleanedList = (response.channel_setting_list || []).map(cleanUndefinedFields);
-					switch (typeFetch) {
-						case ETypeFetchChannelSetting.FETCH_CHANNEL:
-							channelSettingAdapter.setAll(state, cleanedList);
-							break;
-						case ETypeFetchChannelSetting.MORE_CHANNEL:
-							channelSettingAdapter.upsertMany(state, cleanedList);
-							break;
-						case ETypeFetchChannelSetting.FETCH_THREAD:
-							state.threadsByChannel[actions.payload.parentId] = response.channel_setting_list || [];
-							break;
-						case ETypeFetchChannelSetting.SEARCH_CHANNEL:
-							state.listSearchChannel = response.channel_setting_list || [];
-							break;
-						default:
-							channelSettingAdapter.setAll(state, response.channel_setting_list || []);
-					}
-					state.channelCount = response.channel_count || 0;
-					state.threadCount = response.thread_count || 0;
-					state.cache = createCacheMetadata();
-				}
-
+				applyChannelSettingFulfilled(state, actions.payload);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchActiveChannelSettingInClan.pending, (state: SettingClanChannelState) => {
