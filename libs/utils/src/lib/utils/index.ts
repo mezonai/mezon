@@ -1437,3 +1437,10 @@ export function subBigInt(a: string, b: string): string {
 export const generateAttachmentId = (attachment: ApiMessageAttachment, messageId: string): string => {
 	return `${messageId}_${attachment.url}`;
 };
+
+export const checkInviteLinkValid = (url: string): boolean => {
+	const inviteMatch = url.startsWith(INVITE_URL_REGEX);
+	const inviteId = url?.slice(-19);
+	const valid = inviteId?.length === 19 && [...inviteId].every((c) => c >= '0' && c <= '9');
+	return inviteMatch && valid;
+};
