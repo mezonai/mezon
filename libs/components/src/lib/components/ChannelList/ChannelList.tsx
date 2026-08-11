@@ -457,7 +457,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 					}}
 					className="channel-wrap absolute top-0 left-0 w-full"
 				>
-					{items.map((virtualRow, index) => {
+					{items.map((virtualRow) => {
 						const item = data[virtualRow.index];
 						if (virtualRow.index === 0) {
 							return (
@@ -481,7 +481,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 								>
 									{isFirstCategory && (
 										<div
-											className={`absolute right-1 bottom-[-1px] -translate-y-1/2 z-10 transition-opacity ${
+											className={`absolute ${permissions.hasChannelManagePermission && item.id !== FAVORITE_CATEGORY_ID ? 'right-7' : 'right-1'} z-10 transition-opacity ${
 												isDragModeEnabled ? 'opacity-100' : 'opacity-0 group-hover/category:opacity-100'
 											}`}
 										>
