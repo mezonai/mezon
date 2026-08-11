@@ -16,7 +16,7 @@ import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, C
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
-import { CURRENCY, ID_MENTION_HERE } from '../constant';
+import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
