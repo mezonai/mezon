@@ -164,6 +164,9 @@
 			"threadName": "Digite o nome do tópico"
 		}
 	},
+	"errors": {
+		"limit": "O número máximo de canais para este clã foi atingido"
+	},
 	"moreFile": "mais arquivos",
 	"moreFiles": "mais arquivos"
 }
