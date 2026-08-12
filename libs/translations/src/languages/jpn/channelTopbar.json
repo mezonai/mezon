@@ -164,6 +164,9 @@
 			"threadName": "スレッド名を入力"
 		}
 	},
+	"errors": {
+		"limit": "このクランのチャンネル数が上限に達しました"
+	},
 	"moreFile": "ファイル",
 	"moreFiles": "ファイル"
 }

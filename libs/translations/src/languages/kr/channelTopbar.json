@@ -164,6 +164,9 @@
 			"threadName": "스레드 이름 입력"
 		}
 	},
+	"errors": {
+		"limit": "이 클랜의 최대 채널 수에 도달했습니다"
+	},
 	"moreFile": "파일",
 	"moreFiles": "파일"
 }

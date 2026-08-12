@@ -1,6 +1,6 @@
 import type { DragEvent } from 'react';
 import React, { memo, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import {
 	selectCategoryExpandStateByCategoryId,
@@ -36,7 +36,6 @@ type ChannelLinkContentProps = {
 };
 
 const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActive, permissions, dragStart, dragEnter }) => {
-	const dispatch = useDispatch();
 	const isUnreadChannel = useSelector((state) => selectIsUnreadChannelById(state, channel.id));
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel.id, channel.clan_id as string));
 	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, channel.id));

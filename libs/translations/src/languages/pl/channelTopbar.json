@@ -162,6 +162,9 @@
 			"threadName": "Wpisz nazwę wątku"
 		}
 	},
+	"errors": {
+		"limit": "Osiągnięto maksymalną liczbę kanałów dla tego klanu"
+	},
 	"moreFile": "kolejny plik",
 	"moreFiles": "kolejne pliki",
 	"joinedThreads": "Dołączone wątki",
