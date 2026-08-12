@@ -1510,7 +1510,10 @@ export type IOtherCall = {
 export type IPermissonMedia = 'granted' | 'denied' | 'not_found';
 
 export enum AttachmentTypeUpload {
-	BLOB = 'blob:'
+	BLOB = 'blob:',
+	FILE = 'FILE',
+	video = 'video',
+	image = 'image'
 }
 
 export enum CallLog {
