@@ -1,4 +1,4 @@
-import { selectCloseMenu, selectStatusMenu, useAppSelector, useTypingUsersByChannel } from '@mezon/store';
+import { useTypingUsersByChannel } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,19 +10,17 @@ type ChannelTypingProps = {
 	isDM?: boolean;
 };
 
-export function ChannelTyping({ channelId, mode, isPublic, isDM }: ChannelTypingProps) {
+export function ChannelTyping({ channelId }: ChannelTypingProps) {
 	const { t } = useTranslation('common');
 	const typingUsers = useTypingUsersByChannel(channelId);
-	const boxWidthClass = 'w-full max-w-wrappBoxChatView';
+	const boxWidthClass = 'w-full min-[480px]:max-w-wrappBoxChatView';
 
 	const typingLabel = useMemo(() => {
 		if (typingUsers.length === 1) {
 			return (
 				<>
 					<Icons.IconLoadingTyping className="shrink-0" width={20} height={10} aria-hidden />
-					<span className="min-w-0 text-theme-primary-active font-semibold mr-[2px] truncate">
-						{typingUsers[0].typingName}
-					</span>
+					<span className="min-w-0 text-theme-primary-active font-semibold mr-[2px] truncate">{typingUsers[0].typingName}</span>
 					<span className="shrink-0 text-theme-primary">{t('isTyping')}</span>
 				</>
 			);
@@ -35,7 +33,7 @@ export function ChannelTyping({ channelId, mode, isPublic, isDM }: ChannelTyping
 
 	return (
 		<div
-			className={`mx-3 box-border flex h-4 max-h-4 shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap pr-1 text-xs leading-4 text-theme-primary ${boxWidthClass}`}
+			className={`mx-3 box-border relative flex h-4 max-h-4 shrink-0 items-center gap-1.5 overflow-hidden whitespace-nowrap pr-1 text-xs leading-4 text-theme-primary ${boxWidthClass}`}
 		>
 			{typingLabel}
 		</div>
