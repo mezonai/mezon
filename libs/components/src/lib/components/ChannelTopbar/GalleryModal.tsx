@@ -18,7 +18,6 @@ import {
 	galleryActions,
 	getStore,
 	selectCurrentChannelId,
-	selectCurrentChannelLabel,
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectGalleryAttachmentsByChannel,
@@ -78,14 +77,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const currentClanId = useSelector(selectCurrentClanId) ?? '';
 	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
 	const paginationState = useAppSelector((state) => selectGalleryPaginationByChannel(state, currentChannelId));
-
-	useEffect(() => {
-		return () => {
-			if (currentChannelId) {
-				dispatch(galleryActions.clearGalleryAttachments({ channelId: currentChannelId }));
-			}
-		};
-	}, [currentChannelId, dispatch]);
 
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [endDate, setEndDate] = useState<Date | null>(null);
@@ -198,7 +189,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			if (direction === 'after' && !paginationState.hasMoreAfter) {
 				return;
 			}
-
 			dispatch(galleryActions.setGalleryLoading({ channelId: currentChannelId, isLoading: true }));
 
 			try {
@@ -469,7 +459,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			const currentClanId = selectCurrentClanId(state);
 			const currentDm = selectCurrentDM(state);
 			const currentChannelId = selectCurrentChannelId(state);
-			const currentChannelLabel = selectCurrentChannelLabel(state);
 			const currentDmGroupId = currentDm?.id;
 			const attachmentData = attachment;
 

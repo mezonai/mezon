@@ -16,7 +16,7 @@ import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, C
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
-import { CURRENCY, ID_MENTION_HERE } from '../constant';
+import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -1436,4 +1436,11 @@ export function subBigInt(a: string, b: string): string {
 
 export const generateAttachmentId = (attachment: ApiMessageAttachment, messageId: string): string => {
 	return `${messageId}_${attachment.url}`;
+};
+
+export const checkInviteLinkValid = (url: string): boolean => {
+	const inviteMatch = url.startsWith(INVITE_URL_REGEX);
+	const inviteId = url?.slice(-19);
+	const valid = inviteId?.length === 19 && [...inviteId].every((c) => c >= '0' && c <= '9');
+	return inviteMatch && valid;
 };

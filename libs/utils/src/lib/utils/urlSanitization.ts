@@ -11,7 +11,7 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 
 	try {
 		const parsedUrl = new URL(url);
-		const hostname = parsedUrl.hostname.toLowerCase();
+		const hostname = parsedUrl.origin.toLowerCase();
 
 		return allowedDomains.some((domain) => {
 			const normalizedDomain = domain.toLowerCase();
@@ -32,7 +32,13 @@ export function isTenorUrl(url: string | undefined): boolean {
  * this list does not cover would slip past the presign gate and let imgproxy
  * cache a not-found for an object that has not finished uploading.
  */
-export const MEZON_CDN_DOMAINS = ['cdn.komu.vn', 'cdn.komu.ai', 'cdn.mezon.ai', 'cdn.mezon.vn'];
+export const MEZON_CDN_DOMAINS = [
+	'https://cdn.komu.vn',
+	'https://cdn.komu.ai',
+	'https://cdn.mezon.ai',
+	'https://cdn.mezon.vn',
+	...(process.env.NX_BASE_IMG_URL ? [process.env.NX_BASE_IMG_URL] : [])
+];
 
 export function isMezonCdnUrl(url: string | undefined): boolean {
 	return isFromAllowedDomain(url, MEZON_CDN_DOMAINS);
