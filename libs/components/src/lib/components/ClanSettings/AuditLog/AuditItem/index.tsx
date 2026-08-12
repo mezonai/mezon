@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { convertTimeString, createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
+import { convertTimeString, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 import type { ApiAuditLog } from 'mezon-js';
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect } from 'react';
@@ -100,20 +100,22 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 			<div>
 				<div className="">
 					{logItem?.channel_id !== '0' ? (
-						<span>
+						<span data-e2e={generateE2eId('clan_page.settings.audit_log.content')}>
 							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
 							<strong className="text-theme-primary-active font-medium"> {`${logItem?.entity_name} (${logItem?.entity_id})`}</strong> in{' '}
 							{channel?.parent_id !== '0' ? 'thread' : 'channel'}
 							<strong className="text-theme-primary-active font-medium">{` ${logItem?.channel_label} (${logItem?.channel_id})`}</strong>
 						</span>
 					) : (
-						<span>
+						<span data-e2e={generateE2eId('clan_page.settings.audit_log.content')}>
 							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
 							<strong className="text-theme-primary-active font-medium">{`${logItem?.entity_name} (${logItem?.entity_id})`}</strong>
 						</span>
 					)}
 				</div>
-				<div className="text-sm text-theme-primary">{auditLogTime}</div>
+				<div className="text-sm text-theme-primary" data-e2e={generateE2eId('clan_page.settings.audit_log.time')}>
+					{auditLogTime}
+				</div>
 			</div>
 		</div>
 	);

@@ -364,6 +364,10 @@ export const DATA_E2E_IDENTIFIER = {
 				item: '',
 				onboarding_status: ''
 			},
+			audit_log: {
+				content: '',
+				time: ''
+			},
 			onboarding: {
 				button: {
 					enable_onboarding: '',
@@ -953,7 +957,13 @@ export const DATA_E2E_IDENTIFIER = {
 				button_save_changes: ''
 			}
 		},
-		logout: ''
+		logout: '',
+		activity: {
+			switch: ''
+		},
+		notification: {
+			switch: ''
+		}
 	},
 	common: {
 		friend_list: {
