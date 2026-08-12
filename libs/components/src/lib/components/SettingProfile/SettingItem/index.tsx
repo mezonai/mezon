@@ -96,6 +96,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleButtonClick(EUserSettings.ACTIVITY);
 						onItemClick && onItemClick(EUserSettings.ACTIVITY);
 					}}
+					data-e2e={generateE2eId(`user_setting.activity`)}
 				>
 					{t('setting:appSettings.activity')}
 				</button>
@@ -106,6 +107,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleButtonClick(EUserSettings.NOTIFICATIONS);
 						onItemClick && onItemClick(EUserSettings.NOTIFICATIONS);
 					}}
+					data-e2e={generateE2eId(`user_setting.notification`)}
 				>
 					{t('setting:appSettings.notifications')}
 				</button>
