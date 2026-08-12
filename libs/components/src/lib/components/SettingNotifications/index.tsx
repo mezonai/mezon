@@ -1,3 +1,4 @@
+import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +28,10 @@ const SettingNotifications = ({ menuIsOpen }: SettingNotificationsProps) => {
 						<p className="text-sm text-theme-primary">{hideNotifications ? t('hideNotificationDesc') : t('showNotificationDesc')}</p>
 					</div>
 					<div className="ml-4 flex-shrink-0">
-						<label className="relative inline-flex items-center cursor-pointer">
+						<label
+							className="relative inline-flex items-center cursor-pointer"
+							data-e2e={generateE2eId(`user_setting.notification.switch`)}
+						>
 							<input
 								type="checkbox"
 								checked={hideNotifications}
