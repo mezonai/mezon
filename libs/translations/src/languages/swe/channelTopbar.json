@@ -164,6 +164,9 @@
 			"threadName": "Ange tråd namn"
 		}
 	},
+	"errors": {
+		"limit": "Det maximala antalet kanaler för denna klan har uppnåtts"
+	},
 	"moreFile": "fler filer",
 	"moreFiles": "fler filer"
 }

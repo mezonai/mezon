@@ -164,6 +164,9 @@
 			"threadName": "Introducir nombre del Hilo"
 		}
 	},
+	"errors": {
+		"limit": "Se ha alcanzado el número máximo de canales para este clan"
+	},
 	"moreFile": "más archivo",
 	"moreFiles": "más archivos"
 }
