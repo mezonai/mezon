@@ -10,9 +10,10 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 				return attach;
 			}
 			try {
+				const fileType = attach.filetype?.includes('image') ? 'image' : attach.filetype?.includes('video') ? 'video' : attach.filetype;
 				const data = await client.uploadAttachmentFile(session, {
 					filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
-					filetype: attach.filetype,
+					filetype: fileType,
 					size: attach.size,
 					width: attach.width,
 					height: attach.height
@@ -31,6 +32,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 
 				return {
 					...attach,
+					filetype: fileType,
 					filename: attach.filename,
 					uploadName: data.filename,
 					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
