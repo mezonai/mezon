@@ -13,7 +13,7 @@ type ChannelTypingProps = {
 export function ChannelTyping({ channelId }: ChannelTypingProps) {
 	const { t } = useTranslation('common');
 	const typingUsers = useTypingUsersByChannel(channelId);
-	const boxWidthClass = 'w-full min-[480px]:max-w-wrappBoxChatView';
+	const boxWidthClass = 'w-full sbm:max-w-wrappBoxChatView';
 
 	const typingLabel = useMemo(() => {
 		if (typingUsers.length === 1) {
