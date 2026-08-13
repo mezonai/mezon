@@ -138,18 +138,24 @@ const TopBarChannelText = memo(() => {
 		isGuidePath: guidePath
 	});
 	const channelParent = useAppSelector((state) => selectChannelById(state, (channelParentId ? (channelParentId as string) : '') ?? '')) || null;
+
+	const navigate = useCustomNavigate();
+	const dispatch = useAppDispatch();
+
 	const { setStatusMenu } = useMenu();
+
 	const openMenu = useCallback(() => {
 		setStatusMenu(true);
-	}, [setStatusMenu]);
+		dispatch(appActions.setIsShowMemberList(false));
+		dispatch(appActions.setIsUseProfileDM(false));
+	}, [setStatusMenu, dispatch]);
+
 	const closeMenu = useCallback(() => {
 		const isMobile = window.innerWidth < 640;
 		if (isMobile) {
 			setStatusMenu(false);
 		}
 	}, [setStatusMenu]);
-	const navigate = useCustomNavigate();
-	const dispatch = useAppDispatch();
 
 	const handleNavigateToParent = () => {
 		if (!channelParent?.id || !channelParent?.clan_id) {
@@ -210,12 +216,6 @@ const TopBarChannelText = memo(() => {
 	const userStatus = useMemberStatus(currentDmGroup?.user_ids?.[0] || '');
 	const checkInvoice = useSelector((state) => selectStatusInVoice(state, currentDmGroup?.user_ids?.[0] || ''));
 
-	const handleOpenMenu = () => {
-		openMenu();
-		dispatch(appActions.setIsShowMemberList(false));
-		dispatch(appActions.setIsUseProfileDM(false));
-	};
-
 	const handleJoinVoice = () => {
 		if (!checkInvoice || currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return;
@@ -227,7 +227,7 @@ const TopBarChannelText = memo(() => {
 	return (
 		<>
 			<div className="flex relative flex-1 min-w-0 items-center gap-2 text-theme-primary mr-5">
-				<div className="flex w-10 sbm:hidden pl-3 px-2 text-[var(--bg-icon-theme)]" onClick={handleOpenMenu} role="button">
+				<div className="flex w-10 sbm:hidden pl-3 px-2 text-[var(--bg-icon-theme)]" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
 
