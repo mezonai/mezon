@@ -1341,7 +1341,11 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			};
 		}
 		const needUpload = attachments?.some((attachment) => attachment?.uploadPath);
-		if (needUpload) {
+		// The presign_finish patch rides on updateChannelMessage, which carries no
+		// anonymity flag, so the server rejects it for a message owned by the
+		// anonymous account. Anonymous sends upload first and post once instead.
+		const usePresignFirst = Boolean(needUpload) && !anonymous;
+		if (usePresignFirst) {
 			content = {
 				...content,
 				presign_finish: []
@@ -1389,6 +1393,18 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
+
+			if (needUpload && !usePresignFirst && attachments) {
+				await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+				thunkAPI.dispatch(
+					messagesActions.updateSendingMessageAttachments({
+						channelId: channelId as string,
+						messageId: id,
+						attachments: toPublicMessageAttachments(attachments)
+					})
+				);
+			}
+
 			const SEND_TIMEOUT_MS = 30_000;
 			let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
@@ -1436,7 +1452,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				);
 			}
 
-			if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
+			if (attachments && attachments.length > 0 && messageResult?.message_id && usePresignFirst) {
 				try {
 					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
 
