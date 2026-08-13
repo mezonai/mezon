@@ -102,7 +102,7 @@ const Onboarditem = memo(({ icon, title, tick, onClick }: { icon: ReactNode; tit
 	};
 	return (
 		<div
-			className="w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold text-theme-primary-active text-theme-primary-hover bg-item-hover bg-item-theme rounded-lg hover:cursor-pointer"
+			className="w-full sbm:w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold text-theme-primary-active text-theme-primary-hover bg-item-hover bg-item-theme rounded-lg hover:cursor-pointer"
 			onClick={handleOnClickItem}
 			data-e2e={generateE2eId('onboarding.chat.guide_sections')}
 		>
