@@ -89,14 +89,24 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const filteredAttachments = useMemo(() => {
 		if (!attachments || attachments.length === 0) return [];
 
+		let listAttach = [...attachments];
+
 		if (mediaFilter === 'image') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
+			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
 		} else if (mediaFilter === 'video') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
+			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
 		}
 
-		return attachments;
-	}, [attachments, mediaFilter]);
+		if (startDate) {
+			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds > startDate?.getTime() / 1000);
+		}
+
+		if (endDate) {
+			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds < endDate?.getTime() / 1000);
+		}
+
+		return listAttach;
+	}, [attachments, mediaFilter, startDate, endDate]);
 
 	const { refs, floatingStyles, context } = useFloating({
 		open: isDateDropdownOpen,
@@ -385,7 +395,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 		const { startTimestamp, endTimestamp } = calculateTimestamps(startDate, endDate);
 
-		dispatch(galleryActions.clearGalleryChannel({ channelId: currentChannelId }));
 		dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
 		dispatch(
 			galleryActions.fetchGalleryAttachments({
@@ -409,15 +418,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		setDateValidationError(null);
 		if (currentChannelId && currentClanId) {
 			dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
-			dispatch(
-				galleryActions.fetchGalleryAttachments({
-					clanId: currentClanId,
-					channelId: currentChannelId,
-					limit: 50,
-					direction: 'initial',
-					mediaFilter
-				})
-			);
 		}
 	}, [currentChannelId, currentClanId, dispatch]);
 
@@ -513,7 +513,9 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					clanId: currentClanId,
 					channelId: currentChannelId,
 					fileType: 'video',
-					limit: 50
+					limit: 50,
+					direction: 'before',
+					mediaFilter
 				})
 			);
 		}

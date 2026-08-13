@@ -287,10 +287,6 @@ export const gallerySlice = createSlice({
 				) => {
 					const { attachments, channelId, direction, fromCache } = action.payload;
 					const channelGallery = state.galleryByChannel[channelId];
-					if (fromCache) {
-						channelGallery.pagination.isLoading = false;
-						return;
-					}
 					if (!state.galleryByChannel[channelId]) {
 						state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 					}
@@ -307,17 +303,13 @@ export const gallerySlice = createSlice({
 						channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
 					}
 
-					if (direction === 'initial') {
-						channelGallery.attachments = attachments;
-					} else {
-						const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
-						const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
+					const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
+					const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
 
-						if (direction === 'after') {
-							channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
-						} else {
-							channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
-						}
+					if (direction === 'after') {
+						channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+					} else {
+						channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
 					}
 
 					channelGallery.pagination.isLoading = false;
