@@ -101,7 +101,7 @@ const ChannelBannerAndEvents = memo(({ banner }: { banner?: string }) => {
 	return (
 		<>
 			{banner && (
-				<div className="h-[136px]">
+				<div className="h-[136px]" data-e2e={generateE2eId('clan_page.banner')}>
 					<img
 						src={createImgproxyUrl(banner ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 						alt="imageCover"

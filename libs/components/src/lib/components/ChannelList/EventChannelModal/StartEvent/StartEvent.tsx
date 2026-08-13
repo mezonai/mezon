@@ -31,7 +31,10 @@ export const StartEventModal = (props: StartEventModalProps) => {
 		<div ref={modalRef} tabIndex={-1} className="outline-none">
 			<div className=" flex justify-between items-center p-4 border-b-theme-primary">
 				<div className="flex items-center gap-x-4">
-					<div className="gap-x-2 flex items-center">
+					<div
+						className="gap-x-2 flex items-center"
+						data-e2e={generateE2eId('clan_page.modal.create_event.event_management.number_of_event')}
+					>
 						<Icons.IconEvents />
 						<h4 className="font-bold">
 							{numberEventManagement === 0 && t('actions.noEvent')}

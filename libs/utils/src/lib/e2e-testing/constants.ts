@@ -142,6 +142,7 @@ export const DATA_E2E_IDENTIFIER = {
 		}
 	},
 	clan_page: {
+		banner: '',
 		header: {
 			title: {
 				clan_name: ''
@@ -272,6 +273,7 @@ export const DATA_E2E_IDENTIFIER = {
 			create_event: {
 				start_modal: '',
 				button_create: '',
+				button_edit: '',
 				button_close: '',
 				next: '',
 				upload: {
@@ -309,12 +311,23 @@ export const DATA_E2E_IDENTIFIER = {
 					location_name: ''
 				},
 				event_management: {
+					number_of_event: '',
 					item: {
 						modal_detail_item: {
 							start_date_time: '',
 							topic: '',
 							channel_name: '',
-							description: ''
+							description: '',
+							number_of_interested: '',
+							tab: {
+								event_info: '',
+								number_of_interested: ''
+							},
+							user_interested: {
+								item: {
+									display_name: ''
+								}
+							}
 						},
 						button: {
 							open_detail_modal: '',
@@ -322,8 +335,10 @@ export const DATA_E2E_IDENTIFIER = {
 							open_panel: '',
 							confirm_cancel_event: '',
 							share_event: '',
-							close_modal_copy_link: ''
-						}
+							close_modal_copy_link: '',
+							interested: ''
+						},
+						number_of_interested: ''
 					}
 				}
 			},
@@ -439,7 +454,8 @@ export const DATA_E2E_IDENTIFIER = {
 							channel_name: '',
 							category_name: ''
 						}
-					}
+					},
+					message_management: ''
 				},
 				prevent_anonymous: ''
 			},
@@ -745,7 +761,12 @@ export const DATA_E2E_IDENTIFIER = {
 					channel_name: ''
 				},
 				button: {
-					file: '',
+					file: {
+						item: {
+							file_name: '',
+							by_time: ''
+						}
+					},
 					mute: '',
 					inbox: '',
 					member: '',
