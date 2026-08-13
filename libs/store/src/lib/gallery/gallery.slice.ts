@@ -29,7 +29,7 @@ export interface GalleryState {
 	>;
 }
 
-export type MediaFilterType = 'all' | 'image' | 'video';
+export type MediaFilterType = 'image' | 'video' | 'doc';
 
 type fetchGalleryAttachmentsPayload = {
 	clanId: string;
@@ -59,7 +59,7 @@ const fetchChannelAttachmentsCached = async (
 	const currentState = getState();
 	const attachmentState = currentState[GALLERY_FEATURE_KEY] as GalleryState;
 	const channelData = attachmentState.galleryByChannel[channelId];
-	const apiKey = createApiKey('galleryAttachments', limit || 50, after || '', before || '', channelId, clanId);
+	const apiKey = createApiKey('galleryAttachments', fileType, limit || 50, after || '', before || '', channelId, clanId);
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 	if (
@@ -150,9 +150,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 				.filter((att) => {
 					const isImage = att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX);
 					const isVideo = att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
-					if (mediaFilter === 'all') {
-						return isImage || isVideo;
-					} else if (mediaFilter === 'image') {
+					if (mediaFilter === 'image') {
 						return isImage;
 					} else if (mediaFilter === 'video') {
 						return isVideo;

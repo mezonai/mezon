@@ -82,16 +82,14 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 	const [dateValidationError, setDateValidationError] = useState<string | null>(null);
-	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('all');
+	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('image');
 
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	const filteredAttachments = useMemo(() => {
 		if (!attachments || attachments.length === 0) return [];
 
-		if (mediaFilter === 'all') {
-			return attachments;
-		} else if (mediaFilter === 'image') {
+		if (mediaFilter === 'image') {
 			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
 		} else if (mediaFilter === 'video') {
 			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
@@ -233,7 +231,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 						channelId: currentChannelId,
 						limit: paginationState.limit,
 						direction,
-						mediaFilter: 'all',
+						mediaFilter,
 						...(beforeParam && { before: beforeParam }),
 						...(afterParam && { after: afterParam })
 					})
@@ -395,7 +393,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				channelId: currentChannelId,
 				limit: 50,
 				direction: 'initial',
-				mediaFilter: 'all',
+				mediaFilter,
 				...(startTimestamp && { after: startTimestamp }),
 				...(endTimestamp && { before: endTimestamp })
 			})
@@ -417,7 +415,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					channelId: currentChannelId,
 					limit: 50,
 					direction: 'initial',
-					mediaFilter: 'all'
+					mediaFilter
 				})
 			);
 		}
@@ -508,6 +506,19 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		[dispatch]
 	);
 
+	useEffect(() => {
+		if (mediaFilter === 'video' && attachments.length > 0 && filteredAttachments.length === 0) {
+			dispatch(
+				galleryActions.fetchGalleryAttachments({
+					clanId: currentClanId,
+					channelId: currentChannelId,
+					fileType: 'video',
+					limit: 50
+				})
+			);
+		}
+	}, [mediaFilter]);
+
 	return (
 		<div
 			ref={modalRef}
@@ -528,17 +539,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					</div>
 					<div className="flex flex-row items-center justify-between gap-4">
 						<div className="flex gap-2">
-							<button
-								onClick={() => handleMediaFilterChange('all')}
-								className={`px-3 py-1.5 text-sm rounded transition-colors ${
-									mediaFilter === 'all'
-										? 'bg-buttonPrimary text-white'
-										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
-								}`}
-								data-e2e={generateE2eId('clan_page.modal.gallery.tab.all')}
-							>
-								{t('gallery.filters.all')}
-							</button>
 							<button
 								onClick={() => handleMediaFilterChange('image')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
