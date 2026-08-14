@@ -20,9 +20,7 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
-		windowsPortable: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`,
 		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
-		macosIntel: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
 		linux: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
 	};
 
@@ -88,30 +86,14 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 										className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300  text-purple-500 hover:text-pink-500 "
 									>
 										<Icons.Windows className="w-6 h-6 " />
-										<span className="font-medium text-gray-800 group-hover:text-purple-600">Windows (Store)</span>
-									</a>
-									<a
-										href={downloadLinks.windowsPortable}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300  text-purple-500 hover:text-pink-500 "
-									>
-										<Icons.Windows className="w-6 h-6 " />
-										<span className="font-medium text-gray-800 group-hover:text-purple-600">Windows (Portable)</span>
+										<span className="font-medium text-gray-800 group-hover:text-purple-600">Windows (Microsoft Store)</span>
 									</a>
 									<a
 										href={downloadLinks.macos}
 										className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300  text-purple-500 hover:text-pink-500 "
 									>
 										<Icons.Apple className="w-6 h-6 " />
-										<span className="font-medium text-gray-800 group-hover:text-purple-600">macOS (Apple)</span>
-									</a>
-									<a
-										href={downloadLinks.macosIntel}
-										className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300  text-purple-500 hover:text-pink-500 "
-									>
-										<Icons.Apple className="w-6 h-6 " />
-										<span className="font-medium text-gray-800 group-hover:text-purple-600">macOS (Intel)</span>
+										<span className="font-medium text-gray-800 group-hover:text-purple-600">macOS (App Store)</span>
 									</a>
 									<a
 										href={downloadLinks.linux}

@@ -64,8 +64,6 @@ const DesktopIcons = {
 
 interface FooterProps {
 	downloadUrl: string;
-	universalUrl: string;
-	portableUrl: string;
 }
 
 /**
@@ -127,7 +125,7 @@ const OrbitBeamWrapper = ({
 	);
 };
 
-const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
+const Footer = ({ downloadUrl }: FooterProps) => {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
 	const [isOpen, setIsOpen] = useState(false);
@@ -391,39 +389,21 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 										style={{ animation: 'fadeIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards' }}
 									>
 										{platform === Platform.MACOS ? (
-											<div className="space-y-1">
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href={downloadUrl}
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('macOS', 'Apple Silicon')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-														<DesktopIcons.Apple className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Apple Silicon</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">M1 / M2 / M3</span>
-													</div>
-												</a>
-												<div className="h-px bg-white/5 mx-2" />
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href={universalUrl}
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('macOS', 'Intel')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-														<DesktopIcons.Apple className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Intel CPU</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">Universal build</span>
-													</div>
-												</a>
-											</div>
+											<a
+												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
+												href={downloadUrl}
+												target="_blank"
+												rel="noreferrer"
+												onClick={() => trackFooterDownloadEvent('macOS', 'App Store')}
+											>
+												<div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+													<DesktopIcons.Apple className="w-6 h-6" />
+												</div>
+												<div className="flex flex-col">
+													<span className="text-sm font-bold">Mac App Store</span>
+													<span className="text-[10px] text-white/40 uppercase tracking-widest">Official Store</span>
+												</div>
+											</a>
 										) : platform === Platform.LINUX ? (
 											<a
 												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
@@ -441,39 +421,21 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 												</div>
 											</a>
 										) : (
-											<div className="space-y-1">
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href="https://apps.microsoft.com/detail/9pf25lf1fj17"
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('Windows', 'Microsoft Store')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-														<DesktopIcons.MicrosoftStore className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Microsoft Store</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">Recommended</span>
-													</div>
-												</a>
-												<div className="h-px bg-white/5 mx-2" />
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href={portableUrl}
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('Windows', 'Portable')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 group-hover:scale-110 transition-transform">
-														<DesktopIcons.Windows className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Windows Portable</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">EXE (No setup)</span>
-													</div>
-												</a>
-											</div>
+											<a
+												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
+												href={downloadUrl}
+												target="_blank"
+												rel="noreferrer"
+												onClick={() => trackFooterDownloadEvent('Windows', 'Microsoft Store')}
+											>
+												<div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+													<DesktopIcons.MicrosoftStore className="w-6 h-6" />
+												</div>
+												<div className="flex flex-col">
+													<span className="text-sm font-bold">Microsoft Store</span>
+													<span className="text-[10px] text-white/40 uppercase tracking-widest">Official Store</span>
+												</div>
+											</a>
 										)}
 									</div>
 								)}
