@@ -293,7 +293,9 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 				fetchMessages({
 					channelId: currentChannelId as string,
 					clanId: currentClanId as string,
-					topicId: currentTopicId || ''
+					topicId: currentTopicId || '',
+					noCache: true,
+					toPresent: true
 				})
 			);
 			setIsFetchMessageDone(true);

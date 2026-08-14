@@ -240,7 +240,7 @@ export const fetchMessagesCached = async (
 
 	const response = await withRetry(
 		(session) =>
-			ensuredMezon.client.listChannelMessages(session, clanId, channelId, topicId ? undefined : messageId, direction, LIMIT_MESSAGE, topicId),
+			ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
 		{
 			scope: 'channel-messages',
 			mezon: ensuredMezon
@@ -271,6 +271,26 @@ type fetchMessageChannelPayload = {
 };
 
 const MESSAGE_LIST_SLICE = 100;
+
+function isOlderMessageId(a?: string, b?: string) {
+	if (!a || !b) return false;
+	try {
+		return BigInt(a) < BigInt(b);
+	} catch {
+		return a.length === b.length ? a < b : a.length < b.length;
+	}
+}
+
+const MESSAGE_ID_SEQUENCE_SHIFT = BigInt(22);
+
+function messageIdSequenceGap(newerId?: string, olderId?: string) {
+	if (!newerId || !olderId) return 0;
+	try {
+		return Number((BigInt(newerId) >> MESSAGE_ID_SEQUENCE_SHIFT) - (BigInt(olderId) >> MESSAGE_ID_SEQUENCE_SHIFT));
+	} catch {
+		return 0;
+	}
+}
 
 function getViewportSlice(sourceIds: string[], offsetId: string | undefined, direction: Direction_Mode) {
 	const { length } = sourceIds;
@@ -403,7 +423,17 @@ export const fetchMessages = createAsyncThunk(
 			let lastSentMessage = (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader) || response.last_sent_message;
 
 			if (!fromCache) {
-				lastSentMessage = response.last_sent_message as ApiChannelMessageHeader;
+				const newestInBatch = !messageId ? response.messages?.[0] : undefined;
+				lastSentMessage =
+					(response.last_sent_message as ApiChannelMessageHeader) ||
+					(newestInBatch
+						? ({
+								id: newestInBatch.id,
+								sender_id: newestInBatch.sender_id,
+								timestamp_seconds: newestInBatch.create_time_seconds,
+								content: newestInBatch.content
+							} as ApiChannelMessageHeader)
+						: lastSentMessage);
 			}
 			const lastSentState = selectLatestMessageId(state, chlId);
 			if (!lastSentState || (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0))) {
@@ -420,12 +450,33 @@ export const fetchMessages = createAsyncThunk(
 			const lastLoadMessage = !fromCache ? response.messages?.at(-1) || oldMessages[0] : oldMessages[0];
 			const hasMore = lastLoadMessage?.code !== EMessageCode.FIRST_MESSAGE;
 
-			thunkAPI.dispatch(
-				messagesActions.setFirstMessageId({
-					channelId: chlId,
-					firstMessageId: !hasMore ? lastLoadMessage?.id : null
-				})
-			);
+			if (topicId) {
+				const storeOldestId = oldMessages[0]?.id;
+				const batchOldestId = response.messages?.at(-1)?.id;
+				const batchLength = response.messages?.length || 0;
+				const fullPageLength = LIMIT_MESSAGE - 1;
+				const scannedToWindowEdge = messageIdSequenceGap(storeOldestId, batchOldestId) >= fullPageLength;
+				const reachedTop =
+					!fromCache &&
+					direction === Direction_Mode.BEFORE_TIMESTAMP &&
+					(!isOlderMessageId(batchOldestId, storeOldestId) || (batchLength < fullPageLength && !scannedToWindowEdge));
+				const oldestId = reachedTop && isOlderMessageId(batchOldestId, storeOldestId) ? batchOldestId : storeOldestId || batchOldestId;
+				if (reachedTop && oldestId) {
+					thunkAPI.dispatch(
+						messagesActions.setFirstMessageId({
+							channelId: chlId,
+							firstMessageId: oldestId
+						})
+					);
+				}
+			} else {
+				thunkAPI.dispatch(
+					messagesActions.setFirstMessageId({
+						channelId: chlId,
+						firstMessageId: !hasMore ? lastLoadMessage?.id : null
+					})
+				);
+			}
 
 			if (shouldReturnCachedMessages(isFetchingLatestMessages, oldMessages, lastSentMessage, !!fromCache)) {
 				return {
