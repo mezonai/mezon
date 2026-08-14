@@ -1,12 +1,7 @@
 import type { AttachmentEntity } from '@mezon/store';
 import { selectMemberClanByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import {
-	convertTimeString,
-	EFailAttachment,
-	isAttachmentPresignPendingForMessage,
-	shouldHidePresignAttachment
-} from '@mezon/utils';
+import { EFailAttachment, convertTimeString, generateE2eId, isAttachmentPresignPendingForMessage, shouldHidePresignAttachment } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -85,6 +80,7 @@ const FileItem = ({ attachmentData, mode, channelId }: FileItemProps) => {
 			}}
 			className={`cursor-pointer break-all w-full gap-3 flex py-3 pl-3 pr-3 rounded-lg max-w-full ${hideTheInformationFile ? 'bg-theme-setting-nav border-theme-primary' : ''}  relative`}
 			role="button"
+			data-e2e={generateE2eId('chat.channel_message.header.button.file.item')}
 		>
 			<div className="flex items-center">{thumbnailAttachment}</div>
 			{attachmentData.filename === EFailAttachment.FAIL_ATTACHMENT ? (
@@ -93,13 +89,20 @@ const FileItem = ({ attachmentData, mode, channelId }: FileItemProps) => {
 				hideTheInformationFile && (
 					<>
 						<div className="cursor-pointer">
-							<p className="text-blue-500 hover:underline w-fit one-line">{attachmentData?.filename ?? 'File'}</p>
+							<p
+								className="text-blue-500 hover:underline w-fit one-line"
+								data-e2e={generateE2eId('chat.channel_message.header.button.file.item.file_name')}
+							>
+								{attachmentData?.filename ?? 'File'}
+							</p>
 							{hoverShowOptButtonStatus ? (
 								<span>
 									{t('fileItem.download')} <span className="font-medium uppercase">{fileType}</span>
 								</span>
 							) : (
-								<p className=" w-fit one-line">{t('fileItem.sharedBy', { username, time: attachmentSendTime })}</p>
+								<p className=" w-fit one-line" data-e2e={generateE2eId('chat.channel_message.header.button.file.item.by_time')}>
+									{t('fileItem.sharedBy', { username, time: attachmentSendTime })}
+								</p>
 							)}
 						</div>
 						{hoverShowOptButtonStatus && (
