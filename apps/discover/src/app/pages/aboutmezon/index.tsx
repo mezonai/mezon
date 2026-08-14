@@ -66,7 +66,7 @@ const AboutMezon = () => {
 		} else if (platform === Platform.LINUX) {
 			return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
 		}
-		return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
+		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 	}, [platform, version]);
 	const trackHeaderLoginClick = (action: string) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
@@ -77,8 +77,6 @@ const AboutMezon = () => {
 			});
 		}
 	};
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
 
 	const handleDownloadDesktop = () => {
 		if (platform === Platform.IOS) {
@@ -176,17 +174,7 @@ const AboutMezon = () => {
 										onClick={() => setIsDesktopDropdownOpen(false)}
 									>
 										<Icons.Apple className="w-5 h-5" />
-										<span className="text-gray-700 font-svnAvo">macOS (Apple)</span>
-									</a>
-									<a
-										href={'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 text-purple-600 hover:text-pink-600"
-										onClick={() => setIsDesktopDropdownOpen(false)}
-									>
-										<Icons.Apple className="w-5 h-5" />
-										<span className="text-gray-700 font-svnAvo">macOS (Intel)</span>
+										<span className="text-gray-700 font-svnAvo">macOS</span>
 									</a>
 									<a
 										href={`${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}
@@ -358,7 +346,7 @@ const AboutMezon = () => {
 					</Button>
 				</div>
 			</AnimatedSection>
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };
