@@ -807,6 +807,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const scrollPositionRef = useRef<{ messageId?: string; offset?: number } | null>(null);
 
+		const prevScrollHeightRef = useRef<number | null>(null);
+		const prevScrollTopRef = useRef<number>(0);
+
 		useSyncEffect(() => {
 			const store = getStore();
 			const state = store.getState();
@@ -987,7 +990,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					const { scrollTop, scrollHeight } = container;
 
 					const store = getStore();
-					const isAtBottom = !selectShowScrollDownButton(store.getState(), effectiveChannelId);
+					const isAtBottom = isTopic
+						? Math.abs(scrollHeight - container.clientHeight - scrollTop) <= BOTTOM_THRESHOLD
+						: !selectShowScrollDownButton(store.getState(), effectiveChannelId);
 
 					const isAlreadyFocusing = false;
 					if (isAtBottom && !isAlreadyFocusing) {
@@ -1024,6 +1029,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					} else if (anchor && !isScrollTopJustUpdatedRef.current) {
 						const newAnchorTop = anchor.getBoundingClientRect().top;
 						newScrollTop = scrollTop + (newAnchorTop - (anchorTopRef.current || 0));
+					} else if (isTopic && prevScrollHeightRef.current !== null && !isScrollTopJustUpdatedRef.current) {
+						newScrollTop = prevScrollTopRef.current + (scrollHeight - prevScrollHeightRef.current);
 					} else if (scrollPositionRef.current?.messageId && !isScrollTopJustUpdatedRef.current) {
 						const savedMessageElement = container.querySelector(`#msg-${scrollPositionRef.current.messageId}`);
 						if (savedMessageElement) {
@@ -1090,7 +1097,20 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			rememberScrollPositionRef.current();
 		}, [setAnchor?.current, rememberScrollPositionRef]);
 
-		useSyncEffect(() => forceMeasure(() => rememberScrollPositionRef.current()), [messageIds, isViewportNewest, rememberScrollPositionRef]);
+		useSyncEffect(
+			() =>
+				forceMeasure(() => {
+					if (isTopic) {
+						const container = chatRef?.current;
+						if (container) {
+							prevScrollHeightRef.current = container.scrollHeight;
+							prevScrollTopRef.current = container.scrollTop;
+						}
+					}
+					rememberScrollPositionRef.current();
+				}),
+			[messageIds, isViewportNewest, rememberScrollPositionRef, isTopic, chatRef]
+		);
 
 		useEffect(() => rememberScrollPositionRef.current(), [getContainerHeight, rememberScrollPositionRef]);
 
@@ -1325,18 +1345,18 @@ interface MessageSkeletonProps {
 }
 
 const LoadingSkeletonMessages = memo(
-	({ channelId, isTopic }: { channelId: string; isTopic?: boolean; topicId?: string }) => {
-		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, channelId));
-		// TODO: check hasMoreTop topic check backend alway return true
-		if (!hasMoreTop || isTopic) return null;
+	({ channelId, isTopic, topicId }: { channelId: string; isTopic?: boolean; topicId?: string }) => {
+		const scopeId = isTopic ? topicId || channelId : channelId;
+		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, scopeId));
+		if (!hasMoreTop) return null;
 		return (
 			<div id="msg-loading-top" className="py-2">
-				<MessageSkeleton randomKey={channelId} />
+				<MessageSkeleton randomKey={scopeId} />
 			</div>
 		);
 	},
 	(prev, next) => {
-		return prev.channelId === next.channelId && prev.isTopic === next.isTopic;
+		return prev.channelId === next.channelId && prev.isTopic === next.isTopic && prev.topicId === next.topicId;
 	}
 );
 
