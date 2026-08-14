@@ -164,7 +164,7 @@ const AboutMezon = () => {
 										onClick={() => setIsDesktopDropdownOpen(false)}
 									>
 										<Icons.Windows className="w-5 h-5" />
-										<span className="text-gray-700 font-svnAvo">Windows (Microsoft Store)</span>
+										<span className="text-gray-700 font-svnAvo">Windows</span>
 									</a>
 									<a
 										href={'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'}
@@ -174,7 +174,7 @@ const AboutMezon = () => {
 										onClick={() => setIsDesktopDropdownOpen(false)}
 									>
 										<Icons.Apple className="w-5 h-5" />
-										<span className="text-gray-700 font-svnAvo">macOS (App Store)</span>
+										<span className="text-gray-700 font-svnAvo">macOS</span>
 									</a>
 									<a
 										href={`${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}

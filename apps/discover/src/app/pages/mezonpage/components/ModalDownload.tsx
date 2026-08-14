@@ -65,7 +65,7 @@ export const ModalDownload: React.FC<ModalDownloadProps> = ({ isOpen, onClose })
 						className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300 text-purple-500 hover:text-pink-500"
 					>
 						<Icons.Windows className="w-6 h-6" />
-						<span className="font-medium text-gray-800 group-hover:text-purple-600">Windows (Microsoft Store)</span>
+						<span className="font-medium text-gray-800 group-hover:text-purple-600">Windows</span>
 					</a>
 					<a
 						href={downloadLinks.macos}
@@ -74,7 +74,7 @@ export const ModalDownload: React.FC<ModalDownloadProps> = ({ isOpen, onClose })
 						className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300 text-purple-500 hover:text-pink-500"
 					>
 						<Icons.Apple className="w-6 h-6" />
-						<span className="font-medium text-gray-800 group-hover:text-purple-600">macOS (App Store)</span>
+						<span className="font-medium text-gray-800 group-hover:text-purple-600">macOS</span>
 					</a>
 					<a
 						href={downloadLinks.linux}

@@ -400,8 +400,7 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 													<DesktopIcons.Apple className="w-6 h-6" />
 												</div>
 												<div className="flex flex-col">
-													<span className="text-sm font-bold">Mac App Store</span>
-													<span className="text-[10px] text-white/40 uppercase tracking-widest">Official Store</span>
+													<span className="text-sm font-bold">macOS</span>
 												</div>
 											</a>
 										) : platform === Platform.LINUX ? (
@@ -432,8 +431,7 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 													<DesktopIcons.MicrosoftStore className="w-6 h-6" />
 												</div>
 												<div className="flex flex-col">
-													<span className="text-sm font-bold">Microsoft Store</span>
-													<span className="text-[10px] text-white/40 uppercase tracking-widest">Official Store</span>
+													<span className="text-sm font-bold">Windows</span>
 												</div>
 											</a>
 										)}
