@@ -9,7 +9,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -23,8 +23,10 @@ type SignalMessage = {
 	type: string;
 	sdp?: string;
 	message?: string;
+	participant_count?: number;
 	mid_audio?: number | string;
 	mid_video?: number | string;
+	mid_screen?: number | string;
 };
 
 type RemoteMedia = {
@@ -32,11 +34,19 @@ type RemoteMedia = {
 	userId?: string;
 	audio?: MediaStreamTrack;
 	video?: MediaStreamTrack;
+	screen?: MediaStreamTrack;
 };
 
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
-	return Number.isFinite(numericMid) && numericMid >= 2 ? `peer-${Math.floor((numericMid - 2) / 2)}` : `mid-${mid}`;
+	return Number.isFinite(numericMid) && numericMid >= 3 ? `peer-${Math.floor((numericMid - 3) / 3)}` : `mid-${mid}`;
+};
+
+const getRemoteMediaKind = (mid: string) => {
+	const numericMid = Number(mid);
+	if (!Number.isFinite(numericMid) || numericMid < 3) return undefined;
+	const slot = (numericMid - 3) % 3;
+	return slot === 0 ? 'audio' : slot === 1 ? 'camera' : 'screen';
 };
 
 const getUserIdFromTrackId = (trackId: string) => /-u(\d+)(?:-|$)/.exec(trackId)?.[1];
@@ -164,7 +174,23 @@ const Video = ({
 		if (!video) return;
 		video.srcObject = stream;
 		video.play().catch(() => undefined);
-		if (!onFrameStateChange || !video.requestVideoFrameCallback) return;
+		if (!onFrameStateChange) return;
+
+		if (!video.requestVideoFrameCallback) {
+			const markFrameAvailable = () => onFrameStateChange(true);
+			const markFrameUnavailable = () => onFrameStateChange(false);
+			onFrameStateChange(video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA);
+			video.addEventListener('loadeddata', markFrameAvailable);
+			video.addEventListener('playing', markFrameAvailable);
+			video.addEventListener('timeupdate', markFrameAvailable);
+			video.addEventListener('emptied', markFrameUnavailable);
+			return () => {
+				video.removeEventListener('loadeddata', markFrameAvailable);
+				video.removeEventListener('playing', markFrameAvailable);
+				video.removeEventListener('timeupdate', markFrameAvailable);
+				video.removeEventListener('emptied', markFrameUnavailable);
+			};
+		}
 
 		let disposed = false;
 		let frameCallbackId = 0;
@@ -218,7 +244,9 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 	const [hasRecentVideoFrame, setHasRecentVideoFrame] = useState(false);
 	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
 	const handleVideoFrameStateChange = useCallback((hasRecentFrame: boolean) => setHasRecentVideoFrame(hasRecentFrame), []);
-	const showVideo = Boolean(participant.video && !participant.video.muted && participant.video.readyState === 'live' && hasRecentVideoFrame);
+	// Chrome may keep a resumed receiver track muted briefly even while decoded
+	// frames are already available. The frame callback is the reliable render signal.
+	const showVideo = Boolean(participant.video?.readyState === 'live' && hasRecentVideoFrame);
 	return (
 		<div
 			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
@@ -250,9 +278,31 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 	);
 };
 
+const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps, 'participant' | 'displayName'>) => {
+	const [hasRecentVideoFrame, setHasRecentVideoFrame] = useState(false);
+	const stream = useMemo(() => (participant.screen ? new MediaStream([participant.screen]) : undefined), [participant.screen]);
+	const handleVideoFrameStateChange = useCallback((hasRecentFrame: boolean) => setHasRecentVideoFrame(hasRecentFrame), []);
+	const showVideo = Boolean(participant.screen?.readyState === 'live' && hasRecentVideoFrame);
+	if (!stream) return null;
+
+	return (
+		<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
+			<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'opacity-0'}`}>
+				<Video stream={stream} fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
+			</div>
+			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
+			<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">{displayName} — Screen</span>
+		</div>
+	);
+};
+
 const buttonClass = 'flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:opacity-40';
 const DEFAULT_VIDEO_CODEC = 'VP8';
 const REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS = 3000;
+
+type ScreenCaptureController = {
+	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
+};
 
 interface SfuDeviceMenuProps {
 	label: string;
@@ -364,6 +414,7 @@ export function MezonSfuVoiceRoom({
 	const cameraTrackRef = useRef<MediaStreamTrack | null>(null);
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
+	const joinedRef = useRef(false);
 	const pendingOfferRef = useRef<string | null>(null);
 	const peerLeftPendingOfferRef = useRef(false);
 	const leftRemoteMidsRef = useRef(new Set<string>());
@@ -373,9 +424,11 @@ export function MezonSfuVoiceRoom({
 	const [localPreview, setLocalPreview] = useState<MediaStream>();
 	const [localAudioTrack, setLocalAudioTrack] = useState<MediaStreamTrack>();
 	const [remoteMedia, setRemoteMedia] = useState<Map<string, RemoteMedia>>(() => new Map());
+	const [roomParticipantCount, setRoomParticipantCount] = useState(1);
 	const [screenSharing, setScreenSharing] = useState(false);
 	const [isGridView, setIsGridView] = useState(true);
-	const [showMembers, setShowMembers] = useState(false);
+	const [pinnedTrackId, setPinnedTrackId] = useState<string>();
+	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -391,19 +444,21 @@ export function MezonSfuVoiceRoom({
 		dispatch(toastActions.addToast({ message: error, type: 'error', autoClose: 3000 }));
 	}, [dispatch, error]);
 
-	const findUplinkVideoSender = useCallback(() => {
+	const findUplinkVideoSender = useCallback((mid = '1') => {
 		const pc = pcRef.current;
 		if (!pc) return null;
 		const transceiver =
-			pc.getTransceivers().find((item) => item.mid === '1') ||
-			pc.getTransceivers().find((item) => item.sender.track?.kind === 'video') ||
-			pc
-				.getTransceivers()
-				.find(
-					(item) =>
-						item.receiver.track.kind === 'video' &&
-						(item.direction === 'sendonly' || item.direction === 'sendrecv' || item.direction === 'inactive')
-				);
+			pc.getTransceivers().find((item) => item.mid === mid) ||
+			(mid === '1'
+				? pc.getTransceivers().find((item) => item.sender.track?.kind === 'video') ||
+					pc
+						.getTransceivers()
+						.find(
+							(item) =>
+								item.receiver.track.kind === 'video' &&
+								(item.direction === 'sendonly' || item.direction === 'sendrecv' || item.direction === 'inactive')
+						)
+				: undefined);
 		return transceiver?.sender || null;
 	}, []);
 
@@ -429,16 +484,18 @@ export function MezonSfuVoiceRoom({
 			const next = new Map(current);
 			for (const transceiver of pc.getTransceivers()) {
 				const mid = transceiver.mid;
-				if (!mid || mid === '0' || mid === '1' || leftRemoteMidsRef.current.has(mid)) continue;
+				if (!mid || mid === '0' || mid === '1' || mid === '2' || leftRemoteMidsRef.current.has(mid)) continue;
 				const track = transceiver.receiver.track;
 				if (!track || track.readyState === 'ended') continue;
 				const direction = transceiver.currentDirection || transceiver.direction;
 				const id = getRemoteParticipantId(mid);
+				const mediaKind = getRemoteMediaKind(mid);
 				if (direction === 'inactive' || direction === 'stopped') {
 					const inactiveParticipant = next.get(id);
 					if (inactiveParticipant) {
-						if (track.kind === 'audio') inactiveParticipant.audio = undefined;
-						if (track.kind === 'video') inactiveParticipant.video = undefined;
+						if (track.kind === 'audio' && inactiveParticipant.audio === track) inactiveParticipant.audio = undefined;
+						if (mediaKind === 'camera' && inactiveParticipant.video === track) inactiveParticipant.video = undefined;
+						if (mediaKind === 'screen' && inactiveParticipant.screen === track) inactiveParticipant.screen = undefined;
 						next.set(id, inactiveParticipant);
 					}
 					continue;
@@ -446,7 +503,8 @@ export function MezonSfuVoiceRoom({
 				const participant = next.get(id) || { id };
 				participant.userId = getUserIdFromTrackId(track.id) || participant.userId;
 				if (track.kind === 'audio') participant.audio = track;
-				if (track.kind === 'video') participant.video = track;
+				if (mediaKind === 'camera') participant.video = track;
+				if (mediaKind === 'screen') participant.screen = track;
 				next.set(id, participant);
 			}
 			return next;
@@ -461,11 +519,12 @@ export function MezonSfuVoiceRoom({
 			const audioSender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
 			if (audioSender) void audioSender.replaceTrack(microphoneEnabled ? audioTrack : null);
 		}
+		if (joinedRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
+			wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !microphoneEnabled }));
+		}
 	}, [cameraEnabled, microphoneEnabled]);
 
 	useEffect(() => {
-		if (screenStreamRef.current) return;
-
 		const cameraTrack = cameraTrackRef.current;
 		const videoSender = findUplinkVideoSender();
 		const ws = wsRef.current;
@@ -483,7 +542,7 @@ export function MezonSfuVoiceRoom({
 				console.error('[MezonSFU][camera] replaceTrack failed', cause);
 			}
 
-			if (ws?.readyState === WebSocket.OPEN) {
+			if (joinedRef.current && ws?.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(signal));
 			} else {
 				// eslint-disable-next-line no-console
@@ -534,7 +593,7 @@ export function MezonSfuVoiceRoom({
 					const previousTrack = cameraTrackRef.current;
 					nextTrack.enabled = cameraEnabled;
 					cameraTrackRef.current = nextTrack;
-					if (!screenStreamRef.current) await findUplinkVideoSender()?.replaceTrack(cameraEnabled ? nextTrack : null);
+					await findUplinkVideoSender()?.replaceTrack(nextTrack);
 					if (previousTrack) {
 						localStream.removeTrack(previousTrack);
 						previousTrack.stop();
@@ -599,12 +658,14 @@ export function MezonSfuVoiceRoom({
 			const mid = transceiver.mid;
 			if (mid && leftRemoteMidsRef.current.has(mid)) return;
 			const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
+			const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
 			setRemoteMedia((current) => {
 				const next = new Map(current);
 				const participant = next.get(id) || { id };
 				participant.userId = getUserIdFromTrackId(track.id) || participant.userId;
 				if (track.kind === 'audio') participant.audio = track;
-				if (track.kind === 'video') participant.video = track;
+				if (mediaKind === 'camera') participant.video = track;
+				if (mediaKind === 'screen') participant.screen = track;
 				next.set(id, participant);
 				return next;
 			});
@@ -616,9 +677,10 @@ export function MezonSfuVoiceRoom({
 					const next = new Map(current);
 					const participant = next.get(id);
 					if (!participant) return next;
-					if (track.kind === 'audio') participant.audio = undefined;
-					if (track.kind === 'video') participant.video = undefined;
-					if (!participant.audio && !participant.video) next.delete(id);
+					if (track.kind === 'audio' && participant.audio === track) participant.audio = undefined;
+					if (mediaKind === 'camera' && participant.video === track) participant.video = undefined;
+					if (mediaKind === 'screen' && participant.screen === track) participant.screen = undefined;
+					if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
 					else next.set(id, participant);
 					return next;
 				});
@@ -648,7 +710,7 @@ export function MezonSfuVoiceRoom({
 				if (!localTracksAddedRef.current) {
 					const audioTrack = localStream.getAudioTracks()[0];
 					const cameraTrack = localStream.getVideoTracks()[0];
-					const videoTrack = screenStreamRef.current?.getVideoTracks()[0] || (desiredMediaRef.current.cameraEnabled ? cameraTrack : null);
+					const videoTrack = cameraTrack || null;
 					const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 					const videoTransceiver = uplinkVideoTransceiver;
 					if (audioTransceiver) {
@@ -659,10 +721,16 @@ export function MezonSfuVoiceRoom({
 						await videoTransceiver.sender.replaceTrack(videoTrack);
 						videoTransceiver.direction = 'sendonly';
 					}
+					const screenTrack = screenStreamRef.current?.getVideoTracks()[0] || null;
+					const screenTransceiver = pc.getTransceivers().find((item) => item.mid === '2');
+					if (screenTransceiver && screenTrack) {
+						await screenTransceiver.sender.replaceTrack(screenTrack);
+						screenTransceiver.direction = 'sendonly';
+					}
 					localTracksAddedRef.current = true;
 				} else if (screenStreamRef.current) {
 					const screenTrack = screenStreamRef.current.getVideoTracks()[0];
-					const sender = findUplinkVideoSender();
+					const sender = findUplinkVideoSender('2');
 					if (screenTrack && sender && sender.track !== screenTrack) {
 						await sender.replaceTrack(screenTrack);
 						await applyScreenEncodingParams(sender);
@@ -672,6 +740,12 @@ export function MezonSfuVoiceRoom({
 				syncRemoteMedia(pc);
 				if (wsRef.current?.readyState === WebSocket.OPEN && pc.localDescription?.sdp) {
 					wsRef.current.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp }));
+				}
+				// Attach the camera while creating the first answer so its SSRC is
+				// negotiated, then detach it when camera is off. Keeping a disabled
+				// track attached can produce black frames that look like live video.
+				if (!desiredMediaRef.current.cameraEnabled) {
+					await findUplinkVideoSender()?.replaceTrack(null);
 				}
 			} catch (cause) {
 				setError(cause instanceof Error ? cause.message : 'WebRTC negotiation failed');
@@ -697,7 +771,7 @@ export function MezonSfuVoiceRoom({
 				setConnectionState('joining');
 				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: 'speaker' }));
 				const sendVisibility = () => {
-					if (ws.readyState === WebSocket.OPEN)
+					if (joinedRef.current && ws.readyState === WebSocket.OPEN)
 						ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				};
 				document.addEventListener('visibilitychange', sendVisibility);
@@ -710,10 +784,19 @@ export function MezonSfuVoiceRoom({
 				} catch {
 					return;
 				}
+				if (typeof message.participant_count === 'number') {
+					setRoomParticipantCount(message.participant_count);
+				}
 				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong' }));
 				if (message.type === 'joined') {
 					setError(undefined);
 					setConnectionState('awaiting offer');
+				}
+				if (message.type === 'room_snapshot' && !joinedRef.current) {
+					joinedRef.current = true;
+					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
+					ws.send(JSON.stringify({ type: desiredMediaRef.current.cameraEnabled ? 'publish' : 'unpublish' }));
+					ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				}
 				if (message.type === 'offer' && message.sdp) void handleOffer(message.sdp);
 				if (message.type === 'peer_left') {
@@ -723,7 +806,9 @@ export function MezonSfuVoiceRoom({
 						message,
 						peer: getPeerDebugSnapshot(pc)
 					});
-					const mids = [message.mid_audio, message.mid_video].filter((mid) => mid != null && String(mid) !== '0').map(String);
+					const mids = [message.mid_audio, message.mid_video, message.mid_screen]
+						.filter((mid) => mid != null && String(mid) !== '0')
+						.map(String);
 					setRemoteMedia((current) => {
 						const next = new Map(current);
 						mids.forEach((mid) => {
@@ -765,6 +850,7 @@ export function MezonSfuVoiceRoom({
 			screenStreamRef.current?.getTracks().forEach((track) => track.stop());
 			wsRef.current = null;
 			pcRef.current = null;
+			joinedRef.current = false;
 			localTracksAddedRef.current = false;
 			negotiatingRef.current = false;
 			pendingOfferRef.current = null;
@@ -774,30 +860,41 @@ export function MezonSfuVoiceRoom({
 	const toggleScreenShare = async () => {
 		const pc = pcRef.current;
 		if (!pc) return;
-		const sender = findUplinkVideoSender();
+		const sender = findUplinkVideoSender('2');
 		if (screenStreamRef.current) {
 			screenStreamRef.current.getTracks().forEach((track) => {
 				track.onended = null;
 				track.stop();
 			});
 			screenStreamRef.current = null;
-			if (sender) await sender.replaceTrack(cameraEnabled ? cameraTrackRef.current : null);
+			if (sender) await sender.replaceTrack(null);
 			if (wsRef.current?.readyState === WebSocket.OPEN) {
-				wsRef.current.send(JSON.stringify({ type: cameraEnabled ? 'publish' : 'unpublish' }));
+				wsRef.current.send(JSON.stringify({ type: 'share_screen', active: false }));
 			}
 			setScreenSharing(false);
 			setLocalPreview(localStreamRef.current || undefined);
 			return;
 		}
 		try {
+			const CaptureControllerConstructor = (
+				window as typeof window & { CaptureController?: new () => ScreenCaptureController }
+			).CaptureController;
+			const captureController = CaptureControllerConstructor ? new CaptureControllerConstructor() : undefined;
 			const stream = await navigator.mediaDevices.getDisplayMedia({
 				video: {
 					width: { ideal: 1280 },
 					height: { ideal: 720 },
 					frameRate: { ideal: 15, max: 30 }
 				},
-				audio: false
-			});
+				audio: false,
+				...(captureController ? { controller: captureController } : {})
+			} as DisplayMediaStreamOptions);
+			try {
+				captureController?.setFocusBehavior('focus-capturing-application');
+			} catch {
+				// Browsers may expose CaptureController without conditional focus.
+			}
+			window.focus();
 			const track = stream.getVideoTracks()[0];
 			if (!track) throw new Error('Unable to get the screen track');
 			track.contentHint = 'detail';
@@ -811,8 +908,7 @@ export function MezonSfuVoiceRoom({
 			if (transceiver && transceiver.direction !== 'sendonly' && transceiver.direction !== 'sendrecv') transceiver.direction = 'sendonly';
 			await applyScreenEncodingParams(sender);
 			setScreenSharing(true);
-			setLocalPreview(stream);
-			wsRef.current?.send(JSON.stringify({ type: 'share_screen' }));
+			wsRef.current?.send(JSON.stringify({ type: 'share_screen', active: true }));
 			track.onended = () => void toggleScreenShare();
 		} catch (cause) {
 			setError(cause instanceof Error ? cause.message : 'Unable to share the screen');
@@ -820,8 +916,8 @@ export function MezonSfuVoiceRoom({
 	};
 
 	const participants = Array.from(remoteMedia.values());
-	const participantCount = participants.length + 1;
-	const isSolo = participants.length === 0;
+	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
+	const isSolo = participants.length === 0 && !screenSharing;
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
 	const cameras = devices.filter((device) => device.kind === 'videoinput');
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
@@ -845,6 +941,65 @@ export function MezonSfuVoiceRoom({
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) || currentUserId || 'Mezon';
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
 	const localSpeaking = useSpeaking(localAudioTrack, microphoneEnabled);
+	const conferenceTiles: Array<{ id: string; content: ReactNode }> = [
+		{
+			id: 'local-camera',
+			content: (
+				<div
+					className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
+						localSpeaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
+					}`}
+				>
+					{localPreview && cameraEnabled ? (
+						<Video stream={localPreview} muted mirrored />
+					) : (
+						<div className="flex h-full items-center justify-center bg-[#5d5f66]">
+							<AvatarImage
+								username={localDisplayName}
+								alt={localDisplayName}
+								src={localAvatar}
+								srcImgProxy={localAvatar ? createImgproxyUrl(localAvatar) : undefined}
+								className="!h-20 !w-20 !min-h-20 !min-w-20"
+							/>
+						</div>
+					)}
+					<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
+						{!microphoneEnabled ? <Icons.VoiceMicDisabledIcon /> : null}
+						{localDisplayName}
+					</span>
+				</div>
+			)
+		}
+	];
+	if (screenSharing && screenStreamRef.current) {
+		conferenceTiles.push({
+			id: 'local-screen',
+			content: (
+				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
+					<Video stream={screenStreamRef.current} muted fit="contain" />
+					<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">
+						{t('usernameScreen', { username: localDisplayName })}
+					</span>
+				</div>
+			)
+		});
+	}
+	participants.forEach((participant) => {
+		const profile = getParticipantProfile(participant);
+		conferenceTiles.push({
+			id: `${participant.id}-camera`,
+			content: <ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} />
+		});
+		if (participant.screen) {
+			conferenceTiles.push({
+				id: `${participant.id}-screen`,
+				content: <ScreenShareTile participant={participant} displayName={profile.displayName} />
+			});
+		}
+	});
+	const preferredFocusTrack = conferenceTiles.find((tile) => tile.id.endsWith('-screen'))?.id || conferenceTiles[0]?.id;
+	const activePinnedTrackId = conferenceTiles.some((tile) => tile.id === pinnedTrackId) ? pinnedTrackId : preferredFocusTrack;
+	const pinnedTile = conferenceTiles.find((tile) => tile.id === activePinnedTrackId);
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
@@ -868,80 +1023,79 @@ export function MezonSfuVoiceRoom({
 					>
 						{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
 					</button>
-					<div className="relative">
-						<button
-							type="button"
-							className="flex items-center gap-1"
-							title="Participant list"
-							onClick={() => setShowMembers((value) => !value)}
-						>
-							<Icons.MemberList defaultFill="text-white" />
-							<span>{participantCount}</span>
-						</button>
-						{showMembers && (
-							<div className="absolute right-0 top-9 w-56 rounded-lg bg-zinc-800 p-2 shadow-xl">
-								<div className="flex items-center gap-2 rounded px-3 py-2 text-sm">
-									<AvatarImage username={localDisplayName} alt={localDisplayName} src={localAvatar} className="!h-6 !w-6" />
-									<span className="truncate">{localDisplayName}</span>
-								</div>
-								{participants.map((participant) => {
-									const profile = getParticipantProfile(participant);
-									return (
-										<div key={participant.id} className="flex items-center gap-2 rounded px-3 py-2 text-sm">
-											<AvatarImage
-												username={profile.displayName}
-												alt={profile.displayName}
-												src={profile.avatar}
-												className="!h-6 !w-6"
-											/>
-											<span className="truncate">{profile.displayName}</span>
-										</div>
-									);
-								})}
-							</div>
-						)}
-					</div>
 					<button type="button" title={t('chat')} className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''} onClick={onToggleChat}>
 						<Icons.Chat className="h-5 w-5" />
 					</button>
 				</div>
 			</header>
 
-			<main
-				className={`grid min-h-0 flex-1 gap-3 p-4 ${isGridView ? 'grid-cols-[repeat(auto-fit,minmax(260px,1fr))]' : 'grid-cols-1'} ${
-					isSolo ? 'grid-rows-[minmax(0,1fr)] overflow-hidden' : 'auto-rows-min overflow-y-auto'
-				}`}
-			>
-				<div
-					className={`relative overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
-						isSolo ? 'min-h-0 h-full' : 'aspect-video'
-					} ${localSpeaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'}`}
+			{isGridView ? (
+				<main
+					className={`grid min-h-0 flex-1 grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3 p-4 ${
+						isSolo ? 'grid-rows-[minmax(0,1fr)] overflow-hidden' : 'auto-rows-min overflow-y-auto'
+					}`}
 				>
-					{localPreview && (cameraEnabled || screenSharing) ? (
-						<Video stream={localPreview} muted mirrored={!screenSharing} fit={screenSharing ? 'contain' : 'cover'} />
-					) : (
-						<div className="flex h-full items-center justify-center bg-[#5d5f66]">
-							<AvatarImage
-								username={localDisplayName}
-								alt={localDisplayName}
-								src={localAvatar}
-								srcImgProxy={localAvatar ? createImgproxyUrl(localAvatar) : undefined}
-								className="!h-20 !w-20 !min-h-20 !min-w-20"
-							/>
+					{conferenceTiles.map((tile) => (
+						<button
+							key={tile.id}
+							type="button"
+							className="min-w-0 text-left"
+							title="Pin this track"
+							onClick={() => {
+								setPinnedTrackId(tile.id);
+								setIsGridView(false);
+							}}
+						>
+							{tile.content}
+						</button>
+					))}
+				</main>
+			) : (
+				<main className="relative flex min-h-0 flex-1 flex-col gap-3 p-4">
+					<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]">
+						<div className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto">
+							{pinnedTile?.content}
 						</div>
+					</div>
+					{conferenceTiles.length > 1 && (
+						<>
+							<button
+								type="button"
+								className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-3 py-1.5 text-sm text-white shadow-lg transition-[bottom,background-color] hover:bg-zinc-800 ${
+									showFocusThumbnails ? 'bottom-[9.25rem]' : 'bottom-3'
+								}`}
+								title={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
+								aria-label={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
+								onClick={() => setShowFocusThumbnails((value) => !value)}
+							>
+								{showFocusThumbnails ? (
+									<Icons.VoiceArowDownIcon className="h-3 w-3" />
+								) : (
+									<Icons.VoiceArowUpIcon className="h-3 w-3" />
+								)}
+								<Icons.MemberList defaultFill="text-white" />
+								<span>{participantCount}</span>
+							</button>
+							{showFocusThumbnails && (
+								<div className="flex h-36 shrink-0 gap-3 overflow-x-auto pb-1">
+									{conferenceTiles
+										.filter((tile) => tile.id !== activePinnedTrackId)
+										.map((tile) => (
+											<button
+												key={tile.id}
+												type="button"
+												className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
+												onClick={() => setPinnedTrackId(tile.id)}
+											>
+												{tile.content}
+											</button>
+										))}
+								</div>
+							)}
+						</>
 					)}
-					<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
-						{!microphoneEnabled ? <Icons.VoiceMicDisabledIcon /> : null}
-						{screenSharing ? t('usernameScreen', { username: localDisplayName }) : localDisplayName}
-					</span>
-				</div>
-				{participants.map((participant) => {
-					const profile = getParticipantProfile(participant);
-					return (
-						<ParticipantTile key={participant.id} participant={participant} displayName={profile.displayName} avatar={profile.avatar} />
-					);
-				})}
-			</main>
+				</main>
+			)}
 
 			<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3">
 				<div className="flex justify-start gap-4">
