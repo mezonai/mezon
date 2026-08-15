@@ -106,21 +106,13 @@ const VoiceInfo = React.memo(() => {
 
 	const handleToggleShareCamera = useCallback(() => {
 		const btnControl = document.getElementById('btn-meet-camera');
-		if (!btnControl) {
-			return;
-		}
 		btnControl?.click();
-		dispatch(voiceActions.setShowCamera(btnControl.dataset.lkEnabled?.toLowerCase() === 'true'));
-	}, [dispatch]);
+	}, []);
 
 	const handleToggleOpenMicro = useCallback(() => {
 		const btnControl = document.getElementById('btn-meet-micro');
-		if (!btnControl) {
-			return;
-		}
 		btnControl?.click();
-		dispatch(voiceActions.setShowMicrophone(btnControl.dataset.lkEnabled?.toLowerCase() === 'true'));
-	}, [dispatch]);
+	}, []);
 
 	const linkVoice = useMemo(() => {
 		if (currentVoiceInfo) {
