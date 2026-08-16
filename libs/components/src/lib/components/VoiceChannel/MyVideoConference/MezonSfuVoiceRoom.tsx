@@ -160,12 +160,14 @@ const Video = ({
 	muted = false,
 	mirrored = false,
 	fit = 'cover',
+	keepLastFrame = false,
 	onFrameStateChange
 }: {
 	stream: MediaStream;
 	muted?: boolean;
 	mirrored?: boolean;
 	fit?: 'cover' | 'contain';
+	keepLastFrame?: boolean;
 	onFrameStateChange?: (hasRecentFrame: boolean) => void;
 }) => {
 	const ref = useRef<HTMLVideoElement>(null);
@@ -200,7 +202,7 @@ const Video = ({
 			if (disposed) return;
 			onFrameStateChange(true);
 			window.clearTimeout(noFrameTimer);
-			noFrameTimer = window.setTimeout(markNoFrame, REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS);
+			if (!keepLastFrame) noFrameTimer = window.setTimeout(markNoFrame, REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS);
 			frameCallbackId = video.requestVideoFrameCallback(handleFrame);
 		};
 		onFrameStateChange(false);
@@ -211,7 +213,7 @@ const Video = ({
 			window.clearTimeout(noFrameTimer);
 			video.cancelVideoFrameCallback(frameCallbackId);
 		};
-	}, [onFrameStateChange, stream]);
+	}, [keepLastFrame, onFrameStateChange, stream]);
 	return (
 		<video
 			ref={ref}
@@ -288,7 +290,7 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 	return (
 		<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 			<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'opacity-0'}`}>
-				<Video stream={stream} fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
+				<Video stream={stream} fit="contain" keepLastFrame onFrameStateChange={handleVideoFrameStateChange} />
 			</div>
 			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
 			<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">{displayName} — Screen</span>
@@ -867,7 +869,13 @@ export function MezonSfuVoiceRoom({
 				track.stop();
 			});
 			screenStreamRef.current = null;
-			if (sender) await sender.replaceTrack(null);
+			if (sender) {
+				await sender.replaceTrack(null);
+				const transceiver = pc.getTransceivers().find((item) => item.sender === sender);
+				if (transceiver && transceiver.direction !== 'recvonly' && transceiver.direction !== 'inactive') {
+					transceiver.direction = 'recvonly';
+				}
+			}
 			if (wsRef.current?.readyState === WebSocket.OPEN) {
 				wsRef.current.send(JSON.stringify({ type: 'share_screen', active: false }));
 			}
@@ -876,9 +884,8 @@ export function MezonSfuVoiceRoom({
 			return;
 		}
 		try {
-			const CaptureControllerConstructor = (
-				window as typeof window & { CaptureController?: new () => ScreenCaptureController }
-			).CaptureController;
+			const CaptureControllerConstructor = (window as typeof window & { CaptureController?: new () => ScreenCaptureController })
+				.CaptureController;
 			const captureController = CaptureControllerConstructor ? new CaptureControllerConstructor() : undefined;
 			const stream = await navigator.mediaDevices.getDisplayMedia({
 				video: {
@@ -898,15 +905,15 @@ export function MezonSfuVoiceRoom({
 			const track = stream.getVideoTracks()[0];
 			if (!track) throw new Error('Unable to get the screen track');
 			track.contentHint = 'detail';
-			if (!sender) {
-				stream.getTracks().forEach((mediaTrack) => mediaTrack.stop());
-				throw new Error('The video sender has not been negotiated by the SFU');
-			}
 			screenStreamRef.current = stream;
-			await sender.replaceTrack(track);
-			const transceiver = pc.getTransceivers().find((item) => item.sender === sender);
-			if (transceiver && transceiver.direction !== 'sendonly' && transceiver.direction !== 'sendrecv') transceiver.direction = 'sendonly';
-			await applyScreenEncodingParams(sender);
+			if (sender) {
+				await sender.replaceTrack(track);
+				const transceiver = pc.getTransceivers().find((item) => item.sender === sender);
+				if (transceiver && transceiver.direction !== 'sendonly' && transceiver.direction !== 'sendrecv') {
+					transceiver.direction = 'sendonly';
+				}
+				await applyScreenEncodingParams(sender);
+			}
 			setScreenSharing(true);
 			wsRef.current?.send(JSON.stringify({ type: 'share_screen', active: true }));
 			track.onended = () => void toggleScreenShare();
