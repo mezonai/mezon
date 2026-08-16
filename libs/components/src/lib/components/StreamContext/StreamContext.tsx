@@ -19,6 +19,88 @@ interface WebRTCProviderProps {
 	children: React.ReactNode;
 }
 
+interface StnMessage {
+	Key?: string;
+	Value?: unknown;
+	ClanId?: string;
+	ChannelId?: string;
+	UserId?: string;
+	ClientId?: string;
+	IsPublisher?: boolean;
+	State?: number;
+}
+
+type IceCandidateInitLike = RTCIceCandidateInit | RTCIceCandidate;
+
+const ICE_SERVERS: RTCIceServer[] = [
+	{ urls: 'stun:stun.l.google.com:19302' },
+	{
+		urls: process.env.NX_WEBRTC_ICESERVERS_URL as string,
+		username: process.env.NX_WEBRTC_ICESERVERS_USERNAME,
+		credential: process.env.NX_WEBRTC_ICESERVERS_CREDENTIAL
+	}
+].filter((server) => Boolean(server.urls));
+
+const waitIceGatheringComplete = (peerConnection: RTCPeerConnection, timeoutMs = 2000): Promise<void> => {
+	if (peerConnection.iceGatheringState === 'complete') {
+		return Promise.resolve();
+	}
+
+	return new Promise((resolve) => {
+		const onStateChange = () => {
+			if (peerConnection.iceGatheringState === 'complete') {
+				cleanup();
+				resolve();
+			}
+		};
+		const timeoutId = window.setTimeout(() => {
+			cleanup();
+			resolve();
+		}, timeoutMs);
+
+		const cleanup = () => {
+			window.clearTimeout(timeoutId);
+			peerConnection.removeEventListener('icegatheringstatechange', onStateChange);
+		};
+
+		peerConnection.addEventListener('icegatheringstatechange', onStateChange);
+	});
+};
+
+const extractAnswerSdp = (value: unknown): string | null => {
+	if (typeof value === 'string' && value.length > 0) {
+		return value;
+	}
+	if (value && typeof value === 'object' && 'sdp' in value) {
+		const sdp = (value as { sdp?: unknown }).sdp;
+		if (typeof sdp === 'string' && sdp.length > 0) {
+			return sdp;
+		}
+	}
+	return null;
+};
+
+const toIceCandidateInit = (value: unknown): RTCIceCandidateInit | null => {
+	if (!value) {
+		return null;
+	}
+	if (typeof value === 'string') {
+		try {
+			const parsed = JSON.parse(value) as RTCIceCandidateInit;
+			return parsed?.candidate ? parsed : null;
+		} catch {
+			return null;
+		}
+	}
+	if (typeof value === 'object') {
+		const candidate = value as RTCIceCandidateInit;
+		if (candidate.candidate) {
+			return candidate;
+		}
+	}
+	return null;
+};
+
 const WebRTCStreamContext = createContext<WebRTCContextType | null>(null);
 
 export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
@@ -29,8 +111,30 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	const streamVideoRef = useRef<HTMLVideoElement>(null);
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
+	const remoteStreamRef = useRef<MediaStream>(new MediaStream());
+	const pendingLocalIceRef = useRef<IceCandidateInitLike[]>([]);
+	const pendingRemoteIceRef = useRef<RTCIceCandidateInit[]>([]);
+	const remoteDescReadyRef = useRef(false);
+	const localTrickleReadyRef = useRef(false);
 	const [isStream, setIsStream] = useState(false);
 	const [isPlaybackBlocked, setIsPlaybackBlocked] = useState(false);
+
+	const resetMediaFlags = useCallback(() => {
+		dispatch(videoStreamActions.setIsRemoteVideoStream(false));
+		dispatch(videoStreamActions.setIsRemoteAudioStream(false));
+	}, [dispatch]);
+
+	const clearVideoElement = useCallback(() => {
+		const videoElement = streamVideoRef.current;
+		if (videoElement) {
+			videoElement.srcObject = null;
+		}
+		remoteStreamRef.current.getTracks().forEach((track) => {
+			remoteStreamRef.current.removeTrack(track);
+			track.stop();
+		});
+		remoteStreamRef.current = new MediaStream();
+	}, []);
 
 	const retryPlayback = useCallback(async () => {
 		const videoElement = streamVideoRef.current;
@@ -40,7 +144,6 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		try {
 			await videoElement.play();
 			setIsPlaybackBlocked(false);
-			console.log('play success');
 			return true;
 		} catch (err) {
 			console.error(err, 'error');
@@ -49,96 +152,169 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		}
 	}, []);
 
+	const attachRemoteStream = useCallback(() => {
+		const videoElement = streamVideoRef.current;
+		if (!videoElement) {
+			return;
+		}
+		if (videoElement.srcObject !== remoteStreamRef.current) {
+			videoElement.srcObject = remoteStreamRef.current;
+		}
+		videoElement.autoplay = true;
+		videoElement.playsInline = true;
+		void retryPlayback();
+	}, [retryPlayback]);
+
+	const syncTrackFlags = useCallback(() => {
+		const stream = remoteStreamRef.current;
+		const hasLiveVideo = stream.getVideoTracks().some((track) => track.readyState === 'live' && !track.muted);
+		const hasLiveAudio = stream.getAudioTracks().some((track) => track.readyState === 'live' && !track.muted);
+		dispatch(videoStreamActions.setIsRemoteVideoStream(hasLiveVideo));
+		dispatch(videoStreamActions.setIsRemoteAudioStream(hasLiveAudio));
+	}, [dispatch]);
+
+	const bindTrackListeners = useCallback(
+		(track: MediaStreamTrack) => {
+			const updateFlags = () => {
+				syncTrackFlags();
+			};
+			track.onmute = updateFlags;
+			track.onunmute = updateFlags;
+			track.onended = () => {
+				try {
+					remoteStreamRef.current.removeTrack(track);
+				} catch {
+					// ignore
+				}
+				syncTrackFlags();
+			};
+			syncTrackFlags();
+		},
+		[syncTrackFlags]
+	);
+
 	useEffect(() => {
-		const checkSupport = () => {
-			const supported = !!(
-				navigator.mediaDevices?.getUserMedia ||
-				(navigator as any).webkitGetUserMedia ||
-				(navigator as any).mozGetUserMedia ||
-				(navigator as any).msGetUserMedia ||
-				window.RTCPeerConnection
-			);
-			setIsSupported(supported);
+		const legacyNavigator = navigator as Navigator & {
+			webkitGetUserMedia?: unknown;
+			mozGetUserMedia?: unknown;
+			msGetUserMedia?: unknown;
 		};
-		checkSupport();
+		const supported = !!(
+			navigator.mediaDevices?.getUserMedia ||
+			legacyNavigator.webkitGetUserMedia ||
+			legacyNavigator.mozGetUserMedia ||
+			legacyNavigator.msGetUserMedia ||
+			window.RTCPeerConnection
+		);
+		setIsSupported(supported);
 	}, []);
 
-	// WebSocket handling
 	const wsSend = useCallback((message: Record<string, unknown>) => {
-		const jsonStr = JSON.stringify(message);
 		if (wsRef.current?.readyState === WebSocket.OPEN) {
-			wsRef.current.send(jsonStr);
+			wsRef.current.send(JSON.stringify(message));
 		}
 	}, []);
 
-	// RTCPeerConnection handling
-	const initPeerConnection = useCallback(() => {
-		const peerConnection = new RTCPeerConnection({
-			iceServers: [
-				{
-					urls: 'stun:stun.l.google.com:19302'
-				}
-			]
+	const flushLocalIce = useCallback(() => {
+		localTrickleReadyRef.current = true;
+		const queued = pendingLocalIceRef.current.splice(0);
+		queued.forEach((candidate) => {
+			wsSend({
+				Key: 'ice_candidate',
+				Value: candidate
+			});
 		});
+	}, [wsSend]);
+
+	const flushRemoteIce = useCallback(async () => {
+		const peerConnection = pcRef.current;
+		if (!peerConnection) {
+			return;
+		}
+		const queued = pendingRemoteIceRef.current.splice(0);
+		for (const candidate of queued) {
+			try {
+				await peerConnection.addIceCandidate(candidate);
+			} catch (error) {
+				console.error('addIceCandidate queued failed', error);
+			}
+		}
+	}, []);
+
+	const initPeerConnection = useCallback(() => {
+		pcRef.current?.close();
+
+		pendingLocalIceRef.current = [];
+		pendingRemoteIceRef.current = [];
+		remoteDescReadyRef.current = false;
+		localTrickleReadyRef.current = false;
+		clearVideoElement();
+		resetMediaFlags();
+
+		const peerConnection = new RTCPeerConnection({
+			iceServers: ICE_SERVERS,
+			bundlePolicy: 'max-bundle'
+		});
+
+		peerConnection.addTransceiver('audio', { direction: 'recvonly' });
+		peerConnection.addTransceiver('video', { direction: 'recvonly' });
 
 		peerConnection.oniceconnectionstatechange = () => {
 			setConnectionState(peerConnection.iceConnectionState);
-			setIsConnected(peerConnection.iceConnectionState === 'connected');
+			setIsConnected(peerConnection.iceConnectionState === 'connected' || peerConnection.iceConnectionState === 'completed');
 		};
 
 		peerConnection.onicecandidate = (event) => {
-			if (event.candidate && event.candidate.candidate !== '') {
-				const message = {
-					Key: 'ice_candidate',
-					Value: event.candidate
-				};
-				wsSend(message);
+			if (!event.candidate || event.candidate.candidate === '') {
+				return;
 			}
+			const candidateInit = event.candidate.toJSON();
+			if (!localTrickleReadyRef.current) {
+				pendingLocalIceRef.current.push(candidateInit);
+				return;
+			}
+			wsSend({
+				Key: 'ice_candidate',
+				Value: candidateInit
+			});
 		};
 
 		peerConnection.ontrack = (event) => {
-			const remoteStream = event.streams[0];
-			if (streamVideoRef.current) {
-				streamVideoRef.current.srcObject = remoteStream;
-				streamVideoRef.current.autoplay = true;
-				streamVideoRef.current.controls = true;
-				void retryPlayback();
+			const track = event.track;
+			const existing = remoteStreamRef.current.getTracks().find((t) => t.id === track.id);
+			if (!existing) {
+				remoteStreamRef.current.addTrack(track);
 			}
-			remoteStream.getVideoTracks().forEach((track) => {
-				track.onmute = () => {
-					dispatch(videoStreamActions.setIsRemoteVideoStream(false));
-				};
-
-				track.onunmute = () => {
-					dispatch(videoStreamActions.setIsRemoteVideoStream(true));
-				};
-			});
-
-			remoteStream.getAudioTracks().forEach((track) => {
-				track.onmute = () => {
-					dispatch(videoStreamActions.setIsRemoteAudioStream(false));
-				};
-				track.onunmute = () => {
-					dispatch(videoStreamActions.setIsRemoteAudioStream(true));
-				};
-			});
+			bindTrackListeners(track);
+			attachRemoteStream();
+			setIsStream(true);
 		};
-
-		peerConnection.addTransceiver('audio');
 
 		pcRef.current = peerConnection;
 		return peerConnection;
-	}, [dispatch, retryPlayback, wsSend]);
+	}, [attachRemoteStream, bindTrackListeners, clearVideoElement, resetMediaFlags, wsSend]);
 
-	const startSession = useCallback((sd: string) => {
-		if (pcRef.current) {
-			try {
-				pcRef.current.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sd }));
-			} catch (e) {
-				alert(e);
+	const applyRemoteAnswer = useCallback(
+		async (value: unknown) => {
+			const peerConnection = pcRef.current;
+			const sdp = extractAnswerSdp(value);
+			if (!peerConnection || !sdp) {
+				console.error('sd_answer missing sdp');
+				return;
 			}
-		}
-	}, []);
+
+			try {
+				await peerConnection.setRemoteDescription({ type: 'answer', sdp });
+				remoteDescReadyRef.current = true;
+				await flushRemoteIce();
+				flushLocalIce();
+				setIsStream(true);
+			} catch (error) {
+				console.error('setRemoteDescription failed', error);
+			}
+		},
+		[flushLocalIce, flushRemoteIce]
+	);
 
 	const connect = useCallback(async () => {
 		if (!isSupported) {
@@ -150,10 +326,12 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		try {
 			const offer = await peerConnection.createOffer();
 			await peerConnection.setLocalDescription(offer);
+			await waitIceGatheringComplete(peerConnection);
+			const local = peerConnection.localDescription || offer;
 
 			wsSend({
-				Key: 'offer',
-				Value: offer
+				Key: 'session_subscriber',
+				Value: { type: local.type, sdp: local.sdp }
 			});
 		} catch (error) {
 			console.log(error, 'error');
@@ -162,96 +340,166 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	}, [wsSend, isSupported, initPeerConnection]);
 
 	const disconnect = useCallback(() => {
-		wsRef.current?.close();
-		pcRef.current?.close();
-		pcRef.current = null;
+		const ws = wsRef.current;
+		const pc = pcRef.current;
+
 		wsRef.current = null;
+		pcRef.current = null;
+		pendingLocalIceRef.current = [];
+		pendingRemoteIceRef.current = [];
+		remoteDescReadyRef.current = false;
+		localTrickleReadyRef.current = false;
+
+		try {
+			ws?.close();
+		} catch {
+			// ignore
+		}
+		try {
+			pc?.close();
+		} catch {
+			// ignore
+		}
+
+		clearVideoElement();
+		resetMediaFlags();
 		setIsConnected(false);
 		setConnectionState('closed');
 		setIsPlaybackBlocked(false);
-	}, []);
+		setIsStream(false);
+	}, [clearVideoElement, resetMediaFlags]);
 
 	const handleChannelClick = useCallback(
 		(clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => {
+			disconnect();
+
 			const wsUrl = process.env.NX_CHAT_APP_STREAM_WS_URL;
-			const websocket = new WebSocket(`${wsUrl}/ws?username=${username}&token=${accessToken}`);
+			if (!wsUrl || !accessToken) {
+				console.error('Missing stream WS url or access token');
+				return;
+			}
+
+			const targetChannelId = streamId || channelId;
+			const clientId = `web-${userId || username || 'anonymous'}`;
+			const websocket = new WebSocket(`${wsUrl}/ws?token=${encodeURIComponent(accessToken)}`);
+
 			try {
 				const peerConnection = initPeerConnection();
+
+				const sendEnvelope = (key: string, value?: unknown) => {
+					websocket.send(
+						JSON.stringify({
+							Key: key,
+							ClanId: clanId,
+							ChannelId: channelId,
+							UserId: userId,
+							ClientId: clientId,
+							IsPublisher: false,
+							State: 0,
+							...(value !== undefined ? { Value: value } : {})
+						})
+					);
+				};
+
+				const startSubscriberSession = async () => {
+					try {
+						const offer = await peerConnection.createOffer();
+						await peerConnection.setLocalDescription(offer);
+						await waitIceGatheringComplete(peerConnection);
+						const local = peerConnection.localDescription || offer;
+
+						sendEnvelope('session_subscriber', {
+							type: local.type,
+							sdp: local.sdp
+						});
+					} catch (error) {
+						console.error('failed to create subscriber offer', error);
+					}
+				};
+
 				websocket.onopen = () => {
-					const f = () => {
-						peerConnection
-							?.createOffer()
-							.then((d) => {
-								peerConnection?.setLocalDescription(d);
-								websocket.send(
-									JSON.stringify({
-										Key: 'session_subscriber',
-										ClanId: clanId,
-										ChannelId: channelId,
-										UserId: userId,
-										Value: d
-									})
-								);
-								websocket.send(
-									JSON.stringify({
-										Key: 'get_channels'
-									})
-								);
-							})
-							.catch((e) => {
-								console.log(e, 'error');
-							});
-					};
-					websocket.readyState === WebSocket.OPEN ? f() : websocket.addEventListener('open', f);
+					void startSubscriberSession();
 				};
 
 				websocket.onmessage = (event) => {
-					const data = JSON.parse(event.data);
-					if ('Key' in data) {
-						switch (data.Key) {
-							case 'channels':
-								if (data.Value.includes(streamId)) {
-									websocket.send(
-										JSON.stringify({
-											Key: 'connect_subscriber',
-											ClanId: clanId,
-											ChannelId: channelId,
-											UserId: userId,
-											Value: { ChannelId: streamId }
-										})
-									);
-									setIsStream(true);
-								} else {
-									setIsStream(false);
-								}
-								break;
-							case 'session_received':
-								break;
-							case 'error':
-								break;
-							case 'sd_answer':
-								startSession(data.Value);
-								break;
-							case 'ice_candidate':
-								pcRef.current?.addIceCandidate(data.Value);
-								break;
-							default:
-								break;
+					let data: StnMessage;
+					try {
+						data = JSON.parse(event.data) as StnMessage;
+					} catch (error) {
+						console.error('invalid STN message', error);
+						return;
+					}
+
+					if (!data?.Key) {
+						return;
+					}
+
+					switch (data.Key) {
+						case 'session_received':
+							sendEnvelope('connect_subscriber', { ChannelId: targetChannelId });
+							break;
+						case 'channels': {
+							const channels = Array.isArray(data.Value) ? data.Value.map(String) : [];
+							setIsStream(channels.includes(targetChannelId));
+							break;
 						}
+						case 'sd_answer':
+							void applyRemoteAnswer(data.Value);
+							break;
+						case 'ice_candidate': {
+							const candidate = toIceCandidateInit(data.Value);
+							if (!candidate) {
+								break;
+							}
+							if (!remoteDescReadyRef.current || !pcRef.current) {
+								pendingRemoteIceRef.current.push(candidate);
+								break;
+							}
+							void pcRef.current.addIceCandidate(candidate).catch((error) => {
+								console.error('addIceCandidate failed', error);
+							});
+							break;
+						}
+						case 'channel_closed':
+						case 'stream_track_ended':
+							setIsStream(false);
+							resetMediaFlags();
+							break;
+						case 'error':
+							console.error('STN error', data.Value);
+							break;
+						case 'info':
+							break;
+						default:
+							break;
 					}
 				};
 
 				websocket.onerror = (error) => {
-					console.log(error, 'error');
+					console.error('STN websocket error', error);
+				};
+
+				websocket.onclose = () => {
+					if (wsRef.current === websocket) {
+						setIsConnected(false);
+						setConnectionState('closed');
+					}
 				};
 
 				wsRef.current = websocket;
 			} catch (error) {
-				console.log(error, 'error');
+				console.error(error, 'error');
+				websocket.close();
 			}
 		},
-		[initPeerConnection, startSession]
+		[applyRemoteAnswer, disconnect, initPeerConnection, resetMediaFlags]
 	);
+
+	useEffect(() => {
+		return () => {
+			disconnect();
+		};
+	}, [disconnect]);
 
 	const value = {
 		isSupported,

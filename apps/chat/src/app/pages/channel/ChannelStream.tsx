@@ -31,7 +31,7 @@ interface MediaPlayerProps {
 	currentChannel?: ChannelsEntity | null;
 }
 
-function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
+function StreamWebRTCPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 	const { t } = useTranslation('channelStream');
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [isMuted, setIsMuted] = useState(false);
@@ -41,6 +41,14 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 	const [_errorLimitReached, _setErrorLimitReached] = useState(false);
 	const hideControlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const isRemoteVideoStream = useSelector(selectRemoteVideoStream);
+
+	useEffect(() => {
+		return () => {
+			if (hideControlsTimeoutRef.current) {
+				clearTimeout(hideControlsTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	const handleToggleMute = () => {
 		if (videoRef.current) {
@@ -117,27 +125,16 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 			onMouseMove={handleMouseMoveOrClick}
 			onClick={handleMouseMoveOrClick}
 		>
-			<div className="custom-video-container w-full h-full relative">
+			<div className="custom-video-container w-full h-full relative bg-black">
+				<video className="custom-video absolute inset-0 w-full h-full object-contain" ref={videoRef} autoPlay playsInline controls={false} />
 				{!isRemoteVideoStream && (
 					<img
 						src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
 						alt={t('streamThumbnail')}
-						className="w-full h-full object-cover"
+						className="absolute inset-0 w-full h-full object-cover"
 					/>
 				)}
-				<video
-					className={`custom-video w-full h-full object-contain ${isRemoteVideoStream ? 'block' : 'hidden'}`}
-					ref={videoRef}
-					autoPlay
-					playsInline
-					controls={false}
-				/>
-			</div>{' '}
-			{/* {isLoading && (
-				<div className="absolute top-0 left-0 w-full h-full bg-gray-400 flex justify-center items-center text-white text-xl z-50">
-					Loading...
-				</div>
-			)} */}
+			</div>
 			{_errorLimitReached && (
 				<div className="absolute top-0 left-0 w-full h-full bg-gray-400 flex justify-center items-center text-white text-xl z-50">
 					{t('videoError')}
@@ -418,7 +415,7 @@ export default function ChannelStream({
 							<div
 								className={`transition-all duration-300 h-full max-sm:w-full w-${showMembers && !isShowChatStream ? '[70%]' : '[100%]'}`}
 							>
-								<HLSPlayer videoRef={streamVideoRef} currentChannel={currentChannel} />
+								<StreamWebRTCPlayer videoRef={streamVideoRef} currentChannel={currentChannel} />
 								{isPlaybackBlocked && (
 									<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
 										<button
