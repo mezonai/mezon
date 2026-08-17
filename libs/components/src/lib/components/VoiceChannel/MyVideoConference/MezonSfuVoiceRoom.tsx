@@ -910,8 +910,8 @@ export function MezonSfuVoiceRoom({
 			const captureController = CaptureControllerConstructor ? new CaptureControllerConstructor() : undefined;
 			const stream = await navigator.mediaDevices.getDisplayMedia({
 				video: {
-					width: { ideal: 1280 },
-					height: { ideal: 720 },
+					width: { ideal: 640 },
+					height: { ideal: 360 },
 					frameRate: { ideal: 15, max: 30 }
 				},
 				audio: false,
