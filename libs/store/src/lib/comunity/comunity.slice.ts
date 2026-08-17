@@ -18,7 +18,7 @@ export interface ComunityState {
 	byClanId: Record<string, ComunityClanState>;
 	isLoading: boolean;
 	error: string | null;
-}
+}//new
 
 export const initialComunityState: ComunityState = {
 	byClanId: {},
