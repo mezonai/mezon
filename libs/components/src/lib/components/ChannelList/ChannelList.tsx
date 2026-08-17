@@ -493,6 +493,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 														: 'text-[var(--text-theme-primary)] hover:bg-black/5 dark:hover:bg-white/5'
 												}`}
 												title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
+												data-e2e={generateE2eId('clan_page.channel_list.button.drag_channel')}
 											>
 												<svg
 													xmlns="http://www.w3.org/2000/svg"

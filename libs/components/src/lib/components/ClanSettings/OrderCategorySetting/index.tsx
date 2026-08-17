@@ -3,6 +3,7 @@ import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } 
 import { CSS } from '@dnd-kit/utilities';
 import type { CategoriesEntity } from '@mezon/store';
 import { categoriesActions, selectAllCategories, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import type { ApiCategoryOrderUpdate } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,6 +104,7 @@ const SortableCategoryRow = ({ category, isLast }: SortableCategoryRowProps) => 
 			}`}
 			{...attributes}
 			{...listeners}
+			data-e2e={generateE2eId('clan_page.settings.category_order.item.category_name')}
 		>
 			<p className="p-2 truncate uppercase">{category.category_name}</p>
 		</div>
