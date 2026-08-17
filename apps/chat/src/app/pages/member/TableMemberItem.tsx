@@ -1,4 +1,5 @@
 import type { Coords } from '@mezon/components';
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { AvatarImage, ModalRemoveMemberClan, PanelMemberTable, UserProfileModalInner } from '@mezon/components';
 import { useChannelMembersActions, useMemberContext, useOnClickOutside, usePermissionChecker, useRoles } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
@@ -197,49 +198,50 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 
 	return (
 		<div
-			className="flex flex-row justify-between items-center h-[48px]  bg-item-hover cursor-pointer  border-b-theme-primary no-divider-last "
+			className="flex flex-row justify-between items-center h-[48px] bg-item-hover cursor-pointer border-b-theme-primary no-divider-last"
 			onContextMenu={handleContextMenu}
 			onClick={handleClickItem}
 			ref={itemRef}
 			data-e2e={generateE2eId('clan_page.member_list')}
 		>
-			<div className="flex-3 p-1">
-				<div className="flex flex-row gap-2 items-center" data-e2e={generateE2eId('clan_page.member_list.user_info')}>
+			<div className="flex-3 min-w-0 p-1">
+				<div className="flex flex-row gap-2 items-center min-w-0" data-e2e={generateE2eId('clan_page.member_list.user_info')}>
 					<AvatarImage
 						alt={username}
 						username={username}
-						className="min-w-9 min-h-9 max-w-9 max-h-9"
+						className="min-w-9 min-h-9 max-w-9 max-h-9 shrink-0"
 						srcImgProxy={createImgproxyUrl(avatar ?? '')}
 						src={avatar}
 					/>
-					<div className="flex flex-col">
+					<div className="flex flex-col min-w-0">
 						<p
-							className="text-base font-normal"
-							style={{
-								color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR
-							}}
+							className="text-base font-normal truncate"
+							style={{ color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR }}
 							data-e2e={generateE2eId('clan_page.member_list.user_info.display_name')}
 						>
 							{HighlightMatchBold(displayName, searchQuery)}
 						</p>
-						<p className="text-[11px] " data-e2e={generateE2eId('clan_page.member_list.user_info.username')}>
+						<p className="text-[11px] truncate" data-e2e={generateE2eId('clan_page.member_list.user_info.username')}>
 							{HighlightMatchBold(username, searchQuery)}
 						</p>
 					</div>
 				</div>
 			</div>
-			<div className="flex-1 p-1 text-center">
-				<span className="text-xs font-medium" data-e2e={generateE2eId('clan_page.member_list.member_since')}>
+
+			<div className="flex-1 min-w-0 p-1 text-center">
+				<span className="text-xs font-medium truncate block" data-e2e={generateE2eId('clan_page.member_list.member_since')}>
 					{memberSinceLabel || '-'}
 				</span>
 			</div>
-			<div className="flex-1 p-1 text-center">
-				<span className="text-xs font-medium" data-e2e={generateE2eId('clan_page.member_list.join_mezon')}>
+
+			<div className="flex-1 min-w-0 p-1 text-center">
+				<span className="text-xs font-medium truncate block" data-e2e={generateE2eId('clan_page.member_list.join_mezon')}>
 					{joinedMezonLabel || '-'}
 				</span>
 			</div>
-			<div className="flex-2 p-1 text-center">
-				<span className={'inline-flex items-center'}>
+
+			<div className="flex-2 min-w-0 p-1 text-center">
+				<span className="inline-flex items-center min-w-0 max-w-full">
 					{userRolesClan?.length ? (
 						<>
 							<RoleNameCard
@@ -248,12 +250,12 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 								roleIcon={userRolesClan.sortedRoles[0].role_icon || ''}
 							/>
 							{userRolesClan.length > 1 && (
-								<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-opacity-50  hoverIconBlackImportant ml-1">
+								<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-opacity-50 hoverIconBlackImportant ml-1 shrink-0">
 									<Tooltip
 										overlay={
-											<div className={'rounded p-1  flex flex-col items-start'}>
+											<div className="rounded p-1 flex flex-col items-start">
 												{userRolesClan.sortedRoles.slice(1).map((userRole) => (
-													<div className={'my-0.5'} key={userRole.id}>
+													<div className="my-0.5" key={userRole.id}>
 														<RoleNameCard
 															roleName={userRole.title || ''}
 															roleColor={userRole.color || ''}
@@ -276,14 +278,14 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						<Tooltip
 							overlay={
 								<div
-									className="rounded-lg p-1 bg-theme-contexify border-theme-primary  max-h-52 overflow-y-auto overflow-x-hidden scrollbar-hide"
+									className="rounded-lg p-1 bg-theme-contexify border-theme-primary max-h-52 overflow-y-auto overflow-x-hidden scrollbar-hide"
 									onClick={(e) => {
 										e.stopPropagation();
 										e.preventDefault();
 									}}
 								>
 									<div className="flex flex-col gap-1 max-w-72">
-										{<ListOptionRole userId={userId} rolesClanEntity={rolesClanEntity} userRolesClan={userRolesClan} />}
+										<ListOptionRole userId={userId} rolesClanEntity={rolesClanEntity} userRolesClan={userRolesClan} />
 									</div>
 								</div>
 							}
@@ -293,7 +295,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						>
 							<span
 								title={t('addRole')}
-								className="inline-flex justify-center gap-x-1 w-6 aspect-square items-center rounded bg-item-theme  hoverIconBlackImportant ml-1 text-base"
+								className="inline-flex justify-center gap-x-1 w-6 aspect-square items-center rounded bg-item-theme hoverIconBlackImportant ml-1 text-base shrink-0"
 								data-e2e={generateE2eId('clan_page.member_list.role_settings.add_role.button')}
 								onClick={(e) => {
 									e.stopPropagation();
@@ -306,8 +308,9 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 					)}
 				</span>
 			</div>
-			<div className="flex-1 p-1 text-center">
-				<span className="text-xs  font-medium uppercase">{t('signals')}</span>
+
+			<div className="flex-1 min-w-0 p-1 text-center">
+				<span className="text-xs font-medium uppercase truncate block">{t('signals')}</span>
 			</div>
 		</div>
 	);
