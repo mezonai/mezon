@@ -12,7 +12,7 @@ import type {
 } from 'livekit-client';
 import { DisconnectReason, Track } from 'livekit-client';
 import { memo, useEffect, useMemo, useRef } from 'react';
-import { ReactionCallHandler } from './Reaction';
+import { GiveFlowersVoiceHandle, ReactionCallHandler } from './Reaction';
 import { VideoConferenceLayout } from './VideoConferenceLayout';
 import { VoiceContextMenu } from './VoiceContextMenu/VoiceContextMenu';
 import { useScreenSharePublisher } from './hooks/useScreenSharePublisher';
@@ -215,6 +215,7 @@ export const MyVideoConference = memo(
 				<DeepFilterNetInitializer />
 				<VoiceTrackState />
 				<ReactionCallHandler />
+				<GiveFlowersVoiceHandle />
 				<PictureInPictureCleanup layoutContext={layoutContext} />
 				<RoomEventManager
 					room={room}
