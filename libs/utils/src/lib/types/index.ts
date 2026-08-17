@@ -1511,7 +1511,9 @@ export type IPermissonMedia = 'granted' | 'denied' | 'not_found';
 
 export enum AttachmentTypeUpload {
 	BLOB = 'blob:',
-	FILE = 'FILE',
+	FILE = 'file',
+	doc = 'doc',
+	audio = 'audio',
 	video = 'video',
 	image = 'image'
 }

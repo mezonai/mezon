@@ -29,7 +29,7 @@ export interface GalleryState {
 	>;
 }
 
-export type MediaFilterType = 'all' | 'image' | 'video';
+export type MediaFilterType = 'image' | 'video' | 'doc';
 
 type fetchGalleryAttachmentsPayload = {
 	clanId: string;
@@ -59,7 +59,7 @@ const fetchChannelAttachmentsCached = async (
 	const currentState = getState();
 	const attachmentState = currentState[GALLERY_FEATURE_KEY] as GalleryState;
 	const channelData = attachmentState.galleryByChannel[channelId];
-	const apiKey = createApiKey('galleryAttachments', limit || 50, after || '', before || '', channelId, clanId);
+	const apiKey = createApiKey('galleryAttachments', fileType, limit || 50, after || '', before || '', channelId, clanId);
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 	if (
@@ -150,9 +150,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 				.filter((att) => {
 					const isImage = att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX);
 					const isVideo = att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
-					if (mediaFilter === 'all') {
-						return isImage || isVideo;
-					} else if (mediaFilter === 'image') {
+					if (mediaFilter === 'image') {
 						return isImage;
 					} else if (mediaFilter === 'video') {
 						return isVideo;
@@ -289,10 +287,6 @@ export const gallerySlice = createSlice({
 				) => {
 					const { attachments, channelId, direction, fromCache } = action.payload;
 					const channelGallery = state.galleryByChannel[channelId];
-					if (fromCache) {
-						channelGallery.pagination.isLoading = false;
-						return;
-					}
 					if (!state.galleryByChannel[channelId]) {
 						state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 					}
@@ -309,17 +303,13 @@ export const gallerySlice = createSlice({
 						channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
 					}
 
-					if (direction === 'initial') {
-						channelGallery.attachments = attachments;
-					} else {
-						const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
-						const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
+					const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
+					const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
 
-						if (direction === 'after') {
-							channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
-						} else {
-							channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
-						}
+					if (direction === 'after') {
+						channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+					} else {
+						channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
 					}
 
 					channelGallery.pagination.isLoading = false;
