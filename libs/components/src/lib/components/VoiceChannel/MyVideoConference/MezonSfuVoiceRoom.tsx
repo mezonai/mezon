@@ -49,7 +49,24 @@ const getRemoteMediaKind = (mid: string) => {
 	return slot === 0 ? 'audio' : slot === 1 ? 'camera' : 'screen';
 };
 
-const getUserIdFromTrackId = (trackId: string) => /-u(\d+)(?:-|$)/.exec(trackId)?.[1];
+const getUserIdFromMsidPart = (msidPart: string) => /(?:^|-)u(\d+)(?:-|$)/.exec(msidPart)?.[1];
+
+const getUserIdsByMidFromSdp = (sdp: string) => {
+	const userIdsByMid = new Map<string, string>();
+	let currentMid: string | undefined;
+
+	for (const line of sdp.split(/\r?\n/)) {
+		if (line.startsWith('m=')) currentMid = undefined;
+		else if (line.startsWith('a=mid:')) currentMid = line.slice('a=mid:'.length).trim();
+		else if (currentMid && line.startsWith('a=msid:')) {
+			const msidParts = line.slice('a=msid:'.length).trim().split(/\s+/);
+			const userId = msidParts.map(getUserIdFromMsidPart).find(Boolean);
+			if (userId) userIdsByMid.set(currentMid, userId);
+		}
+	}
+
+	return userIdsByMid;
+};
 
 const getPeerDebugSnapshot = (pc: RTCPeerConnection) => ({
 	connectionState: pc.connectionState,
@@ -420,6 +437,7 @@ export function MezonSfuVoiceRoom({
 	const pendingOfferRef = useRef<string | null>(null);
 	const peerLeftPendingOfferRef = useRef(false);
 	const leftRemoteMidsRef = useRef(new Set<string>());
+	const userIdsByMidRef = useRef(new Map<string, string>());
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [error, setError] = useState<string>();
@@ -503,7 +521,7 @@ export function MezonSfuVoiceRoom({
 					continue;
 				}
 				const participant = next.get(id) || { id };
-				participant.userId = getUserIdFromTrackId(track.id) || participant.userId;
+				participant.userId = userIdsByMidRef.current.get(mid) || participant.userId;
 				if (track.kind === 'audio') participant.audio = track;
 				if (mediaKind === 'camera') participant.video = track;
 				if (mediaKind === 'screen') participant.screen = track;
@@ -664,7 +682,7 @@ export function MezonSfuVoiceRoom({
 			setRemoteMedia((current) => {
 				const next = new Map(current);
 				const participant = next.get(id) || { id };
-				participant.userId = getUserIdFromTrackId(track.id) || participant.userId;
+				participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
 				if (track.kind === 'audio') participant.audio = track;
 				if (mediaKind === 'camera') participant.video = track;
 				if (mediaKind === 'screen') participant.screen = track;
@@ -696,6 +714,7 @@ export function MezonSfuVoiceRoom({
 			}
 			negotiatingRef.current = true;
 			try {
+				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...getUserIdsByMidFromSdp(sdp)]);
 				if (peerLeftPendingOfferRef.current) {
 					// eslint-disable-next-line no-console
 					console.info('[MezonSFU][remaining peer] offer received after peer_left', {
@@ -786,6 +805,8 @@ export function MezonSfuVoiceRoom({
 				} catch {
 					return;
 				}
+				// eslint-disable-next-line no-console
+				console.info('[MezonSFU][signaling parsed]', message);
 				if (typeof message.participant_count === 'number') {
 					setRoomParticipantCount(message.participant_count);
 				}
@@ -843,7 +864,7 @@ export function MezonSfuVoiceRoom({
 			// eslint-disable-next-line no-console
 			console.info('[MezonSFU][leaving peer] closing signaling connection', {
 				wsReadyState: wsRef.current?.readyState,
-				peer: getPeerDebugSnapshot(pc)
+				peersFromSdp: Array.from(userIdsByMidRef.current, ([mid, userId]) => ({ mid, userId }))
 			});
 			removeVisibilityListener();
 			wsRef.current?.close();
