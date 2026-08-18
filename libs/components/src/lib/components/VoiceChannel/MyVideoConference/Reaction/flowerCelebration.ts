@@ -711,16 +711,30 @@ export const attachFlowerCelebration = (canvas: HTMLCanvasElement): FlowerCelebr
 
 	const resize = () => {
 		const dpr = Math.min(window.devicePixelRatio || 1, 2);
+		const host = canvas.parentElement;
+		const nextWidth = Math.max(1, Math.round(host?.clientWidth || canvas.clientWidth || 0));
+		const nextHeight = Math.max(1, Math.round(host?.clientHeight || canvas.clientHeight || 0));
+		const bufferWidth = Math.round(nextWidth * dpr);
+		const bufferHeight = Math.round(nextHeight * dpr);
 
-		width = canvas.clientWidth || window.innerWidth;
-		height = canvas.clientHeight || window.innerHeight;
+		if (width === nextWidth && height === nextHeight && canvas.width === bufferWidth && canvas.height === bufferHeight) {
+			return;
+		}
 
-		canvas.width = width * dpr;
-		canvas.height = height * dpr;
-		canvas.style.width = `${width}px`;
-		canvas.style.height = `${height}px`;
+		width = nextWidth;
+		height = nextHeight;
+
+		canvas.width = bufferWidth;
+		canvas.height = bufferHeight;
+		canvas.style.removeProperty('width');
+		canvas.style.removeProperty('height');
 
 		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+		if (scene) {
+			scene.x = width / 2;
+			scene.y = height / 2;
+		}
 	};
 
 	const start = () => {
@@ -785,7 +799,7 @@ export const attachFlowerCelebration = (canvas: HTMLCanvasElement): FlowerCelebr
 		resize();
 
 		const x = options?.x ?? width / 2;
-		const y = options?.y ?? height / 2 + 80;
+		const y = options?.y ?? height / 2;
 
 		scene = createGiftScene(x, y, options?.reducedMotion ?? prefersReducedMotion());
 		start();
@@ -806,9 +820,15 @@ export const attachFlowerCelebration = (canvas: HTMLCanvasElement): FlowerCelebr
 	const destroy = () => {
 		destroyed = true;
 		window.removeEventListener('resize', resize);
+		resizeObserver.disconnect();
 		stop();
 	};
 
+	const resizeObserver = new ResizeObserver(() => {
+		resize();
+	});
+
+	resizeObserver.observe(canvas.parentElement ?? canvas);
 	window.addEventListener('resize', resize);
 	resize();
 

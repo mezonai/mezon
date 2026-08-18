@@ -91,18 +91,11 @@ export const GiveFlowersVoiceHandle = memo(() => {
 	}, [clientRef, channelId, showNextSender]);
 
 	return (
-		<div className="pointer-events-none fixed inset-0 z-[999999]">
+		<div className="pointer-events-none absolute inset-0 z-40 overflow-hidden">
 			<canvas ref={canvasRef} className="h-full w-full" />
 
 			{currentSender && (
-				<div
-					className="
-					pointer-events-none
-					fixed
-					left-1/2
-					bottom-[70px]
-					z-[1000000]"
-				>
+				<div className="pointer-events-none absolute left-1/2 bottom-[70px] z-[41] -translate-x-1/2">
 					<div
 						className="
 						rounded-full

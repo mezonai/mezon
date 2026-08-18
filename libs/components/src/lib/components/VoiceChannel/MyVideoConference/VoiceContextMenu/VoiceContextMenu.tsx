@@ -4,6 +4,7 @@ import {
 	selectMemberClanByUserId,
 	selectVoiceContextMenu,
 	selectWalletDetail,
+	toastActions,
 	useAppDispatch,
 	useAppSelector,
 	voiceActions
@@ -29,7 +30,7 @@ const FLOWER_COOLDOWN_MS = 5000;
 let flowerCooldownUntil = 0;
 
 export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
-	const { t } = useTranslation('contextMenu');
+	const { t } = useTranslation(['contextMenu', 'token']);
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
 	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
@@ -173,6 +174,8 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			return;
 		}
 
+		dispatch(voiceActions.closeVoiceContextMenu());
+
 		try {
 			const mmnClient = mmnRef.current;
 
@@ -181,7 +184,12 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			}
 
 			if (compareBigInt(userWallet?.balance || '', mmnClient.scaleAmountToDecimals(TOKEN_SEND_FLOWER)) < 0) {
-				console.error('You not have enough money');
+				dispatch(
+					toastActions.addToast({
+						message: t('token:toast.error.exceedWallet'),
+						type: 'error'
+					})
+				);
 				return;
 			}
 
@@ -213,7 +221,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		} finally {
 			isSendingFlowerRef.current = false;
 		}
-	}, [dispatch, member?.user?.id, userWallet, myProfile.userId, myProfile?.userProfile?.user?.username, mmnRef]);
+	}, [dispatch, member?.user?.id, userWallet, myProfile.userId, myProfile?.userProfile?.user?.username, mmnRef, t]);
 
 	useOnClickOutside(focusRef, () => {
 		if (contextMenu) {
