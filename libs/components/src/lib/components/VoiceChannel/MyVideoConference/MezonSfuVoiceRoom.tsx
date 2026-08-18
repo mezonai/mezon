@@ -254,14 +254,30 @@ const Video = ({
 	);
 };
 
-const Audio = ({ track }: { track: MediaStreamTrack }) => {
+const RemoteAudioTrack = ({ track }: { track: MediaStreamTrack }) => {
 	const ref = useRef<HTMLAudioElement>(null);
 	useEffect(() => {
-		if (!ref.current) return;
-		ref.current.srcObject = new MediaStream([track]);
-		ref.current.play().catch(() => undefined);
+		const element = ref.current;
+		if (!element) return;
+		element.srcObject = new MediaStream([track]);
+		void element.play().catch(() => undefined);
+
+		return () => {
+			element.srcObject = null;
+		};
 	}, [track]);
+
 	return <audio ref={ref} autoPlay playsInline />;
+};
+
+const RoomAudioRenderer = ({ participants }: { participants: RemoteMedia[] }) => {
+	return (
+		<div style={{ display: 'none' }}>
+			{participants.map((participant) =>
+				participant.audio ? <RemoteAudioTrack key={`${participant.id}-${participant.audio.id}`} track={participant.audio} /> : null
+			)}
+		</div>
+	);
 };
 
 interface ParticipantTileProps {
@@ -304,7 +320,6 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 				{!participant.audio || participant.audio.muted ? <Icons.VoiceMicDisabledIcon /> : null}
 				{displayName}
 			</span>
-			{participant.audio && <Audio track={participant.audio} />}
 		</div>
 	);
 };
@@ -1035,6 +1050,7 @@ export function MezonSfuVoiceRoom({
 	const pinnedTile = conferenceTiles.find((tile) => tile.id === activePinnedTrackId);
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
+			<RoomAudioRenderer participants={participants} />
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
 					<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
@@ -1109,22 +1125,20 @@ export function MezonSfuVoiceRoom({
 								<Icons.MemberList defaultFill="text-white" />
 								<span>{participantCount}</span>
 							</button>
-							{showFocusThumbnails && (
-								<div className="flex h-36 shrink-0 gap-3 overflow-x-auto pb-1">
-									{conferenceTiles
-										.filter((tile) => tile.id !== activePinnedTrackId)
-										.map((tile) => (
-											<button
-												key={tile.id}
-												type="button"
-												className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
-												onClick={() => setPinnedTrackId(tile.id)}
-											>
-												{tile.content}
-											</button>
-										))}
-								</div>
-							)}
+							<div className={`${showFocusThumbnails ? 'flex' : 'hidden'} h-36 shrink-0 gap-3 overflow-x-auto pb-1`}>
+								{conferenceTiles
+									.filter((tile) => tile.id !== activePinnedTrackId)
+									.map((tile) => (
+										<button
+											key={tile.id}
+											type="button"
+											className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
+											onClick={() => setPinnedTrackId(tile.id)}
+										>
+											{tile.content}
+										</button>
+									))}
+							</div>
 						</>
 					)}
 				</main>
