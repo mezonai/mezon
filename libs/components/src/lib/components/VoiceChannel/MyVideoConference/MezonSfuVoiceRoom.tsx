@@ -8,7 +8,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
+import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize, useMediaPermissions } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -344,7 +344,7 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 
 const buttonClass = 'flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:opacity-40';
 const DEFAULT_VIDEO_CODEC = 'VP8';
-const REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS = 3000;
+const REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS = 1000;
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
@@ -453,6 +453,7 @@ export function MezonSfuVoiceRoom({
 	const clanMembers = useSelector(selectEntitesUserClans);
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
+	const { hasMicrophoneAccess, hasCameraAccess } = useMediaPermissions();
 	const wsRef = useRef<WebSocket | null>(null);
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const localStreamRef = useRef<MediaStream | null>(null);
@@ -482,6 +483,15 @@ export function MezonSfuVoiceRoom({
 	const [selectedMicrophone, setSelectedMicrophone] = useState('default');
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const lastShownErrorRef = useRef<string>();
+
+	useEffect(() => {
+		if (hasMicrophoneAccess === false && microphoneEnabled) {
+			dispatch(voiceActions.setShowMicrophone(false));
+		}
+		if (hasCameraAccess === false && cameraEnabled) {
+			dispatch(voiceActions.setShowCamera(false));
+		}
+	}, [cameraEnabled, dispatch, hasCameraAccess, hasMicrophoneAccess, microphoneEnabled]);
 
 	useEffect(() => {
 		if (!error || lastShownErrorRef.current === error) return;
@@ -560,35 +570,68 @@ export function MezonSfuVoiceRoom({
 
 	useEffect(() => {
 		desiredMediaRef.current = { microphoneEnabled, cameraEnabled };
-		const audioTrack = localStreamRef.current?.getAudioTracks()[0];
-		if (audioTrack) {
-			audioTrack.enabled = microphoneEnabled;
-			const audioSender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
-			if (audioSender) void audioSender.replaceTrack(microphoneEnabled ? audioTrack : null);
-		}
-		if (joinedRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
-			wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !microphoneEnabled }));
-		}
+		void (async () => {
+			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
+			if (microphoneEnabled && audioTrack?.readyState !== 'live') {
+				try {
+					const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+					audioTrack = stream.getAudioTracks()[0];
+					if (audioTrack) {
+						const localStream = localStreamRef.current || new MediaStream();
+						localStream.getAudioTracks().forEach((track) => localStream.removeTrack(track));
+						localStream.addTrack(audioTrack);
+						localStreamRef.current = localStream;
+						setLocalAudioTrack(audioTrack);
+						setSelectedMicrophone(audioTrack.getSettings().deviceId || 'default');
+						setLocalPreview(new MediaStream(localStream.getTracks()));
+					}
+				} catch (cause) {
+					setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+				}
+			}
+
+			if (audioTrack) {
+				audioTrack.enabled = desiredMediaRef.current.microphoneEnabled;
+				const audioSender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
+				if (audioSender) await audioSender.replaceTrack(desiredMediaRef.current.microphoneEnabled ? audioTrack : null);
+			}
+			if (joinedRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
+				wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
+			}
+		})();
 	}, [cameraEnabled, microphoneEnabled]);
 
 	useEffect(() => {
-		const cameraTrack = cameraTrackRef.current;
-		const videoSender = findUplinkVideoSender();
 		const ws = wsRef.current;
-		const signal = { type: cameraEnabled ? 'publish' : 'unpublish' } as const;
 
-		if (!cameraTrack) return;
-
-		cameraTrack.enabled = cameraEnabled;
 		void (async () => {
 			try {
+				let cameraTrack = cameraTrackRef.current;
+				if (cameraEnabled && cameraTrack?.readyState !== 'live') {
+					const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: CAMERA_CAPTURE_CONSTRAINTS });
+					cameraTrack = stream.getVideoTracks()[0];
+					if (cameraTrack) {
+						const localStream = localStreamRef.current || new MediaStream();
+						localStream.getVideoTracks().forEach((track) => localStream.removeTrack(track));
+						localStream.addTrack(cameraTrack);
+						localStreamRef.current = localStream;
+						cameraTrackRef.current = cameraTrack;
+						setSelectedCamera(cameraTrack.getSettings().deviceId || 'default');
+						setLocalPreview(new MediaStream(localStream.getTracks()));
+					}
+				}
+
+				if (!cameraTrack) return;
+				cameraTrack.enabled = desiredMediaRef.current.cameraEnabled;
+				const videoSender = findUplinkVideoSender();
 				if (!videoSender) throw new Error('Video sender is not negotiated');
-				await videoSender.replaceTrack(cameraEnabled ? cameraTrack : null);
+				await videoSender.replaceTrack(desiredMediaRef.current.cameraEnabled ? cameraTrack : null);
 			} catch (cause) {
 				// eslint-disable-next-line no-console
 				console.error('[MezonSFU][camera] replaceTrack failed', cause);
 			}
 
+			const signal = { type: desiredMediaRef.current.cameraEnabled ? 'publish' : 'unpublish' } as const;
 			if (joinedRef.current && ws?.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(signal));
 			} else {
@@ -1160,42 +1203,46 @@ export function MezonSfuVoiceRoom({
 					/>
 				</div>
 				<div className="flex items-center justify-center gap-3">
-					<div className="relative">
-						<button
-							id="btn-meet-micro"
-							type="button"
-							title={t(microphoneEnabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-							aria-label={t(microphoneEnabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-							className={buttonClass}
-							onClick={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
-						>
-							{microphoneEnabled ? <Icons.VoiceMicIcon scale={2.5} /> : <Icons.VoiceMicDisabledIcon scale={2.5} />}
-						</button>
-						<SfuDeviceMenu
-							label="Microphone"
-							devices={microphones}
-							selectedDeviceId={selectedMicrophone}
-							onSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
-						/>
-					</div>
-					<div className="relative">
-						<button
-							id="btn-meet-camera"
-							type="button"
-							title={t(cameraEnabled ? 'turnOffCamera' : 'turnOnCamera')}
-							aria-label={t(cameraEnabled ? 'turnOffCamera' : 'turnOnCamera')}
-							className={buttonClass}
-							onClick={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
-						>
-							{cameraEnabled ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
-						</button>
-						<SfuDeviceMenu
-							label="Camera"
-							devices={cameras}
-							selectedDeviceId={selectedCamera}
-							onSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
-						/>
-					</div>
+					{hasMicrophoneAccess && (
+						<div className="relative">
+							<button
+								id="btn-meet-micro"
+								type="button"
+								title={t(microphoneEnabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
+								aria-label={t(microphoneEnabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
+								className={buttonClass}
+								onClick={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
+							>
+								{microphoneEnabled ? <Icons.VoiceMicIcon scale={2.5} /> : <Icons.VoiceMicDisabledIcon scale={2.5} />}
+							</button>
+							<SfuDeviceMenu
+								label="Microphone hihi"
+								devices={microphones}
+								selectedDeviceId={selectedMicrophone}
+								onSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
+							/>
+						</div>
+					)}
+					{hasCameraAccess && (
+						<div className="relative">
+							<button
+								id="btn-meet-camera"
+								type="button"
+								title={t(cameraEnabled ? 'turnOffCamera' : 'turnOnCamera')}
+								aria-label={t(cameraEnabled ? 'turnOffCamera' : 'turnOnCamera')}
+								className={buttonClass}
+								onClick={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
+							>
+								{cameraEnabled ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
+							</button>
+							<SfuDeviceMenu
+								label="Camera"
+								devices={cameras}
+								selectedDeviceId={selectedCamera}
+								onSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
+							/>
+						</div>
+					)}
 					<button
 						id="btn-meet-screen"
 						type="button"
