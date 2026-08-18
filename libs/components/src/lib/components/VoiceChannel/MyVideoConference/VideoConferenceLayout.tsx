@@ -10,6 +10,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import ControlBar from '../ControlBar/ControlBar';
+import { useCallRecorder } from '../Recording/useCallRecorder';
 import { CarouselLayout } from './FocusLayout/CarouselLayout/CarouselLayout';
 import { FocusLayout, FocusLayoutContainer } from './FocusLayout/FocusLayoutContainer';
 import { GridLayout } from './GridLayout/GridLayout';
@@ -99,6 +100,8 @@ export const VideoConferenceLayout = memo(
 		);
 
 		const focusTrack = usePinnedTracks(layoutContext)?.[0];
+
+		useCallRecorder({ room, tracks, focusTrack, isExternalCalling });
 
 		const carouselTracks = useMemo(() => {
 			if (!focusTrack) {
@@ -242,6 +245,7 @@ export const VideoConferenceLayout = memo(
 							onFullScreen={onFullScreen}
 							isShowMember={isShowMember}
 							isGridView={!focusTrack}
+							channelLabel={channelLabel}
 						/>
 					</div>
 				</div>

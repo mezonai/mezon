@@ -44,6 +44,21 @@ export interface VoiceUserData {
 export const UsersInVoiceAdapter = createEntityAdapter({
 	selectId: (user: VoiceUserData) => user.user_id
 });
+
+export type VoiceRecordingStatus = 'idle' | 'starting' | 'recording' | 'stopping' | 'error';
+
+export interface VoiceRecordingState {
+	status: VoiceRecordingStatus;
+	startedAt: number | null;
+	/** Hard stop time when chunks are buffered in RAM instead of streamed to disk. */
+	deadlineAt: number | null;
+	streamingToDisk: boolean;
+	pipeline: 'worker' | 'canvas' | 'none';
+	/** Set when the tab went hidden mid-recording on the canvas fallback. */
+	degraded: boolean;
+	error: string | null;
+}
+
 export interface VoiceState {
 	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
@@ -75,6 +90,7 @@ export interface VoiceState {
 		position: { x: number; y: number };
 	} | null;
 	listVoiceMemberByClan: Record<string, Record<string, EntityState<VoiceUserData, string>>>;
+	recording: VoiceRecordingState;
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -283,7 +299,16 @@ export const initialVoiceState: VoiceState = {
 	externalGroup: false,
 	listInVoiceStatus: {},
 	contextMenu: null,
-	listVoiceMemberByClan: {}
+	listVoiceMemberByClan: {},
+	recording: {
+		status: 'idle',
+		startedAt: null,
+		deadlineAt: null,
+		streamingToDisk: false,
+		pipeline: 'none',
+		degraded: false,
+		error: null
+	}
 };
 
 export const voiceSlice = createSlice({
@@ -390,6 +415,12 @@ export const voiceSlice = createSlice({
 		},
 		setNoiseSuppressionLevel: (state, action: PayloadAction<number>) => {
 			state.noiseSuppressionLevel = action.payload;
+		},
+		setRecordingState: (state, action: PayloadAction<Partial<VoiceRecordingState>>) => {
+			state.recording = { ...state.recording, ...action.payload };
+		},
+		resetRecordingState: (state) => {
+			state.recording = { ...initialVoiceState.recording };
 		},
 		setStatusCall: (state, action: PayloadAction<boolean>) => {
 			state.statusCall = action.payload;
@@ -644,6 +675,13 @@ export const selectUserInvoiceData = createSelector(
 export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 
 export const selectVoiceContextMenu = createSelector(getVoiceState, (state) => state.contextMenu);
+
+export const selectVoiceRecording = createSelector(getVoiceState, (state) => state.recording);
+
+export const selectIsVoiceRecording = createSelector(
+	getVoiceState,
+	(state) => state.recording.status === 'recording' || state.recording.status === 'starting'
+);
 ///
 export const selectJoinCallExtStatus = createSelector(getVoiceState, (state) => state.joinCallExtStatus);
 export const selectExternalToken = createSelector(getVoiceState, (state) => state.externalToken);

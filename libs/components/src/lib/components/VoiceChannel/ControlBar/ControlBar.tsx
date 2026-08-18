@@ -23,6 +23,7 @@ import { ScreenShareControl } from './ScreenShareControl';
 import { Icons } from '@mezon/ui';
 import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
+import { RecordingControl } from '../Recording/RecordingControl';
 import { AgentControl } from './AgentControl';
 import { RaisingHandControls } from './RaisingHandControl';
 import { useControlBarPermissions } from './hooks/useControlBarPermissions';
@@ -39,6 +40,7 @@ export type ControlBarControls = {
 	sound?: boolean;
 	popout?: boolean;
 	fullscreen?: boolean;
+	recording?: boolean;
 };
 
 export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -50,6 +52,7 @@ export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 	isExternalCalling?: boolean;
 	isShowMember?: boolean;
 	isGridView?: boolean;
+	channelLabel?: string;
 }
 
 const ControlBar = ({
@@ -60,7 +63,8 @@ const ControlBar = ({
 	onFullScreen,
 	isExternalCalling,
 	isShowMember = true,
-	isGridView = true
+	isGridView = true,
+	channelLabel
 }: ControlBarProps) => {
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('channelVoice');
@@ -224,9 +228,13 @@ const ControlBar = ({
 
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-md:flex-col">
-			{!isExternalCalling && (
-				<ReactionControls isGroupCall={isGroupCall} isGridView={isGridView} isShowMember={isShowMember} className="max-md:hidden" />
-			)}
+			{/* Desktop groups emoji, sound and record together on the left (mezon-ui/src/chat/voice.rs). */}
+			<div className="flex justify-start items-center gap-4">
+				{!isExternalCalling && (
+					<ReactionControls isGroupCall={isGroupCall} isGridView={isGridView} isShowMember={isShowMember} className="max-md:hidden" />
+				)}
+				{visibleControls.recording && <RecordingControl channelLabel={channelLabel} />}
+			</div>
 
 			<div className="flex justify-center gap-3 flex-1 max-md:scale-75">
 				{visibleControls.microphone && (

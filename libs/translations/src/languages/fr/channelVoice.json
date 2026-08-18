@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Autorisation de la caméra requise",
 		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel."
 	},
-	"usernameScreen": "Écran de {{username}}"
+	"usernameScreen": "Écran de {{username}}",
+	"recording": {
+		"start": "Enregistrer l'appel",
+		"stop": "Arrêter l'enregistrement",
+		"badge": "REC",
+		"memoryLimitWarning": "Ce navigateur ne peut pas écrire directement sur le disque : l'enregistrement reste en mémoire et s'arrête automatiquement au bout de {{minutes}} minutes.",
+		"frozenWarning": "La vidéo s'est figée pendant que l'onglet était masqué. Gardez cet onglet visible pendant l'enregistrement.",
+		"savedToDisk": "Enregistrement sauvegardé dans {{fileName}} ({{size}})",
+		"downloaded": "Enregistrement téléchargé : {{fileName}} ({{size}})",
+		"failed": "Échec de l'enregistrement : {{reason}}"
+	}
 }
