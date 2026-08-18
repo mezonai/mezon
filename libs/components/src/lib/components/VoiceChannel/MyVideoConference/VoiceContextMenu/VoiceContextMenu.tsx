@@ -1,10 +1,21 @@
-import { useOnClickOutside } from '@mezon/core';
-import { selectMemberClanByUserId, selectVoiceContextMenu, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import { useAuth, useOnClickOutside, usePermissionChecker } from '@mezon/core';
+import {
+	giveCoffeeActions,
+	selectMemberClanByUserId,
+	selectVoiceContextMenu,
+	selectWalletDetail,
+	useAppDispatch,
+	useAppSelector,
+	voiceActions
+} from '@mezon/store';
+import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import type { UsersClanEntity } from '@mezon/utils';
+import { EPermission, compareBigInt, type UsersClanEntity } from '@mezon/utils';
 import type { Room } from 'livekit-client';
+import type { ApiTokenSentEvent } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
 
 interface VoiceContextMenuProps {
@@ -12,11 +23,16 @@ interface VoiceContextMenuProps {
 	groupMembers?: UsersClanEntity[];
 }
 
+const TOKEN_GIVE_FLOWERS = 10000;
+
 export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
+	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
+
 	const focusRef = useRef<HTMLDivElement>(null);
+	const myProfile = useAuth();
 
 	const [isMuting, setIsMuting] = useState(false);
 	const [isKicking, setIsKicking] = useState(false);
@@ -24,6 +40,8 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 
 	const isMutingRef = useRef(false);
 	const isKickingRef = useRef(false);
+	const { mmnRef } = useMezon();
+	const userWallet = useSelector(selectWalletDetail);
 
 	const participantId = contextMenu?.openedParticipantId;
 
@@ -126,6 +144,40 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		}
 	}, [room, dispatch, member?.user?.id]);
 
+	const handleGiveFlowers = useCallback(async () => {
+		dispatch(voiceActions.closeVoiceContextMenu());
+		try {
+			const mmnClient = mmnRef.current;
+
+			if (!mmnClient) {
+				return;
+			}
+
+			if (compareBigInt(userWallet?.balance || '', mmnClient.scaleAmountToDecimals(TOKEN_GIVE_FLOWERS)) < 0) {
+				console.error('You not have enough money');
+				return;
+			}
+			if (member?.user?.id) {
+				const tokenEvent: ApiTokenSentEvent = {
+					sender_id: myProfile.userId as string,
+					sender_name: myProfile?.userProfile?.user?.username as string,
+					receiver_id: member?.user?.id,
+					amount: TOKEN_GIVE_FLOWERS,
+					note: 'Give flowers'
+				};
+
+				await dispatch(
+					giveCoffeeActions.sendToken({
+						tokenEvent
+					})
+				);
+				await dispatch(voiceActions.giveFlowers({ receiver_id: member?.user?.id }));
+			}
+		} catch (error) {
+			console.error('Failed to give flowers:', error);
+		}
+	}, [room, dispatch, member?.user?.id, userWallet]);
+
 	useOnClickOutside(focusRef, () => {
 		if (contextMenu) {
 			dispatch(voiceActions.closeVoiceContextMenu());
@@ -157,7 +209,14 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			}
 			ref={focusRef}
 		>
-			{isMicOn && (
+			<div
+				className={`p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] cursor-pointer`}
+				onClick={handleGiveFlowers}
+			>
+				Give Flowers
+			</div>
+
+			{isMicOn && canMangeVoice && (
 				<div
 					className={`text-[#E13542] p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
 						isMuting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
@@ -172,20 +231,21 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 					)}
 				</div>
 			)}
-
-			<div
-				className={`text-[#E13542] p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
-					isKicking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-				}`}
-				onClick={handleRemoveMember}
-			>
-				{t('member.kick')}
-				{isKicking ? (
-					<div className="w-4 h-4 border-2 border-[#E13542] border-t-transparent rounded-full animate-spin" />
-				) : (
-					<Icons.CloseIcon className="w-4 h-4" />
-				)}
-			</div>
+			{canMangeVoice && (
+				<div
+					className={`text-[#E13542] p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
+						isKicking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+					}`}
+					onClick={handleRemoveMember}
+				>
+					{t('member.kick')}
+					{isKicking ? (
+						<div className="w-4 h-4 border-2 border-[#E13542] border-t-transparent rounded-full animate-spin" />
+					) : (
+						<Icons.CloseIcon className="w-4 h-4" />
+					)}
+				</div>
+			)}
 			<div className="contexify_separator"></div>
 
 			<ButtonCopy className="flex flex-row-reverse justify-between p-2" title={t('copyUserId')} copyText={member?.id} />
