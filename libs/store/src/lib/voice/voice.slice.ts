@@ -4,6 +4,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, ChannelType, VoiceLeavedEvent } from 'mezon-js';
 import type { ScreenShareEvent } from 'node_modules/mezon-js-protobuf/dist/rtapi/realtime';
+import { selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { selectCurrentChannelId } from '../channels/channels.slice';
@@ -21,6 +22,9 @@ export interface VoiceEntity extends ApiVoiceChannelUser {
 	id: string; // Primary ID
 }
 
+export enum EVoiceInteractEvent {
+	SENT_FLOWERS = 1
+}
 export enum EInvoice {
 	INVOICE,
 	SHARING_SCREEN
@@ -229,6 +233,29 @@ export const muteVoiceMember = createAsyncThunk(
 		}
 	}
 );
+
+export const giveFlowers = createAsyncThunk('meet/giveFlowers', async ({ receiver_id }: { receiver_id: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+		const state = thunkAPI.getState() as RootState;
+		const voiceInfor = selectVoiceInfo(state);
+		const sender_id = selectCurrentUserId(state);
+		const response = await mezon.client.writeVoiceInteractiveEvent(
+			mezon.session,
+			voiceInfor?.clanId as string,
+			voiceInfor?.channelId as string,
+			sender_id,
+			receiver_id,
+			EVoiceInteractEvent.SENT_FLOWERS,
+			''
+		);
+
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'meet/generateMeetTokenExternal');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
 
 export const initialVoiceState: VoiceState = {
 	loadingStatus: 'not loaded',
@@ -535,7 +562,8 @@ export const voiceActions = {
 	...voiceSlice.actions,
 	fetchVoiceChannelMembers,
 	kickVoiceMember,
-	muteVoiceMember
+	muteVoiceMember,
+	giveFlowers
 };
 
 /*

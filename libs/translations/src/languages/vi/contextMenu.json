@@ -122,5 +122,6 @@
 		"failedToResendMessage": "Không thể gửi lại tin nhắn",
 		"failedToClosePoll": "Không thể kết thúc bình chọn"
 	},
-	"copyUserId": "Sao chép ID người dùng"
+	"copyUserId": "Sao chép ID người dùng",
+	"giveFlowers": "Tặng hoa"
 }
