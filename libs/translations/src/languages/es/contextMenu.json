@@ -122,5 +122,6 @@
 		"failedToClosePoll": "Error al cerrar la encuesta"
 	},
 	"endPollNow": "Finalizar encuesta ahora",
-	"pollEnded": "La encuesta se cerró correctamente"
+	"pollEnded": "La encuesta se cerró correctamente",
+	"giveFlowers": "Enviar una flor"
 }

@@ -122,5 +122,6 @@
 		"failedToResendMessage": "Nachricht konnte nicht erneut gesendet werden",
 		"failedToClosePoll": "Umfrage konnte nicht beendet werden"
 	},
-	"copyUserId": "Benutzer-ID kopieren"
+	"copyUserId": "Benutzer-ID kopieren",
+	"giveFlowers": "Eine Blume senden"
 }

@@ -122,5 +122,6 @@
 		"failedToResendMessage": "Kunde inte skicka om meddelande",
 		"failedToClosePoll": "Kunde inte avsluta röstning"
 	},
-	"copyUserId": "Kopiera användar-ID"
+	"copyUserId": "Kopiera användar-ID",
+	"giveFlowers": "Skicka en blomma"
 }
