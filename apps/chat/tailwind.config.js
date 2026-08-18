@@ -15,7 +15,6 @@ const widthResultSearch = '420px';
 const heightModalSearch = '300px';
 const dmProfileWidth = '340px';
 const iconWidth = '160px';
-const titleBarHeight = '21px';
 const heightMessageViewChat = `calc(100dvh - 10px - ${topBarHeight} - ${chatBoxHeight})`;
 const heightMessageViewChatMobile = `calc(100dvh - 10px - ${chatBoxHeight})`;
 const heightMessageViewChatDM = `calc(100dvh - 50px - ${topBarHeight})`;
@@ -80,7 +79,6 @@ module.exports = {
 				450: '450px',
 				'4/5': '80%',
 				'9/10': '90%',
-				widthTitleBar: '100%',
 				widthChannelList: channelListWidth,
 				widthProfile: '320px'
 			},
@@ -97,13 +95,6 @@ module.exports = {
 				heightModalSearch,
 				heightHeader: '50px',
 				'9/10': '90%',
-				heightTitleBar: `calc(100dvh - ${titleBarHeight})`,
-				heightTitleBarMessageViewChat: `calc(${heightMessageViewChat} - ${titleBarHeight})`,
-				heightTitleBarMessageViewChatMobile: `calc(${heightMessageViewChatMobile} - ${titleBarHeight})`,
-				heightTitleBarMessageViewChatDM: `calc(${heightMessageViewChatDM} - ${titleBarHeight})`,
-				heightTitleBarMessageViewChatThread: `calc(${heightMessageViewChatThread} - ${titleBarHeight})`,
-				heightTitleBarWithoutTopBar: `calc(calc(100dvh - 30px) - 21px)`,
-				heightTitleBarWithoutTopBarMobile: `calc(${heightWithoutTopBarMobile} - ${titleBarHeight})`,
 				heightChannelList: heighChannelList
 			},
 
@@ -120,7 +111,6 @@ module.exports = {
 				'9/10': '90%',
 				heightInBox: `calc(100dvh - 168px)`,
 				messageViewChatDM,
-				titleBarMessageViewChatDM: `calc(${messageViewChatDM} - ${titleBarHeight})`,
 				listMemberRole: `calc(100dvh - 225px)`,
 				'50vh': '50vh'
 			},

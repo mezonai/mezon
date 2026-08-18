@@ -21,7 +21,9 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	button: {
 		base: '',
-		copy: ''
+		copy: '',
+		previous: '',
+		next: ''
 	},
 	input: {
 		base: ''
@@ -142,6 +144,7 @@ export const DATA_E2E_IDENTIFIER = {
 		}
 	},
 	clan_page: {
+		banner: '',
 		header: {
 			title: {
 				clan_name: ''
@@ -272,6 +275,7 @@ export const DATA_E2E_IDENTIFIER = {
 			create_event: {
 				start_modal: '',
 				button_create: '',
+				button_edit: '',
 				button_close: '',
 				next: '',
 				upload: {
@@ -309,12 +313,23 @@ export const DATA_E2E_IDENTIFIER = {
 					location_name: ''
 				},
 				event_management: {
+					number_of_event: '',
 					item: {
 						modal_detail_item: {
 							start_date_time: '',
 							topic: '',
 							channel_name: '',
-							description: ''
+							description: '',
+							number_of_interested: '',
+							tab: {
+								event_info: '',
+								number_of_interested: ''
+							},
+							user_interested: {
+								item: {
+									display_name: ''
+								}
+							}
 						},
 						button: {
 							open_detail_modal: '',
@@ -322,8 +337,10 @@ export const DATA_E2E_IDENTIFIER = {
 							open_panel: '',
 							confirm_cancel_event: '',
 							share_event: '',
-							close_modal_copy_link: ''
-						}
+							close_modal_copy_link: '',
+							interested: ''
+						},
+						number_of_interested: ''
 					}
 				}
 			},
@@ -363,6 +380,10 @@ export const DATA_E2E_IDENTIFIER = {
 				delete: '',
 				item: '',
 				onboarding_status: ''
+			},
+			audit_log: {
+				content: '',
+				time: ''
 			},
 			onboarding: {
 				button: {
@@ -435,7 +456,8 @@ export const DATA_E2E_IDENTIFIER = {
 							channel_name: '',
 							category_name: ''
 						}
-					}
+					},
+					message_management: ''
 				},
 				prevent_anonymous: ''
 			},
@@ -448,6 +470,11 @@ export const DATA_E2E_IDENTIFIER = {
 				community_banner_input: '',
 				voice_sticker_input: {
 					error: ''
+				}
+			},
+			category_order: {
+				item: {
+					category_name: ''
 				}
 			},
 			role: {
@@ -470,7 +497,9 @@ export const DATA_E2E_IDENTIFIER = {
 					button: {
 						edit: '',
 						delete: '',
-						view: ''
+						view: '',
+						confirm: '',
+						cancel: ''
 					},
 					member_count: ''
 				},
@@ -506,7 +535,9 @@ export const DATA_E2E_IDENTIFIER = {
 				},
 				name: '',
 				user_list: {
-					item: ''
+					item: {
+						screen_share: ''
+					}
 				},
 				user_list_collapsed: {
 					item: '',
@@ -528,6 +559,9 @@ export const DATA_E2E_IDENTIFIER = {
 					role_name: '',
 					role_color: ''
 				}
+			},
+			button: {
+				drag_channel: ''
 			}
 		},
 		secondary_side_bar: {
@@ -739,7 +773,12 @@ export const DATA_E2E_IDENTIFIER = {
 					channel_name: ''
 				},
 				button: {
-					file: '',
+					file: {
+						item: {
+							file_name: '',
+							by_time: ''
+						}
+					},
 					mute: '',
 					inbox: '',
 					member: '',
@@ -814,7 +853,15 @@ export const DATA_E2E_IDENTIFIER = {
 					}
 				},
 				message: '',
-				for_you: '',
+				for_you: {
+					username: '',
+					message: '',
+					timestamp: '',
+					button: {
+						remove: '',
+						jump: ''
+					}
+				},
 				action_tabs: ''
 			}
 		},
@@ -873,6 +920,17 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		button: {
 			wave_to_say_hi: ''
+		},
+		search_message: {
+			button: {
+				select: ''
+			},
+			input: {
+				select: ''
+			},
+			select: {
+				item: ''
+			}
 		}
 	},
 	onboarding: {
@@ -900,6 +958,12 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		devices: {
 			tab_devices: ''
+		},
+		language: {
+			tab_language: '',
+			language_item: {
+				language_name: ''
+			}
 		},
 		profile: {
 			button_setting: '',
@@ -937,7 +1001,13 @@ export const DATA_E2E_IDENTIFIER = {
 				button_save_changes: ''
 			}
 		},
-		logout: ''
+		logout: '',
+		activity: {
+			switch: ''
+		},
+		notification: {
+			switch: ''
+		}
 	},
 	common: {
 		friend_list: {
@@ -990,6 +1060,30 @@ export const DATA_E2E_IDENTIFIER = {
 				cancel: '',
 				share: ''
 			}
+		},
+		unpin_message: {
+			button: {
+				cancel: '',
+				unpin: ''
+			}
+		},
+		notification_setting: {
+			select: {
+				item: ''
+			},
+			override: {
+				select_trigger: {
+					item: ''
+				},
+				button: {
+					exit: '',
+					remove: ''
+				},
+				channel_item: {
+					title: '',
+					checkbox: ''
+				}
+			}
 		}
 	},
 	icon: {
@@ -1039,7 +1133,8 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	suggest_item: {
 		username: '',
-		clan_name: ''
+		clan_name: '',
+		count_badge: ''
 	},
 	badge: {
 		friend_pending: ''

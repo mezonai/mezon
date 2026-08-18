@@ -29,7 +29,7 @@
 	"directMessage": "Direct message",
 	"activeThreads": "Active Threads",
 	"joinedThreads": "Joined Threads",
-	"archivedThreads": "Older Threads",
+	"archivedThreads": "Archived Threads",
 	"loading": "Loading...",
 	"topic": "Topic",
 	"reactions": "React",
@@ -163,6 +163,9 @@
 		"placeholder": {
 			"threadName": "Enter Thread Name"
 		}
+	},
+	"errors": {
+		"limit": "Maximum channel limit reached for this clan"
 	},
 	"moreFile": "more file",
 	"moreFiles": "more files"

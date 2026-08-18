@@ -5,7 +5,7 @@
 		"textNotify": "Tập trung vào cuộc trò chuyện với một chủ đề - một kênh văn bản tạm thời.",
 		"createThreads": "Tạo chủ đề"
 	},
-	"otherThreads": "CHỦ ĐỀ CŨ HƠN",
+	"otherThreads": "chủ đề đã lưu trữ",
 	"errorMessage": "Vui lòng nhập tên chủ đề hợp lệ (tối đa 64 ký tự, chỉ bao gồm chữ, số, _ hoặc -).",
 	"threadName": "Tên chủ đề",
 	"privateThread": "Chủ đề riêng tư",
@@ -14,7 +14,7 @@
 	"joinedThreads": "chủ đề đã tham gia",
 	"joinedThread": "chủ đề đã tham gia",
 	"otherActiveThreads": "chủ đề đang hoạt động khác",
-	"archivedThreads": "chủ đề cũ hơn",
+	"archivedThreads": "chủ đề đã lưu trữ",
 	"searchThreads": "chủ đề tìm kiếm",
 	"searchThread": "chủ đề tìm kiếm",
 	"threadFailed": {
@@ -22,5 +22,5 @@
 		"content": "Không tìm thấy chủ đề hoặc bạn không có quyền cập nhật"
 	},
 	"otherActiveThread": "chủ đề đang hoạt động khác",
-	"olderThread": "chủ đề cũ hơn"
+	"olderThread": "chủ đề đã lưu trữ"
 }

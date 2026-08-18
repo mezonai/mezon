@@ -17,7 +17,7 @@ async function validateWorkerPath(path: string): Promise<boolean> {
 }
 
 async function setupPDFWorker(): Promise<void> {
-	const possiblePaths = [`https://cdn.mezon.ai/js/libs/4.8.69/pdf.worker.min.mjs`];
+	const possiblePaths = [`https://cdn.komu.vn/js/libs/4.8.69/pdf.worker.min.mjs`];
 
 	for (const path of possiblePaths) {
 		try {

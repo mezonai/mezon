@@ -8,17 +8,15 @@ import HeaderMezon from '../mezonpage/header';
 
 const ContactUsPage = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
 	const downloadUrl: string =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	useEffect(() => {
 		window.scrollTo(0, 0);
@@ -121,7 +119,7 @@ const ContactUsPage = () => {
 				</div>
 			</div>
 
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 
 			<ContactUs isOpen={isContactFormOpen} onClose={() => setIsContactFormOpen(false)} />
 		</div>

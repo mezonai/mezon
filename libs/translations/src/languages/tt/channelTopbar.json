@@ -29,7 +29,7 @@
 	"directMessage": "Шәхси хәбәр",
 	"activeThreads": "Актив ботакламалар",
 	"joinedThreads": "Минем ботакламаларым",
-	"archivedThreads": "Иске ботакламалар",
+	"archivedThreads": "Архивланган ботакламалар",
 	"loading": "Йөкләү...",
 	"topic": "Тема",
 	"reactions": "Реакцияләр",
@@ -163,6 +163,9 @@
 		"placeholder": {
 			"threadName": "Ботаклама исемен керетегез"
 		}
+	},
+	"errors": {
+		"limit": "Бу клан өчен каналларның максималь санына ирешелде"
 	},
 	"moreFile": "яңа файл",
 	"moreFiles": "яңа файл"

@@ -1,3 +1,4 @@
+import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 
 interface ModalProps {
@@ -19,7 +20,11 @@ export const DeleteModal: React.FC<ModalProps> = ({ handleDelete, onClose }) => 
 				</div>
 
 				<div className="bg-theme-setting-nav flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium rounded-b-md">
-					<div onClick={onClose} className="hover:underline px-4 rounded-lg text-theme-primary text-theme-primary-hover cursor-pointer">
+					<div
+						onClick={onClose}
+						className="hover:underline px-4 rounded-lg text-theme-primary text-theme-primary-hover cursor-pointer"
+						data-e2e={generateE2eId('clan_page.settings.role.item.button.cancel')}
+					>
 						{t('deleteRole.cancel')}
 					</div>
 					<div
@@ -28,6 +33,7 @@ export const DeleteModal: React.FC<ModalProps> = ({ handleDelete, onClose }) => 
 							onClose();
 						}}
 						className="bg-red-600 hover:bg-red-700 text-white rounded-lg px-[25px] py-[8px] cursor-pointer"
+						data-e2e={generateE2eId('clan_page.settings.role.item.button.confirm')}
 					>
 						{t('deleteRole.confirm')}
 					</div>

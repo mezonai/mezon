@@ -62,7 +62,7 @@ export const fetchGifCategories = createAsyncThunk<GifCategoriesResponse>('gifs/
 });
 
 export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchDataSearch', async (valueSearch, thunkAPI) => {
-	const searchUrl = `${baseUrl}/${apiKey}/gifs/search?page=1&per_page=${limit}&q=${valueSearch}&format_filter=gif`;
+	const searchUrl = `${baseUrl}/${apiKey}/gifs/search?page=1&per_page=${limit}&q=${valueSearch}&format_filter=gif&content_filter=low`;
 
 	try {
 		const response = await fetch(`${searchUrl}`);
@@ -79,7 +79,7 @@ export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchData
 });
 
 export const fetchGifTrending = createAsyncThunk<GifEntity[]>('gifs/fetchDataTrending', async (_, thunkAPI) => {
-	const searchUrl = `${baseUrl}/${apiKey}/stickers/trending?page=1&per_page=30&format_filter=gif`;
+	const searchUrl = `${baseUrl}/${apiKey}/gifs/trending?page=1&per_page=30&format_filter=gif&content_filter=low`;
 
 	try {
 		const response = await fetch(`${searchUrl}`);

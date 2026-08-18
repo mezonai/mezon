@@ -18,7 +18,7 @@ import {
 	useParticipantTile
 } from '@livekit/components-react';
 import { useAuth, usePermissionChecker } from '@mezon/core';
-import { selectMemberClanByUserId, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import { selectMemberClanByUserId, selectUserInvoiceData, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { EPermission, createImgproxyUrl } from '@mezon/utils';
@@ -136,6 +136,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	const extAvatar = parsedUsername?.extAvatar ? parsedUsername?.extAvatar : undefined;
 
 	const clanMember = useAppSelector((state) => selectMemberClanByUserId(state, participantId));
+	const voiceMemberData = useAppSelector((state) => selectUserInvoiceData(state, participantId));
 
 	const member = useMemo(() => {
 		if (groupMembers) {
@@ -144,16 +145,16 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		return clanMember;
 	}, [groupMembers, clanMember, participantId]);
 
-	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || usernameString;
+	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || voiceMemberData?.user_name || usernameString;
 
 	const avatar = useMemo(() => {
 		if (trackReference.participant.isAgent) {
-			return 'https://imgproxy.mezon.ai/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
+			return 'https://imgproxy.komu.vn/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
 		}
 		return member?.clan_avatar || member?.user?.avatar_url || null;
 	}, [member]);
 
-	const resolvedAvatar = extAvatar ?? avatar;
+	const resolvedAvatar = extAvatar || avatar || voiceMemberData?.user_avatar;
 	const isAvatarResolved = parsedUsername !== undefined || member !== undefined;
 
 	const activeSoundReaction = useActiveSoundReaction(usernameString);

@@ -1,9 +1,8 @@
 import type { DragEvent } from 'react';
 import React, { memo, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import {
-	clansActions,
 	selectCategoryExpandStateByCategoryId,
 	selectCurrentChannelId,
 	selectCurrentChannelParentId,
@@ -37,7 +36,6 @@ type ChannelLinkContentProps = {
 };
 
 const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActive, permissions, dragStart, dragEnter }) => {
-	const dispatch = useDispatch();
 	const isUnreadChannel = useSelector((state) => selectIsUnreadChannelById(state, channel.id));
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel.id, channel.clan_id as string));
 	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, channel.id));
@@ -51,17 +49,12 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
 
-	const handleOpenInvite = () => {
-		dispatch(clansActions.toggleInvitePeople({ status: true, channelId: channel.id }));
-	};
-
 	const renderChannelLink = () => {
 		return (
 			<ChannelLink
 				clanId={channel?.clan_id}
 				channel={channel}
 				key={channel.channel_id}
-				createInviteLink={handleOpenInvite}
 				isPrivate={channel.channel_private}
 				isUnReadChannel={isUnreadChannel}
 				numberNotification={channel.count_mess_unread}
@@ -141,8 +134,8 @@ const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMembe
 	}, [channelType, voiceChannelMembers, streamChannelMembers]);
 	return (
 		<AvatarGroup className={'px-6'}>
-			{[...channelMemberList].slice(0, 5).map((id, index) => (
-				<AvatarUserShort id={id || ''} key={(id || '') + index} />
+			{[...channelMemberList].slice(0, 5).map((user, index) => (
+				<AvatarUserShort id={user.user_id || ''} key={(user.user_id || '') + index} />
 			))}
 			{channelMemberList && channelMemberList.length > 5 && (
 				<AvatarCount number={channelMemberList?.length - 5 > 99 ? 99 : channelMemberList?.length - 5} />
@@ -170,10 +163,10 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 		return null;
 	}
 
-	return channelMemberList?.map((id) => {
+	return channelMemberList?.map((user) => {
 		return (
-			<div key={id} className={'mt-[1px]'}>
-				<UserListItem id={id} />
+			<div key={user.user_id} className={'mt-[1px]'}>
+				<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} />
 			</div>
 		);
 	});

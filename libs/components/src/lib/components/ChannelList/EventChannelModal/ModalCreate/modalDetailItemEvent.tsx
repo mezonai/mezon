@@ -64,12 +64,16 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 							<h4
 								className={`pb-4 ${currentTab === tabs.event ? 'text-theme-primary-active border-b border-white' : 'text-zinc-400'}`}
 								onClick={() => setCurrentTab(tabs.event)}
+								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.tab.event_info')}
 							>
 								{t('eventDetail.eventInfo')}
 							</h4>
 							<h4
 								className={`pb-4 ${currentTab === tabs.interest ? 'text-theme-primary-active border-b border-white' : 'text-zinc-400'}`}
 								onClick={() => setCurrentTab(tabs.interest)}
+								data-e2e={generateE2eId(
+									'clan_page.modal.create_event.event_management.item.modal_detail_item.tab.number_of_interested'
+								)}
 							>
 								{t('eventDetail.interested', { count: event?.user_ids?.filter((id) => id !== '0')?.length || 0 })}
 							</h4>
@@ -221,7 +225,10 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 					);
 				})()}
 			</div>
-			<div className="flex items-center gap-x-3">
+			<div
+				className="flex items-center gap-x-3"
+				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.number_of_interested')}
+			>
 				<Icons.MemberList className={'w-5 h-5'} />
 				<p>
 					{t(
@@ -270,13 +277,24 @@ const InterestedDetail = ({ userIds }: InterestedDetailProps) => {
 					const avatarUrl = user?.clan_avatar || user?.user?.avatar_url;
 
 					return (
-						<div key={index} className="flex items-center gap-x-3 rounded bg-item-theme-hover p-2">
+						<div
+							key={index}
+							className="flex items-center gap-x-3 rounded bg-item-theme-hover p-2"
+							data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.user_interested.item')}
+						>
 							{avatarUrl ? (
 								<img src={createImgproxyUrl(avatarUrl)} alt={name} className="size-7 rounded-full object-cover" />
 							) : (
 								<AvatarColor username={name || ''} className="size-7" />
 							)}
-							<p className="text-theme-primary">{name}</p>
+							<p
+								className="text-theme-primary"
+								data-e2e={generateE2eId(
+									'clan_page.modal.create_event.event_management.item.modal_detail_item.user_interested.item.display_name'
+								)}
+							>
+								{name}
+							</p>
 						</div>
 					);
 				})

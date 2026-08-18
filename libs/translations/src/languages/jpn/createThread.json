@@ -5,7 +5,7 @@
 		"textNotify": "スレッド - 一時的なテキストチャンネル - で会話に集中しましょう。",
 		"createThreads": "スレッドを作成"
 	},
-	"otherThreads": "古いスレッド",
+	"otherThreads": "アーカイブ済みスレッド",
 	"errorMessage": "有効なスレッド名を入力してください（最大64文字、文字、数字、_または-のみ）。",
 	"threadName": "スレッド名",
 	"privateThread": "プライベートスレッド",
@@ -14,7 +14,7 @@
 	"joinedThreads": "参加したスレッド",
 	"joinedThread": "参加したスレッド",
 	"otherActiveThreads": "他のアクティブスレッド",
-	"archivedThreads": "古いスレッド",
+	"archivedThreads": "アーカイブ済みスレッド",
 	"searchThreads": "スレッドを検索",
 	"searchThread": "スレッドを検索",
 	"threadFailed": {
@@ -22,5 +22,5 @@
 		"content": "スレッドが見つかりません、または更新する権限がありません"
 	},
 	"otherActiveThread": "その他のアクティブなスレッド",
-	"olderThread": "古いスレッド"
+	"olderThread": "アーカイブ済みスレッド"
 }

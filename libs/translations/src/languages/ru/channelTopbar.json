@@ -29,7 +29,7 @@
 	"directMessage": "Личное сообщение",
 	"activeThreads": "Активные ветки",
 	"joinedThreads": "Мои ветки",
-	"archivedThreads": "Старые ветки",
+	"archivedThreads": "Архивные ветки",
 	"loading": "Загрузка...",
 	"topic": "Тема",
 	"reactions": "Реакции",
@@ -163,6 +163,9 @@
 		"placeholder": {
 			"threadName": "Введите название ветки"
 		}
+	},
+	"errors": {
+		"limit": "Достигнуто максимальное количество каналов для этого клана"
 	},
 	"moreFile": "новый файл",
 	"moreFiles": "новые файлы"

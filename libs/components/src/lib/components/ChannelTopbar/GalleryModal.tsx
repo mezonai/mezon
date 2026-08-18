@@ -11,14 +11,13 @@ import {
 	useInteractions,
 	useRole
 } from '@floating-ui/react';
-import { getCurrentChatData, useEscapeKeyClose } from '@mezon/core';
+import { useEscapeKeyClose } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import {
 	attachmentActions,
 	galleryActions,
 	getStore,
 	selectCurrentChannelId,
-	selectCurrentChannelLabel,
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectGalleryAttachmentsByChannel,
@@ -29,9 +28,18 @@ import {
 	type MediaFilterType
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { IImageWindowProps } from '@mezon/utils';
-import { convertDateStringI18n, createImgproxyUrl, EMimeTypes, ETypeLinkMedia, generateE2eId, getAttachmentDataForWindow, isAttachmentPresignPendingForMessage, isElectron, LoadMoreDirection, shouldHidePresignAttachment } from '@mezon/utils';
+import {
+	EMimeTypes,
+	ETypeLinkMedia,
+	LoadMoreDirection,
+	convertDateStringI18n,
+	createImgproxyUrl,
+	generateE2eId,
+	isAttachmentPresignPendingForMessage,
+	shouldHidePresignAttachment
+} from '@mezon/utils';
 import { endOfDay, format, getUnixTime, isSameDay, startOfDay } from 'date-fns';
+
 import type { RefObject } from 'react';
 import React, { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -70,35 +78,35 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
 	const paginationState = useAppSelector((state) => selectGalleryPaginationByChannel(state, currentChannelId));
 
-	useEffect(() => {
-		return () => {
-			if (currentChannelId) {
-				dispatch(galleryActions.clearGalleryAttachments({ channelId: currentChannelId }));
-			}
-		};
-	}, [currentChannelId, dispatch]);
-
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 	const [dateValidationError, setDateValidationError] = useState<string | null>(null);
-	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('all');
+	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('image');
 
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	const filteredAttachments = useMemo(() => {
 		if (!attachments || attachments.length === 0) return [];
 
-		if (mediaFilter === 'all') {
-			return attachments;
-		} else if (mediaFilter === 'image') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
+		let listAttach = [...attachments];
+
+		if (mediaFilter === 'image') {
+			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
 		} else if (mediaFilter === 'video') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
+			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
 		}
 
-		return attachments;
-	}, [attachments, mediaFilter]);
+		if (startDate) {
+			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds > startDate?.getTime() / 1000);
+		}
+
+		if (endDate) {
+			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds < endDate?.getTime() / 1000);
+		}
+
+		return listAttach;
+	}, [attachments, mediaFilter, startDate, endDate]);
 
 	const { refs, floatingStyles, context } = useFloating({
 		open: isDateDropdownOpen,
@@ -189,7 +197,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			if (direction === 'after' && !paginationState.hasMoreAfter) {
 				return;
 			}
-
 			dispatch(galleryActions.setGalleryLoading({ channelId: currentChannelId, isLoading: true }));
 
 			try {
@@ -234,7 +241,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 						channelId: currentChannelId,
 						limit: paginationState.limit,
 						direction,
-						mediaFilter: 'all',
+						mediaFilter,
 						...(beforeParam && { before: beforeParam }),
 						...(afterParam && { after: afterParam })
 					})
@@ -388,7 +395,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 		const { startTimestamp, endTimestamp } = calculateTimestamps(startDate, endDate);
 
-		dispatch(galleryActions.clearGalleryChannel({ channelId: currentChannelId }));
 		dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
 		dispatch(
 			galleryActions.fetchGalleryAttachments({
@@ -396,7 +402,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				channelId: currentChannelId,
 				limit: 50,
 				direction: 'initial',
-				mediaFilter: 'all',
+				mediaFilter,
 				...(startTimestamp && { after: startTimestamp }),
 				...(endTimestamp && { before: endTimestamp })
 			})
@@ -412,15 +418,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		setDateValidationError(null);
 		if (currentChannelId && currentClanId) {
 			dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
-			dispatch(
-				galleryActions.fetchGalleryAttachments({
-					clanId: currentClanId,
-					channelId: currentChannelId,
-					limit: 50,
-					direction: 'initial',
-					mediaFilter: 'all'
-				})
-			);
 		}
 	}, [currentChannelId, currentClanId, dispatch]);
 
@@ -460,7 +457,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			const currentClanId = selectCurrentClanId(state);
 			const currentDm = selectCurrentDM(state);
 			const currentChannelId = selectCurrentChannelId(state);
-			const currentChannelLabel = selectCurrentChannelLabel(state);
 			const currentDmGroupId = currentDm?.id;
 			const attachmentData = attachment;
 
@@ -468,9 +464,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 			const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
 			const sourceMessage =
-				attachmentData.message_id && channelId
-					? selectMessageByMessageId(state, channelId, attachmentData.message_id)
-					: undefined;
+				attachmentData.message_id && channelId ? selectMessageByMessageId(state, channelId, attachmentData.message_id) : undefined;
 			if (isAttachmentPresignPendingForMessage(attachmentData.url, sourceMessage)) return;
 			if (shouldHidePresignAttachment(attachmentData.url, sourceMessage)) return;
 
@@ -478,132 +472,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				...attachmentData,
 				create_time: attachmentData.create_time || new Date().toISOString()
 			};
-
-			const isVideo =
-				attachmentData?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
-				attachmentData?.filetype?.includes(EMimeTypes.mp4) ||
-				attachmentData?.filetype?.includes(EMimeTypes.mov);
-
-			if (isElectron()) {
-				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
-
-				const messageTimestamp = enhancedAttachmentData.create_time
-					? Math.floor(new Date(enhancedAttachmentData.create_time).getTime() / 1000)
-					: undefined;
-				const beforeTimestamp = messageTimestamp ? messageTimestamp + 1 : undefined;
-
-				const data = await dispatch(
-					attachmentActions.fetchChannelAttachments({
-						clanId,
-						channelId,
-						limit: 50,
-						before: beforeTimestamp
-					})
-				).unwrap();
-				const currentChatUsersEntities = getCurrentChatData()?.currentChatUsersEntities;
-				const currentImageUploader = currentChatUsersEntities?.[attachmentData.uploader as string];
-				const listAttachmentsByChannel = data?.attachments
-					?.filter(
-						(att) =>
-							att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) ||
-							att?.filetype === EMimeTypes.sticker ||
-							att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
-							att?.filetype?.includes(EMimeTypes.mp4) ||
-							att?.filetype?.includes(EMimeTypes.mov)
-					)
-					.map((attachmentRes) => ({
-						...attachmentRes,
-						id: attachmentRes.id || '',
-						channelId,
-						clanId,
-						isVideo:
-							attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
-							attachmentRes?.filetype?.includes(EMimeTypes.mp4) ||
-							attachmentRes?.filetype?.includes(EMimeTypes.mov)
-					}))
-					.sort((a, b) => {
-						if (a.create_time_seconds && b.create_time_seconds) {
-							return b.create_time_seconds - a.create_time_seconds;
-						}
-						return 0;
-					});
-				if (!listAttachmentsByChannel) return;
-
-				window.electron.openImageWindow({
-					...enhancedAttachmentData,
-					url: isVideo
-						? enhancedAttachmentData.url || ''
-						: createImgproxyUrl(enhancedAttachmentData.url || '', {
-								width: enhancedAttachmentData.width ? (enhancedAttachmentData.width > 1600 ? 1600 : enhancedAttachmentData.width) : 0,
-								height: enhancedAttachmentData.height
-									? enhancedAttachmentData.height > 900
-										? 900
-										: enhancedAttachmentData.height
-									: 0,
-								resizeType: 'fit'
-							}),
-					uploaderData: {
-						name:
-							currentImageUploader?.clan_nick ||
-							currentImageUploader?.user?.display_name ||
-							currentImageUploader?.user?.username ||
-							'Anonymous',
-						avatar: (currentImageUploader?.clan_avatar ||
-							currentImageUploader?.user?.avatar_url ||
-							`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-					},
-					realUrl: enhancedAttachmentData.url || '',
-					channelImagesData: {
-						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
-						images: [],
-						selectedImageIndex: 0
-					},
-					isVideo
-				});
-
-				if (listAttachmentsByChannel) {
-					const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
-					const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
-					const channelImagesData: IImageWindowProps = {
-						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
-						images: imageListWithUploaderInfo,
-						selectedImageIndex
-					};
-
-					window.electron.openImageWindow({
-						...enhancedAttachmentData,
-						url: isVideo
-							? enhancedAttachmentData.url || ''
-							: createImgproxyUrl(enhancedAttachmentData.url || '', {
-									width: enhancedAttachmentData.width
-										? enhancedAttachmentData.width > 1600
-											? 1600
-											: enhancedAttachmentData.width
-										: 0,
-									height: enhancedAttachmentData.height
-										? (enhancedAttachmentData.width || 0) > 1600
-											? Math.round((1600 * enhancedAttachmentData.height) / (enhancedAttachmentData.width || 1))
-											: enhancedAttachmentData.height
-										: 0,
-									resizeType: 'fill'
-								}),
-						uploaderData: {
-							name:
-								currentImageUploader?.clan_nick ||
-								currentImageUploader?.user?.display_name ||
-								currentImageUploader?.user?.username ||
-								'Anonymous',
-							avatar: (currentImageUploader?.clan_avatar ||
-								currentImageUploader?.user?.avatar_url ||
-								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
-						},
-						realUrl: enhancedAttachmentData.url || '',
-						channelImagesData,
-						isVideo
-					});
-					return;
-				}
-			}
 
 			dispatch(
 				attachmentActions.setCurrentAttachment({
@@ -638,6 +506,21 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		[dispatch]
 	);
 
+	useEffect(() => {
+		if (mediaFilter === 'video' && attachments.length > 0 && filteredAttachments.length === 0) {
+			dispatch(
+				galleryActions.fetchGalleryAttachments({
+					clanId: currentClanId,
+					channelId: currentChannelId,
+					fileType: 'video',
+					limit: 50,
+					direction: 'before',
+					mediaFilter
+				})
+			);
+		}
+	}, [mediaFilter]);
+
 	return (
 		<div
 			ref={modalRef}
@@ -658,17 +541,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					</div>
 					<div className="flex flex-row items-center justify-between gap-4">
 						<div className="flex gap-2">
-							<button
-								onClick={() => handleMediaFilterChange('all')}
-								className={`px-3 py-1.5 text-sm rounded transition-colors ${
-									mediaFilter === 'all'
-										? 'bg-buttonPrimary text-white'
-										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
-								}`}
-								data-e2e={generateE2eId('clan_page.modal.gallery.tab.all')}
-							>
-								{t('gallery.filters.all')}
-							</button>
 							<button
 								onClick={() => handleMediaFilterChange('image')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${
@@ -853,11 +725,7 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		<ImageWithLoading
 			key={cacheKey}
 			cacheKey={cacheKey}
-			src={
-				isVideo
-					? attachment.url || ''
-					: createImgproxyUrl(attachment.url || '', { width: 120, height: 120, resizeType: 'fill' })
-			}
+			src={isVideo ? attachment.url || '' : createImgproxyUrl(attachment.url || '', { width: 120, height: 120, resizeType: 'fill' })}
 			alt={attachment.filename || 'Media'}
 			onClick={() => onClick(attachment)}
 			isVideo={isVideo}

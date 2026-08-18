@@ -6,6 +6,8 @@ export class CustomFile extends File {
 	height?: number;
 	thumbnail?: string;
 	thumbnailBlob?: Blob;
+	uploadPath?: string;
+	thumbnailUpload?: string;
 }
 
 export const isValidUrl = (urlString: string) => {
@@ -75,7 +77,7 @@ async function uploadThumbnailBlob(client: Client, session: ApiSession, blob: Bl
 	try {
 		const type = blob.type || 'image/jpeg';
 		const ext = type.includes('png') ? 'png' : 'jpg';
-		const { filePath, originalFilename } = createUploadFilePath(`thumb.${ext}`, false, index);
+		const { filePath, originalFilename } = createUploadFilePath(`thumb.${ext}`, index);
 		const result = await uploadFile(
 			client,
 			session,
@@ -215,7 +217,7 @@ export async function handleUploadFile(
 				fileType = `text/${fileExtension}`;
 			}
 			const shortFileType = getFileType(fileType);
-			const { filePath, originalFilename } = createUploadFilePath(filename, false, index);
+			const { filePath, originalFilename } = createUploadFilePath(filename, index);
 			const isVideo = fileType.startsWith('video/');
 
 			if (isVideo) {
@@ -304,63 +306,26 @@ export async function handleUploadFile(
 	});
 }
 
-export async function handleUploadFileMobile(
-	client: Client,
-	session: ApiSession,
-	filename: string,
-	file: any,
-	isOauth?: boolean
-): Promise<ApiMessageAttachment> {
-	// eslint-disable-next-line no-async-promise-executor
-	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
-		try {
-			let fileType = file.type;
-			if (!fileType) {
-				const fileNameParts = file.name.split('.');
-				const fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
-				fileType = `text/${fileExtension}`;
-			}
-			if (file?.uri) {
-				const binaryStr = atob(file.fileData);
-				const bytes = new Uint8Array(binaryStr.length);
-				for (let i = 0; i < binaryStr.length; i++) {
-					bytes[i] = binaryStr.charCodeAt(i);
-				}
-				const blob = new Blob([bytes], { type: fileType });
-				const { filePath, originalFilename } = createUploadFilePath(filename, true);
-				resolve(
-					uploadFile(
-						client,
-						session,
-						filePath,
-						fileType,
-						file.size,
-						blob,
-						true,
-						originalFilename,
-						file?.width,
-						file?.height,
-						'', // thumbnail
-						isOauth
-					)
-				);
-			}
-		} catch (error) {
-			reject(new Error(`${error}`));
-		}
-	});
-}
-
-export function createUploadFilePath(filename: string, isMobile: boolean, index?: number): { filePath: string; originalFilename: string } {
+export function createUploadFilePath(filename: string, index?: number): { filePath: string; originalFilename: string } {
 	const originalFilename = filename;
 	// Append milliseconds timestamp to filename
 	const ms = Date.now();
-	filename = isMobile ? ms + filename : `${ms}_${index || ''}${filename}`;
+	filename = `${ms}_${index || ''}${filename}`;
 	filename = filename.replace(/[^a-zA-Z0-9.]/g, '_');
 	// Ensure valid clan and channel IDs
 
 	const filePath = `${filename}`;
 	return { filePath, originalFilename };
+}
+
+export async function uploadFileToPath(uploadPath: string, file: Blob, size: number) {
+	try {
+		const res = await uploadImageToMinIO(uploadPath, file, size);
+		return res;
+	} catch (error) {
+		console.error('error: ', error);
+		return false;
+	}
 }
 
 export async function uploadFile(

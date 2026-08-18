@@ -13,7 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, EEventStatus, EPermission, generateE2eId, isElectron, ONE_MINUTE_MS, OptionEvent } from '@mezon/utils';
+import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiUserEventRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
@@ -149,7 +149,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	const handleOpenPanel = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
-		const mouseY = event.clientY + (isElectron() ? 0 : window.screenY);
+		const mouseY = event.clientY + window.screenY;
 		const windowHeight = window.innerHeight;
 		const distanceToBottom = windowHeight - event.clientY;
 		setCoords({ mouseX, mouseY, distanceToBottom });
@@ -294,7 +294,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 										{ count: event?.user_ids?.filter((id) => id !== '0')?.length || 0 }
 									)}
 								>
-									<span className="text-md">{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}</span>
+									<span
+										className="text-md"
+										data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.number_of_interested')}
+									>
+										{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}
+									</span>
 									<Icons.MemberList className="h-4 w-4" />
 								</div>
 							</div>
@@ -393,7 +398,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							handleStopPropagation(e);
 						}}
 					>
-						<div className="text-theme-primary-hover cursor-pointer" onClick={(e) => handleOpenPanel(e)} data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_panel')}>
+						<div
+							className="text-theme-primary-hover cursor-pointer"
+							onClick={(e) => handleOpenPanel(e)}
+							data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_panel')}
+						>
 							<Icons.IconEditThreeDot className="rotate-90" />
 						</div>
 
@@ -420,6 +429,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							<button
 								onClick={handleToggleUserEvent}
 								className="flex items-center gap-x-1 rounded-lg text-theme-primary-hover px-4 py-2 bg-theme-primary text-theme-primary-active"
+								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.interested')}
 							>
 								{isInterested ? <Icons.MuteBell className="size-4" /> : <Icons.Bell className="size-4 " />}
 								<span className="whitespace-nowrap">{isInterested ? t('dashboard.UnInterested') : t('dashboard.Interested')}</span>

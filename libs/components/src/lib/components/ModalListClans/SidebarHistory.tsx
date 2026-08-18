@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { appActions, selectChannelsEntitiesByClanId, selectClanById, selectDirectMessageEntities, selectHistory, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, isElectron } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -65,10 +65,6 @@ const SideBarHistory = () => {
 		}
 	};
 
-	if (!isElectron()) {
-		return null;
-	}
-
 	return (
 		<div className="flex pb-1 text-theme-primary-active">
 			<div
@@ -79,6 +75,7 @@ const SideBarHistory = () => {
 				}}
 				onMouseDown={handleMouseDown}
 				onMouseUp={(e) => handleMouseUp(e, true)}
+				data-e2e={generateE2eId('button.previous')}
 			>
 				<Icons.LongArrowRight className="w-5" />
 			</div>
@@ -90,6 +87,7 @@ const SideBarHistory = () => {
 				onMouseDown={handleMouseDown}
 				onMouseUp={(e) => handleMouseUp(e, false)}
 				className={`rounded-full aspect-square bg-item-theme-hover p-1 cursor-pointer ${history?.current !== null && history?.current < history?.url?.length - 1 ? '' : 'opacity-40 pointer-events-none'}`}
+				data-e2e={generateE2eId('button.next')}
 			>
 				<Icons.LongArrowRight className="w-5" />
 			</div>

@@ -67,7 +67,7 @@ Located in the `apps` directory:
 
 - **chat**: Main chat application (React)
 - **admin**: Administration panel
-- **desktop**: Electron desktop wrapper
+- **discover**: Marketing and discovery site
 
 ### Libraries
 
@@ -217,14 +217,6 @@ See full API documentation at [https://mezon.ai/docs/api](https://mezon.ai/docs/
 - Update documentation as needed
 
 ## Troubleshooting
-
-### Desktop App Debugging
-
-1. Build and package: `nx build desktop`
-2. Run with debugging: `./dist/executables/win-unpacked/mezon.exe --remote-debugging-port=8315`
-3. Open Chrome: `chrome://inspect`
-4. Configure and add `localhost:8315`
-5. Click "inspect" to open DevTools
 
 ### Common Issues
 

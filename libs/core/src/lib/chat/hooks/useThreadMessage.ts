@@ -1,15 +1,13 @@
-import type { ChannelsEntity, InvitesEntity } from '@mezon/store';
+import type { ChannelsEntity } from '@mezon/store';
 import {
 	channelMetaActions,
 	getStore,
-	inviteActions,
 	messagesActions,
 	referencesActions,
 	selectAllChannelMembers,
 	selectAllRolesClan,
 	selectChannelById,
 	selectCurrentClanId,
-	selectInviteById,
 	selectLatestMessageId,
 	selectOgpData,
 	useAppDispatch,
@@ -20,8 +18,7 @@ import type { IMessageSendPayload } from '@mezon/utils';
 import {
 	CREATING_THREAD,
 	EBacktickType,
-	INVITE_URL_REGEX,
-	getMobileUploadedAttachments,
+	generatePathAttachments,
 	getWebUploadedAttachments,
 	isFacebookLink,
 	isTikTokLink,
@@ -78,21 +75,10 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				throw new Error('Client is not initialized');
 			}
 
-			let uploadedFiles: ApiMessageAttachment[] = [];
 			// Check if there are attachments
 			if (attachments && attachments.length > 0) {
-				if (isMobile) {
-					try {
-						uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
-					} catch (error: any) {
-						console.error('Error uploading attachments:', error);
-						if (error?.code === 'ENOENT') {
-							uploadedFiles = attachments;
-						}
-					}
-				} else {
-					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-				}
+				const attachmentsPath = await generatePathAttachments(client, session, attachments);
+				await getWebUploadedAttachments({ attachments: attachmentsPath });
 			}
 
 			let threadContent = content;
@@ -121,43 +107,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 					...threadContent,
 					mk
 				};
-			} else if (threadContent?.t) {
-				const inviteUrlRegex = new RegExp(`https?:\\/\\/[^\\s]+${INVITE_URL_REGEX.source}`, 'i');
-				const inviteExec = inviteUrlRegex.exec(threadContent.t);
-				const inviteId = inviteExec?.[1] || '';
-				const inviteIndex = inviteExec?.index ?? 0;
-
-				if (inviteId) {
-					let inviteInfo: InvitesEntity | undefined = selectInviteById(inviteId)(store.getState());
-					if (!inviteInfo) {
-						try {
-							inviteInfo = await dispatch(inviteActions.getLinkInvite({ inviteId }) as any).unwrap();
-						} catch {
-							inviteInfo = undefined;
-						}
-					}
-
-					const mk = [...(threadContent.mk ?? [])];
-					const hasOgp = mk.some((item) => item.type === EBacktickType.OGP_PREVIEW);
-					if (!hasOgp) {
-						const memberCount = Number(inviteInfo?.member_count || 0);
-						mk.push({
-							type: EBacktickType.OGP_PREVIEW,
-							s: threadContent.t.length,
-							e: threadContent.t.length + 1,
-							index: inviteIndex,
-							title: inviteInfo?.clan_name || t('unknownClan'),
-							description: inviteInfo ? t('memberCount', { count: memberCount }) : '',
-							image: inviteInfo?.clan_logo || ''
-						});
-						threadContent = {
-							...threadContent,
-							mk
-						};
-					}
-				}
 			}
-
 			await client.writeChatMessage(
 				session,
 				currentClanId,
@@ -166,7 +116,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				thread.channel_private === 0,
 				threadContent,
 				mentions,
-				uploadedFiles,
+				attachments,
 				references
 			);
 			dispatch(referencesActions.clearOgpData());

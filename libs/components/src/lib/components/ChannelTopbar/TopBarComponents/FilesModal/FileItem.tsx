@@ -1,7 +1,7 @@
 import type { AttachmentEntity } from '@mezon/store';
-import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
+import { selectMemberClanByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { convertTimeString, DOWNLOAD_FILE, EFailAttachment, electronBridge, isElectron } from '@mezon/utils';
+import { EFailAttachment, convertTimeString, generateE2eId, isAttachmentPresignPendingForMessage, shouldHidePresignAttachment } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +10,16 @@ import { RenderAttachmentThumbnail } from '../../../ThumbnailAttachmentRender';
 type FileItemProps = {
 	readonly attachmentData: AttachmentEntity;
 	readonly mode?: ChannelStreamMode;
+	readonly channelId?: string;
 };
 
-const FileItem = ({ attachmentData, mode }: FileItemProps) => {
+const FileItem = ({ attachmentData, mode, channelId }: FileItemProps) => {
 	const { t } = useTranslation('channelTopbar');
+	const sourceMessage = useAppSelector((state) =>
+		attachmentData.message_id && channelId ? selectMessageByMessageId(state, channelId, attachmentData.message_id) : undefined
+	);
+	const isPresignPending = isAttachmentPresignPendingForMessage(attachmentData.url, sourceMessage);
+	const isHidden = shouldHidePresignAttachment(attachmentData.url, sourceMessage);
 	const userSendAttachment = useAppSelector((state) => selectMemberClanByUserId(state, attachmentData?.uploader ?? ''));
 	const username = userSendAttachment?.user?.username;
 	const attachmentSendTime = attachmentData?.create_time_seconds ? convertTimeString(attachmentData?.create_time_seconds * 1000) : '';
@@ -33,32 +39,23 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 		if (!response.ok) {
 			return;
 		}
-		if (isElectron()) {
-			const fileName = !attachmentData.filename?.includes('.')
-				? `${attachmentData.filename}.${attachmentData.filetype}`
-				: attachmentData.filename;
-			try {
-				await electronBridge.invoke(DOWNLOAD_FILE, {
-					url: attachmentData.url as string,
-					defaultFileName: fileName
-				});
-			} catch (error) {
-				console.error('Error during download:', error);
-			}
-		} else {
-			try {
-				const blob = await response.blob();
-				const dataUrl = URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = dataUrl;
-				a.download = attachmentData.filename as string;
-				a.click();
-			} catch (error) {
-				console.error('Error during download:', error);
-			}
+		try {
+			const blob = await response.blob();
+			const dataUrl = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = dataUrl;
+			a.download = attachmentData.filename as string;
+			a.click();
+		} catch (error) {
+			console.error('Error during download:', error);
 		}
 	};
-	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment: attachmentData, size: 'w-8 h-10', isFileList: true });
+	const thumbnailAttachment = RenderAttachmentThumbnail({
+		attachment: attachmentData,
+		size: 'w-8 h-10',
+		isFileList: true,
+		isPresignPending
+	});
 
 	const hideTheInformationFile =
 		attachmentData.filetype !== 'image/gif' &&
@@ -71,6 +68,8 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 		setHoverShowOptButtonStatus(true);
 	};
 
+	if (isHidden) return null;
+
 	return (
 		<div
 			onMouseEnter={hoverOptButton}
@@ -81,6 +80,7 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 			}}
 			className={`cursor-pointer break-all w-full gap-3 flex py-3 pl-3 pr-3 rounded-lg max-w-full ${hideTheInformationFile ? 'bg-theme-setting-nav border-theme-primary' : ''}  relative`}
 			role="button"
+			data-e2e={generateE2eId('chat.channel_message.header.button.file.item')}
 		>
 			<div className="flex items-center">{thumbnailAttachment}</div>
 			{attachmentData.filename === EFailAttachment.FAIL_ATTACHMENT ? (
@@ -89,13 +89,20 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 				hideTheInformationFile && (
 					<>
 						<div className="cursor-pointer">
-							<p className="text-blue-500 hover:underline w-fit one-line">{attachmentData?.filename ?? 'File'}</p>
+							<p
+								className="text-blue-500 hover:underline w-fit one-line"
+								data-e2e={generateE2eId('chat.channel_message.header.button.file.item.file_name')}
+							>
+								{attachmentData?.filename ?? 'File'}
+							</p>
 							{hoverShowOptButtonStatus ? (
 								<span>
 									{t('fileItem.download')} <span className="font-medium uppercase">{fileType}</span>
 								</span>
 							) : (
-								<p className=" w-fit one-line">{t('fileItem.sharedBy', { username, time: attachmentSendTime })}</p>
+								<p className=" w-fit one-line" data-e2e={generateE2eId('chat.channel_message.header.button.file.item.by_time')}>
+									{t('fileItem.sharedBy', { username, time: attachmentSendTime })}
+								</p>
 							)}
 						</div>
 						{hoverShowOptButtonStatus && (

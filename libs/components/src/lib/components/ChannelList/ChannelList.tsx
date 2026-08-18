@@ -15,8 +15,6 @@ import {
 	selectCurrentClanId,
 	selectCurrentUserId,
 	selectFirstChannelWithBadgeByClanId,
-	selectIsElectronDownloading,
-	selectIsElectronUpdateAvailable,
 	selectIsOpenCreateNewChannel,
 	selectIsShowEmptyCategory,
 	selectListChannelRenderByClanId,
@@ -26,7 +24,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
-import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
+import { EPermission, createImgproxyUrl, generateE2eId, toggleDisableHover } from '@mezon/utils';
 import type { ApiCategoryOrderUpdate } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -103,7 +101,7 @@ const ChannelBannerAndEvents = memo(({ banner }: { banner?: string }) => {
 	return (
 		<>
 			{banner && (
-				<div className="h-[136px]">
+				<div className="h-[136px]" data-e2e={generateE2eId('clan_page.banner')}>
 					<img
 						src={createImgproxyUrl(banner ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 						alt="imageCover"
@@ -139,8 +137,6 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
 	const streamPlay = useSelector(selectStatusStream);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
-	const isElectronUpdateAvailable = useSelector(selectIsElectronUpdateAvailable);
-	const IsElectronDownloading = useSelector(selectIsElectronDownloading);
 	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
 	const dispatch = useAppDispatch();
 
@@ -191,14 +187,13 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 			const mdBottomMargin = window.innerWidth >= 768 ? 16 : 0;
 			const totalHeight = clanTopbarEle + clanFooterHeight + mdBottomMargin - 3;
 			const outsideHeight = totalHeight;
-			const titleBarHeight = isWindowsDesktop || isLinuxDesktop ? 21 : 0;
 
-			setHeight(window.innerHeight - outsideHeight - titleBarHeight);
+			setHeight(window.innerHeight - outsideHeight);
 		};
 		calculateHeight();
 		window.addEventListener('resize', calculateHeight);
 		return () => window.removeEventListener('resize', calculateHeight);
-	}, [data, streamPlay, IsElectronDownloading, isElectronUpdateAvailable, isVoiceJoined]);
+	}, [data, streamPlay, isVoiceJoined]);
 
 	useEffect(() => {
 		const idleCallback = window.requestIdleCallback(
@@ -462,7 +457,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 					}}
 					className="channel-wrap absolute top-0 left-0 w-full"
 				>
-					{items.map((virtualRow, index) => {
+					{items.map((virtualRow) => {
 						const item = data[virtualRow.index];
 						if (virtualRow.index === 0) {
 							return (
@@ -486,7 +481,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 								>
 									{isFirstCategory && (
 										<div
-											className={`absolute right-1 bottom-[-1px] -translate-y-1/2 z-10 transition-opacity ${
+											className={`absolute ${permissions.hasChannelManagePermission && item.id !== FAVORITE_CATEGORY_ID ? 'right-7' : 'right-1'} z-10 transition-opacity ${
 												isDragModeEnabled ? 'opacity-100' : 'opacity-0 group-hover/category:opacity-100'
 											}`}
 										>
@@ -498,6 +493,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 														: 'text-[var(--text-theme-primary)] hover:bg-black/5 dark:hover:bg-white/5'
 												}`}
 												title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
+												data-e2e={generateE2eId('clan_page.channel_list.button.drag_channel')}
 											>
 												<svg
 													xmlns="http://www.w3.org/2000/svg"

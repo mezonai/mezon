@@ -29,7 +29,7 @@
 	"directMessage": "Direktmeddelande",
 	"activeThreads": "Aktiva trådar",
 	"joinedThreads": "Anslutna trådar",
-	"archivedThreads": "Äldre trådar",
+	"archivedThreads": "Arkiverade trådar",
 	"loading": "Laddar...",
 	"topic": "Ämne",
 	"invoice": "I röstkanal",
@@ -163,6 +163,9 @@
 		"placeholder": {
 			"threadName": "Ange tråd namn"
 		}
+	},
+	"errors": {
+		"limit": "Det maximala antalet kanaler för denna klan har uppnåtts"
 	},
 	"moreFile": "fler filer",
 	"moreFiles": "fler filer"

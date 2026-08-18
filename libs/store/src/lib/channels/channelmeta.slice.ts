@@ -411,3 +411,7 @@ export const selectIsUnreadDMById = createSelector([getDmMetadataState, (_state,
 export const selectDmLastSentMessage = createSelector([getDmMetadataState, (_state, channelId: string) => channelId], (dmState, channelId) => {
 	return dmState?.entities?.[channelId]?.last_sent_message;
 });
+export const selectLastSentMessageId = createSelector([selectChannelMetaEntities, (state, channelId) => channelId], (settings, channelId) => {
+	const channel = settings?.[channelId];
+	return channel?.last_sent_message;
+});

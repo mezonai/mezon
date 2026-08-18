@@ -3,7 +3,7 @@ import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezo
 import {
 	CREATING_TOPIC,
 	EBacktickType,
-	getMobileUploadedAttachments,
+	generatePathAttachments,
 	getWebUploadedAttachments,
 	isFacebookLink,
 	isTikTokLink,
@@ -66,7 +66,7 @@ export interface LoadMoreTopicDiscussionsArgs {
 	page?: number;
 }
 
-const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string, limit: number = 50, page?: number) => {
+const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string, limit = 50, page?: number) => {
 	const response = await mezon.client.listSdTopic(mezon.session, clanId, limit, page);
 	return { ...response, time: Date.now() };
 };
@@ -119,7 +119,7 @@ export const loadMoreTopics = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const currentLength = state.topicdiscussions.clanTopics[clanId]?.ids.length || 0;
 			const actualLimit = 50;
-			const calculatedPage = page ?? (Math.ceil(currentLength / actualLimit) + 1);
+			const calculatedPage = page ?? Math.ceil(currentLength / actualLimit) + 1;
 			const response = await mezon.client.listSdTopic(mezon.session, clanId, actualLimit, calculatedPage);
 			const topics = mapToTopicEntity(response.topics || []);
 			return {
@@ -255,11 +255,9 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 	let uploadedFiles: ApiMessageAttachment[] = [];
 
 	if (attachments && attachments.length > 0) {
-		if (isMobile) {
-			uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
-		} else {
-			uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-		}
+		const attachmentsPath = await generatePathAttachments(client, session, attachments);
+		uploadedFiles = attachmentsPath;
+		await getWebUploadedAttachments({ attachments: attachmentsPath });
 	}
 
 	let topicContent = content;
@@ -434,13 +432,13 @@ export const topicsSlice = createSlice({
 				}
 
 				state.clanTopics[clanId] = topicsAdapter.upsertMany(state.clanTopics[clanId], action.payload.topics);
-				
+
 				if (action.payload.topics.length === 0) {
 					state.clanTopicsHasMore[clanId] = false;
 				} else {
 					state.clanTopicsHasMore[clanId] = action.payload.topics.length >= action.payload.limit;
 				}
-				
+
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(loadMoreTopics.rejected, (state: TopicDiscussionsState, action) => {
@@ -554,11 +552,7 @@ export const selectTopicMetaById = createSelector([getTopicsState, (_, message_i
 	selectById(state.topicMeta, message_id)
 );
 
-export const selectHasMoreTopics = createSelector(
-	[getTopicsState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => {
-		if (!clanId) return false;
-		return state.clanTopicsHasMore[clanId] !== false; 
-	}
-);
-
+export const selectHasMoreTopics = createSelector([getTopicsState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) => {
+	if (!clanId) return false;
+	return state.clanTopicsHasMore[clanId] !== false;
+});

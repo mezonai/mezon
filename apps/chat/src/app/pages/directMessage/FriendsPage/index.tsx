@@ -191,7 +191,7 @@ const FriendsPage = () => {
 	const closeMenuMobile = closeMenu && !statusMenu;
 	return (
 		<div className="flex flex-col flex-1 shrink min-w-0  h-[100%]">
-			<div className={`draggable-area flex min-w-0 items-center bg-theme-chat  px-6 py-3 justify-start h-heightHeader border-b-theme-primary`}>
+			<div className={`flex min-w-0 items-center bg-theme-chat  px-6 py-3 justify-start h-heightHeader border-b-theme-primary`}>
 				{closeMenuMobile && (
 					<div className="text-theme-primary" onClick={() => setStatusMenu(true)}>
 						<Icons.OpenMenu className="w-6 h-6" />
@@ -344,7 +344,7 @@ const FriendsPage = () => {
 							</div>
 							<div className="flex flex-col items-center gap-7">
 								<Image
-									src={'https://cdn.mezon.ai/landing-page-mezon/addfriends.webp'}
+									src={'https://cdn.komu.vn/landing-page-mezon/addfriends.webp'}
 									width={100}
 									height={100}
 									className="object-cover w-[646px] opacity-45"

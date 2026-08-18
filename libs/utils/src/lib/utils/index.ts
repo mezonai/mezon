@@ -1,4 +1,4 @@
-import { CustomFile, handleUploadFile, handleUploadFileMobile } from '@mezon/transport';
+import { CustomFile, uploadFileToPath } from '@mezon/transport';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -12,28 +12,11 @@ import {
 	subDays
 } from 'date-fns';
 
-import type {
-	ApiMessageAttachment,
-	ApiMessageMention,
-	ApiMessageRef,
-	ApiRole,
-	ApiSession,
-	ClanUserListClanUser,
-	Client,
-	RoleUserListRoleUser
-} from 'mezon-js';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
-import { electronBridge } from '../bridge';
-import {
-	CHECK_PERMISSION_CAMERA,
-	CHECK_PERMISSION_MICROPHONE,
-	REQUEST_PERMISSION_CAMERA,
-	REQUEST_PERMISSION_MICROPHONE
-} from '../bridge/electron/constants';
-import { CURRENCY, ID_MENTION_HERE } from '../constant';
-import { Platform } from '../hooks/platform';
+import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -63,7 +46,6 @@ import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
-import { getPlatform, isElectron } from './windowEnvironment';
 export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
@@ -83,6 +65,7 @@ export * from './mediaDimensions';
 export * from './mergeRefs';
 export * from './parseHtmlAsFormattedText';
 export * from './presignFinish';
+export * from './presignUpload';
 export * from './processEntitiesDirectly';
 export * from './resetScroll';
 export * from './sanitizeHtml';
@@ -224,6 +207,7 @@ export {
 	isFromAllowedDomain,
 	isMezonCdnUrl,
 	isSecureAttachmentUrl,
+	isTenorUrl,
 	sanitizeHref,
 	sanitizeUrl as sanitizeUrlSecure,
 	type SecureURLOptions
@@ -786,107 +770,77 @@ const MAX_WORKERS = 4;
 const fileUploadForeman = new Foreman(MAX_WORKERS);
 
 export async function getWebUploadedAttachments(payload: {
-	attachments: ApiMessageAttachment[];
-	client: Client;
-	session: ApiSession;
-}): Promise<ApiMessageAttachment[]> {
-	const { attachments, client, session } = payload;
+	attachments: (ApiMessageAttachment & { uploadPath?: string; thumbnailUpload?: string; uploadName?: string })[];
+}) {
+	const { attachments } = payload;
 	if (!attachments || attachments?.length === 0) {
 		return [];
 	}
-	const directLinks = attachments.filter((att) => isTenorUrl(att.url) || isMezonCdnUrl(att.url));
-	const nonDirectAttachments = attachments.filter((att) => !isTenorUrl(att.url) && !isMezonCdnUrl(att.url));
+	const nonDirectAttachments = attachments.filter((att) => {
+		return att.uploadPath && !isTenorUrl(att.uploadPath) && !isMezonCdnUrl(att.uploadPath);
+	});
 
-	if (nonDirectAttachments.length > 0) {
-		const uploadPromises = nonDirectAttachments.map(async (attachment, index) => {
-			await fileUploadForeman.requestWorker();
-
-			try {
-				if (!attachment.url) {
-					throw new Error(`File URL is missing for file: ${attachment.filename}`);
-				}
-
-				const sourceFile = getPreSendSourceFile(attachment);
-				let createdFile: CustomFile;
-
-				if (sourceFile) {
-					createdFile = sourceFile as CustomFile;
-					createdFile.url = attachment.url;
-					createdFile.width = attachment.width || 0;
-					createdFile.height = attachment.height || 0;
-					createdFile.thumbnail = attachment.thumbnail;
-					createdFile.thumbnailBlob = getPreSendThumbnailBlob(attachment);
-				} else {
-					const response = await fetch(attachment.url);
-					const arrayBuffer = await response.arrayBuffer();
-					const blob = new Blob([arrayBuffer], { type: attachment.filetype || 'application/octet-stream' });
-					createdFile = new CustomFile([blob], attachment.filename ?? 'untitled', {
-						type: attachment.filetype || 'application/octet-stream'
-					});
-					createdFile.url = attachment.url;
-					createdFile.width = attachment.width || 0;
-					createdFile.height = attachment.height || 0;
-					createdFile.thumbnail = attachment.thumbnail;
-				}
-
-				const result = await handleUploadFile(client, session, createdFile.name, createdFile, index);
-
-				fileUploadForeman.releaseWorker();
-
-				return result;
-			} catch (error) {
-				fileUploadForeman.releaseWorker();
-				console.error('Error processing file:', error);
-				throw error;
-			}
-		});
+	if (!nonDirectAttachments.length) {
+		return [];
+	}
+	const uploadPromises = nonDirectAttachments.map(async (attachment, index) => {
+		await fileUploadForeman.requestWorker();
 
 		try {
-			const uploadedAttachments = await Promise.all(uploadPromises);
-			return uploadedAttachments;
+			if (!attachment.url) {
+				throw new Error(`File URL is missing for file: ${attachment.filename}`);
+			}
+
+			const sourceFile = getPreSendSourceFile(attachment);
+			let createdFile: CustomFile;
+
+			if (sourceFile) {
+				createdFile = sourceFile as CustomFile;
+				createdFile.url = attachment.url;
+				createdFile.width = attachment.width || 0;
+				createdFile.height = attachment.height || 0;
+				createdFile.thumbnail = attachment.thumbnail;
+				createdFile.thumbnailBlob = getPreSendThumbnailBlob(attachment);
+				createdFile.uploadPath = attachment.uploadPath;
+			} else {
+				const response = await fetch(attachment.url);
+				const arrayBuffer = await response.arrayBuffer();
+				const blob = new Blob([arrayBuffer], { type: attachment.filetype || 'application/octet-stream' });
+				createdFile = new CustomFile([blob], attachment.uploadName ?? 'untitled', {
+					type: attachment.filetype || 'application/octet-stream'
+				});
+				createdFile.url = attachment.url;
+				createdFile.width = attachment.width || 0;
+				createdFile.height = attachment.height || 0;
+				createdFile.thumbnail = attachment.thumbnail;
+				createdFile.uploadPath = attachment.uploadPath;
+			}
+
+			if (!createdFile.uploadPath) {
+				throw new Error(`Upload path not found for file ${createdFile.name}`);
+			}
+
+			const result = await uploadFileToPath(createdFile.uploadPath, createdFile, createdFile.size);
+			if (result && createdFile.thumbnailBlob && attachment?.thumbnailUpload && createdFile.thumbnail && createdFile.type.startsWith('video')) {
+				await uploadFileToPath(attachment.thumbnailUpload, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
+			}
+			fileUploadForeman.releaseWorker();
+			const id = attachment.uploadName?.split('/').pop()?.split('.')[0];
+			return id;
 		} catch (error) {
-			console.error('Failed to upload attachments:', error);
+			fileUploadForeman.releaseWorker();
+			console.error('Error processing file:', error);
 			throw error;
 		}
-	}
+	});
 
-	return directLinks.map((link) => ({
-		url: link.url,
-		filetype: link.filetype,
-		filename: link.filename,
-		thumbnail: link.thumbnail
-	}));
-}
-
-export async function getMobileUploadedAttachments(payload: {
-	attachments: ApiMessageAttachment[];
-	client: Client;
-	session: ApiSession;
-}): Promise<ApiMessageAttachment[]> {
-	const { attachments, client, session } = payload;
-	if (!attachments || attachments?.length === 0) {
-		return [];
+	try {
+		const uploadedAttachments = await Promise.all(uploadPromises);
+		return uploadedAttachments;
+	} catch (error) {
+		console.error('Failed to upload attachments:', error);
+		throw error;
 	}
-	const directLinks = attachments.filter((att) => isTenorUrl(att.url) || isMezonCdnUrl(att.url));
-	const nonDirectAttachments = attachments.filter((att) => !isTenorUrl(att.url) && !isMezonCdnUrl(att.url));
-
-	if (nonDirectAttachments.length > 0) {
-		const uploadPromises = nonDirectAttachments.map(async (att) => {
-			// const fileData = await RNFS.readFile(att?.url || '', 'base64');
-			const fileData = att;
-			const formattedFile = {
-				type: att?.filetype,
-				uri: att?.url,
-				size: att?.size,
-				height: att?.height,
-				width: att?.width,
-				fileData
-			};
-			return await handleUploadFileMobile(client, session, att?.filename || '', formattedFile);
-		});
-		return await Promise.all(uploadPromises);
-	}
-	return directLinks.map((link) => ({ url: link.url, filetype: link.filetype }));
 }
 
 export const blankReferenceObj: ApiMessageRef = {
@@ -983,10 +937,6 @@ export const checkIsThread = (channel?: IChannel) => {
 	return channel?.type === ChannelType.CHANNEL_TYPE_THREAD || (channel?.parent_id && channel?.parent_id !== '0');
 };
 
-export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();
-export const isMacDesktop = getPlatform() === Platform.MACOS && isElectron();
-export const isLinuxDesktop = getPlatform() === Platform.LINUX && isElectron();
-
 type ImgproxyOptions = {
 	width?: number;
 	height?: number;
@@ -995,7 +945,11 @@ type ImgproxyOptions = {
 
 export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptions = { width: 100, height: 100, resizeType: 'fit' }) => {
 	if (!sourceImageUrl) return '';
-	if (!sourceImageUrl?.startsWith('https://cdn.mezon') && !sourceImageUrl?.startsWith('https://profile.mezon')) {
+	// The host list must stay in step with isMezonCdnUrl: proxying a host the
+	// presign gate does not recognise lets imgproxy cache a not-found for an
+	// upload that has not finished. Still https-only, as before.
+	const isProxyableCdn = sourceImageUrl.startsWith('https://') && isMezonCdnUrl(sourceImageUrl);
+	if (!isProxyableCdn && !sourceImageUrl?.startsWith('https://profile.mezon')) {
 		return sourceImageUrl;
 	}
 	const { width, height, resizeType } = options;
@@ -1006,7 +960,7 @@ export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptio
 };
 
 export function copyChannelLink(clanId: string, channelId: string) {
-	const origin = isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin;
+	const origin = window.location.origin;
 	const link = `${origin}/chat/clans/${clanId}/channels/${channelId}`;
 	if (navigator.clipboard) {
 		navigator.clipboard
@@ -1031,24 +985,6 @@ export function copyChannelLink(clanId: string, channelId: string) {
 
 export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
 	try {
-		if (isMacDesktop) {
-			const response =
-				mediaType === 'audio'
-					? await electronBridge.invoke(REQUEST_PERMISSION_MICROPHONE)
-					: await electronBridge.invoke(REQUEST_PERMISSION_CAMERA);
-
-			const status =
-				typeof response === 'string'
-					? response
-					: typeof response === 'object' && response !== null && 'status' in response
-						? ((response as { status?: string }).status ?? 'denied')
-						: 'denied';
-
-			if (isMacDesktop && status !== 'granted') {
-				return 'denied';
-			}
-		}
-
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 			const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
 			stream.getTracks().forEach((track) => track.stop());
@@ -1068,27 +1004,6 @@ export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Prom
 
 export const checkMediaPermission = async (mediaType: 'audio' | 'video'): Promise<'granted' | 'denied' | 'prompt' | null> => {
 	try {
-		if (isMacDesktop) {
-			try {
-				const response =
-					mediaType === 'audio'
-						? await electronBridge.invoke(CHECK_PERMISSION_MICROPHONE)
-						: await electronBridge.invoke(CHECK_PERMISSION_CAMERA);
-
-				if (typeof response === 'string') {
-					if (response === 'granted') {
-						return 'granted';
-					} else if (response === 'denied' || response === 'restricted') {
-						return 'denied';
-					} else if (response === 'not-determined') {
-						return 'prompt';
-					}
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
 		if (typeof navigator !== 'undefined' && navigator.permissions && navigator.permissions.query) {
 			try {
 				const permissionName = mediaType === 'audio' ? ('microphone' as PermissionName) : ('camera' as PermissionName);
@@ -1521,4 +1436,11 @@ export function subBigInt(a: string, b: string): string {
 
 export const generateAttachmentId = (attachment: ApiMessageAttachment, messageId: string): string => {
 	return `${messageId}_${attachment.url}`;
+};
+
+export const checkInviteLinkValid = (url: string): boolean => {
+	const inviteMatch = url.startsWith(INVITE_URL_REGEX);
+	const inviteId = url?.slice(-19);
+	const valid = inviteId?.length === 19 && [...inviteId].every((c) => c >= '0' && c <= '9');
+	return inviteMatch && valid;
 };

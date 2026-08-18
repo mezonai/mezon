@@ -13,7 +13,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const ClanWorld = () => {
 	const { t } = useTranslation('clandetail');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [openFAQ, setOpenFAQ] = useState<number | null>(0);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,10 +23,8 @@ const ClanWorld = () => {
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);
@@ -41,28 +39,28 @@ const ClanWorld = () => {
 			id: 0,
 			title: t('features.0.title'),
 			description: t('features.0.description'),
-			image: 'https://cdn.mezon.ai/landing-page-mezon/comunityforfun1 .webp',
+			image: 'https://cdn.komu.vn/landing-page-mezon/comunityforfun1 .webp',
 			imageSize: 'max-w-[80vw] lg:max-w-[45vw]'
 		},
 		{
 			id: 1,
 			title: t('features.1.title'),
 			description: t('features.1.description'),
-			image: 'https://cdn.mezon.ai/landing-page-mezon/comunityforfun2.webp',
+			image: 'https://cdn.komu.vn/landing-page-mezon/comunityforfun2.webp',
 			imageSize: 'max-w-[80vw] lg:max-w-[46vw]'
 		},
 		{
 			id: 2,
 			title: t('features.2.title'),
 			description: t('features.2.description'),
-			image: 'https://cdn.mezon.ai/landing-page-mezon/comunityforfun3.webp',
+			image: 'https://cdn.komu.vn/landing-page-mezon/comunityforfun3.webp',
 			imageSize: 'max-w-[80vw] lg:max-w-[47vw]'
 		},
 		{
 			id: 3,
 			title: t('features.3.title'),
 			description: t('features.3.description'),
-			image: 'https://cdn.mezon.ai/landing-page-mezon/comunityforfun4.webp',
+			image: 'https://cdn.komu.vn/landing-page-mezon/comunityforfun4.webp',
 			imageSize: 'max-w-[80vw] lg:max-w-[48vw]'
 		}
 	];
@@ -212,7 +210,7 @@ const ClanWorld = () => {
 								className={`absolute inset-0 bg-gradient-to-br from-[#8761df5f] to-[#7979ed4f] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 							/>
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/clandetai1.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/clandetai1.webp"
 								alt="Build Your Community"
 								className="max-w-[68vw] lg:max-w-[43vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 								loading="lazy"
@@ -248,7 +246,7 @@ const ClanWorld = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/clandtail2.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/clandtail2.webp"
 								alt="WFH Experience"
 								className="max-w-[80vw] lg:max-w-[51vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -334,7 +332,7 @@ const ClanWorld = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/clandetail3.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/clandetail3.webp"
 								alt="Member Relationship"
 								className="max-w-[74vw] lg:max-w-[37vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -369,7 +367,7 @@ const ClanWorld = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/clandetail4.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/clandetail4.webp"
 								alt="Reports"
 								className="max-w-[75vw] lg:max-w-[46vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -404,7 +402,7 @@ const ClanWorld = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/clandetail5.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/clandetail5.webp"
 								alt="Member Relationship Oriented"
 								className="max-w-[80vw] lg:max-w-[34vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -440,7 +438,7 @@ const ClanWorld = () => {
 						<div className="flex items-start justify-between mb-8 md:mb-12">
 							<h2 className="font-svnAvo text-3xl sm:text-4xl lg:text-5xl text-slate-900 font-bold select-text">{t('faq.title')}</h2>
 							<a
-								href="https://mezon.ai/docs/en/user/clan"
+								href="https://mezon.ai/docs/user/clan"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] underline inline-flex items-center gap-1 text-base sm:text-lg transition-colors"
@@ -490,7 +488,7 @@ const ClanWorld = () => {
 												{faq.answer}
 											</p>
 											<a
-												href="https://mezon.ai/docs/en/user/clan"
+												href="https://mezon.ai/docs/user/clan"
 												target="_blank"
 												rel="noopener noreferrer"
 												className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] inline-flex items-center gap-1 text-sm sm:text-base transition-colors"
@@ -510,7 +508,7 @@ const ClanWorld = () => {
 			</section>
 
 			<ModalDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };

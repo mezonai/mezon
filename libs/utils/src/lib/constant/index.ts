@@ -6,7 +6,7 @@ export const TIME_OFFSET = 3;
 export const LIMIT_MESSAGE = 50;
 export const LIMIT_CLAN_ITEM = 50;
 export const SIZE_PAGE_SEARCH = 25;
-export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
+export const LIMIT_SIZE_UPLOAD_IMG = 1048576;
 export const MAX_FILE_NAME_EMOJI = 62;
 export const MAX_FILE_ATTACHMENTS = 50; // 50 items
 export const LENGHT_USER_ID = 19;
@@ -33,7 +33,7 @@ export const FOR_SALE_CATE = 'forsale';
 
 export const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
-export const INVITE_URL_REGEX = /\/invite\/([A-Za-z0-9_-]+)/i;
+export const INVITE_URL_REGEX = `${process.env.NX_DOMAIN_URL}/invite/`;
 
 export const PREDEFINED_EMOJI_CATEGORIES = [
 	'Recent',
@@ -206,28 +206,28 @@ export enum EMuteState {
 export const STICKER_WAVE = {
 	NAME: 'hello',
 	LIST_STICKER: [
-		'https://cdn.mezon.ai/stickers/hellomezon.gif',
-		'https://cdn.mezon.ai/stickers/music_boy.gif',
-		'https://cdn.mezon.ai/stickers/music_girl.gif',
-		'https://cdn.mezon.ai/stickers/d1.gif',
-		'https://cdn.mezon.ai/stickers/d2.gif',
-		'https://cdn.mezon.ai/stickers/d3.gif',
-		'https://cdn.mezon.ai/stickers/d4.gif',
-		'https://cdn.mezon.ai/stickers/d5.gif',
-		'https://cdn.mezon.ai/stickers/whatsapp.gif',
-		'https://cdn.mezon.ai/stickers/zalo.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'https://cdn.mezon.ai/stickers/telegram.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'https://cdn.mezon.ai/stickers/slack.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'https://cdn.mezon.ai/stickers/discord.gif',
-		'https://cdn.mezon.ai/stickers/mezon.gif',
-		'http://cdn.mezon.ai/landing-page-mezon/2021919345600368640.gif'
+		'https://cdn.komu.vn/stickers/hellomezon.gif',
+		'https://cdn.komu.vn/stickers/music_boy.gif',
+		'https://cdn.komu.vn/stickers/music_girl.gif',
+		'https://cdn.komu.vn/stickers/d1.gif',
+		'https://cdn.komu.vn/stickers/d2.gif',
+		'https://cdn.komu.vn/stickers/d3.gif',
+		'https://cdn.komu.vn/stickers/d4.gif',
+		'https://cdn.komu.vn/stickers/d5.gif',
+		'https://cdn.komu.vn/stickers/whatsapp.gif',
+		'https://cdn.komu.vn/stickers/zalo.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'https://cdn.komu.vn/stickers/telegram.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'https://cdn.komu.vn/stickers/slack.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'https://cdn.komu.vn/stickers/discord.gif',
+		'https://cdn.komu.vn/stickers/mezon.gif',
+		'http://cdn.komu.vn/landing-page-mezon/2021919345600368640.gif'
 	]
 };
 
-export const MEZON_AVATAR_URL = 'https://cdn.mezon.ai/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
+export const MEZON_AVATAR_URL = 'https://cdn.komu.vn/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
 export const WAVE_SENDER_NAME = 'Mezon';
 
 export const CURRENCY = {

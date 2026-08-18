@@ -8,7 +8,7 @@ import { useAppDispatch } from './store';
 import { topicsActions } from './topicDiscussion/topicDiscussions.slice';
 
 const PERSIST_AUTH_KEY = 'persist:auth';
-const MAX_RETRIES = 4;
+const MAX_RETRIES_NETWORK = 4;
 
 function readPersistedSession(): ApiSession | null {
 	try {
@@ -47,6 +47,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 	const { sessionRef, createClient, connectSocket } = useMezon();
 	const dispatch = useAppDispatch();
 	const [ready, setReady] = useState(false);
+	const [checkConnect, setCheckConnect] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
 
 	useEffect(() => {
@@ -56,9 +57,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 		const init = async () => {
 			const client = await createClient();
-			client.ontopicinmessage = (event: TopicInMessageEvent) => {
-				dispatch(topicsActions.addTopicMeta(event));
-			};
+
 			if (!client) {
 				setReady(true);
 				return;
@@ -72,14 +71,17 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				setReady(true);
 				return;
 			}
+			client.ontopicinmessage = (event: TopicInMessageEvent) => {
+				dispatch(topicsActions.addTopicMeta(event));
+			};
 
-			let connectOk = false;
+			let shouldLogout = false;
 
 			await Promise.all([
 				(async () => {
 					sessionRef.current = persistedSession as ApiSession;
 					// Retry call connect socket if it fail with MAX_RETRIES time
-					for (let i = 0; i <= MAX_RETRIES; i++) {
+					for (let i = 0; i <= MAX_RETRIES_NETWORK; i++) {
 						setRetryCount(i);
 
 						if (i > 0) {
@@ -88,7 +90,10 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 							});
 							if (!reachable) {
 								console.error(`Network probe failed before bootstrap retry ${i}`);
-								if (i === MAX_RETRIES) break;
+								if (i === MAX_RETRIES_NETWORK) {
+									setCheckConnect(true);
+									break;
+								}
 								const baseDelay = INITIAL_DELAY * Math.pow(2, i);
 								await delay(baseDelay + Math.random() * 500);
 								continue;
@@ -97,15 +102,15 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 						try {
 							await connectSocket();
-							connectOk = true;
 							break;
 						} catch (error) {
-							if (i === MAX_RETRIES) break;
-							const baseDelay = INITIAL_DELAY * Math.pow(2, i);
-							// Add jitter time for not all client call in same time
-							const nextDelay = baseDelay + Math.random() * 500;
-							console.error(`Connection failed. Retrying attempt ${i} in ${nextDelay}ms...`);
-							await delay(nextDelay);
+							try {
+								await connectSocket({ useToken: true });
+							} catch (error) {
+								shouldLogout = true;
+							}
+							console.error('ERROR_CONNECT', error);
+							break;
 						}
 					}
 				})(),
@@ -113,7 +118,7 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 				waitForPersistorBootstrap(persistor)
 			]);
 
-			if (!hasSessionId || !connectOk) {
+			if (!hasSessionId || shouldLogout) {
 				dispatch(authActions.logOut({}));
 			}
 
@@ -122,6 +127,9 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 		init();
 	}, []);
+	if (checkConnect) {
+		return <NetworkErrorScreen />;
+	}
 
 	return <>{ready ? children : (fallback ?? <ConnectingScreen retryCount={retryCount} />)}</>;
 }
@@ -158,7 +166,7 @@ const ConnectingScreen = ({ retryCount }: { retryCount: number }) => {
 
 				<h3 className="text-lg font-semibold text-center">Establishing a connection...</h3>
 
-				{retryCount > 0 && retryCount < MAX_RETRIES && (
+				{retryCount > 0 && retryCount < MAX_RETRIES_NETWORK && (
 					<p className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-gray-300 backdrop-blur-md">
 						<span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
 						<span>
@@ -168,6 +176,18 @@ const ConnectingScreen = ({ retryCount }: { retryCount: number }) => {
 					</p>
 				)}
 			</div>
+		</div>
+	);
+};
+
+const NetworkErrorScreen = () => {
+	return (
+		<div className=" fixed flex h-screen w-full text-white bg-black z-[10000] flex-col items-center justify-center gap-4 bg-background text-center">
+			<div className="text-5xl">🌐</div>
+
+			<h1 className="text-xl font-semibold">Lost Internet Connection</h1>
+
+			<p className="max-w-sm text-sm text-muted-foreground">Please check your internet connection and try again.</p>
 		</div>
 	);
 };

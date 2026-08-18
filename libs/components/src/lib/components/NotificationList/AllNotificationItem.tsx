@@ -136,11 +136,20 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		embed: notify?.content?.embed as IEmbedProps[] | undefined
 	};
 
+	const isShowJump =
+		notify.category === NotificationCategory.MENTIONS ||
+		(notify.category === NotificationCategory.MESSAGES &&
+			notify?.content?.channel_id &&
+			notify?.content?.channel_id !== '0' &&
+			notify?.content?.clan_id &&
+			notify?.content?.message_id);
+
 	return (
 		<div className=" bg-transparent rounded-[8px] relative group">
 			<button
 				onClick={(event) => handleDeleteNotification(event, notify.id, notify.category as NotificationCategory)}
 				className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 rounded-full bg-item-theme-hover text-theme-primary hover:text-red-500 text-sm font-bold shadow-md transition-all  hover:scale-110 active:scale-95"
+				data-e2e={generateE2eId('chat.channel_message.inbox.for_you.button.remove')}
 			>
 				✕
 			</button>
@@ -158,10 +167,11 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 				</div>
 			)}
 
-			{notify.category === NotificationCategory.MENTIONS && (
+			{isShowJump && (
 				<button
 					className="absolute py-1 px-2 bottom-[10px] z-50 right-3 text-[10px] rounded-lg border-theme-primary transition-all duration-300 group-hover:block hidden bg-item-theme"
 					onClick={handleClickJump}
+					data-e2e={generateE2eId('chat.channel_message.inbox.for_you.button.jump')}
 				>
 					{t('tooltips.jump')}
 				</button>
@@ -350,13 +360,17 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 							)}
 						</div>
 					) : (
-						<div className="flex flex-col gap-1 justify-center">
+						<div className="flex flex-col gap-1 justify-center" data-e2e={generateE2eId('chat.channel_message.inbox.for_you')}>
 							<div>
-								<span className="font-bold">{namePriority || user?.display_name || username}</span>
-								<span>{subjectText}</span>
+								<span className="font-bold" data-e2e={generateE2eId('chat.channel_message.inbox.for_you.username')}>
+									{namePriority || user?.display_name || username}
+								</span>
+								<span data-e2e={generateE2eId('chat.channel_message.inbox.for_you.message')}>{subjectText}</span>
 							</div>
 							{!!message?.create_time_seconds && (
-								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time_seconds * 1000)}</span>
+								<span className="text-zinc-400 text-[11px]" data-e2e={generateE2eId('chat.channel_message.inbox.for_you.timestamp')}>
+									{convertTimeString(message?.create_time_seconds * 1000)}
+								</span>
 							)}
 						</div>
 					)}

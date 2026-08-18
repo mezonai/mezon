@@ -46,7 +46,7 @@ export const CLanDiscoverSection = () => {
 							className={`absolute inset-0 bg-gradient-to-br from-[#8661df] to-[#7979ed] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 						/>
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/clanpagee.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/clanpagee.webp"
 							alt="Organize"
 							className="max-w-[68vw] lg:max-w-[42vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 							loading="lazy"

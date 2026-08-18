@@ -162,6 +162,9 @@
 			"threadName": "Voer themanaam in"
 		}
 	},
+	"errors": {
+		"limit": "Het maximale aantal kanalen voor deze clan is bereikt"
+	},
 	"moreFile": "meer bestand",
 	"moreFiles": "meer bestanden",
 	"joinedThreads": "Deelgenomen threads",

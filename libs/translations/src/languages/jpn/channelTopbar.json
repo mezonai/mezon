@@ -29,7 +29,7 @@
 	"directMessage": "ダイレクトメッセージ",
 	"activeThreads": "アクティブスレッド",
 	"joinedThreads": "参加したスレッド",
-	"archivedThreads": "古いスレッド",
+	"archivedThreads": "アーカイブ済みスレッド",
 	"loading": "読み込み中...",
 	"topic": "トピック",
 	"invoice": "音声チャンネル内",
@@ -163,6 +163,9 @@
 		"placeholder": {
 			"threadName": "スレッド名を入力"
 		}
+	},
+	"errors": {
+		"limit": "このクランのチャンネル数が上限に達しました"
 	},
 	"moreFile": "ファイル",
 	"moreFiles": "ファイル"

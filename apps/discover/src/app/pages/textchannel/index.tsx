@@ -14,7 +14,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const TextChannelPage = () => {
 	const { t } = useTranslation('textchannel');
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
@@ -26,7 +26,7 @@ const TextChannelPage = () => {
 	const rawSlides = t('discover.slides', { returnObjects: true });
 	const slides = (Array.isArray(rawSlides) ? rawSlides : []).map((slide: { title: string; description: string }, index: number) => ({
 		...slide,
-		image: `https://cdn.mezon.ai/landing-page-mezon/feat${index + 1}.webp`
+		image: `https://cdn.komu.vn/landing-page-mezon/feat${index + 1}.webp`
 	}));
 
 	const rawFaqQuestions = t('faq.questions', { returnObjects: true });
@@ -36,10 +36,8 @@ const TextChannelPage = () => {
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
+				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);
@@ -215,7 +213,7 @@ const TextChannelPage = () => {
 								className={`absolute inset-0 bg-gradient-to-br from-[#8761df5f] to-[#7979ed4f] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 							/>
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/friendinclan.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/friendinclan.webp"
 								alt="Chill with friends"
 								className="max-w-[68vw] lg:max-w-[37vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 								loading="lazy"
@@ -250,7 +248,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/voicechannel.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/voicechannel.webp"
 								alt="Voice Channels"
 								className="max-w-[80vw] lg:max-w-[51vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -285,7 +283,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/dtcalnvoice.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/dtcalnvoice.webp"
 								alt="Stream and Announcements"
 								className="max-w-[74vw] lg:max-w-[39vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -320,7 +318,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/channelApp.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/channelApp.webp"
 								alt="Channel Apps"
 								className="max-w-[75vw] lg:max-w-[51vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -355,7 +353,7 @@ const TextChannelPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/supperbot.webp"
+								src="https://cdn.komu.vn/landing-page-mezon/supperbot.webp"
 								alt="Super Intelligent Bot"
 								className="max-w-[74vw] lg:max-w-[57vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"
@@ -516,7 +514,7 @@ const TextChannelPage = () => {
 						<div className="flex items-start justify-between mb-8 md:mb-12">
 							<h2 className="font-svnAvo text-3xl sm:text-4xl lg:text-5xl text-slate-900 font-bold select-text">{t('faq.title')}</h2>
 							<a
-								href="https://mezon.ai/docs/en/user/friends-and-messaging"
+								href="https://mezon.ai/docs/user/friends-and-messaging"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] underline inline-flex items-center gap-1 text-base sm:text-lg transition-colors"
@@ -548,7 +546,7 @@ const TextChannelPage = () => {
 												{faq.answer}
 											</p>
 											<a
-												href="https://mezon.ai/docs/en/user/friends-and-messaging"
+												href="https://mezon.ai/docs/user/friends-and-messaging"
 												target="_blank"
 												rel="noopener noreferrer"
 												className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] inline-flex items-center gap-1 text-sm sm:text-base transition-colors"
@@ -568,7 +566,7 @@ const TextChannelPage = () => {
 			</section>
 
 			<ModalDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };

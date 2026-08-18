@@ -29,7 +29,7 @@
 	"directMessage": "Direktnachrichten",
 	"activeThreads": "Aktive Threads",
 	"joinedThreads": "Beigetretene Threads",
-	"archivedThreads": "Ältere Threads",
+	"archivedThreads": "Archivierte Threads",
 	"loading": "Wird geladen...",
 	"topic": "Thema",
 	"invoice": "In Sprachkanälen",
@@ -163,6 +163,9 @@
 		"placeholder": {
 			"threadName": "Thread-Namen eingeben"
 		}
+	},
+	"errors": {
+		"limit": "Maximale Kanalanzahl für diesen Clan erreicht"
 	},
 	"moreFile": "weitere Dateien",
 	"moreFiles": "weitere Dateien"

@@ -54,7 +54,7 @@ const AnimatedSection = ({ className = '', children }: AnimatedSectionProps) => 
 
 const AboutMezon = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.version;
+	const version = mezonPackage.desktopVersion;
 	const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 	const [openAboutUs, setOpenAboutUs] = useState(false);
@@ -64,9 +64,9 @@ const AboutMezon = () => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`;
+			return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
 		}
-		return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
+		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 	}, [platform, version]);
 	const trackHeaderLoginClick = (action: string) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
@@ -77,8 +77,6 @@ const AboutMezon = () => {
 			});
 		}
 	};
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
 
 	const handleDownloadDesktop = () => {
 		if (platform === Platform.IOS) {
@@ -176,20 +174,10 @@ const AboutMezon = () => {
 										onClick={() => setIsDesktopDropdownOpen(false)}
 									>
 										<Icons.Apple className="w-5 h-5" />
-										<span className="text-gray-700 font-svnAvo">macOS (Apple)</span>
+										<span className="text-gray-700 font-svnAvo">macOS</span>
 									</a>
 									<a
-										href={'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 text-purple-600 hover:text-pink-600"
-										onClick={() => setIsDesktopDropdownOpen(false)}
-									>
-										<Icons.Apple className="w-5 h-5" />
-										<span className="text-gray-700 font-svnAvo">macOS (Intel)</span>
-									</a>
-									<a
-										href={`${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`}
+										href={`${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-purple-600 hover:text-pink-600"
@@ -238,7 +226,7 @@ const AboutMezon = () => {
 					</div>
 					<div className="w-full">
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/about-1.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/about-1.webp"
 							alt="Mezon interface preview"
 							className="w-full rounded-[32px] "
 							loading="lazy"
@@ -258,7 +246,7 @@ const AboutMezon = () => {
 					</div>
 					<div className="w-full flex justify-start">
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/about-2.webp"
+							src="https://cdn.komu.vn/landing-page-mezon/about-2.webp"
 							alt="Mezon team collaborating"
 							className="w-full rounded-[32px] shadow-2xl"
 							loading="lazy"
@@ -282,19 +270,19 @@ const AboutMezon = () => {
 							title: 'Always Free',
 							description:
 								'We believe conversations, connections, and creations should always stay free and open — empowering communities to grow together.',
-							image: 'https://cdn.mezon.ai/landing-page-mezon/aboutmenu-1.webp'
+							image: 'https://cdn.komu.vn/landing-page-mezon/aboutmenu-1.webp'
 						},
 						{
 							title: 'Safe & Transparent',
 							description:
 								'You own your data, your rules, your community — so every interaction feels secure and trustworthy inside Mezon.',
-							image: 'https://cdn.mezon.ai/landing-page-mezon/aboutmenu-2.webp'
+							image: 'https://cdn.komu.vn/landing-page-mezon/aboutmenu-2.webp'
 						},
 						{
 							title: 'Powered by Creativity',
 							description:
 								'We celebrate expression and innovation — from chats to creations. Mezon gives you the tools to bring your ideas to life.',
-							image: 'https://cdn.mezon.ai/landing-page-mezon/aboutmenu-3.webp'
+							image: 'https://cdn.komu.vn/landing-page-mezon/aboutmenu-3.webp'
 						}
 					].map((value) => (
 						<div
@@ -358,7 +346,7 @@ const AboutMezon = () => {
 					</Button>
 				</div>
 			</AnimatedSection>
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };

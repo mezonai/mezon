@@ -11,11 +11,11 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 
 	try {
 		const parsedUrl = new URL(url);
-		const hostname = parsedUrl.hostname.toLowerCase();
+		const hostname = parsedUrl.origin.toLowerCase();
 
 		return allowedDomains.some((domain) => {
 			const normalizedDomain = domain.toLowerCase();
-			return hostname === normalizedDomain || hostname.endsWith('.' + normalizedDomain);
+			return hostname === normalizedDomain || hostname.endsWith(`.${normalizedDomain}`);
 		});
 	} catch (error) {
 		return false;
@@ -23,11 +23,25 @@ export function isFromAllowedDomain(url: string | undefined, allowedDomains: str
 }
 
 export function isTenorUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['tenor.com']);
+	return isFromAllowedDomain(url, ['static.klipy.com']);
 }
 
+/**
+ * Hosts that serve attachments uploaded through a presigned URL. Keep this in
+ * step with `createImgproxyUrl`: an attachment the proxy is willing to fetch but
+ * this list does not cover would slip past the presign gate and let imgproxy
+ * cache a not-found for an object that has not finished uploading.
+ */
+export const MEZON_CDN_DOMAINS = [
+	'https://cdn.komu.vn',
+	'https://cdn.komu.ai',
+	'https://cdn.mezon.ai',
+	'https://cdn.mezon.vn',
+	...(process.env.NX_BASE_IMG_URL ? [process.env.NX_BASE_IMG_URL] : [])
+];
+
 export function isMezonCdnUrl(url: string | undefined): boolean {
-	return isFromAllowedDomain(url, ['cdn.mezon.ai']);
+	return isFromAllowedDomain(url, MEZON_CDN_DOMAINS);
 }
 
 export function sanitizeUrl(url: string | undefined, options: SecureURLOptions = {}): string {
@@ -69,7 +83,6 @@ export function sanitizeUrl(url: string | undefined, options: SecureURLOptions =
 		return '';
 	}
 }
-
 
 export function sanitizeHref(url: string | undefined): string | undefined {
 	if (!url) return undefined;

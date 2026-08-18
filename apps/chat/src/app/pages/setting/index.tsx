@@ -2,7 +2,6 @@ import {
 	ExitSetting,
 	SettingAccount,
 	SettingActivity,
-	SettingAdvanced,
 	SettingAppearance,
 	SettingDevices,
 	SettingItem,
@@ -15,7 +14,7 @@ import { useEscapeKeyClose, useSettingFooter } from '@mezon/core';
 import type { showSettingFooterProps } from '@mezon/store';
 import { selectIsShowSettingFooter } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EUserSettings, isElectron } from '@mezon/utils';
+import { EUserSettings } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -79,8 +78,6 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 				{currentSetting === EUserSettings.VOICE && <SettingVoice menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.NOTIFICATIONS && <SettingNotifications menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.ACTIVITY && <SettingActivity menuIsOpen={menuIsOpen} />}
-				{currentSetting === EUserSettings.ADVANCED && isElectron() && <SettingAdvanced menuIsOpen={menuIsOpen} />}
-
 				<ExitSetting onClose={closeSetting} />
 
 				<div className="flex sbm:hidden fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">
