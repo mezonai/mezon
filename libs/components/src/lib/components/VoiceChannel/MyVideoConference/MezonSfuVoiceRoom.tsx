@@ -38,6 +38,10 @@ type SfuPeer = {
 	user_id?: string;
 	role?: 'speaker' | 'audience';
 	is_mute?: boolean;
+	camera_requested?: boolean;
+	camera_active?: boolean;
+	screen_requested?: boolean;
+	screen_active?: boolean;
 	mid_audio?: number | string;
 	mid_video?: number | string;
 	mid_screen?: number | string;
@@ -52,6 +56,9 @@ type RemoteMedia = {
 	video?: MediaStreamTrack;
 	screen?: MediaStreamTrack;
 	screenActive?: boolean;
+	cameraRequested?: boolean;
+	cameraActive?: boolean;
+	screenRequested?: boolean;
 };
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
@@ -299,7 +306,7 @@ interface ParticipantTileProps {
 const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTileProps) => {
 	const speaking = useSpeaking(participant.audio);
 	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
-	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted);
+	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted && participant.cameraActive !== false);
 	return (
 		<div
 			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
@@ -343,7 +350,7 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 	return (
 		<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 			<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'opacity-0'}`}>
-				<Video stream={stream} fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
+				<Video stream={stream} muted fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
 			</div>
 			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
 			<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">{displayName} — Screen</span>
@@ -609,7 +616,11 @@ export function MezonSfuVoiceRoom({
 					...participant,
 					peerId,
 					userId: peer.user_id || participant.userId,
-					role: peer.role || participant.role
+					role: peer.role || participant.role,
+					cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
+					cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
+					screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
+					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive
 				});
 			}
 			return next;
@@ -669,20 +680,24 @@ export function MezonSfuVoiceRoom({
 					}
 				}
 
-				if (!cameraTrack) return;
-				cameraTrack.enabled = desiredMediaRef.current.cameraEnabled;
-				const videoSender = findUplinkVideoSender();
-				if (!videoSender) throw new Error('Video sender is not negotiated');
-				await videoSender.replaceTrack(desiredMediaRef.current.cameraEnabled ? cameraTrack : null);
+				if (cameraTrack) {
+					cameraTrack.enabled = cameraEnabled;
+					const videoSender = findUplinkVideoSender();
+					if (videoSender) {
+						await videoSender.replaceTrack(cameraEnabled ? cameraTrack : null);
+					}
+				}
 			} catch (cause) {
 				// eslint-disable-next-line no-console
 				console.error('[MezonSFU][camera] replaceTrack failed', cause);
 			}
 
-			const signal = { type: desiredMediaRef.current.cameraEnabled ? 'publish' : 'unpublish' } as const;
-			if (joinedRef.current && ws?.readyState === WebSocket.OPEN) {
+			const signal = { type: 'camera', active: cameraEnabled } as const;
+			if (joinRole === 'speaker' && joinedRef.current && ws?.readyState === WebSocket.OPEN) {
+				// eslint-disable-next-line no-console
+				console.info('[MezonSFU][ws.send][camera]', signal);
 				ws.send(JSON.stringify(signal));
-			} else {
+			} else if (joinRole === 'speaker' && joinedRef.current) {
 				// eslint-disable-next-line no-console
 				console.error('[MezonSFU][camera] signaling not sent: WebSocket is not open', {
 					signal,
@@ -690,7 +705,7 @@ export function MezonSfuVoiceRoom({
 				});
 			}
 		})();
-	}, [cameraEnabled, findUplinkVideoSender]);
+	}, [cameraEnabled, findUplinkVideoSender, joinRole]);
 
 	useEffect(() => {
 		const refreshDevices = async () => setDevices(await navigator.mediaDevices.enumerateDevices());
@@ -1024,7 +1039,9 @@ export function MezonSfuVoiceRoom({
 				if (message.type === 'room_snapshot' && !joinedRef.current) {
 					joinedRef.current = true;
 					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
-					ws.send(JSON.stringify({ type: desiredMediaRef.current.cameraEnabled ? 'publish' : 'unpublish' }));
+					if (joinRole === 'speaker') {
+						ws.send(JSON.stringify({ type: 'camera', active: desiredMediaRef.current.cameraEnabled }));
+					}
 					ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				}
 				if (message.type === 'push_to_talk_changed' && typeof message.active === 'boolean') {
@@ -1150,6 +1167,8 @@ export function MezonSfuVoiceRoom({
 				await applyScreenEncodingParams(sender);
 			}
 			setScreenSharing(true);
+			// eslint-disable-next-line no-console
+			console.info('[MezonSFU][ws.send][share_screen]', { type: 'share_screen', active: true });
 			wsRef.current?.send(JSON.stringify({ type: 'share_screen', active: true }));
 			track.onended = () => void toggleScreenShare();
 		} catch (cause) {
