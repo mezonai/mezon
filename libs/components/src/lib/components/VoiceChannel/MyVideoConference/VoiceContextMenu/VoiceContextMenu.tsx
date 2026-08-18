@@ -1,4 +1,4 @@
-import { useAuth, useOnClickOutside } from '@mezon/core';
+import { useAuth, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import {
 	giveCoffeeActions,
 	selectMemberClanByUserId,
@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { compareBigInt, type UsersClanEntity } from '@mezon/utils';
+import { EPermission, compareBigInt, type UsersClanEntity } from '@mezon/utils';
 import type { Room } from 'livekit-client';
 import type { ApiTokenSentEvent } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -29,6 +29,8 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
+	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
+
 	const focusRef = useRef<HTMLDivElement>(null);
 	const myProfile = useAuth();
 
@@ -174,7 +176,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		} catch (error) {
 			console.error('Failed to give flowers:', error);
 		}
-	}, [room, dispatch, member?.user?.id]);
+	}, [room, dispatch, member?.user?.id, userWallet]);
 
 	useOnClickOutside(focusRef, () => {
 		if (contextMenu) {
@@ -208,15 +210,13 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			ref={focusRef}
 		>
 			<div
-				className={`p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
-					isMuting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-				}`}
+				className={`p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] cursor-pointer`}
 				onClick={handleGiveFlowers}
 			>
 				Give Flowers
 			</div>
 
-			{isMicOn && (
+			{isMicOn && canMangeVoice && (
 				<div
 					className={`text-[#E13542] p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
 						isMuting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
@@ -231,20 +231,21 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 					)}
 				</div>
 			)}
-
-			<div
-				className={`text-[#E13542] p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
-					isKicking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-				}`}
-				onClick={handleRemoveMember}
-			>
-				{t('member.kick')}
-				{isKicking ? (
-					<div className="w-4 h-4 border-2 border-[#E13542] border-t-transparent rounded-full animate-spin" />
-				) : (
-					<Icons.CloseIcon className="w-4 h-4" />
-				)}
-			</div>
+			{canMangeVoice && (
+				<div
+					className={`text-[#E13542] p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] ${
+						isKicking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+					}`}
+					onClick={handleRemoveMember}
+				>
+					{t('member.kick')}
+					{isKicking ? (
+						<div className="w-4 h-4 border-2 border-[#E13542] border-t-transparent rounded-full animate-spin" />
+					) : (
+						<Icons.CloseIcon className="w-4 h-4" />
+					)}
+				</div>
+			)}
 			<div className="contexify_separator"></div>
 
 			<ButtonCopy className="flex flex-row-reverse justify-between p-2" title={t('copyUserId')} copyText={member?.id} />

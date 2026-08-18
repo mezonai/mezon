@@ -13826,28 +13826,21 @@ metro@0.80.12:
     ws "^7.5.10"
     yargs "^17.6.2"
 
-mezon-js-protobuf@1.10.62:
-  version "1.10.62"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.10.62.tgz#92750f11d03e64700f83b6c009433f5c300e5f93"
-  integrity sha512-V2utjQa5guL7YxsSvxfgq7BCydJU73+/QGBtZQ85xHepmU6o8CJo6Yf4Ftih6gWXmxdkI2R2Lpnag8jyRSl7nA==
+mezon-js-protobuf@1.10.65, mezon-js-protobuf@^1.10.65:
+  version "1.10.65"
+  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.10.65.tgz#8b2ee55a20e864b3bf39a424c6cc1b0c83264993"
+  integrity sha512-pdnYU0+IXe5bRjWc3z/YdvS3NTnB0LDDKdwbwf1NTSm49Xn/j1bdntaUrCKjuG6UDIdIimumR5cxa+J6gmcdzA==
   dependencies:
     protobufjs "^7.2.4"
 
-mezon-js-protobuf@^1.10.62:
-  version "1.10.63"
-  resolved "https://registry.yarnpkg.com/mezon-js-protobuf/-/mezon-js-protobuf-1.10.63.tgz#61e62149315244f995e0efc3086108cdec7ded54"
-  integrity sha512-EPi3brh0rdgfhxELC5HbhpvyOaEA4NPca7JqPyvfpyRgryZGHPNumPAssjLu42iUvLYWbeDuQdTdQBgai6JAcQ==
-  dependencies:
-    protobufjs "^7.2.4"
-
-mezon-js@2.15.64:
-  version "2.15.64"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.15.64.tgz#d494fb4a326b6daa470af7c59acfcfba12fd15b5"
-  integrity sha512-d4rAB5+aP8/VC10deeCNALHhmXbLWLAgl590ArzyDC8tlQo+mNWJPMQPrQdFgNvq87kzTkuCkVrsIoRvHI8Pfg==
+mezon-js@2.15.72:
+  version "2.15.72"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.15.72.tgz#495bf9124d53e07d2cd06710a53ebc542af8050f"
+  integrity sha512-uM7mqaJMJ1Ce27xuZ1EouxNfWDiWKg/womwQSzxzrDT1eyW7VVxGegOHW6AMvcY6hpsJju6zhy38dfVPEqoSiw==
   dependencies:
     base64-arraybuffer "^1.0.2"
     js-base64 "^3.7.8"
-    mezon-js-protobuf "^1.10.62"
+    mezon-js-protobuf "^1.10.65"
     whatwg-fetch "^3.6.2"
 
 micromatch@^4.0.0, micromatch@^4.0.2, micromatch@^4.0.4, micromatch@^4.0.5, micromatch@^4.0.8:
@@ -14153,11 +14146,6 @@ node-abort-controller@^3.0.1, node-abort-controller@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz#a94377e964a9a37ac3976d848cb5c765833b8548"
   integrity sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==
-
-node-addon-api@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-1.7.2.tgz#3df30b95720b53c24e59948b49532b662444f54d"
-  integrity sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==
 
 node-addon-api@^7.0.0:
   version "7.1.1"

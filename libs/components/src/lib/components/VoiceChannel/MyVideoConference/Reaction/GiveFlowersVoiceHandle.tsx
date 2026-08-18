@@ -1,4 +1,4 @@
-import { selectCurrentUserId, selectMemberClanByUserId, selectVoiceInfo, useAppSelector } from '@mezon/store';
+import { EVoiceInteractEvent, selectCurrentUserId, selectMemberClanByUserId, selectVoiceInfo, useAppSelector } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { VoiceInteractiveEvent } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -26,13 +26,21 @@ type Particle = {
 };
 
 const COLORS = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93', '#ff9e00', '#f72585', '#4cc9f0'];
-
+const SENDER_DISPLAY_MS = 1500;
 export const GiveFlowersVoiceHandle = memo(() => {
 	const [currentSender, setCurrentSender] = useState<VoiceInteractiveEvent | null>(null);
 
 	const senderQueueRef = useRef<VoiceInteractiveEvent[]>([]);
 	const senderTimeoutRef = useRef<number | null>(null);
 	const isShowingSenderRef = useRef(false);
+
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const particlesRef = useRef<Particle[]>([]);
+	const animationRef = useRef<number | null>(null);
+
+	const { clientRef } = useMezon();
+	const voiceInfo = useSelector(selectVoiceInfo);
+	const channelId = voiceInfo?.channelId;
 
 	const showNextSender = useCallback(() => {
 		if (isShowingSenderRef.current) return;
@@ -45,24 +53,16 @@ export const GiveFlowersVoiceHandle = memo(() => {
 		}
 
 		isShowingSenderRef.current = true;
-
 		setCurrentSender(event);
 
 		senderTimeoutRef.current = window.setTimeout(() => {
+			senderTimeoutRef.current = null;
 			isShowingSenderRef.current = false;
 			setCurrentSender(null);
 
-			// Hiển thị người tiếp theo
 			showNextSender();
 		}, 2000);
 	}, []);
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const particlesRef = useRef<Particle[]>([]);
-	const animationRef = useRef<number | null>(null);
-
-	const { clientRef } = useMezon();
-	const voiceInfo = useSelector(selectVoiceInfo);
-	const channelId = voiceInfo?.channelId;
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -144,16 +144,29 @@ export const GiveFlowersVoiceHandle = memo(() => {
 				particles.push(createParticle(x, y, big));
 			}
 
-			// Không cho particle tăng vô hạn
 			if (particles.length > MAX_PARTICLES) {
 				particles.splice(0, particles.length - MAX_PARTICLES);
 			}
+
+			startAnimation();
+		};
+
+		const startAnimation = () => {
+			if (animationRef.current !== null) return;
+
+			animationRef.current = requestAnimationFrame(animate);
 		};
 
 		const animate = () => {
-			ctx.clearRect(0, 0, width, height);
-
 			const particles = particlesRef.current;
+
+			if (particles.length === 0) {
+				animationRef.current = null;
+				ctx.clearRect(0, 0, width, height);
+				return;
+			}
+
+			ctx.clearRect(0, 0, width, height);
 
 			for (let i = particles.length - 1; i >= 0; i--) {
 				const p = particles[i];
@@ -171,7 +184,6 @@ export const GiveFlowersVoiceHandle = memo(() => {
 				p.y += p.vy;
 
 				p.rotation += p.rotSpeed;
-
 				p.life -= p.decay;
 
 				if (p.life <= 0 || p.y > height + 50) {
@@ -192,9 +204,7 @@ export const GiveFlowersVoiceHandle = memo(() => {
 					ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.6);
 				} else if (p.shape === 'circle') {
 					ctx.beginPath();
-
 					ctx.arc(0, 0, p.size / 2.5, 0, Math.PI * 2);
-
 					ctx.fill();
 				} else {
 					ctx.fillRect(-p.size * 1.4, -1.5, p.size * 2.8, 3);
@@ -203,10 +213,12 @@ export const GiveFlowersVoiceHandle = memo(() => {
 				ctx.restore();
 			}
 
-			animationRef.current = requestAnimationFrame(animate);
+			if (particles.length > 0) {
+				animationRef.current = requestAnimationFrame(animate);
+			} else {
+				animationRef.current = null;
+			}
 		};
-
-		animationRef.current = requestAnimationFrame(animate);
 
 		const currentSocket = clientRef.current;
 
@@ -221,7 +233,7 @@ export const GiveFlowersVoiceHandle = memo(() => {
 		}
 
 		currentSocket.onvoiceinteractiveevent = (event: VoiceInteractiveEvent) => {
-			if (event.voice_channel_id !== channelId) {
+			if (event.voice_channel_id !== channelId && event.event_type !== EVoiceInteractEvent.SENT_FLOWERS) {
 				return;
 			}
 
@@ -238,7 +250,16 @@ export const GiveFlowersVoiceHandle = memo(() => {
 
 			if (animationRef.current) {
 				cancelAnimationFrame(animationRef.current);
+				animationRef.current = null;
 			}
+
+			if (senderTimeoutRef.current !== null) {
+				clearTimeout(senderTimeoutRef.current);
+				senderTimeoutRef.current = null;
+			}
+
+			senderQueueRef.current = [];
+			isShowingSenderRef.current = false;
 
 			if (currentSocket?.onvoiceinteractiveevent) {
 				currentSocket.onvoiceinteractiveevent = () => {};
@@ -246,7 +267,7 @@ export const GiveFlowersVoiceHandle = memo(() => {
 
 			particlesRef.current = [];
 		};
-	}, [clientRef, channelId]);
+	}, [clientRef, channelId, showNextSender]);
 
 	return (
 		<div className="pointer-events-none fixed inset-0 z-[999999]">
@@ -289,10 +310,12 @@ const FlowerDetail = ({ event }: { event: VoiceInteractiveEvent }) => {
 	const receiver = useAppSelector((state) => selectMemberClanByUserId(state, event.receiver_id));
 
 	if (currentUserId === receiver?.id) {
-		<div className="flex gap-1">
-			<p>{t('flowers.received')}</p>
-			{sender?.clan_nick || sender?.prioritizeName || sender?.user?.display_name || sender?.user?.username}
-		</div>;
+		return (
+			<div className="flex gap-1">
+				<p>{t('flowers.received')}</p>
+				{sender?.clan_nick || sender?.prioritizeName || sender?.user?.display_name || sender?.user?.username}
+			</div>
+		);
 	}
 
 	return (
