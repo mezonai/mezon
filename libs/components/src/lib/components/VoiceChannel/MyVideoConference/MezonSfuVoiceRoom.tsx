@@ -35,6 +35,7 @@ type RemoteMedia = {
 	audio?: MediaStreamTrack;
 	video?: MediaStreamTrack;
 	screen?: MediaStreamTrack;
+	screenActive?: boolean;
 };
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
@@ -44,9 +45,9 @@ const CAMERA_CAPTURE_CONSTRAINTS = {
 } satisfies MediaTrackConstraints;
 
 const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
-	width: { ideal: 1280 },
-	height: { ideal: 720 },
-	frameRate: { ideal: 15, max: 30 }
+	width: { ideal: 1920 },
+	height: { ideal: 1080 },
+	frameRate: { ideal: 10, max: 15 }
 } satisfies MediaTrackConstraints;
 
 const getRemoteParticipantId = (mid: string) => {
@@ -276,6 +277,28 @@ const RoomAudioRenderer = ({ participants }: { participants: RemoteMedia[] }) =>
 			{participants.map((participant) =>
 				participant.audio ? <RemoteAudioTrack key={`${participant.id}-${participant.audio.id}`} track={participant.audio} /> : null
 			)}
+		</div>
+	);
+};
+
+const RemoteScreenTrackMonitor = ({
+	participantId,
+	track,
+	onActiveChange
+}: {
+	participantId: string;
+	track: MediaStreamTrack;
+	onActiveChange: (participantId: string, track: MediaStreamTrack, active: boolean) => void;
+}) => {
+	const stream = useMemo(() => new MediaStream([track]), [track]);
+	const handleFrameStateChange = useCallback(
+		(hasRecentFrame: boolean) => onActiveChange(participantId, track, hasRecentFrame),
+		[onActiveChange, participantId, track]
+	);
+
+	return (
+		<div className="pointer-events-none fixed h-px w-px opacity-0">
+			<Video stream={stream} muted onFrameStateChange={handleFrameStateChange} />
 		</div>
 	);
 };
@@ -561,8 +584,12 @@ export function MezonSfuVoiceRoom({
 				participant.userId = userIdsByMidRef.current.get(mid) || participant.userId;
 				if (track.kind === 'audio') participant.audio = track;
 				if (mediaKind === 'camera') participant.video = track;
-				if (mediaKind === 'screen') participant.screen = track;
-				next.set(id, participant);
+				if (mediaKind === 'screen') {
+					if (participant.screen !== track) participant.screenActive = false;
+					participant.screen = track;
+				}
+				if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
+				else next.set(id, participant);
 			}
 			return next;
 		});
@@ -741,25 +768,41 @@ export function MezonSfuVoiceRoom({
 			if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') setConnectionState('connected');
 			else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') setConnectionState('disconnected');
 		};
-		pc.ontrack = ({ track, transceiver }) => {
+		pc.ontrack = ({ track, transceiver, streams }) => {
 			const mid = transceiver.mid;
 			if (mid && leftRemoteMidsRef.current.has(mid)) return;
 			const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
 			const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
-			setRemoteMedia((current) => {
-				const next = new Map(current);
-				const participant = next.get(id) || { id };
-				participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
-				if (track.kind === 'audio') participant.audio = track;
-				if (mediaKind === 'camera') participant.video = track;
-				if (mediaKind === 'screen') participant.screen = track;
-				next.set(id, participant);
-				return next;
-			});
-			const refreshTrackState = () => setRemoteMedia((current) => new Map(current));
-			track.addEventListener('mute', refreshTrackState);
-			track.addEventListener('unmute', refreshTrackState);
-			track.addEventListener('ended', () => {
+			const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
+				// eslint-disable-next-line no-console
+				console.info(`[MezonSFU][remote track] ${event}`, {
+					mid,
+					mediaKind,
+					participantId: id,
+					trackId: track.id,
+					kind: track.kind,
+					muted: track.muted,
+					readyState: track.readyState,
+					streamIds: streams.map((stream) => stream.id)
+				});
+			};
+			logTrackEvent('ontrack');
+			const addTrack = () => {
+				setRemoteMedia((current) => {
+					const next = new Map(current);
+					const participant = next.get(id) || { id };
+					participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
+					if (track.kind === 'audio') participant.audio = track;
+					if (mediaKind === 'camera') participant.video = track;
+					if (mediaKind === 'screen') {
+						if (participant.screen !== track) participant.screenActive = false;
+						participant.screen = track;
+					}
+					next.set(id, participant);
+					return next;
+				});
+			};
+			const removeTrack = () => {
 				setRemoteMedia((current) => {
 					const next = new Map(current);
 					const participant = next.get(id);
@@ -771,6 +814,41 @@ export function MezonSfuVoiceRoom({
 					else next.set(id, participant);
 					return next;
 				});
+			};
+
+			if (mediaKind === 'screen') {
+				addTrack();
+				track.addEventListener('unmute', () => {
+					logTrackEvent('unmute');
+				});
+				track.addEventListener('mute', () => {
+					logTrackEvent('mute');
+					setRemoteMedia((current) => {
+						const next = new Map(current);
+						const participant = next.get(id);
+						if (participant?.screen === track) next.set(id, { ...participant, screenActive: false });
+						return next;
+					});
+				});
+				track.addEventListener('ended', () => {
+					logTrackEvent('ended');
+					removeTrack();
+				});
+				return;
+			}
+
+			addTrack();
+			track.addEventListener('mute', () => {
+				logTrackEvent('mute');
+				setRemoteMedia((current) => new Map(current));
+			});
+			track.addEventListener('unmute', () => {
+				logTrackEvent('unmute');
+				setRemoteMedia((current) => new Map(current));
+			});
+			track.addEventListener('ended', () => {
+				logTrackEvent('ended');
+				removeTrack();
 			});
 		};
 
@@ -1006,6 +1084,15 @@ export function MezonSfuVoiceRoom({
 		}
 	};
 
+	const setRemoteScreenActive = useCallback((participantId: string, track: MediaStreamTrack, active: boolean) => {
+		setRemoteMedia((current) => {
+			const participant = current.get(participantId);
+			if (!participant || participant.screen !== track || participant.screenActive === active) return current;
+			const next = new Map(current);
+			next.set(participantId, { ...participant, screenActive: active });
+			return next;
+		});
+	}, []);
 	const participants = Array.from(remoteMedia.values());
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const isSolo = participants.length === 0 && !screenSharing;
@@ -1081,7 +1168,7 @@ export function MezonSfuVoiceRoom({
 			id: `${participant.id}-camera`,
 			content: <ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} />
 		});
-		if (participant.screen) {
+		if (participant.screen && participant.screenActive) {
 			conferenceTiles.push({
 				id: `${participant.id}-screen`,
 				content: <ScreenShareTile participant={participant} displayName={profile.displayName} />
@@ -1094,6 +1181,16 @@ export function MezonSfuVoiceRoom({
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
+			{participants.map((participant) =>
+				participant.screen ? (
+					<RemoteScreenTrackMonitor
+						key={participant.screen.id}
+						participantId={participant.id}
+						track={participant.screen}
+						onActiveChange={setRemoteScreenActive}
+					/>
+				) : null
+			)}
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
 					<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
