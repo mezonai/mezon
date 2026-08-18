@@ -122,5 +122,6 @@
 		"failedToResendMessage": "Impossibile reinviare il messaggio",
 		"failedToClosePoll": "Impossibile terminare il sondaggio"
 	},
-	"copyUserId": "Copia ID utente"
+	"copyUserId": "Copia ID utente",
+	"giveFlowers": "Invia un fiore"
 }

@@ -23,7 +23,7 @@ interface VoiceContextMenuProps {
 	groupMembers?: UsersClanEntity[];
 }
 
-const TOKEN_SEND_FLOWER = 10000;
+const TOKEN_SEND_FLOWER = 50000;
 
 export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
 	const { t } = useTranslation('contextMenu');
