@@ -293,7 +293,9 @@
 		"invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
 		"qr": {
 			"signIn": "Đăng nhập bằng mã QR",
-			"useMobile": "Sử dụng Mezon trên di động để quét QR"
+			"useMobile": "Sử dụng Mezon trên di động để quét QR",
+			"openToConfirm": "Mở Mezon trên điện thoại để xác nhận đăng nhập",
+			"openApp": "Mở app"
 		},
 		"loginToMezon": "Đăng nhập vào tài khoản Mezon",
 		"emailAddress": "Địa chỉ email",
