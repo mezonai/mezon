@@ -22,6 +22,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 
+import type { SfuJoinRole } from '@mezon/components';
 import { useLastCallback } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
@@ -38,7 +39,7 @@ const PreJoinVoiceChannel = lazy(() =>
 
 interface VoicePreJoinWrapperProps {
 	loading: boolean;
-	handleJoinRoom: () => void;
+	handleJoinRoom: (role: SfuJoinRole) => void;
 }
 
 const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapperProps) => {
@@ -71,6 +72,7 @@ interface VoiceConferenceContainerProps {
 
 interface VoiceConferenceContentProps {
 	token: string;
+	joinRole: SfuJoinRole;
 	serverUrl: string;
 	voiceInfo: ReturnType<typeof selectVoiceInfo>;
 	handleLeaveRoom: (self?: boolean) => Promise<void>;
@@ -83,6 +85,7 @@ interface VoiceConferenceContentProps {
 const VoiceConferenceContent = memo(
 	({
 		token,
+		joinRole,
 		serverUrl,
 		voiceInfo,
 		handleLeaveRoom,
@@ -95,6 +98,7 @@ const VoiceConferenceContent = memo(
 			<div className="flex-1 relative flex overflow-hidden">
 				<MezonSfuVoiceRoom
 					token={token}
+					joinRole={joinRole}
 					roomId={voiceInfo?.channelId as string}
 					serverUrl={serverUrl}
 					channelLabel={voiceInfo?.channelLabel || ''}
@@ -139,6 +143,7 @@ const ChannelVoiceInner = () => {
 	const token = useSelector(selectTokenJoinVoice);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const dispatch = useAppDispatch();
 	const serverUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
@@ -154,14 +159,13 @@ const ChannelVoiceInner = () => {
 
 	const isDisconnectingRef = useRef(false);
 
-	const handleJoinRoom = useLastCallback(async (reconnect?: boolean) => {
-		if (reconnect) {
-			return;
-		}
+	const handleJoinRoom = useLastCallback(async (role: SfuJoinRole) => {
+		setJoinRole(role);
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
 		dispatch(voiceActions.setStreamScreen(null));
 		dispatch(voiceActions.setShowMicrophone(false));
+		if (role === 'audience') dispatch(voiceActions.setShowCamera(false));
 
 		const storeState = getStore().getState();
 		const currentClanId = selectCurrentClanId(storeState);
@@ -237,6 +241,7 @@ const ChannelVoiceInner = () => {
 					<VoiceConferenceContainer containerRef={containerRef} token={token} isOpenPopOut={isOpenPopOut}>
 						<VoiceConferenceContent
 							token={token}
+							joinRole={joinRole}
 							serverUrl={serverUrl}
 							voiceInfo={voiceInfo}
 							handleLeaveRoom={handleLeaveRoom}

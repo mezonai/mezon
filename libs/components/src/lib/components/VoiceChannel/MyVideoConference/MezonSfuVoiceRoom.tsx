@@ -21,9 +21,23 @@ type ConnectionState = 'connecting' | 'joining' | 'awaiting offer' | 'connected'
 
 type SignalMessage = {
 	type: string;
+	active?: boolean;
+	role?: 'speaker' | 'audience';
 	sdp?: string;
 	message?: string;
 	participant_count?: number;
+	members?: SfuPeer[];
+	peer?: SfuPeer;
+	mid_audio?: number | string;
+	mid_video?: number | string;
+	mid_screen?: number | string;
+};
+
+type SfuPeer = {
+	peer_id: number | string;
+	user_id?: string;
+	role?: 'speaker' | 'audience';
+	is_mute?: boolean;
 	mid_audio?: number | string;
 	mid_video?: number | string;
 	mid_screen?: number | string;
@@ -31,7 +45,9 @@ type SignalMessage = {
 
 type RemoteMedia = {
 	id: string;
+	peerId?: string;
 	userId?: string;
+	role?: 'speaker' | 'audience';
 	audio?: MediaStreamTrack;
 	video?: MediaStreamTrack;
 	screen?: MediaStreamTrack;
@@ -190,14 +206,12 @@ const Video = ({
 	muted = false,
 	mirrored = false,
 	fit = 'cover',
-	keepLastFrame = false,
 	onFrameStateChange
 }: {
 	stream: MediaStream;
 	muted?: boolean;
 	mirrored?: boolean;
 	fit?: 'cover' | 'contain';
-	keepLastFrame?: boolean;
 	onFrameStateChange?: (hasRecentFrame: boolean) => void;
 }) => {
 	const ref = useRef<HTMLVideoElement>(null);
@@ -226,13 +240,9 @@ const Video = ({
 
 		let disposed = false;
 		let frameCallbackId = 0;
-		let noFrameTimer = 0;
-		const markNoFrame = () => onFrameStateChange(false);
 		const handleFrame: VideoFrameRequestCallback = () => {
 			if (disposed) return;
 			onFrameStateChange(true);
-			window.clearTimeout(noFrameTimer);
-			if (!keepLastFrame) noFrameTimer = window.setTimeout(markNoFrame, REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS);
 			frameCallbackId = video.requestVideoFrameCallback(handleFrame);
 		};
 		onFrameStateChange(false);
@@ -240,10 +250,9 @@ const Video = ({
 
 		return () => {
 			disposed = true;
-			window.clearTimeout(noFrameTimer);
 			video.cancelVideoFrameCallback(frameCallbackId);
 		};
-	}, [keepLastFrame, onFrameStateChange, stream]);
+	}, [onFrameStateChange, stream]);
 	return (
 		<video
 			ref={ref}
@@ -281,28 +290,6 @@ const RoomAudioRenderer = ({ participants }: { participants: RemoteMedia[] }) =>
 	);
 };
 
-const RemoteScreenTrackMonitor = ({
-	participantId,
-	track,
-	onActiveChange
-}: {
-	participantId: string;
-	track: MediaStreamTrack;
-	onActiveChange: (participantId: string, track: MediaStreamTrack, active: boolean) => void;
-}) => {
-	const stream = useMemo(() => new MediaStream([track]), [track]);
-	const handleFrameStateChange = useCallback(
-		(hasRecentFrame: boolean) => onActiveChange(participantId, track, hasRecentFrame),
-		[onActiveChange, participantId, track]
-	);
-
-	return (
-		<div className="pointer-events-none fixed h-px w-px opacity-0">
-			<Video stream={stream} muted onFrameStateChange={handleFrameStateChange} />
-		</div>
-	);
-};
-
 interface ParticipantTileProps {
 	participant: RemoteMedia;
 	displayName: string;
@@ -311,12 +298,8 @@ interface ParticipantTileProps {
 
 const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTileProps) => {
 	const speaking = useSpeaking(participant.audio);
-	const [hasRecentVideoFrame, setHasRecentVideoFrame] = useState(false);
 	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
-	const handleVideoFrameStateChange = useCallback((hasRecentFrame: boolean) => setHasRecentVideoFrame(hasRecentFrame), []);
-	// Chrome may keep a resumed receiver track muted briefly even while decoded
-	// frames are already available. The frame callback is the reliable render signal.
-	const showVideo = Boolean(participant.video?.readyState === 'live' && hasRecentVideoFrame);
+	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted);
 	return (
 		<div
 			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
@@ -325,7 +308,7 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 		>
 			{remoteVideoStream && (
 				<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
-					<Video stream={remoteVideoStream} onFrameStateChange={handleVideoFrameStateChange} />
+					<Video stream={remoteVideoStream} />
 				</div>
 			)}
 			{!showVideo && (
@@ -343,6 +326,9 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 				{!participant.audio || participant.audio.muted ? <Icons.VoiceMicDisabledIcon /> : null}
 				{displayName}
 			</span>
+			{participant.role === 'audience' && (
+				<span className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">Audience</span>
+			)}
 		</div>
 	);
 };
@@ -357,7 +343,7 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 	return (
 		<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 			<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'opacity-0'}`}>
-				<Video stream={stream} fit="contain" keepLastFrame onFrameStateChange={handleVideoFrameStateChange} />
+				<Video stream={stream} fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
 			</div>
 			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
 			<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">{displayName} — Screen</span>
@@ -367,7 +353,6 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 
 const buttonClass = 'flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:opacity-40';
 const DEFAULT_VIDEO_CODEC = 'VP8';
-const REMOTE_VIDEO_NO_FRAME_TIMEOUT_MS = 1000;
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
@@ -449,6 +434,7 @@ const setDefaultVideoCodec = (transceiver: RTCRtpTransceiver) => {
 
 export interface MezonSfuVoiceRoomProps {
 	token: string;
+	joinRole: 'speaker' | 'audience';
 	roomId: string;
 	serverUrl: string;
 	channelLabel: string;
@@ -461,6 +447,7 @@ export interface MezonSfuVoiceRoomProps {
 
 export function MezonSfuVoiceRoom({
 	token,
+	joinRole,
 	roomId,
 	serverUrl,
 	channelLabel,
@@ -489,6 +476,10 @@ export function MezonSfuVoiceRoom({
 	const peerLeftPendingOfferRef = useRef(false);
 	const leftRemoteMidsRef = useRef(new Set<string>());
 	const userIdsByMidRef = useRef(new Map<string, string>());
+	const peerIdsByMidRef = useRef(new Map<string, string>());
+	const rolesByMidRef = useRef(new Map<string, 'speaker' | 'audience'>());
+	const currentSfuRoleRef = useRef(joinRole);
+	const microphonePermissionRevokedRef = useRef(false);
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [error, setError] = useState<string>();
@@ -497,6 +488,7 @@ export function MezonSfuVoiceRoom({
 	const [remoteMedia, setRemoteMedia] = useState<Map<string, RemoteMedia>>(() => new Map());
 	const [roomParticipantCount, setRoomParticipantCount] = useState(1);
 	const [screenSharing, setScreenSharing] = useState(false);
+	const [pushToTalkActive, setPushToTalkActive] = useState(false);
 	const [isGridView, setIsGridView] = useState(true);
 	const [pinnedTrackId, setPinnedTrackId] = useState<string>();
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
@@ -582,14 +574,43 @@ export function MezonSfuVoiceRoom({
 				}
 				const participant = next.get(id) || { id };
 				participant.userId = userIdsByMidRef.current.get(mid) || participant.userId;
+				participant.peerId = peerIdsByMidRef.current.get(mid) || participant.peerId;
+				participant.role = rolesByMidRef.current.get(mid) || participant.role;
 				if (track.kind === 'audio') participant.audio = track;
 				if (mediaKind === 'camera') participant.video = track;
 				if (mediaKind === 'screen') {
-					if (participant.screen !== track) participant.screenActive = false;
+					if (participant.screen !== track) participant.screenActive = !track.muted;
 					participant.screen = track;
 				}
 				if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
 				else next.set(id, participant);
+			}
+			return next;
+		});
+	}, []);
+
+	const applySfuPeers = useCallback((peers: SfuPeer[]) => {
+		setRemoteMedia((current) => {
+			const next = new Map(current);
+			for (const peer of peers) {
+				const peerId = String(peer.peer_id);
+				const mids = [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && String(mid) !== '0').map(String);
+				for (const mid of mids) {
+					peerIdsByMidRef.current.set(mid, peerId);
+					if (peer.user_id) userIdsByMidRef.current.set(mid, peer.user_id);
+					if (peer.role) rolesByMidRef.current.set(mid, peer.role);
+				}
+
+				const existingEntry = Array.from(next.entries()).find(([, participant]) => participant.peerId === peerId);
+				const participantId = existingEntry?.[0] || (mids[0] ? getRemoteParticipantId(mids[0]) : undefined);
+				if (!participantId) continue;
+				const participant = next.get(participantId) || { id: participantId };
+				next.set(participantId, {
+					...participant,
+					peerId,
+					userId: peer.user_id || participant.userId,
+					role: peer.role || participant.role
+				});
 			}
 			return next;
 		});
@@ -726,6 +747,9 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		let disposed = false;
 		let removeVisibilityListener: () => void = () => undefined;
+		const peerIdsByMid = peerIdsByMidRef.current;
+		const rolesByMid = rolesByMidRef.current;
+		currentSfuRoleRef.current = joinRole;
 
 		const prepareLocalMedia = async () => {
 			let stream: MediaStream;
@@ -792,10 +816,12 @@ export function MezonSfuVoiceRoom({
 					const next = new Map(current);
 					const participant = next.get(id) || { id };
 					participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
+					participant.peerId = (mid && peerIdsByMidRef.current.get(mid)) || participant.peerId;
+					participant.role = (mid && rolesByMidRef.current.get(mid)) || participant.role;
 					if (track.kind === 'audio') participant.audio = track;
 					if (mediaKind === 'camera') participant.video = track;
 					if (mediaKind === 'screen') {
-						if (participant.screen !== track) participant.screenActive = false;
+						if (participant.screen !== track) participant.screenActive = !track.muted;
 						participant.screen = track;
 					}
 					next.set(id, participant);
@@ -820,6 +846,12 @@ export function MezonSfuVoiceRoom({
 				addTrack();
 				track.addEventListener('unmute', () => {
 					logTrackEvent('unmute');
+					setRemoteMedia((current) => {
+						const next = new Map(current);
+						const participant = next.get(id);
+						if (participant?.screen === track) next.set(id, { ...participant, screenActive: true });
+						return next;
+					});
 				});
 				track.addEventListener('mute', () => {
 					logTrackEvent('mute');
@@ -880,10 +912,15 @@ export function MezonSfuVoiceRoom({
 					const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 					const videoTransceiver = uplinkVideoTransceiver;
 					if (audioTransceiver) {
-						await audioTransceiver.sender.replaceTrack(desiredMediaRef.current.microphoneEnabled ? audioTrack || null : null);
+						const audioEnabled =
+							joinRole === 'audience' ? currentSfuRoleRef.current === 'speaker' : desiredMediaRef.current.microphoneEnabled;
+						if (audioTrack) audioTrack.enabled = audioEnabled;
+						await audioTransceiver.sender.replaceTrack(
+							joinRole === 'audience' ? audioTrack || null : audioEnabled ? audioTrack || null : null
+						);
 						audioTransceiver.direction = 'sendonly';
 					}
-					if (videoTransceiver) {
+					if (joinRole === 'speaker' && videoTransceiver) {
 						await videoTransceiver.sender.replaceTrack(videoTrack);
 						videoTransceiver.direction = 'sendonly';
 					}
@@ -924,6 +961,28 @@ export function MezonSfuVoiceRoom({
 			}
 		};
 
+		const handleRoleChanged = async (role: 'speaker' | 'audience') => {
+			currentSfuRoleRef.current = role;
+			const audioTrack = localStreamRef.current?.getAudioTracks()[0];
+			const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
+			if (role === 'speaker') {
+				if (audioTrack) audioTrack.enabled = true;
+				if (audioTransceiver && audioTrack) {
+					await audioTransceiver.sender.replaceTrack(audioTrack);
+					audioTransceiver.direction = 'sendonly';
+				}
+				setPushToTalkActive(true);
+				return;
+			}
+
+			if (audioTrack) audioTrack.enabled = false;
+			if (audioTransceiver) {
+				await audioTransceiver.sender.replaceTrack(null);
+				audioTransceiver.direction = 'inactive';
+			}
+			setPushToTalkActive(false);
+		};
+
 		void prepareLocalMedia().finally(() => {
 			if (disposed) return;
 			const secureServerUrl =
@@ -935,7 +994,7 @@ export function MezonSfuVoiceRoom({
 			ws.onopen = () => {
 				setError(undefined);
 				setConnectionState('joining');
-				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: 'speaker' }));
+				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole }));
 				const sendVisibility = () => {
 					if (joinedRef.current && ws.readyState === WebSocket.OPEN)
 						ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
@@ -955,6 +1014,8 @@ export function MezonSfuVoiceRoom({
 				if (typeof message.participant_count === 'number') {
 					setRoomParticipantCount(message.participant_count);
 				}
+				if (message.type === 'room_snapshot' && message.members) applySfuPeers(message.members);
+				if ((message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer) applySfuPeers([message.peer]);
 				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong' }));
 				if (message.type === 'joined') {
 					setError(undefined);
@@ -965,6 +1026,16 @@ export function MezonSfuVoiceRoom({
 					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 					ws.send(JSON.stringify({ type: desiredMediaRef.current.cameraEnabled ? 'publish' : 'unpublish' }));
 					ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
+				}
+				if (message.type === 'push_to_talk_changed' && typeof message.active === 'boolean') {
+					const audioTrack = localStreamRef.current?.getAudioTracks()[0];
+					if (audioTrack) audioTrack.enabled = message.active;
+					setPushToTalkActive(message.active);
+				}
+				if (message.type === 'role_changed' && message.role) {
+					void handleRoleChanged(message.role).catch((cause) => {
+						setError(cause instanceof Error ? cause.message : 'Unable to update audience role');
+					});
 				}
 				if (message.type === 'offer' && message.sdp) void handleOffer(message.sdp);
 				if (message.type === 'peer_left') {
@@ -1022,8 +1093,10 @@ export function MezonSfuVoiceRoom({
 			localTracksAddedRef.current = false;
 			negotiatingRef.current = false;
 			pendingOfferRef.current = null;
+			peerIdsByMid.clear();
+			rolesByMid.clear();
 		};
-	}, [applyScreenEncodingParams, findUplinkVideoSender, roomId, serverUrl, syncRemoteMedia, token]);
+	}, [applyScreenEncodingParams, applySfuPeers, findUplinkVideoSender, joinRole, roomId, serverUrl, syncRemoteMedia, token]);
 
 	const toggleScreenShare = async () => {
 		const pc = pcRef.current;
@@ -1084,15 +1157,65 @@ export function MezonSfuVoiceRoom({
 		}
 	};
 
-	const setRemoteScreenActive = useCallback((participantId: string, track: MediaStreamTrack, active: boolean) => {
-		setRemoteMedia((current) => {
-			const participant = current.get(participantId);
-			if (!participant || participant.screen !== track || participant.screenActive === active) return current;
-			const next = new Map(current);
-			next.set(participantId, { ...participant, screenActive: active });
-			return next;
-		});
-	}, []);
+	const setPushToTalk = useCallback(
+		async (active: boolean) => {
+			if (joinRole !== 'audience' || pushToTalkActive === active) return;
+			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
+			if (active && (microphonePermissionRevokedRef.current || audioTrack?.readyState !== 'live' || audioTrack.muted)) {
+				try {
+					const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+					const nextAudioTrack = stream.getAudioTracks()[0];
+					if (!nextAudioTrack) return;
+					const localStream = localStreamRef.current || new MediaStream();
+					localStream.getAudioTracks().forEach((track) => {
+						localStream.removeTrack(track);
+						track.stop();
+					});
+					localStream.addTrack(nextAudioTrack);
+					localStreamRef.current = localStream;
+					audioTrack = nextAudioTrack;
+					microphonePermissionRevokedRef.current = false;
+					setLocalAudioTrack(nextAudioTrack);
+					setSelectedMicrophone(nextAudioTrack.getSettings().deviceId || 'default');
+					setLocalPreview(new MediaStream(localStream.getTracks()));
+				} catch (cause) {
+					setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+					return;
+				}
+			}
+			if (active && audioTrack) {
+				const audioTransceiver = pcRef.current?.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
+				if (!audioTransceiver) {
+					setError('Audio sender is not negotiated');
+					return;
+				}
+				await audioTransceiver.sender.replaceTrack(audioTrack);
+				if (audioTransceiver.direction !== 'sendonly' && audioTransceiver.direction !== 'sendrecv') {
+					audioTransceiver.direction = 'sendonly';
+				}
+			}
+			if (audioTrack) audioTrack.enabled = active;
+			setPushToTalkActive(active);
+			if (wsRef.current?.readyState === WebSocket.OPEN) {
+				if (active) {
+					wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: false }));
+					wsRef.current.send(JSON.stringify({ type: 'push_to_talk', active: true }));
+				} else {
+					wsRef.current.send(JSON.stringify({ type: 'push_to_talk', active: false }));
+					wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: true }));
+				}
+			}
+		},
+		[joinRole, pushToTalkActive]
+	);
+
+	useEffect(() => {
+		if (joinRole === 'audience' && hasMicrophoneAccess === false) {
+			microphonePermissionRevokedRef.current = true;
+			if (pushToTalkActive) void setPushToTalk(false);
+		}
+	}, [hasMicrophoneAccess, joinRole, pushToTalkActive, setPushToTalk]);
+
 	const participants = Array.from(remoteMedia.values());
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const isSolo = participants.length === 0 && !screenSharing;
@@ -1118,38 +1241,38 @@ export function MezonSfuVoiceRoom({
 	const localDisplayName =
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) || currentUserId || 'Mezon';
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
-	const localSpeaking = useSpeaking(localAudioTrack, microphoneEnabled);
-	const conferenceTiles: Array<{ id: string; content: ReactNode }> = [
-		{
-			id: 'local-camera',
-			content: (
-				<div
-					className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
-						localSpeaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
-					}`}
-				>
-					{localPreview && cameraEnabled ? (
-						<Video stream={localPreview} muted mirrored />
-					) : (
-						<div className="flex h-full items-center justify-center bg-[#5d5f66]">
-							<AvatarImage
-								username={localDisplayName}
-								alt={localDisplayName}
-								src={localAvatar}
-								srcImgProxy={localAvatar ? createImgproxyUrl(localAvatar) : undefined}
-								className="!h-20 !w-20 !min-h-20 !min-w-20"
-							/>
-						</div>
-					)}
-					<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
-						{!microphoneEnabled ? <Icons.VoiceMicDisabledIcon /> : null}
-						{localDisplayName}
-					</span>
-				</div>
-			)
-		}
-	];
-	if (screenSharing && screenStreamRef.current) {
+	const localSpeaking = useSpeaking(localAudioTrack, joinRole === 'audience' ? pushToTalkActive : microphoneEnabled);
+	const conferenceTiles: Array<{ id: string; content: ReactNode }> = [];
+	conferenceTiles.push({
+		id: 'local-camera',
+		content: (
+			<div
+				className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
+					localSpeaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
+				}`}
+			>
+				{joinRole === 'speaker' && localPreview && cameraEnabled ? (
+					<Video stream={localPreview} muted mirrored />
+				) : (
+					<div className="flex h-full items-center justify-center bg-[#5d5f66]">
+						<AvatarImage
+							username={localDisplayName}
+							alt={localDisplayName}
+							src={localAvatar}
+							srcImgProxy={localAvatar ? createImgproxyUrl(localAvatar) : undefined}
+							className="!h-20 !w-20 !min-h-20 !min-w-20"
+						/>
+					</div>
+				)}
+				<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
+					{!(joinRole === 'audience' ? pushToTalkActive : microphoneEnabled) ? <Icons.VoiceMicDisabledIcon /> : null}
+					{localDisplayName}
+				</span>
+				{joinRole === 'audience' && <span className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">Audience</span>}
+			</div>
+		)
+	});
+	if (joinRole === 'speaker' && screenSharing && screenStreamRef.current) {
 		conferenceTiles.push({
 			id: 'local-screen',
 			content: (
@@ -1181,16 +1304,6 @@ export function MezonSfuVoiceRoom({
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
-			{participants.map((participant) =>
-				participant.screen ? (
-					<RemoteScreenTrackMonitor
-						key={participant.screen.id}
-						participantId={participant.id}
-						track={participant.screen}
-						onActiveChange={setRemoteScreenActive}
-					/>
-				) : null
-			)}
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
 					<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
@@ -1300,7 +1413,26 @@ export function MezonSfuVoiceRoom({
 					/>
 				</div>
 				<div className="flex items-center justify-center gap-3">
-					{hasMicrophoneAccess && (
+					{joinRole === 'audience' && hasMicrophoneAccess && (
+						<button
+							id="btn-meet-push-to-talk"
+							type="button"
+							title="Push to talk"
+							aria-label="Push to talk"
+							aria-pressed={pushToTalkActive}
+							className={`${buttonClass} ${pushToTalkActive ? '!bg-green-600' : ''}`}
+							onPointerDown={(event) => {
+								event.currentTarget.setPointerCapture(event.pointerId);
+								void setPushToTalk(true);
+							}}
+							onPointerUp={() => void setPushToTalk(false)}
+							onPointerCancel={() => void setPushToTalk(false)}
+							onLostPointerCapture={() => void setPushToTalk(false)}
+						>
+							<Icons.InPttCall className="h-6 w-6" />
+						</button>
+					)}
+					{joinRole === 'speaker' && hasMicrophoneAccess && (
 						<div className="relative">
 							<button
 								id="btn-meet-micro"
@@ -1320,7 +1452,7 @@ export function MezonSfuVoiceRoom({
 							/>
 						</div>
 					)}
-					{hasCameraAccess && (
+					{joinRole === 'speaker' && hasCameraAccess && (
 						<div className="relative">
 							<button
 								id="btn-meet-camera"
@@ -1340,16 +1472,18 @@ export function MezonSfuVoiceRoom({
 							/>
 						</div>
 					)}
-					<button
-						id="btn-meet-screen"
-						type="button"
-						title={t(screenSharing ? 'stopScreenShare' : 'shareYourScreen')}
-						aria-label={t(screenSharing ? 'stopScreenShare' : 'shareYourScreen')}
-						className={`${buttonClass} ${screenSharing ? '!bg-blue-500' : ''}`}
-						onClick={() => void toggleScreenShare()}
-					>
-						{screenSharing ? <Icons.VoiceScreenShareStopIcon /> : <Icons.VoiceScreenShareIcon />}
-					</button>
+					{joinRole === 'speaker' && (
+						<button
+							id="btn-meet-screen"
+							type="button"
+							title={t(screenSharing ? 'stopScreenShare' : 'shareYourScreen')}
+							aria-label={t(screenSharing ? 'stopScreenShare' : 'shareYourScreen')}
+							className={`${buttonClass} ${screenSharing ? '!bg-blue-500' : ''}`}
+							onClick={() => void toggleScreenShare()}
+						>
+							{screenSharing ? <Icons.VoiceScreenShareStopIcon /> : <Icons.VoiceScreenShareIcon />}
+						</button>
+					)}
 					<button
 						id="btn-meet-leave"
 						type="button"
