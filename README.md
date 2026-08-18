@@ -243,8 +243,8 @@ mezon/
 -   **State Management**: Redux Toolkit + RTK Query
 -   **Styling**: Tailwind CSS
 -   **Build Tool**: Nx Monorepo with Webpack
--   **Mobile**: React Native
--   **Desktop**: Separate [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
+-   **Mobile**: Native app [mezon-ios](https://github.com/mezonai/mezon-ios), [mezon-android](https://github.com/mezonai/mezon-android)
+-   **Desktop**: Rust Native [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
 
 #### Backend & Infrastructure
 
