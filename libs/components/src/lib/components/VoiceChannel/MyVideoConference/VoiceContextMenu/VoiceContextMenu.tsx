@@ -23,7 +23,7 @@ interface VoiceContextMenuProps {
 	groupMembers?: UsersClanEntity[];
 }
 
-const TOKEN_GIVE_FLOWERS = 10000;
+const TOKEN_SEND_FLOWER = 10000;
 
 export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
 	const { t } = useTranslation('contextMenu');
@@ -153,7 +153,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 				return;
 			}
 
-			if (compareBigInt(userWallet?.balance || '', mmnClient.scaleAmountToDecimals(TOKEN_GIVE_FLOWERS)) < 0) {
+			if (compareBigInt(userWallet?.balance || '', mmnClient.scaleAmountToDecimals(TOKEN_SEND_FLOWER)) < 0) {
 				console.error('You not have enough money');
 				return;
 			}
@@ -162,8 +162,8 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 					sender_id: myProfile.userId as string,
 					sender_name: myProfile?.userProfile?.user?.username as string,
 					receiver_id: member?.user?.id,
-					amount: TOKEN_GIVE_FLOWERS,
-					note: 'Give flowers'
+					amount: TOKEN_SEND_FLOWER,
+					note: 'Send a flower'
 				};
 
 				await dispatch(
@@ -174,7 +174,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 				await dispatch(voiceActions.giveFlowers({ receiver_id: member?.user?.id }));
 			}
 		} catch (error) {
-			console.error('Failed to give flowers:', error);
+			console.error('Failed to send flower:', error);
 		}
 	}, [room, dispatch, member?.user?.id, userWallet]);
 
@@ -213,7 +213,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 				className={`p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] cursor-pointer`}
 				onClick={handleGiveFlowers}
 			>
-				Give Flowers
+				{t('flowers.send')}
 			</div>
 
 			{isMicOn && canMangeVoice && (
