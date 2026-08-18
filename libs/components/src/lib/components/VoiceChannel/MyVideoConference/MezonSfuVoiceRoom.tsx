@@ -37,6 +37,18 @@ type RemoteMedia = {
 	screen?: MediaStreamTrack;
 };
 
+const CAMERA_CAPTURE_CONSTRAINTS = {
+	width: { ideal: 640 },
+	height: { ideal: 360 },
+	frameRate: { ideal: 24 }
+} satisfies MediaTrackConstraints;
+
+const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
+	width: { ideal: 1280 },
+	height: { ideal: 720 },
+	frameRate: { ideal: 15, max: 30 }
+} satisfies MediaTrackConstraints;
+
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
 	return Number.isFinite(numericMid) && numericMid >= 3 ? `peer-${Math.floor((numericMid - 3) / 3)}` : `mid-${mid}`;
@@ -586,10 +598,7 @@ export function MezonSfuVoiceRoom({
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia({
 					audio: kind === 'audioinput' ? { deviceId: { exact: deviceId } } : false,
-					video:
-						kind === 'videoinput'
-							? { deviceId: { exact: deviceId }, width: { ideal: 640 }, height: { ideal: 360 }, frameRate: { ideal: 24 } }
-							: false
+					video: kind === 'videoinput' ? { ...CAMERA_CAPTURE_CONSTRAINTS, deviceId: { exact: deviceId } } : false
 				});
 				const nextTrack = kind === 'audioinput' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
 				const localStream = localStreamRef.current;
@@ -638,7 +647,7 @@ export function MezonSfuVoiceRoom({
 			try {
 				stream = await navigator.mediaDevices.getUserMedia({
 					audio: true,
-					video: { width: { ideal: 640 }, height: { ideal: 360 }, frameRate: { ideal: 24 } }
+					video: CAMERA_CAPTURE_CONSTRAINTS
 				});
 			} catch {
 				try {
@@ -909,11 +918,7 @@ export function MezonSfuVoiceRoom({
 				.CaptureController;
 			const captureController = CaptureControllerConstructor ? new CaptureControllerConstructor() : undefined;
 			const stream = await navigator.mediaDevices.getDisplayMedia({
-				video: {
-					width: { ideal: 640 },
-					height: { ideal: 360 },
-					frameRate: { ideal: 15, max: 30 }
-				},
+				video: SCREEN_SHARE_CAPTURE_CONSTRAINTS,
 				audio: false,
 				...(captureController ? { controller: captureController } : {})
 			} as DisplayMediaStreamOptions);
