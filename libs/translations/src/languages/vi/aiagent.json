@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Voice Summary",
+			"subtitle": "Biến các cuộc trò chuyện thành thông tin chi tiết rõ ràng.",
+			"description": "AI lắng nghe các cuộc trò chuyện bằng giọng nói của bạn và biến các cuộc thảo luận dài thành bản tóm tắt ngắn gọn, giúp bạn nhanh chóng nắm bắt các điểm chính, quyết định và thông tin quan trọng mà không cần nghe lại toàn bộ."
+		},
+		"section2": {
+			"title": "Project Assistant",
+			"subtitle": "Đồng đội AI giúp bạn hoàn thành công việc.",
+			"description": "AI giúp bạn tổ chức dự án, tìm kiếm thông tin quan trọng, theo dõi công việc và luôn chủ động trong công việc — giúp nhóm của bạn tốn ít thời gian quản lý hơn và có nhiều thời gian xây dựng hơn."
+		},
+		"section3": {
+			"title": "Interview Agent",
+			"subtitle": "Bạn trả lời. AI đặt câu hỏi.",
+			"description": "AI thực hiện các cuộc phỏng vấn tự nhiên bằng cách đặt câu hỏi phù hợp, lắng nghe câu trả lời của bạn và theo dõi thông minh — giúp các cuộc phỏng vấn, nghiên cứu và thu thập ý kiến phản hồi trở nên nhanh chóng và thú vị hơn."
+		}
+	},
+	"faq": {
+		"title": "Cần thêm trợ giúp?",
+		"seeAll": "Xem tất cả câu hỏi",
+		"learnMore": "Tìm hiểu thêm",
+		"questions": [
+			{
+				"question": "AI Agent là gì?",
+				"answer": "AI Agent là trợ lý thông minh được tích hợp vào Mezon giúp tự động hóa quy trình làm việc, tóm tắt cuộc họp thoại, quản lý dự án và thực hiện phỏng vấn tương tác."
+			},
+			{
+				"question": "Tính năng Voice Summary hoạt động như thế nào?",
+				"answer": "Voice Summary lắng nghe các cuộc gọi thoại hoặc cuộc họp trong Mezon, xử lý bản ghi âm và đưa ra các điểm chính, quyết định và danh sách việc cần làm ngay lập tức."
+			},
+			{
+				"question": "Tôi có thể tùy chỉnh AI Agent cho Clan của mình không?",
+				"answer": "Có, AI Agent có thể được tùy chỉnh để phù hợp với yêu cầu, quy trình làm việc và tích hợp riêng của nhóm bạn."
+			}
+		]
+	},
+	"download": "Tải Xuống"
+}

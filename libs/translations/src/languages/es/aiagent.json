@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Resumen de Voz",
+			"subtitle": "Convierte las conversaciones en información clara.",
+			"description": "La IA escucha tus conversaciones de voz y transforma discusiones largas en resúmenes concisos, ayudándote a captar rápidamente puntos clave, decisiones e información importante sin tener que volver a escucharlo todo."
+		},
+		"section2": {
+			"title": "Asistente de Proyectos",
+			"subtitle": "Tu compañero de equipo con IA para realizar tareas.",
+			"description": "La IA te ayuda a organizar proyectos, encontrar información importante, realizar un seguimiento de tareas y mantenerte al día, para que tu equipo dedique menos tiempo a gestionar y más a construir."
+		},
+		"section3": {
+			"title": "Agente de Entrevistas",
+			"subtitle": "Tú respondes. La IA pregunta.",
+			"description": "La IA realiza entrevistas naturales haciendo preguntas relevantes, escuchando tus respuestas y haciendo un seguimiento inteligente, haciendo que las entrevistas, investigaciones y recopilación de comentarios sean más rápidas y atractivas."
+		}
+	},
+	"faq": {
+		"title": "¿Necesitas más ayuda?",
+		"seeAll": "Ver todas las preguntas frecuentes",
+		"learnMore": "Más información",
+		"questions": [
+			{
+				"question": "¿Qué es un Agente de IA?",
+				"answer": "Un Agente de IA es un asistente inteligente integrado en Mezon para automatizar flujos de trabajo, resumir canales de voz, gestionar proyectos y realizar entrevistas interactivas."
+			},
+			{
+				"question": "¿Cómo funciona el Resumen de Voz?",
+				"answer": "El Resumen de Voz escucha tus reuniones o conversaciones en Mezon, procesa la transcripción y proporciona al instante conclusiones clave, decisiones y tareas."
+			},
+			{
+				"question": "¿Puedo personalizar el Agente de IA para mi Clan?",
+				"answer": "Sí, el Agente de IA se puede personalizar para adaptarse a las necesidades específicas, flujos de trabajo e integraciones de tu equipo."
+			}
+		]
+	},
+	"download": "Descargar"
+}

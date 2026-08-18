@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Röstsammanfattning",
+			"subtitle": "Omvandla konversationer till tydliga insikter.",
+			"description": "AI lyssnar på dina röstsamtal och omvandlar långa diskussioner till koncisa sammanfattningar, vilket hjälper dig att snabbt snappa upp nyckelpunkter, beslut och viktig information utan att behöva lyssna om."
+		},
+		"section2": {
+			"title": "Projektassistent",
+			"subtitle": "Din AI-lagkamrat för att få saker gjorda.",
+			"description": "AI hjälper dig att organisera projekt, hitta viktig information, spåra uppgifter och hålla koll på arbetet — så att ditt team kan ägna mindre tid åt administration och mer tid åt att bygga."
+		},
+		"section3": {
+			"title": "Intervjuagent",
+			"subtitle": "Du svarar. AI frågar.",
+			"description": "AI genomför naturliga intervjuer genom att ställa relevanta frågor, lyssna på dina svar och följa upp intelligensfullt — vilket gör intervjuer, undersökningar och feedbackinsamling snabbare och mer engagerande."
+		}
+	},
+	"faq": {
+		"title": "Behöver du mer hjälp?",
+		"seeAll": "Visa alla vanliga frågor",
+		"learnMore": "Läs mer",
+		"questions": [
+			{
+				"question": "Vad är en AI-agent?",
+				"answer": "En AI-agent är en intelligent assistent integrerad i Mezon för att automatisera arbetsflöden, sammanfatta röstkanaler, hantera projekt och genomföra interaktiva intervjuer."
+			},
+			{
+				"question": "Hur fungerar Röstsammanfattning?",
+				"answer": "Röstsammanfattning lyssnar på dina röstmöten i Mezon, bearbetar transkriptionen och ger direkt nyckelinsikter, beslut och åtgärder."
+			},
+			{
+				"question": "Kan jag anpassa AI-agenten för min Clan?",
+				"answer": "Ja, AI-agenten kan anpassas för att passa ditt teams specifika krav, arbetsflöden och integrationer."
+			}
+		]
+	},
+	"download": "Ladda ner"
+}

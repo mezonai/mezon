@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Podsumowanie Głosowe",
+			"subtitle": "Zamieniaj rozmowy w jasne wnioski.",
+			"description": "AI słucha Twoich rozmów głosowych i przekształca długie dyskusje w zwięzłe podsumowania, pomagając szybko wychwycić kluczowe punkty, decyzje i ważne informacje bez konieczności ponownego odsłuchiwania."
+		},
+		"section2": {
+			"title": "Asystent Projektu",
+			"subtitle": "Twój członek zespołu AI do realizacji zadań.",
+			"description": "AI pomaga organizować projekty, wyszukiwać ważne informacje, śledzić zadania i kontrolować pracę — dzięki czemu Twój zespół spędza mniej czasu na zarządzaniu, a więcej na tworzeniu."
+		},
+		"section3": {
+			"title": "Agent Wywiadów",
+			"subtitle": "Ty odpowiadasz. AI zadaje pytania.",
+			"description": "AI przeprowadza naturalne wywiady, zadając trafne pytania, słuchając odpowiedzi i inteligentnie dopytując — ułatwiając i przyspieszając wywiady, badania oraz zbieranie opinii."
+		}
+	},
+	"faq": {
+		"title": "Potrzebujesz pomocy?",
+		"seeAll": "Zobacz wszystkie pytania",
+		"learnMore": "Dowiedz się więcej",
+		"questions": [
+			{
+				"question": "Czym jest Agent AI?",
+				"answer": "Agent AI to inteligentny asystent zintegrowany z Mezon, służący do automatyzacji pracy, podsumowywania kanałów głosowych, zarządzania projektami i prowadzenia interaktywnych wywiadów."
+			},
+			{
+				"question": "Jak działa Podsumowanie Głosowe?",
+				"answer": "Podsumowanie Głosowe słucha spotkań głosowych w Mezon, przetwarza transkrypcję i natychmiast dostarcza kluczowe wnioski, decyzje i zadania."
+			},
+			{
+				"question": "Czy mogę dostosować Agenta AI dla mojego Clanu?",
+				"answer": "Tak, Agent AI może być dostosowany do specyficznych wymagań, procesów i integracji Twojego zespołu."
+			}
+		]
+	},
+	"download": "Pobierz"
+}
