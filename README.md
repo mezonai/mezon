@@ -249,6 +249,7 @@ mezon/
 #### Backend & Infrastructure
 
 -   **Core**: We built a custom server using Valkey, ScyllaDB, and IOUring to enable real-time communication.
+-   **Mezon SFU**: [mezon-sfu](https://github.com/mezonai/mezon-sfu) - A high-performance optimized for HD meetings
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) - High-performance and zero free blockchain layer 1
 -   **Real-time**: WebSocket and TCP Abridged protocol with binary payload
 -   **Security**: E2E encryption, TLS 1.3
