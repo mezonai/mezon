@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Camera permission is required",
 		"recipientDidNotAnswer": "The recipient did not answer the call."
 	},
-	"usernameScreen": "{{username}}'s screen"
+	"usernameScreen": "{{username}}'s screen",
+	"recording": {
+		"start": "Record call",
+		"stop": "Stop recording",
+		"badge": "REC",
+		"memoryLimitWarning": "This browser cannot write directly to disk, so the recording is held in memory and stops automatically after {{minutes}} minutes.",
+		"frozenWarning": "Video froze while the tab was hidden. Keep this tab visible while recording.",
+		"savedToDisk": "Recording saved to {{fileName}} ({{size}})",
+		"downloaded": "Recording downloaded: {{fileName}} ({{size}})",
+		"failed": "Recording failed: {{reason}}"
+	}
 }

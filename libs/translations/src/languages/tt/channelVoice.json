@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Камерага керү мөмкинлеге таләп ителә",
 		"recipientDidNotAnswer": "Кабул итүче шалтыратуга җавап бирмәде."
 	},
-	"usernameScreen": "{{username}} экраны"
+	"usernameScreen": "{{username}} экраны",
+	"recording": {
+		"start": "Шалтыратуны язу",
+		"stop": "Язуны туктату",
+		"badge": "REC",
+		"memoryLimitWarning": "Бу браузер турыдан-туры дискка яза алмый, шуңа күрә язма хәтердә саклана һәм {{minutes}} минуттан соң үзеннән-үзе туктый.",
+		"frozenWarning": "Кыстырма яшерелгәндә видео катты. Язу барганда бу кыстырманы күренеп торсын.",
+		"savedToDisk": "Язма {{fileName}} ({{size}}) файлына сакланды",
+		"downloaded": "Язма йөкләнде: {{fileName}} ({{size}})",
+		"failed": "Язу уңышсыз: {{reason}}"
+	}
 }

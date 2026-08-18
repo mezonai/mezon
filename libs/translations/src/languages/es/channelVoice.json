@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Se requiere permiso de cámara",
 		"recipientDidNotAnswer": "El destinatario no contestó la llamada"
 	},
-	"usernameScreen": "Pantalla de {{username}}"
+	"usernameScreen": "Pantalla de {{username}}",
+	"recording": {
+		"start": "Grabar llamada",
+		"stop": "Detener grabación",
+		"badge": "REC",
+		"memoryLimitWarning": "Este navegador no puede escribir directamente en disco, así que la grabación se guarda en memoria y se detiene automáticamente tras {{minutes}} minutos.",
+		"frozenWarning": "El vídeo se congeló mientras la pestaña estaba oculta. Mantén esta pestaña visible mientras grabas.",
+		"savedToDisk": "Grabación guardada en {{fileName}} ({{size}})",
+		"downloaded": "Grabación descargada: {{fileName}} ({{size}})",
+		"failed": "Error al grabar: {{reason}}"
+	}
 }

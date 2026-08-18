@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Permissão de câmera necessária",
 		"recipientDidNotAnswer": "O destinatário não atendeu a chamada."
 	},
-	"usernameScreen": "Tela de {{username}}"
+	"usernameScreen": "Tela de {{username}}",
+	"recording": {
+		"start": "Gravar chamada",
+		"stop": "Parar gravação",
+		"badge": "REC",
+		"memoryLimitWarning": "Este navegador não consegue gravar diretamente no disco, por isso a gravação fica na memória e para automaticamente após {{minutes}} minutos.",
+		"frozenWarning": "O vídeo congelou enquanto a aba estava oculta. Mantenha esta aba visível durante a gravação.",
+		"savedToDisk": "Gravação salva em {{fileName}} ({{size}})",
+		"downloaded": "Gravação baixada: {{fileName}} ({{size}})",
+		"failed": "Falha na gravação: {{reason}}"
+	}
 }

@@ -56,6 +56,15 @@
 		"cameraPermissionRequired": "Требуется доступ к камере",
 		"recipientDidNotAnswer": "Получатель не ответил на звонок."
 	},
-	"usernameScreen": "{{username}} экран"
+	"usernameScreen": "{{username}} экран",
+	"recording": {
+		"start": "Записать звонок",
+		"stop": "Остановить запись",
+		"badge": "REC",
+		"memoryLimitWarning": "Этот браузер не может писать прямо на диск, поэтому запись хранится в памяти и остановится автоматически через {{minutes}} минут.",
+		"frozenWarning": "Видео замерло, пока вкладка была скрыта. Держите эту вкладку на виду во время записи.",
+		"savedToDisk": "Запись сохранена в {{fileName}} ({{size}})",
+		"downloaded": "Запись загружена: {{fileName}} ({{size}})",
+		"failed": "Не удалось записать: {{reason}}"
+	}
 }
-
