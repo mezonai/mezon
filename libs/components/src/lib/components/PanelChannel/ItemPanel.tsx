@@ -50,7 +50,14 @@ const ItemPanel = ({
 				{type === 'checkbox' && <input type="checkbox" id="accept" checked={checked} defaultChecked={defaultChecked} readOnly />}
 				{type === 'radio' && <input type="radio" className="" name={name} value="change here" checked={checked} readOnly />}
 			</div>
-			{subText && <div className="text-[12px] self-start ml-2 -mt-2 mb-1 text-theme-primary">{subText}</div>}
+			{subText && (
+				<div
+					className="text-[12px] self-start ml-2 -mt-2 mb-1 text-theme-primary"
+					data-e2e={generateE2eId('clan_page.channel_list.panel.item.sub_text')}
+				>
+					{subText}
+				</div>
+			)}
 		</button>
 	);
 };

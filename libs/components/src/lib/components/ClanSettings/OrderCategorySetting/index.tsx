@@ -73,7 +73,11 @@ const CategoryOrderSetting = () => {
 					<button onClick={handleReset} className="rounded px-4 py-1.5 hover:underline ">
 						{t('reset')}
 					</button>
-					<button onClick={handleSave} className="btn-primary btn-primary-hover rounded-lg px-4 py-1.5 text-nowrap ">
+					<button
+						onClick={handleSave}
+						className="btn-primary btn-primary-hover rounded-lg px-4 py-1.5 text-nowrap "
+						data-e2e={generateE2eId('button.base')}
+					>
 						{t('saveChanges')}
 					</button>
 				</div>
