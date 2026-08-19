@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "Request has been canceled",
+	"error_2": "Unknown error",
+	"error_3": "Hmm, that doesn't look right.",
+	"error_4": "Connection timed out. Please try again.",
+	"error_5": "Resource not found",
+	"error_6": "Resource already exists",
+	"error_7": "Permission denied",
+	"error_8": "Resource exhausted",
+	"error_9": "Failed precondition",
+	"error_10": "Oops, action interrupted. Please try again.",
+	"error_11": "Oops, that value isn't valid.",
+	"error_12": "Operation not implemented",
+	"error_13": "Internal error",
+	"error_14": "Servers are busy. Please try again soon.",
+	"error_15": "Data loss",
+	"error_16": "Session expired. Please log in again."
+}

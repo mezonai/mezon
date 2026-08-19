@@ -1,8 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
-import { E_ERROR_CHANNEL, LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
+import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { t } from 'i18next';
 import type { ApiChannelDescription } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -229,8 +230,10 @@ export const fetchThreadDetail = createAsyncThunk('direct/fetchThreadDetail', as
 		});
 
 		return response;
-	} catch (error) {
-		const errorMess = error === E_ERROR_CHANNEL.INTERNAL ? 'Internal server ' : error;
+	} catch (error: unknown) {
+		const err = error as { code?: string; message?: string };
+		const errorMess = err.code ? t(`errors:error_${err.code}`) : err.message || 'Something went wrong';
+
 		captureSentryError(error, 'direct/fetchThreadDetail');
 		return thunkAPI.rejectWithValue(errorMess);
 	}

@@ -8,7 +8,7 @@ import type {
 	IChannel,
 	LoadingStatus
 } from '@mezon/utils';
-import { E_ERROR_CHANNEL, ModeResponsive, ThreadStatus, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
+import { ModeResponsive, ThreadStatus, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
@@ -442,7 +442,7 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 				return thunkAPI.rejectWithValue({ message: 'Unknown error from server' });
 			}
 		}
-		const errorMess = error.code === E_ERROR_CHANNEL.LIMIT ? t('channelTopbar:errors.limit') : error?.message || 'Something went wrong';
+		const errorMess = error.code ? t(`errors:error_${error.code}`) : error?.message || 'Something went wrong';
 
 		return thunkAPI.rejectWithValue({
 			message: errorMess
