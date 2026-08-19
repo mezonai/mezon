@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
-import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
+import { E_ERROR_CHANNEL, LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelDescription } from 'mezon-js';
@@ -230,8 +230,9 @@ export const fetchThreadDetail = createAsyncThunk('direct/fetchThreadDetail', as
 
 		return response;
 	} catch (error) {
+		const errorMess = error === E_ERROR_CHANNEL.INTERNAL ? 'Internal server ' : error;
 		captureSentryError(error, 'direct/fetchThreadDetail');
-		return thunkAPI.rejectWithValue(error);
+		return thunkAPI.rejectWithValue(errorMess);
 	}
 });
 
