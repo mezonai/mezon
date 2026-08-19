@@ -60,6 +60,7 @@ type RemoteMedia = {
 	cameraRequested?: boolean;
 	cameraActive?: boolean;
 	screenRequested?: boolean;
+	isMute?: boolean;
 };
 
 function useCustomGridLayout(containerRef: React.RefObject<HTMLElement>, totalItems: number) {
@@ -248,40 +249,138 @@ const stabilizeInactiveVideoSections = (offerSdp: string, currentRemoteSdp?: str
 	return `${[...next.sessionLines, ...stabilizedSections.flat()].join('\r\n')}\r\n`;
 };
 
-const useSpeaking = (track?: MediaStreamTrack, enabled = true) => {
-	const [speaking, setSpeaking] = useState(false);
+type SpeakingInfo = {
+	speaking: boolean;
+	recentlySpokeUntil: number;
+	lastSpokeAt: number;
+};
+
+const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefined, localAudioEnabled: boolean, remoteParticipants: RemoteMedia[]) => {
+	const [speakingMap, setSpeakingMap] = useState<Map<string, SpeakingInfo>>(() => new Map());
+
+	const targetMap = useMemo(() => {
+		const map = new Map<string, { track: MediaStreamTrack; enabled: boolean }>();
+		if (localAudioTrack && localAudioTrack.readyState === 'live') {
+			map.set('local', { track: localAudioTrack, enabled: localAudioEnabled });
+		}
+		for (const p of remoteParticipants) {
+			if (p.audio && p.audio.readyState === 'live') {
+				const enabled = p.isMute !== true && !p.audio.muted;
+				map.set(p.id, { track: p.audio, enabled });
+			}
+		}
+		return map;
+	}, [localAudioTrack, localAudioEnabled, remoteParticipants]);
+
+	const tracksKey = useMemo(() => {
+		const parts: string[] = [];
+		targetMap.forEach((item, id) => {
+			parts.push(`${id}:${item.track.id}:${item.enabled}`);
+		});
+		return parts.join('|');
+	}, [targetMap]);
+
 	useEffect(() => {
-		if (!track || !enabled) {
-			setSpeaking(false);
+		let frameId = 0;
+		let audioContext: AudioContext | null = null;
+		try {
+			audioContext = new AudioContext();
+		} catch {
 			return;
 		}
-		let frame = 0;
-		let lastSpeaking = false;
-		const audioContext = new AudioContext();
-		const source = audioContext.createMediaStreamSource(new MediaStream([track]));
-		const analyser = audioContext.createAnalyser();
-		analyser.fftSize = 256;
-		source.connect(analyser);
-		const frequencies = new Uint8Array(analyser.frequencyBinCount);
-		const tick = () => {
-			analyser.getByteFrequencyData(frequencies);
-			const average = frequencies.reduce((sum, value) => sum + value, 0) / frequencies.length;
-			const nextSpeaking = average > 12;
-			if (nextSpeaking !== lastSpeaking) {
-				lastSpeaking = nextSpeaking;
-				setSpeaking(nextSpeaking);
+
+		const nodeMap = new Map<string, { source: MediaStreamAudioSourceNode; analyser: AnalyserNode }>();
+		const lastSpeakingMap = new Map<string, boolean>();
+
+		const ctx = audioContext;
+		targetMap.forEach((item, id) => {
+			if (!item.enabled) return;
+			try {
+				const source = ctx.createMediaStreamSource(new MediaStream([item.track]));
+				const analyser = ctx.createAnalyser();
+				analyser.fftSize = 256;
+				source.connect(analyser);
+				nodeMap.set(id, { source, analyser });
+			} catch {
+				// Ignore invalid stream
 			}
-			frame = requestAnimationFrame(tick);
+		});
+
+		const timeDomainData = new Uint8Array(256);
+
+		const tick = () => {
+			let changed = false;
+			const now = Date.now();
+
+			targetMap.forEach((item, id) => {
+				const node = nodeMap.get(id);
+				let isSpeaking = false;
+
+				if (item.enabled && node) {
+					node.analyser.getByteTimeDomainData(timeDomainData);
+					let sumSquares = 0;
+					for (let i = 0; i < timeDomainData.length; i++) {
+						const normalized = (timeDomainData[i] - 128) / 128;
+						sumSquares += normalized * normalized;
+					}
+					const rms = Math.sqrt(sumSquares / timeDomainData.length);
+					isSpeaking = rms > 0.04;
+				}
+
+				const prevSpeaking = lastSpeakingMap.get(id);
+				if (prevSpeaking === undefined || prevSpeaking !== isSpeaking) {
+					lastSpeakingMap.set(id, isSpeaking);
+					changed = true;
+				}
+			});
+
+			if (changed) {
+				setSpeakingMap((prev) => {
+					const next = new Map(prev);
+					targetMap.forEach((item, id) => {
+						const isSpeaking = item.enabled ? (lastSpeakingMap.get(id) ?? false) : false;
+						const prevEntry = next.get(id);
+						if (isSpeaking) {
+							next.set(id, {
+								speaking: true,
+								recentlySpokeUntil: now + 2500,
+								lastSpokeAt: prevEntry?.speaking ? prevEntry.lastSpokeAt || now : now
+							});
+						} else {
+							next.set(id, {
+								speaking: false,
+								recentlySpokeUntil: prevEntry?.recentlySpokeUntil || 0,
+								lastSpokeAt: prevEntry?.lastSpokeAt || 0
+							});
+						}
+					});
+					return next;
+				});
+			}
+
+			frameId = requestAnimationFrame(tick);
 		};
+
 		tick();
+
 		return () => {
-			cancelAnimationFrame(frame);
-			source.disconnect();
-			analyser.disconnect();
-			void audioContext.close();
+			cancelAnimationFrame(frameId);
+			nodeMap.forEach((node) => {
+				try {
+					node.source.disconnect();
+					node.analyser.disconnect();
+				} catch {
+					// Ignore disconnect errors
+				}
+			});
+			if (audioContext) {
+				void audioContext.close().catch(() => undefined);
+			}
 		};
-	}, [enabled, track]);
-	return speaking;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tracksKey]);
+
+	return speakingMap;
 };
 
 const Video = ({
@@ -377,10 +476,12 @@ interface ParticipantTileProps {
 	participant: RemoteMedia;
 	displayName: string;
 	avatar?: string;
+	speaking?: boolean;
 }
 
-const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTileProps) => {
-	const speaking = useSpeaking(participant.audio);
+const ParticipantTile = ({ participant, displayName, avatar, speaking: propSpeaking }: ParticipantTileProps) => {
+	const isMuted = participant.isMute === true || !participant.audio || participant.audio.muted;
+	const speaking = isMuted ? false : Boolean(propSpeaking);
 	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
 	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted && participant.cameraActive !== false);
 	return (
@@ -406,7 +507,7 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 				</div>
 			)}
 			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-				{!participant.audio || participant.audio.muted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
+				{isMuted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
 				<span className="truncate whitespace-nowrap py-0.5">{displayName}</span>
 			</div>
 			{participant.role === 'audience' && (
@@ -701,7 +802,8 @@ export function MezonSfuVoiceRoom({
 					cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
 					cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
 					screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
-					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive
+					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
+					isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
 				});
 			}
 			return next;
@@ -1392,10 +1494,14 @@ export function MezonSfuVoiceRoom({
 	const localDisplayName =
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) || currentUserId || 'Mezon';
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
-	const localSpeaking = useSpeaking(localAudioTrack, joinRole === 'audience' ? pushToTalkActive : microphoneEnabled);
-	const conferenceTiles: Array<{ id: string; content: ReactNode }> = [];
+	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
+	const speakingMap = useParticipantsSpeakingMap(localAudioTrack, isLocalAudioEnabled, participants);
+	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
+	const conferenceTiles: Array<{ id: string; participantId: string; isScreen: boolean; content: ReactNode }> = [];
 	conferenceTiles.push({
 		id: 'local-camera',
+		participantId: 'local',
+		isScreen: false,
 		content: (
 			<div
 				className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
@@ -1430,6 +1536,8 @@ export function MezonSfuVoiceRoom({
 	if (joinRole === 'speaker' && screenSharing && screenStreamRef.current) {
 		conferenceTiles.push({
 			id: 'local-screen',
+			participantId: 'local',
+			isScreen: true,
 			content: (
 				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 					<Video stream={screenStreamRef.current} muted fit="contain" />
@@ -1443,16 +1551,46 @@ export function MezonSfuVoiceRoom({
 	}
 	participants.forEach((participant) => {
 		const profile = getParticipantProfile(participant);
+		const participantSpeaking = speakingMap.get(participant.id)?.speaking ?? false;
 		conferenceTiles.push({
 			id: `${participant.id}-camera`,
-			content: <ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} />
+			participantId: participant.id,
+			isScreen: false,
+			content: (
+				<ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} speaking={participantSpeaking} />
+			)
 		});
 		if (participant.screen && participant.screenActive) {
 			conferenceTiles.push({
 				id: `${participant.id}-screen`,
+				participantId: participant.id,
+				isScreen: true,
 				content: <ScreenShareTile participant={participant} displayName={profile.displayName} />
 			});
 		}
+	});
+
+	conferenceTiles.sort((a, b) => {
+		if (a.isScreen !== b.isScreen) {
+			return a.isScreen ? -1 : 1;
+		}
+
+		const now = Date.now();
+		const aInfo = speakingMap.get(a.participantId);
+		const bInfo = speakingMap.get(b.participantId);
+
+		const aActive = (aInfo?.recentlySpokeUntil || 0) > now;
+		const bActive = (bInfo?.recentlySpokeUntil || 0) > now;
+
+		if (aActive !== bActive) {
+			return aActive ? -1 : 1;
+		}
+
+		if (aActive && bActive) {
+			return (bInfo?.lastSpokeAt || 0) - (aInfo?.lastSpokeAt || 0);
+		}
+
+		return 0;
 	});
 	const preferredFocusTrack = conferenceTiles.find((tile) => tile.id.endsWith('-screen'))?.id || conferenceTiles[0]?.id;
 	const activePinnedTrackId = conferenceTiles.some((tile) => tile.id === pinnedTrackId) ? pinnedTrackId : preferredFocusTrack;
