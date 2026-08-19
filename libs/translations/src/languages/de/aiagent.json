@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Sprach-Zusammenfassung",
+			"subtitle": "Verwandle Gespräche in klare Erkenntnisse.",
+			"description": "KI hört sich deine Sprachgespräche an und wandelt lange Diskussionen in prägnante Zusammenfassungen um. So erfasst du schnell wichtige Punkte, Entscheidungen und Informationen, ohne alles noch einmal anhören zu müssen."
+		},
+		"section2": {
+			"title": "Projekt-Assistent",
+			"subtitle": "Dein KI-Teamkollege für erledigte Aufgaben.",
+			"description": "KI hilft dir, Projekte zu organisieren, wichtige Informationen zu finden, Aufgaben im Blick zu behalten und deine Arbeit zu strukturieren – damit dein Team weniger Zeit mit Verwaltung und mehr Zeit mit Entwickeln verbringt."
+		},
+		"section3": {
+			"title": "Interview-Agent",
+			"subtitle": "Du antwortest. Die KI fragt.",
+			"description": "KI führt natürliche Interviews durch, indem sie relevante Fragen stellt, deinen Antworten zuhört und intelligent nachhakt – so werden Interviews, Recherche und Feedback-Erfassung schneller und ansprechender."
+		}
+	},
+	"faq": {
+		"title": "Brauchst du weitere Hilfe?",
+		"seeAll": "Alle Fragen ansehen",
+		"learnMore": "Mehr erfahren",
+		"questions": [
+			{
+				"question": "Was ist ein KI-Agent?",
+				"answer": "Ein KI-Agent ist ein intelligenter Assistent in Mezon, der Arbeitsabläufe automatisiert, Sprachkanäle zusammenfasst, Projekte verwaltet und interaktive Interviews führt."
+			},
+			{
+				"question": "Wie funktioniert die Sprach-Zusammenfassung?",
+				"answer": "Die Sprach-Zusammenfassung hört bei Sprachmeetings in Mezon zu, verarbeitet das Transkript und liefert sofort Kernbotschaften, Entscheidungen und Aufgaben."
+			},
+			{
+				"question": "Kann ich den KI-Agenten für meinen Clan anpassen?",
+				"answer": "Ja, der KI-Agent kann an die spezifischen Anforderungen, Arbeitsabläufe und Integrationen deines Teams angepasst werden."
+			}
+		]
+	},
+	"download": "Herunterladen"
+}
