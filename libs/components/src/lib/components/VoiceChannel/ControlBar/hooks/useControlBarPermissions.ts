@@ -22,6 +22,9 @@ export function useControlBarPermissions(controls?: ControlBarControls) {
 	const visibleControls = useMemo(() => {
 		const visible = { leave: true, ...controls };
 
+		// Recording is a purely local capture — it needs no publish permission.
+		visible.recording ??= true;
+
 		if (!localPermissions) {
 			visible.camera = false;
 			visible.microphone = false;

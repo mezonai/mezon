@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "카메라 권한 필요",
 		"recipientDidNotAnswer": "수신자가 전화를 받았습니다."
 	},
-	"usernameScreen": "{{username}} 의 화면"
+	"usernameScreen": "{{username}} 의 화면",
+	"recording": {
+		"start": "통화 녹화",
+		"stop": "녹화 중지",
+		"badge": "REC",
+		"memoryLimitWarning": "이 브라우저는 디스크에 직접 기록할 수 없어 녹화본이 메모리에 보관되며 {{minutes}}분 후 자동으로 중지됩니다.",
+		"frozenWarning": "탭이 숨겨진 동안 영상이 멈췄습니다. 녹화 중에는 이 탭을 화면에 두세요.",
+		"savedToDisk": "녹화본을 {{fileName}}에 저장했습니다 ({{size}})",
+		"downloaded": "녹화본을 다운로드했습니다: {{fileName}} ({{size}})",
+		"failed": "녹화에 실패했습니다: {{reason}}"
+	}
 }

@@ -15,6 +15,7 @@ import type { LocalParticipant, LocalTrackPublication, RemoteParticipant, Remote
 import { DisconnectReason, RoomEvent, Track } from 'livekit-client';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ControlBar from '../ControlBar/ControlBar';
+import { useCallRecorder } from '../Recording/useCallRecorder';
 import { FocusLayout, FocusLayoutContainer } from './FocusLayout/FocusLayoutContainer';
 import { GridLayout } from './GridLayout/GridLayout';
 import { ParticipantTile } from './ParticipantTile/ParticipantTile';
@@ -65,6 +66,8 @@ export const GroupVideoConference = memo(
 		);
 
 		const focusTrack = usePinnedTracks(layoutContext)?.[0];
+
+		useCallRecorder({ room, tracks, focusTrack, isExternalCalling });
 
 		const [isShowMember, setIsShowMember] = useState<boolean>(true);
 		const isVoiceFullScreen = useAppSelector(selectVoiceFullScreen);
@@ -218,6 +221,7 @@ export const GroupVideoConference = memo(
 								onFullScreen={onFullScreen}
 								isShowMember={isShowMember}
 								isGridView={!focusTrack}
+								channelLabel={channelLabel}
 							/>
 						</div>
 					</div>

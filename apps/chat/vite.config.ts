@@ -42,7 +42,20 @@ export default defineConfig(({ mode }) => {
 			port: 4200,
 			host: '127.0.0.1',
 			open: '/chat/',
-			proxy: JSON.parse(fs.readFileSync(path.resolve(__dirname, 'proxy.conf.json'), 'utf-8')),
+			proxy: {
+				...JSON.parse(fs.readFileSync(path.resolve(__dirname, 'proxy.conf.json'), 'utf-8')),
+				// LOCAL DEV ONLY. imgproxy answers with a hard-coded
+				// `Access-Control-Allow-Origin: https://mezon.ai` — it does not echo the
+				// caller's origin — so from 127.0.0.1 an avatar can never be read into a
+				// canvas, which the call recorder needs. Proxying through the dev server
+				// makes the request same-origin and takes CORS out of the picture. On
+				// mezon.ai the direct fetch already passes, so this is not needed in prod.
+				'/imgproxy-cors': {
+					target: env.NX_IMGPROXY_BASE_URL || 'https://imgproxy.mezon.ai',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/imgproxy-cors/, '')
+				}
+			},
 			fs: {
 				allow: [workspaceRoot, path.join(workspaceRoot, 'libs/assets/src/assets')]
 			},

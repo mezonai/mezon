@@ -295,7 +295,9 @@
 		"invalidCredentials": "Email or password is invalid",
 		"qr": {
 			"signIn": "Sign in by QR code",
-			"useMobile": "Use Mezon on mobile to scan QR"
+			"useMobile": "Use Mezon on mobile to scan QR",
+			"openToConfirm": "Open Mezon on your phone to confirm sign in",
+			"openApp": "Open app"
 		},
 		"loginToMezon": "Log in to Mezon account",
 		"emailAddress": "Email address",

@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Camerarecht is vereist",
 		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord."
 	},
-	"usernameScreen": "Scherm van {{username}}"
+	"usernameScreen": "Scherm van {{username}}",
+	"recording": {
+		"start": "Gesprek opnemen",
+		"stop": "Opname stoppen",
+		"badge": "REC",
+		"memoryLimitWarning": "Deze browser kan niet rechtstreeks naar schijf schrijven, dus de opname staat in het geheugen en stopt automatisch na {{minutes}} minuten.",
+		"frozenWarning": "De video bevroor terwijl het tabblad verborgen was. Houd dit tabblad zichtbaar tijdens het opnemen.",
+		"savedToDisk": "Opname opgeslagen als {{fileName}} ({{size}})",
+		"downloaded": "Opname gedownload: {{fileName}} ({{size}})",
+		"failed": "Opname mislukt: {{reason}}"
+	}
 }

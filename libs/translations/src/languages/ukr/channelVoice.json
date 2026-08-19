@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Потрібен доступ до камери",
 		"recipientDidNotAnswer": "Отримувач не відповів на дзвінок."
 	},
-	"usernameScreen": "Екран {{username}}"
+	"usernameScreen": "Екран {{username}}",
+	"recording": {
+		"start": "Записати дзвінок",
+		"stop": "Зупинити запис",
+		"badge": "REC",
+		"memoryLimitWarning": "Цей браузер не може писати прямо на диск, тому запис зберігається в пам'яті й зупиниться автоматично через {{minutes}} хвилин.",
+		"frozenWarning": "Відео завмерло, поки вкладка була прихована. Тримайте цю вкладку видимою під час запису.",
+		"savedToDisk": "Запис збережено у {{fileName}} ({{size}})",
+		"downloaded": "Запис завантажено: {{fileName}} ({{size}})",
+		"failed": "Не вдалося записати: {{reason}}"
+	}
 }
