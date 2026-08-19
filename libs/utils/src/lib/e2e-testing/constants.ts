@@ -430,10 +430,35 @@ export const DATA_E2E_IDENTIFIER = {
 					input: {
 						emoji_name: ''
 					}
+				},
+				item: {
+					name_input: '',
+					created_by: '',
+					actions: {
+						delete: ''
+					}
+				}
+			},
+			image_sticker: {
+				item: {
+					name: '',
+					created_by: '',
+					actions: {
+						edit: '',
+						delete: ''
+					}
 				}
 			},
 			voice_sticker: {
-				button_upload: ''
+				button_upload: '',
+				item: {
+					name: '',
+					created_by: '',
+					actions: {
+						edit: '',
+						delete: ''
+					}
+				}
 			},
 			modal: {
 				delete_clan: {
@@ -665,7 +690,9 @@ export const DATA_E2E_IDENTIFIER = {
 			}
 		},
 		quick_menu: {
-			tab: '',
+			tab: {
+				count: ''
+			},
 			button: {
 				add: ''
 			},
@@ -682,7 +709,11 @@ export const DATA_E2E_IDENTIFIER = {
 			item: {
 				command: '',
 				type: '',
-				message_content: ''
+				message_content: '',
+				button: {
+					edit: '',
+					delete: ''
+				}
 			}
 		}
 	},

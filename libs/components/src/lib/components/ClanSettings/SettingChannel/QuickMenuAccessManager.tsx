@@ -141,7 +141,10 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 			data-e2e={generateE2eId('channel_setting_page.quick_menu.tab')}
 		>
 			{label}
-			<span className={`px-2 py-0.5 rounded-full text-xs ${activeTab === tabKey ? 'bg-white/20' : 'bg-theme-setting-nav text-theme-primary'}`}>
+			<span
+				className={`px-2 py-0.5 rounded-full text-xs ${activeTab === tabKey ? 'bg-white/20' : 'bg-theme-setting-nav text-theme-primary'}`}
+				data-e2e={generateE2eId('channel_setting_page.quick_menu.tab.count')}
+			>
 				{count}
 			</span>
 		</button>
@@ -185,6 +188,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 						disabled={loading}
 						className="p-1.5 text-gray-400 hover:text-white hover:bg-[#3e4146] rounded-md transition-colors duration-200"
 						title={t('quickAction.editCommand')}
+						data-e2e={generateE2eId('channel_setting_page.quick_menu.item.button.edit')}
 					>
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
 							<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
@@ -195,6 +199,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 						disabled={loading}
 						className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors duration-200"
 						title={t('quickAction.deleteCommand')}
+						data-e2e={generateE2eId('channel_setting_page.quick_menu.item.button.delete')}
 					>
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
 							<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
@@ -403,6 +408,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 									onClick={handleDeleteConfirm}
 									disabled={loading}
 									className="bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-theme-primary-active px-4 py-1.5 text-sm rounded-md font-medium transition-colors duration-200 flex items-center gap-2"
+									data-e2e={generateE2eId('modal.confirm_modal.button.confirm')}
 								>
 									{loading && (
 										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin">
