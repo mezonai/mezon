@@ -29,6 +29,35 @@ export enum EInvoice {
 	INVOICE,
 	SHARING_SCREEN
 }
+
+export enum EVoiceInteractEvent {
+	RECORDING = 2,
+	APP_QUIZ = 10,
+	APP_BLACKBOARD = 11,
+	APP_INTERACTIVE = 12
+}
+
+export const VOICE_INTERACTIVE_APPS = [
+	{
+		key: 'APP_QUIZ',
+		eventType: EVoiceInteractEvent.APP_QUIZ,
+		name: 'Quiz',
+		url: 'https://test-sfu.nccsoft.vn'
+	},
+	{
+		key: 'APP_BLACKBOARD',
+		eventType: EVoiceInteractEvent.APP_BLACKBOARD,
+		name: 'Blackboard',
+		url: 'https://blackboard.mezon.ai'
+	},
+	{
+		key: 'APP_INTERACTIVE',
+		eventType: EVoiceInteractEvent.APP_INTERACTIVE,
+		name: 'Interactive',
+		url: 'https://interactive.mezon.ai'
+	}
+];
+
 export interface InVoiceInfor {
 	clanId: string;
 	channelId: string;
@@ -189,6 +218,22 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 			return payload;
 		} catch (error) {
 			captureSentryError(error, 'voice/fetchVoiceChannelMembers');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const sendVoiceInteractiveEvent = createAsyncThunk(
+	'voice/sendVoiceInteractiveEvent',
+	async ({ event_type, clan_id, channel_id }: { event_type: EVoiceInteractEvent; clan_id: string; channel_id: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const sender_id = selectCurrentUserId(state);
+			const response = await mezon.client.writeVoiceInteractiveEvent(mezon.session, clan_id, channel_id, sender_id, sender_id, event_type, '');
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'voice/sendVoiceInteractiveEvent');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -592,6 +637,7 @@ export const voiceReducer = voiceSlice.reducer;
 export const voiceActions = {
 	...voiceSlice.actions,
 	fetchVoiceChannelMembers,
+	sendVoiceInteractiveEvent,
 	kickVoiceMember,
 	muteVoiceMember,
 	giveFlowers
