@@ -329,12 +329,12 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 					/>
 				</div>
 			)}
-			<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
-				{!participant.audio || participant.audio.muted ? <Icons.VoiceMicDisabledIcon /> : null}
-				{displayName}
-			</span>
+			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+				{!participant.audio || participant.audio.muted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
+				<span className="truncate whitespace-nowrap py-0.5">{displayName}</span>
+			</div>
 			{participant.role === 'audience' && (
-				<span className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">Audience</span>
+				<span className="absolute right-2 top-2 rounded-md bg-[#00000080] p-[5px] text-xs text-white">Audience</span>
 			)}
 		</div>
 	);
@@ -353,7 +353,10 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 				<Video stream={stream} muted fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
 			</div>
 			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
-			<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">{displayName} — Screen</span>
+			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+				<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
+				<span className="truncate whitespace-nowrap py-0.5">{displayName} — Screen</span>
+			</div>
 		</div>
 	);
 };
@@ -1283,11 +1286,15 @@ export function MezonSfuVoiceRoom({
 						/>
 					</div>
 				)}
-				<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
-					{!(joinRole === 'audience' ? pushToTalkActive : microphoneEnabled) ? <Icons.VoiceMicDisabledIcon /> : null}
-					{localDisplayName}
-				</span>
-				{joinRole === 'audience' && <span className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">Audience</span>}
+				<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+					{!(joinRole === 'audience' ? pushToTalkActive : microphoneEnabled) ? (
+						<Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" />
+					) : null}
+					<span className="truncate whitespace-nowrap py-0.5">{localDisplayName}</span>
+				</div>
+				{joinRole === 'audience' && (
+					<span className="absolute right-2 top-2 rounded-md bg-[#00000080] p-[5px] text-xs text-white">Audience</span>
+				)}
 			</div>
 		)
 	});
@@ -1297,9 +1304,10 @@ export function MezonSfuVoiceRoom({
 			content: (
 				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 					<Video stream={screenStreamRef.current} muted fit="contain" />
-					<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">
-						{t('usernameScreen', { username: localDisplayName })}
-					</span>
+					<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+						<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
+						<span className="truncate whitespace-nowrap py-0.5">{t('usernameScreen', { username: localDisplayName })}</span>
+					</div>
 				</div>
 			)
 		});
