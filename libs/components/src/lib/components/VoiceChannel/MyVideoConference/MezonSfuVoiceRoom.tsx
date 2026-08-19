@@ -21,6 +21,7 @@ type ConnectionState = 'connecting' | 'joining' | 'awaiting offer' | 'connected'
 
 type SignalMessage = {
 	type: string;
+	timestamp?: number;
 	active?: boolean;
 	role?: 'speaker' | 'audience';
 	sdp?: string;
@@ -842,6 +843,7 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		let disposed = false;
 		let removeVisibilityListener: () => void = () => undefined;
+		let heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 		const peerIdsByMid = peerIdsByMidRef.current;
 		const rolesByMid = rolesByMidRef.current;
 		currentSfuRoleRef.current = joinRole;
@@ -881,105 +883,124 @@ export function MezonSfuVoiceRoom({
 			return stream;
 		};
 
-		const pc = new RTCPeerConnection({ iceServers: [] });
-		pcRef.current = pc;
-		pc.oniceconnectionstatechange = () => {
-			if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') setConnectionState('connected');
-			else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') setConnectionState('disconnected');
-		};
-		pc.ontrack = ({ track, transceiver, streams }) => {
-			const mid = transceiver.mid;
-			if (mid && leftRemoteMidsRef.current.has(mid)) return;
-			const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
-			const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
-			const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
-				// eslint-disable-next-line no-console
-				console.info(`[MezonSFU][remote track] ${event}`, {
-					mid,
-					mediaKind,
-					participantId: id,
-					trackId: track.id,
-					kind: track.kind,
-					muted: track.muted,
-					readyState: track.readyState,
-					streamIds: streams.map((stream) => stream.id)
-				});
-			};
-			logTrackEvent('ontrack');
-			const addTrack = () => {
-				setRemoteMedia((current) => {
-					const next = new Map(current);
-					const participant = next.get(id) || { id };
-					participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
-					participant.peerId = (mid && peerIdsByMidRef.current.get(mid)) || participant.peerId;
-					participant.role = (mid && rolesByMidRef.current.get(mid)) || participant.role;
-					if (track.kind === 'audio') participant.audio = track;
-					if (mediaKind === 'camera') participant.video = track;
-					if (mediaKind === 'screen') {
-						if (participant.screen !== track) participant.screenActive = !track.muted;
-						participant.screen = track;
-					}
-					next.set(id, participant);
-					return next;
-				});
-			};
-			const removeTrack = () => {
-				setRemoteMedia((current) => {
-					const next = new Map(current);
-					const participant = next.get(id);
-					if (!participant) return next;
-					if (track.kind === 'audio' && participant.audio === track) participant.audio = undefined;
-					if (mediaKind === 'camera' && participant.video === track) participant.video = undefined;
-					if (mediaKind === 'screen' && participant.screen === track) participant.screen = undefined;
-					if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
-					else next.set(id, participant);
-					return next;
-				});
-			};
+		const resetAndCreatePeerConnection = () => {
+			if (pcRef.current) {
+				pcRef.current.close();
+				pcRef.current = null;
+			}
+			localTracksAddedRef.current = false;
+			negotiatingRef.current = false;
+			pendingOfferRef.current = null;
+			peerLeftPendingOfferRef.current = false;
+			leftRemoteMidsRef.current.clear();
+			userIdsByMidRef.current.clear();
+			peerIdsByMid.clear();
+			rolesByMid.clear();
+			setRemoteMedia(new Map());
 
-			if (mediaKind === 'screen') {
-				addTrack();
-				track.addEventListener('unmute', () => {
-					logTrackEvent('unmute');
+			const pc = new RTCPeerConnection({ iceServers: [] });
+			pcRef.current = pc;
+			pc.oniceconnectionstatechange = () => {
+				if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') setConnectionState('connected');
+				else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') setConnectionState('disconnected');
+			};
+			pc.ontrack = ({ track, transceiver, streams }) => {
+				const mid = transceiver.mid;
+				if (mid && leftRemoteMidsRef.current.has(mid)) return;
+				const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
+				const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
+				const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
+					// eslint-disable-next-line no-console
+					console.info(`[MezonSFU][remote track] ${event}`, {
+						mid,
+						mediaKind,
+						participantId: id,
+						trackId: track.id,
+						kind: track.kind,
+						muted: track.muted,
+						readyState: track.readyState,
+						streamIds: streams.map((stream) => stream.id)
+					});
+				};
+				logTrackEvent('ontrack');
+				const addTrack = () => {
+					setRemoteMedia((current) => {
+						const next = new Map(current);
+						const participant = next.get(id) || { id };
+						participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
+						participant.peerId = (mid && peerIdsByMidRef.current.get(mid)) || participant.peerId;
+						participant.role = (mid && rolesByMidRef.current.get(mid)) || participant.role;
+						if (track.kind === 'audio') participant.audio = track;
+						if (mediaKind === 'camera') participant.video = track;
+						if (mediaKind === 'screen') {
+							if (participant.screen !== track) participant.screenActive = !track.muted;
+							participant.screen = track;
+						}
+						next.set(id, participant);
+						return next;
+					});
+				};
+				const removeTrack = () => {
 					setRemoteMedia((current) => {
 						const next = new Map(current);
 						const participant = next.get(id);
-						if (participant?.screen === track) next.set(id, { ...participant, screenActive: true });
+						if (!participant) return next;
+						if (track.kind === 'audio' && participant.audio === track) participant.audio = undefined;
+						if (mediaKind === 'camera' && participant.video === track) participant.video = undefined;
+						if (mediaKind === 'screen' && participant.screen === track) participant.screen = undefined;
+						if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
+						else next.set(id, participant);
 						return next;
 					});
-				});
+				};
+
+				if (mediaKind === 'screen') {
+					addTrack();
+					track.addEventListener('unmute', () => {
+						logTrackEvent('unmute');
+						setRemoteMedia((current) => {
+							const next = new Map(current);
+							const participant = next.get(id);
+							if (participant?.screen === track) next.set(id, { ...participant, screenActive: true });
+							return next;
+						});
+					});
+					track.addEventListener('mute', () => {
+						logTrackEvent('mute');
+						setRemoteMedia((current) => {
+							const next = new Map(current);
+							const participant = next.get(id);
+							if (participant?.screen === track) next.set(id, { ...participant, screenActive: false });
+							return next;
+						});
+					});
+					track.addEventListener('ended', () => {
+						logTrackEvent('ended');
+						removeTrack();
+					});
+					return;
+				}
+
+				addTrack();
 				track.addEventListener('mute', () => {
 					logTrackEvent('mute');
-					setRemoteMedia((current) => {
-						const next = new Map(current);
-						const participant = next.get(id);
-						if (participant?.screen === track) next.set(id, { ...participant, screenActive: false });
-						return next;
-					});
+					setRemoteMedia((current) => new Map(current));
+				});
+				track.addEventListener('unmute', () => {
+					logTrackEvent('unmute');
+					setRemoteMedia((current) => new Map(current));
 				});
 				track.addEventListener('ended', () => {
 					logTrackEvent('ended');
 					removeTrack();
 				});
-				return;
-			}
-
-			addTrack();
-			track.addEventListener('mute', () => {
-				logTrackEvent('mute');
-				setRemoteMedia((current) => new Map(current));
-			});
-			track.addEventListener('unmute', () => {
-				logTrackEvent('unmute');
-				setRemoteMedia((current) => new Map(current));
-			});
-			track.addEventListener('ended', () => {
-				logTrackEvent('ended');
-				removeTrack();
-			});
+			};
+			return pc;
 		};
 
 		const handleOffer = async (sdp: string): Promise<void> => {
+			const pc = pcRef.current;
+			if (!pc) return;
 			if (negotiatingRef.current) {
 				pendingOfferRef.current = sdp;
 				return;
@@ -1024,6 +1045,7 @@ export function MezonSfuVoiceRoom({
 					if (screenTransceiver && screenTrack) {
 						await screenTransceiver.sender.replaceTrack(screenTrack);
 						screenTransceiver.direction = 'sendonly';
+						await applyScreenEncodingParams(screenTransceiver.sender);
 					}
 					localTracksAddedRef.current = true;
 				} else if (screenStreamRef.current) {
@@ -1059,7 +1081,7 @@ export function MezonSfuVoiceRoom({
 		const handleRoleChanged = async (role: 'speaker' | 'audience') => {
 			currentSfuRoleRef.current = role;
 			const audioTrack = localStreamRef.current?.getAudioTracks()[0];
-			const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
+			const audioTransceiver = pcRef.current?.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 			if (role === 'speaker') {
 				if (audioTrack) audioTrack.enabled = true;
 				if (audioTransceiver && audioTrack) {
@@ -1078,8 +1100,9 @@ export function MezonSfuVoiceRoom({
 			setPushToTalkActive(false);
 		};
 
-		void prepareLocalMedia().finally(() => {
-			if (disposed) return;
+		const reconnect = () => {
+			if (disposed || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED)) return;
+			resetAndCreatePeerConnection();
 			const secureServerUrl =
 				window.location.protocol === 'https:' && serverUrl.startsWith('ws://') ? `wss://${serverUrl.slice(5)}` : serverUrl;
 			const wsUrl = new URL(secureServerUrl);
@@ -1087,6 +1110,7 @@ export function MezonSfuVoiceRoom({
 			const ws = new WebSocket(wsUrl.toString());
 			wsRef.current = ws;
 			ws.onopen = () => {
+				if (disposed || wsRef.current !== ws) return;
 				setError(undefined);
 				setConnectionState('joining');
 				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole }));
@@ -1094,10 +1118,12 @@ export function MezonSfuVoiceRoom({
 					if (joinedRef.current && ws.readyState === WebSocket.OPEN)
 						ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				};
+				removeVisibilityListener();
 				document.addEventListener('visibilitychange', sendVisibility);
 				removeVisibilityListener = () => document.removeEventListener('visibilitychange', sendVisibility);
 			};
 			ws.onmessage = ({ data }) => {
+				if (disposed || wsRef.current !== ws) return;
 				let message: SignalMessage;
 				try {
 					message = JSON.parse(data) as SignalMessage;
@@ -1111,7 +1137,7 @@ export function MezonSfuVoiceRoom({
 				}
 				if (message.type === 'room_snapshot' && message.members) applySfuPeers(message.members);
 				if ((message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer) applySfuPeers([message.peer]);
-				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong' }));
+				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong', timestamp: message.timestamp }));
 				if (message.type === 'joined') {
 					setError(undefined);
 					setConnectionState('awaiting offer');
@@ -1121,6 +1147,12 @@ export function MezonSfuVoiceRoom({
 					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 					if (joinRole === 'speaker') {
 						ws.send(JSON.stringify({ type: 'camera', active: desiredMediaRef.current.cameraEnabled }));
+					}
+					const activeScreenTrack = screenStreamRef.current?.getVideoTracks()[0];
+					if (activeScreenTrack && activeScreenTrack.readyState === 'live') {
+						// eslint-disable-next-line no-console
+						console.info('[MezonSFU][ws.send][share_screen][reconnect]', { type: 'share_screen', active: true });
+						ws.send(JSON.stringify({ type: 'share_screen', active: true }));
 					}
 					ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				}
@@ -1140,7 +1172,7 @@ export function MezonSfuVoiceRoom({
 					// eslint-disable-next-line no-console
 					console.info('[MezonSFU][remaining peer] peer_left received', {
 						message,
-						peer: getPeerDebugSnapshot(pc)
+						peer: pcRef.current ? getPeerDebugSnapshot(pcRef.current) : null
 					});
 					const mids = [message.mid_audio, message.mid_video, message.mid_screen]
 						.filter((mid) => mid != null && String(mid) !== '0')
@@ -1162,16 +1194,37 @@ export function MezonSfuVoiceRoom({
 				}
 			};
 			ws.onerror = () => {
+				if (disposed || wsRef.current !== ws) return;
 				setError('Unable to connect to SFU signaling');
 				setConnectionState('failed');
 			};
 			ws.onclose = () => {
+				if (wsRef.current !== ws) return;
+				wsRef.current = null;
+				joinedRef.current = false;
 				if (!disposed) setConnectionState('disconnected');
 			};
+		};
+
+		void prepareLocalMedia().finally(() => {
+			if (disposed) return;
+			reconnect();
+			heartbeatInterval = setInterval(() => {
+				const ws = wsRef.current;
+				if (ws?.readyState === WebSocket.OPEN) {
+					const pingMessage = { type: 'ping', timestamp: Date.now() };
+					// eslint-disable-next-line no-console
+					console.info('[MezonSFU][ws.send][ping]', pingMessage);
+					ws.send(JSON.stringify(pingMessage));
+					return;
+				}
+				reconnect();
+			}, 10_000);
 		});
 
 		return () => {
 			disposed = true;
+			if (heartbeatInterval) clearInterval(heartbeatInterval);
 			// A leave is currently signaled by closing the WebSocket; no explicit
 			// { type: 'leave' } message is sent to the SFU.
 			// eslint-disable-next-line no-console
@@ -1181,7 +1234,7 @@ export function MezonSfuVoiceRoom({
 			});
 			removeVisibilityListener();
 			wsRef.current?.close();
-			pc.close();
+			pcRef.current?.close();
 			localStreamRef.current?.getTracks().forEach((track) => track.stop());
 			screenStreamRef.current?.getTracks().forEach((track) => track.stop());
 			wsRef.current = null;
