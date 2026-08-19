@@ -771,6 +771,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 										selectedTrimDurationSec > MAX_TRIM ||
 										trimEndSec <= trimStartSec
 									}
+									data-e2e={generateE2eId('button.base')}
 								>
 									{isUploading ? (
 										<span className="flex items-center gap-1.5">

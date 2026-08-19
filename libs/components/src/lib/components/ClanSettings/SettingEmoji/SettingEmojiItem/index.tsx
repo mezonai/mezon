@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, MAX_FILE_NAME_EMOJI, getSrcEmoji } from '@mezon/utils';
+import { EPermission, MAX_FILE_NAME_EMOJI, generateE2eId, getSrcEmoji } from '@mezon/utils';
 import type { ClanEmoji, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
@@ -141,6 +141,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 							style={{
 								width: `${Math.max(nameEmoji.length * 8)}px`
 							}}
+							data-e2e={generateE2eId('clan_page.settings.emoji.item.name_input')}
 						/>
 						<span>:</span>
 					</div>
@@ -158,7 +159,9 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 							<AvatarColor username={avatarDefault} className="size-6" />
 						)}
 					</div>
-					<p className={'text-sm h-auto leading-6'}>{dataAuthor?.clan_nick || dataAuthor?.user?.username}</p>
+					<p className={'text-sm h-auto leading-6'} data-e2e={generateE2eId('clan_page.settings.emoji.item.created_by')}>
+						{dataAuthor?.clan_nick || dataAuthor?.user?.username}
+					</p>
 				</div>
 
 				{showDelete && (
@@ -166,6 +169,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 						<button
 							onClick={handleDelete}
 							className="border-theme-primary text-red-600 shadow-emoji_item-delete  text-xs font-bold w-6 h-6 flex items-center justify-center rounded-[50%]"
+							data-e2e={generateE2eId('clan_page.settings.emoji.item.actions.delete')}
 						>
 							X
 						</button>
