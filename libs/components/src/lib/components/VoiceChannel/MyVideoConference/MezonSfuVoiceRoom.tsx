@@ -1405,7 +1405,15 @@ export function MezonSfuVoiceRoom({
 								<Icons.MemberList defaultFill="text-white" />
 								<span>{participantCount}</span>
 							</button>
-							<div className={`${showFocusThumbnails ? 'flex' : 'hidden'} h-36 shrink-0 gap-3 overflow-x-auto pb-1`}>
+							<div
+								className={`${
+									showFocusThumbnails ? 'flex' : 'hidden'
+								} h-36 shrink-0 gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
+								onWheel={(e) => {
+									e.stopPropagation();
+									e.currentTarget.scrollLeft += e.deltaY;
+								}}
+							>
 								{conferenceTiles
 									.filter((tile) => tile.id !== activePinnedTrackId)
 									.map((tile) => (
