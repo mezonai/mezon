@@ -188,7 +188,7 @@ const TextChannelPage = () => {
   `;
 
 	return (
-		<div className="min-h-screen bg-white relative">
+		<div className="min-h-screen bg-white relative overflow-x-hidden">
 			<style>{animationStyles}</style>
 			<HeaderMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />
 			<SideBarMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />
@@ -383,7 +383,7 @@ const TextChannelPage = () => {
 				</div>
 			</section>
 
-			<section className="w-full bg-[#e6ebf0] py-16 md:py-24 lg:py-32 overflow-hidden lg:overflow-visible">
+			<section className="w-full bg-[#e6ebf0] py-16 md:py-24 lg:py-32 overflow-hidden">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1-reverse lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 						<div className="space-y-6 lg:space-y-8 relative z-10 order-1 lg:order-1">
