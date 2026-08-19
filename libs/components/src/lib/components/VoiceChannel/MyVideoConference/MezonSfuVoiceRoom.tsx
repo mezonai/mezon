@@ -64,46 +64,51 @@ type RemoteMedia = {
 };
 
 function useCustomGridLayout(containerRef: React.RefObject<HTMLElement>, totalItems: number) {
-	const [layout, setLayout] = useState({ columns: 1, rows: 1, maxTiles: 1 });
+	const [layout, setLayout] = useState({ columns: 1, rows: 1, maxTiles: 0 });
 
 	useEffect(() => {
 		const element = containerRef.current;
 		if (!element) return;
 
 		const updateLayout = () => {
-			const width = element.clientWidth;
-			const height = element.clientHeight - 48;
+			const gap = 12;
+			const minimumTileWidth = 240;
+			const minimumTileHeight = 135;
+			const maximumTilesPerPage = 12;
+			const width = element.clientWidth - 32;
+			const height = element.clientHeight - 80;
 			if (width <= 0 || height <= 0) return;
 
 			const count = Math.max(1, totalItems);
+			const maximumColumns = Math.min(4, count);
+			let bestLayout = { columns: 1, rows: 1, maxTiles: 1, tileArea: 0 };
 
-			let cols = 1;
-			let rows = 1;
+			for (let columns = 1; columns <= maximumColumns; columns++) {
+				const tileWidth = (width - gap * (columns - 1)) / columns;
+				if (columns > 1 && tileWidth < minimumTileWidth) continue;
 
-			if (count === 1) {
-				cols = 1;
-				rows = 1;
-			} else if (width < 640) {
-				cols = 1;
-				rows = 2;
-			} else if (count === 2) {
-				cols = 2;
-				rows = 1;
-			} else if (count <= 4) {
-				cols = 2;
-				rows = 2;
-			} else if (count <= 6) {
-				cols = 3;
-				rows = 2;
-			} else if (count <= 8) {
-				cols = width >= 768 ? 4 : width >= 640 ? 3 : 2;
-				rows = width >= 768 ? 2 : width >= 640 ? 3 : 4;
-			} else {
-				cols = width >= 768 ? 4 : width >= 640 ? 3 : 2;
-				rows = width >= 768 ? 3 : width >= 640 ? 3 : 3;
+				const maximumRows = Math.min(
+					Math.ceil(count / columns),
+					Math.ceil(maximumTilesPerPage / columns),
+					Math.max(1, Math.floor((height + gap) / (minimumTileHeight + gap)))
+				);
+
+				for (let rows = 1; rows <= maximumRows; rows++) {
+					const tileHeight = (height - gap * (rows - 1)) / rows;
+					if (rows > 1 && tileHeight < minimumTileHeight) continue;
+
+					const maxTiles = Math.min(count, columns * rows);
+					const videoWidth = Math.min(tileWidth, tileHeight * (16 / 9));
+					const videoHeight = Math.min(tileHeight, tileWidth * (9 / 16));
+					const tileArea = videoWidth * videoHeight;
+
+					if (maxTiles > bestLayout.maxTiles || (maxTiles === bestLayout.maxTiles && tileArea > bestLayout.tileArea)) {
+						bestLayout = { columns, rows, maxTiles, tileArea };
+					}
+				}
 			}
 
-			setLayout({ columns: cols, rows, maxTiles: cols * rows });
+			setLayout({ columns: bestLayout.columns, rows: bestLayout.rows, maxTiles: bestLayout.maxTiles });
 		};
 
 		updateLayout();
@@ -687,6 +692,10 @@ export function MezonSfuVoiceRoom({
 	const lastShownErrorRef = useRef<string>();
 	const lastGridWheelTimeRef = useRef<number>(0);
 	const gridElRef = useRef<HTMLDivElement>(null);
+	const gridTileOrderRef = useRef<string[]>([]);
+	const focusTileOrderRef = useRef<string[]>([]);
+	const focusThumbnailsRef = useRef<HTMLDivElement>(null);
+	const [, renderFocusTileOrder] = useState(0);
 
 	useEffect(() => {
 		if (hasMicrophoneAccess === false && microphoneEnabled) {
@@ -1570,33 +1579,75 @@ export function MezonSfuVoiceRoom({
 		}
 	});
 
-	conferenceTiles.sort((a, b) => {
-		if (a.isScreen !== b.isScreen) {
-			return a.isScreen ? -1 : 1;
-		}
+	const tilesById = new Map(conferenceTiles.map((tile) => [tile.id, tile]));
+	const existingTileIds = new Set(conferenceTiles.map((tile) => tile.id));
+	const retainedTileIds = gridTileOrderRef.current.filter((id) => existingTileIds.has(id));
+	const retainedTileIdSet = new Set(retainedTileIds);
+	const newScreenTileIds = conferenceTiles.filter((tile) => tile.isScreen && !retainedTileIdSet.has(tile.id)).map((tile) => tile.id);
+	const newCameraTileIds = conferenceTiles.filter((tile) => !tile.isScreen && !retainedTileIdSet.has(tile.id)).map((tile) => tile.id);
+	gridTileOrderRef.current = [...newScreenTileIds, ...retainedTileIds, ...newCameraTileIds];
+	const retainedFocusTileIds = focusTileOrderRef.current.filter((id) => existingTileIds.has(id));
+	const retainedFocusTileIdSet = new Set(retainedFocusTileIds);
+	const newFocusScreenTileIds = conferenceTiles.filter((tile) => tile.isScreen && !retainedFocusTileIdSet.has(tile.id)).map((tile) => tile.id);
+	const newFocusCameraTileIds = conferenceTiles.filter((tile) => !tile.isScreen && !retainedFocusTileIdSet.has(tile.id)).map((tile) => tile.id);
+	focusTileOrderRef.current = [...newFocusScreenTileIds, ...retainedFocusTileIds, ...newFocusCameraTileIds];
 
-		const now = Date.now();
-		const aInfo = speakingMap.get(a.participantId);
-		const bInfo = speakingMap.get(b.participantId);
-
-		const aActive = (aInfo?.recentlySpokeUntil || 0) > now;
-		const bActive = (bInfo?.recentlySpokeUntil || 0) > now;
-
-		if (aActive !== bActive) {
-			return aActive ? -1 : 1;
-		}
-
-		if (aActive && bActive) {
-			return (bInfo?.lastSpokeAt || 0) - (aInfo?.lastSpokeAt || 0);
-		}
-
-		return 0;
-	});
+	const activeSpeakerId = Array.from(speakingMap.entries())
+		.filter(([, info]) => info.speaking)
+		.sort(([, a], [, b]) => b.lastSpokeAt - a.lastSpokeAt)[0]?.[0];
 	const preferredFocusTrack = conferenceTiles.find((tile) => tile.id.endsWith('-screen'))?.id || conferenceTiles[0]?.id;
 	const activePinnedTrackId = conferenceTiles.some((tile) => tile.id === pinnedTrackId) ? pinnedTrackId : preferredFocusTrack;
-	const pinnedTile = conferenceTiles.find((tile) => tile.id === activePinnedTrackId);
 	const gridLayout = useCustomGridLayout(gridElRef, conferenceTiles.length);
-	const gridPagination = useCustomPagination(gridLayout.maxTiles, conferenceTiles);
+
+	if (isGridView && activeSpeakerId && gridLayout.maxTiles > 0) {
+		const activeSpeakerIndex = gridTileOrderRef.current.findIndex((id) => tilesById.get(id)?.participantId === activeSpeakerId);
+		const firstPageCapacity = Math.max(1, gridLayout.maxTiles);
+		if (activeSpeakerIndex >= firstPageCapacity) {
+			// Swap with the last visible slot instead of shifting the whole page.
+			const replacementIndex = firstPageCapacity - 1;
+			[gridTileOrderRef.current[replacementIndex], gridTileOrderRef.current[activeSpeakerIndex]] = [
+				gridTileOrderRef.current[activeSpeakerIndex],
+				gridTileOrderRef.current[replacementIndex]
+			];
+		}
+	}
+
+	const orderedConferenceTiles = gridTileOrderRef.current.map((id) => tilesById.get(id)).filter(Boolean) as typeof conferenceTiles;
+	const focusConferenceTiles = focusTileOrderRef.current.map((id) => tilesById.get(id)).filter(Boolean) as typeof conferenceTiles;
+	const pinnedTile = activePinnedTrackId ? tilesById.get(activePinnedTrackId) : undefined;
+	const activeSpeakerTileId = focusConferenceTiles.find((tile) => tile.participantId === activeSpeakerId)?.id;
+	const gridPagination = useCustomPagination(gridLayout.maxTiles, orderedConferenceTiles);
+
+	useEffect(() => {
+		if (isGridView || !activeSpeakerId) return;
+		if (pinnedTile?.participantId === activeSpeakerId) return;
+		if (!showFocusThumbnails) {
+			if (activeSpeakerTileId) setPinnedTrackId(activeSpeakerTileId);
+			return;
+		}
+
+		const container = focusThumbnailsRef.current;
+		const thumbnails = Array.from(container?.querySelectorAll<HTMLElement>('[data-tile-id]') || []);
+		if (!container || thumbnails.length === 0) return;
+
+		const containerRect = container.getBoundingClientRect();
+		const visibleThumbnails = thumbnails.filter((thumbnail) => {
+			const rect = thumbnail.getBoundingClientRect();
+			return rect.left >= containerRect.left && rect.right <= containerRect.right;
+		});
+		if (visibleThumbnails.some((thumbnail) => thumbnail.dataset.participantId === activeSpeakerId)) return;
+
+		const replacementTileId = visibleThumbnails[visibleThumbnails.length - 1]?.dataset.tileId;
+		const activeIndex = focusTileOrderRef.current.indexOf(activeSpeakerTileId || '');
+		const replacementIndex = focusTileOrderRef.current.indexOf(replacementTileId || '');
+		if (activeIndex < 0 || replacementIndex < 0) return;
+
+		[focusTileOrderRef.current[replacementIndex], focusTileOrderRef.current[activeIndex]] = [
+			focusTileOrderRef.current[activeIndex],
+			focusTileOrderRef.current[replacementIndex]
+		];
+		renderFocusTileOrder((version) => version + 1);
+	}, [activeSpeakerId, activeSpeakerTileId, isGridView, pinnedTile?.participantId, showFocusThumbnails]);
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
@@ -1694,7 +1745,7 @@ export function MezonSfuVoiceRoom({
 							{pinnedTile?.content}
 						</div>
 					</div>
-					{conferenceTiles.length > 1 && (
+					{focusConferenceTiles.length > 1 && (
 						<>
 							<button
 								type="button"
@@ -1714,6 +1765,7 @@ export function MezonSfuVoiceRoom({
 								<span>{participantCount}</span>
 							</button>
 							<div
+								ref={focusThumbnailsRef}
 								className={`${
 									showFocusThumbnails ? 'flex' : 'hidden'
 								} h-36 shrink-0 gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
@@ -1722,11 +1774,13 @@ export function MezonSfuVoiceRoom({
 									e.currentTarget.scrollLeft += e.deltaY;
 								}}
 							>
-								{conferenceTiles
+								{focusConferenceTiles
 									.filter((tile) => tile.id !== activePinnedTrackId)
 									.map((tile) => (
 										<button
 											key={tile.id}
+											data-tile-id={tile.id}
+											data-participant-id={tile.participantId}
 											type="button"
 											className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
 											onClick={() => setPinnedTrackId(tile.id)}
