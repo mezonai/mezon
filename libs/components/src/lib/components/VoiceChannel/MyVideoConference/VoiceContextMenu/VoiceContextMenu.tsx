@@ -4,6 +4,7 @@ import {
 	selectMemberClanByUserId,
 	selectVoiceContextMenu,
 	selectWalletDetail,
+	toastActions,
 	useAppDispatch,
 	useAppSelector,
 	voiceActions
@@ -24,9 +25,10 @@ interface VoiceContextMenuProps {
 }
 
 const TOKEN_SEND_FLOWER = 50000;
+const FLOWER_COOLDOWN_MS = 5000;
 
 export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
-	const { t } = useTranslation('contextMenu');
+	const { t } = useTranslation(['contextMenu', 'token']);
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
 	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
@@ -37,9 +39,12 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 	const [isMuting, setIsMuting] = useState(false);
 	const [isKicking, setIsKicking] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
+	const [flowerCooldownLeft, setFlowerCooldownLeft] = useState(0);
+	const [flowerCooldown, setFlowerCooldown] = useState(true);
 
 	const isMutingRef = useRef(false);
 	const isKickingRef = useRef(false);
+	const flowerCooldownUntil = useRef(0);
 	const { mmnRef } = useMezon();
 	const userWallet = useSelector(selectWalletDetail);
 
@@ -87,6 +92,25 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			events.forEach((event) => participant.off(event, updateMicStatus));
 		};
 	}, [participantId, room, contextMenu, dispatch]);
+
+	useEffect(() => {
+		if (!contextMenu) return;
+
+		let raf = 0;
+		const tick = () => {
+			const left = Math.max(0, flowerCooldownUntil.current - Date.now());
+			setFlowerCooldownLeft(left);
+			if (left > 0) {
+				raf = requestAnimationFrame(tick);
+			}
+		};
+
+		tick();
+
+		return () => {
+			cancelAnimationFrame(raf);
+		};
+	}, [contextMenu, flowerCooldown]);
 
 	const handleRemoveMember = useCallback(async () => {
 		if (isKickingRef.current) return;
@@ -145,7 +169,12 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 	}, [room, dispatch, member?.user?.id]);
 
 	const handleGiveFlowers = useCallback(async () => {
+		if (Date.now() < flowerCooldownUntil.current) {
+			return;
+		}
+
 		dispatch(voiceActions.closeVoiceContextMenu());
+
 		try {
 			const mmnClient = mmnRef.current;
 
@@ -154,29 +183,41 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			}
 
 			if (compareBigInt(userWallet?.balance || '', mmnClient.scaleAmountToDecimals(TOKEN_SEND_FLOWER)) < 0) {
-				console.error('You not have enough money');
-				return;
-			}
-			if (member?.user?.id) {
-				const tokenEvent: ApiTokenSentEvent = {
-					sender_id: myProfile.userId as string,
-					sender_name: myProfile?.userProfile?.user?.username as string,
-					receiver_id: member?.user?.id,
-					amount: TOKEN_SEND_FLOWER,
-					note: 'Send a flower'
-				};
-
-				await dispatch(
-					giveCoffeeActions.sendToken({
-						tokenEvent
+				dispatch(
+					toastActions.addToast({
+						message: t('token:toast.error.exceedWallet'),
+						type: 'error'
 					})
 				);
-				await dispatch(voiceActions.giveFlowers({ receiver_id: member?.user?.id }));
+				return;
 			}
+
+			if (!member?.user?.id) {
+				return;
+			}
+
+			flowerCooldownUntil.current = Date.now() + FLOWER_COOLDOWN_MS;
+			setFlowerCooldownLeft(FLOWER_COOLDOWN_MS);
+			setFlowerCooldown((n) => !n);
+
+			const tokenEvent: ApiTokenSentEvent = {
+				sender_id: myProfile.userId as string,
+				sender_name: myProfile?.userProfile?.user?.username as string,
+				receiver_id: member.user.id,
+				amount: TOKEN_SEND_FLOWER,
+				note: 'Send a flower'
+			};
+
+			await dispatch(
+				giveCoffeeActions.sendToken({
+					tokenEvent
+				})
+			);
+			await dispatch(voiceActions.giveFlowers({ receiver_id: member.user.id }));
 		} catch (error) {
 			console.error('Failed to send flower:', error);
 		}
-	}, [room, dispatch, member?.user?.id, userWallet]);
+	}, [dispatch, member?.user?.id, userWallet, myProfile.userId, myProfile?.userProfile?.user?.username, mmnRef, t]);
 
 	useOnClickOutside(focusRef, () => {
 		if (contextMenu) {
@@ -210,10 +251,21 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			ref={focusRef}
 		>
 			<div
-				className={`p-2 w-full justify-between bg-item-hover items-center flex hover:bg-[#f67e882a] cursor-pointer`}
+				className={`relative overflow-hidden rounded p-2 w-full justify-between bg-item-hover items-center flex ${
+					flowerCooldownLeft > 0 ? 'cursor-not-allowed' : 'hover:bg-[#f67e882a] cursor-pointer'
+				}`}
 				onClick={handleGiveFlowers}
 			>
-				{t('flowers.send')}
+				{flowerCooldownLeft > 0 && (
+					<div
+						className="absolute inset-0 bg-[#f67e88]/40 pointer-events-none"
+						style={{
+							transform: `scaleX(${flowerCooldownLeft / FLOWER_COOLDOWN_MS})`,
+							transformOrigin: 'left center'
+						}}
+					/>
+				)}
+				<span className="relative z-[1]">{t('giveFlowers')}</span>
 			</div>
 
 			{isMicOn && canMangeVoice && (
