@@ -21,6 +21,7 @@ type ConnectionState = 'connecting' | 'joining' | 'awaiting offer' | 'connected'
 
 type SignalMessage = {
 	type: string;
+	timestamp?: number;
 	active?: boolean;
 	role?: 'speaker' | 'audience';
 	sdp?: string;
@@ -59,7 +60,83 @@ type RemoteMedia = {
 	cameraRequested?: boolean;
 	cameraActive?: boolean;
 	screenRequested?: boolean;
+	isMute?: boolean;
 };
+
+function useCustomGridLayout(containerRef: React.RefObject<HTMLElement>, totalItems: number) {
+	const [layout, setLayout] = useState({ columns: 1, rows: 1, maxTiles: 1 });
+
+	useEffect(() => {
+		const element = containerRef.current;
+		if (!element) return;
+
+		const updateLayout = () => {
+			const width = element.clientWidth;
+			const height = element.clientHeight - 48;
+			if (width <= 0 || height <= 0) return;
+
+			const count = Math.max(1, totalItems);
+
+			let cols = 1;
+			let rows = 1;
+
+			if (count === 1) {
+				cols = 1;
+				rows = 1;
+			} else if (width < 640) {
+				cols = 1;
+				rows = 2;
+			} else if (count === 2) {
+				cols = 2;
+				rows = 1;
+			} else if (count <= 4) {
+				cols = 2;
+				rows = 2;
+			} else if (count <= 6) {
+				cols = 3;
+				rows = 2;
+			} else if (count <= 8) {
+				cols = width >= 768 ? 4 : width >= 640 ? 3 : 2;
+				rows = width >= 768 ? 2 : width >= 640 ? 3 : 4;
+			} else {
+				cols = width >= 768 ? 4 : width >= 640 ? 3 : 2;
+				rows = width >= 768 ? 3 : width >= 640 ? 3 : 3;
+			}
+
+			setLayout({ columns: cols, rows, maxTiles: cols * rows });
+		};
+
+		updateLayout();
+
+		const observer = new ResizeObserver(updateLayout);
+		observer.observe(element);
+
+		return () => observer.disconnect();
+	}, [containerRef, totalItems]);
+
+	return layout;
+}
+
+function useCustomPagination<T>(maxTiles: number, items: T[]) {
+	const [currentPage, setCurrentPage] = useState(1);
+	const safeMaxTiles = Math.max(1, maxTiles);
+	const totalPageCount = Math.max(1, Math.ceil(items.length / safeMaxTiles));
+	const safePage = Math.min(currentPage, totalPageCount);
+
+	const pageItems = useMemo(() => {
+		const start = (safePage - 1) * safeMaxTiles;
+		return items.slice(start, start + safeMaxTiles);
+	}, [items, safePage, safeMaxTiles]);
+
+	return {
+		currentPage: safePage,
+		totalPageCount,
+		pageItems,
+		nextPage: () => setCurrentPage((p) => Math.min(totalPageCount, p + 1)),
+		prevPage: () => setCurrentPage((p) => Math.max(1, p - 1)),
+		setPage: (page: number) => setCurrentPage(Math.min(totalPageCount, Math.max(1, page)))
+	};
+}
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
@@ -172,40 +249,138 @@ const stabilizeInactiveVideoSections = (offerSdp: string, currentRemoteSdp?: str
 	return `${[...next.sessionLines, ...stabilizedSections.flat()].join('\r\n')}\r\n`;
 };
 
-const useSpeaking = (track?: MediaStreamTrack, enabled = true) => {
-	const [speaking, setSpeaking] = useState(false);
+type SpeakingInfo = {
+	speaking: boolean;
+	recentlySpokeUntil: number;
+	lastSpokeAt: number;
+};
+
+const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefined, localAudioEnabled: boolean, remoteParticipants: RemoteMedia[]) => {
+	const [speakingMap, setSpeakingMap] = useState<Map<string, SpeakingInfo>>(() => new Map());
+
+	const targetMap = useMemo(() => {
+		const map = new Map<string, { track: MediaStreamTrack; enabled: boolean }>();
+		if (localAudioTrack && localAudioTrack.readyState === 'live') {
+			map.set('local', { track: localAudioTrack, enabled: localAudioEnabled });
+		}
+		for (const p of remoteParticipants) {
+			if (p.audio && p.audio.readyState === 'live') {
+				const enabled = p.isMute !== true && !p.audio.muted;
+				map.set(p.id, { track: p.audio, enabled });
+			}
+		}
+		return map;
+	}, [localAudioTrack, localAudioEnabled, remoteParticipants]);
+
+	const tracksKey = useMemo(() => {
+		const parts: string[] = [];
+		targetMap.forEach((item, id) => {
+			parts.push(`${id}:${item.track.id}:${item.enabled}`);
+		});
+		return parts.join('|');
+	}, [targetMap]);
+
 	useEffect(() => {
-		if (!track || !enabled) {
-			setSpeaking(false);
+		let frameId = 0;
+		let audioContext: AudioContext | null = null;
+		try {
+			audioContext = new AudioContext();
+		} catch {
 			return;
 		}
-		let frame = 0;
-		let lastSpeaking = false;
-		const audioContext = new AudioContext();
-		const source = audioContext.createMediaStreamSource(new MediaStream([track]));
-		const analyser = audioContext.createAnalyser();
-		analyser.fftSize = 256;
-		source.connect(analyser);
-		const frequencies = new Uint8Array(analyser.frequencyBinCount);
-		const tick = () => {
-			analyser.getByteFrequencyData(frequencies);
-			const average = frequencies.reduce((sum, value) => sum + value, 0) / frequencies.length;
-			const nextSpeaking = average > 12;
-			if (nextSpeaking !== lastSpeaking) {
-				lastSpeaking = nextSpeaking;
-				setSpeaking(nextSpeaking);
+
+		const nodeMap = new Map<string, { source: MediaStreamAudioSourceNode; analyser: AnalyserNode }>();
+		const lastSpeakingMap = new Map<string, boolean>();
+
+		const ctx = audioContext;
+		targetMap.forEach((item, id) => {
+			if (!item.enabled) return;
+			try {
+				const source = ctx.createMediaStreamSource(new MediaStream([item.track]));
+				const analyser = ctx.createAnalyser();
+				analyser.fftSize = 256;
+				source.connect(analyser);
+				nodeMap.set(id, { source, analyser });
+			} catch {
+				// Ignore invalid stream
 			}
-			frame = requestAnimationFrame(tick);
+		});
+
+		const timeDomainData = new Uint8Array(256);
+
+		const tick = () => {
+			let changed = false;
+			const now = Date.now();
+
+			targetMap.forEach((item, id) => {
+				const node = nodeMap.get(id);
+				let isSpeaking = false;
+
+				if (item.enabled && node) {
+					node.analyser.getByteTimeDomainData(timeDomainData);
+					let sumSquares = 0;
+					for (let i = 0; i < timeDomainData.length; i++) {
+						const normalized = (timeDomainData[i] - 128) / 128;
+						sumSquares += normalized * normalized;
+					}
+					const rms = Math.sqrt(sumSquares / timeDomainData.length);
+					isSpeaking = rms > 0.04;
+				}
+
+				const prevSpeaking = lastSpeakingMap.get(id);
+				if (prevSpeaking === undefined || prevSpeaking !== isSpeaking) {
+					lastSpeakingMap.set(id, isSpeaking);
+					changed = true;
+				}
+			});
+
+			if (changed) {
+				setSpeakingMap((prev) => {
+					const next = new Map(prev);
+					targetMap.forEach((item, id) => {
+						const isSpeaking = item.enabled ? (lastSpeakingMap.get(id) ?? false) : false;
+						const prevEntry = next.get(id);
+						if (isSpeaking) {
+							next.set(id, {
+								speaking: true,
+								recentlySpokeUntil: now + 2500,
+								lastSpokeAt: prevEntry?.speaking ? prevEntry.lastSpokeAt || now : now
+							});
+						} else {
+							next.set(id, {
+								speaking: false,
+								recentlySpokeUntil: prevEntry?.recentlySpokeUntil || 0,
+								lastSpokeAt: prevEntry?.lastSpokeAt || 0
+							});
+						}
+					});
+					return next;
+				});
+			}
+
+			frameId = requestAnimationFrame(tick);
 		};
+
 		tick();
+
 		return () => {
-			cancelAnimationFrame(frame);
-			source.disconnect();
-			analyser.disconnect();
-			void audioContext.close();
+			cancelAnimationFrame(frameId);
+			nodeMap.forEach((node) => {
+				try {
+					node.source.disconnect();
+					node.analyser.disconnect();
+				} catch {
+					// Ignore disconnect errors
+				}
+			});
+			if (audioContext) {
+				void audioContext.close().catch(() => undefined);
+			}
 		};
-	}, [enabled, track]);
-	return speaking;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tracksKey]);
+
+	return speakingMap;
 };
 
 const Video = ({
@@ -301,10 +476,12 @@ interface ParticipantTileProps {
 	participant: RemoteMedia;
 	displayName: string;
 	avatar?: string;
+	speaking?: boolean;
 }
 
-const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTileProps) => {
-	const speaking = useSpeaking(participant.audio);
+const ParticipantTile = ({ participant, displayName, avatar, speaking: propSpeaking }: ParticipantTileProps) => {
+	const isMuted = participant.isMute === true || !participant.audio || participant.audio.muted;
+	const speaking = isMuted ? false : Boolean(propSpeaking);
 	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
 	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted && participant.cameraActive !== false);
 	return (
@@ -329,12 +506,12 @@ const ParticipantTile = ({ participant, displayName, avatar }: ParticipantTilePr
 					/>
 				</div>
 			)}
-			<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
-				{!participant.audio || participant.audio.muted ? <Icons.VoiceMicDisabledIcon /> : null}
-				{displayName}
-			</span>
+			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+				{isMuted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
+				<span className="truncate whitespace-nowrap py-0.5">{displayName}</span>
+			</div>
 			{participant.role === 'audience' && (
-				<span className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">Audience</span>
+				<span className="absolute right-2 top-2 rounded-md bg-[#00000080] p-[5px] text-xs text-white">Audience</span>
 			)}
 		</div>
 	);
@@ -353,7 +530,10 @@ const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps
 				<Video stream={stream} muted fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
 			</div>
 			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
-			<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">{displayName} — Screen</span>
+			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+				<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
+				<span className="truncate whitespace-nowrap py-0.5">{displayName} — Screen</span>
+			</div>
 		</div>
 	);
 };
@@ -505,6 +685,8 @@ export function MezonSfuVoiceRoom({
 	const [selectedMicrophone, setSelectedMicrophone] = useState('default');
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const lastShownErrorRef = useRef<string>();
+	const lastGridWheelTimeRef = useRef<number>(0);
+	const gridElRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (hasMicrophoneAccess === false && microphoneEnabled) {
@@ -620,7 +802,8 @@ export function MezonSfuVoiceRoom({
 					cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
 					cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
 					screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
-					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive
+					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
+					isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
 				});
 			}
 			return next;
@@ -762,6 +945,7 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		let disposed = false;
 		let removeVisibilityListener: () => void = () => undefined;
+		let heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 		const peerIdsByMid = peerIdsByMidRef.current;
 		const rolesByMid = rolesByMidRef.current;
 		currentSfuRoleRef.current = joinRole;
@@ -801,105 +985,124 @@ export function MezonSfuVoiceRoom({
 			return stream;
 		};
 
-		const pc = new RTCPeerConnection({ iceServers: [] });
-		pcRef.current = pc;
-		pc.oniceconnectionstatechange = () => {
-			if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') setConnectionState('connected');
-			else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') setConnectionState('disconnected');
-		};
-		pc.ontrack = ({ track, transceiver, streams }) => {
-			const mid = transceiver.mid;
-			if (mid && leftRemoteMidsRef.current.has(mid)) return;
-			const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
-			const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
-			const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
-				// eslint-disable-next-line no-console
-				console.info(`[MezonSFU][remote track] ${event}`, {
-					mid,
-					mediaKind,
-					participantId: id,
-					trackId: track.id,
-					kind: track.kind,
-					muted: track.muted,
-					readyState: track.readyState,
-					streamIds: streams.map((stream) => stream.id)
-				});
-			};
-			logTrackEvent('ontrack');
-			const addTrack = () => {
-				setRemoteMedia((current) => {
-					const next = new Map(current);
-					const participant = next.get(id) || { id };
-					participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
-					participant.peerId = (mid && peerIdsByMidRef.current.get(mid)) || participant.peerId;
-					participant.role = (mid && rolesByMidRef.current.get(mid)) || participant.role;
-					if (track.kind === 'audio') participant.audio = track;
-					if (mediaKind === 'camera') participant.video = track;
-					if (mediaKind === 'screen') {
-						if (participant.screen !== track) participant.screenActive = !track.muted;
-						participant.screen = track;
-					}
-					next.set(id, participant);
-					return next;
-				});
-			};
-			const removeTrack = () => {
-				setRemoteMedia((current) => {
-					const next = new Map(current);
-					const participant = next.get(id);
-					if (!participant) return next;
-					if (track.kind === 'audio' && participant.audio === track) participant.audio = undefined;
-					if (mediaKind === 'camera' && participant.video === track) participant.video = undefined;
-					if (mediaKind === 'screen' && participant.screen === track) participant.screen = undefined;
-					if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
-					else next.set(id, participant);
-					return next;
-				});
-			};
+		const resetAndCreatePeerConnection = () => {
+			if (pcRef.current) {
+				pcRef.current.close();
+				pcRef.current = null;
+			}
+			localTracksAddedRef.current = false;
+			negotiatingRef.current = false;
+			pendingOfferRef.current = null;
+			peerLeftPendingOfferRef.current = false;
+			leftRemoteMidsRef.current.clear();
+			userIdsByMidRef.current.clear();
+			peerIdsByMid.clear();
+			rolesByMid.clear();
+			setRemoteMedia(new Map());
 
-			if (mediaKind === 'screen') {
-				addTrack();
-				track.addEventListener('unmute', () => {
-					logTrackEvent('unmute');
+			const pc = new RTCPeerConnection({ iceServers: [] });
+			pcRef.current = pc;
+			pc.oniceconnectionstatechange = () => {
+				if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') setConnectionState('connected');
+				else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') setConnectionState('disconnected');
+			};
+			pc.ontrack = ({ track, transceiver, streams }) => {
+				const mid = transceiver.mid;
+				if (mid && leftRemoteMidsRef.current.has(mid)) return;
+				const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
+				const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
+				const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
+					// eslint-disable-next-line no-console
+					console.info(`[MezonSFU][remote track] ${event}`, {
+						mid,
+						mediaKind,
+						participantId: id,
+						trackId: track.id,
+						kind: track.kind,
+						muted: track.muted,
+						readyState: track.readyState,
+						streamIds: streams.map((stream) => stream.id)
+					});
+				};
+				logTrackEvent('ontrack');
+				const addTrack = () => {
+					setRemoteMedia((current) => {
+						const next = new Map(current);
+						const participant = next.get(id) || { id };
+						participant.userId = (mid && userIdsByMidRef.current.get(mid)) || participant.userId;
+						participant.peerId = (mid && peerIdsByMidRef.current.get(mid)) || participant.peerId;
+						participant.role = (mid && rolesByMidRef.current.get(mid)) || participant.role;
+						if (track.kind === 'audio') participant.audio = track;
+						if (mediaKind === 'camera') participant.video = track;
+						if (mediaKind === 'screen') {
+							if (participant.screen !== track) participant.screenActive = !track.muted;
+							participant.screen = track;
+						}
+						next.set(id, participant);
+						return next;
+					});
+				};
+				const removeTrack = () => {
 					setRemoteMedia((current) => {
 						const next = new Map(current);
 						const participant = next.get(id);
-						if (participant?.screen === track) next.set(id, { ...participant, screenActive: true });
+						if (!participant) return next;
+						if (track.kind === 'audio' && participant.audio === track) participant.audio = undefined;
+						if (mediaKind === 'camera' && participant.video === track) participant.video = undefined;
+						if (mediaKind === 'screen' && participant.screen === track) participant.screen = undefined;
+						if (!participant.audio && !participant.video && !participant.screen) next.delete(id);
+						else next.set(id, participant);
 						return next;
 					});
-				});
+				};
+
+				if (mediaKind === 'screen') {
+					addTrack();
+					track.addEventListener('unmute', () => {
+						logTrackEvent('unmute');
+						setRemoteMedia((current) => {
+							const next = new Map(current);
+							const participant = next.get(id);
+							if (participant?.screen === track) next.set(id, { ...participant, screenActive: true });
+							return next;
+						});
+					});
+					track.addEventListener('mute', () => {
+						logTrackEvent('mute');
+						setRemoteMedia((current) => {
+							const next = new Map(current);
+							const participant = next.get(id);
+							if (participant?.screen === track) next.set(id, { ...participant, screenActive: false });
+							return next;
+						});
+					});
+					track.addEventListener('ended', () => {
+						logTrackEvent('ended');
+						removeTrack();
+					});
+					return;
+				}
+
+				addTrack();
 				track.addEventListener('mute', () => {
 					logTrackEvent('mute');
-					setRemoteMedia((current) => {
-						const next = new Map(current);
-						const participant = next.get(id);
-						if (participant?.screen === track) next.set(id, { ...participant, screenActive: false });
-						return next;
-					});
+					setRemoteMedia((current) => new Map(current));
+				});
+				track.addEventListener('unmute', () => {
+					logTrackEvent('unmute');
+					setRemoteMedia((current) => new Map(current));
 				});
 				track.addEventListener('ended', () => {
 					logTrackEvent('ended');
 					removeTrack();
 				});
-				return;
-			}
-
-			addTrack();
-			track.addEventListener('mute', () => {
-				logTrackEvent('mute');
-				setRemoteMedia((current) => new Map(current));
-			});
-			track.addEventListener('unmute', () => {
-				logTrackEvent('unmute');
-				setRemoteMedia((current) => new Map(current));
-			});
-			track.addEventListener('ended', () => {
-				logTrackEvent('ended');
-				removeTrack();
-			});
+			};
+			return pc;
 		};
 
 		const handleOffer = async (sdp: string): Promise<void> => {
+			const pc = pcRef.current;
+			if (!pc) return;
 			if (negotiatingRef.current) {
 				pendingOfferRef.current = sdp;
 				return;
@@ -944,6 +1147,7 @@ export function MezonSfuVoiceRoom({
 					if (screenTransceiver && screenTrack) {
 						await screenTransceiver.sender.replaceTrack(screenTrack);
 						screenTransceiver.direction = 'sendonly';
+						await applyScreenEncodingParams(screenTransceiver.sender);
 					}
 					localTracksAddedRef.current = true;
 				} else if (screenStreamRef.current) {
@@ -979,7 +1183,7 @@ export function MezonSfuVoiceRoom({
 		const handleRoleChanged = async (role: 'speaker' | 'audience') => {
 			currentSfuRoleRef.current = role;
 			const audioTrack = localStreamRef.current?.getAudioTracks()[0];
-			const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
+			const audioTransceiver = pcRef.current?.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 			if (role === 'speaker') {
 				if (audioTrack) audioTrack.enabled = true;
 				if (audioTransceiver && audioTrack) {
@@ -998,8 +1202,9 @@ export function MezonSfuVoiceRoom({
 			setPushToTalkActive(false);
 		};
 
-		void prepareLocalMedia().finally(() => {
-			if (disposed) return;
+		const reconnect = () => {
+			if (disposed || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED)) return;
+			resetAndCreatePeerConnection();
 			const secureServerUrl =
 				window.location.protocol === 'https:' && serverUrl.startsWith('ws://') ? `wss://${serverUrl.slice(5)}` : serverUrl;
 			const wsUrl = new URL(secureServerUrl);
@@ -1007,6 +1212,7 @@ export function MezonSfuVoiceRoom({
 			const ws = new WebSocket(wsUrl.toString());
 			wsRef.current = ws;
 			ws.onopen = () => {
+				if (disposed || wsRef.current !== ws) return;
 				setError(undefined);
 				setConnectionState('joining');
 				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole }));
@@ -1014,10 +1220,12 @@ export function MezonSfuVoiceRoom({
 					if (joinedRef.current && ws.readyState === WebSocket.OPEN)
 						ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				};
+				removeVisibilityListener();
 				document.addEventListener('visibilitychange', sendVisibility);
 				removeVisibilityListener = () => document.removeEventListener('visibilitychange', sendVisibility);
 			};
 			ws.onmessage = ({ data }) => {
+				if (disposed || wsRef.current !== ws) return;
 				let message: SignalMessage;
 				try {
 					message = JSON.parse(data) as SignalMessage;
@@ -1031,7 +1239,7 @@ export function MezonSfuVoiceRoom({
 				}
 				if (message.type === 'room_snapshot' && message.members) applySfuPeers(message.members);
 				if ((message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer) applySfuPeers([message.peer]);
-				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong' }));
+				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong', timestamp: message.timestamp }));
 				if (message.type === 'joined') {
 					setError(undefined);
 					setConnectionState('awaiting offer');
@@ -1041,6 +1249,12 @@ export function MezonSfuVoiceRoom({
 					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 					if (joinRole === 'speaker') {
 						ws.send(JSON.stringify({ type: 'camera', active: desiredMediaRef.current.cameraEnabled }));
+					}
+					const activeScreenTrack = screenStreamRef.current?.getVideoTracks()[0];
+					if (activeScreenTrack && activeScreenTrack.readyState === 'live') {
+						// eslint-disable-next-line no-console
+						console.info('[MezonSFU][ws.send][share_screen][reconnect]', { type: 'share_screen', active: true });
+						ws.send(JSON.stringify({ type: 'share_screen', active: true }));
 					}
 					ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
 				}
@@ -1060,7 +1274,7 @@ export function MezonSfuVoiceRoom({
 					// eslint-disable-next-line no-console
 					console.info('[MezonSFU][remaining peer] peer_left received', {
 						message,
-						peer: getPeerDebugSnapshot(pc)
+						peer: pcRef.current ? getPeerDebugSnapshot(pcRef.current) : null
 					});
 					const mids = [message.mid_audio, message.mid_video, message.mid_screen]
 						.filter((mid) => mid != null && String(mid) !== '0')
@@ -1082,16 +1296,37 @@ export function MezonSfuVoiceRoom({
 				}
 			};
 			ws.onerror = () => {
+				if (disposed || wsRef.current !== ws) return;
 				setError('Unable to connect to SFU signaling');
 				setConnectionState('failed');
 			};
 			ws.onclose = () => {
+				if (wsRef.current !== ws) return;
+				wsRef.current = null;
+				joinedRef.current = false;
 				if (!disposed) setConnectionState('disconnected');
 			};
+		};
+
+		void prepareLocalMedia().finally(() => {
+			if (disposed) return;
+			reconnect();
+			heartbeatInterval = setInterval(() => {
+				const ws = wsRef.current;
+				if (ws?.readyState === WebSocket.OPEN) {
+					const pingMessage = { type: 'ping', timestamp: Date.now() };
+					// eslint-disable-next-line no-console
+					console.info('[MezonSFU][ws.send][ping]', pingMessage);
+					ws.send(JSON.stringify(pingMessage));
+					return;
+				}
+				reconnect();
+			}, 10_000);
 		});
 
 		return () => {
 			disposed = true;
+			if (heartbeatInterval) clearInterval(heartbeatInterval);
 			// A leave is currently signaled by closing the WebSocket; no explicit
 			// { type: 'leave' } message is sent to the SFU.
 			// eslint-disable-next-line no-console
@@ -1101,7 +1336,7 @@ export function MezonSfuVoiceRoom({
 			});
 			removeVisibilityListener();
 			wsRef.current?.close();
-			pc.close();
+			pcRef.current?.close();
 			localStreamRef.current?.getTracks().forEach((track) => track.stop());
 			screenStreamRef.current?.getTracks().forEach((track) => track.stop());
 			wsRef.current = null;
@@ -1237,7 +1472,6 @@ export function MezonSfuVoiceRoom({
 
 	const participants = Array.from(remoteMedia.values());
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
-	const isSolo = participants.length === 0 && !screenSharing;
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
 	const cameras = devices.filter((device) => device.kind === 'videoinput');
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
@@ -1260,10 +1494,14 @@ export function MezonSfuVoiceRoom({
 	const localDisplayName =
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) || currentUserId || 'Mezon';
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
-	const localSpeaking = useSpeaking(localAudioTrack, joinRole === 'audience' ? pushToTalkActive : microphoneEnabled);
-	const conferenceTiles: Array<{ id: string; content: ReactNode }> = [];
+	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
+	const speakingMap = useParticipantsSpeakingMap(localAudioTrack, isLocalAudioEnabled, participants);
+	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
+	const conferenceTiles: Array<{ id: string; participantId: string; isScreen: boolean; content: ReactNode }> = [];
 	conferenceTiles.push({
 		id: 'local-camera',
+		participantId: 'local',
+		isScreen: false,
 		content: (
 			<div
 				className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
@@ -1283,43 +1521,82 @@ export function MezonSfuVoiceRoom({
 						/>
 					</div>
 				)}
-				<span className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs">
-					{!(joinRole === 'audience' ? pushToTalkActive : microphoneEnabled) ? <Icons.VoiceMicDisabledIcon /> : null}
-					{localDisplayName}
-				</span>
-				{joinRole === 'audience' && <span className="absolute right-2 top-2 rounded bg-black/70 px-2 py-1 text-xs text-white">Audience</span>}
+				<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+					{!(joinRole === 'audience' ? pushToTalkActive : microphoneEnabled) ? (
+						<Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" />
+					) : null}
+					<span className="truncate whitespace-nowrap py-0.5">{localDisplayName}</span>
+				</div>
+				{joinRole === 'audience' && (
+					<span className="absolute right-2 top-2 rounded-md bg-[#00000080] p-[5px] text-xs text-white">Audience</span>
+				)}
 			</div>
 		)
 	});
 	if (joinRole === 'speaker' && screenSharing && screenStreamRef.current) {
 		conferenceTiles.push({
 			id: 'local-screen',
+			participantId: 'local',
+			isScreen: true,
 			content: (
 				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 					<Video stream={screenStreamRef.current} muted fit="contain" />
-					<span className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-1 text-xs">
-						{t('usernameScreen', { username: localDisplayName })}
-					</span>
+					<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
+						<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
+						<span className="truncate whitespace-nowrap py-0.5">{t('usernameScreen', { username: localDisplayName })}</span>
+					</div>
 				</div>
 			)
 		});
 	}
 	participants.forEach((participant) => {
 		const profile = getParticipantProfile(participant);
+		const participantSpeaking = speakingMap.get(participant.id)?.speaking ?? false;
 		conferenceTiles.push({
 			id: `${participant.id}-camera`,
-			content: <ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} />
+			participantId: participant.id,
+			isScreen: false,
+			content: (
+				<ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} speaking={participantSpeaking} />
+			)
 		});
 		if (participant.screen && participant.screenActive) {
 			conferenceTiles.push({
 				id: `${participant.id}-screen`,
+				participantId: participant.id,
+				isScreen: true,
 				content: <ScreenShareTile participant={participant} displayName={profile.displayName} />
 			});
 		}
 	});
+
+	conferenceTiles.sort((a, b) => {
+		if (a.isScreen !== b.isScreen) {
+			return a.isScreen ? -1 : 1;
+		}
+
+		const now = Date.now();
+		const aInfo = speakingMap.get(a.participantId);
+		const bInfo = speakingMap.get(b.participantId);
+
+		const aActive = (aInfo?.recentlySpokeUntil || 0) > now;
+		const bActive = (bInfo?.recentlySpokeUntil || 0) > now;
+
+		if (aActive !== bActive) {
+			return aActive ? -1 : 1;
+		}
+
+		if (aActive && bActive) {
+			return (bInfo?.lastSpokeAt || 0) - (aInfo?.lastSpokeAt || 0);
+		}
+
+		return 0;
+	});
 	const preferredFocusTrack = conferenceTiles.find((tile) => tile.id.endsWith('-screen'))?.id || conferenceTiles[0]?.id;
 	const activePinnedTrackId = conferenceTiles.some((tile) => tile.id === pinnedTrackId) ? pinnedTrackId : preferredFocusTrack;
 	const pinnedTile = conferenceTiles.find((tile) => tile.id === activePinnedTrackId);
+	const gridLayout = useCustomGridLayout(gridElRef, conferenceTiles.length);
+	const gridPagination = useCustomPagination(gridLayout.maxTiles, conferenceTiles);
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
@@ -1352,24 +1629,63 @@ export function MezonSfuVoiceRoom({
 
 			{isGridView ? (
 				<main
-					className={`grid min-h-0 flex-1 grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3 p-4 ${
-						isSolo ? 'grid-rows-[minmax(0,1fr)] overflow-hidden' : 'auto-rows-min overflow-y-auto'
-					}`}
+					ref={gridElRef}
+					className="relative flex min-h-0 flex-1 flex-col overflow-hidden p-4 pb-16"
+					onWheel={(e) => {
+						if (gridPagination.totalPageCount <= 1) return;
+						const now = Date.now();
+						if (now - lastGridWheelTimeRef.current < 250) return;
+						if (e.deltaY > 10) {
+							lastGridWheelTimeRef.current = now;
+							gridPagination.nextPage();
+						} else if (e.deltaY < -10) {
+							lastGridWheelTimeRef.current = now;
+							gridPagination.prevPage();
+						}
+					}}
 				>
-					{conferenceTiles.map((tile) => (
-						<button
-							key={tile.id}
-							type="button"
-							className="min-w-0 text-left"
-							title="Pin this track"
-							onClick={() => {
-								setPinnedTrackId(tile.id);
-								setIsGridView(false);
-							}}
-						>
-							{tile.content}
-						</button>
-					))}
+					<div
+						className="grid min-h-0 flex-1 gap-3 overflow-hidden"
+						style={{
+							gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
+							gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
+						}}
+					>
+						{gridPagination.pageItems.map((tile) => (
+							<button
+								key={tile.id}
+								type="button"
+								className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left transition-transform hover:scale-[1.01] [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+								title="Pin this track"
+								onClick={() => {
+									setPinnedTrackId(tile.id);
+									setIsGridView(false);
+								}}
+							>
+								{tile.content}
+							</button>
+						))}
+					</div>
+
+					{gridPagination.totalPageCount > 1 && (
+						<div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
+							{Array.from({ length: gridPagination.totalPageCount }).map((_, idx) => {
+								const pageNum = idx + 1;
+								const isActive = pageNum === gridPagination.currentPage;
+								return (
+									<button
+										key={pageNum}
+										type="button"
+										className={`h-2.5 w-2.5 rounded-full transition-all ${
+											isActive ? 'bg-white opacity-100' : 'bg-white/40 hover:bg-white/70'
+										}`}
+										onClick={() => gridPagination.setPage(pageNum)}
+										title={`Page ${pageNum}`}
+									/>
+								);
+							})}
+						</div>
+					)}
 				</main>
 			) : (
 				<main className="relative flex min-h-0 flex-1 flex-col gap-3 p-4">
@@ -1397,7 +1713,15 @@ export function MezonSfuVoiceRoom({
 								<Icons.MemberList defaultFill="text-white" />
 								<span>{participantCount}</span>
 							</button>
-							<div className={`${showFocusThumbnails ? 'flex' : 'hidden'} h-36 shrink-0 gap-3 overflow-x-auto pb-1`}>
+							<div
+								className={`${
+									showFocusThumbnails ? 'flex' : 'hidden'
+								} h-36 shrink-0 gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
+								onWheel={(e) => {
+									e.stopPropagation();
+									e.currentTarget.scrollLeft += e.deltaY;
+								}}
+							>
 								{conferenceTiles
 									.filter((tile) => tile.id !== activePinnedTrackId)
 									.map((tile) => (
