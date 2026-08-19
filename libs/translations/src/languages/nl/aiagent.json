@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Spraaksamenvatting",
+			"subtitle": "Zet gesprekken om in heldere inzichten.",
+			"description": "AI luistert naar je spraakgesprekken en zet lange discussies om in beknopte samenvattingen, zodat je snel de belangrijkste punten, besluiten en informatie oppikt zonder alles terug te luisteren."
+		},
+		"section2": {
+			"title": "Projectassistent",
+			"subtitle": "Je AI-teamgenoot om dingen gedaan te krijgen.",
+			"description": "AI helpt je projecten te organiseren, belangrijke informatie te vinden, taken bij te houden en overzicht te bewaren — zodat je team minder tijd besteedt aan beheren en meer aan bouwen."
+		},
+		"section3": {
+			"title": "Interview-agent",
+			"subtitle": "Jij antwoordt. AI vraagt.",
+			"description": "AI voert natuurlijke interviews uit door relevante vragen te stellen, te luisteren naar je antwoorden en intelligent door te vragen — waardoor interviews, onderzoek en feedbackverzameling sneller en boeiender worden."
+		}
+	},
+	"faq": {
+		"title": "Meer hulp nodig?",
+		"seeAll": "Bekijk alle FAQ's",
+		"learnMore": "Meer informatie",
+		"questions": [
+			{
+				"question": "Wat is een AI Agent?",
+				"answer": "Een AI Agent is een intelligente assistent geïntegreerd in Mezon om workflows te automatiseren, spraakkanalen samen te vatten, projecten te beheren en interactieve interviews af te nemen."
+			},
+			{
+				"question": "Hoe werkt Spraaksamenvatting?",
+				"answer": "Spraaksamenvatting luistert naar je spraakvergaderingen in Mezon, verwerkt het transcript en levert direct kernpunten, besluiten en actiepunten."
+			},
+			{
+				"question": "Kan ik de AI Agent aanpassen voor mijn Clan?",
+				"answer": "Ja, de AI Agent kan worden aangepast aan de specifieke vereisten, workflows en integraties van je team."
+			}
+		]
+	},
+	"download": "Downloaden"
+}

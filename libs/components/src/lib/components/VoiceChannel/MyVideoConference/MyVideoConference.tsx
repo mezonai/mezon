@@ -211,7 +211,7 @@ export const MyVideoConference = memo(
 		const layoutContext = useMemo(() => rawLayoutContext, [rawLayoutContext?.pin?.state, rawLayoutContext?.widget?.state]);
 
 		return (
-			<div className="lk-video-conference flex-1">
+			<div className="lk-video-conference relative flex-1">
 				<DeepFilterNetInitializer />
 				<VoiceTrackState />
 				<ReactionCallHandler />

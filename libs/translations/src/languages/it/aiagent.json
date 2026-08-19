@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Riepilogo Vocale",
+			"subtitle": "Trasforma le conversazioni in informazioni chiare.",
+			"description": "L'IA ascolta le tue conversazioni vocali e trasforma lunghe discussioni in sintesi concise, aiutandoti a cogliere rapidamente punti chiave, decisioni e informazioni importanti senza riascoltare tutto."
+		},
+		"section2": {
+			"title": "Assistente di Progetto",
+			"subtitle": "Il tuo compagno di squadra IA per portare a termine il lavoro.",
+			"description": "L'IA ti aiuta a organizzare progetti, trovare informazioni importanti, monitorare le attività e gestire il lavoro — così il tuo team trascorre meno tempo a gestire e più a creare."
+		},
+		"section3": {
+			"title": "Agente di Intervista",
+			"subtitle": "Tu rispondi. L'IA chiede.",
+			"description": "L'IA conduce interviste naturali ponendo domande pertinenti, ascoltando le tue risposte e facendo approfondimenti intelligenti — rendendo interviste, ricerche e raccolta di feedback più veloci e coinvolgenti."
+		}
+	},
+	"faq": {
+		"title": "Serve ulteriore aiuto?",
+		"seeAll": "Vedi tutte le FAQ",
+		"learnMore": "Scopri di più",
+		"questions": [
+			{
+				"question": "Cos'è un Agente IA?",
+				"answer": "Un Agente IA è un assistente intelligente integrato in Mezon per automatizzare i flussi di lavoro, riassumere i canali vocali, gestire progetti e condurre interviste interattive."
+			},
+			{
+				"question": "Come funziona il Riepilogo Vocale?",
+				"answer": "Il Riepilogo Vocale ascolta le riunioni o conversazioni vocali in Mezon, elabora la trascrizione e fornisce istantaneamente punti chiave, decisioni e attività."
+			},
+			{
+				"question": "Posso personalizzare l'Agente IA per il mio Clan?",
+				"answer": "Sì, l'Agente IA può essere personalizzato per adattarsi alle esigenze specifiche, ai flussi di lavoro e alle integrazioni del tuo team."
+			}
+		]
+	},
+	"download": "Scarica"
+}
