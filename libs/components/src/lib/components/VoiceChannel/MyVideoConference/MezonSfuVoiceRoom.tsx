@@ -61,6 +61,81 @@ type RemoteMedia = {
 	screenRequested?: boolean;
 };
 
+function useCustomGridLayout(containerRef: React.RefObject<HTMLElement>, totalItems: number) {
+	const [layout, setLayout] = useState({ columns: 1, rows: 1, maxTiles: 1 });
+
+	useEffect(() => {
+		const element = containerRef.current;
+		if (!element) return;
+
+		const updateLayout = () => {
+			const width = element.clientWidth;
+			const height = element.clientHeight - 48;
+			if (width <= 0 || height <= 0) return;
+
+			const count = Math.max(1, totalItems);
+
+			let cols = 1;
+			let rows = 1;
+
+			if (count === 1) {
+				cols = 1;
+				rows = 1;
+			} else if (width < 640) {
+				cols = 1;
+				rows = 2;
+			} else if (count === 2) {
+				cols = 2;
+				rows = 1;
+			} else if (count <= 4) {
+				cols = 2;
+				rows = 2;
+			} else if (count <= 6) {
+				cols = 3;
+				rows = 2;
+			} else if (count <= 8) {
+				cols = width >= 768 ? 4 : width >= 640 ? 3 : 2;
+				rows = width >= 768 ? 2 : width >= 640 ? 3 : 4;
+			} else {
+				cols = width >= 768 ? 4 : width >= 640 ? 3 : 2;
+				rows = width >= 768 ? 3 : width >= 640 ? 3 : 3;
+			}
+
+			setLayout({ columns: cols, rows, maxTiles: cols * rows });
+		};
+
+		updateLayout();
+
+		const observer = new ResizeObserver(updateLayout);
+		observer.observe(element);
+
+		return () => observer.disconnect();
+	}, [containerRef, totalItems]);
+
+	return layout;
+}
+
+function useCustomPagination<T>(maxTiles: number, items: T[]) {
+	const [currentPage, setCurrentPage] = useState(1);
+	const safeMaxTiles = Math.max(1, maxTiles);
+	const totalPageCount = Math.max(1, Math.ceil(items.length / safeMaxTiles));
+	const safePage = Math.min(currentPage, totalPageCount);
+
+	const pageItems = useMemo(() => {
+		const start = (safePage - 1) * safeMaxTiles;
+		return items.slice(start, start + safeMaxTiles);
+	}, [items, safePage, safeMaxTiles]);
+
+	return {
+		currentPage: safePage,
+		totalPageCount,
+		pageItems,
+		nextPage: () => setCurrentPage((p) => Math.min(totalPageCount, p + 1)),
+		prevPage: () => setCurrentPage((p) => Math.max(1, p - 1)),
+		setPage: (page: number) => setCurrentPage(Math.min(totalPageCount, Math.max(1, page)))
+	};
+}
+
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
 	height: { ideal: 360 },
@@ -508,6 +583,8 @@ export function MezonSfuVoiceRoom({
 	const [selectedMicrophone, setSelectedMicrophone] = useState('default');
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const lastShownErrorRef = useRef<string>();
+	const lastGridWheelTimeRef = useRef<number>(0);
+	const gridElRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (hasMicrophoneAccess === false && microphoneEnabled) {
@@ -1240,7 +1317,6 @@ export function MezonSfuVoiceRoom({
 
 	const participants = Array.from(remoteMedia.values());
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
-	const isSolo = participants.length === 0 && !screenSharing;
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
 	const cameras = devices.filter((device) => device.kind === 'videoinput');
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
@@ -1328,6 +1404,8 @@ export function MezonSfuVoiceRoom({
 	const preferredFocusTrack = conferenceTiles.find((tile) => tile.id.endsWith('-screen'))?.id || conferenceTiles[0]?.id;
 	const activePinnedTrackId = conferenceTiles.some((tile) => tile.id === pinnedTrackId) ? pinnedTrackId : preferredFocusTrack;
 	const pinnedTile = conferenceTiles.find((tile) => tile.id === activePinnedTrackId);
+	const gridLayout = useCustomGridLayout(gridElRef, conferenceTiles.length);
+	const gridPagination = useCustomPagination(gridLayout.maxTiles, conferenceTiles);
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
@@ -1360,24 +1438,63 @@ export function MezonSfuVoiceRoom({
 
 			{isGridView ? (
 				<main
-					className={`grid min-h-0 flex-1 grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3 p-4 ${
-						isSolo ? 'grid-rows-[minmax(0,1fr)] overflow-hidden' : 'auto-rows-min overflow-y-auto'
-					}`}
+					ref={gridElRef}
+					className="relative flex min-h-0 flex-1 flex-col overflow-hidden p-4 pb-16"
+					onWheel={(e) => {
+						if (gridPagination.totalPageCount <= 1) return;
+						const now = Date.now();
+						if (now - lastGridWheelTimeRef.current < 250) return;
+						if (e.deltaY > 10) {
+							lastGridWheelTimeRef.current = now;
+							gridPagination.nextPage();
+						} else if (e.deltaY < -10) {
+							lastGridWheelTimeRef.current = now;
+							gridPagination.prevPage();
+						}
+					}}
 				>
-					{conferenceTiles.map((tile) => (
-						<button
-							key={tile.id}
-							type="button"
-							className="min-w-0 text-left"
-							title="Pin this track"
-							onClick={() => {
-								setPinnedTrackId(tile.id);
-								setIsGridView(false);
-							}}
-						>
-							{tile.content}
-						</button>
-					))}
+					<div
+						className="grid min-h-0 flex-1 gap-3 overflow-hidden"
+						style={{
+							gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
+							gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
+						}}
+					>
+						{gridPagination.pageItems.map((tile) => (
+							<button
+								key={tile.id}
+								type="button"
+								className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left transition-transform hover:scale-[1.01] [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+								title="Pin this track"
+								onClick={() => {
+									setPinnedTrackId(tile.id);
+									setIsGridView(false);
+								}}
+							>
+								{tile.content}
+							</button>
+						))}
+					</div>
+
+					{gridPagination.totalPageCount > 1 && (
+						<div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
+							{Array.from({ length: gridPagination.totalPageCount }).map((_, idx) => {
+								const pageNum = idx + 1;
+								const isActive = pageNum === gridPagination.currentPage;
+								return (
+									<button
+										key={pageNum}
+										type="button"
+										className={`h-2.5 w-2.5 rounded-full transition-all ${
+											isActive ? 'bg-white opacity-100' : 'bg-white/40 hover:bg-white/70'
+										}`}
+										onClick={() => gridPagination.setPage(pageNum)}
+										title={`Page ${pageNum}`}
+									/>
+								);
+							})}
+						</div>
+					)}
 				</main>
 			) : (
 				<main className="relative flex min-h-0 flex-1 flex-col gap-3 p-4">
