@@ -683,6 +683,7 @@ export function MezonSfuVoiceRoom({
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
 	const [isGridView, setIsGridView] = useState(true);
 	const [pinnedTrackId, setPinnedTrackId] = useState<string>();
+	const [autoFocusedTrackId, setAutoFocusedTrackId] = useState<string>();
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
@@ -1596,7 +1597,12 @@ export function MezonSfuVoiceRoom({
 		.filter(([, info]) => info.speaking)
 		.sort(([, a], [, b]) => b.lastSpokeAt - a.lastSpokeAt)[0]?.[0];
 	const preferredFocusTrack = conferenceTiles.find((tile) => tile.id.endsWith('-screen'))?.id || conferenceTiles[0]?.id;
-	const activePinnedTrackId = conferenceTiles.some((tile) => tile.id === pinnedTrackId) ? pinnedTrackId : preferredFocusTrack;
+	const hasPinnedTrack = conferenceTiles.some((tile) => tile.id === pinnedTrackId);
+	const activePinnedTrackId = hasPinnedTrack
+		? pinnedTrackId
+		: conferenceTiles.some((tile) => tile.id === autoFocusedTrackId)
+			? autoFocusedTrackId
+			: preferredFocusTrack;
 	const gridLayout = useCustomGridLayout(gridElRef, conferenceTiles.length);
 
 	if (isGridView && activeSpeakerId && gridLayout.maxTiles > 0) {
@@ -1622,7 +1628,7 @@ export function MezonSfuVoiceRoom({
 		if (isGridView || !activeSpeakerId) return;
 		if (pinnedTile?.participantId === activeSpeakerId) return;
 		if (!showFocusThumbnails) {
-			if (activeSpeakerTileId) setPinnedTrackId(activeSpeakerTileId);
+			if (!hasPinnedTrack && activeSpeakerTileId) setAutoFocusedTrackId(activeSpeakerTileId);
 			return;
 		}
 
@@ -1647,7 +1653,7 @@ export function MezonSfuVoiceRoom({
 			focusTileOrderRef.current[replacementIndex]
 		];
 		renderFocusTileOrder((version) => version + 1);
-	}, [activeSpeakerId, activeSpeakerTileId, isGridView, pinnedTile?.participantId, showFocusThumbnails]);
+	}, [activeSpeakerId, activeSpeakerTileId, hasPinnedTrack, isGridView, pinnedTile?.participantId, showFocusThumbnails]);
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
