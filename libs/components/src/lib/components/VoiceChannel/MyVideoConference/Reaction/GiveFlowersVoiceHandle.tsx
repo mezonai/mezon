@@ -44,21 +44,6 @@ export const GiveFlowersVoiceHandle = memo(() => {
 	}, []);
 
 	useEffect(() => {
-		const canvas = canvasRef.current;
-
-		if (!canvas) return;
-
-		const player = attachFlowerCelebration(canvas);
-
-		playerRef.current = player;
-
-		return () => {
-			player.destroy();
-			playerRef.current = null;
-		};
-	}, []);
-
-	useEffect(() => {
 		const currentSocket = clientRef.current;
 
 		if (!currentSocket || !channelId) {
@@ -75,7 +60,17 @@ export const GiveFlowersVoiceHandle = memo(() => {
 			showNextSender();
 		};
 
+		const canvas = canvasRef.current;
+
+		if (!canvas) return;
+
+		const player = attachFlowerCelebration(canvas);
+
+		playerRef.current = player;
+
 		return () => {
+			player.destroy();
+			playerRef.current = null;
 			if (senderTimeoutRef.current !== null) {
 				clearTimeout(senderTimeoutRef.current);
 				senderTimeoutRef.current = null;
@@ -88,7 +83,7 @@ export const GiveFlowersVoiceHandle = memo(() => {
 				currentSocket.onvoiceinteractiveevent = () => {};
 			}
 		};
-	}, [clientRef, channelId, showNextSender]);
+	}, []);
 
 	return (
 		<div className="pointer-events-none absolute inset-0 z-40 overflow-hidden">

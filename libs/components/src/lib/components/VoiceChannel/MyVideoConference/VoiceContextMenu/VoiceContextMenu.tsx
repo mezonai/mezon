@@ -27,8 +27,6 @@ interface VoiceContextMenuProps {
 const TOKEN_SEND_FLOWER = 50000;
 const FLOWER_COOLDOWN_MS = 5000;
 
-let flowerCooldownUntil = 0;
-
 export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
 	const { t } = useTranslation(['contextMenu', 'token']);
 	const dispatch = useAppDispatch();
@@ -42,11 +40,11 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 	const [isKicking, setIsKicking] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
 	const [flowerCooldownLeft, setFlowerCooldownLeft] = useState(0);
-	const [flowerCooldownEpoch, setFlowerCooldownEpoch] = useState(0);
+	const [flowerCooldown, setFlowerCooldown] = useState(true);
 
 	const isMutingRef = useRef(false);
 	const isKickingRef = useRef(false);
-	const isSendingFlowerRef = useRef(false);
+	const flowerCooldownUntil = useRef(0);
 	const { mmnRef } = useMezon();
 	const userWallet = useSelector(selectWalletDetail);
 
@@ -100,8 +98,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 
 		let raf = 0;
 		const tick = () => {
-			const left = Math.max(0, flowerCooldownUntil - Date.now());
-
+			const left = Math.max(0, flowerCooldownUntil.current - Date.now());
 			setFlowerCooldownLeft(left);
 			if (left > 0) {
 				raf = requestAnimationFrame(tick);
@@ -110,8 +107,10 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 
 		tick();
 
-		return () => cancelAnimationFrame(raf);
-	}, [contextMenu, flowerCooldownEpoch]);
+		return () => {
+			cancelAnimationFrame(raf);
+		};
+	}, [contextMenu, flowerCooldown]);
 
 	const handleRemoveMember = useCallback(async () => {
 		if (isKickingRef.current) return;
@@ -170,7 +169,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 	}, [room, dispatch, member?.user?.id]);
 
 	const handleGiveFlowers = useCallback(async () => {
-		if (isSendingFlowerRef.current || Date.now() < flowerCooldownUntil) {
+		if (Date.now() < flowerCooldownUntil.current) {
 			return;
 		}
 
@@ -197,10 +196,9 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 				return;
 			}
 
-			isSendingFlowerRef.current = true;
-			flowerCooldownUntil = Date.now() + FLOWER_COOLDOWN_MS;
+			flowerCooldownUntil.current = Date.now() + FLOWER_COOLDOWN_MS;
 			setFlowerCooldownLeft(FLOWER_COOLDOWN_MS);
-			setFlowerCooldownEpoch((n) => n + 1);
+			setFlowerCooldown((n) => !n);
 
 			const tokenEvent: ApiTokenSentEvent = {
 				sender_id: myProfile.userId as string,
@@ -218,8 +216,6 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			await dispatch(voiceActions.giveFlowers({ receiver_id: member.user.id }));
 		} catch (error) {
 			console.error('Failed to send flower:', error);
-		} finally {
-			isSendingFlowerRef.current = false;
 		}
 	}, [dispatch, member?.user?.id, userWallet, myProfile.userId, myProfile?.userProfile?.user?.username, mmnRef, t]);
 
