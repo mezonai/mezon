@@ -21,7 +21,9 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	button: {
 		base: '',
-		copy: ''
+		copy: '',
+		previous: '',
+		next: ''
 	},
 	input: {
 		base: ''
@@ -142,6 +144,7 @@ export const DATA_E2E_IDENTIFIER = {
 		}
 	},
 	clan_page: {
+		banner: '',
 		header: {
 			title: {
 				clan_name: ''
@@ -272,6 +275,7 @@ export const DATA_E2E_IDENTIFIER = {
 			create_event: {
 				start_modal: '',
 				button_create: '',
+				button_edit: '',
 				button_close: '',
 				next: '',
 				upload: {
@@ -309,12 +313,23 @@ export const DATA_E2E_IDENTIFIER = {
 					location_name: ''
 				},
 				event_management: {
+					number_of_event: '',
 					item: {
 						modal_detail_item: {
 							start_date_time: '',
 							topic: '',
 							channel_name: '',
-							description: ''
+							description: '',
+							number_of_interested: '',
+							tab: {
+								event_info: '',
+								number_of_interested: ''
+							},
+							user_interested: {
+								item: {
+									display_name: ''
+								}
+							}
 						},
 						button: {
 							open_detail_modal: '',
@@ -322,8 +337,10 @@ export const DATA_E2E_IDENTIFIER = {
 							open_panel: '',
 							confirm_cancel_event: '',
 							share_event: '',
-							close_modal_copy_link: ''
-						}
+							close_modal_copy_link: '',
+							interested: ''
+						},
+						number_of_interested: ''
 					}
 				}
 			},
@@ -363,6 +380,10 @@ export const DATA_E2E_IDENTIFIER = {
 				delete: '',
 				item: '',
 				onboarding_status: ''
+			},
+			audit_log: {
+				content: '',
+				time: ''
 			},
 			onboarding: {
 				button: {
@@ -405,10 +426,39 @@ export const DATA_E2E_IDENTIFIER = {
 				vanity_url: ''
 			},
 			emoji: {
-				upload: ''
+				upload: {
+					input: {
+						emoji_name: ''
+					}
+				},
+				item: {
+					name_input: '',
+					created_by: '',
+					actions: {
+						delete: ''
+					}
+				}
+			},
+			image_sticker: {
+				item: {
+					name: '',
+					created_by: '',
+					actions: {
+						edit: '',
+						delete: ''
+					}
+				}
 			},
 			voice_sticker: {
-				button_upload: ''
+				button_upload: '',
+				item: {
+					name: '',
+					created_by: '',
+					actions: {
+						edit: '',
+						delete: ''
+					}
+				}
 			},
 			modal: {
 				delete_clan: {
@@ -435,7 +485,8 @@ export const DATA_E2E_IDENTIFIER = {
 							channel_name: '',
 							category_name: ''
 						}
-					}
+					},
+					message_management: ''
 				},
 				prevent_anonymous: ''
 			},
@@ -448,6 +499,11 @@ export const DATA_E2E_IDENTIFIER = {
 				community_banner_input: '',
 				voice_sticker_input: {
 					error: ''
+				}
+			},
+			category_order: {
+				item: {
+					category_name: ''
 				}
 			},
 			role: {
@@ -470,7 +526,9 @@ export const DATA_E2E_IDENTIFIER = {
 					button: {
 						edit: '',
 						delete: '',
-						view: ''
+						view: '',
+						confirm: '',
+						cancel: ''
 					},
 					member_count: ''
 				},
@@ -520,7 +578,9 @@ export const DATA_E2E_IDENTIFIER = {
 				name: ''
 			},
 			panel: {
-				item: ''
+				item: {
+					sub_text: ''
+				}
 			},
 			settings: {
 				overview: ''
@@ -530,6 +590,9 @@ export const DATA_E2E_IDENTIFIER = {
 					role_name: '',
 					role_color: ''
 				}
+			},
+			button: {
+				drag_channel: ''
 			}
 		},
 		secondary_side_bar: {
@@ -543,8 +606,13 @@ export const DATA_E2E_IDENTIFIER = {
 				channel_name: '',
 				control_bar: '',
 				button: {
-					join_voice: ''
-				}
+					join_voice: '',
+					send_flower: '',
+					kick: '',
+					mute_mic: '',
+					record: ''
+				},
+				time_record: ''
 			},
 			canvas_editor: {
 				input: {
@@ -627,7 +695,9 @@ export const DATA_E2E_IDENTIFIER = {
 			}
 		},
 		quick_menu: {
-			tab: '',
+			tab: {
+				count: ''
+			},
 			button: {
 				add: ''
 			},
@@ -644,7 +714,11 @@ export const DATA_E2E_IDENTIFIER = {
 			item: {
 				command: '',
 				type: '',
-				message_content: ''
+				message_content: '',
+				button: {
+					edit: '',
+					delete: ''
+				}
 			}
 		}
 	},
@@ -741,7 +815,12 @@ export const DATA_E2E_IDENTIFIER = {
 					channel_name: ''
 				},
 				button: {
-					file: '',
+					file: {
+						item: {
+							file_name: '',
+							by_time: ''
+						}
+					},
 					mute: '',
 					inbox: '',
 					member: '',
@@ -883,6 +962,17 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		button: {
 			wave_to_say_hi: ''
+		},
+		search_message: {
+			button: {
+				select: ''
+			},
+			input: {
+				select: ''
+			},
+			select: {
+				item: ''
+			}
 		}
 	},
 	onboarding: {
@@ -909,7 +999,15 @@ export const DATA_E2E_IDENTIFIER = {
 			info: ''
 		},
 		devices: {
-			tab_devices: ''
+			tab_devices: {
+				current_device: '',
+				other_devices: '',
+				item: '',
+				no_devices: '',
+				button: {
+					remove_device: ''
+				}
+			}
 		},
 		language: {
 			tab_language: '',
@@ -953,7 +1051,13 @@ export const DATA_E2E_IDENTIFIER = {
 				button_save_changes: ''
 			}
 		},
-		logout: ''
+		logout: '',
+		activity: {
+			switch: ''
+		},
+		notification: {
+			switch: ''
+		}
 	},
 	common: {
 		friend_list: {
@@ -1187,6 +1291,48 @@ export const DATA_E2E_IDENTIFIER = {
 	invite_card: {
 		button: {
 			goto_clan: ''
+		}
+	},
+	send_token: {
+		modal: {
+			send: {
+				input: {
+					search_user: '',
+					amount: '',
+					note: ''
+				},
+				select: {
+					item: ''
+				},
+				button: {
+					send: '',
+					cancel: ''
+				}
+			},
+			transaction_history: {
+				tab: {
+					item: ''
+				},
+				item: {
+					amount: '',
+					status: '',
+					time: '',
+					button: {
+						open_detail: ''
+					},
+					detail: {
+						label: '',
+						value: ''
+					}
+				}
+			}
+		},
+		message: {
+			title: '',
+			detail: '',
+			button: {
+				open_history: ''
+			}
 		}
 	}
 };

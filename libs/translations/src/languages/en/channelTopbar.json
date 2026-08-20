@@ -164,6 +164,9 @@
 			"threadName": "Enter Thread Name"
 		}
 	},
+	"errors": {
+		"limit": "Maximum channel limit reached for this clan"
+	},
 	"moreFile": "more file",
 	"moreFiles": "more files"
 }

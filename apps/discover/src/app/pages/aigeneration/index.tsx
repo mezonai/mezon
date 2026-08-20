@@ -15,9 +15,7 @@ const AIGenerationPage = () => {
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
 				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
+				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const [activeFeature, setActiveFeature] = useState(0);
 
@@ -191,7 +189,7 @@ const AIGenerationPage = () => {
 				</div>
 			</section>
 
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };

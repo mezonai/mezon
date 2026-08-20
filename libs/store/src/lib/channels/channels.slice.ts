@@ -11,6 +11,7 @@ import type {
 import { ModeResponsive, ThreadStatus, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { t } from 'i18next';
 import isEqual from 'lodash.isequal';
 import type {
 	ApiAddFavoriteChannelRequest,
@@ -441,9 +442,10 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 				return thunkAPI.rejectWithValue({ message: 'Unknown error from server' });
 			}
 		}
+		const errorMess = error.code ? t(`errors:error_${error.code}`) : error?.message || 'Something went wrong';
 
 		return thunkAPI.rejectWithValue({
-			message: error?.message || 'Something went wrong'
+			message: errorMess
 		});
 	}
 });

@@ -155,7 +155,10 @@ type ToggleItemProps = {
 
 export const ToggleItem: React.FC<ToggleItemProps> = ({ label, value, handleToggle }) => {
 	return (
-		<div className="self-stretch justify-start items-center gap-3 inline-flex text-sm py-1">
+		<div
+			className="self-stretch justify-start items-center gap-3 inline-flex text-sm py-1"
+			data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.message_management')}
+		>
 			<div className="grow shrink basis-0 h-6 justify-start items-center gap-1 flex">
 				<p>{label}</p>
 			</div>

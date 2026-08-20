@@ -122,5 +122,6 @@
 		"failedToResendMessage": "메시지 재전송 실패",
 		"failedToClosePoll": "투표 종료 실패"
 	},
-	"copyUserId": "사용자 ID 복사"
+	"copyUserId": "사용자 ID 복사",
+	"giveFlowers": "꽃 보내기"
 }

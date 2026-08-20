@@ -1,5 +1,5 @@
 'use client';
-
+import { Icons } from '@mezon/ui';
 import { Platform, generateE2eId, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -49,12 +49,7 @@ const DesktopIcons = {
 			<path d="M0 3.449L9.75 2.1v9.451H0V3.449zM0 12.451h9.75V21.9L0 20.551v-8.1zM10.712.914L24 0v11.551H10.712V.914zM10.712 12.451H24V24l-13.288-.914v-10.635z" />
 		</svg>
 	),
-	Linux: ({ className }: { className?: string }) => (
-		<svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-			<path d="M12 0c-3.31 0-6 2.69-6 6 0 1.25.38 2.4 1.03 3.37l-2.03 2.03c-.39.39-.39 1.02 0 1.41l1.41 1.41c.39.39 1.02.39 1.41 0l2.03-2.03c.97.65 2.12 1.03 3.37 1.03 3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-			<path d="M12 14c-4.42 0-8 3.58-8 8v2h16v-2c0-4.42-3.58-8-8-8z" />
-		</svg>
-	),
+	Linux: ({ className }: { className?: string }) => <Icons.Linux className="w-6 h-6" />,
 	MicrosoftStore: ({ className }: { className?: string }) => (
 		<svg viewBox="0 0 24 24" fill="currentColor" className={className}>
 			<path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z" />
@@ -64,8 +59,6 @@ const DesktopIcons = {
 
 interface FooterProps {
 	downloadUrl: string;
-	universalUrl: string;
-	portableUrl: string;
 }
 
 /**
@@ -127,7 +120,7 @@ const OrbitBeamWrapper = ({
 	);
 };
 
-const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
+const Footer = ({ downloadUrl }: FooterProps) => {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
 	const [isOpen, setIsOpen] = useState(false);
@@ -391,39 +384,20 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 										style={{ animation: 'fadeIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards' }}
 									>
 										{platform === Platform.MACOS ? (
-											<div className="space-y-1">
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href={downloadUrl}
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('macOS', 'Apple Silicon')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-														<DesktopIcons.Apple className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Apple Silicon</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">M1 / M2 / M3</span>
-													</div>
-												</a>
-												<div className="h-px bg-white/5 mx-2" />
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href={universalUrl}
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('macOS', 'Intel')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-														<DesktopIcons.Apple className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Intel CPU</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">Universal build</span>
-													</div>
-												</a>
-											</div>
+											<a
+												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
+												href={downloadUrl}
+												target="_blank"
+												rel="noreferrer"
+												onClick={() => trackFooterDownloadEvent('macOS', 'App Store')}
+											>
+												<div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+													<DesktopIcons.Apple className="w-6 h-6" />
+												</div>
+												<div className="flex flex-col">
+													<span className="text-sm font-bold">macOS</span>
+												</div>
+											</a>
 										) : platform === Platform.LINUX ? (
 											<a
 												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
@@ -441,39 +415,20 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 												</div>
 											</a>
 										) : (
-											<div className="space-y-1">
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href="https://apps.microsoft.com/detail/9pf25lf1fj17"
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('Windows', 'Microsoft Store')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-														<DesktopIcons.MicrosoftStore className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Microsoft Store</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">Recommended</span>
-													</div>
-												</a>
-												<div className="h-px bg-white/5 mx-2" />
-												<a
-													className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
-													href={portableUrl}
-													target="_blank"
-													rel="noreferrer"
-													onClick={() => trackFooterDownloadEvent('Windows', 'Portable')}
-												>
-													<div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 group-hover:scale-110 transition-transform">
-														<DesktopIcons.Windows className="w-6 h-6" />
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-bold">Windows Portable</span>
-														<span className="text-[10px] text-white/40 uppercase tracking-widest">EXE (No setup)</span>
-													</div>
-												</a>
-											</div>
+											<a
+												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
+												href={downloadUrl}
+												target="_blank"
+												rel="noreferrer"
+												onClick={() => trackFooterDownloadEvent('Windows', 'Microsoft Store')}
+											>
+												<div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+													<DesktopIcons.MicrosoftStore className="w-6 h-6" />
+												</div>
+												<div className="flex flex-col">
+													<span className="text-sm font-bold">Windows</span>
+												</div>
+											</a>
 										)}
 									</div>
 								)}

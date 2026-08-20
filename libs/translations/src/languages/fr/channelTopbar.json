@@ -162,6 +162,9 @@
 			"threadName": "Entrez le nom du fil"
 		}
 	},
+	"errors": {
+		"limit": "Le nombre maximal de canaux pour ce clan a été atteint"
+	},
 	"moreFile": "autre fichier",
 	"moreFiles": "autres fichiers",
 	"joinedThreads": "Fils rejoints",

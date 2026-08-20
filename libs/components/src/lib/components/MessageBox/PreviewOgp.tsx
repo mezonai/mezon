@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
-import { INVITE_URL_REGEX, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
+import { INVITE_URL_REGEX, checkInviteLinkValid, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -64,11 +64,11 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 
 		const timeoutId = setTimeout(async () => {
 			try {
-				const inviteMatch = ogpLink.url.match(INVITE_URL_REGEX);
+				const isInviteLink = checkInviteLinkValid(ogpLink?.url || '');
 				let previewData: PreviewData;
 
-				if (inviteMatch?.[1]) {
-					const resultAction = await dispatch(inviteActions.getLinkInvite({ inviteId: inviteMatch[1] }));
+				if (isInviteLink) {
+					const resultAction = await dispatch(inviteActions.getLinkInvite({ inviteId: ogpLink?.url.slice(-19) }));
 					if (!resultAction?.payload) {
 						setLoading(false);
 						return;
@@ -178,9 +178,9 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	};
 
 	if (loading) {
-		const isInviteUrl = INVITE_URL_REGEX.test(ogpLink?.url || '');
+		const isInviteLink = checkInviteLinkValid(ogpLink?.url || '');
 
-		if (isInviteUrl) {
+		if (isInviteLink) {
 			return (
 				<div className="px-3 pb-2 pt-2 bg-theme-input text-theme-primary relative animate-pulse">
 					<div className="relative w-full max-w-[320px] rounded-2xl overflow-hidden border dark:border-borderDivider border-borderDividerLight bg-bgLightSecondary dark:bg-bgTertiary">
@@ -220,9 +220,9 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	const memberCount = Number((data.description || '').match(/\d+/)?.[0] || 0);
 	const memberLabel = t('memberCount', { count: memberCount });
 	const isCommunityEnabled = Boolean(data?.is_community);
-	const isInvitePreview = INVITE_URL_REGEX.test(ogpLink?.url || '');
+	const isInviteLink = checkInviteLinkValid(ogpLink?.url || '');
 
-	if (isInvitePreview) {
+	if (isInviteLink) {
 		return (
 			<div className="px-3 pb-2 pt-2 bg-theme-input text-theme-primary relative">
 				<div className="relative w-full max-w-[320px] rounded-2xl overflow-hidden border dark:border-borderDivider border-borderDividerLight bg-bgLightSecondary dark:bg-bgTertiary">

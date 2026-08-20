@@ -17,11 +17,11 @@ import {
 	useMaybeTrackRefContext,
 	useParticipantTile
 } from '@livekit/components-react';
-import { useAuth, usePermissionChecker } from '@mezon/core';
+import { useAuth } from '@mezon/core';
 import { selectMemberClanByUserId, selectUserInvoiceData, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
-import { EPermission, createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl } from '@mezon/utils';
 import type { Participant, Room } from 'livekit-client';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
@@ -179,14 +179,13 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 
 	const dispatch = useAppDispatch();
 
-	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
 	const { userProfile } = useAuth();
 
 	const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (roomName && canMangeVoice && userProfile?.user?.id !== member?.id) {
+		if (roomName && userProfile?.user?.id !== member?.id) {
 			const heightWindow = window.innerHeight;
 			const widthWindow = window.innerWidth;
 			const position = {

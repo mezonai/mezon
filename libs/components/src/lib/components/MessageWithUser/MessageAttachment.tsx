@@ -54,7 +54,7 @@ function areAttachmentLiveFieldsEqual(prev: IMessageWithUser, next: IMessageWith
 
 /** Redux subscription scoped to attachment/presign fields — re-renders without bumping message row memo. */
 function useLiveMessageForAttachments(messageProp: IMessageWithUser, channelId?: string): IMessageWithUser {
-	const resolvedChannelId = (channelId ?? messageProp.channel_id) as string;
+	const resolvedChannelId = (messageProp.channel_id ?? channelId) as string;
 	const messageId = messageProp.id as string;
 
 	return useAppSelector((state) => selectMessageByMessageId(state, resolvedChannelId, messageId) ?? messageProp, areAttachmentLiveFieldsEqual);

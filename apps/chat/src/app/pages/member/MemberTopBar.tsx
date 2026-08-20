@@ -16,7 +16,7 @@ const MemberTopBar = () => {
 
 	return (
 		<div className="flex flex-row justify-between items-center py-2 px-4 border-b-theme-primary">
-			<h2 className="text-base font-semibold">{t('topBar.recentMembers')}</h2>
+			<h2 className="text-base font-semibold truncate">{t('topBar.recentMembers')}</h2>
 			<div className="flex flex-row items-center gap-2">
 				<div className="relative">
 					<div

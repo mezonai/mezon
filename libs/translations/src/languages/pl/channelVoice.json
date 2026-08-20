@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Wymagane uprawnienie kamery",
 		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia."
 	},
-	"usernameScreen": "Ekran {{username}}"
+	"usernameScreen": "Ekran {{username}}",
+	"recording": {
+		"start": "Nagraj rozmowę",
+		"stop": "Zatrzymaj nagrywanie",
+		"badge": "REC",
+		"memoryLimitWarning": "Ta przeglądarka nie może zapisywać bezpośrednio na dysk, więc nagranie jest trzymane w pamięci i zatrzyma się automatycznie po {{minutes}} minutach.",
+		"frozenWarning": "Obraz zamarł, gdy karta była ukryta. Trzymaj tę kartę widoczną podczas nagrywania.",
+		"savedToDisk": "Nagranie zapisano w {{fileName}} ({{size}})",
+		"downloaded": "Nagranie pobrano: {{fileName}} ({{size}})",
+		"failed": "Nagrywanie nie powiodło się: {{reason}}"
+	}
 }

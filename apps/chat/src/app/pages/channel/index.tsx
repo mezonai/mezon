@@ -111,7 +111,7 @@ function useChannelSeen(channelId: string) {
 	const updateChannelSeenState = useCallback(
 		(_channelId: string) => {
 			if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD && currentChannel.active === ThreadStatus.archived) {
-				const channelWithActive = { ...currentChannel, active: ThreadStatus.activePublic };
+				const channelWithActive = { ...currentChannel };
 				dispatch(
 					channelsActions.upsertOne({
 						clanId: currentChannel?.clan_id || '0',
@@ -390,9 +390,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
 			>
-				<div
-					className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`}`}
-				>
+				<div className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`}`}>
 					{!isShowCanvas &&
 						!isShowAgeRestricted &&
 						(isShowChatInVoice || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
@@ -408,9 +406,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							</div>
 						)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
-						<div
-							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big`}
-						>
+						<div className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big`}>
 							<Canvas />
 						</div>
 					)}

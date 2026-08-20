@@ -44,5 +44,18 @@ export const useSendReaction = () => {
 		[clientRef, canSend]
 	);
 
-	return { sendEmojiReaction, sendSoundReaction, sendRaisingHand };
+	/**
+	 * Recording is invisible to the other clients otherwise — the browser asks for no
+	 * permission. Same token shape as the desktop client so both show each other's badge.
+	 */
+	const sendRecordingState = useCallback(
+		(userId: string, isRecording: boolean) => {
+			const channelId = selectVoiceInfo(getStore().getState())?.channelId;
+			if (!clientRef.current || !channelId || !sessionRef.current) return;
+			clientRef.current.writeVoiceReaction(sessionRef.current, [isRecording ? `rec-on:${userId}` : `rec-off:${userId}`], channelId);
+		},
+		[clientRef, sessionRef]
+	);
+
+	return { sendEmojiReaction, sendSoundReaction, sendRaisingHand, sendRecordingState };
 };

@@ -122,5 +122,6 @@
 		"errorSendingQuickMenu": "Error sending quick menu message:",
 		"failedToResendMessage": "Failed to resend message",
 		"failedToClosePoll": "Failed to close poll"
-	}
+	},
+	"giveFlowers": "Send a Flower"
 }

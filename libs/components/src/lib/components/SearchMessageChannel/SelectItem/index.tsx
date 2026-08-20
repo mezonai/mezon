@@ -1,4 +1,5 @@
 import { Icons } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 
 type SelectItemProps = {
@@ -17,6 +18,7 @@ const SelectItem = ({ title, content, onClick, className }: SelectItemProps) => 
 			onMouseLeave={() => setIsHovered(false)}
 			onClick={onClick}
 			className={`flex flex-row justify-between items-center group w-full cursor-pointer rounded py-1 px-2 ${className} bg-item-hover`} // Apply className
+			data-e2e={generateE2eId('chat.search_message.button.select')}
 		>
 			<div>
 				<span className={`${title === '~' ? 'font-extrabold' : 'font-semibold'} text-theme-primary-active`}>{`${title} `}</span>

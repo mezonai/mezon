@@ -1,4 +1,5 @@
 import { acitvitiesActions, selectIsActivityTrackingEnabled, useAppDispatch, useAppSelector } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 
 type SettingActivityProps = {
@@ -37,7 +38,7 @@ const SettingActivity = ({ menuIsOpen }: SettingActivityProps) => {
 						<p className="text-sm text-theme-primary">{t('setting:activity.description')}</p>
 					</div>
 					<div className="ml-4 flex-shrink-0">
-						<label className="relative inline-flex items-center cursor-pointer">
+						<label className="relative inline-flex items-center cursor-pointer" data-e2e={generateE2eId(`user_setting.activity.switch`)}>
 							<input
 								type="checkbox"
 								checked={isActivity}

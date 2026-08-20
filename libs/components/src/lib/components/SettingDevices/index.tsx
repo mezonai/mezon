@@ -9,7 +9,7 @@ import {
 	type IDevice
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { convertTimeString, getPlatformLabel, isMobilePlatform } from '@mezon/utils';
+import { convertTimeString, generateE2eId, getPlatformLabel, isMobilePlatform } from '@mezon/utils';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +53,10 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 	const platformLabel = getPlatformLabel(platform);
 
 	return (
-		<div className="flex items-center justify-between py-4 border-b-theme-primary last:border-b-0">
+		<div
+			className="flex items-center justify-between py-4 border-b-theme-primary last:border-b-0"
+			data-e2e={generateE2eId('user_setting.devices.tab_devices.item')}
+		>
 			<div className="flex items-center gap-4">
 				<DeviceIcon platform={platform} />
 				<div>
@@ -77,6 +80,7 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 					onClick={() => device.device_id && onRemove(device.device_id)}
 					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors"
 					title={t('deviceSettings.removeDevice')}
+					data-e2e={generateE2eId('user_setting.devices.tab_devices.button.remove_device')}
 				>
 					<Icons.CloseIcon className="w-5 h-5" />
 				</button>
@@ -125,20 +129,20 @@ const SettingDevices = ({ menuIsOpen }: SettingDevicesProps) => {
 			)}
 
 			{hasNoDevices && (
-				<div className="text-center py-8">
+				<div className="text-center py-8" data-e2e={generateE2eId('user_setting.devices.tab_devices.no_devices')}>
 					<p className="text-theme-primary text-sm">{t('deviceSettings.noDevices')}</p>
 				</div>
 			)}
 
 			{!isLoading && currentDevice && (
-				<div className="mb-8">
+				<div className="mb-8" data-e2e={generateE2eId('user_setting.devices.tab_devices.current_device')}>
 					<h2 className="text-theme-primary-active font-semibold text-lg mb-4">{t('deviceSettings.currentDevice')}</h2>
 					<DeviceItem device={currentDevice} isCurrent={true} t={t} />
 				</div>
 			)}
 
 			{!isLoading && otherDevices.length > 0 && (
-				<div className="mb-8">
+				<div className="mb-8" data-e2e={generateE2eId('user_setting.devices.tab_devices.other_devices')}>
 					<h2 className="text-theme-primary-active font-semibold text-lg mb-4">{t('deviceSettings.otherDevices')}</h2>
 					<div>
 						{otherDevices.map((device) => (

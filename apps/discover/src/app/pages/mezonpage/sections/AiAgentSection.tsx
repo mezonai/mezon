@@ -70,7 +70,7 @@ export const AiAgentSection = () => {
 								</p>
 							</div>
 							<Link
-								to="/"
+								to="/aiagent"
 								className="group flex items-center gap-2 text-sm md:text-base lg:text-lg text-purple-600 hover:text-purple-700 font-svnAvo"
 							>
 								<span className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-purple-600 after:transition-all after:duration-300 group-hover:after:w-full">

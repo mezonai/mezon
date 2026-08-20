@@ -68,11 +68,9 @@ function MezonPage() {
 		} else if (platform === Platform.LINUX) {
 			return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
 		}
-		return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
+		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 	}, [platform, version]);
 
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
 	const scrollToSection = (id: string, event: React.MouseEvent) => {
 		event.preventDefault();
 
@@ -155,7 +153,7 @@ function MezonPage() {
 				{/* <FinalCTASection /> */}
 			</div>
 
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 			{<CustomCookieConsent />}
 		</div>
 	);

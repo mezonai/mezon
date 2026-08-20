@@ -164,6 +164,9 @@
 			"threadName": "Nhập tên chủ đề"
 		}
 	},
+	"errors": {
+		"limit": "Vượt quá giới hạn số lượng channel"
+	},
 	"moreFile": "tệp nữa",
 	"moreFiles": "tệp nữa"
 }

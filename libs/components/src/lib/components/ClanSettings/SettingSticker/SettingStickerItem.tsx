@@ -1,7 +1,7 @@
 import { usePermissionChecker } from '@mezon/core';
 import { deleteSticker, selectCurrentClanId, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, createImgproxyUrl } from '@mezon/utils';
+import { EPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -47,6 +47,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 			<p
 				title={sticker.shortname}
 				className="font-semibold truncate w-full text-center text-theme-primary-active text-ellipsis whitespace-nowrap max-w-[85px]"
+				data-e2e={generateE2eId('clan_page.settings.image_sticker.item.name')}
 			>
 				{sticker.shortname}
 			</p>
@@ -64,12 +65,14 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 					<button
 						onClick={handleUpdateSticker}
 						className="aspect-square w-6 rounded-full bg-input-theme flex items-center justify-center shadow-sm"
+						data-e2e={generateE2eId('clan_page.settings.image_sticker.item.actions.edit')}
 					>
 						<Icons.EditMessageRightClick defaultSize="w-3 h-3" />
 					</button>
 					<button
 						onClick={handleDeleteSticker}
 						className="aspect-square w-6 text-sm rounded-full bg-input-theme  flex items-center justify-center mb-[1px] font-medium text-red-600 shadow-sm"
+						data-e2e={generateE2eId('clan_page.settings.image_sticker.item.actions.delete')}
 					>
 						x
 					</button>

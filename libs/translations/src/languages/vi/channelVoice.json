@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Cần quyền camera",
 		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi."
 	},
-	"usernameScreen": "Màn hình của {{username}}"
+	"usernameScreen": "Màn hình của {{username}}",
+	"recording": {
+		"start": "Ghi cuộc gọi",
+		"stop": "Dừng ghi",
+		"badge": "REC",
+		"memoryLimitWarning": "Trình duyệt này không ghi thẳng xuống đĩa được nên bản ghi phải giữ trong bộ nhớ và sẽ tự dừng sau {{minutes}} phút.",
+		"frozenWarning": "Hình bị đứng trong lúc tab bị ẩn. Hãy giữ tab này hiển thị khi đang ghi.",
+		"savedToDisk": "Đã lưu bản ghi vào {{fileName}} ({{size}})",
+		"downloaded": "Đã tải bản ghi về: {{fileName}} ({{size}})",
+		"failed": "Ghi thất bại: {{reason}}"
+	}
 }

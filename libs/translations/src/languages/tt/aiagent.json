@@ -1,0 +1,39 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Voice Summary",
+			"subtitle": "Turn conversations into clear insights.",
+			"description": "AI listens to your voice conversations and turns long discussions into concise summaries, helping you quickly catch the key points, decisions, and important information without listening back to everything."
+		},
+		"section2": {
+			"title": "Project Assistant",
+			"subtitle": "Your AI teammate for getting things done.",
+			"description": "AI helps you organize projects, find important information, keep track of tasks, and stay on top of your work — so your team can spend less time managing and more time building."
+		},
+		"section3": {
+			"title": "Interview Agent",
+			"subtitle": "You answer. AI asks.",
+			"description": "AI conducts natural interviews by asking relevant questions, listening to your answers, and following up intelligently — making interviews, research, and feedback collection faster and more engaging."
+		}
+	},
+	"faq": {
+		"title": "Need more help?",
+		"seeAll": "See all FAQs",
+		"learnMore": "Learn more",
+		"questions": [
+			{
+				"question": "What is AI Agent?",
+				"answer": "AI Agent is an intelligent assistant integrated into Mezon to automate workflows, summarize voice channels, manage projects, and conduct interactive interviews."
+			},
+			{
+				"question": "How does Voice Summary work?",
+				"answer": "Voice Summary listens to your voice meetings or conversations in Mezon, processes the audio transcript, and provides key takeaways, decisions, and action items instantly."
+			},
+			{
+				"question": "Can I customize AI Agent for my Clan?",
+				"answer": "Yes, AI Agent can be customized to suit your team's specific requirements, workflows, and integrations."
+			}
+		]
+	},
+	"download": "Download"
+}

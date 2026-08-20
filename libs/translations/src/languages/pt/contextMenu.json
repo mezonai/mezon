@@ -122,5 +122,6 @@
 		"failedToResendMessage": "Não foi possível reenviar a mensagem",
 		"failedToClosePoll": "Não foi possível encerrar a enquete"
 	},
-	"copyUserId": "Copiar ID do usuário"
+	"copyUserId": "Copiar ID do usuário",
+	"giveFlowers": "Enviar uma flor"
 }

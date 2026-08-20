@@ -1,6 +1,6 @@
 import { selectAllUsersByUser } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { formatBalanceToString } from '@mezon/utils';
+import { formatBalanceToString, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import type { Transaction } from 'mmn-client-js';
 import React, { useMemo } from 'react';
@@ -93,14 +93,24 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 					<div key={value} className="space-y-2">
 						<div className="flex items-center gap-2">
 							<Icon className="w-3 h-3 " />
-							<p className="text-xs font-medium uppercase tracking-wide">{label}</p>
+							<p
+								className="text-xs font-medium uppercase tracking-wide"
+								data-e2e={generateE2eId('send_token.modal.transaction_history.item.detail.label')}
+							>
+								{label}
+							</p>
 							{label === t(FIELDS.TRANSACTION_ID) && value && (
 								<span onClick={(e) => e.stopPropagation()}>
 									<ButtonCopy copyText={value} className="p-1" duration={TRANSACTION_DETAIL.COPY_DURATION} />
 								</span>
 							)}
 						</div>
-						<p className=" text-sm font-medium break-all pl-5">{value}</p>
+						<p
+							className=" text-sm font-medium break-all pl-5"
+							data-e2e={generateE2eId('send_token.modal.transaction_history.item.detail.value')}
+						>
+							{value}
+						</p>
 					</div>
 				))}
 			</div>

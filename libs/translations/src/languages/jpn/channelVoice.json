@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "カメラ権限が必要です",
 		"recipientDidNotAnswer": "相手が通話に応答しませんでした。"
 	},
-	"usernameScreen": "{{username}}のスクリーン"
+	"usernameScreen": "{{username}}のスクリーン",
+	"recording": {
+		"start": "通話を録画",
+		"stop": "録画を停止",
+		"badge": "REC",
+		"memoryLimitWarning": "このブラウザはディスクに直接書き込めないため、録画はメモリ上に保持され、{{minutes}} 分後に自動的に停止します。",
+		"frozenWarning": "タブが非表示の間、映像が停止しました。録画中はこのタブを表示したままにしてください。",
+		"savedToDisk": "録画を {{fileName}} に保存しました（{{size}}）",
+		"downloaded": "録画をダウンロードしました: {{fileName}}（{{size}}）",
+		"failed": "録画に失敗しました: {{reason}}"
+	}
 }

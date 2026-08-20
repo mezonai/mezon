@@ -164,6 +164,9 @@
 			"threadName": "Thread-Namen eingeben"
 		}
 	},
+	"errors": {
+		"limit": "Maximale Kanalanzahl für diesen Clan erreicht"
+	},
 	"moreFile": "weitere Dateien",
 	"moreFiles": "weitere Dateien"
 }

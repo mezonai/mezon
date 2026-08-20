@@ -1,4 +1,5 @@
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
+import { AttachmentTypeUpload } from '../types';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
 
 export async function generatePathAttachments(client: Client, session: ApiSession, attachments: Array<ApiMessageAttachment>) {
@@ -10,9 +11,16 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 				return attach;
 			}
 			try {
+				const fileType = attach.filetype?.includes(AttachmentTypeUpload.image)
+					? AttachmentTypeUpload.image
+					: attach.filetype?.includes(AttachmentTypeUpload.video)
+						? AttachmentTypeUpload.video
+						: attach.filetype?.includes(AttachmentTypeUpload.audio)
+							? AttachmentTypeUpload.audio
+							: AttachmentTypeUpload.doc;
 				const data = await client.uploadAttachmentFile(session, {
 					filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
-					filetype: attach.filetype,
+					filetype: fileType,
 					size: attach.size,
 					width: attach.width,
 					height: attach.height
@@ -31,6 +39,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 
 				return {
 					...attach,
+					filetype: fileType,
 					filename: attach.filename,
 					uploadName: data.filename,
 					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,

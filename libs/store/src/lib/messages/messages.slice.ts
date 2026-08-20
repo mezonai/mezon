@@ -39,7 +39,7 @@ import { getCurrentChannelBadgeCount } from '../badge/badgeHelpers';
 import { badgeService } from '../badge/badgeService';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { channelMetaActions } from '../channels/channelmeta.slice';
+import { channelMetaActions, selectDmLastSentMessage, selectLastSentMessageId } from '../channels/channelmeta.slice';
 import { channelsActions, selectChannelById, selectLoadingStatus, selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectUserClanProfileByClanID } from '../clanProfile/clanProfile.slice';
 import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClansLoadingStatus } from '../clans/clans.slice';
@@ -49,7 +49,6 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, isMezonClientSocketOpen, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
-import { getThreadsState } from '../threads/threads.slice';
 import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
@@ -239,8 +238,7 @@ export const fetchMessagesCached = async (
 	}
 
 	const response = await withRetry(
-		(session) =>
-			ensuredMezon.client.listChannelMessages(session, clanId, channelId, topicId ? undefined : messageId, direction, LIMIT_MESSAGE, topicId),
+		(session) => ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
 		{
 			scope: 'channel-messages',
 			mezon: ensuredMezon
@@ -271,6 +269,26 @@ type fetchMessageChannelPayload = {
 };
 
 const MESSAGE_LIST_SLICE = 100;
+
+function isOlderMessageId(a?: string, b?: string) {
+	if (!a || !b) return false;
+	try {
+		return BigInt(a) < BigInt(b);
+	} catch {
+		return a.length === b.length ? a < b : a.length < b.length;
+	}
+}
+
+const MESSAGE_ID_SEQUENCE_SHIFT = BigInt(22);
+
+function messageIdSequenceGap(newerId?: string, olderId?: string) {
+	if (!newerId || !olderId) return 0;
+	try {
+		return Number((BigInt(newerId) >> MESSAGE_ID_SEQUENCE_SHIFT) - (BigInt(olderId) >> MESSAGE_ID_SEQUENCE_SHIFT));
+	} catch {
+		return 0;
+	}
+}
 
 function getViewportSlice(sourceIds: string[], offsetId: string | undefined, direction: Direction_Mode) {
 	const { length } = sourceIds;
@@ -399,14 +417,24 @@ export const fetchMessages = createAsyncThunk(
 					messages: []
 				};
 			}
+			const lastSentState = clanId || clanId === '0' ? selectDmLastSentMessage(state, channelId) : selectLastSentMessageId(state, channelId);
 
-			let lastSentMessage = (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader) || response.last_sent_message;
+			let lastSentMessage = lastSentState || (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader);
 
 			if (!fromCache) {
-				lastSentMessage = response.last_sent_message as ApiChannelMessageHeader;
+				const newestInBatch = !messageId ? response.messages?.[0] : undefined;
+				lastSentMessage =
+					(response.last_sent_message as ApiChannelMessageHeader) ||
+					(newestInBatch
+						? ({
+								id: newestInBatch.id,
+								sender_id: newestInBatch.sender_id,
+								timestamp_seconds: newestInBatch.create_time_seconds,
+								content: newestInBatch.content
+							} as ApiChannelMessageHeader)
+						: lastSentMessage);
 			}
-			const lastSentState = selectLatestMessageId(state, chlId);
-			if (!lastSentState || (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0))) {
+			if (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0)) {
 				thunkAPI.dispatch(
 					messagesActions.setLastMessage({
 						...lastSentMessage,
@@ -420,12 +448,33 @@ export const fetchMessages = createAsyncThunk(
 			const lastLoadMessage = !fromCache ? response.messages?.at(-1) || oldMessages[0] : oldMessages[0];
 			const hasMore = lastLoadMessage?.code !== EMessageCode.FIRST_MESSAGE;
 
-			thunkAPI.dispatch(
-				messagesActions.setFirstMessageId({
-					channelId: chlId,
-					firstMessageId: !hasMore ? lastLoadMessage?.id : null
-				})
-			);
+			if (topicId) {
+				const storeOldestId = oldMessages[0]?.id;
+				const batchOldestId = response.messages?.at(-1)?.id;
+				const batchLength = response.messages?.length || 0;
+				const fullPageLength = LIMIT_MESSAGE - 1;
+				const scannedToWindowEdge = messageIdSequenceGap(storeOldestId, batchOldestId) >= fullPageLength;
+				const reachedTop =
+					!fromCache &&
+					direction === Direction_Mode.BEFORE_TIMESTAMP &&
+					(!isOlderMessageId(batchOldestId, storeOldestId) || (batchLength < fullPageLength && !scannedToWindowEdge));
+				const oldestId = reachedTop && isOlderMessageId(batchOldestId, storeOldestId) ? batchOldestId : storeOldestId || batchOldestId;
+				if (reachedTop && oldestId) {
+					thunkAPI.dispatch(
+						messagesActions.setFirstMessageId({
+							channelId: chlId,
+							firstMessageId: oldestId
+						})
+					);
+				}
+			} else {
+				thunkAPI.dispatch(
+					messagesActions.setFirstMessageId({
+						channelId: chlId,
+						firstMessageId: !hasMore ? lastLoadMessage?.id : null
+					})
+				);
+			}
 
 			if (shouldReturnCachedMessages(isFetchingLatestMessages, oldMessages, lastSentMessage, !!fromCache)) {
 				return {
@@ -1341,7 +1390,11 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			};
 		}
 		const needUpload = attachments?.some((attachment) => attachment?.uploadPath);
-		if (needUpload) {
+		// The presign_finish patch rides on updateChannelMessage, which carries no
+		// anonymity flag, so the server rejects it for a message owned by the
+		// anonymous account. Anonymous sends upload first and post once instead.
+		const usePresignFirst = Boolean(needUpload) && !anonymous;
+		if (usePresignFirst) {
 			content = {
 				...content,
 				presign_finish: []
@@ -1389,6 +1442,18 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
+
+			if (needUpload && !usePresignFirst && attachments) {
+				await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+				thunkAPI.dispatch(
+					messagesActions.updateSendingMessageAttachments({
+						channelId: channelId as string,
+						messageId: id,
+						attachments: toPublicMessageAttachments(attachments)
+					})
+				);
+			}
+
 			const SEND_TIMEOUT_MS = 30_000;
 			let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
@@ -1436,7 +1501,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				);
 			}
 
-			if (attachments && attachments.length > 0 && messageResult?.message_id && needUpload) {
+			if (attachments && attachments.length > 0 && messageResult?.message_id && usePresignFirst) {
 				try {
 					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
 
@@ -2492,37 +2557,6 @@ export const selectMessageEntitiesByChannelId = createCachedSelector([getMessage
 export const selectMessageIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelMessages[channelId]?.ids || emptyArray;
 });
-
-export const selectHasThreadDeleteSystemMessage = createCachedSelector(
-	[
-		(state: RootState, _: string, threadId: string) => selectChannelById(state, threadId),
-		getThreadsState,
-		getChannelIdAsSecondParam,
-		(_: RootState, __: string, threadId: string) => threadId
-	],
-	(threadChannel, threadsState, parentChannelId, threadId) => {
-		if (!threadId) {
-			return false;
-		}
-
-		if (threadChannel) {
-			return false;
-		}
-
-		const threadsCache = threadsState.byChannels?.[parentChannelId];
-		if (threadsCache?.cache) {
-			const existsInCache = threadsCache.ids.some((id) => {
-				const thread = threadsCache.entities[id];
-				return thread?.id === threadId || thread?.channel_id === threadId;
-			});
-			if (!existsInCache) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-);
 
 export const selectViewportIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelViewPortMessageIds[channelId] || emptyArray;

@@ -406,6 +406,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 								disabled={isDisabled}
 								className={`px-4 py-2 rounded-md text-white font-semibold bg-primary ${isDisabled ? 'bg-opacity-50 cursor-not-allowed' : ''}`}
 								onClick={handleUpdate}
+								data-e2e={generateE2eId('clan_page.modal.create_event.button_edit')}
 							>
 								{t('actions.edit')}
 							</button>

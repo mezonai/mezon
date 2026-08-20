@@ -8,6 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { AttachmentTypeUpload } from '@mezon/utils';
 import type { RefObject } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +33,7 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 
 	useEffect(() => {
 		if (!channelId || !clanId) return;
-		dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId, limit: 100, fileType: 'FILE' }));
+		dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId, limit: 100, fileType: AttachmentTypeUpload.doc }));
 	}, [channelId, clanId, dispatch]);
 
 	const filteredAttachments = allAttachments.filter(

@@ -18,7 +18,6 @@ import {
 	galleryActions,
 	getStore,
 	selectCurrentChannelId,
-	selectCurrentChannelLabel,
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectGalleryAttachmentsByChannel,
@@ -79,35 +78,35 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
 	const paginationState = useAppSelector((state) => selectGalleryPaginationByChannel(state, currentChannelId));
 
-	useEffect(() => {
-		return () => {
-			if (currentChannelId) {
-				dispatch(galleryActions.clearGalleryAttachments({ channelId: currentChannelId }));
-			}
-		};
-	}, [currentChannelId, dispatch]);
-
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 	const [dateValidationError, setDateValidationError] = useState<string | null>(null);
-	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('all');
+	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('image');
 
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	const filteredAttachments = useMemo(() => {
 		if (!attachments || attachments.length === 0) return [];
 
-		if (mediaFilter === 'all') {
-			return attachments;
-		} else if (mediaFilter === 'image') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
+		let listAttach = [...attachments];
+
+		if (mediaFilter === 'image') {
+			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
 		} else if (mediaFilter === 'video') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
+			listAttach = listAttach.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
 		}
 
-		return attachments;
-	}, [attachments, mediaFilter]);
+		if (startDate) {
+			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds > startDate?.getTime() / 1000);
+		}
+
+		if (endDate) {
+			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds < endDate?.getTime() / 1000);
+		}
+
+		return listAttach;
+	}, [attachments, mediaFilter, startDate, endDate]);
 
 	const { refs, floatingStyles, context } = useFloating({
 		open: isDateDropdownOpen,
@@ -198,7 +197,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			if (direction === 'after' && !paginationState.hasMoreAfter) {
 				return;
 			}
-
 			dispatch(galleryActions.setGalleryLoading({ channelId: currentChannelId, isLoading: true }));
 
 			try {
@@ -243,7 +241,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 						channelId: currentChannelId,
 						limit: paginationState.limit,
 						direction,
-						mediaFilter: 'all',
+						mediaFilter,
 						...(beforeParam && { before: beforeParam }),
 						...(afterParam && { after: afterParam })
 					})
@@ -397,7 +395,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 		const { startTimestamp, endTimestamp } = calculateTimestamps(startDate, endDate);
 
-		dispatch(galleryActions.clearGalleryChannel({ channelId: currentChannelId }));
 		dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
 		dispatch(
 			galleryActions.fetchGalleryAttachments({
@@ -405,7 +402,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				channelId: currentChannelId,
 				limit: 50,
 				direction: 'initial',
-				mediaFilter: 'all',
+				mediaFilter,
 				...(startTimestamp && { after: startTimestamp }),
 				...(endTimestamp && { before: endTimestamp })
 			})
@@ -421,15 +418,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		setDateValidationError(null);
 		if (currentChannelId && currentClanId) {
 			dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
-			dispatch(
-				galleryActions.fetchGalleryAttachments({
-					clanId: currentClanId,
-					channelId: currentChannelId,
-					limit: 50,
-					direction: 'initial',
-					mediaFilter: 'all'
-				})
-			);
 		}
 	}, [currentChannelId, currentClanId, dispatch]);
 
@@ -469,7 +457,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			const currentClanId = selectCurrentClanId(state);
 			const currentDm = selectCurrentDM(state);
 			const currentChannelId = selectCurrentChannelId(state);
-			const currentChannelLabel = selectCurrentChannelLabel(state);
 			const currentDmGroupId = currentDm?.id;
 			const attachmentData = attachment;
 
@@ -519,6 +506,21 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		[dispatch]
 	);
 
+	useEffect(() => {
+		if (mediaFilter === 'video' && attachments.length > 0 && filteredAttachments.length === 0) {
+			dispatch(
+				galleryActions.fetchGalleryAttachments({
+					clanId: currentClanId,
+					channelId: currentChannelId,
+					fileType: 'video',
+					limit: 50,
+					direction: 'before',
+					mediaFilter
+				})
+			);
+		}
+	}, [mediaFilter]);
+
 	return (
 		<div
 			ref={modalRef}
@@ -539,17 +541,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					</div>
 					<div className="flex flex-row items-center justify-between gap-4">
 						<div className="flex gap-2">
-							<button
-								onClick={() => handleMediaFilterChange('all')}
-								className={`px-3 py-1.5 text-sm rounded transition-colors ${
-									mediaFilter === 'all'
-										? 'bg-buttonPrimary text-white'
-										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
-								}`}
-								data-e2e={generateE2eId('clan_page.modal.gallery.tab.all')}
-							>
-								{t('gallery.filters.all')}
-							</button>
 							<button
 								onClick={() => handleMediaFilterChange('image')}
 								className={`px-3 py-1.5 text-sm rounded transition-colors ${

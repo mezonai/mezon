@@ -24,9 +24,7 @@ const ClanWorld = () => {
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
 				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
+				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);
@@ -440,7 +438,7 @@ const ClanWorld = () => {
 						<div className="flex items-start justify-between mb-8 md:mb-12">
 							<h2 className="font-svnAvo text-3xl sm:text-4xl lg:text-5xl text-slate-900 font-bold select-text">{t('faq.title')}</h2>
 							<a
-								href="https://mezon.ai/docs/en/user/clan"
+								href="https://mezon.ai/docs/user/clan"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] underline inline-flex items-center gap-1 text-base sm:text-lg transition-colors"
@@ -490,7 +488,7 @@ const ClanWorld = () => {
 												{faq.answer}
 											</p>
 											<a
-												href="https://mezon.ai/docs/en/user/clan"
+												href="https://mezon.ai/docs/user/clan"
 												target="_blank"
 												rel="noopener noreferrer"
 												className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] inline-flex items-center gap-1 text-sm sm:text-base transition-colors"
@@ -510,7 +508,7 @@ const ClanWorld = () => {
 			</section>
 
 			<ModalDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };

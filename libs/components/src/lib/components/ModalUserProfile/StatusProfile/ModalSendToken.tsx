@@ -1,7 +1,7 @@
 import type { FriendsEntity, ISendTokenDetailType, UsersEntity } from '@mezon/store';
 import { selectAllFriends, selectAllUsersByUser, selectWalletDetail } from '@mezon/store';
 import { ButtonLoading, Icons, Input } from '@mezon/ui';
-import { createImgproxyUrl, formatNumber } from '@mezon/utils';
+import { createImgproxyUrl, formatNumber, generateE2eId } from '@mezon/utils';
 import Dropdown from 'rc-dropdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -176,6 +176,7 @@ const ModalSendToken = ({
 							<div
 								onClick={() => handleSelectUser(user.id, user.username)}
 								className="flex items-center gap-3 p-3 bg-item-theme-hover cursor-pointer transition-colors h-12"
+								data-e2e={generateE2eId('send_token.modal.send.select.item')}
 							>
 								<AvatarImage
 									alt={user?.username ?? ''}
@@ -256,6 +257,7 @@ const ModalSendToken = ({
 									onChange={handleChangeSearchTerm}
 									disabled={sendTokenInputsState.isUserSelectionDisabled}
 									autoFocus={!searchTerm}
+									data-e2e={generateE2eId('send_token.modal.send.input.search_user')}
 								/>
 							</Dropdown>
 							{userSearchError && <p className="text-red-500 text-sm mt-2">{userSearchError}</p>}
@@ -273,6 +275,7 @@ const ModalSendToken = ({
 								placeholder={t('placeholders.amountPlaceholder')}
 								onChange={handleChangeSendToken}
 								disabled={sendTokenInputsState.isSendTokenInputDisabled}
+								data-e2e={generateE2eId('send_token.modal.send.input.amount')}
 							/>
 							<span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-theme-primary font-medium">
 								{t('currency')}
@@ -290,6 +293,7 @@ const ModalSendToken = ({
 							className="w-full h-12 px-4 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all pr-10"
 							placeholder={t('placeholders.notePlaceholder')}
 							onChange={handleChangeNote}
+							data-e2e={generateE2eId('send_token.modal.send.input.note')}
 						/>
 					</div>
 				</div>
@@ -299,6 +303,7 @@ const ModalSendToken = ({
 						className="flex-1 h-12 px-4 rounded-xl text-theme-primary bg-item-theme-hover border-theme-primary font-medium transition-all"
 						type="button"
 						onClick={onClose}
+						data-e2e={generateE2eId('send_token.modal.send.button.cancel')}
 					>
 						{t('buttons.cancel')}
 					</button>
@@ -308,6 +313,7 @@ const ModalSendToken = ({
 						onClick={handleSendToken}
 						disabled={isButtonDisabled || !selectedUserId || token <= 0 || !!walletBalanceError}
 						label={t('buttons.sendTokens')}
+						data-e2e={generateE2eId('send_token.modal.send.button.send')}
 					/>
 				</div>
 			</div>

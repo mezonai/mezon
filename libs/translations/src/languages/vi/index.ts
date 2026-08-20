@@ -2,6 +2,7 @@ import accountSetting from './accountSetting.json';
 import activityApp from './activityApp.json';
 import adminApplication from './adminApplication.json';
 import ageRestricted from './ageRestricted.json';
+import aiagent from './aiagent.json';
 import appThemeSetting from './appThemeSetting.json';
 import appearanceSetting from './appearanceSetting.json';
 import auditLog from './auditLog.json';
@@ -41,6 +42,7 @@ import deleteClan from './deleteClan.json';
 import directMessage from './directMessage.json';
 import discover from './discover.json';
 import dmMessage from './dmMessage.json';
+import errors from './errors.json';
 import eventCreator from './eventCreator.json';
 import eventMenu from './eventMenu.json';
 import forwardMessage from './forwardMessage.json';
@@ -91,9 +93,10 @@ import transactionHistory from './transactionHistory.json';
 import transferOwner from './transferOwner.json';
 import userEmptyClan from './userEmptyClan.json';
 import userProfile from './userProfile.json';
+
 export default {
-	timeline,
 	invitation,
+	timeline,
 	inviteToChannel,
 	notification,
 	message,
@@ -116,16 +119,16 @@ export default {
 	userProfile,
 	profile,
 	createThread,
-	clanMenu,
 	categoryCreator,
 	screenStack,
+	clanMenu,
 	pinMessage,
 	clanSetting,
 	clanOverviewSetting,
 	clanEmojiSetting,
+	eventMenu,
 	categoryMenu,
 	channelCreator,
-	eventMenu,
 	eventCreator,
 	channelMenu,
 	channelSetting,
@@ -180,9 +183,11 @@ export default {
 	linkAppInstall,
 	discover,
 	mezondong,
+	aiagent,
 	textchannel,
 	clandetail,
 	shareContact,
 	canvas,
-	dashboard
+	dashboard,
+	errors
 };

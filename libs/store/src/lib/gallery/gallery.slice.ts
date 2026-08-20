@@ -5,7 +5,8 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { AttachmentEntity } from '../attachment/attachments.slice';
 import type { CacheMetadata } from '../cache-metadata';
-import { createCacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 export const GALLERY_FEATURE_KEY = 'gallery';
@@ -28,7 +29,7 @@ export interface GalleryState {
 	>;
 }
 
-export type MediaFilterType = 'all' | 'image' | 'video';
+export type MediaFilterType = 'image' | 'video' | 'doc';
 
 type fetchGalleryAttachmentsPayload = {
 	clanId: string;
@@ -42,6 +43,73 @@ type fetchGalleryAttachmentsPayload = {
 };
 
 const GALLERY_CACHED_TIME = 1000 * 60 * 60;
+
+const fetchChannelAttachmentsCached = async (
+	getState: () => any,
+	mezon: MezonValueContext,
+	clanId: string,
+	channelId: string,
+	fileType = '',
+	state?: number,
+	limit?: number,
+	before?: number,
+	after?: number,
+	noCache = false
+) => {
+	const currentState = getState();
+	const attachmentState = currentState[GALLERY_FEATURE_KEY] as GalleryState;
+	const channelData = attachmentState.galleryByChannel[channelId];
+	const apiKey = createApiKey('galleryAttachments', fileType, limit || 50, after || '', before || '', channelId, clanId);
+
+	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
+	if (
+		!shouldForceCall &&
+		!noCache &&
+		channelData?.cache &&
+		isCacheValid(channelData.cache) &&
+		channelData.attachments &&
+		channelData.attachments.length > 0
+	) {
+		const existingAttachments = channelData.attachments;
+		let hasDataForRange = false;
+
+		if (before !== undefined) {
+			const beforeTime = before * 1000;
+			hasDataForRange = existingAttachments.some((att) => {
+				if (!att.create_time_seconds) return false;
+				const attTime = att.create_time_seconds;
+				return attTime < beforeTime;
+			});
+		} else if (after !== undefined) {
+			const afterTime = after * 1000;
+			hasDataForRange = existingAttachments.some((att) => {
+				if (!att.create_time_seconds) return false;
+				const attTime = att.create_time_seconds;
+				return attTime > afterTime;
+			});
+		} else {
+			hasDataForRange = true;
+		}
+
+		if (hasDataForRange) {
+			return {
+				attachments: existingAttachments,
+				fromCache: true,
+				time: channelData.cache.lastFetched
+			};
+		}
+	}
+
+	const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, state, limit, before, after);
+
+	markApiFirstCalled(apiKey);
+
+	return {
+		...response,
+		fromCache: false,
+		time: Date.now()
+	};
+};
 
 export const fetchGalleryAttachments = createAsyncThunk(
 	'gallery/fetchGalleryAttachments',
@@ -61,19 +129,28 @@ export const fetchGalleryAttachments = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, undefined, limit, before, after);
+			const response = await fetchChannelAttachmentsCached(
+				thunkAPI.getState,
+				mezon,
+				clanId,
+				channelId,
+				fileType,
+				undefined,
+				limit,
+				before,
+				after,
+				false
+			);
 
 			if (!response.attachments) {
-				return { attachments: [], channelId, direction };
+				return { attachments: [], channelId, direction, fromCache: response.fromCache };
 			}
 
 			const attachments = response.attachments
 				.filter((att) => {
 					const isImage = att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX);
 					const isVideo = att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
-					if (mediaFilter === 'all') {
-						return isImage || isVideo;
-					} else if (mediaFilter === 'image') {
+					if (mediaFilter === 'image') {
 						return isImage;
 					} else if (mediaFilter === 'video') {
 						return isVideo;
@@ -89,15 +166,9 @@ export const fetchGalleryAttachments = createAsyncThunk(
 					create_time: attachmentRes.create_time_seconds
 						? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString()
 						: undefined
-				}))
-				.sort((a, b) => {
-					if (a.create_time_seconds && b.create_time_seconds) {
-						return b.create_time_seconds - a.create_time_seconds;
-					}
-					return 0;
-				}) as AttachmentEntity[];
+				}));
 
-			return { attachments, channelId, direction };
+			return { attachments, channelId, direction, fromCache: response.fromCache };
 		} catch (error) {
 			captureSentryError(error, 'gallery/fetchGalleryAttachments');
 			return thunkAPI.rejectWithValue(error);
@@ -209,18 +280,16 @@ export const gallerySlice = createSlice({
 				(
 					state: GalleryState,
 					action: PayloadAction<
-						{ attachments: AttachmentEntity[]; channelId: string; direction: 'before' | 'after' | 'initial' },
+						{ attachments: AttachmentEntity[]; channelId: string; direction: 'before' | 'after' | 'initial'; fromCache: boolean },
 						string,
 						{ arg: fetchGalleryAttachmentsPayload }
 					>
 				) => {
-					const { attachments, channelId, direction } = action.payload;
-
+					const { attachments, channelId, direction, fromCache } = action.payload;
+					const channelGallery = state.galleryByChannel[channelId];
 					if (!state.galleryByChannel[channelId]) {
 						state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 					}
-
-					const channelGallery = state.galleryByChannel[channelId];
 
 					if (direction === 'before') {
 						const allItemsAlreadyExist = attachments.every((att) =>
@@ -234,17 +303,13 @@ export const gallerySlice = createSlice({
 						channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
 					}
 
-					if (direction === 'initial') {
-						channelGallery.attachments = attachments;
-					} else {
-						const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
-						const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
+					const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
+					const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
 
-						if (direction === 'after') {
-							channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
-						} else {
-							channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
-						}
+					if (direction === 'after') {
+						channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+					} else {
+						channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
 					}
 
 					channelGallery.pagination.isLoading = false;

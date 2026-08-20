@@ -37,9 +37,7 @@ const TextChannelPage = () => {
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
 				? `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
-				: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-setup-${version}.exe`;
-	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
-	const portableUrl = `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon-${version}-windows-x86_64.zip`;
+				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const section1Ref = useRef<HTMLDivElement>(null);
 	const section2Ref = useRef<HTMLDivElement>(null);
@@ -190,7 +188,7 @@ const TextChannelPage = () => {
   `;
 
 	return (
-		<div className="min-h-screen bg-white relative">
+		<div className="min-h-screen bg-white relative overflow-x-hidden">
 			<style>{animationStyles}</style>
 			<HeaderMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />
 			<SideBarMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} scrollToSection={scrollToSection} />
@@ -385,7 +383,7 @@ const TextChannelPage = () => {
 				</div>
 			</section>
 
-			<section className="w-full bg-[#e6ebf0] py-16 md:py-24 lg:py-32 overflow-hidden lg:overflow-visible">
+			<section className="w-full bg-[#e6ebf0] py-16 md:py-24 lg:py-32 overflow-hidden">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1-reverse lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 						<div className="space-y-6 lg:space-y-8 relative z-10 order-1 lg:order-1">
@@ -516,7 +514,7 @@ const TextChannelPage = () => {
 						<div className="flex items-start justify-between mb-8 md:mb-12">
 							<h2 className="font-svnAvo text-3xl sm:text-4xl lg:text-5xl text-slate-900 font-bold select-text">{t('faq.title')}</h2>
 							<a
-								href="https://mezon.ai/docs/en/user/friends-and-messaging"
+								href="https://mezon.ai/docs/user/friends-and-messaging"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] underline inline-flex items-center gap-1 text-base sm:text-lg transition-colors"
@@ -548,7 +546,7 @@ const TextChannelPage = () => {
 												{faq.answer}
 											</p>
 											<a
-												href="https://mezon.ai/docs/en/user/friends-and-messaging"
+												href="https://mezon.ai/docs/user/friends-and-messaging"
 												target="_blank"
 												rel="noopener noreferrer"
 												className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] inline-flex items-center gap-1 text-sm sm:text-base transition-colors"
@@ -568,7 +566,7 @@ const TextChannelPage = () => {
 			</section>
 
 			<ModalDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-			<Footer downloadUrl={downloadUrl} universalUrl={universalUrl} portableUrl={portableUrl} />
+			<Footer downloadUrl={downloadUrl} />
 		</div>
 	);
 };
