@@ -48,7 +48,7 @@ export const VOICE_INTERACTIVE_APPS = [
 		key: E_APP_INTERACTIVE_KEY.Quiz,
 		eventType: EVoiceInteractEvent.APP_QUIZ,
 		name: 'Quiz',
-		url: 'https://test-sfu.nccsoft.vn'
+		url: 'https://quiz.mezon.ai'
 	},
 	{
 		key: E_APP_INTERACTIVE_KEY.Blackboard,
