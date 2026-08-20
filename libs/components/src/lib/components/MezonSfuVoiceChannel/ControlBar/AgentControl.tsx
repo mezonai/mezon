@@ -6,8 +6,6 @@ import { memo, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
-// Keep the optimistic Agent state when the control bar is remounted while the
-// same SFU call is still active. The SFU snapshot currently has no `isAgent` flag.
 const activeAgentChannels = new Set<string>();
 
 export const SfuAgentControl = memo(() => {
@@ -20,7 +18,7 @@ export const SfuAgentControl = memo(() => {
 	const handleToggle = useCallback(async () => {
 		if (!voiceInfo?.channelId || loading) return;
 		setLoading(true);
-		const payload = { channel_id: voiceInfo.channelId, room_name: voiceInfo.roomId || '0' };
+		const payload = { channel_id: voiceInfo.channelId, room_name: '' };
 		try {
 			await dispatch(active ? handleKichAgentFromVoice(payload) : handleAddAgentToVoice(payload)).unwrap();
 			if (active) activeAgentChannels.delete(voiceInfo.channelId);
@@ -31,7 +29,7 @@ export const SfuAgentControl = memo(() => {
 		} finally {
 			setLoading(false);
 		}
-	}, [active, dispatch, loading, voiceInfo?.channelId, voiceInfo?.roomId]);
+	}, [active, dispatch, loading, voiceInfo?.channelId]);
 
 	if (!hasChannelPermission) return null;
 
@@ -42,20 +40,9 @@ export const SfuAgentControl = memo(() => {
 			onClick={() => void handleToggle()}
 			aria-label={active ? 'Tắt KOMU Agent' : 'Bật KOMU Agent'}
 			title={active ? 'Tắt KOMU Agent' : 'Bật KOMU Agent'}
-			className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-[#da373c] hover:!bg-[#a12829]' : ''} ${loading ? 'cursor-default' : ''}`}
+			className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-[#1f8cf9] hover:!bg-[#3396fa]' : ''} ${loading ? 'cursor-default' : ''}`}
 		>
-			{loading ? (
-				<Icons.LoadingSpinner />
-			) : (
-				<span className="relative">
-					<AgentIcon />
-					{active && (
-						<span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs font-bold text-[#da373c]">
-							×
-						</span>
-					)}
-				</span>
-			)}
+			{loading ? <Icons.LoadingSpinner /> : <AgentIcon />}
 		</button>
 	);
 });
