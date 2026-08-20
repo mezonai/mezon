@@ -14,134 +14,18 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
-import { EmojiReactionControl } from '../ControlBar/EmojiReactionControl';
-import { SoundReactionControl } from '../ControlBar/SoundReactionControl';
-
-type ConnectionState = 'connecting' | 'joining' | 'awaiting offer' | 'connected' | 'disconnected' | 'failed';
-
-type SignalMessage = {
-	type: string;
-	timestamp?: number;
-	active?: boolean;
-	role?: 'speaker' | 'audience';
-	sdp?: string;
-	message?: string;
-	participant_count?: number;
-	members?: SfuPeer[];
-	peer?: SfuPeer;
-	mid_audio?: number | string;
-	mid_video?: number | string;
-	mid_screen?: number | string;
-};
-
-type SfuPeer = {
-	peer_id: number | string;
-	user_id?: string;
-	role?: 'speaker' | 'audience';
-	is_mute?: boolean;
-	camera_requested?: boolean;
-	camera_active?: boolean;
-	screen_requested?: boolean;
-	screen_active?: boolean;
-	mid_audio?: number | string;
-	mid_video?: number | string;
-	mid_screen?: number | string;
-};
-
-type RemoteMedia = {
-	id: string;
-	peerId?: string;
-	userId?: string;
-	role?: 'speaker' | 'audience';
-	audio?: MediaStreamTrack;
-	video?: MediaStreamTrack;
-	screen?: MediaStreamTrack;
-	screenActive?: boolean;
-	cameraRequested?: boolean;
-	cameraActive?: boolean;
-	screenRequested?: boolean;
-	isMute?: boolean;
-};
-
-function useCustomGridLayout(containerRef: React.RefObject<HTMLElement>, totalItems: number) {
-	const [layout, setLayout] = useState({ columns: 1, rows: 1, maxTiles: 0 });
-
-	useEffect(() => {
-		const element = containerRef.current;
-		if (!element) return;
-
-		const updateLayout = () => {
-			const gap = 12;
-			const minimumTileWidth = 240;
-			const minimumTileHeight = 135;
-			const maximumTilesPerPage = 12;
-			const width = element.clientWidth - 32;
-			const height = element.clientHeight - 80;
-			if (width <= 0 || height <= 0) return;
-
-			const count = Math.max(1, totalItems);
-			const maximumColumns = Math.min(4, count);
-			let bestLayout = { columns: 1, rows: 1, maxTiles: 1, tileArea: 0 };
-
-			for (let columns = 1; columns <= maximumColumns; columns++) {
-				const tileWidth = (width - gap * (columns - 1)) / columns;
-				if (columns > 1 && tileWidth < minimumTileWidth) continue;
-
-				const maximumRows = Math.min(
-					Math.ceil(count / columns),
-					Math.ceil(maximumTilesPerPage / columns),
-					Math.max(1, Math.floor((height + gap) / (minimumTileHeight + gap)))
-				);
-
-				for (let rows = 1; rows <= maximumRows; rows++) {
-					const tileHeight = (height - gap * (rows - 1)) / rows;
-					if (rows > 1 && tileHeight < minimumTileHeight) continue;
-
-					const maxTiles = Math.min(count, columns * rows);
-					const videoWidth = Math.min(tileWidth, tileHeight * (16 / 9));
-					const videoHeight = Math.min(tileHeight, tileWidth * (9 / 16));
-					const tileArea = videoWidth * videoHeight;
-
-					if (maxTiles > bestLayout.maxTiles || (maxTiles === bestLayout.maxTiles && tileArea > bestLayout.tileArea)) {
-						bestLayout = { columns, rows, maxTiles, tileArea };
-					}
-				}
-			}
-
-			setLayout({ columns: bestLayout.columns, rows: bestLayout.rows, maxTiles: bestLayout.maxTiles });
-		};
-
-		updateLayout();
-
-		const observer = new ResizeObserver(updateLayout);
-		observer.observe(element);
-
-		return () => observer.disconnect();
-	}, [containerRef, totalItems]);
-
-	return layout;
-}
-
-function useCustomPagination<T>(maxTiles: number, items: T[]) {
-	const [currentPage, setCurrentPage] = useState(1);
-	const safeMaxTiles = Math.max(1, maxTiles);
-	const totalPageCount = Math.max(1, Math.ceil(items.length / safeMaxTiles));
-	const safePage = Math.min(currentPage, totalPageCount);
-
-	const pageItems = useMemo(() => {
-		const start = (safePage - 1) * safeMaxTiles;
-		return items.slice(start, start + safeMaxTiles);
-	}, [items, safePage, safeMaxTiles]);
-
-	return {
-		currentPage: safePage,
-		totalPageCount,
-		pageItems,
-		nextPage: () => setCurrentPage((p) => Math.min(totalPageCount, p + 1)),
-		prevPage: () => setCurrentPage((p) => Math.max(1, p - 1)),
-		setPage: (page: number) => setCurrentPage(Math.min(totalPageCount, Math.max(1, page)))
-	};
-}
+import type { RecordingAudioSource, RecordingSceneTile } from '../../VoiceChannel/Recording/types';
+import { SfuControlBar } from '../ControlBar/SfuControlBar';
+import { useSfuCallRecorder } from '../Recording/useSfuCallRecorder';
+import type { SfuConnectionState as ConnectionState, SfuRemoteMedia as RemoteMedia, SfuPeer, SfuSignalMessage as SignalMessage } from '../types';
+import { SfuFocusLayoutContainer } from './FocusLayout/SfuFocusLayoutContainer';
+import { SfuGridLayoutContainer } from './GridLayout/SfuGridLayoutContainer';
+import { useSfuGridLayout, useSfuPagination } from './GridLayout/useSfuGridLayout';
+import { SfuRoomAudioRenderer } from './Media/SfuRoomAudioRenderer';
+import { SfuVideo } from './Media/SfuVideo';
+import { SfuParticipantTile } from './ParticipantTile/SfuParticipantTile';
+import { SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
+import { ReactionCallHandler, useSendReaction } from './Reaction';
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
@@ -388,227 +272,10 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 	return speakingMap;
 };
 
-const Video = ({
-	stream,
-	muted = false,
-	mirrored = false,
-	fit = 'cover',
-	onFrameStateChange
-}: {
-	stream: MediaStream;
-	muted?: boolean;
-	mirrored?: boolean;
-	fit?: 'cover' | 'contain';
-	onFrameStateChange?: (hasRecentFrame: boolean) => void;
-}) => {
-	const ref = useRef<HTMLVideoElement>(null);
-	useEffect(() => {
-		const video = ref.current;
-		if (!video) return;
-		video.srcObject = stream;
-		video.play().catch(() => undefined);
-		if (!onFrameStateChange) return;
-
-		if (!video.requestVideoFrameCallback) {
-			const markFrameAvailable = () => onFrameStateChange(true);
-			const markFrameUnavailable = () => onFrameStateChange(false);
-			onFrameStateChange(video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA);
-			video.addEventListener('loadeddata', markFrameAvailable);
-			video.addEventListener('playing', markFrameAvailable);
-			video.addEventListener('timeupdate', markFrameAvailable);
-			video.addEventListener('emptied', markFrameUnavailable);
-			return () => {
-				video.removeEventListener('loadeddata', markFrameAvailable);
-				video.removeEventListener('playing', markFrameAvailable);
-				video.removeEventListener('timeupdate', markFrameAvailable);
-				video.removeEventListener('emptied', markFrameUnavailable);
-			};
-		}
-
-		let disposed = false;
-		let frameCallbackId = 0;
-		const handleFrame: VideoFrameRequestCallback = () => {
-			if (disposed) return;
-			onFrameStateChange(true);
-			frameCallbackId = video.requestVideoFrameCallback(handleFrame);
-		};
-		onFrameStateChange(false);
-		frameCallbackId = video.requestVideoFrameCallback(handleFrame);
-
-		return () => {
-			disposed = true;
-			video.cancelVideoFrameCallback(frameCallbackId);
-		};
-	}, [onFrameStateChange, stream]);
-	return (
-		<video
-			ref={ref}
-			autoPlay
-			playsInline
-			muted={muted}
-			className={`h-full w-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} ${mirrored ? '-scale-x-100' : ''}`}
-		/>
-	);
-};
-
-const RemoteAudioTrack = ({ track }: { track: MediaStreamTrack }) => {
-	const ref = useRef<HTMLAudioElement>(null);
-	useEffect(() => {
-		const element = ref.current;
-		if (!element) return;
-		element.srcObject = new MediaStream([track]);
-		void element.play().catch(() => undefined);
-
-		return () => {
-			element.srcObject = null;
-		};
-	}, [track]);
-
-	return <audio ref={ref} autoPlay playsInline />;
-};
-
-const RoomAudioRenderer = ({ participants }: { participants: RemoteMedia[] }) => {
-	return (
-		<div style={{ display: 'none' }}>
-			{participants.map((participant) =>
-				participant.audio ? <RemoteAudioTrack key={`${participant.id}-${participant.audio.id}`} track={participant.audio} /> : null
-			)}
-		</div>
-	);
-};
-
-interface ParticipantTileProps {
-	participant: RemoteMedia;
-	displayName: string;
-	avatar?: string;
-	speaking?: boolean;
-}
-
-const ParticipantTile = ({ participant, displayName, avatar, speaking: propSpeaking }: ParticipantTileProps) => {
-	const isMuted = participant.isMute === true || !participant.audio || participant.audio.muted;
-	const speaking = isMuted ? false : Boolean(propSpeaking);
-	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
-	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted && participant.cameraActive !== false);
-	return (
-		<div
-			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
-				speaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
-			}`}
-		>
-			{remoteVideoStream && (
-				<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
-					<Video stream={remoteVideoStream} />
-				</div>
-			)}
-			{!showVideo && (
-				<div className="flex h-full items-center justify-center bg-[#5d5f66]">
-					<AvatarImage
-						username={displayName}
-						alt={displayName}
-						src={avatar}
-						srcImgProxy={avatar ? createImgproxyUrl(avatar) : undefined}
-						className="!h-20 !w-20 !min-h-20 !min-w-20"
-					/>
-				</div>
-			)}
-			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-				{isMuted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
-				<span className="truncate whitespace-nowrap py-0.5">{displayName}</span>
-			</div>
-			{participant.role === 'audience' && (
-				<span className="absolute right-2 top-2 rounded-md bg-[#00000080] p-[5px] text-xs text-white">Audience</span>
-			)}
-		</div>
-	);
-};
-
-const ScreenShareTile = ({ participant, displayName }: Pick<ParticipantTileProps, 'participant' | 'displayName'>) => {
-	const [hasRecentVideoFrame, setHasRecentVideoFrame] = useState(false);
-	const stream = useMemo(() => (participant.screen ? new MediaStream([participant.screen]) : undefined), [participant.screen]);
-	const handleVideoFrameStateChange = useCallback((hasRecentFrame: boolean) => setHasRecentVideoFrame(hasRecentFrame), []);
-	const showVideo = Boolean(participant.screen?.readyState === 'live' && hasRecentVideoFrame);
-	if (!stream) return null;
-
-	return (
-		<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
-			<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'opacity-0'}`}>
-				<Video stream={stream} muted fit="contain" onFrameStateChange={handleVideoFrameStateChange} />
-			</div>
-			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
-			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-				<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
-				<span className="truncate whitespace-nowrap py-0.5">{displayName} — Screen</span>
-			</div>
-		</div>
-	);
-};
-
-const buttonClass = 'flex h-14 w-14 items-center justify-center rounded-full bg-zinc-700 text-white hover:bg-zinc-600 disabled:opacity-40';
 const DEFAULT_VIDEO_CODEC = 'VP8';
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
-};
-
-interface SfuDeviceMenuProps {
-	label: string;
-	devices: MediaDeviceInfo[];
-	selectedDeviceId: string;
-	onSelect: (deviceId: string) => void;
-}
-
-const SfuDeviceMenu = ({ label, devices, selectedDeviceId, onSelect }: SfuDeviceMenuProps) => {
-	const [isOpen, setIsOpen] = useState(false);
-	const menuRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		if (!isOpen) return;
-		const closeMenu = (event: MouseEvent) => {
-			if (!menuRef.current?.contains(event.target as Node)) setIsOpen(false);
-		};
-		document.addEventListener('mousedown', closeMenu);
-		return () => document.removeEventListener('mousedown', closeMenu);
-	}, [isOpen]);
-
-	return (
-		<div ref={menuRef} className="absolute bottom-0 right-0 z-30">
-			<button
-				type="button"
-				title={label}
-				aria-label={label}
-				className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-zinc-600 bg-zinc-900"
-				onClick={(event) => {
-					event.stopPropagation();
-					setIsOpen((value) => !value);
-				}}
-			>
-				{isOpen ? <Icons.VoiceArowUpIcon className="h-3 w-3" /> : <Icons.VoiceArowDownIcon className="h-3 w-3" />}
-			</button>
-			{isOpen && (
-				<div className="absolute bottom-7 right-0 min-w-[280px] rounded-lg bg-zinc-800 p-2 text-white shadow-2xl">
-					<p className="px-2 pb-2 text-xs font-semibold uppercase text-zinc-400">{label}</p>
-					{devices.length ? (
-						devices.map((device) => (
-							<button
-								key={device.deviceId}
-								type="button"
-								className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-zinc-700"
-								onClick={() => {
-									onSelect(device.deviceId);
-									setIsOpen(false);
-								}}
-							>
-								<span className="max-w-[220px] truncate">{device.label || label}</span>
-								{device.deviceId === selectedDeviceId && <span className="text-blue-400">●</span>}
-							</button>
-						))
-					) : (
-						<p className="px-3 py-2 text-sm text-zinc-400">No devices found</p>
-					)}
-				</div>
-			)}
-		</div>
-	);
 };
 
 const setDefaultVideoCodec = (transceiver: RTCRtpTransceiver) => {
@@ -687,16 +354,65 @@ export function MezonSfuVoiceRoom({
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
+	const [isPopoutOpen, setIsPopoutOpen] = useState(false);
+	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 	const [selectedMicrophone, setSelectedMicrophone] = useState('default');
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const lastShownErrorRef = useRef<string>();
 	const lastGridWheelTimeRef = useRef<number>(0);
-	const gridElRef = useRef<HTMLDivElement>(null);
+	const gridElRef = useRef<HTMLElement>(null);
 	const gridTileOrderRef = useRef<string[]>([]);
 	const focusTileOrderRef = useRef<string[]>([]);
 	const focusThumbnailsRef = useRef<HTMLDivElement>(null);
+	const focusVideoContainerRef = useRef<HTMLDivElement>(null);
 	const [, renderFocusTileOrder] = useState(0);
+
+	const closePopout = useCallback(async () => {
+		if (document.pictureInPictureElement) await document.exitPictureInPicture();
+		setIsPopoutOpen(false);
+		setPopoutTrackId(undefined);
+	}, []);
+
+	const togglePopout = useCallback(
+		async (trackId?: string) => {
+			try {
+				if (document.pictureInPictureElement) {
+					await closePopout();
+					return;
+				}
+
+				const video = focusVideoContainerRef.current?.querySelector('video');
+				if (!video) {
+					dispatch(toastActions.addToast({ message: 'Please select a video track to popout!', type: 'warning', autoClose: 3000 }));
+					return;
+				}
+
+				video.id = 'focusTrack';
+				video.addEventListener(
+					'leavepictureinpicture',
+					() => {
+						setIsPopoutOpen(false);
+						setPopoutTrackId(undefined);
+					},
+					{ once: true }
+				);
+				await video.requestPictureInPicture();
+				setIsPopoutOpen(true);
+				setPopoutTrackId(trackId);
+			} catch (popoutError) {
+				console.error('PiP error:', popoutError);
+			}
+		},
+		[closePopout, dispatch]
+	);
+
+	useEffect(
+		() => () => {
+			if (document.pictureInPictureElement) void document.exitPictureInPicture();
+		},
+		[]
+	);
 
 	useEffect(() => {
 		if (hasMicrophoneAccess === false && microphoneEnabled) {
@@ -1480,26 +1196,42 @@ export function MezonSfuVoiceRoom({
 		}
 	}, [hasMicrophoneAccess, joinRole, pushToTalkActive, setPushToTalk]);
 
-	const participants = Array.from(remoteMedia.values());
+	useEffect(() => {
+		if (joinRole !== 'audience') return;
+		const handleExternalPushToTalk = (event: Event) => {
+			const { active } = (event as CustomEvent<{ active?: boolean }>).detail || {};
+			if (typeof active === 'boolean') void setPushToTalk(active);
+		};
+		window.addEventListener('mezon-sfu-push-to-talk', handleExternalPushToTalk);
+		return () => window.removeEventListener('mezon-sfu-push-to-talk', handleExternalPushToTalk);
+	}, [joinRole, setPushToTalk]);
+
+	const participants = useMemo(() => Array.from(remoteMedia.values()), [remoteMedia]);
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
 	const cameras = devices.filter((device) => device.kind === 'videoinput');
+	const { sendEmojiReaction: sendMezonEmojiReaction, sendSoundReaction: sendMezonSoundReaction } = useSendReaction();
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
-		wsRef.current?.send(JSON.stringify({ type: 'reaction', reaction_type: 'emoji', emoji_id: emojiId, emoji }));
+		sendMezonEmojiReaction(emoji, emojiId);
 		setShowEmojiPanel(false);
 	};
 	const sendSoundReaction = (soundId: string, soundUrl: string) => {
-		wsRef.current?.send(JSON.stringify({ type: 'reaction', reaction_type: 'sound', sound_id: soundId, sound_url: soundUrl }));
+		sendMezonSoundReaction(soundUrl || soundId);
 		setShowSoundPanel(false);
 	};
-	const getParticipantProfile = (participant: RemoteMedia) => {
-		const member = participant.userId ? clanMembers[participant.userId] : undefined;
-		return {
-			displayName:
-				getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) || participant.userId || participant.id,
-			avatar: getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url)
-		};
-	};
+	const getParticipantProfile = useCallback(
+		(participant: RemoteMedia) => {
+			const member = participant.userId ? clanMembers[participant.userId] : undefined;
+			return {
+				displayName:
+					getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) ||
+					participant.userId ||
+					participant.id,
+				avatar: getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url)
+			};
+		},
+		[clanMembers]
+	);
 	const localMember = currentUserId ? clanMembers[currentUserId] : undefined;
 	const localDisplayName =
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) || currentUserId || 'Mezon';
@@ -1519,7 +1251,7 @@ export function MezonSfuVoiceRoom({
 				}`}
 			>
 				{joinRole === 'speaker' && localPreview && cameraEnabled ? (
-					<Video stream={localPreview} muted mirrored />
+					<SfuVideo stream={localPreview} muted mirrored />
 				) : (
 					<div className="flex h-full items-center justify-center bg-[#5d5f66]">
 						<AvatarImage
@@ -1550,7 +1282,7 @@ export function MezonSfuVoiceRoom({
 			isScreen: true,
 			content: (
 				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
-					<Video stream={screenStreamRef.current} muted fit="contain" />
+					<SfuVideo stream={screenStreamRef.current} muted fit="contain" />
 					<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
 						<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
 						<span className="truncate whitespace-nowrap py-0.5">{t('usernameScreen', { username: localDisplayName })}</span>
@@ -1567,7 +1299,12 @@ export function MezonSfuVoiceRoom({
 			participantId: participant.id,
 			isScreen: false,
 			content: (
-				<ParticipantTile participant={participant} displayName={profile.displayName} avatar={profile.avatar} speaking={participantSpeaking} />
+				<SfuParticipantTile
+					participant={participant}
+					displayName={profile.displayName}
+					avatar={profile.avatar}
+					speaking={participantSpeaking}
+				/>
 			)
 		});
 		if (participant.screen && participant.screenActive) {
@@ -1575,7 +1312,7 @@ export function MezonSfuVoiceRoom({
 				id: `${participant.id}-screen`,
 				participantId: participant.id,
 				isScreen: true,
-				content: <ScreenShareTile participant={participant} displayName={profile.displayName} />
+				content: <SfuScreenShareTile participant={participant} displayName={profile.displayName} />
 			});
 		}
 	});
@@ -1603,7 +1340,89 @@ export function MezonSfuVoiceRoom({
 		: conferenceTiles.some((tile) => tile.id === autoFocusedTrackId)
 			? autoFocusedTrackId
 			: preferredFocusTrack;
-	const gridLayout = useCustomGridLayout(gridElRef, conferenceTiles.length);
+	const recordingTiles = useMemo<RecordingSceneTile[]>(() => {
+		const sceneTiles: RecordingSceneTile[] = [
+			{
+				key: 'local-camera',
+				participantId: 'local',
+				label: localDisplayName,
+				avatarUrl: localAvatar || null,
+				videoTrack: joinRole === 'speaker' && cameraEnabled ? (localPreview?.getVideoTracks()[0] ?? null) : null,
+				isScreenShare: false,
+				focused: activePinnedTrackId === 'local-camera',
+				speaking: localSpeaking
+			}
+		];
+
+		if (joinRole === 'speaker' && screenSharing && screenStreamRef.current) {
+			sceneTiles.push({
+				key: 'local-screen',
+				participantId: 'local',
+				label: t('usernameScreen', { username: localDisplayName }),
+				avatarUrl: localAvatar || null,
+				videoTrack: screenStreamRef.current.getVideoTracks()[0] ?? null,
+				isScreenShare: true,
+				focused: activePinnedTrackId === 'local-screen',
+				speaking: localSpeaking
+			});
+		}
+
+		participants.forEach((participant) => {
+			const profile = getParticipantProfile(participant);
+			const participantSpeaking = speakingMap.get(participant.id)?.speaking ?? false;
+			sceneTiles.push({
+				key: `${participant.id}-camera`,
+				participantId: participant.id,
+				label: profile.displayName,
+				avatarUrl: profile.avatar || null,
+				videoTrack: participant.video?.readyState === 'live' && participant.cameraActive !== false ? participant.video : null,
+				isScreenShare: false,
+				focused: activePinnedTrackId === `${participant.id}-camera`,
+				speaking: participantSpeaking
+			});
+			if (participant.screen?.readyState === 'live' && participant.screenActive) {
+				sceneTiles.push({
+					key: `${participant.id}-screen`,
+					participantId: participant.id,
+					label: t('usernameScreen', { username: profile.displayName }),
+					avatarUrl: profile.avatar || null,
+					videoTrack: participant.screen,
+					isScreenShare: true,
+					focused: activePinnedTrackId === `${participant.id}-screen`,
+					speaking: participantSpeaking
+				});
+			}
+		});
+
+		return sceneTiles;
+	}, [
+		activePinnedTrackId,
+		cameraEnabled,
+		getParticipantProfile,
+		joinRole,
+		localAvatar,
+		localDisplayName,
+		localPreview,
+		localSpeaking,
+		participants,
+		screenSharing,
+		speakingMap,
+		t
+	]);
+	const recordingAudioSources = useMemo<RecordingAudioSource[]>(() => {
+		const sources: RecordingAudioSource[] = [];
+		if (isLocalAudioEnabled && localAudioTrack?.readyState === 'live') {
+			sources.push({ key: 'local-audio', track: localAudioTrack });
+		}
+		participants.forEach((participant) => {
+			if (participant.audio?.readyState === 'live' && !participant.isMute) {
+				sources.push({ key: `${participant.id}-audio`, track: participant.audio });
+			}
+		});
+		return sources;
+	}, [isLocalAudioEnabled, localAudioTrack, participants]);
+	useSfuCallRecorder({ tiles: recordingTiles, audioSources: recordingAudioSources });
+	const gridLayout = useSfuGridLayout(gridElRef, conferenceTiles.length);
 
 	if (isGridView && activeSpeakerId && gridLayout.maxTiles > 0) {
 		const activeSpeakerIndex = gridTileOrderRef.current.findIndex((id) => tilesById.get(id)?.participantId === activeSpeakerId);
@@ -1621,8 +1440,9 @@ export function MezonSfuVoiceRoom({
 	const orderedConferenceTiles = gridTileOrderRef.current.map((id) => tilesById.get(id)).filter(Boolean) as typeof conferenceTiles;
 	const focusConferenceTiles = focusTileOrderRef.current.map((id) => tilesById.get(id)).filter(Boolean) as typeof conferenceTiles;
 	const pinnedTile = activePinnedTrackId ? tilesById.get(activePinnedTrackId) : undefined;
+	const isPopoutTrackAvailable = !popoutTrackId || conferenceTiles.some((tile) => tile.id === popoutTrackId);
 	const activeSpeakerTileId = focusConferenceTiles.find((tile) => tile.participantId === activeSpeakerId)?.id;
-	const gridPagination = useCustomPagination(gridLayout.maxTiles, orderedConferenceTiles);
+	const gridPagination = useSfuPagination(gridLayout.maxTiles, orderedConferenceTiles);
 
 	useEffect(() => {
 		if (isGridView || !activeSpeakerId) return;
@@ -1654,9 +1474,15 @@ export function MezonSfuVoiceRoom({
 		];
 		renderFocusTileOrder((version) => version + 1);
 	}, [activeSpeakerId, activeSpeakerTileId, hasPinnedTrack, isGridView, pinnedTile?.participantId, showFocusThumbnails]);
+
+	useEffect(() => {
+		if (!isPopoutTrackAvailable) void closePopout();
+	}, [closePopout, isPopoutTrackAvailable]);
+
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
-			<RoomAudioRenderer participants={participants} />
+			<ReactionCallHandler />
+			<SfuRoomAudioRenderer participants={participants} />
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
 					<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
@@ -1685,9 +1511,8 @@ export function MezonSfuVoiceRoom({
 			</header>
 
 			{isGridView ? (
-				<main
+				<SfuGridLayoutContainer
 					ref={gridElRef}
-					className="relative flex min-h-0 flex-1 flex-col overflow-hidden p-4 pb-16"
 					onWheel={(e) => {
 						if (gridPagination.totalPageCount <= 1) return;
 						const now = Date.now();
@@ -1743,10 +1568,13 @@ export function MezonSfuVoiceRoom({
 							})}
 						</div>
 					)}
-				</main>
+				</SfuGridLayoutContainer>
 			) : (
-				<main className="relative flex min-h-0 flex-1 flex-col gap-3 p-4">
-					<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]">
+				<SfuFocusLayoutContainer>
+					<div
+						ref={focusVideoContainerRef}
+						className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
+					>
 						<div className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto">
 							{pinnedTile?.content}
 						</div>
@@ -1797,119 +1625,41 @@ export function MezonSfuVoiceRoom({
 							</div>
 						</>
 					)}
-				</main>
+				</SfuFocusLayoutContainer>
 			)}
 
-			<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3">
-				<div className="flex justify-start gap-4">
-					<EmojiReactionControl
-						isGridView={isGridView}
-						showEmojiPanel={showEmojiPanel}
-						onVisibleChange={setShowEmojiPanel}
-						onEmojiSelect={sendEmojiReaction}
-					/>
-					<SoundReactionControl
-						isGridView={isGridView}
-						showSoundPanel={showSoundPanel}
-						onVisibleChange={setShowSoundPanel}
-						onSoundSelect={sendSoundReaction}
-					/>
-				</div>
-				<div className="flex items-center justify-center gap-3">
-					{joinRole === 'audience' && hasMicrophoneAccess && (
-						<button
-							id="btn-meet-push-to-talk"
-							type="button"
-							title="Push to talk"
-							aria-label="Push to talk"
-							aria-pressed={pushToTalkActive}
-							className={`${buttonClass} ${pushToTalkActive ? '!bg-green-600' : ''}`}
-							onPointerDown={(event) => {
-								event.currentTarget.setPointerCapture(event.pointerId);
-								void setPushToTalk(true);
-							}}
-							onPointerUp={() => void setPushToTalk(false)}
-							onPointerCancel={() => void setPushToTalk(false)}
-							onLostPointerCapture={() => void setPushToTalk(false)}
-						>
-							<Icons.InPttCall className="h-6 w-6" />
-						</button>
-					)}
-					{joinRole === 'speaker' && hasMicrophoneAccess && (
-						<div className="relative">
-							<button
-								id="btn-meet-micro"
-								type="button"
-								title={t(microphoneEnabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-								aria-label={t(microphoneEnabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-								className={buttonClass}
-								onClick={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
-							>
-								{microphoneEnabled ? <Icons.VoiceMicIcon scale={2.5} /> : <Icons.VoiceMicDisabledIcon scale={2.5} />}
-							</button>
-							<SfuDeviceMenu
-								label="Microphone hihi"
-								devices={microphones}
-								selectedDeviceId={selectedMicrophone}
-								onSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
-							/>
-						</div>
-					)}
-					{joinRole === 'speaker' && hasCameraAccess && (
-						<div className="relative">
-							<button
-								id="btn-meet-camera"
-								type="button"
-								title={t(cameraEnabled ? 'turnOffCamera' : 'turnOnCamera')}
-								aria-label={t(cameraEnabled ? 'turnOffCamera' : 'turnOnCamera')}
-								className={buttonClass}
-								onClick={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
-							>
-								{cameraEnabled ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
-							</button>
-							<SfuDeviceMenu
-								label="Camera"
-								devices={cameras}
-								selectedDeviceId={selectedCamera}
-								onSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
-							/>
-						</div>
-					)}
-					{joinRole === 'speaker' && (
-						<button
-							id="btn-meet-screen"
-							type="button"
-							title={t(screenSharing ? 'stopScreenShare' : 'shareYourScreen')}
-							aria-label={t(screenSharing ? 'stopScreenShare' : 'shareYourScreen')}
-							className={`${buttonClass} ${screenSharing ? '!bg-blue-500' : ''}`}
-							onClick={() => void toggleScreenShare()}
-						>
-							{screenSharing ? <Icons.VoiceScreenShareStopIcon /> : <Icons.VoiceScreenShareIcon />}
-						</button>
-					)}
-					<button
-						id="btn-meet-leave"
-						type="button"
-						title={t('disconnect')}
-						aria-label={t('disconnect')}
-						className={`${buttonClass} !bg-[#da373c] hover:!bg-[#a12829]`}
-						onClick={onLeaveRoom}
-					>
-						<Icons.EndCall className="h-6 w-6" />
-					</button>
-				</div>
-				<div className="flex justify-end pr-1">
-					<button
-						type="button"
-						title={isFullScreen ? 'Exit full screen' : 'Full screen'}
-						aria-label={isFullScreen ? 'Exit full screen' : 'Full screen'}
-						className="cursor-pointer p-2 text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
-						onClick={onFullScreen}
-					>
-						{isFullScreen ? <Icons.ExitFullScreen /> : <Icons.FullScreen />}
-					</button>
-				</div>
-			</footer>
+			<SfuControlBar
+				channelLabel={channelLabel || roomId}
+				joinRole={joinRole}
+				hasMicrophoneAccess={hasMicrophoneAccess}
+				hasCameraAccess={hasCameraAccess}
+				pushToTalkActive={pushToTalkActive}
+				microphoneEnabled={microphoneEnabled}
+				cameraEnabled={cameraEnabled}
+				screenSharing={screenSharing}
+				isGridView={isGridView}
+				showEmojiPanel={showEmojiPanel}
+				showSoundPanel={showSoundPanel}
+				microphones={microphones}
+				cameras={cameras}
+				selectedMicrophone={selectedMicrophone}
+				selectedCamera={selectedCamera}
+				isPopoutOpen={isPopoutOpen}
+				isFullScreen={isFullScreen}
+				onEmojiPanelChange={setShowEmojiPanel}
+				onSoundPanelChange={setShowSoundPanel}
+				onEmojiSelect={sendEmojiReaction}
+				onSoundSelect={sendSoundReaction}
+				onPushToTalk={(active) => void setPushToTalk(active)}
+				onMicrophoneToggle={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
+				onCameraToggle={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
+				onScreenShareToggle={() => void toggleScreenShare()}
+				onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
+				onCameraSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
+				onLeaveRoom={onLeaveRoom}
+				onTogglePopout={() => void togglePopout(activePinnedTrackId)}
+				onFullScreen={onFullScreen}
+			/>
 		</div>
 	);
 }

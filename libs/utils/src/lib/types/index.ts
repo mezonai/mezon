@@ -1587,6 +1587,7 @@ export type IvoiceInfo = {
 	channelLabel: string;
 	channelPrivate: number;
 	roomId?: string;
+	joinRole?: 'speaker' | 'audience';
 };
 
 export type ImageSourceObject = {

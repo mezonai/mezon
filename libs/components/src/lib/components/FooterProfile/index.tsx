@@ -14,6 +14,7 @@ import {
 	selectShowModalCustomStatus,
 	selectShowModalSendToken,
 	selectStatusMenu,
+	selectVoiceInfo,
 	selectVoiceJoined,
 	selectWalletDetail,
 	useAppDispatch,
@@ -42,6 +43,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import { UserStatusIconDM } from '../MemberProfile';
+import { SfuVoiceInfo } from '../MezonSfuVoiceChannel';
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
 import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
 import StreamInfo from '../StreamInfo';
@@ -64,6 +66,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 	const infoSendToken = useSelector(selectInfoSendToken);
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const statusMenu = useSelector(selectStatusMenu);
+	const voiceInfo = useSelector(selectVoiceInfo);
 	const userWallet = useSelector(selectWalletDetail);
 	const myProfile = useAuth();
 	const userMemberStatus = useAppSelector((state) => selectMemberCustomStatusById(state, myProfile.userId as string));
@@ -316,7 +319,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 		>
 			{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 			{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
-			{(isVoiceJoined || GroupCallJoined) && <VoiceInfo />}
+			{(isVoiceJoined || GroupCallJoined) && (voiceInfo?.joinRole ? <SfuVoiceInfo /> : <VoiceInfo />)}
 			<div
 				className={`flex items-center gap-2 pr-4 pl-2 py-2 font-title text-[15px]
 			 font-[500]
