@@ -1,13 +1,4 @@
-import {
-	channelsActions,
-	isDMStreamMode,
-	messagesActions,
-	pinMessageActions,
-	selectHasThreadDeleteSystemMessage,
-	threadsActions,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { channelsActions, isDMStreamMode, messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { ETokenMessage, TypeMessage, convertUnixSecondsToTimeString, generateE2eId, parseThreadInfo } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -60,13 +51,8 @@ const CreateThreadLink = ({ message, threadId, threadLabel }: CreateThreadLinkPr
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { t: translateMessage } = useTranslation('message');
-	const isThreadDeleted = useAppSelector((state) => selectHasThreadDeleteSystemMessage(state, message.channel_id, threadId));
 
 	const handelJumpToChannel = async () => {
-		if (isThreadDeleted) {
-			return;
-		}
-
 		const result = await dispatch(
 			channelsActions.addThreadToChannels({
 				channelId: threadId,
@@ -86,10 +72,7 @@ const CreateThreadLink = ({ message, threadId, threadLabel }: CreateThreadLinkPr
 	return (
 		<>
 			{translateMessage('systemMessages.startedAThread')}{' '}
-			<span
-				onClick={isThreadDeleted ? undefined : handelJumpToChannel}
-				className={`font-semibold ${isThreadDeleted ? 'cursor-default' : 'cursor-pointer hover:underline'}`}
-			>
+			<span onClick={handelJumpToChannel} className={`font-semibold cursor-pointer hover:underline`}>
 				{threadLabel}
 			</span>
 			. {translateMessage('systemMessages.seeAllThreads')}{' '}

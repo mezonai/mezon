@@ -1,0 +1,19 @@
+{
+	"error_0": "Thành công",
+	"error_1": "Yêu cầu đã bị hủy",
+	"error_2": "Lỗi không xác định",
+	"error_3": "Hmm, có vẻ không đúng.",
+	"error_4": "Kết nối đã hết thời gian chờ. Vui lòng thử lại.",
+	"error_5": "Không tìm thấy tài nguyên",
+	"error_6": "Tài nguyên đã tồn tại",
+	"error_7": "Không có quyền truy cập",
+	"error_8": "Tài nguyên đã đạt giới hạn",
+	"error_9": "Điều kiện tiên quyết không được đáp ứng",
+	"error_10": "Rất tiếc, thao tác đã bị gián đoạn. Vui lòng thử lại.",
+	"error_11": "Rất tiếc, giá trị này không hợp lệ.",
+	"error_12": "Thao tác chưa được hỗ trợ",
+	"error_13": "Lỗi nội bộ",
+	"error_14": "Máy chủ đang bận. Vui lòng thử lại sau.",
+	"error_15": "Mất dữ liệu",
+	"error_16": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+}

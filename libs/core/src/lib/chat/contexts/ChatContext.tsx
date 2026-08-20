@@ -6,7 +6,6 @@ import {
 	EStateFriend,
 	accountActions,
 	acitvitiesActions,
-	appActions,
 	attachmentActions,
 	audioCallActions,
 	authActions,
@@ -962,11 +961,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					dispatch(listChannelsByUserActions.remove(userID));
 					dispatch(directMetaActions.remove(user.channel_id));
 					dispatch(
-						appActions.clearHistoryChannel({
-							channelId: user.channel_id
-						})
-					);
-					dispatch(
 						channelsActions.removePreviousChannel({
 							clanId: user.clan_id,
 							channelId: user.channel_id
@@ -1021,7 +1015,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
 					dispatch(topicsActions.removeClanTopics(user?.clan_id));
-					dispatch(appActions.cleanHistoryClan(user.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
 				}
 				dispatch(
@@ -1700,7 +1693,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				navigate(`/chat/direct/friends`);
 				dispatch(clansSlice.actions.removeByClanID(clanDelete.clan_id));
 			}
-			dispatch(appActions.cleanHistoryClan(clanDelete.clan_id));
 		},
 		[userId, isMobile]
 	);
@@ -1712,7 +1704,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const clanId = selectCurrentClanId(store.getState());
 
 			dispatch(voiceActions.removeInVoiceInChannel(channelDeleted?.channel_id));
-			dispatch(appActions.clearHistoryChannel({ channelId: channelDeleted.channel_id }));
 			dispatch(
 				threadsActions.setIsShowCreateThread({
 					channelId: channelDeleted.channel_id as string,

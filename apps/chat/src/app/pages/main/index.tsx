@@ -15,7 +15,6 @@ import {
 	NavLinkComponent,
 	SearchModal,
 	SidebarClanItem,
-	SidebarHistory,
 	SidebarLogoItem,
 	Topbar,
 	useWebRTCStream
@@ -58,7 +57,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId, Platform, PLATFORM_ENV, TIME_OF_SHOWING_FIRST_POPUP } from '@mezon/utils';
+import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -353,7 +352,6 @@ const SidebarMenu = memo(
 						onScroll={(e) => setIsAtTop(e.currentTarget.scrollTop === 0)}
 					>
 						<div className={`flex flex-col items-center sticky top-0 z-50 bg-theme-primary w-full ${isAtTop ? 'pt-3' : 'py-3'}`}>
-							<SidebarHistory />
 							<SidebarLogoItem />
 							<DirectUnreadList />
 							{isAtTop && <div className="w-10 border-b border-color-theme mx-auto mt-3" />}

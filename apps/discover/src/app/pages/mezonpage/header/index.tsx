@@ -3,7 +3,7 @@ import { generateE2eId } from '@mezon/utils';
 import throttle from 'lodash/throttle';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface HeaderProps {
 	sideBarIsOpen: boolean;
@@ -12,22 +12,22 @@ interface HeaderProps {
 }
 
 interface NavLinkProps {
-	href: string;
+	to: string;
 	section: string;
 	label: string;
-	onClick: (id: string, event: React.MouseEvent) => void;
+	onClick: (section: string, event: React.MouseEvent) => void;
 }
 
-const NavItem = memo(({ href, section, label, onClick }: NavLinkProps) => (
-	<a
-		href={href}
+const NavItem = memo(({ to, section, label, onClick }: NavLinkProps) => (
+	<Link
+		to={to}
 		onClick={(event) => onClick(section, event)}
 		className="relative text-[13px] lg:text-[14px] xl:text-[16px] leading-[24px] text-white font-semibold flex flex-row items-center px-1 lg:px-2 xl:px-3 py-2 rounded-lg transition-all duration-300 group overflow-hidden whitespace-nowrap"
 		data-e2e={generateE2eId('homepage.header.link')}
 	>
 		<span className="relative z-10 group-hover:text-white transition-colors duration-300">{label}</span>
 		<span className="absolute inset-0 bg-[#de82e6] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-	</a>
+	</Link>
 ));
 
 const HeaderMezon = memo((props: HeaderProps) => {
@@ -47,7 +47,17 @@ const HeaderMezon = memo((props: HeaderProps) => {
 	};
 
 	const isLogin = getIsLogin();
+	const location = useLocation();
 	const { sideBarIsOpen, toggleSideBar, scrollToSection } = props;
+
+	const handleHomeClick = useCallback(
+		(section: string, event: React.MouseEvent) => {
+			if (location.pathname === '/' || location.pathname === '') {
+				scrollToSection(section, event);
+			}
+		},
+		[location.pathname, scrollToSection]
+	);
 
 	const [isScrolled, setIsScrolled] = useState(false);
 
@@ -96,7 +106,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 						</Link>
 					</div>
 					<nav className="hidden lg:flex items-center justify-center flex-1 min-w-0 gap-x-1 xl:gap-x-2">
-						<NavItem href="#home" section="home" label={t('header.home')} onClick={scrollToSection} />
+						<NavItem to="/" section="home" label={t('header.home')} onClick={handleHomeClick} />
 
 						{[
 							{ href: 'developers/', label: t('header.developers') },
