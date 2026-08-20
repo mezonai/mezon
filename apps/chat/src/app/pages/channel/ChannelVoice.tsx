@@ -194,7 +194,8 @@ const ChannelVoiceInner = () => {
 						clanName: currentClanName as string,
 						channelId: currentChannelId as string,
 						channelLabel: currentChannelLabel as string,
-						channelPrivate: currentChannelPrivate as number
+						channelPrivate: currentChannelPrivate as number,
+						joinRole: role
 					})
 				);
 			} else {
