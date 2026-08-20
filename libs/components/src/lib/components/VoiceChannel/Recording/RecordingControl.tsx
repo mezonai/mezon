@@ -20,8 +20,8 @@ const RecordGlyph = ({ active }: { active: boolean }) => (
 			<rect x="6" y="6" width="12" height="12" rx="2.5" fill="currentColor" />
 		) : (
 			<>
-				<circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-				<circle cx="12" cy="12" r="4.5" fill="currentColor" />
+				<circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeWidth="2" />
+				<circle cx="12" cy="12" r="5.5" fill="currentColor" />
 			</>
 		)}
 	</svg>
