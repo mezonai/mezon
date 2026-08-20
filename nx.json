@@ -98,5 +98,6 @@
 				"cacheableOperations": ["build", "test"]
 			}
 		}
-	}
+	},
+	"analytics": false
 }
