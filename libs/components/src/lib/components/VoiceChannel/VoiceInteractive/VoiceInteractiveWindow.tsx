@@ -119,8 +119,42 @@ const VoiceInteractiveWindow = ({ url, title, onClose }: VoiceInteractiveWindowP
 		};
 	}, [onClose]);
 
+	const activePopupRef = useRef<HTMLDivElement | null>(null);
+
+	const focusPopup = useCallback((popup: HTMLDivElement) => {
+		if (activePopupRef.current === popup) return;
+		activePopupRef.current?.style.setProperty('z-index', '9999');
+		popup.style.setProperty('z-index', '10000');
+
+		activePopupRef.current = popup;
+	}, []);
+
+	useEffect(() => {
+		const handleOutsideClick = (event: PointerEvent) => {
+			const activePopup = activePopupRef.current;
+
+			if (!activePopup) return;
+
+			if (!activePopup.contains(event.target as Node)) {
+				activePopup.style.setProperty('z-index', '9999');
+				activePopupRef.current = null;
+			}
+		};
+
+		document.addEventListener('pointerdown', handleOutsideClick);
+
+		return () => {
+			document.removeEventListener('pointerdown', handleOutsideClick);
+		};
+	}, []);
+
 	return (
 		<div
+			onPointerDown={() => {
+				if (winRef.current) {
+					focusPopup(winRef.current);
+				}
+			}}
 			ref={winRef}
 			style={{
 				position: 'fixed',
@@ -141,6 +175,7 @@ const VoiceInteractiveWindow = ({ url, title, onClose }: VoiceInteractiveWindowP
 			</div>
 
 			<iframe
+				key={url}
 				src={url}
 				title={title}
 				className="flex-1 w-full border-0 bg-white"
