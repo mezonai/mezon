@@ -1,7 +1,7 @@
 import { getPlatform } from '@mezon/utils';
 import { useEffect } from 'react';
 
-const MobileDownload = () => {
+export default function MobileDownload() {
 	useEffect(() => {
 		const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent || '' : '';
 		const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
@@ -31,6 +31,4 @@ const MobileDownload = () => {
 			</div>
 		</div>
 	);
-};
-
-export default MobileDownload;
+}
