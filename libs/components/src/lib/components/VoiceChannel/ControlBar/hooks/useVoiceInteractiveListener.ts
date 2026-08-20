@@ -1,12 +1,4 @@
-import {
-	VOICE_INTERACTIVE_APPS,
-	channelAppActions,
-	getStore,
-	selectChannelById,
-	selectCurrentClanId,
-	selectCurrentClanName,
-	useAppDispatch
-} from '@mezon/store';
+import { VOICE_INTERACTIVE_APPS, channelAppActions, getStore, selectChannelByIdAndClanId, seletClanNameById, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { buildChannelAppLaunchUrl } from '@mezon/utils';
 import type { VoiceInteractiveEvent } from 'mezon-js';
@@ -38,25 +30,23 @@ export function useVoiceInteractiveListener(channelId?: string) {
 
 			try {
 				const hashData = await dispatch(channelAppActions.generateAppUserHash({ appId: app.key })).unwrap();
+				console.log('hashData: ', hashData);
 				if (!hashData.web_app_data) return;
 
 				const store = getStore();
 				const state = store.getState();
-				const clanId = selectCurrentClanId(state) ?? '';
-				const clanName = selectCurrentClanName(state) ?? '';
-				const channel = selectChannelById(state, channelId);
-
+				const clanId = event.clan_id ?? '';
+				const channel = selectChannelByIdAndClanId(state, clanId, channelId);
+				const clanName = seletClanNameById(state, clanId) ?? '';
 				const urlWithHash = buildChannelAppLaunchUrl(app.url, {
 					webAppData: hashData.web_app_data,
 					clanId,
 					clanName
 				});
+				console.log('urlWithHash: ', urlWithHash);
 
 				const id = `${app.key}-${Date.now()}`;
-				setActiveApps((prev) => [
-					...prev,
-					{ id, title: channel?.channel_label ? `${app.name} — ${channel.channel_label}` : app.name, url: urlWithHash }
-				]);
+				setActiveApps((prev) => [...prev, { id, title: clanName ? `${app.name} — ${channel.channel_label}` : app.name, url: urlWithHash }]);
 			} catch (err) {
 				console.error('[voice-interactive] failed to open app:', err);
 			}
