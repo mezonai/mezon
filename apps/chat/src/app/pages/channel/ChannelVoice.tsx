@@ -161,6 +161,10 @@ const ChannelVoiceInner = () => {
 
 	const handleJoinRoom = useLastCallback(async (role: SfuJoinRole) => {
 		setJoinRole(role);
+		if (token) {
+			dispatch(voiceActions.setJoined(false));
+			dispatch(voiceActions.setToken(''));
+		}
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
 		dispatch(voiceActions.setStreamScreen(null));
@@ -239,19 +243,22 @@ const ChannelVoiceInner = () => {
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
 					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />
 				) : (
-					<VoiceConferenceContainer containerRef={containerRef} token={token} isOpenPopOut={isOpenPopOut}>
-						<VoiceConferenceContent
-							token={token}
-							joinRole={joinRole}
-							serverUrl={serverUrl}
-							voiceInfo={voiceInfo}
-							handleLeaveRoom={handleLeaveRoom}
-							handleFullScreen={handleFullScreen}
-							isShowChatVoice={isShowChatVoice}
-							isVoiceFullScreen={!!isVoiceFullScreen}
-							handleToggleChat={handleToggleChat}
-						/>
-					</VoiceConferenceContainer>
+					<>
+						{isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />}
+						<VoiceConferenceContainer containerRef={containerRef} token={token} isOpenPopOut={isOpenPopOut}>
+							<VoiceConferenceContent
+								token={token}
+								joinRole={joinRole}
+								serverUrl={serverUrl}
+								voiceInfo={voiceInfo}
+								handleLeaveRoom={handleLeaveRoom}
+								handleFullScreen={handleFullScreen}
+								isShowChatVoice={isShowChatVoice}
+								isVoiceFullScreen={!!isVoiceFullScreen}
+								handleToggleChat={handleToggleChat}
+							/>
+						</VoiceConferenceContainer>
+					</>
 				)}
 			</div>
 		</Suspense>
