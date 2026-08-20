@@ -1,6 +1,6 @@
 # Mezon Developer Guide
 
-> This guide is for developers who want to contribute to Mezon, build integrations, or understand the technical architecture.
+> This guide is for developers working on the **web** client in this repository. Native clients are maintained separately: [mezon-desktop](https://github.com/mezonai/mezon-desktop), [mezon-ios](https://github.com/mezonai/mezon-ios), and [mezon-android](https://github.com/mezonai/mezon-android).
 
 ## Table of Contents
 
@@ -63,11 +63,13 @@ Mezon uses a monorepo architecture managed by Nx, providing efficient code shari
 
 ### Applications
 
-Located in the `apps` directory:
+Located in the `apps` directory (web only):
 
 - **chat**: Main chat application (React)
 - **admin**: Administration panel
 - **discover**: Marketing and discovery site
+
+Desktop, iOS, and Android are not part of this monorepo. See [mezon-desktop](https://github.com/mezonai/mezon-desktop), [mezon-ios](https://github.com/mezonai/mezon-ios), and [mezon-android](https://github.com/mezonai/mezon-android).
 
 ### Libraries
 
@@ -198,7 +200,7 @@ Mezon provides comprehensive APIs for building integrations:
 - Rich messaging capabilities
 - Custom commands and interactions
 
-See full API documentation at [https://mezon.ai/docs/api](https://mezon.ai/docs/api)
+See full API documentation at [https://mezon.ai/docs/](https://mezon.ai/docs/developer/intro)
 
 ## Contributing
 
@@ -259,9 +261,12 @@ Managed through the `policies` slice:
 
 ## Resources
 
-- [Mezon SDK Documentation](https://github.com/mezonai/mezon-sdk)
-- [API Reference](https://mezon.ai/docs/api)
-- [Community Discord](https://mezon.ai/invite/1840696977034055680)
+- [Mezon SDK Documentation](https://mezon.ai/docs/developer/intro)
+- [API Reference](https://mezon.ai/docs/developer/mezon-sdk/integration-bot-sdk/api-references)
+- [Desktop client](https://github.com/mezonai/mezon-desktop)
+- [iOS client](https://github.com/mezonai/mezon-ios)
+- [Android client](https://github.com/mezonai/mezon-android)
+- [Community Hub](https://mezon.ai/invite/1840696977034055680)
 - [Bug Reports](https://mezon.ai/invite/1840696977034055680)
 
 ---

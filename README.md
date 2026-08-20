@@ -7,7 +7,7 @@
 
   <p align="center">
     <a href="https://github.com/mezonai/mezon/releases"><img src="https://img.shields.io/github/v/release/mezonai/mezon?style=flat-square" alt="Latest Release"></a>
-    <a href="https://github.com/mezonai/mezon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/mezonai/mezon?style=flat-square" alt="License"></a>
+    <a href="#-license--legal"><img src="https://img.shields.io/github/license/mezonai/mezon?style=flat-square" alt="License"></a>
     <a href="https://github.com/mezonai/mezon/stargazers"><img src="https://img.shields.io/github/stars/mezonai/mezon?style=flat-square" alt="GitHub Stars"></a>
     <a href="https://github.com/mezonai/mezon/issues"><img src="https://img.shields.io/github/issues/mezonai/mezon?style=flat-square" alt="Issues"></a>
     <a href="https://github.com/mezonai/mezon/network/members"><img src="https://img.shields.io/github/forks/mezonai/mezon?style=flat-square" alt="Forks"></a>
@@ -60,13 +60,19 @@ That performance comes from owning the hot path end to end — a C WebRTC SFU, a
 ### For Users
 
 1. **Web App**: Visit [mezon.ai](https://mezon.ai) - no installation required
-2. **Desktop**: Download from [releases](https://github.com/mezonai/mezon/releases) for Windows, macOS, or Linux
+2. **Desktop**: Download from [mezon-desktop releases](https://github.com/mezonai/mezon-desktop) for Windows, macOS, or Linux
 3. **Mobile**: Get the app from [App Store](https://apps.apple.com/vn/app/mezon/id6502750046) or [Google Play](https://play.google.com/store/apps/details?id=com.mezon.mobile&pli=1)
 
 ### For Developers
 
+This repository is the **web** client (Nx/React monorepo). Native clients live in separate repos:
+
+-   [mezon-desktop](https://github.com/mezonai/mezon-desktop) — Rust/GPUI desktop app
+-   [mezon-ios](https://github.com/mezonai/mezon-ios) — native iOS app
+-   [mezon-android](https://github.com/mezonai/mezon-android) — native Android app
+
 ```bash
-# Clone the repository
+# Clone the web repository
 git clone https://github.com/mezonai/mezon.git
 cd mezon
 
@@ -121,12 +127,12 @@ The application will be available at http://localhost:4200/
 
 ### System Requirements
 
-| Platform        | Requirements                                                   |
-| --------------- | -------------------------------------------------------------- |
-| **Web**         | Modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+) |
-| **Desktop**     | Windows 10+, macOS 10.15+, Ubuntu 18.04+                       |
-| **Mobile**      | iOS 13.0+, Android 8.0+ (API level 26+)                        |
-| **Development** | Node.js 18+, Yarn 1.22.4+, 4GB RAM minimum                     |
+| Platform              | Requirements                                                   |
+| --------------------- | -------------------------------------------------------------- |
+| **Web**               | Modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+) |
+| **Desktop**           | Windows 10+, macOS 10.15+, Ubuntu 18.04+                       |
+| **Mobile**            | iOS 13.0+, Android 8.0+ (API level 26+)                        |
+| **Development (web)** | Node.js 18+, Yarn 1.22.4+, 4GB RAM minimum                     |
 
 ### Source code
 
@@ -146,7 +152,7 @@ The application will be available at http://localhost:4200/
 | ----------- | ----------------------------------------------------------------------------- | --------- |
 | **Windows** | [Download](https://apps.microsoft.com/detail/9pf25lf1fj17)                    | ✅ Stable |
 | **macOS**   | [Download](https://apps.apple.com/vn/app/mezon-desktop/id6756601798)          | ✅ Stable |
-| **Linux**   | [Download](https://cdn.komu.vn/release/mezon-2.0.1-linux-amd64.deb)           | ✅ Stable |
+| **Linux**   | [Download](https://cdn.komu.vn/mezon/release/latest/mezon_2.0.16_amd64.deb)   | ✅ Stable |
 | **iOS**     | [App Store](https://apps.apple.com/vn/app/mezon/id6502750046)                 | ✅ Stable |
 | **Android** | [Google Play](https://play.google.com/store/apps/details?id=com.mezon.mobile) | ✅ Stable |
 | **Web**     | [mezon.ai](https://mezon.ai)                                                  | ✅ Stable |
@@ -158,7 +164,7 @@ The application will be available at http://localhost:4200/
 ### 🛠️ Development Setup
 
 ```bash
-# Clone the repository
+# Clone the web repository
 git clone https://github.com/mezonai/mezon.git
 cd mezon
 
@@ -168,16 +174,16 @@ yarn install
 # Available development commands
 yarn dev:chat          # Start chat app (port 4200)
 yarn dev:admin         # Start admin dashboard (port 4200)
-yarn dev:mobile        # Start mobile development
 
 # Build for production
 yarn build:chat        # Build web chat app
-yarn build:mobile      # Build mobile apps
 
 # Code quality
 yarn lint              # Run linting
 yarn format           # Format code
 ```
+
+For native clients, follow the setup guides in [mezon-desktop](https://github.com/mezonai/mezon-desktop), [mezon-ios](https://github.com/mezonai/mezon-ios), and [mezon-android](https://github.com/mezonai/mezon-android).
 
 ### Local Development Setup Guide
 
@@ -189,15 +195,15 @@ Open your terminal in the project's root directory and run the following command
 yarn install
 ```
 
-#### 2. Retrieve Authentication Data from Dev
+#### 2. Retrieve Authentication Data from Production (mezon.ai)
 
-To access protected data and features on your local machine, you need to copy your session tokens from the Development environment:
+To access protected data and features on your local machine, you need to copy your session tokens from the production environment:
 
-1. Navigate to: [https://dev-mezon.nccsoft.vn](https://dev-mezon.nccsoft.vn)
+1. Navigate to: [https://mezon.ai](https://mezon.ai)
 2. **Log in** with your credentials.
 3. Open **Developer Tools** (Press `F12` or `Right-click > Inspect`).
 4. Go to the **Application** tab.
-5. In the left sidebar, expand **Local Storage** and select `https://dev-mezon.nccsoft.vn`.
+5. In the left sidebar, expand **Local Storage** and select `https://mezon.ai`.
 6. Locate and **copy** the values for the following keys:
 
 -   `persist:auth`
@@ -210,7 +216,7 @@ Once your local server is running (typically at `http://localhost:4200`):
 1. Open your **Localhost** URL in the browser.
 2. Open **Developer Tools** (`F12`) > **Application** tab > **Local Storage**.
 3. Manually add or edit the keys `persist:auth` and `mezon_session`.
-4. **Paste** the corresponding values you copied from the Dev site into the **Value** column.
+4. **Paste** the corresponding values you copied from mezon.ai into the **Value** column.
 
 #### 4. Finalize
 
@@ -218,7 +224,7 @@ Refresh your local browser tab to apply the authentication state:
 
 -   Press **F5** or **Cmd/Ctrl + R**.
 
-You should now be logged into the local environment with your Dev session active.
+You should now be logged into the local environment with your mezon.ai session active.
 
 ---
 
@@ -247,8 +253,9 @@ mezon/
 -   **State Management**: Redux Toolkit + RTK Query
 -   **Styling**: Tailwind CSS
 -   **Build Tool**: Nx Monorepo with Webpack
--   **Mobile**: Native app [mezon-ios](https://github.com/mezonai/mezon-ios), [mezon-android](https://github.com/mezonai/mezon-android)
--   **Desktop**: Rust Native [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
+-   **iOS** (separate repo): Native Swift client — [mezon-ios](https://github.com/mezonai/mezon-ios)
+-   **Android** (separate repo): Native Kotlin client — [mezon-android](https://github.com/mezonai/mezon-android)
+-   **Desktop** (separate repo): Native Rust/GPUI client — [mezon-desktop](https://github.com/mezonai/mezon-desktop)
 
 #### Backend & Infrastructure
 
@@ -305,7 +312,7 @@ Mezon owns the hot path in C so chat, voice, and data stay off generic HTTP/WebR
 -   Custom webhooks and third-party integrations
 -   Extensive documentation and examples
 
-> 🔗 **Resources**: [Bot Example](https://github.com/mezonai/mezon-bot-example) | [SDK Documentation](https://mezon.ai/docs/mezon-sdk-docs/)
+> 🔗 **Resources**: [Bot Example](https://github.com/mezonai/mezon-bot-example) | [SDK Documentation](https://mezon.ai/docs/developer/mezon-sdk)
 
 ## 🤝 Contributing
 
@@ -327,7 +334,7 @@ We welcome contributions from the community! Here's how you can help:
 4. Ensure all tests pass (`yarn test`)
 5. Submit a pull request
 
-> 📋 **Guidelines**: Please read our [Contributing Guide](CONTRIBUTING.md) for detailed information about our development process, coding standards, and pull request guidelines.
+> 📋 **Guidelines**: Please read our [Contributing Guide](DEVELOPMENT.md#contributing) for detailed information about our development process, coding standards, and pull request guidelines.
 
 ---
 
@@ -342,10 +349,11 @@ We welcome contributions from the community! Here's how you can help:
 
 ### 🛠️ For Developers
 
--   [**Developer Guide**](docs/developer/SETUP.md) - Complete setup and development guide
--   [**API Documentation**](https://mezon.ai/docs/mezon-sdk-docs/) - REST API and WebSocket reference
+-   [**Developer Guide**](docs/developer/SETUP.md) - Complete setup and development guide (web)
+-   [**API Documentation**](https://mezon.ai/docs/developer/mezon-sdk) - REST API and WebSocket reference
 -   [**Architecture Guide**](docs/developer/ARCHITECTURE.md) - System design and architecture
 -   [**Bot Development**](https://github.com/mezonai/mezon-bot-example) - Bot creation tutorial
+-   [**Desktop**](https://github.com/mezonai/mezon-desktop) · [**iOS**](https://github.com/mezonai/mezon-ios) · [**Android**](https://github.com/mezonai/mezon-android) - Native clients
 
 ### 📦 SDKs & Libraries
 
@@ -353,6 +361,7 @@ We welcome contributions from the community! Here's how you can help:
 -   [**Go SDK**](https://github.com/mezonai/mezon-go-sdk) - Official Go SDK
 -   [**Java SDK**](https://github.com/mezonai/mezon-java-sdk) - Official Java SDK
 -   [**Python SDK**](https://github.com/phuvinh010701/mezon-sdk-python) - Official Python SDK
+-   [**.NET SDK**](https://github.com/huy-buidoanquang/Mezon.NET) - Official .NET SDK
 -   [**NestJS SDK**](https://github.com/n0xgg04/nezon) - Official NestJs SDK
 -   [**Mezon WebJs SDK**](https://github.com/mezonai/mezon-web-js) - SDK for channel apps integration
 -   [**MCP Integration**](https://github.com/mezonai/mezon-mcp) - AI-ready integration
@@ -388,13 +397,13 @@ We welcome contributions from the community! Here's how you can help:
 -   Close unnecessary applications to free up system resources
 -   Update to the latest version for performance improvements
 
-> 🆘 **Need Help?** Visit our [troubleshooting guide](docs/TROUBLESHOOTING.md) or ask in our [community chat](https://mezon.ai/invite/1840696977034055680).
+> 🆘 **Need Help?** Visit our [troubleshooting guide](DEVELOPMENT.md#troubleshooting) or ask in our [community chat](https://mezon.ai/invite/1840696977034055680).
 
 ---
 
 ## 📄 License & Legal
 
--   **License**: [MIT License](LICENSE) - Free for personal and commercial use
+-   **License**: MIT License - Free for personal and commercial use
 -   **Privacy Policy**: [mezon.ai/privacy](https://mezon.ai/privacy-policy)
 -   **Terms of Service**: [mezon.ai/terms](https://mezon.ai/terms-of-service)
 -   **Security Policy**: [SECURITY.md](SECURITY.md)
@@ -405,6 +414,8 @@ We welcome contributions from the community! Here's how you can help:
 
 Mezon is built on top of amazing open-source technologies:
 
+-   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
+-   [mezon-sfu](https://github.com/mezonai/mezon-sfu) - mezon-sfu
 -   [liburing](https://github.com/axboe/liburing) - io_uring for zero-copy I/O in mezon-sfu and mezon-proto-server
 -   [BoringSSL](https://boringssl.googlesource.com/boringssl) - TLS / DTLS
 -   [libsrtp](https://github.com/cisco/libsrtp) - SRTP media protection
