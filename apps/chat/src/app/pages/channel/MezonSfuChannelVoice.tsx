@@ -1,7 +1,3 @@
-import { loadUserChoices, saveUserChoices } from '@livekit/components-core';
-import { RoomContext } from '@livekit/components-react';
-import '@livekit/components-styles';
-
 import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
 import {
 	appActions,
@@ -26,21 +22,24 @@ import {
 	voiceActions
 } from '@mezon/store';
 
-// eslint-disable-next-line @nx/enforce-module-boundaries -- legacy LiveKit room remains a separate route-level implementation
-import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
+import type { SfuJoinRole } from '@mezon/components';
 import { useLastCallback } from '@mezon/utils';
-import type { RoomConnectOptions } from 'livekit-client';
-import { Room } from 'livekit-client';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
-import React, { Suspense, memo, useCallback, useEffect, useMemo, useRef, useState, type ErrorInfo } from 'react';
+import React, { Suspense, lazy, memo, useCallback, useRef, useState, type ErrorInfo } from 'react';
 import { useSelector } from 'react-redux';
 import ChatStream from '../chatStream';
-import { useLowCPUOptimizer } from './hooks/useLowCPUOptimizer';
+
+const MezonSfuVoiceRoom = lazy(() =>
+	import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.MezonSfuVoiceRoom }))
+);
+const SfuPreJoinVoiceChannel = lazy(() =>
+	import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.SfuPreJoinVoiceChannel }))
+);
 
 interface VoicePreJoinWrapperProps {
 	loading: boolean;
-	handleJoinRoom: () => void;
+	handleJoinRoom: (role: SfuJoinRole) => void;
 }
 
 const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapperProps) => {
@@ -53,7 +52,7 @@ const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapp
 	const isCurrentChannel = isJoined && voiceInfo?.channelId === channelId;
 
 	return (
-		<PreJoinVoiceChannel
+		<SfuPreJoinVoiceChannel
 			channel_label={channelLabel}
 			channel_id={channelId as string}
 			loading={loading}
@@ -68,61 +67,60 @@ interface VoiceConferenceContainerProps {
 	containerRef: RefObject<HTMLDivElement>;
 	token: string;
 	isOpenPopOut?: boolean;
-	isVoiceFullScreen?: boolean;
 	children: ReactNode;
 }
 
 interface VoiceConferenceContentProps {
-	room: Room;
 	token: string;
+	joinRole: SfuJoinRole;
 	serverUrl: string;
 	voiceInfo: ReturnType<typeof selectVoiceInfo>;
 	handleLeaveRoom: (self?: boolean) => Promise<void>;
 	handleFullScreen: () => void;
-	handleJoinRoom: (reconnect?: boolean) => void;
 	isShowChatVoice: boolean;
-	toggleChat: () => void;
+	isVoiceFullScreen: boolean;
+	handleToggleChat: () => void;
 }
 
 const VoiceConferenceContent = memo(
 	({
-		room,
 		token,
+		joinRole,
 		serverUrl,
 		voiceInfo,
 		handleLeaveRoom,
 		handleFullScreen,
-		handleJoinRoom,
 		isShowChatVoice,
-		toggleChat
+		isVoiceFullScreen,
+		handleToggleChat
 	}: VoiceConferenceContentProps) => {
 		return (
-			<RoomContext.Provider value={room}>
-				<div className="flex-1 relative flex overflow-hidden">
-					<MyVideoConference
-						token={token}
-						url={serverUrl}
-						channelLabel={voiceInfo?.channelLabel as string}
-						onLeaveRoom={handleLeaveRoom}
-						onFullScreen={handleFullScreen}
-						onJoinRoom={handleJoinRoom}
-						isShowChatVoice={isShowChatVoice}
-						onToggleChat={toggleChat}
-					/>
-					<EmojiSuggestionProvider>
-						{isShowChatVoice && (
-							<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
-								<ChatStream topicChannelId={voiceInfo?.channelId} />
-							</div>
-						)}
-					</EmojiSuggestionProvider>
-				</div>
-			</RoomContext.Provider>
+			<div className="flex-1 relative flex overflow-hidden">
+				<MezonSfuVoiceRoom
+					token={token}
+					joinRole={joinRole}
+					roomId={voiceInfo?.channelId as string}
+					serverUrl={serverUrl}
+					channelLabel={voiceInfo?.channelLabel || ''}
+					isChatOpen={isShowChatVoice}
+					isFullScreen={isVoiceFullScreen}
+					onLeaveRoom={() => void handleLeaveRoom()}
+					onFullScreen={handleFullScreen}
+					onToggleChat={handleToggleChat}
+				/>
+				<EmojiSuggestionProvider>
+					{isShowChatVoice && (
+						<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
+							<ChatStream topicChannelId={voiceInfo?.channelId} />
+						</div>
+					)}
+				</EmojiSuggestionProvider>
+			</div>
 		);
 	}
 );
 
-const VoiceConferenceContainer = memo(({ containerRef, token, isOpenPopOut, isVoiceFullScreen, children }: VoiceConferenceContainerProps) => {
+const VoiceConferenceContainer = memo(({ containerRef, token, isOpenPopOut, children }: VoiceConferenceContainerProps) => {
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -132,22 +130,22 @@ const VoiceConferenceContainer = memo(({ containerRef, token, isOpenPopOut, isVo
 	return (
 		<div
 			ref={containerRef}
-			id="livekitRoom11"
+			id="mezonSfuRoom"
 			key={token}
-			className={`${!isShow || isOpenPopOut ? '!hidden' : ''} lk-room-container flex ${isVoiceFullScreen ? 'w-full h-full' : ''}`}
-			data-lk-theme="default"
+			className={`${!isShow || isOpenPopOut ? '!hidden' : ''} flex flex-1 min-w-0 w-full h-full`}
 		>
 			{children}
 		</div>
 	);
 });
 
-const ChannelVoiceInner = () => {
+const MezonSfuChannelVoiceInner = () => {
 	const token = useSelector(selectTokenJoinVoice);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const dispatch = useAppDispatch();
-	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
+	const serverUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const isShowChatVoice = useSelector(selectIsShowChatVoice);
 	const currentChannelType = useSelector(selectCurrentChannelType);
@@ -159,56 +157,19 @@ const ChannelVoiceInner = () => {
 	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
 	const isOnMenu = useSelector(selectStatusMenu);
 
-	const room = useMemo(() => new Room({ dynacast: true, adaptiveStream: true }), []);
 	const isDisconnectingRef = useRef(false);
 
-	const connectOptions = useMemo(
-		(): RoomConnectOptions => ({
-			autoSubscribe: true
-		}),
-		[]
-	);
-
-	const handleError = useCallback((error: Error) => {
-		console.error('Room error:', error);
-	}, []);
-
-	useEffect(() => {
-		if (!token || !serverUrl) return;
-		room.connect(serverUrl, token).catch((error) => {
-			handleError(error);
-		});
-	}, [token, serverUrl, room, connectOptions, handleError]);
-
-	const lowPowerMode = useLowCPUOptimizer(room);
-
-	useEffect(() => {
-		if (lowPowerMode) {
-			console.warn('Low power mode enabled');
+	const handleJoinRoom = useLastCallback(async (role: SfuJoinRole) => {
+		setJoinRole(role);
+		if (token) {
+			dispatch(voiceActions.setJoined(false));
+			dispatch(voiceActions.setToken(''));
 		}
-	}, [lowPowerMode]);
-
-	const handleJoinRoom = useLastCallback(async (reconnect?: boolean) => {
-		if (reconnect) {
-			return;
-		}
-		try {
-			await room.disconnect();
-		} catch (error) {
-			console.error('Failed to disconnect previous LiveKit room before joining:', error);
-		}
-
-		const currentUserChoices = loadUserChoices();
-		saveUserChoices({
-			...currentUserChoices,
-			audioEnabled: false,
-			videoEnabled: false
-		});
-
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
 		dispatch(voiceActions.setStreamScreen(null));
 		dispatch(voiceActions.setShowMicrophone(false));
+		if (role === 'audience') dispatch(voiceActions.setShowCamera(false));
 
 		const storeState = getStore().getState();
 		const currentClanId = selectCurrentClanId(storeState);
@@ -237,7 +198,8 @@ const ChannelVoiceInner = () => {
 						clanName: currentClanName as string,
 						channelId: currentChannelId as string,
 						channelLabel: currentChannelLabel as string,
-						channelPrivate: currentChannelPrivate as number
+						channelPrivate: currentChannelPrivate as number,
+						joinRole: role
 					})
 				);
 			} else {
@@ -251,17 +213,11 @@ const ChannelVoiceInner = () => {
 		}
 	});
 
-	const handleLeaveRoom = useLastCallback(async (self?: boolean) => {
+	const handleLeaveRoom = useLastCallback(async (_self?: boolean) => {
 		if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
 
 		if (isDisconnectingRef.current) return;
 		isDisconnectingRef.current = true;
-
-		try {
-			await room.disconnect();
-		} catch (error) {
-			console.error('Failed to disconnect LiveKit room:', error);
-		}
 
 		dispatch(voiceActions.resetVoiceControl());
 		if (userProfile?.user?.id) {
@@ -273,19 +229,10 @@ const ChannelVoiceInner = () => {
 
 	const handleFullScreen = useCallback(() => {
 		dispatch(voiceActions.setFullScreen(!isVoiceFullScreen));
-	}, [isVoiceFullScreen]);
-
-	const toggleChat = useCallback(() => {
+	}, [dispatch, isVoiceFullScreen]);
+	const handleToggleChat = useCallback(() => {
 		dispatch(appActions.setIsShowChatVoice(!isShowChatVoice));
-	}, [isShowChatVoice, dispatch]);
-
-	useEffect(() => {
-		return () => {
-			room.disconnect().catch((error) => {
-				console.error('Error disconnecting LiveKit room on unmount:', error);
-			});
-		};
-	}, [room]);
+	}, [dispatch, isShowChatVoice]);
 
 	return (
 		<Suspense fallback={<div>loading ...</div>}>
@@ -298,23 +245,17 @@ const ChannelVoiceInner = () => {
 				) : (
 					<>
 						{isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />}
-
-						<VoiceConferenceContainer
-							containerRef={containerRef}
-							token={token}
-							isOpenPopOut={isOpenPopOut}
-							isVoiceFullScreen={isVoiceFullScreen}
-						>
+						<VoiceConferenceContainer containerRef={containerRef} token={token} isOpenPopOut={isOpenPopOut}>
 							<VoiceConferenceContent
-								room={room}
 								token={token}
+								joinRole={joinRole}
 								serverUrl={serverUrl}
 								voiceInfo={voiceInfo}
 								handleLeaveRoom={handleLeaveRoom}
 								handleFullScreen={handleFullScreen}
-								handleJoinRoom={handleJoinRoom}
 								isShowChatVoice={isShowChatVoice}
-								toggleChat={toggleChat}
+								isVoiceFullScreen={!!isVoiceFullScreen}
+								handleToggleChat={handleToggleChat}
 							/>
 						</VoiceConferenceContainer>
 					</>
@@ -362,10 +303,10 @@ class VoiceErrorBoundary extends React.Component<{ children: ReactNode }, VoiceE
 	}
 }
 
-const ChannelVoice = memo(() => (
+const MezonSfuChannelVoice = memo(() => (
 	<VoiceErrorBoundary>
-		<ChannelVoiceInner />
+		<MezonSfuChannelVoiceInner />
 	</VoiceErrorBoundary>
 ));
 
-export default ChannelVoice;
+export default MezonSfuChannelVoice;
