@@ -606,8 +606,13 @@ export const DATA_E2E_IDENTIFIER = {
 				channel_name: '',
 				control_bar: '',
 				button: {
-					join_voice: ''
-				}
+					join_voice: '',
+					send_flower: '',
+					kick: '',
+					mute_mic: '',
+					record: ''
+				},
+				time_record: ''
 			},
 			canvas_editor: {
 				input: {
@@ -1286,6 +1291,48 @@ export const DATA_E2E_IDENTIFIER = {
 	invite_card: {
 		button: {
 			goto_clan: ''
+		}
+	},
+	send_token: {
+		modal: {
+			send: {
+				input: {
+					search_user: '',
+					amount: '',
+					note: ''
+				},
+				select: {
+					item: ''
+				},
+				button: {
+					send: '',
+					cancel: ''
+				}
+			},
+			transaction_history: {
+				tab: {
+					item: ''
+				},
+				item: {
+					amount: '',
+					status: '',
+					time: '',
+					button: {
+						open_detail: ''
+					},
+					detail: {
+						label: '',
+						value: ''
+					}
+				}
+			}
+		},
+		message: {
+			title: '',
+			detail: '',
+			button: {
+				open_history: ''
+			}
 		}
 	}
 };

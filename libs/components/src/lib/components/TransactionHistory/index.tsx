@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { formatBalanceToString } from '@mezon/utils';
+import { formatBalanceToString, generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -136,7 +136,10 @@ const TransactionHistory = ({ onClose }: IProps) => {
 		if (isSender) {
 			return (
 				<div className="flex items-center gap-2">
-					<div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+					<div
+						className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center"
+						data-e2e={generateE2eId('send_token.modal.transaction_history.item.button.open_detail')}
+					>
 						{isOpened ? (
 							<Icons.ArrowDown className="w-4 h-4 text-red-600 dark:text-red-400 rotate-180" />
 						) : (
@@ -144,8 +147,16 @@ const TransactionHistory = ({ onClose }: IProps) => {
 						)}
 					</div>
 					<div>
-						<p className="text-red-600 dark:text-red-400 font-semibold">{`- ${formattedAmount} ${t(CURRENCY.SYMBOL)}`}</p>
-						<p className="text-xs text-gray-500 dark:text-gray-400">{t(TRANSACTION_TYPES.SENT)}</p>
+						<p
+							className="text-red-600 dark:text-red-400 font-semibold"
+							data-e2e={generateE2eId('send_token.modal.transaction_history.item.amount')}
+						>{`- ${formattedAmount} ${t(CURRENCY.SYMBOL)}`}</p>
+						<p
+							className="text-xs text-gray-500 dark:text-gray-400"
+							data-e2e={generateE2eId('send_token.modal.transaction_history.item.status')}
+						>
+							{t(TRANSACTION_TYPES.SENT)}
+						</p>
 					</div>
 				</div>
 			);
@@ -153,7 +164,10 @@ const TransactionHistory = ({ onClose }: IProps) => {
 
 		return (
 			<div className="flex items-center gap-2">
-				<div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+				<div
+					className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center"
+					data-e2e={generateE2eId('send_token.modal.transaction_history.item.button.open_detail')}
+				>
 					{isOpened ? (
 						<Icons.ArrowDown className="w-4 h-4 text-green-600 dark:text-green-400 rotate-180" />
 					) : (
@@ -161,8 +175,16 @@ const TransactionHistory = ({ onClose }: IProps) => {
 					)}
 				</div>
 				<div>
-					<p className="text-green-600 dark:text-green-400 font-semibold">{`+ ${formattedAmount} ${t(CURRENCY.SYMBOL)}`}</p>
-					<p className="text-xs text-gray-500 dark:text-gray-400">{t(TRANSACTION_TYPES.RECEIVED)}</p>
+					<p
+						className="text-green-600 dark:text-green-400 font-semibold"
+						data-e2e={generateE2eId('send_token.modal.transaction_history.item.amount')}
+					>{`+ ${formattedAmount} ${t(CURRENCY.SYMBOL)}`}</p>
+					<p
+						className="text-xs text-gray-500 dark:text-gray-400"
+						data-e2e={generateE2eId('send_token.modal.transaction_history.item.status')}
+					>
+						{t(TRANSACTION_TYPES.RECEIVED)}
+					</p>
 				</div>
 			</div>
 		);
@@ -243,6 +265,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 											? `bg-${tab.color}-100 text-${tab.color}-700 dark:bg-${tab.color}-900/30 dark:text-${tab.color}-400 shadow-sm`
 											: 'text-theme-primary bg-item-theme-hover'
 									}`}
+									data-e2e={generateE2eId('send_token.modal.transaction_history.tab.item')}
 								>
 									{t(tab.label)}
 								</button>
@@ -276,7 +299,10 @@ const TransactionHistory = ({ onClose }: IProps) => {
 																{item.hash?.slice(-TRANSACTION_ITEM.ID_LENGTH)}
 															</p>
 														</div>
-														<p className="dark:text-gray-400 text-gray-500 text-xs mt-1">
+														<p
+															className="dark:text-gray-400 text-gray-500 text-xs mt-1"
+															data-e2e={generateE2eId('send_token.modal.transaction_history.item.time')}
+														>
 															{formatDate(new Date((item.transaction_timestamp ?? 0) * 1000).toISOString())}
 														</p>
 													</div>

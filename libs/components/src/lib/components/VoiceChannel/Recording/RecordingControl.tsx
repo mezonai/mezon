@@ -1,4 +1,5 @@
 import { selectVoiceRecording } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -51,7 +52,11 @@ const RecordingClock = memo(({ startedAt }: { startedAt: number | null }) => {
 	}, []);
 
 	// Fixed width, so the pill does not resize every time a digit changes.
-	return <span className="tabular-nums min-w-[4.75rem]">REC {formatClock(startedAt ? now - startedAt : 0)}</span>;
+	return (
+		<span className="tabular-nums min-w-[4.75rem]" data-e2e={generateE2eId('clan_page.screen.voice_room.time_record')}>
+			REC {formatClock(startedAt ? now - startedAt : 0)}
+		</span>
+	);
 });
 
 RecordingClock.displayName = 'RecordingClock';
@@ -109,6 +114,7 @@ export const RecordingControl = memo(({ channelLabel }: RecordingControlProps) =
 				className={`flex items-center cursor-pointer transition-colors ${isBusy ? 'opacity-60 pointer-events-none' : ''} ${
 					isActive ? 'text-[#da373c] hover:text-[#a12829]' : 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'
 				}`}
+				data-e2e={generateE2eId('clan_page.screen.voice_room.button.record')}
 			>
 				<RecordGlyph active={isActive} />
 			</div>
