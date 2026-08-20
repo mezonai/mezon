@@ -1,7 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { channelsActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
+import { authActions, channelsActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,22 +55,29 @@ export default function InvitePage() {
 	};
 
 	const handleJoinChannel = async () => {
+		if (!isLogin) {
+			if (inviteIdParam) {
+				dispatch(authActions.setRedirectUrl(`/invite/${inviteIdParam}`));
+			}
+			navigate('/mezon');
+			return;
+		}
+
 		const result = await joinChannel();
 		handleBackNavigate();
 		if (!result) {
+			try {
+				window.location.href = `mezon.ai://invite/${inviteIdParam}`;
+			} catch (e) {
+				console.error('log  => handleJoinChannel error', e);
+			}
 			navigate(`/mezon`);
-		}
-		try {
-			window.location.href = `mezon.ai://invite/${inviteIdParam}`;
-			setLoading(false);
-		} catch (e) {
-			console.error('log  => handleJoinChannel error', e);
+			return;
 		}
 	};
 
-	const appDispatch = useAppDispatch();
 	const handleBackNavigate = () => {
-		appDispatch(inviteActions.setIsClickInvite(false));
+		dispatch(inviteActions.setIsClickInvite(false));
 	};
 
 	useEffect(() => {
@@ -90,13 +97,7 @@ export default function InvitePage() {
 				document.removeEventListener('keydown', handleKeyDown);
 			};
 		}
-	}, [userJoined, navigate, clanId, channeId]);
-
-	useEffect(() => {
-		if (isLogin === false && inviteIdParam) {
-			navigate(`/chat/login?redirect=/invite/${inviteIdParam}`);
-		}
-	}, [isLogin, inviteIdParam, navigate]);
+	}, [userJoined, navigate, clanId, channeId, t]);
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-theme-primary">
@@ -137,7 +138,7 @@ export default function InvitePage() {
 
 				{error && <div className="w-full text-center text-red-400 text-sm mb-2">{error}</div>}
 				<button
-					onClick={isLogin ? handleJoinChannel : () => navigate(`/chat/login?redirect=/invite/${inviteIdParam}`)}
+					onClick={handleJoinChannel}
 					disabled={loading}
 					className={`text-white w-full py-[10px] text-base font-medium rounded-md ${loading ? 'bg-gray-500 cursor-not-allowed' : 'btn-primary btn-primary-hover '}`}
 					data-e2e={generateE2eId('acceptModal.button.acceptInvite')}
