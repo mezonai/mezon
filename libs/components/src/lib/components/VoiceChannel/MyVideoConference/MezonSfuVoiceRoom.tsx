@@ -687,6 +687,8 @@ export function MezonSfuVoiceRoom({
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
+	const [isPopoutOpen, setIsPopoutOpen] = useState(false);
+	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 	const [selectedMicrophone, setSelectedMicrophone] = useState('default');
 	const [selectedCamera, setSelectedCamera] = useState('default');
@@ -696,7 +698,54 @@ export function MezonSfuVoiceRoom({
 	const gridTileOrderRef = useRef<string[]>([]);
 	const focusTileOrderRef = useRef<string[]>([]);
 	const focusThumbnailsRef = useRef<HTMLDivElement>(null);
+	const focusVideoContainerRef = useRef<HTMLDivElement>(null);
 	const [, renderFocusTileOrder] = useState(0);
+
+	const closePopout = useCallback(async () => {
+		if (document.pictureInPictureElement) await document.exitPictureInPicture();
+		setIsPopoutOpen(false);
+		setPopoutTrackId(undefined);
+	}, []);
+
+	const togglePopout = useCallback(
+		async (trackId?: string) => {
+			try {
+				if (document.pictureInPictureElement) {
+					await closePopout();
+					return;
+				}
+
+				const video = focusVideoContainerRef.current?.querySelector('video');
+				if (!video) {
+					dispatch(toastActions.addToast({ message: 'Please select a video track to popout!', type: 'warning', autoClose: 3000 }));
+					return;
+				}
+
+				video.id = 'focusTrack';
+				video.addEventListener(
+					'leavepictureinpicture',
+					() => {
+						setIsPopoutOpen(false);
+						setPopoutTrackId(undefined);
+					},
+					{ once: true }
+				);
+				await video.requestPictureInPicture();
+				setIsPopoutOpen(true);
+				setPopoutTrackId(trackId);
+			} catch (popoutError) {
+				console.error('PiP error:', popoutError);
+			}
+		},
+		[closePopout, dispatch]
+	);
+
+	useEffect(
+		() => () => {
+			if (document.pictureInPictureElement) void document.exitPictureInPicture();
+		},
+		[]
+	);
 
 	useEffect(() => {
 		if (hasMicrophoneAccess === false && microphoneEnabled) {
@@ -1621,6 +1670,7 @@ export function MezonSfuVoiceRoom({
 	const orderedConferenceTiles = gridTileOrderRef.current.map((id) => tilesById.get(id)).filter(Boolean) as typeof conferenceTiles;
 	const focusConferenceTiles = focusTileOrderRef.current.map((id) => tilesById.get(id)).filter(Boolean) as typeof conferenceTiles;
 	const pinnedTile = activePinnedTrackId ? tilesById.get(activePinnedTrackId) : undefined;
+	const isPopoutTrackAvailable = !popoutTrackId || conferenceTiles.some((tile) => tile.id === popoutTrackId);
 	const activeSpeakerTileId = focusConferenceTiles.find((tile) => tile.participantId === activeSpeakerId)?.id;
 	const gridPagination = useCustomPagination(gridLayout.maxTiles, orderedConferenceTiles);
 
@@ -1654,6 +1704,11 @@ export function MezonSfuVoiceRoom({
 		];
 		renderFocusTileOrder((version) => version + 1);
 	}, [activeSpeakerId, activeSpeakerTileId, hasPinnedTrack, isGridView, pinnedTile?.participantId, showFocusThumbnails]);
+
+	useEffect(() => {
+		if (!isPopoutTrackAvailable) void closePopout();
+	}, [closePopout, isPopoutTrackAvailable]);
+
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<RoomAudioRenderer participants={participants} />
@@ -1746,7 +1801,10 @@ export function MezonSfuVoiceRoom({
 				</main>
 			) : (
 				<main className="relative flex min-h-0 flex-1 flex-col gap-3 p-4">
-					<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]">
+					<div
+						ref={focusVideoContainerRef}
+						className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
+					>
 						<div className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto">
 							{pinnedTile?.content}
 						</div>
@@ -1898,7 +1956,18 @@ export function MezonSfuVoiceRoom({
 						<Icons.EndCall className="h-6 w-6" />
 					</button>
 				</div>
-				<div className="flex justify-end pr-1">
+				<div className="flex justify-end gap-4 pr-1">
+					<button
+						type="button"
+						title={isPopoutOpen ? 'Close popout' : 'Popout selected video'}
+						aria-label={isPopoutOpen ? 'Close popout' : 'Popout selected video'}
+						className={`cursor-pointer p-2 text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+							isPopoutOpen ? 'text-[var(--bg-icon-theme-active)]' : ''
+						}`}
+						onClick={() => void togglePopout(activePinnedTrackId)}
+					>
+						<Icons.VoicePopOutIcon className={`h-5 w-5 ${isPopoutOpen ? 'rotate-180' : ''}`} />
+					</button>
 					<button
 						type="button"
 						title={isFullScreen ? 'Exit full screen' : 'Full screen'}
