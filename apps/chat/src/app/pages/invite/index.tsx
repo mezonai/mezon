@@ -1,7 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { channelsActions, inviteActions, selectInviteById, useAppDispatch } from '@mezon/store';
+import { channelsActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ export default function InvitePage() {
 	const navigate = useNavigate();
 	const { inviteUser } = useInvite();
 	const dispatch = useAppDispatch();
+	const isLogin = useSelector(selectIsLogin);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -91,6 +92,12 @@ export default function InvitePage() {
 		}
 	}, [userJoined, navigate, clanId, channeId]);
 
+	useEffect(() => {
+		if (isLogin === false && inviteIdParam) {
+			navigate(`/chat/login?redirect=/invite/${inviteIdParam}`);
+		}
+	}, [isLogin, inviteIdParam, navigate]);
+
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-theme-primary">
 			<div className="bg-theme-setting-primary border-theme-primary text-theme-primary rounded-md p-6 w-full max-w-[440px] flex flex-col items-center shadow-xl">
@@ -130,7 +137,7 @@ export default function InvitePage() {
 
 				{error && <div className="w-full text-center text-red-400 text-sm mb-2">{error}</div>}
 				<button
-					onClick={handleJoinChannel}
+					onClick={isLogin ? handleJoinChannel : () => navigate(`/chat/login?redirect=/invite/${inviteIdParam}`)}
 					disabled={loading}
 					className={`text-white w-full py-[10px] text-base font-medium rounded-md ${loading ? 'bg-gray-500 cursor-not-allowed' : 'btn-primary btn-primary-hover '}`}
 					data-e2e={generateE2eId('acceptModal.button.acceptInvite')}
