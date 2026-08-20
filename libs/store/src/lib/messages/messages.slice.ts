@@ -49,7 +49,6 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, isMezonClientSocketOpen, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
-import { getThreadsState } from '../threads/threads.slice';
 import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
@@ -2558,37 +2557,6 @@ export const selectMessageEntitiesByChannelId = createCachedSelector([getMessage
 export const selectMessageIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelMessages[channelId]?.ids || emptyArray;
 });
-
-export const selectHasThreadDeleteSystemMessage = createCachedSelector(
-	[
-		(state: RootState, _: string, threadId: string) => selectChannelById(state, threadId),
-		getThreadsState,
-		getChannelIdAsSecondParam,
-		(_: RootState, __: string, threadId: string) => threadId
-	],
-	(threadChannel, threadsState, parentChannelId, threadId) => {
-		if (!threadId) {
-			return false;
-		}
-
-		if (threadChannel) {
-			return false;
-		}
-
-		const threadsCache = threadsState.byChannels?.[parentChannelId];
-		if (threadsCache?.cache) {
-			const existsInCache = threadsCache.ids.some((id) => {
-				const thread = threadsCache.entities[id];
-				return thread?.id === threadId || thread?.channel_id === threadId;
-			});
-			if (!existsInCache) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-);
 
 export const selectViewportIdsByChannelId = createCachedSelector([getMessagesState, getChannelIdAsSecondParam], (messagesState, channelId) => {
 	return messagesState?.channelViewPortMessageIds[channelId] || emptyArray;

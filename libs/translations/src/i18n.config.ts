@@ -20,7 +20,7 @@ import ukrTranslations from './languages/ukr/index';
 import viTranslations from './languages/vi/index';
 
 export const defaultNS = 'common';
-const defaultNamespaces = ['common', 'friends'];
+const defaultNamespaces = ['common', 'friends', 'errors'];
 
 export const SUPPORTED_LANGUAGES = ['en', 'vi', 'ru', 'ukr', 'es', 'tt', 'de', 'it', 'pt', 'jpn', 'pl', 'kr', 'swe', 'blr', 'fr', 'nl'] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
