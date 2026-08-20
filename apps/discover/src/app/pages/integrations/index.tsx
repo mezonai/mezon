@@ -325,7 +325,7 @@ const IntegrationsPage = () => {
 						<div className="flex items-start justify-between mb-8 md:mb-12">
 							<h2 className="font-svnAvo text-3xl sm:text-4xl lg:text-5xl text-slate-900 font-bold select-text">{t('faq.title')}</h2>
 							<a
-								href="https://mezon.ai/docs/en/user/welcome"
+								href="https://mezon.ai/docs/user/welcome"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] underline inline-flex items-center gap-1 text-base sm:text-lg transition-colors"

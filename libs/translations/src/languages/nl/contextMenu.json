@@ -122,5 +122,6 @@
 		"failedToResendMessage": "Kon bericht niet opnieuw verzenden",
 		"failedToClosePoll": "Kon enquête niet beëindigen"
 	},
-	"copyUserId": "Gebruikers-ID kopiëren"
+	"copyUserId": "Gebruikers-ID kopiëren",
+	"giveFlowers": "Een bloem sturen"
 }

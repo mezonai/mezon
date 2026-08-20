@@ -1,4 +1,5 @@
 import { HighlightMatchBold, Icons } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { memo } from 'react';
 
 type SelectItemProps = {
@@ -11,7 +12,11 @@ type SelectItemProps = {
 
 const SelectItemUser = ({ title, content, onClick, isFocused, search }: SelectItemProps) => {
 	return (
-		<button onClick={onClick} className="flex flex-row justify-between items-center w-full cursor-pointer rounded relative p-2">
+		<button
+			onClick={onClick}
+			className="flex flex-row justify-between items-center w-full cursor-pointer rounded relative p-2"
+			data-e2e={generateE2eId('chat.search_message.select.item')}
+		>
 			<div>
 				<span className="text-theme-message font-semibold">{title}</span>
 				<span className="">{HighlightMatchBold(content ?? '', search ?? '')}</span>

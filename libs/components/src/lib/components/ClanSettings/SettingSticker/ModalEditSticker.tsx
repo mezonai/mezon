@@ -380,6 +380,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 									onChange={handleChangeShortName}
 									onKeyDown={handleOnEnter}
 									maxLength={62}
+									data-e2e={generateE2eId('clan_page.settings.emoji.upload.input.emoji_name')}
 								/>
 								<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
 									<span

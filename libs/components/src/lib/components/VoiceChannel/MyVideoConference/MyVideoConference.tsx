@@ -12,7 +12,7 @@ import type {
 } from 'livekit-client';
 import { DisconnectReason, Track } from 'livekit-client';
 import { memo, useEffect, useMemo, useRef } from 'react';
-import { ReactionCallHandler } from './Reaction';
+import { GiveFlowersVoiceHandle, ReactionCallHandler } from './Reaction';
 import { VideoConferenceLayout } from './VideoConferenceLayout';
 import { VoiceContextMenu } from './VoiceContextMenu/VoiceContextMenu';
 import { useScreenSharePublisher } from './hooks/useScreenSharePublisher';
@@ -211,10 +211,11 @@ export const MyVideoConference = memo(
 		const layoutContext = useMemo(() => rawLayoutContext, [rawLayoutContext?.pin?.state, rawLayoutContext?.widget?.state]);
 
 		return (
-			<div className="lk-video-conference flex-1">
+			<div className="lk-video-conference relative flex-1">
 				<DeepFilterNetInitializer />
 				<VoiceTrackState />
 				<ReactionCallHandler />
+				<GiveFlowersVoiceHandle />
 				<PictureInPictureCleanup layoutContext={layoutContext} />
 				<RoomEventManager
 					room={room}

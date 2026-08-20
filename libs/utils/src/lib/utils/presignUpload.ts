@@ -15,7 +15,9 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					? AttachmentTypeUpload.image
 					: attach.filetype?.includes(AttachmentTypeUpload.video)
 						? AttachmentTypeUpload.video
-						: AttachmentTypeUpload.FILE;
+						: attach.filetype?.includes(AttachmentTypeUpload.audio)
+							? AttachmentTypeUpload.audio
+							: AttachmentTypeUpload.doc;
 				const data = await client.uploadAttachmentFile(session, {
 					filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
 					filetype: fileType,

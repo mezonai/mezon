@@ -1,4 +1,4 @@
-import { searchMentionsHashtag } from '@mezon/utils';
+import { generateE2eId, searchMentionsHashtag } from '@mezon/utils';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mention as MentionComponent, MentionsInput as MentionsInputComponent } from 'react-mentions';
@@ -128,6 +128,7 @@ const SearchInput = ({
 			onClick={onInputClick}
 			onKeyDown={onKeyDown}
 			customSuggestionsContainer={renderSuggestionsContainer as any}
+			data-e2e={generateE2eId('chat.search_message.input.select')}
 		>
 			{/* From user filter: > */}
 			<Mention

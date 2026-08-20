@@ -39,7 +39,7 @@ import { getCurrentChannelBadgeCount } from '../badge/badgeHelpers';
 import { badgeService } from '../badge/badgeService';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { channelMetaActions } from '../channels/channelmeta.slice';
+import { channelMetaActions, selectDmLastSentMessage, selectLastSentMessageId } from '../channels/channelmeta.slice';
 import { channelsActions, selectChannelById, selectLoadingStatus, selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectUserClanProfileByClanID } from '../clanProfile/clanProfile.slice';
 import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClansLoadingStatus } from '../clans/clans.slice';
@@ -239,8 +239,7 @@ export const fetchMessagesCached = async (
 	}
 
 	const response = await withRetry(
-		(session) =>
-			ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
+		(session) => ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
 		{
 			scope: 'channel-messages',
 			mezon: ensuredMezon
@@ -419,8 +418,9 @@ export const fetchMessages = createAsyncThunk(
 					messages: []
 				};
 			}
+			const lastSentState = clanId || clanId === '0' ? selectDmLastSentMessage(state, channelId) : selectLastSentMessageId(state, channelId);
 
-			let lastSentMessage = (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader) || response.last_sent_message;
+			let lastSentMessage = lastSentState || (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader);
 
 			if (!fromCache) {
 				const newestInBatch = !messageId ? response.messages?.[0] : undefined;
@@ -435,8 +435,7 @@ export const fetchMessages = createAsyncThunk(
 							} as ApiChannelMessageHeader)
 						: lastSentMessage);
 			}
-			const lastSentState = selectLatestMessageId(state, chlId);
-			if (!lastSentState || (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0))) {
+			if (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0)) {
 				thunkAPI.dispatch(
 					messagesActions.setLastMessage({
 						...lastSentMessage,

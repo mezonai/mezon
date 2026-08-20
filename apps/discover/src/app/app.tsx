@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { DiscoverProvider } from './context/DiscoverContext';
 import { useMezonDiscover } from './hooks/useMezonDiscover';
 import AboutMezon from './pages/aboutmezon';
+import AiAgentPage from './pages/aiagent';
 import AIGenerationPage from './pages/aigeneration';
 import AppDirectory from './pages/AppDirectory';
 import BrandCenterPage from './pages/brandcenter';
@@ -51,6 +52,7 @@ function AppWithStore() {
 					<Route path="/privacy-policy" element={<PrivacyMezonPage />} />
 					<Route path="/brand-center" element={<BrandCenterPage />} />
 					<Route path="/mezondong" element={<MezonDongPage />} />
+					<Route path="/aiagent" element={<AiAgentPage />} />
 				</Routes>
 			</Suspense>
 		</div>

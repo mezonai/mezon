@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Патрэбен доступ да камеры",
 		"recipientDidNotAnswer": "Атрымальнік не адказаў на званок."
 	},
-	"usernameScreen": "Экран {{username}}"
+	"usernameScreen": "Экран {{username}}",
+	"recording": {
+		"start": "Запісаць размову",
+		"stop": "Спыніць запіс",
+		"badge": "REC",
+		"memoryLimitWarning": "Гэты браўзер не можа пісаць проста на дыск, таму запіс захоўваецца ў памяці і спыніцца аўтаматычна праз {{minutes}} хвілін.",
+		"frozenWarning": "Відэа замерла, пакуль укладка была схаваная. Трымайце гэтую ўкладку бачнай падчас запісу.",
+		"savedToDisk": "Запіс захаваны ў {{fileName}} ({{size}})",
+		"downloaded": "Запіс спампаваны: {{fileName}} ({{size}})",
+		"failed": "Не ўдалося запісаць: {{reason}}"
+	}
 }

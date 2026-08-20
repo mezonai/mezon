@@ -243,14 +243,15 @@ mezon/
 -   **State Management**: Redux Toolkit + RTK Query
 -   **Styling**: Tailwind CSS
 -   **Build Tool**: Nx Monorepo with Webpack
--   **Mobile**: React Native
--   **Desktop**: Separate [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
+-   **Mobile**: Native app [mezon-ios](https://github.com/mezonai/mezon-ios), [mezon-android](https://github.com/mezonai/mezon-android)
+-   **Desktop**: Rust Native [mezon-desktop](https://github.com/mezonai/mezon-desktop) repository
 
 #### Backend & Infrastructure
 
--   **Core**: We built a custom server using Redis, ScyllaDB, and sockets to enable real-time communication.
+-   **Core**: We built a custom server using Valkey, ScyllaDB, and IOUring to enable real-time communication.
+-   **Mezon SFU**: [mezon-sfu](https://github.com/mezonai/mezon-sfu) - A high-performance optimized for HD meetings
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) - High-performance and zero free blockchain layer 1
--   **Real-time**: WebSocket with binary protocol
+-   **Real-time**: WebSocket and TCP Abridged protocol with binary payload
 -   **Security**: E2E encryption, TLS 1.3
 -   **Performance**: Sub-millisecond latency, horizontal scaling
 

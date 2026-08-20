@@ -10,13 +10,13 @@ import { clanLoader, shouldRevalidateServer } from '../loaders/clanLoader';
 import { directLoader } from '../loaders/directLoader';
 import { directMessageLoader, shouldRevalidateDirect } from '../loaders/directMessageLoader';
 import { friendsLoader } from '../loaders/friendsLoader';
-import { loginLoader } from '../loaders/loginLoader';
 import { mainLoader, shouldRevalidateMain } from '../loaders/mainLoader';
 
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
 import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
 import { inviteLoader, shouldRevalidateInvite } from '../loaders/inviteLoader';
+import { loginDeeplinkLoader, shouldRevalidateLoginDeeplink } from '../loaders/loginDeeplinkLoader';
 
 import { useLoading } from '../app';
 import CanvasRoutes from './CanvasRoutes';
@@ -47,6 +47,7 @@ const DirectMessage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../p
 const FriendsPage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pages/directMessage/FriendsPage'));
 const GuideMain = lazy(() => import(/* webpackChunkName: "guide-pages" */ '../pages/guide'));
 const InvitePage = lazy(() => import(/* webpackChunkName: "invite-pages" */ '../pages/invite'));
+const LoginDeeplinkPage = lazy(() => import(/* webpackChunkName: "login-deeplink-pages" */ '../pages/loginDeeplink'));
 const Login = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/login'));
 const LoginCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/loginCallback'));
 const LogoutCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/logoutCallback'));
@@ -453,6 +454,21 @@ export const Routes = memo(() => {
 								element: (
 									<Suspense fallback={<SuspenseFallback />}>
 										<InvitePage />
+									</Suspense>
+								)
+							}
+						]
+					},
+					{
+						path: 'login',
+						children: [
+							{
+								path: ':loginId',
+								loader: loaderWithStore(loginDeeplinkLoader),
+								shouldRevalidate: shouldRevalidateLoginDeeplink,
+								element: (
+									<Suspense fallback={<SuspenseFallback />}>
+										<LoginDeeplinkPage />
 									</Suspense>
 								)
 							}

@@ -56,5 +56,15 @@
 		"cameraPermissionRequired": "Autorizzazione fotocamera richiesta",
 		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata."
 	},
-	"usernameScreen": "Schermo di {{username}}"
+	"usernameScreen": "Schermo di {{username}}",
+	"recording": {
+		"start": "Registra chiamata",
+		"stop": "Ferma registrazione",
+		"badge": "REC",
+		"memoryLimitWarning": "Questo browser non può scrivere direttamente su disco, quindi la registrazione resta in memoria e si ferma automaticamente dopo {{minutes}} minuti.",
+		"frozenWarning": "Il video si è bloccato mentre la scheda era nascosta. Tieni questa scheda visibile durante la registrazione.",
+		"savedToDisk": "Registrazione salvata in {{fileName}} ({{size}})",
+		"downloaded": "Registrazione scaricata: {{fileName}} ({{size}})",
+		"failed": "Registrazione non riuscita: {{reason}}"
+	}
 }

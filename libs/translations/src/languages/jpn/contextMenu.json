@@ -122,5 +122,6 @@
 		"failedToResendMessage": "メッセージを再送信できません",
 		"failedToClosePoll": "投票を終了できません"
 	},
-	"copyUserId": "ユーザーIDをコピー"
+	"copyUserId": "ユーザーIDをコピー",
+	"giveFlowers": "花を贈る"
 }
