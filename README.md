@@ -26,10 +26,11 @@
 
 [Mezon Bug Report Community](https://mezon.ai/invite/1840696977034055680)
 
-## high-performance, lightweight alternative to Discord
+## High-performance, lightweight alternative to Discord
 
 Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling with friends, or even building a global community. Customize your own space to talk, play, and hang out. Mezon also delivers enterprise-grade performance with sub-millisecond response times and support for millions of concurrent connections.
 
+That performance comes from owning the hot path end to end — a C WebRTC SFU, a C11 native media engine, IO Uring and a binary data plane — instead of stacking generic HTTP and WebRTC middleware.
 <div align="center">
   <img width="851" height="315" alt="Mezon Platform Overview" src="https://github.com/user-attachments/assets/0cbc29c7-b8eb-4810-9e88-9efa88e7b43d" />
 </div>
@@ -37,7 +38,7 @@ Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling
 ### ✨ Key Features
 
 -   **🔒 Security First** - End-to-end encryption, XSS protection, zero-knowledge architecture
--   **⚡ High Performance** - Sub-millisecond response times, millions of concurrent connections
+-   **⚡ High Performance** - Native C path: [mezon-sfu](https://github.com/mezonai/mezon-sfu) + [libmezia](https://github.com/mezonai/libmezia) + mezon-proto-server (io uring). Sub-millisecond responses, millions of concurrent connections
 -   **🌐 Cross-Platform** - Web, Desktop (Windows/macOS/Linux), Mobile (iOS/Android)
 -   **🤖 AI-Powered** - Built-in content moderation, real-time translation, meeting summaries
 -   **🔧 Extensible** - Custom bots, 100+ integrations, API-first design
@@ -129,12 +130,15 @@ The application will be available at http://localhost:4200/
 
 ### Source code
 
-| Platform    | Git Repo                                                 | Status    |
-| ----------- | -------------------------------------------------------- | --------- |
+| Platform / layer | Git Repo | Status |
+| ---------------- | -------- | ------ |
 | **Desktop** | [Desktop repo](https://github.com/mezonai/mezon-desktop) | ✅ Stable |
-| **iOS**     | [IOS repo](https://github.com/mezonai/mezon-ios)         | ✅ Stable |
+| **iOS** | [iOS repo](https://github.com/mezonai/mezon-ios) | ✅ Stable |
 | **Android** | [Android repo](https://github.com/mezonai/mezon-android) | ✅ Stable |
-| **Web**     | [Web repo](https://github.com/mezonai/mezon)             | ✅ Stable |
+| **Web** | [Web repo](https://github.com/mezonai/mezon) | ✅ Stable |
+| **SFU** | [mezon-sfu](https://github.com/mezonai/mezon-sfu) | ✅ Stable |
+| **Media engine** | [libmezia](https://github.com/mezonai/libmezia) | 🚧 Active |
+| **Protocol** | [mezon-protocol](https://github.com/mezonai/mezon-protocol) | ✅ Stable |
 
 ### Download Options
 
@@ -248,12 +252,24 @@ mezon/
 
 #### Backend & Infrastructure
 
--   **Core**: We built a custom server using Valkey, ScyllaDB, and IOUring to enable real-time communication.
--   **Mezon SFU**: [mezon-sfu](https://github.com/mezonai/mezon-sfu) - A high-performance optimized for HD meetings
--   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) - High-performance and zero free blockchain layer 1
--   **Real-time**: WebSocket and TCP Abridged protocol with binary payload
--   **Security**: E2E encryption, TLS 1.3
--   **Performance**: Sub-millisecond latency, horizontal scaling
+Mezon owns the hot path in C so chat, voice, and data stay off generic HTTP/WebRTC stacks.
+
+-   **Core**: Custom real-time server on Valkey, ScyllaDB, and `io_uring`
+-   **[mezon-sfu](https://github.com/mezonai/mezon-sfu)**: C WebRTC SFU for HD meetings and large rooms — lock-free per-room workers, zero-copy `io_uring` fan-out, DTLS/SRTP, VP9/AV1/VP8, TWCC/GCC + SVC
+-   **[libmezia](https://github.com/mezonai/libmezia)** (native media engine): C11 client engine, wire-compatible with mezon-sfu — lock-minimal Opus voice (~24 kbit/s) and hardware H.264, no PeerConnection tax on mobile
+-   **mezon-proto-server**: Binary Mezon-Proto over raw QUIC — C data plane (L1 process cache + Valkey), Go control plane over Unix sockets. Schemas: [mezon-protocol](https://github.com/mezonai/mezon-protocol)
+-   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) — high-performance, zero-fee L1
+-   **Real-time**: WebSocket / TCP Abridged with binary payload; Mezon-Proto for the high-QPS data path
+-   **Security**: E2E encryption, TLS 1.3 (SFU: DTLS + SRTP)
+-   **Performance**: Sub-millisecond latency, millions of concurrent connections, horizontal scaling
+
+### Why this stack is fast
+
+| Layer | Component | What it avoids |
+| ----- | --------- | -------------- |
+| Voice / video | **mezon-sfu** | Shared-state mutexes and copy-heavy fan-out. Each room is an isolated thread; packets are referenced, not copied, through `io_uring` (`recv` + `SEND_ZC`). |
+| Native clients | **libmezia** | A full WebRTC `PeerConnection` tree on iOS/Android. Same SDP/RTP subset the SFU already speaks; no extra packet format, no steady-state heap on the audio path. |
+| Chat / data | **mezon-proto-server** | Nginx + HTTP header parsing + TCP head-of-line blocking. Raw QUIC + protobuf; CPU moves bytes. Complex work stays on Go over a Unix socket. |
 
 #### Development Tools
 
@@ -389,17 +405,15 @@ We welcome contributions from the community! Here's how you can help:
 
 Mezon is built on top of amazing open-source technologies:
 
--   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
--   [mezon-sfu](https://github.com/mezonai) - mezon-sfu
+-   [liburing](https://github.com/axboe/liburing) - io_uring for zero-copy I/O in mezon-sfu and mezon-proto-server
+-   [BoringSSL](https://boringssl.googlesource.com/boringssl) - TLS / DTLS
+-   [libsrtp](https://github.com/cisco/libsrtp) - SRTP media protection
+-   [Opus](https://opus-codec.org/) - Voice codec used by libmezia
 -   [ScyllaDB](https://www.scylladb.com) - ScyllaDB
--   [Valkey](https://github.com/valkey-io/valkey) - Valkey
+-   [Valkey](https://valkey.io) / [Redis](https://redis.io) - Cache and real-time state
 -   [imgproxy](https://imgproxy.net) - imgproxy
 -   [minio](https://min.io) - minio
 -   [Ory Hydra](https://www.ory.sh/hydra) - OAuth 2.0 and OpenID Connect server
--   [Snowflake](https://github.com/bwmarrin/snowflake) - A very simple Twitter snowflake generator
--   [React](https://reactjs.org/) - UI framework
--   [Nx](https://nx.dev/) - Monorepo tooling
--   And many other fantastic open-source projects
 
 <div align="center">
   <p>
