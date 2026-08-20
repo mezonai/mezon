@@ -133,18 +133,25 @@ const SettingSoundEffect = () => {
 							className="flex flex-col w-full p-4 border rounded-lg bg-theme-setting-nav shadow-sm hover:shadow-md transition duration-200 border-theme-primary"
 						>
 							<div className="flex items-center justify-between mb-3">
-								<p className="font-semibold truncate w-full text-center text-theme-primary-active">{sound.name}</p>
+								<p
+									className="font-semibold truncate w-full text-center text-theme-primary-active"
+									data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.name')}
+								>
+									{sound.name}
+								</p>
 								{canManageSound(sound.creator_id || '') && (
 									<div className="flex items-center gap-1">
 										<button
 											className="aspect-square w-6 rounded-full text-theme-primary-active bg-theme-setting-primary flex items-center justify-center shadow-sm"
 											onClick={() => handleEditSound(sound)}
+											data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.actions.edit')}
 										>
 											<Icons.EditMessageRightClick defaultSize="w-3 h-3" />
 										</button>
 										<button
 											className="aspect-square w-6 text-sm rounded-full bg-theme-setting-primary hover:bg-theme-setting-primary flex items-center justify-center mb-[1px] font-medium text-red-600 shadow-sm"
 											onClick={() => handleDeleteSound(sound.id, sound.name)}
+											data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.actions.delete')}
 										>
 											x
 										</button>
@@ -188,7 +195,9 @@ const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 				<AvatarColor username={avatarDefault || ''} className={`size-4`} />
 			)}
 
-			<p className="text-xs text-theme-primary max-w-20 truncate">{creator?.clan_nick || creator?.user?.username}</p>
+			<p className="text-xs text-theme-primary max-w-20 truncate" data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.created_by')}>
+				{creator?.clan_nick || creator?.user?.username}
+			</p>
 		</div>
 	);
 };
