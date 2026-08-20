@@ -4,6 +4,7 @@ import { Platform, generateE2eId, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
+import { Link } from 'react-router-dom';
 
 const AppStoreIcon = () => (
 	<svg viewBox="0 0 135 40" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
@@ -166,9 +167,9 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 						<h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 text-white/30">Platform</h3>
 						<ul className="space-y-4">
 							<li>
-								<a href="/about" className="text-sm text-white/60 hover:text-cyan-400 transition-colors">
+								<Link to="/about" className="text-sm text-white/60 hover:text-cyan-400 transition-colors">
 									About
-								</a>
+								</Link>
 							</li>
 							<li>
 								<a
@@ -231,24 +232,14 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 						<h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 text-white/30">Company</h3>
 						<ul className="space-y-4">
 							<li>
-								<a
-									href="brand-center"
-									target="_blank"
-									rel="noreferrer"
-									className="text-sm text-white/60 hover:text-cyan-400 transition-colors"
-								>
+								<Link to="/brand-center" className="text-sm text-white/60 hover:text-cyan-400 transition-colors">
 									Brand Center
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
-									href="/contact-us"
-									target="_blank"
-									rel="noreferrer"
-									className="text-sm text-white/60 hover:text-cyan-400 transition-colors"
-								>
+								<Link to="/contact-us" className="text-sm text-white/60 hover:text-cyan-400 transition-colors">
 									Contact
-								</a>
+								</Link>
 							</li>
 							<li>
 								<a
@@ -266,24 +257,14 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 						<h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 text-white/30">Legal</h3>
 						<ul className="space-y-4">
 							<li>
-								<a
-									href="/privacy-policy"
-									target="_blank"
-									rel="noreferrer"
-									className="text-sm text-white/60 hover:text-cyan-400 transition-colors"
-								>
+								<Link to="/privacy-policy" className="text-sm text-white/60 hover:text-cyan-400 transition-colors">
 									Privacy Policy
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
-									href="/terms-of-service"
-									target="_blank"
-									rel="noreferrer"
-									className="text-sm text-white/60 hover:text-cyan-400 transition-colors"
-								>
+								<Link to="/terms-of-service" className="text-sm text-white/60 hover:text-cyan-400 transition-colors">
 									Terms of Service
-								</a>
+								</Link>
 							</li>
 						</ul>
 					</div>
