@@ -57,6 +57,7 @@ const MemberMain = lazy(() => import(/* webpackChunkName: "member-pages" */ '../
 const ChannelSettingMain = lazy(() => import(/* webpackChunkName: "setting-pages" */ '../pages/setting/channelSetting'));
 const Canvas = lazy(() => import(/* webpackChunkName: "canvas" */ '@mezon/components').then((m) => ({ default: m.Canvas })));
 const ThreadsMain = lazy(() => import(/* webpackChunkName: "thread-pages" */ '../pages/thread'));
+const MobileDownload = lazy(() => import('../pages/mobile-download'));
 
 const SuspenseFallback = () => {
 	const { setSuspenseLoading } = useLoading();
@@ -164,6 +165,14 @@ export const Routes = memo(() => {
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
 								<MeetPage />
+							</Suspense>
+						)
+					},
+					{
+						path: 'mobile-download',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<MobileDownload />
 							</Suspense>
 						)
 					},
