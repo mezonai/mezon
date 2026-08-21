@@ -72,7 +72,7 @@ export default defineConfig(({ mode }) => {
 					"connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com https://cdn.jsdelivr.net",
 					"media-src 'self' blob: https: *.mezon.ai media.tenor.com",
 					"child-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
-					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com https://quiz.mezon.ai https://blackboard.mezon.ai",
+					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com https://quiz.mezon.ai https://blackboard.mezon.ai https://interactive.mezon.ai",
 					"base-uri 'self'",
 					"form-action 'self' *.mezon.ai",
 					"frame-ancestors 'self'"
