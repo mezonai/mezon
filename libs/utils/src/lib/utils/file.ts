@@ -41,8 +41,13 @@ export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string 
 	const sourceFile = getPreSendSourceFile(attachment);
 	if (!sourceFile) return undefined;
 
-	const filetype = attachment.filetype || sourceFile.type;
-	if (!filetype?.startsWith('image/')) return undefined;
+	// Presign rewrites `filetype` to the bare upload CATEGORY ("image"), so by the
+	// time the row is built the MIME survives only on the file itself. Read that
+	// first and take the category as the fallback — matching on `image/` alone
+	// misses every attachment that has already been through presign, which is all
+	// of them by the time anything renders.
+	const mime = sourceFile.type || attachment.filetype || '';
+	if (!mime.startsWith('image/') && attachment.filetype !== 'image') return undefined;
 
 	try {
 		return URL.createObjectURL(sourceFile);
