@@ -16,19 +16,21 @@ import { generateE2eId, useMediaPermissions } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';
 import { useGroupCallSignaling, useGroupCallState } from '../../GroupCall';
 
-const VoiceInfo = React.memo(() => {
+const SfuVoiceInfo = React.memo(() => {
 	const { t } = useTranslation('channelVoice');
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 	const { toChannelPage, toDmGroupPage, navigate } = useAppNavigation();
 
 	const currentVoiceInfo = useSelector(selectVoiceInfo);
+	const isAudience = currentVoiceInfo?.joinRole === 'audience';
+	const [pushToTalkActive, setPushToTalkActive] = useState(false);
 	const isGroupCallActive = useSelector(selectIsGroupCallActive);
 
 	const currentDmGroup = useSelector((state) => selectDmGroupById(state, currentVoiceInfo?.channelId || ''));
@@ -114,6 +116,21 @@ const VoiceInfo = React.memo(() => {
 		btnControl?.click();
 	}, []);
 
+	const setPushToTalk = useCallback((active: boolean) => {
+		setPushToTalkActive(active);
+		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk', { detail: { active } }));
+	}, []);
+
+	useEffect(() => {
+		const handlePushToTalkChanged = (event: Event) => {
+			const { active } = (event as CustomEvent<{ active?: boolean }>).detail || {};
+			if (typeof active === 'boolean') setPushToTalkActive(active);
+		};
+
+		window.addEventListener('mezon-sfu-push-to-talk-changed', handlePushToTalkChanged);
+		return () => window.removeEventListener('mezon-sfu-push-to-talk-changed', handlePushToTalkChanged);
+	}, []);
+
 	const linkVoice = useMemo(() => {
 		if (currentVoiceInfo) {
 			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
@@ -146,7 +163,22 @@ const VoiceInfo = React.memo(() => {
 				</div>
 			</div>
 			<div className="flex items-center gap-4 justify-between">
-				{hasMicrophoneAccess && (
+				{isAudience && hasMicrophoneAccess && (
+					<ButtonControlVoice
+						active={pushToTalkActive}
+						overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">Push to talk</span>}
+						onPointerDown={(event) => {
+							event.currentTarget.setPointerCapture(event.pointerId);
+							setPushToTalk(true);
+						}}
+						onPointerUp={() => setPushToTalk(false)}
+						onPointerCancel={() => setPushToTalk(false)}
+						onLostPointerCapture={() => setPushToTalk(false)}
+						icon={<Icons.InPttCall className="w-5 h-5" />}
+					/>
+				)}
+
+				{!isAudience && hasMicrophoneAccess && (
 					<ButtonControlVoice
 						overlay={
 							hasMicrophoneAccess ? (
@@ -160,7 +192,7 @@ const VoiceInfo = React.memo(() => {
 					/>
 				)}
 
-				{hasCameraAccess && (
+				{!isAudience && hasCameraAccess && (
 					<ButtonControlVoice
 						overlay={
 							hasCameraAccess ? (
@@ -172,13 +204,17 @@ const VoiceInfo = React.memo(() => {
 					/>
 				)}
 
-				<ButtonControlVoice
-					overlay={
-						<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t(showScreen ? 'stopScreenShare' : 'shareYourScreen')}</span>
-					}
-					onClick={handleToggleShareScreen}
-					icon={showScreen ? <Icons.VoiceScreenShareStopIcon className="w-5 h-5 " /> : <Icons.VoiceScreenShareIcon className="w-5 h-5 " />}
-				/>
+				{!isAudience && (
+					<ButtonControlVoice
+						overlay={
+							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t(showScreen ? 'stopScreenShare' : 'shareYourScreen')}</span>
+						}
+						onClick={handleToggleShareScreen}
+						icon={
+							showScreen ? <Icons.VoiceScreenShareStopIcon className="w-5 h-5 " /> : <Icons.VoiceScreenShareIcon className="w-5 h-5 " />
+						}
+					/>
+				)}
 				<ButtonControlVoice
 					danger={true}
 					overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t('disconnect')}</span>}
@@ -190,36 +226,63 @@ const VoiceInfo = React.memo(() => {
 	);
 });
 interface ButtonControlVoiceProps {
-	onClick: () => void;
+	onClick?: () => void;
+	onPointerDown?: React.PointerEventHandler<HTMLButtonElement>;
+	onPointerUp?: React.PointerEventHandler<HTMLButtonElement>;
+	onPointerCancel?: React.PointerEventHandler<HTMLButtonElement>;
+	onLostPointerCapture?: React.PointerEventHandler<HTMLButtonElement>;
 	overlay: ReactNode;
 	danger?: boolean;
+	active?: boolean;
 	icon: ReactNode;
 }
 
 const TOOLTIP_OVERLAY_STYLE = { background: 'none', boxShadow: 'none' };
 
-const ButtonControlVoice = memo(({ onClick, overlay, danger = false, icon }: ButtonControlVoiceProps) => {
-	return (
-		<div className="flex-1">
-			<Tooltip
-				showArrow={{ className: '!bottom-1' }}
-				placement="top"
-				overlay={overlay}
-				overlayInnerStyle={TOOLTIP_OVERLAY_STYLE}
-				overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
-				destroyTooltipOnHide
-			>
-				<button
-					className={`flex h-9 w-full justify-center items-center ${danger ? 'bg-[#da373c] hover:bg-[#a12829]' : 'bg-buttonSecondary hover:bg-buttonSecondaryHover'} p-[6px] rounded-md`}
-					onClick={onClick}
-					data-e2e={generateE2eId('modal.voice_management.button.control_item')}
+const ButtonControlVoice = memo(
+	({
+		onClick,
+		onPointerDown,
+		onPointerUp,
+		onPointerCancel,
+		onLostPointerCapture,
+		overlay,
+		danger = false,
+		active = false,
+		icon
+	}: ButtonControlVoiceProps) => {
+		return (
+			<div className="flex-1">
+				<Tooltip
+					showArrow={{ className: '!bottom-1' }}
+					placement="top"
+					overlay={overlay}
+					overlayInnerStyle={TOOLTIP_OVERLAY_STYLE}
+					overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
+					destroyTooltipOnHide
 				>
-					{icon}
-				</button>
-			</Tooltip>
-		</div>
-	);
-});
+					<button
+						className={`flex h-9 w-full justify-center items-center ${
+							danger
+								? 'bg-[#da373c] hover:bg-[#a12829]'
+								: active
+									? 'bg-green-600 hover:bg-green-600'
+									: 'bg-buttonSecondary hover:bg-buttonSecondaryHover'
+						} p-[6px] rounded-md`}
+						onClick={onClick}
+						onPointerDown={onPointerDown}
+						onPointerUp={onPointerUp}
+						onPointerCancel={onPointerCancel}
+						onLostPointerCapture={onLostPointerCapture}
+						data-e2e={generateE2eId('modal.voice_management.button.control_item')}
+					>
+						{icon}
+					</button>
+				</Tooltip>
+			</div>
+		);
+	}
+);
 
 const ButtonNoiseControl = memo(() => {
 	const dispatch = useAppDispatch();
@@ -283,4 +346,4 @@ const ButtonNoiseControl = memo(() => {
 	);
 });
 
-export default VoiceInfo;
+export default SfuVoiceInfo;

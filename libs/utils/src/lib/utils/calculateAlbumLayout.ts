@@ -1,5 +1,5 @@
 import { getAvailableWidth } from '../helper';
-import { ApiDimensions } from '../types';
+import type { ApiDimensions } from '../types';
 import { calculateMediaDimensions } from './mediaDimensions';
 
 export const clamp = (num: number, min: number, max: number) => Math.min(max, Math.max(min, num));
