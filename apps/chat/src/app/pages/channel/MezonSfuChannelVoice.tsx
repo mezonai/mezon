@@ -1,3 +1,4 @@
+import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@mezon/components';
 import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
 import {
 	appActions,
@@ -22,20 +23,12 @@ import {
 	voiceActions
 } from '@mezon/store';
 
-import type { SfuJoinRole } from '@mezon/components';
 import { useLastCallback } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
-import React, { Suspense, lazy, memo, useCallback, useRef, useState, type ErrorInfo } from 'react';
+import React, { Suspense, memo, useCallback, useRef, useState, type ErrorInfo } from 'react';
 import { useSelector } from 'react-redux';
 import ChatStream from '../chatStream';
-
-const MezonSfuVoiceRoom = lazy(() =>
-	import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.MezonSfuVoiceRoom }))
-);
-const SfuPreJoinVoiceChannel = lazy(() =>
-	import(/* webpackChunkName: "ui-components" */ '@mezon/components').then((module) => ({ default: module.SfuPreJoinVoiceChannel }))
-);
 
 interface VoicePreJoinWrapperProps {
 	loading: boolean;

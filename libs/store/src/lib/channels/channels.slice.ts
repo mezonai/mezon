@@ -47,10 +47,6 @@ import { channelMetaActions, selectChannelMetaById } from './channelmeta.slice';
 
 const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 5;
 
-enum E_ERROR_CHANNEL {
-	LIMIT = 11
-}
-
 const pendingFetchChannels = new Map<string, Promise<any>>();
 
 export const CHANNELS_FEATURE_KEY = 'channels';
@@ -446,7 +442,7 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 				return thunkAPI.rejectWithValue({ message: 'Unknown error from server' });
 			}
 		}
-		const errorMess = error.code === E_ERROR_CHANNEL.LIMIT ? t('channelTopbar:errors.limit') : error?.message || 'Something went wrong';
+		const errorMess = error.code ? t(`errors:error_${error.code}`) : error?.message || 'Something went wrong';
 
 		return thunkAPI.rejectWithValue({
 			message: errorMess

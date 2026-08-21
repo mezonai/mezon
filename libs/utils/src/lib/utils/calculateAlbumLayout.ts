@@ -1,5 +1,5 @@
 import { getAvailableWidth } from '../helper';
-import { ApiDimensions } from '../types';
+import type { ApiDimensions } from '../types';
 import { calculateMediaDimensions } from './mediaDimensions';
 
 export const clamp = (num: number, min: number, max: number) => Math.min(max, Math.max(min, num));
@@ -60,7 +60,14 @@ function getRatios(allMedia: any[], isSingleMessage?: boolean, isMobile?: boolea
 			isMobile
 		}) as ApiDimensions;
 
-		return dimensions.width / dimensions.height;
+		const ratio = dimensions.width / dimensions.height;
+
+		// An attachment whose sender could not measure it arrives as 0x0, and
+		// 0/0 is NaN. The average ratio is a plain sum, so a single NaN poisons
+		// it and EVERY tile in the album comes out NaN-sized — the whole message
+		// renders as zero-width boxes, not just the offending picture. Treat an
+		// unmeasurable item as square and let the rest lay out normally.
+		return Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
 	});
 }
 

@@ -5,6 +5,7 @@ export { CameraControl } from './CameraControl';
 export { LeaveButton } from './LeaveButton';
 export { MicrophoneControl } from './MicrophoneControl';
 export { ScreenShareControl } from './ScreenShareControl';
+export { VoiceInteractiveControl } from './VoiceInteractiveControl';
 
 export { EmojiReactionControl } from './EmojiReactionControl';
 export { FullscreenControl } from './FullscreenControl';

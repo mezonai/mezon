@@ -1,6 +1,7 @@
 import debounce from 'lodash.debounce';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SideBarProps {
 	sideBarIsOpen: boolean;
@@ -10,6 +11,7 @@ interface SideBarProps {
 
 export const SideBarMezon = memo((props: SideBarProps) => {
 	const { t } = useTranslation('homepage');
+	const location = useLocation();
 	const getIsLogin = () => {
 		try {
 			const raw = localStorage.getItem('persist:auth');
@@ -24,7 +26,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 		}
 	};
 	const isLogin = getIsLogin();
-	const { sideBarIsOpen, scrollToSection } = props;
+	const { sideBarIsOpen, toggleSideBar, scrollToSection } = props;
 
 	const [bodySideBarRef, setBodySideBarRef] = useState(0);
 	const headerSideBarRef = useRef<HTMLDivElement>(null);
@@ -64,13 +66,19 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					maxHeight: `${bodySideBarRef}px`
 				}}
 			>
-				<a
-					href="#home"
-					onClick={(event) => scrollToSection('home', event)}
+				<Link
+					to="/"
+					onClick={(event) => {
+						if (location.pathname === '/' || location.pathname === '') {
+							scrollToSection('home', event);
+						} else {
+							toggleSideBar();
+						}
+					}}
 					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
 				>
 					{t('header.home')}
-				</a>
+				</Link>
 				<a
 					href={'developers/'}
 					target="_blank"

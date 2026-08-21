@@ -31,6 +31,7 @@ import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageLinkFile from './MessageLinkFile';
 import MessageVideo from './MessageVideo';
 import Photo from './Photo';
+import { usePresignRefresh } from './usePresignRefresh';
 
 type MessageAttachmentProps = {
 	message: IMessageWithUser;
@@ -93,7 +94,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	const messageCreateTimeSeconds = getMessageCreateTimeSeconds(message);
 
 	attachments.forEach((attachment) => {
-		if (isMediaTypeNotSupported(attachment.filetype)) {
+		if (isMediaTypeNotSupported(attachment.filetype, attachment.url)) {
 			documents.push(attachment);
 			return;
 		}
@@ -234,6 +235,16 @@ const MessageAttachment = memo(
 			[message.attachments, message.content]
 		);
 		const nowSeconds = usePresignExpiryNow(hasPresignPending, messageCreateTimeSeconds);
+		usePresignRefresh({
+			hasPresignPending,
+			clanId: message.clan_id,
+			bucketId: (message.channel_id ?? channelId) as string,
+			parentChannelId: channelId,
+			messageId: message.id,
+			createTimeSeconds: messageCreateTimeSeconds,
+			attachments: message.attachments,
+			content: message.content
+		});
 
 		const validateAttachment = useMemo(() => {
 			const rawAttachments = (message.attachments || []).filter((attachment) => Object.keys(attachment).length !== 0);
