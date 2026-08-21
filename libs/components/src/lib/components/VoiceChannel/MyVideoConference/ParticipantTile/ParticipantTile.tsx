@@ -21,7 +21,7 @@ import { useAuth } from '@mezon/core';
 import { selectMemberClanByUserId, selectUserInvoiceData, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { Participant, Room } from 'livekit-client';
 import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
@@ -244,7 +244,12 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 												}}
 												show={'muted'}
 											></TrackMutedIndicator>
-											<span className="truncate whitespace-nowrap py-0.5">{voiceUsername}</span>
+											<span
+												className="truncate whitespace-nowrap py-0.5"
+												data-e2e={generateE2eId('clan_page.screen.voice_room.username')}
+											>
+												{voiceUsername}
+											</span>
 										</div>
 									) : (
 										<div className="flex min-w-0 items-center overflow-hidden gap-1 bg-[#00000080] p-[5px] rounded-md">
@@ -265,6 +270,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 						className="peer w-full h-full absolute top-0 right-0 bg-transparent"
 						trackRef={trackReference}
 						onContextMenu={handleContextMenu}
+						data-e2e={generateE2eId('clan_page.screen.voice_room.button.open_context')}
 					/>
 				</ParticipantContextIfNeeded>
 			</TrackRefContextIfNeeded>
