@@ -32,6 +32,31 @@ export function getPreSendThumbnailBlob(attachment: ApiMessageAttachment): Blob 
 }
 
 /**
+ * How many local previews stay alive at once. Leaving a channel does not drop
+ * its messages — only a jump-to-present refetch or a reload does — so without a
+ * cap these accumulate for the whole session. A row whose preview has been
+ * revoked falls back to the network copy on its own, so the oldest can go.
+ */
+const LIVE_LOCAL_PREVIEWS = 12;
+
+const livePreviews: string[] = [];
+
+function rememberPreview(url: string): string {
+	livePreviews.push(url);
+	while (livePreviews.length > LIVE_LOCAL_PREVIEWS) {
+		const oldest = livePreviews.shift();
+		if (oldest) URL.revokeObjectURL(oldest);
+	}
+	return url;
+}
+
+/** Called when a preview is revoked elsewhere, so the cap does not count it twice. */
+export function forgetLocalPreview(url: string): void {
+	const at = livePreviews.indexOf(url);
+	if (at !== -1) livePreviews.splice(at, 1);
+}
+
+/**
  * An object url for the file being uploaded, so the row can show it while the
  * CDN object does not exist yet. Images only: a document already renders as a
  * named box, and the video player has its own poster path — handing either one
@@ -53,10 +78,10 @@ export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string 
 	// original keeps a row that has none from going blank, at the price of holding
 	// the full file until the message leaves the store.
 	const preview = (attachment as PreSendMediaAttachment)._previewUrl;
-	if (preview) return preview;
+	if (preview) return rememberPreview(preview);
 
 	try {
-		return URL.createObjectURL(sourceFile);
+		return rememberPreview(URL.createObjectURL(sourceFile));
 	} catch {
 		return undefined;
 	}
@@ -71,6 +96,7 @@ export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment): v
 		URL.revokeObjectURL(att.thumbnail);
 	}
 	if (att.local_source?.startsWith('blob:')) {
+		forgetLocalPreview(att.local_source);
 		URL.revokeObjectURL(att.local_source);
 	}
 	if (att._previewUrl?.startsWith('blob:') && att._previewUrl !== att.local_source) {
