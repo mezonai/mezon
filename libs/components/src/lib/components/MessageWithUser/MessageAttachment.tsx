@@ -94,7 +94,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	const messageCreateTimeSeconds = getMessageCreateTimeSeconds(message);
 
 	attachments.forEach((attachment) => {
-		if (isMediaTypeNotSupported(attachment.filetype)) {
+		if (isMediaTypeNotSupported(attachment.filetype, attachment.url)) {
 			documents.push(attachment);
 			return;
 		}
@@ -241,7 +241,9 @@ const MessageAttachment = memo(
 			bucketId: (message.channel_id ?? channelId) as string,
 			parentChannelId: channelId,
 			messageId: message.id,
-			createTimeSeconds: messageCreateTimeSeconds
+			createTimeSeconds: messageCreateTimeSeconds,
+			attachments: message.attachments,
+			content: message.content
 		});
 
 		const validateAttachment = useMemo(() => {

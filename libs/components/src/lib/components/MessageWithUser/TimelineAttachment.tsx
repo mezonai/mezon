@@ -38,7 +38,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 	const others: ApiMessageAttachment[] = [];
 
 	attachments.forEach((attachment) => {
-		if (isMediaTypeNotSupported(attachment.filetype)) {
+		if (isMediaTypeNotSupported(attachment.filetype, attachment.url)) {
 			others.push(attachment);
 			return;
 		}
@@ -91,7 +91,9 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 		bucketId: message.channel_id,
 		parentChannelId,
 		messageId: message.id,
-		createTimeSeconds: messageCreateTimeSeconds
+		createTimeSeconds: messageCreateTimeSeconds,
+		attachments: message.attachments,
+		content: message.content
 	});
 
 	const { images, videos, audio } = useMemo(() => classifyAttachments(validateAttachment), [validateAttachment]);
