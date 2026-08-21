@@ -35,11 +35,12 @@ export function AttachmentSendingIndicator({ className = '', showLabel = false, 
 				className="w-8 h-8 border-2 border-textSecondary800 dark:border-textSecondary border-t-transparent rounded-full animate-spin"
 				aria-hidden
 			/>
-			{withLabel && (
-				<span className="text-xs text-textSecondary800 dark:text-textSecondary" role="status" aria-live="polite">
-					{t('attachment.uploading')}
-				</span>
-			)}
+			{/* Whether the caption fits is a layout question. Whether the state is
+			    announced is not, so on a tile too small to show it the same text
+			    is still there for a screen reader. */}
+			<span className={withLabel ? 'text-xs text-textSecondary800 dark:text-textSecondary' : 'sr-only'} role="status" aria-live="polite">
+				{t('attachment.uploading')}
+			</span>
 		</div>
 	);
 }

@@ -17,6 +17,7 @@ import {
 	MessageCrypt,
 	PRESIGN_PENDING_MAX_AGE_SEC,
 	TypeMessage,
+	createLocalPreviewUrl,
 	getMessageCreateTimeSeconds,
 	getPublicKeys,
 	getWebUploadedAttachments,
@@ -24,7 +25,6 @@ import {
 	isTikTokLink,
 	isYouTubeLink,
 	mergePresignFinishContent,
-	createLocalPreviewUrl,
 	revokePreSendAttachmentUrls,
 	toPublicMessageAttachments,
 	withCreateTimeSecondsInUpdateContent
@@ -2114,10 +2114,30 @@ export const messagesSlice = createSlice({
 			if (!existingMessage) {
 				return;
 			}
-			existingMessage.attachments?.forEach(revokePreSendAttachmentUrls);
+
+			// This runs on the upload-first path (anonymous sends), where the
+			// public metadata that lands here has a CDN url and no local copy.
+			// Handing the row that alone sends the sender to the image proxy for
+			// an object uploaded seconds ago — the request that pins a failure in
+			// the proxy's cache, and the one thing this whole path exists to
+			// avoid. The picture stays; only the wire payload is public.
+			const previous = existingMessage.attachments ?? [];
+			const spare = [...previous];
+			const carried = new Set<string>();
+			const withLocalSource = attachments.map((attachment) => {
+				const at = spare.findIndex((p) => p.local_source && p.filename === attachment.filename);
+				if (at === -1) {
+					return attachment;
+				}
+				const [match] = spare.splice(at, 1);
+				carried.add(match.local_source as string);
+				return { ...attachment, local_source: match.local_source };
+			});
+
+			previous.forEach((attachment) => revokePreSendAttachmentUrls(attachment, carried));
 			channelMessagesAdapter.updateOne(channelEntity, {
 				id: messageId,
-				changes: { attachments }
+				changes: { attachments: withLocalSource }
 			});
 		},
 		applyPresignRefresh: (state, action: PayloadAction<{ channelId: string; messageId: string; presignFinish: string[] }>) => {

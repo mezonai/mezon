@@ -1118,8 +1118,13 @@ export enum ENotificationTypes {
 export type PreSendMediaAttachmentFields = {
 	_sourceFile?: File;
 	_thumbnailBlob?: Blob;
-	/** Display-sized copy of the picked image, made once at pick time. */
-	_previewUrl?: string;
+	/**
+	 * Display-sized copy of the picked image, made once at pick time. A blob and
+	 * not a url on purpose: an object url can be revoked out from under the row
+	 * that still holds the string (a resend, or the live-preview cap evicting an
+	 * older one), and a string cannot be re-opened. From the blob it can.
+	 */
+	_previewBlob?: Blob;
 	/**
 	 * Object url for the file this client is uploading right now, so the sender
 	 * sees the picture they just sent instead of a placeholder. Never leaves the

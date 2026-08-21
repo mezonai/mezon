@@ -74,40 +74,43 @@ export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string 
 	const mime = sourceFile.type || attachment.filetype || '';
 	if (!mime.startsWith('image/') && attachment.filetype !== 'image') return undefined;
 
-	// The display-sized copy made when the file was picked. Falling back to the
-	// original keeps a row that has none from going blank, at the price of holding
-	// the full file until the message leaves the store.
-	const preview = (attachment as PreSendMediaAttachment)._previewUrl;
-	if (preview) return rememberPreview(preview);
+	// The display-sized copy made when the file was picked, falling back to the
+	// original for a row that has none. The url is minted here rather than stored
+	// on the attachment, so revoking one is always recoverable: a resend, or a
+	// re-render after the cap evicted this row's preview, just opens the blob
+	// again instead of handing the img a url that no longer resolves.
+	const source = (attachment as PreSendMediaAttachment)._previewBlob ?? sourceFile;
 
 	try {
-		return rememberPreview(URL.createObjectURL(sourceFile));
+		return rememberPreview(URL.createObjectURL(source));
 	} catch {
 		return undefined;
 	}
 }
 
-export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment): void {
+/**
+ * `keep` is for the case where the row is being replaced rather than dropped and
+ * some of its urls move to the replacement — revoking those would blank the very
+ * row that just inherited them.
+ */
+export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment, keep?: ReadonlySet<string>): void {
 	const att = attachment as PreSendMediaAttachment;
-	if (att.url?.startsWith('blob:')) {
+	if (att.url?.startsWith('blob:') && !keep?.has(att.url)) {
 		URL.revokeObjectURL(att.url);
 	}
-	if (att.thumbnail?.startsWith('blob:')) {
+	if (att.thumbnail?.startsWith('blob:') && !keep?.has(att.thumbnail)) {
 		URL.revokeObjectURL(att.thumbnail);
 	}
-	if (att.local_source?.startsWith('blob:')) {
+	if (att.local_source?.startsWith('blob:') && !keep?.has(att.local_source)) {
 		forgetLocalPreview(att.local_source);
 		URL.revokeObjectURL(att.local_source);
-	}
-	if (att._previewUrl?.startsWith('blob:') && att._previewUrl !== att.local_source) {
-		URL.revokeObjectURL(att._previewUrl);
 	}
 }
 
 /** Strip in-memory pre-send fields before persisting on a message entity. */
 export function toPublicMessageAttachments(attachments: ApiMessageAttachment[]): ApiMessageAttachment[] {
 	return attachments.map((attachment) => {
-		const { _sourceFile: _sf, _thumbnailBlob: _tb, _previewUrl: _pu, ...publicAttachment } = attachment as PreSendMediaAttachment;
+		const { _sourceFile: _sf, _thumbnailBlob: _tb, _previewBlob: _pb, ...publicAttachment } = attachment as PreSendMediaAttachment;
 		return publicAttachment;
 	});
 }
@@ -166,12 +169,21 @@ async function processVideoFile<T>(file: File): Promise<T> {
 const LOCAL_PREVIEW_MAX_EDGE = 1024;
 
 /**
+ * Formats a canvas cannot copy without destroying them. `drawImage` takes a
+ * single frame, so a gif or an animated webp comes back as a still — and since
+ * the sender's row prefers its local copy for as long as the row exists, that
+ * still is what they would watch until a reload. These keep their original
+ * bytes instead; the live-preview cap is what makes that affordable.
+ */
+const ANIMATED_IMAGE_TYPES = new Set(['image/gif', 'image/webp', 'image/apng', 'image/avif']);
+
+/**
  * A display-sized copy of a picked image, made from the decode `processImageFile`
  * already pays for. CSS cannot do this: a 4000x3000 photo drawn into a 200px box
  * still decodes to a ~48MB bitmap, so ten of them cost half a gigabyte. Sizing it
  * here is what makes the preview affordable when a whole album is in flight.
  */
-function downscaledPreviewUrl(img: HTMLImageElement, type: string): Promise<string | undefined> {
+function downscaledPreviewBlob(img: HTMLImageElement, type: string): Promise<Blob | undefined> {
 	return new Promise((resolve) => {
 		try {
 			const longest = Math.max(img.width, img.height);
@@ -188,8 +200,8 @@ function downscaledPreviewUrl(img: HTMLImageElement, type: string): Promise<stri
 
 			// Keep alpha for the formats that carry it; everything else is smaller
 			// as a jpeg, and this copy is thrown away as soon as the row is gone.
-			const outputType = type === 'image/png' || type === 'image/webp' ? type : 'image/jpeg';
-			canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : undefined), outputType, 0.85);
+			const outputType = type === 'image/png' ? type : 'image/jpeg';
+			canvas.toBlob((blob) => resolve(blob ?? undefined), outputType, 0.85);
 		} catch {
 			resolve(undefined);
 		}
@@ -207,7 +219,7 @@ function processImageFile<T>(file: File): Promise<T> {
 					width: img.width,
 					height: img.height,
 					_sourceFile: file,
-					_previewUrl: await downscaledPreviewUrl(img, file.type)
+					_previewBlob: ANIMATED_IMAGE_TYPES.has(file.type) ? undefined : await downscaledPreviewBlob(img, file.type)
 				} as T;
 
 				resolve(metadata);
