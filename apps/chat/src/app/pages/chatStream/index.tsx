@@ -1,7 +1,7 @@
 import { useEscapeKey } from '@mezon/core';
-import { appActions, selectCurrentChannelLabel, selectIsShowCreateTopic, useAppDispatch } from '@mezon/store';
+import { appActions, selectCurrentChannelLabel, selectIsShowCreateTopic, selectIsShowMemberList, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ChannelMain from '../channel';
 import TopicDiscussionMain from '../topicDiscussion';
@@ -37,7 +37,17 @@ const ChatHeader = () => {
 const ChatStream = ({ topicChannelId }: ChatStreamProps) => {
 	const dispatch = useAppDispatch();
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
+	const isShowMemberList = useSelector(selectIsShowMemberList);
+	const shouldRestoreMemberListRef = useRef(isShowMemberList);
 	useEscapeKey(() => dispatch(appActions.setIsShowChatStream(false)));
+
+	useEffect(() => {
+		const shouldRestoreMemberList = shouldRestoreMemberListRef.current;
+		if (shouldRestoreMemberList) dispatch(appActions.setIsShowMemberList(false));
+		return () => {
+			if (shouldRestoreMemberList) dispatch(appActions.setIsShowMemberList(true));
+		};
+	}, [dispatch]);
 
 	return (
 		<div className="flex flex-col h-full max-h-full overflow-hidden">

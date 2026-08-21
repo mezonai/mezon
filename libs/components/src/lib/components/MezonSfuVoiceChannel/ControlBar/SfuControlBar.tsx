@@ -76,23 +76,27 @@ export const SfuControlBar = ({
 	onTogglePopout,
 	onFullScreen
 }: SfuControlBarProps) => (
-	<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3">
-		<div className="flex justify-start gap-4">
-			<EmojiReactionControl
-				isGridView={isGridView}
-				showEmojiPanel={showEmojiPanel}
-				onVisibleChange={onEmojiPanelChange}
-				onEmojiSelect={onEmojiSelect}
-			/>
-			<SoundReactionControl
-				isGridView={isGridView}
-				showSoundPanel={showSoundPanel}
-				onVisibleChange={onSoundPanelChange}
-				onSoundSelect={onSoundSelect}
-			/>
+	<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3 max-md:flex max-md:flex-col max-md:justify-center max-md:gap-3 max-md:px-2 max-md:py-2">
+		<div className="flex items-center justify-start gap-4 max-md:justify-center max-md:gap-3">
+			<div className="max-md:hidden">
+				<EmojiReactionControl
+					isGridView={isGridView}
+					showEmojiPanel={showEmojiPanel}
+					onVisibleChange={onEmojiPanelChange}
+					onEmojiSelect={onEmojiSelect}
+				/>
+			</div>
+			<div className="max-md:hidden">
+				<SoundReactionControl
+					isGridView={isGridView}
+					showSoundPanel={showSoundPanel}
+					onVisibleChange={onSoundPanelChange}
+					onSoundSelect={onSoundSelect}
+				/>
+			</div>
 			<RecordingControl channelLabel={channelLabel} />
 		</div>
-		<div className="flex items-center justify-center gap-3">
+		<div className="flex items-center justify-center gap-3 max-md:gap-2">
 			{joinRole === 'audience' && hasMicrophoneAccess && <PushToTalkControl active={pushToTalkActive} onChange={onPushToTalk} />}
 			{joinRole === 'speaker' && hasMicrophoneAccess && (
 				<MicrophoneControl
@@ -112,12 +116,16 @@ export const SfuControlBar = ({
 					onSelect={onCameraSelect}
 				/>
 			)}
-			{joinRole === 'speaker' && <ScreenShareControl active={screenSharing} onToggle={onScreenShareToggle} />}
+			{joinRole === 'speaker' && (
+				<div className="max-md:hidden">
+					<ScreenShareControl active={screenSharing} onToggle={onScreenShareToggle} />
+				</div>
+			)}
 			<SfuAgentControl />
 			<SfuRaisingHandControl />
 			<LeaveButton onLeave={onLeaveRoom} />
 		</div>
-		<div className="flex justify-end pr-1">
+		<div className="flex justify-end pr-1 max-md:hidden">
 			<PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />
 			<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 		</div>

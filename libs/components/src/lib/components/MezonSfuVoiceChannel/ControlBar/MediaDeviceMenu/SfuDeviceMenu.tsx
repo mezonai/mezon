@@ -36,7 +36,7 @@ export const SfuDeviceMenu = ({ label, devices, selectedDeviceId, onSelect }: Sf
 				{isOpen ? <Icons.VoiceArowUpIcon className="h-3 w-3" /> : <Icons.VoiceArowDownIcon className="h-3 w-3" />}
 			</button>
 			{isOpen && (
-				<div className="absolute bottom-7 right-0 min-w-[280px] rounded-lg bg-zinc-800 p-2 text-white shadow-2xl">
+				<div className="absolute bottom-7 right-0 min-w-[280px] rounded-lg bg-zinc-800 p-2 text-white shadow-2xl max-md:fixed max-md:inset-x-4 max-md:bottom-16 max-md:max-h-[50vh] max-md:min-w-0 max-md:overflow-y-auto">
 					<p className="px-2 pb-2 text-xs font-semibold uppercase text-zinc-400">{label}</p>
 					{devices.length ? (
 						devices.map((device) => (
