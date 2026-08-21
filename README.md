@@ -416,6 +416,7 @@ Mezon is built on top of amazing open-source technologies:
 
 -   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
 -   [mezon-sfu](https://github.com/mezonai/mezon-sfu) - mezon-sfu
+-   [libmezia](https://github.com/mezonai/libmezia) - libmezon
 -   [liburing](https://github.com/axboe/liburing) - io_uring for zero-copy I/O in mezon-sfu and mezon-proto-server
 -   [BoringSSL](https://boringssl.googlesource.com/boringssl) - TLS / DTLS
 -   [libsrtp](https://github.com/cisco/libsrtp) - SRTP media protection
