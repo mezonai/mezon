@@ -37,11 +37,11 @@ export enum EVoiceInteractEvent {
 	APP_INTERACTIVE = 12
 }
 
-enum E_APP_INTERACTIVE_KEY {
-	Interactive = 'APP_INTERACTIVE',
-	Blackboard = 'APP_BLACKBOARD',
-	Quiz = 'APP_QUIZ'
-}
+const E_APP_INTERACTIVE_KEY = {
+	Interactive: process.env.NX_APP_INTERACTIVE,
+	Blackboard: process.env.NX_APP_BLACKBOARD,
+	Quiz: process.env.NX_APP_QUIZ
+};
 
 export const VOICE_INTERACTIVE_APPS = [
 	{
