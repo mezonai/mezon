@@ -8,7 +8,7 @@ import {
 	createImgproxyUrl,
 	useIsIntersecting
 } from '@mezon/utils';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 
@@ -145,7 +145,6 @@ const Photo = <T,>({
 		return 'fill';
 	})();
 
-	const shouldRenderSkeleton = !shouldLoad && !isUploading;
 	const isNonInteractive = nonInteractive || isPresignPending;
 
 	const componentClassName = buildClassName(
@@ -179,8 +178,19 @@ const Photo = <T,>({
 
 	const thumbnailDataUri = photo.thumbnail?.dataUri;
 	const hasThumbnail = !!thumbnailDataUri;
-	const showPresignSkeleton = isPresignPending && !hasThumbnail && !showLocalPreview;
 	const canOpenViewer = !isPresignPending;
+
+	// The proxied copy is absolutely positioned, so between "start loading" and
+	// "decoded" there is nothing in the layout at all and the row goes blank for
+	// the length of a network round trip. Hold the placeholder until something is
+	// genuinely on screen — the local copy, the thumbnail, or the image itself.
+	const [imagePainted, setImagePainted] = useState(false);
+	const onImageSettled = useCallback(() => setImagePainted(true), []);
+	useEffect(() => {
+		setImagePainted(false);
+	}, [photo?.url]);
+
+	const somethingIsPainted = showLocalPreview || (isPresignPending && hasThumbnail) || (shouldLoad && imagePainted);
 
 	return (
 		<div
@@ -205,6 +215,7 @@ const Photo = <T,>({
 					isProtected={isProtected}
 					onContextMenu={onContextMenu}
 					isInSearchMessage={isInSearchMessage}
+					onSettled={onImageSettled}
 				/>
 			)}
 			{/* The sender's own copy, straight off disk: the CDN object is not there
@@ -227,14 +238,8 @@ const Photo = <T,>({
 					style={{ width: displayWidth, height: displayHeight }}
 				/>
 			)}
-			{showPresignSkeleton && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
-			{isUploading && <AttachmentSendingIndicator showLabel boxWidth={displayWidth} />}
-			{!isUploading && shouldRenderSkeleton && (
-				<div
-					style={{ width: displayWidth, height: displayHeight }}
-					className="max-w-full max-h-full absolute bottom-0 left-0 rounded-md bg-[#0000001c] animate-pulse"
-				/>
-			)}
+			{!somethingIsPainted && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
+			{isUploading && <AttachmentSendingIndicator showLabel boxWidth={displayWidth} boxHeight={displayHeight} />}
 			{isProtected && <span className="protector" />}
 		</div>
 	);
@@ -250,10 +255,12 @@ type PhotoImageProps = {
 	isProtected?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	isInSearchMessage?: boolean;
+	/** Fires once the CDN copy is painted, or has failed for good. */
+	onSettled?: () => void;
 };
 
 const PhotoImage = React.memo(
-	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage }: PhotoImageProps) => {
+	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage, onSettled }: PhotoImageProps) => {
 		const { setImageURL, setPositionShow } = useMessageContextMenu();
 		const [hasError, setHasError] = useState(false);
 
@@ -272,7 +279,12 @@ const PhotoImage = React.memo(
 
 		const handleError = useCallback(() => {
 			setHasError(true);
-		}, []);
+			onSettled?.();
+		}, [onSettled]);
+
+		const handleLoad = useCallback(() => {
+			onSettled?.();
+		}, [onSettled]);
 
 		if (hasError) {
 			return (
@@ -301,6 +313,7 @@ const PhotoImage = React.memo(
 				style={{ width: displayWidth }}
 				draggable={!isProtected}
 				onError={handleError}
+				onLoad={handleLoad}
 			/>
 		);
 	}
