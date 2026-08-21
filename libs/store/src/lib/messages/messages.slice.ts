@@ -2123,7 +2123,16 @@ export const messagesSlice = createSlice({
 			// the keys — i.e. the message text would vanish).
 			const stored = existing.content;
 			const base = typeof stored === 'string' ? safeJSONParse(stored) : stored;
-			const merged = { ...(base && typeof base === 'object' ? base : {}), presign_finish: presignFinish };
+			// Union, not replace: the list only ever grows, and the caller may be
+			// contributing a single key it just proved readable rather than the whole
+			// server-side list.
+			const storedKeys = Array.isArray((base as { presign_finish?: unknown })?.presign_finish)
+				? ((base as { presign_finish: unknown[] }).presign_finish.filter((key): key is string => typeof key === 'string') as string[])
+				: [];
+			const merged = {
+				...(base && typeof base === 'object' ? base : {}),
+				presign_finish: [...new Set([...storedKeys, ...presignFinish])]
+			};
 			channelMessagesAdapter.updateOne(channelEntity, {
 				id: messageId,
 				changes: { content: typeof stored === 'string' ? JSON.stringify(merged) : merged } as Partial<MessagesEntity>
