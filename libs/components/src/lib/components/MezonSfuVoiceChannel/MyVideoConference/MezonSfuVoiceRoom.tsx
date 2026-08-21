@@ -1631,8 +1631,8 @@ export function MezonSfuVoiceRoom({
 			<SfuControlBar
 				channelLabel={channelLabel || roomId}
 				joinRole={joinRole}
-				hasMicrophoneAccess={hasMicrophoneAccess}
-				hasCameraAccess={hasCameraAccess}
+				hasMicrophoneAccess={hasMicrophoneAccess ?? false}
+				hasCameraAccess={hasCameraAccess ?? false}
 				pushToTalkActive={pushToTalkActive}
 				microphoneEnabled={microphoneEnabled}
 				cameraEnabled={cameraEnabled}

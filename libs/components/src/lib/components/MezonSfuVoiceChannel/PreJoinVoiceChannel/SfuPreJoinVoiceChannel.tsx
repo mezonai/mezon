@@ -3,9 +3,8 @@ import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { SfuJoinRole } from '../types';
 import { VoiceChannelUsers } from './VoiceChannelUsers/VoiceChannelUsers';
-
-export type SfuJoinRole = 'speaker' | 'audience';
 
 interface PreJoinVoiceChannelProps {
 	channel_label?: string;
