@@ -1,4 +1,4 @@
-import type { ApiPhoto, IAlbum, IAlbumLayout, ObserveFn } from '@mezon/utils';
+import type { ApiPhoto, IAlbum, IAlbumLayout, ObserveFn, PreSendMediaAttachment } from '@mezon/utils';
 import { AlbumRectPart, generateAttachmentId } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import type { FC } from 'react';
@@ -78,6 +78,7 @@ const Album: FC<OwnProps> = ({
 					onContextMenu={onContextMenu}
 					isSending={isSending}
 					isPresignPending={isPresignPending}
+					localSource={(attachment as PreSendMediaAttachment)?.local_source}
 					loadWhenUnpending={!isPresignPending}
 					isInSearchMessage={isInSearchMessage}
 				/>

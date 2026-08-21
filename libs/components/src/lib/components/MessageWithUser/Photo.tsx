@@ -8,19 +8,20 @@ import {
 	createImgproxyUrl,
 	useIsIntersecting
 } from '@mezon/utils';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 
 let lastSentUrl: string | null = null;
 
+/**
+ * In the layout flow on purpose. A locally picked file usually has no measured
+ * width, and the wrapper is `width: auto` — so with every child positioned
+ * absolutely the box collapses to zero and the row renders as nothing at all.
+ * This one is what gives it a size while there is no image to show.
+ */
 function ImageAttachmentSkeleton({ width, height }: { width: number; height: number }) {
-	return (
-		<div
-			style={{ width, height }}
-			className="max-w-full max-h-full absolute bottom-0 left-0 z-[1] rounded-md bg-bgLightSecondary dark:bg-bgSecondary"
-		/>
-	);
+	return <div style={{ width, height }} className="max-w-full rounded-md bg-bgLightSecondary dark:bg-bgSecondary" />;
 }
 
 export type OwnProps<T> = {
@@ -51,6 +52,8 @@ export type OwnProps<T> = {
 	isInSearchMessage?: boolean;
 	isSending?: boolean;
 	isPresignPending?: boolean;
+	/** Object url for the file being uploaded; shown until the CDN copy exists. */
+	localSource?: string;
 	loadWhenUnpending?: boolean;
 	isMobile?: boolean;
 };
@@ -81,6 +84,7 @@ const Photo = <T,>({
 	isInSearchMessage,
 	isSending,
 	isPresignPending = false,
+	localSource,
 	loadWhenUnpending = false,
 	isMobile
 }: OwnProps<T>) => {
@@ -162,7 +166,16 @@ const Photo = <T,>({
 
 	const thumbnailDataUri = photo.thumbnail?.dataUri;
 	const hasThumbnail = !!thumbnailDataUri;
-	const showPresignSkeleton = isPresignPending && !hasThumbnail;
+	const showLocalPreview = isUploading && !!localSource;
+
+	// The object url pins the whole file in memory, and the store keeps the
+	// attachment long after the upload lands. Once the row is no longer uploading
+	// the CDN copy is what renders, so nothing reads this again — let it go.
+	useEffect(() => {
+		if (isUploading || !localSource) return;
+		URL.revokeObjectURL(localSource);
+	}, [isUploading, localSource]);
+	const showPresignSkeleton = isPresignPending && !hasThumbnail && !showLocalPreview;
 	const canOpenViewer = !isPresignPending;
 
 	return (
@@ -188,6 +201,17 @@ const Photo = <T,>({
 					isProtected={isProtected}
 					onContextMenu={onContextMenu}
 					isInSearchMessage={isInSearchMessage}
+				/>
+			)}
+			{/* The sender's own copy, straight off disk: the CDN object is not there
+			    yet, and requesting it early is what pins a 404 in the image proxy's
+			    cache. In the layout flow, so it is also what gives the row a size. */}
+			{showLocalPreview && (
+				<img
+					src={localSource}
+					alt=""
+					className="block max-w-full rounded object-cover"
+					style={{ maxHeight: displayHeight, width: width || undefined }}
 				/>
 			)}
 			{isPresignPending && hasThumbnail && (

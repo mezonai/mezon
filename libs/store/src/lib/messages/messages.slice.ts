@@ -24,6 +24,7 @@ import {
 	isTikTokLink,
 	isYouTubeLink,
 	mergePresignFinishContent,
+	createLocalPreviewUrl,
 	revokePreSendAttachmentUrls,
 	toPublicMessageAttachments,
 	withCreateTimeSecondsInUpdateContent
@@ -1239,6 +1240,19 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			width: attach.width
 		})) ?? [];
 
+	// The row this client renders while the bytes are still going up. Presign has
+	// already rewritten `url` to the CDN object, which does not exist yet, so
+	// without a local source the sender's own message has nothing to show — and
+	// asking for the CDN object early is what pins a 404 in the image proxy cache
+	// for a week. Kept off `attachmentsMessage` so the wire payload (and the size
+	// guard below) never carries a blob url.
+	const sendingAttachmentsMessage: ApiMessageAttachment[] = attachments?.length
+		? attachmentsMessage.map((attachment, index) => {
+				const local_source = createLocalPreviewUrl(attachments[index]);
+				return local_source ? { ...attachment, local_source } : attachment;
+			})
+		: attachmentsMessage;
+
 	const payloadSizeInBytes = Buffer.byteLength(
 		JSON.stringify({
 			...payload,
@@ -1415,7 +1429,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			content,
-			attachments: attachmentsMessage,
+			attachments: sendingAttachmentsMessage,
 			create_time_seconds: clientSendTime / 1000,
 			create_time: new Date(clientSendTime).toISOString(),
 			client_send_time: clientSendTime,

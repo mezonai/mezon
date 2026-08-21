@@ -31,6 +31,26 @@ export function getPreSendThumbnailBlob(attachment: ApiMessageAttachment): Blob 
 	return (attachment as PreSendMediaAttachment)._thumbnailBlob;
 }
 
+/**
+ * An object url for the file being uploaded, so the row can show it while the
+ * CDN object does not exist yet. Images only: a document already renders as a
+ * named box, and the video player has its own poster path — handing either one
+ * a url nothing reads would just pin the file in memory.
+ */
+export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string | undefined {
+	const sourceFile = getPreSendSourceFile(attachment);
+	if (!sourceFile) return undefined;
+
+	const filetype = attachment.filetype || sourceFile.type;
+	if (!filetype?.startsWith('image/')) return undefined;
+
+	try {
+		return URL.createObjectURL(sourceFile);
+	} catch {
+		return undefined;
+	}
+}
+
 export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment): void {
 	const att = attachment as PreSendMediaAttachment;
 	if (att.url?.startsWith('blob:')) {
@@ -38,6 +58,9 @@ export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment): v
 	}
 	if (att.thumbnail?.startsWith('blob:')) {
 		URL.revokeObjectURL(att.thumbnail);
+	}
+	if (att.local_source?.startsWith('blob:')) {
+		URL.revokeObjectURL(att.local_source);
 	}
 }
 

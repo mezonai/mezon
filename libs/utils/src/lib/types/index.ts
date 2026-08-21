@@ -1118,6 +1118,14 @@ export enum ENotificationTypes {
 export type PreSendMediaAttachmentFields = {
 	_sourceFile?: File;
 	_thumbnailBlob?: Blob;
+	/**
+	 * Object url for the file this client is uploading right now, so the sender
+	 * sees the picture they just sent instead of a placeholder. Never leaves the
+	 * browser: presign rewrites `url` to the CDN object before the message is
+	 * sent, and that object does not exist yet — asking for it early is what
+	 * pins a 404 in the image proxy's cache.
+	 */
+	local_source?: string;
 };
 
 export type PreSendMediaAttachment = ApiMessageAttachment & PreSendMediaAttachmentFields;
