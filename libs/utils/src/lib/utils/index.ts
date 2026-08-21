@@ -821,6 +821,15 @@ export async function getWebUploadedAttachments(payload: {
 			}
 
 			const result = await uploadFileToPath(createdFile.uploadPath, createdFile, createdFile.size);
+
+			// The id returned here becomes a presign_finish key, i.e. a promise to
+			// every client that the object is on the CDN. Returning it after a
+			// failed PUT is what turns a transient upload error into a message
+			// permanently pointing at a 404. Fail the send instead.
+			if (!result) {
+				throw new Error(`Upload failed for ${createdFile.name}`);
+			}
+
 			if (result && createdFile.thumbnailBlob && attachment?.thumbnailUpload && createdFile.thumbnail && createdFile.type.startsWith('video')) {
 				await uploadFileToPath(attachment.thumbnailUpload, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
 			}

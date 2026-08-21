@@ -11,5 +11,8 @@
 			"downloadButton": "비디오 다운로드",
 			"browserNotSupported": "브라우저가 비디오 태그를 지원합니다."
 		}
+	},
+	"attachment": {
+		"uploading": "업로드 중..."
 	}
 }
