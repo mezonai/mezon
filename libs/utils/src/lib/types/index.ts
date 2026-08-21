@@ -1118,6 +1118,8 @@ export enum ENotificationTypes {
 export type PreSendMediaAttachmentFields = {
 	_sourceFile?: File;
 	_thumbnailBlob?: Blob;
+	/** Display-sized copy of the picked image, made once at pick time. */
+	_previewUrl?: string;
 	/**
 	 * Object url for the file this client is uploading right now, so the sender
 	 * sees the picture they just sent instead of a placeholder. Never leaves the

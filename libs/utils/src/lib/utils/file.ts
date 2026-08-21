@@ -49,6 +49,12 @@ export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string 
 	const mime = sourceFile.type || attachment.filetype || '';
 	if (!mime.startsWith('image/') && attachment.filetype !== 'image') return undefined;
 
+	// The display-sized copy made when the file was picked. Falling back to the
+	// original keeps a row that has none from going blank, at the price of holding
+	// the full file until the message leaves the store.
+	const preview = (attachment as PreSendMediaAttachment)._previewUrl;
+	if (preview) return preview;
+
 	try {
 		return URL.createObjectURL(sourceFile);
 	} catch {
@@ -67,12 +73,15 @@ export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment): v
 	if (att.local_source?.startsWith('blob:')) {
 		URL.revokeObjectURL(att.local_source);
 	}
+	if (att._previewUrl?.startsWith('blob:') && att._previewUrl !== att.local_source) {
+		URL.revokeObjectURL(att._previewUrl);
+	}
 }
 
 /** Strip in-memory pre-send fields before persisting on a message entity. */
 export function toPublicMessageAttachments(attachments: ApiMessageAttachment[]): ApiMessageAttachment[] {
 	return attachments.map((attachment) => {
-		const { _sourceFile: _sf, _thumbnailBlob: _tb, ...publicAttachment } = attachment as PreSendMediaAttachment;
+		const { _sourceFile: _sf, _thumbnailBlob: _tb, _previewUrl: _pu, ...publicAttachment } = attachment as PreSendMediaAttachment;
 		return publicAttachment;
 	});
 }
@@ -123,6 +132,44 @@ async function processVideoFile<T>(file: File): Promise<T> {
 	return metadata as T;
 }
 
+/**
+ * Longest edge of the preview the sender's own row renders. Covers the widest
+ * message column on a 2x screen; past that the extra pixels are decoded, held in
+ * memory and never seen.
+ */
+const LOCAL_PREVIEW_MAX_EDGE = 1024;
+
+/**
+ * A display-sized copy of a picked image, made from the decode `processImageFile`
+ * already pays for. CSS cannot do this: a 4000x3000 photo drawn into a 200px box
+ * still decodes to a ~48MB bitmap, so ten of them cost half a gigabyte. Sizing it
+ * here is what makes the preview affordable when a whole album is in flight.
+ */
+function downscaledPreviewUrl(img: HTMLImageElement, type: string): Promise<string | undefined> {
+	return new Promise((resolve) => {
+		try {
+			const longest = Math.max(img.width, img.height);
+			if (!longest) return resolve(undefined);
+
+			const scale = Math.min(1, LOCAL_PREVIEW_MAX_EDGE / longest);
+			const canvas = document.createElement('canvas');
+			canvas.width = Math.max(1, Math.round(img.width * scale));
+			canvas.height = Math.max(1, Math.round(img.height * scale));
+
+			const ctx = canvas.getContext('2d');
+			if (!ctx) return resolve(undefined);
+			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+			// Keep alpha for the formats that carry it; everything else is smaller
+			// as a jpeg, and this copy is thrown away as soon as the row is gone.
+			const outputType = type === 'image/png' || type === 'image/webp' ? type : 'image/jpeg';
+			canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : undefined), outputType, 0.85);
+		} catch {
+			resolve(undefined);
+		}
+	});
+}
+
 function processImageFile<T>(file: File): Promise<T> {
 	return new Promise((resolve) => {
 		const reader = new FileReader();
@@ -133,7 +180,8 @@ function processImageFile<T>(file: File): Promise<T> {
 					...createFileMetadata(file),
 					width: img.width,
 					height: img.height,
-					_sourceFile: file
+					_sourceFile: file,
+					_previewUrl: await downscaledPreviewUrl(img, file.type)
 				} as T;
 
 				resolve(metadata);
