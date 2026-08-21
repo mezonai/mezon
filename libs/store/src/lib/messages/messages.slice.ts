@@ -15,6 +15,7 @@ import {
 	EOgpType,
 	LIMIT_MESSAGE,
 	MessageCrypt,
+	PRESIGN_PENDING_MAX_AGE_SEC,
 	TypeMessage,
 	getMessageCreateTimeSeconds,
 	getPublicKeys,
@@ -60,6 +61,9 @@ export const MESSAGES_FEATURE_KEY = 'messages';
 /*
  * Update these interfaces according to your requirements.
  */
+
+/** Retry schedule for the presign_finish patch; the last entry means "no more waiting". */
+const PRESIGN_PATCH_BACKOFF_MS = [1000, 3000, 0];
 
 export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
 	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -125,6 +129,8 @@ export interface MessagesState {
 		navigate?: boolean;
 	} | null;
 	channelDraftMessage: Record<string, ChannelDraftMessages>;
+	/** messageId -> ms of the last presign refetch, so N rendered copies cost one request. */
+	presignRefreshAt: Record<string, number>;
 	isJumpingToPresent: Record<string, boolean>;
 	channelMessages: Record<
 		string,
@@ -1513,20 +1519,40 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						})
 					);
 					await new Promise((resolve) => setTimeout(resolve, 1000));
-					thunkAPI.dispatch(
-						editMessageViaApi({
-							content: {
-								...content,
-								presign_finish
-							},
-							channelId,
-							clanId,
-							isPublic,
-							messageId: messageResult?.message_id,
-							mode,
-							hideEditted: true
-						})
-					);
+					// This patch is what stops every receiver showing "uploading". It used
+					// to be dispatched once and never checked: one failed request and the
+					// row stayed stuck for everyone until a reload.
+					// Capture the id — the closure below outlives the guard above.
+					const presignMessageId = messageResult.message_id as string;
+					const patch = () =>
+						thunkAPI
+							.dispatch(
+								editMessageViaApi({
+									content: {
+										...content,
+										presign_finish
+									},
+									channelId,
+									clanId,
+									isPublic,
+									messageId: presignMessageId,
+									mode,
+									hideEditted: true
+								})
+							)
+							.unwrap();
+					void (async () => {
+						for (let attempt = 0; attempt < PRESIGN_PATCH_BACKOFF_MS.length; attempt++) {
+							try {
+								await patch();
+								return;
+							} catch (e) {
+								console.error(`presign_finish patch failed (attempt ${attempt + 1}/${PRESIGN_PATCH_BACKOFF_MS.length})`, e);
+								const wait = PRESIGN_PATCH_BACKOFF_MS[attempt];
+								if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+							}
+						}
+					})();
 				} catch (error) {
 					console.error('error: ', error);
 				}
@@ -1842,6 +1868,7 @@ export const initialMessagesState: MessagesState = {
 	dataReactionGetFromLoadMessage: [],
 	channelMessages: {},
 	channelDraftMessage: {},
+	presignRefreshAt: {},
 	isFocused: false,
 	isViewingOlderMessagesByChannelId: {},
 	isJumpingToPresent: {},
@@ -2077,6 +2104,30 @@ export const messagesSlice = createSlice({
 				id: messageId,
 				changes: { attachments }
 			});
+		},
+		applyPresignRefresh: (
+			state,
+			action: PayloadAction<{ channelId: string; messageId: string; content: unknown; attachments: ApiMessageAttachment[] }>
+		) => {
+			const { channelId, messageId, content, attachments } = action.payload;
+			const channelEntity = state.channelMessages[channelId];
+			if (!channelEntity?.entities[messageId]) {
+				return;
+			}
+			channelMessagesAdapter.updateOne(channelEntity, {
+				id: messageId,
+				changes: { content, attachments } as Partial<MessagesEntity>
+			});
+		},
+		markPresignRefresh: (state, action: PayloadAction<{ messageId: string; at: number }>) => {
+			const { messageId, at } = action.payload;
+			const ids = Object.keys(state.presignRefreshAt);
+			if (ids.length > 200) {
+				ids.forEach((id) => {
+					if (at - state.presignRefreshAt[id] > PRESIGN_PENDING_MAX_AGE_SEC * 1000) delete state.presignRefreshAt[id];
+				});
+			}
+			state.presignRefreshAt[messageId] = at;
 		},
 		markAsError: (
 			state,
@@ -2422,6 +2473,55 @@ import { channel } from 'process';
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
 
+/** Smallest gap between two refetches of the same message. */
+const PRESIGN_REFRESH_MIN_GAP_MS = 10000;
+/** Second line of defence next to the store-state gate below. */
+const presignRefreshLocal = new Map<string, number>();
+
+/**
+ * Re-read one message from the server.
+ *
+ * A message with attachments is posted before its uploads finish, and the
+ * receiver only stops showing "uploading" when the follow-up presign_finish
+ * update arrives over the socket. If that single event is lost — a socket blip,
+ * a failed patch on the sender — the row stays stuck until a manual reload.
+ * Ask for the message again so it can heal itself.
+ */
+export const refreshPresignMessage = createAsyncThunk(
+	'messages/refreshPresignMessage',
+	async ({ clanId, channelId, messageId, topicId }: { clanId: string; channelId: string; messageId: string; topicId?: string }, thunkAPI) => {
+		const now = Date.now();
+		const localLast = presignRefreshLocal.get(messageId);
+		if (localLast && now - localLast < PRESIGN_REFRESH_MIN_GAP_MS) {
+			return;
+		}
+		// The gate lives in store state on purpose: a module-scope Map is not shared
+		// when the slice module gets instantiated more than once, and every rendered
+		// copy of the row would then fire its own request.
+		const last = getMessagesState(thunkAPI.getState() as RootState).presignRefreshAt?.[messageId];
+		if (last && now - last < PRESIGN_REFRESH_MIN_GAP_MS) {
+			return;
+		}
+		presignRefreshLocal.set(messageId, now);
+		thunkAPI.dispatch(messagesActions.markPresignRefresh({ messageId, at: now }));
+
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.listChannelMessages(mezon.session, clanId, channelId, messageId, 1, 1, topicId);
+		const fresh = response?.messages?.find((message) => (message.id || message.message_id) === messageId);
+		if (!fresh) {
+			return;
+		}
+		thunkAPI.dispatch(
+			messagesActions.applyPresignRefresh({
+				channelId: topicId || channelId,
+				messageId,
+				content: fresh.content,
+				attachments: fresh.attachments ?? []
+			})
+		);
+	}
+);
+
 export const messagesActions = {
 	...messagesSlice.actions,
 	addNewMessage,
@@ -2438,7 +2538,8 @@ export const messagesActions = {
 	loadMoreMessage,
 	jumpToMessage,
 	clickButtonMessage,
-	mapMessageChannelToEntityAction
+	mapMessageChannelToEntityAction,
+	refreshPresignMessage
 };
 
 export const getMessagesState = (rootState: { [MESSAGES_FEATURE_KEY]: MessagesState }): MessagesState => rootState[MESSAGES_FEATURE_KEY];

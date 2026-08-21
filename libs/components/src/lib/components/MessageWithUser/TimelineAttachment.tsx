@@ -1,4 +1,12 @@
-import { attachmentActions, getStore, selectCurrentChannel, selectCurrentClanId, selectCurrentDM, useAppDispatch } from '@mezon/store';
+import {
+	attachmentActions,
+	getStore,
+	selectCurrentChannel,
+	selectCurrentClanId,
+	selectCurrentDM,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import {
 	EMimeTypes,
@@ -7,6 +15,7 @@ import {
 	filterExpiredPresignAttachments,
 	generateAttachmentId,
 	getMessageCreateTimeSeconds,
+	hasActivePresignPendingAttachments,
 	isAttachmentPresignPendingForMessage,
 	isMediaTypeNotSupported
 } from '@mezon/utils';
@@ -14,6 +23,7 @@ import {
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
 import { MessageAudio } from './MessageAudio/MessageAudio';
+import { usePresignRefresh } from './usePresignRefresh';
 
 type TimelineAttachmentProps = {
 	message: IMessageWithUser;
@@ -67,6 +77,22 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 	}, [message.attachments, message.content, messageCreateTimeSeconds]);
 
 	const isPresignPendingForUrl = useCallback((url?: string) => isAttachmentPresignPendingForMessage(url, message), [message]);
+
+	// Topic rows are the ones users reported stuck: the presign update lands on the
+	// parent channel copy and the topic copy never hears about it.
+	const hasPresignPending = useMemo(
+		() => hasActivePresignPendingAttachments(message.attachments, message.content),
+		[message.attachments, message.content]
+	);
+	const parentChannelId = useAppSelector((state) => selectCurrentChannel(state)?.channel_id);
+	usePresignRefresh({
+		hasPresignPending,
+		clanId: message.clan_id,
+		bucketId: message.channel_id,
+		parentChannelId,
+		messageId: message.id,
+		createTimeSeconds: messageCreateTimeSeconds
+	});
 
 	const { images, videos, audio } = useMemo(() => classifyAttachments(validateAttachment), [validateAttachment]);
 
