@@ -11,5 +11,8 @@
 			"downloadButton": "Tải video xuống",
 			"browserNotSupported": "Trình duyệt của bạn không hỗ trợ thẻ video."
 		}
+	},
+	"attachment": {
+		"uploading": "Đang tải lên..."
 	}
 }

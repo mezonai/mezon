@@ -199,7 +199,7 @@ const Photo = <T,>({
 				/>
 			)}
 			{showPresignSkeleton && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
-			{isSending && <AttachmentSendingIndicator />}
+			{isUploading && <AttachmentSendingIndicator showLabel boxWidth={displayWidth} />}
 			{!isUploading && shouldRenderSkeleton && (
 				<div
 					style={{ width: displayWidth, height: displayHeight }}
