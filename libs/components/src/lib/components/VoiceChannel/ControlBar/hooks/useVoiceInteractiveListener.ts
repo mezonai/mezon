@@ -17,12 +17,16 @@ interface ActiveApp {
 	id: string;
 	title: string;
 	url: string;
+	zIndex: number;
 }
+
+const BASE_Z = 9999;
 
 export function useVoiceInteractiveListener(channelId?: string) {
 	const dispatch = useAppDispatch();
 	const { clientRef } = useMezon();
 	const [activeApps, setActiveApps] = useState<ActiveApp[]>([]);
+	const zCounterRef = useRef(BASE_Z);
 	const senderQueueRef = useRef<VoiceInteractiveEvent[]>([]);
 	const playerRef = useRef<FlowerCelebrationHandle | null>(null);
 	const senderTimeoutRef = useRef<number | null>(null);
@@ -32,6 +36,17 @@ export function useVoiceInteractiveListener(channelId?: string) {
 	const closeApp = (id: string) => {
 		setActiveApps((prev) => prev.filter((a) => a.id !== id));
 	};
+
+	const focusApp = useCallback((id: string) => {
+		setActiveApps((prev) => {
+			const current = prev.find((a) => a.id === id);
+			if (current && current.zIndex === zCounterRef.current) return prev;
+
+			zCounterRef.current += 1;
+			const newZ = zCounterRef.current;
+			return prev.map((a) => (a.id === id ? { ...a, zIndex: newZ } : a));
+		});
+	}, []);
 
 	const showNextSender = useCallback(() => {
 		if (isShowingSenderRef.current) return;
@@ -78,16 +93,26 @@ export function useVoiceInteractiveListener(channelId?: string) {
 				const store = getStore();
 				const state = store.getState();
 				const clanId = event.clan_id ?? '';
+				const params = event.params;
 				const channel = selectChannelByIdAndClanId(state, clanId, channelId);
 				const clanName = seletClanNameById(state, clanId) ?? '';
 				const urlWithHash = buildChannelAppLaunchUrl(app.url, {
 					webAppData: hashData.web_app_data,
 					clanId,
-					clanName
+					clanName,
+					params
 				});
-
 				const id = `${app.key}-${Date.now()}`;
-				setActiveApps((prev) => [...prev, { id, title: clanName ? `${app.name} — ${channel.channel_label}` : app.name, url: urlWithHash }]);
+				zCounterRef.current += 1;
+				setActiveApps((prev) => [
+					...prev,
+					{
+						id,
+						title: clanName ? `${app.name} — ${channel.channel_label}` : app.name,
+						url: urlWithHash,
+						zIndex: zCounterRef.current
+					}
+				]);
 			} catch (err) {
 				console.error('[voice-interactive] failed to open app:', err);
 			}
@@ -103,5 +128,5 @@ export function useVoiceInteractiveListener(channelId?: string) {
 		};
 	}, [clientRef, channelId, dispatch]);
 
-	return { activeApps, closeApp, currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
+	return { activeApps, closeApp, focusApp, currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
 }

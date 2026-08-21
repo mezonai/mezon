@@ -38,9 +38,9 @@ export enum EVoiceInteractEvent {
 }
 
 enum E_APP_INTERACTIVE_KEY {
-	Interactive = '2089273739668623360',
-	Blackboard = '2089294331818020864',
-	Quiz = '2089257413122199552'
+	Interactive = 'APP_INTERACTIVE',
+	Blackboard = 'APP_BLACKBOARD',
+	Quiz = 'APP_QUIZ'
 }
 
 export const VOICE_INTERACTIVE_APPS = [
@@ -236,7 +236,16 @@ export const sendVoiceInteractiveEvent = createAsyncThunk(
 			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 			const state = thunkAPI.getState() as RootState;
 			const sender_id = selectCurrentUserId(state);
-			const response = await mezon.client.writeVoiceInteractiveEvent(mezon.session, clan_id, channel_id, sender_id, sender_id, event_type, '');
+			const params = event_type === EVoiceInteractEvent.APP_BLACKBOARD ? `userId=${sender_id}` : '';
+			const response = await mezon.client.writeVoiceInteractiveEvent(
+				mezon.session,
+				clan_id,
+				channel_id,
+				sender_id,
+				sender_id,
+				event_type,
+				params
+			);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'voice/sendVoiceInteractiveEvent');
