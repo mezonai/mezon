@@ -128,8 +128,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		try {
 			await dispatch(
 				voiceActions.kickVoiceMember({
-					room_name: room?.name,
-					username: member?.user?.id
+					user_id: member?.user?.id
 				})
 			).unwrap();
 		} catch (error) {
@@ -156,8 +155,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		try {
 			await dispatch(
 				voiceActions.muteVoiceMember({
-					room_name: room?.name,
-					username: member?.user?.id
+					user_id: member?.user?.id
 				})
 			).unwrap();
 		} catch (error) {

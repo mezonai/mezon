@@ -259,47 +259,39 @@ export const generateMeetTokenExternal = createAsyncThunk(
 	}
 );
 
-export const kickVoiceMember = createAsyncThunk(
-	'meet/kickVoiceMember',
-	async ({ room_name, username }: { room_name?: string; username?: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const state = thunkAPI.getState() as RootState;
-			const voiceInfor = selectVoiceInfo(state);
-			const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
-				room_name,
-				username: username as string
-			});
-			return response;
-		} catch (error) {
-			captureSentryError(error, 'meet/generateMeetTokenExternal');
-			return thunkAPI.rejectWithValue(error);
-		}
+export const kickVoiceMember = createAsyncThunk('meet/kickVoiceMember', async ({ user_id }: { room_name?: string; user_id?: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+		const state = thunkAPI.getState() as RootState;
+		const voiceInfor = selectVoiceInfo(state);
+		const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
+			clan_id: voiceInfor?.clanId as string,
+			channel_id: voiceInfor?.channelId,
+			user_id: user_id as string
+		});
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'meet/generateMeetTokenExternal');
+		return thunkAPI.rejectWithValue(error);
 	}
-);
+});
 
-export const muteVoiceMember = createAsyncThunk(
-	'meet/muteVoiceMember',
-	async ({ room_name, username }: { room_name?: string; username?: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const state = thunkAPI.getState() as RootState;
-			const voiceInfor = selectVoiceInfo(state);
-			const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
-				room_name,
-				username: username as string
-			});
-			return response;
-		} catch (error) {
-			captureSentryError(error, 'meet/generateMeetTokenExternal');
-			return thunkAPI.rejectWithValue(error);
-		}
+export const muteVoiceMember = createAsyncThunk('meet/muteVoiceMember', async ({ user_id }: { user_id?: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+		const state = thunkAPI.getState() as RootState;
+		const voiceInfor = selectVoiceInfo(state);
+		const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
+			clan_id: voiceInfor?.clanId as string,
+			channel_id: voiceInfor?.channelId,
+			user_id: user_id as string
+		});
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'meet/generateMeetTokenExternal');
+		return thunkAPI.rejectWithValue(error);
 	}
-);
+});
 
 export const giveFlowers = createAsyncThunk('meet/giveFlowers', async ({ receiver_id }: { receiver_id: string }, thunkAPI) => {
 	try {
