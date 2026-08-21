@@ -114,7 +114,7 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between  flex-shrink   ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
 		</div>
@@ -138,18 +138,24 @@ const TopBarChannelText = memo(() => {
 		isGuidePath: guidePath
 	});
 	const channelParent = useAppSelector((state) => selectChannelById(state, (channelParentId ? (channelParentId as string) : '') ?? '')) || null;
+
+	const navigate = useCustomNavigate();
+	const dispatch = useAppDispatch();
+
 	const { setStatusMenu } = useMenu();
+
 	const openMenu = useCallback(() => {
 		setStatusMenu(true);
-	}, [setStatusMenu]);
+		dispatch(appActions.setIsShowMemberList(false));
+		dispatch(appActions.setIsUseProfileDM(false));
+	}, [setStatusMenu, dispatch]);
+
 	const closeMenu = useCallback(() => {
 		const isMobile = window.innerWidth < 640;
 		if (isMobile) {
 			setStatusMenu(false);
 		}
 	}, [setStatusMenu]);
-	const navigate = useCustomNavigate();
-	const dispatch = useAppDispatch();
 
 	const handleNavigateToParent = () => {
 		if (!channelParent?.id || !channelParent?.clan_id) {
@@ -217,45 +223,44 @@ const TopBarChannelText = memo(() => {
 		const link = toChannelPage(checkInvoice.channelId, checkInvoice.clanId);
 		navigate(link);
 	};
+
 	return (
 		<>
-			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary mr-5">
-				<div className="flex sbm:hidden pl-3 px-2 text-[var(--bg-icon-theme)]" onClick={openMenu} role="button">
+			<div className="flex relative flex-1 min-w-0 items-center gap-2 text-theme-primary mr-5">
+				<div className="flex w-10 sbm:hidden pl-3 px-2 text-[var(--bg-icon-theme)]" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
 
 				{pagePathTitle ? (
 					<p className="text-base font-semibold truncate max-sbm:max-w-[180px]">{pagePathTitle}</p>
 				) : (
-					<>
-						{!!channelType && (
-							<>
-								{channelParent && (
-									<div className="flex gap-1 items-center truncate max-sbm:hidden cursor-pointer" onClick={handleNavigateToParent}>
-										<ChannelTopbarLabel
-											isPrivate={!!channelParent?.channel_private}
-											isAgeRestricted={channelParent?.age_restricted === 1}
-											label={channelParent?.channel_label || ''}
-											type={channelParent?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
-										/>
-										<Icons.ArrowRight />
-									</div>
-								)}
-								<ChannelTopbarLabel
-									isPrivate={!!channelPrivate}
-									isAgeRestricted={channelAgeRestricted === 1}
-									label={channelLabel || ''}
-									type={channelType || ChannelType.CHANNEL_TYPE_CHANNEL}
-									onClick={handleCloseCanvas}
-								/>
-							</>
-						)}
-					</>
+					!!channelType && (
+						<>
+							{channelParent && (
+								<div className="flex gap-1 items-center truncate max-sbm:hidden cursor-pointer" onClick={handleNavigateToParent}>
+									<ChannelTopbarLabel
+										isPrivate={!!channelParent?.channel_private}
+										isAgeRestricted={channelParent?.age_restricted === 1}
+										label={channelParent?.channel_label || ''}
+										type={channelParent?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
+									/>
+									<Icons.ArrowRight />
+								</div>
+							)}
+							<ChannelTopbarLabel
+								isPrivate={!!channelPrivate}
+								isAgeRestricted={channelAgeRestricted === 1}
+								label={channelLabel || ''}
+								type={channelType || ChannelType.CHANNEL_TYPE_CHANNEL}
+								onClick={handleCloseCanvas}
+							/>
+						</>
+					)
 				)}
 
 				{currentClanId === '0' && (
 					<div
-						className=" h-9 flex items-center gap-3 flex-1 overflow-hidden relative"
+						className="h-9 flex items-center gap-3 flex-1 overflow-hidden relative"
 						data-e2e={generateE2eId(`chat.direct_message.header.left_container`)}
 					>
 						<DmTopbarAvatar
@@ -320,21 +325,18 @@ const TopBarChannelText = memo(() => {
 				)}
 			</div>
 			<div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-				{!pagePathTitle && (
-					<>
-						{channelType ? (
-							<ChannelTopbarTools
-								isPagePath={!!isMemberPath || !!isChannelPath}
-								isStream={channelType === ChannelType.CHANNEL_TYPE_STREAMING}
-								isVoice={channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
-								isApp={channelType === ChannelType.CHANNEL_TYPE_APP}
-								isThread={!!(channelParentId !== '0' && channelParentId)}
-							/>
-						) : (
-							<DmTopbarTools />
-						)}
-					</>
-				)}
+				{!pagePathTitle &&
+					(channelType ? (
+						<ChannelTopbarTools
+							isPagePath={!!isMemberPath || !!isChannelPath}
+							isStream={channelType === ChannelType.CHANNEL_TYPE_STREAMING}
+							isVoice={channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
+							isApp={channelType === ChannelType.CHANNEL_TYPE_APP}
+							isThread={!!(channelParentId !== '0' && channelParentId)}
+						/>
+					) : (
+						<DmTopbarTools />
+					))}
 
 				{!isMemberPath && !isChannelPath && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
 					<SearchMessageChannel mode={channelType ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_DM} />

@@ -1,4 +1,3 @@
-import { getBlobDuration } from '@mezon/utils';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 
 type AudioControlProps = {
@@ -63,31 +62,56 @@ export const MessageAudioControl = forwardRef((props: AudioControlProps, ref) =>
 		};
 	}, []);
 
-	const getAudioDuration = async () => {
-		const abortController = new AbortController();
-
-		try {
-			const response = await fetch(audioUrl, { signal: abortController.signal });
-			const blob = await response.blob();
-			const duration = await getBlobDuration(blob);
-			setDuration(Math.floor(duration));
-		} catch (error) {
-			if (error instanceof DOMException && error.name === 'AbortError') return;
-			console.error('Error fetching audio:', error, audioUrl);
-		}
-
-		return () => {
-			abortController.abort();
-		};
-	};
-
+	// The element below already has the file open, and its metadata carries the
+	// duration. Reading it there costs nothing extra and, unlike fetch(), needs no
+	// CORS header from the media host — a host that does not send one made every
+	// clip read "0:00 / 0:00". Downloading the whole clip for its length also meant
+	// a channel full of voice messages fetched all of them on render.
 	useEffect(() => {
-		const cleanup = getAudioDuration();
+		const audio = audioRef.current;
+		if (!audio) return;
 
-		return () => {
-			cleanup.then((cleanupFn) => cleanupFn?.());
+		const readDuration = () => {
+			if (Number.isFinite(audio.duration) && audio.duration > 0) {
+				setDuration(Math.floor(audio.duration));
+				return true;
+			}
+			return false;
 		};
-	}, [audioUrl]);
 
-	return <audio ref={audioRef} src={audioUrl} onEnded={() => setIsPlaying(false)} className="hidden" onTimeUpdate={handleTimeUpdate} />;
+		if (readDuration()) return;
+
+		// A stream written without a duration in its header (webm/opus from a
+		// browser recorder) reports Infinity until it is seeked to the end.
+		const handleLoadedMetadata = () => {
+			if (readDuration()) return;
+			const onSeeked = () => {
+				readDuration();
+				audio.currentTime = 0;
+				audio.removeEventListener('seeked', onSeeked);
+			};
+			audio.addEventListener('seeked', onSeeked);
+			try {
+				audio.currentTime = Number.MAX_SAFE_INTEGER;
+			} catch {
+				audio.removeEventListener('seeked', onSeeked);
+			}
+		};
+
+		audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+		return () => {
+			audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+		};
+	}, [audioUrl, setDuration]);
+
+	return (
+		<audio
+			ref={audioRef}
+			src={audioUrl}
+			preload="metadata"
+			onEnded={() => setIsPlaying(false)}
+			className="hidden"
+			onTimeUpdate={handleTimeUpdate}
+		/>
+	);
 });

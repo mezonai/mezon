@@ -166,32 +166,39 @@ export async function processFilesForAttachment(files: File[]): Promise<ApiMessa
 		await Promise.all(Array.from({ length: Math.min(concurrency, indexes.length) }, () => worker()));
 	};
 
-	await Promise.all([
-		runPool(lightweightIndexes, FILE_PROCESS_CONCURRENCY),
-		runPool(videoIndexes, VIDEO_PROCESS_CONCURRENCY)
-	]);
+	await Promise.all([runPool(lightweightIndexes, FILE_PROCESS_CONCURRENCY), runPool(videoIndexes, VIDEO_PROCESS_CONCURRENCY)]);
 	return results;
 }
 
-export function isMediaTypeNotSupported(mediaType?: string) {
-	if (!mediaType) return false;
+const UNSUPPORTED_MEDIA_TYPES = new Set([
+	'video/x-ms-wmv',
+	'video/wmv',
+	'video/avi',
+	'video/flv',
+	'video/mkv',
+	'video/rmvb',
+	'audio/wma',
+	'audio/ra',
+	'audio/atrac',
+	'image/tiff',
+	'image/bmp',
+	'image/psd'
+]);
 
-	const unsupportedMediaTypes = new Set([
-		'video/x-ms-wmv',
-		'video/wmv',
-		'video/avi',
-		'video/flv',
-		'video/mkv',
-		'video/rmvb',
-		'audio/wma',
-		'audio/ra',
-		'audio/atrac',
-		'image/tiff',
-		'image/bmp',
-		'image/psd'
-	]);
+/** Extensions of the types above, for senders that give us no usable MIME. */
+const UNSUPPORTED_MEDIA_EXTENSIONS = new Set(['wmv', 'avi', 'flv', 'mkv', 'rmvb', 'wma', 'ra', 'tiff', 'tif', 'bmp', 'psd']);
 
-	return unsupportedMediaTypes.has(mediaType);
+export function isMediaTypeNotSupported(mediaType?: string, url?: string) {
+	if (mediaType && UNSUPPORTED_MEDIA_TYPES.has(mediaType)) {
+		return true;
+	}
+
+	// The desktop client sends a category ("image", "video") rather than a MIME,
+	// so the check above never matched anything it uploaded: a .bmp took the image
+	// path, imgproxy could not read it, and the reader was left with a broken
+	// thumbnail. The extension is the only thing left to go on.
+	const extension = url?.split('?')[0].split('#')[0].split('.').pop()?.toLowerCase();
+	return Boolean(extension && UNSUPPORTED_MEDIA_EXTENSIONS.has(extension));
 }
 
 export function isImageFile(file: File): boolean {

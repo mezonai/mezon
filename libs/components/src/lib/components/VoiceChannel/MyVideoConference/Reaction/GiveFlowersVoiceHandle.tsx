@@ -1,98 +1,65 @@
-import { EVoiceInteractEvent, selectCurrentUserId, selectMemberClanByUserId, selectVoiceInfo, useAppSelector } from '@mezon/store';
+import { selectCurrentUserId, selectMemberClanByUserId, selectVoiceInfo, useAppSelector } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { VoiceInteractiveEvent } from 'mezon-js';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { FlowerCelebrationHandle } from './flowerCelebration';
 import { attachFlowerCelebration } from './flowerCelebration';
 
-export const GiveFlowersVoiceHandle = memo(() => {
-	const [currentSender, setCurrentSender] = useState<VoiceInteractiveEvent | null>(null);
+type GiveFlowersVoiceType = {
+	senderQueueRef: MutableRefObject<VoiceInteractiveEvent[]>;
+	playerRef: MutableRefObject<FlowerCelebrationHandle | null>;
+	senderTimeoutRef: MutableRefObject<number | null>;
+	isShowingSenderRef: MutableRefObject<boolean>;
+	currentSender: VoiceInteractiveEvent | null;
+};
 
-	const senderQueueRef = useRef<VoiceInteractiveEvent[]>([]);
-	const senderTimeoutRef = useRef<number | null>(null);
-	const isShowingSenderRef = useRef(false);
+export const GiveFlowersVoiceHandle = memo(
+	({ currentSender, senderQueueRef, playerRef, senderTimeoutRef, isShowingSenderRef }: GiveFlowersVoiceType) => {
+		const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const playerRef = useRef<FlowerCelebrationHandle | null>(null);
+		const { clientRef } = useMezon();
+		const voiceInfo = useSelector(selectVoiceInfo);
+		const channelId = voiceInfo?.channelId;
 
-	const { clientRef } = useMezon();
-	const voiceInfo = useSelector(selectVoiceInfo);
-	const channelId = voiceInfo?.channelId;
+		useEffect(() => {
+			const currentSocket = clientRef.current;
 
-	const showNextSender = useCallback(() => {
-		if (isShowingSenderRef.current) return;
-
-		const event = senderQueueRef.current.shift();
-
-		if (!event) {
-			setCurrentSender(null);
-			return;
-		}
-
-		isShowingSenderRef.current = true;
-		setCurrentSender(event);
-
-		senderTimeoutRef.current = window.setTimeout(() => {
-			senderTimeoutRef.current = null;
-			isShowingSenderRef.current = false;
-			setCurrentSender(null);
-
-			showNextSender();
-		}, 2000);
-	}, []);
-
-	useEffect(() => {
-		const currentSocket = clientRef.current;
-
-		if (!currentSocket || !channelId) {
-			return;
-		}
-
-		currentSocket.onvoiceinteractiveevent = (event: VoiceInteractiveEvent) => {
-			if (event.voice_channel_id !== channelId || event.event_type !== EVoiceInteractEvent.SENT_FLOWERS) {
+			if (!currentSocket || !channelId) {
 				return;
 			}
 
-			playerRef.current?.play();
-			senderQueueRef.current.push(event);
-			showNextSender();
-		};
+			const canvas = canvasRef.current;
 
-		const canvas = canvasRef.current;
+			if (!canvas) return;
 
-		if (!canvas) return;
+			const player = attachFlowerCelebration(canvas);
 
-		const player = attachFlowerCelebration(canvas);
+			playerRef.current = player;
 
-		playerRef.current = player;
+			return () => {
+				player.destroy();
+				playerRef.current = null;
+				if (senderTimeoutRef.current !== null) {
+					clearTimeout(senderTimeoutRef.current);
+					senderTimeoutRef.current = null;
+				}
 
-		return () => {
-			player.destroy();
-			playerRef.current = null;
-			if (senderTimeoutRef.current !== null) {
-				clearTimeout(senderTimeoutRef.current);
-				senderTimeoutRef.current = null;
-			}
+				senderQueueRef.current = [];
+				isShowingSenderRef.current = false;
+			};
+		}, []);
 
-			senderQueueRef.current = [];
-			isShowingSenderRef.current = false;
+		return (
+			<div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+				<canvas ref={canvasRef} className="h-full w-full" />
 
-			if (currentSocket?.onvoiceinteractiveevent) {
-				currentSocket.onvoiceinteractiveevent = () => {};
-			}
-		};
-	}, []);
-
-	return (
-		<div className="pointer-events-none absolute inset-0 z-40 overflow-hidden">
-			<canvas ref={canvasRef} className="h-full w-full" />
-
-			{currentSender && (
-				<div className="pointer-events-none absolute left-1/2 bottom-[70px] z-[41] -translate-x-1/2">
-					<div
-						className="
+				{currentSender && (
+					<div className="pointer-events-none absolute left-1/2 bottom-[70px] z-[41] -translate-x-1/2">
+						<div
+							className="
 						rounded-full
 						bg-black
 						px-3
@@ -102,14 +69,15 @@ export const GiveFlowersVoiceHandle = memo(() => {
 						shadow-[0_4px_12px_rgba(255,255,255,0.3)]
 						w-full
 					"
-					>
-						<FlowerDetail event={currentSender} />
+						>
+							<FlowerDetail event={currentSender} />
+						</div>
 					</div>
-				</div>
-			)}
-		</div>
-	);
-});
+				)}
+			</div>
+		);
+	}
+);
 
 const FlowerDetail = ({ event }: { event: VoiceInteractiveEvent }) => {
 	const { t } = useTranslation('token');

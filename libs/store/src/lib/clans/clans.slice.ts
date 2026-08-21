@@ -1128,3 +1128,6 @@ export const selectOrderedClansWithGroups = createSelector([selectAllClans, sele
 });
 
 export const selectCountClanJoined = createSelector(getClansState, (state) => state?.ids?.length || 0);
+export const seletClanNameById = createSelector([getClansState, (state, clanId: string) => clanId], (state, clanId) => {
+	return selectById(state, clanId)?.clan_name || null;
+});

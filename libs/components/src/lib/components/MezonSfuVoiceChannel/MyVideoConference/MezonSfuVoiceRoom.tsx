@@ -1206,6 +1206,10 @@ export function MezonSfuVoiceRoom({
 		return () => window.removeEventListener('mezon-sfu-push-to-talk', handleExternalPushToTalk);
 	}, [joinRole, setPushToTalk]);
 
+	useEffect(() => {
+		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk-changed', { detail: { active: pushToTalkActive } }));
+	}, [pushToTalkActive]);
+
 	const participants = useMemo(() => Array.from(remoteMedia.values()), [remoteMedia]);
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
@@ -1527,7 +1531,7 @@ export function MezonSfuVoiceRoom({
 					}}
 				>
 					<div
-						className="grid min-h-0 flex-1 gap-3 overflow-hidden"
+						className="grid min-h-0 flex-1 gap-2 overflow-hidden"
 						style={{
 							gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
 							gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
@@ -1537,7 +1541,7 @@ export function MezonSfuVoiceRoom({
 							<button
 								key={tile.id}
 								type="button"
-								className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left transition-transform hover:scale-[1.01] [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+								className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
 								title="Pin this track"
 								onClick={() => {
 									setPinnedTrackId(tile.id);
@@ -1602,7 +1606,7 @@ export function MezonSfuVoiceRoom({
 								ref={focusThumbnailsRef}
 								className={`${
 									showFocusThumbnails ? 'flex' : 'hidden'
-								} h-36 shrink-0 gap-3 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
+								} h-36 shrink-0 gap-1 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
 								onWheel={(e) => {
 									e.stopPropagation();
 									e.currentTarget.scrollLeft += e.deltaY;

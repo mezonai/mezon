@@ -134,7 +134,11 @@ export function hasActivePresignPendingAttachments(attachments: ApiMessageAttach
 	const presignFinishKeys = parsePresignFinishKeys(content);
 	if (presignFinishKeys === null || !attachments?.length) return false;
 
-	return attachments.some((attachment) => isPresignAttachmentPending(attachment.url, presignFinishKeys));
+	// Pass the attachments so the count short-circuit applies: a message whose keys
+	// all arrived is finished even when a key does not match its url by name. Without
+	// this the answer disagrees with what the row actually renders, and anything
+	// driven off it (the expiry tick, the refetch) never stops.
+	return attachments.some((attachment) => isPresignAttachmentPending(attachment.url, presignFinishKeys, attachments));
 }
 
 export function getPresignExpiryDelayMs(messageCreateTimeSeconds?: number, nowMs = Date.now()): number | null {

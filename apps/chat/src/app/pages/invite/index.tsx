@@ -1,7 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { channelsActions, inviteActions, selectInviteById, useAppDispatch } from '@mezon/store';
+import { authActions, channelsActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ export default function InvitePage() {
 	const navigate = useNavigate();
 	const { inviteUser } = useInvite();
 	const dispatch = useAppDispatch();
+	const isLogin = useSelector(selectIsLogin);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -54,22 +55,29 @@ export default function InvitePage() {
 	};
 
 	const handleJoinChannel = async () => {
+		if (!isLogin) {
+			if (inviteIdParam) {
+				dispatch(authActions.setRedirectUrl(`/invite/${inviteIdParam}`));
+			}
+			navigate('/mezon');
+			return;
+		}
+
 		const result = await joinChannel();
 		handleBackNavigate();
 		if (!result) {
+			try {
+				window.location.href = `mezon.ai://invite/${inviteIdParam}`;
+			} catch (e) {
+				console.error('log  => handleJoinChannel error', e);
+			}
 			navigate(`/mezon`);
-		}
-		try {
-			window.location.href = `mezon.ai://invite/${inviteIdParam}`;
-			setLoading(false);
-		} catch (e) {
-			console.error('log  => handleJoinChannel error', e);
+			return;
 		}
 	};
 
-	const appDispatch = useAppDispatch();
 	const handleBackNavigate = () => {
-		appDispatch(inviteActions.setIsClickInvite(false));
+		dispatch(inviteActions.setIsClickInvite(false));
 	};
 
 	useEffect(() => {
@@ -89,7 +97,7 @@ export default function InvitePage() {
 				document.removeEventListener('keydown', handleKeyDown);
 			};
 		}
-	}, [userJoined, navigate, clanId, channeId]);
+	}, [userJoined, navigate, clanId, channeId, t]);
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-theme-primary">

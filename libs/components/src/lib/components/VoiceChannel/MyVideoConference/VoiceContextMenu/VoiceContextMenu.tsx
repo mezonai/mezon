@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { EPermission, compareBigInt, type UsersClanEntity } from '@mezon/utils';
+import { EPermission, compareBigInt, generateE2eId, type UsersClanEntity } from '@mezon/utils';
 import type { Room } from 'livekit-client';
 import type { ApiTokenSentEvent } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -265,7 +265,9 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 						}}
 					/>
 				)}
-				<span className="relative z-[1]">{t('giveFlowers')}</span>
+				<span className="relative z-[1]" data-e2e={generateE2eId('clan_page.screen.voice_room.button.send_flower')}>
+					{t('giveFlowers')}
+				</span>
 			</div>
 
 			{isMicOn && canMangeVoice && (
@@ -274,6 +276,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 						isMuting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
 					}`}
 					onClick={handleMuteMember}
+					data-e2e={generateE2eId('clan_page.screen.voice_room.button.mute_mic')}
 				>
 					{t('muteMic')}
 					{isMuting ? (
@@ -289,6 +292,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 						isKicking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
 					}`}
 					onClick={handleRemoveMember}
+					data-e2e={generateE2eId('clan_page.screen.voice_room.button.kick')}
 				>
 					{t('member.kick')}
 					{isKicking ? (
