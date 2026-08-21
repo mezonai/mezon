@@ -434,10 +434,10 @@ export const threadsSlice = createSlice({
 		addThreadToCached: (state, action: PayloadAction<{ channelId: string; thread: ThreadsEntity }>) => {
 			const { channelId, thread } = action.payload;
 			if (!state.byChannels) {
-				state.byChannels = {};
+				return;
 			}
 			if (!state.byChannels[channelId]) {
-				state.byChannels[channelId] = threadsAdapter.getInitialState();
+				return;
 			}
 
 			threadsAdapter.upsertOne(state.byChannels[channelId], thread);
