@@ -17,6 +17,7 @@ import {
 	MessageCrypt,
 	PRESIGN_PENDING_MAX_AGE_SEC,
 	TypeMessage,
+	createLocalPreviewUrl,
 	getMessageCreateTimeSeconds,
 	getPublicKeys,
 	getWebUploadedAttachments,
@@ -1239,6 +1240,19 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			width: attach.width
 		})) ?? [];
 
+	// The row this client renders while the bytes are still going up. Presign has
+	// already rewritten `url` to the CDN object, which does not exist yet, so
+	// without a local source the sender's own message has nothing to show — and
+	// asking for the CDN object early is what pins a 404 in the image proxy cache
+	// for a week. Kept off `attachmentsMessage` so the wire payload (and the size
+	// guard below) never carries a blob url.
+	const sendingAttachmentsMessage: ApiMessageAttachment[] = attachments?.length
+		? attachmentsMessage.map((attachment, index) => {
+				const local_source = createLocalPreviewUrl(attachments[index]);
+				return local_source ? { ...attachment, local_source } : attachment;
+			})
+		: attachmentsMessage;
+
 	const payloadSizeInBytes = Buffer.byteLength(
 		JSON.stringify({
 			...payload,
@@ -1415,7 +1429,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			content,
-			attachments: attachmentsMessage,
+			attachments: sendingAttachmentsMessage,
 			create_time_seconds: clientSendTime / 1000,
 			create_time: new Date(clientSendTime).toISOString(),
 			client_send_time: clientSendTime,
@@ -2100,10 +2114,30 @@ export const messagesSlice = createSlice({
 			if (!existingMessage) {
 				return;
 			}
-			existingMessage.attachments?.forEach(revokePreSendAttachmentUrls);
+
+			// This runs on the upload-first path (anonymous sends), where the
+			// public metadata that lands here has a CDN url and no local copy.
+			// Handing the row that alone sends the sender to the image proxy for
+			// an object uploaded seconds ago — the request that pins a failure in
+			// the proxy's cache, and the one thing this whole path exists to
+			// avoid. The picture stays; only the wire payload is public.
+			const previous = existingMessage.attachments ?? [];
+			const spare = [...previous];
+			const carried = new Set<string>();
+			const withLocalSource = attachments.map((attachment) => {
+				const at = spare.findIndex((p) => p.local_source && p.filename === attachment.filename);
+				if (at === -1) {
+					return attachment;
+				}
+				const [match] = spare.splice(at, 1);
+				carried.add(match.local_source as string);
+				return { ...attachment, local_source: match.local_source };
+			});
+
+			previous.forEach((attachment) => revokePreSendAttachmentUrls(attachment, carried));
 			channelMessagesAdapter.updateOne(channelEntity, {
 				id: messageId,
-				changes: { attachments }
+				changes: { attachments: withLocalSource }
 			});
 		},
 		applyPresignRefresh: (state, action: PayloadAction<{ channelId: string; messageId: string; presignFinish: string[] }>) => {

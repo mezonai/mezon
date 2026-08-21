@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ApiPhoto, IMessageWithUser, ObserveFn } from '@mezon/utils';
+import type { ApiPhoto, IMessageWithUser, ObserveFn, PreSendMediaAttachment } from '@mezon/utils';
 import {
 	EMimeTypes,
 	ETypeLinkMedia,
@@ -435,6 +435,7 @@ const ImageAlbum = memo(
 						isInSearchMessage={isInSearchMessage}
 						isSending={message.isSending}
 						isPresignPending={isPresignPending}
+						localSource={(firstImage as PreSendMediaAttachment)?.local_source}
 						loadWhenUnpending={!isPresignPending}
 						isMobile={isMobile}
 					/>

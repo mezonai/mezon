@@ -413,7 +413,8 @@ function VideoPoster({
 	onPlay,
 	disablePlay = false,
 	isSending = false,
-	boxWidth
+	boxWidth,
+	boxHeight
 }: {
 	thumbnailUrl?: string;
 	style: React.CSSProperties;
@@ -421,6 +422,7 @@ function VideoPoster({
 	disablePlay?: boolean;
 	isSending?: boolean;
 	boxWidth?: number;
+	boxHeight?: number;
 }) {
 	return (
 		<div
@@ -432,7 +434,7 @@ function VideoPoster({
 		>
 			{thumbnailUrl && <img src={thumbnailUrl} alt="" className="w-full h-full object-cover" loading="lazy" />}
 			{isSending ? (
-				<AttachmentSendingIndicator showLabel boxWidth={boxWidth} />
+				<AttachmentSendingIndicator showLabel boxWidth={boxWidth} boxHeight={boxHeight} />
 			) : (
 				<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group">
 					<div className="flex items-center justify-center w-12 h-12 rounded-full bg-black bg-opacity-50 transition-transform duration-150 group-hover:scale-110">
@@ -527,6 +529,7 @@ function DefaultVideo({
 					disablePlay={isUploading}
 					isSending={isUploading}
 					boxWidth={width}
+					boxHeight={height}
 				/>
 			)}
 
