@@ -166,15 +166,20 @@ const Photo = <T,>({
 
 	const thumbnailDataUri = photo.thumbnail?.dataUri;
 	const hasThumbnail = !!thumbnailDataUri;
-	const showLocalPreview = isUploading && !!localSource;
+	// Hold the local copy until the CDN one is actually painted, not merely
+	// requested: dropping it the moment the upload lands leaves a gap the width of
+	// a network round trip, which reads as a flicker on the sender's own row.
+	const [cdnSettled, setCdnSettled] = useState(false);
+	const onCdnSettled = useCallback(() => setCdnSettled(true), []);
+	const showLocalPreview = !!localSource && !cdnSettled;
 
-	// The object url pins the whole file in memory, and the store keeps the
-	// attachment long after the upload lands. Once the row is no longer uploading
-	// the CDN copy is what renders, so nothing reads this again — let it go.
+	// The object url pins the whole file in memory and the store keeps the
+	// attachment long after the upload lands, so it cannot be held for the row's
+	// lifetime — the CDN copy taking over is what makes it safe to let go.
 	useEffect(() => {
-		if (isUploading || !localSource) return;
+		if (!cdnSettled || !localSource) return;
 		URL.revokeObjectURL(localSource);
-	}, [isUploading, localSource]);
+	}, [cdnSettled, localSource]);
 	const showPresignSkeleton = isPresignPending && !hasThumbnail && !showLocalPreview;
 	const canOpenViewer = !isPresignPending;
 
@@ -201,6 +206,7 @@ const Photo = <T,>({
 					isProtected={isProtected}
 					onContextMenu={onContextMenu}
 					isInSearchMessage={isInSearchMessage}
+					onSettled={onCdnSettled}
 				/>
 			)}
 			{/* The sender's own copy, straight off disk: the CDN object is not there
@@ -245,10 +251,12 @@ type PhotoImageProps = {
 	isProtected?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	isInSearchMessage?: boolean;
+	/** Called once the CDN copy is on screen — decoded, or failed for good. */
+	onSettled?: () => void;
 };
 
 const PhotoImage = React.memo(
-	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage }: PhotoImageProps) => {
+	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage, onSettled }: PhotoImageProps) => {
 		const { setImageURL, setPositionShow } = useMessageContextMenu();
 		const [hasError, setHasError] = useState(false);
 
@@ -267,7 +275,14 @@ const PhotoImage = React.memo(
 
 		const handleError = useCallback(() => {
 			setHasError(true);
-		}, []);
+			// A dead object must not hide behind the sender's local copy: whatever
+			// everyone else sees, the sender sees too.
+			onSettled?.();
+		}, [onSettled]);
+
+		const handleLoad = useCallback(() => {
+			onSettled?.();
+		}, [onSettled]);
 
 		if (hasError) {
 			return (
@@ -296,6 +311,7 @@ const PhotoImage = React.memo(
 				style={{ width: displayWidth }}
 				draggable={!isProtected}
 				onError={handleError}
+				onLoad={handleLoad}
 			/>
 		);
 	}
