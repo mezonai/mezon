@@ -5,6 +5,7 @@ import type { IMessageWithUser } from '@mezon/utils';
 import { EFailAttachment, EMimeTypes } from '@mezon/utils';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { Suspense, lazy, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { ModalDeleteMess, RenderAttachmentThumbnail } from '../../components';
@@ -17,6 +18,8 @@ export type MessageImage = {
 	readonly attachmentData: ApiMessageAttachment;
 	readonly mode?: ChannelStreamMode;
 	message?: IMessageWithUser;
+	/** The row exists but the object is not on the CDN yet. */
+	isPresignPending?: boolean;
 };
 function formatFileSize(bytes: number) {
 	if (bytes >= 1000000) {
@@ -49,7 +52,11 @@ const PDFLoadingFallback = () => {
 	);
 };
 
-function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
+function MessageLinkFile({ attachmentData, mode, message, isPresignPending = false }: MessageImage) {
+	const { t } = useTranslation('media');
+	// The sender sees isSending, a reader only ever sees the presign gate; both
+	// mean the same thing to whoever is looking at the row.
+	const isUploading = Boolean(message?.isSending) || isPresignPending;
 	const [isDownloading, setIsDownloading] = useState(false);
 	const downloadingRef = useRef(false);
 	const handleDownload = async () => {
@@ -73,18 +80,18 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 
 		try {
 			const response = await fetch(url);
-				if (!response.ok) {
-					return;
-				}
+			if (!response.ok) {
+				return;
+			}
 
-				const blob = await response.blob();
-				const dataUrl = URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = dataUrl;
-				a.download = filename;
-				a.click();
+			const blob = await response.blob();
+			const dataUrl = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = dataUrl;
+			a.download = filename;
+			a.click();
 
-				URL.revokeObjectURL(dataUrl);
+			URL.revokeObjectURL(dataUrl);
 		} catch (error) {
 			console.error('Error during download:', error);
 		} finally {
@@ -169,18 +176,24 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		>
 			<div className="relative flex items-center shrink-0">
 				{thumbnailAttachment}
-				{message?.isSending && <AttachmentSendingIndicator className="rounded" />}
+				{isUploading && <AttachmentSendingIndicator className="rounded" />}
 			</div>
 			{attachmentData.filename === EFailAttachment.FAIL_ATTACHMENT ? (
 				<div className="text-red-500">Attachment failed to load.</div>
 			) : (
 				hideTheInformationFile && (
 					<>
-						<div className="cursor-pointer flex-1" onClick={handleDownload} onKeyDown={handleDownload}>
+						<div
+							className="cursor-pointer flex-1"
+							onClick={isUploading ? undefined : handleDownload}
+							onKeyDown={isUploading ? undefined : handleDownload}
+						>
 							<p className="text-blue-500 hover:underline">{attachmentData.filename}</p>
-							<p className="text-theme-primary">size: {formatFileSize(attachmentData.size || 0)}</p>
+							<p className="text-theme-primary">
+								{isUploading ? t('attachment.uploading') : `size: ${formatFileSize(attachmentData.size || 0)}`}
+							</p>
 						</div>
-						{hoverShowOptButtonStatus && (
+						{hoverShowOptButtonStatus && !isUploading && (
 							<div className="flex space-x-2 absolute right-4">
 								<button
 									onClick={handleDownload}
