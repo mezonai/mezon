@@ -1206,6 +1206,10 @@ export function MezonSfuVoiceRoom({
 		return () => window.removeEventListener('mezon-sfu-push-to-talk', handleExternalPushToTalk);
 	}, [joinRole, setPushToTalk]);
 
+	useEffect(() => {
+		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk-changed', { detail: { active: pushToTalkActive } }));
+	}, [pushToTalkActive]);
+
 	const participants = useMemo(() => Array.from(remoteMedia.values()), [remoteMedia]);
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const microphones = devices.filter((device) => device.kind === 'audioinput');

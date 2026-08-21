@@ -117,7 +117,7 @@ export const SfuControlBar = ({
 			<SfuRaisingHandControl />
 			<LeaveButton onLeave={onLeaveRoom} />
 		</div>
-		<div className="flex justify-end gap-4 pr-1">
+		<div className="flex justify-end pr-1">
 			<PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />
 			<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 		</div>

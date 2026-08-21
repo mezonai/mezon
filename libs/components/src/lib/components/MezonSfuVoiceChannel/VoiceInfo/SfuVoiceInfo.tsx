@@ -16,7 +16,7 @@ import { generateE2eId, useMediaPermissions } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';
@@ -119,6 +119,16 @@ const SfuVoiceInfo = React.memo(() => {
 	const setPushToTalk = useCallback((active: boolean) => {
 		setPushToTalkActive(active);
 		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk', { detail: { active } }));
+	}, []);
+
+	useEffect(() => {
+		const handlePushToTalkChanged = (event: Event) => {
+			const { active } = (event as CustomEvent<{ active?: boolean }>).detail || {};
+			if (typeof active === 'boolean') setPushToTalkActive(active);
+		};
+
+		window.addEventListener('mezon-sfu-push-to-talk-changed', handlePushToTalkChanged);
+		return () => window.removeEventListener('mezon-sfu-push-to-talk-changed', handlePushToTalkChanged);
 	}, []);
 
 	const linkVoice = useMemo(() => {
