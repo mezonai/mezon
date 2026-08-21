@@ -610,9 +610,11 @@ export const DATA_E2E_IDENTIFIER = {
 					send_flower: '',
 					kick: '',
 					mute_mic: '',
-					record: ''
+					record: '',
+					open_context: ''
 				},
-				time_record: ''
+				time_record: '',
+				username: ''
 			},
 			canvas_editor: {
 				input: {
@@ -1306,7 +1308,8 @@ export const DATA_E2E_IDENTIFIER = {
 				},
 				button: {
 					send: '',
-					cancel: ''
+					cancel: '',
+					close: ''
 				}
 			},
 			transaction_history: {
@@ -1318,7 +1321,8 @@ export const DATA_E2E_IDENTIFIER = {
 					status: '',
 					time: '',
 					button: {
-						open_detail: ''
+						open_detail: '',
+						close_transaction: ''
 					},
 					detail: {
 						label: '',
