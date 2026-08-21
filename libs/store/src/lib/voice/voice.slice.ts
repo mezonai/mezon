@@ -37,21 +37,27 @@ export enum EVoiceInteractEvent {
 	APP_INTERACTIVE = 12
 }
 
+enum E_APP_INTERACTIVE_KEY {
+	Interactive = '2089273739668623360',
+	Blackboard = '2089294331818020864',
+	Quiz = '2089257413122199552'
+}
+
 export const VOICE_INTERACTIVE_APPS = [
 	{
-		key: 'APP_QUIZ',
+		key: E_APP_INTERACTIVE_KEY.Quiz,
 		eventType: EVoiceInteractEvent.APP_QUIZ,
 		name: 'Quiz',
-		url: 'https://test-sfu.nccsoft.vn'
+		url: 'https://quiz.mezon.ai'
 	},
 	{
-		key: 'APP_BLACKBOARD',
+		key: E_APP_INTERACTIVE_KEY.Blackboard,
 		eventType: EVoiceInteractEvent.APP_BLACKBOARD,
 		name: 'Blackboard',
 		url: 'https://blackboard.mezon.ai'
 	},
 	{
-		key: 'APP_INTERACTIVE',
+		key: E_APP_INTERACTIVE_KEY.Interactive,
 		eventType: EVoiceInteractEvent.APP_INTERACTIVE,
 		name: 'Interactive',
 		url: 'https://interactive.mezon.ai'

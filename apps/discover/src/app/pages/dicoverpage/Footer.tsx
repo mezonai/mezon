@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
 	return (
@@ -8,9 +9,9 @@ const Footer: React.FC = () => {
 					<div>
 						<h3 className="font-bold text-xl md:text-md tracking-wider mb-4 md:mb-5 text-[#5865f2]">Platform</h3>
 						<div className="space-y-2 md:space-y-3">
-							<a href="/about" className="text-gray-400 hover:text-white transition-colors text-xs md:text-sm leading-relaxed block">
+							<Link to="/about" className="text-gray-400 hover:text-white transition-colors text-xs md:text-sm leading-relaxed block">
 								About
-							</a>
+							</Link>
 							<a
 								href="https://mezon.ai/blogs/"
 								target="_blank"
@@ -63,22 +64,18 @@ const Footer: React.FC = () => {
 					<div>
 						<h3 className="font-bold text-xl md:text-md tracking-wider mb-4 md:mb-5 text-[#5865f2]">Company</h3>
 						<div className="space-y-2 md:space-y-3">
-							<a
-								href="brand-center"
-								target="_blank"
-								rel="noreferrer"
+							<Link
+								to="/brand-center"
 								className="text-gray-400 hover:text-white transition-colors text-xs md:text-sm leading-relaxed block"
 							>
 								Brand Center
-							</a>
-							<a
-								href="/contact-us"
-								target="_blank"
-								rel="noreferrer"
+							</Link>
+							<Link
+								to="/contact-us"
 								className="text-gray-400 hover:text-white transition-colors text-xs md:text-sm leading-relaxed block"
 							>
 								Contact
-							</a>
+							</Link>
 							<a
 								href="https://mezon.ai/clans/"
 								target="_blank"
@@ -93,22 +90,18 @@ const Footer: React.FC = () => {
 					<div>
 						<h3 className="font-bold text-xl md:text-md tracking-wider mb-4 md:mb-5 text-[#5865f2]">Legal</h3>
 						<div className="space-y-2 md:space-y-3">
-							<a
-								href="/privacy-policy"
-								target="_blank"
-								rel="noreferrer"
+							<Link
+								to="/privacy-policy"
 								className="text-gray-400 hover:text-white transition-colors text-xs md:text-sm leading-relaxed block"
 							>
 								Privacy Policy
-							</a>
-							<a
-								href="/terms-of-service"
-								target="_blank"
-								rel="noreferrer"
+							</Link>
+							<Link
+								to="/terms-of-service"
 								className="text-gray-400 hover:text-white transition-colors text-xs md:text-sm leading-relaxed block"
 							>
 								Terms of Service
-							</a>
+							</Link>
 						</div>
 					</div>
 				</div>
