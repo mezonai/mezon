@@ -259,7 +259,7 @@ export const generateMeetTokenExternal = createAsyncThunk(
 	}
 );
 
-export const kickVoiceMember = createAsyncThunk('meet/kickVoiceMember', async ({ user_id }: { room_name?: string; user_id?: string }, thunkAPI) => {
+export const kickVoiceMember = createAsyncThunk('meet/kickVoiceMember', async ({ user_id }: { user_id?: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 		const state = thunkAPI.getState() as RootState;
