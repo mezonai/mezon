@@ -33,6 +33,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCr
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -2105,22 +2106,34 @@ export const messagesSlice = createSlice({
 				changes: { attachments }
 			});
 		},
-		applyPresignRefresh: (
-			state,
-			action: PayloadAction<{ channelId: string; messageId: string; content: unknown; attachments: ApiMessageAttachment[] }>
-		) => {
-			const { channelId, messageId, content, attachments } = action.payload;
+		applyPresignRefresh: (state, action: PayloadAction<{ channelId: string; messageId: string; presignFinish: string[] }>) => {
+			const { channelId, messageId, presignFinish } = action.payload;
 			const channelEntity = state.channelMessages[channelId];
-			if (!channelEntity?.entities[messageId]) {
+			const existing = channelEntity?.entities[messageId];
+			if (!existing) {
 				return;
 			}
+			// Merge ONLY the keys. What the row holds is not always what the server
+			// holds: in an E2EE channel the stored content carries the DECRYPTED
+			// text, and the attachments can point at local preview urls, so writing
+			// the server copy over either would undo work this client already did —
+			// for the sake of a field the client only needs to read.
+			// Keep whatever shape the row already stores (object here, but a string
+			// elsewhere would otherwise be replaced by an object holding nothing but
+			// the keys — i.e. the message text would vanish).
+			const stored = existing.content;
+			const base = typeof stored === 'string' ? safeJSONParse(stored) : stored;
+			const merged = { ...(base && typeof base === 'object' ? base : {}), presign_finish: presignFinish };
 			channelMessagesAdapter.updateOne(channelEntity, {
 				id: messageId,
-				changes: { content, attachments } as Partial<MessagesEntity>
+				changes: { content: typeof stored === 'string' ? JSON.stringify(merged) : merged } as Partial<MessagesEntity>
 			});
 		},
 		markPresignRefresh: (state, action: PayloadAction<{ messageId: string; at: number }>) => {
 			const { messageId, at } = action.payload;
+			if (!state.presignRefreshAt) {
+				state.presignRefreshAt = {};
+			}
 			const ids = Object.keys(state.presignRefreshAt);
 			if (ids.length > 200) {
 				ids.forEach((id) => {
@@ -2511,12 +2524,18 @@ export const refreshPresignMessage = createAsyncThunk(
 		if (!fresh) {
 			return;
 		}
+		// Take the keys verbatim rather than the parsed/normalised form: they end up
+		// back in `content`, which a later edit re-sends to the server.
+		const freshContent = typeof fresh.content === 'string' ? safeJSONParse(fresh.content) : fresh.content;
+		const presignFinish = (freshContent as { presign_finish?: unknown } | null)?.presign_finish;
+		if (!Array.isArray(presignFinish)) {
+			return;
+		}
 		thunkAPI.dispatch(
 			messagesActions.applyPresignRefresh({
 				channelId: topicId || channelId,
 				messageId,
-				content: fresh.content,
-				attachments: fresh.attachments ?? []
+				presignFinish: presignFinish.filter((key): key is string => typeof key === 'string')
 			})
 		);
 	}
