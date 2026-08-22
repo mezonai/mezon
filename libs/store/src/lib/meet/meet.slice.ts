@@ -21,10 +21,7 @@ export const generateMeetToken = createAsyncThunk('meet/generateMeetToken', asyn
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		const response = await generateMeetTokenCached(mezon, channelId, roomName || '0');
-		if (!response) {
-			return;
-		}
-		return response.token;
+		return response?.token;
 	} catch (error) {
 		captureSentryError(error, 'meet/generateMeetToken');
 		return thunkAPI.rejectWithValue(error);
