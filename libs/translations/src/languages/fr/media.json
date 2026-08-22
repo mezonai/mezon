@@ -11,5 +11,8 @@
 			"downloadButton": "Télécharger la vidéo",
 			"browserNotSupported": "Votre navigateur ne prend pas en charge la balise vidéo."
 		}
+	},
+	"attachment": {
+		"uploading": "Téléchargement en cours..."
 	}
 }

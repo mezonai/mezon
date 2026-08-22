@@ -15,7 +15,9 @@ import {
 	EOgpType,
 	LIMIT_MESSAGE,
 	MessageCrypt,
+	PRESIGN_PENDING_MAX_AGE_SEC,
 	TypeMessage,
+	createLocalPreviewUrl,
 	getMessageCreateTimeSeconds,
 	getPublicKeys,
 	getWebUploadedAttachments,
@@ -32,6 +34,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCr
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -60,6 +63,9 @@ export const MESSAGES_FEATURE_KEY = 'messages';
 /*
  * Update these interfaces according to your requirements.
  */
+
+/** Retry schedule for the presign_finish patch; the last entry means "no more waiting". */
+const PRESIGN_PATCH_BACKOFF_MS = [1000, 3000, 0];
 
 export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
 	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -125,6 +131,8 @@ export interface MessagesState {
 		navigate?: boolean;
 	} | null;
 	channelDraftMessage: Record<string, ChannelDraftMessages>;
+	/** messageId -> ms of the last presign refetch, so N rendered copies cost one request. */
+	presignRefreshAt: Record<string, number>;
 	isJumpingToPresent: Record<string, boolean>;
 	channelMessages: Record<
 		string,
@@ -1232,6 +1240,19 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			width: attach.width
 		})) ?? [];
 
+	// The row this client renders while the bytes are still going up. Presign has
+	// already rewritten `url` to the CDN object, which does not exist yet, so
+	// without a local source the sender's own message has nothing to show — and
+	// asking for the CDN object early is what pins a 404 in the image proxy cache
+	// for a week. Kept off `attachmentsMessage` so the wire payload (and the size
+	// guard below) never carries a blob url.
+	const sendingAttachmentsMessage: ApiMessageAttachment[] = attachments?.length
+		? attachmentsMessage.map((attachment, index) => {
+				const local_source = createLocalPreviewUrl(attachments[index]);
+				return local_source ? { ...attachment, local_source } : attachment;
+			})
+		: attachmentsMessage;
+
 	const payloadSizeInBytes = Buffer.byteLength(
 		JSON.stringify({
 			...payload,
@@ -1408,7 +1429,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			content,
-			attachments: attachmentsMessage,
+			attachments: sendingAttachmentsMessage,
 			create_time_seconds: clientSendTime / 1000,
 			create_time: new Date(clientSendTime).toISOString(),
 			client_send_time: clientSendTime,
@@ -1513,20 +1534,40 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						})
 					);
 					await new Promise((resolve) => setTimeout(resolve, 1000));
-					thunkAPI.dispatch(
-						editMessageViaApi({
-							content: {
-								...content,
-								presign_finish
-							},
-							channelId,
-							clanId,
-							isPublic,
-							messageId: messageResult?.message_id,
-							mode,
-							hideEditted: true
-						})
-					);
+					// This patch is what stops every receiver showing "uploading". It used
+					// to be dispatched once and never checked: one failed request and the
+					// row stayed stuck for everyone until a reload.
+					// Capture the id — the closure below outlives the guard above.
+					const presignMessageId = messageResult.message_id as string;
+					const patch = () =>
+						thunkAPI
+							.dispatch(
+								editMessageViaApi({
+									content: {
+										...content,
+										presign_finish
+									},
+									channelId,
+									clanId,
+									isPublic,
+									messageId: presignMessageId,
+									mode,
+									hideEditted: true
+								})
+							)
+							.unwrap();
+					void (async () => {
+						for (let attempt = 0; attempt < PRESIGN_PATCH_BACKOFF_MS.length; attempt++) {
+							try {
+								await patch();
+								return;
+							} catch (e) {
+								console.error(`presign_finish patch failed (attempt ${attempt + 1}/${PRESIGN_PATCH_BACKOFF_MS.length})`, e);
+								const wait = PRESIGN_PATCH_BACKOFF_MS[attempt];
+								if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+							}
+						}
+					})();
 				} catch (error) {
 					console.error('error: ', error);
 				}
@@ -1842,6 +1883,7 @@ export const initialMessagesState: MessagesState = {
 	dataReactionGetFromLoadMessage: [],
 	channelMessages: {},
 	channelDraftMessage: {},
+	presignRefreshAt: {},
 	isFocused: false,
 	isViewingOlderMessagesByChannelId: {},
 	isJumpingToPresent: {},
@@ -2072,11 +2114,76 @@ export const messagesSlice = createSlice({
 			if (!existingMessage) {
 				return;
 			}
-			existingMessage.attachments?.forEach(revokePreSendAttachmentUrls);
+
+			// This runs on the upload-first path (anonymous sends), where the
+			// public metadata that lands here has a CDN url and no local copy.
+			// Handing the row that alone sends the sender to the image proxy for
+			// an object uploaded seconds ago — the request that pins a failure in
+			// the proxy's cache, and the one thing this whole path exists to
+			// avoid. The picture stays; only the wire payload is public.
+			const previous = existingMessage.attachments ?? [];
+			const spare = [...previous];
+			const carried = new Set<string>();
+			const withLocalSource = attachments.map((attachment) => {
+				const at = spare.findIndex((p) => p.local_source && p.filename === attachment.filename);
+				if (at === -1) {
+					return attachment;
+				}
+				const [match] = spare.splice(at, 1);
+				carried.add(match.local_source as string);
+				return { ...attachment, local_source: match.local_source };
+			});
+
+			previous.forEach((attachment) => revokePreSendAttachmentUrls(attachment, carried));
 			channelMessagesAdapter.updateOne(channelEntity, {
 				id: messageId,
-				changes: { attachments }
+				changes: { attachments: withLocalSource }
 			});
+		},
+		applyPresignRefresh: (state, action: PayloadAction<{ channelId: string; messageId: string; presignFinish: string[] }>) => {
+			const { channelId, messageId, presignFinish } = action.payload;
+			const channelEntity = state.channelMessages[channelId];
+			const existing = channelEntity?.entities[messageId];
+			if (!existing) {
+				return;
+			}
+			// Merge ONLY the keys. What the row holds is not always what the server
+			// holds: in an E2EE channel the stored content carries the DECRYPTED
+			// text, and the attachments can point at local preview urls, so writing
+			// the server copy over either would undo work this client already did —
+			// for the sake of a field the client only needs to read.
+			// Keep whatever shape the row already stores (object here, but a string
+			// elsewhere would otherwise be replaced by an object holding nothing but
+			// the keys — i.e. the message text would vanish).
+			const stored = existing.content;
+			const base = typeof stored === 'string' ? safeJSONParse(stored) : stored;
+			// Union, not replace: the list only ever grows, and the caller may be
+			// contributing a single key it just proved readable rather than the whole
+			// server-side list.
+			const storedKeys = Array.isArray((base as { presign_finish?: unknown })?.presign_finish)
+				? ((base as { presign_finish: unknown[] }).presign_finish.filter((key): key is string => typeof key === 'string') as string[])
+				: [];
+			const merged = {
+				...(base && typeof base === 'object' ? base : {}),
+				presign_finish: [...new Set([...storedKeys, ...presignFinish])]
+			};
+			channelMessagesAdapter.updateOne(channelEntity, {
+				id: messageId,
+				changes: { content: typeof stored === 'string' ? JSON.stringify(merged) : merged } as Partial<MessagesEntity>
+			});
+		},
+		markPresignRefresh: (state, action: PayloadAction<{ messageId: string; at: number }>) => {
+			const { messageId, at } = action.payload;
+			if (!state.presignRefreshAt) {
+				state.presignRefreshAt = {};
+			}
+			const ids = Object.keys(state.presignRefreshAt);
+			if (ids.length > 200) {
+				ids.forEach((id) => {
+					if (at - state.presignRefreshAt[id] > PRESIGN_PENDING_MAX_AGE_SEC * 1000) delete state.presignRefreshAt[id];
+				});
+			}
+			state.presignRefreshAt[messageId] = at;
 		},
 		markAsError: (
 			state,
@@ -2422,6 +2529,61 @@ import { channel } from 'process';
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
 
+/** Smallest gap between two refetches of the same message. */
+const PRESIGN_REFRESH_MIN_GAP_MS = 10000;
+/** Second line of defence next to the store-state gate below. */
+const presignRefreshLocal = new Map<string, number>();
+
+/**
+ * Re-read one message from the server.
+ *
+ * A message with attachments is posted before its uploads finish, and the
+ * receiver only stops showing "uploading" when the follow-up presign_finish
+ * update arrives over the socket. If that single event is lost — a socket blip,
+ * a failed patch on the sender — the row stays stuck until a manual reload.
+ * Ask for the message again so it can heal itself.
+ */
+export const refreshPresignMessage = createAsyncThunk(
+	'messages/refreshPresignMessage',
+	async ({ clanId, channelId, messageId, topicId }: { clanId: string; channelId: string; messageId: string; topicId?: string }, thunkAPI) => {
+		const now = Date.now();
+		const localLast = presignRefreshLocal.get(messageId);
+		if (localLast && now - localLast < PRESIGN_REFRESH_MIN_GAP_MS) {
+			return;
+		}
+		// The gate lives in store state on purpose: a module-scope Map is not shared
+		// when the slice module gets instantiated more than once, and every rendered
+		// copy of the row would then fire its own request.
+		const last = getMessagesState(thunkAPI.getState() as RootState).presignRefreshAt?.[messageId];
+		if (last && now - last < PRESIGN_REFRESH_MIN_GAP_MS) {
+			return;
+		}
+		presignRefreshLocal.set(messageId, now);
+		thunkAPI.dispatch(messagesActions.markPresignRefresh({ messageId, at: now }));
+
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.listChannelMessages(mezon.session, clanId, channelId, messageId, 1, 1, topicId);
+		const fresh = response?.messages?.find((message) => (message.id || message.message_id) === messageId);
+		if (!fresh) {
+			return;
+		}
+		// Take the keys verbatim rather than the parsed/normalised form: they end up
+		// back in `content`, which a later edit re-sends to the server.
+		const freshContent = typeof fresh.content === 'string' ? safeJSONParse(fresh.content) : fresh.content;
+		const presignFinish = (freshContent as { presign_finish?: unknown } | null)?.presign_finish;
+		if (!Array.isArray(presignFinish)) {
+			return;
+		}
+		thunkAPI.dispatch(
+			messagesActions.applyPresignRefresh({
+				channelId: topicId || channelId,
+				messageId,
+				presignFinish: presignFinish.filter((key): key is string => typeof key === 'string')
+			})
+		);
+	}
+);
+
 export const messagesActions = {
 	...messagesSlice.actions,
 	addNewMessage,
@@ -2438,7 +2600,8 @@ export const messagesActions = {
 	loadMoreMessage,
 	jumpToMessage,
 	clickButtonMessage,
-	mapMessageChannelToEntityAction
+	mapMessageChannelToEntityAction,
+	refreshPresignMessage
 };
 
 export const getMessagesState = (rootState: { [MESSAGES_FEATURE_KEY]: MessagesState }): MessagesState => rootState[MESSAGES_FEATURE_KEY];

@@ -2,6 +2,7 @@ export type ChannelAppLaunchParams = {
 	webAppData: string;
 	clanId: string;
 	clanName: string;
+	params?: string;
 };
 
 export function buildChannelAppLaunchUrl(appUrl: string, payload: ChannelAppLaunchParams): string {
@@ -12,7 +13,7 @@ export function buildChannelAppLaunchUrl(appUrl: string, payload: ChannelAppLaun
 		if (payload.clanName) {
 			url.searchParams.set('clanName', payload.clanName);
 		}
-		return url.toString();
+		return payload.params ? `${url.toString()}&${payload.params}` : url.toString();
 	} catch {
 		const sep = appUrl.includes('?') ? '&' : '?';
 		const q = new URLSearchParams();

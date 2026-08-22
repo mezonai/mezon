@@ -37,11 +37,11 @@ export enum EVoiceInteractEvent {
 	APP_INTERACTIVE = 12
 }
 
-enum E_APP_INTERACTIVE_KEY {
-	Interactive = '2089273739668623360',
-	Blackboard = '2089294331818020864',
-	Quiz = '2089257413122199552'
-}
+const E_APP_INTERACTIVE_KEY = {
+	Interactive: process.env.NX_APP_INTERACTIVE,
+	Blackboard: process.env.NX_APP_BLACKBOARD,
+	Quiz: process.env.NX_APP_QUIZ
+};
 
 export const VOICE_INTERACTIVE_APPS = [
 	{
@@ -236,7 +236,16 @@ export const sendVoiceInteractiveEvent = createAsyncThunk(
 			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 			const state = thunkAPI.getState() as RootState;
 			const sender_id = selectCurrentUserId(state);
-			const response = await mezon.client.writeVoiceInteractiveEvent(mezon.session, clan_id, channel_id, sender_id, sender_id, event_type, '');
+			const params = event_type === EVoiceInteractEvent.APP_BLACKBOARD ? `userId=${sender_id}` : '';
+			const response = await mezon.client.writeVoiceInteractiveEvent(
+				mezon.session,
+				clan_id,
+				channel_id,
+				sender_id,
+				sender_id,
+				event_type,
+				params
+			);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'voice/sendVoiceInteractiveEvent');
@@ -259,47 +268,39 @@ export const generateMeetTokenExternal = createAsyncThunk(
 	}
 );
 
-export const kickVoiceMember = createAsyncThunk(
-	'meet/kickVoiceMember',
-	async ({ room_name, username }: { room_name?: string; username?: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const state = thunkAPI.getState() as RootState;
-			const voiceInfor = selectVoiceInfo(state);
-			const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
-				room_name,
-				username: username as string
-			});
-			return response;
-		} catch (error) {
-			captureSentryError(error, 'meet/generateMeetTokenExternal');
-			return thunkAPI.rejectWithValue(error);
-		}
+export const kickVoiceMember = createAsyncThunk('meet/kickVoiceMember', async ({ user_id }: { user_id?: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+		const state = thunkAPI.getState() as RootState;
+		const voiceInfor = selectVoiceInfo(state);
+		const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
+			clan_id: voiceInfor?.clanId as string,
+			channel_id: voiceInfor?.channelId,
+			user_id: user_id as string
+		});
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'meet/generateMeetTokenExternal');
+		return thunkAPI.rejectWithValue(error);
 	}
-);
+});
 
-export const muteVoiceMember = createAsyncThunk(
-	'meet/muteVoiceMember',
-	async ({ room_name, username }: { room_name?: string; username?: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const state = thunkAPI.getState() as RootState;
-			const voiceInfor = selectVoiceInfo(state);
-			const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
-				room_name,
-				username: username as string
-			});
-			return response;
-		} catch (error) {
-			captureSentryError(error, 'meet/generateMeetTokenExternal');
-			return thunkAPI.rejectWithValue(error);
-		}
+export const muteVoiceMember = createAsyncThunk('meet/muteVoiceMember', async ({ user_id }: { user_id?: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+		const state = thunkAPI.getState() as RootState;
+		const voiceInfor = selectVoiceInfo(state);
+		const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
+			clan_id: voiceInfor?.clanId as string,
+			channel_id: voiceInfor?.channelId,
+			user_id: user_id as string
+		});
+		return response;
+	} catch (error) {
+		captureSentryError(error, 'meet/generateMeetTokenExternal');
+		return thunkAPI.rejectWithValue(error);
 	}
-);
+});
 
 export const giveFlowers = createAsyncThunk('meet/giveFlowers', async ({ receiver_id }: { receiver_id: string }, thunkAPI) => {
 	try {

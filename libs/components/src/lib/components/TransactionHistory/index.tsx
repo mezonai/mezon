@@ -241,7 +241,11 @@ const TransactionHistory = ({ onClose }: IProps) => {
 									 ${isLoading ? 'animate-spin' : ''}`}
 								/>
 							</button>
-							<button onClick={onClose} className="p-2 rounded-lg  bg-item-theme-hover transition-colors">
+							<button
+								onClick={onClose}
+								className="p-2 rounded-lg  bg-item-theme-hover transition-colors"
+								data-e2e={generateE2eId('send_token.modal.transaction_history.item.button.close_transaction')}
+							>
 								<Icons.Close className="w-5 h-5 " />
 							</button>
 						</div>

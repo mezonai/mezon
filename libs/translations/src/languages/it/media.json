@@ -11,5 +11,8 @@
 			"downloadButton": "Scarica video",
 			"browserNotSupported": "Il tuo browser non supporta il tag video."
 		}
+	},
+	"attachment": {
+		"uploading": "Caricamento in corso..."
 	}
 }

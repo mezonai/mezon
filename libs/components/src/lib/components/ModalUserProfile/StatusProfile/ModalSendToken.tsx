@@ -231,7 +231,11 @@ const ModalSendToken = ({
 							<p className="text-theme-secondary">{t('description')}</p>
 						</div>
 					</div>
-					<button onClick={onClose} className="text-theme-primary text-theme-primary-hover transition-colors">
+					<button
+						onClick={onClose}
+						className="text-theme-primary text-theme-primary-hover transition-colors"
+						data-e2e={generateE2eId('send_token.modal.send.button.close')}
+					>
 						<Icons.Close className="w-5 h-5" />
 					</button>
 				</div>
