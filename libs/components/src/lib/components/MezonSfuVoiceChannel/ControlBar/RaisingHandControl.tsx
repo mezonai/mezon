@@ -35,8 +35,8 @@ export const SfuRaisingHandControl = memo(() => {
 	return (
 		<button
 			type="button"
-			title={active ? 'Hạ tay' : 'Giơ tay'}
-			aria-label={active ? 'Hạ tay' : 'Giơ tay'}
+			title={active ? 'Lower hand' : 'Raise hand'}
+			aria-label={active ? 'Lower hand' : 'Raise hand'}
 			aria-pressed={active}
 			className={SFU_CONTROL_BUTTON_CLASS}
 			onClick={() => setHand(!active)}

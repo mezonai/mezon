@@ -9,7 +9,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize, useMediaPermissions } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -26,6 +26,7 @@ import { SfuVideo } from './Media/SfuVideo';
 import { SfuParticipantTile } from './ParticipantTile/SfuParticipantTile';
 import { SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
 import { ReactionCallHandler, useSendReaction } from './Reaction';
+import { SfuVoiceContextMenu } from './VoiceContextMenu';
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
@@ -38,6 +39,8 @@ const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
 	height: { ideal: 1080 },
 	frameRate: { ideal: 10, max: 15 }
 } satisfies MediaTrackConstraints;
+
+const SELF_MUTE_EVENT_CORRELATION_MS = 300;
 
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
@@ -340,6 +343,9 @@ export function MezonSfuVoiceRoom({
 	const currentSfuRoleRef = useRef(joinRole);
 	const microphonePermissionRevokedRef = useRef(false);
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
+	const onLeaveRoomRef = useRef(onLeaveRoom);
+	const lastMuteChangedAtRef = useRef(0);
+	const pendingForcedMuteRef = useRef<number>();
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [error, setError] = useState<string>();
 	const [localPreview, setLocalPreview] = useState<MediaStream>();
@@ -348,6 +354,7 @@ export function MezonSfuVoiceRoom({
 	const [roomParticipantCount, setRoomParticipantCount] = useState(1);
 	const [screenSharing, setScreenSharing] = useState(false);
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
+	const mutedParticipantIds = useMemo(() => new Set<string>(), []);
 	const [isGridView, setIsGridView] = useState(true);
 	const [pinnedTrackId, setPinnedTrackId] = useState<string>();
 	const [autoFocusedTrackId, setAutoFocusedTrackId] = useState<string>();
@@ -367,6 +374,7 @@ export function MezonSfuVoiceRoom({
 	const focusThumbnailsRef = useRef<HTMLDivElement>(null);
 	const focusVideoContainerRef = useRef<HTMLDivElement>(null);
 	const [, renderFocusTileOrder] = useState(0);
+	onLeaveRoomRef.current = onLeaveRoom;
 
 	const closePopout = useCallback(async () => {
 		if (document.pictureInPictureElement) await document.exitPictureInPicture();
@@ -670,6 +678,7 @@ export function MezonSfuVoiceRoom({
 
 	useEffect(() => {
 		let disposed = false;
+		let reconnectAllowed = true;
 		let removeVisibilityListener: () => void = () => undefined;
 		let heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 		const peerIdsByMid = peerIdsByMidRef.current;
@@ -929,7 +938,7 @@ export function MezonSfuVoiceRoom({
 		};
 
 		const reconnect = () => {
-			if (disposed || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED)) return;
+			if (!reconnectAllowed || disposed || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED)) return;
 			resetAndCreatePeerConnection();
 			const secureServerUrl =
 				window.location.protocol === 'https:' && serverUrl.startsWith('ws://') ? `wss://${serverUrl.slice(5)}` : serverUrl;
@@ -964,7 +973,42 @@ export function MezonSfuVoiceRoom({
 					setRoomParticipantCount(message.participant_count);
 				}
 				if (message.type === 'room_snapshot' && message.members) applySfuPeers(message.members);
-				if ((message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer) applySfuPeers([message.peer]);
+				if (message.type === 'mute_changed') {
+					lastMuteChangedAtRef.current = Date.now();
+					if (pendingForcedMuteRef.current !== undefined) {
+						window.clearTimeout(pendingForcedMuteRef.current);
+						pendingForcedMuteRef.current = undefined;
+					}
+				}
+				if ((message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer) {
+					applySfuPeers([message.peer]);
+
+					const isCurrentUser = message.peer.user_id != null && String(message.peer.user_id) === String(currentUserId);
+					if (message.type === 'peer_updated' && isCurrentUser && message.peer.is_mute === true) {
+						const muteChangedAlreadyReceived = Date.now() - lastMuteChangedAtRef.current <= SELF_MUTE_EVENT_CORRELATION_MS;
+						if (!muteChangedAlreadyReceived && desiredMediaRef.current.microphoneEnabled) {
+							if (pendingForcedMuteRef.current !== undefined) window.clearTimeout(pendingForcedMuteRef.current);
+							pendingForcedMuteRef.current = window.setTimeout(() => {
+								pendingForcedMuteRef.current = undefined;
+								if (Date.now() - lastMuteChangedAtRef.current <= SELF_MUTE_EVENT_CORRELATION_MS) return;
+
+								desiredMediaRef.current.microphoneEnabled = false;
+								const audioTrack = localStreamRef.current?.getAudioTracks()[0];
+								if (audioTrack) audioTrack.enabled = false;
+								const audioSender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
+								if (audioSender) void audioSender.replaceTrack(null);
+								dispatch(voiceActions.setShowMicrophone(false));
+								dispatch(
+									toastActions.addToast({
+										message: 'You have been muted by a channel moderator.',
+										type: 'warning',
+										autoClose: 3000
+									})
+								);
+							}, SELF_MUTE_EVENT_CORRELATION_MS);
+						}
+					}
+				}
 				if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong', timestamp: message.timestamp }));
 				if (message.type === 'joined') {
 					setError(undefined);
@@ -1026,11 +1070,27 @@ export function MezonSfuVoiceRoom({
 				setError('Unable to connect to SFU signaling');
 				setConnectionState('failed');
 			};
-			ws.onclose = () => {
+			ws.onclose = (event) => {
 				if (wsRef.current !== ws) return;
 				wsRef.current = null;
 				joinedRef.current = false;
-				if (!disposed) setConnectionState('disconnected');
+				reconnectAllowed = event.code === 4001;
+				if (disposed) return;
+
+				setConnectionState('disconnected');
+				if (event.code === 4006) {
+					dispatch(
+						toastActions.addToast({
+							message: event.reason || 'You have been kicked from the channel.',
+							type: 'warning',
+							autoClose: 5000
+						})
+					);
+					onLeaveRoomRef.current();
+					return;
+				}
+
+				if (reconnectAllowed) reconnect();
 			};
 		};
 
@@ -1053,6 +1113,10 @@ export function MezonSfuVoiceRoom({
 		return () => {
 			disposed = true;
 			if (heartbeatInterval) clearInterval(heartbeatInterval);
+			if (pendingForcedMuteRef.current !== undefined) {
+				window.clearTimeout(pendingForcedMuteRef.current);
+				pendingForcedMuteRef.current = undefined;
+			}
 			// A leave is currently signaled by closing the WebSocket; no explicit
 			// { type: 'leave' } message is sent to the SFU.
 			// eslint-disable-next-line no-console
@@ -1074,7 +1138,18 @@ export function MezonSfuVoiceRoom({
 			peerIdsByMid.clear();
 			rolesByMid.clear();
 		};
-	}, [applyScreenEncodingParams, applySfuPeers, findUplinkVideoSender, joinRole, roomId, serverUrl, syncRemoteMedia, token]);
+	}, [
+		applyScreenEncodingParams,
+		applySfuPeers,
+		currentUserId,
+		dispatch,
+		findUplinkVideoSender,
+		joinRole,
+		roomId,
+		serverUrl,
+		syncRemoteMedia,
+		token
+	]);
 
 	const toggleScreenShare = async () => {
 		const pc = pcRef.current;
@@ -1211,6 +1286,47 @@ export function MezonSfuVoiceRoom({
 	}, [pushToTalkActive]);
 
 	const participants = useMemo(() => Array.from(remoteMedia.values()), [remoteMedia]);
+	const handleParticipantAction = useCallback(
+		async (action: 'mute' | 'kick', participantId: string) => {
+			const response = await dispatch(
+				(action === 'mute' ? voiceActions.muteVoiceMember : voiceActions.kickVoiceMember)({ user_id: participantId })
+			).unwrap();
+			const message = response?.message;
+			const actionToken =
+				typeof message === 'string'
+					? message
+					: message && typeof message === 'object'
+						? new TextDecoder().decode(
+								message instanceof Uint8Array ? message : Uint8Array.from(Object.values(message as Record<string, number>))
+							)
+						: undefined;
+			if (!actionToken) throw new Error(`The ${action} API did not return an SFU action token`);
+
+			const ws = wsRef.current;
+			if (!ws || ws.readyState !== WebSocket.OPEN) throw new Error('SFU signaling is not connected');
+			ws.send(JSON.stringify({ type: 'participant_action', token: actionToken }));
+		},
+		[dispatch]
+	);
+	const handleParticipantContextMenu = useCallback(
+		(event: ReactMouseEvent<HTMLElement>, participantUserId?: string) => {
+			if (!participantUserId || participantUserId === currentUserId) return;
+			event.preventDefault();
+			event.stopPropagation();
+			const menuWidth = 220;
+			const menuHeight = 200;
+			dispatch(
+				voiceActions.openVoiceContextMenu({
+					participantId: participantUserId,
+					position: {
+						x: Math.min(event.clientX, window.innerWidth - menuWidth),
+						y: Math.min(event.clientY, window.innerHeight - menuHeight)
+					}
+				})
+			);
+		},
+		[currentUserId, dispatch]
+	);
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
 	const cameras = devices.filter((device) => device.kind === 'videoinput');
@@ -1243,7 +1359,7 @@ export function MezonSfuVoiceRoom({
 	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
 	const speakingMap = useParticipantsSpeakingMap(localAudioTrack, isLocalAudioEnabled, participants);
 	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
-	const conferenceTiles: Array<{ id: string; participantId: string; isScreen: boolean; content: ReactNode }> = [];
+	const conferenceTiles: Array<{ id: string; participantId: string; contextMenuUserId?: string; isScreen: boolean; content: ReactNode }> = [];
 	conferenceTiles.push({
 		id: 'local-camera',
 		participantId: 'local',
@@ -1301,6 +1417,7 @@ export function MezonSfuVoiceRoom({
 		conferenceTiles.push({
 			id: `${participant.id}-camera`,
 			participantId: participant.id,
+			contextMenuUserId: participant.userId,
 			isScreen: false,
 			content: (
 				<SfuParticipantTile
@@ -1308,6 +1425,7 @@ export function MezonSfuVoiceRoom({
 					displayName={profile.displayName}
 					avatar={profile.avatar}
 					speaking={participantSpeaking}
+					locallyMuted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
 				/>
 			)
 		});
@@ -1315,6 +1433,7 @@ export function MezonSfuVoiceRoom({
 			conferenceTiles.push({
 				id: `${participant.id}-screen`,
 				participantId: participant.id,
+				contextMenuUserId: participant.userId,
 				isScreen: true,
 				content: <SfuScreenShareTile participant={participant} displayName={profile.displayName} />
 			});
@@ -1486,7 +1605,7 @@ export function MezonSfuVoiceRoom({
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<ReactionCallHandler />
-			<SfuRoomAudioRenderer participants={participants} />
+			<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
 					<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
@@ -1547,6 +1666,7 @@ export function MezonSfuVoiceRoom({
 									setPinnedTrackId(tile.id);
 									setIsGridView(false);
 								}}
+								onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
 							>
 								{tile.content}
 							</button>
@@ -1579,7 +1699,10 @@ export function MezonSfuVoiceRoom({
 						ref={focusVideoContainerRef}
 						className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
 					>
-						<div className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto">
+						<div
+							className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+							onContextMenu={(event) => handleParticipantContextMenu(event, pinnedTile?.contextMenuUserId)}
+						>
 							{pinnedTile?.content}
 						</div>
 					</div>
@@ -1622,6 +1745,7 @@ export function MezonSfuVoiceRoom({
 											type="button"
 											className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
 											onClick={() => setPinnedTrackId(tile.id)}
+											onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
 										>
 											{tile.content}
 										</button>
@@ -1632,6 +1756,7 @@ export function MezonSfuVoiceRoom({
 				</SfuFocusLayoutContainer>
 			)}
 
+			<SfuVoiceContextMenu channelId={roomId} onParticipantAction={handleParticipantAction} />
 			<SfuControlBar
 				channelLabel={channelLabel || roomId}
 				joinRole={joinRole}

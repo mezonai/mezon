@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { SfuRemoteMedia } from '../../types';
 
-const SfuRemoteAudioTrack = ({ track }: { track: MediaStreamTrack }) => {
+const SfuRemoteAudioTrack = ({ track, muted }: { track: MediaStreamTrack; muted: boolean }) => {
 	const ref = useRef<HTMLAudioElement>(null);
 	useEffect(() => {
 		const element = ref.current;
@@ -12,13 +12,19 @@ const SfuRemoteAudioTrack = ({ track }: { track: MediaStreamTrack }) => {
 			element.srcObject = null;
 		};
 	}, [track]);
-	return <audio ref={ref} autoPlay playsInline />;
+	return <audio ref={ref} autoPlay playsInline muted={muted} />;
 };
 
-export const SfuRoomAudioRenderer = ({ participants }: { participants: SfuRemoteMedia[] }) => (
+export const SfuRoomAudioRenderer = ({ participants, mutedParticipantIds }: { participants: SfuRemoteMedia[]; mutedParticipantIds: Set<string> }) => (
 	<div className="hidden">
 		{participants.map((participant) =>
-			participant.audio ? <SfuRemoteAudioTrack key={`${participant.id}-${participant.audio.id}`} track={participant.audio} /> : null
+			participant.audio ? (
+				<SfuRemoteAudioTrack
+					key={`${participant.id}-${participant.audio.id}`}
+					track={participant.audio}
+					muted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
+				/>
+			) : null
 		)}
 	</div>
 );

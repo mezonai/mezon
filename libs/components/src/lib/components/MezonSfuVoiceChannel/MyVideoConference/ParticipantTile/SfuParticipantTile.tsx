@@ -11,10 +11,11 @@ export interface SfuParticipantTileProps {
 	displayName: string;
 	avatar?: string;
 	speaking?: boolean;
+	locallyMuted?: boolean;
 }
 
-export const SfuParticipantTile = ({ participant, displayName, avatar, speaking: propSpeaking }: SfuParticipantTileProps) => {
-	const isMuted = participant.isMute === true || !participant.audio || participant.audio.muted;
+export const SfuParticipantTile = ({ participant, displayName, avatar, speaking: propSpeaking, locallyMuted }: SfuParticipantTileProps) => {
+	const isMuted = locallyMuted || participant.isMute === true || !participant.audio || participant.audio.muted;
 	const speaking = isMuted ? false : Boolean(propSpeaking);
 	const remoteVideoStream = useMemo(() => (participant.video ? new MediaStream([participant.video]) : undefined), [participant.video]);
 	const showVideo = Boolean(participant.video?.readyState === 'live' && !participant.video.muted && participant.cameraActive !== false);

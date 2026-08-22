@@ -18,6 +18,10 @@ export type SfuPeer = {
 
 export type SfuSignalMessage = {
 	type: string;
+	action?: 'mute' | 'kick';
+	user_id?: string;
+	affected?: number;
+	error?: string;
 	timestamp?: number;
 	active?: boolean;
 	role?: SfuJoinRole;
