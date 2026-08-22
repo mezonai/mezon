@@ -119,26 +119,22 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		setIsKicking(true);
 		dispatch(voiceActions.closeVoiceContextMenu());
 
-		if (!room?.name) {
+		const userId = member?.user?.id;
+		if (!userId) {
 			isKickingRef.current = false;
 			setIsKicking(false);
 			return;
 		}
 
 		try {
-			await dispatch(
-				voiceActions.kickVoiceMember({
-					room_name: room?.name,
-					username: member?.user?.id
-				})
-			).unwrap();
+			await dispatch(voiceActions.kickVoiceMember({ user_id: userId })).unwrap();
 		} catch (error) {
 			console.error('Failed to kick member:', error);
 		} finally {
 			isKickingRef.current = false;
 			setIsKicking(false);
 		}
-	}, [dispatch, member?.user?.id, room]);
+	}, [dispatch, member?.user?.id]);
 
 	const handleMuteMember = useCallback(async () => {
 		if (isMutingRef.current) return;
@@ -147,26 +143,22 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		setIsMuting(true);
 		dispatch(voiceActions.closeVoiceContextMenu());
 
-		if (!room?.name) {
+		const userId = member?.user?.id;
+		if (!userId) {
 			isMutingRef.current = false;
 			setIsMuting(false);
 			return;
 		}
 
 		try {
-			await dispatch(
-				voiceActions.muteVoiceMember({
-					room_name: room?.name,
-					username: member?.user?.id
-				})
-			).unwrap();
+			await dispatch(voiceActions.muteVoiceMember({ user_id: userId })).unwrap();
 		} catch (error) {
 			console.error('Failed to mute member:', error);
 		} finally {
 			isMutingRef.current = false;
 			setIsMuting(false);
 		}
-	}, [room, dispatch, member?.user?.id]);
+	}, [dispatch, member?.user?.id]);
 
 	const handleGiveFlowers = useCallback(async () => {
 		if (Date.now() < flowerCooldownUntil.current) {
