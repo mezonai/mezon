@@ -178,7 +178,12 @@ const Photo = <T,>({
 
 	const thumbnailDataUri = photo.thumbnail?.dataUri;
 	const hasThumbnail = !!thumbnailDataUri;
-	const canOpenViewer = !isPresignPending;
+	// `isPresignPending` alone leaves the upload-first paths open: an anonymous
+	// send is never presign-pending, only sending, and the row already carries the
+	// CDN url of an object that has not been written yet. Opening the viewer on it
+	// asks the image proxy for that object and pins the failure in its cache for a
+	// week. The desktop row gates on the same set of states.
+	const canOpenViewer = !isUploading;
 
 	// The proxied copy is absolutely positioned, so between "start loading" and
 	// "decoded" there is nothing in the layout at all and the row goes blank for

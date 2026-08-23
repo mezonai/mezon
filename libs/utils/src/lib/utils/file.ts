@@ -1,6 +1,6 @@
 import type { Dispatch } from '@reduxjs/toolkit';
 import type { ApiMessageAttachment } from 'mezon-js';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, fileTypeImage } from '../constant';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, fileTypeImage } from '../constant';
 import { captureVideoPosterFromUrl } from '../helper/videoPoster';
 import type {
 	IMentionOnMessage,
@@ -37,23 +37,38 @@ export function getPreSendThumbnailBlob(attachment: ApiMessageAttachment): Blob 
  * cap these accumulate for the whole session. A row whose preview has been
  * revoked falls back to the network copy on its own, so the oldest can go.
  */
-const LIVE_LOCAL_PREVIEWS = 12;
+/**
+ * Counting previews was the wrong unit. A message may carry MAX_FILE_ATTACHMENTS
+ * of them, so any count below that let a single send revoke its own oldest
+ * previews mid-upload — and those rows then asked the image proxy for objects
+ * that had just been written, which is the one request this whole path exists to
+ * avoid. The floor is therefore one full message; the byte ceiling is what keeps
+ * the pathological case (an album of untouched gifs, which skip the downscale)
+ * from holding half a gigabyte.
+ */
+const LIVE_PREVIEW_MAX_BYTES = 128 * 1024 * 1024;
 
-const livePreviews: string[] = [];
+const livePreviews: { url: string; bytes: number }[] = [];
+let livePreviewBytes = 0;
 
-function rememberPreview(url: string): string {
-	livePreviews.push(url);
-	while (livePreviews.length > LIVE_LOCAL_PREVIEWS) {
+function rememberPreview(url: string, bytes: number): string {
+	livePreviews.push({ url, bytes });
+	livePreviewBytes += bytes;
+	while (livePreviews.length > 1 && (livePreviews.length > MAX_FILE_ATTACHMENTS || livePreviewBytes > LIVE_PREVIEW_MAX_BYTES)) {
 		const oldest = livePreviews.shift();
-		if (oldest) URL.revokeObjectURL(oldest);
+		if (!oldest) break;
+		livePreviewBytes -= oldest.bytes;
+		URL.revokeObjectURL(oldest.url);
 	}
 	return url;
 }
 
 /** Called when a preview is revoked elsewhere, so the cap does not count it twice. */
 export function forgetLocalPreview(url: string): void {
-	const at = livePreviews.indexOf(url);
-	if (at !== -1) livePreviews.splice(at, 1);
+	const at = livePreviews.findIndex((preview) => preview.url === url);
+	if (at === -1) return;
+	livePreviewBytes -= livePreviews[at].bytes;
+	livePreviews.splice(at, 1);
 }
 
 /**
@@ -82,7 +97,7 @@ export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string 
 	const source = (attachment as PreSendMediaAttachment)._previewBlob ?? sourceFile;
 
 	try {
-		return rememberPreview(URL.createObjectURL(source));
+		return rememberPreview(URL.createObjectURL(source), source.size);
 	} catch {
 		return undefined;
 	}

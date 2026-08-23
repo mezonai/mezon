@@ -830,9 +830,10 @@ export async function getWebUploadedAttachments(payload: {
 				throw new Error(`Upload failed for ${createdFile.name}`);
 			}
 
-			if (result && createdFile.thumbnailBlob && attachment?.thumbnailUpload && createdFile.thumbnail && createdFile.type.startsWith('video')) {
-				await uploadFileToPath(attachment.thumbnailUpload, createdFile.thumbnailBlob, createdFile.thumbnailBlob?.size);
-			}
+			// The video poster is uploaded by generatePathAttachments, before the
+			// message is posted — its url is only put on the wire once the object
+			// exists. It used to be uploaded here instead, after the message had
+			// already published the url, with the result discarded.
 			fileUploadForeman.releaseWorker();
 			const id = attachment.uploadName?.split('/').pop()?.split('.')[0];
 			return id;
