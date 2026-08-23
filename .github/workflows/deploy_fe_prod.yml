@@ -96,9 +96,9 @@ jobs:
           envkey_NX_CHAT_APP_INDEXER_API_URL: https://dong.mezon.ai/indexer-api
           envkey_NX_CHAT_APP_ZK_API_URL: https://dong.mezon.ai/zk-api
           envkey_NX_OGP_URL: https://ogp.mezon.ai/ogp
-          envkey_NX_APP_INTERACTIVE: 2089273739668623360
-          envkey_NX_APP_BLACKBOARD: 2089294331818020864
-          envkey_NX_APP_QUIZ: 2089257413122199552
+          envkey_NX_APP_INTERACTIVE: '2089273739668623360'
+          envkey_NX_APP_BLACKBOARD: '2089294331818020864'
+          envkey_NX_APP_QUIZ: '2089257413122199552'
 
       - name: Build
         env:
