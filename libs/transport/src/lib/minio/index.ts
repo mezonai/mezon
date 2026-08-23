@@ -321,6 +321,15 @@ export function createUploadFilePath(filename: string, index?: number): { filePa
 export async function uploadFileToPath(uploadPath: string, file: Blob, size: number) {
 	try {
 		const res = await uploadImageToMinIO(uploadPath, file, size);
+		// fetch only rejects on a network-level failure — an expired presign (403)
+		// or a bucket 5xx resolves like a success. The caller publishes the object
+		// key on the strength of this return value, so a non-2xx has to read as a
+		// failure; otherwise presign_finish names a key that was never written and
+		// every viewer gets "Source is unreachable" from imgproxy, forever.
+		// `handleUploadFile` in this same file already guards this way.
+		if (!res.ok) {
+			throw new Error(`Upload failed with status ${res.status}`);
+		}
 		return res;
 	} catch (error) {
 		console.error('error: ', error);

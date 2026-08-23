@@ -11,5 +11,8 @@
 			"downloadButton": "Download video",
 			"browserNotSupported": "Your browser does not support the video tag."
 		}
+	},
+	"attachment": {
+		"uploading": "Uploading..."
 	}
 }

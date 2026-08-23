@@ -11,6 +11,8 @@
 			"downloadButton": "Загрузить видео",
 			"browserNotSupported": "Ваш браузер не поддерживает тег video."
 		}
+	},
+	"attachment": {
+		"uploading": "Загрузка..."
 	}
 }
-
