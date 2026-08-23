@@ -6,6 +6,7 @@ import type {
 	IMessageSendPayload,
 	IMessageWithUser,
 	LoadingStatus,
+	PreSendMediaAttachment,
 	PublicKeyMaterial
 } from '@mezon/utils';
 import {
@@ -1672,7 +1673,8 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 		if (attachments && attachments.length > 0) {
 			thunkAPI.dispatch(handleUploadFileToMinIO(attachments));
 
-			attachments.forEach(revokePreSendAttachmentUrls);
+			// Not point-free: forEach would hand the index in as `keep`.
+			attachments.forEach((attachment) => revokePreSendAttachmentUrls(attachment));
 		}
 
 		let avatarToUse = avatar;
@@ -2121,7 +2123,7 @@ export const messagesSlice = createSlice({
 			// an object uploaded seconds ago — the request that pins a failure in
 			// the proxy's cache, and the one thing this whole path exists to
 			// avoid. The picture stays; only the wire payload is public.
-			const previous = existingMessage.attachments ?? [];
+			const previous = (existingMessage.attachments ?? []) as PreSendMediaAttachment[];
 			const spare = [...previous];
 			const carried = new Set<string>();
 			const withLocalSource = attachments.map((attachment) => {
@@ -2890,7 +2892,8 @@ const handleRemoveOneMessage = ({ state, channelId, messageId }: { state: Messag
 	}
 
 	const removedMessage = channelEntity.entities[messageId];
-	removedMessage?.attachments?.forEach(revokePreSendAttachmentUrls);
+	// Not point-free: forEach would hand the index in as `keep`.
+	removedMessage?.attachments?.forEach((attachment) => revokePreSendAttachmentUrls(attachment));
 
 	return channelMessagesAdapter.removeOne(channelEntity, messageId);
 };
