@@ -26,6 +26,7 @@ export type SfuSignalMessage = {
 	active?: boolean;
 	role?: SfuJoinRole;
 	sdp?: string;
+	offer_generation?: number;
 	message?: string;
 	participant_count?: number;
 	members?: SfuPeer[];

@@ -307,6 +307,8 @@ export interface MezonSfuVoiceRoomProps {
 	onToggleChat: () => void;
 }
 
+type SfuOffer = { sdp: string; offer_generation: number };
+
 export function MezonSfuVoiceRoom({
 	token,
 	joinRole,
@@ -334,7 +336,7 @@ export function MezonSfuVoiceRoom({
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
 	const joinedRef = useRef(false);
-	const pendingOfferRef = useRef<string | null>(null);
+	const pendingOfferRef = useRef<SfuOffer | null>(null);
 	const peerLeftPendingOfferRef = useRef(false);
 	const leftRemoteMidsRef = useRef(new Set<string>());
 	const userIdsByMidRef = useRef(new Map<string, string>());
@@ -835,26 +837,26 @@ export function MezonSfuVoiceRoom({
 			return pc;
 		};
 
-		const handleOffer = async (sdp: string): Promise<void> => {
+		const handleOffer = async (offer: SfuOffer): Promise<void> => {
 			const pc = pcRef.current;
 			if (!pc) return;
 			if (negotiatingRef.current) {
-				pendingOfferRef.current = sdp;
+				pendingOfferRef.current = offer;
 				return;
 			}
 			negotiatingRef.current = true;
 			try {
-				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...getUserIdsByMidFromSdp(sdp)]);
+				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...getUserIdsByMidFromSdp(offer.sdp)]);
 				if (peerLeftPendingOfferRef.current) {
 					// eslint-disable-next-line no-console
 					console.info('[MezonSFU][remaining peer] offer received after peer_left', {
 						peer: getPeerDebugSnapshot(pc),
-						sdp
+						sdp: offer.sdp
 					});
 					peerLeftPendingOfferRef.current = false;
 				}
 				const localStream = localStreamRef.current || (await prepareLocalMedia());
-				const stabilizedSdp = stabilizeInactiveVideoSections(sdp, pc.currentRemoteDescription?.sdp);
+				const stabilizedSdp = stabilizeInactiveVideoSections(offer.sdp, pc.currentRemoteDescription?.sdp);
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: stabilizedSdp }));
 				const uplinkVideoTransceiver = pc.getTransceivers().find((item) => item.mid === '1');
 				if (uplinkVideoTransceiver) setDefaultVideoCodec(uplinkVideoTransceiver);
@@ -896,7 +898,13 @@ export function MezonSfuVoiceRoom({
 				await pc.setLocalDescription(await pc.createAnswer());
 				syncRemoteMedia(pc);
 				if (wsRef.current?.readyState === WebSocket.OPEN && pc.localDescription?.sdp) {
-					wsRef.current.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp }));
+					wsRef.current.send(
+						JSON.stringify({
+							type: 'answer',
+							sdp: pc.localDescription.sdp,
+							offer_generation: offer.offer_generation
+						})
+					);
 				}
 				// Attach the camera while creating the first answer so its SSRC is
 				// negotiated, then detach it when camera is off. Keeping a disabled
@@ -1038,7 +1046,9 @@ export function MezonSfuVoiceRoom({
 						setError(cause instanceof Error ? cause.message : 'Unable to update audience role');
 					});
 				}
-				if (message.type === 'offer' && message.sdp) void handleOffer(message.sdp);
+				if (message.type === 'offer' && message.sdp && message.offer_generation != null) {
+					void handleOffer({ sdp: message.sdp, offer_generation: message.offer_generation });
+				}
 				if (message.type === 'peer_left') {
 					peerLeftPendingOfferRef.current = true;
 					// eslint-disable-next-line no-console
