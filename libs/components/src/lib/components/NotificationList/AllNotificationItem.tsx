@@ -133,7 +133,8 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		subject: notify.subject,
 		category: notify.category,
 		senderId: contentSenderId && contentSenderId !== '0' ? contentSenderId : notify.sender_id,
-		embed: notify?.content?.embed as IEmbedProps[] | undefined
+		embed: notify?.content?.embed as IEmbedProps[] | undefined,
+		onCloseTooltip
 	};
 
 	const isShowJump =
@@ -198,9 +199,10 @@ interface IMentionTabContent {
 	category?: number;
 	senderId?: string;
 	embed?: IEmbedProps[];
+	onCloseTooltip?: () => void;
 }
 
-function AllTabContent({ message, subject, category, senderId, embed }: IMentionTabContent) {
+function AllTabContent({ message, subject, category, senderId, embed, onCloseTooltip }: IMentionTabContent) {
 	const { t } = useTranslation('channelTopbar');
 	const { priorityAvatar, namePriority, usernameSender } = useGetPriorityNameFromUserClan(senderId || message.sender_id || '');
 
@@ -323,6 +325,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 									content={messageLineContent}
 									isTokenClickAble={false}
 									isJumMessageEnabled={false}
+									onCloseTooltip={onCloseTooltip}
 								/>
 							)}
 							{message.attachment_link && (

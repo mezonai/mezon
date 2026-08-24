@@ -13,6 +13,7 @@ import MessageReply from '../MessageWithUser/MessageReply/MessageReply';
 export type NotifyMentionProps = {
 	readonly notify: INotification;
 	readonly isUnreadTab?: boolean;
+	onCloseTooltip?: () => void;
 };
 function convertContentToObject(notify: any) {
 	if (notify && notify.content && typeof notify.content === 'object') {
@@ -36,7 +37,7 @@ function convertContentToObject(notify: any) {
 	}
 	return notify;
 }
-function NotifyMentionItem({ notify, isUnreadTab }: NotifyMentionProps) {
+function NotifyMentionItem({ notify, isUnreadTab, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
 	const parseNotify = convertContentToObject(notify);
 
@@ -79,7 +80,7 @@ function NotifyMentionItem({ notify, isUnreadTab }: NotifyMentionProps) {
 			>
 				{t('tooltips.jump')}
 			</button>
-			{<MentionTabContent message={parseNotify.content} />}
+			{<MentionTabContent message={parseNotify.content} onCloseTooltip={onCloseTooltip} />}
 		</div>
 	);
 }
@@ -88,9 +89,10 @@ export default NotifyMentionItem;
 
 interface IMentionTabContent {
 	message: IMessageWithUser;
+	onCloseTooltip?: () => void;
 }
 
-function MentionTabContent({ message }: IMentionTabContent) {
+function MentionTabContent({ message, onCloseTooltip }: IMentionTabContent) {
 	const contentUpdatedMention = addMention(message?.content, message?.mentions as IMentionOnMessage[]);
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id);
 	const checkMessageHasReply = useMemo(() => {
@@ -126,6 +128,7 @@ function MentionTabContent({ message }: IMentionTabContent) {
 						content={contentUpdatedMention}
 						isTokenClickAble={false}
 						isJumMessageEnabled={false}
+						onCloseTooltip={onCloseTooltip}
 					/>
 					{Array.isArray(message.attachments) && (
 						<MessageAttachment mode={ChannelStreamMode.STREAM_MODE_CHANNEL} message={message} defaultMaxWidth={TOPBARS_MAX_WIDTH} />

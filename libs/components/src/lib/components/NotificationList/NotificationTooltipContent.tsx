@@ -15,7 +15,7 @@ import { Icons } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
 import type { ApiSdTopic } from 'mezon-js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import AllNotification from './AllNotification';
@@ -206,7 +206,11 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 					>
 						{getAllNotificationForYou.length > 0 ? (
 							getAllNotificationForYou.map((notification: INotification, index: number) => (
-								<AllNotification notification={notification} key={`individual-${notification?.id}-${index}`} />
+								<AllNotification
+									notification={notification}
+									key={`individual-${notification?.id}-${index}`}
+									onCloseTooltip={onCloseTooltip}
+								/>
 							))
 						) : (
 							<EmptyNotification isEmptyForYou />
@@ -242,7 +246,11 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 					>
 						{getAllNotificationClan.length > 0 ? (
 							getAllNotificationClan.map((notification: INotification, index: number) => (
-								<AllNotification notification={notification} key={`message-${notification?.id}-${index}`} />
+								<AllNotification
+									notification={notification}
+									key={`message-${notification?.id}-${index}`}
+									onCloseTooltip={onCloseTooltip}
+								/>
 							))
 						) : (
 							<EmptyNotification isEmptyMessages />
