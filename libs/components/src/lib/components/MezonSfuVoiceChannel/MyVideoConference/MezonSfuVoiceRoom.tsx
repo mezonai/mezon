@@ -604,6 +604,10 @@ export function MezonSfuVoiceRoom({
 					const videoSender = findUplinkVideoSender();
 					if (videoSender) {
 						await videoSender.replaceTrack(cameraEnabled ? cameraTrack : null);
+						const videoTransceiver = pcRef.current?.getTransceivers().find((item) => item.mid === '1');
+						if (videoTransceiver && cameraEnabled && videoTransceiver.direction !== 'sendonly') {
+							videoTransceiver.direction = 'sendonly';
+						}
 					}
 				}
 			} catch (cause) {
