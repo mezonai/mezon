@@ -3,7 +3,6 @@ import { Icons } from '@mezon/ui';
 import Tooltip from 'rc-tooltip';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { SfuVoiceInteractiveLayer } from '../MyVideoConference/VoiceContextMenu/SfuVoiceInteractiveLayer';
 import { SfuVoiceInteractiveMenu } from '../VoiceInteractive/SfuVoiceInteractiveMenu';
 
 interface SfuVoiceInteractiveControlProps {
@@ -22,21 +21,18 @@ export const SfuVoiceInteractiveControl = ({ showVoiceInteractive, onVisibleChan
 	const channelId = voiceInfo?.channelId ?? '';
 
 	return (
-		<>
-			<Tooltip
-				placement="topLeft"
-				trigger={['click']}
-				overlayClassName="w-auto text-theme-primary"
-				visible={showVoiceInteractive}
-				onVisibleChange={onVisibleChange}
-				overlay={<SfuVoiceInteractiveMenu channelId={channelId} onClose={handleClose} />}
-				destroyTooltipOnHide
-			>
-				<div>
-					<Icons.Joystick className={iconClassName} />
-				</div>
-			</Tooltip>
-			<SfuVoiceInteractiveLayer channelId={channelId} />
-		</>
+		<Tooltip
+			placement="topLeft"
+			trigger={['click']}
+			overlayClassName="w-auto text-theme-primary"
+			visible={showVoiceInteractive}
+			onVisibleChange={onVisibleChange}
+			overlay={<SfuVoiceInteractiveMenu channelId={channelId} onClose={handleClose} />}
+			destroyTooltipOnHide
+		>
+			<div>
+				<Icons.Joystick className={iconClassName} />
+			</div>
+		</Tooltip>
 	);
 };

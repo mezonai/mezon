@@ -37,6 +37,7 @@ import { SfuParticipantTile } from './ParticipantTile/SfuParticipantTile';
 import { SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
 import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
+import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
@@ -1673,6 +1674,7 @@ export function MezonSfuVoiceRoom({
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<ReactionCallHandler />
+			<SfuVoiceInteractiveLayer channelId={channel_id as string} />
 			<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">

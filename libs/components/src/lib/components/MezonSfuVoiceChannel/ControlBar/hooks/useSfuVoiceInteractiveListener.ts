@@ -48,6 +48,18 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 		});
 	}, []);
 
+	const playFlowerCelebrationSound = useCallback(() => {
+		try {
+			const audio = new Audio('/assets/audio/bankSound.mp3');
+			audio.volume = 0.5;
+			audio.play().catch((err) => {
+				console.error('[flower sound play error]', err);
+			});
+		} catch (e) {
+			console.error('[flower sound error]', e);
+		}
+	}, []);
+
 	const showNextSender = useCallback(() => {
 		if (isShowingSenderRef.current) return;
 
@@ -85,6 +97,7 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 			const handler = async (event: VoiceInteractiveEvent) => {
 				if (event.voice_channel_id !== channelId) return;
 				if (event.event_type === EVoiceInteractEvent.SENT_FLOWERS) {
+					playFlowerCelebrationSound();
 					playerRef.current?.play();
 					senderQueueRef.current.push(event);
 					showNextSender();
@@ -139,19 +152,20 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 				activeSocket.onvoiceinteractiveevent = () => undefined;
 			}
 		};
-	}, [clientRef, channelId, dispatch, showNextSender]);
+	}, [clientRef, channelId, dispatch, playFlowerCelebrationSound, showNextSender]);
 
 	useEffect(() => {
 		const handleFlowerReaction = (rawEvent: Event) => {
 			const event = (rawEvent as CustomEvent<VoiceInteractiveEvent>).detail;
 			if (event?.voice_channel_id !== channelId) return;
+			playFlowerCelebrationSound();
 			playerRef.current?.play();
 			senderQueueRef.current.push(event);
 			showNextSender();
 		};
 		window.addEventListener('mezon-sfu-flower', handleFlowerReaction);
 		return () => window.removeEventListener('mezon-sfu-flower', handleFlowerReaction);
-	}, [channelId, showNextSender]);
+	}, [channelId, playFlowerCelebrationSound, showNextSender]);
 
 	return { activeApps, closeApp, focusApp, currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
 }
