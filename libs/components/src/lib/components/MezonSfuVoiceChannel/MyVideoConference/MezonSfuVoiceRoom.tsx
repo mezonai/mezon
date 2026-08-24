@@ -376,6 +376,7 @@ export function MezonSfuVoiceRoom({
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
+	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
 	const [isPopoutOpen, setIsPopoutOpen] = useState(false);
 	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -1836,6 +1837,7 @@ export function MezonSfuVoiceRoom({
 				isGridView={isGridView}
 				showEmojiPanel={showEmojiPanel}
 				showSoundPanel={showSoundPanel}
+				showVoiceInteractivePanel={showVoiceInteractivePanel}
 				microphones={microphones}
 				cameras={cameras}
 				selectedMicrophone={selectedMicrophone}
@@ -1844,6 +1846,7 @@ export function MezonSfuVoiceRoom({
 				isFullScreen={isFullScreen}
 				onEmojiPanelChange={setShowEmojiPanel}
 				onSoundPanelChange={setShowSoundPanel}
+				onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}
 				onEmojiSelect={sendEmojiReaction}
 				onSoundSelect={sendSoundReaction}
 				onPushToTalk={(active) => void setPushToTalk(active)}
