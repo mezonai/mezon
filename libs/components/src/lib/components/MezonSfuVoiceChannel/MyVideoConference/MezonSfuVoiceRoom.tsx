@@ -1,6 +1,8 @@
 import {
 	selectCurrentUserId,
 	selectEntitesUserClans,
+	selectNoiseSuppressionEnabled,
+	selectNoiseSuppressionLevel,
 	selectShowCamera,
 	selectShowMicrophone,
 	toastActions,
@@ -8,7 +10,15 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize, useMediaPermissions } from '@mezon/utils';
+import {
+	NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
+	createImgproxyUrl,
+	getAvatarForPrioritize,
+	getNameForPrioritize,
+	getNoiseSuppressionAudioCaptureOptions,
+	useMediaPermissions
+} from '@mezon/utils';
+import { DeepFilterNoiseFilterProcessor, type DeepFilterNet3Core } from 'deepfilternet3-noise-filter';
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -27,6 +37,7 @@ import { SfuParticipantTile } from './ParticipantTile/SfuParticipantTile';
 import { SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
 import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
+import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
@@ -327,6 +338,9 @@ export function MezonSfuVoiceRoom({
 	const clanMembers = useSelector(selectEntitesUserClans);
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
+	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
+	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
+	const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
 	const { hasMicrophoneAccess, hasCameraAccess } = useMediaPermissions();
 	const wsRef = useRef<WebSocket | null>(null);
 	const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -363,6 +377,7 @@ export function MezonSfuVoiceRoom({
 	const [showFocusThumbnails, setShowFocusThumbnails] = useState(true);
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
+	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
 	const [isPopoutOpen, setIsPopoutOpen] = useState(false);
 	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -514,37 +529,44 @@ export function MezonSfuVoiceRoom({
 		});
 	}, []);
 
-	const applySfuPeers = useCallback((peers: SfuPeer[]) => {
-		setRemoteMedia((current) => {
-			const next = new Map(current);
-			for (const peer of peers) {
-				const peerId = String(peer.peer_id);
-				const mids = [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && String(mid) !== '0').map(String);
-				for (const mid of mids) {
-					peerIdsByMidRef.current.set(mid, peerId);
-					if (peer.user_id) userIdsByMidRef.current.set(mid, peer.user_id);
-					if (peer.role) rolesByMidRef.current.set(mid, peer.role);
-				}
+	const applySfuPeers = useCallback(
+		(peers: SfuPeer[]) => {
+			setRemoteMedia((current) => {
+				const next = new Map(current);
+				for (const peer of peers) {
+					const peerId = String(peer.peer_id);
+					const mids = [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && String(mid) !== '0').map(String);
+					for (const mid of mids) {
+						leftRemoteMidsRef.current.delete(mid);
+						peerIdsByMidRef.current.set(mid, peerId);
+						if (peer.user_id) userIdsByMidRef.current.set(mid, peer.user_id);
+						if (peer.role) rolesByMidRef.current.set(mid, peer.role);
+					}
 
-				const existingEntry = Array.from(next.entries()).find(([, participant]) => participant.peerId === peerId);
-				const participantId = existingEntry?.[0] || (mids[0] ? getRemoteParticipantId(mids[0]) : undefined);
-				if (!participantId) continue;
-				const participant = next.get(participantId) || { id: participantId };
-				next.set(participantId, {
-					...participant,
-					peerId,
-					userId: peer.user_id || participant.userId,
-					role: peer.role || participant.role,
-					cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
-					cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
-					screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
-					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
-					isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
-				});
+					const existingEntry = Array.from(next.entries()).find(([, participant]) => participant.peerId === peerId);
+					const participantId = existingEntry?.[0] || (mids[0] ? getRemoteParticipantId(mids[0]) : undefined);
+					if (!participantId) continue;
+					const participant = next.get(participantId) || { id: participantId };
+					next.set(participantId, {
+						...participant,
+						peerId,
+						userId: peer.user_id || participant.userId,
+						role: peer.role || participant.role,
+						cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
+						cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
+						screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
+						screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
+						isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
+					});
+				}
+				return next;
+			});
+			if (pcRef.current) {
+				syncRemoteMedia(pcRef.current);
 			}
-			return next;
-		});
-	}, []);
+		},
+		[syncRemoteMedia]
+	);
 
 	useEffect(() => {
 		desiredMediaRef.current = { microphoneEnabled, cameraEnabled };
@@ -552,7 +574,10 @@ export function MezonSfuVoiceRoom({
 			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
 			if (microphoneEnabled && audioTrack?.readyState !== 'live') {
 				try {
-					const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+					const stream = await navigator.mediaDevices.getUserMedia({
+						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+						video: false
+					});
 					audioTrack = stream.getAudioTracks()[0];
 					if (audioTrack) {
 						const localStream = localStreamRef.current || new MediaStream();
@@ -577,7 +602,7 @@ export function MezonSfuVoiceRoom({
 				wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 			}
 		})();
-	}, [cameraEnabled, microphoneEnabled]);
+	}, [cameraEnabled, microphoneEnabled, noiseSuppressionEnabled]);
 
 	useEffect(() => {
 		const ws = wsRef.current;
@@ -604,6 +629,10 @@ export function MezonSfuVoiceRoom({
 					const videoSender = findUplinkVideoSender();
 					if (videoSender) {
 						await videoSender.replaceTrack(cameraEnabled ? cameraTrack : null);
+						const videoTransceiver = pcRef.current?.getTransceivers().find((item) => item.mid === '1');
+						if (videoTransceiver && cameraEnabled && videoTransceiver.direction !== 'sendonly') {
+							videoTransceiver.direction = 'sendonly';
+						}
 					}
 				}
 			} catch (cause) {
@@ -627,6 +656,36 @@ export function MezonSfuVoiceRoom({
 	}, [cameraEnabled, findUplinkVideoSender, joinRole]);
 
 	useEffect(() => {
+		const audioTrack = localAudioTrack || localStreamRef.current?.getAudioTracks()[0];
+		if (audioTrack && audioTrack.readyState === 'live') {
+			void audioTrack
+				.applyConstraints(getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled) as MediaTrackConstraints)
+				.catch(() => undefined);
+		}
+
+		if (!noiseSuppressionEnabled || !DeepFilterNoiseFilterProcessor.isSupported()) {
+			if (noiseProcessorRef.current) {
+				try {
+					noiseProcessorRef.current.setNoiseSuppressionEnabled(false);
+				} catch {
+					// Ignore disconnect errors
+				}
+			}
+			return;
+		}
+
+		const normalizedLevel = noiseSuppressionLevel * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
+		if (noiseProcessorRef.current) {
+			try {
+				noiseProcessorRef.current.setSuppressionLevel(normalizedLevel);
+				noiseProcessorRef.current.setNoiseSuppressionEnabled(true);
+			} catch {
+				// Ignore errors
+			}
+		}
+	}, [localAudioTrack, noiseSuppressionEnabled, noiseSuppressionLevel]);
+
+	useEffect(() => {
 		const refreshDevices = async () => setDevices(await navigator.mediaDevices.enumerateDevices());
 		void refreshDevices();
 		navigator.mediaDevices.addEventListener('devicechange', refreshDevices);
@@ -637,7 +696,10 @@ export function MezonSfuVoiceRoom({
 		async (kind: 'audioinput' | 'videoinput', deviceId: string) => {
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia({
-					audio: kind === 'audioinput' ? { deviceId: { exact: deviceId } } : false,
+					audio:
+						kind === 'audioinput'
+							? { ...getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled), deviceId: { exact: deviceId } }
+							: false,
 					video: kind === 'videoinput' ? { ...CAMERA_CAPTURE_CONSTRAINTS, deviceId: { exact: deviceId } } : false
 				});
 				const nextTrack = kind === 'audioinput' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
@@ -675,7 +737,7 @@ export function MezonSfuVoiceRoom({
 				setError(cause instanceof Error ? cause.message : 'Unable to switch device');
 			}
 		},
-		[cameraEnabled, findUplinkVideoSender, microphoneEnabled]
+		[cameraEnabled, findUplinkVideoSender, microphoneEnabled, noiseSuppressionEnabled]
 	);
 
 	useEffect(() => {
@@ -691,12 +753,15 @@ export function MezonSfuVoiceRoom({
 			let stream: MediaStream;
 			try {
 				stream = await navigator.mediaDevices.getUserMedia({
-					audio: true,
+					audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
 					video: CAMERA_CAPTURE_CONSTRAINTS
 				});
 			} catch {
 				try {
-					stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+					stream = await navigator.mediaDevices.getUserMedia({
+						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+						video: false
+					});
 				} catch {
 					stream = new MediaStream();
 				}
@@ -846,7 +911,11 @@ export function MezonSfuVoiceRoom({
 			}
 			negotiatingRef.current = true;
 			try {
-				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...getUserIdsByMidFromSdp(offer.sdp)]);
+				const sdpUserIdsByMid = getUserIdsByMidFromSdp(offer.sdp);
+				for (const [mid] of sdpUserIdsByMid) {
+					leftRemoteMidsRef.current.delete(mid);
+				}
+				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...sdpUserIdsByMid]);
 				if (peerLeftPendingOfferRef.current) {
 					// eslint-disable-next-line no-console
 					console.info('[MezonSFU][remaining peer] offer received after peer_left', {
@@ -1063,8 +1132,19 @@ export function MezonSfuVoiceRoom({
 						const next = new Map(current);
 						mids.forEach((mid) => {
 							leftRemoteMidsRef.current.add(mid);
+							peerIdsByMidRef.current.delete(mid);
+							userIdsByMidRef.current.delete(mid);
+							rolesByMidRef.current.delete(mid);
 							next.delete(getRemoteParticipantId(mid));
 						});
+						if (message.peer_id) {
+							const peerIdStr = String(message.peer_id);
+							for (const [id, participant] of next.entries()) {
+								if (participant.peerId === peerIdStr) {
+									next.delete(id);
+								}
+							}
+						}
 						return next;
 					});
 				}
@@ -1155,6 +1235,7 @@ export function MezonSfuVoiceRoom({
 		dispatch,
 		findUplinkVideoSender,
 		joinRole,
+		noiseSuppressionEnabled,
 		roomId,
 		serverUrl,
 		syncRemoteMedia,
@@ -1615,6 +1696,7 @@ export function MezonSfuVoiceRoom({
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<ReactionCallHandler />
+			<SfuVoiceInteractiveLayer channelId={roomId} />
 			<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
@@ -1779,6 +1861,7 @@ export function MezonSfuVoiceRoom({
 				isGridView={isGridView}
 				showEmojiPanel={showEmojiPanel}
 				showSoundPanel={showSoundPanel}
+				showVoiceInteractivePanel={showVoiceInteractivePanel}
 				microphones={microphones}
 				cameras={cameras}
 				selectedMicrophone={selectedMicrophone}
@@ -1787,6 +1870,7 @@ export function MezonSfuVoiceRoom({
 				isFullScreen={isFullScreen}
 				onEmojiPanelChange={setShowEmojiPanel}
 				onSoundPanelChange={setShowSoundPanel}
+				onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}
 				onEmojiSelect={sendEmojiReaction}
 				onSoundSelect={sendSoundReaction}
 				onPushToTalk={(active) => void setPushToTalk(active)}

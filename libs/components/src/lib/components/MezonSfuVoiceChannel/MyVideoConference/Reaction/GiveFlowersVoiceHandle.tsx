@@ -24,7 +24,7 @@ export const GiveFlowersVoiceHandle = memo(
 		playerRef,
 		senderTimeoutRef,
 		isShowingSenderRef,
-		containerClassName = 'fixed inset-0'
+		containerClassName = 'absolute inset-0'
 	}: GiveFlowersVoiceType) => {
 		const canvasRef = useRef<HTMLCanvasElement>(null);
 
