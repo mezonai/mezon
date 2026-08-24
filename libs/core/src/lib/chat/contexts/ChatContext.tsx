@@ -49,7 +49,6 @@ import {
 	rolesClanActions,
 	selectAllChannels,
 	selectAllTextChannel,
-	selectAllUserClans,
 	selectCategoryById,
 	selectChannelById,
 	selectChannelByIdAndClanId,
@@ -72,6 +71,7 @@ import {
 	selectDirectById,
 	selectDmGroupCurrentId,
 	selectDmMetaEntities,
+	selectEntitesUserClans,
 	selectFriendById,
 	selectIsInCall,
 	selectIsShowCreateTopic,
@@ -2192,14 +2192,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 		if (isReceiverGiveCoffee) {
 			const senderToken = coffeeEvent.sender_id;
-			const allMembersClan = selectAllUserClans(store.getState() as unknown as RootState);
-			let member = null;
-			for (const m of allMembersClan) {
-				if (m.id === senderToken) {
-					member = m;
-					break;
-				}
+			if (!senderToken) {
+				return;
 			}
+			const allMembersClan = selectEntitesUserClans(store.getState() as unknown as RootState);
+
+			const member = allMembersClan[senderToken];
 			if (!member) return;
 			const prioritizedName = member.clan_nick || member.user?.display_name || member.user?.username;
 			const prioritizedAvatar = member.clan_avatar || member.user?.avatar_url;

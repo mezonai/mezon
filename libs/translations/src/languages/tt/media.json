@@ -11,5 +11,8 @@
 			"downloadButton": "Видеоны күчереп алу",
 			"browserNotSupported": "Сезнең браузерыгыз video тегын тотымый."
 		}
+	},
+	"attachment": {
+		"uploading": "Йөкләү..."
 	}
 }

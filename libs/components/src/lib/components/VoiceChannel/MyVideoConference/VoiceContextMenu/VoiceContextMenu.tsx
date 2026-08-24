@@ -127,7 +127,11 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		}
 
 		try {
-			await dispatch(voiceActions.kickVoiceMember({ user_id: userId })).unwrap();
+			await dispatch(
+				voiceActions.kickVoiceMember({
+					user_id: member?.user?.id
+				})
+			).unwrap();
 		} catch (error) {
 			console.error('Failed to kick member:', error);
 		} finally {
@@ -151,7 +155,11 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		}
 
 		try {
-			await dispatch(voiceActions.muteVoiceMember({ user_id: userId })).unwrap();
+			await dispatch(
+				voiceActions.muteVoiceMember({
+					user_id: member?.user?.id
+				})
+			).unwrap();
 		} catch (error) {
 			console.error('Failed to mute member:', error);
 		} finally {

@@ -7,13 +7,20 @@ interface VoiceInteractiveLayerProps {
 }
 
 const VoiceInteractiveLayer = ({ channelId }: VoiceInteractiveLayerProps) => {
-	const { activeApps, closeApp, currentSender, senderQueueRef, playerRef, isShowingSenderRef, senderTimeoutRef, showNextSender } =
+	const { activeApps, closeApp, focusApp, currentSender, senderQueueRef, playerRef, isShowingSenderRef, senderTimeoutRef, showNextSender } =
 		useVoiceInteractiveListener(channelId);
 
 	return (
 		<>
 			{activeApps.map((app) => (
-				<VoiceInteractiveWindow key={app.id} url={app.url} title={app.title} onClose={() => closeApp(app.id)} />
+				<VoiceInteractiveWindow
+					key={app.id}
+					url={app.url}
+					title={app.title}
+					zIndex={app.zIndex}
+					onFocus={() => focusApp(app.id)}
+					onClose={() => closeApp(app.id)}
+				/>
 			))}
 			<GiveFlowersVoiceHandle
 				currentSender={currentSender}

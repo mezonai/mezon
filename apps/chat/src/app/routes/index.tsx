@@ -472,6 +472,14 @@ export const Routes = memo(() => {
 						path: 'login',
 						children: [
 							{
+								index: true,
+								element: (
+									<Suspense fallback={<SuspenseFallback />}>
+										<InitialRoutes />
+									</Suspense>
+								)
+							},
+							{
 								path: ':loginId',
 								loader: loaderWithStore(loginDeeplinkLoader),
 								shouldRevalidate: shouldRevalidateLoginDeeplink,

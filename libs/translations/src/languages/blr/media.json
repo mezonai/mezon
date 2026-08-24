@@ -11,5 +11,8 @@
 			"downloadButton": "Загрузіць відэа",
 			"browserNotSupported": "Ваш браўзер не падтрымлівае тэг відэа."
 		}
+	},
+	"attachment": {
+		"uploading": "Загрузка..."
 	}
 }

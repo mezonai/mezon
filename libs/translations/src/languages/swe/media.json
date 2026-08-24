@@ -11,5 +11,8 @@
 			"downloadButton": "Ladda ner video",
 			"browserNotSupported": "Din webbläsare stöder inte video-tagg."
 		}
+	},
+	"attachment": {
+		"uploading": "Laddar upp..."
 	}
 }

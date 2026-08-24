@@ -16,10 +16,10 @@ function UserListItem({ id, user_name, user_avatar }: { id: string; user_name: s
 		>
 			<div className="flex items-center gap-2">
 				<div className="w-5 h-5">
-					{avatar ? (
+					{avatar || name ? (
 						<AvatarImage
 							alt={avatar || ''}
-							username={avatar}
+							username={name}
 							className="min-w-5 min-h-5 max-w-5 max-h-5"
 							srcImgProxy={createImgproxyUrl(avatar ?? '')}
 							src={avatar}

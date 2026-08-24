@@ -1310,6 +1310,15 @@ export default MemoizedChannelMessages;
 
 (MemoizedChannelMessages as any).displayName = 'MemoizedChannelMessages';
 
+/**
+ * Long enough that a channel whose history is already cached never flashes a
+ * skeleton it does not need, short enough that a channel being fetched shows one
+ * instead of an empty page. The old second-long wait outlasted most fetches, so
+ * opening a channel just went blank and then filled in — the skeleton was there
+ * but almost never on screen.
+ */
+const LOAD_SKELETON_DELAY_MS = 120;
+
 const StickyLoadingIndicator = memo(({ messageCount }: { messageCount: number }) => {
 	const isLoading = useAppSelector(selectMessageIsLoading);
 	const [showLoading, setShowLoading] = useState(false);
@@ -1319,7 +1328,7 @@ const StickyLoadingIndicator = memo(({ messageCount }: { messageCount: number })
 		if (isLoading && !messageCount) {
 			timeoutId = setTimeout(() => {
 				setShowLoading(true);
-			}, 1000);
+			}, LOAD_SKELETON_DELAY_MS);
 		} else {
 			setShowLoading(false);
 		}
