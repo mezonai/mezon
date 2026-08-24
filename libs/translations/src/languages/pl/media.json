@@ -11,5 +11,8 @@
 			"downloadButton": "Pobierz wideo",
 			"browserNotSupported": "Twoja przeglądarka nie obsługuje tagu wideo."
 		}
+	},
+	"attachment": {
+		"uploading": "Przekazywanie..."
 	}
 }

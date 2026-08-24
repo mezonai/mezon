@@ -11,5 +11,8 @@
 			"downloadButton": "Descargar video",
 			"browserNotSupported": "Tu navegador no soporta el reproductor de video"
 		}
+	},
+	"attachment": {
+		"uploading": "Cargando..."
 	}
 }

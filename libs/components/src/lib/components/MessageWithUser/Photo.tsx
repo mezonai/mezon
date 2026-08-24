@@ -8,19 +8,20 @@ import {
 	createImgproxyUrl,
 	useIsIntersecting
 } from '@mezon/utils';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 
 let lastSentUrl: string | null = null;
 
+/**
+ * In the layout flow on purpose. A locally picked file usually has no measured
+ * width, and the wrapper is `width: auto` — so with every child positioned
+ * absolutely the box collapses to zero and the row renders as nothing at all.
+ * This one is what gives it a size while there is no image to show.
+ */
 function ImageAttachmentSkeleton({ width, height }: { width: number; height: number }) {
-	return (
-		<div
-			style={{ width, height }}
-			className="max-w-full max-h-full absolute bottom-0 left-0 z-[1] rounded-md bg-bgLightSecondary dark:bg-bgSecondary"
-		/>
-	);
+	return <div style={{ width, height }} className="max-w-full rounded-md bg-bgLightSecondary dark:bg-bgSecondary" />;
 }
 
 export type OwnProps<T> = {
@@ -51,6 +52,8 @@ export type OwnProps<T> = {
 	isInSearchMessage?: boolean;
 	isSending?: boolean;
 	isPresignPending?: boolean;
+	/** Object url for the file being uploaded; shown until the CDN copy exists. */
+	localSource?: string;
 	loadWhenUnpending?: boolean;
 	isMobile?: boolean;
 };
@@ -81,6 +84,7 @@ const Photo = <T,>({
 	isInSearchMessage,
 	isSending,
 	isPresignPending = false,
+	localSource,
 	loadWhenUnpending = false,
 	isMobile
 }: OwnProps<T>) => {
@@ -90,7 +94,20 @@ const Photo = <T,>({
 
 	const isRecentlySent = !!(photo?.url && photo.url === lastSentUrl);
 	const isUploading = isSending || isPresignPending;
-	const shouldLoad = canAutoLoad && !isPresignPending && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
+	// The sender already holds the bytes, so their row never asks the proxy for a
+	// rendition of them. That request is the one thing that can go wrong at the
+	// worst moment: it lands seconds after the object is written, and a proxy
+	// timeout there is cached as a failure for a week — for everyone, triggered by
+	// the one person who did not need the request at all.
+	//
+	// The cost is that this row holds the file in memory until the message leaves
+	// the store, and that a broken object stays invisible to its sender until they
+	// reload. A reload has no blob and takes the ordinary path.
+	const [localFailed, setLocalFailed] = useState(false);
+	const showLocalPreview = !!localSource && !localFailed;
+	const onLocalPreviewError = useCallback(() => setLocalFailed(true), []);
+
+	const shouldLoad = canAutoLoad && !isPresignPending && !showLocalPreview && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
 
 	if (isSending && photo?.url) {
 		lastSentUrl = photo.url;
@@ -128,7 +145,6 @@ const Photo = <T,>({
 		return 'fill';
 	})();
 
-	const shouldRenderSkeleton = !shouldLoad && !isUploading;
 	const isNonInteractive = nonInteractive || isPresignPending;
 
 	const componentClassName = buildClassName(
@@ -162,8 +178,24 @@ const Photo = <T,>({
 
 	const thumbnailDataUri = photo.thumbnail?.dataUri;
 	const hasThumbnail = !!thumbnailDataUri;
-	const showPresignSkeleton = isPresignPending && !hasThumbnail;
-	const canOpenViewer = !isPresignPending;
+	// `isPresignPending` alone leaves the upload-first paths open: an anonymous
+	// send is never presign-pending, only sending, and the row already carries the
+	// CDN url of an object that has not been written yet. Opening the viewer on it
+	// asks the image proxy for that object and pins the failure in its cache for a
+	// week. The desktop row gates on the same set of states.
+	const canOpenViewer = !isUploading;
+
+	// The proxied copy is absolutely positioned, so between "start loading" and
+	// "decoded" there is nothing in the layout at all and the row goes blank for
+	// the length of a network round trip. Hold the placeholder until something is
+	// genuinely on screen — the local copy, the thumbnail, or the image itself.
+	const [imagePainted, setImagePainted] = useState(false);
+	const onImageSettled = useCallback(() => setImagePainted(true), []);
+	useEffect(() => {
+		setImagePainted(false);
+	}, [photo?.url]);
+
+	const somethingIsPainted = showLocalPreview || (isPresignPending && hasThumbnail) || (shouldLoad && imagePainted);
 
 	return (
 		<div
@@ -188,6 +220,19 @@ const Photo = <T,>({
 					isProtected={isProtected}
 					onContextMenu={onContextMenu}
 					isInSearchMessage={isInSearchMessage}
+					onSettled={onImageSettled}
+				/>
+			)}
+			{/* The sender's own copy, straight off disk: the CDN object is not there
+			    yet, and requesting it early is what pins a 404 in the image proxy's
+			    cache. In the layout flow, so it is also what gives the row a size. */}
+			{showLocalPreview && (
+				<img
+					src={localSource}
+					alt=""
+					className="block max-w-full rounded object-cover"
+					style={{ maxHeight: displayHeight, width: width || undefined }}
+					onError={onLocalPreviewError}
 				/>
 			)}
 			{isPresignPending && hasThumbnail && (
@@ -198,14 +243,8 @@ const Photo = <T,>({
 					style={{ width: displayWidth, height: displayHeight }}
 				/>
 			)}
-			{showPresignSkeleton && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
-			{isSending && <AttachmentSendingIndicator />}
-			{!isUploading && shouldRenderSkeleton && (
-				<div
-					style={{ width: displayWidth, height: displayHeight }}
-					className="max-w-full max-h-full absolute bottom-0 left-0 rounded-md bg-[#0000001c] animate-pulse"
-				/>
-			)}
+			{!somethingIsPainted && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
+			{isUploading && <AttachmentSendingIndicator showLabel boxWidth={displayWidth} boxHeight={displayHeight} />}
 			{isProtected && <span className="protector" />}
 		</div>
 	);
@@ -221,10 +260,12 @@ type PhotoImageProps = {
 	isProtected?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	isInSearchMessage?: boolean;
+	/** Fires once the CDN copy is painted, or has failed for good. */
+	onSettled?: () => void;
 };
 
 const PhotoImage = React.memo(
-	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage }: PhotoImageProps) => {
+	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage, onSettled }: PhotoImageProps) => {
 		const { setImageURL, setPositionShow } = useMessageContextMenu();
 		const [hasError, setHasError] = useState(false);
 
@@ -243,7 +284,12 @@ const PhotoImage = React.memo(
 
 		const handleError = useCallback(() => {
 			setHasError(true);
-		}, []);
+			onSettled?.();
+		}, [onSettled]);
+
+		const handleLoad = useCallback(() => {
+			onSettled?.();
+		}, [onSettled]);
 
 		if (hasError) {
 			return (
@@ -272,6 +318,7 @@ const PhotoImage = React.memo(
 				style={{ width: displayWidth }}
 				draggable={!isProtected}
 				onError={handleError}
+				onLoad={handleLoad}
 			/>
 		);
 	}

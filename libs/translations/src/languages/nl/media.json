@@ -11,5 +11,8 @@
 			"downloadButton": "Video downloaden",
 			"browserNotSupported": "Je browser ondersteunt het videobegrip."
 		}
+	},
+	"attachment": {
+		"uploading": "Aan het uploaden..."
 	}
 }

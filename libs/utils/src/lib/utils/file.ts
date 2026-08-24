@@ -1,6 +1,6 @@
 import type { Dispatch } from '@reduxjs/toolkit';
 import type { ApiMessageAttachment } from 'mezon-js';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, fileTypeImage } from '../constant';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, fileTypeImage } from '../constant';
 import { captureVideoPosterFromUrl } from '../helper/videoPoster';
 import type {
 	IMentionOnMessage,
@@ -31,20 +31,101 @@ export function getPreSendThumbnailBlob(attachment: ApiMessageAttachment): Blob 
 	return (attachment as PreSendMediaAttachment)._thumbnailBlob;
 }
 
-export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment): void {
+/**
+ * How many local previews stay alive at once. Leaving a channel does not drop
+ * its messages — only a jump-to-present refetch or a reload does — so without a
+ * cap these accumulate for the whole session. A row whose preview has been
+ * revoked falls back to the network copy on its own, so the oldest can go.
+ */
+/**
+ * Counting previews was the wrong unit. A message may carry MAX_FILE_ATTACHMENTS
+ * of them, so any count below that let a single send revoke its own oldest
+ * previews mid-upload — and those rows then asked the image proxy for objects
+ * that had just been written, which is the one request this whole path exists to
+ * avoid. The floor is therefore one full message; the byte ceiling is what keeps
+ * the pathological case (an album of untouched gifs, which skip the downscale)
+ * from holding half a gigabyte.
+ */
+const LIVE_PREVIEW_MAX_BYTES = 128 * 1024 * 1024;
+
+const livePreviews: { url: string; bytes: number }[] = [];
+let livePreviewBytes = 0;
+
+function rememberPreview(url: string, bytes: number): string {
+	livePreviews.push({ url, bytes });
+	livePreviewBytes += bytes;
+	while (livePreviews.length > 1 && (livePreviews.length > MAX_FILE_ATTACHMENTS || livePreviewBytes > LIVE_PREVIEW_MAX_BYTES)) {
+		const oldest = livePreviews.shift();
+		if (!oldest) break;
+		livePreviewBytes -= oldest.bytes;
+		URL.revokeObjectURL(oldest.url);
+	}
+	return url;
+}
+
+/** Called when a preview is revoked elsewhere, so the cap does not count it twice. */
+export function forgetLocalPreview(url: string): void {
+	const at = livePreviews.findIndex((preview) => preview.url === url);
+	if (at === -1) return;
+	livePreviewBytes -= livePreviews[at].bytes;
+	livePreviews.splice(at, 1);
+}
+
+/**
+ * An object url for the file being uploaded, so the row can show it while the
+ * CDN object does not exist yet. Images only: a document already renders as a
+ * named box, and the video player has its own poster path — handing either one
+ * a url nothing reads would just pin the file in memory.
+ */
+export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string | undefined {
+	const sourceFile = getPreSendSourceFile(attachment);
+	if (!sourceFile) return undefined;
+
+	// Presign rewrites `filetype` to the bare upload CATEGORY ("image"), so by the
+	// time the row is built the MIME survives only on the file itself. Read that
+	// first and take the category as the fallback — matching on `image/` alone
+	// misses every attachment that has already been through presign, which is all
+	// of them by the time anything renders.
+	const mime = sourceFile.type || attachment.filetype || '';
+	if (!mime.startsWith('image/') && attachment.filetype !== 'image') return undefined;
+
+	// The display-sized copy made when the file was picked, falling back to the
+	// original for a row that has none. The url is minted here rather than stored
+	// on the attachment, so revoking one is always recoverable: a resend, or a
+	// re-render after the cap evicted this row's preview, just opens the blob
+	// again instead of handing the img a url that no longer resolves.
+	const source = (attachment as PreSendMediaAttachment)._previewBlob ?? sourceFile;
+
+	try {
+		return rememberPreview(URL.createObjectURL(source), source.size);
+	} catch {
+		return undefined;
+	}
+}
+
+/**
+ * `keep` is for the case where the row is being replaced rather than dropped and
+ * some of its urls move to the replacement — revoking those would blank the very
+ * row that just inherited them.
+ */
+export function revokePreSendAttachmentUrls(attachment: ApiMessageAttachment, keep?: ReadonlySet<string>): void {
 	const att = attachment as PreSendMediaAttachment;
-	if (att.url?.startsWith('blob:')) {
+	if (att.url?.startsWith('blob:') && !keep?.has(att.url)) {
 		URL.revokeObjectURL(att.url);
 	}
-	if (att.thumbnail?.startsWith('blob:')) {
+	if (att.thumbnail?.startsWith('blob:') && !keep?.has(att.thumbnail)) {
 		URL.revokeObjectURL(att.thumbnail);
+	}
+	if (att.local_source?.startsWith('blob:') && !keep?.has(att.local_source)) {
+		forgetLocalPreview(att.local_source);
+		URL.revokeObjectURL(att.local_source);
 	}
 }
 
 /** Strip in-memory pre-send fields before persisting on a message entity. */
 export function toPublicMessageAttachments(attachments: ApiMessageAttachment[]): ApiMessageAttachment[] {
 	return attachments.map((attachment) => {
-		const { _sourceFile: _sf, _thumbnailBlob: _tb, ...publicAttachment } = attachment as PreSendMediaAttachment;
+		const { _sourceFile: _sf, _thumbnailBlob: _tb, _previewBlob: _pb, ...publicAttachment } = attachment as PreSendMediaAttachment;
 		return publicAttachment;
 	});
 }
@@ -95,6 +176,53 @@ async function processVideoFile<T>(file: File): Promise<T> {
 	return metadata as T;
 }
 
+/**
+ * Longest edge of the preview the sender's own row renders. Covers the widest
+ * message column on a 2x screen; past that the extra pixels are decoded, held in
+ * memory and never seen.
+ */
+const LOCAL_PREVIEW_MAX_EDGE = 1024;
+
+/**
+ * Formats a canvas cannot copy without destroying them. `drawImage` takes a
+ * single frame, so a gif or an animated webp comes back as a still — and since
+ * the sender's row prefers its local copy for as long as the row exists, that
+ * still is what they would watch until a reload. These keep their original
+ * bytes instead; the live-preview cap is what makes that affordable.
+ */
+const ANIMATED_IMAGE_TYPES = new Set(['image/gif', 'image/webp', 'image/apng', 'image/avif']);
+
+/**
+ * A display-sized copy of a picked image, made from the decode `processImageFile`
+ * already pays for. CSS cannot do this: a 4000x3000 photo drawn into a 200px box
+ * still decodes to a ~48MB bitmap, so ten of them cost half a gigabyte. Sizing it
+ * here is what makes the preview affordable when a whole album is in flight.
+ */
+function downscaledPreviewBlob(img: HTMLImageElement, type: string): Promise<Blob | undefined> {
+	return new Promise((resolve) => {
+		try {
+			const longest = Math.max(img.width, img.height);
+			if (!longest) return resolve(undefined);
+
+			const scale = Math.min(1, LOCAL_PREVIEW_MAX_EDGE / longest);
+			const canvas = document.createElement('canvas');
+			canvas.width = Math.max(1, Math.round(img.width * scale));
+			canvas.height = Math.max(1, Math.round(img.height * scale));
+
+			const ctx = canvas.getContext('2d');
+			if (!ctx) return resolve(undefined);
+			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+			// Keep alpha for the formats that carry it; everything else is smaller
+			// as a jpeg, and this copy is thrown away as soon as the row is gone.
+			const outputType = type === 'image/png' ? type : 'image/jpeg';
+			canvas.toBlob((blob) => resolve(blob ?? undefined), outputType, 0.85);
+		} catch {
+			resolve(undefined);
+		}
+	});
+}
+
 function processImageFile<T>(file: File): Promise<T> {
 	return new Promise((resolve) => {
 		const reader = new FileReader();
@@ -105,7 +233,8 @@ function processImageFile<T>(file: File): Promise<T> {
 					...createFileMetadata(file),
 					width: img.width,
 					height: img.height,
-					_sourceFile: file
+					_sourceFile: file,
+					_previewBlob: ANIMATED_IMAGE_TYPES.has(file.type) ? undefined : await downscaledPreviewBlob(img, file.type)
 				} as T;
 
 				resolve(metadata);

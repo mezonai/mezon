@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ApiPhoto, IMessageWithUser, ObserveFn } from '@mezon/utils';
+import type { ApiPhoto, IMessageWithUser, ObserveFn, PreSendMediaAttachment } from '@mezon/utils';
 import {
 	EMimeTypes,
 	ETypeLinkMedia,
@@ -192,17 +192,28 @@ const Attachments: React.FC<{
 					/>
 				)}
 
+				{/* A pending file used to be dropped from the row entirely, so the
+				    reader saw the text with nothing under it and then a box appearing
+				    out of nowhere. Show the box, and say what it is waiting for. */}
 				{documents.length > 0 &&
-					documents
-						.filter((document) => !isPresignPendingForUrl(document.url))
-						.map((document, index) => (
-							<MessageLinkFile key={`${index}_${document.url}`} attachmentData={document} mode={mode} message={message} />
-						))}
+					documents.map((document, index) => (
+						<MessageLinkFile
+							key={`${index}_${document.url}`}
+							attachmentData={document}
+							mode={mode}
+							message={message}
+							isPresignPending={isPresignPendingForUrl(document.url)}
+						/>
+					))}
 
 				{audio.length > 0 &&
-					audio
-						.filter((audioItem) => !isPresignPendingForUrl(audioItem.url))
-						.map((audioItem, index) => <MessageAudio key={`${index}_${audioItem.url}`} audioUrl={audioItem.url || ''} />)}
+					audio.map((audioItem, index) => (
+						<MessageAudio
+							key={`${index}_${audioItem.url}`}
+							audioUrl={audioItem.url || ''}
+							isPresignPending={isPresignPendingForUrl(audioItem.url)}
+						/>
+					))}
 			</>
 		);
 	},
@@ -424,6 +435,7 @@ const ImageAlbum = memo(
 						isInSearchMessage={isInSearchMessage}
 						isSending={message.isSending}
 						isPresignPending={isPresignPending}
+						localSource={(firstImage as PreSendMediaAttachment)?.local_source}
 						loadWhenUnpending={!isPresignPending}
 						isMobile={isMobile}
 					/>
