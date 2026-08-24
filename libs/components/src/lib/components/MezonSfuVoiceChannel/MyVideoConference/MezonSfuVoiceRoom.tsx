@@ -529,37 +529,44 @@ export function MezonSfuVoiceRoom({
 		});
 	}, []);
 
-	const applySfuPeers = useCallback((peers: SfuPeer[]) => {
-		setRemoteMedia((current) => {
-			const next = new Map(current);
-			for (const peer of peers) {
-				const peerId = String(peer.peer_id);
-				const mids = [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && String(mid) !== '0').map(String);
-				for (const mid of mids) {
-					peerIdsByMidRef.current.set(mid, peerId);
-					if (peer.user_id) userIdsByMidRef.current.set(mid, peer.user_id);
-					if (peer.role) rolesByMidRef.current.set(mid, peer.role);
-				}
+	const applySfuPeers = useCallback(
+		(peers: SfuPeer[]) => {
+			setRemoteMedia((current) => {
+				const next = new Map(current);
+				for (const peer of peers) {
+					const peerId = String(peer.peer_id);
+					const mids = [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && String(mid) !== '0').map(String);
+					for (const mid of mids) {
+						leftRemoteMidsRef.current.delete(mid);
+						peerIdsByMidRef.current.set(mid, peerId);
+						if (peer.user_id) userIdsByMidRef.current.set(mid, peer.user_id);
+						if (peer.role) rolesByMidRef.current.set(mid, peer.role);
+					}
 
-				const existingEntry = Array.from(next.entries()).find(([, participant]) => participant.peerId === peerId);
-				const participantId = existingEntry?.[0] || (mids[0] ? getRemoteParticipantId(mids[0]) : undefined);
-				if (!participantId) continue;
-				const participant = next.get(participantId) || { id: participantId };
-				next.set(participantId, {
-					...participant,
-					peerId,
-					userId: peer.user_id || participant.userId,
-					role: peer.role || participant.role,
-					cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
-					cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
-					screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
-					screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
-					isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
-				});
+					const existingEntry = Array.from(next.entries()).find(([, participant]) => participant.peerId === peerId);
+					const participantId = existingEntry?.[0] || (mids[0] ? getRemoteParticipantId(mids[0]) : undefined);
+					if (!participantId) continue;
+					const participant = next.get(participantId) || { id: participantId };
+					next.set(participantId, {
+						...participant,
+						peerId,
+						userId: peer.user_id || participant.userId,
+						role: peer.role || participant.role,
+						cameraRequested: peer.camera_requested !== undefined ? peer.camera_requested : participant.cameraRequested,
+						cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
+						screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
+						screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
+						isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
+					});
+				}
+				return next;
+			});
+			if (pcRef.current) {
+				syncRemoteMedia(pcRef.current);
 			}
-			return next;
-		});
-	}, []);
+		},
+		[syncRemoteMedia]
+	);
 
 	useEffect(() => {
 		desiredMediaRef.current = { microphoneEnabled, cameraEnabled };
@@ -904,7 +911,11 @@ export function MezonSfuVoiceRoom({
 			}
 			negotiatingRef.current = true;
 			try {
-				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...getUserIdsByMidFromSdp(offer.sdp)]);
+				const sdpUserIdsByMid = getUserIdsByMidFromSdp(offer.sdp);
+				for (const [mid] of sdpUserIdsByMid) {
+					leftRemoteMidsRef.current.delete(mid);
+				}
+				userIdsByMidRef.current = new Map([...userIdsByMidRef.current, ...sdpUserIdsByMid]);
 				if (peerLeftPendingOfferRef.current) {
 					// eslint-disable-next-line no-console
 					console.info('[MezonSFU][remaining peer] offer received after peer_left', {
@@ -1121,8 +1132,19 @@ export function MezonSfuVoiceRoom({
 						const next = new Map(current);
 						mids.forEach((mid) => {
 							leftRemoteMidsRef.current.add(mid);
+							peerIdsByMidRef.current.delete(mid);
+							userIdsByMidRef.current.delete(mid);
+							rolesByMidRef.current.delete(mid);
 							next.delete(getRemoteParticipantId(mid));
 						});
+						if (message.peer_id) {
+							const peerIdStr = String(message.peer_id);
+							for (const [id, participant] of next.entries()) {
+								if (participant.peerId === peerIdStr) {
+									next.delete(id);
+								}
+							}
+						}
 						return next;
 					});
 				}
@@ -1674,7 +1696,7 @@ export function MezonSfuVoiceRoom({
 	return (
 		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
 			<ReactionCallHandler />
-			<SfuVoiceInteractiveLayer channelId={channel_id as string} />
+			<SfuVoiceInteractiveLayer channelId={roomId} />
 			<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
 			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
