@@ -286,23 +286,118 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 	return speakingMap;
 };
 
-const DEFAULT_VIDEO_CODEC = 'VP8';
+const CAMERA_CODEC = 'VP8';
+const SCREEN_CODEC = 'VP9';
+const SCREEN_SVC_MODE = 'L1T3';
+
+const CAMERA_MAX_BITRATE_BPS = 1_000_000;
+const SCREEN_MAX_BITRATE_BPS = 2_500_000;
+const CAMERA_MIN_BITRATE_KBPS = 250;
+const CAMERA_START_BITRATE_KBPS = 500;
+const CAMERA_MAX_BITRATE_KBPS = 1000;
+const SCREEN_MIN_BITRATE_KBPS = 400;
+const SCREEN_START_BITRATE_KBPS = 1000;
+const SCREEN_MAX_BITRATE_KBPS = 2500;
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
 };
 
-const setDefaultVideoCodec = (transceiver: RTCRtpTransceiver) => {
-	if (typeof transceiver.setCodecPreferences !== 'function') return false;
+const forceVideoCodec = (transceiver: RTCRtpTransceiver, codecName: string) => {
+	if (!transceiver || typeof transceiver.setCodecPreferences !== 'function') return false;
 	const capabilities = RTCRtpSender.getCapabilities?.('video');
 	if (!capabilities?.codecs) return false;
 
-	const vp8Codecs = capabilities.codecs.filter((codec) => codec.mimeType.toUpperCase() === `VIDEO/${DEFAULT_VIDEO_CODEC}`);
-	const rtxCodecs = capabilities.codecs.filter((codec) => codec.mimeType.toLowerCase() === 'video/rtx');
-	if (!vp8Codecs.length) return false;
+	const wanted = (codecName || 'VP8').toLowerCase();
+	const preferred = capabilities.codecs.filter((c) => c.mimeType.toLowerCase() === `video/${wanted}`);
+	const preferredPayloadTypes = new Set(
+		preferred.map((c) => (c as { preferredPayloadType?: number }).preferredPayloadType).filter((pt): pt is number => Number.isInteger(pt))
+	);
+	const havePreferredPayloadTypes = preferredPayloadTypes.size > 0;
+	const rtx = capabilities.codecs.filter((c) => {
+		if (c.mimeType.toLowerCase() !== 'video/rtx') return false;
+		if (!havePreferredPayloadTypes) return true;
+		const match = /(?:^|;)\s*apt=(\d+)/i.exec(c.sdpFmtpLine || '');
+		return match && preferredPayloadTypes.has(Number(match[1]));
+	});
 
-	transceiver.setCodecPreferences([...vp8Codecs, ...rtxCodecs]);
-	return true;
+	if (preferred.length > 0) {
+		try {
+			transceiver.setCodecPreferences([...preferred, ...rtx]);
+			return true;
+		} catch (e) {
+			// eslint-disable-next-line no-console
+			console.warn(`setCodecPreferences for ${wanted} failed:`, e);
+		}
+	}
+	return false;
+};
+
+const mungeVideoSectionBitrate = (section: string, minKbps: number, startKbps: number, maxKbps: number) => {
+	const pts = new Set<string>();
+	for (const m of section.matchAll(/^a=rtpmap:(\d+) (VP9|VP8|AV1)\//gim)) {
+		pts.add(m[1]);
+	}
+	let out = section;
+	for (const pt of pts) {
+		const fmtpRe = new RegExp(`^a=fmtp:${pt} (.*)$`, 'm');
+		const extras = `x-google-min-bitrate=${minKbps};x-google-start-bitrate=${startKbps};x-google-max-bitrate=${maxKbps}`;
+		if (fmtpRe.test(out)) {
+			out = out.replace(fmtpRe, (_line, rest) => {
+				const cleaned = rest.replace(/;?\s*x-google-(?:min|start|max)-bitrate=\d+/gi, '').replace(/^;|;$/g, '');
+				return `a=fmtp:${pt} ${cleaned ? `${cleaned};` : ''}${extras}`;
+			});
+		} else {
+			const rtpmapRe = new RegExp(`^(a=rtpmap:${pt} .*)$`, 'm');
+			out = out.replace(rtpmapRe, `$1\r\na=fmtp:${pt} ${extras}`);
+		}
+	}
+	return out;
+};
+
+const mungeVideoBitrates = (sdp?: string) => {
+	if (!sdp) return sdp;
+	return sdp
+		.split(/(?=^m=)/gm)
+		.map((section) => {
+			const mid = section.match(/^a=mid:(\S+)/m)?.[1];
+			if (mid === '1') {
+				return mungeVideoSectionBitrate(section, CAMERA_MIN_BITRATE_KBPS, CAMERA_START_BITRATE_KBPS, CAMERA_MAX_BITRATE_KBPS);
+			}
+			if (mid === '2') {
+				return mungeVideoSectionBitrate(section, SCREEN_MIN_BITRATE_KBPS, SCREEN_START_BITRATE_KBPS, SCREEN_MAX_BITRATE_KBPS);
+			}
+			return section;
+		})
+		.join('');
+};
+
+const applyVideoEncodingParams = async (pc: RTCPeerConnection) => {
+	const uplink =
+		pc.getTransceivers().find((t) => t.mid === '1') ||
+		pc.getTransceivers().find((t) => t.sender && t.sender.track && t.sender.track.kind === 'video');
+	if (!uplink?.sender) return;
+
+	try {
+		const params = uplink.sender.getParameters();
+		if (!params.encodings?.length) {
+			params.encodings = [{}];
+		}
+		params.degradationPreference = 'maintain-resolution';
+		const encoding = params.encodings[0] as RTCRtpEncodingParameters & { scalabilityMode?: string };
+		if ('scalabilityMode' in encoding) {
+			delete encoding.scalabilityMode;
+		}
+		encoding.maxBitrate = CAMERA_MAX_BITRATE_BPS;
+		encoding.maxFramerate = 30;
+		encoding.scaleResolutionDownBy = 1;
+		encoding.priority = 'high';
+		encoding.networkPriority = 'high';
+		await uplink.sender.setParameters(params);
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.warn('applyVideoEncodingParams failed:', e);
+	}
 };
 
 export interface MezonSfuVoiceRoomProps {
@@ -475,19 +570,22 @@ export function MezonSfuVoiceRoom({
 	}, []);
 
 	const applyScreenEncodingParams = useCallback(async (sender: RTCRtpSender) => {
+		if (!sender || typeof sender.getParameters !== 'function') return;
 		try {
 			const parameters = sender.getParameters();
 			if (!parameters.encodings?.length) parameters.encodings = [{}];
+			parameters.degradationPreference = 'maintain-resolution';
 			const encoding = parameters.encodings[0] as RTCRtpEncodingParameters & { scalabilityMode?: string };
-			delete encoding.scalabilityMode;
+			encoding.scalabilityMode = SCREEN_SVC_MODE;
 			encoding.maxFramerate = 15;
-			encoding.maxBitrate = 2_500_000;
+			encoding.maxBitrate = SCREEN_MAX_BITRATE_BPS;
 			encoding.scaleResolutionDownBy = 1;
 			encoding.priority = 'high';
 			encoding.networkPriority = 'high';
 			await sender.setParameters(parameters);
-		} catch {
-			// Keep the existing sender parameters when the browser rejects an optional encoding setting.
+		} catch (e) {
+			// eslint-disable-next-line no-console
+			console.warn('applyScreenEncodingParams failed:', e);
 		}
 	}, []);
 
@@ -626,12 +724,23 @@ export function MezonSfuVoiceRoom({
 
 				if (cameraTrack) {
 					cameraTrack.enabled = cameraEnabled;
+					if ('contentHint' in cameraTrack && cameraTrack.contentHint !== 'detail') {
+						try {
+							cameraTrack.contentHint = 'motion';
+						} catch {
+							// ignore
+						}
+					}
 					const videoSender = findUplinkVideoSender();
 					if (videoSender) {
 						await videoSender.replaceTrack(cameraEnabled ? cameraTrack : null);
 						const videoTransceiver = pcRef.current?.getTransceivers().find((item) => item.mid === '1');
 						if (videoTransceiver && cameraEnabled && videoTransceiver.direction !== 'sendonly') {
 							videoTransceiver.direction = 'sendonly';
+						}
+						if (cameraEnabled && pcRef.current && videoTransceiver) {
+							forceVideoCodec(videoTransceiver, CAMERA_CODEC);
+							await applyVideoEncodingParams(pcRef.current);
 						}
 					}
 				}
@@ -928,11 +1037,21 @@ export function MezonSfuVoiceRoom({
 				const stabilizedSdp = stabilizeInactiveVideoSections(offer.sdp, pc.currentRemoteDescription?.sdp);
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: stabilizedSdp }));
 				const uplinkVideoTransceiver = pc.getTransceivers().find((item) => item.mid === '1');
-				if (uplinkVideoTransceiver) setDefaultVideoCodec(uplinkVideoTransceiver);
+				if (uplinkVideoTransceiver) forceVideoCodec(uplinkVideoTransceiver, CAMERA_CODEC);
+				const screenTransceiver = pc.getTransceivers().find((item) => item.mid === '2');
+				if (screenTransceiver) forceVideoCodec(screenTransceiver, SCREEN_CODEC);
+
 				if (!localTracksAddedRef.current) {
 					const audioTrack = localStream.getAudioTracks()[0];
 					const cameraTrack = localStream.getVideoTracks()[0];
 					const videoTrack = cameraTrack || null;
+					if (videoTrack && 'contentHint' in videoTrack && videoTrack.contentHint !== 'detail') {
+						try {
+							videoTrack.contentHint = 'motion';
+						} catch {
+							// ignore
+						}
+					}
 					const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 					const videoTransceiver = uplinkVideoTransceiver;
 					if (audioTransceiver) {
@@ -947,9 +1066,9 @@ export function MezonSfuVoiceRoom({
 					if (joinRole === 'speaker' && videoTransceiver) {
 						await videoTransceiver.sender.replaceTrack(videoTrack);
 						videoTransceiver.direction = 'sendonly';
+						await applyVideoEncodingParams(pc);
 					}
 					const screenTrack = screenStreamRef.current?.getVideoTracks()[0] || null;
-					const screenTransceiver = pc.getTransceivers().find((item) => item.mid === '2');
 					if (screenTransceiver && screenTrack) {
 						await screenTransceiver.sender.replaceTrack(screenTrack);
 						screenTransceiver.direction = 'sendonly';
@@ -964,7 +1083,9 @@ export function MezonSfuVoiceRoom({
 						await applyScreenEncodingParams(sender);
 					}
 				}
-				await pc.setLocalDescription(await pc.createAnswer());
+				const answer = await pc.createAnswer();
+				const mungedSdp = mungeVideoBitrates(answer.sdp);
+				await pc.setLocalDescription(new RTCSessionDescription({ type: 'answer', sdp: mungedSdp }));
 				syncRemoteMedia(pc);
 				if (wsRef.current?.readyState === WebSocket.OPEN && pc.localDescription?.sdp) {
 					wsRef.current.send(
@@ -1287,10 +1408,12 @@ export function MezonSfuVoiceRoom({
 			screenStreamRef.current = stream;
 			if (sender) {
 				await sender.replaceTrack(track);
-				const transceiver = pc.getTransceivers().find((item) => item.sender === sender);
+				const transceiver =
+					pc.getTransceivers().find((item) => item.sender === sender) || pc.getTransceivers().find((item) => item.mid === '2');
 				if (transceiver && transceiver.direction !== 'sendonly' && transceiver.direction !== 'sendrecv') {
 					transceiver.direction = 'sendonly';
 				}
+				if (transceiver) forceVideoCodec(transceiver, SCREEN_CODEC);
 				await applyScreenEncodingParams(sender);
 			}
 			setScreenSharing(true);
