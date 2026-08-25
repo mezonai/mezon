@@ -1,4 +1,4 @@
-import { AvatarImage } from '@mezon/components';
+import { AvatarImage, useWebRTCStream } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import type { ChannelsEntity, UsersStreamEntity } from '@mezon/store';
 import {
@@ -26,6 +26,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
+const STREAM_RENDITIONS = ['480', '720', '1080', '4k'] as const;
+
 interface MediaPlayerProps {
 	videoRef: RefObject<HTMLVideoElement>;
 	currentChannel?: ChannelsEntity | null;
@@ -33,6 +35,7 @@ interface MediaPlayerProps {
 
 function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 	const { t } = useTranslation('channelStream');
+	const { hasVideo, renditions, currentRendition, setRendition, autoAbr, setAutoAbr } = useWebRTCStream();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [isMuted, setIsMuted] = useState(false);
 	const [volume, setVolume] = useState(1);
@@ -169,13 +172,47 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 						/>
 					</div>
 				</div>
-				<button onClick={handleFullscreen} className="p-1">
-					{isFullscreen ? (
-						<Icons.ExitFullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-					) : (
-						<Icons.FullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
+				<div className="flex items-center gap-2">
+					{hasVideo && (
+						<>
+							<label
+								className="flex items-center gap-1 text-xs text-white/80 cursor-pointer"
+								onClick={(event) => event.stopPropagation()}
+							>
+								<input
+									type="checkbox"
+									checked={autoAbr}
+									onChange={(event) => setAutoAbr(event.target.checked)}
+									className="cursor-pointer"
+								/>
+								{t('autoQuality')}
+							</label>
+							<select
+								aria-label={t('quality')}
+								value={currentRendition}
+								onClick={(event) => event.stopPropagation()}
+								onChange={(event) => setRendition(event.target.value)}
+								className="bg-black/60 text-white text-xs rounded px-1 py-1 cursor-pointer max-h-8"
+							>
+								{STREAM_RENDITIONS.map((id) => {
+									const allowed = renditions.length === 0 || renditions.includes(id);
+									return (
+										<option key={id} value={id} disabled={!allowed}>
+											{id}
+										</option>
+									);
+								})}
+							</select>
+						</>
 					)}
-				</button>
+					<button onClick={handleFullscreen} className="p-1">
+						{isFullscreen ? (
+							<Icons.ExitFullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
+						) : (
+							<Icons.FullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
+						)}
+					</button>
+				</div>
 			</div>
 		</div>
 	);

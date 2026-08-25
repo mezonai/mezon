@@ -6,5 +6,7 @@
 	"joinStream": "Tham gia phát trực tiếp",
 	"noStreamToday": "Hôm nay không có phát trực tiếp",
 	"hideMembers": "Ẩn thành viên",
-	"showMembers": "Hiện thành viên"
+	"showMembers": "Hiện thành viên",
+	"quality": "Chất lượng",
+	"autoQuality": "Tự động"
 }

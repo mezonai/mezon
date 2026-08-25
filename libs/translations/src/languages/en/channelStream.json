@@ -6,5 +6,7 @@
 	"joinStream": "Join stream",
 	"noStreamToday": "No stream today",
 	"hideMembers": "Hide Members",
-	"showMembers": "Show Members"
+	"showMembers": "Show Members",
+	"quality": "Quality",
+	"autoQuality": "Auto"
 }
