@@ -943,7 +943,6 @@ type SendMessagePayload = {
 	senderId: string;
 	isPublic: boolean;
 	avatar?: string;
-	isMobile?: boolean;
 	username?: string;
 	code?: number;
 	clientSendTime?: number;
@@ -951,22 +950,8 @@ type SendMessagePayload = {
 };
 
 export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', async (payload: SendMessagePayload, thunkAPI) => {
-	const {
-		mentions,
-		attachments,
-		references,
-		anonymous,
-		mentionEveryone,
-		channelId,
-		mode,
-		isPublic,
-		clanId,
-		senderId,
-		avatar,
-		isMobile = false,
-		username,
-		code
-	} = payload;
+	const { mentions, attachments, references, anonymous, mentionEveryone, channelId, mode, isPublic, clanId, senderId, avatar, username, code } =
+		payload;
 
 	const content = payload.content;
 	const clientSendTime = Date.now();
@@ -1213,22 +1198,8 @@ export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (pay
 });
 
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
-	const {
-		mentions,
-		attachments,
-		references,
-		anonymous,
-		mentionEveryone,
-		channelId,
-		mode,
-		isPublic,
-		clanId,
-		senderId,
-		avatar,
-		isMobile = false,
-		username,
-		code
-	} = payload;
+	const { mentions, attachments, references, anonymous, mentionEveryone, channelId, mode, isPublic, clanId, senderId, avatar, username, code } =
+		payload;
 	const attachmentsMessage: ApiMessageAttachment[] =
 		attachments?.map((attach) => ({
 			filename: attach.filename,
@@ -1552,6 +1523,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 									clanId,
 									isPublic,
 									messageId: presignMessageId,
+									mentions,
 									mode,
 									hideEditted: true
 								})

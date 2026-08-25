@@ -33,6 +33,7 @@ type ChannelHashtagProps = {
 	tagRoleName?: string;
 	tagRoleId?: string;
 	mention?: string;
+	onCloseTooltip?: () => void;
 };
 
 enum MentionType {
@@ -60,7 +61,8 @@ const MentionUser = ({
 	isTokenClickAble,
 	tagUserId,
 	tagRoleName,
-	tagRoleId
+	tagRoleId,
+	onCloseTooltip
 }: ChannelHashtagProps) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const displayToken = useMemo(() => {
@@ -120,6 +122,7 @@ const MentionUser = ({
 			if (checkAnonymous) {
 				return;
 			}
+			onCloseTooltip?.();
 			const screenX = window.innerWidth;
 			const heightPanel =
 				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
@@ -149,7 +152,7 @@ const MentionUser = ({
 			setIsShowPanelChannel(!showProfileUser);
 			openProfileItem();
 		},
-		[checkAnonymous, mode]
+		[checkAnonymous, mode, onCloseTooltip, openProfileItem, showProfileUser]
 	);
 
 	return (

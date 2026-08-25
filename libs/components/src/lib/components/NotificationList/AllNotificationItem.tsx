@@ -1,6 +1,6 @@
-import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification } from '@mezon/core';
+import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useOnClickOutside } from '@mezon/core';
 import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
-import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
+import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification, INotificationContent } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
 	NotificationCategory,
@@ -14,9 +14,8 @@ import {
 	processText,
 	stripNotificationMarkers
 } from '@mezon/utils';
-import type { ApiDirectFcmProto } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationJump } from '../../hooks/useNotificationJump';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
@@ -25,6 +24,7 @@ import MessageAttachment from '../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../MessageWithUser/MessageLine';
 import getPendingNames from '../MessageWithUser/usePendingNames';
 import ShareContactCard from '../ShareContact/ShareContactCard';
+import { NotificationAttachmentItem } from './NotificationAttachmentItem';
 export type NotifyMentionProps = {
 	readonly notify: INotification;
 	onCloseTooltip?: () => void;
@@ -71,7 +71,7 @@ function getNotificationCopyText(contentRaw: string | undefined): string {
 				return parsed.t;
 			}
 		} catch {
-			// fall through
+			// fall through to plain-text parsing
 		}
 	}
 
@@ -133,7 +133,8 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		subject: notify.subject,
 		category: notify.category,
 		senderId: contentSenderId && contentSenderId !== '0' ? contentSenderId : notify.sender_id,
-		embed: notify?.content?.embed as IEmbedProps[] | undefined
+		embed: notify?.content?.embed as IEmbedProps[] | undefined,
+		onCloseTooltip
 	};
 
 	const isShowJump =
@@ -179,10 +180,11 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 			{message && (
 				<AllTabContent
 					{...allTabProps}
+					onCloseTooltip={onCloseTooltip}
 					message={{
 						...message,
 						create_time_seconds:
-							notify?.category === NotificationCategory.FOR_YOU ? notify.create_time_seconds : message?.create_time_seconds
+							(notify?.category === NotificationCategory.FOR_YOU ? notify.create_time_seconds : message?.create_time_seconds) ?? 0
 					}}
 				/>
 			)}
@@ -193,15 +195,25 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 export default AllNotificationItem;
 
 interface IMentionTabContent {
-	message: ApiDirectFcmProto;
+	message: INotificationContent;
 	subject?: string;
 	category?: number;
 	senderId?: string;
 	embed?: IEmbedProps[];
+	onCloseTooltip?: () => void;
 }
 
-function AllTabContent({ message, subject, category, senderId, embed }: IMentionTabContent) {
-	const { t } = useTranslation('channelTopbar');
+function AllTabContent({ message, subject, category, senderId, embed, onCloseTooltip }: IMentionTabContent) {
+	const { t } = useTranslation(['channelTopbar', 'common', 'message']);
+	const [isExpanded, setIsExpanded] = useState(false);
+	const attachmentContainerRef = useRef<HTMLDivElement>(null);
+
+	useOnClickOutside(attachmentContainerRef, () => {
+		if (isExpanded) {
+			setIsExpanded(false);
+		}
+	});
+
 	const { priorityAvatar, namePriority, usernameSender } = useGetPriorityNameFromUserClan(senderId || message.sender_id || '');
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id || '0')) || {};
@@ -236,6 +248,15 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 	}, [message.mention_ids, message.position_e, message.position_s, message.is_mention_role]);
 
 	const messageLineContent = useMemo(() => buildNotificationMessageContent(message.content, mentions), [message.content, mentions]);
+	const hasMessageText = useMemo(() => {
+		return Boolean(
+			messageLineContent?.t?.trim() ||
+				messageLineContent?.mk?.length ||
+				messageLineContent?.lk?.length ||
+				messageLineContent?.vk?.length ||
+				messageLineContent?.ej?.length
+		);
+	}, [messageLineContent]);
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg overflow-hidden">
@@ -254,36 +275,40 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 
 				<div className="h-full w-full min-w-0 flex-1">
 					<div className="flex flex-col gap-[2px] text-[12px] font-bold ">
-						{category === NotificationCategory.MENTIONS ? (
+						{category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES ? (
 							clan?.clan_name ? (
 								<div className="flex flex-col text-sm min-w-0">
 									<div className="flex items-center gap-1 min-w-0">
 										<span className="uppercase truncate max-w-[120px] overflow-hidden whitespace-nowrap">{clan.clan_name}</span>
-										<span>{'>'}</span>
-										<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap uppercase">
-											{isChannel ? currentChannel.category_name : parentChannel.category_name}
-										</span>
-									</div>
-
-									<div className="flex items-center gap-1 min-w-0 text-[13px]">
-										<span className="truncate max-w-[120px] overflow-hidden whitespace-nowrap">
-											{isChannel ? `#${currentChannel.channel_label}` : `#${parentChannel.channel_label}`}
-										</span>
-										{!isChannel && (
+										{(isChannel ? currentChannel.category_name : parentChannel.category_name) && (
 											<>
 												<span>{'>'}</span>
-												<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap">
-													{`${currentChannel.channel_label}`}
+												<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap uppercase">
+													{isChannel ? currentChannel.category_name : parentChannel.category_name}
 												</span>
 											</>
 										)}
 									</div>
+
+									{(currentChannel?.channel_label || parentChannel?.channel_label) && (
+										<div className="flex items-center gap-1 min-w-0 text-[13px]">
+											<span className="truncate max-w-[120px] overflow-hidden whitespace-nowrap">
+												{isChannel ? `#${currentChannel.channel_label}` : `#${parentChannel.channel_label}`}
+											</span>
+											{!isChannel && currentChannel?.channel_label && (
+												<>
+													<span>{'>'}</span>
+													<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap">
+														{`${currentChannel.channel_label}`}
+													</span>
+												</>
+											)}
+										</div>
+									)}
 								</div>
 							) : (
 								t('directMessage')
 							)
-						) : category === NotificationCategory.MESSAGES ? (
-							clan?.clan_name
 						) : (
 							''
 						)}
@@ -295,67 +320,120 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 						>
 							<MessageHead
 								message={{
-									id: message.message_id,
-									avatar: message.avatar,
-									channel_id: message.channel_id,
-									clan_id: message.clan_id,
+									id: message.message_id || '',
+									avatar: message.avatar || '',
+									channel_id: message.channel_id || '',
+									clan_id: message.clan_id || '',
 									channel_label: isChannel ? currentChannel.channel_label || '' : parentChannel.channel_label || '',
-									content: message.content,
+									content: message.content || '',
 									code: 0,
-									sender_id: message.sender_id,
-									display_name: message.display_name || message.username,
-									username: message.username,
+									sender_id: message.sender_id || '',
+									display_name: message.display_name || message.username || '',
+									username: message.username || '',
 									user: {
-										id: message.sender_id,
-										name: message.display_name || message.username,
-										username: message.username
+										id: message.sender_id || '',
+										name: message.display_name || message.username || '',
+										username: message.username || ''
 									},
-									create_time_seconds: message.create_time_seconds
+									create_time_seconds: message.create_time_seconds || 0
 								}}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 							/>
 							{isShareContact && shareContactEmbed ? (
 								<ShareContactCard embed={shareContactEmbed} />
-							) : (
+							) : hasMessageText ? (
 								<MessageLine
 									messageId={message.message_id}
 									isEditted={false}
 									content={messageLineContent}
 									isTokenClickAble={false}
 									isJumMessageEnabled={false}
+									onCloseTooltip={onCloseTooltip}
 								/>
-							)}
+							) : null}
 							{message.attachment_link && (
-								<div>
-									<div className="max-h-[150px] max-w-[150px] overflow-hidden rounded-lg">
-										<div>
-											<MessageAttachment
-												mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-												message={{
-													...{
-														id: message.message_id,
-														avatar: message.avatar,
-														channel_id: message.channel_id,
-														clan_id: message.clan_id,
-														channel_label: isChannel
-															? currentChannel.channel_label || ''
-															: parentChannel.channel_label || '',
-														content: message.content,
-														code: 0,
-														sender_id: message.sender_id,
-														user: {
-															id: message.sender_id,
-															name: message.username,
-															username: message.username
-														}
-													},
-													attachments: [{ url: message.attachment_link, filetype: message.attachment_type }]
-												}}
-												defaultMaxWidth={TOPBARS_MAX_WIDTH}
-											/>
+								<div ref={attachmentContainerRef} className="flex flex-col">
+									{!isExpanded ? (
+										<div className="max-h-[150px] max-w-[150px] overflow-hidden rounded-lg">
+											<div>
+												<MessageAttachment
+													mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+													message={{
+														...{
+															id: message.message_id || '',
+															avatar: message.avatar || '',
+															channel_id: message.channel_id || '',
+															clan_id: message.clan_id || '',
+															channel_label: isChannel
+																? currentChannel.channel_label || ''
+																: parentChannel.channel_label || '',
+															content: message.content || '',
+															code: 0,
+															sender_id: message.sender_id || '',
+															user: {
+																id: message.sender_id || '',
+																name: message.username || '',
+																username: message.username || ''
+															}
+														},
+														attachments: [
+															{
+																url: message.attachments?.[0]?.url || message.attachment_link || '',
+																filetype: message.attachments?.[0]?.filetype || message.attachment_type || '',
+																size: message.attachments?.[0]?.size || message.attachment_size || 0,
+																filename: message.attachments?.[0]?.filename || message.content || ''
+															}
+														]
+													}}
+													defaultMaxWidth={TOPBARS_MAX_WIDTH}
+												/>
+											</div>
 										</div>
-									</div>
-									{message.has_more_attachment && <div className="text-xs text-zinc-400 mt-1 ml-1">{t('moreFiles')}</div>}
+									) : (
+										<div className="flex flex-col gap-1.5 w-full">
+											{(message.attachments && message.attachments.length > 0
+												? message.attachments
+												: [
+														{
+															url: message.attachment_link,
+															filetype: message.attachment_type,
+															size: message.attachment_size || 0
+														}
+													]
+											).map((attachment, idx) => (
+												<NotificationAttachmentItem
+													key={attachment?.url || idx}
+													attachment={attachment}
+													index={idx}
+													compact={true}
+												/>
+											))}
+										</div>
+									)}
+
+									{message.has_more_attachment && (
+										<button
+											type="button"
+											onClick={(e) => {
+												e.stopPropagation();
+												setIsExpanded((prev) => !prev);
+											}}
+											className="text-xs text-blue-400 hover:underline mt-1.5 ml-1 cursor-pointer flex items-center gap-1 font-medium transition-colors hover:text-blue-300 w-fit"
+										>
+											{isExpanded ? (
+												<span>{t('showLess', { ns: 'message', defaultValue: 'Show less' })}</span>
+											) : (
+												<>
+													<span>{t('moreFiles', { ns: 'channelTopbar' })}</span>
+													{message.attachments && message.attachments.length > 1 && (
+														<span className="text-[10px] bg-item-theme px-1.5 py-0.5 rounded-full text-zinc-300">
+															+{message.attachments.length - 1}
+														</span>
+													)}
+												</>
+											)}
+										</button>
+									)}
 								</div>
 							)}
 						</div>

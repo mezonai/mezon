@@ -358,7 +358,7 @@ We welcome contributions from the community! Here's how you can help:
 ### 📦 SDKs & Libraries
 
 -   [**JavaScript SDK**](https://github.com/mezonai/mezon-js) - Official JS/TS SDK
--   [**Go SDK**](https://github.com/mezonai/mezon-go-sdk) - Official Go SDK
+-   [**Go SDK**](https://github.com/quangledang23/mezon-sdk-go) - Official Go SDK
 -   [**Java SDK**](https://github.com/mezonai/mezon-java-sdk) - Official Java SDK
 -   [**Python SDK**](https://github.com/phuvinh010701/mezon-sdk-python) - Official Python SDK
 -   [**.NET SDK**](https://github.com/huy-buidoanquang/Mezon.NET) - Official .NET SDK

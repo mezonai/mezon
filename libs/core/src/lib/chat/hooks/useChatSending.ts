@@ -220,7 +220,6 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					mentionEveryone,
 					senderId: currentUserId,
 					avatar: priorityAvatar,
-					isMobile,
 					username: priorityNameToShow,
 					code
 				})
