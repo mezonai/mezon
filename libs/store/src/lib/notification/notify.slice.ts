@@ -148,14 +148,22 @@ export const deleteNotify = createAsyncThunk(
 export const markMessageNotify = createAsyncThunk('notification/markMessageNotify', async (message: MessagesEntity, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createMessage2Inbox(mezon.session, {
+		const contentString = JSON.stringify({
+			...(typeof message.content === 'object' && message.content !== null ? message.content : { t: message.content }),
+			attachments: message?.attachments || []
+		});
+
+		const payload = {
 			message_id: message.id,
-			content: JSON.stringify(message.content),
+			content: contentString,
 			avatar: message.avatar || '',
 			clan_id: message.clan_id || '0',
 			channel_id: message.channel_id,
 			attachments: message?.attachments || []
-		});
+		};
+
+		const response = await mezon.client.createMessage2Inbox(mezon.session, payload);
+
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}
@@ -192,8 +200,7 @@ export const notificationSlice = createSlice({
 		removeAll: notificationAdapter.removeAll,
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
-
-			if (state.notifications[category]?.data?.length) {
+			if (state.notifications[category]) {
 				state.notifications[category].data = [data, ...state.notifications[category].data];
 			}
 		},
@@ -247,20 +254,22 @@ export const notificationSlice = createSlice({
 
 						const { data, category, fromCache } = action.payload;
 						const dataParse = data.map((item) => {
+							const parsedContent =
+								typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content) : item.content?.content;
+							const parsedAttachments = parsedContent?.attachments;
+
 							return {
 								...item,
 								content: {
 									...item?.content,
-									content:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content,
-									embed:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed,
-									tp:
-										typeof item.content?.content === 'string'
-											? safeJSONParse(item.content?.content)?.tp
-												? safeJSONParse(item.content?.content)?.tp
-												: null
-											: null
+									content: parsedContent?.t,
+									embed: parsedContent?.embed ?? item.content?.embed,
+									tp: parsedContent?.tp ?? null,
+									attachment_link: parsedAttachments?.[0]?.url || item.content?.attachment_link || '',
+									attachment_type: parsedAttachments?.[0]?.filetype || item.content?.attachment_type || '',
+									attachment_size: parsedAttachments?.[0]?.size || 0,
+									attachments: parsedAttachments,
+									has_more_attachment: (parsedAttachments?.length || 0) > 1
 								}
 							};
 						});
@@ -299,65 +308,75 @@ export const notificationSlice = createSlice({
 			.addCase(
 				markMessageNotify.fulfilled,
 				(state: NotificationState, action: PayloadAction<{ noti: ApiChannelMessageHeader; message: MessagesEntity }>) => {
-					if (state.notifications[NotificationCategory.MESSAGES].data && state.notifications[NotificationCategory.MESSAGES].data?.[0]?.id) {
-						const { noti, message } = action.payload;
-						const mention_ids: string[] = [];
-						const position_s: number[] = [];
-						const position_e: number[] = [];
-						const is_mention_role: boolean[] = [];
-						if (Array.isArray(message?.mentions)) {
-							(message?.mentions || []).map((item: ApiMessageMention) => {
-								if (item.user_id && item.s && item.e) {
-									mention_ids.push(item.user_id);
-									is_mention_role.push(false);
-									position_s.push(item.s);
-									position_e.push(item.e);
-								}
-								if (item.role_id && item.s && item.e) {
-									mention_ids.push(item.role_id);
-									is_mention_role.push(true);
-									position_s.push(item.s);
-									position_e.push(item.e);
-								}
-							});
-						}
-						const notiMark: INotification = {
-							...message,
-							id: noti.id || '',
-							...noti,
-							content: {
-								title: '',
-								link: '',
-								content: message.content.t,
-								embed: message?.content?.embed,
-								channel_id: message.channel_id,
-								sender_id: message.sender_id,
-								avatar: message.clan_avatar || message.avatar,
-								clan_id: message.clan_id,
-								attachment_link: message.attachments?.[0]?.url || '',
-								display_name: message.clan_nick || message.display_name || message.username,
-								create_time_seconds: message.create_time_seconds,
-								update_time_seconds: message.update_time_seconds,
-								username: message.username,
-								mention_ids,
-								position_s,
-								position_e,
-								attachment_type: message?.attachments?.[0]?.filetype || '',
-								has_more_attachment: (message.attachments?.length || 0) > 2,
-								is_mention_role,
-								message_id: message.message_id
-							},
-							category: NotificationCategory.MESSAGES,
-							avatar_url: message?.avatar?.[0] || '',
-							clan_id: message.clan_id || '0',
-							topic_id: message.topic_id || '0'
-						};
-
-						state.notifications[NotificationCategory.MESSAGES].data = [
-							notiMark,
-							...state.notifications[NotificationCategory.MESSAGES].data
-						];
+					if (!state.notifications[NotificationCategory.MESSAGES]) {
+						state.notifications[NotificationCategory.MESSAGES] = { data: [], lastId: '' };
 					}
+					const { noti, message } = action.payload;
+					const mention_ids: string[] = [];
+					const position_s: number[] = [];
+					const position_e: number[] = [];
+					const is_mention_role: boolean[] = [];
+					if (Array.isArray(message?.mentions)) {
+						(message?.mentions || []).forEach((item: ApiMessageMention) => {
+							if (item.user_id && item.s && item.e) {
+								mention_ids.push(item.user_id);
+								is_mention_role.push(false);
+								position_s.push(item.s);
+								position_e.push(item.e);
+							}
+							if (item.role_id && item.s && item.e) {
+								mention_ids.push(item.role_id);
+								is_mention_role.push(true);
+								position_s.push(item.s);
+								position_e.push(item.e);
+							}
+						});
+					}
+					const notiId = noti?.id && noti.id !== '' && noti.id !== '0' ? noti.id : message?.id || '';
+					const notiObj = noti as Record<string, unknown>;
+					const messageContentObj =
+						typeof message.content === 'object' && message.content !== null ? (message.content as Record<string, unknown>) : null;
+					const contentText =
+						typeof messageContentObj?.t === 'string' ? messageContentObj.t : typeof message.content === 'string' ? message.content : '';
+
+					const notiMark: INotification = {
+						...message,
+						...noti,
+						id: notiId,
+						create_time_seconds: notiObj?.create_time_seconds ? Number(notiObj.create_time_seconds) : Math.floor(Date.now() / 1000),
+						content: {
+							title: '',
+							link: '',
+							content: contentText,
+							embed: message?.content?.embed,
+							channel_id: message.channel_id,
+							sender_id: message.sender_id,
+							avatar: message.clan_avatar || message.avatar,
+							clan_id: message.clan_id,
+							attachment_link: message.attachments?.[0]?.url || '',
+							display_name: message.clan_nick || message.display_name || message.username,
+							create_time_seconds: message.create_time_seconds,
+							update_time_seconds: message.update_time_seconds,
+							username: message.username,
+							mention_ids,
+							position_s,
+							position_e,
+							attachment_type: message?.attachments?.[0]?.filetype || '',
+							attachment_size: message?.attachments?.[0]?.size || 0,
+							attachments: message.attachments || [],
+							has_more_attachment: (message.attachments?.length || 0) > 1,
+							is_mention_role,
+							message_id: message.message_id || message.id
+						},
+						category: NotificationCategory.MESSAGES,
+						avatar_url: message?.avatar?.[0] || '',
+						clan_id: message.clan_id || '0',
+						topic_id: message.topic_id || '0'
+					};
+
+					const existingData = state.notifications[NotificationCategory.MESSAGES].data || [];
+					const dedupedData = notiId ? existingData.filter((item) => item.id !== notiId) : existingData;
+					state.notifications[NotificationCategory.MESSAGES].data = [notiMark, ...dedupedData];
 				}
 			);
 	}

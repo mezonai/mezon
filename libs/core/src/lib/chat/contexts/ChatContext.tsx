@@ -740,12 +740,22 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				!isFocus
 			) {
 				const parsedNotificationContent = safeJSONParse(notification.content?.content);
+				const parsedAttachments = parsedNotificationContent?.attachments;
+
 				dispatch(
 					notificationActions.add({
 						data: {
 							...notification,
 							id: notification?.id || '',
-							content: { ...notification.content, content: parsedNotificationContent?.t }
+							content: {
+								...notification.content,
+								content: parsedNotificationContent?.t,
+								attachment_link: parsedAttachments?.[0]?.url || notification.content?.attachment_link || '',
+								attachment_type: parsedAttachments?.[0]?.filetype || notification.content?.attachment_type || '',
+								attachment_size: parsedAttachments?.[0]?.size || 0,
+								attachments: parsedAttachments,
+								has_more_attachment: (parsedAttachments?.length || 0) > 1
+							}
 						},
 						category: notification.category as NotificationCategory
 					})
