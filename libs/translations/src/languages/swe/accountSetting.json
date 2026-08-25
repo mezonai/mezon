@@ -145,7 +145,6 @@
 		}
 	},
 	"qrProfile": {
-		"scanToConnect": "Skanna för att ansluta till",
 		"centerLogo": "QR-centerlogotyp",
 		"chooseFromDevice": "Välj från enhet",
 		"useMyAvatar": "Använd min avatar",

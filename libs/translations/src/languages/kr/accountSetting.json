@@ -145,7 +145,6 @@
 		}
 	},
 	"qrProfile": {
-		"scanToConnect": "스캔하여 연결하기",
 		"centerLogo": "QR 중앙 로고",
 		"chooseFromDevice": "기기에서 선택",
 		"useMyAvatar": "내 아바타 사용",

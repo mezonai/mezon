@@ -349,7 +349,6 @@
 		"sendOtpError": "Ocurrió un error al enviar OTP"
 	},
 	"invite": {
-		"scanToConnect": "Escanear para conectar con",
 		"openInApp": "Abrir en la aplicación Mezon",
 		"canChatNow": "¡Ahora puedes chatear!!",
 		"verifyWait": "Por favor, espera mientras verificamos tu información. Esto tomará solo unos segundos.",

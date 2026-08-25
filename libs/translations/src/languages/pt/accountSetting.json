@@ -145,7 +145,6 @@
 		}
 	},
 	"qrProfile": {
-		"scanToConnect": "Escanear para conectar com",
 		"centerLogo": "Logotipo central do QR",
 		"chooseFromDevice": "Escolher do dispositivo",
 		"useMyAvatar": "Usar meu avatar",

@@ -145,7 +145,6 @@
 		}
 	},
 	"qrProfile": {
-		"scanToConnect": "Scan om te verbinden met",
 		"centerLogo": "QR-middenlogo",
 		"chooseFromDevice": "Kies van apparaat",
 		"useMyAvatar": "Gebruik mijn avatar",

@@ -145,7 +145,6 @@
 		}
 	},
 	"qrProfile": {
-		"scanToConnect": "Quét mã để kết nối đến",
 		"centerLogo": "Logo ở giữa QR",
 		"chooseFromDevice": "Chọn ảnh từ thiết bị",
 		"useMyAvatar": "Dùng Avatar của tôi",

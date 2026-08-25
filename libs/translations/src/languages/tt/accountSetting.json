@@ -145,7 +145,6 @@
 		}
 	},
 	"qrProfile": {
-		"scanToConnect": "Тоташу өчен сканерлагыз",
 		"centerLogo": "QR уртасындагы логотип",
 		"chooseFromDevice": "Җайланмадан сайлау",
 		"useMyAvatar": "Аватарымны куллану",
