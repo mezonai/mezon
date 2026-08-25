@@ -50,7 +50,7 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 
 	const playFlowerCelebrationSound = useCallback(() => {
 		try {
-			const audio = new Audio('/assets/audio/bankSound.mp3');
+			const audio = new Audio('/assets/audio/give-flower.mp3');
 			audio.volume = 0.5;
 			audio.play().catch((err) => {
 				console.error('[flower sound play error]', err);
