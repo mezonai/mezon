@@ -92,7 +92,7 @@ export function TimelineView({ events, loadingStatus, onNavigateToEvents, onNavi
 				</button>
 			</div>
 
-			<div className="flex-1 overflow-y-auto px-6 py-4 messages-scroll">
+			<div className="flex-1 overflow-y-auto px-6 py-4 messages-scroll flex flex-col-reverse">
 				<div className="relative">
 					<div className="absolute left-1/2 transform -translate-x-px top-0 bottom-0 w-0.5 bg-buttonPrimary/30" />
 
