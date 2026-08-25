@@ -10,6 +10,10 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+const DEFAULT_LOGO = 'https://cdn.komu.vn/images/mezon_logo.png';
+const QR_SIZE = 260;
+const LOGO_SIZE = 50;
+
 enum ErrorTypeMutable {
 	NOT_MUTABLE = 'not_mutable',
 	MUTABLE = 'mutable'
@@ -126,59 +130,118 @@ export default function AddFriendPage() {
 	const initials = displayName.charAt(0).toUpperCase();
 
 	return (
-		<div className="bg-[#0a0a0f] h-screen w-screen overflow-hidden flex items-center justify-center relative">
-			<div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-purple-900/20 pointer-events-none" />
+		<div className="bg-[#0a0a0f] h-screen w-screen overflow-hidden flex items-center justify-center relative select-none">
+			<div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-transparent to-purple-950/20 pointer-events-none" />
 			<div
 				className="absolute inset-0 opacity-[0.03] pointer-events-none"
 				style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }}
 			/>
 
-			<div className="relative z-10 w-full max-w-[420px] mx-4">
-				<div className="bg-[#1a1a2e]/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
+			<div className="relative z-10 w-full max-w-[380px] mx-4 flex flex-col items-center">
+				<div className="w-full bg-[#181920] border border-white/10 rounded-[32px] shadow-2xl shadow-black/50 overflow-hidden flex flex-col items-center">
 					{username && (
-						<div className="flex flex-col items-center pt-10 pb-6 px-8">
-							<div className="relative mb-5">
-								{avatarUrl ? (
-									<div className="w-20 h-20 rounded-full ring-4 ring-blue-500/30 ring-offset-2 ring-offset-[#1a1a2e] overflow-hidden">
-										<img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
-									</div>
-								) : (
-									<div className="w-20 h-20 rounded-full ring-4 ring-blue-500/30 ring-offset-2 ring-offset-[#1a1a2e] bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-										<span className="text-2xl font-bold text-white">{initials}</span>
-									</div>
-								)}
-								<div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-[3px] border-[#1a1a2e]" />
-							</div>
-
-							<h2 className="text-xl font-bold text-white mb-1">{displayName}</h2>
-							{dataEncode?.name && username && <p className="text-sm text-white/40">@{username}</p>}
-
-							<div className="mt-6 bg-white rounded-xl p-4 shadow-lg relative group">
-								<QRCode size={200} value={qrValue} level="L" />
-								<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-									<div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-										<img src="/assets/images/mezon-logo-white.svg" alt="Mezon" className="w-6 h-6" />
-									</div>
+						<>
+							<div className="w-full flex items-center justify-center pt-5 pb-2">
+								<div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+									<div className="w-2 h-2 rounded-full bg-emerald-400" />
+									<span className="text-[11px] font-semibold tracking-wider text-white uppercase">Mezon QR</span>
 								</div>
 							</div>
 
-							<p className="mt-4 text-xs text-white/30 text-center">{t('invite.scanToConnect') || 'Scan QR code to connect'}</p>
-						</div>
+							<div className="w-full flex flex-col items-center px-6 pt-2 pb-3 text-center">
+								<p className="text-slate-400 text-xs font-normal tracking-wide">{t('invite.scanToConnect')}</p>
+
+								<div className="flex items-center gap-2.5 mt-1.5">
+									{avatarUrl ? (
+										<img
+											src={avatarUrl}
+											alt={displayName}
+											className="w-8 h-8 rounded-full border-2 border-indigo-500/40 object-cover"
+										/>
+									) : (
+										<div className="w-8 h-8 rounded-full border-2 border-indigo-500/40 bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">
+											{initials}
+										</div>
+									)}
+									<h2 className="text-lg font-bold text-white tracking-tight uppercase line-clamp-1">{displayName}</h2>
+								</div>
+
+								{dataEncode?.name && username && (
+									<div className="mt-1 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
+										<span className="text-indigo-400 text-xs font-semibold">@{username}</span>
+									</div>
+								)}
+							</div>
+
+							<div className="px-6 w-full flex flex-col items-center">
+								<div
+									className="relative w-full rounded-[24px] bg-white p-3.5 flex flex-col items-center shadow-2xl"
+									style={{
+										boxShadow: '0 20px 40px -15px rgba(0,0,0,0.5), 0 0 25px rgba(99,102,241,0.2)'
+									}}
+								>
+									<div className="flex items-center justify-between w-full pb-3 border-b border-slate-100 mb-3 px-1">
+										<div className="flex items-center gap-1.5">
+											<img src={DEFAULT_LOGO} className="w-5 h-5 object-contain rounded-md" alt="Mezon Logo" />
+											<span className="font-extrabold text-sm tracking-wider text-slate-800">MEZON</span>
+										</div>
+										<span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+											Profile QR
+										</span>
+									</div>
+
+									<div className="relative flex items-center justify-center bg-white" style={{ width: QR_SIZE, height: QR_SIZE }}>
+										<QRCode
+											level="H"
+											value={qrValue}
+											size={QR_SIZE}
+											style={{ width: '100%', height: '100%' }}
+											bgColor="#ffffff"
+											fgColor="#0f172a"
+										/>
+
+										<div
+											className="absolute rounded-xl overflow-hidden flex items-center justify-center bg-white shadow-md"
+											style={{
+												width: LOGO_SIZE,
+												height: LOGO_SIZE,
+												top: '50%',
+												left: '50%',
+												transform: 'translate(-50%, -50%)',
+												padding: 3,
+												border: '2px solid #ffffff',
+												boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+											}}
+										>
+											<img
+												src={avatarUrl || DEFAULT_LOGO}
+												className="w-full h-full object-contain rounded-lg pointer-events-none"
+												alt="Center Logo"
+											/>
+										</div>
+									</div>
+
+									<div className="flex items-center justify-center w-full pt-3 mt-3 border-t border-slate-100 px-1 text-slate-400">
+										<span className="text-[10px] font-bold tracking-widest text-indigo-500 uppercase">SCAN • CONNECT</span>
+									</div>
+								</div>
+							</div>
+						</>
 					)}
 
-					<div className="px-8 pb-8">
+					<div className="w-full px-6 pt-5 pb-6">
 						{loading ? (
-							<div className="flex flex-col items-center gap-3 py-4">
-								<Icons.LoadingSpinner className="!w-10 !h-10 text-blue-400" />
-								<p className="text-sm text-white/50">{t('invite.verifyWait')}</p>
+							<div className="flex flex-col items-center gap-2.5 py-2">
+								<Icons.LoadingSpinner className="!w-8 !h-8 text-indigo-400 animate-spin" />
+								<p className="text-xs text-white/50">{t('invite.verifyWait')}</p>
 							</div>
 						) : (
 							!!userProfile && (
-								<div className="flex flex-col gap-3">
+								<div className="flex flex-col gap-3 w-full">
 									{error === ErrorTypeMutable.MUTABLE && (
 										<button
 											onClick={handleGotoDm}
-											className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98]"
+											className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold rounded-2xl transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] cursor-pointer text-sm"
 										>
 											{t('invite.chatNow')}
 										</button>
@@ -187,7 +250,7 @@ export default function AddFriendPage() {
 										<button
 											onClick={handleAddFriend}
 											disabled={isAddingFriend}
-											className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+											className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold rounded-2xl transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm"
 										>
 											{t('invite.addFriend')}
 										</button>
@@ -199,8 +262,8 @@ export default function AddFriendPage() {
 				</div>
 
 				<div className="flex items-center justify-center gap-2 mt-6 opacity-40">
-					<img src="/assets/images/mezon-logo-white.svg" alt="Mezon" className="w-4 h-4" />
-					<span className="text-xs text-white font-medium tracking-wider uppercase">Mezon</span>
+					<img src={DEFAULT_LOGO} alt="Mezon" className="w-4 h-4 object-contain rounded" />
+					<span className="text-xs text-white font-medium tracking-wider uppercase">mezon.ai</span>
 				</div>
 			</div>
 		</div>

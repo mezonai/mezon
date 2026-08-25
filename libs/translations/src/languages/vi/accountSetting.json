@@ -143,5 +143,26 @@
 			"verifyButton": "Xác nhận",
 			"success": "Cập nhật email thành công"
 		}
+	},
+	"qrProfile": {
+		"scanToConnect": "Quét mã để kết nối đến",
+		"centerLogo": "Logo ở giữa QR",
+		"chooseFromDevice": "Chọn ảnh từ thiết bị",
+		"useMyAvatar": "Dùng Avatar của tôi",
+		"resetDefaultLogo": "Đặt lại logo Mezon",
+		"copyImage": "Chép ảnh",
+		"copied": "Đã chép",
+		"download": "Tải về",
+		"copyLink": "Chép link",
+		"copiedLink": "Đã chép link",
+		"close": "Đóng",
+		"customizeLogo": "Tùy chỉnh logo QR",
+		"logoUpdatedSuccess": "Đã cập nhật logo ở giữa QR",
+		"avatarAppliedSuccess": "Đã áp dụng avatar cá nhân làm logo QR",
+		"noAvatar": "Bạn chưa có avatar cá nhân",
+		"logoResetDefault": "Đã đặt lại logo mặc định",
+		"qrCopiedSuccess": "Đã sao chép ảnh QR",
+		"profileLinkCopied": "Đã sao chép liên kết profile",
+		"qrDownloaded": "Đã tải ảnh QR về máy"
 	}
 }

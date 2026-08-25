@@ -143,5 +143,26 @@
 			"verifyButton": "확인",
 			"success": "이메일 성공적으로 업데이트"
 		}
+	},
+	"qrProfile": {
+		"scanToConnect": "스캔하여 연결하기",
+		"centerLogo": "QR 중앙 로고",
+		"chooseFromDevice": "기기에서 선택",
+		"useMyAvatar": "내 아바타 사용",
+		"resetDefaultLogo": "Mezon 로고로 초기화",
+		"copyImage": "이미지 복사",
+		"copied": "복사됨",
+		"download": "다운로드",
+		"copyLink": "링크 복사",
+		"copiedLink": "링크가 복사되었습니다",
+		"close": "닫기",
+		"customizeLogo": "QR 로고 사용자 지정",
+		"logoUpdatedSuccess": "QR 중앙 로고가 업데이트되었습니다",
+		"avatarAppliedSuccess": "아바타가 QR 로고로 적용되었습니다",
+		"noAvatar": "아바타가 없습니다",
+		"logoResetDefault": "기본 로고로 초기화되었습니다",
+		"qrCopiedSuccess": "QR 코드 이미지가 복사되었습니다",
+		"profileLinkCopied": "프로필 링크가 복사되었습니다",
+		"qrDownloaded": "QR 코드 이미지가 다운로드되었습니다"
 	}
 }

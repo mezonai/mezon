@@ -143,5 +143,26 @@
 			"verifyButton": "Падцвердзіць",
 			"success": "Email паспяхова абноўлены"
 		}
+	},
+	"qrProfile": {
+		"scanToConnect": "Сканаваць для падключэння да",
+		"centerLogo": "Лагатып у цэнтры QR",
+		"chooseFromDevice": "Выбраць з прылады",
+		"useMyAvatar": "Выкарыстоўваць мой аватар",
+		"resetDefaultLogo": "Скінуць лагатып Mezon",
+		"copyImage": "Капіяваць выяву",
+		"copied": "Скапіявана",
+		"download": "Спампаваць",
+		"copyLink": "Капіяваць спасылку",
+		"copiedLink": "Спасылка скапіявана",
+		"close": "Закрыць",
+		"customizeLogo": "Наладзіць лагатып QR",
+		"logoUpdatedSuccess": "Лагатып QR абноўлены",
+		"avatarAppliedSuccess": "Аватар усталяваны як лагатып QR",
+		"noAvatar": "У вас няма аватара",
+		"logoResetDefault": "Лагатып скінуты па змаўчанні",
+		"qrCopiedSuccess": "Выява QR скапіявана",
+		"profileLinkCopied": "Спасылка на профіль скапіявана",
+		"qrDownloaded": "Выява QR спампавана"
 	}
 }

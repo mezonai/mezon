@@ -143,5 +143,26 @@
 			"verifyButton": "Verifiëren",
 			"success": "E-mail succesvol bijgewerkt"
 		}
+	},
+	"qrProfile": {
+		"scanToConnect": "Scan om te verbinden met",
+		"centerLogo": "QR-middenlogo",
+		"chooseFromDevice": "Kies van apparaat",
+		"useMyAvatar": "Gebruik mijn avatar",
+		"resetDefaultLogo": "Mezon-logo herstellen",
+		"copyImage": "Afbeelding kopiëren",
+		"copied": "Gekopieerd",
+		"download": "Downloaden",
+		"copyLink": "Link kopiëren",
+		"copiedLink": "Link gekopieerd",
+		"close": "Sluiten",
+		"customizeLogo": "QR-logo aanpassen",
+		"logoUpdatedSuccess": "QR-middenlogo bijgewerkt",
+		"avatarAppliedSuccess": "Avatar toegepast als QR-logo",
+		"noAvatar": "Je hebt geen avatar",
+		"logoResetDefault": "Standaardlogo hersteld",
+		"qrCopiedSuccess": "QR-afbeelding gekopieerd",
+		"profileLinkCopied": "Profiellink gekopieerd",
+		"qrDownloaded": "QR-afbeelding gedownload"
 	}
 }
