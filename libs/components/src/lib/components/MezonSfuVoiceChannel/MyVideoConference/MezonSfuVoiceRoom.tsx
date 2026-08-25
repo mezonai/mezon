@@ -13,6 +13,7 @@ import { Icons } from '@mezon/ui';
 import {
 	NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
 	createImgproxyUrl,
+	generateE2eId,
 	getAvatarForPrioritize,
 	getNameForPrioritize,
 	getNoiseSuppressionAudioCaptureOptions,
@@ -287,8 +288,8 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 };
 
 const CAMERA_CODEC = 'VP8';
-const SCREEN_CODEC = 'VP9';
-const SCREEN_SVC_MODE = 'L1T3';
+const SCREEN_CODEC = 'VP8';
+const SCREEN_SVC_MODE = 'L1T1';
 
 const CAMERA_MAX_BITRATE_BPS = 1_000_000;
 const SCREEN_MAX_BITRATE_BPS = 2_500_000;
@@ -335,7 +336,7 @@ const forceVideoCodec = (transceiver: RTCRtpTransceiver, codecName: string) => {
 
 const mungeVideoSectionBitrate = (section: string, minKbps: number, startKbps: number, maxKbps: number) => {
 	const pts = new Set<string>();
-	for (const m of section.matchAll(/^a=rtpmap:(\d+) (VP9|VP8|AV1)\//gim)) {
+	for (const m of section.matchAll(/^a=rtpmap:(\d+) VP8\//gim)) {
 		pts.add(m[1]);
 	}
 	let out = section;
@@ -435,6 +436,7 @@ export function MezonSfuVoiceRoom({
 	const cameraEnabled = useSelector(selectShowCamera);
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
 	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
+	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
 	const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
 	const { hasMicrophoneAccess, hasCameraAccess } = useMediaPermissions();
 	const wsRef = useRef<WebSocket | null>(null);
@@ -487,6 +489,7 @@ export function MezonSfuVoiceRoom({
 	const focusVideoContainerRef = useRef<HTMLDivElement>(null);
 	const [, renderFocusTileOrder] = useState(0);
 	onLeaveRoomRef.current = onLeaveRoom;
+	noiseSuppressionEnabledRef.current = noiseSuppressionEnabled;
 
 	const closePopout = useCallback(async () => {
 		if (document.pictureInPictureElement) await document.exitPictureInPicture();
@@ -673,7 +676,7 @@ export function MezonSfuVoiceRoom({
 			if (microphoneEnabled && audioTrack?.readyState !== 'live') {
 				try {
 					const stream = await navigator.mediaDevices.getUserMedia({
-						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current),
 						video: false
 					});
 					audioTrack = stream.getAudioTracks()[0];
@@ -700,7 +703,7 @@ export function MezonSfuVoiceRoom({
 				wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 			}
 		})();
-	}, [cameraEnabled, microphoneEnabled, noiseSuppressionEnabled]);
+	}, [cameraEnabled, microphoneEnabled]);
 
 	useEffect(() => {
 		const ws = wsRef.current;
@@ -807,7 +810,7 @@ export function MezonSfuVoiceRoom({
 				const stream = await navigator.mediaDevices.getUserMedia({
 					audio:
 						kind === 'audioinput'
-							? { ...getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled), deviceId: { exact: deviceId } }
+							? { ...getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current), deviceId: { exact: deviceId } }
 							: false,
 					video: kind === 'videoinput' ? { ...CAMERA_CAPTURE_CONSTRAINTS, deviceId: { exact: deviceId } } : false
 				});
@@ -846,7 +849,7 @@ export function MezonSfuVoiceRoom({
 				setError(cause instanceof Error ? cause.message : 'Unable to switch device');
 			}
 		},
-		[cameraEnabled, findUplinkVideoSender, microphoneEnabled, noiseSuppressionEnabled]
+		[cameraEnabled, findUplinkVideoSender, microphoneEnabled]
 	);
 
 	useEffect(() => {
@@ -862,13 +865,13 @@ export function MezonSfuVoiceRoom({
 			let stream: MediaStream;
 			try {
 				stream = await navigator.mediaDevices.getUserMedia({
-					audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+					audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current),
 					video: CAMERA_CAPTURE_CONSTRAINTS
 				});
 			} catch {
 				try {
 					stream = await navigator.mediaDevices.getUserMedia({
-						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current),
 						video: false
 					});
 				} catch {
@@ -1148,7 +1151,7 @@ export function MezonSfuVoiceRoom({
 				if (disposed || wsRef.current !== ws) return;
 				setError(undefined);
 				setConnectionState('joining');
-				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole }));
+				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole, screen_codec: SCREEN_CODEC.toLowerCase() }));
 				const sendVisibility = () => {
 					if (joinedRef.current && ws.readyState === WebSocket.OPEN)
 						ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
@@ -1356,7 +1359,6 @@ export function MezonSfuVoiceRoom({
 		dispatch,
 		findUplinkVideoSender,
 		joinRole,
-		noiseSuppressionEnabled,
 		roomId,
 		serverUrl,
 		syncRemoteMedia,
@@ -1842,7 +1844,13 @@ export function MezonSfuVoiceRoom({
 					>
 						{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
 					</button>
-					<button type="button" title={t('chat')} className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''} onClick={onToggleChat}>
+					<button
+						type="button"
+						title={t('chat')}
+						className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''}
+						onClick={onToggleChat}
+						data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
+					>
 						<Icons.Chat className="h-5 w-5" />
 					</button>
 				</div>
