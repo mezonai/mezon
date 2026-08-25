@@ -13,6 +13,7 @@ import { Icons } from '@mezon/ui';
 import {
 	NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
 	createImgproxyUrl,
+	generateE2eId,
 	getAvatarForPrioritize,
 	getNameForPrioritize,
 	getNoiseSuppressionAudioCaptureOptions,
@@ -1843,7 +1844,13 @@ export function MezonSfuVoiceRoom({
 					>
 						{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
 					</button>
-					<button type="button" title={t('chat')} className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''} onClick={onToggleChat}>
+					<button
+						type="button"
+						title={t('chat')}
+						className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''}
+						onClick={onToggleChat}
+						data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
+					>
 						<Icons.Chat className="h-5 w-5" />
 					</button>
 				</div>
