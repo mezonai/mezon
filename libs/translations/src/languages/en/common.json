@@ -351,6 +351,7 @@
 		"sendOtpError": "An error occurred while sending OTP"
 	},
 	"invite": {
+		"openInApp": "Open in Mezon App",
 		"canChatNow": "You can chat now !!",
 		"verifyWait": " Please wait while we verify your information. This will only take a few seconds.",
 		"chatNow": "Chat Now",

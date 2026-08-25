@@ -143,5 +143,25 @@
 			"verifyButton": "Verify",
 			"success": "Email updated successfully"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "Center QR Logo",
+		"chooseFromDevice": "Choose image from device",
+		"useMyAvatar": "Use my Avatar",
+		"resetDefaultLogo": "Reset to Mezon logo",
+		"copyImage": "Copy image",
+		"copied": "Copied",
+		"download": "Download",
+		"copyLink": "Copy link",
+		"copiedLink": "Link copied",
+		"close": "Close",
+		"customizeLogo": "Customize QR logo",
+		"logoUpdatedSuccess": "Center QR logo updated",
+		"avatarAppliedSuccess": "Avatar applied as QR logo",
+		"noAvatar": "You do not have a personal avatar",
+		"logoResetDefault": "Default logo restored",
+		"qrCopiedSuccess": "QR image copied",
+		"profileLinkCopied": "Profile link copied",
+		"qrDownloaded": "QR image downloaded"
 	}
 }
