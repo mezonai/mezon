@@ -1,4 +1,4 @@
-import { useAuth, useOnClickOutside, usePermissionChecker } from '@mezon/core';
+import { useAuth, useDirect, useOnClickOutside, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
 import {
 	giveCoffeeActions,
 	selectMemberClanByUserId,
@@ -11,9 +11,9 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { EPermission, compareBigInt, generateE2eId, type UsersClanEntity } from '@mezon/utils';
+import { EPermission, TypeMessage, compareBigInt, generateE2eId, type UsersClanEntity } from '@mezon/utils';
 import type { Room } from 'livekit-client';
-import type { ApiTokenSentEvent } from 'mezon-js';
+import { ChannelStreamMode, type ApiTokenSentEvent } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -31,6 +31,9 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 	const { t } = useTranslation(['contextMenu', 'token']);
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
+	const { sendInviteMessage } = useSendInviteMessage();
+	const { createDirectMessageWithUser } = useDirect();
+
 	const [canMangeVoice] = usePermissionChecker([EPermission.manageChannel]);
 
 	const focusRef = useRef<HTMLDivElement>(null);
@@ -203,7 +206,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 				sender_name: myProfile?.userProfile?.user?.username as string,
 				receiver_id: member.user.id,
 				amount: TOKEN_SEND_FLOWER,
-				note: 'Send a flower'
+				note: t('giveFlowers')
 			};
 
 			await dispatch(
@@ -212,6 +215,22 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 				})
 			);
 			await dispatch(voiceActions.giveFlowers({ receiver_id: member.user.id }));
+
+			const response = await createDirectMessageWithUser(
+				member.user.id,
+				member.user.display_name,
+				member.user.username,
+				member.user.avatar_url
+			);
+			if (response.channel_id) {
+				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				sendInviteMessage(
+					`Funds Transferred: ${TOKEN_SEND_FLOWER}₫ | ${tokenEvent.note}`,
+					response.channel_id,
+					channelMode,
+					TypeMessage.SendToken
+				);
+			}
 		} catch (error) {
 			console.error('Failed to send flower:', error);
 		}
