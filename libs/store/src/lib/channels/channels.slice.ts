@@ -1944,3 +1944,7 @@ export const selectShowScrollDownButton = createSelector(
 		return state.showScrollDownButton?.[key] ?? false;
 	}
 );
+
+export const selectAllChannelsInAllClans = createSelector([getChannelsState, (_, clanId?: string) => clanId as string], (channelsState, clanId) => {
+	return channelsState.byClans;
+});
