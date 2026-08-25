@@ -288,8 +288,8 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 };
 
 const CAMERA_CODEC = 'VP8';
-const SCREEN_CODEC = 'VP9';
-const SCREEN_SVC_MODE = 'L1T3';
+const SCREEN_CODEC = 'VP8';
+const SCREEN_SVC_MODE = 'L1T1';
 
 const CAMERA_MAX_BITRATE_BPS = 1_000_000;
 const SCREEN_MAX_BITRATE_BPS = 2_500_000;
@@ -336,7 +336,7 @@ const forceVideoCodec = (transceiver: RTCRtpTransceiver, codecName: string) => {
 
 const mungeVideoSectionBitrate = (section: string, minKbps: number, startKbps: number, maxKbps: number) => {
 	const pts = new Set<string>();
-	for (const m of section.matchAll(/^a=rtpmap:(\d+) (VP9|VP8|AV1)\//gim)) {
+	for (const m of section.matchAll(/^a=rtpmap:(\d+) VP8\//gim)) {
 		pts.add(m[1]);
 	}
 	let out = section;
@@ -1151,7 +1151,7 @@ export function MezonSfuVoiceRoom({
 				if (disposed || wsRef.current !== ws) return;
 				setError(undefined);
 				setConnectionState('joining');
-				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole }));
+				ws.send(JSON.stringify({ type: 'join', room: roomId, token, role: joinRole, screen_codec: SCREEN_CODEC.toLowerCase() }));
 				const sendVisibility = () => {
 					if (joinedRef.current && ws.readyState === WebSocket.OPEN)
 						ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
