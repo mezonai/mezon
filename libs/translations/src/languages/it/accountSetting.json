@@ -143,5 +143,25 @@
 			"verifyButton": "Conferma",
 			"success": "Email aggiornata con successo"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "Logo centrale QR",
+		"chooseFromDevice": "Scegli dal dispositivo",
+		"useMyAvatar": "Usa il mio avatar",
+		"resetDefaultLogo": "Reimposta logo Mezon",
+		"copyImage": "Copia immagine",
+		"copied": "Copiato",
+		"download": "Scarica",
+		"copyLink": "Copia link",
+		"copiedLink": "Link copiato",
+		"close": "Chiudi",
+		"customizeLogo": "Personalizza logo QR",
+		"logoUpdatedSuccess": "Logo centrale QR aggiornato",
+		"avatarAppliedSuccess": "Avatar applicato come logo QR",
+		"noAvatar": "Non hai un avatar",
+		"logoResetDefault": "Logo predefinito reimpostato",
+		"qrCopiedSuccess": "Immagine QR copiata",
+		"profileLinkCopied": "Link del profilo copiato",
+		"qrDownloaded": "Immagine QR scaricata"
 	}
 }

@@ -143,5 +143,25 @@
 			"verifyButton": "Раслау",
 			"success": "Электрон почта адресы уңышлы яңартылды"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "QR уртасындагы логотип",
+		"chooseFromDevice": "Җайланмадан сайлау",
+		"useMyAvatar": "Аватарымны куллану",
+		"resetDefaultLogo": "Mezon логотибын кайтару",
+		"copyImage": "Рәсемне күчерү",
+		"copied": "Күчерелде",
+		"download": "Йөкләү",
+		"copyLink": "Сылтаманы күчерү",
+		"copiedLink": "Сылтама күчерелде",
+		"close": "Ябу",
+		"customizeLogo": "QR логотибын көйләү",
+		"logoUpdatedSuccess": "QR логотибы яңартылды",
+		"avatarAppliedSuccess": "Аватар QR логотибы итеп куелды",
+		"noAvatar": "Сезнең аватарыгыз юк",
+		"logoResetDefault": "Төп логотип кайтарылды",
+		"qrCopiedSuccess": "QR рәсеме күчерелде",
+		"profileLinkCopied": "Профиль сылтамасы күчерелде",
+		"qrDownloaded": "QR рәсеме йөкләнде"
 	}
 }
