@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useMemo } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import type { SfuRemoteMedia } from '../../types';
@@ -38,7 +38,10 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 				</div>
 			)}
 			{!showVideo && (
-				<div className="flex h-full items-center justify-center bg-[#5d5f66]">
+				<div
+					className="flex h-full items-center justify-center bg-[#5d5f66]"
+					data-e2e={generateE2eId('clan_page.screen.voice_room.button.open_context')}
+				>
 					<AvatarImage
 						username={displayName}
 						alt={displayName}
@@ -50,7 +53,9 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 			)}
 			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
 				{isMuted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
-				<span className="truncate whitespace-nowrap py-0.5">{displayName}</span>
+				<span className="truncate whitespace-nowrap py-0.5" data-e2e={generateE2eId('clan_page.screen.voice_room.username')}>
+					{displayName}
+				</span>
 			</div>
 			{participant.role === 'audience' && (
 				<span className="absolute right-2 top-2 rounded-md bg-[#00000080] p-[5px] text-xs text-white">Audience</span>
