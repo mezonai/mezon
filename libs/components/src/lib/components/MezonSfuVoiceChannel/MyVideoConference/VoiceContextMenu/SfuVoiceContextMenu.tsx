@@ -1,7 +1,7 @@
 import { useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import { selectMemberClanByUserId, selectVoiceContextMenu, toastActions, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission } from '@mezon/utils';
+import { EPermission, generateE2eId } from '@mezon/utils';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
@@ -112,6 +112,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 				<button
 					className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a]"
 					onClick={handleGiveFlowers}
+					data-e2e={generateE2eId('clan_page.screen.voice_room.button.send_flower')}
 				>
 					<span>{t('giveFlowers')}</span>
 				</button>
@@ -120,6 +121,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 						disabled={isMuting}
 						className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-item-hover disabled:cursor-not-allowed disabled:opacity-50"
 						onClick={() => void handleMute()}
+						data-e2e={generateE2eId('clan_page.screen.voice_room.button.mute_mic')}
 					>
 						<span>{t('muteMic')}</span>
 						{isMuting ? (
@@ -134,6 +136,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 						disabled={isKicking}
 						className="flex w-full cursor-pointer items-center justify-between rounded p-2 text-[#E13542] hover:bg-[#f67e882a] disabled:cursor-not-allowed disabled:opacity-50"
 						onClick={() => void handleKick()}
+						data-e2e={generateE2eId('clan_page.screen.voice_room.button.kick')}
 					>
 						<span>{t('member.kick')}</span>
 						{isKicking ? (
