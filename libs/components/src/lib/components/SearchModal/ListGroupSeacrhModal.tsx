@@ -1,6 +1,5 @@
 import type { SearchItemProps } from '@mezon/utils';
 import { toggleDisableHover } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListGroupSearchModalContext } from './ListGroupSearchModalContext';
@@ -9,43 +8,13 @@ import ListSearchModal from './ListSearchModal';
 type Props = {
 	listRecent: SearchItemProps[];
 	listItemWithoutRecent: SearchItemProps[];
+	unreadList: SearchItemProps[];
 	normalizeSearchText: string;
 	handleItemClick: (item: SearchItemProps) => void;
 };
 
-type ClassifiedLists = {
-	mentionList: SearchItemProps[];
-	unreadList: SearchItemProps[];
-};
-export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWithoutRecent, normalizeSearchText, handleItemClick }) => {
+export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, listItemWithoutRecent, normalizeSearchText, handleItemClick }) => {
 	const { t } = useTranslation('common');
-	const classificationList = useMemo(
-		() =>
-			listItemWithoutRecent.reduce<ClassifiedLists>(
-				(acc, item) => {
-					const hasCountUnread = (item.count_messsage_unread ?? 0) > 0;
-					const isTextChannel = item.type === ChannelType.CHANNEL_TYPE_CHANNEL;
-					const isThreadChannel = item.type === ChannelType.CHANNEL_TYPE_THREAD;
-					const isDMMessage = item.type === ChannelType.CHANNEL_TYPE_DM;
-					const isGrMessage = item.type === ChannelType.CHANNEL_TYPE_GROUP;
-					const hasUnread = item.lastSentTimeStamp > item.lastSeenTimeStamp;
-					const hasUnreadChannel = (isTextChannel && (hasUnread || hasCountUnread)) || (isThreadChannel && (hasUnread || hasCountUnread));
-					const hasUnreadDmGr = (isDMMessage && (hasUnread || hasCountUnread)) || (isGrMessage && (hasUnread || hasCountUnread));
-					const isInListRecent = listRecent.some((recentItem) => recentItem.id === item.id);
-
-					if ((hasCountUnread && isTextChannel) || (hasCountUnread && isThreadChannel)) {
-						acc.mentionList.push(item);
-					} else if (hasUnreadChannel || (hasUnreadDmGr && !isInListRecent)) {
-						acc.unreadList.push(item);
-					}
-					return acc;
-				},
-				{ mentionList: [], unreadList: [] }
-			),
-		[listItemWithoutRecent, listRecent]
-	);
-
-	const { mentionList, unreadList } = classificationList;
 
 	const boxRef = useRef<HTMLDivElement | null>(null);
 	const itemRefs = useRef<Record<string, Element | null>>({});
@@ -57,8 +26,8 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 		if (normalizeSearchText) {
 			return listItemWithoutRecent;
 		}
-		return [...listRecent, ...mentionList, ...unreadList];
-	}, [normalizeSearchText, listRecent, mentionList, unreadList, listItemWithoutRecent]);
+		return [...listRecent, ...unreadList];
+	}, [normalizeSearchText, listRecent, unreadList, listItemWithoutRecent]);
 
 	const isNoResult = useMemo(() => !allItems?.length, [allItems?.length]);
 
@@ -170,7 +139,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 						/>
 					</>
 				)}
-				{!normalizeSearchText && mentionList.length > 0 && (
+				{/* {!normalizeSearchText && mentionList.length > 0 && (
 					<>
 						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.mentions')}</div>
 						<ListSearchModal
@@ -181,7 +150,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 							onMouseEnter={handleItemMouseEnter}
 						/>
 					</>
-				)}
+				)} */}
 				{!normalizeSearchText && unreadList.length > 0 && (
 					<>
 						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.unreadChannels')}</div>
@@ -195,13 +164,16 @@ export const ListGroupSearchModal: React.FC<Props> = ({ listRecent, listItemWith
 					</>
 				)}
 				{normalizeSearchText && listItemWithoutRecent.length > 0 && (
-					<ListSearchModal
-						listSearch={listItemWithoutRecent}
-						onItemClick={handleItemClick}
-						searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
-						focusItemId={focusItemId}
-						onMouseEnter={handleItemMouseEnter}
-					/>
+					<>
+						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.unreadChannels')}</div>
+						<ListSearchModal
+							listSearch={listItemWithoutRecent}
+							onItemClick={handleItemClick}
+							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
+							focusItemId={focusItemId}
+							onMouseEnter={handleItemMouseEnter}
+						/>
+					</>
 				)}
 
 				{isNoResult && <span className=" flex flex-row justify-center">{t('searchModal.noResults')}</span>}
