@@ -20,7 +20,6 @@ import {
 	EBacktickType,
 	generatePathAttachments,
 	getWebUploadedAttachments,
-	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
 	uniqueUsers
@@ -84,7 +83,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			let threadContent = content;
 			const store = getStore();
 			const ogpData = selectOgpData(store.getState());
-			const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
+			const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isTikTokLink(ogpData.url));
 			const isOgpFromThreadBox =
 				ogpData &&
 				(ogpData.channel_id === thread.channel_id || ogpData.channel_id === CREATING_THREAD) &&
