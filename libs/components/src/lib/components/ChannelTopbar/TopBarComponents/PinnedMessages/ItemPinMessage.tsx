@@ -100,7 +100,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		return contentObj;
 	}, [message?.content, messageContentObject]);
 
-	const isPollMessage = message?.code === TypeMessage.Poll || Boolean(pollData?.id);
+	const isPollMessage = message?.code === TypeMessage.Poll || Boolean(pollData?.answer_counts);
 
 	const pollDuration = useMemo(() => {
 		if (!pollData?.expire_at) return '';
