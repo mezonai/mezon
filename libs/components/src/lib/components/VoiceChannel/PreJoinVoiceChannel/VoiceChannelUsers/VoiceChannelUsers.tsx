@@ -71,7 +71,7 @@ export function VoiceUserItem({ userId, userName, userAvatar }: { userId: string
 
 	return (
 		<div className="size-14 rounded-full">
-			{avatar ? (
+			{avatar || username ? (
 				<AvatarImage alt={username || ''} username={username} className="size-14" srcImgProxy={avatarUrl} src={avatar} />
 			) : (
 				<Icons.AvatarUser />
