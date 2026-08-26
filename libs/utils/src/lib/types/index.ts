@@ -8,6 +8,7 @@ import type {
 	ApiChannelMessageHeader,
 	ApiClanDesc,
 	ApiClanProfile,
+	ApiDirectFcmProto,
 	ApiEventManagement,
 	ApiInviteUserRes,
 	ApiMessageAttachment,
@@ -971,9 +972,16 @@ export enum ThemeApp {
 	System = 'system'
 }
 
-export interface INotification extends ApiNotification {
+export interface INotificationContent extends Partial<ApiDirectFcmProto> {
+	attachment_size?: number;
+	attachments?: ApiMessageAttachment[];
+	embed?: IEmbedProps[] | Record<string, unknown>;
+	tp?: string | null;
+}
+
+export interface INotification extends Omit<ApiNotification, 'content'> {
 	id: string;
-	content?: any;
+	content?: INotificationContent;
 }
 export interface NotificationEntity extends INotification {
 	id: string;

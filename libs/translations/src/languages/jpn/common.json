@@ -349,6 +349,7 @@
 		"sendOtpError": "OTP送信中にエラーが発生しました"
 	},
 	"invite": {
+		"openInApp": "Mezonアプリで開く",
 		"canChatNow": "今すぐにチャットできます!!",
 		"verifyWait": " 情報を確認している間、お待ちください。これは数秒しかかかりません。",
 		"chatNow": "今すぐチャット",

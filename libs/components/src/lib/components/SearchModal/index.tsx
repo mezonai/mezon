@@ -1,4 +1,4 @@
-import { useAppNavigation, useAuth, useDirect } from '@mezon/core';
+import { useAppNavigation, useDirect } from '@mezon/core';
 import type { ChannelMetaEntity, DirectEntity } from '@mezon/store';
 import {
 	appActions,
@@ -7,23 +7,24 @@ import {
 	directActions,
 	listChannelsByUserActions,
 	messagesActions,
-	selectAllChannelsByUser,
+	selectAllChannelsInAllClans,
+	selectAllCtrlK,
 	selectAllDirectMessages,
-	selectAllUsesInAllClansEntities,
 	selectChannelMetaEntities,
-	selectClansEntities,
 	selectDmMetaEntities,
 	selectEntitesUserClans,
+	selectEntitiesCtrlK,
 	selectPreviousChannels,
 	useAppDispatch,
-	useAppSelector
+	useAppSelector,
+	userChannelsActions
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
-import { TypeSearch, addAttributesSearchList, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
+import { TypeSearch, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalLayout } from '../../components';
 import { ListGroupSearchModal } from './ListGroupSeacrhModal';
@@ -31,7 +32,10 @@ import { ListGroupSearchModal } from './ListGroupSeacrhModal';
 export type SearchModalProps = {
 	onClose: () => void;
 };
-
+type ClassifiedLists = {
+	recentList: SearchItemProps[];
+	unreadList: SearchItemProps[];
+};
 const withChannelMetaUnread = (lastSent: number, lastSeen: number, countUnread: number | undefined, meta?: ChannelMetaEntity) => {
 	const fromList = {
 		lastSentTimeStamp: lastSent,
@@ -53,45 +57,23 @@ const withChannelMetaUnread = (lastSent: number, lastSeen: number, countUnread: 
 	};
 };
 
-const getMetaUnreadSignature = (entities: Record<string, ChannelMetaEntity | undefined>, channelIds: string[]) =>
-	channelIds
-		.map((id) => {
-			const meta = entities[id];
-			return meta ? `${meta.count_mess_unread ?? 0}:${meta.lastSentTimestamp ?? 0}:${meta.lastSeenTimestamp ?? 0}` : '';
-		})
-		.join('|');
-
 function SearchModal({ onClose }: SearchModalProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
 	const allClanUsersEntities = useAppSelector(selectEntitesUserClans);
 	const dmGroupChatList = useAppSelector(selectAllDirectMessages);
-	const listChannels = useAppSelector(selectAllChannelsByUser);
-	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
 	const dmMetaEntities = useAppSelector(selectDmMetaEntities);
-	const allUsesInAllClansEntities = useAppSelector(selectAllUsesInAllClansEntities);
+	const ctrlKEntities = useAppSelector(selectEntitiesCtrlK);
+	const cltrKList = useAppSelector(selectAllCtrlK);
 	const previousChannels = useAppSelector(selectPreviousChannels);
-	const listClansRef = useRef(useAppSelector(selectClansEntities));
-	const listClans = listClansRef.current;
-	const { userProfile } = useAuth();
-	const accountId = userProfile?.user?.id ?? '';
 
 	const { toDmGroupPageFromMainApp, toChannelPage, navigate } = useAppNavigation();
 	const { createDirectMessageWithUser } = useDirect();
 
 	const [searchText, setSearchText] = useState('');
 
-	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 200), []);
+	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 300), []);
 	const checkListDM = useRef(new Set<string>());
-	const dmChannelIds = useMemo(
-		() =>
-			dmGroupChatList
-				.filter((item) => item.active === 1)
-				.map((item) => item.channel_id ?? '')
-				.filter(Boolean),
-		[dmGroupChatList]
-	);
-	const dmMetaUnreadSignature = getMetaUnreadSignature(dmMetaEntities, dmChannelIds);
 	const listDirectSearch = useMemo(() => {
 		const listDmSearchMap: SearchItemProps[] = [];
 		if (dmGroupChatList.length) {
@@ -117,7 +99,8 @@ function SearchModal({ onClose }: SearchModalProps) {
 						lastSeenTimeStamp: dmMeta.lastSeenTimeStamp,
 						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || []), ...clanNicks, itemDM?.channel_label]
 							.filter(Boolean)
-							.join('.')
+							.join('.'),
+						prioritizeName: itemDM.channel_label || itemDM?.display_names?.toString() || itemDM?.usernames?.toString() || ''
 					});
 				}
 				if (itemDM.active === 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
@@ -125,68 +108,26 @@ function SearchModal({ onClose }: SearchModalProps) {
 				}
 			});
 		}
-		const addPropsIntoSearchList = addAttributesSearchList(listDmSearchMap, Object.values(allUsesInAllClansEntities) as any);
-		return addPropsIntoSearchList;
-	}, [dmGroupChatList, allUsesInAllClansEntities, allClanUsersEntities, dmMetaUnreadSignature]);
-	const channelIdsForMeta = useMemo(() => listChannels.map((item) => item?.channel_id ?? '').filter(Boolean), [listChannels]);
-	const channelMetaUnreadSignature = getMetaUnreadSignature(channelMetaEntities, channelIdsForMeta);
+		return listDmSearchMap;
+	}, [dmGroupChatList, cltrKList, dmMetaEntities, allClanUsersEntities]);
 	const listChannelSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
-		listChannels.map((item) => {
-			if (item) {
-				const ageRestricted = (item as { age_restricted?: number }).age_restricted;
-				const meta = withChannelMetaUnread(
-					Number(item?.last_sent_message?.timestamp_seconds || 0),
-					Number(item?.last_seen_message?.timestamp_seconds || 0),
-					item?.count_mess_unread,
-					channelMetaEntities[item?.channel_id ?? '']
-				);
-				list.push({
-					id: item?.channel_id ?? '',
-					name: item?.channel_label ?? '',
-					subText: item?.clan_id ? listClans?.[item.clan_id]?.clan_name || '' : item.clan_name || '',
-					icon: '#',
-					clanId: item?.clan_id ?? '',
-					channelId: item?.channel_id ?? '',
-					lastSentTimeStamp: meta.lastSentTimeStamp,
-					typeChat: TypeSearch.Channel_Type,
-					prioritizeName: item?.channel_label ?? '',
-					channel_private: item?.channel_private,
-					age_restricted: ageRestricted,
-					type: item?.type,
-					parent_id: item?.parent_id,
-					count_messsage_unread: meta.count_messsage_unread,
-					lastSeenTimeStamp: meta.lastSeenTimeStamp
-				});
-			}
-		});
+		if (cltrKList.length) {
+			cltrKList.forEach((item) => {
+				if (!item.id) {
+					return;
+				}
+				if (checkListDM.current.has(item.id)) {
+					return;
+				}
+				list.push(item);
+			});
+		}
 		return list;
-	}, [listChannels, channelMetaUnreadSignature, listClans]);
-
+	}, [cltrKList]);
 	const listMemberSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
 		const addedUserIds = new Set<string>();
-
-		for (const userId in allUsesInAllClansEntities) {
-			const user = allUsesInAllClansEntities[userId];
-			if (!checkListDM.current?.has(user?.id)) {
-				list.push({
-					id: user?.id ?? '',
-					prioritizeName: allClanUsersEntities[user?.id]?.clan_nick ?? user?.display_name ?? '',
-					name: user?.username ?? '',
-					avatarUser: user?.avatar_url ?? '',
-					displayName: user?.display_name ?? '',
-					lastSentTimeStamp: '0',
-					idDM: user?.id,
-					typeChat: TypeSearch.Dm_Type,
-					type: ChannelType.CHANNEL_TYPE_DM,
-					searchName: [...(user.list_nick_names || []), allClanUsersEntities[user?.id]?.clan_nick, user?.display_name]
-						.filter(Boolean)
-						.join('.')
-				});
-				addedUserIds.add(user?.id);
-			}
-		}
 
 		dmGroupChatList.forEach((itemDM: DirectEntity) => {
 			if (itemDM.active !== 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
@@ -211,7 +152,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 		});
 
 		return list as SearchItemProps[];
-	}, [allClanUsersEntities, allUsesInAllClansEntities, dmGroupChatList]);
+	}, [allClanUsersEntities, dmGroupChatList]);
 	const normalizeSearchText = useMemo(() => {
 		return normalizeString(searchText);
 	}, [searchText]);
@@ -224,7 +165,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 		const list = listMemberSearch.concat(listChannelSearch, listDirectSearch);
 		const sortedList = list.slice().sort((a: any, b: any) => b.lastSentTimeStamp - a.lastSentTimeStamp);
 		return sortedList;
-	}, [listMemberSearch, listChannelSearch, listDirectSearch, allUsesInAllClansEntities, accountId]);
+	}, [listMemberSearch, listChannelSearch, listDirectSearch]);
 
 	const totalListsFiltered = useMemo(() => {
 		return filterListByName(totalLists, normalizeSearchText, isSearchByUsername);
@@ -234,15 +175,15 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return sortFilteredList(totalListsFiltered, normalizeSearchText, isSearchByUsername);
 	}, [totalListsFiltered, normalizeSearchText, isSearchByUsername]);
 
-	const totalListSortedWithoutPreviousList = useMemo(() => {
-		return [...totalListsSorted];
-	}, [totalListsSorted]);
-
 	const channelSearchSorted = useMemo(() => {
 		return totalListsSorted.filter((item) => item.typeChat === TypeSearch.Channel_Type);
 	}, [totalListsSorted]);
 
 	const totalListsMemberFiltered = useMemo(() => {
+		if (!listMemberSearch.length) {
+			return [];
+		}
+
 		return filterListByName(listMemberSearch, normalizeSearchText, isSearchByUsername);
 	}, [listMemberSearch, normalizeSearchText, isSearchByUsername]);
 
@@ -250,33 +191,6 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return sortFilteredList(totalListsMemberFiltered, normalizeSearchText, isSearchByUsername);
 	}, [totalListsMemberFiltered, normalizeSearchText, isSearchByUsername]);
 
-	const listRecent = useMemo(() => {
-		const previous: SearchItemProps[] = [];
-		if (totalListSortedWithoutPreviousList.length > 0) {
-			for (let i = totalListSortedWithoutPreviousList.length - 1; i >= 0; i--) {
-				if (
-					previousChannels
-						.map((item) => item.channelId)
-						.includes(totalListSortedWithoutPreviousList[i]?.channelId || totalListSortedWithoutPreviousList[i]?.id || '')
-				) {
-					previous.unshift(totalListSortedWithoutPreviousList[i]);
-					totalListSortedWithoutPreviousList.splice(i, 1);
-				}
-			}
-		}
-
-		if (listDirectSearch.length > 0) {
-			for (let i = listDirectSearch.length - 1; i >= 0; i--) {
-				const itemDMId = listDirectSearch[i]?.idDM || '';
-				const existsInPrevious = previous.some((item) => item?.idDM === listDirectSearch[i]?.idDM);
-				if (previousChannels.map((item) => item.channelId).includes(itemDMId) && !existsInPrevious) {
-					previous.unshift(listDirectSearch[i]);
-				}
-			}
-		}
-
-		return previous;
-	}, [listDirectSearch, previousChannels, totalListSortedWithoutPreviousList]);
 	const listItemWithoutRecent = useMemo(() => {
 		if (normalizeSearchText.startsWith('@')) {
 			return totalListMembersSorted;
@@ -288,12 +202,113 @@ function SearchModal({ onClose }: SearchModalProps) {
 		if (normalizeSearchText) {
 			return totalListsSorted;
 		}
-		return totalListSortedWithoutPreviousList;
-	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListSortedWithoutPreviousList, totalListsSorted]);
+		return totalListsSorted;
+	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListsSorted, totalListsSorted]);
 
+	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
+	const allChannels = useAppSelector(selectAllChannelsInAllClans);
+
+	const classificationList = useMemo(() => {
+		const recentIds = new Set(previousChannels.map((item) => item.channelId));
+
+		const { recentList, unreadList } = listItemWithoutRecent.reduce<ClassifiedLists>(
+			(acc, item) => {
+				const hasUnread = item.lastSentTimeStamp > item.lastSeenTimeStamp || (item.count_messsage_unread ?? 0) > 0;
+				if (!hasUnread) return acc;
+
+				const isChannel = item.type === ChannelType.CHANNEL_TYPE_CHANNEL || item.type === ChannelType.CHANNEL_TYPE_THREAD;
+				const isDmOrGroup = item.type === ChannelType.CHANNEL_TYPE_DM || item.type === ChannelType.CHANNEL_TYPE_GROUP;
+
+				if (isChannel) {
+					acc.unreadList.push(item);
+				} else if (isDmOrGroup && item.id && !recentIds.has(item.id)) {
+					acc.unreadList.push(item);
+				}
+
+				return acc;
+			},
+			{ recentList: [], unreadList: [] }
+		);
+
+		const listPrevious = new Set<string>();
+		if (previousChannels.length > 0) {
+			for (const previous of previousChannels) {
+				if (listPrevious.has(previous.channelId)) {
+					continue;
+				}
+				const channel = allChannels[previous.clanId].entities.entities?.[previous.channelId];
+				const meta = channelMetaEntities?.[previous.channelId];
+
+				if (channel) {
+					listPrevious.add(channel.id);
+					recentList.push({
+						count_messsage_unread: meta.count_mess_unread,
+						channelId: meta.id,
+						id: meta.id,
+						channel_private: channel.channel_private || 0,
+						name: channel?.channel_label ?? '',
+						subText: channel.clan_name || '',
+						icon: '#',
+						clanId: channel?.clan_id ?? '',
+						typeChat: TypeSearch.Channel_Type,
+						prioritizeName: channel?.channel_label ?? '',
+						age_restricted: channel.age_restricted,
+						type: channel?.type,
+						parent_id: channel?.parent_id,
+						lastSeenTimeStamp: meta.lastSeenTimestamp,
+						lastSentTimeStamp: meta.lastSentTimestamp
+					});
+				}
+			}
+		}
+
+		Object.values(channelMetaEntities)?.map((meta) => {
+			if ((meta.count_mess_unread || meta.lastSeenTimestamp < meta.lastSentTimestamp) && !listPrevious.has(meta.id)) {
+				if (allChannels[meta.clanId]?.entities?.entities?.[meta.id]) {
+					const channel = allChannels[meta.clanId].entities.entities?.[meta.id];
+
+					unreadList.push({
+						count_messsage_unread: meta.count_mess_unread,
+						channelId: meta.id,
+						id: meta.id,
+						channel_private: channel.channel_private || 0,
+						name: channel?.channel_label ?? '',
+						subText: channel.clan_name || '',
+						icon: '#',
+						clanId: channel?.clan_id ?? '',
+						typeChat: TypeSearch.Channel_Type,
+						prioritizeName: channel?.channel_label ?? '',
+						age_restricted: channel.age_restricted,
+						type: channel?.type,
+						parent_id: channel?.parent_id,
+						lastSeenTimeStamp: meta.lastSeenTimestamp,
+						lastSentTimeStamp: meta.lastSentTimestamp
+					});
+				}
+			}
+		});
+
+		return { recentList, unreadList };
+	}, [listItemWithoutRecent, previousChannels, channelMetaEntities]);
+
+	const { recentList, unreadList } = classificationList;
+
+	const listRecent = useMemo(() => {
+		const previous: SearchItemProps[] = recentList;
+		if (listDirectSearch.length > 0) {
+			for (let i = listDirectSearch.length - 1; i >= 0; i--) {
+				const itemDMId = listDirectSearch[i]?.id || '';
+				if (previousChannels.map((item) => item.channelId).includes(itemDMId)) {
+					previous.unshift(listDirectSearch[i]);
+				}
+			}
+		}
+
+		return previous;
+	}, [recentList, listDirectSearch, previousChannels, totalListsSorted]);
 	const handleSelectMem = useCallback(
 		async (user: SearchItemProps) => {
-			const foundDirect = listDirectSearch.find((item) => item.id === user.id);
+			const foundDirect = dmGroupChatList.find((item) => item.id === user.id);
 			dispatch(appActions.setIsShowSettingFooterStatus(false));
 			if (foundDirect !== undefined) {
 				dispatch(
@@ -322,7 +337,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 				}
 			}
 		},
-		[createDirectMessageWithUser, dispatch, listDirectSearch, navigate, toDmGroupPageFromMainApp]
+		[createDirectMessageWithUser, dispatch, dmGroupChatList, navigate, toDmGroupPageFromMainApp]
 	);
 
 	const handleSelectChannel = useCallback(
@@ -367,6 +382,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 		[onClose, handleSelectChannel, dispatch, handleSelectMem]
 	);
 
+	useEffect(() => {
+		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText }));
+	}, [searchText]);
+
 	return (
 		<ModalLayout onClose={onClose}>
 			<div
@@ -384,6 +403,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 				</div>
 				<ListGroupSearchModal
 					listRecent={listRecent}
+					unreadList={unreadList}
 					listItemWithoutRecent={listItemWithoutRecent}
 					normalizeSearchText={normalizeSearchText}
 					handleItemClick={handleItemClick}

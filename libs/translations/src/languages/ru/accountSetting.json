@@ -143,5 +143,25 @@
 			"verifyButton": "Подтвердить",
 			"success": "Адрес электронной почты был успешно обновлён"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "Логотип в центре QR",
+		"chooseFromDevice": "Выбрать с устройства",
+		"useMyAvatar": "Использовать мой аватар",
+		"resetDefaultLogo": "Сбросить логотип Mezon",
+		"copyImage": "Копировать изображение",
+		"copied": "Скопировано",
+		"download": "Скачать",
+		"copyLink": "Копировать ссылку",
+		"copiedLink": "Ссылка скопирована",
+		"close": "Закрыть",
+		"customizeLogo": "Настроить логотип QR",
+		"logoUpdatedSuccess": "Логотип QR обновлен",
+		"avatarAppliedSuccess": "Аватар установлен как логотип QR",
+		"noAvatar": "У вас нет аватара",
+		"logoResetDefault": "Логотип сброшен по умолчанию",
+		"qrCopiedSuccess": "Изображение QR скопировано",
+		"profileLinkCopied": "Ссылка на профиль скопирована",
+		"qrDownloaded": "Изображение QR скачано"
 	}
 }

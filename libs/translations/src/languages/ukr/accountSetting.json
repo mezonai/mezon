@@ -143,5 +143,25 @@
 			"verifyButton": "Підтвердити",
 			"success": "Email успішно оновлено"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "Логотип у центрі QR",
+		"chooseFromDevice": "Вибрати з пристрою",
+		"useMyAvatar": "Використовувати мій аватар",
+		"resetDefaultLogo": "Скинути логотип Mezon",
+		"copyImage": "Копіювати зображення",
+		"copied": "Скопійовано",
+		"download": "Завантажити",
+		"copyLink": "Копіювати посилання",
+		"copiedLink": "Посилання скопійовано",
+		"close": "Закрити",
+		"customizeLogo": "Налаштувати логотип QR",
+		"logoUpdatedSuccess": "Логотип QR оновлено",
+		"avatarAppliedSuccess": "Аватар встановлено як логотип QR",
+		"noAvatar": "У вас немає аватара",
+		"logoResetDefault": "Логотип скинуто за замовчуванням",
+		"qrCopiedSuccess": "Зображення QR скопійовано",
+		"profileLinkCopied": "Посилання на профіль скопійовано",
+		"qrDownloaded": "Зображення QR завантажено"
 	}
 }

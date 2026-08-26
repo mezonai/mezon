@@ -213,6 +213,7 @@
 		"protipDescription": "Start searches with @, # to narrow down results.",
 		"previousChannels": "Previous channels",
 		"mentions": "Mentions",
+		"search": "Search channels",
 		"unreadChannels": "Unread channels",
 		"noResults": "Can't seem to find what you're looking for?"
 	},
@@ -351,6 +352,7 @@
 		"sendOtpError": "An error occurred while sending OTP"
 	},
 	"invite": {
+		"openInApp": "Open in Mezon App",
 		"canChatNow": "You can chat now !!",
 		"verifyWait": " Please wait while we verify your information. This will only take a few seconds.",
 		"chatNow": "Chat Now",

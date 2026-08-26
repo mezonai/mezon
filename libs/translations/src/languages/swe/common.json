@@ -349,6 +349,7 @@
 		"sendOtpError": "Ett fel uppstod vid OTP-sändning"
 	},
 	"invite": {
+		"openInApp": "Öppna i Mezon-appen",
 		"canChatNow": "Du kan chatta nu!!",
 		"verifyWait": " Vänligen vänta medan vi verifierar din information. Detta tar bara några sekunder.",
 		"chatNow": "Chatta nu",

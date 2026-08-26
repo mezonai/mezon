@@ -32,6 +32,7 @@ interface RenderContentProps {
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	senderId?: string;
+	onCloseTooltip?: () => void;
 }
 
 export interface ElementToken {
@@ -328,7 +329,8 @@ export const MessageLine = ({
 	isEphemeral,
 	isSending,
 	onContextMenu,
-	senderId
+	senderId,
+	onCloseTooltip
 }: RenderContentProps) => {
 	const { t: translate } = useTranslation('common');
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -403,6 +405,7 @@ export const MessageLine = ({
 						index={index}
 						s={s}
 						mention={element.username}
+						onCloseTooltip={onCloseTooltip}
 					/>
 				);
 			} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
@@ -699,6 +702,7 @@ interface MentionContentProps {
 	index: number;
 	s: number;
 	mention?: string;
+	onCloseTooltip?: () => void;
 }
 
 export const MentionContent = ({
@@ -709,7 +713,8 @@ export const MentionContent = ({
 	isJumMessageEnabled,
 	mode,
 	index,
-	s
+	s,
+	onCloseTooltip
 }: MentionContentProps) => {
 	return (
 		<MentionUser
@@ -719,6 +724,7 @@ export const MentionContent = ({
 			tagUserId={element.user_id}
 			mode={mode}
 			mention={mention}
+			onCloseTooltip={onCloseTooltip}
 		/>
 	);
 };
