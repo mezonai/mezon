@@ -22,7 +22,6 @@ export * from './lib/channels/channelapp.slice';
 export * from './lib/channels/channelmeta.slice';
 export * from './lib/channels/channels.slice';
 export * from './lib/channels/listChannelRender';
-export * from './lib/channels/listUsers.slice';
 export * from './lib/channels/updateChannelActions.slice';
 export * from './lib/clanMembers/clan.members';
 export * from './lib/clanProfile/clanProfile.slice';

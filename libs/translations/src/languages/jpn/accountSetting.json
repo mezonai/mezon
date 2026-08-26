@@ -143,5 +143,25 @@
 			"verifyButton": "確認",
 			"success": "メールの更新に成功しました"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "QR中央ロゴ",
+		"chooseFromDevice": "端末から選択",
+		"useMyAvatar": "自分のアバターを使用",
+		"resetDefaultLogo": "Mezonロゴにリセット",
+		"copyImage": "画像をコピー",
+		"copied": "コピー完了",
+		"download": "ダウンロード",
+		"copyLink": "リンクをコピー",
+		"copiedLink": "リンクをコピーしました",
+		"close": "閉じる",
+		"customizeLogo": "QRロゴをカスタマイズ",
+		"logoUpdatedSuccess": "QR中央ロゴを更新しました",
+		"avatarAppliedSuccess": "アバターをQRロゴに設定しました",
+		"noAvatar": "アバターが設定されていません",
+		"logoResetDefault": "デフォルトロゴにリセットしました",
+		"qrCopiedSuccess": "QRコード画像をコピーしました",
+		"profileLinkCopied": "プロフィールリンクをコピーしました",
+		"qrDownloaded": "QRコード画像をダウンロードしました"
 	}
 }

@@ -213,6 +213,7 @@
 		"protipDescription": "Bắt đầu tìm kiếm với @, # để thu hẹp kết quả.",
 		"previousChannels": "Kênh trước đó",
 		"mentions": "Nhắc đến",
+		"search": "Kênh tìm kiếm",
 		"unreadChannels": "Kênh chưa đọc",
 		"noResults": "Có vẻ như không tìm thấy thứ bạn đang tìm?"
 	},
@@ -351,6 +352,7 @@
 		"sendOtpError": "Đã xảy ra lỗi khi gửi OTP"
 	},
 	"invite": {
+		"openInApp": "Mở trong Mezon App",
 		"canChatNow": "Bạn có thể trò chuyện ngay bây giờ !!",
 		"verifyWait": " Vui lòng đợi trong khi chúng tôi xác minh thông tin của bạn. Điều này sẽ chỉ mất vài giây.",
 		"chatNow": "Trò chuyện ngay",

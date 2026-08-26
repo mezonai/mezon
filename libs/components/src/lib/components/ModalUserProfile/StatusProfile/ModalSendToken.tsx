@@ -1,5 +1,5 @@
-import type { FriendsEntity, ISendTokenDetailType, UsersEntity } from '@mezon/store';
-import { selectAllFriends, selectAllUsersByUser, selectWalletDetail } from '@mezon/store';
+import type { FriendsEntity, ISendTokenDetailType } from '@mezon/store';
+import { selectAllFriends, selectWalletDetail } from '@mezon/store';
 import { ButtonLoading, Icons, Input } from '@mezon/ui';
 import { createImgproxyUrl, formatNumber, generateE2eId } from '@mezon/utils';
 import Dropdown from 'rc-dropdown';
@@ -53,7 +53,6 @@ const ModalSendToken = ({
 	isButtonDisabled
 }: ModalSendTokenProps) => {
 	const { t, i18n } = useTranslation(['userProfile', 'message'], { keyPrefix: 'statusProfile.sendTokenModal' });
-	const usersClan = useSelector(selectAllUsersByUser);
 	const friends = useSelector(selectAllFriends);
 	const walletDetail = useSelector(selectWalletDetail);
 
@@ -117,7 +116,7 @@ const ModalSendToken = ({
 		setNoteSendToken(value);
 	};
 
-	const mergeUniqueUsers = (usersClan: UsersEntity[], directMessages: FriendsEntity[]) => {
+	const mergeUniqueUsers = (usersClan: [], directMessages: FriendsEntity[]) => {
 		const userMap: Map<string, User> = new Map();
 		directMessages.forEach((itemDM: FriendsEntity) => {
 			const userId = itemDM?.user?.id ?? '';
@@ -130,23 +129,11 @@ const ModalSendToken = ({
 				});
 			}
 		});
-		usersClan.forEach((itemUserClan) => {
-			const userId = itemUserClan?.id ?? '';
-			if (userId && !userMap.has(userId)) {
-				userMap.set(userId, {
-					id: userId,
-					username: itemUserClan?.username ?? '',
-					avatar_url: itemUserClan?.avatar_url ?? '',
-					search_key: itemUserClan.list_nick_names?.join('./'),
-					display_name: itemUserClan.display_name
-				});
-			}
-		});
 
 		return Array.from(userMap.values());
 	};
 
-	const mergedUsers = mergeUniqueUsers(usersClan, friends);
+	const mergedUsers = mergeUniqueUsers([], friends);
 
 	const filteredUsers = mergedUsers.filter((user) =>
 		searchTerm.length === 0

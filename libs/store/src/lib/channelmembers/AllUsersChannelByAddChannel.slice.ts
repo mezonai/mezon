@@ -1,8 +1,8 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IUserChannel, LoadingStatus } from '@mezon/utils';
+import { TypeSearch, type IUserChannel, type LoadingStatus, type SearchItemProps } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAllUsersAddChannelResponse } from 'mezon-js';
+import type { ApiAllUsersAddChannelResponse, ApiSearchCtrlKResponse } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -17,18 +17,26 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 	error?: string | null;
 	cacheByChannels: Record<string, CacheMetadata>;
 	userIdToChannelIds: Record<string, string[]>;
+	listSearch: EntityState<SearchItemProps, string>;
 }
 
 export const UserChannelAdapter = createEntityAdapter({
 	selectId: (userChannel: IUserChannel) => userChannel.channel_id || '0'
 });
 
+export const ItemSearchCtrlKAdapter = createEntityAdapter({
+	selectId: (item: SearchItemProps) => item.id || '0'
+});
+
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
 	cacheByChannels: {},
-	userIdToChannelIds: {}
+	userIdToChannelIds: {},
+	listSearch: ItemSearchCtrlKAdapter.getInitialState({})
 });
+
+const cacheSearchKey = new Set<string>();
 
 export const fetchUserChannelsCached = async (
 	getState: () => RootState,
@@ -95,6 +103,38 @@ export const fetchUserChannels = createAsyncThunk(
 			};
 		} catch (error) {
 			captureSentryError(error, 'allUsersByAddChannel/fetchUserChannels');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const fetchSearchCtrlK = createAsyncThunk(
+	'allUsersByAddChannel/fetchSearchCtrlK',
+	async ({ textSearch }: { textSearch: string }, thunkAPI) => {
+		if (!textSearch.trim()) {
+			return true;
+		}
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const typeSearch = textSearch.startsWith('@') ? 1 : textSearch.startsWith('#') ? 2 : 0;
+			if (cacheSearchKey.has(textSearch)) {
+				return true;
+			}
+
+			const response = await mezon.client.searchCtrlK(mezon.session, {
+				text: textSearch,
+				type: typeSearch
+			});
+			if (!typeSearch) {
+				cacheSearchKey.add(`@${textSearch}`);
+				cacheSearchKey.add(`#${textSearch}`);
+			} else {
+				cacheSearchKey.add(textSearch);
+			}
+
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'allUsersByAddChannel/fetchSearchCtrlK');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -259,13 +299,56 @@ export const userChannelsSlice = createSlice({
 			.addCase(fetchUserChannels.rejected, (state: UsersByAddChannelState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(fetchSearchCtrlK.fulfilled, (state: UsersByAddChannelState, action: PayloadAction<boolean | ApiSearchCtrlKResponse>) => {
+				if (typeof action.payload === 'boolean') {
+					return;
+				}
+
+				if (action.payload.channels && action.payload.channels?.length) {
+					const channels: SearchItemProps[] = action.payload.channels.map((channel) => {
+						return {
+							count_messsage_unread: channel.count_mess_unread,
+							channelId: channel.channel_id,
+							id: channel.channel_id,
+							channel_private: channel.channel_private || 0,
+							name: channel?.channel_label ?? '',
+							subText: channel.clan_name || '',
+							icon: '#',
+							clanId: channel?.clan_id ?? '',
+							typeChat: TypeSearch.Channel_Type,
+							prioritizeName: channel?.channel_label ?? '',
+							age_restricted: channel.age_restricted,
+							type: channel?.type,
+							parent_id: channel?.parent_id
+						};
+					});
+					state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, channels);
+				}
+
+				if (action.payload.users && action.payload.users?.length) {
+					const users: SearchItemProps[] = action.payload.users.map((users) => {
+						return {
+							channelId: users.id,
+							idDM: users.id,
+							id: users.id,
+							name: users?.display_name || users?.username || '',
+							subText: users?.username || '',
+							icon: '@',
+							typeChat: TypeSearch.Dm_Type,
+							prioritizeName: users?.display_name || users?.username || ''
+						};
+					});
+					state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, users);
+				}
 			});
 	}
 });
 
 export const userChannelsActions = {
 	...userChannelsSlice.actions,
-	fetchUserChannels
+	fetchUserChannels,
+	fetchSearchCtrlK
 };
 
 export const userChannelsReducer = userChannelsSlice.reducer;
@@ -303,3 +386,7 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 	});
 	return listMember;
 });
+
+const { selectEntities, selectAll } = ItemSearchCtrlKAdapter.getSelectors();
+export const selectEntitiesCtrlK = createSelector(getUserChannelsState, (state) => selectEntities(state.listSearch));
+export const selectAllCtrlK = createSelector(getUserChannelsState, (state) => selectAll(state.listSearch));

@@ -143,5 +143,25 @@
 			"verifyButton": "Bekräfta",
 			"success": "E-post uppdaterat framgångsrikt"
 		}
+	},
+	"qrProfile": {
+		"centerLogo": "QR-centerlogotyp",
+		"chooseFromDevice": "Välj från enhet",
+		"useMyAvatar": "Använd min avatar",
+		"resetDefaultLogo": "Återställ Mezon-logotyp",
+		"copyImage": "Kopiera bild",
+		"copied": "Kopierad",
+		"download": "Ladda ner",
+		"copyLink": "Kopiera länk",
+		"copiedLink": "Länk kopierad",
+		"close": "Stäng",
+		"customizeLogo": "Anpassa QR-logotyp",
+		"logoUpdatedSuccess": "QR-centerlogotyp uppdaterad",
+		"avatarAppliedSuccess": "Avatar tillämpad som QR-logotyp",
+		"noAvatar": "Du har ingen avatar",
+		"logoResetDefault": "Standardlogotyp återställd",
+		"qrCopiedSuccess": "QR-kodsbild kopierad",
+		"profileLinkCopied": "Profillänk kopierad",
+		"qrDownloaded": "QR-kodsbild nedladdad"
 	}
 }
