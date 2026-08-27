@@ -121,7 +121,9 @@ function MyApp() {
 					return;
 				}
 				if (!currentClanId) return;
-				dispatch(accountActions.setAnonymousMode(currentClanId));
+				const currentChannelId = selectCurrentChannelId(store.getState());
+				if (!currentChannelId) return;
+				dispatch(accountActions.setAnonymousMode(currentChannelId));
 			}
 		},
 		[handleOpenSearchModal, currentURL]

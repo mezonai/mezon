@@ -213,7 +213,10 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 
 			await dispatch(
 				giveCoffeeActions.sendToken({
-					tokenEvent
+					tokenEvent: {
+						...tokenEvent,
+						receiver_name: member.user.username || ''
+					}
 				})
 			);
 			await dispatch(voiceActions.giveFlowers({ receiver_id: member.user.id }));
