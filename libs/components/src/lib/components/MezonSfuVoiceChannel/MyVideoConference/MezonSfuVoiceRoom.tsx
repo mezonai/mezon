@@ -47,8 +47,8 @@ const CAMERA_CAPTURE_CONSTRAINTS = {
 } satisfies MediaTrackConstraints;
 
 const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
-	width: { ideal: 1920 },
-	height: { ideal: 1080 },
+	width: { ideal: 1280 },
+	height: { ideal: 720 },
 	frameRate: { ideal: 10, max: 15 }
 } satisfies MediaTrackConstraints;
 
