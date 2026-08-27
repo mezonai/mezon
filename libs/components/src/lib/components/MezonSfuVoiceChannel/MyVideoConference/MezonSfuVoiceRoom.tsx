@@ -1,4 +1,5 @@
 import {
+	generateMeetToken,
 	selectCurrentUserId,
 	selectEntitesUserClans,
 	selectNoiseSuppressionEnabled,
@@ -459,6 +460,7 @@ export function MezonSfuVoiceRoom({
 	const onLeaveRoomRef = useRef(onLeaveRoom);
 	const lastMuteChangedAtRef = useRef(0);
 	const pendingForcedMuteRef = useRef<number>();
+	const refreshingTokenRef = useRef(false);
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [error, setError] = useState<string>();
 	const [localPreview, setLocalPreview] = useState<MediaStream>();
@@ -1275,7 +1277,28 @@ export function MezonSfuVoiceRoom({
 				if (message.type === 'error') {
 					// eslint-disable-next-line no-console
 					console.error('[MezonSFU] server error', message);
-					setError(message.message || 'SFU signaling error');
+					const errorMsg = message.message || 'SFU signaling error';
+					if (!refreshingTokenRef.current && (errorMsg.toLowerCase().includes('token') || errorMsg.toLowerCase().includes('invalid'))) {
+						refreshingTokenRef.current = true;
+						void dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
+							.unwrap()
+							.then((newToken) => {
+								refreshingTokenRef.current = false;
+								if (newToken && newToken !== token) {
+									dispatch(voiceActions.setToken(newToken));
+								} else {
+									setError(errorMsg);
+									setConnectionState('failed');
+								}
+							})
+							.catch((cause) => {
+								refreshingTokenRef.current = false;
+								setError(cause instanceof Error ? cause.message : errorMsg);
+								setConnectionState('failed');
+							});
+						return;
+					}
+					setError(errorMsg);
 					setConnectionState('failed');
 				}
 			};
@@ -1288,7 +1311,7 @@ export function MezonSfuVoiceRoom({
 				if (wsRef.current !== ws) return;
 				wsRef.current = null;
 				joinedRef.current = false;
-				reconnectAllowed = event.code === 4001;
+				reconnectAllowed = event.code !== 4006;
 				if (disposed) return;
 
 				setConnectionState('disconnected');
@@ -1301,6 +1324,25 @@ export function MezonSfuVoiceRoom({
 						})
 					);
 					onLeaveRoomRef.current();
+					return;
+				}
+
+				if ((event.code === 4001 || event.code === 4003) && !refreshingTokenRef.current) {
+					refreshingTokenRef.current = true;
+					void dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
+						.unwrap()
+						.then((newToken) => {
+							refreshingTokenRef.current = false;
+							if (newToken && newToken !== token) {
+								dispatch(voiceActions.setToken(newToken));
+							} else if (reconnectAllowed) {
+								reconnect();
+							}
+						})
+						.catch(() => {
+							refreshingTokenRef.current = false;
+							if (reconnectAllowed) reconnect();
+						});
 					return;
 				}
 
