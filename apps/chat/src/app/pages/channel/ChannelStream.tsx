@@ -327,7 +327,7 @@ export default function ChannelStream({
 	const isJoin = useSelector(selectIsJoin);
 	const { userProfile } = useAuth();
 	const { sessionRef } = useMezon();
-	const accessToken = sessionRef.current?.session_id;
+	const accessToken = sessionRef.current?.token;
 	const dispatch = useAppDispatch();
 	const [showMembers, setShowMembers] = useState(true);
 	const [showEndCallButton, setShowEndCallButton] = useState(true);
