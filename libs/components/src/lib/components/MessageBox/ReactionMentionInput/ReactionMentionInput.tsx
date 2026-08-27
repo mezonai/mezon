@@ -143,7 +143,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const dispatch = useAppDispatch();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
-	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id as string));
+	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.id as string));
 	const [mentionEveryone, setMentionEveryone] = useState(false);
 	const addEmojiState = useSelector(selectAddEmojiState);
 	const emojiPicked = useSelector(selectEmojiObjSuggestion);

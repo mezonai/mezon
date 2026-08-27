@@ -102,7 +102,10 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 export const sendToken = createAsyncThunk(
 	'token/sendToken',
 	async (
-		{ tokenEvent, isSendByAddress, isMobile = false }: { tokenEvent: ApiTokenSentEvent; isSendByAddress?: boolean; isMobile?: boolean },
+		{
+			tokenEvent,
+			isSendByAddress
+		}: { tokenEvent: ApiTokenSentEvent & { receiver_name?: string }; isSendByAddress?: boolean; isMobile?: boolean },
 		thunkAPI
 	) => {
 		try {
@@ -121,10 +124,10 @@ export const sendToken = createAsyncThunk(
 							UserReceiverId: tokenEvent.receiver_id || '',
 							UserSenderId: tokenEvent.sender_id || '',
 							UserSenderUsername: currentUser?.user?.username || '',
-							ExtraAttribute: tokenEvent?.extra_attribute || ''
+							ExtraAttribute: tokenEvent?.extra_attribute || '',
+							UserReceiverName: tokenEvent.receiver_name || ''
 						},
-						isSendByAddress,
-						isMobile
+						isSendByAddress
 					})
 				)
 				.then((action) => action?.payload as AddTxResponse);

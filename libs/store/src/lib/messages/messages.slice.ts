@@ -22,7 +22,6 @@ import {
 	getMessageCreateTimeSeconds,
 	getPublicKeys,
 	getWebUploadedAttachments,
-	isFacebookLink,
 	isTikTokLink,
 	isYouTubeLink,
 	mergePresignFinishContent,
@@ -1358,7 +1357,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		const ogpData = selectOgpData(rootState);
 
-		const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
+		const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isTikTokLink(ogpData.url));
 
 		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0 && !isSocialMediaLink) {
 			const mk = [...(content.mk ?? [])];

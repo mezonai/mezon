@@ -13,7 +13,6 @@ import {
 	selectChannelMetaEntities,
 	selectDmMetaEntities,
 	selectEntitesUserClans,
-	selectEntitiesCtrlK,
 	selectPreviousChannels,
 	useAppDispatch,
 	useAppSelector,
@@ -63,7 +62,6 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const allClanUsersEntities = useAppSelector(selectEntitesUserClans);
 	const dmGroupChatList = useAppSelector(selectAllDirectMessages);
 	const dmMetaEntities = useAppSelector(selectDmMetaEntities);
-	const ctrlKEntities = useAppSelector(selectEntitiesCtrlK);
 	const cltrKList = useAppSelector(selectAllCtrlK);
 	const previousChannels = useAppSelector(selectPreviousChannels);
 

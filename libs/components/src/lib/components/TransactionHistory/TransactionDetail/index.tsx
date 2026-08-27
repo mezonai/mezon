@@ -55,17 +55,17 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 	const detailFields = useMemo(() => {
 		if (!detailLedger) return [];
 		const extraInfo = safeJSONParse(detailLedger.extra_info);
-		const sender = extraInfo?.UserSenderId || null;
-		const receiver = extraInfo?.UserReceiverId || null;
+		const sender = extraInfo?.UserSenderUsername || null;
+		const receiver = extraInfo?.UserSenderUsername || null;
 		return [
 			{ label: t(FIELDS.TRANSACTION_ID), value: detailLedger.hash, icon: Icons.Transaction },
-			{ label: t(FIELDS.SENDER), value: sender?.username || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ label: t(FIELDS.SENDER), value: sender || t(UNKNOWN_USER), icon: Icons.UserIcon },
 			{
 				label: t(FIELDS.AMOUNT),
 				value: `${formatBalanceToString(detailLedger.value)} ${t(CURRENCY.SYMBOL)}`,
 				icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite />
 			},
-			{ label: t(FIELDS.RECEIVER), value: receiver?.username || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ label: t(FIELDS.RECEIVER), value: receiver || t(UNKNOWN_USER), icon: Icons.UserIcon },
 			{ label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: Icons.PenEdit },
 			{
 				label: t(FIELDS.CREATED),
