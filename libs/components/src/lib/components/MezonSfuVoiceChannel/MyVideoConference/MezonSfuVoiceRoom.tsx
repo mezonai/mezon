@@ -50,9 +50,9 @@ const CAMERA_CAPTURE_CONSTRAINTS = {
 } satisfies MediaTrackConstraints;
 
 const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
-	width: { ideal: 1280 },
-	height: { ideal: 720 },
-	frameRate: { ideal: 10, max: 15 }
+	width: { ideal: 1920 },
+	height: { ideal: 1080 },
+	frameRate: { ideal: 5, max: 5 }
 } satisfies MediaTrackConstraints;
 
 const SELF_MUTE_EVENT_CORRELATION_MS = 300;
@@ -291,17 +291,17 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 };
 
 const CAMERA_CODEC = 'VP8';
-const SCREEN_CODEC = 'VP8';
+const SCREEN_CODEC = 'VP9';
 const SCREEN_SVC_MODE = 'L1T1';
 
 const CAMERA_MAX_BITRATE_BPS = 1_000_000;
-const SCREEN_MAX_BITRATE_BPS = 2_500_000;
+const SCREEN_MAX_BITRATE_BPS = 3_500_000;
 const CAMERA_MIN_BITRATE_KBPS = 250;
 const CAMERA_START_BITRATE_KBPS = 500;
 const CAMERA_MAX_BITRATE_KBPS = 1000;
 const SCREEN_MIN_BITRATE_KBPS = 400;
 const SCREEN_START_BITRATE_KBPS = 1000;
-const SCREEN_MAX_BITRATE_KBPS = 2500;
+const SCREEN_MAX_BITRATE_KBPS = 3500;
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
