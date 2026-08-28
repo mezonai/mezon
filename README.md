@@ -264,7 +264,7 @@ Mezon owns the hot path in C so chat, voice, and data stay off generic HTTP/WebR
 -   **Core**: Custom real-time server on Valkey, ScyllaDB, and `io_uring`
 -   **[mezon-sfu](https://github.com/mezonai/mezon-sfu)**: C WebRTC SFU for HD meetings and large rooms — lock-free per-room workers, zero-copy `io_uring` fan-out, DTLS/SRTP, VP9/AV1/VP8, TWCC/GCC + SVC
 -   **[libmezia](https://github.com/mezonai/libmezia)** (native media engine): C11 client engine, wire-compatible with mezon-sfu — lock-minimal Opus voice (~24 kbit/s) and hardware H.264, no PeerConnection tax on mobile
--   **mezon-proto-server**: Binary Mezon-Proto over raw QUIC — C data plane (L1 process cache + Valkey), Go control plane over Unix sockets. Schemas: [mezon-protocol](https://github.com/mezonai/mezon-protocol)
+-   **mezon-proto-server**: the high-performance socket server handles protobuf compliance. [mezon-protocol](https://github.com/mezonai/mezon-protocol)
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) — high-performance, zero-fee L1
 -   **Real-time**: WebSocket / TCP Abridged with binary payload; Mezon-Proto for the high-QPS data path
 -   **Security**: E2E encryption, TLS 1.3 (SFU: DTLS + SRTP)
@@ -276,7 +276,7 @@ Mezon owns the hot path in C so chat, voice, and data stay off generic HTTP/WebR
 | ----- | --------- | -------------- |
 | Voice / video | **mezon-sfu** | Shared-state mutexes and copy-heavy fan-out. Each room is an isolated thread; packets are referenced, not copied, through `io_uring` (`recv` + `SEND_ZC`). |
 | Native clients | **libmezia** | A full WebRTC `PeerConnection` tree on iOS/Android. Same SDP/RTP subset the SFU already speaks; no extra packet format, no steady-state heap on the audio path. |
-| Chat / data | **mezon-proto-server** | Nginx + HTTP header parsing + TCP head-of-line blocking. Raw QUIC + protobuf; CPU moves bytes. Complex work stays on Go over a Unix socket. |
+| Chat / data | **mezon-proto-server** | The proto-server uses io_uring with SQPOLL and fixed files/buffers to cut syscalls and avoid per-op fd/memory overhead. A custom BoringSSL integration reads/writes directly into registered buffers for a zero-copy encrypt/decrypt path. Everything is lock-free — per-thread rings, no shared mutexes on the hot path. |
 
 #### Development Tools
 
