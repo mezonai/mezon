@@ -30,7 +30,7 @@
 
 Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling with friends, or even building a global community. Customize your own space to talk, play, and hang out. Mezon also delivers enterprise-grade performance with sub-millisecond response times and support for millions of concurrent connections.
 
-That performance comes from owning the hot path end to end — a C WebRTC SFU, a C11 native media engine, IO Uring and a binary data plane — instead of stacking generic HTTP and WebRTC middleware.
+That performance comes from owning the hot path end to end: high-performance native Android and iOS clients — not hybrid solutions — a Rust desktop app that renders its UI directly on the GPU, and a high-performance server stack written in C, built on a custom WebRTC SFU, a C11 native media engine, io_uring, and a binary data plane, instead of stacking generic HTTP and WebRTC middleware.
 <div align="center">
   <img width="851" height="315" alt="Mezon Platform Overview" src="https://github.com/user-attachments/assets/0cbc29c7-b8eb-4810-9e88-9efa88e7b43d" />
 </div>
