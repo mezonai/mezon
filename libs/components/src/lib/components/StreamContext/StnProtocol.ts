@@ -1,10 +1,22 @@
 export const STN_PING_INTERVAL_MS = 15000;
-export const STN_CHANNELS_WAIT_MS = 800;
+export const STN_CHANNELS_WAIT_MS = 1200;
+export const STN_CHANNELS_POLL_MS = 1000;
 export const STN_ICE_GATHER_TIMEOUT_MS = 2500;
 export const STN_DEFAULT_RENDITION = '1080';
 export const STN_KNOWN_RENDITIONS = ['480', '720', '1080', '4k'] as const;
 export const STN_PRESENCE_CONNECTED = 3;
 export const STN_PRESENCE_DISCONNECTED = 5;
+export const STN_VOD_PLAYOUT_DELAY_MS = 2500;
+export const STN_LIVE_PLAYOUT_DELAY_MS = 400;
+export const STN_ABR_COOLDOWN_MS = 8000;
+export const STN_QOE_WINDOW_MS = 2000;
+export const STN_QOE_DROP_THRESHOLD = 8;
+
+const RUNG_DOWN: Record<string, string> = {
+	'4k': '1080',
+	'1080': '720',
+	'720': '480'
+};
 
 export type StnRendition = (typeof STN_KNOWN_RENDITIONS)[number];
 
@@ -68,11 +80,15 @@ export function parseChannelList(value: unknown): StnChannelEntry[] {
 	});
 }
 
-export function shouldOfferVideo(list: StnChannelEntry[] | null, streamId: string): boolean {
+export function findListedChannel(list: StnChannelEntry[] | null | undefined, streamId: string): StnChannelEntry | null {
 	if (!list) {
-		return true;
+		return null;
 	}
-	const hit = list.find((entry) => entry.id === streamId);
+	return list.find((entry) => entry.id === streamId) ?? null;
+}
+
+export function shouldOfferVideo(list: StnChannelEntry[] | null, streamId: string): boolean {
+	const hit = findListedChannel(list, streamId);
 	if (hit && hit.hasVideo === false) {
 		return false;
 	}
@@ -138,6 +154,17 @@ export function infoHasVideo(info: Record<string, unknown> | null): boolean | nu
 	return !!hv;
 }
 
+export function infoIsVod(info: Record<string, unknown> | null): boolean | null {
+	if (!info) {
+		return null;
+	}
+	const vod = info.vod ?? info.Vod;
+	if (vod == null) {
+		return null;
+	}
+	return !!vod;
+}
+
 export function infoPlayoutDelayMs(info: Record<string, unknown> | null): number | null {
 	if (!info) {
 		return null;
@@ -145,6 +172,64 @@ export function infoPlayoutDelayMs(info: Record<string, unknown> | null): number
 	const delay = info.playout_delay_ms ?? info.PlayoutDelayMs;
 	const n = Number(delay);
 	return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export function resolvePlayoutDelayMs(info: Record<string, unknown> | null, isVod: boolean | null): number | null {
+	if (isVod === false) {
+		return STN_LIVE_PLAYOUT_DELAY_MS;
+	}
+	const fromInfo = infoPlayoutDelayMs(info);
+	if (fromInfo != null) {
+		return fromInfo;
+	}
+	if (isVod === true) {
+		return STN_VOD_PLAYOUT_DELAY_MS;
+	}
+	return null;
+}
+
+export function preferVideoCodecs(transceiver: RTCRtpTransceiver, live: boolean): void {
+	if (typeof transceiver.setCodecPreferences !== 'function') {
+		return;
+	}
+	if (!RTCRtpReceiver?.getCapabilities) {
+		return;
+	}
+	const caps = RTCRtpReceiver.getCapabilities('video');
+	if (!caps?.codecs?.length) {
+		return;
+	}
+	const needle = live ? /h264/i : /vp9/i;
+	const hit = caps.codecs.filter((codec) => needle.test(codec.mimeType || ''));
+	const rest = caps.codecs.filter((codec) => !needle.test(codec.mimeType || ''));
+	if (!hit.length) {
+		return;
+	}
+	try {
+		transceiver.setCodecPreferences(hit.concat(rest));
+	} catch {
+		// Safari / older browsers may reject the preference list.
+	}
+}
+
+export function stepDownRendition(current: string, published: string[]): string | null {
+	const token = normalizeRendition(current);
+	const publishedSet = published.map((item) => String(item).toLowerCase());
+	const next = RUNG_DOWN[token];
+	if (next && (!publishedSet.length || publishedSet.includes(next))) {
+		return next;
+	}
+	const order = ['1080', '720', '480'];
+	const cur = order.indexOf(token);
+	if (cur < 0) {
+		return null;
+	}
+	for (let i = cur + 1; i < order.length; i++) {
+		if (!publishedSet.length || publishedSet.includes(order[i])) {
+			return order[i];
+		}
+	}
+	return null;
 }
 
 export function infoRendition(info: Record<string, unknown> | null): string | null {

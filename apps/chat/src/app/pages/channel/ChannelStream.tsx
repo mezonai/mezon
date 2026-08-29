@@ -469,7 +469,7 @@ export default function ChannelStream({
 							</div>
 						) : (
 							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex justify-center items-center text-center border-theme-primary">
-								<span>{t('noStreamToday')}</span>
+								<span>{t('waitingForPublisher')}</span>
 							</div>
 						)}
 						{memberJoin.length > 0 && (

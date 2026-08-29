@@ -2,23 +2,32 @@
 import { useAppDispatch, videoStreamActions } from '@mezon/store';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
+	STN_ABR_COOLDOWN_MS,
+	STN_CHANNELS_POLL_MS,
 	STN_CHANNELS_WAIT_MS,
 	STN_DEFAULT_RENDITION,
 	STN_PING_INTERVAL_MS,
 	STN_PRESENCE_CONNECTED,
 	STN_PRESENCE_DISCONNECTED,
+	STN_QOE_DROP_THRESHOLD,
+	STN_QOE_WINDOW_MS,
+	STN_VOD_PLAYOUT_DELAY_MS,
 	applyPlayoutDelayHint,
 	buildStnEnvelope,
+	findListedChannel,
 	iceCandidateFromValue,
 	infoHasVideo,
-	infoPlayoutDelayMs,
+	infoIsVod,
 	infoRendition,
 	infoRenditions,
 	normalizeRendition,
 	parseChannelList,
 	parseInfoValue,
+	preferVideoCodecs,
+	resolvePlayoutDelayMs,
 	sdpFromAnswer,
 	shouldOfferVideo,
+	stepDownRendition,
 	stnClientId,
 	waitIceGatheringComplete,
 	type StnChannelEntry,
@@ -76,9 +85,17 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	const pendingRemoteIceRef = useRef<RTCIceCandidateInit[]>([]);
 	const pendingLocalIceRef = useRef<RTCIceCandidateInit[]>([]);
 	const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const qoeTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const channelsWaiterRef = useRef<((list: StnChannelEntry[] | null) => void) | null>(null);
+	const channelsWaitSeqRef = useRef(0);
 	const connGenRef = useRef(0);
 	const presenceSentRef = useRef(false);
+	const isVodRef = useRef<boolean | null>(null);
+	const playoutDelayMsRef = useRef(STN_VOD_PLAYOUT_DELAY_MS);
+	const abrCooldownUntilRef = useRef(0);
+	const qoeDroppedRef = useRef(0);
+	const qoeDroppedAtRef = useRef(0);
+	const renditionsRef = useRef<string[]>([]);
 
 	const setHasVideoState = useCallback(
 		(next: boolean) => {
@@ -87,6 +104,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 			setHasVideo(next);
 			if (!next) {
 				dispatch(videoStreamActions.setIsRemoteVideoStream(false));
+				renditionsRef.current = [];
 				setRenditions([]);
 			}
 		},
@@ -107,6 +125,11 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	const retryPlayback = useCallback(async () => {
 		const videoElement = streamVideoRef.current;
 		if (!videoElement) {
+			return false;
+		}
+		const stream = videoElement.srcObject;
+		const hasAudio = stream instanceof MediaStream && stream.getAudioTracks().some((track) => track.readyState === 'live');
+		if (!hasVideoRef.current && !hasAudio) {
 			return false;
 		}
 		try {
@@ -135,6 +158,13 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		if (heartbeatRef.current) {
 			clearInterval(heartbeatRef.current);
 			heartbeatRef.current = null;
+		}
+	}, []);
+
+	const stopQoe = useCallback(() => {
+		if (qoeTimerRef.current) {
+			clearInterval(qoeTimerRef.current);
+			qoeTimerRef.current = null;
 		}
 	}, []);
 
@@ -197,11 +227,13 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 
 	const cleanupPeer = useCallback(() => {
 		stopHeartbeat();
+		stopQoe();
 		remoteDescReadyRef.current = false;
 		localTrickleReadyRef.current = false;
 		pendingRemoteIceRef.current = [];
 		pendingLocalIceRef.current = [];
 		channelsWaiterRef.current = null;
+		channelsWaitSeqRef.current += 1;
 		if (pcRef.current) {
 			try {
 				pcRef.current.close();
@@ -214,7 +246,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		setIsConnected(false);
 		setConnectionState('closed');
 		setIsPlaybackBlocked(false);
-	}, [clearVideoElement, stopHeartbeat]);
+	}, [clearVideoElement, stopHeartbeat, stopQoe]);
 
 	const setRendition = useCallback(
 		(id: string) => {
@@ -223,11 +255,57 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 			if (!identity || wsRef.current?.readyState !== WebSocket.OPEN) {
 				return;
 			}
+			abrCooldownUntilRef.current = Date.now() + STN_ABR_COOLDOWN_MS;
 			markRendition(token);
 			wsSend(buildStnEnvelope('set_rendition', identity, { Rendition: token }));
 		},
 		[markRendition, wsSend]
 	);
+
+	const startQoe = useCallback(() => {
+		stopQoe();
+		qoeDroppedRef.current = 0;
+		qoeDroppedAtRef.current = 0;
+		qoeTimerRef.current = setInterval(() => {
+			const peer = pcRef.current;
+			if (!peer || !autoAbrRef.current || !hasVideoRef.current) {
+				return;
+			}
+			void peer.getStats().then((report) => {
+				let framesDropped = 0;
+				report.forEach((stat) => {
+					if (stat.type === 'inbound-rtp' && (stat.kind === 'video' || (stat as { mediaType?: string }).mediaType === 'video')) {
+						framesDropped += (stat as RTCInboundRtpStreamStats).framesDropped || 0;
+					}
+				});
+				const now = Date.now();
+				if (now < abrCooldownUntilRef.current) {
+					qoeDroppedRef.current = framesDropped;
+					return;
+				}
+				if (!qoeDroppedAtRef.current) {
+					qoeDroppedRef.current = framesDropped;
+					qoeDroppedAtRef.current = now;
+					return;
+				}
+				const delta = framesDropped - qoeDroppedRef.current;
+				const windowMs = now - qoeDroppedAtRef.current;
+				qoeDroppedRef.current = framesDropped;
+				if (windowMs < STN_QOE_WINDOW_MS) {
+					return;
+				}
+				qoeDroppedAtRef.current = now;
+				if (delta < STN_QOE_DROP_THRESHOLD) {
+					return;
+				}
+				const next = stepDownRendition(currentRenditionRef.current, renditionsRef.current);
+				if (!next) {
+					return;
+				}
+				setRendition(next);
+			});
+		}, 1000);
+	}, [setRendition, stopQoe]);
 
 	const initPeerConnection = useCallback(
 		(offerVideo: boolean) => {
@@ -238,7 +316,11 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 
 			peerConnection.oniceconnectionstatechange = () => {
 				setConnectionState(peerConnection.iceConnectionState);
-				setIsConnected(peerConnection.iceConnectionState === 'connected' || peerConnection.iceConnectionState === 'completed');
+				const connected = peerConnection.iceConnectionState === 'connected' || peerConnection.iceConnectionState === 'completed';
+				setIsConnected(connected);
+				if (connected) {
+					startQoe();
+				}
 			};
 
 			peerConnection.onicecandidate = (event) => {
@@ -265,7 +347,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					void retryPlayback();
 				}
 				if (event.track.kind === 'video') {
-					applyPlayoutDelayHint(peerConnection, 2500, hasVideoRef.current);
+					applyPlayoutDelayHint(peerConnection, playoutDelayMsRef.current, hasVideoRef.current);
 					event.track.onmute = () => {
 						dispatch(videoStreamActions.setIsRemoteVideoStream(false));
 					};
@@ -291,22 +373,31 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 
 			peerConnection.addTransceiver('audio', { direction: 'recvonly' });
 			if (offerVideo) {
-				peerConnection.addTransceiver('video', { direction: 'recvonly' });
+				const videoTransceiver = peerConnection.addTransceiver('video', { direction: 'recvonly' });
+				preferVideoCodecs(videoTransceiver, true);
 			}
 
 			pcRef.current = peerConnection;
 			return peerConnection;
 		},
-		[dispatch, retryPlayback, sendLocalIce]
+		[dispatch, retryPlayback, sendLocalIce, startQoe]
 	);
 
 	const waitForChannels = useCallback((ms: number) => {
 		return new Promise<StnChannelEntry[] | null>((resolve) => {
+			const seq = channelsWaitSeqRef.current + 1;
+			channelsWaitSeqRef.current = seq;
 			const timer = setTimeout(() => {
+				if (channelsWaitSeqRef.current !== seq) {
+					return;
+				}
 				channelsWaiterRef.current = null;
 				resolve(null);
 			}, ms);
 			channelsWaiterRef.current = (list) => {
+				if (channelsWaitSeqRef.current !== seq) {
+					return;
+				}
 				clearTimeout(timer);
 				channelsWaiterRef.current = null;
 				resolve(list);
@@ -332,7 +423,11 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 		joinRef.current = null;
 		cleanupPeer();
 		setIsStream(false);
+		renditionsRef.current = [];
 		setRenditions([]);
+		isVodRef.current = null;
+		playoutDelayMsRef.current = STN_VOD_PLAYOUT_DELAY_MS;
+		abrCooldownUntilRef.current = 0;
 		setHasVideoState(true);
 		markRendition(STN_DEFAULT_RENDITION);
 		dispatch(videoStreamActions.setIsRemoteVideoStream(false));
@@ -425,15 +520,22 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 				}
 				case 'info': {
 					const info = parseInfoValue(data.Value);
+					const vod = infoIsVod(info);
+					if (vod != null) {
+						isVodRef.current = vod;
+					}
 					const hv = infoHasVideo(info);
 					if (hv === false) {
 						setHasVideoState(false);
 					} else if (hv === true) {
 						setHasVideoState(true);
 					}
-					const delayMs = infoPlayoutDelayMs(info);
-					if (delayMs && hasVideoRef.current) {
-						applyPlayoutDelayHint(pcRef.current, delayMs, true);
+					const delayMs = resolvePlayoutDelayMs(info, isVodRef.current);
+					if (delayMs != null) {
+						playoutDelayMsRef.current = delayMs;
+						if (hasVideoRef.current) {
+							applyPlayoutDelayHint(pcRef.current, delayMs, true);
+						}
 					}
 					const cur = infoRendition(info);
 					if (cur && hasVideoRef.current) {
@@ -441,6 +543,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					}
 					if (hasVideoRef.current) {
 						const list = infoRenditions(info);
+						renditionsRef.current = list;
 						setRenditions(list);
 					}
 					break;
@@ -451,8 +554,9 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					if (id) {
 						markRendition(id);
 					}
-					const delayMs = infoPlayoutDelayMs(info);
-					if (delayMs) {
+					const delayMs = resolvePlayoutDelayMs(info, isVodRef.current);
+					if (delayMs != null) {
+						playoutDelayMsRef.current = delayMs;
 						applyPlayoutDelayHint(pcRef.current, delayMs, hasVideoRef.current);
 					}
 					break;
@@ -469,9 +573,12 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					break;
 				}
 				case 'channel_closed':
+				case 'stream_publisher_ended':
 				case 'stream_track_ended':
 					setIsStream(false);
 					dispatch(videoStreamActions.setIsRemoteVideoStream(false));
+					break;
+				case 'session_state_changed':
 					break;
 				case 'error':
 					console.error('STN error', data.Value);
@@ -510,6 +617,10 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 			joinRef.current = identity;
 			wantVideoRef.current = true;
 			hasVideoRef.current = true;
+			isVodRef.current = null;
+			playoutDelayMsRef.current = STN_VOD_PLAYOUT_DELAY_MS;
+			abrCooldownUntilRef.current = 0;
+			renditionsRef.current = [];
 			setHasVideo(true);
 			markRendition(STN_DEFAULT_RENDITION);
 			remoteDescReadyRef.current = false;
@@ -526,12 +637,24 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					return;
 				}
 				startHeartbeat();
-				wsSend(buildStnEnvelope('get_channels', identity, {}, { ChannelId: streamId }));
-				const listed = await waitForChannels(STN_CHANNELS_WAIT_MS);
-				if (gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
+				let hit: StnChannelEntry | null = null;
+				while (gen === connGenRef.current && websocket.readyState === WebSocket.OPEN) {
+					const pending = waitForChannels(STN_CHANNELS_WAIT_MS);
+					wsSend(buildStnEnvelope('get_channels', identity, {}, { ChannelId: streamId }));
+					const listed = await pending;
+					if (gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
+						return;
+					}
+					hit = findListedChannel(listed, streamId);
+					if (hit) {
+						break;
+					}
+					await new Promise((resolve) => setTimeout(resolve, STN_CHANNELS_POLL_MS));
+				}
+				if (!hit || gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
 					return;
 				}
-				const offerVideo = shouldOfferVideo(listed, streamId);
+				const offerVideo = shouldOfferVideo([hit], streamId);
 				wantVideoRef.current = offerVideo;
 				hasVideoRef.current = offerVideo;
 				setHasVideo(offerVideo);

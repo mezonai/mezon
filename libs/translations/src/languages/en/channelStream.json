@@ -8,5 +8,6 @@
 	"hideMembers": "Hide Members",
 	"showMembers": "Show Members",
 	"quality": "Quality",
-	"autoQuality": "Auto"
+	"autoQuality": "Auto",
+	"waitingForPublisher": "Waiting for stream…"
 }

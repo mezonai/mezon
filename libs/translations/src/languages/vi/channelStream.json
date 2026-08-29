@@ -8,5 +8,6 @@
 	"hideMembers": "Ẩn thành viên",
 	"showMembers": "Hiện thành viên",
 	"quality": "Chất lượng",
-	"autoQuality": "Tự động"
+	"autoQuality": "Tự động",
+	"waitingForPublisher": "Đang chờ luồng phát…"
 }
