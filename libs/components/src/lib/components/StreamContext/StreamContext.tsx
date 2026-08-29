@@ -23,12 +23,14 @@ import {
 	normalizeRendition,
 	parseChannelList,
 	parseInfoValue,
+	pickStnCredentials,
 	preferVideoCodecs,
 	resolvePlayoutDelayMs,
 	sdpFromAnswer,
 	shouldOfferVideo,
 	stepDownRendition,
 	stnClientId,
+	stnWebSocketUrl,
 	waitIceGatheringComplete,
 	type StnChannelEntry,
 	type StnJoinIdentity,
@@ -41,7 +43,15 @@ interface WebRTCContextType {
 	connectionState: RTCIceConnectionState;
 	connect: () => Promise<void>;
 	disconnect: () => void;
-	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => void;
+	handleChannelClick: (
+		clanId: string,
+		channelId: string,
+		userId: string,
+		streamId: string,
+		username: string,
+		accessToken: string,
+		jwtToken?: string
+	) => void;
 	streamVideoRef: React.RefObject<HTMLVideoElement>;
 	isStream: boolean;
 	isPlaybackBlocked: boolean;
@@ -592,13 +602,14 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 	);
 
 	const handleChannelClick = useCallback(
-		(clanId: string, channelId: string, userId: string, streamId: string, _username: string, accessToken: string) => {
+		(clanId: string, channelId: string, userId: string, streamId: string, _username: string, accessToken: string, jwtToken?: string) => {
 			if (!isSupported) {
 				console.error('WebRTC is not supported');
 				return;
 			}
 			const wsUrl = process.env.NX_CHAT_APP_STREAM_WS_URL;
-			if (!wsUrl || !accessToken) {
+			const { primary, fallback } = pickStnCredentials(accessToken, jwtToken);
+			if (!wsUrl || !primary) {
 				console.error('missing STN url or session token');
 				return;
 			}
@@ -629,20 +640,17 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 			pendingLocalIceRef.current = [];
 			presenceSentRef.current = false;
 
-			const websocket = new WebSocket(`${wsUrl}/ws?token=${encodeURIComponent(accessToken)}`);
-			wsRef.current = websocket;
-
-			websocket.onopen = async () => {
-				if (gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
+			const runSubscriber = async (socket: WebSocket) => {
+				if (gen !== connGenRef.current || socket.readyState !== WebSocket.OPEN) {
 					return;
 				}
 				startHeartbeat();
 				let hit: StnChannelEntry | null = null;
-				while (gen === connGenRef.current && websocket.readyState === WebSocket.OPEN) {
+				while (gen === connGenRef.current && socket.readyState === WebSocket.OPEN) {
 					const pending = waitForChannels(STN_CHANNELS_WAIT_MS);
 					wsSend(buildStnEnvelope('get_channels', identity, {}, { ChannelId: streamId }));
 					const listed = await pending;
-					if (gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
+					if (gen !== connGenRef.current || socket.readyState !== WebSocket.OPEN) {
 						return;
 					}
 					hit = findListedChannel(listed, streamId);
@@ -651,7 +659,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					}
 					await new Promise((resolve) => setTimeout(resolve, STN_CHANNELS_POLL_MS));
 				}
-				if (!hit || gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
+				if (!hit || gen !== connGenRef.current || socket.readyState !== WebSocket.OPEN) {
 					return;
 				}
 				const offerVideo = shouldOfferVideo([hit], streamId);
@@ -667,7 +675,7 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 					const offer = await peerConnection.createOffer();
 					await peerConnection.setLocalDescription(offer);
 					await waitIceGatheringComplete(peerConnection);
-					if (gen !== connGenRef.current || websocket.readyState !== WebSocket.OPEN) {
+					if (gen !== connGenRef.current || socket.readyState !== WebSocket.OPEN) {
 						return;
 					}
 					const local = peerConnection.localDescription;
@@ -682,32 +690,48 @@ export const WebRTCStreamProvider: React.FC<WebRTCProviderProps> = ({ children }
 				}
 			};
 
-			websocket.onmessage = (event) => {
-				if (gen !== connGenRef.current) {
-					return;
-				}
-				try {
-					const data = JSON.parse(event.data) as StnSignalMessage;
-					void handleSignal(data, gen);
-				} catch (err) {
-					console.error(err, 'STN message');
-				}
+			const bindSocket = (socket: WebSocket, jwtFallback?: string) => {
+				let opened = false;
+				socket.onopen = () => {
+					opened = true;
+					void runSubscriber(socket);
+				};
+				socket.onmessage = (event) => {
+					if (gen !== connGenRef.current) {
+						return;
+					}
+					try {
+						const data = JSON.parse(event.data) as StnSignalMessage;
+						void handleSignal(data, gen);
+					} catch (err) {
+						console.error(err, 'STN message');
+					}
+				};
+				socket.onerror = (error) => {
+					console.error(error, 'STN websocket');
+				};
+				socket.onclose = () => {
+					if (gen !== connGenRef.current) {
+						return;
+					}
+					if (!opened && jwtFallback) {
+						console.warn('STN SID handshake failed, retrying with JWT');
+						const next = new WebSocket(stnWebSocketUrl(wsUrl, jwtFallback));
+						wsRef.current = next;
+						bindSocket(next);
+						return;
+					}
+					stopHeartbeat();
+					cleanupPeer();
+					wsRef.current = null;
+					presenceSentRef.current = false;
+					setIsStream(false);
+				};
 			};
 
-			websocket.onerror = (error) => {
-				console.error(error, 'STN websocket');
-			};
-
-			websocket.onclose = () => {
-				if (gen !== connGenRef.current) {
-					return;
-				}
-				stopHeartbeat();
-				cleanupPeer();
-				wsRef.current = null;
-				presenceSentRef.current = false;
-				setIsStream(false);
-			};
+			const websocket = new WebSocket(stnWebSocketUrl(wsUrl, primary));
+			wsRef.current = websocket;
+			bindSocket(websocket, fallback);
 		},
 		[
 			cleanupPeer,

@@ -44,6 +44,20 @@ export type StnJoinIdentity = {
 	clientId: string;
 };
 
+export function stnWebSocketUrl(baseUrl: string, token: string): string {
+	const trimmed = baseUrl.replace(/\/$/, '');
+	return `${trimmed}/ws?token=${encodeURIComponent(token)}`;
+}
+
+export function pickStnCredentials(sid?: string | null, jwt?: string | null): { primary: string; fallback?: string } {
+	const sessionId = sid?.trim() || '';
+	const jwtToken = jwt?.trim() || '';
+	if (sessionId && jwtToken && sessionId !== jwtToken) {
+		return { primary: sessionId, fallback: jwtToken };
+	}
+	return { primary: sessionId || jwtToken };
+}
+
 export function stnClientId(userId: string): string {
 	return `web-${userId}`;
 }

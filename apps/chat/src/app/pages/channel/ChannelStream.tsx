@@ -301,7 +301,15 @@ function UserItem({ id, user_name, user_avatar }: { id: string; user_name: strin
 type ChannelStreamProps = {
 	currentStreamInfo: IStreamInfo | null;
 	currentChannel: ChannelsEntity | null;
-	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => void;
+	handleChannelClick: (
+		clanId: string,
+		channelId: string,
+		userId: string,
+		streamId: string,
+		username: string,
+		accessToken: string,
+		jwtToken?: string
+	) => void;
 	streamVideoRef: RefObject<HTMLVideoElement>;
 	disconnect: () => void;
 	isStream: boolean;
@@ -328,6 +336,7 @@ export default function ChannelStream({
 	const { userProfile } = useAuth();
 	const { sessionRef } = useMezon();
 	const accessToken = sessionRef.current?.session_id;
+	const jwtToken = sessionRef.current?.token;
 	const dispatch = useAppDispatch();
 	const [showMembers, setShowMembers] = useState(true);
 	const [showEndCallButton, setShowEndCallButton] = useState(true);
@@ -377,7 +386,8 @@ export default function ChannelStream({
 			userProfile?.user?.id as string,
 			currentChannel?.channel_id as string,
 			userProfile?.user?.username as string,
-			accessToken as string
+			accessToken as string,
+			jwtToken
 		);
 	};
 
