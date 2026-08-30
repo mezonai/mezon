@@ -3,7 +3,7 @@ export const STN_CHANNELS_WAIT_MS = 1200;
 export const STN_CHANNELS_POLL_MS = 1000;
 export const STN_ICE_GATHER_TIMEOUT_MS = 2500;
 export const STN_DEFAULT_RENDITION = '1080';
-export const STN_KNOWN_RENDITIONS = ['480', '720', '1080', '4k'] as const;
+export const STN_KNOWN_RENDITIONS = ['360', '480', '720', '1080', '1440', '2160'] as const;
 export const STN_PRESENCE_CONNECTED = 3;
 export const STN_PRESENCE_DISCONNECTED = 5;
 export const STN_VOD_PLAYOUT_DELAY_MS = 2500;
@@ -13,10 +13,14 @@ export const STN_QOE_WINDOW_MS = 2000;
 export const STN_QOE_DROP_THRESHOLD = 8;
 
 const RUNG_DOWN: Record<string, string> = {
-	'4k': '1080',
+	'2160': '1440',
+	'1440': '1080',
 	'1080': '720',
-	'720': '480'
+	'720': '480',
+	'480': '360'
 };
+
+const RUNG_ORDER = ['2160', '1440', '1080', '720', '480', '360'] as const;
 
 export type StnRendition = (typeof STN_KNOWN_RENDITIONS)[number];
 
@@ -228,19 +232,18 @@ export function preferVideoCodecs(transceiver: RTCRtpTransceiver, live: boolean)
 
 export function stepDownRendition(current: string, published: string[]): string | null {
 	const token = normalizeRendition(current);
-	const publishedSet = published.map((item) => String(item).toLowerCase());
+	const publishedSet = published.map((item) => normalizeRendition(String(item)));
 	const next = RUNG_DOWN[token];
 	if (next && (!publishedSet.length || publishedSet.includes(next))) {
 		return next;
 	}
-	const order = ['1080', '720', '480'];
-	const cur = order.indexOf(token);
+	const cur = RUNG_ORDER.indexOf(token as (typeof RUNG_ORDER)[number]);
 	if (cur < 0) {
 		return null;
 	}
-	for (let i = cur + 1; i < order.length; i++) {
-		if (!publishedSet.length || publishedSet.includes(order[i])) {
-			return order[i];
+	for (let i = cur + 1; i < RUNG_ORDER.length; i++) {
+		if (!publishedSet.length || publishedSet.includes(RUNG_ORDER[i])) {
+			return RUNG_ORDER[i];
 		}
 	}
 	return null;
@@ -262,7 +265,7 @@ export function infoRenditions(info: Record<string, unknown> | null): string[] {
 	if (!Array.isArray(list)) {
 		return [];
 	}
-	return list.map((item) => String(item).toLowerCase()).filter(Boolean);
+	return list.map((item) => normalizeRendition(String(item))).filter(Boolean);
 }
 
 export function normalizeRendition(id: string | null | undefined): string {
@@ -286,6 +289,32 @@ export function applyPlayoutDelayHint(peer: RTCPeerConnection | null, delayMs: n
 			}
 		}
 	});
+}
+
+export function stnErrorText(value: unknown): string {
+	if (typeof value === 'string') {
+		return value;
+	}
+	if (value && typeof value === 'object') {
+		const rec = value as Record<string, unknown>;
+		if (typeof rec.message === 'string' && rec.message.length > 0) {
+			return rec.message;
+		}
+		if (typeof rec.Error === 'string' && rec.Error.length > 0) {
+			return rec.Error;
+		}
+		try {
+			return JSON.stringify(value);
+		} catch {
+			return '';
+		}
+	}
+	return '';
+}
+
+export function isStnSoftError(value: unknown): boolean {
+	const text = stnErrorText(value).toLowerCase();
+	return /rendition|budget|pps|nic/.test(text);
 }
 
 export function waitIceGatheringComplete(peer: RTCPeerConnection, timeoutMs = STN_ICE_GATHER_TIMEOUT_MS): Promise<void> {

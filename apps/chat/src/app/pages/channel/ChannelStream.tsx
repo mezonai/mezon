@@ -26,8 +26,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-const STREAM_RENDITIONS = ['480', '720', '1080', '4k'] as const;
-
 interface MediaPlayerProps {
 	videoRef: RefObject<HTMLVideoElement>;
 	currentChannel?: ChannelsEntity | null;
@@ -173,7 +171,7 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					{hasVideo && (
+					{hasVideo && renditions.length > 1 && (
 						<>
 							<label
 								className="flex items-center gap-1 text-xs text-white/80 cursor-pointer"
@@ -189,19 +187,16 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 							</label>
 							<select
 								aria-label={t('quality')}
-								value={currentRendition}
+								value={renditions.includes(currentRendition) ? currentRendition : renditions[0]}
 								onClick={(event) => event.stopPropagation()}
 								onChange={(event) => setRendition(event.target.value)}
 								className="bg-black/60 text-white text-xs rounded px-1 py-1 cursor-pointer max-h-8"
 							>
-								{STREAM_RENDITIONS.map((id) => {
-									const allowed = renditions.length === 0 || renditions.includes(id);
-									return (
-										<option key={id} value={id} disabled={!allowed}>
-											{id}
-										</option>
-									);
-								})}
+								{renditions.map((id) => (
+									<option key={id} value={id}>
+										{id}
+									</option>
+								))}
 							</select>
 						</>
 					)}
@@ -330,6 +325,7 @@ export default function ChannelStream({
 	retryPlayback
 }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
+	const { streamError } = useWebRTCStream();
 	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || '0'));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
@@ -444,11 +440,7 @@ export default function ChannelStream({
 						) : (
 							<div className="text-gray-800 dark:text-white">{t('noOneInStream')}</div>
 						)}
-						<button
-							disabled={!memberJoin.length}
-							className={`bg-green-700 rounded-3xl p-2 ${memberJoin.length > 0 ? 'hover:bg-green-600' : 'opacity-50'}`}
-							onClick={handleJoinChannel}
-						>
+						<button className="bg-green-700 rounded-3xl p-2 hover:bg-green-600" onClick={handleJoinChannel}>
 							{t('joinStream')}
 						</button>
 					</div>
@@ -476,10 +468,16 @@ export default function ChannelStream({
 										</button>
 									</div>
 								)}
+								{streamError && (
+									<div className="absolute bottom-12 left-1/2 -translate-x-1/2 px-3 py-1 rounded bg-black/70 text-white text-xs max-w-[80%] truncate">
+										{streamError}
+									</div>
+								)}
 							</div>
 						) : (
-							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex justify-center items-center text-center border-theme-primary">
+							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex flex-col justify-center items-center text-center border-theme-primary gap-4">
 								<span>{t('waitingForPublisher')}</span>
+								{streamError && <span className="text-sm text-red-400 px-4">{streamError}</span>}
 							</div>
 						)}
 						{memberJoin.length > 0 && (
