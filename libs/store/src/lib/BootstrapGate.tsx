@@ -139,8 +139,15 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 					headers: {
 						Authorization: `Bearer ${sessionRef.current?.session_id}`
 					}
+				}).then(async (response) => {
+					const payload = await response.json();
+					console.warn('BETTER_SERVER:', payload);
+					if (payload?.ws_url && payload?.ws_url !== sessionRef.current?.ws_url) {
+						console.warn('SWITCH TO SERVER:', payload?.ws_url);
+					}
+
+					return payload;
 				});
-				console.warn('BETTER_SERVER: ', response);
 			} catch (error) {
 				console.error('CHECK_HEALTHY: ', error);
 			}
