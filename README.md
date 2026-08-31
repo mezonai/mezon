@@ -2,7 +2,7 @@
   <h1>Mezon</h1>
   
   <p align="center">
-    <strong>The Live, Work, and Play Platform – the best Discord alternative.</strong>
+    <strong>The Live, Work, and Play Platform – High-performance · Lightweight · Real-time.</strong>
   </p>
 
   <p align="center">
