@@ -9,12 +9,10 @@ export function useReactionControls() {
 
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
-	const [showVoiceInteractive, setShowVoiceInteractive] = useState(false);
 
 	useEffect(() => {
 		setShowEmojiPanel(false);
 		setShowSoundPanel(false);
-		setShowVoiceInteractive(false);
 	}, [voiceInfo?.channelId]);
 
 	useEffect(() => {
@@ -39,17 +37,6 @@ export function useReactionControls() {
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [showSoundPanel]);
 
-	useEffect(() => {
-		if (!showVoiceInteractive) return;
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape' || e.key === 'Esc') {
-				setShowVoiceInteractive(false);
-			}
-		};
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [showVoiceInteractive]);
-
 	const handleEmojiSelect = useCallback(
 		(emojiId: string, emoji: string) => {
 			sendEmojiReaction(emoji, emojiId);
@@ -69,8 +56,6 @@ export function useReactionControls() {
 		setShowEmojiPanel,
 		showSoundPanel,
 		setShowSoundPanel,
-		showVoiceInteractive,
-		setShowVoiceInteractive,
 		handleEmojiSelect,
 		handleSoundSelect,
 		sendRaisingHand
