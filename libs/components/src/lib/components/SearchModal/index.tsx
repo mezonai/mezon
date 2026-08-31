@@ -181,12 +181,12 @@ function SearchModal({ onClose }: SearchModalProps) {
 	}, [totalListsSorted]);
 
 	const totalListsMemberFiltered = useMemo(() => {
-		if (!listMemberSearch.length) {
+		if (!listDirectSearch.length && !listChannelSearch.length) {
 			return [];
 		}
 
-		return filterListByName(listMemberSearch, normalizeSearchText, isSearchByUsername);
-	}, [listMemberSearch, normalizeSearchText, isSearchByUsername]);
+		return filterListByName([...listDirectSearch, ...listChannelSearch], normalizeSearchText, isSearchByUsername);
+	}, [listDirectSearch, listChannelSearch, normalizeSearchText, isSearchByUsername]);
 
 	const totalListMembersSorted = useMemo(() => {
 		return sortFilteredList(totalListsMemberFiltered, normalizeSearchText, isSearchByUsername);
