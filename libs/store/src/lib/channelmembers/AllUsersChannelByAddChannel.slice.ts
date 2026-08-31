@@ -336,7 +336,8 @@ export const userChannelsSlice = createSlice({
 							subText: users?.username || '',
 							icon: '@',
 							typeChat: TypeSearch.Dm_Type,
-							prioritizeName: users?.display_name || users?.username || ''
+							prioritizeName: users?.display_name || users?.username || '',
+							searchName: `${users?.display_name}.${users?.username}`
 						};
 					});
 					state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, users);
