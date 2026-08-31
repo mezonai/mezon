@@ -2,6 +2,7 @@ import mezonPackage from '@mezon/package-js';
 import { Button } from '@mezon/ui';
 import { getPlatform, Platform } from '@mezon/utils';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ContactUs } from '../mezonpage/components/ContactUs';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
@@ -89,9 +90,9 @@ const ContactUsPage = () => {
 						<h2 className="text-3xl  text-gray-900 mb-4 select-text">Privacy Policy Questions</h2>
 						<p className="text-base sm:text-lg text-gray-700 mb-6 select-text">
 							For all questions related to our Privacy Policy,{' '}
-							<a className="text-purple-600 underline" href="/privacy-policy" target="_blank" rel="noreferrer">
+							<Link className="text-purple-600 underline" to="/privacy-policy">
 								Click here
-							</a>
+							</Link>
 						</p>
 					</section>
 
