@@ -18,6 +18,7 @@ import {
 	getAvatarForPrioritize,
 	getNameForPrioritize,
 	getNoiseSuppressionAudioCaptureOptions,
+	requestMediaPermission,
 	useMediaPermissions
 } from '@mezon/utils';
 import { DeepFilterNoiseFilterProcessor, type DeepFilterNet3Core } from 'deepfilternet3-noise-filter';
@@ -28,6 +29,7 @@ import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import type { RecordingAudioSource, RecordingSceneTile } from '../../VoiceChannel/Recording/types';
 import { SfuControlBar } from '../ControlBar/SfuControlBar';
+import { MediaPermissionModal } from '../MediaPermissionModal';
 import { useSfuCallRecorder } from '../Recording/useSfuCallRecorder';
 import type { SfuConnectionState as ConnectionState, SfuRemoteMedia as RemoteMedia, SfuPeer, SfuSignalMessage as SignalMessage } from '../types';
 import { SfuFocusLayoutContainer } from './FocusLayout/SfuFocusLayoutContainer';
@@ -48,9 +50,9 @@ const CAMERA_CAPTURE_CONSTRAINTS = {
 } satisfies MediaTrackConstraints;
 
 const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
-	width: { ideal: 1280 },
-	height: { ideal: 720 },
-	frameRate: { ideal: 10, max: 15 }
+	width: { ideal: 1920 },
+	height: { ideal: 1080 },
+	frameRate: { ideal: 5, max: 5 }
 } satisfies MediaTrackConstraints;
 
 const SELF_MUTE_EVENT_CORRELATION_MS = 300;
@@ -289,17 +291,17 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 };
 
 const CAMERA_CODEC = 'VP8';
-const SCREEN_CODEC = 'VP8';
+const SCREEN_CODEC = 'VP9';
 const SCREEN_SVC_MODE = 'L1T1';
 
 const CAMERA_MAX_BITRATE_BPS = 1_000_000;
-const SCREEN_MAX_BITRATE_BPS = 2_500_000;
+const SCREEN_MAX_BITRATE_BPS = 3_500_000;
 const CAMERA_MIN_BITRATE_KBPS = 250;
 const CAMERA_START_BITRATE_KBPS = 500;
 const CAMERA_MAX_BITRATE_KBPS = 1000;
 const SCREEN_MIN_BITRATE_KBPS = 400;
 const SCREEN_START_BITRATE_KBPS = 1000;
-const SCREEN_MAX_BITRATE_KBPS = 2500;
+const SCREEN_MAX_BITRATE_KBPS = 3500;
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
@@ -439,7 +441,43 @@ export function MezonSfuVoiceRoom({
 	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
 	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
 	const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
-	const { hasMicrophoneAccess, hasCameraAccess } = useMediaPermissions();
+	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState, refreshPermissions } = useMediaPermissions();
+	const [permissionModalSource, setPermissionModalSource] = useState<'microphone' | 'camera' | null>(null);
+
+	const handleRequestMicrophonePermission = useCallback(async () => {
+		const permissionStatus = await requestMediaPermission('audio');
+		await refreshPermissions();
+		if (permissionStatus === 'granted') {
+			dispatch(voiceActions.setShowMicrophone(true));
+		} else {
+			setPermissionModalSource('microphone');
+		}
+	}, [dispatch, refreshPermissions]);
+
+	const handleRequestCameraPermission = useCallback(async () => {
+		const permissionStatus = await requestMediaPermission('video');
+		await refreshPermissions();
+		if (permissionStatus === 'granted') {
+			dispatch(voiceActions.setShowCamera(true));
+		} else {
+			setPermissionModalSource('camera');
+		}
+	}, [dispatch, refreshPermissions]);
+
+	const handlePermissionRetry = useCallback(async () => {
+		if (!permissionModalSource) return;
+		const source = permissionModalSource;
+		setPermissionModalSource(null);
+		if (source === 'camera') {
+			await handleRequestCameraPermission();
+		} else {
+			await handleRequestMicrophonePermission();
+		}
+	}, [permissionModalSource, handleRequestCameraPermission, handleRequestMicrophonePermission]);
+
+	const handleClosePermissionModal = useCallback(() => {
+		setPermissionModalSource(null);
+	}, []);
 	const wsRef = useRef<WebSocket | null>(null);
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const localStreamRef = useRef<MediaStream | null>(null);
@@ -705,7 +743,7 @@ export function MezonSfuVoiceRoom({
 				wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 			}
 		})();
-	}, [cameraEnabled, microphoneEnabled]);
+	}, [cameraEnabled, microphoneEnabled, hasMicrophoneAccess]);
 
 	useEffect(() => {
 		const ws = wsRef.current;
@@ -767,7 +805,7 @@ export function MezonSfuVoiceRoom({
 				});
 			}
 		})();
-	}, [cameraEnabled, findUplinkVideoSender, joinRole]);
+	}, [cameraEnabled, findUplinkVideoSender, joinRole, hasCameraAccess]);
 
 	useEffect(() => {
 		const audioTrack = localAudioTrack || localStreamRef.current?.getAudioTracks()[0];
@@ -2027,6 +2065,10 @@ export function MezonSfuVoiceRoom({
 				joinRole={joinRole}
 				hasMicrophoneAccess={hasMicrophoneAccess ?? false}
 				hasCameraAccess={hasCameraAccess ?? false}
+				microphonePermissionState={microphonePermissionState}
+				cameraPermissionState={cameraPermissionState}
+				onRequestMicrophonePermission={handleRequestMicrophonePermission}
+				onRequestCameraPermission={handleRequestCameraPermission}
 				pushToTalkActive={pushToTalkActive}
 				microphoneEnabled={microphoneEnabled}
 				cameraEnabled={cameraEnabled}
@@ -2056,6 +2098,8 @@ export function MezonSfuVoiceRoom({
 				onTogglePopout={() => void togglePopout(activePinnedTrackId)}
 				onFullScreen={onFullScreen}
 			/>
+
+			<MediaPermissionModal source={permissionModalSource} onClose={handleClosePermissionModal} onRetry={handlePermissionRetry} />
 		</div>
 	);
 }

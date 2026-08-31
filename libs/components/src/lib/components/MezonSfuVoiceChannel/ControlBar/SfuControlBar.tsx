@@ -18,6 +18,10 @@ interface SfuControlBarProps {
 	joinRole: 'speaker' | 'audience';
 	hasMicrophoneAccess: boolean;
 	hasCameraAccess: boolean;
+	microphonePermissionState?: 'granted' | 'denied' | 'prompt' | null;
+	cameraPermissionState?: 'granted' | 'denied' | 'prompt' | null;
+	onRequestMicrophonePermission?: () => Promise<void>;
+	onRequestCameraPermission?: () => Promise<void>;
 	pushToTalkActive: boolean;
 	microphoneEnabled: boolean;
 	cameraEnabled: boolean;
@@ -53,6 +57,10 @@ export const SfuControlBar = ({
 	joinRole,
 	hasMicrophoneAccess,
 	hasCameraAccess,
+	microphonePermissionState,
+	cameraPermissionState,
+	onRequestMicrophonePermission,
+	onRequestCameraPermission,
 	pushToTalkActive,
 	microphoneEnabled,
 	cameraEnabled,
@@ -112,23 +120,37 @@ export const SfuControlBar = ({
 				<RecordingControl channelLabel={channelLabel} />
 			</div>
 			<div className="flex items-center justify-center gap-3 max-md:gap-2" data-e2e={generateE2eId('clan_page.screen.voice_room.control_bar')}>
-				{joinRole === 'audience' && hasMicrophoneAccess && <PushToTalkControl active={pushToTalkActive} onChange={onPushToTalk} />}
-				{joinRole === 'speaker' && hasMicrophoneAccess && (
+				{joinRole === 'audience' && (
+					<PushToTalkControl
+						active={pushToTalkActive}
+						onChange={onPushToTalk}
+						permissionState={microphonePermissionState}
+						hasMicrophoneAccess={hasMicrophoneAccess}
+						onPermissionRequest={onRequestMicrophonePermission}
+					/>
+				)}
+				{joinRole === 'speaker' && (
 					<MicrophoneControl
 						enabled={microphoneEnabled}
 						devices={microphones}
 						selectedDeviceId={selectedMicrophone}
 						onToggle={onMicrophoneToggle}
 						onSelect={onMicrophoneSelect}
+						permissionState={microphonePermissionState}
+						hasMicrophoneAccess={hasMicrophoneAccess}
+						onPermissionRequest={onRequestMicrophonePermission}
 					/>
 				)}
-				{joinRole === 'speaker' && hasCameraAccess && (
+				{joinRole === 'speaker' && (
 					<CameraControl
 						enabled={cameraEnabled}
 						devices={cameras}
 						selectedDeviceId={selectedCamera}
 						onToggle={onCameraToggle}
 						onSelect={onCameraSelect}
+						permissionState={cameraPermissionState}
+						hasCameraAccess={hasCameraAccess}
+						onPermissionRequest={onRequestCameraPermission}
 					/>
 				)}
 				{joinRole === 'speaker' && (
