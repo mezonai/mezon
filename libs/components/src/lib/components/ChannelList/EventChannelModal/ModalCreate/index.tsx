@@ -244,7 +244,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 				event_id: eventId,
 				clan_id: currentClanId as string,
 				creator_id: creatorId as string,
-				channel_id_old: currentEvent?.channel_id,
+				channel_id_old: currentEvent?.channel_id || '0',
 				is_private: Boolean(currentEvent?.is_private)
 			};
 
