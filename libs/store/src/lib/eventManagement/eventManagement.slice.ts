@@ -214,7 +214,7 @@ export const updateEventManagement = createAsyncThunk(
 				title,
 				clan_id,
 				creator_id,
-				channel_id: channel_id || undefined,
+				channel_id: channel_id !== undefined ? (channel_id === '' ? '0' : channel_id) : undefined,
 				channel_id_old,
 				repeat_type
 			};

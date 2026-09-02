@@ -55,7 +55,7 @@ const LocationModal = (props: LocationModalProps) => {
 	const { t } = useTranslation('eventCreator');
 	const [errorVoice, setErrorVoice] = useState(false);
 
-	const displaySelectAudiences = (!isEditEventAction && !choicePrivateEvent) || (isEditEventAction && isChannelEvent);
+	const displaySelectAudiences = !choicePrivateEvent && (!isEditEventAction || !isPrivateEvent);
 	const displaySelectPrivate = !isEditEventAction || (isEditEventAction && isPrivateEvent);
 	const displaySelectVoiceOrLocation = !isEditEventAction || (isEditEventAction && !isPrivateEvent);
 
@@ -163,7 +163,7 @@ const LocationModal = (props: LocationModalProps) => {
 		() => (isClear ? undefined : optionsTextChannel.find((option) => option.value === contentSubmit.textChannelId)),
 		[isClear, optionsTextChannel, contentSubmit.textChannelId]
 	);
-	const showClearButton = selectedOption && !isEditEventAction ? true : false;
+	const showClearButton = Boolean(selectedOption);
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
