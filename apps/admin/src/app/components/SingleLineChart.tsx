@@ -42,7 +42,8 @@ function SingleLineChart({
 						content={<ChartTooltip />}
 						labelFormatter={(label) => {
 							try {
-								return formatChartDate(new Date(label), lang, { withYear: false });
+								const value = typeof label === 'string' || typeof label === 'number' ? label : String(label ?? '');
+								return formatChartDate(new Date(value), lang, { withYear: false });
 							} catch (e) {
 								return String(label);
 							}
