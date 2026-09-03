@@ -47,7 +47,6 @@ import {
 	resetRefreshState,
 	rolesClanActions,
 	selectAllChannels,
-	selectAllTextChannel,
 	selectCategoryById,
 	selectChannelById,
 	selectChannelByIdAndClanId,
@@ -2170,11 +2169,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (isActionUpdating) {
 					const store = await getStoreAsync();
-					const allThreadChannelPrivate = selectAllTextChannel(store.getState() as unknown as RootState);
-					const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
+					const state = store.getState() as unknown as RootState;
 					const newChannelId = eventCreatedEvent.channel_id;
 					const notUpdateChannelId = !newChannelId || newChannelId === '0';
-					const userHasChannel = allThreadChannelPrivateIds.includes(newChannelId);
+
+					const clanChannels = selectChannelsByClanId(state, eventCreatedEvent.clan_id || '');
+					const userChannelIds = clanChannels.map((channel) => channel?.id || channel?.channel_id);
+					const userHasChannel = userChannelIds.includes(newChannelId);
 
 					if (notUpdateChannelId || userHasChannel) {
 						dispatch(eventManagementActions.upsertEvent(eventCreatedEvent));
