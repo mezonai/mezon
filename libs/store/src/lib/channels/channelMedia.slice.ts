@@ -81,8 +81,8 @@ export interface detailChannelTimelinePayload {
 }
 
 export interface ChannelMediaChannelState {
-	events: ChannelTimeline[];
-	cache?: CacheMetadata;
+	eventsByYear: Record<number, ChannelTimeline[]>;
+	cacheByYear: Record<number, CacheMetadata>;
 }
 
 export interface ChannelMediaState {
@@ -97,17 +97,19 @@ type RootState = { [CHANNEL_MEDIA_FEATURE_KEY]: ChannelMediaState };
 const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: MezonValueContext, payload: fetchChannelMediaPayload) => {
 	const { noCache, ...requestPayload } = payload;
 	const currentState = getState();
-	const channelData = currentState[CHANNEL_MEDIA_FEATURE_KEY].eventsByChannel[payload.channel_id];
+	const channelData = currentState[CHANNEL_MEDIA_FEATURE_KEY]?.eventsByChannel?.[payload.channel_id];
+	const yearCache = channelData?.cacheByYear?.[payload.year];
 	const apiKey = createApiKey('fetchChannelMedia', payload.channel_id, payload.year);
 
-	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
+	const shouldForceCall = shouldForceApiCall(apiKey, yearCache, noCache);
 
-	if (!shouldForceCall) {
+	if (!shouldForceCall && channelData?.eventsByYear?.[payload.year]) {
 		return {
 			channelId: payload.channel_id,
-			events: channelData.events,
+			year: payload.year,
+			events: channelData.eventsByYear[payload.year],
 			fromCache: true,
-			time: channelData.cache?.lastFetched || Date.now()
+			time: yearCache?.lastFetched || Date.now()
 		};
 	}
 
@@ -117,6 +119,7 @@ const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: 
 
 	return {
 		channelId: payload.channel_id,
+		year: payload.year,
 		events: response.events || [],
 		fromCache: false,
 		time: Date.now()
@@ -139,9 +142,13 @@ export const createChannelTimeline = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelTimeline(mezon.session, payload);
+			const event = {
+				...payload,
+				...(response?.event || {})
+			} as ChannelTimeline;
 			return {
 				channelId: payload.channel_id,
-				event: response.event as ChannelTimeline
+				event
 			};
 		} catch (error) {
 			captureSentryError(error, 'channelMedia/createChannelTimeline');
@@ -267,16 +274,22 @@ export const channelMediaSlice = createSlice({
 			})
 			.addCase(
 				fetchChannelMedia.fulfilled,
-				(state, action: PayloadAction<{ channelId: string; events: ChannelTimeline[]; fromCache: boolean; time: number }>) => {
-					const { channelId, events, fromCache } = action.payload;
+				(state, action: PayloadAction<{ channelId: string; year: number; events: ChannelTimeline[]; fromCache: boolean; time: number }>) => {
+					const { channelId, year, events, fromCache } = action.payload;
 
 					if (!state.eventsByChannel[channelId]) {
-						state.eventsByChannel[channelId] = { events: [] };
+						state.eventsByChannel[channelId] = { eventsByYear: {}, cacheByYear: {} };
+					}
+					if (!state.eventsByChannel[channelId].eventsByYear) {
+						state.eventsByChannel[channelId].eventsByYear = {};
+					}
+					if (!state.eventsByChannel[channelId].cacheByYear) {
+						state.eventsByChannel[channelId].cacheByYear = {};
 					}
 
 					if (!fromCache) {
-						state.eventsByChannel[channelId].events = events;
-						state.eventsByChannel[channelId].cache = createCacheMetadata(CHANNEL_MEDIA_CACHED_TIME);
+						state.eventsByChannel[channelId].eventsByYear[year] = events;
+						state.eventsByChannel[channelId].cacheByYear[year] = createCacheMetadata(CHANNEL_MEDIA_CACHED_TIME);
 					}
 
 					state.loadingStatus = 'loaded';
@@ -293,16 +306,34 @@ export const channelMediaSlice = createSlice({
 				const { channelId, event } = action.payload;
 
 				if (!state.eventsByChannel[channelId]) {
-					state.eventsByChannel[channelId] = { events: [] };
+					state.eventsByChannel[channelId] = { eventsByYear: {}, cacheByYear: {} };
+				}
+				if (!state.eventsByChannel[channelId].eventsByYear) {
+					state.eventsByChannel[channelId].eventsByYear = {};
+				}
+				if (!state.eventsByChannel[channelId].cacheByYear) {
+					state.eventsByChannel[channelId].cacheByYear = {};
 				}
 
-				const events = state.eventsByChannel[channelId].events;
-				const insertIndex = events.findIndex((e) => (e.start_time_seconds || 0) < (event.start_time_seconds || 0));
-				if (insertIndex === -1) {
-					events.push(event);
-				} else {
-					events.splice(insertIndex, 0, event);
+				const eventYear = event.start_time_seconds ? new Date(event.start_time_seconds * 1000).getFullYear() : new Date().getFullYear();
+
+				if (!state.eventsByChannel[channelId].eventsByYear[eventYear]) {
+					state.eventsByChannel[channelId].eventsByYear[eventYear] = [];
 				}
+
+				const events = state.eventsByChannel[channelId].eventsByYear[eventYear];
+				const existingIndex = events.findIndex((e) => e.id === event.id);
+				if (existingIndex !== -1) {
+					events[existingIndex] = event;
+				} else {
+					const insertIndex = events.findIndex((e) => (e.start_time_seconds || 0) < (event.start_time_seconds || 0));
+					if (insertIndex === -1) {
+						events.push(event);
+					} else {
+						events.splice(insertIndex, 0, event);
+					}
+				}
+
 				syncEventDetailCache(state, event);
 				state.loadingStatus = 'loaded';
 			})
@@ -316,11 +347,34 @@ export const channelMediaSlice = createSlice({
 			.addCase(updateChannelTimeline.fulfilled, (state, action: PayloadAction<{ channelId: string; event: ChannelTimeline }>) => {
 				const { channelId, event } = action.payload;
 
-				if (state.eventsByChannel[channelId]) {
-					const index = state.eventsByChannel[channelId].events.findIndex((e) => e.id === event.id);
-					if (index !== -1) {
-						const existing = state.eventsByChannel[channelId].events[index];
-						state.eventsByChannel[channelId].events[index] = mergeChannelTimelineEvent(existing, event);
+				if (state.eventsByChannel[channelId]?.eventsByYear) {
+					const eventYear = event.start_time_seconds ? new Date(event.start_time_seconds * 1000).getFullYear() : new Date().getFullYear();
+
+					let found = false;
+					for (const yearKey of Object.keys(state.eventsByChannel[channelId].eventsByYear)) {
+						const yearNum = Number(yearKey);
+						const yearEvents = state.eventsByChannel[channelId].eventsByYear[yearNum];
+						const index = yearEvents.findIndex((e) => e.id === event.id);
+						if (index !== -1) {
+							found = true;
+							if (yearNum === eventYear) {
+								yearEvents[index] = mergeChannelTimelineEvent(yearEvents[index], event);
+							} else {
+								yearEvents.splice(index, 1);
+								if (!state.eventsByChannel[channelId].eventsByYear[eventYear]) {
+									state.eventsByChannel[channelId].eventsByYear[eventYear] = [];
+								}
+								state.eventsByChannel[channelId].eventsByYear[eventYear].push(event);
+							}
+							break;
+						}
+					}
+
+					if (!found && event.id) {
+						if (!state.eventsByChannel[channelId].eventsByYear[eventYear]) {
+							state.eventsByChannel[channelId].eventsByYear[eventYear] = [];
+						}
+						state.eventsByChannel[channelId].eventsByYear[eventYear].push(event);
 					}
 				}
 
@@ -365,7 +419,27 @@ export const getChannelMediaState = (rootState: any): ChannelMediaState => rootS
 
 export const selectChannelMediaByChannelId = createSelector(
 	[getChannelMediaState, (_state: unknown, channelId: string) => channelId],
-	(state, channelId) => state.eventsByChannel[channelId]?.events || []
+	(state, channelId): ChannelTimeline[] => {
+		const channelData = state.eventsByChannel[channelId];
+		if (!channelData?.eventsByYear) return [];
+		const allEvents = Object.values(channelData.eventsByYear).flat();
+		const uniqueMap = new Map<string, ChannelTimeline>();
+		for (const event of allEvents) {
+			if (event?.id) {
+				uniqueMap.set(event.id, event);
+			}
+		}
+		return Array.from(uniqueMap.values()).sort((a, b) => (b.start_time_seconds || 0) - (a.start_time_seconds || 0));
+	}
+);
+
+export const selectChannelMediaByChannelIdAndYear = createSelector(
+	[getChannelMediaState, (_state: unknown, channelId: string) => channelId, (_state: unknown, _channelId: string, year: number) => year],
+	(state, channelId, year): ChannelTimeline[] => {
+		const channelData = state.eventsByChannel[channelId];
+		const events = channelData?.eventsByYear?.[year] || [];
+		return [...events].sort((a, b) => (b.start_time_seconds || 0) - (a.start_time_seconds || 0));
+	}
 );
 
 export const selectChannelMediaLoadingStatus = createSelector([getChannelMediaState], (state) => state.loadingStatus);
