@@ -259,6 +259,14 @@ export const userChannelsSlice = createSlice({
 					}
 				}
 			});
+			ItemSearchCtrlKAdapter.removeOne(state.listSearch, channelId);
+		},
+		removeOneCtrlK: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+
+			if (!state.listSearch) return;
+
+			ItemSearchCtrlKAdapter.removeOne(state.listSearch, channelId);
 		}
 	},
 	extraReducers(builder) {
