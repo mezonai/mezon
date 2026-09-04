@@ -106,8 +106,8 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 						} catch (error) {
 							try {
 								await connectSocket({ useToken: true });
-							} catch (error) {
-								if (error !== E_CONNECT_ERROR.TIME_OUT) {
+							} catch (errorToken) {
+								if (errorToken instanceof Error && errorToken.message !== E_CONNECT_ERROR.TIME_OUT) {
 									shouldLogout = true;
 								} else {
 									setCheckConnect(true);
