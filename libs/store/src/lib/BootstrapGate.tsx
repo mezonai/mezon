@@ -1,5 +1,5 @@
 import { probeNetworkReachability, RECONNECT_NETWORK_PROBE_TIMEOUT_MS, useMezon } from '@mezon/transport';
-import type { ApiSession, TopicInMessageEvent } from 'mezon-js';
+import { E_CONNECT_ERROR, type ApiSession, type TopicInMessageEvent } from 'mezon-js';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import type { Persistor } from 'redux-persist';
@@ -107,7 +107,11 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 							try {
 								await connectSocket({ useToken: true });
 							} catch (error) {
-								shouldLogout = true;
+								if (error !== E_CONNECT_ERROR.TIME_OUT) {
+									shouldLogout = true;
+								} else {
+									setCheckConnect(true);
+								}
 							}
 							console.error('ERROR_CONNECT', error);
 							break;
