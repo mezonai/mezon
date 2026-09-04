@@ -4,15 +4,40 @@ import { getNameForPrioritize, normalizeString } from '@mezon/utils';
 import { createContext, useContext, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+export type SortField = 'name' | 'memberSince' | 'joinedMezon' | 'roles';
+
+export type SortDirection = 'asc' | 'desc';
+
 interface MemberContextType {
 	searchQuery: string;
 	setSearchQuery: (query: string) => void;
 	filteredMembers: UsersClanEntity[];
-	isSort: boolean;
-	setIsSort: (isSort: boolean) => void;
+
+	sortField: SortField | null;
+	sortDirection: SortDirection;
+	setSort: (field: SortField) => void;
 }
 
 const MemberContext = createContext<MemberContextType | undefined>(undefined);
+
+const compareMembers = (a: UsersClanEntity & { prioritizeName?: string }, b: UsersClanEntity & { prioritizeName?: string }, field: SortField) => {
+	switch (field) {
+		case 'name':
+			return normalizeString(a.prioritizeName ?? '').localeCompare(normalizeString(b.prioritizeName ?? ''));
+
+		case 'memberSince':
+			return new Date(a.user?.join_time_seconds ?? 0).getTime() - new Date(b.user?.join_time_seconds ?? 0).getTime();
+
+		case 'joinedMezon':
+			return new Date(a.user?.create_time_seconds ?? 0).getTime() - new Date(b.user?.create_time_seconds ?? 0).getTime();
+
+		case 'roles':
+			return (a.role_id?.length ?? 0) - (b.role_id?.length ?? 0);
+
+		default:
+			return 0;
+	}
+};
 
 export const useMemberContext = () => {
 	const context = useContext(MemberContext);
@@ -24,7 +49,8 @@ export const useMemberContext = () => {
 
 export const MemberProvider = ({ children }: { children: React.ReactNode }) => {
 	const [searchQuery, setSearchQuery] = useState('');
-	const [isSort, setIsSort] = useState(false);
+	const [sortField, setSortField] = useState<SortField | null>(null);
+	const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 	const usersClan = useSelector(selectAllUserClans);
 
 	const usersWithPrioritizeName = useMemo(
@@ -39,25 +65,46 @@ export const MemberProvider = ({ children }: { children: React.ReactNode }) => {
 	const filteredMembers = useMemo(() => {
 		const searchLowerCase = normalizeString(searchQuery).toLowerCase();
 
-		let filtered = usersWithPrioritizeName.filter((member) => {
+		const filtered = usersWithPrioritizeName.filter((member) => {
 			const prioritizeNameMatch = normalizeString(member.prioritizeName ?? '')
-				?.toLowerCase()
+				.toLowerCase()
 				.includes(searchLowerCase);
+
 			const usernameMatch = member.user?.username?.toLowerCase().includes(searchLowerCase);
 
 			return prioritizeNameMatch || usernameMatch;
 		});
 
-		if (isSort) {
-			filtered = filtered.slice().reverse();
+		if (!sortField) {
+			return filtered;
 		}
 
-		return filtered;
-	}, [usersWithPrioritizeName, searchQuery, isSort]);
+		return [...filtered].sort((a, b) => {
+			const result = compareMembers(a, b, sortField);
+
+			return sortDirection === 'asc' ? result : -result;
+		});
+	}, [usersWithPrioritizeName, searchQuery, sortField, sortDirection]);
+
+	const setSort = (field: SortField) => {
+		if (sortField === field) {
+			setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+			return;
+		}
+		setSortField(field);
+		setSortDirection('asc');
+	};
 
 	const contextValue = useMemo(
-		() => ({ searchQuery, setSearchQuery, filteredMembers, isSort, setIsSort }),
-		[searchQuery, filteredMembers, isSort]
+		() => ({
+			searchQuery,
+			setSearchQuery,
+			filteredMembers,
+			sortField,
+			sortDirection,
+			setSort
+		}),
+		[searchQuery, filteredMembers, sortField, sortDirection]
 	);
 
 	return <MemberContext.Provider value={contextValue}>{children}</MemberContext.Provider>;

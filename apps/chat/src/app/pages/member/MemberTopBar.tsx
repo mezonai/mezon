@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 
 const MemberTopBar = () => {
 	const { t } = useTranslation('memberTable');
-	const { searchQuery, setSearchQuery, isSort, setIsSort } = useMemberContext();
+	const { searchQuery, setSearchQuery, setSort } = useMemberContext();
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchQuery(e.target.value);
 	};
 
-	const toggleSortOrder = () => {
-		setIsSort(!isSort);
+	const toggleSort = () => {
+		setSort('memberSince');
 	};
 
 	return (
@@ -37,7 +37,7 @@ const MemberTopBar = () => {
 				<div>
 					<button
 						className="h-8 rounded text-sm font-medium flex gap-1 px-2 focus:ring-transparent bg-indigo-500 hover:bg-indigo-600 items-center text-white"
-						onClick={toggleSortOrder}
+						onClick={toggleSort}
 					>
 						<Icons.ConvertAccount className="rotate-90 mr-1 text-white" />
 						<span>{t('topBar.sort')}</span>

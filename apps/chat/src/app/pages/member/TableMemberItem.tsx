@@ -308,10 +308,6 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 					)}
 				</span>
 			</div>
-
-			<div className="flex-1 min-w-0 p-1 text-center">
-				<span className="text-xs font-medium uppercase truncate block">{t('signals')}</span>
-			</div>
 		</div>
 	);
 };
