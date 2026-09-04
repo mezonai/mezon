@@ -214,7 +214,7 @@ export const updateEventManagement = createAsyncThunk(
 				title,
 				clan_id,
 				creator_id,
-				channel_id: channel_id || undefined,
+				channel_id: channel_id !== undefined ? (channel_id === '' ? '0' : channel_id) : undefined,
 				channel_id_old,
 				repeat_type
 			};
@@ -395,17 +395,22 @@ export const eventManagementSlice = createSlice({
 			});
 		},
 		upsertEvent: (state, action) => {
-			const { event_id, channel_id, channel_voice_id, event_status, ...restPayload } = action.payload;
+			const { event_id, channel_id, channel_voice_id, event_status, clan_id, ...restPayload } = action.payload || {};
+			if (!event_id || !clan_id) {
+				return;
+			}
 
 			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
 			const { event_status: _, ...restWithoutEventStatus } = restPayload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
-			if (!existingEvent) {
-				return;
+			if (!state.byClans[clan_id]) {
+				state.byClans[clan_id] = {
+					entities: eventManagementAdapter.getInitialState()
+				};
 			}
-			eventManagementAdapter.upsertOne(state.byClans[action.payload.clan_id].entities, {
+
+			eventManagementAdapter.upsertOne(state.byClans[clan_id].entities, {
 				id: event_id,
 				channel_id: normalizedChannelId,
 				channel_voice_id: normalizedVoiceChannelId,

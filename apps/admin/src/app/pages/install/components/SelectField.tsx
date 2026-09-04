@@ -54,8 +54,8 @@ const SelectField = <T,>({ label, options, value, onChange, errorMessage, classN
 	);
 
 	return (
-		<div className="flex flex-col gap-1.5 p-0 bg-transparent w-full">
-			<label className="block text-left text-[10px] font-extrabold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1">
+		<div className="flex flex-col gap-1 p-0 bg-transparent w-full">
+			<label className="block text-left text-[10px] font-extrabold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-0.5">
 				{label}
 			</label>
 
@@ -65,18 +65,18 @@ const SelectField = <T,>({ label, options, value, onChange, errorMessage, classN
 				placement="bottomLeft"
 				visible={visible}
 				onVisibleChange={handleVisibleChange}
-				className="border-none p-0 z-20 rounded-xl"
+				className="border-none p-0 z-20 rounded-lg"
 			>
-				<div className="w-full h-11 rounded-xl flex flex-row px-4 justify-between items-center cursor-pointer bg-slate-50 dark:bg-[#171a2a] text-slate-900 dark:text-slate-100 border dark:border-white/[0.04] border-slate-200 transition-all duration-300 hover:border-violet-500/40 dark:hover:border-violet-500/30 focus-within:ring-2 focus-within:ring-violet-500/20 shadow-sm">
+				<div className="w-full h-9 rounded-lg flex flex-row px-3.5 justify-between items-center cursor-pointer bg-slate-50 dark:bg-[#171a2a] text-slate-900 dark:text-slate-100 border dark:border-white/[0.04] border-slate-200 transition-all duration-300 hover:border-violet-500/40 dark:hover:border-violet-500/30 focus-within:ring-2 focus-within:ring-violet-500/20 shadow-sm">
 					<p className={`text-xs font-semibold truncate ${uppercaseClass}`}>{selectedOption}</p>
 					<div className="text-slate-400 dark:text-slate-500 shrink-0 ml-2">
-						<Icons.ArrowDownFill className={`size-4 transform transition-transform duration-200 ${visible ? 'rotate-180' : ''}`} />
+						<Icons.ArrowDownFill className={`size-3.5 transform transition-transform duration-200 ${visible ? 'rotate-180' : ''}`} />
 					</div>
 				</div>
 			</Menu>
 
 			{errorMessage && (
-				<span className="text-red-500 text-[11px] font-medium text-left mt-0.5 pl-1 flex items-center gap-1 animate-fade-in">
+				<span className="text-red-500 text-[10px] font-medium text-left mt-0.5 pl-1 flex items-center gap-1 animate-fade-in">
 					{errorMessage}
 				</span>
 			)}

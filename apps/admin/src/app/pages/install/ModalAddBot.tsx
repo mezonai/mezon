@@ -35,7 +35,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	const dispatch = useAppDispatch();
 	const account = useSelector(selectAllAccount);
 	const appDetail = useSelector(selectAppDetail);
-	const activeSince = new Date(appDetail?.create_time_seconds || 0 * 1000);
+	const activeSince = new Date((appDetail?.create_time_seconds || 0) * 1000);
 	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	const [openSuccess, setOpenSuccess] = useState(false);
 	const toggleSuccess = () => setOpenSuccess((s) => !s);
@@ -123,12 +123,12 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	}
 
 	return (
-		<div className="rounded-3xl dark:bg-[#121421]/90 bg-white border dark:border-white/[0.06] border-slate-200/80 max-w-[440px] w-full p-6 md:p-7 flex flex-col items-center text-center backdrop-blur-xl transition-all duration-300 shadow-[0_24px_48px_-12px_rgba(15,23,42,0.06)] dark:shadow-[0_24px_50px_-12px_rgba(3,4,9,0.7)] relative overflow-hidden">
+		<div className="rounded-2xl dark:bg-[#121421]/90 bg-white border dark:border-white/[0.06] border-slate-200/80 max-w-[400px] w-full p-4 sm:p-4.5 flex flex-col items-center text-center backdrop-blur-xl transition-all duration-300 shadow-[0_24px_48px_-12px_rgba(15,23,42,0.06)] dark:shadow-[0_24px_50px_-12px_rgba(3,4,9,0.7)] relative overflow-hidden my-auto">
 			{appDetail && (
-				<div className="flex flex-col items-center mt-2 mb-3 w-full">
-					<div className="relative group mb-3">
-						<div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-violet-600 via-indigo-500 to-sky-400 opacity-25 blur-sm transition duration-500" />
-						<div className="rounded-full size-16 min-w-[64px] uppercase flex justify-center items-center text-2xl font-extrabold border-2 dark:border-[#1a1d2e] border-white dark:bg-[#0d0f19] bg-slate-50 dark:text-white text-slate-900 relative z-10 overflow-hidden shadow-md">
+				<div className="flex flex-col items-center mt-0 mb-1.5 w-full">
+					<div className="relative group mb-1">
+						<div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-violet-600 via-indigo-500 to-sky-400 opacity-25 blur-sm transition duration-500" />
+						<div className="rounded-full size-11 min-w-[44px] uppercase flex justify-center items-center text-lg font-extrabold border-2 dark:border-[#1a1d2e] border-white dark:bg-[#0d0f19] bg-slate-50 dark:text-white text-slate-900 relative z-10 overflow-hidden shadow-md">
 							{appDetail.applogo ? (
 								<img src={appDetail.applogo} alt={appDetail.appname} className="w-full h-full object-cover" />
 							) : (
@@ -138,11 +138,13 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 							)}
 						</div>
 					</div>
-					<p className="text-xl font-extrabold tracking-tight dark:text-white text-slate-900 truncate max-w-[300px]">{appDetail.appname}</p>
+					<p className="text-base font-extrabold tracking-tight dark:text-white text-slate-900 truncate max-w-[300px]">
+						{appDetail.appname}
+					</p>
 				</div>
 			)}
 
-			<div className="w-full flex flex-col gap-4 text-left">
+			<div className="w-full flex flex-col gap-2 text-left">
 				<HeaderModal name={appDetail?.appname || ''} username={account?.user?.username} />
 
 				<div className="w-full">
@@ -151,7 +153,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 
 				<FooterModal activeSince={activeSincecv} name={appDetail?.appname || ''} />
 
-				<div className="mt-2 w-full">
+				<div className="w-full">
 					<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleAdd} />
 				</div>
 			</div>

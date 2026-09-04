@@ -42,14 +42,14 @@ export const Routes = () => {
 	const routes = useMemo(
 		() =>
 			createBrowserRouter([
-				{
-					path: '',
-					element: <Navigate to="/developers" replace />
-				},
-				{
-					path: '*',
-					element: <Navigate to="/developers" replace />
-				},
+				// {
+				// 	path: '',
+				// 	element: <Navigate to="/developers" replace />
+				// },
+				// {
+				// 	path: '*',
+				// 	element: <Navigate to="/developers" replace />
+				// },
 				{
 					path: '/developers',
 					element: <AppLayout />,
