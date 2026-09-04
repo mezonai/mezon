@@ -1,14 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
-import {
-	CREATING_TOPIC,
-	EBacktickType,
-	generatePathAttachments,
-	getWebUploadedAttachments,
-	isFacebookLink,
-	isTikTokLink,
-	isYouTubeLink
-} from '@mezon/utils';
+import { CREATING_TOPIC, EBacktickType, generatePathAttachments, getWebUploadedAttachments, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type {
@@ -263,7 +255,7 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 	let topicContent = content;
 	const state = thunkAPI.getState() as RootState;
 	const ogpData = selectOgpData(state);
-	const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
+	const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isTikTokLink(ogpData.url));
 	const isOgpFromTopicBox =
 		ogpData &&
 		(ogpData.channel_id === topicId || ogpData.channel_id === CREATING_TOPIC || ogpData.channel_id === channelId) &&

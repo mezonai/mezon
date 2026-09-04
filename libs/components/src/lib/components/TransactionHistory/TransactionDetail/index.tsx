@@ -1,11 +1,9 @@
-import { selectAllUsersByUser } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { formatBalanceToString, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import type { Transaction } from 'mmn-client-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';
 import { CURRENCY, TRANSACTION_DETAIL } from '../constants/constants';
 
@@ -52,23 +50,22 @@ const TransactionDetailSkeleton: React.FC = () => {
 
 const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detailLedger, formatDate, isLoading = false }) => {
 	const { t } = useTranslation('transactionHistory');
-	const usersClan = useSelector(selectAllUsersByUser);
 	const { FIELDS, UNKNOWN_USER } = TRANSACTION_DETAIL;
 
 	const detailFields = useMemo(() => {
 		if (!detailLedger) return [];
 		const extraInfo = safeJSONParse(detailLedger.extra_info);
-		const sender = extraInfo?.UserSenderId ? usersClan.find((user) => user.id === extraInfo?.UserSenderId) : null;
-		const receiver = extraInfo?.UserReceiverId ? usersClan.find((user) => user.id === extraInfo?.UserReceiverId) : null;
+		const sender = extraInfo?.UserSenderUsername || null;
+		const receiver = extraInfo?.UserSenderUsername || null;
 		return [
 			{ label: t(FIELDS.TRANSACTION_ID), value: detailLedger.hash, icon: Icons.Transaction },
-			{ label: t(FIELDS.SENDER), value: sender?.username || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ label: t(FIELDS.SENDER), value: sender || t(UNKNOWN_USER), icon: Icons.UserIcon },
 			{
 				label: t(FIELDS.AMOUNT),
 				value: `${formatBalanceToString(detailLedger.value)} ${t(CURRENCY.SYMBOL)}`,
 				icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite />
 			},
-			{ label: t(FIELDS.RECEIVER), value: receiver?.username || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ label: t(FIELDS.RECEIVER), value: receiver || t(UNKNOWN_USER), icon: Icons.UserIcon },
 			{ label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: Icons.PenEdit },
 			{
 				label: t(FIELDS.CREATED),
@@ -76,7 +73,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 				icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" />
 			}
 		];
-	}, [usersClan, detailLedger, t, formatDate, FIELDS, UNKNOWN_USER]);
+	}, [detailLedger, t, formatDate, FIELDS, UNKNOWN_USER]);
 
 	if (isLoading) {
 		return <TransactionDetailSkeleton />;

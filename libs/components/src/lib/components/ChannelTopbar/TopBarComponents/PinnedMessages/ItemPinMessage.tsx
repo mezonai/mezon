@@ -95,12 +95,12 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 	// Poll data: prefer from message.content (messages store), fallback to parsed pinMessage.content
 	const pollData = useMemo(() => {
-		const contentObj = (message?.content as unknown as Record<string, unknown>) ?? messageContentObject;
-		if (!contentObj || !('poll_id' in contentObj || 'question' in contentObj || 'answer_counts' in contentObj)) return null;
+		const contentObj = (message?.content as unknown as Record<string, unknown>) || messageContentObject;
+		if (!contentObj || !('id' in contentObj || 'question' in contentObj || 'answer_counts' in contentObj)) return null;
 		return contentObj;
 	}, [message?.content, messageContentObject]);
 
-	const isPollMessage = message?.code === TypeMessage.Poll || Boolean(pollData?.poll_id);
+	const isPollMessage = message?.code === TypeMessage.Poll || Boolean(pollData?.answer_counts);
 
 	const pollDuration = useMemo(() => {
 		if (!pollData?.expire_at) return '';

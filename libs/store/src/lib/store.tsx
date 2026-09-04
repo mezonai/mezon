@@ -39,7 +39,6 @@ import { channelMediaReducer } from './channels/channelMedia.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
-import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
@@ -169,15 +168,6 @@ const persistedThreadReducer = persistReducer(
 		blacklist: ['isShowCreateThread', 'isThreadModalVisible', 'isFocusThreadBox']
 	},
 	threadsReducer
-);
-
-const persistedListUsersByUserReducer = persistReducer(
-	{
-		key: 'listusersbyuserid',
-		storage,
-		blacklist: ['onlineStatusUser']
-	},
-	listUsersByUserReducer
 );
 
 const persistedListchannelsByUserReducer = persistReducer(
@@ -331,7 +321,6 @@ const reducer = {
 	listchannelbyusers: persistedListchannelsByUserReducer,
 	listpermissionroleschannel: permissionRoleChannelReducer,
 	channelMembers: channelMembersReducer,
-	listusersbyuserid: persistedListUsersByUserReducer,
 	threads: persistedThreadReducer,
 	topicdiscussions: topicsReducer,
 	[SEARCH_MESSAGES_FEATURE_KEY]: searchMessageReducer,

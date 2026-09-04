@@ -34,7 +34,6 @@ import {
 	giveCoffeeActions,
 	inviteActions,
 	listChannelsByUserActions,
-	listUsersByUserActions,
 	mapMessageChannelToEntityAction,
 	mapReactionToEntity,
 	messagesActions,
@@ -977,6 +976,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					);
 
 					dispatch(listChannelsByUserActions.remove(user.channel_id));
+					dispatch(
+						userChannelsActions.removeOneCtrlK({
+							channelId: user.channel_id
+						})
+					);
 				} else {
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_GROUP) {
 						dispatch(directActions.removeGroupMember({ userId: userID, currentUserId: userId as string, channelId: user.channel_id }));
@@ -2602,14 +2606,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onaddfriend = useCallback((user: AddFriend) => {
 		dispatch(friendsActions.upsertFriendRequest({ user, myId: userId || '' }));
-		dispatch(
-			listUsersByUserActions.updateUserInList({
-				id: user?.user_id,
-				avatar_url: user?.avatar,
-				display_name: user?.display_name,
-				username: user?.username
-			})
-		);
 	}, []);
 
 	const onbanneduser = useCallback((user: BannedUserEvent) => {
