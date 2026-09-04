@@ -282,7 +282,8 @@ const MessageAttachment = memo(
 		prev.channelId === next.channelId &&
 		prev.mode === next.mode &&
 		prev.isInSearchMessage === next.isInSearchMessage &&
-		prev.defaultMaxWidth === next.defaultMaxWidth
+		prev.defaultMaxWidth === next.defaultMaxWidth &&
+		prev.message?.content?.presign_finish === next.message?.content?.presign_finish
 );
 
 MessageAttachment.displayName = 'MessageAttachment';
