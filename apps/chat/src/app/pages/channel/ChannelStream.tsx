@@ -254,7 +254,7 @@ function UserItem({ id, user_name, user_avatar }: { id: string; user_name: strin
 						src={avatar}
 					/>
 				) : (
-					<Icons.AvatarUser />
+					<Icons.AvatarUser className={`w-14 h-14`} />
 				)}
 			</div>
 		</div>

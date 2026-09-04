@@ -3,7 +3,15 @@ import type { ICategory, LoadingStatus, SortChannel } from '@mezon/utils';
 import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js';
+import type {
+	ApiCategoryDesc,
+	ApiCategoryDescList,
+	ApiCreateCategoryDescRequest,
+	ApiUpdateCategoryDescRequest,
+	ApiUpdateCategoryOrderRequest
+} from 'mezon-js';
+import { CategoryDesc, CategoryDescList } from 'mezon-js-protobuf';
+import { callApiAdmin } from '../application/adminAPI.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
@@ -81,12 +89,30 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 	const clanData = state[CATEGORIES_FEATURE_KEY].byClans[clanId];
 	const apiKey = createApiKey('fetchCategories', clanId);
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData?.cache, noCache);
-
 	if (!shouldForceCall) {
 		const categories = selectCachedCategoriesByClan(state, clanId);
 		return {
 			categorydesc: categories,
 			fromCache: true
+		};
+	}
+
+	if (!ensuredMezon.session && state.auth?.session) {
+		ensuredMezon.session = state.auth.session;
+	}
+
+	const token = state.auth?.session?.token;
+	if (token && !ensuredMezon.clientRef?.current) {
+		const response = await callApiAdmin({
+			path: '/mezon.api.Mezon/ListCategoryDescs',
+			data: CategoryDesc.encode(CategoryDesc.fromPartial({ clan_id: clanId })).finish(),
+			decodeBody: (bytes) => CategoryDescList.decode(bytes) as ApiCategoryDescList,
+			token
+		});
+		markApiFirstCalled(apiKey);
+		return {
+			...response,
+			fromCache: false
 		};
 	}
 
@@ -112,9 +138,9 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 
 export const fetchCategories = createAsyncThunk('categories/fetchCategories', async ({ clanId, noCache }: fetchCategoriesPayload, thunkAPI) => {
 	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const mezonCtx = getMezonCtx(thunkAPI);
+		const mezon = mezonCtx?.clientRef?.current ? await ensureSession(mezonCtx) : (mezonCtx as any);
 		const response = await fetchCategoriesCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
-
 		if (!response.categorydesc) {
 			return { categories: [], clanId };
 		}
@@ -126,6 +152,7 @@ export const fetchCategories = createAsyncThunk('categories/fetchCategories', as
 		};
 		return payload;
 	} catch (error) {
+		console.error('[categories/fetchCategories] Error:', error);
 		captureSentryError(error, 'categories/fetchCategories');
 		return thunkAPI.rejectWithValue(error);
 	}

@@ -14,6 +14,7 @@ import {
 	processText,
 	stripNotificationMarkers
 } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -258,6 +259,28 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 		);
 	}, [messageLineContent]);
 
+	const hasAttachment = Boolean(message.attachment_link || (message.attachments && message.attachments.length > 0));
+
+	const firstAttachment = useMemo<ApiMessageAttachment>(() => {
+		if (message.attachments && message.attachments.length > 0) {
+			return message.attachments[0];
+		}
+		return {
+			url: message.attachment_link || '',
+			filetype: message.attachment_type || '',
+			size: message.attachment_size || 0,
+			filename: message.attachments?.[0]?.filename || ''
+		};
+	}, [message.attachments, message.attachment_link, message.attachment_type, message.attachment_size]);
+
+	const isFirstAttachmentImageOrVideo = useMemo(() => {
+		const filetype = (firstAttachment?.filetype || message.attachment_type || '').toLowerCase();
+		const filename = (firstAttachment?.filename || firstAttachment?.url || message.attachment_link || '').toLowerCase();
+		return Boolean(
+			filetype.startsWith('image/') || filetype.startsWith('video/') || filename.match(/\.(jpeg|jpg|png|gif|webp|svg|mp4|mov|webm)$/i)
+		);
+	}, [firstAttachment, message.attachment_type, message.attachment_link]);
+
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg overflow-hidden">
 			<div className="flex flex-row items-start p-1 w-full gap-4 rounded-lg ">
@@ -342,72 +365,66 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 							{isShareContact && shareContactEmbed ? (
 								<ShareContactCard embed={shareContactEmbed} />
 							) : hasMessageText ? (
-								<MessageLine
-									messageId={message.message_id}
-									isEditted={false}
-									content={messageLineContent}
-									isTokenClickAble={false}
-									isJumMessageEnabled={false}
-									onCloseTooltip={onCloseTooltip}
-								/>
+								<div className="pointer-events-none">
+									<MessageLine
+										messageId={message.message_id}
+										isEditted={false}
+										content={messageLineContent}
+										isTokenClickAble={false}
+										isJumMessageEnabled={false}
+										onCloseTooltip={onCloseTooltip}
+									/>
+								</div>
 							) : null}
-							{message.attachment_link && (
-								<div ref={attachmentContainerRef} className="flex flex-col">
+							{hasAttachment && (
+								<div ref={attachmentContainerRef} className="flex flex-col mt-1">
 									{!isExpanded ? (
-										<div className="max-h-[150px] max-w-[150px] overflow-hidden rounded-lg">
-											<div>
-												<MessageAttachment
-													mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-													message={{
-														...{
-															id: message.message_id || '',
-															avatar: message.avatar || '',
-															channel_id: message.channel_id || '',
-															clan_id: message.clan_id || '',
-															channel_label: isChannel
-																? currentChannel.channel_label || ''
-																: parentChannel.channel_label || '',
-															content: message.content || '',
-															code: 0,
-															sender_id: message.sender_id || '',
-															user: {
-																id: message.sender_id || '',
-																name: message.username || '',
-																username: message.username || ''
-															}
-														},
-														attachments: [
-															{
-																url: message.attachments?.[0]?.url || message.attachment_link || '',
-																filetype: message.attachments?.[0]?.filetype || message.attachment_type || '',
-																size: message.attachments?.[0]?.size || message.attachment_size || 0,
-																filename: message.attachments?.[0]?.filename || message.content || ''
-															}
-														]
-													}}
-													defaultMaxWidth={TOPBARS_MAX_WIDTH}
-												/>
+										isFirstAttachmentImageOrVideo ? (
+											<div className="max-h-[150px] max-w-[150px] overflow-hidden rounded-lg">
+												<div>
+													<MessageAttachment
+														mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+														message={{
+															...{
+																id: message.message_id || '',
+																avatar: message.avatar || '',
+																channel_id: message.channel_id || '',
+																clan_id: message.clan_id || '',
+																channel_label: isChannel
+																	? currentChannel.channel_label || ''
+																	: parentChannel.channel_label || '',
+																content: message.content || '',
+																code: 0,
+																sender_id: message.sender_id || '',
+																user: {
+																	id: message.sender_id || '',
+																	name: message.username || '',
+																	username: message.username || ''
+																}
+															},
+															attachments: [firstAttachment]
+														}}
+														defaultMaxWidth={TOPBARS_MAX_WIDTH}
+													/>
+												</div>
 											</div>
-										</div>
+										) : (
+											<div className="w-fit max-w-full">
+												<NotificationAttachmentItem attachment={firstAttachment} index={0} compact={true} />
+											</div>
+										)
 									) : (
-										<div className="flex flex-col gap-1.5 w-full">
-											{(message.attachments && message.attachments.length > 0
-												? message.attachments
-												: [
-														{
-															url: message.attachment_link,
-															filetype: message.attachment_type,
-															size: message.attachment_size || 0
-														}
-													]
-											).map((attachment, idx) => (
-												<NotificationAttachmentItem
-													key={attachment?.url || idx}
-													attachment={attachment}
-													index={idx}
-													compact={true}
-												/>
-											))}
+										<div className="flex flex-col gap-1.5 w-fit max-w-full">
+											{(message.attachments && message.attachments.length > 0 ? message.attachments : [firstAttachment]).map(
+												(attachment, idx) => (
+													<NotificationAttachmentItem
+														key={attachment?.url || idx}
+														attachment={attachment}
+														index={idx}
+														compact={true}
+													/>
+												)
+											)}
 										</div>
 									)}
 

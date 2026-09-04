@@ -469,6 +469,10 @@ export function addAttributesSearchList(data: SearchItemProps[], dataUserClan: C
 }
 
 export function filterListByName(listSearch: SearchItemProps[], searchText: string, isSearchByUsername: boolean): SearchItemProps[] {
+	if (!searchText.trim()) {
+		return listSearch;
+	}
+
 	const result = listSearch.filter((item: SearchItemProps) => {
 		if (isSearchByUsername) {
 			const searchName = normalizeSearchString(searchText.slice(1));

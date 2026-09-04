@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
-import { INVITE_URL_REGEX, checkInviteLinkValid, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
+import { INVITE_URL_REGEX, checkInviteLinkValid, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -51,7 +51,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 			return;
 		}
 
-		const isSocialMediaLink = isYouTubeLink(ogpLink.url) || isFacebookLink(ogpLink.url) || isTikTokLink(ogpLink.url);
+		const isSocialMediaLink = isYouTubeLink(ogpLink.url) || isTikTokLink(ogpLink.url);
 		if (isSocialMediaLink) {
 			setData(null);
 			dispatch(referencesActions.clearOgpData());

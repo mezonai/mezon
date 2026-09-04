@@ -128,8 +128,40 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 
 			setReady(true);
 		};
-
 		init();
+
+		const handleHealthCheck = async (event: Event) => {
+			const customEvent = event as CustomEvent;
+
+			console.log('CHECK_HEALTHY:', customEvent.detail);
+
+			const { requestId, fastRate, totalRequests, slowCount } = customEvent.detail;
+
+			try {
+				const response = await fetch('https://dev-mezon.nccsoft.vn:8088/v2/healthy/endpoint', {
+					method: 'GET',
+					headers: {
+						Authorization: `Bearer ${sessionRef.current?.session_id}`
+					}
+				}).then(async (response) => {
+					const payload = await response.json();
+					console.warn('BETTER_SERVER:', payload);
+					if (payload?.ws_url && payload?.ws_url !== sessionRef.current?.ws_url) {
+						console.warn('SWITCH TO SERVER:', payload?.ws_url);
+					}
+
+					return payload;
+				});
+			} catch (error) {
+				console.error('CHECK_HEALTHY: ', error);
+			}
+		};
+
+		window.addEventListener('CHECK_HEALTHY', handleHealthCheck);
+
+		return () => {
+			window.removeEventListener('CHECK_HEALTHY', handleHealthCheck);
+		};
 	}, []);
 	if (checkConnect) {
 		return <NetworkErrorScreen />;

@@ -1,11 +1,13 @@
-import type { FriendsEntity, ISendTokenDetailType, UsersEntity } from '@mezon/store';
-import { selectAllFriends, selectAllUsersByUser, selectWalletDetail } from '@mezon/store';
+import type { FriendsEntity, ISendTokenDetailType } from '@mezon/store';
+import { selectAllCtrlK, selectAllFriends, selectWalletDetail, useAppDispatch, userChannelsActions } from '@mezon/store';
 import { ButtonLoading, Icons, Input } from '@mezon/ui';
+import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, formatNumber, generateE2eId } from '@mezon/utils';
 import Dropdown from 'rc-dropdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useDebouncedCallback } from 'use-debounce';
 import { AvatarImage, ModalLayout } from '../../../components';
 
 type ModalSendTokenProps = {
@@ -53,15 +55,15 @@ const ModalSendToken = ({
 	isButtonDisabled
 }: ModalSendTokenProps) => {
 	const { t, i18n } = useTranslation(['userProfile', 'message'], { keyPrefix: 'statusProfile.sendTokenModal' });
-	const usersClan = useSelector(selectAllUsersByUser);
 	const friends = useSelector(selectAllFriends);
 	const walletDetail = useSelector(selectWalletDetail);
-
+	const searchCtrlK = useSelector(selectAllCtrlK);
 	const [searchTerm, setSearchTerm] = useState(infoSendToken?.receiver_name || '');
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [tokenNumber, setTokenNumber] = useState('');
 	const [noteSendToken, setNoteSendToken] = useState(note || '');
 	const [walletBalanceError, setWalletBalanceError] = useState<string | null>(null);
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		return () => {
@@ -79,8 +81,11 @@ const ModalSendToken = ({
 		setSearchTerm(value);
 		setSelectedUserId('');
 		setIsDropdownOpen(true);
+		debouncedSearch(value);
 	};
-
+	const debouncedSearch = useDebouncedCallback((value: string) => {
+		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: `${value}` }));
+	}, 400);
 	const handleSelectUser = useCallback(
 		(id: string, name: string) => {
 			setSearchTerm(name);
@@ -117,7 +122,7 @@ const ModalSendToken = ({
 		setNoteSendToken(value);
 	};
 
-	const mergeUniqueUsers = (usersClan: UsersEntity[], directMessages: FriendsEntity[]) => {
+	const mergeUniqueUsers = (usersClan: SearchItemProps[], directMessages: FriendsEntity[]) => {
 		const userMap: Map<string, User> = new Map();
 		directMessages.forEach((itemDM: FriendsEntity) => {
 			const userId = itemDM?.user?.id ?? '';
@@ -130,15 +135,15 @@ const ModalSendToken = ({
 				});
 			}
 		});
-		usersClan.forEach((itemUserClan) => {
-			const userId = itemUserClan?.id ?? '';
+
+		usersClan.forEach((user: SearchItemProps) => {
+			const userId = user?.idDM ?? '';
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,
-					username: itemUserClan?.username ?? '',
-					avatar_url: itemUserClan?.avatar_url ?? '',
-					search_key: itemUserClan.list_nick_names?.join('./'),
-					display_name: itemUserClan.display_name
+					username: user?.subText ?? '',
+					avatar_url: user?.avatarUser ?? '',
+					display_name: (user?.prioritizeName || user?.displayName) ?? ''
 				});
 			}
 		});
@@ -146,7 +151,7 @@ const ModalSendToken = ({
 		return Array.from(userMap.values());
 	};
 
-	const mergedUsers = mergeUniqueUsers(usersClan, friends);
+	const mergedUsers = mergeUniqueUsers(searchCtrlK, friends);
 
 	const filteredUsers = mergedUsers.filter((user) =>
 		searchTerm.length === 0

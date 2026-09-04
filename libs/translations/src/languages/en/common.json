@@ -213,6 +213,7 @@
 		"protipDescription": "Start searches with @, # to narrow down results.",
 		"previousChannels": "Previous channels",
 		"mentions": "Mentions",
+		"search": "Search channels",
 		"unreadChannels": "Unread channels",
 		"noResults": "Can't seem to find what you're looking for?"
 	},
