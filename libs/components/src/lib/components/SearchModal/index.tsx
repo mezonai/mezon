@@ -104,6 +104,9 @@ function SearchModal({ onClose }: SearchModalProps) {
 				if (itemDM.active === 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
 					checkListDM.current?.add(itemDM?.user_ids?.[0]);
 				}
+				if (itemDM.type === ChannelType.CHANNEL_TYPE_GROUP) {
+					checkListDM.current?.add(itemDM?.id);
+				}
 			});
 		}
 		return listDmSearchMap;
@@ -178,12 +181,12 @@ function SearchModal({ onClose }: SearchModalProps) {
 	}, [totalListsSorted]);
 
 	const totalListsMemberFiltered = useMemo(() => {
-		if (!listMemberSearch.length) {
+		if (!listDirectSearch.length && !listChannelSearch.length) {
 			return [];
 		}
 
-		return filterListByName(listMemberSearch, normalizeSearchText, isSearchByUsername);
-	}, [listMemberSearch, normalizeSearchText, isSearchByUsername]);
+		return filterListByName([...listDirectSearch, ...listChannelSearch], normalizeSearchText, isSearchByUsername);
+	}, [listDirectSearch, listChannelSearch, normalizeSearchText, isSearchByUsername]);
 
 	const totalListMembersSorted = useMemo(() => {
 		return sortFilteredList(totalListsMemberFiltered, normalizeSearchText, isSearchByUsername);

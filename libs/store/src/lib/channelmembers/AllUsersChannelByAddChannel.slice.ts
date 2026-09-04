@@ -111,18 +111,19 @@ export const fetchUserChannels = createAsyncThunk(
 export const fetchSearchCtrlK = createAsyncThunk(
 	'allUsersByAddChannel/fetchSearchCtrlK',
 	async ({ textSearch }: { textSearch: string }, thunkAPI) => {
-		if (!textSearch.trim()) {
+		const typeSearch = textSearch.startsWith('@') ? 1 : textSearch.startsWith('#') ? 2 : 0;
+		const textSearchValue = !typeSearch ? textSearch.trim() : textSearch.slice(1).trim();
+		if (!textSearchValue.trim()) {
 			return true;
 		}
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const typeSearch = textSearch.startsWith('@') ? 1 : textSearch.startsWith('#') ? 2 : 0;
 			if (cacheSearchKey.has(textSearch)) {
 				return true;
 			}
 
 			const response = await mezon.client.searchCtrlK(mezon.session, {
-				text: textSearch,
+				text: textSearchValue,
 				type: typeSearch
 			});
 			if (!typeSearch) {
@@ -258,6 +259,14 @@ export const userChannelsSlice = createSlice({
 					}
 				}
 			});
+			ItemSearchCtrlKAdapter.removeOne(state.listSearch, channelId);
+		},
+		removeOneCtrlK: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+
+			if (!state.listSearch) return;
+
+			ItemSearchCtrlKAdapter.removeOne(state.listSearch, channelId);
 		}
 	},
 	extraReducers(builder) {
@@ -336,7 +345,8 @@ export const userChannelsSlice = createSlice({
 							subText: users?.username || '',
 							icon: '@',
 							typeChat: TypeSearch.Dm_Type,
-							prioritizeName: users?.display_name || users?.username || ''
+							prioritizeName: users?.display_name || users?.username || '',
+							searchName: `${users?.display_name}.${users?.username}`
 						};
 					});
 					state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, users);

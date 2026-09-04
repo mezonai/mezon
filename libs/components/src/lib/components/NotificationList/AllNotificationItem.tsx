@@ -365,14 +365,16 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 							{isShareContact && shareContactEmbed ? (
 								<ShareContactCard embed={shareContactEmbed} />
 							) : hasMessageText ? (
-								<MessageLine
-									messageId={message.message_id}
-									isEditted={false}
-									content={messageLineContent}
-									isTokenClickAble={false}
-									isJumMessageEnabled={false}
-									onCloseTooltip={onCloseTooltip}
-								/>
+								<div className="pointer-events-none">
+									<MessageLine
+										messageId={message.message_id}
+										isEditted={false}
+										content={messageLineContent}
+										isTokenClickAble={false}
+										isJumMessageEnabled={false}
+										onCloseTooltip={onCloseTooltip}
+									/>
+								</div>
 							) : null}
 							{hasAttachment && (
 								<div ref={attachmentContainerRef} className="flex flex-col mt-1">

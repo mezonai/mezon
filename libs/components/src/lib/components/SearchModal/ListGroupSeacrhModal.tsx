@@ -139,18 +139,6 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 						/>
 					</>
 				)}
-				{/* {!normalizeSearchText && mentionList.length > 0 && (
-					<>
-						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.mentions')}</div>
-						<ListSearchModal
-							listSearch={mentionList}
-							onItemClick={handleItemClick}
-							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
-							focusItemId={focusItemId}
-							onMouseEnter={handleItemMouseEnter}
-						/>
-					</>
-				)} */}
 				{!normalizeSearchText && unreadList.length > 0 && (
 					<>
 						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.unreadChannels')}</div>
