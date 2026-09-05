@@ -5,8 +5,8 @@ import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarColor } from '../../../AvatarImage/AvatarImage';
-import { soundReactionsService } from '../../../VoiceChannel/MyVideoConference/Reaction/soundReactionsService';
-import type { DisplayedEmoji, DisplayedHand } from '../../../VoiceChannel/MyVideoConference/Reaction/types';
+import { soundReactionsService } from './soundReactionsService';
+import type { DisplayedEmoji, DisplayedHand } from './types';
 
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
@@ -211,7 +211,7 @@ export const ReactionCallHandler = memo(() => {
 	const shouldRender = displayedEmojis.length !== 0 || raisingList.length !== 0;
 	return (
 		<>
-			<audio ref={audioRef} src="assets/audio/raising-hand.mp3" preload="auto" className="hidden" />
+			<audio ref={audioRef} src="/assets/audio/raising-hand.mp3" preload="auto" className="hidden" />
 			{shouldRender && (
 				<>
 					<div className="absolute z-30 flex items-center justify-center inset-0 pointer-events-none ">

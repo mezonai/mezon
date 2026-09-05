@@ -11,7 +11,7 @@ import { useMezon } from '@mezon/transport';
 import { buildChannelAppLaunchUrl } from '@mezon/utils';
 import type { VoiceInteractiveEvent } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { FlowerCelebrationHandle } from '../../../VoiceChannel/MyVideoConference/Reaction/flowerCelebration';
+import type { FlowerCelebrationHandle } from '../../MyVideoConference/Reaction/flowerCelebration';
 
 interface ActiveApp {
 	id: string;

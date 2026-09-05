@@ -1,9 +1,21 @@
-import { useOnClickOutside, usePermissionChecker } from '@mezon/core';
-import { selectMemberClanByUserId, selectVoiceContextMenu, toastActions, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import { useAuth, useDirect, useOnClickOutside, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
+import {
+	giveCoffeeActions,
+	selectMemberClanByUserId,
+	selectVoiceContextMenu,
+	selectWalletDetail,
+	toastActions,
+	useAppDispatch,
+	useAppSelector,
+	voiceActions
+} from '@mezon/store';
+import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { EPermission, generateE2eId } from '@mezon/utils';
+import { EPermission, TypeMessage, compareBigInt, generateE2eId } from '@mezon/utils';
+import { ChannelStreamMode, type ApiTokenSentEvent } from 'mezon-js';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
 import { useSendReaction } from '../Reaction';
 import { SfuVoiceInteractiveLayer } from './SfuVoiceInteractiveLayer';
@@ -13,13 +25,20 @@ interface SfuVoiceContextMenuProps {
 	onParticipantAction: (action: 'mute' | 'kick', participantId: string) => Promise<void>;
 }
 
+const TOKEN_SEND_FLOWER = 50000;
 const FLOWER_COOLDOWN_MS = 5000;
 
 export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoiceContextMenuProps) => {
 	const { t } = useTranslation(['contextMenu', 'token']);
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
+	const { sendInviteMessage } = useSendInviteMessage();
+	const { createDirectMessageWithUser } = useDirect();
+	const myProfile = useAuth();
+	const { mmnRef } = useMezon();
+	const userWallet = useSelector(selectWalletDetail);
 	const [canManageVoice] = usePermissionChecker([EPermission.manageChannel]);
+
 	const menuRef = useRef<HTMLDivElement>(null);
 	const isMutingRef = useRef(false);
 	const isKickingRef = useRef(false);
@@ -80,24 +99,89 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 	}, [dispatch, member?.user?.id, onParticipantAction, participantId]);
 
 	const handleGiveFlowers = useCallback(async () => {
-		if (!participantId || Date.now() < flowerCooldownUntilRef.current) return;
+		if (Date.now() < flowerCooldownUntilRef.current) {
+			return;
+		}
+
 		dispatch(voiceActions.closeVoiceContextMenu());
+
 		try {
+			const mmnClient = mmnRef.current;
+
+			if (!mmnClient) {
+				return;
+			}
+
+			if (compareBigInt(userWallet?.balance || '', mmnClient.scaleAmountToDecimals(TOKEN_SEND_FLOWER)) < 0) {
+				dispatch(
+					toastActions.addToast({
+						message: t('token:toast.error.exceedWallet'),
+						type: 'error'
+					})
+				);
+				return;
+			}
+
 			const receiverId = member?.user?.id || participantId;
+			if (!receiverId) {
+				return;
+			}
+
 			flowerCooldownUntilRef.current = Date.now() + FLOWER_COOLDOWN_MS;
-			await dispatch(voiceActions.giveFlowers({ receiver_id: receiverId })).unwrap();
-			sendFlower(receiverId);
-		} catch (error) {
-			console.error('Failed to send flower:', error);
-			dispatch(
-				toastActions.addToast({
-					message: error instanceof Error ? error.message : 'Failed to send flowers',
-					type: 'error',
-					autoClose: 3000
+
+			const tokenEvent: ApiTokenSentEvent = {
+				sender_id: myProfile.userId as string,
+				sender_name: myProfile?.userProfile?.user?.username as string,
+				receiver_id: receiverId,
+				amount: TOKEN_SEND_FLOWER,
+				note: t('giveFlowers')
+			};
+
+			await dispatch(
+				giveCoffeeActions.sendToken({
+					tokenEvent: {
+						...tokenEvent,
+						receiver_name: member?.user?.username || ''
+					}
 				})
 			);
+			await dispatch(voiceActions.giveFlowers({ receiver_id: receiverId })).unwrap();
+			sendFlower(receiverId);
+
+			const response = await createDirectMessageWithUser(
+				receiverId,
+				member?.user?.display_name || '',
+				member?.user?.username || '',
+				member?.user?.avatar_url
+			);
+			if (response.channel_id) {
+				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				sendInviteMessage(
+					`Funds Transferred: ${TOKEN_SEND_FLOWER}₫ | ${tokenEvent.note}`,
+					response.channel_id,
+					channelMode,
+					TypeMessage.SendToken
+				);
+			}
+		} catch (error) {
+			console.error('Failed to send flower:', error);
 		}
-	}, [dispatch, member?.user?.id, participantId, sendFlower]);
+	}, [
+		createDirectMessageWithUser,
+		dispatch,
+		member?.user?.avatar_url,
+		member?.user?.display_name,
+		member?.user?.id,
+		member?.user?.username,
+		mmnRef,
+		myProfile.userId,
+		myProfile?.userProfile?.user?.username,
+		participantId,
+		sendFlower,
+		sendInviteMessage,
+		t,
+		userWallet?.balance
+	]);
 
 	if (!contextMenu || !participantId) return <SfuVoiceInteractiveLayer channelId={channelId} />;
 

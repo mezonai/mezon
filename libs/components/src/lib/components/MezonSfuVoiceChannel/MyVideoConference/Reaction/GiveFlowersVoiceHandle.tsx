@@ -5,8 +5,8 @@ import type { MutableRefObject } from 'react';
 import { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import type { FlowerCelebrationHandle } from '../../../VoiceChannel/MyVideoConference/Reaction/flowerCelebration';
-import { attachFlowerCelebration } from '../../../VoiceChannel/MyVideoConference/Reaction/flowerCelebration';
+import type { FlowerCelebrationHandle } from './flowerCelebration';
+import { attachFlowerCelebration } from './flowerCelebration';
 
 type GiveFlowersVoiceType = {
 	senderQueueRef: MutableRefObject<VoiceInteractiveEvent[]>;

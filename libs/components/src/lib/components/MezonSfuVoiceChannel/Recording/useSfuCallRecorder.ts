@@ -1,42 +1,27 @@
-import { getStore, selectIsVoiceRecording, voiceActions } from '@mezon/store';
-import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { callRecorder } from '../../VoiceChannel/Recording/callRecorder';
-import type { RecordingAudioSource, RecordingSceneTile } from '../../VoiceChannel/Recording/types';
+import { useEffect } from 'react';
+import { sfuCallRecorder } from './callRecorder';
+import type { RecordingAudioSource, RecordingSceneTile } from './types';
 
-interface UseSfuCallRecorderParams {
+export interface UseSfuCallRecorderParams {
 	tiles: RecordingSceneTile[];
 	audioSources: RecordingAudioSource[];
 }
 
-export const useSfuCallRecorder = ({ tiles, audioSources }: UseSfuCallRecorderParams) => {
-	const isRecording = useSelector(selectIsVoiceRecording);
-	const sourceRef = useRef({ tiles, audioSources });
-	sourceRef.current = { tiles, audioSources };
-
-	useEffect(
-		() =>
-			callRecorder.setSource({
-				scene: () => sourceRef.current.tiles,
-				audio: () => sourceRef.current.audioSources
-			}),
-		[]
-	);
+export function useSfuCallRecorder({ tiles, audioSources }: UseSfuCallRecorderParams): void {
+	useEffect(() => {
+		return sfuCallRecorder.setSource({
+			scene: () => tiles,
+			audio: () => audioSources
+		});
+	}, [tiles, audioSources]);
 
 	useEffect(() => {
-		if (!isRecording) return;
-		callRecorder.syncScene(tiles);
-		callRecorder.syncAudio(audioSources);
-	}, [audioSources, isRecording, tiles]);
+		if (!sfuCallRecorder.isRecording) return;
+		sfuCallRecorder.syncScene(tiles);
+	}, [tiles]);
 
-	useEffect(
-		() => () => {
-			if (!callRecorder.isRecording) {
-				getStore().dispatch(voiceActions.resetRecordingState());
-				return;
-			}
-			void callRecorder.stop().finally(() => getStore().dispatch(voiceActions.resetRecordingState()));
-		},
-		[]
-	);
-};
+	useEffect(() => {
+		if (!sfuCallRecorder.isRecording) return;
+		sfuCallRecorder.syncAudio(audioSources);
+	}, [audioSources]);
+}
