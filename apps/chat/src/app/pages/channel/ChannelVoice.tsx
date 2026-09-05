@@ -26,6 +26,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 
+// eslint-disable-next-line @nx/enforce-module-boundaries -- legacy LiveKit room remains a separate route-level implementation
 import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
 import { useLastCallback } from '@mezon/utils';
 import type { RoomConnectOptions } from 'livekit-client';
@@ -290,11 +291,7 @@ const ChannelVoiceInner = () => {
 		<Suspense fallback={<div>loading ...</div>}>
 			<div
 				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute bottom-0 right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
-				style={
-					!isVoiceFullScreen
-						? { width: 'calc(100% - 72px - 272px)', height: '100%' }
-						: { width: '100vw', height: '100vh' }
-				}
+				style={!isVoiceFullScreen ? { width: 'calc(100% - 72px - 272px)', height: '100%' } : { width: '100vw', height: '100vh' }}
 			>
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
 					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />
