@@ -1,5 +1,5 @@
 import { useAppNavigation, useDirect } from '@mezon/core';
-import type { ChannelMetaEntity, DirectEntity } from '@mezon/store';
+import type { ChannelMetaEntity, ChannelsEntity, DirectEntity } from '@mezon/store';
 import {
 	appActions,
 	categoriesActions,
@@ -11,7 +11,10 @@ import {
 	selectAllCtrlK,
 	selectAllDirectMessages,
 	selectChannelMetaEntities,
+	selectClanView,
 	selectClansEntities,
+	selectCtrlKQuery,
+	selectCurrentClanId,
 	selectDmMetaEntities,
 	selectEntitesUserClans,
 	selectPreviousChannels,
@@ -57,6 +60,26 @@ const withChannelMetaUnread = (lastSent: number, lastSeen: number, countUnread: 
 	};
 };
 
+const GROUP_LIMIT = 5;
+
+const toChannelItem = (channel: ChannelsEntity, clanName: string, meta?: ChannelMetaEntity): SearchItemProps => ({
+	count_messsage_unread: meta?.count_mess_unread,
+	channelId: channel.id,
+	id: channel.id,
+	channel_private: channel.channel_private || 0,
+	name: channel?.channel_label ?? '',
+	subText: clanName,
+	icon: '#',
+	clanId: channel?.clan_id ?? '',
+	typeChat: TypeSearch.Channel_Type,
+	prioritizeName: channel?.channel_label ?? '',
+	age_restricted: channel.age_restricted,
+	type: channel?.type,
+	parent_id: channel?.parent_id,
+	lastSeenTimeStamp: meta?.lastSeenTimestamp ?? 0,
+	lastSentTimeStamp: meta?.lastSentTimestamp ?? 0
+});
+
 const dedupeById = (items: SearchItemProps[]) => {
 	const seenIds = new Set<string>();
 	return items.filter((item) => {
@@ -77,9 +100,13 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const allClanUsersEntities = useAppSelector(selectEntitesUserClans);
 	const dmGroupChatList = useAppSelector(selectAllDirectMessages);
 	const dmMetaEntities = useAppSelector(selectDmMetaEntities);
+	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
 	const cltrKList = useAppSelector(selectAllCtrlK);
+	const ctrlKQuery = useAppSelector(selectCtrlKQuery);
 	const clansEntities = useAppSelector(selectClansEntities);
 	const previousChannels = useAppSelector(selectPreviousChannels);
+	const currentClanId = useAppSelector(selectCurrentClanId);
+	const isClanView = useAppSelector(selectClanView);
 
 	const resolveClanName = useCallback(
 		(clanId?: string, fallback?: string) => (clanId ? clansEntities?.[clanId]?.clan_name : '') || fallback || '',
@@ -90,6 +117,8 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const { createDirectMessageWithUser } = useDirect();
 
 	const [searchText, setSearchText] = useState('');
+
+	const isAwaitingResults = searchText.trim() !== '' && ctrlKQuery !== searchText;
 
 	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 300), []);
 	const checkListDM = useRef(new Set<string>());
@@ -134,6 +163,9 @@ function SearchModal({ onClose }: SearchModalProps) {
 	}, [dmGroupChatList, cltrKList, dmMetaEntities, allClanUsersEntities]);
 	const listChannelSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
+		if (isAwaitingResults) {
+			return list;
+		}
 		if (cltrKList.length) {
 			cltrKList.forEach((item) => {
 				if (!item.id) {
@@ -143,17 +175,30 @@ function SearchModal({ onClose }: SearchModalProps) {
 					return;
 				}
 				if (item.typeChat === TypeSearch.Channel_Type) {
-					const clanName = resolveClanName(item.clanId, item.subText);
-					if (clanName !== item.subText) {
-						list.push({ ...item, subText: clanName });
+					const isDirectConversation =
+						!item.clanId ||
+						item.clanId === '0' ||
+						item.type === ChannelType.CHANNEL_TYPE_GROUP ||
+						item.type === ChannelType.CHANNEL_TYPE_DM;
+					if (isDirectConversation) {
 						return;
 					}
+
+					const meta = channelMetaEntities[item.id];
+					list.push({
+						...item,
+						subText: resolveClanName(item.clanId, item.subText),
+						lastSentTimeStamp: meta?.lastSentTimestamp ?? 0,
+						lastSeenTimeStamp: meta?.lastSeenTimestamp ?? 0,
+						count_messsage_unread: meta ? meta.count_mess_unread : item.count_messsage_unread
+					});
+					return;
 				}
 				list.push(item);
 			});
 		}
 		return list;
-	}, [cltrKList, resolveClanName]);
+	}, [cltrKList, isAwaitingResults, channelMetaEntities, resolveClanName]);
 	const listMemberSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
 		const addedUserIds = new Set<string>();
@@ -209,12 +254,15 @@ function SearchModal({ onClose }: SearchModalProps) {
 	}, [totalListsSorted]);
 
 	const totalListsMemberFiltered = useMemo(() => {
-		if (!listDirectSearch.length && !listChannelSearch.length) {
+		const memberSources = [...listMemberSearch, ...listDirectSearch, ...listChannelSearch].filter(
+			(item) => item.typeChat !== TypeSearch.Channel_Type
+		);
+		if (!memberSources.length) {
 			return [];
 		}
 
-		return filterListByName([...listDirectSearch, ...listChannelSearch], normalizeSearchText, isSearchByUsername);
-	}, [listDirectSearch, listChannelSearch, normalizeSearchText, isSearchByUsername]);
+		return filterListByName(memberSources, normalizeSearchText, isSearchByUsername);
+	}, [listMemberSearch, listDirectSearch, listChannelSearch, normalizeSearchText, isSearchByUsername]);
 
 	const totalListMembersSorted = useMemo(() => {
 		return sortFilteredList(totalListsMemberFiltered, normalizeSearchText, isSearchByUsername);
@@ -231,118 +279,66 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return dedupeById(totalListsSorted);
 	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListsSorted]);
 
-	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
 	const allChannels = useAppSelector(selectAllChannelsInAllClans);
 
-	const classificationList = useMemo(() => {
-		const recentIds = new Set(previousChannels.map((item) => item.channelId));
-		const unreadIds = new Set<string>();
+	const classificationList = useMemo<ClassifiedLists>(() => {
+		const recentPool: SearchItemProps[] = [];
+		const unreadPool: SearchItemProps[] = [];
+		const seenRecent = new Set<string>();
 
-		const { recentList, unreadList } = listItemWithoutRecent.reduce<ClassifiedLists>(
-			(acc, item) => {
-				const hasUnread = item.lastSentTimeStamp > item.lastSeenTimeStamp || (item.count_messsage_unread ?? 0) > 0;
-				if (!hasUnread) return acc;
-
-				const isChannel = item.type === ChannelType.CHANNEL_TYPE_CHANNEL || item.type === ChannelType.CHANNEL_TYPE_THREAD;
-				const isDmOrGroup = item.type === ChannelType.CHANNEL_TYPE_DM || item.type === ChannelType.CHANNEL_TYPE_GROUP;
-
-				if (isChannel) {
-					acc.unreadList.push(item);
-					item.id && unreadIds.add(item.id);
-				} else if (isDmOrGroup && item.id && !recentIds.has(item.id)) {
-					acc.unreadList.push(item);
-					unreadIds.add(item.id);
-				}
-
-				return acc;
-			},
-			{ recentList: [], unreadList: [] }
-		);
-
-		const listPrevious = new Set<string>();
-		if (previousChannels.length > 0) {
+		if (isClanView) {
+			const clanChannels = allChannels[currentClanId as string]?.entities?.entities;
 			for (const previous of previousChannels) {
-				if (listPrevious.has(previous.channelId)) {
+				const channel = clanChannels?.[previous.channelId];
+				if (!channel?.id || seenRecent.has(channel.id)) {
 					continue;
 				}
-				const channel = allChannels[previous.clanId].entities.entities?.[previous.channelId];
-				const meta = channelMetaEntities?.[previous.channelId];
+				seenRecent.add(channel.id);
+				recentPool.push(toChannelItem(channel, resolveClanName(channel.clan_id, channel.clan_name), channelMetaEntities?.[channel.id]));
+			}
 
-				if (channel) {
-					listPrevious.add(channel.id);
-					recentList.push({
-						count_messsage_unread: meta.count_mess_unread,
-						channelId: meta.id,
-						id: meta.id,
-						channel_private: channel.channel_private || 0,
-						name: channel?.channel_label ?? '',
-						subText: resolveClanName(channel?.clan_id, channel.clan_name),
-						icon: '#',
-						clanId: channel?.clan_id ?? '',
-						typeChat: TypeSearch.Channel_Type,
-						prioritizeName: channel?.channel_label ?? '',
-						age_restricted: channel.age_restricted,
-						type: channel?.type,
-						parent_id: channel?.parent_id,
-						lastSeenTimeStamp: meta.lastSeenTimestamp,
-						lastSentTimeStamp: meta.lastSentTimestamp
-					});
+			for (const channel of Object.values(clanChannels ?? {})) {
+				if (!channel?.id) {
+					continue;
 				}
+				const meta = channelMetaEntities?.[channel.id];
+				if (!meta || !(meta.count_mess_unread || meta.lastSeenTimestamp < meta.lastSentTimestamp)) {
+					continue;
+				}
+				unreadPool.push(toChannelItem(channel, resolveClanName(channel.clan_id, channel.clan_name), meta));
+			}
+		} else {
+			const conversationsById = new Map(listDirectSearch.map((item) => [item.id, item]));
+			for (const previous of previousChannels) {
+				const conversation = conversationsById.get(previous.channelId);
+				if (!conversation?.id || seenRecent.has(conversation.id)) {
+					continue;
+				}
+				seenRecent.add(conversation.id);
+				recentPool.push(conversation);
+			}
+
+			for (const conversation of listDirectSearch) {
+				if (!conversation.id) {
+					continue;
+				}
+				const hasUnread = conversation.lastSentTimeStamp > conversation.lastSeenTimeStamp || (conversation.count_messsage_unread ?? 0) > 0;
+				if (!hasUnread) {
+					continue;
+				}
+				unreadPool.push(conversation);
 			}
 		}
 
-		Object.values(channelMetaEntities)?.map((meta) => {
-			if (
-				(meta.count_mess_unread || meta.lastSeenTimestamp < meta.lastSentTimestamp) &&
-				!listPrevious.has(meta.id) &&
-				!unreadIds.has(meta.id)
-			) {
-				if (allChannels[meta.clanId]?.entities?.entities?.[meta.id]) {
-					const channel = allChannels[meta.clanId].entities.entities?.[meta.id];
-
-					unreadIds.add(meta.id);
-					unreadList.push({
-						count_messsage_unread: meta.count_mess_unread,
-						channelId: meta.id,
-						id: meta.id,
-						channel_private: channel.channel_private || 0,
-						name: channel?.channel_label ?? '',
-						subText: resolveClanName(channel?.clan_id, channel.clan_name),
-						icon: '#',
-						clanId: channel?.clan_id ?? '',
-						typeChat: TypeSearch.Channel_Type,
-						prioritizeName: channel?.channel_label ?? '',
-						age_restricted: channel.age_restricted,
-						type: channel?.type,
-						parent_id: channel?.parent_id,
-						lastSeenTimeStamp: meta.lastSeenTimestamp,
-						lastSentTimeStamp: meta.lastSentTimestamp
-					});
-				}
-			}
-		});
+		unreadPool.sort((a, b) => (Number(b.lastSentTimeStamp) || 0) - (Number(a.lastSentTimeStamp) || 0));
+		const unreadList = unreadPool.slice(0, GROUP_LIMIT);
+		const unreadIds = new Set(unreadList.map((item) => item.id));
+		const recentList = recentPool.filter((item) => !unreadIds.has(item.id)).slice(0, GROUP_LIMIT);
 
 		return { recentList, unreadList };
-	}, [listItemWithoutRecent, previousChannels, channelMetaEntities, resolveClanName]);
+	}, [isClanView, currentClanId, previousChannels, allChannels, channelMetaEntities, listDirectSearch, resolveClanName]);
 
-	const { recentList, unreadList } = classificationList;
-
-	const listRecent = useMemo(() => {
-		const previous: SearchItemProps[] = [...recentList];
-		if (listDirectSearch.length > 0) {
-			const previousIds = new Set(previous.map((item) => item.id));
-			const recentChannelIds = new Set(previousChannels.map((item) => item.channelId));
-			for (let i = listDirectSearch.length - 1; i >= 0; i--) {
-				const itemDMId = listDirectSearch[i]?.id || '';
-				if (recentChannelIds.has(itemDMId) && !previousIds.has(itemDMId)) {
-					previousIds.add(itemDMId);
-					previous.unshift(listDirectSearch[i]);
-				}
-			}
-		}
-
-		return previous;
-	}, [recentList, listDirectSearch, previousChannels]);
+	const { recentList: listRecent, unreadList } = classificationList;
 	const handleSelectMem = useCallback(
 		async (user: SearchItemProps) => {
 			const foundDirect = dmGroupChatList.find((item) => item.id === user.id);
@@ -444,6 +440,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 					listItemWithoutRecent={listItemWithoutRecent}
 					normalizeSearchText={normalizeSearchText}
 					handleItemClick={handleItemClick}
+					isAwaitingResults={isAwaitingResults}
 				/>
 				<FooterNoteModal />
 			</div>

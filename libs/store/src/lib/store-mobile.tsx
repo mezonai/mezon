@@ -64,8 +64,8 @@ import { defaultNotificationClanReducer } from './notificationSetting/notificati
 import { ONBOARDING_FEATURE_KEY, onboardingReducer } from './onboarding/onboarding.slice';
 import { permissionRoleChannelReducer } from './permissionChannel/permissionRoleChannel.slice';
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
-import { POLLS_FEATURE_KEY, pollsReducer } from './polls/polls.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
+import { POLLS_FEATURE_KEY, pollsReducer } from './polls/polls.slice';
 import { QUICK_MENU_FEATURE_KEY, quickMenuReducer } from './quickMenu/quickMenu.slice';
 import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/roleclan.slice';
 import { SEARCH_MESSAGES_FEATURE_KEY, searchMessageReducer } from './searchmessages/searchmessage.slice';
@@ -327,7 +327,8 @@ const persistedsettingClanStickerReducer = persistReducer(
 const persisteduserChannelsReducer = persistReducer(
 	{
 		key: 'allUsersByAddChannel',
-		storage
+		storage,
+		blacklist: ['searchRequestId']
 	},
 	userChannelsReducer
 );
