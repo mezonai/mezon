@@ -31,7 +31,6 @@ type SuggestItemProps = {
 };
 
 const SuggestItem = ({
-	isOpenSearchModal,
 	avatarUrl,
 	channelId,
 	subText,

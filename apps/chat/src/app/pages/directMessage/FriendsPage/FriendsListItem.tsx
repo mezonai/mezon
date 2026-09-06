@@ -1,7 +1,7 @@
 import { BaseProfile, useRemoveFriendModal } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends, useMemberStatus } from '@mezon/core';
 import type { FriendsEntity } from '@mezon/store';
-import { EStateFriend, audioCallActions, listUsersByUserActions, selectCurrentTabStatus } from '@mezon/store';
+import { EStateFriend, audioCallActions, selectCurrentTabStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ETabUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -137,7 +137,6 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 
 	const handleAcceptFriend = (username: string, id: string, avatar?: string, displayName?: string) => {
 		acceptFriend(username, id);
-		dispatch(listUsersByUserActions.updateUserInList({ id, avatar_url: avatar, display_name: displayName, username }));
 	};
 
 	const handleDeleteFriend = (selectedFriend: FriendsEntity) => {

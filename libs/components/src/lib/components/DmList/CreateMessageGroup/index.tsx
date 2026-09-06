@@ -1,6 +1,6 @@
 import { useAppNavigation, useEscapeKeyClose, useFriends, useOnClickOutside } from '@mezon/core';
 import type { DirectEntity, FriendsEntity } from '@mezon/store';
-import { channelUsersActions, directActions, selectAllAccount, selectAllFriends, useAppDispatch } from '@mezon/store';
+import { channelUsersActions, directActions, selectAllAccount, selectAllFriends, toastActions, useAppDispatch } from '@mezon/store';
 import { Icons, InputField } from '@mezon/ui';
 import { GROUP_CHAT_MAXIMUM_MEMBERS, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiCreateChannelDescRequest } from 'mezon-js';
@@ -132,8 +132,24 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			const response = await dispatch(
 				directActions.createNewDirectMessage({ body: bodyCreateDmGroup, username: userNameGroup, avatar: avatarGroup })
 			);
-			const resPayload = response.payload as ApiCreateChannelDescRequest;
-			if (resPayload.channel_id) {
+			if (directActions.createNewDirectMessage.rejected.match(response)) {
+				const err = response.payload as { code?: number } | undefined;
+				if (err?.code === 6 && bodyCreateDmGroup.type === ChannelType.CHANNEL_TYPE_GROUP) {
+					dispatch(
+						toastActions.addToast({
+							message: t('createMessageGroup.groupAlreadyExists'),
+							type: 'error',
+							autoClose: 4000
+						})
+					);
+					return;
+				}
+			}
+			if (!directActions.createNewDirectMessage.fulfilled.match(response)) {
+				return;
+			}
+			const resPayload = response.payload;
+			if (resPayload?.channel_id) {
 				const directChat = toDmGroupPage(resPayload.channel_id, Number(resPayload.type));
 				navigate(directChat);
 			}

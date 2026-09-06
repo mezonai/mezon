@@ -55,7 +55,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			: priorityDisplayName;
 
 	const currentUserId = userProfile?.user?.id || '';
-	const anonymousMode = useSelector((state) => selectAnonymousMode(state, getClanId as string));
+	const anonymousMode = useSelector((state) => selectAnonymousMode(state, channelOrDirect?.channel_id as string));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 	const { clientRef, sessionRef } = useMezon();

@@ -6,7 +6,6 @@ export function isYouTubeLink(url: string): boolean {
 
 export function getLinkType(url: string): EBacktickType {
 	if (isYouTubeLink(url)) return EBacktickType.LINKYOUTUBE;
-	if (isFacebookLink(url)) return EBacktickType.LINKFACEBOOK;
 	if (isTikTokLink(url)) return EBacktickType.LINKTIKTOK;
 	return EBacktickType.LINK;
 }

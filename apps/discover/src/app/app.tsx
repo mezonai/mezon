@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import ScrollToTop from './components/common/ScrollToTop';
 import { DiscoverProvider } from './context/DiscoverContext';
 import { useMezonDiscover } from './hooks/useMezonDiscover';
 import AboutMezon from './pages/aboutmezon';
@@ -33,6 +34,7 @@ const LoadingSpinner = () => (
 function AppWithStore() {
 	return (
 		<div className="min-h-screen bg-[#F4F7F9]">
+			<ScrollToTop />
 			<Suspense fallback={<LoadingSpinner />}>
 				<Routes>
 					<Route path="/" element={<MezonPage />} />

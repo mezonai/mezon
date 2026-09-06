@@ -8,7 +8,6 @@ import {
 	fcmActions,
 	friendsActions,
 	listChannelsByUserActions,
-	listUsersByUserActions,
 	stickerSettingActions
 } from '@mezon/store';
 import { isOnline, waitForOnline } from '@mezon/transport';
@@ -32,7 +31,6 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(stickerSettingActions.fetchStickerByUserId({ clanId: '' }));
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
-	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
 	dispatch(clansActions.fetchClans({}));
 	dispatch(clansActions.listClanBadgeCount());
 	dispatch(friendsActions.fetchListFriends({}));

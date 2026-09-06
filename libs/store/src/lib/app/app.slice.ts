@@ -16,7 +16,6 @@ import type { RootState } from '../store';
 import { voiceActions } from '../voice/voice.slice';
 
 export const APP_FEATURE_KEY = 'app';
-const NUMBER_HISTORY = 10;
 
 const REFRESH_APP_CONFIG = {
 	maxAttempts: 5,

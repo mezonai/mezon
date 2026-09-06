@@ -1,7 +1,7 @@
 import { attachmentActions, useAppDispatch } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js';
-import { Suspense, lazy, useCallback } from 'react';
+import { Suspense, lazy, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePopup } from '../DraggablePopup';
 import { PDFFooter, PDFHeader } from '../PDFViewer';
@@ -137,18 +137,36 @@ export const NotificationAttachmentItem = ({ attachment, index, compact = false 
 		}
 	};
 
+	const displayName = useMemo(() => {
+		if (attachment?.filename) return attachment.filename;
+		if (attachment?.url) {
+			try {
+				const pathname = new URL(attachment.url, 'http://localhost').pathname;
+				const name = decodeURIComponent(pathname.split('/').pop() || '');
+				if (name && name !== '/') return name;
+			} catch {
+				const name = attachment.url.split('/').pop()?.split('?')[0];
+				if (name) return name;
+			}
+		}
+		return `${t('file', { ns: 'common', defaultValue: 'File' })} ${index + 1}`;
+	}, [attachment?.filename, attachment?.url, index, t]);
+
 	const sizeText = formatFileSize(attachment?.size);
 	const thumbnail = RenderAttachmentThumbnail({
-		attachment,
+		attachment: {
+			...attachment,
+			filename: attachment?.filename || displayName
+		},
 		size: compact ? 'w-8 h-8' : 'w-10 h-10',
 		isFileList: true
 	});
 
 	return (
 		<div
-			className={`flex items-center justify-between ${
+			className={`flex items-center justify-between w-[245px] max-w-full ${
 				compact ? 'gap-2 p-2' : 'gap-3 p-3'
-			} rounded-lg bg-theme-secondary/40 hover:bg-item-theme-hover transition-colors group border-theme-primary`}
+			} rounded-lg bg-item-theme hover:bg-item-theme-hover transition-colors group border-theme-primary`}
 		>
 			<div className={`flex items-center ${compact ? 'gap-2' : 'gap-3'} min-w-0 flex-1`}>
 				<div className="shrink-0 flex items-center justify-center cursor-pointer" onClick={handleView}>
@@ -157,12 +175,12 @@ export const NotificationAttachmentItem = ({ attachment, index, compact = false 
 				<div className="min-w-0 flex-1">
 					<p
 						className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-theme-primary truncate hover:text-blue-400 cursor-pointer`}
-						title={attachment?.filename || t('attachment', { ns: 'common', defaultValue: 'Attachment' })}
+						title={displayName}
 						onClick={handleView}
 					>
-						{attachment?.filename || `${t('file', { ns: 'common', defaultValue: 'File' })} ${index + 1}`}
+						{displayName}
 					</p>
-					{sizeText && <span className={`${compact ? 'text-[10px]' : 'text-xs'} text-zinc-400`}>{sizeText}</span>}
+					{sizeText && <span className={`${compact ? 'text-[10px]' : 'text-xs'} text-zinc-400 truncate block`}>{sizeText}</span>}
 				</div>
 			</div>
 

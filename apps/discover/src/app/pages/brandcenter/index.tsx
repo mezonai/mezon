@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 const BrandCenterPage = () => {
 	const introRef = useRef<HTMLDivElement | null>(null);
@@ -91,23 +92,19 @@ const BrandCenterPage = () => {
 									These Guidelines explain how you may and may not use Mezon's brand assets for marketing, communication, or
 									partnership purposes. They also include legal disclosures to help ensure that Mezon's visual and verbal identity
 									is always represented with consistency, accuracy, and respect. By using our brand assets, you also agree to our{' '}
-									<a
-										href="/terms-of-service"
-										target="_blank"
-										rel="noopener noreferrer"
+									<Link
+										to="/terms-of-service"
 										className="text-[#6B5FE0] hover:text-[#5A6FE8] font-semibold hover:underline transition-colors"
 									>
 										Terms of Service
-									</a>{' '}
+									</Link>{' '}
 									and{' '}
-									<a
-										href="/privacy-policy"
-										target="_blank"
-										rel="noopener noreferrer"
+									<Link
+										to="/privacy-policy"
 										className="text-[#6B5FE0] hover:text-[#5A6FE8] font-semibold hover:underline transition-colors"
 									>
 										Privacy Policy
-									</a>
+									</Link>
 									.
 								</p>
 								<p className="text-lg">
@@ -235,23 +232,19 @@ const BrandCenterPage = () => {
 										'Incorporate Mezon trademarks into your own product names, service names, trademarks, logos, or company names.',
 										<>
 											Use Mezon's brand assets in ways that violate our{' '}
-											<a
-												href="/terms-of-service"
-												target="_blank"
-												rel="noopener noreferrer"
+											<Link
+												to="/terms-of-service"
 												className="text-[#6B5FE0] hover:text-[#5A6FE8] font-semibold hover:underline transition-colors"
 											>
 												Terms of Service
-											</a>
+											</Link>
 											,{' '}
-											<a
-												href="/privacy-policy"
-												target="_blank"
-												rel="noopener noreferrer"
+											<Link
+												to="/privacy-policy"
 												className="text-[#6B5FE0] hover:text-[#5A6FE8] font-semibold hover:underline transition-colors"
 											>
 												Privacy Policy
-											</a>
+											</Link>
 											, Community Guidelines, or any applicable laws and regulations.
 										</>,
 										"Display Mezon's brand assets in a manner that implies a relationship, affiliation, endorsement, or sponsorship between you or your products/services and Mezon that does not exist."

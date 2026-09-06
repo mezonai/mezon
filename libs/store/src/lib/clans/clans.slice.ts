@@ -8,13 +8,16 @@ import type {
 	ApiCheckDuplicateNameRequest,
 	ApiCheckDuplicateNameResponse,
 	ApiClanDesc,
+	ApiClanDescList,
 	ApiUpdateAccountRequest,
 	ClanUpdatedEvent,
 	MezonUpdateClanDescBody
 } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
+import { ClanDescList, ListClanDescRequest } from 'mezon-js-protobuf';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
+import { callApiAdmin } from '../application/adminAPI.slice';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -216,6 +219,25 @@ export const fetchClansCached = async (
 		};
 	}
 
+	if (!ensuredMezon.session && rootState.auth?.session) {
+		ensuredMezon.session = rootState.auth.session;
+	}
+
+	const token = rootState.auth?.session?.token;
+	if (token && !ensuredMezon.clientRef?.current) {
+		const response = await callApiAdmin({
+			path: '/mezon.api.Mezon/ListClanDescs',
+			data: ListClanDescRequest.encode(ListClanDescRequest.fromPartial({ limit, state: 1, cursor: cursor || '' })).finish(),
+			decodeBody: (bytes) => ClanDescList.decode(bytes) as ApiClanDescList,
+			token
+		});
+		markApiFirstCalled(apiKey);
+		return {
+			...response,
+			fromCache: false
+		};
+	}
+
 	const response = await fetchDataWithSocketFallback(
 		ensuredMezon,
 		{
@@ -265,7 +287,8 @@ export const fetchClans = createAsyncThunk(
 	'clans/fetchClans',
 	async ({ noCache = false, isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
 		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const mezonCtx = getMezonCtx(thunkAPI);
+			const mezon = mezonCtx?.clientRef?.current ? await ensureSession(mezonCtx) : (mezonCtx as any);
 			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '0', noCache);
 			if (!response.clandesc) {
 				return { clans: [], fromCache: response.fromCache };
@@ -275,8 +298,8 @@ export const fetchClans = createAsyncThunk(
 			thunkAPI.dispatch(clansActions.updateBulkClanMetadata(meta));
 
 			const state = thunkAPI.getState() as RootState;
-			const queuedMessages = state.messages.queuedLastSeenMessages;
-			if (queuedMessages.length > 0) {
+			const queuedMessages = state.messages?.queuedLastSeenMessages;
+			if (queuedMessages && queuedMessages.length > 0) {
 				thunkAPI.dispatch(processQueuedLastSeenMessages());
 			}
 
@@ -511,7 +534,7 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 	}
 });
 
-export const listClanBadgeCount = createAsyncThunk('clans/listClanBadgeCount', async (_, thunkAPI) => {
+export const listClanBadgeCount = createAsyncThunk<any, void>('clans/listClanBadgeCount', async (_, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 

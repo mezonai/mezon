@@ -349,8 +349,8 @@ export const selectAllAccount = createSelector(getAccountState, (state: AccountS
 
 export const selectCurrentUserId = createSelector(getAccountState, (state: AccountState) => state?.userProfile?.user?.id || '');
 
-export const selectAnonymousMode = createSelector([getAccountState, (state, clanId: string) => clanId], (state: AccountState, clanId) => {
-	return !!state.anonymousMode?.[clanId];
+export const selectAnonymousMode = createSelector([getAccountState, (_, channelId: string) => channelId], (state: AccountState, channelId) => {
+	return !!state.anonymousMode?.[channelId];
 });
 
 export const selectTopicAnonymousMode = createSelector(getAccountState, (state: AccountState) => state.topicAnonymousMode);

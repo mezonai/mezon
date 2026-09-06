@@ -169,7 +169,14 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 
 		setIsButtonDisabled(true);
 		try {
-			await dispatch(giveCoffeeActions.sendToken({ tokenEvent })).unwrap();
+			await dispatch(
+				giveCoffeeActions.sendToken({
+					tokenEvent: {
+						...tokenEvent,
+						receiver_name: username
+					}
+				})
+			).unwrap();
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_SUCCESS_STATUS }));
 			if (id) {
 				await sendNotificationMessage(id, token, note ?? '', username, avatar, display_name);
