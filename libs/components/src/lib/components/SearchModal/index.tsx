@@ -57,8 +57,6 @@ const withChannelMetaUnread = (lastSent: number, lastSeen: number, countUnread: 
 	};
 };
 
-// The same entity can be produced by several sources (ctrl+K search cache, DM list, channel meta),
-// and each rendered list is keyed by `id`, so only the first occurrence may survive.
 const dedupeById = (items: SearchItemProps[]) => {
 	const seenIds = new Set<string>();
 	return items.filter((item) => {
