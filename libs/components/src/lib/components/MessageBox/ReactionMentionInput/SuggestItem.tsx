@@ -1,11 +1,9 @@
-import type { ChannelsEntity } from '@mezon/store';
-import { selectAllChannelsByUser, selectChannelById, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectEntitiesChannelsByUser, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
-import type { HashtagDm } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { AppChannelListIcon } from '../../ChannelList/AppChannelListIcon';
@@ -47,24 +45,21 @@ const SuggestItem = ({
 	isRowFocused = false,
 	color
 }: SuggestItemProps) => {
-	const allChannels = useSelector(selectAllChannelsByUser);
-	const getChannel = allChannels.find((channel) => {
-		return channel.channel_id === channelId;
-	});
+	const allChannelsEntities = useSelector(selectEntitiesChannelsByUser);
+	const getChannel = channelId ? allChannelsEntities?.[channelId] : null;
 
-	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
 	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string, getChannel?.clan_id as string));
 	const checkVoiceStatus = useMemo(() => {
-		if (channelId !== undefined && numberMembersVoice && specificChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		if (channelId !== undefined && numberMembersVoice && getChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			return numberMembersVoice >= 2;
 		}
 		return false;
-	}, [channelId, numberMembersVoice, specificChannel?.type]);
+	}, [channelId, numberMembersVoice]);
 	const channelIcon = useMemo(() => {
-		if (!specificChannel) return null;
+		if (!getChannel) return null;
 
-		const { channel_private, type } = specificChannel;
-		const isAgeRestrictedChannel = (specificChannel as { age_restricted?: number }).age_restricted === 1;
+		const { channel_private, type } = getChannel;
+		const isAgeRestrictedChannel = (getChannel as { age_restricted?: number }).age_restricted === 1;
 
 		const isThreadEmphasized = isUnread || Boolean(count && count > 0) || isRowFocused;
 		const threadFillClass = isThreadEmphasized
@@ -139,19 +134,7 @@ const SuggestItem = ({
 		}
 
 		return null;
-	}, [specificChannel, isUnread, count, isRowFocused]);
-
-	useEffect(() => {
-		if (channel) {
-			setSpecificChannel(channel);
-		} else {
-			allChannels.map((channel) => {
-				if (channel.channel_id === channelId) {
-					setSpecificChannel(channel);
-				}
-			});
-		}
-	}, []);
+	}, [getChannel, isUnread, count, isRowFocused]);
 
 	return (
 		<div
