@@ -144,7 +144,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				onClose={closePanelMember}
 				member={member}
 				onOpenProfile={openUserProfile}
-				kichMember={hasClanPermission}
+				kickMember={hasClanPermission}
 				handleRemoveMember={handleClickRemoveMember}
 				handleTransferOwner={openConfirmTransfer}
 			/>
