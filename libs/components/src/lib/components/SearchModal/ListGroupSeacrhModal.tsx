@@ -11,17 +11,9 @@ type Props = {
 	unreadList: SearchItemProps[];
 	normalizeSearchText: string;
 	handleItemClick: (item: SearchItemProps) => void;
-	isAwaitingResults: boolean;
 };
 
-export const ListGroupSearchModal: React.FC<Props> = ({
-	unreadList,
-	listRecent,
-	listItemWithoutRecent,
-	normalizeSearchText,
-	handleItemClick,
-	isAwaitingResults
-}) => {
+export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, listItemWithoutRecent, normalizeSearchText, handleItemClick }) => {
 	const { t } = useTranslation('common');
 
 	const boxRef = useRef<HTMLDivElement | null>(null);
@@ -32,10 +24,10 @@ export const ListGroupSearchModal: React.FC<Props> = ({
 
 	const allItems = useMemo(() => {
 		if (normalizeSearchText) {
-			return isAwaitingResults ? [] : listItemWithoutRecent;
+			return listItemWithoutRecent;
 		}
 		return [...listRecent, ...unreadList];
-	}, [normalizeSearchText, isAwaitingResults, listRecent, unreadList, listItemWithoutRecent]);
+	}, [normalizeSearchText, listRecent, unreadList, listItemWithoutRecent]);
 
 	const isNoResult = useMemo(() => !allItems?.length, [allItems?.length]);
 
@@ -114,18 +106,15 @@ export const ListGroupSearchModal: React.FC<Props> = ({
 		return () => document.removeEventListener('mousemove', handler);
 	}, []);
 
-	const lastResultsKey = useRef<string>('');
-
 	useEffect(() => {
-		const resultsKey = `${normalizeSearchText}\u0000${allItems.map((item) => item.id ?? '').join('|')}`;
-		if (resultsKey === lastResultsKey.current) {
-			return;
-		}
-		lastResultsKey.current = resultsKey;
-
-		focusItemIndex.current = 0;
-		setFocusItemId(allItems?.[0]?.id ?? '');
-		boxRef.current?.scroll({ top: 0, behavior: 'instant' });
+		const timeoutId = setTimeout(() => {
+			focusItemIndex.current = 0;
+			setFocusItemId(allItems?.[0]?.id ?? '');
+			boxRef.current?.scroll({ top: 0, behavior: 'instant' });
+		}, 300);
+		return () => {
+			timeoutId && clearTimeout(timeoutId);
+		};
 	}, [allItems, normalizeSearchText]);
 
 	const listGroupSearchContextValue = useMemo(() => ({ itemRefs: itemRefs.current }), []);
@@ -162,21 +151,20 @@ export const ListGroupSearchModal: React.FC<Props> = ({
 						/>
 					</>
 				)}
-				{normalizeSearchText && !isAwaitingResults && listItemWithoutRecent.length > 0 && (
-					<ListSearchModal
-						listSearch={listItemWithoutRecent}
-						onItemClick={handleItemClick}
-						searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
-						focusItemId={focusItemId}
-						onMouseEnter={handleItemMouseEnter}
-					/>
+				{normalizeSearchText && listItemWithoutRecent.length > 0 && (
+					<>
+						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.search')}</div>
+						<ListSearchModal
+							listSearch={listItemWithoutRecent}
+							onItemClick={handleItemClick}
+							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
+							focusItemId={focusItemId}
+							onMouseEnter={handleItemMouseEnter}
+						/>
+					</>
 				)}
 
-				{(isAwaitingResults || isNoResult) && (
-					<span className="flex flex-1 flex-row items-center justify-center">
-						{isAwaitingResults ? t('loadingData') : t('searchModal.noResults')}
-					</span>
-				)}
+				{isNoResult && <span className=" flex flex-row justify-center">{t('searchModal.noResults')}</span>}
 			</div>
 		</ListGroupSearchModalContext.Provider>
 	);

@@ -18,8 +18,6 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 	cacheByChannels: Record<string, CacheMetadata>;
 	userIdToChannelIds: Record<string, string[]>;
 	listSearch: EntityState<SearchItemProps, string>;
-	searchRequestId?: string;
-	searchQuery?: string;
 }
 
 export const UserChannelAdapter = createEntityAdapter({
@@ -37,6 +35,8 @@ export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapte
 	userIdToChannelIds: {},
 	listSearch: ItemSearchCtrlKAdapter.getInitialState({})
 });
+
+const cacheSearchKey = new Set<string>();
 
 export const fetchUserChannelsCached = async (
 	getState: () => RootState,
@@ -108,24 +108,31 @@ export const fetchUserChannels = createAsyncThunk(
 	}
 );
 
-const parseCtrlKQuery = (textSearch: string) => {
-	const typeSearch = textSearch.startsWith('@') ? 1 : textSearch.startsWith('#') ? 2 : 0;
-	return { typeSearch, text: (typeSearch ? textSearch.slice(1) : textSearch).trim() };
-};
-
 export const fetchSearchCtrlK = createAsyncThunk(
 	'allUsersByAddChannel/fetchSearchCtrlK',
 	async ({ textSearch }: { textSearch: string }, thunkAPI) => {
-		const { typeSearch, text } = parseCtrlKQuery(textSearch);
-		if (!text) {
-			return null;
+		const typeSearch = textSearch.startsWith('@') ? 1 : textSearch.startsWith('#') ? 2 : 0;
+		const textSearchValue = !typeSearch ? textSearch.trim() : textSearch.slice(1).trim();
+		if (!textSearchValue.trim()) {
+			return true;
 		}
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response: ApiSearchCtrlKResponse = await mezon.client.searchCtrlK(mezon.session, {
-				text,
+			if (cacheSearchKey.has(textSearch)) {
+				return true;
+			}
+
+			const response = await mezon.client.searchCtrlK(mezon.session, {
+				text: textSearchValue,
 				type: typeSearch
 			});
+
+			if (!typeSearch) {
+				cacheSearchKey.add(`@${textSearch}`);
+				cacheSearchKey.add(`#${textSearch}`);
+			} else {
+				cacheSearchKey.add(textSearch);
+			}
 
 			return response;
 		} catch (error) {
@@ -303,23 +310,10 @@ export const userChannelsSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			})
-			.addCase(fetchSearchCtrlK.pending, (state: UsersByAddChannelState, action) => {
-				state.searchRequestId = action.meta.requestId;
-			})
-			.addCase(fetchSearchCtrlK.rejected, (state: UsersByAddChannelState, action) => {
-				if (state.searchRequestId !== action.meta.requestId) {
+			.addCase(fetchSearchCtrlK.fulfilled, (state: UsersByAddChannelState, action: PayloadAction<boolean | ApiSearchCtrlKResponse>) => {
+				if (typeof action.payload === 'boolean') {
 					return;
 				}
-				state.searchRequestId = undefined;
-				state.searchQuery = action.meta.arg.textSearch;
-				state.listSearch = ItemSearchCtrlKAdapter.removeAll(state.listSearch);
-			})
-			.addCase(fetchSearchCtrlK.fulfilled, (state: UsersByAddChannelState, action) => {
-				if (state.searchRequestId !== action.meta.requestId) {
-					return;
-				}
-				state.searchRequestId = undefined;
-				state.searchQuery = action.meta.arg.textSearch;
 				const results: SearchItemProps[] = [];
 
 				for (const channel of action.payload?.channels ?? []) {
@@ -360,7 +354,7 @@ export const userChannelsSlice = createSlice({
 					});
 				}
 
-				state.listSearch = ItemSearchCtrlKAdapter.setAll(state.listSearch, results);
+				state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, results);
 			});
 	}
 });
@@ -410,5 +404,3 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 const { selectEntities, selectAll } = ItemSearchCtrlKAdapter.getSelectors();
 export const selectEntitiesCtrlK = createSelector(getUserChannelsState, (state) => selectEntities(state.listSearch));
 export const selectAllCtrlK = createSelector(getUserChannelsState, (state) => selectAll(state.listSearch));
-export const selectCtrlKQuery = (rootState: { [ALL_USERS_BY_ADD_CHANNEL]: UsersByAddChannelState }): string | undefined =>
-	getUserChannelsState(rootState).searchQuery;
