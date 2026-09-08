@@ -1511,7 +1511,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					sender_id: channelCreated.creator_id,
 					timestamp_seconds: Date.now() / 1000
 				},
-				active: channelCreated.creator_id === userId ? ThreadStatus.joined : ThreadStatus.activePublic
+				active: channelCreated.creator_id === userId ? ThreadStatus.joined : ThreadStatus.other
 			};
 			dispatch(
 				threadsActions.addThreadToCached({
