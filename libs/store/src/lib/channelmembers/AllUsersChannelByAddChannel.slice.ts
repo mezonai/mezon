@@ -126,6 +126,7 @@ export const fetchSearchCtrlK = createAsyncThunk(
 				text: textSearchValue,
 				type: typeSearch
 			});
+
 			if (!typeSearch) {
 				cacheSearchKey.add(`@${textSearch}`);
 				cacheSearchKey.add(`#${textSearch}`);
@@ -313,44 +314,47 @@ export const userChannelsSlice = createSlice({
 				if (typeof action.payload === 'boolean') {
 					return;
 				}
+				const results: SearchItemProps[] = [];
 
-				if (action.payload.channels && action.payload.channels?.length) {
-					const channels: SearchItemProps[] = action.payload.channels.map((channel) => {
-						return {
-							count_messsage_unread: channel.count_mess_unread,
-							channelId: channel.channel_id,
-							id: channel.channel_id,
-							channel_private: channel.channel_private || 0,
-							name: channel?.channel_label ?? '',
-							subText: channel.clan_name || '',
-							icon: '#',
-							clanId: channel?.clan_id ?? '',
-							typeChat: TypeSearch.Channel_Type,
-							prioritizeName: channel?.channel_label ?? '',
-							age_restricted: channel.age_restricted,
-							type: channel?.type,
-							parent_id: channel?.parent_id
-						};
+				for (const channel of action.payload?.channels ?? []) {
+					if (!channel.channel_id) {
+						continue;
+					}
+					results.push({
+						count_messsage_unread: channel.count_mess_unread,
+						channelId: channel.channel_id,
+						id: channel.channel_id,
+						channel_private: channel.channel_private || 0,
+						name: channel?.channel_label ?? '',
+						subText: channel.clan_name || '',
+						icon: '#',
+						clanId: channel?.clan_id ?? '',
+						typeChat: TypeSearch.Channel_Type,
+						prioritizeName: channel?.channel_label ?? '',
+						age_restricted: channel.age_restricted,
+						type: channel?.type,
+						parent_id: channel?.parent_id
 					});
-					state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, channels);
 				}
 
-				if (action.payload.users && action.payload.users?.length) {
-					const users: SearchItemProps[] = action.payload.users.map((users) => {
-						return {
-							channelId: users.id,
-							idDM: users.id,
-							id: users.id,
-							name: users?.display_name || users?.username || '',
-							subText: users?.username || '',
-							icon: '@',
-							typeChat: TypeSearch.Dm_Type,
-							prioritizeName: users?.display_name || users?.username || '',
-							searchName: `${users?.display_name}.${users?.username}`
-						};
+				for (const user of action.payload?.users ?? []) {
+					if (!user.id) {
+						continue;
+					}
+					results.push({
+						channelId: user.id,
+						idDM: user.id,
+						id: user.id,
+						name: user?.display_name || user?.username || '',
+						subText: user?.username || '',
+						icon: '@',
+						typeChat: TypeSearch.Dm_Type,
+						prioritizeName: user?.display_name || user?.username || '',
+						searchName: [user?.display_name, user?.username, ...(user?.list_nick_names ?? [])].filter(Boolean).join('.')
 					});
-					state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, users);
 				}
+
+				state.listSearch = ItemSearchCtrlKAdapter.upsertMany(state.listSearch, results);
 			});
 	}
 });
