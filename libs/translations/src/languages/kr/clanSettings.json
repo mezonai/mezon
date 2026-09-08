@@ -98,5 +98,9 @@
 		"restoreSuccess": "채널이 성공적으로 복원되었습니다.",
 		"emptyState": "보관된 채널이 없습니다.",
 		"fetchError": "보관된 채널을 불러오지 못했습니다. 다시 시도해 주세요."
+	},
+	"toast": {
+		"clanDeletedSuccess": "클랜이 성공적으로 삭제되었습니다",
+		"clanCreatedSuccess": "클랜이 성공적으로 생성되었습니다"
 	}
 }

@@ -37,9 +37,9 @@ import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChanne
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
-import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
-import { listUsersByUserReducer } from './channels/listUsers.slice';
-import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
+// import { CHANNEL_LIST_RENDER, listChannelRenderReducer } from './channels/listChannelRender.slice';
+// import { listUsersByUserReducer } from './channels/listUsers.slice';
+import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slice';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
@@ -208,14 +208,14 @@ const persistedChannelMembersReducer = persistReducer(
 	channelMembersReducer
 );
 
-const persistedListUsersByUserReducer = persistReducer(
-	{
-		key: 'listusersbyuserid',
-		storage,
-		blacklist: ['onlineStatusUser']
-	},
-	listUsersByUserReducer
-);
+// const persistedListUsersByUserReducer = persistReducer(
+// 	{
+// 		key: 'listusersbyuserid',
+// 		storage,
+// 		blacklist: ['onlineStatusUser']
+// 	},
+// 	listUsersByUserReducer
+// );
 
 const persistedListchannelsByUserReducer = persistReducer(
 	{
@@ -364,13 +364,13 @@ const persistAccountReducer = persistReducer(
 	},
 	accountReducer
 );
-const persistListChannelRenderReducer = persistReducer(
-	{
-		key: CHANNEL_LIST_RENDER,
-		storage
-	},
-	listChannelRenderReducer
-);
+// const persistListChannelRenderReducer = persistReducer(
+// 	{
+// 		key: CHANNEL_LIST_RENDER,
+// 		storage
+// 	},
+// 	listChannelRenderReducer
+// );
 
 const persistedVoiceReducer = persistReducer(
 	{
@@ -454,7 +454,7 @@ const reducer = {
 	listchannelbyusers: persistedListchannelsByUserReducer,
 	listpermissionroleschannel: persistedPermissionRoleChannelReducer,
 	channelMembers: persistedChannelMembersReducer,
-	listusersbyuserid: persistedListUsersByUserReducer,
+	// listusersbyuserid: persistedListUsersByUserReducer,
 	threads: threadsReducer,
 	topicdiscussions: persistedTopicReducer,
 	[SEARCH_MESSAGES_FEATURE_KEY]: searchMessageReducer,
@@ -507,7 +507,7 @@ const reducer = {
 	dmcall: DMCallReducer,
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
-	[CHANNEL_LIST_RENDER]: persistListChannelRenderReducer,
+	// [CHANNEL_LIST_RENDER]: persistListChannelRenderReducer,
 	[COMPOSE_FEATURE_KEY]: persistedCompose,
 	groupCall: groupCallReducer,
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,

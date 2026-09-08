@@ -12070,10 +12070,10 @@ mezon-js-protobuf@1.10.66, mezon-js-protobuf@^1.10.65:
   dependencies:
     protobufjs "^7.2.4"
 
-mezon-js@2.15.76:
-  version "2.15.76"
-  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.15.76.tgz#523690fc05fbbcb09bc64c9321cc3f7a4cee5944"
-  integrity sha512-BqSD1QyrJKFKSYBQSRtuVDR175zajw14V5tpnrhw5dEVO5ZU+ZJ7iveicON+h7GAqhkpu3PThvpd6c0XXPJyxA==
+mezon-js@2.15.79:
+  version "2.15.79"
+  resolved "https://registry.yarnpkg.com/mezon-js/-/mezon-js-2.15.79.tgz#27d00b45a173dd1c22731d10f0003dfeea04c285"
+  integrity sha512-axNYCtjoaeaLglW+lsyDpltZwMUBwN1KVbkMn5iUMmEZceAw4+SrrHeDx/Nmudl0ayhUqNIgXVxOMvh0ibavvA==
   dependencies:
     base64-arraybuffer "^1.0.2"
     js-base64 "^3.7.8"
