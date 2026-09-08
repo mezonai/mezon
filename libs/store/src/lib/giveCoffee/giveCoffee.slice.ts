@@ -23,6 +23,15 @@ export interface GiveCoffeeEntity {
 export interface ISendTokenDetailType extends ApiTokenSentEvent {
 	receiver_name?: string;
 }
+
+export interface IUpdateGiveCoffeeParams {
+	channel_id?: string;
+	clan_id?: string;
+	message_ref_id?: string;
+	receiver_id?: string;
+	sender_id?: string;
+	receiver_name?: string;
+}
 export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -41,7 +50,7 @@ export const giveCoffeeAdapter = createEntityAdapter<GiveCoffeeEntity>();
 
 export const updateGiveCoffee = createAsyncThunk(
 	'giveCoffee/updateGiveCoffee',
-	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id }: ApiGiveCoffeeEvent, thunkAPI) => {
+	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id, receiver_name }: IUpdateGiveCoffeeParams, thunkAPI) => {
 		const state = thunkAPI.getState() as any;
 		if (!state.giveCoffee.pendingGiveCoffee) {
 			try {
@@ -63,7 +72,8 @@ export const updateGiveCoffee = createAsyncThunk(
 								MessageRefId: message_ref_id || '',
 								UserReceiverId: receiver_id || '',
 								UserSenderId: sender_id || '',
-								UserSenderUsername: currentUser?.user?.username || ''
+								UserSenderUsername: currentUser?.user?.username || '',
+								UserReceiverName: receiver_name || ''
 							}
 						})
 					)
