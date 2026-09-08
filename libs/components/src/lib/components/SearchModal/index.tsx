@@ -11,6 +11,7 @@ import {
 	selectAllCtrlK,
 	selectAllDirectMessages,
 	selectChannelMetaEntities,
+	selectClansEntities,
 	selectDmMetaEntities,
 	selectEntitesUserClans,
 	selectPreviousChannels,
@@ -56,6 +57,20 @@ const withChannelMetaUnread = (lastSent: number, lastSeen: number, countUnread: 
 	};
 };
 
+const dedupeById = (items: SearchItemProps[]) => {
+	const seenIds = new Set<string>();
+	return items.filter((item) => {
+		if (!item.id) {
+			return true;
+		}
+		if (seenIds.has(item.id)) {
+			return false;
+		}
+		seenIds.add(item.id);
+		return true;
+	});
+};
+
 function SearchModal({ onClose }: SearchModalProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
@@ -63,7 +78,13 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const dmGroupChatList = useAppSelector(selectAllDirectMessages);
 	const dmMetaEntities = useAppSelector(selectDmMetaEntities);
 	const cltrKList = useAppSelector(selectAllCtrlK);
+	const clansEntities = useAppSelector(selectClansEntities);
 	const previousChannels = useAppSelector(selectPreviousChannels);
+
+	const resolveClanName = useCallback(
+		(clanId?: string, fallback?: string) => (clanId ? clansEntities?.[clanId]?.clan_name : '') || fallback || '',
+		[clansEntities]
+	);
 
 	const { toDmGroupPageFromMainApp, toChannelPage, navigate } = useAppNavigation();
 	const { createDirectMessageWithUser } = useDirect();
@@ -121,11 +142,22 @@ function SearchModal({ onClose }: SearchModalProps) {
 				if (checkListDM.current.has(item.id)) {
 					return;
 				}
+				if (item.typeChat === TypeSearch.Channel_Type) {
+					if (item.clanId === '0') {
+						return;
+					}
+					const clanName = resolveClanName(item.clanId, item.subText);
+					if (clanName !== item.subText) {
+						list.push({ ...item, subText: clanName });
+
+						return;
+					}
+				}
 				list.push(item);
 			});
 		}
 		return list;
-	}, [cltrKList]);
+	}, [cltrKList, resolveClanName]);
 	const listMemberSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
 		const addedUserIds = new Set<string>();
@@ -194,23 +226,21 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	const listItemWithoutRecent = useMemo(() => {
 		if (normalizeSearchText.startsWith('@')) {
-			return totalListMembersSorted;
+			return dedupeById(totalListMembersSorted);
 		}
 		if (normalizeSearchText.startsWith('#')) {
-			return channelSearchSorted;
+			return dedupeById(channelSearchSorted);
 		}
 
-		if (normalizeSearchText) {
-			return totalListsSorted;
-		}
-		return totalListsSorted;
-	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListsSorted, totalListsSorted]);
+		return dedupeById(totalListsSorted);
+	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListsSorted]);
 
 	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
 	const allChannels = useAppSelector(selectAllChannelsInAllClans);
 
 	const classificationList = useMemo(() => {
 		const recentIds = new Set(previousChannels.map((item) => item.channelId));
+		const unreadIds = new Set<string>();
 
 		const { recentList, unreadList } = listItemWithoutRecent.reduce<ClassifiedLists>(
 			(acc, item) => {
@@ -222,8 +252,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 				if (isChannel) {
 					acc.unreadList.push(item);
+					item.id && unreadIds.add(item.id);
 				} else if (isDmOrGroup && item.id && !recentIds.has(item.id)) {
 					acc.unreadList.push(item);
+					unreadIds.add(item.id);
 				}
 
 				return acc;
@@ -248,7 +280,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 						id: meta.id,
 						channel_private: channel.channel_private || 0,
 						name: channel?.channel_label ?? '',
-						subText: channel.clan_name || '',
+						subText: resolveClanName(channel?.clan_id, channel.clan_name),
 						icon: '#',
 						clanId: channel?.clan_id ?? '',
 						typeChat: TypeSearch.Channel_Type,
@@ -264,17 +296,22 @@ function SearchModal({ onClose }: SearchModalProps) {
 		}
 
 		Object.values(channelMetaEntities)?.map((meta) => {
-			if ((meta.count_mess_unread || meta.lastSeenTimestamp < meta.lastSentTimestamp) && !listPrevious.has(meta.id)) {
+			if (
+				(meta.count_mess_unread || meta.lastSeenTimestamp < meta.lastSentTimestamp) &&
+				!listPrevious.has(meta.id) &&
+				!unreadIds.has(meta.id)
+			) {
 				if (allChannels[meta.clanId]?.entities?.entities?.[meta.id]) {
 					const channel = allChannels[meta.clanId].entities.entities?.[meta.id];
 
+					unreadIds.add(meta.id);
 					unreadList.push({
 						count_messsage_unread: meta.count_mess_unread,
 						channelId: meta.id,
 						id: meta.id,
 						channel_private: channel.channel_private || 0,
 						name: channel?.channel_label ?? '',
-						subText: channel.clan_name || '',
+						subText: resolveClanName(channel?.clan_id, channel.clan_name),
 						icon: '#',
 						clanId: channel?.clan_id ?? '',
 						typeChat: TypeSearch.Channel_Type,
@@ -290,23 +327,27 @@ function SearchModal({ onClose }: SearchModalProps) {
 		});
 
 		return { recentList, unreadList };
-	}, [listItemWithoutRecent, previousChannels, channelMetaEntities]);
+	}, [listItemWithoutRecent, previousChannels, channelMetaEntities, resolveClanName]);
 
 	const { recentList, unreadList } = classificationList;
 
 	const listRecent = useMemo(() => {
-		const previous: SearchItemProps[] = recentList;
+		const previous: SearchItemProps[] = [...recentList];
 		if (listDirectSearch.length > 0) {
+			const previousIds = new Set(previous.map((item) => item.id));
+			const recentChannelIds = new Set(previousChannels.map((item) => item.channelId));
 			for (let i = listDirectSearch.length - 1; i >= 0; i--) {
 				const itemDMId = listDirectSearch[i]?.id || '';
-				if (previousChannels.map((item) => item.channelId).includes(itemDMId)) {
+				if (recentChannelIds.has(itemDMId) && !previousIds.has(itemDMId)) {
+					previousIds.add(itemDMId);
 					previous.unshift(listDirectSearch[i]);
 				}
 			}
 		}
 
 		return previous;
-	}, [recentList, listDirectSearch, previousChannels, totalListsSorted]);
+	}, [recentList, listDirectSearch, previousChannels]);
+
 	const handleSelectMem = useCallback(
 		async (user: SearchItemProps) => {
 			const foundDirect = dmGroupChatList.find((item) => item.id === user.id);
