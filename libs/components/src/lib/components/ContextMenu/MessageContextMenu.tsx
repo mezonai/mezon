@@ -757,7 +757,8 @@ function MessageContextMenu({
 										clan_id: message.clan_id,
 										message_ref_id: message.id,
 										receiver_id: message.sender_id,
-										sender_id: userId
+										sender_id: userId,
+										receiver_name: message?.username || message?.user?.username || ''
 									})
 								).unwrap();
 								await reactionMessageDispatch({
