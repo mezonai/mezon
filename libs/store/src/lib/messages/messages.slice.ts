@@ -1927,7 +1927,7 @@ export const messagesSlice = createSlice({
 			delete state.queueSending[action.payload];
 		},
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
-			const { code, channel_id: channelId, id: messageId, isSending, isMe, isAnonymous, content, topic_id, attachments } = action.payload;
+			const { code, channel_id: channelId, id: messageId, isMe, content, topic_id } = action.payload;
 
 			if (!channelId || !messageId) return state;
 
@@ -1937,7 +1937,6 @@ export const messagesSlice = createSlice({
 				});
 			}
 			const messageChannelId = topic_id !== '0' && topic_id && !content?.tp ? topic_id : channelId;
-			const channelEntity = state.channelMessages[messageChannelId];
 
 			switch (code) {
 				case TypeMessage.Welcome:
