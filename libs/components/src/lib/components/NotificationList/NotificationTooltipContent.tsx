@@ -71,23 +71,32 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const hasMoreTopics = useSelector(selectHasMoreTopics);
 
 	const getAllNotificationForYou = useMemo(() => {
-		return sortNotificationsByDate([...allNotificationForYou.data]);
+		if (!allNotificationForYou) {
+			return [];
+		}
+		return sortNotificationsByDate(allNotificationForYou.data);
 	}, [allNotificationForYou]);
 
 	const getAllNotificationMentions = useMemo(() => {
-		return sortNotificationsByDate([...allNotificationMentions.data]);
+		if (!allNotificationMentions) {
+			return [];
+		}
+		return sortNotificationsByDate(allNotificationMentions.data);
 	}, [allNotificationMentions]);
 
 	const getAllNotificationClan = useMemo(() => {
-		return sortNotificationsByDate([...allNotificationClan.data]);
+		if (!allNotificationClan) {
+			return [];
+		}
+		return sortNotificationsByDate(allNotificationClan.data);
 	}, [allNotificationClan]);
 
 	useEffect(() => {
 		if (!currentClanId) return;
 
-		const isAllNotificationForYouEmpty = !(allNotificationForYou?.data?.length > 0);
-		const isAllNotificationClanEmpty = !(allNotificationClan?.data?.length > 0);
-		const isAllNotificationMentionsEmpty = !(allNotificationMentions?.data?.length > 0);
+		const isAllNotificationForYouEmpty = !allNotificationForYou;
+		const isAllNotificationClanEmpty = allNotificationClan;
+		const isAllNotificationMentionsEmpty = !allNotificationMentions;
 
 		let category;
 
@@ -148,7 +157,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 		};
 	}, [currentClanId, getAllTopic.length, hasMoreTopics, currentTabNotify, dispatch]);
 
-	const handleScroll = (category: NotificationCategory, lastId: string | null) => {
+	const handleScroll = (category: NotificationCategory, lastId: string | null | undefined) => {
 		return (event: React.UIEvent<HTMLDivElement>) => {
 			const target = event.currentTarget;
 			if (!lastId) return;
