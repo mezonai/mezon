@@ -416,6 +416,8 @@ export interface MezonSfuVoiceRoomProps {
 	channelLabel: string;
 	isChatOpen: boolean;
 	isFullScreen: boolean;
+	isExternalCalling?: boolean;
+	onRefreshToken?: () => Promise<string | undefined>;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
 	onToggleChat: () => void;
@@ -431,6 +433,8 @@ export function MezonSfuVoiceRoom({
 	channelLabel,
 	isChatOpen,
 	isFullScreen,
+	isExternalCalling,
+	onRefreshToken,
 	onLeaveRoom,
 	onFullScreen,
 	onToggleChat
@@ -501,9 +505,14 @@ export function MezonSfuVoiceRoom({
 	const microphonePermissionRevokedRef = useRef(false);
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
 	const onLeaveRoomRef = useRef(onLeaveRoom);
+	const onRefreshTokenRef = useRef(onRefreshToken);
 	const lastMuteChangedAtRef = useRef(0);
 	const pendingForcedMuteRef = useRef<number>();
 	const refreshingTokenRef = useRef(false);
+
+	useEffect(() => {
+		onRefreshTokenRef.current = onRefreshToken;
+	}, [onRefreshToken]);
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [error, setError] = useState<string>();
 	const [localPreview, setLocalPreview] = useState<MediaStream>();
@@ -1348,8 +1357,10 @@ export function MezonSfuVoiceRoom({
 					const errorMsg = message.message || 'SFU signaling error';
 					if (!refreshingTokenRef.current && (errorMsg.toLowerCase().includes('token') || errorMsg.toLowerCase().includes('invalid'))) {
 						refreshingTokenRef.current = true;
-						void dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
-							.unwrap()
+						const refreshPromise = onRefreshTokenRef.current
+							? onRefreshTokenRef.current()
+							: dispatch(generateMeetToken({ channelId: roomId, roomName: '' })).unwrap();
+						void refreshPromise
 							.then((newToken) => {
 								refreshingTokenRef.current = false;
 								if (newToken && newToken !== token) {
@@ -1395,10 +1406,12 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 
-				if ((event.code === 4001 || event.code === 4003) && !refreshingTokenRef.current) {
+				if ((event.code === 4001 || event.code === 4003 || (isExternalCalling && reconnectAllowed)) && !refreshingTokenRef.current) {
 					refreshingTokenRef.current = true;
-					void dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
-						.unwrap()
+					const refreshPromise = onRefreshTokenRef.current
+						? onRefreshTokenRef.current()
+						: dispatch(generateMeetToken({ channelId: roomId, roomName: '' })).unwrap();
+					void refreshPromise
 						.then((newToken) => {
 							refreshingTokenRef.current = false;
 							if (newToken && newToken !== token) {
@@ -1434,6 +1447,10 @@ export function MezonSfuVoiceRoom({
 			}, 10_000);
 		});
 
+		const pendingPeers = pendingPeersRef.current;
+		const leftRemoteMids = leftRemoteMidsRef.current;
+		const userIdsByMid = userIdsByMidRef.current;
+
 		return () => {
 			disposed = true;
 			if (heartbeatInterval) clearInterval(heartbeatInterval);
@@ -1446,7 +1463,7 @@ export function MezonSfuVoiceRoom({
 			// eslint-disable-next-line no-console
 			console.info('[MezonSFU][leaving peer] closing signaling connection', {
 				wsReadyState: wsRef.current?.readyState,
-				peersFromSdp: Array.from(userIdsByMidRef.current, ([mid, userId]) => ({ mid, userId }))
+				peersFromSdp: Array.from(userIdsByMid, ([mid, userId]) => ({ mid, userId }))
 			});
 			removeVisibilityListener();
 			wsRef.current?.close();
@@ -1461,6 +1478,10 @@ export function MezonSfuVoiceRoom({
 			pendingOfferRef.current = null;
 			peerIdsByMid.clear();
 			rolesByMid.clear();
+			pendingPeers.clear();
+			leftRemoteMids.clear();
+			userIdsByMid.clear();
+			setRemoteMedia(new Map());
 		};
 	}, [
 		applyScreenEncodingParams,
@@ -1469,6 +1490,7 @@ export function MezonSfuVoiceRoom({
 		currentUserId,
 		dispatch,
 		findUplinkVideoSender,
+		isExternalCalling,
 		joinRole,
 		roomId,
 		serverUrl,
@@ -1612,7 +1634,18 @@ export function MezonSfuVoiceRoom({
 		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk-changed', { detail: { active: pushToTalkActive } }));
 	}, [pushToTalkActive]);
 
-	const participants = useMemo(() => Array.from(remoteMedia.values()), [remoteMedia]);
+	const participants = useMemo(() => {
+		const list = Array.from(remoteMedia.values()).filter((p) => !p.userId || !currentUserId || String(p.userId) !== String(currentUserId));
+		const uniqueByUserId = new Map<string, RemoteMedia>();
+		for (const p of list) {
+			const key = p.userId ? `user-${p.userId}` : p.id;
+			const existing = uniqueByUserId.get(key);
+			if (!existing || p.video?.readyState === 'live' || p.audio?.readyState === 'live') {
+				uniqueByUserId.set(key, p);
+			}
+		}
+		return Array.from(uniqueByUserId.values());
+	}, [currentUserId, remoteMedia]);
 	const handleParticipantAction = useCallback(
 		async (action: 'mute' | 'kick', participantId: string) => {
 			const response = await dispatch(
@@ -1947,7 +1980,7 @@ export function MezonSfuVoiceRoom({
 					</span>
 				</div>
 				<div className="flex items-center gap-4 text-[var(--bg-icon-theme)]">
-					<NotificationTooltip />
+					{!isExternalCalling && <NotificationTooltip />}
 					<button
 						type="button"
 						title={isGridView ? 'Switch to focus view' : 'Switch to grid view'}
@@ -2114,6 +2147,7 @@ export function MezonSfuVoiceRoom({
 				selectedCamera={selectedCamera}
 				isPopoutOpen={isPopoutOpen}
 				isFullScreen={isFullScreen}
+				isExternalCalling={isExternalCalling}
 				onEmojiPanelChange={setShowEmojiPanel}
 				onSoundPanelChange={setShowSoundPanel}
 				onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}

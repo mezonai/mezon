@@ -36,6 +36,7 @@ interface SfuControlBarProps {
 	selectedCamera: string;
 	isPopoutOpen: boolean;
 	isFullScreen: boolean;
+	isExternalCalling?: boolean;
 	channelLabel: string;
 	onEmojiPanelChange: (visible: boolean) => void;
 	onSoundPanelChange: (visible: boolean) => void;
@@ -75,6 +76,7 @@ export const SfuControlBar = ({
 	selectedCamera,
 	isPopoutOpen,
 	isFullScreen,
+	isExternalCalling,
 	channelLabel,
 	onEmojiPanelChange,
 	onSoundPanelChange,
@@ -98,25 +100,29 @@ export const SfuControlBar = ({
 	return (
 		<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3 max-md:flex max-md:flex-col max-md:justify-center max-md:gap-3 max-md:px-2 max-md:py-2">
 			<div className="flex items-center justify-start gap-4 max-md:justify-center max-md:gap-3">
-				<div className="max-md:hidden">
-					<EmojiReactionControl
-						isGridView={isGridView}
-						showEmojiPanel={showEmojiPanel}
-						onVisibleChange={onEmojiPanelChange}
-						onEmojiSelect={onEmojiSelect}
-					/>
-				</div>
-				<div className="max-md:hidden">
-					<SoundReactionControl
-						isGridView={isGridView}
-						showSoundPanel={showSoundPanel}
-						onVisibleChange={onSoundPanelChange}
-						onSoundSelect={onSoundSelect}
-					/>
-				</div>
-				<div className="max-md:hidden">
-					<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
-				</div>
+				{!isExternalCalling && (
+					<>
+						<div className="max-md:hidden">
+							<EmojiReactionControl
+								isGridView={isGridView}
+								showEmojiPanel={showEmojiPanel}
+								onVisibleChange={onEmojiPanelChange}
+								onEmojiSelect={onEmojiSelect}
+							/>
+						</div>
+						<div className="max-md:hidden">
+							<SoundReactionControl
+								isGridView={isGridView}
+								showSoundPanel={showSoundPanel}
+								onVisibleChange={onSoundPanelChange}
+								onSoundSelect={onSoundSelect}
+							/>
+						</div>
+						<div className="max-md:hidden">
+							<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
+						</div>
+					</>
+				)}
 				<RecordingControl channelLabel={channelLabel} />
 			</div>
 			<div className="flex items-center justify-center gap-3 max-md:gap-2" data-e2e={generateE2eId('clan_page.screen.voice_room.control_bar')}>
@@ -159,11 +165,11 @@ export const SfuControlBar = ({
 					</div>
 				)}
 				<SfuAgentControl />
-				<SfuRaisingHandControl />
+				{!isExternalCalling && <SfuRaisingHandControl />}
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>
 			<div className="flex justify-end pr-1 max-md:hidden">
-				<PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />
+				{!isExternalCalling && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
 				<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 			</div>
 		</footer>
