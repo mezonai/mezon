@@ -424,7 +424,9 @@ export interface MezonSfuVoiceRoomProps {
 }
 
 type SfuOffer = { sdp: string; offer_generation: number };
-
+const AGENT_AVATAR =
+	'https://imgproxy.komu.vn/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
+const AGENT_DISPLAY_NAME = 'KOMU Agent';
 export function MezonSfuVoiceRoom({
 	token,
 	joinRole,
@@ -1782,8 +1784,8 @@ export function MezonSfuVoiceRoom({
 			content: (
 				<SfuParticipantTile
 					participant={participant}
-					displayName={profile.displayName}
-					avatar={profile.avatar}
+					displayName={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_DISPLAY_NAME : profile.displayName}
+					avatar={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_AVATAR : profile.avatar}
 					speaking={participantSpeaking}
 					locallyMuted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
 				/>
