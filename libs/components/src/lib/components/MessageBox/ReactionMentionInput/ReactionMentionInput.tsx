@@ -975,9 +975,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			const plainText = event.clipboardData.getData('text/plain');
-			const htmlContent = event.clipboardData.getData('text/html');
-
 			const items = event.clipboardData.items;
 			let hasMediaFiles = false;
 
@@ -995,32 +992,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				if (originalHandlePaste) {
 					originalHandlePaste(event);
 				}
-				return;
-			}
-
-			const contentToCheck = plainText || htmlContent;
-			const currentValue = draftRequest?.content || '';
-			const newTotalLength = currentValue.length + contentToCheck.length;
-
-			if (handleConvertToFile && contentToCheck?.length && JSON.stringify(contentToCheck)?.length > MIN_THRESHOLD_CHARS) {
-				event.preventDefault();
-				handleConvertToFile(contentToCheck);
-				return;
-			}
-
-			const combinedContent = currentValue + contentToCheck;
-			const combinedContentSize = (contentToCheck?.length && JSON.stringify(combinedContent)?.length) || 0;
-
-			if (handleConvertToFile && combinedContentSize > MIN_THRESHOLD_CHARS) {
-				event.preventDefault();
-				handleConvertToFile(combinedContent);
-
-				updateDraft?.({
-					valueTextInput: '',
-					content: '',
-					mentionRaw: [],
-					entities: []
-				});
 				return;
 			}
 		},
