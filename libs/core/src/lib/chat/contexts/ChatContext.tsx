@@ -77,7 +77,6 @@ import {
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
 	selectLoadingStatus,
-	selectStreamMembersByChannelId,
 	selectUserCallId,
 	selectVoiceInfo,
 	selectWelcomeChannelByClanId,
@@ -344,23 +343,19 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const onstreamingchanneljoined = useCallback(async (user: StreamingJoinedEvent) => {
-		const store = await getStoreAsync();
-		const currentStreamInfo = selectCurrentStreamInfo(store.getState());
-		const streamChannelMember = selectStreamMembersByChannelId(store.getState(), currentStreamInfo?.streamId || '');
-
-		const existingMember = streamChannelMember?.find((user) => user.user_id === user?.user_id);
-		if (existingMember) {
-			dispatch(usersStreamActions.remove(existingMember.user_id));
-		}
-		dispatch(
-			usersStreamActions.add({
-				...user,
-				user_avatar: '',
-				user_name: ''
-			})
-		);
-	}, []);
+	const onstreamingchanneljoined = useCallback(
+		(user: StreamingJoinedEvent) => {
+			if (!user?.user_id) return;
+			dispatch(
+				usersStreamActions.add({
+					...user,
+					user_avatar: '',
+					user_name: ''
+				})
+			);
+		},
+		[dispatch]
+	);
 
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
