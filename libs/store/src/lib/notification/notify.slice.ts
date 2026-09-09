@@ -27,15 +27,13 @@ export interface NotificationState extends EntityState<NotificationEntity, strin
 	error?: string | null;
 	messageNotifiedId: string;
 	isShowInbox: boolean;
-	notifications: Partial<
-		Record<
-			NotificationCategory,
-			{
-				data: NotificationEntity[];
-				lastId: string;
-				cache?: CacheMetadata;
-			}
-		>
+	notifications: Record<
+		number, // As NotificationCategory
+		{
+			data: NotificationEntity[];
+			lastId: string;
+			cache?: CacheMetadata;
+		}
 	>;
 }
 
