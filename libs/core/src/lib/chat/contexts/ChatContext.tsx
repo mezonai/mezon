@@ -868,31 +868,40 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onlastseenupdated = useCallback(async (lastSeenMess: LastSeenMessageEvent) => {
-		const { clan_id, channel_id, message_id } = lastSeenMess;
-		let badge_count = lastSeenMess.badge_count;
+		const MAX_RETRIES = 3;
+		const RETRY_DELAY_MS = 2000;
 
-		const store = getStore();
+		const handleLastSeenUpdated = async (event: LastSeenMessageEvent, retryCount = 0) => {
+			const { clan_id, channel_id, message_id } = event;
+			let badge_count = event.badge_count;
 
-		const state = store.getState() as RootState;
-		const channelsLoadingStatus = selectLoadingStatus(state);
-		const clansLoadingStatus = selectClansLoadingStatus(state);
+			const store = getStore();
+			const state = store.getState() as RootState;
+			const channelsLoadingStatus = selectLoadingStatus(state);
+			const clansLoadingStatus = selectClansLoadingStatus(state);
 
-		if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
-			return;
-		}
+			if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
+				if (retryCount < MAX_RETRIES) {
+					setTimeout(() => handleLastSeenUpdated(event, retryCount + 1), RETRY_DELAY_MS);
+				}
+				return;
+			}
 
-		if (clan_id && clan_id !== '0') {
-			const channel = selectChannelMetaById(state, channel_id);
-			badge_count = channel?.count_mess_unread || 0;
-			badgeService.resetChannel({
-				clanId: clan_id,
-				channelId: channel_id,
-				badgeCount: badge_count,
-				messageId: message_id
-			});
-		} else {
-			badgeService.resetDm(channel_id, undefined, message_id);
-		}
+			if (clan_id && clan_id !== '0') {
+				const channel = selectChannelMetaById(state, channel_id);
+				badge_count = channel?.count_mess_unread || 0;
+				badgeService.resetChannel({
+					clanId: clan_id,
+					channelId: channel_id,
+					badgeCount: badge_count,
+					messageId: message_id
+				});
+			} else {
+				badgeService.resetDm(channel_id, undefined, message_id);
+			}
+		};
+
+		await handleLastSeenUpdated(lastSeenMess);
 	}, []);
 
 	const onuserchannelremoved = useCallback(
