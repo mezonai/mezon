@@ -930,7 +930,8 @@ export const handleShowShortProfile = (
 };
 
 export const sortNotificationsByDate = (notifications: NotificationEntity[]) => {
-	return notifications.sort((a, b) => {
+	const sortedData = [...notifications];
+	return sortedData.sort((a, b) => {
 		const dateA = a.create_time_seconds ? a.create_time_seconds : 0;
 		const dateB = b.create_time_seconds ? b.create_time_seconds : 0;
 		return dateB - dateA;

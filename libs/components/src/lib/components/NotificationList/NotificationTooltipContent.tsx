@@ -71,25 +71,25 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const hasMoreTopics = useSelector(selectHasMoreTopics);
 
 	const getAllNotificationForYou = useMemo(() => {
-		if (!allNotificationForYou) {
+		if (!allNotificationForYou?.data.length) {
 			return [];
 		}
 		return sortNotificationsByDate(allNotificationForYou.data);
-	}, [allNotificationForYou]);
+	}, [allNotificationForYou?.data]);
 
 	const getAllNotificationMentions = useMemo(() => {
-		if (!allNotificationMentions) {
+		if (!allNotificationMentions?.data.length) {
 			return [];
 		}
 		return sortNotificationsByDate(allNotificationMentions.data);
-	}, [allNotificationMentions]);
+	}, [allNotificationMentions?.data]);
 
 	const getAllNotificationClan = useMemo(() => {
-		if (!allNotificationClan) {
+		if (!allNotificationClan?.data.length) {
 			return [];
 		}
 		return sortNotificationsByDate(allNotificationClan.data);
-	}, [allNotificationClan]);
+	}, [allNotificationClan?.data]);
 
 	useEffect(() => {
 		if (!currentClanId) return;
