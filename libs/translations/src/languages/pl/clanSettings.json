@@ -98,5 +98,9 @@
 		"restoreSuccess": "Kanał został pomyślnie przywrócony.",
 		"emptyState": "Brak zarchiwizowanych kanałów",
 		"fetchError": "Nie udało się załadować zarchiwizowanych kanałów. Spróbuj ponownie."
+	},
+	"toast": {
+		"clanDeletedSuccess": "Klan został pomyślnie usunięty",
+		"clanCreatedSuccess": "Klan został pomyślnie utworzony"
 	}
 }

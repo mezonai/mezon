@@ -26,6 +26,8 @@ import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
 import { fetchClanMembersWithStatus, usersClanActions } from '../clanMembers/clan.members';
 
+import { t } from 'i18next';
+import { toast } from 'react-toastify';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -333,6 +335,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}
+		toast.success(t('clanSettings:toast.clanCreatedSuccess'));
 		return mapClanToEntity(response);
 	} catch (error) {
 		captureSentryError(error, 'clans/createClans');
@@ -356,6 +359,7 @@ export const deleteClan = createAsyncThunk('clans/deleteClans', async (body: Cha
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.deleteClanDesc(mezon.session, body.clanId);
 		if (response) {
+			toast.success(t('clanSettings:toast.clanDeletedSuccess'));
 			thunkAPI.dispatch(emojiSuggestionSlice.actions.invalidateCache());
 			thunkAPI.dispatch(settingClanStickerSlice.actions.invalidateCache());
 			thunkAPI.dispatch(soundEffectActions.invalidateCache());

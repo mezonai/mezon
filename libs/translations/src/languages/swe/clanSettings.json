@@ -98,5 +98,9 @@
 		"restoreSuccess": "Kanalen har återställts.",
 		"emptyState": "Inga arkiverade kanaler",
 		"fetchError": "Det gick inte att läsa in arkiverade kanaler. Försök igen."
+	},
+	"toast": {
+		"clanDeletedSuccess": "Klanen har raderats",
+		"clanCreatedSuccess": "Klanen har skapats"
 	}
 }
