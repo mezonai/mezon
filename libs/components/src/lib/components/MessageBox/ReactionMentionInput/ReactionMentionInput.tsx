@@ -739,13 +739,20 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	});
 
 	const hashtagData = useMemo(() => {
-		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {
+		return allChannels.reduce<Array<MentionData>>((acc, item) => {
 			const id = item?.channel_id ?? '';
 			const display = item?.channel_label ?? '';
 			const subText = ((item as ChannelsEntity)?.category_name || item?.clan_name) ?? '';
 
 			if (id || display || subText) {
-				acc.push({ id, display, subText });
+				acc.push({
+					id,
+					display,
+					subText,
+					type: item.type,
+					parent_id: item.parent_id,
+					channel_private: item.channel_private
+				});
 			}
 
 			return acc;
@@ -1116,6 +1123,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 									symbol="#"
 									subText={suggestion.subText as string}
 									channelId={suggestion.id}
+									channel={suggestion}
 								/>
 							</div>
 						)}

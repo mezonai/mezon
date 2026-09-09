@@ -80,6 +80,8 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const cltrKList = useAppSelector(selectAllCtrlK);
 	const clansEntities = useAppSelector(selectClansEntities);
 	const previousChannels = useAppSelector(selectPreviousChannels);
+	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
+	const allChannels = useAppSelector(selectAllChannelsInAllClans);
 
 	const resolveClanName = useCallback(
 		(clanId?: string, fallback?: string) => (clanId ? clansEntities?.[clanId]?.clan_name : '') || fallback || '',
@@ -158,28 +160,32 @@ function SearchModal({ onClose }: SearchModalProps) {
 		}
 		return list;
 	}, [cltrKList, resolveClanName]);
-	const listMemberSearch = useMemo(() => {
+	const listChannelClan = useMemo(() => {
 		const list: SearchItemProps[] = [];
-		const addedUserIds = new Set<string>();
+		const recentIds = new Set(previousChannels.map((item) => item.channelId));
+		Object.values(channelMetaEntities)?.map((meta) => {
+			if (!recentIds.has(meta.id)) {
+				if (allChannels[meta.clanId]?.entities?.entities?.[meta.id]) {
+					const channel = allChannels[meta.clanId].entities.entities?.[meta.id];
 
-		dmGroupChatList.forEach((itemDM: DirectEntity) => {
-			if (itemDM.active !== 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
-				const userId = itemDM.user_ids[0];
-				const clanNick = allClanUsersEntities[userId]?.clan_nick;
-				if (!addedUserIds.has(userId) && !checkListDM.current?.has(userId)) {
+					recentIds.add(meta.id);
 					list.push({
-						id: userId,
-						prioritizeName: clanNick ?? itemDM?.display_names?.[0] ?? itemDM?.usernames?.[0] ?? '',
-						name: itemDM?.usernames?.[0] ?? '',
-						avatarUser: itemDM?.avatars?.[0] ?? '',
-						displayName: itemDM?.display_names?.[0] ?? '',
-						lastSentTimeStamp: itemDM?.last_sent_message?.timestamp_seconds || '0',
-						idDM: userId,
-						typeChat: TypeSearch.Dm_Type,
-						type: ChannelType.CHANNEL_TYPE_DM,
-						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || []), clanNick].filter(Boolean).join('.')
+						count_messsage_unread: meta.count_mess_unread,
+						channelId: meta.id,
+						id: meta.id,
+						channel_private: channel.channel_private || 0,
+						name: channel?.channel_label ?? '',
+						subText: resolveClanName(channel?.clan_id, channel.clan_name),
+						icon: '#',
+						clanId: channel?.clan_id ?? '',
+						typeChat: TypeSearch.Channel_Type,
+						prioritizeName: channel?.channel_label ?? '',
+						age_restricted: channel.age_restricted,
+						type: channel?.type,
+						parent_id: channel?.parent_id,
+						lastSeenTimeStamp: meta.lastSeenTimestamp,
+						lastSentTimeStamp: meta.lastSentTimestamp
 					});
-					addedUserIds.add(userId);
 				}
 			}
 		});
@@ -195,10 +201,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 	}, [searchText]);
 
 	const totalLists = useMemo(() => {
-		const list = listMemberSearch.concat(listChannelSearch, listDirectSearch);
+		const list = listChannelClan.concat(listChannelSearch, listDirectSearch);
 		const sortedList = list.slice().sort((a: any, b: any) => b.lastSentTimeStamp - a.lastSentTimeStamp);
 		return sortedList;
-	}, [listMemberSearch, listChannelSearch, listDirectSearch]);
+	}, [listChannelClan, listChannelSearch, listDirectSearch]);
 
 	const totalListsFiltered = useMemo(() => {
 		return filterListByName(totalLists, normalizeSearchText, isSearchByUsername);
@@ -234,9 +240,6 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 		return dedupeById(totalListsSorted);
 	}, [channelSearchSorted, normalizeSearchText, totalListMembersSorted, totalListsSorted]);
-
-	const channelMetaEntities = useAppSelector(selectChannelMetaEntities);
-	const allChannels = useAppSelector(selectAllChannelsInAllClans);
 
 	const classificationList = useMemo(() => {
 		const recentIds = new Set(previousChannels.map((item) => item.channelId));
@@ -294,37 +297,6 @@ function SearchModal({ onClose }: SearchModalProps) {
 				}
 			}
 		}
-
-		Object.values(channelMetaEntities)?.map((meta) => {
-			if (
-				(meta.count_mess_unread || meta.lastSeenTimestamp < meta.lastSentTimestamp) &&
-				!listPrevious.has(meta.id) &&
-				!unreadIds.has(meta.id)
-			) {
-				if (allChannels[meta.clanId]?.entities?.entities?.[meta.id]) {
-					const channel = allChannels[meta.clanId].entities.entities?.[meta.id];
-
-					unreadIds.add(meta.id);
-					unreadList.push({
-						count_messsage_unread: meta.count_mess_unread,
-						channelId: meta.id,
-						id: meta.id,
-						channel_private: channel.channel_private || 0,
-						name: channel?.channel_label ?? '',
-						subText: resolveClanName(channel?.clan_id, channel.clan_name),
-						icon: '#',
-						clanId: channel?.clan_id ?? '',
-						typeChat: TypeSearch.Channel_Type,
-						prioritizeName: channel?.channel_label ?? '',
-						age_restricted: channel.age_restricted,
-						type: channel?.type,
-						parent_id: channel?.parent_id,
-						lastSeenTimeStamp: meta.lastSeenTimestamp,
-						lastSentTimeStamp: meta.lastSentTimestamp
-					});
-				}
-			}
-		});
 
 		return { recentList, unreadList };
 	}, [listItemWithoutRecent, previousChannels, channelMetaEntities, resolveClanName]);
