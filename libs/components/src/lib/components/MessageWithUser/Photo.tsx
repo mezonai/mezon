@@ -113,23 +113,33 @@ const Photo = <T,>({
 		lastSentUrl = photo.url;
 	}
 
+	const isSticker = (photo as ApiPhoto & { filetype?: string })?.filetype === EMimeTypes.sticker;
+	const maxStickerWidth = isInSearchMessage ? 120 : 200;
+	const maxStickerHeight = isInSearchMessage ? 120 : 220;
+
 	const { width: realWidth, height: realHeight } = photo;
 	const hasZeroDimension = !realWidth || !realHeight;
 
-	const { width, height, isSmall } = hasZeroDimension
-		? { width: 0, height: 150, isSmall: false }
-		: dimensions ||
-			calculateMediaDimensions({
-				media: photo,
-				isOwn,
-				asForwarded,
-				noAvatars,
-				isMobile,
-				messageText,
-				isInWebPage
-			});
+	const { width, height, isSmall } = isSticker
+		? { width: maxStickerWidth, height: maxStickerHeight, isSmall: false }
+		: hasZeroDimension
+			? { width: 0, height: 150, isSmall: false }
+			: dimensions ||
+				calculateMediaDimensions({
+					media: photo,
+					isOwn,
+					asForwarded,
+					noAvatars,
+					isMobile,
+					messageText,
+					isInWebPage
+				});
 
 	const resizeType = (() => {
+		if (isSticker) {
+			return 'fit';
+		}
+
 		if (hasZeroDimension || !width || !height) {
 			return 'fill';
 		}
@@ -147,17 +157,25 @@ const Photo = <T,>({
 
 	const isNonInteractive = nonInteractive || isPresignPending;
 
-	const componentClassName = buildClassName(
-		'media-inner',
-		!isNonInteractive && 'interactive',
-		isSmall && 'small-image',
-		(width === height || size === 'pictogram') && 'square-image',
-		height < MIN_MEDIA_HEIGHT && 'fix-min-height',
-		className
-	);
+	const componentClassName = isSticker
+		? buildClassName('media-inner sticker-media', !isNonInteractive && 'interactive', className)
+		: buildClassName(
+				'media-inner',
+				!isNonInteractive && 'interactive',
+				isSmall && 'small-image',
+				(width === height || size === 'pictogram') && 'square-image',
+				height < MIN_MEDIA_HEIGHT && 'fix-min-height',
+				className
+			);
 
-	const style =
-		size === 'inline'
+	const style = isSticker
+		? {
+				maxWidth: `${maxStickerWidth}px`,
+				maxHeight: `${maxStickerHeight}px`,
+				width: 'fit-content',
+				height: 'fit-content'
+			}
+		: size === 'inline'
 			? {
 					height: height ? `${height}px` : 150,
 					width: isInSearchMessage ? '' : width ? `${width}px` : 'auto',
@@ -169,8 +187,8 @@ const Photo = <T,>({
 				}
 			: undefined;
 
-	const displayWidth = forcedWidth || width || 150;
-	const displayHeight = height || 150;
+	const displayWidth = isSticker ? maxStickerWidth : forcedWidth || width || 150;
+	const displayHeight = isSticker ? maxStickerHeight : height || 150;
 
 	const isGif = useMemo(() => {
 		return photo?.url?.endsWith('.gif') || photo?.url?.includes('.gif');
@@ -216,11 +234,14 @@ const Photo = <T,>({
 					height={height}
 					resizeType={resizeType}
 					displayWidth={displayWidth}
+					displayHeight={displayHeight}
 					isGif={isGif}
 					isProtected={isProtected}
 					onContextMenu={onContextMenu}
 					isInSearchMessage={isInSearchMessage}
 					onSettled={onImageSettled}
+					isSticker={isSticker}
+					imagePainted={imagePainted}
 				/>
 			)}
 			{/* The sender's own copy, straight off disk: the CDN object is not there
@@ -243,7 +264,7 @@ const Photo = <T,>({
 					style={{ width: displayWidth, height: displayHeight }}
 				/>
 			)}
-			{!somethingIsPainted && <ImageAttachmentSkeleton width={displayWidth} height={displayHeight} />}
+			{!somethingIsPainted && <ImageAttachmentSkeleton width={isSticker ? 140 : displayWidth} height={isSticker ? 140 : displayHeight} />}
 			{isUploading && <AttachmentSendingIndicator showLabel boxWidth={displayWidth} boxHeight={displayHeight} />}
 			{isProtected && <span className="protector" />}
 		</div>
@@ -256,18 +277,40 @@ type PhotoImageProps = {
 	height: number;
 	resizeType: string;
 	displayWidth: number;
+	displayHeight?: number;
 	isGif?: boolean | string | null;
 	isProtected?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 	isInSearchMessage?: boolean;
 	/** Fires once the CDN copy is painted, or has failed for good. */
 	onSettled?: () => void;
+	isSticker?: boolean;
+	imagePainted?: boolean;
 };
 
 const PhotoImage = React.memo(
-	({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu, isInSearchMessage, onSettled }: PhotoImageProps) => {
+	({
+		url,
+		width,
+		height,
+		resizeType,
+		displayWidth,
+		displayHeight,
+		isGif,
+		isProtected,
+		onContextMenu,
+		isInSearchMessage,
+		onSettled,
+		isSticker,
+		imagePainted
+	}: PhotoImageProps) => {
 		const { setImageURL, setPositionShow } = useMessageContextMenu();
 		const [hasError, setHasError] = useState(false);
+		const [aspectType, setAspectType] = useState<'square' | 'tall' | 'wide'>('square');
+
+		useEffect(() => {
+			setAspectType('square');
+		}, [url]);
 
 		const imgSrc = useMemo(() => {
 			return createImgproxyUrl(url, { width, height, resizeType });
@@ -287,15 +330,33 @@ const PhotoImage = React.memo(
 			onSettled?.();
 		}, [onSettled]);
 
-		const handleLoad = useCallback(() => {
-			onSettled?.();
-		}, [onSettled]);
+		const handleLoad = useCallback(
+			(e: React.SyntheticEvent<HTMLImageElement>) => {
+				if (isSticker) {
+					const { naturalWidth, naturalHeight } = e.currentTarget;
+					if (naturalWidth && naturalHeight) {
+						const ratio = naturalHeight / naturalWidth;
+						if (ratio > 1.15) {
+							setAspectType('tall');
+						} else if (ratio < 0.85) {
+							setAspectType('wide');
+						} else {
+							setAspectType('square');
+						}
+					}
+				}
+				onSettled?.();
+			},
+			[isSticker, onSettled]
+		);
 
 		if (hasError) {
 			return (
 				<div
-					className="max-w-full max-h-full w-full h-full flex items-center justify-center absolute bottom-0 left-0 z-[1] rounded overflow-hidden bg-bgSecondary"
-					style={{ width: displayWidth, height: height || 150 }}
+					className={`flex items-center justify-center rounded overflow-hidden bg-bgSecondary ${
+						isSticker ? 'w-[120px] h-[120px]' : 'max-w-full max-h-full w-full h-full absolute bottom-0 left-0 z-[1]'
+					}`}
+					style={isSticker ? undefined : { width: displayWidth, height: height || 150 }}
 				>
 					<svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -306,6 +367,33 @@ const PhotoImage = React.memo(
 						/>
 					</svg>
 				</div>
+			);
+		}
+
+		if (isSticker) {
+			const standardStickerSize = isInSearchMessage ? 100 : 150;
+			const maxLongHeight = isInSearchMessage ? 120 : 220;
+			const maxLongWidth = isInSearchMessage ? 120 : 200;
+
+			const stickerMaxWidth = aspectType === 'wide' ? maxLongWidth : standardStickerSize;
+			const stickerMaxHeight = aspectType === 'tall' ? maxLongHeight : standardStickerSize;
+
+			return (
+				<img
+					onContextMenu={handleContextMenu}
+					src={imgSrc}
+					className={`max-w-full max-h-full w-auto h-auto object-contain rounded select-none cursor-pointer transition-opacity duration-150 ${
+						imagePainted ? 'block opacity-100' : 'opacity-0 absolute top-0 left-0 pointer-events-none'
+					}`}
+					style={{
+						maxWidth: `${stickerMaxWidth}px`,
+						maxHeight: `${stickerMaxHeight}px`
+					}}
+					alt=""
+					draggable={!isProtected}
+					onError={handleError}
+					onLoad={handleLoad}
+				/>
 			);
 		}
 
