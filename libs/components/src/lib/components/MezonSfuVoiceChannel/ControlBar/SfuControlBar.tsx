@@ -52,6 +52,7 @@ interface SfuControlBarProps {
 	onLeaveRoom: () => void;
 	onTogglePopout: () => void;
 	onFullScreen: () => void;
+	roomId?: string;
 }
 
 export const SfuControlBar = ({
@@ -91,7 +92,8 @@ export const SfuControlBar = ({
 	onCameraSelect,
 	onLeaveRoom,
 	onTogglePopout,
-	onFullScreen
+	onFullScreen,
+	roomId
 }: SfuControlBarProps) => {
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
@@ -164,7 +166,7 @@ export const SfuControlBar = ({
 						<ScreenShareControl active={screenSharing} onToggle={onScreenShareToggle} />
 					</div>
 				)}
-				<SfuAgentControl />
+				<SfuAgentControl roomId={roomId} isExternalCalling={isExternalCalling} />
 				{!isExternalCalling && <SfuRaisingHandControl />}
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>
