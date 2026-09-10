@@ -39,7 +39,7 @@ import { channelMediaReducer } from './channels/channelMedia.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
-import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
+import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slice';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
 import { dashboardReducer } from './dashboard/dashboard.slice';

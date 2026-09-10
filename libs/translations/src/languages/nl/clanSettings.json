@@ -98,5 +98,9 @@
 		"restoreSuccess": "Kanaal is succesvol hersteld.",
 		"emptyState": "Geen gearchiveerde kanalen",
 		"fetchError": "Kan gearchiveerde kanalen niet laden. Probeer het opnieuw."
+	},
+	"toast": {
+		"clanDeletedSuccess": "Clan is succesvol verwijderd",
+		"clanCreatedSuccess": "Clan is succesvol aangemaakt"
 	}
 }

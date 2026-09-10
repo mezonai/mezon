@@ -739,13 +739,20 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	});
 
 	const hashtagData = useMemo(() => {
-		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {
+		return allChannels.reduce<Array<MentionData>>((acc, item) => {
 			const id = item?.channel_id ?? '';
 			const display = item?.channel_label ?? '';
 			const subText = ((item as ChannelsEntity)?.category_name || item?.clan_name) ?? '';
 
 			if (id || display || subText) {
-				acc.push({ id, display, subText });
+				acc.push({
+					id,
+					display,
+					subText,
+					type: item.type,
+					parent_id: item.parent_id,
+					channel_private: item.channel_private
+				});
 			}
 
 			return acc;
@@ -968,9 +975,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			const plainText = event.clipboardData.getData('text/plain');
-			const htmlContent = event.clipboardData.getData('text/html');
-
 			const items = event.clipboardData.items;
 			let hasMediaFiles = false;
 
@@ -988,32 +992,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				if (originalHandlePaste) {
 					originalHandlePaste(event);
 				}
-				return;
-			}
-
-			const contentToCheck = plainText || htmlContent;
-			const currentValue = draftRequest?.content || '';
-			const newTotalLength = currentValue.length + contentToCheck.length;
-
-			if (handleConvertToFile && contentToCheck?.length && JSON.stringify(contentToCheck)?.length > MIN_THRESHOLD_CHARS) {
-				event.preventDefault();
-				handleConvertToFile(contentToCheck);
-				return;
-			}
-
-			const combinedContent = currentValue + contentToCheck;
-			const combinedContentSize = (contentToCheck?.length && JSON.stringify(combinedContent)?.length) || 0;
-
-			if (handleConvertToFile && combinedContentSize > MIN_THRESHOLD_CHARS) {
-				event.preventDefault();
-				handleConvertToFile(combinedContent);
-
-				updateDraft?.({
-					valueTextInput: '',
-					content: '',
-					mentionRaw: [],
-					entities: []
-				});
 				return;
 			}
 		},
@@ -1116,6 +1094,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 									symbol="#"
 									subText={suggestion.subText as string}
 									channelId={suggestion.id}
+									channel={suggestion}
 								/>
 							</div>
 						)}

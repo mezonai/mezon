@@ -28,7 +28,7 @@ export interface NotificationState extends EntityState<NotificationEntity, strin
 	messageNotifiedId: string;
 	isShowInbox: boolean;
 	notifications: Record<
-		NotificationCategory,
+		number, // As NotificationCategory
 		{
 			data: NotificationEntity[];
 			lastId: string;
@@ -58,7 +58,7 @@ export const fetchListNotificationCached = async (
 	const apiKey = createApiKey('fetchListNotification', clanId, category || '', notificationId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, notificationData?.cache, noCache);
 
-	if (!shouldForceCall) {
+	if (!shouldForceCall && notificationData?.data) {
 		return {
 			notifications: notificationData.data,
 			fromCache: true
@@ -186,11 +186,7 @@ export const initialNotificationState: NotificationState = notificationAdapter.g
 	lastSeenTimeStampChannels: {},
 	quantityNotifyClans: {},
 	isShowInbox: false,
-	notifications: {
-		[NotificationCategory.FOR_YOU]: { data: [], lastId: '' },
-		[NotificationCategory.MESSAGES]: { data: [], lastId: '' },
-		[NotificationCategory.MENTIONS]: { data: [], lastId: '' }
-	}
+	notifications: {}
 });
 
 export const notificationSlice = createSlice({
@@ -286,7 +282,7 @@ export const notificationSlice = createSlice({
 						if (state.notifications[category]) {
 							state.notifications[category].data = [...state.notifications[category].data, ...dataParse];
 						} else {
-							state.notifications[category] = { data: [...dataParse], lastId: '', cache: undefined };
+							state.notifications[category] = { data: dataParse, lastId: '', cache: undefined };
 						}
 
 						if (!fromCache) {

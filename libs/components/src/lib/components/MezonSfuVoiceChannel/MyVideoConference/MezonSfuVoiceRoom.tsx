@@ -12,6 +12,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
+	GUEST_NAME,
 	NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
 	createImgproxyUrl,
 	generateE2eId,
@@ -32,6 +33,8 @@ import { MediaPermissionModal } from '../MediaPermissionModal';
 import type { RecordingAudioSource, RecordingSceneTile } from '../Recording/types';
 import { useSfuCallRecorder } from '../Recording/useSfuCallRecorder';
 import type { SfuConnectionState as ConnectionState, SfuRemoteMedia as RemoteMedia, SfuPeer, SfuSignalMessage as SignalMessage } from '../types';
+import type { ExternalChatRef } from './ChatMeeting';
+import ChatStreamExternal from './ChatMeeting';
 import { SfuFocusLayoutContainer } from './FocusLayout/SfuFocusLayoutContainer';
 import { SfuGridLayoutContainer } from './GridLayout/SfuGridLayoutContainer';
 import { useSfuGridLayout, useSfuPagination } from './GridLayout/useSfuGridLayout';
@@ -416,13 +419,18 @@ export interface MezonSfuVoiceRoomProps {
 	channelLabel: string;
 	isChatOpen: boolean;
 	isFullScreen: boolean;
+	isExternalCalling?: boolean;
+	onRefreshToken?: () => Promise<string | undefined>;
 	onLeaveRoom: () => void;
 	onFullScreen: () => void;
 	onToggleChat: () => void;
+	username?: string;
 }
 
 type SfuOffer = { sdp: string; offer_generation: number };
-
+const AGENT_AVATAR =
+	'https://imgproxy.komu.vn/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
+const AGENT_DISPLAY_NAME = 'KOMU Agent';
 export function MezonSfuVoiceRoom({
 	token,
 	joinRole,
@@ -431,9 +439,12 @@ export function MezonSfuVoiceRoom({
 	channelLabel,
 	isChatOpen,
 	isFullScreen,
+	isExternalCalling,
+	onRefreshToken,
 	onLeaveRoom,
 	onFullScreen,
-	onToggleChat
+	onToggleChat,
+	username
 }: MezonSfuVoiceRoomProps) {
 	const { t } = useTranslation('channelVoice');
 	const dispatch = useAppDispatch();
@@ -501,9 +512,14 @@ export function MezonSfuVoiceRoom({
 	const microphonePermissionRevokedRef = useRef(false);
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
 	const onLeaveRoomRef = useRef(onLeaveRoom);
+	const onRefreshTokenRef = useRef(onRefreshToken);
 	const lastMuteChangedAtRef = useRef(0);
 	const pendingForcedMuteRef = useRef<number>();
 	const refreshingTokenRef = useRef(false);
+
+	useEffect(() => {
+		onRefreshTokenRef.current = onRefreshToken;
+	}, [onRefreshToken]);
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [error, setError] = useState<string>();
 	const [localPreview, setLocalPreview] = useState<MediaStream>();
@@ -914,6 +930,11 @@ export function MezonSfuVoiceRoom({
 		},
 		[cameraEnabled, findUplinkVideoSender, microphoneEnabled]
 	);
+	const chatRef = useRef<ExternalChatRef>(null);
+	const handleAddMessage = useCallback((message: string) => {
+		chatRef.current?.setMessages((prev) => [...prev, message]);
+	}, []);
+	const [roomPeerId, setRoomPeerId] = useState('');
 
 	useEffect(() => {
 		let disposed = false;
@@ -1279,6 +1300,9 @@ export function MezonSfuVoiceRoom({
 				if (message.type === 'joined') {
 					setError(undefined);
 					setConnectionState('awaiting offer');
+					if ((message as unknown as { room: string })?.room) {
+						setRoomPeerId((message as unknown as { room: string }).room);
+					}
 				}
 				if (message.type === 'room_snapshot' && !joinedRef.current) {
 					joinedRef.current = true;
@@ -1342,14 +1366,19 @@ export function MezonSfuVoiceRoom({
 						return next;
 					});
 				}
+				if (message.type === 'room_message' && message.message) {
+					handleAddMessage(message.message);
+				}
 				if (message.type === 'error') {
 					// eslint-disable-next-line no-console
 					console.error('[MezonSFU] server error', message);
 					const errorMsg = message.message || 'SFU signaling error';
 					if (!refreshingTokenRef.current && (errorMsg.toLowerCase().includes('token') || errorMsg.toLowerCase().includes('invalid'))) {
 						refreshingTokenRef.current = true;
-						void dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
-							.unwrap()
+						const refreshPromise = onRefreshTokenRef.current
+							? onRefreshTokenRef.current()
+							: dispatch(generateMeetToken({ channelId: roomId, roomName: '' })).unwrap();
+						void refreshPromise
 							.then((newToken) => {
 								refreshingTokenRef.current = false;
 								if (newToken && newToken !== token) {
@@ -1395,10 +1424,12 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 
-				if ((event.code === 4001 || event.code === 4003) && !refreshingTokenRef.current) {
+				if ((event.code === 4001 || event.code === 4003 || (isExternalCalling && reconnectAllowed)) && !refreshingTokenRef.current) {
 					refreshingTokenRef.current = true;
-					void dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
-						.unwrap()
+					const refreshPromise = onRefreshTokenRef.current
+						? onRefreshTokenRef.current()
+						: dispatch(generateMeetToken({ channelId: roomId, roomName: '' })).unwrap();
+					void refreshPromise
 						.then((newToken) => {
 							refreshingTokenRef.current = false;
 							if (newToken && newToken !== token) {
@@ -1434,6 +1465,10 @@ export function MezonSfuVoiceRoom({
 			}, 10_000);
 		});
 
+		const pendingPeers = pendingPeersRef.current;
+		const leftRemoteMids = leftRemoteMidsRef.current;
+		const userIdsByMid = userIdsByMidRef.current;
+
 		return () => {
 			disposed = true;
 			if (heartbeatInterval) clearInterval(heartbeatInterval);
@@ -1446,7 +1481,7 @@ export function MezonSfuVoiceRoom({
 			// eslint-disable-next-line no-console
 			console.info('[MezonSFU][leaving peer] closing signaling connection', {
 				wsReadyState: wsRef.current?.readyState,
-				peersFromSdp: Array.from(userIdsByMidRef.current, ([mid, userId]) => ({ mid, userId }))
+				peersFromSdp: Array.from(userIdsByMid, ([mid, userId]) => ({ mid, userId }))
 			});
 			removeVisibilityListener();
 			wsRef.current?.close();
@@ -1461,6 +1496,10 @@ export function MezonSfuVoiceRoom({
 			pendingOfferRef.current = null;
 			peerIdsByMid.clear();
 			rolesByMid.clear();
+			pendingPeers.clear();
+			leftRemoteMids.clear();
+			userIdsByMid.clear();
+			setRemoteMedia(new Map());
 		};
 	}, [
 		applyScreenEncodingParams,
@@ -1469,6 +1508,7 @@ export function MezonSfuVoiceRoom({
 		currentUserId,
 		dispatch,
 		findUplinkVideoSender,
+		isExternalCalling,
 		joinRole,
 		roomId,
 		serverUrl,
@@ -1612,7 +1652,18 @@ export function MezonSfuVoiceRoom({
 		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk-changed', { detail: { active: pushToTalkActive } }));
 	}, [pushToTalkActive]);
 
-	const participants = useMemo(() => Array.from(remoteMedia.values()), [remoteMedia]);
+	const participants = useMemo(() => {
+		const list = Array.from(remoteMedia.values()).filter((p) => !p.userId || !currentUserId || String(p.userId) !== String(currentUserId));
+		const uniqueByUserId = new Map<string, RemoteMedia>();
+		for (const p of list) {
+			const key = p.userId ? `user-${p.userId}` : p.id;
+			const existing = uniqueByUserId.get(key);
+			if (!existing || p.video?.readyState === 'live' || p.audio?.readyState === 'live') {
+				uniqueByUserId.set(key, p);
+			}
+		}
+		return Array.from(uniqueByUserId.values());
+	}, [currentUserId, remoteMedia]);
 	const handleParticipantAction = useCallback(
 		async (action: 'mute' | 'kick', participantId: string) => {
 			const response = await dispatch(
@@ -1672,8 +1723,7 @@ export function MezonSfuVoiceRoom({
 			return {
 				displayName:
 					getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) ||
-					participant.userId ||
-					participant.id,
+					Number(participant.userId || participant.id).toString(36),
 				avatar: getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url)
 			};
 		},
@@ -1681,7 +1731,11 @@ export function MezonSfuVoiceRoom({
 	);
 	const localMember = currentUserId ? clanMembers[currentUserId] : undefined;
 	const localDisplayName =
-		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) || currentUserId || 'Mezon';
+		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) ||
+		username ||
+		currentUserId ||
+		GUEST_NAME;
+
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
 	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
 	const speakingMap = useParticipantsSpeakingMap(localAudioTrack, isLocalAudioEnabled, participants);
@@ -1749,8 +1803,8 @@ export function MezonSfuVoiceRoom({
 			content: (
 				<SfuParticipantTile
 					participant={participant}
-					displayName={profile.displayName}
-					avatar={profile.avatar}
+					displayName={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_DISPLAY_NAME : profile.displayName}
+					avatar={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_AVATAR : profile.avatar}
 					speaking={participantSpeaking}
 					locallyMuted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
 				/>
@@ -1929,209 +1983,226 @@ export function MezonSfuVoiceRoom({
 		if (!isPopoutTrackAvailable) void closePopout();
 	}, [closePopout, isPopoutTrackAvailable]);
 
-	return (
-		<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
-			<ReactionCallHandler />
-			<SfuVoiceInteractiveLayer channelId={roomId} />
-			<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
-			<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
-				<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
-					<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
-					<strong className="text-base">{channelLabel || roomId}</strong>
-					<span
-						className={
-							connectionState === 'connected' ? 'text-green-400' : connectionState === 'failed' ? 'text-red-400' : 'text-yellow-300'
-						}
-					>
-						· {connectionState}
-					</span>
-				</div>
-				<div className="flex items-center gap-4 text-[var(--bg-icon-theme)]">
-					<NotificationTooltip />
-					<button
-						type="button"
-						title={isGridView ? 'Switch to focus view' : 'Switch to grid view'}
-						onClick={() => setIsGridView((value) => !value)}
-					>
-						{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
-					</button>
-					<button
-						type="button"
-						title={t('chat')}
-						className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''}
-						onClick={onToggleChat}
-						data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
-					>
-						<Icons.Chat className="h-5 w-5" />
-					</button>
-				</div>
-			</header>
+	const handleWriteChatExternal = (message: string) => {
+		wsRef.current?.send(JSON.stringify({ type: 'send_message', message }));
+	};
 
-			{isGridView ? (
-				<SfuGridLayoutContainer
-					ref={gridElRef}
-					onWheel={(e) => {
-						if (gridPagination.totalPageCount <= 1) return;
-						const now = Date.now();
-						if (now - lastGridWheelTimeRef.current < 250) return;
-						if (e.deltaY > 10) {
-							lastGridWheelTimeRef.current = now;
-							gridPagination.nextPage();
-						} else if (e.deltaY < -10) {
-							lastGridWheelTimeRef.current = now;
-							gridPagination.prevPage();
-						}
-					}}
-				>
-					<div
-						className="grid min-h-0 flex-1 gap-2 overflow-hidden"
-						style={{
-							gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
-							gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
+	return (
+		<>
+			<div className="relative flex h-full w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#11111b] text-white">
+				<ReactionCallHandler />
+				<SfuVoiceInteractiveLayer channelId={roomId} />
+				<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
+				<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
+					<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
+						<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
+						<strong className="text-base">{channelLabel || roomId}</strong>
+						<span
+							className={
+								connectionState === 'connected' ? 'text-green-400' : connectionState === 'failed' ? 'text-red-400' : 'text-yellow-300'
+							}
+						>
+							· {connectionState}
+						</span>
+					</div>
+					<div className="flex items-center gap-4 text-[var(--bg-icon-theme)]">
+						{!isExternalCalling && <NotificationTooltip />}
+						<button
+							type="button"
+							title={isGridView ? 'Switch to focus view' : 'Switch to grid view'}
+							onClick={() => setIsGridView((value) => !value)}
+						>
+							{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
+						</button>
+						<button
+							type="button"
+							title={t('chat')}
+							className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''}
+							onClick={onToggleChat}
+							data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
+						>
+							<Icons.Chat className="h-5 w-5" />
+						</button>
+					</div>
+				</header>
+
+				{isGridView ? (
+					<SfuGridLayoutContainer
+						ref={gridElRef}
+						onWheel={(e) => {
+							if (gridPagination.totalPageCount <= 1) return;
+							const now = Date.now();
+							if (now - lastGridWheelTimeRef.current < 250) return;
+							if (e.deltaY > 10) {
+								lastGridWheelTimeRef.current = now;
+								gridPagination.nextPage();
+							} else if (e.deltaY < -10) {
+								lastGridWheelTimeRef.current = now;
+								gridPagination.prevPage();
+							}
 						}}
 					>
-						{gridPagination.pageItems.map((tile) => (
-							<button
-								key={tile.id}
-								type="button"
-								className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
-								title="Pin this track"
-								onClick={() => {
-									setPinnedTrackId(tile.id);
-									setIsGridView(false);
-								}}
-								onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
-							>
-								{tile.content}
-							</button>
-						))}
-					</div>
-
-					{gridPagination.totalPageCount > 1 && (
-						<div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
-							{Array.from({ length: gridPagination.totalPageCount }).map((_, idx) => {
-								const pageNum = idx + 1;
-								const isActive = pageNum === gridPagination.currentPage;
-								return (
-									<button
-										key={pageNum}
-										type="button"
-										className={`h-2.5 w-2.5 rounded-full transition-all ${
-											isActive ? 'bg-white opacity-100' : 'bg-white/40 hover:bg-white/70'
-										}`}
-										onClick={() => gridPagination.setPage(pageNum)}
-										title={`Page ${pageNum}`}
-									/>
-								);
-							})}
-						</div>
-					)}
-				</SfuGridLayoutContainer>
-			) : (
-				<SfuFocusLayoutContainer>
-					<div
-						ref={focusVideoContainerRef}
-						className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
-					>
 						<div
-							className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
-							onContextMenu={(event) => handleParticipantContextMenu(event, pinnedTile?.contextMenuUserId)}
+							className="grid min-h-0 flex-1 gap-2 overflow-hidden"
+							style={{
+								gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
+								gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
+							}}
 						>
-							{pinnedTile?.content}
+							{gridPagination.pageItems.map((tile) => (
+								<button
+									key={tile.id}
+									type="button"
+									className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+									title="Pin this track"
+									onClick={() => {
+										setPinnedTrackId(tile.id);
+										setIsGridView(false);
+									}}
+									onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
+								>
+									{tile.content}
+								</button>
+							))}
 						</div>
-					</div>
-					{focusConferenceTiles.length > 1 && (
-						<>
-							<button
-								type="button"
-								className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-3 py-1.5 text-sm text-white shadow-lg transition-[bottom,background-color] hover:bg-zinc-800 ${
-									showFocusThumbnails ? 'bottom-[9.25rem]' : 'bottom-3'
-								}`}
-								title={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
-								aria-label={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
-								onClick={() => setShowFocusThumbnails((value) => !value)}
-							>
-								{showFocusThumbnails ? (
-									<Icons.VoiceArowDownIcon className="h-3 w-3" />
-								) : (
-									<Icons.VoiceArowUpIcon className="h-3 w-3" />
-								)}
-								<Icons.MemberList defaultFill="text-white" />
-								<span>{participantCount}</span>
-							</button>
-							<div
-								ref={focusThumbnailsRef}
-								className={`${
-									showFocusThumbnails ? 'flex' : 'hidden'
-								} h-36 shrink-0 gap-1 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
-								onWheel={(e) => {
-									e.stopPropagation();
-									e.currentTarget.scrollLeft += e.deltaY;
-								}}
-							>
-								{focusConferenceTiles
-									.filter((tile) => tile.id !== activePinnedTrackId)
-									.map((tile) => (
+
+						{gridPagination.totalPageCount > 1 && (
+							<div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
+								{Array.from({ length: gridPagination.totalPageCount }).map((_, idx) => {
+									const pageNum = idx + 1;
+									const isActive = pageNum === gridPagination.currentPage;
+									return (
 										<button
-											key={tile.id}
-											data-tile-id={tile.id}
-											data-participant-id={tile.participantId}
+											key={pageNum}
 											type="button"
-											className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
-											onClick={() => setPinnedTrackId(tile.id)}
-											onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
-										>
-											{tile.content}
-										</button>
-									))}
+											className={`h-2.5 w-2.5 rounded-full transition-all ${
+												isActive ? 'bg-white opacity-100' : 'bg-white/40 hover:bg-white/70'
+											}`}
+											onClick={() => gridPagination.setPage(pageNum)}
+											title={`Page ${pageNum}`}
+										/>
+									);
+								})}
 							</div>
-						</>
-					)}
-				</SfuFocusLayoutContainer>
+						)}
+					</SfuGridLayoutContainer>
+				) : (
+					<SfuFocusLayoutContainer>
+						<div
+							ref={focusVideoContainerRef}
+							className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
+						>
+							<div
+								className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+								onContextMenu={(event) => handleParticipantContextMenu(event, pinnedTile?.contextMenuUserId)}
+							>
+								{pinnedTile?.content}
+							</div>
+						</div>
+						{focusConferenceTiles.length > 1 && (
+							<>
+								<button
+									type="button"
+									className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-3 py-1.5 text-sm text-white shadow-lg transition-[bottom,background-color] hover:bg-zinc-800 ${
+										showFocusThumbnails ? 'bottom-[9.25rem]' : 'bottom-3'
+									}`}
+									title={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
+									aria-label={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
+									onClick={() => setShowFocusThumbnails((value) => !value)}
+								>
+									{showFocusThumbnails ? (
+										<Icons.VoiceArowDownIcon className="h-3 w-3" />
+									) : (
+										<Icons.VoiceArowUpIcon className="h-3 w-3" />
+									)}
+									<Icons.MemberList defaultFill="text-white" />
+									<span>{participantCount}</span>
+								</button>
+								<div
+									ref={focusThumbnailsRef}
+									className={`${
+										showFocusThumbnails ? 'flex' : 'hidden'
+									} h-36 shrink-0 gap-1 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
+									onWheel={(e) => {
+										e.stopPropagation();
+										e.currentTarget.scrollLeft += e.deltaY;
+									}}
+								>
+									{focusConferenceTiles
+										.filter((tile) => tile.id !== activePinnedTrackId)
+										.map((tile) => (
+											<button
+												key={tile.id}
+												data-tile-id={tile.id}
+												data-participant-id={tile.participantId}
+												type="button"
+												className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
+												onClick={() => setPinnedTrackId(tile.id)}
+												onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
+											>
+												{tile.content}
+											</button>
+										))}
+								</div>
+							</>
+						)}
+					</SfuFocusLayoutContainer>
+				)}
+
+				<SfuVoiceContextMenu channelId={roomId} onParticipantAction={handleParticipantAction} />
+				<SfuControlBar
+					channelLabel={channelLabel || roomId}
+					roomId={roomPeerId}
+					joinRole={joinRole}
+					hasMicrophoneAccess={hasMicrophoneAccess ?? false}
+					hasCameraAccess={hasCameraAccess ?? false}
+					microphonePermissionState={microphonePermissionState}
+					cameraPermissionState={cameraPermissionState}
+					onRequestMicrophonePermission={handleRequestMicrophonePermission}
+					onRequestCameraPermission={handleRequestCameraPermission}
+					pushToTalkActive={pushToTalkActive}
+					microphoneEnabled={microphoneEnabled}
+					cameraEnabled={cameraEnabled}
+					screenSharing={screenSharing}
+					isGridView={isGridView}
+					showEmojiPanel={showEmojiPanel}
+					showSoundPanel={showSoundPanel}
+					showVoiceInteractivePanel={showVoiceInteractivePanel}
+					microphones={microphones}
+					cameras={cameras}
+					selectedMicrophone={selectedMicrophone}
+					selectedCamera={selectedCamera}
+					isPopoutOpen={isPopoutOpen}
+					isFullScreen={isFullScreen}
+					isExternalCalling={isExternalCalling}
+					onEmojiPanelChange={setShowEmojiPanel}
+					onSoundPanelChange={setShowSoundPanel}
+					onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}
+					onEmojiSelect={sendEmojiReaction}
+					onSoundSelect={sendSoundReaction}
+					onPushToTalk={(active) => void setPushToTalk(active)}
+					onMicrophoneToggle={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
+					onCameraToggle={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
+					onScreenShareToggle={() => void toggleScreenShare()}
+					onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
+					onCameraSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
+					onLeaveRoom={onLeaveRoom}
+					onTogglePopout={() => void togglePopout(activePinnedTrackId)}
+					onFullScreen={onFullScreen}
+				/>
+
+				<MediaPermissionModal source={permissionModalSource} onClose={handleClosePermissionModal} onRetry={handlePermissionRetry} />
+			</div>
+			{isExternalCalling && (
+				<ChatStreamExternal
+					name={localDisplayName}
+					avatar={localAvatar}
+					userId={currentUserId}
+					ref={chatRef}
+					handleWriteChatExternal={handleWriteChatExternal}
+				/>
 			)}
-
-			<SfuVoiceContextMenu channelId={roomId} onParticipantAction={handleParticipantAction} />
-			<SfuControlBar
-				channelLabel={channelLabel || roomId}
-				joinRole={joinRole}
-				hasMicrophoneAccess={hasMicrophoneAccess ?? false}
-				hasCameraAccess={hasCameraAccess ?? false}
-				microphonePermissionState={microphonePermissionState}
-				cameraPermissionState={cameraPermissionState}
-				onRequestMicrophonePermission={handleRequestMicrophonePermission}
-				onRequestCameraPermission={handleRequestCameraPermission}
-				pushToTalkActive={pushToTalkActive}
-				microphoneEnabled={microphoneEnabled}
-				cameraEnabled={cameraEnabled}
-				screenSharing={screenSharing}
-				isGridView={isGridView}
-				showEmojiPanel={showEmojiPanel}
-				showSoundPanel={showSoundPanel}
-				showVoiceInteractivePanel={showVoiceInteractivePanel}
-				microphones={microphones}
-				cameras={cameras}
-				selectedMicrophone={selectedMicrophone}
-				selectedCamera={selectedCamera}
-				isPopoutOpen={isPopoutOpen}
-				isFullScreen={isFullScreen}
-				onEmojiPanelChange={setShowEmojiPanel}
-				onSoundPanelChange={setShowSoundPanel}
-				onVoiceInteractivePanelChange={setShowVoiceInteractivePanel}
-				onEmojiSelect={sendEmojiReaction}
-				onSoundSelect={sendSoundReaction}
-				onPushToTalk={(active) => void setPushToTalk(active)}
-				onMicrophoneToggle={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
-				onCameraToggle={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
-				onScreenShareToggle={() => void toggleScreenShare()}
-				onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
-				onCameraSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
-				onLeaveRoom={onLeaveRoom}
-				onTogglePopout={() => void togglePopout(activePinnedTrackId)}
-				onFullScreen={onFullScreen}
-			/>
-
-			<MediaPermissionModal source={permissionModalSource} onClose={handleClosePermissionModal} onRetry={handlePermissionRetry} />
-		</div>
+		</>
 	);
 }
 

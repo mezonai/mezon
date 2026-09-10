@@ -58,6 +58,7 @@ const MemberMain = lazy(() => import(/* webpackChunkName: "member-pages" */ '../
 const ChannelSettingMain = lazy(() => import(/* webpackChunkName: "setting-pages" */ '../pages/setting/channelSetting'));
 const ThreadsMain = lazy(() => import(/* webpackChunkName: "thread-pages" */ '../pages/thread'));
 const MobileDownload = lazy(() => import('../pages/mobile-download'));
+const YoutubeEmbed = lazy(() => import(/* webpackChunkName: "embed-pages" */ '../pages/embed/YoutubeEmbed'));
 
 const SuspenseFallback = () => {
 	const { setSuspenseLoading } = useLoading();
@@ -173,6 +174,15 @@ export const Routes = memo(() => {
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
 								<MobileDownload />
+							</Suspense>
+						)
+					},
+					{
+						// Public: a YouTube channel app opens here instead of on youtube.com.
+						path: 'embed/youtube',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<YoutubeEmbed />
 							</Suspense>
 						)
 					},

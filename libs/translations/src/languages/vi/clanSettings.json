@@ -98,5 +98,9 @@
 		"restoreSuccess": "Khôi phục kênh thành công.",
 		"emptyState": "Không có kênh nào được lưu trữ",
 		"fetchError": "Không thể tải danh sách kênh đã lưu trữ. Vui lòng thử lại."
+	},
+	"toast": {
+		"clanDeletedSuccess": "Xóa clan thành công",
+		"clanCreatedSuccess": "Tạo clan thành công"
 	}
 }

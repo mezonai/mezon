@@ -1186,9 +1186,8 @@ export enum TypeCheck {
 
 export enum ThreadStatus {
 	archived = 0,
-	activePublic = 2,
 	joined = 1,
-	activePrivate = 3
+	other = 2
 }
 
 export type ICanvas = {

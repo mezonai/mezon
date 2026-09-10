@@ -1,10 +1,9 @@
-import { selectChannelById, selectEntitiesChannelsByUser, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { AppChannelListIcon } from '../../ChannelList/AppChannelListIcon';
 
@@ -45,21 +44,18 @@ const SuggestItem = ({
 	isRowFocused = false,
 	color
 }: SuggestItemProps) => {
-	const allChannelsEntities = useSelector(selectEntitiesChannelsByUser);
-	const getChannel = channelId ? allChannelsEntities?.[channelId] : null;
-
-	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string, getChannel?.clan_id as string));
+	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string, channel?.clanId as string));
 	const checkVoiceStatus = useMemo(() => {
-		if (channelId !== undefined && numberMembersVoice && getChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		if (channelId !== undefined && numberMembersVoice && channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			return numberMembersVoice >= 2;
 		}
 		return false;
 	}, [channelId, numberMembersVoice]);
 	const channelIcon = useMemo(() => {
-		if (!getChannel) return null;
+		if (!channel) return null;
 
-		const { channel_private, type } = getChannel;
-		const isAgeRestrictedChannel = (getChannel as { age_restricted?: number }).age_restricted === 1;
+		const { channel_private, type } = channel;
+		const isAgeRestrictedChannel = (channel as { age_restricted?: number }).age_restricted === 1;
 
 		const isThreadEmphasized = isUnread || Boolean(count && count > 0) || isRowFocused;
 		const threadFillClass = isThreadEmphasized
@@ -134,7 +130,7 @@ const SuggestItem = ({
 		}
 
 		return null;
-	}, [getChannel, isUnread, count, isRowFocused]);
+	}, [channel, isUnread, count, isRowFocused]);
 
 	return (
 		<div
@@ -187,8 +183,8 @@ const SuggestItem = ({
 				className={`text-[10px] font-semibold text-theme-primary one-line ${subTextStyle}`}
 				data-e2e={generateE2eId('suggest_item.username')}
 			>
-				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channel_id={getChannel?.parent_id as string} />
+				{channel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
+					<RenderChannelLabelForThread channel_id={channel?.parent_id as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}

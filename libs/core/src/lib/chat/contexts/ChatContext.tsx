@@ -78,7 +78,6 @@ import {
 	selectLatestMessageId,
 	selectLoadingStatus,
 	selectMessageByMessageId,
-	selectStreamMembersByChannelId,
 	selectUserCallId,
 	selectVoiceInfo,
 	selectWelcomeChannelByClanId,
@@ -347,23 +346,19 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const onstreamingchanneljoined = useCallback(async (user: StreamingJoinedEvent) => {
-		const store = await getStoreAsync();
-		const currentStreamInfo = selectCurrentStreamInfo(store.getState());
-		const streamChannelMember = selectStreamMembersByChannelId(store.getState(), currentStreamInfo?.streamId || '');
-
-		const existingMember = streamChannelMember?.find((user) => user.user_id === user?.user_id);
-		if (existingMember) {
-			dispatch(usersStreamActions.remove(existingMember.user_id));
-		}
-		dispatch(
-			usersStreamActions.add({
-				...user,
-				user_avatar: '',
-				user_name: ''
-			})
-		);
-	}, []);
+	const onstreamingchanneljoined = useCallback(
+		(user: StreamingJoinedEvent) => {
+			if (!user?.user_id) return;
+			dispatch(
+				usersStreamActions.add({
+					...user,
+					user_avatar: '',
+					user_name: ''
+				})
+			);
+		},
+		[dispatch]
+	);
 
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
@@ -984,31 +979,40 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onlastseenupdated = useCallback(async (lastSeenMess: LastSeenMessageEvent) => {
-		const { clan_id, channel_id, message_id } = lastSeenMess;
-		let badge_count = lastSeenMess.badge_count;
+		const MAX_RETRIES = 3;
+		const RETRY_DELAY_MS = 2000;
 
-		const store = getStore();
+		const handleLastSeenUpdated = async (event: LastSeenMessageEvent, retryCount = 0) => {
+			const { clan_id, channel_id, message_id } = event;
+			let badge_count = event.badge_count;
 
-		const state = store.getState() as RootState;
-		const channelsLoadingStatus = selectLoadingStatus(state);
-		const clansLoadingStatus = selectClansLoadingStatus(state);
+			const store = getStore();
+			const state = store.getState() as RootState;
+			const channelsLoadingStatus = selectLoadingStatus(state);
+			const clansLoadingStatus = selectClansLoadingStatus(state);
 
-		if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
-			return;
-		}
+			if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
+				if (retryCount < MAX_RETRIES) {
+					setTimeout(() => handleLastSeenUpdated(event, retryCount + 1), RETRY_DELAY_MS);
+				}
+				return;
+			}
 
-		if (clan_id && clan_id !== '0') {
-			const channel = selectChannelMetaById(state, channel_id);
-			badge_count = channel?.count_mess_unread || 0;
-			badgeService.resetChannel({
-				clanId: clan_id,
-				channelId: channel_id,
-				badgeCount: badge_count,
-				messageId: message_id
-			});
-		} else {
-			badgeService.resetDm(channel_id, undefined, message_id);
-		}
+			if (clan_id && clan_id !== '0') {
+				const channel = selectChannelMetaById(state, channel_id);
+				badge_count = channel?.count_mess_unread || 0;
+				badgeService.resetChannel({
+					clanId: clan_id,
+					channelId: channel_id,
+					badgeCount: badge_count,
+					messageId: message_id
+				});
+			} else {
+				badgeService.resetDm(channel_id, undefined, message_id);
+			}
+		};
+
+		await handleLastSeenUpdated(lastSeenMess);
 	}, []);
 
 	const onuserchannelremoved = useCallback(
@@ -1627,7 +1631,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					sender_id: channelCreated.creator_id,
 					timestamp_seconds: Date.now() / 1000
 				},
-				active: channelCreated.creator_id === userId ? ThreadStatus.joined : ThreadStatus.activePublic
+				active: channelCreated.creator_id === userId ? ThreadStatus.joined : ThreadStatus.other
 			};
 			dispatch(
 				threadsActions.addThreadToCached({

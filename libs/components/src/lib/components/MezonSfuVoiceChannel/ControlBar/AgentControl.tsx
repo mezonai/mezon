@@ -8,7 +8,7 @@ import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 const activeAgentChannels = new Set<string>();
 
-export const SfuAgentControl = memo(() => {
+export const SfuAgentControl = memo(({ isExternalCalling, roomId }: { isExternalCalling?: boolean; roomId?: string }) => {
 	const [hasChannelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const dispatch = useAppDispatch();
@@ -16,22 +16,28 @@ export const SfuAgentControl = memo(() => {
 	const [loading, setLoading] = useState(false);
 
 	const handleToggle = useCallback(async () => {
-		if (!voiceInfo?.channelId || loading) return;
+		const channelId = isExternalCalling ? roomId : voiceInfo?.channelId;
+
+		if (!channelId || loading) return;
+		const payload = {
+			channel_id: isExternalCalling ? '0' : channelId,
+			room_name: isExternalCalling ? channelId : '0'
+		};
+
 		setLoading(true);
-		const payload = { channel_id: voiceInfo.channelId, room_name: '' };
+
 		try {
 			await dispatch(active ? handleKichAgentFromVoice(payload) : handleAddAgentToVoice(payload)).unwrap();
-			if (active) activeAgentChannels.delete(voiceInfo.channelId);
-			else activeAgentChannels.add(voiceInfo.channelId);
+			active ? activeAgentChannels.delete(channelId) : activeAgentChannels.add(channelId);
 			setActive(!active);
 		} catch {
 			return;
 		} finally {
 			setLoading(false);
 		}
-	}, [active, dispatch, loading, voiceInfo?.channelId]);
+	}, [active, dispatch, isExternalCalling, loading, roomId, voiceInfo?.channelId]);
 
-	if (!hasChannelPermission) return null;
+	if (!hasChannelPermission && !isExternalCalling) return null;
 
 	return (
 		<button
