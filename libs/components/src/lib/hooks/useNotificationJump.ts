@@ -109,7 +109,9 @@ export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isT
 	}, [clanId, channelId, topicId, messageId, mode, navigate, dispatch]);
 
 	const handleJumpToMessage = useCallback(() => {
-		if (!messageId || !channelId || !clanId) return;
+		if (!messageId || !channelId || !clanId) {
+			return;
+		}
 
 		dispatch(
 			messagesActions.jumpToMessage({

@@ -100,9 +100,9 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		}
 	}, [channelJump]);
 	const message = notify?.content;
-	const messageId = message?.message_id;
-	const channelId = message?.channel_id;
-	const clanId = message?.clan_id;
+	const messageId = message?.message_id || notify?.id;
+	const channelId = message?.channel_id || notify?.channel_id;
+	const clanId = message?.clan_id || notify?.clan_id;
 
 	const topicId = notify?.topic_id || notify?.content?.tp || '0';
 
