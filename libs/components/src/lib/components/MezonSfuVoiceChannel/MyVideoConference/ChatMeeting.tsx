@@ -1,6 +1,6 @@
 import { selectAllAccount, selectOpenExternalChatBox } from '@mezon/store';
 import { safeJSONParse } from 'mezon-js';
-import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 interface MessageExternal {
@@ -52,11 +52,29 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 		}
 	};
 
+	const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+	React.useEffect(() => {
+		const container = messagesContainerRef.current;
+
+		if (!container) return;
+
+		const threshold = 50;
+
+		const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= threshold;
+
+		if (!isAtBottom) {
+			container.scrollTo({
+				top: container.scrollHeight,
+				behavior: 'smooth'
+			});
+		}
+	}, [messages]);
 	return (
 		<>
 			{openChatBox && (
 				<div className="max-w-[480px] bg-[#111] min-w-[300px] w-1/4 h-full flex-col flex p-2 py-4 gap-2 select-text">
-					<div className="flex-1 bg-bgPrimary rounded-md flex flex-col gap-2 overflow-y-auto thread-scroll">
+					<div ref={messagesContainerRef} className="flex-1 bg-bgPrimary rounded-md flex flex-col gap-2 overflow-y-auto thread-scroll">
 						{messages.map((message) => (
 							<MessageItem key={message} message={message} />
 						))}
