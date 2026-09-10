@@ -934,6 +934,8 @@ export function MezonSfuVoiceRoom({
 	const handleAddMessage = useCallback((message: string) => {
 		chatRef.current?.setMessages((prev) => [...prev, message]);
 	}, []);
+	const [roomPeerId, setRoomPeerId] = useState('');
+
 	useEffect(() => {
 		let disposed = false;
 		let reconnectAllowed = true;
@@ -1298,6 +1300,9 @@ export function MezonSfuVoiceRoom({
 				if (message.type === 'joined') {
 					setError(undefined);
 					setConnectionState('awaiting offer');
+					if ((message as unknown as { room: string })?.room) {
+						setRoomPeerId((message as unknown as { room: string }).room);
+					}
 				}
 				if (message.type === 'room_snapshot' && !joinedRef.current) {
 					joinedRef.current = true;
@@ -2147,6 +2152,7 @@ export function MezonSfuVoiceRoom({
 				<SfuVoiceContextMenu channelId={roomId} onParticipantAction={handleParticipantAction} />
 				<SfuControlBar
 					channelLabel={channelLabel || roomId}
+					roomId={roomPeerId}
 					joinRole={joinRole}
 					hasMicrophoneAccess={hasMicrophoneAccess ?? false}
 					hasCameraAccess={hasCameraAccess ?? false}
