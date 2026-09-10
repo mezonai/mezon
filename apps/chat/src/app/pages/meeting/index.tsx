@@ -94,12 +94,6 @@ export default function PreJoinCalling() {
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 
 	useEffect(() => {
-		if (getDisplayName && !username) {
-			setUsername(sanitizeUsername(getDisplayName));
-		}
-	}, [getDisplayName, username]);
-
-	useEffect(() => {
 		function decodeJWT(token: string) {
 			try {
 				const parts = token.split('.');

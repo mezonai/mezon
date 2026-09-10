@@ -22,9 +22,9 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 	};
 
 	const webHookAvatars = [
-		`https://cdn.komu.vn/images/webhook-avatar-1.png`,
-		`https://cdn.komu.vn/images/webhook-avatar-2.png`,
-		`https://cdn.komu.vn/images/webhook-avatar-3.png `
+		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-1.png`,
+		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-2.png`,
+		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-3.png `
 	];
 
 	const getRandomAvatar = (): string => {

@@ -1718,8 +1718,7 @@ export function MezonSfuVoiceRoom({
 			return {
 				displayName:
 					getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) ||
-					participant.userId ||
-					participant.id,
+					Number(participant.userId || participant.id).toString(36),
 				avatar: getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url)
 			};
 		},
