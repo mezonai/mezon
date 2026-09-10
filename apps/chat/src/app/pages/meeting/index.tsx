@@ -246,6 +246,10 @@ export default function PreJoinCalling() {
 		dispatch(voiceActions.resetExternalCall());
 	}, [dispatch]);
 
+	const toggleChat = useCallback(() => {
+		dispatch(voiceActions.setToggleChatBox());
+	}, [dispatch]);
+
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<div className="h-screen w-screen flex">
@@ -263,7 +267,8 @@ export default function PreJoinCalling() {
 						onRefreshToken={handleRefreshToken}
 						onLeaveRoom={handleLeaveRoom}
 						onFullScreen={handleFullScreen}
-						onToggleChat={() => undefined}
+						onToggleChat={toggleChat}
+						username={username}
 					/>
 				</div>
 			) : (
