@@ -1556,7 +1556,6 @@ export function MezonSfuVoiceRoom({
 		});
 
 		const pendingPeers = pendingPeersRef.current;
-		const leftRemoteMids = leftRemoteMidsRef.current;
 		const userIdsByMid = userIdsByMidRef.current;
 
 		return () => {
@@ -1590,7 +1589,6 @@ export function MezonSfuVoiceRoom({
 			peerIdsByMid.clear();
 			rolesByMid.clear();
 			pendingPeers.clear();
-			leftRemoteMids.clear();
 			userIdsByMid.clear();
 			setRemoteMedia(new Map());
 		};
