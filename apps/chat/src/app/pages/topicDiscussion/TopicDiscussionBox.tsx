@@ -26,6 +26,7 @@ import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import {
 	CREATING_TOPIC,
+	Direction_Mode,
 	EOverriddenPermission,
 	IMAGE_MAX_FILE_SIZE,
 	MAX_FILE_ATTACHMENTS,
@@ -294,6 +295,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 					channelId: currentChannelId as string,
 					clanId: currentClanId as string,
 					topicId: currentTopicId || '',
+					direction: Direction_Mode.BEFORE_TIMESTAMP,
 					noCache: true,
 					toPresent: true
 				})
