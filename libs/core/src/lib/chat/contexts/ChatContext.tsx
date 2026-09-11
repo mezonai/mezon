@@ -197,6 +197,7 @@ import {
 	MAX_RECONNECT_WAVES_BEFORE_LOGOUT,
 	beginReconnectWave,
 	consumeReconnectAttempt,
+	getReconnectWaveAttempts,
 	markNetworkProbeCompleted,
 	noteReconnectWaveExhausted,
 	refundReconnectAttempt,
@@ -2940,6 +2941,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 								return await executeReconnect(socketType, clientRef.current);
 							} catch (error) {
 								captureSentryError(error, 'SOCKET_RECONNECT');
+								const delay = 1000 * 2 ** getReconnectWaveAttempts();
+								await new Promise((resolve) => setTimeout(resolve, delay));
 								return false;
 							}
 						}),
