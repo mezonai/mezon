@@ -59,6 +59,11 @@ const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
 } satisfies MediaTrackConstraints;
 
 const SELF_MUTE_EVENT_CORRELATION_MS = 300;
+const ICE_RECOVERY_GRACE_MS = 4000;
+const FAST_RECONNECT_ATTEMPTS = 2;
+const FAST_RECONNECT_DELAY_MS = 400;
+const RECONNECT_DELAY_MS = 3000;
+const MAX_RECONNECT_ATTEMPTS = 40;
 
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
@@ -501,9 +506,9 @@ export function MezonSfuVoiceRoom({
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
 	const joinedRef = useRef(false);
+	const pushToTalkRequestedRef = useRef(false);
 	const pendingOfferRef = useRef<SfuOffer | null>(null);
 	const peerLeftPendingOfferRef = useRef(false);
-	const leftRemoteMidsRef = useRef(new Set<string>());
 	const userIdsByMidRef = useRef(new Map<string, string>());
 	const peerIdsByMidRef = useRef(new Map<string, string>());
 	const rolesByMidRef = useRef(new Map<string, 'speaker' | 'audience'>());
@@ -658,7 +663,7 @@ export function MezonSfuVoiceRoom({
 			const next = new Map(current);
 			for (const transceiver of pc.getTransceivers()) {
 				const mid = transceiver.mid;
-				if (!mid || mid === '0' || mid === '1' || mid === '2' || leftRemoteMidsRef.current.has(mid)) continue;
+				if (!mid || mid === '0' || mid === '1' || mid === '2') continue;
 				const track = transceiver.receiver.track;
 				if (!track || track.readyState === 'ended') continue;
 				const direction = transceiver.currentDirection || transceiver.direction;
@@ -699,7 +704,6 @@ export function MezonSfuVoiceRoom({
 					const peerId = String(peer.peer_id);
 					const mids = [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && String(mid) !== '0').map(String);
 					for (const mid of mids) {
-						leftRemoteMidsRef.current.delete(mid);
 						peerIdsByMidRef.current.set(mid, peerId);
 						if (peer.user_id) userIdsByMidRef.current.set(mid, peer.user_id);
 						if (peer.role) rolesByMidRef.current.set(mid, peer.role);
@@ -940,7 +944,30 @@ export function MezonSfuVoiceRoom({
 		let disposed = false;
 		let reconnectAllowed = true;
 		let removeVisibilityListener: () => void = () => undefined;
+		let removeNetworkListeners: () => void = () => undefined;
 		let heartbeatInterval: ReturnType<typeof setInterval> | undefined;
+		let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+		let iceRecoveryTimer: ReturnType<typeof setTimeout> | undefined;
+		let reconnectAttempts = 0;
+		let requestReconnect: () => void = () => undefined;
+
+		const clearIceRecoveryTimer = () => {
+			if (iceRecoveryTimer === undefined) return;
+			clearTimeout(iceRecoveryTimer);
+			iceRecoveryTimer = undefined;
+		};
+
+		const restartSession = () => {
+			if (disposed || !reconnectAllowed) return;
+			clearIceRecoveryTimer();
+			const ws = wsRef.current;
+			if (ws && ws.readyState !== WebSocket.CLOSED) {
+				ws.close();
+				return;
+			}
+			requestReconnect();
+		};
+
 		const peerIdsByMid = peerIdsByMidRef.current;
 		const rolesByMid = rolesByMidRef.current;
 		currentSfuRoleRef.current = joinRole;
@@ -992,7 +1019,6 @@ export function MezonSfuVoiceRoom({
 			negotiatingRef.current = false;
 			pendingOfferRef.current = null;
 			peerLeftPendingOfferRef.current = false;
-			leftRemoteMidsRef.current.clear();
 			userIdsByMidRef.current.clear();
 			peerIdsByMid.clear();
 			rolesByMid.clear();
@@ -1002,12 +1028,33 @@ export function MezonSfuVoiceRoom({
 			const pc = new RTCPeerConnection({ iceServers: [] });
 			pcRef.current = pc;
 			pc.oniceconnectionstatechange = () => {
-				if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') setConnectionState('connected');
-				else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') setConnectionState('disconnected');
+				if (pcRef.current !== pc) return;
+				const iceState = pc.iceConnectionState;
+				if (iceState === 'connected' || iceState === 'completed') {
+					clearIceRecoveryTimer();
+					setConnectionState('connected');
+					return;
+				}
+				if (iceState === 'failed') {
+					setConnectionState('disconnected');
+					// eslint-disable-next-line no-console
+					console.info('[MezonSFU][ice] failed, restarting the session');
+					restartSession();
+					return;
+				}
+				if (iceState === 'disconnected') {
+					setConnectionState('disconnected');
+					if (iceRecoveryTimer !== undefined) return;
+					iceRecoveryTimer = setTimeout(() => {
+						iceRecoveryTimer = undefined;
+						// eslint-disable-next-line no-console
+						console.info('[MezonSFU][ice] stayed disconnected, restarting the session');
+						restartSession();
+					}, ICE_RECOVERY_GRACE_MS);
+				}
 			};
 			pc.ontrack = ({ track, transceiver, streams }) => {
 				const mid = transceiver.mid;
-				if (mid && leftRemoteMidsRef.current.has(mid)) return;
 				const id = mid ? getRemoteParticipantId(mid) : `track-${track.id}`;
 				const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
 				const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
@@ -1110,7 +1157,6 @@ export function MezonSfuVoiceRoom({
 			try {
 				const sdpOccupantsByMid = getMsidOccupantsByMidFromSdp(offer.sdp);
 				for (const [mid, occupant] of sdpOccupantsByMid) {
-					leftRemoteMidsRef.current.delete(mid);
 					userIdsByMidRef.current.set(mid, occupant.userId);
 					if (occupant.peerId) claimRemoteMid(mid, occupant.peerId);
 				}
@@ -1306,7 +1352,12 @@ export function MezonSfuVoiceRoom({
 				}
 				if (message.type === 'room_snapshot' && !joinedRef.current) {
 					joinedRef.current = true;
-					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
+					reconnectAttempts = 0;
+					const resumePushToTalk = joinRole === 'audience' && pushToTalkRequestedRef.current;
+					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled && !resumePushToTalk }));
+					if (resumePushToTalk) {
+						ws.send(JSON.stringify({ type: 'push_to_talk', active: true }));
+					}
 					if (joinRole === 'speaker') {
 						ws.send(JSON.stringify({ type: 'camera', active: desiredMediaRef.current.cameraEnabled }));
 					}
@@ -1350,7 +1401,6 @@ export function MezonSfuVoiceRoom({
 					setRemoteMedia((current) => {
 						const next = new Map(current);
 						mids.forEach((mid) => {
-							leftRemoteMidsRef.current.add(mid);
 							peerIdsByMidRef.current.delete(mid);
 							userIdsByMidRef.current.delete(mid);
 							rolesByMidRef.current.delete(mid);
@@ -1408,6 +1458,9 @@ export function MezonSfuVoiceRoom({
 				if (wsRef.current !== ws) return;
 				wsRef.current = null;
 				joinedRef.current = false;
+				const closingAudioTrack = localStreamRef.current?.getAudioTracks()[0];
+				if (closingAudioTrack && joinRole === 'audience') closingAudioTrack.enabled = false;
+				setPushToTalkActive(false);
 				reconnectAllowed = event.code !== 4006;
 				if (disposed) return;
 
@@ -1435,18 +1488,55 @@ export function MezonSfuVoiceRoom({
 							if (newToken && newToken !== token) {
 								dispatch(voiceActions.setToken(newToken));
 							} else if (reconnectAllowed) {
-								reconnect();
+								requestReconnect();
 							}
 						})
 						.catch(() => {
 							refreshingTokenRef.current = false;
-							if (reconnectAllowed) reconnect();
+							if (reconnectAllowed) requestReconnect();
 						});
 					return;
 				}
 
-				if (reconnectAllowed) reconnect();
+				if (reconnectAllowed) requestReconnect();
 			};
+		};
+
+		requestReconnect = () => {
+			if (disposed || !reconnectAllowed || reconnectTimer !== undefined) return;
+			if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+				// eslint-disable-next-line no-console
+				console.info('[MezonSFU][reconnect] browser is offline, waiting for the network to come back');
+				return;
+			}
+			if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+				setConnectionState('failed');
+				return;
+			}
+			reconnectAttempts += 1;
+			const delayMs = reconnectAttempts <= FAST_RECONNECT_ATTEMPTS ? FAST_RECONNECT_DELAY_MS : RECONNECT_DELAY_MS;
+			reconnectTimer = setTimeout(() => {
+				reconnectTimer = undefined;
+				reconnect();
+			}, delayMs);
+		};
+
+		const handleOnline = () => {
+			// eslint-disable-next-line no-console
+			console.info('[MezonSFU][reconnect] network came back, restarting the session');
+			reconnectAttempts = 0;
+			restartSession();
+		};
+		const handleOffline = () => {
+			if (reconnectTimer === undefined) return;
+			clearTimeout(reconnectTimer);
+			reconnectTimer = undefined;
+		};
+		window.addEventListener('online', handleOnline);
+		window.addEventListener('offline', handleOffline);
+		removeNetworkListeners = () => {
+			window.removeEventListener('online', handleOnline);
+			window.removeEventListener('offline', handleOffline);
 		};
 
 		void prepareLocalMedia().finally(() => {
@@ -1461,7 +1551,7 @@ export function MezonSfuVoiceRoom({
 					ws.send(JSON.stringify(pingMessage));
 					return;
 				}
-				reconnect();
+				requestReconnect();
 			}, 10_000);
 		});
 
@@ -1484,6 +1574,9 @@ export function MezonSfuVoiceRoom({
 				peersFromSdp: Array.from(userIdsByMid, ([mid, userId]) => ({ mid, userId }))
 			});
 			removeVisibilityListener();
+			removeNetworkListeners();
+			clearIceRecoveryTimer();
+			if (reconnectTimer !== undefined) clearTimeout(reconnectTimer);
 			wsRef.current?.close();
 			pcRef.current?.close();
 			localStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -1581,7 +1674,9 @@ export function MezonSfuVoiceRoom({
 
 	const setPushToTalk = useCallback(
 		async (active: boolean) => {
-			if (joinRole !== 'audience' || pushToTalkActive === active) return;
+			if (joinRole !== 'audience') return;
+			pushToTalkRequestedRef.current = active;
+			if (pushToTalkActive === active) return;
 			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
 			if (active && (microphonePermissionRevokedRef.current || audioTrack?.readyState !== 'live' || audioTrack.muted)) {
 				try {
