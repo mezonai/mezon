@@ -1357,7 +1357,8 @@ const LoadingSkeletonMessages = memo(
 	({ channelId, isTopic, topicId }: { channelId: string; isTopic?: boolean; topicId?: string }) => {
 		const scopeId = isTopic ? topicId || channelId : channelId;
 		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, scopeId));
-		if (!hasMoreTop) return null;
+		const messageCount = useAppSelector((state) => state.messages.channelMessages[scopeId]?.ids?.length ?? 0);
+		if (!hasMoreTop || (isTopic && messageCount < 50)) return null;
 		return (
 			<div id="msg-loading-top" className="py-2">
 				<MessageSkeleton randomKey={scopeId} />

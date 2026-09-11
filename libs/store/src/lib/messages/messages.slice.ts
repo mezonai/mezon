@@ -152,6 +152,7 @@ export type FetchMessagesMeta = {
 		channelId: string;
 		direction?: Direction_Mode;
 		messageId?: string;
+		topicId?: string;
 	};
 };
 export type DirectTimeStampArg = {
@@ -462,9 +463,10 @@ export const fetchMessages = createAsyncThunk(
 				const batchLength = response.messages?.length || 0;
 				const fullPageLength = LIMIT_MESSAGE - 1;
 				const scannedToWindowEdge = messageIdSequenceGap(storeOldestId, batchOldestId) >= fullPageLength;
+				const effectiveDirection = direction || Direction_Mode.BEFORE_TIMESTAMP;
 				const reachedTop =
 					!fromCache &&
-					direction === Direction_Mode.BEFORE_TIMESTAMP &&
+					(effectiveDirection === Direction_Mode.BEFORE_TIMESTAMP || toPresent) &&
 					(!isOlderMessageId(batchOldestId, storeOldestId) || (batchLength < fullPageLength && !scannedToWindowEdge));
 				const oldestId = reachedTop && isOlderMessageId(batchOldestId, storeOldestId) ? batchOldestId : storeOldestId || batchOldestId;
 				if (reachedTop && oldestId) {
@@ -493,7 +495,11 @@ export const fetchMessages = createAsyncThunk(
 			}
 
 			let messages = response.messages.map((item: ChannelMessage) => {
-				return mapMessageChannelToEntity(item, response.last_seen_message?.id);
+				const entity = mapMessageChannelToEntity(item, response.last_seen_message?.id);
+				if (topicId) {
+					entity.channel_id = topicId;
+				}
+				return entity;
 			});
 
 			if (clanId === '0' || !clanId) {
@@ -1688,7 +1694,10 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 	const channelId = message.channel_id;
 	const channelData = state.messages.channelMessages?.[channelId];
 
-	if (!channelData?.cache && !channelData?.ids?.length) {
+	const currentTopicId = state.topicdiscussions?.currentTopicId;
+	const isCurrentTopic = Boolean(currentTopicId && (currentTopicId === channelId || message.topic_id === currentTopicId));
+
+	if (!channelData?.cache && !channelData?.ids?.length && !isCurrentTopic) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));
 		return;
 	}
@@ -1766,6 +1775,26 @@ export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (m
 				keep50items: isBottom
 			})
 		);
+	}
+
+	const currentState = thunkAPI.getState() as RootState;
+	if (!currentState.messages.firstMessageId[channelId]) {
+		const allIds = (currentState.messages.channelMessages[channelId]?.ids as string[]) || [];
+		if (allIds.length <= 1) {
+			thunkAPI.dispatch(
+				messagesActions.setFirstMessageId({
+					channelId,
+					firstMessageId: message.id
+				})
+			);
+		} else if (allIds.length < LIMIT_MESSAGE - 1) {
+			thunkAPI.dispatch(
+				messagesActions.setFirstMessageId({
+					channelId,
+					firstMessageId: allIds[0]
+				})
+			);
+		}
 	}
 });
 
@@ -2385,7 +2414,7 @@ export const messagesSlice = createSlice({
 			.addCase(
 				fetchMessages.fulfilled,
 				(state: MessagesState, action: PayloadAction<FetchMessagesPayloadAction, string, FetchMessagesMeta>) => {
-					const channelId = action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
+					const channelId = action.meta.arg.topicId || action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
 					const isClearMessage = action.payload.isClearMessage || false;
 					const toPresent = action.payload.toPresent || false;
 					const fromCache = action.payload.fromCache || false;
@@ -2393,15 +2422,6 @@ export const messagesSlice = createSlice({
 					const lastSentMessageId = state.lastMessageByChannel[channelId]?.id;
 					state.loadingStatus = 'loaded';
 					let direction = action.meta.arg.direction;
-
-					if (!action?.payload?.messages?.length) return;
-
-					const isNew =
-						channelId &&
-						action.payload.messages.some(({ id, avatar }) => {
-							const existingMessage = state.channelMessages?.[channelId]?.entities?.[id];
-							return !existingMessage || existingMessage.avatar !== avatar;
-						});
 
 					if (!fromCache && channelId) {
 						if (!state.channelMessages[channelId]) {
@@ -2411,6 +2431,15 @@ export const messagesSlice = createSlice({
 						}
 						state.channelMessages[channelId].cache = createCacheMetadata();
 					}
+
+					if (!action?.payload?.messages?.length) return;
+
+					const isNew =
+						channelId &&
+						action.payload.messages.some(({ id, avatar }) => {
+							const existingMessage = state.channelMessages?.[channelId]?.entities?.[id];
+							return !existingMessage || existingMessage.avatar !== avatar;
+						});
 
 					if (!direction && (!isNew || !channelId) && (!isClearMessage || (isClearMessage && fromCache)) && !foundE2ee) {
 						return;
@@ -2650,8 +2679,17 @@ export const selectIsUserTypingInChannel = createSelector(
 );
 
 export const selectHasMoreMessageByChannelId = createSelector([getMessagesState, getChannelIdAsSecondParam], (state, channelId) => {
+	const channelData = state.channelMessages[channelId];
+	const idsLength = channelData?.ids?.length ?? 0;
+
+	if (idsLength < LIMIT_MESSAGE - 1) {
+		return false;
+	}
+
 	const firstMessageId = state.firstMessageId[channelId];
-	if (!firstMessageId) return true;
+	if (!firstMessageId) {
+		return true;
+	}
 
 	const viewportIds = state.channelViewPortMessageIds[channelId] || [];
 	const isFirstMessageInViewport = viewportIds.includes(firstMessageId);

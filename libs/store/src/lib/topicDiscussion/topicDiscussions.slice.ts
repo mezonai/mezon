@@ -525,8 +525,8 @@ export const selectIsShowCreateTopic = createSelector(getTopicsState, (state) =>
 
 export const selectInitTopicMessageId = createSelector(getTopicsState, (state) => state.initTopicMessageId);
 export const selectFirstMessageOfCurrentTopic = createSelector([getTopicsState, selectMessageEntitiesByChannelId], (state, entities) => {
-	if (!state.initTopicMessageId) return null;
-	return entities?.[state.initTopicMessageId];
+	if (!state.initTopicMessageId) return state.currentTopicInitMessage || null;
+	return entities?.[state.initTopicMessageId] || state.currentTopicInitMessage || null;
 });
 
 export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
