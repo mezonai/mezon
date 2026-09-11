@@ -269,3 +269,4 @@ export const Community = createLazyIconWithFallback(() => import('./icons'), 'Co
 export const PaintTray = createLazyIconWithFallback(() => import('./icons'), 'PaintTray');
 export const DeviceDesktopIcon = createLazyIconWithFallback(() => import('./icons'), 'DeviceDesktopIcon');
 export const DeviceMobileIcon = createLazyIconWithFallback(() => import('./icons'), 'DeviceMobileIcon');
+export const IconGiveFlower = createLazyIconWithFallback(() => import('./icons'), 'IconGiveFlower');

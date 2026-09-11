@@ -379,7 +379,7 @@
 		"noQuestions": "Bạn chưa có câu hỏi nào. Hãy thiết lập câu hỏi cho clan này trước !!",
 		"noRules": "Bạn chưa có quy tắc nào. Hãy thiết lập quy tắc cho clan này trước !!",
 		"noMissions": "Bạn chưa có nhiệm vụ nào. Hãy thiết lập nhiệm vụ cho clan này trước !!",
-		"emptyGuideLine": "Chưa có hướng dẫn nào. Hãy thiết lập hướng dẫn cho Clan này!"
+		"emptyGuideLine": "Chưa có hướng dẫn nào được thiết lập !!"
 	},
 	"updateUsername": {
 		"enterUsername": "Nhập tên Mezon",

@@ -194,11 +194,12 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 				style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
 			>
 				<button
-					className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a]"
+					className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a] hover:text-white"
 					onClick={handleGiveFlowers}
 					data-e2e={generateE2eId('clan_page.screen.voice_room.button.send_flower')}
 				>
 					<span>{t('giveFlowers')}</span>
+					<Icons.IconGiveFlower />
 				</button>
 				{canManageVoice && (
 					<button
