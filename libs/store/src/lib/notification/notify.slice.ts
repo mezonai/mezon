@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/utils';
-import { Direction_Mode, NotificationCategory } from '@mezon/utils';
+import { Direction_Mode, NotificationCategory, NotificationCode } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js';
@@ -196,9 +196,20 @@ export const notificationSlice = createSlice({
 		removeAll: notificationAdapter.removeAll,
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
-			if (state.notifications[category]) {
-				state.notifications[category].data = [data, ...state.notifications[category].data];
+			let targetCategory = category;
+			if (!targetCategory || !state.notifications[targetCategory]) {
+				if (data?.code === NotificationCode.USER_MENTIONED || data?.code === NotificationCode.USER_REPLIED) {
+					targetCategory = NotificationCategory.MENTIONS;
+				} else {
+					targetCategory = NotificationCategory.MESSAGES;
+				}
 			}
+			if (!state.notifications[targetCategory]) {
+				state.notifications[targetCategory] = { data: [], lastId: '', cache: undefined };
+			}
+			const existingData = state.notifications[targetCategory].data || [];
+			const dedupedData = data?.id ? existingData.filter((item) => item.id !== data.id) : existingData;
+			state.notifications[targetCategory].data = [{ ...data, category: targetCategory }, ...dedupedData];
 		},
 
 		remove(state, action: PayloadAction<{ id: string; category: NotificationCategory }>) {
