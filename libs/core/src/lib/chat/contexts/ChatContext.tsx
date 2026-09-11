@@ -29,6 +29,7 @@ import {
 	emojiSuggestionActions,
 	eventManagementActions,
 	friendsActions,
+	galleryActions,
 	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -109,6 +110,7 @@ import {
 	EMuteState,
 	EOverriddenPermission,
 	ERepeatType,
+	ETypeLinkMedia,
 	EUserStatus,
 	IMessageTypeCallLog,
 	ITEM_TYPE,
@@ -476,8 +478,29 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (attachmentList?.length && message?.code === TypeMessage.Chat) {
 					dispatch(attachmentActions.addAttachments({ listAttachments: attachmentList, channelId: message.channel_id }));
+
+					const createTimeSeconds = message.create_time_seconds ?? Math.floor(Date.now() / 1000);
+					const galleryAttachments = attachmentList
+						.filter(
+							(attachment) =>
+								attachment.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) ||
+								attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
+						)
+						.map((attachment) => ({
+							...attachment,
+							channelId: message.channel_id,
+							clanId: message.clan_id,
+							isVideo: attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX),
+							create_time_seconds: createTimeSeconds,
+							create_time: new Date(createTimeSeconds * 1000).toISOString()
+						}));
+
+					if (galleryAttachments.length) {
+						dispatch(galleryActions.addGalleryAttachments({ channelId: message.channel_id, attachments: galleryAttachments }));
+					}
 				} else if (message?.code === TypeMessage.ChatRemove && message?.attachments) {
 					dispatch(attachmentActions.removeAttachments({ messageId: message?.message_id as string, channelId: message.channel_id }));
+					dispatch(galleryActions.removeGalleryAttachments({ channelId: message.channel_id, messageId: message?.message_id as string }));
 				}
 
 				if (
