@@ -45,17 +45,18 @@ import { SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
 import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
 import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
+import {
+	SCREEN_SHARE_PROFILES,
+	applyScreenShareEncoding,
+	getScreenShareConstraints,
+	updateScreenShareQuality,
+	type ScreenShareMode
+} from './screenShareQuality';
 
 const CAMERA_CAPTURE_CONSTRAINTS = {
 	width: { ideal: 640 },
 	height: { ideal: 360 },
 	frameRate: { ideal: 24 }
-} satisfies MediaTrackConstraints;
-
-const SCREEN_SHARE_CAPTURE_CONSTRAINTS = {
-	width: { ideal: 1920 },
-	height: { ideal: 1080 },
-	frameRate: { ideal: 5, max: 5 }
 } satisfies MediaTrackConstraints;
 
 const SELF_MUTE_EVENT_CORRELATION_MS = 300;
@@ -304,10 +305,8 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 
 const CAMERA_CODEC = 'VP8';
 const SCREEN_CODEC = 'VP9';
-const SCREEN_SVC_MODE = 'L1T1';
 
 const CAMERA_MAX_BITRATE_BPS = 1_000_000;
-const SCREEN_MAX_BITRATE_BPS = 3_500_000;
 const CAMERA_MIN_BITRATE_KBPS = 250;
 const CAMERA_START_BITRATE_KBPS = 500;
 const CAMERA_MAX_BITRATE_KBPS = 1000;
@@ -502,6 +501,8 @@ export function MezonSfuVoiceRoom({
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const localStreamRef = useRef<MediaStream | null>(null);
 	const screenStreamRef = useRef<MediaStream | null>(null);
+	const screenShareModeRef = useRef<ScreenShareMode>('text');
+	const changingScreenShareModeRef = useRef(false);
 	const cameraTrackRef = useRef<MediaStreamTrack | null>(null);
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
@@ -532,6 +533,8 @@ export function MezonSfuVoiceRoom({
 	const [remoteMedia, setRemoteMedia] = useState<Map<string, RemoteMedia>>(() => new Map());
 	const [roomParticipantCount, setRoomParticipantCount] = useState(1);
 	const [screenSharing, setScreenSharing] = useState(false);
+	const [screenShareMode, setScreenShareMode] = useState<ScreenShareMode>('text');
+	const [changingScreenShareMode, setChangingScreenShareMode] = useState(false);
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
 	const mutedParticipantIds = useMemo(() => new Set<string>(), []);
 	const [isGridView, setIsGridView] = useState(true);
@@ -641,22 +644,36 @@ export function MezonSfuVoiceRoom({
 	const applyScreenEncodingParams = useCallback(async (sender: RTCRtpSender) => {
 		if (!sender || typeof sender.getParameters !== 'function') return;
 		try {
-			const parameters = sender.getParameters();
-			if (!parameters.encodings?.length) parameters.encodings = [{}];
-			parameters.degradationPreference = 'maintain-resolution';
-			const encoding = parameters.encodings[0] as RTCRtpEncodingParameters & { scalabilityMode?: string };
-			encoding.scalabilityMode = SCREEN_SVC_MODE;
-			encoding.maxFramerate = 15;
-			encoding.maxBitrate = SCREEN_MAX_BITRATE_BPS;
-			encoding.scaleResolutionDownBy = 1;
-			encoding.priority = 'high';
-			encoding.networkPriority = 'high';
-			await sender.setParameters(parameters);
+			await applyScreenShareEncoding(sender, screenShareModeRef.current);
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.warn('applyScreenEncodingParams failed:', e);
 		}
 	}, []);
+
+	const changeScreenShareMode = useCallback(
+		async (mode: ScreenShareMode) => {
+			if (changingScreenShareModeRef.current || mode === screenShareModeRef.current) return;
+			changingScreenShareModeRef.current = true;
+			setChangingScreenShareMode(true);
+			try {
+				const track = screenStreamRef.current?.getVideoTracks()[0];
+				if (track?.readyState === 'live') {
+					const sender = findUplinkVideoSender('2');
+					if (!sender) throw new Error('Screen sender is not negotiated');
+					await updateScreenShareQuality(track, sender, mode);
+				}
+				screenShareModeRef.current = mode;
+				setScreenShareMode(mode);
+			} catch (cause) {
+				setError(cause instanceof Error ? cause.message : 'Unable to change screen share mode');
+			} finally {
+				changingScreenShareModeRef.current = false;
+				setChangingScreenShareMode(false);
+			}
+		},
+		[findUplinkVideoSender]
+	);
 
 	const syncRemoteMedia = useCallback((pc: RTCPeerConnection) => {
 		setRemoteMedia((current) => {
@@ -1636,7 +1653,7 @@ export function MezonSfuVoiceRoom({
 				.CaptureController;
 			const captureController = CaptureControllerConstructor ? new CaptureControllerConstructor() : undefined;
 			const stream = await navigator.mediaDevices.getDisplayMedia({
-				video: SCREEN_SHARE_CAPTURE_CONSTRAINTS,
+				video: getScreenShareConstraints(screenShareModeRef.current),
 				audio: false,
 				...(captureController ? { controller: captureController } : {})
 			} as DisplayMediaStreamOptions);
@@ -1648,7 +1665,7 @@ export function MezonSfuVoiceRoom({
 			window.focus();
 			const track = stream.getVideoTracks()[0];
 			if (!track) throw new Error('Unable to get the screen track');
-			track.contentHint = 'detail';
+			track.contentHint = SCREEN_SHARE_PROFILES[screenShareModeRef.current].contentHint;
 			screenStreamRef.current = stream;
 			if (sender) {
 				await sender.replaceTrack(track);
@@ -2257,6 +2274,9 @@ export function MezonSfuVoiceRoom({
 					microphoneEnabled={microphoneEnabled}
 					cameraEnabled={cameraEnabled}
 					screenSharing={screenSharing}
+					screenShareMode={screenShareMode}
+					changingScreenShareMode={changingScreenShareMode}
+					onScreenShareModeChange={changeScreenShareMode}
 					isGridView={isGridView}
 					showEmojiPanel={showEmojiPanel}
 					showSoundPanel={showSoundPanel}

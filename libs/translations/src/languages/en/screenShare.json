@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Also share system audio",
 	"loadingMore": "Loading more...",
 	"loadMore": "Load more",
-	"remaining": "remaining"
+	"remaining": "remaining",
+	"qualityMode": "Screen share mode",
+	"textMode": "Text",
+	"videoMode": "Video",
+	"textModeDescription": "Sharper text and slides, lower resource use.",
+	"videoModeDescription": "Smoother video; may reduce sharpness on a slow connection."
 }

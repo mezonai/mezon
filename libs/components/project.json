@@ -6,6 +6,11 @@
   "tags": [],
   "files": ["*.ts"],
   "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/components"],
+      "options": { "jestConfig": "libs/components/jest.config.cjs" }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
