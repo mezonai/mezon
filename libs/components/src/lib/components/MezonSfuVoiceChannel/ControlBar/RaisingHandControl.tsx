@@ -44,7 +44,7 @@ export const SfuRaisingHandControl = memo(() => {
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="-5 -10 110 135"
-				className={`h-8 ${active ? 'text-[#efbc39]' : 'text-white'}`}
+				className={`h-9 w-9 max-lg:h-8 max-lg:w-8 max-md:h-7 max-md:w-7" ${active ? 'text-[#efbc39]' : 'text-white'}`}
 				fill="currentColor"
 			>
 				<path d="m50 94.488c-30.781-.488-28.59-41.488-28.59-41.488V32a4.86 4.86 0 0 1 9.71 0v21h2.12V14.67a4.86 4.86 0 0 1 9.71 0v36h2.16V10.35a4.85 4.85 0 0 1 9.7 0v40.32h2V15.75a5 5 0 0 1 10 0v45.38l2 .46V46a4.86 4.86 0 0 1 9.71 0v15.59s2.22 33.41-28.52 32.898Z" />

@@ -63,7 +63,11 @@ export const ScreenShareControl = ({ active, onToggle, mode, changingMode, onMod
 				onClick={onToggle}
 				disabled={changingMode}
 			>
-				{active ? <Icons.VoiceScreenShareStopIcon /> : <Icons.VoiceScreenShareIcon />}
+				{active ? (
+					<Icons.VoiceScreenShareStopIcon className="h-7 w-7 max-lg:h-6 max-lg:w-6 max-md:h-6 max-md:w-6" />
+				) : (
+					<Icons.VoiceScreenShareIcon className="h-7 w-7 max-lg:h-6 max-lg:w-6 max-md:h-6 max-md:w-6" />
+				)}
 			</button>
 			<button
 				ref={menuButtonRef}
@@ -73,10 +77,18 @@ export const ScreenShareControl = ({ active, onToggle, mode, changingMode, onMod
 				aria-expanded={isOpen}
 				disabled={changingMode}
 				onClick={toggleMenu}
-				className="absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-zinc-600 bg-zinc-900 px-2 py-0.5 text-[10px] text-white disabled:opacity-40"
+				className={`group absolute bottom-0 right-0 z-30 flex h-5 min-w-5 items-center whitespace-nowrap rounded-full border-2 border-zinc-600 bg-zinc-900 text-[10px] text-white transition-[max-width,padding,background-color] duration-200 ease-out hover:max-w-24 hover:bg-zinc-800 hover:px-1.5 focus-visible:max-w-24 focus-visible:px-1.5 disabled:opacity-40 ${
+					isOpen ? 'max-w-24 px-1.5 justify-end overflow-hidden' : 'max-w-5 px-0 justify-center'
+				}`}
 			>
-				{selectedLabel}
-				<Icons.VoiceArowDownIcon className="h-3 w-3" />
+				<span
+					className={`overflow-hidden transition-[max-width,opacity,margin] duration-200 ease-out group-hover:mr-1 group-hover:max-w-20 group-hover:opacity-100 group-focus-visible:mr-1 group-focus-visible:max-w-20 group-focus-visible:opacity-100 ${
+						isOpen ? 'mr-1 max-w-20 opacity-100' : 'px-0 mr-0 max-w-0 opacity-0'
+					}`}
+				>
+					{selectedLabel}
+				</span>
+				{isOpen ? <Icons.VoiceArowUpIcon className="h-3 w-3 shrink-0" /> : <Icons.VoiceArowDownIcon className="h-3 w-3 shrink-0" />}
 			</button>
 			{isOpen && (
 				<fieldset className="absolute bottom-16 right-0 z-30 w-64 rounded-lg bg-zinc-800 p-3 text-white shadow-2xl" aria-label={modeLabel}>

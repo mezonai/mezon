@@ -45,7 +45,11 @@ export const MicrophoneControl = ({
 				className={SFU_CONTROL_BUTTON_CLASS}
 				onClick={handleClick}
 			>
-				{enabled ? <Icons.VoiceMicIcon scale={2.5} /> : <Icons.VoiceMicDisabledIcon scale={2.5} />}
+				{enabled ? (
+					<Icons.VoiceMicIcon className="h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5" scale={2.5} />
+				) : (
+					<Icons.VoiceMicDisabledIcon className="h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5" scale={2.5} />
+				)}
 			</button>
 			{showWarning && (
 				<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">
