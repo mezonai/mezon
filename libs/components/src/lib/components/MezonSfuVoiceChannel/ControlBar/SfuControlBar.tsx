@@ -132,7 +132,9 @@ export const SfuControlBar = ({
 						</div>
 					</>
 				)}
-				<RecordingControl channelLabel={channelLabel} />
+				<div className="max-md:hidden">
+					<RecordingControl channelLabel={channelLabel} />
+				</div>
 			</div>
 			<div className="flex items-center justify-center gap-3 max-md:gap-2" data-e2e={generateE2eId('clan_page.screen.voice_room.control_bar')}>
 				{joinRole === 'audience' && (

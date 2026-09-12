@@ -45,7 +45,11 @@ export const CameraControl = ({
 				className={SFU_CONTROL_BUTTON_CLASS}
 				onClick={handleClick}
 			>
-				{enabled ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
+				{enabled ? (
+					<Icons.VoiceCameraIcon className="h-8 w-8 max-lg:h-7 max-lg:w-7 max-md:h-6 max-md:w-6" scale={1.5} />
+				) : (
+					<Icons.VoiceCameraDisabledIcon className="h-8 w-8 max-lg:h-7 max-lg:w-7 max-md:h-6 max-md:w-6" scale={1.5} />
+				)}
 			</button>
 			{showWarning && (
 				<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">
