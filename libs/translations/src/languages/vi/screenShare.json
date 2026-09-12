@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Đồng thời chia sẻ âm thanh hệ thống",
 	"loadingMore": "Đang tải thêm...",
 	"loadMore": "Tải thêm",
-	"remaining": "còn lại"
+	"remaining": "còn lại",
+	"qualityMode": "Chế độ chia sẻ màn hình",
+	"textMode": "Văn bản",
+	"videoMode": "Video",
+	"textModeDescription": "Văn bản và slide rõ nét, ít tốn tài nguyên hơn.",
+	"videoModeDescription": "Video mượt hơn; có thể giảm độ nét khi mạng chậm."
 }

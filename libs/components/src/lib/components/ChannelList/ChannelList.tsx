@@ -253,13 +253,15 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 	const handleScrollChannelIntoView = () => {
 		const { index, currentScrollIndex, currentScrollPosition, targetScrollPosition } = findScrollIndex();
+		if (index === -1) return;
 		if (currentScrollIndex === -1 || targetScrollPosition !== currentScrollPosition) {
 			virtualizer.scrollToIndex(index, { align: 'center' });
 		}
 	};
 
 	const isChannelRefOutOfViewport = () => {
-		const { currentScrollIndex } = findScrollIndex();
+		const { index, currentScrollIndex } = findScrollIndex();
+		if (index === -1) return false;
 		return currentScrollIndex === -1;
 	};
 	const dragItemIndex = useRef<{ idElement: string; indexEnd: number } | null>(null);

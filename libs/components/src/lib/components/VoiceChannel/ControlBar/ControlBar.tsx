@@ -26,6 +26,7 @@ import Tooltip from 'rc-tooltip';
 import { RecordingControl } from '../Recording/RecordingControl';
 import { AgentControl } from './AgentControl';
 import { RaisingHandControls } from './RaisingHandControl';
+import { VoiceInteractiveControl } from './VoiceInteractiveControl';
 import { useControlBarPermissions } from './hooks/useControlBarPermissions';
 import { useViewControls } from './hooks/useViewControls';
 
@@ -36,6 +37,7 @@ export type ControlBarControls = {
 	leave?: boolean;
 	noiseSuppression?: boolean;
 	backgroundEffect?: boolean;
+	voiceInteractive?: boolean;
 	emoji?: boolean;
 	sound?: boolean;
 	popout?: boolean;
@@ -79,6 +81,7 @@ const ControlBar = ({
 	const visibleControls = useControlBarPermissions(controls);
 	const { isOpenPopOut, togglePopout } = useViewControls();
 	const [permissionModalSource, setPermissionModalSource] = useState<Track.Source | null>(null);
+	const [showVoiceInteractive, setShowVoiceInteractive] = useState(false);
 	const { cameraPermissionState, microphonePermissionState, refreshPermissions } = useMediaPermissions();
 
 	const browserSupportsScreenSharing = supportsScreenSharing();
@@ -226,12 +229,26 @@ const ControlBar = ({
 		}
 	}, [permissionModalSource, openPermissionModal, closePermissionModal]);
 
+	useEffect(() => {
+		if (!showVoiceInteractive) return;
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Esc') {
+				setShowVoiceInteractive(false);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [showVoiceInteractive]);
+
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-md:flex-col">
 			{/* Desktop groups emoji, sound and record together on the left (mezon-ui/src/chat/voice.rs). */}
 			<div className="flex justify-start items-center gap-4">
 				{!isExternalCalling && (
 					<ReactionControls isGroupCall={isGroupCall} isGridView={isGridView} isShowMember={isShowMember} className="max-md:hidden" />
+				)}
+				{visibleControls.voiceInteractive && (
+					<VoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={setShowVoiceInteractive} />
 				)}
 				{visibleControls.recording && <RecordingControl channelLabel={channelLabel} />}
 			</div>

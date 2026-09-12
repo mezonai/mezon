@@ -98,5 +98,9 @@
 		"restoreSuccess": "Canal restauré avec succès.",
 		"emptyState": "Aucun canal archivé",
 		"fetchError": "Impossible de charger les canaux archivés. Veuillez réessayer."
+	},
+	"toast": {
+		"clanDeletedSuccess": "Le clan a été supprimé avec succès",
+		"clanCreatedSuccess": "Le clan a été créé avec succès"
 	}
 }

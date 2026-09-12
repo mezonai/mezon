@@ -161,7 +161,7 @@ function MessageLinkFile({ attachmentData, mode, message, isPresignPending = fal
 				/>
 			);
 		}
-	}, [message?.id, mode, message?.content?.t]);
+	}, [message?.id, mode, message?.content]);
 
 	const handleOpenRemoveAttachementModal = () => {
 		showModal();

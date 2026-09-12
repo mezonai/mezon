@@ -32,7 +32,7 @@ const TableMember: React.FC<ITableMemberProps> = ({ currentPage, pageSize, dataM
 							mezonJoinTime={accountCreatedSeconds ? new Date(accountCreatedSeconds * 1000).toISOString() : undefined}
 							clanJoinTime={memberSinceSeconds ? new Date(memberSinceSeconds * 1000).toISOString() : undefined}
 							userId={user.id}
-							displayName={user.prioritizeName!}
+							displayName={user.prioritizeName ?? ''}
 						/>
 					);
 				})}

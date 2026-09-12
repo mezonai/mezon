@@ -25,7 +25,7 @@ export * from './lib/channels/listChannelRender';
 export * from './lib/channels/updateChannelActions.slice';
 export * from './lib/clanMembers/clan.members';
 export * from './lib/clanProfile/clanProfile.slice';
-export * from './lib/clanWebhook/clanWebhook.slide';
+export * from './lib/clanWebhook/clanWebhook.slice';
 export * from './lib/clans/clanSettingChannel.slice';
 export * from './lib/clans/clans.slice';
 export * from './lib/compose/compose.slice';

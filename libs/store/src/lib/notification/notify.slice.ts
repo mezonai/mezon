@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/utils';
-import { Direction_Mode, NotificationCategory } from '@mezon/utils';
+import { Direction_Mode, NotificationCategory, NotificationCode } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js';
@@ -28,7 +28,7 @@ export interface NotificationState extends EntityState<NotificationEntity, strin
 	messageNotifiedId: string;
 	isShowInbox: boolean;
 	notifications: Record<
-		NotificationCategory,
+		number, // As NotificationCategory
 		{
 			data: NotificationEntity[];
 			lastId: string;
@@ -58,7 +58,7 @@ export const fetchListNotificationCached = async (
 	const apiKey = createApiKey('fetchListNotification', clanId, category || '', notificationId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, notificationData?.cache, noCache);
 
-	if (!shouldForceCall) {
+	if (!shouldForceCall && notificationData?.data) {
 		return {
 			notifications: notificationData.data,
 			fromCache: true
@@ -186,11 +186,7 @@ export const initialNotificationState: NotificationState = notificationAdapter.g
 	lastSeenTimeStampChannels: {},
 	quantityNotifyClans: {},
 	isShowInbox: false,
-	notifications: {
-		[NotificationCategory.FOR_YOU]: { data: [], lastId: '' },
-		[NotificationCategory.MESSAGES]: { data: [], lastId: '' },
-		[NotificationCategory.MENTIONS]: { data: [], lastId: '' }
-	}
+	notifications: {}
 });
 
 export const notificationSlice = createSlice({
@@ -200,9 +196,20 @@ export const notificationSlice = createSlice({
 		removeAll: notificationAdapter.removeAll,
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
-			if (state.notifications[category]) {
-				state.notifications[category].data = [data, ...state.notifications[category].data];
+			let targetCategory = category;
+			if (!targetCategory || !state.notifications[targetCategory]) {
+				if (data?.code === NotificationCode.USER_MENTIONED || data?.code === NotificationCode.USER_REPLIED) {
+					targetCategory = NotificationCategory.MENTIONS;
+				} else {
+					targetCategory = NotificationCategory.MESSAGES;
+				}
 			}
+			if (!state.notifications[targetCategory]) {
+				state.notifications[targetCategory] = { data: [], lastId: '', cache: undefined };
+			}
+			const existingData = state.notifications[targetCategory].data || [];
+			const dedupedData = data?.id ? existingData.filter((item) => item.id !== data.id) : existingData;
+			state.notifications[targetCategory].data = [{ ...data, category: targetCategory }, ...dedupedData];
 		},
 
 		remove(state, action: PayloadAction<{ id: string; category: NotificationCategory }>) {
@@ -276,7 +283,7 @@ export const notificationSlice = createSlice({
 						if (state.notifications[category]) {
 							state.notifications[category].data = [...state.notifications[category].data, ...dataParse];
 						} else {
-							state.notifications[category] = { data: [...dataParse], lastId: '', cache: undefined };
+							state.notifications[category] = { data: dataParse, lastId: '', cache: undefined };
 						}
 
 						if (!fromCache) {

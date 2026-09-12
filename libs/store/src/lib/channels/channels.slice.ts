@@ -855,7 +855,7 @@ export const fetchChannels = createAsyncThunk(
 						if (data) {
 							response.channeldesc.push({
 								...data,
-								active: data.active ? data.active : ThreadStatus.activePublic
+								active: data.active ? data.active : ThreadStatus.archived
 							} as ChannelsEntity);
 						}
 					}

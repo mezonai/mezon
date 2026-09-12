@@ -12,6 +12,7 @@ import { directMessageLoader, shouldRevalidateDirect } from '../loaders/directMe
 import { friendsLoader } from '../loaders/friendsLoader';
 import { mainLoader, shouldRevalidateMain } from '../loaders/mainLoader';
 
+import { Canvas } from '@mezon/components';
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
 import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
@@ -55,9 +56,9 @@ const Main = lazy(() => import(/* webpackChunkName: "main-pages" */ '../pages/ma
 const AddFriendPage = lazy(() => import(/* webpackChunkName: "main-pages" */ '../pages/invite/addFriendPage'));
 const MemberMain = lazy(() => import(/* webpackChunkName: "member-pages" */ '../pages/member'));
 const ChannelSettingMain = lazy(() => import(/* webpackChunkName: "setting-pages" */ '../pages/setting/channelSetting'));
-const Canvas = lazy(() => import(/* webpackChunkName: "canvas" */ '@mezon/components').then((m) => ({ default: m.Canvas })));
 const ThreadsMain = lazy(() => import(/* webpackChunkName: "thread-pages" */ '../pages/thread'));
 const MobileDownload = lazy(() => import('../pages/mobile-download'));
+const YoutubeEmbed = lazy(() => import(/* webpackChunkName: "embed-pages" */ '../pages/embed/YoutubeEmbed'));
 
 const SuspenseFallback = () => {
 	const { setSuspenseLoading } = useLoading();
@@ -173,6 +174,15 @@ export const Routes = memo(() => {
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
 								<MobileDownload />
+							</Suspense>
+						)
+					},
+					{
+						// Public: a YouTube channel app opens here instead of on youtube.com.
+						path: 'embed/youtube',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<YoutubeEmbed />
 							</Suspense>
 						)
 					},
