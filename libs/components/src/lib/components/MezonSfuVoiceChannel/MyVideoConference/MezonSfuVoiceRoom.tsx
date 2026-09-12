@@ -619,7 +619,7 @@ export function MezonSfuVoiceRoom({
 		if (!error || lastShownErrorRef.current === error) return;
 		lastShownErrorRef.current = error;
 		// eslint-disable-next-line no-console
-		console.error('[MezonSFU]', error);
+		// console.error('[MezonSFU]', error);
 		dispatch(toastActions.addToast({ message: error, type: 'error', autoClose: 3000 }));
 	}, [dispatch, error]);
 
@@ -849,20 +849,20 @@ export function MezonSfuVoiceRoom({
 				}
 			} catch (cause) {
 				// eslint-disable-next-line no-console
-				console.error('[MezonSFU][camera] replaceTrack failed', cause);
+				// console.error('[MezonSFU][camera] replaceTrack failed', cause);
 			}
 
 			const signal = { type: 'camera', active: cameraEnabled } as const;
 			if (joinRole === 'speaker' && joinedRef.current && ws?.readyState === WebSocket.OPEN) {
 				// eslint-disable-next-line no-console
-				console.info('[MezonSFU][ws.send][camera]', signal);
+				// console.info('[MezonSFU][ws.send][camera]', signal);
 				ws.send(JSON.stringify(signal));
 			} else if (joinRole === 'speaker' && joinedRef.current) {
 				// eslint-disable-next-line no-console
-				console.error('[MezonSFU][camera] signaling not sent: WebSocket is not open', {
-					signal,
-					wsReadyState: ws?.readyState
-				});
+				// console.error('[MezonSFU][camera] signaling not sent: WebSocket is not open', {
+				// 	signal,
+				// 	wsReadyState: ws?.readyState
+				// });
 			}
 		})();
 	}, [cameraEnabled, findUplinkVideoSender, joinRole, hasCameraAccess]);
@@ -1055,7 +1055,7 @@ export function MezonSfuVoiceRoom({
 				if (iceState === 'failed') {
 					setConnectionState('disconnected');
 					// eslint-disable-next-line no-console
-					console.info('[MezonSFU][ice] failed, restarting the session');
+					// console.info('[MezonSFU][ice] failed, restarting the session');
 					restartSession();
 					return;
 				}
@@ -1065,7 +1065,7 @@ export function MezonSfuVoiceRoom({
 					iceRecoveryTimer = setTimeout(() => {
 						iceRecoveryTimer = undefined;
 						// eslint-disable-next-line no-console
-						console.info('[MezonSFU][ice] stayed disconnected, restarting the session');
+						// console.info('[MezonSFU][ice] stayed disconnected, restarting the session');
 						restartSession();
 					}, ICE_RECOVERY_GRACE_MS);
 				}
@@ -1076,16 +1076,16 @@ export function MezonSfuVoiceRoom({
 				const mediaKind = mid ? getRemoteMediaKind(mid) : undefined;
 				const logTrackEvent = (event: 'ontrack' | 'mute' | 'unmute' | 'ended') => {
 					// eslint-disable-next-line no-console
-					console.info(`[MezonSFU][remote track] ${event}`, {
-						mid,
-						mediaKind,
-						participantId: id,
-						trackId: track.id,
-						kind: track.kind,
-						muted: track.muted,
-						readyState: track.readyState,
-						streamIds: streams.map((stream) => stream.id)
-					});
+					// console.info(`[MezonSFU][remote track] ${event}`, {
+					// 	mid,
+					// 	mediaKind,
+					// 	participantId: id,
+					// 	trackId: track.id,
+					// 	kind: track.kind,
+					// 	muted: track.muted,
+					// 	readyState: track.readyState,
+					// 	streamIds: streams.map((stream) => stream.id)
+					// });
 				};
 				logTrackEvent('ontrack');
 				const addTrack = () => {
@@ -1179,10 +1179,10 @@ export function MezonSfuVoiceRoom({
 				}
 				if (peerLeftPendingOfferRef.current) {
 					// eslint-disable-next-line no-console
-					console.info('[MezonSFU][remaining peer] offer received after peer_left', {
-						peer: getPeerDebugSnapshot(pc),
-						sdp: offer.sdp
-					});
+					// console.info('[MezonSFU][remaining peer] offer received after peer_left', {
+					// 	peer: getPeerDebugSnapshot(pc),
+					// 	sdp: offer.sdp
+					// });
 					peerLeftPendingOfferRef.current = false;
 				}
 				const localStream = localStreamRef.current || (await prepareLocalMedia());
@@ -1318,7 +1318,7 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 				// eslint-disable-next-line no-console
-				console.info('[MezonSFU][signaling parsed]', message);
+				// console.info('[MezonSFU][signaling parsed]', message);
 				if (typeof message.participant_count === 'number') {
 					setRoomParticipantCount(message.participant_count);
 				}
@@ -1381,7 +1381,7 @@ export function MezonSfuVoiceRoom({
 					const activeScreenTrack = screenStreamRef.current?.getVideoTracks()[0];
 					if (activeScreenTrack && activeScreenTrack.readyState === 'live') {
 						// eslint-disable-next-line no-console
-						console.info('[MezonSFU][ws.send][share_screen][reconnect]', { type: 'share_screen', active: true });
+						// console.info('[MezonSFU][ws.send][share_screen][reconnect]', { type: 'share_screen', active: true });
 						ws.send(JSON.stringify({ type: 'share_screen', active: true }));
 					}
 					ws.send(JSON.stringify({ type: 'visibility', visible: document.visibilityState === 'visible' }));
@@ -1402,10 +1402,10 @@ export function MezonSfuVoiceRoom({
 				if (message.type === 'peer_left') {
 					peerLeftPendingOfferRef.current = true;
 					// eslint-disable-next-line no-console
-					console.info('[MezonSFU][remaining peer] peer_left received', {
-						message,
-						peer: pcRef.current ? getPeerDebugSnapshot(pcRef.current) : null
-					});
+					// console.info('[MezonSFU][remaining peer] peer_left received', {
+					// 	message,
+					// 	peer: pcRef.current ? getPeerDebugSnapshot(pcRef.current) : null
+					// });
 					const leavingPeerId = message.peer_id != null ? String(message.peer_id) : undefined;
 					if (leavingPeerId) pendingPeersRef.current.delete(leavingPeerId);
 					const mids = [message.mid_audio, message.mid_video, message.mid_screen]
@@ -1438,7 +1438,7 @@ export function MezonSfuVoiceRoom({
 				}
 				if (message.type === 'error') {
 					// eslint-disable-next-line no-console
-					console.error('[MezonSFU] server error', message);
+					// console.error('[MezonSFU] server error', message);
 					const errorMsg = message.message || 'SFU signaling error';
 					if (!refreshingTokenRef.current && (errorMsg.toLowerCase().includes('token') || errorMsg.toLowerCase().includes('invalid'))) {
 						refreshingTokenRef.current = true;
@@ -1523,7 +1523,7 @@ export function MezonSfuVoiceRoom({
 			if (disposed || !reconnectAllowed || reconnectTimer !== undefined) return;
 			if (typeof navigator !== 'undefined' && navigator.onLine === false) {
 				// eslint-disable-next-line no-console
-				console.info('[MezonSFU][reconnect] browser is offline, waiting for the network to come back');
+				// console.info('[MezonSFU][reconnect] browser is offline, waiting for the network to come back');
 				return;
 			}
 			if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
@@ -1540,7 +1540,7 @@ export function MezonSfuVoiceRoom({
 
 		const handleOnline = () => {
 			// eslint-disable-next-line no-console
-			console.info('[MezonSFU][reconnect] network came back, restarting the session');
+			// console.info('[MezonSFU][reconnect] network came back, restarting the session');
 			reconnectAttempts = 0;
 			restartSession();
 		};
@@ -1564,7 +1564,7 @@ export function MezonSfuVoiceRoom({
 				if (ws?.readyState === WebSocket.OPEN) {
 					const pingMessage = { type: 'ping', timestamp: Date.now() };
 					// eslint-disable-next-line no-console
-					console.info('[MezonSFU][ws.send][ping]', pingMessage);
+					// console.info('[MezonSFU][ws.send][ping]', pingMessage);
 					ws.send(JSON.stringify(pingMessage));
 					return;
 				}
@@ -1585,10 +1585,10 @@ export function MezonSfuVoiceRoom({
 			// A leave is currently signaled by closing the WebSocket; no explicit
 			// { type: 'leave' } message is sent to the SFU.
 			// eslint-disable-next-line no-console
-			console.info('[MezonSFU][leaving peer] closing signaling connection', {
-				wsReadyState: wsRef.current?.readyState,
-				peersFromSdp: Array.from(userIdsByMid, ([mid, userId]) => ({ mid, userId }))
-			});
+			// console.info('[MezonSFU][leaving peer] closing signaling connection', {
+			// 	wsReadyState: wsRef.current?.readyState,
+			// 	peersFromSdp: Array.from(userIdsByMid, ([mid, userId]) => ({ mid, userId }))
+			// });
 			removeVisibilityListener();
 			removeNetworkListeners();
 			clearIceRecoveryTimer();
@@ -1679,7 +1679,7 @@ export function MezonSfuVoiceRoom({
 			}
 			setScreenSharing(true);
 			// eslint-disable-next-line no-console
-			console.info('[MezonSFU][ws.send][share_screen]', { type: 'share_screen', active: true });
+			// console.info('[MezonSFU][ws.send][share_screen]', { type: 'share_screen', active: true });
 			wsRef.current?.send(JSON.stringify({ type: 'share_screen', active: true }));
 			track.onended = () => void toggleScreenShare();
 		} catch (cause) {
