@@ -88,7 +88,7 @@ export const RecordingControl = memo(({ channelLabel }: RecordingControlProps) =
 	const label = isActive ? t('recording.stop') : t('recording.start');
 
 	return (
-		<>
+		<div className="flex gap-1">
 			<div
 				role="button"
 				tabIndex={0}
@@ -117,7 +117,7 @@ export const RecordingControl = memo(({ channelLabel }: RecordingControlProps) =
 					)}
 				</div>
 			)}
-		</>
+		</div>
 	);
 });
 
