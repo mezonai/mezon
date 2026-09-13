@@ -116,8 +116,8 @@ function SearchModal({ onClose }: SearchModalProps) {
 						lastSentTimeStamp: dmMeta.lastSentTimeStamp,
 						typeChat: TypeSearch.Dm_Type,
 						type: itemDM.type,
-						count_messsage_unread: dmMeta.count_messsage_unread,
-						lastSeenTimeStamp: dmMeta.lastSeenTimeStamp,
+						count_messsage_unread: dmMeta?.count_messsage_unread,
+						lastSeenTimeStamp: dmMeta?.lastSeenTimeStamp,
 						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || []), ...clanNicks, itemDM?.channel_label]
 							.filter(Boolean)
 							.join('.'),
@@ -247,7 +247,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 		const { recentList, unreadList } = listItemWithoutRecent.reduce<ClassifiedLists>(
 			(acc, item) => {
-				const hasUnread = item.lastSentTimeStamp > item.lastSeenTimeStamp || (item.count_messsage_unread ?? 0) > 0;
+				const hasUnread = item?.lastSentTimeStamp > item?.lastSeenTimeStamp || (item?.count_messsage_unread ?? 0) > 0;
 				if (!hasUnread) return acc;
 
 				const isChannel = item.type === ChannelType.CHANNEL_TYPE_CHANNEL || item.type === ChannelType.CHANNEL_TYPE_THREAD;
