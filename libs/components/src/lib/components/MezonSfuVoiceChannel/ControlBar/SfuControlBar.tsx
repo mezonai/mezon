@@ -1,4 +1,5 @@
-import { generateE2eId } from '@mezon/utils';
+import { usePermissionChecker } from '@mezon/core';
+import { EPermission, generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
 import { RecordingControl } from '../Recording/RecordingControl';
@@ -103,6 +104,7 @@ export const SfuControlBar = ({
 	roomId
 }: SfuControlBarProps) => {
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
+	const [channelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
 	const handleVoiceInteractiveChange = onVoiceInteractivePanelChange ?? setLocalShowVoiceInteractive;
 
@@ -127,9 +129,14 @@ export const SfuControlBar = ({
 								onSoundSelect={onSoundSelect}
 							/>
 						</div>
-						<div className="max-md:hidden">
-							<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
-						</div>
+						{channelPermission && (
+							<div className="max-md:hidden">
+								<SfuVoiceInteractiveControl
+									showVoiceInteractive={showVoiceInteractive}
+									onVisibleChange={handleVoiceInteractiveChange}
+								/>
+							</div>
+						)}
 					</>
 				)}
 				<div className="max-md:hidden">
