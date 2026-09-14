@@ -26,7 +26,6 @@ import {
 	selectLatestMessageId,
 	selectMemberClanByUserId,
 	selectMessageEntitiesByChannelId,
-	selectMessageIsLoading,
 	selectMessageIsLoadingByChannelId,
 	selectMessageNotified,
 	selectMessageViewportIdsByChannelId,
@@ -194,7 +193,6 @@ function ChannelMessages({
 	const anchorTopRef = useRef<number | null>(null);
 	const setAnchor = useRef<number | null>(null);
 	const previousChannelId = useRef<string | null>(null);
-	const preventScrollbottom = useRef<boolean>(false);
 	const isFirstJoinLoadRef = useRef<boolean>(true);
 	const lastSeenAtBottomRef = useRef<string | null>(null);
 	const isJumpingToPresentRef = useRef<boolean>(false);
@@ -203,7 +201,6 @@ function ChannelMessages({
 		skipCalculateScroll.current = false;
 		anchorIdRef.current = null;
 		anchorTopRef.current = null;
-		preventScrollbottom.current = false;
 		isFirstJoinLoadRef.current = true;
 		lastSeenAtBottomRef.current = null;
 		isJumpingToPresentRef.current = false;
@@ -256,24 +253,18 @@ function ChannelMessages({
 		};
 	}, [channelId]);
 
-	useSyncEffect(() => {
-		if (lastMessage && preventScrollbottom.current) {
-			preventScrollbottom.current = false;
-		}
-	}, [lastMessage?.id]);
-
 	const loadMoreMessage = useCallback(
 		async (direction: ELoadMoreDirection, cb?: IBeforeRenderCb) => {
 			const store = getStore();
 			const state = store.getState();
-			const isFetching = selectMessageIsLoading(state);
+			const isFetching = selectMessageIsLoadingByChannelId(state as RootState, effectiveChannelId);
 			if (isFetching) {
 				return;
 			}
 
 			if (direction === ELoadMoreDirection.bottom) {
 				const hasMoreBottom = selectHasMoreBottomByChannelId(state as RootState, effectiveChannelId);
-				if (!hasMoreBottom || preventScrollbottom.current) {
+				if (!hasMoreBottom) {
 					dispatch(messagesActions.setViewingOlder({ channelId: effectiveChannelId, status: false }));
 					return;
 				}
@@ -306,20 +297,12 @@ function ChannelMessages({
 					return true;
 				}
 
-				const res = await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.AFTER_TIMESTAMP }));
-				const messages = (res?.payload as any)?.payload?.messages || [];
-				if (lastMessageId === messages[0]?.id) {
-					preventScrollbottom.current = true;
-				} else {
-					preventScrollbottom.current = false;
-				}
+				await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.AFTER_TIMESTAMP }));
 
 				dispatch(messagesActions.resetLoading());
 				// dispatch(messagesActions.setViewingOlder({ channelId, status: true }));
 				return true;
 			}
-
-			preventScrollbottom.current = false;
 
 			//load more in topic
 			if (isTopicBox) {
@@ -354,45 +337,25 @@ function ChannelMessages({
 	const isLoadMore = useRef<boolean>(false);
 	const currentScrollDirection = useRef<ELoadMoreDirection | null>(null);
 	const isLoadingMoreBottomRef = useRef<boolean>(false);
-	const lastLoadMoreTimestampRef = useRef<number>(0);
-	const consecutiveLoadCountRef = useRef<number>(0);
 
 	const handleOnChange = useCallback(
 		async (direction: LoadMoreDirection) => {
 			if (isLoadMore.current || !chatRef.current?.scrollHeight) return;
 
-			const now = Date.now();
-			const elapsed = now - lastLoadMoreTimestampRef.current;
-
-			if (elapsed < 300) {
-				consecutiveLoadCountRef.current = Math.min(consecutiveLoadCountRef.current + 1, 3);
-			} else {
-				consecutiveLoadCountRef.current = 0;
-			}
-
-			const delay = consecutiveLoadCountRef.current * 333;
-
-			if (delay > 0) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
-
-			if (isLoadMore.current) return;
-
-			lastLoadMoreTimestampRef.current = Date.now();
-
-			switch (direction) {
-				case LoadMoreDirection.Backwards:
-					currentScrollDirection.current = ELoadMoreDirection.top;
-					isLoadMore.current = true;
-					await loadMoreMessage(ELoadMoreDirection.top);
-					isLoadMore.current = false;
-					break;
-				case LoadMoreDirection.Forwards:
-					currentScrollDirection.current = ELoadMoreDirection.bottom;
-					isLoadMore.current = true;
-					await loadMoreMessage(ELoadMoreDirection.bottom);
-					isLoadMore.current = false;
-					break;
+			isLoadMore.current = true;
+			try {
+				switch (direction) {
+					case LoadMoreDirection.Backwards:
+						currentScrollDirection.current = ELoadMoreDirection.top;
+						await loadMoreMessage(ELoadMoreDirection.top);
+						break;
+					case LoadMoreDirection.Forwards:
+						currentScrollDirection.current = ELoadMoreDirection.bottom;
+						await loadMoreMessage(ELoadMoreDirection.bottom);
+						break;
+				}
+			} finally {
+				isLoadMore.current = false;
 			}
 		},
 		[loadMoreMessage]
@@ -741,7 +704,7 @@ type ChatMessageListProps = {
 	topicId?: string;
 	mode: number;
 	channelLabel?: string;
-	onChange: (direction: LoadMoreDirection) => void;
+	onChange: (direction: LoadMoreDirection) => Promise<void>;
 	isTopic?: boolean;
 	anchorIdRef: React.MutableRefObject<string | null>;
 	anchorTopRef: React.MutableRefObject<number | null>;
@@ -783,6 +746,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		isJumpingToPresentRef
 	}) => {
 		const effectiveChannelId = topicId || channelId;
+		const isHistoryLoading = useAppSelector((state) => selectMessageIsLoadingByChannelId(state, effectiveChannelId));
+		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, effectiveChannelId));
+		const hasMoreBottom = useAppSelector((state) => selectHasMoreBottomByChannelId(state, effectiveChannelId));
 
 		const dispatch = useAppDispatch();
 		const { setSafeTimeout, clearSafeTimeout } = useSafeTimeout();
@@ -852,8 +818,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			onNotchToggle,
 			isReady,
 			(event: { direction: LoadMoreDirection }) => {
-				onChange(event.direction);
-			}
+				return onChange(event.direction);
+			},
+			{ scopeId: effectiveChannelId, isLoading: isHistoryLoading, isJumping: !!idMessageToJump, hasMoreTop, hasMoreBottom }
 		);
 
 		const { observeIntersectionForLoading } = useMessageObservers('thread', chatRef, null, null, channelId);
