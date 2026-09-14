@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "A solicitação foi cancelada",
+	"error_2": "Erro desconhecido",
+	"error_3": "Hum, algo não parece certo.",
+	"error_4": "O tempo de conexão expirou. Tente novamente.",
+	"error_5": "Recurso não encontrado",
+	"error_6": "O recurso já existe",
+	"error_7": "Permissão negada",
+	"error_8": "Recursos esgotados",
+	"error_9": "Pré-condição não atendida",
+	"error_10": "A ação foi interrompida. Tente novamente.",
+	"error_11": "Esse valor não é válido.",
+	"error_12": "Operação não implementada",
+	"error_13": "Erro interno",
+	"error_14": "Os servidores estão ocupados. Tente novamente em instantes.",
+	"error_15": "Perda de dados",
+	"error_16": "A sessão expirou. Faça login novamente."
+}

@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Systemaudio ebenfalls teilen",
 	"loadingMore": "Weitere werden geladen...",
 	"loadMore": "Mehr laden",
-	"remaining": "verbleibend"
+	"remaining": "verbleibend",
+	"qualityMode": "Bildschirmfreigabemodus",
+	"textMode": "Text",
+	"videoMode": "Video",
+	"textModeDescription": "Schärferer Text und schärfere Folien bei geringerem Ressourcenverbrauch.",
+	"videoModeDescription": "Flüssigeres Video; bei langsamer Verbindung kann die Schärfe abnehmen."
 }

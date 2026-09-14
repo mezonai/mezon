@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "시스템 오디오도 공유",
 	"loadingMore": "더 로딩 중...",
 	"loadMore": "더 로드",
-	"remaining": "남은"
+	"remaining": "남은",
+	"qualityMode": "화면 공유 모드",
+	"textMode": "텍스트",
+	"videoMode": "동영상",
+	"textModeDescription": "텍스트와 슬라이드를 더 선명하게 표시하고 리소스 사용량을 줄입니다.",
+	"videoModeDescription": "동영상을 더 부드럽게 표시합니다. 연결이 느리면 선명도가 떨어질 수 있습니다."
 }

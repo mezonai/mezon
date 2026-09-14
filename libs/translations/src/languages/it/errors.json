@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "La richiesta è stata annullata",
+	"error_2": "Errore sconosciuto",
+	"error_3": "Qualcosa non sembra corretto.",
+	"error_4": "Tempo di connessione scaduto. Riprova.",
+	"error_5": "Risorsa non trovata",
+	"error_6": "La risorsa esiste già",
+	"error_7": "Accesso negato",
+	"error_8": "Risorse esaurite",
+	"error_9": "Precondizione non soddisfatta",
+	"error_10": "L’azione è stata interrotta. Riprova.",
+	"error_11": "Questo valore non è valido.",
+	"error_12": "Operazione non implementata",
+	"error_13": "Errore interno",
+	"error_14": "I server sono occupati. Riprova tra poco.",
+	"error_15": "Perdita di dati",
+	"error_16": "Sessione scaduta. Accedi di nuovo."
+}

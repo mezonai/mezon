@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Również udostępnij audio systemowe",
 	"loadingMore": "Ładowanie więcej...",
 	"loadMore": "Załaduj więcej",
-	"remaining": "pozostało"
+	"remaining": "pozostało",
+	"qualityMode": "Tryb udostępniania ekranu",
+	"textMode": "Tekst",
+	"videoMode": "Wideo",
+	"textModeDescription": "Wyraźniejszy tekst i slajdy przy mniejszym zużyciu zasobów.",
+	"videoModeDescription": "Płynniejsze wideo; przy wolnym połączeniu ostrość może się zmniejszyć."
 }

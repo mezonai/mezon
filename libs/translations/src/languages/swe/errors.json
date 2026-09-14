@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "Begäran har avbrutits",
+	"error_2": "Okänt fel",
+	"error_3": "Hmm, något verkar inte stämma.",
+	"error_4": "Anslutningen tog för lång tid. Försök igen.",
+	"error_5": "Resursen hittades inte",
+	"error_6": "Resursen finns redan",
+	"error_7": "Åtkomst nekad",
+	"error_8": "Resurserna är slut",
+	"error_9": "Förhandsvillkoret är inte uppfyllt",
+	"error_10": "Åtgärden avbröts. Försök igen.",
+	"error_11": "Det värdet är ogiltigt.",
+	"error_12": "Åtgärden är inte implementerad",
+	"error_13": "Internt fel",
+	"error_14": "Servrarna är upptagna. Försök igen om en stund.",
+	"error_15": "Dataförlust",
+	"error_16": "Sessionen har gått ut. Logga in igen."
+}
