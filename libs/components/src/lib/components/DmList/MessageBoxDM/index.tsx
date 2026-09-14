@@ -42,7 +42,7 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 			ephemeralReceiverId?: string
 		) => {
 			if (sessionUser) {
-				sendMessage(content, mentions, attachments, references, false, mentionEveryone, false, undefined, ephemeralReceiverId);
+				return sendMessage(content, mentions, attachments, references, false, mentionEveryone, false, undefined, ephemeralReceiverId);
 			} else {
 				console.error('Session is not available');
 			}

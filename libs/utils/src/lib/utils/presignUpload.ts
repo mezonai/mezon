@@ -19,34 +19,33 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 						: attach.filetype?.includes(AttachmentTypeUpload.audio)
 							? AttachmentTypeUpload.audio
 							: AttachmentTypeUpload.doc;
-				const data = await client.uploadAttachmentFile(session, {
-					filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
-					filetype: fileType,
-					size: attach.size,
-					width: attach.width,
-					height: attach.height
-				});
-				// The poster is uploaded HERE, before the message is posted, and its url
-				// is published only once the object is actually on the CDN. It used to
-				// ride along after the main file, with its result thrown away — so a
-				// failed poster PUT left every client pointing at an object that was
-				// never written, and one imgproxy miss on that url is cached for a
-				// week. It is a few tens of kilobytes; paying for it up front is what
-				// makes the url on the wire a promise the sender has already kept.
-				let thumbnail;
 				const thumbnailBlob = (attach as File & { _thumbnailBlob?: Blob })?._thumbnailBlob;
-				if (attach.filetype?.startsWith('video') && thumbnailBlob) {
-					const ms = Date.now();
-					const filename = `${ms}_thumbnail.png`;
-					const presignedThumbnail = await client.uploadAttachmentFile(session, {
-						filename,
-						filetype: thumbnailBlob.type,
-						size: thumbnailBlob.size
-					});
-					if (presignedThumbnail?.url && (await uploadFileToPath(presignedThumbnail.url, thumbnailBlob, thumbnailBlob.size))) {
-						thumbnail = presignedThumbnail;
-					}
-				}
+				const isVideoWithThumbnail = Boolean(attach.filetype?.startsWith('video') && thumbnailBlob);
+				const originalThumbnail = attach.thumbnail;
+				const [data, thumbnail] = await Promise.all([
+					client.uploadAttachmentFile(session, {
+						filename: (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_'),
+						filetype: fileType,
+						size: attach.size,
+						width: attach.width,
+						height: attach.height
+					}),
+					isVideoWithThumbnail && thumbnailBlob
+						? (async () => {
+								const ms = Date.now();
+								const filename = `${ms}_thumbnail.png`;
+								const presignedThumbnail = await client.uploadAttachmentFile(session, {
+									filename,
+									filetype: thumbnailBlob.type,
+									size: thumbnailBlob.size
+								});
+								if (presignedThumbnail?.url && (await uploadFileToPath(presignedThumbnail.url, thumbnailBlob, thumbnailBlob.size))) {
+									return presignedThumbnail;
+								}
+								return undefined;
+							})()
+						: Promise.resolve(undefined)
+				]);
 
 				return {
 					...attach,
@@ -55,6 +54,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					uploadName: data.filename,
 					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
 					uploadPath: data.url,
+					...(originalThumbnail && originalThumbnail.startsWith('blob:') && { local_thumbnail: originalThumbnail }),
 					...(thumbnail && thumbnail?.filename && { thumbnail: `${process.env.NX_BASE_IMG_URL}/${thumbnail.filename}` })
 				};
 			} catch (error) {
@@ -69,5 +69,6 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 		thumbnail?: string;
 		thumbnailUpload?: string;
 		uploadName?: string;
+		local_thumbnail?: string;
 	})[];
 }

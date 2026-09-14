@@ -447,6 +447,10 @@ function VideoPoster({
 }
 
 function resolveVideoThumbnailUrl(attachmentData: ApiMessageAttachment, width: number, height: number): string | undefined {
+	const localThumb = (attachmentData as any).local_thumbnail;
+	if (typeof localThumb === 'string' && localThumb.startsWith('blob:')) {
+		return localThumb;
+	}
 	const thumb = attachmentData.thumbnail;
 	if (!thumb) return undefined;
 	if (thumb.startsWith('blob:')) return thumb;
@@ -468,7 +472,7 @@ function DefaultVideo({
 	const isUploading = isSending || isPresignPending;
 	const { width, height, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
-	const thumbnailUrl = isPresignPending ? undefined : resolveVideoThumbnailUrl(attachmentData, width, height);
+	const thumbnailUrl = resolveVideoThumbnailUrl(attachmentData, width, height);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [showControl, setShowControl] = useState(true);

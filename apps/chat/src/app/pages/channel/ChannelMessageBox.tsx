@@ -57,8 +57,8 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			clanNick?: string,
 			ephemeralReceiverId?: string
 		) => {
-			sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, false, undefined, ephemeralReceiverId);
 			handDoMessageMission();
+			return sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, false, undefined, ephemeralReceiverId);
 		},
 		[sendMessage, currentMission, onboardingList?.mission]
 	);

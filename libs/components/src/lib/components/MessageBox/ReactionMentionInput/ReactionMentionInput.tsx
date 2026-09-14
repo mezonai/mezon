@@ -193,6 +193,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const [displayMarkup, setDisplayMarkup] = useState<string>('');
 	const [mentionUpdated, setMentionUpdated] = useState<IMentionOnMessage[]>([]);
 	const [isPasteMulti, setIsPasteMulti] = useState<boolean>(false);
+	const isSubmittingRef = useRef<boolean>(false);
 
 	useEffect(() => {
 		if (editorRef.current) {
@@ -283,6 +284,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const handleSendInternal = useCallback(
 		async (checkedRequest: RequestInput, anonymousMessage?: boolean) => {
+			if (isSubmittingRef.current) return;
 			//TODO: break logic send width thread box, channel, topic box, dm
 			if (props.isThread && !nameValueThread?.trim() && !props.isTopic && !threadCurrentChannel) {
 				dispatch(threadsActions.setNameThreadError(t('channelTopbar:createThread.validation.threadNameRequired')));
@@ -397,8 +399,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					await addMemberToThread(currentChannel!, usersNotExistingInThread);
 				}
 
+				isSubmittingRef.current = true;
+				let sendPromise: any;
 				if (isReplyOnChannel) {
-					props.onSend(
+					sendPromise = props.onSend(
 						filterEmptyArrays(payload),
 						mentionList,
 						attachmentData,
@@ -414,7 +418,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					setMentionEveryone(false);
 					dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
 				} else if (isSendMessageOnThreadBox) {
-					props.onSend(
+					sendPromise = props.onSend(
 						filterEmptyArrays(payload),
 						mentionList,
 						attachmentData,
@@ -428,7 +432,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						usersNotExistingInThread
 					);
 				} else if (isReplyOnTopic) {
-					props.onSend(
+					sendPromise = props.onSend(
 						filterEmptyArrays(payload),
 						mentionList,
 						attachmentData,
@@ -449,7 +453,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						})
 					);
 				} else {
-					props.onSend(
+					sendPromise = props.onSend(
 						filterEmptyArrays(payload),
 						mentionList,
 						attachmentData,
@@ -479,13 +483,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					})
 				);
 
-				dispatch(
-					referencesActions.setAtachmentAfterUpload({
-						channelId: props.currentChannelId ?? '',
-						files: []
-					})
-				);
-
 				setMentionUpdated([]);
 				setDisplayPlaintext('');
 				setDisplayMarkup('');
@@ -496,6 +493,18 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				if (ephemeralTargetUserId) {
 					setEphemeralTargetUserId(null);
 					setEphemeralTargetUserDisplay(null);
+				}
+
+				try {
+					await sendPromise;
+				} finally {
+					isSubmittingRef.current = false;
+					dispatch(
+						referencesActions.setAtachmentAfterUpload({
+							channelId: props.currentChannelId ?? '',
+							files: []
+						})
+					);
 				}
 
 				return;
@@ -571,8 +580,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
+			isSubmittingRef.current = true;
+			let sendPromise: any;
 			if (isReplyOnChannel) {
-				props.onSend(
+				sendPromise = props.onSend(
 					filterEmptyArrays(payload),
 					isPasteMulti ? mentionUpdated : [],
 					attachmentData,
@@ -591,7 +602,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isSendMessageOnThreadBox) {
-				props.onSend(
+				sendPromise = props.onSend(
 					filterEmptyArrays(payload),
 					isPasteMulti ? mentionUpdated : [],
 					attachmentData,
@@ -604,12 +615,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					ephemeralTargetUserId || undefined
 				);
 				setMentionEveryone(false);
-				dispatch(
-					referencesActions.setAtachmentAfterUpload({
-						channelId: props.currentChannelId ?? '',
-						files: []
-					})
-				);
 				updateDraft?.({
 					valueTextInput: '',
 					content: '',
@@ -622,7 +627,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isReplyOnTopic) {
-				props.onSend(
+				sendPromise = props.onSend(
 					filterEmptyArrays(payload),
 					[],
 					attachmentData,
@@ -645,7 +650,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else {
-				props.onSend(
+				sendPromise = props.onSend(
 					filterEmptyArrays(payload),
 					isPasteMulti ? mentionUpdated : [],
 					attachmentData,
@@ -682,17 +687,23 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					isReset: true
 				})
 			);
-			dispatch(
-				referencesActions.setAtachmentAfterUpload({
-					channelId: props.currentChannelId ?? '',
-					files: []
-				})
-			);
 			setMentionUpdated([]);
 			setDisplayPlaintext('');
 			setIsPasteMulti(false);
 			setSubPanelActive(SubPanelName.NONE);
 			await handleThreadActivation(currentChannel);
+
+			try {
+				await sendPromise;
+			} finally {
+				isSubmittingRef.current = false;
+				dispatch(
+					referencesActions.setAtachmentAfterUpload({
+						channelId: props.currentChannelId ?? '',
+						files: []
+					})
+				);
+			}
 		},
 		[
 			mentionData,
