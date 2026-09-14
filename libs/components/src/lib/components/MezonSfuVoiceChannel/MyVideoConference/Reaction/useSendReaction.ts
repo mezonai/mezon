@@ -43,16 +43,6 @@ export const useSendReaction = () => {
 		},
 		[clientRef, canSend]
 	);
-
-	const sendFlower = useCallback(
-		(receiverId: string) => {
-			const channelId = selectVoiceInfo(getStore().getState())?.channelId;
-			if (!clientRef.current || !channelId || !canSend() || !sessionRef.current) return;
-			clientRef.current.writeVoiceReaction(sessionRef.current, [`flower:${receiverId}`], channelId);
-		},
-		[clientRef, canSend, sessionRef]
-	);
-
 	/**
 	 * Recording is invisible to the other clients otherwise — the browser asks for no
 	 * permission. Same token shape as the desktop client so both show each other's badge.
@@ -66,5 +56,5 @@ export const useSendReaction = () => {
 		[clientRef, sessionRef]
 	);
 
-	return { sendEmojiReaction, sendSoundReaction, sendRaisingHand, sendFlower, sendRecordingState };
+	return { sendEmojiReaction, sendSoundReaction, sendRaisingHand, sendRecordingState };
 };
