@@ -749,21 +749,21 @@ const SettingComunity = ({
 									value={aboutText}
 									onChange={handleChangeAbout}
 									placeholder={t('communitySettings.about.placeholder')}
-									maxLength={600}
+									maxLength={3000}
 								/>
 								<div className="absolute bottom-3 right-3 text-sm  bg-theme-setting-primary text-theme-primary border border-theme-primary px-2 py-1 rounded-md">
 									<span
 										className={
-											aboutText.length > 550
+											aboutText.length > 2500
 												? 'text-red-500'
-												: aboutText.length > 500
+												: aboutText.length > 2000
 													? 'text-orange-500'
 													: 'text-theme-primary-active'
 										}
 									>
 										{aboutText.length}
 									</span>
-									<span className="text-theme-primary">/600</span>
+									<span className="text-theme-primary">/3000</span>
 								</div>
 							</div>
 						</div>
