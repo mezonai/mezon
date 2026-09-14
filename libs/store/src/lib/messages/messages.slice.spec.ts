@@ -1,4 +1,4 @@
-import { generatePathAttachments, getWebUploadedAttachments } from '@mezon/utils';
+import { Direction_Mode, generatePathAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { ChannelStreamMode } from 'mezon-js';
 import { shouldForceApiCall } from '../cache-metadata';
@@ -7,10 +7,12 @@ import {
 	addNewMessage,
 	fetchMessages,
 	fetchMessagesCached,
+	jumpToMessage,
 	loadMoreMessage,
 	messagesActions,
 	messagesReducer,
 	resendMessage,
+	selectHasMoreBottomByChannelId,
 	selectHasMoreMessageByChannelId,
 	selectMessageIsLoadingByChannelId,
 	sendMessage
@@ -21,7 +23,7 @@ jest.mock('@mezon/utils', () => ({
 	mergePresignFinishContent: jest.requireActual('../../../../utils/src/lib/utils/presignFinish').mergePresignFinishContent,
 	TypeMessage: { Chat: 0, ChatUpdate: 1 },
 	EMessageCode: { FIRST_MESSAGE: 4 },
-	Direction_Mode: { BEFORE_TIMESTAMP: 1 },
+	Direction_Mode: { BEFORE_TIMESTAMP: 3, AFTER_TIMESTAMP: 1, AROUND_TIMESTAMP: 2 },
 	LIMIT_MESSAGE: 50,
 	EBacktickType: {},
 	EOgpType: {},
@@ -53,7 +55,10 @@ jest.mock('../channels/channelmeta.slice', () => ({
 	selectDmLastSentMessage: () => undefined,
 	selectLastSentMessageId: () => undefined
 }));
-jest.mock('../channels/channels.slice', () => ({ selectShowScrollDownButton: () => false }));
+jest.mock('../channels/channels.slice', () => ({
+	selectShowScrollDownButton: () => false,
+	channelsActions: { setScrollDownVisibility: (payload: unknown) => ({ type: 'test/scrollDown', payload }) }
+}));
 jest.mock('../clanProfile/clanProfile.slice', () => ({ selectUserClanProfileByClanID: () => () => undefined }));
 jest.mock('../clans/clans.slice', () => ({ selectClanExists: () => () => true }));
 jest.mock('../direct/direct.slice', () => ({}));
@@ -93,7 +98,11 @@ function setup() {
 	};
 	const mezon = { client, clientRef: { current: client }, sessionRef: { current: {} }, session: {} };
 	const store = configureStore({
-		reducer: { messages: messagesReducer },
+		reducer: {
+			messages: messagesReducer,
+			channels: () => ({ byClans: { clan: { currentChannelId: 'channel' } } }),
+			clans: () => ({ currentClanId: 'clan' })
+		},
 		middleware: (defaults) => defaults({ thunk: { extraArgument: { mezon } }, serializableCheck: false })
 	});
 	return { store, client, mezon };
@@ -602,14 +611,125 @@ it.each(['channel', 'topic'])('allows %s paging while a different message scope 
 		fetchMessages.pending('other-request', { clanId: 'clan', channelId: 'channel', topicId: scope === 'channel' ? 'topic' : undefined })
 	);
 	client.listChannelMessages.mockResolvedValue({ messages: [{ ...serverReply(49), channel_id: scope }] });
-	await store.dispatch(loadMoreMessage({ ...args, direction: 1 })).unwrap();
-	expect(client.listChannelMessages).toHaveBeenCalledWith({}, 'clan', 'channel', message.id, 1, 50, topicId);
+	await store.dispatch(loadMoreMessage({ ...args, direction: Direction_Mode.BEFORE_TIMESTAMP })).unwrap();
+	expect(client.listChannelMessages).toHaveBeenCalledWith({}, 'clan', 'channel', message.id, Direction_Mode.BEFORE_TIMESTAMP, 50, topicId);
 	expect(selectMessageIsLoadingByChannelId(store.getState() as any, scope)).toBe(false);
 });
 
 it('blocks overlapping loads within the same scope', async () => {
 	const { store, client } = setup();
 	store.dispatch(fetchMessages.pending('same-request', { clanId: 'clan', channelId: 'channel' }));
-	await store.dispatch(loadMoreMessage({ clanId: 'clan', channelId: 'channel', direction: 1 })).unwrap();
+	await store.dispatch(loadMoreMessage({ clanId: 'clan', channelId: 'channel', direction: Direction_Mode.BEFORE_TIMESTAMP })).unwrap();
 	expect(client.listChannelMessages).not.toHaveBeenCalled();
+});
+
+describe.each(['channel', 'topic'])('distant jump pagination in %s', (scope) => {
+	const topicId = scope === 'topic' ? scope : undefined;
+	const args = { clanId: 'clan', channelId: 'channel', topicId };
+	const msg = (n: number) => ({ ...serverReply(n), channel_id: scope, topic_id: topicId, timestamp_seconds: n });
+	const page = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => msg(to - i));
+	const ids = (from: number, to: number) =>
+		page(from, to)
+			.reverse()
+			.map((m) => m.id);
+
+	it.each([
+		[10, false],
+		[50, false],
+		[10, true],
+		[50, true]
+	] as const)('keeps a %i-row jumped window continuous (cached target: %s)', async (size, cachedTarget) => {
+		const { store, client } = setup();
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(951, 1000), last_sent_message: msg(1000) });
+		await store.dispatch(fetchMessages({ ...args, noCache: true, toPresent: true })).unwrap();
+		if (cachedTarget) store.dispatch(messagesActions.addOneMessage(msg(105) as any));
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(101, 100 + size), last_sent_message: msg(1000) });
+		await store.dispatch(jumpToMessage({ ...args, messageId: msg(105).id })).unwrap();
+		store.dispatch(messagesActions.setIdMessageToJump(null));
+		const oldViewport = store.getState().messages.channelViewPortMessageIds[scope];
+		await store.dispatch(addNewMessage({ ...msg(1001), isMe: false } as any)).unwrap();
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual(oldViewport);
+		expect(selectHasMoreBottomByChannelId(store.getState() as any, scope)).toBe(true);
+		let cursor = 100 + size;
+		const seen = new Set(oldViewport);
+		while (cursor < 1001) {
+			const next = Math.min(cursor + 50, 1001);
+			client.listChannelMessages.mockResolvedValueOnce({ messages: page(cursor + 1, next), last_sent_message: msg(1001) });
+			await store.dispatch(loadMoreMessage({ ...args, direction: Direction_Mode.AFTER_TIMESTAMP })).unwrap();
+			expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([
+				{},
+				'clan',
+				'channel',
+				msg(cursor).id,
+				Direction_Mode.AFTER_TIMESTAMP,
+				50,
+				topicId
+			]);
+			const viewport = store.getState().messages.channelViewPortMessageIds[scope];
+			expect(viewport.at(-1)).toBe(msg(next).id);
+			viewport.forEach((id) => seen.add(id));
+			expect(selectHasMoreBottomByChannelId(store.getState() as any, scope)).toBe(next < 1001);
+			cursor = next;
+		}
+		expect([...seen]).toEqual(ids(101, 1001));
+	});
+
+	it('keeps a newer realtime header when the in-flight jump returns an older snapshot', async () => {
+		const { store, client } = setup();
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(951, 1000), last_sent_message: msg(1000) });
+		await store.dispatch(fetchMessages({ ...args, noCache: true, toPresent: true })).unwrap();
+		const response = deferred<any>();
+		client.listChannelMessages.mockReturnValueOnce(response.promise);
+		const jumping = store.dispatch(jumpToMessage({ ...args, messageId: msg(105).id }));
+		await new Promise(setImmediate);
+		await store.dispatch(addNewMessage({ ...msg(1001), isMe: false } as any)).unwrap();
+		response.resolve({ messages: page(101, 150), last_sent_message: msg(1000) });
+		await jumping.unwrap();
+		expect(store.getState().messages.lastMessageByChannel[scope]?.id).toBe(msg(1001).id);
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual(ids(101, 150));
+	});
+
+	it('preserves the pending row when loading older messages from the latest window', async () => {
+		const { store, client } = setup();
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(951, 1000), last_sent_message: msg(1000) });
+		await store.dispatch(fetchMessages({ ...args, noCache: true, toPresent: true })).unwrap();
+		const ack = deferred<{ message_id: string }>();
+		client.writeChatMessage.mockReturnValueOnce(ack.promise);
+		const sending = store.dispatch(sendMessage({ ...payload, topicId, attachments: [] }));
+		await new Promise(setImmediate);
+		const pendingId = store.getState().messages.channelViewPortMessageIds[scope].at(-1);
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(902, 951), last_sent_message: msg(1000) });
+		await store.dispatch(loadMoreMessage({ ...args, direction: Direction_Mode.BEFORE_TIMESTAMP })).unwrap();
+		const viewport = store.getState().messages.channelViewPortMessageIds[scope];
+		ack.resolve({ message_id: msg(1001).id });
+		await sending.unwrap();
+		expect(viewport).toContain(pendingId);
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual(viewport.map((id) => (id === pendingId ? msg(1001).id : id)));
+	});
+
+	it('keeps a pending send outside the jumped window after its ACK', async () => {
+		const { store, client } = setup();
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(951, 1000), last_sent_message: msg(1000) });
+		await store.dispatch(fetchMessages({ ...args, noCache: true, toPresent: true })).unwrap();
+		const ack = deferred<{ message_id: string }>();
+		client.writeChatMessage.mockReturnValueOnce(ack.promise);
+		const sending = store.dispatch(sendMessage({ ...payload, topicId, attachments: [] }));
+		await new Promise(setImmediate);
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(101, 150), last_sent_message: msg(1000) });
+		await store.dispatch(jumpToMessage({ ...args, messageId: msg(105).id })).unwrap();
+		ack.resolve({ message_id: msg(1001).id });
+		await sending.unwrap();
+		await store.dispatch(addNewMessage({ ...msg(1001), isMe: true } as any)).unwrap();
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual(ids(101, 150));
+		expect(store.getState().messages.channelMessages[scope].entities[msg(1001).id]).toBeDefined();
+		store.dispatch(messagesActions.setIdMessageToJump(null));
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(51, 100), last_sent_message: msg(1001) });
+		await store.dispatch(loadMoreMessage({ ...args, direction: Direction_Mode.BEFORE_TIMESTAMP })).unwrap();
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual(ids(51, 150));
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(151, 200), last_sent_message: msg(1001) });
+		await store.dispatch(loadMoreMessage({ ...args, direction: Direction_Mode.AFTER_TIMESTAMP })).unwrap();
+		expect(client.listChannelMessages.mock.calls.at(-1)?.[3]).toBe(msg(150).id);
+		expect(store.getState().messages.channelViewPortMessageIds[scope].at(-1)).toBe(msg(200).id);
+		expect(selectHasMoreBottomByChannelId(store.getState() as any, scope)).toBe(true);
+	});
 });

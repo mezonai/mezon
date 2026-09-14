@@ -193,7 +193,6 @@ function ChannelMessages({
 	const anchorTopRef = useRef<number | null>(null);
 	const setAnchor = useRef<number | null>(null);
 	const previousChannelId = useRef<string | null>(null);
-	const preventScrollbottom = useRef<boolean>(false);
 	const isFirstJoinLoadRef = useRef<boolean>(true);
 	const lastSeenAtBottomRef = useRef<string | null>(null);
 	const isJumpingToPresentRef = useRef<boolean>(false);
@@ -202,7 +201,6 @@ function ChannelMessages({
 		skipCalculateScroll.current = false;
 		anchorIdRef.current = null;
 		anchorTopRef.current = null;
-		preventScrollbottom.current = false;
 		isFirstJoinLoadRef.current = true;
 		lastSeenAtBottomRef.current = null;
 		isJumpingToPresentRef.current = false;
@@ -255,12 +253,6 @@ function ChannelMessages({
 		};
 	}, [channelId]);
 
-	useSyncEffect(() => {
-		if (lastMessage && preventScrollbottom.current) {
-			preventScrollbottom.current = false;
-		}
-	}, [lastMessage?.id]);
-
 	const loadMoreMessage = useCallback(
 		async (direction: ELoadMoreDirection, cb?: IBeforeRenderCb) => {
 			const store = getStore();
@@ -272,7 +264,7 @@ function ChannelMessages({
 
 			if (direction === ELoadMoreDirection.bottom) {
 				const hasMoreBottom = selectHasMoreBottomByChannelId(state as RootState, effectiveChannelId);
-				if (!hasMoreBottom || preventScrollbottom.current) {
+				if (!hasMoreBottom) {
 					dispatch(messagesActions.setViewingOlder({ channelId: effectiveChannelId, status: false }));
 					return;
 				}
@@ -305,20 +297,12 @@ function ChannelMessages({
 					return true;
 				}
 
-				const res = await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.AFTER_TIMESTAMP }));
-				const messages = (res?.payload as any)?.payload?.messages || [];
-				if (lastMessageId === messages[0]?.id) {
-					preventScrollbottom.current = true;
-				} else {
-					preventScrollbottom.current = false;
-				}
+				await dispatch(messagesActions.loadMoreMessage({ clanId, channelId, direction: Direction_Mode.AFTER_TIMESTAMP }));
 
 				dispatch(messagesActions.resetLoading());
 				// dispatch(messagesActions.setViewingOlder({ channelId, status: true }));
 				return true;
 			}
-
-			preventScrollbottom.current = false;
 
 			//load more in topic
 			if (isTopicBox) {

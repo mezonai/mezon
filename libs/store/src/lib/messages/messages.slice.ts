@@ -472,6 +472,12 @@ export const fetchMessages = createAsyncThunk(
 							} as ApiChannelMessageHeader)
 						: lastSentMessage);
 			}
+			// An API snapshot can predate a socket message received during this request.
+			const currentLastMessage = getMessagesState(getMessagesRootState(thunkAPI)).lastMessageByChannel[chlId];
+			const lastMessageChanged = currentLastMessage?.id !== state.messages.lastMessageByChannel[chlId]?.id;
+			if (lastMessageChanged && isOlderMessageId(lastSentMessage?.id, currentLastMessage?.id)) {
+				lastSentMessage = currentLastMessage;
+			}
 			if (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0)) {
 				thunkAPI.dispatch(
 					messagesActions.setLastMessage({
@@ -684,7 +690,7 @@ export const jumpToMessage = createAsyncThunk(
 				thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 				thunkAPI.dispatch(messagesActions.setLoadingJumpMessage(false));
 			}, 15000);
-			const channelMessages = selectViewportIdsByChannelId(getMessagesRootState(thunkAPI), channelId);
+			const channelMessages = selectViewportIdsByChannelId(getMessagesRootState(thunkAPI), topicId || channelId);
 			const indexMessage = channelMessages.indexOf(messageId);
 			let found = true;
 			if (indexMessage === -1) {
@@ -2538,11 +2544,27 @@ export const messagesSlice = createSlice({
 						addMany: !!offsetId && !state.channelMessages[channelId]?.ids?.includes(offsetId)
 					});
 
-					const messageIds = state.channelMessages[channelId]?.ids as string[];
+					let messageIds = state.channelMessages[channelId]?.ids as string[];
+					if (offsetId) {
+						// The cache may also contain a distant latest page or an acknowledged
+						// send. Only extend the current window with the page the API returned.
+						const connectedIds = new Set(action.payload.messages.map((message) => message.id));
+						const oldViewport = state.channelViewPortMessageIds[channelId] || [];
+						if (direction !== Direction_Mode.AROUND_TIMESTAMP && oldViewport.includes(offsetId)) {
+							oldViewport.forEach((id) => connectedIds.add(id));
+						}
+						if (lastSentMessageId && connectedIds.has(lastSentMessageId)) {
+							pendingMessages.forEach((message) => connectedIds.add(message.id));
+						}
+						const entities = state.channelMessages[channelId].entities;
+						messageIds = [...connectedIds]
+							.filter((id) => !!entities[id])
+							.sort((a, b) => orderMessageByIDAscending(entities[a], entities[b]));
+					}
 
 					if (messageIds?.length <= 50) {
 						state.channelViewPortMessageIds[channelId] = messageIds;
-						const showFab = !!lastSentMessageId && !messageIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
+						const showFab = !!lastSentMessageId && !messageIds.includes(lastSentMessageId as string);
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 						return;
 					} else {
@@ -2572,7 +2594,7 @@ export const messagesSlice = createSlice({
 						}
 
 						state.channelViewPortMessageIds[channelId] = newViewportIds;
-						const showFab = !!lastSentMessageId && !newViewportIds.includes(lastSentMessageId as string) && messageIds.length >= 20;
+						const showFab = !!lastSentMessageId && !newViewportIds.includes(lastSentMessageId as string);
 						state.isViewingOlderMessagesByChannelId[channelId] = showFab;
 					}
 				}
