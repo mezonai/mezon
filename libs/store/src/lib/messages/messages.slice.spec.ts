@@ -7,6 +7,7 @@ import {
 	addNewMessage,
 	fetchMessages,
 	fetchMessagesCached,
+	loadMoreMessage,
 	messagesActions,
 	messagesReducer,
 	resendMessage,
@@ -588,4 +589,27 @@ it('releases incoming same-user messages when an acknowledgement times out', asy
 	} finally {
 		jest.useRealTimers();
 	}
+});
+
+it.each(['channel', 'topic'])('allows %s paging while a different message scope is fetching', async (scope) => {
+	const { store, client } = setup();
+	const topicId = scope === 'topic' ? scope : undefined;
+	const args = { clanId: 'clan', channelId: 'channel', topicId };
+	const message = { ...serverReply(50), channel_id: scope };
+	store.dispatch(messagesActions.addOneMessage(message as any));
+	store.dispatch(messagesActions.setViewportIds({ channelId: scope, viewportIds: [message.id] }));
+	store.dispatch(
+		fetchMessages.pending('other-request', { clanId: 'clan', channelId: 'channel', topicId: scope === 'channel' ? 'topic' : undefined })
+	);
+	client.listChannelMessages.mockResolvedValue({ messages: [{ ...serverReply(49), channel_id: scope }] });
+	await store.dispatch(loadMoreMessage({ ...args, direction: 1 })).unwrap();
+	expect(client.listChannelMessages).toHaveBeenCalledWith({}, 'clan', 'channel', message.id, 1, 50, topicId);
+	expect(selectMessageIsLoadingByChannelId(store.getState() as any, scope)).toBe(false);
+});
+
+it('blocks overlapping loads within the same scope', async () => {
+	const { store, client } = setup();
+	store.dispatch(fetchMessages.pending('same-request', { clanId: 'clan', channelId: 'channel' }));
+	await store.dispatch(loadMoreMessage({ clanId: 'clan', channelId: 'channel', direction: 1 })).unwrap();
+	expect(client.listChannelMessages).not.toHaveBeenCalled();
 });

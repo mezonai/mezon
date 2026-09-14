@@ -26,7 +26,6 @@ import {
 	selectLatestMessageId,
 	selectMemberClanByUserId,
 	selectMessageEntitiesByChannelId,
-	selectMessageIsLoading,
 	selectMessageIsLoadingByChannelId,
 	selectMessageNotified,
 	selectMessageViewportIdsByChannelId,
@@ -266,7 +265,7 @@ function ChannelMessages({
 		async (direction: ELoadMoreDirection, cb?: IBeforeRenderCb) => {
 			const store = getStore();
 			const state = store.getState();
-			const isFetching = selectMessageIsLoading(state);
+			const isFetching = selectMessageIsLoadingByChannelId(state as RootState, effectiveChannelId);
 			if (isFetching) {
 				return;
 			}
@@ -380,19 +379,20 @@ function ChannelMessages({
 
 			lastLoadMoreTimestampRef.current = Date.now();
 
-			switch (direction) {
-				case LoadMoreDirection.Backwards:
-					currentScrollDirection.current = ELoadMoreDirection.top;
-					isLoadMore.current = true;
-					await loadMoreMessage(ELoadMoreDirection.top);
-					isLoadMore.current = false;
-					break;
-				case LoadMoreDirection.Forwards:
-					currentScrollDirection.current = ELoadMoreDirection.bottom;
-					isLoadMore.current = true;
-					await loadMoreMessage(ELoadMoreDirection.bottom);
-					isLoadMore.current = false;
-					break;
+			isLoadMore.current = true;
+			try {
+				switch (direction) {
+					case LoadMoreDirection.Backwards:
+						currentScrollDirection.current = ELoadMoreDirection.top;
+						await loadMoreMessage(ELoadMoreDirection.top);
+						break;
+					case LoadMoreDirection.Forwards:
+						currentScrollDirection.current = ELoadMoreDirection.bottom;
+						await loadMoreMessage(ELoadMoreDirection.bottom);
+						break;
+				}
+			} finally {
+				isLoadMore.current = false;
 			}
 		},
 		[loadMoreMessage]
@@ -783,6 +783,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		isJumpingToPresentRef
 	}) => {
 		const effectiveChannelId = topicId || channelId;
+		const isHistoryLoading = useAppSelector((state) => selectMessageIsLoadingByChannelId(state, effectiveChannelId));
+		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, effectiveChannelId));
+		const hasMoreBottom = useAppSelector((state) => selectHasMoreBottomByChannelId(state, effectiveChannelId));
 
 		const dispatch = useAppDispatch();
 		const { setSafeTimeout, clearSafeTimeout } = useSafeTimeout();
@@ -853,7 +856,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			isReady,
 			(event: { direction: LoadMoreDirection }) => {
 				onChange(event.direction);
-			}
+			},
+			{ scopeId: effectiveChannelId, isLoading: isHistoryLoading, isJumping: !!idMessageToJump, hasMoreTop, hasMoreBottom }
 		);
 
 		const { observeIntersectionForLoading } = useMessageObservers('thread', chatRef, null, null, channelId);

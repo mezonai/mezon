@@ -585,7 +585,7 @@ export const loadMoreMessage = createAsyncThunk(
 			// - loading
 			// - already have message to jump to
 			// Potential bug: if the idMessageToJump is not removed, the user will not be able to load more messages
-			if (state.loadingStatus === 'loading' || state.idMessageToJump?.id) {
+			if (state.loadingRequestsByChannel[chlId] > 0 || state.idMessageToJump?.id) {
 				return;
 			}
 
