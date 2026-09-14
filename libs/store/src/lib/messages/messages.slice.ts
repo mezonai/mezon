@@ -35,7 +35,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCr
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { t } from 'i18next';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ChannelMessage, MessageButtonClicked } from 'mezon-js';
-import { safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -1485,7 +1485,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				fakeMess = { ...fakeMess, attachments: preparedMessage?.attachments ?? attachmentsMessage };
 			}
 			const needUpload = attachments?.some((attachment) => attachment.uploadPath);
-			const usePresignFirst = Boolean(needUpload) && !anonymous && !topicId;
+			// Thread sends keep their upload-first contract so failed PUTs remain retryable
+			// instead of leaving an acknowledged message pointing at a missing file.
+			const usePresignFirst = Boolean(needUpload) && !anonymous && !topicId && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
 			if (usePresignFirst) {
 				content = { ...content, presign_finish: [] };
 				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
@@ -1982,7 +1984,7 @@ export const messagesSlice = createSlice({
 			delete state.queueSending[action.payload];
 		},
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
-			const { code, channel_id: channelId, id: messageId, isMe, content, topic_id } = action.payload;
+			const { code, channel_id: channelId, id: messageId, content, topic_id } = action.payload;
 
 			if (!channelId || !messageId) return state;
 
@@ -1992,7 +1994,6 @@ export const messagesSlice = createSlice({
 				});
 			}
 			const messageChannelId = topic_id !== '0' && topic_id && !content?.tp ? topic_id : channelId;
-			const channelEntity = state.channelMessages[messageChannelId];
 
 			switch (code) {
 				case TypeMessage.Welcome:
@@ -2008,12 +2009,8 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Location:
 				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
-					if (isMe) {
-						const existSendingMessage = Object.keys(state.queueSending).some((id) => Boolean(channelEntity?.entities[id]));
-						if (existSendingMessage) {
-							return;
-						}
-					}
+					// A same-user event can come from another device. Accept it and let
+					// confirmSentMessage reconcile our own send using the acknowledged ID.
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({
 							state,
@@ -2386,6 +2383,8 @@ export const messagesSlice = createSlice({
 		) => {
 			const { channelId, messageId, keep50items } = payload;
 			const currentViewport = state.channelViewPortMessageIds[channelId] || [];
+			// ACK and socket echo can arrive in either order; each server ID gets one row.
+			if (currentViewport.includes(messageId)) return;
 
 			const updatedViewport =
 				currentViewport.length >= 50 ? [...currentViewport.slice(keep50items ? -49 : 1), messageId] : [...currentViewport, messageId];

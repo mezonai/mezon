@@ -1,8 +1,10 @@
 import { generatePathAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import { configureStore } from '@reduxjs/toolkit';
+import { ChannelStreamMode } from 'mezon-js';
 import { shouldForceApiCall } from '../cache-metadata';
 import { handleSendTopic } from '../topicDiscussion/topicDiscussions.slice';
 import {
+	addNewMessage,
 	fetchMessages,
 	fetchMessagesCached,
 	messagesActions,
@@ -32,7 +34,7 @@ jest.mock('@mezon/utils', () => ({
 	isYouTubeLink: jest.fn(),
 	isTikTokLink: jest.fn()
 }));
-jest.mock('mezon-js', () => ({ safeJSONParse: JSON.parse }));
+jest.mock('mezon-js', () => ({ safeJSONParse: JSON.parse, ChannelStreamMode: { STREAM_MODE_THREAD: 6 } }));
 jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: { error: jest.fn() } }));
 jest.mock('../account/account.slice', () => ({ selectAllAccount: () => ({ user: { id: 'user' } }) }));
@@ -426,4 +428,69 @@ it('does not suppress an own message in another channel while a topic upload is 
 	expect(store.getState().messages.channelMessages['another-channel'].entities['10']).toBeDefined();
 	presign.resolve([prepared]);
 	await request.unwrap();
+});
+
+it('keeps a failed thread upload retryable without publishing a broken attachment', async () => {
+	const upload = deferred<string[]>();
+	jest.mocked(getWebUploadedAttachments).mockReturnValueOnce(upload.promise);
+	const { store, client } = setup();
+	const request = store.dispatch(sendMessage({ ...payload, channelId: 'thread', mode: ChannelStreamMode.STREAM_MODE_THREAD }));
+	await new Promise(setImmediate);
+	const [id] = store.getState().messages.channelMessages.thread.ids;
+	expect(store.getState().messages.channelMessages.thread.entities[id].isSending).toBe(true);
+	const callsBeforeUpload = client.writeChatMessage.mock.calls.length;
+	upload.reject(new Error('Upload failed'));
+	await expect(request.unwrap()).rejects.toMatchObject({ message: 'Upload failed' });
+	expect(callsBeforeUpload).toBe(0);
+	expect(client.writeChatMessage).not.toHaveBeenCalled();
+	const failed = store.getState().messages.channelMessages.thread.entities[id];
+	expect(failed.isError).toBe(true);
+	expect(failed.isSending).toBe(false);
+	expect(failed.attachments?.[0]).toHaveProperty('local_source', 'blob:independent-preview');
+	expect(store.getState().messages.queueSending).toEqual({});
+
+	await store.dispatch(resendMessage({ channelId: 'thread', messageId: id as string })).unwrap();
+	expect(client.writeChatMessage).toHaveBeenCalledTimes(1);
+	expect(client.updateChannelMessage).not.toHaveBeenCalled();
+	expect(store.getState().messages.channelViewPortMessageIds.thread).toEqual(['900']);
+	expect(store.getState().messages.channelMessages.thread.entities['900'].isSending).toBe(false);
+});
+
+it.each(['topic', 'thread', 'channel'])('receives another same-user message in %s during a pending upload', async (scope) => {
+	const presign = deferred<(typeof prepared)[]>();
+	jest.mocked(generatePathAttachments).mockReturnValueOnce(presign.promise);
+	const { store } = setup();
+	const topicId = scope === 'topic' ? scope : undefined;
+	const request = store.dispatch(
+		sendMessage({
+			...payload,
+			channelId: topicId ? 'channel' : scope,
+			topicId,
+			mode: scope === 'thread' ? ChannelStreamMode.STREAM_MODE_THREAD : payload.mode
+		})
+	);
+	const other = { ...serverReply(5), channel_id: scope, topic_id: topicId, isMe: true, sender_id: 'user' };
+	await store.dispatch(addNewMessage(other as any)).unwrap();
+	const received = store.getState().messages.channelMessages[scope].entities[other.id];
+	presign.resolve([prepared]);
+	await request.unwrap();
+	expect(received).toBeDefined();
+	expect(store.getState().messages.channelViewPortMessageIds[scope]).toContain(other.id);
+});
+
+it.each([true, false])('deduplicates a server echo arriving before ACK: %s', async (echoBeforeAck) => {
+	const ack = deferred<{ message_id: string }>();
+	const { store, client } = setup();
+	client.writeChatMessage.mockReturnValueOnce(ack.promise);
+	const request = store.dispatch(sendMessage({ ...payload, topicId: 'topic', attachments: [], content: { t: 'Reply' } }));
+	await new Promise(setImmediate);
+	const echo = { ...serverReply(5), channel_id: 'topic', topic_id: 'topic', isMe: true, sender_id: 'user' };
+	if (echoBeforeAck) await store.dispatch(addNewMessage(echo as any)).unwrap();
+	ack.resolve({ message_id: echo.id });
+	await request.unwrap();
+	if (!echoBeforeAck) await store.dispatch(addNewMessage(echo as any)).unwrap();
+	await store.dispatch(addNewMessage(echo as any)).unwrap();
+	expect(store.getState().messages.channelMessages.topic.ids).toEqual([echo.id]);
+	expect(store.getState().messages.channelViewPortMessageIds.topic).toEqual([echo.id]);
+	expect(store.getState().messages.queueSending).toEqual({});
 });
