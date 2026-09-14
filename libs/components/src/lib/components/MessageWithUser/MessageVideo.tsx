@@ -1,5 +1,12 @@
 import { Icons } from '@mezon/ui';
-import { calculateMediaDimensions, createImgproxyUrl, useIsIntersecting, useResizeObserver, type ObserveFn } from '@mezon/utils';
+import {
+	calculateMediaDimensions,
+	createImgproxyUrl,
+	useIsIntersecting,
+	useResizeObserver,
+	type ObserveFn,
+	type PreSendMediaAttachment
+} from '@mezon/utils';
 
 import type { ApiMessageAttachment } from 'mezon-js';
 import type { Movie, Track } from 'mp4box';
@@ -409,6 +416,7 @@ function VideoSkeleton({ style }: { style: React.CSSProperties }) {
 
 function VideoPoster({
 	thumbnailUrl,
+	onThumbnailError,
 	style,
 	onPlay,
 	disablePlay = false,
@@ -417,6 +425,7 @@ function VideoPoster({
 	boxHeight
 }: {
 	thumbnailUrl?: string;
+	onThumbnailError: () => void;
 	style: React.CSSProperties;
 	onPlay: () => void;
 	disablePlay?: boolean;
@@ -432,7 +441,7 @@ function VideoPoster({
 			style={style}
 			onClick={disablePlay ? undefined : onPlay}
 		>
-			{thumbnailUrl && <img src={thumbnailUrl} alt="" className="w-full h-full object-cover" loading="lazy" />}
+			{thumbnailUrl && <img src={thumbnailUrl} onError={onThumbnailError} alt="" className="w-full h-full object-cover" loading="lazy" />}
 			{isSending ? (
 				<AttachmentSendingIndicator showLabel boxWidth={boxWidth} boxHeight={boxHeight} />
 			) : (
@@ -468,7 +477,13 @@ function DefaultVideo({
 	const isUploading = isSending || isPresignPending;
 	const { width, height, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
-	const thumbnailUrl = isPresignPending ? undefined : resolveVideoThumbnailUrl(attachmentData, width, height);
+	const localSource = (attachmentData as PreSendMediaAttachment).local_source;
+	const [failedLocalSource, setFailedLocalSource] = useState<string>();
+	const hasLocalPoster = Boolean(localSource && localSource !== failedLocalSource);
+	const thumbnailUrl = hasLocalPoster ? localSource : isPresignPending ? undefined : resolveVideoThumbnailUrl(attachmentData, width, height);
+	const handleThumbnailError = useCallback(() => {
+		if (hasLocalPoster) setFailedLocalSource(localSource);
+	}, [hasLocalPoster, localSource]);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [showControl, setShowControl] = useState(true);
@@ -515,7 +530,7 @@ function DefaultVideo({
 		}
 	}, [showControl, activated]);
 
-	const showMedia = isUploading || isIntersecting;
+	const showMedia = isUploading || isIntersecting || hasLocalPoster;
 
 	return (
 		<div ref={containerRef} className="relative overflow-hidden group rounded-lg max-w-full">
@@ -524,6 +539,7 @@ function DefaultVideo({
 			{showMedia && !activated && (
 				<VideoPoster
 					thumbnailUrl={thumbnailUrl}
+					onThumbnailError={handleThumbnailError}
 					style={mediaStyle}
 					onPlay={handlePlay}
 					disablePlay={isUploading}

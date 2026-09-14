@@ -8,16 +8,14 @@ import {
 	ThreadNameTextField,
 	UserMentionList
 } from '@mezon/components';
-import { useChannelMembers, useDragAndDrop, useMessageValue, useReference, useThreadMessage, useThreads } from '@mezon/core';
+import { useChannelMembers, useDragAndDrop, useReference, useThreadMessage, useThreads } from '@mezon/core';
 import {
 	channelsActions,
 	checkDuplicateThread,
+	composeActions,
 	createNewChannel,
-	messagesActions,
 	referencesActions,
 	selectAllChannelMembers,
-	selectCloseMenu,
-	selectComposeInputByChannelId,
 	selectCurrentChannelCategoryId,
 	selectCurrentChannelId,
 	selectCurrentChannelParentId,
@@ -25,7 +23,6 @@ import {
 	selectMemberClanByUserId,
 	selectOpenThreadMessageState,
 	selectSession,
-	selectStatusMenu,
 	selectThreadCurrentChannel,
 	threadsActions,
 	useAppDispatch,
@@ -70,8 +67,6 @@ const ThreadBox = () => {
 	const { setOverUploadingState } = useDragAndDrop();
 	const { messageThreadError, isPrivate, nameValueThread, valueThread, setNameValueThread } = useThreads();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
-	const { setRequestInput } = useMessageValue();
-	const request = useAppSelector((state) => selectComposeInputByChannelId(state, `${currentChannelId}true`));
 	const { addMemberToThread } = useChannelMembers({
 		channelId: currentChannelId,
 		mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
@@ -79,8 +74,6 @@ const ThreadBox = () => {
 	const membersOfParent = useAppSelector((state) =>
 		threadCurrentChannel?.parent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parent_id as string) : null
 	);
-	const closeMenu = useSelector(selectCloseMenu);
-	const statusMenu = useSelector(selectStatusMenu);
 	const attachmentData = useMemo(() => {
 		if (attachmentFilteredByChannelId === null) {
 			return [];
@@ -90,7 +83,7 @@ const ThreadBox = () => {
 	}, [attachmentFilteredByChannelId]);
 
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
-		channelId: threadCurrentChannel?.parent_id || currentChannelId || '',
+		channelId: threadCurrentChannel?.channel_id || '',
 		mode: ChannelStreamMode.STREAM_MODE_THREAD,
 		username: sessionUser?.username
 	});
@@ -206,20 +199,13 @@ const ThreadBox = () => {
 						if (hasUserMessage) {
 							await sendMessageThread(content, mentions, attachments, references, thread);
 						}
-						await dispatch(
-							messagesActions.fetchMessages({
-								clanId: currentClanId || '',
-								channelId: thread.channel_id as string,
-								isFetchingLatestMessages: true
-							})
-						);
 						dispatch(
 							referencesActions.setAtachmentAfterUpload({
 								channelId: currentInputChannelId,
 								files: []
 							})
 						);
-						setRequestInput({ ...request, valueTextInput: '', content: '' }, true);
+						dispatch(composeActions.clearComposeInput({ channelId: `${currentChannelId}true` }));
 						setNameValueThread('');
 					}
 				} else {
@@ -234,14 +220,13 @@ const ThreadBox = () => {
 		},
 		[
 			createThread,
+			currentChannelId,
 			currentClanId,
 			dispatch,
 			sendMessageThread,
 			threadCurrentChannel,
 			sessionUser,
-			setRequestInput,
 			currentInputChannelId,
-			request,
 			setNameValueThread,
 			addMemberToThread,
 			valueThread,
@@ -272,7 +257,7 @@ const ThreadBox = () => {
 					return false;
 				}
 
-				const combinedAttachments = [...(attachments || []), ...attachmentData];
+				const combinedAttachments = attachments ?? attachmentData;
 				if (combinedAttachments.length > MAX_FILE_ATTACHMENTS) {
 					setOverUploadingState(true, UploadLimitReason.COUNT);
 					return false;
@@ -437,11 +422,11 @@ const ThreadBox = () => {
 	return (
 		<div
 			ref={threadBoxRef}
-			className="flex flex-col flex-1 justify-end border-l border-color-primary bg-theme-chat"
+			className="flex min-h-0 min-w-0 flex-col flex-1 justify-end border-l border-color-primary bg-theme-chat"
 			data-e2e={generateE2eId('discussion.box.thread')}
 		>
 			{threadCurrentChannel && (
-				<div className={`overflow-y-auto  max-w-widthMessageViewChat overflow-x-hidden flex-1`}>
+				<div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
 					<MemoizedChannelMessages
 						isThreadBox={true}
 						userIdsFromThreadBox={mapToMemberIds}
@@ -456,7 +441,7 @@ const ThreadBox = () => {
 				</div>
 			)}
 			{!threadCurrentChannel && (
-				<div className={`flex flex-col overflow-y-auto w-full  px-3`} onPaste={onPastedFiles}>
+				<div className="flex min-h-0 min-w-0 flex-col overflow-y-auto w-full px-3" onPaste={onPastedFiles}>
 					<div className="flex flex-col justify-end flex-grow">
 						{!threadCurrentChannel && (
 							<div className="relative flex text-theme-primary-active items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
@@ -539,58 +524,29 @@ const ThreadBox = () => {
 				</div>
 			)}
 			<PreviewOgp contextId={currentInputChannelId} />
-			<div className={`flex-shrink-0 flex flex-col pb-4 px-3  h-auto relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}>
+			<div className="relative shrink-0 px-3 pb-4">
 				<div
-					className={`h-fit w-full bg-transparent shadow-md rounded-lg min-h-[45px] ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'} ${messageThreadError && !threadCurrentChannel ? 'border-[#B91C1C]' : ''}`}
+					className={`flex w-full min-w-0 items-start gap-2 rounded-lg border-theme-primary bg-theme-surface ${checkAttachment ? 'rounded-t-none' : ''} ${messageThreadError && !threadCurrentChannel ? 'border-[#B91C1C]' : ''}`}
+					onContextMenu={handleChildContextMenu}
 				>
-					{!threadCurrentChannel ? (
-						<div
-							className={`flex flex-inline items-start gap-2 box-content w-full bg-theme-surface rounded-lg relative border-theme-primary ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
-							onContextMenu={handleChildContextMenu}
-						>
-							<FileSelectionButton currentChannelId={currentInputChannelId} />
-							<div className="flex-1 min-w-0">
-								<MentionReactInput
-									currentChannelId={currentInputChannelId}
-									handlePaste={onPastedFiles}
-									onSend={handleSendWithLimitCheck}
-									onTyping={handleTypingDebounced}
-									listMentions={UserMentionList({
-										channelID: currentChannelId as string,
-										channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
-									})}
-									isThread={true}
-									isThreadbox={true}
-									allowEmptySend={true}
-								/>
-							</div>
-						</div>
-					) : (
-						<div
-							className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0 bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}
-						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
-						>
-							<FileSelectionButton currentChannelId={currentInputChannelId} />
-							<div className={`w-[calc(100%_-_58px)] bg-transparent gap-3 flex items-center rounded-e-md`}>
-								<div
-									className={`w-full border-none rounded-r-lg gap-3 relative whitespace-pre-wrap`}
-									onContextMenu={handleChildContextMenu}
-								>
-									<MentionReactInput
-										currentChannelId={currentInputChannelId}
-										handlePaste={onPastedFiles}
-										onSend={handleSendWithLimitCheck}
-										onTyping={handleTypingDebounced}
-										listMentions={UserMentionList({
-											channelID: currentChannelId as string,
-											channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
-										})}
-										isThreadbox
-									/>
-								</div>
-							</div>
-						</div>
-					)}
+					<FileSelectionButton currentChannelId={currentInputChannelId} />
+					<div className="min-w-0 flex-1">
+						<MentionReactInput
+							key={currentInputChannelId}
+							currentChannelId={currentInputChannelId}
+							mode={ChannelStreamMode.STREAM_MODE_THREAD}
+							handlePaste={onPastedFiles}
+							onSend={handleSendWithLimitCheck}
+							onTyping={handleTypingDebounced}
+							listMentions={UserMentionList({
+								channelID: currentChannelId as string,
+								channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
+							})}
+							isThread={!threadCurrentChannel}
+							isThreadbox
+							allowEmptySend={!threadCurrentChannel}
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
