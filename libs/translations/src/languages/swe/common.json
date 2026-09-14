@@ -214,7 +214,8 @@
 		"previousChannels": "Tidigare kanaler",
 		"mentions": "Nämningar",
 		"unreadChannels": "Olästa kanaler",
-		"noResults": "Verkar som att du inte hittar vad du söker?"
+		"noResults": "Verkar som att du inte hittar vad du söker?",
+		"search": "Sök kanaler"
 	},
 	"userProfile": {
 		"aboutMe": "Om mig",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "Ogiltig e-post eller lösenord",
 		"qr": {
 			"signIn": "Logga in med QR-kod",
-			"useMobile": "Använd Mezon på mobilen för att scanna QR"
+			"useMobile": "Använd Mezon på mobilen för att scanna QR",
+			"openToConfirm": "Öppna Mezon på din telefon för att bekräfta inloggningen",
+			"openApp": "Öppna appen"
 		},
 		"loginToMezon": "Logga in på ditt Mezon-konto",
 		"emailAddress": "E-postadress",
@@ -375,7 +378,8 @@
 		"membersOnline": "Online-medlemmar",
 		"noQuestions": "Du har inga frågor än. Ställ en fråga för denna clan först!!",
 		"noRules": "Du har inga regler än. Ställ en regel för denna clan först!!",
-		"noMissions": "Du har inga uppdrag än. Ställ ett uppdrag för denna clan först!!"
+		"noMissions": "Du har inga uppdrag än. Ställ ett uppdrag för denna clan först!!",
+		"emptyGuideLine": "Inga riktlinjer har lagts till ännu!"
 	},
 	"updateUsername": {
 		"enterUsername": "Ange Mezon namn",

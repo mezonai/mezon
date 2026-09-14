@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "La solicitud se ha cancelado",
+	"error_2": "Error desconocido",
+	"error_3": "Mmm, algo no parece correcto.",
+	"error_4": "Se agotó el tiempo de conexión. Inténtalo de nuevo.",
+	"error_5": "Recurso no encontrado",
+	"error_6": "El recurso ya existe",
+	"error_7": "Permiso denegado",
+	"error_8": "Recursos agotados",
+	"error_9": "No se cumple la condición previa",
+	"error_10": "Se interrumpió la acción. Inténtalo de nuevo.",
+	"error_11": "Ese valor no es válido.",
+	"error_12": "Operación no implementada",
+	"error_13": "Error interno",
+	"error_14": "Los servidores están ocupados. Inténtalo de nuevo en unos momentos.",
+	"error_15": "Pérdida de datos",
+	"error_16": "La sesión ha caducado. Inicia sesión de nuevo."
+}

@@ -214,7 +214,8 @@
 		"previousChannels": "이전 채널",
 		"mentions": "알림",
 		"unreadChannels": "읽지 않은 채널",
-		"noResults": "무엇을 찾고 계신가요?"
+		"noResults": "무엇을 찾고 계신가요?",
+		"search": "채널 검색"
 	},
 	"userProfile": {
 		"aboutMe": "소개",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "이메일 또는 비밀번호가 유효하지 않습니다",
 		"qr": {
 			"signIn": "QR 로 로그인",
-			"useMobile": "모바일에서 Mezon 을 사용하여 QR 스캔"
+			"useMobile": "모바일에서 Mezon 을 사용하여 QR 스캔",
+			"openToConfirm": "휴대폰에서 Mezon을 열어 로그인을 확인하세요",
+			"openApp": "앱 열기"
 		},
 		"loginToMezon": "Mezon 계정 로그인",
 		"emailAddress": "이메일 주소",
@@ -375,7 +378,8 @@
 		"membersOnline": "온라인 멤버",
 		"noQuestions": "질문이 아직 없습니다. 이 클랜을 위해 질문을 먼저 설정하세요!!",
 		"noRules": "규칙이 아직 없습니다. 이 클랜을 위해 규칙을 먼저 설정하세요!!",
-		"noMissions": "미션이 아직 없습니다. 이 클랜을 위해 미션을 먼저 설정하세요!!"
+		"noMissions": "미션이 아직 없습니다. 이 클랜을 위해 미션을 먼저 설정하세요!!",
+		"emptyGuideLine": "아직 추가된 가이드라인이 없습니다!"
 	},
 	"updateUsername": {
 		"enterUsername": "Mezon 이름 입력",
