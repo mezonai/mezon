@@ -1,6 +1,4 @@
-import { LiveKitRoom } from '@livekit/components-react';
-import '@livekit/components-styles';
-import { JoinForm, MyVideoConference, VideoPreview } from '@mezon/components';
+import { JoinForm, MezonSfuVoiceRoom, VideoPreview, type SfuJoinRole } from '@mezon/components';
 import {
 	authActions,
 	generateMeetTokenExternal,
@@ -8,16 +6,16 @@ import {
 	selectExternalToken,
 	selectGuestAccessToken,
 	selectJoinCallExtStatus,
+	selectVoiceFullScreen,
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { GUEST_NAME, IS_MOBILE } from '@mezon/utils';
+import { GUEST_NAME } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import ChatStreamExternal from './ChatMeeting';
 
 // Permissions popup component
 const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
@@ -61,13 +59,20 @@ const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
 	);
 });
 
+const sanitizeUsername = (val: string) =>
+	val
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, '')
+		.slice(0, 12);
+
 export default function PreJoinCalling() {
 	const { t } = useTranslation('common');
 	const account = useSelector(selectAllAccount);
 	const getDisplayName = account?.user?.display_name || account?.user?.username;
 	const getAvatar = account?.user?.avatar_url;
-	const [cameraOn, setCameraOn] = useState(false);
-	const [username, setUsername] = useState(getDisplayName || '');
+	const [cameraOn] = useState(false);
+	const [username, setUsername] = useState(() => sanitizeUsername(getDisplayName || ''));
+	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [avatar, setAvatar] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	// State for permissions
@@ -86,42 +91,44 @@ export default function PreJoinCalling() {
 	const getExternalToken = useSelector(selectExternalToken);
 	const getJoinCallExtStatus = useSelector(selectJoinCallExtStatus);
 	const getGuestAccessToken = useSelector(selectGuestAccessToken);
-
-	function decodeJWT(token: string) {
-		try {
-			const parts = token.split('.');
-			if (parts.length !== 3) throw new Error('JWT must have 3 parts');
-			const payload = parts[1];
-			const decoded = atob(payload);
-			return JSON.parse(decoded);
-		} catch (error) {
-			toast.error(t('invalidJWT'));
-			return {};
-		}
-	}
-	function createGuestSessionData(token: string) {
-		const payload = decodeJWT(token);
-		const now = Math.floor(Date.now() / 1000);
-		return {
-			created: false,
-			token,
-			created_at: now,
-			expires_at: payload.exp,
-			refresh_expires_at: undefined,
-			username: payload.usn || payload.usr || payload.sub || GUEST_NAME,
-			user_id: payload.uid?.toString(),
-			vars: payload.vrs || {},
-			is_remember: false
-		};
-	}
+	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 
 	useEffect(() => {
+		function decodeJWT(token: string) {
+			try {
+				const parts = token.split('.');
+				if (parts.length !== 3) throw new Error('JWT must have 3 parts');
+				const payload = parts[1];
+				const decoded = atob(payload);
+				return JSON.parse(decoded);
+			} catch (error) {
+				toast.error(t('invalidJWT'));
+				return {};
+			}
+		}
+
+		function createGuestSessionData(token: string) {
+			const payload = decodeJWT(token);
+			const now = Math.floor(Date.now() / 1000);
+			return {
+				created: false,
+				token,
+				created_at: now,
+				expires_at: payload.exp,
+				refresh_expires_at: undefined,
+				username: payload.usn || payload.usr || payload.sub || GUEST_NAME,
+				user_id: payload.uid?.toString(),
+				vars: payload.vrs || {},
+				is_remember: false
+			};
+		}
+
 		if (getGuestAccessToken && getGuestAccessToken !== '0') {
 			const session = createGuestSessionData(getGuestAccessToken as string);
 			dispatch(authActions.setSession(session));
 			dispatch(authActions.checkSessionWithToken());
 		}
-	}, [getGuestAccessToken, dispatch]);
+	}, [getGuestAccessToken, dispatch, t]);
 
 	useEffect(() => {
 		if (getJoinCallExtStatus === 'error') {
@@ -129,7 +136,7 @@ export default function PreJoinCalling() {
 		}
 	}, [getJoinCallExtStatus]);
 
-	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
+	const serverUrl = process.env.NX_CHAT_APP_SFU_WS_URL || process.env.NX_CHAT_APP_MEET_WS_URL || '';
 
 	const closePermissionsPopup = useCallback(() => {
 		setPermissionsState((prev) => ({
@@ -163,28 +170,54 @@ export default function PreJoinCalling() {
 		};
 	}, []);
 
-	const isUser = getDisplayName && getAvatar;
+	const isUser = !!(getDisplayName && getAvatar);
 
 	// Handle Join Meeting
-	const joinMeeting = useCallback(async () => {
-		if (!username.trim() && !getDisplayName) {
-			setError('Please enter your name before joining the meeting.');
-			return;
+	const joinMeeting = useCallback(
+		async (role: SfuJoinRole = 'speaker') => {
+			const trimmed = username.trim();
+			if (!trimmed) {
+				setError('Please enter your name before joining the meeting.');
+				return;
+			}
+
+			if (!/^[a-z0-9]{1,12}$/.test(trimmed)) {
+				setError('Username must be 1 to 12 characters, containing only 0-9 and a-z.');
+				return;
+			}
+
+			setError(null);
+			setAvatar(avatar as string);
+			setJoinRole(role);
+
+			await dispatch(
+				generateMeetTokenExternal({
+					token: code as string,
+					username: trimmed,
+					metadata: '',
+					isGuest: !isUser as boolean
+				})
+			);
+		},
+		[dispatch, username, isUser, code, avatar]
+	);
+
+	const handleRefreshToken = useCallback(async () => {
+		try {
+			const res = await dispatch(
+				generateMeetTokenExternal({
+					token: code as string,
+					username,
+					metadata: '',
+					isGuest: !isUser
+				})
+			).unwrap();
+			return res?.token;
+		} catch (err) {
+			console.error('Error refreshing external meet token:', err);
+			return undefined;
 		}
-
-		setError(null);
-		setAvatar(avatar as string);
-		const fullStringNameAndAvatar = isUser ? JSON.stringify({ extName: username, extAvatar: getAvatar }) : JSON.stringify({ extName: username });
-
-		await dispatch(
-			generateMeetTokenExternal({
-				token: code as string,
-				username: account?.user?.id || username,
-				metadata: fullStringNameAndAvatar,
-				isGuest: !isUser as boolean
-			})
-		);
-	}, [dispatch, username, account?.user?.id, getDisplayName, code]);
+	}, [dispatch, code, username, isUser]);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -207,36 +240,31 @@ export default function PreJoinCalling() {
 		dispatch(voiceActions.resetExternalCall());
 	}, [dispatch]);
 
+	const toggleChat = useCallback(() => {
+		dispatch(voiceActions.setToggleChatBox());
+	}, [dispatch]);
+
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<div className="h-screen w-screen flex">
 			{getExternalToken ? (
-				<LiveKitRoom
-					ref={containerRef}
-					id="livekitRoom"
-					key={getExternalToken}
-					audio={IS_MOBILE as boolean}
-					token={getExternalToken}
-					serverUrl={serverUrl}
-					data-lk-theme="default"
-					className="h-full flex-1 flex"
-					options={{
-						videoCaptureDefaults: {
-							resolution: { width: 640, height: 360 },
-							frameRate: 24
-						}
-					}}
-				>
-					<MyVideoConference
+				<div ref={containerRef} className="h-full flex-1 flex">
+					<MezonSfuVoiceRoom
 						token={getExternalToken}
-						url={serverUrl}
-						isExternalCalling={true}
+						joinRole={joinRole}
+						roomId={code as string}
+						serverUrl={serverUrl}
 						channelLabel={'Meeting Room'}
+						isChatOpen={false}
+						isFullScreen={!!isVoiceFullScreen}
+						isExternalCalling={true}
+						onRefreshToken={handleRefreshToken}
 						onLeaveRoom={handleLeaveRoom}
 						onFullScreen={handleFullScreen}
+						onToggleChat={toggleChat}
+						username={username}
 					/>
-					<ChatStreamExternal />
-				</LiveKitRoom>
+				</div>
 			) : (
 				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white flex-1">
 					<div className="w-full max-w-3xl px-4 py-8 flex flex-col items-center">
@@ -247,7 +275,7 @@ export default function PreJoinCalling() {
 						</div>
 
 						{/* Video Preview */}
-						<div className="w-full max-w-xl bg-zinc-800 rounded-lg overflow-hidden">
+						<div className="w-full max-w-xl bg-zinc-800 rounded-lg">
 							<div className="p-6 flex flex-col items-center">
 								<VideoPreview avatarExist={getAvatar} cameraOn={cameraOn} stream={streamRef.current} />
 								<JoinForm loadingStatus={getJoinCallExtStatus} username={username} setUsername={setUsername} onJoin={joinMeeting} />

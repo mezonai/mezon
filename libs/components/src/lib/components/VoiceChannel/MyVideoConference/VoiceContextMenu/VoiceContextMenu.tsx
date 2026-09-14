@@ -122,7 +122,8 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		setIsKicking(true);
 		dispatch(voiceActions.closeVoiceContextMenu());
 
-		if (!room?.name) {
+		const userId = member?.user?.id;
+		if (!userId) {
 			isKickingRef.current = false;
 			setIsKicking(false);
 			return;
@@ -140,7 +141,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			isKickingRef.current = false;
 			setIsKicking(false);
 		}
-	}, [dispatch, member?.user?.id, room]);
+	}, [dispatch, member?.user?.id]);
 
 	const handleMuteMember = useCallback(async () => {
 		if (isMutingRef.current) return;
@@ -149,7 +150,8 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 		setIsMuting(true);
 		dispatch(voiceActions.closeVoiceContextMenu());
 
-		if (!room?.name) {
+		const userId = member?.user?.id;
+		if (!userId) {
 			isMutingRef.current = false;
 			setIsMuting(false);
 			return;
@@ -167,7 +169,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupM
 			isMutingRef.current = false;
 			setIsMuting(false);
 		}
-	}, [room, dispatch, member?.user?.id]);
+	}, [dispatch, member?.user?.id]);
 
 	const handleGiveFlowers = useCallback(async () => {
 		if (Date.now() < flowerCooldownUntil.current) {

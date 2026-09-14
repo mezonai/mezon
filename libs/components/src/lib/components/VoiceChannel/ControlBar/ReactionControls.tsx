@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { memo } from 'react';
 import { EmojiReactionControl } from './EmojiReactionControl';
 import { SoundReactionControl } from './SoundReactionControl';
-import { VoiceInteractiveControl } from './VoiceInteractiveControl';
 import { useReactionControls } from './hooks/useReactionControls';
 
 interface ReactionControlsProps {
@@ -13,16 +12,7 @@ interface ReactionControlsProps {
 }
 
 export const ReactionControls = memo(({ isGroupCall, isGridView, isShowMember, className }: ReactionControlsProps) => {
-	const {
-		showEmojiPanel,
-		setShowEmojiPanel,
-		showSoundPanel,
-		setShowSoundPanel,
-		showVoiceInteractive,
-		setShowVoiceInteractive,
-		handleEmojiSelect,
-		handleSoundSelect
-	} = useReactionControls();
+	const { showEmojiPanel, setShowEmojiPanel, showSoundPanel, setShowSoundPanel, handleEmojiSelect, handleSoundSelect } = useReactionControls();
 
 	if (isGroupCall) {
 		return null;
@@ -44,7 +34,6 @@ export const ReactionControls = memo(({ isGroupCall, isGridView, isShowMember, c
 				onVisibleChange={setShowSoundPanel}
 				onSoundSelect={handleSoundSelect}
 			/>
-			<VoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={setShowVoiceInteractive} />
 		</div>
 	);
 });

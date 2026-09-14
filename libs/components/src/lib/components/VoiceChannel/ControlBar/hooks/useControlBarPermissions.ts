@@ -24,6 +24,7 @@ export function useControlBarPermissions(controls?: ControlBarControls) {
 
 		// Recording is a purely local capture — it needs no publish permission.
 		visible.recording ??= true;
+		visible.voiceInteractive ??= true;
 
 		if (!localPermissions) {
 			visible.camera = false;

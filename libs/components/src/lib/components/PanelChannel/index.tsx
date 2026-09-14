@@ -1,11 +1,10 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker } from '@mezon/core';
+import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import type { MuteChannelPayload } from '@mezon/store';
 import {
 	FAVORITE_CATEGORY_ID,
 	channelsActions,
 	clansActions,
-	hasGrandchildModal,
 	notificationSettingActions,
 	selectAllChannelsFavorite,
 	selectCategoryById,
@@ -49,6 +48,7 @@ import type { Coords } from '../ChannelLink';
 import ModalConfirm from '../ModalConfirm';
 import GroupPanels from './GroupPanels';
 import ItemPanel from './ItemPanel';
+import { usePanelPosition } from './usePanelPosition';
 
 type PanelChannel = {
 	coords: Coords;
@@ -135,8 +135,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, currentClanId as string));
-	const panelRef = useRef<HTMLDivElement | null>(null);
-	const [positionTop, setPositionTop] = useState(false);
+
 	const [nameChildren, setNameChildren] = useState('');
 	const [mutedUntil, setmutedUntil] = useState('');
 	const [defaultNotifiName, setDefaultNotifiName] = useState('');
@@ -155,7 +154,6 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const hasArchiveChannelPermission = hasClanOwnerPermission || hasAdminPermission || canManageClan || canManageChannel || isChannelCreator;
 	const hasManageThreadPermission = (canManageThread && isChannelCreator) || hasClanOwnerPermission || hasAdminPermission;
 	const currentCategory = useAppSelector((state) => selectCategoryById(state, channel?.category_id as string));
-	const hasModalInChild = useSelector(hasGrandchildModal);
 	const favoriteChannel = useSelector(selectAllChannelsFavorite);
 	const [isFavorite, setIsFavorite] = useState<boolean>(false);
 	const navigate = useNavigate();
@@ -222,7 +220,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const handleCloseModalConfirm = () => {
 		dispatch(stickerSettingActions.closeModalInChild());
 		closeModelConfirm();
-		handClosePannel();
+		handleClosePanel();
 	};
 
 	const handleArchiveChannel = async () => {
@@ -270,7 +268,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const handleCloseArchiveConfirm = () => {
 		dispatch(stickerSettingActions.closeModalInChild());
 		closeArchiveConfirm();
-		handClosePannel();
+		handleClosePanel();
 	};
 
 	const handleScheduleMute = (duration: number) => {
@@ -312,15 +310,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 				})
 			);
 		}
-		handClosePannel();
+		handleClosePanel();
 	};
-
-	useEffect(() => {
-		const heightPanel = panelRef.current?.clientHeight;
-		if (heightPanel && heightPanel > coords.distanceToBottom) {
-			setPositionTop(true);
-		}
-	}, [coords.distanceToBottom]);
 
 	useEffect(() => {
 		if (!getNotificationChannelSelected?.time_mute_seconds) {
@@ -351,20 +342,12 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			setDefaultNotifiName(notiLabelsTranslated[defaultNotificationClan.notification_setting_type]);
 		}
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan, notiLabelsTranslated]);
-	const handClosePannel = useCallback(() => {
+
+	const handleClosePanel = useCallback(() => {
 		setIsShowPanelChannel(false);
 	}, []);
 
-	useEscapeKeyClose(panelRef, handClosePannel);
-	useOnClickOutside(
-		panelRef,
-		() => {
-			if (!hasModalInChild && !menuOpenMute.current && !menuOpenNoti.current) {
-				handClosePannel();
-			}
-		},
-		rootRef
-	);
+	const { panelRef, positionTop } = usePanelPosition(coords, handleClosePanel, rootRef);
 
 	const handleOpenCreateChannelModal = () => {
 		dispatch(
@@ -478,7 +461,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 					children={t('menu.inviteMenu.copyLink')}
 					onClick={() => {
 						copyChannelLink(currentClanId as string, channel.id);
-						handClosePannel();
+						handleClosePanel();
 					}}
 				/>
 			</GroupPanels>

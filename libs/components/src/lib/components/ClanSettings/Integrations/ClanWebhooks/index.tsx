@@ -22,9 +22,9 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 	};
 
 	const webHookAvatars = [
-		`${process.env.NX_BASE_IMG_URL}/1787707828677382144/1791037204600983552/1787691797724532700/211_0mezon_logo_white.png`,
-		`${process.env.NX_BASE_IMG_URL}/1787707828677382144/1791037204600983552/1787691797724532700/211_1mezon_logo_black.png`,
-		`${process.env.NX_BASE_IMG_URL}/0/1833395573034586112/1787375123666309000/955_0mezon_logo.png`
+		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-1.png`,
+		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-2.png`,
+		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-3.png `
 	];
 
 	const getRandomAvatar = (): string => {

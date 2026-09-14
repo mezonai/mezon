@@ -1,4 +1,4 @@
-﻿import { Icons } from '@mezon/ui';
+import { Icons } from '@mezon/ui';
 import { calculateMediaDimensions, createImgproxyUrl, useIsIntersecting, useResizeObserver, type ObserveFn } from '@mezon/utils';
 
 import type { ApiMessageAttachment } from 'mezon-js';

@@ -164,6 +164,9 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 	}
 
 	return channelMemberList?.map((user) => {
+		if (user.user_id === process.env.NX_VOICE_AGENT_ID) {
+			return null;
+		}
 		return (
 			<div key={user.user_id} className={'mt-[1px]'}>
 				<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} />

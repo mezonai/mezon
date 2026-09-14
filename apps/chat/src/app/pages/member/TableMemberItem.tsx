@@ -144,7 +144,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				onClose={closePanelMember}
 				member={member}
 				onOpenProfile={openUserProfile}
-				kichMember={hasClanPermission}
+				kickMember={hasClanPermission}
 				handleRemoveMember={handleClickRemoveMember}
 				handleTransferOwner={openConfirmTransfer}
 			/>
@@ -307,10 +307,6 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 						</Tooltip>
 					)}
 				</span>
-			</div>
-
-			<div className="flex-1 min-w-0 p-1 text-center">
-				<span className="text-xs font-medium uppercase truncate block">{t('signals')}</span>
 			</div>
 		</div>
 	);

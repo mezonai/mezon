@@ -153,7 +153,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 				)}
 				{normalizeSearchText && listItemWithoutRecent.length > 0 && (
 					<>
-						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.unreadChannels')}</div>
+						<div className="text-xs font-semibold uppercase py-2 text-theme-primary-active">{t('searchModal.search')}</div>
 						<ListSearchModal
 							listSearch={listItemWithoutRecent}
 							onItemClick={handleItemClick}

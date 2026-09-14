@@ -4,7 +4,7 @@ import { getMezonConfig, MezonContextProvider, useMezon } from '@mezon/transport
 
 import { PopupManagerProvider } from '@mezon/components';
 import { PermissionProvider } from '@mezon/core';
-import { createContext, Suspense, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, lazy, Suspense, useContext, useEffect, useMemo, useState } from 'react';
 import 'react-contexify/ReactContexify.css';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +22,19 @@ void import('livekit-client').then(({ LogLevel, setLogLevel }) => {
 ThemeManager.initializeTheme();
 
 const mezon = getMezonConfig();
+
+/**
+ * Public pages that are only a viewer — no session, no store, no socket.
+ *
+ * They are mounted above `MezonStoreProvider` on purpose: its `BootstrapGate`
+ * calls `connectSocket()` whenever a persisted session exists, so letting a
+ * video window boot the shell would open one more socket for the account every
+ * time the user opens a video.
+ */
+const EMBED_PATH_PREFIX = '/embed/';
+const YoutubeEmbed = lazy(() => import(/* webpackChunkName: "embed-pages" */ './pages/embed/YoutubeEmbed'));
+
+const isEmbedPath = () => typeof window !== 'undefined' && window.location.pathname.startsWith(EMBED_PATH_PREFIX);
 
 export const LoadingFallbackWrapper = () => <LoadingFallback />;
 
@@ -117,6 +130,14 @@ function AppWrapper() {
 			splashScreen.style.display = 'none';
 		}
 	}, []);
+
+	if (isEmbedPath()) {
+		return (
+			<Suspense fallback={<LoadingFallbackWrapper />}>
+				<YoutubeEmbed />
+			</Suspense>
+		);
+	}
 
 	return (
 		<I18nextProvider i18n={i18n}>

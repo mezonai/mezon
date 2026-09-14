@@ -1,4 +1,3 @@
-import type { MessagesEntity } from '@mezon/store';
 import {
 	getStore,
 	messagesActions,
@@ -16,7 +15,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { TypeMessage, generatePathAttachments, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import { generatePathAttachments, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -305,23 +304,6 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					finalTopicId,
 					!!isTopic
 				);
-
-				if (existingMessage) {
-					const updateTimeSeconds = Math.floor(Date.now() / 1000);
-					dispatch(
-						messagesActions.newMessage({
-							...existingMessage,
-							code: TypeMessage.ChatUpdate,
-							content: trimContent,
-							mentions,
-							channel_id: messageLookupChannelId,
-							topic_id: finalTopicId !== '0' ? finalTopicId : existingMessage.topic_id,
-							hide_editted: hide_editted ?? false,
-							update_time_seconds: updateTimeSeconds,
-							update_time: new Date(updateTimeSeconds * 1000).toISOString()
-						} as MessagesEntity)
-					);
-				}
 			} catch (e) {
 				console.error(e);
 			}

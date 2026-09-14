@@ -8,6 +8,9 @@ export interface MentionData {
 	category?: string;
 	shortname?: string;
 	is_for_sale?: boolean;
+	type?: number;
+	parent_id?: string;
+	channel_private?: number;
 	emoji?: string;
 	[key: string]: unknown;
 }

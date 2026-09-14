@@ -16,12 +16,12 @@ type PanelMemberProps = {
 	onClose: () => void;
 	onRemoveMember?: () => void;
 	onOpenProfile?: () => void;
-	kichMember?: boolean;
+	kickMember?: boolean;
 	handleRemoveMember?: () => void;
 	handleTransferOwner?: () => void;
 };
 
-const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, handleRemoveMember, handleTransferOwner }: PanelMemberProps) => {
+const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kickMember, handleRemoveMember, handleTransferOwner }: PanelMemberProps) => {
 	const { t } = useTranslation('memberTable');
 	const { userProfile } = useAuth();
 	const panelRef = useRef<HTMLDivElement | null>(null);
@@ -87,7 +87,7 @@ const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, 
 
 				{!isSelf && <ItemPanelMember children={t('message')} onClick={handleDirectMessageWithUser} />}
 				{isClanOwner && !isSelf && <ItemPanelMember danger children={t('transferOwnership')} onClick={handleTransferOwner} />}
-				{kichMember && !isSelf && currentClanCreatorId !== member?.id && (
+				{kickMember && !isSelf && currentClanCreatorId !== member?.id && (
 					<ItemPanelMember danger children={t('removeMember')} onClick={handleRemoveMember} />
 				)}
 			</GroupPanelMember>

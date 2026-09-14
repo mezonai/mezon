@@ -161,7 +161,7 @@ export const usersStreamSlice = createSlice({
 	initialState: initialUsersStreamState,
 	reducers: {
 		add: (state, action: PayloadAction<UsersStreamEntity>) => {
-			userStreamAdapter.addOne(state, action.payload);
+			userStreamAdapter.setOne(state, action.payload);
 		},
 		remove: (state, action: PayloadAction<string>) => {
 			userStreamAdapter.removeOne(state, action.payload);

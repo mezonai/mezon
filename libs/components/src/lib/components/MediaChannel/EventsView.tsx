@@ -1,5 +1,11 @@
 import type { ChannelTimeline } from '@mezon/store';
-import { channelMediaActions, selectChannelMediaByChannelId, selectChannelMediaLoadingStatus, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	channelMediaActions,
+	selectChannelMediaByChannelIdAndYear,
+	selectChannelMediaLoadingStatus,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -29,7 +35,7 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 	const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 	const years = useMemo(() => generateYearList(), []);
 
-	const events = useAppSelector((state) => selectChannelMediaByChannelId(state, channelId));
+	const events = useAppSelector((state) => selectChannelMediaByChannelIdAndYear(state, channelId, selectedYear));
 	const loadingStatus = useAppSelector(selectChannelMediaLoadingStatus);
 	const isLoading = loadingStatus === 'loading';
 
@@ -191,6 +197,14 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 					})}
 				</div>
 			</div>
+
+			<button
+				onClick={onOpenCreate}
+				className="fixed bottom-6 right-6 w-12 h-12 btn-primary btn-primary-hover rounded-full shadow-lg flex items-center justify-center transition-colors z-20"
+				data-e2e={generateE2eId('timeline.buttons.create_new')}
+			>
+				<Icons.Plus defaultSize="w-6 h-6" />
+			</button>
 		</div>
 	);
 }

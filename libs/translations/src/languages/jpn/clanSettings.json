@@ -98,5 +98,9 @@
 		"restoreSuccess": "チャンネルを正常に復元しました。",
 		"emptyState": "アーカイブされたチャンネルはありません。",
 		"fetchError": "アーカイブされたチャンネルを読み込めませんでした。もう一度お試しください。"
+	},
+	"toast": {
+		"clanDeletedSuccess": "クランを削除しました",
+		"clanCreatedSuccess": "クランを作成しました"
 	}
 }

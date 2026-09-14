@@ -71,6 +71,7 @@ jobs:
           envkey_NX_WEBRTC_ICESERVERS_CREDENTIAL: ${{ secrets.NX_WEBRTC_ICESERVERS_CREDENTIAL_PROD }}
           envkey_NX_CHAT_APP_STREAM_WS_URL: ${{ secrets.NX_CHAT_APP_STREAM_WS_URL }}
           envkey_NX_CHAT_APP_MEET_WS_URL: ${{ secrets.NX_CHAT_APP_MEET_WS_URL }}
+          envkey_NX_CHAT_APP_SFU_WS_URL: ${{ secrets.NX_CHAT_APP_SFU_WS_URL }}
           envkey_NX_CHAT_APP_OAUTH2_AUTHORIZE_URL: ${{ secrets.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL }}
           envkey_NX_CHAT_APP_OAUTH2_CLIENT_ID: ${{ secrets.NX_CHAT_APP_OAUTH2_CLIENT_ID }}
           envkey_NX_CHAT_APP_OAUTH2_REDIRECT_URI: ${{ secrets.NX_CHAT_APP_OAUTH2_REDIRECT_URI }}

@@ -1,3 +1,4 @@
+import { selectAddress, selectAllAccount, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { formatBalanceToString, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
@@ -18,23 +19,23 @@ const TransactionDetailSkeleton: React.FC = () => {
 	const { FIELDS } = TRANSACTION_DETAIL;
 
 	const detailFields = [
-		{ label: t(FIELDS.TRANSACTION_ID), icon: Icons.Transaction },
-		{ label: t(FIELDS.SENDER), icon: Icons.UserIcon },
-		{ label: t(FIELDS.AMOUNT), icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite /> },
-		{ label: t(FIELDS.RECEIVER), icon: Icons.UserIcon },
-		{ label: t(FIELDS.NOTE), icon: Icons.PenEdit },
-		{ label: t(FIELDS.CREATED), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
+		{ id: 'transaction_id', label: t(FIELDS.TRANSACTION_ID), icon: Icons.Transaction },
+		{ id: 'sender', label: t(FIELDS.SENDER), icon: Icons.UserIcon },
+		{ id: 'amount', label: t(FIELDS.AMOUNT), icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite /> },
+		{ id: 'receiver', label: t(FIELDS.RECEIVER), icon: Icons.UserIcon },
+		{ id: 'note', label: t(FIELDS.NOTE), icon: Icons.PenEdit },
+		{ id: 'created', label: t(FIELDS.CREATED), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
 	];
 
 	return (
 		<div className="p-4 bg-item-theme text-theme-primary ">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{detailFields.map(({ label, icon: Icon }) => (
-					<div key={label} className="space-y-2">
+				{detailFields.map(({ id, label, icon: Icon }) => (
+					<div key={id} className="space-y-2">
 						<div className="flex items-center gap-2">
 							<Icon className="w-3 h-3 " />
 							<p className="text-xs font-medium uppercase tracking-wide">{label}</p>
-							{label === t(FIELDS.TRANSACTION_ID) && (
+							{id === 'transaction_id' && (
 								<span>
 									<ButtonCopy copyText="" className="p-1" duration={TRANSACTION_DETAIL.COPY_DURATION} disabled={true} />
 								</span>
@@ -51,29 +52,44 @@ const TransactionDetailSkeleton: React.FC = () => {
 const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detailLedger, formatDate, isLoading = false }) => {
 	const { t } = useTranslation('transactionHistory');
 	const { FIELDS, UNKNOWN_USER } = TRANSACTION_DETAIL;
+	const currentUser = useAppSelector(selectAllAccount);
+	const walletAddress = useAppSelector(selectAddress);
 
 	const detailFields = useMemo(() => {
 		if (!detailLedger) return [];
 		const extraInfo = safeJSONParse(detailLedger.extra_info);
-		const sender = extraInfo?.UserSenderUsername || null;
-		const receiver = extraInfo?.UserSenderUsername || null;
+		const isCurrentUserSender =
+			walletAddress && detailLedger.from_address ? walletAddress.toLowerCase() === detailLedger.from_address.toLowerCase() : false;
+		const isCurrentUserReceiver =
+			walletAddress && detailLedger.to_address
+				? walletAddress.toLowerCase() === detailLedger.to_address.toLowerCase()
+				: walletAddress && detailLedger.from_address
+					? walletAddress.toLowerCase() !== detailLedger.from_address.toLowerCase()
+					: false;
+
+		const sender = extraInfo?.UserSenderUsername || (isCurrentUserSender ? currentUser?.user?.username : null);
+		const receiver =
+			extraInfo?.UserReceiverName || extraInfo?.UserReceiverUsername || (isCurrentUserReceiver ? currentUser?.user?.username : null);
+
 		return [
-			{ label: t(FIELDS.TRANSACTION_ID), value: detailLedger.hash, icon: Icons.Transaction },
-			{ label: t(FIELDS.SENDER), value: sender || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ id: 'transaction_id', label: t(FIELDS.TRANSACTION_ID), value: detailLedger.hash, icon: Icons.Transaction },
+			{ id: 'sender', label: t(FIELDS.SENDER), value: sender || t(UNKNOWN_USER), icon: Icons.UserIcon },
 			{
+				id: 'amount',
 				label: t(FIELDS.AMOUNT),
 				value: `${formatBalanceToString(detailLedger.value)} ${t(CURRENCY.SYMBOL)}`,
 				icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite />
 			},
-			{ label: t(FIELDS.RECEIVER), value: receiver || t(UNKNOWN_USER), icon: Icons.UserIcon },
-			{ label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: Icons.PenEdit },
+			{ id: 'receiver', label: t(FIELDS.RECEIVER), value: receiver || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ id: 'note', label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: Icons.PenEdit },
 			{
+				id: 'created',
 				label: t(FIELDS.CREATED),
 				value: formatDate(new Date((detailLedger.transaction_timestamp ?? 0) * 1000).toISOString()),
 				icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" />
 			}
 		];
-	}, [detailLedger, t, formatDate, FIELDS, UNKNOWN_USER]);
+	}, [detailLedger, t, formatDate, FIELDS, UNKNOWN_USER, walletAddress, currentUser]);
 
 	if (isLoading) {
 		return <TransactionDetailSkeleton />;
@@ -86,8 +102,8 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 	return (
 		<div className="p-4 bg-item-theme text-theme-primary">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{detailFields.map(({ label, value, icon: Icon }) => (
-					<div key={value} className="space-y-2">
+				{detailFields.map(({ id, label, value, icon: Icon }) => (
+					<div key={id} className="space-y-2">
 						<div className="flex items-center gap-2">
 							<Icon className="w-3 h-3 " />
 							<p
@@ -96,7 +112,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 							>
 								{label}
 							</p>
-							{label === t(FIELDS.TRANSACTION_ID) && value && (
+							{id === 'transaction_id' && value && (
 								<span onClick={(e) => e.stopPropagation()}>
 									<ButtonCopy copyText={value} className="p-1" duration={TRANSACTION_DETAIL.COPY_DURATION} />
 								</span>

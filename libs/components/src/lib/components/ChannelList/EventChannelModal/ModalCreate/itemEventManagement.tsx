@@ -1,5 +1,5 @@
-import { ButtonCopy } from '@mezon/components';
-import { useAppNavigation, useAuth, useOnClickOutside, usePermissionChecker } from '@mezon/core';
+import { autoUpdate, flip, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions } from '@floating-ui/react';
+import { useAppNavigation, useAuth, usePermissionChecker } from '@mezon/core';
 import type { EventManagementEntity } from '@mezon/store';
 import {
 	addUserEvent,
@@ -13,17 +13,17 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { createImgproxyUrl, EEventStatus, EPermission, generateE2eId, ONE_MINUTE_MS, OptionEvent } from '@mezon/utils';
 import type { ApiUserEventRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
-import type { Coords } from '../../../ChannelLink';
+import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
 import ModalInvite from '../../../ListMemberInvite/modalInvite';
 import { renderDescriptionWithLinks } from '../eventHelper';
 import { createI18nTimeFormatter } from '../timeFomatEvent';
@@ -88,11 +88,19 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const [openPanel, setOpenPanel] = useState(false);
 	const [openModalDelEvent, setOpenModalDelEvent] = useState(false);
 	const [openModalShare, setOpenModalShare] = useState(false);
-	const [coords, setCoords] = useState<Coords>({
-		mouseX: 0,
-		mouseY: 0,
-		distanceToBottom: 0
+
+	const { refs, floatingStyles, context } = useFloating({
+		open: openPanel,
+		onOpenChange: setOpenPanel,
+		placement: 'bottom-start',
+		strategy: 'fixed',
+		middleware: [offset(8), flip(), shift({ padding: 8 })],
+		whileElementsMounted: autoUpdate
 	});
+
+	const click = useClick(context);
+	const dismiss = useDismiss(context, { escapeKey: true, outsidePress: true });
+	const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
 	const getPrivateMeetingRoom = useAppSelector((state) => selectMeetRoomByEventId(state, event?.id as string));
 	const eventIsUpcomming = event?.event_status === EEventStatus.UPCOMING;
@@ -147,17 +155,6 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		e.stopPropagation();
 	};
 
-	const handleOpenPanel = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-		const mouseX = event.clientX;
-		const mouseY = event.clientY + window.screenY;
-		const windowHeight = window.innerHeight;
-		const distanceToBottom = windowHeight - event.clientY;
-		setCoords({ mouseX, mouseY, distanceToBottom });
-		setOpenPanel(true);
-	};
-
-	const panelRef = useRef(null);
-	useOnClickOutside(panelRef, () => setOpenPanel(false));
 	const timeUntilEvent = useMemo(() => {
 		if (!event?.start_time_seconds || !actualEventStatus.isUpcoming) return null;
 
@@ -230,7 +227,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	}, [actualEventStatus.isUpcoming, actualEventStatus.isOngoing, timeUntilEvent, start, event?.start_time_seconds, t]);
 
 	return (
-		<div className="rounded-lg overflow-hidden bg-theme-setting-nav border-theme-primary" ref={panelRef}>
+		<div className="rounded-lg overflow-hidden bg-theme-setting-nav border-theme-primary">
 			{logo && <img src={logo} alt="logo" className="w-full max-h-[180px] object-cover" />}
 			<div className="p-4 border-b-theme-primary cursor-pointer" onClick={() => event && setChooseEvent(event)}>
 				<div className="flex justify-between">
@@ -399,8 +396,13 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						}}
 					>
 						<div
+							ref={refs.setReference}
+							{...getReferenceProps({
+								onClick: (e) => {
+									handleStopPropagation(e);
+								}
+							})}
 							className="text-theme-primary-hover cursor-pointer"
-							onClick={(e) => handleOpenPanel(e)}
 							data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_panel')}
 						>
 							<Icons.IconEditThreeDot className="rotate-90" />
@@ -479,20 +481,32 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 			</div>
 
 			{openPanel && (
-				<PanelEventItem
-					event={event}
-					coords={coords}
-					onHandle={handleStopPropagation}
-					setOpenModalUpdateEvent={openModelUpdate}
-					setOpenModalDelEvent={setOpenModalDelEvent}
-					onTrigerEventUpdateId={() => {
-						if (onEventUpdateId) {
-							onEventUpdateId(event?.id || '');
-						}
-					}}
-					handleCopyLink={handleCopyLink}
-					onClose={() => setOpenPanel(false)}
-				/>
+				<FloatingPortal>
+					<div
+						ref={refs.setFloating}
+						style={floatingStyles}
+						className="z-[110]"
+						{...getFloatingProps({
+							onClick: (e) => {
+								handleStopPropagation(e);
+							}
+						})}
+					>
+						<PanelEventItem
+							event={event}
+							onHandle={handleStopPropagation}
+							setOpenModalUpdateEvent={openModelUpdate}
+							setOpenModalDelEvent={setOpenModalDelEvent}
+							onTrigerEventUpdateId={() => {
+								if (onEventUpdateId) {
+									onEventUpdateId(event?.id || '');
+								}
+							}}
+							handleCopyLink={handleCopyLink}
+							onClose={() => setOpenPanel(false)}
+						/>
+					</div>
+				</FloatingPortal>
 			)}
 			{openModalDelEvent && <ModalDelEvent event={event} setOpenModalDelEvent={setOpenModalDelEvent} />}
 			{openModalShare && <ModalShareEvent link={link} channel={channelVoice} setOpenModalShareEvent={setOpenModalShare} />}

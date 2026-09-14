@@ -7,16 +7,10 @@ import {
 	useIdleRender,
 	useReconnectOnForeground
 } from '@mezon/core';
-import {
-	appActions,
-	e2eeActions,
-	gifsStickerEmojiActions,
-	selectAllAccount,
-	selectBadgeCountAllClan,
-	useAppDispatch
-} from '@mezon/store';
+import { appActions, e2eeActions, gifsStickerEmojiActions, selectAllAccount, selectBadgeCountAllClan, useAppDispatch } from '@mezon/store';
 import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/utils';
 
+// eslint-disable-next-line @nx/enforce-module-boundaries -- shared shell components are required before route-level lazy chunks mount
 import { TooManyUpload, WebRTCStreamProvider, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
 import { MezonSuspense } from '@mezon/transport';
@@ -25,7 +19,7 @@ import { SubPanelName } from '@mezon/utils';
 import { memo, useContext, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router-dom';
-import ChannelVoice from '../pages/channel/ChannelVoice';
+import MezonSfuChannelVoice from '../pages/channel/MezonSfuChannelVoice';
 
 const GlobalEventListener = () => {
 	const { handleReconnect } = useContext(ChatContext);
@@ -159,7 +153,7 @@ const MainLayout = memo(
 					event.preventDefault();
 				}}
 			>
-				{shouldRender && <ChannelVoice />}
+				{shouldRender && <MezonSfuChannelVoice />}
 				<Outlet />
 				<GlobalEventListener />
 

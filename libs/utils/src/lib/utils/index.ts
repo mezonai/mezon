@@ -40,7 +40,7 @@ import type {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus } from '../types';
+import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus, TypeSearch } from '../types';
 import { getDateLocale } from './dateI18n';
 import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
@@ -475,6 +475,9 @@ export function filterListByName(listSearch: SearchItemProps[], searchText: stri
 
 	const result = listSearch.filter((item: SearchItemProps) => {
 		if (isSearchByUsername) {
+			if (item.typeChat === TypeSearch.Channel_Type) {
+				return false;
+			}
 			const searchName = normalizeSearchString(searchText.slice(1));
 			const itemDisplayName = item.displayName ? normalizeSearchString(item.displayName) : '';
 			const itemName = item.name ? normalizeSearchString(item.name) : '';
@@ -927,7 +930,8 @@ export const handleShowShortProfile = (
 };
 
 export const sortNotificationsByDate = (notifications: NotificationEntity[]) => {
-	return notifications.sort((a, b) => {
+	const sortedData = [...notifications];
+	return sortedData.sort((a, b) => {
 		const dateA = a.create_time_seconds ? a.create_time_seconds : 0;
 		const dateB = b.create_time_seconds ? b.create_time_seconds : 0;
 		return dateB - dateA;
