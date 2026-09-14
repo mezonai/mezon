@@ -13,5 +13,136 @@
 	"desFeature": "Try out the official features of this clan!",
 	"community": "Community",
 	"desCommunity": "Weekly events and updates.",
-	"about": "About"
+	"about": "About",
+	"title": "Find your people",
+	"titleHighlight": "people",
+	"overline": "Mezon clans",
+	"subtitle": "Hang out with communities that actually feel like home.",
+	"searchPlaceholder": "Search communities",
+	"searchLabel": "Search communities",
+	"featured": "Featured Communities",
+	"orbitTitle": "More communities",
+	"orbitHint": "Browse",
+	"orbitPrev": "Previous communities",
+	"orbitNext": "Next communities",
+	"indexKicker": "Index",
+	"enterClan": "Enter",
+	"featuredBadge": "Featured",
+	"viewAll": "View all",
+	"seeAll": "See all",
+	"explore": "Explore Communities",
+	"loadMore": "Load more communities",
+	"loadingMore": "Loading...",
+	"joinCommunity": "Join Community",
+	"joinNow": "Join Now",
+	"joining": "Joining...",
+	"openInMezon": "Open in Mezon",
+	"share": "Share",
+	"shareClan": "Share Clan",
+	"linkCopied": "Link copied",
+	"copyFailed": "Could not copy link",
+	"copied": "Copied!",
+	"copy": "Copy",
+	"joinModal": {
+		"subtitle": "Choose how you want to join this clan",
+		"scanQr": "Scan QR Code",
+		"scanHint": "Use your phone camera to scan and join",
+		"openLink": "Open Link Directly",
+		"openHint": "Open in new tab"
+	},
+	"shareModal": {
+		"subtitle": "Share this clan with your friends"
+	},
+	"online": "online",
+	"onlineCount": "{{count}} online",
+	"onlineCount_one": "{{count}} online",
+	"onlineCount_other": "{{count}} online",
+	"memberCount": "{{count}} members",
+	"memberCount_one": "{{count}} member",
+	"memberCount_other": "{{count}} members",
+	"statsLine": "{{members}} members",
+	"more": "More",
+	"categories": {
+		"gaming": "Gaming",
+		"technology": "Technology",
+		"education": "Education",
+		"music": "Music",
+		"anime": "Anime",
+		"sports": "Sports",
+		"lifestyle": "Lifestyle"
+	},
+	"filters": {
+		"title": "Filters",
+		"category": "Category",
+		"language": "Language",
+		"activity": "Activity",
+		"verifiedOnly": "Verified only",
+		"reset": "Reset",
+		"showResults": "Show communities",
+		"all": "All",
+		"open": "Filters"
+	},
+	"sort": {
+		"label": "Sort",
+		"recommended": "Recommended",
+		"largest": "Largest",
+		"newest": "Newest"
+	},
+	"heading": {
+		"default": "Explore Communities",
+		"search": "{{count}} communities for “{{query}}”",
+		"category": "{{count}} {{category}} communities",
+		"matching": "Communities matching “{{query}}”"
+	},
+	"empty": {
+		"searchTitle": "We couldn't find a community for “{{query}}”.",
+		"searchHint": "Try another search or explore popular categories.",
+		"clearSearch": "Clear search",
+		"filterTitle": "No communities match these filters.",
+		"clearFilters": "Clear filters",
+		"genericTitle": "No communities to show yet.",
+		"genericHint": "Check back soon or try a different search."
+	},
+	"error": {
+		"title": "Couldn't load communities.",
+		"retry": "Try again",
+		"clanNotFound": "This community could not be found.",
+		"backToDiscover": "Back to Discover"
+	},
+	"detail": {
+		"about": "About",
+		"aboutThisCommunity": "About this community",
+		"readMore": "Read more",
+		"readLess": "Read less",
+		"joinThisCommunity": "Join this community",
+		"created": "Created",
+		"communityType": "Community type",
+		"communityTypePublic": "Public",
+		"noInvite": "Invites are not available for this community right now.",
+		"similar": "Discover more communities",
+		"breadcrumbDiscover": "Discover",
+		"back": "Back",
+		"unnamed": "Unnamed clan",
+		"noDescription": "A community on Mezon.",
+		"overview": "Overview",
+		"presence": "Now",
+		"membersLabel": "Members",
+		"onlineLabel": "Online",
+		"tags": "Tags"
+	},
+	"card": {
+		"fallbackDescription": "A community on Mezon"
+	},
+	"addClan": {
+		"title": "Have a clan you want to add to Discovery?",
+		"body": "Add your clan to Mezon Discovery to reach millions of users and grow your community."
+	},
+	"header": {
+		"openMezon": "Open Mezon",
+		"login": "Open Mezon"
+	},
+	"a11y": {
+		"verified": "verified",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

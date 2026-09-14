@@ -1,201 +1,243 @@
-import { useEffect, useState } from 'react';
-import { COLORS, PAGINATION } from '../../constants/constants';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { CATEGORY_SHORTCUTS, FEATURED_CLAN_ID, PAGINATION } from '../../constants/constants';
 import { useDiscover } from '../../context/DiscoverContext';
-import { usePagination } from '../../hooks/usePagination';
-import Banner from './Banner';
-import Categories from './Categories';
-import ClanList from './ClanList';
+import CategoryChips from './CategoryChips';
+import ClanIndex from './ClanIndex';
+import ClanOrbit from './ClanOrbit';
+import ClanPager from './ClanPager';
+import EmptyDiscoverState from './EmptyDiscoverState';
+import FilterSheet, { FilterBar } from './FilterBar';
 import Footer from './Footer';
 import HeaderMezon from './HeaderMezon';
+import StageHero from './StageHero';
+import {
+	clanMatchesId,
+	isSameClan,
+	matchesCategory,
+	matchesQuery,
+	pickFeaturedClans,
+	sortClans,
+	trackDiscoverEvent,
+	type DiscoverClan
+} from './communityUtils';
 
 export default function DiscoverPage() {
+	const { t } = useTranslation('discover');
 	const {
 		clans,
-		categories,
+		stageClans,
+		featuredClan: pinnedClan,
 		loading,
 		error,
-		currentPage,
-		totalPages,
 		searchTerm,
+		committedQuery,
 		selectedCategory,
+		sort,
+		verifiedOnly,
+		currentPage,
+		pageCount,
 		handleSearch,
 		handleCategorySelect,
-		handlePageChange
+		handleSortChange,
+		handleVerifiedOnly,
+		goToPage,
+		clearFilters,
+		retry
 	} = useDiscover();
-
-	const { pageNumbers, isFirstPage, isLastPage } = usePagination({
-		currentPage,
-		totalPages,
-		maxPageNumbers: PAGINATION.MAX_PAGE_NUMBERS
-	});
-
-	const filteredClans = clans.filter((clan) => {
-		if (!clan) return false;
-		const clanName = clan.clan_name || '';
-		return clanName.toLowerCase().includes(searchTerm.toLowerCase());
-	});
-
-	const formatNumber = (num: number) => {
-		return num.toLocaleString('en-US');
-	};
 	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
+	const [filtersOpen, setFiltersOpen] = useState(false);
+	const isBrowsing = committedQuery.trim().length < 2 && !selectedCategory && !verifiedOnly;
 
-	const toggleSideBar = () => {
-		setSideBarIsOpen(!sideBarIsOpen);
-	};
+	const filteredClans = useMemo(() => {
+		const next = clans.filter((clan) => {
+			if (!clan) return false;
+			if (verifiedOnly && !clan.verified) return false;
+			if (selectedCategory && !matchesCategory(clan, selectedCategory)) return false;
+			if (!matchesQuery(clan, committedQuery)) return false;
+			return true;
+		});
+		return sortClans(next, sort);
+	}, [clans, committedQuery, selectedCategory, sort, verifiedOnly]);
+
+	const featuredClan = useMemo(() => {
+		const pool = stageClans.length ? stageClans : clans;
+		if (pinnedClan) return pinnedClan;
+		if (FEATURED_CLAN_ID) {
+			const configured = pool.find((clan) => clanMatchesId(clan, FEATURED_CLAN_ID));
+			if (configured) return configured;
+		}
+		return pickFeaturedClans(pool, 1)[0];
+	}, [clans, pinnedClan, stageClans]);
+	const orbitClans = useMemo(() => {
+		if (!isBrowsing) return [];
+		const pool = (stageClans.length ? stageClans : clans).filter(Boolean);
+		if (!featuredClan) return pool.slice(0, 12);
+		const rest = pool.filter((clan) => !isSameClan(clan, featuredClan));
+		return [featuredClan, ...rest].slice(0, 12);
+	}, [clans, featuredClan, isBrowsing, stageClans]);
+
+	const listedClans = useMemo(() => {
+		if (!isBrowsing || currentPage !== 1 || !featuredClan) return filteredClans;
+		const rest = filteredClans.filter((clan) => !isSameClan(clan, featuredClan));
+		return [featuredClan, ...rest];
+	}, [currentPage, featuredClan, filteredClans, isBrowsing]);
+
+	const exploreHeading = useMemo(() => {
+		if (committedQuery.trim().length >= 2) {
+			return t('heading.search', { count: filteredClans.length, query: committedQuery.trim() });
+		}
+		if (selectedCategory) {
+			const category = CATEGORY_SHORTCUTS.find((item) => item.id === selectedCategory);
+			return t('heading.category', {
+				count: filteredClans.length,
+				category: category ? t(`categories.${category.id}`) : selectedCategory
+			});
+		}
+		return t('heading.default');
+	}, [committedQuery, filteredClans.length, selectedCategory, t]);
+
+	const activeFilterCount = Number(Boolean(selectedCategory)) + Number(verifiedOnly);
 
 	useEffect(() => {
-		document.title = 'Mezon Discover';
-	}, []);
+		document.title = `${t('title')} | Mezon`;
+		trackDiscoverEvent('clan_discover_view');
+	}, [t]);
+
+	useEffect(() => {
+		if (committedQuery.trim().length >= 2) {
+			trackDiscoverEvent('clan_search_result_view', { query: committedQuery, count: filteredClans.length });
+		}
+	}, [committedQuery, filteredClans.length]);
+
+	useEffect(() => {
+		const shouldNoIndex = committedQuery.trim().length >= 2 || Boolean(selectedCategory) || verifiedOnly;
+		let robots = document.querySelector('meta[name="robots"]');
+		if (!robots) {
+			robots = document.createElement('meta');
+			robots.setAttribute('name', 'robots');
+			document.head.appendChild(robots);
+		}
+		robots.setAttribute('content', shouldNoIndex ? 'noindex,follow' : 'index,follow');
+	}, [committedQuery, selectedCategory, verifiedOnly]);
+
+	useEffect(() => {
+		if (isBrowsing) return;
+		document.getElementById('explore-communities')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}, [committedQuery, selectedCategory, isBrowsing]);
+
+	const onCategorySelect = (categoryId: string) => {
+		handleCategorySelect(categoryId);
+		trackDiscoverEvent('clan_category_click', { category: categoryId });
+		trackDiscoverEvent('clan_filter_apply', { category: categoryId, verified: verifiedOnly });
+	};
+
+	const handlePageChange = (page: number) => {
+		goToPage(page);
+		trackDiscoverEvent('clan_page_change', { page });
+		document.getElementById('explore-communities')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	};
+
+	const handleCardSelect = (clan: DiscoverClan, meta: { section?: string; position?: number }) => {
+		trackDiscoverEvent('clan_card_click', {
+			section: meta.section,
+			position: meta.position,
+			clan_id: clan.clan_id,
+			query: committedQuery,
+			category: selectedCategory,
+			sort,
+			verified: verifiedOnly
+		});
+	};
+
 	return (
 		<>
-			<HeaderMezon sideBarIsOpen={sideBarIsOpen} toggleSideBar={toggleSideBar} />
+			<HeaderMezon overlay sideBarIsOpen={sideBarIsOpen} toggleSideBar={() => setSideBarIsOpen((open) => !open)} />
+			<main className="bg-[var(--surface-page)] min-h-screen">
+				<StageHero
+					clan={featuredClan}
+					loading={loading && !clans.length}
+					searchTerm={searchTerm}
+					onSearch={handleSearch}
+					onSelect={(clan) => handleCardSelect(clan, { section: 'stage', position: 0 })}
+				>
+					<CategoryChips selectedCategory={selectedCategory} onSelect={onCategorySelect} variant="stage" />
+				</StageHero>
 
-			<div className="bg-[#f6f6f7] min-h-screen pb-12 pt-[80px]">
-				<Banner onSearch={handleSearch} searchTerm={searchTerm} />
+				{isBrowsing ? <ClanOrbit clans={orbitClans} onSelect={handleCardSelect} /> : null}
 
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-8">
-					<div className={`flex flex-col gap-4 ${categories.length > 0 ? 'lg:flex-row lg:gap-8' : ''}`}>
-						{categories.length > 0 && (
-							<div className="w-full lg:w-64 flex-shrink-0">
-								<Categories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
-							</div>
-						)}
+				<section id="explore-communities" className="px-4 md:px-8 lg:px-12 py-16 md:py-24" aria-labelledby="explore-heading">
+					<h2
+						id="explore-heading"
+						className="text-[32px] md:text-[56px] leading-[0.9] font-extrabold tracking-[-0.05em] text-[#131221] mb-8"
+					>
+						{exploreHeading}
+					</h2>
+					<FilterBar
+						verifiedOnly={verifiedOnly}
+						sort={sort}
+						onVerifiedOnly={handleVerifiedOnly}
+						onSortChange={(next) => {
+							handleSortChange(next);
+							trackDiscoverEvent('clan_sort_change', { sort: next });
+						}}
+						onOpenMobileFilters={() => setFiltersOpen(true)}
+						activeFilterCount={activeFilterCount}
+					/>
 
-						<div className="flex-1 min-w-0">
-							<div className="flex justify-between items-center mb-4 sm:mb-6">
-								<h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800">
-									{formatNumber(filteredClans.length)} Results found
-								</h2>
-							</div>
-
-							{loading ? (
-								<>
-									<div className="text-center mb-6">
-										<p className="text-gray-600">Loading clan list...</p>
-									</div>
-									<ClanList loading={true} clans={[]} />
-								</>
-							) : error ? (
-								<div className="text-center py-12">
-									<div className="mb-4 text-gray-400">
-										<svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-											<path
-												fillRule="evenodd"
-												d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-												clipRule="evenodd"
-											></path>
-										</svg>
-									</div>
-									<h3 className="text-xl font-semibold mb-2">Error loading clan list</h3>
-									<p className="text-gray-600">{error}</p>
-									<button
-										className={`mt-4 bg-[${COLORS.PRIMARY}] text-white px-4 py-2 rounded-md`}
-										onClick={() => handlePageChange(1)}
-									>
-										Refresh
-									</button>
-								</div>
-							) : filteredClans.length > 0 ? (
-								<ClanList clans={filteredClans} />
-							) : (
-								<div className="text-center py-12">
-									<div className="mb-4 text-gray-400">
-										<svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-											<path
-												fillRule="evenodd"
-												d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-												clipRule="evenodd"
-											></path>
-										</svg>
-									</div>
-									<h3 className="text-xl font-semibold mb-2">No matching results</h3>
-									<p className="text-gray-600">Please try searching with different keywords</p>
-								</div>
-							)}
-
-							{filteredClans.length > 0 && (
-								<div className="flex justify-center mt-8 sm:mt-12">
-									<div className="flex flex-wrap items-center justify-center gap-2">
-										<button
-											className={`px-2 sm:px-3 py-1 rounded text-sm ${
-												isFirstPage
-													? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-													: 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-											}`}
-											onClick={() => handlePageChange(1)}
-											disabled={isFirstPage}
-										>
-											First
-										</button>
-										<button
-											className={`px-2 sm:px-3 py-1 rounded text-sm ${
-												isFirstPage
-													? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-													: 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-											}`}
-											onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-											disabled={isFirstPage}
-										>
-											Prev
-										</button>
-
-										{pageNumbers.map((pageNumber, index) =>
-											pageNumber === 'ellipsis' ? (
-												<span key={`ellipsis-${index}`} className="px-2 sm:px-3 py-1 text-sm">
-													...
-												</span>
-											) : (
-												<button
-													key={`page-${pageNumber}`}
-													className={`px-2 sm:px-3 py-1 rounded text-sm ${
-														currentPage === pageNumber
-															? `bg-[${COLORS.PRIMARY}] text-white`
-															: 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-													}`}
-													onClick={() => handlePageChange(pageNumber as number)}
-												>
-													{pageNumber}
-												</button>
-											)
-										)}
-
-										<button
-											className={`px-2 sm:px-3 py-1 rounded text-sm ${
-												isLastPage
-													? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-													: 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-											}`}
-											onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-											disabled={isLastPage}
-										>
-											Next
-										</button>
-										<button
-											className={`px-2 sm:px-3 py-1 rounded text-sm ${
-												isLastPage
-													? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-													: 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-											}`}
-											onClick={() => handlePageChange(totalPages)}
-											disabled={isLastPage}
-										>
-											Last
-										</button>
-									</div>
-								</div>
-							)}
-
-							<div className="text-center py-6 sm:py-8 bg-white rounded-lg shadow-sm my-6 sm:my-8 px-4">
-								<h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Have a clan you want to add to Discovery?</h3>
-								<p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-2xl mx-auto">
-									Add your clan to Mezon Discovery to reach millions of users and grow your community.
-								</p>
-							</div>
+					{error && !clans.length ? (
+						<div className="text-center py-16">
+							<h3 className="text-xl font-semibold mb-2">{t('error.title')}</h3>
+							<button
+								type="button"
+								onClick={retry}
+								className="mt-4 min-h-[44px] px-5 rounded-full bg-[#8960e0] text-white font-semibold hover:bg-[#7a52d4]"
+							>
+								{t('error.retry')}
+							</button>
 						</div>
-					</div>
-				</div>
-			</div>
+					) : loading ? (
+						<div>
+							<ClanIndex clans={[]} loading />
+							<ClanPager page={currentPage} pageCount={pageCount} onPageChange={handlePageChange} disabled />
+						</div>
+					) : listedClans.length > 0 ? (
+						<div>
+							<ClanIndex clans={listedClans} startIndex={(currentPage - 1) * PAGINATION.ITEMS_PER_PAGE} onSelect={handleCardSelect} />
+							<ClanPager page={currentPage} pageCount={pageCount} onPageChange={handlePageChange} disabled={loading} />
+						</div>
+					) : (
+						<EmptyDiscoverState
+							query={committedQuery}
+							hasFilters={Boolean(selectedCategory || verifiedOnly)}
+							onClearSearch={() => handleSearch('')}
+							onClearFilters={clearFilters}
+							selectedCategory={selectedCategory}
+							onCategorySelect={onCategorySelect}
+						/>
+					)}
+				</section>
+
+				<section className="relative overflow-hidden bg-[#131221] text-white px-4 md:px-8 lg:px-12 py-20 md:py-28">
+					<p className="pointer-events-none absolute -left-4 bottom-[-4vw] select-none text-[18vw] leading-none font-extrabold tracking-[-0.07em] text-white/[0.06]">
+						CLAN
+					</p>
+					<h3 className="relative max-w-3xl text-3xl md:text-6xl font-extrabold tracking-[-0.05em] leading-[0.95] mb-4">
+						{t('addClan.title')}
+					</h3>
+					<p className="relative text-white/70 max-w-xl text-lg">{t('addClan.body')}</p>
+				</section>
+			</main>
+			<FilterSheet
+				open={filtersOpen}
+				onClose={() => setFiltersOpen(false)}
+				selectedCategory={selectedCategory}
+				verifiedOnly={verifiedOnly}
+				onCategorySelect={onCategorySelect}
+				onVerifiedOnly={handleVerifiedOnly}
+				onReset={clearFilters}
+				resultCount={filteredClans.length}
+			/>
 			<Footer />
 		</>
 	);

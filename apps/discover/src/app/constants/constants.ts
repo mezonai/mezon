@@ -1,3 +1,4 @@
+import Mezon_Brand from '../assets/Brand_logo.png';
 import Mezon_Dark from '../assets/Logo_mezon_dark.png';
 import Mezon_Light from '../assets/Logo_mezon_light.png';
 import No_Banner from '../assets/no_banner.jpg';
@@ -26,7 +27,8 @@ export const NAVIGATION_LINKS = {
 };
 export const MEZON_LOGO = {
 	LIGHT: Mezon_Light,
-	DARK: Mezon_Dark
+	DARK: Mezon_Dark,
+	WORDMARK: Mezon_Brand
 };
 export const CATEGORY_TYPES = {
 	1: {
@@ -61,9 +63,30 @@ export const DEFAULT_IMAGES = {
 };
 
 export const PAGINATION = {
-	ITEMS_PER_PAGE: 12,
+	ITEMS_PER_PAGE: 24,
 	MAX_PAGE_NUMBERS: 5
 };
+
+export const DISCOVER_LAYOUT = {
+	CONTENT_MAX_WIDTH: '1240px',
+	SEARCH_DEBOUNCE_MS: 280
+};
+
+/** Clan ID (`clan_id`) pinned to the Discover homepage hero. Set via `NX_DISCOVER_FEATURED_CLAN_ID`. */
+export const FEATURED_CLAN_ID = (process.env.NX_DISCOVER_FEATURED_CLAN_ID || '').trim();
+
+export const CATEGORY_SHORTCUTS = [
+	{ id: 'gaming', keywords: ['game', 'gaming', 'esport', 'gamer'] },
+	{ id: 'technology', keywords: ['tech', 'ai', 'code', 'dev', 'program', 'it', 'software'] },
+	{ id: 'education', keywords: ['edu', 'learn', 'study', 'school', 'campus', 'student'] },
+	{ id: 'music', keywords: ['music', 'song', 'dj', 'audio'] },
+	{ id: 'anime', keywords: ['anime', 'manga', 'otaku'] },
+	{ id: 'sports', keywords: ['sport', 'football', 'soccer', 'gym'] },
+	{ id: 'lifestyle', keywords: ['life', 'lifestyle', 'travel', 'food'] }
+] as const;
+
+export type DiscoverSort = 'recommended' | 'largest' | 'newest';
+export type CategoryShortcutId = (typeof CATEGORY_SHORTCUTS)[number]['id'];
 
 export const COLORS = {
 	PRIMARY: '#5865f2',
