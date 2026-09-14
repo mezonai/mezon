@@ -316,7 +316,7 @@ export const notificationSlice = createSlice({
 				markMessageNotify.fulfilled,
 				(state: NotificationState, action: PayloadAction<{ noti: ApiChannelMessageHeader; message: MessagesEntity }>) => {
 					if (!state.notifications[NotificationCategory.MESSAGES]) {
-						state.notifications[NotificationCategory.MESSAGES] = { data: [], lastId: '' };
+						return;
 					}
 					const { noti, message } = action.payload;
 					const mention_ids: string[] = [];
