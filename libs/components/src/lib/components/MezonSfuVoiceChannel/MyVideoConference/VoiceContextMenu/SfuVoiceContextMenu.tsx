@@ -146,7 +146,6 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 				})
 			);
 			await dispatch(voiceActions.giveFlowers({ receiver_id: receiverId })).unwrap();
-			sendFlower(receiverId);
 
 			const response = await createDirectMessageWithUser(
 				receiverId,
