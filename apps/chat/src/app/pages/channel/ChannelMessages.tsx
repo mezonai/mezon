@@ -353,31 +353,10 @@ function ChannelMessages({
 	const isLoadMore = useRef<boolean>(false);
 	const currentScrollDirection = useRef<ELoadMoreDirection | null>(null);
 	const isLoadingMoreBottomRef = useRef<boolean>(false);
-	const lastLoadMoreTimestampRef = useRef<number>(0);
-	const consecutiveLoadCountRef = useRef<number>(0);
 
 	const handleOnChange = useCallback(
 		async (direction: LoadMoreDirection) => {
 			if (isLoadMore.current || !chatRef.current?.scrollHeight) return;
-
-			const now = Date.now();
-			const elapsed = now - lastLoadMoreTimestampRef.current;
-
-			if (elapsed < 300) {
-				consecutiveLoadCountRef.current = Math.min(consecutiveLoadCountRef.current + 1, 3);
-			} else {
-				consecutiveLoadCountRef.current = 0;
-			}
-
-			const delay = consecutiveLoadCountRef.current * 333;
-
-			if (delay > 0) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
-
-			if (isLoadMore.current) return;
-
-			lastLoadMoreTimestampRef.current = Date.now();
 
 			isLoadMore.current = true;
 			try {
@@ -741,7 +720,7 @@ type ChatMessageListProps = {
 	topicId?: string;
 	mode: number;
 	channelLabel?: string;
-	onChange: (direction: LoadMoreDirection) => void;
+	onChange: (direction: LoadMoreDirection) => Promise<void>;
 	isTopic?: boolean;
 	anchorIdRef: React.MutableRefObject<string | null>;
 	anchorTopRef: React.MutableRefObject<number | null>;
@@ -855,7 +834,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			onNotchToggle,
 			isReady,
 			(event: { direction: LoadMoreDirection }) => {
-				onChange(event.direction);
+				return onChange(event.direction);
 			},
 			{ scopeId: effectiveChannelId, isLoading: isHistoryLoading, isJumping: !!idMessageToJump, hasMoreTop, hasMoreBottom }
 		);

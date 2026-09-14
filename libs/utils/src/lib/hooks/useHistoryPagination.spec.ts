@@ -5,12 +5,15 @@ import { useHistoryPagination, type HistoryPaginationState } from './useHistoryP
 let notify: (entries: unknown[]) => void;
 let frames: Map<number, FrameRequestCallback>;
 let nextFrame: number;
+let now: number;
 const disconnect = jest.fn();
 const originalObserver = globalThis.IntersectionObserver;
 const originalRaf = globalThis.requestAnimationFrame;
 const originalCancelRaf = globalThis.cancelAnimationFrame;
 
 beforeEach(() => {
+	now = 10000;
+	jest.spyOn(Date, 'now').mockImplementation(() => now);
 	frames = new Map();
 	nextFrame = 0;
 	globalThis.requestAnimationFrame = (callback) => {
@@ -26,6 +29,7 @@ beforeEach(() => {
 	}) as unknown as typeof IntersectionObserver;
 });
 afterEach(() => {
+	jest.restoreAllMocks();
 	globalThis.IntersectionObserver = originalObserver;
 	globalThis.requestAnimationFrame = originalRaf;
 	globalThis.cancelAnimationFrame = originalCancelRaf;
@@ -45,7 +49,7 @@ function setup() {
 	let topY = 0;
 	let bottomY = 3000;
 	const container = {
-		getBoundingClientRect: () => ({ top: 0, bottom: 600 }),
+		getBoundingClientRect: jest.fn(() => ({ top: 0, bottom: 600 })),
 		addEventListener: (type: string, cb: (e: unknown) => void) => listeners.set(type, cb),
 		removeEventListener: (type: string) => listeners.delete(type)
 	};
@@ -64,6 +68,15 @@ function setup() {
 	});
 	return {
 		load,
+		measure: container.getBoundingClientRect,
+		burst: (count: number) => {
+			act(() => {
+				for (let i = 0; i < count; i++) {
+					listeners.get('wheel')?.({ deltaY: -100 });
+					listeners.get('scroll')?.({});
+				}
+			});
+		},
 		intersect: (directions: string[] = ['top']) => {
 			act(() =>
 				notify(
@@ -124,6 +137,7 @@ it('does not loop on an error or a page that did not advance the cursor', () => 
 	h.update({ isLoading: false });
 	h.intersect();
 	expect(h.load).toHaveBeenCalledTimes(1);
+	now += 1000;
 	h.wheel(-100);
 	expect(h.load).toHaveBeenCalledTimes(2);
 	h.unmount();
@@ -169,6 +183,115 @@ it('keeps the wheel direction when the scroll event arrives in the same frame', 
 	h.move(0, 650);
 	h.intersect(['top']);
 	h.wheel(100);
+	expect(h.load.mock.calls).toEqual([['top'], ['bottom']]);
+	h.unmount();
+});
+
+it('keeps only one callback active even before Redux loading starts', async () => {
+	const h = setup();
+	let finish!: () => void;
+	h.load.mockReturnValueOnce(
+		new Promise<void>((resolve) => {
+			finish = resolve;
+		})
+	);
+	h.intersect();
+	const measurements = h.measure.mock.calls.length;
+	for (let i = 0; i < 120; i++) h.wheel(-100);
+	expect(h.load).toHaveBeenCalledTimes(1);
+	expect(h.measure).toHaveBeenCalledTimes(measurements);
+	await act(async () => {
+		finish();
+	});
+	h.update({}, ['1', '100']);
+	expect(h.load).toHaveBeenCalledTimes(2);
+	h.unmount();
+});
+
+it('coalesces a wheel/scroll event storm into one frame and one geometry read', () => {
+	const h = setup();
+	h.burst(1000);
+	expect(frames.size).toBe(1);
+	expect(nextFrame).toBe(1);
+	flush();
+	expect(h.measure).toHaveBeenCalledTimes(1);
+	expect(h.load).toHaveBeenCalledTimes(1);
+	h.unmount();
+});
+
+it('does not measure the DOM again for an already attempted cursor', () => {
+	const h = setup();
+	h.intersect();
+	const measurements = h.measure.mock.calls.length;
+	for (let i = 0; i < 100; i++) {
+		h.update({ isLoading: true });
+		h.update({ isLoading: false });
+	}
+	expect(h.measure).toHaveBeenCalledTimes(measurements);
+	expect(h.load).toHaveBeenCalledTimes(1);
+	h.unmount();
+});
+
+it('cancels a pending frame on unmount', () => {
+	const h = setup();
+	h.burst(100);
+	h.unmount();
+	flush();
+	expect(h.load).not.toHaveBeenCalled();
+	expect(h.measure).not.toHaveBeenCalled();
+});
+
+it('limits retries of a fast failing or unchanged page during continuous wheel input', () => {
+	const h = setup();
+	h.intersect();
+	for (let i = 0; i < 59; i++) {
+		now += 16;
+		h.wheel(-100);
+	}
+	expect(h.load).toHaveBeenCalledTimes(1);
+	now += 1000;
+	h.wheel(-100);
+	expect(h.load).toHaveBeenCalledTimes(2);
+	h.unmount();
+});
+
+it('does not let an old scope completion unlock the new scope request', async () => {
+	const h = setup();
+	let finishOld!: () => void;
+	let finishNew!: () => void;
+	h.load.mockReturnValueOnce(
+		new Promise<void>((resolve) => {
+			finishOld = resolve;
+		})
+	);
+	h.intersect();
+	h.update({ scopeId: 'topic' });
+	h.load.mockReturnValueOnce(
+		new Promise<void>((resolve) => {
+			finishNew = resolve;
+		})
+	);
+	h.intersect();
+	await act(async () => {
+		finishOld();
+	});
+	now += 1000;
+	h.wheel(-100);
+	expect(h.load).toHaveBeenCalledTimes(2);
+	h.unmount();
+	await act(async () => {
+		finishNew();
+	});
+	flush();
+	expect(h.load).toHaveBeenCalledTimes(2);
+});
+
+it('does not bypass the retry limit by alternating unchanged edges', () => {
+	const h = setup();
+	h.move(0, 650);
+	h.intersect(['top']);
+	h.wheel(100);
+	for (let i = 0; i < 20; i++) h.wheel(i % 2 ? 100 : -100);
 	expect(h.load.mock.calls).toEqual([['top'], ['bottom']]);
 	h.unmount();
 });

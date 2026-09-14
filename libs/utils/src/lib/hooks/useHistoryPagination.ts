@@ -2,6 +2,7 @@ import { useEffect, useRef, type RefObject } from 'react';
 import useLastCallback from './useLastCallback';
 
 type Direction = 'top' | 'bottom';
+const RETRY_INTERVAL_MS = 1000;
 
 export interface HistoryPaginationState {
 	scopeId: string;
@@ -20,12 +21,13 @@ export function useHistoryPagination(
 	enabled: boolean,
 	state: HistoryPaginationState,
 	margin: number,
-	loadPage: (direction: Direction) => void
+	loadPage: (direction: Direction) => void | Promise<unknown>
 ) {
 	const directionRef = useRef<Direction>();
-	const attemptedRef = useRef<string>();
+	const attemptedRef = useRef<Partial<Record<Direction, { key: string; at: number }>>>({});
 	const frameRef = useRef<number>();
 	const retryRef = useRef(false);
+	const requestRef = useRef<object>();
 	const firstId = messageIds?.[0];
 	const lastId = messageIds?.[messageIds.length - 1];
 
@@ -34,34 +36,53 @@ export function useHistoryPagination(
 		const target = direction === 'top' ? topRef.current : bottomRef.current;
 		if (!enabled || !container || !target) return;
 		directionRef.current = direction;
-		if (state.isLoading || state.isJumping) return;
+		if (requestRef.current || state.isLoading || state.isJumping) return;
 		if (direction === 'top' ? !state.hasMoreTop : !state.hasMoreBottom) return;
+		const key = `${state.scopeId}:${direction}:${direction === 'top' ? firstId : lastId}`;
+		// Avoid even a layout read until the cursor advances or the user retries.
+		const attempted = attemptedRef.current[direction];
+		if (attempted?.key === key && (!retry || Date.now() - attempted.at < RETRY_INTERVAL_MS)) return;
 		const root = container.getBoundingClientRect();
 		const edge = target.getBoundingClientRect();
 		if (edge.bottom < root.top - margin || edge.top > root.bottom + margin) return;
 
-		const key = `${state.scopeId}:${direction}:${direction === 'top' ? firstId : lastId}`;
-		// An error or an empty page must not start an automatic retry loop.
-		if (!retry && attemptedRef.current === key) return;
-		attemptedRef.current = key;
-		loadPage(direction);
+		attemptedRef.current[direction] = { key, at: Date.now() };
+		const request = {};
+		requestRef.current = request;
+		const finish = () => {
+			if (requestRef.current !== request) return;
+			requestRef.current = undefined;
+			// Data can commit before the callback settles; recheck the latest cursor.
+			if (directionRef.current) scheduleCheck(directionRef.current);
+		};
+		try {
+			const result = loadPage(direction);
+			if (result) {
+				void result.then(finish, finish);
+			} else {
+				requestRef.current = undefined;
+			}
+		} catch (error) {
+			finish();
+			throw error;
+		}
 	});
 
 	const scheduleCheck = useLastCallback((direction: Direction, retry = false) => {
 		retryRef.current = retry || (directionRef.current === direction && retryRef.current);
 		directionRef.current = direction;
-		if (frameRef.current !== undefined) cancelAnimationFrame(frameRef.current);
+		if (frameRef.current !== undefined) return;
 		frameRef.current = requestAnimationFrame(() => {
 			frameRef.current = undefined;
 			const shouldRetry = retryRef.current;
 			retryRef.current = false;
-			checkEdge(direction, shouldRetry);
+			if (directionRef.current) checkEdge(directionRef.current, shouldRetry);
 		});
 	});
 
 	useEffect(() => {
 		directionRef.current = undefined;
-		attemptedRef.current = undefined;
+		attemptedRef.current = {};
 		const container = containerRef.current;
 		const top = topRef.current;
 		const bottom = bottomRef.current;
@@ -99,6 +120,10 @@ export function useHistoryPagination(
 			container.removeEventListener('wheel', onWheel);
 			container.removeEventListener('scroll', onScroll);
 			if (frameRef.current !== undefined) cancelAnimationFrame(frameRef.current);
+			frameRef.current = undefined;
+			requestRef.current = undefined;
+			directionRef.current = undefined;
+			retryRef.current = false;
 		};
 	}, [containerRef, topRef, bottomRef, enabled, state.scopeId, margin, scheduleCheck]);
 

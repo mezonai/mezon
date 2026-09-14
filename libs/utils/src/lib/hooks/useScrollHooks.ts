@@ -31,7 +31,7 @@ export function useScrollHooks(
 	onScrollDownToggle: BooleanToVoidFunction,
 	onNotchToggle: BooleanToVoidFunction,
 	isReady: RefObject<boolean>,
-	loadViewportMessages: ({ direction }: { direction: LoadMoreDirection }) => void,
+	loadViewportMessages: ({ direction }: { direction: LoadMoreDirection }) => void | Promise<unknown>,
 	historyState: HistoryPaginationState
 ) {
 	const backwardsTriggerRef = useRef<HTMLDivElement>(null);
