@@ -478,19 +478,114 @@ it.each(['topic', 'thread', 'channel'])('receives another same-user message in %
 	expect(store.getState().messages.channelViewPortMessageIds[scope]).toContain(other.id);
 });
 
-it.each([true, false])('deduplicates a server echo arriving before ACK: %s', async (echoBeforeAck) => {
+it.each(['topic', 'thread', 'channel'].flatMap((scope) => [true, false].map((echoBeforeAck) => ({ scope, echoBeforeAck }))))(
+	'keeps one stable row in $scope when echoBeforeAck=$echoBeforeAck',
+	async ({ scope, echoBeforeAck }) => {
+		const ack = deferred<{ message_id: string }>();
+		const { store, client } = setup();
+		client.writeChatMessage.mockReturnValueOnce(ack.promise);
+		const request = store.dispatch(
+			sendMessage({
+				...payload,
+				channelId: scope,
+				topicId: scope === 'topic' ? scope : undefined,
+				mode: scope === 'thread' ? ChannelStreamMode.STREAM_MODE_THREAD : payload.mode,
+				attachments: [],
+				content: { t: 'Reply' }
+			})
+		);
+		await new Promise(setImmediate);
+		const [fakeId] = store.getState().messages.channelViewPortMessageIds[scope];
+		const renderKey = store.getState().messages.channelMessages[scope].entities[fakeId].temp_id;
+		const rowCounts: number[] = [];
+		const unsubscribe = store.subscribe(() => rowCounts.push(store.getState().messages.channelViewPortMessageIds[scope].length));
+		const echo = { ...serverReply(5), channel_id: scope, topic_id: scope === 'topic' ? scope : undefined, isMe: true, sender_id: 'user' };
+		const earlyEcho = echoBeforeAck ? store.dispatch(addNewMessage(echo as any)) : undefined;
+		await new Promise(setImmediate);
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual([fakeId]);
+		ack.resolve({ message_id: echo.id });
+		await request.unwrap();
+		await earlyEcho?.unwrap();
+		if (!echoBeforeAck) await store.dispatch(addNewMessage(echo as any)).unwrap();
+		await store.dispatch(addNewMessage(echo as any)).unwrap();
+		unsubscribe();
+		expect(rowCounts.every((count) => count === 1)).toBe(true);
+		expect(renderKey).toBeTruthy();
+		expect(store.getState().messages.channelMessages[scope].entities[echo.id].temp_id).toBe(renderKey);
+		expect(store.getState().messages.channelMessages[scope].ids).toEqual([echo.id]);
+		expect(store.getState().messages.channelViewPortMessageIds[scope]).toEqual([echo.id]);
+		expect(store.getState().messages.queueSending).toEqual({});
+	}
+);
+
+it.each([false, true])('retains other-device messages when an active send fails: %s', async (fails) => {
 	const ack = deferred<{ message_id: string }>();
 	const { store, client } = setup();
-	client.writeChatMessage.mockReturnValueOnce(ack.promise);
-	const request = store.dispatch(sendMessage({ ...payload, topicId: 'topic', attachments: [], content: { t: 'Reply' } }));
+	client.writeChatMessage.mockReturnValue(ack.promise);
+	client.sendChannelMessage.mockRejectedValue(new Error('offline'));
+	const request = store.dispatch(sendMessage({ ...payload, attachments: [], content: { t: 'Local' } }));
 	await new Promise(setImmediate);
-	const echo = { ...serverReply(5), channel_id: 'topic', topic_id: 'topic', isMe: true, sender_id: 'user' };
-	if (echoBeforeAck) await store.dispatch(addNewMessage(echo as any)).unwrap();
-	ack.resolve({ message_id: echo.id });
-	await request.unwrap();
-	if (!echoBeforeAck) await store.dispatch(addNewMessage(echo as any)).unwrap();
-	await store.dispatch(addNewMessage(echo as any)).unwrap();
-	expect(store.getState().messages.channelMessages.topic.ids).toEqual([echo.id]);
-	expect(store.getState().messages.channelViewPortMessageIds.topic).toEqual([echo.id]);
-	expect(store.getState().messages.queueSending).toEqual({});
+	const other = { ...serverReply(6), channel_id: 'channel', isMe: true, sender_id: 'user' };
+	const received = store.dispatch(addNewMessage(other as any));
+	// Other users and stores must not wait on this send.
+	const peer = { ...serverReply(7), channel_id: 'channel', isMe: false, sender_id: 'peer' };
+	await store.dispatch(addNewMessage(peer as any)).unwrap();
+	expect(store.getState().messages.channelMessages.channel.entities[peer.id]).toBeDefined();
+	const { store: otherStore } = setup();
+	otherStore.dispatch(messagesActions.addOneMessage(peer as any));
+	await otherStore.dispatch(addNewMessage(other as any)).unwrap();
+	expect(otherStore.getState().messages.channelMessages.channel.entities[other.id]).toBeDefined();
+	if (fails) ack.reject(new Error('offline'));
+	else ack.resolve({ message_id: '900' });
+	await request;
+	await received.unwrap();
+	expect(store.getState().messages.channelMessages.channel.entities[other.id]).toBeDefined();
+	expect(store.getState().messages.channelViewPortMessageIds.channel).toContain(other.id);
+});
+
+it('reconciles concurrent sends without briefly adding their own echoes', async () => {
+	const firstAck = deferred<{ message_id: string }>();
+	const secondAck = deferred<{ message_id: string }>();
+	const { store, client } = setup();
+	client.writeChatMessage.mockReturnValueOnce(firstAck.promise).mockReturnValueOnce(secondAck.promise);
+	const textPayload = { ...payload, attachments: [], content: { t: 'Same text' } };
+	const first = store.dispatch(sendMessage(textPayload));
+	const second = store.dispatch(sendMessage(textPayload));
+	await new Promise(setImmediate);
+	const echoes = [5, 6].map((sequence) => ({
+		...serverReply(sequence),
+		channel_id: 'channel',
+		isMe: true,
+		sender_id: 'user',
+		content: textPayload.content
+	}));
+	const received = echoes.map((echo) => store.dispatch(addNewMessage(echo as any)));
+	const rowCounts: number[] = [];
+	const unsubscribe = store.subscribe(() => rowCounts.push(store.getState().messages.channelViewPortMessageIds.channel.length));
+	secondAck.resolve({ message_id: echoes[1].id });
+	await second.unwrap();
+	firstAck.resolve({ message_id: echoes[0].id });
+	await first.unwrap();
+	await Promise.all(received.map((event) => event.unwrap()));
+	unsubscribe();
+	expect(rowCounts.every((count) => count === 2)).toBe(true);
+	expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(echoes.map((echo) => echo.id));
+});
+
+it('releases incoming same-user messages when an acknowledgement times out', async () => {
+	jest.useFakeTimers();
+	try {
+		const { store, client } = setup();
+		client.writeChatMessage.mockReturnValue(deferred<{ message_id: string }>().promise);
+		const request = store.dispatch(sendMessage({ ...payload, attachments: [], content: { t: 'Local' } }));
+		await jest.advanceTimersByTimeAsync(0);
+		const other = { ...serverReply(6), channel_id: 'channel', isMe: true, sender_id: 'user' };
+		const received = store.dispatch(addNewMessage(other as any));
+		await jest.advanceTimersByTimeAsync(30_000);
+		await request;
+		await received.unwrap();
+		expect(store.getState().messages.channelMessages.channel.entities[other.id]).toBeDefined();
+	} finally {
+		jest.useRealTimers();
+	}
 });

@@ -1185,7 +1185,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 				return (
 					<MemorizedChannelMessage
-						key={messageId}
+						key={entities[messageId]?.temp_id || messageId}
 						index={index}
 						message={entities[messageId]}
 						previousMessage={entities[messageIds[index - 1]]}

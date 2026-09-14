@@ -57,6 +57,29 @@ import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
 const sendTimeoutMap = new Map<string, ReturnType<typeof setTimeout>>();
+// Scope acknowledgement waits to a store and conversation. Uploads are excluded:
+// only an active send can produce an echo that races its optimistic replacement.
+const pendingMessageAcks = new WeakMap<() => unknown, Map<string, Set<Promise<void>>>>();
+
+const beginMessageAckWait = (getState: () => unknown, channelId: string) => {
+	let conversations = pendingMessageAcks.get(getState);
+	if (!conversations) {
+		conversations = new Map();
+		pendingMessageAcks.set(getState, conversations);
+	}
+	const pending = conversations.get(channelId) ?? new Set<Promise<void>>();
+	conversations.set(channelId, pending);
+	let finish!: () => void;
+	const acknowledgement = new Promise<void>((resolve) => {
+		finish = resolve;
+	});
+	pending.add(acknowledgement);
+	return () => {
+		pending.delete(acknowledgement);
+		if (!pending.size) conversations.delete(channelId);
+		finish();
+	};
+};
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
 export const MESSAGES_FEATURE_KEY = 'messages';
@@ -93,6 +116,7 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 
 export interface MessagesEntity extends IMessageWithUser {
 	id: string; // Primary ID
+	temp_id?: string;
 	channel_id: string;
 	isStartedMessageGroup?: boolean;
 	isStartedMessageOfTheDay?: boolean;
@@ -1450,6 +1474,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			);
 		}
 
+		let finishMessageAck: (() => void) | undefined;
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
 
@@ -1499,6 +1524,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 			const SEND_TIMEOUT_MS = 30_000;
 			let timeoutId: ReturnType<typeof setTimeout> | undefined;
+			finishMessageAck = beginMessageAckWait(thunkAPI.getState, storeChannelId);
 
 			const messageResult = (await Promise.race([
 				sendWithRetry(1),
@@ -1536,6 +1562,10 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					})
 				);
 			}
+
+			// Release incoming echoes only after the optimistic row has its server ID.
+			finishMessageAck();
+			finishMessageAck = undefined;
 
 			if (attachments && attachments.length > 0 && messageResult?.message_id && usePresignFirst) {
 				try {
@@ -1614,6 +1644,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			);
 			captureSentryError(error, 'messages/sendMessage');
 			throw error;
+		} finally {
+			finishMessageAck?.();
 		}
 	}
 
@@ -1724,13 +1756,21 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 export const addNewMessage = createAsyncThunk('messages/addNewMessage', async (message: MessagesEntity, thunkAPI) => {
 	if (!message?.channel_id) return;
 
-	const state = thunkAPI.getState() as RootState;
 	const channelId = message.channel_id;
+	let state = thunkAPI.getState() as RootState;
 	const channelData = state.messages.channelMessages?.[channelId];
 
 	if (!channelData?.cache && !channelData?.ids?.length) {
 		thunkAPI.dispatch(messagesActions.setLastMessage(message));
 		return;
+	}
+
+	const pending = pendingMessageAcks.get(thunkAPI.getState)?.get(channelId);
+	if (message.isMe && !message.isSending && pending?.size) {
+		// Keep every event, including other devices' messages, but reconcile any
+		// in-flight sends before exposing a possible second copy to the viewport.
+		await Promise.all([...pending]);
+		state = thunkAPI.getState() as RootState;
 	}
 
 	const isViewingOlderMessages = getMessagesState(getMessagesRootState(thunkAPI))?.isViewingOlderMessagesByChannelId?.[channelId];
