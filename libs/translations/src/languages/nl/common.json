@@ -214,7 +214,8 @@
 		"previousChannels": "Vorige kanalen",
 		"mentions": "Vermeldingen",
 		"unreadChannels": "Ongelezen kanalen",
-		"noResults": "Het lijkt erop dat je niet vindt wat je zoekt?"
+		"noResults": "Het lijkt erop dat je niet vindt wat je zoekt?",
+		"search": "Kanalen zoeken"
 	},
 	"userProfile": {
 		"aboutMe": "Over mij",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "E-mail of wachtwoord is ongeldig",
 		"qr": {
 			"signIn": "Inloggen met QR-code",
-			"useMobile": "Gebruik Mezon op mobiel om de QR te scannen"
+			"useMobile": "Gebruik Mezon op mobiel om de QR te scannen",
+			"openToConfirm": "Open Mezon op je telefoon om het inloggen te bevestigen",
+			"openApp": "App openen"
 		},
 		"loginToMezon": "Inloggen op Mezon-account",
 		"emailAddress": "E-mailadres",
@@ -375,7 +378,8 @@
 		"membersOnline": "Leden online",
 		"noQuestions": "Je hebt nog geen vragen. Stel eerst vragen voor deze clan !!",
 		"noRules": "Je hebt nog geen regels. Stel eerst regels in voor deze clan !!",
-		"noMissions": "Je hebt nog geen missies. Stel eerst missies in voor deze clan !!"
+		"noMissions": "Je hebt nog geen missies. Stel eerst missies in voor deze clan !!",
+		"emptyGuideLine": "Er zijn nog geen richtlijnen toegevoegd!"
 	},
 	"updateUsername": {
 		"enterUsername": "Mezon-naam invoeren",

@@ -59,7 +59,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 				};
 			} catch (error) {
 				console.error('error: ', error);
-				return null;
+				throw error;
 			}
 		})
 	);

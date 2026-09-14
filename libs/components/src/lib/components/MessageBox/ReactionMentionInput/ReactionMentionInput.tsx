@@ -910,40 +910,39 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const handleSearchSlashCommands = useCallback(
 		async (search: string): Promise<SlashCommand[]> => {
-			const store = getStore();
-			const channelQuickMenuItems = selectQuickMenuByChannelId(store.getState(), props.currentChannelId || '');
-			const hasExistingData = channelQuickMenuItems && channelQuickMenuItems.length > 0;
+			const channelId = props.currentChannelId;
 
+			if (channelId === currTopicId) {
+				return [];
+			}
+			if (!channelId) {
+				return generateCommandsList(search);
+			}
+
+			const store = getStore();
+			const channelQuickMenuItems = selectQuickMenuByChannelId(store.getState(), channelId);
+			const hasExistingData = !!channelQuickMenuItems?.length;
+			const commands = generateCommandsList(search);
 			if (hasExistingData) {
-				const commands = generateCommandsList(search);
-				if (props.currentChannelId) {
-					try {
-						await dispatch(
-							quickMenuActions.listQuickMenuAccess({ channelId: props.currentChannelId, menuType: QUICK_MENU_TYPE.FLASH_MESSAGE })
-						);
-						return generateCommandsList(search);
-					} catch (error) {
-						console.error('Error fetching fresh commands:', error);
-						return commands;
-					}
-				}
 				return commands;
-			} else {
-				try {
-					if (props.currentChannelId) {
-						await dispatch(
-							quickMenuActions.listQuickMenuAccess({ channelId: props.currentChannelId, menuType: QUICK_MENU_TYPE.FLASH_MESSAGE })
-						);
-					}
-					return generateCommandsList(search);
-				} catch (error) {
-					console.error('Error fetching commands:', error);
-					const builtInCommands = createSlashCommands(t).filter((cmd) => cmd.display.toLowerCase().includes(search.toLowerCase()));
-					return builtInCommands;
-				}
+			}
+
+			try {
+				await dispatch(
+					quickMenuActions.listQuickMenuAccess({
+						channelId,
+						menuType: QUICK_MENU_TYPE.FLASH_MESSAGE
+					})
+				);
+
+				return generateCommandsList(search);
+			} catch (error) {
+				console.error('Error fetching commands:', error);
+
+				return hasExistingData ? commands : createSlashCommands(t).filter((cmd) => cmd.display.toLowerCase().includes(search.toLowerCase()));
 			}
 		},
-		[props.currentChannelId, generateCommandsList, dispatch, t]
+		[props.currentChannelId, currTopicId, generateCommandsList, dispatch, t]
 	);
 
 	const handleSlashCommandSelect = useCallback(
@@ -1007,7 +1006,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	});
 
 	return (
-		<div className={`contain-layout relative bg-theme-surface rounded-lg ${props?.isThread && 'border-theme-primary'}`} ref={containerRef}>
+		<div
+			className={`contain-layout relative bg-theme-surface rounded-lg ${props.isThread && !props.isThreadbox ? 'border-theme-primary' : ''}`}
+			ref={containerRef}
+		>
 			<div className="relative">
 				<span
 					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary pointer-events-none z-10 truncate transition-opacity duration-300 ${

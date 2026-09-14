@@ -214,7 +214,8 @@
 		"previousChannels": "Poprzednie kanały",
 		"mentions": "Wzmianki",
 		"unreadChannels": "Nieprzeczytane kanały",
-		"noResults": "Wygląda na to, że nie znalazłeś tego, czego szukasz?"
+		"noResults": "Wygląda na to, że nie znalazłeś tego, czego szukasz?",
+		"search": "Szukaj kanałów"
 	},
 	"userProfile": {
 		"aboutMe": "O mnie",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "Nieprawidłowy email lub hasło",
 		"qr": {
 			"signIn": "Zaloguj się za pomocą kodu QR",
-			"useMobile": "Użyj Mezon na telefonie, aby zeskanować QR"
+			"useMobile": "Użyj Mezon na telefonie, aby zeskanować QR",
+			"openToConfirm": "Otwórz Mezon na telefonie, aby potwierdzić logowanie",
+			"openApp": "Otwórz aplikację"
 		},
 		"loginToMezon": "Zaloguj się na konto Mezon",
 		"emailAddress": "Adres email",
@@ -375,7 +378,8 @@
 		"membersOnline": "Członków online",
 		"noQuestions": "Nie masz jeszcze żadnych pytań. Ustaw pytania dla tego clanu przed !!",
 		"noRules": "Nie masz jeszcze żadnych zasad. Ustaw zasady dla tego clanu przed !!",
-		"noMissions": "Nie masz jeszcze żadnych misji. Ustaw misje dla tego clanu przed !!"
+		"noMissions": "Nie masz jeszcze żadnych misji. Ustaw misje dla tego clanu przed !!",
+		"emptyGuideLine": "Nie dodano jeszcze żadnych wytycznych!"
 	},
 	"updateUsername": {
 		"enterUsername": "Wpisz nazwę Mezon",

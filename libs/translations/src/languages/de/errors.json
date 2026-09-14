@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "Die Anfrage wurde abgebrochen",
+	"error_2": "Unbekannter Fehler",
+	"error_3": "Hm, da stimmt etwas nicht.",
+	"error_4": "Zeitüberschreitung der Verbindung. Bitte versuche es erneut.",
+	"error_5": "Ressource nicht gefunden",
+	"error_6": "Ressource existiert bereits",
+	"error_7": "Zugriff verweigert",
+	"error_8": "Ressourcen erschöpft",
+	"error_9": "Vorbedingung nicht erfüllt",
+	"error_10": "Die Aktion wurde unterbrochen. Bitte versuche es erneut.",
+	"error_11": "Dieser Wert ist ungültig.",
+	"error_12": "Vorgang nicht implementiert",
+	"error_13": "Interner Fehler",
+	"error_14": "Die Server sind ausgelastet. Bitte versuche es in Kürze erneut.",
+	"error_15": "Datenverlust",
+	"error_16": "Sitzung abgelaufen. Bitte melde dich erneut an."
+}

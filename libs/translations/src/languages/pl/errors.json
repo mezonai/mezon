@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "Żądanie zostało anulowane",
+	"error_2": "Nieznany błąd",
+	"error_3": "Coś wygląda nie tak.",
+	"error_4": "Upłynął limit czasu połączenia. Spróbuj ponownie.",
+	"error_5": "Nie znaleziono zasobu",
+	"error_6": "Zasób już istnieje",
+	"error_7": "Odmowa dostępu",
+	"error_8": "Zasoby zostały wyczerpane",
+	"error_9": "Warunek wstępny nie został spełniony",
+	"error_10": "Działanie zostało przerwane. Spróbuj ponownie.",
+	"error_11": "Ta wartość jest nieprawidłowa.",
+	"error_12": "Operacja nie została zaimplementowana",
+	"error_13": "Błąd wewnętrzny",
+	"error_14": "Serwery są zajęte. Spróbuj ponownie za chwilę.",
+	"error_15": "Utrata danych",
+	"error_16": "Sesja wygasła. Zaloguj się ponownie."
+}

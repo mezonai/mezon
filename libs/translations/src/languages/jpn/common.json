@@ -214,7 +214,8 @@
 		"previousChannels": "以前のチャンネル",
 		"mentions": "メンション",
 		"unreadChannels": "未読チャンネル",
-		"noResults": "お探しのものが見つかりませんか？"
+		"noResults": "お探しのものが見つかりませんか？",
+		"search": "チャンネルを検索"
 	},
 	"userProfile": {
 		"aboutMe": "概要",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "メールまたはパスワードが無効です",
 		"qr": {
 			"signIn": "QRコードでサインイン",
-			"useMobile": "Mezonをモバイルで使用してQRをスキャン"
+			"useMobile": "Mezonをモバイルで使用してQRをスキャン",
+			"openToConfirm": "スマートフォンでMezonを開いてログインを確認してください",
+			"openApp": "アプリを開く"
 		},
 		"loginToMezon": "Mezonアカウントにログイン",
 		"emailAddress": "メールアドレス",
@@ -375,7 +378,8 @@
 		"membersOnline": "オンラインメンバー",
 		"noQuestions": "まだ質問がありません。このクランの質問を設定しましょう!!",
 		"noRules": "まだルールがありません。このクランのルールを設定しましょう!!",
-		"noMissions": "まだミッションがありません。このクランのミッションを設定しましょう!!"
+		"noMissions": "まだミッションがありません。このクランのミッションを設定しましょう!!",
+		"emptyGuideLine": "ガイドラインはまだ追加されていません！"
 	},
 	"updateUsername": {
 		"enterUsername": "Mezonユーザー名を入力",

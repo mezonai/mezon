@@ -214,7 +214,8 @@
 		"previousChannels": "Canaux précédents",
 		"mentions": "Mentions",
 		"unreadChannels": "Canaux non lus",
-		"noResults": "Il semble que vous ne trouviez pas ce que vous cherchez ?"
+		"noResults": "Il semble que vous ne trouviez pas ce que vous cherchez ?",
+		"search": "Rechercher des salons"
 	},
 	"userProfile": {
 		"aboutMe": "À propos de moi",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "Email ou mot de passe invalide",
 		"qr": {
 			"signIn": "Se connecter avec le code QR",
-			"useMobile": "Utilisez Mezon sur mobile pour scanner le QR"
+			"useMobile": "Utilisez Mezon sur mobile pour scanner le QR",
+			"openToConfirm": "Ouvrez Mezon sur votre téléphone pour confirmer la connexion",
+			"openApp": "Ouvrir l’application"
 		},
 		"loginToMezon": "Se connecter à votre compte Mezon",
 		"emailAddress": "Adresse email",
@@ -375,7 +378,8 @@
 		"membersOnline": "Membres en ligne",
 		"noQuestions": "Vous n'avez aucune question. Veuillez créer une question pour ce clan d'abord !!",
 		"noRules": "Vous n'avez aucune règle. Veuillez créer une règle pour ce clan d'abord !!",
-		"noMissions": "Vous n'avez aucune quête. Veuillez créer une quête pour ce clan d'abord !!"
+		"noMissions": "Vous n'avez aucune quête. Veuillez créer une quête pour ce clan d'abord !!",
+		"emptyGuideLine": "Aucune consigne n’a encore été ajoutée !"
 	},
 	"updateUsername": {
 		"enterUsername": "Entrez votre nom Mezon",

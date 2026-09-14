@@ -315,7 +315,7 @@ const BrandCenterPage = () => {
 									))}
 								</ul>
 								<a
-									href={`${process.env.NX_BASE_IMG_URL}/landing-page-mezon/Mezon-Brand-Resource.zip`}
+									href={`${process.env.NX_BASE_IMG_URL}/landing-page-mezon/Mezon-Brand-Resource-.zip`}
 									target="_blank"
 									rel="noopener noreferrer"
 								>

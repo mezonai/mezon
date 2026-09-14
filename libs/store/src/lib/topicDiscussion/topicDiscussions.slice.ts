@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
-import { CREATING_TOPIC, EBacktickType, generatePathAttachments, getWebUploadedAttachments, isTikTokLink, isYouTubeLink } from '@mezon/utils';
+import { CREATING_TOPIC, EBacktickType, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type {
@@ -13,9 +13,9 @@ import type {
 	TopicInMessageEvent
 } from 'mezon-js';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
 import { messagesActions, selectMessageEntitiesByChannelId } from '../messages/messages.slice';
-import { referencesActions, selectOgpData } from '../messages/references.slice';
+import { selectOgpData } from '../messages/references.slice';
 import type { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 
@@ -229,28 +229,14 @@ type SendTopicPayload = {
 	isMobile?: boolean;
 	code?: number;
 	topicId: string;
+	senderId: string;
+	isFirstTopicMessage?: boolean;
+	avatar?: string;
+	username?: string;
 };
 
 export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async (payload: SendTopicPayload, thunkAPI) => {
-	const { clanId, channelId, mode, isPublic, content, mentions, attachments, references, anonymous, mentionEveryone, isMobile, code, topicId } =
-		payload;
-
-	const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-
-	const session = mezon.sessionRef.current;
-	const client = mezon.clientRef.current;
-
-	if (!client || !session || !channelId) {
-		throw new Error('Client is not initialized');
-	}
-
-	let uploadedFiles: ApiMessageAttachment[] = [];
-
-	if (attachments && attachments.length > 0) {
-		const attachmentsPath = await generatePathAttachments(client, session, attachments);
-		uploadedFiles = attachmentsPath;
-		await getWebUploadedAttachments({ attachments: attachmentsPath });
-	}
+	const { channelId, content, mentions, topicId } = payload;
 
 	let topicContent = content;
 	const state = thunkAPI.getState() as RootState;
@@ -286,23 +272,7 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		};
 	}
 
-	await client.writeChatMessage(
-		mezon.session,
-		clanId as string,
-		channelId as string,
-		mode,
-		isPublic,
-		topicContent,
-		mentions,
-		uploadedFiles,
-		references,
-		anonymous,
-		false,
-		'',
-		0,
-		topicId
-	);
-	thunkAPI.dispatch(referencesActions.clearOgpData());
+	return thunkAPI.dispatch(messagesActions.sendMessage({ ...payload, content: topicContent, mentionEveryone: false, code: 0 })).unwrap();
 });
 
 export const topicsSlice = createSlice({

@@ -65,6 +65,7 @@ const FAST_RECONNECT_ATTEMPTS = 2;
 const FAST_RECONNECT_DELAY_MS = 400;
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 40;
+const MAX_IVALID__RECONNECT_ATTEMPTS = 2;
 
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
@@ -956,7 +957,7 @@ export function MezonSfuVoiceRoom({
 		chatRef.current?.setMessages((prev) => [...prev, message]);
 	}, []);
 	const [roomPeerId, setRoomPeerId] = useState('');
-
+	const attemptsReconnect = useRef(0);
 	useEffect(() => {
 		let disposed = false;
 		let reconnectAllowed = true;
@@ -1437,6 +1438,21 @@ export function MezonSfuVoiceRoom({
 					handleAddMessage(message.message);
 				}
 				if (message.type === 'error') {
+					if (message.message === 'invalid_token') {
+						attemptsReconnect.current = attemptsReconnect.current + 1;
+						if (attemptsReconnect.current >= MAX_IVALID__RECONNECT_ATTEMPTS) {
+							dispatch(
+								toastActions.addToast({
+									message: 'Invalid token.',
+									type: 'error',
+									autoClose: 3000
+								})
+							);
+							onLeaveRoomRef.current();
+							attemptsReconnect.current = 0;
+							return;
+						}
+					}
 					// eslint-disable-next-line no-console
 					// console.error('[MezonSFU] server error', message);
 					const errorMsg = message.message || 'SFU signaling error';
@@ -1451,7 +1467,9 @@ export function MezonSfuVoiceRoom({
 								if (newToken && newToken !== token) {
 									dispatch(voiceActions.setToken(newToken));
 								} else {
-									setError(errorMsg);
+									if (message.message !== 'invalid_token') {
+										setError(errorMsg);
+									}
 									setConnectionState('failed');
 								}
 							})
@@ -1821,7 +1839,6 @@ export function MezonSfuVoiceRoom({
 	const { sendEmojiReaction: sendMezonEmojiReaction, sendSoundReaction: sendMezonSoundReaction } = useSendReaction();
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
 		sendMezonEmojiReaction(emoji, emojiId);
-		setShowEmojiPanel(false);
 	};
 	const sendSoundReaction = (soundId: string, soundUrl: string) => {
 		sendMezonSoundReaction(soundUrl || soundId);
