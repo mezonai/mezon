@@ -1839,7 +1839,6 @@ export function MezonSfuVoiceRoom({
 	const { sendEmojiReaction: sendMezonEmojiReaction, sendSoundReaction: sendMezonSoundReaction } = useSendReaction();
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
 		sendMezonEmojiReaction(emoji, emojiId);
-		setShowEmojiPanel(false);
 	};
 	const sendSoundReaction = (soundId: string, soundUrl: string) => {
 		sendMezonSoundReaction(soundUrl || soundId);
