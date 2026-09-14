@@ -15,7 +15,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { generatePathAttachments, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import { getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -149,10 +149,11 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 
 					try {
 						const topic = (await createTopic()) as ApiSdTopic;
-						if (!topic) {
+						if (!topic?.id) {
 							return;
 						}
 
+						dispatch(topicsActions.setCurrentTopicId(topic.id as string));
 						await dispatch(
 							topicsActions.handleSendTopic({
 								clanId: getClanId as string,
@@ -167,10 +168,14 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 								mentionEveryone,
 								mentions,
 								references,
-								topicId: topic?.id as string
+								topicId: topic?.id as string,
+								isFirstTopicMessage: true,
+								senderId: currentUserId,
+								avatar: priorityAvatar,
+								username: priorityNameToShow
 							})
 						);
-						return dispatch(topicsActions.setCurrentTopicId(topic?.id as string));
+						return;
 					} finally {
 						isCreatingTopicRef.current = false;
 					}
@@ -190,19 +195,13 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 						mentionEveryone,
 						mentions,
 						references,
-						topicId: currentTopicId as string
+						topicId: currentTopicId as string,
+						senderId: currentUserId,
+						avatar: priorityAvatar,
+						username: priorityNameToShow
 					})
 				);
 				return;
-			}
-
-			let attachmentsPath;
-			if (attachments) {
-				const session = sessionRef.current;
-				const client = clientRef.current;
-				if (client && session) {
-					attachmentsPath = await generatePathAttachments(client, session, attachments);
-				}
 			}
 
 			await dispatch(
@@ -213,7 +212,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					isPublic,
 					content,
 					mentions,
-					attachments: attachmentsPath,
+					attachments,
 					references,
 					anonymous: getClanId !== '0' ? anonymousMode : false,
 					mentionEveryone,

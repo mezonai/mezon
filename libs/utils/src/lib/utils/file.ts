@@ -72,13 +72,22 @@ export function forgetLocalPreview(url: string): void {
 }
 
 /**
- * An object url for the file being uploaded, so the row can show it while the
- * CDN object does not exist yet. Images only: a document already renders as a
- * named box, and the video player has its own poster path — handing either one
- * a url nothing reads would just pin the file in memory.
+ * An independent image/poster url for the message row. Composer cleanup must
+ * not revoke the preview the sender is still viewing after upload.
  */
 export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string | undefined {
 	const sourceFile = getPreSendSourceFile(attachment);
+	const mime = sourceFile?.type || attachment.filetype || '';
+	const isVideo = mime.startsWith('video');
+	const poster = getPreSendThumbnailBlob(attachment);
+	if (isVideo) {
+		if (!poster) return undefined;
+		try {
+			return rememberPreview(URL.createObjectURL(poster), poster.size);
+		} catch {
+			return undefined;
+		}
+	}
 	if (!sourceFile) return undefined;
 
 	// Presign rewrites `filetype` to the bare upload CATEGORY ("image"), so by the
@@ -86,7 +95,6 @@ export function createLocalPreviewUrl(attachment: ApiMessageAttachment): string 
 	// first and take the category as the fallback — matching on `image/` alone
 	// misses every attachment that has already been through presign, which is all
 	// of them by the time anything renders.
-	const mime = sourceFile.type || attachment.filetype || '';
 	if (!mime.startsWith('image/') && attachment.filetype !== 'image') return undefined;
 
 	// The display-sized copy made when the file was picked, falling back to the

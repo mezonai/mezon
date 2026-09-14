@@ -1007,7 +1007,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	});
 
 	return (
-		<div className={`contain-layout relative bg-theme-surface rounded-lg ${props?.isThread && 'border-theme-primary'}`} ref={containerRef}>
+		<div
+			className={`contain-layout relative bg-theme-surface rounded-lg ${props.isThread && !props.isThreadbox ? 'border-theme-primary' : ''}`}
+			ref={containerRef}
+		>
 			<div className="relative">
 				<span
 					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary pointer-events-none z-10 truncate transition-opacity duration-300 ${

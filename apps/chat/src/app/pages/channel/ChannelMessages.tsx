@@ -27,6 +27,7 @@ import {
 	selectMemberClanByUserId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIsLoading,
+	selectMessageIsLoadingByChannelId,
 	selectMessageNotified,
 	selectMessageViewportIdsByChannelId,
 	selectOpenEditMessageState,
@@ -1259,7 +1260,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		return (
 			<div className="w-full h-full relative messages-container select-text bg-theme-chat ">
-				<StickyLoadingIndicator messageCount={messageIds?.length} />
+				<StickyLoadingIndicator channelId={topicId || channelId} messageCount={messageIds?.length} />
 				<div onWheelCapture={handleWheel} ref={chatRef} className={'messages-scroll outline-none w-full scroll-big'}>
 					<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end">
 						{isTopic && firstMsgOfThisTopic && (
@@ -1319,8 +1320,8 @@ export default MemoizedChannelMessages;
  */
 const LOAD_SKELETON_DELAY_MS = 120;
 
-const StickyLoadingIndicator = memo(({ messageCount }: { messageCount: number }) => {
-	const isLoading = useAppSelector(selectMessageIsLoading);
+const StickyLoadingIndicator = memo(({ channelId, messageCount }: { channelId: string; messageCount: number }) => {
+	const isLoading = useAppSelector((state) => selectMessageIsLoadingByChannelId(state, channelId));
 	const [showLoading, setShowLoading] = useState(false);
 
 	useEffect(() => {
@@ -1357,7 +1358,8 @@ const LoadingSkeletonMessages = memo(
 	({ channelId, isTopic, topicId }: { channelId: string; isTopic?: boolean; topicId?: string }) => {
 		const scopeId = isTopic ? topicId || channelId : channelId;
 		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, scopeId));
-		if (!hasMoreTop) return null;
+		const isLoading = useAppSelector((state) => selectMessageIsLoadingByChannelId(state, scopeId));
+		if (!hasMoreTop || !isLoading) return null;
 		return (
 			<div id="msg-loading-top" className="py-2">
 				<MessageSkeleton randomKey={scopeId} />

@@ -19,6 +19,7 @@ import {
 	PRESIGN_PENDING_MAX_AGE_SEC,
 	TypeMessage,
 	createLocalPreviewUrl,
+	generatePathAttachments,
 	getMessageCreateTimeSeconds,
 	getPublicKeys,
 	getWebUploadedAttachments,
@@ -117,6 +118,7 @@ export type FetchMessageParam = {
 
 export interface MessagesState {
 	loadingStatus: LoadingStatus;
+	loadingRequestsByChannel: Record<string, number>;
 	error?: string | null;
 	queueSending: Record<string, string>;
 	unreadMessagesEntries?: Record<string, string>;
@@ -150,6 +152,7 @@ export interface MessagesState {
 export type FetchMessagesMeta = {
 	arg: {
 		channelId: string;
+		topicId?: string;
 		direction?: Direction_Mode;
 		messageId?: string;
 	};
@@ -233,7 +236,7 @@ export const fetchMessagesCached = async (
 			}
 		}
 	}
-	const channelData = state[MESSAGES_FEATURE_KEY].channelMessages[channelId];
+	const channelData = state[MESSAGES_FEATURE_KEY].channelMessages[topicId || channelId];
 	const apiKey = createApiKey('fetchMessages', clanId, messageId || '0', channelId, direction || 1, topicId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 
@@ -288,6 +291,8 @@ function isOlderMessageId(a?: string, b?: string) {
 }
 
 const MESSAGE_ID_SEQUENCE_SHIFT = BigInt(22);
+// mezon-api initializes topic counters with constant.BASE_SEED_GID in createSdTopic.
+const TOPIC_MESSAGE_SEQUENCE_BASE = 438845456274;
 
 function messageIdSequenceGap(newerId?: string, olderId?: string) {
 	if (!newerId || !olderId) return 0;
@@ -388,14 +393,15 @@ export const fetchMessages = createAsyncThunk(
 			if (!currentUser) {
 				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
 			}
-			const lastMessageId = selectLastMessageIdByChannelId(state, channelId);
+			const lastMessageId = selectLastMessageIdByChannelId(state, chlId);
+			const requestMessageId = toPresent ? '0' : messageId || lastMessageId || '0';
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
 				mezon,
 				clanId,
 				channelId,
-				toPresent ? '0' : messageId || lastMessageId || '0',
+				requestMessageId,
 				direction,
 				topicId,
 				noCache,
@@ -462,10 +468,18 @@ export const fetchMessages = createAsyncThunk(
 				const batchLength = response.messages?.length || 0;
 				const fullPageLength = LIMIT_MESSAGE - 1;
 				const scannedToWindowEdge = messageIdSequenceGap(storeOldestId, batchOldestId) >= fullPageLength;
+				// The server scans a sequence window, not LIMIT_MESSAGE existing rows.
+				// On a fresh open, a window reaching the topic's initial seed covers all history.
+				const latestId = response.last_sent_message?.id || response.messages[0]?.id;
+				const messagesSinceTopicStart = messageIdSequenceGap(latestId, '0') - TOPIC_MESSAGE_SEQUENCE_BASE;
+				const latestWindowReachesStart =
+					requestMessageId === '0' && !!latestId && messagesSinceTopicStart >= 0 && messagesSinceTopicStart <= LIMIT_MESSAGE;
 				const reachedTop =
 					!fromCache &&
-					direction === Direction_Mode.BEFORE_TIMESTAMP &&
-					(!isOlderMessageId(batchOldestId, storeOldestId) || (batchLength < fullPageLength && !scannedToWindowEdge));
+					(latestWindowReachesStart ||
+						(direction === Direction_Mode.BEFORE_TIMESTAMP &&
+							!!storeOldestId &&
+							(!isOlderMessageId(batchOldestId, storeOldestId) || (batchLength < fullPageLength && !scannedToWindowEdge))));
 				const oldestId = reachedTop && isOlderMessageId(batchOldestId, storeOldestId) ? batchOldestId : storeOldestId || batchOldestId;
 				if (reachedTop && oldestId) {
 					thunkAPI.dispatch(
@@ -946,6 +960,8 @@ type SendMessagePayload = {
 	code?: number;
 	clientSendTime?: number;
 	tempId?: string;
+	topicId?: string;
+	isFirstTopicMessage?: boolean;
 };
 
 export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', async (payload: SendMessagePayload, thunkAPI) => {
@@ -1197,9 +1213,25 @@ export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (pay
 });
 
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
-	const { mentions, attachments, references, anonymous, mentionEveryone, channelId, mode, isPublic, clanId, senderId, avatar, username, code } =
-		payload;
-	const attachmentsMessage: ApiMessageAttachment[] =
+	const {
+		mentions,
+		attachments: sourceAttachments,
+		references,
+		anonymous,
+		mentionEveryone,
+		channelId,
+		mode,
+		isPublic,
+		clanId,
+		senderId,
+		avatar,
+		username,
+		code,
+		topicId
+	} = payload;
+	const storeChannelId = topicId || channelId;
+	let attachments = sourceAttachments;
+	let attachmentsMessage: ApiMessageAttachment[] =
 		attachments?.map((attach) => ({
 			filename: attach.filename,
 			filetype: attach.filetype,
@@ -1211,15 +1243,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			width: attach.width
 		})) ?? [];
 
-	// The row this client renders while the bytes are still going up. Presign has
-	// already rewritten `url` to the CDN object, which does not exist yet, so
-	// without a local source the sender's own message has nothing to show — and
-	// asking for the CDN object early is what pins a 404 in the image proxy cache
-	// for a week. Kept off `attachmentsMessage` so the wire payload (and the size
-	// guard below) never carries a blob url.
 	const sendingAttachmentsMessage: ApiMessageAttachment[] = attachments?.length
 		? attachmentsMessage.map((attachment, index) => {
-				const local_source = createLocalPreviewUrl(attachments[index]);
+				const local_source = createLocalPreviewUrl(sourceAttachments?.[index] ?? attachment);
 				return local_source ? { ...attachment, local_source } : attachment;
 			})
 		: attachmentsMessage;
@@ -1237,7 +1263,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	}
 	let content = payload.content;
 	const clientSendTime = Date.now();
-	const tempId = `${payload.channelId}-${clientSendTime}`;
+	const tempId = `${storeChannelId}-${Snowflake.generate()}`;
 	const originalSendPayload: SendMessagePayload = {
 		...payload,
 		clientSendTime,
@@ -1287,13 +1313,14 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					mode,
 					isPublic,
 					content,
-					anonymous ? undefined : mentions,
-					attachments,
+					anonymous && !topicId ? undefined : mentions,
+					attachmentsMessage,
 					references,
 					anonymous,
 					mentionEveryone,
 					'',
-					code
+					code,
+					topicId
 				);
 			} else {
 				throw new Error('Socket not connected');
@@ -1306,13 +1333,14 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mode,
 				isPublic,
 				typeof content === 'object' ? JSON.stringify(content) : content,
-				anonymous ? undefined : mentions,
-				attachments,
+				anonymous && !topicId ? undefined : mentions,
+				attachmentsMessage,
 				references,
 				anonymous,
 				mentionEveryone,
 				avatar,
-				code
+				code,
+				topicId
 			);
 		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
@@ -1359,7 +1387,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isTikTokLink(ogpData.url));
 
-		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0 && !isSocialMediaLink) {
+		if (!topicId && ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0 && !isSocialMediaLink) {
 			const mk = [...(content.mk ?? [])];
 
 			mk.push({
@@ -1381,22 +1409,11 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mk
 			};
 		}
-		const needUpload = attachments?.some((attachment) => attachment?.uploadPath);
-		// The presign_finish patch rides on updateChannelMessage, which carries no
-		// anonymity flag, so the server rejects it for a message owned by the
-		// anonymous account. Anonymous sends upload first and post once instead.
-		const usePresignFirst = Boolean(needUpload) && !anonymous;
-		if (usePresignFirst) {
-			content = {
-				...content,
-				presign_finish: []
-			};
-		}
-
 		const fakeMessage: ChannelMessageWithClientMeta = {
 			id,
 			code: code || 0, // Add new message
-			channel_id: channelId,
+			channel_id: storeChannelId,
+			topic_id: topicId,
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			content,
@@ -1417,33 +1434,65 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			isAnonymous: anonymous,
 			mentions
 		};
-		const fakeMess = await thunkAPI
-			.dispatch(
-				messagesActions.mapMessageChannelToEntityAction({
-					message: fakeMessage
-				})
-			)
-			.unwrap();
+		let fakeMess = mapMessageChannelToEntity(fakeMessage);
 		const state = getMessagesState(getMessagesRootState(thunkAPI));
-		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
+		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[storeChannelId];
 
 		if (!isViewingOlderMessages) {
 			thunkAPI.dispatch(addRealMessage(fakeMess));
 			thunkAPI.dispatch(messagesActions.addQueueSending(fakeMess.id));
 		}
+		if (topicId && payload.isFirstTopicMessage) {
+			// A newly created topic has no older replies to load, even while this send is pending.
+			const topicMessages = getMessagesState(getMessagesRootState(thunkAPI)).channelMessages[storeChannelId];
+			thunkAPI.dispatch(
+				messagesActions.setFirstMessageId({ channelId: storeChannelId, firstMessageId: (topicMessages?.ids[0] as string) || fakeMess.id })
+			);
+		}
 
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
 
-			if (needUpload && !usePresignFirst && attachments) {
-				await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+			if (attachments?.length) {
+				const mezon = await ensureSession(getMezonCtx(thunkAPI));
+				const client = mezon.clientRef.current;
+				const session = mezon.sessionRef.current;
+				if (!client || !session) throw new Error('Client is not initialized');
+				attachments = await generatePathAttachments(client, session, attachments);
+				attachmentsMessage = attachments.map(({ filename, filetype, size, duration, url, thumbnail, height, width }) => ({
+					filename,
+					filetype,
+					size,
+					duration,
+					url,
+					thumbnail,
+					height,
+					width
+				}));
+				const preparedPayloadSize = Buffer.byteLength(JSON.stringify({ ...payload, attachments: attachmentsMessage }), 'utf8');
+				if (preparedPayloadSize > 4 * 1024) {
+					toast.error(t('message:tooLongMessage'));
+					throw new Error('Message attachments exceed the payload limit');
+				}
 				thunkAPI.dispatch(
 					messagesActions.updateSendingMessageAttachments({
-						channelId: channelId as string,
+						channelId: storeChannelId,
 						messageId: id,
-						attachments: toPublicMessageAttachments(attachments)
+						attachments: attachmentsMessage
 					})
 				);
+				const preparedMessage = selectMessageEntityById(thunkAPI.getState() as RootState, storeChannelId, id);
+				fakeMess = { ...fakeMess, attachments: preparedMessage?.attachments ?? attachmentsMessage };
+			}
+			const needUpload = attachments?.some((attachment) => attachment.uploadPath);
+			const usePresignFirst = Boolean(needUpload) && !anonymous && !topicId;
+			if (usePresignFirst) {
+				content = { ...content, presign_finish: [] };
+				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
+			}
+
+			if (needUpload && !usePresignFirst && attachments) {
+				await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
 			}
 
 			const SEND_TIMEOUT_MS = 30_000;
@@ -1471,24 +1520,17 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				const timestamp = Date.now() / 1000;
 				thunkAPI.dispatch(
 					channelMetaActions.setChannelLastSeenTimestamp({
-						channelId,
+						channelId: storeChannelId,
 						timestamp,
 						messageId: messageResult.message_id,
 						clanId
 					})
 				);
 				thunkAPI.dispatch(
-					messagesActions.removeFakeMessage({
-						channelId,
-						fakeId: fakeMess.id
-					})
-				);
-				thunkAPI.dispatch(
-					addRealMessage({
-						...fakeMess,
-						id: messageResult.message_id,
-						message_id: messageResult.message_id,
-						isSending: false
+					messagesActions.confirmSentMessage({
+						channelId: storeChannelId,
+						fakeId: id,
+						message: { ...fakeMess, id: messageResult.message_id, message_id: messageResult.message_id, isSending: false }
 					})
 				);
 			}
@@ -1499,9 +1541,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 					thunkAPI.dispatch(
 						messagesActions.updateSendingMessageAttachments({
-							channelId: channelId as string,
-							messageId: id,
-							attachments: toPublicMessageAttachments(attachments)
+							channelId: storeChannelId,
+							messageId: messageResult.message_id,
+							attachments: attachmentsMessage
 						})
 					);
 					await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -1546,7 +1588,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		} catch (error) {
 			const payload = originalSendPayload;
-			delete state.queueSending[fakeMess.id];
+			thunkAPI.dispatch(messagesActions.deleteQueueSending(fakeMess.id));
 			if (sendTimeoutMap.has(tempId)) {
 				clearTimeout(sendTimeoutMap.get(tempId));
 				sendTimeoutMap.delete(tempId);
@@ -1564,7 +1606,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			thunkAPI.dispatch(
 				messagesActions.markAsError({
 					messageId: id,
-					channelId,
+					channelId: storeChannelId,
 					originalSendPayload: payload
 				})
 			);
@@ -1573,11 +1615,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 	}
 
-	try {
-		await fakeItUntilYouMakeIt();
-	} catch (error) {
-		console.error(error);
-	}
+	return fakeItUntilYouMakeIt();
 });
 
 // Add ephemeral message sending functionality
@@ -1846,6 +1884,7 @@ const channelMessagesAdapter = createEntityAdapter({
 
 export const initialMessagesState: MessagesState = {
 	loadingStatus: 'not loaded',
+	loadingRequestsByChannel: {},
 	error: null,
 	queueSending: {},
 	unreadMessagesEntries: {},
@@ -1912,7 +1951,8 @@ export const messagesSlice = createSlice({
 		},
 		addOneMessage: (state, action: PayloadAction<MessagesEntity>) => {
 			const message = action.payload;
-			state.channelMessages[message.channel_id] = channelMessagesAdapter.addOne(state.channelMessages[message.channel_id], message);
+			const channel = state.channelMessages[message.channel_id] ?? channelMessagesAdapter.getInitialState({ id: message.channel_id });
+			state.channelMessages[message.channel_id] = channelMessagesAdapter.addOne(channel, message);
 		},
 		removeFakeMessage: (state, action: PayloadAction<{ channelId: string; fakeId: string }>) => {
 			const { channelId, fakeId } = action.payload;
@@ -1920,6 +1960,21 @@ export const messagesSlice = createSlice({
 			state.channelMessages[channelId] = channelMessagesAdapter.removeOne(entity, fakeId);
 			delete state.queueSending[fakeId];
 		},
+		confirmSentMessage: (state, action: PayloadAction<{ channelId: string; fakeId: string; message: MessagesEntity }>) => {
+			const { channelId, fakeId, message } = action.payload;
+			const channel = state.channelMessages[channelId];
+			if (channel) {
+				channelMessagesAdapter.removeOne(channel, fakeId);
+				channelMessagesAdapter.upsertOne(channel, message);
+				const viewport = state.channelViewPortMessageIds[channelId] ?? [];
+				state.channelViewPortMessageIds[channelId] = [...new Set(viewport.map((id) => (id === fakeId ? message.id : id)))];
+				if (state.firstMessageId[channelId] === fakeId) {
+					state.firstMessageId[channelId] = message.id;
+				}
+			}
+			delete state.queueSending[fakeId];
+		},
+
 		addQueueSending: (state, action: PayloadAction<string>) => {
 			state.queueSending[action.payload] = action.payload;
 		},
@@ -1937,6 +1992,7 @@ export const messagesSlice = createSlice({
 				});
 			}
 			const messageChannelId = topic_id !== '0' && topic_id && !content?.tp ? topic_id : channelId;
+			const channelEntity = state.channelMessages[messageChannelId];
 
 			switch (code) {
 				case TypeMessage.Welcome:
@@ -1953,7 +2009,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
 					if (isMe) {
-						const existSendingMessage = Object.keys(state.queueSending).length > 0;
+						const existSendingMessage = Object.keys(state.queueSending).some((id) => Boolean(channelEntity?.entities[id]));
 						if (existSendingMessage) {
 							return;
 						}
@@ -2010,7 +2066,13 @@ export const messagesSlice = createSlice({
 						changes.hide_editted = action.payload.hide_editted;
 					}
 					if (action.payload.attachments?.length) {
-						changes.attachments = action.payload.attachments;
+						const previous = [...((existingMessage.attachments ?? []) as PreSendMediaAttachment[])];
+						changes.attachments = action.payload.attachments.map((attachment) => {
+							const index = previous.findIndex((item) => item.url === attachment.url && item.filename === attachment.filename);
+							if (index === -1) return attachment;
+							const [match] = previous.splice(index, 1);
+							return match.local_source ? { ...attachment, local_source: match.local_source } : attachment;
+						});
 					}
 					channelMessagesAdapter.updateOne(targetEntity, {
 						id: action.payload.id,
@@ -2379,12 +2441,16 @@ export const messagesSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchMessages.pending, (state: MessagesState) => {
+			.addCase(fetchMessages.pending, (state: MessagesState, action) => {
 				state.loadingStatus = 'loading';
+				const scopeId = action.meta.arg.topicId || action.meta.arg.channelId;
+				state.loadingRequestsByChannel[scopeId] = (state.loadingRequestsByChannel[scopeId] || 0) + 1;
 			})
 			.addCase(
 				fetchMessages.fulfilled,
 				(state: MessagesState, action: PayloadAction<FetchMessagesPayloadAction, string, FetchMessagesMeta>) => {
+					const scopeId = action.meta.arg.topicId || action.meta.arg.channelId;
+					state.loadingRequestsByChannel[scopeId] = Math.max(0, (state.loadingRequestsByChannel[scopeId] || 0) - 1);
 					const channelId = action?.payload.messages.at(0)?.channel_id || action.meta.arg.channelId;
 					const isClearMessage = action.payload.isClearMessage || false;
 					const toPresent = action.payload.toPresent || false;
@@ -2418,6 +2484,9 @@ export const messagesSlice = createSlice({
 
 					direction = direction || Direction_Mode.BEFORE_TIMESTAMP;
 
+					const pendingMessages = Object.values(state.channelMessages[channelId]?.entities ?? {}).filter(
+						(message) => message.isSending || message.isError
+					);
 					if (toPresent) {
 						handleRemoveManyMessages(state, channelId);
 					}
@@ -2426,7 +2495,7 @@ export const messagesSlice = createSlice({
 					handleSetManyMessages({
 						state,
 						channelId,
-						adapterPayload: action.payload.messages,
+						adapterPayload: [...action.payload.messages, ...pendingMessages],
 						addMany: !!offsetId && !state.channelMessages[channelId]?.ids?.includes(offsetId)
 					});
 
@@ -2470,6 +2539,8 @@ export const messagesSlice = createSlice({
 				}
 			)
 			.addCase(fetchMessages.rejected, (state: MessagesState, action) => {
+				const scopeId = action.meta.arg.topicId || action.meta.arg.channelId;
+				state.loadingRequestsByChannel[scopeId] = Math.max(0, (state.loadingRequestsByChannel[scopeId] || 0) - 1);
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
@@ -2779,6 +2850,10 @@ export const selectLastMessageIdByChannelId = createSelector(selectMessageIdsByC
 });
 
 export const selectMessageIsLoading = createSelector(getMessagesState, (state) => state.loadingStatus === 'loading');
+export const selectMessageIsLoadingByChannelId = createSelector(
+	[getMessagesState, getChannelIdAsSecondParam],
+	(state, channelId) => (state.loadingRequestsByChannel[channelId] || 0) > 0
+);
 
 export const selectIsMessageIdExist = createSelector(
 	[getMessagesState, getChannelIdAsSecondParam, (_, __, messageId) => messageId],

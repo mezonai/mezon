@@ -31,9 +31,13 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentChannelId ?? ''));
 	const dataReferencesTopic = useAppSelector((state) => selectDataReferences(state, currTopicId ?? ''));
 
-	const { draftRequest, updateDraft } = useDraftCompose(
-		props.isThread || props.isTopic ? currentChannelId + String(props.isThread || props.isTopic) : (currentChannelId as string)
-	);
+	const draftChannelId =
+		props.isThreadbox && !props.isThread
+			? props.currentChannelId || ''
+			: props.isThread || props.isTopic
+				? currentChannelId + String(props.isThread || props.isTopic)
+				: (currentChannelId as string);
+	const { draftRequest, updateDraft } = useDraftCompose(draftChannelId);
 
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: currentChannelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
