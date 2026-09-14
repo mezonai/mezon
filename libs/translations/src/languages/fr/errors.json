@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "La requête a été annulée",
+	"error_2": "Erreur inconnue",
+	"error_3": "Hum, quelque chose ne semble pas correct.",
+	"error_4": "Le délai de connexion a expiré. Veuillez réessayer.",
+	"error_5": "Ressource introuvable",
+	"error_6": "La ressource existe déjà",
+	"error_7": "Accès refusé",
+	"error_8": "Ressources épuisées",
+	"error_9": "Condition préalable non remplie",
+	"error_10": "L’action a été interrompue. Veuillez réessayer.",
+	"error_11": "Cette valeur n’est pas valide.",
+	"error_12": "Opération non implémentée",
+	"error_13": "Erreur interne",
+	"error_14": "Les serveurs sont occupés. Veuillez réessayer dans quelques instants.",
+	"error_15": "Perte de données",
+	"error_16": "La session a expiré. Veuillez vous reconnecter."
+}

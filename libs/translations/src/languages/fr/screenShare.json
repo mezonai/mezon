@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Partager également l'audio système",
 	"loadingMore": "Chargement de plus...",
 	"loadMore": "Charger plus",
-	"remaining": "restant"
+	"remaining": "restant",
+	"qualityMode": "Mode de partage d’écran",
+	"textMode": "Texte",
+	"videoMode": "Vidéo",
+	"textModeDescription": "Texte et diapositives plus nets, avec une consommation de ressources réduite.",
+	"videoModeDescription": "Vidéo plus fluide ; la netteté peut diminuer si la connexion est lente."
 }

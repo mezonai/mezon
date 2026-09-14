@@ -1,0 +1,19 @@
+{
+	"error_0": "OK",
+	"error_1": "Het verzoek is geannuleerd",
+	"error_2": "Onbekende fout",
+	"error_3": "Hmm, er lijkt iets niet te kloppen.",
+	"error_4": "De verbinding is verlopen. Probeer het opnieuw.",
+	"error_5": "Bron niet gevonden",
+	"error_6": "De bron bestaat al",
+	"error_7": "Toegang geweigerd",
+	"error_8": "Bronnen uitgeput",
+	"error_9": "Niet aan de voorwaarde voldaan",
+	"error_10": "De actie is onderbroken. Probeer het opnieuw.",
+	"error_11": "Die waarde is ongeldig.",
+	"error_12": "Bewerking niet geïmplementeerd",
+	"error_13": "Interne fout",
+	"error_14": "De servers zijn bezet. Probeer het straks opnieuw.",
+	"error_15": "Gegevensverlies",
+	"error_16": "Sessie verlopen. Log opnieuw in."
+}

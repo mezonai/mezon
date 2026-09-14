@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Dela även systemljud",
 	"loadingMore": "Laddar mer...",
 	"loadMore": "Ladda mer",
-	"remaining": "kvar"
+	"remaining": "kvar",
+	"qualityMode": "Skärmdelningsläge",
+	"textMode": "Text",
+	"videoMode": "Video",
+	"textModeDescription": "Skarpare text och bilder i presentationer med lägre resursanvändning.",
+	"videoModeDescription": "Jämnare video; skärpan kan minska vid en långsam anslutning."
 }

@@ -214,7 +214,8 @@
 		"previousChannels": "Canais anteriores",
 		"mentions": "Menções",
 		"unreadChannels": "Canais não lidos",
-		"noResults": "Parece que não encontramos o que você está procurando?"
+		"noResults": "Parece que não encontramos o que você está procurando?",
+		"search": "Pesquisar canais"
 	},
 	"userProfile": {
 		"aboutMe": "Sobre mim",
@@ -293,7 +294,9 @@
 		"invalidCredentials": "E-mail ou senha inválidos",
 		"qr": {
 			"signIn": "Entrar com QR Code",
-			"useMobile": "Use o Mezon no celular para escanear o QR Code"
+			"useMobile": "Use o Mezon no celular para escanear o QR Code",
+			"openToConfirm": "Abra o Mezon no seu telefone para confirmar o login",
+			"openApp": "Abrir aplicativo"
 		},
 		"loginToMezon": "Entrar na conta Mezon",
 		"emailAddress": "Endereço de e-mail",
@@ -375,7 +378,8 @@
 		"membersOnline": "Membros online",
 		"noQuestions": "Você ainda não tem perguntas. Configure as perguntas para este clã primeiro!!",
 		"noRules": "Você ainda não tem regras. Configure as regras para este clã primeiro!!",
-		"noMissions": "Você ainda não tem missões. Configure as missões para este clã primeiro!!"
+		"noMissions": "Você ainda não tem missões. Configure as missões para este clã primeiro!!",
+		"emptyGuideLine": "Nenhuma diretriz foi adicionada ainda!"
 	},
 	"updateUsername": {
 		"enterUsername": "Digite seu nome Mezon",

@@ -42,6 +42,7 @@ import deleteClan from './deleteClan.json';
 import directMessage from './directMessage.json';
 import discover from './discover.json';
 import dmMessage from './dmMessage.json';
+import errors from './errors.json';
 import eventCreator from './eventCreator.json';
 import eventMenu from './eventMenu.json';
 import forwardMessage from './forwardMessage.json';
@@ -94,6 +95,7 @@ import userEmptyClan from './userEmptyClan.json';
 import userProfile from './userProfile.json';
 
 export default {
+	errors,
 	invitation,
 	timeline,
 	inviteToChannel,

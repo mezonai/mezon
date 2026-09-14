@@ -10,5 +10,10 @@
 	"alsoShareSystemAudio": "Systeemgeluid ook delen",
 	"loadingMore": "Meer laden...",
 	"loadMore": "Meer laden",
-	"remaining": "over"
+	"remaining": "over",
+	"qualityMode": "Modus voor schermdelen",
+	"textMode": "Tekst",
+	"videoMode": "Video",
+	"textModeDescription": "Scherpere tekst en dia’s, met minder gebruik van systeembronnen.",
+	"videoModeDescription": "Vloeiendere video; bij een trage verbinding kan de scherpte afnemen."
 }
