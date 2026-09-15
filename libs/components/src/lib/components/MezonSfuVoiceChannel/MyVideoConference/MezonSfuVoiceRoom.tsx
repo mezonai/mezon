@@ -3,7 +3,6 @@ import {
 	selectCurrentUserId,
 	selectEntitesUserClans,
 	selectNoiseSuppressionEnabled,
-	selectNoiseSuppressionLevel,
 	selectShowCamera,
 	selectShowMicrophone,
 	toastActions,
@@ -13,7 +12,6 @@ import {
 import { Icons } from '@mezon/ui';
 import {
 	GUEST_NAME,
-	NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
 	createImgproxyUrl,
 	generateE2eId,
 	getAvatarForPrioritize,
@@ -22,7 +20,6 @@ import {
 	requestMediaPermission,
 	useMediaPermissions
 } from '@mezon/utils';
-import { DeepFilterNoiseFilterProcessor, type DeepFilterNet3Core } from 'deepfilternet3-noise-filter';
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -458,9 +455,7 @@ export function MezonSfuVoiceRoom({
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
-	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
 	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
-	const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
 	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState, refreshPermissions } = useMediaPermissions();
 	const [permissionModalSource, setPermissionModalSource] = useState<'microphone' | 'camera' | null>(null);
 
@@ -875,28 +870,7 @@ export function MezonSfuVoiceRoom({
 				.applyConstraints(getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled) as MediaTrackConstraints)
 				.catch(() => undefined);
 		}
-
-		if (!noiseSuppressionEnabled || !DeepFilterNoiseFilterProcessor.isSupported()) {
-			if (noiseProcessorRef.current) {
-				try {
-					noiseProcessorRef.current.setNoiseSuppressionEnabled(false);
-				} catch {
-					// Ignore disconnect errors
-				}
-			}
-			return;
-		}
-
-		const normalizedLevel = noiseSuppressionLevel * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
-		if (noiseProcessorRef.current) {
-			try {
-				noiseProcessorRef.current.setSuppressionLevel(normalizedLevel);
-				noiseProcessorRef.current.setNoiseSuppressionEnabled(true);
-			} catch {
-				// Ignore errors
-			}
-		}
-	}, [localAudioTrack, noiseSuppressionEnabled, noiseSuppressionLevel]);
+	}, [localAudioTrack, noiseSuppressionEnabled]);
 
 	useEffect(() => {
 		const refreshDevices = async () => setDevices(await navigator.mediaDevices.enumerateDevices());

@@ -98,7 +98,7 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	const isMe = useMemo(() => userProfile?.user?.id === senderId, [userProfile?.user?.id, senderId]);
 	const key = `${callLog.callLogType}_${isMe ? 'SENDER' : 'RECEIVER'}`;
 
-	const shouldShowCallBack = callLog.showCallBack !== false && !isBlocked;
+	const shouldShowCallBack = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && callLog.showCallBack !== false && !isBlocked;
 
 	const { icon, text, colorClass, bgClass } = iconMap[key] || {
 		icon: <Icons.OutGoingCall className="w-6 h-6" />,

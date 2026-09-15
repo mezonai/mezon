@@ -6,7 +6,6 @@ import {
 	authActions,
 	giveCoffeeActions,
 	selectAccountCustomStatus,
-	selectGroupCallJoined,
 	selectInfoSendToken,
 	selectIsInCall,
 	selectIsJoin,
@@ -14,7 +13,6 @@ import {
 	selectShowModalCustomStatus,
 	selectShowModalSendToken,
 	selectStatusMenu,
-	selectVoiceInfo,
 	selectVoiceJoined,
 	selectWalletDetail,
 	useAppDispatch,
@@ -47,7 +45,6 @@ import { SfuVoiceInfo } from '../MezonSfuVoiceChannel';
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
 import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
 import StreamInfo from '../StreamInfo';
-import { VoiceInfo } from '../VoiceChannel';
 import ModalFooterProfile from './ModalFooterProfile';
 export type FooterProfileProps = {
 	name: string;
@@ -66,7 +63,6 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 	const infoSendToken = useSelector(selectInfoSendToken);
 	const userStatusProfile = useSelector(selectAccountCustomStatus);
 	const statusMenu = useSelector(selectStatusMenu);
-	const voiceInfo = useSelector(selectVoiceInfo);
 	const userWallet = useSelector(selectWalletDetail);
 	const myProfile = useAuth();
 	const userMemberStatus = useAppSelector((state) => selectMemberCustomStatusById(state, myProfile.userId as string));
@@ -240,7 +236,6 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
-	const GroupCallJoined = useSelector(selectGroupCallJoined);
 
 	const [showProfile, setShowProfile] = useState(false);
 
@@ -326,7 +321,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 		>
 			{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 			{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
-			{(isVoiceJoined || GroupCallJoined) && (voiceInfo?.joinRole ? <SfuVoiceInfo /> : <VoiceInfo />)}
+			{isVoiceJoined && <SfuVoiceInfo />}
 			<div
 				className={`flex items-center gap-2 pr-4 pl-2 py-2 font-title text-[15px]
 			 font-[500]

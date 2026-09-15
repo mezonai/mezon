@@ -4,7 +4,6 @@ import {
 	FirstJoinPopup,
 	FooterProfile,
 	ForwardMessageModal,
-	GroupCallManager,
 	InternetStatusPopover,
 	MessageContextMenuProvider,
 	MessageModalImage,
@@ -226,7 +225,7 @@ function MyApp() {
 					) : null}
 				</div>
 				<DmCallManager userId={userProfile?.user?.id || ''} directId={directId} />
-				<GroupCallManager /> {openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
+				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} />}
 				{isShowPopupQuickMess && <PopupQuickMess />}
