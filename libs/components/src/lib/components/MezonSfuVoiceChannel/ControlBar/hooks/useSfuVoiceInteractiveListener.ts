@@ -154,18 +154,5 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 		};
 	}, [clientRef, channelId, dispatch, playFlowerCelebrationSound, showNextSender]);
 
-	useEffect(() => {
-		const handleFlowerReaction = (rawEvent: Event) => {
-			const event = (rawEvent as CustomEvent<VoiceInteractiveEvent>).detail;
-			if (event?.voice_channel_id !== channelId) return;
-			playFlowerCelebrationSound();
-			playerRef.current?.play();
-			senderQueueRef.current.push(event);
-			showNextSender();
-		};
-		window.addEventListener('mezon-sfu-flower', handleFlowerReaction);
-		return () => window.removeEventListener('mezon-sfu-flower', handleFlowerReaction);
-	}, [channelId, playFlowerCelebrationSound, showNextSender]);
-
 	return { activeApps, closeApp, focusApp, currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
 }

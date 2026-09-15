@@ -99,20 +99,6 @@ export const ReactionCallHandler = memo(() => {
 					const senderId = message.sender_id;
 
 					if (firstEmojiId) {
-						if (firstEmojiId.startsWith('flower:')) {
-							window.dispatchEvent(
-								new CustomEvent('mezon-sfu-flower', {
-									detail: {
-										voice_channel_id: channelId,
-										sender_id: senderId,
-										receiver_id: firstEmojiId.slice('flower:'.length),
-										event_type: 1,
-										params: ''
-									}
-								})
-							);
-							return;
-						}
 						if (firstEmojiId.startsWith('sound:')) {
 							const soundUrl = firstEmojiId.replace('sound:', '');
 
