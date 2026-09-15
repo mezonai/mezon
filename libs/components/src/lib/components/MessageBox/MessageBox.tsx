@@ -60,17 +60,12 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 				return;
 			}
 
+			const updatedFiles = await processFilesForAttachment([file]);
+
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
 					channelId: currentChannelId,
-					files: [
-						{
-							filename: file.name,
-							filetype: file.type,
-							size: file.size,
-							url: URL.createObjectURL(file)
-						}
-					]
+					files: updatedFiles
 				})
 			);
 		},
