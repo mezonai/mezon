@@ -1,7 +1,12 @@
+import i18n from '@mezon/translations';
 import { lazy, Suspense } from 'react';
+import { I18nextProvider } from 'react-i18next';
 import { Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ScrollToTop from './components/common/ScrollToTop';
 import { DiscoverProvider } from './context/DiscoverContext';
+import { useDiscoverAnalytics } from './hooks/useDiscoverAnalytics';
 import { useMezonDiscover } from './hooks/useMezonDiscover';
 import AboutMezon from './pages/aboutmezon';
 import AiAgentPage from './pages/aiagent';
@@ -25,21 +30,23 @@ const DiscoverPage = lazy(() => import('./pages/dicoverpage/DiscoverPage'));
 
 const LoadingSpinner = () => (
 	<div className="flex items-center justify-center min-h-screen">
-		<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5865f2]"></div>
+		<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-brand-primary)]"></div>
 	</div>
 );
 
-/**
- */
 function AppWithStore() {
+	useDiscoverAnalytics();
+
 	return (
-		<div className="min-h-screen bg-[#F4F7F9]">
+		<div className="min-h-screen bg-[var(--surface-page)]">
 			<ScrollToTop />
+			<ToastContainer position="bottom-center" autoClose={2000} hideProgressBar />
 			<Suspense fallback={<LoadingSpinner />}>
 				<Routes>
 					<Route path="/" element={<MezonPage />} />
 					<Route path="/clans" element={<DiscoverPage />} />
 					<Route path="/clans/clan/:id" element={<ClanDetailPage />} />
+					<Route path="/clans/:id" element={<ClanDetailPage />} />
 					<Route path="/about" element={<AboutMezon />} />
 					<Route path="/contact-us" element={<ContactUsPage />} />
 					<Route path="/terms-of-service" element={<TermOfServivePage />} />
@@ -73,8 +80,10 @@ export default function App() {
 	}
 
 	return (
-		<DiscoverProvider>
-			<AppWithStore />
-		</DiscoverProvider>
+		<I18nextProvider i18n={i18n}>
+			<DiscoverProvider>
+				<AppWithStore />
+			</DiscoverProvider>
+		</I18nextProvider>
 	);
 }
