@@ -69,7 +69,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 				})
 			);
 		},
-		[attachmentFilteredByChannelId?.files?.length, currentChannelId, dispatch, setOverUploadingState]
+		[attachmentFilteredByChannelId?.files?.length, currentChannelId]
 	);
 
 	const onPastedFiles = useCallback(
