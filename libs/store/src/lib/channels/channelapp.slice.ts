@@ -3,7 +3,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import { DEFAULT_POSITION, INIT_SIZE } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { JoinChannelAppData } from 'mezon-js';
+import type { JoinChannelAppData, VoiceInteractiveEvent } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 type CreateChannelAppMeetPayload = {
@@ -21,6 +21,13 @@ export interface ChannelAppEntity {
 	id: string;
 }
 
+export interface ActiveApp {
+	id: string;
+	title: string;
+	url: string;
+	zIndex: number;
+}
+
 export interface ChannelAppState {
 	loadingStatus: LoadingStatus;
 	roomName: string | null;
@@ -34,6 +41,8 @@ export interface ChannelAppState {
 	enableCall: boolean;
 	position: { x: number; y: number };
 	size: { width: number; height: number };
+	appInteractData: VoiceInteractiveEvent[] | null;
+	activeApps: ActiveApp[];
 }
 
 export const initialChannelAppState: ChannelAppState = {
@@ -48,7 +57,9 @@ export const initialChannelAppState: ChannelAppState = {
 	enableCall: false,
 	channelId: null,
 	position: DEFAULT_POSITION,
-	size: INIT_SIZE
+	size: INIT_SIZE,
+	appInteractData: null,
+	activeApps: []
 };
 export const createChannelAppMeet = createAsyncThunk(
 	`${CHANNEL_APP}/CreateMeetingRoom`,
@@ -124,6 +135,28 @@ export const channelAppSlice = createSlice({
 		},
 		setSize: (state, action: PayloadAction<{ width: number; height: number }>) => {
 			state.size = action.payload;
+		},
+		setAppInteractiveData: (state, action: PayloadAction<VoiceInteractiveEvent>) => {
+			if (!state.appInteractData) {
+				state.appInteractData = [action.payload];
+				return;
+			}
+			state.appInteractData.push(action.payload);
+		},
+		setActiveApps: (state, action: PayloadAction<ActiveApp>) => {
+			if (state.activeApps.some((app) => app.id === action.payload.id)) {
+				return;
+			}
+			state.activeApps.push(action.payload);
+		},
+		closeActiveApps: (state, action: PayloadAction<string>) => {
+			if (!state.activeApps) {
+				return;
+			}
+			state.activeApps.filter((app) => app.id !== action.payload);
+		},
+		clearAppInteractiveData: (state) => {
+			state.appInteractData = null;
 		}
 	},
 	extraReducers: (builder) => {
@@ -153,6 +186,8 @@ export const selectChannelAppChannelId = createSelector(getChannelAppState, (sta
 export const selectChannelAppClanId = createSelector(getChannelAppState, (state) => state.clanId);
 
 export const channelAppReducer = channelAppSlice.reducer;
+export const selectAppInteractData = createSelector(getChannelAppState, (state) => state.appInteractData);
+export const selectActiveApps = createSelector(getChannelAppState, (state) => state.activeApps);
 
 // Export actions & reducer
 export const channelAppActions = {
