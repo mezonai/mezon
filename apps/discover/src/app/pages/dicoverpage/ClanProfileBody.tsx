@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import LinkifiedText from './LinkifiedText';
 import { getClanHashtags, splitClanStory, type DiscoverClan } from './communityUtils';
 
 interface ClanProfileBodyProps {
@@ -21,7 +22,7 @@ export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
 				<div className="max-w-5xl">
 					{lede ? (
 						<p className="max-w-4xl text-[1.35rem] sm:text-[1.65rem] md:text-[2.15rem] lg:text-[2.5rem] leading-[1.22] font-medium tracking-[-0.03em] text-[#131221]">
-							{lede}
+							<LinkifiedText text={lede} />
 						</p>
 					) : null}
 
@@ -34,7 +35,7 @@ export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
 									!aboutExpanded && shouldClamp ? 'line-clamp-8' : ''
 								}`}
 							>
-								{body}
+								<LinkifiedText text={body} />
 							</p>
 							{shouldClamp ? (
 								<button

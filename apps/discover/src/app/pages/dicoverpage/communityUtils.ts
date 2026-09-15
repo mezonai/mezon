@@ -147,6 +147,54 @@ export function getOnlineCount(clan: DiscoverClan): number {
 	return asFiniteCount(clan.online_members ?? record.onlineMembers) ?? 0;
 }
 
+export type TextSegment = { type: 'text'; value: string } | { type: 'link'; value: string; href: string };
+
+const URL_FINDER = /(?:https?:\/\/|www\.)[^\s<>"'`]+/gi;
+const TRAILING_PUNCT = /[),.;:!?]+$/;
+
+function toSafeHttpHref(raw: string): string | null {
+	const value = raw.trim();
+	if (!value) return null;
+	const candidate = /^https?:\/\//i.test(value) ? value : /^www\./i.test(value) ? `https://${value}` : null;
+	if (!candidate) return null;
+	try {
+		const url = new URL(candidate);
+		if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+		if (!url.hostname || !url.hostname.includes('.')) return null;
+		return url.href;
+	} catch {
+		return null;
+	}
+}
+
+export function splitLinkifiedText(text: string): TextSegment[] {
+	if (!text) return [];
+	const segments: TextSegment[] = [];
+	const matcher = new RegExp(URL_FINDER.source, 'gi');
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+	while ((match = matcher.exec(text)) !== null) {
+		const raw = match[0];
+		const punct = raw.match(TRAILING_PUNCT)?.[0] ?? '';
+		const core = punct ? raw.slice(0, -punct.length) : raw;
+		const href = toSafeHttpHref(core);
+		if (match.index > lastIndex) {
+			segments.push({ type: 'text', value: text.slice(lastIndex, match.index) });
+		}
+		if (href && core) {
+			segments.push({ type: 'link', value: core, href });
+			if (punct) segments.push({ type: 'text', value: punct });
+		} else {
+			segments.push({ type: 'text', value: raw });
+		}
+		lastIndex = match.index + raw.length;
+	}
+	if (lastIndex < text.length) {
+		segments.push({ type: 'text', value: text.slice(lastIndex) });
+	}
+	return segments.length ? segments : [{ type: 'text', value: text }];
+}
+
 export function getCreatedAtMs(clan: DiscoverClan): number | null {
 	const seconds = asFiniteCount(clan.create_time_seconds);
 	if (seconds === undefined || seconds <= 0) return null;
