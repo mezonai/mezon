@@ -11,6 +11,7 @@ import { LeaveButton } from './LeaveButton';
 import { MicrophoneControl } from './MicrophoneControl';
 import { PopoutControl } from './PopoutControl';
 import { PushToTalkControl } from './PushToTalkControl';
+import { PushToTalkHint } from './PushToTalkHint';
 import { SfuRaisingHandControl } from './RaisingHandControl';
 import { ScreenShareControl } from './ScreenShareControl';
 import { SfuVoiceInteractiveControl } from './SfuVoiceInteractiveControl';
@@ -25,6 +26,8 @@ interface SfuControlBarProps {
 	onRequestMicrophonePermission?: () => Promise<void>;
 	onRequestCameraPermission?: () => Promise<void>;
 	pushToTalkActive: boolean;
+	pushToTalkHintDismissed?: boolean;
+	onDismissPushToTalkHint?: () => void;
 	microphoneEnabled: boolean;
 	cameraEnabled: boolean;
 	screenSharing: boolean;
@@ -69,6 +72,8 @@ export const SfuControlBar = ({
 	onRequestMicrophonePermission,
 	onRequestCameraPermission,
 	pushToTalkActive,
+	pushToTalkHintDismissed = false,
+	onDismissPushToTalkHint,
 	microphoneEnabled,
 	cameraEnabled,
 	screenSharing,
@@ -145,13 +150,16 @@ export const SfuControlBar = ({
 			</div>
 			<div className="flex items-center justify-center gap-3 max-md:gap-2" data-e2e={generateE2eId('clan_page.screen.voice_room.control_bar')}>
 				{joinRole === 'audience' && (
-					<PushToTalkControl
-						active={pushToTalkActive}
-						onChange={onPushToTalk}
-						permissionState={microphonePermissionState}
-						hasMicrophoneAccess={hasMicrophoneAccess}
-						onPermissionRequest={onRequestMicrophonePermission}
-					/>
+					<div className="relative">
+						<PushToTalkControl
+							active={pushToTalkActive}
+							onChange={onPushToTalk}
+							permissionState={microphonePermissionState}
+							hasMicrophoneAccess={hasMicrophoneAccess}
+							onPermissionRequest={onRequestMicrophonePermission}
+						/>
+						{!pushToTalkHintDismissed && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />}
+					</div>
 				)}
 				{joinRole === 'speaker' && (
 					<MicrophoneControl
