@@ -537,6 +537,15 @@ export function MezonSfuVoiceRoom({
 	const [screenShareMode, setScreenShareMode] = useState<ScreenShareMode>('text');
 	const [changingScreenShareMode, setChangingScreenShareMode] = useState(false);
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
+	const [pushToTalkHintDismissed, setPushToTalkHintDismissed] = useState(false);
+	useEffect(() => {
+		setPushToTalkHintDismissed(false);
+	}, [roomId, joinRole]);
+	const holdToTalkRef = useRef(false);
+	const microphoneEnabledRef = useRef(microphoneEnabled);
+	microphoneEnabledRef.current = microphoneEnabled;
+	const microphonePermissionStateRef = useRef(microphonePermissionState);
+	microphonePermissionStateRef.current = microphonePermissionState;
 	const mutedParticipantIds = useMemo(() => new Set<string>(), []);
 	const [isGridView, setIsGridView] = useState(true);
 	const [pinnedTrackId, setPinnedTrackId] = useState<string>();
@@ -1759,6 +1768,60 @@ export function MezonSfuVoiceRoom({
 		[joinRole, pushToTalkActive]
 	);
 
+	const releaseHoldToTalk = useCallback(() => {
+		if (!holdToTalkRef.current) return;
+		holdToTalkRef.current = false;
+		dispatch(voiceActions.setShowMicrophone(false));
+	}, [dispatch]);
+
+	const setPushToTalkRef = useRef(setPushToTalk);
+	setPushToTalkRef.current = setPushToTalk;
+
+	useEffect(() => {
+		const isTyping = (target: EventTarget | null) => {
+			const el = target as HTMLElement | null;
+			if (!el || typeof el.tagName !== 'string') return false;
+			return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable;
+		};
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+			if (isTyping(event.target) || isTyping(document.activeElement)) return;
+			event.preventDefault();
+			if (joinRole === 'audience') {
+				void setPushToTalkRef.current(true);
+				return;
+			}
+			if (holdToTalkRef.current || microphoneEnabledRef.current || microphonePermissionStateRef.current !== 'granted') return;
+			holdToTalkRef.current = true;
+			dispatch(voiceActions.setShowMicrophone(true));
+		};
+		const onKeyUp = (event: KeyboardEvent) => {
+			if (event.code !== 'Space') return;
+			if (joinRole === 'audience') {
+				void setPushToTalkRef.current(false);
+				return;
+			}
+			if (holdToTalkRef.current) event.preventDefault();
+			releaseHoldToTalk();
+		};
+		const onBlur = () => {
+			if (joinRole === 'audience') {
+				void setPushToTalkRef.current(false);
+				return;
+			}
+			releaseHoldToTalk();
+		};
+		window.addEventListener('keydown', onKeyDown);
+		window.addEventListener('keyup', onKeyUp);
+		window.addEventListener('blur', onBlur);
+		return () => {
+			window.removeEventListener('keydown', onKeyDown);
+			window.removeEventListener('keyup', onKeyUp);
+			window.removeEventListener('blur', onBlur);
+			releaseHoldToTalk();
+		};
+	}, [dispatch, joinRole, releaseHoldToTalk]);
+
 	useEffect(() => {
 		if (joinRole === 'audience' && hasMicrophoneAccess === false) {
 			microphonePermissionRevokedRef.current = true;
@@ -2311,7 +2374,12 @@ export function MezonSfuVoiceRoom({
 					onEmojiSelect={sendEmojiReaction}
 					onSoundSelect={sendSoundReaction}
 					onPushToTalk={(active) => void setPushToTalk(active)}
-					onMicrophoneToggle={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
+					pushToTalkHintDismissed={pushToTalkHintDismissed}
+					onDismissPushToTalkHint={() => setPushToTalkHintDismissed(true)}
+					onMicrophoneToggle={() => {
+						holdToTalkRef.current = false;
+						dispatch(voiceActions.setShowMicrophone(!microphoneEnabled));
+					}}
 					onCameraToggle={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
 					onScreenShareToggle={() => void toggleScreenShare()}
 					onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
