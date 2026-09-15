@@ -5,31 +5,14 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-function nodePolyfillsPlugin(): Plugin {
+function nodePolyfillsPlugin(workspaceRoot: string): Plugin {
 	return {
 		name: 'node-polyfills',
-		transformIndexHtml() {
-			return [
-				{
-					tag: 'script',
-					attrs: { type: 'module' },
-					children: [
-						"import { Buffer } from 'buffer';",
-						'globalThis.Buffer = globalThis.Buffer || Buffer;',
-						"import process from 'process/browser';",
-						'globalThis.process = globalThis.process || process;',
-						'globalThis.global = globalThis.global || globalThis;'
-					].join('\n'),
-					injectTo: 'head-prepend'
-				}
-			];
-		},
 		config() {
 			return {
 				resolve: {
 					alias: {
-						buffer: 'buffer',
-						process: 'process/browser',
+						buffer: path.resolve(workspaceRoot, 'node_modules/buffer/index.js'),
 						stream: 'stream-browserify',
 						util: 'util'
 					}
@@ -44,8 +27,11 @@ const APP_VERSION = packageJson.version;
 
 export default defineConfig(({ mode }) => {
 	const workspaceRoot = path.resolve(__dirname, '../..');
-	const env = loadEnv(mode, workspaceRoot, 'NX_');
 	const appRoot = path.join(workspaceRoot, 'apps/discover');
+	const env = {
+		...loadEnv(mode, workspaceRoot, 'NX_'),
+		...loadEnv(mode, appRoot, 'NX_')
+	};
 	return {
 		root: path.join(appRoot, 'src'),
 		publicDir: mode === 'production' ? false : path.join(appRoot, 'src/assets'),
@@ -76,7 +62,7 @@ export default defineConfig(({ mode }) => {
 					]
 				}
 			}),
-			nodePolyfillsPlugin(),
+			nodePolyfillsPlugin(workspaceRoot),
 			viteStaticCopy({
 				targets: [
 					{
@@ -142,7 +128,8 @@ export default defineConfig(({ mode }) => {
 				'react-router-dom',
 				'@reduxjs/toolkit',
 				'react-redux',
-				'mezon-js'
+				'mezon-js',
+				'buffer'
 			]
 		},
 
@@ -161,7 +148,8 @@ export default defineConfig(({ mode }) => {
 				'@mezon/assets': path.resolve(__dirname, '../../libs/assets/src/index.ts'),
 				'@mezon/chat-scroll': path.resolve(__dirname, '../../libs/chat-scroll/src/index.ts'),
 				'@mezon/package-js': path.resolve(__dirname, '../../package.json'),
-				'mezon-js-protobuf': path.resolve(__dirname, '../../node_modules/mezon-js-protobuf/dist/mezon-js-protobuf.esm.mjs')
+				'mezon-js-protobuf': path.resolve(__dirname, '../../node_modules/mezon-js-protobuf/dist/mezon-js-protobuf.esm.mjs'),
+				buffer: path.resolve(workspaceRoot, 'node_modules/buffer/index.js')
 			},
 			extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
 			conditions: ['import', 'module', 'browser', 'default']

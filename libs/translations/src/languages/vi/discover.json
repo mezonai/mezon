@@ -1,6 +1,6 @@
 {
 	"communityOnMezon": "Cộng đồng trên Mezon",
-	"exploreCommunities": "Tìm kiếm cộng đồng",
+	"exploreCommunities": "Khám phá cộng đồng",
 	"resultsFound": "Kết quả",
 	"members": "Thành viên",
 	"verified": "Đã xác minh",
@@ -13,5 +13,136 @@
 	"community": "Cộng đồng",
 	"desCommunity": "Sự kiện và cập nhật hàng tuần.",
 	"about": "Giới thiệu",
-	"discoverAndJoin": "Khám phá và tham gia các cộng đồng có cùng sở thích với bạn."
+	"discoverAndJoin": "Khám phá và tham gia các cộng đồng có cùng sở thích với bạn.",
+	"title": "Tìm cộng đồng của bạn",
+	"titleHighlight": "cộng đồng",
+	"overline": "Clan trên Mezon",
+	"subtitle": "Nơi mọi người tụ họp quanh những thứ họ yêu thích.",
+	"searchPlaceholder": "Tìm cộng đồng",
+	"searchLabel": "Tìm cộng đồng",
+	"featured": "Cộng đồng nổi bật",
+	"orbitTitle": "Thêm cộng đồng",
+	"orbitHint": "Xem thêm",
+	"orbitPrev": "Cộng đồng trước",
+	"orbitNext": "Cộng đồng tiếp",
+	"indexKicker": "Mục lục",
+	"enterClan": "Vào clan",
+	"featuredBadge": "Nổi bật",
+	"viewAll": "Xem tất cả",
+	"seeAll": "Xem tất cả",
+	"explore": "Khám phá tất cả",
+	"loadMore": "Tải thêm cộng đồng",
+	"loadingMore": "Đang tải...",
+	"joinCommunity": "Tham gia cộng đồng",
+	"joinNow": "Tham gia ngay",
+	"joining": "Đang tham gia...",
+	"openInMezon": "Mở trong Mezon",
+	"share": "Chia sẻ",
+	"shareClan": "Chia sẻ Clan",
+	"linkCopied": "Đã sao chép liên kết",
+	"copyFailed": "Không thể sao chép liên kết",
+	"copied": "Đã copy!",
+	"copy": "Copy",
+	"joinModal": {
+		"subtitle": "Chọn cách bạn muốn tham gia clan này",
+		"scanQr": "Quét mã QR",
+		"scanHint": "Dùng camera điện thoại để quét và tham gia",
+		"openLink": "Mở liên kết trực tiếp",
+		"openHint": "Mở trong tab mới"
+	},
+	"shareModal": {
+		"subtitle": "Chia sẻ clan này với bạn bè"
+	},
+	"online": "đang hoạt động",
+	"onlineCount": "{{count}} đang hoạt động",
+	"onlineCount_one": "{{count}} đang hoạt động",
+	"onlineCount_other": "{{count}} đang hoạt động",
+	"memberCount": "{{count}} thành viên",
+	"memberCount_one": "{{count}} thành viên",
+	"memberCount_other": "{{count}} thành viên",
+	"statsLine": "{{members}} thành viên",
+	"more": "Thêm",
+	"categories": {
+		"gaming": "Gaming",
+		"technology": "Công nghệ",
+		"education": "Giáo dục",
+		"music": "Âm nhạc",
+		"anime": "Anime",
+		"sports": "Thể thao",
+		"lifestyle": "Lifestyle"
+	},
+	"filters": {
+		"title": "Bộ lọc",
+		"category": "Danh mục",
+		"language": "Ngôn ngữ",
+		"activity": "Hoạt động",
+		"verifiedOnly": "Chỉ clan đã xác minh",
+		"reset": "Đặt lại",
+		"showResults": "Hiện cộng đồng",
+		"all": "Tất cả",
+		"open": "Bộ lọc"
+	},
+	"sort": {
+		"label": "Sắp xếp",
+		"recommended": "Đề xuất",
+		"largest": "Đông thành viên nhất",
+		"newest": "Mới nhất"
+	},
+	"heading": {
+		"default": "Khám phá tất cả",
+		"search": "{{count}} cộng đồng cho “{{query}}”",
+		"category": "{{count}} cộng đồng {{category}}",
+		"matching": "Cộng đồng khớp với “{{query}}”"
+	},
+	"empty": {
+		"searchTitle": "Không tìm thấy cộng đồng cho “{{query}}”.",
+		"searchHint": "Thử từ khóa khác hoặc khám phá danh mục phổ biến.",
+		"clearSearch": "Xóa tìm kiếm",
+		"filterTitle": "Không có cộng đồng nào khớp bộ lọc này.",
+		"clearFilters": "Xóa bộ lọc",
+		"genericTitle": "Chưa có cộng đồng để hiển thị.",
+		"genericHint": "Hãy quay lại sau hoặc thử tìm kiếm khác."
+	},
+	"error": {
+		"title": "Không thể tải danh sách cộng đồng.",
+		"retry": "Thử lại",
+		"clanNotFound": "Không tìm thấy cộng đồng này.",
+		"backToDiscover": "Quay lại Discover"
+	},
+	"detail": {
+		"about": "Giới thiệu",
+		"aboutThisCommunity": "Giới thiệu cộng đồng",
+		"readMore": "Xem thêm",
+		"readLess": "Thu gọn",
+		"joinThisCommunity": "Tham gia cộng đồng này",
+		"created": "Ngày tạo",
+		"communityType": "Loại cộng đồng",
+		"communityTypePublic": "Công khai",
+		"noInvite": "Clan này hiện chưa có lời mời công khai.",
+		"similar": "Cộng đồng tương tự",
+		"breadcrumbDiscover": "Discover",
+		"back": "Quay lại",
+		"unnamed": "Clan chưa đặt tên",
+		"noDescription": "Một cộng đồng trên Mezon.",
+		"overview": "Tổng quan",
+		"presence": "Hiện tại",
+		"membersLabel": "Thành viên",
+		"onlineLabel": "Đang hoạt động",
+		"tags": "Hashtag"
+	},
+	"card": {
+		"fallbackDescription": "Một cộng đồng trên Mezon"
+	},
+	"addClan": {
+		"title": "Bạn có clan muốn thêm vào Discovery?",
+		"body": "Thêm clan của bạn vào Mezon Discovery để tiếp cận hàng triệu người dùng và phát triển cộng đồng."
+	},
+	"header": {
+		"openMezon": "Mở Mezon",
+		"login": "Mở Mezon"
+	},
+	"a11y": {
+		"verified": "đã xác minh",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }
