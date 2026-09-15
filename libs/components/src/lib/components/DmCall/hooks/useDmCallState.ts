@@ -3,7 +3,6 @@ import {
 	audioCallActions,
 	selectCurrentStartDmCall,
 	selectGroupCallId,
-	selectIsGroupCallActive,
 	selectIsInCall,
 	selectJoinedCall,
 	selectSignalingDataByUserId,
@@ -16,7 +15,6 @@ import { useSelector } from 'react-redux';
 
 export interface DmCallStateHookReturn {
 	isInCall: boolean;
-	isGroupCallActive: boolean;
 	isJoinedCall: boolean;
 	isInAnyCall: boolean;
 
@@ -40,14 +38,13 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 	const dispatch = useAppDispatch();
 
 	const isInCall = useSelector(selectIsInCall);
-	const isGroupCallActive = useSelector(selectIsGroupCallActive);
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const isDmCallInfo = useSelector(selectCurrentStartDmCall);
 	const groupCallId = useSelector(selectGroupCallId);
 
 	const signalingData = useSelector((state) => selectSignalingDataByUserId(state, userId));
 
-	const isInAnyCall = isInCall || isGroupCallActive;
+	const isInAnyCall = isInCall;
 
 	const dataCall = useMemo(() => {
 		return signalingData?.[signalingData?.length - 1]?.signalingData;
@@ -132,7 +129,7 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 			default:
 				break;
 		}
-	}, [dispatch, isInCall, isGroupCallActive, isJoinedCall, signalingData, dataCall, isInAnyCall]);
+	}, [dispatch, isInCall, isJoinedCall, signalingData, dataCall, isInAnyCall]);
 
 	useEffect(() => {
 		return () => {
@@ -143,7 +140,6 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 
 	return {
 		isInCall,
-		isGroupCallActive,
 		isJoinedCall,
 		isInAnyCall,
 

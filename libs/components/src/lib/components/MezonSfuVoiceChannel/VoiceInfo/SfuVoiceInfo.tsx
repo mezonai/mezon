@@ -1,9 +1,6 @@
 import { useAppNavigation, useAuth } from '@mezon/core';
 import {
-	selectDmGroupById,
-	selectIsGroupCallActive,
 	selectNoiseSuppressionEnabled,
-	selectNoiseSuppressionLevel,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
@@ -13,42 +10,27 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, useMediaPermissions } from '@mezon/utils';
-import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ButtonCopy } from '../../../components';
-import { useGroupCallSignaling, useGroupCallState } from '../../GroupCall';
 
 const SfuVoiceInfo = React.memo(() => {
 	const { t } = useTranslation('channelVoice');
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
-	const { toChannelPage, toDmGroupPage, navigate } = useAppNavigation();
+	const { toChannelPage, navigate } = useAppNavigation();
 
 	const currentVoiceInfo = useSelector(selectVoiceInfo);
 	const isAudience = currentVoiceInfo?.joinRole === 'audience';
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
-	const isGroupCallActive = useSelector(selectIsGroupCallActive);
-
-	const currentDmGroup = useSelector((state) => selectDmGroupById(state, currentVoiceInfo?.channelId || ''));
-
-	const groupCallState = useGroupCallState();
-	const groupCallSignaling = useGroupCallSignaling();
 
 	const redirectToVoice = () => {
 		if (currentVoiceInfo) {
-			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
-
-			if (isGroupCall) {
-				const groupUrl = toDmGroupPage(currentVoiceInfo.channelId as string, ChannelType.CHANNEL_TYPE_GROUP);
-				navigate(groupUrl);
-			} else {
-				const channelUrl = toChannelPage(currentVoiceInfo.channelId as string, currentVoiceInfo.clanId as string);
-				navigate(channelUrl);
-			}
+			const channelUrl = toChannelPage(currentVoiceInfo.channelId as string, currentVoiceInfo.clanId as string);
+			navigate(channelUrl);
 		}
 	};
 
@@ -59,31 +41,7 @@ const SfuVoiceInfo = React.memo(() => {
 			return;
 		}
 		if (currentVoiceInfo) {
-			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
-
-			if (isGroupCall) {
-				groupCallState.endGroupCall();
-
-				if (currentDmGroup?.user_ids && userProfile?.user?.id) {
-					const participantLeftData = {
-						userId: userProfile.user.id,
-						userName: userProfile.user.display_name || userProfile.user.username,
-						timestamp: Date.now()
-					};
-
-					groupCallSignaling.sendParticipantLeft(
-						currentDmGroup.user_ids,
-						participantLeftData,
-						currentVoiceInfo.channelId,
-						userProfile.user.id
-					);
-				}
-
-				dispatch(voiceActions.setJoined(false));
-				dispatch(voiceActions.setToken(''));
-			} else {
-				dispatch(voiceActions.resetVoiceControl());
-			}
+			dispatch(voiceActions.resetVoiceControl());
 			if (userProfile?.user?.id) {
 				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: currentVoiceInfo.clanId }));
 			}
@@ -133,13 +91,9 @@ const SfuVoiceInfo = React.memo(() => {
 
 	const linkVoice = useMemo(() => {
 		if (currentVoiceInfo) {
-			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
-
-			return isGroupCall
-				? `${process.env.NX_DOMAIN_URL}/chat/direct/message/${currentVoiceInfo.channelId}/${ChannelType.CHANNEL_TYPE_GROUP}`
-				: `${process.env.NX_DOMAIN_URL}/chat/clans/${currentVoiceInfo.clanId}/channels/${currentVoiceInfo.channelId}`;
+			return `${process.env.NX_DOMAIN_URL}/chat/clans/${currentVoiceInfo.clanId}/channels/${currentVoiceInfo.channelId}`;
 		}
-	}, [currentVoiceInfo, isGroupCallActive]);
+	}, [currentVoiceInfo]);
 	return (
 		<div
 			className={`flex flex-col gap-2 rounded-t-lg border-b-2 border-theme-primary px-4 py-2 hover:bg-gray-550/[0.16] shadow-sm transition bg-theme-chat w-full group`}
@@ -295,14 +249,6 @@ const ButtonNoiseControl = memo(() => {
 	const toggleNoiseSuppression = useCallback(() => {
 		dispatch(voiceActions.setNoiseSuppressionEnabled(!noiseSuppressionEnabled));
 	}, [dispatch, noiseSuppressionEnabled]);
-	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
-	const handleNoiseSuppressionLevelChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			dispatch(voiceActions.setNoiseSuppressionLevel(Number(e.target.value)));
-		},
-		[dispatch]
-	);
-
 	if (!noiseSuppressionEnabled) {
 		return (
 			<button
@@ -317,25 +263,7 @@ const ButtonNoiseControl = memo(() => {
 	return (
 		<Tooltip
 			placement="top"
-			overlay={
-				noiseSuppressionEnabled ? (
-					<div className="p-2" onClick={(e) => e.stopPropagation()}>
-						<div className="flex justify-between items-center mb-2">
-							<span className="text-xs font-semibold text-theme-primary-active">Noise Suppression</span>
-							<span className="text-xs text-theme-primary-active">{noiseSuppressionLevel}%</span>
-						</div>
-						<input
-							type="range"
-							min="0"
-							max="100"
-							value={noiseSuppressionLevel}
-							onChange={handleNoiseSuppressionLevelChange}
-							className="w-full h-2 bg-themxe-setting-nav rounded-lg appearance-none cursor-pointer border-theme-primary"
-							disabled={!noiseSuppressionEnabled}
-						/>
-					</div>
-				) : null
-			}
+			overlay="Noise Suppression"
 			overlayInnerStyle={TOOLTIP_OVERLAY_STYLE}
 			overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 			destroyTooltipOnHide
