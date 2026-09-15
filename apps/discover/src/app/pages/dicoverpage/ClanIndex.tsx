@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import ImageWithSkeleton from '../../components/common/ImageWithSkeleton';
-import { getClanHref, getClanInitials, getMemberCount, getOnlineCount, type DiscoverClan } from './communityUtils';
+import ClanLiveStats from './ClanLiveStats';
+import { getClanHref, getClanInitials, type DiscoverClan } from './communityUtils';
 
 interface ClanIndexProps {
 	clans: DiscoverClan[];
@@ -85,8 +86,6 @@ const IndexRow = ({
 
 const IndexCopy = ({ name, clan, align = 'left' }: { name: string; clan: DiscoverClan; align?: 'left' | 'right' }) => {
 	const { t } = useTranslation('discover');
-	const memberLabel = t('memberCount', { count: getMemberCount(clan) });
-	const onlineLabel = t('onlineCount', { count: getOnlineCount(clan) });
 
 	return (
 		<>
@@ -94,15 +93,7 @@ const IndexCopy = ({ name, clan, align = 'left' }: { name: string; clan: Discove
 				{name}
 			</h3>
 			<p className="mt-3 text-sm md:text-base text-[#7c92af] line-clamp-2">{clan.description || t('card.fallbackDescription')}</p>
-			<p
-				className={`mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs tracking-[0.18em] uppercase ${align === 'right' ? 'justify-end' : ''}`}
-			>
-				<span className="text-[#8960e0]">{memberLabel}</span>
-				<span className="text-[#131221]/25" aria-hidden>
-					·
-				</span>
-				<span className="text-[#de82e6]">{onlineLabel}</span>
-			</p>
+			<ClanLiveStats clan={clan} align={align} className="mt-3 text-xs tracking-[0.18em] uppercase text-[#8960e0]" />
 		</>
 	);
 };
