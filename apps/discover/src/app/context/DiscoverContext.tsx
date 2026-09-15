@@ -128,7 +128,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 	const readCachedClan = (clanId: string): DiscoverClan | null =>
 		[featuredClanRef.current, ...stageClansRef.current, ...clansRef.current].find(
-			(clan): clan is DiscoverClan => Boolean(clan) && clanMatchesId(clan, clanId)
+			(clan): clan is DiscoverClan => Boolean(clan) && clanMatchesId(clan ?? {}, clanId)
 		) || null;
 
 	const resolveFeaturedFrom = useCallback((list: DiscoverClan[]) => {
