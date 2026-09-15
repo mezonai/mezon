@@ -956,6 +956,7 @@ input:-webkit-autofill:active {
 
 .discover-title-on-art {
 	color: #ffffff;
+	overflow: visible;
 	-webkit-text-stroke: clamp(1px, 0.016em, 5px) #131221;
 	paint-order: stroke fill;
 	text-shadow: 0 0.045em 0.14em rgba(19, 18, 33, 0.72);

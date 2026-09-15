@@ -185,14 +185,25 @@ export default function ClanDetailPage() {
 			<HeaderMezon overlay sideBarIsOpen={sideBarIsOpen} toggleSideBar={() => setSideBarIsOpen((open) => !open)} />
 
 			<main className="pb-28 lg:pb-0">
-				<section className="discover-detail-stage relative flex flex-col h-[100svh] overflow-hidden bg-[var(--surface-ink)] text-white lg:block lg:h-auto lg:min-h-[100svh]">
-					{clan.banner && !bannerError ? <ClanStageBackdrop src={clan.banner} /> : <CoverFallback name={clanName} />}
+				<section className="discover-detail-stage relative min-h-[100svh] overflow-hidden bg-[var(--surface-ink)] text-white max-lg:flex max-lg:h-[100svh] max-lg:flex-col">
+					{clan.banner && !bannerError ? (
+						<>
+							<ClanStageBackdrop src={clan.banner} />
+							<ClanStagePoster
+								src={clan.banner}
+								onError={() => setBannerError(true)}
+								className="pointer-events-none absolute inset-0 max-lg:hidden"
+							/>
+						</>
+					) : (
+						<CoverFallback name={clanName} />
+					)}
 					<CoverScrim />
-					<p className="pointer-events-none absolute -right-8 top-[20%] select-none text-[18vw] leading-none font-extrabold tracking-[-0.08em] text-white/[0.07] rotate-90 origin-center">
+					<p className="pointer-events-none absolute -right-8 top-[20%] z-[1] select-none text-[18vw] leading-none font-extrabold tracking-[-0.08em] text-white/[0.07] rotate-90 origin-center">
 						MEZON
 					</p>
 
-					<nav className="relative z-10 shrink-0 px-4 pt-[calc(var(--navbar-height)+0.15rem)] text-sm discover-copy-on-art md:px-8 lg:absolute lg:top-24 lg:left-8 lg:px-0 lg:pt-0">
+					<nav className="relative z-20 shrink-0 px-4 pt-[calc(var(--navbar-height)+0.15rem)] text-sm discover-copy-on-art md:px-8 lg:absolute lg:top-24 lg:left-8 lg:px-0 lg:pt-0">
 						<Link to="/clans" className="hover:text-white min-h-[44px] inline-flex items-center">
 							{t('detail.breadcrumbDiscover')}
 						</Link>
@@ -201,16 +212,16 @@ export default function ClanDetailPage() {
 					</nav>
 
 					{clan.banner && !bannerError ? (
-						<div className="relative z-[1] flex-1 min-h-0 px-3 lg:absolute lg:inset-0 lg:px-0">
+						<div className="relative flex-1 min-h-0 px-3 lg:hidden">
 							<ClanStagePoster src={clan.banner} onError={() => setBannerError(true)} className="absolute inset-0" />
 						</div>
 					) : (
 						<div className="flex-1 min-h-0 lg:hidden" />
 					)}
 
-					<div className="discover-title-plate relative z-10 shrink-0 px-4 pt-2 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] md:px-8 lg:relative lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-end lg:px-12 lg:pb-10 lg:pt-28">
-						<div className="flex flex-row items-end gap-3 md:gap-6 lg:gap-10">
-							<div className="w-16 h-16 sm:w-20 sm:h-20 md:w-36 md:h-36 rounded-full overflow-hidden ring-[5px] md:ring-[6px] ring-[#5865f2] shadow-2xl shrink-0 bg-[#404eed]">
+					<div className="discover-title-plate relative z-10 shrink-0 px-4 pt-2 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] md:px-8 lg:pointer-events-none lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-end lg:px-12 lg:pb-10 lg:pt-28">
+						<div className="flex flex-row items-end gap-3 md:gap-6 lg:pointer-events-auto lg:gap-10">
+							<div className="w-16 h-16 shrink-0 overflow-hidden rounded-full bg-[#404eed] shadow-2xl ring-[5px] ring-[#5865f2] sm:h-20 sm:w-20 md:h-36 md:w-36 md:ring-[6px]">
 								{clan.clan_logo && !logoError ? (
 									<ImageWithSkeleton
 										src={clan.clan_logo}
@@ -226,19 +237,19 @@ export default function ClanDetailPage() {
 							</div>
 							<div className="min-w-0 flex-1">
 								<div className="flex flex-wrap items-center gap-2 md:gap-3">
-									<h1 className="discover-title-on-art text-[clamp(1.75rem,8.5vw,7vw)] leading-[0.86] font-extrabold tracking-[-0.06em] break-words line-clamp-2">
+									<h1 className="discover-title-on-art text-[clamp(1.75rem,8.5vw,3.25rem)] leading-[0.9] font-extrabold tracking-[-0.06em] break-words lg:text-[clamp(2.1rem,11vw,7vw)] lg:leading-[0.82]">
 										{clanName}
 									</h1>
 									{clan.verified ? (
 										<>
-											<VerifiedBadge className="w-6 h-6 md:w-7 md:h-7 text-[#de82e6] drop-shadow-[0_1px_6px_rgba(19,18,33,0.9)]" />
+											<VerifiedBadge className="w-6 h-6 lg:w-7 lg:h-7 text-[#de82e6] drop-shadow-[0_1px_6px_rgba(19,18,33,0.9)]" />
 											<span className="sr-only">{t('verified')}</span>
 										</>
 									) : null}
 								</div>
 								<ClanLiveStats
 									clan={clan}
-									className="discover-copy-on-art mt-2 md:mt-6 text-xs sm:text-sm md:text-base tracking-[0.12em] uppercase"
+									className="discover-copy-on-art mt-2 text-xs tracking-[0.12em] uppercase sm:text-sm md:mt-4 md:text-base lg:mt-6"
 									extra={
 										createdAt ? (
 											<>
