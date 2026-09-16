@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Бәйләнеш өзелде",
 		"microphonePermissionRequired": "Микрофонга керү мөмкинлеге таләп ителә",
 		"cameraPermissionRequired": "Камерага керү мөмкинлеге таләп ителә",
-		"recipientDidNotAnswer": "Кабул итүче шалтыратуга җавап бирмәде."
+		"recipientDidNotAnswer": "Кабул итүче шалтыратуга җавап бирмәде.",
+		"aloneTimeoutDisconnected": "Сез тавыш каналында артык озак ялгыз булганга күрә, аннан өзелдегез."
 	},
 	"usernameScreen": "{{username}} экраны",
 	"recording": {

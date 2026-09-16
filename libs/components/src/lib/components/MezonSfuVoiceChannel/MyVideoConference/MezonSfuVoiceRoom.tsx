@@ -63,6 +63,8 @@ const FAST_RECONNECT_DELAY_MS = 400;
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 40;
 const MAX_IVALID__RECONNECT_ATTEMPTS = 2;
+const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
+const SFU_REMOVED_CLOSE_CODES = new Set([4006, SFU_ALONE_TIMEOUT_CLOSE_CODE]);
 
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
@@ -515,6 +517,7 @@ export function MezonSfuVoiceRoom({
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
 	const onLeaveRoomRef = useRef(onLeaveRoom);
 	const onRefreshTokenRef = useRef(onRefreshToken);
+	const tRef = useRef(t);
 	const lastMuteChangedAtRef = useRef(0);
 	const pendingForcedMuteRef = useRef<number>();
 	const refreshingTokenRef = useRef(false);
@@ -563,6 +566,7 @@ export function MezonSfuVoiceRoom({
 	const focusVideoContainerRef = useRef<HTMLDivElement>(null);
 	const [, renderFocusTileOrder] = useState(0);
 	onLeaveRoomRef.current = onLeaveRoom;
+	tRef.current = t;
 	noiseSuppressionEnabledRef.current = noiseSuppressionEnabled;
 
 	const closePopout = useCallback(async () => {
@@ -1479,14 +1483,17 @@ export function MezonSfuVoiceRoom({
 				const closingAudioTrack = localStreamRef.current?.getAudioTracks()[0];
 				if (closingAudioTrack && joinRole === 'audience') closingAudioTrack.enabled = false;
 				setPushToTalkActive(false);
-				reconnectAllowed = event.code !== 4006;
+				reconnectAllowed = !SFU_REMOVED_CLOSE_CODES.has(event.code);
 				if (disposed) return;
 
 				setConnectionState('disconnected');
-				if (event.code === 4006) {
+				if (SFU_REMOVED_CLOSE_CODES.has(event.code)) {
 					dispatch(
 						toastActions.addToast({
-							message: event.reason || 'You have been kicked from the channel.',
+							message:
+								event.code === SFU_ALONE_TIMEOUT_CLOSE_CODE
+									? tRef.current('toast.aloneTimeoutDisconnected')
+									: event.reason || 'You have been kicked from the channel.',
 							type: 'warning',
 							autoClose: 5000
 						})
