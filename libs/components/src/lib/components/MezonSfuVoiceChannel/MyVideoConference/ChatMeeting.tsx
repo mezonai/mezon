@@ -9,6 +9,7 @@ interface MessageExternal {
 	name?: string;
 	content?: string;
 	avatar?: string;
+	isMe?: boolean;
 }
 
 export type ExternalChatRef = {
@@ -48,7 +49,7 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 			handleWriteChatExternal(JSON.stringify(message));
 
 			event.currentTarget.value = '';
-			setMessages((pre) => [...pre, JSON.stringify(message)]);
+			setMessages((pre) => [...pre, JSON.stringify({ ...message, isMe: true })]);
 		}
 	};
 
@@ -100,7 +101,7 @@ const MessageItem = ({ message }: { message: string }) => {
 
 	const nameSender = parsed.name || 'Guest';
 	const avatarUrl = parsed.avatar || '';
-
+	const iseMe = parsed?.isMe;
 	const time = useMemo(() => {
 		const timestamp = parsed?.timestamp || Date.now();
 		const date = new Date(timestamp);
@@ -112,7 +113,7 @@ const MessageItem = ({ message }: { message: string }) => {
 	}, []);
 
 	return (
-		<div className="flex flex-row gap-2 p-2 text-contentPrimary">
+		<div className={`flex gap-2 p-2 text-contentPrimary ${iseMe ? 'flex-row-reverse' : 'flex-row'}`}>
 			<div className="flex-shrink-0 pt-1">
 				{avatarUrl ? (
 					<img src={avatarUrl} alt={nameSender} className="w-8 h-8 rounded-full object-cover" />
@@ -123,13 +124,13 @@ const MessageItem = ({ message }: { message: string }) => {
 				)}
 			</div>
 
-			<div className="flex flex-col min-w-0">
-				<p className="text-base font-semibold leading-5">
+			<div className={`flex flex-col min-w-0  ${iseMe && 'items-end'}`}>
+				<p className={`text-base font-semibold leading-5 gap-2 flex items-center ${iseMe ? 'flex-row-reverse' : 'flex-row'}`}>
 					{nameSender}
-					<span className="font-normal text-xs text-gray-400 ml-2">{time}</span>
+					<span className="font-normal text-xs text-gray-400">{time}</span>
 				</p>
 
-				<p className="text-sm break-words">{parsed.content}</p>
+				<p className="text-sm break-words max-w-64">{parsed.content}</p>
 			</div>
 		</div>
 	);
