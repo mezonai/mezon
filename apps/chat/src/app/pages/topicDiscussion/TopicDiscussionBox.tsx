@@ -149,17 +149,12 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 				return;
 			}
 
+			const updatedFiles = await processFilesForAttachment([file]);
+
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
 					channelId: currentInputChannelId,
-					files: [
-						{
-							filename: file.name,
-							filetype: file.type,
-							size: file.size,
-							url: URL.createObjectURL(file)
-						}
-					]
+					files: updatedFiles
 				})
 			);
 		},

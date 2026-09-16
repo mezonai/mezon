@@ -2,6 +2,7 @@ import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@me
 import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
 import {
 	appActions,
+	channelAppActions,
 	generateMeetToken,
 	getStore,
 	selectCurrentChannelClanId,
@@ -213,6 +214,7 @@ const MezonSfuChannelVoiceInner = () => {
 		isDisconnectingRef.current = true;
 
 		dispatch(voiceActions.resetVoiceControl());
+		dispatch(channelAppActions.clearAppInteractiveData());
 		if (userProfile?.user?.id) {
 			dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
 		}

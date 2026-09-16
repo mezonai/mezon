@@ -3,7 +3,6 @@ import {
 	selectCurrentUserId,
 	selectEntitesUserClans,
 	selectNoiseSuppressionEnabled,
-	selectNoiseSuppressionLevel,
 	selectShowCamera,
 	selectShowMicrophone,
 	toastActions,
@@ -13,7 +12,6 @@ import {
 import { Icons } from '@mezon/ui';
 import {
 	GUEST_NAME,
-	NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
 	createImgproxyUrl,
 	generateE2eId,
 	getAvatarForPrioritize,
@@ -22,7 +20,6 @@ import {
 	requestMediaPermission,
 	useMediaPermissions
 } from '@mezon/utils';
-import { DeepFilterNoiseFilterProcessor, type DeepFilterNet3Core } from 'deepfilternet3-noise-filter';
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -458,9 +455,7 @@ export function MezonSfuVoiceRoom({
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
-	const noiseSuppressionLevel = useSelector(selectNoiseSuppressionLevel);
 	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
-	const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
 	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState, refreshPermissions } = useMediaPermissions();
 	const [permissionModalSource, setPermissionModalSource] = useState<'microphone' | 'camera' | null>(null);
 
@@ -537,6 +532,15 @@ export function MezonSfuVoiceRoom({
 	const [screenShareMode, setScreenShareMode] = useState<ScreenShareMode>('text');
 	const [changingScreenShareMode, setChangingScreenShareMode] = useState(false);
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
+	const [pushToTalkHintDismissed, setPushToTalkHintDismissed] = useState(false);
+	useEffect(() => {
+		setPushToTalkHintDismissed(false);
+	}, [roomId, joinRole]);
+	const holdToTalkRef = useRef(false);
+	const microphoneEnabledRef = useRef(microphoneEnabled);
+	microphoneEnabledRef.current = microphoneEnabled;
+	const microphonePermissionStateRef = useRef(microphonePermissionState);
+	microphonePermissionStateRef.current = microphonePermissionState;
 	const mutedParticipantIds = useMemo(() => new Set<string>(), []);
 	const [isGridView, setIsGridView] = useState(true);
 	const [pinnedTrackId, setPinnedTrackId] = useState<string>();
@@ -875,28 +879,7 @@ export function MezonSfuVoiceRoom({
 				.applyConstraints(getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled) as MediaTrackConstraints)
 				.catch(() => undefined);
 		}
-
-		if (!noiseSuppressionEnabled || !DeepFilterNoiseFilterProcessor.isSupported()) {
-			if (noiseProcessorRef.current) {
-				try {
-					noiseProcessorRef.current.setNoiseSuppressionEnabled(false);
-				} catch {
-					// Ignore disconnect errors
-				}
-			}
-			return;
-		}
-
-		const normalizedLevel = noiseSuppressionLevel * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
-		if (noiseProcessorRef.current) {
-			try {
-				noiseProcessorRef.current.setSuppressionLevel(normalizedLevel);
-				noiseProcessorRef.current.setNoiseSuppressionEnabled(true);
-			} catch {
-				// Ignore errors
-			}
-		}
-	}, [localAudioTrack, noiseSuppressionEnabled, noiseSuppressionLevel]);
+	}, [localAudioTrack, noiseSuppressionEnabled]);
 
 	useEffect(() => {
 		const refreshDevices = async () => setDevices(await navigator.mediaDevices.enumerateDevices());
@@ -1759,6 +1742,60 @@ export function MezonSfuVoiceRoom({
 		[joinRole, pushToTalkActive]
 	);
 
+	const releaseHoldToTalk = useCallback(() => {
+		if (!holdToTalkRef.current) return;
+		holdToTalkRef.current = false;
+		dispatch(voiceActions.setShowMicrophone(false));
+	}, [dispatch]);
+
+	const setPushToTalkRef = useRef(setPushToTalk);
+	setPushToTalkRef.current = setPushToTalk;
+
+	useEffect(() => {
+		const isTyping = (target: EventTarget | null) => {
+			const el = target as HTMLElement | null;
+			if (!el || typeof el.tagName !== 'string') return false;
+			return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable;
+		};
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+			if (isTyping(event.target) || isTyping(document.activeElement)) return;
+			event.preventDefault();
+			if (joinRole === 'audience') {
+				void setPushToTalkRef.current(true);
+				return;
+			}
+			if (holdToTalkRef.current || microphoneEnabledRef.current || microphonePermissionStateRef.current !== 'granted') return;
+			holdToTalkRef.current = true;
+			dispatch(voiceActions.setShowMicrophone(true));
+		};
+		const onKeyUp = (event: KeyboardEvent) => {
+			if (event.code !== 'Space') return;
+			if (joinRole === 'audience') {
+				void setPushToTalkRef.current(false);
+				return;
+			}
+			if (holdToTalkRef.current) event.preventDefault();
+			releaseHoldToTalk();
+		};
+		const onBlur = () => {
+			if (joinRole === 'audience') {
+				void setPushToTalkRef.current(false);
+				return;
+			}
+			releaseHoldToTalk();
+		};
+		window.addEventListener('keydown', onKeyDown);
+		window.addEventListener('keyup', onKeyUp);
+		window.addEventListener('blur', onBlur);
+		return () => {
+			window.removeEventListener('keydown', onKeyDown);
+			window.removeEventListener('keyup', onKeyUp);
+			window.removeEventListener('blur', onBlur);
+			releaseHoldToTalk();
+		};
+	}, [dispatch, joinRole, releaseHoldToTalk]);
+
 	useEffect(() => {
 		if (joinRole === 'audience' && hasMicrophoneAccess === false) {
 			microphonePermissionRevokedRef.current = true;
@@ -2311,7 +2348,12 @@ export function MezonSfuVoiceRoom({
 					onEmojiSelect={sendEmojiReaction}
 					onSoundSelect={sendSoundReaction}
 					onPushToTalk={(active) => void setPushToTalk(active)}
-					onMicrophoneToggle={() => dispatch(voiceActions.setShowMicrophone(!microphoneEnabled))}
+					pushToTalkHintDismissed={pushToTalkHintDismissed}
+					onDismissPushToTalkHint={() => setPushToTalkHintDismissed(true)}
+					onMicrophoneToggle={() => {
+						holdToTalkRef.current = false;
+						dispatch(voiceActions.setShowMicrophone(!microphoneEnabled));
+					}}
 					onCameraToggle={() => dispatch(voiceActions.setShowCamera(!cameraEnabled))}
 					onScreenShareToggle={() => void toggleScreenShare()}
 					onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}

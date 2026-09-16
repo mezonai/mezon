@@ -1,5 +1,3 @@
-import type { AudioCaptureOptions } from 'livekit-client';
-
 export const getBlobDuration = async (blob: string | Blob): Promise<number> => {
 	const videoElement = document.createElement('video');
 
@@ -48,11 +46,11 @@ export const blobToFile = (blob: Blob): File => {
 	return new File([blob], `audio-${timestamp}.ogg`, { type: 'audio/mp3' });
 };
 
-export type MezonAudioCaptureOptions = AudioCaptureOptions;
+export type MezonAudioCaptureOptions = MediaTrackConstraints & { voiceIsolation?: ConstrainBoolean };
 
 export const getNoiseSuppressionAudioCaptureOptions = (enabled: boolean): MezonAudioCaptureOptions => ({
 	echoCancellation: true,
-	noiseSuppression: !enabled,
+	noiseSuppression: enabled,
 	autoGainControl: true,
-	voiceIsolation: !enabled
+	voiceIsolation: enabled
 });

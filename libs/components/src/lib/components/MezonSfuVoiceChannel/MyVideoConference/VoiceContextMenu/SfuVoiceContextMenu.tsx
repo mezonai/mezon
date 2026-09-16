@@ -17,7 +17,6 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
-import { useSendReaction } from '../Reaction';
 import { SfuVoiceInteractiveLayer } from './SfuVoiceInteractiveLayer';
 
 interface SfuVoiceContextMenuProps {
@@ -45,7 +44,6 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 	const flowerCooldownUntilRef = useRef(0);
 	const [isMuting, setIsMuting] = useState(false);
 	const [isKicking, setIsKicking] = useState(false);
-	const { sendFlower } = useSendReaction();
 
 	const participantId = contextMenu?.openedParticipantId;
 	const member = useAppSelector((state) => (participantId ? selectMemberClanByUserId(state, participantId) : undefined));
@@ -146,7 +144,6 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 				})
 			);
 			await dispatch(voiceActions.giveFlowers({ receiver_id: receiverId })).unwrap();
-			sendFlower(receiverId);
 
 			const response = await createDirectMessageWithUser(
 				receiverId,
@@ -177,7 +174,6 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 		myProfile.userId,
 		myProfile?.userProfile?.user?.username,
 		participantId,
-		sendFlower,
 		sendInviteMessage,
 		t,
 		userWallet?.balance

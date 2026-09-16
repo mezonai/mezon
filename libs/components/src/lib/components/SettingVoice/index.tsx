@@ -23,11 +23,11 @@ const safeParseNumber = (value: string | null, fallback: number) => {
 interface ISettingVoiceProps {
 	menuIsOpen: boolean;
 	noiseSuppressionEnabled?: boolean;
-	noiseSuppressionLevel?: number;
 }
 
-export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, noiseSuppressionLevel = 0 }: ISettingVoiceProps) => {
+export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false }: ISettingVoiceProps) => {
 	const { t } = useTranslation(['setting']);
+	const [isNoiseSuppressionEnabled, setIsNoiseSuppressionEnabled] = useState(noiseSuppressionEnabled);
 	const [permissionState, setPermissionState] = useState<'unknown' | 'granted' | 'denied'>('unknown');
 
 	const [inputDevices, setInputDevices] = useState<MediaDeviceInfo[]>([]);
@@ -214,7 +214,7 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, nois
 
 			const constraints: MediaStreamConstraints = {
 				audio: {
-					...getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled),
+					...getNoiseSuppressionAudioCaptureOptions(isNoiseSuppressionEnabled),
 					...(currentInputDeviceId ? { deviceId: { exact: currentInputDeviceId } } : {})
 				} as MediaTrackConstraints,
 				video: false
@@ -233,7 +233,7 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, nois
 
 			startLevelMeter();
 
-			if (noiseSuppressionEnabled) {
+			if (isNoiseSuppressionEnabled) {
 				try {
 					await noiseSuppressionControlRef.current?.applyNoiseSuppression(true);
 				} catch (error) {
@@ -274,7 +274,7 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, nois
 			cleanupAudioGraph();
 			stopStream();
 		}
-	}, [cleanupAudioGraph, hasSetSinkId, noiseSuppressionEnabled, startLevelMeter, stopStream, stopTest, t]);
+	}, [cleanupAudioGraph, hasSetSinkId, isNoiseSuppressionEnabled, startLevelMeter, stopStream, stopTest, t]);
 
 	useEffect(() => {
 		return () => {
@@ -317,8 +317,8 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, nois
 				<NoiseSuppressionControl
 					ref={noiseSuppressionControlRef}
 					className="mt-4"
-					noiseSuppressionEnabled={noiseSuppressionEnabled}
-					noiseSuppressionLevel={noiseSuppressionLevel}
+					noiseSuppressionEnabled={isNoiseSuppressionEnabled}
+					onNoiseSuppressionEnabledChange={setIsNoiseSuppressionEnabled}
 					isTesting={isTesting}
 				/>
 
