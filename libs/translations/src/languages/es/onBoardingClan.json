@@ -106,6 +106,25 @@
 			"title": "Acerca de la Comunidad",
 			"placeholder": "Cuéntanos sobre tu comunidad... ¿Qué la hace especial?"
 		},
+		"hashtags": {
+			"title": "Hashtags de la comunidad",
+			"description": "Selecciona hasta 6 hashtags que representen el tema de tu comunidad para que los miembros puedan encontrarte fácilmente.",
+			"selectedCount": "Seleccionados: {{count}}/{{max}} hashtags",
+			"minRequired": "La comunidad requiere al menos 1 hashtag",
+			"maxReached": "Máximo de 6 hashtags alcanzado",
+			"items": {
+				"Gaming": "Gaming",
+				"Technology": "Tecnología",
+				"Education": "Educación",
+				"Entertainment": "Entretenimiento",
+				"Music": "Música",
+				"Art": "Arte",
+				"Crypto": "Cripto",
+				"Anime": "Anime y Manga",
+				"Sports": "Deportes",
+				"Community": "Comunidad"
+			}
+		},
 		"vanityUrl": {
 			"title": "URL Personalizada",
 			"description": "Crea una URL personalizada para tu comunidad. Usa solo letras minúsculas, números y guiones.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "Comunidad desactivada.",
 			"disableFailed": "¡Error al desactivar!",
 			"bannerRemoved": "¡Banner eliminado!",
-			"fillAllRequiredFields": "Por favor completa todos los campos requeridos: Banner, Acerca, Descripción, URL Personalizada!",
+			"fillAllRequiredFields": "Por favor completa todos los campos requeridos: Banner, Acerca, Descripción, URL Personalizada, Hashtags!",
 			"bannerUpdateFailed": "¡Error al actualizar banner!"
 		}
 	},

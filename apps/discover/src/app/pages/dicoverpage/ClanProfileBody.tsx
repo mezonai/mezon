@@ -9,7 +9,7 @@ interface ClanProfileBodyProps {
 }
 
 export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
-	const { t } = useTranslation('discover');
+	const { t } = useTranslation(['discover', 'onBoardingClan']);
 	const [aboutExpanded, setAboutExpanded] = useState(false);
 	const tags = getClanHashtags(clan);
 	const { lede, body } = splitClanStory(clan);
@@ -59,9 +59,10 @@ export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
 						<li key={tag}>
 							<Link
 								to={`/clans?q=${encodeURIComponent(tag)}`}
-								className="inline-flex h-9 items-center px-3.5 rounded-full bg-[#8960e0]/10 text-sm font-medium text-[#6E4A9E] hover:bg-[#8960e0] hover:text-white transition-colors"
+								className="inline-flex h-9 items-center gap-1 px-3.5 rounded-full bg-[#8960e0]/10 text-sm font-medium text-[#6E4A9E] hover:bg-[#8960e0] hover:text-white transition-colors"
 							>
-								#{tag}
+								<span className="font-bold opacity-70">#</span>
+								<span>{t(`communitySettings.hashtags.items.${tag}`, { ns: 'onBoardingClan', defaultValue: tag })}</span>
 							</Link>
 						</li>
 					))}

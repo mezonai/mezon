@@ -106,6 +106,25 @@
 			"title": "Over Community",
 			"placeholder": "Vertel ons over je community... Wat maakt het bijzonder?"
 		},
+		"hashtags": {
+			"title": "Community-hashtags",
+			"description": "Selecteer maximaal 6 hashtags die het onderwerp van je community vertegenwoordigen, zodat leden je gemakkelijk kunnen vinden.",
+			"selectedCount": "Geselecteerd: {{count}}/{{max}} hashtags",
+			"minRequired": "Community vereist minimaal 1 hashtag",
+			"maxReached": "Maximaal 6 hashtags bereikt",
+			"items": {
+				"Gaming": "Gaming",
+				"Technology": "Technologie",
+				"Education": "Onderwijs",
+				"Entertainment": "Amusement",
+				"Music": "Muziek",
+				"Art": "Kunst",
+				"Crypto": "Crypto",
+				"Anime": "Anime & Manga",
+				"Sports": "Sport",
+				"Community": "Community"
+			}
+		},
 		"vanityUrl": {
 			"title": "Aangepaste URL",
 			"description": "Maak een aangepaste URL voor je community. Gebruik alleen kleine letters, cijfers en streepjes.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "Community uitgeschakeld.",
 			"disableFailed": "Uitschakelen mislukt!",
 			"bannerRemoved": "Banner verwijderd!",
-			"fillAllRequiredFields": "Vul alle verplichte velden in: Banner, Introductie, Beschrijving, Aangepaste URL!",
+			"fillAllRequiredFields": "Vul alle verplichte velden in: Banner, Introductie, Beschrijving, Aangepaste URL, Hashtags!",
 			"bannerUpdateFailed": "Banner bijwerken mislukt!"
 		}
 	},

@@ -15,6 +15,7 @@ import Footer from './Footer';
 import HeaderMezon from './HeaderMezon';
 import {
 	clanMatchesId,
+	getClanHashtags,
 	getClanInitials,
 	getCreatedAtMs,
 	getInviteUrl,
@@ -42,7 +43,7 @@ const CoverFallback = ({ name }: { name: string }) => (
 
 export default function ClanDetailPage() {
 	const { id } = useParams();
-	const { t } = useTranslation('discover');
+	const { t } = useTranslation(['discover', 'onBoardingClan']);
 	const { fetchSingleClan, clans, featuredClan } = useDiscover();
 	const [clan, setClan] = useState<DiscoverClan | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -115,6 +116,8 @@ export default function ClanDetailPage() {
 			8
 		);
 	}, [clan, clans]);
+
+	const hashtags = useMemo(() => (clan ? getClanHashtags(clan) : []), [clan]);
 
 	const handleJoin = () => {
 		if (!clan) return;
@@ -263,6 +266,21 @@ export default function ClanDetailPage() {
 										) : null
 									}
 								/>
+								{hashtags.length > 0 ? (
+									<div className="mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2 md:mt-4">
+										{hashtags.map((tag) => (
+											<span
+												key={tag}
+												className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium backdrop-blur-md bg-black/40 text-white/95 border border-white/20 shadow-md transition-all hover:bg-black/60 hover:border-white/35 sm:px-3 sm:py-1 sm:text-sm select-none"
+											>
+												<span className="text-[#a78bfa] font-bold">#</span>
+												<span>
+													{t(`communitySettings.hashtags.items.${tag}`, { ns: 'onBoardingClan', defaultValue: tag })}
+												</span>
+											</span>
+										))}
+									</div>
+								) : null}
 							</div>
 							<div className="hidden lg:flex flex-col items-stretch gap-3 shrink-0 pb-2 min-w-[220px]">
 								{joinButton}
