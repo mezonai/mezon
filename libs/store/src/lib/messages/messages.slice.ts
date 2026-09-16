@@ -1195,13 +1195,12 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 
 		const stringifiedContent = JSON.stringify(contentForUpdate);
 		const finalTopicId = topicId || '0';
-		const updateChannelId = finalTopicId !== '0' ? finalTopicId : channelId || '0';
 		const updateAttachments = isAttachmentFieldUpdate ? attachments : undefined;
 
 		const res = await client.updateChannelMessage(
 			session,
 			clanId || '0',
-			updateChannelId,
+			channelId || '0',
 			mode,
 			isPublic,
 			messageId || '0',
