@@ -1,7 +1,8 @@
-import { selectAllAccount, selectOpenExternalChatBox } from '@mezon/store';
+import { selectAllAccount, selectOpenExternalChatBox, voiceActions } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import { safeJSONParse } from 'mezon-js';
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface MessageExternal {
 	id: string;
@@ -27,7 +28,7 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 	const openChatBox = useSelector(selectOpenExternalChatBox);
 	const profile = useSelector(selectAllAccount);
 	const [messages, setMessages] = useState<string[]>([]);
-
+	const dispatch = useDispatch();
 	useImperativeHandle(ref, () => ({
 		setMessages
 	}));
@@ -71,10 +72,20 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 			});
 		}
 	}, [messages]);
+
+	const handleClose = useCallback(() => {
+		dispatch(voiceActions.setToggleChatBox());
+	}, [dispatch]);
 	return (
 		<>
 			{openChatBox && (
 				<div className="max-w-[480px] bg-[#111] min-w-[300px] w-1/4 h-full flex-col flex p-2 py-4 gap-2 select-text">
+					<div className="flex justify-between p-3 items-center text-textPrimary border-b-[1px]">
+						<div>External Message Chat</div>
+						<div onClick={handleClose} className="cursor-pointer hover:bg-bgHover p-2 rounded-full text-sm">
+							<Icons.CloseButton className="w-4 h-4" />
+						</div>
+					</div>
 					<div ref={messagesContainerRef} className="flex-1 bg-bgPrimary rounded-md flex flex-col gap-2 overflow-y-auto thread-scroll">
 						{messages.map((message) => (
 							<MessageItem key={message} message={message} />
