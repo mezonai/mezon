@@ -153,7 +153,7 @@ export const channelAppSlice = createSlice({
 			if (!state.activeApps) {
 				return;
 			}
-			state.activeApps.filter((app) => app.id !== action.payload);
+			state.activeApps = state.activeApps.filter((app) => app.id !== action.payload);
 		},
 		clearAppInteractiveData: (state) => {
 			state.appInteractData = null;

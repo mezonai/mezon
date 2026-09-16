@@ -77,16 +77,16 @@ export const SfuVoiceInteractiveMenu = ({ channelId, onClose }: SfuVoiceInteract
 			const event = VOICE_INTERACTIVE_APPS.find((a) => a.eventType === app?.eventType);
 			if (!event || !event.key || !event.url) return;
 
-			const hashData = await dispatch(channelAppActions.generateAppUserHash({ appId: event.key })).unwrap();
-			if (!hashData.web_app_data) return;
+			// const hashData = await dispatch(channelAppActions.generateAppUserHash({ appId: event.key })).unwrap();
+			// if (!hashData.web_app_data) return;
 
 			const store = getStore();
 			const state = store.getState();
 			const clanId = currentClanId ?? '';
 			const params = '';
 			const clanName = seletClanNameById(state, clanId) ?? '';
-			const urlWithHash = buildChannelAppLaunchUrl(event.url, {
-				webAppData: hashData.web_app_data,
+			const urlWithHash = buildChannelAppLaunchUrl('https://www.youtube.com/', {
+				webAppData: '',
 				clanId,
 				clanName,
 				params
