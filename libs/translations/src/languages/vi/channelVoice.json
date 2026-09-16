@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Kết nối bị gián đoạn",
 		"microphonePermissionRequired": "Cần quyền microphone",
 		"cameraPermissionRequired": "Cần quyền camera",
-		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi."
+		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi.",
+		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu."
 	},
 	"usernameScreen": "Màn hình của {{username}}",
 	"recording": {
