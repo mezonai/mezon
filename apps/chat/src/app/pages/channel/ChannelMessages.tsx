@@ -533,7 +533,7 @@ const ScrollDownButton = memo(
 			let count = 0;
 			const baseMessageId = lastSeenAtBottomRef.current || lastMessageUnreadId;
 
-			if (baseMessageId && lastSent.id) {
+			if (baseMessageId && lastSent?.id) {
 				try {
 					count = Math.max(0, Math.round(Number((BigInt(lastSent.id) >> BigInt(22)) - (BigInt(baseMessageId) >> BigInt(22)))));
 				} catch (e) {
