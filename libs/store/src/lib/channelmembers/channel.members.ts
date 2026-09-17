@@ -57,7 +57,7 @@ export interface ChannelMembersState extends EntityState<ChannelMembersEntity, s
 	currentChannelId?: string | null;
 	followingUserIds?: string[];
 	onlineStatusUser: Record<string, boolean>;
-	customStatusUser: Record<string, { status: string; time_reset?: number }>;
+	customStatusUser: Record<string, { status: string; time_reset?: number; no_clear?: boolean }>;
 	toFollowUserIds: string[];
 	memberChannels: Record<
 		string,
@@ -279,7 +279,7 @@ export const updateCustomStatus = createAsyncThunk(
 	async ({ clanId, customStatus, minutes, noClear, isMobile = false }: UpdateCustomStatus, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			if (minutes === 0 && !isMobile) {
+			if (minutes === 0 && !noClear && !isMobile) {
 				const now = new Date();
 				const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 				const timeDifference = endOfDay.getTime() - now.getTime();
@@ -309,7 +309,8 @@ export const updateCustomStatus = createAsyncThunk(
 				return {
 					status: customStatus,
 					user_id: userId || '',
-					time_reset: minutes
+					time_reset: minutes,
+					no_clear: noClear
 				};
 			}
 		} catch (error) {
@@ -547,9 +548,9 @@ export const channelMembers = createSlice({
 				delete state.memberChannels[channelId];
 			}
 		},
-		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string; time_reset?: number }>) => {
-			const { userId, status, time_reset } = action.payload;
-			state.customStatusUser[userId] = { status, time_reset };
+		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string; time_reset?: number; no_clear?: boolean }>) => {
+			const { userId, status, time_reset, no_clear } = action.payload;
+			state.customStatusUser[userId] = { status, time_reset, no_clear };
 		}
 	},
 	extraReducers: (builder) => {
@@ -582,7 +583,11 @@ export const channelMembers = createSlice({
 			})
 			.addCase(updateCustomStatus.fulfilled, (state: ChannelMembersState, action) => {
 				if (action.payload) {
-					state.customStatusUser[action.payload?.user_id] = { status: action.payload.status, time_reset: action.payload.time_reset };
+					state.customStatusUser[action.payload?.user_id] = {
+						status: action.payload.status,
+						time_reset: action.payload.time_reset,
+						no_clear: action.payload.no_clear
+					};
 				}
 			});
 	}

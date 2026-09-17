@@ -2,7 +2,7 @@ import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanPro
 import { Icons, Menu } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ModalLayout } from '../../../components';
@@ -12,47 +12,63 @@ type ModalCustomStatusProps = {
 	onClose: () => void;
 	status?: string;
 	time_reset?: number;
+	noClear?: boolean;
 };
 
-const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCustomStatusProps) => {
+const ModalCustomStatus = ({ name, status, onClose, time_reset = 0, noClear = false }: ModalCustomStatusProps) => {
 	const { t } = useTranslation(['userProfile'], { keyPrefix: 'statusProfile.customStatusModal' });
 	const dispatch = useAppDispatch();
+	const isDirtyRef = useRef<boolean>(false);
 
 	useEffect(() => {
 		dispatch(userClanProfileActions.setShowModalFooterProfile(false));
 	}, [dispatch]);
 
 	const handleChangeCustomStatus = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const updatedStatus = e.target.value.slice(0, 128).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/'/g, "''");
-		setCustomStatus(updatedStatus);
+		isDirtyRef.current = true;
+		setCustomStatus(e.target.value.slice(0, 128));
 	};
 
-	function getTimeResetLabel(minutes: number, t: (key: string) => string): string {
+	function getTimeResetLabel(minutes: number, isNoClear: boolean, t: (key: string) => string): string {
+		if (isNoClear) {
+			return t('timeOptions.dontClear');
+		}
 		switch (minutes) {
-			case 0:
-				return t('timeOptions.today');
 			case 240:
 				return t('timeOptions.fourHours');
 			case 60:
 				return t('timeOptions.oneHour');
 			case 30:
 				return t('timeOptions.thirtyMinutes');
-
+			case 0:
 			default:
 				return t('timeOptions.today');
 		}
 	}
 
-	const [timeSetReset, setTimeSetReset] = useState<string>(getTimeResetLabel(time_reset, t));
+	const [timeSetReset, setTimeSetReset] = useState<string>(getTimeResetLabel(time_reset, Boolean(noClear), t));
 	const [resetTimerStatus, setResetTimerStatus] = useState<number>(time_reset);
-	const [noClearStatus, setNoClearStatus] = useState<boolean>(false);
+	const [noClearStatus, setNoClearStatus] = useState<boolean>(Boolean(noClear));
 	const [customStatus, setCustomStatus] = useState<string>(status ?? '');
+
+	useEffect(() => {
+		if (!isDirtyRef.current) {
+			setCustomStatus(status ?? '');
+		}
+	}, [status]);
+
+	useEffect(() => {
+		setTimeSetReset(getTimeResetLabel(time_reset, Boolean(noClear), t));
+		setResetTimerStatus(noClear ? 0 : time_reset);
+		setNoClearStatus(Boolean(noClear));
+	}, [time_reset, noClear, t]);
 
 	const setStatusTimer = useCallback(
 		(minutes: number, noClear: boolean, option: string) => {
 			setTimeSetReset(option);
 			if (noClear) {
 				setNoClearStatus(true);
+				setResetTimerStatus(0);
 			} else {
 				setNoClearStatus(false);
 				if (option === t('timeOptions.today')) {
@@ -69,7 +85,7 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 	const currentClanId = useSelector(selectCurrentClanId);
 
 	const handleSaveCustomStatus = () => {
-		const trimmedStatus = customStatus.trim();
+		const trimmedStatus = customStatus.trim().replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/'/g, "''");
 		dispatch(
 			channelMembersActions.updateCustomStatus({
 				clanId: currentClanId ?? '',
@@ -134,7 +150,7 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 						</div>
 						<input
 							type="text"
-							defaultValue={customStatus}
+							value={customStatus}
 							className="text-theme-primary bg-input-secondary outline-none w-full h-10 p-[10px] text-base rounded placeholder:text-sm border-theme-primary"
 							placeholder={t('placeholder')}
 							maxLength={128}
