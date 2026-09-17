@@ -401,7 +401,7 @@ const applyVideoEncodingParams = async (pc: RTCPeerConnection) => {
 		if (!params.encodings?.length) {
 			params.encodings = [{}];
 		}
-		params.degradationPreference = 'maintain-resolution';
+		params.degradationPreference = 'maintain-framerate';
 		const encoding = params.encodings[0] as RTCRtpEncodingParameters & { scalabilityMode?: string };
 		if ('scalabilityMode' in encoding) {
 			delete encoding.scalabilityMode;
