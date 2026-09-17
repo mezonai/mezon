@@ -50,7 +50,11 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	const currentChannelType = useAppSelector(selectCurrentChannelType);
 	const currentChannelCreatorId = useAppSelector(selectCurrentChannelCreatorId);
 
-	const [hasClanOwnerPermission, hasAdminPermission] = usePermissionChecker([EPermission.clanOwner, EPermission.administrator]);
+	const [hasClanOwnerPermission, hasAdminPermission, hasChannelPermission] = usePermissionChecker([
+		EPermission.clanOwner,
+		EPermission.administrator,
+		EPermission.manageChannel
+	]);
 	const isBan = useAppSelector((state) => selectBanMemberCurrentClanById(state, currentChannelId || '', currentUser?.id || ''));
 	const dispatch = useAppDispatch();
 	const { addFriend, deleteFriend, unBlockFriend } = useFriends();
@@ -169,7 +173,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	const shouldShowKickOption = !isSelf && (hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
 
 	const shouldShowRemoveFromThreadOption =
-		!isSelf && isThread && (isCreator || hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
+		!isSelf && isThread && (hasChannelPermission || isCreator || hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
 
 	const friendStatus = useAppSelector(selectFriendStatus(currentUser?.user?.id || ''));
 	const friendInfo = useAppSelector((state) => selectFriendById(state, currentUser?.user?.id || ''));

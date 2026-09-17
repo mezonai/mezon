@@ -1,5 +1,4 @@
-import { usePermissionChecker } from '@mezon/core';
-import { EPermission, generateE2eId } from '@mezon/utils';
+import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
 import { RecordingControl } from '../Recording/RecordingControl';
@@ -11,6 +10,7 @@ import { LeaveButton } from './LeaveButton';
 import { MicrophoneControl } from './MicrophoneControl';
 import { PopoutControl } from './PopoutControl';
 import { PushToTalkControl } from './PushToTalkControl';
+import { PushToTalkHint } from './PushToTalkHint';
 import { SfuRaisingHandControl } from './RaisingHandControl';
 import { ScreenShareControl } from './ScreenShareControl';
 import { SfuVoiceInteractiveControl } from './SfuVoiceInteractiveControl';
@@ -25,6 +25,8 @@ interface SfuControlBarProps {
 	onRequestMicrophonePermission?: () => Promise<void>;
 	onRequestCameraPermission?: () => Promise<void>;
 	pushToTalkActive: boolean;
+	pushToTalkHintDismissed?: boolean;
+	onDismissPushToTalkHint?: () => void;
 	microphoneEnabled: boolean;
 	cameraEnabled: boolean;
 	screenSharing: boolean;
@@ -69,6 +71,8 @@ export const SfuControlBar = ({
 	onRequestMicrophonePermission,
 	onRequestCameraPermission,
 	pushToTalkActive,
+	pushToTalkHintDismissed = false,
+	onDismissPushToTalkHint,
 	microphoneEnabled,
 	cameraEnabled,
 	screenSharing,
@@ -104,10 +108,8 @@ export const SfuControlBar = ({
 	roomId
 }: SfuControlBarProps) => {
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
-	const [channelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
 	const handleVoiceInteractiveChange = onVoiceInteractivePanelChange ?? setLocalShowVoiceInteractive;
-
 	return (
 		<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3 max-md:flex max-md:flex-col max-md:justify-center max-md:gap-3 max-md:px-2 max-md:py-2">
 			<div className="flex items-center justify-start gap-4 max-md:justify-center max-md:gap-3">
@@ -129,14 +131,10 @@ export const SfuControlBar = ({
 								onSoundSelect={onSoundSelect}
 							/>
 						</div>
-						{channelPermission && (
-							<div className="max-md:hidden">
-								<SfuVoiceInteractiveControl
-									showVoiceInteractive={showVoiceInteractive}
-									onVisibleChange={handleVoiceInteractiveChange}
-								/>
-							</div>
-						)}
+
+						<div className="max-md:hidden">
+							<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
+						</div>
 					</>
 				)}
 				<div className="max-md:hidden">
@@ -145,13 +143,16 @@ export const SfuControlBar = ({
 			</div>
 			<div className="flex items-center justify-center gap-3 max-md:gap-2" data-e2e={generateE2eId('clan_page.screen.voice_room.control_bar')}>
 				{joinRole === 'audience' && (
-					<PushToTalkControl
-						active={pushToTalkActive}
-						onChange={onPushToTalk}
-						permissionState={microphonePermissionState}
-						hasMicrophoneAccess={hasMicrophoneAccess}
-						onPermissionRequest={onRequestMicrophonePermission}
-					/>
+					<div className="relative">
+						<PushToTalkControl
+							active={pushToTalkActive}
+							onChange={onPushToTalk}
+							permissionState={microphonePermissionState}
+							hasMicrophoneAccess={hasMicrophoneAccess}
+							onPermissionRequest={onRequestMicrophonePermission}
+						/>
+						{!pushToTalkHintDismissed && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />}
+					</div>
 				)}
 				{joinRole === 'speaker' && (
 					<MicrophoneControl

@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import ImageWithSkeleton from '../../components/common/ImageWithSkeleton';
+import ClanLiveStats from './ClanLiveStats';
+import ClanStageArt from './ClanStageArt';
 import CoverScrim from './CoverScrim';
-import { getClanHref, getMemberCount, getOnlineCount, type DiscoverClan } from './communityUtils';
+import { getClanHref, type DiscoverClan } from './communityUtils';
 
 interface StageHeroProps {
 	clan?: DiscoverClan | null;
@@ -27,20 +28,12 @@ const StageHero: React.FC<StageHeroProps> = ({ clan, loading, searchTerm, onSear
 
 	return (
 		<section className="relative min-h-[100svh] bg-[var(--surface-ink)] text-white overflow-hidden">
-			<div className="absolute inset-0">
-				{clan?.banner && !bannerError ? (
-					<ImageWithSkeleton
-						src={clan.banner}
-						alt=""
-						className="discover-art-media w-full h-full object-cover"
-						onError={() => setBannerError(true)}
-						loading="eager"
-						fetchPriority="high"
-					/>
-				) : (
-					<div className="absolute inset-0 bg-[image:var(--gradient-brand-hero)]" />
-				)}
-			</div>
+			<ClanStageArt
+				src={clan?.banner}
+				broken={bannerError}
+				onError={() => setBannerError(true)}
+				fallback={<div className="absolute inset-0 bg-[image:var(--gradient-brand-hero)]" />}
+			/>
 			<CoverScrim />
 			<p className="pointer-events-none absolute -left-4 bottom-[-8vw] select-none text-[22vw] leading-none font-extrabold tracking-[-0.07em] text-white/[0.07]">
 				MEZON
@@ -65,10 +58,18 @@ const StageHero: React.FC<StageHeroProps> = ({ clan, loading, searchTerm, onSear
 									{clan.description}
 								</p>
 							) : null}
-							<p className="discover-copy-on-art mt-3 md:mt-4 text-xs sm:text-sm tracking-wide">
-								{t('memberCount', { count: getMemberCount(clan) })} · {t('onlineCount', { count: getOnlineCount(clan) })} ·{' '}
-								{t('enterClan')} →
-							</p>
+							<ClanLiveStats
+								clan={clan}
+								className="discover-copy-on-art mt-3 md:mt-4 text-xs sm:text-sm tracking-wide"
+								extra={
+									<>
+										<span className="opacity-50" aria-hidden>
+											·
+										</span>
+										<span>{t('enterClan')} →</span>
+									</>
+								}
+							/>
 						</Link>
 					) : (
 						<div>

@@ -94,9 +94,9 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	useEffect(() => {
 		if (!currentClanId) return;
 
-		const isAllNotificationForYouEmpty = !allNotificationForYou;
-		const isAllNotificationClanEmpty = allNotificationClan;
-		const isAllNotificationMentionsEmpty = !allNotificationMentions;
+		const isAllNotificationForYouEmpty = !allNotificationForYou?.data?.length;
+		const isAllNotificationClanEmpty = !allNotificationClan?.data?.length;
+		const isAllNotificationMentionsEmpty = !allNotificationMentions?.data?.length;
 
 		let category;
 

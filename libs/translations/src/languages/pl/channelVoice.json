@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Połączenie zostało przerwane",
 		"microphonePermissionRequired": "Wymagane uprawnienie mikrofonu",
 		"cameraPermissionRequired": "Wymagane uprawnienie kamery",
-		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia."
+		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia.",
+		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam."
 	},
 	"usernameScreen": "Ekran {{username}}",
 	"recording": {

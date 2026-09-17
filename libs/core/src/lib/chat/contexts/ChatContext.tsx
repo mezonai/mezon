@@ -200,6 +200,7 @@ import {
 	MAX_RECONNECT_WAVES_BEFORE_LOGOUT,
 	beginReconnectWave,
 	consumeReconnectAttempt,
+	getReconnectWaveAttempts,
 	markNetworkProbeCompleted,
 	noteReconnectWaveExhausted,
 	refundReconnectAttempt,
@@ -208,7 +209,6 @@ import {
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
 } from '../utils/socketReconnectBudget';
-import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
 
 const MobileEventEmitter = new EventEmitter();
 
@@ -2450,21 +2450,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onwebrtcsignalingfwd = useCallback(async (event: WebrtcSignalingFwd) => {
 		// Define type 50 for clear call on all platforms
 		const WEBRTC_CLEAR_CALL = 50;
-		// Handle Group Call Events (>= 9)
 		if (event.data_type >= 9 && event.data_type !== WEBRTC_CLEAR_CALL) {
-			const store = await getStoreAsync();
-			const state = store.getState() as unknown as RootState;
-
-			const handled = await handleGroupCallSocketEvent(event, state, {
-				dispatch,
-				clientRef,
-				userId,
-				sessionRef
-			});
-
-			if (handled) {
-				return;
-			}
+			return;
 		}
 
 		const store = await getStoreAsync();
@@ -3047,6 +3034,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 								return await executeReconnect(socketType, clientRef.current);
 							} catch (error) {
 								captureSentryError(error, 'SOCKET_RECONNECT');
+								const delay = 1000 * 2 ** getReconnectWaveAttempts();
+								await new Promise((resolve) => setTimeout(resolve, delay));
 								return false;
 							}
 						}),

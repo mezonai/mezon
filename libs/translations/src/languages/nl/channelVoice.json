@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Verbinding verbroken",
 		"microphonePermissionRequired": "Microfoonrecht is vereist",
 		"cameraPermissionRequired": "Camerarecht is vereist",
-		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord."
+		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord.",
+		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was."
 	},
 	"usernameScreen": "Scherm van {{username}}",
 	"recording": {

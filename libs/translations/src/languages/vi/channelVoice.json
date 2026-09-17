@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Kết nối bị gián đoạn",
 		"microphonePermissionRequired": "Cần quyền microphone",
 		"cameraPermissionRequired": "Cần quyền camera",
-		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi."
+		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi.",
+		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu."
 	},
 	"usernameScreen": "Màn hình của {{username}}",
 	"recording": {
@@ -66,5 +67,10 @@
 		"savedToDisk": "Đã lưu bản ghi vào {{fileName}} ({{size}})",
 		"downloaded": "Đã tải bản ghi về: {{fileName}} ({{size}})",
 		"failed": "Ghi thất bại: {{reason}}"
+	},
+	"pushToTalk": {
+		"holdSpace": "Giữ phím Space để nói",
+		"holdingSpace": "Đang nói — thả Space để tắt mic",
+		"hintBody": "Bạn đang tham gia để nghe. Giữ phím Space để mở mic khi nói, thả ra để tắt lại."
 	}
 }

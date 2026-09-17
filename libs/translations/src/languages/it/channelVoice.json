@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Connessione interrotta",
 		"microphonePermissionRequired": "Autorizzazione microfono richiesta",
 		"cameraPermissionRequired": "Autorizzazione fotocamera richiesta",
-		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata."
+		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata.",
+		"aloneTimeoutDisconnected": "Sei stato disconnesso dal canale vocale perché sei rimasto da solo troppo a lungo."
 	},
 	"usernameScreen": "Schermo di {{username}}",
 	"recording": {
