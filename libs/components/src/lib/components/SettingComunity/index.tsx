@@ -5,6 +5,7 @@ import {
 	selectCommunityBanner,
 	selectComunityAbout,
 	selectComunityError,
+	selectComunityHashtags,
 	selectComunityLoading,
 	selectComunityShortUrl,
 	selectIsCommunityEnabled,
@@ -20,6 +21,127 @@ import { toast } from 'react-toastify';
 import { ModalErrorTypeUpload, ModalOverData, ModalSaveChanges } from '../../components';
 import EnableComunity from '../EnableComunityClan';
 import { ELimitSize } from '../ModalValidateFile';
+
+import { COMMUNITY_HASHTAGS, DEFAULT_COMMUNITY_HASHTAG, MAX_COMMUNITY_HASHTAGS as MAX_HASHTAGS } from './constants';
+export type { HashtagItem } from './constants';
+
+const HashtagSection = ({
+	selectedHashtags,
+	onToggle,
+	max = MAX_HASHTAGS,
+	error
+}: {
+	selectedHashtags: string[];
+	onToggle: (tag: string) => void;
+	max?: number;
+	error?: boolean;
+}) => {
+	const { t } = useTranslation('onBoardingClan');
+
+	return (
+		<div className="space-y-3">
+			<div className="flex items-center justify-between">
+				<label className="flex items-center gap-2 text-lg font-semibold text-theme-primary">
+					<svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+					</svg>
+					{t('communitySettings.hashtags.title', 'Hashtags cộng đồng')}
+					<span title={t('communitySettings.warnningEmptyField')} className="text-red-500 cursor-pointer">
+						*
+					</span>
+				</label>
+				<div className="flex items-center gap-2 px-3 py-1 bg-theme-setting-primary border border-theme-primary rounded-full">
+					<span className="text-xs font-semibold text-theme-primary-active">
+						{selectedHashtags.length}/{max}
+					</span>
+					<div className="flex items-center gap-1">
+						{Array.from({ length: max }).map((_, i) => (
+							<span
+								key={i}
+								className={`w-2 h-2 rounded-full transition-all duration-300 ${
+									i < selectedHashtags.length ? 'bg-blue-500 scale-110 shadow-sm' : 'bg-theme-primary opacity-25'
+								}`}
+							/>
+						))}
+					</div>
+				</div>
+			</div>
+
+			<p className="text-sm text-theme-primary opacity-75">
+				{t(
+					'communitySettings.hashtags.description',
+					'Chọn tối đa 6 hashtag đại diện cho chủ đề cộng đồng để thành viên dễ dàng tìm thấy bạn.'
+				)}
+			</p>
+
+			<div
+				className={`p-3.5 rounded-2xl bg-theme-input/40 border transition-all duration-200 ${
+					error ? 'border-2 border-red-500' : 'border-theme-primary'
+				}`}
+			>
+				<div className="flex flex-wrap gap-2">
+					{COMMUNITY_HASHTAGS.map((tag) => {
+						const isSelected = selectedHashtags.some((t) => t.toLowerCase() === tag.id.toLowerCase());
+						const isOnlyOne = isSelected && selectedHashtags.length <= 1;
+						const isMaxReached = selectedHashtags.length >= max && !isSelected;
+						const label = t(tag.translationKey, tag.fallbackLabel);
+
+						return (
+							<button
+								key={tag.id}
+								type="button"
+								onClick={() => {
+									if (!isOnlyOne && (!isMaxReached || isSelected)) {
+										onToggle(tag.id);
+									}
+								}}
+								disabled={isMaxReached}
+								title={
+									isOnlyOne
+										? t('communitySettings.hashtags.minRequired', 'Cộng đồng cần tối thiểu 1 hashtag')
+										: isMaxReached
+											? t('communitySettings.hashtags.maxReached', 'Đã đạt tối đa 6 hashtag')
+											: undefined
+								}
+								className={`group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 select-none ${
+									isSelected
+										? 'bg-item-theme text-theme-primary-active border-2 border-blue-500 shadow-md ring-2 ring-blue-500/20 scale-[1.02] cursor-pointer'
+										: isMaxReached
+											? 'border border-theme-primary opacity-35 bg-theme-input/20 cursor-not-allowed text-theme-primary'
+											: 'border border-theme-primary bg-theme-input hover:bg-item-theme-hover hover:border-theme-primary-active text-theme-primary cursor-pointer active:scale-95'
+								}`}
+							>
+								<span className="text-sm font-bold text-blue-500 opacity-90">#</span>
+								<span>{label}</span>
+								{isSelected && (
+									<span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+										✓
+									</span>
+								)}
+							</button>
+						);
+					})}
+				</div>
+
+				<div className="mt-3 pt-2.5 border-t border-theme-primary/40 flex items-center justify-between text-xs text-theme-primary opacity-70">
+					<span>
+						{t('communitySettings.hashtags.selectedCount', 'Đã chọn: {{count}}/{{max}} hashtag', {
+							count: selectedHashtags.length,
+							max
+						})}
+					</span>
+					<span>
+						{selectedHashtags.length >= max
+							? t('communitySettings.hashtags.maxReached', 'Đã đạt tối đa 6 hashtag')
+							: selectedHashtags.length === 1
+								? t('communitySettings.hashtags.minRequired', 'Cộng đồng cần tối thiểu 1 hashtag')
+								: ''}
+					</span>
+				</div>
+			</div>
+		</div>
+	);
+};
 
 const SettingComunity = ({
 	clanId,
@@ -37,6 +159,7 @@ const SettingComunity = ({
 	const about = useAppSelector((state) => selectComunityAbout(state, clanId));
 	const isLoading = useAppSelector((state) => selectComunityLoading(state));
 	const _error = useAppSelector((state) => selectComunityError(state));
+	const hashtags = useAppSelector((state) => selectComunityHashtags(state, clanId));
 
 	useEffect(() => {
 		if (clanId) {
@@ -50,21 +173,30 @@ const SettingComunity = ({
 	const [aboutText, setAboutText] = useState('');
 	const [descriptionText, setDescriptionText] = useState('');
 	const [vanityUrl, setVanityUrl] = useState('');
+	const [selectedHashtags, setSelectedHashtags] = useState<string[]>([]);
 	const [initialBanner, setInitialBanner] = useState<string | null>(null);
 	const [initialAbout, setInitialAbout] = useState('');
 	const [initialDescription, setInitialDescription] = useState('');
 	const [initialVanityUrl, setInitialVanityUrl] = useState('');
+	const [initialHashtags, setInitialHashtags] = useState<string[]>([]);
 	const [isSaving, setIsSaving] = useState(false);
 	const [openSaveChange, setOpenSaveChange] = useState(false);
 	const [aboutError, setAboutError] = useState(false);
 	const [descError, setDescError] = useState(false);
 	const [bannerError, setBannerError] = useState(false);
 	const [vanityUrlError, setVanityUrlError] = useState(false);
+	const [hashtagError, setHashtagError] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { sessionRef, clientRef } = useMezon();
 
+	const isHashtagsChanged = selectedHashtags.length !== initialHashtags.length || selectedHashtags.some((tag, i) => tag !== initialHashtags[i]);
+
 	const hasChanges =
-		aboutText !== initialAbout || bannerPreview !== initialBanner || descriptionText !== initialDescription || vanityUrl !== initialVanityUrl;
+		aboutText !== initialAbout ||
+		bannerPreview !== initialBanner ||
+		descriptionText !== initialDescription ||
+		vanityUrl !== initialVanityUrl ||
+		isHashtagsChanged;
 
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
@@ -152,7 +284,28 @@ const SettingComunity = ({
 		}
 	};
 
-	const handleEnable = () => setIsInitialEditing(true);
+	const handleToggleHashtag = (tagId: string) => {
+		setSelectedHashtags((prev) => {
+			const exists = prev.some((t) => t.toLowerCase() === tagId.toLowerCase());
+			let next: string[];
+			if (exists) {
+				if (prev.length <= 1) return prev;
+				next = prev.filter((t) => t.toLowerCase() !== tagId.toLowerCase());
+			} else {
+				if (prev.length >= MAX_HASHTAGS) return prev;
+				next = [...prev, tagId];
+			}
+			setHashtagError(false);
+			if (isEnabled) setOpenSaveChange(true);
+			return next;
+		});
+	};
+
+	const handleEnable = () => {
+		setIsInitialEditing(true);
+		setHashtagError(false);
+		setSelectedHashtags((prev) => (prev.length > 0 ? prev : [DEFAULT_COMMUNITY_HASHTAG]));
+	};
 
 	const handleConfirmEnable = async () => {
 		let hasError = false;
@@ -160,6 +313,7 @@ const SettingComunity = ({
 		setDescError(false);
 		setBannerError(false);
 		setVanityUrlError(false);
+		setHashtagError(false);
 		if (!aboutText.trim()) {
 			setAboutError(true);
 			hasError = true;
@@ -176,14 +330,17 @@ const SettingComunity = ({
 			setBannerError(true);
 			hasError = true;
 		}
+		if (selectedHashtags.length === 0) {
+			setHashtagError(true);
+			hasError = true;
+		}
 		if (hasError) {
 			toast.error(t('communitySettings.messages.fillAllRequiredFields'));
 			return;
 		}
 		setIsSaving(true);
 		try {
-			await dispatch(comunityActions.updateCommunityStatus({ clan_id: clanId, enabled: true })).unwrap();
-			let bannerUrl = bannerPreview;
+			let bannerUrl = bannerPreview || '';
 			if (bannerFile) {
 				const client = clientRef.current;
 				const session = sessionRef.current;
@@ -192,26 +349,32 @@ const SettingComunity = ({
 				const attachment = await handleUploadEmoticon(client, session, path, bannerFile);
 				if (attachment && attachment.url) {
 					bannerUrl = attachment.url;
-					await dispatch(comunityActions.updateCommunityBanner({ clan_id: clanId, bannerUrl })).unwrap();
+				} else {
+					throw new Error('Upload banner failed: no url returned');
 				}
 			}
-			if (aboutText) {
-				await dispatch(comunityActions.updateCommunityAbout({ clan_id: clanId, about: aboutText })).unwrap();
-			}
-			if (descriptionText) {
-				await dispatch(comunityActions.updateCommunityDescription({ clan_id: clanId, description: descriptionText })).unwrap();
-			}
-			if (vanityUrl) {
-				await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
-			}
+
+			await dispatch(
+				comunityActions.updateCommunity({
+					clan_id: clanId,
+					enabled: true,
+					bannerUrl,
+					about: aboutText,
+					description: descriptionText,
+					short_url: vanityUrl,
+					hashtags: selectedHashtags
+				})
+			).unwrap();
+
 			setInitialAbout(aboutText);
 			setInitialDescription(descriptionText);
 			setInitialVanityUrl(vanityUrl);
 			setInitialBanner(bannerUrl);
+			setInitialHashtags(selectedHashtags);
 			setIsInitialEditing(false);
 			onCommunityEnabledChange?.(true);
 			toast.success(t('communitySettings.messages.communityEnabledAndSaved'));
-		} catch (e) {
+		} catch {
 			toast.error(t('communitySettings.messages.saveFailed'));
 		} finally {
 			setIsSaving(false);
@@ -225,11 +388,12 @@ const SettingComunity = ({
 		setBannerFile(null);
 		setOpenSaveChange(false);
 		setVanityUrl(initialVanityUrl);
-		// Clear all error states
+		setSelectedHashtags(initialHashtags);
 		setAboutError(false);
 		setDescError(false);
 		setBannerError(false);
 		setVanityUrlError(false);
+		setHashtagError(false);
 	};
 
 	const handleSaveChanges = async () => {
@@ -238,6 +402,7 @@ const SettingComunity = ({
 		setDescError(false);
 		setBannerError(false);
 		setVanityUrlError(false);
+		setHashtagError(false);
 
 		if (!aboutText.trim()) {
 			setAboutError(true);
@@ -253,6 +418,10 @@ const SettingComunity = ({
 		}
 		if (!bannerPreview) {
 			setBannerError(true);
+			hasError = true;
+		}
+		if (selectedHashtags.length === 0) {
+			setHashtagError(true);
 			hasError = true;
 		}
 
@@ -287,6 +456,10 @@ const SettingComunity = ({
 				await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
 				setInitialVanityUrl(vanityUrl);
 			}
+			if (isHashtagsChanged) {
+				await dispatch(comunityActions.updateCommunityHashtags({ clan_id: clanId, hashtags: selectedHashtags })).unwrap();
+				setInitialHashtags(selectedHashtags);
+			}
 			setInitialBanner(bannerUrl);
 			setOpenSaveChange(false);
 			setBannerFile(null);
@@ -305,13 +478,16 @@ const SettingComunity = ({
 			setAboutText('');
 			setDescriptionText('');
 			setVanityUrl('');
+			setSelectedHashtags([]);
 			setBannerFile(null);
 			setBannerPreview(null);
 			setInitialAbout('');
 			setInitialDescription('');
 			setInitialVanityUrl('');
+			setInitialHashtags([]);
 			setInitialBanner(null);
 			setOpenSaveChange(false);
+			setHashtagError(false);
 			onCommunityEnabledChange?.(false);
 			toast.info(t('communitySettings.messages.communityDisabled'));
 		} catch {
@@ -353,6 +529,19 @@ const SettingComunity = ({
 		setVanityUrl(shortUrl);
 		setInitialVanityUrl(shortUrl);
 	}, [shortUrl, clanId, isEnabled]);
+
+	useEffect(() => {
+		if (hashtags && hashtags.length > 0) {
+			setSelectedHashtags(hashtags);
+			setInitialHashtags(hashtags);
+		} else if (!isEnabled) {
+			setSelectedHashtags([DEFAULT_COMMUNITY_HASHTAG]);
+			setInitialHashtags([DEFAULT_COMMUNITY_HASHTAG]);
+		} else {
+			setSelectedHashtags([]);
+			setInitialHashtags([]);
+		}
+	}, [hashtags, clanId, isEnabled]);
 
 	if (isLoading) {
 		return (
@@ -533,6 +722,8 @@ const SettingComunity = ({
 								</div>
 							</div>
 						</div>
+
+						<HashtagSection selectedHashtags={selectedHashtags} onToggle={handleToggleHashtag} error={hashtagError} />
 
 						<div className="space-y-4">
 							<label className="flex items-center gap-2 text-lg font-semibold text-theme-primary">
@@ -768,6 +959,8 @@ const SettingComunity = ({
 							</div>
 						</div>
 
+						<HashtagSection selectedHashtags={selectedHashtags} onToggle={handleToggleHashtag} error={hashtagError} />
+
 						<div className="space-y-4">
 							<label className="flex items-center gap-2 text-lg font-semibold text-theme-primary">
 								<svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -831,4 +1024,5 @@ const SettingComunity = ({
 	);
 };
 
+export * from './constants';
 export default SettingComunity;

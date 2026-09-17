@@ -106,6 +106,25 @@
 			"title": "O Społeczności",
 			"placeholder": "Powiedz nam o swojej społeczności... Co ją wyróżnia?"
 		},
+		"hashtags": {
+			"title": "Hashtagi społeczności",
+			"description": "Wybierz do 6 hashtagów reprezentujących tematykę Twojej społeczności, aby członkowie mogli Cię łatwo znaleźć.",
+			"selectedCount": "Wybrano: {{count}}/{{max}} hashtagów",
+			"minRequired": "Społeczność wymaga co najmniej 1 hashtagu",
+			"maxReached": "Osiągnięto limit 6 hashtagów",
+			"items": {
+				"Gaming": "Gry",
+				"Technology": "Technologia",
+				"Education": "Edukacja",
+				"Entertainment": "Rozrywka",
+				"Music": "Muzyka",
+				"Art": "Sztuka",
+				"Crypto": "Krypto",
+				"Anime": "Anime i Manga",
+				"Sports": "Sport",
+				"Community": "Społeczność"
+			}
+		},
 		"vanityUrl": {
 			"title": "URL niestandardowy",
 			"description": "Utwórz niestandardowy URL dla swojej społeczności. Używaj tylko małych liter, cyfr i myślników.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "Społeczność wyłączona.",
 			"disableFailed": "Wyłączenie nie powiodło się!",
 			"bannerRemoved": "Baner usunięty!",
-			"fillAllRequiredFields": "Proszę wypełnić wszystkie wymagane pola: Baner, O nas, Opis, URL niestandardowy!",
+			"fillAllRequiredFields": "Proszę wypełnić wszystkie wymagane pola: Baner, O nas, Opis, URL niestandardowy, Hashtagi!",
 			"bannerUpdateFailed": "Aktualizacja baneru nie powiodła się!"
 		}
 	},

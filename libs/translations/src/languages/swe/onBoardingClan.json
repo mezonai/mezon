@@ -106,6 +106,25 @@
 			"title": "Om Gemenskap",
 			"placeholder": "Berätta om din gemenskap... Vad gör den unik?"
 		},
+		"hashtags": {
+			"title": "Gemenskaps-hashtags",
+			"description": "Välj upp till 6 hashtags som representerar ditt gemenskapsämne så att medlemmar enkelt kan hitta dig.",
+			"selectedCount": "Valda: {{count}}/{{max}} hashtags",
+			"minRequired": "Gemenskapen kräver minst 1 hashtag",
+			"maxReached": "Maximalt 6 hashtags har uppnåtts",
+			"items": {
+				"Gaming": "Spel",
+				"Technology": "Teknologi",
+				"Education": "Utbildning",
+				"Entertainment": "Underhållning",
+				"Music": "Musik",
+				"Art": "Konst",
+				"Crypto": "Krypto",
+				"Anime": "Anime & Manga",
+				"Sports": "Sport",
+				"Community": "Gemenskap"
+			}
+		},
 		"vanityUrl": {
 			"title": "Anpassad URL",
 			"description": "Skapa anpassad URL för din gemenskap. Använd bara små bokstäver, siffror och bindestreck.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "Gemenskap stängd.",
 			"disableFailed": "Stängning misslyckades!",
 			"bannerRemoved": "Banner raderad!",
-			"fillAllRequiredFields": "Vänligen fyll alla obligatoriska fält: Banner, Om Oss, Beskrivning, Anpassad URL!",
+			"fillAllRequiredFields": "Vänligen fyll alla obligatoriska fält: Banner, Om Oss, Beskrivning, Anpassad URL, Hashtags!",
 			"bannerUpdateFailed": "Banner uppdatering misslyckades!"
 		}
 	},

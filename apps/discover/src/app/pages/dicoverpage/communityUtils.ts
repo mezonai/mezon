@@ -1,3 +1,4 @@
+import { parseHashtags } from '@mezon/store';
 import type { ApiClanDiscover } from 'mezon-js';
 import { CATEGORY_SHORTCUTS, type CategoryShortcutId, type DiscoverSort } from '../../constants/constants';
 
@@ -201,38 +202,8 @@ export function getCreatedAtMs(clan: DiscoverClan): number | null {
 	return seconds * 1000;
 }
 
-function pushTag(target: string[], value: unknown) {
-	if (!value) return;
-	if (typeof value === 'string') {
-		value
-			.split(/[,|/]+/)
-			.map((part) => part.trim().replace(/^#/, ''))
-			.filter(Boolean)
-			.forEach((part) => {
-				if (!target.some((item) => item.toLowerCase() === part.toLowerCase())) target.push(part);
-			});
-		return;
-	}
-	if (typeof value === 'object') {
-		const record = value as { name?: string; tag?: string; label?: string };
-		pushTag(target, record.tag || record.name || record.label);
-	}
-}
-
 export function getClanHashtags(clan: DiscoverClan): string[] {
-	const tags: string[] = [];
-	const record = clan as DiscoverClan & {
-		hashtags?: string[] | string | Array<{ name?: string; tag?: string; label?: string }>;
-		tags?: string[] | string;
-		hashtag?: string[] | string;
-	};
-	const raw = [record.hashtags, record.tags, record.hashtag];
-	for (const source of raw) {
-		if (!source) continue;
-		if (Array.isArray(source)) source.forEach((item) => pushTag(tags, item));
-		else pushTag(tags, source);
-	}
-	return tags.slice(0, 12);
+	return parseHashtags(clan.hashtags);
 }
 
 export function splitClanStory(clan: DiscoverClan): { lede: string; body: string } {

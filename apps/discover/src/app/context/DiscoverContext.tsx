@@ -164,15 +164,17 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 					resolveFeaturedFrom(newClans);
 				}
 				setClans((prev) => {
-					if (!append) return newClans;
-					const seen = new Set(prev.map((clan) => clan.clan_id || clan.short_url).filter(Boolean) as string[]);
+					const incomingIds = new Set(newClans.map((clan) => clan.clan_id || clan.short_url).filter(Boolean) as string[]);
+					const preserved = prev.filter((clan) => {
+						const id = clan.clan_id || clan.short_url;
+						return id && !incomingIds.has(id);
+					});
+					if (!append) return [...newClans, ...preserved];
 					return [
 						...prev,
 						...newClans.filter((clan) => {
 							const id = clan.clan_id || clan.short_url;
-							if (!id || seen.has(id)) return false;
-							seen.add(id);
-							return true;
+							return id && !incomingIds.has(id);
 						})
 					];
 				});
@@ -200,12 +202,34 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 			if (!clanId) return null;
 			const cached = readCachedClan(clanId);
 			if (cached) return cached;
-			if (clansRef.current.length === 0 && stageClansRef.current.length === 0) {
-				await fetchClansDiscover(1, false);
+
+			try {
+				const request: ApiClanDiscoverRequest = {
+					clan_id: clanId
+				};
+				const response = await listClanDiscover(request);
+				if (!response) {
+					throw new Error('No response from API');
+				}
+				const clanDiscoverList = (response.clan_discover || []) as DiscoverClan[];
+				const found = clanDiscoverList.find((item) => clanMatchesId(item, clanId)) || clanDiscoverList[0] || null;
+				if (found) {
+					setClans((prev) => {
+						const exists = prev.some((item) => clanMatchesId(item, clanId));
+						return exists ? prev : [...prev, found];
+					});
+				}
+				if (clansRef.current.length <= 1 && stageClansRef.current.length === 0) {
+					fetchClansDiscover(1, false).catch(() => undefined);
+				}
+				return found;
+			} catch (err) {
+				console.error('Failed to fetch single clan:', err);
+				toast.error(tRef.current('cannotFetchClans'));
+				return null;
 			}
-			return readCachedClan(clanId);
 		},
-		[fetchClansDiscover]
+		[fetchClansDiscover, listClanDiscover]
 	);
 
 	useEffect(() => {

@@ -119,7 +119,7 @@ export type ChangeCurrentClanArgs = {
 
 export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 	'clans/changeCurrentClan',
-	async ({ clanId, noCache = false }: ChangeCurrentClanArgs, thunkAPI) => {
+	async ({ clanId, noCache: _noCache = false }: ChangeCurrentClanArgs, thunkAPI) => {
 		try {
 			batch(() => {
 				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
@@ -287,7 +287,7 @@ export type FetchClansPayload = {
 
 export const fetchClans = createAsyncThunk(
 	'clans/fetchClans',
-	async ({ noCache = false, isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
+	async ({ noCache = false, isMobile: _isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezonCtx = getMezonCtx(thunkAPI);
 			const mezon = mezonCtx?.clientRef?.current ? await ensureSession(mezonCtx) : (mezonCtx as any);
@@ -446,7 +446,7 @@ type UpdateLinkUser = {
 
 export const updateUser = createAsyncThunk(
 	'clans/updateUser',
-	async ({ avatar_url, display_name, about_me, logo, noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
+	async ({ avatar_url, display_name, about_me, logo, noCache: _noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
 		try {
 			const state = thunkAPI.getState() as RootState;
 			const currentUser = state.account?.userProfile;
@@ -864,6 +864,13 @@ export const clansSlice = createSlice({
 			const { dataUpdate } = action.payload;
 
 			const currentClanData = clansAdapter.getSelectors().selectById(state, dataUpdate.clan_id);
+			const rawData = dataUpdate as ClanUpdatedEvent & {
+				description?: string;
+				is_community?: boolean;
+				community_banner?: string;
+				short_url?: string;
+			};
+
 			clansAdapter.updateOne(state, {
 				id: dataUpdate.clan_id as string,
 				changes: {
@@ -871,9 +878,17 @@ export const clansSlice = createSlice({
 					clan_name: dataUpdate.clan_name,
 					logo: dataUpdate.logo,
 					banner: dataUpdate.banner,
+					status: dataUpdate.status ?? currentClanData?.status,
 					is_onboarding: dataUpdate.is_onboarding,
-					welcome_channel_id: dataUpdate.welcome_channel_id !== '-1' ? dataUpdate.welcome_channel_id : currentClanData.welcome_channel_id,
-					prevent_anonymous: dataUpdate?.prevent_anonymous ?? currentClanData.prevent_anonymous
+					welcome_channel_id: dataUpdate.welcome_channel_id !== '-1' ? dataUpdate.welcome_channel_id : currentClanData?.welcome_channel_id,
+					onboarding_banner: dataUpdate.onboarding_banner ?? currentClanData?.onboarding_banner,
+					prevent_anonymous: dataUpdate?.prevent_anonymous ?? currentClanData?.prevent_anonymous,
+					about: dataUpdate.about ?? currentClanData?.about,
+					description: rawData.description ?? currentClanData?.description,
+					is_community: rawData.is_community ?? currentClanData?.is_community,
+					community_banner: rawData.community_banner ?? currentClanData?.community_banner,
+					short_url: rawData.short_url ?? currentClanData?.short_url,
+					hashtags: dataUpdate.hashtags ?? currentClanData?.hashtags
 				}
 			});
 		},
