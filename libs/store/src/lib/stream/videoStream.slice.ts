@@ -8,16 +8,12 @@ export interface StreamState {
 	streamInfo: IStreamInfo | null;
 	isPlaying: boolean;
 	isJoin: boolean;
-	isRemoteVideoStream: boolean;
-	isRemoteAudioStream: boolean;
 }
 
 const initialState: StreamState = {
 	streamInfo: null,
 	isPlaying: false,
-	isJoin: false,
-	isRemoteVideoStream: false,
-	isRemoteAudioStream: false
+	isJoin: false
 };
 
 const videoStreamSlice = createSlice({
@@ -31,12 +27,6 @@ const videoStreamSlice = createSlice({
 		stopStream(state) {
 			state.isPlaying = false;
 			// state.currentStreamId = null;
-		},
-		setIsRemoteVideoStream(state, action) {
-			state.isRemoteVideoStream = action.payload;
-		},
-		setIsRemoteAudioStream(state, action) {
-			state.isRemoteAudioStream = action.payload;
 		},
 		setIsJoin(state, action) {
 			state.isJoin = action.payload;
@@ -55,7 +45,5 @@ export const getVideoStreamState = (rootState: { [VIDEO_STREAM_FEATURE_KEY]: Str
 export const selectCurrentStreamInfo = createSelector(getVideoStreamState, (state) => state.streamInfo);
 
 export const selectStatusStream = createSelector(getVideoStreamState, (state) => state.isPlaying);
-
-export const selectRemoteVideoStream = createSelector(getVideoStreamState, (state) => state.isRemoteVideoStream);
 
 export const selectIsJoin = createSelector(getVideoStreamState, (state) => state.isJoin);

@@ -1,14 +1,14 @@
-import { AvatarImage } from '@mezon/components';
+import { AvatarImage, SfuAudioAudience } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import type { ChannelsEntity, UsersStreamEntity } from '@mezon/store';
 import {
 	appActions,
+	generateMeetToken,
 	selectCurrentClanId,
 	selectCurrentClanName,
 	selectIsJoin,
 	selectIsShowChatStream,
 	selectMemberClanByUserId,
-	selectRemoteVideoStream,
 	selectStatusStream,
 	selectStreamMembersByChannelId,
 	useAppDispatch,
@@ -16,170 +16,13 @@ import {
 	usersStreamActions,
 	videoStreamActions
 } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { IStreamInfo } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { RefObject } from 'react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-
-interface MediaPlayerProps {
-	videoRef: RefObject<HTMLVideoElement>;
-	currentChannel?: ChannelsEntity | null;
-}
-
-function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
-	const { t } = useTranslation('channelStream');
-	const containerRef = useRef<HTMLDivElement | null>(null);
-	const [isMuted, setIsMuted] = useState(false);
-	const [volume, setVolume] = useState(1);
-	const [isFullscreen, setIsFullscreen] = useState(false);
-	const [showControls, setShowControls] = useState(false);
-	const [_errorLimitReached, _setErrorLimitReached] = useState(false);
-	const hideControlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const isRemoteVideoStream = useSelector(selectRemoteVideoStream);
-
-	const handleToggleMute = () => {
-		if (videoRef.current) {
-			videoRef.current.muted = !isMuted;
-			setIsMuted(videoRef.current.muted);
-		}
-	};
-
-	const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const newVolume = parseFloat(event.target.value);
-		if (videoRef.current) {
-			videoRef.current.volume = newVolume;
-			setVolume(newVolume);
-			if (newVolume > 0) {
-				videoRef.current.muted = false;
-				setIsMuted(false);
-			} else {
-				videoRef.current.muted = true;
-				setIsMuted(true);
-			}
-		}
-	};
-
-	const handleFullscreen = () => {
-		const containerElement = containerRef.current;
-		if (containerElement) {
-			if (!document.fullscreenElement) {
-				containerElement
-					.requestFullscreen()
-					.then(() => {
-						setIsFullscreen(true);
-					})
-					.catch((err) => {
-						console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
-					});
-			} else {
-				document.exitFullscreen().then(() => {
-					setIsFullscreen(false);
-				});
-			}
-		}
-	};
-
-	const handleMouseEnter = () => {
-		setShowControls(true);
-		resetHideControlsTimer();
-	};
-
-	const handleMouseLeave = () => {
-		setShowControls(false);
-		resetHideControlsTimer();
-	};
-
-	const handleMouseMoveOrClick = () => {
-		setShowControls(true);
-		resetHideControlsTimer();
-	};
-
-	const resetHideControlsTimer = () => {
-		if (hideControlsTimeoutRef.current) {
-			clearTimeout(hideControlsTimeoutRef.current);
-		}
-		hideControlsTimeoutRef.current = setTimeout(() => {
-			setShowControls(false);
-		}, 3000);
-	};
-
-	return (
-		<div
-			ref={containerRef}
-			className="relative w-full h-full overflow-hidden rounded-lg"
-			onMouseEnter={handleMouseEnter}
-			onMouseLeave={handleMouseLeave}
-			onMouseMove={handleMouseMoveOrClick}
-			onClick={handleMouseMoveOrClick}
-		>
-			<div className="custom-video-container w-full h-full relative">
-				{!isRemoteVideoStream && (
-					<img
-						src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
-						alt={t('streamThumbnail')}
-						className="w-full h-full object-cover"
-					/>
-				)}
-				<video
-					className={`custom-video w-full h-full object-contain ${isRemoteVideoStream ? 'block' : 'hidden'}`}
-					ref={videoRef}
-					autoPlay
-					playsInline
-					controls={false}
-				/>
-			</div>{' '}
-			{/* {isLoading && (
-				<div className="absolute top-0 left-0 w-full h-full bg-gray-400 flex justify-center items-center text-white text-xl z-50">
-					Loading...
-				</div>
-			)} */}
-			{_errorLimitReached && (
-				<div className="absolute top-0 left-0 w-full h-full bg-gray-400 flex justify-center items-center text-white text-xl z-50">
-					{t('videoError')}
-				</div>
-			)}
-			<div
-				className={`bg-black bg-opacity-50 absolute bottom-0 flex items-center w-full justify-between p-2 transition-transform duration-300 ease-in-out ${showControls ? 'translate-y-0' : 'translate-y-full'}`}
-			>
-				<div className="flex items-center gap-1">
-					<button onClick={handleToggleMute} className="p-1">
-						{isMuted || volume === 0 ? (
-							<Icons.MutedVolume className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-						) : volume < 0.5 ? (
-							<Icons.LowVolume className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-						) : (
-							<Icons.LoudVolume className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-						)}
-					</button>
-
-					<div className="flex items-center">
-						<input
-							type="range"
-							min="0"
-							max="1"
-							step="0.01"
-							value={isMuted ? 0 : volume}
-							onChange={handleVolumeChange}
-							className="cursor-pointer w-[100px] h-[5px]"
-						/>
-					</div>
-				</div>
-				<button onClick={handleFullscreen} className="p-1">
-					{isFullscreen ? (
-						<Icons.ExitFullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-					) : (
-						<Icons.FullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-					)}
-				</button>
-			</div>
-		</div>
-	);
-}
 
 export type UserListStreamChannelProps = {
 	readonly memberJoin: UsersStreamEntity[];
@@ -264,33 +107,16 @@ function UserItem({ id, user_name, user_avatar }: { id: string; user_name: strin
 type ChannelStreamProps = {
 	currentStreamInfo: IStreamInfo | null;
 	currentChannel: ChannelsEntity | null;
-	handleChannelClick: (clanId: string, channelId: string, userId: string, streamId: string, username: string, accessToken: string) => void;
-	streamVideoRef: RefObject<HTMLVideoElement>;
-	disconnect: () => void;
-	isStream: boolean;
-	isPlaybackBlocked: boolean;
-	retryPlayback: () => Promise<boolean>;
 };
 
 // TODO: improve later
 
-export default function ChannelStream({
-	currentStreamInfo,
-	currentChannel,
-	handleChannelClick,
-	streamVideoRef,
-	disconnect,
-	isStream,
-	isPlaybackBlocked,
-	retryPlayback
-}: ChannelStreamProps) {
+export default function ChannelStream({ currentStreamInfo, currentChannel }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
 	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || '0'));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
 	const { userProfile } = useAuth();
-	const { sessionRef } = useMezon();
-	const accessToken = sessionRef.current?.session_id;
 	const dispatch = useAppDispatch();
 	const [showMembers, setShowMembers] = useState(true);
 	const [showEndCallButton, setShowEndCallButton] = useState(true);
@@ -300,6 +126,25 @@ export default function ChannelStream({
 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
+	const sfuServerUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
+	const [sfuAudioToken, setSfuAudioToken] = useState<string>();
+	const [sfuAudioTokenChannelId, setSfuAudioTokenChannelId] = useState<string>();
+	const refreshSfuAudioToken = useCallback(async () => {
+		if (!currentChannel?.channel_id) throw new Error('Stream channel is unavailable');
+		const token = await dispatch(
+			generateMeetToken({
+				channelId: currentChannel.channel_id,
+				roomName: ''
+			})
+		).unwrap();
+		if (!token) throw new Error('SFU audio token is empty');
+		return token;
+	}, [currentChannel?.channel_id, dispatch]);
+
+	useEffect(() => {
+		setSfuAudioToken(undefined);
+		setSfuAudioTokenChannelId(undefined);
+	}, [currentChannel?.channel_id]);
 	useEffect(() => {
 		if (!currentChannel || !currentClanId || !currentStreamInfo) return;
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
@@ -312,8 +157,8 @@ export default function ChannelStream({
 		if (currentStreamInfo) {
 			dispatch(videoStreamActions.stopStream());
 		}
+		setSfuAudioToken(undefined);
 		dispatch(videoStreamActions.setIsJoin(false));
-		disconnect();
 		const idStreamByMe = memberJoin?.find((user) => user.user_id === userProfile?.user?.id);
 		dispatch(usersStreamActions.remove(idStreamByMe?.user_id || ''));
 		dispatch(appActions.setIsShowChatStream(false));
@@ -323,6 +168,16 @@ export default function ChannelStream({
 	const handleJoinChannel = async () => {
 		if (!currentChannel || !currentClanId) return;
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
+		if (!sfuServerUrl) return;
+		let token: string;
+		try {
+			token = await refreshSfuAudioToken();
+		} catch {
+			return;
+		}
+		if (!token) return;
+		setSfuAudioToken(token);
+		setSfuAudioTokenChannelId(currentChannel.channel_id);
 		dispatch(
 			videoStreamActions.startStream({
 				clanId: currentClanId as string,
@@ -333,15 +188,6 @@ export default function ChannelStream({
 			})
 		);
 		dispatch(videoStreamActions.setIsJoin(true));
-		disconnect();
-		handleChannelClick(
-			currentClanId as string,
-			currentChannel?.channel_id as string,
-			userProfile?.user?.id as string,
-			currentChannel?.channel_id as string,
-			userProfile?.user?.username as string,
-			accessToken as string
-		);
 	};
 
 	const toggleMembers = () => {
@@ -364,11 +210,6 @@ export default function ChannelStream({
 		resetHideButtonsTimer();
 	};
 
-	const handleRetryPlayback = async (event: React.MouseEvent<HTMLButtonElement>) => {
-		event.stopPropagation();
-		await retryPlayback();
-	};
-
 	useEffect(() => {
 		resetHideButtonsTimer();
 
@@ -381,6 +222,14 @@ export default function ChannelStream({
 
 	return (
 		<>
+			{isJoin && sfuAudioToken && sfuAudioTokenChannelId === currentChannel?.channel_id && currentChannel?.channel_id && sfuServerUrl && (
+				<SfuAudioAudience
+					token={sfuAudioToken}
+					roomId={currentChannel.channel_id}
+					serverUrl={sfuServerUrl}
+					onRefreshToken={refreshSfuAudioToken}
+				/>
+			)}
 			{(currentStreamInfo?.streamId !== currentChannel?.channel_id || !isJoin) && (
 				<div className="w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center">
 					<div className="flex flex-col justify-center items-center gap-4 w-full">
@@ -414,27 +263,15 @@ export default function ChannelStream({
 			>
 				<div className="flex flex-col justify-center gap-2 w-full bg-theme-setting-primary border-theme-primary">
 					<div className={`relative min-h-40 h-fit items-center flex justify-center ${memberJoin.length > 0 && showMembers ? 'mt-6' : ''}`}>
-						{isStream ? (
-							<div
-								className={`transition-all duration-300 h-full max-sm:w-full w-${showMembers && !isShowChatStream ? '[70%]' : '[100%]'}`}
-							>
-								<HLSPlayer videoRef={streamVideoRef} currentChannel={currentChannel} />
-								{isPlaybackBlocked && (
-									<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-										<button
-											onClick={handleRetryPlayback}
-											className="pointer-events-auto px-4 py-2 rounded-lg bg-black/70 text-white hover:bg-black/80"
-										>
-											Click to enable audio
-										</button>
-									</div>
-								)}
-							</div>
-						) : (
-							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex justify-center items-center text-center border-theme-primary">
-								<span>{t('noStreamToday')}</span>
-							</div>
-						)}
+						<div
+							className={`sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav flex justify-center items-center text-center border-theme-primary`}
+						>
+							<img
+								src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
+								alt={currentChannel?.channel_label || t('streamThumbnail')}
+								className="w-full h-full object-cover opacity-80"
+							/>
+						</div>
 						{memberJoin.length > 0 && (
 							<div
 								className={`absolute z-50 opacity-0 transition-opacity duration-300 ${showMembers ? '-bottom-10' : `${isShowChatStream ? 'bottom-20' : 'bottom-20 max-[1700px]:bottom-2'}`} group-hover:opacity-100`}
