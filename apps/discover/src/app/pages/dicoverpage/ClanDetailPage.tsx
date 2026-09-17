@@ -187,7 +187,7 @@ export default function ClanDetailPage() {
 		<div className="min-h-screen bg-[var(--surface-page)]">
 			<HeaderMezon overlay sideBarIsOpen={sideBarIsOpen} toggleSideBar={() => setSideBarIsOpen((open) => !open)} />
 
-			<main className="pb-28 lg:pb-0">
+			<main className="pb-28 lg:pb-0 overflow-x-hidden w-full max-w-full">
 				<section className="discover-detail-stage relative min-h-[100svh] overflow-hidden bg-[var(--surface-ink)] text-white max-lg:flex max-lg:h-[100svh] max-lg:flex-col">
 					{clan.banner && !bannerError ? (
 						<>
