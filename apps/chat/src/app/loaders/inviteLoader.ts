@@ -10,10 +10,9 @@ export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) =
 	}
 	dispatch(inviteActions.getLinkInvite({ inviteId }));
 	// Handle auto open deeplink when load on mobile
-	const isLinux = /Linux/i.test(navigator.userAgent);
-	if (inviteId && !isLinux) {
+	if (inviteId) {
 		try {
-			window.location.href = `mezon.ai://invite/${inviteId}`;
+			window.location.href = `mezonapp://invite/${inviteId}`;
 		} catch (e) {
 			console.error('log  => handleJoinChannel error', e);
 		}
