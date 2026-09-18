@@ -516,5 +516,9 @@ export const selectTopicMetaById = createSelector([getTopicsState, (_, message_i
 
 export const selectHasMoreTopics = createSelector([getTopicsState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) => {
 	if (!clanId) return false;
-	return state.clanTopicsHasMore[clanId] !== false;
+	return state.clanTopicsHasMore[clanId] === true;
+});
+export const selectHasFetchedTopics = createSelector([getTopicsState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) => {
+	if (!clanId) return false;
+	return state.clanTopics[clanId] !== undefined;
 });
