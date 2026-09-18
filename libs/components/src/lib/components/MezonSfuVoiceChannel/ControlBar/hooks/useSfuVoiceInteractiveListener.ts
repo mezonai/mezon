@@ -73,6 +73,7 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 			const handler = async (event: VoiceInteractiveEvent) => {
 				if (event.voice_channel_id !== channelId) return;
 				if (event.event_type === EVoiceInteractEvent.SENT_FLOWERS) {
+					playFlowerCelebrationSound();
 					playerRef.current?.play();
 					senderQueueRef.current.push(event);
 					showNextSender();
