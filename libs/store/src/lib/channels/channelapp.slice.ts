@@ -157,6 +157,7 @@ export const channelAppSlice = createSlice({
 		},
 		clearAppInteractiveData: (state) => {
 			state.appInteractData = null;
+			state.activeApps = [];
 		}
 	},
 	extraReducers: (builder) => {
