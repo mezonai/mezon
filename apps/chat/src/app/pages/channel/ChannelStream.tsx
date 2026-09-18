@@ -153,7 +153,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
 		if (!sfuServerUrl) return;
 		if (!memberJoin.length) return;
-		let token: string;
+		let token: string | undefined;
 		try {
 			token = await dispatch(
 				generateMeetToken({
