@@ -239,7 +239,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	thunkAPI.dispatch(walletActions.setLogout());
 	thunkAPI.dispatch(listChannelsByUserActions.removeAll());
 	thunkAPI.dispatch(voiceActions.resetVoiceControl());
-	thunkAPI.dispatch(videoStreamActions.setIsJoin(false));
+	thunkAPI.dispatch(videoStreamActions.resetPlayback());
 	thunkAPI.dispatch(fcmActions.clearGotifyToken());
 	clearApiCallTracker();
 	const restoreKey = ['persist:apps', 'current-theme', 'hideNotificationContent', 'i18nextLng'];

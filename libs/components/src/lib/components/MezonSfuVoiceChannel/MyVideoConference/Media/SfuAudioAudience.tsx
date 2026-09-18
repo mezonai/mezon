@@ -6,6 +6,8 @@ export interface SfuAudioAudienceProps {
 	token: string;
 	roomId: string;
 	serverUrl: string;
+	volume?: number;
+	muted?: boolean;
 	onRefreshToken: () => Promise<string>;
 	onConnectionStateChange?: (state: SfuAudioAudienceState) => void;
 	onError?: (error: Error) => void;
@@ -13,10 +15,38 @@ export interface SfuAudioAudienceProps {
 
 const reconnectDelay = (attempt: number) => Math.min(1000 * 2 ** Math.min(attempt, 4), 15000);
 
+const applyReceiverJitterTarget = (receiver: RTCRtpReceiver) => {
+	const withHint = receiver as RTCRtpReceiver & { jitterBufferTarget?: number; playoutDelayHint?: number };
+	if (typeof withHint.jitterBufferTarget === 'number' || 'jitterBufferTarget' in withHint) {
+		try {
+			withHint.jitterBufferTarget = 80;
+		} catch {
+			// Browser may reject the assignment.
+		}
+	}
+	if (typeof withHint.playoutDelayHint === 'number' || 'playoutDelayHint' in withHint) {
+		try {
+			withHint.playoutDelayHint = 0.08;
+		} catch {
+			// Browser may reject the assignment.
+		}
+	}
+};
+
 /** Receives the stream-channel speaker audio without microphone, camera, PTT, or video. */
-export function SfuAudioAudience({ token, roomId, serverUrl, onRefreshToken, onConnectionStateChange, onError }: SfuAudioAudienceProps) {
+export function SfuAudioAudience({
+	token,
+	roomId,
+	serverUrl,
+	volume = 1,
+	muted = false,
+	onRefreshToken,
+	onConnectionStateChange,
+	onError
+}: SfuAudioAudienceProps) {
 	const [audioTracks, setAudioTracks] = useState<MediaStreamTrack[]>([]);
 	const audioTracksRef = useRef<MediaStreamTrack[]>([]);
+	const tracksByMidRef = useRef(new Map<string, MediaStreamTrack>());
 	const tokenRef = useRef(token);
 	const disposedRef = useRef(false);
 	const wsRef = useRef<WebSocket | null>(null);
@@ -42,8 +72,10 @@ export function SfuAudioAudience({ token, roomId, serverUrl, onRefreshToken, onC
 		const reportState = (state: SfuAudioAudienceState) => onConnectionStateChangeRef.current?.(state);
 		const reportError = (message: string) => onErrorRef.current?.(new Error(message));
 		let connecting = false;
+		let closingIntentionally = false;
 
 		const closeTransport = () => {
+			closingIntentionally = true;
 			const ws = wsRef.current;
 			wsRef.current = null;
 			if (ws && ws.readyState !== WebSocket.CLOSED) ws.close();
@@ -54,10 +86,13 @@ export function SfuAudioAudience({ token, roomId, serverUrl, onRefreshToken, onC
 			pendingOfferRef.current = undefined;
 			audioTracksRef.current.forEach((track) => track.stop());
 			audioTracksRef.current = [];
+			tracksByMidRef.current.forEach((track) => track.stop());
+			tracksByMidRef.current.clear();
 			setAudioTracks([]);
+			closingIntentionally = false;
 		};
 		const scheduleReconnect = () => {
-			if (disposedRef.current || connecting || reconnectTimerRef.current !== undefined) return;
+			if (disposedRef.current || connecting || closingIntentionally || reconnectTimerRef.current !== undefined) return;
 			reconnectAttemptRef.current += 1;
 			reportState('reconnecting');
 			reconnectTimerRef.current = window.setTimeout(() => {
@@ -129,30 +164,34 @@ export function SfuAudioAudience({ token, roomId, serverUrl, onRefreshToken, onC
 			}
 
 			try {
-				const pc = new RTCPeerConnection();
+				const pc = new RTCPeerConnection({ iceServers: [] });
 				pcRef.current = pc;
-				pc.ontrack = ({ track }) => {
+				pc.ontrack = ({ track, transceiver, receiver }) => {
 					if (track.kind !== 'audio') {
 						track.stop();
 						return;
 					}
-					setAudioTracks((current) => {
-						const next = current.some((item) => item.id === track.id) ? current : [...current, track];
-						audioTracksRef.current = next;
-						return next;
-					});
-					track.onended = () =>
-						setAudioTracks((current) => {
-							const next = current.filter((item) => item.id !== track.id);
-							audioTracksRef.current = next;
-							return next;
-						});
+					applyReceiverJitterTarget(receiver);
+					const mid = transceiver.mid || track.id;
+					const previous = tracksByMidRef.current.get(mid);
+					if (previous && previous.id !== track.id) previous.stop();
+					tracksByMidRef.current.set(mid, track);
+					const next = Array.from(tracksByMidRef.current.values()).filter((item) => item.readyState === 'live');
+					audioTracksRef.current = next;
+					setAudioTracks(next);
+					track.onended = () => {
+						if (tracksByMidRef.current.get(mid) === track) tracksByMidRef.current.delete(mid);
+						const remaining = Array.from(tracksByMidRef.current.values()).filter((item) => item.readyState === 'live');
+						audioTracksRef.current = remaining;
+						setAudioTracks(remaining);
+					};
 				};
 				pc.onconnectionstatechange = () => {
+					if (pcRef.current !== pc) return;
 					if (pc.connectionState === 'connected') {
 						reconnectAttemptRef.current = 0;
 						reportState('connected');
-					} else if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
+					} else if (pc.connectionState === 'failed') {
 						scheduleReconnect();
 					}
 				};
@@ -209,12 +248,12 @@ export function SfuAudioAudience({ token, roomId, serverUrl, onRefreshToken, onC
 			setAudioTracks([]);
 			reportState('closed');
 		};
-	}, [roomId, serverUrl, token]);
+	}, [roomId, serverUrl]);
 
 	return (
 		<div className="hidden" aria-hidden="true">
 			{audioTracks.map((track) => (
-				<SfuAudioElement key={track.id} track={track} />
+				<SfuAudioElement key={track.id} track={track} volume={volume} muted={muted} />
 			))}
 		</div>
 	);
@@ -247,7 +286,7 @@ function validateFullSdpLayout(offerSdp: string, answerSdp?: string) {
 	}
 }
 
-function SfuAudioElement({ track }: { track: MediaStreamTrack }) {
+function SfuAudioElement({ track, volume, muted }: { track: MediaStreamTrack; volume: number; muted: boolean }) {
 	const ref = useRef<HTMLAudioElement>(null);
 	useEffect(() => {
 		const element = ref.current;
@@ -259,5 +298,11 @@ function SfuAudioElement({ track }: { track: MediaStreamTrack }) {
 			element.srcObject = null;
 		};
 	}, [track]);
+	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+		element.muted = muted;
+		element.volume = Math.min(1, Math.max(0, volume));
+	}, [muted, volume]);
 	return <audio ref={ref} autoPlay playsInline />;
 }

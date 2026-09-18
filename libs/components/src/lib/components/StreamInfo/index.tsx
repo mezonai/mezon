@@ -82,8 +82,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			dispatch(audioCallActions.startDmCall(null));
 			dispatch(audioCallActions.setUserCallId(''));
 		} else if (type === ESummaryInfo.STREAM && currentStreamInfo) {
-			dispatch(videoStreamActions.stopStream());
-			dispatch(videoStreamActions.setIsJoin(false));
+			dispatch(videoStreamActions.resetPlayback());
 			const userStreamId = streamChannelMember?.find((stream) => stream.user_id === userProfile?.user?.id);
 			dispatch(usersStreamActions.remove(userStreamId?.user_id || ''));
 		}

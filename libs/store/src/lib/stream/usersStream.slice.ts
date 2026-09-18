@@ -171,7 +171,7 @@ export const usersStreamSlice = createSlice({
 			const channelId = action.payload;
 			const idsToRemove = Object.values(state.entities)
 				.filter((member) => member?.streaming_channel_id === channelId)
-				.map((member) => member?.id);
+				.map((member) => member?.user_id || '');
 			userStreamAdapter.removeMany(state, idsToRemove);
 		}
 		// ...
