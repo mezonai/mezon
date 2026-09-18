@@ -106,6 +106,25 @@
 			"title": "About Community",
 			"placeholder": "Tell us about your community... What makes it special?"
 		},
+		"hashtags": {
+			"title": "Community Hashtags",
+			"description": "Select up to 6 hashtags representing your community topic so members can easily find you.",
+			"selectedCount": "Selected: {{count}}/{{max}} hashtags",
+			"minRequired": "Community requires at least 1 hashtag",
+			"maxReached": "Maximum 6 hashtags reached",
+			"items": {
+				"Gaming": "Gaming",
+				"Technology": "Technology",
+				"Education": "Education",
+				"Entertainment": "Entertainment",
+				"Music": "Music",
+				"Art": "Art",
+				"Crypto": "Crypto",
+				"Anime": "Anime & Manga",
+				"Sports": "Sports",
+				"Community": "Community"
+			}
+		},
 		"vanityUrl": {
 			"title": "Vanity URL",
 			"description": "Create a custom URL for your community. Use only lowercase letters, numbers, and hyphens.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "Community disabled.",
 			"disableFailed": "Disable failed!",
 			"bannerRemoved": "Banner removed!",
-			"fillAllRequiredFields": "Please fill all required fields: Banner, About, Description, Vanity URL!",
+			"fillAllRequiredFields": "Please fill all required fields: Banner, About, Description, Vanity URL, Hashtags!",
 			"bannerUpdateFailed": "Update banner failed!"
 		}
 	},

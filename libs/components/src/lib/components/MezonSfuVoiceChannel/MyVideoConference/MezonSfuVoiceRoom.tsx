@@ -50,12 +50,6 @@ import {
 	type ScreenShareMode
 } from './screenShareQuality';
 
-const CAMERA_CAPTURE_CONSTRAINTS = {
-	width: { ideal: 640 },
-	height: { ideal: 360 },
-	frameRate: { ideal: 24 }
-} satisfies MediaTrackConstraints;
-
 const SELF_MUTE_EVENT_CORRELATION_MS = 300;
 const ICE_RECOVERY_GRACE_MS = 4000;
 const FAST_RECONNECT_ATTEMPTS = 2;
@@ -306,10 +300,31 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 const CAMERA_CODEC = 'VP8';
 const SCREEN_CODEC = 'VP9';
 
-const CAMERA_MAX_BITRATE_BPS = 1_000_000;
-const CAMERA_MIN_BITRATE_KBPS = 250;
-const CAMERA_START_BITRATE_KBPS = 500;
-const CAMERA_MAX_BITRATE_KBPS = 1000;
+const CAMERA_TIERS = [
+	{ maxCameras: 2, width: 640, height: 360, frameRate: 24, kbps: 1000, uncapped: true },
+	{ maxCameras: 4, width: 480, height: 270, frameRate: 24, kbps: 500, uncapped: false },
+	{ maxCameras: 8, width: 320, height: 180, frameRate: 20, kbps: 300, uncapped: false },
+	{ maxCameras: Number.POSITIVE_INFINITY, width: 320, height: 180, frameRate: 15, kbps: 200, uncapped: false }
+];
+const UNCAPPED_CAMERA_FRAMERATE = 30;
+const CAMERA_TIER_DOWNGRADE_MS = 1500;
+const CAMERA_TIER_UPGRADE_MS = 6000;
+
+const cameraTierAt = (index: number) => CAMERA_TIERS[index] ?? CAMERA_TIERS[0];
+const cameraTierIndexFor = (cameras: number, margin = 0) => CAMERA_TIERS.findIndex((tier) => cameras <= tier.maxCameras - margin);
+
+const resolveCameraTier = (cameras: number, currentIndex: number) => {
+	const target = cameraTierIndexFor(cameras);
+	return target >= currentIndex ? target : Math.min(currentIndex, cameraTierIndexFor(cameras, 1));
+};
+
+const cameraRange = (value: number, capped: boolean) => (capped ? { ideal: value, max: value } : { ideal: value });
+
+const getCameraConstraints = (index: number): MediaTrackConstraints => {
+	const { width, height, frameRate, uncapped } = cameraTierAt(index);
+	return { width: cameraRange(width, !uncapped), height: cameraRange(height, !uncapped), frameRate: cameraRange(frameRate, !uncapped) };
+};
+
 const SCREEN_MIN_BITRATE_KBPS = 400;
 const SCREEN_START_BITRATE_KBPS = 1000;
 const SCREEN_MAX_BITRATE_KBPS = 3500;
@@ -370,14 +385,15 @@ const mungeVideoSectionBitrate = (section: string, minKbps: number, startKbps: n
 	return out;
 };
 
-const mungeVideoBitrates = (sdp?: string) => {
+const mungeVideoBitrates = (sdp: string | undefined, cameraTierIndex: number) => {
 	if (!sdp) return sdp;
+	const { kbps } = cameraTierAt(cameraTierIndex);
 	return sdp
 		.split(/(?=^m=)/gm)
 		.map((section) => {
 			const mid = section.match(/^a=mid:(\S+)/m)?.[1];
 			if (mid === '1') {
-				return mungeVideoSectionBitrate(section, CAMERA_MIN_BITRATE_KBPS, CAMERA_START_BITRATE_KBPS, CAMERA_MAX_BITRATE_KBPS);
+				return mungeVideoSectionBitrate(section, kbps / 4, kbps / 2, kbps);
 			}
 			if (mid === '2') {
 				return mungeVideoSectionBitrate(section, SCREEN_MIN_BITRATE_KBPS, SCREEN_START_BITRATE_KBPS, SCREEN_MAX_BITRATE_KBPS);
@@ -387,24 +403,23 @@ const mungeVideoBitrates = (sdp?: string) => {
 		.join('');
 };
 
-const applyVideoEncodingParams = async (pc: RTCPeerConnection) => {
+const applyVideoEncodingParams = async (pc: RTCPeerConnection, cameraTierIndex: number) => {
 	const uplink =
 		pc.getTransceivers().find((t) => t.mid === '1') ||
 		pc.getTransceivers().find((t) => t.sender && t.sender.track && t.sender.track.kind === 'video');
 	if (!uplink?.sender) return;
 
 	try {
+		const tier = cameraTierAt(cameraTierIndex);
 		const params = uplink.sender.getParameters();
 		if (!params.encodings?.length) {
 			params.encodings = [{}];
 		}
-		params.degradationPreference = 'maintain-resolution';
+		params.degradationPreference = 'maintain-framerate';
 		const encoding = params.encodings[0] as RTCRtpEncodingParameters & { scalabilityMode?: string };
-		if ('scalabilityMode' in encoding) {
-			delete encoding.scalabilityMode;
-		}
-		encoding.maxBitrate = CAMERA_MAX_BITRATE_BPS;
-		encoding.maxFramerate = 30;
+		delete encoding.scalabilityMode;
+		encoding.maxBitrate = tier.kbps * 1000;
+		encoding.maxFramerate = tier.uncapped ? UNCAPPED_CAMERA_FRAMERATE : tier.frameRate;
 		encoding.scaleResolutionDownBy = 1;
 		encoding.priority = 'high';
 		encoding.networkPriority = 'high';
@@ -502,6 +517,7 @@ export function MezonSfuVoiceRoom({
 	const screenShareModeRef = useRef<ScreenShareMode>('text');
 	const changingScreenShareModeRef = useRef(false);
 	const cameraTrackRef = useRef<MediaStreamTrack | null>(null);
+	const cameraQualityTierRef = useRef(0);
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
 	const joinedRef = useRef(false);
@@ -821,7 +837,8 @@ export function MezonSfuVoiceRoom({
 			try {
 				let cameraTrack = cameraTrackRef.current;
 				if (cameraEnabled && cameraTrack?.readyState !== 'live') {
-					const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: CAMERA_CAPTURE_CONSTRAINTS });
+					const video = getCameraConstraints(cameraQualityTierRef.current);
+					const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video });
 					cameraTrack = stream.getVideoTracks()[0];
 					if (cameraTrack) {
 						const localStream = localStreamRef.current || new MediaStream();
@@ -852,7 +869,7 @@ export function MezonSfuVoiceRoom({
 						}
 						if (cameraEnabled && pcRef.current && videoTransceiver) {
 							forceVideoCodec(videoTransceiver, CAMERA_CODEC);
-							await applyVideoEncodingParams(pcRef.current);
+							await applyVideoEncodingParams(pcRef.current, cameraQualityTierRef.current);
 						}
 					}
 				}
@@ -900,7 +917,7 @@ export function MezonSfuVoiceRoom({
 						kind === 'audioinput'
 							? { ...getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current), deviceId: { exact: deviceId } }
 							: false,
-					video: kind === 'videoinput' ? { ...CAMERA_CAPTURE_CONSTRAINTS, deviceId: { exact: deviceId } } : false
+					video: kind === 'videoinput' ? { ...getCameraConstraints(cameraQualityTierRef.current), deviceId: { exact: deviceId } } : false
 				});
 				const nextTrack = kind === 'audioinput' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
 				const localStream = localStreamRef.current;
@@ -982,7 +999,7 @@ export function MezonSfuVoiceRoom({
 			try {
 				stream = await navigator.mediaDevices.getUserMedia({
 					audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current),
-					video: CAMERA_CAPTURE_CONSTRAINTS
+					video: getCameraConstraints(cameraQualityTierRef.current)
 				});
 			} catch {
 				try {
@@ -1206,7 +1223,7 @@ export function MezonSfuVoiceRoom({
 					if (joinRole === 'speaker' && videoTransceiver) {
 						await videoTransceiver.sender.replaceTrack(videoTrack);
 						videoTransceiver.direction = 'sendonly';
-						await applyVideoEncodingParams(pc);
+						await applyVideoEncodingParams(pc, cameraQualityTierRef.current);
 					}
 					const screenTrack = screenStreamRef.current?.getVideoTracks()[0] || null;
 					if (screenTransceiver && screenTrack) {
@@ -1224,7 +1241,7 @@ export function MezonSfuVoiceRoom({
 					}
 				}
 				const answer = await pc.createAnswer();
-				const mungedSdp = mungeVideoBitrates(answer.sdp);
+				const mungedSdp = mungeVideoBitrates(answer.sdp, cameraQualityTierRef.current);
 				await pc.setLocalDescription(new RTCSessionDescription({ type: 'answer', sdp: mungedSdp }));
 				syncRemoteMedia(pc);
 				if (wsRef.current?.readyState === WebSocket.OPEN && pc.localDescription?.sdp) {
@@ -1836,6 +1853,32 @@ export function MezonSfuVoiceRoom({
 		}
 		return Array.from(uniqueByUserId.values());
 	}, [currentUserId, remoteMedia]);
+
+	const activeCameraCount = useMemo(() => {
+		const remoteCameras = participants.filter(
+			(participant) => participant.cameraActive !== false && participant.video?.readyState === 'live' && !participant.video.muted
+		).length;
+		return remoteCameras + (cameraEnabled ? 1 : 0);
+	}, [cameraEnabled, participants]);
+
+	useEffect(() => {
+		const currentTier = cameraQualityTierRef.current;
+		const nextTier = resolveCameraTier(activeCameraCount, currentTier);
+		if (nextTier === currentTier) return;
+		const timer = setTimeout(
+			() => {
+				void (async () => {
+					const cameraTrack = cameraTrackRef.current;
+					if (cameraTrack?.readyState === 'live') await cameraTrack.applyConstraints(getCameraConstraints(nextTier));
+					if (pcRef.current) await applyVideoEncodingParams(pcRef.current, nextTier);
+					cameraQualityTierRef.current = nextTier;
+				})().catch(() => undefined);
+			},
+			nextTier > currentTier ? CAMERA_TIER_DOWNGRADE_MS : CAMERA_TIER_UPGRADE_MS
+		);
+		return () => clearTimeout(timer);
+	}, [activeCameraCount]);
+
 	const handleParticipantAction = useCallback(
 		async (action: 'mute' | 'kick', participantId: string) => {
 			const response = await dispatch(

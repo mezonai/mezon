@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import ImageWithSkeleton from '../../components/common/ImageWithSkeleton';
 import ClanLiveStats from './ClanLiveStats';
-import { getClanHref, getClanInitials, type DiscoverClan } from './communityUtils';
+import { getClanHashtags, getClanHref, getClanInitials, type DiscoverClan } from './communityUtils';
 
 interface ClanIndexProps {
 	clans: DiscoverClan[];
@@ -85,7 +85,8 @@ const IndexRow = ({
 };
 
 const IndexCopy = ({ name, clan, align = 'left' }: { name: string; clan: DiscoverClan; align?: 'left' | 'right' }) => {
-	const { t } = useTranslation('discover');
+	const { t } = useTranslation(['discover', 'onBoardingClan']);
+	const tags = getClanHashtags(clan);
 
 	return (
 		<>
@@ -93,6 +94,19 @@ const IndexCopy = ({ name, clan, align = 'left' }: { name: string; clan: Discove
 				{name}
 			</h3>
 			<p className="mt-3 text-sm md:text-base text-[#7c92af] line-clamp-2">{clan.description || t('card.fallbackDescription')}</p>
+			{tags.length > 0 ? (
+				<div className={`mt-3 flex flex-wrap items-center gap-1.5 ${align === 'right' ? 'justify-end' : 'justify-start'}`}>
+					{tags.map((tag) => (
+						<span
+							key={tag}
+							className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-[#8960e0]/10 text-[#6E4A9E] border border-[#8960e0]/15 group-hover:border-[#5865f2]/25 group-hover:bg-[#5865f2]/10 group-hover:text-[#5865f2] transition-colors"
+						>
+							<span className="font-bold opacity-60">#</span>
+							<span>{t(`communitySettings.hashtags.items.${tag}`, { ns: 'onBoardingClan', defaultValue: tag })}</span>
+						</span>
+					))}
+				</div>
+			) : null}
 			<ClanLiveStats clan={clan} align={align} className="mt-3 text-xs tracking-[0.18em] uppercase text-[#8960e0]" />
 		</>
 	);

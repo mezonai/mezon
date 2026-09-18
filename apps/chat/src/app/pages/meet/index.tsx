@@ -1,9 +1,11 @@
 import { ModalInvite } from '@mezon/components';
 import { createExternalMezonMeet, useAppDispatch } from '@mezon/store';
+import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export default function MeetPage() {
@@ -12,10 +14,15 @@ export default function MeetPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [externalLink, setExternalLink] = useState<string | null>(null);
 	const [isCreating, setIsCreating] = useState(false);
+	const { sessionRef } = useMezon();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const createMeeting = async () => {
-			if (isCreating || externalLink) return;
+			if (isCreating || externalLink || !sessionRef.current) {
+				navigate('/mezon');
+				return;
+			}
 
 			setIsCreating(true);
 			setError(null);
