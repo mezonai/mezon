@@ -15,8 +15,7 @@ import {
 	SearchModal,
 	SidebarClanItem,
 	SidebarLogoItem,
-	Topbar,
-	useWebRTCStream
+	Topbar
 } from '@mezon/components';
 import { useAppParams, useAuth, useClanGroupDragAndDrop, useMenu, useReference } from '@mezon/core';
 import type { ClanGroupItem } from '@mezon/store';
@@ -176,8 +175,6 @@ function MyApp() {
 
 	const previewMode = useSelector(selectOnboardingMode);
 
-	const { streamVideoRef, handleChannelClick, disconnect, isStream, isPlaybackBlocked, retryPlayback } = useWebRTCStream();
-
 	const handleClose = () => {
 		dispatch(e2eeActions.setOpenModalE2ee(false));
 	};
@@ -210,18 +207,8 @@ function MyApp() {
 					className={`fixed h-heightWithoutTopBar bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && currentClanId !== '0' && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
 					style={streamStyle}
 				>
-					{isStream || currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? (
-						<ChannelStream
-							key={currentStreamInfo?.streamId}
-							currentChannel={currentChannel}
-							currentStreamInfo={currentStreamInfo}
-							handleChannelClick={handleChannelClick}
-							streamVideoRef={streamVideoRef}
-							disconnect={disconnect}
-							isStream={isStream}
-							isPlaybackBlocked={isPlaybackBlocked}
-							retryPlayback={retryPlayback}
-						/>
+					{currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? (
+						<ChannelStream key={currentStreamInfo?.streamId} currentChannel={currentChannel} currentStreamInfo={currentStreamInfo} />
 					) : null}
 				</div>
 				<DmCallManager userId={userProfile?.user?.id || ''} directId={directId} />
