@@ -83,7 +83,7 @@ import { UserStatusIconDM } from '../MemberProfile';
 import ModalEditGroup from '../ModalEditGroup';
 import { NotificationTooltip } from '../NotificationList';
 import SearchMessageChannel from '../SearchMessageChannel';
-import { GalleryModal } from './GalleryModal';
+import { GalleryModal, useGalleryTarget } from './GalleryModal';
 import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
@@ -705,7 +705,7 @@ const DmTopbarTools = memo(() => {
 						</>
 					)}
 					<PinButton isDMView mode={mode} styleCss="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />
-
+					<GalleryButton />
 					{!isBlockUser && !isMe && <AddMemberToGroupDm currentDmGroup={currentDmGroup} />}
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
 						<button
@@ -1147,8 +1147,7 @@ function GalleryButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowGallery, setIsShowGallery] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
-	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
-	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const { channelId: currentChannelId, clanId: currentClanId } = useGalleryTarget();
 	const galleryFillClass = isShowGallery
 		? '[--gallery-fill-1:var(--bg-icon-theme-active)] [--gallery-fill-2:var(--bg-theme-secounnd)]'
 		: '[--gallery-fill-1:var(--bg-icon-theme)] [--gallery-fill-2:var(--bg-theme-secounnd)] hover:[--gallery-fill-1:var(--bg-icon-theme-active)] hover:[--gallery-fill-2:var(--bg-theme-secounnd)]';
@@ -1157,12 +1156,14 @@ function GalleryButton() {
 
 	const handleShowGallery = async () => {
 		if (!isShowGallery) {
+			if (!currentChannelId) return;
 			await dispatch(
 				galleryActions.fetchGalleryAttachments({
 					clanId: currentClanId,
 					channelId: currentChannelId,
 					limit: 50,
-					direction: 'initial'
+					direction: 'initial',
+					noCache: true
 				})
 			);
 		}
