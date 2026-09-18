@@ -1,13 +1,14 @@
 import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import { persistReducer, persistStore } from 'redux-persist';
+import { createTransform, persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { ACCOUNT_FEATURE_KEY, accountReducer } from './account/account.slice';
 import { appReducer } from './app/app.slice';
 import { authReducer, setupSessionSyncListener } from './auth/auth.slice';
 import { categoriesReducer } from './categories/categories.slice';
 import { channelMembersReducer } from './channelmembers/channel.members';
+import type { ChannelsState } from './channels/channels.slice';
 import { channelsReducer } from './channels/channels.slice';
 import { usersClanReducer } from './clanMembers/clan.members';
 import { userClanProfileReducer } from './clanProfile/clanProfile.slice';
@@ -151,12 +152,28 @@ const persistedCatReducer = persistReducer(
 	},
 	categoriesReducer
 );
+const channelsTransform = createTransform(
+	(inboundState: ChannelsState) => inboundState,
 
+	(outboundState: ChannelsState) => ({
+		...outboundState,
+		byClans: Object.fromEntries(
+			Object.entries(outboundState.byClans).map(([clanId, clan]) => [
+				clanId,
+				{
+					...clan,
+					fetchChannelSuccess: false
+				}
+			])
+		)
+	})
+);
 const persistedChannelReducer = persistReducer(
 	{
 		key: 'channels',
 		storage,
-		blacklist: ['request', 'previousChannels', 'showScrollDownButton', 'scrollPosition']
+		blacklist: ['request', 'previousChannels', 'showScrollDownButton', 'scrollPosition'],
+		transforms: [channelsTransform]
 	},
 	channelsReducer
 );
