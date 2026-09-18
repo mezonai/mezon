@@ -13,6 +13,7 @@ import {
 	selectStreamMembersByChannelId,
 	selectStreamMuted,
 	selectStreamVolume,
+	streamMemberEntityId,
 	useAppDispatch,
 	useAppSelector,
 	usersStreamActions,
@@ -142,7 +143,9 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 
 	const handleLeaveChannel = async () => {
 		const idStreamByMe = memberJoin?.find((user) => user.user_id === userProfile?.user?.id);
-		dispatch(usersStreamActions.remove(idStreamByMe?.user_id || ''));
+		if (idStreamByMe) {
+			dispatch(usersStreamActions.remove(streamMemberEntityId(idStreamByMe.user_id, idStreamByMe.streaming_channel_id)));
+		}
 		dispatch(videoStreamActions.resetPlayback());
 		dispatch(appActions.setIsShowChatStream(false));
 		setShowMembers(true);

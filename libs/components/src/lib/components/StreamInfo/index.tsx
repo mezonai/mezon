@@ -12,6 +12,7 @@ import {
 	selectJoinedCall,
 	selectStreamMembersByChannelId,
 	selectTheme,
+	streamMemberEntityId,
 	useAppDispatch,
 	useAppSelector,
 	usersStreamActions,
@@ -84,7 +85,9 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 		} else if (type === ESummaryInfo.STREAM && currentStreamInfo) {
 			dispatch(videoStreamActions.resetPlayback());
 			const userStreamId = streamChannelMember?.find((stream) => stream.user_id === userProfile?.user?.id);
-			dispatch(usersStreamActions.remove(userStreamId?.user_id || ''));
+			if (userStreamId) {
+				dispatch(usersStreamActions.remove(streamMemberEntityId(userStreamId.user_id, userStreamId.streaming_channel_id)));
+			}
 		}
 	};
 

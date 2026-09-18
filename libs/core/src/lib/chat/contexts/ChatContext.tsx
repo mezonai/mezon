@@ -86,6 +86,7 @@ import {
 	socketState,
 	statusActions,
 	stickerSettingActions,
+	streamMemberEntityId,
 	threadsActions,
 	toastActions,
 	topicsActions,
@@ -364,7 +365,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
-			dispatch(usersStreamActions.remove(user.streaming_user_id));
+			dispatch(usersStreamActions.remove(streamMemberEntityId(user.streaming_user_id, user.streaming_channel_id)));
 			const store = getStore();
 			const streamInfo = selectCurrentStreamInfo(store.getState());
 			const isJoin = selectIsJoin(store.getState());

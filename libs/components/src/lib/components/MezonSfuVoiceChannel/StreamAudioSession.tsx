@@ -18,6 +18,7 @@ import { SfuAudioAudience } from './MyVideoConference/Media/SfuAudioAudience';
 /**
  * Keeps stream-channel SFU audio alive while the user is joined, including
  * when they navigate to another channel. ChannelStream only owns the overlay UI.
+ * Empty-member reset is scoped to streamInfo.streamId; presence on other channels cannot cut this session.
  */
 export function StreamAudioSession() {
 	const dispatch = useAppDispatch();
