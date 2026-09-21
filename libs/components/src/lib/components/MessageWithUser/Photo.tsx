@@ -251,7 +251,7 @@ const Photo = <T,>({
 				<img
 					src={localSource}
 					alt=""
-					className="block max-w-full rounded object-cover"
+					className="max-w-full max-h-full w-full h-full block object-cover absolute bottom-0 left-0 z-[1] rounded overflow-hidden"
 					style={{ maxHeight: displayHeight, width: width || undefined }}
 					onError={onLocalPreviewError}
 				/>
