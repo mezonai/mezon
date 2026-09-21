@@ -6,6 +6,7 @@ import {
 	EStateFriend,
 	accountActions,
 	acitvitiesActions,
+	appActions,
 	attachmentActions,
 	audioCallActions,
 	authActions,
@@ -73,6 +74,7 @@ import {
 	selectEntitesUserClans,
 	selectFriendById,
 	selectIsInCall,
+	selectIsJoin,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
 	selectLastSentMessageStateByChannelId,
@@ -85,6 +87,7 @@ import {
 	socketState,
 	statusActions,
 	stickerSettingActions,
+	streamMemberEntityId,
 	threadsActions,
 	toastActions,
 	topicsActions,
@@ -364,9 +367,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
-			dispatch(usersStreamActions.remove(user.streaming_user_id));
+			dispatch(usersStreamActions.remove(streamMemberEntityId(user.streaming_user_id, user.streaming_channel_id)));
+			const store = getStore();
+			const streamInfo = selectCurrentStreamInfo(store.getState());
+			const isJoin = selectIsJoin(store.getState());
+			if (!isJoin || !streamInfo?.streamId) return;
+			if (String(user.streaming_channel_id) !== String(streamInfo.streamId)) return;
+			if (String(user.streaming_user_id) !== String(userId)) return;
+			dispatch(usersStreamActions.streamEnded(streamInfo.streamId));
+			dispatch(videoStreamActions.resetPlayback());
+			dispatch(appActions.setIsShowChatStream(false));
 		},
-		[dispatch]
+		[dispatch, userId]
 	);
 
 	const onactivityupdated = useCallback(
@@ -1156,8 +1168,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						}
 					}
 					if (user.clan_id === currentStream?.clanId) {
-						dispatch(videoStreamActions.stopStream());
-						dispatch(videoStreamActions.setIsJoin(false));
+						dispatch(videoStreamActions.resetPlayback());
 					}
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));

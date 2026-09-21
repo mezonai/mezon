@@ -11,6 +11,10 @@ import type { RootState } from '../store';
 
 export const USERS_STREAM_FEATURE_KEY = 'usersstream';
 
+// One user can be a speaker/audience in multiple stream channels at once (cross-clan).
+// Entity id must include the channel or join B overwrites join A and leave A wipes B.
+export const streamMemberEntityId = (userId?: string | null, channelId?: string | null) => `${userId || ''}:${channelId || ''}`;
+
 /*
  * Update these interfaces according to your requirements.
  */
@@ -28,7 +32,7 @@ export interface UsersStreamState extends EntityState<UsersStreamEntity, string>
 }
 
 export const userStreamAdapter = createEntityAdapter({
-	selectId: (user: UsersStreamEntity) => user.user_id || ''
+	selectId: (user: UsersStreamEntity) => streamMemberEntityId(user.user_id, user.streaming_channel_id)
 });
 
 const { selectAll: selectAllUsersStreamEntities } = userStreamAdapter.getSelectors();
@@ -171,7 +175,7 @@ export const usersStreamSlice = createSlice({
 			const channelId = action.payload;
 			const idsToRemove = Object.values(state.entities)
 				.filter((member) => member?.streaming_channel_id === channelId)
-				.map((member) => member?.id);
+				.map((member) => streamMemberEntityId(member?.user_id, member?.streaming_channel_id));
 			userStreamAdapter.removeMany(state, idsToRemove);
 		}
 		// ...
