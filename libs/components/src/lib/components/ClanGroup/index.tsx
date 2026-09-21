@@ -10,6 +10,7 @@ import {
 } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useDispatch, useSelector } from 'react-redux';
+import { getAvatarColor } from '../AvatarImage/AvatarImage';
 import SidebarClanItem from '../ModalListClans';
 
 const FolderIcon = ({ className }: { className?: string }) => (
@@ -228,8 +229,10 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 								draggable="false"
 							/>
 						) : (
-							<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode rounded-lg flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[20px]">
-								{(displayClans[0].clan_name || '').charAt(0).toUpperCase()}
+							<div
+								className={`w-full h-full ${getAvatarColor(displayClans[0].clan_name)} rounded-lg flex justify-center items-center text-white text-[20px]`}
+							>
+								{(displayClans[0].clan_name || '').trim().charAt(0).toUpperCase()}
 							</div>
 						)}
 					</div>
@@ -247,8 +250,10 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 												draggable="false"
 											/>
 										) : (
-											<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[10px]">
-												{(clan.clan_name || '').charAt(0).toUpperCase()}
+											<div
+												className={`w-full h-full ${getAvatarColor(clan.clan_name)} flex justify-center items-center text-white text-[10px]`}
+											>
+												{(clan.clan_name || '').trim().charAt(0).toUpperCase()}
 											</div>
 										)}
 									</div>
@@ -269,8 +274,10 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 												draggable="false"
 											/>
 										) : (
-											<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[8px]">
-												{(clan.clan_name || '').charAt(0).toUpperCase()}
+											<div
+												className={`w-full h-full ${getAvatarColor(clan.clan_name)} flex justify-center items-center text-white text-[8px]`}
+											>
+												{(clan.clan_name || '').trim().charAt(0).toUpperCase()}
 											</div>
 										)}
 									</div>
