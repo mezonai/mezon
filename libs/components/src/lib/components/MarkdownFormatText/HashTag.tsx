@@ -1,5 +1,13 @@
 import { getTagById, useAppNavigation } from '@mezon/core';
-import { categoriesActions, selectClanView, useAppDispatch } from '@mezon/store';
+import {
+	categoriesActions,
+	getStoreAsync,
+	selectChannelFetchSuccessByClanId,
+	selectClanById,
+	selectClanView,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
@@ -35,7 +43,32 @@ const ChannelHashtag = ({
 	const channel = getTagById(channelHastagId);
 	const parentChannel = getTagById(parentId);
 
-	const handleClick = useCallback(() => {
+	const [openUnknown, closeUnknown] = useModal(() => {
+		return <ModalUnknowChannel onClose={closeUnknown} />;
+	}, []);
+
+	const checkFetchChannel = useAppSelector((state) => selectChannelFetchSuccessByClanId(state, clanId || ''));
+	const checkGetChannelData = checkFetchChannel && !channel;
+
+	const handleClick = useCallback(async () => {
+		const store = await getStoreAsync();
+		if (clanId) {
+			const clan = selectClanById(clanId)(store.getState());
+			if (!clan) {
+				openUnknown();
+				return;
+			}
+			if (checkFetchChannel && !channel) {
+				openUnknown();
+				return;
+			}
+			if (!checkFetchChannel && channelHastagId) {
+				const channelUrl = toChannelPage(channelHastagId, clanId);
+				dispatch(categoriesActions.setCtrlKFocusChannel({ id: channelHastagId, parentId: parentId ?? '' }));
+				navigate(channelUrl);
+			}
+		}
+
 		if (!channel && !parentId) return;
 
 		if (channel) {
@@ -49,17 +82,13 @@ const ChannelHashtag = ({
 			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channelId, parentId }));
 			navigate(channelUrl);
 		}
-	}, [channel, dispatch, navigate, toChannelPage]);
+	}, [channel, checkFetchChannel, channelHastagId, dispatch, navigate, toChannelPage]);
 
 	const tokenClickAble = () => {
 		if (!isJumMessageEnabled || isTokenClickAble) {
 			handleClick();
 		}
 	};
-
-	const [openUnknown, closeUnknown] = useModal(() => {
-		return <ModalUnknowChannel onClose={closeUnknown} />;
-	}, []);
 
 	const isTextChannel = channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 	const isStreamingChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
@@ -103,20 +132,32 @@ const ChannelHashtag = ({
 			<span className="inline">{channel ? channel.channel_label : channelLabel || null}</span>
 		</span>
 	) : (
-		<PrivateChannel onClick={openUnknown} isLink={isLink} />
+		<PrivateChannel onClick={handleClick} isLink={isLink} channelLabel={channelLabel} checkGetChannelData={checkGetChannelData} />
 	);
 };
 
 export default memo(ChannelHashtag);
-function PrivateChannel({ onClick, isLink }: { onClick: () => void; isLink?: boolean }) {
+function PrivateChannel({
+	onClick,
+	isLink,
+	channelLabel,
+	checkGetChannelData
+}: {
+	onClick: () => void;
+	isLink?: boolean;
+	channelLabel?: string;
+	checkGetChannelData: boolean;
+}) {
 	const { t } = useTranslation('message');
 	return (
 		<span
 			onClick={onClick}
 			className={`px-0.1 items-center rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
-			{isLink ? <Icons.Hashtag defaultSize={`w-4 h-4`} /> : <Icons.LockedPrivate className={`w-4 h-4`} />}
-			<span className={`${isLink ? 'italic' : ''}`}>{isLink ? t('unknown') : t('noAccess')}</span>
+			{channelLabel ? null : isLink ? <Icons.Hashtag defaultSize={`w-4 h-4`} /> : <Icons.LockedPrivate className={`w-4 h-4`} />}
+			<span className={`${isLink ? 'italic' : ''}`}>
+				{channelLabel && !checkGetChannelData ? channelLabel : isLink ? t('unknown') : t('noAccess')}
+			</span>
 		</span>
 	);
 }
