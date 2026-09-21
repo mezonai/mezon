@@ -42,6 +42,7 @@ type MessageAttachmentProps = {
 	isInSearchMessage?: boolean;
 	isTopic?: boolean;
 	defaultMaxWidth?: number;
+	isPreview?: boolean;
 };
 
 function areAttachmentLiveFieldsEqual(prev: IMessageWithUser, next: IMessageWithUser): boolean {
@@ -53,12 +54,14 @@ function areAttachmentLiveFieldsEqual(prev: IMessageWithUser, next: IMessageWith
 	);
 }
 
-/** Redux subscription scoped to attachment/presign fields — re-renders without bumping message row memo. */
-function useLiveMessageForAttachments(messageProp: IMessageWithUser, channelId?: string): IMessageWithUser {
+function useLiveMessageForAttachments(messageProp: IMessageWithUser, channelId?: string, isPreview?: boolean): IMessageWithUser {
 	const resolvedChannelId = (messageProp.channel_id ?? channelId) as string;
 	const messageId = messageProp.id as string;
 
-	return useAppSelector((state) => selectMessageByMessageId(state, resolvedChannelId, messageId) ?? messageProp, areAttachmentLiveFieldsEqual);
+	return useAppSelector(
+		(state) => (isPreview ? messageProp : (selectMessageByMessageId(state, resolvedChannelId, messageId) ?? messageProp)),
+		areAttachmentLiveFieldsEqual
+	);
 }
 
 function usePresignExpiryNow(hasPresignPending: boolean, messageCreateTimeSeconds?: number): number {
@@ -237,9 +240,10 @@ const MessageAttachment = memo(
 		mode,
 		observeIntersectionForLoading,
 		isInSearchMessage,
-		defaultMaxWidth
+		defaultMaxWidth,
+		isPreview
 	}: MessageAttachmentProps) => {
-		const message = useLiveMessageForAttachments(messageProp, channelId);
+		const message = useLiveMessageForAttachments(messageProp, channelId, isPreview);
 		const messageCreateTimeSeconds = useMemo(() => getMessageCreateTimeSeconds(message), [message]);
 		const hasPresignPending = useMemo(
 			() => hasActivePresignPendingAttachments(message.attachments, message.content),
@@ -283,6 +287,7 @@ const MessageAttachment = memo(
 		prev.mode === next.mode &&
 		prev.isInSearchMessage === next.isInSearchMessage &&
 		prev.defaultMaxWidth === next.defaultMaxWidth &&
+		prev.isPreview === next.isPreview &&
 		prev.message?.content?.presign_finish === next.message?.content?.presign_finish
 );
 
