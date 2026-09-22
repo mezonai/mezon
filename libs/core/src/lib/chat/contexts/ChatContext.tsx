@@ -1127,6 +1127,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							channelId: user.channel_id
 						})
 					);
+
+					const isVoiceJoined = selectVoiceInfo(store.getState());
+					if (isVoiceJoined?.channelId === user.channel_id) {
+						//Leave Room If It's been deleted
+						dispatch(voiceActions.resetVoiceControl());
+					}
 				} else {
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_GROUP) {
 						dispatch(directActions.removeGroupMember({ userId: userID, currentUserId: userId as string, channelId: user.channel_id }));
