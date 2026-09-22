@@ -1180,6 +1180,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					dispatch(listChannelsByUserActions.remove(id));
 					dispatch(topicsActions.removeClanTopics(user?.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
+					const isVoiceJoined = selectVoiceInfo(store.getState());
+					if (isVoiceJoined?.channelId === user.clan_id) {
+						//Leave Room If It's been deleted
+						dispatch(voiceActions.resetVoiceControl());
+					}
 				}
 				dispatch(
 					channelMembersActions.removeUserByUserIdAndClan({
