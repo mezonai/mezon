@@ -14,6 +14,8 @@ export interface SfuAudioAudienceProps {
 }
 
 const reconnectDelay = (attempt: number) => Math.min(1000 * 2 ** Math.min(attempt, 4), 15000);
+const MAX_RECONNECT_ATTEMPTS = 40;
+const HEALTHY_CONNECTION_RESET_MS = 30_000;
 
 const applyReceiverJitterTarget = (receiver: RTCRtpReceiver) => {
 	const withHint = receiver as RTCRtpReceiver & { jitterBufferTarget?: number; playoutDelayHint?: number };
@@ -53,8 +55,10 @@ export function SfuAudioAudience({
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const reconnectTimerRef = useRef<number>();
 	const reconnectAttemptRef = useRef(0);
+	const stableConnectionTimerRef = useRef<number>();
 	const negotiatingRef = useRef(false);
 	const pendingOfferRef = useRef<{ sdp: string; offer_generation: number }>();
+	const lastOfferGenerationRef = useRef(-1);
 	const onRefreshTokenRef = useRef(onRefreshToken);
 	const onConnectionStateChangeRef = useRef(onConnectionStateChange);
 	const onErrorRef = useRef(onError);
@@ -68,6 +72,7 @@ export function SfuAudioAudience({
 		disposedRef.current = false;
 		tokenRef.current = token;
 		reconnectAttemptRef.current = 0;
+		lastOfferGenerationRef.current = -1;
 
 		const reportState = (state: SfuAudioAudienceState) => onConnectionStateChangeRef.current?.(state);
 		const reportError = (message: string) => onErrorRef.current?.(new Error(message));
@@ -82,8 +87,11 @@ export function SfuAudioAudience({
 			const pc = pcRef.current;
 			pcRef.current = null;
 			pc?.close();
+			if (stableConnectionTimerRef.current !== undefined) window.clearTimeout(stableConnectionTimerRef.current);
+			stableConnectionTimerRef.current = undefined;
 			negotiatingRef.current = false;
 			pendingOfferRef.current = undefined;
+			lastOfferGenerationRef.current = -1;
 			audioTracksRef.current.forEach((track) => track.stop());
 			audioTracksRef.current = [];
 			tracksByMidRef.current.forEach((track) => track.stop());
@@ -93,6 +101,12 @@ export function SfuAudioAudience({
 		};
 		const scheduleReconnect = () => {
 			if (disposedRef.current || connecting || closingIntentionally || reconnectTimerRef.current !== undefined) return;
+			if (reconnectAttemptRef.current >= MAX_RECONNECT_ATTEMPTS) {
+				reportError('SFU audio reconnect limit reached');
+				reportState('failed');
+				closeTransport();
+				return;
+			}
 			reconnectAttemptRef.current += 1;
 			reportState('reconnecting');
 			reconnectTimerRef.current = window.setTimeout(() => {
@@ -103,8 +117,11 @@ export function SfuAudioAudience({
 
 		const handleOffer = async (offer: { sdp: string; offer_generation: number }) => {
 			if (disposedRef.current || !pcRef.current || !wsRef.current) return;
+			if (offer.offer_generation <= lastOfferGenerationRef.current) return;
 			if (negotiatingRef.current) {
-				pendingOfferRef.current = offer;
+				if (!pendingOfferRef.current || offer.offer_generation > pendingOfferRef.current.offer_generation) {
+					pendingOfferRef.current = offer;
+				}
 				return;
 			}
 			negotiatingRef.current = true;
@@ -113,6 +130,7 @@ export function SfuAudioAudience({
 				const ws = wsRef.current;
 				if (!pc || !ws || ws.readyState !== WebSocket.OPEN) return;
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: offer.sdp }));
+				if (disposedRef.current || pcRef.current !== pc || wsRef.current !== ws) return;
 				// The SFU keeps its complete audio/video/screen SDP layout. This
 				// audience participates in that layout but negotiates no video media.
 				const offeredKinds = offer.sdp
@@ -127,9 +145,9 @@ export function SfuAudioAudience({
 				const answer = await pc.createAnswer();
 				validateFullSdpLayout(offer.sdp, answer.sdp);
 				await pc.setLocalDescription(answer);
-				if (ws.readyState === WebSocket.OPEN && pc.localDescription?.sdp) {
-					ws.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp, offer_generation: offer.offer_generation }));
-				}
+				if (ws.readyState !== WebSocket.OPEN || !pc.localDescription?.sdp) return;
+				ws.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp, offer_generation: offer.offer_generation }));
+				lastOfferGenerationRef.current = offer.offer_generation;
 			} catch {
 				reportError('SFU audio negotiation failed');
 				scheduleReconnect();
@@ -154,7 +172,7 @@ export function SfuAudioAudience({
 				} catch {
 					connecting = false;
 					reportError('Unable to refresh SFU audio token');
-					reportState('failed');
+					scheduleReconnect();
 					return;
 				}
 			}
@@ -189,7 +207,11 @@ export function SfuAudioAudience({
 				pc.onconnectionstatechange = () => {
 					if (pcRef.current !== pc) return;
 					if (pc.connectionState === 'connected') {
-						reconnectAttemptRef.current = 0;
+						if (stableConnectionTimerRef.current !== undefined) window.clearTimeout(stableConnectionTimerRef.current);
+						stableConnectionTimerRef.current = window.setTimeout(() => {
+							stableConnectionTimerRef.current = undefined;
+							if (pcRef.current === pc && pc.connectionState === 'connected') reconnectAttemptRef.current = 0;
+						}, HEALTHY_CONNECTION_RESET_MS);
 						reportState('connected');
 					} else if (pc.connectionState === 'failed') {
 						scheduleReconnect();
@@ -205,7 +227,7 @@ export function SfuAudioAudience({
 				reportState('joining');
 				ws.onopen = () => {
 					if (disposedRef.current || wsRef.current !== ws) return;
-					ws.send(JSON.stringify({ type: 'join', room: roomId, token: nextToken, role: 'audience' }));
+					if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'join', room: roomId, token: nextToken, role: 'audience' }));
 				};
 				ws.onmessage = ({ data }) => {
 					if (disposedRef.current || wsRef.current !== ws) return;
@@ -215,16 +237,20 @@ export function SfuAudioAudience({
 					} catch {
 						return;
 					}
-					if (message.type === 'ping') ws.send(JSON.stringify({ type: 'pong' }));
+					if (message.type === 'ping' && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'pong' }));
 					if (message.type === 'offer' && message.sdp && message.offer_generation != null) {
 						void handleOffer({ sdp: message.sdp, offer_generation: message.offer_generation });
 					}
 					if (message.type === 'error') {
+						if (message.message === 'stale_offer_generation' || message.message === 'future_offer_generation') return;
 						reportError(message.message === 'invalid_token' ? 'SFU audio token rejected' : 'SFU audio signaling failed');
 						scheduleReconnect();
 					}
 				};
-				ws.onerror = () => reportError('SFU audio signaling failed');
+				ws.onerror = () => {
+					reportError('SFU audio signaling failed');
+					if (wsRef.current === ws && ws.readyState !== WebSocket.CLOSED) ws.close();
+				};
 				ws.onclose = () => {
 					if (wsRef.current === ws) {
 						wsRef.current = null;
