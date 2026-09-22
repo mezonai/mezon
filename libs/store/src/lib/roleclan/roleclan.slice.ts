@@ -312,6 +312,7 @@ export const updateRole = createAsyncThunk(
 			const permission = selectAllPermissionsDefaultEntities(store);
 			const listUserClan = selectEntitesUserClans(store);
 			const role = roles[roleId];
+
 			const updateRoleData = handleMapUpdateRole(role, body, permission, listUserClan);
 
 			return updateRoleData;
