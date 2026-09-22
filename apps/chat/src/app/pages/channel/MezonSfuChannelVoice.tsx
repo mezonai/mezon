@@ -5,6 +5,7 @@ import {
 	channelAppActions,
 	generateMeetToken,
 	getStore,
+	selectChannelById,
 	selectCurrentChannelClanId,
 	selectCurrentChannelId,
 	selectCurrentChannelLabel,
@@ -155,6 +156,7 @@ const MezonSfuChannelVoiceInner = () => {
 	const isOnMenu = useSelector(selectStatusMenu);
 
 	const isDisconnectingRef = useRef(false);
+	const isPrivateVoice = !!useSelector((state) => selectChannelById(state, voiceInfo?.channelId || ''))?.channel_private;
 
 	const handleJoinRoom = useLastCallback(async (role: SfuJoinRole) => {
 		setJoinRole(role);
@@ -249,7 +251,7 @@ const MezonSfuChannelVoiceInner = () => {
 								joinRole={joinRole}
 								serverUrl={serverUrl}
 								voiceInfo={voiceInfo}
-								isPrivateVoice={!!voiceInfo?.channelPrivate}
+								isPrivateVoice={isPrivateVoice}
 								handleLeaveRoom={handleLeaveRoom}
 								handleFullScreen={handleFullScreen}
 								isShowChatVoice={isShowChatVoice}
