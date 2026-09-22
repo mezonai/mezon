@@ -97,6 +97,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 	const [dateValidationError, setDateValidationError] = useState<string | null>(null);
 	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('image');
+	const today = new Date();
 
 	const modalRef = useRef<HTMLDivElement>(null);
 
@@ -112,11 +113,13 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		}
 
 		if (startDate) {
-			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds > startDate?.getTime() / 1000);
+			const startTimestamp = getUnixTime(startOfDay(startDate));
+			listAttach = listAttach.filter((att) => att.create_time_seconds && Number(att.create_time_seconds) >= startTimestamp);
 		}
 
 		if (endDate) {
-			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds < endDate?.getTime() / 1000);
+			const endTimestamp = getUnixTime(endOfDay(endDate));
+			listAttach = listAttach.filter((att) => att.create_time_seconds && Number(att.create_time_seconds) <= endTimestamp);
 		}
 
 		listAttach = listAttach.filter((att) => {
@@ -280,6 +283,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			attachments,
 			startDate,
 			endDate,
+			mediaFilter,
 			dispatch,
 			calculateTimestamps
 		]
@@ -422,6 +426,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				limit: 50,
 				direction: 'initial',
 				mediaFilter,
+				noCache: true,
 				...(startTimestamp && { after: startTimestamp }),
 				...(endTimestamp && { before: endTimestamp })
 			})
@@ -429,7 +434,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 		setDateValidationError(null);
 		setIsDateDropdownOpen(false);
-	}, [currentChannelId, currentClanId, startDate, endDate, dispatch, validateDateRange, calculateTimestamps]);
+	}, [currentChannelId, currentClanId, startDate, endDate, mediaFilter, dispatch, validateDateRange, calculateTimestamps]);
 
 	const clearDateFilter = useCallback(() => {
 		setStartDate(null);
@@ -614,11 +619,11 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
-															selected={startDate || new Date()}
+															selected={startDate}
 															onChange={handleStartDateChange}
 															dateFormat="dd/MM/yyyy"
-															minDate={endDate ? undefined : new Date(2020, 0, 1)}
-															maxDate={endDate || undefined}
+															placeholderText="dd/mm/yyyy"
+															maxDate={endDate && endDate < today ? endDate : today}
 														/>
 													</Suspense>
 												</div>
@@ -632,10 +637,12 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
-															selected={endDate || new Date()}
+															selected={endDate}
 															onChange={handleEndDateChange}
 															dateFormat="dd/MM/yyyy"
+															placeholderText="dd/mm/yyyy"
 															minDate={startDate || undefined}
+															maxDate={today}
 														/>
 													</Suspense>
 												</div>
