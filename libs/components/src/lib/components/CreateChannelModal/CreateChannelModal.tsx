@@ -147,6 +147,9 @@ export const CreateNewChannelModal = () => {
 	const onChangeChannelType = (value: number) => {
 		setIsErrorType('');
 		setChannelType(value);
+		if (value === ChannelType.CHANNEL_TYPE_STREAMING) {
+			setIsPrivate(0);
+		}
 	};
 
 	const onChangeToggle = (value: number) => {

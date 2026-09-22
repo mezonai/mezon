@@ -105,7 +105,11 @@ const ChannelHashtag = ({
 			className={`no-underline font-medium rounded-sm inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
 		>
 			{isVoiceChannel ? (
-				<Icons.Speaker defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+				channel.channel_private ? (
+					<Icons.SpeakerLocked defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+				) : (
+					<Icons.Speaker defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+				)
 			) : isStreamingChannel ? (
 				<Icons.Stream defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
 			) : isAppChannel ? (

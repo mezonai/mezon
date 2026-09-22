@@ -74,6 +74,7 @@ interface VoiceConferenceContentProps {
 	isShowChatVoice: boolean;
 	isVoiceFullScreen: boolean;
 	handleToggleChat: () => void;
+	isPrivateVoice?: boolean;
 }
 
 const VoiceConferenceContent = memo(
@@ -86,7 +87,8 @@ const VoiceConferenceContent = memo(
 		handleFullScreen,
 		isShowChatVoice,
 		isVoiceFullScreen,
-		handleToggleChat
+		handleToggleChat,
+		isPrivateVoice
 	}: VoiceConferenceContentProps) => {
 		return (
 			<div className="flex-1 relative flex overflow-hidden">
@@ -101,6 +103,7 @@ const VoiceConferenceContent = memo(
 					onLeaveRoom={() => void handleLeaveRoom()}
 					onFullScreen={handleFullScreen}
 					onToggleChat={handleToggleChat}
+					isPrivateVoice={isPrivateVoice}
 				/>
 				<EmojiSuggestionProvider>
 					{isShowChatVoice && (
@@ -246,6 +249,7 @@ const MezonSfuChannelVoiceInner = () => {
 								joinRole={joinRole}
 								serverUrl={serverUrl}
 								voiceInfo={voiceInfo}
+								isPrivateVoice={!!voiceInfo?.channelPrivate}
 								handleLeaveRoom={handleLeaveRoom}
 								handleFullScreen={handleFullScreen}
 								isShowChatVoice={isShowChatVoice}
