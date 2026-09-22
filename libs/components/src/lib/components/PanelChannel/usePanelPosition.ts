@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { Coords } from '../ChannelLink';
 
-export const usePanelPosition = (coords: Coords, onClose: () => void, rootRef?: RefObject<HTMLElement>) => {
+export const usePanelPosition = (coords: Coords, onClose: () => void, rootRef?: RefObject<HTMLElement>, shouldIgnoreOutsideClick?: () => boolean) => {
 	const panelRef = useRef<HTMLDivElement>(null);
 	const [positionTop, setPositionTop] = useState(false);
 	const hasModalInChild = useSelector(hasGrandchildModal);
@@ -19,7 +19,7 @@ export const usePanelPosition = (coords: Coords, onClose: () => void, rootRef?: 
 	useOnClickOutside(
 		panelRef,
 		() => {
-			if (!hasModalInChild) onClose();
+			if (!hasModalInChild && !shouldIgnoreOutsideClick?.()) onClose();
 		},
 		rootRef
 	);
