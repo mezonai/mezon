@@ -312,7 +312,6 @@ export const updateRole = createAsyncThunk(
 			const permission = selectAllPermissionsDefaultEntities(store);
 			const listUserClan = selectEntitesUserClans(store);
 			const role = roles[roleId];
-
 			const updateRoleData = handleMapUpdateRole(role, body, permission, listUserClan);
 
 			return updateRoleData;
@@ -814,7 +813,7 @@ const handleMapUpdateRole = (
 	const removePermissionSet = new Set(remove_permission_ids);
 	// const activePermissionSet = new Set(active_permission_ids);
 
-	const permissionUpdate = (role.permission_list?.permissions || [])
+	const permissionUpdate = (role?.permission_list?.permissions || [])
 		.filter((p) => (p.id ? !removePermissionSet.has(p.id) : false))
 		.concat(active_permission_ids.map((id) => permissions[id]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id)));
 
