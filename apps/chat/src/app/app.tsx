@@ -15,10 +15,6 @@ import { Routes } from './routes';
 
 import { ThemeManager } from '@mezon/themes';
 
-void import('livekit-client').then(({ LogLevel, setLogLevel }) => {
-	setLogLevel(LogLevel.silent);
-});
-
 ThemeManager.initializeTheme();
 
 const mezon = getMezonConfig();

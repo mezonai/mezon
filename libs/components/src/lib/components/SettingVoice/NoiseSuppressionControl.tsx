@@ -1,13 +1,10 @@
 import { Icons } from '@mezon/ui';
-import { NOISE_SUPPRESSION_NORMALIZATION_FACTOR } from '@mezon/utils';
-import { DeepFilterNet3Core, DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
-import type { ChangeEvent } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { getNoiseSuppressionAudioCaptureOptions } from '@mezon/utils';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface NoiseSuppressionControlRef {
 	applyNoiseSuppression: (enabled: boolean) => Promise<void>;
-	updateNoiseSuppressionLevel: (level: number) => void;
 	setupAudioNodes: (stream: MediaStream, audioContext: AudioContext, analyser: AnalyserNode, micVolume: number) => MediaStreamAudioDestinationNode;
 	getDestinationStream: () => MediaStream | null;
 	cleanupAudioNodes: () => void;
@@ -17,39 +14,19 @@ export interface NoiseSuppressionControlRef {
 interface NoiseSuppressionControlProps {
 	className?: string;
 	noiseSuppressionEnabled?: boolean;
-	noiseSuppressionLevel?: number;
+	onNoiseSuppressionEnabledChange?: (enabled: boolean) => void;
 	isTesting: boolean;
 }
 
 export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, NoiseSuppressionControlProps>(
-	(
-		{
-			className = '',
-			noiseSuppressionEnabled: initialNoiseSuppressionEnabled = false,
-			noiseSuppressionLevel: initialNoiseSuppressionLevel = 0,
-			isTesting
-		},
-		ref
-	) => {
+	({ className = '', noiseSuppressionEnabled = false, onNoiseSuppressionEnabledChange, isTesting }, ref) => {
 		const { t } = useTranslation(['setting']);
-		const [noiseSuppressionEnabled, setNoiseSuppressionEnabled] = useState(initialNoiseSuppressionEnabled);
-		const [noiseSuppressionLevel, setNoiseSuppressionLevel] = useState(initialNoiseSuppressionLevel);
-
+		const inputStreamRef = useRef<MediaStream | null>(null);
 		const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
 		const gainNodeRef = useRef<GainNode | null>(null);
 		const destinationNodeRef = useRef<MediaStreamAudioDestinationNode | null>(null);
-		const analyserRef = useRef<AnalyserNode | null>(null);
-		const audioContextRef = useRef<AudioContext | null>(null);
-		const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
-		const noiseWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
 
-		const normalizedNoiseSuppressionLevel = useMemo(
-			() => noiseSuppressionLevel * NOISE_SUPPRESSION_NORMALIZATION_FACTOR,
-			[noiseSuppressionLevel]
-		);
-
-		const isSupported = DeepFilterNoiseFilterProcessor.isSupported();
-		const isEnabled = isSupported && noiseSuppressionEnabled;
+		const isSupported = typeof navigator !== 'undefined' && Boolean(navigator.mediaDevices?.getSupportedConstraints().noiseSuppression);
 
 		const setupAudioNodes = useCallback((stream: MediaStream, audioContext: AudioContext, analyser: AnalyserNode, micVolume: number) => {
 			const source = audioContext.createMediaStreamSource(stream);
@@ -57,11 +34,10 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 			gain.gain.value = micVolume;
 			const dest = audioContext.createMediaStreamDestination();
 
+			inputStreamRef.current = stream;
 			sourceNodeRef.current = source;
 			gainNodeRef.current = gain;
 			destinationNodeRef.current = dest;
-			analyserRef.current = analyser;
-			audioContextRef.current = audioContext;
 
 			source.connect(gain);
 			gain.connect(analyser);
@@ -70,187 +46,70 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 			return dest;
 		}, []);
 
-		const getDestinationStream = useCallback(() => {
-			return destinationNodeRef.current?.stream || null;
-		}, []);
+		const getDestinationStream = useCallback(() => destinationNodeRef.current?.stream || null, []);
 
 		const cleanupAudioNodes = useCallback(() => {
+			try {
+				sourceNodeRef.current?.disconnect();
+				gainNodeRef.current?.disconnect();
+				destinationNodeRef.current?.disconnect();
+			} catch {
+				// The graph may already have been disconnected during another cleanup path.
+			}
+
+			inputStreamRef.current = null;
 			sourceNodeRef.current = null;
 			gainNodeRef.current = null;
 			destinationNodeRef.current = null;
-			analyserRef.current = null;
-			audioContextRef.current = null;
 		}, []);
 
-		const cleanupNoiseSuppression = useCallback(() => {
-			try {
-				noiseWorkletNodeRef.current?.disconnect();
-			} catch {
-				// ignore
-			}
-			noiseWorkletNodeRef.current = null;
-
-			if (noiseProcessorRef.current) {
-				noiseProcessorRef.current.destroy();
-				noiseProcessorRef.current = null;
-			}
-		}, []);
-
-		const ensureNoiseSuppressionNode = useCallback(async () => {
-			if (!isSupported) return false;
-			const ctx = audioContextRef.current;
-			if (!ctx) return false;
-
-			if (!noiseProcessorRef.current) {
-				const processor = new DeepFilterNet3Core({
-					sampleRate: ctx.sampleRate,
-					noiseReductionLevel: 0,
-					assetConfig: {
-						cdnUrl: 'https://cdn.komu.vn/AI/models/datas/noise_suppression/deepfilternet3'
-					}
-				});
-				await processor.initialize();
-				const node = await processor.createAudioWorkletNode(ctx);
-				noiseProcessorRef.current = processor;
-				noiseWorkletNodeRef.current = node;
-			}
-
-			noiseProcessorRef.current.setSuppressionLevel(normalizedNoiseSuppressionLevel);
-			noiseProcessorRef.current.setNoiseSuppressionEnabled(true);
-			return true;
-		}, [isSupported, normalizedNoiseSuppressionLevel, audioContextRef]);
-
-		const wireOutput = useCallback(
-			(useNoiseSuppression: boolean) => {
-				const gain = gainNodeRef.current;
-				const dest = destinationNodeRef.current;
-				if (!gain || !dest) return;
-
-				try {
-					gain.disconnect();
-				} catch {
-					// ignore
-				}
-
-				if (analyserRef.current) {
-					gain.connect(analyserRef.current);
-				}
-
-				if (noiseWorkletNodeRef.current) {
-					try {
-						noiseWorkletNodeRef.current.disconnect();
-					} catch {
-						// ignore
-					}
-				}
-
-				if (useNoiseSuppression && noiseWorkletNodeRef.current) {
-					gain.connect(noiseWorkletNodeRef.current);
-					noiseWorkletNodeRef.current.connect(dest);
-				} else {
-					gain.connect(dest);
-				}
-			},
-			[gainNodeRef, destinationNodeRef, analyserRef]
-		);
-
-		const applyNoiseSuppressionInternal = useCallback(
+		const applyNoiseSuppression = useCallback(
 			async (enabled: boolean) => {
-				setNoiseSuppressionEnabled(enabled);
-				if (!isTesting) return;
+				onNoiseSuppressionEnabledChange?.(enabled);
+				if (!isTesting || !isSupported) return;
 
-				if (!enabled) {
-					if (noiseProcessorRef.current) {
-						noiseProcessorRef.current.setNoiseSuppressionEnabled(false);
-					}
-					wireOutput(false);
-					return;
-				}
-
-				try {
-					const ok = await ensureNoiseSuppressionNode();
-					if (ok) {
-						wireOutput(true);
-					}
-				} catch (error) {
-					console.error('Failed to apply noise suppression for mic test:', error);
-					wireOutput(false);
+				const audioTrack = inputStreamRef.current?.getAudioTracks()[0];
+				if (audioTrack) {
+					await audioTrack.applyConstraints(getNoiseSuppressionAudioCaptureOptions(enabled));
 				}
 			},
-			[isTesting, wireOutput, ensureNoiseSuppressionNode]
-		);
-
-		const updateNoiseSuppressionLevelInternal = useCallback(
-			(level: number) => {
-				setNoiseSuppressionLevel(level);
-				if (!isTesting) return;
-				if (!noiseProcessorRef.current) return;
-				const normalizedLevel = level * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
-				noiseProcessorRef.current.setSuppressionLevel(normalizedLevel);
-			},
-			[isTesting]
+			[isSupported, isTesting, onNoiseSuppressionEnabledChange]
 		);
 
 		useImperativeHandle(
 			ref,
 			() => ({
-				applyNoiseSuppression: applyNoiseSuppressionInternal,
-				updateNoiseSuppressionLevel: updateNoiseSuppressionLevelInternal,
+				applyNoiseSuppression,
 				setupAudioNodes,
 				getDestinationStream,
 				cleanupAudioNodes,
-				cleanup: cleanupNoiseSuppression
+				cleanup: cleanupAudioNodes
 			}),
-			[
-				applyNoiseSuppressionInternal,
-				updateNoiseSuppressionLevelInternal,
-				setupAudioNodes,
-				getDestinationStream,
-				cleanupAudioNodes,
-				cleanupNoiseSuppression
-			]
+			[applyNoiseSuppression, setupAudioNodes, getDestinationStream, cleanupAudioNodes]
 		);
 
 		const toggleNoiseSuppression = () => {
 			if (!isSupported) return;
-			const newEnabled = !noiseSuppressionEnabled;
-			applyNoiseSuppressionInternal(newEnabled);
+			void applyNoiseSuppression(!noiseSuppressionEnabled);
 		};
 
-		const handleNoiseSuppressionLevelChange = (e: ChangeEvent<HTMLInputElement>) => {
-			if (!isSupported) return;
-			const level = Number(e.target.value);
-			updateNoiseSuppressionLevelInternal(level);
-		};
 		return (
 			<div className={`space-y-4 ${className}`.trim()}>
 				<div className="text-lg font-bold pt-4 text-theme-primary-active tracking-wide">{t('setting:voice.noiseSuppression.title')}</div>
-				<div className="flex items-center gap-3">
-					<button
-						onClick={toggleNoiseSuppression}
-						disabled={!isSupported}
-						className={`w-10 h-10 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed ${
-							isSupported
-								? isEnabled
-									? 'bg-item-theme-hover text-theme-primary-active'
-									: 'bg-item-theme-hover text-red-500'
-								: 'bg-item-theme-hover text-theme-primary-hover'
-						}`}
-						aria-label={t('setting:voice.noiseSuppression.toggleAriaLabel')}
-					>
-						<Icons.NoiseSupressionIcon className="w-5 h-5" disabled={!isEnabled} />
-					</button>
-					<input
-						type="range"
-						min={0}
-						max={100}
-						value={noiseSuppressionLevel}
-						onChange={handleNoiseSuppressionLevelChange}
-						disabled={!isSupported || !noiseSuppressionEnabled}
-						className="w-full h-1 disabled:opacity-50"
-					/>
-					<div className="w-10 text-right text-xs text-theme-primary-hover">{noiseSuppressionLevel}%</div>
-				</div>
+				<button
+					onClick={toggleNoiseSuppression}
+					disabled={!isSupported}
+					className={`w-10 h-10 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed ${
+						isSupported
+							? noiseSuppressionEnabled
+								? 'bg-item-theme-hover text-theme-primary-active'
+								: 'bg-item-theme-hover text-red-500'
+							: 'bg-item-theme-hover text-theme-primary-hover'
+					}`}
+					aria-label={t('setting:voice.noiseSuppression.toggleAriaLabel')}
+				>
+					<Icons.NoiseSupressionIcon className="w-5 h-5" disabled={!noiseSuppressionEnabled} />
+				</button>
 			</div>
 		);
 	}

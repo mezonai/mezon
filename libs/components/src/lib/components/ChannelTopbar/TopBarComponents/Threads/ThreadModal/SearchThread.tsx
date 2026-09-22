@@ -20,14 +20,14 @@ const SearchThread = ({ channelId }: SearchThreadProps) => {
 			(value: string) => {
 				dispatch(threadsActions.searchedThreads({ label: value, channelId: channelId ?? '' }));
 			},
-			[dispatch]
+			[channelId, dispatch]
 		),
 		500
 	);
 	const handleChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
 			const value = event.target.value;
-			dispatch(threadsActions.setThreadInputSearch({ channelId: channelId, value }));
+			dispatch(threadsActions.setThreadInputSearch({ channelId, value }));
 			handleTypingDebounced(value);
 		},
 		[dispatch, channelId, handleTypingDebounced]

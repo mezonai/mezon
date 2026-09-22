@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Verbindung unterbrochen",
 		"microphonePermissionRequired": "Mikrofonberechtigung erforderlich",
 		"cameraPermissionRequired": "Kameraberechtigung erforderlich",
-		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen."
+		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen.",
+		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst."
 	},
 	"usernameScreen": "{{username}}s Bildschirm",
 	"recording": {

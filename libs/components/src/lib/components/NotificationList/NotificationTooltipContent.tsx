@@ -3,6 +3,7 @@ import {
 	fetchListNotification,
 	notificationActions,
 	selectCurrentClanId,
+	selectHasFetchedTopics,
 	selectHasMoreTopics,
 	selectNotificationClan,
 	selectNotificationForYou,
@@ -57,68 +58,67 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 		[t]
 	);
 
-	const handleChangeTab = (valueTab: string) => {
-		setCurrentTabNotify(valueTab);
-		if (valueTab === InboxType.TOPICS) {
-			dispatch(topicsActions.fetchTopics({ clanId: currentClanId as string }));
-		}
-	};
-
 	const allNotificationForYou = useSelector(selectNotificationForYou);
 	const allNotificationMentions = useSelector(selectNotificationMentions);
 	const allNotificationClan = useSelector(selectNotificationClan);
 	const getAllTopic = useSelector(selectTopicsSort);
 	const hasMoreTopics = useSelector(selectHasMoreTopics);
+	const hasFetchedTopics = useSelector(selectHasFetchedTopics);
+
+	const handleChangeTab = (valueTab: string) => {
+		setCurrentTabNotify(valueTab);
+		if (!currentClanId) return;
+
+		switch (valueTab) {
+			case InboxType.INDIVIDUAL:
+				if (!allNotificationForYou) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
+				}
+				break;
+			case InboxType.MESSAGES:
+				if (!allNotificationClan) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
+				}
+				break;
+			case InboxType.MENTIONS:
+				if (!allNotificationMentions) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+				}
+				break;
+			case InboxType.TOPICS:
+				if (!hasFetchedTopics) {
+					dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
+				}
+				break;
+		}
+	};
+
+	useEffect(() => {
+		if (currentClanId && !allNotificationMentions) {
+			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+		}
+	}, [allNotificationMentions, currentClanId, dispatch]);
 
 	const getAllNotificationForYou = useMemo(() => {
-		if (!allNotificationForYou?.data.length) {
+		if (!allNotificationForYou?.data?.length) {
 			return [];
 		}
 		return sortNotificationsByDate(allNotificationForYou.data);
 	}, [allNotificationForYou?.data]);
 
 	const getAllNotificationMentions = useMemo(() => {
-		if (!allNotificationMentions?.data.length) {
+		if (!allNotificationMentions?.data?.length) {
 			return [];
 		}
 		return sortNotificationsByDate(allNotificationMentions.data);
 	}, [allNotificationMentions?.data]);
 
 	const getAllNotificationClan = useMemo(() => {
-		if (!allNotificationClan?.data.length) {
+		if (!allNotificationClan?.data?.length) {
 			return [];
 		}
 		return sortNotificationsByDate(allNotificationClan.data);
 	}, [allNotificationClan?.data]);
-
-	useEffect(() => {
-		if (!currentClanId) return;
-
-		const isAllNotificationForYouEmpty = !allNotificationForYou;
-		const isAllNotificationClanEmpty = allNotificationClan;
-		const isAllNotificationMentionsEmpty = !allNotificationMentions;
-
-		let category;
-
-		if (currentTabNotify === InboxType.INDIVIDUAL && isAllNotificationForYouEmpty) {
-			category = NotificationCategory.FOR_YOU;
-		} else if (currentTabNotify === InboxType.MESSAGES && isAllNotificationClanEmpty) {
-			category = NotificationCategory.MESSAGES;
-		} else if (currentTabNotify === InboxType.MENTIONS && isAllNotificationMentionsEmpty) {
-			category = NotificationCategory.MENTIONS;
-		}
-
-		if (category) {
-			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category }));
-		}
-	}, [
-		currentTabNotify,
-		currentClanId,
-		allNotificationForYou?.data?.length,
-		allNotificationClan?.data?.length,
-		allNotificationMentions?.data?.length,
-		dispatch
-	]);
 
 	const listRefForYou = useRef<HTMLDivElement | null>(null);
 	const listRefMentions = useRef<HTMLDivElement | null>(null);

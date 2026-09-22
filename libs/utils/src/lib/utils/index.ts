@@ -23,10 +23,6 @@ import type {
 	IChannel,
 	IEmojiOnMessage,
 	IExtendedMessage,
-	IHashtagOnMessage,
-	ILinkOnMessage,
-	ILinkVoiceRoomOnMessage,
-	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageSendPayload,
 	IMessageWithUser,
@@ -40,7 +36,7 @@ import type {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus, TypeSearch } from '../types';
+import { EBacktickType, EMimeTypes, EUserStatus, TypeSearch } from '../types';
 import { getDateLocale } from './dateI18n';
 import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
@@ -526,78 +522,6 @@ export const getRoleList = (rolesInClan: ApiRole[]) => {
 		roleId: item.id ?? '',
 		roleName: item.title ?? ''
 	}));
-};
-
-type ElementToken =
-	| (IMentionOnMessage & { kindOf: ETokenMessage.MENTIONS })
-	| (IHashtagOnMessage & { kindOf: ETokenMessage.HASHTAGS })
-	| (IEmojiOnMessage & { kindOf: ETokenMessage.EMOJIS })
-	| (ILinkOnMessage & { kindOf: ETokenMessage.LINKS })
-	| (IMarkdownOnMessage & { kindOf: ETokenMessage.MARKDOWNS })
-	| (ILinkVoiceRoomOnMessage & { kindOf: ETokenMessage.VOICE_LINKS });
-
-export const createFormattedString = (data: IExtendedMessage): string => {
-	const { t = '' } = data;
-	const elements: ElementToken[] = [];
-	(Object.keys(data) as (keyof IExtendedMessage)[]).forEach((key) => {
-		const itemArray = data[key];
-
-		if (Array.isArray(itemArray)) {
-			itemArray.forEach((item) => {
-				if (item) {
-					const typedItem: ElementToken = { ...(item as object), kindOf: key as any }; // Casting key as any
-					elements.push(typedItem);
-				}
-			});
-		}
-	});
-
-	elements.sort((a, b) => {
-		const startA = a.s ?? 0;
-		const startB = b.s ?? 0;
-		return startA - startB;
-	});
-	let result = '';
-	let lastIndex = 0;
-
-	elements.forEach((element) => {
-		const startindex = element.s ?? lastIndex;
-		const endindex = element.e ?? startindex;
-		result += t.slice(lastIndex, startindex);
-		const contentInElement = t?.substring(startindex, endindex);
-		switch (element.kindOf) {
-			case ETokenMessage.MENTIONS: {
-				if (element.user_id) {
-					result += `@[${contentInElement.slice(1)}](${element.user_id})`;
-				} else if (element.role_id) {
-					result += `@[${contentInElement.slice(1)}](${element.role_id})`;
-				}
-				break;
-			}
-			case ETokenMessage.HASHTAGS:
-				result += `#[${contentInElement.slice(1)}](${element.channelId})`;
-				break;
-			case ETokenMessage.EMOJIS:
-				result += `::[${contentInElement}](${element.emojiid})`;
-				break;
-			case ETokenMessage.LINKS:
-				result += `${contentInElement}`;
-				break;
-			case ETokenMessage.MARKDOWNS:
-				result += `${contentInElement}`;
-				break;
-			case ETokenMessage.VOICE_LINKS:
-				result += `${contentInElement}`;
-				break;
-			default:
-				break;
-		}
-		lastIndex = endindex;
-	});
-
-	result += t.slice(lastIndex);
-
-	return result;
 };
 
 export function addMention(obj: IMessageSendPayload | string, mentionValue: IMentionOnMessage[]): IExtendedMessage {

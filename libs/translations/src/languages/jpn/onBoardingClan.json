@@ -106,6 +106,25 @@
 			"title": "コミュニティについて",
 			"placeholder": "私たちのコミュニティについて教えてください。何が特別ですか?"
 		},
+		"hashtags": {
+			"title": "コミュニティハッシュタグ",
+			"description": "メンバーがあなたを見つけやすくなるよう、コミュニティのトピックを表すハッシュタグを最大6個選択してください。",
+			"selectedCount": "選択済み: {{count}}/{{max}} ハッシュタグ",
+			"minRequired": "コミュニティには少なくとも1つのハッシュタグが必要です",
+			"maxReached": "最大6個のハッシュタグに達しました",
+			"items": {
+				"Gaming": "ゲーム",
+				"Technology": "テクノロジー",
+				"Education": "教育・学習",
+				"Entertainment": "エンタメ",
+				"Music": "音楽",
+				"Art": "アート",
+				"Crypto": "暗号資産",
+				"Anime": "アニメ＆マンガ",
+				"Sports": "スポーツ",
+				"Community": "コミュニティ"
+			}
+		},
 		"vanityUrl": {
 			"title": "カスタムURL",
 			"description": "コミュニティのためのカスタムURLを作成。小文字、数字、およびハイフンのみを使用。",
@@ -132,7 +151,7 @@
 			"communityDisabled": "コミュニティが無効化されました。",
 			"disableFailed": "無効化に失敗しました!",
 			"bannerRemoved": "バナーを削除しました!",
-			"fillAllRequiredFields": "すべての必須フィールド（バナー、紹介、説明、カスタムURL）を埋めてください!",
+			"fillAllRequiredFields": "すべての必須フィールド（バナー、紹介、説明、カスタムURL、ハッシュタグ）を埋めてください!",
 			"bannerUpdateFailed": "バナーの更新に失敗しました!"
 		}
 	},

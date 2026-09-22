@@ -170,79 +170,75 @@ export const CreateNewChannelModal = () => {
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className="w-[100vw] h-[100vh] text-theme-primary overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center"
+			className="fixed inset-0 h-dvh w-screen text-theme-primary overflow-hidden z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center sm:p-4"
 		>
-			<div
-				className={`z-60 w-full h-full sm:w-4/5 sm:max-h-[630px] md:w-[684px] bg-theme-setting-primary  rounded-2xl flex-col justify-start  items-start gap-3 inline-flex relative shadow-lg`}
-			>
-				<div className="self-stretch flex-col justify-start items-start flex">
-					<div className="self-stretch px-5 pt-8 flex-col justify-start items-start gap-3 flex">
-						<div className="self-stretch h-14 flex-col justify-center items-start gap-1 flex">
-							<div className="flex flex-col items-start gap-x-2 sm:flex-row sm:items-center w-full relative">
-								<ChannelLableModal labelProp={t('header.title')} />
-								<span>
-									<p className="self-stretch  text-sm font-bold leading-normal uppercase text-cyan-500">
-										{currentCategory?.category_name || channelWelcome?.category_name}
-									</p>
-								</span>
-								<div className="absolute right-1 top-[-10px]">
-									<button onClick={handleCloseModal} className="">
-										<Icons.Close />
-									</button>
-								</div>
+			<div className="z-60 w-full h-full sm:h-auto sm:max-h-[630px] sm:w-4/5 md:w-[684px] bg-theme-setting-primary rounded-2xl flex flex-col justify-between relative shadow-lg overflow-hidden">
+				<div className="flex-shrink-0 self-stretch px-5 pt-6 sm:pt-8 pb-1 flex flex-col justify-start items-start gap-3">
+					<div className="self-stretch h-14 flex-col justify-center items-start gap-1 flex">
+						<div className="flex flex-col items-start gap-x-2 sm:flex-row sm:items-center w-full relative pr-8">
+							<ChannelLableModal labelProp={t('header.title')} />
+							<span>
+								<p className="self-stretch text-sm font-bold leading-normal uppercase text-cyan-500">
+									{currentCategory?.category_name || channelWelcome?.category_name}
+								</p>
+							</span>
+							<div className="absolute right-0 top-[-6px] sm:top-[-10px]">
+								<button onClick={handleCloseModal} className="p-1 hover:opacity-80 transition-opacity">
+									<Icons.Close />
+								</button>
 							</div>
+						</div>
 
-							<div className=" text-sm">{t('labels.description')}</div>
-						</div>
-						<div className={`flex flex-col gap-3 w-full`}>
-							<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
-								<ChannelLableModal labelProp={t('labels.chooseType')} />
-								<div
-									className={`Frame405 self-stretch  flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-scroll max-xl:h-auto app-scroll`}
-								>
-									<ChannelTypeComponent
-										type={ChannelType.CHANNEL_TYPE_CHANNEL}
-										selectedType={channelType}
-										onChange={onChangeChannelType}
-										error={isErrorType}
-									/>
-									<ChannelTypeComponent
-										disable={false}
-										type={channelTypeVoice}
-										selectedType={channelType}
-										onChange={onChangeChannelType}
-										error={isErrorType}
-									/>
-									<ChannelTypeComponent
-										disable={false}
-										type={ChannelType.CHANNEL_TYPE_STREAMING}
-										selectedType={channelType}
-										onChange={onChangeChannelType}
-										error={isErrorType}
-									/>
-								</div>
-							</div>
-							{channelType !== ChannelType.CHANNEL_TYPE_APP && (
-								<ChannelNameTextField
-									ref={InputRef}
-									onChange={handleChannelNameChange}
-									onCheckValidate={checkValidate}
-									type={channelType}
-									channelNameProps={t('labels.channelName')}
-									error={isErrorName}
-									placeholder={t('labels.placeholder')}
-									shouldValidate={true}
-									categoryId={currentCategory?.category_id || channelWelcome?.category_id}
-									clanId={currentCategory?.clan_id as string}
-									onKeyDown={handleKeyDown}
-								/>
-							)}
-							{channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
-								<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps={t('labels.isPrivate')} />
-							)}
-						</div>
+						<div className="text-sm">{t('labels.description')}</div>
 					</div>
 				</div>
+
+				<div className="flex-1 min-h-0 overflow-y-auto px-5 py-1 flex flex-col gap-3 w-full app-scroll">
+					<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
+						<ChannelLableModal labelProp={t('labels.chooseType')} />
+						<div className="Frame405 self-stretch flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-auto max-xl:h-auto app-scroll">
+							<ChannelTypeComponent
+								type={ChannelType.CHANNEL_TYPE_CHANNEL}
+								selectedType={channelType}
+								onChange={onChangeChannelType}
+								error={isErrorType}
+							/>
+							<ChannelTypeComponent
+								disable={false}
+								type={channelTypeVoice}
+								selectedType={channelType}
+								onChange={onChangeChannelType}
+								error={isErrorType}
+							/>
+							<ChannelTypeComponent
+								disable={false}
+								type={ChannelType.CHANNEL_TYPE_STREAMING}
+								selectedType={channelType}
+								onChange={onChangeChannelType}
+								error={isErrorType}
+							/>
+						</div>
+					</div>
+					{channelType !== ChannelType.CHANNEL_TYPE_APP && (
+						<ChannelNameTextField
+							ref={InputRef}
+							onChange={handleChannelNameChange}
+							onCheckValidate={checkValidate}
+							type={channelType}
+							channelNameProps={t('labels.channelName')}
+							error={isErrorName}
+							placeholder={t('labels.placeholder')}
+							shouldValidate={true}
+							categoryId={currentCategory?.category_id || channelWelcome?.category_id}
+							clanId={currentCategory?.clan_id as string}
+							onKeyDown={handleKeyDown}
+						/>
+					)}
+					{channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
+						<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps={t('labels.isPrivate')} />
+					)}
+				</div>
+
 				<CreateChannelButton onClickCancel={handleCloseModal} onClickCreate={handleSubmit} checkInputError={isInputError} />
 			</div>
 			{isErrorType !== '' && <AlertTitleTextWarning description={isErrorType} />}

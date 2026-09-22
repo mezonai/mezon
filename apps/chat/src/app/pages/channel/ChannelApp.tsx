@@ -1,58 +1,16 @@
-import { GridLayout, LiveKitRoom, ParticipantTile, RoomAudioRenderer, useLocalParticipant, useTracks } from '@livekit/components-react';
 import {
 	channelAppActions,
-	generateMeetToken,
 	getStore,
 	giveCoffeeActions,
-	selectAllAccount,
 	selectChannelAppChannelId,
 	selectChannelAppClanId,
-	selectEnableCall,
-	selectEnableMic,
-	selectEnableVideo,
-	selectGetRoomId,
-	selectLiveToken,
-	selectNoiseSuppressionEnabled,
 	selectSendTokenEvent,
-	useAppDispatch,
-	useAppSelector
+	useAppDispatch
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import { getNoiseSuppressionAudioCaptureOptions, type ApiChannelAppResponseExtend } from '@mezon/utils';
-import { Track } from 'livekit-client';
+import type { ApiChannelAppResponseExtend } from '@mezon/utils';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
-function AudioConference() {
-	const tracks = useTracks([{ source: Track.Source.Microphone, withPlaceholder: true }], { onlySubscribed: false });
-	return (
-		<GridLayout tracks={tracks} className="h-[calc(100vh-var(--lk-control-bar-height))]">
-			<ParticipantTile />
-		</GridLayout>
-	);
-}
-
-export function AudiRoom({ token, serverUrl }: { token: string; serverUrl: string | undefined }) {
-	const enableMic = useSelector(selectEnableMic);
-	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
-
-	return (
-		<LiveKitRoom
-			video={false}
-			audio={enableMic ? getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled) : false}
-			token={token}
-			serverUrl={serverUrl}
-			data-lk-theme="empty"
-			className="w-full h-full flex justify-center items-center"
-		>
-			<RoomAudioRenderer />
-			<div className="relative w-full h-full bg-black overflow-hidden">
-				<AudioConference />
-				<AudioControls />
-			</div>
-		</LiveKitRoom>
-	);
-}
 
 const buildAppUrl = (appChannel?: ApiChannelAppResponseExtend) => {
 	if (!appChannel?.app_url) return '';
@@ -70,16 +28,10 @@ const buildAppUrl = (appChannel?: ApiChannelAppResponseExtend) => {
 };
 
 export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelAppResponseExtend }) => {
-	const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
 	const dispatch = useAppDispatch();
 	const store = getStore();
 
 	const sendTokenEvent = useSelector(selectSendTokenEvent);
-	const userProfile = useSelector(selectAllAccount);
-	const roomId = useAppSelector((state) => selectGetRoomId(state, appChannel?.channel_id));
-
-	const isJoinVoice = useSelector(selectEnableCall);
-	const token = useSelector(selectLiveToken);
 
 	useEffect(() => {
 		const currentChannelAppClanId = selectChannelAppClanId(store.getState());
@@ -91,30 +43,6 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		dispatch(channelAppActions.setChannelId(appChannel?.channel_id || '0'));
 		dispatch(channelAppActions.setClanId(appChannel?.clan_id || null));
 	}, []);
-
-	useEffect(() => {
-		const fetchData = async () => {
-			if (!roomId || !isJoinVoice) return;
-
-			try {
-				const result = await dispatch(
-					generateMeetToken({
-						channelId: appChannel?.channel_id as string,
-						roomName: roomId
-					})
-				).unwrap();
-
-				if (result) {
-					dispatch(channelAppActions.setRoomToken(result));
-				}
-			} catch (err) {
-				console.error('Failed to join room:', err);
-				dispatch(channelAppActions.setRoomToken(undefined));
-			}
-		};
-
-		fetchData();
-	}, [roomId, isJoinVoice]);
 
 	useEffect(() => {
 		const handleTokenListerner = () => {
@@ -137,12 +65,6 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 					className="w-full h-full rounded-b-lg"
 				/>
 			</div>
-
-			{token && (
-				<div className="hidden">
-					<AudiRoom token={token} serverUrl={serverUrl} />
-				</div>
-			)}
 		</div>
 	) : (
 		<div className="w-full h-full flex items-center justify-center rounded-b-lg">
@@ -150,19 +72,3 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		</div>
 	);
 });
-
-function AudioControls() {
-	const enableVideo = useSelector(selectEnableVideo);
-	const enableMic = useSelector(selectEnableMic);
-	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
-	const { localParticipant } = useLocalParticipant();
-
-	useEffect(() => {
-		if (localParticipant) {
-			localParticipant.setCameraEnabled(enableVideo).catch(console.error);
-			localParticipant.setMicrophoneEnabled(enableMic, getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabled)).catch(console.error);
-		}
-	}, [enableVideo, enableMic, noiseSuppressionEnabled, localParticipant]);
-
-	return null;
-}

@@ -8,9 +8,8 @@ import {
 	useMenu,
 	usePathMatch
 } from '@mezon/core';
-import type { ChannelMembersEntity, DirectEntity, RootState } from '@mezon/store';
+import type { DirectEntity, RootState } from '@mezon/store';
 import {
-	DMCallActions,
 	EInvoice,
 	EStateFriend,
 	appActions,
@@ -21,7 +20,6 @@ import {
 	galleryActions,
 	getStore,
 	getStoreAsync,
-	groupCallActions,
 	pinMessageActions,
 	searchMessagesActions,
 	selectAllAccount,
@@ -67,8 +65,7 @@ import {
 	toastActions,
 	topicsActions,
 	useAppDispatch,
-	useAppSelector,
-	voiceActions
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
@@ -86,7 +83,7 @@ import { UserStatusIconDM } from '../MemberProfile';
 import ModalEditGroup from '../ModalEditGroup';
 import { NotificationTooltip } from '../NotificationList';
 import SearchMessageChannel from '../SearchMessageChannel';
-import { GalleryModal } from './GalleryModal';
+import { GalleryModal, useGalleryTarget } from './GalleryModal';
 import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
@@ -576,26 +573,17 @@ const DmTopbarTools = memo(() => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
 	const currentDmGroup = useSelector(selectCurrentDM);
-	const rawMembers = useAppSelector((state: RootState) => (currentDmGroup?.id ? selectMemberByGroupId(state, currentDmGroup.id) || [] : []));
 
 	const isShowMemberListDM = useSelector(selectIsShowMemberListDM);
 	const selectOpenVoice = useSelector(selectOpenVoiceCall);
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
-	const userProfile = useSelector(selectSession);
 	const { setStatusMenu } = useMenu();
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode });
 	const isInCall = useSelector(selectIsInCall);
-	const isGroupCallActive = useSelector((state: RootState) => state.groupCall?.isGroupCallActive || false);
-	const voiceInfo = useSelector((state: RootState) => state.voice?.voiceInfo || null);
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
 	const userCurrent = useSelector(selectAllAccount);
 	const isBlockUser = useMemo(() => infoFriend?.state === EStateFriend.BLOCK, [infoFriend]);
-
-	const groupParticipants = useMemo(
-		() => rawMembers.map((member: ChannelMembersEntity) => member?.user?.id || member?.id).filter((id): id is string => Boolean(id)),
-		[rawMembers]
-	);
 
 	const closeMenuOnMobile = useCallback(() => {
 		const isMobile = window.innerWidth < 640;
@@ -625,94 +613,6 @@ const DmTopbarTools = memo(() => {
 
 	const handleStartCall = (isVideoCall = false) => {
 		closeMenuOnMobile();
-		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			if (isGroupCallActive && (voiceInfo as any)?.channelId === currentDmGroup.channel_id) {
-				dispatch(voiceActions.setOpenPopOut(false));
-				dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
-				dispatch(voiceActions.setShowCamera(isVideoCall));
-
-				dispatch(audioCallActions.setIsRingTone(false));
-				dispatch(audioCallActions.setIsBusyTone(false));
-				dispatch(audioCallActions.setIsEndTone(false));
-				dispatch(audioCallActions.setIsDialTone(false));
-				return;
-			}
-
-			if (!isInCall && !isGroupCallActive) {
-				if (!currentDmGroup.channel_id) {
-					dispatch(toastActions.addToast({ message: t('toastMessages.groupChannelIdMissing'), type: 'error', autoClose: 3000 }));
-					return;
-				}
-
-				handleSend(
-					{
-						t: isVideoCall ? t('callMessages.startedVideoCall') : t('callMessages.startedVoiceCall'),
-						callLog: {
-							isVideo: isVideoCall,
-							callLogType: IMessageTypeCallLog.STARTCALL,
-							showCallBack: false
-						}
-					},
-					[],
-					[],
-					[]
-				);
-
-				dispatch(
-					groupCallActions.showPreCallInterface({
-						groupId: currentDmGroup.channel_id,
-						isVideo: isVideoCall
-					})
-				);
-
-				dispatch(
-					groupCallActions.setIncomingCallData({
-						groupId: currentDmGroup.channel_id,
-						groupName: currentDmGroup.channel_label || currentDmGroup.usernames?.join(',') || 'Group Call',
-						groupAvatar: currentDmGroup.channel_avatar,
-						clanId: currentDmGroup.clan_id,
-						participants: [...groupParticipants, userProfile?.user_id?.toString() as string],
-						callerInfo: {
-							id: userProfile?.user_id || '',
-							name: userProfile?.username || '',
-							avatar: ''
-						}
-					})
-				);
-
-				dispatch(audioCallActions.setGroupCallId(currentDmGroup.channel_id));
-				dispatch(audioCallActions.setIsBusyTone(false));
-			} else {
-				const isSameGroup = (voiceInfo as any)?.channelId === currentDmGroup.channel_id;
-
-				if (isSameGroup) {
-					dispatch(voiceActions.setOpenPopOut(false));
-					dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
-					dispatch(voiceActions.setShowCamera(isVideoCall));
-
-					dispatch(audioCallActions.setIsRingTone(false));
-					dispatch(audioCallActions.setIsBusyTone(false));
-					dispatch(audioCallActions.setIsEndTone(false));
-					dispatch(audioCallActions.setIsDialTone(false));
-
-					dispatch(
-						groupCallActions.showPreCallInterface({
-							groupId: currentDmGroup.channel_id || '0',
-							isVideo: isVideoCall
-						})
-					);
-				} else {
-					dispatch(
-						toastActions.addToast({
-							message: t('toastMessages.youAreOnAnotherCall'),
-							type: 'warning',
-							autoClose: 3000
-						})
-					);
-				}
-			}
-			return;
-		}
 		if (!isInCall) {
 			startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
 		} else {
@@ -805,7 +705,7 @@ const DmTopbarTools = memo(() => {
 						</>
 					)}
 					<PinButton isDMView mode={mode} styleCss="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />
-
+					<GalleryButton />
 					{!isBlockUser && !isMe && <AddMemberToGroupDm currentDmGroup={currentDmGroup} />}
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
 						<button
@@ -1247,8 +1147,7 @@ function GalleryButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowGallery, setIsShowGallery] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
-	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
-	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const { channelId: currentChannelId, clanId: currentClanId } = useGalleryTarget();
 	const galleryFillClass = isShowGallery
 		? '[--gallery-fill-1:var(--bg-icon-theme-active)] [--gallery-fill-2:var(--bg-theme-secounnd)]'
 		: '[--gallery-fill-1:var(--bg-icon-theme)] [--gallery-fill-2:var(--bg-theme-secounnd)] hover:[--gallery-fill-1:var(--bg-icon-theme-active)] hover:[--gallery-fill-2:var(--bg-theme-secounnd)]';
@@ -1257,12 +1156,14 @@ function GalleryButton() {
 
 	const handleShowGallery = async () => {
 		if (!isShowGallery) {
+			if (!currentChannelId) return;
 			await dispatch(
 				galleryActions.fetchGalleryAttachments({
 					clanId: currentClanId,
 					channelId: currentChannelId,
 					limit: 50,
-					direction: 'initial'
+					direction: 'initial',
+					noCache: true
 				})
 			);
 		}

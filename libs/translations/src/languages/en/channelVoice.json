@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Connection disconnected",
 		"microphonePermissionRequired": "Microphone permission is required",
 		"cameraPermissionRequired": "Camera permission is required",
-		"recipientDidNotAnswer": "The recipient did not answer the call."
+		"recipientDidNotAnswer": "The recipient did not answer the call.",
+		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long."
 	},
 	"usernameScreen": "{{username}}'s screen",
 	"recording": {
@@ -66,5 +67,10 @@
 		"savedToDisk": "Recording saved to {{fileName}} ({{size}})",
 		"downloaded": "Recording downloaded: {{fileName}} ({{size}})",
 		"failed": "Recording failed: {{reason}}"
+	},
+	"pushToTalk": {
+		"holdSpace": "Hold Space to talk",
+		"holdingSpace": "Talking — release Space to mute",
+		"hintBody": "You joined to listen. Hold Space to open your mic while you speak, release to mute again."
 	}
 }

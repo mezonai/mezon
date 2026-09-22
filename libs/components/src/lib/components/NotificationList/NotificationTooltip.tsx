@@ -13,8 +13,12 @@ export const NotificationTooltip = memo(() => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const badgeCount = useSelector((state) => selectBadgeClanById(state, currentClanId || ''));
 	const [visible, setVisible] = useState(false);
+	const [openCount, setOpenCount] = useState(0);
 
 	const handleVisibleChange = (visible: boolean) => {
+		if (visible) {
+			setOpenCount((c) => c + 1);
+		}
 		setVisible(visible);
 	};
 
@@ -42,7 +46,7 @@ export const NotificationTooltip = memo(() => {
 		<Tooltip
 			placement="bottomRight"
 			trigger={['click']}
-			overlay={<NotificationTooltipContent onCloseTooltip={handleCloseTooltip} />}
+			overlay={<NotificationTooltipContent key={openCount} onCloseTooltip={handleCloseTooltip} />}
 			onVisibleChange={handleVisibleChange}
 			visible={visible}
 			overlayClassName="notification-tooltip"

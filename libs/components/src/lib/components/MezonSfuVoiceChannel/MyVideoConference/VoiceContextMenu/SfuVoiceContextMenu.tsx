@@ -17,8 +17,6 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
-import { useSendReaction } from '../Reaction';
-import { SfuVoiceInteractiveLayer } from './SfuVoiceInteractiveLayer';
 
 interface SfuVoiceContextMenuProps {
 	channelId: string;
@@ -45,7 +43,6 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 	const flowerCooldownUntilRef = useRef(0);
 	const [isMuting, setIsMuting] = useState(false);
 	const [isKicking, setIsKicking] = useState(false);
-	const { sendFlower } = useSendReaction();
 
 	const participantId = contextMenu?.openedParticipantId;
 	const member = useAppSelector((state) => (participantId ? selectMemberClanByUserId(state, participantId) : undefined));
@@ -146,7 +143,6 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 				})
 			);
 			await dispatch(voiceActions.giveFlowers({ receiver_id: receiverId })).unwrap();
-			sendFlower(receiverId);
 
 			const response = await createDirectMessageWithUser(
 				receiverId,
@@ -177,63 +173,59 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 		myProfile.userId,
 		myProfile?.userProfile?.user?.username,
 		participantId,
-		sendFlower,
 		sendInviteMessage,
 		t,
 		userWallet?.balance
 	]);
 
-	if (!contextMenu || !participantId) return <SfuVoiceInteractiveLayer channelId={channelId} />;
+	if (!contextMenu || !participantId) return null;
 
 	return (
-		<>
-			<SfuVoiceInteractiveLayer channelId={channelId} />
-			<div
-				ref={menuRef}
-				className="contexify fixed z-30 flex w-52 flex-col rounded-md border border-border bg-theme-setting-nav p-2 text-sm font-medium text-theme-primary !bg-theme-contexify !opacity-100"
-				style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
+		<div
+			ref={menuRef}
+			className="contexify fixed z-30 flex w-52 flex-col rounded-md border border-border bg-theme-setting-nav p-2 text-sm font-medium text-theme-primary !bg-theme-contexify !opacity-100"
+			style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
+		>
+			<button
+				className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a] hover:text-white"
+				onClick={handleGiveFlowers}
+				data-e2e={generateE2eId('clan_page.screen.voice_room.button.send_flower')}
 			>
+				<span>{t('giveFlowers')}</span>
+				<Icons.IconGiveFlower />
+			</button>
+			{canManageVoice && (
 				<button
-					className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a] hover:text-white"
-					onClick={handleGiveFlowers}
-					data-e2e={generateE2eId('clan_page.screen.voice_room.button.send_flower')}
+					disabled={isMuting}
+					className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-item-hover disabled:cursor-not-allowed disabled:opacity-50"
+					onClick={() => void handleMute()}
+					data-e2e={generateE2eId('clan_page.screen.voice_room.button.mute_mic')}
 				>
-					<span>{t('giveFlowers')}</span>
-					<Icons.IconGiveFlower />
+					<span>{t('muteMic')}</span>
+					{isMuting ? (
+						<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+					) : (
+						<Icons.VoiceMicDisabledIcon className="h-4 w-4" />
+					)}
 				</button>
-				{canManageVoice && (
-					<button
-						disabled={isMuting}
-						className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-item-hover disabled:cursor-not-allowed disabled:opacity-50"
-						onClick={() => void handleMute()}
-						data-e2e={generateE2eId('clan_page.screen.voice_room.button.mute_mic')}
-					>
-						<span>{t('muteMic')}</span>
-						{isMuting ? (
-							<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-						) : (
-							<Icons.VoiceMicDisabledIcon className="h-4 w-4" />
-						)}
-					</button>
-				)}
-				{canManageVoice && (
-					<button
-						disabled={isKicking}
-						className="flex w-full cursor-pointer items-center justify-between rounded p-2 text-[#E13542] hover:bg-[#f67e882a] disabled:cursor-not-allowed disabled:opacity-50"
-						onClick={() => void handleKick()}
-						data-e2e={generateE2eId('clan_page.screen.voice_room.button.kick')}
-					>
-						<span>{t('member.kick')}</span>
-						{isKicking ? (
-							<div className="h-4 w-4 animate-spin rounded-full border-2 border-[#E13542] border-t-transparent" />
-						) : (
-							<Icons.CloseIcon className="h-4 w-4" />
-						)}
-					</button>
-				)}
-				<div className="contexify_separator" />
-				<ButtonCopy className="flex flex-row-reverse justify-between p-2" title={t('copyUserId')} copyText={member?.id || participantId} />
-			</div>
-		</>
+			)}
+			{canManageVoice && (
+				<button
+					disabled={isKicking}
+					className="flex w-full cursor-pointer items-center justify-between rounded p-2 text-[#E13542] hover:bg-[#f67e882a] disabled:cursor-not-allowed disabled:opacity-50"
+					onClick={() => void handleKick()}
+					data-e2e={generateE2eId('clan_page.screen.voice_room.button.kick')}
+				>
+					<span>{t('member.kick')}</span>
+					{isKicking ? (
+						<div className="h-4 w-4 animate-spin rounded-full border-2 border-[#E13542] border-t-transparent" />
+					) : (
+						<Icons.CloseIcon className="h-4 w-4" />
+					)}
+				</button>
+			)}
+			<div className="contexify_separator" />
+			<ButtonCopy className="flex flex-row-reverse justify-between p-2" title={t('copyUserId')} copyText={member?.id || participantId} />
+		</div>
 	);
 };

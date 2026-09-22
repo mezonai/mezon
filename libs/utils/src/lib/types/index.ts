@@ -67,6 +67,7 @@ export type LoadingStatus = 'not loaded' | 'loading' | 'loaded' | 'error';
 
 export type IClan = ApiClanDesc & {
 	id: string;
+	hashtags?: string;
 };
 
 export type IChannelAttachment = ApiChannelAttachment & {

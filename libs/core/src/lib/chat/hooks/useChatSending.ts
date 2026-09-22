@@ -285,13 +285,12 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			if (hasExistingAttachments && !isAttachmentFieldUpdate) {
 				trimContent = withCreateTimeSecondsInUpdateContent(trimContent, messageCreateTimeSeconds);
 			}
-			const updateChannelId = finalTopicId !== '0' ? finalTopicId : (channelIdOrDirectId ?? '0');
 			const updateAttachments = isAttachmentFieldUpdate ? attachments : undefined;
 			try {
 				await client.updateChannelMessage(
 					session,
 					getClanId || '0',
-					updateChannelId,
+					channelIdOrDirectId ?? '0',
 					mode,
 					isPublic,
 					messageId || '0',

@@ -106,6 +106,25 @@
 			"title": "커뮤니티 소개",
 			"placeholder": "커뮤니티에 대해 알려주세요... 무엇으로 특별한가요?"
 		},
+		"hashtags": {
+			"title": "커뮤니티 해시태그",
+			"description": "멤버들이 커뮤니티를 쉽게 찾을 수 있도록 주제를 대표하는 해시태그를 최대 6개까지 선택하세요.",
+			"selectedCount": "선택됨: {{count}}/{{max}} 해시태그",
+			"minRequired": "커뮤니티에는 최소 1개의 해시태그가 필요합니다",
+			"maxReached": "최대 6개 해시태그에 도달했습니다",
+			"items": {
+				"Gaming": "게임",
+				"Technology": "기술",
+				"Education": "교육",
+				"Entertainment": "엔터테인먼트",
+				"Music": "음악",
+				"Art": "예술",
+				"Crypto": "크립토",
+				"Anime": "애니메이션 & 만화",
+				"Sports": "스포츠",
+				"Community": "커뮤니티"
+			}
+		},
 		"vanityUrl": {
 			"title": "맞춤 URL",
 			"description": "커뮤니티를 위한 맞춤 URL 을 만드세요. 소문자, 숫자 및 하이픈만 사용하세요.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "커뮤니티 끔.",
 			"disableFailed": "끄기 실패!",
 			"bannerRemoved": "배너 제거됨!",
-			"fillAllRequiredFields": "필수 필드를 모두 채우세요: 배너, 소개, 설명, 맞춤 URL!",
+			"fillAllRequiredFields": "필수 필드를 모두 채우세요: 배너, 소개, 설명, 맞춤 URL, 해시태그!",
 			"bannerUpdateFailed": "배너 업데이트 실패!"
 		}
 	},

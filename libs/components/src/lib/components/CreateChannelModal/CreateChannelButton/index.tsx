@@ -14,12 +14,7 @@ export const CreateChannelButton: React.FC<CreateChannelProps> = ({ checkInputEr
 	const { t } = useTranslation('createChannel');
 	const isLoading = useSelector(selectLoadingStatus);
 	return (
-		<div
-			className="Frame394 absolute border-t-theme-primary  self-stretch mb-0 pt-3 justify-end items-center gap-4 inline-flex bottom-5 right-5"
-			style={{
-				width: 'calc(100% - 40px)'
-			}}
-		>
+		<div className="Frame394 border-t-theme-primary w-full px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:pb-5 justify-end items-center gap-4 inline-flex flex-shrink-0">
 			<button
 				onClick={onClickCancel}
 				className="Text  px-4 py-2 rounded-lg hover:underline text-xs leading-normal font-semibold"

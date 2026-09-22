@@ -40,6 +40,7 @@ type fetchGalleryAttachmentsPayload = {
 	after?: number;
 	direction?: 'before' | 'after' | 'initial';
 	mediaFilter?: MediaFilterType;
+	noCache?: boolean;
 };
 
 const GALLERY_CACHED_TIME = 1000 * 60 * 60;
@@ -122,10 +123,15 @@ export const fetchGalleryAttachments = createAsyncThunk(
 			before,
 			after,
 			direction = 'initial',
-			mediaFilter = 'image'
+			mediaFilter = 'image',
+			noCache = false
 		}: fetchGalleryAttachmentsPayload,
 		thunkAPI
 	) => {
+		if (!channelId) {
+			return { attachments: [], channelId, direction, fromCache: false };
+		}
+
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -139,7 +145,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 				limit,
 				before,
 				after,
-				false
+				noCache
 			);
 
 			if (!response.attachments) {
@@ -175,6 +181,20 @@ export const fetchGalleryAttachments = createAsyncThunk(
 		}
 	}
 );
+
+/**
+ * Attachments arriving over the socket are keyed by their url, while the ones coming back
+ * from the API are keyed by a snowflake id - so dedupe on every identity we have, otherwise
+ * the same media shows up twice once the list is refetched.
+ */
+const dedupeGalleryAttachments = (existing: AttachmentEntity[], incoming: AttachmentEntity[]) => {
+	const existingKeys = new Set<string>();
+	for (const att of existing) {
+		if (att.url) existingKeys.add(att.url);
+		if (att.id) existingKeys.add(att.id);
+	}
+	return incoming.filter((att) => !(att.url && existingKeys.has(att.url)) && !(att.id && existingKeys.has(att.id)));
+};
 
 const getInitialChannelGalleryState = () => ({
 	attachments: [] as AttachmentEntity[],
@@ -252,8 +272,7 @@ export const gallerySlice = createSlice({
 				state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 			}
 
-			const existingIds = new Set(state.galleryByChannel[channelId].attachments.map((att) => att.id || att.url));
-			const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
+			const newAttachments = dedupeGalleryAttachments(state.galleryByChannel[channelId].attachments, attachments);
 
 			state.galleryByChannel[channelId].attachments.push(...newAttachments);
 			state.galleryByChannel[channelId].attachments.sort((a, b) => {
@@ -262,14 +281,24 @@ export const gallerySlice = createSlice({
 				}
 				return 0;
 			});
+		},
+
+		removeGalleryAttachments: (state, action: PayloadAction<{ channelId: string; messageId: string }>) => {
+			const { channelId, messageId } = action.payload;
+			const channelGallery = state.galleryByChannel[channelId];
+			if (!channelGallery) {
+				return;
+			}
+			channelGallery.attachments = channelGallery.attachments.filter((att) => att.message_id !== messageId);
 		}
 	},
 
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchGalleryAttachments.pending, (state: GalleryState, action) => {
-				state.loadingStatus = 'loading';
 				const { channelId } = action.meta.arg;
+				if (!channelId) return;
+				state.loadingStatus = 'loading';
 				if (!state.galleryByChannel[channelId]) {
 					state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 				}
@@ -286,10 +315,11 @@ export const gallerySlice = createSlice({
 					>
 				) => {
 					const { attachments, channelId, direction, fromCache } = action.payload;
-					const channelGallery = state.galleryByChannel[channelId];
+					if (!channelId) return;
 					if (!state.galleryByChannel[channelId]) {
 						state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 					}
+					const channelGallery = state.galleryByChannel[channelId];
 
 					if (direction === 'before') {
 						const allItemsAlreadyExist = attachments.every((att) =>
@@ -303,8 +333,7 @@ export const gallerySlice = createSlice({
 						channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
 					}
 
-					const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
-					const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
+					const newAttachments = dedupeGalleryAttachments(channelGallery.attachments, attachments);
 
 					if (direction === 'after') {
 						channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];

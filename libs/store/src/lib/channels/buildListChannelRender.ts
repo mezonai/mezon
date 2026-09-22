@@ -1,5 +1,6 @@
 import type { ICategoryChannel, IChannel } from '@mezon/utils';
 import type { CategoriesEntity } from '../categories/categories.slice';
+import { sortThreadsByName } from './compareThreadName';
 
 export const FAVORITE_CATEGORY_ID = 'favorCate';
 export const FAVORITE_CATEGORY_NAME = 'favoriteChannel';
@@ -117,7 +118,7 @@ export function flattenCategoryWithThreads(parentsForCategory: IChannel[], threa
 			result.push(channel);
 			continue;
 		}
-		const children = sortByOptionalOrder(rawChildren);
+		const children = sortThreadsByName(rawChildren);
 		const threadIds: string[] = channel.threadIds ? channel.threadIds.slice() : [];
 		for (let j = 0; j < children.length; j++) {
 			threadIds.push(children[j].id);

@@ -111,7 +111,6 @@ export { default as EventSchedule } from './components/EventSchedule';
 export { default as ModalCall } from './components/ModalCall';
 export { default as MultiStepModalE2ee } from './components/ModalSendCode';
 export { default as SettingComunity } from './components/SettingComunity';
-export { WebRTCStreamProvider, useWebRTCStream } from './components/StreamContext/StreamContext';
 
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
@@ -123,19 +122,11 @@ export { default as MessageWithSystem } from './components/MessageWithSystem';
 export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
 
 export * from './components/MezonSfuVoiceChannel';
-export * from './components/VoiceChannel';
 export * from './components/virtual-core/useVirtualizer';
 
 export * from './components/PreJoinCalling/ControlButton';
 export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
-
-export * from './components/GroupCall';
-export * from './components/GroupCall/GroupCallComponent';
-export { default as GroupPopupNotiCall } from './components/GroupCall/GroupPopupNotiCall';
-export { default as PreCallInterface } from './components/GroupCall/PreCallInterface';
-export { CallControls } from './components/GroupCall/components/CallControls';
-export { CallStatus } from './components/GroupCall/components/CallStatus';
 
 export * from './components/ButtonSwitchCustom';
 export { default as ButtonCopy } from './components/ButtonSwitchCustom/CopyButtonComponent';

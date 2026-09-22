@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useSfuVoiceInteractiveListener } from '../../ControlBar/hooks/useSfuVoiceInteractiveListener';
 import { SfuVoiceInteractiveWindow } from '../../VoiceInteractive/SfuVoiceInteractiveWindow';
 import { GiveFlowersVoiceHandle } from '../Reaction';
@@ -9,7 +10,7 @@ interface SfuVoiceInteractiveLayerProps {
 export const SfuVoiceInteractiveLayer = ({ channelId }: SfuVoiceInteractiveLayerProps) => {
 	const { activeApps, closeApp, focusApp, currentSender, senderQueueRef, playerRef, isShowingSenderRef, senderTimeoutRef } =
 		useSfuVoiceInteractiveListener(channelId);
-
+	const currentZindex = useRef(9999);
 	return (
 		<>
 			{activeApps.map((app) => (
@@ -20,6 +21,7 @@ export const SfuVoiceInteractiveLayer = ({ channelId }: SfuVoiceInteractiveLayer
 					zIndex={app.zIndex}
 					onFocus={() => focusApp(app.id)}
 					onClose={() => closeApp(app.id)}
+					refZIndex={currentZindex}
 				/>
 			))}
 			<GiveFlowersVoiceHandle

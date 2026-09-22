@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
+import { LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, ChannelType, VoiceLeavedEvent } from 'mezon-js';
@@ -102,7 +102,6 @@ export interface VoiceState {
 	showCamera: boolean;
 	showScreen: boolean;
 	noiseSuppressionEnabled: boolean;
-	noiseSuppressionLevel: number;
 	statusCall: boolean;
 	voiceConnectionState: boolean;
 	fullScreen?: boolean;
@@ -333,7 +332,6 @@ export const initialVoiceState: VoiceState = {
 	showCamera: false,
 	showScreen: false,
 	noiseSuppressionEnabled: false,
-	noiseSuppressionLevel: INITIAL_NOISE_SUPPRESSION_PERCENTAGE,
 	statusCall: false,
 	voiceConnectionState: false,
 	fullScreen: false,
@@ -465,9 +463,6 @@ export const voiceSlice = createSlice({
 		setNoiseSuppressionEnabled: (state, action: PayloadAction<boolean>) => {
 			state.noiseSuppressionEnabled = action.payload;
 		},
-		setNoiseSuppressionLevel: (state, action: PayloadAction<number>) => {
-			state.noiseSuppressionLevel = action.payload;
-		},
 		setRecordingState: (state, action: PayloadAction<Partial<VoiceRecordingState>>) => {
 			state.recording = { ...state.recording, ...action.payload };
 		},
@@ -491,7 +486,6 @@ export const voiceSlice = createSlice({
 			state.showCamera = false;
 			state.showScreen = false;
 			state.noiseSuppressionEnabled = false;
-			state.noiseSuppressionLevel = INITIAL_NOISE_SUPPRESSION_PERCENTAGE;
 			state.voiceConnectionState = false;
 			state.voiceInfo = null;
 			state.fullScreen = false;
@@ -692,8 +686,6 @@ export const selectShowCamera = createSelector(getVoiceState, (state) => state.s
 export const selectShowScreen = createSelector(getVoiceState, (state) => state.showScreen);
 
 export const selectNoiseSuppressionEnabled = createSelector(getVoiceState, (state) => state.noiseSuppressionEnabled);
-
-export const selectNoiseSuppressionLevel = createSelector(getVoiceState, (state) => state.noiseSuppressionLevel);
 
 export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => state.fullScreen);
 

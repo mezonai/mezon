@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Anslutning bruten",
 		"microphonePermissionRequired": "Mikrofon behörighet krävs",
 		"cameraPermissionRequired": "Kamera behörighet krävs",
-		"recipientDidNotAnswer": "Mottagaren svarade inte på samtal."
+		"recipientDidNotAnswer": "Mottagaren svarade inte på samtal.",
+		"aloneTimeoutDisconnected": "Du kopplades från röstkanalen eftersom du var ensam i den för länge."
 	},
 	"usernameScreen": "{{username}}s skärm",
 	"recording": {

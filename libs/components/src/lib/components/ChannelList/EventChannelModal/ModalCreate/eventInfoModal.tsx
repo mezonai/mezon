@@ -76,6 +76,9 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 
 	useEffect(() => {
 		setSelectedFrequency(contentSubmit.repeatType ?? ERepeatType.DOES_NOT_REPEAT);
+		if (contentSubmit.selectedDateEnd !== contentSubmit.selectedDateStart) {
+			setContentSubmit((prev) => ({ ...prev, selectedDateEnd: prev.selectedDateStart }));
+		}
 	}, []);
 
 	useMemo(() => {
@@ -88,14 +91,12 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	}, [contentSubmit.timeEnd, contentSubmit.timeStart, contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, contentSubmit.repeatType]);
 
 	const handleDateChangeStart = (date: Date) => {
-		setContentSubmit((prev) => ({ ...prev, selectedDateStart: getTimeTodayMidNight(date ? date.getTime() : undefined) }));
-		if (date.getTime() > contentSubmit.selectedDateEnd) {
-			handleDateChangeEnd(date);
-		}
-	};
-
-	const handleDateChangeEnd = (date: Date) => {
-		setContentSubmit((prev) => ({ ...prev, selectedDateEnd: getTimeTodayMidNight(date ? date.getTime() : undefined) }));
+		const midnight = getTimeTodayMidNight(date ? date.getTime() : undefined);
+		setContentSubmit((prev) => ({
+			...prev,
+			selectedDateStart: midnight,
+			selectedDateEnd: midnight
+		}));
 	};
 
 	const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -187,23 +188,23 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				/>
 				{errorTopic && <p className="text-[#e44141]  text-xs italic font-thin mt-1">{t('errorMessages.invalidTopic')}</p>}
 			</div>
+			<div className="mb-4" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.start_date')}>
+				<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
+					{t('fields.startDate.title')}
+					<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
+				</h3>
+				<Suspense fallback={<DatePickerPlaceholder />}>
+					<DatePickerWrapper
+						className="bg-theme-input p-2 rounded outline-none w-full"
+						wrapperClassName="w-full"
+						selected={new Date(contentSubmit.selectedDateStart)}
+						onChange={handleDateChangeStart}
+						dateFormat="dd/MM/yyyy"
+						minDate={new Date()}
+					/>
+				</Suspense>
+			</div>
 			<div className="mb-4 flex gap-x-4">
-				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.start_date')}>
-					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
-						{t('fields.startDate.title')}
-						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
-					</h3>
-					<Suspense fallback={<DatePickerPlaceholder />}>
-						<DatePickerWrapper
-							className="bg-theme-input p-2 rounded outline-none w-full"
-							wrapperClassName="w-full"
-							selected={new Date(contentSubmit.selectedDateStart)}
-							onChange={handleDateChangeStart}
-							dateFormat="dd/MM/yyyy"
-							minDate={new Date()}
-						/>
-					</Suspense>
-				</div>
 				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.start_time')}>
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
 						{t('fields.startTime.title')}
@@ -214,24 +215,6 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						name="timeStart"
 						handleChangeTime={handleChangeTimeStart}
 					/>
-				</div>
-			</div>
-			<div className="mb-4 flex gap-x-4">
-				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.end_date')}>
-					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
-						{t('fields.endDate.title')}
-						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
-					</h3>
-					<Suspense fallback={<DatePickerPlaceholder />}>
-						<DatePickerWrapper
-							className="bg-theme-input p-2 rounded outline-none w-full"
-							wrapperClassName="w-full"
-							selected={new Date(contentSubmit.selectedDateEnd)}
-							onChange={handleDateChangeEnd}
-							dateFormat="dd/MM/yyyy"
-							minDate={new Date(contentSubmit.selectedDateStart)}
-						/>
-					</Suspense>
 				</div>
 				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.end_time')}>
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">

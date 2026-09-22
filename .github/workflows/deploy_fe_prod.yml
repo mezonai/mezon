@@ -100,6 +100,7 @@ jobs:
           envkey_NX_APP_INTERACTIVE: '2089273739668623360'
           envkey_NX_APP_BLACKBOARD: '2089294331818020864'
           envkey_NX_APP_QUIZ: '2089257413122199552'
+          envkey_NX_VOICE_AGENT_ID: '2037383744142184448'
 
       - name: Build
         env:

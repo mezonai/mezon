@@ -1,7 +1,8 @@
-import { selectAllAccount, selectOpenExternalChatBox } from '@mezon/store';
+import { selectAllAccount, selectOpenExternalChatBox, voiceActions } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import { safeJSONParse } from 'mezon-js';
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface MessageExternal {
 	id: string;
@@ -9,6 +10,7 @@ interface MessageExternal {
 	name?: string;
 	content?: string;
 	avatar?: string;
+	isMe?: boolean;
 }
 
 export type ExternalChatRef = {
@@ -26,7 +28,7 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 	const openChatBox = useSelector(selectOpenExternalChatBox);
 	const profile = useSelector(selectAllAccount);
 	const [messages, setMessages] = useState<string[]>([]);
-
+	const dispatch = useDispatch();
 	useImperativeHandle(ref, () => ({
 		setMessages
 	}));
@@ -48,7 +50,7 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 			handleWriteChatExternal(JSON.stringify(message));
 
 			event.currentTarget.value = '';
-			setMessages((pre) => [...pre, JSON.stringify(message)]);
+			setMessages((pre) => [...pre, JSON.stringify({ ...message, isMe: true })]);
 		}
 	};
 
@@ -70,10 +72,20 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 			});
 		}
 	}, [messages]);
+
+	const handleClose = useCallback(() => {
+		dispatch(voiceActions.setToggleChatBox());
+	}, [dispatch]);
 	return (
 		<>
 			{openChatBox && (
 				<div className="max-w-[480px] bg-[#111] min-w-[300px] w-1/4 h-full flex-col flex p-2 py-4 gap-2 select-text">
+					<div className="flex justify-between p-3 items-center text-textPrimary border-b-[1px]">
+						<div>External Message Chat</div>
+						<div onClick={handleClose} className="cursor-pointer hover:bg-bgHover p-2 rounded-full text-sm">
+							<Icons.CloseButton className="w-4 h-4" />
+						</div>
+					</div>
 					<div ref={messagesContainerRef} className="flex-1 bg-bgPrimary rounded-md flex flex-col gap-2 overflow-y-auto thread-scroll">
 						{messages.map((message) => (
 							<MessageItem key={message} message={message} />
@@ -100,7 +112,7 @@ const MessageItem = ({ message }: { message: string }) => {
 
 	const nameSender = parsed.name || 'Guest';
 	const avatarUrl = parsed.avatar || '';
-
+	const iseMe = parsed?.isMe;
 	const time = useMemo(() => {
 		const timestamp = parsed?.timestamp || Date.now();
 		const date = new Date(timestamp);
@@ -112,7 +124,7 @@ const MessageItem = ({ message }: { message: string }) => {
 	}, []);
 
 	return (
-		<div className="flex flex-row gap-2 p-2 text-contentPrimary">
+		<div className={`flex gap-2 p-2 text-contentPrimary ${iseMe ? 'flex-row-reverse' : 'flex-row'}`}>
 			<div className="flex-shrink-0 pt-1">
 				{avatarUrl ? (
 					<img src={avatarUrl} alt={nameSender} className="w-8 h-8 rounded-full object-cover" />
@@ -123,13 +135,13 @@ const MessageItem = ({ message }: { message: string }) => {
 				)}
 			</div>
 
-			<div className="flex flex-col min-w-0">
-				<p className="text-base font-semibold leading-5">
+			<div className={`flex flex-col min-w-0  ${iseMe && 'items-end'}`}>
+				<p className={`text-base font-semibold leading-5 gap-2 flex items-center ${iseMe ? 'flex-row-reverse' : 'flex-row'}`}>
 					{nameSender}
-					<span className="font-normal text-xs text-gray-400 ml-2">{time}</span>
+					<span className="font-normal text-xs text-gray-400">{time}</span>
 				</p>
 
-				<p className="text-sm break-words">{parsed.content}</p>
+				<p className="text-sm break-words max-w-64">{parsed.content}</p>
 			</div>
 		</div>
 	);

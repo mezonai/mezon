@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Підключення перервано",
 		"microphonePermissionRequired": "Потрібен доступ до мікрофона",
 		"cameraPermissionRequired": "Потрібен доступ до камери",
-		"recipientDidNotAnswer": "Отримувач не відповів на дзвінок."
+		"recipientDidNotAnswer": "Отримувач не відповів на дзвінок.",
+		"aloneTimeoutDisconnected": "Вас відключено від голосового каналу, оскільки ви занадто довго були в ньому самі."
 	},
 	"usernameScreen": "Екран {{username}}",
 	"recording": {

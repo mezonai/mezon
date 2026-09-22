@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Conexão interrompida",
 		"microphonePermissionRequired": "Permissão de microfone necessária",
 		"cameraPermissionRequired": "Permissão de câmera necessária",
-		"recipientDidNotAnswer": "O destinatário não atendeu a chamada."
+		"recipientDidNotAnswer": "O destinatário não atendeu a chamada.",
+		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo."
 	},
 	"usernameScreen": "Tela de {{username}}",
 	"recording": {

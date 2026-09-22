@@ -1086,7 +1086,7 @@ export const Sticker: React.FC<IconProps> = ({
 	);
 };
 
-export const Smile: React.FC<IconProps> = ({ defaultFill1 = 'currentColor', ...props }) => {
+export const Smile: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5', defaultFill1 = 'currentColor', ...props }) => {
 	return (
 		<svg width="20" height="20" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
 			<path

@@ -80,7 +80,7 @@ export default function AddFriendPage() {
 	const navigateDeeplinkMobile = () => {
 		try {
 			const strData = `${username}?data=${data}`;
-			window.location.href = `mezon.ai://invite/chat/${strData}`;
+			window.location.href = `mezonapp://invite/chat/${strData}`;
 		} catch (e) {
 			console.error('log  => navigateDeeplinkMobile error', e);
 		}

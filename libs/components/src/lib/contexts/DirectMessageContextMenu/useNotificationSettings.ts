@@ -65,12 +65,14 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 
 		setNameChildren(timeMute ? t('contextMenu.unmute') : t('contextMenu.mute'));
 
-		const mutedText =
-			timeMute && timeMute !== EMuteState.MUTED_INFINITY
-				? t('contextMenu.mutedUntil', {
-						time: format(new Date(timeMute * 1000), 'dd/MM, HH:mm')
-					})
-				: '';
+		const muteDate =
+			timeMute && timeMute !== EMuteState.MUTED_INFINITY ? (timeMute > 1e11 ? new Date(timeMute) : new Date(timeMute * 1000)) : null;
+
+		const mutedText = muteDate
+			? t('contextMenu.mutedUntil', {
+					time: format(muteDate, 'dd/MM, HH:mm')
+				})
+			: '';
 
 		setMutedUntilText(mutedText);
 	}, [notificationSettings, t]);

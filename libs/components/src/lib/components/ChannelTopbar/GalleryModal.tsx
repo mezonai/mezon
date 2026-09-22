@@ -23,6 +23,7 @@ import {
 	selectGalleryAttachmentsByChannel,
 	selectGalleryPaginationByChannel,
 	selectMessageByMessageId,
+	selectMessageEntitiesByChannelId,
 	useAppDispatch,
 	useAppSelector,
 	type MediaFilterType
@@ -70,14 +71,27 @@ interface GalleryModalProps {
 	rootRef?: RefObject<HTMLElement>;
 }
 
+export function useGalleryTarget() {
+	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
+	const currentDm = useSelector(selectCurrentDM);
+
+	return useMemo(() => {
+		const isDM = !currentClanId || currentClanId === '0';
+		return {
+			clanId: isDM ? '0' : currentClanId,
+			channelId: (isDM ? currentDm?.id : currentChannelId) ?? ''
+		};
+	}, [currentClanId, currentChannelId, currentDm?.id]);
+}
+
 export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const { t, i18n } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
-	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
-	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const { channelId: currentChannelId, clanId: currentClanId } = useGalleryTarget();
 	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
 	const paginationState = useAppSelector((state) => selectGalleryPaginationByChannel(state, currentChannelId));
-
+	const messageEntities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, currentChannelId));
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
@@ -105,8 +119,13 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds < endDate?.getTime() / 1000);
 		}
 
+		listAttach = listAttach.filter((att) => {
+			const sourceMessage = att.message_id ? messageEntities?.[att.message_id] : undefined;
+			return !shouldHidePresignAttachment(att.url, sourceMessage);
+		});
+
 		return listAttach;
-	}, [attachments, mediaFilter, startDate, endDate]);
+	}, [attachments, mediaFilter, startDate, endDate, messageEntities]);
 
 	const { refs, floatingStyles, context } = useFloating({
 		open: isDateDropdownOpen,
@@ -710,9 +729,6 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
 	);
 	const isPresignPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage);
-	const isHidden = shouldHidePresignAttachment(attachment.url, sourceMessage);
-
-	if (isHidden) return null;
 
 	const cacheKey = attachment.id || attachment.message_id || `${dateKey}-${attachment.url}-${attachmentIndex}`;
 	const isVideo = attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);

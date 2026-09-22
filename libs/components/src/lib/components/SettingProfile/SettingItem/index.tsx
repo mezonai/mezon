@@ -1,4 +1,3 @@
-import mezonPackage from '@mezon/package-js';
 import { LogoutModal } from '@mezon/ui';
 import { EUserSettings, generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
@@ -165,7 +164,6 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					{t('setting:logOut')}
 				</button>
 				{openModal && <LogoutModal handleLogOut={handleLogOut} onClose={handleCloseModal} />}
-				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.desktopVersion}</div>
 			</div>
 		</div>
 	);

@@ -1,4 +1,4 @@
-import { selectVoiceInfo } from '@mezon/store';
+import { selectAppInteractData, selectVoiceInfo } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import Tooltip from 'rc-tooltip';
 import { useCallback } from 'react';
@@ -15,7 +15,8 @@ export const SfuVoiceInteractiveControl = ({ showVoiceInteractive, onVisibleChan
 		onVisibleChange(false);
 	}, [onVisibleChange]);
 
-	const iconClassName = 'cursor-pointer text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]';
+	const interactAppData = useSelector(selectAppInteractData);
+	const iconClassName = `cursor-pointer ${interactAppData ? 'text-green-400' : 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'} `;
 
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const channelId = voiceInfo?.channelId ?? '';
@@ -30,7 +31,7 @@ export const SfuVoiceInteractiveControl = ({ showVoiceInteractive, onVisibleChan
 			overlay={<SfuVoiceInteractiveMenu channelId={channelId} onClose={handleClose} />}
 			destroyTooltipOnHide
 		>
-			<div>
+			<div className={`flex items-center justify-center p-1 rounded-full ${interactAppData && 'shadow-[0px_0px_2px_#4ade80]'}`}>
 				<Icons.Joystick className={iconClassName} />
 			</div>
 		</Tooltip>

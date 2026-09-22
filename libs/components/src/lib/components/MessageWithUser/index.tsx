@@ -67,6 +67,7 @@ export type MessageWithUserProps = {
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
 	channelId?: string;
+	isPreview?: boolean;
 };
 
 const PollMessageWrapper = ({
@@ -154,7 +155,8 @@ function MessageWithUser({
 	observeIntersectionForLoading,
 	isSelected,
 	previousMessage,
-	channelId
+	channelId,
+	isPreview
 }: Readonly<MessageWithUserProps>) {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
@@ -405,6 +407,7 @@ function MessageWithUser({
 								onContextMenu={onContextMenu}
 								isInSearchMessage={isSearchMessage}
 								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}
+								isPreview={isPreview}
 							/>
 						)}
 						{Array.isArray(message?.content?.embed) && (

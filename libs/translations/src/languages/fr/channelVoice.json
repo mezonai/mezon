@@ -54,7 +54,8 @@
 		"connectionDisconnected": "Connexion interrompue",
 		"microphonePermissionRequired": "Autorisation du micro requise",
 		"cameraPermissionRequired": "Autorisation de la caméra requise",
-		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel."
+		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel.",
+		"aloneTimeoutDisconnected": "Vous avez été déconnecté du canal vocal car vous y étiez seul depuis trop longtemps."
 	},
 	"usernameScreen": "Écran de {{username}}",
 	"recording": {

@@ -106,6 +106,25 @@
 			"title": "Về Cộng đồng",
 			"placeholder": "Hãy kể cho chúng tôi về cộng đồng của bạn... Điều gì làm cho nó đặc biệt?"
 		},
+		"hashtags": {
+			"title": "Hashtags cộng đồng",
+			"description": "Chọn tối đa 6 hashtag đại diện cho chủ đề cộng đồng để thành viên dễ dàng tìm thấy bạn.",
+			"selectedCount": "Đã chọn: {{count}}/{{max}} hashtag",
+			"minRequired": "Cộng đồng cần tối thiểu 1 hashtag",
+			"maxReached": "Đã đạt tối đa 6 hashtag",
+			"items": {
+				"Gaming": "Gaming",
+				"Technology": "Công nghệ",
+				"Education": "Học tập",
+				"Entertainment": "Giải trí",
+				"Music": "Âm nhạc",
+				"Art": "Nghệ thuật",
+				"Crypto": "Tiền mã hóa",
+				"Anime": "Anime & Manga",
+				"Sports": "Thể thao",
+				"Community": "Cộng đồng"
+			}
+		},
 		"vanityUrl": {
 			"title": "URL Tùy chỉnh",
 			"description": "Tạo URL tùy chỉnh cho cộng đồng của bạn. Chỉ sử dụng chữ thường, số và dấu gạch ngang.",
@@ -132,7 +151,7 @@
 			"communityDisabled": "Đã tắt cộng đồng.",
 			"disableFailed": "Tắt thất bại!",
 			"bannerRemoved": "Đã xóa banner!",
-			"fillAllRequiredFields": "Vui lòng điền đầy đủ các trường bắt buộc: Banner, Giới thiệu, Mô tả, URL tùy chỉnh!",
+			"fillAllRequiredFields": "Vui lòng điền đầy đủ các trường bắt buộc: Banner, Giới thiệu, Mô tả, URL tùy chỉnh, Hashtags!",
 			"bannerUpdateFailed": "Cập nhật banner thất bại!"
 		}
 	},
