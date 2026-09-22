@@ -181,13 +181,9 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		currentUser?.type === ChannelType.CHANNEL_TYPE_DM;
 
 	const isDefaultSetting = !notificationSettings?.id || notificationSettings?.id === '0';
-	const muteTimeMs =
-		notificationSettings?.time_mute_seconds && notificationSettings.time_mute_seconds !== EMuteState.MUTED_INFINITY
-			? notificationSettings.time_mute_seconds > 1e11
-				? notificationSettings.time_mute_seconds
-				: notificationSettings.time_mute_seconds * 1000
-			: 0;
-	const hasMuteTime = (!isDefaultSetting && muteTimeMs > Date.now()) || notificationSettings?.time_mute_seconds === EMuteState.MUTED_INFINITY;
+	const hasMuteTime =
+		(!isDefaultSetting && notificationSettings?.time_mute_seconds && notificationSettings.time_mute_seconds > Date.now() / 1000) ||
+		notificationSettings?.time_mute_seconds === EMuteState.MUTED_INFINITY;
 	const shouldShowUnmute = !isDefaultSetting && hasMuteTime;
 
 	const shouldShowMuteSubmenu = isDefaultSetting || !hasMuteTime;
