@@ -1,5 +1,5 @@
 import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useOnClickOutside } from '@mezon/core';
-import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectClanById, selectMemberDMByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification, INotificationContent } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
@@ -99,9 +99,21 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 				return ChannelStreamMode.STREAM_MODE_DM;
 		}
 	}, [channelJump]);
-	const message = notify?.content;
-	const messageId = message?.message_id || notify?.id;
-	const channelId = message?.channel_id || notify?.channel_id;
+	const messageId = notify?.content?.message_id || notify?.id;
+	const channelId = notify?.content?.channel_id || notify?.channel_id;
+	const liveAttachments = useAppSelector((state) => selectMessageByMessageId(state, channelId || '', messageId || '')?.attachments);
+	const message = useMemo<INotificationContent | undefined>(() => {
+		const content = notify?.content;
+		if (!content || !liveAttachments?.length) return content;
+		return {
+			...content,
+			attachments: liveAttachments,
+			attachment_link: liveAttachments[0]?.url || '',
+			attachment_type: liveAttachments[0]?.filetype || '',
+			attachment_size: liveAttachments[0]?.size || 0,
+			has_more_attachment: liveAttachments.length > 1
+		};
+	}, [notify?.content, liveAttachments]);
 	const clanId = message?.clan_id || notify?.clan_id;
 
 	const topicId = notify?.topic_id || notify?.content?.tp || '0';

@@ -3,7 +3,7 @@ import type { IAttachmentEntity, IChannelAttachment, LoadingStatus } from '@mezo
 import { EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelAttachment, ChannelStreamMode } from 'mezon-js';
+import type { ApiChannelAttachment, ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
@@ -331,6 +331,19 @@ export const attachmentSlice = createSlice({
 					delete state.listAttachmentsByChannel[channelId];
 				}
 			}
+		},
+		syncMessageAttachments: (state, action: PayloadAction<{ channelId: string; messageId: string; attachments: ApiMessageAttachment[] }>) => {
+			const { channelId, messageId, attachments } = action.payload;
+			const channelData = state.listAttachmentsByChannel[channelId];
+			if (!channelData) return;
+
+			const remainingUrls = new Set(attachments.map((attachment) => attachment.url));
+			const isRemoved = (attachment: AttachmentEntity) => attachment.message_id === messageId && !remainingUrls.has(attachment.url);
+			const removedUrls = channelData.attachments.filter(isRemoved).map((attachment) => attachment.url as string);
+			if (!removedUrls.length) return;
+
+			channelData.attachments = channelData.attachments.filter((attachment) => !isRemoved(attachment));
+			attachmentAdapter.removeMany(state, removedUrls);
 		},
 		setAttachmentLoading: (state, action: PayloadAction<{ channelId: string; isLoading: boolean }>) => {
 			const { channelId, isLoading } = action.payload;
