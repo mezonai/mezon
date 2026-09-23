@@ -173,7 +173,17 @@
 			"title": "Channel Permissions",
 			"description": "Use permissions to customise who can do what in this channel.",
 			"syncedWithCategory": "Permissions synced with category:"
-		}
+		},
+		"searchMembers": "Search Members",
+		"noMembersFound": "No members found",
+		"removeMember": "Remove member from channel",
+		"loading": "Loading...",
+		"loadPermissions": "Load permissions / Retry",
+		"choiceLegend": "× Deny   / Inherit   ✓ Allow",
+		"saveBeforeSwitch": "Save or reset your changes before selecting another role or member.",
+		"deny": "Deny",
+		"inherit": "Inherit from roles and category",
+		"allow": "Allow"
 	},
 	"quickAction": {
 		"title": "Quick Command",
