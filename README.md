@@ -142,8 +142,6 @@ The application will be available at http://localhost:4200/
 | **iOS** | [iOS repo](https://github.com/mezonai/mezon-ios) | ✅ Stable |
 | **Android** | [Android repo](https://github.com/mezonai/mezon-android) | ✅ Stable |
 | **Web** | [Web repo](https://github.com/mezonai/mezon) | ✅ Stable |
-| **SFU** | [mezon-sfu](https://github.com/mezonai/mezon-sfu) | ✅ Stable |
-| **Media engine** | [libmezia](https://github.com/mezonai/libmezia) | 🚧 Active |
 | **Protocol** | [mezon-protocol](https://github.com/mezonai/mezon-protocol) | ✅ Stable |
 
 ### Download Options
