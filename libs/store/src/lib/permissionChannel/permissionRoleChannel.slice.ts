@@ -27,10 +27,21 @@ export interface PermissionRoleChannelState {
 			cache?: CacheMetadata;
 		}
 	>;
+	/** `channelId:entityId` of every override load still in flight. */
+	loadingEntities: Record<string, boolean>;
 }
 
+/**
+ * Id a role's or a member's overrides are stored under. A fetch fills the side it
+ * did not ask for with '0' and a save with '', so both count as unset — otherwise
+ * every role fetched lands under '0' and none of them is ever found again.
+ */
+export const permissionEntityId = (roleId?: string, userId?: string) => (userId && userId !== '0' ? userId : roleId) || '';
+
+const loadingEntityKey = (channelId: string, entityId: string) => `${channelId}:${entityId}`;
+
 export const permissionRoleChannelAdapter = createEntityAdapter({
-	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => permission.user_id || permission.role_id || ''
+	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => permissionEntityId(permission.role_id, permission.user_id)
 });
 
 type fetchChannelsArgs = {
@@ -58,10 +69,11 @@ export const fetchPermissionRoleChannelCached = async (
 
 	const apiKey = createApiKey('fetchPermissionRoleChannel', channelId, roleId, userId);
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData.cache, noCache);
+	const cachedEntity = channelData.permissionRoleChannel?.entities[permissionEntityId(roleId, userId)];
 
-	if (!shouldForceCall) {
+	if (!shouldForceCall && cachedEntity) {
 		return {
-			...channelData.permissionRoleChannel.entities[roleId || userId],
+			...cachedEntity,
 			fromCache: true,
 			time: channelData.cache?.lastFetched || Date.now()
 		};
@@ -95,17 +107,29 @@ export const fetchPermissionRoleChannel = createAsyncThunk(
 			userId || '0',
 			noCache
 		);
-		if (!response || !response?.permission_role_channel) {
-			return [];
-		}
 
-		const updatedPermissionRoleChannel = response.permission_role_channel.map((channel) => {
+		// An entity without a single override still counts as loaded, with nothing in it.
+		const updatedPermissionRoleChannel = (response?.permission_role_channel ?? []).map((channel) => {
 			if (channel.permission_id && channel.active === undefined) {
 				return { ...channel, active: false };
 			}
 			return channel;
 		});
-		return { ...response, permission_role_channel: updatedPermissionRoleChannel, fromCache: response?.fromCache };
+		return {
+			...response,
+			channel_id: channelId,
+			role_id: roleId || '0',
+			user_id: userId || '0',
+			permission_role_channel: updatedPermissionRoleChannel,
+			fromCache: !!response?.fromCache
+		};
+	},
+	{
+		// Hovering a row and then selecting it asks for the same entity twice.
+		condition: ({ roleId, channelId, userId }, { getState }) => {
+			const state = (getState() as RootState)[LIST_PERMISSION_ROLE_CHANNEL_FEATURE_KEY];
+			return !state.loadingEntities?.[loadingEntityKey(channelId, permissionEntityId(roleId, userId))];
+		}
 	}
 );
 
@@ -151,7 +175,8 @@ export const initialPermissionRoleChannelState: PermissionRoleChannelState = per
 	channelPermissions: [],
 	error: null,
 	permission: null,
-	cacheByChannels: {}
+	cacheByChannels: {},
+	loadingEntities: {}
 });
 
 export const permissionRoleChannelSlice = createSlice({
@@ -179,29 +204,36 @@ export const permissionRoleChannelSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchPermissionRoleChannel.pending, (state: PermissionRoleChannelState) => {
+			.addCase(fetchPermissionRoleChannel.pending, (state: PermissionRoleChannelState, action) => {
+				const { channelId, roleId, userId } = action.meta.arg;
 				state.loadingStatus = 'loading';
+				state.loadingEntities[loadingEntityKey(channelId, permissionEntityId(roleId, userId))] = true;
 			})
-			.addCase(fetchPermissionRoleChannel.fulfilled, (state: PermissionRoleChannelState, action: PayloadAction<any>) => {
-				const { channel_id, fromCache } = action.payload;
+			.addCase(fetchPermissionRoleChannel.fulfilled, (state: PermissionRoleChannelState, action) => {
+				const { channelId, roleId, userId } = action.meta.arg;
+				const { fromCache, time: _time, ...permission } = action.payload;
+				delete state.loadingEntities[loadingEntityKey(channelId, permissionEntityId(roleId, userId))];
 
-				if (!state.cacheByChannels[channel_id]) {
-					state.cacheByChannels[channel_id] = {
+				if (!state.cacheByChannels[channelId]) {
+					state.cacheByChannels[channelId] = {
 						permissionRoleChannel: permissionRoleChannelAdapter.getInitialState()
 					};
 				}
 
 				if (!fromCache) {
-					state.cacheByChannels[channel_id].permissionRoleChannel = permissionRoleChannelAdapter.addOne(
-						state.cacheByChannels[channel_id].permissionRoleChannel,
-						action.payload
+					// setOne, not addOne: a forced refetch must replace what an earlier load stored.
+					state.cacheByChannels[channelId].permissionRoleChannel = permissionRoleChannelAdapter.setOne(
+						state.cacheByChannels[channelId].permissionRoleChannel,
+						permission
 					);
 
-					state.cacheByChannels[channel_id].cache = createCacheMetadata();
+					state.cacheByChannels[channelId].cache = createCacheMetadata();
 				}
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchPermissionRoleChannel.rejected, (state: PermissionRoleChannelState, action) => {
+				const { channelId, roleId, userId } = action.meta.arg;
+				delete state.loadingEntities[loadingEntityKey(channelId, permissionEntityId(roleId, userId))];
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			})
@@ -292,3 +324,6 @@ export const selectAllPermissionRoleChannel = createSelector(
 		return currentPermission ?? null;
 	}
 );
+
+export const selectIsPermissionRoleChannelLoading = (state: RootState, channelId: string, entityId?: string) =>
+	!!entityId && !!getPermissionRoleChannelState(state).loadingEntities?.[loadingEntityKey(channelId, entityId)];
