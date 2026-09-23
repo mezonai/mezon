@@ -1,4 +1,3 @@
-import { ChannelTopbar } from '@mezon/components';
 import { usePathMatch } from '@mezon/core';
 import {
 	selectCloseMenu,
@@ -12,6 +11,7 @@ import type { IChannel } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import ChannelTopbar from './index';
 
 export type ChannelTopbarProps = {
 	readonly channel?: Readonly<IChannel> | null;
@@ -38,7 +38,7 @@ const Topbar = memo(({ isHidden = false }: { isHidden?: boolean }) => {
 
 	return (
 		<div
-			className={`${isFriendPath || isHidden || (closeMenu && statusMenu) || isInCurrentVoiceChannel ? 'hidden' : ''} border-b-theme-primary bg-theme-chat max-sbm:bg-transparent max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment max-sbm:w-full max-sbm:h-[50px] flex-shrink fixed right-0 z-10 border-b-theme-nav text-theme-primary  `}
+			className={`${isFriendPath || isHidden || (closeMenu && statusMenu) || isInCurrentVoiceChannel ? 'hidden' : ''} border-b-theme-primary bg-theme-chat max-sbm:bg-transparent max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment max-sbm:w-full max-sbm:h-[50px] flex-shrink fixed right-0 z-10 border-b-theme-nav text-theme-primary`}
 		>
 			<ChannelTopbar />
 		</div>

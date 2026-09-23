@@ -85,9 +85,11 @@ import { NotificationTooltip } from '../NotificationList';
 import SearchMessageChannel from '../SearchMessageChannel';
 import { GalleryModal } from './GalleryModal';
 import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
+import ChannelTopicPinBanner from './TopBarComponents/ChannelTopicPinBanner';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
 import PinnedMessages from './TopBarComponents/PinnedMessages';
+
 import ThreadModal from './TopBarComponents/Threads/ThreadModal';
 
 export type ChannelTopbarProps = {
@@ -111,9 +113,10 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`max-sbm:z-20 flex min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
+			<ChannelTopicPinBanner />
 		</div>
 	);
 });
