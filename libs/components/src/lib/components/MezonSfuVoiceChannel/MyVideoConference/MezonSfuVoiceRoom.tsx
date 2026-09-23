@@ -1,6 +1,6 @@
+import { useAuth } from '@mezon/core';
 import {
 	generateMeetToken,
-	selectCurrentUserId,
 	selectEntitesUserClans,
 	selectNoiseSuppressionEnabled,
 	selectShowCamera,
@@ -20,6 +20,7 @@ import {
 	requestMediaPermission,
 	useMediaPermissions
 } from '@mezon/utils';
+import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -467,7 +468,8 @@ export function MezonSfuVoiceRoom({
 }: MezonSfuVoiceRoomProps) {
 	const { t } = useTranslation('channelVoice');
 	const dispatch = useAppDispatch();
-	const currentUserId = useSelector(selectCurrentUserId);
+	const { userProfile, userId } = useAuth();
+	const currentUserId = userId || '';
 	const clanMembers = useSelector(selectEntitesUserClans);
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
@@ -759,6 +761,7 @@ export function MezonSfuVoiceRoom({
 					}
 					pendingPeersRef.current.delete(peerId);
 					const participant = next.get(participantId) || { id: participantId };
+					const metaPeer = peer.metadata ? (safeJSONParse(peer.metadata) as { username?: string; avatar?: string }) : null;
 					next.set(participantId, {
 						...participant,
 						peerId,
@@ -768,7 +771,13 @@ export function MezonSfuVoiceRoom({
 						cameraActive: peer.camera_active !== undefined ? peer.camera_active : participant.cameraActive,
 						screenRequested: peer.screen_requested !== undefined ? peer.screen_requested : participant.screenRequested,
 						screenActive: peer.screen_active !== undefined ? peer.screen_active : participant.screenActive,
-						isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute
+						isMute: peer.is_mute !== undefined ? peer.is_mute : participant.isMute,
+						...(metaPeer
+							? {
+									...(metaPeer?.avatar && { avatar: metaPeer.avatar }),
+									...(metaPeer?.username && { username: metaPeer.username })
+								}
+							: {})
 					});
 				}
 				return next;
@@ -1943,7 +1952,7 @@ export function MezonSfuVoiceRoom({
 		},
 		[clanMembers]
 	);
-	const localMember = currentUserId ? clanMembers[currentUserId] : undefined;
+	const localMember = currentUserId ? clanMembers[currentUserId] || userProfile : undefined;
 	const localDisplayName =
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) ||
 		username ||
@@ -2018,7 +2027,7 @@ export function MezonSfuVoiceRoom({
 				<SfuParticipantTile
 					participant={participant}
 					displayName={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_DISPLAY_NAME : profile.displayName}
-					avatar={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_AVATAR : profile.avatar}
+					avatar={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_AVATAR : profile.avatar || participant?.avatar}
 					speaking={participantSpeaking}
 					locallyMuted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
 				/>
