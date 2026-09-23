@@ -8,14 +8,18 @@ import type { RootState } from '../store';
 export const COMUNITY_FEATURE_KEY = 'COMUNITY_FEATURE_KEY';
 
 export const serializeHashtags = (tags: string[]): string => {
-	return JSON.stringify(tags);
+	if (!tags || tags.length === 0) return '';
+	return tags
+		.map((t) => t.trim().replace(/^#/, ''))
+		.filter(Boolean)
+		.join(',');
 };
 
 export const parseHashtags = (raw?: string | null): string[] => {
 	if (!raw) return [];
 	try {
 		const parsed = JSON.parse(raw);
-		if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim()).filter(Boolean);
+		if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim().replace(/^#/, '')).filter(Boolean);
 	} catch {
 		// Ignore JSON parse error, fallback to delimiters
 	}
@@ -130,7 +134,7 @@ export const updateCommunity = createAsyncThunk(
 			return { clan_id, enabled, bannerUrl, about, description, short_url, hashtags: hashtags ?? [] };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunity');
-			return thunkAPI.rejectWithValue('Failed to update community');
+			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );
@@ -147,7 +151,7 @@ export const updateCommunityHashtags = createAsyncThunk(
 			return { clan_id, hashtags };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityHashtags');
-			return thunkAPI.rejectWithValue('Failed to update community hashtags');
+			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );
@@ -163,7 +167,7 @@ export const updateCommunityStatus = createAsyncThunk(
 			return { clan_id, enabled };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityStatus');
-			return thunkAPI.rejectWithValue('Failed to update community status');
+			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );

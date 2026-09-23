@@ -1,13 +1,15 @@
-import React, { useEffect, useId, useRef } from 'react';
+import React, { useEffect, useId, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CATEGORY_SHORTCUTS, type DiscoverSort } from '../../constants/constants';
+import { DISCOVER_HASHTAGS, type DiscoverSort } from '../../constants/constants';
 
 interface FilterSheetProps {
 	open: boolean;
 	onClose: () => void;
-	selectedCategory: string;
+	selectedCategory?: string;
+	selectedHashtags?: string[];
 	verifiedOnly: boolean;
-	onCategorySelect: (category: string) => void;
+	onCategorySelect?: (category: string) => void;
+	onHashtagToggle?: (tag: string) => void;
 	onVerifiedOnly: (value: boolean) => void;
 	onReset: () => void;
 	resultCount: number;
@@ -16,16 +18,34 @@ interface FilterSheetProps {
 const FilterSheet: React.FC<FilterSheetProps> = ({
 	open,
 	onClose,
-	selectedCategory,
+	selectedCategory = '',
+	selectedHashtags,
 	verifiedOnly,
 	onCategorySelect,
+	onHashtagToggle,
 	onVerifiedOnly,
 	onReset,
 	resultCount
 }) => {
-	const { t } = useTranslation('discover');
+	const { t } = useTranslation(['discover', 'onBoardingClan']);
 	const titleId = useId();
 	const closeRef = useRef<HTMLButtonElement>(null);
+
+	const activeTags = useMemo(() => {
+		if (selectedHashtags && selectedHashtags.length > 0) return selectedHashtags;
+		if (selectedCategory) {
+			return selectedCategory
+				.split(',')
+				.map((t) => t.trim().replace(/^#/, ''))
+				.filter(Boolean);
+		}
+		return [];
+	}, [selectedHashtags, selectedCategory]);
+
+	const handleToggle = (tag: string) => {
+		if (onHashtagToggle) onHashtagToggle(tag);
+		else if (onCategorySelect) onCategorySelect(tag);
+	};
 
 	useEffect(() => {
 		if (!open) return;
@@ -45,20 +65,19 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
 	if (!open) return null;
 
 	return (
-		<div className="fixed inset-0 z-[200] md:hidden">
-			<button type="button" className="absolute inset-0 bg-black/50" aria-label={t('detail.back')} onClick={onClose} />
+		<div className="fixed inset-0 z-50 lg:hidden">
+			<div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden />
 			<div
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby={titleId}
-				className="absolute bottom-0 left-0 right-0 bg-[var(--surface-card)] rounded-t-[var(--radius-xl)] max-h-[85vh] overflow-y-auto"
+				className="absolute inset-y-0 right-0 w-full max-w-sm bg-[var(--surface-card)] text-[var(--text-primary)] shadow-2xl flex flex-col"
 			>
-				<div className="sticky top-0 bg-[var(--surface-card)] px-4 pt-3 pb-3 border-b border-[var(--border-subtle)]">
-					<div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300" />
-					<div className="flex items-center justify-between">
-						<h2 id={titleId} className="text-lg font-semibold text-[var(--text-primary)]">
-							{t('filters.title')}
-						</h2>
+				<div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-subtle)]">
+					<h2 id={titleId} className="text-base font-semibold">
+						{t('filters.title')}
+					</h2>
+					<div className="flex items-center gap-2">
 						<button
 							ref={closeRef}
 							type="button"
@@ -69,30 +88,38 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
 						</button>
 					</div>
 				</div>
-				<div className="px-4 py-4 space-y-6">
+				<div className="px-4 py-4 space-y-6 flex-1 overflow-y-auto">
 					<fieldset>
-						<legend className="text-sm font-semibold text-[var(--text-primary)] mb-3">{t('filters.category')}</legend>
+						<legend className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+							{t('communitySettings.hashtags.title', { ns: 'onBoardingClan', defaultValue: 'Hashtags' })}
+						</legend>
 						<div className="space-y-1">
-							<label className="flex items-center gap-3 min-h-[44px]">
-								<input type="radio" name="discover-category" checked={!selectedCategory} onChange={() => onCategorySelect('')} />
-								<span>{t('filters.all')}</span>
-							</label>
-							{CATEGORY_SHORTCUTS.map((category) => (
-								<label key={category.id} className="flex items-center gap-3 min-h-[44px]">
-									<input
-										type="radio"
-										name="discover-category"
-										checked={selectedCategory === category.id}
-										onChange={() => onCategorySelect(category.id)}
-									/>
-									<span>{t(`categories.${category.id}`)}</span>
-								</label>
-							))}
+							{DISCOVER_HASHTAGS.map((tag) => {
+								const checked = activeTags.some((t) => t.toLowerCase() === tag.toLowerCase());
+								return (
+									<label key={tag} className="flex items-center gap-3 min-h-[44px] cursor-pointer">
+										<input
+											type="checkbox"
+											checked={checked}
+											onChange={() => handleToggle(tag)}
+											className="w-4 h-4 rounded text-[#8960e0] focus:ring-[#8960e0]"
+										/>
+										<span className="text-sm text-[var(--text-primary)]">
+											#{t(`communitySettings.hashtags.items.${tag}`, { ns: 'onBoardingClan', defaultValue: tag })}
+										</span>
+									</label>
+								);
+							})}
 						</div>
 					</fieldset>
-					<label className="flex items-center gap-3 min-h-[44px]">
-						<input type="checkbox" checked={verifiedOnly} onChange={(event) => onVerifiedOnly(event.target.checked)} />
-						<span>{t('filters.verifiedOnly')}</span>
+					<label className="flex items-center gap-3 min-h-[44px] cursor-pointer">
+						<input
+							type="checkbox"
+							checked={verifiedOnly}
+							onChange={(event) => onVerifiedOnly(event.target.checked)}
+							className="w-4 h-4 rounded text-[#8960e0] focus:ring-[#8960e0]"
+						/>
+						<span className="text-sm text-[var(--text-primary)]">{t('filters.verifiedOnly')}</span>
 					</label>
 				</div>
 				<div className="sticky bottom-0 p-4 bg-[var(--surface-card)] border-t border-[var(--border-subtle)] pb-[max(16px,env(safe-area-inset-bottom))]">

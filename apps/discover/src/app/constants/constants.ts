@@ -75,6 +75,21 @@ export const DISCOVER_LAYOUT = {
 /** Clan ID (`clan_id`) pinned to the Discover homepage hero. Set via `NX_DISCOVER_FEATURED_CLAN_ID`. */
 export const FEATURED_CLAN_ID = (process.env.NX_DISCOVER_FEATURED_CLAN_ID || '').trim();
 
+export const DISCOVER_HASHTAGS = [
+	'Gaming',
+	'Technology',
+	'Education',
+	'Entertainment',
+	'Music',
+	'Art',
+	'Crypto',
+	'Anime',
+	'Sports',
+	'Community'
+] as const;
+
+export type DiscoverHashtag = (typeof DISCOVER_HASHTAGS)[number];
+
 export const CATEGORY_SHORTCUTS = [
 	{ id: 'gaming', keywords: ['game', 'gaming', 'esport', 'gamer'] },
 	{ id: 'technology', keywords: ['tech', 'ai', 'code', 'dev', 'program', 'it', 'software'] },
