@@ -14,6 +14,7 @@ import {
 	selectCurrentClanName,
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
+	selectMemberClanByUserId,
 	selectStatusMenu,
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
@@ -171,15 +172,25 @@ const MezonSfuChannelVoiceInner = () => {
 		const currentChannelId = selectCurrentChannelId(storeState);
 		const currentChannelLabel = selectCurrentChannelLabel(storeState);
 		const currentChannelPrivate = selectCurrentChannelPrivate(storeState);
+		const clanMember = selectMemberClanByUserId(storeState, userProfile?.user?.id || '');
 
 		if (!currentClanId) return;
 		setLoading(true);
 
 		try {
+			const username = clanMember?.clan_nick || clanMember?.prioritizeName || userProfile?.user?.display_name || userProfile?.user?.username;
+
+			const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url;
+
+			const metadata = {
+				...(username ? { username } : {}),
+				...(avatar ? { avatar } : {})
+			};
 			const result = await dispatch(
 				generateMeetToken({
 					channelId: currentChannelId as string,
-					roomName: ''
+					roomName: '',
+					metadata: JSON.stringify(metadata)
 				})
 			).unwrap();
 

@@ -15,6 +15,7 @@ export type SfuPeer = {
 	mid_audio?: number | string;
 	mid_video?: number | string;
 	mid_screen?: number | string;
+	metadata?: string;
 };
 
 export type SfuSignalMessage = {
@@ -52,4 +53,6 @@ export type SfuRemoteMedia = {
 	cameraActive?: boolean;
 	screenRequested?: boolean;
 	isMute?: boolean;
+	username?: string;
+	avatar?: string;
 };
