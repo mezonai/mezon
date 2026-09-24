@@ -228,7 +228,8 @@ const persistedListchannelsByUserReducer = persistReducer(
 const persistedPermissionRoleChannelReducer = persistReducer(
 	{
 		key: 'listpermissionroleschannel',
-		storage
+		storage,
+		blacklist: ['loadingEntities']
 	},
 	permissionRoleChannelReducer
 );

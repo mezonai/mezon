@@ -62,6 +62,8 @@
 		"start": "Grabar llamada",
 		"stop": "Detener grabación",
 		"badge": "REC",
+		"by": "{{name}} está grabando la llamada",
+		"byMany": "{{name}} y {{count}} más están grabando la llamada",
 		"memoryLimitWarning": "Este navegador no puede escribir directamente en disco, así que la grabación se guarda en memoria y se detiene automáticamente tras {{minutes}} minutos.",
 		"frozenWarning": "El vídeo se congeló mientras la pestaña estaba oculta. Mantén esta pestaña visible mientras grabas.",
 		"savedToDisk": "Grabación guardada en {{fileName}} ({{size}})",
