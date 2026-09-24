@@ -1,5 +1,5 @@
 import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@mezon/components';
-import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
+import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
 	channelAppActions,
@@ -146,7 +146,6 @@ const MezonSfuChannelVoiceInner = () => {
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const isChannelMezonVoice = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { userProfile } = useAuth();
 
 	const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
 	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
@@ -167,6 +166,7 @@ const MezonSfuChannelVoiceInner = () => {
 		if (role === 'audience') dispatch(voiceActions.setShowCamera(false));
 
 		const storeState = getStore().getState();
+		const userProfile = storeState.account.userProfile;
 		const currentClanId = selectCurrentClanId(storeState);
 		const currentClanName = selectCurrentClanName(storeState);
 		const currentChannelId = selectCurrentChannelId(storeState);
@@ -226,9 +226,6 @@ const MezonSfuChannelVoiceInner = () => {
 
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
-		if (userProfile?.user?.id) {
-			dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
-		}
 
 		isDisconnectingRef.current = false;
 	});
