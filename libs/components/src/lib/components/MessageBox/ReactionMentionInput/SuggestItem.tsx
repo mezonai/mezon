@@ -184,7 +184,11 @@ const SuggestItem = ({
 				data-e2e={generateE2eId('suggest_item.username')}
 			>
 				{channel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channel_id={channel?.parent_id as string} />
+					<RenderChannelLabelForThread
+						channel_id={channel?.parent_id as string}
+						fallbackSubText={subText}
+						valueHightLight={valueHightLight}
+					/>
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}
@@ -192,10 +196,23 @@ const SuggestItem = ({
 		</div>
 	);
 };
-const RenderChannelLabelForThread = ({ channel_id }: { channel_id: string }) => {
+const RenderChannelLabelForThread = ({
+	channel_id,
+	fallbackSubText,
+	valueHightLight
+}: {
+	channel_id?: string;
+	fallbackSubText?: string;
+	valueHightLight?: string;
+}) => {
 	const channelParent = useAppSelector((state) => selectChannelById(state, channel_id ?? '')) || {};
-
-	return <>{channelParent?.channel_label || null}</>;
+	if (channelParent?.channel_label) {
+		return <>{channelParent.channel_label}</>;
+	}
+	if (fallbackSubText) {
+		return <>{HighlightMatchBold(fallbackSubText, valueHightLight ?? '')}</>;
+	}
+	return null;
 };
 
 export default memo(SuggestItem);

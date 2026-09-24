@@ -47,6 +47,7 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 							checked={selectedObjectIdSends.some((selectedItem) => selectedItem.id === item.id)}
 							handleToggle={() => handleToggle(item.id, item.type || 0, item.isPublic, item.clanId, item.channelLabel || '', false)}
 							clanId={item.clanId}
+							channel={item}
 						/>
 					)}
 				</div>
@@ -98,10 +99,11 @@ type ItemChannelProps = {
 	checked: boolean;
 	handleToggle: () => void;
 	clanId: string;
+	channel?: any;
 };
 
 const ItemChannel = (props: ItemChannelProps) => {
-	const { id, name, searchText, checked, handleToggle, clanId } = props;
+	const { id, name, searchText, checked, handleToggle, clanId, channel } = props;
 	const clanByClanId = useSelector(selectClanById(clanId));
 
 	return (
@@ -115,6 +117,7 @@ const ItemChannel = (props: ItemChannelProps) => {
 					subTextStyle="uppercase"
 					isOpenSearchModal
 					emojiId=""
+					channel={channel}
 				/>
 			</div>
 			<Checkbox className="w-4 h-4 focus:ring-transparent" id={`checkbox-item-${id}`} checked={checked} onChange={handleToggle} />

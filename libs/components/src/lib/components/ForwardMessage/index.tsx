@@ -431,13 +431,16 @@ const ForwardMessageModal = () => {
 				name: item?.channel_label ?? '',
 				subText: item?.category_name ?? '',
 				icon: '#',
-				type: item?.type ?? '',
+				type: item?.type,
 				clanId: item?.clan_id ?? '',
 				channelLabel: item?.channel_label ?? '',
 				lastSentTimeStamp: item.last_sent_message?.timestamp_seconds,
 				typeSearch: TypeSearch.Channel_Type,
 				prioritizeName: item?.channel_label ?? '',
-				isPublic: item ? !item.channel_private : false
+				isPublic: item ? !item.channel_private : false,
+				channel_private: item?.channel_private ? 1 : 0,
+				age_restricted: (item as any)?.age_restricted,
+				parent_id: item?.parent_id
 			};
 		});
 		return list;
@@ -547,10 +550,7 @@ const ForwardMessageModal = () => {
 	);
 	// The message being forwarded may still be uploading; requesting its CDN url
 	// now would only cache a not-found.
-	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(
-		previewAttachment?.attachment?.url,
-		previewOwnerMessage ?? selectedMessage
-	);
+	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(previewAttachment?.attachment?.url, previewOwnerMessage ?? selectedMessage);
 
 	return (
 		<ModalLayout onClose={handleCloseModal}>
