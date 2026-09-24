@@ -41,8 +41,9 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
 	const [permissionsListHasChanged, setPermissionsListHasChanged] = useState(false);
-	const saveTriggerRef = useRef<() => void | null>(null);
-	const resetTriggerRef = useRef<() => void | null>(null);
+	const [isSaving, setIsSaving] = useState(false);
+	const saveTriggerRef = useRef<(() => Promise<void> | void) | null>(null);
+	const resetTriggerRef = useRef<(() => void) | null>(null);
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 
@@ -80,14 +81,25 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		setSelectedRoleIds([]);
 	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel, clanId, dispatch]);
 
-	const handleSave = useCallback(() => {
+	const handleSave = useCallback(async () => {
+		if (isSaving) {
+			return;
+		}
+		const saves: Promise<unknown>[] = [];
 		if (valueToggle !== valueToggleInit) {
-			handleSaveChannelPrivateChanged();
+			saves.push(handleSaveChannelPrivateChanged());
 		}
 		if (saveTriggerRef.current && permissionsListHasChanged) {
-			saveTriggerRef.current();
+			saves.push(Promise.resolve(saveTriggerRef.current()));
 		}
-	}, [valueToggle, valueToggleInit, permissionsListHasChanged, handleSaveChannelPrivateChanged]);
+		// Save and Reset stay disabled until every save lands, so a second click cannot race the first.
+		setIsSaving(true);
+		try {
+			await Promise.allSettled(saves);
+		} finally {
+			setIsSaving(false);
+		}
+	}, [isSaving, valueToggle, valueToggleInit, permissionsListHasChanged, handleSaveChannelPrivateChanged]);
 
 	const openAddMemRoleModal = useCallback(() => {
 		setShowAddMemRole(true);
@@ -101,6 +113,8 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			parentRef?.current?.focus();
 		}, 0);
 	}, [openModalAdd, parentRef]);
+
+	const hasUnsavedChanges = valueToggleInit !== valueToggle || permissionsListHasChanged;
 
 	const handleSelectedUsersChange = useCallback((newSelectedUserIds: string[]) => {
 		setSelectedUserIds(newSelectedUserIds);
@@ -170,16 +184,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 									</div>
 								</div>
 								<hr className="border-t border-solid dark:border-borderDefault border-bgModifierHoverLight" />
-								<div className="py-4">
-									<p className="uppercase font-bold text-xs pb-4 text-theme-primary">{t('channelPermission.members')}</p>
-									<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.member_list')}>
-										<ListMemberPermission
-											channel={channel}
-											selectedUserIds={selectedUserIds}
-											setSelectedUserIds={setSelectedUserIds}
-										/>
-									</div>
-								</div>
+								<ListMemberPermission channel={channel} selectedUserIds={selectedUserIds} setSelectedUserIds={setSelectedUserIds} />
 							</div>
 						)}
 					</div>
@@ -193,12 +198,17 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 								setPermissionsListHasChanged={setPermissionsListHasChanged}
 								saveTriggerRef={saveTriggerRef}
 								resetTriggerRef={resetTriggerRef}
+								isSaving={isSaving}
 							/>
 						</>
 					)}
 				</div>
-				{(valueToggleInit !== valueToggle || permissionsListHasChanged) && (
-					<ModalAskChangeChannel onReset={handleReset} onSave={handleSave} className="relative mt-8 bg-transparent pr-0" />
+				{hasUnsavedChanges && (
+					<>
+						{/* Room for the floating save bar, so it never covers the last rows. */}
+						<div className="h-20 shrink-0" />
+						<ModalAskChangeChannel onReset={handleReset} onSave={handleSave} isSaving={isSaving} />
+					</>
 				)}
 			</div>
 			{showAddMemRole && (

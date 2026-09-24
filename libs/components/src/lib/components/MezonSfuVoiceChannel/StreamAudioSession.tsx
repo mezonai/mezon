@@ -13,7 +13,7 @@ import {
 } from '@mezon/store';
 import { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { SfuAudioAudience } from './MyVideoConference/Media/SfuAudioAudience';
+import { SfuAudioAudience, type SfuAudioAudienceState } from './MyVideoConference/Media/SfuAudioAudience';
 
 /**
  * Keeps stream-channel SFU audio alive while the user is joined, including
@@ -43,6 +43,15 @@ export function StreamAudioSession() {
 		return nextToken;
 	}, [dispatch, streamInfo?.streamId]);
 
+	const handleConnectionStateChange = useCallback(
+		(state: SfuAudioAudienceState) => {
+			if (state !== 'failed') return;
+			dispatch(videoStreamActions.resetPlayback());
+			dispatch(appActions.setIsShowChatStream(false));
+		},
+		[dispatch]
+	);
+
 	useEffect(() => {
 		if (!isJoin || !streamInfo?.streamId) return;
 		if (members.length > 0) return;
@@ -60,6 +69,7 @@ export function StreamAudioSession() {
 			volume={volume}
 			muted={muted}
 			onRefreshToken={refreshToken}
+			onConnectionStateChange={handleConnectionStateChange}
 		/>
 	);
 }

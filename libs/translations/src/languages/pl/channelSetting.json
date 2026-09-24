@@ -173,7 +173,17 @@
 			"title": "Uprawnienia kanału",
 			"description": "Użyj uprawnień, aby dostosować, co może robić każdy w tym kanale.",
 			"syncedWithCategory": "Uprawnienia zsynchronizowane z kategorią:"
-		}
+		},
+		"searchMembers": "Szukaj członków",
+		"noMembersFound": "Nie znaleziono członków",
+		"removeMember": "Usuń członka z kanału",
+		"loading": "Ładowanie...",
+		"loadPermissions": "Wczytaj uprawnienia / Spróbuj ponownie",
+		"choiceLegend": "× Odmów   / Dziedzicz   ✓ Zezwól",
+		"saveBeforeSwitch": "Zapisz lub zresetuj zmiany przed wybraniem innej roli lub członka.",
+		"deny": "Odmów",
+		"inherit": "Dziedzicz z ról i kategorii",
+		"allow": "Zezwól"
 	},
 	"quickAction": {
 		"title": "Menu szybkie",
