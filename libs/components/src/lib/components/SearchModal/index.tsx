@@ -71,6 +71,22 @@ const dedupeById = (items: SearchItemProps[]) => {
 	});
 };
 
+// Past this a slow SearchCtrlK stops holding the list back, so the local matches show
+// and the server rows land on top of them later.
+const SEARCH_SETTLE_TIMEOUT_MS = 1000;
+
+// While `isHeld` is true, keeps returning the value from the last render where it was
+// false. Lets the modal keep the previous results on screen until the new query's server
+// rows are in, so the list is replaced once instead of showing the local matches and then
+// reshuffling under the cursor when SearchCtrlK answers a few frames later.
+const useHeldWhile = <T,>(value: T, isHeld: boolean): T => {
+	const [heldValue, setHeldValue] = useState(value);
+	if (!isHeld && heldValue !== value) {
+		setHeldValue(value);
+	}
+	return isHeld ? heldValue : value;
+};
+
 function SearchModal({ onClose }: SearchModalProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
@@ -92,6 +108,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const { createDirectMessageWithUser } = useDirect();
 
 	const [searchText, setSearchText] = useState('');
+	const [settledSearchText, setSettledSearchText] = useState('');
 
 	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 300), []);
 	const checkListDM = useRef(new Set<string>());
@@ -202,7 +219,9 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	const totalLists = useMemo(() => {
 		const list = listChannelClan.concat(listChannelSearch, listDirectSearch);
-		const sortedList = list.slice().sort((a: any, b: any) => b.lastSentTimeStamp - a.lastSentTimeStamp);
+		// Server rows carry no lastSentTimeStamp; without the `|| 0` the comparator returns NaN
+		// and every recompute can order those rows differently.
+		const sortedList = list.slice().sort((a: any, b: any) => (b.lastSentTimeStamp || 0) - (a.lastSentTimeStamp || 0));
 		return sortedList;
 	}, [listChannelClan, listChannelSearch, listDirectSearch]);
 
@@ -320,6 +339,12 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return previous;
 	}, [recentList, listDirectSearch, previousChannels]);
 
+	const isAwaitingSearch = settledSearchText !== searchText;
+	const shownListRecent = useHeldWhile(listRecent, isAwaitingSearch);
+	const shownUnreadList = useHeldWhile(unreadList, isAwaitingSearch);
+	const shownListItemWithoutRecent = useHeldWhile(listItemWithoutRecent, isAwaitingSearch);
+	const shownSearchText = useHeldWhile(normalizeSearchText, isAwaitingSearch);
+
 	const handleSelectMem = useCallback(
 		async (user: SearchItemProps) => {
 			const foundDirect = dmGroupChatList.find((item) => item.id === user.id);
@@ -397,13 +422,29 @@ function SearchModal({ onClose }: SearchModalProps) {
 	);
 
 	useEffect(() => {
-		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText }));
+		let isLatestSearch = true;
+		const settle = () => {
+			if (isLatestSearch) {
+				setSettledSearchText(searchText);
+			}
+		};
+		const settleTimeout = setTimeout(settle, SEARCH_SETTLE_TIMEOUT_MS);
+		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText })).finally(() => {
+			clearTimeout(settleTimeout);
+			settle();
+		});
+		return () => {
+			isLatestSearch = false;
+			clearTimeout(settleTimeout);
+		};
 	}, [searchText]);
 
 	return (
 		<ModalLayout onClose={onClose}>
+			{/* Pinned to the top a full list would be centered at: centering made the input
+			    jump up and down under the caret every time the result count changed. */}
 			<div
-				className="relative z-10 mx-4 md:!w-[640px] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme-search"
+				className="relative z-10 mx-4 md:!w-[640px] self-start mt-[max(1rem,calc(50vh-200px))] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme-search"
 				data-e2e={generateE2eId('modal.search')}
 			>
 				<div className="flex flex-col" data-e2e={generateE2eId('modal.search.input')}>
@@ -416,10 +457,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 					/>
 				</div>
 				<ListGroupSearchModal
-					listRecent={listRecent}
-					unreadList={unreadList}
-					listItemWithoutRecent={listItemWithoutRecent}
-					normalizeSearchText={normalizeSearchText}
+					listRecent={shownListRecent}
+					unreadList={shownUnreadList}
+					listItemWithoutRecent={shownListItemWithoutRecent}
+					normalizeSearchText={shownSearchText}
 					handleItemClick={handleItemClick}
 				/>
 				<FooterNoteModal />
