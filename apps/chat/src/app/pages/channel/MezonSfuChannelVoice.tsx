@@ -166,6 +166,7 @@ const MezonSfuChannelVoiceInner = () => {
 		if (role === 'audience') dispatch(voiceActions.setShowCamera(false));
 
 		const storeState = getStore().getState();
+		const userProfile = storeState.account.userProfile;
 		const currentClanId = selectCurrentClanId(storeState);
 		const currentClanName = selectCurrentClanName(storeState);
 		const currentChannelId = selectCurrentChannelId(storeState);
