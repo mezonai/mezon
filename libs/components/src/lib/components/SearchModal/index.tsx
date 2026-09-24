@@ -21,7 +21,7 @@ import {
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
-import { TypeSearch, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
+import { TypeSearch, createImgproxyUrl, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -71,6 +71,39 @@ const dedupeById = (items: SearchItemProps[]) => {
 	});
 };
 
+// Past this a slow SearchCtrlK stops holding the list back, so the local matches show
+// and the server rows land on top of them later.
+const SEARCH_SETTLE_TIMEOUT_MS = 1000;
+
+// Rows the 250px list shows before it scrolls. Their avatars are fetched before the new
+// list swaps in, so a first-time avatar does not pop in after its row.
+const PRELOAD_AVATAR_ROWS = 10;
+// A slow avatar holds the list back at most this long; past it the row shows and the
+// image fills in when it lands, as before.
+const AVATAR_PRELOAD_TIMEOUT_MS = 300;
+
+const preloadImages = (urls: string[], timeoutMs: number) => {
+	const loads = urls.map((url) => {
+		const image = new Image();
+		image.src = url;
+		return image.decode().catch(() => undefined);
+	});
+	const timeout = new Promise((resolve) => setTimeout(resolve, timeoutMs));
+	return Promise.race([Promise.all(loads), timeout]);
+};
+
+// While `isHeld` is true, keeps returning the value from the last render where it was
+// false. Lets the modal keep the previous results on screen until the new query's server
+// rows are in, so the list is replaced once instead of showing the local matches and then
+// reshuffling under the cursor when SearchCtrlK answers a few frames later.
+const useHeldWhile = <T,>(value: T, isHeld: boolean): T => {
+	const [heldValue, setHeldValue] = useState(value);
+	if (!isHeld && heldValue !== value) {
+		setHeldValue(value);
+	}
+	return isHeld ? heldValue : value;
+};
+
 function SearchModal({ onClose }: SearchModalProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
@@ -92,6 +125,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const { createDirectMessageWithUser } = useDirect();
 
 	const [searchText, setSearchText] = useState('');
+	const [settledSearchText, setSettledSearchText] = useState('');
 
 	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 300), []);
 	const checkListDM = useRef(new Set<string>());
@@ -202,7 +236,9 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	const totalLists = useMemo(() => {
 		const list = listChannelClan.concat(listChannelSearch, listDirectSearch);
-		const sortedList = list.slice().sort((a: any, b: any) => b.lastSentTimeStamp - a.lastSentTimeStamp);
+		// Server rows carry no lastSentTimeStamp; without the `|| 0` the comparator returns NaN
+		// and every recompute can order those rows differently.
+		const sortedList = list.slice().sort((a: any, b: any) => (b.lastSentTimeStamp || 0) - (a.lastSentTimeStamp || 0));
 		return sortedList;
 	}, [listChannelClan, listChannelSearch, listDirectSearch]);
 
@@ -320,6 +356,23 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return previous;
 	}, [recentList, listDirectSearch, previousChannels]);
 
+	// Only the local DM rows carry an avatar (server rows have none), so these are known
+	// before SearchCtrlK answers and can load alongside it.
+	const firstRowAvatarUrls = useMemo(() => {
+		const rows = normalizeSearchText ? listItemWithoutRecent : [...listRecent, ...unreadList];
+		return rows
+			.slice(0, PRELOAD_AVATAR_ROWS)
+			.map((item) => item.avatarUser)
+			.filter((avatarUrl): avatarUrl is string => !!avatarUrl)
+			.map((avatarUrl) => createImgproxyUrl(avatarUrl));
+	}, [normalizeSearchText, listItemWithoutRecent, listRecent, unreadList]);
+
+	const isAwaitingSearch = settledSearchText !== searchText;
+	const shownListRecent = useHeldWhile(listRecent, isAwaitingSearch);
+	const shownUnreadList = useHeldWhile(unreadList, isAwaitingSearch);
+	const shownListItemWithoutRecent = useHeldWhile(listItemWithoutRecent, isAwaitingSearch);
+	const shownSearchText = useHeldWhile(normalizeSearchText, isAwaitingSearch);
+
 	const handleSelectMem = useCallback(
 		async (user: SearchItemProps) => {
 			const foundDirect = dmGroupChatList.find((item) => item.id === user.id);
@@ -397,13 +450,33 @@ function SearchModal({ onClose }: SearchModalProps) {
 	);
 
 	useEffect(() => {
-		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText }));
+		let isLatestSearch = true;
+		const settle = () => {
+			if (isLatestSearch) {
+				setSettledSearchText(searchText);
+			}
+		};
+		const settleTimeout = setTimeout(settle, SEARCH_SETTLE_TIMEOUT_MS);
+		// Deliberately the avatars of this render only: re-running on every list change would
+		// refetch SearchCtrlK and restart the hold.
+		const searchLoaded = dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText }));
+		const avatarsLoaded = preloadImages(firstRowAvatarUrls, AVATAR_PRELOAD_TIMEOUT_MS);
+		Promise.all([searchLoaded, avatarsLoaded]).finally(() => {
+			clearTimeout(settleTimeout);
+			settle();
+		});
+		return () => {
+			isLatestSearch = false;
+			clearTimeout(settleTimeout);
+		};
 	}, [searchText]);
 
 	return (
 		<ModalLayout onClose={onClose}>
+			{/* Pinned to the top a full list would be centered at: centering made the input
+			    jump up and down under the caret every time the result count changed. */}
 			<div
-				className="relative z-10 mx-4 md:!w-[640px] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme-search"
+				className="relative z-10 mx-4 md:!w-[640px] self-start mt-[max(1rem,calc(50vh-200px))] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme-search"
 				data-e2e={generateE2eId('modal.search')}
 			>
 				<div className="flex flex-col" data-e2e={generateE2eId('modal.search.input')}>
@@ -416,10 +489,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 					/>
 				</div>
 				<ListGroupSearchModal
-					listRecent={listRecent}
-					unreadList={unreadList}
-					listItemWithoutRecent={listItemWithoutRecent}
-					normalizeSearchText={normalizeSearchText}
+					listRecent={shownListRecent}
+					unreadList={shownUnreadList}
+					listItemWithoutRecent={shownListItemWithoutRecent}
+					normalizeSearchText={shownSearchText}
 					handleItemClick={handleItemClick}
 				/>
 				<FooterNoteModal />

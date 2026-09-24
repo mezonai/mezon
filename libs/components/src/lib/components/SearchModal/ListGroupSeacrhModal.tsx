@@ -1,6 +1,6 @@
 import type { SearchItemProps } from '@mezon/utils';
 import { toggleDisableHover } from '@mezon/utils';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListGroupSearchModalContext } from './ListGroupSearchModalContext';
 import ListSearchModal from './ListSearchModal';
@@ -13,14 +13,20 @@ type Props = {
 	handleItemClick: (item: SearchItemProps) => void;
 };
 
-export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, listItemWithoutRecent, normalizeSearchText, handleItemClick }) => {
+// Memoized so the renders SearchModal does while it holds the previous results (typing,
+// store updates before SearchCtrlK answers) skip the whole row list.
+export const ListGroupSearchModal = memo(({ unreadList, listRecent, listItemWithoutRecent, normalizeSearchText, handleItemClick }: Props) => {
 	const { t } = useTranslation('common');
 
 	const boxRef = useRef<HTMLDivElement | null>(null);
 	const itemRefs = useRef<Record<string, Element | null>>({});
 	const usingKeyboard = useRef<boolean>(true);
-	const focusItemIndex = useRef<number>(0);
 	const [focusItemId, setFocusItemId] = useState<string>('');
+	const [focusSearchText, setFocusSearchText] = useState<string>(normalizeSearchText);
+	if (focusSearchText !== normalizeSearchText) {
+		setFocusSearchText(normalizeSearchText);
+		setFocusItemId('');
+	}
 
 	const allItems = useMemo(() => {
 		if (normalizeSearchText) {
@@ -40,15 +46,16 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 		}, {});
 	}, [allItems]);
 
-	const handleItemMouseEnter = useCallback(
-		(item: SearchItemProps) => {
-			if (item?.id && !usingKeyboard.current) {
-				focusItemIndex.current = indexMap[item?.id] ?? 0;
-				setFocusItemId(item?.id ?? '');
-			}
-		},
-		[indexMap]
-	);
+	// The highlight follows the item, not the row index: rows that arrive or reorder for
+	// the same query leave it where the user put it. A new query starts on the first row.
+	const activeFocusItemId = indexMap[focusItemId] !== undefined ? focusItemId : (allItems[0]?.id ?? '');
+	const activeFocusIndex = indexMap[activeFocusItemId] ?? 0;
+
+	const handleItemMouseEnter = useCallback((item: SearchItemProps) => {
+		if (item?.id && !usingKeyboard.current) {
+			setFocusItemId(item.id);
+		}
+	}, []);
 
 	const travelItemByKeyBoard = useCallback(
 		(event: KeyboardEvent) => {
@@ -56,15 +63,15 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 			let newFocusIndex = 0;
 			switch (event.code) {
 				case 'Enter': {
-					handleItemClick(allItems[focusItemIndex.current]);
+					handleItemClick(allItems[activeFocusIndex]);
 					return;
 				}
 				case 'ArrowDown': {
-					newFocusIndex = focusItemIndex.current + 1;
+					newFocusIndex = activeFocusIndex + 1;
 					break;
 				}
 				case 'ArrowUp': {
-					newFocusIndex = focusItemIndex.current - 1;
+					newFocusIndex = activeFocusIndex - 1;
 					break;
 				}
 				default:
@@ -82,10 +89,9 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 			} else {
 				element?.scrollIntoView({ behavior: 'smooth' });
 			}
-			focusItemIndex.current = newFocusIndex;
 			setFocusItemId(focusId);
 		},
-		[allItems, handleItemClick]
+		[allItems, activeFocusIndex, handleItemClick]
 	);
 
 	const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -106,16 +112,9 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 		return () => document.removeEventListener('mousemove', handler);
 	}, []);
 
-	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			focusItemIndex.current = 0;
-			setFocusItemId(allItems?.[0]?.id ?? '');
-			boxRef.current?.scroll({ top: 0, behavior: 'instant' });
-		}, 300);
-		return () => {
-			timeoutId && clearTimeout(timeoutId);
-		};
-	}, [allItems, normalizeSearchText]);
+	useLayoutEffect(() => {
+		boxRef.current?.scroll({ top: 0, behavior: 'instant' });
+	}, [normalizeSearchText]);
 
 	const listGroupSearchContextValue = useMemo(() => ({ itemRefs: itemRefs.current }), []);
 
@@ -132,7 +131,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 						</div>
 						<ListSearchModal
 							listSearch={listRecent}
-							focusItemId={focusItemId}
+							focusItemId={activeFocusItemId}
 							searchText={normalizeSearchText}
 							onMouseEnter={handleItemMouseEnter}
 							onItemClick={handleItemClick}
@@ -146,7 +145,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 							listSearch={unreadList}
 							onItemClick={handleItemClick}
 							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
-							focusItemId={focusItemId}
+							focusItemId={activeFocusItemId}
 							onMouseEnter={handleItemMouseEnter}
 						/>
 					</>
@@ -158,7 +157,7 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 							listSearch={listItemWithoutRecent}
 							onItemClick={handleItemClick}
 							searchText={normalizeSearchText.startsWith('#') ? normalizeSearchText.slice(1) : normalizeSearchText}
-							focusItemId={focusItemId}
+							focusItemId={activeFocusItemId}
 							onMouseEnter={handleItemMouseEnter}
 						/>
 					</>
@@ -168,4 +167,4 @@ export const ListGroupSearchModal: React.FC<Props> = ({ unreadList, listRecent, 
 			</div>
 		</ListGroupSearchModalContext.Provider>
 	);
-};
+});
