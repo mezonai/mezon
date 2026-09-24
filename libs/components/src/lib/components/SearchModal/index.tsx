@@ -21,7 +21,7 @@ import {
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
-import { TypeSearch, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
+import { TypeSearch, createImgproxyUrl, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -74,6 +74,23 @@ const dedupeById = (items: SearchItemProps[]) => {
 // Past this a slow SearchCtrlK stops holding the list back, so the local matches show
 // and the server rows land on top of them later.
 const SEARCH_SETTLE_TIMEOUT_MS = 1000;
+
+// Rows the 250px list shows before it scrolls. Their avatars are fetched before the new
+// list swaps in, so a first-time avatar does not pop in after its row.
+const PRELOAD_AVATAR_ROWS = 10;
+// A slow avatar holds the list back at most this long; past it the row shows and the
+// image fills in when it lands, as before.
+const AVATAR_PRELOAD_TIMEOUT_MS = 300;
+
+const preloadImages = (urls: string[], timeoutMs: number) => {
+	const loads = urls.map((url) => {
+		const image = new Image();
+		image.src = url;
+		return image.decode().catch(() => undefined);
+	});
+	const timeout = new Promise((resolve) => setTimeout(resolve, timeoutMs));
+	return Promise.race([Promise.all(loads), timeout]);
+};
 
 // While `isHeld` is true, keeps returning the value from the last render where it was
 // false. Lets the modal keep the previous results on screen until the new query's server
@@ -339,6 +356,17 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return previous;
 	}, [recentList, listDirectSearch, previousChannels]);
 
+	// Only the local DM rows carry an avatar (server rows have none), so these are known
+	// before SearchCtrlK answers and can load alongside it.
+	const firstRowAvatarUrls = useMemo(() => {
+		const rows = normalizeSearchText ? listItemWithoutRecent : [...listRecent, ...unreadList];
+		return rows
+			.slice(0, PRELOAD_AVATAR_ROWS)
+			.map((item) => item.avatarUser)
+			.filter((avatarUrl): avatarUrl is string => !!avatarUrl)
+			.map((avatarUrl) => createImgproxyUrl(avatarUrl));
+	}, [normalizeSearchText, listItemWithoutRecent, listRecent, unreadList]);
+
 	const isAwaitingSearch = settledSearchText !== searchText;
 	const shownListRecent = useHeldWhile(listRecent, isAwaitingSearch);
 	const shownUnreadList = useHeldWhile(unreadList, isAwaitingSearch);
@@ -429,7 +457,11 @@ function SearchModal({ onClose }: SearchModalProps) {
 			}
 		};
 		const settleTimeout = setTimeout(settle, SEARCH_SETTLE_TIMEOUT_MS);
-		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText })).finally(() => {
+		// Deliberately the avatars of this render only: re-running on every list change would
+		// refetch SearchCtrlK and restart the hold.
+		const searchLoaded = dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText }));
+		const avatarsLoaded = preloadImages(firstRowAvatarUrls, AVATAR_PRELOAD_TIMEOUT_MS);
+		Promise.all([searchLoaded, avatarsLoaded]).finally(() => {
 			clearTimeout(settleTimeout);
 			settle();
 		});
