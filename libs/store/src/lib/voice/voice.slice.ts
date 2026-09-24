@@ -16,11 +16,8 @@ import { addVoicePeer, removeVoicePeer, voicePeersFromSnapshot } from './voicePe
 
 export const VOICE_FEATURE_KEY = 'voice';
 
-/*
- * Update these interfaces according to your requirements.
- */
 export interface VoiceEntity extends ApiVoiceChannelUser {
-	id: string; // Primary ID
+	id: string;
 }
 
 export enum EVoiceInteractEvent {
@@ -87,11 +84,9 @@ export type VoiceRecordingStatus = 'idle' | 'starting' | 'recording' | 'stopping
 export interface VoiceRecordingState {
 	status: VoiceRecordingStatus;
 	startedAt: number | null;
-	/** Hard stop time when chunks are buffered in RAM instead of streamed to disk. */
 	deadlineAt: number | null;
 	streamingToDisk: boolean;
 	pipeline: 'worker' | 'canvas' | 'none';
-	/** Set when the tab went hidden mid-recording on the canvas fallback. */
 	degraded: boolean;
 	error: string | null;
 }
@@ -204,7 +199,6 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 	async ({ clanId, channelId, channelType, noCache }: fetchVoiceChannelMembersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			// A snapshot requested before a join/leave must not overwrite newer peer membership.
 			for (let attempt = 0; attempt < 3; attempt++) {
 				const revision = (thunkAPI.getState() as RootState).voice.presenceRevisionByClan[clanId] ?? 0;
 				const response = await fetchVoiceChannelMembersCached(
@@ -545,7 +539,6 @@ export const voiceSlice = createSlice({
 				};
 			}
 		}
-		// ...
 	},
 	extraReducers: (builder) => {
 		builder
@@ -627,29 +620,8 @@ export const voiceSlice = createSlice({
 	}
 });
 
-/*
- * Export reducer for store configuration.
- */
 export const voiceReducer = voiceSlice.reducer;
 
-/*
- * Export action creators to be dispatched. For use with the `useDispatch` hook.
- *
- * e.g.
- * ```
- * import React, { useEffect } from 'react';
- * import { useDispatch } from 'react-redux';
- *
- * // ...
- *
- * const dispatch = useDispatch();
- * useEffect(() => {
- *   dispatch(usersActions.add({ id: 1 }))
- * }, [dispatch]);
- * ```
- *
- * See: https://react-redux.js.org/next/api/hooks#usedispatch
- */
 export const voiceActions = {
 	...voiceSlice.actions,
 	fetchVoiceChannelMembers,
@@ -659,20 +631,6 @@ export const voiceActions = {
 	giveFlowers
 };
 
-/*
- * Export selectors to query state. For use with the `useSelector` hook.
- *
- * e.g.
- * ```
- * import { useSelector } from 'react-redux';
- *
- * // ...
- *
- * const entities = useSelector(selectAllUsers);
- * ```
- *
- * See: https://react-redux.js.org/next/api/hooks#useselector
- */
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
 const { selectAll, selectIds, selectById } = UsersInVoiceAdapter.getSelectors();
@@ -742,7 +700,6 @@ export const selectIsVoiceRecording = createSelector(
 	getVoiceState,
 	(state) => state.recording.status === 'recording' || state.recording.status === 'starting'
 );
-///
 export const selectJoinCallExtStatus = createSelector(getVoiceState, (state) => state.joinCallExtStatus);
 export const selectExternalToken = createSelector(getVoiceState, (state) => state.externalToken);
 export const selectIsPiPMode = createSelector(getVoiceState, (state) => state.isPiPMode);

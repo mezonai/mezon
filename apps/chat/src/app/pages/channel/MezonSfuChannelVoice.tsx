@@ -214,7 +214,6 @@ const MezonSfuChannelVoiceInner = () => {
 
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
-		// Account presence belongs to the server; another peer may still be in this room.
 
 		isDisconnectingRef.current = false;
 	});

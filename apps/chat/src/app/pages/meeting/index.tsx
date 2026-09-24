@@ -17,7 +17,6 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-// Permissions popup component
 const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
 	return (
 		<div
@@ -75,7 +74,6 @@ export default function PreJoinCalling() {
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [avatar, setAvatar] = useState('');
 	const [error, setError] = useState<string | null>(null);
-	// State for permissions
 	const [permissionsState, setPermissionsState] = useState({
 		camera: false,
 		microphone: false,
@@ -147,7 +145,6 @@ export default function PreJoinCalling() {
 
 	useEffect(() => {
 		return () => {
-			// Clean up all resources when component unmounts
 			if (streamRef.current) {
 				streamRef.current.getTracks().forEach((track) => track.stop());
 				streamRef.current = null;
@@ -172,7 +169,6 @@ export default function PreJoinCalling() {
 
 	const isUser = !!(getDisplayName && getAvatar);
 
-	// Handle Join Meeting
 	const joinMeeting = useCallback(
 		async (role: SfuJoinRole = 'speaker') => {
 			const trimmed = username.trim();
@@ -266,19 +262,16 @@ export default function PreJoinCalling() {
 			) : (
 				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white flex-1">
 					<div className="w-full max-w-3xl px-4 py-8 flex flex-col items-center">
-						{/* Header */}
 						<div className="text-center mb-4">
 							<p className="text-gray-300 mb-1">Choose your audio and video settings for</p>
 							<h1 className="text-3xl font-bold">Meeting now</h1>
 						</div>
 
-						{/* Video Preview */}
 						<div className="w-full max-w-xl bg-zinc-800 rounded-lg">
 							<div className="p-6 flex flex-col items-center">
 								<VideoPreview avatarExist={getAvatar} cameraOn={cameraOn} stream={streamRef.current} />
 								<JoinForm loadingStatus={getJoinCallExtStatus} username={username} setUsername={setUsername} onJoin={joinMeeting} />
 
-								{/* Error message */}
 								{error && (
 									<div className="w-full mb-4 p-2 bg-red-900/50 border border-red-800 rounded text-red-200 text-sm">{error}</div>
 								)}

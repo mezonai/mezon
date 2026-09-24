@@ -179,9 +179,7 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 				analyser.fftSize = 256;
 				source.connect(analyser);
 				nodeMap.set(id, { source, analyser });
-			} catch {
-				// Ignore invalid stream
-			}
+			} catch {} // eslint-disable-line no-empty
 		});
 
 		const timeDomainData = new Uint8Array(256);
@@ -247,9 +245,7 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 				try {
 					node.source.disconnect();
 					node.analyser.disconnect();
-				} catch {
-					// Ignore disconnect errors
-				}
+				} catch {} // eslint-disable-line no-empty
 			});
 			if (audioContext) {
 				void audioContext.close().catch(() => undefined);
@@ -704,7 +700,6 @@ export function MezonSfuVoiceRoom({
 
 	const applySfuPeers = useCallback(
 		(peers: SfuPeer[]) => {
-			// Save updates before React renders: signaling may arrive before the SDP maps a MID.
 			const updatedPeers = peers.map((peer) => {
 				const peerId = String(peer.peer_id);
 				const updated = { ...peerMetadataRef.current.get(peerId), ...peer };
@@ -817,9 +812,7 @@ export function MezonSfuVoiceRoom({
 					if ('contentHint' in cameraTrack && cameraTrack.contentHint !== 'detail') {
 						try {
 							cameraTrack.contentHint = 'motion';
-						} catch {
-							// ignore
-						}
+						} catch {} // eslint-disable-line no-empty
 					}
 					const videoSender = findUplinkVideoSender();
 					if (videoSender) {
@@ -834,9 +827,7 @@ export function MezonSfuVoiceRoom({
 						}
 					}
 				}
-			} catch {
-				// The sender may have closed while the session reconnects.
-			}
+			} catch {} // eslint-disable-line no-empty
 
 			const signal = { type: 'camera', active: cameraEnabled } as const;
 			if (joinRole === 'speaker' && joinedRef.current && ws?.readyState === WebSocket.OPEN) {
@@ -1035,7 +1026,6 @@ export function MezonSfuVoiceRoom({
 					syncRemoteMedia(pc);
 				};
 				refresh();
-				// Track events must not overwrite screen_requested/screen_active from the SFU.
 				track.addEventListener('mute', refresh);
 				track.addEventListener('unmute', refresh);
 				track.addEventListener('ended', refresh);
@@ -1070,9 +1060,7 @@ export function MezonSfuVoiceRoom({
 					if (videoTrack && 'contentHint' in videoTrack && videoTrack.contentHint !== 'detail') {
 						try {
 							videoTrack.contentHint = 'motion';
-						} catch {
-							// ignore
-						}
+						} catch {} // eslint-disable-line no-empty
 					}
 					const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 					const videoTransceiver = uplinkVideoTransceiver;
@@ -1111,7 +1099,6 @@ export function MezonSfuVoiceRoom({
 				const mungedSdp = mungeVideoBitrates(answer.sdp, cameraQualityTierRef.current);
 				await pc.setLocalDescription(new RTCSessionDescription({ type: 'answer', sdp: mungedSdp }));
 				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
-				// Commit ownership only after the answer succeeds; old track events cannot revive a departed peer.
 				for (const [mid, occupant] of getMsidOccupantsByMidFromSdp(offer.sdp)) {
 					if (!getRemoteMediaKind(mid) || !canReactivateMid(retiredMidsRef.current.get(mid), occupant, peerIdsByMidRef.current.get(mid)))
 						continue;
@@ -1129,9 +1116,6 @@ export function MezonSfuVoiceRoom({
 						})
 					);
 				}
-				// Attach the camera while creating the first answer so its SSRC is
-				// negotiated, then detach it when camera is off. Keeping a disabled
-				// track attached can produce black frames that look like live video.
 				if (!desiredMediaRef.current.cameraEnabled) {
 					await findUplinkVideoSender()?.replaceTrack(null);
 				}
@@ -1496,8 +1480,6 @@ export function MezonSfuVoiceRoom({
 				window.clearTimeout(pendingForcedMuteRef.current);
 				pendingForcedMuteRef.current = undefined;
 			}
-			// A leave is currently signaled by closing the WebSocket; no explicit
-			// { type: 'leave' } message is sent to the SFU.
 			removeVisibilityListener();
 			removeNetworkListeners();
 			clearIceRecoveryTimer();
@@ -1569,9 +1551,7 @@ export function MezonSfuVoiceRoom({
 			} as DisplayMediaStreamOptions);
 			try {
 				captureController?.setFocusBehavior('focus-capturing-application');
-			} catch {
-				// Browsers may expose CaptureController without conditional focus.
-			}
+			} catch {} // eslint-disable-line no-empty
 			window.focus();
 			const track = stream.getVideoTracks()[0];
 			if (!track) throw new Error('Unable to get the screen track');
@@ -2020,7 +2000,6 @@ export function MezonSfuVoiceRoom({
 		const activeSpeakerIndex = gridTileOrderRef.current.findIndex((id) => tilesById.get(id)?.participantId === activeSpeakerId);
 		const firstPageCapacity = Math.max(1, gridLayout.maxTiles);
 		if (activeSpeakerIndex >= firstPageCapacity) {
-			// Swap with the last visible slot instead of shifting the whole page.
 			const replacementIndex = firstPageCapacity - 1;
 			[gridTileOrderRef.current[replacementIndex], gridTileOrderRef.current[activeSpeakerIndex]] = [
 				gridTileOrderRef.current[activeSpeakerIndex],

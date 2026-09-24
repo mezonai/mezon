@@ -1,4 +1,3 @@
-/** Bind one remote track without stopping the WebRTC-owned receiver on cleanup. */
 export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStreamTrack) => {
 	let disposed = false;
 	let inFlight = false;
@@ -68,7 +67,6 @@ export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStrea
 	element.addEventListener('canplay', resume);
 	element.addEventListener('pause', resume);
 	element.addEventListener('playing', playing);
-	// Retry synchronously inside user activation if autoplay was rejected.
 	document.addEventListener('pointerdown', gesture, true);
 	document.addEventListener('keydown', gesture, true);
 	play();

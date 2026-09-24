@@ -10,8 +10,6 @@ export const parseMeetMetadata = (metadata?: string): MeetMetadata => {
 				avatar: typeof fields.avatar === 'string' ? fields.avatar.trim() : ''
 			};
 		}
-	} catch {
-		// Older clients may send empty, plain-text, or truncated metadata.
-	}
+	} catch {} // eslint-disable-line no-empty
 	return { username: '', avatar: '' };
 };

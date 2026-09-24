@@ -41,7 +41,6 @@ const SfuVoiceInfo = React.memo(() => {
 		}
 		if (currentVoiceInfo) {
 			dispatch(voiceActions.resetVoiceControl());
-			// Wait for server presence instead of removing all sessions of this account.
 		}
 	};
 

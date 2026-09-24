@@ -25,20 +25,15 @@ const applyReceiverJitterTarget = (receiver: RTCRtpReceiver) => {
 	if (typeof withHint.jitterBufferTarget === 'number' || 'jitterBufferTarget' in withHint) {
 		try {
 			withHint.jitterBufferTarget = 80;
-		} catch {
-			// Browser may reject the assignment.
-		}
+		} catch {} // eslint-disable-line no-empty
 	}
 	if (typeof withHint.playoutDelayHint === 'number' || 'playoutDelayHint' in withHint) {
 		try {
 			withHint.playoutDelayHint = 0.08;
-		} catch {
-			// Browser may reject the assignment.
-		}
+		} catch {} // eslint-disable-line no-empty
 	}
 };
 
-/** Receives the stream-channel speaker audio without microphone, camera, PTT, or video. */
 export function SfuAudioAudience({
 	token,
 	roomId,
@@ -159,8 +154,6 @@ export function SfuAudioAudience({
 				if (!pc || !ws || ws.readyState !== WebSocket.OPEN) return;
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: offer.sdp }));
 				if (disposed || disposedRef.current || pcRef.current !== pc || wsRef.current !== ws) return;
-				// The SFU keeps its complete audio/video/screen SDP layout. This
-				// audience participates in that layout but negotiates no video media.
 				const offeredKinds = offer.sdp
 					.split(/\r?\nm=/)
 					.slice(1)
@@ -175,7 +168,6 @@ export function SfuAudioAudience({
 				validateFullSdpLayout(offer.sdp, answer.sdp);
 				await pc.setLocalDescription(answer);
 				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
-				// An existing receiver can be reused without another ontrack event.
 				for (const [mid, occupant] of getMsidOccupantsByMidFromSdp(offer.sdp)) {
 					if (Number(mid) < 3 || !canReactivateMid(retired.get(mid), occupant, owners.get(mid))) continue;
 					retired.delete(mid);

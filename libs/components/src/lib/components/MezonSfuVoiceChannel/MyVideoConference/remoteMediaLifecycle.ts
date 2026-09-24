@@ -47,7 +47,6 @@ export const getDepartedMids = (
 	});
 };
 
-// A retired MID stays silent until a committed SDP identifies its replacement.
 export const canReactivateMid = (retired: RetiredSource | undefined, next: MsidOccupant, currentPeer?: string) => {
 	if (!retired) return true;
 	if (retired.peerId && next.peerId) return retired.peerId !== next.peerId;
@@ -55,7 +54,6 @@ export const canReactivateMid = (retired: RetiredSource | undefined, next: MsidO
 	return Boolean(currentPeer && currentPeer !== retired.peerId);
 };
 
-/** Signaling owns sharing state; receiver mute/unmute only describes packet delivery. */
 export const isRemoteScreenSharing = (participant: SfuRemoteMedia) =>
 	participant.screen?.readyState === 'live' && participant.screenActive === true && participant.screenRequested !== false;
 
@@ -63,7 +61,6 @@ export const mergeRemotePeerMetadata = (participant: SfuRemoteMedia, peer: SfuPe
 	const peerId = String(peer.peer_id);
 	const changedOwner =
 		(participant.peerId && participant.peerId !== peerId) || (participant.userId && peer.user_id && participant.userId !== peer.user_id);
-	// A reused slot must not inherit the previous occupant's tracks or sharing flags.
 	const current: SfuRemoteMedia = changedOwner ? { id: participant.id } : participant;
 	return {
 		...current,
@@ -82,7 +79,6 @@ export const mergeRemotePeerMetadata = (participant: SfuRemoteMedia, peer: SfuPe
 export const isCurrentSfuPeer = (peerId: string | number | undefined, selfPeerId: string | undefined) =>
 	peerId != null && selfPeerId !== undefined && String(peerId) === selfPeerId;
 
-/** One account can have multiple connections; only the local peer is excluded. */
 export const getRemoteParticipants = (media: Iterable<SfuRemoteMedia>, selfPeerId?: string): SfuRemoteMedia[] => {
 	const byPeer = new Map<string, SfuRemoteMedia>();
 	for (const participant of media) {
