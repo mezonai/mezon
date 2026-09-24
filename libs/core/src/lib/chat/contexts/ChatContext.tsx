@@ -280,7 +280,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const reconnectRecoveryPendingRef = useRef(false);
 
 	const navigate = useCustomNavigate();
-	// update later
 	const onvoiceended = useCallback(
 		(voice: VoiceEndedEvent) => {
 			if (voice) {
@@ -291,7 +290,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onvoicejoined = useCallback(
-		(voice: VoiceJoinedEvent) => {
+		(voice: VoiceJoinedEvent & { peer_id?: number }) => {
 			if (voice) {
 				const store = getStore();
 				const state = store.getState();
@@ -331,7 +330,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						clan_id: voice.clan_id,
 						user_id: voice.user_id,
 						user_name: voice.participant,
-						user_avatar: voice.last_screenshot
+						user_avatar: voice.last_screenshot,
+						peer_id: voice.peer_id
 					})
 				);
 			}
@@ -342,11 +342,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onvoiceleaved = useCallback(
 		(voice: VoiceLeavedEvent) => {
 			dispatch(voiceActions.remove(voice));
-			if (voice.voice_user_id === userId) {
-				if (document.pictureInPictureElement) {
-					document.exitPictureInPicture();
-				}
-			}
 		},
 		[dispatch]
 	);
@@ -579,7 +574,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (mess.isMe && !isContentMutation) {
 						const directReceiver = selectDirectById(store.getState(), mess?.channel_id);
-						// Mark as read if isMe send token
 						if (
 							directReceiver &&
 							(directReceiver.type === ChannelType.CHANNEL_TYPE_DM || directReceiver.type === ChannelType.CHANNEL_TYPE_GROUP)
@@ -673,7 +667,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					);
 				}
 
-				// Fallback: detect replies to current user from onchannelmessage until BE sends onnotification for replies
 				const currentUserId = userId || selectCurrentUserId(store.getState());
 				const isNewMessage = message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove;
 				if (isNewMessage && currentUserId && message.sender_id !== currentUserId) {
@@ -770,7 +763,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						);
 					}
 				}
-				// check
 			} catch (error) {
 				captureSentryError(message, 'onchannelmessage');
 			}
@@ -1130,7 +1122,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				} else {
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_GROUP) {
 						dispatch(directActions.removeGroupMember({ userId: userID, currentUserId: userId as string, channelId: user.channel_id }));
-						// TODO: remove member group
 					}
 				}
 				dispatch(channelMembers.actions.remove({ userId: userID, channelId: user.channel_id }));
@@ -1300,7 +1291,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						user: {
 							id: user.user_id,
 							avatar_url: user.avatar,
-							//about_me: user.about_me,
 							display_name: user.display_name,
 							metadata: user.custom_status,
 							username: user.username,
@@ -1585,9 +1575,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch, userId]
 	);
 
-	const onmessagebuttonclicked = useCallback((event: MessageButtonClicked) => {
-		//console.error('event', event);
-	}, []);
+	const onmessagebuttonclicked = useCallback((event: MessageButtonClicked) => {}, []); // eslint-disable-line @typescript-eslint/no-empty-function
 
 	const onerror = useCallback(
 		(event: unknown) => {
@@ -1886,7 +1874,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			const isVoiceJoined = selectVoiceInfo(store.getState());
 			if (channelDeleted?.channel_id === isVoiceJoined?.channelId) {
-				//Leave Room If It's been deleted
 				dispatch(voiceActions.resetVoiceControl());
 			}
 
@@ -1982,7 +1969,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch, userId]
 	);
 
-	//TODO: delete account
 	const ondeleteaccount = useCallback(
 		(deleteAccountEvent: DeleteAccountEvent) => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2040,7 +2026,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 			}
-			// Switch public to private
 			if (channelUpdated.channel_private && channelExist && channelExist.channel_private !== channelUpdated.channel_private) {
 				const result = await dispatch(
 					updateChannelActions.switchPublicToPrivate({
@@ -2054,7 +2039,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 			}
 
-			// Switch private to public
 			if (!channelUpdated.channel_private && channelExist && channelExist.channel_private !== channelUpdated.channel_private) {
 				dispatch(
 					updateChannelActions.switchPrivateToPublic({
@@ -2063,7 +2047,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			// Add new public channel
 			if (!channelUpdated.channel_private && !channelExist && channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 				dispatch(
 					updateChannelActions.addChannelNotExist({
@@ -2072,7 +2055,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			// Add new public thread
 			if (!channelUpdated.channel_private && !channelExist && channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 				dispatch(
 					updateChannelActions.addThreadNotExist({
@@ -2275,21 +2257,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	}, []);
 	const oneventcreated = useCallback(
 		async (eventCreatedEvent: ApiCreateEventRequest) => {
-			// Check actions
 			const isActionCreating = eventCreatedEvent.action === EEventAction.CREATED;
 			const isActionUpdating = eventCreatedEvent.action === EEventAction.UPDATE;
 			const isActionDeleting = eventCreatedEvent.action === EEventAction.DELETE;
 			const isActionUpdateUser = eventCreatedEvent.action === EEventAction.INTERESTED || eventCreatedEvent.action === EEventAction.UNINTERESTED;
 
-			// Check repeat
 			const isEventNotRepeat = eventCreatedEvent.repeat_type === ERepeatType.DOES_NOT_REPEAT;
 
-			// Check status
 			const isEventUpcoming = eventCreatedEvent.event_status === EEventStatus.UPCOMING;
 			const isEventOngoing = eventCreatedEvent.event_status === EEventStatus.ONGOING;
 			const isEventCompleted = eventCreatedEvent.event_status === EEventStatus.COMPLETED;
 
-			// Check action remove
 			const shouldRemoveEvent = isEventNotRepeat && isEventCompleted;
 			const onlyHidingEvent = !isEventNotRepeat && isEventCompleted;
 			const onlyUpdateStatus = isEventUpcoming || isEventOngoing;
@@ -2306,7 +2284,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 
 				if (onlyHidingEvent) {
-					// hide schedule event icon
 					dispatch(eventManagementActions.updateEventStatus(eventCreatedEvent));
 					dispatch(eventManagementActions.updateNewStartTime(eventCreatedEvent));
 					return;
@@ -2378,7 +2355,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			const { role, status, user_add_ids = [], user_remove_ids = [] } = roleEvent;
 
-			// Handle role assignments/removals
 			if (user_add_ids.length) {
 				dispatch(
 					usersClanActions.updateManyRoleIds({
@@ -2397,7 +2373,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			// Handle new role creation
 			if (status === EEventAction.CREATED && role) {
 				dispatch(
 					rolesClanActions.add({
@@ -2445,7 +2420,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					userIds: user_remove_ids
 				})
 			);
-			// Handle role update
 			if (status === EEventAction.UPDATE) {
 				const isUserAffected = user_add_ids.includes(userId as string) || user_remove_ids.includes(userId as string);
 
@@ -2473,7 +2447,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				return;
 			}
 
-			// Handle role deletion
 			if (status === EEventAction.DELETE) {
 				dispatch(rolesClanActions.remove({ roleId: role.id as string, clanId: role.clan_id as string }));
 			}
@@ -2482,7 +2455,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onwebrtcsignalingfwd = useCallback(async (event: WebrtcSignalingFwd) => {
-		// Define type 50 for clear call on all platforms
 		const WEBRTC_CLEAR_CALL = 50;
 		if (event.data_type >= 9 && event.data_type !== WEBRTC_CLEAR_CALL) {
 			return;
@@ -2492,7 +2464,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const userCallId = selectUserCallId(store.getState() as unknown as RootState);
 		const isInCall = selectIsInCall(store.getState() as unknown as RootState);
 		const signalingType = event?.data_type;
-		// Skip processing if not in a call and the signaling type is not relevant
 		if (!isInCall && [WebrtcSignalingType.WEBRTC_SDP_ANSWER, WebrtcSignalingType.WEBRTC_ICE_CANDIDATE].includes(signalingType)) {
 			return;
 		}
@@ -2526,7 +2497,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					userId || ''
 				);
 			} else if (event.data_type === WEBRTC_CLEAR_CALL) {
-				// Force quit call for android
 				dispatch(DMCallActions.setIsForceQuitCallNative(true));
 			}
 		}
@@ -3263,7 +3233,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const value = React.useMemo<ChatContextValue>(
 		() => ({
-			// add logic code
 			setCallbackEventFn,
 			handleReconnect,
 			onchannelmessage

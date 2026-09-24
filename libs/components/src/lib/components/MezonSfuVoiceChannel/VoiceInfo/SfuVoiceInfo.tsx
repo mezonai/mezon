@@ -1,4 +1,4 @@
-import { useAppNavigation, useAuth } from '@mezon/core';
+import { useAppNavigation } from '@mezon/core';
 import {
 	selectNoiseSuppressionEnabled,
 	selectShowCamera,
@@ -19,7 +19,6 @@ import { ButtonCopy } from '../../../components';
 
 const SfuVoiceInfo = React.memo(() => {
 	const { t } = useTranslation('channelVoice');
-	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 	const { toChannelPage, navigate } = useAppNavigation();
 
@@ -42,9 +41,6 @@ const SfuVoiceInfo = React.memo(() => {
 		}
 		if (currentVoiceInfo) {
 			dispatch(voiceActions.resetVoiceControl());
-			if (userProfile?.user?.id) {
-				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: currentVoiceInfo.clanId }));
-			}
 		}
 	};
 

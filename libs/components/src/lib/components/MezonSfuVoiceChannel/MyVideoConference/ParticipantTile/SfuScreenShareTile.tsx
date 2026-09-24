@@ -1,6 +1,7 @@
 import { Icons } from '@mezon/ui';
 import { useCallback, useMemo, useState } from 'react';
 import { SfuVideo } from '../Media/SfuVideo';
+import { isRemoteScreenSharing } from '../remoteMediaLifecycle';
 import type { SfuParticipantTileProps } from './SfuParticipantTile';
 
 export const SfuScreenShareTile = ({ participant, displayName }: Pick<SfuParticipantTileProps, 'participant' | 'displayName'>) => {
@@ -8,7 +9,7 @@ export const SfuScreenShareTile = ({ participant, displayName }: Pick<SfuPartici
 	const stream = useMemo(() => (participant.screen ? new MediaStream([participant.screen]) : undefined), [participant.screen]);
 	const handleVideoFrameStateChange = useCallback((hasRecentFrame: boolean) => setHasRecentVideoFrame(hasRecentFrame), []);
 	const showVideo = Boolean(participant.screen?.readyState === 'live' && hasRecentVideoFrame);
-	if (!stream) return null;
+	if (!stream || !isRemoteScreenSharing(participant)) return null;
 
 	return (
 		<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
