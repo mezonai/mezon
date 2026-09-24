@@ -1,6 +1,6 @@
+import { useAuth } from '@mezon/core';
 import {
 	generateMeetToken,
-	selectCurrentUserId,
 	selectEntitesUserClans,
 	selectNoiseSuppressionEnabled,
 	selectShowCamera,
@@ -425,7 +425,8 @@ export function MezonSfuVoiceRoom({
 }: MezonSfuVoiceRoomProps) {
 	const { t } = useTranslation('channelVoice');
 	const dispatch = useAppDispatch();
-	const currentUserId = useSelector(selectCurrentUserId);
+	const { userProfile, userId } = useAuth();
+	const currentUserId = userId || '';
 	const clanMembers = useSelector(selectEntitesUserClans);
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
@@ -1797,7 +1798,7 @@ export function MezonSfuVoiceRoom({
 		},
 		[clanMembers]
 	);
-	const localMember = currentUserId ? clanMembers[currentUserId] : undefined;
+	const localMember = currentUserId ? clanMembers[currentUserId] || userProfile : undefined;
 	const localDisplayName =
 		getNameForPrioritize(localMember?.clan_nick, localMember?.user?.display_name, localMember?.user?.username) ||
 		username ||
@@ -1872,7 +1873,7 @@ export function MezonSfuVoiceRoom({
 				<SfuParticipantTile
 					participant={participant}
 					displayName={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_DISPLAY_NAME : profile.displayName}
-					avatar={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_AVATAR : profile.avatar}
+					avatar={participant.userId === process.env.NX_VOICE_AGENT_ID ? AGENT_AVATAR : profile.avatar || participant?.avatar}
 					speaking={participantSpeaking}
 					locallyMuted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
 				/>

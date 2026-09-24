@@ -55,4 +55,6 @@ export type SfuRemoteMedia = {
 	cameraActive?: boolean;
 	screenRequested?: boolean;
 	isMute?: boolean;
+	username?: string;
+	avatar?: string;
 };
