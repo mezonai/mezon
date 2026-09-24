@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import type { SfuSignalMessage } from '../../types';
+import { canReactivateMid, getDepartedMids, getMsidOccupantsByMidFromSdp, isReceivingRemoteTrack, type RetiredSource } from '../remoteMediaLifecycle';
+import { SfuAudioTrack } from './SfuAudioTrack';
 
 export type SfuAudioAudienceState = 'joining' | 'connected' | 'reconnecting' | 'failed' | 'closed';
 
@@ -78,6 +81,28 @@ export function SfuAudioAudience({
 		const reportError = (message: string) => onErrorRef.current?.(new Error(message));
 		let connecting = false;
 		let closingIntentionally = false;
+		let disposed = false;
+		const owners = new Map<string, string>();
+		const users = new Map<string, string>();
+		const retired = new Map<string, RetiredSource>();
+		const syncAudio = (pc: RTCPeerConnection) => {
+			if (disposed || pcRef.current !== pc || negotiatingRef.current) return;
+			const nextByMid = new Map<string, MediaStreamTrack>();
+			for (const transceiver of pc.getTransceivers()) {
+				const mid = transceiver.mid;
+				if (!mid || Number(mid) < 3 || retired.has(mid) || !isReceivingRemoteTrack(transceiver)) continue;
+				if (transceiver.receiver.track.kind !== 'audio') continue;
+				applyReceiverJitterTarget(transceiver.receiver);
+				nextByMid.set(mid, transceiver.receiver.track);
+			}
+			tracksByMidRef.current = nextByMid;
+			const next = [...nextByMid.values()];
+			audioTracksRef.current = next;
+			setAudioTracks((current) => (current.length === next.length && current.every((track, index) => track === next[index]) ? current : next));
+		};
+		const syncTimer = window.setInterval(() => {
+			if (pcRef.current) syncAudio(pcRef.current);
+		}, 5000);
 
 		const closeTransport = () => {
 			closingIntentionally = true;
@@ -96,11 +121,14 @@ export function SfuAudioAudience({
 			audioTracksRef.current = [];
 			tracksByMidRef.current.forEach((track) => track.stop());
 			tracksByMidRef.current.clear();
+			owners.clear();
+			users.clear();
+			retired.clear();
 			setAudioTracks([]);
 			closingIntentionally = false;
 		};
 		const scheduleReconnect = () => {
-			if (disposedRef.current || connecting || closingIntentionally || reconnectTimerRef.current !== undefined) return;
+			if (disposed || disposedRef.current || connecting || closingIntentionally || reconnectTimerRef.current !== undefined) return;
 			if (reconnectAttemptRef.current >= MAX_RECONNECT_ATTEMPTS) {
 				reportError('SFU audio reconnect limit reached');
 				reportState('failed');
@@ -116,7 +144,7 @@ export function SfuAudioAudience({
 		};
 
 		const handleOffer = async (offer: { sdp: string; offer_generation: number }) => {
-			if (disposedRef.current || !pcRef.current || !wsRef.current) return;
+			if (disposed || disposedRef.current || !pcRef.current || !wsRef.current) return;
 			if (offer.offer_generation <= lastOfferGenerationRef.current) return;
 			if (negotiatingRef.current) {
 				if (!pendingOfferRef.current || offer.offer_generation > pendingOfferRef.current.offer_generation) {
@@ -124,13 +152,13 @@ export function SfuAudioAudience({
 				}
 				return;
 			}
+			const pc = pcRef.current;
+			const ws = wsRef.current;
 			negotiatingRef.current = true;
 			try {
-				const pc = pcRef.current;
-				const ws = wsRef.current;
 				if (!pc || !ws || ws.readyState !== WebSocket.OPEN) return;
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: offer.sdp }));
-				if (disposedRef.current || pcRef.current !== pc || wsRef.current !== ws) return;
+				if (disposed || disposedRef.current || pcRef.current !== pc || wsRef.current !== ws) return;
 				// The SFU keeps its complete audio/video/screen SDP layout. This
 				// audience participates in that layout but negotiates no video media.
 				const offeredKinds = offer.sdp
@@ -143,40 +171,55 @@ export function SfuAudioAudience({
 					transceiver.direction = offeredKinds[index] === 'video' ? 'inactive' : 'recvonly';
 				});
 				const answer = await pc.createAnswer();
+				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 				validateFullSdpLayout(offer.sdp, answer.sdp);
 				await pc.setLocalDescription(answer);
+				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
+				// An existing receiver can be reused without another ontrack event.
+				for (const [mid, occupant] of getMsidOccupantsByMidFromSdp(offer.sdp)) {
+					if (Number(mid) < 3 || !canReactivateMid(retired.get(mid), occupant, owners.get(mid))) continue;
+					retired.delete(mid);
+					users.set(mid, occupant.userId);
+					if (occupant.peerId) owners.set(mid, occupant.peerId);
+				}
 				if (ws.readyState !== WebSocket.OPEN || !pc.localDescription?.sdp) return;
 				ws.send(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp, offer_generation: offer.offer_generation }));
 				lastOfferGenerationRef.current = offer.offer_generation;
 			} catch {
+				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 				reportError('SFU audio negotiation failed');
 				scheduleReconnect();
 			} finally {
-				negotiatingRef.current = false;
-				const pending = pendingOfferRef.current;
-				pendingOfferRef.current = undefined;
-				if (pending && !disposedRef.current) void handleOffer(pending);
+				if (!disposed && pcRef.current === pc && wsRef.current === ws) {
+					negotiatingRef.current = false;
+					if (pc) syncAudio(pc);
+					const pending = pendingOfferRef.current;
+					pendingOfferRef.current = undefined;
+					if (pending) void handleOffer(pending);
+				}
 			}
 		};
 
 		const connect = async (refreshToken: boolean) => {
-			if (disposedRef.current || connecting) return;
+			if (disposed || disposedRef.current || connecting) return;
 			connecting = true;
 			closeTransport();
 			let nextToken = tokenRef.current;
 			if (refreshToken) {
 				try {
 					nextToken = await onRefreshTokenRef.current();
+					if (disposed) return;
 					if (!nextToken) throw new Error('empty token');
 					tokenRef.current = nextToken;
 				} catch {
+					if (disposed) return;
 					connecting = false;
 					reportError('Unable to refresh SFU audio token');
 					scheduleReconnect();
 					return;
 				}
 			}
-			if (disposedRef.current) {
+			if (disposed || disposedRef.current) {
 				connecting = false;
 				return;
 			}
@@ -184,25 +227,12 @@ export function SfuAudioAudience({
 			try {
 				const pc = new RTCPeerConnection({ iceServers: [] });
 				pcRef.current = pc;
-				pc.ontrack = ({ track, transceiver, receiver }) => {
-					if (track.kind !== 'audio') {
-						track.stop();
-						return;
-					}
-					applyReceiverJitterTarget(receiver);
-					const mid = transceiver.mid || track.id;
-					const previous = tracksByMidRef.current.get(mid);
-					if (previous && previous.id !== track.id) previous.stop();
-					tracksByMidRef.current.set(mid, track);
-					const next = Array.from(tracksByMidRef.current.values()).filter((item) => item.readyState === 'live');
-					audioTracksRef.current = next;
-					setAudioTracks(next);
-					track.onended = () => {
-						if (tracksByMidRef.current.get(mid) === track) tracksByMidRef.current.delete(mid);
-						const remaining = Array.from(tracksByMidRef.current.values()).filter((item) => item.readyState === 'live');
-						audioTracksRef.current = remaining;
-						setAudioTracks(remaining);
-					};
+				pc.ontrack = ({ track }) => {
+					const refresh = () => syncAudio(pc);
+					refresh();
+					track.addEventListener('ended', refresh);
+					track.addEventListener('unmute', refresh);
+					track.addEventListener('mute', refresh);
 				};
 				pc.onconnectionstatechange = () => {
 					if (pcRef.current !== pc) return;
@@ -226,12 +256,15 @@ export function SfuAudioAudience({
 				wsRef.current = ws;
 				reportState('joining');
 				ws.onopen = () => {
-					if (disposedRef.current || wsRef.current !== ws) return;
-					if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'join', room: roomId, token: nextToken, role: 'audience' }));
+					if (disposed || disposedRef.current || wsRef.current !== ws) return;
+					if (ws.readyState === WebSocket.OPEN) {
+						const joinMessage = { type: 'join', room: roomId, token: nextToken, role: 'audience' };
+						ws.send(JSON.stringify(joinMessage));
+					}
 				};
 				ws.onmessage = ({ data }) => {
-					if (disposedRef.current || wsRef.current !== ws) return;
-					let message: { type?: string; sdp?: string; offer_generation?: number; message?: string };
+					if (disposed || disposedRef.current || wsRef.current !== ws) return;
+					let message: SfuSignalMessage;
 					try {
 						message = JSON.parse(data) as typeof message;
 					} catch {
@@ -241,6 +274,38 @@ export function SfuAudioAudience({
 					if (message.type === 'offer' && message.sdp && message.offer_generation != null) {
 						void handleOffer({ sdp: message.sdp, offer_generation: message.offer_generation });
 					}
+					const peers =
+						message.type === 'room_snapshot'
+							? message.members
+							: (message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer
+								? [message.peer]
+								: undefined;
+					for (const peer of peers || []) {
+						for (const mid of [peer.mid_audio, peer.mid_video, peer.mid_screen]
+							.filter((mid) => mid != null && Number(mid) >= 3)
+							.map(String)) {
+							owners.set(mid, String(peer.peer_id));
+							if (peer.user_id) users.set(mid, peer.user_id);
+						}
+					}
+					if (message.type === 'peer_left') {
+						const peerId = message.peer_id == null ? undefined : String(message.peer_id);
+						for (const mid of getDepartedMids(
+							peerId,
+							message.user_id,
+							[message.mid_audio, message.mid_video, message.mid_screen],
+							owners,
+							users
+						)) {
+							retired.set(mid, { peerId, userId: users.get(mid) || message.user_id });
+							owners.delete(mid);
+							users.delete(mid);
+							tracksByMidRef.current.delete(mid);
+						}
+						const remaining = [...tracksByMidRef.current.values()];
+						audioTracksRef.current = remaining;
+						setAudioTracks(remaining);
+					}
 					if (message.type === 'error') {
 						if (message.message === 'stale_offer_generation' || message.message === 'future_offer_generation') return;
 						reportError(message.message === 'invalid_token' ? 'SFU audio token rejected' : 'SFU audio signaling failed');
@@ -248,6 +313,7 @@ export function SfuAudioAudience({
 					}
 				};
 				ws.onerror = () => {
+					if (disposed || wsRef.current !== ws) return;
 					reportError('SFU audio signaling failed');
 					if (wsRef.current === ws && ws.readyState !== WebSocket.CLOSED) ws.close();
 				};
@@ -267,6 +333,8 @@ export function SfuAudioAudience({
 
 		void connect(false);
 		return () => {
+			disposed = true;
+			window.clearInterval(syncTimer);
 			disposedRef.current = true;
 			if (reconnectTimerRef.current !== undefined) window.clearTimeout(reconnectTimerRef.current);
 			reconnectTimerRef.current = undefined;
@@ -279,7 +347,7 @@ export function SfuAudioAudience({
 	return (
 		<div className="hidden" aria-hidden="true">
 			{audioTracks.map((track) => (
-				<SfuAudioElement key={track.id} track={track} volume={volume} muted={muted} />
+				<SfuAudioTrack key={track.id} track={track} volume={volume} muted={muted} />
 			))}
 		</div>
 	);
@@ -310,25 +378,4 @@ function validateFullSdpLayout(offerSdp: string, answerSdp?: string) {
 	if (answerSections.some((section, index) => offerSections[index]?.media === 'm=video' && !section.lines.includes('a=inactive'))) {
 		throw new Error('SFU SDP answer activated a video media section');
 	}
-}
-
-function SfuAudioElement({ track, volume, muted }: { track: MediaStreamTrack; volume: number; muted: boolean }) {
-	const ref = useRef<HTMLAudioElement>(null);
-	useEffect(() => {
-		const element = ref.current;
-		if (!element) return;
-		element.srcObject = new MediaStream([track]);
-		void element.play().catch(() => undefined);
-		return () => {
-			element.pause();
-			element.srcObject = null;
-		};
-	}, [track]);
-	useEffect(() => {
-		const element = ref.current;
-		if (!element) return;
-		element.muted = muted;
-		element.volume = Math.min(1, Math.max(0, volume));
-	}, [muted, volume]);
-	return <audio ref={ref} autoPlay playsInline />;
 }

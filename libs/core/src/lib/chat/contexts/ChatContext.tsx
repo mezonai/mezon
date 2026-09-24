@@ -291,7 +291,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onvoicejoined = useCallback(
-		(voice: VoiceJoinedEvent) => {
+		(voice: VoiceJoinedEvent & { peer_id?: number }) => {
 			if (voice) {
 				const store = getStore();
 				const state = store.getState();
@@ -331,7 +331,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						clan_id: voice.clan_id,
 						user_id: voice.user_id,
 						user_name: voice.participant,
-						user_avatar: voice.last_screenshot
+						user_avatar: voice.last_screenshot,
+						peer_id: voice.peer_id
 					})
 				);
 			}
@@ -342,11 +343,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onvoiceleaved = useCallback(
 		(voice: VoiceLeavedEvent) => {
 			dispatch(voiceActions.remove(voice));
-			if (voice.voice_user_id === userId) {
-				if (document.pictureInPictureElement) {
-					document.exitPictureInPicture();
-				}
-			}
+			// This is account presence, not a close signal for this client's peer.
+			// The SFU room owns PiP cleanup when its local connection is closed.
 		},
 		[dispatch]
 	);

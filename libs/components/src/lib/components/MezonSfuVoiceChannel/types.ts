@@ -3,6 +3,7 @@ export type SfuJoinRole = 'speaker' | 'audience';
 export type SfuConnectionState = 'connecting' | 'joining' | 'awaiting offer' | 'connected' | 'disconnected' | 'failed';
 
 export type SfuPeer = {
+	metadata?: string;
 	peer_id: number | string;
 	user_id?: string;
 	ufrag?: string;
@@ -18,6 +19,7 @@ export type SfuPeer = {
 };
 
 export type SfuSignalMessage = {
+	metadata?: string;
 	type: string;
 	action?: 'mute' | 'kick';
 	user_id?: string;
@@ -40,6 +42,7 @@ export type SfuSignalMessage = {
 };
 
 export type SfuRemoteMedia = {
+	metadata?: string;
 	id: string;
 	peerId?: string;
 	userId?: string;

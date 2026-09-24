@@ -1,5 +1,5 @@
 import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@mezon/components';
-import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
+import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
 	channelAppActions,
@@ -145,7 +145,6 @@ const MezonSfuChannelVoiceInner = () => {
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const isChannelMezonVoice = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { userProfile } = useAuth();
 
 	const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
 	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
@@ -215,9 +214,7 @@ const MezonSfuChannelVoiceInner = () => {
 
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
-		if (userProfile?.user?.id) {
-			dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
-		}
+		// Account presence belongs to the server; another peer may still be in this room.
 
 		isDisconnectingRef.current = false;
 	});

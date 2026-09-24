@@ -194,7 +194,6 @@ export default function PreJoinCalling() {
 				generateMeetTokenExternal({
 					token: code as string,
 					username: trimmed,
-					metadata: '',
 					isGuest: !isUser as boolean
 				})
 			);
@@ -208,7 +207,6 @@ export default function PreJoinCalling() {
 				generateMeetTokenExternal({
 					token: code as string,
 					username,
-					metadata: '',
 					isGuest: !isUser
 				})
 			).unwrap();
