@@ -35,6 +35,8 @@
 	"topics": "Topics",
 	"pinnedMessage": "Pinned message",
 	"latestPin": "Latest pin",
+	"poll": "Voting",
+	"pollDiscussion": "Voting",
 	"reactions": "React",
 	"invoice": "In voice",
 	"shareScreen": "Sharing screen",

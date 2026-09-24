@@ -13,6 +13,7 @@ import {
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
+	selectLastMessageByChannelId,
 	selectMessageByMessageId,
 	selectPinMessageByChannelId,
 	threadsActions,
@@ -21,10 +22,11 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { NX_CHAT_APP_ANNONYMOUS_USER_ID, createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TypeMessage, createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
 import { format } from 'date-fns';
+import type { ApiSdTopic } from 'mezon-js';
 import { ChannelType, decodeAttachments, safeJSONParse } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -224,6 +226,40 @@ const checkAgeGatePassed = (channelId?: string | null, ageRestricted?: number | 
 	return false;
 };
 
+const getTopicTimestamp = (t: ApiSdTopic): number => {
+	const lastSent = t.last_sent_message?.timestamp_seconds ? t.last_sent_message.timestamp_seconds * 1000 : 0;
+	let updateTime = 0;
+	if (t.update_time) {
+		const num = Number(t.update_time);
+		if (!isNaN(num) && num > 0) {
+			updateTime = num > 1e11 ? num : num * 1000;
+		} else {
+			const parsed = Date.parse(t.update_time);
+			if (!isNaN(parsed)) {
+				updateTime = parsed;
+			}
+		}
+	}
+	const createTime = (t.create_time_seconds || t.message?.create_time_seconds || 0) * 1000;
+	let snowflakeTime = 0;
+	if (t.id) {
+		try {
+			snowflakeTime = Number(BigInt(t.id) >> BigInt(22));
+		} catch {
+			snowflakeTime = 0;
+		}
+	}
+	let msgSnowflakeTime = 0;
+	if (t.message_id) {
+		try {
+			msgSnowflakeTime = Number(BigInt(t.message_id) >> BigInt(22));
+		} catch {
+			msgSnowflakeTime = 0;
+		}
+	}
+	return Math.max(lastSent, updateTime, createTime, snowflakeTime, msgSnowflakeTime);
+};
+
 export const ChannelTopicPinBanner = memo(() => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
@@ -306,12 +342,87 @@ export const ChannelTopicPinBanner = memo(() => {
 		if (!allTopics?.length || !currentChannelId) return null;
 		const channelTopics = allTopics.filter((tp) => tp.channel_id === currentChannelId);
 		if (!channelTopics.length) return null;
-		return channelTopics[0];
+		return [...channelTopics].sort((a, b) => {
+			const timeA = getTopicTimestamp(a);
+			const timeB = getTopicTimestamp(b);
+			if (timeB !== timeA) {
+				return timeB - timeA;
+			}
+			try {
+				if (a.id && b.id && a.id !== b.id) {
+					return BigInt(b.id) > BigInt(a.id) ? 1 : -1;
+				}
+			} catch {
+				return (b.id || '').localeCompare(a.id || '');
+			}
+			return 0;
+		})[0];
 	}, [allTopics, currentChannelId]);
 
 	const topicOriginalMessage = useAppSelector((state) =>
 		latestTopic?.channel_id && latestTopic?.message_id ? selectMessageByMessageId(state, latestTopic.channel_id, latestTopic.message_id) : null
 	);
+
+	const topicLastMessageInStore = useAppSelector((state) => (latestTopic?.id ? selectLastMessageByChannelId(state, latestTopic.id) : null));
+
+	const fetchingTopicIdRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		const topicId = latestTopic?.id;
+		if (!topicId || !currentClanId || currentClanId === '0' || !currentChannelId || isExcludedRoute || isVoiceOrStream || !isChannelGatePassed) {
+			return;
+		}
+
+		if (latestTopic.last_sent_message?.content || topicLastMessageInStore) {
+			return;
+		}
+
+		if (fetchingTopicIdRef.current === topicId) {
+			return;
+		}
+
+		fetchingTopicIdRef.current = topicId;
+
+		dispatch(
+			messagesActions.fetchMessages({
+				clanId: currentClanId,
+				channelId: currentChannelId,
+				topicId,
+				toPresent: true,
+				noCache: false
+			})
+		)
+			.unwrap()
+			.then((res) => {
+				const lastMsg = res?.messages?.at(-1);
+				if (lastMsg && currentClanId) {
+					dispatch(
+						topicsActions.setTopicLastSent({
+							clanId: currentClanId,
+							topicId,
+							lastSentMess: {
+								content: typeof lastMsg.content === 'object' ? JSON.stringify(lastMsg.content) : lastMsg.content || '',
+								sender_id: lastMsg.sender_id || '',
+								timestamp_seconds: lastMsg.create_time_seconds || 0
+							}
+						})
+					);
+				}
+			})
+			.catch(() => {
+				fetchingTopicIdRef.current = null;
+			});
+	}, [
+		latestTopic?.id,
+		latestTopic?.last_sent_message?.content,
+		topicLastMessageInStore,
+		currentClanId,
+		currentChannelId,
+		isExcludedRoute,
+		isVoiceOrStream,
+		isChannelGatePassed,
+		dispatch
+	]);
 
 	const topicTitle = useMemo(() => {
 		if (!latestTopic) return '';
@@ -325,7 +436,7 @@ export const ChannelTopicPinBanner = memo(() => {
 
 	const topicSubtitle = useMemo(() => {
 		if (!latestTopic) return '';
-		const lastMsgContent = extractMessageText(latestTopic.last_sent_message?.content);
+		const lastMsgContent = extractMessageText(latestTopic.last_sent_message?.content) || extractMessageText(topicLastMessageInStore?.content);
 		if (lastMsgContent && lastMsgContent !== topicTitle) {
 			return lastMsgContent;
 		}
@@ -334,19 +445,26 @@ export const ChannelTopicPinBanner = memo(() => {
 			return origContent;
 		}
 		return '';
-	}, [latestTopic, topicOriginalMessage, topicTitle]);
+	}, [latestTopic, topicOriginalMessage, topicTitle, topicLastMessageInStore]);
 
 	const topicAttachment = useMemo(() => {
 		if (!latestTopic) return null;
 		const raw =
 			(latestTopic as any)?.attachments ||
 			(latestTopic as any)?.attachment ||
-			(latestTopic.message as any)?.attachments ||
 			(latestTopic.last_sent_message as any)?.attachments ||
+			(latestTopic.last_sent_message as any)?.attachment ||
+			topicLastMessageInStore?.attachments ||
+			(latestTopic.message as any)?.attachments ||
 			topicOriginalMessage?.attachments;
-		const content = (latestTopic as any)?.content || latestTopic.message?.content || topicOriginalMessage?.content;
+		const content =
+			(latestTopic as any)?.content ||
+			latestTopic.last_sent_message?.content ||
+			topicLastMessageInStore?.content ||
+			latestTopic.message?.content ||
+			topicOriginalMessage?.content;
 		return extractAttachment(raw, content);
-	}, [latestTopic, topicOriginalMessage]);
+	}, [latestTopic, topicOriginalMessage, topicLastMessageInStore]);
 
 	const pinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannelId || ''));
 	const latestPin = useMemo(() => {
@@ -380,10 +498,39 @@ export const ChannelTopicPinBanner = memo(() => {
 		}
 	}, [pinTimeSeconds]);
 
+	const isPinPoll = useMemo(() => {
+		if (!latestPin) return false;
+		if ((latestPin as any)?.code === TypeMessage.Poll || pinMessageInStore?.code === TypeMessage.Poll) {
+			return true;
+		}
+		let raw: any = pinMessageInStore?.content || latestPin.content;
+		if (raw instanceof Uint8Array) {
+			try {
+				raw = new TextDecoder().decode(raw);
+			} catch {
+				return false;
+			}
+		}
+		let parsed: any = raw;
+		if (typeof raw === 'string') {
+			try {
+				parsed = safeJSONParse(raw);
+			} catch {
+				parsed = null;
+			}
+		}
+		return Boolean(
+			parsed && typeof parsed === 'object' && ('poll_id' in parsed || 'question' in parsed || 'answer_counts' in parsed || 'answers' in parsed)
+		);
+	}, [latestPin, pinMessageInStore]);
+
 	const pinContent = useMemo(() => {
 		if (!latestPin) return '';
+		if (isPinPoll) {
+			return t('pollDiscussion', 'Cuộc bầu chọn');
+		}
 		return extractMessageText(latestPin.content) || extractMessageText(pinMessageInStore?.content);
-	}, [latestPin, pinMessageInStore]);
+	}, [latestPin, pinMessageInStore, isPinPoll, t]);
 
 	const pinAttachment = useMemo(() => {
 		if (!latestPin) return null;
@@ -459,7 +606,6 @@ export const ChannelTopicPinBanner = memo(() => {
 							<Icons.TopicIcon className="w-5 h-5 shrink-0 text-theme-primary-active" />
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="text-[11px] font-medium text-gray-400 leading-none mb-0.5">{t('topics', 'Topics')}</div>
 							<div className="text-sm font-semibold text-theme-primary truncate leading-tight">{topicTitle}</div>
 							{topicSubtitle && <div className="text-xs text-gray-400 truncate leading-tight mt-0.5">{topicSubtitle}</div>}
 						</div>
@@ -490,7 +636,6 @@ export const ChannelTopicPinBanner = memo(() => {
 							/>
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="text-[11px] font-medium text-gray-400 leading-none mb-0.5">{t('latestPin', 'Latest pin')}</div>
 							<div className="flex items-center justify-between gap-2 min-w-0">
 								<span className="text-sm font-semibold text-theme-primary truncate leading-tight">{pinUserName}</span>
 								{pinFormattedTime && (
