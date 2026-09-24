@@ -1,3 +1,4 @@
+import { safeJSONParse } from 'mezon-js';
 import type { SfuPeer, SfuRemoteMedia } from '../types';
 
 const getUserIdFromMsidPart = (msidPart: string) => /(?:^|-)u(\d+)(?:-|$)/.exec(msidPart)?.[1];
@@ -62,6 +63,7 @@ export const mergeRemotePeerState = (participant: SfuRemoteMedia, peer: SfuPeer)
 	const changedOwner =
 		(participant.peerId && participant.peerId !== peerId) || (participant.userId && peer.user_id && participant.userId !== peer.user_id);
 	const current: SfuRemoteMedia = changedOwner ? { id: participant.id } : participant;
+	const metaPeer = peer.metadata ? (safeJSONParse(peer.metadata) as { username?: string; avatar?: string }) : null;
 	return {
 		...current,
 		peerId,
@@ -71,7 +73,9 @@ export const mergeRemotePeerState = (participant: SfuRemoteMedia, peer: SfuPeer)
 		cameraActive: peer.camera_active ?? current.cameraActive,
 		screenRequested: peer.screen_requested ?? current.screenRequested,
 		screenActive: peer.screen_active ?? current.screenActive,
-		isMute: peer.is_mute ?? current.isMute
+		isMute: peer.is_mute ?? current.isMute,
+		...(metaPeer?.avatar && { avatar: metaPeer.avatar }),
+		...(metaPeer?.username && { username: metaPeer.username })
 	};
 };
 
