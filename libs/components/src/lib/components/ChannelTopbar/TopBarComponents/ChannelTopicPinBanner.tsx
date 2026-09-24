@@ -1,11 +1,16 @@
-import { useGetPriorityNameFromUserClan } from '@mezon/core';
+import { useAuth, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
 import {
+	appActions,
 	messagesActions,
 	pinMessageActions,
 	selectAllTopics,
 	selectCloseMenu,
+	selectCurrentChannelAgeRestricted,
 	selectCurrentChannelId,
+	selectCurrentChannelType,
 	selectCurrentClanId,
+	selectHasFetchedTopics,
+	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectMessageByMessageId,
@@ -16,16 +21,24 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
 import { format } from 'date-fns';
-import { decodeAttachments, safeJSONParse } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { ChannelType, decodeAttachments, safeJSONParse } from 'mezon-js';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { AvatarColor } from '../../AvatarImage/AvatarImage';
+import { useLocation } from 'react-router-dom';
+import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
 const extractMessageText = (content: any): string => {
 	if (!content) return '';
+	if (content instanceof Uint8Array) {
+		try {
+			content = new TextDecoder().decode(content);
+		} catch {
+			return '';
+		}
+	}
 	if (typeof content === 'string') {
 		try {
 			const parsed = safeJSONParse(content);
@@ -56,20 +69,26 @@ const extractAttachment = (rawAttachments: any, content: any): ExtractedAttachme
 
 	if (rawAttachments) {
 		if (Array.isArray(rawAttachments)) {
-			attList = rawAttachments;
-		} else if (typeof rawAttachments === 'string') {
+			attList = rawAttachments.filter((att) => att && Object.keys(att).length > 0);
+		} else {
+			let attachment: unknown;
 			try {
-				const decoded = decodeAttachments(rawAttachments);
-				if (Array.isArray(decoded)) {
-					attList = decoded;
-				}
+				attachment = decodeAttachments(rawAttachments);
 			} catch {
-				const parsed = safeJSONParse(rawAttachments);
-				if (Array.isArray(parsed)) {
-					attList = parsed;
-				} else if (Array.isArray(parsed?.attachments)) {
-					attList = parsed.attachments;
+				const str = typeof rawAttachments === 'string' ? rawAttachments : rawAttachments?.toString?.() || '';
+				const parsed = safeJSONParse(str);
+				if (parsed?.t) {
+					attachment = [];
+				} else {
+					attachment = parsed?.attachments || parsed || [];
 				}
+			}
+
+			if (Array.isArray(attachment)) {
+				attList = (attachment as any[]).filter((att) => att && Object.keys(att).length > 0);
+			} else if (attachment && typeof attachment === 'object') {
+				const parsedAttachments = (attachment as { attachments?: any[] }).attachments;
+				attList = (parsedAttachments || []).filter((att) => att && Object.keys(att).length > 0);
 			}
 		}
 	}
@@ -80,7 +99,7 @@ const extractAttachment = (rawAttachments: any, content: any): ExtractedAttachme
 			try {
 				contentObj = safeJSONParse(content);
 			} catch {
-				// ignore
+				contentObj = null;
 			}
 		} else if (typeof content === 'object') {
 			contentObj = content;
@@ -177,35 +196,117 @@ const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachm
 });
 AttachmentThumbnail.displayName = 'AttachmentThumbnail';
 
+const checkAgeGatePassed = (channelId?: string | null, ageRestricted?: number | null, dobSeconds?: number | null): boolean => {
+	if (ageRestricted !== 1 || !channelId) {
+		return true;
+	}
+
+	if (dobSeconds) {
+		const currentYear = new Date().getFullYear();
+		if (currentYear - new Date(dobSeconds).getFullYear() >= 18 || currentYear - new Date(dobSeconds * 1000).getFullYear() >= 18) {
+			return true;
+		}
+	}
+
+	try {
+		const raw = localStorage.getItem('agerestrictedchannelIds');
+		if (raw) {
+			const parsed = safeJSONParse(raw);
+			const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.t) ? parsed.t : [];
+			if (list.includes(channelId)) {
+				return true;
+			}
+		}
+	} catch {
+		return false;
+	}
+
+	return false;
+};
+
 export const ChannelTopicPinBanner = memo(() => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
+	const { userProfile } = useAuth();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannelId = useSelector(selectCurrentChannelId);
+	const channelType = useSelector(selectCurrentChannelType);
+	const channelAgeRestricted = useSelector(selectCurrentChannelAgeRestricted);
+	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const closeMenu = useSelector(selectCloseMenu);
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state as any, currentChannelId || ''));
 	const isSidePanelOpen = Boolean(isShowCreateTopic || isShowCreateThread);
 
-	// Fetch pin messages and topics when switching channels in a clan
-	useEffect(() => {
-		if (currentClanId && currentClanId !== '0' && currentChannelId) {
-			dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId, clanId: currentClanId }));
-			dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
-		}
-	}, [currentClanId, currentChannelId, dispatch]);
+	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
+	const channelSettingPath = `/chat/clans/${currentClanId}/channel-setting`;
+	const guidePath = `/chat/clans/${currentClanId}/guide`;
+	const { isMemberPath, isChannelSettingPath, isGuidePath } = usePathMatch({
+		isMemberPath: memberPath,
+		isChannelSettingPath: channelSettingPath,
+		isGuidePath: guidePath
+	});
+	const location = useLocation();
 
-	// Latest Topic for current channel
+	const isExcludedRoute = Boolean(
+		isMemberPath ||
+			isChannelSettingPath ||
+			isGuidePath ||
+			location.pathname.includes('/member-safety') ||
+			location.pathname.includes('/channel-setting') ||
+			location.pathname.includes('/guide')
+	);
+
+	const isVoiceOrStream = channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channelType === ChannelType.CHANNEL_TYPE_STREAMING;
+
+	const hasFetchedTopics = useSelector(selectHasFetchedTopics);
+
+	const dobSeconds = userProfile?.user?.dob_seconds;
+
+	const [isAgeGatePassed, setIsAgeGatePassed] = useState<boolean>(() => checkAgeGatePassed(currentChannelId, channelAgeRestricted, dobSeconds));
+
+	useEffect(() => {
+		if (channelAgeRestricted !== 1) {
+			setIsAgeGatePassed(true);
+			return;
+		}
+
+		const passed = checkAgeGatePassed(currentChannelId, channelAgeRestricted, dobSeconds);
+		setIsAgeGatePassed(passed);
+		if (passed) {
+			return;
+		}
+
+		const intervalId = window.setInterval(() => {
+			if (checkAgeGatePassed(currentChannelId, channelAgeRestricted, dobSeconds)) {
+				setIsAgeGatePassed(true);
+				window.clearInterval(intervalId);
+			}
+		}, 300);
+
+		return () => {
+			window.clearInterval(intervalId);
+		};
+	}, [currentChannelId, channelAgeRestricted, dobSeconds]);
+
+	const isChannelGatePassed =
+		channelAgeRestricted !== 1 || (isAgeGatePassed && checkAgeGatePassed(currentChannelId, channelAgeRestricted, dobSeconds));
+
+	useEffect(() => {
+		if (currentClanId && currentClanId !== '0' && currentChannelId && !isExcludedRoute && !isVoiceOrStream && isChannelGatePassed) {
+			dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId, clanId: currentClanId }));
+			if (!hasFetchedTopics) {
+				dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
+			}
+		}
+	}, [currentClanId, currentChannelId, dispatch, isExcludedRoute, isVoiceOrStream, isChannelGatePassed, hasFetchedTopics]);
+
 	const allTopics = useSelector(selectAllTopics);
 	const latestTopic = useMemo(() => {
 		if (!allTopics?.length || !currentChannelId) return null;
 		const channelTopics = allTopics.filter((tp) => tp.channel_id === currentChannelId);
 		if (!channelTopics.length) return null;
-		return channelTopics.sort((a, b) => {
-			const timeA = a.last_sent_message?.timestamp_seconds || a.create_time_seconds || 0;
-			const timeB = b.last_sent_message?.timestamp_seconds || b.create_time_seconds || 0;
-			return timeB - timeA;
-		})[0];
+		return channelTopics[0];
 	}, [allTopics, currentChannelId]);
 
 	const topicOriginalMessage = useAppSelector((state) =>
@@ -214,7 +315,12 @@ export const ChannelTopicPinBanner = memo(() => {
 
 	const topicTitle = useMemo(() => {
 		if (!latestTopic) return '';
-		return extractMessageText(latestTopic.message?.content) || extractMessageText(topicOriginalMessage?.content) || t('topic');
+		return (
+			extractMessageText((latestTopic as any)?.content) ||
+			extractMessageText(latestTopic.message?.content) ||
+			extractMessageText(topicOriginalMessage?.content) ||
+			t('topic')
+		);
 	}, [latestTopic, topicOriginalMessage, t]);
 
 	const topicSubtitle = useMemo(() => {
@@ -223,26 +329,25 @@ export const ChannelTopicPinBanner = memo(() => {
 		if (lastMsgContent && lastMsgContent !== topicTitle) {
 			return lastMsgContent;
 		}
-		const origContent = extractMessageText(topicOriginalMessage?.content);
+		const origContent = extractMessageText((latestTopic as any)?.content) || extractMessageText(topicOriginalMessage?.content);
 		if (origContent && origContent !== topicTitle) {
 			return origContent;
 		}
-		return lastMsgContent || '';
+		return '';
 	}, [latestTopic, topicOriginalMessage, topicTitle]);
 
 	const topicAttachment = useMemo(() => {
 		if (!latestTopic) return null;
 		const raw =
+			(latestTopic as any)?.attachments ||
+			(latestTopic as any)?.attachment ||
 			(latestTopic.message as any)?.attachments ||
 			(latestTopic.last_sent_message as any)?.attachments ||
-			topicOriginalMessage?.attachments ||
-			(latestTopic as any).attachments ||
-			(latestTopic as any).attachment;
-		const content = latestTopic.message?.content || topicOriginalMessage?.content;
+			topicOriginalMessage?.attachments;
+		const content = (latestTopic as any)?.content || latestTopic.message?.content || topicOriginalMessage?.content;
 		return extractAttachment(raw, content);
 	}, [latestTopic, topicOriginalMessage]);
 
-	// Latest Pin message for current channel
 	const pinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannelId || ''));
 	const latestPin = useMemo(() => {
 		if (!pinMessages?.length) return null;
@@ -255,8 +360,15 @@ export const ChannelTopicPinBanner = memo(() => {
 
 	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(latestPin?.sender_id || ''));
 
-	const pinUserName = namePriority || latestPin?.username || pinMessageInStore?.display_name || pinMessageInStore?.username || 'Member';
-	const pinAvatarUrl = priorityAvatar || latestPin?.avatar || pinMessageInStore?.avatar || '';
+	const isPinAnonymous = Boolean(
+		(latestPin?.sender_id && latestPin.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID) ||
+			(pinMessageInStore?.sender_id && pinMessageInStore.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID)
+	);
+
+	const pinUserName = isPinAnonymous
+		? 'Anonymous'
+		: namePriority || latestPin?.username || pinMessageInStore?.display_name || pinMessageInStore?.username || 'Member';
+	const pinAvatarUrl = isPinAnonymous ? '' : priorityAvatar || latestPin?.avatar || pinMessageInStore?.avatar || '';
 
 	const pinTimeSeconds = pinMessageInStore?.create_time_seconds || latestPin?.create_time_seconds;
 	const pinFormattedTime = useMemo(() => {
@@ -280,9 +392,11 @@ export const ChannelTopicPinBanner = memo(() => {
 		return extractAttachment(raw, content);
 	}, [latestPin, pinMessageInStore]);
 
-	// Handlers
 	const handleJumpToTopic = useCallback(() => {
-		if (!latestTopic) return;
+		if (!latestTopic || !isChannelGatePassed || isExcludedRoute || isVoiceOrStream) return;
+		if (isShowCanvas) {
+			dispatch(appActions.setIsShowCanvas(false));
+		}
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(threadsActions.setIsShowCreateThread({ channelId: currentChannelId || '', isShowCreateThread: false }));
 		dispatch(topicsActions.setCurrentTopicId(latestTopic.id || ''));
@@ -296,10 +410,13 @@ export const ChannelTopicPinBanner = memo(() => {
 				})
 			);
 		}
-	}, [dispatch, latestTopic, currentChannelId, currentClanId]);
+	}, [dispatch, isShowCanvas, latestTopic, currentChannelId, currentClanId, isChannelGatePassed, isExcludedRoute, isVoiceOrStream]);
 
 	const handleJumpToPin = useCallback(() => {
-		if (!latestPin?.message_id || !currentClanId) return;
+		if (!latestPin?.message_id || !currentClanId || !isChannelGatePassed || isExcludedRoute || isVoiceOrStream) return;
+		if (isShowCanvas) {
+			dispatch(appActions.setIsShowCanvas(false));
+		}
 		dispatch(
 			messagesActions.jumpToMessage({
 				clanId: currentClanId,
@@ -307,11 +424,17 @@ export const ChannelTopicPinBanner = memo(() => {
 				channelId: String(latestPin.channel_id || currentChannelId || '')
 			})
 		);
-	}, [dispatch, latestPin, currentClanId, currentChannelId]);
+	}, [dispatch, isShowCanvas, latestPin, currentClanId, currentChannelId, isChannelGatePassed, isExcludedRoute, isVoiceOrStream]);
 
-	// Don't render if neither topic nor pin exists, or not in clan channel
-	// Also don't render on mobile when topic or thread panel is open
-	if (!currentClanId || currentClanId === '0' || (!latestTopic && !latestPin) || (isSidePanelOpen && closeMenu)) {
+	if (
+		!currentClanId ||
+		currentClanId === '0' ||
+		isExcludedRoute ||
+		isVoiceOrStream ||
+		(!latestTopic && !latestPin) ||
+		(isSidePanelOpen && closeMenu) ||
+		!isChannelGatePassed
+	) {
 		return null;
 	}
 
@@ -319,11 +442,8 @@ export const ChannelTopicPinBanner = memo(() => {
 
 	return (
 		<div
-			className="absolute top-[49px] left-0 bg-theme-chat px-4 pb-2 pt-1 border-b border-theme-primary transition-[width] duration-150 ease-out"
-			style={{
-				width: isSidePanelOpen ? 'calc(100% - 510px)' : '100%'
-			}}
-			data-e2e={generateE2eId('chat.channel_message.header.button.thread' as any)}
+			className="w-full bg-theme-chat px-4 pb-2 pt-1 border-b border-theme-primary flex-shrink-0"
+			data-e2e={generateE2eId('chat.channel_message.topic_pin_banner')}
 		>
 			<div className="flex items-center w-full bg-item-theme border border-theme-primary rounded-[10px] py-1.5 px-3 gap-3 overflow-hidden shadow-sm">
 				{latestTopic && (
@@ -333,16 +453,10 @@ export const ChannelTopicPinBanner = memo(() => {
 						}`}
 						onClick={handleJumpToTopic}
 						title={topicTitle}
-						data-e2e={generateE2eId('chat.channel_message.header.button.thread' as any)}
+						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item')}
 					>
-						<div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-lg">
-							<Icons.ThreadIcon
-								className="w-5 h-5 shrink-0"
-								defaultFill1="#ffffff"
-								defaultFill2="#ffffff"
-								defaultFill3="#ffffff"
-								defaultFill4="var(--bg-theme-chat, #1b1a29)"
-							/>
+						<div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-lg text-theme-primary-active">
+							<Icons.TopicIcon className="w-5 h-5 shrink-0 text-theme-primary-active" />
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
 							<div className="text-[11px] font-medium text-gray-400 leading-none mb-0.5">{t('topics', 'Topics')}</div>
@@ -362,18 +476,18 @@ export const ChannelTopicPinBanner = memo(() => {
 						}`}
 						onClick={handleJumpToPin}
 						title={pinContent}
-						data-e2e={generateE2eId('chat.channel_message.header.button.pin' as any)}
+						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.pin_item')}
 					>
 						<div className="shrink-0 flex items-center justify-center">
-							{pinAvatarUrl ? (
-								<img
-									src={createImgproxyUrl(pinAvatarUrl, { width: 64, height: 64, resizeType: 'fit' })}
-									alt={pinUserName}
-									className="w-7 h-7 rounded-full object-cover shrink-0"
-								/>
-							) : (
-								<AvatarColor username={pinUserName || ''} className="w-7 h-7 rounded-full text-xs shrink-0" />
-							)}
+							<AvatarImage
+								alt={pinUserName}
+								username={pinUserName}
+								className="!w-7 !h-7 !min-w-7 !min-h-7 rounded-full text-xs shrink-0"
+								classNameText="text-xs"
+								srcImgProxy={pinAvatarUrl ? createImgproxyUrl(pinAvatarUrl, { width: 64, height: 64, resizeType: 'fit' }) : undefined}
+								src={pinAvatarUrl}
+								isAnonymous={isPinAnonymous}
+							/>
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
 							<div className="text-[11px] font-medium text-gray-400 leading-none mb-0.5">{t('latestPin', 'Latest pin')}</div>
