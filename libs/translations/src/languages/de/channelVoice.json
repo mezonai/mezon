@@ -62,6 +62,8 @@
 		"start": "Anruf aufzeichnen",
 		"stop": "Aufzeichnung beenden",
 		"badge": "REC",
+		"by": "{{name}} zeichnet den Anruf auf",
+		"byMany": "{{name}} und {{count}} weitere zeichnen den Anruf auf",
 		"memoryLimitWarning": "Dieser Browser kann nicht direkt auf die Festplatte schreiben. Die Aufzeichnung liegt daher im Arbeitsspeicher und stoppt automatisch nach {{minutes}} Minuten.",
 		"frozenWarning": "Das Bild stand still, während der Tab ausgeblendet war. Lass diesen Tab während der Aufzeichnung sichtbar.",
 		"savedToDisk": "Aufzeichnung gespeichert unter {{fileName}} ({{size}})",

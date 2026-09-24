@@ -12,7 +12,10 @@ import { selectCurrentClanId } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
+import { recordingParams, withRecordingUser } from './recordingSignal';
 import { addVoicePeer, removeVoicePeer, voicePeersFromSnapshot } from './voicePeerPresence';
+
+export { RECORDING_ANNOUNCE_INTERVAL_MS, RECORDING_INDICATOR_TTL_MS, parseRecordingParams, recordingParams } from './recordingSignal';
 
 export const VOICE_FEATURE_KEY = 'voice';
 
@@ -123,6 +126,7 @@ export interface VoiceState {
 	} | null;
 	listVoiceMemberByClan: Record<string, Record<string, EntityState<VoiceUserData, string>>>;
 	recording: VoiceRecordingState;
+	recordingUserIds: string[];
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -215,6 +219,29 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 			throw new Error('Voice presence changed during snapshot refresh');
 		} catch (error) {
 			captureSentryError(error, 'voice/fetchVoiceChannelMembers');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const sendRecordingState = createAsyncThunk(
+	'voice/sendRecordingState',
+	async ({ isRecording, clanId, channelId }: { isRecording: boolean; clanId: string; channelId: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const senderId = selectCurrentUserId(state);
+			return await mezon.client.writeVoiceInteractiveEvent(
+				mezon.session,
+				clanId,
+				channelId,
+				senderId,
+				senderId,
+				EVoiceInteractEvent.RECORDING,
+				recordingParams(isRecording)
+			);
+		} catch (error) {
+			captureSentryError(error, 'voice/sendRecordingState');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -351,7 +378,8 @@ export const initialVoiceState: VoiceState = {
 		pipeline: 'none',
 		degraded: false,
 		error: null
-	}
+	},
+	recordingUserIds: []
 };
 
 export const voiceSlice = createSlice({
@@ -466,6 +494,17 @@ export const voiceSlice = createSlice({
 		resetRecordingState: (state) => {
 			state.recording = { ...initialVoiceState.recording };
 		},
+		setUserRecording: (state, action: PayloadAction<{ userId: string; isRecording: boolean }>) => {
+			const next = withRecordingUser(state.recordingUserIds, action.payload.userId, action.payload.isRecording);
+			if (next) {
+				state.recordingUserIds = next;
+			}
+		},
+		clearRecordingUsers: (state) => {
+			if (state.recordingUserIds.length) {
+				state.recordingUserIds = [];
+			}
+		},
 		setStatusCall: (state, action: PayloadAction<boolean>) => {
 			state.statusCall = action.payload;
 		},
@@ -491,6 +530,7 @@ export const voiceSlice = createSlice({
 			state.token = '';
 			state.stream = null;
 			state.openPopOut = false;
+			state.recordingUserIds = [];
 		},
 		resetExternalCall: (state) => {
 			state.showMicrophone = false;
@@ -503,6 +543,7 @@ export const voiceSlice = createSlice({
 			state.externalToken = undefined;
 			state.stream = null;
 			state.joinCallExtStatus = 'not loaded';
+			state.recordingUserIds = [];
 		},
 
 		setPiPModeMobile: (state, action) => {
@@ -626,6 +667,7 @@ export const voiceActions = {
 	...voiceSlice.actions,
 	fetchVoiceChannelMembers,
 	sendVoiceInteractiveEvent,
+	sendRecordingState,
 	kickVoiceMember,
 	muteVoiceMember,
 	giveFlowers
@@ -695,6 +737,8 @@ export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannel
 export const selectVoiceContextMenu = createSelector(getVoiceState, (state) => state.contextMenu);
 
 export const selectVoiceRecording = createSelector(getVoiceState, (state) => state.recording);
+
+export const selectRecordingUserIds = createSelector(getVoiceState, (state) => state.recordingUserIds);
 
 export const selectIsVoiceRecording = createSelector(
 	getVoiceState,
