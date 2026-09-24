@@ -62,6 +62,8 @@
 		"start": "Gesprek opnemen",
 		"stop": "Opname stoppen",
 		"badge": "REC",
+		"by": "{{name}} neemt het gesprek op",
+		"byMany": "{{name}} en {{count}} anderen nemen het gesprek op",
 		"memoryLimitWarning": "Deze browser kan niet rechtstreeks naar schijf schrijven, dus de opname staat in het geheugen en stopt automatisch na {{minutes}} minuten.",
 		"frozenWarning": "De video bevroor terwijl het tabblad verborgen was. Houd dit tabblad zichtbaar tijdens het opnemen.",
 		"savedToDisk": "Opname opgeslagen als {{fileName}} ({{size}})",

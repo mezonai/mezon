@@ -62,6 +62,8 @@
 		"start": "Ghi cuộc gọi",
 		"stop": "Dừng ghi",
 		"badge": "REC",
+		"by": "{{name}} đang ghi cuộc gọi",
+		"byMany": "{{name}} và {{count}} người khác đang ghi cuộc gọi",
 		"memoryLimitWarning": "Trình duyệt này không ghi thẳng xuống đĩa được nên bản ghi phải giữ trong bộ nhớ và sẽ tự dừng sau {{minutes}} phút.",
 		"frozenWarning": "Hình bị đứng trong lúc tab bị ẩn. Hãy giữ tab này hiển thị khi đang ghi.",
 		"savedToDisk": "Đã lưu bản ghi vào {{fileName}} ({{size}})",

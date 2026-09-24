@@ -62,6 +62,8 @@
 		"start": "Nagraj rozmowę",
 		"stop": "Zatrzymaj nagrywanie",
 		"badge": "REC",
+		"by": "{{name}} nagrywa rozmowę",
+		"byMany": "{{name}} i {{count}} innych nagrywa rozmowę",
 		"memoryLimitWarning": "Ta przeglądarka nie może zapisywać bezpośrednio na dysk, więc nagranie jest trzymane w pamięci i zatrzyma się automatycznie po {{minutes}} minutach.",
 		"frozenWarning": "Obraz zamarł, gdy karta była ukryta. Trzymaj tę kartę widoczną podczas nagrywania.",
 		"savedToDisk": "Nagranie zapisano w {{fileName}} ({{size}})",

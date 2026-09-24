@@ -28,7 +28,9 @@ import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import { SfuControlBar } from '../ControlBar/SfuControlBar';
 import { MediaPermissionModal } from '../MediaPermissionModal';
+import { RecordingIndicator } from '../Recording/RecordingIndicator';
 import type { RecordingAudioSource, RecordingSceneTile } from '../Recording/types';
+import { useRecordingBroadcast } from '../Recording/useRecordingBroadcast';
 import { useSfuCallRecorder } from '../Recording/useSfuCallRecorder';
 import type { SfuConnectionState as ConnectionState, SfuRemoteMedia as RemoteMedia, SfuPeer, SfuSignalMessage as SignalMessage } from '../types';
 import type { ExternalChatRef } from './ChatMeeting';
@@ -1960,6 +1962,18 @@ export function MezonSfuVoiceRoom({
 		GUEST_NAME;
 
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
+	const presentUserIds = useMemo(
+		() => [currentUserId, ...participants.map((participant) => participant.userId)].filter((id): id is string => !!id),
+		[currentUserId, participants]
+	);
+	const resolveRecorderName = useCallback(
+		(userId: string) => {
+			if (userId === currentUserId) return localDisplayName;
+			const participant = participants.find((item) => item.userId === userId);
+			return participant ? getParticipantProfile(participant).displayName : userId;
+		},
+		[currentUserId, getParticipantProfile, localDisplayName, participants]
+	);
 	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
 	const speakingMap = useParticipantsSpeakingMap(localAudioTrack, isLocalAudioEnabled, participants);
 	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
@@ -2149,6 +2163,7 @@ export function MezonSfuVoiceRoom({
 		return sources;
 	}, [isLocalAudioEnabled, localAudioTrack, participants]);
 	useSfuCallRecorder({ tiles: recordingTiles, audioSources: recordingAudioSources });
+	useRecordingBroadcast();
 	const gridLayout = useSfuGridLayout(gridElRef, conferenceTiles.length);
 
 	if (isGridView && activeSpeakerId && gridLayout.maxTiles > 0) {
@@ -2248,6 +2263,7 @@ export function MezonSfuVoiceRoom({
 						</button>
 					</div>
 				</header>
+				<RecordingIndicator presentUserIds={presentUserIds} resolveName={resolveRecorderName} />
 
 				{isGridView ? (
 					<SfuGridLayoutContainer
