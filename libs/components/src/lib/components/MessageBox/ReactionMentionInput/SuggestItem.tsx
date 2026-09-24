@@ -25,6 +25,11 @@ type SuggestItemProps = {
 	isUnread?: boolean;
 	isRowFocused?: boolean;
 	color?: string;
+	alwaysShowSubText?: boolean;
+	channelType?: number;
+	channelPrivate?: number;
+	isAgeRestricted?: boolean;
+	parentId?: string;
 };
 
 const SuggestItem = ({
@@ -42,20 +47,26 @@ const SuggestItem = ({
 	count,
 	isUnread,
 	isRowFocused = false,
-	color
+	color,
+	alwaysShowSubText,
+	channelType,
+	channelPrivate,
+	isAgeRestricted,
+	parentId
 }: SuggestItemProps) => {
+	const channel_type = channelType ?? channel?.type;
+	const channel_private = channelPrivate ?? channel?.channel_private;
+	const isAgeRestrictedChannel = isAgeRestricted ?? (channel as { age_restricted?: number })?.age_restricted === 1;
+
 	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string, channel?.clanId as string));
 	const checkVoiceStatus = useMemo(() => {
-		if (channelId !== undefined && numberMembersVoice && channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		if (channelId !== undefined && numberMembersVoice && channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			return numberMembersVoice >= 2;
 		}
 		return false;
-	}, [channelId, numberMembersVoice]);
+	}, [channelId, numberMembersVoice, channel_type]);
 	const channelIcon = useMemo(() => {
-		if (!channel) return null;
-
-		const { channel_private, type } = channel;
-		const isAgeRestrictedChannel = (channel as { age_restricted?: number }).age_restricted === 1;
+		if (!channel && channel_type === undefined) return null;
 
 		const isThreadEmphasized = isUnread || Boolean(count && count > 0) || isRowFocused;
 		const threadFillClass = isThreadEmphasized
@@ -72,7 +83,7 @@ const SuggestItem = ({
 				? '[--hashtag-locked-fill-1:var(--bg-icon-theme-active)] [--hashtag-locked-fill-2:var(--bg-icon-theme-active)]'
 				: '[--hashtag-locked-fill-1:var(--bg-icon-theme)] [--hashtag-locked-fill-2:var(--bg-icon-theme-active)] hover:[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]';
 
-		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+		if (channel_type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isAgeRestrictedChannel) {
 				return <Icons.HashtagWarning defaultSize="w-5 h-5" />;
 			}
@@ -91,7 +102,7 @@ const SuggestItem = ({
 			}
 		}
 
-		if (type === ChannelType.CHANNEL_TYPE_THREAD) {
+		if (channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 			if (!channel_private || channel_private === 0) {
 				return (
 					<Icons.ThreadIcon
@@ -114,23 +125,23 @@ const SuggestItem = ({
 			}
 		}
 
-		if (type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		if (channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			if (!channel_private || channel_private === 0) {
 				return <Icons.Speaker defaultSize="w-5 5-5" />;
 			}
 			return <Icons.SpeakerLocked defaultSize="w-5 h-5" />;
 		}
 
-		if (type === ChannelType.CHANNEL_TYPE_STREAMING && (!channel_private || channel_private === 0)) {
+		if (channel_type === ChannelType.CHANNEL_TYPE_STREAMING && (!channel_private || channel_private === 0)) {
 			return <Icons.Stream defaultSize="w-5 5-5" />;
 		}
 
-		if (type === ChannelType.CHANNEL_TYPE_APP) {
+		if (channel_type === ChannelType.CHANNEL_TYPE_APP) {
 			return <AppChannelListIcon isEmphasized={isUnread || Boolean(count && count > 0)} className="w-5 h-5" />;
 		}
 
 		return null;
-	}, [channel, isUnread, count, isRowFocused]);
+	}, [channel, channel_type, channel_private, isAgeRestrictedChannel, isUnread, count, isRowFocused]);
 
 	return (
 		<div
@@ -183,12 +194,8 @@ const SuggestItem = ({
 				className={`text-[10px] font-semibold text-theme-primary one-line ${subTextStyle}`}
 				data-e2e={generateE2eId('suggest_item.username')}
 			>
-				{channel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread
-						channel_id={channel?.parent_id as string}
-						fallbackSubText={subText}
-						valueHightLight={valueHightLight}
-					/>
+				{channel_type === ChannelType.CHANNEL_TYPE_THREAD && !alwaysShowSubText ? (
+					<RenderChannelLabelForThread channel_id={(parentId || channel?.parent_id) as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}
@@ -196,23 +203,10 @@ const SuggestItem = ({
 		</div>
 	);
 };
-const RenderChannelLabelForThread = ({
-	channel_id,
-	fallbackSubText,
-	valueHightLight
-}: {
-	channel_id?: string;
-	fallbackSubText?: string;
-	valueHightLight?: string;
-}) => {
+const RenderChannelLabelForThread = ({ channel_id }: { channel_id: string }) => {
 	const channelParent = useAppSelector((state) => selectChannelById(state, channel_id ?? '')) || {};
-	if (channelParent?.channel_label) {
-		return <>{channelParent.channel_label}</>;
-	}
-	if (fallbackSubText) {
-		return <>{HighlightMatchBold(fallbackSubText, valueHightLight ?? '')}</>;
-	}
-	return null;
+
+	return <>{channelParent?.channel_label || null}</>;
 };
 
 export default memo(SuggestItem);

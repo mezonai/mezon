@@ -37,7 +37,7 @@ import {
 	removeDuplicatesById
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ModalLayout } from '../../components';
@@ -92,14 +92,15 @@ const ForwardMessageModal = () => {
 	const handleCloseModal = () => {
 		dispatch(toggleIsShowPopupForwardFalse());
 	};
-	const handleToggle = (id: string, type: number, isPublic: boolean, clanId?: string, channelLabel?: string, isFriend?: boolean) => {
-		const existingIndex = selectedObjectIdSends.findIndex((item) => item.id === id && item.type === type);
-		if (existingIndex !== -1) {
-			setSelectedObjectIdSends((prevItems) => [...prevItems.slice(0, existingIndex), ...prevItems.slice(existingIndex + 1)]);
-		} else {
-			setSelectedObjectIdSends((prevItems) => [...prevItems, { id, type, clanId, channelLabel, isPublic, isFriend }]);
-		}
-	};
+	const handleToggle = useCallback((id: string, type: number, isPublic: boolean, clanId?: string, channelLabel?: string, isFriend?: boolean) => {
+		setSelectedObjectIdSends((prevItems) => {
+			const existingIndex = prevItems.findIndex((item) => item.id === id && item.type === type);
+			if (existingIndex !== -1) {
+				return [...prevItems.slice(0, existingIndex), ...prevItems.slice(existingIndex + 1)];
+			}
+			return [...prevItems, { id, type, clanId, channelLabel, isPublic, isFriend }];
+		});
+	}, []);
 
 	const handleForward = () => {
 		return isForwardAll ? handleForwardAllMessage() : sentToMessage();

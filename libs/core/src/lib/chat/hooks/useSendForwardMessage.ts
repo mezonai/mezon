@@ -2,7 +2,7 @@ import { toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { MAX_FORWARD_MESSAGE_LENGTH } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,22 +32,26 @@ export function useSendForwardMessage() {
 				} else if (mode === ChannelStreamMode.STREAM_MODE_THREAD) {
 					type = ChannelType.CHANNEL_TYPE_THREAD;
 				}
+				const parsedContent: IMessageSendPayload =
+					typeof message.content === 'string'
+						? safeJSONParse(message.content) || { t: message.content }
+						: (message.content as IMessageSendPayload) || {};
+
 				const validatedContent = {
-					...(message.content as IMessageSendPayload),
+					...parsedContent,
 					fwd: true
 				};
+
+				const messageMentions = message.mentions ?? (parsedContent as any)?.mentions;
+				const mentions = Array.isArray(messageMentions)
+					? messageMentions
+					: typeof messageMentions === 'string'
+						? safeJSONParse(messageMentions) || []
+						: [];
+
 				await client.joinChat(session, clanid || '0', channel_id, type, isPublic);
 
-				await client.writeChatMessage(
-					session,
-					clanid || '0',
-					channel_id,
-					mode,
-					isPublic,
-					validatedContent,
-					message.channel_id === channel_id ? message.mentions : [],
-					message.attachments
-				);
+				await client.writeChatMessage(session, clanid || '0', channel_id, mode, isPublic, validatedContent, mentions, message.attachments);
 
 				if (additionalMessage && additionalMessage.trim()) {
 					const trimmedMessage = additionalMessage.trim();
