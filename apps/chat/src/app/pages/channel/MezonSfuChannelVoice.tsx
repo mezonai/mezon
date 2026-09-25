@@ -5,6 +5,7 @@ import {
 	channelAppActions,
 	generateMeetToken,
 	getStore,
+	selectChannelById,
 	selectCurrentChannelClanId,
 	selectCurrentChannelId,
 	selectCurrentChannelLabel,
@@ -75,6 +76,7 @@ interface VoiceConferenceContentProps {
 	isShowChatVoice: boolean;
 	isVoiceFullScreen: boolean;
 	handleToggleChat: () => void;
+	isPrivateVoice?: boolean;
 }
 
 const VoiceConferenceContent = memo(
@@ -87,7 +89,8 @@ const VoiceConferenceContent = memo(
 		handleFullScreen,
 		isShowChatVoice,
 		isVoiceFullScreen,
-		handleToggleChat
+		handleToggleChat,
+		isPrivateVoice
 	}: VoiceConferenceContentProps) => {
 		return (
 			<div className="flex-1 relative flex overflow-hidden">
@@ -102,6 +105,7 @@ const VoiceConferenceContent = memo(
 					onLeaveRoom={() => void handleLeaveRoom()}
 					onFullScreen={handleFullScreen}
 					onToggleChat={handleToggleChat}
+					isPrivateVoice={isPrivateVoice}
 				/>
 				<EmojiSuggestionProvider>
 					{isShowChatVoice && (
@@ -152,6 +156,7 @@ const MezonSfuChannelVoiceInner = () => {
 	const isOnMenu = useSelector(selectStatusMenu);
 
 	const isDisconnectingRef = useRef(false);
+	const isPrivateVoice = !!useSelector((state) => selectChannelById(state, voiceInfo?.channelId || ''))?.channel_private;
 
 	const handleJoinRoom = useLastCallback(async (role: SfuJoinRole) => {
 		setJoinRole(role);
@@ -254,6 +259,7 @@ const MezonSfuChannelVoiceInner = () => {
 								joinRole={joinRole}
 								serverUrl={serverUrl}
 								voiceInfo={voiceInfo}
+								isPrivateVoice={isPrivateVoice}
 								handleLeaveRoom={handleLeaveRoom}
 								handleFullScreen={handleFullScreen}
 								isShowChatVoice={isShowChatVoice}

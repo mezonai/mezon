@@ -2,6 +2,7 @@ import { useAuth } from '@mezon/core';
 import { channelsActions, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import type { MutableRefObject, RefObject } from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -187,16 +188,20 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 							</div>
 						)}
 					</div>
-					<hr className="border-t border-solid dark:border-gray-700 border-bgModifierHoverLight mt-10 mb-[30px]" />
-					<PermissionManage
-						channelId={channel.id}
-						channelPrivate={channel.channel_private === 1}
-						setIsPrivateChannel={setValueToggle}
-						setPermissionsListHasChanged={setPermissionsListHasChanged}
-						saveTriggerRef={saveTriggerRef}
-						resetTriggerRef={resetTriggerRef}
-						isSaving={isSaving}
-					/>
+					{channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
+						<>
+							<hr className="border-t border-solid dark:border-gray-700 border-bgModifierHoverLight mt-10 mb-[30px]" />
+							<PermissionManage
+								channelId={channel.id}
+								channelPrivate={channel.channel_private === 1}
+								setIsPrivateChannel={setValueToggle}
+								setPermissionsListHasChanged={setPermissionsListHasChanged}
+								saveTriggerRef={saveTriggerRef}
+								resetTriggerRef={resetTriggerRef}
+								isSaving={isSaving}
+							/>
+						</>
+					)}
 				</div>
 				{hasUnsavedChanges && (
 					<>

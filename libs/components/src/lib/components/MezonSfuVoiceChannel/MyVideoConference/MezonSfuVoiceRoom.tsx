@@ -414,6 +414,7 @@ export interface MezonSfuVoiceRoomProps {
 	onFullScreen: () => void;
 	onToggleChat: () => void;
 	username?: string;
+	isPrivateVoice?: boolean;
 }
 
 type SfuOffer = { sdp: string; offer_generation: number };
@@ -433,7 +434,8 @@ export function MezonSfuVoiceRoom({
 	onLeaveRoom,
 	onFullScreen,
 	onToggleChat,
-	username
+	username,
+	isPrivateVoice
 }: MezonSfuVoiceRoomProps) {
 	const { t } = useTranslation('channelVoice');
 	const dispatch = useAppDispatch();
@@ -2142,7 +2144,21 @@ export function MezonSfuVoiceRoom({
 				<SfuRoomAudioRenderer participants={participants} mutedParticipantIds={mutedParticipantIds} />
 				<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
 					<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
-						<Icons.Speaker defaultSize="h-6 w-6" defaultFill1="currentColor" defaultFill2="currentColor" defaultFill3="currentColor" />
+						{isPrivateVoice ? (
+							<Icons.SpeakerLocked
+								defaultSize="h-6 w-6"
+								defaultFill1="currentColor"
+								defaultFill2="currentColor"
+								defaultFill3="currentColor"
+							/>
+						) : (
+							<Icons.Speaker
+								defaultSize="h-6 w-6"
+								defaultFill1="currentColor"
+								defaultFill2="currentColor"
+								defaultFill3="currentColor"
+							/>
+						)}
 						<strong className="text-base">{channelLabel || roomId}</strong>
 						<span
 							className={
