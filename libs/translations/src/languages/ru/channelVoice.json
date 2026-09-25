@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Требуется доступ к микрофону",
 		"cameraPermissionRequired": "Требуется доступ к камере",
 		"recipientDidNotAnswer": "Получатель не ответил на звонок.",
-		"aloneTimeoutDisconnected": "Вы были отключены от голосового канала, потому что слишком долго находились в нём одни."
+		"aloneTimeoutDisconnected": "Вы были отключены от голосового канала, потому что слишком долго находились в нём одни.",
+		"duplicateSessionDisconnected": "Вы вошли в голосовой канал на другом устройстве, поэтому этот сеанс был отключён.",
+		"disconnectedRejoin": "Вы были отключены от голосового канала."
 	},
 	"usernameScreen": "{{username}} экран",
 	"recording": {

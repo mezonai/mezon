@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Cần quyền microphone",
 		"cameraPermissionRequired": "Cần quyền camera",
 		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi.",
-		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu."
+		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu.",
+		"duplicateSessionDisconnected": "Bạn đã tham gia kênh thoại trên thiết bị khác nên phiên này bị ngắt kết nối.",
+		"disconnectedRejoin": "Bạn đã bị ngắt khỏi kênh thoại."
 	},
 	"usernameScreen": "Màn hình của {{username}}",
 	"recording": {

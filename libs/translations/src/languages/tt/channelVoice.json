@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Микрофонга керү мөмкинлеге таләп ителә",
 		"cameraPermissionRequired": "Камерага керү мөмкинлеге таләп ителә",
 		"recipientDidNotAnswer": "Кабул итүче шалтыратуга җавап бирмәде.",
-		"aloneTimeoutDisconnected": "Сез тавыш каналында артык озак ялгыз булганга күрә, аннан өзелдегез."
+		"aloneTimeoutDisconnected": "Сез тавыш каналында артык озак ялгыз булганга күрә, аннан өзелдегез.",
+		"duplicateSessionDisconnected": "Сез башка җайланмада тавыш каналына кушылдыгыз, шуңа күрә бу сессия өзелде.",
+		"disconnectedRejoin": "Сез тавыш каналыннан өзелдегез."
 	},
 	"usernameScreen": "{{username}} экраны",
 	"recording": {
