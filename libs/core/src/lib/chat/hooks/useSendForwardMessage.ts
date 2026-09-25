@@ -2,7 +2,7 @@ import { toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { MAX_FORWARD_MESSAGE_LENGTH } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageMention } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,17 +37,44 @@ export function useSendForwardMessage() {
 						? safeJSONParse(message.content) || { t: message.content }
 						: (message.content as IMessageSendPayload) || {};
 
+				const messageMentions = message.mentions ?? (parsedContent as any)?.mentions;
+				let parsedMentions: any[] = [];
+				if (Array.isArray(messageMentions)) {
+					parsedMentions = messageMentions;
+				} else if (typeof messageMentions === 'string' && messageMentions.trim()) {
+					try {
+						const parsed = JSON.parse(messageMentions);
+						parsedMentions = Array.isArray(parsed) ? parsed : [];
+					} catch {
+						parsedMentions = [];
+					}
+				}
+				const sanitizedMentions: ApiMessageMention[] = parsedMentions
+					.filter((m: any) => m && typeof m === 'object')
+					.map((m: any) => {
+						const mention: ApiMessageMention = {};
+						if (m.user_id !== undefined && m.user_id !== null) mention.user_id = String(m.user_id);
+						if (m.username !== undefined && m.username !== null) mention.username = String(m.username);
+						if (m.role_id !== undefined && m.role_id !== null) mention.role_id = String(m.role_id);
+						if (m.rolename !== undefined && m.rolename !== null) mention.rolename = String(m.rolename);
+						if (m.s !== undefined && m.s !== null) {
+							const sNum = Number(m.s);
+							if (!isNaN(sNum)) mention.s = sNum;
+						}
+						if (m.e !== undefined && m.e !== null) {
+							const eNum = Number(m.e);
+							if (!isNaN(eNum)) mention.e = eNum;
+						}
+						return mention;
+					})
+					.filter((m) => Object.keys(m).length > 0);
+
 				const validatedContent = {
 					...parsedContent,
 					fwd: true
 				};
 
-				const messageMentions = message.mentions ?? (parsedContent as any)?.mentions;
-				const mentions = Array.isArray(messageMentions)
-					? messageMentions
-					: typeof messageMentions === 'string'
-						? safeJSONParse(messageMentions) || []
-						: [];
+				const mentions = message.channel_id === channel_id ? sanitizedMentions : [];
 
 				await client.joinChat(session, clanid || '0', channel_id, type, isPublic);
 
