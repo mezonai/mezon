@@ -190,7 +190,8 @@ const persistedThreadReducer = persistReducer(
 const persistedListchannelsByUserReducer = persistReducer(
 	{
 		key: 'listchannelbyusers',
-		storage
+		storage,
+		blacklist: ['channelDetails']
 	},
 	listchannelsByUserReducer
 );
