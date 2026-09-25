@@ -62,6 +62,8 @@
 		"start": "Record call",
 		"stop": "Stop recording",
 		"badge": "REC",
+		"by": "{{name}} is recording the call",
+		"byMany": "{{name}} and {{count}} others are recording the call",
 		"memoryLimitWarning": "This browser cannot write directly to disk, so the recording is held in memory and stops automatically after {{minutes}} minutes.",
 		"frozenWarning": "Video froze while the tab was hidden. Keep this tab visible while recording.",
 		"savedToDisk": "Recording saved to {{fileName}} ({{size}})",

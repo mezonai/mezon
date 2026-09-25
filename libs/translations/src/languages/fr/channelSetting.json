@@ -173,7 +173,17 @@
 			"title": "Permissions du canal",
 			"description": "Utilisez les permissions pour personnaliser ce que chacun peut faire dans ce canal.",
 			"syncedWithCategory": "Permissions synchronisées avec la catégorie:"
-		}
+		},
+		"searchMembers": "Rechercher des membres",
+		"noMembersFound": "Aucun membre trouvé",
+		"removeMember": "Retirer le membre du canal",
+		"loading": "Chargement...",
+		"loadPermissions": "Charger les permissions / Réessayer",
+		"choiceLegend": "× Refuser   / Hériter   ✓ Autoriser",
+		"saveBeforeSwitch": "Enregistrez ou réinitialisez vos modifications avant de sélectionner un autre rôle ou membre.",
+		"deny": "Refuser",
+		"inherit": "Hériter des rôles et de la catégorie",
+		"allow": "Autoriser"
 	},
 	"quickAction": {
 		"title": "Menu rapide",

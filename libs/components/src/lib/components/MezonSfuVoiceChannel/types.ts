@@ -5,6 +5,7 @@ export type SfuConnectionState = 'connecting' | 'joining' | 'awaiting offer' | '
 export type SfuPeer = {
 	peer_id: number | string;
 	user_id?: string;
+	ufrag?: string;
 	role?: SfuJoinRole;
 	is_mute?: boolean;
 	camera_requested?: boolean;
@@ -14,6 +15,7 @@ export type SfuPeer = {
 	mid_audio?: number | string;
 	mid_video?: number | string;
 	mid_screen?: number | string;
+	metadata?: string;
 };
 
 export type SfuSignalMessage = {
@@ -21,6 +23,7 @@ export type SfuSignalMessage = {
 	action?: 'mute' | 'kick';
 	user_id?: string;
 	peer_id?: number | string;
+	self_peer_id?: number | string;
 	affected?: number;
 	error?: string;
 	timestamp?: number;
@@ -50,4 +53,6 @@ export type SfuRemoteMedia = {
 	cameraActive?: boolean;
 	screenRequested?: boolean;
 	isMute?: boolean;
+	username?: string;
+	avatar?: string;
 };
