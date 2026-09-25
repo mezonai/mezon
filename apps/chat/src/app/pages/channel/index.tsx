@@ -22,7 +22,6 @@ import {
 	selectCurrentClanIsOnboarding,
 	selectIsSearchMessage,
 	selectIsShowCanvas,
-	selectIsShowChatVoice,
 	selectIsShowCreateThread,
 	selectIsShowMemberList,
 	selectLastMessageViewportByChannelId,
@@ -299,9 +298,10 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 type ChannelMainContentProps = {
 	channelId: string;
+	isVoiceChatPanel: boolean;
 };
 
-const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
+const ChannelMainContent = ({ channelId, isVoiceChatPanel }: ChannelMainContentProps) => {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const { draggingState, setDraggingState } = useDragAndDrop();
@@ -310,7 +310,6 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
-	const isShowChatInVoice = useSelector(selectIsShowChatVoice);
 	const isTimelineView = useAppSelector(selectTimelineViewMode);
 	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
 	const isSpecialView = isTimelineView || isMediaChannelView;
@@ -391,20 +390,18 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
 			>
 				<div className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`}`}>
-					{!isShowCanvas &&
-						!isShowAgeRestricted &&
-						(isShowChatInVoice || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
-							<div
-								className={`flex flex-col flex-1 min-w-60 max-h-messageViewChatDM ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
-							>
-								<div className={`relative overflow-y-auto flex-1 min-h-0`}>
-									<ChannelMedia currentChannel={currentChannel} />
-								</div>
-								<div className="flex-shrink-0">
-									<ChannelMainContentText canSendMessage={canSendMessage} channelId={channelId} />
-								</div>
+					{!isShowCanvas && !isShowAgeRestricted && (isVoiceChatPanel || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
+						<div
+							className={`flex flex-col flex-1 min-w-60 max-h-messageViewChatDM ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+						>
+							<div className={`relative overflow-y-auto flex-1 min-h-0`}>
+								<ChannelMedia currentChannel={currentChannel} />
 							</div>
-						)}
+							<div className="flex-shrink-0">
+								<ChannelMainContentText canSendMessage={canSendMessage} channelId={channelId} />
+							</div>
+						</div>
+					)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
 						<div className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big`}>
 							<Canvas />
@@ -447,7 +444,7 @@ export default function ChannelMain({ topicChannelId }: IChannelMainProps) {
 	}
 	return (
 		<>
-			<ChannelMainContent channelId={chlId} />
+			<ChannelMainContent channelId={chlId} isVoiceChatPanel={!!topicChannelId} />
 			<ChannelSeenListener channelId={chlId} />
 		</>
 	);
