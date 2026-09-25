@@ -1467,7 +1467,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				channelMembersActions.setCustomStatusUser({
 					userId: statusEvent.user_id,
 					status: statusEvent.status,
-					time_reset: statusEvent.time_reset
+					time_reset: statusEvent.time_reset,
+					no_clear: statusEvent.no_clear
 				})
 			);
 
