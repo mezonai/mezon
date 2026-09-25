@@ -309,9 +309,14 @@ const RussiaFlag = () => (
 	</svg>
 );
 
+const ES_FLAG_SHIELD = 'M9.3 13.1H12.7V17.1A1.7 1.7 0 0 1 9.3 17.1Z';
+
 const SpainFlag = () => (
 	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
 		<defs>
+			<clipPath id="es-shield-clip">
+				<path d={ES_FLAG_SHIELD} />
+			</clipPath>
 			<clipPath id="es-clip">
 				<rect x="1" y="4" width="30" height="24" rx="4" ry="4" />
 			</clipPath>
@@ -319,6 +324,33 @@ const SpainFlag = () => (
 		<g clipPath="url(#es-clip)">
 			<rect x="1" y="4" width="30" height="24" fill="#C60B1E" />
 			<rect x="1" y="10" width="30" height="12" fill="#FFC400" />
+			<g fill="#c8b100">
+				<rect x="7.3" y="12.6" width="1.4" height="0.5" />
+				<rect x="7.3" y="18.6" width="1.4" height="0.5" />
+				<rect x="13.3" y="12.6" width="1.4" height="0.5" />
+				<rect x="13.3" y="18.6" width="1.4" height="0.5" />
+			</g>
+			<rect x="7.6" y="13.1" width="0.8" height="5.5" fill="#b5b5b5" />
+			<rect x="13.6" y="13.1" width="0.8" height="5.5" fill="#b5b5b5" />
+			<rect x="7.2" y="15.3" width="1.6" height="0.6" fill="#ad1519" />
+			<rect x="13.2" y="15.3" width="1.6" height="0.6" fill="#ad1519" />
+			<path d="M9.4 12.4L9.1 11.1L10.1 11.8L11 10.8L11.9 11.8L12.9 11.1L12.6 12.4Z" fill="#c8b100" />
+			<rect x="9.4" y="12.3" width="3.2" height="0.5" fill="#ad1519" />
+			<g clipPath="url(#es-shield-clip)">
+				<rect x="9.3" y="13.1" width="1.7" height="2.2" fill="#ad1519" />
+				<rect x="9.8" y="13.6" width="0.7" height="1.2" fill="#c8b100" />
+				<rect x="11" y="13.1" width="1.7" height="2.2" fill="#fff" />
+				<circle cx="11.85" cy="14.2" r="0.5" fill="#7d2f8c" />
+				<rect x="9.3" y="15.3" width="1.7" height="3.5" fill="#fcdd09" />
+				<rect x="9.55" y="15.3" width="0.3" height="3.5" fill="#da121a" />
+				<rect x="10.15" y="15.3" width="0.3" height="3.5" fill="#da121a" />
+				<rect x="10.7" y="15.3" width="0.3" height="3.5" fill="#da121a" />
+				<rect x="11" y="15.3" width="1.7" height="3.5" fill="#db4446" />
+				<path d="M11.85 16L12.3 16.5L11.85 17L11.4 16.5Z" fill="#c8b100" />
+				<circle cx="11" cy="18.3" r="0.45" fill="#fff" />
+			</g>
+			<ellipse cx="11" cy="15.3" rx="0.6" ry="0.7" fill="#005bbf" stroke="#c8b100" strokeWidth="0.2" />
+			<path d={ES_FLAG_SHIELD} fill="none" stroke="#c8b100" strokeWidth="0.25" />
 		</g>
 		<path
 			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
@@ -373,9 +405,33 @@ const PortugalFlag = () => (
 			</clipPath>
 		</defs>
 		<g clipPath="url(#pt-clip)">
-			<rect x="1" y="4" width="12" height="24" fill="#006600" />
-			<rect x="13" y="4" width="18" height="24" fill="#ff0000" />
-			<circle cx="13" cy="16" r="4.5" fill="#ffcc00" />
+			<rect x="1" y="4" width="12" height="24" fill="#046a38" />
+			<rect x="13" y="4" width="18" height="24" fill="#da291c" />
+			<g fill="none" stroke="#ffe900" strokeWidth="0.6">
+				<circle cx="13" cy="16" r="4.4" />
+				<ellipse cx="13" cy="16" rx="4.4" ry="1.3" />
+				<ellipse cx="13" cy="16" rx="4.4" ry="1.3" transform="rotate(30 13 16)" />
+				<ellipse cx="13" cy="16" rx="4.4" ry="1.3" transform="rotate(-30 13 16)" />
+				<ellipse cx="13" cy="16" rx="1.3" ry="4.4" />
+			</g>
+			<path d="M10.8 13.4H15.2V16.4A2.2 2.2 0 0 1 10.8 16.4Z" fill="#da291c" stroke="#fff" strokeWidth="0.25" />
+			<path d="M11.6 14.2H14.4V16.3A1.4 1.4 0 0 1 11.6 16.3Z" fill="#fff" />
+			<g fill="#002d72">
+				<rect x="12.75" y="14.5" width="0.5" height="0.65" />
+				<rect x="12.05" y="15.35" width="0.5" height="0.65" />
+				<rect x="12.75" y="15.35" width="0.5" height="0.65" />
+				<rect x="13.45" y="15.35" width="0.5" height="0.65" />
+				<rect x="12.75" y="16.2" width="0.5" height="0.65" />
+			</g>
+			<g fill="#ffe900">
+				<rect x="11.05" y="13.65" width="0.35" height="0.35" />
+				<rect x="12.83" y="13.65" width="0.35" height="0.35" />
+				<rect x="14.6" y="13.65" width="0.35" height="0.35" />
+				<rect x="11.05" y="15.5" width="0.35" height="0.35" />
+				<rect x="14.6" y="15.5" width="0.35" height="0.35" />
+				<rect x="11.5" y="17.3" width="0.35" height="0.35" />
+				<rect x="14.15" y="17.3" width="0.35" height="0.35" />
+			</g>
 		</g>
 		<path
 			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
@@ -478,6 +534,17 @@ const SwedenFlag = () => (
 	</svg>
 );
 
+const BY_FLAG_ORNAMENT = [4, 8, 12, 16, 20, 24]
+	.map((top) => {
+		const cy = top + 2;
+		const diamond = `M3 ${top}L4.4 ${cy}L3 ${top + 4}L1.6 ${cy}Z`;
+		const hole = `M3 ${cy - 0.8}L3.6 ${cy}L3 ${cy + 0.8}L2.4 ${cy}Z`;
+		const sideMarks =
+			top > 4 ? `M1.9 ${top - 0.7}L2.4 ${top}L1.9 ${top + 0.7}L1.4 ${top}ZM4.1 ${top - 0.7}L4.6 ${top}L4.1 ${top + 0.7}L3.6 ${top}Z` : '';
+		return diamond + hole + sideMarks;
+	})
+	.join('');
+
 const BelarusFlag = () => (
 	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
 		<defs>
@@ -486,9 +553,10 @@ const BelarusFlag = () => (
 			</clipPath>
 		</defs>
 		<g clipPath="url(#blr-clip)">
-			<rect x="1" y="4" width="30" height="8" fill="#fff" />
-			<rect x="1" y="12" width="30" height="8" fill="#c8313e" />
-			<rect x="1" y="20" width="30" height="8" fill="#fff" />
+			<rect x="1" y="4" width="30" height="16" fill="#c8313e" />
+			<rect x="1" y="20" width="30" height="8" fill="#4aa657" />
+			<rect x="1" y="4" width="4" height="24" fill="#fff" />
+			<path d={BY_FLAG_ORNAMENT} fill="#c8313e" fillRule="evenodd" />
 		</g>
 		<path
 			d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
