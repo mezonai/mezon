@@ -1674,7 +1674,10 @@ export function MezonSfuVoiceRoom({
 			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
 			if (active && (microphonePermissionRevokedRef.current || audioTrack?.readyState !== 'live' || audioTrack.muted)) {
 				try {
-					const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+					const stream = await navigator.mediaDevices.getUserMedia({
+						audio: getNoiseSuppressionAudioCaptureOptions(noiseSuppressionEnabledRef.current),
+						video: false
+					});
 					const nextAudioTrack = stream.getAudioTracks()[0];
 					if (!nextAudioTrack) return;
 					const localStream = localStreamRef.current || new MediaStream();
