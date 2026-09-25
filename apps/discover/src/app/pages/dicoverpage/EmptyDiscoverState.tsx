@@ -7,9 +7,8 @@ interface EmptyDiscoverStateProps {
 	hasFilters?: boolean;
 	onClearSearch: () => void;
 	onClearFilters: () => void;
-	selectedCategory: string;
 	selectedHashtags?: string[];
-	onCategorySelect: (categoryId: string) => void;
+	onHashtagSelect: (tag: string) => void;
 }
 
 const EmptyDiscoverState: React.FC<EmptyDiscoverStateProps> = ({
@@ -17,9 +16,8 @@ const EmptyDiscoverState: React.FC<EmptyDiscoverStateProps> = ({
 	hasFilters,
 	onClearSearch,
 	onClearFilters,
-	selectedCategory,
 	selectedHashtags,
-	onCategorySelect
+	onHashtagSelect
 }) => {
 	const { t } = useTranslation('discover');
 
@@ -36,12 +34,7 @@ const EmptyDiscoverState: React.FC<EmptyDiscoverStateProps> = ({
 					{t('empty.clearSearch')}
 				</button>
 				<div className="mt-8">
-					<CategoryChips
-						selectedCategory={selectedCategory}
-						selectedHashtags={selectedHashtags}
-						onSelect={onCategorySelect}
-						variant="recovery"
-					/>
+					<CategoryChips selectedHashtags={selectedHashtags} onSelect={onHashtagSelect} variant="recovery" />
 				</div>
 			</div>
 		);

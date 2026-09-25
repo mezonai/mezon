@@ -75,33 +75,17 @@ export const DISCOVER_LAYOUT = {
 /** Clan ID (`clan_id`) pinned to the Discover homepage hero. Set via `NX_DISCOVER_FEATURED_CLAN_ID`. */
 export const FEATURED_CLAN_ID = (process.env.NX_DISCOVER_FEATURED_CLAN_ID || '').trim();
 
-export const DISCOVER_HASHTAGS = [
-	'Gaming',
-	'Technology',
-	'Education',
-	'Entertainment',
-	'Music',
-	'Art',
-	'Crypto',
-	'Anime',
-	'Sports',
-	'Community'
-] as const;
-
-export type DiscoverHashtag = (typeof DISCOVER_HASHTAGS)[number];
-
-export const CATEGORY_SHORTCUTS = [
-	{ id: 'gaming', keywords: ['game', 'gaming', 'esport', 'gamer'] },
-	{ id: 'technology', keywords: ['tech', 'ai', 'code', 'dev', 'program', 'it', 'software'] },
-	{ id: 'education', keywords: ['edu', 'learn', 'study', 'school', 'campus', 'student'] },
-	{ id: 'music', keywords: ['music', 'song', 'dj', 'audio'] },
-	{ id: 'anime', keywords: ['anime', 'manga', 'otaku'] },
-	{ id: 'sports', keywords: ['sport', 'football', 'soccer', 'gym'] },
-	{ id: 'lifestyle', keywords: ['life', 'lifestyle', 'travel', 'food'] }
-] as const;
+export {
+	COMMUNITY_HASHTAGS,
+	DEFAULT_COMMUNITY_HASHTAG,
+	DISCOVER_HASHTAGS,
+	MAX_COMMUNITY_HASHTAGS,
+	MIN_COMMUNITY_HASHTAGS,
+	type DiscoverHashtag,
+	type HashtagItem
+} from '@mezon/utils';
 
 export type DiscoverSort = 'recommended' | 'largest' | 'newest';
-export type CategoryShortcutId = (typeof CATEGORY_SHORTCUTS)[number]['id'];
 
 export const COLORS = {
 	PRIMARY: '#5865f2',

@@ -23,7 +23,6 @@ export default function DiscoverPage() {
 		error,
 		searchTerm,
 		committedQuery,
-		selectedCategory,
 		selectedHashtags,
 		sort,
 		verifiedOnly,
@@ -120,9 +119,18 @@ export default function DiscoverPage() {
 	}, [committedQuery, selectedHashtags, isBrowsing]);
 
 	const onHashtagSelect = (tag: string) => {
+		const cleanTag = tag.trim().replace(/^#/, '');
+		const nextHashtags = selectedHashtags.some((t) => t.toLowerCase() === cleanTag.toLowerCase())
+			? selectedHashtags.filter((t) => t.toLowerCase() !== cleanTag.toLowerCase())
+			: [...selectedHashtags, cleanTag];
+
 		handleToggleHashtag(tag);
-		trackDiscoverEvent('clan_category_click', { hashtag: tag });
-		trackDiscoverEvent('clan_filter_apply', { hashtags: selectedHashtags, verified: verifiedOnly });
+		trackDiscoverEvent('clan_category_click', { category: cleanTag, hashtag: cleanTag });
+		trackDiscoverEvent('clan_filter_apply', {
+			category: nextHashtags.join(','),
+			hashtags: nextHashtags,
+			verified: verifiedOnly
+		});
 	};
 
 	const handlePageChange = (page: number) => {
@@ -137,7 +145,8 @@ export default function DiscoverPage() {
 			position: meta.position,
 			clan_id: clan.clan_id,
 			query: committedQuery,
-			category: selectedCategory,
+			category: selectedHashtags.join(','),
+			hashtags: selectedHashtags.join(','),
 			sort,
 			verified: verifiedOnly
 		});
@@ -205,9 +214,8 @@ export default function DiscoverPage() {
 							hasFilters={Boolean(selectedHashtags.length > 0 || verifiedOnly)}
 							onClearSearch={() => handleSearch('')}
 							onClearFilters={clearFilters}
-							selectedCategory={selectedCategory}
 							selectedHashtags={selectedHashtags}
-							onCategorySelect={onHashtagSelect}
+							onHashtagSelect={onHashtagSelect}
 						/>
 					)}
 				</section>
@@ -226,10 +234,8 @@ export default function DiscoverPage() {
 				open={filtersOpen}
 				onClose={() => setFiltersOpen(false)}
 				selectedHashtags={selectedHashtags}
-				selectedCategory={selectedCategory}
 				verifiedOnly={verifiedOnly}
 				onHashtagToggle={onHashtagSelect}
-				onCategorySelect={onHashtagSelect}
 				onVerifiedOnly={handleVerifiedOnly}
 				onReset={clearFilters}
 				resultCount={filteredClans.length}

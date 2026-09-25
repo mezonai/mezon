@@ -1,15 +1,13 @@
-import React, { useEffect, useId, useMemo, useRef } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DISCOVER_HASHTAGS, type DiscoverSort } from '../../constants/constants';
 
 interface FilterSheetProps {
 	open: boolean;
 	onClose: () => void;
-	selectedCategory?: string;
 	selectedHashtags?: string[];
 	verifiedOnly: boolean;
-	onCategorySelect?: (category: string) => void;
-	onHashtagToggle?: (tag: string) => void;
+	onHashtagToggle: (tag: string) => void;
 	onVerifiedOnly: (value: boolean) => void;
 	onReset: () => void;
 	resultCount: number;
@@ -18,10 +16,8 @@ interface FilterSheetProps {
 const FilterSheet: React.FC<FilterSheetProps> = ({
 	open,
 	onClose,
-	selectedCategory = '',
-	selectedHashtags,
+	selectedHashtags = [],
 	verifiedOnly,
-	onCategorySelect,
 	onHashtagToggle,
 	onVerifiedOnly,
 	onReset,
@@ -31,20 +27,10 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
 	const titleId = useId();
 	const closeRef = useRef<HTMLButtonElement>(null);
 
-	const activeTags = useMemo(() => {
-		if (selectedHashtags && selectedHashtags.length > 0) return selectedHashtags;
-		if (selectedCategory) {
-			return selectedCategory
-				.split(',')
-				.map((t) => t.trim().replace(/^#/, ''))
-				.filter(Boolean);
-		}
-		return [];
-	}, [selectedHashtags, selectedCategory]);
+	const activeTags = selectedHashtags;
 
 	const handleToggle = (tag: string) => {
-		if (onHashtagToggle) onHashtagToggle(tag);
-		else if (onCategorySelect) onCategorySelect(tag);
+		onHashtagToggle(tag);
 	};
 
 	useEffect(() => {
@@ -65,7 +51,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
 	if (!open) return null;
 
 	return (
-		<div className="fixed inset-0 z-50 lg:hidden">
+		<div className="fixed inset-0 z-[200] md:hidden">
 			<div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden />
 			<div
 				role="dialog"

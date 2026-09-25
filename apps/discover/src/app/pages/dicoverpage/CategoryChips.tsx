@@ -1,28 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DISCOVER_HASHTAGS } from '../../constants/constants';
 
 interface CategoryChipsProps {
-	selectedCategory?: string;
 	selectedHashtags?: string[];
 	onSelect: (tag: string) => void;
 	variant?: 'hero' | 'recovery' | 'stage';
 }
 
-const CategoryChips: React.FC<CategoryChipsProps> = ({ selectedCategory = '', selectedHashtags, onSelect, variant = 'hero' }) => {
+const CategoryChips: React.FC<CategoryChipsProps> = ({ selectedHashtags = [], onSelect, variant = 'hero' }) => {
 	const { t } = useTranslation(['discover', 'onBoardingClan']);
 	const [showAll, setShowAll] = useState(false);
 
-	const activeTags = useMemo(() => {
-		if (selectedHashtags && selectedHashtags.length > 0) return selectedHashtags;
-		if (selectedCategory) {
-			return selectedCategory
-				.split(',')
-				.map((t) => t.trim().replace(/^#/, ''))
-				.filter(Boolean);
-		}
-		return [];
-	}, [selectedHashtags, selectedCategory]);
+	const activeTags = selectedHashtags;
 
 	const visible = showAll ? DISCOVER_HASHTAGS : DISCOVER_HASHTAGS.slice(0, 6);
 

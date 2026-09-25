@@ -140,7 +140,7 @@ export const updateCommunity = createAsyncThunk(
 			return { clan_id, enabled, bannerUrl, about, description, short_url, hashtags: hashtags ?? [] };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunity');
-			return thunkAPI.rejectWithValue(error);
+			return thunkAPI.rejectWithValue('Failed to update community');
 		}
 	}
 );
