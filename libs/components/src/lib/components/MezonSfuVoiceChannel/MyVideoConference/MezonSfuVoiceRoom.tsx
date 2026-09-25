@@ -71,7 +71,8 @@ const MAX_TOKEN_REFRESH_ATTEMPTS = 3;
 const FAST_RECONNECT_ATTEMPTS = 2;
 const FAST_RECONNECT_DELAY_MS = 400;
 const RECONNECT_DELAY_MS = 3000;
-const MAX_RECONNECT_ATTEMPTS = 40;
+const MAX_RECONNECT_ATTEMPTS = 4;
+const HEALTHY_CONNECTION_MS = 30_000;
 const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
 const SFU_RETRYABLE_CLOSE_CODES = new Set([4001, 4002, 4008, 4010]);
 const SFU_DUPLICATE_SESSION_CLOSE_CODE = 4012;
@@ -930,6 +931,7 @@ export function MezonSfuVoiceRoom({
 		let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 		let iceRecoveryTimer: ReturnType<typeof setTimeout> | undefined;
 		let transportDeadlineTimer: ReturnType<typeof setTimeout> | undefined;
+		let healthyConnectionTimer: ReturnType<typeof setTimeout> | undefined;
 		let reconnectAttempts = 0;
 		let tokenRefreshAttempts = 0;
 		let requestReconnect: () => void = () => undefined;
@@ -958,11 +960,27 @@ export function MezonSfuVoiceRoom({
 			clearTimeout(transportDeadlineTimer);
 			transportDeadlineTimer = undefined;
 		};
+		const clearHealthyConnectionTimer = () => {
+			if (healthyConnectionTimer === undefined) return;
+			clearTimeout(healthyConnectionTimer);
+			healthyConnectionTimer = undefined;
+		};
+		const markMediaConnected = (pc: RTCPeerConnection) => {
+			setConnectionState('connected');
+			if (!joinedRef.current || healthyConnectionTimer !== undefined) return;
+			healthyConnectionTimer = setTimeout(() => {
+				healthyConnectionTimer = undefined;
+				if (pcRef.current === pc && pc.connectionState === 'connected' && joinedRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
+					reconnectAttempts = 0;
+				}
+			}, HEALTHY_CONNECTION_MS);
+		};
 
 		const restartSession = () => {
 			if (disposed || !reconnectAllowed) return;
 			clearIceRecoveryTimer();
 			clearTransportDeadlineTimer();
+			clearHealthyConnectionTimer();
 			const ws = wsRef.current;
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
 				restartingSocket = ws;
@@ -1026,6 +1044,7 @@ export function MezonSfuVoiceRoom({
 
 		const resetAndCreatePeerConnection = () => {
 			clearTransportDeadlineTimer();
+			clearHealthyConnectionTimer();
 			if (pcRef.current) {
 				pcRef.current.close();
 				pcRef.current = null;
@@ -1052,12 +1071,13 @@ export function MezonSfuVoiceRoom({
 					clearIceRecoveryTimer();
 					if (pc.connectionState === 'connected') {
 						clearTransportDeadlineTimer();
-						setConnectionState('connected');
+						markMediaConnected(pc);
 					} else {
 						armTransportDeadline(pc);
 					}
 					return;
 				}
+				clearHealthyConnectionTimer();
 				if (iceState === 'failed') {
 					setConnectionState('disconnected');
 					restartSession();
@@ -1076,9 +1096,10 @@ export function MezonSfuVoiceRoom({
 				if (pcRef.current !== pc) return;
 				if (pc.connectionState === 'connected') {
 					clearTransportDeadlineTimer();
-					setConnectionState('connected');
+					markMediaConnected(pc);
 					return;
 				}
+				clearHealthyConnectionTimer();
 				if (pc.connectionState === 'failed') {
 					clearTransportDeadlineTimer();
 					setConnectionState('disconnected');
@@ -1335,7 +1356,7 @@ export function MezonSfuVoiceRoom({
 				}
 				if (message.type === 'room_snapshot' && !joinedRef.current) {
 					joinedRef.current = true;
-					reconnectAttempts = 0;
+					if (pcRef.current?.connectionState === 'connected') markMediaConnected(pcRef.current);
 					tokenRefreshAttempts = 0;
 					const resumePushToTalk = joinRole === 'audience' && pushToTalkRequestedRef.current;
 					ws.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled && !resumePushToTalk }));
@@ -1437,6 +1458,7 @@ export function MezonSfuVoiceRoom({
 			};
 			ws.onclose = (event) => {
 				if (wsRef.current !== ws) return;
+				clearHealthyConnectionTimer();
 				wsRef.current = null;
 				joinedRef.current = false;
 				const closingAudioTrack = localStreamRef.current?.getAudioTracks()[0];
@@ -1508,7 +1530,6 @@ export function MezonSfuVoiceRoom({
 		};
 
 		const handleOnline = () => {
-			reconnectAttempts = 0;
 			restartSession();
 		};
 		const handleOffline = () => {
@@ -1552,6 +1573,7 @@ export function MezonSfuVoiceRoom({
 			removeNetworkListeners();
 			clearIceRecoveryTimer();
 			clearTransportDeadlineTimer();
+			clearHealthyConnectionTimer();
 			if (reconnectTimer !== undefined) clearTimeout(reconnectTimer);
 			wsRef.current?.close();
 			pcRef.current?.close();
