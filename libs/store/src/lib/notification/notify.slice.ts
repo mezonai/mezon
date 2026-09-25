@@ -3,7 +3,7 @@ import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/ut
 import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -207,6 +207,30 @@ export const notificationSlice = createSlice({
 			if (state.notifications[category]) {
 				state.notifications[category].data = state.notifications[category].data.filter((item) => item.id !== id);
 			}
+		},
+
+		updateMessageAttachments(state, action: PayloadAction<{ messageId: string; attachments: ApiMessageAttachment[] }>) {
+			const { messageId, attachments } = action.payload;
+			if (!messageId) return;
+
+			Object.values(state.notifications).forEach((notificationGroup) => {
+				notificationGroup?.data?.forEach((item) => {
+					const itemMessageId = item.content?.message_id || item.id;
+					if (itemMessageId !== messageId || !item.content) return;
+
+					const currentAttachments = item.content.attachments || [];
+					const isUnchanged =
+						currentAttachments.length === attachments.length &&
+						currentAttachments.every((attachment, index) => attachment.url === attachments[index]?.url);
+					if (isUnchanged) return;
+
+					item.content.attachments = attachments;
+					item.content.attachment_link = attachments[0]?.url || '';
+					item.content.attachment_type = attachments[0]?.filetype || '';
+					item.content.attachment_size = attachments[0]?.size || 0;
+					item.content.has_more_attachment = attachments.length > 1;
+				});
+			});
 		},
 
 		setMessageNotifiedId(state, action) {

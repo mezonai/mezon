@@ -3,6 +3,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import { ETypeLinkMedia } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiMessageAttachment } from 'mezon-js';
 import type { AttachmentEntity } from '../attachment/attachments.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -290,6 +291,20 @@ export const gallerySlice = createSlice({
 				return;
 			}
 			channelGallery.attachments = channelGallery.attachments.filter((att) => att.message_id !== messageId);
+		},
+
+		syncMessageAttachments: (state, action: PayloadAction<{ channelId: string; messageId: string; attachments: ApiMessageAttachment[] }>) => {
+			const { channelId, messageId, attachments } = action.payload;
+			const channelGallery = state.galleryByChannel[channelId];
+			if (!channelGallery) {
+				return;
+			}
+			const remainingUrls = new Set(attachments.map((attachment) => attachment.url));
+			const isRemoved = (att: (typeof channelGallery.attachments)[number]) => att.message_id === messageId && !remainingUrls.has(att.url);
+			if (!channelGallery.attachments.some(isRemoved)) {
+				return;
+			}
+			channelGallery.attachments = channelGallery.attachments.filter((att) => !isRemoved(att));
 		}
 	},
 

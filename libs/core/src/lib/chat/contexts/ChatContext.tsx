@@ -511,6 +511,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				} else if (message?.code === TypeMessage.ChatRemove && message?.attachments) {
 					dispatch(attachmentActions.removeAttachments({ messageId: message?.message_id as string, channelId: message.channel_id }));
 					dispatch(galleryActions.removeGalleryAttachments({ channelId: message.channel_id, messageId: message?.message_id as string }));
+				} else if (message?.code === TypeMessage.ChatUpdate && message?.message_id && message.attachments?.length) {
+					const syncPayload = { channelId: message.channel_id, messageId: message.message_id, attachments: message.attachments };
+					dispatch(attachmentActions.syncMessageAttachments(syncPayload));
+					dispatch(galleryActions.syncMessageAttachments(syncPayload));
+					dispatch(notificationActions.updateMessageAttachments({ messageId: message.message_id, attachments: message.attachments }));
 				}
 
 				if (

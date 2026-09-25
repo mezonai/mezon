@@ -1,5 +1,8 @@
 import { ColorRoleProvider, useChatSending, useCurrentInbox, useDeleteMessage, useEditMessage, useEscapeKeyClose } from '@mezon/core';
 import {
+	attachmentActions,
+	galleryActions,
+	notificationActions,
 	selectAllAccount,
 	selectCurrentTopicId,
 	selectInitTopicMessageId,
@@ -88,6 +91,12 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 				(isTopic && currentTopicId && currentTopicId !== '0' && currentTopicId) ||
 				'0';
 			await editSendMessage(mess.content, mess.id, mess.mentions ?? [], remainingAttachments, true, topicIdForUpdate, !!isTopic);
+			if (remainingAttachments) {
+				const syncPayload = { channelId: mess.channel_id, messageId: mess.id, attachments: remainingAttachments };
+				dispatch(attachmentActions.syncMessageAttachments(syncPayload));
+				dispatch(galleryActions.syncMessageAttachments(syncPayload));
+				dispatch(notificationActions.updateMessageAttachments({ messageId: mess.id, attachments: remainingAttachments }));
+			}
 		} else {
 			setIsLoading(true);
 			await handleDeleteMessage();
@@ -104,9 +113,11 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 		mess.content,
 		mess.id,
 		mess.mentions,
+		mess.channel_id,
 		isTopic,
 		currentTopicId,
 		editSendMessage,
+		dispatch,
 		handleDeleteMessage
 	]);
 
