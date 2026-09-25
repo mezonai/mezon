@@ -74,19 +74,11 @@ const fetchChannelAttachmentsCached = async (
 		const existingAttachments = channelData.attachments;
 		let hasDataForRange = false;
 
-		if (before !== undefined) {
-			const beforeTime = before * 1000;
+		if (before !== undefined || after !== undefined) {
 			hasDataForRange = existingAttachments.some((att) => {
 				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime < beforeTime;
-			});
-		} else if (after !== undefined) {
-			const afterTime = after * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime > afterTime;
+				const attTime = Number(att.create_time_seconds);
+				return (before === undefined || attTime < before) && (after === undefined || attTime > after);
 			});
 		} else {
 			hasDataForRange = true;
