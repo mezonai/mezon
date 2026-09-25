@@ -13,7 +13,6 @@ import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 import { recordingParams, withRecordingUser } from './recordingSignal';
-import { addVoicePeer, removeVoicePeer, voicePeersFromSnapshot } from './voicePeerPresence';
 
 export { RECORDING_ANNOUNCE_INTERVAL_MS, RECORDING_INDICATOR_TTL_MS, parseRecordingParams, recordingParams } from './recordingSignal';
 
@@ -72,7 +71,6 @@ export interface InVoiceInfor {
 }
 
 export interface VoiceUserData {
-	peer_ids?: number[];
 	user_id: string;
 	user_name: string;
 	user_avatar: string;
@@ -137,7 +135,7 @@ type fetchVoiceChannelMembersPayload = {
 };
 
 export type FetchVoiceChannelMembersResponse = {
-	users: (ApiVoiceChannelUser & { peer_ids?: number[] })[];
+	users: ApiVoiceChannelUser[];
 	presenceRevision?: number;
 	clanId: string;
 	channelId: string;
@@ -386,11 +384,8 @@ export const voiceSlice = createSlice({
 	name: VOICE_FEATURE_KEY,
 	initialState: initialVoiceState,
 	reducers: {
-		add: (
-			state,
-			action: PayloadAction<{ clan_id: string; channel_id: string; user_id: string; user_name: string; user_avatar: string; peer_id?: number }>
-		) => {
-			const { clan_id, channel_id, user_id, user_name, user_avatar, peer_id } = action.payload;
+		add: (state, action: PayloadAction<{ clan_id: string; channel_id: string; user_id: string; user_name: string; user_avatar: string }>) => {
+			const { clan_id, channel_id, user_id, user_name, user_avatar } = action.payload;
 			state.presenceRevisionByClan[clan_id] = (state.presenceRevisionByClan[clan_id] ?? 0) + 1;
 			state.listVoiceMemberByClan[clan_id] ??= {};
 			const room = (state.listVoiceMemberByClan[clan_id][channel_id] ??= UsersInVoiceAdapter.getInitialState());
@@ -398,8 +393,7 @@ export const voiceSlice = createSlice({
 			state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.upsertOne(room, {
 				user_id,
 				user_name: user_name || previous?.user_name || '',
-				user_avatar: user_avatar || previous?.user_avatar || '',
-				peer_ids: addVoicePeer(previous?.peer_ids, peer_id)
+				user_avatar: user_avatar || previous?.user_avatar || ''
 			});
 			if (user_id) {
 				const status = state.listInVoiceStatus[user_id];
@@ -410,16 +404,11 @@ export const voiceSlice = createSlice({
 				};
 			}
 		},
-		remove: (state, action: PayloadAction<VoiceLeavedEvent & { peer_id?: number }>) => {
+		remove: (state, action: PayloadAction<VoiceLeavedEvent>) => {
 			const voice = action.payload;
 			state.presenceRevisionByClan[voice.clan_id] = (state.presenceRevisionByClan[voice.clan_id] ?? 0) + 1;
 			const room = state.listVoiceMemberByClan[voice.clan_id]?.[voice.voice_channel_id];
-			const member = room?.entities[voice.voice_user_id];
-			if (member) {
-				member.peer_ids = removeVoicePeer(member.peer_ids, voice.peer_id);
-				if (member.peer_ids.length) return;
-				UsersInVoiceAdapter.removeOne(room, voice.voice_user_id);
-			}
+			if (room) UsersInVoiceAdapter.removeOne(room, voice.voice_user_id);
 			const status = state.listInVoiceStatus[voice.voice_user_id];
 			if (status?.clanId === voice.clan_id && status.channelId === voice.voice_channel_id) {
 				delete state.listInVoiceStatus[voice.voice_user_id];
@@ -611,15 +600,13 @@ export const voiceSlice = createSlice({
 					for (const [userId, status] of Object.entries(state.listInVoiceStatus)) {
 						if (status.clanId === clanId && status.channelId === channelId) delete state.listInVoiceStatus[userId];
 					}
-					const peers = voicePeersFromSnapshot(listUser, list.peer_ids);
 					const listIdInVoice: VoiceUserData[] = [];
 					for (const id of new Set(listUser)) {
 						if (id.length === LENGHT_USER_ID) {
 							listIdInVoice.push({
 								user_id: id,
 								user_avatar: previousRoom?.entities[id]?.user_avatar ?? '',
-								user_name: previousRoom?.entities[id]?.user_name ?? '',
-								peer_ids: peers[id] ?? previousRoom?.entities[id]?.peer_ids
+								user_name: previousRoom?.entities[id]?.user_name ?? ''
 							});
 							state.listInVoiceStatus[id] = {
 								clanId,
