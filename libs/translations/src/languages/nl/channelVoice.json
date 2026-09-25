@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Microfoonrecht is vereist",
 		"cameraPermissionRequired": "Camerarecht is vereist",
 		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord.",
-		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was."
+		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was.",
+		"duplicateSessionDisconnected": "Je bent op een ander apparaat lid geworden van het spraakkanaal. Deze sessie is daarom verbroken.",
+		"disconnectedRejoin": "Je verbinding met het spraakkanaal is verbroken."
 	},
 	"usernameScreen": "Scherm van {{username}}",
 	"recording": {

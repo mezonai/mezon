@@ -72,9 +72,17 @@ const FAST_RECONNECT_ATTEMPTS = 2;
 const FAST_RECONNECT_DELAY_MS = 400;
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 40;
-const MAX_IVALID__RECONNECT_ATTEMPTS = 2;
 const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
-const SFU_REMOVED_CLOSE_CODES = new Set([4006, SFU_ALONE_TIMEOUT_CLOSE_CODE]);
+const SFU_RETRYABLE_CLOSE_CODES = new Set([4001, 4002, 4008, 4010]);
+const SFU_DUPLICATE_SESSION_CLOSE_CODE = 4012;
+const SFU_PARTICIPANT_ACTION_ERRORS = new Set([
+	'invalid_token',
+	'token_room_mismatch',
+	'target_not_found',
+	'invalid_participant_action',
+	'unsupported_participant_action',
+	'auth_not_configured'
+]);
 
 const getRemoteParticipantId = (mid: string) => {
 	const numericMid = Number(mid);
@@ -909,10 +917,10 @@ export function MezonSfuVoiceRoom({
 		chatRef.current?.setMessages((prev) => [...prev, message]);
 	}, []);
 	const [roomPeerId, setRoomPeerId] = useState('');
-	const attemptsReconnect = useRef(0);
 	useEffect(() => {
 		let disposed = false;
 		let reconnectAllowed = true;
+		let restartingSocket: WebSocket | null = null;
 		let removeVisibilityListener: () => void = () => undefined;
 		let removeNetworkListeners: () => void = () => undefined;
 		const mediaSyncInterval = setInterval(() => {
@@ -925,6 +933,19 @@ export function MezonSfuVoiceRoom({
 		let reconnectAttempts = 0;
 		let tokenRefreshAttempts = 0;
 		let requestReconnect: () => void = () => undefined;
+		const endCallAfterReconnectFailure = () => {
+			if (!reconnectAllowed || disposed) return;
+			reconnectAllowed = false;
+			setConnectionState('failed');
+			dispatch(
+				toastActions.addToast({
+					message: tRef.current('toast.disconnectedRejoin'),
+					type: 'warning',
+					autoClose: 5000
+				})
+			);
+			onLeaveRoomRef.current();
+		};
 
 		const clearIceRecoveryTimer = () => {
 			if (iceRecoveryTimer === undefined) return;
@@ -944,6 +965,7 @@ export function MezonSfuVoiceRoom({
 			clearTransportDeadlineTimer();
 			const ws = wsRef.current;
 			if (ws && ws.readyState !== WebSocket.CLOSED) {
+				restartingSocket = ws;
 				ws.close();
 				return;
 			}
@@ -1393,53 +1415,19 @@ export function MezonSfuVoiceRoom({
 					handleAddMessage(message.message);
 				}
 				if (message.type === 'error') {
-					if (message.message === 'invalid_token') {
-						attemptsReconnect.current = attemptsReconnect.current + 1;
-						if (attemptsReconnect.current >= MAX_IVALID__RECONNECT_ATTEMPTS) {
-							dispatch(
-								toastActions.addToast({
-									message: 'Invalid token.',
-									type: 'error',
-									autoClose: 3000
-								})
-							);
-							onLeaveRoomRef.current();
-							attemptsReconnect.current = 0;
-							return;
-						}
-					}
 					const errorMsg = message.message || 'SFU signaling error';
-					if (
-						!refreshingTokenRef.current &&
-						tokenRefreshAttempts < MAX_TOKEN_REFRESH_ATTEMPTS &&
-						(errorMsg.toLowerCase().includes('token') || errorMsg.toLowerCase().includes('invalid'))
-					) {
-						tokenRefreshAttempts += 1;
-						refreshingTokenRef.current = true;
-						const refreshPromise = onRefreshTokenRef.current
-							? onRefreshTokenRef.current()
-							: dispatch(generateMeetToken({ channelId: roomId, roomName: '' })).unwrap();
-						void refreshPromise
-							.then((newToken) => {
-								refreshingTokenRef.current = false;
-								if (newToken && newToken !== token) {
-									dispatch(voiceActions.setToken(newToken));
-								} else {
-									if (message.message !== 'invalid_token') {
-										setError(errorMsg);
-									}
-									setConnectionState('failed');
-								}
-							})
-							.catch((cause) => {
-								refreshingTokenRef.current = false;
-								setError(cause instanceof Error ? cause.message : errorMsg);
-								setConnectionState('failed');
-							});
+					if (errorMsg === 'invalid_push_to_talk' || errorMsg === 'push_to_talk_rejected') {
+						setPushToTalkActive(false);
+						return;
+					}
+					if (errorMsg === 'stale_offer_generation' || errorMsg === 'future_offer_generation') {
+						return;
+					}
+					if (joinedRef.current && SFU_PARTICIPANT_ACTION_ERRORS.has(errorMsg)) {
 						return;
 					}
 					setError(errorMsg);
-					setConnectionState('failed');
+					endCallAfterReconnectFailure();
 				}
 			};
 			ws.onerror = () => {
@@ -1454,17 +1442,24 @@ export function MezonSfuVoiceRoom({
 				const closingAudioTrack = localStreamRef.current?.getAudioTracks()[0];
 				if (closingAudioTrack && joinRole === 'audience') closingAudioTrack.enabled = false;
 				setPushToTalkActive(false);
-				reconnectAllowed = !SFU_REMOVED_CLOSE_CODES.has(event.code);
-				if (disposed) return;
+				const callAlreadyEnded = !reconnectAllowed;
+				const localRestart = restartingSocket === ws;
+				if (localRestart) restartingSocket = null;
+				if (disposed || callAlreadyEnded) return;
+				reconnectAllowed = localRestart || SFU_RETRYABLE_CLOSE_CODES.has(event.code);
 
 				setConnectionState('disconnected');
-				if (SFU_REMOVED_CLOSE_CODES.has(event.code)) {
+				if (!reconnectAllowed) {
 					dispatch(
 						toastActions.addToast({
 							message:
 								event.code === SFU_ALONE_TIMEOUT_CLOSE_CODE
 									? tRef.current('toast.aloneTimeoutDisconnected')
-									: event.reason || 'You have been kicked from the channel.',
+									: event.code === 4006
+										? event.reason || tRef.current('disconnectModal.content.removed')
+										: event.code === SFU_DUPLICATE_SESSION_CLOSE_CODE
+											? tRef.current('toast.duplicateSessionDisconnected')
+											: tRef.current('toast.disconnectedRejoin'),
 							type: 'warning',
 							autoClose: 5000
 						})
@@ -1473,7 +1468,7 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 
-				if ((event.code === 4001 || event.code === 4003 || (isExternalCalling && reconnectAllowed)) && !refreshingTokenRef.current) {
+				if (!localRestart && (event.code === 4001 || isExternalCalling) && !refreshingTokenRef.current) {
 					refreshToken(requestReconnect);
 					return;
 				}
@@ -1486,7 +1481,7 @@ export function MezonSfuVoiceRoom({
 			if (!canOpenSignaling()) return;
 			if (meetTokenNeedsRefresh(token) && !refreshingTokenRef.current) {
 				if (tokenRefreshAttempts >= MAX_TOKEN_REFRESH_ATTEMPTS) {
-					setConnectionState('failed');
+					endCallAfterReconnectFailure();
 					return;
 				}
 				refreshToken(openSignaling);
@@ -1501,7 +1496,7 @@ export function MezonSfuVoiceRoom({
 				return;
 			}
 			if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-				setConnectionState('failed');
+				endCallAfterReconnectFailure();
 				return;
 			}
 			reconnectAttempts += 1;

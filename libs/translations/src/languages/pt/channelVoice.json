@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Permissão de microfone necessária",
 		"cameraPermissionRequired": "Permissão de câmera necessária",
 		"recipientDidNotAnswer": "O destinatário não atendeu a chamada.",
-		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo."
+		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo.",
+		"duplicateSessionDisconnected": "Você entrou no canal de voz em outro dispositivo, então esta sessão foi desconectada.",
+		"disconnectedRejoin": "Você foi desconectado do canal de voz."
 	},
 	"usernameScreen": "Tela de {{username}}",
 	"recording": {

@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "マイク権限が必要です",
 		"cameraPermissionRequired": "カメラ権限が必要です",
 		"recipientDidNotAnswer": "相手が通話に応答しませんでした。",
-		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。"
+		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。",
+		"duplicateSessionDisconnected": "別のデバイスでボイスチャンネルに参加したため、このセッションは切断されました。",
+		"disconnectedRejoin": "ボイスチャンネルから切断されました。"
 	},
 	"usernameScreen": "{{username}}のスクリーン",
 	"recording": {
