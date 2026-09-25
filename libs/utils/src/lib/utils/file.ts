@@ -1,6 +1,6 @@
 import type { Dispatch } from '@reduxjs/toolkit';
 import type { ApiMessageAttachment } from 'mezon-js';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, fileTypeImage } from '../constant';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, fileTypeImage } from '../constant';
 import { captureVideoPosterFromUrl } from '../helper/videoPoster';
 import type {
 	IMentionOnMessage,
@@ -349,6 +349,55 @@ export function getMaxFileSize(file: File): number {
 export function isFileSizeExceeded(file: File): boolean {
 	const maxSize = getMaxFileSize(file);
 	return file.size > maxSize;
+}
+
+const pastedFilesByClipboard = new WeakMap<DataTransfer, File[]>();
+
+export function getPastedFiles(clipboardData: DataTransfer | null | undefined): File[] {
+	if (!clipboardData) {
+		return [];
+	}
+	const cached = pastedFilesByClipboard.get(clipboardData);
+	if (cached) {
+		return cached;
+	}
+	const files = Array.from(clipboardData.items)
+		.filter((item) => item.kind === 'file' && !item.webkitGetAsEntry?.()?.isDirectory)
+		.map((item) => item.getAsFile())
+		.filter((file): file is File => Boolean(file));
+	pastedFilesByClipboard.set(clipboardData, files);
+	return files;
+}
+
+async function keepReadableFiles(files: File[]): Promise<File[]> {
+	const readable = await Promise.all(
+		files.map((file) =>
+			file
+				.slice(0, 1)
+				.arrayBuffer()
+				.then(
+					() => file,
+					() => undefined
+				)
+		)
+	);
+	return readable.filter((file): file is File => Boolean(file));
+}
+
+export function readPastedFiles(clipboardData: DataTransfer | null | undefined): Promise<File[]> {
+	const pasted = getPastedFiles(clipboardData);
+	return pasted.length ? keepReadableFiles(pasted) : Promise.resolve([]);
+}
+
+export type AttachmentLimitViolation = { reason: UploadLimitReason; limit?: number };
+
+export function getAttachmentLimitViolation(files: File[], attachedCount: number): AttachmentLimitViolation | undefined {
+	if (files.length + attachedCount > MAX_FILE_ATTACHMENTS) {
+		return { reason: UploadLimitReason.COUNT };
+	}
+	const limitOf = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
+	const oversizedFile = files.find((file) => file.size > limitOf(file));
+	return oversizedFile ? { reason: UploadLimitReason.SIZE, limit: limitOf(oversizedFile) } : undefined;
 }
 
 export function formatMentionsToString(array: MentionDataProps[]) {
