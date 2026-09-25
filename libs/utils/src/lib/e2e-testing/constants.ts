@@ -860,6 +860,13 @@ export const DATA_E2E_IDENTIFIER = {
 				},
 				badge: ''
 			},
+			topic_pin_banner: {
+				container: '',
+				topic_item: '',
+				pin_item: '',
+				topic: '',
+				pin: ''
+			},
 			actions: {
 				add_reaction: '',
 				give_a_coffee: '',

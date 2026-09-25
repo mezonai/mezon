@@ -23,12 +23,7 @@ import renderText from './utils/renderText';
 const escapeMentionText = (value: string): string => {
 	if (value == null) return '';
 	const str = String(value);
-	return str
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;');
+	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 };
 
 export interface User {
