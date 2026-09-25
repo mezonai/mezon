@@ -44,5 +44,7 @@
 	"unknowClan": "Je bent niet langer lid van dit gesprek",
 	"contactMessage": "[Contact]",
 	"attachmentMessage": "[Bijlage]",
-	"interactiveMessage": "Interactief bericht"
+	"interactiveMessage": "Interactief bericht",
+	"pollCreated": "Heeft een enquête aangemaakt",
+	"pollEnded": "De enquête is beëindigd"
 }

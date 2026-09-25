@@ -44,5 +44,7 @@
 	"unknowClan": "Сез инде бу сөйләшүнең катнашучысы түгелсез",
 	"contactMessage": "[Контакт]",
 	"attachmentMessage": "[Кушымта]",
-	"interactiveMessage": "Интерактив хәбәр"
+	"interactiveMessage": "Интерактив хәбәр",
+	"pollCreated": "Сораштыру булдырылды",
+	"pollEnded": "Сораштыру тәмамланды"
 }

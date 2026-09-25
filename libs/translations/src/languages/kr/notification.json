@@ -44,5 +44,7 @@
 	"unknowClan": "더 이상 이 대화의 멤버가 아닙니다",
 	"contactMessage": "[연락처]",
 	"attachmentMessage": "[첨부파일]",
-	"interactiveMessage": "인터랙티브 메시지"
+	"interactiveMessage": "인터랙티브 메시지",
+	"pollCreated": "설문을 만들었습니다",
+	"pollEnded": "설문이 종료되었습니다"
 }

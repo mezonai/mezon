@@ -44,5 +44,7 @@
 	"unknowClan": "Bạn không còn là thành viên của đoạn hội thoại này nữa",
 	"contactMessage": "[Danh thiếp]",
 	"attachmentMessage": "[Tệp đính kèm]",
-	"interactiveMessage": "Tin nhắn tương tác"
+	"interactiveMessage": "Tin nhắn tương tác",
+	"pollCreated": "Đã tạo cuộc bình chọn",
+	"pollEnded": "Cuộc bình chọn đã kết thúc"
 }

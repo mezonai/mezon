@@ -44,5 +44,7 @@
 	"unknowClan": "Вы больш не з'яўляецеся ўдзельнікам гэтага клана",
 	"contactMessage": "[Кантакт]",
 	"attachmentMessage": "[Укладанне]",
-	"interactiveMessage": "Інтэрактыўнае паведамленне"
+	"interactiveMessage": "Інтэрактыўнае паведамленне",
+	"pollCreated": "Створана апытанне",
+	"pollEnded": "Апытанне завершана"
 }

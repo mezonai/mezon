@@ -44,5 +44,7 @@
 	"unknowClan": "Você não é mais membro desta conversa",
 	"contactMessage": "[Contato]",
 	"attachmentMessage": "[Anexo]",
-	"interactiveMessage": "Mensagem interativa"
+	"interactiveMessage": "Mensagem interativa",
+	"pollCreated": "Criou uma enquete",
+	"pollEnded": "A enquete foi encerrada"
 }

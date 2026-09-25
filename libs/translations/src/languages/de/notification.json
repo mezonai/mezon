@@ -44,5 +44,7 @@
 	"unknowClan": "Du bist kein Mitglied dieses Chats mehr",
 	"contactMessage": "[Kontakt]",
 	"attachmentMessage": "[Anhang]",
-	"interactiveMessage": "Interaktive Nachricht"
+	"interactiveMessage": "Interaktive Nachricht",
+	"pollCreated": "Hat eine Umfrage erstellt",
+	"pollEnded": "Die Umfrage ist beendet"
 }

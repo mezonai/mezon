@@ -44,5 +44,7 @@
 	"unknowClan": "Вы больше не являетесь участником этого разговора",
 	"contactMessage": "[Контакт]",
 	"attachmentMessage": "[Вложение]",
-	"interactiveMessage": "Интерактивное сообщение"
+	"interactiveMessage": "Интерактивное сообщение",
+	"pollCreated": "Создан опрос",
+	"pollEnded": "Опрос завершён"
 }

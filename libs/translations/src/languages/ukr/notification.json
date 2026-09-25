@@ -44,5 +44,7 @@
 	"unknowClan": "Ви більше не є учасником цього клану",
 	"contactMessage": "[Контакт]",
 	"attachmentMessage": "[Вкладення]",
-	"interactiveMessage": "Інтерактивне повідомлення"
+	"interactiveMessage": "Інтерактивне повідомлення",
+	"pollCreated": "Створено опитування",
+	"pollEnded": "Опитування завершено"
 }

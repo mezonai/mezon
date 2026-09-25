@@ -1,6 +1,8 @@
+import { t } from 'i18next';
 import { safeJSONParse } from 'mezon-js';
 import { MessageCrypt } from '../e2ee';
 import { isBackgroundModeActive } from '../hooks/useBackgroundMode';
+import type { IMessageSendPayload } from '../types';
 import { EUserStatus } from '../types';
 
 export interface IMessageExtras {
@@ -33,6 +35,18 @@ const DEFAULT_MAX_RECONNECT_ATTEMPTS = 10;
 const DEFAULT_RECONNECT_INTERVAL = 1000; // 1s
 const DEFAULT_MAX_RECONNECT_INTERVAL = 32000; // 32s (after 5 reconnect attempts)
 const PING_TIMEOUT = 60000; // 60 seconds
+
+// Poll messages arrive with the raw poll JSON as the body, so swap it for a readable label.
+const getPollNotificationBody = (message: string): string | null => {
+	if (!message?.trimStart().startsWith('{')) return null;
+	let poll: IMessageSendPayload;
+	try {
+		poll = JSON.parse(message);
+	} catch {
+		return null;
+	}
+	return t(poll.is_closed ? 'notification:pollEnded' : 'notification:pollCreated');
+};
 
 interface UserNotificationConnection {
 	userId: string;
@@ -249,7 +263,7 @@ export class MezonNotificationService {
 		}
 
 		const hideContent = localStorage.getItem('hideNotificationContent') === 'true';
-		const notificationBody = hideContent ? '' : message;
+		const notificationBody = hideContent ? '' : (getPollNotificationBody(message) ?? message);
 
 		// Web notification handling
 		if (!('Notification' in window)) {

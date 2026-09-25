@@ -44,5 +44,7 @@
 	"unknowClan": "Vous ne faites plus partie de cette conversation",
 	"contactMessage": "[Contact]",
 	"attachmentMessage": "[Pièce jointe]",
-	"interactiveMessage": "Message interactif"
+	"interactiveMessage": "Message interactif",
+	"pollCreated": "A créé un sondage",
+	"pollEnded": "Le sondage est terminé"
 }
