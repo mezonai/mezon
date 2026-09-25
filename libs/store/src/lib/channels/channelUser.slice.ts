@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IChannelUser, LoadingStatus } from '@mezon/utils';
+import type { IChannel, IChannelUser, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelDescription } from 'mezon-js';
@@ -29,6 +29,7 @@ export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity,
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	cache?: CacheMetadata;
+	channelDetails: Record<string, IChannel | null>;
 }
 
 export const listChannelsByUserAdapter = createEntityAdapter({
@@ -109,10 +110,108 @@ export const fetchListChannelsByUser = createAsyncThunk<
 	}
 });
 
+const channelDetailsInFlight = new Set<string>();
+const CHANNEL_DETAIL_MAX_CONCURRENT = 2;
+const CHANNEL_DETAIL_MAX_PER_MINUTE = 10;
+const CHANNEL_DETAIL_WINDOW_MS = 60_000;
+const channelDetailStarts: number[] = [];
+const channelDetailWaiting: Array<() => void> = [];
+let channelDetailRunning = 0;
+let channelDetailTimer: ReturnType<typeof setTimeout> | undefined;
+
+const pumpChannelDetailQueue = () => {
+	const now = Date.now();
+	while (channelDetailStarts.length && now - channelDetailStarts[0] >= CHANNEL_DETAIL_WINDOW_MS) {
+		channelDetailStarts.shift();
+	}
+	while (
+		channelDetailWaiting.length &&
+		channelDetailRunning < CHANNEL_DETAIL_MAX_CONCURRENT &&
+		channelDetailStarts.length < CHANNEL_DETAIL_MAX_PER_MINUTE
+	) {
+		channelDetailRunning += 1;
+		channelDetailStarts.push(now);
+		channelDetailWaiting.shift()?.();
+	}
+	if (channelDetailWaiting.length && channelDetailStarts.length >= CHANNEL_DETAIL_MAX_PER_MINUTE && !channelDetailTimer) {
+		channelDetailTimer = setTimeout(
+			() => {
+				channelDetailTimer = undefined;
+				pumpChannelDetailQueue();
+			},
+			channelDetailStarts[0] + CHANNEL_DETAIL_WINDOW_MS - now
+		);
+	}
+};
+
+const withChannelDetailSlot = async <T>(request: () => Promise<T>): Promise<T> => {
+	await new Promise<void>((resolve) => {
+		channelDetailWaiting.push(resolve);
+		pumpChannelDetailQueue();
+	});
+	try {
+		return await request();
+	} finally {
+		channelDetailRunning -= 1;
+		pumpChannelDetailQueue();
+	}
+};
+
+const isServerRejection = (error: unknown) => typeof (error as { code?: unknown })?.code === 'number';
+
+const channelDetailListeners = new Map<string, Set<() => void>>();
+
+export const subscribeChannelDetail = (channelId: string, listener: () => void) => {
+	const listeners = channelDetailListeners.get(channelId) ?? new Set<() => void>();
+	listeners.add(listener);
+	channelDetailListeners.set(channelId, listeners);
+	return () => {
+		listeners.delete(listener);
+		if (!listeners.size) channelDetailListeners.delete(channelId);
+	};
+};
+
+export const fetchChannelDetail = createAsyncThunk(
+	'channelsByUser/fetchChannelDetail',
+	async ({ channelId }: { channelId: string }, thunkAPI) => {
+		channelDetailsInFlight.add(channelId);
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const sessionToken = mezon.sessionRef.current?.token;
+			let detail: IChannel | null = null;
+			try {
+				const response = await withChannelDetailSlot(() =>
+					withRetry((session) => mezon.client.listChannelDetail(session, channelId), { mezon })
+				);
+				detail = response?.channel_id ? { ...response, id: response.channel_id } : null;
+			} catch (error) {
+				if (!isServerRejection(error)) {
+					return thunkAPI.rejectWithValue(error);
+				}
+			}
+			if (getMezonCtx(thunkAPI).sessionRef.current?.token !== sessionToken) {
+				return thunkAPI.rejectWithValue('session changed');
+			}
+			thunkAPI.dispatch(listChannelsByUserSlice.actions.setChannelDetail({ channelId, detail }));
+			channelDetailListeners.get(channelId)?.forEach((listener) => listener());
+			return detail;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error);
+		} finally {
+			channelDetailsInFlight.delete(channelId);
+		}
+	},
+	{
+		condition: ({ channelId }, { getState }) =>
+			!channelDetailsInFlight.has(channelId) && !(channelId in (getState() as RootState)[LIST_CHANNELS_USER_FEATURE_KEY].channelDetails)
+	}
+);
+
 export const initialListChannelsByUserState: ListChannelsByUserState = listChannelsByUserAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
-	cache: undefined
+	cache: undefined,
+	channelDetails: {}
 });
 
 export const listChannelsByUserSlice = createSlice({
@@ -120,7 +219,13 @@ export const listChannelsByUserSlice = createSlice({
 	initialState: initialListChannelsByUserState,
 	reducers: {
 		add: listChannelsByUserAdapter.addOne,
-		removeAll: listChannelsByUserAdapter.removeAll,
+		removeAll: (state) => {
+			listChannelsByUserAdapter.removeAll(state);
+			state.channelDetails = {};
+		},
+		setChannelDetail: (state, action: PayloadAction<{ channelId: string; detail: IChannel | null }>) => {
+			state.channelDetails[action.payload.channelId] = action.payload.detail;
+		},
 		remove: listChannelsByUserAdapter.removeOne,
 		update: listChannelsByUserAdapter.updateOne,
 		upsertOne: listChannelsByUserAdapter.upsertOne,
@@ -268,7 +373,8 @@ export const listchannelsByUserReducer = listChannelsByUserSlice.reducer;
 
 export const listChannelsByUserActions = {
 	...listChannelsByUserSlice.actions,
-	fetchListChannelsByUser
+	fetchListChannelsByUser,
+	fetchChannelDetail
 };
 
 /*
@@ -295,6 +401,10 @@ export const getChannelsByUserState = (rootState: { [LIST_CHANNELS_USER_FEATURE_
 export const selectAllChannelsByUser = createSelector(getChannelsByUserState, selectAll);
 export const selectEntitiesChannelsByUser = createSelector(getChannelsByUserState, selectEntities);
 export const selectSearchChannelById = createSelector([getChannelsByUserState, (_, id: string) => id], (state, id) => selectById(state, id));
+export const selectChannelDetailById = createSelector(
+	[getChannelsByUserState, (_, channelId: string) => channelId],
+	(state, channelId) => state.channelDetails[channelId]
+);
 
 export const selectAllInfoChannels = createSelector(selectAllChannelsByUser, (channels = []) =>
 	channels?.map(({ channel_id, channel_label, channel_private, clan_name, clan_id, type, parent_id, id }) => ({
