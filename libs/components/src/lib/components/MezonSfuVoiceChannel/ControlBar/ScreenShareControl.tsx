@@ -59,7 +59,7 @@ export const ScreenShareControl = ({ active, onToggle, mode, changingMode, onMod
 				type="button"
 				title={t(active ? 'stopScreenShare' : 'shareYourScreen')}
 				aria-label={t(active ? 'stopScreenShare' : 'shareYourScreen')}
-				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500' : ''}`}
+				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500 hover:!bg-blue-600' : ''}`}
 				onClick={onToggle}
 				disabled={changingMode}
 			>
