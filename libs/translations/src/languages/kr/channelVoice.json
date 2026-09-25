@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "마이크 권한 필요",
 		"cameraPermissionRequired": "카메라 권한 필요",
 		"recipientDidNotAnswer": "수신자가 전화를 받았습니다.",
-		"aloneTimeoutDisconnected": "너무 오랫동안 혼자 있어서 음성 채널에서 연결이 해제되었습니다."
+		"aloneTimeoutDisconnected": "너무 오랫동안 혼자 있어서 음성 채널에서 연결이 해제되었습니다.",
+		"duplicateSessionDisconnected": "다른 기기에서 음성 채널에 참여하여 이 세션의 연결이 끊어졌습니다.",
+		"disconnectedRejoin": "음성 채널 연결이 끊어졌습니다."
 	},
 	"usernameScreen": "{{username}} 의 화면",
 	"recording": {
 		"start": "통화 녹화",
 		"stop": "녹화 중지",
 		"badge": "REC",
+		"by": "{{name}} 님이 통화를 녹화하고 있습니다",
+		"byMany": "{{name}} 님 외 {{count}}명이 통화를 녹화하고 있습니다",
 		"memoryLimitWarning": "이 브라우저는 디스크에 직접 기록할 수 없어 녹화본이 메모리에 보관되며 {{minutes}}분 후 자동으로 중지됩니다.",
 		"frozenWarning": "탭이 숨겨진 동안 영상이 멈췄습니다. 녹화 중에는 이 탭을 화면에 두세요.",
 		"savedToDisk": "녹화본을 {{fileName}}에 저장했습니다 ({{size}})",

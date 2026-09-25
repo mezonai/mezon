@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Microphone permission is required",
 		"cameraPermissionRequired": "Camera permission is required",
 		"recipientDidNotAnswer": "The recipient did not answer the call.",
-		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long."
+		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long.",
+		"duplicateSessionDisconnected": "You joined the voice channel on another device, so this session was disconnected.",
+		"disconnectedRejoin": "You were disconnected from the voice channel."
 	},
 	"usernameScreen": "{{username}}'s screen",
 	"recording": {
 		"start": "Record call",
 		"stop": "Stop recording",
 		"badge": "REC",
+		"by": "{{name}} is recording the call",
+		"byMany": "{{name}} and {{count}} others are recording the call",
 		"memoryLimitWarning": "This browser cannot write directly to disk, so the recording is held in memory and stops automatically after {{minutes}} minutes.",
 		"frozenWarning": "Video froze while the tab was hidden. Keep this tab visible while recording.",
 		"savedToDisk": "Recording saved to {{fileName}} ({{size}})",

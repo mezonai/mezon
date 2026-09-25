@@ -112,7 +112,6 @@ export { default as EventSchedule } from './components/EventSchedule';
 export { default as ModalCall } from './components/ModalCall';
 export { default as MultiStepModalE2ee } from './components/ModalSendCode';
 export { default as SettingComunity } from './components/SettingComunity';
-export { WebRTCStreamProvider, useWebRTCStream } from './components/StreamContext/StreamContext';
 
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';

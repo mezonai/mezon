@@ -1,10 +1,11 @@
 import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@mezon/components';
-import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
+import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
 	channelAppActions,
 	generateMeetToken,
 	getStore,
+	selectChannelById,
 	selectCurrentChannelClanId,
 	selectCurrentChannelId,
 	selectCurrentChannelLabel,
@@ -14,6 +15,7 @@ import {
 	selectCurrentClanName,
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
+	selectMemberClanByUserId,
 	selectStatusMenu,
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
@@ -74,6 +76,7 @@ interface VoiceConferenceContentProps {
 	isShowChatVoice: boolean;
 	isVoiceFullScreen: boolean;
 	handleToggleChat: () => void;
+	isPrivateVoice?: boolean;
 }
 
 const VoiceConferenceContent = memo(
@@ -86,7 +89,8 @@ const VoiceConferenceContent = memo(
 		handleFullScreen,
 		isShowChatVoice,
 		isVoiceFullScreen,
-		handleToggleChat
+		handleToggleChat,
+		isPrivateVoice
 	}: VoiceConferenceContentProps) => {
 		return (
 			<div className="flex-1 relative flex overflow-hidden">
@@ -101,6 +105,7 @@ const VoiceConferenceContent = memo(
 					onLeaveRoom={() => void handleLeaveRoom()}
 					onFullScreen={handleFullScreen}
 					onToggleChat={handleToggleChat}
+					isPrivateVoice={isPrivateVoice}
 				/>
 				<EmojiSuggestionProvider>
 					{isShowChatVoice && (
@@ -145,13 +150,13 @@ const MezonSfuChannelVoiceInner = () => {
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const isChannelMezonVoice = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { userProfile } = useAuth();
 
 	const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
 	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
 	const isOnMenu = useSelector(selectStatusMenu);
 
 	const isDisconnectingRef = useRef(false);
+	const isPrivateVoice = !!useSelector((state) => selectChannelById(state, voiceInfo?.channelId || ''))?.channel_private;
 
 	const handleJoinRoom = useLastCallback(async (role: SfuJoinRole) => {
 		setJoinRole(role);
@@ -166,20 +171,31 @@ const MezonSfuChannelVoiceInner = () => {
 		if (role === 'audience') dispatch(voiceActions.setShowCamera(false));
 
 		const storeState = getStore().getState();
+		const userProfile = storeState.account.userProfile;
 		const currentClanId = selectCurrentClanId(storeState);
 		const currentClanName = selectCurrentClanName(storeState);
 		const currentChannelId = selectCurrentChannelId(storeState);
 		const currentChannelLabel = selectCurrentChannelLabel(storeState);
 		const currentChannelPrivate = selectCurrentChannelPrivate(storeState);
+		const clanMember = selectMemberClanByUserId(storeState, userProfile?.user?.id || '');
 
 		if (!currentClanId) return;
 		setLoading(true);
 
 		try {
+			const username = clanMember?.clan_nick || clanMember?.prioritizeName || userProfile?.user?.display_name || userProfile?.user?.username;
+
+			const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url;
+
+			const metadata = {
+				...(username ? { username } : {}),
+				...(avatar ? { avatar } : {})
+			};
 			const result = await dispatch(
 				generateMeetToken({
 					channelId: currentChannelId as string,
-					roomName: ''
+					roomName: '',
+					metadata: JSON.stringify(metadata)
 				})
 			).unwrap();
 
@@ -215,9 +231,6 @@ const MezonSfuChannelVoiceInner = () => {
 
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
-		if (userProfile?.user?.id) {
-			dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
-		}
 
 		isDisconnectingRef.current = false;
 	});
@@ -246,6 +259,7 @@ const MezonSfuChannelVoiceInner = () => {
 								joinRole={joinRole}
 								serverUrl={serverUrl}
 								voiceInfo={voiceInfo}
+								isPrivateVoice={isPrivateVoice}
 								handleLeaveRoom={handleLeaveRoom}
 								handleFullScreen={handleFullScreen}
 								isShowChatVoice={isShowChatVoice}

@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Mikrofon behörighet krävs",
 		"cameraPermissionRequired": "Kamera behörighet krävs",
 		"recipientDidNotAnswer": "Mottagaren svarade inte på samtal.",
-		"aloneTimeoutDisconnected": "Du kopplades från röstkanalen eftersom du var ensam i den för länge."
+		"aloneTimeoutDisconnected": "Du kopplades från röstkanalen eftersom du var ensam i den för länge.",
+		"duplicateSessionDisconnected": "Du gick med i röstkanalen på en annan enhet, så den här sessionen kopplades från.",
+		"disconnectedRejoin": "Du kopplades från röstkanalen."
 	},
 	"usernameScreen": "{{username}}s skärm",
 	"recording": {
 		"start": "Spela in samtal",
 		"stop": "Stoppa inspelning",
 		"badge": "REC",
+		"by": "{{name}} spelar in samtalet",
+		"byMany": "{{name}} och {{count}} till spelar in samtalet",
 		"memoryLimitWarning": "Den här webbläsaren kan inte skriva direkt till disk, så inspelningen hålls i minnet och stoppas automatiskt efter {{minutes}} minuter.",
 		"frozenWarning": "Videon frös medan fliken var dold. Håll den här fliken synlig under inspelningen.",
 		"savedToDisk": "Inspelningen sparades i {{fileName}} ({{size}})",

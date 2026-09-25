@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Mikrofonberechtigung erforderlich",
 		"cameraPermissionRequired": "Kameraberechtigung erforderlich",
 		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen.",
-		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst."
+		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst.",
+		"duplicateSessionDisconnected": "Du bist dem Sprachkanal auf einem anderen Gerät beigetreten. Diese Sitzung wurde daher getrennt.",
+		"disconnectedRejoin": "Du wurdest vom Sprachkanal getrennt."
 	},
 	"usernameScreen": "{{username}}s Bildschirm",
 	"recording": {
 		"start": "Anruf aufzeichnen",
 		"stop": "Aufzeichnung beenden",
 		"badge": "REC",
+		"by": "{{name}} zeichnet den Anruf auf",
+		"byMany": "{{name}} und {{count}} weitere zeichnen den Anruf auf",
 		"memoryLimitWarning": "Dieser Browser kann nicht direkt auf die Festplatte schreiben. Die Aufzeichnung liegt daher im Arbeitsspeicher und stoppt automatisch nach {{minutes}} Minuten.",
 		"frozenWarning": "Das Bild stand still, während der Tab ausgeblendet war. Lass diesen Tab während der Aufzeichnung sichtbar.",
 		"savedToDisk": "Aufzeichnung gespeichert unter {{fileName}} ({{size}})",

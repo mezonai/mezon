@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Autorizzazione microfono richiesta",
 		"cameraPermissionRequired": "Autorizzazione fotocamera richiesta",
 		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata.",
-		"aloneTimeoutDisconnected": "Sei stato disconnesso dal canale vocale perché sei rimasto da solo troppo a lungo."
+		"aloneTimeoutDisconnected": "Sei stato disconnesso dal canale vocale perché sei rimasto da solo troppo a lungo.",
+		"duplicateSessionDisconnected": "Hai effettuato l’accesso al canale vocale su un altro dispositivo, quindi questa sessione è stata disconnessa.",
+		"disconnectedRejoin": "Sei stato disconnesso dal canale vocale."
 	},
 	"usernameScreen": "Schermo di {{username}}",
 	"recording": {
 		"start": "Registra chiamata",
 		"stop": "Ferma registrazione",
 		"badge": "REC",
+		"by": "{{name}} sta registrando la chiamata",
+		"byMany": "{{name}} e altri {{count}} stanno registrando la chiamata",
 		"memoryLimitWarning": "Questo browser non può scrivere direttamente su disco, quindi la registrazione resta in memoria e si ferma automaticamente dopo {{minutes}} minuti.",
 		"frozenWarning": "Il video si è bloccato mentre la scheda era nascosta. Tieni questa scheda visibile durante la registrazione.",
 		"savedToDisk": "Registrazione salvata in {{fileName}} ({{size}})",

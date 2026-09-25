@@ -1,21 +1,28 @@
 import { captureSentryError } from '@mezon/logger';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiClanDesc } from 'mezon-js';
+import type { ApiClanDesc, MezonUpdateClanDescBody } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
+
+type ClanDescWithHashtags = ApiClanDesc & { hashtags?: string };
+type UpdateClanDescBodyWithHashtags = MezonUpdateClanDescBody & { hashtags?: string };
 
 export const COMUNITY_FEATURE_KEY = 'COMUNITY_FEATURE_KEY';
 
 export const serializeHashtags = (tags: string[]): string => {
-	return JSON.stringify(tags);
+	if (!tags || tags.length === 0) return '';
+	return tags
+		.map((t) => t.trim().replace(/^#/, ''))
+		.filter(Boolean)
+		.join(',');
 };
 
 export const parseHashtags = (raw?: string | null): string[] => {
 	if (!raw) return [];
 	try {
 		const parsed = JSON.parse(raw);
-		if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim()).filter(Boolean);
+		if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim().replace(/^#/, '')).filter(Boolean);
 	} catch {
 		// Ignore JSON parse error, fallback to delimiters
 	}
@@ -79,6 +86,8 @@ export const getCommunityInfo = createAsyncThunk('comunity/getCommunityInfo', as
 			return thunkAPI.rejectWithValue('Clan not found');
 		}
 
+		const clanWithHashtags = clan as ClanDescWithHashtags;
+
 		return {
 			clan_id,
 			isCommunityEnabled: clan.is_community || false,
@@ -86,7 +95,7 @@ export const getCommunityInfo = createAsyncThunk('comunity/getCommunityInfo', as
 			about: clan.about || '',
 			description: clan.description || '',
 			short_url: clan.short_url || '',
-			hashtags: parseHashtags(clan.hashtags)
+			hashtags: parseHashtags(clanWithHashtags.hashtags)
 		};
 	} catch (error) {
 		captureSentryError(error, 'comunity/getCommunityInfo');
@@ -119,14 +128,15 @@ export const updateCommunity = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const hashtagsStr = hashtags ? serializeHashtags(hashtags) : undefined;
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			const body: UpdateClanDescBodyWithHashtags = {
 				is_community: enabled,
 				community_banner: bannerUrl,
 				about,
 				description,
 				short_url,
 				hashtags: hashtagsStr
-			});
+			};
+			await mezon.client.updateClanDesc(mezon.session, clan_id, body);
 			return { clan_id, enabled, bannerUrl, about, description, short_url, hashtags: hashtags ?? [] };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunity');
@@ -141,13 +151,14 @@ export const updateCommunityHashtags = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const hashtagsStr = serializeHashtags(hashtags);
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			const body: UpdateClanDescBodyWithHashtags = {
 				hashtags: hashtagsStr
-			});
+			};
+			await mezon.client.updateClanDesc(mezon.session, clan_id, body);
 			return { clan_id, hashtags };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityHashtags');
-			return thunkAPI.rejectWithValue('Failed to update community hashtags');
+			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );
@@ -163,7 +174,7 @@ export const updateCommunityStatus = createAsyncThunk(
 			return { clan_id, enabled };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityStatus');
-			return thunkAPI.rejectWithValue('Failed to update community status');
+			return thunkAPI.rejectWithValue(error);
 		}
 	}
 );
@@ -389,7 +400,7 @@ export const comunitySlice = createSlice({
 			})
 			.addMatcher(
 				(action) => action.type === 'clans/update',
-				(state, action: PayloadAction<{ dataUpdate: Partial<ApiClanDesc> }>) => {
+				(state, action: PayloadAction<{ dataUpdate: Partial<ClanDescWithHashtags> }>) => {
 					const dataUpdate = action.payload?.dataUpdate;
 					if (!dataUpdate?.clan_id) return;
 					const clanId = dataUpdate.clan_id;

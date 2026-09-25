@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Permissão de microfone necessária",
 		"cameraPermissionRequired": "Permissão de câmera necessária",
 		"recipientDidNotAnswer": "O destinatário não atendeu a chamada.",
-		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo."
+		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo.",
+		"duplicateSessionDisconnected": "Você entrou no canal de voz em outro dispositivo, então esta sessão foi desconectada.",
+		"disconnectedRejoin": "Você foi desconectado do canal de voz."
 	},
 	"usernameScreen": "Tela de {{username}}",
 	"recording": {
 		"start": "Gravar chamada",
 		"stop": "Parar gravação",
 		"badge": "REC",
+		"by": "{{name}} está a gravar a chamada",
+		"byMany": "{{name}} e mais {{count}} estão a gravar a chamada",
 		"memoryLimitWarning": "Este navegador não consegue gravar diretamente no disco, por isso a gravação fica na memória e para automaticamente após {{minutes}} minutos.",
 		"frozenWarning": "O vídeo congelou enquanto a aba estava oculta. Mantenha esta aba visível durante a gravação.",
 		"savedToDisk": "Gravação salva em {{fileName}} ({{size}})",

@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "マイク権限が必要です",
 		"cameraPermissionRequired": "カメラ権限が必要です",
 		"recipientDidNotAnswer": "相手が通話に応答しませんでした。",
-		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。"
+		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。",
+		"duplicateSessionDisconnected": "別のデバイスでボイスチャンネルに参加したため、このセッションは切断されました。",
+		"disconnectedRejoin": "ボイスチャンネルから切断されました。"
 	},
 	"usernameScreen": "{{username}}のスクリーン",
 	"recording": {
 		"start": "通話を録画",
 		"stop": "録画を停止",
 		"badge": "REC",
+		"by": "{{name}} が通話を録画しています",
+		"byMany": "{{name}} ほか {{count}} 人が通話を録画しています",
 		"memoryLimitWarning": "このブラウザはディスクに直接書き込めないため、録画はメモリ上に保持され、{{minutes}} 分後に自動的に停止します。",
 		"frozenWarning": "タブが非表示の間、映像が停止しました。録画中はこのタブを表示したままにしてください。",
 		"savedToDisk": "録画を {{fileName}} に保存しました（{{size}}）",

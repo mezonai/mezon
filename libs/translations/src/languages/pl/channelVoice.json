@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Wymagane uprawnienie mikrofonu",
 		"cameraPermissionRequired": "Wymagane uprawnienie kamery",
 		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia.",
-		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam."
+		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam.",
+		"duplicateSessionDisconnected": "Dołączono do kanału głosowego na innym urządzeniu, więc ta sesja została rozłączona.",
+		"disconnectedRejoin": "Rozłączono Cię z kanałem głosowym."
 	},
 	"usernameScreen": "Ekran {{username}}",
 	"recording": {
 		"start": "Nagraj rozmowę",
 		"stop": "Zatrzymaj nagrywanie",
 		"badge": "REC",
+		"by": "{{name}} nagrywa rozmowę",
+		"byMany": "{{name}} i {{count}} innych nagrywa rozmowę",
 		"memoryLimitWarning": "Ta przeglądarka nie może zapisywać bezpośrednio na dysk, więc nagranie jest trzymane w pamięci i zatrzyma się automatycznie po {{minutes}} minutach.",
 		"frozenWarning": "Obraz zamarł, gdy karta była ukryta. Trzymaj tę kartę widoczną podczas nagrywania.",
 		"savedToDisk": "Nagranie zapisano w {{fileName}} ({{size}})",

@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Cần quyền microphone",
 		"cameraPermissionRequired": "Cần quyền camera",
 		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi.",
-		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu."
+		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu.",
+		"duplicateSessionDisconnected": "Bạn đã tham gia kênh thoại trên thiết bị khác nên phiên này bị ngắt kết nối.",
+		"disconnectedRejoin": "Bạn đã bị ngắt khỏi kênh thoại."
 	},
 	"usernameScreen": "Màn hình của {{username}}",
 	"recording": {
 		"start": "Ghi cuộc gọi",
 		"stop": "Dừng ghi",
 		"badge": "REC",
+		"by": "{{name}} đang ghi cuộc gọi",
+		"byMany": "{{name}} và {{count}} người khác đang ghi cuộc gọi",
 		"memoryLimitWarning": "Trình duyệt này không ghi thẳng xuống đĩa được nên bản ghi phải giữ trong bộ nhớ và sẽ tự dừng sau {{minutes}} phút.",
 		"frozenWarning": "Hình bị đứng trong lúc tab bị ẩn. Hãy giữ tab này hiển thị khi đang ghi.",
 		"savedToDisk": "Đã lưu bản ghi vào {{fileName}} ({{size}})",

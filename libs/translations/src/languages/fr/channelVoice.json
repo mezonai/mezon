@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Autorisation du micro requise",
 		"cameraPermissionRequired": "Autorisation de la caméra requise",
 		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel.",
-		"aloneTimeoutDisconnected": "Vous avez été déconnecté du canal vocal car vous y étiez seul depuis trop longtemps."
+		"aloneTimeoutDisconnected": "Vous avez été déconnecté du canal vocal car vous y étiez seul depuis trop longtemps.",
+		"duplicateSessionDisconnected": "Vous avez rejoint le salon vocal sur un autre appareil. Cette session a donc été déconnectée.",
+		"disconnectedRejoin": "Vous avez été déconnecté du salon vocal."
 	},
 	"usernameScreen": "Écran de {{username}}",
 	"recording": {
 		"start": "Enregistrer l'appel",
 		"stop": "Arrêter l'enregistrement",
 		"badge": "REC",
+		"by": "{{name}} enregistre l'appel",
+		"byMany": "{{name}} et {{count}} autres enregistrent l'appel",
 		"memoryLimitWarning": "Ce navigateur ne peut pas écrire directement sur le disque : l'enregistrement reste en mémoire et s'arrête automatiquement au bout de {{minutes}} minutes.",
 		"frozenWarning": "La vidéo s'est figée pendant que l'onglet était masqué. Gardez cet onglet visible pendant l'enregistrement.",
 		"savedToDisk": "Enregistrement sauvegardé dans {{fileName}} ({{size}})",

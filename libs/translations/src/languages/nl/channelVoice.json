@@ -55,13 +55,17 @@
 		"microphonePermissionRequired": "Microfoonrecht is vereist",
 		"cameraPermissionRequired": "Camerarecht is vereist",
 		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord.",
-		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was."
+		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was.",
+		"duplicateSessionDisconnected": "Je bent op een ander apparaat lid geworden van het spraakkanaal. Deze sessie is daarom verbroken.",
+		"disconnectedRejoin": "Je verbinding met het spraakkanaal is verbroken."
 	},
 	"usernameScreen": "Scherm van {{username}}",
 	"recording": {
 		"start": "Gesprek opnemen",
 		"stop": "Opname stoppen",
 		"badge": "REC",
+		"by": "{{name}} neemt het gesprek op",
+		"byMany": "{{name}} en {{count}} anderen nemen het gesprek op",
 		"memoryLimitWarning": "Deze browser kan niet rechtstreeks naar schijf schrijven, dus de opname staat in het geheugen en stopt automatisch na {{minutes}} minuten.",
 		"frozenWarning": "De video bevroor terwijl het tabblad verborgen was. Houd dit tabblad zichtbaar tijdens het opnemen.",
 		"savedToDisk": "Opname opgeslagen als {{fileName}} ({{size}})",

@@ -420,7 +420,12 @@ export const notificationSettingSlice = createSlice({
 						const notificationEntity = {
 							id: channelId,
 							...notifiSetting,
-							time_mute_seconds: notifiSetting?.time_mute_seconds ? Date.now() / 1000 + (notifiSetting?.time_mute_seconds || 0) : 0
+							time_mute_seconds:
+								notifiSetting?.time_mute_seconds === EMuteState.MUTED_INFINITY
+									? EMuteState.MUTED_INFINITY
+									: notifiSetting?.time_mute_seconds
+										? Date.now() + (notifiSetting.time_mute_seconds || 0) * 1000
+										: 0
 						} as INotificationUserChannel;
 
 						NotificationSettingsAdapter.upsertOne(state, notificationEntity);
