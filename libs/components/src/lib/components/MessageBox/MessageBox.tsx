@@ -7,8 +7,8 @@ import {
 	MAX_FILE_ATTACHMENTS,
 	UploadLimitReason,
 	getAttachmentLimitViolation,
-	getPastedFiles,
 	processFilesForAttachment,
+	readPastedFiles,
 	useLongPress
 } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -80,7 +80,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>, anonymousMessage?: boolean) => {
-			const files = getPastedFiles(event.clipboardData);
+			const files = await readPastedFiles(event.clipboardData);
 			if (!files.length) {
 				return;
 			}

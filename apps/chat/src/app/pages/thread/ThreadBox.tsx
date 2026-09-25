@@ -41,8 +41,8 @@ import {
 	ValidateSpecialCharacters,
 	generateE2eId,
 	getAttachmentLimitViolation,
-	getPastedFiles,
-	processFilesForAttachment
+	processFilesForAttachment,
+	readPastedFiles
 } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -351,7 +351,7 @@ const ThreadBox = () => {
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
-			const files = getPastedFiles(event.clipboardData);
+			const files = await readPastedFiles(event.clipboardData);
 			if (!files.length) {
 				return;
 			}

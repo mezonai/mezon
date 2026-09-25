@@ -1,5 +1,5 @@
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason } from '../constant';
-import { getAttachmentLimitViolation, getPastedFiles } from './file';
+import { getAttachmentLimitViolation, getPastedFiles, readPastedFiles } from './file';
 
 jest.mock('../helper/videoPoster', () => ({ captureVideoPosterFromUrl: jest.fn() }));
 
@@ -30,6 +30,27 @@ it('keeps a copied file when the browser cannot tell a folder apart', () => {
 	const withoutEntry = { kind: 'file', type: pdf.type, getAsFile: () => pdf };
 
 	expect(getPastedFiles(clipboard([withoutEntry]))).toEqual([pdf]);
+});
+
+it('reads the clipboard once per paste, however many handlers ask', () => {
+	const pdf = new File(['%PDF'], 'a.pdf', { type: 'application/pdf' });
+	const getAsFile = jest.fn(() => pdf);
+	const data = clipboard([{ kind: 'file', type: pdf.type, getAsFile }]);
+
+	expect(getPastedFiles(data)).toBe(getPastedFiles(data));
+	expect(getAsFile).toHaveBeenCalledTimes(1);
+});
+
+it('drops pasted entries that cannot be read, such as a folder the browser did not flag', async () => {
+	const pdf = new File(['%PDF'], 'a.pdf', { type: 'application/pdf' });
+	const empty = new File([], 'empty.txt', { type: 'text/plain' });
+	const folder = { name: 'folder', type: '', size: 64, slice: () => ({ arrayBuffer: () => Promise.reject(new Error('NotFoundError')) }) };
+	const withoutEntry = (file: object) => ({ kind: 'file', type: '', getAsFile: () => file });
+
+	const files = await readPastedFiles(clipboard([withoutEntry(pdf), withoutEntry(folder), withoutEntry(empty)]));
+
+	expect(files).toEqual([pdf, empty]);
+	await expect(readPastedFiles(null)).resolves.toEqual([]);
 });
 
 it('refuses a paste past the attachment count or size limits, as a drop does', () => {

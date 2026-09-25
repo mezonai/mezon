@@ -57,7 +57,6 @@ import {
 	checkIsThread,
 	extractCanvasIdsFromText,
 	filterEmptyArrays,
-	getPastedFiles,
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
@@ -967,17 +966,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		[props.currentChannelId]
 	);
 
-	const { handlePaste: originalHandlePaste } = props;
-
-	const handlePasteWithCharacterLimit = useCallback(
-		(event: React.ClipboardEvent<HTMLDivElement>) => {
-			if (getPastedFiles(event.clipboardData).length) {
-				originalHandlePaste?.(event);
-			}
-		},
-		[originalHandlePaste]
-	);
-
 	useClickUpToEditMessage({
 		editorRef: editorElementRef as RefObject<HTMLDivElement>,
 		currentChannelId: props.currentChannelId,
@@ -1013,7 +1001,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						handleSendWithFormattedText(formattedText, anonymousMode);
 						cachedLinkOgp.current = '';
 					}}
-					onHandlePaste={handlePasteWithCharacterLimit}
+					onHandlePaste={props.handlePaste}
 					enableUndoRedo={true}
 					maxHistorySize={50}
 					hasFilesToSend={attachmentData.length > 0}

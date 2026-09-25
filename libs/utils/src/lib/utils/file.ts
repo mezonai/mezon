@@ -351,11 +351,42 @@ export function isFileSizeExceeded(file: File): boolean {
 	return file.size > maxSize;
 }
 
+const pastedFilesByClipboard = new WeakMap<DataTransfer, File[]>();
+
 export function getPastedFiles(clipboardData: DataTransfer | null | undefined): File[] {
-	return Array.from(clipboardData?.items ?? [])
+	if (!clipboardData) {
+		return [];
+	}
+	const cached = pastedFilesByClipboard.get(clipboardData);
+	if (cached) {
+		return cached;
+	}
+	const files = Array.from(clipboardData.items)
 		.filter((item) => item.kind === 'file' && !item.webkitGetAsEntry?.()?.isDirectory)
 		.map((item) => item.getAsFile())
 		.filter((file): file is File => Boolean(file));
+	pastedFilesByClipboard.set(clipboardData, files);
+	return files;
+}
+
+async function keepReadableFiles(files: File[]): Promise<File[]> {
+	const readable = await Promise.all(
+		files.map((file) =>
+			file
+				.slice(0, 1)
+				.arrayBuffer()
+				.then(
+					() => file,
+					() => undefined
+				)
+		)
+	);
+	return readable.filter((file): file is File => Boolean(file));
+}
+
+export function readPastedFiles(clipboardData: DataTransfer | null | undefined): Promise<File[]> {
+	const pasted = getPastedFiles(clipboardData);
+	return pasted.length ? keepReadableFiles(pasted) : Promise.resolve([]);
 }
 
 export type AttachmentLimitViolation = { reason: UploadLimitReason; limit?: number };

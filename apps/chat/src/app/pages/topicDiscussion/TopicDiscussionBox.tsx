@@ -33,9 +33,9 @@ import {
 	UploadLimitReason,
 	generateE2eId,
 	getAttachmentLimitViolation,
-	getPastedFiles,
 	isBackgroundModeActive,
 	processFilesForAttachment,
+	readPastedFiles,
 	useBackgroundMode
 } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -165,7 +165,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
-			const files = getPastedFiles(event.clipboardData);
+			const files = await readPastedFiles(event.clipboardData);
 			if (!files.length) {
 				return;
 			}

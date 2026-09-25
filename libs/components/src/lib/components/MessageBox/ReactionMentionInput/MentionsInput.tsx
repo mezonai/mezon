@@ -943,7 +943,9 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				e.preventDefault();
 
-				if (getPastedFiles(e.clipboardData).length) {
+				const pastedFiles = getPastedFiles(e.clipboardData);
+				const pastesFiles = onHandlePaste ? pastedFiles.length > 0 : pastedFiles.some((file) => file.type.startsWith('image/'));
+				if (pastesFiles) {
 					return;
 				}
 
