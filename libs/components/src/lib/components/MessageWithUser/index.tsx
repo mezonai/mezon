@@ -11,6 +11,7 @@ import {
 	TypeMessage,
 	WIDTH_CHANNEL_LIST_BOX,
 	WIDTH_CLAN_SIDE_BAR,
+	WIDTH_PANEL_PROFILE,
 	convertDateStringI18n,
 	convertTimeHour,
 	convertTimestampToTimeRemainingI18n,
@@ -212,15 +213,18 @@ function MessageWithUser({
 				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
 					? HEIGHT_PANEL_PROFILE
 					: HEIGHT_PANEL_PROFILE_DM;
+			const messageRowLeft =
+				e.currentTarget.closest<HTMLElement>('.fullBoxText')?.getBoundingClientRect().left ?? WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX;
+			const left = Math.min(messageRowLeft + e.currentTarget.offsetWidth + 24, window.innerWidth - WIDTH_PANEL_PROFILE);
 			if (window.innerHeight - e.clientY > heightPanel) {
 				positionShortUser.current = {
 					top: e.clientY,
-					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+					left
 				};
 			} else {
 				positionShortUser.current = {
 					top: window.innerHeight - heightPanel,
-					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+					left
 				};
 			}
 			openProfileItem();
