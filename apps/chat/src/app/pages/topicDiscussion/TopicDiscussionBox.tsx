@@ -32,6 +32,8 @@ import {
 	MAX_FILE_SIZE,
 	UploadLimitReason,
 	generateE2eId,
+	getAttachmentLimitViolation,
+	getPastedFiles,
 	isBackgroundModeActive,
 	processFilesForAttachment,
 	useBackgroundMode
@@ -163,32 +165,22 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
-			const items = (event.clipboardData || (window as unknown as { clipboardData?: DataTransfer }).clipboardData)?.items;
-			const files: File[] = [];
-			if (items) {
-				for (let i = 0; i < items.length; i++) {
-					if (items[i].type.indexOf('image') !== -1) {
-						const file = items[i].getAsFile();
-						if (file) {
-							files.push(file);
-						}
-					}
-				}
-
-				if (files.length > 0) {
-					if (files.length + (attachmentFilteredByChannelId?.files?.length || 0) > MAX_FILE_ATTACHMENTS) {
-						setOverUploadingState(true, UploadLimitReason.COUNT);
-						return;
-					}
-					const updatedFiles = await processFilesForAttachment(files);
-					dispatch(
-						referencesActions.setAtachmentAfterUpload({
-							channelId: currentInputChannelId,
-							files: updatedFiles
-						})
-					);
-				}
+			const files = getPastedFiles(event.clipboardData);
+			if (!files.length) {
+				return;
 			}
+			const violation = getAttachmentLimitViolation(files, attachmentFilteredByChannelId?.files?.length || 0);
+			if (violation) {
+				setOverUploadingState(true, violation.reason, violation.limit);
+				return;
+			}
+			const updatedFiles = await processFilesForAttachment(files);
+			dispatch(
+				referencesActions.setAtachmentAfterUpload({
+					channelId: currentInputChannelId,
+					files: updatedFiles
+				})
+			);
 		},
 		[attachmentFilteredByChannelId?.files?.length, currentInputChannelId, dispatch, setOverUploadingState]
 	);

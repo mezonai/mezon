@@ -57,6 +57,7 @@ import {
 	checkIsThread,
 	extractCanvasIdsFromText,
 	filterEmptyArrays,
+	getPastedFiles,
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
@@ -966,35 +967,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		[props.currentChannelId]
 	);
 
-	const { handlePaste: originalHandlePaste, handleConvertToFile } = props;
+	const { handlePaste: originalHandlePaste } = props;
 
 	const handlePasteWithCharacterLimit = useCallback(
 		(event: React.ClipboardEvent<HTMLDivElement>) => {
-			if (!event.clipboardData) {
-				return;
-			}
-
-			const items = event.clipboardData.items;
-			let hasMediaFiles = false;
-
-			if (items) {
-				for (let i = 0; i < items.length; i++) {
-					const type = items[i].type;
-					if (type.indexOf('image') !== -1 || type.indexOf('video') !== -1) {
-						hasMediaFiles = true;
-						break;
-					}
-				}
-			}
-
-			if (hasMediaFiles) {
-				if (originalHandlePaste) {
-					originalHandlePaste(event);
-				}
-				return;
+			if (getPastedFiles(event.clipboardData).length) {
+				originalHandlePaste?.(event);
 			}
 		},
-		[originalHandlePaste, handleConvertToFile, draftRequest?.content, updateDraft]
+		[originalHandlePaste]
 	);
 
 	useClickUpToEditMessage({

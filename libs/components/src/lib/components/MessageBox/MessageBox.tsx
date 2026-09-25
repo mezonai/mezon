@@ -1,9 +1,16 @@
 import { useDragAndDrop, usePermissionChecker, useReference } from '@mezon/core';
 import { referencesActions, selectCloseMenu, selectDataReferences, selectStatusMenu, useAppDispatch } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { ILongPressType, IMessageSendPayload, MentionDataProps, ThreadValue } from '@mezon/utils';
-import { EOverriddenPermission, MAX_FILE_ATTACHMENTS, UploadLimitReason, processFilesForAttachment, useLongPress } from '@mezon/utils';
+import {
+	EOverriddenPermission,
+	MAX_FILE_ATTACHMENTS,
+	UploadLimitReason,
+	getAttachmentLimitViolation,
+	getPastedFiles,
+	processFilesForAttachment,
+	useLongPress
+} from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import type { ReactElement } from 'react';
 import { Fragment, memo, useCallback, useState } from 'react';
@@ -37,7 +44,6 @@ export type MessageBoxProps = {
 
 const MessageBox = (props: MessageBoxProps): ReactElement => {
 	const dispatch = useAppDispatch();
-	const { sessionRef, clientRef } = useMezon();
 	const { currentChannelId, currentClanId } = props;
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], currentChannelId ?? '');
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(props.currentChannelId);
@@ -74,34 +80,24 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>, anonymousMessage?: boolean) => {
-			const items = (event.clipboardData || (window as any).clipboardData).items;
-			const files: File[] = [];
-			if (items) {
-				for (let i = 0; i < items.length; i++) {
-					if (items[i].type.indexOf('image') !== -1) {
-						const file = items[i].getAsFile();
-						if (file) {
-							files.push(file);
-						}
-					}
-				}
-
-				if (files.length > 0) {
-					if (files.length + attachmentFilteredByChannelId?.files?.length > MAX_FILE_ATTACHMENTS) {
-						setOverUploadingState(true, UploadLimitReason.COUNT);
-						return;
-					}
-					const updatedFiles = await processFilesForAttachment(files);
-					dispatch(
-						referencesActions.setAtachmentAfterUpload({
-							channelId: currentChannelId,
-							files: updatedFiles
-						})
-					);
-				}
+			const files = getPastedFiles(event.clipboardData);
+			if (!files.length) {
+				return;
 			}
+			const violation = getAttachmentLimitViolation(files, attachmentFilteredByChannelId?.files?.length || 0);
+			if (violation) {
+				setOverUploadingState(true, violation.reason, violation.limit);
+				return;
+			}
+			const updatedFiles = await processFilesForAttachment(files);
+			dispatch(
+				referencesActions.setAtachmentAfterUpload({
+					channelId: currentChannelId,
+					files: updatedFiles
+				})
+			);
 		},
-		[clientRef, currentChannelId, currentClanId, sessionRef, props.mode, attachmentFilteredByChannelId?.files?.length]
+		[currentChannelId, attachmentFilteredByChannelId?.files?.length, dispatch, setOverUploadingState]
 	);
 
 	const closeMenu = useSelector(selectCloseMenu);

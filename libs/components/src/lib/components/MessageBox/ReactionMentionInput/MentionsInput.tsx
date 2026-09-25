@@ -1,5 +1,5 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
-import { ID_MENTION_HERE, IS_SAFARI, generateE2eId, sanitizeMessageHtml } from '@mezon/utils';
+import { ID_MENTION_HERE, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
 	cloneElement,
@@ -943,20 +943,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				e.preventDefault();
 
-				const items = e.clipboardData.items;
-				let hasImageFiles = false;
-
-				if (items) {
-					for (let i = 0; i < items.length; i++) {
-						if (items[i].type.indexOf('image') !== -1) {
-							hasImageFiles = true;
-							break;
-						}
-					}
-
-					if (hasImageFiles) {
-						return;
-					}
+				if (getPastedFiles(e.clipboardData).length) {
+					return;
 				}
 
 				const htmlContent = e.clipboardData.getData('text/html');

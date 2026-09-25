@@ -1,6 +1,6 @@
 import type { Dispatch } from '@reduxjs/toolkit';
 import type { ApiMessageAttachment } from 'mezon-js';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, fileTypeImage } from '../constant';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, fileTypeImage } from '../constant';
 import { captureVideoPosterFromUrl } from '../helper/videoPoster';
 import type {
 	IMentionOnMessage,
@@ -349,6 +349,24 @@ export function getMaxFileSize(file: File): number {
 export function isFileSizeExceeded(file: File): boolean {
 	const maxSize = getMaxFileSize(file);
 	return file.size > maxSize;
+}
+
+export function getPastedFiles(clipboardData: DataTransfer | null | undefined): File[] {
+	return Array.from(clipboardData?.items ?? [])
+		.filter((item) => item.kind === 'file' && !item.webkitGetAsEntry?.()?.isDirectory)
+		.map((item) => item.getAsFile())
+		.filter((file): file is File => Boolean(file));
+}
+
+export type AttachmentLimitViolation = { reason: UploadLimitReason; limit?: number };
+
+export function getAttachmentLimitViolation(files: File[], attachedCount: number): AttachmentLimitViolation | undefined {
+	if (files.length + attachedCount > MAX_FILE_ATTACHMENTS) {
+		return { reason: UploadLimitReason.COUNT };
+	}
+	const limitOf = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
+	const oversizedFile = files.find((file) => file.size > limitOf(file));
+	return oversizedFile ? { reason: UploadLimitReason.SIZE, limit: limitOf(oversizedFile) } : undefined;
 }
 
 export function formatMentionsToString(array: MentionDataProps[]) {

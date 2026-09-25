@@ -40,6 +40,8 @@ import {
 	UploadLimitReason,
 	ValidateSpecialCharacters,
 	generateE2eId,
+	getAttachmentLimitViolation,
+	getPastedFiles,
 	processFilesForAttachment
 } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -349,29 +351,15 @@ const ThreadBox = () => {
 
 	const onPastedFiles = useCallback(
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
-			const items = Array.from(event.clipboardData?.items || []);
-			const files = items
-				.filter((item) => item.type.startsWith('image') || item.type.startsWith('video'))
-				.map((item) => item.getAsFile())
-				.filter((file): file is File => Boolean(file));
-
+			const files = getPastedFiles(event.clipboardData);
 			if (!files.length) {
 				return;
 			}
-
-			const totalFiles = files.length + (attachmentFilteredByChannelId?.files?.length || 0);
-			if (totalFiles > MAX_FILE_ATTACHMENTS) {
-				setOverUploadingState(true, UploadLimitReason.COUNT);
+			const violation = getAttachmentLimitViolation(files, attachmentFilteredByChannelId?.files?.length || 0);
+			if (violation) {
+				setOverUploadingState(true, violation.reason, violation.limit);
 				return;
 			}
-
-			const getLimit = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
-			const oversizedFile = files.find((file) => file.size > getLimit(file));
-			if (oversizedFile) {
-				setOverUploadingState(true, UploadLimitReason.SIZE, getLimit(oversizedFile));
-				return;
-			}
-
 			const updatedFiles = await processFilesForAttachment(files);
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
