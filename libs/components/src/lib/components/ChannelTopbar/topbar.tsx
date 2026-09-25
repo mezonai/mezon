@@ -1,4 +1,3 @@
-import { ChannelTopbar } from '@mezon/components';
 import { usePathMatch } from '@mezon/core';
 import {
 	selectCloseMenu,
@@ -10,8 +9,9 @@ import {
 } from '@mezon/store';
 import type { IChannel } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, type ReactNode } from 'react';
 import { useSelector } from 'react-redux';
+import ChannelTopbar from '.';
 
 export type ChannelTopbarProps = {
 	readonly channel?: Readonly<IChannel> | null;
@@ -22,7 +22,7 @@ export type ChannelTopbarProps = {
 	isHidden?: boolean;
 };
 
-const Topbar = memo(({ isHidden = false }: { isHidden?: boolean }) => {
+const Topbar = memo(({ isHidden = false, children }: { isHidden?: boolean; children?: ReactNode }) => {
 	const { isFriendPath } = usePathMatch({
 		isFriendPath: `/chat/direct/friends`
 	});
@@ -40,7 +40,7 @@ const Topbar = memo(({ isHidden = false }: { isHidden?: boolean }) => {
 		<div
 			className={`${isFriendPath || isHidden || (closeMenu && statusMenu) || isInCurrentVoiceChannel ? 'hidden' : ''} border-b-theme-primary bg-theme-chat max-sbm:bg-transparent max-sbm:z-20 flex h-heightTopBar p-3 min-w-0 items-center w-widthThumnailAttachment max-sbm:w-full max-sbm:h-[50px] flex-shrink fixed right-0 z-10 border-b-theme-nav text-theme-primary  `}
 		>
-			<ChannelTopbar />
+			<ChannelTopbar>{children}</ChannelTopbar>
 		</div>
 	);
 });

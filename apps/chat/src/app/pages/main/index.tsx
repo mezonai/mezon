@@ -62,6 +62,7 @@ import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import ChannelStream from '../channel/ChannelStream';
+import { OpenChannelInAppButton } from '../channel/OpenChannelInAppButton';
 import { MainContent } from './MainContent';
 import PopupQuickMess from './PopupQuickMess';
 import DirectUnread from './directUnreads';
@@ -193,7 +194,9 @@ function MyApp() {
 				{previewMode?.open && previewMode.clanId === currentClanId && <PreviewOnboardingMode />}
 				{openPopupForward && <ForwardMessageModal />}
 				<SidebarMenu openCreateClanModal={openCreateClanModal} openDiscoverPage={openDiscoverPage} />
-				<Topbar isHidden={currentClanId !== '0' ? false : !directId} />
+				<Topbar isHidden={currentClanId !== '0' ? false : !directId}>
+					<OpenChannelInAppButton />
+				</Topbar>
 				<MainContent />
 				<FooterProfile
 					username={userProfile?.user?.username || ''}
