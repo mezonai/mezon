@@ -54,3 +54,15 @@ export const getNoiseSuppressionAudioCaptureOptions = (enabled: boolean): MezonA
 	autoGainControl: true,
 	voiceIsolation: enabled
 });
+
+export type MezonNsAudioCaptureOptions = MezonAudioCaptureOptions & { googNoiseSuppression?: boolean; googAutoGainControl?: boolean };
+
+export const getMezonNsAudioCaptureOptions = (): MezonNsAudioCaptureOptions => ({
+	channelCount: 1,
+	echoCancellation: { exact: true },
+	noiseSuppression: { exact: false },
+	voiceIsolation: { exact: false },
+	autoGainControl: { exact: false },
+	googNoiseSuppression: false,
+	googAutoGainControl: false
+});

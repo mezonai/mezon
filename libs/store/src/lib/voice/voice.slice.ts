@@ -102,6 +102,7 @@ export interface VoiceState {
 	showCamera: boolean;
 	showScreen: boolean;
 	noiseSuppressionEnabled: boolean;
+	noiseSuppressionReady: boolean;
 	statusCall: boolean;
 	voiceConnectionState: boolean;
 	fullScreen?: boolean;
@@ -351,6 +352,7 @@ export const initialVoiceState: VoiceState = {
 	showCamera: false,
 	showScreen: false,
 	noiseSuppressionEnabled: false,
+	noiseSuppressionReady: false,
 	statusCall: false,
 	voiceConnectionState: false,
 	fullScreen: false,
@@ -477,6 +479,8 @@ export const voiceSlice = createSlice({
 			}
 		},
 		setShowMicrophone: (state, action: PayloadAction<boolean>) => {
+			// Do not queue an unmute while the filter is still preparing.
+			if (action.payload && state.noiseSuppressionEnabled && !state.noiseSuppressionReady) return;
 			state.showMicrophone = action.payload;
 		},
 		setShowCamera: (state, action: PayloadAction<boolean>) => {
@@ -486,7 +490,12 @@ export const voiceSlice = createSlice({
 			state.showScreen = action.payload;
 		},
 		setNoiseSuppressionEnabled: (state, action: PayloadAction<boolean>) => {
+			// Preserve the user's mic intent. Only the outgoing pipeline is paused.
+			if (state.noiseSuppressionEnabled !== action.payload) state.noiseSuppressionReady = false;
 			state.noiseSuppressionEnabled = action.payload;
+		},
+		setNoiseSuppressionReady: (state, action: PayloadAction<boolean>) => {
+			state.noiseSuppressionReady = state.noiseSuppressionEnabled && action.payload;
 		},
 		setRecordingState: (state, action: PayloadAction<Partial<VoiceRecordingState>>) => {
 			state.recording = { ...state.recording, ...action.payload };
@@ -522,6 +531,7 @@ export const voiceSlice = createSlice({
 			state.showCamera = false;
 			state.showScreen = false;
 			state.noiseSuppressionEnabled = false;
+			state.noiseSuppressionReady = false;
 			state.voiceConnectionState = false;
 			state.voiceInfo = null;
 			state.fullScreen = false;
@@ -701,6 +711,7 @@ export const selectShowCamera = createSelector(getVoiceState, (state) => state.s
 export const selectShowScreen = createSelector(getVoiceState, (state) => state.showScreen);
 
 export const selectNoiseSuppressionEnabled = createSelector(getVoiceState, (state) => state.noiseSuppressionEnabled);
+export const selectNoiseSuppressionReady = createSelector(getVoiceState, (state) => state.noiseSuppressionReady);
 
 export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => state.fullScreen);
 

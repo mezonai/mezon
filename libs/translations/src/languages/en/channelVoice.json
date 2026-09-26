@@ -1,4 +1,11 @@
 {
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Applying noise filter…",
+		"applied": "Noise filter applied",
+		"preparing": "Applying noise suppression…",
+		"audioBlocked": "Your audio is not being sent while applying the filter.",
+		"keepMuted": "Audio is paused. Click to keep your microphone muted."
+	},
 	"joinChannelVoiceBS": {
 		"channelVoice": "Voice Room",
 		"joinVoice": "Join Voice"

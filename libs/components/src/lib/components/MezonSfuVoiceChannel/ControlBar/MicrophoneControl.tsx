@@ -5,6 +5,7 @@ import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface MicrophoneControlProps {
 	enabled: boolean;
+	preparing?: boolean;
 	devices: MediaDeviceInfo[];
 	selectedDeviceId: string;
 	onToggle: () => void;
@@ -16,6 +17,7 @@ interface MicrophoneControlProps {
 
 export const MicrophoneControl = ({
 	enabled,
+	preparing = false,
 	devices,
 	selectedDeviceId,
 	onToggle,
@@ -27,7 +29,15 @@ export const MicrophoneControl = ({
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
 
+	const label = preparing
+		? enabled
+			? t('noiseSuppressionStatus.keepMuted', { defaultValue: 'Audio is paused. Click to keep your microphone muted.' })
+			: t('noiseSuppressionStatus.preparing', { defaultValue: 'Applying noise suppression…' })
+		: t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone');
 	const handleClick = async () => {
+		if (preparing && !enabled) {
+			return;
+		}
 		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
 			await onPermissionRequest();
 			return;
@@ -40,8 +50,11 @@ export const MicrophoneControl = ({
 			<button
 				id="btn-meet-micro"
 				type="button"
-				title={t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-				aria-label={t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
+				title={label}
+				aria-label={label}
+				aria-busy={preparing}
+				// handleClick blocks unmuting while keeping opacity and keyboard focus stable.
+				aria-disabled={preparing && !enabled}
 				className={SFU_CONTROL_BUTTON_CLASS}
 				onClick={handleClick}
 			>
