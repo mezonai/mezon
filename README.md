@@ -38,7 +38,7 @@ That performance comes from owning the hot path end to end: high-performance nat
 ### ✨ Key Features
 
 -   **🔒 Security First** - End-to-end encryption, XSS protection, zero-knowledge architecture
--   **⚡ High Performance** - Native C path: [mezon-sfu](https://github.com/mezonai/mezon-sfu) + [libmezia](https://github.com/mezonai/libmezia) + mezon-proto-server (io uring). Sub-millisecond responses, millions of concurrent connections
+-   **⚡ High Performance** - Native C path: mezon-sfu + libmeziaa + mezon-proto-server (io uring). Sub-millisecond responses, millions of concurrent connections
 -   **🌐 Cross-Platform** - Web, Desktop (Windows/macOS/Linux), Mobile (iOS/Android)
 -   **🤖 AI-Powered** - Built-in content moderation, real-time translation, meeting summaries
 -   **🔧 Extensible** - Custom bots, 100+ integrations, API-first design
@@ -412,9 +412,7 @@ We welcome contributions from the community! Here's how you can help:
 
 Mezon is built on top of amazing open-source technologies:
 
--   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
--   [mezon-sfu](https://github.com/mezonai/mezon-sfu) - a high-performance optimized for HD meetings and large-scale deployment
--   [libmezia](https://github.com/mezonai/libmezia) - lightweight and ultra low latentcy audio/video for native platform 
+-   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API 
 -   [liburing](https://github.com/axboe/liburing) - io_uring for zero-copy I/O in mezon-sfu and mezon-proto-server
 -   [BoringSSL](https://boringssl.googlesource.com/boringssl) - TLS / DTLS
 -   [libsrtp](https://github.com/cisco/libsrtp) - SRTP media protection
