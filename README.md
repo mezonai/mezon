@@ -260,8 +260,8 @@ mezon/
 Mezon owns the hot path in C so chat, voice, and data stay off generic HTTP/WebRTC stacks.
 
 -   **Core**: Custom real-time server on Valkey, ScyllaDB, and `io_uring`
--   **[mezon-sfu](https://github.com/mezonai/mezon-sfu)**: C WebRTC SFU for HD meetings and large rooms — lock-free per-room workers, zero-copy `io_uring` fan-out, DTLS/SRTP, VP9/AV1/VP8, TWCC/GCC + SVC
--   **[libmezia](https://github.com/mezonai/libmezia)** (native media engine): C11 client engine, wire-compatible with mezon-sfu — lock-minimal Opus voice (~24 kbit/s) and hardware H.264, no PeerConnection tax on mobile
+-   **mezon-sfu**: C WebRTC SFU for HD meetings and large rooms — lock-free per-room workers, zero-copy `io_uring` fan-out, DTLS/SRTP, VP9/AV1/VP8, TWCC/GCC + SVC
+-   **libmezia** (native media engine): C11 client engine, wire-compatible with mezon-sfu — lock-minimal Opus voice (~24 kbit/s) and hardware H.264, no PeerConnection tax on mobile
 -   **mezon-proto-server**: the high-performance socket server handles protobuf compliance. [mezon-protocol](https://github.com/mezonai/mezon-protocol)
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) — high-performance, zero-fee L1
 -   **Real-time**: WebSocket / TCP Abridged with binary payload; Mezon-Proto for the high-QPS data path
