@@ -55,9 +55,7 @@
 		"microphonePermissionRequired": "Wymagane uprawnienie mikrofonu",
 		"cameraPermissionRequired": "Wymagane uprawnienie kamery",
 		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia.",
-		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam.",
-		"duplicateSessionDisconnected": "Dołączono do kanału głosowego na innym urządzeniu, więc ta sesja została rozłączona.",
-		"disconnectedRejoin": "Rozłączono Cię z kanałem głosowym."
+		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam."
 	},
 	"usernameScreen": "Ekran {{username}}",
 	"recording": {

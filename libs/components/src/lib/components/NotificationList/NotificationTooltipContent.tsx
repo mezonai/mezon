@@ -65,37 +65,25 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const hasMoreTopics = useSelector(selectHasMoreTopics);
 	const hasFetchedTopics = useSelector(selectHasFetchedTopics);
 
-	const fetchedTabsRef = useRef<{ clanId: string; tabs: Set<string> }>({
-		clanId: '',
-		tabs: new Set()
-	});
-
 	const handleChangeTab = (valueTab: string) => {
 		setCurrentTabNotify(valueTab);
-	};
-
-	useEffect(() => {
 		if (!currentClanId) return;
 
-		if (fetchedTabsRef.current.clanId !== currentClanId) {
-			fetchedTabsRef.current = { clanId: currentClanId, tabs: new Set() };
-		}
-
-		if (fetchedTabsRef.current.tabs.has(currentTabNotify)) {
-			return;
-		}
-
-		fetchedTabsRef.current.tabs.add(currentTabNotify);
-
-		switch (currentTabNotify) {
+		switch (valueTab) {
 			case InboxType.INDIVIDUAL:
-				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
+				if (!allNotificationForYou) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
+				}
 				break;
 			case InboxType.MESSAGES:
-				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
+				if (!allNotificationClan) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
+				}
 				break;
 			case InboxType.MENTIONS:
-				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+				if (!allNotificationMentions) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+				}
 				break;
 			case InboxType.TOPICS:
 				if (!hasFetchedTopics) {
@@ -103,7 +91,13 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				}
 				break;
 		}
-	}, [currentTabNotify, currentClanId, hasFetchedTopics, dispatch]);
+	};
+
+	useEffect(() => {
+		if (currentClanId && !allNotificationMentions) {
+			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+		}
+	}, [allNotificationMentions, currentClanId, dispatch]);
 
 	const getAllNotificationForYou = useMemo(() => {
 		if (!allNotificationForYou?.data?.length) {

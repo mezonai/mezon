@@ -48,7 +48,6 @@ export interface ElementToken {
 	clanId?: string;
 	parentId?: string;
 	channelLabel?: string;
-	channelType?: number;
 	title?: string;
 	image?: string;
 	description?: string;
@@ -386,7 +385,6 @@ export const MessageLine = ({
 						isJumMessageEnabled={isJumMessageEnabled}
 						channelHastagId={element.channelId || ''}
 						channelLabel={element.channelLabel}
-						channelType={element.channelType}
 						clanId={element.clanId}
 						parentId={element.parentId}
 						channelId={element.channelId}
@@ -485,19 +483,16 @@ export const MessageLine = ({
 								/>
 							);
 						} else if (!isCanvas && contentHasChannelLink) {
-							const isSentForThisLink =
-								(!element.clanId || element.clanId === clanId) && (!element.channelId || element.channelId === channelId);
 							componentToRender = (
 								<ChannelHashtag
 									key={`linkChannel${s}-${messageId}`}
 									isTokenClickAble={isTokenClickAble}
 									isJumMessageEnabled={isJumMessageEnabled}
 									channelHastagId={channelId}
-									channelLabel={(isSentForThisLink && element.channelLabel) || contentInElement}
-									channelType={isSentForThisLink ? element.channelType : undefined}
-									clanId={clanId}
-									parentId={isSentForThisLink ? element.parentId : undefined}
-									channelId={channelId}
+									channelLabel={element.channelLabel || contentInElement}
+									clanId={element.clanId || clanId}
+									parentId={element.parentId}
+									channelId={element.channelId}
 									isLink={true}
 								/>
 							);

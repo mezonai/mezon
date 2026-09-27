@@ -55,9 +55,7 @@
 		"microphonePermissionRequired": "Mikrofonberechtigung erforderlich",
 		"cameraPermissionRequired": "Kameraberechtigung erforderlich",
 		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen.",
-		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst.",
-		"duplicateSessionDisconnected": "Du bist dem Sprachkanal auf einem anderen Gerät beigetreten. Diese Sitzung wurde daher getrennt.",
-		"disconnectedRejoin": "Du wurdest vom Sprachkanal getrennt."
+		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst."
 	},
 	"usernameScreen": "{{username}}s Bildschirm",
 	"recording": {

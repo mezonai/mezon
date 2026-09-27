@@ -11,18 +11,14 @@ type UpdateClanDescBodyWithHashtags = MezonUpdateClanDescBody & { hashtags?: str
 export const COMUNITY_FEATURE_KEY = 'COMUNITY_FEATURE_KEY';
 
 export const serializeHashtags = (tags: string[]): string => {
-	if (!tags || tags.length === 0) return '';
-	return tags
-		.map((t) => t.trim().replace(/^#/, ''))
-		.filter(Boolean)
-		.join(',');
+	return JSON.stringify(tags);
 };
 
 export const parseHashtags = (raw?: string | null): string[] => {
 	if (!raw) return [];
 	try {
 		const parsed = JSON.parse(raw);
-		if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim().replace(/^#/, '')).filter(Boolean);
+		if (Array.isArray(parsed)) return parsed.map((t) => String(t).trim()).filter(Boolean);
 	} catch {
 		// Ignore JSON parse error, fallback to delimiters
 	}
@@ -158,7 +154,7 @@ export const updateCommunityHashtags = createAsyncThunk(
 			return { clan_id, hashtags };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityHashtags');
-			return thunkAPI.rejectWithValue(error);
+			return thunkAPI.rejectWithValue('Failed to update community hashtags');
 		}
 	}
 );
@@ -174,7 +170,7 @@ export const updateCommunityStatus = createAsyncThunk(
 			return { clan_id, enabled };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityStatus');
-			return thunkAPI.rejectWithValue(error);
+			return thunkAPI.rejectWithValue('Failed to update community status');
 		}
 	}
 );

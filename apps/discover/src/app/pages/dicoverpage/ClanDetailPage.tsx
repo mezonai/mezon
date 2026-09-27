@@ -78,10 +78,6 @@ export default function ClanDetailPage() {
 			setLoading(false);
 			return;
 		}
-		if (clan && clanMatchesId(clan, id)) {
-			setLoading(false);
-			return;
-		}
 		setLoading(true);
 		fetchSingleClan(id).then((clanData) => {
 			if (cancelled) return;

@@ -1,5 +1,5 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
-import { ID_MENTION_HERE, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
+import { ID_MENTION_HERE, IS_SAFARI, generateE2eId, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
 	cloneElement,
@@ -23,7 +23,12 @@ import renderText from './utils/renderText';
 const escapeMentionText = (value: string): string => {
 	if (value == null) return '';
 	const str = String(value);
-	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
 };
 
 export interface User {
@@ -938,10 +943,20 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				e.preventDefault();
 
-				const pastedFiles = getPastedFiles(e.clipboardData);
-				const pastesFiles = onHandlePaste ? pastedFiles.length > 0 : pastedFiles.some((file) => file.type.startsWith('image/'));
-				if (pastesFiles) {
-					return;
+				const items = e.clipboardData.items;
+				let hasImageFiles = false;
+
+				if (items) {
+					for (let i = 0; i < items.length; i++) {
+						if (items[i].type.indexOf('image') !== -1) {
+							hasImageFiles = true;
+							break;
+						}
+					}
+
+					if (hasImageFiles) {
+						return;
+					}
 				}
 
 				const htmlContent = e.clipboardData.getData('text/html');
