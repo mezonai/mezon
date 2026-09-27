@@ -46,11 +46,24 @@ export const blobToFile = (blob: Blob): File => {
 	return new File([blob], `audio-${timestamp}.ogg`, { type: 'audio/mp3' });
 };
 
-export type MezonAudioCaptureOptions = MediaTrackConstraints & { voiceIsolation?: ConstrainBoolean };
+export type MezonAudioCaptureOptions = MediaTrackConstraints & {
+	voiceIsolation?: ConstrainBoolean;
+	googEchoCancellation?: boolean;
+	googAutoGainControl?: boolean;
+	googNoiseSuppression?: boolean;
+	googHighpassFilter?: boolean;
+};
 
-export const getNoiseSuppressionAudioCaptureOptions = (enabled: boolean): MezonAudioCaptureOptions => ({
+// Keep the current UI toggle, but always use WebRTC's built-in audio processing for capture.
+export const getNoiseSuppressionAudioCaptureOptions = (_enabled: boolean): MezonAudioCaptureOptions => ({
 	echoCancellation: true,
-	noiseSuppression: enabled,
+	noiseSuppression: true,
 	autoGainControl: true,
-	voiceIsolation: enabled
+	voiceIsolation: true,
+	googEchoCancellation: true,
+	googAutoGainControl: true,
+	googNoiseSuppression: true,
+	googHighpassFilter: true,
+	sampleRate: 48000,
+	channelCount: 1
 });

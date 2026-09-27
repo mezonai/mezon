@@ -290,7 +290,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onvoicejoined = useCallback(
-		(voice: VoiceJoinedEvent & { peer_id?: number }) => {
+		(voice: VoiceJoinedEvent) => {
 			if (voice) {
 				const store = getStore();
 				const state = store.getState();
@@ -330,8 +330,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						clan_id: voice.clan_id,
 						user_id: voice.user_id,
 						user_name: voice.participant,
-						user_avatar: voice.last_screenshot,
-						peer_id: voice.peer_id
+						user_avatar: voice.last_screenshot
 					})
 				);
 			}
