@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Autorizzazione microfono richiesta",
 		"cameraPermissionRequired": "Autorizzazione fotocamera richiesta",
 		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata.",
-		"aloneTimeoutDisconnected": "Sei stato disconnesso dal canale vocale perché sei rimasto da solo troppo a lungo."
+		"aloneTimeoutDisconnected": "Sei stato disconnesso dal canale vocale perché sei rimasto da solo troppo a lungo.",
+		"duplicateSessionDisconnected": "Hai effettuato l’accesso al canale vocale su un altro dispositivo, quindi questa sessione è stata disconnessa.",
+		"disconnectedRejoin": "Sei stato disconnesso dal canale vocale."
 	},
 	"usernameScreen": "Schermo di {{username}}",
 	"recording": {

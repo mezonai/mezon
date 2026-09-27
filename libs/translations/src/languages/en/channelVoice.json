@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Microphone permission is required",
 		"cameraPermissionRequired": "Camera permission is required",
 		"recipientDidNotAnswer": "The recipient did not answer the call.",
-		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long."
+		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long.",
+		"duplicateSessionDisconnected": "You joined the voice channel on another device, so this session was disconnected.",
+		"disconnectedRejoin": "You were disconnected from the voice channel."
 	},
 	"usernameScreen": "{{username}}'s screen",
 	"recording": {
