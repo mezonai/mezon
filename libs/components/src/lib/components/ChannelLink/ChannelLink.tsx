@@ -260,14 +260,23 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag_lock')}
 									/>
 								)}
-							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
-								<Icons.Speaker
-									className={` w-4 h-4 ${iconFillClasses.speaker}`}
-									defaultFill1="var(--speaker-fill-1)"
-									defaultFill2="var(--speaker-fill-2)"
-									defaultFill3="var(--speaker-fill-2)"
-								/>
-							)}
+							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
+								(channel.channel_private ? (
+									<Icons.SpeakerLocked
+										className={` w-4 h-4 ${iconFillClasses.speaker}`}
+										defaultFill1="var(--speaker-fill-1)"
+										defaultFill2="var(--speaker-fill-2)"
+										defaultFill3="var(--speaker-fill-2)"
+									/>
+								) : (
+									<Icons.Speaker
+										className={` w-4 h-4 ${iconFillClasses.speaker}`}
+										defaultFill1="var(--speaker-fill-1)"
+										defaultFill2="var(--speaker-fill-2)"
+										defaultFill3="var(--speaker-fill-2)"
+									/>
+								))}
+
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
 								<Icons.Hashtag
 									className={`w-4 h-4 ${iconFillClasses.hashtag}`}

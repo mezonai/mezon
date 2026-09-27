@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Mikrofon behörighet krävs",
 		"cameraPermissionRequired": "Kamera behörighet krävs",
 		"recipientDidNotAnswer": "Mottagaren svarade inte på samtal.",
-		"aloneTimeoutDisconnected": "Du kopplades från röstkanalen eftersom du var ensam i den för länge."
+		"aloneTimeoutDisconnected": "Du kopplades från röstkanalen eftersom du var ensam i den för länge.",
+		"duplicateSessionDisconnected": "Du gick med i röstkanalen på en annan enhet, så den här sessionen kopplades från.",
+		"disconnectedRejoin": "Du kopplades från röstkanalen."
 	},
 	"usernameScreen": "{{username}}s skärm",
 	"recording": {

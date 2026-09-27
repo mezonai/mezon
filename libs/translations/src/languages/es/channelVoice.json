@@ -55,7 +55,9 @@
 		"microphonePermissionRequired": "Se requiere permiso del micrófono",
 		"cameraPermissionRequired": "Se requiere permiso de cámara",
 		"recipientDidNotAnswer": "El destinatario no contestó la llamada",
-		"aloneTimeoutDisconnected": "Fuiste desconectado del canal de voz porque estuviste solo en él demasiado tiempo."
+		"aloneTimeoutDisconnected": "Fuiste desconectado del canal de voz porque estuviste solo en él demasiado tiempo.",
+		"duplicateSessionDisconnected": "Te uniste al canal de voz en otro dispositivo, por lo que se desconectó esta sesión.",
+		"disconnectedRejoin": "Se te desconectó del canal de voz."
 	},
 	"usernameScreen": "Pantalla de {{username}}",
 	"recording": {

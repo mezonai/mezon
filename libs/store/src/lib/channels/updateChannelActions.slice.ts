@@ -3,6 +3,7 @@ import type { ChannelUpdatedEvent } from 'mezon-js';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { rolesClanActions, selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
+import { selectVoiceInfo, voiceActions } from '../voice/voice.slice';
 import { channelMetaActions } from './channelmeta.slice';
 import type { ChannelsEntity } from './channels.slice';
 import { channelsActions } from './channels.slice';
@@ -50,6 +51,11 @@ export const switchPublicToPrivate = createAsyncThunk(
 				);
 			}
 			return false;
+		}
+		const isVoiceJoined = selectVoiceInfo(store.getState());
+		if (isVoiceJoined?.channelId === channel.channel_id) {
+			//Leave Room If It's been deleted
+			thunkAPI.dispatch(voiceActions.resetVoiceControl());
 		}
 		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channel_id }));
 		return true;
