@@ -187,15 +187,12 @@ const MezonSfuChannelVoiceInner = () => {
 
 			const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url;
 
-			const metadata = {
-				...(username ? { username } : {}),
-				...(avatar ? { avatar } : {})
-			};
+			const metadata = username || avatar ? `${username};${avatar}` : '';
 			const result = await dispatch(
 				generateMeetToken({
 					channelId: currentChannelId as string,
 					roomName: '',
-					metadata: JSON.stringify(metadata)
+					metadata
 				})
 			).unwrap();
 
