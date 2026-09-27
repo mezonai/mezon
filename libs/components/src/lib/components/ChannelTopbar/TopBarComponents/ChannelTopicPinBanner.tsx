@@ -1,6 +1,7 @@
 import { useAuth, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
 import {
 	appActions,
+	getPoll,
 	messagesActions,
 	pinMessageActions,
 	selectAllTopics,
@@ -14,6 +15,7 @@ import {
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
+	selectMemberClanByUserId,
 	selectMessageByMessageId,
 	selectPinMessageByChannelId,
 	threadsActions,
@@ -31,6 +33,40 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
+import { parsePollData } from '../../MessageWithUser/parsePollData';
+
+const extractPollQuestion = (content: any): string => {
+	if (!content) return '';
+	if (content instanceof Uint8Array) {
+		try {
+			content = new TextDecoder().decode(content);
+		} catch {
+			return '';
+		}
+	}
+	let parsed: any = content;
+	if (typeof content === 'string') {
+		try {
+			parsed = safeJSONParse(content);
+		} catch {
+			parsed = content;
+		}
+	}
+	if (parsed && typeof parsed === 'object') {
+		if (parsed.question) return String(parsed.question);
+		if (parsed.poll?.question) return String(parsed.poll.question);
+		if (parsed.data?.question) return String(parsed.data.question);
+		if (parsed.t) {
+			const pollData = parsePollData(parsed.t);
+			if (pollData?.question) return pollData.question;
+		}
+	}
+	if (typeof content === 'string') {
+		const pollData = parsePollData(content);
+		if (pollData?.question) return pollData.question;
+	}
+	return '';
+};
 
 const extractMessageText = (content: any): string => {
 	if (!content) return '';
@@ -176,9 +212,9 @@ const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachm
 		return (
 			<div className="shrink-0 flex items-center justify-center">
 				<img
-					src={createImgproxyUrl(attachment.url, { width: 80, height: 80, resizeType: 'fit' })}
+					src={createImgproxyUrl(attachment.url, { width: 64, height: 64, resizeType: 'fit' })}
 					alt={attachment.filename}
-					className="w-10 h-10 rounded-md object-cover shrink-0 bg-white/10 border border-white/5"
+					className="w-7 h-7 rounded object-cover shrink-0 bg-white/10 border border-white/5"
 				/>
 			</div>
 		);
@@ -187,11 +223,11 @@ const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachm
 	const formattedSize = formatAttachmentSize(attachment.size);
 
 	return (
-		<div className="shrink-0 flex items-center gap-2 bg-[#252438] dark:bg-[#1f1e33] border border-white/10 rounded-lg px-2.5 py-1 max-w-[150px]">
+		<div className="shrink-0 flex items-center gap-1.5 bg-[#252438] dark:bg-[#1f1e33] border border-white/10 rounded-md px-2 py-0.5 max-w-[130px]">
 			<div className="shrink-0 flex items-center justify-center">{renderFileIcon(attachment.filename, attachment.filetype)}</div>
 			<div className="flex flex-col min-w-0 justify-center">
-				<span className="text-xs font-semibold text-theme-primary truncate leading-tight">{attachment.filename}</span>
-				{formattedSize && <span className="text-[10px] text-gray-400 leading-tight mt-0.5 truncate">{formattedSize}</span>}
+				<span className="text-[11px] font-semibold text-theme-primary truncate leading-tight">{attachment.filename}</span>
+				{formattedSize && <span className="text-[9px] text-gray-400 leading-tight truncate">{formattedSize}</span>}
 			</div>
 		</div>
 	);
@@ -424,6 +460,77 @@ export const ChannelTopicPinBanner = memo(() => {
 		dispatch
 	]);
 
+	const topicSenderId = useMemo(() => {
+		if (latestTopic?.last_sent_message?.sender_id) {
+			return String(latestTopic.last_sent_message.sender_id);
+		}
+		if (topicLastMessageInStore?.sender_id) {
+			return String(topicLastMessageInStore.sender_id);
+		}
+		if (latestTopic?.creator_id) {
+			return String(latestTopic.creator_id);
+		}
+		if (latestTopic?.message?.sender_id) {
+			return String(latestTopic.message.sender_id);
+		}
+		if (topicOriginalMessage?.sender_id) {
+			return String(topicOriginalMessage.sender_id);
+		}
+		return '';
+	}, [
+		latestTopic?.last_sent_message?.sender_id,
+		topicLastMessageInStore?.sender_id,
+		latestTopic?.creator_id,
+		latestTopic?.message?.sender_id,
+		topicOriginalMessage?.sender_id
+	]);
+
+	const {
+		namePriority: topicSenderNamePriority,
+		usernameSender: topicSenderUsername,
+		isAnonymous: isTopicAnonymous
+	} = useGetPriorityNameFromUserClan(topicSenderId);
+
+	const topicSenderMember = useAppSelector((state) => (topicSenderId ? selectMemberClanByUserId(state, topicSenderId) : null));
+
+	const isTopicSenderAnonymous = Boolean(
+		isTopicAnonymous ||
+			topicSenderId === NX_CHAT_APP_ANNONYMOUS_USER_ID ||
+			(topicLastMessageInStore as any)?.isAnonymous ||
+			(topicOriginalMessage as any)?.isAnonymous
+	);
+
+	const topicSenderName = useMemo(() => {
+		if (!topicSenderId) return '';
+		if (isTopicSenderAnonymous) return 'Anonymous';
+		return (
+			topicSenderNamePriority ||
+			(latestTopic?.last_sent_message as any)?.username ||
+			(latestTopic?.last_sent_message as any)?.display_name ||
+			(topicLastMessageInStore as any)?.display_name ||
+			(topicLastMessageInStore as any)?.username ||
+			(topicOriginalMessage as any)?.display_name ||
+			(topicOriginalMessage as any)?.username ||
+			(latestTopic?.message as any)?.display_name ||
+			(latestTopic?.message as any)?.username ||
+			topicSenderUsername ||
+			topicSenderMember?.clan_nick ||
+			topicSenderMember?.user?.display_name ||
+			topicSenderMember?.user?.username ||
+			''
+		);
+	}, [
+		topicSenderId,
+		isTopicSenderAnonymous,
+		topicSenderNamePriority,
+		latestTopic?.last_sent_message,
+		topicLastMessageInStore,
+		topicOriginalMessage,
+		latestTopic?.message,
+		topicSenderUsername,
+		topicSenderMember
+	]);
+
 	const topicTitle = useMemo(() => {
 		if (!latestTopic) return '';
 		return (
@@ -438,14 +545,26 @@ export const ChannelTopicPinBanner = memo(() => {
 		if (!latestTopic) return '';
 		const lastMsgContent = extractMessageText(latestTopic.last_sent_message?.content) || extractMessageText(topicLastMessageInStore?.content);
 		if (lastMsgContent && lastMsgContent !== topicTitle) {
+			if (topicSenderName) {
+				return t('messageFrom', 'Message from {{username}}: {{message}}', {
+					username: topicSenderName,
+					message: lastMsgContent
+				});
+			}
 			return lastMsgContent;
 		}
 		const origContent = extractMessageText((latestTopic as any)?.content) || extractMessageText(topicOriginalMessage?.content);
 		if (origContent && origContent !== topicTitle) {
+			if (topicSenderName) {
+				return t('messageFrom', 'Message from {{username}}: {{message}}', {
+					username: topicSenderName,
+					message: origContent
+				});
+			}
 			return origContent;
 		}
 		return '';
-	}, [latestTopic, topicOriginalMessage, topicTitle, topicLastMessageInStore]);
+	}, [latestTopic, topicOriginalMessage, topicTitle, topicLastMessageInStore, topicSenderName, t]);
 
 	const topicAttachment = useMemo(() => {
 		if (!latestTopic) return null;
@@ -498,9 +617,23 @@ export const ChannelTopicPinBanner = memo(() => {
 		}
 	}, [pinTimeSeconds]);
 
+	const pollQuestionFromContent = useMemo(() => {
+		if (!latestPin) return '';
+		return extractPollQuestion(pinMessageInStore?.content) || extractPollQuestion(latestPin.content);
+	}, [latestPin, pinMessageInStore]);
+
+	const [fetchedPollQuestion, setFetchedPollQuestion] = useState<string>('');
+
+	useEffect(() => {
+		setFetchedPollQuestion('');
+	}, [latestPin?.message_id]);
+
 	const isPinPoll = useMemo(() => {
 		if (!latestPin) return false;
 		if ((latestPin as any)?.code === TypeMessage.Poll || pinMessageInStore?.code === TypeMessage.Poll) {
+			return true;
+		}
+		if (pollQuestionFromContent) {
 			return true;
 		}
 		let raw: any = pinMessageInStore?.content || latestPin.content;
@@ -519,18 +652,51 @@ export const ChannelTopicPinBanner = memo(() => {
 				parsed = null;
 			}
 		}
-		return Boolean(
-			parsed && typeof parsed === 'object' && ('poll_id' in parsed || 'question' in parsed || 'answer_counts' in parsed || 'answers' in parsed)
-		);
-	}, [latestPin, pinMessageInStore]);
+		if (typeof raw === 'string' && raw.startsWith('📊')) {
+			return true;
+		}
+		if (parsed && typeof parsed === 'object') {
+			if ('poll_id' in parsed || 'question' in parsed || 'answer_counts' in parsed || 'answers' in parsed) {
+				return true;
+			}
+			if (typeof parsed.t === 'string' && parsed.t.startsWith('📊')) {
+				return true;
+			}
+		}
+		return false;
+	}, [latestPin, pinMessageInStore, pollQuestionFromContent]);
+
+	useEffect(() => {
+		if (!isPinPoll || pollQuestionFromContent) return;
+		const pinMessageId = String(latestPin?.message_id || '');
+		const pinChannelId = String(latestPin?.channel_id || currentChannelId || '');
+		if (!pinMessageId || !pinChannelId) return;
+
+		dispatch(getPoll({ message_id: pinMessageId, channel_id: pinChannelId }))
+			.unwrap()
+			.then((res: any) => {
+				const q = res?.question || res?.poll?.question || res?.data?.question;
+				if (q) {
+					setFetchedPollQuestion(String(q));
+				}
+			})
+			.catch(() => {
+				setFetchedPollQuestion('');
+			});
+	}, [isPinPoll, pollQuestionFromContent, latestPin?.message_id, latestPin?.channel_id, currentChannelId, dispatch]);
+
+	const pinPollQuestion = pollQuestionFromContent || fetchedPollQuestion;
 
 	const pinContent = useMemo(() => {
 		if (!latestPin) return '';
 		if (isPinPoll) {
+			if (pinPollQuestion) {
+				return t('pollWithQuestion', 'Poll: {{question}}', { question: pinPollQuestion });
+			}
 			return t('pollDiscussion', 'Cuộc bầu chọn');
 		}
 		return extractMessageText(latestPin.content) || extractMessageText(pinMessageInStore?.content);
-	}, [latestPin, pinMessageInStore, isPinPoll, t]);
+	}, [latestPin, pinMessageInStore, isPinPoll, pinPollQuestion, t]);
 
 	const pinAttachment = useMemo(() => {
 		if (!latestPin) return null;
@@ -589,35 +755,35 @@ export const ChannelTopicPinBanner = memo(() => {
 
 	return (
 		<div
-			className="w-full bg-theme-chat px-4 pb-2 pt-1 border-b border-theme-primary flex-shrink-0"
+			className="w-full bg-theme-chat px-4 pt-1 pb-1.5 flex-shrink-0 relative z-10"
 			data-e2e={generateE2eId('chat.channel_message.topic_pin_banner')}
 		>
-			<div className="flex items-center w-full bg-item-theme border border-theme-primary rounded-[10px] py-1.5 px-3 gap-3 overflow-hidden shadow-sm">
+			<div className="flex items-stretch w-full bg-item-theme rounded-[10px] overflow-hidden shadow-[0_4px_14px_rgba(0,0,0,0.16),0_1px_4px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.45),0_2px_6px_rgba(0,0,0,0.25)] transition-shadow duration-200">
 				{latestTopic && (
 					<div
-						className={`flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity ${
+						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-1.5 px-3 hover:bg-white/[0.06] dark:hover:bg-white/[0.08] transition-colors ${
 							hasBoth ? 'flex-1' : 'w-full'
 						}`}
 						onClick={handleJumpToTopic}
 						title={topicTitle}
 						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item')}
 					>
-						<div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-lg text-theme-primary-active">
-							<Icons.TopicIcon className="w-5 h-5 shrink-0 text-theme-primary-active" />
+						<div className="flex items-center justify-center shrink-0 w-7 h-7 text-theme-primary-active">
+							<Icons.TopicIcon className="w-6 h-6 shrink-0 text-theme-primary-active" />
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="text-sm font-semibold text-theme-primary truncate leading-tight">{topicTitle}</div>
-							{topicSubtitle && <div className="text-xs text-gray-400 truncate leading-tight mt-0.5">{topicSubtitle}</div>}
+							<div className="text-[13px] font-semibold text-theme-primary truncate leading-tight">{topicTitle}</div>
+							{topicSubtitle && <div className="text-[11px] text-gray-400 truncate leading-tight mt-0.5">{topicSubtitle}</div>}
 						</div>
 						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} />}
 					</div>
 				)}
 
-				{hasBoth && <div className="w-[1px] h-8 bg-white/10 shrink-0 mx-1" />}
+				{hasBoth && <div className="w-[1px] my-1.5 bg-white/10 shrink-0" />}
 
 				{latestPin && (
 					<div
-						className={`flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity ${
+						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-1.5 px-3 hover:bg-white/[0.06] dark:hover:bg-white/[0.08] transition-colors ${
 							hasBoth ? 'flex-1' : 'w-full'
 						}`}
 						onClick={handleJumpToPin}
@@ -629,7 +795,7 @@ export const ChannelTopicPinBanner = memo(() => {
 								alt={pinUserName}
 								username={pinUserName}
 								className="!w-7 !h-7 !min-w-7 !min-h-7 rounded-full text-xs shrink-0"
-								classNameText="text-xs"
+								classNameText="text-[10px]"
 								srcImgProxy={pinAvatarUrl ? createImgproxyUrl(pinAvatarUrl, { width: 64, height: 64, resizeType: 'fit' }) : undefined}
 								src={pinAvatarUrl}
 								isAnonymous={isPinAnonymous}
@@ -637,12 +803,12 @@ export const ChannelTopicPinBanner = memo(() => {
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
 							<div className="flex items-center justify-between gap-2 min-w-0">
-								<span className="text-sm font-semibold text-theme-primary truncate leading-tight">{pinUserName}</span>
+								<span className="text-[13px] font-semibold text-theme-primary truncate leading-tight">{pinUserName}</span>
 								{pinFormattedTime && (
-									<span className="text-[11px] text-gray-400 font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
+									<span className="text-[10px] text-gray-400 font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
 								)}
 							</div>
-							{pinContent && <div className="text-xs text-gray-400 truncate leading-tight mt-0.5">{pinContent}</div>}
+							{pinContent && <div className="text-[11px] text-gray-400 truncate leading-tight mt-0.5">{pinContent}</div>}
 						</div>
 						{pinAttachment && <AttachmentThumbnail attachment={pinAttachment} />}
 					</div>

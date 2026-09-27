@@ -37,6 +37,8 @@
 	"latestPin": "Latest pin",
 	"poll": "Voting",
 	"pollDiscussion": "Voting",
+	"pollWithQuestion": "Poll: {{question}}",
+	"messageFrom": "Message from {{username}}: {{message}}",
 	"reactions": "React",
 	"invoice": "In voice",
 	"shareScreen": "Sharing screen",
