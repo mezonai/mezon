@@ -72,7 +72,7 @@ import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEditGroupModal } from '../../hooks/useEditGroupModal';
@@ -88,7 +88,6 @@ import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
 import PinnedMessages from './TopBarComponents/PinnedMessages';
-
 import ThreadModal from './TopBarComponents/Threads/ThreadModal';
 
 export type ChannelTopbarProps = {
@@ -98,7 +97,7 @@ export type ChannelTopbarProps = {
 	isChannelPath?: boolean;
 };
 
-const ChannelTopbar = memo(({ children }: { children?: ReactNode }) => {
+const ChannelTopbar = memo(() => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const { setSubPanelActive } = useGifsStickersEmoji();
@@ -112,10 +111,9 @@ const ChannelTopbar = memo(({ children }: { children?: ReactNode }) => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`h-heightTopBar max-sbm:z-20 flex min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
-			{children}
 		</div>
 	);
 });

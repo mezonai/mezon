@@ -966,6 +966,37 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		[props.currentChannelId]
 	);
 
+	const { handlePaste: originalHandlePaste, handleConvertToFile } = props;
+
+	const handlePasteWithCharacterLimit = useCallback(
+		(event: React.ClipboardEvent<HTMLDivElement>) => {
+			if (!event.clipboardData) {
+				return;
+			}
+
+			const items = event.clipboardData.items;
+			let hasMediaFiles = false;
+
+			if (items) {
+				for (let i = 0; i < items.length; i++) {
+					const type = items[i].type;
+					if (type.indexOf('image') !== -1 || type.indexOf('video') !== -1) {
+						hasMediaFiles = true;
+						break;
+					}
+				}
+			}
+
+			if (hasMediaFiles) {
+				if (originalHandlePaste) {
+					originalHandlePaste(event);
+				}
+				return;
+			}
+		},
+		[originalHandlePaste, handleConvertToFile, draftRequest?.content, updateDraft]
+	);
+
 	useClickUpToEditMessage({
 		editorRef: editorElementRef as RefObject<HTMLDivElement>,
 		currentChannelId: props.currentChannelId,
@@ -1001,7 +1032,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						handleSendWithFormattedText(formattedText, anonymousMode);
 						cachedLinkOgp.current = '';
 					}}
-					onHandlePaste={props.handlePaste}
+					onHandlePaste={handlePasteWithCharacterLimit}
 					enableUndoRedo={true}
 					maxHistorySize={50}
 					hasFilesToSend={attachmentData.length > 0}
