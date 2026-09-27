@@ -46,7 +46,7 @@ export const SfuAgentControl = memo(({ isExternalCalling, roomId }: { isExternal
 			onClick={() => void handleToggle()}
 			aria-label={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
 			title={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
-			className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-[#1f8cf9] hover:!bg-[#3396fa]' : ''} ${loading ? 'cursor-default' : ''}`}
+			className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500 hover:!bg-blue-600' : ''} ${loading ? 'cursor-default' : ''}`}
 		>
 			{loading ? <Icons.LoadingSpinner /> : <AgentIcon />}
 		</button>
