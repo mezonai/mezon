@@ -1,4 +1,11 @@
 {
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Đang áp dụng lọc…",
+		"applied": "Đã bật lọc tiếng ồn",
+		"preparing": "Đang áp dụng bộ lọc tiếng ồn…",
+		"audioBlocked": "Âm thanh chưa được truyền trong lúc áp dụng bộ lọc.",
+		"keepMuted": "Âm thanh đang tạm chặn. Bấm để giữ mic ở trạng thái tắt."
+	},
 	"joinChannelVoiceBS": {
 		"channelVoice": "Phòng thoại",
 		"joinVoice": "Tham gia thoại"
