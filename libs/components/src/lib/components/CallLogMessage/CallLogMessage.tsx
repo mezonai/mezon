@@ -2,6 +2,7 @@ import { useChatSending } from '@mezon/core';
 import {
 	audioCallActions,
 	EStateFriend,
+	getStore,
 	selectAllAccount,
 	selectAudioBusyTone,
 	selectAudioDialTone,
@@ -130,8 +131,9 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	);
 
 	const handleStartCall = async () => {
-		if (!isInCall && !(await ensureMediaPermission('microphone', handleStartCall))) return;
-		if (!isInCall) {
+		const inCall = selectIsInCall(getStore().getState());
+		if (!inCall && !(await ensureMediaPermission('microphone', handleStartCall))) return;
+		if (!inCall) {
 			handleSend(
 				{
 					t: `Started ${callLog.isVideo ? 'video' : 'voice'} call`,

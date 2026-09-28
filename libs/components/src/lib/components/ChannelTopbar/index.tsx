@@ -619,7 +619,9 @@ const DmTopbarTools = memo(() => {
 			dispatch(toastActions.addToast({ message: t('toastMessages.youAreOnAnotherCall'), type: 'warning', autoClose: 3000 }));
 			return;
 		}
-		const start = () => startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
+		const start = () => {
+			if (!selectIsInCall(getStore().getState())) startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
+		};
 		if (await ensureMediaPermission('microphone', start)) start();
 	};
 

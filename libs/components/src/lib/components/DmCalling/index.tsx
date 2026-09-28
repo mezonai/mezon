@@ -26,7 +26,7 @@ import { Icons, Menu } from '@mezon/ui';
 import { AvatarImage } from '@mezon/components';
 import { createImgproxyUrl, ensureMediaPermission, IMessageTypeCallLog, useMediaPermissions } from '@mezon/utils';
 import { WebrtcSignalingType } from 'mezon-js';
-import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -62,7 +62,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const avatarImages = currentDmGroup?.avatars || [];
 	const nameImages = currentDmGroup?.usernames || [];
 	const isMuteMicrophone = useSelector(selectIsMuteMicrophone);
-	const { hasMicrophoneAccess, hasCameraAccess } = useMediaPermissions();
+	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState } = useMediaPermissions();
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
@@ -142,20 +142,21 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	}));
 
 	const handleMuteToggle = () => {
+		if (microphonePermissionState === 'denied') {
+			void ensureMediaPermission('microphone');
+			return;
+		}
 		toggleAudio();
 		dispatch(DMCallActions.setIsMuteMicrophone(!isMuteMicrophone));
 	};
 
-	const triggerCall = async (isVideoCall = false, isAnswer = false) => {
-		if (isAnswer && !(await ensureMediaPermission('microphone', () => triggerCallRef.current(isVideoCall, isAnswer)))) return;
+	const triggerCall = (isVideoCall = false, isAnswer = false) => {
 		if (!isAnswer) {
 			dispatch(audioCallActions.setIsDialTone(true));
 			dispatch(audioCallActions.setIsEndTone(false));
 		}
 		onStartCall({ isVideoCall, isAnswer });
 	};
-	const triggerCallRef = useRef(triggerCall);
-	triggerCallRef.current = triggerCall;
 
 	const onStartCall = async ({ isVideoCall = false, isAnswer = false }) => {
 		if (!isAnswer) dispatch(DMCallActions.setIsInCall(true));
@@ -434,13 +435,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 						<div className="justify-center items-center gap-3 sbm:gap-4 flex w-full">
 							<div
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
-								onClick={() => triggerCall(true, true)}
+								onClick={() => onStartCall({ isVideoCall: true, isAnswer: true })}
 							>
 								<Icons.VoiceCameraIcon scale={1} />
 							</div>
 							<div
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
-								onClick={() => triggerCall(false, true)}
+								onClick={() => onStartCall({ isVideoCall: false, isAnswer: true })}
 							>
 								<Icons.VoiceMicIcon scale={2} />
 							</div>

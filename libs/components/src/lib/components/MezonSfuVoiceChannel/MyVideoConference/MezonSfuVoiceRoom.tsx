@@ -2004,6 +2004,7 @@ export function MezonSfuVoiceRoom({
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 			if (isTyping(event.target) || isTyping(document.activeElement)) return;
+			if ((event.target as HTMLElement | null)?.closest?.('[role="dialog"]')) return;
 			event.preventDefault();
 			if (joinRole === 'audience') {
 				void setPushToTalkRef.current(true);

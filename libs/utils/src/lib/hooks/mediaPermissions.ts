@@ -5,7 +5,7 @@ export type MediaPermissionState = 'granted' | 'denied' | 'prompt';
 export type MediaPermissionPrompt =
 	| { kind: 'request'; device: MediaDevice; requesting: boolean }
 	| { kind: 'blocked'; device: MediaDevice; bySystem: boolean };
-export type MediaAccessResult = 'granted' | 'blocked' | 'unavailable';
+export type MediaAccessResult = 'granted' | 'refused' | 'unavailable';
 
 interface MediaPermissionSnapshot {
 	microphone: MediaPermissionState | null;
@@ -14,6 +14,8 @@ interface MediaPermissionSnapshot {
 }
 
 const DEVICES: MediaDevice[] = ['microphone', 'camera'];
+// A refusal quicker than this cannot be a person answering the browser's prompt.
+const PROMPT_ANSWER_MIN_MS = 300;
 const listeners = new Set<() => void>();
 const blockedBySystem: Record<MediaDevice, boolean> = { microphone: false, camera: false };
 const capturedThisSession: Record<MediaDevice, boolean> = { microphone: false, camera: false };
@@ -118,13 +120,22 @@ export const reportMediaAccessGranted = (device: MediaDevice) => {
  * Records a refused `getUserMedia` and opens the blocked popup for it. Returns false for failures
  * that are not a permission refusal (no device, device busy), which callers report themselves.
  */
-export const reportMediaAccessError = (device: MediaDevice, error: unknown): boolean => {
+export const reportMediaAccessError = (device: MediaDevice, error: unknown, requestedAt?: number): boolean => {
 	if (!isPermissionRefusal(error)) return false;
 	capturedThisSession[device] = false;
 	const message = (error as Error | undefined)?.message ?? '';
+	const answeredAfterMs = requestedAt === undefined ? undefined : Date.now() - requestedAt;
 	void queryBrowserPermission(device).then((browserState) => {
 		// The site is allowed but the browser itself is not: the OS privacy settings refused it.
-		blockedBySystem[device] = browserState === 'granted' || /system/i.test(message);
+		const bySystem = browserState === 'granted' || /system/i.test(message);
+		// Still 'prompt' means the user closed the browser's prompt: nothing is blocked. An instant refusal
+		// is the browser blocking without asking (Firefox's temporary block), which needs the unblock steps.
+		if (browserState === 'prompt' && !bySystem && (answeredAfterMs === undefined || answeredAfterMs >= PROMPT_ANSWER_MIN_MS)) {
+			const { prompt } = snapshot;
+			if (prompt?.kind === 'request' && prompt.device === device) setSnapshot({ prompt: { ...prompt, requesting: false } });
+			return;
+		}
+		blockedBySystem[device] = bySystem;
 		const { prompt } = snapshot;
 		if (prompt?.device === device) onGranted = null;
 		setSnapshot({
@@ -136,13 +147,14 @@ export const reportMediaAccessError = (device: MediaDevice, error: unknown): boo
 };
 
 const acquire = async (device: MediaDevice): Promise<MediaAccessResult> => {
+	const requestedAt = Date.now();
 	try {
 		const stream = await navigator.mediaDevices.getUserMedia(constraintsFor(device));
 		stream.getTracks().forEach((track) => track.stop());
 		reportMediaAccessGranted(device);
 		return 'granted';
 	} catch (error) {
-		return reportMediaAccessError(device, error) ? 'blocked' : 'unavailable';
+		return reportMediaAccessError(device, error, requestedAt) ? 'refused' : 'unavailable';
 	}
 };
 
@@ -153,10 +165,18 @@ const acquire = async (device: MediaDevice): Promise<MediaAccessResult> => {
 export const ensureMediaPermission = async (device: MediaDevice, action?: () => void): Promise<boolean> => {
 	watch();
 	const browserState = await queryBrowserPermission(device);
+	// Already asking: keep that popup and its pending action.
+	if (snapshot.prompt) return false;
 	const state: MediaPermissionState = browserState ? effectiveState(device, browserState) : snapshot[device] === 'granted' ? 'granted' : 'prompt';
 	if (browserState === 'granted' && blockedBySystem[device]) {
 		// Only a capture attempt tells whether the OS still blocks the browser.
-		return (await acquire(device)) === 'granted';
+		const result = await acquire(device);
+		if (result === 'unavailable') {
+			// No longer refused: let the caller run into its own device error.
+			blockedBySystem[device] = false;
+			apply(device, 'granted');
+		}
+		return result !== 'refused';
 	}
 	if (state === 'granted') {
 		apply(device, 'granted');

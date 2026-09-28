@@ -17,7 +17,7 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
-import { reportMediaAccessError, reportMediaAccessGranted } from '../hooks/mediaPermissions';
+import { reportMediaAccessGranted } from '../hooks/mediaPermissions';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -937,7 +937,7 @@ export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Prom
 		}
 		return 'denied';
 	} catch (error: any) {
-		if (reportMediaAccessError(device, error)) {
+		if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
 			return 'denied';
 		} else if (error.name === 'NotFoundError') {
 			return 'not_found';
