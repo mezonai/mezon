@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { SfuSignalMessage } from '../../types';
+import { meetTokenNeedsRefresh } from '../meetToken';
 import { canReactivateMid, getDepartedMids, getMsidOccupantsByMidFromSdp, isReceivingRemoteTrack, type RetiredSource } from '../remoteMediaLifecycle';
 import { SfuAudioTrack } from './SfuAudioTrack';
 
@@ -18,6 +19,7 @@ export interface SfuAudioAudienceProps {
 
 const reconnectDelay = (attempt: number) => Math.min(1000 * 2 ** Math.min(attempt, 4), 15000);
 const MAX_RECONNECT_ATTEMPTS = 40;
+const MAX_TOKEN_REFRESH_ATTEMPTS = 3;
 const HEALTHY_CONNECTION_RESET_MS = 30_000;
 
 const applyReceiverJitterTarget = (receiver: RTCRtpReceiver) => {
@@ -77,6 +79,8 @@ export function SfuAudioAudience({
 		let connecting = false;
 		let closingIntentionally = false;
 		let disposed = false;
+		let tokenRefreshAttempts = 0;
+		let tokenRejected = false;
 		const owners = new Map<string, string>();
 		const users = new Map<string, string>();
 		const retired = new Map<string, RetiredSource>();
@@ -197,12 +201,21 @@ export function SfuAudioAudience({
 			connecting = true;
 			closeTransport();
 			let nextToken = tokenRef.current;
-			if (refreshToken) {
+			const wantsRefresh = refreshToken && (tokenRejected || meetTokenNeedsRefresh(nextToken));
+			if (wantsRefresh && tokenRefreshAttempts >= MAX_TOKEN_REFRESH_ATTEMPTS) {
+				connecting = false;
+				reportError('SFU audio token refresh limit reached');
+				reportState('failed');
+				return;
+			}
+			if (wantsRefresh) {
+				tokenRefreshAttempts += 1;
 				try {
 					nextToken = await onRefreshTokenRef.current();
 					if (disposed) return;
 					if (!nextToken) throw new Error('empty token');
 					tokenRef.current = nextToken;
+					tokenRejected = false;
 				} catch {
 					if (disposed) return;
 					connecting = false;
@@ -232,7 +245,10 @@ export function SfuAudioAudience({
 						if (stableConnectionTimerRef.current !== undefined) window.clearTimeout(stableConnectionTimerRef.current);
 						stableConnectionTimerRef.current = window.setTimeout(() => {
 							stableConnectionTimerRef.current = undefined;
-							if (pcRef.current === pc && pc.connectionState === 'connected') reconnectAttemptRef.current = 0;
+							if (pcRef.current === pc && pc.connectionState === 'connected') {
+								reconnectAttemptRef.current = 0;
+								tokenRefreshAttempts = 0;
+							}
 						}, HEALTHY_CONNECTION_RESET_MS);
 						reportState('connected');
 					} else if (pc.connectionState === 'failed') {
@@ -300,6 +316,7 @@ export function SfuAudioAudience({
 					}
 					if (message.type === 'error') {
 						if (message.message === 'stale_offer_generation' || message.message === 'future_offer_generation') return;
+						if (message.message === 'invalid_token') tokenRejected = true;
 						reportError(message.message === 'invalid_token' ? 'SFU audio token rejected' : 'SFU audio signaling failed');
 						scheduleReconnect();
 					}

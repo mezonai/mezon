@@ -1,11 +1,13 @@
+import { parseHashtags } from '@mezon/store';
 import type { ApiClanDiscover, ApiClanDiscoverRequest, ApiListClanDiscover } from 'mezon-js';
 import { Client } from 'mezon-js';
+import { ListClanDiscover } from 'mezon-js-protobuf';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { DISCOVER_LAYOUT, FEATURED_CLAN_ID, PAGINATION, type DiscoverSort } from '../constants/constants';
-import { clanMatchesId, isCategoryShortcutId, type DiscoverClan } from '../pages/dicoverpage/communityUtils';
+import { clanMatchesId, isSameClan, type DiscoverClan } from '../pages/dicoverpage/communityUtils';
 
 interface DiscoverContextType {
 	clans: DiscoverClan[];
@@ -15,14 +17,14 @@ interface DiscoverContextType {
 	error: string | null;
 	searchTerm: string;
 	committedQuery: string;
-	selectedCategory: string;
+	selectedHashtags: string[];
 	sort: DiscoverSort;
 	verifiedOnly: boolean;
 	hasMore: boolean;
 	currentPage: number;
 	pageCount: number;
 	handleSearch: (term: string) => void;
-	handleCategorySelect: (category: string) => void;
+	handleToggleHashtag: (tag: string) => void;
 	handleSortChange: (sort: DiscoverSort) => void;
 	handleVerifiedOnly: (value: boolean) => void;
 	handleLoadMore: () => void;
@@ -44,7 +46,8 @@ const requestKey = (request: ApiClanDiscoverRequest) =>
 	JSON.stringify({
 		clan_id: request.clan_id || '',
 		page_number: request.page_number || 0,
-		item_per_page: request.item_per_page || 0
+		item_per_page: request.item_per_page || 0,
+		hashtags: request.hashtags || ''
 	});
 
 const inflightDiscover = new Map<string, Promise<ApiListClanDiscover | null>>();
@@ -72,6 +75,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 	const stageClansRef = useRef<DiscoverClan[]>([]);
 	const featuredClanRef = useRef<DiscoverClan | null>(null);
 	const loadedPageRef = useRef<number | null>(null);
+	const loadedHashtagsRef = useRef<string | null>(null);
 	const tRef = useRef(t);
 	clansRef.current = clans;
 	stageClansRef.current = stageClans;
@@ -79,7 +83,10 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 	tRef.current = t;
 
 	const searchTerm = searchParams.get('q') || '';
-	const selectedCategory = searchParams.get('category') || '';
+	const hashtagsParam = searchParams.get('hashtags') || searchParams.get('category') || '';
+	const selectedHashtags = useMemo(() => {
+		return parseHashtags(hashtagsParam);
+	}, [hashtagsParam]);
 	const sort = parseSort(searchParams.get('sort'));
 	const verifiedOnly = searchParams.get('verified') === '1';
 	const pageFromUrl = Math.max(1, Number.parseInt(searchParams.get('page') || '1', 10) || 1);
@@ -100,12 +107,74 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 	const getClient = () => {
 		if (!clientRef.current) {
-			clientRef.current = new Client(
+			const client = new Client(
 				process.env.NX_CHAT_APP_API_KEY as string,
 				process.env.NX_CHAT_APP_API_GW_HOST as string,
 				process.env.NX_CHAT_APP_API_GW_PORT as string,
 				process.env.NX_CHAT_APP_API_SECURE === 'true'
 			);
+
+			const transport = (client as unknown as { transport: Record<string, unknown> }).transport;
+			if (transport && !transport._clanDiscoverPatched) {
+				transport._clanDiscoverPatched = true;
+				transport.clanDiscover = function (
+					serverKey: string,
+					pass: string,
+					body: Record<string, unknown>,
+					options: { headers?: Record<string, string> } = {}
+				) {
+					if (body == null) throw new Error("'body' is a required parameter but is null or undefined.");
+					const queryMap = new Map<string, string | number | boolean>();
+					if (body.hashtags) queryMap.set('hashtags', String(body.hashtags));
+					if (body.page_number !== undefined && body.page_number !== null) queryMap.set('page_number', Number(body.page_number));
+					if (body.item_per_page !== undefined && body.item_per_page !== null) queryMap.set('item_per_page', Number(body.item_per_page));
+					if (body.clan_id) queryMap.set('clan_id', String(body.clan_id));
+
+					const self = this as unknown as {
+						basePath: string;
+						buildFullUrl: (base: string, path: string, params: Map<string, unknown>) => string;
+						timeoutMs?: number;
+					};
+					const fullUrl = self.buildFullUrl(self.basePath, '/v2/clan/discover', queryMap as Map<string, unknown>);
+
+					const s = JSON.stringify(body || {});
+					const headers: Record<string, string> = {
+						Accept: 'application/x-protobuf',
+						'Content-Type': 'application/json',
+						...(options?.headers || {})
+					};
+					if (serverKey) {
+						headers.Authorization = `Basic ${btoa(`${serverKey}:${pass || ''}`)}`;
+					}
+
+					return Promise.race([
+						fetch(fullUrl, { method: 'POST', headers, body: s }).then(async (res) => {
+							if (!res.ok) {
+								if (res.status === 405) {
+									const getRes = await fetch(fullUrl, { method: 'GET', headers });
+									if (!getRes.ok) throw getRes;
+									const buf = await getRes.arrayBuffer();
+									try {
+										return ListClanDiscover.decode(new Uint8Array(buf));
+									} catch {
+										return JSON.parse(new TextDecoder().decode(buf));
+									}
+								}
+								throw res;
+							}
+							const buffer = await res.arrayBuffer();
+							try {
+								return ListClanDiscover.decode(new Uint8Array(buffer));
+							} catch {
+								return JSON.parse(new TextDecoder().decode(buffer));
+							}
+						}),
+						new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out.')), self.timeoutMs || 30000))
+					]);
+				};
+			}
+
+			clientRef.current = client;
 		}
 		return clientRef.current;
 	};
@@ -125,6 +194,8 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 		inflightDiscover.set(key, task);
 		return task;
 	}, []);
+
+	const singleClanIdsRef = useRef<Set<string>>(new Set());
 
 	const readCachedClan = (clanId: string): DiscoverClan | null =>
 		[featuredClanRef.current, ...stageClansRef.current, ...clansRef.current].find(
@@ -150,9 +221,11 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 					setError(null);
 				}
 
+				const hashtagsFormatted = selectedHashtags.length > 0 ? selectedHashtags.join(',') : undefined;
 				const request: ApiClanDiscoverRequest = {
 					page_number: page,
-					item_per_page: PAGINATION.ITEMS_PER_PAGE
+					item_per_page: PAGINATION.ITEMS_PER_PAGE,
+					hashtags: hashtagsFormatted
 				};
 				const response = await listClanDiscover(request);
 				if (requestId !== requestIdRef.current) return;
@@ -164,21 +237,18 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 					resolveFeaturedFrom(newClans);
 				}
 				setClans((prev) => {
-					const incomingIds = new Set(newClans.map((clan) => clan.clan_id || clan.short_url).filter(Boolean) as string[]);
-					const preserved = prev.filter((clan) => {
-						const id = clan.clan_id || clan.short_url;
-						return id && !incomingIds.has(id);
-					});
-					if (!append) return [...newClans, ...preserved];
-					return [
-						...prev,
-						...newClans.filter((clan) => {
-							const id = clan.clan_id || clan.short_url;
-							return id && !incomingIds.has(id);
-						})
-					];
+					if (!append) {
+						const retained = prev.filter(
+							(p) =>
+								!newClans.some((n) => isSameClan(n, p)) &&
+								(singleClanIdsRef.current.has(p.clan_id || '') || singleClanIdsRef.current.has(p.short_url || '') || !isDiscoverIndex)
+						);
+						return retained.length > 0 ? [...newClans, ...retained] : newClans;
+					}
+					return [...prev, ...newClans.filter((clan) => !prev.some((p) => isSameClan(p, clan)))];
 				});
 				loadedPageRef.current = page;
+				loadedHashtagsRef.current = hashtagsParam;
 				const nextPageCount = Math.max(1, response.page_count || 1);
 				setPageCount(nextPageCount);
 				setHasMore(page < nextPageCount && newClans.length > 0);
@@ -194,7 +264,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 				}
 			}
 		},
-		[listClanDiscover, resolveFeaturedFrom]
+		[hashtagsParam, isDiscoverIndex, listClanDiscover, resolveFeaturedFrom, selectedHashtags]
 	);
 
 	const fetchSingleClan = useCallback(
@@ -214,8 +284,10 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 				const clanDiscoverList = (response.clan_discover || []) as DiscoverClan[];
 				const found = clanDiscoverList.find((item) => clanMatchesId(item, clanId)) || clanDiscoverList[0] || null;
 				if (found) {
+					if (found.clan_id) singleClanIdsRef.current.add(found.clan_id);
+					if (found.short_url) singleClanIdsRef.current.add(found.short_url);
 					setClans((prev) => {
-						const exists = prev.some((item) => clanMatchesId(item, clanId));
+						const exists = prev.some((item) => isSameClan(item, found));
 						return exists ? prev : [...prev, found];
 					});
 				}
@@ -234,9 +306,9 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 	useEffect(() => {
 		if (!isDiscoverIndex) return;
-		if (loadedPageRef.current === pageFromUrl && clansRef.current.length > 0) return;
+		if (loadedPageRef.current === pageFromUrl && loadedHashtagsRef.current === hashtagsParam && clansRef.current.length > 0) return;
 		fetchClansDiscover(pageFromUrl, false);
-	}, [isDiscoverIndex, fetchClansDiscover, pageFromUrl]);
+	}, [isDiscoverIndex, fetchClansDiscover, pageFromUrl, hashtagsParam]);
 
 	useEffect(() => {
 		setSearchInput(searchTerm);
@@ -257,12 +329,23 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 		[updateParams]
 	);
 
-	const handleCategorySelect = useCallback(
-		(category: string) => {
-			const next = selectedCategory === category ? '' : category;
-			updateParams({ category: next && isCategoryShortcutId(next) ? next : null, page: null }, false);
+	const handleToggleHashtag = useCallback(
+		(tag: string) => {
+			const cleanTag = tag.trim().replace(/^#/, '');
+			const isAlreadySelected = selectedHashtags.some((t) => t.toLowerCase() === cleanTag.toLowerCase());
+			const next = isAlreadySelected
+				? selectedHashtags.filter((t) => t.toLowerCase() !== cleanTag.toLowerCase())
+				: [...selectedHashtags, cleanTag];
+			updateParams(
+				{
+					hashtags: next.length > 0 ? next.join(',') : null,
+					category: null,
+					page: null
+				},
+				false
+			);
 		},
-		[selectedCategory, updateParams]
+		[selectedHashtags, updateParams]
 	);
 
 	const handleSortChange = useCallback(
@@ -298,6 +381,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 	const retry = useCallback(() => {
 		loadedPageRef.current = null;
+		loadedHashtagsRef.current = null;
 		fetchClansDiscover(1, false);
 	}, [fetchClansDiscover]);
 
@@ -311,14 +395,14 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 			error,
 			searchTerm: searchInput,
 			committedQuery: searchTerm,
-			selectedCategory,
+			selectedHashtags,
 			sort,
 			verifiedOnly,
 			hasMore,
 			currentPage: pageFromUrl,
 			pageCount,
 			handleSearch,
-			handleCategorySelect,
+			handleToggleHashtag,
 			handleSortChange,
 			handleVerifiedOnly,
 			handleLoadMore,
@@ -336,14 +420,14 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 			error,
 			searchInput,
 			searchTerm,
-			selectedCategory,
+			selectedHashtags,
 			sort,
 			verifiedOnly,
 			hasMore,
 			pageFromUrl,
 			pageCount,
 			handleSearch,
-			handleCategorySelect,
+			handleToggleHashtag,
 			handleSortChange,
 			handleVerifiedOnly,
 			handleLoadMore,

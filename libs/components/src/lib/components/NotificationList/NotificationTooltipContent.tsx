@@ -65,25 +65,37 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const hasMoreTopics = useSelector(selectHasMoreTopics);
 	const hasFetchedTopics = useSelector(selectHasFetchedTopics);
 
+	const fetchedTabsRef = useRef<{ clanId: string; tabs: Set<string> }>({
+		clanId: '',
+		tabs: new Set()
+	});
+
 	const handleChangeTab = (valueTab: string) => {
 		setCurrentTabNotify(valueTab);
+	};
+
+	useEffect(() => {
 		if (!currentClanId) return;
 
-		switch (valueTab) {
+		if (fetchedTabsRef.current.clanId !== currentClanId) {
+			fetchedTabsRef.current = { clanId: currentClanId, tabs: new Set() };
+		}
+
+		if (fetchedTabsRef.current.tabs.has(currentTabNotify)) {
+			return;
+		}
+
+		fetchedTabsRef.current.tabs.add(currentTabNotify);
+
+		switch (currentTabNotify) {
 			case InboxType.INDIVIDUAL:
-				if (!allNotificationForYou) {
-					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
-				}
+				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
 				break;
 			case InboxType.MESSAGES:
-				if (!allNotificationClan) {
-					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
-				}
+				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
 				break;
 			case InboxType.MENTIONS:
-				if (!allNotificationMentions) {
-					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
-				}
+				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
 				break;
 			case InboxType.TOPICS:
 				if (!hasFetchedTopics) {
@@ -91,13 +103,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				}
 				break;
 		}
-	};
-
-	useEffect(() => {
-		if (currentClanId && !allNotificationMentions) {
-			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
-		}
-	}, [allNotificationMentions, currentClanId, dispatch]);
+	}, [currentTabNotify, currentClanId, hasFetchedTopics, dispatch]);
 
 	const getAllNotificationForYou = useMemo(() => {
 		if (!allNotificationForYou?.data?.length) {

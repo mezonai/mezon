@@ -107,7 +107,7 @@ export const CreateNewChannelModal = () => {
 			clan_id: currentClanId as string,
 			type: channelType,
 			channel_label: channelName,
-			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isPrivate,
+			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL && channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE ? 0 : isPrivate,
 			category_id: currentCategory?.category_id || channelWelcome?.category_id,
 			...(isAppChannel && selectedApp && { app_id: selectedApp.id }),
 			parent_id: '0'
@@ -147,6 +147,9 @@ export const CreateNewChannelModal = () => {
 	const onChangeChannelType = (value: number) => {
 		setIsErrorType('');
 		setChannelType(value);
+		if (value === ChannelType.CHANNEL_TYPE_STREAMING) {
+			setIsPrivate(0);
+		}
 	};
 
 	const onChangeToggle = (value: number) => {
@@ -234,7 +237,7 @@ export const CreateNewChannelModal = () => {
 							onKeyDown={handleKeyDown}
 						/>
 					)}
-					{channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
+					{channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
 						<ChannelStatusModal onChangeValue={onChangeToggle} channelNameProps={t('labels.isPrivate')} />
 					)}
 				</div>

@@ -1119,6 +1119,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							channelId: user.channel_id
 						})
 					);
+
+					const isVoiceJoined = selectVoiceInfo(store.getState());
+					if (isVoiceJoined?.channelId === user.channel_id) {
+						//Leave Room If It's been deleted
+						dispatch(voiceActions.resetVoiceControl());
+					}
 				} else {
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_GROUP) {
 						dispatch(directActions.removeGroupMember({ userId: userID, currentUserId: userId as string, channelId: user.channel_id }));
@@ -1165,6 +1171,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					dispatch(listChannelsByUserActions.remove(id));
 					dispatch(topicsActions.removeClanTopics(user?.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
+					const isVoiceJoined = selectVoiceInfo(store.getState());
+					if (isVoiceJoined?.channelId === user.clan_id) {
+						//Leave Room If It's been deleted
+						dispatch(voiceActions.resetVoiceControl());
+					}
 				}
 				dispatch(
 					channelMembersActions.removeUserByUserIdAndClan({
