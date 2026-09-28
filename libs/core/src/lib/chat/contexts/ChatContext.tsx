@@ -2057,7 +2057,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			if (!channelUpdated.channel_private && !channelExist && channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			if (
+				!channelUpdated.channel_private &&
+				!channelExist &&
+				(channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_CHANNEL ||
+					channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE)
+			) {
 				dispatch(
 					updateChannelActions.addChannelNotExist({
 						channel: channelUpdated
