@@ -1,17 +1,11 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
-import {
-	attachmentActions,
-	selectAllListDocumentByChannel,
-	selectCurrentChannelChannelId,
-	selectCurrentChannelClanId,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { attachmentActions, selectAllListDocumentByChannel, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { AttachmentTypeUpload } from '@mezon/utils';
 import type { RefObject } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useGalleryTarget } from '../../GalleryModal';
 import EmptyFile from './EmptyFile';
 import FileItem from './FileItem';
 import SearchFile from './SearchFile';
@@ -24,11 +18,11 @@ type FileModalProps = {
 const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
-	const channelId = useAppSelector(selectCurrentChannelChannelId);
-	const clanId = useAppSelector(selectCurrentChannelClanId);
+	const { channelId, clanId } = useGalleryTarget();
+	const isDirect = clanId === '0';
 	const [keywordSearch, setKeywordSearch] = useState('');
 
-	const allAttachments = useAppSelector((state) => selectAllListDocumentByChannel(state, (channelId ?? '') as string));
+	const allAttachments = useAppSelector((state) => selectAllListDocumentByChannel(state, channelId));
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -64,7 +58,7 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 				</div>
 				<div className={`flex flex-col gap-2 py-2  px-[16px] min-h-full flex-1 overflow-y-auto thread-scroll`}>
 					{filteredAttachments.map((attachment) => (
-						<FileItem key={attachment.id} attachmentData={attachment} channelId={channelId} />
+						<FileItem key={attachment.id} attachmentData={attachment} channelId={channelId} isDirect={isDirect} />
 					))}
 
 					{!filteredAttachments.length && <EmptyFile />}
