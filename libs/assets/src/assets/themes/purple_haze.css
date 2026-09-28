@@ -66,8 +66,8 @@
 	/* màu nền của clan */
 	--theme-base-color: linear-gradient(rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.13));
 	--theme-text-color-dark: rgb(229, 254, 255);
-	--theme-setting-primary: rgb(27, 28, 32);
-	--theme-setting-nav: rgb(21, 22, 24);
+	--theme-setting-nav: rgb(25, 24, 48);
+	--theme-setting-primary: rgb(32, 29, 58);
 	--private-theme: rgb(0, 214, 172);
 	/* màu text full */
 	--text-theme-primary: #acacac;

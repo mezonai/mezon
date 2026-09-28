@@ -14,10 +14,13 @@ import {
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
+	selectIsShowMemberList,
 	selectLastMessageByChannelId,
+	selectMediaChannelViewMode,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
 	selectPinMessageByChannelId,
+	selectTimelineViewMode,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -214,7 +217,7 @@ const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachm
 				<img
 					src={createImgproxyUrl(attachment.url, { width: 64, height: 64, resizeType: 'fit' })}
 					alt={attachment.filename}
-					className="w-7 h-7 rounded object-cover shrink-0 bg-white/10 border border-white/5"
+					className="w-7 h-7 rounded object-cover shrink-0 bg-item-theme border border-theme-primary"
 				/>
 			</div>
 		);
@@ -223,11 +226,11 @@ const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachm
 	const formattedSize = formatAttachmentSize(attachment.size);
 
 	return (
-		<div className="shrink-0 flex items-center gap-1.5 bg-[#252438] dark:bg-[#1f1e33] border border-white/10 rounded-md px-2 py-0.5 max-w-[130px]">
+		<div className="shrink-0 flex items-center gap-1.5 bg-item-theme border border-theme-primary rounded-md px-2 py-0.5 max-w-[130px]">
 			<div className="shrink-0 flex items-center justify-center">{renderFileIcon(attachment.filename, attachment.filetype)}</div>
 			<div className="flex flex-col min-w-0 justify-center">
-				<span className="text-[11px] font-semibold text-theme-primary truncate leading-tight">{attachment.filename}</span>
-				{formattedSize && <span className="text-[9px] text-gray-400 leading-tight truncate">{formattedSize}</span>}
+				<span className="text-[11px] font-semibold text-theme-primary-active truncate leading-tight">{attachment.filename}</span>
+				{formattedSize && <span className="text-[9px] text-theme-primary leading-tight truncate">{formattedSize}</span>}
 			</div>
 		</div>
 	);
@@ -306,6 +309,11 @@ export const ChannelTopicPinBanner = memo(() => {
 	const channelAgeRestricted = useSelector(selectCurrentChannelAgeRestricted);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const closeMenu = useSelector(selectCloseMenu);
+	const isShowMemberList = useSelector(selectIsShowMemberList);
+	const isTimelineView = useAppSelector(selectTimelineViewMode);
+	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
+	const isSpecialView = Boolean(isTimelineView || isMediaChannelView);
+	const isMemberListOpen = Boolean(isShowMemberList && !isSpecialView && !closeMenu);
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state as any, currentChannelId || ''));
 	const isSidePanelOpen = Boolean(isShowCreateTopic || isShowCreateThread);
@@ -326,7 +334,8 @@ export const ChannelTopicPinBanner = memo(() => {
 			isGuidePath ||
 			location.pathname.includes('/member-safety') ||
 			location.pathname.includes('/channel-setting') ||
-			location.pathname.includes('/guide')
+			location.pathname.includes('/guide') ||
+			location.pathname.includes('/canvas')
 	);
 
 	const isVoiceOrStream = channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channelType === ChannelType.CHANNEL_TYPE_STREAMING;
@@ -746,7 +755,8 @@ export const ChannelTopicPinBanner = memo(() => {
 		isVoiceOrStream ||
 		(!latestTopic && !latestPin) ||
 		(isSidePanelOpen && closeMenu) ||
-		!isChannelGatePassed
+		!isChannelGatePassed ||
+		isShowCanvas
 	) {
 		return null;
 	}
@@ -755,14 +765,15 @@ export const ChannelTopicPinBanner = memo(() => {
 
 	return (
 		<div
-			className="w-full bg-theme-chat px-4 pt-1 pb-1.5 flex-shrink-0 relative z-10"
+			className="absolute top-2 left-0 z-20 px-4 pointer-events-none transition-[right] duration-200"
+			style={{ right: isMemberListOpen ? 245 : 0 }}
 			data-e2e={generateE2eId('chat.channel_message.topic_pin_banner')}
 		>
-			<div className="flex items-stretch w-full bg-item-theme rounded-[10px] overflow-hidden shadow-[0_4px_14px_rgba(0,0,0,0.16),0_1px_4px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.45),0_2px_6px_rgba(0,0,0,0.25)] transition-shadow duration-200">
+			<div className="flex items-stretch w-full bg-theme-setting-nav border border-theme-primary rounded-xl overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-shadow duration-200 pointer-events-auto">
 				{latestTopic && (
 					<div
-						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-1.5 px-3 hover:bg-white/[0.06] dark:hover:bg-white/[0.08] transition-colors ${
-							hasBoth ? 'flex-1' : 'w-full'
+						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
+							hasBoth ? 'flex-1 pl-3.5 pr-2.5' : 'w-full px-3.5'
 						}`}
 						onClick={handleJumpToTopic}
 						title={topicTitle}
@@ -772,19 +783,19 @@ export const ChannelTopicPinBanner = memo(() => {
 							<Icons.TopicIcon className="w-6 h-6 shrink-0 text-theme-primary-active" />
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="text-[13px] font-semibold text-theme-primary truncate leading-tight">{topicTitle}</div>
-							{topicSubtitle && <div className="text-[11px] text-gray-400 truncate leading-tight mt-0.5">{topicSubtitle}</div>}
+							<div className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{topicTitle}</div>
+							{topicSubtitle && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{topicSubtitle}</div>}
 						</div>
 						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} />}
 					</div>
 				)}
 
-				{hasBoth && <div className="w-[1px] my-1.5 bg-white/10 shrink-0" />}
+				{hasBoth && <div className="w-[1px] my-2 border-r border-theme-primary shrink-0" />}
 
 				{latestPin && (
 					<div
-						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-1.5 px-3 hover:bg-white/[0.06] dark:hover:bg-white/[0.08] transition-colors ${
-							hasBoth ? 'flex-1' : 'w-full'
+						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
+							hasBoth ? 'flex-1 pl-2.5 pr-3.5' : 'w-full px-3.5'
 						}`}
 						onClick={handleJumpToPin}
 						title={pinContent}
@@ -802,13 +813,13 @@ export const ChannelTopicPinBanner = memo(() => {
 							/>
 						</div>
 						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="flex items-center justify-between gap-2 min-w-0">
-								<span className="text-[13px] font-semibold text-theme-primary truncate leading-tight">{pinUserName}</span>
+							<div className="flex items-baseline gap-2 min-w-0">
+								<span className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{pinUserName}</span>
 								{pinFormattedTime && (
-									<span className="text-[10px] text-gray-400 font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
+									<span className="text-xs text-theme-primary font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
 								)}
 							</div>
-							{pinContent && <div className="text-[11px] text-gray-400 truncate leading-tight mt-0.5">{pinContent}</div>}
+							{pinContent && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{pinContent}</div>}
 						</div>
 						{pinAttachment && <AttachmentThumbnail attachment={pinAttachment} />}
 					</div>

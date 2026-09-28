@@ -1,3 +1,4 @@
+import { ChannelTopicPinBanner } from '@mezon/components';
 import { useGifsStickersEmoji, useIdleRender } from '@mezon/core';
 import {
 	selectClickedOnThreadBoxStatus,
@@ -44,11 +45,10 @@ const ChannelLayout = () => {
 	return (
 		<div
 			onMouseDown={onMouseDown}
-			className={`flex flex-col ${openEmojiPanelOnTopic || subPanelActive !== SubPanelName.NONE || isFocusThreadBox ? 'z-20 relative' : 'z-0'} flex-1 shrink min-w-0 bg-transparent h-[100%] overflow-visible justify-end relative`}
+			className={`flex flex-col ${openEmojiPanelOnTopic || subPanelActive !== SubPanelName.NONE || isFocusThreadBox ? 'z-20 relative' : 'z-0'} flex-1 shrink min-w-0 bg-transparent h-full max-h-full overflow-hidden relative`}
 		>
-			<div
-				className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`} ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}
-			>
+			<ChannelTopicPinBanner />
+			<div className={`flex flex-row flex-1 min-h-0 w-full overflow-hidden ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}>
 				<Outlet />
 			</div>
 			{shouldRender && (
