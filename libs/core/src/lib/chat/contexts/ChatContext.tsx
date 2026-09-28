@@ -72,6 +72,7 @@ import {
 	selectDmGroupCurrentId,
 	selectDmMetaEntities,
 	selectEntitesUserClans,
+	selectEntitiesChannelsByUser,
 	selectFriendById,
 	selectIsInCall,
 	selectIsJoin,
@@ -290,7 +291,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onvoicejoined = useCallback(
-		(voice: VoiceJoinedEvent & { peer_id?: number }) => {
+		(voice: VoiceJoinedEvent) => {
 			if (voice) {
 				const store = getStore();
 				const state = store.getState();
@@ -330,8 +331,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						clan_id: voice.clan_id,
 						user_id: voice.user_id,
 						user_name: voice.participant,
-						user_avatar: voice.last_screenshot,
-						peer_id: voice.peer_id
+						user_avatar: voice.last_screenshot
 					})
 				);
 			}
@@ -1088,7 +1088,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						user.channel_type === ChannelType.CHANNEL_TYPE_THREAD ? selectChannelById(currentState, user.channel_id) : null;
 
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
-					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
+					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: user.clan_id || (clanId as string) }));
 
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 						if (threadToRemove && threadToRemove.channel_private === ChannelStatusEnum.isPrivate) {
@@ -2037,6 +2037,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 			}
+			let lostAccess = false;
 			if (channelUpdated.channel_private && channelExist && channelExist.channel_private !== channelUpdated.channel_private) {
 				const result = await dispatch(
 					updateChannelActions.switchPublicToPrivate({
@@ -2044,6 +2045,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						userId: userId as string
 					})
 				).unwrap();
+				lostAccess = result;
 
 				if (result && currentChannelId === channelUpdated.channel_id) {
 					navigate(`/chat/clans/${channelUpdated.clan_id}/member-safety`);
@@ -2058,7 +2060,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			if (!channelUpdated.channel_private && !channelExist && channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			if (
+				!channelUpdated.channel_private &&
+				!channelExist &&
+				(channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_CHANNEL ||
+					channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE)
+			) {
 				dispatch(
 					updateChannelActions.addChannelNotExist({
 						channel: channelUpdated
@@ -2094,7 +2101,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						}
 					})
 				);
-				dispatch(listChannelsByUserActions.upsertOne({ ...channel }));
+				// A private channel reaches the whole clan: only refresh an entry this user already has.
+				const listedForUser = !!selectEntitiesChannelsByUser(store.getState() as unknown as RootState)[channelUpdated.channel_id];
+				if (!lostAccess && listedForUser) {
+					dispatch(listChannelsByUserActions.upsertOne({ ...channel }));
+				}
 			} else {
 				dispatch(channelsActions.updateChannelSocket(channelPayload as ChannelUpdatedEvent));
 				dispatch(listChannelsByUserActions.upsertOne({ id: channelUpdated.channel_id, ...channelPayload }));

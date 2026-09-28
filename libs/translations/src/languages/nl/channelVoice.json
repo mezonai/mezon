@@ -35,13 +35,91 @@
 		},
 		"confirm": "Bevestigen"
 	},
-	"permission": {
-		"cameraTitle": "Camerarecht verlenen",
-		"cameraBody": "App heeft camerarecht niet verleend. Schakel camerarecht in in je systeeminstellingen.",
-		"microphoneTitle": "Microfoonrecht verlenen",
-		"microphoneBody": "App heeft microfoonrecht niet verleend. Schakel microfoonrecht in in je systeeminstellingen.",
-		"cancel": "Annuleren",
-		"deviceSettings": "Apparaatinstellingen"
+	"mediaPermission": {
+		"allow": "Toestaan",
+		"notNow": "Niet nu",
+		"close": "Sluiten",
+		"needed": {
+			"microphone": "Microfoontoegang vereist",
+			"camera": "Cameratoegang vereist"
+		},
+		"requestTitle": {
+			"microphone": "Mezon toestaan je microfoon te gebruiken",
+			"camera": "Mezon toestaan je camera te gebruiken"
+		},
+		"requestBody": {
+			"microphone": "Anderen kunnen je niet horen totdat Mezon je microfoon mag gebruiken.",
+			"camera": "Anderen kunnen je niet zien totdat Mezon je camera mag gebruiken."
+		},
+		"requestHint": "Kies Toestaan wanneer je browser dit vraagt.",
+		"blockedTitle": {
+			"microphone": "Mezon mag je microfoon niet gebruiken",
+			"camera": "Mezon mag je camera niet gebruiken"
+		},
+		"systemBlockedTitle": {
+			"microphone": "Je browser mag je microfoon niet gebruiken",
+			"camera": "Je browser mag je camera niet gebruiken"
+		},
+		"unavailable": {
+			"microphone": "Kan de microfoon niet starten. Controleer of deze is aangesloten en niet door een andere app wordt gebruikt.",
+			"camera": "Kan de camera niet starten. Controleer of deze is aangesloten en niet door een andere app wordt gebruikt."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Klik op het pagina-informatiepictogram <icon/> in de adresbalk van je browser",
+				"enable": {
+					"microphone": "Microfoon inschakelen",
+					"camera": "Camera inschakelen"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Klik op het geblokkeerde microfoonpictogram in de adresbalk van je browser",
+					"camera": "Klik op het geblokkeerde camerapictogram in de adresbalk van je browser"
+				},
+				"enable": {
+					"microphone": "Hef de blokkering van de microfoon op en zet deze daarna weer aan",
+					"camera": "Hef de blokkering van de camera op en zet deze daarna weer aan"
+				}
+			},
+			"safari": {
+				"open": "Kies in de menubalk Safari → Instellingen voor deze website",
+				"enable": {
+					"microphone": "Zet Microfoon op Toestaan",
+					"camera": "Zet Camera op Toestaan"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Open Systeeminstellingen → Privacy en beveiliging → Microfoon",
+					"camera": "Open Systeeminstellingen → Privacy en beveiliging → Camera"
+				},
+				"enable": {
+					"microphone": "Zet je browser aan en open deze opnieuw indien gevraagd",
+					"camera": "Zet je browser aan en open deze opnieuw indien gevraagd"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Open Instellingen → Privacy en beveiliging → Microfoon",
+					"camera": "Open Instellingen → Privacy en beveiliging → Camera"
+				},
+				"enable": {
+					"microphone": "Zet “Microfoontoegang” en “Bureaubladapps toegang geven tot je microfoon” aan",
+					"camera": "Zet “Cameratoegang” en “Bureaubladapps toegang geven tot je camera” aan"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Open de privacy-instellingen van je apparaat",
+					"camera": "Open de privacy-instellingen van je apparaat"
+				},
+				"enable": {
+					"microphone": "Sta je browser toe de microfoon te gebruiken",
+					"camera": "Sta je browser toe de camera te gebruiken"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Microfoon",
@@ -53,7 +131,6 @@
 		"connectionConnected": "Succesvol verbonden",
 		"connectionDisconnected": "Verbinding verbroken",
 		"microphonePermissionRequired": "Microfoonrecht is vereist",
-		"cameraPermissionRequired": "Camerarecht is vereist",
 		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord.",
 		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was.",
 		"duplicateSessionDisconnected": "Je bent op een ander apparaat lid geworden van het spraakkanaal. Deze sessie is daarom verbroken.",

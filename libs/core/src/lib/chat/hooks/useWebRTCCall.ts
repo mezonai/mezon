@@ -1,6 +1,6 @@
 import { audioCallActions, DMCallActions, selectAudioBusyTone, selectIsShowMeetDM, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { compress, decompress, IMessageTypeCallLog, requestMediaPermission } from '@mezon/utils';
+import { compress, decompress, ensureMediaPermission, IMessageTypeCallLog, reportMediaAccessError, requestMediaPermission } from '@mezon/utils';
 import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -685,15 +685,10 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	const toggleVideo = async () => {
 		if (!callState.localStream) return;
 
-		const cameraGranted = await requestMediaPermission('video');
-		const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
-		if (cameraGranted !== 'granted' || cameraPermission.state !== 'granted') {
-			dispatch(toastActions.addToast({ message: t('toast.cameraPermissionRequired'), type: 'warning', autoClose: 1000 }));
-			return;
-		}
+		const newCameraState = !controlState.cameraEnabled;
+		if (newCameraState && !(await ensureMediaPermission('camera', () => toggleVideoRef.current()))) return;
 
 		const videoTracks = callState.localStream.getVideoTracks();
-		const newCameraState = !controlState.cameraEnabled;
 
 		if (videoTracks.length === 0 && newCameraState) {
 			try {
@@ -727,6 +722,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					);
 				}
 			} catch (error) {
+				reportMediaAccessError('camera', error);
 				console.error('Error adding video track:', error);
 				return;
 			}
@@ -783,6 +779,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			cameraEnabled: newCameraState
 		}));
 	};
+
+	const toggleVideoRef = useRef(toggleVideo);
+	toggleVideoRef.current = toggleVideo;
 
 	const changeAudioInputDevice = async (deviceId: string) => {
 		try {

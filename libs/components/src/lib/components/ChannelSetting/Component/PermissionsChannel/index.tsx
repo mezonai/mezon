@@ -1,5 +1,5 @@
 import { useAuth } from '@mezon/core';
-import { channelsActions, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
+import { channelsActions, fetchUserChannels, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -76,6 +76,8 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 				role_ids: valueToggle ? selectedRoleIds : []
 			})
 		).unwrap();
+		// The server now holds only the creator and the members picked here; show that, not the cached list.
+		dispatch(fetchUserChannels({ channelId: channel.id, noCache: true }));
 		setValueToggleInit(valueToggle);
 		setSelectedUserIds([]);
 		setSelectedRoleIds([]);
