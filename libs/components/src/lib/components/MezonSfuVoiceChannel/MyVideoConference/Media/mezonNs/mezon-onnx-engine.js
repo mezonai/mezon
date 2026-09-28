@@ -179,7 +179,7 @@ export class MezonNSEngine {
 
 		// Adaptive noise floor & VAD state
 		this.noiseFloor = 0.0005;
-		this.speechPeak = 0.02;
+		this.speechPeak = 0.015; // Let the first quiet nearby utterance open the gate.
 		this.vadState = 0.0;
 		this.hangoverFrames = 0;
 		this.startupFrames = 0;
@@ -190,7 +190,7 @@ export class MezonNSEngine {
 	/**
 	 * Load the ONNX model from URL or ArrayBuffer.
 	 */
-	async loadModel(modelUrlOrBuffer = '/mezon_ns_music_boost.onnx') {
+	async loadModel(modelUrlOrBuffer = '/mezon_ns_asym_babble.onnx') {
 		const sessionOptions = {
 			executionProviders: ['wasm'],
 			graphOptimizationLevel: 'all'
@@ -216,7 +216,7 @@ export class MezonNSEngine {
 		this.gruHidden.fill(0.0);
 		this.convState.fill(0.0);
 		this.noiseFloor = 0.0005;
-		this.speechPeak = 0.02;
+		this.speechPeak = 0.015;
 		this.vadState = 0.0;
 		this.hangoverFrames = 0;
 		this.startupFrames = 0;
