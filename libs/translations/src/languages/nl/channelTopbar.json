@@ -101,7 +101,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Startdatum moet voor of op einddatum zijn"
+			"startDateBeforeEnd": "Startdatum moet voor of op einddatum zijn",
+			"dateOutOfRange": "Datum moet tussen {{minDate}} en vandaag liggen"
 		},
 		"buttons": {
 			"clearAll": "Alles wissen",

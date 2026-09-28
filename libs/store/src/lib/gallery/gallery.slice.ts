@@ -62,8 +62,11 @@ const fetchChannelAttachmentsCached = async (
 	const channelData = attachmentState.galleryByChannel[channelId];
 	const apiKey = createApiKey('galleryAttachments', fileType, limit || 50, after || '', before || '', channelId, clanId);
 
+	// A before/after request asks for items past the edge of this same cached list, so the cache can never answer it.
+	const isWindowed = before !== undefined || after !== undefined;
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 	if (
+		!isWindowed &&
 		!shouldForceCall &&
 		!noCache &&
 		channelData?.cache &&
@@ -71,34 +74,11 @@ const fetchChannelAttachmentsCached = async (
 		channelData.attachments &&
 		channelData.attachments.length > 0
 	) {
-		const existingAttachments = channelData.attachments;
-		let hasDataForRange = false;
-
-		if (before !== undefined) {
-			const beforeTime = before * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime < beforeTime;
-			});
-		} else if (after !== undefined) {
-			const afterTime = after * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime > afterTime;
-			});
-		} else {
-			hasDataForRange = true;
-		}
-
-		if (hasDataForRange) {
-			return {
-				attachments: existingAttachments,
-				fromCache: true,
-				time: channelData.cache.lastFetched
-			};
-		}
+		return {
+			attachments: channelData.attachments,
+			fromCache: true,
+			time: channelData.cache.lastFetched
+		};
 	}
 
 	const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, state, limit, before, after);
@@ -321,24 +301,33 @@ export const gallerySlice = createSlice({
 					}
 					const channelGallery = state.galleryByChannel[channelId];
 
-					if (direction === 'before') {
-						const allItemsAlreadyExist = attachments.every((att) =>
-							channelGallery.attachments.some((existing) => existing.id === att.id)
-						);
-						channelGallery.pagination.hasMoreBefore = !allItemsAlreadyExist;
-					} else if (direction === 'after') {
-						const allItemsAlreadyExist = attachments.every((att) =>
-							channelGallery.attachments.some((existing) => existing.id === att.id)
-						);
-						channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
-					}
-
-					const newAttachments = dedupeGalleryAttachments(channelGallery.attachments, attachments);
-
-					if (direction === 'after') {
-						channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+					if (direction === 'initial' && !fromCache) {
+						// A fresh initial fetch starts a new view (open, media tab, date range); merging it into the old list
+						// would leave a gap that load-more then skips over.
+						channelGallery.attachments = attachments;
+						channelGallery.pagination.hasMoreBefore = true;
+						channelGallery.pagination.hasMoreAfter = true;
 					} else {
-						channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
+						// Cached data carries no pagination info, so it must not end pagination.
+						if (!fromCache && direction === 'before') {
+							const allItemsAlreadyExist = attachments.every((att) =>
+								channelGallery.attachments.some((existing) => existing.id === att.id)
+							);
+							channelGallery.pagination.hasMoreBefore = !allItemsAlreadyExist;
+						} else if (!fromCache && direction === 'after') {
+							const allItemsAlreadyExist = attachments.every((att) =>
+								channelGallery.attachments.some((existing) => existing.id === att.id)
+							);
+							channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
+						}
+
+						const newAttachments = dedupeGalleryAttachments(channelGallery.attachments, attachments);
+
+						if (direction === 'after') {
+							channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+						} else {
+							channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
+						}
 					}
 
 					channelGallery.pagination.isLoading = false;

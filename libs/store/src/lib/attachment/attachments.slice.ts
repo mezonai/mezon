@@ -67,6 +67,13 @@ type fetchChannelAttachmentsPayload = {
 
 const CHANNEL_ATTACHMENTS_CACHED_TIME = 1000 * 60 * 60;
 
+const isAttachmentInTimeWindow = (att: AttachmentEntity, before?: number, after?: number) => {
+	if (before === undefined && after === undefined) return true;
+	const attTime = Number(att.create_time_seconds);
+	if (!attTime) return false;
+	return (before === undefined || attTime < before) && (after === undefined || attTime > after);
+};
+
 export const fetchChannelAttachmentsCached = async (
 	getState: () => any,
 	mezon: MezonValueContext,
@@ -85,25 +92,7 @@ export const fetchChannelAttachmentsCached = async (
 
 	if (!noCache && channelData?.cache && isCacheValid(channelData.cache) && channelData.attachments && channelData.attachments.length > 0) {
 		const existingAttachments = channelData.attachments;
-		let hasDataForRange = false;
-
-		if (before !== undefined) {
-			const beforeTime = before * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime < beforeTime;
-			});
-		} else if (after !== undefined) {
-			const afterTime = after * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime > afterTime;
-			});
-		} else {
-			hasDataForRange = true;
-		}
+		const hasDataForRange = existingAttachments.some((att) => isAttachmentInTimeWindow(att, before, after));
 
 		if (hasDataForRange) {
 			return {
