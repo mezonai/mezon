@@ -1,7 +1,7 @@
 import type { MezonNSEngine } from './mezon-onnx-engine';
 
 const assetBase = () => `${process.env.NODE_ENV === 'production' ? '/chat' : ''}/assets/mezon-ns/`;
-const ASSET_VERSION = 'fe3c059-v7';
+const ASSET_VERSION = '457ca7c-v1';
 const LOG_PREFIX = '[MezonSFU][Mezon-NS]';
 const READY_TIMEOUT_MS = 5000;
 let resourcesPromise: Promise<{ model: Uint8Array; Engine: typeof MezonNSEngine }> | undefined;
@@ -17,7 +17,7 @@ const loadResources = () => {
 			const timeout = setTimeout(() => controller.abort(), 15000);
 			try {
 				const [response, { MezonNSEngine: Engine }] = await Promise.all([
-					fetch(`${assetBase()}mezon_ns_music_boost.onnx?v=${ASSET_VERSION}`, { signal: controller.signal }),
+					fetch(`${assetBase()}mezon_ns_asym_babble.onnx?v=${ASSET_VERSION}`, { signal: controller.signal }),
 					import('./mezon-onnx-engine')
 				]);
 				if (!response.ok) throw new Error(`Mezon-NS model download failed (${response.status})`);

@@ -183,14 +183,14 @@ async function readyPipeline(harness, enabled = true, onFailure = () => {}) {
 	return { pipeline, input, context };
 }
 
-test('preload selects the versioned music boost checkpoint in development and production', async () => {
+test('preload selects the versioned asym babble checkpoint in development and production', async () => {
 	for (const environment of ['development', 'production']) {
 		const harness = createHarness(environment);
 		await harness.Pipeline.preload();
 		const url = new URL(harness.stats.modelUrls[0], 'https://client.example');
 		const prefix = environment === 'production' ? '/chat' : '';
-		assert.equal(url.pathname, `${prefix}/assets/mezon-ns/mezon_ns_music_boost.onnx`);
-		assert.equal(url.searchParams.get('v'), 'fe3c059-v7');
+		assert.equal(url.pathname, `${prefix}/assets/mezon-ns/mezon_ns_asym_babble.onnx`);
+		assert.equal(url.searchParams.get('v'), '457ca7c-v1');
 	}
 });
 

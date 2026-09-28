@@ -248,13 +248,13 @@ test('worklet bridges 128-sample quanta and delayed 160-sample frames without pe
 	assert.ok(started);
 });
 
-test('music boost ONNX model runs with the web engine and produces finite stateful audio', async () => {
+test('asym babble ONNX model runs with the web engine and produces finite stateful audio', async () => {
 	const ort = require('onnxruntime-web');
 	const Engine = loadEngine(ort);
 	const engine = new Engine({ suppressionIntensity: 1.6 });
 	try {
-		const model = fs.readFileSync(path.join(assetPath, 'mezon_ns_music_boost.onnx'));
-		assert.equal(createHash('sha256').update(model).digest('hex'), '15a99c67ff8837cabdf58a5dc525c2a9b2ff649de1be12fb8bc93c684316adbe');
+		const model = fs.readFileSync(path.join(assetPath, 'mezon_ns_asym_babble.onnx'));
+		assert.equal(createHash('sha256').update(model).digest('hex'), 'c68b7e5e728cb846c75cab83df171fba85cc359d5a70532bb588d966c44e70a3');
 		await engine.loadModel(model);
 		assert.deepEqual(engine.session.inputNames, ['frame_input', 'h_in', 'conv_state_in']);
 		assert.deepEqual(engine.session.outputNames, ['mask_output', 'h_out', 'conv_state_out']);
