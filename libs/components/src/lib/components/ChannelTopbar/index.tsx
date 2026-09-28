@@ -69,7 +69,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, ensureMediaPermission, generateE2eId } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -613,13 +613,16 @@ const DmTopbarTools = memo(() => {
 		[sendMessage]
 	);
 
-	const handleStartCall = (isVideoCall = false) => {
+	const handleStartCall = async (isVideoCall = false) => {
 		closeMenuOnMobile();
-		if (!isInCall) {
-			startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
-		} else {
+		if (isInCall) {
 			dispatch(toastActions.addToast({ message: t('toastMessages.youAreOnAnotherCall'), type: 'warning', autoClose: 3000 }));
+			return;
 		}
+		const start = () => {
+			if (!selectIsInCall(getStore().getState())) startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
+		};
+		if (await ensureMediaPermission('microphone', start)) start();
 	};
 
 	const startCallDM = (isVideoCall = false, channelId?: string, userId?: string) => {

@@ -35,13 +35,91 @@
 		},
 		"confirm": "Bestätigen"
 	},
-	"permission": {
-		"cameraTitle": "Kameraberechtigung erteilen",
-		"cameraBody": "Die App hat noch keine Kameraberechtigung. Bitte aktiviere die Kamera in den Systemeinstellungen.",
-		"microphoneTitle": "Mikrofonberechtigung erteilen",
-		"microphoneBody": "Die App hat noch keine Mikrofonberechtigung. Bitte aktiviere das Mikrofon in den Systemeinstellungen.",
-		"cancel": "Abbrechen",
-		"deviceSettings": "Geräteeinstellungen"
+	"mediaPermission": {
+		"allow": "Zulassen",
+		"notNow": "Nicht jetzt",
+		"close": "Schließen",
+		"needed": {
+			"microphone": "Mikrofonzugriff erforderlich",
+			"camera": "Kamerazugriff erforderlich"
+		},
+		"requestTitle": {
+			"microphone": "Mezon Zugriff auf dein Mikrofon erlauben",
+			"camera": "Mezon Zugriff auf deine Kamera erlauben"
+		},
+		"requestBody": {
+			"microphone": "Andere können dich nicht hören, bis Mezon dein Mikrofon verwenden darf.",
+			"camera": "Andere können dich nicht sehen, bis Mezon deine Kamera verwenden darf."
+		},
+		"requestHint": "Wähle „Zulassen“, wenn dein Browser fragt.",
+		"blockedTitle": {
+			"microphone": "Mezon darf dein Mikrofon nicht verwenden",
+			"camera": "Mezon darf deine Kamera nicht verwenden"
+		},
+		"systemBlockedTitle": {
+			"microphone": "Dein Browser darf dein Mikrofon nicht verwenden",
+			"camera": "Dein Browser darf deine Kamera nicht verwenden"
+		},
+		"unavailable": {
+			"microphone": "Mikrofon konnte nicht gestartet werden. Prüfe, ob es angeschlossen und nicht von einer anderen App belegt ist.",
+			"camera": "Kamera konnte nicht gestartet werden. Prüfe, ob sie angeschlossen und nicht von einer anderen App belegt ist."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Klicke auf das Seiteninformationssymbol <icon/> in der Adressleiste deines Browsers",
+				"enable": {
+					"microphone": "Mikrofon aktivieren",
+					"camera": "Kamera aktivieren"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Klicke auf das blockierte Mikrofonsymbol in der Adressleiste deines Browsers",
+					"camera": "Klicke auf das blockierte Kamerasymbol in der Adressleiste deines Browsers"
+				},
+				"enable": {
+					"microphone": "Hebe die Blockierung des Mikrofons auf und schalte es dann wieder ein",
+					"camera": "Hebe die Blockierung der Kamera auf und schalte sie dann wieder ein"
+				}
+			},
+			"safari": {
+				"open": "Wähle in der Menüleiste Safari → Einstellungen für diese Website",
+				"enable": {
+					"microphone": "Setze Mikrofon auf Erlauben",
+					"camera": "Setze Kamera auf Erlauben"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Öffne Systemeinstellungen → Datenschutz & Sicherheit → Mikrofon",
+					"camera": "Öffne Systemeinstellungen → Datenschutz & Sicherheit → Kamera"
+				},
+				"enable": {
+					"microphone": "Aktiviere deinen Browser und öffne ihn bei Bedarf erneut",
+					"camera": "Aktiviere deinen Browser und öffne ihn bei Bedarf erneut"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Öffne Einstellungen → Datenschutz und Sicherheit → Mikrofon",
+					"camera": "Öffne Einstellungen → Datenschutz und Sicherheit → Kamera"
+				},
+				"enable": {
+					"microphone": "Aktiviere „Mikrofonzugriff“ und „Desktop-Apps dürfen auf das Mikrofon zugreifen“",
+					"camera": "Aktiviere „Kamerazugriff“ und „Desktop-Apps dürfen auf die Kamera zugreifen“"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Öffne die Datenschutzeinstellungen deines Geräts",
+					"camera": "Öffne die Datenschutzeinstellungen deines Geräts"
+				},
+				"enable": {
+					"microphone": "Erlaube deinem Browser die Verwendung des Mikrofons",
+					"camera": "Erlaube deinem Browser die Verwendung der Kamera"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Mikrofon",
@@ -53,7 +131,6 @@
 		"connectionConnected": "Verbindung erfolgreich hergestellt",
 		"connectionDisconnected": "Verbindung unterbrochen",
 		"microphonePermissionRequired": "Mikrofonberechtigung erforderlich",
-		"cameraPermissionRequired": "Kameraberechtigung erforderlich",
 		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen.",
 		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst.",
 		"duplicateSessionDisconnected": "Du bist dem Sprachkanal auf einem anderen Gerät beigetreten. Diese Sitzung wurde daher getrennt.",

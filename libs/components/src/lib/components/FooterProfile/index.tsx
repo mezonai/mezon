@@ -42,6 +42,7 @@ import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import { UserStatusIconDM } from '../MemberProfile';
 import { SfuVoiceInfo } from '../MezonSfuVoiceChannel';
+import { NoiseSuppressionStatus } from '../MezonSfuVoiceChannel/NoiseSuppressionStatus';
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
 import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
 import StreamInfo from '../StreamInfo';
@@ -353,12 +354,12 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 							>
 								{name}
 							</p>
-							<p
-								className="text-[11px] text-left line-clamp-1 leading-[14px] truncate max-w-[150px] max-sbm:max-w-[100px]"
+							<div
+								className="text-[11px] text-left leading-[14px] max-w-[150px] max-sbm:max-w-[100px]"
 								data-e2e={generateE2eId('footer_profile.user_status')}
 							>
-								{userCustomStatus}
-							</p>
+								<NoiseSuppressionStatus fallback={userCustomStatus} />
+							</div>
 						</div>
 					</div>
 				</div>

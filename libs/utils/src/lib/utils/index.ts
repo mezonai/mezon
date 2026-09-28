@@ -17,6 +17,7 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
+import { reportMediaAccessGranted } from '../hooks/mediaPermissions';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
@@ -926,10 +927,12 @@ export function copyChannelLink(clanId: string, channelId: string) {
 }
 
 export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
+	const device = mediaType === 'audio' ? 'microphone' : 'camera';
 	try {
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 			const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
 			stream.getTracks().forEach((track) => track.stop());
+			reportMediaAccessGranted(device);
 			return 'granted';
 		}
 		return 'denied';
@@ -941,41 +944,6 @@ export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Prom
 		} else {
 			return 'denied';
 		}
-	}
-};
-
-export const checkMediaPermission = async (mediaType: 'audio' | 'video'): Promise<'granted' | 'denied' | 'prompt' | null> => {
-	try {
-		if (typeof navigator !== 'undefined' && navigator.permissions && navigator.permissions.query) {
-			try {
-				const permissionName = mediaType === 'audio' ? ('microphone' as PermissionName) : ('camera' as PermissionName);
-				const permissionStatus = await navigator.permissions.query({ name: permissionName });
-
-				return permissionStatus.state as 'granted' | 'denied' | 'prompt';
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
-		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
-				stream.getTracks().forEach((track) => track.stop());
-				return 'granted';
-			} catch (error: any) {
-				if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-					return 'denied';
-				} else if (error.name === 'NotFoundError') {
-					return null;
-				} else {
-					return 'prompt';
-				}
-			}
-		}
-
-		return null;
-	} catch (error) {
-		return null;
 	}
 };
 

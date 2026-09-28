@@ -1,22 +1,38 @@
 import { Icons } from '@mezon/ui';
+import { useTranslation } from 'react-i18next';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface PushToTalkControlProps {
 	active: boolean;
+	preparing?: boolean;
 	onChange: (active: boolean) => void;
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
 }
 
-export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrophoneAccess, onPermissionRequest }: PushToTalkControlProps) => {
+export const PushToTalkControl = ({
+	active,
+	preparing = false,
+	onChange,
+	permissionState,
+	hasMicrophoneAccess,
+	onPermissionRequest
+}: PushToTalkControlProps) => {
+	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
+	const label = showWarning
+		? t('mediaPermission.needed.microphone')
+		: preparing
+			? 'Preparing noise suppression — microphone muted'
+			: 'Push to talk';
 
 	const handlePointerDown = async (event: React.PointerEvent<HTMLButtonElement>) => {
 		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
 			await onPermissionRequest();
 			return;
 		}
+		if (preparing) return;
 		event.currentTarget.setPointerCapture(event.pointerId);
 		onChange(true);
 	};
@@ -26,8 +42,11 @@ export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrop
 			<button
 				id="btn-meet-push-to-talk"
 				type="button"
-				title="Push to talk"
-				aria-label="Push to talk"
+				title={label}
+				aria-label={label}
+				aria-busy={preparing}
+				// handlePointerDown blocks speaking without briefly dimming the idle button.
+				aria-disabled={preparing && !active && !showWarning}
 				aria-pressed={active}
 				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-green-600' : ''}`}
 				onPointerDown={handlePointerDown}
