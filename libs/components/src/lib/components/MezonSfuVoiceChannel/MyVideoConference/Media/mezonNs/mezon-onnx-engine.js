@@ -179,6 +179,7 @@ export class MezonNSEngine {
 
 		// Adaptive noise floor & VAD state
 		this.noiseFloor = 0.0005;
+		this.speechPeak = 0.02;
 		this.vadState = 0.0;
 		this.hangoverFrames = 0;
 		this.startupFrames = 0;
@@ -215,6 +216,7 @@ export class MezonNSEngine {
 		this.gruHidden.fill(0.0);
 		this.convState.fill(0.0);
 		this.noiseFloor = 0.0005;
+		this.speechPeak = 0.02;
 		this.vadState = 0.0;
 		this.hangoverFrames = 0;
 		this.startupFrames = 0;
@@ -255,7 +257,19 @@ export class MezonNSEngine {
 
 			// 3. SNR tracking with instant attack and hangover
 			const snrRatio = frameRms / Math.max(1e-6, this.noiseFloor);
-			const speechDetected = snrRatio > 1.8 && frameRms > 0.001;
+
+			// 4. Track nearby speech with a fast attack and a slow release.
+			if (frameRms > this.speechPeak) {
+				this.speechPeak = 0.2 * this.speechPeak + 0.8 * frameRms;
+			} else if (this.vadState > 0.5) {
+				this.speechPeak = 0.999 * this.speechPeak + 0.001 * frameRms;
+			} else if (this.speechPeak > 0.015) {
+				this.speechPeak = 0.9995 * this.speechPeak + 0.0005 * 0.015;
+			}
+
+			const peakRatio = frameRms / Math.max(1e-5, this.speechPeak);
+			// Reject distant background voices well below the recent nearby speaker.
+			const speechDetected = snrRatio > 1.8 && frameRms > 0.001 && (peakRatio >= 0.18 || frameRms >= 0.008);
 
 			if (speechDetected) {
 				this.hangoverFrames = 25; // 250ms hangover
@@ -268,13 +282,13 @@ export class MezonNSEngine {
 					this.vadState = 0.85 * this.vadState;
 				}
 
-				// 4. Adapt upward ONLY during confirmed silence/pauses
+				// 5. Adapt upward ONLY during confirmed silence/pauses
 				if (this.hangoverFrames === 0 && this.vadState < 0.1) {
 					this.noiseFloor = 0.995 * this.noiseFloor + 0.005 * frameRms;
 				}
 			}
 
-			// 5. Soft floor: clamp between -18 dB (0.125) and 0 dB (1.0)
+			// 6. Soft floor: clamp between -18 dB (0.125) and 0 dB (1.0)
 			gate = 0.125 + 0.875 * this.vadState;
 		}
 
