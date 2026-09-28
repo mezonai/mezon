@@ -467,15 +467,6 @@ export function MezonSfuVoiceRoom({
 	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
 	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState } = useMediaPermissions();
 
-	const handleRequestMicrophonePermission = useCallback(async () => {
-		if (joinRole !== 'speaker') {
-			await ensureMediaPermission('microphone');
-			return;
-		}
-		const enableMicrophone = () => dispatch(voiceActions.setShowMicrophone(true));
-		if (await ensureMediaPermission('microphone', enableMicrophone)) enableMicrophone();
-	}, [dispatch, joinRole]);
-
 	const handleRequestCameraPermission = useCallback(async () => {
 		const enableCamera = () => dispatch(voiceActions.setShowCamera(true));
 		if (await ensureMediaPermission('camera', enableCamera)) enableCamera();
@@ -822,33 +813,72 @@ export function MezonSfuVoiceRoom({
 		[applySfuPeers]
 	);
 
+	const acquireMicrophoneTrack = useCallback(async () => {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({
+				audio: getMicrophoneCaptureOptions(),
+				video: false
+			});
+			const audioTrack = stream.getAudioTracks()[0];
+			if (!audioTrack) return undefined;
+			audioTrack.enabled = desiredMediaRef.current.microphoneEnabled;
+			const localStream = localStreamRef.current || new MediaStream();
+			localStream.getAudioTracks().forEach((track) => localStream.removeTrack(track));
+			localStream.addTrack(audioTrack);
+			localStreamRef.current = localStream;
+			setLocalAudioTrack(audioTrack);
+			setSelectedMicrophone(audioTrack.getSettings().deviceId || 'default');
+			setLocalPreview(new MediaStream(localStream.getTracks()));
+			return audioTrack;
+		} catch (cause) {
+			if (reportMediaAccessError('microphone', cause)) {
+				dispatch(voiceActions.setShowMicrophone(false));
+			} else {
+				setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+			}
+			return undefined;
+		}
+	}, [dispatch, getMicrophoneCaptureOptions]);
+
+	// Mezon-NS prepares only on a live track and holds every unmute until it is ready. When access arrives
+	// after the join-time capture failed, capture a muted track so the filter can prepare.
+	const previousMicrophonePermissionRef = useRef(microphonePermissionState);
+	useEffect(() => {
+		const previous = previousMicrophonePermissionRef.current;
+		previousMicrophonePermissionRef.current = microphonePermissionState;
+		if (previous === null || previous === 'granted' || microphonePermissionState !== 'granted' || !noiseSuppressionEnabled) return;
+		if (localStreamRef.current?.getAudioTracks()[0]?.readyState === 'live') return;
+		void acquireMicrophoneTrack();
+	}, [acquireMicrophoneTrack, microphonePermissionState, noiseSuppressionEnabled]);
+
+	const pendingUnmuteRef = useRef(false);
+	useEffect(() => {
+		if (!pendingUnmuteRef.current || (noiseSuppressionEnabled && !noiseSuppressionReady)) return;
+		pendingUnmuteRef.current = false;
+		dispatch(voiceActions.setShowMicrophone(true));
+	}, [dispatch, noiseSuppressionEnabled, noiseSuppressionReady]);
+
+	const handleRequestMicrophonePermission = useCallback(async () => {
+		if (joinRole !== 'speaker') {
+			await ensureMediaPermission('microphone');
+			return;
+		}
+		const enableMicrophone = () => {
+			if (noiseSuppressionEnabledRef.current && !noiseSuppressionReadyRef.current) {
+				pendingUnmuteRef.current = true;
+			} else {
+				dispatch(voiceActions.setShowMicrophone(true));
+			}
+		};
+		if (await ensureMediaPermission('microphone', enableMicrophone)) enableMicrophone();
+	}, [dispatch, joinRole]);
+
 	useEffect(() => {
 		desiredMediaRef.current = { microphoneEnabled, cameraEnabled };
 		void (async () => {
 			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
 			if (microphoneEnabled && audioTrack?.readyState !== 'live') {
-				try {
-					const stream = await navigator.mediaDevices.getUserMedia({
-						audio: getMicrophoneCaptureOptions(),
-						video: false
-					});
-					audioTrack = stream.getAudioTracks()[0];
-					if (audioTrack) {
-						const localStream = localStreamRef.current || new MediaStream();
-						localStream.getAudioTracks().forEach((track) => localStream.removeTrack(track));
-						localStream.addTrack(audioTrack);
-						localStreamRef.current = localStream;
-						setLocalAudioTrack(audioTrack);
-						setSelectedMicrophone(audioTrack.getSettings().deviceId || 'default');
-						setLocalPreview(new MediaStream(localStream.getTracks()));
-					}
-				} catch (cause) {
-					if (reportMediaAccessError('microphone', cause)) {
-						dispatch(voiceActions.setShowMicrophone(false));
-					} else {
-						setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
-					}
-				}
+				audioTrack = await acquireMicrophoneTrack();
 			}
 
 			if (audioTrack) {
@@ -860,7 +890,7 @@ export function MezonSfuVoiceRoom({
 				wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 			}
 		})();
-	}, [cameraEnabled, dispatch, microphoneEnabled, hasMicrophoneAccess, getMicrophoneCaptureOptions, getOutgoingAudioTrack, setAudioTrackEnabled]);
+	}, [acquireMicrophoneTrack, cameraEnabled, microphoneEnabled, hasMicrophoneAccess, getOutgoingAudioTrack, setAudioTrackEnabled]);
 
 	useEffect(() => {
 		const ws = wsRef.current;
@@ -1923,15 +1953,15 @@ export function MezonSfuVoiceRoom({
 	const setPushToTalk = useCallback(
 		async (active: boolean) => {
 			if (joinRole !== 'audience') return;
+			if (active && microphonePermissionStateRef.current !== 'granted' && !(await ensureMediaPermission('microphone'))) {
+				pushToTalkRequestedRef.current = false;
+				return;
+			}
 			if (active && noiseSuppressionEnabledRef.current && !noiseSuppressionReadyRef.current) {
 				return;
 			}
 			pushToTalkRequestedRef.current = active;
 			if (pushToTalkActive === active) return;
-			if (active && microphonePermissionStateRef.current !== 'granted' && !(await ensureMediaPermission('microphone'))) {
-				pushToTalkRequestedRef.current = false;
-				return;
-			}
 			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
 			if (active && (microphonePermissionRevokedRef.current || audioTrack?.readyState !== 'live' || audioTrack.muted)) {
 				try {

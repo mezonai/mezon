@@ -126,7 +126,7 @@ const SfuVoiceInfo = React.memo(() => {
 				{isAudience && (
 					<ButtonControlVoice
 						active={pushToTalkActive}
-						disabled={microphonePreparing && !pushToTalkActive}
+						disabled={microphonePreparing && !pushToTalkActive && !microphoneWarning}
 						overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">Push to talk</span>}
 						onPointerDown={(event) => {
 							const btnControl = document.getElementById('btn-meet-push-to-talk');
@@ -159,7 +159,7 @@ const SfuVoiceInfo = React.memo(() => {
 										: t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
 							</span>
 						}
-						disabled={microphonePreparing && !showMicrophone}
+						disabled={microphonePreparing && !showMicrophone && !microphoneWarning}
 						onClick={handleToggleOpenMicro}
 						icon={showMicrophone ? <Icons.VoiceMicIcon className="w-5 h-5" /> : <Icons.VoiceMicDisabledIcon className="w-5 h-5" />}
 						showWarning={microphoneWarning}
