@@ -1,7 +1,7 @@
 import { useMenu, useWebRTCCall } from '@mezon/core';
 import {
-	audioCallActions,
 	DMCallActions,
+	audioCallActions,
 	selectAllAccount,
 	selectAudioBusyTone,
 	selectAudioDialTone,
@@ -22,13 +22,12 @@ import {
 } from '@mezon/store';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Icons, Menu } from '@mezon/ui';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { AvatarImage } from '@mezon/components';
-import { createImgproxyUrl, ensureMediaPermission, IMessageTypeCallLog, useMediaPermissions } from '@mezon/utils';
+import { IMessageTypeCallLog, createImgproxyUrl, ensureMediaPermission, useMediaPermissions } from '@mezon/utils';
 import { WebrtcSignalingType } from 'mezon-js';
 import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { AvatarImage } from '../AvatarImage/AvatarImage';
 
 type DmCallingProps = {
 	readonly dmGroupId?: Readonly<string>;

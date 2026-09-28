@@ -61,7 +61,6 @@ const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapp
 
 interface VoiceConferenceContainerProps {
 	containerRef: RefObject<HTMLDivElement>;
-	token: string;
 	isOpenPopOut?: boolean;
 	children: ReactNode;
 }
@@ -119,7 +118,7 @@ const VoiceConferenceContent = memo(
 	}
 );
 
-const VoiceConferenceContainer = memo(({ containerRef, token, isOpenPopOut, children }: VoiceConferenceContainerProps) => {
+const VoiceConferenceContainer = memo(({ containerRef, isOpenPopOut, children }: VoiceConferenceContainerProps) => {
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -130,7 +129,7 @@ const VoiceConferenceContainer = memo(({ containerRef, token, isOpenPopOut, chil
 		<div
 			ref={containerRef}
 			id="mezonSfuRoom"
-			key={token}
+			key={voiceInfo?.channelId}
 			className={`${!isShow || isOpenPopOut ? '!hidden' : ''} flex flex-1 min-w-0 w-full h-full`}
 		>
 			{children}
@@ -250,7 +249,7 @@ const MezonSfuChannelVoiceInner = () => {
 				) : (
 					<>
 						{isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />}
-						<VoiceConferenceContainer containerRef={containerRef} token={token} isOpenPopOut={isOpenPopOut}>
+						<VoiceConferenceContainer containerRef={containerRef} isOpenPopOut={isOpenPopOut}>
 							<VoiceConferenceContent
 								token={token}
 								joinRole={joinRole}

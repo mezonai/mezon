@@ -175,6 +175,7 @@ const AudioRecorderControl: React.FC<AudioRecorderProps> = React.memo(({ onSendR
 				try {
 					recorderRef.current.stop();
 				} catch {
+					// Continue releasing the media tracks even if stopping the recorder fails.
 				}
 			}
 			if (streamRef.current) {
