@@ -262,6 +262,20 @@ export const userChannelsSlice = createSlice({
 			});
 			ItemSearchCtrlKAdapter.removeOne(state.listSearch, channelId);
 		},
+		// Access changed on the server (private <-> public): drop the list so the next read refetches it.
+		invalidateUserChannel: (state, action: PayloadAction<string>) => {
+			const channelId = action.payload;
+			state.entities[channelId]?.user_ids?.forEach((userId) => {
+				const channelIds = state.userIdToChannelIds[userId]?.filter((id) => id !== channelId);
+				if (channelIds?.length) {
+					state.userIdToChannelIds[userId] = channelIds;
+				} else {
+					delete state.userIdToChannelIds[userId];
+				}
+			});
+			UserChannelAdapter.removeOne(state, channelId);
+			delete state.cacheByChannels[channelId];
+		},
 		removeOneCtrlK: (state, action: PayloadAction<{ channelId: string }>) => {
 			const { channelId } = action.payload;
 

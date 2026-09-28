@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { ChannelUpdatedEvent } from 'mezon-js';
+import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { rolesClanActions, selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
@@ -12,6 +13,7 @@ export const switchPublicToPrivate = createAsyncThunk(
 	'channels/switchPublicToPrivate',
 	async ({ channel, userId }: { channel: ChannelUpdatedEvent; userId: string }, thunkAPI) => {
 		const clanId = channel.clan_id;
+		thunkAPI.dispatch(userChannelsActions.invalidateUserChannel(channel.channel_id));
 		const store = await getStoreAsync();
 		const roleInClan = selectRolesByClanId(store.getState(), channel.clan_id);
 		const hasRoleAccessPrivate = (channel.role_ids || []).some((key) => key in roleInClan);
@@ -73,6 +75,7 @@ export const switchPrivateToPublic = createAsyncThunk(
 			})
 		);
 		thunkAPI.dispatch(channelMembersActions.switchChannelOutPrivate(channel.channel_id));
+		thunkAPI.dispatch(userChannelsActions.invalidateUserChannel(channel.channel_id));
 		thunkAPI.dispatch(rolesClanActions.removeAllRolesFromChannel({ clanId: channel.clan_id, channelId: channel.channel_id }));
 	}
 );
