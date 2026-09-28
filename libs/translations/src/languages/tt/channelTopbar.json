@@ -103,7 +103,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Башлану датасы тәмамлану датасыннан иртәрәк яки тигез булырга тиеш"
+			"startDateBeforeEnd": "Башлану датасы тәмамлану датасыннан иртәрәк яки тигез булырга тиеш",
+			"dateOutOfRange": "Дата {{minDate}} һәм бүгенге көн арасында булырга тиеш"
 		},
 		"buttons": {
 			"clearAll": "Барысын чистарту",

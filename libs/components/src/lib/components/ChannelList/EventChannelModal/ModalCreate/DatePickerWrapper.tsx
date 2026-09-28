@@ -1,6 +1,9 @@
+import { isValid } from 'date-fns';
+
 type DatePickerWrapperProps = {
-	selected: Date;
+	selected: Date | null;
 	onChange: (date: Date) => void;
+	onClear?: () => void;
 	dateFormat?: string;
 	minDate?: Date;
 	maxDate?: Date;
@@ -13,17 +16,25 @@ type DatePickerWrapperProps = {
 	onFocus?: () => void;
 };
 
-const toInputValue = (date: Date): string => {
-	const y = date.getFullYear();
+const toInputValue = (date?: Date | null): string => {
+	if (!date || !isValid(date)) return '';
+	const y = String(date.getFullYear()).padStart(4, '0');
 	const m = String(date.getMonth() + 1).padStart(2, '0');
 	const d = String(date.getDate()).padStart(2, '0');
 	return `${y}-${m}-${d}`;
 };
 
-const DatePickerWrapper = ({ selected, onChange, minDate, maxDate, className, wrapperClassName, onFocus }: DatePickerWrapperProps) => {
+const DatePickerWrapper = ({ selected, onChange, onClear, minDate, maxDate, className, wrapperClassName, onFocus }: DatePickerWrapperProps) => {
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.value) return;
-		onChange(new Date(`${e.target.value}T00:00:00`));
+		const value = e.target.value;
+		if (!value) {
+			onClear?.();
+			return;
+		}
+		const date = new Date(`${value}T00:00:00`);
+		if (isValid(date)) {
+			onChange(date);
+		}
 	};
 
 	return (
@@ -32,8 +43,8 @@ const DatePickerWrapper = ({ selected, onChange, minDate, maxDate, className, wr
 				type="date"
 				className={className}
 				value={toInputValue(selected)}
-				min={minDate ? toInputValue(minDate) : undefined}
-				max={maxDate ? toInputValue(maxDate) : undefined}
+				min={toInputValue(minDate) || undefined}
+				max={toInputValue(maxDate) || undefined}
 				onChange={handleChange}
 				onFocus={onFocus}
 			/>
