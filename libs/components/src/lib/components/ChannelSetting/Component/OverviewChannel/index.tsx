@@ -1,4 +1,3 @@
-import { ModalSaveChanges } from '@mezon/components';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
@@ -23,6 +22,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
+import ModalSaveChanges from '../../../ClanSettings/ClanSettingOverview/ModalSaveChanges';
 
 export type OverviewChannelProps = {
 	channel: IChannel;
@@ -52,8 +52,9 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	const [checkValidate, setCheckValidate] = useState('');
 	const [checkValidateEmpty, setCheckValidateEmpty] = useState('');
 	const [checkValidateUrl, setCheckValidateUrl] = useState(!ValidateURL().test(appUrlInit || ''));
-	const [countCharacterTopic, setCountCharacterTopic] = useState(1024);
 	const isThread = checkIsThread(currentChannel as ChannelsEntity);
+	const maxTopicLength = 512;
+	const countCharacterTopic = useMemo(() => maxTopicLength - (topic?.length || 0), [maxTopicLength, topic]);
 	const [isAgeRestricted, setIsAgeRestricted] = useState(ageRestrictedInit);
 	const [isE2ee, setIsE2ee] = useState(e2eeInit);
 
@@ -107,13 +108,9 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		[t, isThread]
 	);
 
-	const handleChangeTextArea = useCallback(
-		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-			setTopic(e.target.value);
-			setCountCharacterTopic(1024 - e.target.value.length);
-		},
-		[topic, countCharacterTopic]
-	);
+	const handleChangeTextArea = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setTopic(e.target.value);
+	}, []);
 
 	const debouncedSetChannelName = useDebouncedCallback(async (value: string) => {
 		if (!value.trim()) {
@@ -357,7 +354,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 						onChange={handleChangeTextArea}
 						rows={1}
 						refTextArea={textAreaRef}
-						maxLength={1024}
+						maxLength={maxTopicLength}
 					></TextArea>
 					<p className="absolute bottom-2 right-2 ">{countCharacterTopic}</p>
 				</div>
