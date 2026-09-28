@@ -101,7 +101,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Дата початку має бути до або дорівнювати даті завершення"
+			"startDateBeforeEnd": "Дата початку має бути до або дорівнювати даті завершення",
+			"dateOutOfRange": "Дата має бути в межах від {{minDate}} до сьогодні"
 		},
 		"buttons": {
 			"clearAll": "Очистити все",

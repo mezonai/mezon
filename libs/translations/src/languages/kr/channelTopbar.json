@@ -103,7 +103,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "시작일은 종료일 이전 또는 동일해야 합니다"
+			"startDateBeforeEnd": "시작일은 종료일 이전 또는 동일해야 합니다",
+			"dateOutOfRange": "날짜는 {{minDate}}부터 오늘까지여야 합니다"
 		},
 		"buttons": {
 			"clearAll": "모두 지우기",
