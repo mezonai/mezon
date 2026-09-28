@@ -2,6 +2,8 @@ import type { MediaDevice } from '@mezon/utils';
 
 export type AddressBarGlyph = 'tune' | 'blockedDevice' | 'settings';
 
+const PRIMARY = 'var(--button-theme-primary, #5265ec)';
+
 const DEVICE_ROWS: { device: MediaDevice; y: number }[] = [
 	{ device: 'camera', y: 132 },
 	{ device: 'microphone', y: 178 }
@@ -17,7 +19,7 @@ export const TuneGlyph = ({ className }: { className?: string }) => (
 );
 
 const CameraShape = ({ x, y, color }: { x: number; y: number; color: string }) => (
-	<g transform={`translate(${x} ${y})`} fill={color}>
+	<g transform={`translate(${x} ${y})`} style={{ fill: color }}>
 		<rect x="0" y="-13" width="30" height="26" rx="5" />
 		<path d="M32 -5 44 -12 V12 L32 5 Z" />
 	</g>
@@ -25,7 +27,7 @@ const CameraShape = ({ x, y, color }: { x: number; y: number; color: string }) =
 
 const MicrophoneShape = ({ x, y, color }: { x: number; y: number; color: string }) => (
 	<g transform={`translate(${x} ${y})`}>
-		<rect x="12" y="-20" width="16" height="28" rx="8" fill={color} />
+		<rect x="12" y="-20" width="16" height="28" rx="8" style={{ fill: color }} />
 		<path d="M6 0a14 14 0 0 0 28 0M20 14v8M12 22h16" fill="none" stroke="#5f6368" strokeWidth={2.5} strokeLinecap="round" />
 	</g>
 );
@@ -75,12 +77,11 @@ export const BlockedIllustration = ({ device, glyph }: { device: MediaDevice; gl
 		<rect x="122" y="50" width="178" height="24" rx="12" fill="#d3e3fd" />
 		{DEVICE_ROWS.map(({ device: rowDevice, y }) => {
 			const active = rowDevice === device;
-			const color = active ? '#ee6c4d' : '#f6b7a8';
 			return (
-				<g key={rowDevice} opacity={active ? 1 : 0.55}>
-					{rowDevice === 'camera' ? <CameraShape x={40} y={y} color={color} /> : <MicrophoneShape x={44} y={y} color={color} />}
-					<rect x="104" y={y - 7} width="64" height="14" rx="7" fill="#c9daf8" />
-					<circle cx="110" cy={y} r="11" fill="#fad2cf" stroke="#9aa0a6" strokeWidth={2} />
+				<g key={rowDevice} opacity={active ? 1 : 0.4}>
+					{rowDevice === 'camera' ? <CameraShape x={40} y={y} color={PRIMARY} /> : <MicrophoneShape x={44} y={y} color={PRIMARY} />}
+					<rect x="104" y={y - 7} width="64" height="14" rx="7" fill="#dfe2fc" />
+					<circle cx="110" cy={y} r="11" fill="#c5cbf9" stroke="#9aa0a6" strokeWidth={2} />
 				</g>
 			);
 		})}
