@@ -14,12 +14,13 @@ import { Icons } from '@mezon/ui';
 import {
 	GUEST_NAME,
 	createImgproxyUrl,
+	ensureMediaPermission,
 	generateE2eId,
 	getAvatarForPrioritize,
 	getMezonNsAudioCaptureOptions,
 	getNameForPrioritize,
 	getNoiseSuppressionAudioCaptureOptions,
-	requestMediaPermission,
+	reportMediaAccessError,
 	useMediaPermissions
 } from '@mezon/utils';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
@@ -28,7 +29,6 @@ import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import { SfuControlBar } from '../ControlBar/SfuControlBar';
-import { MediaPermissionModal } from '../MediaPermissionModal';
 import { RecordingIndicator } from '../Recording/RecordingIndicator';
 import type { RecordingAudioSource, RecordingSceneTile } from '../Recording/types';
 import { useRecordingBroadcast } from '../Recording/useRecordingBroadcast';
@@ -465,43 +465,21 @@ export function MezonSfuVoiceRoom({
 	const noiseSuppressionReadyRef = useRef(noiseSuppressionReady);
 	noiseSuppressionReadyRef.current = noiseSuppressionReady;
 	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
-	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState, refreshPermissions } = useMediaPermissions();
-	const [permissionModalSource, setPermissionModalSource] = useState<'microphone' | 'camera' | null>(null);
+	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState } = useMediaPermissions();
 
 	const handleRequestMicrophonePermission = useCallback(async () => {
-		const permissionStatus = await requestMediaPermission('audio');
-		await refreshPermissions();
-		if (permissionStatus === 'granted') {
-			dispatch(voiceActions.setShowMicrophone(true));
-		} else {
-			setPermissionModalSource('microphone');
+		if (joinRole !== 'speaker') {
+			await ensureMediaPermission('microphone');
+			return;
 		}
-	}, [dispatch, refreshPermissions]);
+		const enableMicrophone = () => dispatch(voiceActions.setShowMicrophone(true));
+		if (await ensureMediaPermission('microphone', enableMicrophone)) enableMicrophone();
+	}, [dispatch, joinRole]);
 
 	const handleRequestCameraPermission = useCallback(async () => {
-		const permissionStatus = await requestMediaPermission('video');
-		await refreshPermissions();
-		if (permissionStatus === 'granted') {
-			dispatch(voiceActions.setShowCamera(true));
-		} else {
-			setPermissionModalSource('camera');
-		}
-	}, [dispatch, refreshPermissions]);
-
-	const handlePermissionRetry = useCallback(async () => {
-		if (!permissionModalSource) return;
-		const source = permissionModalSource;
-		setPermissionModalSource(null);
-		if (source === 'camera') {
-			await handleRequestCameraPermission();
-		} else {
-			await handleRequestMicrophonePermission();
-		}
-	}, [permissionModalSource, handleRequestCameraPermission, handleRequestMicrophonePermission]);
-
-	const handleClosePermissionModal = useCallback(() => {
-		setPermissionModalSource(null);
-	}, []);
+		const enableCamera = () => dispatch(voiceActions.setShowCamera(true));
+		if (await ensureMediaPermission('camera', enableCamera)) enableCamera();
+	}, [dispatch]);
 	const wsRef = useRef<WebSocket | null>(null);
 	const pcRef = useRef<RTCPeerConnection | null>(null);
 	const localStreamRef = useRef<MediaStream | null>(null);
@@ -865,7 +843,11 @@ export function MezonSfuVoiceRoom({
 						setLocalPreview(new MediaStream(localStream.getTracks()));
 					}
 				} catch (cause) {
-					setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+					if (reportMediaAccessError('microphone', cause)) {
+						dispatch(voiceActions.setShowMicrophone(false));
+					} else {
+						setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+					}
 				}
 			}
 
@@ -878,7 +860,7 @@ export function MezonSfuVoiceRoom({
 				wsRef.current.send(JSON.stringify({ type: 'mute', is_mute: !desiredMediaRef.current.microphoneEnabled }));
 			}
 		})();
-	}, [cameraEnabled, microphoneEnabled, hasMicrophoneAccess, getMicrophoneCaptureOptions, getOutgoingAudioTrack, setAudioTrackEnabled]);
+	}, [cameraEnabled, dispatch, microphoneEnabled, hasMicrophoneAccess, getMicrophoneCaptureOptions, getOutgoingAudioTrack, setAudioTrackEnabled]);
 
 	useEffect(() => {
 		const ws = wsRef.current;
@@ -888,7 +870,10 @@ export function MezonSfuVoiceRoom({
 				let cameraTrack = cameraTrackRef.current;
 				if (cameraEnabled && cameraTrack?.readyState !== 'live') {
 					const video = getCameraConstraints(cameraQualityTierRef.current);
-					const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video });
+					const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video }).catch((cause) => {
+						if (reportMediaAccessError('camera', cause)) dispatch(voiceActions.setShowCamera(false));
+						throw cause;
+					});
 					cameraTrack = stream.getVideoTracks()[0];
 					if (cameraTrack) {
 						const localStream = localStreamRef.current || new MediaStream();
@@ -928,7 +913,7 @@ export function MezonSfuVoiceRoom({
 				ws.send(JSON.stringify(signal));
 			}
 		})();
-	}, [cameraEnabled, findUplinkVideoSender, joinRole, hasCameraAccess]);
+	}, [cameraEnabled, dispatch, findUplinkVideoSender, joinRole, hasCameraAccess]);
 
 	const handleMezonNsFailure = useCallback(
 		(cause: unknown, pipeline?: MezonNsAudioPipeline) => {
@@ -1943,6 +1928,10 @@ export function MezonSfuVoiceRoom({
 			}
 			pushToTalkRequestedRef.current = active;
 			if (pushToTalkActive === active) return;
+			if (active && microphonePermissionStateRef.current !== 'granted' && !(await ensureMediaPermission('microphone'))) {
+				pushToTalkRequestedRef.current = false;
+				return;
+			}
 			let audioTrack = localStreamRef.current?.getAudioTracks()[0];
 			if (active && (microphonePermissionRevokedRef.current || audioTrack?.readyState !== 'live' || audioTrack.muted)) {
 				try {
@@ -1965,7 +1954,9 @@ export function MezonSfuVoiceRoom({
 					setSelectedMicrophone(nextAudioTrack.getSettings().deviceId || 'default');
 					setLocalPreview(new MediaStream(localStream.getTracks()));
 				} catch (cause) {
-					setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+					if (!reportMediaAccessError('microphone', cause)) {
+						setError(cause instanceof Error ? cause.message : 'Unable to access microphone');
+					}
 					return;
 				}
 			}
@@ -2018,7 +2009,11 @@ export function MezonSfuVoiceRoom({
 				void setPushToTalkRef.current(true);
 				return;
 			}
-			if (holdToTalkRef.current || microphoneEnabledRef.current || microphonePermissionStateRef.current !== 'granted') return;
+			if (holdToTalkRef.current || microphoneEnabledRef.current) return;
+			if (microphonePermissionStateRef.current !== 'granted') {
+				void ensureMediaPermission('microphone');
+				return;
+			}
 			holdToTalkRef.current = true;
 			dispatch(voiceActions.setShowMicrophone(true));
 		};
@@ -2659,8 +2654,6 @@ export function MezonSfuVoiceRoom({
 					onTogglePopout={() => void togglePopout(activePinnedTrackId)}
 					onFullScreen={onFullScreen}
 				/>
-
-				<MediaPermissionModal source={permissionModalSource} onClose={handleClosePermissionModal} onRetry={handlePermissionRetry} />
 			</div>
 			{isExternalCalling && (
 				<ChatStreamExternal

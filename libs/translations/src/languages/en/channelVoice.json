@@ -42,13 +42,91 @@
 		},
 		"confirm": "Confirm"
 	},
-	"permission": {
-		"cameraTitle": "Grant camera permission",
-		"cameraBody": "We do not have access to your camera. Please enable camera access in your system settings.",
-		"microphoneTitle": "Grant microphone permission",
-		"microphoneBody": "We do not have access to your microphone. Please enable microphone access in your system settings.",
-		"cancel": "Cancel",
-		"deviceSettings": "Device Settings"
+	"mediaPermission": {
+		"allow": "Allow",
+		"notNow": "Not now",
+		"close": "Close",
+		"needed": {
+			"microphone": "Microphone access needed",
+			"camera": "Camera access needed"
+		},
+		"requestTitle": {
+			"microphone": "Allow Mezon to use your microphone",
+			"camera": "Allow Mezon to use your camera"
+		},
+		"requestBody": {
+			"microphone": "Others can't hear you until Mezon can use your microphone.",
+			"camera": "Others can't see you until Mezon can use your camera."
+		},
+		"requestHint": "Choose Allow when your browser asks.",
+		"blockedTitle": {
+			"microphone": "Mezon is blocked from using your microphone",
+			"camera": "Mezon is blocked from using your camera"
+		},
+		"systemBlockedTitle": {
+			"microphone": "Your browser is blocked from using your microphone",
+			"camera": "Your browser is blocked from using your camera"
+		},
+		"unavailable": {
+			"microphone": "Couldn't start your microphone. Check that it is connected and not in use by another app.",
+			"camera": "Couldn't start your camera. Check that it is connected and not in use by another app."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Click the page info icon <icon/> in your browser's address bar",
+				"enable": {
+					"microphone": "Turn on Microphone",
+					"camera": "Turn on Camera"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Click the blocked microphone icon in your browser's address bar",
+					"camera": "Click the blocked camera icon in your browser's address bar"
+				},
+				"enable": {
+					"microphone": "Remove the block on the microphone, then turn your microphone on again",
+					"camera": "Remove the block on the camera, then turn your camera on again"
+				}
+			},
+			"safari": {
+				"open": "In the menu bar, choose Safari → Settings for this website",
+				"enable": {
+					"microphone": "Set Microphone to Allow",
+					"camera": "Set Camera to Allow"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Open System Settings → Privacy & Security → Microphone",
+					"camera": "Open System Settings → Privacy & Security → Camera"
+				},
+				"enable": {
+					"microphone": "Turn on your browser, then reopen it if asked",
+					"camera": "Turn on your browser, then reopen it if asked"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Open Settings → Privacy & security → Microphone",
+					"camera": "Open Settings → Privacy & security → Camera"
+				},
+				"enable": {
+					"microphone": "Turn on “Microphone access” and “Let desktop apps access your microphone”",
+					"camera": "Turn on “Camera access” and “Let desktop apps access your camera”"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Open your device's privacy settings",
+					"camera": "Open your device's privacy settings"
+				},
+				"enable": {
+					"microphone": "Allow your browser to use the microphone",
+					"camera": "Allow your browser to use the camera"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Input device",
@@ -60,7 +138,6 @@
 		"connectionConnected": "Connection connected",
 		"connectionDisconnected": "Connection disconnected",
 		"microphonePermissionRequired": "Microphone permission is required",
-		"cameraPermissionRequired": "Camera permission is required",
 		"recipientDidNotAnswer": "The recipient did not answer the call.",
 		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long.",
 		"duplicateSessionDisconnected": "You joined the voice channel on another device, so this session was disconnected.",

@@ -42,13 +42,91 @@
 		},
 		"confirm": "Xác nhận"
 	},
-	"permission": {
-		"cameraTitle": "Cấp quyền camera",
-		"cameraBody": "Ứng dụng chưa được cấp quyền camera. Vui lòng bật quyền camera trong cài đặt hệ thống.",
-		"microphoneTitle": "Cấp quyền microphone",
-		"microphoneBody": "Ứng dụng chưa được cấp quyền microphone. Vui lòng bật quyền microphone trong cài đặt hệ thống.",
-		"cancel": "Hủy",
-		"deviceSettings": "Cài đặt thiết bị"
+	"mediaPermission": {
+		"allow": "Cho phép",
+		"notNow": "Để sau",
+		"close": "Đóng",
+		"needed": {
+			"microphone": "Cần quyền truy cập micrô",
+			"camera": "Cần quyền truy cập camera"
+		},
+		"requestTitle": {
+			"microphone": "Cho phép Mezon sử dụng micrô",
+			"camera": "Cho phép Mezon sử dụng camera"
+		},
+		"requestBody": {
+			"microphone": "Người khác sẽ không nghe thấy bạn cho đến khi Mezon được dùng micrô.",
+			"camera": "Người khác sẽ không thấy bạn cho đến khi Mezon được dùng camera."
+		},
+		"requestHint": "Chọn Cho phép khi trình duyệt hỏi.",
+		"blockedTitle": {
+			"microphone": "Mezon bị chặn sử dụng micrô của bạn",
+			"camera": "Mezon bị chặn sử dụng camera của bạn"
+		},
+		"systemBlockedTitle": {
+			"microphone": "Trình duyệt bị chặn sử dụng micrô của bạn",
+			"camera": "Trình duyệt bị chặn sử dụng camera của bạn"
+		},
+		"unavailable": {
+			"microphone": "Không bật được micrô. Hãy kiểm tra micrô đã được kết nối và không bị ứng dụng khác sử dụng.",
+			"camera": "Không bật được camera. Hãy kiểm tra camera đã được kết nối và không bị ứng dụng khác sử dụng."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Nhấp vào biểu tượng thông tin trang <icon/> trong thanh địa chỉ của trình duyệt",
+				"enable": {
+					"microphone": "Bật micrô",
+					"camera": "Bật camera"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Nhấp vào biểu tượng micrô bị chặn trong thanh địa chỉ của trình duyệt",
+					"camera": "Nhấp vào biểu tượng camera bị chặn trong thanh địa chỉ của trình duyệt"
+				},
+				"enable": {
+					"microphone": "Gỡ chặn micrô, rồi bật lại micrô",
+					"camera": "Gỡ chặn camera, rồi bật lại camera"
+				}
+			},
+			"safari": {
+				"open": "Trên thanh menu, chọn Safari → Cài đặt cho trang web này",
+				"enable": {
+					"microphone": "Đặt Micrô thành Cho phép",
+					"camera": "Đặt Camera thành Cho phép"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Mở Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Micrô",
+					"camera": "Mở Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Camera"
+				},
+				"enable": {
+					"microphone": "Bật trình duyệt của bạn, rồi mở lại trình duyệt nếu được yêu cầu",
+					"camera": "Bật trình duyệt của bạn, rồi mở lại trình duyệt nếu được yêu cầu"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Mở Cài đặt → Quyền riêng tư & bảo mật → Micrô",
+					"camera": "Mở Cài đặt → Quyền riêng tư & bảo mật → Camera"
+				},
+				"enable": {
+					"microphone": "Bật “Quyền truy cập micrô” và “Cho phép ứng dụng trên máy tính truy cập micrô”",
+					"camera": "Bật “Quyền truy cập camera” và “Cho phép ứng dụng trên máy tính truy cập camera”"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Mở cài đặt quyền riêng tư của thiết bị",
+					"camera": "Mở cài đặt quyền riêng tư của thiết bị"
+				},
+				"enable": {
+					"microphone": "Cho phép trình duyệt sử dụng micrô",
+					"camera": "Cho phép trình duyệt sử dụng camera"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Microphone",
@@ -60,7 +138,6 @@
 		"connectionConnected": "Kết nối thành công",
 		"connectionDisconnected": "Kết nối bị gián đoạn",
 		"microphonePermissionRequired": "Cần quyền microphone",
-		"cameraPermissionRequired": "Cần quyền camera",
 		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi.",
 		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu.",
 		"duplicateSessionDisconnected": "Bạn đã tham gia kênh thoại trên thiết bị khác nên phiên này bị ngắt kết nối.",

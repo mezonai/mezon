@@ -26,9 +26,10 @@ export const CameraControl = ({
 }: CameraControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasCameraAccess === false;
+	const label = t(showWarning ? 'mediaPermission.needed.camera' : enabled ? 'turnOffCamera' : 'turnOnCamera');
 
 	const handleClick = async () => {
-		if ((permissionState !== 'granted' || hasCameraAccess === false) && onPermissionRequest) {
+		if (!enabled && (permissionState !== 'granted' || hasCameraAccess === false) && onPermissionRequest) {
 			await onPermissionRequest();
 			return;
 		}
@@ -37,14 +38,7 @@ export const CameraControl = ({
 
 	return (
 		<div className="relative">
-			<button
-				id="btn-meet-camera"
-				type="button"
-				title={t(enabled ? 'turnOffCamera' : 'turnOnCamera')}
-				aria-label={t(enabled ? 'turnOffCamera' : 'turnOnCamera')}
-				className={SFU_CONTROL_BUTTON_CLASS}
-				onClick={handleClick}
-			>
+			<button id="btn-meet-camera" type="button" title={label} aria-label={label} className={SFU_CONTROL_BUTTON_CLASS} onClick={handleClick}>
 				{enabled ? (
 					<Icons.VoiceCameraIcon className="h-8 w-8 max-lg:h-7 max-lg:w-7 max-md:h-6 max-md:w-6" scale={1.5} />
 				) : (

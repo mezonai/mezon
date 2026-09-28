@@ -35,13 +35,91 @@
 		},
 		"confirm": "Potwierdź"
 	},
-	"permission": {
-		"cameraTitle": "Udziel uprawnienia kamery",
-		"cameraBody": "Aplikacja nie otrzymała uprawnienia kamery. Proszę włączyć uprawnienie kamery w ustawieniach systemowych.",
-		"microphoneTitle": "Udziel uprawnienia mikrofonu",
-		"microphoneBody": "Aplikacja nie otrzymała uprawnienia mikrofonu. Proszę włączyć uprawnienie mikrofonu w ustawieniach systemowych.",
-		"cancel": "Anuluj",
-		"deviceSettings": "Ustawienia urządzenia"
+	"mediaPermission": {
+		"allow": "Zezwól",
+		"notNow": "Nie teraz",
+		"close": "Zamknij",
+		"needed": {
+			"microphone": "Wymagany dostęp do mikrofonu",
+			"camera": "Wymagany dostęp do kamery"
+		},
+		"requestTitle": {
+			"microphone": "Zezwól Mezon na używanie mikrofonu",
+			"camera": "Zezwól Mezon na używanie kamery"
+		},
+		"requestBody": {
+			"microphone": "Inni nie usłyszą cię, dopóki Mezon nie będzie mógł używać twojego mikrofonu.",
+			"camera": "Inni nie zobaczą cię, dopóki Mezon nie będzie mógł używać twojej kamery."
+		},
+		"requestHint": "Wybierz Zezwól, gdy zapyta przeglądarka.",
+		"blockedTitle": {
+			"microphone": "Mezon nie ma dostępu do twojego mikrofonu",
+			"camera": "Mezon nie ma dostępu do twojej kamery"
+		},
+		"systemBlockedTitle": {
+			"microphone": "Twoja przeglądarka nie ma dostępu do mikrofonu",
+			"camera": "Twoja przeglądarka nie ma dostępu do kamery"
+		},
+		"unavailable": {
+			"microphone": "Nie można uruchomić mikrofonu. Sprawdź, czy jest podłączony i nie jest używany przez inną aplikację.",
+			"camera": "Nie można uruchomić kamery. Sprawdź, czy jest podłączona i nie jest używana przez inną aplikację."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Kliknij ikonę informacji o stronie <icon/> na pasku adresu przeglądarki",
+				"enable": {
+					"microphone": "Włącz mikrofon",
+					"camera": "Włącz kamerę"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Kliknij zablokowaną ikonę mikrofonu na pasku adresu przeglądarki",
+					"camera": "Kliknij zablokowaną ikonę kamery na pasku adresu przeglądarki"
+				},
+				"enable": {
+					"microphone": "Usuń blokadę mikrofonu, a następnie włącz go ponownie",
+					"camera": "Usuń blokadę kamery, a następnie włącz ją ponownie"
+				}
+			},
+			"safari": {
+				"open": "Na pasku menu wybierz Safari → Ustawienia dla tej witryny",
+				"enable": {
+					"microphone": "Ustaw Mikrofon na Zezwól",
+					"camera": "Ustaw Kamerę na Zezwól"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Otwórz Ustawienia systemowe → Prywatność i bezpieczeństwo → Mikrofon",
+					"camera": "Otwórz Ustawienia systemowe → Prywatność i bezpieczeństwo → Kamera"
+				},
+				"enable": {
+					"microphone": "Włącz przeglądarkę, a następnie otwórz ją ponownie, jeśli pojawi się prośba",
+					"camera": "Włącz przeglądarkę, a następnie otwórz ją ponownie, jeśli pojawi się prośba"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Otwórz Ustawienia → Prywatność i zabezpieczenia → Mikrofon",
+					"camera": "Otwórz Ustawienia → Prywatność i zabezpieczenia → Kamera"
+				},
+				"enable": {
+					"microphone": "Włącz „Dostęp do mikrofonu” i „Zezwalaj aplikacjom klasycznym na dostęp do mikrofonu”",
+					"camera": "Włącz „Dostęp do kamery” i „Zezwalaj aplikacjom klasycznym na dostęp do kamery”"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Otwórz ustawienia prywatności urządzenia",
+					"camera": "Otwórz ustawienia prywatności urządzenia"
+				},
+				"enable": {
+					"microphone": "Zezwól przeglądarce na używanie mikrofonu",
+					"camera": "Zezwól przeglądarce na używanie kamery"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Mikrofon",
@@ -53,7 +131,6 @@
 		"connectionConnected": "Połączono pomyślnie",
 		"connectionDisconnected": "Połączenie zostało przerwane",
 		"microphonePermissionRequired": "Wymagane uprawnienie mikrofonu",
-		"cameraPermissionRequired": "Wymagane uprawnienie kamery",
 		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia.",
 		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam.",
 		"duplicateSessionDisconnected": "Dołączono do kanału głosowego na innym urządzeniu, więc ta sesja została rozłączona.",

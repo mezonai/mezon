@@ -24,9 +24,9 @@ import {
 import { Icons, Menu } from '@mezon/ui';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { AvatarImage } from '@mezon/components';
-import { createImgproxyUrl, IMessageTypeCallLog } from '@mezon/utils';
+import { createImgproxyUrl, ensureMediaPermission, IMessageTypeCallLog, useMediaPermissions } from '@mezon/utils';
 import { WebrtcSignalingType } from 'mezon-js';
-import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -43,6 +43,12 @@ function dmCallingDeviceMenuSubtitle(device: MediaDeviceInfo | null, systemDefau
 	return '';
 }
 
+const MediaPermissionBadge = () => (
+	<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">
+		<span className="text-black text-xs font-bold">!</span>
+	</div>
+);
+
 // DmCalling check later
 const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: boolean) => void }, DmCallingProps>(({ dmGroupId, directId }, ref) => {
 	const dispatch = useAppDispatch();
@@ -56,6 +62,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const avatarImages = currentDmGroup?.avatars || [];
 	const nameImages = currentDmGroup?.usernames || [];
 	const isMuteMicrophone = useSelector(selectIsMuteMicrophone);
+	const { hasMicrophoneAccess, hasCameraAccess } = useMediaPermissions();
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
@@ -139,13 +146,16 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		dispatch(DMCallActions.setIsMuteMicrophone(!isMuteMicrophone));
 	};
 
-	const triggerCall = (isVideoCall = false, isAnswer = false) => {
+	const triggerCall = async (isVideoCall = false, isAnswer = false) => {
+		if (isAnswer && !(await ensureMediaPermission('microphone', () => triggerCallRef.current(isVideoCall, isAnswer)))) return;
 		if (!isAnswer) {
 			dispatch(audioCallActions.setIsDialTone(true));
 			dispatch(audioCallActions.setIsEndTone(false));
 		}
 		onStartCall({ isVideoCall, isAnswer });
 	};
+	const triggerCallRef = useRef(triggerCall);
+	triggerCallRef.current = triggerCall;
 
 	const onStartCall = async ({ isVideoCall = false, isAnswer = false }) => {
 		if (!isAnswer) dispatch(DMCallActions.setIsInCall(true));
@@ -424,13 +434,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 						<div className="justify-center items-center gap-3 sbm:gap-4 flex w-full">
 							<div
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
-								onClick={() => onStartCall({ isVideoCall: true, isAnswer: true })}
+								onClick={() => triggerCall(true, true)}
 							>
 								<Icons.VoiceCameraIcon scale={1} />
 							</div>
 							<div
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
-								onClick={() => onStartCall({ isVideoCall: false, isAnswer: true })}
+								onClick={() => triggerCall(false, true)}
 							>
 								<Icons.VoiceMicIcon scale={2} />
 							</div>
@@ -444,16 +454,20 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 					) : (
 						<div className="flex flex-row gap-1.5 sbm:gap-2 lg:gap-3 justify-center flex-wrap">
 							<div
-								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full flex items-center justify-center cursor-pointer ${!isShowMeetDM ? 'dark:bg-bgSecondary dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary' : 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400'}`}
+								className={`relative h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full flex items-center justify-center cursor-pointer ${!isShowMeetDM ? 'dark:bg-bgSecondary dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary' : 'dark:bg-bgSecondary bg-bgLightMode dark:hover:bg-neutral-400 hover:bg-neutral-400'}`}
 								onClick={toggleVideo}
+								title={hasCameraAccess === false ? t('mediaPermission.needed.camera') : undefined}
 							>
 								{isShowMeetDM ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
+								{hasCameraAccess === false && <MediaPermissionBadge />}
 							</div>
 							<div
-								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full flex items-center justify-center cursor-pointer ${isMuteMicrophone ? 'dark:bg-bgSecondary bg-neutral-500 dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgSecondary dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
+								className={`relative h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full flex items-center justify-center cursor-pointer ${isMuteMicrophone ? 'dark:bg-bgSecondary bg-neutral-500 dark:hover:bg-neutral-400 hover:bg-neutral-400' : 'dark:bg-bgSecondary dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
 								onClick={handleMuteToggle}
+								title={hasMicrophoneAccess === false ? t('mediaPermission.needed.microphone') : undefined}
 							>
 								{isMuteMicrophone ? <Icons.VoiceMicDisabledIcon scale={2.5} /> : <Icons.VoiceMicIcon scale={2.5} />}
+								{hasMicrophoneAccess === false && <MediaPermissionBadge />}
 							</div>
 
 							<Menu

@@ -1,60 +1,207 @@
-import { useCallback, useEffect, useState } from 'react';
-import { checkMediaPermission } from '../utils';
+import { useSyncExternalStore } from 'react';
+
+export type MediaDevice = 'microphone' | 'camera';
+export type MediaPermissionState = 'granted' | 'denied' | 'prompt';
+export type MediaPermissionPrompt =
+	| { kind: 'request'; device: MediaDevice; requesting: boolean }
+	| { kind: 'blocked'; device: MediaDevice; bySystem: boolean };
+export type MediaAccessResult = 'granted' | 'blocked' | 'unavailable';
+
+interface MediaPermissionSnapshot {
+	microphone: MediaPermissionState | null;
+	camera: MediaPermissionState | null;
+	prompt: MediaPermissionPrompt | null;
+}
+
+const DEVICES: MediaDevice[] = ['microphone', 'camera'];
+const listeners = new Set<() => void>();
+const blockedBySystem: Record<MediaDevice, boolean> = { microphone: false, camera: false };
+const capturedThisSession: Record<MediaDevice, boolean> = { microphone: false, camera: false };
+// Held so their change listeners are not garbage collected.
+const watchedStatuses: PermissionStatus[] = [];
+let snapshot: MediaPermissionSnapshot = { microphone: null, camera: null, prompt: null };
+let onGranted: (() => void) | null = null;
+let watching = false;
+
+const constraintsFor = (device: MediaDevice): MediaStreamConstraints => (device === 'microphone' ? { audio: true } : { video: true });
+
+const setSnapshot = (next: Partial<MediaPermissionSnapshot>) => {
+	snapshot = { ...snapshot, ...next };
+	listeners.forEach((listener) => listener());
+};
+
+const effectiveState = (device: MediaDevice, browserState: PermissionState): MediaPermissionState => {
+	if (browserState === 'granted') return blockedBySystem[device] ? 'denied' : 'granted';
+	// A one-time grant (Firefox without "Remember", Safari) still queries as 'prompt'.
+	if (browserState === 'prompt' && capturedThisSession[device]) return 'granted';
+	return browserState;
+};
+
+const queryBrowserPermission = async (device: MediaDevice): Promise<PermissionState | null> => {
+	if (typeof navigator === 'undefined' || !navigator.permissions?.query) return null;
+	try {
+		const status = await navigator.permissions.query({ name: device as PermissionName });
+		return status.state;
+	} catch {
+		return null;
+	}
+};
+
+const apply = (device: MediaDevice, state: MediaPermissionState) => {
+	const previous = snapshot[device];
+	const { prompt } = snapshot;
+	let nextPrompt = prompt;
+	if (prompt?.device === device) {
+		if (prompt.kind === 'request' && state === 'granted') {
+			nextPrompt = null;
+			const action = onGranted;
+			onGranted = null;
+			if (action) setTimeout(action);
+		} else if (prompt.kind === 'request' && state === 'denied') {
+			onGranted = null;
+			nextPrompt = { kind: 'blocked', device, bySystem: blockedBySystem[device] };
+		} else if (prompt.kind === 'blocked' && state === 'granted') {
+			nextPrompt = null;
+		}
+	}
+	if (previous !== state || nextPrompt !== prompt) {
+		setSnapshot({ [device]: state, prompt: nextPrompt });
+	}
+};
+
+const refresh = async (device: MediaDevice) => {
+	const browserState = await queryBrowserPermission(device);
+	if (browserState) apply(device, effectiveState(device, browserState));
+};
+
+export const refreshMediaPermissions = async () => {
+	await Promise.all(DEVICES.map(refresh));
+};
+
+const watch = () => {
+	if (watching || typeof window === 'undefined') return;
+	watching = true;
+	window.addEventListener('focus', () => void refreshMediaPermissions());
+	if (!navigator.permissions?.query) return;
+	DEVICES.forEach((device) => {
+		navigator.permissions
+			.query({ name: device as PermissionName })
+			.then((status) => {
+				watchedStatuses.push(status);
+				apply(device, effectiveState(device, status.state));
+				status.addEventListener('change', () => apply(device, effectiveState(device, status.state)));
+			})
+			.catch(() => undefined);
+	});
+};
+
+const subscribe = (listener: () => void) => {
+	watch();
+	listeners.add(listener);
+	return () => {
+		listeners.delete(listener);
+	};
+};
+
+const isPermissionRefusal = (error: unknown) => {
+	const name = (error as DOMException | undefined)?.name;
+	return name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError';
+};
+
+export const reportMediaAccessGranted = (device: MediaDevice) => {
+	blockedBySystem[device] = false;
+	capturedThisSession[device] = true;
+	apply(device, 'granted');
+};
+
+/**
+ * Records a refused `getUserMedia` and opens the blocked popup for it. Returns false for failures
+ * that are not a permission refusal (no device, device busy), which callers report themselves.
+ */
+export const reportMediaAccessError = (device: MediaDevice, error: unknown): boolean => {
+	if (!isPermissionRefusal(error)) return false;
+	capturedThisSession[device] = false;
+	const message = (error as Error | undefined)?.message ?? '';
+	void queryBrowserPermission(device).then((browserState) => {
+		// The site is allowed but the browser itself is not: the OS privacy settings refused it.
+		blockedBySystem[device] = browserState === 'granted' || /system/i.test(message);
+		const { prompt } = snapshot;
+		if (prompt?.device === device) onGranted = null;
+		setSnapshot({
+			[device]: 'denied',
+			prompt: prompt && prompt.device !== device ? prompt : { kind: 'blocked', device, bySystem: blockedBySystem[device] }
+		});
+	});
+	return true;
+};
+
+const acquire = async (device: MediaDevice): Promise<MediaAccessResult> => {
+	try {
+		const stream = await navigator.mediaDevices.getUserMedia(constraintsFor(device));
+		stream.getTracks().forEach((track) => track.stop());
+		reportMediaAccessGranted(device);
+		return 'granted';
+	} catch (error) {
+		return reportMediaAccessError(device, error) ? 'blocked' : 'unavailable';
+	}
+};
+
+/**
+ * Resolves true when the device can be used right away. Otherwise opens the request popup (not asked
+ * yet) or the blocked popup (refused), and runs `action` once the request popup ends in a grant.
+ */
+export const ensureMediaPermission = async (device: MediaDevice, action?: () => void): Promise<boolean> => {
+	watch();
+	const browserState = await queryBrowserPermission(device);
+	const state: MediaPermissionState = browserState ? effectiveState(device, browserState) : snapshot[device] === 'granted' ? 'granted' : 'prompt';
+	if (browserState === 'granted' && blockedBySystem[device]) {
+		// Only a capture attempt tells whether the OS still blocks the browser.
+		return (await acquire(device)) === 'granted';
+	}
+	if (state === 'granted') {
+		apply(device, 'granted');
+		return true;
+	}
+	onGranted = state === 'prompt' ? (action ?? null) : null;
+	setSnapshot({
+		[device]: state,
+		prompt: state === 'prompt' ? { kind: 'request', device, requesting: false } : { kind: 'blocked', device, bySystem: false }
+	});
+	return false;
+};
+
+/** The request popup's Allow button: raises the browser's own permission prompt. */
+export const allowMediaPermissionRequest = async (): Promise<MediaAccessResult | undefined> => {
+	const { prompt } = snapshot;
+	if (prompt?.kind !== 'request' || prompt.requesting) return undefined;
+	setSnapshot({ prompt: { ...prompt, requesting: true } });
+	const result = await acquire(prompt.device);
+	const current = snapshot.prompt;
+	if (result === 'unavailable' && current?.kind === 'request' && current.device === prompt.device) {
+		onGranted = null;
+		setSnapshot({ prompt: null });
+	}
+	return result;
+};
+
+export const dismissMediaPermissionPrompt = () => {
+	onGranted = null;
+	if (snapshot.prompt) setSnapshot({ prompt: null });
+};
+
+export function useMediaPermissionPrompt() {
+	return useSyncExternalStore(subscribe, () => snapshot.prompt);
+}
+
 export function useMediaPermissions() {
-	const [hasCameraAccess, setHasCameraAccess] = useState<boolean | null>(null);
-	const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState<boolean | null>(null);
-	const [cameraPermissionState, setCameraPermissionState] = useState<'granted' | 'denied' | 'prompt' | null>(null);
-	const [microphonePermissionState, setMicrophonePermissionState] = useState<'granted' | 'denied' | 'prompt' | null>(null);
-
-	const refreshPermissions = useCallback(async () => {
-		try {
-			const micPermission = await checkMediaPermission('audio');
-			setMicrophonePermissionState(micPermission);
-			setHasMicrophoneAccess(micPermission === 'granted');
-
-			const camPermission = await checkMediaPermission('video');
-			setCameraPermissionState(camPermission);
-			setHasCameraAccess(camPermission === 'granted');
-		} catch (error) {
-			console.error('Access check error:', error);
-			setHasCameraAccess(false);
-			setHasMicrophoneAccess(false);
-		}
-	}, []);
-
-	useEffect(() => {
-		refreshPermissions();
-		if (navigator.permissions && navigator.permissions.query) {
-			const setupPermissionListeners = async () => {
-				try {
-					const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
-					const microphonePermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-
-					cameraPermission.onchange = () => {
-						const state = cameraPermission.state as 'granted' | 'denied' | 'prompt';
-						setCameraPermissionState(state);
-						setHasCameraAccess(state === 'granted');
-					};
-
-					microphonePermission.onchange = () => {
-						const state = microphonePermission.state as 'granted' | 'denied' | 'prompt';
-						setMicrophonePermissionState(state);
-						setHasMicrophoneAccess(state === 'granted');
-					};
-				} catch (error) {
-					console.error(error);
-				}
-			};
-
-			setupPermissionListeners();
-		}
-	}, [refreshPermissions]);
+	const microphonePermissionState = useSyncExternalStore(subscribe, () => snapshot.microphone);
+	const cameraPermissionState = useSyncExternalStore(subscribe, () => snapshot.camera);
 
 	return {
-		hasCameraAccess,
-		hasMicrophoneAccess,
+		hasCameraAccess: cameraPermissionState === null ? null : cameraPermissionState === 'granted',
+		hasMicrophoneAccess: microphonePermissionState === null ? null : microphonePermissionState === 'granted',
 		cameraPermissionState,
 		microphonePermissionState,
-		refreshPermissions
+		refreshPermissions: refreshMediaPermissions
 	};
 }
