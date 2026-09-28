@@ -7,6 +7,7 @@ import { ensureSession, getMezonCtx } from '../helpers';
 import { rolesClanActions, selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
 import { selectVoiceInfo, voiceActions } from '../voice/voice.slice';
+import { listChannelsByUserActions } from './channelUser.slice';
 import { channelMetaActions } from './channelmeta.slice';
 import type { ChannelsEntity } from './channels.slice';
 import { channelsActions } from './channels.slice';
@@ -85,6 +86,7 @@ export const switchPublicToPrivate = createAsyncThunk(
 			thunkAPI.dispatch(voiceActions.resetVoiceControl());
 		}
 		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channel_id }));
+		thunkAPI.dispatch(listChannelsByUserActions.remove(channel.channel_id));
 		return true;
 	}
 );
