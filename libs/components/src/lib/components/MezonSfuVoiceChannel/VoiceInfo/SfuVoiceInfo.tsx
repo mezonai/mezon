@@ -55,6 +55,8 @@ const SfuVoiceInfo = React.memo(() => {
 	const microphonePreparing = noiseSuppressionEnabled && !noiseSuppressionReady;
 
 	const { hasCameraAccess, hasMicrophoneAccess, microphonePermissionState, cameraPermissionState } = useMediaPermissions();
+	const microphoneWarning = microphonePermissionState === 'denied' || hasMicrophoneAccess === false;
+	const cameraWarning = cameraPermissionState === 'denied' || hasCameraAccess === false;
 	const handleToggleShareScreen = useCallback(() => {
 		const btnControl = document.getElementById('btn-meet-screen');
 		if (btnControl) {
@@ -124,7 +126,7 @@ const SfuVoiceInfo = React.memo(() => {
 				{isAudience && (
 					<ButtonControlVoice
 						active={pushToTalkActive}
-						disabled={microphonePreparing && !pushToTalkActive}
+						disabled={microphonePreparing && !pushToTalkActive && !microphoneWarning}
 						overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">Push to talk</span>}
 						onPointerDown={(event) => {
 							const btnControl = document.getElementById('btn-meet-push-to-talk');
@@ -138,7 +140,7 @@ const SfuVoiceInfo = React.memo(() => {
 						onPointerCancel={() => setPushToTalk(false)}
 						onLostPointerCapture={() => setPushToTalk(false)}
 						icon={<Icons.InPttCall className="w-5 h-5" />}
-						showWarning={microphonePermissionState === 'denied' || hasMicrophoneAccess === false}
+						showWarning={microphoneWarning}
 					/>
 				)}
 
@@ -146,28 +148,34 @@ const SfuVoiceInfo = React.memo(() => {
 					<ButtonControlVoice
 						overlay={
 							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">
-								{microphonePreparing
-									? showMicrophone
-										? t('noiseSuppressionStatus.keepMuted', {
-												defaultValue: 'Audio is paused. Click to keep your microphone muted.'
-											})
-										: t('noiseSuppressionStatus.preparing', { defaultValue: 'Applying noise suppression…' })
-									: t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
+								{microphoneWarning
+									? t('mediaPermission.needed.microphone')
+									: microphonePreparing
+										? showMicrophone
+											? t('noiseSuppressionStatus.keepMuted', {
+													defaultValue: 'Audio is paused. Click to keep your microphone muted.'
+												})
+											: t('noiseSuppressionStatus.preparing', { defaultValue: 'Applying noise suppression…' })
+										: t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
 							</span>
 						}
-						disabled={microphonePreparing && !showMicrophone}
+						disabled={microphonePreparing && !showMicrophone && !microphoneWarning}
 						onClick={handleToggleOpenMicro}
 						icon={showMicrophone ? <Icons.VoiceMicIcon className="w-5 h-5" /> : <Icons.VoiceMicDisabledIcon className="w-5 h-5" />}
-						showWarning={microphonePermissionState === 'denied' || hasMicrophoneAccess === false}
+						showWarning={microphoneWarning}
 					/>
 				)}
 
 				{!isAudience && (
 					<ButtonControlVoice
-						overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t(showCamera ? 'turnOffCamera' : 'turnOnCamera')}</span>}
+						overlay={
+							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">
+								{t(cameraWarning ? 'mediaPermission.needed.camera' : showCamera ? 'turnOffCamera' : 'turnOnCamera')}
+							</span>
+						}
 						onClick={handleToggleShareCamera}
 						icon={showCamera ? <Icons.VoiceCameraIcon className="w-6 h-6" /> : <Icons.VoiceCameraDisabledIcon className="w-6 h-6" />}
-						showWarning={cameraPermissionState === 'denied' || hasCameraAccess === false}
+						showWarning={cameraWarning}
 					/>
 				)}
 

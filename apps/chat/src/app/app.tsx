@@ -2,7 +2,7 @@ import { appActions, initStore, MezonStoreProvider, selectCurrentLanguage } from
 import i18n from '@mezon/translations';
 import { getMezonConfig, MezonContextProvider, useMezon } from '@mezon/transport';
 
-import { PopupManagerProvider } from '@mezon/components';
+import { MediaPermissionPrompt, PopupManagerProvider } from '@mezon/components';
 import { PermissionProvider } from '@mezon/core';
 import { createContext, lazy, Suspense, useContext, useEffect, useMemo, useState } from 'react';
 import 'react-contexify/ReactContexify.css';
@@ -112,6 +112,7 @@ export function App() {
 					<PermissionProvider>
 						<AppInitializer />
 						<Routes />
+						<MediaPermissionPrompt />
 					</PermissionProvider>
 				</PopupManagerProvider>
 			</MezonStoreProvider>

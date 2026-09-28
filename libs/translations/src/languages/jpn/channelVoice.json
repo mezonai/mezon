@@ -35,13 +35,91 @@
 		},
 		"confirm": "確認"
 	},
-	"permission": {
-		"cameraTitle": "カメラ権限を付与",
-		"cameraBody": "アプリにカメラへのアクセス権限が付与されていません。システム設定でカメラ権限をオンにしてください。",
-		"microphoneTitle": "マイク権限を付与",
-		"microphoneBody": "アプリにマイクへのアクセス権限が付与されていません。システム設定でマイク権限をオンにしてください。",
-		"cancel": "キャンセル",
-		"deviceSettings": "デバイス設定"
+	"mediaPermission": {
+		"allow": "許可",
+		"notNow": "今はしない",
+		"close": "閉じる",
+		"needed": {
+			"microphone": "マイクへのアクセスが必要です",
+			"camera": "カメラへのアクセスが必要です"
+		},
+		"requestTitle": {
+			"microphone": "Mezonにマイクの使用を許可",
+			"camera": "Mezonにカメラの使用を許可"
+		},
+		"requestBody": {
+			"microphone": "Mezonがマイクを使用できるまで、相手にはあなたの声が聞こえません。",
+			"camera": "Mezonがカメラを使用できるまで、相手にはあなたの姿が見えません。"
+		},
+		"requestHint": "ブラウザで確認画面が表示されたら「許可」を選択してください。",
+		"blockedTitle": {
+			"microphone": "Mezonはマイクの使用をブロックされています",
+			"camera": "Mezonはカメラの使用をブロックされています"
+		},
+		"systemBlockedTitle": {
+			"microphone": "ブラウザがマイクの使用をブロックされています",
+			"camera": "ブラウザがカメラの使用をブロックされています"
+		},
+		"unavailable": {
+			"microphone": "マイクを起動できませんでした。マイクが接続されているか、他のアプリで使用されていないか確認してください。",
+			"camera": "カメラを起動できませんでした。カメラが接続されているか、他のアプリで使用されていないか確認してください。"
+		},
+		"steps": {
+			"chromium": {
+				"open": "ブラウザのアドレスバーにあるページ情報アイコン <icon/> をクリックしてください",
+				"enable": {
+					"microphone": "マイクをオンにする",
+					"camera": "カメラをオンにする"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "ブラウザのアドレスバーにあるブロックされたマイクのアイコンをクリックしてください",
+					"camera": "ブラウザのアドレスバーにあるブロックされたカメラのアイコンをクリックしてください"
+				},
+				"enable": {
+					"microphone": "マイクのブロックを解除してから、マイクを再度オンにしてください",
+					"camera": "カメラのブロックを解除してから、カメラを再度オンにしてください"
+				}
+			},
+			"safari": {
+				"open": "メニューバーで Safari → このWebサイトの設定 を選択してください",
+				"enable": {
+					"microphone": "マイクを「許可」に設定してください",
+					"camera": "カメラを「許可」に設定してください"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "システム設定 → プライバシーとセキュリティ → マイク を開いてください",
+					"camera": "システム設定 → プライバシーとセキュリティ → カメラ を開いてください"
+				},
+				"enable": {
+					"microphone": "ブラウザをオンにし、必要に応じて再度開いてください",
+					"camera": "ブラウザをオンにし、必要に応じて再度開いてください"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "設定 → プライバシーとセキュリティ → マイク を開いてください",
+					"camera": "設定 → プライバシーとセキュリティ → カメラ を開いてください"
+				},
+				"enable": {
+					"microphone": "「マイクのアクセス」と「デスクトップアプリにマイクへのアクセスを許可する」をオンにしてください",
+					"camera": "「カメラのアクセス」と「デスクトップアプリにカメラへのアクセスを許可する」をオンにしてください"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "デバイスのプライバシー設定を開いてください",
+					"camera": "デバイスのプライバシー設定を開いてください"
+				},
+				"enable": {
+					"microphone": "ブラウザにマイクの使用を許可してください",
+					"camera": "ブラウザにカメラの使用を許可してください"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "マイク",
@@ -53,7 +131,6 @@
 		"connectionConnected": "接続に成功しました",
 		"connectionDisconnected": "接続が切断されました",
 		"microphonePermissionRequired": "マイク権限が必要です",
-		"cameraPermissionRequired": "カメラ権限が必要です",
 		"recipientDidNotAnswer": "相手が通話に応答しませんでした。",
 		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。",
 		"duplicateSessionDisconnected": "別のデバイスでボイスチャンネルに参加したため、このセッションは切断されました。",

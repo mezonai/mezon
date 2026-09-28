@@ -28,18 +28,20 @@ export const MicrophoneControl = ({
 }: MicrophoneControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
-
-	const label = preparing
-		? enabled
-			? t('noiseSuppressionStatus.keepMuted', { defaultValue: 'Audio is paused. Click to keep your microphone muted.' })
-			: t('noiseSuppressionStatus.preparing', { defaultValue: 'Applying noise suppression…' })
-		: t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone');
+	// Without access the filter never gets a track to prepare, so the permission prompt comes first.
+	const label = showWarning
+		? t('mediaPermission.needed.microphone')
+		: preparing
+			? enabled
+				? t('noiseSuppressionStatus.keepMuted', { defaultValue: 'Audio is paused. Click to keep your microphone muted.' })
+				: t('noiseSuppressionStatus.preparing', { defaultValue: 'Applying noise suppression…' })
+			: t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone');
 	const handleClick = async () => {
-		if (preparing && !enabled) {
+		if (!enabled && (permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
+			await onPermissionRequest();
 			return;
 		}
-		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
-			await onPermissionRequest();
+		if (preparing && !enabled) {
 			return;
 		}
 		onToggle();
@@ -54,7 +56,7 @@ export const MicrophoneControl = ({
 				aria-label={label}
 				aria-busy={preparing}
 				// handleClick blocks unmuting while keeping opacity and keyboard focus stable.
-				aria-disabled={preparing && !enabled}
+				aria-disabled={preparing && !enabled && !showWarning}
 				className={SFU_CONTROL_BUTTON_CLASS}
 				onClick={handleClick}
 			>

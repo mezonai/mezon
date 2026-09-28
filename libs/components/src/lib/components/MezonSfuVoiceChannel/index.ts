@@ -1,4 +1,3 @@
-export * from './MediaPermissionModal';
 export { SfuAudioAudience } from './MyVideoConference/Media/SfuAudioAudience';
 export { MezonSfuVoiceRoom } from './MyVideoConference/MezonSfuVoiceRoom';
 export * from './PreJoinVoiceChannel/SfuPreJoinVoiceChannel';

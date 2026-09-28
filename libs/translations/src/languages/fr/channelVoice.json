@@ -35,13 +35,91 @@
 		},
 		"confirm": "Confirmer"
 	},
-	"permission": {
-		"cameraTitle": "Autoriser l'accès à la caméra",
-		"cameraBody": "L'application n'a pas l'autorisation de la caméra. Veuillez activer l'autorisation de la caméra dans les paramètres du système.",
-		"microphoneTitle": "Autoriser l'accès au micro",
-		"microphoneBody": "L'application n'a pas l'autorisation du micro. Veuillez activer l'autorisation du micro dans les paramètres du système.",
-		"cancel": "Annuler",
-		"deviceSettings": "Paramètres de l'appareil"
+	"mediaPermission": {
+		"allow": "Autoriser",
+		"notNow": "Plus tard",
+		"close": "Fermer",
+		"needed": {
+			"microphone": "Accès au micro requis",
+			"camera": "Accès à la caméra requis"
+		},
+		"requestTitle": {
+			"microphone": "Autoriser Mezon à utiliser votre micro",
+			"camera": "Autoriser Mezon à utiliser votre caméra"
+		},
+		"requestBody": {
+			"microphone": "Les autres ne peuvent pas vous entendre tant que Mezon ne peut pas utiliser votre micro.",
+			"camera": "Les autres ne peuvent pas vous voir tant que Mezon ne peut pas utiliser votre caméra."
+		},
+		"requestHint": "Choisissez Autoriser lorsque votre navigateur le demande.",
+		"blockedTitle": {
+			"microphone": "L'accès au micro est bloqué pour Mezon",
+			"camera": "L'accès à la caméra est bloqué pour Mezon"
+		},
+		"systemBlockedTitle": {
+			"microphone": "L'accès au micro est bloqué pour votre navigateur",
+			"camera": "L'accès à la caméra est bloqué pour votre navigateur"
+		},
+		"unavailable": {
+			"microphone": "Impossible de démarrer le micro. Vérifiez qu'il est branché et qu'aucune autre application ne l'utilise.",
+			"camera": "Impossible de démarrer la caméra. Vérifiez qu'elle est branchée et qu'aucune autre application ne l'utilise."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Cliquez sur l'icône d'informations sur la page <icon/> dans la barre d'adresse de votre navigateur",
+				"enable": {
+					"microphone": "Activer le micro",
+					"camera": "Activer la caméra"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Cliquez sur l'icône de micro bloqué dans la barre d'adresse de votre navigateur",
+					"camera": "Cliquez sur l'icône de caméra bloquée dans la barre d'adresse de votre navigateur"
+				},
+				"enable": {
+					"microphone": "Supprimez le blocage du micro, puis réactivez-le",
+					"camera": "Supprimez le blocage de la caméra, puis réactivez-la"
+				}
+			},
+			"safari": {
+				"open": "Dans la barre de menus, choisissez Safari → Réglages pour ce site web",
+				"enable": {
+					"microphone": "Réglez Micro sur Autoriser",
+					"camera": "Réglez Caméra sur Autoriser"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Ouvrez Réglages Système → Confidentialité et sécurité → Micro",
+					"camera": "Ouvrez Réglages Système → Confidentialité et sécurité → Caméra"
+				},
+				"enable": {
+					"microphone": "Activez votre navigateur, puis rouvrez-le si demandé",
+					"camera": "Activez votre navigateur, puis rouvrez-le si demandé"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Ouvrez Paramètres → Confidentialité et sécurité → Microphone",
+					"camera": "Ouvrez Paramètres → Confidentialité et sécurité → Caméra"
+				},
+				"enable": {
+					"microphone": "Activez « Accès au microphone » et « Autoriser les applications de bureau à accéder à votre microphone »",
+					"camera": "Activez « Accès à la caméra » et « Autoriser les applications de bureau à accéder à votre caméra »"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Ouvrez les paramètres de confidentialité de votre appareil",
+					"camera": "Ouvrez les paramètres de confidentialité de votre appareil"
+				},
+				"enable": {
+					"microphone": "Autorisez votre navigateur à utiliser le micro",
+					"camera": "Autorisez votre navigateur à utiliser la caméra"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Microphone",
@@ -53,7 +131,6 @@
 		"connectionConnected": "Connexion réussie",
 		"connectionDisconnected": "Connexion interrompue",
 		"microphonePermissionRequired": "Autorisation du micro requise",
-		"cameraPermissionRequired": "Autorisation de la caméra requise",
 		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel.",
 		"aloneTimeoutDisconnected": "Vous avez été déconnecté du canal vocal car vous y étiez seul depuis trop longtemps.",
 		"duplicateSessionDisconnected": "Vous avez rejoint le salon vocal sur un autre appareil. Cette session a donc été déconnectée.",
