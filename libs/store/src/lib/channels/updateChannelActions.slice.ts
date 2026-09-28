@@ -1,21 +1,49 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { ChannelUpdatedEvent } from 'mezon-js';
+import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
+import { USERS_CLANS_FEATURE_KEY } from '../clanMembers/clan.members';
+import { ensureSession, getMezonCtx } from '../helpers';
 import { rolesClanActions, selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
 import { selectVoiceInfo, voiceActions } from '../voice/voice.slice';
+import { listChannelsByUserActions } from './channelUser.slice';
 import { channelMetaActions } from './channelmeta.slice';
 import type { ChannelsEntity } from './channels.slice';
 import { channelsActions } from './channels.slice';
+
+// ListClanUsers returns only the newest members, so an early joiner of a large clan may be missing from
+// the store: ask the server for this user's roles instead. undefined when that request fails.
+const fetchOwnRoleIds = async (thunkAPI: Parameters<typeof getMezonCtx>[0], clanId: string) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const response = await mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId);
+		return (response?.roles || []).map((role) => role.id).filter((id): id is string => Boolean(id));
+	} catch {
+		return undefined;
+	}
+};
 
 export const switchPublicToPrivate = createAsyncThunk(
 	'channels/switchPublicToPrivate',
 	async ({ channel, userId }: { channel: ChannelUpdatedEvent; userId: string }, thunkAPI) => {
 		const clanId = channel.clan_id;
+		thunkAPI.dispatch(userChannelsActions.invalidateUserChannel(channel.channel_id));
 		const store = await getStoreAsync();
 		const roleInClan = selectRolesByClanId(store.getState(), channel.clan_id);
-		const hasRoleAccessPrivate = (channel.role_ids || []).some((key) => key in roleInClan);
 		const memberAccessPrivate = (channel.user_ids || []).some((user_id) => user_id === userId);
+		const channelRoleIds = channel.role_ids || [];
+		let hasRoleAccessPrivate = false;
+		if (channelRoleIds.length && channel.creator_id !== userId && !memberAccessPrivate) {
+			// Access comes from holding one of the roles, not from the role existing in the clan.
+			const self = store.getState()[USERS_CLANS_FEATURE_KEY].byClans[clanId]?.entities.entities[userId];
+			const ownRoleIds = self ? (self.role_id ?? []) : await fetchOwnRoleIds(thunkAPI, clanId);
+			hasRoleAccessPrivate =
+				ownRoleIds === undefined ||
+				channelRoleIds.some(
+					(roleId) => ownRoleIds.includes(roleId) || !!roleInClan[roleId]?.role_user_list?.role_users?.some((user) => user.id === userId)
+				);
+		}
 		if (channel.creator_id === userId || hasRoleAccessPrivate || memberAccessPrivate) {
 			const userIdsToAdd = [
 				...(channel.creator_id ? [channel.creator_id] : []),
@@ -58,6 +86,7 @@ export const switchPublicToPrivate = createAsyncThunk(
 			thunkAPI.dispatch(voiceActions.resetVoiceControl());
 		}
 		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channel_id }));
+		thunkAPI.dispatch(listChannelsByUserActions.remove(channel.channel_id));
 		return true;
 	}
 );
@@ -73,6 +102,7 @@ export const switchPrivateToPublic = createAsyncThunk(
 			})
 		);
 		thunkAPI.dispatch(channelMembersActions.switchChannelOutPrivate(channel.channel_id));
+		thunkAPI.dispatch(userChannelsActions.invalidateUserChannel(channel.channel_id));
 		thunkAPI.dispatch(rolesClanActions.removeAllRolesFromChannel({ clanId: channel.clan_id, channelId: channel.channel_id }));
 	}
 );

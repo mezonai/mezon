@@ -2,6 +2,7 @@ import { useAppNavigation, useAuth, useCustomNavigate } from '@mezon/core';
 import type { removeChannelUsersPayload } from '@mezon/store';
 import {
 	channelUsersActions,
+	fetchUserChannels,
 	selectCurrentClanId,
 	selectEntitesUserClans,
 	selectRawDataUserGroup,
@@ -13,7 +14,7 @@ import { Icons, Pagination } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -45,6 +46,11 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 	const dispatch = useAppDispatch();
 	const idUsers = useSelector((state) => selectUserChannelIds(state, channel.id));
 	const channelUsers = useAppSelector((state) => selectRawDataUserGroup(state, channel.id));
+	const isPrivateChannel = channel.channel_private === 1;
+	useEffect(() => {
+		// The list is dropped when the channel switches between private and public.
+		if (isPrivateChannel && !channelUsers) dispatch(fetchUserChannels({ channelId: channel.id }));
+	}, [channel.id, channelUsers, dispatch, isPrivateChannel]);
 	const rosterMembers = useSelector(selectEntitesUserClans);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const navigate = useCustomNavigate();

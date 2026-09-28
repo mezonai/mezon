@@ -294,6 +294,8 @@ export const ChannelTopicPinBanner = memo(() => {
 	);
 
 	const isVoiceOrStream = channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channelType === ChannelType.CHANNEL_TYPE_STREAMING;
+	// A deleted channel or one the user lost access to leaves the store before the route moves on.
+	const isChannelKnown = channelType !== undefined;
 
 	const hasFetchedTopics = useSelector(selectHasFetchedTopics);
 
@@ -329,13 +331,21 @@ export const ChannelTopicPinBanner = memo(() => {
 		channelAgeRestricted !== 1 || (isAgeGatePassed && checkAgeGatePassed(currentChannelId, channelAgeRestricted, dobSeconds));
 
 	useEffect(() => {
-		if (currentClanId && currentClanId !== '0' && currentChannelId && !isExcludedRoute && !isVoiceOrStream && isChannelGatePassed) {
+		if (
+			currentClanId &&
+			currentClanId !== '0' &&
+			currentChannelId &&
+			isChannelKnown &&
+			!isExcludedRoute &&
+			!isVoiceOrStream &&
+			isChannelGatePassed
+		) {
 			dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId, clanId: currentClanId }));
 			if (!hasFetchedTopics) {
 				dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
 			}
 		}
-	}, [currentClanId, currentChannelId, dispatch, isExcludedRoute, isVoiceOrStream, isChannelGatePassed, hasFetchedTopics]);
+	}, [currentClanId, currentChannelId, dispatch, isChannelKnown, isExcludedRoute, isVoiceOrStream, isChannelGatePassed, hasFetchedTopics]);
 
 	const allTopics = useSelector(selectAllTopics);
 	const latestTopic = useMemo(() => {
