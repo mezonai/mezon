@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
 import { Link } from 'react-router-dom';
 
+const APPLE_LOGO_PATH =
+	'M22.5,18c0-3,2.4-4.5,2.5-4.6c-1.4-2.1-3.6-2.4-4.4-2.4c-1.9-0.2-3.8,1.1-4.8,1.1c-1,0-2.5-1.1-4.1-1.1 c-2.1,0-4,1.2-5,3c-2.1,3.6-0.5,8.9,1.5,11.8c1,1.4,2.2,3,3.7,2.9c1.5-0.1,2-1,3.8-1c1.8,0,2.3,1,3.8,1c1.6,0,2.6-1.4,3.6-2.9 c1.2-1.7,1.7-3.4,1.7-3.5C24.8,22.3,22.5,21.5,22.5,18z M18.9,10.2c0.8-1,1.4-2.4,1.2-3.8c-1.2,0.1-2.6,0.8-3.5,1.9 c-0.8,0.9-1.4,2.3-1.2,3.7C16.6,12.1,18,11.3,18.9,10.2z';
+
 const AppStoreIcon = () => (
 	<svg viewBox="0 0 135 40" className="h-full w-auto" xmlns="http://www.w3.org/2000/svg">
-		<path
-			fill="currentColor"
-			d="M22.5,18c0-3,2.4-4.5,2.5-4.6c-1.4-2.1-3.6-2.4-4.4-2.4c-1.9-0.2-3.8,1.1-4.8,1.1c-1,0-2.5-1.1-4.1-1.1 c-2.1,0-4,1.2-5,3c-2.1,3.6-0.5,8.9,1.5,11.8c1,1.4,2.2,3,3.7,2.9c1.5-0.1,2-1,3.8-1c1.8,0,2.3,1,3.8,1c1.6,0,2.6-1.4,3.6-2.9 c1.2-1.7,1.7-3.4,1.7-3.5C24.8,22.3,22.5,21.5,22.5,18z M18.9,10.2c0.8-1,1.4-2.4,1.2-3.8c-1.2,0.1-2.6,0.8-3.5,1.9 c-0.8,0.9-1.4,2.3-1.2,3.7C16.6,12.1,18,11.3,18.9,10.2z"
-		/>
+		<path fill="currentColor" d={APPLE_LOGO_PATH} />
 		<text x="35" y="15" fill="currentColor" style={{ fontSize: '9px', fontWeight: '400', opacity: 0.8 }}>
 			Download on the
 		</text>
@@ -40,9 +40,9 @@ const GooglePlayIcon = ({ className }: { className?: string }) => (
 );
 
 const DesktopIcons = {
-	Apple: ({ className }: { className?: string }) => (
-		<svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-			<path d="M17.05 20.28c-.96.95-2.04 1.72-3.23 1.72-1.16 0-1.57-.7-3-.7-1.45 0-1.89.7-2.98.7-1.16 0-2.36-.88-3.32-1.84-1.98-1.95-3.32-5.46-3.32-8.66 0-2.58 1.15-4.5 2.87-4.5 1.13 0 1.9.7 2.86.7.96 0 2.04-.7 3.23-.7 1.34 0 2.4.63 3.08 1.62-2.77 1.63-2.32 5.37.45 6.55-.42 1.54-1.43 3.16-2.66 5.11zM12 4c.05-2.23 1.86-4 4-4 .05 2.23-1.86 4-4 4z" />
+	Apple: ({ className = 'w-8 h-8' }: { className?: string }) => (
+		<svg viewBox="3.5 5.5 22 24.5" fill="currentColor" className={className}>
+			<path d={APPLE_LOGO_PATH} />
 		</svg>
 	),
 	Windows: ({ className }: { className?: string }) => (
@@ -341,7 +341,7 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 										glowColor="pink"
 									>
 										{platform === Platform.MACOS ? (
-											<DesktopIcons.Apple className="w-6 h-6" />
+											<DesktopIcons.Apple className="w-8 h-8" />
 										) : platform === Platform.LINUX ? (
 											<DesktopIcons.Linux className="w-6 h-6" />
 										) : (

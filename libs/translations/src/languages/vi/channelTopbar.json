@@ -108,7 +108,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc"
+			"startDateBeforeEnd": "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+			"dateOutOfRange": "Ngày phải nằm trong khoảng từ {{minDate}} đến hôm nay"
 		},
 		"buttons": {
 			"clearAll": "Xóa tất cả",

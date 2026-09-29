@@ -103,7 +103,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "開始日は終了日以前または同じである必要があります"
+			"startDateBeforeEnd": "開始日は終了日以前または同じである必要があります",
+			"dateOutOfRange": "日付は{{minDate}}から今日までの範囲で指定してください"
 		},
 		"buttons": {
 			"clearAll": "すべてクリア",

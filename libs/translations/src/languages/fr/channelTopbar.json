@@ -101,7 +101,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "La date de début doit être antérieure ou égale à la date de fin"
+			"startDateBeforeEnd": "La date de début doit être antérieure ou égale à la date de fin",
+			"dateOutOfRange": "La date doit être comprise entre le {{minDate}} et aujourd'hui"
 		},
 		"buttons": {
 			"clearAll": "Tout effacer",
