@@ -1088,7 +1088,7 @@ export function MezonSfuVoiceRoom({
 					if (
 						inputTrack.readyState !== 'live' ||
 						capture.noiseSuppression === true ||
-						capture.autoGainControl === true ||
+						capture.autoGainControl === false ||
 						capture.voiceIsolation === true
 					) {
 						const stream = await openMicrophone({ ...getMezonNsAudioCaptureOptions(), ...device });
@@ -1098,8 +1098,7 @@ export function MezonSfuVoiceRoom({
 					}
 					if (!isCurrent()) return;
 					const settings = nextTrack.getSettings();
-					if (settings.noiseSuppression === true || settings.autoGainControl === true)
-						throw new Error('Native NS/AGC could not be disabled');
+					if (settings.noiseSuppression === true) throw new Error('Native noise suppression could not be disabled');
 					// Keep the original sender until the candidate has genuinely processed live audio.
 					nextTrack.enabled = inputTrack.enabled;
 					candidate = await MezonNsAudioPipeline.create(

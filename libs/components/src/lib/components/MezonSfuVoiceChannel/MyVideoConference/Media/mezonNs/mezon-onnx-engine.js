@@ -147,6 +147,11 @@ export class MezonNSEngine {
 		this.suppressionIntensity = options.suppressionIntensity ?? 1.0;
 		this.enableNoiseGate = options.enableNoiseGate ?? true;
 		this.attenuationLimitDb = options.attenuationLimitDb ?? 0.0;
+		this.modelTargetRms =
+			Number.isFinite(options.modelInputTargetDbfs) && options.modelInputTargetDbfs < 0
+				? Math.pow(10.0, options.modelInputTargetDbfs / 20.0)
+				: 0.0;
+		this.modelLevelRms = 0.0;
 
 		this.fft = new FastRealFFT512();
 
@@ -155,6 +160,7 @@ export class MezonNSEngine {
 		this.outputBuffer = new Float32Array(WIN_LENGTH + HOP_LENGTH);
 		this.windowedFrame = new Float32Array(FFT_SIZE);
 		this.magSpec = new Float32Array(FREQ_BINS);
+		this.modelMagSpec = new Float32Array(FREQ_BINS);
 		this.phaseSpec = new Float32Array(FREQ_BINS);
 		this.cleanMagSpec = new Float32Array(FREQ_BINS);
 		this.synthFrame = new Float32Array(FFT_SIZE);
@@ -220,6 +226,7 @@ export class MezonNSEngine {
 		this.vadState = 0.0;
 		this.hangoverFrames = 0;
 		this.startupFrames = 0;
+		this.modelLevelRms = 0.0;
 	}
 
 	/**
@@ -309,8 +316,28 @@ export class MezonNSEngine {
 			if (this.magSpec[k] < 1e-5) this.magSpec[k] = 1e-5;
 		}
 
+		// Bring quiet microphones into the model's expected level range. The
+		// original spectrum is still used for reconstruction, so this does not
+		// directly amplify the outgoing microphone signal.
+		let modelInput = this.magSpec;
+		if (this.modelTargetRms > 0.0) {
+			let sumSq = 0.0;
+			let peak = 0.0;
+			for (let i = 0; i < HOP_LENGTH; i++) {
+				const sample = inFrame[i];
+				sumSq += sample * sample;
+				peak = Math.max(peak, Math.abs(sample));
+			}
+			const frameRms = Math.sqrt(sumSq / HOP_LENGTH);
+			this.modelLevelRms = Math.max(frameRms, this.modelLevelRms * 0.9);
+			const levelGain = Math.max(1.0, Math.min(16.0, this.modelTargetRms / Math.max(this.modelLevelRms, 1e-5)));
+			const gain = Math.min(levelGain, Math.max(1.0, 0.8 / Math.max(peak, 1e-5)));
+			for (let k = 0; k < FREQ_BINS; k++) this.modelMagSpec[k] = this.magSpec[k] * gain;
+			modelInput = this.modelMagSpec;
+		}
+
 		// 4. ONNX Model Inference
-		const inputTensor = new ort.Tensor('float32', this.magSpec, [1, 1, 1, FREQ_BINS]);
+		const inputTensor = new ort.Tensor('float32', modelInput, [1, 1, 1, FREQ_BINS]);
 		const hTensor = new ort.Tensor('float32', this.gruHidden, [NUM_GRU_LAYERS, 1, GRU_HIDDEN_SIZE]);
 
 		const feeds = {

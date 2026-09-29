@@ -123,6 +123,34 @@ test('silent FFT magnitudes are floored before inference to match the updated mo
 	assert.ok(magnitudes.every((value) => value >= Math.fround(1e-5)));
 });
 
+test('quiet speech is normalized for inference without changing its reconstructed loudness', async () => {
+	const baseline = createEngine({ enableNoiseGate: false });
+	const normalized = createEngine({ enableNoiseGate: false, modelInputTargetDbfs: -20 });
+	const input = Float32Array.from({ length: 160 }, (_, i) => 0.003 * Math.sin((2 * Math.PI * 1000 * i) / 16000));
+	const baselineOutput = new Float32Array(160);
+	const normalizedOutput = new Float32Array(160);
+	let baselineMagnitude = 0;
+	let normalizedMagnitude = 0;
+	for (const [engine, record] of [
+		[baseline, (magnitude) => (baselineMagnitude = magnitude)],
+		[normalized, (magnitude) => (normalizedMagnitude = magnitude)]
+	]) {
+		const run = engine.session.run;
+		engine.session.run = async (feeds) => {
+			record(feeds.frame_input.data[20]);
+			return run(feeds);
+		};
+	}
+	for (let frame = 0; frame < 10; frame++) {
+		await baseline.processFrame(input, baselineOutput);
+		await normalized.processFrame(input, normalizedOutput);
+	}
+	assert.ok(normalizedMagnitude > baselineMagnitude * 10, 'The model should see a quiet voice in its trained level range');
+	assert.deepEqual(normalizedOutput, baselineOutput, 'A unity mask must reconstruct the unamplified microphone signal');
+	normalized.reset();
+	assert.equal(normalized.modelLevelRms, 0, 'A new stream must not inherit the previous model level');
+});
+
 test('tiny negative model gains cannot poison fractional gamma shaping with NaN', async () => {
 	assert.equal(await toneEnergy(createEngine({ suppressionIntensity: 1.6 }, -5.960464477539063e-8), 0.12), 0);
 });
@@ -164,13 +192,13 @@ function release(worklet, enabled = true, requestId = worklet.requestId) {
 }
 
 function warmWorklet(worklet) {
-	for (let i = 0; i < 8; i++) cleanFrame(worklet);
+	for (let i = 0; i < 12; i++) cleanFrame(worklet);
 	assert.ok(worklet.sent.some((message) => message.type === 'mode_applied' && message.requestId === worklet.requestId));
 }
 
 test('startup waits for warm live inference frames and readiness never releases output by itself', () => {
 	const worklet = createWorklet();
-	for (let i = 0; i < 7; i++) cleanFrame(worklet);
+	for (let i = 0; i < 11; i++) cleanFrame(worklet);
 	assert.ok(!worklet.sent.some((message) => message.type === 'mode_applied'));
 	assert.ok(render(worklet).every((sample) => sample === 0));
 	// The first buffered frame has not been consumed while outputReady is false.
@@ -217,16 +245,25 @@ test('filtered underruns are silent and refill without falling back to raw audio
 	const worklet = createWorklet();
 	warmWorklet(worklet);
 	release(worklet);
-	for (let i = 0; i < 3; i++) render(worklet);
+	for (let i = 0; i < 8; i++) render(worklet);
 	assert.ok(render(worklet).every((sample) => sample === 0));
-	cleanFrame(worklet);
+	assert.equal(worklet.sent.filter((message) => message.type === 'output_underrun').length, 1);
+	for (let i = 0; i < 5; i++) cleanFrame(worklet);
 	assert.ok(render(worklet).every((sample) => sample === 0));
 	cleanFrame(worklet);
 	assert.ok(render(worklet).every((sample) => Math.abs(sample - 0.01) < 1e-7));
 	assert.ok(render(worklet).every((sample) => Math.abs(sample - 0.01) < 1e-7));
-	const partial = render(worklet);
-	assert.ok(partial.subarray(0, 64).every((sample) => Math.abs(sample - 0.01) < 1e-7));
-	assert.ok(partial.subarray(64).every((sample) => sample === 0));
+});
+
+test('filtered playout survives a 48 ms inference scheduling pause', () => {
+	const worklet = createWorklet();
+	warmWorklet(worklet);
+	release(worklet);
+	for (let i = 0; i < 6; i++) {
+		assert.ok(render(worklet).every((sample) => sample > 0));
+	}
+	for (let i = 0; i < 6; i++) cleanFrame(worklet);
+	assert.ok(render(worklet).every((sample) => Math.abs(sample - 0.01) < 1e-7));
 });
 
 test('worklet bridges 128-sample quanta and delayed 160-sample frames without periodic gaps', () => {
@@ -251,7 +288,7 @@ test('worklet bridges 128-sample quanta and delayed 160-sample frames without pe
 test('asym babble ONNX model runs with the web engine and produces finite stateful audio', async () => {
 	const ort = require('onnxruntime-web');
 	const Engine = loadEngine(ort);
-	const engine = new Engine({ suppressionIntensity: 1.6 });
+	const engine = new Engine({ suppressionIntensity: 1.6, attenuationLimitDb: 15, modelInputTargetDbfs: -20 });
 	try {
 		const model = fs.readFileSync(path.join(assetPath, 'mezon_ns_asym_babble.onnx'));
 		assert.equal(createHash('sha256').update(model).digest('hex'), 'c68b7e5e728cb846c75cab83df171fba85cc359d5a70532bb588d966c44e70a3');
@@ -259,7 +296,9 @@ test('asym babble ONNX model runs with the web engine and produces finite statef
 		assert.deepEqual(engine.session.inputNames, ['frame_input', 'h_in', 'conv_state_in']);
 		assert.deepEqual(engine.session.outputNames, ['mask_output', 'h_out', 'conv_state_out']);
 		await toneEnergy(engine, 0, 3);
-		assert.ok((await toneEnergy(engine, 0.12, 20)) > 0);
+		const protectedEnergy = await toneEnergy(engine, 0.12, 20);
+		const rawEnergy = await toneEnergy(createEngine({ enableNoiseGate: false }), 0.12, 20);
+		assert.ok(protectedEnergy / rawEnergy > 0.02, 'The attenuation floor must keep a strong input from becoming silent');
 	} finally {
 		await engine.dispose();
 	}
