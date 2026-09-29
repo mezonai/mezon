@@ -9,7 +9,13 @@ const workletSource = fs.readFileSync(
 	path.resolve(__dirname, '../../../../../../../../../apps/chat/src/assets/mezon-ns/mezon-ns-processor.js'),
 	'utf8'
 );
-const pipelineSource = ts.transpileModule(fs.readFileSync(path.join(__dirname, 'MezonNsAudioPipeline.ts'), 'utf8'), {
+const pipelineSource = ts.transpileModule(fs.readFileSync(path.join(__dirname, 'MezonNsAudioPipeline.ts'), 'utf8').replace(
+	"new URL('./MezonNsInferenceWorker.ts', import.meta.url)",
+	"'mezon-ns-test-worker'"
+), {
+	compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS }
+}).outputText;
+const workerSource = ts.transpileModule(fs.readFileSync(path.join(__dirname, 'MezonNsInferenceWorker.ts'), 'utf8'), {
 	compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS }
 }).outputText;
 const flush = () => new Promise((done) => setImmediate(done));
@@ -34,7 +40,8 @@ function createHarness(environment = 'development') {
 		downloads: 0,
 		resets: 0,
 		frames: 0,
-		disposals: 0,
+		workerFrames: 0,
+		terminations: 0,
 		failNextDownload: false,
 		failInference: false,
 		blockInitialization: false
@@ -43,6 +50,9 @@ function createHarness(environment = 'development') {
 	let nextTimer = 0;
 	const contexts = [];
 	class Engine {
+		constructor(options) {
+			stats.engineOptions = options;
+		}
 		async loadModel() {
 			stats.loads++;
 			if (stats.blockInitialization)
@@ -59,8 +69,63 @@ function createHarness(environment = 'development') {
 			if (stats.failInference) throw new Error('inference failed');
 			output.fill(0.01);
 		}
-		async dispose() {
-			stats.disposals++;
+		async dispose() {}
+	}
+	class FakePort {
+		closed = false;
+		onmessage = null;
+		postMessage(data) {
+			if (data.type === 'process_frame') stats.workerFrames++;
+			if (!this.closed) queueMicrotask(() => {
+				if (!this.peer.closed) this.peer.onmessage?.({ data });
+			});
+		}
+		close() {
+			this.closed = true;
+		}
+	}
+	class FakeMessageChannel {
+		constructor() {
+			this.port1 = new FakePort();
+			this.port2 = new FakePort();
+			this.port1.peer = this.port2;
+			this.port2.peer = this.port1;
+		}
+	}
+	class InferenceWorker {
+		constructor() {
+			this.terminated = false;
+			this.onmessage = null;
+			this.onerror = null;
+			this.scope = {
+				onmessage: null,
+				postMessage: (data) => {
+					if (!this.terminated) queueMicrotask(() => this.onmessage?.({ data }));
+				}
+			};
+			vm.runInNewContext(workerSource, Object.assign(this.scope, {
+				exports: {},
+				require: (name) => {
+					if (name === 'onnxruntime-web') return { env: { wasm: {} } };
+					if (name === './mezon-onnx-engine') return { MezonNSEngine: Engine };
+					throw new Error(`Unexpected worker import: ${name}`);
+				},
+				Float32Array,
+				Uint8Array,
+				Promise,
+				Error,
+				Number
+			}));
+		}
+		postMessage(message) {
+			if (message.type === 'init') this.port = message.port;
+			if (!this.terminated) queueMicrotask(() => this.scope.onmessage?.({ data: message }));
+		}
+		terminate() {
+			if (this.terminated) return;
+			this.terminated = true;
+			stats.terminations++;
+			this.port?.close();
 		}
 	}
 	class Context {
@@ -136,6 +201,8 @@ function createHarness(environment = 'development') {
 		window: { AudioContext: Context },
 		AudioContext: Context,
 		AudioWorkletNode: WorkletNode,
+		Worker: InferenceWorker,
+		MessageChannel: FakeMessageChannel,
 		MediaStream: class {
 			constructor(tracks) {
 				this.tracks = tracks;
@@ -190,7 +257,7 @@ test('preload selects the versioned asym babble checkpoint in development and pr
 		const url = new URL(harness.stats.modelUrls[0], 'https://client.example');
 		const prefix = environment === 'production' ? '/chat' : '';
 		assert.equal(url.pathname, `${prefix}/assets/mezon-ns/mezon_ns_asym_babble.onnx`);
-		assert.equal(url.searchParams.get('v'), '457ca7c-v1');
+		assert.equal(url.searchParams.get('v'), '457ca7c-v3');
 	}
 });
 
@@ -198,12 +265,29 @@ test('readiness keeps capture alive and transmission blocked until explicitly re
 	const harness = createHarness();
 	const { pipeline, input, context } = await readyPipeline(harness);
 	try {
+		assert.equal(harness.stats.engineOptions.modelInputTargetDbfs, -20);
 		assert.equal(input.enabled, true);
 		assert.equal(pipeline.isDenoisingReady, true);
 		assert.equal(pipeline.track.enabled, false);
 		pipeline.setOutputEnabled(true);
 		await context.pump(5);
 		assert.equal(pipeline.track.enabled, true);
+		assert.ok(context.lastOutput.every((sample) => Math.abs(sample - 0.01) < 1e-7));
+	} finally {
+		pipeline.dispose();
+	}
+});
+
+test('filtered audio keeps flowing when the main worklet message handler is stalled', async () => {
+	const harness = createHarness();
+	const { pipeline, context } = await readyPipeline(harness);
+	try {
+		pipeline.setOutputEnabled(true);
+		await context.pump(5);
+		context.node.port.onmessage = null; // UI-thread message handling is unavailable.
+		const frames = harness.stats.workerFrames;
+		await context.pump(30);
+		assert.ok(harness.stats.workerFrames > frames);
 		assert.ok(context.lastOutput.every((sample) => Math.abs(sample - 0.01) < 1e-7));
 	} finally {
 		pipeline.dispose();
@@ -434,7 +518,7 @@ test('room prepares its pipeline before the first toggle without reopening an al
 	const input = {
 		enabled: true,
 		readyState: 'live',
-		getSettings: () => ({ noiseSuppression: false, autoGainControl: false }),
+		getSettings: () => ({ noiseSuppression: false, autoGainControl: true }),
 		stop() {
 			this.readyState = 'ended';
 		}
@@ -497,16 +581,16 @@ test('cancelling noise before initialization finishes restores the live original
 test('model initialization timeout creates no output and cleans up a session that finishes late', async () => {
 	const harness = createHarness();
 	harness.stats.blockInitialization = true;
-	const creating = harness.Pipeline.create({ enabled: true }, () => {});
+	const creating = harness.Pipeline.create(withClone({ enabled: true }), () => {});
 	const rejected = assert.rejects(creating, /initialization timed out/);
 	await flush();
 	harness.timeout();
 	await rejected;
-	assert.equal(harness.contexts.length, 0);
-	assert.equal(harness.stats.disposals, 0);
+	assert.equal(harness.contexts[0].state, 'closed');
+	assert.equal(harness.stats.terminations, 1);
 	harness.stats.releaseInitialization();
 	await flush();
-	assert.equal(harness.stats.disposals, 1);
+	assert.equal(harness.stats.terminations, 1);
 });
 
 test('disposing while ON is pending settles readiness without releasing output or muting capture', async () => {
@@ -534,7 +618,7 @@ test('initial native-to-raw capture adoption preserves a user mute made during p
 	const raw = withClone({
 		enabled: true,
 		readyState: 'live',
-		getSettings: () => ({ noiseSuppression: false, autoGainControl: false }),
+		getSettings: () => ({ noiseSuppression: false, autoGainControl: true }),
 		stop() {
 			this.readyState = 'ended';
 		}
@@ -693,7 +777,8 @@ test('private preparation stays silent and readiness releases audio without debu
 		await context.pump(10);
 		assert.equal(pipeline.track.enabled, true);
 		assert.ok(context.lastOutput.some((sample) => sample > 0));
-		assert.ok(messages.includes('process_frame'));
+		assert.ok(harness.stats.workerFrames > 0);
+		assert.ok(!messages.includes('process_frame'));
 		assert.ok(!messages.includes('meter'));
 		assert.deepEqual(harness.stats.logs, []);
 	} finally {

@@ -1,28 +1,18 @@
-import type { MezonNSEngine } from './mezon-onnx-engine';
-
 const assetBase = () => `${process.env.NODE_ENV === 'production' ? '/chat' : ''}/assets/mezon-ns/`;
-const ASSET_VERSION = '457ca7c-v1';
+const ASSET_VERSION = '457ca7c-v3';
 const LOG_PREFIX = '[MezonSFU][Mezon-NS]';
 const READY_TIMEOUT_MS = 5000;
-let resourcesPromise: Promise<{ model: Uint8Array; Engine: typeof MezonNSEngine }> | undefined;
+let resourcesPromise: Promise<Uint8Array> | undefined;
 
 const loadResources = () => {
 	if (!resourcesPromise) {
 		resourcesPromise = (async () => {
-			const ort = await import('onnxruntime-web');
-			ort.env.wasm.numThreads = 1;
-			ort.env.wasm.simd = true;
-			ort.env.wasm.wasmPaths = assetBase();
 			const controller = new AbortController();
 			const timeout = setTimeout(() => controller.abort(), 15000);
 			try {
-				const [response, { MezonNSEngine: Engine }] = await Promise.all([
-					fetch(`${assetBase()}mezon_ns_asym_babble.onnx?v=${ASSET_VERSION}`, { signal: controller.signal }),
-					import('./mezon-onnx-engine')
-				]);
+				const response = await fetch(`${assetBase()}mezon_ns_asym_babble.onnx?v=${ASSET_VERSION}`, { signal: controller.signal });
 				if (!response.ok) throw new Error(`Mezon-NS model download failed (${response.status})`);
-				const model = new Uint8Array(await response.arrayBuffer());
-				return { model, Engine };
+				return new Uint8Array(await response.arrayBuffer());
 			} finally {
 				clearTimeout(timeout);
 			}
@@ -50,18 +40,14 @@ export class MezonNsAudioPipeline {
 	private preparingWhileMuted = false;
 	private denoisingEnabled = true;
 	private modeReady = false;
-	private warmedUp = false;
 	private modeId = 0;
 	private pendingMode: PendingMode | null = null;
-	private warnedAboutOverrun = false;
-	private queuedFrames = 0;
-	private processing = Promise.resolve();
 
 	private constructor(
 		readonly inputTrack: MediaStreamTrack,
 		private readonly analysisTrack: MediaStreamTrack,
 		private readonly context: AudioContext,
-		private readonly engine: MezonNSEngine,
+		private readonly worker: Worker,
 		private readonly source: MediaStreamAudioSourceNode,
 		private readonly worklet: AudioWorkletNode,
 		private readonly destination: MediaStreamAudioDestinationNode,
@@ -104,13 +90,18 @@ export class MezonNsAudioPipeline {
 	// the output waits for noise suppression to finish applying.
 	setPreparationEnabled(enabled: boolean): void {
 		this.preparingWhileMuted = enabled;
-		this.analysisTrack.enabled = this.inputTrack.enabled || enabled;
+		this.syncCaptureEnabled();
 	}
 
 	setOutputEnabled(enabled: boolean): void {
-		this.analysisTrack.enabled = this.inputTrack.enabled || this.preparingWhileMuted;
+		this.syncCaptureEnabled();
 		this.outputEnabled = enabled;
 		this.syncOutputEnabled();
+	}
+
+	private syncCaptureEnabled(): void {
+		this.analysisTrack.enabled = this.inputTrack.enabled || this.preparingWhileMuted;
+		this.worker.postMessage({ type: 'capture_active', enabled: this.analysisTrack.enabled });
 	}
 
 	private syncOutputEnabled(): void {
@@ -139,30 +130,15 @@ export class MezonNsAudioPipeline {
 	}
 
 	static async create(inputTrack: MediaStreamTrack, onFailure: (error: unknown) => void, prepareWhileMuted = false): Promise<MezonNsAudioPipeline> {
-		if (!window.AudioContext || typeof AudioWorkletNode === 'undefined') throw new Error('AudioWorklet is unavailable');
-		const { model, Engine } = await loadResources();
-		const engine = new Engine({ suppressionIntensity: 1.6, enableNoiseGate: true });
+		if (!window.AudioContext || typeof AudioWorkletNode === 'undefined' || typeof Worker === 'undefined' || typeof MessageChannel === 'undefined')
+			throw new Error('Mezon-NS audio workers are unavailable');
+		const model = await loadResources();
 		let context: AudioContext | undefined;
 		let analysisTrack: MediaStreamTrack | undefined;
+		let worker: Worker | undefined;
+		let pendingPort: MessagePort | undefined;
 		let pipeline: MezonNsAudioPipeline | undefined;
-		const preparation = (async () => {
-			await engine.loadModel(model);
-			// Compile/warm the graph before consuming live frames, then reset synthetic state.
-			await engine.processFrame(new Float32Array(160), new Float32Array(160));
-			engine.reset();
-		})();
 		try {
-			let preparationTimeout: ReturnType<typeof setTimeout> | undefined;
-			try {
-				await Promise.race([
-					preparation,
-					new Promise<never>((_, reject) => {
-						preparationTimeout = setTimeout(() => reject(new Error('Mezon-NS model initialization timed out')), 15000);
-					})
-				]);
-			} finally {
-				if (preparationTimeout !== undefined) clearTimeout(preparationTimeout);
-			}
 			context = new AudioContext({ sampleRate: 16000, latencyHint: 'interactive' });
 			if (context.sampleRate !== 16000) throw new Error('Mezon-NS requires 16 kHz audio');
 			await context.audioWorklet.addModule(`${assetBase()}mezon-ns-processor.js?v=${ASSET_VERSION}`);
@@ -172,18 +148,66 @@ export class MezonNsAudioPipeline {
 			const worklet = new AudioWorkletNode(context, 'mezon-ns-processor', { outputChannelCount: [1] });
 			const destination = context.createMediaStreamDestination();
 			destination.channelCount = 1;
-			const created = new MezonNsAudioPipeline(inputTrack, analysisTrack, context, engine, source, worklet, destination, onFailure);
+			worker = new Worker(new URL('./MezonNsInferenceWorker.ts', import.meta.url), { type: 'module' });
+			const created = new MezonNsAudioPipeline(inputTrack, analysisTrack, context, worker, source, worklet, destination, onFailure);
 			pipeline = created;
+			const channel = new MessageChannel();
+			pendingPort = channel.port1;
+			let resolveWorker!: () => void;
+			let rejectWorker!: (error: Error) => void;
+			let workerReady = false;
+			let warnedAboutBacklog = false;
+			let warnedAboutUnderrun = false;
+			const initialized = new Promise<void>((resolve, reject) => {
+				resolveWorker = resolve;
+				rejectWorker = reject;
+			});
+			worker.onmessage = (event: MessageEvent<{ type: string; error?: string }>) => {
+				if (created.disposed || created.failed) return;
+				if (event.data?.type === 'ready') {
+					workerReady = true;
+					resolveWorker();
+				} else if (event.data?.type === 'failure') {
+					const error = new Error(event.data.error || 'Mezon-NS inference worker failed');
+					if (workerReady) created.fail(error);
+					else rejectWorker(error);
+				} else if (event.data?.type === 'backlog' && !warnedAboutBacklog) {
+					warnedAboutBacklog = true;
+					console.warn(`${LOG_PREFIX} inference worker backlog`);
+				}
+			};
+			worker.onerror = (event) => {
+				event.preventDefault();
+				const error = new Error(event.message || 'Mezon-NS inference worker failed');
+				if (workerReady) created.fail(error);
+				else rejectWorker(error);
+			};
+			const modelCopy = model.slice(); // Keep the cached model intact when transferring its bytes.
+			worker.postMessage(
+				{ type: 'init', model: modelCopy.buffer, port: channel.port2, wasmPaths: assetBase(), captureActive: analysisTrack.enabled },
+				[modelCopy.buffer, channel.port2]
+			);
+			let preparationTimeout: ReturnType<typeof setTimeout> | undefined;
+			try {
+				await Promise.race([
+					initialized,
+					new Promise<never>((_, reject) => {
+						preparationTimeout = setTimeout(() => reject(new Error('Mezon-NS model initialization timed out')), 15000);
+					})
+				]);
+			} finally {
+				if (preparationTimeout !== undefined) clearTimeout(preparationTimeout);
+			}
+			worklet.port.postMessage({ type: 'bind_inference_port', port: channel.port1 }, [channel.port1]);
+			pendingPort = undefined;
 			created.setPreparationEnabled(prepareWhileMuted);
 			const ready = created.waitForMode(true, 0);
-			const output = new Float32Array(160);
 			worklet.onprocessorerror = () => created.fail(new Error('Mezon-NS audio processor failed'));
 			worklet.port.onmessage = (
 				event: MessageEvent<{
 					type: string;
 					requestId?: number;
 					enabled?: boolean;
-					frame?: Float32Array;
 				}>
 			) => {
 				const message = event.data;
@@ -196,41 +220,13 @@ export class MezonNsAudioPipeline {
 					clearTimeout(pending.timeout);
 					created.pendingMode = null;
 					created.modeReady = true;
-					created.warmedUp = true;
+					worker?.postMessage({ type: 'warmed_up' });
 					created.syncOutputEnabled();
 					pending.resolve(true);
-					return;
+				} else if (message.type === 'output_underrun' && !warnedAboutUnderrun) {
+					warnedAboutUnderrun = true;
+					console.warn(`${LOG_PREFIX} filtered audio underrun; audio was briefly silent`);
 				}
-				if (message.type !== 'process_frame' || !message.frame) return;
-				if (created.queuedFrames >= 6) {
-					if (!created.warnedAboutOverrun) {
-						created.warnedAboutOverrun = true;
-						console.warn(`${LOG_PREFIX} inference backlog; output remains silent on underrun`);
-					}
-					return;
-				}
-				created.queuedFrames++;
-				const frame = message.frame;
-				const requestId = message.requestId;
-				created.processing = created.processing
-					.then(async () => {
-						if (created.disposed || created.failed) return;
-						// Ordinary user mute freezes state; the explicit preparation phase
-						// continues inference on a private capture clone with outgoing audio muted.
-						if (!created.analysisTrack.enabled && created.warmedUp) {
-							output.fill(0);
-						} else {
-							await engine.processFrame(frame, output);
-						}
-						for (let i = 0; i < output.length; i++) {
-							if (!Number.isFinite(output[i])) throw new Error('Mezon-NS produced non-finite audio');
-						}
-						if (!created.disposed && !created.failed) worklet.port.postMessage({ type: 'clean_frame', requestId, frame: output.slice() });
-					})
-					.catch((error) => created.fail(error))
-					.finally(() => {
-						created.queuedFrames--;
-					});
 			};
 			source.connect(worklet);
 			worklet.connect(destination);
@@ -239,18 +235,12 @@ export class MezonNsAudioPipeline {
 			if (!(await ready) || context.state !== 'running') throw new Error('Mezon-NS audio could not become ready');
 			return created;
 		} catch (error) {
+			pendingPort?.close();
 			if (pipeline) pipeline.dispose();
 			else {
+				worker?.terminate();
 				analysisTrack?.stop();
 				void context?.close().catch(() => undefined);
-				// A timed-out ONNX initialization cannot be cancelled. Release its session
-				// after it settles, never while an inference is still using it.
-				void preparation
-					.then(
-						() => engine.dispose(),
-						() => engine.dispose()
-					)
-					.catch(() => undefined);
 			}
 			throw error;
 		}
@@ -263,13 +253,16 @@ export class MezonNsAudioPipeline {
 		this.cancelPendingMode();
 		this.worklet.port.onmessage = null;
 		this.worklet.onprocessorerror = null;
+		this.worklet.port.postMessage({ type: 'dispose' });
 		this.worklet.port.close();
+		this.worker.onmessage = null;
+		this.worker.onerror = null;
+		this.worker.terminate();
 		this.source.disconnect();
 		this.worklet.disconnect();
 		this.destination.disconnect();
 		this.track.stop();
 		this.analysisTrack.stop();
 		void this.context.close().catch(() => undefined);
-		void this.processing.then(() => this.engine.dispose()).catch(() => undefined);
 	}
 }
