@@ -70,12 +70,14 @@ export const getNoiseSuppressionAudioCaptureOptions = (_enabled: boolean): Mezon
 
 export type MezonNsAudioCaptureOptions = MezonAudioCaptureOptions & { googNoiseSuppression?: boolean; googAutoGainControl?: boolean };
 
+// Mezon-NS replaces native noise suppression; keep browser AGC so mic loudness
+// remains consistent when the user toggles the filter.
 export const getMezonNsAudioCaptureOptions = (): MezonNsAudioCaptureOptions => ({
 	channelCount: 1,
 	echoCancellation: { exact: true },
 	noiseSuppression: { exact: false },
 	voiceIsolation: { exact: false },
-	autoGainControl: { exact: false },
+	autoGainControl: true,
 	googNoiseSuppression: false,
-	googAutoGainControl: false
+	googAutoGainControl: true
 });

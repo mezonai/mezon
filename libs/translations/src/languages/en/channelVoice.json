@@ -32,6 +32,13 @@
 		"content": "Please confirm if you would like to kick \"{{userName}}\"?",
 		"kick": "Kick"
 	},
+	"reconnectModal": {
+		"title": "Unable to connect to voice",
+		"description": "The voice connection could not be restored. Check your connection and try joining again.",
+		"rejoin": "Rejoin",
+		"joining": "Joining…",
+		"exit": "Exit"
+	},
 	"disconnectModal": {
 		"title": "Voice Disconnected",
 		"content": {
