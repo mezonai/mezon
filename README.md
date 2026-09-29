@@ -26,7 +26,7 @@
 
 [Mezon Bug Report Community](https://mezon.ai/invite/1840696977034055680)
 
-## High-performance, lightweight real-time communication technology for communities.
+## High-performance, lightweight real-time platform for communities.
 
 Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling with friends, or even building a global community. Customize your own space to talk, play, and hang out. Mezon also delivers enterprise-grade performance with sub-millisecond response times and support for millions of concurrent connections.
 
@@ -38,7 +38,7 @@ That performance comes from owning the hot path end to end: high-performance nat
 ### ✨ Key Features
 
 -   **🔒 Security First** - End-to-end encryption, XSS protection, zero-knowledge architecture
--   **⚡ High Performance** - Native C path: [mezon-sfu](https://github.com/mezonai/mezon-sfu) + [libmezia](https://github.com/mezonai/libmezia) + mezon-proto-server (io uring). Sub-millisecond responses, millions of concurrent connections
+-   **⚡ High Performance** - Native C path: mezon-sfu + libmeziaa + mezon-proto-server (io uring). Sub-millisecond responses, millions of concurrent connections
 -   **🌐 Cross-Platform** - Web, Desktop (Windows/macOS/Linux), Mobile (iOS/Android)
 -   **🤖 AI-Powered** - Built-in content moderation, real-time translation, meeting summaries
 -   **🔧 Extensible** - Custom bots, 100+ integrations, API-first design
@@ -142,8 +142,6 @@ The application will be available at http://localhost:4200/
 | **iOS** | [iOS repo](https://github.com/mezonai/mezon-ios) | ✅ Stable |
 | **Android** | [Android repo](https://github.com/mezonai/mezon-android) | ✅ Stable |
 | **Web** | [Web repo](https://github.com/mezonai/mezon) | ✅ Stable |
-| **SFU** | [mezon-sfu](https://github.com/mezonai/mezon-sfu) | ✅ Stable |
-| **Media engine** | [libmezia](https://github.com/mezonai/libmezia) | 🚧 Active |
 | **Protocol** | [mezon-protocol](https://github.com/mezonai/mezon-protocol) | ✅ Stable |
 
 ### Download Options
@@ -262,9 +260,9 @@ mezon/
 Mezon owns the hot path in C so chat, voice, and data stay off generic HTTP/WebRTC stacks.
 
 -   **Core**: Custom real-time server on Valkey, ScyllaDB, and `io_uring`
--   **[mezon-sfu](https://github.com/mezonai/mezon-sfu)**: C WebRTC SFU for HD meetings and large rooms — lock-free per-room workers, zero-copy `io_uring` fan-out, DTLS/SRTP, VP9/AV1/VP8, TWCC/GCC + SVC
--   **[libmezia](https://github.com/mezonai/libmezia)** (native media engine): C11 client engine, wire-compatible with mezon-sfu — lock-minimal Opus voice (~24 kbit/s) and hardware H.264, no PeerConnection tax on mobile
--   **mezon-proto-server**: the high-performance socket server handles protobuf compliance. [mezon-protocol](https://github.com/mezonai/mezon-protocol)
+-   **mezon-sfu**: C WebRTC SFU for HD meetings and large rooms — lock-free per-room workers, zero-copy `io_uring` fan-out, DTLS/SRTP, VP9/AV1/VP8, TWCC/GCC + SVC
+-   **libmezia** (native media engine): C11 client engine, wire-compatible with mezon-sfu — lock-minimal Opus voice (~24 kbit/s) and hardware H.264, no PeerConnection tax on mobile
+-   **mezon-proto-server**: the high-performance socket server handles protobuf compliance which is defined at [mezon-protocol](https://github.com/mezonai/mezon-protocol)
 -   **Mezon Mainnet**: [mmn](https://github.com/mezonai/mmn) — high-performance, zero-fee L1
 -   **Real-time**: WebSocket / TCP Abridged with binary payload; Mezon-Proto for the high-QPS data path
 -   **Security**: E2E encryption, TLS 1.3 (SFU: DTLS + SRTP)
@@ -414,9 +412,7 @@ We welcome contributions from the community! Here's how you can help:
 
 Mezon is built on top of amazing open-source technologies:
 
--   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
--   [mezon-sfu](https://github.com/mezonai/mezon-sfu) - a high-performance optimized for HD meetings and large-scale deployment
--   [libmezia](https://github.com/mezonai/libmezia) - lightweight and ultra low latentcy audio/video for native platform 
+-   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API 
 -   [liburing](https://github.com/axboe/liburing) - io_uring for zero-copy I/O in mezon-sfu and mezon-proto-server
 -   [BoringSSL](https://boringssl.googlesource.com/boringssl) - TLS / DTLS
 -   [libsrtp](https://github.com/cisco/libsrtp) - SRTP media protection
