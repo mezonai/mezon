@@ -1,6 +1,6 @@
 {
   "name": "mezon",
-  "version": "1.4.74",
+  "version": "2.0.0",
   "license": "MIT",
   "description": "Mezon application",
   "repository": "https://github.com/mezonai/mezon",
@@ -215,5 +215,5 @@
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "author": "Mezon App <hello@mezon.vn>",
-  "desktopVersion": "2.1.1"
+  "desktopVersion": "2.1.7"
 }
