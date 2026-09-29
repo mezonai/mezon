@@ -9,12 +9,14 @@ const workletSource = fs.readFileSync(
 	path.resolve(__dirname, '../../../../../../../../../apps/chat/src/assets/mezon-ns/mezon-ns-processor.js'),
 	'utf8'
 );
-const pipelineSource = ts.transpileModule(fs.readFileSync(path.join(__dirname, 'MezonNsAudioPipeline.ts'), 'utf8').replace(
-	"new URL('./MezonNsInferenceWorker.ts', import.meta.url)",
-	"'mezon-ns-test-worker'"
-), {
-	compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS }
-}).outputText;
+const pipelineSource = ts.transpileModule(
+	fs
+		.readFileSync(path.join(__dirname, 'MezonNsAudioPipeline.ts'), 'utf8')
+		.replace("new URL('./MezonNsInferenceWorker.ts', import.meta.url)", "'mezon-ns-test-worker'"),
+	{
+		compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS }
+	}
+).outputText;
 const workerSource = ts.transpileModule(fs.readFileSync(path.join(__dirname, 'MezonNsInferenceWorker.ts'), 'utf8'), {
 	compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS }
 }).outputText;
@@ -22,6 +24,8 @@ const flush = () => new Promise((done) => setImmediate(done));
 
 function createHarness(environment = 'development') {
 	const logs = [];
+	const document = Object.assign(new EventTarget(), { visibilityState: 'visible' });
+	const window = new EventTarget();
 	let Processor;
 	vm.runInNewContext(workletSource, {
 		AudioWorkletProcessor: class {
@@ -76,9 +80,10 @@ function createHarness(environment = 'development') {
 		onmessage = null;
 		postMessage(data) {
 			if (data.type === 'process_frame') stats.workerFrames++;
-			if (!this.closed) queueMicrotask(() => {
-				if (!this.peer.closed) this.peer.onmessage?.({ data });
-			});
+			if (!this.closed)
+				queueMicrotask(() => {
+					if (!this.peer.closed) this.peer.onmessage?.({ data });
+				});
 		}
 		close() {
 			this.closed = true;
@@ -103,19 +108,22 @@ function createHarness(environment = 'development') {
 					if (!this.terminated) queueMicrotask(() => this.onmessage?.({ data }));
 				}
 			};
-			vm.runInNewContext(workerSource, Object.assign(this.scope, {
-				exports: {},
-				require: (name) => {
-					if (name === 'onnxruntime-web') return { env: { wasm: {} } };
-					if (name === './mezon-onnx-engine') return { MezonNSEngine: Engine };
-					throw new Error(`Unexpected worker import: ${name}`);
-				},
-				Float32Array,
-				Uint8Array,
-				Promise,
-				Error,
-				Number
-			}));
+			vm.runInNewContext(
+				workerSource,
+				Object.assign(this.scope, {
+					exports: {},
+					require: (name) => {
+						if (name === 'onnxruntime-web') return { env: { wasm: {} } };
+						if (name === './mezon-onnx-engine') return { MezonNSEngine: Engine };
+						throw new Error(`Unexpected worker import: ${name}`);
+					},
+					Float32Array,
+					Uint8Array,
+					Promise,
+					Error,
+					Number
+				})
+			);
 		}
 		postMessage(message) {
 			if (message.type === 'init') this.port = message.port;
@@ -155,6 +163,7 @@ function createHarness(environment = 'development') {
 			return { stream: { getAudioTracks: () => [track] }, disconnect() {} };
 		}
 		async resume() {
+			this.resumeCalls = (this.resumeCalls || 0) + 1;
 			this.state = 'running';
 			this.startup = this.pump(16);
 		}
@@ -198,7 +207,8 @@ function createHarness(environment = 'development') {
 			}
 			return { ok: true, arrayBuffer: async () => new ArrayBuffer(16) };
 		},
-		window: { AudioContext: Context },
+		document,
+		window: Object.assign(window, { AudioContext: Context }),
 		AudioContext: Context,
 		AudioWorkletNode: WorkletNode,
 		Worker: InferenceWorker,
@@ -225,6 +235,8 @@ function createHarness(environment = 'development') {
 		Pipeline: sandbox.exports.MezonNsAudioPipeline,
 		stats,
 		contexts,
+		document,
+		window,
 		timeout() {
 			for (const callback of [...timers.values()]) callback();
 		}
@@ -273,6 +285,57 @@ test('readiness keeps capture alive and transmission blocked until explicitly re
 		await context.pump(5);
 		assert.equal(pipeline.track.enabled, true);
 		assert.ok(context.lastOutput.every((sample) => Math.abs(sample - 0.01) < 1e-7));
+	} finally {
+		pipeline.dispose();
+	}
+});
+
+test('foreground resumes interrupted audio without replacing the track or resetting inference', async () => {
+	const harness = createHarness();
+	const { pipeline, context } = await readyPipeline(harness);
+	try {
+		pipeline.setOutputEnabled(true);
+		const track = pipeline.track;
+		const calls = context.resumeCalls;
+		harness.document.dispatchEvent(new Event('visibilitychange'));
+		assert.equal(context.resumeCalls, calls); // Healthy audio is untouched.
+		harness.document.visibilityState = 'hidden';
+		context.state = 'interrupted';
+		harness.document.dispatchEvent(new Event('visibilitychange'));
+		assert.equal(context.resumeCalls, calls);
+		harness.document.visibilityState = 'visible';
+		harness.document.dispatchEvent(new Event('visibilitychange'));
+		await context.startup;
+		await context.pump(8);
+		assert.equal(context.state, 'running');
+		assert.equal(pipeline.track, track);
+		assert.equal(pipeline.track.enabled, true);
+		assert.equal(harness.stats.loads, 1);
+		assert.equal(harness.stats.resets, 1);
+		assert.ok(context.lastOutput.every((sample) => Math.abs(sample - 0.01) < 1e-7));
+	} finally {
+		pipeline.dispose();
+	}
+});
+
+test('pageshow preserves user mute and disabled denoising across recovery', async () => {
+	const harness = createHarness();
+	const { pipeline, input, context } = await readyPipeline(harness);
+	try {
+		await pipeline.setDenoisingEnabled(false);
+		input.enabled = false;
+		pipeline.setOutputEnabled(false);
+		context.state = 'suspended';
+		harness.window.dispatchEvent(new Event('pageshow'));
+		await context.startup;
+		assert.equal(context.state, 'running');
+		assert.equal(input.enabled, false);
+		assert.equal(pipeline.track.enabled, false);
+		assert.equal(pipeline.isDenoisingReady, false);
+		input.enabled = true;
+		pipeline.setOutputEnabled(true);
+		await context.pump(8);
+		assert.ok(context.lastOutput.every((sample) => Math.abs(sample - 0.4) < 1e-7));
 	} finally {
 		pipeline.dispose();
 	}
@@ -405,15 +468,22 @@ function roomCallback(hook, marker) {
 	return ts.transpileModule(`(() => { const callback = ${callback}; return callback; })()`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } })
 		.outputText;
 }
-const outgoingCallback = roomCallback('useCallback', 'All publishing paths');
+const outgoingCallback = roomCallback('useCallback', 'A Mezon-NS capture');
 const audioEnabledCallback = roomCallback('useCallback', 'inputTrack.enabled = enabled');
-const modeCallback = roomCallback('useLayoutEffect', 'Block transmission');
-const initCallback = roomCallback('useEffect', '++mezonNsGenerationRef.current');
+const microphoneOptionsCallback = roomCallback('useCallback', 'const processing =');
+const preferredCaptureCallback = roomCallback('useCallback', 'const constraint =');
+const syncMicrophoneSelectionCallback = roomCallback('useCallback', 'const preferred = preferredMicrophoneIdRef.current');
+const changeInputDeviceCallback = roomCallback('useCallback', "kind: 'audioinput' | 'videoinput'");
+const modeCallback = roomCallback('useLayoutEffect', '++mezonNsGenerationRef.current');
+const microphoneSyncCallback = roomCallback('useEffect', 'desiredMediaRef.current = { microphoneEnabled, cameraEnabled }');
+const cameraSyncCallback = roomCallback('useEffect', 'const video = getCameraConstraints(cameraQualityTierRef.current)');
 
 function roomSandbox(harness, input, pipeline = null) {
 	withClone(input);
 	const actions = [];
 	const tracks = [input];
+	const captureModes = new WeakMap();
+	captureModes.set(input, pipeline ? 'mezon-ns' : 'native');
 	const sender = {
 		track: pipeline?.track || input,
 		async replaceTrack(track) {
@@ -425,7 +495,10 @@ function roomSandbox(harness, input, pipeline = null) {
 		noiseSuppressionEnabledRef: { current: true },
 		mezonNsPipelineRef: { current: pipeline },
 		mezonNsGenerationRef: { current: 0 },
+		microphoneCaptureModeRef: { current: captureModes },
+		preferredMicrophoneIdRef: { current: 'default' },
 		mezonNsUnavailable: false,
+		mezonNsUnavailableRef: { current: false },
 		localAudioTrack: input,
 		localStreamRef: {
 			current: {
@@ -450,8 +523,14 @@ function roomSandbox(harness, input, pipeline = null) {
 				}
 			}
 		},
-		getMezonNsAudioCaptureOptions: () => ({}),
+		getMezonNsAudioCaptureOptions: () => ({ noiseSuppression: { exact: false } }),
+		getNativeMicrophoneCaptureOptions: () => ({ noiseSuppression: true }),
 		getNoiseSuppressionAudioCaptureOptions: () => ({}),
+		microphoneDeviceConstraint: (deviceId) => ({ deviceId: deviceId === 'default' ? { ideal: 'default' } : { exact: deviceId } }),
+		openPreferredMicrophone: (audio, video) => sandbox.navigator.mediaDevices.getUserMedia({ audio, video }),
+		syncSelectedMicrophone: (track) => {
+			sandbox.selectedMicrophone = track.getSettings().deviceId;
+		},
 		setMezonNsUnavailable: (value) => {
 			sandbox.mezonNsUnavailable = value;
 		},
@@ -461,7 +540,9 @@ function roomSandbox(harness, input, pipeline = null) {
 		setLocalAudioTrack: (track) => {
 			sandbox.localAudioTrack = track;
 		},
-		setSelectedMicrophone() {},
+		setSelectedMicrophone: (deviceId) => {
+			sandbox.selectedMicrophone = deviceId;
+		},
 		setLocalPreview() {},
 		voiceActions: {
 			setNoiseSuppressionReady: (payload) => ({ type: 'ready', payload }),
@@ -478,104 +559,230 @@ function roomSandbox(harness, input, pipeline = null) {
 	return { sandbox, actions, sender };
 }
 
-test('room blocks every raw publishing path while noise is requested but no pipeline is ready', async () => {
-	const harness = createHarness();
-	const input = { enabled: true };
-	const { sandbox, sender, actions } = roomSandbox(harness, input);
-	assert.equal(sandbox.getOutgoingAudioTrack(input), null);
-	vm.runInNewContext(modeCallback, sandbox)();
-	await flush();
-	assert.equal(input.enabled, true);
-	assert.equal(sender.track, null);
-	assert.ok(actions.every((action) => action.type !== 'ready' || action.payload === false));
-});
-
-test('room restores processed transmission only after fresh readiness, respecting a mute made while waiting', async () => {
-	const harness = createHarness();
-	const { pipeline, input, context } = await readyPipeline(harness);
-	await pipeline.setDenoisingEnabled(false);
-	pipeline.setOutputEnabled(true);
-	const { sandbox, sender, actions } = roomSandbox(harness, input, pipeline);
-	const cleanup = vm.runInNewContext(modeCallback, sandbox)();
-	try {
-		assert.equal(input.enabled, true);
-		assert.equal(pipeline.track.enabled, false);
-		assert.equal(sandbox.getOutgoingAudioTrack(input), null);
-		sandbox.setAudioTrackEnabled(input, false);
-		await context.pump(10);
-		assert.equal(pipeline.isDenoisingReady, true);
-		assert.equal(sender.track, null);
-		assert.equal(pipeline.track.enabled, false);
-		assert.ok(actions.some((action) => action.type === 'ready' && action.payload === true));
-	} finally {
-		cleanup();
-		pipeline.dispose();
+test('initial media preparation owns capture while controls wait, then reuses the prepared mic', async () => {
+	for (const mutedDuringPreparation of [false, true]) {
+		const harness = createHarness();
+		const input = roomTrack(true);
+		const { sandbox, sender } = roomSandbox(harness, input);
+		const preparedStream = sandbox.localStreamRef.current;
+		sandbox.localStreamRef.current = null;
+		sandbox.localMediaPreparedRef = { current: false };
+		sandbox.microphoneEnabled = true;
+		sandbox.cameraEnabled = true;
+		sandbox.desiredMediaRef = { current: {} };
+		sandbox.joinedRef = { current: false };
+		sandbox.noiseSuppressionEnabledRef.current = false;
+		let microphoneRequests = 0;
+		sandbox.acquireMicrophoneTrack = async () => {
+			microphoneRequests++;
+			return input;
+		};
+		const syncMicrophone = vm.runInNewContext(microphoneSyncCallback, sandbox);
+		const syncCamera = vm.runInNewContext(cameraSyncCallback, sandbox);
+		syncMicrophone();
+		syncCamera();
+		await flush();
+		assert.equal(microphoneRequests, 0);
+		if (mutedDuringPreparation) {
+			sandbox.microphoneEnabled = false;
+			syncMicrophone();
+		}
+		sandbox.localStreamRef.current = preparedStream;
+		sandbox.localMediaPreparedRef.current = true;
+		syncMicrophone();
+		await flush();
+		assert.equal(microphoneRequests, 0);
+		assert.equal(sender.track, mutedDuringPreparation ? null : input);
+		assert.equal(input.enabled, !mutedDuringPreparation);
 	}
 });
 
-test('room prepares its pipeline before the first toggle without reopening an already raw microphone', async () => {
+test('both capture modes request the preferred microphone and Default keeps the system alias', () => {
 	const harness = createHarness();
-	const input = {
-		enabled: true,
+	const { sandbox } = roomSandbox(harness, roomTrack(true));
+	sandbox.noiseSuppressionEnabledRef.current = false;
+	const getOptions = vm.runInNewContext(microphoneOptionsCallback, sandbox);
+	assert.equal(getOptions().deviceId.ideal, 'default');
+	assert.equal(getOptions().noiseSuppression, true);
+	sandbox.preferredMicrophoneIdRef.current = 'preferred-mic';
+	assert.equal(getOptions().deviceId.exact, 'preferred-mic');
+	sandbox.noiseSuppressionEnabledRef.current = true;
+	assert.equal(getOptions().noiseSuppression.exact, false);
+	assert.equal(getOptions().deviceId.exact, 'preferred-mic');
+});
+
+test('the mic menu keeps Default selected when its active physical device is reported', () => {
+	const harness = createHarness();
+	const { sandbox } = roomSandbox(harness, roomTrack(true));
+	const syncSelection = vm.runInNewContext(syncMicrophoneSelectionCallback, sandbox);
+	syncSelection({ getSettings: () => ({ deviceId: 'external-mic' }) });
+	assert.equal(sandbox.selectedMicrophone, 'default');
+	sandbox.preferredMicrophoneIdRef.current = 'external-mic';
+	syncSelection({ getSettings: () => ({ deviceId: 'external-mic' }) });
+	assert.equal(sandbox.selectedMicrophone, 'external-mic');
+});
+
+test('a disconnected preferred microphone falls back to the system Default', async () => {
+	const harness = createHarness();
+	const { sandbox } = roomSandbox(harness, roomTrack(true));
+	sandbox.preferredMicrophoneIdRef.current = 'disconnected-mic';
+	const attempts = [];
+	const missingDevice = new DOMException('Device unavailable', 'OverconstrainedError');
+	Object.defineProperty(missingDevice, 'constraint', { value: 'deviceId' });
+	sandbox.navigator.mediaDevices.getUserMedia = async ({ audio }) => {
+		attempts.push(audio.deviceId);
+		if (attempts.length === 1) throw missingDevice;
+		return { getAudioTracks: () => [] };
+	};
+	const openPreferred = vm.runInNewContext(preferredCaptureCallback, sandbox);
+	await openPreferred({ deviceId: { exact: 'disconnected-mic' } }, false);
+	assert.equal(attempts[0].exact, 'disconnected-mic');
+	assert.equal(attempts[1].ideal, 'default');
+});
+
+test('selecting Default in the mic menu saves the alias instead of the physical device ID', async () => {
+	const harness = createHarness();
+	const input = roomTrack(true);
+	const next = roomTrack(true);
+	const { sandbox, sender } = roomSandbox(harness, input);
+	const saved = [];
+	sandbox.noiseSuppressionEnabledRef.current = false;
+	sandbox.microphoneEnabled = true;
+	sandbox.getMicrophoneCaptureOptions = () => ({ deviceId: { exact: 'old-mic' } });
+	sandbox.PREFERRED_MICROPHONE_STORAGE_KEY = 'mezon.voice.inputDeviceId';
+	sandbox.localStorage = { setItem: (key, value) => saved.push([key, value]) };
+	sandbox.setError = (error) => {
+		throw new Error(error);
+	};
+	sandbox.navigator.mediaDevices.getUserMedia = async ({ audio }) => {
+		assert.equal(audio.deviceId.ideal, 'default');
+		return { getAudioTracks: () => [next] };
+	};
+	const changeInputDevice = vm.runInNewContext(changeInputDeviceCallback, sandbox);
+	await changeInputDevice('audioinput', 'default');
+	assert.equal(sandbox.preferredMicrophoneIdRef.current, 'default');
+	assert.equal(sandbox.selectedMicrophone, 'default');
+	assert.equal(sender.track, next);
+	assert.equal(input.readyState, 'ended');
+	assert.equal(saved[0][1], 'default');
+});
+
+function roomTrack(noiseSuppression, enabled = true) {
+	return withClone({
+		enabled,
 		readyState: 'live',
-		getSettings: () => ({ noiseSuppression: false, autoGainControl: true }),
+		getSettings: () => ({ noiseSuppression, autoGainControl: true }),
 		stop() {
 			this.readyState = 'ended';
 		}
-	};
+	});
+}
+
+test('Off publishes the native WebRTC track without loading Mezon-NS', async () => {
+	const harness = createHarness();
+	const input = roomTrack(true);
 	const { sandbox, sender } = roomSandbox(harness, input);
 	sandbox.noiseSuppressionEnabled = false;
 	sandbox.noiseSuppressionEnabledRef.current = false;
-	const cleanup = vm.runInNewContext(initCallback, sandbox)();
-	for (let i = 0; i < 35; i++) await flush();
-	const pipeline = sandbox.mezonNsPipelineRef.current;
+	assert.equal(sandbox.getOutgoingAudioTrack(input), input);
+	vm.runInNewContext(modeCallback, sandbox)();
+	await flush();
+	assert.equal(sender.track, input);
+	assert.equal(sandbox.mezonNsPipelineRef.current, null);
+	assert.equal(harness.stats.downloads, 0);
+	assert.equal(harness.stats.loads, 0);
+});
+
+test('On blocks native audio until a fresh Mezon-NS capture and model are ready', async () => {
+	const harness = createHarness();
+	const input = roomTrack(true);
+	const raw = roomTrack(false);
+	const { sandbox, sender, actions } = roomSandbox(harness, input);
+	sandbox.navigator.mediaDevices.getUserMedia = async () => ({ getAudioTracks: () => [raw] });
+	const cleanup = vm.runInNewContext(modeCallback, sandbox)();
 	try {
+		assert.equal(sandbox.getOutgoingAudioTrack(input), null);
+		for (let i = 0; i < 35; i++) await flush();
+		const pipeline = sandbox.mezonNsPipelineRef.current;
 		assert.ok(pipeline);
+		assert.equal(pipeline.inputTrack, raw);
 		assert.equal(sender.track, pipeline.track);
-		assert.equal(pipeline.track.enabled, true);
-		assert.equal(pipeline.isDenoisingReady, false); // Prepared, with raw bypass selected.
-		assert.equal(input.readyState, 'live');
+		assert.equal(input.readyState, 'ended');
+		assert.equal(sandbox.localAudioTrack, raw);
+		assert.ok(actions.some((action) => action.type === 'ready' && action.payload === true));
 		assert.equal(harness.stats.loads, 1);
 	} finally {
 		cleanup();
-		pipeline?.dispose();
+		sandbox.mezonNsPipelineRef.current?.dispose();
 	}
 });
 
-test('an open mic automatically resumes only on the processed track after readiness', async () => {
+test('On preserves a microphone muted while Mezon-NS is preparing', async () => {
 	const harness = createHarness();
-	const { pipeline, input, context } = await readyPipeline(harness);
-	await pipeline.setDenoisingEnabled(false);
-	pipeline.setOutputEnabled(true);
-	const { sandbox, sender, actions } = roomSandbox(harness, input, pipeline);
+	const input = roomTrack(true);
+	const raw = roomTrack(false);
+	const { sandbox, sender } = roomSandbox(harness, input);
+	sandbox.navigator.mediaDevices.getUserMedia = async () => ({ getAudioTracks: () => [raw] });
 	const cleanup = vm.runInNewContext(modeCallback, sandbox)();
+	input.enabled = false;
 	try {
-		assert.equal(pipeline.track.enabled, false);
-		assert.equal(sandbox.getOutgoingAudioTrack(input), null);
-		await context.pump(12);
-		assert.equal(sender.track, pipeline.track);
-		assert.equal(pipeline.track.enabled, true);
-		assert.equal(input.enabled, true);
-		assert.ok(actions.some((action) => action.type === 'ready' && action.payload));
-		assert.ok(context.lastOutput.every((sample) => sample <= 0.010001));
+		for (let i = 0; i < 35; i++) await flush();
+		assert.equal(raw.enabled, false);
+		assert.equal(sender.track, null);
+		assert.equal(sandbox.mezonNsPipelineRef.current.track.enabled, false);
 	} finally {
 		cleanup();
-		pipeline.dispose();
+		sandbox.mezonNsPipelineRef.current?.dispose();
 	}
 });
 
-test('cancelling noise before initialization finishes restores the live original microphone', async () => {
+test('Off disposes Mezon-NS and restores a fresh native WebRTC capture', async () => {
 	const harness = createHarness();
-	const input = { enabled: true, readyState: 'live' };
+	const input = roomTrack(false);
+	const pipeline = await harness.Pipeline.create(input, () => {}, true);
+	const native = roomTrack(true);
+	const { sandbox, sender, actions } = roomSandbox(harness, input, pipeline);
+	sandbox.noiseSuppressionEnabled = false;
+	sandbox.noiseSuppressionEnabledRef.current = false;
+	sandbox.navigator.mediaDevices.getUserMedia = async () => ({ getAudioTracks: () => [native] });
+	const cleanup = vm.runInNewContext(modeCallback, sandbox)();
+	try {
+		assert.equal(sandbox.getOutgoingAudioTrack(input), null);
+		for (let i = 0; i < 12; i++) await flush();
+		assert.equal(pipeline.track.stopped, true);
+		assert.equal(sandbox.mezonNsPipelineRef.current, null);
+		assert.equal(sender.track, native);
+		assert.equal(sandbox.localAudioTrack, native);
+		assert.equal(input.readyState, 'ended');
+		assert.ok(actions.some((action) => action.type === 'ready' && action.payload === false));
+	} finally {
+		cleanup();
+	}
+});
+
+test('turning Off during Mezon-NS capture restores native audio and discards the late raw track', async () => {
+	const harness = createHarness();
+	const input = roomTrack(true);
+	const raw = roomTrack(false);
 	const { sandbox, sender } = roomSandbox(harness, input);
-	vm.runInNewContext(modeCallback, sandbox)();
+	let finishCapture;
+	sandbox.navigator.mediaDevices.getUserMedia = () =>
+		new Promise((resolve) => {
+			finishCapture = () => resolve({ getAudioTracks: () => [raw] });
+		});
+	const cancelOn = vm.runInNewContext(modeCallback, sandbox)();
 	await flush();
 	assert.equal(sender.track, null);
+	cancelOn();
 	sandbox.noiseSuppressionEnabled = false;
 	sandbox.noiseSuppressionEnabledRef.current = false;
 	vm.runInNewContext(modeCallback, sandbox)();
 	await flush();
 	assert.equal(sender.track, input);
+	finishCapture();
+	await flush();
+	assert.equal(raw.readyState, 'ended');
+	assert.equal(harness.stats.downloads, 0);
 });
 
 test('model initialization timeout creates no output and cleans up a session that finishes late', async () => {
@@ -603,45 +810,6 @@ test('disposing while ON is pending settles readiness without releasing output o
 	assert.equal(input.enabled, true);
 	assert.equal(pipeline.track.stopped, true);
 	assert.equal(pipeline.isDenoisingReady, false);
-});
-
-test('initial native-to-raw capture adoption preserves a user mute made during preparation', async () => {
-	const harness = createHarness();
-	const input = {
-		enabled: true,
-		readyState: 'live',
-		getSettings: () => ({ noiseSuppression: true, autoGainControl: true }),
-		stop() {
-			this.readyState = 'ended';
-		}
-	};
-	const raw = withClone({
-		enabled: true,
-		readyState: 'live',
-		getSettings: () => ({ noiseSuppression: false, autoGainControl: true }),
-		stop() {
-			this.readyState = 'ended';
-		}
-	});
-	const { sandbox, sender } = roomSandbox(harness, input);
-	sandbox.navigator.mediaDevices.getUserMedia = async () => ({ getAudioTracks: () => [raw] });
-	vm.runInNewContext(modeCallback, sandbox)();
-	const cleanup = vm.runInNewContext(initCallback, sandbox)();
-	input.enabled = false;
-	for (let i = 0; i < 35; i++) await flush();
-	const pipeline = sandbox.mezonNsPipelineRef.current;
-	try {
-		assert.ok(pipeline);
-		assert.equal(pipeline.inputTrack, raw);
-		assert.equal(raw.enabled, false);
-		assert.equal(sender.track, null);
-		assert.equal(pipeline.track.enabled, false);
-		assert.equal(input.readyState, 'ended');
-		assert.equal(sandbox.localAudioTrack, raw);
-	} finally {
-		cleanup();
-		pipeline?.dispose();
-	}
 });
 
 test('private preparation hears live capture while a previously muted microphone and outgoing audio stay muted', async () => {
@@ -677,31 +845,6 @@ test('private preparation hears live capture while a previously muted microphone
 	}
 	assert.equal(analysis.stopped, true);
 	assert.equal(input.enabled, false);
-});
-
-test('room applies noise while mic is already muted, then stops private preparation without unmuting', async () => {
-	const harness = createHarness();
-	const { pipeline, input, context } = await readyPipeline(harness);
-	await pipeline.setDenoisingEnabled(false);
-	input.enabled = false;
-	pipeline.setOutputEnabled(false);
-	const { sandbox, sender, actions } = roomSandbox(harness, input, pipeline);
-	const cleanup = vm.runInNewContext(modeCallback, sandbox)();
-	try {
-		assert.equal(input.enabled, false);
-		assert.equal(pipeline.track.enabled, false);
-		const frames = harness.stats.frames;
-		await context.pump(16);
-		assert.ok(actions.some((action) => action.type === 'ready' && action.payload));
-		assert.equal(context.inputTrack.enabled, false); // Preparation ended, original mute remains.
-		assert.ok(harness.stats.frames > frames);
-		assert.equal(input.enabled, false);
-		assert.equal(sender.track, null);
-		assert.equal(pipeline.track.enabled, false);
-	} finally {
-		cleanup();
-		pipeline.dispose();
-	}
 });
 
 // Run the actual reducer bodies without importing the store's unrelated services.
@@ -786,45 +929,6 @@ test('private preparation stays silent and readiness releases audio without debu
 	}
 });
 
-test('rapid noise on/off/on never restores a stale mode or a mic muted while applying', async () => {
-	const harness = createHarness();
-	const { pipeline, input, context } = await readyPipeline(harness);
-	await pipeline.setDenoisingEnabled(false);
-	pipeline.setOutputEnabled(true);
-	const { sandbox, sender, actions } = roomSandbox(harness, input, pipeline);
-	let outputEnabled = pipeline.track.enabled;
-	let releases = 0;
-	Object.defineProperty(pipeline.track, 'enabled', {
-		get: () => outputEnabled,
-		set: (enabled) => {
-			if (enabled && !outputEnabled) releases++;
-			outputEnabled = enabled;
-		}
-	});
-	const firstCleanup = vm.runInNewContext(modeCallback, sandbox)();
-	firstCleanup();
-	sandbox.noiseSuppressionEnabled = false;
-	sandbox.noiseSuppressionEnabledRef.current = false;
-	const offCleanup = vm.runInNewContext(modeCallback, sandbox)();
-	offCleanup();
-	sandbox.noiseSuppressionEnabled = true;
-	sandbox.noiseSuppressionEnabledRef.current = true;
-	const finalCleanup = vm.runInNewContext(modeCallback, sandbox)();
-	sandbox.setAudioTrackEnabled(input, false);
-	try {
-		await context.pump(16);
-		assert.equal(pipeline.isDenoisingReady, true);
-		assert.equal(sender.track, null);
-		assert.equal(input.enabled, false);
-		assert.equal(pipeline.track.enabled, false);
-		assert.equal(actions.filter((action) => action.type === 'ready' && action.payload).length, 1);
-		assert.equal(releases, 0);
-	} finally {
-		finalCleanup();
-		pipeline.dispose();
-	}
-});
-
 test('failed noise application mutes the microphone before native fallback instead of resuming raw audio', async () => {
 	const harness = createHarness();
 	const { pipeline, input } = await readyPipeline(harness);
@@ -845,35 +949,4 @@ test('failed noise application mutes the microphone before native fallback inste
 	assert.equal(sandbox.pushToTalkActive, false);
 	assert.ok(actions.find((action) => action.type === 'microphone' && action.payload === false));
 	assert.ok(actions.find((action) => action.type === 'enabled' && action.payload === false));
-});
-
-test('muting while sender attachment is pending cancels automatic audio resume but completes loading', async () => {
-	const harness = createHarness();
-	const { pipeline, input, context } = await readyPipeline(harness);
-	await pipeline.setDenoisingEnabled(false);
-	pipeline.setOutputEnabled(true);
-	const { sandbox, sender, actions } = roomSandbox(harness, input, pipeline);
-	let finishAttachment;
-	sender.replaceTrack = async (track) => {
-		sender.track = track;
-		await new Promise((done) => {
-			finishAttachment = done;
-		});
-	};
-	const cleanup = vm.runInNewContext(modeCallback, sandbox)();
-	try {
-		await context.pump(12);
-		assert.equal(typeof finishAttachment, 'function');
-		assert.equal(sender.track, pipeline.track);
-		sandbox.setAudioTrackEnabled(input, false);
-		finishAttachment();
-		await flush();
-		assert.equal(input.enabled, false);
-		assert.equal(pipeline.track.enabled, false);
-		assert.equal(context.inputTrack.enabled, false);
-		assert.ok(actions.some((action) => action.type === 'ready' && action.payload));
-	} finally {
-		cleanup();
-		pipeline.dispose();
-	}
 });

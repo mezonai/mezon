@@ -36,6 +36,7 @@ export class MezonNsAudioPipeline {
 	readonly track: MediaStreamTrack;
 	private disposed = false;
 	private failed = false;
+	private lifecycleActive = false;
 	private outputEnabled = false;
 	private preparingWhileMuted = false;
 	private denoisingEnabled = true;
@@ -56,6 +57,17 @@ export class MezonNsAudioPipeline {
 		this.track = destination.stream.getAudioTracks()[0];
 		this.track.enabled = false;
 	}
+
+	// A live destination track can outlive a suspended/interrupted audio graph on iOS.
+	// Resume the graph without changing capture, output gating, or denoising readiness.
+	private readonly resumeAfterInterruption = (): void => {
+		if (!this.lifecycleActive || this.disposed || this.failed || document.visibilityState !== 'visible') return;
+		if (this.context.state === 'running' || this.context.state === 'closed') return;
+		// Call synchronously so an unmute gesture can also satisfy browser autoplay rules.
+		// Do not cache a pending resume: a later gesture must be allowed to retry it.
+		// A blocked resume is retried on the next foreground or microphone action.
+		void this.context.resume().catch(() => undefined);
+	};
 
 	get isDenoisingReady(): boolean {
 		return !this.disposed && !this.failed && this.modeReady && this.denoisingEnabled;
@@ -91,12 +103,14 @@ export class MezonNsAudioPipeline {
 	setPreparationEnabled(enabled: boolean): void {
 		this.preparingWhileMuted = enabled;
 		this.syncCaptureEnabled();
+		if (enabled) this.resumeAfterInterruption();
 	}
 
 	setOutputEnabled(enabled: boolean): void {
 		this.syncCaptureEnabled();
 		this.outputEnabled = enabled;
 		this.syncOutputEnabled();
+		if (enabled) this.resumeAfterInterruption();
 	}
 
 	private syncCaptureEnabled(): void {
@@ -112,6 +126,7 @@ export class MezonNsAudioPipeline {
 
 	setDenoisingEnabled(enabled: boolean): Promise<boolean> {
 		if (this.disposed || this.failed) return Promise.resolve(false);
+		this.resumeAfterInterruption();
 		if (this.pendingMode?.enabled === enabled) return this.pendingMode.promise;
 		if (this.modeReady && this.denoisingEnabled === enabled) return Promise.resolve(true);
 		const id = ++this.modeId;
@@ -233,6 +248,9 @@ export class MezonNsAudioPipeline {
 			// The readiness timeout also bounds a resume() blocked by browser autoplay rules.
 			void context.resume().catch((error) => created.fail(error));
 			if (!(await ready) || context.state !== 'running') throw new Error('Mezon-NS audio could not become ready');
+			created.lifecycleActive = true;
+			document.addEventListener('visibilitychange', created.resumeAfterInterruption);
+			window.addEventListener('pageshow', created.resumeAfterInterruption);
 			return created;
 		} catch (error) {
 			pendingPort?.close();
@@ -249,6 +267,8 @@ export class MezonNsAudioPipeline {
 	dispose(): void {
 		if (this.disposed) return;
 		this.disposed = true;
+		document.removeEventListener('visibilitychange', this.resumeAfterInterruption);
+		window.removeEventListener('pageshow', this.resumeAfterInterruption);
 		this.modeReady = false;
 		this.cancelPendingMode();
 		this.worklet.port.onmessage = null;
