@@ -32,6 +32,13 @@
 		"content": "Bạn có chắc muốn xóa \"{{userName}}\" khỏi kênh thoại?",
 		"kick": "Xóa"
 	},
+	"reconnectModal": {
+		"title": "Không thể kết nối phòng thoại",
+		"description": "Kết nối thoại đã bị gián đoạn. Vui lòng kiểm tra kết nối mạng và thử tham gia lại.",
+		"rejoin": "Tham gia lại",
+		"joining": "Đang tham gia…",
+		"exit": "Thoát"
+	},
 	"disconnectModal": {
 		"title": "Mất kết nối thoại",
 		"content": {
