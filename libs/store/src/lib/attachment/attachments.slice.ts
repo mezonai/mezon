@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IAttachmentEntity, IChannelAttachment, LoadingStatus } from '@mezon/utils';
-import { EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
+import { AttachmentTypeUpload, EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiChannelAttachment, ChannelStreamMode } from 'mezon-js';
@@ -53,6 +53,11 @@ export const attachmentAdapter = createEntityAdapter({
 	}
 });
 
+const getAttachmentListKey = (channelId: string, fileType?: string) => (fileType ? `${channelId}_${fileType}` : channelId);
+
+const isDocumentAttachment = ({ filetype }: AttachmentEntity) =>
+	!filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) && !filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && filetype !== EMimeTypes.sticker;
+
 type fetchChannelAttachmentsPayload = {
 	clanId: string;
 	channelId: string;
@@ -81,7 +86,7 @@ export const fetchChannelAttachmentsCached = async (
 ) => {
 	const currentState = getState();
 	const attachmentState = currentState[ATTACHMENT_FEATURE_KEY] as AttachmentState;
-	const channelData = attachmentState.listAttachmentsByChannel[channelId];
+	const channelData = attachmentState.listAttachmentsByChannel[getAttachmentListKey(channelId, fileType)];
 
 	if (!noCache && channelData?.cache && isCacheValid(channelData.cache) && channelData.attachments && channelData.attachments.length > 0) {
 		const existingAttachments = channelData.attachments;
@@ -311,26 +316,29 @@ export const attachmentSlice = createSlice({
 		},
 		addAttachments: (state, action: PayloadAction<{ listAttachments: AttachmentEntity[]; channelId: string }>) => {
 			const currentChannelId = action?.payload?.channelId;
-
-			if (!state.listAttachmentsByChannel[currentChannelId]) {
-				return;
-			}
+			const documentList = state.listAttachmentsByChannel[getAttachmentListKey(currentChannelId, AttachmentTypeUpload.doc)];
 
 			action?.payload?.listAttachments?.forEach((attachment) => {
 				state?.listAttachmentsByChannel[currentChannelId]?.attachments?.unshift(attachment);
+				if (isDocumentAttachment(attachment)) {
+					documentList?.attachments.unshift(attachment);
+				}
 			});
 		},
 		removeAttachments: (state, action: PayloadAction<{ messageId: string; channelId: string }>) => {
 			const { messageId, channelId } = action.payload;
-			if (state.listAttachmentsByChannel[channelId]) {
-				state.listAttachmentsByChannel[channelId].attachments = state.listAttachmentsByChannel[channelId].attachments.filter(
+			[channelId, getAttachmentListKey(channelId, AttachmentTypeUpload.doc)].forEach((listKey) => {
+				if (!state.listAttachmentsByChannel[listKey]) {
+					return;
+				}
+				state.listAttachmentsByChannel[listKey].attachments = state.listAttachmentsByChannel[listKey].attachments.filter(
 					(attachment) => attachment.message_id !== messageId
 				);
 
-				if (state?.listAttachmentsByChannel[channelId].attachments.length === 0) {
-					delete state.listAttachmentsByChannel[channelId];
+				if (state.listAttachmentsByChannel[listKey].attachments.length === 0) {
+					delete state.listAttachmentsByChannel[listKey];
 				}
-			}
+			});
 		},
 		setAttachmentLoading: (state, action: PayloadAction<{ channelId: string; isLoading: boolean }>) => {
 			const { channelId, isLoading } = action.payload;
@@ -368,23 +376,24 @@ export const attachmentSlice = createSlice({
 		builder
 			.addCase(fetchChannelAttachments.pending, (state: AttachmentState, action) => {
 				state.loadingStatus = 'loading';
-				const channelId = action.meta.arg.channelId;
-				if (!state.listAttachmentsByChannel[channelId]) {
-					state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+				const listKey = getAttachmentListKey(action.meta.arg.channelId, action.meta.arg.fileType);
+				if (!state.listAttachmentsByChannel[listKey]) {
+					state.listAttachmentsByChannel[listKey] = getInitialChannelState();
 				}
-				if (state.listAttachmentsByChannel[channelId].pagination) {
-					state.listAttachmentsByChannel[channelId].pagination!.isLoading = true;
+				if (state.listAttachmentsByChannel[listKey].pagination) {
+					state.listAttachmentsByChannel[listKey].pagination!.isLoading = true;
 				}
 			})
 			.addCase(fetchChannelAttachments.fulfilled, (state: AttachmentState, action) => {
-				const { attachments, channelId, fromCache, direction = 'initial' } = action.payload;
+				const { attachments, fromCache, direction = 'initial' } = action.payload;
 				const limit = action.meta.arg.limit || 50;
+				const listKey = getAttachmentListKey(action.meta.arg.channelId, action.meta.arg.fileType);
 
-				if (!state?.listAttachmentsByChannel?.[channelId]) {
-					state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+				if (!state?.listAttachmentsByChannel?.[listKey]) {
+					state.listAttachmentsByChannel[listKey] = getInitialChannelState();
 				}
 
-				const pagination = state.listAttachmentsByChannel[channelId].pagination;
+				const pagination = state.listAttachmentsByChannel[listKey].pagination;
 				if (!pagination) {
 					return;
 				}
@@ -394,25 +403,25 @@ export const attachmentSlice = createSlice({
 						if (attachments.length === 0) {
 							pagination.hasMoreBefore = false;
 						} else {
-							const currentAttachments = state.listAttachmentsByChannel[channelId].attachments;
+							const currentAttachments = state.listAttachmentsByChannel[listKey].attachments;
 							const existingUrls = new Set(currentAttachments.map((att) => att.url));
 							const newItems = attachments.filter((att) => !existingUrls.has(att.url));
 							const newAttachments = [...currentAttachments, ...newItems];
 
 							pagination.hasMoreBefore = attachments.length >= limit && newItems.length > 0;
-							state.listAttachmentsByChannel[channelId].attachments = newAttachments;
+							state.listAttachmentsByChannel[listKey].attachments = newAttachments;
 						}
 					} else if (direction === 'after') {
 						if (attachments.length === 0) {
 							pagination.hasMoreAfter = false;
 						} else {
-							const currentAttachments = state.listAttachmentsByChannel[channelId].attachments;
+							const currentAttachments = state.listAttachmentsByChannel[listKey].attachments;
 							const existingUrls = new Set(currentAttachments.map((att) => att.url));
 							const newItems = attachments.filter((att) => !existingUrls.has(att.url));
 							const newAttachments = [...newItems, ...currentAttachments];
 
 							pagination.hasMoreAfter = attachments.length >= limit && newItems.length > 0;
-							state.listAttachmentsByChannel[channelId].attachments = newAttachments;
+							state.listAttachmentsByChannel[listKey].attachments = newAttachments;
 						}
 					} else {
 						if (attachments.length === 0) {
@@ -422,12 +431,12 @@ export const attachmentSlice = createSlice({
 							pagination.hasMoreBefore = attachments.length >= limit;
 							pagination.hasMoreAfter = attachments.length >= limit;
 						}
-						state.listAttachmentsByChannel[channelId].attachments = attachments;
+						state.listAttachmentsByChannel[listKey].attachments = attachments;
 					}
 
 					if (attachments.length > 0) {
-						attachmentAdapter.setAll(state, state.listAttachmentsByChannel[channelId].attachments);
-						state.listAttachmentsByChannel[channelId].cache = createCacheMetadata(CHANNEL_ATTACHMENTS_CACHED_TIME);
+						attachmentAdapter.setAll(state, state.listAttachmentsByChannel[listKey].attachments);
+						state.listAttachmentsByChannel[listKey].cache = createCacheMetadata(CHANNEL_ATTACHMENTS_CACHED_TIME);
 					}
 				}
 
@@ -437,9 +446,9 @@ export const attachmentSlice = createSlice({
 			.addCase(fetchChannelAttachments.rejected, (state: AttachmentState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
-				const channelId = action.meta.arg.channelId;
-				if (state.listAttachmentsByChannel[channelId]?.pagination) {
-					state.listAttachmentsByChannel[channelId].pagination!.isLoading = false;
+				const listKey = getAttachmentListKey(action.meta.arg.channelId, action.meta.arg.fileType);
+				if (state.listAttachmentsByChannel[listKey]?.pagination) {
+					state.listAttachmentsByChannel[listKey].pagination!.isLoading = false;
 				}
 			});
 	}
@@ -514,19 +523,16 @@ export const selectAllListAttachmentByChannel = createSelector([getAttachmentSta
 });
 
 export const selectAllListDocumentByChannel = createSelector([getAttachmentState, (state, channelId: string) => channelId], (state, channelId) => {
+	const listKey = getAttachmentListKey(channelId, AttachmentTypeUpload.doc);
 	if (!state?.listAttachmentsByChannel) return [];
-	if (!Object.prototype.hasOwnProperty.call(state?.listAttachmentsByChannel, channelId)) {
+	if (!Object.prototype.hasOwnProperty.call(state?.listAttachmentsByChannel, listKey)) {
 		return [];
 	}
 
 	return (
-		state?.listAttachmentsByChannel[channelId]?.attachments?.reduce<AttachmentEntity[]>((result, att) => {
+		state?.listAttachmentsByChannel[listKey]?.attachments?.reduce<AttachmentEntity[]>((result, att) => {
 			const { filetype, filename } = att || {};
-			if (
-				!filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
-				!filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) &&
-				filetype !== EMimeTypes.sticker
-			) {
+			if (att && isDocumentAttachment(att)) {
 				result.push({
 					...att,
 					filename: filename ?? 'File',
@@ -541,9 +547,10 @@ export const selectAllListDocumentByChannel = createSelector([getAttachmentState
 export const selectAttachmentsLoadingStatus = createSelector(getAttachmentState, (state: AttachmentState) => state.loadingStatus);
 
 export const selectAttachmentPaginationByChannel = createSelector(
-	[getAttachmentState, (state, channelId: string) => channelId],
-	(state, channelId) => {
-		if (!Object.prototype.hasOwnProperty.call(state.listAttachmentsByChannel, channelId)) {
+	[getAttachmentState, (state, channelId: string) => channelId, (state, channelId: string, fileType?: string) => fileType],
+	(state, channelId, fileType) => {
+		const listKey = getAttachmentListKey(channelId, fileType);
+		if (!Object.prototype.hasOwnProperty.call(state.listAttachmentsByChannel, listKey)) {
 			return {
 				isLoading: false,
 				hasMoreBefore: true,
@@ -552,7 +559,7 @@ export const selectAttachmentPaginationByChannel = createSelector(
 			};
 		}
 		return (
-			state.listAttachmentsByChannel[channelId]?.pagination || {
+			state.listAttachmentsByChannel[listKey]?.pagination || {
 				isLoading: false,
 				hasMoreBefore: true,
 				hasMoreAfter: true,

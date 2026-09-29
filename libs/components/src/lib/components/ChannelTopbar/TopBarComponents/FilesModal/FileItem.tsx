@@ -1,5 +1,5 @@
 import type { AttachmentEntity } from '@mezon/store';
-import { selectAllAccount, selectMemberClanByUserId, selectMemberGroupByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
+import { selectMemberClanByUserId, selectMemberGroupByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EFailAttachment, convertTimeString, generateE2eId, isAttachmentPresignPendingForMessage, shouldHidePresignAttachment } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
@@ -12,9 +12,10 @@ type FileItemProps = {
 	readonly mode?: ChannelStreamMode;
 	readonly channelId?: string;
 	readonly isDirect?: boolean;
+	readonly fallbackUsername?: string;
 };
 
-const FileItem = ({ attachmentData, mode, channelId, isDirect = false }: FileItemProps) => {
+const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackUsername }: FileItemProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const sourceMessage = useAppSelector((state) =>
 		attachmentData.message_id && channelId ? selectMessageByMessageId(state, channelId, attachmentData.message_id) : undefined
@@ -26,9 +27,7 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false }: FileIte
 			? selectMemberGroupByUserId(state, channelId ?? '', attachmentData?.uploader ?? '')
 			: selectMemberClanByUserId(state, attachmentData?.uploader ?? '')
 	);
-	const currentAccount = useAppSelector(selectAllAccount);
-	const username =
-		userSendAttachment?.user?.username ?? (attachmentData?.uploader === currentAccount?.user?.id ? currentAccount?.user?.username : undefined);
+	const username = userSendAttachment?.user?.username || sourceMessage?.username || fallbackUsername;
 	const attachmentSendTime = attachmentData?.create_time_seconds ? convertTimeString(attachmentData?.create_time_seconds * 1000) : '';
 	const fileType = getFileExtension(attachmentData?.filetype ?? '');
 
