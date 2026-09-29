@@ -47,6 +47,7 @@ const ChannelLayout = () => {
 			onMouseDown={onMouseDown}
 			className={`flex flex-col ${openEmojiPanelOnTopic || subPanelActive !== SubPanelName.NONE || isFocusThreadBox ? 'z-20 relative' : 'z-0'} flex-1 shrink min-w-0 bg-transparent h-full max-h-full overflow-hidden relative`}
 		>
+			{/* Channel banner: displays latest topic and pinned message */}
 			<ChannelTopicPinBanner />
 			<div className={`flex flex-row flex-1 min-h-0 w-full overflow-hidden ${isChannelStream ? 'justify-center items-center mx-4' : ''}`}>
 				<Outlet />
