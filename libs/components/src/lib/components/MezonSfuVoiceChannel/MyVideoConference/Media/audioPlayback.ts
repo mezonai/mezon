@@ -1,9 +1,23 @@
-export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStreamTrack) => {
+export type AudioPlaybackFailure = (track: MediaStreamTrack, reason: string) => void;
+
+export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStreamTrack, onFailure?: AudioPlaybackFailure) => {
 	let disposed = false;
 	let inFlight = false;
 	let blocked = false;
 	let failures = 0;
 	let retryTimer: ReturnType<typeof setTimeout> | undefined;
+	let failureTimer: ReturnType<typeof setTimeout> | undefined;
+	const clearFailure = () => {
+		if (failureTimer !== undefined) clearTimeout(failureTimer);
+		failureTimer = undefined;
+	};
+	const reportFailure = (reason: string) => {
+		if (!onFailure || failureTimer !== undefined) return;
+		failureTimer = setTimeout(() => {
+			failureTimer = undefined;
+			if (!disposed && element.srcObject === stream && !element.muted && element.volume > 0 && element.paused) onFailure(track, reason);
+		}, 15_000);
+	};
 	const stream = new MediaStream([track]);
 	element.srcObject = stream;
 
@@ -23,9 +37,11 @@ export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStrea
 				console.warn('[MezonSFU] remote audio playback failed', { trackId: track.id, name });
 				if (name === 'NotAllowedError') {
 					blocked = true;
+					reportFailure('audio_playback_blocked');
 					return;
 				}
 				failures += 1;
+				reportFailure('audio_playback_failed');
 				if (failures < 4) {
 					clearRetry();
 					retryTimer = setTimeout(
@@ -54,6 +70,7 @@ export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStrea
 		resume();
 	};
 	const playing = () => {
+		clearFailure();
 		blocked = false;
 		failures = 0;
 		clearRetry();
@@ -73,6 +90,7 @@ export const attachAudioPlayback = (element: HTMLAudioElement, track: MediaStrea
 	return () => {
 		disposed = true;
 		clearRetry();
+		clearFailure();
 		track.removeEventListener('unmute', unmute);
 		element.removeEventListener('canplay', resume);
 		element.removeEventListener('pause', resume);

@@ -16,6 +16,8 @@ import {
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
 	selectMemberByIdAndClanId,
+	selectShowCamera,
+	selectShowMicrophone,
 	selectStatusMenu,
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
@@ -180,6 +182,9 @@ const MezonSfuChannelVoiceInner = () => {
 		if (joiningRef.current) return;
 		joiningRef.current = true;
 		const request = ++joinRequestRef.current;
+		const previousState = getStore().getState();
+		const restoreMicrophone = !!target && selectShowMicrophone(previousState);
+		const restoreCamera = !!target && selectShowCamera(previousState);
 		if (!target) setRejoinTarget(null);
 		setJoinRole(role);
 		if (target) {
@@ -195,7 +200,8 @@ const MezonSfuChannelVoiceInner = () => {
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
 		dispatch(voiceActions.setStreamScreen(null));
-		dispatch(voiceActions.setShowMicrophone(false));
+		dispatch(voiceActions.setShowMicrophone(restoreMicrophone));
+		if (target) dispatch(voiceActions.setShowCamera(restoreCamera));
 		if (role === 'audience') dispatch(voiceActions.setShowCamera(false));
 
 		const storeState = getStore().getState();
@@ -261,6 +267,7 @@ const MezonSfuChannelVoiceInner = () => {
 	const handleReconnectRequired = useLastCallback(() => {
 		if (!voiceInfo) return;
 		setRejoinTarget({ ...voiceInfo, joinRole });
+		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setVoiceConnectionState(false));
 	});
 	const handleExitReconnect = useLastCallback(() => {
@@ -277,6 +284,9 @@ const MezonSfuChannelVoiceInner = () => {
 
 		if (isDisconnectingRef.current) return;
 		isDisconnectingRef.current = true;
+		joinRequestRef.current += 1;
+		joiningRef.current = false;
+		setLoading(false);
 		setRejoinTarget(null);
 
 		dispatch(voiceActions.resetVoiceControl());
