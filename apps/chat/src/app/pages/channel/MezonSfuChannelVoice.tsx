@@ -6,7 +6,6 @@ import {
 	generateMeetToken,
 	getStore,
 	selectChannelById,
-	selectClanMemberByClanId,
 	selectCurrentChannelClanId,
 	selectCurrentChannelId,
 	selectCurrentChannelLabel,
@@ -16,6 +15,7 @@ import {
 	selectCurrentClanName,
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
+	selectMemberByIdAndClanId,
 	selectStatusMenu,
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
@@ -213,7 +213,7 @@ const MezonSfuChannelVoiceInner = () => {
 		setLoading(true);
 
 		try {
-			const clanMember = selectClanMemberByClanId(storeState, currentClanId)?.entities[userProfile?.user?.id || ''];
+			const clanMember = selectMemberByIdAndClanId(storeState, currentClanId, userProfile?.user?.id || '');
 			const username = clanMember?.clan_nick || clanMember?.prioritizeName || userProfile?.user?.display_name || userProfile?.user?.username;
 
 			const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url;
