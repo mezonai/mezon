@@ -1,5 +1,5 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
-import { fetchUserChannels, selectChannelById, selectCloseMenu, useAppDispatch, useAppSelector } from '@mezon/store';
+import { fetchUserChannels, rolesClanActions, selectChannelById, selectCloseMenu, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -34,6 +34,13 @@ const SettingChannel = (props: ModalSettingProps) => {
 	const channelId = (channel?.channel_id || (channel as any)?.id || '') as string;
 	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentChannel = (channelFromStore || channel) as IChannel;
+	// Losing access (removed from a private channel) or a delete drops the channel from the store while this is open.
+	// A thread opened from its list may never have been in the store, so only a channel seen here counts as gone.
+	const [wasInStore, setWasInStore] = useState(!!channelFromStore);
+	if (channelFromStore && !wasInStore) {
+		setWasInStore(true);
+	}
+	const isChannelGone = wasInStore && !channelFromStore;
 
 	const [currentSetting, setCurrentSetting] = useState<string>(EChannelSettingTab.OVERVIEW);
 	const [menu, setMenu] = useState(true);
@@ -67,6 +74,11 @@ const SettingChannel = (props: ModalSettingProps) => {
 
 		if (settingName === EChannelSettingTab.PREMISSIONS) {
 			dispatch(fetchUserChannels({ channelId: channel.channel_id as string }));
+			// Only the member who adds or removes a role updates its channel list locally; every other member still
+			// holds the list fetched at startup, so ask the server which roles reach this private channel now.
+			if (currentChannel?.channel_private === 1) {
+				dispatch(rolesClanActions.fetchRolesClan({ clanId: channel.clan_id as string, noCache: true }));
+			}
 		}
 	};
 
@@ -91,6 +103,12 @@ const SettingChannel = (props: ModalSettingProps) => {
 	useOnClickOutside(modalRef, handleClose);
 
 	useEffect(() => {
+		if (isChannelGone) {
+			onClose();
+		}
+	}, [isChannelGone, onClose]);
+
+	useEffect(() => {
 		setDisplayChannelLabel(currentChannel?.channel_label || '');
 	}, [currentChannel?.channel_id, currentChannel?.channel_label]);
 
@@ -106,6 +124,11 @@ const SettingChannel = (props: ModalSettingProps) => {
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
+
+	// The tabs read the channel from the store and would crash on the missing entry before the close lands.
+	if (isChannelGone) {
+		return null;
+	}
 
 	return (
 		<div
