@@ -20,6 +20,7 @@ export type SfuPeer = {
 
 export type SfuSignalMessage = {
 	type: string;
+	is_mute?: boolean;
 	action?: 'mute' | 'kick';
 	user_id?: string;
 	peer_id?: number | string;
