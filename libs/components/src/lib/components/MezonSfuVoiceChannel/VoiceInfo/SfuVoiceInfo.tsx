@@ -50,9 +50,6 @@ const SfuVoiceInfo = React.memo(() => {
 	const showScreen = useSelector(selectShowScreen);
 	const showCamera = useSelector(selectShowCamera);
 	const showMicrophone = useSelector(selectShowMicrophone);
-	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
-	const noiseSuppressionReady = useSelector(selectNoiseSuppressionReady);
-	const microphonePreparing = noiseSuppressionEnabled && !noiseSuppressionReady;
 
 	const { hasCameraAccess, hasMicrophoneAccess, microphonePermissionState, cameraPermissionState } = useMediaPermissions();
 	const microphoneWarning = microphonePermissionState === 'denied' || hasMicrophoneAccess === false;
@@ -76,14 +73,10 @@ const SfuVoiceInfo = React.memo(() => {
 		btnControl?.click();
 	}, []);
 
-	const setPushToTalk = useCallback(
-		(active: boolean) => {
-			if (active && microphonePreparing) return;
-			setPushToTalkActive(active);
-			window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk', { detail: { active } }));
-		},
-		[microphonePreparing]
-	);
+	const setPushToTalk = useCallback((active: boolean) => {
+		setPushToTalkActive(active);
+		window.dispatchEvent(new CustomEvent('mezon-sfu-push-to-talk', { detail: { active } }));
+	}, []);
 
 	useEffect(() => {
 		const handlePushToTalkChanged = (event: Event) => {
@@ -126,7 +119,6 @@ const SfuVoiceInfo = React.memo(() => {
 				{isAudience && (
 					<ButtonControlVoice
 						active={pushToTalkActive}
-						disabled={microphonePreparing && !pushToTalkActive && !microphoneWarning}
 						overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">Push to talk</span>}
 						onPointerDown={(event) => {
 							const btnControl = document.getElementById('btn-meet-push-to-talk');
@@ -150,16 +142,9 @@ const SfuVoiceInfo = React.memo(() => {
 							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">
 								{microphoneWarning
 									? t('mediaPermission.needed.microphone')
-									: microphonePreparing
-										? showMicrophone
-											? t('noiseSuppressionStatus.keepMuted', {
-													defaultValue: 'Audio is paused. Click to keep your microphone muted.'
-												})
-											: t('noiseSuppressionStatus.preparing', { defaultValue: 'Applying noise suppression…' })
-										: t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
+									: t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
 							</span>
 						}
-						disabled={microphonePreparing && !showMicrophone && !microphoneWarning}
 						onClick={handleToggleOpenMicro}
 						icon={showMicrophone ? <Icons.VoiceMicIcon className="w-5 h-5" /> : <Icons.VoiceMicDisabledIcon className="w-5 h-5" />}
 						showWarning={microphoneWarning}
@@ -277,7 +262,7 @@ const ButtonNoiseControl = memo(() => {
 	return (
 		<Tooltip
 			placement="top"
-			overlay={preparing ? 'Preparing noise suppression — microphone muted' : 'Noise Suppression'}
+			overlay={preparing ? 'Applying noise suppression…' : 'Noise Suppression'}
 			overlayInnerStyle={TOOLTIP_OVERLAY_STYLE}
 			overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 			destroyTooltipOnHide

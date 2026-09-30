@@ -173,7 +173,8 @@ export default defineConfig(({ mode }) => {
 				'react-router-dom',
 				'@reduxjs/toolkit',
 				'react-redux',
-				'mezon-js'
+				'mezon-js',
+				'onnxruntime-web'
 			],
 			esbuildOptions: {
 				target: 'esnext'

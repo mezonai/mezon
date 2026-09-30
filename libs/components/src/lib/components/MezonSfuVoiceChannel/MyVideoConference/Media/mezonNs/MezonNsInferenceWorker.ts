@@ -4,6 +4,7 @@ import { MezonNSEngine } from './mezon-onnx-engine';
 type InitMessage = {
 	type: 'init';
 	model: ArrayBuffer;
+	wasm: ArrayBuffer;
 	port: MessagePort;
 	wasmPaths: string;
 	captureActive: boolean;
@@ -74,6 +75,7 @@ scope.onmessage = ({ data }) => {
 		ort.env.wasm.numThreads = 1;
 		ort.env.wasm.simd = true;
 		ort.env.wasm.wasmPaths = data.wasmPaths;
+		ort.env.wasm.wasmBinary = data.wasm;
 		const nextEngine = new MezonNSEngine({
 			suppressionIntensity: 1.6,
 			enableNoiseGate: true,
@@ -82,7 +84,6 @@ scope.onmessage = ({ data }) => {
 		});
 		engine = nextEngine;
 		await nextEngine.loadModel(new Uint8Array(data.model));
-		// Compile the model before any live frame reaches the worklet, then discard synthetic state.
 		await nextEngine.processFrame(new Float32Array(160), new Float32Array(160));
 		nextEngine.reset();
 		if (failed) return;

@@ -28,7 +28,6 @@ interface SfuControlBarProps {
 	pushToTalkHintDismissed?: boolean;
 	onDismissPushToTalkHint?: () => void;
 	microphoneEnabled: boolean;
-	microphonePreparing?: boolean;
 	cameraEnabled: boolean;
 	screenSharing: boolean;
 	screenShareMode: ScreenShareMode;
@@ -75,7 +74,6 @@ export const SfuControlBar = ({
 	pushToTalkHintDismissed = false,
 	onDismissPushToTalkHint,
 	microphoneEnabled,
-	microphonePreparing = false,
 	cameraEnabled,
 	screenSharing,
 	screenShareMode,
@@ -148,7 +146,6 @@ export const SfuControlBar = ({
 					<div className="relative">
 						<PushToTalkControl
 							active={pushToTalkActive}
-							preparing={microphonePreparing}
 							onChange={onPushToTalk}
 							permissionState={microphonePermissionState}
 							hasMicrophoneAccess={hasMicrophoneAccess}
@@ -160,7 +157,6 @@ export const SfuControlBar = ({
 				{joinRole === 'speaker' && (
 					<MicrophoneControl
 						enabled={microphoneEnabled}
-						preparing={microphonePreparing}
 						devices={microphones}
 						selectedDeviceId={selectedMicrophone}
 						onToggle={onMicrophoneToggle}
