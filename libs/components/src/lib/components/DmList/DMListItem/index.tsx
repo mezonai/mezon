@@ -132,10 +132,6 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			/>
 			{buzzStateDM?.isReset ? (
 				<BuzzBadge
-					timestamp={buzzStateDM?.timestamp as number}
-					isReset={buzzStateDM?.isReset}
-					channelId={directMessage.channel_id as string}
-					senderId={buzzStateDM.senderId as string}
 					mode={directMessage.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
 				/>
 			) : null}

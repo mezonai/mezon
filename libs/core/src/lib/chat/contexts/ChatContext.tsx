@@ -76,12 +76,14 @@ import {
 	selectFriendById,
 	selectIsInCall,
 	selectIsJoin,
+	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
 	selectLoadingStatus,
 	selectMessageByMessageId,
+	selectThreadCurrentChannel,
 	selectUserCallId,
 	selectVoiceInfo,
 	selectWelcomeChannelByClanId,
@@ -387,7 +389,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const handleBuzz = useCallback((channelId: string, senderId: string, isReset: boolean, mode: ChannelStreamMode | undefined) => {
+	const handleBuzz = useCallback((message: ChannelMessage, isMe: boolean) => {
 		const audio = new Audio('/assets/audio/buzz.mp3');
 
 		const cleanup = () => {
@@ -404,25 +406,39 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			cleanup();
 		});
 
-		const timestamp = Math.round(Date.now() / 1000);
+		// The badge stays until the channel is opened, so skip it only for our own buzz and for a buzz the user is looking at right now.
+		if (isMe) return;
+
+		const { channel_id: channelId, sender_id: senderId, mode, topic_id: topicId } = message;
+		const state = getStore().getState() as unknown as RootState;
+		const isClanView = selectClanView(state);
+		const isFocused = !isBackgroundModeActive();
+		const buzzState = { isReset: true, senderId, timestamp: Math.round(Date.now() / 1000) };
 
 		if (mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL) {
-			const store = getStore();
-			const currentClanId = selectCurrentClanId(store.getState());
+			const currentChannelId = selectCurrentChannelId(state);
+			const isThreadBoxOpen =
+				!!currentChannelId &&
+				selectIsShowCreateThread(state, currentChannelId) &&
+				selectThreadCurrentChannel(state)?.channel_id === channelId;
+			const isOnScreen =
+				topicId && topicId !== '0'
+					? selectIsShowCreateTopic(state) && selectCurrentTopicId(state) === topicId
+					: currentChannelId === channelId || isThreadBoxOpen;
+			if (isFocused && isClanView && isOnScreen) return;
+
 			dispatch(
 				channelsActions.setBuzzState({
-					clanId: currentClanId as string,
+					clanId: message.clan_id || (selectCurrentClanId(state) as string),
 					channelId,
-					buzzState: { isReset: true, senderId, timestamp }
+					buzzState
 				})
 			);
 		} else if (mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-			dispatch(
-				directActions.setBuzzStateDirect({
-					channelId,
-					buzzState: { isReset: true, senderId, timestamp }
-				})
-			);
+			const isFriendPageView = window.location.pathname.includes('/chat/direct/friends');
+			if (isFocused && !isClanView && !isFriendPageView && selectDmGroupCurrentId(state) === channelId) return;
+
+			dispatch(directActions.setBuzzStateDirect({ channelId, buzzState }));
 		}
 	}, []);
 
@@ -440,7 +456,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 
 			if (message.code === TypeMessage.MessageBuzz) {
-				handleBuzz(message.channel_id, message.sender_id, true, message.mode);
+				handleBuzz(message, message.sender_id === userId);
 			}
 
 			if (message.topic_id && message.topic_id !== '0') {
