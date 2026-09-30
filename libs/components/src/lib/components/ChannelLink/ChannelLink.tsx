@@ -315,15 +315,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 								: channel?.channel_label}
 						</p>
 					</span>
-					{buzzState?.isReset ? (
-						<BuzzBadge
-							timestamp={buzzState?.timestamp as number}
-							isReset={buzzState?.isReset}
-							channelId={channel.channel_id as string}
-							senderId={buzzState.senderId as string}
-							mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-						/>
-					) : null}
+					{buzzState?.isReset ? <BuzzBadge mode={ChannelStreamMode.STREAM_MODE_CHANNEL} /> : null}
 				</Link>
 			}
 

@@ -1163,6 +1163,9 @@ export const channelsSlice = createSlice({
 				state.byClans[clanId] = getInitialClanState();
 			}
 			state.byClans[clanId].currentChannelId = channelId;
+			if (state.byClans[clanId].buzzState?.[channelId]) {
+				state.byClans[clanId].buzzState[channelId] = null;
+			}
 		},
 
 		setSelectedChannelId: (state, action: PayloadAction<{ clanId: string; channelId: string }>) => {

@@ -172,15 +172,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 					{numberNotification}
 				</div>
 			)}
-			{buzzState?.isReset ? (
-				<BuzzBadge
-					timestamp={buzzState?.timestamp as number}
-					isReset={buzzState?.isReset}
-					channelId={thread.channel_id as string}
-					senderId={buzzState.senderId as string}
-					mode={ChannelStreamMode.STREAM_MODE_THREAD}
-				/>
-			) : null}
+			{buzzState?.isReset ? <BuzzBadge mode={ChannelStreamMode.STREAM_MODE_THREAD} /> : null}
 		</div>
 	);
 });
