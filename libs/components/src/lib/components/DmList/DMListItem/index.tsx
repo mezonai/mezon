@@ -106,8 +106,11 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	};
 
 	const handleClickDM = useCallback(async () => {
+		if (buzzStateDM) {
+			dispatch(directActions.setBuzzStateDirect({ channelId: directMessage?.channel_id || id, buzzState: null }));
+		}
 		joinToChatAndNavigate(id, directMessage?.type as number);
-	}, [directMessage, id, currentDmGroupId]);
+	}, [directMessage, id, currentDmGroupId, buzzStateDM, dispatch]);
 
 	if (!directMessage) {
 		return null;
