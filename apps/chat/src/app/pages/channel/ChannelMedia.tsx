@@ -4,12 +4,14 @@ import {
 	getStore,
 	selectBanMeInChannel,
 	selectClickedOnThreadBoxStatus,
+	selectClickedOnTopicStatus,
+	selectIsShowCreateTopic,
 	selectMediaChannelViewMode,
 	selectThreadCurrentChannel,
 	useAppSelector,
 	type ChannelsEntity
 } from '@mezon/store';
-import { generateE2eId } from '@mezon/utils';
+import { CHANNEL_INPUT_ID, GENERAL_INPUT_ID, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -63,7 +65,7 @@ type KeyPressListenerProps = {
 
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel?.id));
-	const buzzTargetRef = useRef({ channel: currentChannel, mode });
+	const buzzTargetRef = useRef({ channel: currentChannel, mode, fromTopic: false });
 
 	const [openModalBuzz, closeModalBuzz] = useModal(
 		() => (
@@ -71,6 +73,7 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 				<ModalInputMessageBuzz
 					currentChannel={buzzTargetRef.current.channel}
 					mode={buzzTargetRef.current.mode}
+					fromTopic={buzzTargetRef.current.fromTopic}
 					closeBuzzModal={closeModalBuzz}
 				/>
 			</EmojiSuggestionProvider>
@@ -85,6 +88,14 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 			if (event.ctrlKey && (event.key === 'g' || event.key === 'G')) {
 				event.preventDefault();
 				const state = getStore().getState();
+				const inTopicBox = document.activeElement?.closest(`#${GENERAL_INPUT_ID}`);
+				const inChannelInput = document.activeElement?.closest(`#${CHANNEL_INPUT_ID}`);
+				if (selectIsShowCreateTopic(state) && (inTopicBox || (!inChannelInput && selectClickedOnTopicStatus(state)))) {
+					buzzTargetRef.current = { channel: currentChannel, mode, fromTopic: true };
+					openModalBuzz();
+					return;
+				}
+
 				const thread = selectThreadCurrentChannel(state);
 				const inThreadBox = document.activeElement?.closest(THREAD_BOX_SELECTOR);
 				if (inThreadBox && !thread) return;
@@ -92,7 +103,8 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 				const useThread = thread && (selectClickedOnThreadBoxStatus(state) || inThreadBox);
 				buzzTargetRef.current = {
 					channel: useThread ? thread : currentChannel,
-					mode: useThread ? ChannelStreamMode.STREAM_MODE_THREAD : mode
+					mode: useThread ? ChannelStreamMode.STREAM_MODE_THREAD : mode,
+					fromTopic: false
 				};
 				openModalBuzz();
 			}

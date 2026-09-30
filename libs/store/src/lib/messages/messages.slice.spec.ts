@@ -269,6 +269,14 @@ it('does not assume an existing topic with uncached history has no older replies
 	expect(selectHasMoreMessageByChannelId(store.getState() as any, 'existing-topic')).toBe(true);
 });
 
+it('keeps the caller message code on a topic send so a buzz reaches the topic', async () => {
+	const { store, client } = setup();
+	await store.dispatch(handleSendTopic({ ...payload, content: { t: 'Buzz' }, attachments: [], topicId: 'topic', code: 8 })).unwrap();
+	const args = client.writeChatMessage.mock.calls[0];
+	expect(args[12]).toBe(8);
+	expect(args[13]).toBe('topic');
+});
+
 it.each(['presign', 'upload'])('marks a topic send as failed on %s failure and can retry it', async (stage) => {
 	const { store, client } = setup();
 	const failedStage = stage === 'presign' ? jest.mocked(generatePathAttachments) : jest.mocked(getWebUploadedAttachments);

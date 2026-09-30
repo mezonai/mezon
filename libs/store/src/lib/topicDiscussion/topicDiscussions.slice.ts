@@ -272,7 +272,9 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		};
 	}
 
-	return thunkAPI.dispatch(messagesActions.sendMessage({ ...payload, content: topicContent, mentionEveryone: false, code: 0 })).unwrap();
+	return thunkAPI
+		.dispatch(messagesActions.sendMessage({ ...payload, content: topicContent, mentionEveryone: false, code: payload.code ?? 0 }))
+		.unwrap();
 });
 
 export const topicsSlice = createSlice({
