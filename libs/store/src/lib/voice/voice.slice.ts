@@ -468,8 +468,6 @@ export const voiceSlice = createSlice({
 			}
 		},
 		setShowMicrophone: (state, action: PayloadAction<boolean>) => {
-			// Do not queue an unmute while the filter is still preparing.
-			if (action.payload && state.noiseSuppressionEnabled && !state.noiseSuppressionReady) return;
 			state.showMicrophone = action.payload;
 		},
 		setShowCamera: (state, action: PayloadAction<boolean>) => {
@@ -479,7 +477,6 @@ export const voiceSlice = createSlice({
 			state.showScreen = action.payload;
 		},
 		setNoiseSuppressionEnabled: (state, action: PayloadAction<boolean>) => {
-			// Preserve the user's mic intent. Only the outgoing pipeline is paused.
 			if (state.noiseSuppressionEnabled !== action.payload) state.noiseSuppressionReady = false;
 			state.noiseSuppressionEnabled = action.payload;
 		},
