@@ -11,7 +11,7 @@ import {
 	useAppSelector,
 	type ChannelsEntity
 } from '@mezon/store';
-import { GENERAL_INPUT_ID, generateE2eId } from '@mezon/utils';
+import { CHANNEL_INPUT_ID, GENERAL_INPUT_ID, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -89,7 +89,8 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 				event.preventDefault();
 				const state = getStore().getState();
 				const inTopicBox = document.activeElement?.closest(`#${GENERAL_INPUT_ID}`);
-				if (selectIsShowCreateTopic(state) && (inTopicBox || selectClickedOnTopicStatus(state))) {
+				const inChannelInput = document.activeElement?.closest(`#${CHANNEL_INPUT_ID}`);
+				if (selectIsShowCreateTopic(state) && (inTopicBox || (!inChannelInput && selectClickedOnTopicStatus(state)))) {
 					buzzTargetRef.current = { channel: currentChannel, mode, fromTopic: true };
 					openModalBuzz();
 					return;
