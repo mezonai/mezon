@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AgeRestricted, Canvas, ChannelTopicPinBanner, FileUploadByDnD, MemberList, SearchMessageChannelRender } from '@mezon/components';
+import { AgeRestricted, Canvas, FileUploadByDnD, MemberList, SearchMessageChannelRender } from '@mezon/components';
 import { useAppNavigation, useAuth, useDragAndDrop, usePermissionChecker, useSearchMessages, useSeenMessagePool } from '@mezon/core';
 import type { ChannelsEntity } from '@mezon/store';
 import {
@@ -389,12 +389,11 @@ const ChannelMainContent = ({ channelId, isVoiceChatPanel }: ChannelMainContentP
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
 			>
-				<div className={`flex flex-row ${closeMenu ? `h-heightWithoutTopBarMobile` : `h-heightWithoutTopBar`}`}>
+				<div className="flex flex-row h-full max-h-full w-full">
 					{!isShowCanvas && !isShowAgeRestricted && (isVoiceChatPanel || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
 						<div
-							className={`flex flex-col flex-1 min-w-60 max-h-messageViewChatDM ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+							className={`flex flex-col flex-1 min-w-60 h-full max-h-full overflow-hidden ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 						>
-							<ChannelTopicPinBanner />
 							<div className="relative overflow-y-auto flex-1 min-h-0">
 								<ChannelMedia currentChannel={currentChannel} />
 							</div>
