@@ -23,6 +23,7 @@ import {
 	selectGalleryAttachmentsByChannel,
 	selectGalleryPaginationByChannel,
 	selectMessageByMessageId,
+	selectMessageEntitiesByChannelId,
 	useAppDispatch,
 	useAppSelector,
 	type MediaFilterType
@@ -38,7 +39,7 @@ import {
 	isAttachmentPresignPendingForMessage,
 	shouldHidePresignAttachment
 } from '@mezon/utils';
-import { endOfDay, format, getUnixTime, isSameDay, startOfDay } from 'date-fns';
+import { clamp, endOfDay, format, getUnixTime, isSameDay, startOfDay } from 'date-fns';
 
 import type { RefObject } from 'react';
 import React, { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -49,6 +50,17 @@ import InfiniteScroll from './InfiniteScroll';
 const DatePickerWrapper = lazy(() => import('../ChannelList/EventChannelModal/ModalCreate/DatePickerWrapper'));
 
 const DatePickerPlaceholder = () => <div className="w-full h-[32px] bg-theme-surface animate-pulse rounded"></div>;
+
+const GALLERY_MIN_DATE = new Date(2020, 0, 1);
+const GALLERY_PAGE_LIMIT = 50;
+
+const getRangeBounds = (startDate: Date | null, endDate: Date | null) => {
+	const interval = { start: GALLERY_MIN_DATE, end: new Date() };
+	return {
+		after: startDate ? getUnixTime(startOfDay(clamp(startDate, interval))) - 1 : undefined,
+		before: endDate ? getUnixTime(endOfDay(clamp(endDate, interval))) + 1 : undefined
+	};
+};
 
 interface DateHeaderItem {
 	type: 'dateHeader';
@@ -70,23 +82,37 @@ interface GalleryModalProps {
 	rootRef?: RefObject<HTMLElement>;
 }
 
+export function useGalleryTarget() {
+	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
+	const currentDm = useSelector(selectCurrentDM);
+
+	return useMemo(() => {
+		const isDM = !currentClanId || currentClanId === '0';
+		return {
+			clanId: isDM ? '0' : currentClanId,
+			channelId: (isDM ? currentDm?.id : currentChannelId) ?? ''
+		};
+	}, [currentClanId, currentChannelId, currentDm?.id]);
+}
+
 export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	const { t, i18n } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
-	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
-	const currentClanId = useSelector(selectCurrentClanId) ?? '';
+	const { channelId: currentChannelId, clanId: currentClanId } = useGalleryTarget();
 	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
 	const paginationState = useAppSelector((state) => selectGalleryPaginationByChannel(state, currentChannelId));
-
+	const messageEntities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, currentChannelId));
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 	const [dateValidationError, setDateValidationError] = useState<string | null>(null);
 	const [mediaFilter, setMediaFilter] = useState<MediaFilterType>('image');
+	const today = new Date();
 
 	const modalRef = useRef<HTMLDivElement>(null);
 
-	const filteredAttachments = useMemo(() => {
+	const rangeAttachments = useMemo(() => {
 		if (!attachments || attachments.length === 0) return [];
 
 		let listAttach = [...attachments];
@@ -98,15 +124,26 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		}
 
 		if (startDate) {
-			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds > startDate?.getTime() / 1000);
+			const startTimestamp = getUnixTime(startOfDay(startDate));
+			listAttach = listAttach.filter((att) => att.create_time_seconds && Number(att.create_time_seconds) >= startTimestamp);
 		}
 
 		if (endDate) {
-			listAttach = listAttach.filter((att) => att.create_time_seconds && att.create_time_seconds < endDate?.getTime() / 1000);
+			const endTimestamp = getUnixTime(endOfDay(endDate));
+			listAttach = listAttach.filter((att) => att.create_time_seconds && Number(att.create_time_seconds) <= endTimestamp);
 		}
 
 		return listAttach;
 	}, [attachments, mediaFilter, startDate, endDate]);
+
+	const filteredAttachments = useMemo(
+		() =>
+			rangeAttachments.filter((att) => {
+				const sourceMessage = att.message_id ? messageEntities?.[att.message_id] : undefined;
+				return !shouldHidePresignAttachment(att.url, sourceMessage);
+			}),
+		[rangeAttachments, messageEntities]
+	);
 
 	const { refs, floatingStyles, context } = useFloating({
 		open: isDateDropdownOpen,
@@ -161,29 +198,27 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 	useEscapeKeyClose(modalRef, onClose);
 
-	const calculateTimestamps = useCallback((startDate: Date | null, endDate: Date | null) => {
-		let startTimestamp: number | undefined;
-		let endTimestamp: number | undefined;
-
-		if (startDate && endDate && isSameDay(startDate, endDate)) {
-			const dayStart = startOfDay(startDate);
-			const dayEnd = endOfDay(startDate);
-			startTimestamp = getUnixTime(dayStart);
-			endTimestamp = getUnixTime(dayEnd);
-		} else {
-			if (startDate) {
-				const dayStart = startOfDay(startDate);
-				startTimestamp = getUnixTime(dayStart);
-			}
-
-			if (endDate) {
-				const dayEnd = endOfDay(endDate);
-				endTimestamp = getUnixTime(dayEnd);
-			}
-		}
-
-		return { startTimestamp, endTimestamp };
-	}, []);
+	// Opening, switching tab, applying or clearing a range all start a new view: the 'initial' fetch replaces the list.
+	const fetchGalleryView = useCallback(
+		(filter: MediaFilterType, start: Date | null, end: Date | null) => {
+			if (!currentChannelId) return;
+			const { after, before } = getRangeBounds(start, end);
+			dispatch(
+				galleryActions.fetchGalleryAttachments({
+					clanId: currentClanId,
+					channelId: currentChannelId,
+					fileType: filter,
+					mediaFilter: filter,
+					limit: GALLERY_PAGE_LIMIT,
+					direction: 'initial',
+					noCache: true,
+					before,
+					after
+				})
+			);
+		},
+		[currentChannelId, currentClanId, dispatch]
+	);
 
 	const handleLoadMoreAttachments = useCallback(
 		async (direction: 'before' | 'after') => {
@@ -200,50 +235,21 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(galleryActions.setGalleryLoading({ channelId: currentChannelId, isLoading: true }));
 
 			try {
-				const timestamp = direction === 'before' ? attachments?.[attachments.length - 1]?.create_time : attachments?.[0]?.create_time;
-				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
-
-				const { startTimestamp, endTimestamp } = calculateTimestamps(startDate, endDate);
-
-				let beforeParam: number | undefined;
-				let afterParam: number | undefined;
-
-				if (startDate || endDate) {
-					if (direction === 'before') {
-						beforeParam = timestampNumber;
-						if (startTimestamp && timestampNumber && timestampNumber < startTimestamp) {
-							beforeParam = startTimestamp;
-						}
-					} else {
-						afterParam = timestampNumber;
-						if (endTimestamp && timestampNumber && timestampNumber > endTimestamp) {
-							afterParam = endTimestamp;
-						}
-					}
-
-					if (startTimestamp && (!afterParam || afterParam < startTimestamp)) {
-						afterParam = startTimestamp;
-					}
-					if (endTimestamp && (!beforeParam || beforeParam > endTimestamp)) {
-						beforeParam = endTimestamp;
-					}
-				} else {
-					if (direction === 'before') {
-						beforeParam = timestampNumber;
-					} else {
-						afterParam = timestampNumber;
-					}
-				}
+				// Page from the edge of what the current view shows; the raw list may also hold new socket items or the other media type.
+				const edge = direction === 'before' ? rangeAttachments[rangeAttachments.length - 1] : rangeAttachments[0];
+				const cursor = edge?.create_time_seconds ? Number(edge.create_time_seconds) : undefined;
+				const range = getRangeBounds(startDate, endDate);
 
 				await dispatch(
 					galleryActions.fetchGalleryAttachments({
 						clanId: currentClanId,
 						channelId: currentChannelId,
+						fileType: mediaFilter,
+						mediaFilter,
 						limit: paginationState.limit,
 						direction,
-						mediaFilter,
-						...(beforeParam && { before: beforeParam }),
-						...(afterParam && { after: afterParam })
+						before: direction === 'before' ? (cursor ?? range.before) : range.before,
+						after: direction === 'after' ? (cursor ?? range.after) : range.after
 					})
 				);
 			} catch (error) {
@@ -258,11 +264,11 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			paginationState.hasMoreAfter,
 			currentChannelId,
 			currentClanId,
-			attachments,
+			rangeAttachments,
 			startDate,
 			endDate,
-			dispatch,
-			calculateTimestamps
+			mediaFilter,
+			dispatch
 		]
 	);
 
@@ -346,6 +352,13 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 	const validateDateRange = useCallback(
 		(start: Date | null, end: Date | null): string | null => {
+			// min/max only restrict the picker popup; a typed date (e.g. 1960) still gets through.
+			const lastDay = startOfDay(new Date());
+			const isOutOfRange = (date: Date | null) => !!date && (date < GALLERY_MIN_DATE || startOfDay(date) > lastDay);
+			if (isOutOfRange(start) || isOutOfRange(end)) {
+				return t('gallery.validation.dateOutOfRange', { minDate: format(GALLERY_MIN_DATE, 'dd/MM/yyyy') });
+			}
+
 			if (!start && !end) return null;
 			if (start && !end) return null;
 			if (!start && end) return null;
@@ -365,7 +378,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	);
 
 	const handleStartDateChange = useCallback(
-		(date: Date) => {
+		(date: Date | null) => {
 			setStartDate(date);
 			const error = validateDateRange(date, endDate);
 			setDateValidationError(error);
@@ -374,7 +387,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 	);
 
 	const handleEndDateChange = useCallback(
-		(date: Date) => {
+		(date: Date | null) => {
 			setEndDate(date);
 			const error = validateDateRange(startDate, date);
 			setDateValidationError(error);
@@ -393,40 +406,26 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			return;
 		}
 
-		const { startTimestamp, endTimestamp } = calculateTimestamps(startDate, endDate);
-
-		dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
-		dispatch(
-			galleryActions.fetchGalleryAttachments({
-				clanId: currentClanId,
-				channelId: currentChannelId,
-				limit: 50,
-				direction: 'initial',
-				mediaFilter,
-				...(startTimestamp && { after: startTimestamp }),
-				...(endTimestamp && { before: endTimestamp })
-			})
-		);
+		fetchGalleryView(mediaFilter, startDate, endDate);
 
 		setDateValidationError(null);
 		setIsDateDropdownOpen(false);
-	}, [currentChannelId, currentClanId, startDate, endDate, dispatch, validateDateRange, calculateTimestamps]);
+	}, [currentChannelId, currentClanId, startDate, endDate, mediaFilter, validateDateRange, fetchGalleryView]);
 
 	const clearDateFilter = useCallback(() => {
 		setStartDate(null);
 		setEndDate(null);
 		setDateValidationError(null);
-		if (currentChannelId && currentClanId) {
-			dispatch(galleryActions.resetGalleryPagination({ channelId: currentChannelId }));
-		}
-	}, [currentChannelId, currentClanId, dispatch]);
+		fetchGalleryView(mediaFilter, null, null);
+	}, [mediaFilter, fetchGalleryView]);
 
 	const handleMediaFilterChange = useCallback(
 		(filter: MediaFilterType) => {
 			if (filter === mediaFilter) return;
 			setMediaFilter(filter);
+			fetchGalleryView(filter, startDate, endDate);
 		},
-		[mediaFilter]
+		[mediaFilter, startDate, endDate, fetchGalleryView]
 	);
 
 	const getDateRangeText = useCallback(() => {
@@ -506,21 +505,6 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		[dispatch]
 	);
 
-	useEffect(() => {
-		if (mediaFilter === 'video' && attachments.length > 0 && filteredAttachments.length === 0) {
-			dispatch(
-				galleryActions.fetchGalleryAttachments({
-					clanId: currentClanId,
-					channelId: currentChannelId,
-					fileType: 'video',
-					limit: 50,
-					direction: 'before',
-					mediaFilter
-				})
-			);
-		}
-	}, [mediaFilter]);
-
 	return (
 		<div
 			ref={modalRef}
@@ -595,11 +579,12 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
-															selected={startDate || new Date()}
+															selected={startDate}
 															onChange={handleStartDateChange}
+															onClear={() => handleStartDateChange(null)}
 															dateFormat="dd/MM/yyyy"
-															minDate={endDate ? undefined : new Date(2020, 0, 1)}
-															maxDate={endDate || undefined}
+															minDate={GALLERY_MIN_DATE}
+															maxDate={endDate && endDate < today ? endDate : today}
 														/>
 													</Suspense>
 												</div>
@@ -613,10 +598,12 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
-															selected={endDate || new Date()}
+															selected={endDate}
 															onChange={handleEndDateChange}
+															onClear={() => handleEndDateChange(null)}
 															dateFormat="dd/MM/yyyy"
-															minDate={startDate || undefined}
+															minDate={startDate ?? GALLERY_MIN_DATE}
+															maxDate={today}
 														/>
 													</Suspense>
 												</div>
@@ -710,9 +697,6 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
 	);
 	const isPresignPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage);
-	const isHidden = shouldHidePresignAttachment(attachment.url, sourceMessage);
-
-	if (isHidden) return null;
 
 	const cacheKey = attachment.id || attachment.message_id || `${dateKey}-${attachment.url}-${attachmentIndex}`;
 	const isVideo = attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);

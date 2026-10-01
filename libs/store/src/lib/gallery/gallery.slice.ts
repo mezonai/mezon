@@ -40,6 +40,7 @@ type fetchGalleryAttachmentsPayload = {
 	after?: number;
 	direction?: 'before' | 'after' | 'initial';
 	mediaFilter?: MediaFilterType;
+	noCache?: boolean;
 };
 
 const GALLERY_CACHED_TIME = 1000 * 60 * 60;
@@ -61,8 +62,11 @@ const fetchChannelAttachmentsCached = async (
 	const channelData = attachmentState.galleryByChannel[channelId];
 	const apiKey = createApiKey('galleryAttachments', fileType, limit || 50, after || '', before || '', channelId, clanId);
 
+	// A before/after request asks for items past the edge of this same cached list, so the cache can never answer it.
+	const isWindowed = before !== undefined || after !== undefined;
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 	if (
+		!isWindowed &&
 		!shouldForceCall &&
 		!noCache &&
 		channelData?.cache &&
@@ -70,34 +74,11 @@ const fetchChannelAttachmentsCached = async (
 		channelData.attachments &&
 		channelData.attachments.length > 0
 	) {
-		const existingAttachments = channelData.attachments;
-		let hasDataForRange = false;
-
-		if (before !== undefined) {
-			const beforeTime = before * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime < beforeTime;
-			});
-		} else if (after !== undefined) {
-			const afterTime = after * 1000;
-			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time_seconds) return false;
-				const attTime = att.create_time_seconds;
-				return attTime > afterTime;
-			});
-		} else {
-			hasDataForRange = true;
-		}
-
-		if (hasDataForRange) {
-			return {
-				attachments: existingAttachments,
-				fromCache: true,
-				time: channelData.cache.lastFetched
-			};
-		}
+		return {
+			attachments: channelData.attachments,
+			fromCache: true,
+			time: channelData.cache.lastFetched
+		};
 	}
 
 	const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, state, limit, before, after);
@@ -122,10 +103,15 @@ export const fetchGalleryAttachments = createAsyncThunk(
 			before,
 			after,
 			direction = 'initial',
-			mediaFilter = 'image'
+			mediaFilter = 'image',
+			noCache = false
 		}: fetchGalleryAttachmentsPayload,
 		thunkAPI
 	) => {
+		if (!channelId) {
+			return { attachments: [], channelId, direction, fromCache: false };
+		}
+
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -139,7 +125,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 				limit,
 				before,
 				after,
-				false
+				noCache
 			);
 
 			if (!response.attachments) {
@@ -175,6 +161,20 @@ export const fetchGalleryAttachments = createAsyncThunk(
 		}
 	}
 );
+
+/**
+ * Attachments arriving over the socket are keyed by their url, while the ones coming back
+ * from the API are keyed by a snowflake id - so dedupe on every identity we have, otherwise
+ * the same media shows up twice once the list is refetched.
+ */
+const dedupeGalleryAttachments = (existing: AttachmentEntity[], incoming: AttachmentEntity[]) => {
+	const existingKeys = new Set<string>();
+	for (const att of existing) {
+		if (att.url) existingKeys.add(att.url);
+		if (att.id) existingKeys.add(att.id);
+	}
+	return incoming.filter((att) => !(att.url && existingKeys.has(att.url)) && !(att.id && existingKeys.has(att.id)));
+};
 
 const getInitialChannelGalleryState = () => ({
 	attachments: [] as AttachmentEntity[],
@@ -252,8 +252,7 @@ export const gallerySlice = createSlice({
 				state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 			}
 
-			const existingIds = new Set(state.galleryByChannel[channelId].attachments.map((att) => att.id || att.url));
-			const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
+			const newAttachments = dedupeGalleryAttachments(state.galleryByChannel[channelId].attachments, attachments);
 
 			state.galleryByChannel[channelId].attachments.push(...newAttachments);
 			state.galleryByChannel[channelId].attachments.sort((a, b) => {
@@ -262,14 +261,24 @@ export const gallerySlice = createSlice({
 				}
 				return 0;
 			});
+		},
+
+		removeGalleryAttachments: (state, action: PayloadAction<{ channelId: string; messageId: string }>) => {
+			const { channelId, messageId } = action.payload;
+			const channelGallery = state.galleryByChannel[channelId];
+			if (!channelGallery) {
+				return;
+			}
+			channelGallery.attachments = channelGallery.attachments.filter((att) => att.message_id !== messageId);
 		}
 	},
 
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchGalleryAttachments.pending, (state: GalleryState, action) => {
-				state.loadingStatus = 'loading';
 				const { channelId } = action.meta.arg;
+				if (!channelId) return;
+				state.loadingStatus = 'loading';
 				if (!state.galleryByChannel[channelId]) {
 					state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 				}
@@ -286,30 +295,39 @@ export const gallerySlice = createSlice({
 					>
 				) => {
 					const { attachments, channelId, direction, fromCache } = action.payload;
-					const channelGallery = state.galleryByChannel[channelId];
+					if (!channelId) return;
 					if (!state.galleryByChannel[channelId]) {
 						state.galleryByChannel[channelId] = getInitialChannelGalleryState();
 					}
+					const channelGallery = state.galleryByChannel[channelId];
 
-					if (direction === 'before') {
-						const allItemsAlreadyExist = attachments.every((att) =>
-							channelGallery.attachments.some((existing) => existing.id === att.id)
-						);
-						channelGallery.pagination.hasMoreBefore = !allItemsAlreadyExist;
-					} else if (direction === 'after') {
-						const allItemsAlreadyExist = attachments.every((att) =>
-							channelGallery.attachments.some((existing) => existing.id === att.id)
-						);
-						channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
-					}
-
-					const existingIds = new Set(channelGallery.attachments.map((att) => att.id || att.url));
-					const newAttachments = attachments.filter((att) => !existingIds.has(att.id || att.url));
-
-					if (direction === 'after') {
-						channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+					if (direction === 'initial' && !fromCache) {
+						// A fresh initial fetch starts a new view (open, media tab, date range); merging it into the old list
+						// would leave a gap that load-more then skips over.
+						channelGallery.attachments = attachments;
+						channelGallery.pagination.hasMoreBefore = true;
+						channelGallery.pagination.hasMoreAfter = true;
 					} else {
-						channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
+						// Cached data carries no pagination info, so it must not end pagination.
+						if (!fromCache && direction === 'before') {
+							const allItemsAlreadyExist = attachments.every((att) =>
+								channelGallery.attachments.some((existing) => existing.id === att.id)
+							);
+							channelGallery.pagination.hasMoreBefore = !allItemsAlreadyExist;
+						} else if (!fromCache && direction === 'after') {
+							const allItemsAlreadyExist = attachments.every((att) =>
+								channelGallery.attachments.some((existing) => existing.id === att.id)
+							);
+							channelGallery.pagination.hasMoreAfter = !allItemsAlreadyExist;
+						}
+
+						const newAttachments = dedupeGalleryAttachments(channelGallery.attachments, attachments);
+
+						if (direction === 'after') {
+							channelGallery.attachments = [...newAttachments, ...channelGallery.attachments];
+						} else {
+							channelGallery.attachments = [...channelGallery.attachments, ...newAttachments];
+						}
 					}
 
 					channelGallery.pagination.isLoading = false;

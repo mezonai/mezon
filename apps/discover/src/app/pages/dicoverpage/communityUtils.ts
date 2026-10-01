@@ -1,6 +1,6 @@
 import { parseHashtags } from '@mezon/store';
 import type { ApiClanDiscover } from 'mezon-js';
-import { CATEGORY_SHORTCUTS, type CategoryShortcutId, type DiscoverSort } from '../../constants/constants';
+import type { DiscoverSort } from '../../constants/constants';
 
 export type DiscoverClan = ApiClanDiscover;
 
@@ -40,13 +40,6 @@ export function formatExactNumber(value: number | undefined, locale?: string): s
 	return new Intl.NumberFormat(locale).format(safe);
 }
 
-export function matchesCategory(clan: DiscoverClan, categoryId: string): boolean {
-	const shortcut = CATEGORY_SHORTCUTS.find((item) => item.id === categoryId);
-	if (!shortcut) return true;
-	const haystack = `${clan.clan_name || ''} ${clan.description || ''} ${clan.about || ''}`.toLowerCase();
-	return shortcut.keywords.some((keyword) => haystack.includes(keyword));
-}
-
 export function matchesQuery(clan: DiscoverClan, query: string): boolean {
 	const normalized = query.trim().toLowerCase();
 	if (normalized.length < 2) return true;
@@ -78,10 +71,6 @@ export function pickFeaturedClans(clans: DiscoverClan[], limit = 3): DiscoverCla
 		if (unique.length >= limit) break;
 	}
 	return unique;
-}
-
-export function isCategoryShortcutId(value: string): value is CategoryShortcutId {
-	return CATEGORY_SHORTCUTS.some((item) => item.id === value);
 }
 
 export function trackDiscoverEvent(eventName: string, params?: Record<string, unknown>): void {

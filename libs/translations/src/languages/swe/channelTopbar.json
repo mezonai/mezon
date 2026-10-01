@@ -103,7 +103,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Startdatum måste vara före eller samma som slutdatum"
+			"startDateBeforeEnd": "Startdatum måste vara före eller samma som slutdatum",
+			"dateOutOfRange": "Datumet måste vara mellan {{minDate}} och idag"
 		},
 		"buttons": {
 			"clearAll": "Rensa allt",

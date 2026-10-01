@@ -11,6 +11,10 @@ import type { RootState } from '../store';
 
 export const USERS_STREAM_FEATURE_KEY = 'usersstream';
 
+// One user can be a speaker/audience in multiple stream channels at once (cross-clan).
+// Entity id must include the channel or join B overwrites join A and leave A wipes B.
+export const streamMemberEntityId = (userId?: string | null, channelId?: string | null) => `${userId || ''}:${channelId || ''}`;
+
 /*
  * Update these interfaces according to your requirements.
  */
@@ -24,11 +28,11 @@ export interface UsersStreamState extends EntityState<UsersStreamEntity, string>
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	streamChannelMember: IChannelMember[];
-	cache?: CacheMetadata;
+	cacheByClans: Record<string, CacheMetadata>;
 }
 
 export const userStreamAdapter = createEntityAdapter({
-	selectId: (user: UsersStreamEntity) => user.user_id || ''
+	selectId: (user: UsersStreamEntity) => streamMemberEntityId(user.user_id, user.streaming_channel_id)
 });
 
 const { selectAll: selectAllUsersStreamEntities } = userStreamAdapter.getSelectors();
@@ -45,17 +49,20 @@ export type FetchStreamChannelMembersResponse = {
 	fromCache?: boolean;
 };
 
-const selectCachedStreamMembers = createSelector([(state: RootState) => state[USERS_STREAM_FEATURE_KEY]], (streamState) => {
-	const entities = selectAllUsersStreamEntities(streamState);
-	return entities.map(
-		(entity): ApiStreamingChannelUser => ({
-			user_id: entity.user_id,
-			channel_id: entity.streaming_channel_id,
-			participant: entity.participant,
-			id: entity.id
-		})
-	);
-});
+const selectCachedStreamMembers = createSelector(
+	[(state: RootState) => state[USERS_STREAM_FEATURE_KEY], (_: RootState, clanId: string) => clanId],
+	(streamState, clanId) => {
+		const entities = selectAllUsersStreamEntities(streamState).filter((entity) => entity.clan_id === clanId);
+		return entities.map(
+			(entity): ApiStreamingChannelUser => ({
+				user_id: entity.user_id,
+				channel_id: entity.streaming_channel_id,
+				participant: entity.participant,
+				id: entity.id
+			})
+		);
+	}
+);
 
 export const fetchStreamChannelMembersCached = async (
 	getState: () => RootState,
@@ -68,10 +75,10 @@ export const fetchStreamChannelMembersCached = async (
 	const state = getState();
 	const streamState = state[USERS_STREAM_FEATURE_KEY];
 	const apiKey = createApiKey('fetchStreamChannelMembers', clanId, 'streaming_user_list');
-	const shouldForceCall = shouldForceApiCall(apiKey, streamState?.cache, noCache);
+	const shouldForceCall = shouldForceApiCall(apiKey, streamState?.cacheByClans?.[clanId], noCache);
 
 	if (!shouldForceCall) {
-		const streamMembers = selectCachedStreamMembers(state);
+		const streamMembers = selectCachedStreamMembers(state, clanId);
 		return {
 			streaming_channel_users: streamMembers,
 			fromCache: true
@@ -153,7 +160,8 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 export const initialUsersStreamState: UsersStreamState = userStreamAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
-	streamChannelMember: []
+	streamChannelMember: [],
+	cacheByClans: {}
 });
 
 export const usersStreamSlice = createSlice({
@@ -171,7 +179,7 @@ export const usersStreamSlice = createSlice({
 			const channelId = action.payload;
 			const idsToRemove = Object.values(state.entities)
 				.filter((member) => member?.streaming_channel_id === channelId)
-				.map((member) => member?.id);
+				.map((member) => streamMemberEntityId(member?.user_id, member?.streaming_channel_id));
 			userStreamAdapter.removeMany(state, idsToRemove);
 		}
 		// ...
@@ -181,7 +189,7 @@ export const usersStreamSlice = createSlice({
 			.addCase(fetchStreamChannelMembers.pending, (state: UsersStreamState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchStreamChannelMembers.fulfilled, (state: UsersStreamState, action: PayloadAction<FetchStreamChannelMembersResponse>) => {
+			.addCase(fetchStreamChannelMembers.fulfilled, (state: UsersStreamState, action) => {
 				const { streams, fromCache } = action.payload;
 				state.loadingStatus = 'loaded';
 
@@ -192,7 +200,7 @@ export const usersStreamSlice = createSlice({
 					user_id: stream.user_id,
 					participant: stream.participant
 				}));
-				state.cache = createCacheMetadata();
+				state.cacheByClans[action.meta.arg.clanId] = createCacheMetadata();
 			})
 			.addCase(fetchStreamChannelMembers.rejected, (state: UsersStreamState, action) => {
 				state.loadingStatus = 'error';

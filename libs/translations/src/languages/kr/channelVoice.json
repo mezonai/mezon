@@ -35,13 +35,91 @@
 		},
 		"confirm": "확인"
 	},
-	"permission": {
-		"cameraTitle": "카메라 권한 부여",
-		"cameraBody": "애플리케이션이 카메라 권한을 얻지 못했습니다. 시스템 설정에서 카메라 권한을 켜세요.",
-		"microphoneTitle": "마이크 권한 부여",
-		"microphoneBody": "애플리케이션이 마이크 권한을 얻지 못했습니다. 시스템 설정에서 마이크 권한을 켜세요.",
-		"cancel": "취소",
-		"deviceSettings": "장치 설정"
+	"mediaPermission": {
+		"allow": "허용",
+		"notNow": "나중에",
+		"close": "닫기",
+		"needed": {
+			"microphone": "마이크 접근 권한이 필요합니다",
+			"camera": "카메라 접근 권한이 필요합니다"
+		},
+		"requestTitle": {
+			"microphone": "Mezon이 마이크를 사용하도록 허용",
+			"camera": "Mezon이 카메라를 사용하도록 허용"
+		},
+		"requestBody": {
+			"microphone": "Mezon이 마이크를 사용할 수 있을 때까지 다른 사람이 내 목소리를 들을 수 없습니다.",
+			"camera": "Mezon이 카메라를 사용할 수 있을 때까지 다른 사람이 나를 볼 수 없습니다."
+		},
+		"requestHint": "브라우저에서 물어보면 허용을 선택하세요.",
+		"blockedTitle": {
+			"microphone": "Mezon의 마이크 사용이 차단되었습니다",
+			"camera": "Mezon의 카메라 사용이 차단되었습니다"
+		},
+		"systemBlockedTitle": {
+			"microphone": "브라우저의 마이크 사용이 차단되었습니다",
+			"camera": "브라우저의 카메라 사용이 차단되었습니다"
+		},
+		"unavailable": {
+			"microphone": "마이크를 시작할 수 없습니다. 마이크가 연결되어 있는지, 다른 앱에서 사용 중이지 않은지 확인하세요.",
+			"camera": "카메라를 시작할 수 없습니다. 카메라가 연결되어 있는지, 다른 앱에서 사용 중이지 않은지 확인하세요."
+		},
+		"steps": {
+			"chromium": {
+				"open": "브라우저 주소창에서 페이지 정보 아이콘 <icon/> 을 클릭하세요",
+				"enable": {
+					"microphone": "마이크 켜기",
+					"camera": "카메라 켜기"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "브라우저 주소창에서 차단된 마이크 아이콘을 클릭하세요",
+					"camera": "브라우저 주소창에서 차단된 카메라 아이콘을 클릭하세요"
+				},
+				"enable": {
+					"microphone": "마이크 차단을 해제한 다음 마이크를 다시 켜세요",
+					"camera": "카메라 차단을 해제한 다음 카메라를 다시 켜세요"
+				}
+			},
+			"safari": {
+				"open": "메뉴 막대에서 Safari → 이 웹 사이트에 대한 설정 을 선택하세요",
+				"enable": {
+					"microphone": "마이크를 허용으로 설정하세요",
+					"camera": "카메라를 허용으로 설정하세요"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "시스템 설정 → 개인정보 보호 및 보안 → 마이크 를 여세요",
+					"camera": "시스템 설정 → 개인정보 보호 및 보안 → 카메라 를 여세요"
+				},
+				"enable": {
+					"microphone": "브라우저를 켠 다음, 필요하면 다시 여세요",
+					"camera": "브라우저를 켠 다음, 필요하면 다시 여세요"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "설정 → 개인 정보 및 보안 → 마이크 를 여세요",
+					"camera": "설정 → 개인 정보 및 보안 → 카메라 를 여세요"
+				},
+				"enable": {
+					"microphone": "“마이크 액세스”와 “데스크톱 앱이 내 마이크에 액세스하도록 허용”을 켜세요",
+					"camera": "“카메라 액세스”와 “데스크톱 앱이 내 카메라에 액세스하도록 허용”을 켜세요"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "기기의 개인정보 보호 설정을 여세요",
+					"camera": "기기의 개인정보 보호 설정을 여세요"
+				},
+				"enable": {
+					"microphone": "브라우저가 마이크를 사용하도록 허용하세요",
+					"camera": "브라우저가 카메라를 사용하도록 허용하세요"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "마이크",
@@ -53,15 +131,18 @@
 		"connectionConnected": "연결 성공",
 		"connectionDisconnected": "연결 끊김",
 		"microphonePermissionRequired": "마이크 권한 필요",
-		"cameraPermissionRequired": "카메라 권한 필요",
 		"recipientDidNotAnswer": "수신자가 전화를 받았습니다.",
-		"aloneTimeoutDisconnected": "너무 오랫동안 혼자 있어서 음성 채널에서 연결이 해제되었습니다."
+		"aloneTimeoutDisconnected": "너무 오랫동안 혼자 있어서 음성 채널에서 연결이 해제되었습니다.",
+		"duplicateSessionDisconnected": "다른 기기에서 음성 채널에 참여하여 이 세션의 연결이 끊어졌습니다.",
+		"disconnectedRejoin": "음성 채널 연결이 끊어졌습니다."
 	},
 	"usernameScreen": "{{username}} 의 화면",
 	"recording": {
 		"start": "통화 녹화",
 		"stop": "녹화 중지",
 		"badge": "REC",
+		"by": "{{name}} 님이 통화를 녹화하고 있습니다",
+		"byMany": "{{name}} 님 외 {{count}}명이 통화를 녹화하고 있습니다",
 		"memoryLimitWarning": "이 브라우저는 디스크에 직접 기록할 수 없어 녹화본이 메모리에 보관되며 {{minutes}}분 후 자동으로 중지됩니다.",
 		"frozenWarning": "탭이 숨겨진 동안 영상이 멈췄습니다. 녹화 중에는 이 탭을 화면에 두세요.",
 		"savedToDisk": "녹화본을 {{fileName}}에 저장했습니다 ({{size}})",

@@ -173,7 +173,17 @@
 			"title": "Kanal behörigheter",
 			"description": "Använd behörigheter för att anpassa vem som kan göra vad i denna kanal.",
 			"syncedWithCategory": "Behörigheter synkroniserade med kategori:"
-		}
+		},
+		"searchMembers": "Sök medlemmar",
+		"noMembersFound": "Inga medlemmar hittades",
+		"removeMember": "Ta bort medlem från kanalen",
+		"loading": "Läser in...",
+		"loadPermissions": "Läs in behörigheter / Försök igen",
+		"choiceLegend": "× Neka   / Ärv   ✓ Tillåt",
+		"saveBeforeSwitch": "Spara eller återställ ändringarna innan du väljer en annan roll eller medlem.",
+		"deny": "Neka",
+		"inherit": "Ärv från roller och kategori",
+		"allow": "Tillåt"
 	},
 	"quickAction": {
 		"title": "Snabbkommando",

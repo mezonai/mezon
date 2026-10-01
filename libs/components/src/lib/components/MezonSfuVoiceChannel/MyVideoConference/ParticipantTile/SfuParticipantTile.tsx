@@ -23,8 +23,8 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 
 	return (
 		<div
-			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
-				speaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
+			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 hover:border-zinc-400 ${
+				speaking ? '!border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
 			}`}
 		>
 			{activeSoundReaction && (

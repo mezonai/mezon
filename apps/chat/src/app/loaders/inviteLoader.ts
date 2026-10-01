@@ -1,5 +1,6 @@
 import { inviteActions } from '@mezon/store';
 import type { ShouldRevalidateFunction } from 'react-router-dom';
+import { openAppDeeplink } from '../utils/deeplink';
 import type { CustomLoaderFunction } from './appLoader';
 
 export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
@@ -9,14 +10,7 @@ export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) =
 		throw new Error('inviteId ID null');
 	}
 	dispatch(inviteActions.getLinkInvite({ inviteId }));
-	// Handle auto open deeplink when load on mobile
-	if (inviteId) {
-		try {
-			window.location.href = `mezonapp://invite/${inviteId}`;
-		} catch (e) {
-			console.error('log  => handleJoinChannel error', e);
-		}
-	}
+	openAppDeeplink(`invite/${inviteId}`);
 	return null;
 };
 export const shouldRevalidateInvite: ShouldRevalidateFunction = (ctx) => {

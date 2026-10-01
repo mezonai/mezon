@@ -12,14 +12,14 @@ import { selectCurrentClanId } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
+import { recordingParams, withRecordingUser } from './recordingSignal';
+
+export { RECORDING_ANNOUNCE_INTERVAL_MS, RECORDING_INDICATOR_TTL_MS, parseRecordingParams, recordingParams } from './recordingSignal';
 
 export const VOICE_FEATURE_KEY = 'voice';
 
-/*
- * Update these interfaces according to your requirements.
- */
 export interface VoiceEntity extends ApiVoiceChannelUser {
-	id: string; // Primary ID
+	id: string;
 }
 
 export enum EVoiceInteractEvent {
@@ -85,11 +85,9 @@ export type VoiceRecordingStatus = 'idle' | 'starting' | 'recording' | 'stopping
 export interface VoiceRecordingState {
 	status: VoiceRecordingStatus;
 	startedAt: number | null;
-	/** Hard stop time when chunks are buffered in RAM instead of streamed to disk. */
 	deadlineAt: number | null;
 	streamingToDisk: boolean;
 	pipeline: 'worker' | 'canvas' | 'none';
-	/** Set when the tab went hidden mid-recording on the canvas fallback. */
 	degraded: boolean;
 	error: string | null;
 }
@@ -102,6 +100,7 @@ export interface VoiceState {
 	showCamera: boolean;
 	showScreen: boolean;
 	noiseSuppressionEnabled: boolean;
+	noiseSuppressionReady: boolean;
 	statusCall: boolean;
 	voiceConnectionState: boolean;
 	fullScreen?: boolean;
@@ -117,6 +116,7 @@ export interface VoiceState {
 	openPopOut?: boolean;
 	openChatBox?: boolean;
 	externalGroup?: boolean;
+	presenceRevisionByClan: Record<string, number>;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
 	cache?: CacheMetadata;
 	contextMenu: {
@@ -125,6 +125,7 @@ export interface VoiceState {
 	} | null;
 	listVoiceMemberByClan: Record<string, Record<string, EntityState<VoiceUserData, string>>>;
 	recording: VoiceRecordingState;
+	recordingUserIds: string[];
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -136,6 +137,7 @@ type fetchVoiceChannelMembersPayload = {
 
 export type FetchVoiceChannelMembersResponse = {
 	users: ApiVoiceChannelUser[];
+	presenceRevision?: number;
 	clanId: string;
 	channelId: string;
 	fromCache?: boolean;
@@ -200,29 +202,45 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 	async ({ clanId, channelId, channelType, noCache }: fetchVoiceChannelMembersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchVoiceChannelMembersCached(
-				thunkAPI.getState as () => RootState,
-				mezon,
-				clanId,
-				channelId,
-				channelType,
-				noCache
-			);
-
-			if (!response.voice_channel_users) {
-				return { users: [] as ApiVoiceChannelUser[], clanId, channelId };
+			for (let attempt = 0; attempt < 3; attempt++) {
+				const revision = (thunkAPI.getState() as RootState).voice.presenceRevisionByClan[clanId] ?? 0;
+				const response = await fetchVoiceChannelMembersCached(
+					thunkAPI.getState as () => RootState,
+					mezon,
+					clanId,
+					channelId,
+					channelType,
+					noCache || attempt > 0
+				);
+				if (((thunkAPI.getState() as RootState).voice.presenceRevisionByClan[clanId] ?? 0) !== revision) continue;
+				return { users: response.voice_channel_users ?? [], channelId, clanId, fromCache: response.fromCache, presenceRevision: revision };
 			}
-
-			const payload: FetchVoiceChannelMembersResponse = {
-				users: response.voice_channel_users,
-				channelId,
-				clanId,
-				fromCache: response.fromCache
-			};
-
-			return payload;
+			throw new Error('Voice presence changed during snapshot refresh');
 		} catch (error) {
 			captureSentryError(error, 'voice/fetchVoiceChannelMembers');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const sendRecordingState = createAsyncThunk(
+	'voice/sendRecordingState',
+	async ({ isRecording, clanId, channelId }: { isRecording: boolean; clanId: string; channelId: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const senderId = selectCurrentUserId(state);
+			return await mezon.client.writeVoiceInteractiveEvent(
+				mezon.session,
+				clanId,
+				channelId,
+				senderId,
+				senderId,
+				EVoiceInteractEvent.RECORDING,
+				recordingParams(isRecording)
+			);
+		} catch (error) {
+			captureSentryError(error, 'voice/sendRecordingState');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}
@@ -332,6 +350,7 @@ export const initialVoiceState: VoiceState = {
 	showCamera: false,
 	showScreen: false,
 	noiseSuppressionEnabled: false,
+	noiseSuppressionReady: false,
 	statusCall: false,
 	voiceConnectionState: false,
 	fullScreen: false,
@@ -347,6 +366,7 @@ export const initialVoiceState: VoiceState = {
 	openPopOut: false,
 	openChatBox: false,
 	externalGroup: false,
+	presenceRevisionByClan: {},
 	listInVoiceStatus: {},
 	contextMenu: null,
 	listVoiceMemberByClan: {},
@@ -358,7 +378,8 @@ export const initialVoiceState: VoiceState = {
 		pipeline: 'none',
 		degraded: false,
 		error: null
-	}
+	},
+	recordingUserIds: []
 };
 
 export const voiceSlice = createSlice({
@@ -367,42 +388,31 @@ export const voiceSlice = createSlice({
 	reducers: {
 		add: (state, action: PayloadAction<{ clan_id: string; channel_id: string; user_id: string; user_name: string; user_avatar: string }>) => {
 			const { clan_id, channel_id, user_id, user_name, user_avatar } = action.payload;
-			if (!state.listVoiceMemberByClan[clan_id]) {
-				state.listVoiceMemberByClan[clan_id] = {};
-			}
-			const entities = state.listVoiceMemberByClan[clan_id][channel_id];
-			if (entities) {
-				const duplicateEntry = UsersInVoiceAdapter.getSelectors().selectById(entities, user_id);
-				if (duplicateEntry) {
-					state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.removeOne(entities, user_id);
-				}
-			} else {
-				state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.getInitialState();
-			}
-			state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.addOne(state.listVoiceMemberByClan[clan_id][channel_id], {
+			state.presenceRevisionByClan[clan_id] = (state.presenceRevisionByClan[clan_id] ?? 0) + 1;
+			state.listVoiceMemberByClan[clan_id] ??= {};
+			const room = (state.listVoiceMemberByClan[clan_id][channel_id] ??= UsersInVoiceAdapter.getInitialState());
+			const previous = room.entities[user_id];
+			state.listVoiceMemberByClan[clan_id][channel_id] = UsersInVoiceAdapter.upsertOne(room, {
 				user_id,
-				user_name,
-				user_avatar
+				user_name: user_name || previous?.user_name || '',
+				user_avatar: user_avatar || previous?.user_avatar || ''
 			});
 			if (user_id) {
+				const status = state.listInVoiceStatus[user_id];
 				state.listInVoiceStatus[user_id] = {
 					clanId: clan_id,
 					channelId: channel_id,
-					status: EInvoice.INVOICE
+					status: status?.clanId === clan_id && status.channelId === channel_id ? status.status : EInvoice.INVOICE
 				};
 			}
 		},
 		remove: (state, action: PayloadAction<VoiceLeavedEvent>) => {
 			const voice = action.payload;
-			const clanState = state.listVoiceMemberByClan[voice.clan_id];
-			if (!clanState) return;
-
-			const channalState = clanState[voice.voice_channel_id];
-			if (!channalState) return;
-			const duplicateEntry = UsersInVoiceAdapter.getSelectors().selectById(channalState, voice.voice_user_id);
-
-			if (duplicateEntry) {
-				state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id] = UsersInVoiceAdapter.removeOne(channalState, voice.voice_user_id);
+			state.presenceRevisionByClan[voice.clan_id] = (state.presenceRevisionByClan[voice.clan_id] ?? 0) + 1;
+			const room = state.listVoiceMemberByClan[voice.clan_id]?.[voice.voice_channel_id];
+			if (room) UsersInVoiceAdapter.removeOne(room, voice.voice_user_id);
+			const status = state.listInVoiceStatus[voice.voice_user_id];
+			if (status?.clanId === voice.clan_id && status.channelId === voice.voice_channel_id) {
 				delete state.listInVoiceStatus[voice.voice_user_id];
 			}
 		},
@@ -410,12 +420,18 @@ export const voiceSlice = createSlice({
 			const userId = action.payload.id;
 			const entitiesOfUser = state.listVoiceMemberByClan[action.payload.clanId];
 
+			state.presenceRevisionByClan[action.payload.clanId] = (state.presenceRevisionByClan[action.payload.clanId] ?? 0) + 1;
 			if (entitiesOfUser) {
-				delete state.listInVoiceStatus[userId];
+				Object.values(entitiesOfUser).forEach((room) => UsersInVoiceAdapter.removeOne(room, userId));
+				if (state.listInVoiceStatus[userId]?.clanId === action.payload.clanId) delete state.listInVoiceStatus[userId];
 			}
 		},
 		voiceEnded: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
 			const { channelId, clanId } = action.payload;
+			state.presenceRevisionByClan[clanId] = (state.presenceRevisionByClan[clanId] ?? 0) + 1;
+			for (const [userId, status] of Object.entries(state.listInVoiceStatus)) {
+				if (status.clanId === clanId && status.channelId === channelId) delete state.listInVoiceStatus[userId];
+			}
 			const clanState = state.listVoiceMemberByClan[clanId];
 			if (!clanState) return;
 			delete state.listVoiceMemberByClan[clanId][channelId];
@@ -461,13 +477,28 @@ export const voiceSlice = createSlice({
 			state.showScreen = action.payload;
 		},
 		setNoiseSuppressionEnabled: (state, action: PayloadAction<boolean>) => {
+			if (state.noiseSuppressionEnabled !== action.payload) state.noiseSuppressionReady = false;
 			state.noiseSuppressionEnabled = action.payload;
+		},
+		setNoiseSuppressionReady: (state, action: PayloadAction<boolean>) => {
+			state.noiseSuppressionReady = state.noiseSuppressionEnabled && action.payload;
 		},
 		setRecordingState: (state, action: PayloadAction<Partial<VoiceRecordingState>>) => {
 			state.recording = { ...state.recording, ...action.payload };
 		},
 		resetRecordingState: (state) => {
 			state.recording = { ...initialVoiceState.recording };
+		},
+		setUserRecording: (state, action: PayloadAction<{ userId: string; isRecording: boolean }>) => {
+			const next = withRecordingUser(state.recordingUserIds, action.payload.userId, action.payload.isRecording);
+			if (next) {
+				state.recordingUserIds = next;
+			}
+		},
+		clearRecordingUsers: (state) => {
+			if (state.recordingUserIds.length) {
+				state.recordingUserIds = [];
+			}
 		},
 		setStatusCall: (state, action: PayloadAction<boolean>) => {
 			state.statusCall = action.payload;
@@ -486,6 +517,7 @@ export const voiceSlice = createSlice({
 			state.showCamera = false;
 			state.showScreen = false;
 			state.noiseSuppressionEnabled = false;
+			state.noiseSuppressionReady = false;
 			state.voiceConnectionState = false;
 			state.voiceInfo = null;
 			state.fullScreen = false;
@@ -494,6 +526,7 @@ export const voiceSlice = createSlice({
 			state.token = '';
 			state.stream = null;
 			state.openPopOut = false;
+			state.recordingUserIds = [];
 		},
 		resetExternalCall: (state) => {
 			state.showMicrophone = false;
@@ -506,6 +539,7 @@ export const voiceSlice = createSlice({
 			state.externalToken = undefined;
 			state.stream = null;
 			state.joinCallExtStatus = 'not loaded';
+			state.recordingUserIds = [];
 		},
 
 		setPiPModeMobile: (state, action) => {
@@ -522,6 +556,11 @@ export const voiceSlice = createSlice({
 		},
 		removeInVoiceInChannel: (state, action: PayloadAction<string>) => {
 			const channelId = action.payload;
+			for (const [clanId, rooms] of Object.entries(state.listVoiceMemberByClan)) {
+				if (!rooms[channelId]) continue;
+				state.presenceRevisionByClan[clanId] = (state.presenceRevisionByClan[clanId] ?? 0) + 1;
+				delete rooms[channelId];
+			}
 			for (const key in state.listInVoiceStatus) {
 				if (state.listInVoiceStatus[key].channelId === channelId) {
 					delete state.listInVoiceStatus[key];
@@ -537,7 +576,6 @@ export const voiceSlice = createSlice({
 				};
 			}
 		}
-		// ...
 	},
 	extraReducers: (builder) => {
 		builder
@@ -545,10 +583,11 @@ export const voiceSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchVoiceChannelMembers.fulfilled, (state: VoiceState, action: PayloadAction<FetchVoiceChannelMembersResponse>) => {
-				const { users, clanId, channelId, fromCache } = action.payload;
+				const { users, clanId, fromCache, presenceRevision } = action.payload;
 				state.loadingStatus = 'loaded';
 
 				if (fromCache || !users.length) return;
+				if (presenceRevision !== undefined && presenceRevision !== (state.presenceRevisionByClan[clanId] ?? 0)) return;
 
 				if (!state.listVoiceMemberByClan[clanId]) {
 					state.listVoiceMemberByClan[clanId] = {};
@@ -564,13 +603,17 @@ export const voiceSlice = createSlice({
 
 					if (!listUser || !channelId) return;
 
+					const previousRoom = state.listVoiceMemberByClan[clanId][channelId];
+					for (const [userId, status] of Object.entries(state.listInVoiceStatus)) {
+						if (status.clanId === clanId && status.channelId === channelId) delete state.listInVoiceStatus[userId];
+					}
 					const listIdInVoice: VoiceUserData[] = [];
-					for (const id of listUser) {
+					for (const id of new Set(listUser)) {
 						if (id.length === LENGHT_USER_ID) {
 							listIdInVoice.push({
 								user_id: id,
-								user_avatar: '',
-								user_name: ''
+								user_avatar: previousRoom?.entities[id]?.user_avatar ?? '',
+								user_name: previousRoom?.entities[id]?.user_name ?? ''
 							});
 							state.listInVoiceStatus[id] = {
 								clanId,
@@ -612,52 +655,18 @@ export const voiceSlice = createSlice({
 	}
 });
 
-/*
- * Export reducer for store configuration.
- */
 export const voiceReducer = voiceSlice.reducer;
 
-/*
- * Export action creators to be dispatched. For use with the `useDispatch` hook.
- *
- * e.g.
- * ```
- * import React, { useEffect } from 'react';
- * import { useDispatch } from 'react-redux';
- *
- * // ...
- *
- * const dispatch = useDispatch();
- * useEffect(() => {
- *   dispatch(usersActions.add({ id: 1 }))
- * }, [dispatch]);
- * ```
- *
- * See: https://react-redux.js.org/next/api/hooks#usedispatch
- */
 export const voiceActions = {
 	...voiceSlice.actions,
 	fetchVoiceChannelMembers,
 	sendVoiceInteractiveEvent,
+	sendRecordingState,
 	kickVoiceMember,
 	muteVoiceMember,
 	giveFlowers
 };
 
-/*
- * Export selectors to query state. For use with the `useSelector` hook.
- *
- * e.g.
- * ```
- * import { useSelector } from 'react-redux';
- *
- * // ...
- *
- * const entities = useSelector(selectAllUsers);
- * ```
- *
- * See: https://react-redux.js.org/next/api/hooks#useselector
- */
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
 const { selectAll, selectIds, selectById } = UsersInVoiceAdapter.getSelectors();
@@ -686,6 +695,7 @@ export const selectShowCamera = createSelector(getVoiceState, (state) => state.s
 export const selectShowScreen = createSelector(getVoiceState, (state) => state.showScreen);
 
 export const selectNoiseSuppressionEnabled = createSelector(getVoiceState, (state) => state.noiseSuppressionEnabled);
+export const selectNoiseSuppressionReady = createSelector(getVoiceState, (state) => state.noiseSuppressionReady);
 
 export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => state.fullScreen);
 
@@ -723,11 +733,12 @@ export const selectVoiceContextMenu = createSelector(getVoiceState, (state) => s
 
 export const selectVoiceRecording = createSelector(getVoiceState, (state) => state.recording);
 
+export const selectRecordingUserIds = createSelector(getVoiceState, (state) => state.recordingUserIds);
+
 export const selectIsVoiceRecording = createSelector(
 	getVoiceState,
 	(state) => state.recording.status === 'recording' || state.recording.status === 'starting'
 );
-///
 export const selectJoinCallExtStatus = createSelector(getVoiceState, (state) => state.joinCallExtStatus);
 export const selectExternalToken = createSelector(getVoiceState, (state) => state.externalToken);
 export const selectIsPiPMode = createSelector(getVoiceState, (state) => state.isPiPMode);

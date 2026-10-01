@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CATEGORY_SHORTCUTS, FEATURED_CLAN_ID, PAGINATION } from '../../constants/constants';
+import { FEATURED_CLAN_ID, PAGINATION } from '../../constants/constants';
 import { useDiscover } from '../../context/DiscoverContext';
 import CategoryChips from './CategoryChips';
 import ClanIndex from './ClanIndex';
@@ -11,19 +11,10 @@ import FilterSheet, { FilterBar } from './FilterBar';
 import Footer from './Footer';
 import HeaderMezon from './HeaderMezon';
 import StageHero from './StageHero';
-import {
-	clanMatchesId,
-	isSameClan,
-	matchesCategory,
-	matchesQuery,
-	pickFeaturedClans,
-	sortClans,
-	trackDiscoverEvent,
-	type DiscoverClan
-} from './communityUtils';
+import { clanMatchesId, isSameClan, matchesQuery, pickFeaturedClans, sortClans, trackDiscoverEvent, type DiscoverClan } from './communityUtils';
 
 export default function DiscoverPage() {
-	const { t } = useTranslation('discover');
+	const { t } = useTranslation(['discover', 'onBoardingClan']);
 	const {
 		clans,
 		stageClans,
@@ -32,13 +23,13 @@ export default function DiscoverPage() {
 		error,
 		searchTerm,
 		committedQuery,
-		selectedCategory,
+		selectedHashtags,
 		sort,
 		verifiedOnly,
 		currentPage,
 		pageCount,
 		handleSearch,
-		handleCategorySelect,
+		handleToggleHashtag,
 		handleSortChange,
 		handleVerifiedOnly,
 		goToPage,
@@ -47,18 +38,17 @@ export default function DiscoverPage() {
 	} = useDiscover();
 	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
 	const [filtersOpen, setFiltersOpen] = useState(false);
-	const isBrowsing = committedQuery.trim().length < 2 && !selectedCategory && !verifiedOnly;
+	const isBrowsing = committedQuery.trim().length < 2 && selectedHashtags.length === 0 && !verifiedOnly;
 
 	const filteredClans = useMemo(() => {
 		const next = clans.filter((clan) => {
 			if (!clan) return false;
 			if (verifiedOnly && !clan.verified) return false;
-			if (selectedCategory && !matchesCategory(clan, selectedCategory)) return false;
 			if (!matchesQuery(clan, committedQuery)) return false;
 			return true;
 		});
 		return sortClans(next, sort);
-	}, [clans, committedQuery, selectedCategory, sort, verifiedOnly]);
+	}, [clans, committedQuery, sort, verifiedOnly]);
 
 	const featuredClan = useMemo(() => {
 		const pool = stageClans.length ? stageClans : clans;
@@ -87,17 +77,19 @@ export default function DiscoverPage() {
 		if (committedQuery.trim().length >= 2) {
 			return t('heading.search', { count: filteredClans.length, query: committedQuery.trim() });
 		}
-		if (selectedCategory) {
-			const category = CATEGORY_SHORTCUTS.find((item) => item.id === selectedCategory);
+		if (selectedHashtags.length > 0) {
+			const tagsLabel = selectedHashtags
+				.map((tag) => `#${t(`communitySettings.hashtags.items.${tag}`, { ns: 'onBoardingClan', defaultValue: tag })}`)
+				.join(', ');
 			return t('heading.category', {
 				count: filteredClans.length,
-				category: category ? t(`categories.${category.id}`) : selectedCategory
+				category: tagsLabel
 			});
 		}
 		return t('heading.default');
-	}, [committedQuery, filteredClans.length, selectedCategory, t]);
+	}, [committedQuery, filteredClans.length, selectedHashtags, t]);
 
-	const activeFilterCount = Number(Boolean(selectedCategory)) + Number(verifiedOnly);
+	const activeFilterCount = selectedHashtags.length + Number(verifiedOnly);
 
 	useEffect(() => {
 		document.title = `${t('title')} | Mezon`;
@@ -111,7 +103,7 @@ export default function DiscoverPage() {
 	}, [committedQuery, filteredClans.length]);
 
 	useEffect(() => {
-		const shouldNoIndex = committedQuery.trim().length >= 2 || Boolean(selectedCategory) || verifiedOnly;
+		const shouldNoIndex = committedQuery.trim().length >= 2 || selectedHashtags.length > 0 || verifiedOnly;
 		let robots = document.querySelector('meta[name="robots"]');
 		if (!robots) {
 			robots = document.createElement('meta');
@@ -119,17 +111,26 @@ export default function DiscoverPage() {
 			document.head.appendChild(robots);
 		}
 		robots.setAttribute('content', shouldNoIndex ? 'noindex,follow' : 'index,follow');
-	}, [committedQuery, selectedCategory, verifiedOnly]);
+	}, [committedQuery, selectedHashtags, verifiedOnly]);
 
 	useEffect(() => {
 		if (isBrowsing) return;
 		document.getElementById('explore-communities')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-	}, [committedQuery, selectedCategory, isBrowsing]);
+	}, [committedQuery, selectedHashtags, isBrowsing]);
 
-	const onCategorySelect = (categoryId: string) => {
-		handleCategorySelect(categoryId);
-		trackDiscoverEvent('clan_category_click', { category: categoryId });
-		trackDiscoverEvent('clan_filter_apply', { category: categoryId, verified: verifiedOnly });
+	const onHashtagSelect = (tag: string) => {
+		const cleanTag = tag.trim().replace(/^#/, '');
+		const nextHashtags = selectedHashtags.some((t) => t.toLowerCase() === cleanTag.toLowerCase())
+			? selectedHashtags.filter((t) => t.toLowerCase() !== cleanTag.toLowerCase())
+			: [...selectedHashtags, cleanTag];
+
+		handleToggleHashtag(tag);
+		trackDiscoverEvent('clan_category_click', { category: cleanTag, hashtag: cleanTag });
+		trackDiscoverEvent('clan_filter_apply', {
+			category: nextHashtags.join(','),
+			hashtags: nextHashtags,
+			verified: verifiedOnly
+		});
 	};
 
 	const handlePageChange = (page: number) => {
@@ -144,7 +145,8 @@ export default function DiscoverPage() {
 			position: meta.position,
 			clan_id: clan.clan_id,
 			query: committedQuery,
-			category: selectedCategory,
+			category: selectedHashtags.join(','),
+			hashtags: selectedHashtags.join(','),
 			sort,
 			verified: verifiedOnly
 		});
@@ -161,7 +163,7 @@ export default function DiscoverPage() {
 					onSearch={handleSearch}
 					onSelect={(clan) => handleCardSelect(clan, { section: 'stage', position: 0 })}
 				>
-					<CategoryChips selectedCategory={selectedCategory} onSelect={onCategorySelect} variant="stage" />
+					<CategoryChips selectedHashtags={selectedHashtags} onSelect={onHashtagSelect} variant="stage" />
 				</StageHero>
 
 				{isBrowsing ? <ClanOrbit clans={orbitClans} onSelect={handleCardSelect} /> : null}
@@ -209,11 +211,11 @@ export default function DiscoverPage() {
 					) : (
 						<EmptyDiscoverState
 							query={committedQuery}
-							hasFilters={Boolean(selectedCategory || verifiedOnly)}
+							hasFilters={Boolean(selectedHashtags.length > 0 || verifiedOnly)}
 							onClearSearch={() => handleSearch('')}
 							onClearFilters={clearFilters}
-							selectedCategory={selectedCategory}
-							onCategorySelect={onCategorySelect}
+							selectedHashtags={selectedHashtags}
+							onHashtagSelect={onHashtagSelect}
 						/>
 					)}
 				</section>
@@ -231,9 +233,9 @@ export default function DiscoverPage() {
 			<FilterSheet
 				open={filtersOpen}
 				onClose={() => setFiltersOpen(false)}
-				selectedCategory={selectedCategory}
+				selectedHashtags={selectedHashtags}
 				verifiedOnly={verifiedOnly}
-				onCategorySelect={onCategorySelect}
+				onHashtagToggle={onHashtagSelect}
 				onVerifiedOnly={handleVerifiedOnly}
 				onReset={clearFilters}
 				resultCount={filteredClans.length}

@@ -173,7 +173,17 @@
 			"title": "Quyền hạn kênh",
 			"description": "Sử dụng quyền hạn để tùy chỉnh ai có thể làm gì trong kênh này.",
 			"syncedWithCategory": "Quyền hạn được đồng bộ với danh mục:"
-		}
+		},
+		"searchMembers": "Tìm kiếm thành viên",
+		"noMembersFound": "Không tìm thấy thành viên nào",
+		"removeMember": "Xóa thành viên khỏi kênh",
+		"loading": "Đang tải...",
+		"loadPermissions": "Tải quyền / Thử lại",
+		"choiceLegend": "× Từ chối   / Kế thừa   ✓ Cho phép",
+		"saveBeforeSwitch": "Lưu hoặc đặt lại thay đổi trước khi chọn vai trò hay thành viên khác.",
+		"deny": "Từ chối",
+		"inherit": "Kế thừa từ vai trò và danh mục",
+		"allow": "Cho phép"
 	},
 	"quickAction": {
 		"title": "Lệnh nhanh",

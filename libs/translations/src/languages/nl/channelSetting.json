@@ -173,7 +173,17 @@
 			"title": "Kanaalrechten",
 			"description": "Gebruik rechten om aan te passen wie wat kan doen in dit kanaal.",
 			"syncedWithCategory": "Rechten gesynchroniseerd met categorie:"
-		}
+		},
+		"searchMembers": "Zoek op leden",
+		"noMembersFound": "Geen leden gevonden",
+		"removeMember": "Lid uit kanaal verwijderen",
+		"loading": "Laden...",
+		"loadPermissions": "Machtigingen laden / Opnieuw proberen",
+		"choiceLegend": "× Weigeren   / Overnemen   ✓ Toestaan",
+		"saveBeforeSwitch": "Sla je wijzigingen op of herstel ze voordat je een andere rol of een ander lid selecteert.",
+		"deny": "Weigeren",
+		"inherit": "Overnemen van rollen en categorie",
+		"allow": "Toestaan"
 	},
 	"quickAction": {
 		"title": "Snelmenu",

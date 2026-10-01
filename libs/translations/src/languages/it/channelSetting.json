@@ -173,7 +173,17 @@
 			"title": "Permessi del canale",
 			"description": "Usa i permessi per personalizzare chi può fare cosa in questo canale.",
 			"syncedWithCategory": "Permessi sincronizzati con la categoria:"
-		}
+		},
+		"searchMembers": "Cerca membri",
+		"noMembersFound": "Nessun membro trovato",
+		"removeMember": "Rimuovi membro dal canale",
+		"loading": "Caricamento...",
+		"loadPermissions": "Carica permessi / Riprova",
+		"choiceLegend": "× Nega   / Eredita   ✓ Consenti",
+		"saveBeforeSwitch": "Salva o reimposta le modifiche prima di selezionare un altro ruolo o membro.",
+		"deny": "Nega",
+		"inherit": "Eredita da ruoli e categoria",
+		"allow": "Consenti"
 	},
 	"quickAction": {
 		"title": "Comando rapido",

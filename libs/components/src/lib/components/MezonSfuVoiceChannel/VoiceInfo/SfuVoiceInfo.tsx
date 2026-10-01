@@ -1,6 +1,7 @@
-import { useAppNavigation, useAuth } from '@mezon/core';
+import { useAppNavigation } from '@mezon/core';
 import {
 	selectNoiseSuppressionEnabled,
+	selectNoiseSuppressionReady,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
@@ -19,7 +20,6 @@ import { ButtonCopy } from '../../../components';
 
 const SfuVoiceInfo = React.memo(() => {
 	const { t } = useTranslation('channelVoice');
-	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 	const { toChannelPage, navigate } = useAppNavigation();
 
@@ -42,9 +42,6 @@ const SfuVoiceInfo = React.memo(() => {
 		}
 		if (currentVoiceInfo) {
 			dispatch(voiceActions.resetVoiceControl());
-			if (userProfile?.user?.id) {
-				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: currentVoiceInfo.clanId }));
-			}
 		}
 	};
 
@@ -55,6 +52,8 @@ const SfuVoiceInfo = React.memo(() => {
 	const showMicrophone = useSelector(selectShowMicrophone);
 
 	const { hasCameraAccess, hasMicrophoneAccess, microphonePermissionState, cameraPermissionState } = useMediaPermissions();
+	const microphoneWarning = microphonePermissionState === 'denied' || hasMicrophoneAccess === false;
+	const cameraWarning = cameraPermissionState === 'denied' || hasCameraAccess === false;
 	const handleToggleShareScreen = useCallback(() => {
 		const btnControl = document.getElementById('btn-meet-screen');
 		if (btnControl) {
@@ -133,7 +132,7 @@ const SfuVoiceInfo = React.memo(() => {
 						onPointerCancel={() => setPushToTalk(false)}
 						onLostPointerCapture={() => setPushToTalk(false)}
 						icon={<Icons.InPttCall className="w-5 h-5" />}
-						showWarning={microphonePermissionState === 'denied' || hasMicrophoneAccess === false}
+						showWarning={microphoneWarning}
 					/>
 				)}
 
@@ -141,21 +140,27 @@ const SfuVoiceInfo = React.memo(() => {
 					<ButtonControlVoice
 						overlay={
 							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">
-								{t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
+								{microphoneWarning
+									? t('mediaPermission.needed.microphone')
+									: t(showMicrophone ? 'turnOffMicrophone' : 'turnOnMicrophone')}
 							</span>
 						}
 						onClick={handleToggleOpenMicro}
 						icon={showMicrophone ? <Icons.VoiceMicIcon className="w-5 h-5" /> : <Icons.VoiceMicDisabledIcon className="w-5 h-5" />}
-						showWarning={microphonePermissionState === 'denied' || hasMicrophoneAccess === false}
+						showWarning={microphoneWarning}
 					/>
 				)}
 
 				{!isAudience && (
 					<ButtonControlVoice
-						overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t(showCamera ? 'turnOffCamera' : 'turnOnCamera')}</span>}
+						overlay={
+							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">
+								{t(cameraWarning ? 'mediaPermission.needed.camera' : showCamera ? 'turnOffCamera' : 'turnOnCamera')}
+							</span>
+						}
 						onClick={handleToggleShareCamera}
 						icon={showCamera ? <Icons.VoiceCameraIcon className="w-6 h-6" /> : <Icons.VoiceCameraDisabledIcon className="w-6 h-6" />}
-						showWarning={cameraPermissionState === 'denied' || hasCameraAccess === false}
+						showWarning={cameraWarning}
 					/>
 				)}
 
@@ -191,6 +196,7 @@ interface ButtonControlVoiceProps {
 	active?: boolean;
 	icon: ReactNode;
 	showWarning?: boolean;
+	disabled?: boolean;
 }
 
 const TOOLTIP_OVERLAY_STYLE = { background: 'none', boxShadow: 'none' };
@@ -206,7 +212,8 @@ const ButtonControlVoice = memo(
 		danger = false,
 		active = false,
 		icon,
-		showWarning = false
+		showWarning = false,
+		disabled = false
 	}: ButtonControlVoiceProps) => {
 		return (
 			<div className="flex-1 relative">
@@ -222,6 +229,7 @@ const ButtonControlVoice = memo(
 						className={`flex h-9 w-full justify-center items-center ${
 							danger ? 'bg-[#da373c]' : active ? 'bg-green-600' : 'bg-buttonSecondary hover:bg-buttonSecondaryHover'
 						} p-[6px] rounded-md`}
+						disabled={disabled}
 						onClick={onClick}
 						onPointerDown={onPointerDown}
 						onPointerUp={onPointerUp}
@@ -246,33 +254,32 @@ const ButtonNoiseControl = memo(() => {
 	const dispatch = useAppDispatch();
 
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
+	const noiseSuppressionReady = useSelector(selectNoiseSuppressionReady);
+	const preparing = noiseSuppressionEnabled && !noiseSuppressionReady;
 	const toggleNoiseSuppression = useCallback(() => {
 		dispatch(voiceActions.setNoiseSuppressionEnabled(!noiseSuppressionEnabled));
-	}, [dispatch, noiseSuppressionEnabled]);
-	if (!noiseSuppressionEnabled) {
-		return (
-			<button
-				onClick={toggleNoiseSuppression}
-				className="flex items-center rounded-sm bg-item-theme-hover text-red-500 gap-2 p-[2px] text-sm bg-transparent bg-item-theme-hover"
-			>
-				<Icons.NoiseSupressionIcon className={`w-5 h-5`} disabled />
-			</button>
-		);
-	}
-
+	}, [dispatch, noiseSuppressionEnabled, noiseSuppressionReady]);
 	return (
 		<Tooltip
 			placement="top"
-			overlay="Noise Suppression"
+			overlay={preparing ? 'Applying noise suppression…' : 'Noise Suppression'}
 			overlayInnerStyle={TOOLTIP_OVERLAY_STYLE}
 			overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 			destroyTooltipOnHide
 		>
 			<button
 				onClick={toggleNoiseSuppression}
+				aria-label={
+					preparing ? 'Preparing noise suppression' : noiseSuppressionEnabled ? 'Turn off noise suppression' : 'Turn on noise suppression'
+				}
+				aria-busy={preparing}
+				aria-pressed={noiseSuppressionEnabled && noiseSuppressionReady}
 				className="flex items-center rounded-sm bg-bgSecondary bg-item-theme-hover text-theme-primary gap-2 p-[2px] text-sm bg-transparent bg-item-theme-hover"
 			>
-				<Icons.NoiseSupressionIcon className={`w-5 h-5 text-theme-primary-active`} />
+				<Icons.NoiseSupressionIcon
+					className={`w-5 h-5 ${noiseSuppressionEnabled && noiseSuppressionReady ? 'text-theme-primary-active' : 'text-red-500'}`}
+					disabled={!noiseSuppressionEnabled}
+				/>
 			</button>
 		</Tooltip>
 	);

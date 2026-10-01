@@ -1,6 +1,6 @@
 {
   "name": "mezon",
-  "version": "1.4.74",
+  "version": "2.0.0",
   "license": "MIT",
   "description": "Mezon application",
   "repository": "https://github.com/mezonai/mezon",
@@ -63,10 +63,11 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
-    "mezon-js": "2.16.1",
-    "mezon-js-protobuf": "1.10.67",
+    "mezon-js": "2.16.5",
+    "mezon-js-protobuf": "1.10.70",
     "mmn-client-js": "1.0.16",
     "mp4box": "^2.3.0",
+    "onnxruntime-web": "1.20.1",
     "rc-dropdown": "^4.2.1",
     "rc-tooltip": "^6.4.0",
     "react": "18.3.1",
@@ -214,5 +215,5 @@
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "author": "Mezon App <hello@mezon.vn>",
-  "desktopVersion": "2.1.1"
+  "desktopVersion": "2.1.7"
 }

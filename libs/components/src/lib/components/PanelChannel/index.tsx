@@ -347,7 +347,11 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		setIsShowPanelChannel(false);
 	}, []);
 
-	const { panelRef, positionTop } = usePanelPosition(coords, handleClosePanel, rootRef);
+	const menuOpenMute = useRef(false);
+	const menuOpenNoti = useRef(false);
+	const shouldKeepPanelOpen = useCallback(() => menuOpenMute.current || menuOpenNoti.current, []);
+
+	const { panelRef, positionTop } = usePanelPosition(coords, handleClosePanel, rootRef, shouldKeepPanelOpen);
 
 	const handleOpenCreateChannelModal = () => {
 		dispatch(
@@ -370,9 +374,6 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		channel &&
 		channel.type !== undefined &&
 		(channel.type === typeChannel.text || channel.type === typeChannel.thread || (isThread && channel.parent_id && channel.parent_id !== '0'));
-
-	const menuOpenMute = useRef(false);
-	const menuOpenNoti = useRef(false);
 
 	const menuMute = useMemo(() => {
 		const menuItems = [

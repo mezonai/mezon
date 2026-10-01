@@ -94,7 +94,21 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 		}
 		handleCancelEdit();
 		closeModal();
-	}, [isRemoveAttachmentNoContent, attachmentData, mess, editSendMessage, handleDeleteMessage, handleCancelEdit, closeModal]);
+	}, [
+		isRemoveAttachmentNoContent,
+		handleCancelEdit,
+		closeModal,
+		attachmentData,
+		mess?.attachments,
+		mess.topic_id,
+		mess.content,
+		mess.id,
+		mess.mentions,
+		isTopic,
+		currentTopicId,
+		editSendMessage,
+		handleDeleteMessage
+	]);
 
 	const handleEnter = async (e: React.KeyboardEvent<HTMLDivElement>) => {
 		if (e.key === 'Enter') {
@@ -139,7 +153,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 								: t('deleteMessageModal.deleteMessageDescription')}
 						</p>
 					</div>
-					<div className="w-full flex flex-wrap items-start p-4 max-w-[720px] max-h-[50vh] overflow-y-auto overflow-x-hidden bg-theme-secondary pointer-events-none break-words break-all thread-scroll whitespace-pre-wrap [&_p]:!whitespace-normal [&_span]:!whitespace-normal [&_a]:!whitespace-normal [&_div]:!whitespace-normal [&_p]:break-words [&_span]:break-words [&_a]:break-words [&_code]:break-all [&_.attachment-actions]:!hidden [&_button]:!hidden [&_img]:!object-contain [&_img]:max-w-full">
+					<div className="w-full flex flex-wrap items-start p-4 max-w-[720px] max-h-[50vh] overflow-y-auto overflow-x-hidden bg-theme-secondary pointer-events-none break-words break-all thread-scroll whitespace-pre-wrap [&>.message-list-item]:w-full [&_p]:!whitespace-normal [&_span]:!whitespace-normal [&_a]:!whitespace-normal [&_div]:!whitespace-normal [&_p]:break-words [&_span]:break-words [&_a]:break-words [&_code]:break-all [&_.attachment-actions]:!hidden [&_button]:!hidden [&_img]:!object-contain [&_img]:max-w-full">
 						<ColorRoleProvider>
 							{isMessageSystem ? (
 								<MessageWithSystem message={mess as IMessageWithUser} isTopic={!!isTopic} />
@@ -156,6 +170,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 									isShowFull={true}
 									user={currentClanUser}
 									isSearchMessage={false}
+									isPreview={isRemoveAttachmentAction}
 								/>
 							)}
 						</ColorRoleProvider>

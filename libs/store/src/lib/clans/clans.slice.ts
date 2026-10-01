@@ -869,6 +869,7 @@ export const clansSlice = createSlice({
 				is_community?: boolean;
 				community_banner?: string;
 				short_url?: string;
+				hashtags?: string;
 			};
 
 			clansAdapter.updateOne(state, {
@@ -888,7 +889,7 @@ export const clansSlice = createSlice({
 					is_community: rawData.is_community ?? currentClanData?.is_community,
 					community_banner: rawData.community_banner ?? currentClanData?.community_banner,
 					short_url: rawData.short_url ?? currentClanData?.short_url,
-					hashtags: dataUpdate.hashtags ?? currentClanData?.hashtags
+					hashtags: rawData.hashtags ?? currentClanData?.hashtags
 				}
 			});
 		},

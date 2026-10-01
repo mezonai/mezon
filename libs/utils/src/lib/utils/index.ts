@@ -17,16 +17,13 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { CURRENCY, ID_MENTION_HERE, INVITE_URL_REGEX } from '../constant';
+import { reportMediaAccessGranted } from '../hooks/mediaPermissions';
 import type {
 	ChannelMembersEntity,
 	IAttachmentEntity,
 	IChannel,
 	IEmojiOnMessage,
 	IExtendedMessage,
-	IHashtagOnMessage,
-	ILinkOnMessage,
-	ILinkVoiceRoomOnMessage,
-	IMarkdownOnMessage,
 	IMentionOnMessage,
 	IMessageSendPayload,
 	IMessageWithUser,
@@ -40,7 +37,7 @@ import type {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus, TypeSearch } from '../types';
+import { EBacktickType, EMimeTypes, EUserStatus, TypeSearch } from '../types';
 import { getDateLocale } from './dateI18n';
 import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
@@ -528,78 +525,6 @@ export const getRoleList = (rolesInClan: ApiRole[]) => {
 	}));
 };
 
-type ElementToken =
-	| (IMentionOnMessage & { kindOf: ETokenMessage.MENTIONS })
-	| (IHashtagOnMessage & { kindOf: ETokenMessage.HASHTAGS })
-	| (IEmojiOnMessage & { kindOf: ETokenMessage.EMOJIS })
-	| (ILinkOnMessage & { kindOf: ETokenMessage.LINKS })
-	| (IMarkdownOnMessage & { kindOf: ETokenMessage.MARKDOWNS })
-	| (ILinkVoiceRoomOnMessage & { kindOf: ETokenMessage.VOICE_LINKS });
-
-export const createFormattedString = (data: IExtendedMessage): string => {
-	const { t = '' } = data;
-	const elements: ElementToken[] = [];
-	(Object.keys(data) as (keyof IExtendedMessage)[]).forEach((key) => {
-		const itemArray = data[key];
-
-		if (Array.isArray(itemArray)) {
-			itemArray.forEach((item) => {
-				if (item) {
-					const typedItem: ElementToken = { ...(item as object), kindOf: key as any }; // Casting key as any
-					elements.push(typedItem);
-				}
-			});
-		}
-	});
-
-	elements.sort((a, b) => {
-		const startA = a.s ?? 0;
-		const startB = b.s ?? 0;
-		return startA - startB;
-	});
-	let result = '';
-	let lastIndex = 0;
-
-	elements.forEach((element) => {
-		const startindex = element.s ?? lastIndex;
-		const endindex = element.e ?? startindex;
-		result += t.slice(lastIndex, startindex);
-		const contentInElement = t?.substring(startindex, endindex);
-		switch (element.kindOf) {
-			case ETokenMessage.MENTIONS: {
-				if (element.user_id) {
-					result += `@[${contentInElement.slice(1)}](${element.user_id})`;
-				} else if (element.role_id) {
-					result += `@[${contentInElement.slice(1)}](${element.role_id})`;
-				}
-				break;
-			}
-			case ETokenMessage.HASHTAGS:
-				result += `#[${contentInElement.slice(1)}](${element.channelId})`;
-				break;
-			case ETokenMessage.EMOJIS:
-				result += `::[${contentInElement}](${element.emojiid})`;
-				break;
-			case ETokenMessage.LINKS:
-				result += `${contentInElement}`;
-				break;
-			case ETokenMessage.MARKDOWNS:
-				result += `${contentInElement}`;
-				break;
-			case ETokenMessage.VOICE_LINKS:
-				result += `${contentInElement}`;
-				break;
-			default:
-				break;
-		}
-		lastIndex = endindex;
-	});
-
-	result += t.slice(lastIndex);
-
-	return result;
-};
-
 export function addMention(obj: IMessageSendPayload | string, mentionValue: IMentionOnMessage[]): IExtendedMessage {
 	let updatedObj: IExtendedMessage;
 
@@ -1002,10 +927,12 @@ export function copyChannelLink(clanId: string, channelId: string) {
 }
 
 export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
+	const device = mediaType === 'audio' ? 'microphone' : 'camera';
 	try {
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 			const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
 			stream.getTracks().forEach((track) => track.stop());
+			reportMediaAccessGranted(device);
 			return 'granted';
 		}
 		return 'denied';
@@ -1017,41 +944,6 @@ export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Prom
 		} else {
 			return 'denied';
 		}
-	}
-};
-
-export const checkMediaPermission = async (mediaType: 'audio' | 'video'): Promise<'granted' | 'denied' | 'prompt' | null> => {
-	try {
-		if (typeof navigator !== 'undefined' && navigator.permissions && navigator.permissions.query) {
-			try {
-				const permissionName = mediaType === 'audio' ? ('microphone' as PermissionName) : ('camera' as PermissionName);
-				const permissionStatus = await navigator.permissions.query({ name: permissionName });
-
-				return permissionStatus.state as 'granted' | 'denied' | 'prompt';
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
-		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({ [mediaType]: true });
-				stream.getTracks().forEach((track) => track.stop());
-				return 'granted';
-			} catch (error: any) {
-				if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-					return 'denied';
-				} else if (error.name === 'NotFoundError') {
-					return null;
-				} else {
-					return 'prompt';
-				}
-			}
-		}
-
-		return null;
-	} catch (error) {
-		return null;
 	}
 };
 

@@ -686,6 +686,9 @@ export const directSlice = createSlice({
 		},
 		setDmGroupCurrentId: (state, action: PayloadAction<string | null>) => {
 			state.currentDirectMessageId = action.payload;
+			if (action.payload && state.buzzStateDirect[action.payload]) {
+				state.buzzStateDirect[action.payload] = null;
+			}
 		},
 		setDmGroupCurrentType: (state, action: PayloadAction<number>) => {
 			state.currentDirectMessageType = action.payload;
