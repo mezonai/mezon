@@ -46,11 +46,38 @@ export const blobToFile = (blob: Blob): File => {
 	return new File([blob], `audio-${timestamp}.ogg`, { type: 'audio/mp3' });
 };
 
-export type MezonAudioCaptureOptions = MediaTrackConstraints & { voiceIsolation?: ConstrainBoolean };
+export type MezonAudioCaptureOptions = MediaTrackConstraints & {
+	voiceIsolation?: ConstrainBoolean;
+	googEchoCancellation?: boolean;
+	googAutoGainControl?: boolean;
+	googNoiseSuppression?: boolean;
+	googHighpassFilter?: boolean;
+};
 
-export const getNoiseSuppressionAudioCaptureOptions = (enabled: boolean): MezonAudioCaptureOptions => ({
+// Keep the current UI toggle, but always use WebRTC's built-in audio processing for capture.
+export const getNoiseSuppressionAudioCaptureOptions = (_enabled: boolean): MezonAudioCaptureOptions => ({
 	echoCancellation: true,
-	noiseSuppression: enabled,
+	noiseSuppression: true,
 	autoGainControl: true,
-	voiceIsolation: enabled
+	voiceIsolation: true,
+	googEchoCancellation: true,
+	googAutoGainControl: true,
+	googNoiseSuppression: true,
+	googHighpassFilter: true,
+	sampleRate: 48000,
+	channelCount: 1
+});
+
+export type MezonNsAudioCaptureOptions = MezonAudioCaptureOptions & { googNoiseSuppression?: boolean; googAutoGainControl?: boolean };
+
+// Mezon-NS replaces native noise suppression; keep browser AGC so mic loudness
+// remains consistent when the user toggles the filter.
+export const getMezonNsAudioCaptureOptions = (): MezonNsAudioCaptureOptions => ({
+	channelCount: 1,
+	echoCancellation: { exact: true },
+	noiseSuppression: { exact: false },
+	voiceIsolation: { exact: false },
+	autoGainControl: true,
+	googNoiseSuppression: false,
+	googAutoGainControl: true
 });

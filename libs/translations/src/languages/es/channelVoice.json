@@ -35,13 +35,91 @@
 		},
 		"confirm": "Confirmar"
 	},
-	"permission": {
-		"cameraTitle": "Conceder permiso de cámara",
-		"cameraBody": "No tenemos acceso a tu cámara. Por favor, habilita el acceso a la cámara en los ajustes del sistema.",
-		"microphoneTitle": "Conceder permiso de micrófono",
-		"microphoneBody": "No tenemos acceso a tu micrófono. Por favor, habilita el acceso al micrófono en los ajustes del sistema.",
-		"cancel": "Cancelar",
-		"deviceSettings": "Ajustes del dispositivo"
+	"mediaPermission": {
+		"allow": "Permitir",
+		"notNow": "Ahora no",
+		"close": "Cerrar",
+		"needed": {
+			"microphone": "Se necesita acceso al micrófono",
+			"camera": "Se necesita acceso a la cámara"
+		},
+		"requestTitle": {
+			"microphone": "Permitir que Mezon use tu micrófono",
+			"camera": "Permitir que Mezon use tu cámara"
+		},
+		"requestBody": {
+			"microphone": "Los demás no podrán oírte hasta que Mezon pueda usar tu micrófono.",
+			"camera": "Los demás no podrán verte hasta que Mezon pueda usar tu cámara."
+		},
+		"requestHint": "Elige Permitir cuando tu navegador lo pregunte.",
+		"blockedTitle": {
+			"microphone": "Mezon tiene bloqueado el uso de tu micrófono",
+			"camera": "Mezon tiene bloqueado el uso de tu cámara"
+		},
+		"systemBlockedTitle": {
+			"microphone": "Tu navegador tiene bloqueado el uso del micrófono",
+			"camera": "Tu navegador tiene bloqueado el uso de la cámara"
+		},
+		"unavailable": {
+			"microphone": "No se pudo iniciar el micrófono. Comprueba que esté conectado y que ninguna otra app lo esté usando.",
+			"camera": "No se pudo iniciar la cámara. Comprueba que esté conectada y que ninguna otra app la esté usando."
+		},
+		"steps": {
+			"chromium": {
+				"open": "Haz clic en el icono de información de la página <icon/> en la barra de direcciones del navegador",
+				"enable": {
+					"microphone": "Activar micrófono",
+					"camera": "Activar cámara"
+				}
+			},
+			"firefox": {
+				"open": {
+					"microphone": "Haz clic en el icono de micrófono bloqueado en la barra de direcciones del navegador",
+					"camera": "Haz clic en el icono de cámara bloqueada en la barra de direcciones del navegador"
+				},
+				"enable": {
+					"microphone": "Quita el bloqueo del micrófono y vuelve a activarlo",
+					"camera": "Quita el bloqueo de la cámara y vuelve a activarla"
+				}
+			},
+			"safari": {
+				"open": "En la barra de menús, elige Safari → Ajustes para este sitio web",
+				"enable": {
+					"microphone": "Ajusta Micrófono en Permitir",
+					"camera": "Ajusta Cámara en Permitir"
+				}
+			},
+			"mac": {
+				"open": {
+					"microphone": "Abre Ajustes del Sistema → Privacidad y seguridad → Micrófono",
+					"camera": "Abre Ajustes del Sistema → Privacidad y seguridad → Cámara"
+				},
+				"enable": {
+					"microphone": "Activa tu navegador y vuelve a abrirlo si te lo pide",
+					"camera": "Activa tu navegador y vuelve a abrirlo si te lo pide"
+				}
+			},
+			"windows": {
+				"open": {
+					"microphone": "Abre Configuración → Privacidad y seguridad → Micrófono",
+					"camera": "Abre Configuración → Privacidad y seguridad → Cámara"
+				},
+				"enable": {
+					"microphone": "Activa «Acceso al micrófono» y «Permitir que las aplicaciones de escritorio accedan al micrófono»",
+					"camera": "Activa «Acceso a la cámara» y «Permitir que las aplicaciones de escritorio accedan a la cámara»"
+				}
+			},
+			"other": {
+				"open": {
+					"microphone": "Abre la configuración de privacidad de tu dispositivo",
+					"camera": "Abre la configuración de privacidad de tu dispositivo"
+				},
+				"enable": {
+					"microphone": "Permite que tu navegador use el micrófono",
+					"camera": "Permite que tu navegador use la cámara"
+				}
+			}
+		}
 	},
 	"device": {
 		"inputDevice": "Dispositivo de entrada",
@@ -53,15 +131,18 @@
 		"connectionConnected": "Conexión establecida",
 		"connectionDisconnected": "Conexión desconectada",
 		"microphonePermissionRequired": "Se requiere permiso del micrófono",
-		"cameraPermissionRequired": "Se requiere permiso de cámara",
 		"recipientDidNotAnswer": "El destinatario no contestó la llamada",
-		"aloneTimeoutDisconnected": "Fuiste desconectado del canal de voz porque estuviste solo en él demasiado tiempo."
+		"aloneTimeoutDisconnected": "Fuiste desconectado del canal de voz porque estuviste solo en él demasiado tiempo.",
+		"duplicateSessionDisconnected": "Te uniste al canal de voz en otro dispositivo, por lo que se desconectó esta sesión.",
+		"disconnectedRejoin": "Se te desconectó del canal de voz."
 	},
 	"usernameScreen": "Pantalla de {{username}}",
 	"recording": {
 		"start": "Grabar llamada",
 		"stop": "Detener grabación",
 		"badge": "REC",
+		"by": "{{name}} está grabando la llamada",
+		"byMany": "{{name}} y {{count}} más están grabando la llamada",
 		"memoryLimitWarning": "Este navegador no puede escribir directamente en disco, así que la grabación se guarda en memoria y se detiene automáticamente tras {{minutes}} minutos.",
 		"frozenWarning": "El vídeo se congeló mientras la pestaña estaba oculta. Mantén esta pestaña visible mientras grabas.",
 		"savedToDisk": "Grabación guardada en {{fileName}} ({{size}})",

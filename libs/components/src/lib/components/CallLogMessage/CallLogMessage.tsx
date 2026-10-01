@@ -2,6 +2,7 @@ import { useChatSending } from '@mezon/core';
 import {
 	audioCallActions,
 	EStateFriend,
+	getStore,
 	selectAllAccount,
 	selectAudioBusyTone,
 	selectAudioDialTone,
@@ -16,7 +17,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageCallLog, IMessageSendPayload } from '@mezon/utils';
-import { CallLog, IMessageTypeCallLog } from '@mezon/utils';
+import { CallLog, ensureMediaPermission, IMessageTypeCallLog } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
@@ -129,8 +130,10 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 		[sendMessage, sessionUser]
 	);
 
-	const handleStartCall = () => {
-		if (!isInCall) {
+	const handleStartCall = async () => {
+		const inCall = selectIsInCall(getStore().getState());
+		if (!inCall && !(await ensureMediaPermission('microphone', handleStartCall))) return;
+		if (!inCall) {
 			handleSend(
 				{
 					t: `Started ${callLog.isVideo ? 'video' : 'voice'} call`,

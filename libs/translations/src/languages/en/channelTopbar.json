@@ -32,6 +32,13 @@
 	"archivedThreads": "Archived Threads",
 	"loading": "Loading...",
 	"topic": "Topic",
+	"topics": "Topics",
+	"pinnedMessage": "Pinned message",
+	"latestPin": "Latest pin",
+	"poll": "Voting",
+	"pollDiscussion": "Voting",
+	"pollWithQuestion": "Poll: {{question}}",
+	"messageFrom": "Message from {{username}}: {{message}}",
 	"reactions": "React",
 	"invoice": "In voice",
 	"shareScreen": "Sharing screen",
@@ -103,7 +110,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Start date must be before or equal to end date"
+			"startDateBeforeEnd": "Start date must be before or equal to end date",
+			"dateOutOfRange": "Date must be between {{minDate}} and today"
 		},
 		"buttons": {
 			"clearAll": "Clear all",

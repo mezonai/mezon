@@ -173,7 +173,17 @@
 			"title": "チャンネル権限",
 			"description": "権限を使用して、このチャンネルで誰が何ができるかをカスタマイズします。",
 			"syncedWithCategory": "カテゴリと同期された権限:"
-		}
+		},
+		"searchMembers": "メンバーを検索",
+		"noMembersFound": "メンバーが見つかりません",
+		"removeMember": "チャンネルからメンバーを削除",
+		"loading": "読み込み中...",
+		"loadPermissions": "権限を読み込む / 再試行",
+		"choiceLegend": "× 拒否   / 継承   ✓ 許可",
+		"saveBeforeSwitch": "別のロールやメンバーを選択する前に、変更を保存またはリセットしてください。",
+		"deny": "拒否",
+		"inherit": "ロールとカテゴリーから継承",
+		"allow": "許可"
 	},
 	"quickAction": {
 		"title": "クイックコマンド",

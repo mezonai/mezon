@@ -26,9 +26,9 @@ export const MicrophoneControl = ({
 }: MicrophoneControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
-
+	const label = showWarning ? t('mediaPermission.needed.microphone') : t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone');
 	const handleClick = async () => {
-		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
+		if (!enabled && (permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
 			await onPermissionRequest();
 			return;
 		}
@@ -37,14 +37,7 @@ export const MicrophoneControl = ({
 
 	return (
 		<div className="relative">
-			<button
-				id="btn-meet-micro"
-				type="button"
-				title={t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-				aria-label={t(enabled ? 'turnOffMicrophone' : 'turnOnMicrophone')}
-				className={SFU_CONTROL_BUTTON_CLASS}
-				onClick={handleClick}
-			>
+			<button id="btn-meet-micro" type="button" title={label} aria-label={label} className={SFU_CONTROL_BUTTON_CLASS} onClick={handleClick}>
 				{enabled ? (
 					<Icons.VoiceMicIcon className="h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5" scale={2.5} />
 				) : (

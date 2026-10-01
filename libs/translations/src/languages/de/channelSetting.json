@@ -173,7 +173,17 @@
 			"title": "Kanalberechtigungen",
 			"description": "Nutze Berechtigungen, um anzupassen, wer was in diesem Kanal tun darf.",
 			"syncedWithCategory": "Berechtigungen sind synchronisiert mit der Kategorie:"
-		}
+		},
+		"searchMembers": "Mitglieder suchen",
+		"noMembersFound": "Keine Mitglieder gefunden",
+		"removeMember": "Mitglied aus Kanal entfernen",
+		"loading": "Wird geladen...",
+		"loadPermissions": "Berechtigungen laden / Erneut versuchen",
+		"choiceLegend": "× Verweigern   / Erben   ✓ Erlauben",
+		"saveBeforeSwitch": "Speichere oder verwerfe deine Änderungen, bevor du eine andere Rolle oder ein anderes Mitglied auswählst.",
+		"deny": "Verweigern",
+		"inherit": "Von Rollen und Kategorie erben",
+		"allow": "Erlauben"
 	},
 	"quickAction": {
 		"title": "Schnellbefehl",

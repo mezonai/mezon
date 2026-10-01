@@ -1,4 +1,5 @@
 import { Icons } from '@mezon/ui';
+import { useTranslation } from 'react-i18next';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface PushToTalkControlProps {
@@ -10,7 +11,9 @@ interface PushToTalkControlProps {
 }
 
 export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrophoneAccess, onPermissionRequest }: PushToTalkControlProps) => {
+	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
+	const label = showWarning ? t('mediaPermission.needed.microphone') : 'Push to talk';
 
 	const handlePointerDown = async (event: React.PointerEvent<HTMLButtonElement>) => {
 		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
@@ -26,8 +29,8 @@ export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrop
 			<button
 				id="btn-meet-push-to-talk"
 				type="button"
-				title="Push to talk"
-				aria-label="Push to talk"
+				title={label}
+				aria-label={label}
 				aria-pressed={active}
 				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-green-600' : ''}`}
 				onPointerDown={handlePointerDown}

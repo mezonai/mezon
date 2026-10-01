@@ -615,7 +615,7 @@ const ChannelRow = ({
 						<Icons.Hashtag />
 					))}
 
-				{isVoice && <Icons.Speaker />}
+				{isVoice && (privateChannel ? <Icons.SpeakerLocked /> : <Icons.Speaker />)}
 				{isStream && <Icons.Stream />}
 				{isApp && (privateChannel ? <Icons.PrivateAppChannelIcon className="w-5 h-5" /> : <Icons.AppChannelIcon className="w-5 h-5" />)}
 			</div>

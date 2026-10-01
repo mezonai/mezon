@@ -1,4 +1,12 @@
-import { EVoiceInteractEvent, channelAppActions, selectActiveApps, useAppDispatch } from '@mezon/store';
+import {
+	EVoiceInteractEvent,
+	RECORDING_INDICATOR_TTL_MS,
+	channelAppActions,
+	parseRecordingParams,
+	selectActiveApps,
+	useAppDispatch,
+	voiceActions
+} from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { VoiceInteractiveEvent } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -17,6 +25,7 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 	const senderTimeoutRef = useRef<number | null>(null);
 	const isShowingSenderRef = useRef(false);
 	const [currentSender, setCurrentSender] = useState<VoiceInteractiveEvent | null>(null);
+	const recordingTimersRef = useRef(new Map<string, number>());
 
 	const closeApp = (id: string) => {
 		dispatch(channelAppActions.closeActiveApps(id));
@@ -58,6 +67,36 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 		}, 2000);
 	}, []);
 
+	const handleRecordingSignal = useCallback(
+		(event: VoiceInteractiveEvent) => {
+			const isRecording = parseRecordingParams(event.params);
+			const userId = event.sender_id;
+			if (isRecording === undefined || !userId) return;
+			const timers = recordingTimersRef.current;
+			window.clearTimeout(timers.get(userId));
+			timers.delete(userId);
+			dispatch(voiceActions.setUserRecording({ userId, isRecording }));
+			if (!isRecording) return;
+			timers.set(
+				userId,
+				window.setTimeout(() => {
+					timers.delete(userId);
+					dispatch(voiceActions.setUserRecording({ userId, isRecording: false }));
+				}, RECORDING_INDICATOR_TTL_MS)
+			);
+		},
+		[dispatch]
+	);
+
+	useEffect(() => {
+		const timers = recordingTimersRef.current;
+		return () => {
+			timers.forEach((timer) => window.clearTimeout(timer));
+			timers.clear();
+			dispatch(voiceActions.clearRecordingUsers());
+		};
+	}, [channelId, dispatch]);
+
 	useEffect(() => {
 		let activeSocket: typeof clientRef.current;
 		let activeHandler: ((event: VoiceInteractiveEvent) => void) | undefined;
@@ -72,6 +111,10 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 
 			const handler = async (event: VoiceInteractiveEvent) => {
 				if (event.voice_channel_id !== channelId) return;
+				if (event.event_type === EVoiceInteractEvent.RECORDING) {
+					handleRecordingSignal(event);
+					return;
+				}
 				if (event.event_type === EVoiceInteractEvent.SENT_FLOWERS) {
 					playFlowerCelebrationSound();
 					playerRef.current?.play();
@@ -95,7 +138,7 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 				activeSocket.onvoiceinteractiveevent = () => undefined;
 			}
 		};
-	}, [clientRef, channelId, dispatch, playFlowerCelebrationSound, showNextSender]);
+	}, [clientRef, channelId, dispatch, handleRecordingSignal, playFlowerCelebrationSound, showNextSender]);
 
 	return { activeApps, closeApp, focusApp, currentSender, senderQueueRef, showNextSender, playerRef, senderTimeoutRef, isShowingSenderRef };
 }

@@ -1,6 +1,7 @@
 export * from './components/ChannelLink';
 export { ChannelList } from './components/ChannelList';
 export { default as ChannelTopbar } from './components/ChannelTopbar';
+export { default as ChannelTopicPinBanner } from './components/ChannelTopbar/TopBarComponents/ChannelTopicPinBanner';
 export { default as ThreadHeader } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/ThreadHeader';
 export { default as ThreadNameTextField } from './components/ChannelTopbar/TopBarComponents/Threads/CreateThread/ThreadNameTextField';
 export { default as TopicHeader } from './components/ChannelTopbar/TopBarComponents/TopicDiscussion/CreateTopicDiscussion/TopicHeader';
@@ -135,6 +136,7 @@ export * from './components/DmCall';
 export { DmCallManager } from './components/DmCall/DmCallManager';
 export { default as InternetStatusPopover } from './components/InternetStatusPopover';
 export { MediaChannel } from './components/MediaChannel';
+export { MediaPermissionPrompt } from './components/MediaPermissionPrompt';
 export { default as ModalLayout } from './components/Modal';
 export { default as ModalEditGroup } from './components/ModalEditGroup';
 export { OtpConfirm } from './components/OtpConfirm/index';

@@ -69,10 +69,10 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, ensureMediaPermission, generateE2eId } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEditGroupModal } from '../../hooks/useEditGroupModal';
@@ -88,6 +88,7 @@ import CanvasModal from './TopBarComponents/Canvas/CanvasModal';
 import FileModal from './TopBarComponents/FilesModal';
 import NotificationSetting from './TopBarComponents/NotificationSetting';
 import PinnedMessages from './TopBarComponents/PinnedMessages';
+
 import ThreadModal from './TopBarComponents/Threads/ThreadModal';
 
 export type ChannelTopbarProps = {
@@ -97,7 +98,7 @@ export type ChannelTopbarProps = {
 	isChannelPath?: boolean;
 };
 
-const ChannelTopbar = memo(() => {
+const ChannelTopbar = memo(({ children }: { children?: ReactNode }) => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const { setSubPanelActive } = useGifsStickersEmoji();
@@ -111,9 +112,10 @@ const ChannelTopbar = memo(() => {
 	return (
 		<div
 			onMouseDown={onMouseDownTopbar}
-			className={`max-sbm:z-20 flex h-heightTopBar min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
+			className={`h-heightTopBar max-sbm:z-20 flex min-w-0 w-full items-center justify-between flex-shrink ${closeMenu && 'fixed top-0 w-screen'} ${closeMenu && statusMenu ? 'left-[100vw]' : 'left-0'}`}
 		>
 			<TopBarChannelText />
+			{children}
 		</div>
 	);
 });
@@ -611,13 +613,16 @@ const DmTopbarTools = memo(() => {
 		[sendMessage]
 	);
 
-	const handleStartCall = (isVideoCall = false) => {
+	const handleStartCall = async (isVideoCall = false) => {
 		closeMenuOnMobile();
-		if (!isInCall) {
-			startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
-		} else {
+		if (isInCall) {
 			dispatch(toastActions.addToast({ message: t('toastMessages.youAreOnAnotherCall'), type: 'warning', autoClose: 3000 }));
+			return;
 		}
+		const start = () => {
+			if (!selectIsInCall(getStore().getState())) startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
+		};
+		if (await ensureMediaPermission('microphone', start)) start();
 	};
 
 	const startCallDM = (isVideoCall = false, channelId?: string, userId?: string) => {
@@ -706,6 +711,9 @@ const DmTopbarTools = memo(() => {
 					)}
 					<PinButton isDMView mode={mode} styleCss="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />
 					<GalleryButton />
+					<div className="hidden sbm:flex">
+						<FileButton />
+					</div>
 					{!isBlockUser && !isMe && <AddMemberToGroupDm currentDmGroup={currentDmGroup} />}
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
 						<button

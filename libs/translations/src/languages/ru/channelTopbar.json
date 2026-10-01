@@ -103,7 +103,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Дата начала должна быть ранней или равна дате окончания"
+			"startDateBeforeEnd": "Дата начала должна быть ранней или равна дате окончания",
+			"dateOutOfRange": "Дата должна быть в диапазоне от {{minDate}} до сегодняшнего дня"
 		},
 		"buttons": {
 			"clearAll": "Очистить всё",

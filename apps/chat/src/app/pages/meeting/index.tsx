@@ -189,17 +189,17 @@ export default function PreJoinCalling() {
 			setError(null);
 			setAvatar(avatar as string);
 			setJoinRole(role);
-
+			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
 			await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
 					username: trimmed,
-					metadata: '',
+					metadata,
 					isGuest: !isUser as boolean
 				})
 			);
 		},
-		[dispatch, username, isUser, code, avatar]
+		[dispatch, username, isUser, code, avatar, getAvatar]
 	);
 
 	const handleRefreshToken = useCallback(async () => {

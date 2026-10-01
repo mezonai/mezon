@@ -32,6 +32,13 @@
 	"archivedThreads": "Chủ đề đã lưu trữ",
 	"loading": "Đang tải...",
 	"topic": "Chủ đề",
+	"topics": "Chủ đề",
+	"pinnedMessage": "Tin nhắn đã ghim",
+	"latestPin": "Tin ghim mới nhất",
+	"poll": "Cuộc bầu chọn",
+	"pollDiscussion": "Cuộc bầu chọn",
+	"pollWithQuestion": "Poll: {{question}}",
+	"messageFrom": "Message from {{username}}: {{message}}",
 	"invoice": "Trong kênh thoại",
 	"shareScreen": "Đang chia sẻ màn hình",
 	"reactions": "Biểu cảm",
@@ -103,7 +110,8 @@
 			"range": "{{startDate}} - {{endDate}}"
 		},
 		"validation": {
-			"startDateBeforeEnd": "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc"
+			"startDateBeforeEnd": "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+			"dateOutOfRange": "Ngày phải nằm trong khoảng từ {{minDate}} đến hôm nay"
 		},
 		"buttons": {
 			"clearAll": "Xóa tất cả",

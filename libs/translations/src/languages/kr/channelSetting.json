@@ -173,7 +173,17 @@
 			"title": "채널 권한",
 			"description": "권한을 사용하여 이 채널에서 누가 무엇을 할 수 있는지 사용자 정의합니다.",
 			"syncedWithCategory": "카테고리와 동기화된 권한:"
-		}
+		},
+		"searchMembers": "멤버 검색",
+		"noMembersFound": "멤버 찾지 못함",
+		"removeMember": "채널에서 멤버 제거",
+		"loading": "불러오는 중...",
+		"loadPermissions": "권한 불러오기 / 재시도",
+		"choiceLegend": "× 거부   / 상속   ✓ 허용",
+		"saveBeforeSwitch": "다른 역할이나 멤버를 선택하기 전에 변경 사항을 저장하거나 초기화하세요.",
+		"deny": "거부",
+		"inherit": "역할 및 카테고리에서 상속",
+		"allow": "허용"
 	},
 	"quickAction": {
 		"title": "빠른 명령",

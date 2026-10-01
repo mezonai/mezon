@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { openAppDeeplink } from '../../utils/deeplink';
 
 export default function InvitePage() {
 	const { t } = useTranslation('common');
@@ -66,11 +67,7 @@ export default function InvitePage() {
 		const result = await joinChannel();
 		handleBackNavigate();
 		if (!result) {
-			try {
-				window.location.href = `mezonapp://invite/${inviteIdParam}`;
-			} catch (e) {
-				console.error('log  => handleJoinChannel error', e);
-			}
+			openAppDeeplink(`invite/${inviteIdParam}`);
 			navigate(`/mezon`);
 			return;
 		}

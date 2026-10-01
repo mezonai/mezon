@@ -106,8 +106,11 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	};
 
 	const handleClickDM = useCallback(async () => {
+		if (buzzStateDM) {
+			dispatch(directActions.setBuzzStateDirect({ channelId: directMessage?.channel_id || id, buzzState: null }));
+		}
 		joinToChatAndNavigate(id, directMessage?.type as number);
-	}, [directMessage, id, currentDmGroupId]);
+	}, [directMessage, id, currentDmGroupId, buzzStateDM, dispatch]);
 
 	if (!directMessage) {
 		return null;
@@ -132,10 +135,6 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			/>
 			{buzzStateDM?.isReset ? (
 				<BuzzBadge
-					timestamp={buzzStateDM?.timestamp as number}
-					isReset={buzzStateDM?.isReset}
-					channelId={directMessage.channel_id as string}
-					senderId={buzzStateDM.senderId as string}
 					mode={directMessage.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
 				/>
 			) : null}

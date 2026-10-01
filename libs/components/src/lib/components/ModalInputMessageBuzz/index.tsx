@@ -10,12 +10,13 @@ import { useSelector } from 'react-redux';
 type ModalInputMessageBuzzProps = {
 	currentChannel: DirectEntity | null;
 	mode: number;
+	fromTopic?: boolean;
 	closeBuzzModal: () => void;
 };
 
-const ModalInputMessageBuzz = ({ currentChannel, mode, closeBuzzModal }: ModalInputMessageBuzzProps) => {
+const ModalInputMessageBuzz = ({ currentChannel, mode, fromTopic = false, closeBuzzModal }: ModalInputMessageBuzzProps) => {
 	const { t } = useTranslation('messageBuzz');
-	const { sendMessage } = useChatSending({ channelOrDirect: currentChannel || undefined, mode });
+	const { sendMessage } = useChatSending({ channelOrDirect: currentChannel || undefined, mode, fromTopic });
 	const [message, setMessage] = useState('');
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -31,8 +32,9 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, closeBuzzModal }: ModalIn
 	}, [closeBuzzModal]);
 
 	const focusChatInput = useCallback(() => {
-		const editor =
-			mode === ChannelStreamMode.STREAM_MODE_THREAD
+		const editor = fromTopic
+			? document.getElementById(GENERAL_INPUT_ID)
+			: mode === ChannelStreamMode.STREAM_MODE_THREAD
 				? document.querySelector(`[data-e2e="${generateE2eId('discussion.box.thread')}"]`)?.querySelector<HTMLElement>(`#${CHANNEL_INPUT_ID}`)
 				: document.getElementById(CHANNEL_INPUT_ID) || document.getElementById(GENERAL_INPUT_ID);
 		if (!editor) return;
@@ -50,7 +52,7 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, closeBuzzModal }: ModalIn
 				// ignore
 			}
 		}
-	}, [mode]);
+	}, [fromTopic, mode]);
 
 	const handleSendBuzzMsg = useCallback(() => {
 		const trimmedMessage = message.trim();

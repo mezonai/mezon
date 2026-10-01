@@ -9,8 +9,9 @@ type PermissionManageProps = {
 	channelPrivate: boolean;
 	setIsPrivateChannel: React.Dispatch<React.SetStateAction<boolean>>;
 	setPermissionsListHasChanged: React.Dispatch<React.SetStateAction<boolean>>;
-	saveTriggerRef: React.MutableRefObject<(() => void) | null>;
+	saveTriggerRef: React.MutableRefObject<(() => Promise<void> | void) | null>;
 	resetTriggerRef: React.MutableRefObject<(() => void) | null>;
+	isSaving: boolean;
 };
 
 const PermissionManage: React.FC<PermissionManageProps> = ({
@@ -19,7 +20,8 @@ const PermissionManage: React.FC<PermissionManageProps> = ({
 	setIsPrivateChannel,
 	setPermissionsListHasChanged,
 	saveTriggerRef,
-	resetTriggerRef
+	resetTriggerRef,
+	isSaving
 }) => {
 	const [showRole, setShowRole] = useState(true);
 	return (
@@ -33,6 +35,7 @@ const PermissionManage: React.FC<PermissionManageProps> = ({
 						setPermissionsListHasChanged={setPermissionsListHasChanged}
 						saveTriggerRef={saveTriggerRef}
 						resetTriggerRef={resetTriggerRef}
+						isSaving={isSaving}
 					/>
 				)}
 			</div>

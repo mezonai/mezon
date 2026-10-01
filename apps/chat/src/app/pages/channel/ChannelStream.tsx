@@ -124,7 +124,10 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	const [showMembers, setShowMembers] = useState(true);
 	const [showEndCallButton, setShowEndCallButton] = useState(true);
 	const [showMembersButton, setShowMembersButton] = useState(true);
+	const [isJoining, setIsJoining] = useState(false);
 	const hideButtonsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const joinRequestRef = useRef(0);
+	const currentChannelIdRef = useRef(currentChannel?.channel_id);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -132,6 +135,16 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	const sfuServerUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
 	const volume = useSelector(selectStreamVolume);
 	const muted = useSelector(selectStreamMuted);
+
+	useEffect(() => {
+		currentChannelIdRef.current = currentChannel?.channel_id;
+		joinRequestRef.current += 1;
+		setIsJoining(false);
+
+		return () => {
+			joinRequestRef.current += 1;
+		};
+	}, [currentChannel?.channel_id]);
 
 	useEffect(() => {
 		if (!currentChannel || !currentClanId || !currentStreamInfo) return;
@@ -142,6 +155,8 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	}, [currentChannel, currentStreamInfo, currentClanId, dispatch, streamPlay]);
 
 	const handleLeaveChannel = async () => {
+		joinRequestRef.current += 1;
+		setIsJoining(false);
 		const idStreamByMe = memberJoin?.find((user) => user.user_id === userProfile?.user?.id);
 		if (idStreamByMe) {
 			dispatch(usersStreamActions.remove(streamMemberEntityId(idStreamByMe.user_id, idStreamByMe.streaming_channel_id)));
@@ -156,29 +171,40 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
 		if (!sfuServerUrl) return;
 		if (!memberJoin.length) return;
+		if (isJoining) return;
+
+		const channelId = currentChannel.channel_id as string;
+		const requestId = ++joinRequestRef.current;
+		setIsJoining(true);
 		let token: string | undefined;
 		try {
 			token = await dispatch(
 				generateMeetToken({
-					channelId: currentChannel.channel_id as string,
+					channelId,
 					roomName: ''
 				})
 			).unwrap();
 		} catch {
+			if (requestId === joinRequestRef.current) setIsJoining(false);
 			return;
 		}
-		if (!token) return;
+		if (requestId !== joinRequestRef.current || currentChannelIdRef.current !== channelId) return;
+		if (!token) {
+			setIsJoining(false);
+			return;
+		}
 		dispatch(videoStreamActions.setToken(token));
 		dispatch(
 			videoStreamActions.startStream({
 				clanId: currentClanId as string,
 				clanName: currentClanName as string,
-				streamId: currentChannel.channel_id as string,
+				streamId: channelId,
 				streamName: currentChannel.channel_label as string,
 				parentId: currentChannel.parent_id as string
 			})
 		);
 		dispatch(videoStreamActions.setIsJoin(true));
+		setIsJoining(false);
 	};
 
 	const handleToggleMute = () => {
@@ -238,8 +264,8 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 							<div className="text-gray-800 dark:text-white">{t('noOneInStream')}</div>
 						)}
 						<button
-							disabled={!memberJoin.length}
-							className={`bg-green-700 rounded-3xl p-2 ${memberJoin.length > 0 ? 'hover:bg-green-600' : 'opacity-50'}`}
+							disabled={!memberJoin.length || isJoining}
+							className={`bg-green-700 rounded-3xl p-2 ${memberJoin.length > 0 && !isJoining ? 'hover:bg-green-600' : 'opacity-50'}`}
 							onClick={handleJoinChannel}
 						>
 							{t('joinStream')}
@@ -255,14 +281,14 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 				<div className="flex flex-col justify-center gap-2 w-full bg-theme-setting-primary border-theme-primary">
 					<div className={`relative min-h-40 h-fit items-center flex justify-center ${memberJoin.length > 0 && showMembers ? 'mt-6' : ''}`}>
 						<div
-							className={`sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav flex justify-center items-center text-center border-theme-primary relative overflow-hidden`}
+							className={`h-[220px] w-[calc(100%-1rem)] sm:h-[250px] sm:w-[70%] md:h-[350px] lg:h-[450px] xl:h-[550px] text-theme-primary bg-theme-setting-nav flex justify-center items-center text-center border-theme-primary relative overflow-hidden`}
 						>
 							<img
 								src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
 								alt={currentChannel?.channel_label || t('streamThumbnail')}
 								className="w-full h-full object-cover opacity-80"
 							/>
-							<div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+							<div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2 bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
 								<div className="flex items-center gap-1">
 									<button onClick={handleToggleMute} className="p-1" type="button">
 										{muted || volume === 0 ? (
@@ -287,7 +313,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 						</div>
 						{memberJoin.length > 0 && (
 							<div
-								className={`absolute z-50 opacity-0 transition-opacity duration-300 ${showMembers ? '-bottom-10' : `${isShowChatStream ? 'bottom-20' : 'bottom-20 max-[1700px]:bottom-2'}`} group-hover:opacity-100`}
+								className={`absolute z-50 opacity-100 sm:opacity-0 transition-opacity duration-300 ${showMembers ? '-bottom-10' : `${isShowChatStream ? 'bottom-20' : 'bottom-20 max-[1700px]:bottom-2'}`} sm:group-hover:opacity-100`}
 							>
 								<div
 									title={showMembers ? t('hideMembers') : t('showMembers')}
@@ -312,7 +338,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 					)}
 					{memberJoin.length > 0 && showMembers && <div className="h-20"></div>}
 				</div>
-				<div className="absolute z-50 bottom-4 left-1/2 transform -translate-x-1/2 translate-y-5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+				<div className="absolute z-50 bottom-4 left-1/2 transform -translate-x-1/2 translate-y-5 opacity-100 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
 					{showEndCallButton && (
 						<button
 							onClick={handleLeaveChannel}

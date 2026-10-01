@@ -173,7 +173,17 @@
 			"title": "Permissões do canal",
 			"description": "Use as permissões para personalizar quem pode fazer o quê neste canal.",
 			"syncedWithCategory": "Permissões sincronizadas com a categoria:"
-		}
+		},
+		"searchMembers": "Pesquisar membros",
+		"noMembersFound": "Nenhum membro encontrado",
+		"removeMember": "Remover membro do canal",
+		"loading": "Carregando...",
+		"loadPermissions": "Carregar permissões / Tentar novamente",
+		"choiceLegend": "× Negar   / Herdar   ✓ Permitir",
+		"saveBeforeSwitch": "Salve ou redefina as alterações antes de selecionar outro cargo ou membro.",
+		"deny": "Negar",
+		"inherit": "Herdar dos cargos e da categoria",
+		"allow": "Permitir"
 	},
 	"quickAction": {
 		"title": "Comando rápido",
