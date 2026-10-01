@@ -9,29 +9,22 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import {
-	CREATING_TOPIC,
-	IMAGE_MAX_FILE_SIZE,
-	MAX_FILE_ATTACHMENTS,
-	MAX_FILE_SIZE,
-	UploadLimitReason,
-	generateE2eId,
-	processFilesForAttachment
-} from '@mezon/utils';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFilesForAttachment } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
+import { toast } from 'react-toastify';
 import CreatePollModal, { type PollData } from './CreatePollModal';
 import FileSelectionModal from './FileSelectionModal';
 
 export type FileSelectionButtonProps = {
 	currentChannelId: string;
 	mode?: number;
-	isTopic?: boolean;
-	disabledPoll?: boolean;
 };
 
-function FileSelectionButton({ currentChannelId, isTopic, disabledPoll }: FileSelectionButtonProps) {
+function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
+	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
 	const uploadedAttachmentsInChannel = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId))?.files || [];
 	const currentChannel = useAppSelector((state) => selectChannelById(state, currentChannelId));
@@ -39,7 +32,7 @@ function FileSelectionButton({ currentChannelId, isTopic, disabledPoll }: FileSe
 	const channelType = currentChannel?.type ?? currentDirect?.type;
 	const clanId = currentChannel?.clan_id ?? currentDirect?.clan_id ?? '0';
 	const isOneToOneDM = channelType === ChannelType.CHANNEL_TYPE_DM;
-	const isPollDisabled = isOneToOneDM || isTopic || disabledPoll || currentChannelId === CREATING_TOPIC;
+	const isPollDisabled = !channelType || isOneToOneDM;
 	const { setOverUploadingState } = useDragAndDrop();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -90,6 +83,7 @@ function FileSelectionButton({ currentChannelId, isTopic, disabledPoll }: FileSe
 		try {
 			if (isPollDisabled || !channelType) {
 				console.error('Current channel/direct not found or poll is not allowed');
+				toast.error(t('poll.failedToCreatePoll', 'Failed to create poll'));
 				return;
 			}
 
@@ -109,6 +103,7 @@ function FileSelectionButton({ currentChannelId, isTopic, disabledPoll }: FileSe
 			handleClosePollModal();
 		} catch (error) {
 			console.error('Failed to create poll:', error);
+			toast.error(t('poll.failedToCreatePoll', 'Failed to create poll'));
 		}
 	};
 
@@ -120,6 +115,8 @@ function FileSelectionButton({ currentChannelId, isTopic, disabledPoll }: FileSe
 		setIsModalOpen(false);
 		openPollModal();
 	};
+
+	const handleCreatePoll = isPollDisabled ? undefined : handleOpenPollModal;
 
 	return (
 		<div className="pl-3 flex items-center h-11 relative" data-e2e={generateE2eId('mention.selected_file')}>
@@ -145,7 +142,7 @@ function FileSelectionButton({ currentChannelId, isTopic, disabledPoll }: FileSe
 				isOpen={isModalOpen}
 				onClose={handleCloseModal}
 				onUploadFile={handleUploadFile}
-				onCreatePoll={isPollDisabled ? undefined : handleOpenPollModal}
+				onCreatePoll={handleCreatePoll}
 				buttonRef={buttonRef}
 			/>
 		</div>

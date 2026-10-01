@@ -370,7 +370,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}
 						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
 								>
-									<FileSelectionButton currentChannelId={currentInputChannelId} isTopic />
+									<FileSelectionButton currentChannelId={currentInputChannelId} />
 
 									<div className={`w-[calc(100%_-_58px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
 										<div
