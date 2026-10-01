@@ -276,7 +276,16 @@ export const generateMeetTokenExternal = createAsyncThunk(
 	async ({ token, username, metadata, isGuest }: { token: string; username?: string; metadata?: string; isGuest?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-			const response = await mezon.client.generateMeetTokenExternal(token, username, metadata, isGuest);
+			const bodyPayload = JSON.stringify({
+				username,
+				metadata,
+				is_guest: isGuest,
+				isGuest
+			});
+			const clientAny = mezon.client as any;
+			const response = clientAny.transport?.generateMeetTokenExternal
+				? await clientAny.transport.generateMeetTokenExternal(token, username, metadata, isGuest, { body: bodyPayload })
+				: await mezon.client.generateMeetTokenExternal(token, username, metadata, isGuest);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'meet/generateMeetTokenExternal');

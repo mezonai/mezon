@@ -204,11 +204,13 @@ export default function PreJoinCalling() {
 
 	const handleRefreshToken = useCallback(async () => {
 		try {
+			const trimmed = username.trim();
+			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
 			const res = await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
-					username,
-					metadata: '',
+					username: trimmed,
+					metadata,
 					isGuest: !isUser
 				})
 			).unwrap();
@@ -217,7 +219,7 @@ export default function PreJoinCalling() {
 			console.error('Error refreshing external meet token:', err);
 			return undefined;
 		}
-	}, [dispatch, code, username, isUser]);
+	}, [dispatch, code, username, isUser, avatar, getAvatar]);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
