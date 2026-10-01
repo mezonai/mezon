@@ -711,6 +711,9 @@ const DmTopbarTools = memo(() => {
 					)}
 					<PinButton isDMView mode={mode} styleCss="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />
 					<GalleryButton />
+					<div className="hidden sbm:flex">
+						<FileButton />
+					</div>
 					{!isBlockUser && !isMe && <AddMemberToGroupDm currentDmGroup={currentDmGroup} />}
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
 						<button
