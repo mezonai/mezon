@@ -1,8 +1,8 @@
 /* eslint-disable no-useless-escape */
 import { isYouTubeLink } from '.';
-import { sanitizeMessageHtml } from './sanitizeHtml';
 import type { IMarkdownOnMessage, MentionItem } from '../types';
 import { EBacktickType, ETypeMEntion } from '../types';
+import { sanitizeMessageHtml } from './sanitizeHtml';
 
 function escapeHtmlText(value: string): string {
 	return value.replace(/[&<>"']/g, (ch) => {
@@ -189,14 +189,18 @@ function parseMarkdown(html: string) {
 
 	// Pre
 	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, function (match, p1) {
-		return `<pre>${p1.replace(/\n/g, '___#new_line___')}</pre>`;
+		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		return `<pre>${cleanContent.replace(/\n/g, '___#new_line___')}</pre>`;
 	});
 
 	// parsedHtml = parsedHtml.replace(/^`{3}[\n\r]?(.*?)[\n\r]?`{3}/gms, '<pre>$1</pre>');
 	// parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
 
 	// Code
-	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(code|pre)>)/g, '<code>$2</code>');
+	parsedHtml = parsedHtml.replace(/(?!<(?:code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(?:code|pre)>)/g, (_, p1) => {
+		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		return `<code>${cleanContent}</code>`;
+	});
 
 	// Process bold markdown, but skip mentions
 	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[*]{2}([^*]*?)[*]{2}(?![^<]*<\/(code|pre)>)/g, '<b>$2</b>');
@@ -205,8 +209,8 @@ function parseMarkdown(html: string) {
 }
 
 const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
-const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
-const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
+const localhostDomainRE = /^localhost[:?\d]*(?:[^:?\d]\S*)?$/;
+const nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/;
 
 function isUrl(string: string): boolean {
 	if (typeof string !== 'string') {
