@@ -515,7 +515,9 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		};
 
 		const isDM = channel_desc.type === ChannelType.CHANNEL_TYPE_DM;
-		for (const user of users) {
+		const isSelfDM = isDM && Boolean(myId) && Boolean(users?.length) && users.every((u) => u?.user_id === myId);
+
+		for (const user of users || []) {
 			listMember.avatars.push(user.avatar);
 			listMember.user_ids.push(user.user_id);
 			listMember.usernames.push(user.username);
@@ -523,7 +525,11 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			listMember.display_names.push(user.display_name || user.username);
 
 			const isMe = user.user_id === myId;
-			if ((isDM && isMe) || !user.user_id) {
+			if ((isDM && !isSelfDM && isMe) || !user.user_id) {
+				continue;
+			}
+
+			if (isSelfDM && userIds.length > 0) {
 				continue;
 			}
 
@@ -543,7 +549,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			user_ids: userIds,
 			usernames,
 			display_names: label,
-			channel_avatar: channel_desc.channel_avatar || '/assets/images/avatar-group.png',
+			channel_avatar: channel_desc.channel_avatar || avatars[0] || '/assets/images/avatar-group.png',
 			avatars,
 			onlines,
 			active: 1,

@@ -127,7 +127,7 @@ const ModalUserProfile = ({
 
 	const sendMessage = async (userId: string, display_name?: string, username?: string, avatar?: string) => {
 		const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-		if (response.channel_id) {
+		if (response?.channel_id) {
 			const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 			sendInviteMessage(content, response.channel_id, channelMode);
 			setContent('');
@@ -194,7 +194,7 @@ const ModalUserProfile = ({
 		if (userID === message?.sender_id) {
 			return message?.username;
 		}
-		return message?.references?.[0].message_sender_username;
+		return message?.references?.[0]?.message_sender_username;
 	}, [userById, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
 
 	const handleOnKeyPress = useCallback(
@@ -205,18 +205,22 @@ const ModalUserProfile = ({
 						isFooterProfile ? userId || userById?.user?.id || '' : userById?.user?.id || '',
 						userById?.user?.display_name || userById?.user?.username,
 						userById?.user?.username,
-						userById.user?.avatar_url
+						userById?.user?.avatar_url
 					);
 					onLoading.current = true;
 					return;
 				}
 				sendMessage(
-					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || ''
+					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0]?.message_sender_id) ||
+						'',
+					isFooterProfile ? userProfile?.user?.display_name || userProfile?.user?.username : undefined,
+					isFooterProfile ? userProfile?.user?.username : undefined,
+					isFooterProfile ? userProfile?.user?.avatar_url : undefined
 				);
 				onLoading.current = true;
 			}
 		},
-		[userById, content, isFooterProfile]
+		[userById, content, isFooterProfile, userId, userID, message, userProfile]
 	);
 
 	return (
