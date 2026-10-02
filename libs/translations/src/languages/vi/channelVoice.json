@@ -136,10 +136,14 @@
 		}
 	},
 	"device": {
-		"inputDevice": "Microphone",
-		"outputDevice": "Audio",
+		"inputDevice": "Thiết bị đầu vào",
+		"outputDevice": "Thiết bị đầu ra",
 		"camera": "Camera",
-		"systemDefault": "Mặc định hệ thống"
+		"systemDefault": "Mặc định hệ thống",
+		"audioSettings": "Cài đặt âm thanh",
+		"noDevices": "Không tìm thấy thiết bị",
+		"noInputDevices": "Không tìm thấy thiết bị đầu vào",
+		"noOutputDevices": "Không tìm thấy thiết bị đầu ra"
 	},
 	"toast": {
 		"connectionConnected": "Kết nối thành công",
@@ -164,6 +168,7 @@
 		"failed": "Ghi thất bại: {{reason}}"
 	},
 	"pushToTalk": {
+		"title": "Nhấn để nói",
 		"holdSpace": "Giữ phím Space để nói",
 		"holdingSpace": "Đang nói — thả Space để tắt mic",
 		"hintBody": "Bạn đang tham gia để nghe. Giữ phím Space để mở mic khi nói, thả ra để tắt lại."

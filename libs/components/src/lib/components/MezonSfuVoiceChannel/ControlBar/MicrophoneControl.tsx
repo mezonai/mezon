@@ -1,14 +1,17 @@
 import { Icons } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
-import { SfuDeviceMenu } from './MediaDeviceMenu/SfuDeviceMenu';
+import { SfuAudioDeviceMenu } from './MediaDeviceMenu/SfuAudioDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface MicrophoneControlProps {
 	enabled: boolean;
 	devices: MediaDeviceInfo[];
+	outputDevices?: MediaDeviceInfo[];
 	selectedDeviceId: string;
+	selectedOutputDeviceId?: string;
 	onToggle: () => void;
 	onSelect: (deviceId: string) => void;
+	onSelectOutput?: (deviceId: string) => void;
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
@@ -17,9 +20,12 @@ interface MicrophoneControlProps {
 export const MicrophoneControl = ({
 	enabled,
 	devices,
+	outputDevices,
 	selectedDeviceId,
+	selectedOutputDeviceId,
 	onToggle,
 	onSelect,
+	onSelectOutput,
 	permissionState,
 	hasMicrophoneAccess,
 	onPermissionRequest
@@ -49,7 +55,14 @@ export const MicrophoneControl = ({
 					<span className="text-black text-xs font-bold">!</span>
 				</div>
 			)}
-			<SfuDeviceMenu label="Microphone" devices={devices} selectedDeviceId={selectedDeviceId} onSelect={onSelect} />
+			<SfuAudioDeviceMenu
+				inputDevices={devices}
+				outputDevices={outputDevices}
+				selectedInputDeviceId={selectedDeviceId}
+				selectedOutputDeviceId={selectedOutputDeviceId}
+				onSelectInputDevice={onSelect}
+				onSelectOutputDevice={onSelectOutput}
+			/>
 		</div>
 	);
 };

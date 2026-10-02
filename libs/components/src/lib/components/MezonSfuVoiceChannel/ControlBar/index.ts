@@ -3,6 +3,7 @@ export * from './CameraControl';
 export * from './EmojiReactionControl';
 export * from './FullscreenControl';
 export * from './LeaveButton';
+export * from './MediaDeviceMenu/SfuAudioDeviceMenu';
 export * from './MediaDeviceMenu/SfuDeviceMenu';
 export * from './MicrophoneControl';
 export * from './PopoutControl';

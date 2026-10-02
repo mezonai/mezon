@@ -1,5 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
+import { SfuAudioDeviceMenu } from './MediaDeviceMenu/SfuAudioDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface PushToTalkControlProps {
@@ -8,12 +9,30 @@ interface PushToTalkControlProps {
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
+	inputDevices?: MediaDeviceInfo[];
+	outputDevices?: MediaDeviceInfo[];
+	selectedInputDeviceId?: string;
+	selectedOutputDeviceId?: string;
+	onSelectInput?: (deviceId: string) => void;
+	onSelectOutput?: (deviceId: string) => void;
 }
 
-export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrophoneAccess, onPermissionRequest }: PushToTalkControlProps) => {
+export const PushToTalkControl = ({
+	active,
+	onChange,
+	permissionState,
+	hasMicrophoneAccess,
+	onPermissionRequest,
+	inputDevices,
+	outputDevices,
+	selectedInputDeviceId,
+	selectedOutputDeviceId,
+	onSelectInput,
+	onSelectOutput
+}: PushToTalkControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
-	const label = showWarning ? t('mediaPermission.needed.microphone') : 'Push to talk';
+	const label = showWarning ? t('mediaPermission.needed.microphone') : t('pushToTalk.title', { defaultValue: 'Push to talk' });
 
 	const handlePointerDown = async (event: React.PointerEvent<HTMLButtonElement>) => {
 		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
@@ -44,6 +63,16 @@ export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrop
 				<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">
 					<span className="text-black text-xs font-bold">!</span>
 				</div>
+			)}
+			{inputDevices && (
+				<SfuAudioDeviceMenu
+					inputDevices={inputDevices}
+					outputDevices={outputDevices}
+					selectedInputDeviceId={selectedInputDeviceId}
+					selectedOutputDeviceId={selectedOutputDeviceId}
+					onSelectInputDevice={onSelectInput ?? (() => {})}
+					onSelectOutputDevice={onSelectOutput}
+				/>
 			)}
 		</div>
 	);

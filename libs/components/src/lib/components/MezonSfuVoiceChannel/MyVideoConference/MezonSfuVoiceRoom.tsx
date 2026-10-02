@@ -78,6 +78,7 @@ const MAX_RECOVERY_MS = 120_000;
 const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
 const SFU_DUPLICATE_SESSION_CLOSE_CODE = 4012;
 const PREFERRED_MICROPHONE_STORAGE_KEY = 'mezon.voice.inputDeviceId';
+const PREFERRED_SPEAKER_STORAGE_KEY = 'mezon.voice.outputDeviceId';
 const microphoneDeviceConstraint = (deviceId: string) => ({ deviceId: deviceId === 'default' ? { ideal: 'default' } : { exact: deviceId } });
 const getNativeMicrophoneCaptureOptions = () => {
 	const options = getNoiseSuppressionAudioCaptureOptions(true);
@@ -633,6 +634,8 @@ export function MezonSfuVoiceRoom({
 	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 	const [selectedMicrophone, setSelectedMicrophone] = useState(preferredMicrophoneIdRef.current);
+	const preferredSpeakerIdRef = useRef(localStorage.getItem(PREFERRED_SPEAKER_STORAGE_KEY) || 'default');
+	const [selectedSpeaker, setSelectedSpeaker] = useState(preferredSpeakerIdRef.current);
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const syncSelectedMicrophone = useCallback((track: MediaStreamTrack) => {
 		const preferred = preferredMicrophoneIdRef.current;
@@ -1272,6 +1275,11 @@ export function MezonSfuVoiceRoom({
 		},
 		[cameraEnabled, findUplinkVideoSender, getMicrophoneCaptureOptions, getOutgoingAudioTrack, microphoneEnabled, setAudioTrackEnabled]
 	);
+	const changeOutputDevice = useCallback((deviceId: string) => {
+		preferredSpeakerIdRef.current = deviceId;
+		setSelectedSpeaker(deviceId);
+		localStorage.setItem(PREFERRED_SPEAKER_STORAGE_KEY, deviceId);
+	}, []);
 	const chatRef = useRef<ExternalChatRef>(null);
 	const handleAddMessage = useCallback((message: string) => {
 		chatRef.current?.setMessages((prev) => [...prev, message]);
@@ -2473,6 +2481,7 @@ export function MezonSfuVoiceRoom({
 	const participantCount = Math.max(roomParticipantCount, participants.length + 1);
 	const microphones = devices.filter((device) => device.kind === 'audioinput');
 	const cameras = devices.filter((device) => device.kind === 'videoinput');
+	const speakers = devices.filter((device) => device.kind === 'audiooutput');
 	const { sendEmojiReaction: sendMezonEmojiReaction, sendSoundReaction: sendMezonSoundReaction } = useSendReaction();
 	const sendEmojiReaction = (emojiId: string, emoji: string) => {
 		sendMezonEmojiReaction(emoji, emojiId);
@@ -2771,6 +2780,7 @@ export function MezonSfuVoiceRoom({
 				<SfuRoomAudioRenderer
 					participants={participants}
 					mutedParticipantIds={mutedParticipantIds}
+					sinkId={selectedSpeaker}
 					onPlaybackFailure={handleAudioPlaybackFailure}
 				/>
 				<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm">
@@ -2968,8 +2978,10 @@ export function MezonSfuVoiceRoom({
 					showVoiceInteractivePanel={showVoiceInteractivePanel}
 					microphones={microphones}
 					cameras={cameras}
+					speakers={speakers}
 					selectedMicrophone={selectedMicrophone}
 					selectedCamera={selectedCamera}
+					selectedSpeaker={selectedSpeaker}
 					isPopoutOpen={isPopoutOpen}
 					isFullScreen={isFullScreen}
 					isExternalCalling={isExternalCalling}
@@ -2989,6 +3001,7 @@ export function MezonSfuVoiceRoom({
 					onScreenShareToggle={() => void toggleScreenShare()}
 					onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
 					onCameraSelect={(deviceId) => void changeInputDevice('videoinput', deviceId)}
+					onSpeakerSelect={changeOutputDevice}
 					onLeaveRoom={onLeaveRoom}
 					onTogglePopout={() => void togglePopout(activePinnedTrackId)}
 					onFullScreen={onFullScreen}

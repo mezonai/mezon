@@ -39,8 +39,10 @@ interface SfuControlBarProps {
 	showVoiceInteractivePanel?: boolean;
 	microphones: MediaDeviceInfo[];
 	cameras: MediaDeviceInfo[];
+	speakers?: MediaDeviceInfo[];
 	selectedMicrophone: string;
 	selectedCamera: string;
+	selectedSpeaker?: string;
 	isPopoutOpen: boolean;
 	isFullScreen: boolean;
 	isExternalCalling?: boolean;
@@ -56,6 +58,7 @@ interface SfuControlBarProps {
 	onScreenShareToggle: () => void;
 	onMicrophoneSelect: (deviceId: string) => void;
 	onCameraSelect: (deviceId: string) => void;
+	onSpeakerSelect?: (deviceId: string) => void;
 	onLeaveRoom: () => void;
 	onTogglePopout: () => void;
 	onFullScreen: () => void;
@@ -85,8 +88,10 @@ export const SfuControlBar = ({
 	showVoiceInteractivePanel,
 	microphones,
 	cameras,
+	speakers,
 	selectedMicrophone,
 	selectedCamera,
+	selectedSpeaker,
 	isPopoutOpen,
 	isFullScreen,
 	isExternalCalling,
@@ -102,6 +107,7 @@ export const SfuControlBar = ({
 	onScreenShareToggle,
 	onMicrophoneSelect,
 	onCameraSelect,
+	onSpeakerSelect,
 	onLeaveRoom,
 	onTogglePopout,
 	onFullScreen,
@@ -150,6 +156,12 @@ export const SfuControlBar = ({
 							permissionState={microphonePermissionState}
 							hasMicrophoneAccess={hasMicrophoneAccess}
 							onPermissionRequest={onRequestMicrophonePermission}
+							inputDevices={microphones}
+							outputDevices={speakers}
+							selectedInputDeviceId={selectedMicrophone}
+							selectedOutputDeviceId={selectedSpeaker}
+							onSelectInput={onMicrophoneSelect}
+							onSelectOutput={onSpeakerSelect}
 						/>
 						{!pushToTalkHintDismissed && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />}
 					</div>
@@ -158,9 +170,12 @@ export const SfuControlBar = ({
 					<MicrophoneControl
 						enabled={microphoneEnabled}
 						devices={microphones}
+						outputDevices={speakers}
 						selectedDeviceId={selectedMicrophone}
+						selectedOutputDeviceId={selectedSpeaker}
 						onToggle={onMicrophoneToggle}
 						onSelect={onMicrophoneSelect}
+						onSelectOutput={onSpeakerSelect}
 						permissionState={microphonePermissionState}
 						hasMicrophoneAccess={hasMicrophoneAccess}
 						onPermissionRequest={onRequestMicrophonePermission}
