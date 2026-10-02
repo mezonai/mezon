@@ -12,6 +12,7 @@ import {
 	selectAnonymousMode,
 	selectAttachmentByChannelId,
 	selectChannelMetaById,
+	selectClanRosterCapped,
 	selectCloseMenu,
 	selectCurrentTopicId,
 	selectDataMentions,
@@ -70,7 +71,16 @@ import Mention, { type MentionData } from './Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
 import { ChatBoxToolbarWrapper } from './components';
-import { useClickUpToEditMessage, useEmojiPicker, useFocusEditor, useFocusManager, useKeyboardHandler } from './hooks';
+import {
+	appendRemoteMembers,
+	mentionScopeChannelId,
+	useClickUpToEditMessage,
+	useEmojiPicker,
+	useFocusEditor,
+	useFocusManager,
+	useKeyboardHandler,
+	useRemoteMentionSearch
+} from './hooks';
 import parseHtmlAsFormattedToText, { ApiMessageEntityTypes } from './parseHtmlAsFormattedText';
 import { getCanvasTitles } from './utils/canvas';
 
@@ -193,6 +203,19 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const [displayMarkup, setDisplayMarkup] = useState<string>('');
 	const [mentionUpdated, setMentionUpdated] = useState<IMentionOnMessage[]>([]);
 	const [isPasteMulti, setIsPasteMulti] = useState<boolean>(false);
+
+	const mentionClanId = currentChannel?.clan_id ?? '';
+	const clanRosterCapped = useAppSelector((state) => selectClanRosterCapped(state, mentionClanId));
+	const {
+		searchMembers: searchRemoteMembers,
+		isRemoteMember,
+		isSearching: isSearchingRemoteMembers,
+		lateAnswers: remoteMentionAnswers
+	} = useRemoteMentionSearch({
+		clanId: mentionClanId,
+		channelId: mentionScopeChannelId(currentChannel),
+		enabled: !isDm && clanRosterCapped && mentionClanId !== '' && mentionClanId !== '0'
+	});
 
 	useEffect(() => {
 		if (editorRef.current) {
@@ -328,7 +351,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					mentionList.forEach((mention) => {
 						if (mention.user_id) {
 							const existsInChild = props.membersOfChild?.some((member) => member.user?.id === mention.user_id);
-							const existsInParent = props.membersOfParent?.some((member) => member.user?.id === mention.user_id);
+							const existsInParent =
+								props.membersOfParent?.some((member) => member.user?.id === mention.user_id) || isRemoteMember(mention.user_id);
 
 							if ((!existsInChild || props.isThreadbox) && existsInParent && mention?.user_id) {
 								usersNotExistingInThreadSet.add(mention.user_id);
@@ -711,7 +735,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setSubPanelActive,
 			handleThreadActivation,
 			checkAttachment,
-			valueThread
+			valueThread,
+			isRemoteMember
 		]
 	);
 	const attachmentData = useMemo(() => {
@@ -867,6 +892,17 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		onDirectEmojiInsert: (_emojiId, _emojiShortname) => {}
 	});
 
+	const searchLocalUserMentions = useCallback(
+		(search: string): MentionData[] => {
+			const filteredMentions = !isEphemeralMode
+				? props.listMentions || []
+				: props.listMentions?.filter((item) => item.display !== TITLE_MENTION_HERE && item.id !== userProfile?.user?.id) || [];
+
+			return searchMentionsHashtag(search, filteredMentions) as MentionData[];
+		},
+		[props.listMentions, isEphemeralMode, userProfile?.user?.id]
+	);
+
 	const handleSearchUserMention = useCallback(
 		async (search: string): Promise<MentionData[]> => {
 			if (!props.listMentions?.length && props.currentClanId && props.currentClanId !== '0') {
@@ -879,13 +915,19 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				);
 			}
 
-			const filteredMentions = !isEphemeralMode
-				? props.listMentions || []
-				: props.listMentions?.filter((item) => item.display !== TITLE_MENTION_HERE && item.id !== userProfile?.user?.id) || [];
-
-			return searchMentionsHashtag(search, filteredMentions) as MentionData[];
+			const localMentions = searchLocalUserMentions(search);
+			return appendRemoteMembers(localMentions, await searchRemoteMembers(search), isEphemeralMode ? userProfile?.user?.id : undefined);
 		},
-		[props.listMentions, isEphemeralMode, props.currentClanId, props.currentChannelId, dispatch, userProfile?.user?.id]
+		[
+			props.listMentions,
+			props.currentClanId,
+			props.currentChannelId,
+			dispatch,
+			searchLocalUserMentions,
+			searchRemoteMembers,
+			isEphemeralMode,
+			userProfile?.user?.id
+		]
 	);
 
 	const generateCommandsList = useCallback(
@@ -1012,6 +1054,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						trigger="@"
 						title={t('mentionCategories.members')}
 						data={handleSearchUserMention}
+						getImmediateSuggestions={searchLocalUserMentions}
+						refreshKey={remoteMentionAnswers}
+						isSearching={isSearchingRemoteMembers}
+						searchingLabel={t('searchMessageChannel:searching')}
 						allowSpaceInQuery={true}
 						allowedCharacters="._-"
 						renderSuggestion={(
