@@ -2,7 +2,7 @@ import { getStore, selectCurrentChannel, selectCurrentDM, selectCurrentUserId, s
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import { EBacktickType, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +16,11 @@ interface OgpEmbedProps {
 	image?: string;
 	messageId?: string;
 	senderId?: string;
+	topicId?: string;
+	isSearchMessage?: boolean;
 }
 
-const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId, senderId }) => {
+const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId, senderId, topicId, isSearchMessage }) => {
 	const userId = useSelector(selectCurrentUserId);
 	return (
 		<div className="flex flex-col gap-0.5 max-w-[350px]">
@@ -58,13 +60,13 @@ const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, mes
 						}}
 					/>
 				</div>
-				{senderId === userId && <DeleteOgpButton messageId={messageId} />}
+				{senderId === userId && !isSearchMessage && <DeleteOgpButton messageId={messageId} topicId={topicId} url={url} />}
 			</div>
 		</div>
 	);
 };
 
-const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
+const DeleteOgpButton = ({ messageId, topicId, url }: { messageId?: string; topicId?: string; url: string }) => {
 	const { clientRef, sessionRef } = useMezon();
 	const [loading, setLoading] = useState(false);
 	const { t } = useTranslation('message');
@@ -81,13 +83,16 @@ const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
 
-			if (!client || !session || !channelOrDirect || !messageId) {
+			const isTopic = !!topicId && topicId !== '0';
+			const message =
+				channelOrDirect && messageId
+					? selectMessageByMessageId(state, isTopic ? topicId : (channelOrDirect.channel_id ?? ''), messageId)
+					: undefined;
+			if (!client || !session || !channelOrDirect || !messageId || !message?.content) {
 				toast.error(t('toast.closeOgpFailed'));
 				return;
 			}
 			setLoading(true);
-
-			const message = selectMessageByMessageId(state, channelOrDirect.channel_id, messageId);
 
 			const mode =
 				channelOrDirect?.type === ChannelType.CHANNEL_TYPE_THREAD
@@ -98,29 +103,29 @@ const DeleteOgpButton = ({ messageId }: { messageId?: string }) => {
 							? ChannelStreamMode.STREAM_MODE_GROUP
 							: ChannelStreamMode.STREAM_MODE_CHANNEL;
 
-			let trimContent: IMessageSendPayload = {
-				...(message.content as IMessageSendPayload),
-				t: message.content?.t?.trim(),
-				mk: message.content?.mk?.slice(0, -1)
+			const currentContent = message.content as IMessageSendPayload;
+			let contentWithoutOgp: IMessageSendPayload = {
+				...currentContent,
+				mk: currentContent.mk?.filter((token) => !(token.type === EBacktickType.OGP_PREVIEW && (token.url || '') === url))
 			};
 			if (message.attachments?.length) {
-				trimContent = withCreateTimeSecondsInUpdateContent(trimContent, getMessageCreateTimeSeconds(message));
+				contentWithoutOgp = withCreateTimeSecondsInUpdateContent(contentWithoutOgp, getMessageCreateTimeSeconds(message));
 			}
 
-			await client.updateChatMessage(
+			await client.updateChannelMessage(
 				session,
 				channelOrDirect.clan_id || '0',
 				channelOrDirect.channel_id ?? '0',
 				mode,
 				!channelOrDirect.channel_private,
 				messageId,
-				trimContent,
+				JSON.stringify(contentWithoutOgp),
 				message.mentions,
 				undefined,
 				getMessageCreateTimeSeconds(message),
 				message.hide_editted,
-				message.topic_id || '0',
-				false
+				isTopic ? topicId : '0',
+				isTopic
 			);
 			setLoading(false);
 		} catch (error) {

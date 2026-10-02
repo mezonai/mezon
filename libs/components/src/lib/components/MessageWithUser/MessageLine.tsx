@@ -32,6 +32,7 @@ interface RenderContentProps {
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	senderId?: string;
+	topicId?: string;
 	onCloseTooltip?: () => void;
 }
 
@@ -331,6 +332,7 @@ export const MessageLine = ({
 	isSending,
 	onContextMenu,
 	senderId,
+	topicId,
 	onCloseTooltip
 }: RenderContentProps) => {
 	const { t: translate } = useTranslation('common');
@@ -567,6 +569,8 @@ export const MessageLine = ({
 									image={element.image}
 									title={element.title}
 									messageId={messageId}
+									topicId={topicId}
+									isSearchMessage={isSearchMessage}
 								/>
 							);
 						}
