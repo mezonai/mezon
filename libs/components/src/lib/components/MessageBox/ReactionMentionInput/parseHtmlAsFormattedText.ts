@@ -197,8 +197,8 @@ export const ENTITY_CLASS_BY_NODE_NAME: Record<string, ApiMessageEntityTypes> = 
 const MAX_TAG_DEEPNESS = 3;
 
 const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
-const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
-const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
+const localhostDomainRE = /^localhost[:?\d]*(?:[^:?\d]\S*)?$/;
+const nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/;
 
 function isUrl(string: string): boolean {
 	if (typeof string !== 'string') {
@@ -339,11 +339,17 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
 	// Pre
-	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, '<pre>$1</pre>');
+	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, (_, p1) => {
+		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		return `<pre>${cleanContent}</pre>`;
+	});
 	// parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
 
 	// Code
-	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(code|pre)>)/g, '<code>$2</code>');
+	parsedHtml = parsedHtml.replace(/(?!<(?:code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(?:code|pre)>)/g, (_, p1) => {
+		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		return `<code>${cleanContent}</code>`;
+	});
 
 	// Custom Emoji markdown tag
 	if (!IS_EMOJI_SUPPORTED) {
@@ -373,16 +379,8 @@ function parseMarkdownLinks(html: string) {
 
 	result = result.replace(/```[\s\S]*?```/g, (match) => {
 		const index = codeSections.length;
-
-		const div = document.createElement('div');
-		div.innerHTML = match;
-		div.querySelectorAll('br').forEach((br) => {
-			br.replaceWith('\n');
-		});
-		const text = div.textContent?.trim();
-		if (text) {
-			codeSections.push(text);
-		}
+		const cleanMatch = match.replace(/<div><br([^>]*)?><\/div>/gi, '\n').replace(/<br([^>]*)?>/gi, '\n');
+		codeSections.push(cleanMatch);
 		return `__CODE_BLOCK_${index}__`;
 	});
 
@@ -390,16 +388,8 @@ function parseMarkdownLinks(html: string) {
 		if (match.includes('__CODE_BLOCK_')) {
 			return match;
 		}
-		const div = document.createElement('div');
-		div.innerHTML = match;
-		div.querySelectorAll('br').forEach((br) => {
-			br.replaceWith('\n');
-		});
-		const text = div.textContent?.trim();
 		const index = codeSections.length;
-		if (text) {
-			codeSections.push(text);
-		}
+		codeSections.push(match);
 		return `__INLINE_CODE_${index}__`;
 	});
 
@@ -440,7 +430,7 @@ function parseMarkdownLinks(html: string) {
 
 	if (codeSections.length > 0) {
 		result = result.replace(/__(?:CODE_BLOCK|INLINE_CODE)_(\d+)__/g, (match, index) => {
-			return codeSections[parseInt(index, 10)] || match;
+			return codeSections[parseInt(index, 10)] ?? match;
 		});
 	}
 
