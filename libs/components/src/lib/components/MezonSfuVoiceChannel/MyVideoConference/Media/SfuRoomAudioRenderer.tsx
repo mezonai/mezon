@@ -6,12 +6,14 @@ export const SfuRoomAudioRenderer = ({
 	participants,
 	mutedParticipantIds,
 	sinkId,
-	onPlaybackFailure
+	onPlaybackFailure,
+	onSinkIdFailure
 }: {
 	participants: SfuRemoteMedia[];
 	mutedParticipantIds: Set<string>;
 	sinkId?: string;
 	onPlaybackFailure?: AudioPlaybackFailure;
+	onSinkIdFailure?: (sinkId: string) => void;
 }) => (
 	<div className="hidden">
 		{participants.map((participant) =>
@@ -21,6 +23,7 @@ export const SfuRoomAudioRenderer = ({
 					track={participant.audio}
 					sinkId={sinkId}
 					onPlaybackFailure={onPlaybackFailure}
+					onSinkIdFailure={onSinkIdFailure}
 					muted={participant.userId ? mutedParticipantIds.has(participant.userId) : false}
 				/>
 			) : null

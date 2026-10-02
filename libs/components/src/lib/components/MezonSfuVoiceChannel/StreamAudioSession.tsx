@@ -11,7 +11,7 @@ import {
 	useAppSelector,
 	videoStreamActions
 } from '@mezon/store';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SfuAudioAudience, type SfuAudioAudienceState } from './MyVideoConference/Media/SfuAudioAudience';
 
@@ -27,6 +27,25 @@ export function StreamAudioSession() {
 	const token = useSelector(selectStreamAudioToken);
 	const volume = useSelector(selectStreamVolume);
 	const muted = useSelector(selectStreamMuted);
+	const [outputDeviceId, setOutputDeviceId] = useState(() => localStorage.getItem('mezon.voice.outputDeviceId') || 'default');
+
+	useEffect(() => {
+		const handleStorage = (e?: Event) => {
+			const customEvent = e as CustomEvent<string | { deviceId?: string }>;
+			const nextId =
+				typeof customEvent?.detail === 'string'
+					? customEvent.detail
+					: (customEvent?.detail as { deviceId?: string })?.deviceId || localStorage.getItem('mezon.voice.outputDeviceId') || 'default';
+			setOutputDeviceId(nextId);
+		};
+		window.addEventListener('storage', handleStorage);
+		window.addEventListener('mezon:outputDeviceChange', handleStorage);
+		return () => {
+			window.removeEventListener('storage', handleStorage);
+			window.removeEventListener('mezon:outputDeviceChange', handleStorage);
+		};
+	}, []);
+
 	const members = useAppSelector((state) => selectStreamMembersByChannelId(state, streamInfo?.streamId || ''));
 	const serverUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
 
@@ -68,6 +87,7 @@ export function StreamAudioSession() {
 			serverUrl={serverUrl}
 			volume={volume}
 			muted={muted}
+			sinkId={outputDeviceId}
 			onRefreshToken={refreshToken}
 			onConnectionStateChange={handleConnectionStateChange}
 		/>

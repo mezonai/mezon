@@ -13,6 +13,7 @@ export interface SfuAudioAudienceProps {
 	serverUrl: string;
 	volume?: number;
 	muted?: boolean;
+	sinkId?: string;
 	onRefreshToken: () => Promise<string>;
 	onConnectionStateChange?: (state: SfuAudioAudienceState) => void;
 	onError?: (error: Error) => void;
@@ -42,6 +43,7 @@ export function SfuAudioAudience({
 	serverUrl,
 	volume = 1,
 	muted = false,
+	sinkId,
 	onRefreshToken,
 	onConnectionStateChange,
 	onError
@@ -394,7 +396,7 @@ export function SfuAudioAudience({
 	return (
 		<div className="hidden" aria-hidden="true">
 			{audioTracks.map((track) => (
-				<SfuAudioTrack key={track.id} track={track} volume={volume} muted={muted} />
+				<SfuAudioTrack key={track.id} track={track} volume={volume} muted={muted} sinkId={sinkId} />
 			))}
 		</div>
 	);
