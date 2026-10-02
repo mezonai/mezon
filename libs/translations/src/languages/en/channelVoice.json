@@ -139,7 +139,11 @@
 		"inputDevice": "Input device",
 		"outputDevice": "Output device",
 		"camera": "Camera",
-		"systemDefault": "System default"
+		"systemDefault": "System default",
+		"audioSettings": "Audio settings",
+		"noDevices": "No devices found",
+		"noInputDevices": "No input devices found",
+		"noOutputDevices": "No output devices found"
 	},
 	"toast": {
 		"connectionConnected": "Connection connected",
@@ -164,6 +168,7 @@
 		"failed": "Recording failed: {{reason}}"
 	},
 	"pushToTalk": {
+		"title": "Push to talk",
 		"holdSpace": "Hold Space to talk",
 		"holdingSpace": "Talking — release Space to mute",
 		"hintBody": "You joined to listen. Hold Space to open your mic while you speak, release to mute again."
