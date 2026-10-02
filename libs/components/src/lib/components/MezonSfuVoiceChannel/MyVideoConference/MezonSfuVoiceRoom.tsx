@@ -79,7 +79,7 @@ const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
 const SFU_DUPLICATE_SESSION_CLOSE_CODE = 4012;
 const PREFERRED_MICROPHONE_STORAGE_KEY = 'mezon.voice.inputDeviceId';
 const PREFERRED_SPEAKER_STORAGE_KEY = 'mezon.voice.outputDeviceId';
-const microphoneDeviceConstraint = (deviceId: string) => ({ deviceId: deviceId === 'default' ? { ideal: 'default' } : { exact: deviceId } });
+const microphoneDeviceConstraint = (deviceId: string) => ({ deviceId: { exact: deviceId } });
 const getNativeMicrophoneCaptureOptions = () => {
 	const options = getNoiseSuppressionAudioCaptureOptions(true);
 	options.voiceIsolation = false;
@@ -499,16 +499,14 @@ export function MezonSfuVoiceRoom({
 		try {
 			return await navigator.mediaDevices.getUserMedia({ audio, video });
 		} catch (cause) {
-			const constraint = (cause as DOMException & { constraint?: string })?.constraint;
-			if (
-				preferredMicrophoneIdRef.current === 'default' ||
-				!(cause instanceof DOMException) ||
-				cause.name !== 'OverconstrainedError' ||
-				constraint !== 'deviceId'
-			) {
-				throw cause;
-			}
-			return navigator.mediaDevices.getUserMedia({ audio: { ...audio, deviceId: { ideal: 'default' } }, video });
+			if ((cause as { name?: string } | null)?.name !== 'OverconstrainedError') throw cause;
+			const preferred = preferredMicrophoneIdRef.current;
+			const microphoneIds = (await navigator.mediaDevices.enumerateDevices())
+				.filter((device) => device.kind === 'audioinput')
+				.map((device) => device.deviceId);
+			if (microphoneIds.includes(preferred)) throw cause;
+			const systemDefault = preferred !== 'default' && microphoneIds.includes('default') ? { exact: 'default' } : undefined;
+			return navigator.mediaDevices.getUserMedia({ audio: { ...audio, deviceId: systemDefault }, video });
 		}
 	}, []);
 	const getOutgoingAudioTrack = useCallback((inputTrack: MediaStreamTrack | null | undefined) => {
@@ -638,9 +636,7 @@ export function MezonSfuVoiceRoom({
 	const [selectedSpeaker, setSelectedSpeaker] = useState(preferredSpeakerIdRef.current);
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const syncSelectedMicrophone = useCallback((track: MediaStreamTrack) => {
-		const preferred = preferredMicrophoneIdRef.current;
-		const active = track.getSettings().deviceId;
-		setSelectedMicrophone(preferred === 'default' || preferred === active ? preferred : active || 'default');
+		setSelectedMicrophone(track.getSettings().deviceId || preferredMicrophoneIdRef.current);
 	}, []);
 	const lastShownErrorRef = useRef<string>();
 	const lastGridWheelTimeRef = useRef<number>(0);

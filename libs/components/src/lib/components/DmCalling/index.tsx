@@ -48,7 +48,6 @@ const MediaPermissionBadge = () => (
 	</div>
 );
 
-// DmCalling check later
 const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: boolean) => void }, DmCallingProps>(({ dmGroupId, directId }, ref) => {
 	const dispatch = useAppDispatch();
 	const { t, i18n } = useTranslation('channelVoice');
@@ -82,6 +81,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	}, [currentDmGroup?.user_ids, isInCall, signalingData]);
 
 	const {
+		peerConnection,
 		timeStartConnected,
 		isMyCaller,
 		startCall,
@@ -135,6 +135,12 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 			handleSignalingMessage(lastSignalingData);
 		}
 	}, [isInCall, signalingData]);
+
+	useEffect(() => {
+		if (!isInCall && peerConnection.current) {
+			handleEndCall(true);
+		}
+	}, [isInCall]);
 
 	useImperativeHandle(ref, () => ({
 		triggerCall
@@ -337,7 +343,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 			<div
 				className={`flex ${activeVideo === 'local' || activeVideo === 'remote' ? 'relative w-full h-[calc(100%_-_32px)] justify-center' : 'flex justify-center items-center h-full'} space-x-4 max-sbm:flex-col max-sbm:space-x-0 max-sbm:space-y-4 ${!isShowMeetDM && !isRemoteVideo ? 'hidden -z-10 opacity-0' : `${activeVideo === 'local' || activeVideo === 'remote' ? '' : 'z-10 mb-5 mt-5'}`}`}
 			>
-				{/* Local Video */}
 				<div className={remoteVideoContainerClass}>
 					<video
 						ref={localVideoRef}
@@ -370,7 +375,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 						)}
 					</div>
 				</div>
-				{/* Remote Video */}
 				<div className={localVideoContainerClass}>
 					<div className="relative w-full h-full">
 						<video

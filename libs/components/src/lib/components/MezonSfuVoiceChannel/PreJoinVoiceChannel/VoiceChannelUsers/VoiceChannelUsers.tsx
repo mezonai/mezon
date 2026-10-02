@@ -1,7 +1,6 @@
 import type { VoiceUserData } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, getAvatarForPrioritize, useSyncEffect, useWindowSize } from '@mezon/utils';
+import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize, useSyncEffect, useWindowSize } from '@mezon/utils';
 import { useCallback, useState } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 
@@ -61,21 +60,26 @@ export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProp
 
 export function VoiceUserItem({ userId, userName, userAvatar }: { userId: string; userName: string; userAvatar: string }) {
 	const userVoice = useAppSelector((state) => selectMemberClanByUserId(state, userId));
-	const username = userVoice?.user?.username || userName;
+	const username = getNameForPrioritize(userVoice?.clan_nick, userVoice?.user?.display_name, userVoice?.user?.username) || userName;
 	const avatar = getAvatarForPrioritize(userVoice?.clan_avatar, userVoice?.user?.avatar_url) || userAvatar;
-	const avatarUrl = createImgproxyUrl(avatar ?? '', {
-		width: 300,
-		height: 300,
-		resizeType: 'fit'
-	});
+	const avatarUrl = avatar
+		? createImgproxyUrl(avatar, {
+				width: 300,
+				height: 300,
+				resizeType: 'fit'
+			})
+		: undefined;
 
 	return (
 		<div className="size-14 rounded-full">
-			{avatar ? (
-				<AvatarImage alt={username || ''} username={username} className="size-14" srcImgProxy={avatarUrl} src={avatar} />
-			) : (
-				<Icons.AvatarUser />
-			)}
+			<AvatarImage
+				alt={username || ''}
+				username={username}
+				className="size-14"
+				classNameText="font-semibold !text-xl"
+				srcImgProxy={avatarUrl}
+				src={avatar}
+			/>
 		</div>
 	);
 }

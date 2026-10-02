@@ -263,6 +263,7 @@
 		"loadMore1Option": "Xem thêm 1 câu trả lời",
 		"showLess": "Thu gọn",
 		"noVotesYet": "Chưa có người bình chọn",
-		"pollLabel": "[Bình chọn]"
+		"pollLabel": "[Bình chọn]",
+		"failedToCreatePoll": "Không thể tạo bình chọn"
 	}
 }
