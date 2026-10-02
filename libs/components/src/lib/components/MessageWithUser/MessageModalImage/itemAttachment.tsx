@@ -38,13 +38,13 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 		attachment.filetype?.includes(EMimeTypes.mp4) ||
 		attachment.filetype?.includes(EMimeTypes.mov);
 
-	const thumbnailClassName = `block w-[120px] h-[90px] max-[480px]:w-16 max-[480px]:h-12 object-cover rounded ${
+	const thumbnailClassName = `block w-[120px] h-[90px] max-sbm:w-16 max-sbm:h-12 object-cover rounded ${
 		isPresignPending ? 'cursor-default' : 'cursor-pointer'
 	} ${isSelected ? '' : 'overlay'}`;
 
 	return (
 		<div className={`attachment-item`} ref={isSelected ? selectedImageRef : null}>
-			{showDate && <div className={`dark:text-white text-black mb-1 text-center max-[480px]:text-xs`}>{previousDate}</div>}
+			{showDate && <div className={`dark:text-white text-black mb-1 text-center max-sbm:text-xs`}>{previousDate}</div>}
 			<div
 				className={`relative flex w-fit mx-auto rounded-md border-2 ${isPresignPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'border-buttonPrimary' : 'border-transparent'}`}
 				onClick={handleSelectImage}
