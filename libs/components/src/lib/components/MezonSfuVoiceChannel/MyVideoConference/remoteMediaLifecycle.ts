@@ -58,12 +58,23 @@ export const canReactivateMid = (retired: RetiredSource | undefined, next: MsidO
 export const isRemoteScreenSharing = (participant: SfuRemoteMedia) =>
 	participant.screen?.readyState === 'live' && participant.screenActive === true && participant.screenRequested !== false;
 
+const parsePeerMetadata = (raw?: string): { username?: string; avatar?: string } | null => {
+	if (!raw) return null;
+	const json = safeJSONParse(raw) as { username?: string; avatar?: string } | null;
+	if (json && typeof json === 'object' && (json.username || json.avatar)) return json;
+	if (raw.includes(';')) {
+		const [username, avatar] = raw.split(';');
+		return { username: username || undefined, avatar: avatar || undefined };
+	}
+	return null;
+};
+
 export const mergeRemotePeerState = (participant: SfuRemoteMedia, peer: SfuPeer): SfuRemoteMedia => {
 	const peerId = String(peer.peer_id);
 	const changedOwner =
 		(participant.peerId && participant.peerId !== peerId) || (participant.userId && peer.user_id && participant.userId !== peer.user_id);
 	const current: SfuRemoteMedia = changedOwner ? { id: participant.id } : participant;
-	const metaPeer = peer.metadata ? (safeJSONParse(peer.metadata) as { username?: string; avatar?: string }) : null;
+	const metaPeer = parsePeerMetadata(peer.metadata);
 	return {
 		...current,
 		peerId,
