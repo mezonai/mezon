@@ -263,6 +263,7 @@
 		"loadMore1Option": "Load more 1 option",
 		"showLess": "Show less",
 		"noVotesYet": "No votes yet",
-		"pollLabel": "[Poll]"
+		"pollLabel": "[Poll]",
+		"failedToCreatePoll": "Failed to create poll"
 	}
 }
