@@ -35,6 +35,7 @@ import {
 	LoadMoreDirection,
 	convertDateStringI18n,
 	createImgproxyUrl,
+	generateAttachmentId,
 	generateE2eId,
 	isAttachmentPresignPendingForMessage,
 	shouldHidePresignAttachment
@@ -475,7 +476,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(
 				attachmentActions.setCurrentAttachment({
 					...enhancedAttachmentData,
-					id: enhancedAttachmentData.message_id as string,
+					id: generateAttachmentId(enhancedAttachmentData, enhancedAttachmentData.message_id as string),
 					uploader: enhancedAttachmentData.uploader,
 					create_time: enhancedAttachmentData.create_time
 				})
@@ -489,17 +490,26 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				const messageTimestamp = enhancedAttachmentData.create_time
 					? Math.floor(new Date(enhancedAttachmentData.create_time).getTime() / 1000)
 					: undefined;
-				const beforeTimestamp = messageTimestamp ? messageTimestamp + 1 : undefined;
+				const fetchAttachments = (direction: 'initial' | 'before' | 'after', cursor?: number) =>
+					dispatch(
+						attachmentActions.fetchChannelAttachments({
+							clanId,
+							channelId,
+							state: undefined,
+							limit: 50,
+							direction,
+							...(direction === 'before' && cursor !== undefined && { before: cursor }),
+							...(direction === 'after' && cursor !== undefined && { after: cursor }),
+							noCache: true
+						})
+					);
 
-				dispatch(
-					attachmentActions.fetchChannelAttachments({
-						clanId,
-						channelId,
-						state: undefined,
-						limit: 50,
-						before: beforeTimestamp
-					})
-				);
+				if (messageTimestamp) {
+					fetchAttachments('before', messageTimestamp + 1);
+					fetchAttachments('after', messageTimestamp);
+				} else {
+					fetchAttachments('initial');
+				}
 			}
 		},
 		[dispatch]
@@ -575,7 +585,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 													</label>
 													<Suspense fallback={<DatePickerPlaceholder />}>
 														<DatePickerWrapper
-															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none ${
+															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none dark:[color-scheme:dark] ${
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
@@ -594,7 +604,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 													</label>
 													<Suspense fallback={<DatePickerPlaceholder />}>
 														<DatePickerWrapper
-															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none ${
+															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none dark:[color-scheme:dark] ${
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
