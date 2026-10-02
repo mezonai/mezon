@@ -1,5 +1,37 @@
 type MicrophoneHealth = { micExpected: boolean; captureHealthy: boolean; senderHealthy: boolean };
 type ReceiveProgress = { packets: number; samples?: number };
+type InboundLoss = { received: number; lost: number };
+
+const WEAK_NETWORK_LOSS_RATIO = 0.05;
+const WEAK_NETWORK_MIN_PACKETS = 50;
+const WEAK_NETWORK_CLEAR_SAMPLES = 2;
+
+export class SfuNetworkQuality {
+	private inbound = new Map<string, InboundLoss>();
+	private weak = false;
+	private cleanSamples = 0;
+
+	isWeak(report: RTCStatsReport): boolean {
+		const inbound = new Map<string, InboundLoss>();
+		let expected = 0;
+		let lost = 0;
+		report.forEach((stat) => {
+			if (stat.type !== 'inbound-rtp' || typeof stat.packetsReceived !== 'number' || typeof stat.packetsLost !== 'number') return;
+			inbound.set(stat.id, { received: stat.packetsReceived, lost: stat.packetsLost });
+			const previous = this.inbound.get(stat.id);
+			if (!previous) return;
+			const lostDelta = Math.max(0, stat.packetsLost - previous.lost);
+			lost += lostDelta;
+			expected += lostDelta + Math.max(0, stat.packetsReceived - previous.received);
+		});
+		this.inbound = inbound;
+		const lossy = expected >= WEAK_NETWORK_MIN_PACKETS && lost / expected >= WEAK_NETWORK_LOSS_RATIO;
+		this.cleanSamples = lossy ? 0 : this.cleanSamples + 1;
+		if (lossy) this.weak = true;
+		else if (this.cleanSamples >= WEAK_NETWORK_CLEAR_SAMPLES) this.weak = false;
+		return this.weak;
+	}
+}
 
 // Silence, DTX, a locally muted microphone, or an idle remote participant are not failures.
 // Require sustained evidence of a broken track or audio progressing on only one side of the pipeline.

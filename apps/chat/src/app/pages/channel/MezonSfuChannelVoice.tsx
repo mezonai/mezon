@@ -78,7 +78,7 @@ interface VoiceConferenceContentProps {
 	serverUrl: string;
 	voiceInfo: ReturnType<typeof selectVoiceInfo>;
 	handleLeaveRoom: (self?: boolean) => Promise<void>;
-	onReconnectRequired: () => void;
+	onReconnectRequired: (networkLost: boolean) => void;
 	handleFullScreen: () => void;
 	isShowChatVoice: boolean;
 	isVoiceFullScreen: boolean;
@@ -154,6 +154,7 @@ const MezonSfuChannelVoiceInner = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [rejoinTarget, setRejoinTarget] = useState<VoiceJoinTarget | null>(null);
+	const [rejoinNetworkLost, setRejoinNetworkLost] = useState(false);
 	const joinRequestRef = useRef(0);
 	const joiningRef = useRef(false);
 	const dispatch = useAppDispatch();
@@ -188,7 +189,6 @@ const MezonSfuChannelVoiceInner = () => {
 		if (!target) setRejoinTarget(null);
 		setJoinRole(role);
 		if (target) {
-			// Rejoin must unmount the paused room before obtaining a fresh token.
 			flushSync(() => {
 				dispatch(voiceActions.resetVoiceControl());
 				dispatch(channelAppActions.clearAppInteractiveData());
@@ -246,7 +246,6 @@ const MezonSfuChannelVoiceInner = () => {
 						joinRole: role
 					})
 				);
-				// Publish the token last so the new room mounts with its final channel and role.
 				dispatch(voiceActions.setToken(result));
 				setRejoinTarget(null);
 			} else {
@@ -264,8 +263,9 @@ const MezonSfuChannelVoiceInner = () => {
 		}
 	});
 
-	const handleReconnectRequired = useLastCallback(() => {
+	const handleReconnectRequired = useLastCallback((networkLost: boolean) => {
 		if (!voiceInfo) return;
+		setRejoinNetworkLost(networkLost);
 		setRejoinTarget({ ...voiceInfo, joinRole });
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setVoiceConnectionState(false));
@@ -336,6 +336,7 @@ const MezonSfuChannelVoiceInner = () => {
 							{rejoinTarget && (
 								<SfuReconnectModal
 									loading={loading}
+									networkLost={rejoinNetworkLost}
 									onRejoin={() => void handleJoinRoom(rejoinTarget.joinRole || 'speaker', rejoinTarget)}
 									onExit={handleExitReconnect}
 								/>

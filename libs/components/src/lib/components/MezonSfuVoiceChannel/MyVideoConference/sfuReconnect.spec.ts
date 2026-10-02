@@ -8,10 +8,10 @@ describe('SFU reconnect contract', () => {
 	it.each([4003, 4004, 4005])('refreshes the token on %i', (code) => {
 		expect(sfuCloseAction(code)).toBe('refresh-token');
 	});
-	it('discards the failed DTLS transport on 4013', () => {
-		expect(sfuCloseAction(4013)).toBe('reset-transport');
+	it.each([1006, 4001, 4002, 4008, 4010, 4013, 4014])('reports a lost network on %i', (code) => {
+		expect(sfuCloseAction(code)).toBe('network-lost');
 	});
-	it.each([0, 1001, 1006, 1011, 4001, 4008, 4999])('retries %i', (code) => {
+	it.each([0, 1001, 1011, 4999])('retries %i', (code) => {
 		expect(sfuCloseAction(code)).toBe('retry');
 	});
 	it('uses bounded exponential backoff with equal jitter', () => {
