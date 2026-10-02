@@ -1175,6 +1175,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 			}
+			dispatch(userChannelsActions.markAccessChanged(user.channel_id));
 		},
 		[userId, isMobile]
 	);
@@ -1360,6 +1361,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			if (userAdds.status !== ADD_ROLE_CHANNEL_STATUS) {
 				dispatch(userChannelsActions.addUserChannel({ channelId: channel_desc.channel_id as string, userAdds: userIds }));
 			}
+			dispatch(userChannelsActions.markAccessChanged(channel_desc.channel_id as string));
 		},
 		[userId, dispatch]
 	);
