@@ -37,7 +37,7 @@ import {
 	removeDuplicatesById
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ModalLayout } from '../../components';
@@ -92,14 +92,15 @@ const ForwardMessageModal = () => {
 	const handleCloseModal = () => {
 		dispatch(toggleIsShowPopupForwardFalse());
 	};
-	const handleToggle = (id: string, type: number, isPublic: boolean, clanId?: string, channelLabel?: string, isFriend?: boolean) => {
-		const existingIndex = selectedObjectIdSends.findIndex((item) => item.id === id && item.type === type);
-		if (existingIndex !== -1) {
-			setSelectedObjectIdSends((prevItems) => [...prevItems.slice(0, existingIndex), ...prevItems.slice(existingIndex + 1)]);
-		} else {
-			setSelectedObjectIdSends((prevItems) => [...prevItems, { id, type, clanId, channelLabel, isPublic, isFriend }]);
-		}
-	};
+	const handleToggle = useCallback((id: string, type: number, isPublic: boolean, clanId?: string, channelLabel?: string, isFriend?: boolean) => {
+		setSelectedObjectIdSends((prevItems) => {
+			const existingIndex = prevItems.findIndex((item) => item.id === id && item.type === type);
+			if (existingIndex !== -1) {
+				return [...prevItems.slice(0, existingIndex), ...prevItems.slice(existingIndex + 1)];
+			}
+			return [...prevItems, { id, type, clanId, channelLabel, isPublic, isFriend }];
+		});
+	}, []);
 
 	const handleForward = () => {
 		return isForwardAll ? handleForwardAllMessage() : sentToMessage();
@@ -431,13 +432,16 @@ const ForwardMessageModal = () => {
 				name: item?.channel_label ?? '',
 				subText: item?.category_name ?? '',
 				icon: '#',
-				type: item?.type ?? '',
+				type: item?.type,
 				clanId: item?.clan_id ?? '',
 				channelLabel: item?.channel_label ?? '',
 				lastSentTimeStamp: item.last_sent_message?.timestamp_seconds,
 				typeSearch: TypeSearch.Channel_Type,
 				prioritizeName: item?.channel_label ?? '',
-				isPublic: item ? !item.channel_private : false
+				isPublic: item ? !item.channel_private : false,
+				channel_private: item?.channel_private ? 1 : 0,
+				age_restricted: (item as any)?.age_restricted,
+				parent_id: item?.parent_id
 			};
 		});
 		return list;
@@ -547,10 +551,7 @@ const ForwardMessageModal = () => {
 	);
 	// The message being forwarded may still be uploading; requesting its CDN url
 	// now would only cache a not-found.
-	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(
-		previewAttachment?.attachment?.url,
-		previewOwnerMessage ?? selectedMessage
-	);
+	const isPreviewPresignPending = isAttachmentPresignPendingForMessage(previewAttachment?.attachment?.url, previewOwnerMessage ?? selectedMessage);
 
 	return (
 		<ModalLayout onClose={handleCloseModal}>
