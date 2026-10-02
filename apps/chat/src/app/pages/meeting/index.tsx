@@ -189,7 +189,7 @@ export default function PreJoinCalling() {
 			setError(null);
 			setAvatar(avatar as string);
 			setJoinRole(role);
-			const metadata = JSON.stringify({ username: trimmed, avatar: avatar || getAvatar || '' });
+			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
 			await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
@@ -204,7 +204,7 @@ export default function PreJoinCalling() {
 
 	const handleRefreshToken = useCallback(async () => {
 		try {
-			const refreshMetadata = JSON.stringify({ username, avatar: avatar || getAvatar || '' });
+			const refreshMetadata = username || avatar || getAvatar ? `${username};${avatar || getAvatar || ''}` : '';
 			const res = await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
