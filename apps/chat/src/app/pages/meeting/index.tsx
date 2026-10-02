@@ -189,7 +189,7 @@ export default function PreJoinCalling() {
 			setError(null);
 			setAvatar(avatar as string);
 			setJoinRole(role);
-			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
+			const metadata = JSON.stringify({ username: trimmed, avatar: avatar || getAvatar || '' });
 			await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
@@ -204,11 +204,12 @@ export default function PreJoinCalling() {
 
 	const handleRefreshToken = useCallback(async () => {
 		try {
+			const refreshMetadata = JSON.stringify({ username, avatar: avatar || getAvatar || '' });
 			const res = await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
 					username,
-					metadata: '',
+					metadata: refreshMetadata,
 					isGuest: !isUser
 				})
 			).unwrap();
@@ -217,7 +218,7 @@ export default function PreJoinCalling() {
 			console.error('Error refreshing external meet token:', err);
 			return undefined;
 		}
-	}, [dispatch, code, username, isUser]);
+	}, [dispatch, code, username, avatar, getAvatar, isUser]);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
