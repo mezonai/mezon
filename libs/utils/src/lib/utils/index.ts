@@ -27,7 +27,7 @@ import type {
 	IMentionOnMessage,
 	IMessageSendPayload,
 	IMessageWithUser,
-	IPermissonMedia,
+	IPermissionMedia,
 	IRolesClan,
 	MentionDataProps,
 	MentionItem,
@@ -926,7 +926,7 @@ export function copyChannelLink(clanId: string, channelId: string) {
 	}
 }
 
-export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
+export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissionMedia> => {
 	const device = mediaType === 'audio' ? 'microphone' : 'camera';
 	try {
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

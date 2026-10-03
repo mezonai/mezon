@@ -1,4 +1,3 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage } from '@mezon/utils';
@@ -670,6 +669,7 @@ export const MessageLine = ({
 					: {
 							whiteSpace: 'break-spaces',
 							overflowWrap: 'break-word',
+							fontFeatureSettings: "'mkmk' 0",
 							minHeight: 30,
 							textAlign: 'left'
 						}

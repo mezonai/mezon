@@ -173,7 +173,8 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 								textOverflow: 'ellipsis'
 							}
 						: {
-								whiteSpace: 'pre-line'
+								whiteSpace: 'pre-line',
+								fontFeatureSettings: "'mkmk' 0"
 							}
 				}
 				className={` ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 text-theme-primary text-theme-primary-hover flex items-center  cursor-pointer' : 'text-theme-primary'}`}
