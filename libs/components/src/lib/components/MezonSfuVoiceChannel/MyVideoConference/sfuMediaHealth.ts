@@ -1,5 +1,45 @@
 type MicrophoneHealth = { micExpected: boolean; captureHealthy: boolean; senderHealthy: boolean };
 type ReceiveProgress = { packets: number; samples?: number };
+type StreamLoss = { packets: number; lost: number };
+type LossWindow = { expected: number; lost: number };
+
+const WEAK_NETWORK_LOSS_RATIO = 0.05;
+const WEAK_NETWORK_MIN_PACKETS = 50;
+const WEAK_NETWORK_CLEAR_SAMPLES = 2;
+
+const isLossy = ({ expected, lost }: LossWindow) => expected >= WEAK_NETWORK_MIN_PACKETS && lost / expected >= WEAK_NETWORK_LOSS_RATIO;
+
+export class SfuNetworkQuality {
+	private streams = new Map<string, StreamLoss>();
+	private weak = false;
+	private cleanSamples = 0;
+
+	isWeak(report: RTCStatsReport): boolean {
+		const streams = new Map<string, StreamLoss>();
+		const received: LossWindow = { expected: 0, lost: 0 };
+		const sent: LossWindow = { expected: 0, lost: 0 };
+		report.forEach((stat) => {
+			if (typeof stat.packetsLost !== 'number') return;
+			const outbound = stat.type === 'remote-inbound-rtp' ? report.get(stat.localId) : undefined;
+			const packets = stat.type === 'inbound-rtp' ? stat.packetsReceived : outbound?.packetsSent;
+			if (typeof packets !== 'number') return;
+			streams.set(stat.id, { packets, lost: stat.packetsLost });
+			const previous = this.streams.get(stat.id);
+			if (!previous) return;
+			const lostDelta = Math.max(0, stat.packetsLost - previous.lost);
+			const packetsDelta = Math.max(0, packets - previous.packets);
+			const direction = outbound ? sent : received;
+			direction.lost += lostDelta;
+			direction.expected += outbound ? packetsDelta : packetsDelta + lostDelta;
+		});
+		this.streams = streams;
+		const lossy = isLossy(received) || isLossy(sent);
+		this.cleanSamples = lossy ? 0 : this.cleanSamples + 1;
+		if (lossy) this.weak = true;
+		else if (this.cleanSamples >= WEAK_NETWORK_CLEAR_SAMPLES) this.weak = false;
+		return this.weak;
+	}
+}
 
 // Silence, DTX, a locally muted microphone, or an idle remote participant are not failures.
 // Require sustained evidence of a broken track or audio progressing on only one side of the pipeline.

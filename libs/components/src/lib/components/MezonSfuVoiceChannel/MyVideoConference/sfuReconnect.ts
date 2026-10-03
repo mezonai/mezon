@@ -1,4 +1,4 @@
-export type SfuCloseAction = 'stop' | 'refresh-token' | 'reset-transport' | 'retry';
+export type SfuCloseAction = 'stop' | 'refresh-token' | 'network-lost' | 'retry';
 
 export const sfuCloseAction = (code: number): SfuCloseAction => {
 	switch (code) {
@@ -11,10 +11,16 @@ export const sfuCloseAction = (code: number): SfuCloseAction => {
 		case 4004:
 		case 4005:
 			return 'refresh-token';
+		case 1006:
+		case 4001:
+		case 4002:
+		case 4008:
+		case 4010:
 		case 4013:
-			return 'reset-transport';
+		case 4014:
+			return 'network-lost';
 		default:
-			return 'retry'; // Includes 1001, 1006, 1011, 4001, 4008 and missing close frames.
+			return 'retry';
 	}
 };
 
