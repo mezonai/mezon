@@ -145,7 +145,7 @@ class FastRealFFT512 {
 export class MezonNSEngine {
 	constructor(options = {}) {
 		this.suppressionIntensity = options.suppressionIntensity ?? 1.0;
-		this.enableNoiseGate = options.enableNoiseGate ?? true;
+		this.enableNoiseGate = options.enableNoiseGate ?? false;
 		this.attenuationLimitDb = options.attenuationLimitDb ?? 0.0;
 		this.modelTargetRms =
 			Number.isFinite(options.modelInputTargetDbfs) && options.modelInputTargetDbfs < 0

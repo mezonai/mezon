@@ -3,7 +3,6 @@ import {
 	generateMeetToken,
 	selectEntitesUserClans,
 	selectNoiseSuppressionEnabled,
-	selectNoiseSuppressionReady,
 	selectShowCamera,
 	selectShowMicrophone,
 	toastActions,
@@ -68,18 +67,20 @@ import {
 	type ScreenShareMode
 } from './screenShareQuality';
 
-import { SfuMediaHealth } from './sfuMediaHealth';
+import { SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
 
 const ICE_RECOVERY_GRACE_MS = 4000;
+const NETWORK_QUALITY_INTERVAL_MS = 5000;
 const TRANSPORT_CONNECT_DEADLINE_MS = 15_000;
 const MAX_TOKEN_REFRESH_ATTEMPTS = 3;
 const MAX_RECONNECT_ATTEMPTS = 4;
 const MAX_RECOVERY_MS = 120_000;
+const SFU_SERVER_RESTART_CLOSE_CODE = 1001;
 const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
 const SFU_DUPLICATE_SESSION_CLOSE_CODE = 4012;
 const PREFERRED_MICROPHONE_STORAGE_KEY = 'mezon.voice.inputDeviceId';
-const microphoneDeviceConstraint = (deviceId: string) => ({ deviceId: deviceId === 'default' ? { ideal: 'default' } : { exact: deviceId } });
+const microphoneDeviceConstraint = (deviceId: string) => ({ deviceId: { exact: deviceId } });
 const getNativeMicrophoneCaptureOptions = () => {
 	const options = getNoiseSuppressionAudioCaptureOptions(true);
 	options.voiceIsolation = false;
@@ -433,7 +434,7 @@ export interface MezonSfuVoiceRoomProps {
 	isExternalCalling?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
 	onLeaveRoom: () => void;
-	onReconnectRequired?: () => void;
+	onReconnectRequired?: (networkLost: boolean) => void;
 	onFullScreen: () => void;
 	onToggleChat: () => void;
 	username?: string;
@@ -469,9 +470,6 @@ export function MezonSfuVoiceRoom({
 	const microphoneEnabled = useSelector(selectShowMicrophone);
 	const cameraEnabled = useSelector(selectShowCamera);
 	const noiseSuppressionEnabled = useSelector(selectNoiseSuppressionEnabled);
-	const noiseSuppressionReady = useSelector(selectNoiseSuppressionReady);
-	const noiseSuppressionReadyRef = useRef(noiseSuppressionReady);
-	noiseSuppressionReadyRef.current = noiseSuppressionReady;
 	const noiseSuppressionEnabledRef = useRef(noiseSuppressionEnabled);
 	const { hasMicrophoneAccess, hasCameraAccess, microphonePermissionState, cameraPermissionState } = useMediaPermissions();
 
@@ -502,25 +500,20 @@ export function MezonSfuVoiceRoom({
 		try {
 			return await navigator.mediaDevices.getUserMedia({ audio, video });
 		} catch (cause) {
-			const constraint = (cause as DOMException & { constraint?: string })?.constraint;
-			if (
-				preferredMicrophoneIdRef.current === 'default' ||
-				!(cause instanceof DOMException) ||
-				cause.name !== 'OverconstrainedError' ||
-				constraint !== 'deviceId'
-			) {
-				throw cause;
-			}
-			return navigator.mediaDevices.getUserMedia({ audio: { ...audio, deviceId: { ideal: 'default' } }, video });
+			if ((cause as { name?: string } | null)?.name !== 'OverconstrainedError') throw cause;
+			const preferred = preferredMicrophoneIdRef.current;
+			const microphoneIds = (await navigator.mediaDevices.enumerateDevices())
+				.filter((device) => device.kind === 'audioinput')
+				.map((device) => device.deviceId);
+			if (microphoneIds.includes(preferred)) throw cause;
+			const systemDefault = preferred !== 'default' && microphoneIds.includes('default') ? { exact: 'default' } : undefined;
+			return navigator.mediaDevices.getUserMedia({ audio: { ...audio, deviceId: systemDefault }, video });
 		}
 	}, []);
 	const getOutgoingAudioTrack = useCallback((inputTrack: MediaStreamTrack | null | undefined) => {
 		if (!inputTrack) return null;
 		const pipeline = mezonNsPipelineRef.current;
-		if (noiseSuppressionEnabledRef.current) {
-			return pipeline?.inputTrack === inputTrack && pipeline.isDenoisingReady ? pipeline.track : null;
-		}
-		// A Mezon-NS capture has native suppression disabled. Never publish it in Off mode.
+		if (noiseSuppressionEnabledRef.current && pipeline?.inputTrack === inputTrack && pipeline.isDenoisingReady) return pipeline.track;
 		return microphoneCaptureModeRef.current.get(inputTrack) === 'native' ? inputTrack : null;
 	}, []);
 	const setAudioTrackEnabled = useCallback((inputTrack: MediaStreamTrack, enabled: boolean) => {
@@ -585,6 +578,9 @@ export function MezonSfuVoiceRoom({
 		onRefreshTokenRef.current = onRefreshToken;
 	}, [onRefreshToken]);
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
+	const [weakNetwork, setWeakNetwork] = useState(false);
+	const weakNetworkRef = useRef(weakNetwork);
+	weakNetworkRef.current = weakNetwork;
 	const [error, setError] = useState<string>();
 	const [localPreview, setLocalPreview] = useState<MediaStream>();
 	const [localAudioTrack, setLocalAudioTrack] = useState<MediaStreamTrack>();
@@ -642,9 +638,7 @@ export function MezonSfuVoiceRoom({
 	const [selectedMicrophone, setSelectedMicrophone] = useState(preferredMicrophoneIdRef.current);
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	const syncSelectedMicrophone = useCallback((track: MediaStreamTrack) => {
-		const preferred = preferredMicrophoneIdRef.current;
-		const active = track.getSettings().deviceId;
-		setSelectedMicrophone(preferred === 'default' || preferred === active ? preferred : active || 'default');
+		setSelectedMicrophone(track.getSettings().deviceId || preferredMicrophoneIdRef.current);
 	}, []);
 	const lastShownErrorRef = useRef<string>();
 	const lastGridWheelTimeRef = useRef<number>(0);
@@ -718,6 +712,28 @@ export function MezonSfuVoiceRoom({
 		lastShownErrorRef.current = error;
 		dispatch(toastActions.addToast({ message: error, type: 'error', autoClose: 3000 }));
 	}, [dispatch, error]);
+
+	useEffect(() => {
+		if (connectionState !== 'connected') {
+			setWeakNetwork(false);
+			return;
+		}
+		let cancelled = false;
+		const quality = new SfuNetworkQuality();
+		const timer = window.setInterval(() => {
+			const pc = pcRef.current;
+			if (!pc) return;
+			void withSfuTimeout(pc.getStats(), 2000)
+				.then((report) => {
+					if (!cancelled && pcRef.current === pc) setWeakNetwork(quality.isWeak(report));
+				})
+				.catch(() => undefined);
+		}, NETWORK_QUALITY_INTERVAL_MS);
+		return () => {
+			cancelled = true;
+			window.clearInterval(timer);
+		};
+	}, [connectionState]);
 
 	const findUplinkVideoSender = useCallback((mid = '1') => {
 		const pc = pcRef.current;
@@ -931,8 +947,6 @@ export function MezonSfuVoiceRoom({
 		}
 	}, [dispatch, getMicrophoneCaptureOptions, openPreferredMicrophone, syncSelectedMicrophone]);
 
-	// Mezon-NS prepares only on a live track and holds every unmute until it is ready. When access arrives
-	// after the join-time capture failed, capture a muted track so the filter can prepare.
 	const previousMicrophonePermissionRef = useRef(microphonePermissionState);
 	useEffect(() => {
 		const previous = previousMicrophonePermissionRef.current;
@@ -949,25 +963,12 @@ export function MezonSfuVoiceRoom({
 		void acquireMicrophoneTrack();
 	}, [acquireMicrophoneTrack, microphonePermissionState, noiseSuppressionEnabled]);
 
-	const pendingUnmuteRef = useRef(false);
-	useEffect(() => {
-		if (!pendingUnmuteRef.current || (noiseSuppressionEnabled && !noiseSuppressionReady)) return;
-		pendingUnmuteRef.current = false;
-		dispatch(voiceActions.setShowMicrophone(true));
-	}, [dispatch, noiseSuppressionEnabled, noiseSuppressionReady]);
-
 	const handleRequestMicrophonePermission = useCallback(async () => {
 		if (joinRole !== 'speaker') {
 			await ensureMediaPermission('microphone');
 			return;
 		}
-		const enableMicrophone = () => {
-			if (noiseSuppressionEnabledRef.current && !noiseSuppressionReadyRef.current) {
-				pendingUnmuteRef.current = true;
-			} else {
-				dispatch(voiceActions.setShowMicrophone(true));
-			}
-		};
+		const enableMicrophone = () => dispatch(voiceActions.setShowMicrophone(true));
 		if (await ensureMediaPermission('microphone', enableMicrophone)) enableMicrophone();
 	}, [dispatch, joinRole]);
 
@@ -1077,14 +1078,9 @@ export function MezonSfuVoiceRoom({
 			if (pipeline && mezonNsPipelineRef.current !== pipeline) return;
 			console.warn('[MezonSFU][Mezon-NS] unavailable; restoring native microphone processing', cause);
 			if (noiseSuppressionEnabledRef.current) {
-				dispatch(voiceActions.setShowMicrophone(false));
-				pushToTalkRequestedRef.current = false;
-				setPushToTalkActive(false);
-				const inputTrack = localStreamRef.current?.getAudioTracks()[0];
-				if (inputTrack) inputTrack.enabled = false;
 				dispatch(
 					toastActions.addToast({
-						message: 'Noise suppression could not start. Your microphone is muted; turn it on to use standard audio.',
+						message: 'Noise suppression could not start. Standard noise suppression is used instead.',
 						type: 'warning',
 						autoClose: 5000
 					})
@@ -1129,19 +1125,24 @@ export function MezonSfuVoiceRoom({
 
 		const sender = () => pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
 		const openMicrophone = async (audio: MediaTrackConstraints) => {
+			const liveDeviceId = inputTrack?.readyState === 'live' ? inputTrack.getSettings().deviceId : undefined;
+			const open = () =>
+				liveDeviceId
+					? navigator.mediaDevices.getUserMedia({ audio: { ...audio, deviceId: { exact: liveDeviceId } }, video: false })
+					: openPreferredMicrophone(audio, false);
 			try {
-				return await openPreferredMicrophone(audio, false);
+				return await open();
 			} catch (cause) {
 				if (!(cause instanceof DOMException) || cause.name !== 'OverconstrainedError' || inputTrack?.readyState !== 'live' || !isCurrent())
 					throw cause;
 				inputTrack.stop();
-				return openPreferredMicrophone(audio, false);
+				return open();
 			}
 		};
 		void (async () => {
 			try {
 				const activeSender = sender();
-				if (activeSender) await activeSender.replaceTrack(null);
+				if (activeSender && !enabled) await activeSender.replaceTrack(null);
 				if (!isCurrent()) return;
 				currentPipeline?.dispose();
 				if (mezonNsPipelineRef.current === currentPipeline) mezonNsPipelineRef.current = null;
@@ -1162,25 +1163,27 @@ export function MezonSfuVoiceRoom({
 						microphoneCaptureModeRef.current.set(nextTrack, 'native');
 					}
 				} else {
-					if (
-						inputTrack.readyState !== 'live' ||
-						microphoneCaptureModeRef.current.get(inputTrack) !== 'mezon-ns' ||
-						capture.noiseSuppression === true ||
-						capture.autoGainControl === false ||
-						capture.voiceIsolation === true
-					) {
-						const stream = await openMicrophone({ ...getMezonNsAudioCaptureOptions(), ...device });
-						nextTrack = stream.getAudioTracks()[0];
-						if (!nextTrack) throw new Error('Microphone capture returned no audio track');
-						pendingInput = nextTrack;
-						microphoneCaptureModeRef.current.set(nextTrack, 'mezon-ns');
-					}
-					if (!isCurrent()) return;
-					const settings = nextTrack.getSettings();
-					if (settings.noiseSuppression === true) throw new Error('Native noise suppression could not be disabled');
-					nextTrack.enabled = inputTrack.enabled;
 					candidate = await MezonNsAudioPipeline.create(
-						nextTrack,
+						async () => {
+							if (!isCurrent()) throw new Error('Mezon-NS preparation was superseded');
+							if (
+								inputTrack.readyState !== 'live' ||
+								microphoneCaptureModeRef.current.get(inputTrack) !== 'mezon-ns' ||
+								capture.noiseSuppression === true ||
+								capture.autoGainControl === false ||
+								capture.voiceIsolation === true
+							) {
+								const stream = await openMicrophone({ ...getMezonNsAudioCaptureOptions(), ...device });
+								nextTrack = stream.getAudioTracks()[0];
+								if (!nextTrack) throw new Error('Microphone capture returned no audio track');
+								pendingInput = nextTrack;
+								microphoneCaptureModeRef.current.set(nextTrack, 'mezon-ns');
+							}
+							if (!isCurrent()) throw new Error('Mezon-NS preparation was superseded');
+							if (nextTrack.getSettings().noiseSuppression === true) throw new Error('Native noise suppression could not be disabled');
+							nextTrack.enabled = inputTrack.enabled;
+							return nextTrack;
+						},
 						(cause) => {
 							if (candidate && mezonNsPipelineRef.current === candidate) handleMezonNsFailure(cause, candidate);
 						},
@@ -1191,7 +1194,7 @@ export function MezonSfuVoiceRoom({
 				}
 				const localStream = localStreamRef.current;
 				if (!isCurrent() || !localStream?.getAudioTracks().includes(inputTrack)) return;
-				nextTrack.enabled = inputTrack.enabled; // Preserve a mute/PTT change made during initialization.
+				nextTrack.enabled = inputTrack.enabled;
 				mezonNsPipelineRef.current = candidate;
 				if (nextTrack !== inputTrack) {
 					localStream.removeTrack(inputTrack);
@@ -1309,6 +1312,7 @@ export function MezonSfuVoiceRoom({
 		let sessionToken = signalingTokenRef.current;
 		let tokenRejected = false;
 		let everJoined = false;
+		let serverRestarting = false;
 		let removeVisibilityListener: () => void = () => undefined;
 		let removeNetworkListeners: () => void = () => undefined;
 		const mediaSyncInterval = setInterval(() => {
@@ -1362,7 +1366,7 @@ export function MezonSfuVoiceRoom({
 		let reconnectAttempts = 0;
 		let tokenRefreshAttempts = 0;
 		let requestReconnect: () => void = () => undefined;
-		const endCallAfterReconnectFailure = () => {
+		const endCallAfterReconnectFailure = (networkLost = false) => {
 			if (!reconnectAllowed || disposed) return;
 			reconnectAllowed = false;
 
@@ -1378,12 +1382,12 @@ export function MezonSfuVoiceRoom({
 			localMediaPreparedRef.current = false;
 			setLocalMediaPrepared(false);
 			if (onReconnectRequiredRef.current) {
-				onReconnectRequiredRef.current();
+				onReconnectRequiredRef.current(networkLost);
 				return;
 			}
 			dispatch(
 				toastActions.addToast({
-					message: tRef.current('toast.disconnectedRejoin'),
+					message: tRef.current(networkLost ? 'toast.weakNetworkDisconnected' : 'toast.disconnectedRejoin'),
 					type: 'warning',
 					autoClose: 5000
 				})
@@ -1426,6 +1430,7 @@ export function MezonSfuVoiceRoom({
 			if (!joinedRef.current) return;
 
 			clearRecoveryDeadline();
+			serverRestarting = false;
 
 			reconnectAttempts = 0;
 		};
@@ -1437,7 +1442,7 @@ export function MezonSfuVoiceRoom({
 			if (disposed || !reconnectAllowed || reconnectTimer !== undefined || refreshingTokenRef.current) return;
 
 			const ws = wsRef.current;
-			wsRef.current = null; // Invalidate old signaling callbacks before closing.
+			wsRef.current = null;
 			ws?.close();
 			discardPeerConnection();
 			requestReconnect();
@@ -1445,13 +1450,14 @@ export function MezonSfuVoiceRoom({
 
 		restartSessionRef.current = restartSession;
 
+		const handleNetworkLoss = () => endCallAfterReconnectFailure(true);
+
 		const armTransportDeadline = (pc: RTCPeerConnection) => {
 			if (transportDeadlineTimer !== undefined) return;
 			transportDeadlineTimer = setTimeout(() => {
 				transportDeadlineTimer = undefined;
 				if (disposed || pcRef.current !== pc || pc.connectionState === 'connected') return;
-				setConnectionState('disconnected');
-				restartSession();
+				handleNetworkLoss();
 			}, TRANSPORT_CONNECT_DEADLINE_MS);
 		};
 
@@ -1551,8 +1557,7 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 				if (iceState === 'failed') {
-					setConnectionState('disconnected');
-					restartSession();
+					handleNetworkLoss();
 					return;
 				}
 				if (iceState === 'disconnected') {
@@ -1560,7 +1565,7 @@ export function MezonSfuVoiceRoom({
 					if (iceRecoveryTimer !== undefined) return;
 					iceRecoveryTimer = setTimeout(() => {
 						iceRecoveryTimer = undefined;
-						restartSession();
+						handleNetworkLoss();
 					}, ICE_RECOVERY_GRACE_MS);
 				}
 			};
@@ -1573,9 +1578,7 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 				if (pc.connectionState === 'failed') {
-					clearTransportDeadlineTimer();
-					setConnectionState('disconnected');
-					restartSession();
+					handleNetworkLoss();
 				}
 			};
 			pc.ontrack = ({ track, transceiver }) => {
@@ -1888,7 +1891,7 @@ export function MezonSfuVoiceRoom({
 					everJoined = true;
 					tokenRefreshAttempts = 0;
 					const resumePushToTalk = joinRole === 'audience' && pushToTalkRequestedRef.current;
-					sendMute(!desiredMediaRef.current.microphoneEnabled && !resumePushToTalk);
+					if (desiredMediaRef.current.microphoneEnabled || resumePushToTalk) sendMute(false);
 					if (resumePushToTalk) {
 						ws.send(JSON.stringify({ type: 'push_to_talk', active: true }));
 					}
@@ -2004,6 +2007,11 @@ export function MezonSfuVoiceRoom({
 				wsRef.current = null;
 				if (disposed || !reconnectAllowed) return;
 				const action = sfuCloseAction(event.code);
+				if (action === 'network-lost' && !serverRestarting) {
+					handleNetworkLoss();
+					return;
+				}
+				if (event.code === SFU_SERVER_RESTART_CLOSE_CODE) serverRestarting = true;
 
 				discardPeerConnection();
 				reconnectAllowed = action !== 'stop';
@@ -2052,6 +2060,10 @@ export function MezonSfuVoiceRoom({
 		requestReconnect = () => {
 			if (disposed || !reconnectAllowed || refreshingTokenRef.current || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED))
 				return;
+			if (weakNetworkRef.current) {
+				handleNetworkLoss();
+				return;
+			}
 			beginRecovery();
 			if (!canOpenSignaling() || refreshingTokenRef.current || reconnectTimer !== undefined) return;
 			if (typeof navigator !== 'undefined' && navigator.onLine === false) {
@@ -2078,23 +2090,11 @@ export function MezonSfuVoiceRoom({
 			if (pcRef.current?.connectionState === 'connected' && wsRef.current?.readyState === WebSocket.OPEN) return;
 			restartSession();
 		};
-		const handleOffline = () => {
-			if (disposed || !reconnectAllowed) return;
-
-			beginRecovery();
-			if (reconnectTimer !== undefined) clearTimeout(reconnectTimer);
-			reconnectTimer = undefined;
-			setConnectionState('disconnected');
-			const ws = wsRef.current;
-			wsRef.current = null;
-			ws?.close();
-			discardPeerConnection();
-		};
 		window.addEventListener('online', handleOnline);
-		window.addEventListener('offline', handleOffline);
+		window.addEventListener('offline', handleNetworkLoss);
 		removeNetworkListeners = () => {
 			window.removeEventListener('online', handleOnline);
-			window.removeEventListener('offline', handleOffline);
+			window.removeEventListener('offline', handleNetworkLoss);
 		};
 
 		void prepareLocalMedia().finally(() => {
@@ -2113,9 +2113,7 @@ export function MezonSfuVoiceRoom({
 						now - lastSignalingAt >= 60_000 ||
 						muteTimeout !== undefined)
 				) {
-					if (muteTimeout !== undefined && monitorMediaRecovery && joinedRef.current && pcRef.current?.connectionState === 'connected')
-						endCallAfterReconnectFailure();
-					else restartSession();
+					handleNetworkLoss();
 					return;
 				}
 				if (ws?.readyState === WebSocket.OPEN) {
@@ -2124,7 +2122,7 @@ export function MezonSfuVoiceRoom({
 						try {
 							ws.send(JSON.stringify({ type: 'ping', timestamp: now }));
 						} catch {
-							restartSession();
+							handleNetworkLoss();
 						}
 					}
 					return;
@@ -2267,9 +2265,6 @@ export function MezonSfuVoiceRoom({
 			if (joinRole !== 'audience') return;
 			if (active && microphonePermissionStateRef.current !== 'granted' && !(await ensureMediaPermission('microphone'))) {
 				pushToTalkRequestedRef.current = false;
-				return;
-			}
-			if (active && noiseSuppressionEnabledRef.current && !noiseSuppressionReadyRef.current) {
 				return;
 			}
 			pushToTalkRequestedRef.current = active;
@@ -2510,8 +2505,10 @@ export function MezonSfuVoiceRoom({
 			return {
 				displayName:
 					getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) ||
-					Number(participant.userId || participant.id).toString(36),
-				avatar: getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url)
+					participant.username ||
+					participant.userId ||
+					GUEST_NAME,
+				avatar: getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || participant.avatar || ''
 			};
 		},
 		[clanMembers]
@@ -2537,8 +2534,7 @@ export function MezonSfuVoiceRoom({
 		[currentUserId, getParticipantProfile, localDisplayName, participants]
 	);
 
-	const isLocalAudioEnabled =
-		(joinRole === 'audience' ? pushToTalkActive : microphoneEnabled) && (!noiseSuppressionEnabled || noiseSuppressionReady);
+	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
 	const outgoingLocalAudioTrack = getOutgoingAudioTrack(localAudioTrack) || undefined;
 	const speakingMap = useParticipantsSpeakingMap(outgoingLocalAudioTrack, isLocalAudioEnabled, participants);
 	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
@@ -2549,8 +2545,8 @@ export function MezonSfuVoiceRoom({
 		isScreen: false,
 		content: (
 			<div
-				className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 ${
-					localSpeaking ? 'border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
+				className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 hover:border-zinc-400 ${
+					localSpeaking ? '!border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
 				}`}
 			>
 				{joinRole === 'speaker' && localPreview && cameraEnabled ? (
@@ -2786,6 +2782,8 @@ export function MezonSfuVoiceRoom({
 	const handleWriteChatExternal = (message: string) => {
 		wsRef.current?.send(JSON.stringify({ type: 'send_message', message }));
 	};
+	const connectionLabel =
+		connectionState === 'connected' && weakNetwork ? t('weakNetwork') : connectionState === 'awaiting offer' ? 'connecting' : connectionState;
 
 	return (
 		<>
@@ -2817,10 +2815,14 @@ export function MezonSfuVoiceRoom({
 						<strong className="text-base">{channelLabel || roomId}</strong>
 						<span
 							className={
-								connectionState === 'connected' ? 'text-green-400' : connectionState === 'failed' ? 'text-red-400' : 'text-yellow-300'
+								connectionState === 'failed'
+									? 'text-red-400'
+									: connectionState === 'connected' && !weakNetwork
+										? 'text-green-400'
+										: 'text-yellow-300'
 							}
 						>
-							· {connectionState}
+							· {connectionLabel}
 						</span>
 					</div>
 					<div className="flex items-center gap-4 text-[var(--bg-icon-theme)]">
@@ -2955,7 +2957,7 @@ export function MezonSfuVoiceRoom({
 												data-tile-id={tile.id}
 												data-participant-id={tile.participantId}
 												type="button"
-												className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors hover:border-zinc-500"
+												className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors"
 												onClick={() => setPinnedTrackId(tile.id)}
 												onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
 											>
@@ -2981,7 +2983,6 @@ export function MezonSfuVoiceRoom({
 					onRequestCameraPermission={handleRequestCameraPermission}
 					pushToTalkActive={pushToTalkActive}
 					microphoneEnabled={microphoneEnabled}
-					microphonePreparing={noiseSuppressionEnabled && !noiseSuppressionReady}
 					cameraEnabled={cameraEnabled}
 					screenSharing={screenSharing}
 					screenShareMode={screenShareMode}
@@ -3006,6 +3007,7 @@ export function MezonSfuVoiceRoom({
 					onPushToTalk={(active) => void setPushToTalk(active)}
 					pushToTalkHintDismissed={pushToTalkHintDismissed}
 					onDismissPushToTalkHint={() => setPushToTalkHintDismissed(true)}
+					weakNetwork={connectionState === 'connected' && weakNetwork}
 					onMicrophoneToggle={() => {
 						holdToTalkRef.current = false;
 						dispatch(voiceActions.setShowMicrophone(!microphoneEnabled));

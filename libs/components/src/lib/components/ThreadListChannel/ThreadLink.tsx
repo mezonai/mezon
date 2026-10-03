@@ -1,6 +1,7 @@
 import { toChannelPage, useChannels, useCustomNavigate, useMenu } from '@mezon/core';
 import {
 	appActions,
+	channelsActions,
 	notificationSettingActions,
 	referencesActions,
 	selectBuzzStateByChannelId,
@@ -120,6 +121,9 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 			navigate(link);
 		}
 		dispatch(referencesActions.setOpenEditMessageState(false));
+		if (buzzState) {
+			dispatch(channelsActions.setBuzzState({ clanId: thread.clan_id as string, channelId: thread.channel_id as string, buzzState: null }));
+		}
 		if (currentChannelId === thread.parent_id) {
 			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parent_id as string, isShowCreateThread: false }));
 		}

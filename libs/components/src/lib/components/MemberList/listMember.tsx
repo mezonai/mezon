@@ -43,13 +43,13 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
 				{userVoiceStatus?.status === EInvoice.INVOICE ? (
 					<>
-						<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-						{t('inVoice')}
+						<Icons.Speaker className="text-[#23a55a] !w-3 !h-3" />
+						<span className="opacity-60">{t('inVoice')}</span>
 					</>
 				) : (
 					<>
-						<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
-						{t('shareScreen')}
+						<Icons.VoiceScreenShareIcon color="#23a55a" className="!w-3 !h-3 " />
+						<span className="opacity-60">{t('shareScreen')}</span>
 					</>
 				)}
 			</span>
@@ -75,7 +75,9 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 				</div>
 				<div className="flex flex-col font-medium">
 					<ClanUserName userId={user.user?.id as string} name={username} isOwner={!!isOwner} />
-					<p className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px]">
+					<p
+						className={`text-xs text-left text-theme-primary line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px] ${typeof secondaryLine === 'string' ? 'opacity-60' : ''}`}
+					>
 						{secondaryLine}
 					</p>
 				</div>
@@ -117,13 +119,13 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 					<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
 						{userVoiceStatus?.status === EInvoice.INVOICE ? (
 							<>
-								<Icons.Speaker className="text-green-500 !w-3 !h-3" />
-								{t('inVoice')}
+								<Icons.Speaker className="text-[#23a55a] !w-3 !h-3" />
+								<span className="opacity-60">{t('inVoice')}</span>
 							</>
 						) : (
 							<>
-								<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
-								{t('shareScreen')}
+								<Icons.VoiceScreenShareIcon color="#23a55a" className="!w-3 !h-3 " />
+								<span className="opacity-60">{t('shareScreen')}</span>
 							</>
 						)}
 					</span>

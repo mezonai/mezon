@@ -4,35 +4,30 @@ import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface PushToTalkControlProps {
 	active: boolean;
-	preparing?: boolean;
 	onChange: (active: boolean) => void;
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
+	weakNetwork?: boolean;
 }
 
 export const PushToTalkControl = ({
 	active,
-	preparing = false,
 	onChange,
 	permissionState,
 	hasMicrophoneAccess,
-	onPermissionRequest
+	onPermissionRequest,
+	weakNetwork
 }: PushToTalkControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
-	const label = showWarning
-		? t('mediaPermission.needed.microphone')
-		: preparing
-			? 'Preparing noise suppression — microphone muted'
-			: 'Push to talk';
+	const label = showWarning ? t('mediaPermission.needed.microphone') : 'Push to talk';
 
 	const handlePointerDown = async (event: React.PointerEvent<HTMLButtonElement>) => {
 		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
 			await onPermissionRequest();
 			return;
 		}
-		if (preparing) return;
 		event.currentTarget.setPointerCapture(event.pointerId);
 		onChange(true);
 	};
@@ -44,9 +39,6 @@ export const PushToTalkControl = ({
 				type="button"
 				title={label}
 				aria-label={label}
-				aria-busy={preparing}
-				// handlePointerDown blocks speaking without briefly dimming the idle button.
-				aria-disabled={preparing && !active && !showWarning}
 				aria-pressed={active}
 				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-green-600' : ''}`}
 				onPointerDown={handlePointerDown}
@@ -60,6 +52,9 @@ export const PushToTalkControl = ({
 				<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">
 					<span className="text-black text-xs font-bold">!</span>
 				</div>
+			)}
+			{!showWarning && weakNetwork && (
+				<div className="pointer-events-none absolute -right-0.5 -top-0.5 z-10 h-3.5 w-3.5 rounded-full border-2 border-[#11111b] bg-orange-500" />
 			)}
 		</div>
 	);

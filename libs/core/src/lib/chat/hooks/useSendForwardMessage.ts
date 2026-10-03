@@ -74,7 +74,7 @@ export function useSendForwardMessage() {
 					fwd: true
 				};
 
-				const mentions = message.channel_id === channel_id ? sanitizedMentions : [];
+				const mentions = sanitizedMentions;
 
 				await client.joinChat(session, clanid || '0', channel_id, type, isPublic);
 

@@ -93,7 +93,10 @@ export const SfuScreenShareTile = ({
 	if (!stream || !sharing) return null;
 
 	return (
-		<div ref={tileRef} className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
+		<div
+			ref={tileRef}
+			className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66] hover:border-zinc-400"
+		>
 			<div className={`absolute inset-0 ${showVideo ? 'opacity-100' : 'opacity-0'}`}>
 				<SfuVideo
 					stream={stream}

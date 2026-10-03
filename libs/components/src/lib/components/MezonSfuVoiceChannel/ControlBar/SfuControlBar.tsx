@@ -1,5 +1,5 @@
 import { generateE2eId } from '@mezon/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
 import { RecordingControl } from '../Recording/RecordingControl';
 import { SfuAgentControl } from './AgentControl';
@@ -8,6 +8,7 @@ import { EmojiReactionControl } from './EmojiReactionControl';
 import { FullscreenControl } from './FullscreenControl';
 import { LeaveButton } from './LeaveButton';
 import { MicrophoneControl } from './MicrophoneControl';
+import { NetworkWarningHint } from './NetworkWarningHint';
 import { PopoutControl } from './PopoutControl';
 import { PushToTalkControl } from './PushToTalkControl';
 import { PushToTalkHint } from './PushToTalkHint';
@@ -27,8 +28,8 @@ interface SfuControlBarProps {
 	pushToTalkActive: boolean;
 	pushToTalkHintDismissed?: boolean;
 	onDismissPushToTalkHint?: () => void;
+	weakNetwork: boolean;
 	microphoneEnabled: boolean;
-	microphonePreparing?: boolean;
 	cameraEnabled: boolean;
 	screenSharing: boolean;
 	screenShareMode: ScreenShareMode;
@@ -74,8 +75,8 @@ export const SfuControlBar = ({
 	pushToTalkActive,
 	pushToTalkHintDismissed = false,
 	onDismissPushToTalkHint,
+	weakNetwork,
 	microphoneEnabled,
-	microphonePreparing = false,
 	cameraEnabled,
 	screenSharing,
 	screenShareMode,
@@ -112,6 +113,12 @@ export const SfuControlBar = ({
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
 	const handleVoiceInteractiveChange = onVoiceInteractivePanelChange ?? setLocalShowVoiceInteractive;
+	const [networkWarningDismissed, setNetworkWarningDismissed] = useState(false);
+	useEffect(() => {
+		if (!weakNetwork) setNetworkWarningDismissed(false);
+	}, [weakNetwork]);
+	const showNetworkWarning = weakNetwork && !networkWarningDismissed;
+	const dismissNetworkWarning = () => setNetworkWarningDismissed(true);
 	return (
 		<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3 max-md:flex max-md:flex-col max-md:justify-center max-md:gap-3 max-md:px-2 max-md:py-2">
 			<div className="flex items-center justify-start gap-4 max-md:justify-center max-md:gap-3">
@@ -148,27 +155,34 @@ export const SfuControlBar = ({
 					<div className="relative">
 						<PushToTalkControl
 							active={pushToTalkActive}
-							preparing={microphonePreparing}
 							onChange={onPushToTalk}
 							permissionState={microphonePermissionState}
 							hasMicrophoneAccess={hasMicrophoneAccess}
 							onPermissionRequest={onRequestMicrophonePermission}
+							weakNetwork={weakNetwork}
 						/>
-						{!pushToTalkHintDismissed && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />}
+						{showNetworkWarning ? (
+							<NetworkWarningHint onDismiss={dismissNetworkWarning} />
+						) : (
+							!pushToTalkHintDismissed && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />
+						)}
 					</div>
 				)}
 				{joinRole === 'speaker' && (
-					<MicrophoneControl
-						enabled={microphoneEnabled}
-						preparing={microphonePreparing}
-						devices={microphones}
-						selectedDeviceId={selectedMicrophone}
-						onToggle={onMicrophoneToggle}
-						onSelect={onMicrophoneSelect}
-						permissionState={microphonePermissionState}
-						hasMicrophoneAccess={hasMicrophoneAccess}
-						onPermissionRequest={onRequestMicrophonePermission}
-					/>
+					<div className="relative">
+						<MicrophoneControl
+							enabled={microphoneEnabled}
+							devices={microphones}
+							selectedDeviceId={selectedMicrophone}
+							onToggle={onMicrophoneToggle}
+							onSelect={onMicrophoneSelect}
+							permissionState={microphonePermissionState}
+							hasMicrophoneAccess={hasMicrophoneAccess}
+							onPermissionRequest={onRequestMicrophonePermission}
+							weakNetwork={weakNetwork}
+						/>
+						{showNetworkWarning && <NetworkWarningHint onDismiss={dismissNetworkWarning} />}
+					</div>
 				)}
 				{joinRole === 'speaker' && (
 					<CameraControl

@@ -740,7 +740,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const hashtagData = useMemo(() => {
 		return allChannels.reduce<Array<MentionData>>((acc, item) => {
-			const id = item?.channel_id ?? '';
+			const id = item?.channel_id ?? item?.id ?? '';
 			const display = item?.channel_label ?? '';
 			const subText = ((item as ChannelsEntity)?.category_name || item?.clan_name) ?? '';
 
