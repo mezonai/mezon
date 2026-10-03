@@ -23,6 +23,7 @@
 	"shareYourScreen": "Share Your Screen",
 	"disconnect": "Disconnect",
 	"weakNetwork": "Weak network",
+	"networkWarning": "Your internet connection is unstable. Others may not hear you clearly.",
 	"muteModal": {
 		"title": "Mute member",
 		"content": "Please confirm if you would like to mute \"{{userName}}\"?",

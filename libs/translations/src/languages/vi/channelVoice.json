@@ -23,6 +23,7 @@
 	"shareYourScreen": "Chia sẻ màn hình",
 	"disconnect": "Ngắt kết nối",
 	"weakNetwork": "Mạng yếu",
+	"networkWarning": "Kết nối mạng của bạn không ổn định. Người khác có thể không nghe rõ bạn.",
 	"muteModal": {
 		"title": "Tắt tiếng thành viên",
 		"content": "Bạn có chắc muốn tắt tiếng \"{{userName}}\"?",
