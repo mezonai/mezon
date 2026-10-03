@@ -1891,7 +1891,7 @@ export function MezonSfuVoiceRoom({
 					everJoined = true;
 					tokenRefreshAttempts = 0;
 					const resumePushToTalk = joinRole === 'audience' && pushToTalkRequestedRef.current;
-					sendMute(!desiredMediaRef.current.microphoneEnabled && !resumePushToTalk);
+					if (desiredMediaRef.current.microphoneEnabled || resumePushToTalk) sendMute(false);
 					if (resumePushToTalk) {
 						ws.send(JSON.stringify({ type: 'push_to_talk', active: true }));
 					}
