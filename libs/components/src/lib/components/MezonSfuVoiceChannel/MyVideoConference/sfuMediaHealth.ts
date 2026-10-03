@@ -18,9 +18,11 @@ export class SfuNetworkQuality {
 		const streams = new Map<string, StreamLoss>();
 		const received: LossWindow = { expected: 0, lost: 0 };
 		const sent: LossWindow = { expected: 0, lost: 0 };
+		const statsById = new Map<string, { packetsSent?: number }>();
+		report.forEach((stat) => statsById.set(stat.id, stat));
 		report.forEach((stat) => {
 			if (typeof stat.packetsLost !== 'number') return;
-			const outbound = stat.type === 'remote-inbound-rtp' ? report.get(stat.localId) : undefined;
+			const outbound = stat.type === 'remote-inbound-rtp' ? statsById.get(stat.localId) : undefined;
 			const packets = stat.type === 'inbound-rtp' ? stat.packetsReceived : outbound?.packetsSent;
 			if (typeof packets !== 'number') return;
 			streams.set(stat.id, { packets, lost: stat.packetsLost });
@@ -41,8 +43,6 @@ export class SfuNetworkQuality {
 	}
 }
 
-// Silence, DTX, a locally muted microphone, or an idle remote participant are not failures.
-// Require sustained evidence of a broken track or audio progressing on only one side of the pipeline.
 export class SfuMediaHealth {
 	private failures = new Map<string, number>();
 	private receive = new Map<string, ReceiveProgress>();
