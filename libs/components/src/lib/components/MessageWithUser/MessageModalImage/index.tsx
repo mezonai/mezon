@@ -428,7 +428,7 @@ const MessageModalImage = () => {
 					<Icons.MenuClose className="text-white w-full" />
 				</div>
 			</div>
-			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-[480px]:flex-col">
+			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-sbm:flex-col">
 				<div
 					className="flex-1 flex justify-center items-center px-5 py-3 overflow-hidden h-full w-full relative"
 					onClick={handleClickOutsideImage}
@@ -511,17 +511,17 @@ const MessageModalImage = () => {
 						/>
 					)}
 					<div
-						className={`h-full w-12 absolute flex flex-col right-0 gap-2 justify-center ${scale === 1 && !isVideo ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
+						className={`h-full w-12 absolute flex flex-col right-0 gap-2 justify-center max-sbm:h-auto max-sbm:w-full max-sbm:right-0 max-sbm:bottom-3 max-sbm:flex-row max-sbm:gap-4 ${scale === 1 && !isVideo ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
 						onClick={stopPropagation}
 					>
 						<div
-							className="rounded-full rotate-180 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
+							className="rounded-full rotate-180 max-sbm:rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 							onClick={handleSelectNextImage}
 						>
 							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
 						</div>
 						<div
-							className="rounded-full  bg-bgTertiary  cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
+							className="rounded-full max-sbm:-rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 							onClick={handleSelectPreviousImage}
 						>
 							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
