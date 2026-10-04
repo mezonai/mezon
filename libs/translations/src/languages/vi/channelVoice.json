@@ -22,6 +22,8 @@
 	"stopScreenShare": "Dừng chia sẻ màn hình",
 	"shareYourScreen": "Chia sẻ màn hình",
 	"disconnect": "Ngắt kết nối",
+	"weakNetwork": "Mạng yếu",
+	"networkWarning": "Kết nối mạng của bạn không ổn định. Người khác có thể không nghe rõ bạn.",
 	"muteModal": {
 		"title": "Tắt tiếng thành viên",
 		"content": "Bạn có chắc muốn tắt tiếng \"{{userName}}\"?",
@@ -35,6 +37,8 @@
 	"reconnectModal": {
 		"title": "Không thể kết nối phòng thoại",
 		"description": "Kết nối thoại đã bị gián đoạn. Vui lòng kiểm tra kết nối mạng và thử tham gia lại.",
+		"weakNetworkTitle": "Kết nối mạng yếu",
+		"weakNetworkDescription": "Mạng của bạn không ổn định nên kết nối thoại đã bị ngắt. Vui lòng kiểm tra kết nối mạng rồi tham gia lại.",
 		"rejoin": "Tham gia lại",
 		"joining": "Đang tham gia…",
 		"exit": "Thoát"
@@ -152,7 +156,8 @@
 		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi.",
 		"aloneTimeoutDisconnected": "Bạn đã bị ngắt khỏi kênh thoại vì ở một mình quá lâu.",
 		"duplicateSessionDisconnected": "Bạn đã tham gia kênh thoại trên thiết bị khác nên phiên này bị ngắt kết nối.",
-		"disconnectedRejoin": "Bạn đã bị ngắt khỏi kênh thoại."
+		"disconnectedRejoin": "Bạn đã bị ngắt khỏi kênh thoại.",
+		"weakNetworkDisconnected": "Bạn đã bị ngắt khỏi kênh thoại do mạng yếu."
 	},
 	"usernameScreen": "Màn hình của {{username}}",
 	"recording": {

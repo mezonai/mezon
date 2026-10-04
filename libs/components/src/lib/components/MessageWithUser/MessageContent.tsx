@@ -46,7 +46,7 @@ type IMessageContentProps = {
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
+const MessageContent = ({ message, mode, isSearchMessage, isInTopic, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
@@ -64,6 +64,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 		<MessageText
 			isOnlyContainEmoji={isOnlyContainEmoji}
 			isSearchMessage={isSearchMessage}
+			isInTopic={isInTopic}
 			content={contentUpdatedMention}
 			message={message}
 			lines={lineValue as string}
@@ -158,6 +159,7 @@ const MessageText = ({
 	content,
 	isOnlyContainEmoji,
 	isSearchMessage,
+	isInTopic,
 	onCopy,
 	isEphemeral,
 	isSending,
@@ -168,6 +170,7 @@ const MessageText = ({
 	mode?: number;
 	content?: IExtendedMessage;
 	isSearchMessage?: boolean;
+	isInTopic?: boolean;
 	isOnlyContainEmoji?: boolean;
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
 	isEphemeral?: boolean;
@@ -232,6 +235,7 @@ const MessageText = ({
 					isSending={isSending}
 					onContextMenu={onContextMenu}
 					senderId={message.sender_id}
+					topicId={isInTopic ? message.channel_id : undefined}
 				/>
 			) : null}
 		</>

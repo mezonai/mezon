@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 interface SfuReconnectModalProps {
 	loading: boolean;
+	networkLost: boolean;
 	onRejoin: () => void;
 	onExit: () => void;
 }
 
-export function SfuReconnectModal({ loading, onRejoin, onExit }: SfuReconnectModalProps) {
+export function SfuReconnectModal({ loading, networkLost, onRejoin, onExit }: SfuReconnectModalProps) {
 	const { t } = useTranslation('channelVoice');
 	const dialogRef = useRef<HTMLDivElement>(null);
 	const titleId = useId();
@@ -53,10 +54,10 @@ export function SfuReconnectModal({ loading, onRejoin, onExit }: SfuReconnectMod
 				className="my-auto w-[338px] max-w-full shrink-0 rounded-2xl border border-white/[0.06] bg-[#1b1c20]/95 p-5 text-[#d3d4d8] shadow-xl"
 			>
 				<h2 id={titleId} className="border-b border-white/5 pb-3 text-center text-lg font-semibold">
-					{t('reconnectModal.title')}
+					{t(networkLost ? 'reconnectModal.weakNetworkTitle' : 'reconnectModal.title')}
 				</h2>
 				<p id={descriptionId} className="py-5 text-sm leading-[18px] text-[#b5b5b8]">
-					{t('reconnectModal.description')}
+					{t(networkLost ? 'reconnectModal.weakNetworkDescription' : 'reconnectModal.description')}
 				</p>
 				<div className="flex flex-col gap-3">
 					<button
