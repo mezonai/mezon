@@ -114,15 +114,17 @@ export const createNewDirectMessage = createAsyncThunk(
 					directActions.upsertOne({
 						id: response.channel_id || '0',
 						...response,
-						usernames: Array.isArray(username) ? username : username ? [username] : [],
-						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : [],
+						usernames: Array.isArray(username) ? username : username ? [username] : undefined,
+						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : undefined,
 						channel_label: Array.isArray(display_names)
 							? display_names.join(',')
 							: Array.isArray(username)
 								? username.join(',')
-								: display_names || username,
-						channel_avatar: Array.isArray(avatar) ? avatar[0] : avatar || '/assets/images/avatar-group.png',
-						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
+								: display_names || username || undefined,
+						channel_avatar: Array.isArray(avatar)
+							? avatar[0]
+							: avatar || (response.type === ChannelType.CHANNEL_TYPE_GROUP ? '/assets/images/avatar-group.png' : undefined),
+						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : undefined,
 						user_ids: body.user_ids,
 						active: 1,
 						last_sent_message: {
@@ -518,6 +520,10 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		const isSelfDM = isDM && Boolean(myId) && Boolean(users?.length) && users.every((u) => u?.user_id === myId);
 
 		for (const user of users || []) {
+			if (!user || !user.user_id) {
+				continue;
+			}
+
 			listMember.avatars.push(user.avatar);
 			listMember.user_ids.push(user.user_id);
 			listMember.usernames.push(user.username);
@@ -525,7 +531,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			listMember.display_names.push(user.display_name || user.username);
 
 			const isMe = user.user_id === myId;
-			if ((isDM && !isSelfDM && isMe) || !user.user_id) {
+			if (isDM && !isSelfDM && isMe) {
 				continue;
 			}
 
@@ -549,7 +555,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			user_ids: userIds,
 			usernames,
 			display_names: label,
-			channel_avatar: channel_desc.channel_avatar || avatars[0] || '/assets/images/avatar-group.png',
+			channel_avatar: channel_desc.channel_avatar || (isSelfDM ? avatars[0] : undefined) || '/assets/images/avatar-group.png',
 			avatars,
 			onlines,
 			active: 1,
@@ -615,6 +621,9 @@ export const directSlice = createSlice({
 
 			if ((dataUpdate.channel_label === undefined || dataUpdate.channel_label.trim()) && existingEntity?.channel_label?.trim()) {
 				dataUpdate.channel_label = existingEntity.channel_label;
+			}
+			if (dataUpdate.channel_avatar === undefined && existingEntity?.channel_avatar) {
+				dataUpdate.channel_avatar = existingEntity.channel_avatar;
 			}
 			if (dataUpdate.avatars === undefined && existingEntity?.avatars?.length) {
 				dataUpdate.avatars = existingEntity.avatars;
