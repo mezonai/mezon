@@ -183,24 +183,20 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<br([^>]*)?>/g, '\n');
 
 	// Strip redundant <div> tags
-	parsedHtml = parsedHtml.replace(/<\/div>(\s*)<div>/g, '\n');
+	parsedHtml = parsedHtml.replace(/<\/div>[^\S\r\n]*<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
 	// Pre
 	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, function (match, p1) {
-		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		return `<pre>${cleanContent.replace(/\n/g, '___#new_line___')}</pre>`;
+		return `<pre>${p1.replace(/\n/g, '___#new_line___')}</pre>`;
 	});
 
 	// parsedHtml = parsedHtml.replace(/^`{3}[\n\r]?(.*?)[\n\r]?`{3}/gms, '<pre>$1</pre>');
 	// parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
 
 	// Code
-	parsedHtml = parsedHtml.replace(/(?!<(?:code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(?:code|pre)>)/g, (_, p1) => {
-		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		return `<code>${cleanContent}</code>`;
-	});
+	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(code|pre)>)/g, '<code>$2</code>');
 
 	// Process bold markdown, but skip mentions
 	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[*]{2}([^*]*?)[*]{2}(?![^<]*<\/(code|pre)>)/g, '<b>$2</b>');

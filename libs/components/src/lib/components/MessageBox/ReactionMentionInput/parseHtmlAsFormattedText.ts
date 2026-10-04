@@ -334,22 +334,16 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<div><br([^>]*)?><\/div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<br([^>]*)?>/g, '\n');
 
-	parsedHtml = parsedHtml.replace(/<\/div>(\s*)<div>/g, '\n');
+	parsedHtml = parsedHtml.replace(/<\/div>[^\S\r\n]*<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
 	// Pre
-	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, (_, p1) => {
-		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		return `<pre>${cleanContent}</pre>`;
-	});
+	parsedHtml = parsedHtml.replace(/`{3}([\s\S]*?)`{3}/g, '<pre>$1</pre>');
 	// parsedHtml = parsedHtml.replace(/[`]{3}([^`]+)[`]{3}/g, '<pre>$1</pre>');
 
 	// Code
-	parsedHtml = parsedHtml.replace(/(?!<(?:code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(?:code|pre)>)/g, (_, p1) => {
-		const cleanContent = p1.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		return `<code>${cleanContent}</code>`;
-	});
+	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[`]{1}([^`\n]+)[`]{1}(?![^<]*<\/(code|pre)>)/g, '<code>$2</code>');
 
 	// Custom Emoji markdown tag
 	if (!IS_EMOJI_SUPPORTED) {
@@ -371,6 +365,26 @@ function parseMarkdown(html: string) {
 	return parsedHtml;
 }
 
+function cleanCodeMatch(match: string): string {
+	const div = document.createElement('div');
+	div.innerHTML = match;
+	div.querySelectorAll('div').forEach((d) => {
+		if (d.innerHTML === '<br>' || d.innerHTML === '<br/>') {
+			d.replaceWith('\n');
+		} else {
+			d.replaceWith('\n', ...Array.from(d.childNodes));
+		}
+	});
+	div.querySelectorAll('br').forEach((br) => {
+		br.replaceWith('\n');
+	});
+	div.querySelectorAll('img').forEach((img) => {
+		img.replaceWith(img.alt || '');
+	});
+	const text = div.textContent ?? '';
+	return escapeHtmlText(text);
+}
+
 function parseMarkdownLinks(html: string) {
 	if (!html || html.length === 0) return html;
 
@@ -379,8 +393,7 @@ function parseMarkdownLinks(html: string) {
 
 	result = result.replace(/```[\s\S]*?```/g, (match) => {
 		const index = codeSections.length;
-		const cleanMatch = match.replace(/<div><br([^>]*)?><\/div>/gi, '\n').replace(/<br([^>]*)?>/gi, '\n');
-		codeSections.push(cleanMatch);
+		codeSections.push(cleanCodeMatch(match));
 		return `__CODE_BLOCK_${index}__`;
 	});
 
@@ -389,7 +402,7 @@ function parseMarkdownLinks(html: string) {
 			return match;
 		}
 		const index = codeSections.length;
-		codeSections.push(match);
+		codeSections.push(cleanCodeMatch(match));
 		return `__INLINE_CODE_${index}__`;
 	});
 
