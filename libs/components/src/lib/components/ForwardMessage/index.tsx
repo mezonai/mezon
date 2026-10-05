@@ -475,7 +475,8 @@ const ForwardMessageModal = () => {
 			isPublic: !channel.channel_private,
 			channel_private: channel.channel_private ? 1 : 0,
 			age_restricted: channel.age_restricted,
-			parent_id: channel.parent_id
+			parent_id: channel.parent_id,
+			isSearchedOnServer: true
 		}));
 	}, [searchedChannels, listChannelSearch, clansEntities]);
 
@@ -614,7 +615,9 @@ const ForwardMessageModal = () => {
 								{isNoResult &&
 									(isSearchingServer ? (
 										<span className=" flex flex-row justify-center ">
-											<Icons.LoadingSpinner className="h-5 w-5 text-theme-primary" />
+											<span className="inline-flex animate-spin text-theme-primary">
+												<Icons.LoadingSpinner />
+											</span>
 										</span>
 									) : (
 										<span className=" flex flex-row justify-center ">{t('modal.noResults')}</span>

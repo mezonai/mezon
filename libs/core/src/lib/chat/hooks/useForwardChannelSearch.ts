@@ -13,33 +13,31 @@ export function useForwardChannelSearch(searchText: string) {
 	const queryRef = useRef(query);
 	queryRef.current = query;
 	const [channels, setChannels] = useState<ApiChannelDescription[]>([]);
-	const [pending, setPending] = useState(false);
+	const [settledKey, setSettledKey] = useState<string | null>(null);
 
 	useEffect(() => {
 		const text = queryRef.current;
-		if (text === null) {
-			setPending(false);
+		if (text === null || queryKey === null) {
 			setChannels([]);
+			setSettledKey(null);
 			return;
 		}
-		setPending(true);
 		let cancelled = false;
 		const timer = setTimeout(async () => {
 			const client = clientRef.current;
 			const session = sessionRef.current;
 			try {
-				if (!client || !session) {
-					return;
-				}
-				const response = await client.searchCtrlK(session, { text, type: SEARCH_TYPE_CHANNELS });
-				if (!cancelled) {
-					setChannels(response?.channels ?? []);
+				if (client && session) {
+					const response = await client.searchCtrlK(session, { text, type: SEARCH_TYPE_CHANNELS });
+					if (!cancelled) {
+						setChannels(response?.channels ?? []);
+					}
 				}
 			} catch (error) {
 				console.warn('[forward] SearchCtrlK channels failed', error);
 			} finally {
 				if (!cancelled) {
-					setPending(false);
+					setSettledKey(queryKey);
 				}
 			}
 		}, SERVER_SEARCH_DEBOUNCE_MS);
@@ -49,5 +47,5 @@ export function useForwardChannelSearch(searchText: string) {
 		};
 	}, [queryKey, clientRef, sessionRef]);
 
-	return { channels, pending };
+	return { channels, pending: queryKey !== null && queryKey !== settledKey };
 }
