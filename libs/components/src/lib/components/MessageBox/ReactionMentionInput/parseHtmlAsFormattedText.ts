@@ -197,8 +197,8 @@ export const ENTITY_CLASS_BY_NODE_NAME: Record<string, ApiMessageEntityTypes> = 
 const MAX_TAG_DEEPNESS = 3;
 
 const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
-const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
-const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
+const localhostDomainRE = /^localhost[:?\d]*(?:[^:?\d]\S*)?$/;
+const nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/;
 
 function isUrl(string: string): boolean {
 	if (typeof string !== 'string') {
@@ -334,7 +334,7 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<div><br([^>]*)?><\/div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<br([^>]*)?>/g, '\n');
 
-	parsedHtml = parsedHtml.replace(/<\/div>(\s*)<div>/g, '\n');
+	parsedHtml = parsedHtml.replace(/<\/div>[^\S\r\n]*<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
@@ -365,6 +365,26 @@ function parseMarkdown(html: string) {
 	return parsedHtml;
 }
 
+function cleanCodeMatch(match: string): string {
+	const div = document.createElement('div');
+	div.innerHTML = match;
+	div.querySelectorAll('div').forEach((d) => {
+		if (d.innerHTML === '<br>' || d.innerHTML === '<br/>') {
+			d.replaceWith('\n');
+		} else {
+			d.replaceWith('\n', ...Array.from(d.childNodes));
+		}
+	});
+	div.querySelectorAll('br').forEach((br) => {
+		br.replaceWith('\n');
+	});
+	div.querySelectorAll('img').forEach((img) => {
+		img.replaceWith(img.alt || '');
+	});
+	const text = div.textContent ?? '';
+	return escapeHtmlText(text);
+}
+
 function parseMarkdownLinks(html: string) {
 	if (!html || html.length === 0) return html;
 
@@ -373,16 +393,7 @@ function parseMarkdownLinks(html: string) {
 
 	result = result.replace(/```[\s\S]*?```/g, (match) => {
 		const index = codeSections.length;
-
-		const div = document.createElement('div');
-		div.innerHTML = match;
-		div.querySelectorAll('br').forEach((br) => {
-			br.replaceWith('\n');
-		});
-		const text = div.textContent?.trim();
-		if (text) {
-			codeSections.push(text);
-		}
+		codeSections.push(cleanCodeMatch(match));
 		return `__CODE_BLOCK_${index}__`;
 	});
 
@@ -390,16 +401,8 @@ function parseMarkdownLinks(html: string) {
 		if (match.includes('__CODE_BLOCK_')) {
 			return match;
 		}
-		const div = document.createElement('div');
-		div.innerHTML = match;
-		div.querySelectorAll('br').forEach((br) => {
-			br.replaceWith('\n');
-		});
-		const text = div.textContent?.trim();
 		const index = codeSections.length;
-		if (text) {
-			codeSections.push(text);
-		}
+		codeSections.push(cleanCodeMatch(match));
 		return `__INLINE_CODE_${index}__`;
 	});
 
@@ -440,7 +443,7 @@ function parseMarkdownLinks(html: string) {
 
 	if (codeSections.length > 0) {
 		result = result.replace(/__(?:CODE_BLOCK|INLINE_CODE)_(\d+)__/g, (match, index) => {
-			return codeSections[parseInt(index, 10)] || match;
+			return codeSections[parseInt(index, 10)] ?? match;
 		});
 	}
 
