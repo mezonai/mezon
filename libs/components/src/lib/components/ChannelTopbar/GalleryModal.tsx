@@ -17,6 +17,7 @@ import {
 	attachmentActions,
 	galleryActions,
 	getStore,
+	mapChannelAttachmentsToEntity,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectCurrentDM,
@@ -487,32 +488,17 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 			if ((currentClanId && currentChannelId) || currentDmGroupId) {
 				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
-				const messageTimestamp = enhancedAttachmentData.create_time
-					? Math.floor(new Date(enhancedAttachmentData.create_time).getTime() / 1000)
-					: undefined;
-				const fetchAttachments = (direction: 'initial' | 'before' | 'after', cursor?: number) =>
-					dispatch(
-						attachmentActions.fetchChannelAttachments({
-							clanId,
-							channelId,
-							state: undefined,
-							limit: 50,
-							direction,
-							...(direction === 'before' && cursor !== undefined && { before: cursor }),
-							...(direction === 'after' && cursor !== undefined && { after: cursor }),
-							noCache: true
-						})
-					);
-
-				if (messageTimestamp) {
-					fetchAttachments('before', messageTimestamp + 1);
-					fetchAttachments('after', messageTimestamp);
-				} else {
-					fetchAttachments('initial');
-				}
+				dispatch(
+					attachmentActions.setChannelAttachments({
+						channelId,
+						attachments: filteredAttachments.map((att) => mapChannelAttachmentsToEntity(att, channelId, clanId)),
+						hasMoreBefore: paginationState.hasMoreBefore,
+						hasMoreAfter: false
+					})
+				);
 			}
 		},
-		[dispatch]
+		[dispatch, filteredAttachments, paginationState.hasMoreBefore]
 	);
 
 	return (

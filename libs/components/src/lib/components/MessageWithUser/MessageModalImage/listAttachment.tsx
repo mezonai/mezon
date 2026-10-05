@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '../../virtual-core/useVirtualizer';
 import ItemAttachment from './itemAttachment';
 
-const HORIZONTAL_LIST_MEDIA_QUERY = '(max-width: 480px)';
+const HORIZONTAL_LIST_MEDIA_QUERY = '(max-width: 479.98px)';
 const HORIZONTAL_LIST_HEIGHT = 80;
 
 type ListAttachmentProps = {

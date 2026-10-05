@@ -44,7 +44,6 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 
 	return (
 		<div className={`attachment-item`} ref={isSelected ? selectedImageRef : null}>
-			{showDate && <div className={`dark:text-white text-black mb-1 text-center max-sbm:text-xs`}>{previousDate}</div>}
 			<div
 				className={`relative flex w-fit mx-auto rounded-md border-2 ${isPresignPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'border-buttonPrimary' : 'border-transparent'}`}
 				onClick={handleSelectImage}
@@ -87,6 +86,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 				)}
 				{!isSelected && <div className="absolute inset-0 bg-black opacity-30 rounded"></div>}
 			</div>
+			{showDate && <div className={`dark:text-white text-black mt-1 text-center max-sbm:text-xs`}>{previousDate}</div>}
 		</div>
 	);
 };

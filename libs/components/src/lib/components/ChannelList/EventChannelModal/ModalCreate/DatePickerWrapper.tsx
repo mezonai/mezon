@@ -1,5 +1,4 @@
 import { isValid } from 'date-fns';
-import { useRef } from 'react';
 
 type DatePickerWrapperProps = {
 	selected: Date | null;
@@ -26,10 +25,7 @@ const toInputValue = (date?: Date | null): string => {
 };
 
 const DatePickerWrapper = ({ selected, onChange, onClear, minDate, maxDate, className, wrapperClassName, onFocus }: DatePickerWrapperProps) => {
-	const isPickerOpenRef = useRef(false);
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		isPickerOpenRef.current = false;
 		const value = e.target.value;
 		if (!value) {
 			onClear?.();
@@ -38,30 +34,6 @@ const DatePickerWrapper = ({ selected, onChange, onClear, minDate, maxDate, clas
 		const date = new Date(`${value}T00:00:00`);
 		if (isValid(date)) {
 			onChange(date);
-		}
-	};
-
-	const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
-		e.preventDefault();
-		if (isPickerOpenRef.current) {
-			isPickerOpenRef.current = false;
-			return;
-		}
-		try {
-			e.currentTarget.showPicker();
-			isPickerOpenRef.current = true;
-		} catch {
-			isPickerOpenRef.current = false;
-		}
-	};
-
-	const handleBlur = () => {
-		isPickerOpenRef.current = false;
-	};
-
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === 'Escape' || e.key === 'Enter') {
-			isPickerOpenRef.current = false;
 		}
 	};
 
@@ -74,9 +46,6 @@ const DatePickerWrapper = ({ selected, onChange, onClear, minDate, maxDate, clas
 				min={toInputValue(minDate) || undefined}
 				max={toInputValue(maxDate) || undefined}
 				onChange={handleChange}
-				onClick={handleClick}
-				onBlur={handleBlur}
-				onKeyDown={handleKeyDown}
 				onFocus={onFocus}
 			/>
 		</div>
