@@ -1,11 +1,12 @@
 const assetBase = () => `${process.env.NODE_ENV === 'production' ? '/chat' : ''}/assets/mezon-ns/`;
+const cdnBase = () => (['localhost', '127.0.0.1'].includes(window.location.hostname) ? '/mezon-ns-cdn/' : 'https://cdn.komu.vn/ns/');
 const ASSET_VERSION = '457ca7c-v3';
 const LOG_PREFIX = '[MezonSFU][Mezon-NS]';
 const READY_TIMEOUT_MS = 5000;
 let resourcesPromise: Promise<{ model: Uint8Array; wasm: Uint8Array }> | undefined;
 
 const download = async (file: string, signal: AbortSignal) => {
-	const response = await fetch(`${assetBase()}${file}?v=${ASSET_VERSION}`, { signal });
+	const response = await fetch(`${cdnBase()}${file}?v=${ASSET_VERSION}`, { signal });
 	if (!response.ok) throw new Error(`Mezon-NS ${file} download failed (${response.status})`);
 	return new Uint8Array(await response.arrayBuffer());
 };
@@ -209,7 +210,7 @@ export class MezonNsAudioPipeline {
 			const modelCopy = model.slice();
 			const wasmCopy = wasm.slice();
 			worker.postMessage(
-				{ type: 'init', model: modelCopy.buffer, wasm: wasmCopy.buffer, port: channel.port2, wasmPaths: assetBase(), captureActive: false },
+				{ type: 'init', model: modelCopy.buffer, wasm: wasmCopy.buffer, port: channel.port2, wasmPaths: cdnBase(), captureActive: false },
 				[modelCopy.buffer, wasmCopy.buffer, channel.port2]
 			);
 			let preparationTimeout: ReturnType<typeof setTimeout> | undefined;

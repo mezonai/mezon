@@ -316,9 +316,6 @@ export class MezonNSEngine {
 			if (this.magSpec[k] < 1e-5) this.magSpec[k] = 1e-5;
 		}
 
-		// Bring quiet microphones into the model's expected level range. The
-		// original spectrum is still used for reconstruction, so this does not
-		// directly amplify the outgoing microphone signal.
 		let modelInput = this.magSpec;
 		if (this.modelTargetRms > 0.0) {
 			let sumSq = 0.0;
@@ -329,7 +326,7 @@ export class MezonNSEngine {
 				peak = Math.max(peak, Math.abs(sample));
 			}
 			const frameRms = Math.sqrt(sumSq / HOP_LENGTH);
-			this.modelLevelRms = Math.max(frameRms, this.modelLevelRms * 0.9);
+			this.modelLevelRms = Math.max(frameRms, this.modelLevelRms * 0.995);
 			const levelGain = Math.max(1.0, Math.min(16.0, this.modelTargetRms / Math.max(this.modelLevelRms, 1e-5)));
 			const gain = Math.min(levelGain, Math.max(1.0, 0.8 / Math.max(peak, 1e-5)));
 			for (let k = 0; k < FREQ_BINS; k++) this.modelMagSpec[k] = this.magSpec[k] * gain;
