@@ -6,6 +6,8 @@ import { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import SuggestItem from '../MessageBox/ReactionMentionInput/SuggestItem';
 
+const MAX_ROWS_PER_SOURCE = 15;
+
 type ListSearchForwardMessageProps = {
 	listSearch: any[];
 	searchText: string;
@@ -18,6 +20,11 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 
 	const filteredList = useMemo(() => filterListByName(listSearch, searchText, false), [listSearch, searchText]);
 	const sortedList = useMemo(() => sortFilteredList(filteredList, searchText, false), [filteredList, searchText]);
+	const visibleList = useMemo(() => {
+		let local = 0;
+		let searched = 0;
+		return sortedList.filter((item) => (item.isSearchedOnServer ? ++searched : ++local) <= MAX_ROWS_PER_SOURCE);
+	}, [sortedList]);
 
 	const onToggleChannel = useCallback(
 		(id: string, type: number, isPublic: boolean, clanId: string, channelLabel: string) => {
@@ -33,12 +40,12 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 		[handleToggle]
 	);
 
-	if (sortedList.length === 0) {
+	if (visibleList.length === 0) {
 		return null;
 	}
 	return (
-		sortedList.length &&
-		sortedList.slice(0, 15).map((item: any) => {
+		visibleList.length &&
+		visibleList.map((item: any) => {
 			const isTypeDm = item.typeSearch === TypeSearch.Dm_Type;
 			return (
 				<div key={item.id} className="flex items-center px-4 py-1 rounded bg-item-hover">
