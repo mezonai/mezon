@@ -1,40 +1,29 @@
-export type BackgroundMode = 'none' | 'bg-1' | 'bg-2' | 'bg-3' | 'bg-4' | 'bg-5';
+export type BackgroundMode = 'bg-1' | 'bg-2' | 'bg-3' | 'bg-4' | 'bg-5';
 
 export interface BackgroundOption {
 	id: BackgroundMode;
-	label: string;
 	url: string;
 }
 
 export const VIRTUAL_BACKGROUNDS: BackgroundOption[] = [
 	{
-		id: 'none',
-		label: 'None',
-		url: ''
-	},
-	{
 		id: 'bg-1',
-		label: 'Background 1',
 		url: 'https://cdn.komu.vn/vtbg/pasted-image-1791187790282-0.png'
 	},
 	{
 		id: 'bg-2',
-		label: 'Background 2',
 		url: 'https://cdn.komu.vn/vtbg/pasted-image-1791187812257-0.png'
 	},
 	{
 		id: 'bg-3',
-		label: 'Background 3',
 		url: 'https://cdn.komu.vn/vtbg/pasted-image-1791187833198-0.png'
 	},
 	{
 		id: 'bg-4',
-		label: 'Background 4',
 		url: 'https://cdn.komu.vn/vtbg/pasted-image-1791187852816-0.png'
 	},
 	{
 		id: 'bg-5',
-		label: 'Background 5',
 		url: 'https://cdn.komu.vn/vtbg/pasted-image-1791187892349-0.png'
 	}
 ];
@@ -107,17 +96,19 @@ export class MediaPipeBackgroundProcessor {
 	public readonly width = MODEL_WIDTH;
 	public readonly height = MODEL_HEIGHT;
 
-	private mode: BackgroundMode = 'none';
+	private mode: BackgroundMode = 'bg-1';
 	private mirrorCamera = true;
-	private edgeFeather = 2;
+	private hasFirstResult = false;
+	private lastFrameTime = 0;
 
 	private videoElement: HTMLVideoElement | null = null;
 	private inputStream: MediaStream | null = null;
 
-	private maskCanvas: HTMLCanvasElement;
-	private maskCtx: CanvasRenderingContext2D | null;
-	private bgCanvas: HTMLCanvasElement;
-	private bgCtx: CanvasRenderingContext2D | null;
+	// Downscaled input canvas to avoid uploading high-res 1080p/720p frames into WebGL
+	private inputCanvas: HTMLCanvasElement;
+	private inputCtx: CanvasRenderingContext2D | null;
+
+	// Single offscreen foreground compositing canvas
 	private fgCanvas: HTMLCanvasElement;
 	private fgCtx: CanvasRenderingContext2D | null;
 
@@ -133,15 +124,10 @@ export class MediaPipeBackgroundProcessor {
 	private loadedImages = new Map<BackgroundMode, HTMLImageElement>();
 
 	constructor() {
-		this.maskCanvas = document.createElement('canvas');
-		this.maskCanvas.width = this.width;
-		this.maskCanvas.height = this.height;
-		this.maskCtx = this.maskCanvas.getContext('2d');
-
-		this.bgCanvas = document.createElement('canvas');
-		this.bgCanvas.width = this.width;
-		this.bgCanvas.height = this.height;
-		this.bgCtx = this.bgCanvas.getContext('2d');
+		this.inputCanvas = document.createElement('canvas');
+		this.inputCanvas.width = this.width;
+		this.inputCanvas.height = this.height;
+		this.inputCtx = this.inputCanvas.getContext('2d', { willReadFrequently: false });
 
 		this.fgCanvas = document.createElement('canvas');
 		this.fgCanvas.width = this.width;
@@ -159,35 +145,27 @@ export class MediaPipeBackgroundProcessor {
 
 	private preloadAllBackgrounds(): void {
 		VIRTUAL_BACKGROUNDS.forEach((opt) => {
-			if (opt.id !== 'none' && opt.url) {
-				void this.preloadImage(opt);
-			}
+			void this.preloadImage(opt);
 		});
 	}
 
 	private preloadImage(opt: BackgroundOption): Promise<HTMLImageElement | null> {
 		if (this.loadedImages.has(opt.id)) {
-			return Promise.resolve(this.loadedImages.get(opt.id) || null);
+			const existing = this.loadedImages.get(opt.id);
+			if (existing && existing.complete && existing.naturalWidth > 0) {
+				return Promise.resolve(existing);
+			}
 		}
 
 		return new Promise((resolve) => {
 			const img = new Image();
-			img.crossOrigin = 'anonymous';
 			img.onload = () => {
 				this.loadedImages.set(opt.id, img);
 				resolve(img);
 			};
-			img.onerror = () => {
-				const directImg = new Image();
-				directImg.onload = () => {
-					this.loadedImages.set(opt.id, directImg);
-					resolve(directImg);
-				};
-				directImg.onerror = (e) => {
-					console.error(`Failed to load background image directly from ${opt.url}:`, e);
-					resolve(null);
-				};
-				directImg.src = opt.url;
+			img.onerror = (e) => {
+				console.error(`Failed to load background image directly from ${opt.url}:`, e);
+				resolve(null);
 			};
 			img.src = opt.url;
 		});
@@ -213,45 +191,55 @@ export class MediaPipeBackgroundProcessor {
 		this.selfieSegmentation.onResults((results: SelfieSegmentationResults) => this.onResults(results));
 	}
 
-	public async start(inputStream: MediaStream, initialMode: BackgroundMode = 'none'): Promise<MediaStream> {
+	public async start(inputStream: MediaStream, initialMode: BackgroundMode = 'bg-1'): Promise<MediaStream> {
 		this.stop();
 		this.inputStream = inputStream;
 		this.mode = initialMode;
 		this.isRunning = true;
+		this.hasFirstResult = false;
 
 		this.videoElement = document.createElement('video');
 		this.videoElement.autoplay = true;
 		this.videoElement.playsInline = true;
 		this.videoElement.muted = true;
+		this.videoElement.style.position = 'fixed';
+		this.videoElement.style.top = '-9999px';
+		this.videoElement.style.left = '-9999px';
+		this.videoElement.style.width = '1px';
+		this.videoElement.style.height = '1px';
+		this.videoElement.style.opacity = '0';
+		this.videoElement.style.pointerEvents = 'none';
+		document.body.appendChild(this.videoElement);
 		this.videoElement.srcObject = inputStream;
 
 		await this.videoElement.play().catch(() => undefined);
 
-		if (this.mode !== 'none') {
-			try {
-				await this.initMediaPipe();
-				const opt = VIRTUAL_BACKGROUNDS.find((b) => b.id === this.mode);
-				if (opt) await this.preloadImage(opt);
-			} catch (err) {
-				console.warn('Failed to initialize MediaPipe upfront, falling back to passthrough:', err);
-			}
+		// Start MediaPipe initialization and initial background preload asynchronously
+		void this.initMediaPipe().catch((err) => {
+			console.warn('Failed to initialize MediaPipe upfront:', err);
+		});
+		const opt = VIRTUAL_BACKGROUNDS.find((b) => b.id === this.mode) || VIRTUAL_BACKGROUNDS[0];
+		if (opt) {
+			void this.preloadImage(opt);
 		}
 
 		this.loop();
 		return this.getStream();
 	}
 
+	public getCanvas(): HTMLCanvasElement {
+		return this.outputCanvas;
+	}
+
 	public setMode(newMode: BackgroundMode): void {
 		this.mode = newMode;
-		if (newMode !== 'none') {
-			const opt = VIRTUAL_BACKGROUNDS.find((b) => b.id === newMode);
-			if (opt) void this.preloadImage(opt);
+		const opt = VIRTUAL_BACKGROUNDS.find((b) => b.id === newMode);
+		if (opt) void this.preloadImage(opt);
 
-			if (!this.selfieSegmentation) {
-				void this.initMediaPipe().catch((err) => {
-					console.error('Failed to initialize MediaPipe on mode change:', err);
-				});
-			}
+		if (!this.selfieSegmentation) {
+			void this.initMediaPipe().catch((err) => {
+				console.error('Failed to initialize MediaPipe on mode change:', err);
+			});
 		}
 	}
 
@@ -267,8 +255,8 @@ export class MediaPipeBackgroundProcessor {
 		return this.mirrorCamera;
 	}
 
-	public setEdgeFeather(feather: number): void {
-		this.edgeFeather = Math.max(0, Math.min(8, feather));
+	public setEdgeFeather(_feather: number): void {
+		// No-op: Canvas blur filters are intentionally disabled to prevent GPU memory leaks in Firefox
 	}
 
 	public getStream(fps = 30): MediaStream {
@@ -291,8 +279,16 @@ export class MediaPipeBackgroundProcessor {
 			return;
 		}
 
-		if (this.mode === 'none') {
-			// Direct passthrough to outputCanvas with no inference
+		// Throttle to ~30 FPS to avoid overloading the WebGL command queue and GPU memory
+		const now = performance.now();
+		if (now - this.lastFrameTime < 33) {
+			this.animationFrameId = requestAnimationFrame(this.loop);
+			return;
+		}
+		this.lastFrameTime = now;
+
+		if (!this.selfieSegmentation || !this.hasFirstResult) {
+			// Passthrough camera feed until first segmentation result arrives
 			if (this.outCtx) {
 				this.outCtx.save();
 				this.outCtx.clearRect(0, 0, this.width, this.height);
@@ -303,10 +299,17 @@ export class MediaPipeBackgroundProcessor {
 				this.outCtx.drawImage(video, 0, 0, this.width, this.height);
 				this.outCtx.restore();
 			}
-		} else if (!this.isProcessing && this.selfieSegmentation) {
+		}
+
+		if (!this.isProcessing && this.selfieSegmentation) {
 			this.isProcessing = true;
 			try {
-				await this.selfieSegmentation.send({ image: video });
+				// Downscale input frame to 640x360 on inputCanvas before sending to MediaPipe
+				// to avoid allocating full 1080p/720p WebGL textures every frame in Firefox
+				if (this.inputCtx) {
+					this.inputCtx.drawImage(video, 0, 0, this.width, this.height);
+				}
+				await this.selfieSegmentation.send({ image: this.inputCanvas });
 			} catch (err) {
 				console.error('MediaPipe send error:', err);
 				this.isProcessing = false;
@@ -319,13 +322,16 @@ export class MediaPipeBackgroundProcessor {
 	};
 
 	private onResults(results: SelfieSegmentationResults): void {
-		if (!this.outCtx || !this.bgCtx || !this.maskCtx || !this.fgCtx) {
+		if (!this.outCtx || !this.fgCtx) {
 			this.isProcessing = false;
 			return;
 		}
 
-		// 1. Draw Background Image onto bgCanvas
-		this.bgCtx.clearRect(0, 0, this.width, this.height);
+		this.hasFirstResult = true;
+
+		// 1. Draw Background Image directly onto outputCanvas (no intermediate bgCanvas)
+		this.outCtx.save();
+		this.outCtx.clearRect(0, 0, this.width, this.height);
 		const bgImg = this.loadedImages.get(this.mode);
 		if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
 			// Draw image covering 640x360 maintaining aspect ratio
@@ -342,38 +348,25 @@ export class MediaPipeBackgroundProcessor {
 				drawH = this.width / imgAspect;
 				drawY = (this.height - drawH) / 2;
 			}
-			this.bgCtx.drawImage(bgImg, drawX, drawY, drawW, drawH);
+			this.outCtx.drawImage(bgImg, drawX, drawY, drawW, drawH);
 		} else {
 			// Fallback subtle gradient if image is still loading
-			const grad = this.bgCtx.createLinearGradient(0, 0, this.width, this.height);
+			const grad = this.outCtx.createLinearGradient(0, 0, this.width, this.height);
 			grad.addColorStop(0, '#1e293b');
 			grad.addColorStop(1, '#0f172a');
-			this.bgCtx.fillStyle = grad;
-			this.bgCtx.fillRect(0, 0, this.width, this.height);
+			this.outCtx.fillStyle = grad;
+			this.outCtx.fillRect(0, 0, this.width, this.height);
 		}
 
-		// 2. Draw segmentation mask with edge feathering
-		this.maskCtx.clearRect(0, 0, this.width, this.height);
-		if (this.edgeFeather > 0) {
-			this.maskCtx.filter = `blur(${this.edgeFeather}px)`;
-		} else {
-			this.maskCtx.filter = 'none';
-		}
-		this.maskCtx.drawImage(results.segmentationMask, 0, 0, this.width, this.height);
-		this.maskCtx.filter = 'none';
-
-		// 3. Cut foreground from camera frame
+		// 2. Cut foreground from camera frame using segmentation mask directly
+		// (NO ctx.filter = blur: completely eliminates the catastrophic Firefox Canvas2D GPU memory leak!)
 		this.fgCtx.clearRect(0, 0, this.width, this.height);
 		this.fgCtx.drawImage(results.image, 0, 0, this.width, this.height);
 		this.fgCtx.globalCompositeOperation = 'destination-in';
-		this.fgCtx.drawImage(this.maskCanvas, 0, 0, this.width, this.height);
+		this.fgCtx.drawImage(results.segmentationMask, 0, 0, this.width, this.height);
 		this.fgCtx.globalCompositeOperation = 'source-over';
 
-		// 4. Composite Background & Foreground into outputCanvas
-		this.outCtx.save();
-		this.outCtx.clearRect(0, 0, this.width, this.height);
-		this.outCtx.drawImage(this.bgCanvas, 0, 0, this.width, this.height);
-
+		// 3. Composite Foreground over Background with selfie mirror
 		if (this.mirrorCamera) {
 			this.outCtx.translate(this.width, 0);
 			this.outCtx.scale(-1, 1);
@@ -392,6 +385,9 @@ export class MediaPipeBackgroundProcessor {
 		}
 		if (this.videoElement) {
 			this.videoElement.srcObject = null;
+			if (this.videoElement.parentNode) {
+				this.videoElement.parentNode.removeChild(this.videoElement);
+			}
 			this.videoElement = null;
 		}
 		this.isProcessing = false;
