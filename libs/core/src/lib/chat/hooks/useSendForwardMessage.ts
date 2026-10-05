@@ -1,18 +1,54 @@
-import { toastActions, useAppDispatch } from '@mezon/store';
+import type { RootState } from '@mezon/store';
+import { getStore, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { MAX_FORWARD_MESSAGE_LENGTH } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageMention } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+
+const CLAN_CHANNEL_LISTING_LIMIT = 500;
+const CLAN_CHANNEL_LISTING_STATE = 1;
 
 export function useSendForwardMessage() {
 	const { t } = useTranslation('forwardMessage');
 	const { clientRef, sessionRef } = useMezon();
 
 	const dispatch = useAppDispatch();
+	const currentClanId = useSelector(selectCurrentClanId);
+	const joinedClansRef = useRef(new Set<string>());
 
 	const client = clientRef.current;
+
+	const joinClanBeforePublicChannel = React.useCallback(
+		async (clanId: string) => {
+			const joinedThisSession = (getStore()?.getState() as RootState | undefined)?.clans?.checkJoinList?.[clanId];
+			if (joinedThisSession || joinedClansRef.current.has(clanId)) {
+				return;
+			}
+			const session = sessionRef.current;
+			const client = clientRef.current;
+			if (!client || !session) {
+				return;
+			}
+			try {
+				await client.listChannelDescs(
+					session,
+					CLAN_CHANNEL_LISTING_LIMIT,
+					CLAN_CHANNEL_LISTING_STATE,
+					0,
+					clanId,
+					ChannelType.CHANNEL_TYPE_CHANNEL
+				);
+				await client.joinClanChat(session, clanId);
+				joinedClansRef.current.add(clanId);
+			} catch (error) {
+				console.warn('[forward] clan join before channel join failed', error);
+			}
+		},
+		[clientRef, sessionRef]
+	);
 
 	const sendForwardMessage = React.useCallback(
 		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
@@ -76,6 +112,10 @@ export function useSendForwardMessage() {
 
 				const mentions = sanitizedMentions;
 
+				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL && isPublic && clanid && clanid !== '0' && clanid !== currentClanId) {
+					await joinClanBeforePublicChannel(clanid);
+				}
+
 				await client.joinChat(session, clanid || '0', channel_id, type, isPublic);
 
 				await client.writeChatMessage(session, clanid || '0', channel_id, mode, isPublic, validatedContent, mentions, message.attachments);
@@ -108,7 +148,7 @@ export function useSendForwardMessage() {
 				);
 			}
 		},
-		[sessionRef, clientRef, dispatch, t]
+		[sessionRef, clientRef, dispatch, t, currentClanId, joinClanBeforePublicChannel]
 	);
 
 	return useMemo(

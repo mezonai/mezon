@@ -3,7 +3,7 @@ import type { IUserProfileActivity, LoadingStatus, UsersClanEntity } from '@mezo
 import { EUserStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js';
+import type { ApiMentionUser, ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js';
 import { batch } from 'react-redux';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -13,6 +13,9 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 export const USERS_CLANS_FEATURE_KEY = 'usersClan';
+
+// ListClanUsers stops at this many members, newest joiners first: a clan that fills it has members the store never sees.
+export const CLAN_USERS_LIST_LIMIT = 1000;
 
 export const initClanMembersAction = createAction<{ users: UsersClanEntity[]; clanId: string }>('UsersClan/initClanMembers');
 
@@ -31,6 +34,8 @@ export interface UsersClanState {
 		{
 			entities: EntityState<UsersClanEntity, string>;
 			cache?: CacheMetadata;
+			// The last ListClanUsers answer hit CLAN_USERS_LIST_LIMIT, so `entities` is only part of the clan.
+			rosterCapped?: boolean;
 		}
 	>;
 	loadingStatus: LoadingStatus;
@@ -101,6 +106,29 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 		return thunkAPI.rejectWithValue(error);
 	}
 });
+
+// Finds members of a clan (or of a private channel, a thread under one included) by name on the server, for clans the
+// store only holds part of. Needs mezon-api with SearchMentionUsers: an older socket server answers 404.
+export const searchMentionUsers = createAsyncThunk(
+	'UsersClan/searchMentionUsers',
+	async (
+		{ clanId, channelId, text }: { clanId: string; channelId: string; text: string },
+		thunkAPI
+	): Promise<{ users: ApiMentionUser[] } | { errorCode?: number }> => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.searchMentionUsers(mezon.session, { clan_id: clanId, channel_id: channelId, text });
+			return { users: response?.users ?? [] };
+		} catch (error) {
+			// Resolved rather than rejected: a rejection raises the global error toast, while the picker just keeps the
+			// members it already has.
+			// The socket rejects with { code, error: { code, message } }; the status sits in the inner code.
+			const failure = error as { code?: unknown; error?: { code?: unknown } } | null;
+			const code = failure?.error?.code ?? failure?.code;
+			return { errorCode: typeof code === 'number' ? code : undefined };
+		}
+	}
+);
 
 export const listOnlineUserClan = createAsyncThunk('UsersClan/listOnlineUserClan', async ({ clanId }: { clanId?: string }, thunkAPI) => {
 	try {
@@ -523,6 +551,7 @@ export const UsersClanSlice = createSlice({
 					entities: newEntities
 				};
 				state.byClans[clanId].cache = createCacheMetadata();
+				state.byClans[clanId].rosterCapped = users.length >= CLAN_USERS_LIST_LIMIT;
 			})
 			.addCase(fetchUsersClan.pending, (state: UsersClanState) => {
 				state.loadingStatus = 'loading';
@@ -552,6 +581,7 @@ export const UsersClanSlice = createSlice({
 						};
 
 						state.byClans[clanId].cache = createCacheMetadata();
+						state.byClans[clanId].rosterCapped = users.length >= CLAN_USERS_LIST_LIMIT;
 					}
 				}
 			)
@@ -605,7 +635,7 @@ export const UsersClanSlice = createSlice({
  * Export reducer for store configuration.
  */
 export const usersClanReducer = UsersClanSlice.reducer;
-export const usersClanActions = { ...UsersClanSlice.actions, fetchUsersClan, fetchListBanUser };
+export const usersClanActions = { ...UsersClanSlice.actions, fetchUsersClan, fetchListBanUser, searchMentionUsers };
 
 const { selectAll, selectById, selectEntities } = UsersClanAdapter.getSelectors();
 
@@ -642,6 +672,8 @@ export const selectMemberClanByUserId = createSelector(
 export const selectMembersByUserIds = createSelector([selectEntitesUserClans, (_, userIds: string[]) => userIds], (entities, userIds) =>
 	userIds.map((userId) => entities[userId] ?? null)
 );
+
+export const selectClanRosterCapped = (state: RootState, clanId: string) => !!state[USERS_CLANS_FEATURE_KEY].byClans[clanId]?.rosterCapped;
 
 export const selectMembersClanCount = createSelector(
 	[getUsersClanState, (state: RootState) => state.clans.currentClanId as string],

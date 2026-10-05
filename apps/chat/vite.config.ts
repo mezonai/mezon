@@ -54,6 +54,12 @@ export default defineConfig(({ mode }) => {
 					target: env.NX_IMGPROXY_BASE_URL || 'https://imgproxy.mezon.ai',
 					changeOrigin: true,
 					rewrite: (p: string) => p.replace(/^\/imgproxy-cors/, '')
+				},
+				// LOCAL DEV ONLY. cdn.komu.vn does not allow 127.0.0.1 in CORS, so the dev server proxies the Mezon-NS model and wasm.
+				'/mezon-ns-cdn': {
+					target: 'https://cdn.komu.vn',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/mezon-ns-cdn/, '/ns')
 				}
 			},
 			fs: {
