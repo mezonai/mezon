@@ -100,6 +100,8 @@ export interface MentionsInputHandle {
 	canRedo: () => boolean;
 }
 
+const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Fn']);
+
 interface ActiveMentionContext {
 	trigger: string;
 	config: MentionProps;
@@ -350,8 +352,20 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 		const [html, setHtml] = useState(value);
 		const [activeMentionContext, setActiveMentionContext] = useState<ActiveMentionContext | null>(null);
 		const [triggerSelection, setTriggerSelection] = useState<boolean>(false);
+		// Set when the key held for a mention pick is the send key, so a pick that finds nobody sends the message instead.
+		const pickSendsRef = useRef(false);
+		const cancelPendingPick = useCallback(() => {
+			pickSendsRef.current = false;
+			setTriggerSelection(false);
+		}, []);
 		const savedCaretPositionRef = useRef<{ range: Range; inputHtml: string } | null>(null);
 		const [suggestionsCount, setSuggestionsCount] = useState(0);
+
+		// A pick that is waiting for a pending answer belongs to the mention it was made in.
+		const activeTrigger = activeMentionContext?.trigger;
+		useEffect(() => {
+			setTriggerSelection(false);
+		}, [activeTrigger]);
 
 		const [undoHistory, setUndoHistory] = useState<string[]>([]);
 		const [redoHistory, setRedoHistory] = useState<string[]>([]);
@@ -416,13 +430,21 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			document.addEventListener('mousedown', handleClickOutside);
 
 			return () => {
-				if (detectMentionTimeoutRef.current) {
-					clearTimeout(detectMentionTimeoutRef.current);
-				}
 				document.removeEventListener('keydown', handleGlobalKeyDown);
 				document.removeEventListener('mousedown', handleClickOutside);
 			};
 		}, [activeMentionContext]);
+
+		// Only on unmount: clearing it whenever the mention context changed dropped the detection of a key typed while
+		// the suggestions were settling, leaving the dropdown on the query before it.
+		useEffect(
+			() => () => {
+				if (detectMentionTimeoutRef.current) {
+					clearTimeout(detectMentionTimeoutRef.current);
+				}
+			},
+			[]
+		);
 
 		const triggerRegex = useMemo(() => {
 			if (mentionConfigs.length === 0) return null;
@@ -542,15 +564,13 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			return enableUndoRedo && redoHistory.length > 0;
 		}, [enableUndoRedo, redoHistory.length]);
 
-		const detectMention = useCallback(async () => {
+		const computeMentionContext = useCallback((): ActiveMentionContext | null => {
 			if (!inputRef.current || mentionConfigs.length === 0 || !triggerRegex) {
-				setActiveMentionContext(null);
-				return;
+				return null;
 			}
 
 			if (isSelectionInsideFormatTag(inputRef.current)) {
-				setActiveMentionContext(null);
-				return;
+				return null;
 			}
 
 			const htmlBeforeSelection = getHtmlBeforeSelection(inputRef.current);
@@ -566,8 +586,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				const config = mentionConfigs.find((c) => c.trigger === trigger);
 				if (!config) {
-					setActiveMentionContext(null);
-					return;
+					return null;
 				}
 
 				const mentionState: MentionState = {
@@ -580,22 +599,26 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					selectedIndex: 0
 				};
 
-				setActiveMentionContext({
+				return {
 					trigger,
 					config,
 					mentionState
-				});
-				return;
+				};
 			}
 
-			setActiveMentionContext(null);
+			return null;
 		}, [mentionConfigs, triggerRegex]);
+
+		const detectMention = useCallback(() => {
+			setActiveMentionContext(computeMentionContext());
+		}, [computeMentionContext]);
 
 		const debouncedDetectMention = useCallback(() => {
 			if (detectMentionTimeoutRef.current) {
 				clearTimeout(detectMentionTimeoutRef.current);
 			}
 			detectMentionTimeoutRef.current = setTimeout(() => {
+				detectMentionTimeoutRef.current = null;
 				detectMention();
 			}, 30);
 		}, [detectMention]);
@@ -863,6 +886,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setSuggestionsCount(count);
 			setActiveMentionContext((prev) => {
 				if (!prev) return null;
+				if (prev.mentionState.isActive === (count > 0 || isLoading) && prev.mentionState.isLoading === isLoading) return prev;
 				return {
 					...prev,
 					mentionState: {
@@ -1058,11 +1082,36 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				setHtml(newHtml);
 				onChange?.(newHtml);
+				cancelPendingPick();
 
 				debouncedDetectMention();
 			},
-			[onChange, debouncedDetectMention, enableUndoRedo, html, addToHistory]
+			[onChange, debouncedDetectMention, enableUndoRedo, html, addToHistory, cancelPendingPick]
 		);
+
+		const sendCurrentText = useCallback(() => {
+			if (onSend && (html.trim() || hasFilesToSend || allowEmptySend)) {
+				const formattedText = parseHtmlAsFormattedText(html, true, false) as FormattedText;
+				const hasActualContent = formattedText.text.trim().length > 0;
+				if (hasActualContent || hasFilesToSend || allowEmptySend) {
+					onSend(formattedText);
+					setHtml('');
+					if (inputRef.current) {
+						inputRef.current.innerHTML = '';
+					}
+				}
+			}
+		}, [onSend, html, hasFilesToSend, allowEmptySend]);
+		const sendCurrentTextRef = useRef(sendCurrentText);
+		sendCurrentTextRef.current = sendCurrentText;
+
+		const handleSelectionUnresolved = useCallback(() => {
+			setActiveMentionContext(null);
+			if (pickSendsRef.current) {
+				pickSendsRef.current = false;
+				sendCurrentTextRef.current();
+			}
+		}, []);
 
 		const handleKeyDown = useCallback(
 			(e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -1070,6 +1119,12 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				if (disabled || isComposing) {
 					return;
+				}
+
+				// A pick still waiting for its answer belongs to the text as it was when Enter/Tab was pressed: any other key
+				// cancels it, so a late answer cannot insert a mention or send a message the user did not confirm.
+				if (!MODIFIER_KEYS.has(e.key)) {
+					cancelPendingPick();
 				}
 
 				if (enableUndoRedo && (e.ctrlKey || e.metaKey)) {
@@ -1091,7 +1146,22 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					}
 				}
 
-				if (activeMentionContext?.mentionState.isActive) {
+				let mentionContext = activeMentionContext;
+				// Keys that act on the dropdown must see the text typed right before them: run a detection still waiting
+				// on its debounce now, or Enter picks from the query before the last keystrokes.
+				if (detectMentionTimeoutRef.current && (e.key === 'Enter' || e.key === 'Tab' || e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+					clearTimeout(detectMentionTimeoutRef.current);
+					detectMentionTimeoutRef.current = null;
+					const detected = computeMentionContext();
+					// The same mention with a longer query keeps the dropdown as active as it was.
+					mentionContext =
+						detected && activeMentionContext?.trigger === detected.trigger && activeMentionContext.mentionState.isActive
+							? { ...detected, mentionState: { ...detected.mentionState, isActive: true } }
+							: detected;
+					setActiveMentionContext(mentionContext);
+				}
+
+				if (mentionContext?.mentionState.isActive) {
 					if (e.key === 'ArrowDown') {
 						e.preventDefault();
 						setActiveMentionContext((prev) => {
@@ -1139,6 +1209,10 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					}
 					if (e.key === 'Enter' || e.key === 'Tab') {
 						e.preventDefault();
+						pickSendsRef.current =
+							e.key === 'Enter' &&
+							!isMobile &&
+							((messageSendKeyCombo === 'enter' && !e.shiftKey) || (messageSendKeyCombo === 'ctrl-enter' && (e.ctrlKey || e.metaKey)));
 						setTriggerSelection(true);
 						return;
 					}
@@ -1150,17 +1224,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 						((messageSendKeyCombo === 'enter' && !e.shiftKey) || (messageSendKeyCombo === 'ctrl-enter' && (e.ctrlKey || e.metaKey)))
 					) {
 						e.preventDefault();
-						if (onSend && (html.trim() || hasFilesToSend || allowEmptySend)) {
-							const formattedText = parseHtmlAsFormattedText(html, true, false) as FormattedText;
-							const hasActualContent = formattedText.text.trim().length > 0;
-							if (hasActualContent || hasFilesToSend || allowEmptySend) {
-								onSend(formattedText);
-								setHtml('');
-								if (inputRef.current) {
-									inputRef.current.innerHTML = '';
-								}
-							}
-						}
+						sendCurrentText();
 						return;
 					}
 				}
@@ -1229,8 +1293,9 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			},
 			[
 				activeMentionContext,
-				onSend,
-				html,
+				computeMentionContext,
+				cancelPendingPick,
+				sendCurrentText,
 				messageSendKeyCombo,
 				isMobile,
 				disabled,
@@ -1239,9 +1304,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				enableUndoRedo,
 				undo,
 				redo,
-				hasFilesToSend,
-				suggestionsCount,
-				allowEmptySend
+				suggestionsCount
 			]
 		);
 
@@ -1263,7 +1326,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 							suggestionsClassName,
 							suggestionStyle,
 							triggerSelection,
-							onSelectionTriggered
+							onSelectionTriggered,
+							onSelectionUnresolved: handleSelectionUnresolved
 						} as MentionProps);
 					}
 				}
@@ -1278,7 +1342,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			suggestionsClassName,
 			suggestionStyle,
 			triggerSelection,
-			onSelectionTriggered
+			onSelectionTriggered,
+			handleSelectionUnresolved
 		]);
 
 		const { refs, floatingStyles } = useFloating({
@@ -1348,6 +1413,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					className="mention-input-editor"
 					onInput={handleInput}
 					onKeyDown={handleKeyDown}
+					onMouseDown={cancelPendingPick}
 					onPaste={handlePaste}
 					onContextMenu={handleContextMenu}
 					onBlur={saveCaretPosition}

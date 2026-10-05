@@ -1,10 +1,19 @@
 import { useAuth } from '@mezon/core';
-import { channelsActions, fetchUserChannels, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	channelsActions,
+	fetchUserChannels,
+	rolesClanActions,
+	selectAllCategories,
+	selectChannelAccessVersion,
+	selectChannelById,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { MutableRefObject, RefObject } from 'react';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AddMemRole } from '../Modal/addMemRoleModal';
@@ -46,6 +55,17 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const resetTriggerRef = useRef<(() => void) | null>(null);
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
+	const accessVersion = useAppSelector((state) => selectChannelAccessVersion(state, channel_id));
+	const seenAccessVersion = useRef(accessVersion);
+
+	useEffect(() => {
+		if (accessVersion === seenAccessVersion.current) return;
+		seenAccessVersion.current = accessVersion;
+		if (channel?.channel_private !== 1) return;
+		dispatch(fetchUserChannels({ channelId: channel_id, noCache: true }));
+		const rolesClanId = clanId || channel.clan_id;
+		if (rolesClanId) dispatch(rolesClanActions.fetchRolesClan({ clanId: rolesClanId, noCache: true }));
+	}, [accessVersion, channel?.channel_private, channel?.clan_id, channel_id, clanId, dispatch]);
 
 	const handleToggle = useCallback(() => {
 		setValueToggle(!valueToggle);

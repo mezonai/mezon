@@ -8,9 +8,17 @@ interface PushToTalkControlProps {
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
+	weakNetwork?: boolean;
 }
 
-export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrophoneAccess, onPermissionRequest }: PushToTalkControlProps) => {
+export const PushToTalkControl = ({
+	active,
+	onChange,
+	permissionState,
+	hasMicrophoneAccess,
+	onPermissionRequest,
+	weakNetwork
+}: PushToTalkControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
 	const label = showWarning ? t('mediaPermission.needed.microphone') : 'Push to talk';
@@ -44,6 +52,9 @@ export const PushToTalkControl = ({ active, onChange, permissionState, hasMicrop
 				<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">
 					<span className="text-black text-xs font-bold">!</span>
 				</div>
+			)}
+			{!showWarning && weakNetwork && (
+				<div className="pointer-events-none absolute -right-0.5 -top-0.5 z-10 h-3.5 w-3.5 rounded-full border-2 border-[#11111b] bg-orange-500" />
 			)}
 		</div>
 	);
