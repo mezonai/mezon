@@ -28,6 +28,7 @@ import {
 	ModeResponsive,
 	TypeSearch,
 	addAttributesSearchList,
+	filterListByName,
 	forwardableServerChannels,
 	generateE2eId,
 	getAvatarForPrioritize,
@@ -464,12 +465,10 @@ const ForwardMessageModal = () => {
 		).map((channel) => ({
 			id: channel.channel_id ?? '',
 			name: channel.channel_label ?? '',
-			subText: clansEntities?.[channel.clan_id ?? '']?.clan_name || channel.clan_name || '',
 			icon: '#',
 			type: channel.type,
 			clanId: channel.clan_id ?? '',
 			channelLabel: channel.channel_label ?? '',
-			lastSentTimeStamp: undefined,
 			typeSearch: TypeSearch.Channel_Type,
 			prioritizeName: channel.channel_label ?? '',
 			isPublic: !channel.channel_private,
@@ -483,22 +482,26 @@ const ForwardMessageModal = () => {
 	const listAllChannelSearch = useMemo(() => [...listChannelSearch, ...listSearchedChannel], [listChannelSearch, listSearchedChannel]);
 
 	const addPropsIntoListMember = useMemo(() => addAttributesSearchList(listMemSearch, membersInClan), [listMemSearch, membersInClan]);
-	const totalsSearch = [...addPropsIntoListMember, ...listAllChannelSearch];
+	const totalsSearch = useMemo(() => [...addPropsIntoListMember, ...listAllChannelSearch], [addPropsIntoListMember, listAllChannelSearch]);
 
-	const normalizedSearchText = normalizeString(searchText);
+	const normalizedSearchText = normalizeString(searchText.trim());
+	const channelSearchText = normalizedSearchText.slice(1).trim();
 
-	const isNoResult = useMemo(() => {
-		const memberResults = addPropsIntoListMember.some(
-			(item) =>
-				(item.prioritizeName && item.prioritizeName.toUpperCase().includes(normalizedSearchText)) ||
-				(typeof item.name === 'string' && item.name.toUpperCase().includes(normalizedSearchText)) ||
-				(Array.isArray(item.name) && item.name[0].toUpperCase().includes(normalizedSearchText))
-		);
-		const channelResults = listAllChannelSearch.some(
-			(item) => item.prioritizeName && item.prioritizeName.toUpperCase().includes(normalizedSearchText)
-		);
-		return !memberResults && !channelResults;
-	}, [addPropsIntoListMember, listAllChannelSearch, normalizedSearchText]);
+	const isNoResult = useMemo(() => filterListByName(totalsSearch, normalizedSearchText, false).length === 0, [totalsSearch, normalizedSearchText]);
+	const isNoChannelResult = useMemo(
+		() => filterListByName(listAllChannelSearch, channelSearchText, false).length === 0,
+		[listAllChannelSearch, channelSearchText]
+	);
+
+	const emptyState = isSearchingServer ? (
+		<span className=" flex flex-row justify-center ">
+			<span className="inline-flex animate-spin text-theme-primary">
+				<Icons.LoadingSpinner />
+			</span>
+		</span>
+	) : (
+		<span className=" flex flex-row justify-center ">{t('modal.noResults')}</span>
+	);
 
 	const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -612,16 +615,7 @@ const ForwardMessageModal = () => {
 									selectedObjectIdSends={selectedObjectIdSends}
 									handleToggle={handleToggle}
 								/>
-								{isNoResult &&
-									(isSearchingServer ? (
-										<span className=" flex flex-row justify-center ">
-											<span className="inline-flex animate-spin text-theme-primary">
-												<Icons.LoadingSpinner />
-											</span>
-										</span>
-									) : (
-										<span className=" flex flex-row justify-center ">{t('modal.noResults')}</span>
-									))}
+								{isNoResult && emptyState}
 							</>
 						) : (
 							<>
@@ -641,10 +635,11 @@ const ForwardMessageModal = () => {
 										<span className=" text-left opacity-60 text-[11px] pb-1 uppercase">{t('modal.searchingChannel')}</span>
 										<ListSearchForwardMessage
 											listSearch={listAllChannelSearch}
-											searchText={normalizedSearchText.slice(1)}
+											searchText={channelSearchText}
 											selectedObjectIdSends={selectedObjectIdSends}
 											handleToggle={handleToggle}
 										/>
+										{isNoChannelResult && emptyState}
 									</>
 								)}
 							</>

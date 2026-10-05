@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 const SERVER_SEARCH_DEBOUNCE_MS = 300;
 const SEARCH_TYPE_CHANNELS = 2;
+const NO_CHANNELS: ApiChannelDescription[] = [];
 
 export function useForwardChannelSearch(searchText: string) {
 	const { clientRef, sessionRef } = useMezon();
@@ -12,13 +13,13 @@ export function useForwardChannelSearch(searchText: string) {
 	const queryKey = query === null ? null : forwardServerQueryKey(query);
 	const queryRef = useRef(query);
 	queryRef.current = query;
-	const [channels, setChannels] = useState<ApiChannelDescription[]>([]);
+	const [channels, setChannels] = useState<ApiChannelDescription[]>(NO_CHANNELS);
 	const [settledKey, setSettledKey] = useState<string | null>(null);
 
 	useEffect(() => {
 		const text = queryRef.current;
-		if (text === null || queryKey === null) {
-			setChannels([]);
+		if (text === null) {
+			setChannels(NO_CHANNELS);
 			setSettledKey(null);
 			return;
 		}
@@ -30,7 +31,7 @@ export function useForwardChannelSearch(searchText: string) {
 				if (client && session) {
 					const response = await client.searchCtrlK(session, { text, type: SEARCH_TYPE_CHANNELS });
 					if (!cancelled) {
-						setChannels(response?.channels ?? []);
+						setChannels(response?.channels ?? NO_CHANNELS);
 					}
 				}
 			} catch (error) {
@@ -47,5 +48,8 @@ export function useForwardChannelSearch(searchText: string) {
 		};
 	}, [queryKey, clientRef, sessionRef]);
 
-	return { channels, pending: queryKey !== null && queryKey !== settledKey };
+	return {
+		channels: queryKey === null ? NO_CHANNELS : channels,
+		pending: queryKey !== null && queryKey !== settledKey
+	};
 }
