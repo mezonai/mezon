@@ -70,7 +70,7 @@ const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
 
 // Floating In-Meeting Virtual Background menu
 const InMeetingBackgroundMenu = React.memo(
-	({ selectedMode, onSelectMode }: { selectedMode: BackgroundMode; onSelectMode: (mode: BackgroundMode) => void }) => {
+	({ selectedMode, onSelectMode }: { selectedMode: BackgroundMode | null; onSelectMode: (mode: BackgroundMode | null) => void }) => {
 		const [isOpen, setIsOpen] = useState(false);
 		const menuRef = useRef<HTMLDivElement>(null);
 
@@ -100,7 +100,7 @@ const InMeetingBackgroundMenu = React.memo(
 					<span>Backgrounds</span>
 				</button>
 				{isOpen && (
-					<div className="absolute right-0 top-full mt-2 w-80 p-3 bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-2xl backdrop-blur-md z-50">
+					<div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] p-3 bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-2xl backdrop-blur-md z-50">
 						<BackgroundSelector selectedMode={selectedMode} onSelectMode={onSelectMode} />
 					</div>
 				)}
@@ -122,8 +122,8 @@ export default function PreJoinCalling() {
 	const getAvatar = account?.user?.avatar_url;
 
 	const [cameraOn, setCameraOn] = useState(false);
-	const [selectedBg, setSelectedBg] = useState<BackgroundMode>('bg-1');
-	const selectedBgRef = useRef<BackgroundMode>('bg-1');
+	const [selectedBg, setSelectedBg] = useState<BackgroundMode | null>(null);
+	const selectedBgRef = useRef<BackgroundMode | null>(null);
 	const [showBgSelector, setShowBgSelector] = useState(false);
 	const [processedStream, setProcessedStream] = useState<MediaStream | null>(null);
 	const [processorCanvas, setProcessorCanvas] = useState<HTMLCanvasElement | null>(null);
@@ -265,19 +265,11 @@ export default function PreJoinCalling() {
 
 		return () => {
 			active = false;
-			if (rawStreamRef.current) {
-				rawStreamRef.current.getTracks().forEach((track) => track.stop());
-				rawStreamRef.current = null;
-			}
-			if (processorRef.current) {
-				processorRef.current.destroy();
-				processorRef.current = null;
-			}
 		};
 	}, []);
 
 	// Handle background selection
-	const handleSelectBg = useCallback((mode: BackgroundMode) => {
+	const handleSelectBg = useCallback((mode: BackgroundMode | null) => {
 		setSelectedBg(mode);
 		selectedBgRef.current = mode;
 		if (processorRef.current) {
@@ -383,7 +375,13 @@ export default function PreJoinCalling() {
 						onFullScreen={handleFullScreen}
 						onToggleChat={toggleChat}
 						username={username}
-						customVideoTrack={cameraOn ? customVideoTrack : null}
+						customVideoTrack={
+							cameraOn
+								? customVideoTrack && customVideoTrack.readyState === 'live'
+									? customVideoTrack
+									: processorRef.current?.getVideoTrack()
+								: null
+						}
 					/>
 					{cameraOn && (
 						<div className="absolute top-4 right-4 z-40">

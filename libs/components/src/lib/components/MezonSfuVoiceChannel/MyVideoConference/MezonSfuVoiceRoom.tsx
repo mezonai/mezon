@@ -1504,13 +1504,15 @@ export function MezonSfuVoiceRoom({
 				}
 			}
 			if (disposed) {
-				stream.getTracks().forEach((track) => track.stop());
+				stream.getTracks().forEach((track) => {
+					if (track !== customVideoTrack) track.stop();
+				});
 				return stream;
 			}
 			const audioTrack = stream.getAudioTracks()[0];
 			let videoTrack = stream.getVideoTracks()[0];
 			if (customVideoTrack && customVideoTrack.readyState === 'live') {
-				if (videoTrack) videoTrack.stop();
+				if (videoTrack && videoTrack !== customVideoTrack) videoTrack.stop();
 				videoTrack = customVideoTrack;
 				stream.getVideoTracks().forEach((t) => stream.removeTrack(t));
 				stream.addTrack(customVideoTrack);
@@ -2189,7 +2191,9 @@ export function MezonSfuVoiceRoom({
 			mezonNsPipelineRef.current?.dispose();
 			mezonNsPipelineRef.current = null;
 			dispatch(voiceActions.setNoiseSuppressionReady(false));
-			localStreamRef.current?.getTracks().forEach((track) => track.stop());
+			localStreamRef.current?.getTracks().forEach((track) => {
+				if (track !== customVideoTrack) track.stop();
+			});
 			screenStreamRef.current?.getTracks().forEach((track) => track.stop());
 			wsRef.current = null;
 			pcRef.current = null;

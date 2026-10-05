@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import type { ReactNode } from 'react';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 interface VideoPreviewProps {
 	cameraOn: boolean;
@@ -36,37 +36,47 @@ export function VisualEffectsIcon({ className = 'w-6 h-6', ...props }: React.SVG
 	);
 }
 
-const VideoPreview = memo(({ cameraOn, stream, canvas, avatarExist, children, onEffectClick, isEffectActive }: VideoPreviewProps) => {
+const VideoPreview = memo(({ cameraOn, stream, avatarExist, children, onEffectClick, isEffectActive }: VideoPreviewProps) => {
 	const videoRef = useRef<HTMLVideoElement | null>(null);
-	const canvasContainerRef = useRef<HTMLDivElement | null>(null);
+	const [aspectRatio, setAspectRatio] = useState<'video' | 'portrait'>('video');
 
 	useEffect(() => {
-		if (videoRef.current && !canvas) {
-			videoRef.current.srcObject = stream;
-			if (stream && cameraOn) {
-				videoRef.current.play().catch(() => undefined);
-			}
+		const video = videoRef.current;
+		if (!video) return;
+		video.srcObject = stream;
+		if (stream && cameraOn) {
+			video.play().catch(() => undefined);
 		}
-	}, [stream, cameraOn, canvas]);
 
-	useEffect(() => {
-		const container = canvasContainerRef.current;
-		if (container && canvas) {
-			canvas.className = 'w-full h-full object-cover';
-			canvas.style.display = 'block';
-			if (!container.contains(canvas)) {
-				container.replaceChildren(canvas);
+		const checkRatio = () => {
+			if (video.videoWidth && video.videoHeight) {
+				setAspectRatio(video.videoHeight > video.videoWidth ? 'portrait' : 'video');
 			}
-		}
-	}, [canvas]);
+		};
+
+		video.addEventListener('loadedmetadata', checkRatio);
+		video.addEventListener('resize', checkRatio);
+		checkRatio();
+
+		return () => {
+			video.removeEventListener('loadedmetadata', checkRatio);
+			video.removeEventListener('resize', checkRatio);
+		};
+	}, [stream, cameraOn]);
 
 	return (
-		<div className="w-full aspect-video bg-zinc-900 rounded-lg mb-4 relative overflow-hidden flex items-center justify-center border border-zinc-700/50">
-			{canvas ? (
-				<div ref={canvasContainerRef} className={`w-full h-full flex items-center justify-center ${!cameraOn ? 'hidden' : 'block'}`} />
-			) : (
-				<video ref={videoRef} autoPlay playsInline muted className={`w-full h-full object-cover ${!cameraOn ? 'hidden' : 'block'}`} />
-			)}
+		<div
+			className={`w-full bg-zinc-900 rounded-lg mb-4 relative overflow-hidden flex items-center justify-center border border-zinc-700/50 transition-all ${
+				aspectRatio === 'portrait' ? 'aspect-[3/4] max-h-[60vh] max-w-sm mx-auto' : 'aspect-video'
+			}`}
+		>
+			<video
+				ref={videoRef}
+				autoPlay
+				playsInline
+				muted
+				className={`w-full h-full object-cover -scale-x-100 ${!cameraOn ? 'hidden' : 'block'}`}
+			/>
 			{!cameraOn && (
 				<div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
 					<div className="w-24 h-24 bg-zinc-700 rounded-full flex items-center justify-center overflow-hidden border border-zinc-600">

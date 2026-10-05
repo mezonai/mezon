@@ -60,6 +60,12 @@ export default defineConfig(({ mode }) => {
 					target: 'https://cdn.komu.vn',
 					changeOrigin: true,
 					rewrite: (p: string) => p.replace(/^\/mezon-ns-cdn/, '/ns')
+				},
+				// LOCAL DEV ONLY. cdn.komu.vn does not allow 127.0.0.1 in CORS, so the dev server proxies virtual backgrounds to keep canvas origin-clean.
+				'/vtbg-cdn': {
+					target: 'https://cdn.komu.vn',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/vtbg-cdn/, '')
 				}
 			},
 			fs: {
@@ -68,7 +74,7 @@ export default defineConfig(({ mode }) => {
 			headers: {
 				'Content-Security-Policy': [
 					"default-src 'self'",
-					"script-src 'self' 'wasm-unsafe-eval' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' blob: *.mezon.ai *.googletagmanager.com *.google-analytics.com *.googlesyndication.com *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net",
+					"script-src 'self' 'wasm-unsafe-eval' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' blob: *.mezon.ai *.googletagmanager.com *.google-analytics.com *.googlesyndication.com *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net https://cdn.komu.vn *.komu.vn",
 					"style-src 'self' 'unsafe-inline' *.mezon.ai *.googleapis.com *.gstatic.com https://cdn.jsdelivr.net",
 					"font-src 'self' data: *.mezon.ai *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net",
 					"object-src 'none'",
