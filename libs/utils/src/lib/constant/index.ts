@@ -223,7 +223,7 @@ export const STICKER_WAVE = {
 		'https://cdn.komu.vn/stickers/mezon.gif',
 		'https://cdn.komu.vn/stickers/discord.gif',
 		'https://cdn.komu.vn/stickers/mezon.gif',
-		'http://cdn.komu.vn/landing-page-mezon/2021919345600368640.gif'
+		'https://cdn.komu.vn/landing-page-mezon/2021919345600368640.gif'
 	]
 };
 
