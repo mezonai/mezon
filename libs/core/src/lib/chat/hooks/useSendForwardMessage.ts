@@ -1,18 +1,43 @@
-import { toastActions, useAppDispatch } from '@mezon/store';
+import { channelsActions, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { MAX_FORWARD_MESSAGE_LENGTH } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageMention } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 export function useSendForwardMessage() {
 	const { t } = useTranslation('forwardMessage');
 	const { clientRef, sessionRef } = useMezon();
 
 	const dispatch = useAppDispatch();
+	const currentClanId = useSelector(selectCurrentClanId);
+	const clanJoinsRef = useRef(new Map<string, Promise<void>>());
 
 	const client = clientRef.current;
+
+	const joinClanBeforePublicChannel = React.useCallback(
+		(clanId: string) => {
+			const pending = clanJoinsRef.current.get(clanId);
+			if (pending) {
+				return pending;
+			}
+			const joining = (async () => {
+				await dispatch(channelsActions.fetchChannels({ clanId }));
+				const session = sessionRef.current;
+				const client = clientRef.current;
+				if (client && session) {
+					await client.joinClanChat(session, clanId);
+				}
+			})().catch((error) => {
+				console.warn('[forward] clan join before channel join failed', error);
+			});
+			clanJoinsRef.current.set(clanId, joining);
+			return joining;
+		},
+		[dispatch, clientRef, sessionRef]
+	);
 
 	const sendForwardMessage = React.useCallback(
 		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
@@ -76,6 +101,10 @@ export function useSendForwardMessage() {
 
 				const mentions = sanitizedMentions;
 
+				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL && isPublic && clanid && clanid !== '0' && clanid !== currentClanId) {
+					await joinClanBeforePublicChannel(clanid);
+				}
+
 				await client.joinChat(session, clanid || '0', channel_id, type, isPublic);
 
 				await client.writeChatMessage(session, clanid || '0', channel_id, mode, isPublic, validatedContent, mentions, message.attachments);
@@ -108,7 +137,7 @@ export function useSendForwardMessage() {
 				);
 			}
 		},
-		[sessionRef, clientRef, dispatch, t]
+		[sessionRef, clientRef, dispatch, t, currentClanId, joinClanBeforePublicChannel]
 	);
 
 	return useMemo(

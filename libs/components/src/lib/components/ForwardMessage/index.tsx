@@ -1,4 +1,4 @@
-import { useAuth, useDirect, useSendForwardMessage } from '@mezon/core';
+import { useAuth, useDirect, useForwardChannelSearch, useSendForwardMessage } from '@mezon/core';
 import type { DirectEntity, MessagesEntity } from '@mezon/store';
 import {
 	EStateFriend,
@@ -11,6 +11,7 @@ import {
 	selectAllDirectMessages,
 	selectAllFriends,
 	selectAllUserClans,
+	selectClansEntities,
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectDmGroupCurrentId,
@@ -27,6 +28,7 @@ import {
 	ModeResponsive,
 	TypeSearch,
 	addAttributesSearchList,
+	forwardableServerChannels,
 	generateE2eId,
 	getAvatarForPrioritize,
 	isAttachmentPresignPendingForMessage,
@@ -45,6 +47,8 @@ import MessageContent from '../MessageWithUser/MessageContent';
 import ListSearchForwardMessage from './ListSearchForwardMessage';
 
 import { MAX_FORWARD_MESSAGE_LENGTH } from '@mezon/utils';
+
+const FORWARD_CHANNEL_TYPES: ReadonlySet<number> = new Set([ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD]);
 
 type ObjectSend = {
 	id: string;
@@ -447,8 +451,38 @@ const ForwardMessageModal = () => {
 		return list;
 	}, [listChannels]);
 
+	const { channels: searchedChannels, pending: isSearchingServer } = useForwardChannelSearch(searchText);
+	const clansEntities = useSelector(selectClansEntities);
+
+	const listSearchedChannel = useMemo(() => {
+		const listedIds = new Set(listChannelSearch.map((item) => item.id));
+		return forwardableServerChannels(
+			searchedChannels,
+			FORWARD_CHANNEL_TYPES,
+			(clanId) => Boolean(clansEntities?.[clanId]),
+			(channelId) => listedIds.has(channelId)
+		).map((channel) => ({
+			id: channel.channel_id ?? '',
+			name: channel.channel_label ?? '',
+			subText: clansEntities?.[channel.clan_id ?? '']?.clan_name || channel.clan_name || '',
+			icon: '#',
+			type: channel.type,
+			clanId: channel.clan_id ?? '',
+			channelLabel: channel.channel_label ?? '',
+			lastSentTimeStamp: undefined,
+			typeSearch: TypeSearch.Channel_Type,
+			prioritizeName: channel.channel_label ?? '',
+			isPublic: !channel.channel_private,
+			channel_private: channel.channel_private ? 1 : 0,
+			age_restricted: channel.age_restricted,
+			parent_id: channel.parent_id
+		}));
+	}, [searchedChannels, listChannelSearch, clansEntities]);
+
+	const listAllChannelSearch = useMemo(() => [...listChannelSearch, ...listSearchedChannel], [listChannelSearch, listSearchedChannel]);
+
 	const addPropsIntoListMember = useMemo(() => addAttributesSearchList(listMemSearch, membersInClan), [listMemSearch, membersInClan]);
-	const totalsSearch = [...addPropsIntoListMember, ...listChannelSearch];
+	const totalsSearch = [...addPropsIntoListMember, ...listAllChannelSearch];
 
 	const normalizedSearchText = normalizeString(searchText);
 
@@ -459,11 +493,11 @@ const ForwardMessageModal = () => {
 				(typeof item.name === 'string' && item.name.toUpperCase().includes(normalizedSearchText)) ||
 				(Array.isArray(item.name) && item.name[0].toUpperCase().includes(normalizedSearchText))
 		);
-		const channelResults = listChannelSearch.some(
+		const channelResults = listAllChannelSearch.some(
 			(item) => item.prioritizeName && item.prioritizeName.toUpperCase().includes(normalizedSearchText)
 		);
 		return !memberResults && !channelResults;
-	}, [addPropsIntoListMember, listChannelSearch, normalizedSearchText]);
+	}, [addPropsIntoListMember, listAllChannelSearch, normalizedSearchText]);
 
 	const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -577,7 +611,14 @@ const ForwardMessageModal = () => {
 									selectedObjectIdSends={selectedObjectIdSends}
 									handleToggle={handleToggle}
 								/>
-								{isNoResult && <span className=" flex flex-row justify-center ">{t('modal.noResults')}</span>}
+								{isNoResult &&
+									(isSearchingServer ? (
+										<span className=" flex flex-row justify-center ">
+											<Icons.LoadingSpinner className="h-5 w-5 text-theme-primary" />
+										</span>
+									) : (
+										<span className=" flex flex-row justify-center ">{t('modal.noResults')}</span>
+									))}
 							</>
 						) : (
 							<>
@@ -596,7 +637,7 @@ const ForwardMessageModal = () => {
 									<>
 										<span className=" text-left opacity-60 text-[11px] pb-1 uppercase">{t('modal.searchingChannel')}</span>
 										<ListSearchForwardMessage
-											listSearch={listChannelSearch}
+											listSearch={listAllChannelSearch}
 											searchText={normalizedSearchText.slice(1)}
 											selectedObjectIdSends={selectedObjectIdSends}
 											handleToggle={handleToggle}
