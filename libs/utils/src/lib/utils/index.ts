@@ -57,6 +57,7 @@ export * from './detectTokenMessage';
 export * from './embed-social';
 export * from './file';
 export * from './forceReflow';
+export * from './forwardSearch';
 export * from './heavyAnimation';
 export * from './mediaDimensions';
 export * from './mergeRefs';

@@ -47,7 +47,10 @@ const processFrame = ({ requestId, frame }: FrameMessage) => {
 		.then(async () => {
 			if (failed || !engine || !audioPort) return;
 			const output = new Float32Array(160);
-			if (captureActive || !warmedUp) await engine.processFrame(frame, output);
+			if (captureActive || !warmedUp) {
+				for (let i = 0; i < frame.length; i++) frame[i] = Math.max(-32768, Math.min(32767, Math.round(frame[i] * 32768))) / 32768;
+				await engine.processFrame(frame, output);
+			}
 			for (let i = 0; i < output.length; i++) {
 				if (!Number.isFinite(output[i])) throw new Error('Mezon-NS produced non-finite audio');
 			}

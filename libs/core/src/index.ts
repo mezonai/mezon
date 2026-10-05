@@ -49,6 +49,7 @@ export * from './lib/chat/hooks/useEscapeKeyClose';
 export * from './lib/chat/hooks/useEventManagement';
 export * from './lib/chat/hooks/useEventManagementQuantity';
 export * from './lib/chat/hooks/useFormatDate';
+export * from './lib/chat/hooks/useForwardChannelSearch';
 export * from './lib/chat/hooks/useFriends';
 export * from './lib/chat/hooks/useGetPriorityNameFromUserClan';
 export * from './lib/chat/hooks/useGifs';
