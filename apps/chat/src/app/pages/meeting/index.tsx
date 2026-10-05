@@ -1,4 +1,13 @@
-import { JoinForm, MezonSfuVoiceRoom, VideoPreview, type SfuJoinRole } from '@mezon/components';
+import {
+	BackgroundSelector,
+	ControlButton,
+	JoinForm,
+	MediaPipeBackgroundProcessor,
+	MezonSfuVoiceRoom,
+	VideoPreview,
+	type BackgroundMode,
+	type SfuJoinRole
+} from '@mezon/components';
 import {
 	authActions,
 	generateMeetTokenExternal,
@@ -10,6 +19,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import { GUEST_NAME } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +69,49 @@ const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
 	);
 });
 
+// Floating In-Meeting Virtual Background menu
+const InMeetingBackgroundMenu = React.memo(
+	({ selectedMode, onSelectMode }: { selectedMode: BackgroundMode; onSelectMode: (mode: BackgroundMode) => void }) => {
+		const [isOpen, setIsOpen] = useState(false);
+		const menuRef = useRef<HTMLDivElement>(null);
+
+		useEffect(() => {
+			const handleClickOutside = (e: MouseEvent) => {
+				if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+					setIsOpen(false);
+				}
+			};
+			if (isOpen) {
+				document.addEventListener('mousedown', handleClickOutside);
+			}
+			return () => {
+				document.removeEventListener('mousedown', handleClickOutside);
+			};
+		}, [isOpen]);
+
+		return (
+			<div className="relative" ref={menuRef}>
+				<button
+					type="button"
+					onClick={() => setIsOpen((prev) => !prev)}
+					className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 rounded-full text-xs font-medium text-white shadow-lg backdrop-blur transition-all"
+					title="Virtual Background (MediaPipe)"
+				>
+					<span role="img" aria-label="sparkles">
+						✨
+					</span>
+					<span>Backgrounds</span>
+				</button>
+				{isOpen && (
+					<div className="absolute right-0 top-full mt-2 w-80 p-3 bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-2xl backdrop-blur-md z-50">
+						<BackgroundSelector selectedMode={selectedMode} onSelectMode={onSelectMode} />
+					</div>
+				)}
+			</div>
+		);
+	}
+);
+
 const sanitizeUsername = (val: string) =>
 	val
 		.toLowerCase()
@@ -70,21 +123,32 @@ export default function PreJoinCalling() {
 	const account = useSelector(selectAllAccount);
 	const getDisplayName = account?.user?.display_name || account?.user?.username;
 	const getAvatar = account?.user?.avatar_url;
-	const [cameraOn] = useState(false);
+
+	const [cameraOn, setCameraOn] = useState(false);
+	const [micOn, setMicOn] = useState(true);
+	const [audioLevel, setAudioLevel] = useState(0);
+	const [selectedBg, setSelectedBg] = useState<BackgroundMode>('none');
+	const [processedStream, setProcessedStream] = useState<MediaStream | null>(null);
+	const [customVideoTrack, setCustomVideoTrack] = useState<MediaStreamTrack | null>(null);
+
 	const [username, setUsername] = useState(() => sanitizeUsername(getDisplayName || ''));
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [avatar, setAvatar] = useState('');
 	const [error, setError] = useState<string | null>(null);
+
 	// State for permissions
 	const [permissionsState, setPermissionsState] = useState({
 		camera: false,
 		microphone: false,
 		showPopup: false
 	});
-	const streamRef = useRef<MediaStream | null>(null);
+
+	const rawStreamRef = useRef<MediaStream | null>(null);
 	const micStreamRef = useRef<MediaStream | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const animationFrameRef = useRef<number | null>(null);
+	const processorRef = useRef<MediaPipeBackgroundProcessor | null>(null);
+
 	const dispatch = useAppDispatch();
 	const { code } = useParams<{ code: string }>();
 
@@ -101,7 +165,7 @@ export default function PreJoinCalling() {
 				const payload = parts[1];
 				const decoded = atob(payload);
 				return JSON.parse(decoded);
-			} catch (error) {
+			} catch (err) {
 				toast.error(t('invalidJWT'));
 				return {};
 			}
@@ -145,12 +209,12 @@ export default function PreJoinCalling() {
 		}));
 	}, []);
 
+	// Clean up all resources when component unmounts
 	useEffect(() => {
 		return () => {
-			// Clean up all resources when component unmounts
-			if (streamRef.current) {
-				streamRef.current.getTracks().forEach((track) => track.stop());
-				streamRef.current = null;
+			if (rawStreamRef.current) {
+				rawStreamRef.current.getTracks().forEach((track) => track.stop());
+				rawStreamRef.current = null;
 			}
 
 			if (micStreamRef.current) {
@@ -159,7 +223,7 @@ export default function PreJoinCalling() {
 			}
 
 			if (audioContextRef.current) {
-				audioContextRef.current.close();
+				audioContextRef.current.close().catch(() => undefined);
 				audioContextRef.current = null;
 			}
 
@@ -167,7 +231,120 @@ export default function PreJoinCalling() {
 				cancelAnimationFrame(animationFrameRef.current);
 				animationFrameRef.current = null;
 			}
+
+			if (processorRef.current) {
+				processorRef.current.destroy();
+				processorRef.current = null;
+			}
 		};
+	}, []);
+
+	// Toggle Microphone
+	const toggleMic = useCallback(async () => {
+		if (micOn) {
+			setMicOn(false);
+			dispatch(voiceActions.setShowMicrophone(false));
+			if (animationFrameRef.current) {
+				cancelAnimationFrame(animationFrameRef.current);
+				animationFrameRef.current = null;
+			}
+			if (micStreamRef.current) {
+				micStreamRef.current.getTracks().forEach((track) => track.stop());
+				micStreamRef.current = null;
+			}
+			if (audioContextRef.current) {
+				audioContextRef.current.close().catch(() => undefined);
+				audioContextRef.current = null;
+			}
+			setAudioLevel(0);
+		} else {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				micStreamRef.current = stream;
+				const AudioContextClass =
+					window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+				if (AudioContextClass) {
+					const audioContext = new AudioContextClass();
+					audioContextRef.current = audioContext;
+					const analyser = audioContext.createAnalyser();
+					const source = audioContext.createMediaStreamSource(stream);
+					source.connect(analyser);
+					analyser.fftSize = 32;
+					const bufferLength = analyser.frequencyBinCount;
+					const dataArray = new Uint8Array(bufferLength);
+					const updateAudioLevel = () => {
+						if (!audioContextRef.current) return;
+						analyser.getByteFrequencyData(dataArray);
+						const sum = dataArray.reduce((acc, val) => acc + val, 0);
+						const avg = sum / bufferLength;
+						setAudioLevel(Math.min(avg / 128, 1));
+						if (micStreamRef.current && micStreamRef.current.active) {
+							animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+						}
+					};
+					updateAudioLevel();
+				}
+				setMicOn(true);
+				dispatch(voiceActions.setShowMicrophone(true));
+				setError(null);
+				setPermissionsState((prev) => ({ ...prev, microphone: true }));
+			} catch (err) {
+				console.error('Error accessing microphone:', err);
+				setError('Failed to access microphone. Please check your permissions and try again.');
+			}
+		}
+	}, [micOn, dispatch]);
+
+	// Toggle Camera with MediaPipe Selfie Segmentation pipeline
+	const toggleCamera = useCallback(async () => {
+		if (cameraOn) {
+			if (rawStreamRef.current) {
+				rawStreamRef.current.getTracks().forEach((track) => track.stop());
+				rawStreamRef.current = null;
+			}
+			if (processorRef.current) {
+				processorRef.current.stop();
+			}
+			setCameraOn(false);
+			setProcessedStream(null);
+			setCustomVideoTrack(null);
+			dispatch(voiceActions.setShowCamera(false));
+		} else {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({
+					video: {
+						width: { ideal: 1280 },
+						height: { ideal: 720 },
+						facingMode: 'user'
+					},
+					audio: false
+				});
+				rawStreamRef.current = stream;
+
+				if (!processorRef.current) {
+					processorRef.current = new MediaPipeBackgroundProcessor();
+				}
+
+				const outStream = await processorRef.current.start(stream, selectedBg);
+				setProcessedStream(outStream);
+				setCustomVideoTrack(processorRef.current.getVideoTrack());
+				setCameraOn(true);
+				dispatch(voiceActions.setShowCamera(true));
+				setError(null);
+				setPermissionsState((prev) => ({ ...prev, camera: true }));
+			} catch (err) {
+				console.error('Error accessing camera:', err);
+				setError('Failed to access camera. Please check your permissions and try again.');
+			}
+		}
+	}, [cameraOn, selectedBg, dispatch]);
+
+	// Handle background selection
+	const handleSelectBg = useCallback((mode: BackgroundMode) => {
+		setSelectedBg(mode);
+		if (processorRef.current) {
+			processorRef.current.setMode(mode);
+		}
 	}, []);
 
 	const isUser = !!(getDisplayName && getAvatar);
@@ -189,6 +366,10 @@ export default function PreJoinCalling() {
 			setError(null);
 			setAvatar(avatar as string);
 			setJoinRole(role);
+
+			dispatch(voiceActions.setShowCamera(cameraOn));
+			dispatch(voiceActions.setShowMicrophone(micOn));
+
 			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
 			await dispatch(
 				generateMeetTokenExternal({
@@ -199,7 +380,7 @@ export default function PreJoinCalling() {
 				})
 			);
 		},
-		[dispatch, username, isUser, code, avatar, getAvatar]
+		[dispatch, username, isUser, code, avatar, getAvatar, cameraOn, micOn]
 	);
 
 	const handleRefreshToken = useCallback(async () => {
@@ -246,10 +427,9 @@ export default function PreJoinCalling() {
 	}, [dispatch]);
 
 	return (
-		// eslint-disable-next-line react/jsx-no-useless-fragment
-		<div className="h-screen w-screen flex">
+		<div className="h-screen w-screen flex bg-black">
 			{getExternalToken ? (
-				<div ref={containerRef} className="h-full flex-1 flex">
+				<div ref={containerRef} className="h-full flex-1 flex relative">
 					<MezonSfuVoiceRoom
 						token={getExternalToken}
 						joinRole={joinRole}
@@ -264,28 +444,70 @@ export default function PreJoinCalling() {
 						onFullScreen={handleFullScreen}
 						onToggleChat={toggleChat}
 						username={username}
+						customVideoTrack={cameraOn ? customVideoTrack : null}
 					/>
+					{cameraOn && (
+						<div className="absolute top-4 right-4 z-40">
+							<InMeetingBackgroundMenu selectedMode={selectedBg} onSelectMode={handleSelectBg} />
+						</div>
+					)}
 				</div>
 			) : (
-				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white flex-1">
-					<div className="w-full max-w-3xl px-4 py-8 flex flex-col items-center">
+				<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white flex-1 p-4 overflow-y-auto">
+					<div className="w-full max-w-xl flex flex-col items-center">
 						{/* Header */}
-						<div className="text-center mb-4">
-							<p className="text-gray-300 mb-1">Choose your audio and video settings for</p>
-							<h1 className="text-3xl font-bold">Meeting now</h1>
+						<div className="text-center mb-6">
+							<p className="text-gray-400 text-sm mb-1">Choose your audio and video settings for</p>
+							<h1 className="text-2xl font-bold">Meeting now</h1>
 						</div>
 
-						{/* Video Preview */}
-						<div className="w-full max-w-xl bg-zinc-800 rounded-lg">
-							<div className="p-6 flex flex-col items-center">
-								<VideoPreview avatarExist={getAvatar} cameraOn={cameraOn} stream={streamRef.current} />
-								<JoinForm loadingStatus={getJoinCallExtStatus} username={username} setUsername={setUsername} onJoin={joinMeeting} />
+						{/* Video Preview Card */}
+						<div className="w-full bg-zinc-800/90 border border-zinc-700/60 rounded-xl p-5 shadow-2xl backdrop-blur flex flex-col items-center">
+							<VideoPreview avatarExist={getAvatar} cameraOn={cameraOn} stream={processedStream} />
 
-								{/* Error message */}
-								{error && (
-									<div className="w-full mb-4 p-2 bg-red-900/50 border border-red-800 rounded text-red-200 text-sm">{error}</div>
-								)}
+							{/* Audio / Video Controls */}
+							<div className="flex gap-8 my-2 justify-center">
+								<ControlButton
+									onClick={toggleMic}
+									isActive={micOn}
+									label={micOn ? 'Mic On' : 'Mic Off'}
+									audioLevel={audioLevel}
+									icon={
+										micOn ? (
+											<Icons.VoiceMicIcon className="w-5 h-5 text-white" />
+										) : (
+											<Icons.VoiceMicDisabledIcon className="w-5 h-5 text-zinc-400" />
+										)
+									}
+								/>
+								<ControlButton
+									onClick={toggleCamera}
+									isActive={cameraOn}
+									label={cameraOn ? 'Camera On' : 'Camera Off'}
+									icon={
+										cameraOn ? (
+											<Icons.VoiceCameraIcon className="w-5 h-5 text-white" />
+										) : (
+											<Icons.VoiceCameraDisabledIcon className="w-5 h-5 text-zinc-400" />
+										)
+									}
+								/>
 							</div>
+
+							{/* 5 Hardcoded Backgrounds Selector */}
+							<BackgroundSelector selectedMode={selectedBg} onSelectMode={handleSelectBg} disabled={!cameraOn} />
+
+							{/* Join Form */}
+							<div className="w-full mt-2">
+								<JoinForm loadingStatus={getJoinCallExtStatus} username={username} setUsername={setUsername} onJoin={joinMeeting} />
+							</div>
+
+							{/* Error message */}
+							{error && (
+								<div className="w-full mt-3 p-2 bg-red-900/50 border border-red-800 rounded-lg text-red-200 text-sm text-center">
+									{error}
+								</div>
+							)}
 						</div>
 					</div>
 
