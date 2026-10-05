@@ -54,7 +54,7 @@
     "@tiptap/starter-kit": "^3.17.1",
     "copy-to-clipboard": "^3.3.3",
     "date-fns": "^3.3.1",
-    "dompurify": "^3.4.13",
+    "dompurify": "^3.4.16",
     "fast-average-color": "^9.4.0",
     "i18next": "^23.11.4",
     "i18next-browser-languagedetector": "^8.0.0",
