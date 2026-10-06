@@ -3,6 +3,7 @@ import { TypeMessage, getMessageCreateTimeSeconds } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { WebrtcSignalingFwd } from 'mezon-js';
+import { WebrtcSignalingType } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { messagesActions, selectMessageByMessageId, type MessagesEntity } from '../messages/messages.slice';
 import type { RootState } from '../store';
@@ -114,7 +115,7 @@ export const DMCallSlice = createSlice({
 				DMCallAdapter.updateOne(state, { id: action.payload.id, changes: action.payload });
 			} else if (!existingEntity && (Object.keys(state.entities).length === 0 || !isInCall)) {
 				DMCallAdapter.addOne(state, action);
-			} else {
+			} else if (action.payload.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
 				state.otherCall = {
 					caller_id: action.payload.signalingData.caller_id,
 					channel_id: action.payload.signalingData.channel_id

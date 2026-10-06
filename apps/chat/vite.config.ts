@@ -54,6 +54,18 @@ export default defineConfig(({ mode }) => {
 					target: env.NX_IMGPROXY_BASE_URL || 'https://imgproxy.mezon.ai',
 					changeOrigin: true,
 					rewrite: (p: string) => p.replace(/^\/imgproxy-cors/, '')
+				},
+				// LOCAL DEV ONLY. cdn.komu.vn does not allow 127.0.0.1 in CORS, so the dev server proxies the Mezon-NS model and wasm.
+				'/mezon-ns-cdn': {
+					target: 'https://cdn.komu.vn',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/mezon-ns-cdn/, '/ns')
+				},
+				// LOCAL DEV ONLY. cdn.komu.vn does not allow 127.0.0.1 in CORS, so the dev server proxies virtual backgrounds to keep canvas origin-clean.
+				'/vtbg-cdn': {
+					target: 'https://cdn.komu.vn',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/vtbg-cdn/, '')
 				}
 			},
 			fs: {
@@ -62,14 +74,14 @@ export default defineConfig(({ mode }) => {
 			headers: {
 				'Content-Security-Policy': [
 					"default-src 'self'",
-					"script-src 'self' 'wasm-unsafe-eval' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' blob: *.mezon.ai *.googletagmanager.com *.google-analytics.com *.googlesyndication.com *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net",
-					"style-src 'self' 'unsafe-inline' *.mezon.ai *.googleapis.com *.gstatic.com https://cdn.jsdelivr.net",
-					"font-src 'self' data: *.mezon.ai *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net",
+					"script-src 'self' 'wasm-unsafe-eval' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' blob: *.mezon.ai *.googletagmanager.com *.google-analytics.com *.googlesyndication.com *.gstatic.com *.googleapis.com https://cdn.jsdelivr.net https://cdn.komu.vn *.komu.vn",
+					"style-src 'self' 'unsafe-inline' *.mezon.ai *.googleapis.com *.gstatic.com",
+					"font-src 'self' data: *.mezon.ai *.gstatic.com *.googleapis.com",
 					"object-src 'none'",
 					"worker-src 'self' 'wasm-unsafe-eval' blob:",
 					"manifest-src 'self'",
 					"img-src 'self' data: blob: https: *.mezon.ai media.tenor.com *.googleusercontent.com",
-					"connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com https://cdn.jsdelivr.net",
+					"connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com",
 					"media-src 'self' blob: https: *.mezon.ai media.tenor.com",
 					"child-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
 					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com https://quiz.mezon.ai https://blackboard.mezon.ai https://interactive.mezon.ai",

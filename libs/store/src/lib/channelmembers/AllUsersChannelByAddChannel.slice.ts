@@ -18,6 +18,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 	cacheByChannels: Record<string, CacheMetadata>;
 	userIdToChannelIds: Record<string, string[]>;
 	listSearch: EntityState<SearchItemProps, string>;
+	accessVersionByChannel: Record<string, number>;
 }
 
 export const UserChannelAdapter = createEntityAdapter({
@@ -33,7 +34,8 @@ export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapte
 	error: null,
 	cacheByChannels: {},
 	userIdToChannelIds: {},
-	listSearch: ItemSearchCtrlKAdapter.getInitialState({})
+	listSearch: ItemSearchCtrlKAdapter.getInitialState({}),
+	accessVersionByChannel: {}
 });
 
 const cacheSearchKey = new Set<string>();
@@ -276,6 +278,12 @@ export const userChannelsSlice = createSlice({
 			UserChannelAdapter.removeOne(state, channelId);
 			delete state.cacheByChannels[channelId];
 		},
+		// The server added or removed someone's access (as a member or through a role); an open Permissions view
+		// rereads its lists, since the event names neither the role nor whether the user is a direct member.
+		markAccessChanged: (state, action: PayloadAction<string>) => {
+			const channelId = action.payload;
+			state.accessVersionByChannel[channelId] = (state.accessVersionByChannel[channelId] ?? 0) + 1;
+		},
 		removeOneCtrlK: (state, action: PayloadAction<{ channelId: string }>) => {
 			const { channelId } = action.payload;
 
@@ -389,6 +397,9 @@ export const selectUserChannelIds = createSelector(
 	[getUserChannelsState, (state, channelId: string) => channelId],
 	(state, channelId) => selectById(state, channelId)?.user_ids || []
 );
+
+export const selectChannelAccessVersion = (rootState: { [ALL_USERS_BY_ADD_CHANNEL]: UsersByAddChannelState }, channelId: string) =>
+	getUserChannelsState(rootState).accessVersionByChannel?.[channelId] ?? 0;
 
 export const selectRawDataUserGroup = createSelector([getUserChannelsState, (state, channelId: string) => channelId], (state, channelId) =>
 	selectById(state, channelId)

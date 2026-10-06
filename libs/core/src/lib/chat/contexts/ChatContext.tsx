@@ -66,6 +66,7 @@ import {
 	selectCurrentStreamInfo,
 	selectCurrentTopicId,
 	selectCurrentUserId,
+	selectDMVoiceEntities,
 	selectDataReferences,
 	selectDefaultChannelIdByClanId,
 	selectDirectById,
@@ -73,6 +74,7 @@ import {
 	selectDmMetaEntities,
 	selectEntitesUserClans,
 	selectEntitiesChannelsByUser,
+	selectEstablishedCall,
 	selectFriendById,
 	selectIsInCall,
 	selectIsJoin,
@@ -204,6 +206,7 @@ import { Observable, Subject } from 'rxjs';
 import { exhaustMap, filter, takeWhile, tap } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
+import { isKnownPeerSession, readSignalSessionId, rememberPeerSession } from '../hooks/useWebRTCCall';
 import {
 	MAX_RECONNECT_WAVES_BEFORE_LOGOUT,
 	beginReconnectWave,
@@ -261,6 +264,24 @@ function reconnectJitterTicker$(): Observable<number> {
 }
 
 type ReconnectWaveTickResult = boolean | 'ATTEMPTS_EXHAUSTED' | 'RECONNECTING' | 'NETWORK_DOWN' | 'WAVE_COOLDOWN' | 'SKIP';
+
+async function isRepeatedCallOffer(event: WebrtcSignalingFwd, state: RootState) {
+	const isInCall = selectIsInCall(state);
+	const establishedPeerId = selectEstablishedCall(state)?.peerId;
+	const callerEntity = selectDMVoiceEntities(state)[event.caller_id];
+	const isFromCurrentCallPeer =
+		isInCall && (establishedPeerId ? event.caller_id === establishedPeerId : event.caller_id === selectUserCallId(state) || !!callerEntity);
+	if (isFromCurrentCallPeer) {
+		return false;
+	}
+	const sessionId = await readSignalSessionId(event.json_data);
+	const isRingingOfferUpdate = !isInCall && callerEntity?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER;
+	if (!isRingingOfferUpdate && isKnownPeerSession(event.caller_id, sessionId)) {
+		return true;
+	}
+	rememberPeerSession(event.caller_id, sessionId);
+	return false;
+}
 
 type ChatContextProviderProps = {
 	children: React.ReactNode;
@@ -1154,6 +1175,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 			}
+			dispatch(userChannelsActions.markAccessChanged(user.channel_id));
 		},
 		[userId, isMobile]
 	);
@@ -1339,6 +1361,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			if (userAdds.status !== ADD_ROLE_CHANNEL_STATUS) {
 				dispatch(userChannelsActions.addUserChannel({ channelId: channel_desc.channel_id as string, userAdds: userIds }));
 			}
+			dispatch(userChannelsActions.markAccessChanged(channel_desc.channel_id as string));
 		},
 		[userId, dispatch]
 	);
@@ -2499,25 +2522,52 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 
 		const store = await getStoreAsync();
-		const userCallId = selectUserCallId(store.getState() as unknown as RootState);
-		const isInCall = selectIsInCall(store.getState() as unknown as RootState);
 		const signalingType = event?.data_type;
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_ANSWER) {
+			void readSignalSessionId(event.json_data).then((sessionId) => rememberPeerSession(event.caller_id, sessionId));
+		}
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_OFFER && (await isRepeatedCallOffer(event, store.getState() as unknown as RootState))) {
+			return;
+		}
+		const state = store.getState() as unknown as RootState;
+		const userCallId = selectUserCallId(state);
+		const isInCall = selectIsInCall(state);
+		const establishedCall = selectEstablishedCall(state);
+		if (establishedCall) {
+			const isQuitFromEstablishedPeer =
+				signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT &&
+				event.caller_id === establishedCall.peerId &&
+				(!event.channel_id || event.channel_id === '0' || !establishedCall.channelId || event.channel_id === establishedCall.channelId);
+			const isCallEndingSignal = [
+				WebrtcSignalingType.WEBRTC_SDP_QUIT,
+				WebrtcSignalingType.WEBRTC_SDP_TIMEOUT,
+				WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
+				WEBRTC_CLEAR_CALL
+			].includes(signalingType);
+			if (isCallEndingSignal && !isQuitFromEstablishedPeer) {
+				return;
+			}
+		}
 		if (!isInCall && [WebrtcSignalingType.WEBRTC_SDP_ANSWER, WebrtcSignalingType.WEBRTC_ICE_CANDIDATE].includes(signalingType)) {
 			return;
 		}
 
 		if (userCallId && userCallId !== event?.caller_id && sessionRef.current) {
-			clientRef.current?.forwardWebrtcSignaling(
-				sessionRef.current,
-				event?.caller_id,
-				WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
-				'',
-				event?.channel_id,
-				userId || ''
-			);
+			if (signalingType === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
+				clientRef.current?.forwardWebrtcSignaling(
+					sessionRef.current,
+					event?.caller_id,
+					WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL,
+					'',
+					event?.channel_id,
+					userId || ''
+				);
+			}
 			return;
 		}
 		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT || event.data_type === WEBRTC_CLEAR_CALL) {
+			const isQuitFromCallPeer =
+				event.caller_id === userCallId || event.caller_id === establishedCall?.peerId || !!selectDMVoiceEntities(state)[event.caller_id];
 			dispatch(DMCallActions.removeAll());
 			dispatch(audioCallActions.reset());
 			dispatch(DMCallActions.cancelCall({}));
@@ -2525,7 +2575,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));
-			if (event.data_type !== WEBRTC_CLEAR_CALL && sessionRef.current) {
+			if (event.data_type !== WEBRTC_CLEAR_CALL && isQuitFromCallPeer && sessionRef.current) {
 				clientRef.current?.forwardWebrtcSignaling(
 					sessionRef.current,
 					event?.caller_id,

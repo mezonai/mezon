@@ -46,7 +46,7 @@ type IMessageContentProps = {
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
+const MessageContent = ({ message, mode, isSearchMessage, isInTopic, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
@@ -64,6 +64,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 		<MessageText
 			isOnlyContainEmoji={isOnlyContainEmoji}
 			isSearchMessage={isSearchMessage}
+			isInTopic={isInTopic}
 			content={contentUpdatedMention}
 			message={message}
 			lines={lineValue as string}
@@ -91,6 +92,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	}, [dispatch, message]);
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channel_id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
+
 	return (
 		<div
 			className={`border-theme-primary min-w-250 text-theme-primary bg-item-theme text-theme-primary-hover rounded-lg gap-1 my-1 p-1  flex justify-between items-center cursor-pointer group/view-topic-btn  ${isShowCreateThread || isShowCreateTopic ? '' : 'w-fit'}`}
@@ -106,9 +108,12 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 					src={avatarToDisplay}
 				/>
 				<div className="flex flex-wrap items-center gap-x-2 flex-1 min-w-0">
-					<p className="break-words color-mention min-w-0" data-e2e={generateE2eId('chat.topic.number_replies')}>
-						{rplCount > 0 &&
-							(rplCount === 1 ? t('reply', { number: 1 }) : t('numberReplies', { number: rplCount > 99 ? '99+' : rplCount }))}
+					<p className="break-words color-mention min-w-0 font-medium" data-e2e={generateE2eId('chat.topic.number_replies')}>
+						{rplCount > 0
+							? rplCount === 1
+								? t('reply', { number: 1 })
+								: t('numberReplies', { number: rplCount > 99 ? '99+' : rplCount })
+							: t('viewTopic')}
 					</p>
 					{topicMeata?.lsnt && convertTimeMessage(Number(topicMeata.lsnt) ?? 0, i18n.language)}
 					<NumberTopicBadge channel_id={message.content.tp as string} />
@@ -158,6 +163,7 @@ const MessageText = ({
 	content,
 	isOnlyContainEmoji,
 	isSearchMessage,
+	isInTopic,
 	onCopy,
 	isEphemeral,
 	isSending,
@@ -168,6 +174,7 @@ const MessageText = ({
 	mode?: number;
 	content?: IExtendedMessage;
 	isSearchMessage?: boolean;
+	isInTopic?: boolean;
 	isOnlyContainEmoji?: boolean;
 	onCopy?: (event: React.ClipboardEvent<HTMLDivElement>, startIndex: number, endIndex: number) => void;
 	isEphemeral?: boolean;
@@ -232,6 +239,7 @@ const MessageText = ({
 					isSending={isSending}
 					onContextMenu={onContextMenu}
 					senderId={message.sender_id}
+					topicId={isInTopic ? message.channel_id : undefined}
 				/>
 			) : null}
 		</>

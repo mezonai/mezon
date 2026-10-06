@@ -2,9 +2,11 @@ import { selectClanById } from '@mezon/store';
 import { Checkbox } from '@mezon/ui';
 import { filterListByName, sortFilteredList, TypeSearch } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import SuggestItem from '../MessageBox/ReactionMentionInput/SuggestItem';
+
+const MAX_ROWS_PER_SOURCE = 15;
 
 type ListSearchForwardMessageProps = {
 	listSearch: any[];
@@ -18,12 +20,32 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 
 	const filteredList = useMemo(() => filterListByName(listSearch, searchText, false), [listSearch, searchText]);
 	const sortedList = useMemo(() => sortFilteredList(filteredList, searchText, false), [filteredList, searchText]);
-	if (sortedList.length === 0) {
+	const visibleList = useMemo(() => {
+		let local = 0;
+		let searched = 0;
+		return sortedList.filter((item) => (item.isSearchedOnServer ? ++searched : ++local) <= MAX_ROWS_PER_SOURCE);
+	}, [sortedList]);
+
+	const onToggleChannel = useCallback(
+		(id: string, type: number, isPublic: boolean, clanId: string, channelLabel: string) => {
+			handleToggle(id, type, isPublic, clanId, channelLabel, false);
+		},
+		[handleToggle]
+	);
+
+	const onToggleDm = useCallback(
+		(id: string, type: number, isFriend: boolean) => {
+			handleToggle(id, type, false, '', '', isFriend);
+		},
+		[handleToggle]
+	);
+
+	if (visibleList.length === 0) {
 		return null;
 	}
 	return (
-		sortedList.length &&
-		sortedList.slice(0, 15).map((item: any) => {
+		visibleList.length &&
+		visibleList.map((item: any) => {
 			const isTypeDm = item.typeSearch === TypeSearch.Dm_Type;
 			return (
 				<div key={item.id} className="flex items-center px-4 py-1 rounded bg-item-hover">
@@ -34,9 +56,11 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 							name={item.prioritizeName}
 							searchText={searchText}
 							checked={selectedObjectIdSends.some((selectedItem) => selectedItem.id === (item.idDM || item.id))}
-							handleToggle={() => handleToggle(item.idDM || item.id, item.typeChat || 0, false, '', '', item.isFriend)}
 							username={item.name}
 							hiddenSubText={item.typeChat === ChannelType.CHANNEL_TYPE_GROUP}
+							onToggle={onToggleDm}
+							typeChat={item.typeChat}
+							isFriend={item.isFriend}
 						/>
 					) : (
 						<ItemChannel
@@ -45,8 +69,13 @@ const ListSearchForwardMessage = (props: ListSearchForwardMessageProps) => {
 							subText={item.subText}
 							searchText={searchText}
 							checked={selectedObjectIdSends.some((selectedItem) => selectedItem.id === item.id)}
-							handleToggle={() => handleToggle(item.id, item.type || 0, item.isPublic, item.clanId, item.channelLabel || '', false)}
 							clanId={item.clanId}
+							channelType={item.type}
+							channelPrivate={item.channel_private}
+							isAgeRestricted={Boolean(item.age_restricted)}
+							onToggle={onToggleChannel}
+							isPublic={item.isPublic}
+							channelLabel={item.channelLabel}
 						/>
 					)}
 				</div>
@@ -63,13 +92,19 @@ type ItemDmProps = {
 	avatar: string;
 	searchText: string;
 	checked: boolean;
-	handleToggle: () => void;
 	username?: string;
 	hiddenSubText: boolean;
+	onToggle: (id: string, type: number, isFriend: boolean) => void;
+	typeChat?: number;
+	isFriend?: boolean;
 };
 
-const ItemDm = (props: ItemDmProps) => {
-	const { id, name, avatar, searchText, checked, handleToggle, username, hiddenSubText } = props;
+const ItemDm = memo((props: ItemDmProps) => {
+	const { id, name, avatar, searchText, checked, username, hiddenSubText, onToggle, typeChat, isFriend } = props;
+
+	const handleToggle = useCallback(() => {
+		onToggle(id, typeChat || 0, Boolean(isFriend));
+	}, [onToggle, id, typeChat, isFriend]);
 
 	return (
 		<>
@@ -88,7 +123,7 @@ const ItemDm = (props: ItemDmProps) => {
 			<Checkbox className="w-4 h-4 focus:ring-transparent" id={`checkbox-item-${id}`} checked={checked} onChange={handleToggle} />
 		</>
 	);
-};
+});
 
 type ItemChannelProps = {
 	id: string;
@@ -96,13 +131,22 @@ type ItemChannelProps = {
 	subText: string;
 	searchText: string;
 	checked: boolean;
-	handleToggle: () => void;
 	clanId: string;
+	channelType?: number;
+	channelPrivate?: number;
+	isAgeRestricted?: boolean;
+	onToggle: (id: string, type: number, isPublic: boolean, clanId: string, channelLabel: string) => void;
+	isPublic?: boolean;
+	channelLabel?: string;
 };
 
-const ItemChannel = (props: ItemChannelProps) => {
-	const { id, name, searchText, checked, handleToggle, clanId } = props;
+const ItemChannel = memo((props: ItemChannelProps) => {
+	const { id, name, searchText, checked, clanId, channelType, channelPrivate, isAgeRestricted, onToggle, isPublic, channelLabel } = props;
 	const clanByClanId = useSelector(selectClanById(clanId));
+
+	const handleToggle = useCallback(() => {
+		onToggle(id, channelType || 0, Boolean(isPublic), clanId, channelLabel || '');
+	}, [onToggle, id, channelType, isPublic, clanId, channelLabel]);
 
 	return (
 		<>
@@ -115,9 +159,13 @@ const ItemChannel = (props: ItemChannelProps) => {
 					subTextStyle="uppercase"
 					isOpenSearchModal
 					emojiId=""
+					channelType={channelType}
+					channelPrivate={channelPrivate}
+					isAgeRestricted={isAgeRestricted}
+					alwaysShowSubText
 				/>
 			</div>
 			<Checkbox className="w-4 h-4 focus:ring-transparent" id={`checkbox-item-${id}`} checked={checked} onChange={handleToggle} />
 		</>
 	);
-};
+});

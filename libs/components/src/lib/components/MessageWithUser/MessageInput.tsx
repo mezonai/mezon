@@ -1,6 +1,15 @@
 import { useChannelMembers, useEditMessage, useEmojiSuggestionContext } from '@mezon/core';
 import type { MessagesEntity } from '@mezon/store';
-import { pinMessageActions, selectAllChannels, selectAllRolesClan, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
+import {
+	pinMessageActions,
+	selectAllChannels,
+	selectAllRolesClan,
+	selectChannelById,
+	selectClanRosterCapped,
+	selectCurrentChannelId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import {
 	RECENT_EMOJI_CATEGORY,
 	TITLE_MENTION_HERE,
@@ -11,13 +20,19 @@ import {
 	searchMentionsHashtag
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalDeleteMess from '../../components/DeleteMessageModal/ModalDeleteMess';
 import Mention, { type MentionData } from '../../components/MessageBox/ReactionMentionInput/Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from '../../components/MessageBox/ReactionMentionInput/MentionsInput';
 import SuggestItem from '../../components/MessageBox/ReactionMentionInput/SuggestItem';
+import {
+	appendRemoteMembers,
+	mentionScopeChannelId,
+	useRemoteMentionSearch
+} from '../../components/MessageBox/ReactionMentionInput/hooks/useRemoteMentionSearch';
 import { default as parseHtmlAsFormattedToText } from '../../components/MessageBox/ReactionMentionInput/parseHtmlAsFormattedText';
 import { UserMentionList } from '../../components/UserMentionList';
 
@@ -48,6 +63,20 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 	const { emojis } = useEmojiSuggestionContext();
 	const editorRef = useRef<MentionsInputHandle | null>(null);
 	const mentionListData = UserMentionList({ channelID: channelId, channelMode: mode });
+	const isDmMode = mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
+	const mentionClanId = message?.clan_id ?? '';
+	const messageChannel = useAppSelector((state) => selectChannelById(state, message?.channel_id ?? ''));
+	const clanRosterCapped = useAppSelector((state) => selectClanRosterCapped(state, mentionClanId));
+	const { t } = useTranslation('searchMessageChannel');
+	const {
+		searchMembers: searchRemoteMembers,
+		isSearching: isSearchingRemoteMembers,
+		lateAnswers: remoteMentionAnswers
+	} = useRemoteMentionSearch({
+		clanId: mentionClanId,
+		channelId: mentionScopeChannelId(messageChannel),
+		enabled: !isDmMode && clanRosterCapped && mentionClanId !== '' && mentionClanId !== '0'
+	});
 	const rolesClan = useSelector(selectAllRolesClan);
 	useChannelMembers({ channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
 	const [showModal, closeModal] = useModal(() => {
@@ -188,9 +217,16 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 		handleCancelEdit();
 	};
 
-	const handleSearchUserMention = (search: string): MentionData[] => {
-		return searchMentionsHashtag(search, mentionListData ?? []) as MentionData[];
-	};
+	// Stable across renders: the picker reloads its query whenever these change.
+	const searchLocalUserMentions = useCallback(
+		(search: string): MentionData[] => searchMentionsHashtag(search, mentionListData ?? []) as MentionData[],
+		[mentionListData]
+	);
+
+	const handleSearchUserMention = useCallback(
+		async (search: string): Promise<MentionData[]> => appendRemoteMembers(searchLocalUserMentions(search), await searchRemoteMembers(search)),
+		[searchLocalUserMentions, searchRemoteMembers]
+	);
 
 	const handleSearchHashtag = (search: string): MentionData[] => {
 		return searchMentionsHashtag(search, listChannelsMention ?? []) as MentionData[];
@@ -232,6 +268,10 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 						trigger="@"
 						title="MEMBERS"
 						data={handleSearchUserMention}
+						getImmediateSuggestions={searchLocalUserMentions}
+						refreshKey={remoteMentionAnswers}
+						isSearching={isSearchingRemoteMembers}
+						searchingLabel={t('searching')}
 						displayPrefix="@"
 						markup="@[__display__](__id__)"
 						appendSpaceOnAdd={true}

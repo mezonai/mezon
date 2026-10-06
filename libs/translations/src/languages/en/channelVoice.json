@@ -22,6 +22,8 @@
 	"stopScreenShare": "Stop screen share",
 	"shareYourScreen": "Share Your Screen",
 	"disconnect": "Disconnect",
+	"weakNetwork": "Weak network",
+	"networkWarning": "Your internet connection is unstable. Others may not hear you clearly.",
 	"muteModal": {
 		"title": "Mute member",
 		"content": "Please confirm if you would like to mute \"{{userName}}\"?",
@@ -35,6 +37,8 @@
 	"reconnectModal": {
 		"title": "Unable to connect to voice",
 		"description": "The voice connection could not be restored. Check your connection and try joining again.",
+		"weakNetworkTitle": "Weak network connection",
+		"weakNetworkDescription": "Your network is unstable, so the voice connection was lost. Check your connection and rejoin.",
 		"rejoin": "Rejoin",
 		"joining": "Joining…",
 		"exit": "Exit"
@@ -148,7 +152,8 @@
 		"recipientDidNotAnswer": "The recipient did not answer the call.",
 		"aloneTimeoutDisconnected": "You were disconnected from the voice channel because you were alone in it for too long.",
 		"duplicateSessionDisconnected": "You joined the voice channel on another device, so this session was disconnected.",
-		"disconnectedRejoin": "You were disconnected from the voice channel."
+		"disconnectedRejoin": "You were disconnected from the voice channel.",
+		"weakNetworkDisconnected": "You were disconnected from the voice channel because your network is weak."
 	},
 	"usernameScreen": "{{username}}'s screen",
 	"recording": {
