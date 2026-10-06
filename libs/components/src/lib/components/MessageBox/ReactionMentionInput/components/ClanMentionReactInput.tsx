@@ -5,6 +5,7 @@ import {
 	selectCurrentTopicId,
 	selectDataReferences,
 	selectIsSearchMessage,
+	selectIsShowCreateTopic,
 	selectIsShowMemberList,
 	selectOpenThreadMessageState,
 	selectThreadCurrentChannel,
@@ -20,6 +21,7 @@ import { MentionReactBase } from '../ReactionMentionInput';
 const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const isShowMemberList = useSelector(selectIsShowMemberList);
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const isSearchMessage = useSelector((state) => selectIsSearchMessage(state, props.currentChannelId));
 	const [mentionWidth, setMentionWidth] = useState('');
 
@@ -47,13 +49,13 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 		setMentionWidth(
 			isShowMemberList
 				? widthMessageViewChat
-				: isShowCreateThread
+				: isShowCreateThread || isShowCreateTopic
 					? widthMessageViewChatThread
 					: isSearchMessage
 						? widthSearchMessage
 						: widthThumbnailAttachment
 		);
-	}, [isSearchMessage, isShowCreateThread, isShowMemberList]);
+	}, [isSearchMessage, isShowCreateThread, isShowCreateTopic, isShowMemberList]);
 
 	return (
 		<MentionReactBase

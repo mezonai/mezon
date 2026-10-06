@@ -23,6 +23,7 @@ import {
 	selectIsSearchMessage,
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
+	selectIsShowCreateTopic,
 	selectIsShowMemberList,
 	selectLastMessageViewportByChannelId,
 	selectLastSeenMessageId,
@@ -323,6 +324,7 @@ const ChannelMainContent = ({ channelId, isVoiceChatPanel }: ChannelMainContentP
 		setIsShowAgeRestricted(false);
 	};
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id));
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, channelId as string));
 
@@ -392,7 +394,7 @@ const ChannelMainContent = ({ channelId, isVoiceChatPanel }: ChannelMainContentP
 				<div className="flex flex-row h-full max-h-full w-full">
 					{!isShowCanvas && !isShowAgeRestricted && (isVoiceChatPanel || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
 						<div
-							className={`flex flex-col flex-1 min-w-60 h-full max-h-full overflow-hidden ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+							className={`flex flex-col flex-1 min-w-60 h-full max-h-full overflow-hidden ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread || isShowCreateTopic ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 						>
 							<div className="relative overflow-y-auto flex-1 min-h-0">
 								<ChannelMedia currentChannel={currentChannel} />
