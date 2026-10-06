@@ -107,7 +107,7 @@ const ClanSettingOverview = () => {
 							checkDuplicateNameApi({
 								name: clanRequest.clan_name?.trim() ?? '',
 								type: TypeCheck.TYPECLAN,
-								condition_id: '0'
+								condition_id: currentClan.clan_id
 							})
 						).then(unwrapResult);
 
