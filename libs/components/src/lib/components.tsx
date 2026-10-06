@@ -125,9 +125,11 @@ export { default as ModalInputMessageBuzz } from './components/ModalInputMessage
 export * from './components/MezonSfuVoiceChannel';
 export * from './components/virtual-core/useVirtualizer';
 
+export * from './components/PreJoinCalling/BackgroundSelector';
 export * from './components/PreJoinCalling/ControlButton';
 export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
+export * from './components/PreJoinCalling/mediaPipeBackground';
 
 export * from './components/ButtonSwitchCustom';
 export { default as ButtonCopy } from './components/ButtonSwitchCustom/CopyButtonComponent';
