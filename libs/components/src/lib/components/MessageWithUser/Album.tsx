@@ -19,6 +19,8 @@ type OwnProps = {
 	isMobile?: boolean;
 	messageId?: string;
 	images?: ApiMessageAttachment[];
+	cdnSignature?: string;
+	isCdnSignaturePending?: boolean;
 };
 
 const Album: FC<OwnProps> = ({
@@ -35,7 +37,9 @@ const Album: FC<OwnProps> = ({
 	isPresignPendingForUrl,
 	isMobile,
 	messageId,
-	images
+	images,
+	cdnSignature,
+	isCdnSignaturePending
 }) => {
 	const mediaCount = (album as any)?.length;
 
@@ -81,6 +85,8 @@ const Album: FC<OwnProps> = ({
 					localSource={(attachment as PreSendMediaAttachment)?.local_source}
 					loadWhenUnpending={!isPresignPending}
 					isInSearchMessage={isInSearchMessage}
+					cdnSignature={cdnSignature}
+					isCdnSignaturePending={isCdnSignaturePending}
 				/>
 			);
 		} else if (video) {

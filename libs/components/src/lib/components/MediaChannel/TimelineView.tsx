@@ -15,7 +15,7 @@ interface TimelineViewProps {
 	onOpenCreate: () => void;
 }
 
-export function TimelineView({ events, loadingStatus, onNavigateToEvents, onNavigateToEventDetail, onOpenCreate }: TimelineViewProps) {
+export function TimelineView({ channelId, events, loadingStatus, onNavigateToEvents, onNavigateToEventDetail, onOpenCreate }: TimelineViewProps) {
 	const { t } = useTranslation('channelCreator');
 	const months = useMemo(() => (t('monthsShort', { returnObjects: true }) as string[]) || [], [t]);
 
@@ -148,6 +148,7 @@ export function TimelineView({ events, loadingStatus, onNavigateToEvents, onNavi
 															<MediaImage
 																key={idx}
 																src={imgUrl}
+																channelId={channelId}
 																alt=""
 																className="w-full h-20 object-cover"
 																loading="lazy"
@@ -158,6 +159,7 @@ export function TimelineView({ events, loadingStatus, onNavigateToEvents, onNavi
 												) : (
 													<MediaImage
 														src={images[0]}
+														channelId={channelId}
 														alt=""
 														className="w-full h-28 object-cover rounded-lg"
 														loading="lazy"

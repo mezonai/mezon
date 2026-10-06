@@ -14,6 +14,7 @@ export { EventName, badgeService } from './lib/badge/badgeService';
 export * from './lib/cache-metadata';
 export * from './lib/canvas/canvasAPI.slice';
 export * from './lib/categories/categories.slice';
+export * from './lib/cdnSignature/cdnSignature.slice';
 export * from './lib/channelmembers/AllUsersChannelByAddChannel.slice';
 export * from './lib/channelmembers/channel.members';
 export * from './lib/channels/channelMedia.slice';

@@ -1,10 +1,5 @@
 import type { ChannelTimeline, ChannelTimelineAttachment } from '@mezon/store';
-import {
-	channelMediaActions,
-	selectChannelTimelineDetailById,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
+import { channelMediaActions, selectChannelTimelineDetailById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, isImageFileType, isVideoFileType } from '@mezon/utils';
@@ -125,9 +120,10 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 				attachments={attachments.filter((att) => isUploaded(att))}
 				initialIndex={modalImageIndexRef.current}
 				onClose={hideImageModal}
+				channelId={channelId}
 			/>
 		),
-		[attachments]
+		[attachments, channelId]
 	);
 
 	const getProxyUri = useCallback((att: ChannelTimelineAttachment) => {
@@ -201,7 +197,9 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 			);
 
 			try {
-				const uploadResults = await Promise.all(fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx)));
+				const uploadResults = await Promise.all(
+					fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx, undefined, channelId))
+				);
 
 				const newAttachments: ChannelTimelineAttachment[] = uploadResults.map((uploaded, idx) => ({
 					...previewItems[idx],
@@ -237,9 +235,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 						event: {
 							...(updatedEvent ?? eventFromStore ?? { id: eventId }),
 							attachments:
-								(updatedEvent?.attachments?.length ?? 0) >= allAttachments.length
-									? updatedEvent!.attachments
-									: allAttachments
+								(updatedEvent?.attachments?.length ?? 0) >= allAttachments.length ? updatedEvent!.attachments : allAttachments
 						} as ChannelTimeline
 					})
 				);
@@ -526,6 +522,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 								<div className="relative rounded-xl overflow-hidden">
 									<MediaImage
 										src={getProxyUri(featuredAttachment)}
+										channelId={channelId}
 										alt=""
 										className="w-full h-64 object-cover"
 										loading="lazy"
@@ -549,6 +546,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 								<div key={`${att.id}-${idx}`} className="relative rounded-xl overflow-hidden aspect-square">
 									<MediaImage
 										src={getProxyUri(att)}
+										channelId={channelId}
 										alt=""
 										className="w-full h-full object-cover"
 										loading="lazy"

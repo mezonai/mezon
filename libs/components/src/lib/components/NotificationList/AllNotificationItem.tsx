@@ -410,7 +410,12 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 											</div>
 										) : (
 											<div className="w-fit max-w-full">
-												<NotificationAttachmentItem attachment={firstAttachment} index={0} compact={true} />
+												<NotificationAttachmentItem
+													attachment={firstAttachment}
+													channelId={message.channel_id}
+													index={0}
+													compact={true}
+												/>
 											</div>
 										)
 									) : (
@@ -420,6 +425,7 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 													<NotificationAttachmentItem
 														key={attachment?.url || idx}
 														attachment={attachment}
+														channelId={message.channel_id}
 														index={idx}
 														compact={true}
 													/>

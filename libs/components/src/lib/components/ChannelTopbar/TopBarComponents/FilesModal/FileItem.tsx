@@ -1,3 +1,4 @@
+import { useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import { selectMemberClanByUserId, selectMemberGroupByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -22,6 +23,7 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackU
 	);
 	const isPresignPending = isAttachmentPresignPendingForMessage(attachmentData.url, sourceMessage);
 	const isHidden = shouldHidePresignAttachment(attachmentData.url, sourceMessage);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
 	const userSendAttachment = useAppSelector((state) =>
 		isDirect
 			? selectMemberGroupByUserId(state, channelId ?? '', attachmentData?.uploader ?? '')
@@ -41,7 +43,7 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackU
 
 	const handleDownload = async (event: React.MouseEvent) => {
 		event.stopPropagation();
-		const response = await fetch(attachmentData?.url as string);
+		const response = await fetch(signCdnUrl(attachmentData?.url) as string);
 		if (!response.ok) {
 			return;
 		}
@@ -57,10 +59,10 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackU
 		}
 	};
 	const thumbnailAttachment = RenderAttachmentThumbnail({
-		attachment: attachmentData,
+		attachment: { ...attachmentData, url: signCdnUrl(attachmentData.url) },
 		size: 'w-8 h-10',
 		isFileList: true,
-		isPresignPending
+		isPresignPending: isPresignPending || isAwaitingSignature(attachmentData.url)
 	});
 
 	const hideTheInformationFile =

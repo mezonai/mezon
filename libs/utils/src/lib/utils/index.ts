@@ -51,6 +51,7 @@ export * from './calculateAlbumLayout';
 export * from './call';
 export * from './callbacks';
 export * from './canvasLink';
+export * from './cdnSignature';
 export * from './convertMessageToHtml';
 export * from './dateI18n';
 export * from './detectTokenMessage';
@@ -898,7 +899,10 @@ export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptio
 	}
 	const { width, height, resizeType } = options;
 	const processingOptions = `rs:${resizeType}:${width}:${height}:1/mb:2097152`;
-	const path = `/${processingOptions}/plain/${sourceImageUrl}@webp`;
+	// imgproxy reads a plain source url up to its own `?` / `@`, so a CDN url that
+	// carries its signature as a query string has to be escaped to reach the CDN whole.
+	const source = /[?@]/.test(sourceImageUrl) ? encodeURIComponent(sourceImageUrl) : sourceImageUrl;
+	const path = `/${processingOptions}/plain/${source}@webp`;
 
 	return `${process.env.NX_IMGPROXY_BASE_URL}/${process.env.NX_IMGPROXY_KEY}${path}`;
 };

@@ -1,3 +1,4 @@
+import { useCdnUrlSigner } from '@mezon/core';
 import { attachmentActions, useAppDispatch } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js';
@@ -38,13 +39,20 @@ const PDFLoadingFallback = () => {
 
 export type NotificationAttachmentItemProps = {
 	readonly attachment: ApiMessageAttachment;
+	/** The channel the attachment was sent in; its CDN signature is applied to the urls. */
+	readonly channelId?: string;
 	readonly index: number;
 	readonly compact?: boolean;
 };
 
-export const NotificationAttachmentItem = ({ attachment, index, compact = false }: NotificationAttachmentItemProps) => {
+export const NotificationAttachmentItem = ({ attachment: rawAttachment, channelId, index, compact = false }: NotificationAttachmentItemProps) => {
 	const { t } = useTranslation(['channelTopbar', 'common']);
 	const dispatch = useAppDispatch();
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+	const attachment = useMemo<ApiMessageAttachment>(
+		() => ({ ...rawAttachment, url: signCdnUrl(rawAttachment?.url), thumbnail: signCdnUrl(rawAttachment?.thumbnail) }),
+		[rawAttachment, signCdnUrl]
+	);
 	const isPDF = Boolean(attachment?.filetype === 'application/pdf' || attachment?.filename?.toLowerCase().endsWith('.pdf'));
 	const isImageOrVideo = Boolean(
 		attachment?.filetype?.startsWith('image/') ||
@@ -159,7 +167,8 @@ export const NotificationAttachmentItem = ({ attachment, index, compact = false 
 			filename: attachment?.filename || displayName
 		},
 		size: compact ? 'w-8 h-8' : 'w-10 h-10',
-		isFileList: true
+		isFileList: true,
+		isPresignPending: isAwaitingSignature(rawAttachment?.url)
 	});
 
 	return (

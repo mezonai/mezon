@@ -1,4 +1,4 @@
-import { useAuth, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
+import { useAuth, useCdnUrlSigner, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
 import {
 	EventName,
 	appActions,
@@ -212,15 +212,20 @@ const renderFileIcon = (filename: string, filetype: string) => {
 	return <Icons.TxtThumbnail defaultSize="w-5 h-6" />;
 };
 
-const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachment }) => {
+const AttachmentThumbnail = memo(({ attachment, channelId }: { attachment: ExtractedAttachment; channelId?: string }) => {
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
 	if (attachment.isImage && attachment.url) {
 		return (
 			<div className="shrink-0 flex items-center justify-center">
-				<img
-					src={createImgproxyUrl(attachment.url, { width: 64, height: 64, resizeType: 'fit' })}
-					alt={attachment.filename}
-					className="w-7 h-7 rounded object-cover shrink-0 bg-item-theme border border-theme-primary"
-				/>
+				{isAwaitingSignature(attachment.url) ? (
+					<div className="w-7 h-7 rounded shrink-0 bg-item-theme border border-theme-primary" />
+				) : (
+					<img
+						src={createImgproxyUrl(signCdnUrl(attachment.url), { width: 64, height: 64, resizeType: 'fit' })}
+						alt={attachment.filename}
+						className="w-7 h-7 rounded object-cover shrink-0 bg-item-theme border border-theme-primary"
+					/>
+				)}
 			</div>
 		);
 	}
@@ -1060,7 +1065,7 @@ export const ChannelTopicPinBanner = memo(() => {
 							<div className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{topicTitle}</div>
 							{topicSubtitle && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{topicSubtitle}</div>}
 						</div>
-						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} />}
+						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} channelId={currentChannelId ?? undefined} />}
 					</div>
 				)}
 
@@ -1095,7 +1100,9 @@ export const ChannelTopicPinBanner = memo(() => {
 							</div>
 							{pinContent && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{pinContent}</div>}
 						</div>
-						{pinAttachment && <AttachmentThumbnail attachment={pinAttachment} />}
+						{pinAttachment && (
+							<AttachmentThumbnail attachment={pinAttachment} channelId={String(latestPin?.channel_id || currentChannelId || '')} />
+						)}
 					</div>
 				)}
 

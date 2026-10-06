@@ -3,9 +3,11 @@ import {
 	EMimeTypes,
 	MIN_MEDIA_HEIGHT,
 	SHOW_POSITION,
+	appendCdnSignature,
 	buildClassName,
 	calculateMediaDimensions,
 	createImgproxyUrl,
+	needsCdnSignature,
 	useIsIntersecting
 } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -56,6 +58,10 @@ export type OwnProps<T> = {
 	localSource?: string;
 	loadWhenUnpending?: boolean;
 	isMobile?: boolean;
+	/** Appended to the CDN url of the photo and its thumbnail as `?<signature>`. */
+	cdnSignature?: string;
+	/** The channel's signature has not arrived yet: a CDN photo waits behind the skeleton instead of loading unsigned. */
+	isCdnSignaturePending?: boolean;
 };
 const Photo = <T,>({
 	id,
@@ -86,7 +92,9 @@ const Photo = <T,>({
 	isPresignPending = false,
 	localSource,
 	loadWhenUnpending = false,
-	isMobile
+	isMobile,
+	cdnSignature,
+	isCdnSignaturePending = false
 }: OwnProps<T>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -107,7 +115,13 @@ const Photo = <T,>({
 	const showLocalPreview = !!localSource && !localFailed;
 	const onLocalPreviewError = useCallback(() => setLocalFailed(true), []);
 
-	const shouldLoad = canAutoLoad && !isPresignPending && !showLocalPreview && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
+	const isAwaitingSignature = isCdnSignaturePending && needsCdnSignature(photo?.url);
+	const shouldLoad =
+		canAutoLoad &&
+		!isPresignPending &&
+		!isAwaitingSignature &&
+		!showLocalPreview &&
+		(isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
 
 	if (isSending && photo?.url) {
 		lastSentUrl = photo.url;
@@ -194,7 +208,8 @@ const Photo = <T,>({
 		return photo?.url?.endsWith('.gif') || photo?.url?.includes('.gif');
 	}, [photo?.url]);
 
-	const thumbnailDataUri = photo.thumbnail?.dataUri;
+	const rawThumbnail = photo.thumbnail?.dataUri;
+	const thumbnailDataUri = isCdnSignaturePending && needsCdnSignature(rawThumbnail) ? undefined : appendCdnSignature(rawThumbnail, cdnSignature);
 	const hasThumbnail = !!thumbnailDataUri;
 	// `isPresignPending` alone leaves the upload-first paths open: an anonymous
 	// send is never presign-pending, only sending, and the row already carries the
@@ -229,7 +244,7 @@ const Photo = <T,>({
 		>
 			{shouldLoad && (
 				<PhotoImage
-					url={photo?.url ?? ''}
+					url={appendCdnSignature(photo?.url ?? '', cdnSignature)}
 					width={width}
 					height={height}
 					resizeType={resizeType}
@@ -310,6 +325,7 @@ const PhotoImage = React.memo(
 
 		useEffect(() => {
 			setAspectType('square');
+			setHasError(false);
 		}, [url]);
 
 		const imgSrc = useMemo(() => {

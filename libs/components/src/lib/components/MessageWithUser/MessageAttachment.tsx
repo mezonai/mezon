@@ -1,3 +1,4 @@
+import { useCdnSignature } from '@mezon/core';
 import {
 	attachmentActions,
 	getStore,
@@ -12,6 +13,7 @@ import type { ApiPhoto, IMessageWithUser, ObserveFn, PreSendMediaAttachment } fr
 import {
 	EMimeTypes,
 	ETypeLinkMedia,
+	appendCdnSignature,
 	calculateAlbumLayout,
 	filterExpiredPresignAttachments,
 	generateAttachmentId,
@@ -20,6 +22,7 @@ import {
 	hasActivePresignPendingAttachments,
 	isMediaTypeNotSupported,
 	isPresignAttachmentPending,
+	needsCdnSignature,
 	parsePresignFinishKeys,
 	useAppLayout
 } from '@mezon/utils';
@@ -142,17 +145,32 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	return { videos, images, documents, audio };
 };
 
+const signAttachment = (attachment: ApiMessageAttachment, cdnSignature?: string, isSignaturePending?: boolean): ApiMessageAttachment => {
+	if (isSignaturePending) {
+		return needsCdnSignature(attachment.thumbnail) ? { ...attachment, thumbnail: undefined } : attachment;
+	}
+	return cdnSignature
+		? {
+				...attachment,
+				url: appendCdnSignature(attachment.url, cdnSignature),
+				thumbnail: appendCdnSignature(attachment.thumbnail, cdnSignature)
+			}
+		: attachment;
+};
+
 const Attachments: React.FC<{
 	attachments: ApiMessageAttachment[];
 	message: IMessageWithUser;
+	channelId?: string;
 	onContextMenu: any;
 	mode: ChannelStreamMode;
 	observeIntersectionForLoading?: ObserveFn;
 	isInSearchMessage?: boolean;
 	defaultMaxWidth?: number;
 }> = memo(
-	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
+	({ attachments, message, channelId, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
+		const { signature: cdnSignature, isPending: isCdnSignaturePending } = useCdnSignature(channelId);
 
 		const { videos, images, documents, audio } = classified;
 		const presignFinishKeys = useMemo(() => parsePresignFinishKeys(message.content), [message.content]);
@@ -170,7 +188,7 @@ const Attachments: React.FC<{
 						{videos.map((video, index) => (
 							<div key={index} className="gap-y-2 max-w-full min-w-0">
 								<MessageVideo
-									attachmentData={video}
+									attachmentData={signAttachment(video, cdnSignature, isCdnSignaturePending)}
 									isMobile={isMobile}
 									isSending={message.isSending}
 									isPresignPending={isPresignPendingForUrl(video.url)}
@@ -192,6 +210,8 @@ const Attachments: React.FC<{
 						defaultMaxWidth={defaultMaxWidth}
 						isMobile={isMobile}
 						isPresignPendingForUrl={isPresignPendingForUrl}
+						cdnSignature={cdnSignature}
+						isCdnSignaturePending={isCdnSignaturePending}
 					/>
 				)}
 
@@ -202,7 +222,8 @@ const Attachments: React.FC<{
 					documents.map((document, index) => (
 						<MessageLinkFile
 							key={`${index}_${document.url}`}
-							attachmentData={document}
+							attachmentData={signAttachment(document, cdnSignature, isCdnSignaturePending)}
+							isCdnSignaturePending={isCdnSignaturePending}
 							mode={mode}
 							message={message}
 							isPresignPending={isPresignPendingForUrl(document.url)}
@@ -213,7 +234,9 @@ const Attachments: React.FC<{
 					audio.map((audioItem, index) => (
 						<MessageAudio
 							key={`${index}_${audioItem.url}`}
-							audioUrl={audioItem.url || ''}
+							audioUrl={
+								isCdnSignaturePending && needsCdnSignature(audioItem.url) ? '' : appendCdnSignature(audioItem.url || '', cdnSignature)
+							}
 							isPresignPending={isPresignPendingForUrl(audioItem.url)}
 						/>
 					))}
@@ -226,6 +249,7 @@ const Attachments: React.FC<{
 		prev.message.isSending === next.message.isSending &&
 		prev.message.attachments === next.message.attachments &&
 		prev.message.content === next.message.content &&
+		prev.channelId === next.channelId &&
 		prev.mode === next.mode
 );
 
@@ -273,6 +297,7 @@ const MessageAttachment = memo(
 			<Attachments
 				mode={mode}
 				message={message}
+				channelId={message.channel_id || channelId}
 				attachments={validateAttachment}
 				onContextMenu={onContextMenu}
 				observeIntersectionForLoading={observeIntersectionForLoading}
@@ -303,7 +328,9 @@ const ImageAlbum = memo(
 		isInSearchMessage,
 		defaultMaxWidth,
 		isMobile,
-		isPresignPendingForUrl
+		isPresignPendingForUrl,
+		cdnSignature,
+		isCdnSignaturePending
 	}: {
 		images: ApiMessageAttachment[];
 		message: IMessageWithUser;
@@ -314,6 +341,8 @@ const ImageAlbum = memo(
 		defaultMaxWidth?: number;
 		isMobile?: boolean;
 		isPresignPendingForUrl?: (url?: string) => boolean;
+		cdnSignature?: string;
+		isCdnSignaturePending?: boolean;
 	}) => {
 		const dispatch = useAppDispatch();
 
@@ -419,6 +448,8 @@ const ImageAlbum = memo(
 						isMobile={isMobile}
 						messageId={message.id}
 						images={images}
+						cdnSignature={cdnSignature}
+						isCdnSignaturePending={isCdnSignaturePending}
 					/>
 				</div>
 			);
@@ -444,6 +475,8 @@ const ImageAlbum = memo(
 						localSource={(firstImage as PreSendMediaAttachment)?.local_source}
 						loadWhenUnpending={!isPresignPending}
 						isMobile={isMobile}
+						cdnSignature={cdnSignature}
+						isCdnSignaturePending={isCdnSignaturePending}
 					/>
 				</div>
 			);
@@ -458,7 +491,9 @@ const ImageAlbum = memo(
 		prev.message.content === next.message.content &&
 		prev.mode === next.mode &&
 		prev.isMobile === next.isMobile &&
-		prev.defaultMaxWidth === next.defaultMaxWidth
+		prev.defaultMaxWidth === next.defaultMaxWidth &&
+		prev.cdnSignature === next.cdnSignature &&
+		prev.isCdnSignaturePending === next.isCdnSignaturePending
 );
 
 ImageAlbum.displayName = 'ImageAlbum';
