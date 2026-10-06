@@ -129,7 +129,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 								clanId: getClanId as string,
 								channelId: channelIdOrDirectId as string,
 								mode,
-								anonymous: false,
+								anonymous: getClanId !== '0' ? topicAnonymousMode : false,
 								attachments,
 								code: code ?? 0,
 								content,
@@ -211,7 +211,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 	);
 
 	const sendMessageTyping = React.useCallback(async () => {
-		if (!anonymousMode) {
+		const isAnonymous = fromTopic ? topicAnonymousMode : anonymousMode;
+		if (!isAnonymous) {
 			dispatch(
 				messagesActions.sendTypingUser({
 					clanId: getClanId || '0',
@@ -223,7 +224,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				})
 			);
 		}
-	}, [anonymousMode, dispatch, getClanId, channelIdOrDirectId, mode, isPublic, priorityNameToShow, fromTopic, currentTopicId]);
+	}, [fromTopic, topicAnonymousMode, anonymousMode, dispatch, getClanId, channelIdOrDirectId, mode, isPublic, priorityNameToShow, currentTopicId]);
 
 	// Move this function to to a new action of messages slice
 	const editSendMessage = React.useCallback(
