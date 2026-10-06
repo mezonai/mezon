@@ -53,11 +53,11 @@ const ModalConfirm = ({
 			<div className="fixed inset-0 bg-black opacity-80 " />
 			<div className="relative z-10 w-[440px] px-4 md:px-0" onClick={(e) => e.stopPropagation()}>
 				<div className="bg-theme-setting-primary pt-[16px] px-[16px] rounded-t-md">
-					<div className=" text-theme-primary-active text-[20px] font-semibold pb-[16px]">
+					<div className=" text-theme-primary-active text-[20px] font-semibold pb-[16px] break-words">
 						<span className="capitalize mr-1">{defaultTitle}</span>
 						{customModalName ? customModalName : modalName}
 					</div>
-					<div className=" pb-[20px] text-theme-primary">
+					<div className=" pb-[20px] text-theme-primary break-words">
 						{customTitle !== '' ? <span>{customTitle}</span> : <span>{defaultMessage && ` ${defaultMessage}`}</span>}
 					</div>
 				</div>
