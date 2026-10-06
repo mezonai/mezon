@@ -741,3 +741,51 @@ describe.each(['channel', 'topic'])('distant jump pagination in %s', (scope) => 
 		expect(selectHasMoreBottomByChannelId(store.getState() as any, scope)).toBe(true);
 	});
 });
+
+describe('reopening a channel that missed messages while offline', () => {
+	const args = { clanId: 'clan', channelId: 'channel' };
+	const sequenceOf = (id: string) => Number((BigInt(id) >> BigInt(22)) - BigInt(438845456274));
+	const msg = (n: number) => ({ ...serverReply(n), channel_id: 'channel', create_time_seconds: n > 1000 ? 5000 : n });
+	const page = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => msg(to - i));
+	const ids = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => msg(from + i).id);
+
+	async function openThenMiss(latest: number) {
+		const { store, client } = setup();
+		const server = { latest: 1000 };
+		client.listChannelMessages.mockImplementation(async (_session, _clan, _channel, cursor, direction, limit = 50) => {
+			if (!cursor || cursor === '0') return { messages: page(server.latest - limit + 1, server.latest) };
+			const sequence = sequenceOf(cursor);
+			if (direction === Direction_Mode.AFTER_TIMESTAMP) return { messages: page(sequence, Math.min(sequence + limit - 1, server.latest)) };
+			return { messages: page(Math.max(1, sequence - limit), sequence - 1) };
+		});
+		await store.dispatch(fetchMessages({ ...args, noCache: true, toPresent: true })).unwrap();
+		server.latest = latest;
+		return { store, client };
+	}
+
+	it('fetches the missed messages in order instead of the page before its newest cached row', async () => {
+		const { store, client } = await openThenMiss(1003);
+		await store.dispatch(fetchMessages(args)).unwrap();
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined]);
+		expect(store.getState().messages.channelViewPortMessageIds.channel.slice(-4)).toEqual(ids(1000, 1003));
+		expect(store.getState().messages.lastMessageByChannel.channel?.id).toBe(msg(1003).id);
+		expect(selectHasMoreBottomByChannelId(store.getState() as any, 'channel')).toBe(false);
+	});
+
+	it('replaces a cache that no longer connects to the latest page', async () => {
+		const { store } = await openThenMiss(1200);
+		await store.dispatch(fetchMessages(args)).unwrap();
+		expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(ids(1151, 1200));
+		expect(store.getState().messages.channelMessages.channel.entities[msg(1000).id]).toBeUndefined();
+		expect(selectHasMoreMessageByChannelId(store.getState() as any, 'channel')).toBe(true);
+	});
+
+	it('keeps the reading position of a user viewing older messages', async () => {
+		const { store } = await openThenMiss(1200);
+		store.dispatch(messagesActions.setViewingOlder({ channelId: 'channel', status: true }));
+		await store.dispatch(fetchMessages(args)).unwrap();
+		expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(ids(951, 1000));
+		expect(store.getState().messages.lastMessageByChannel.channel?.id).toBe(msg(1200).id);
+		expect(selectHasMoreBottomByChannelId(store.getState() as any, 'channel')).toBe(true);
+	});
+});
