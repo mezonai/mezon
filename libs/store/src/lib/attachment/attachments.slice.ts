@@ -350,6 +350,20 @@ export const attachmentSlice = createSlice({
 				limit: 50
 			};
 		},
+		setChannelAttachments: (
+			state,
+			action: PayloadAction<{ channelId: string; attachments: AttachmentEntity[]; hasMoreBefore: boolean; hasMoreAfter: boolean }>
+		) => {
+			const { channelId, attachments, hasMoreBefore, hasMoreAfter } = action.payload;
+			if (!state.listAttachmentsByChannel[channelId]) {
+				state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+			}
+			const channelState = state.listAttachmentsByChannel[channelId];
+			channelState.attachments = attachments;
+			channelState.cache = undefined;
+			channelState.pagination = { isLoading: false, hasMoreBefore, hasMoreAfter, limit: channelState.pagination?.limit ?? 50 };
+			attachmentAdapter.setAll(state, attachments);
+		},
 		clearAttachmentChannel: (state, action: PayloadAction<{ channelId: string }>) => {
 			const { channelId } = action.payload;
 			if (state.listAttachmentsByChannel[channelId]) {
