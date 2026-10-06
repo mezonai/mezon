@@ -102,7 +102,6 @@ module.exports = composePlugins(
 			'*.googlesyndication.com',
 			'*.gstatic.com',
 			'*.googleapis.com',
-			'https://cdn.jsdelivr.net',
 			'googleads.g.doubleclick.net'
 		].join(' ');
 		const basePolicies = [
