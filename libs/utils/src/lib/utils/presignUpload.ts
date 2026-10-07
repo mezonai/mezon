@@ -1,6 +1,6 @@
 import { uploadFileToPath } from '@mezon/transport';
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
-import { AttachmentTypeUpload } from '../types';
+import { AttachmentTypeUpload, ETypesCDN } from '../types';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
 
 export async function generatePathAttachments(client: Client, session: ApiSession, attachments: Array<ApiMessageAttachment>) {
@@ -53,9 +53,12 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					filetype: fileType,
 					filename: attach.filename,
 					uploadName: data.filename,
-					url: `${process.env.NX_BASE_IMG_URL}/${data.filename}`,
+					url: `${data.type_cdn === ETypesCDN.MEZON ? process.env.NX_BASE_MEZON_IMG_URL : process.env.NX_BASE_IMG_URL}/${data.filename}`,
 					uploadPath: data.url,
-					...(thumbnail && thumbnail?.filename && { thumbnail: `${process.env.NX_BASE_IMG_URL}/${thumbnail.filename}` })
+					...(thumbnail &&
+						thumbnail?.filename && {
+							thumbnail: `${thumbnail?.type_cdn === ETypesCDN.MEZON ? process.env.NX_BASE_MEZON_IMG_URL : process.env.NX_BASE_IMG_URL}/${thumbnail.filename}`
+						})
 				};
 			} catch (error) {
 				console.error('error: ', error);
