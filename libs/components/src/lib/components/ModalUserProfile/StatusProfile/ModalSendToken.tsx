@@ -259,7 +259,6 @@ const ModalSendToken = ({
 									className="w-full h-12 px-4 pr-10 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all text-base"
 									value={searchTerm}
 									onClick={() => setIsDropdownOpen(true)}
-									onFocus={() => setIsDropdownOpen(true)}
 									onChange={handleChangeSearchTerm}
 									disabled={sendTokenInputsState.isUserSelectionDisabled}
 									autoFocus={!searchTerm}
