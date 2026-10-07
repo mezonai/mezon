@@ -1,3 +1,4 @@
+import { generateE2eId } from '@mezon/utils';
 import type { MutableRefObject } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -252,6 +253,7 @@ export const SfuVoiceInteractiveWindow = memo(
 					zIndex
 				}}
 				className="flex flex-col bg-theme-setting-primary text-theme-primary shadow-2xl overflow-hidden border border-zinc-700 rounded-lg"
+				data-e2e={generateE2eId('clan_page.screen.voice_room.interactive_apps.window')}
 			>
 				<div
 					onPointerDown={handlePointerDownDrag}
