@@ -343,12 +343,17 @@ const checkIsChannelBannerDismissed = (channelId: string | null | undefined): bo
 	}
 };
 
-export const ChannelTopicPinBanner = memo(() => {
+export type ChannelTopicPinBannerProps = {
+	channelId?: string;
+};
+
+export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: ChannelTopicPinBannerProps = {}) => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
 	const { userProfile } = useAuth();
 	const currentClanId = useSelector(selectCurrentClanId);
-	const currentChannelId = useSelector(selectCurrentChannelId);
+	const storeChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelId = propChannelId || storeChannelId;
 	const channelType = useSelector(selectCurrentChannelType);
 	const channelAgeRestricted = useSelector(selectCurrentChannelAgeRestricted);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
@@ -1022,97 +1027,105 @@ export const ChannelTopicPinBanner = memo(() => {
 	const hasBoth = Boolean(latestTopic && latestPin);
 
 	return (
-		<div
-			className="absolute top-2 left-0 z-20 px-4 pointer-events-none transition-[right] duration-200"
-			style={{ right: isMemberListOpen ? 245 : 0 }}
-			data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container')}
-		>
-			<div className="flex items-stretch w-full bg-theme-setting-nav border border-theme-primary rounded-xl overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-shadow duration-200 pointer-events-auto">
-				{latestTopic && (
-					<div
-						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
-							hasBoth ? 'flex-1 pl-3.5 pr-2.5' : 'flex-1 px-3.5'
-						}`}
-						onClick={handleJumpToTopic}
-						title={topicTitle}
-						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item')}
-					>
-						<div className="relative flex items-center justify-center shrink-0 w-7 h-7 text-theme-primary-active">
-							<Icons.TopicIcon className="w-6 h-6 shrink-0 text-theme-primary-active" />
-							{showTopicBadge &&
-								(topicBadgeCount > 0 ? (
-									<div
-										className="absolute -top-1 -right-1 w-4 h-4 min-w-[16px] px-0.5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center leading-none ring-0 border-0 outline-none"
-										style={{ boxShadow: 'none' }}
-										data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item', 'badge')}
-									>
-										{topicBadgeCount > 9 ? '9+' : topicBadgeCount}
-									</div>
-								) : (
-									<div
-										className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-600 ring-0 border-0 outline-none"
-										style={{ boxShadow: 'none' }}
-										data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item', 'badge')}
-									/>
-								))}
-						</div>
-						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{topicTitle}</div>
-							{topicSubtitle && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{topicSubtitle}</div>}
-						</div>
-						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} />}
-					</div>
-				)}
+		<>
+			{/* Lớp layout trong suốt ở dưới để giữ chỗ trong flow, ngăn chữ cuộn lên lọt vào sau banner */}
+			<div className="w-full h-14 shrink-0 pointer-events-none" />
 
-				{hasBoth && <div className="w-[1px] my-2 border-r border-theme-primary shrink-0" />}
-
-				{latestPin && (
-					<div
-						className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
-							hasBoth ? 'flex-1 pl-2.5 pr-3.5' : 'flex-1 px-3.5'
-						}`}
-						onClick={handleJumpToPin}
-						title={pinContent}
-						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.pin_item')}
-					>
-						<div className="shrink-0 flex items-center justify-center">
-							<AvatarImage
-								alt={pinUserName}
-								username={pinUserName}
-								className="!w-7 !h-7 !min-w-7 !min-h-7 rounded-full text-xs shrink-0"
-								classNameText="text-[10px]"
-								srcImgProxy={pinAvatarUrl ? createImgproxyUrl(pinAvatarUrl, { width: 64, height: 64, resizeType: 'fit' }) : undefined}
-								src={pinAvatarUrl}
-								isAnonymous={isPinAnonymous}
-							/>
-						</div>
-						<div className="flex flex-col min-w-0 flex-1 justify-center">
-							<div className="flex items-baseline gap-2 min-w-0">
-								<span className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{pinUserName}</span>
-								{pinFormattedTime && (
-									<span className="text-xs text-theme-primary font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
-								)}
+			{/* Banner nổi (absolute) nằm ngoài layout với đầy đủ hiệu ứng nổi, bóng đổ và màu sắc */}
+			<div
+				className="absolute top-2 left-0 z-20 px-4 pointer-events-none transition-[right] duration-200"
+				style={{ right: isMemberListOpen ? 245 : 0 }}
+				data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container')}
+			>
+				<div className="flex items-stretch w-full bg-theme-setting-primary border border-theme-primary rounded-lg overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-shadow duration-200 pointer-events-auto">
+					{latestTopic && (
+						<div
+							className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
+								hasBoth ? 'flex-1 pl-3.5 pr-2.5' : 'flex-1 px-3.5'
+							}`}
+							onClick={handleJumpToTopic}
+							title={topicTitle}
+							data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item')}
+						>
+							<div className="relative flex items-center justify-center shrink-0 w-7 h-7 text-theme-primary-active">
+								<Icons.TopicIcon className="w-6 h-6 shrink-0 text-theme-primary-active" />
+								{showTopicBadge &&
+									(topicBadgeCount > 0 ? (
+										<div
+											className="absolute -top-1 -right-1 w-4 h-4 min-w-[16px] px-0.5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center leading-none ring-0 border-0 outline-none"
+											style={{ boxShadow: 'none' }}
+											data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item', 'badge')}
+										>
+											{topicBadgeCount > 9 ? '9+' : topicBadgeCount}
+										</div>
+									) : (
+										<div
+											className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-600 ring-0 border-0 outline-none"
+											style={{ boxShadow: 'none' }}
+											data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item', 'badge')}
+										/>
+									))}
 							</div>
-							{pinContent && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{pinContent}</div>}
+							<div className="flex flex-col min-w-0 flex-1 justify-center">
+								<div className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{topicTitle}</div>
+								{topicSubtitle && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{topicSubtitle}</div>}
+							</div>
+							{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} />}
 						</div>
-						{pinAttachment && <AttachmentThumbnail attachment={pinAttachment} />}
-					</div>
-				)}
+					)}
 
-				<div className="w-[1px] my-2 border-r border-theme-primary shrink-0" />
+					{hasBoth && <div className="w-[1px] my-2 border-r border-theme-primary shrink-0" />}
 
-				<button
-					type="button"
-					className="flex items-center justify-center px-2.5 text-theme-primary hover:text-theme-primary-active hover:bg-item-theme-hover transition-colors cursor-pointer shrink-0"
-					onClick={handleOpenDismissModal}
-					title={t('unpin', 'Bỏ ghim')}
-					aria-label={t('unpin', 'Bỏ ghim')}
-					data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container', 'dismiss_button')}
-				>
-					<UnpinBannerIcon className="w-5 h-5 shrink-0" />
-				</button>
+					{latestPin && (
+						<div
+							className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
+								hasBoth ? 'flex-1 pl-2.5 pr-3.5' : 'flex-1 px-3.5'
+							}`}
+							onClick={handleJumpToPin}
+							title={pinContent}
+							data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.pin_item')}
+						>
+							<div className="shrink-0 flex items-center justify-center">
+								<AvatarImage
+									alt={pinUserName}
+									username={pinUserName}
+									className="!w-7 !h-7 !min-w-7 !min-h-7 rounded-full text-xs shrink-0"
+									classNameText="text-[10px]"
+									srcImgProxy={
+										pinAvatarUrl ? createImgproxyUrl(pinAvatarUrl, { width: 64, height: 64, resizeType: 'fit' }) : undefined
+									}
+									src={pinAvatarUrl}
+									isAnonymous={isPinAnonymous}
+								/>
+							</div>
+							<div className="flex flex-col min-w-0 flex-1 justify-center">
+								<div className="flex items-baseline gap-2 min-w-0">
+									<span className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{pinUserName}</span>
+									{pinFormattedTime && (
+										<span className="text-xs text-theme-primary font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
+									)}
+								</div>
+								{pinContent && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{pinContent}</div>}
+							</div>
+							{pinAttachment && <AttachmentThumbnail attachment={pinAttachment} />}
+						</div>
+					)}
+
+					<div className="w-[1px] my-2 border-r border-theme-primary shrink-0" />
+
+					<button
+						type="button"
+						className="flex items-center justify-center px-2.5 text-theme-primary hover:text-theme-primary-active hover:bg-item-theme-hover transition-colors cursor-pointer shrink-0"
+						onClick={handleOpenDismissModal}
+						title={t('unpin', 'Bỏ ghim')}
+						aria-label={t('unpin', 'Bỏ ghim')}
+						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container', 'dismiss_button')}
+					>
+						<UnpinBannerIcon className="w-5 h-5 shrink-0" />
+					</button>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 });
 
