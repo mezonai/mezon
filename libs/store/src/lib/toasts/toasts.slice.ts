@@ -1,5 +1,6 @@
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Toast, ToastPayload } from './types';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Toast, ToastPayload } from './types';
 
 export const TOASTS_FEATURE_KEY = 'toasts';
 
@@ -14,7 +15,7 @@ export enum EErrorType {
 
 const initialState = {
 	...toastsAdapter.getInitialState(),
-	toastErrors: [] as { id: string; message: string; errType?: EErrorType }[]
+	toastErrors: [] as { id: string; message: string; errType?: EErrorType; code?: number }[]
 };
 const addToast = createAsyncThunk(
 	'toasts/addToast',
@@ -95,13 +96,13 @@ export const toastsSlice = createSlice({
 
 			toastsAdapter.removeAll(state);
 		},
-		addToastError: (state, action: PayloadAction<{ message?: string; errType?: EErrorType }>) => {
+		addToastError: (state, action: PayloadAction<{ message?: string; errType?: EErrorType; code?: number }>) => {
 			const message = action.payload.message;
 			if (!message || state.toastErrors.find((error) => error.message === message)) {
 				return;
 			}
 			const id = Date.now().toString();
-			state.toastErrors.push({ id, message, errType: action.payload.errType });
+			state.toastErrors.push({ id, message, errType: action.payload.errType, code: action.payload.code });
 		},
 		removeToastError: (state, action: PayloadAction<string>) => {
 			state.toastErrors = state.toastErrors.filter((error) => error.id !== action.payload);

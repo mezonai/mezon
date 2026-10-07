@@ -9,7 +9,7 @@ interface ErrorAction {
 	type: string;
 	payload?: {
 		status?: number;
-		error?: { status?: number };
+		error?: { status?: number; code?: number };
 		errType?: EErrorType;
 		json?: () => Promise<{ message: string }>;
 		[key: string]: unknown;
@@ -184,7 +184,8 @@ errorListenerMiddleware.startListening({
 			listenerApi.dispatch(
 				toastActions.addToastError({
 					message: toast.message as string,
-					errType: action.payload?.errType
+					errType: action.payload?.errType,
+					code: action.payload?.error?.code
 				})
 			);
 		}

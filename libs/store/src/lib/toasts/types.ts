@@ -4,6 +4,7 @@ export interface Toast {
 	position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 	autoClose?: number | false; // milliseconds
 	hideProgressBar?: boolean;
+	code?: number;
 	closeOnClick?: boolean;
 	pauseOnHover?: boolean;
 	draggable?: boolean;
