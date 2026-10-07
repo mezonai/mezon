@@ -341,6 +341,67 @@ class FastGuidedFilter {
 	}
 }
 
+/**
+ * Adaptive exposure normalizer that analyzes scene luminance using a tiny 16x16 thumbnail.
+ * In low light conditions, it dynamically calculates exposure and contrast boosts to condition
+ * the input frame before neural network inference, preventing loss of edge definition around
+ * hair, dark clothing, and shadowy backgrounds.
+ */
+class AdaptiveExposureNormalizer {
+	private microCanvas: HTMLCanvasElement;
+	private microCtx: CanvasRenderingContext2D | null;
+	private smoothedLuminance = 128;
+	private lastAnalysisTime = 0;
+	public currentBrightness = 1.0;
+	public currentContrast = 1.0;
+	public isLowLight = false;
+
+	constructor() {
+		this.microCanvas = document.createElement('canvas');
+		this.microCanvas.width = 16;
+		this.microCanvas.height = 16;
+		this.microCtx = this.microCanvas.getContext('2d', { willReadFrequently: true });
+	}
+
+	public update(source: CanvasImageSource, now: number): void {
+		// Sample ~7 times per second (every 140ms) to conserve CPU cycles
+		if (now - this.lastAnalysisTime < 140 || !this.microCtx) return;
+		this.lastAnalysisTime = now;
+
+		this.microCtx.drawImage(source, 0, 0, 16, 16);
+		const data = this.microCtx.getImageData(0, 0, 16, 16).data;
+
+		let totalLuma = 0;
+		for (let i = 0; i < 1024; i += 4) {
+			// Perceived luminance (ITU-R BT.601 formula)
+			totalLuma += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+		}
+		const avgLuma = totalLuma / 256;
+
+		// Exponential moving average for temporal stability (prevents exposure hunting/flickering)
+		this.smoothedLuminance = this.smoothedLuminance * 0.82 + avgLuma * 0.18;
+
+		// Low-light threshold: if scene average luminance falls below 85 (on a 0-255 scale)
+		if (this.smoothedLuminance < 85) {
+			this.isLowLight = true;
+			const deficiency = (85 - this.smoothedLuminance) / 85; // 0.0 to 1.0
+			this.currentBrightness = 1.0 + deficiency * 0.45; // Up to 1.45x boost
+			this.currentContrast = 1.0 + deficiency * 0.25; // Up to 1.25x boost
+		} else {
+			this.isLowLight = false;
+			this.currentBrightness = 1.0;
+			this.currentContrast = 1.0;
+		}
+	}
+
+	public getFilter(): string {
+		if (this.currentBrightness > 1.02) {
+			return `brightness(${this.currentBrightness.toFixed(2)}) contrast(${this.currentContrast.toFixed(2)})`;
+		}
+		return 'none';
+	}
+}
+
 export class MediaPipeBackgroundProcessor {
 	public width = MODEL_WIDTH;
 	public height = MODEL_HEIGHT;
@@ -349,6 +410,9 @@ export class MediaPipeBackgroundProcessor {
 	private mirrorCamera = false;
 	private hasFirstResult = false;
 	private lastFrameTime = 0;
+
+	// Input conditioning: adaptive exposure normalizer
+	private exposureNormalizer = new AdaptiveExposureNormalizer();
 
 	private videoElement: HTMLVideoElement | null = null;
 	private inputStream: MediaStream | null = null;
@@ -571,6 +635,38 @@ export class MediaPipeBackgroundProcessor {
 		return this.initPromise;
 	}
 
+	private async applyHardwareConstraints(track: MediaStreamTrack | undefined): Promise<void> {
+		if (!track || typeof track.getCapabilities !== 'function' || typeof track.applyConstraints !== 'function') {
+			return;
+		}
+		try {
+			const capabilities = track.getCapabilities() as Record<string, unknown>;
+			const advanced: Record<string, unknown> = {};
+
+			if (Array.isArray(capabilities.exposureMode) && capabilities.exposureMode.includes('continuous')) {
+				advanced.exposureMode = 'continuous';
+			}
+			if (Array.isArray(capabilities.whiteBalanceMode) && capabilities.whiteBalanceMode.includes('continuous')) {
+				advanced.whiteBalanceMode = 'continuous';
+			}
+			const expComp = capabilities.exposureCompensation as { min?: number; max?: number } | undefined;
+			if (expComp && typeof expComp === 'object') {
+				const min = expComp.min ?? 0;
+				const max = expComp.max ?? 0;
+				if (max > min) {
+					// Subtle positive bias (+0.3 EV) to prevent dark underexposure in dim rooms
+					advanced.exposureCompensation = Math.min(max, Math.max(min, 0.3));
+				}
+			}
+
+			if (Object.keys(advanced).length > 0) {
+				await track.applyConstraints({ advanced: [advanced] } as unknown as MediaTrackConstraints);
+			}
+		} catch {
+			// Silently ignore if camera driver does not support hardware advanced exposure constraints
+		}
+	}
+
 	public async start(inputStream: MediaStream, initialMode: BackgroundMode | null = null): Promise<MediaStream> {
 		this.stop();
 		this.inputStream = inputStream;
@@ -578,6 +674,12 @@ export class MediaPipeBackgroundProcessor {
 		this.isRunning = true;
 		this.hasFirstResult = false;
 		this.bgDirty = true;
+
+		// Apply hardware ISP low-light optimization if supported by the camera device
+		const videoTrack = inputStream.getVideoTracks()[0];
+		if (videoTrack) {
+			void this.applyHardwareConstraints(videoTrack);
+		}
 
 		this.videoElement = document.createElement('video');
 		this.videoElement.autoplay = true;
@@ -779,12 +881,22 @@ export class MediaPipeBackgroundProcessor {
 		if (this.mode && !this.isProcessing && this.selfieSegmentation) {
 			this.isProcessing = true;
 			try {
-				// 1. Draw camera video frame to full-resolution inputCanvas
+				// 1. Draw camera video frame to full-resolution inputCanvas with adaptive temporal denoising
 				if (this.inputCtx) {
-					drawImageCover(this.inputCtx, video, video.videoWidth, video.videoHeight, this.width, this.height);
+					// In low light, apply subtle temporal blend (alpha = 0.88) to suppress high-frequency CMOS sensor shot noise
+					if (this.exposureNormalizer.isLowLight && this.hasFirstResult) {
+						this.inputCtx.globalAlpha = 0.88;
+						drawImageCover(this.inputCtx, video, video.videoWidth, video.videoHeight, this.width, this.height);
+						this.inputCtx.globalAlpha = 1.0;
+					} else {
+						drawImageCover(this.inputCtx, video, video.videoWidth, video.videoHeight, this.width, this.height);
+					}
 				}
 
-				// 2. Crop ROI for inference to dramatically increase effective resolution on the subject
+				// Update adaptive exposure normalizer using the latest input frame
+				this.exposureNormalizer.update(this.inputCanvas, now);
+
+				// 2. Crop ROI for inference with exposure normalization and bilinear anti-aliasing
 				this.frameCount++;
 				// Periodic keyframe pass (every 60 frames ~ 2s) to check full frame in case a new person entered
 				let sendRoi = this.roi;
@@ -794,7 +906,16 @@ export class MediaPipeBackgroundProcessor {
 				this.pendingRoi = { ...sendRoi };
 
 				if (this.roiCtx && this.inputCanvas) {
+					this.roiCtx.imageSmoothingEnabled = true;
+					this.roiCtx.imageSmoothingQuality = 'medium';
+
+					// Apply exposure normalization specifically for the neural network input
+					const filter = this.exposureNormalizer.getFilter();
+					this.roiCtx.filter = filter;
+
 					this.roiCtx.drawImage(this.inputCanvas, sendRoi.x, sendRoi.y, sendRoi.w, sendRoi.h, 0, 0, this.roiWidth, this.roiHeight);
+
+					this.roiCtx.filter = 'none';
 				}
 
 				const timeoutPromise = new Promise<void>((_, reject) => setTimeout(() => reject(new Error('MediaPipe inference timeout')), 5000));
