@@ -199,7 +199,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 					onClick={handleToggleCategory}
 					className="text-theme-primary flex items-center px-0.5 w-full font-title tracking-wide text-theme-primary-hover uppercase text-sm font-medium"
 				>
-					{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}
+					<div>{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}</div>
 					<span className="one-line" data-e2e={generateE2eId('clan_page.side_bar.channel_list.category.name')}>
 						{category.id === FAVORITE_CATEGORY_ID
 							? t('favoriteChannel')
