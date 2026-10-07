@@ -834,7 +834,7 @@ export const fetchChannels = createAsyncThunk(
 							channel_id: channel.channel_id
 						})) ?? [];
 
-					const lastChannelMessagesTruthy = lastChannelMessages.filter((message) => message);
+					const lastChannelMessagesTruthy = lastChannelMessages.filter((message) => message.id);
 
 					thunkAPI.dispatch(messagesActions.setManyLastMessages(lastChannelMessagesTruthy as ApiChannelMessageHeaderWithChannel[]));
 				}
