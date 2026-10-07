@@ -108,7 +108,9 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 		});
 
 		try {
-			const uploadResults = await Promise.all(fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx)));
+			const uploadResults = await Promise.all(
+				fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx, undefined, channelId))
+			);
 
 			setAttachments((prev) => {
 				const updated = prev.map((att) => {

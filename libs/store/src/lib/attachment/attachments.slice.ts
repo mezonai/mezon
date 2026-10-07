@@ -183,7 +183,8 @@ export const multipartUploadAttachmentFileStart = createAsyncThunk(
 			size,
 			width = 0,
 			height = 0,
-			partCount = 1
+			partCount = 1,
+			channelId
 		}: {
 			filename: string;
 			filetype: string;
@@ -191,6 +192,7 @@ export const multipartUploadAttachmentFileStart = createAsyncThunk(
 			width?: number;
 			height?: number;
 			partCount?: number;
+			channelId?: string;
 		},
 		thunkAPI
 	) => {
@@ -200,7 +202,8 @@ export const multipartUploadAttachmentFileStart = createAsyncThunk(
 			size,
 			...(width > 0 ? { width } : {}),
 			...(height > 0 ? { height } : {}),
-			...(partCount > 0 ? { part_count: partCount } : {})
+			...(partCount > 0 ? { part_count: partCount } : {}),
+			...(channelId ? { channel_id: channelId } : {})
 		};
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));

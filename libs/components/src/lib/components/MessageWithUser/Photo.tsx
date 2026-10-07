@@ -1,3 +1,4 @@
+import type { CdnUrlSigner } from '@mezon/core';
 import type { ApiMediaExtendedPreview, ApiPhoto, IMediaDimensions, ObserveFn } from '@mezon/utils';
 import {
 	EMimeTypes,
@@ -56,6 +57,8 @@ export type OwnProps<T> = {
 	localSource?: string;
 	loadWhenUnpending?: boolean;
 	isMobile?: boolean;
+	/** Signs the CDN url of the photo and its thumbnail; a photo still waiting for its signature stays behind the skeleton. */
+	cdnSigner?: CdnUrlSigner;
 };
 const Photo = <T,>({
 	id,
@@ -86,7 +89,8 @@ const Photo = <T,>({
 	isPresignPending = false,
 	localSource,
 	loadWhenUnpending = false,
-	isMobile
+	isMobile,
+	cdnSigner
 }: OwnProps<T>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -107,7 +111,13 @@ const Photo = <T,>({
 	const showLocalPreview = !!localSource && !localFailed;
 	const onLocalPreviewError = useCallback(() => setLocalFailed(true), []);
 
-	const shouldLoad = canAutoLoad && !isPresignPending && !showLocalPreview && (isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
+	const isAwaitingSignature = !!cdnSigner?.isAwaitingSignature(photo?.url);
+	const shouldLoad =
+		canAutoLoad &&
+		!isPresignPending &&
+		!isAwaitingSignature &&
+		!showLocalPreview &&
+		(isSending || isIntersecting || isRecentlySent || loadWhenUnpending);
 
 	if (isSending && photo?.url) {
 		lastSentUrl = photo.url;
@@ -194,7 +204,8 @@ const Photo = <T,>({
 		return photo?.url?.endsWith('.gif') || photo?.url?.includes('.gif');
 	}, [photo?.url]);
 
-	const thumbnailDataUri = photo.thumbnail?.dataUri;
+	const rawThumbnail = photo.thumbnail?.dataUri;
+	const thumbnailDataUri = cdnSigner?.isAwaitingSignature(rawThumbnail) ? undefined : (cdnSigner?.signCdnUrl(rawThumbnail) ?? rawThumbnail);
 	const hasThumbnail = !!thumbnailDataUri;
 	// `isPresignPending` alone leaves the upload-first paths open: an anonymous
 	// send is never presign-pending, only sending, and the row already carries the
@@ -229,7 +240,8 @@ const Photo = <T,>({
 		>
 			{shouldLoad && (
 				<PhotoImage
-					url={photo?.url ?? ''}
+					url={cdnSigner?.signCdnUrl(photo?.url ?? '') ?? photo?.url ?? ''}
+					originalUrl={photo?.url ?? ''}
 					width={width}
 					height={height}
 					resizeType={resizeType}
@@ -272,7 +284,10 @@ const Photo = <T,>({
 };
 
 type PhotoImageProps = {
+	/** What the image loads: the CDN url with its signature. */
 	url: string;
+	/** The url as sent, handed to the context menu: a copied link must not carry a signature that expires. */
+	originalUrl: string;
 	width: number;
 	height: number;
 	resizeType: string;
@@ -291,6 +306,7 @@ type PhotoImageProps = {
 const PhotoImage = React.memo(
 	({
 		url,
+		originalUrl,
 		width,
 		height,
 		resizeType,
@@ -310,6 +326,7 @@ const PhotoImage = React.memo(
 
 		useEffect(() => {
 			setAspectType('square');
+			setHasError(false);
 		}, [url]);
 
 		const imgSrc = useMemo(() => {
@@ -318,11 +335,11 @@ const PhotoImage = React.memo(
 
 		const handleContextMenu = useCallback(
 			(e: React.MouseEvent<HTMLImageElement>) => {
-				setImageURL(url);
+				setImageURL(originalUrl);
 				setPositionShow(SHOW_POSITION.NONE);
 				onContextMenu?.(e);
 			},
-			[url, setImageURL, setPositionShow, onContextMenu]
+			[originalUrl, setImageURL, setPositionShow, onContextMenu]
 		);
 
 		const handleError = useCallback(() => {

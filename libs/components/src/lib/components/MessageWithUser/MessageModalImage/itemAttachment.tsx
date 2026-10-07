@@ -1,3 +1,4 @@
+import { useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import { attachmentActions, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { EMimeTypes, ETypeLinkMedia, createImgproxyUrl, isAttachmentPresignPendingForMessage } from '@mezon/utils';
@@ -23,10 +24,12 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 	const sourceMessage = useAppSelector((state) =>
 		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
 	);
-	const isPresignPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachment.url]);
+	// Not loadable yet: the upload is unconfirmed, or the channel's CDN signature is still on its way.
+	const isMediaPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage) || isAwaitingSignature(attachment.url);
 
 	const handleSelectImage = () => {
-		if (isPresignPending) return;
+		if (isMediaPending) return;
 		setUrlImg(attachment.url || '');
 		setCurrentIndexAtt(index);
 		dispatch(attachmentActions.setCurrentAttachment(attachment));
@@ -39,21 +42,21 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 		attachment.filetype?.includes(EMimeTypes.mov);
 
 	const thumbnailClassName = `block w-[120px] h-[90px] max-sbm:w-16 max-sbm:h-12 object-cover rounded ${
-		isPresignPending ? 'cursor-default' : 'cursor-pointer'
+		isMediaPending ? 'cursor-default' : 'cursor-pointer'
 	} ${isSelected ? '' : 'overlay'}`;
 
 	return (
 		<div className={`attachment-item`} ref={isSelected ? selectedImageRef : null}>
 			<div
-				className={`relative flex w-fit mx-auto rounded-md border-2 ${isPresignPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'border-buttonPrimary' : 'border-transparent'}`}
+				className={`relative flex w-fit mx-auto rounded-md border-2 ${isMediaPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'border-buttonPrimary' : 'border-transparent'}`}
 				onClick={handleSelectImage}
 			>
-				{isPresignPending ? (
+				{isMediaPending ? (
 					<div className={`${thumbnailClassName} bg-bgLightSecondary dark:bg-bgSecondary`} />
 				) : isVideo ? (
 					<div className="relative">
 						<video
-							src={attachment.url ?? ''}
+							src={signCdnUrl(attachment.url ?? '')}
 							className={thumbnailClassName}
 							muted
 							playsInline
@@ -73,7 +76,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 					</div>
 				) : (
 					<img
-						src={createImgproxyUrl(attachment.url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+						src={createImgproxyUrl(signCdnUrl(attachment.url ?? ''), { width: 300, height: 300, resizeType: 'fit' })}
 						alt={attachment.url}
 						className={thumbnailClassName}
 						onDragStart={handleDrag}

@@ -11,7 +11,7 @@ import {
 	useInteractions,
 	useRole
 } from '@floating-ui/react';
-import { useEscapeKeyClose } from '@mezon/core';
+import { useCdnUrlSigner, useEscapeKeyClose } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import {
 	attachmentActions,
@@ -138,13 +138,17 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		return listAttach;
 	}, [attachments, mediaFilter, startDate, endDate]);
 
+	const rangeUrls = useMemo(() => rangeAttachments.map((att) => att.url), [rangeAttachments]);
+	const { isSignatureDenied } = useCdnUrlSigner(rangeUrls);
+
 	const filteredAttachments = useMemo(
 		() =>
 			rangeAttachments.filter((att) => {
+				if (isSignatureDenied(att.url)) return false;
 				const sourceMessage = att.message_id ? messageEntities?.[att.message_id] : undefined;
 				return !shouldHidePresignAttachment(att.url, sourceMessage);
 			}),
-		[rangeAttachments, messageEntities]
+		[rangeAttachments, messageEntities, isSignatureDenied]
 	);
 
 	const { refs, floatingStyles, context } = useFloating({
@@ -693,11 +697,12 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
 	);
 	const isPresignPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachment.url]);
 
 	const cacheKey = attachment.id || attachment.message_id || `${dateKey}-${attachment.url}-${attachmentIndex}`;
 	const isVideo = attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
 
-	if (isPresignPending) {
+	if (isPresignPending || isAwaitingSignature(attachment.url)) {
 		return <div key={cacheKey} className="aspect-square rounded-lg bg-bgLightSecondary dark:bg-bgSecondary" />;
 	}
 
@@ -705,7 +710,11 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		<ImageWithLoading
 			key={cacheKey}
 			cacheKey={cacheKey}
-			src={isVideo ? attachment.url || '' : createImgproxyUrl(attachment.url || '', { width: 120, height: 120, resizeType: 'fill' })}
+			src={
+				isVideo
+					? signCdnUrl(attachment.url || '')
+					: createImgproxyUrl(signCdnUrl(attachment.url || ''), { width: 120, height: 120, resizeType: 'fill' })
+			}
 			alt={attachment.filename || 'Media'}
 			onClick={() => onClick(attachment)}
 			isVideo={isVideo}
