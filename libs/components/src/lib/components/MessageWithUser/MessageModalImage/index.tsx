@@ -48,7 +48,11 @@ const MessageModalImage = () => {
 	const [showList, setShowList] = useState(true);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
 	const currentClanId = useAppSelector(selectCurrentClanId) ?? '';
-	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
+	const channelAttachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
+	const channelAttachmentUrls = useMemo(() => channelAttachments?.map((att) => att.url) ?? [], [channelAttachments]);
+	const { isSignatureDenied } = useCdnUrlSigner(channelAttachmentUrls);
+	// A file forwarded from a private channel the user is not in cannot load: it stays out of the list and the navigation.
+	const attachments = useMemo(() => channelAttachments?.filter((att) => !isSignatureDenied(att.url)), [channelAttachments, isSignatureDenied]);
 	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, (directId ?? currentChannelId) as string));
 	const { setOpenModalAttachment } = useAttachments();
 	const openModalAttachment = useAppSelector(selectOpenModalAttachment);
@@ -89,7 +93,7 @@ const MessageModalImage = () => {
 			: undefined
 	);
 	const isMainPresignPending = isAttachmentPresignPendingForMessage(urlImg ?? currentAttachment?.url, sourceMessage);
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelIdForAttachments);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([urlImg]);
 	const signedUrlImg = signCdnUrl(urlImg ?? '');
 
 	const getSourceMessageForAttachment = useCallback(
@@ -282,9 +286,9 @@ const MessageModalImage = () => {
 		(event: React.MouseEvent<HTMLElement>, props?: Partial<MessageContextMenuProps>) => {
 			showMessageContextMenu(event, messageId, mode ?? 2, false, props);
 			setPositionShow(SHOW_POSITION.IN_VIEWER);
-			setImageURL(signedUrlImg);
+			setImageURL(urlImg ?? '');
 		},
-		[showMessageContextMenu, messageId, mode, setPositionShow, setImageURL, signedUrlImg]
+		[showMessageContextMenu, messageId, mode, setPositionShow, setImageURL, urlImg]
 	);
 
 	const handleSelectImage = useCallback(

@@ -78,7 +78,8 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 	}, [message.attachments, message.content, messageCreateTimeSeconds]);
 
 	const isPresignPendingForUrl = useCallback((url?: string) => isAttachmentPresignPendingForMessage(url, message), [message]);
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(message.channel_id);
+	const cdnUrls = useMemo(() => validateAttachment.flatMap((attachment) => [attachment.url, attachment.thumbnail]), [validateAttachment]);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(cdnUrls);
 
 	// Topic rows are the ones users reported stuck: the presign update lands on the
 	// parent channel copy and the topic copy never hears about it.

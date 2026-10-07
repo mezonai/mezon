@@ -259,7 +259,6 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 										<div key={att.id} className="relative aspect-square rounded-lg overflow-hidden">
 											<MediaImage
 												src={originalUrl}
-												channelId={channelId}
 												alt=""
 												className="w-full h-full object-cover"
 												imgProxyOptions={isUploaded(att) ? { width: 200, height: 200, resizeType: 'fill' } : undefined}

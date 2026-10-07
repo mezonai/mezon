@@ -24,7 +24,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 	const sourceMessage = useAppSelector((state) =>
 		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
 	);
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachment.url]);
 	// Not loadable yet: the upload is unconfirmed, or the channel's CDN signature is still on its way.
 	const isMediaPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage) || isAwaitingSignature(attachment.url);
 

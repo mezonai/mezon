@@ -2,7 +2,7 @@ import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, selectCurrentUserId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { EFailAttachment, EMimeTypes, needsCdnSignature } from '@mezon/utils';
+import { EFailAttachment, EMimeTypes } from '@mezon/utils';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { Suspense, lazy, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ export type MessageImage = {
 	message?: IMessageWithUser;
 	/** The row exists but the object is not on the CDN yet. */
 	isPresignPending?: boolean;
-	/** The channel's CDN signature has not arrived yet, so an image thumbnail waits instead of loading unsigned. */
+	/** The file's CDN signature has not arrived yet, so an image thumbnail waits instead of loading unsigned. */
 	isCdnSignaturePending?: boolean;
 };
 function formatFileSize(bytes: number) {
@@ -104,7 +104,7 @@ function MessageLinkFile({ attachmentData, mode, message, isPresignPending = fal
 	const thumbnailAttachment = RenderAttachmentThumbnail({
 		attachment: attachmentData,
 		size: 'w-8 h-10',
-		isPresignPending: isCdnSignaturePending && needsCdnSignature(attachmentData.url)
+		isPresignPending: isCdnSignaturePending
 	});
 
 	const hideTheInformationFile =

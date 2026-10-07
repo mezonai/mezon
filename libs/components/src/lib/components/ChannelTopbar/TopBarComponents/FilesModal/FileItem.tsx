@@ -23,7 +23,7 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackU
 	);
 	const isPresignPending = isAttachmentPresignPendingForMessage(attachmentData.url, sourceMessage);
 	const isHidden = shouldHidePresignAttachment(attachmentData.url, sourceMessage);
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachmentData.url]);
 	const userSendAttachment = useAppSelector((state) =>
 		isDirect
 			? selectMemberGroupByUserId(state, channelId ?? '', attachmentData?.uploader ?? '')

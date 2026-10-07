@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Laddar upp..."
+		"uploading": "Laddar upp...",
+		"fromPrivateChannel": "Media från en privat kanal"
 	}
 }

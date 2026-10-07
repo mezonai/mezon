@@ -161,7 +161,6 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 													<MediaImage
 														key={idx}
 														src={imgUrl}
-														channelId={channelId}
 														alt=""
 														className="w-full h-20 object-cover"
 														loading="lazy"
@@ -172,7 +171,6 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 										) : (
 											<MediaImage
 												src={images[0]}
-												channelId={channelId}
 												alt=""
 												className="w-48 h-28 object-cover rounded-lg"
 												loading="lazy"

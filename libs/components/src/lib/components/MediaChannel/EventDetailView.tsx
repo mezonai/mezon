@@ -120,10 +120,9 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 				attachments={attachments.filter((att) => isUploaded(att))}
 				initialIndex={modalImageIndexRef.current}
 				onClose={hideImageModal}
-				channelId={channelId}
 			/>
 		),
-		[attachments, channelId]
+		[attachments]
 	);
 
 	const getProxyUri = useCallback((att: ChannelTimelineAttachment) => {
@@ -522,7 +521,6 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 								<div className="relative rounded-xl overflow-hidden">
 									<MediaImage
 										src={getProxyUri(featuredAttachment)}
-										channelId={channelId}
 										alt=""
 										className="w-full h-64 object-cover"
 										loading="lazy"
@@ -546,7 +544,6 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 								<div key={`${att.id}-${idx}`} className="relative rounded-xl overflow-hidden aspect-square">
 									<MediaImage
 										src={getProxyUri(att)}
-										channelId={channelId}
 										alt=""
 										className="w-full h-full object-cover"
 										loading="lazy"

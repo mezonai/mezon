@@ -212,8 +212,8 @@ const renderFileIcon = (filename: string, filetype: string) => {
 	return <Icons.TxtThumbnail defaultSize="w-5 h-6" />;
 };
 
-const AttachmentThumbnail = memo(({ attachment, channelId }: { attachment: ExtractedAttachment; channelId?: string }) => {
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachment }) => {
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachment.url]);
 	if (attachment.isImage && attachment.url) {
 		return (
 			<div className="shrink-0 flex items-center justify-center">
@@ -1065,7 +1065,7 @@ export const ChannelTopicPinBanner = memo(() => {
 							<div className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{topicTitle}</div>
 							{topicSubtitle && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{topicSubtitle}</div>}
 						</div>
-						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} channelId={currentChannelId ?? undefined} />}
+						{topicAttachment && <AttachmentThumbnail attachment={topicAttachment} />}
 					</div>
 				)}
 
@@ -1100,9 +1100,7 @@ export const ChannelTopicPinBanner = memo(() => {
 							</div>
 							{pinContent && <div className="text-xs text-theme-primary truncate leading-tight mt-0.5">{pinContent}</div>}
 						</div>
-						{pinAttachment && (
-							<AttachmentThumbnail attachment={pinAttachment} channelId={String(latestPin?.channel_id || currentChannelId || '')} />
-						)}
+						{pinAttachment && <AttachmentThumbnail attachment={pinAttachment} />}
 					</div>
 				)}
 

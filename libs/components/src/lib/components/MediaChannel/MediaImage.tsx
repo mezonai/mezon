@@ -16,14 +16,13 @@ interface MediaImageProps {
 	loading?: 'lazy' | 'eager';
 	imgProxyOptions?: ImgProxyOptions;
 	onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
-	channelId?: string;
 }
 
-export function MediaImage({ src, alt = '', className = '', loading = 'lazy', imgProxyOptions, onClick, channelId }: MediaImageProps) {
+export function MediaImage({ src, alt = '', className = '', loading = 'lazy', imgProxyOptions, onClick }: MediaImageProps) {
 	const [hasError, setHasError] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([src]);
 	const signedSrc = signCdnUrl(src);
 	const processedSrc = signedSrc && imgProxyOptions ? (createImgproxyUrl(signedSrc, imgProxyOptions) as string) : signedSrc;
 

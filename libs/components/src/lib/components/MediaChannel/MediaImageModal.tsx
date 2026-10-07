@@ -10,10 +10,9 @@ interface MediaImageModalProps {
 	attachments: ChannelTimelineAttachment[];
 	initialIndex: number;
 	onClose: () => void;
-	channelId?: string;
 }
 
-export function MediaImageModal({ attachments, initialIndex, onClose, channelId }: MediaImageModalProps) {
+export function MediaImageModal({ attachments, initialIndex, onClose }: MediaImageModalProps) {
 	const modalRef = useRef<HTMLDivElement>(null);
 	const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -31,7 +30,8 @@ export function MediaImageModal({ attachments, initialIndex, onClose, channelId 
 	const thumbnailListRef = useRef<HTMLDivElement>(null);
 
 	const currentAttachment = attachments[currentIndex];
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+	const cdnUrls = useMemo(() => attachments.flatMap((att) => [att.file_url, att.thumbnail]), [attachments]);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(cdnUrls);
 	const currentUrl = signCdnUrl(currentAttachment?.file_url || '');
 
 	const isVideo = useMemo(() => {

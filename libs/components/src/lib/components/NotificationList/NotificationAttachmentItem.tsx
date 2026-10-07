@@ -39,16 +39,14 @@ const PDFLoadingFallback = () => {
 
 export type NotificationAttachmentItemProps = {
 	readonly attachment: ApiMessageAttachment;
-	/** The channel the attachment was sent in; its CDN signature is applied to the urls. */
-	readonly channelId?: string;
 	readonly index: number;
 	readonly compact?: boolean;
 };
 
-export const NotificationAttachmentItem = ({ attachment: rawAttachment, channelId, index, compact = false }: NotificationAttachmentItemProps) => {
+export const NotificationAttachmentItem = ({ attachment: rawAttachment, index, compact = false }: NotificationAttachmentItemProps) => {
 	const { t } = useTranslation(['channelTopbar', 'common']);
 	const dispatch = useAppDispatch();
-	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(channelId);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([rawAttachment?.url, rawAttachment?.thumbnail]);
 	const attachment = useMemo<ApiMessageAttachment>(
 		() => ({ ...rawAttachment, url: signCdnUrl(rawAttachment?.url), thumbnail: signCdnUrl(rawAttachment?.thumbnail) }),
 		[rawAttachment, signCdnUrl]
@@ -95,7 +93,7 @@ export const NotificationAttachmentItem = ({ attachment: rawAttachment, channelI
 			initialHeight: 600,
 			minWidth: 600,
 			minHeight: 400,
-			popupId: `pdf-viewer-${attachment?.filename || 'doc'}-${attachment?.url || index}`
+			popupId: `pdf-viewer-${attachment?.filename || 'doc'}-${rawAttachment?.url || index}`
 		}
 	);
 
@@ -128,17 +126,18 @@ export const NotificationAttachmentItem = ({ attachment: rawAttachment, channelI
 		event.stopPropagation();
 		if (isPDF) {
 			openPDFViewer();
-		} else if (isImageOrVideo && attachment?.url) {
+		} else if (isImageOrVideo && rawAttachment?.url) {
+			// The viewer signs the url itself; a signed url stored here would never be re-signed once it expires.
 			dispatch(
 				attachmentActions.setCurrentAttachment({
-					id: attachment.url,
-					url: attachment.url,
+					id: rawAttachment.url,
+					url: rawAttachment.url,
 					filetype: attachment.filetype || '',
 					filename: attachment.filename || '',
 					filesize: String(attachment.size || 0)
 				})
 			);
-			dispatch(attachmentActions.setAttachment(attachment.url));
+			dispatch(attachmentActions.setAttachment(rawAttachment.url));
 			dispatch(attachmentActions.setOpenModalAttachment(true));
 		} else if (attachment?.url) {
 			handleDownload(event);
