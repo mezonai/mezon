@@ -4,7 +4,7 @@ import { ButtonLoading, Icons, Input } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, formatNumber, generateE2eId } from '@mezon/utils';
 import Dropdown from 'rc-dropdown';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -151,59 +151,53 @@ const ModalSendToken = ({
 		return Array.from(userMap.values());
 	};
 
-	const mergedUsers = mergeUniqueUsers(searchCtrlK, friends);
+	const mergedUsers = useMemo(() => mergeUniqueUsers(searchCtrlK, friends), [searchCtrlK, friends]);
 
-	const filteredUsers = mergedUsers.filter((user) =>
-		searchTerm.length === 0
-			? user.id !== userId
-			: (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-					user.search_key?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-					user.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-				user.id !== userId
+	const filteredUsers = useMemo(
+		() =>
+			mergedUsers.filter((user) =>
+				searchTerm.length === 0
+					? user.id !== userId
+					: (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+							user.search_key?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+							user.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+						user.id !== userId
+			),
+		[mergedUsers, searchTerm, userId]
 	);
 
-	const dropdownMenu = (
-		<div className="bg-theme-surface rounded-xl shadow-lg max-h-48 overflow-y-auto thread-scroll text-theme-primary min-w-[400px] w-full relative">
-			<div
-				style={{
-					height: `${filteredUsers.length * 48}px`
-				}}
-			>
+	const dropdownMenu = useMemo(
+		() => (
+			<div className="bg-theme-surface rounded-xl shadow-lg max-h-48 overflow-y-auto thread-scroll text-theme-primary w-full">
 				{filteredUsers.length > 0 ? (
-					filteredUsers.map((user, index) => (
+					filteredUsers.map((user) => (
 						<div
 							key={user.id}
-							className="absolute left-0 w-full h-[48px]"
-							style={{
-								top: index * 48
-							}}
+							onClick={() => handleSelectUser(user.id, user.username)}
+							className="flex items-center gap-3 p-3 bg-item-theme-hover cursor-pointer transition-colors h-12 w-full min-w-0"
+							data-e2e={generateE2eId('send_token.modal.send.select.item')}
 						>
-							<div
-								onClick={() => handleSelectUser(user.id, user.username)}
-								className="flex items-center gap-3 p-3 bg-item-theme-hover cursor-pointer transition-colors h-12"
-								data-e2e={generateE2eId('send_token.modal.send.select.item')}
-							>
-								<AvatarImage
-									alt={user?.username ?? ''}
-									username={user?.username ?? ''}
-									srcImgProxy={createImgproxyUrl(user.avatar_url ?? '', {
-										width: 100,
-										height: 100,
-										resizeType: 'fit'
-									})}
-									src={user.avatar_url}
-									className="w-8 h-8"
-									classNameText="text-xs w-8 h-8"
-								/>
-								<span className="font-medium">{user.username}</span>
-							</div>
+							<AvatarImage
+								alt={user?.username ?? ''}
+								username={user?.username ?? ''}
+								srcImgProxy={createImgproxyUrl(user.avatar_url ?? '', {
+									width: 100,
+									height: 100,
+									resizeType: 'fit'
+								})}
+								src={user.avatar_url}
+								className="w-8 h-8 flex-shrink-0"
+								classNameText="text-xs w-8 h-8"
+							/>
+							<span className="font-medium truncate flex-1 min-w-0">{user.username}</span>
 						</div>
 					))
 				) : (
 					<div className="p-4 text-center">{t('noUsersFound')}</div>
 				)}
 			</div>
-		</div>
+		),
+		[filteredUsers, handleSelectUser, t]
 	);
 
 	useEffect(() => {
@@ -256,13 +250,16 @@ const ModalSendToken = ({
 								placement="bottomLeft"
 								visible={isDropdownOpen}
 								onVisibleChange={(visible) => setIsDropdownOpen(visible)}
+								minOverlayWidthMatchTrigger={true}
+								overlayStyle={{ maxWidth: 'calc(100vw - 32px)' }}
 							>
 								<input
 									type="text"
 									placeholder={t('placeholders.searchUsers')}
-									className="w-full h-12 px-4 pr-10 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all"
+									className="w-full h-12 px-4 pr-10 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all text-base"
 									value={searchTerm}
 									onClick={() => setIsDropdownOpen(true)}
+									onFocus={() => setIsDropdownOpen(true)}
 									onChange={handleChangeSearchTerm}
 									disabled={sendTokenInputsState.isUserSelectionDisabled}
 									autoFocus={!searchTerm}
@@ -280,7 +277,7 @@ const ModalSendToken = ({
 								ref={amountRef}
 								type="text"
 								value={tokenNumber}
-								className="w-full h-12 px-4 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all pr-20"
+								className="w-full h-12 px-4 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all pr-20 text-base"
 								placeholder={t('placeholders.amountPlaceholder')}
 								onChange={handleChangeSendToken}
 								disabled={sendTokenInputsState.isSendTokenInputDisabled}
@@ -299,7 +296,7 @@ const ModalSendToken = ({
 						<Input
 							type="text"
 							defaultValue={noteSendToken}
-							className="w-full h-12 px-4 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all pr-10"
+							className="w-full h-12 px-4 bg-input-theme border-theme-primary rounded-xl outline-none focus:ring-2 transition-all pr-10 text-base"
 							placeholder={t('placeholders.notePlaceholder')}
 							onChange={handleChangeNote}
 							data-e2e={generateE2eId('send_token.modal.send.input.note')}
