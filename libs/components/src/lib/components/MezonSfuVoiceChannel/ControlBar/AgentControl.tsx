@@ -3,12 +3,20 @@ import { handleAddAgentToVoice, handleKichAgentFromVoice, selectVoiceInfo, useAp
 import { Icons } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 const activeAgentChannels = new Set<string>();
 
-export const SfuAgentControl = memo(({ isExternalCalling, roomId }: { isExternalCalling?: boolean; roomId?: string }) => {
+interface SfuAgentControlProps {
+	isExternalCalling?: boolean;
+	roomId?: string;
+	showHint?: boolean;
+	onDismissHint?: () => void;
+}
+
+export const SfuAgentControl = memo(({ isExternalCalling, roomId, showHint = false, onDismissHint }: SfuAgentControlProps) => {
 	const [hasChannelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const dispatch = useAppDispatch();
@@ -40,18 +48,51 @@ export const SfuAgentControl = memo(({ isExternalCalling, roomId }: { isExternal
 	if (!hasChannelPermission && !isExternalCalling) return null;
 
 	return (
-		<button
-			type="button"
-			disabled={loading}
-			onClick={() => void handleToggle()}
-			aria-label={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
-			title={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
-			className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500 hover:!bg-blue-600' : ''} ${loading ? 'cursor-default' : ''}`}
-		>
-			{loading ? <Icons.LoadingSpinner /> : <AgentIcon />}
-		</button>
+		<div className="relative">
+			<button
+				type="button"
+				disabled={loading}
+				onClick={() => void handleToggle()}
+				aria-label={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
+				title={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
+				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500 hover:!bg-blue-600' : ''} ${loading ? 'cursor-default' : ''}`}
+			>
+				{loading ? <Icons.LoadingSpinner /> : <AgentIcon />}
+			</button>
+			{showHint && !active && !loading && <AgentHint onDismiss={onDismissHint} />}
+		</div>
 	);
 });
+
+const AgentHint = ({ onDismiss }: { onDismiss?: () => void }) => {
+	const { t } = useTranslation('channelVoice');
+
+	return (
+		<div className="pointer-events-none absolute bottom-full left-[-16px] z-30 mb-[7px] w-80 max-md:hidden">
+			<div className="pointer-events-auto relative rounded-lg border border-white/10 bg-zinc-800 p-4 text-left shadow-xl">
+				<div className="flex items-center gap-2">
+					<span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center [&>svg]:h-[18px] [&>svg]:w-[18px]">
+						<AgentIcon />
+					</span>
+					<span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">{t('agentHint.title')}</span>
+					<button
+						type="button"
+						aria-label={t('mediaPermission.close')}
+						className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
+						onClick={onDismiss}
+					>
+						<Icons.Close className="h-4 w-4" />
+					</button>
+				</div>
+				<p className="mt-2 text-xs text-white/70">{t('agentHint.body')}</p>
+				<span
+					aria-hidden="true"
+					className="absolute -bottom-[5px] left-[40px] h-2 w-2 rotate-45 border-b border-r border-white/10 bg-zinc-800"
+				/>
+			</div>
+		</div>
+	);
+};
 
 const AgentIcon = () => (
 	<svg

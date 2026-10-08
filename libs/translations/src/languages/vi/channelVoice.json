@@ -172,5 +172,9 @@
 		"holdSpace": "Giữ phím Space để nói",
 		"holdingSpace": "Đang nói — thả Space để tắt mic",
 		"hintBody": "Bạn đang tham gia để nghe. Giữ phím Space để mở mic khi nói, thả ra để tắt lại."
+	},
+	"agentHint": {
+		"title": "Bật KOMU Agent",
+		"body": "Bấm vào biểu tượng KOMU Agent để thêm AI agent vào cuộc gọi này."
 	}
 }

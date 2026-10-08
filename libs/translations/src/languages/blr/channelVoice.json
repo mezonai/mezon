@@ -148,5 +148,9 @@
 		"savedToDisk": "Запіс захаваны ў {{fileName}} ({{size}})",
 		"downloaded": "Запіс спампаваны: {{fileName}} ({{size}})",
 		"failed": "Не ўдалося запісаць: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Уключыце KOMU Agent",
+		"body": "Націсніце на значок KOMU Agent, каб дадаць ШІ-агента ў гэты званок."
 	}
 }

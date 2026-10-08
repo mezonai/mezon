@@ -148,5 +148,9 @@
 		"savedToDisk": "Enregistrement sauvegardé dans {{fileName}} ({{size}})",
 		"downloaded": "Enregistrement téléchargé : {{fileName}} ({{size}})",
 		"failed": "Échec de l'enregistrement : {{reason}}"
+	},
+	"agentHint": {
+		"title": "Activer KOMU Agent",
+		"body": "Cliquez sur l’icône KOMU Agent pour ajouter l’agent IA à cet appel."
 	}
 }

@@ -148,5 +148,9 @@
 		"savedToDisk": "Nagranie zapisano w {{fileName}} ({{size}})",
 		"downloaded": "Nagranie pobrano: {{fileName}} ({{size}})",
 		"failed": "Nagrywanie nie powiodło się: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Włącz KOMU Agent",
+		"body": "Kliknij ikonę KOMU Agent, aby dodać agenta AI do tego połączenia."
 	}
 }

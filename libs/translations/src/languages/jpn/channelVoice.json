@@ -148,5 +148,9 @@
 		"savedToDisk": "録画を {{fileName}} に保存しました（{{size}}）",
 		"downloaded": "録画をダウンロードしました: {{fileName}}（{{size}}）",
 		"failed": "録画に失敗しました: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent をオンにする",
+		"body": "KOMU Agent のアイコンをクリックすると、この通話に AI エージェントを追加できます。"
 	}
 }

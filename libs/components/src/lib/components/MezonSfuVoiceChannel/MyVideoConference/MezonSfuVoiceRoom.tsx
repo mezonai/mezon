@@ -621,6 +621,10 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		setPushToTalkHintDismissed(false);
 	}, [roomId, joinRole]);
+	const [agentHintDismissed, setAgentHintDismissed] = useState(false);
+	useEffect(() => {
+		setAgentHintDismissed(false);
+	}, [roomId]);
 	const holdToTalkRef = useRef(false);
 	const microphoneEnabledRef = useRef(microphoneEnabled);
 	microphoneEnabledRef.current = microphoneEnabled;
@@ -3039,6 +3043,8 @@ export function MezonSfuVoiceRoom({
 					onPushToTalk={(active) => void setPushToTalk(active)}
 					pushToTalkHintDismissed={pushToTalkHintDismissed}
 					onDismissPushToTalkHint={() => setPushToTalkHintDismissed(true)}
+					agentHintDismissed={agentHintDismissed}
+					onDismissAgentHint={() => setAgentHintDismissed(true)}
 					weakNetwork={connectionState === 'connected' && weakNetwork}
 					onMicrophoneToggle={() => {
 						holdToTalkRef.current = false;

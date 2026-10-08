@@ -148,5 +148,9 @@
 		"savedToDisk": "Registrazione salvata in {{fileName}} ({{size}})",
 		"downloaded": "Registrazione scaricata: {{fileName}} ({{size}})",
 		"failed": "Registrazione non riuscita: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Attiva KOMU Agent",
+		"body": "Fai clic sull'icona KOMU Agent per aggiungere l'agente IA a questa chiamata."
 	}
 }
