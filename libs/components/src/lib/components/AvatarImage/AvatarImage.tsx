@@ -27,7 +27,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 		setIsError(true);
 	};
 
-	if (isAnonymous)
+	if (isAnonymous && !src)
 		return (
 			<div
 				className={`flex items-center justify-center size-10 rounded-full bg-white ${computedClassName}`}
