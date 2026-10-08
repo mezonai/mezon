@@ -37,13 +37,14 @@ export const SfuAgentControl = memo(({ isExternalCalling, roomId, showHint = fal
 		try {
 			await dispatch(active ? handleKichAgentFromVoice(payload) : handleAddAgentToVoice(payload)).unwrap();
 			active ? activeAgentChannels.delete(channelId) : activeAgentChannels.add(channelId);
+			if (!active) onDismissHint?.();
 			setActive(!active);
 		} catch {
 			return;
 		} finally {
 			setLoading(false);
 		}
-	}, [active, dispatch, isExternalCalling, loading, roomId, voiceInfo?.channelId]);
+	}, [active, dispatch, isExternalCalling, loading, onDismissHint, roomId, voiceInfo?.channelId]);
 
 	if (!hasChannelPermission && !isExternalCalling) return null;
 
