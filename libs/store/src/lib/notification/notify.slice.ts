@@ -245,6 +245,9 @@ export const notificationSlice = createSlice({
 			.addCase(
 				fetchListNotification.fulfilled,
 				(state: NotificationState, action: PayloadAction<{ data: INotification[]; category: NotificationCategory; fromCache?: boolean }>) => {
+					if (action.payload.fromCache) {
+						return;
+					}
 					if (action.payload && Array.isArray(action.payload.data) && action.payload.data.length > 0) {
 						notificationAdapter.setMany(state, action.payload.data);
 
