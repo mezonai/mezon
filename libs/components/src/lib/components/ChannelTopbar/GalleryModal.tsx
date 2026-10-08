@@ -11,12 +11,13 @@ import {
 	useInteractions,
 	useRole
 } from '@floating-ui/react';
-import { useEscapeKeyClose } from '@mezon/core';
+import { useCdnUrlSigner, useEscapeKeyClose } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import {
 	attachmentActions,
 	galleryActions,
 	getStore,
+	mapChannelAttachmentsToEntity,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectCurrentDM,
@@ -35,6 +36,7 @@ import {
 	LoadMoreDirection,
 	convertDateStringI18n,
 	createImgproxyUrl,
+	generateAttachmentId,
 	generateE2eId,
 	isAttachmentPresignPendingForMessage,
 	shouldHidePresignAttachment
@@ -136,13 +138,17 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		return listAttach;
 	}, [attachments, mediaFilter, startDate, endDate]);
 
+	const rangeUrls = useMemo(() => rangeAttachments.map((att) => att.url), [rangeAttachments]);
+	const { isSignatureDenied } = useCdnUrlSigner(rangeUrls);
+
 	const filteredAttachments = useMemo(
 		() =>
 			rangeAttachments.filter((att) => {
+				if (isSignatureDenied(att.url)) return false;
 				const sourceMessage = att.message_id ? messageEntities?.[att.message_id] : undefined;
 				return !shouldHidePresignAttachment(att.url, sourceMessage);
 			}),
-		[rangeAttachments, messageEntities]
+		[rangeAttachments, messageEntities, isSignatureDenied]
 	);
 
 	const { refs, floatingStyles, context } = useFloating({
@@ -475,7 +481,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(
 				attachmentActions.setCurrentAttachment({
 					...enhancedAttachmentData,
-					id: enhancedAttachmentData.message_id as string,
+					id: generateAttachmentId(enhancedAttachmentData, enhancedAttachmentData.message_id as string),
 					uploader: enhancedAttachmentData.uploader,
 					create_time: enhancedAttachmentData.create_time
 				})
@@ -486,34 +492,28 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 			if ((currentClanId && currentChannelId) || currentDmGroupId) {
 				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
-				const messageTimestamp = enhancedAttachmentData.create_time
-					? Math.floor(new Date(enhancedAttachmentData.create_time).getTime() / 1000)
-					: undefined;
-				const beforeTimestamp = messageTimestamp ? messageTimestamp + 1 : undefined;
-
 				dispatch(
-					attachmentActions.fetchChannelAttachments({
-						clanId,
+					attachmentActions.setChannelAttachments({
 						channelId,
-						state: undefined,
-						limit: 50,
-						before: beforeTimestamp
+						attachments: filteredAttachments.map((att) => mapChannelAttachmentsToEntity(att, channelId, clanId)),
+						hasMoreBefore: paginationState.hasMoreBefore,
+						hasMoreAfter: false
 					})
 				);
 			}
 		},
-		[dispatch]
+		[dispatch, filteredAttachments, paginationState.hasMoreBefore]
 	);
 
 	return (
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className="absolute top-8 right-0 rounded-md dark:shadow-shadowBorder shadow-shadowInbox z-[9999] origin-top-right"
+			className="absolute max-sm:fixed top-8 max-sm:top-14 max-sm:w-full right-0 rounded-md dark:shadow-shadowBorder shadow-shadowInbox z-[9999] origin-top-right"
 			data-e2e={generateE2eId('clan_page.modal.gallery')}
 		>
-			<div className="flex bg-theme-setting-primary flex-col rounded-md min-h-[400px] md:w-[480px] max-h-[80vh] lg:w-[540px] shadow-sm overflow-hidden">
-				<div className="bg-theme-setting-nav flex flex-col p-[16px]">
+			<div className="flex bg-theme-setting-primary flex-col rounded-md min-h-[400px] w-[480px] max-sm:h-[calc(100dvh-3.5rem)] max-sm:min-h-0 max-sm:max-h-[calc(100dvh-3.5rem)] max-sm:w-full sm:max-h-[80vh] lg:w-[540px] shadow-sm overflow-hidden">
+				<div className="bg-theme-setting-nav flex flex-col p-[16px] shrink-0">
 					<div className="flex flex-row items-center justify-between mb-3">
 						<div className="flex flex-row items-center gap-4">
 							<Icons.ImageThumbnail />
@@ -575,7 +575,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 													</label>
 													<Suspense fallback={<DatePickerPlaceholder />}>
 														<DatePickerWrapper
-															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none ${
+															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none dark:[color-scheme:dark] ${
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
@@ -594,7 +594,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 													</label>
 													<Suspense fallback={<DatePickerPlaceholder />}>
 														<DatePickerWrapper
-															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none ${
+															className={`w-full bg-theme-surface border rounded px-3 py-2 text-sm text-theme-primary outline-none dark:[color-scheme:dark] ${
 																dateValidationError ? 'border-red-500' : 'border-theme-primary'
 															}`}
 															wrapperClassName="w-full"
@@ -642,7 +642,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-4 py-4 px-[16px] min-h-full flex-1 overflow-hidden">
+				<div className="flex flex-col gap-4 py-4 px-[16px] min-h-0 flex-1 overflow-hidden">
 					{virtualData.length === 0 ? (
 						<div className="flex flex-col items-center justify-center h-64 text-center">
 							<Icons.ImageThumbnail className="w-12 h-12 text-theme-secondary opacity-50 mb-4" />
@@ -697,11 +697,12 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		attachment.message_id && channelId ? selectMessageByMessageId(state, channelId, attachment.message_id) : undefined
 	);
 	const isPresignPending = isAttachmentPresignPendingForMessage(attachment.url, sourceMessage);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachment.url]);
 
 	const cacheKey = attachment.id || attachment.message_id || `${dateKey}-${attachment.url}-${attachmentIndex}`;
 	const isVideo = attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
 
-	if (isPresignPending) {
+	if (isPresignPending || isAwaitingSignature(attachment.url)) {
 		return <div key={cacheKey} className="aspect-square rounded-lg bg-bgLightSecondary dark:bg-bgSecondary" />;
 	}
 
@@ -709,7 +710,11 @@ const GalleryAttachmentTile = React.memo(({ attachment, channelId, dateKey, atta
 		<ImageWithLoading
 			key={cacheKey}
 			cacheKey={cacheKey}
-			src={isVideo ? attachment.url || '' : createImgproxyUrl(attachment.url || '', { width: 120, height: 120, resizeType: 'fill' })}
+			src={
+				isVideo
+					? signCdnUrl(attachment.url || '')
+					: createImgproxyUrl(signCdnUrl(attachment.url || ''), { width: 120, height: 120, resizeType: 'fill' })
+			}
 			alt={attachment.filename || 'Media'}
 			onClick={() => onClick(attachment)}
 			isVideo={isVideo}

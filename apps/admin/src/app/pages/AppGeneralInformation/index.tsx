@@ -39,7 +39,8 @@ const GeneralInformation = () => {
 					size: file.size,
 					width: 0,
 					height: 0,
-					part_count: 1
+					part_count: 1,
+					channel_id: ''
 				})
 			).unwrap();
 

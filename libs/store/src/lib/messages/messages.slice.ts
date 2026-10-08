@@ -418,7 +418,7 @@ export const fetchMessages = createAsyncThunk(
 				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
 			}
 			const lastMessageId = selectLastMessageIdByChannelId(state, chlId);
-			const requestMessageId = toPresent ? '0' : messageId || lastMessageId || '0';
+			const requestMessageId = toPresent ? '0' : messageId || '0';
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
@@ -553,13 +553,22 @@ export const fetchMessages = createAsyncThunk(
 				);
 			}
 
+			// More messages arrived than one page holds: start over from the latest page instead of leaving a gap.
+			const latestPageSkipsCache =
+				!messageId &&
+				!toPresent &&
+				!!lastMessageId &&
+				!state.messages.isViewingOlderMessagesByChannelId[chlId] &&
+				messages.length > 0 &&
+				messages.every((message) => isOlderMessageId(lastMessageId, message.id));
+
 			return {
 				messages,
 				isFetchingLatestMessages,
 				isClearMessage,
 				viewingOlder,
 				foundE2ee,
-				toPresent
+				toPresent: toPresent || latestPageSkipsCache
 			};
 		} catch (error) {
 			captureSentryError(error, 'messages/fetchMessages');
@@ -1488,7 +1497,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				const client = mezon.clientRef.current;
 				const session = mezon.sessionRef.current;
 				if (!client || !session) throw new Error('Client is not initialized');
-				attachments = await generatePathAttachments(client, session, attachments);
+				attachments = await generatePathAttachments(client, session, attachments, channelId);
 				attachmentsMessage = attachments.map(({ filename, filetype, size, duration, url, thumbnail, height, width }) => ({
 					filename,
 					filetype,
@@ -2583,7 +2592,11 @@ export const messagesSlice = createSlice({
 									const ts = entities[id]?.create_time_seconds;
 									timestamps.set(id, ts ? +ts : 0);
 								}
-								newViewportIds = combinedViewport.sort((a, b) => (timestamps.get(a) || 0) - (timestamps.get(b) || 0));
+								newViewportIds = combinedViewport.sort(
+									(a, b) =>
+										(timestamps.get(a) || 0) - (timestamps.get(b) || 0) ||
+										(isOlderMessageId(a, b) ? -1 : isOlderMessageId(b, a) ? 1 : 0)
+								);
 							} else {
 								newViewportIds = messageIds;
 							}

@@ -73,7 +73,14 @@ function isRemoteUrl(url: string): boolean {
 	return url.startsWith('http://') || url.startsWith('https://');
 }
 
-async function uploadThumbnailBlob(client: Client, session: ApiSession, blob: Blob, index?: number, isOauth?: boolean): Promise<string | undefined> {
+async function uploadThumbnailBlob(
+	client: Client,
+	session: ApiSession,
+	blob: Blob,
+	index?: number,
+	isOauth?: boolean,
+	channelId?: string
+): Promise<string | undefined> {
 	try {
 		const type = blob.type || 'image/jpeg';
 		const ext = type.includes('png') ? 'png' : 'jpg';
@@ -90,7 +97,8 @@ async function uploadThumbnailBlob(client: Client, session: ApiSession, blob: Bl
 			undefined,
 			undefined,
 			undefined,
-			isOauth
+			isOauth,
+			channelId
 		);
 		return result.url;
 	} catch {
@@ -103,12 +111,13 @@ async function uploadBlobThumbnail(
 	session: ApiSession,
 	blobUrl: string,
 	index?: number,
-	isOauth?: boolean
+	isOauth?: boolean,
+	channelId?: string
 ): Promise<string | undefined> {
 	try {
 		const response = await fetch(blobUrl);
 		const blob = await response.blob();
-		return uploadThumbnailBlob(client, session, blob, index, isOauth);
+		return uploadThumbnailBlob(client, session, blob, index, isOauth, channelId);
 	} catch {
 		return undefined;
 	}
@@ -120,13 +129,14 @@ async function resolveThumbnailForUpload(
 	file: CustomFile,
 	isVideo: boolean,
 	index?: number,
-	isOauth?: boolean
+	isOauth?: boolean,
+	channelId?: string
 ): Promise<string | undefined> {
 	if (!isVideo) {
 		return file.thumbnail;
 	}
 	if (file.thumbnailBlob) {
-		return uploadThumbnailBlob(client, session, file.thumbnailBlob, index, isOauth);
+		return uploadThumbnailBlob(client, session, file.thumbnailBlob, index, isOauth, channelId);
 	}
 	const thumbnail = file.thumbnail;
 	if (!thumbnail) {
@@ -136,7 +146,7 @@ async function resolveThumbnailForUpload(
 		return thumbnail;
 	}
 	if (thumbnail.startsWith('blob:')) {
-		return uploadBlobThumbnail(client, session, thumbnail, index, isOauth);
+		return uploadBlobThumbnail(client, session, thumbnail, index, isOauth, channelId);
 	}
 	return thumbnail;
 }
@@ -205,7 +215,8 @@ export async function handleUploadFile(
 	filename: string,
 	file: CustomFile,
 	index?: number,
-	isOauth?: boolean
+	isOauth?: boolean,
+	channelId?: string
 ): Promise<ApiMessageAttachment> {
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
@@ -221,7 +232,7 @@ export async function handleUploadFile(
 			const isVideo = fileType.startsWith('video/');
 
 			if (isVideo) {
-				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, isOauth);
+				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, isOauth, channelId);
 
 				if (file.size > MULTIPART_MIN_FILE_SIZE) {
 					const start = await client.multipartUploadAttachmentFile(session, {
@@ -230,7 +241,8 @@ export async function handleUploadFile(
 						height: file.height,
 						size: file.size,
 						width: file.width,
-						part_count: multipartPartCount(file.size)
+						part_count: multipartPartCount(file.size),
+						channel_id: channelId
 					});
 				}
 
@@ -246,7 +258,8 @@ export async function handleUploadFile(
 					file.width,
 					file.height,
 					undefined,
-					isOauth
+					isOauth,
+					channelId
 				);
 				const [thumbnail, videoResult] = await Promise.all([thumbPromise, videoPromise]);
 				resolve({ ...videoResult, thumbnail: thumbnail ?? videoResult.thumbnail });
@@ -260,7 +273,8 @@ export async function handleUploadFile(
 					height: file.height,
 					size: file.size,
 					width: file.width,
-					part_count: multipartPartCount(file.size)
+					part_count: multipartPartCount(file.size),
+					channel_id: channelId
 				});
 
 				const updaloadMultipeFile = await uploadMultipart({
@@ -297,7 +311,8 @@ export async function handleUploadFile(
 					file.width,
 					file.height,
 					file.thumbnail,
-					isOauth
+					isOauth,
+					channelId
 				)
 			);
 		} catch (error) {
@@ -349,7 +364,8 @@ export async function uploadFile(
 	width?: number,
 	height?: number,
 	thumbnail?: string,
-	isOauth?: boolean
+	isOauth?: boolean,
+	channelId?: string
 ): Promise<ApiMessageAttachment> {
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
@@ -363,7 +379,8 @@ export async function uploadFile(
 				filetype: type,
 				size,
 				width,
-				height
+				height,
+				channel_id: channelId
 			});
 			if (!data?.url) {
 				reject(new Error('Failed to upload file. URL not available.'));

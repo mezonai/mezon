@@ -33,6 +33,7 @@ import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
 import { badgeService } from './badge/badgeService';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
+import { CDN_SIGNATURE_FEATURE_KEY, cdnSignatureReducer } from './cdnSignature/cdnSignature.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
@@ -517,7 +518,8 @@ const reducer = {
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
 	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
 	[DEVICES_FEATURE_KEY]: devicesReducer,
-	[POLLS_FEATURE_KEY]: persistedPollsReducer
+	[POLLS_FEATURE_KEY]: persistedPollsReducer,
+	[CDN_SIGNATURE_FEATURE_KEY]: cdnSignatureReducer
 };
 
 let storeInstance = configureStore({

@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react';
+import type { DetailedHTMLProps, ImgHTMLAttributes, MouseEventHandler } from 'react';
 import { memo, useState } from 'react';
 
 export type AvatarImageProp = {
@@ -63,7 +63,8 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 		const colorClass = getAvatarColor(username);
 		return (
 			<div
-				className={`size-10 ${colorClass}  rounded-full flex justify-center items-center text-white text-[16px] ${className} ${classNameText}`}
+				className={`size-10 ${colorClass}  rounded-full flex justify-center items-center text-white text-[16px] ${rest.onClick ? 'cursor-pointer' : ''} ${className} ${classNameText}`}
+				onClick={rest.onClick as MouseEventHandler<HTMLElement>}
 				data-e2e={generateE2eId('avatar.image')}
 			>
 				{avatarChar}

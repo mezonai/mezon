@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { buildChannelAppLaunchUrl } from '@mezon/utils';
+import { buildChannelAppLaunchUrl, generateE2eId } from '@mezon/utils';
 import type { VoiceInteractiveEvent } from 'mezon-js';
 import { useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -134,6 +134,7 @@ export const SfuVoiceInteractiveMenu = ({ channelId, onClose }: SfuVoiceInteract
 				return (
 					<div
 						key={app.eventType}
+						data-e2e={generateE2eId('clan_page.screen.voice_room.interactive_apps.item', app.name.toLowerCase())}
 						className={`relative flex justify-between gap-4 p-2 h-9 content-center text-sm rounded-lg hover:bg-zinc-700 hover:cursor-pointer ${isActive && 'border-green-400 border text-green-400 before:absolute before:top-0 before:right-0 before:rounded-lg before:h-full before:w-full before:bg-green-400/10 before:content-[""]'}`}
 						onClick={() => handleOpenApp(app)}
 					>

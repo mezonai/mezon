@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import {
 	useAppParams,
 	useAuth,
+	useCdnUrlSigner,
 	useChatReaction,
 	useChatSending,
 	useDirect,
@@ -658,6 +659,8 @@ function MessageContextMenu({
 		}
 		return '';
 	}, [imageSrc, message?.content?.embed]);
+	// `urlImage` stays unsigned so a copied link does not expire with its signature; open, copy image and save sign it on use.
+	const { signCdnUrl } = useCdnUrlSigner([urlImage]);
 
 	useMemo(() => {
 		if (isClickedEmoji) {
@@ -963,7 +966,8 @@ function MessageContextMenu({
 		builder.when(enableOpenLinkItem, (builder) => {
 			builder.addMenuItem('openLink', t('openLink'), async () => {
 				try {
-					const contentToOpen = isLinkContent && linkContent ? linkContent : checkElementIsImage ? urlImage : (message?.content?.t ?? '');
+					const contentToOpen =
+						isLinkContent && linkContent ? linkContent : checkElementIsImage ? signCdnUrl(urlImage) : (message?.content?.t ?? '');
 					await handleOpenLink(contentToOpen);
 				} catch (error) {
 					console.error(t('errors.failedToCopyImage'), error);
@@ -984,7 +988,7 @@ function MessageContextMenu({
 		builder.when(enableCopyImageItem, (builder) => {
 			builder.addMenuItem('copyImage', t('copyImage'), async () => {
 				try {
-					const success = await handleCopyImage(urlImage, () => {
+					const success = await handleCopyImage(signCdnUrl(urlImage), () => {
 						showSimpleToast(t('imageCopiedToClipboard'));
 					});
 					if (!success) {
@@ -1000,7 +1004,7 @@ function MessageContextMenu({
 		builder.when(enableSaveImageItem, (builder) => {
 			builder.addMenuItem('saveImage', t('saveImage'), async () => {
 				try {
-					handleSaveImage(urlImage);
+					handleSaveImage(signCdnUrl(urlImage));
 				} catch (error) {
 					console.error(t('errors.failedToSaveImage'), error);
 				}
@@ -1037,6 +1041,7 @@ function MessageContextMenu({
 		handleForwardMessage,
 		handleForwardAllMessage,
 		urlImage,
+		signCdnUrl,
 		handleItemClick,
 		handleCreateTopic,
 		handleAddToNote,

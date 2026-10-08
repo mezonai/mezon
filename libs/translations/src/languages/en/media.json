@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Uploading..."
+		"uploading": "Uploading...",
+		"fromPrivateChannel": "Media from private channel"
 	}
 }

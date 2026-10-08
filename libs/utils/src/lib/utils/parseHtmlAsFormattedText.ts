@@ -1,8 +1,8 @@
 /* eslint-disable no-useless-escape */
 import { isYouTubeLink } from '.';
-import { sanitizeMessageHtml } from './sanitizeHtml';
 import type { IMarkdownOnMessage, MentionItem } from '../types';
 import { EBacktickType, ETypeMEntion } from '../types';
+import { sanitizeMessageHtml } from './sanitizeHtml';
 
 function escapeHtmlText(value: string): string {
 	return value.replace(/[&<>"']/g, (ch) => {
@@ -183,7 +183,7 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(/<br([^>]*)?>/g, '\n');
 
 	// Strip redundant <div> tags
-	parsedHtml = parsedHtml.replace(/<\/div>(\s*)<div>/g, '\n');
+	parsedHtml = parsedHtml.replace(/<\/div>[^\S\r\n]*<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<div>/g, '\n');
 	parsedHtml = parsedHtml.replace(/<\/div>/g, '');
 
@@ -205,8 +205,8 @@ function parseMarkdown(html: string) {
 }
 
 const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
-const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
-const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
+const localhostDomainRE = /^localhost[:?\d]*(?:[^:?\d]\S*)?$/;
+const nonLocalhostDomainRE = /^[^\s.]+\.\S{2,}$/;
 
 function isUrl(string: string): boolean {
 	if (typeof string !== 'string') {
