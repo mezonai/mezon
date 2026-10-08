@@ -89,13 +89,19 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 
 		switch (currentTabNotify) {
 			case InboxType.INDIVIDUAL:
-				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
+				if (!allNotificationForYou) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.FOR_YOU }));
+				}
 				break;
 			case InboxType.MESSAGES:
-				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
+				if (!allNotificationClan) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MESSAGES }));
+				}
 				break;
 			case InboxType.MENTIONS:
-				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+				if (!allNotificationMentions) {
+					dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
+				}
 				break;
 			case InboxType.TOPICS:
 				if (!hasFetchedTopics) {
@@ -103,7 +109,15 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				}
 				break;
 		}
-	}, [currentTabNotify, currentClanId, hasFetchedTopics, dispatch]);
+	}, [
+		allNotificationForYou?.data,
+		allNotificationMentions?.data,
+		allNotificationClan?.data,
+		currentTabNotify,
+		currentClanId,
+		hasFetchedTopics,
+		dispatch
+	]);
 
 	const getAllNotificationForYou = useMemo(() => {
 		if (!allNotificationForYou?.data?.length) {
