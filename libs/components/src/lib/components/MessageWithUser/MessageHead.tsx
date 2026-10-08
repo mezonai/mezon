@@ -1,5 +1,6 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeStringI18n, convertUnixSecondsToTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -48,6 +49,7 @@ const BaseMessageHead = ({
 	);
 
 	const priorityName = message.display_name ? message.display_name : message.username;
+	const isAnonymous = message.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
 	return (
 		<>
@@ -65,11 +67,19 @@ const BaseMessageHead = ({
 				data-e2e={generateE2eId('base_profile.display_name')}
 			>
 				{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? nameShowed : priorityName}
-				{userRolesClan?.highestPermissionRoleIcon &&
-					mode !== ChannelStreamMode.STREAM_MODE_DM &&
-					mode !== ChannelStreamMode.STREAM_MODE_GROUP && (
-						<img loading="lazy" src={userRolesClan.highestPermissionRoleIcon} alt="" className="'w-5 h-5 ml-1" />
-					)}
+				{isAnonymous ? (
+					<div className="rounded-full flex items-center justify-center ml-1">
+						<Icons.HatIcon className="w-4 h-4" />
+					</div>
+				) : (
+					<>
+						{userRolesClan?.highestPermissionRoleIcon &&
+							mode !== ChannelStreamMode.STREAM_MODE_DM &&
+							mode !== ChannelStreamMode.STREAM_MODE_GROUP && (
+								<img loading="lazy" src={userRolesClan.highestPermissionRoleIcon} alt="" className="'w-5 h-5 ml-1" />
+							)}
+					</>
+				)}
 			</div>
 			<div className="pl-1 pt-[5px] text-theme-primary text-[12px] font-medium">{messageTime}</div>
 		</>
