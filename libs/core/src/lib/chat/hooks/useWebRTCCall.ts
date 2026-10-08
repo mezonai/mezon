@@ -657,8 +657,20 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		}
 	};
 
-	const cancelCallFCMMobile = async (isConnected = false, peerId = dmUserId, callChannelId = channelId) => {
-		const bodyFCMMobile = { offer: 'CANCEL_CALL', isConnected, sentAt: String(Date.now()) };
+	const cancelCallFCMMobile = async (
+		isConnected = false,
+		peerId = dmUserId,
+		callChannelId = channelId,
+		callSessionId = getSdpSessionId(peerConnection.current?.localDescription?.sdp)
+	) => {
+		const bodyFCMMobile = {
+			offer: 'CANCEL_CALL',
+			isConnected,
+			callerId: userId,
+			channelId: callChannelId,
+			callSessionId,
+			sentAt: String(Date.now())
+		};
 		if (mezon.sessionRef.current) {
 			await mezon.clientRef.current?.makeCallPush(mezon.sessionRef.current, peerId, JSON.stringify(bodyFCMMobile), callChannelId, userId);
 		}
@@ -667,6 +679,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	const handleEndCall = async (isCallerEndCall = false) => {
 		const callPeerId = callTargetRef.current?.dmUserId || dmUserId;
 		const callChannelId = callTargetRef.current?.channelId || channelId;
+		const callSessionId = getSdpSessionId(peerConnection.current?.localDescription?.sdp);
+		const wasMyCaller = isMyCaller.current;
 		try {
 			if (!isCallerEndCall && mezon.sessionRef.current) {
 				await mezon.clientRef.current?.forwardWebrtcSignaling(
@@ -727,7 +741,6 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			callTargetRef.current = null;
 			pendingCandidatesRef.current = [];
 			remoteIceCandidatesRef.current = [];
-			const wasMyCaller = isMyCaller.current;
 			isMyCaller.current = false;
 			if (timeStartConnected?.current && wasMyCaller) {
 				let timeCall = '';
@@ -751,10 +764,22 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 						}
 					})
 				);
-			} else if (wasMyCaller) {
-				await cancelCallFCMMobile(false, callPeerId, callChannelId);
 			}
 			timeStartConnected.current = null;
+			if (wasMyCaller) {
+				const relay = async () => {
+					if (!mezon.sessionRef.current) return;
+					await mezon.clientRef.current?.forwardWebrtcSignaling(
+						mezon.sessionRef.current,
+						callPeerId,
+						50,
+						JSON.stringify({ callSessionId, sentAt: String(Date.now()) }),
+						callChannelId,
+						userId
+					);
+				};
+				await Promise.allSettled([relay(), cancelCallFCMMobile(false, callPeerId, callChannelId, callSessionId)]);
+			}
 		} catch (error) {
 			console.error('Error ending call:', error);
 		}
