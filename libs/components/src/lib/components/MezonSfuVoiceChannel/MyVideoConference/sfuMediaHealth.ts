@@ -42,7 +42,6 @@ export class SfuNetworkQuality {
 		this.streams = streams;
 		const ratios = [received, sent].filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS).map(({ expected, lost }) => lost / expected);
 		if (!ratios.length) {
-			// Silence or a new stream is not evidence that the network recovered.
 			this.badSamples = 0;
 			this.cleanSamples = 0;
 			return this.weak;

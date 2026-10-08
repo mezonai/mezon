@@ -72,14 +72,9 @@ export class MezonNsAudioPipeline {
 		this.track.enabled = false;
 	}
 
-	// A live destination track can outlive a suspended/interrupted audio graph on iOS.
-	// Resume the graph without changing capture, output gating, or denoising readiness.
 	private readonly resumeAfterInterruption = (): void => {
 		if (!this.lifecycleActive || this.disposed || this.failed || document.visibilityState !== 'visible') return;
 		if (this.context.state === 'running' || this.context.state === 'closed') return;
-		// Call synchronously so an unmute gesture can also satisfy browser autoplay rules.
-		// Do not cache a pending resume: a later gesture must be allowed to retry it.
-		// A blocked resume is retried on the next foreground or microphone action.
 		void this.context.resume().catch(() => undefined);
 	};
 
@@ -112,8 +107,6 @@ export class MezonNsAudioPipeline {
 		this.pendingMode = null;
 	}
 
-	// The analysis clone is never published. It can hear the microphone while
-	// the output waits for noise suppression to finish applying.
 	setPreparationEnabled(enabled: boolean): void {
 		this.preparingWhileMuted = enabled;
 		this.syncCaptureEnabled();
