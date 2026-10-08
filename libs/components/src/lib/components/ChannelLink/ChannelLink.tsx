@@ -315,7 +315,6 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 								: channel?.channel_label}
 						</p>
 					</span>
-					{buzzState?.isReset ? <BuzzBadge mode={ChannelStreamMode.STREAM_MODE_CHANNEL} /> : null}
 				</Link>
 			}
 
@@ -326,7 +325,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 				/>
 			)}
 
-			<ChannelBadge channelId={channel.id} />
+			<ChannelBadge channelId={channel.id} buzzState={buzzState?.isReset} />
 		</div>
 	);
 };
@@ -370,16 +369,16 @@ const ModalConfirmComponent: React.FC<ModalConfirmComponentProps> = ({ handleCan
 	);
 };
 
-const ChannelBadge = memo(({ channelId }: { channelId: string }) => {
+const ChannelBadge = memo(({ channelId, buzzState }: { channelId: string; buzzState?: boolean }) => {
 	const badgeChannel = useSelector((state) => selectChannelBadgeById(state, channelId));
 	const countNumberNotification = badgeChannel && badgeChannel > 99 ? '99+' : (badgeChannel ?? 0);
 
-	if (!badgeChannel) {
-		return null;
-	}
 	return (
-		<div className="absolute ml-auto w-4 h-4 top-[9px] text-white right-3 group-hover:hidden bg-red-600 flex justify-center items-center rounded-full text-xs">
-			{countNumberNotification}
+		<div className="absolute flex gap-1 top-[9px] text-white right-3 group-hover:hidden items-center justify-center">
+			{buzzState ? <BuzzBadge mode={ChannelStreamMode.STREAM_MODE_CHANNEL} /> : null}
+			{badgeChannel ? (
+				<div className=" ml-auto w-4 h-4  bg-red-600 flex justify-center items-center rounded-full text-xs">{countNumberNotification}</div>
+			) : null}
 		</div>
 	);
 });
