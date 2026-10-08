@@ -58,9 +58,9 @@ export const fetchListNotificationCached = async (
 	const apiKey = createApiKey('fetchListNotification', clanId, category || '', notificationId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, notificationData?.cache, noCache);
 
-	if (!shouldForceCall && notificationData?.data) {
+	if (!shouldForceCall && notificationData) {
 		return {
-			notifications: notificationData.data,
+			notifications: notificationData.data ?? [],
 			fromCache: true
 		};
 	}
@@ -112,14 +112,16 @@ export const fetchListNotification = createAsyncThunk(
 				return {
 					category,
 					data: [] as INotification[],
-					fromCache
+					fromCache,
+					notificationId
 				};
 			}
 
 			return {
 				data: response.notifications as INotification[],
 				category,
-				fromCache
+				fromCache,
+				notificationId
 			};
 		} catch (error) {
 			captureSentryError(error, 'notification/fetchListNotification');
@@ -244,52 +246,78 @@ export const notificationSlice = createSlice({
 			})
 			.addCase(
 				fetchListNotification.fulfilled,
-				(state: NotificationState, action: PayloadAction<{ data: INotification[]; category: NotificationCategory; fromCache?: boolean }>) => {
+				(
+					state: NotificationState,
+					action: PayloadAction<{
+						data: INotification[];
+						category: NotificationCategory;
+						fromCache?: boolean;
+						notificationId?: string;
+					}>
+				) => {
 					if (action.payload.fromCache) {
+						state.loadingStatus = 'loaded';
 						return;
 					}
-					if (action.payload && Array.isArray(action.payload.data) && action.payload.data.length > 0) {
-						notificationAdapter.setMany(state, action.payload.data);
 
-						const { data, category, fromCache } = action.payload;
-						const dataParse = data.map((item) => {
-							const parsedContent =
-								typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content) : item.content?.content;
-							const parsedAttachments = parsedContent?.attachments;
-
-							return {
-								...item,
-								content: {
-									...item?.content,
-									content: parsedContent?.t,
-									embed: parsedContent?.embed ?? item.content?.embed,
-									tp: parsedContent?.tp ?? null,
-									attachment_link: parsedAttachments?.[0]?.url || item.content?.attachment_link || '',
-									attachment_type: parsedAttachments?.[0]?.filetype || item.content?.attachment_type || '',
-									attachment_size: parsedAttachments?.[0]?.size || 0,
-									attachments: parsedAttachments,
-									has_more_attachment: (parsedAttachments?.length || 0) > 1
-								}
-							};
-						});
-						if (state.notifications[category]) {
-							state.notifications[category].data = [...state.notifications[category].data, ...dataParse];
-						} else {
-							state.notifications[category] = { data: dataParse, lastId: '', cache: undefined };
-						}
-
-						if (!fromCache) {
-							state.notifications[category].cache = createCacheMetadata();
-						}
-
-						state.loadingStatus = 'loaded';
-
-						if (data.length >= LIMIT_NOTIFICATION) {
-							state.notifications[category].lastId = data[data.length - 1].id;
-						}
-					} else {
+					const { data, category, notificationId } = action.payload;
+					if (!Array.isArray(data)) {
 						state.loadingStatus = 'not loaded';
+						return;
 					}
+
+					const isFirstPage = !notificationId;
+					const dataParse = data.map((item) => {
+						const parsedContent =
+							typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content) : item.content?.content;
+						const parsedAttachments = parsedContent?.attachments;
+
+						return {
+							...item,
+							content: {
+								...item?.content,
+								content: parsedContent?.t,
+								embed: parsedContent?.embed ?? item.content?.embed,
+								tp: parsedContent?.tp ?? null,
+								attachment_link: parsedAttachments?.[0]?.url || item.content?.attachment_link || '',
+								attachment_type: parsedAttachments?.[0]?.filetype || item.content?.attachment_type || '',
+								attachment_size: parsedAttachments?.[0]?.size || 0,
+								attachments: parsedAttachments,
+								has_more_attachment: (parsedAttachments?.length || 0) > 1
+							}
+						};
+					});
+
+					if (data.length > 0) {
+						notificationAdapter.setMany(state, data);
+					}
+
+					if (isFirstPage) {
+						state.notifications[category] = {
+							data: dataParse,
+							lastId: data.length >= LIMIT_NOTIFICATION ? data[data.length - 1].id : '',
+							cache: createCacheMetadata()
+						};
+					} else if (dataParse.length > 0) {
+						const existing = state.notifications[category]?.data ?? [];
+						const existingIds = new Set(existing.map((item) => item.id));
+						const newItems = dataParse.filter((item) => !existingIds.has(item.id));
+
+						if (state.notifications[category]) {
+							state.notifications[category].data = [...existing, ...newItems];
+							if (data.length >= LIMIT_NOTIFICATION) {
+								state.notifications[category].lastId = data[data.length - 1].id;
+							}
+						} else {
+							state.notifications[category] = {
+								data: dataParse,
+								lastId: data.length >= LIMIT_NOTIFICATION ? data[data.length - 1].id : '',
+								cache: createCacheMetadata()
+							};
+						}
+					}
+
+					state.loadingStatus = 'loaded';
 				}
 			)
 
