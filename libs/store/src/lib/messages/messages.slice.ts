@@ -1461,7 +1461,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			client_send_time: clientSendTime,
 			temp_id: tempId,
 			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
-			username: anonymous ? 'Anonymous' : username || '',
+			username: anonymous ? '' : username || '',
 			avatar: anonymous ? '' : finalAvatar,
 			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
 			clan_id: clanId !== '0' ? clanId : undefined,
