@@ -1,12 +1,17 @@
 const assetBase = () => `${process.env.NODE_ENV === 'production' ? '/chat' : ''}/assets/mezon-ns/`;
 const cdnBase = () => (['localhost', '127.0.0.1'].includes(window.location.hostname) ? '/mezon-ns-cdn/' : 'https://cdn.komu.vn/ns/');
-const ASSET_VERSION = '457ca7c-v3';
+const ASSET_VERSION = '09704aa-asym-v2';
+const MODEL_FILE = 'mezon_ns_asym.onnx';
 const LOG_PREFIX = '[MezonSFU][Mezon-NS]';
 const READY_TIMEOUT_MS = 5000;
 let resourcesPromise: Promise<{ model: Uint8Array; wasm: Uint8Array }> | undefined;
 
 const download = async (file: string, signal: AbortSignal) => {
-	const response = await fetch(`${cdnBase()}${file}?v=${ASSET_VERSION}`, { signal });
+	const isModel = file === MODEL_FILE;
+	const response = await fetch(`${cdnBase()}${file}${isModel ? '' : `?v=${ASSET_VERSION}`}`, {
+		signal,
+		cache: isModel ? 'no-cache' : 'default'
+	});
 	if (!response.ok) throw new Error(`Mezon-NS ${file} download failed (${response.status})`);
 	return new Uint8Array(await response.arrayBuffer());
 };
@@ -18,7 +23,7 @@ const loadResources = () => {
 			const timeout = setTimeout(() => controller.abort(), 120000);
 			try {
 				const [model, wasm] = await Promise.all([
-					download('mezon_ns_asym_babble.onnx', controller.signal),
+					download(MODEL_FILE, controller.signal),
 					download('ort-wasm-simd-threaded.wasm', controller.signal)
 				]);
 				return { model, wasm };

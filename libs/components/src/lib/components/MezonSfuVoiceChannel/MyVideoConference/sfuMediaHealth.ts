@@ -3,26 +3,31 @@ type ReceiveProgress = { packets: number; samples?: number };
 type StreamLoss = { packets: number; lost: number };
 type LossWindow = { expected: number; lost: number };
 
-const WEAK_NETWORK_LOSS_RATIO = 0.05;
+const WEAK_NETWORK_WARNING_LOSS_RATIO = 0.1;
+const WEAK_NETWORK_SEVERE_LOSS_RATIO = 0.2;
+const WEAK_NETWORK_RECOVERY_LOSS_RATIO = 0.05;
 const WEAK_NETWORK_MIN_PACKETS = 50;
+const WEAK_NETWORK_WARNING_SAMPLES = 2;
 const WEAK_NETWORK_CLEAR_SAMPLES = 2;
-
-const isLossy = ({ expected, lost }: LossWindow) => expected >= WEAK_NETWORK_MIN_PACKETS && lost / expected >= WEAK_NETWORK_LOSS_RATIO;
 
 export class SfuNetworkQuality {
 	private streams = new Map<string, StreamLoss>();
 	private weak = false;
+	private badSamples = 0;
 	private cleanSamples = 0;
 
 	isWeak(report: RTCStatsReport): boolean {
 		const streams = new Map<string, StreamLoss>();
 		const received: LossWindow = { expected: 0, lost: 0 };
 		const sent: LossWindow = { expected: 0, lost: 0 };
-		const statsById = new Map<string, { packetsSent?: number }>();
+		const statsById = new Map<string, { kind?: string; mediaType?: string; packetsSent?: number }>();
 		report.forEach((stat) => statsById.set(stat.id, stat));
 		report.forEach((stat) => {
+			if (stat.type !== 'inbound-rtp' && stat.type !== 'remote-inbound-rtp') return;
 			if (typeof stat.packetsLost !== 'number') return;
 			const outbound = stat.type === 'remote-inbound-rtp' ? statsById.get(stat.localId) : undefined;
+			const media = outbound ?? stat;
+			if ((media.kind || media.mediaType) !== 'audio') return;
 			const packets = stat.type === 'inbound-rtp' ? stat.packetsReceived : outbound?.packetsSent;
 			if (typeof packets !== 'number') return;
 			streams.set(stat.id, { packets, lost: stat.packetsLost });
@@ -35,9 +40,17 @@ export class SfuNetworkQuality {
 			direction.expected += outbound ? packetsDelta : packetsDelta + lostDelta;
 		});
 		this.streams = streams;
-		const lossy = isLossy(received) || isLossy(sent);
-		this.cleanSamples = lossy ? 0 : this.cleanSamples + 1;
-		if (lossy) this.weak = true;
+		const ratios = [received, sent].filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS).map(({ expected, lost }) => lost / expected);
+		if (!ratios.length) {
+			// Silence or a new stream is not evidence that the network recovered.
+			this.badSamples = 0;
+			this.cleanSamples = 0;
+			return this.weak;
+		}
+		const lossRatio = Math.max(...ratios);
+		this.badSamples = lossRatio >= WEAK_NETWORK_WARNING_LOSS_RATIO ? this.badSamples + 1 : 0;
+		this.cleanSamples = lossRatio < WEAK_NETWORK_RECOVERY_LOSS_RATIO ? this.cleanSamples + 1 : 0;
+		if (lossRatio >= WEAK_NETWORK_SEVERE_LOSS_RATIO || this.badSamples >= WEAK_NETWORK_WARNING_SAMPLES) this.weak = true;
 		else if (this.cleanSamples >= WEAK_NETWORK_CLEAR_SAMPLES) this.weak = false;
 		return this.weak;
 	}

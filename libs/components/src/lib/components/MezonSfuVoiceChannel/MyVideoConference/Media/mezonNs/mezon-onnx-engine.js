@@ -146,7 +146,7 @@ export class MezonNSEngine {
 	constructor(options = {}) {
 		this.suppressionIntensity = options.suppressionIntensity ?? 1.0;
 		this.enableNoiseGate = options.enableNoiseGate ?? false;
-		this.attenuationLimitDb = options.attenuationLimitDb ?? 0.0;
+		this.attenuationLimitDb = options.attenuationLimitDb ?? 15.0;
 		this.modelTargetRms =
 			Number.isFinite(options.modelInputTargetDbfs) && options.modelInputTargetDbfs < 0
 				? Math.pow(10.0, options.modelInputTargetDbfs / 20.0)
@@ -196,7 +196,7 @@ export class MezonNSEngine {
 	/**
 	 * Load the ONNX model from URL or ArrayBuffer.
 	 */
-	async loadModel(modelUrlOrBuffer = '/mezon_ns_asym_babble.onnx') {
+	async loadModel(modelUrlOrBuffer = 'https://cdn.komu.vn/ns/mezon_ns_asym.onnx') {
 		const sessionOptions = {
 			executionProviders: ['wasm'],
 			graphOptimizationLevel: 'all'

@@ -1,3 +1,17 @@
+// Match desktop's fixed +3 dB makeup gain with a -3 dBFS soft knee and -1 dBFS ceiling.
+const MAKEUP_GAIN = 1.4125376;
+const LIMITER_KNEE = 0.70794576;
+const LIMITER_CEILING = 0.8912509;
+
+function applyOutputGain(sample) {
+	const amplified = sample * MAKEUP_GAIN;
+	const magnitude = Math.abs(amplified);
+	if (magnitude <= LIMITER_KNEE) return amplified;
+	const headroom = LIMITER_CEILING - LIMITER_KNEE;
+	const excess = magnitude - LIMITER_KNEE;
+	return Math.sign(amplified) * (LIMITER_KNEE + (headroom * excess) / (headroom + excess));
+}
+
 /** Bridges 128-sample render quanta and 160-sample Mezon-NS inference frames. */
 class MezonNSAudioProcessor extends AudioWorkletProcessor {
 	constructor(options) {
@@ -119,7 +133,7 @@ class MezonNSAudioProcessor extends AudioWorkletProcessor {
 			if (this.outputEnabled && this.modeReady) this.outputGain = Math.min(1, this.outputGain + 1 / this.FADE_SAMPLES);
 			else this.outputGain = 0;
 			// While ON there is no raw fallback or raw/clean crossfade, even during an underrun.
-			const sample = (this.denoisingEnabled ? cleanSample : inChannel[i]) * this.outputGain;
+			const sample = (this.denoisingEnabled ? applyOutputGain(cleanSample) : inChannel[i]) * this.outputGain;
 			outChannel[i] = sample;
 		}
 		if (underrun && !this.underrunReported) {
