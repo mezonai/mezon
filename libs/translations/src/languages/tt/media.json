@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Йөкләү..."
+		"uploading": "Йөкләү...",
+		"fromPrivateChannel": "Шәхси каналдан медиа"
 	}
 }

@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Wird hochgeladen..."
+		"uploading": "Wird hochgeladen...",
+		"fromPrivateChannel": "Medien aus einem privaten Kanal"
 	}
 }

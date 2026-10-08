@@ -1,3 +1,4 @@
+import { useCdnUrlSigner } from '@mezon/core';
 import { attachmentActions, useAppDispatch } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js';
@@ -42,9 +43,14 @@ export type NotificationAttachmentItemProps = {
 	readonly compact?: boolean;
 };
 
-export const NotificationAttachmentItem = ({ attachment, index, compact = false }: NotificationAttachmentItemProps) => {
+export const NotificationAttachmentItem = ({ attachment: rawAttachment, index, compact = false }: NotificationAttachmentItemProps) => {
 	const { t } = useTranslation(['channelTopbar', 'common']);
 	const dispatch = useAppDispatch();
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([rawAttachment?.url, rawAttachment?.thumbnail]);
+	const attachment = useMemo<ApiMessageAttachment>(
+		() => ({ ...rawAttachment, url: signCdnUrl(rawAttachment?.url), thumbnail: signCdnUrl(rawAttachment?.thumbnail) }),
+		[rawAttachment, signCdnUrl]
+	);
 	const isPDF = Boolean(attachment?.filetype === 'application/pdf' || attachment?.filename?.toLowerCase().endsWith('.pdf'));
 	const isImageOrVideo = Boolean(
 		attachment?.filetype?.startsWith('image/') ||
@@ -87,7 +93,7 @@ export const NotificationAttachmentItem = ({ attachment, index, compact = false 
 			initialHeight: 600,
 			minWidth: 600,
 			minHeight: 400,
-			popupId: `pdf-viewer-${attachment?.filename || 'doc'}-${attachment?.url || index}`
+			popupId: `pdf-viewer-${attachment?.filename || 'doc'}-${rawAttachment?.url || index}`
 		}
 	);
 
@@ -120,17 +126,18 @@ export const NotificationAttachmentItem = ({ attachment, index, compact = false 
 		event.stopPropagation();
 		if (isPDF) {
 			openPDFViewer();
-		} else if (isImageOrVideo && attachment?.url) {
+		} else if (isImageOrVideo && rawAttachment?.url) {
+			// The viewer signs the url itself; a signed url stored here would never be re-signed once it expires.
 			dispatch(
 				attachmentActions.setCurrentAttachment({
-					id: attachment.url,
-					url: attachment.url,
+					id: rawAttachment.url,
+					url: rawAttachment.url,
 					filetype: attachment.filetype || '',
 					filename: attachment.filename || '',
 					filesize: String(attachment.size || 0)
 				})
 			);
-			dispatch(attachmentActions.setAttachment(attachment.url));
+			dispatch(attachmentActions.setAttachment(rawAttachment.url));
 			dispatch(attachmentActions.setOpenModalAttachment(true));
 		} else if (attachment?.url) {
 			handleDownload(event);
@@ -159,7 +166,8 @@ export const NotificationAttachmentItem = ({ attachment, index, compact = false 
 			filename: attachment?.filename || displayName
 		},
 		size: compact ? 'w-8 h-8' : 'w-10 h-10',
-		isFileList: true
+		isFileList: true,
+		isPresignPending: isAwaitingSignature(rawAttachment?.url)
 	});
 
 	return (

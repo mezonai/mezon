@@ -1,4 +1,4 @@
-import { useAuth, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
+import { useAuth, useCdnUrlSigner, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
 import {
 	EventName,
 	appActions,
@@ -213,14 +213,19 @@ const renderFileIcon = (filename: string, filetype: string) => {
 };
 
 const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachment }) => {
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([attachment.url]);
 	if (attachment.isImage && attachment.url) {
 		return (
 			<div className="shrink-0 flex items-center justify-center">
-				<img
-					src={createImgproxyUrl(attachment.url, { width: 64, height: 64, resizeType: 'fit' })}
-					alt={attachment.filename}
-					className="w-7 h-7 rounded object-cover shrink-0 bg-item-theme border border-theme-primary"
-				/>
+				{isAwaitingSignature(attachment.url) ? (
+					<div className="w-7 h-7 rounded shrink-0 bg-item-theme border border-theme-primary" />
+				) : (
+					<img
+						src={createImgproxyUrl(signCdnUrl(attachment.url), { width: 64, height: 64, resizeType: 'fit' })}
+						alt={attachment.filename}
+						className="w-7 h-7 rounded object-cover shrink-0 bg-item-theme border border-theme-primary"
+					/>
+				)}
 			</div>
 		);
 	}
