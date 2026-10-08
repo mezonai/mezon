@@ -1,5 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SfuDeviceMenuProps {
 	label: string;
@@ -9,6 +10,7 @@ interface SfuDeviceMenuProps {
 }
 
 export const SfuDeviceMenu = ({ label, devices, selectedDeviceId, onSelect }: SfuDeviceMenuProps) => {
+	const { t } = useTranslation('channelVoice');
 	const [isOpen, setIsOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +56,7 @@ export const SfuDeviceMenu = ({ label, devices, selectedDeviceId, onSelect }: Sf
 							</button>
 						))
 					) : (
-						<p className="px-3 py-2 text-sm text-zinc-400">No devices found</p>
+						<p className="px-3 py-2 text-sm text-zinc-400">{t('device.noDevices', { defaultValue: 'No devices found' })}</p>
 					)}
 				</div>
 			)}

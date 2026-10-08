@@ -11,7 +11,11 @@ import type { DisplayedEmoji, DisplayedHand } from './types';
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
 
-export const ReactionCallHandler = memo(() => {
+interface ReactionCallHandlerProps {
+	sinkId?: string;
+}
+
+export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = {}) => {
 	const [displayedEmojis, setDisplayedEmojis] = useState<DisplayedEmoji[]>([]);
 	const [raisingList, setRaisingList] = useState<DisplayedHand[]>([]);
 	const timeoutsRef = useRef<Map<string, number>>(new Map());
@@ -24,6 +28,40 @@ export const ReactionCallHandler = memo(() => {
 	const channelId = voiceInfo?.channelId;
 	const rafRef = useRef<number>();
 	const audioRef = useRef<HTMLAudioElement>(null);
+
+	useEffect(() => {
+		const el = audioRef.current as (HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> }) | null;
+		if (el && typeof el.setSinkId === 'function' && sinkId !== undefined) {
+			const targetSinkId = sinkId === 'default' ? '' : sinkId;
+			el.setSinkId(targetSinkId).catch((err) => {
+				console.warn('[ReactionCallHandler] failed to setSinkId for raise hand', err);
+				if (targetSinkId !== '') {
+					el.setSinkId('').catch((fallbackErr) => {
+						console.warn('[ReactionCallHandler] fallback to default speaker failed', fallbackErr);
+					});
+				}
+			});
+		}
+	}, [sinkId]);
+
+	useEffect(() => {
+		if (sinkId === undefined) return;
+		const targetSinkId = sinkId === 'default' ? '' : sinkId;
+		audioRefs.current.forEach((audio) => {
+			const el = audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> };
+			if (typeof el.setSinkId === 'function') {
+				el.setSinkId(targetSinkId).catch((err) => {
+					console.warn('[ReactionCallHandler] failed to setSinkId for sound reaction', err);
+					if (targetSinkId !== '') {
+						el.setSinkId('').catch((fallbackErr) => {
+							console.warn('[ReactionCallHandler] fallback to default speaker failed', fallbackErr);
+						});
+					}
+				});
+			}
+		});
+	}, [sinkId]);
+
 	const generatePosition = useCallback(() => {
 		const horizontalOffset = (Math.random() - 0.5) * 40;
 		const baseLeft = 50;
@@ -41,28 +79,55 @@ export const ReactionCallHandler = memo(() => {
 		};
 	}, []);
 
-	const playSound = useCallback((soundUrl: string, soundId: string, senderId: string) => {
-		try {
-			let audio = audioRefs.current.get(soundId);
-			if (audio) {
-				audio.pause();
-				audio.currentTime = 0;
-			} else {
-				audio = new Audio(soundUrl);
-				audio.volume = 0.3;
-				audioRefs.current.set(soundId, audio);
-				audio.onended = () => {
-					soundReactionsService.removeActiveSoundParticipant(senderId);
-				};
-			}
+	const playSound = useCallback(
+		(soundUrl: string, soundId: string, senderId: string) => {
+			try {
+				let audio = audioRefs.current.get(soundId);
+				if (audio) {
+					audio.pause();
+					audio.currentTime = 0;
+				} else {
+					audio = new Audio(soundUrl);
+					audio.volume = 0.3;
+					audioRefs.current.set(soundId, audio);
+					audio.onended = () => {
+						soundReactionsService.removeActiveSoundParticipant(senderId);
+					};
+				}
 
-			audio.play().catch((error) => {
-				console.error('Failed to play sound reaction:', error);
-			});
-		} catch (error) {
-			console.error('Error playing sound reaction:', error);
-		}
-	}, []);
+				const triggerPlay = () => {
+					audio.play().catch((error) => {
+						console.error('Failed to play sound reaction:', error);
+					});
+				};
+
+				if (
+					sinkId !== undefined &&
+					typeof (audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> }).setSinkId === 'function'
+				) {
+					const targetSinkId = sinkId === 'default' ? '' : sinkId;
+					(audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> })
+						.setSinkId(targetSinkId)
+						.catch((err) => {
+							console.warn('[ReactionCallHandler] failed to setSinkId for sound reaction', err);
+							if (targetSinkId !== '') {
+								(audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> }).setSinkId('').catch((fallbackErr) => {
+									console.warn('[ReactionCallHandler] fallback to default speaker failed', fallbackErr);
+								});
+							}
+						})
+						.finally(() => {
+							triggerPlay();
+						});
+				} else {
+					triggerPlay();
+				}
+			} catch (error) {
+				console.error('Error playing sound reaction:', error);
+			}
+		},
+		[sinkId]
+	);
 
 	useEffect(() => {
 		const handleAnimationFrame = () => {

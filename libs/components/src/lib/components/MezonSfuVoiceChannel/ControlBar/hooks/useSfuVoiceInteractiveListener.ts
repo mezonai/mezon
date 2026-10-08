@@ -15,7 +15,7 @@ import type { FlowerCelebrationHandle } from '../../MyVideoConference/Reaction/f
 
 const BASE_Z = 9999;
 
-export function useSfuVoiceInteractiveListener(channelId?: string) {
+export function useSfuVoiceInteractiveListener(channelId?: string, sinkId?: string) {
 	const dispatch = useAppDispatch();
 	const { clientRef } = useMezon();
 	const activeApps = useSelector(selectActiveApps);
@@ -37,13 +37,33 @@ export function useSfuVoiceInteractiveListener(channelId?: string) {
 		try {
 			const audio = new Audio('/chat/assets/audio/give-flower.mp3');
 			audio.volume = 0.5;
-			audio.play().catch((err) => {
-				console.error('[flower sound play error]', err);
-			});
+			const triggerPlay = () => {
+				audio.play().catch((err) => {
+					console.error('[flower sound play error]', err);
+				});
+			};
+			if (sinkId !== undefined && typeof (audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> }).setSinkId === 'function') {
+				const targetSinkId = sinkId === 'default' ? '' : sinkId;
+				(audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> })
+					.setSinkId(targetSinkId)
+					.catch((err) => {
+						console.warn('[flower sound setSinkId error]', err);
+						if (targetSinkId !== '') {
+							(audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> }).setSinkId('').catch((fallbackErr) => {
+								console.warn('[flower sound fallback setSinkId error]', fallbackErr);
+							});
+						}
+					})
+					.finally(() => {
+						triggerPlay();
+					});
+			} else {
+				triggerPlay();
+			}
 		} catch (e) {
 			console.error('[flower sound error]', e);
 		}
-	}, []);
+	}, [sinkId]);
 
 	const showNextSender = useCallback(() => {
 		if (isShowingSenderRef.current) return;

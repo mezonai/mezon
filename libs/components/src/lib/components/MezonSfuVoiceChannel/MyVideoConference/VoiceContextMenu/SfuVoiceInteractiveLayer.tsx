@@ -5,11 +5,12 @@ import { GiveFlowersVoiceHandle } from '../Reaction';
 
 interface SfuVoiceInteractiveLayerProps {
 	channelId?: string;
+	sinkId?: string;
 }
 
-export const SfuVoiceInteractiveLayer = ({ channelId }: SfuVoiceInteractiveLayerProps) => {
+export const SfuVoiceInteractiveLayer = ({ channelId, sinkId }: SfuVoiceInteractiveLayerProps) => {
 	const { activeApps, closeApp, focusApp, currentSender, senderQueueRef, playerRef, isShowingSenderRef, senderTimeoutRef } =
-		useSfuVoiceInteractiveListener(channelId);
+		useSfuVoiceInteractiveListener(channelId, sinkId);
 	const currentZindex = useRef(9999);
 	return (
 		<>

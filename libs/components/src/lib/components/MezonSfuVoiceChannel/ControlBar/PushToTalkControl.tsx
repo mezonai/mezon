@@ -1,5 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
+import { SfuAudioDeviceMenu } from './MediaDeviceMenu/SfuAudioDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface PushToTalkControlProps {
@@ -8,6 +9,12 @@ interface PushToTalkControlProps {
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
+	inputDevices?: MediaDeviceInfo[];
+	outputDevices?: MediaDeviceInfo[];
+	selectedInputDeviceId?: string;
+	selectedOutputDeviceId?: string;
+	onSelectInput?: (deviceId: string) => void;
+	onSelectOutput?: (deviceId: string) => void;
 	weakNetwork?: boolean;
 }
 
@@ -17,11 +24,17 @@ export const PushToTalkControl = ({
 	permissionState,
 	hasMicrophoneAccess,
 	onPermissionRequest,
+	inputDevices,
+	outputDevices,
+	selectedInputDeviceId,
+	selectedOutputDeviceId,
+	onSelectInput,
+	onSelectOutput,
 	weakNetwork
 }: PushToTalkControlProps) => {
 	const { t } = useTranslation('channelVoice');
 	const showWarning = permissionState === 'denied' || hasMicrophoneAccess === false;
-	const label = showWarning ? t('mediaPermission.needed.microphone') : 'Push to talk';
+	const label = showWarning ? t('mediaPermission.needed.microphone') : t('pushToTalk.title', { defaultValue: 'Push to talk' });
 
 	const handlePointerDown = async (event: React.PointerEvent<HTMLButtonElement>) => {
 		if ((permissionState !== 'granted' || hasMicrophoneAccess === false) && onPermissionRequest) {
@@ -55,6 +68,16 @@ export const PushToTalkControl = ({
 			)}
 			{!showWarning && weakNetwork && (
 				<div className="pointer-events-none absolute -right-0.5 -top-0.5 z-10 h-3.5 w-3.5 rounded-full border-2 border-[#11111b] bg-orange-500" />
+			)}
+			{inputDevices && (
+				<SfuAudioDeviceMenu
+					inputDevices={inputDevices}
+					outputDevices={outputDevices}
+					selectedInputDeviceId={selectedInputDeviceId}
+					selectedOutputDeviceId={selectedOutputDeviceId}
+					onSelectInputDevice={onSelectInput ?? (() => {})}
+					onSelectOutputDevice={onSelectOutput}
+				/>
 			)}
 		</div>
 	);
