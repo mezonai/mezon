@@ -148,5 +148,9 @@
 		"savedToDisk": "Запись сохранена в {{fileName}} ({{size}})",
 		"downloaded": "Запись загружена: {{fileName}} ({{size}})",
 		"failed": "Не удалось записать: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Включите KOMU Agent",
+		"body": "Нажмите на значок KOMU Agent, чтобы добавить ИИ-агента в этот звонок."
 	}
 }

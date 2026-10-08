@@ -148,5 +148,9 @@
 		"savedToDisk": "Inspelningen sparades i {{fileName}} ({{size}})",
 		"downloaded": "Inspelningen laddades ner: {{fileName}} ({{size}})",
 		"failed": "Inspelningen misslyckades: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Slå på KOMU Agent",
+		"body": "Klicka på KOMU Agent-ikonen för att lägga till AI-agenten i det här samtalet."
 	}
 }

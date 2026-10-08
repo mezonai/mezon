@@ -148,5 +148,9 @@
 		"savedToDisk": "Grabación guardada en {{fileName}} ({{size}})",
 		"downloaded": "Grabación descargada: {{fileName}} ({{size}})",
 		"failed": "Error al grabar: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Activa KOMU Agent",
+		"body": "Haz clic en el icono de KOMU Agent para añadir el agente de IA a esta llamada."
 	}
 }

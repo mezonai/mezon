@@ -148,5 +148,9 @@
 		"savedToDisk": "Aufzeichnung gespeichert unter {{fileName}} ({{size}})",
 		"downloaded": "Aufzeichnung heruntergeladen: {{fileName}} ({{size}})",
 		"failed": "Aufzeichnung fehlgeschlagen: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent einschalten",
+		"body": "Klicke auf das KOMU-Agent-Symbol, um den KI-Agenten zu diesem Anruf hinzuzufügen."
 	}
 }

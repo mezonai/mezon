@@ -9,6 +9,7 @@ interface CameraControlProps {
 	selectedDeviceId: string;
 	onToggle: () => void;
 	onSelect: (deviceId: string) => void;
+	onDeviceMenuOpenChange?: (open: boolean) => void;
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasCameraAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
@@ -20,6 +21,7 @@ export const CameraControl = ({
 	selectedDeviceId,
 	onToggle,
 	onSelect,
+	onDeviceMenuOpenChange,
 	permissionState,
 	hasCameraAccess,
 	onPermissionRequest
@@ -50,7 +52,13 @@ export const CameraControl = ({
 					<span className="text-black text-xs font-bold">!</span>
 				</div>
 			)}
-			<SfuDeviceMenu label="Camera" devices={devices} selectedDeviceId={selectedDeviceId} onSelect={onSelect} />
+			<SfuDeviceMenu
+				label="Camera"
+				devices={devices}
+				selectedDeviceId={selectedDeviceId}
+				onSelect={onSelect}
+				onOpenChange={onDeviceMenuOpenChange}
+			/>
 		</div>
 	);
 };

@@ -148,5 +148,9 @@
 		"savedToDisk": "Язма {{fileName}} ({{size}}) файлына сакланды",
 		"downloaded": "Язма йөкләнде: {{fileName}} ({{size}})",
 		"failed": "Язу уңышсыз: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent'ны кабызыгыз",
+		"body": "Бу шалтыратуга ЯИ-агентны өстәү өчен KOMU Agent тамгасына басыгыз."
 	}
 }

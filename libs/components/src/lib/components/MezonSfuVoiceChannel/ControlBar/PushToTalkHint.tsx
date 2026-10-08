@@ -11,8 +11,8 @@ export const PushToTalkHint = ({ active, onDismiss }: PushToTalkHintProps) => {
 	const accent = active ? 'text-green-400' : 'text-yellow-400';
 
 	return (
-		<div className="pointer-events-none absolute bottom-full left-[-16px] z-30 mb-1 w-80 max-md:hidden">
-			<div className="pointer-events-auto rounded-lg border border-white/10 bg-zinc-800 p-4 text-left shadow-xl">
+		<div className="pointer-events-none absolute bottom-full left-[-16px] z-30 mb-[7px] w-80 max-md:hidden">
+			<div className="pointer-events-auto relative rounded-lg border border-white/10 bg-zinc-800 p-4 text-left shadow-xl">
 				<div className="flex items-center gap-2">
 					<Icons.InPttCall className={`h-[18px] w-[18px] shrink-0 ${accent}`} />
 					<span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
@@ -28,10 +28,11 @@ export const PushToTalkHint = ({ active, onDismiss }: PushToTalkHintProps) => {
 					</button>
 				</div>
 				<p className="mt-2 text-xs text-white/70">{t('pushToTalk.hintBody')}</p>
+				<span
+					aria-hidden="true"
+					className="absolute -bottom-[5px] left-[40px] h-2 w-2 rotate-45 border-b border-r border-white/10 bg-zinc-800"
+				/>
 			</div>
-			<svg className="ml-[38px] block h-[6px] w-3 text-zinc-800" viewBox="0 0 12 6" fill="currentColor" aria-hidden="true">
-				<path d="M6 6 0 0h12Z" />
-			</svg>
 		</div>
 	);
 };

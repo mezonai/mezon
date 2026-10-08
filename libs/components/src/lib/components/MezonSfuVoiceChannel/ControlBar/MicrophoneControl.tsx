@@ -9,6 +9,7 @@ interface MicrophoneControlProps {
 	selectedDeviceId: string;
 	onToggle: () => void;
 	onSelect: (deviceId: string) => void;
+	onDeviceMenuOpenChange?: (open: boolean) => void;
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
@@ -21,6 +22,7 @@ export const MicrophoneControl = ({
 	selectedDeviceId,
 	onToggle,
 	onSelect,
+	onDeviceMenuOpenChange,
 	permissionState,
 	hasMicrophoneAccess,
 	onPermissionRequest,
@@ -54,7 +56,13 @@ export const MicrophoneControl = ({
 			{!showWarning && weakNetwork && (
 				<div className="pointer-events-none absolute -right-0.5 -top-0.5 z-10 h-3.5 w-3.5 rounded-full border-2 border-[#11111b] bg-orange-500" />
 			)}
-			<SfuDeviceMenu label="Microphone" devices={devices} selectedDeviceId={selectedDeviceId} onSelect={onSelect} />
+			<SfuDeviceMenu
+				label="Microphone"
+				devices={devices}
+				selectedDeviceId={selectedDeviceId}
+				onSelect={onSelect}
+				onOpenChange={onDeviceMenuOpenChange}
+			/>
 		</div>
 	);
 };
