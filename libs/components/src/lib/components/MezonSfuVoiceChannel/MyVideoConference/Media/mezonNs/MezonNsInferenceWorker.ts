@@ -80,7 +80,7 @@ scope.onmessage = ({ data }) => {
 		ort.env.wasm.wasmPaths = data.wasmPaths;
 		ort.env.wasm.wasmBinary = data.wasm;
 		const nextEngine = new MezonNSEngine({
-			suppressionIntensity: 1.6,
+			suppressionIntensity: 1.0,
 			enableNoiseGate: false,
 			attenuationLimitDb: 15,
 			modelInputTargetDbfs: -20

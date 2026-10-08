@@ -3,7 +3,7 @@ import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
 import { AttachmentTypeUpload, ETypesCDN } from '../types';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
 
-export async function generatePathAttachments(client: Client, session: ApiSession, attachments: Array<ApiMessageAttachment>) {
+export async function generatePathAttachments(client: Client, session: ApiSession, attachments: Array<ApiMessageAttachment>, channelId?: string) {
 	const result = await Promise.all(
 		attachments.map(async (attach) => {
 			const nonDirectAttachments = !isTenorUrl(attach.url) && !isMezonCdnUrl(attach.url);
@@ -24,7 +24,8 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					filetype: fileType,
 					size: attach.size,
 					width: attach.width,
-					height: attach.height
+					height: attach.height,
+					channel_id: channelId
 				});
 				// The poster is uploaded HERE, before the message is posted, and its url
 				// is published only once the object is actually on the CDN. It used to
@@ -41,7 +42,8 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					const presignedThumbnail = await client.uploadAttachmentFile(session, {
 						filename,
 						filetype: thumbnailBlob.type,
-						size: thumbnailBlob.size
+						size: thumbnailBlob.size,
+						channel_id: channelId
 					});
 					if (presignedThumbnail?.url && (await uploadFileToPath(presignedThumbnail.url, thumbnailBlob, thumbnailBlob.size))) {
 						thumbnail = presignedThumbnail;

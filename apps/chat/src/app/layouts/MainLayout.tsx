@@ -2,6 +2,7 @@ import {
 	ChatContext,
 	ChatContextProvider,
 	ColorRoleProvider,
+	useCdnSignatureRefreshOnMediaError,
 	useDragAndDrop,
 	useFriends,
 	useIdleRender,
@@ -38,6 +39,7 @@ const GlobalEventListener = () => {
 		scheduleReconnect: handleReconnect,
 		debouncedScheduleMs: 3000
 	});
+	useCdnSignatureRefreshOnMediaError();
 
 	const handleReconnectSuccess = useMemo(
 		() =>

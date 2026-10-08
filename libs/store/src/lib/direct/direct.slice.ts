@@ -15,6 +15,7 @@ import type {
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
+import { cdnSignatureActions } from '../cdnSignature/cdnSignature.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
 import type { ChannelMetaEntity } from '../channels/channelmeta.slice';
@@ -416,6 +417,7 @@ export const joinDirectMessage = createAsyncThunk<void, JoinDirectMessagePayload
 			if (directMessageId !== '') {
 				thunkAPI.dispatch(directActions.setDmGroupCurrentId(directMessageId));
 				thunkAPI.dispatch(directActions.setDmGroupCurrentType(type ?? ChannelType.CHANNEL_TYPE_DM));
+				thunkAPI.dispatch(cdnSignatureActions.fetchCdnSignature({ channelId: directMessageId }));
 				thunkAPI.dispatch(
 					messagesActions.fetchMessages({
 						clanId: '0',

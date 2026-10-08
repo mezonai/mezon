@@ -1,5 +1,6 @@
 import { selectAppInteractData, selectVoiceInfo } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
@@ -31,7 +32,10 @@ export const SfuVoiceInteractiveControl = ({ showVoiceInteractive, onVisibleChan
 			overlay={<SfuVoiceInteractiveMenu channelId={channelId} onClose={handleClose} />}
 			destroyTooltipOnHide
 		>
-			<div className={`flex items-center justify-center p-1 rounded-full ${interactAppData && 'shadow-[0px_0px_2px_#4ade80]'}`}>
+			<div
+				className={`flex items-center justify-center p-1 rounded-full ${interactAppData && 'shadow-[0px_0px_2px_#4ade80]'}`}
+				data-e2e={generateE2eId('clan_page.screen.voice_room.button.open_interactive_apps')}
+			>
 				<Icons.Joystick className={iconClassName} />
 			</div>
 		</Tooltip>

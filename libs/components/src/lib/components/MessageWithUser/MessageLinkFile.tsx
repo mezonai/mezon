@@ -20,6 +20,8 @@ export type MessageImage = {
 	message?: IMessageWithUser;
 	/** The row exists but the object is not on the CDN yet. */
 	isPresignPending?: boolean;
+	/** The file's CDN signature has not arrived yet, so an image thumbnail waits instead of loading unsigned. */
+	isCdnSignaturePending?: boolean;
 };
 function formatFileSize(bytes: number) {
 	if (bytes >= 1000000) {
@@ -52,7 +54,7 @@ const PDFLoadingFallback = () => {
 	);
 };
 
-function MessageLinkFile({ attachmentData, mode, message, isPresignPending = false }: MessageImage) {
+function MessageLinkFile({ attachmentData, mode, message, isPresignPending = false, isCdnSignaturePending = false }: MessageImage) {
 	const { t } = useTranslation('media');
 	// The sender sees isSending, a reader only ever sees the presign gate; both
 	// mean the same thing to whoever is looking at the row.
@@ -99,7 +101,11 @@ function MessageLinkFile({ attachmentData, mode, message, isPresignPending = fal
 			setIsDownloading(false);
 		}
 	};
-	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment: attachmentData, size: 'w-8 h-10' });
+	const thumbnailAttachment = RenderAttachmentThumbnail({
+		attachment: attachmentData,
+		size: 'w-8 h-10',
+		isPresignPending: isCdnSignaturePending
+	});
 
 	const hideTheInformationFile =
 		attachmentData.filetype !== EMimeTypes.gif &&

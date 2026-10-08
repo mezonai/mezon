@@ -107,7 +107,7 @@ export const MessageAudioControl = forwardRef((props: AudioControlProps, ref) =>
 	return (
 		<audio
 			ref={audioRef}
-			src={audioUrl}
+			src={audioUrl || undefined}
 			preload="metadata"
 			onEnded={() => setIsPlaying(false)}
 			className="hidden"

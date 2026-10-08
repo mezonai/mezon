@@ -1497,7 +1497,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				const client = mezon.clientRef.current;
 				const session = mezon.sessionRef.current;
 				if (!client || !session) throw new Error('Client is not initialized');
-				attachments = await generatePathAttachments(client, session, attachments);
+				attachments = await generatePathAttachments(client, session, attachments, channelId);
 				attachmentsMessage = attachments.map(({ filename, filetype, size, duration, url, thumbnail, height, width }) => ({
 					filename,
 					filetype,
