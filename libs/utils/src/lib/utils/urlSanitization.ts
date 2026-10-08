@@ -37,7 +37,7 @@ export const MEZON_CDN_DOMAINS = [
 	'https://cdn.komu.ai',
 	'https://cdn.mezon.ai',
 	'https://cdn.mezon.vn',
-	...(process.env.NX_BASE_IMG_URL ? [process.env.NX_BASE_IMG_URL] : [])
+	...(process.env.NX_CLOUDFLARE_CDN_URL ? [process.env.NX_CLOUDFLARE_CDN_URL] : [])
 ];
 
 export function isMezonCdnUrl(url: string | undefined): boolean {

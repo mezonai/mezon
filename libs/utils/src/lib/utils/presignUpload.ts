@@ -55,11 +55,11 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					filetype: fileType,
 					filename: attach.filename,
 					uploadName: data.filename,
-					url: `${data.type_cdn === ETypesCDN.MEZON ? process.env.NX_BASE_MEZON_IMG_URL : process.env.NX_BASE_IMG_URL}/${data.filename}`,
+					url: `${data.type_cdn === ETypesCDN.MEZON ? process.env.NX_MEZON_CDN_URL : process.env.NX_CLOUDFLARE_CDN_URL}/${data.filename}`,
 					uploadPath: data.url,
 					...(thumbnail &&
 						thumbnail?.filename && {
-							thumbnail: `${thumbnail?.type_cdn === ETypesCDN.MEZON ? process.env.NX_BASE_MEZON_IMG_URL : process.env.NX_BASE_IMG_URL}/${thumbnail.filename}`
+							thumbnail: `${thumbnail?.type_cdn === ETypesCDN.MEZON ? process.env.NX_MEZON_CDN_URL : process.env.NX_CLOUDFLARE_CDN_URL}/${thumbnail.filename}`
 						})
 				};
 			} catch (error) {
