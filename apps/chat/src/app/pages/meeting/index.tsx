@@ -288,8 +288,8 @@ export default function PreJoinCalling() {
 				return;
 			}
 
-			if (!/^[a-z0-9]{1,12}$/.test(trimmed)) {
-				setError('Username must be 1 to 12 characters, containing only 0-9 and a-z.');
+			if (!/^[a-zA-Z0-9]+$/.test(trimmed)) {
+				setError('Username must be containing only 0-9 and a-z.');
 				return;
 			}
 
