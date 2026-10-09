@@ -68,7 +68,7 @@ const BaseMessageHead = ({
 				data-e2e={generateE2eId('base_profile.display_name')}
 			>
 				{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? nameShowed : priorityName}
-				{isAnonymous ? (
+				{isAnonymous && !message.isSending ? (
 					<div className="rounded-full flex items-center justify-center ml-1">
 						<Icons.HatIcon className="w-4 h-4" />
 					</div>
