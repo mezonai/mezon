@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "수신자가 전화를 받았습니다.",
 		"aloneTimeoutDisconnected": "너무 오랫동안 혼자 있어서 음성 채널에서 연결이 해제되었습니다.",
 		"duplicateSessionDisconnected": "다른 기기에서 음성 채널에 참여하여 이 세션의 연결이 끊어졌습니다.",
-		"disconnectedRejoin": "음성 채널 연결이 끊어졌습니다."
+		"disconnectedRejoin": "음성 채널 연결이 끊어졌습니다.",
+		"weakNetworkDisconnected": "네트워크가 약하여 음성 채널에서 연결이 끊어졌습니다."
 	},
 	"usernameScreen": "{{username}} 의 화면",
 	"recording": {
@@ -152,5 +153,28 @@
 	"agentHint": {
 		"title": "KOMU Agent 켜기",
 		"body": "KOMU Agent 아이콘을 클릭하면 이 통화에 AI 에이전트를 추가할 수 있습니다."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "노이즈 필터 적용 중…",
+		"applied": "노이즈 필터 적용됨",
+		"preparing": "노이즈 억제 적용 중…",
+		"audioBlocked": "필터를 적용하는 동안 오디오가 전송되지 않습니다.",
+		"keepMuted": "오디오가 일시정지되었습니다. 클릭하면 마이크를 계속 음소거 상태로 유지합니다."
+	},
+	"weakNetwork": "약한 네트워크",
+	"networkWarning": "인터넷 연결이 불안정합니다. 다른 사람들이 당신의 목소리를 선명하게 듣지 못할 수 있습니다.",
+	"reconnectModal": {
+		"title": "음성 채널에 연결할 수 없습니다",
+		"description": "음성 연결을 복원하지 못했습니다. 연결을 확인하고 다시 참여해 보세요.",
+		"weakNetworkTitle": "약한 네트워크 연결",
+		"weakNetworkDescription": "네트워크가 불안정하여 음성 연결이 끊어졌습니다. 연결을 확인하고 다시 참여하세요.",
+		"rejoin": "다시 참여",
+		"joining": "참여 중…",
+		"exit": "나가기"
+	},
+	"pushToTalk": {
+		"holdSpace": "스페이스를 길게 눌러 말하기",
+		"holdingSpace": "말하는 중 — 스페이스를 놓으면 음소거",
+		"hintBody": "당신은 듣기 위해 참여했습니다. 말하는 동안 스페이스를 길게 눌러 마이크를 열고, 놓으면 다시 음소거됩니다."
 	}
 }

@@ -13,5 +13,136 @@
 	"desFeature": "Бу кланның рәсми функцияләрен сынап карагыз!",
 	"community": "Җәмгыять",
 	"desCommunity": "Атна саен чаралар һәм яңартулар.",
-	"about": "Турында"
+	"about": "Турында",
+	"title": "Үзеңнең кешеләреңне тап",
+	"titleHighlight": "кешеләр",
+	"overline": "Mezon кланнары",
+	"subtitle": "Чыннан да өй кебек тоелган җәмгыятьләр белән вакыт үткәрегез.",
+	"searchPlaceholder": "Җәмгыятьләр эзләү",
+	"searchLabel": "Җәмгыятьләр эзләү",
+	"featured": "Тәкъдим ителгән җәмгыятьләр",
+	"orbitTitle": "Тагын җәмгыятьләр",
+	"orbitHint": "Карау",
+	"orbitPrev": "Алдагы җәмгыятьләр",
+	"orbitNext": "Киләсе җәмгыятьләр",
+	"indexKicker": "Индекс",
+	"enterClan": "Керү",
+	"featuredBadge": "Тәкъдим ителгән",
+	"viewAll": "Барысын да карау",
+	"seeAll": "Барысын да күрү",
+	"explore": "Җәмгыятьләрне өйрәнү",
+	"loadMore": "Күбрәк җәмгыять йөкләү",
+	"loadingMore": "Йөкләнә...",
+	"joinCommunity": "Җәмгыятькә кушылу",
+	"joinNow": "Хәзер кушылу",
+	"joining": "Кушылу...",
+	"openInMezon": "Mezon'да ачу",
+	"share": "Уртаклашу",
+	"shareClan": "Клан белән уртаклашу",
+	"linkCopied": "Сылтама күчерелде",
+	"copyFailed": "Сылтаманы күчереп булмады",
+	"copied": "Күчерелде!",
+	"copy": "Күчерү",
+	"joinModal": {
+		"subtitle": "Бу кланга ничек кушылырга теләвегезне сайлагыз",
+		"scanQr": "QR-кодны сканерләү",
+		"scanHint": "Сканерлау һәм кушылу өчен телефоныгыз камерасын кулланыгыз",
+		"openLink": "Сылтаманы турыдан-туры ачу",
+		"openHint": "Яңа өлештә ачу"
+	},
+	"shareModal": {
+		"subtitle": "Бу кланны дусларыгыз белән уртаклашыгыз"
+	},
+	"online": "челтәрдә",
+	"onlineCount": "{{count}} челтәрдә",
+	"onlineCount_one": "{{count}} челтәрдә",
+	"onlineCount_other": "{{count}} челтәрдә",
+	"memberCount": "{{count}} әгъза",
+	"memberCount_one": "{{count}} әгъза",
+	"memberCount_other": "{{count}} әгъза",
+	"statsLine": "{{members}} әгъза",
+	"more": "Күбрәк",
+	"categories": {
+		"gaming": "Уеннар",
+		"technology": "Технология",
+		"education": "Мәгариф",
+		"music": "Музыка",
+		"anime": "Аниме",
+		"sports": "Спорт",
+		"lifestyle": "Тормыш рәвеше"
+	},
+	"filters": {
+		"title": "Фильтрлар",
+		"category": "Категория",
+		"language": "Тел",
+		"activity": "Активлык",
+		"verifiedOnly": "Бары тик расланганнар",
+		"reset": "Яңадан урнаштыру",
+		"showResults": "Җәмгыятьләрне күрсәтү",
+		"all": "Барысы",
+		"open": "Фильтрлар"
+	},
+	"sort": {
+		"label": "Тәртипләү",
+		"recommended": "Тәкъдим ителгән",
+		"largest": "Иң зур",
+		"newest": "Иң яңа"
+	},
+	"heading": {
+		"default": "Җәмгыятьләрне өйрәнү",
+		"search": "“{{query}}” өчен {{count}} җәмгыять",
+		"category": "{{count}} {{category}} җәмгыяте",
+		"matching": "“{{query}}” белән туры килгән җәмгыятьләр"
+	},
+	"empty": {
+		"searchTitle": "“{{query}}” өчен җәмгыять таба алмадык.",
+		"searchHint": "Башка эзләүне сынап карагыз яки популяр категорияләрне өйрәнегез.",
+		"clearSearch": "Эзләүне чистарту",
+		"filterTitle": "Бу фильтрларга бер җәмгыять тә туры килми.",
+		"clearFilters": "Фильтрларны чистарту",
+		"genericTitle": "Күрсәтер өчен әлегә җәмгыятьләр юк.",
+		"genericHint": "Тиздән кире килегез яки башка эзләүне сынап карагыз."
+	},
+	"error": {
+		"title": "Җәмгыятьләрне йөкләп булмады.",
+		"retry": "Яңадан сынап карау",
+		"clanNotFound": "Бу җәмгыять табылмады.",
+		"backToDiscover": "Discover'ка кире"
+	},
+	"detail": {
+		"about": "Хакында",
+		"aboutThisCommunity": "Бу җәмгыять хакында",
+		"readMore": "Күбрәк укырга",
+		"readLess": "Азрак укырга",
+		"joinThisCommunity": "Бу җәмгыятькә кушылу",
+		"created": "Булдырылган",
+		"communityType": "Җәмгыять төре",
+		"communityTypePublic": "Ачык",
+		"noInvite": "Бу җәмгыять өчен чакырулар хәзерге вакытта мөмкин түгел.",
+		"similar": "Күбрәк җәмгыятьләр табу",
+		"breadcrumbDiscover": "Discover",
+		"back": "Кире",
+		"unnamed": "Исемсез клан",
+		"noDescription": "Mezon'дагы җәмгыять.",
+		"overview": "Күзәтү",
+		"presence": "Хәзер",
+		"membersLabel": "Әгъзалар",
+		"onlineLabel": "Челтәрдә",
+		"tags": "Теглар"
+	},
+	"card": {
+		"fallbackDescription": "Mezon'дагы җәмгыять"
+	},
+	"addClan": {
+		"title": "Discovery'га кушырга теләгән кланыгыз бармы?",
+		"body": "Миллионнарча кулланучыга ирешү һәм җәмгыятегезне үстерү өчен кланыгызны Mezon Discovery'га кушыгыз."
+	},
+	"header": {
+		"openMezon": "Mezon'ны ачу",
+		"login": "Mezon'ны ачу"
+	},
+	"a11y": {
+		"verified": "расланган",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

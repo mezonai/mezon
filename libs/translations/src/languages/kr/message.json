@@ -263,6 +263,7 @@
 		"loadMore1Option": "1 개 답변 더보기",
 		"showLess": "접기",
 		"noVotesYet": "아직 투표 없음",
-		"pollLabel": "[설문]"
+		"pollLabel": "[설문]",
+		"failedToCreatePoll": "투표를 만들지 못했습니다"
 	}
 }

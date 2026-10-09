@@ -13,5 +13,136 @@
 	"community": "Communauté",
 	"desCommunity": "Événements et mises à jour hebdomadaires.",
 	"about": "À propos",
-	"discoverAndJoin": "Découvrez et rejoignez des communautés qui partagent vos centres d'intérêt."
+	"discoverAndJoin": "Découvrez et rejoignez des communautés qui partagent vos centres d'intérêt.",
+	"title": "Trouvez votre tribu",
+	"titleHighlight": "tribu",
+	"overline": "Clans Mezon",
+	"subtitle": "Retrouvez des communautés qui ressemblent vraiment à chez vous.",
+	"searchPlaceholder": "Rechercher des communautés",
+	"searchLabel": "Rechercher des communautés",
+	"featured": "Communautés en vedette",
+	"orbitTitle": "Plus de communautés",
+	"orbitHint": "Parcourir",
+	"orbitPrev": "Communautés précédentes",
+	"orbitNext": "Communautés suivantes",
+	"indexKicker": "Index",
+	"enterClan": "Entrer",
+	"featuredBadge": "En vedette",
+	"viewAll": "Tout afficher",
+	"seeAll": "Tout voir",
+	"explore": "Explorer les communautés",
+	"loadMore": "Charger plus de communautés",
+	"loadingMore": "Chargement...",
+	"joinCommunity": "Rejoindre la communauté",
+	"joinNow": "Rejoindre maintenant",
+	"joining": "Connexion...",
+	"openInMezon": "Ouvrir dans Mezon",
+	"share": "Partager",
+	"shareClan": "Partager le clan",
+	"linkCopied": "Lien copié",
+	"copyFailed": "Impossible de copier le lien",
+	"copied": "Copié !",
+	"copy": "Copier",
+	"joinModal": {
+		"subtitle": "Choisissez comment rejoindre ce clan",
+		"scanQr": "Scanner le code QR",
+		"scanHint": "Utilisez l'appareil photo de votre téléphone pour scanner et rejoindre",
+		"openLink": "Ouvrir le lien directement",
+		"openHint": "Ouvrir dans un nouvel onglet"
+	},
+	"shareModal": {
+		"subtitle": "Partagez ce clan avec vos amis"
+	},
+	"online": "en ligne",
+	"onlineCount": "{{count}} en ligne",
+	"onlineCount_one": "{{count}} en ligne",
+	"onlineCount_other": "{{count}} en ligne",
+	"memberCount": "{{count}} membres",
+	"memberCount_one": "{{count}} membre",
+	"memberCount_other": "{{count}} membres",
+	"statsLine": "{{members}} membres",
+	"more": "Plus",
+	"categories": {
+		"gaming": "Jeux",
+		"technology": "Technologie",
+		"education": "Éducation",
+		"music": "Musique",
+		"anime": "Anime",
+		"sports": "Sports",
+		"lifestyle": "Style de vie"
+	},
+	"filters": {
+		"title": "Filtres",
+		"category": "Catégorie",
+		"language": "Langue",
+		"activity": "Activité",
+		"verifiedOnly": "Vérifiées uniquement",
+		"reset": "Réinitialiser",
+		"showResults": "Afficher les communautés",
+		"all": "Toutes",
+		"open": "Filtres"
+	},
+	"sort": {
+		"label": "Trier",
+		"recommended": "Recommandé",
+		"largest": "Les plus grandes",
+		"newest": "Les plus récentes"
+	},
+	"heading": {
+		"default": "Explorer les communautés",
+		"search": "{{count}} communautés pour « {{query}} »",
+		"category": "{{count}} communautés {{category}}",
+		"matching": "Communautés correspondant à « {{query}} »"
+	},
+	"empty": {
+		"searchTitle": "Nous n'avons pas trouvé de communauté pour « {{query}} ».",
+		"searchHint": "Essayez une autre recherche ou explorez des catégories populaires.",
+		"clearSearch": "Effacer la recherche",
+		"filterTitle": "Aucune communauté ne correspond à ces filtres.",
+		"clearFilters": "Effacer les filtres",
+		"genericTitle": "Aucune communauté à afficher pour le moment.",
+		"genericHint": "Revenez bientôt ou essayez une autre recherche."
+	},
+	"error": {
+		"title": "Impossible de charger les communautés.",
+		"retry": "Réessayer",
+		"clanNotFound": "Cette communauté est introuvable.",
+		"backToDiscover": "Retour à Discover"
+	},
+	"detail": {
+		"about": "À propos",
+		"aboutThisCommunity": "À propos de cette communauté",
+		"readMore": "Lire plus",
+		"readLess": "Lire moins",
+		"joinThisCommunity": "Rejoindre cette communauté",
+		"created": "Créée",
+		"communityType": "Type de communauté",
+		"communityTypePublic": "Publique",
+		"noInvite": "Les invitations ne sont pas disponibles pour cette communauté pour le moment.",
+		"similar": "Découvrir plus de communautés",
+		"breadcrumbDiscover": "Discover",
+		"back": "Retour",
+		"unnamed": "Clan sans nom",
+		"noDescription": "Une communauté sur Mezon.",
+		"overview": "Aperçu",
+		"presence": "Maintenant",
+		"membersLabel": "Membres",
+		"onlineLabel": "En ligne",
+		"tags": "Étiquettes"
+	},
+	"card": {
+		"fallbackDescription": "Une communauté sur Mezon"
+	},
+	"addClan": {
+		"title": "Vous avez un clan à ajouter à Discovery ?",
+		"body": "Ajoutez votre clan à Mezon Discovery pour toucher des millions d'utilisateurs et développer votre communauté."
+	},
+	"header": {
+		"openMezon": "Ouvrir Mezon",
+		"login": "Ouvrir Mezon"
+	},
+	"a11y": {
+		"verified": "vérifiée",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

@@ -263,6 +263,7 @@
 		"loadMore1Option": "1件の答えをもっと見る",
 		"showLess": "隠す",
 		"noVotesYet": "まだ投票はありません",
-		"pollLabel": "[投票]"
+		"pollLabel": "[投票]",
+		"failedToCreatePoll": "投票の作成に失敗しました"
 	}
 }

@@ -169,5 +169,12 @@
 		"limit": "Se ha alcanzado el número máximo de canales para este clan"
 	},
 	"moreFile": "más archivo",
-	"moreFiles": "más archivos"
+	"moreFiles": "más archivos",
+	"topics": "Temas",
+	"pinnedMessage": "Mensaje fijado",
+	"latestPin": "Último fijado",
+	"poll": "Votación",
+	"pollDiscussion": "Votación",
+	"pollWithQuestion": "Encuesta: {{question}}",
+	"messageFrom": "Mensaje de {{username}}: {{message}}"
 }
