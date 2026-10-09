@@ -16,6 +16,7 @@ import {
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
 	selectMemberByIdAndClanId,
+	selectSfuUrlJoinVoice,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectStatusMenu,
@@ -150,6 +151,7 @@ const VoiceConferenceContainer = memo(({ containerRef, isOpenPopOut, rejoinTarge
 
 const MezonSfuChannelVoiceInner = () => {
 	const token = useSelector(selectTokenJoinVoice);
+	const sfuUrl = useSelector(selectSfuUrlJoinVoice);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
@@ -158,7 +160,7 @@ const MezonSfuChannelVoiceInner = () => {
 	const joinRequestRef = useRef(0);
 	const joiningRef = useRef(false);
 	const dispatch = useAppDispatch();
-	const serverUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
+	const serverUrl = sfuUrl || process.env.NX_CHAT_APP_SFU_WS_URL;
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const isShowChatVoice = useSelector(selectIsShowChatVoice);
 	const currentChannelType = useSelector(selectCurrentChannelType);
@@ -234,7 +236,7 @@ const MezonSfuChannelVoiceInner = () => {
 			).unwrap();
 			if (request !== joinRequestRef.current) return;
 
-			if (result) {
+			if (result?.token) {
 				dispatch(voiceActions.setJoined(true));
 				dispatch(
 					voiceActions.setVoiceInfo({
@@ -246,7 +248,8 @@ const MezonSfuChannelVoiceInner = () => {
 						joinRole: role
 					})
 				);
-				dispatch(voiceActions.setToken(result));
+				dispatch(voiceActions.setSfuUrl(result.url));
+				dispatch(voiceActions.setToken(result.token));
 				setRejoinTarget(null);
 			} else {
 				dispatch(voiceActions.setToken(''));

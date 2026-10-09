@@ -19,6 +19,21 @@ const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: stri
 	return await mezon.client.generateMeetToken(mezon.session, body);
 };
 
+const normalizeSfuWsUrl = (raw?: string): string => {
+	const value = raw?.trim() ?? '';
+	if (!value) return '';
+	try {
+		const url = new URL(value.includes('://') ? value : `wss://${value}`);
+		if (url.protocol === 'https:') url.protocol = 'wss:';
+		if (url.protocol === 'http:') url.protocol = 'ws:';
+		if ((url.protocol !== 'wss:' && url.protocol !== 'ws:') || !url.hostname) return '';
+		if (url.pathname === '' || url.pathname === '/') url.pathname = '/ws';
+		return url.toString();
+	} catch {
+		return '';
+	}
+};
+
 export const generateMeetToken = createAsyncThunk(
 	'meet/generateMeetToken',
 	async ({ channelId, roomName, metadata }: generateMeetTokenPayload, thunkAPI) => {
@@ -26,7 +41,7 @@ export const generateMeetToken = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			const response = await generateMeetTokenCached(mezon, channelId, roomName || '0', metadata);
-			return response?.token;
+			return { token: response?.token, url: normalizeSfuWsUrl(response?.url) };
 		} catch (error) {
 			captureSentryError(error, 'meet/generateMeetToken');
 			return thunkAPI.rejectWithValue(error);

@@ -177,13 +177,16 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		const requestId = ++joinRequestRef.current;
 		setIsJoining(true);
 		let token: string | undefined;
+		let sfuUrl = '';
 		try {
-			token = await dispatch(
+			const result = await dispatch(
 				generateMeetToken({
 					channelId,
 					roomName: ''
 				})
 			).unwrap();
+			token = result?.token;
+			sfuUrl = result?.url ?? '';
 		} catch {
 			if (requestId === joinRequestRef.current) setIsJoining(false);
 			return;
@@ -193,6 +196,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 			setIsJoining(false);
 			return;
 		}
+		dispatch(videoStreamActions.setSfuUrl(sfuUrl));
 		dispatch(videoStreamActions.setToken(token));
 		dispatch(
 			videoStreamActions.startStream({
