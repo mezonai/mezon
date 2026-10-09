@@ -45,7 +45,8 @@ const BaseMessageHead = ({
 		clanNick ? clanNick : (pendingClannick ?? ''),
 		displayName ? displayName : (pendingDisplayName ?? ''),
 		usernameSender ? usernameSender : (pendingUserName ?? ''),
-		message?.sender_id ?? ''
+		message?.sender_id ?? '',
+		message.isSending
 	);
 
 	const priorityName = message.display_name ? message.display_name : message.username;
