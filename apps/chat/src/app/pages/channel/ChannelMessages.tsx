@@ -20,7 +20,6 @@ import {
 	selectHasMoreMessageByChannelId,
 	selectIdMessageRefEdit,
 	selectIdMessageToJump,
-	selectIsMessageIdExist,
 	selectLastMessageByChannelId,
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
@@ -1104,10 +1103,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					});
 				}
 			};
-			const store = getStore();
-			const isMessageExist = selectIsMessageIdExist(store.getState() as RootState, effectiveChannelId, idMessageToJump?.id);
 
-			if (idMessageToJump && isMessageExist) {
+			if (idMessageToJump) {
 				if (idMessageToJump.id === 'temp') return;
 				scrollToMessage(idMessageToJump.id);
 				msgIdJumpHightlight.current = idMessageToJump.id;
