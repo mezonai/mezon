@@ -1,6 +1,8 @@
+import type { RootState } from '@mezon/store';
 import {
 	DMCallActions,
 	audioCallActions,
+	selectAudioRingTone,
 	selectCurrentStartDmCall,
 	selectGroupCallId,
 	selectIsInCall,
@@ -10,8 +12,8 @@ import {
 } from '@mezon/store';
 import { WEBRTC_SIGNALING_TYPES } from '@mezon/utils';
 import { WebrtcSignalingType } from 'mezon-js';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useSelector, useStore } from 'react-redux';
 
 export interface DmCallStateHookReturn {
 	isInCall: boolean;
@@ -36,9 +38,12 @@ interface DmCallStateHookParams {
 
 export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams): DmCallStateHookReturn => {
 	const dispatch = useAppDispatch();
+	const store = useStore<RootState>();
+	const incomingRing = useRef<{ key: string; deadline: number; answered: boolean } | null>(null);
 
 	const isInCall = useSelector(selectIsInCall);
 	const isJoinedCall = useSelector(selectJoinedCall);
+	const isRingTone = useSelector(selectAudioRingTone);
 	const isDmCallInfo = useSelector(selectCurrentStartDmCall);
 	const groupCallId = useSelector(selectGroupCallId);
 
@@ -52,6 +57,7 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 
 	const triggerCall = useCallback(
 		(isVideoCall = false) => {
+			if (incomingRing.current) incomingRing.current.answered = true;
 			dmCallingRef.current?.triggerCall(isDmCallInfo?.isVideo, true);
 		},
 		[dmCallingRef, isDmCallInfo?.isVideo]
@@ -130,6 +136,41 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 				break;
 		}
 	}, [dispatch, isInCall, isJoinedCall, signalingData, dataCall, isInAnyCall]);
+
+	useEffect(() => {
+		if (dataCall?.data_type !== WebrtcSignalingType.WEBRTC_SDP_OFFER || isInAnyCall || isJoinedCall) {
+			incomingRing.current = null;
+			return;
+		}
+		if (!isRingTone) return;
+		const key = JSON.stringify([dataCall.caller_id, dataCall.channel_id, dataCall.json_data]);
+		if (incomingRing.current?.key !== key) {
+			incomingRing.current = { key, deadline: performance.now() + 30_000, answered: false };
+		}
+		if (incomingRing.current.answered) return;
+		const deadline = incomingRing.current.deadline;
+		const expire = () => {
+			if (performance.now() < deadline || incomingRing.current?.key !== key || incomingRing.current.answered) return;
+			const state = store.getState();
+			const pending = selectSignalingDataByUserId(state, userId);
+			if (
+				selectIsInCall(state) ||
+				selectJoinedCall(state) ||
+				!selectAudioRingTone(state) ||
+				pending?.[pending.length - 1]?.signalingData !== dataCall
+			)
+				return;
+			clearCallState();
+		};
+		const timer = setTimeout(expire, Math.max(0, deadline - performance.now()));
+		if (typeof document !== 'undefined') document.addEventListener('visibilitychange', expire);
+		if (typeof window !== 'undefined') window.addEventListener('focus', expire);
+		return () => {
+			clearTimeout(timer);
+			if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', expire);
+			if (typeof window !== 'undefined') window.removeEventListener('focus', expire);
+		};
+	}, [dataCall, isInAnyCall, isJoinedCall, isRingTone, clearCallState, store, userId]);
 
 	useEffect(() => {
 		return () => {

@@ -107,6 +107,7 @@ export interface VoiceState {
 	isJoined: boolean;
 	isGroupCallJoined: boolean;
 	token: string;
+	sfuUrl: string;
 	stream: MediaStream | null | undefined;
 	externalToken: string | undefined;
 	guestUserId: string | undefined;
@@ -357,6 +358,7 @@ export const initialVoiceState: VoiceState = {
 	isJoined: false,
 	isGroupCallJoined: false,
 	token: '',
+	sfuUrl: '',
 	stream: null,
 	externalToken: undefined,
 	guestUserId: undefined,
@@ -454,6 +456,9 @@ export const voiceSlice = createSlice({
 		setToken: (state, action) => {
 			state.token = action.payload;
 		},
+		setSfuUrl: (state, action: PayloadAction<string>) => {
+			state.sfuUrl = action.payload;
+		},
 		setVoiceInfo: (state, action: PayloadAction<IvoiceInfo>) => {
 			if (state.voiceInfo?.channelId !== action.payload.channelId) {
 				state.voiceInfo = action.payload;
@@ -524,6 +529,7 @@ export const voiceSlice = createSlice({
 			state.isJoined = false;
 			state.isGroupCallJoined = false;
 			state.token = '';
+			state.sfuUrl = '';
 			state.stream = null;
 			state.openPopOut = false;
 			state.recordingUserIds = [];
@@ -685,6 +691,8 @@ export const selectVoiceJoined = createSelector(getVoiceState, (state) => state.
 export const selectGroupCallJoined = createSelector(getVoiceState, (state) => state.isGroupCallJoined);
 
 export const selectTokenJoinVoice = createSelector(getVoiceState, (state) => state.token);
+
+export const selectSfuUrlJoinVoice = createSelector(getVoiceState, (state) => state.sfuUrl);
 
 export const selectVoiceInfo = createSelector(getVoiceState, (state) => state.voiceInfo);
 

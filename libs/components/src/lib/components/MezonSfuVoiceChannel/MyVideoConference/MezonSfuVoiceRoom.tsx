@@ -1796,7 +1796,9 @@ export function MezonSfuVoiceRoom({
 				Promise.resolve().then(() =>
 					onRefreshTokenRef.current
 						? onRefreshTokenRef.current()
-						: dispatch(generateMeetToken({ channelId: roomId, roomName: '' })).unwrap()
+						: dispatch(generateMeetToken({ channelId: roomId, roomName: '' }))
+								.unwrap()
+								.then((result) => result?.token)
 				),
 				10_000
 			)
