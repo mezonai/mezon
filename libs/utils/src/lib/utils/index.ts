@@ -27,7 +27,7 @@ import type {
 	IMentionOnMessage,
 	IMessageSendPayload,
 	IMessageWithUser,
-	IPermissonMedia,
+	IPermissionMedia,
 	IRolesClan,
 	MentionDataProps,
 	MentionItem,
@@ -266,12 +266,12 @@ export const convertMarkdown = (markdown: string, type: EBacktickType): string =
 
 export const getSrcEmoji = (id: string) => {
 	if (!id) return '';
-	const baseUrl = `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+	const baseUrl = `${process.env.NX_CLOUDFLARE_CDN_URL}/emojis/${id}.webp`;
 	return createImgproxyUrl(baseUrl, { width: 100, height: 100, resizeType: 'fit' });
 };
 
 export const getSrcSound = (id: string) => {
-	return `${process.env.NX_BASE_IMG_URL}/sounds/${id}.mp3`;
+	return `${process.env.NX_CLOUDFLARE_CDN_URL}/sounds/${id}.mp3`;
 };
 
 export const checkLastChar = (text: string) => {
@@ -931,7 +931,7 @@ export function copyChannelLink(clanId: string, channelId: string) {
 	}
 }
 
-export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
+export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissionMedia> => {
 	const device = mediaType === 'audio' ? 'microphone' : 'camera';
 	try {
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

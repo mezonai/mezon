@@ -148,5 +148,9 @@
 		"savedToDisk": "녹화본을 {{fileName}}에 저장했습니다 ({{size}})",
 		"downloaded": "녹화본을 다운로드했습니다: {{fileName}} ({{size}})",
 		"failed": "녹화에 실패했습니다: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent 켜기",
+		"body": "KOMU Agent 아이콘을 클릭하면 이 통화에 AI 에이전트를 추가할 수 있습니다."
 	}
 }

@@ -80,6 +80,15 @@ const SFU_SERVER_RESTART_CLOSE_CODE = 1001;
 const SFU_ALONE_TIMEOUT_CLOSE_CODE = 4011;
 const SFU_DUPLICATE_SESSION_CLOSE_CODE = 4012;
 const PREFERRED_MICROPHONE_STORAGE_KEY = 'mezon.voice.inputDeviceId';
+const AGENT_HINT_DISMISSED_STORAGE_KEY = 'mezon.voice.agentHintDismissed';
+
+const readAgentHintDismissed = () => {
+	try {
+		return localStorage.getItem(AGENT_HINT_DISMISSED_STORAGE_KEY) === '1';
+	} catch {
+		return false;
+	}
+};
 const microphoneDeviceConstraint = (deviceId: string) => ({ deviceId: { exact: deviceId } });
 const getNativeMicrophoneCaptureOptions = () => {
 	const options = getNoiseSuppressionAudioCaptureOptions(true);
@@ -621,6 +630,15 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		setPushToTalkHintDismissed(false);
 	}, [roomId, joinRole]);
+	const [agentHintDismissed, setAgentHintDismissed] = useState(readAgentHintDismissed);
+	const dismissAgentHint = useCallback(() => {
+		setAgentHintDismissed(true);
+		try {
+			localStorage.setItem(AGENT_HINT_DISMISSED_STORAGE_KEY, '1');
+		} catch {
+			return;
+		}
+	}, []);
 	const holdToTalkRef = useRef(false);
 	const microphoneEnabledRef = useRef(microphoneEnabled);
 	microphoneEnabledRef.current = microphoneEnabled;
@@ -3039,6 +3057,8 @@ export function MezonSfuVoiceRoom({
 					onPushToTalk={(active) => void setPushToTalk(active)}
 					pushToTalkHintDismissed={pushToTalkHintDismissed}
 					onDismissPushToTalkHint={() => setPushToTalkHintDismissed(true)}
+					agentHintDismissed={agentHintDismissed}
+					onDismissAgentHint={dismissAgentHint}
 					weakNetwork={connectionState === 'connected' && weakNetwork}
 					onMicrophoneToggle={() => {
 						holdToTalkRef.current = false;

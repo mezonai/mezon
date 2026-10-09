@@ -148,5 +148,9 @@
 		"savedToDisk": "Opname opgeslagen als {{fileName}} ({{size}})",
 		"downloaded": "Opname gedownload: {{fileName}} ({{size}})",
 		"failed": "Opname mislukt: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent inschakelen",
+		"body": "Klik op het KOMU Agent-pictogram om de AI-agent aan dit gesprek toe te voegen."
 	}
 }

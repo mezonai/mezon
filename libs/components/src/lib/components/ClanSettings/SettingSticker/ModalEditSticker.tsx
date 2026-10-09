@@ -55,7 +55,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 	const tEmojiNs = useTranslation('clanEmojiSetting').t;
 	const t = isSticker ? tSticker : tEmoji;
 	const rawSource = isSticker ? (graphic as ClanSticker)?.source : (graphic as ClanEmoji)?.src;
-	const graphicSource = isSticker && !rawSource && graphic?.id ? `${process.env.NX_BASE_IMG_URL}/stickers/${graphic.id}.webp` : rawSource;
+	const graphicSource = isSticker && !rawSource && graphic?.id ? `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${graphic.id}.webp` : rawSource;
 	const [editingGraphic, setEditingGraphic] = useState<EditingGraphic>({
 		fileName: graphicSource?.split('/').pop() ?? null,
 		shortname: graphic?.shortname ?? '',

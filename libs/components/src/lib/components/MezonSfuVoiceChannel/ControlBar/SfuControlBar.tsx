@@ -28,6 +28,8 @@ interface SfuControlBarProps {
 	pushToTalkActive: boolean;
 	pushToTalkHintDismissed?: boolean;
 	onDismissPushToTalkHint?: () => void;
+	agentHintDismissed?: boolean;
+	onDismissAgentHint?: () => void;
 	weakNetwork: boolean;
 	microphoneEnabled: boolean;
 	cameraEnabled: boolean;
@@ -75,6 +77,8 @@ export const SfuControlBar = ({
 	pushToTalkActive,
 	pushToTalkHintDismissed = false,
 	onDismissPushToTalkHint,
+	agentHintDismissed = false,
+	onDismissAgentHint,
 	weakNetwork,
 	microphoneEnabled,
 	cameraEnabled,
@@ -119,6 +123,9 @@ export const SfuControlBar = ({
 	}, [weakNetwork]);
 	const showNetworkWarning = weakNetwork && !networkWarningDismissed;
 	const dismissNetworkWarning = () => setNetworkWarningDismissed(true);
+	const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
+	const showPushToTalkHint = joinRole === 'audience' && !pushToTalkHintDismissed && !deviceMenuOpen;
+	const showAgentHint = !agentHintDismissed && !showNetworkWarning && !deviceMenuOpen && !(joinRole === 'audience' && !pushToTalkHintDismissed);
 	return (
 		<footer className="relative z-20 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-t border-white/10 bg-[#11111b] px-4 py-3 max-md:flex max-md:flex-col max-md:justify-center max-md:gap-3 max-md:px-2 max-md:py-2">
 			<div className="flex items-center justify-start gap-4 max-md:justify-center max-md:gap-3">
@@ -156,6 +163,10 @@ export const SfuControlBar = ({
 						<PushToTalkControl
 							active={pushToTalkActive}
 							onChange={onPushToTalk}
+							devices={microphones}
+							selectedDeviceId={selectedMicrophone}
+							onSelect={onMicrophoneSelect}
+							onDeviceMenuOpenChange={setDeviceMenuOpen}
 							permissionState={microphonePermissionState}
 							hasMicrophoneAccess={hasMicrophoneAccess}
 							onPermissionRequest={onRequestMicrophonePermission}
@@ -164,7 +175,7 @@ export const SfuControlBar = ({
 						{showNetworkWarning ? (
 							<NetworkWarningHint onDismiss={dismissNetworkWarning} />
 						) : (
-							!pushToTalkHintDismissed && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />
+							showPushToTalkHint && <PushToTalkHint active={pushToTalkActive} onDismiss={onDismissPushToTalkHint} />
 						)}
 					</div>
 				)}
@@ -176,6 +187,7 @@ export const SfuControlBar = ({
 							selectedDeviceId={selectedMicrophone}
 							onToggle={onMicrophoneToggle}
 							onSelect={onMicrophoneSelect}
+							onDeviceMenuOpenChange={setDeviceMenuOpen}
 							permissionState={microphonePermissionState}
 							hasMicrophoneAccess={hasMicrophoneAccess}
 							onPermissionRequest={onRequestMicrophonePermission}
@@ -191,6 +203,7 @@ export const SfuControlBar = ({
 						selectedDeviceId={selectedCamera}
 						onToggle={onCameraToggle}
 						onSelect={onCameraSelect}
+						onDeviceMenuOpenChange={setDeviceMenuOpen}
 						permissionState={cameraPermissionState}
 						hasCameraAccess={hasCameraAccess}
 						onPermissionRequest={onRequestCameraPermission}
@@ -207,7 +220,7 @@ export const SfuControlBar = ({
 						/>
 					</div>
 				)}
-				<SfuAgentControl roomId={roomId} isExternalCalling={isExternalCalling} />
+				<SfuAgentControl roomId={roomId} isExternalCalling={isExternalCalling} showHint={showAgentHint} onDismissHint={onDismissAgentHint} />
 				{!isExternalCalling && <SfuRaisingHandControl />}
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>

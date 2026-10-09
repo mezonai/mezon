@@ -55,8 +55,10 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 			if (displayA > displayB) return 1;
 			return 0;
 		});
+		// everyone-mention: the Everyone role is hidden from suggestions for now (it notifies like @here); drop this filter to restore it.
+		const mentionableRoles = rolesToUse?.filter((item: ApiRole) => item.slug !== `everyone-${item.clan_id}`);
 		const roleMentions =
-			rolesToUse?.map((item: ApiRole) => ({
+			mentionableRoles?.map((item: ApiRole) => ({
 				id: item.id ?? '',
 				display: item.title,
 				avatarUrl: item.role_icon || '',

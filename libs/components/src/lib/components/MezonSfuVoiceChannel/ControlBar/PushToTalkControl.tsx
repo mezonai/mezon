@@ -1,10 +1,15 @@
 import { Icons } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
+import { SfuDeviceMenu } from './MediaDeviceMenu/SfuDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 interface PushToTalkControlProps {
 	active: boolean;
 	onChange: (active: boolean) => void;
+	devices: MediaDeviceInfo[];
+	selectedDeviceId: string;
+	onSelect: (deviceId: string) => void;
+	onDeviceMenuOpenChange?: (open: boolean) => void;
 	permissionState?: 'granted' | 'denied' | 'prompt' | null;
 	hasMicrophoneAccess?: boolean;
 	onPermissionRequest?: () => Promise<void>;
@@ -14,6 +19,10 @@ interface PushToTalkControlProps {
 export const PushToTalkControl = ({
 	active,
 	onChange,
+	devices,
+	selectedDeviceId,
+	onSelect,
+	onDeviceMenuOpenChange,
 	permissionState,
 	hasMicrophoneAccess,
 	onPermissionRequest,
@@ -56,6 +65,13 @@ export const PushToTalkControl = ({
 			{!showWarning && weakNetwork && (
 				<div className="pointer-events-none absolute -right-0.5 -top-0.5 z-10 h-3.5 w-3.5 rounded-full border-2 border-[#11111b] bg-orange-500" />
 			)}
+			<SfuDeviceMenu
+				label="Microphone"
+				devices={devices}
+				selectedDeviceId={selectedDeviceId}
+				onSelect={onSelect}
+				onOpenChange={onDeviceMenuOpenChange}
+			/>
 		</div>
 	);
 };

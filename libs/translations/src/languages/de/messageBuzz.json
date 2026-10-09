@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Gib deine Buzz-Nachricht ein",
 	"send": "Senden",
-	"emojiMatching": "Passende Emojis"
+	"emojiMatching": "Passende Emojis",
+	"anonymousNotAllowed": "Buzz ist im anonymen Modus nicht verfügbar"
 }

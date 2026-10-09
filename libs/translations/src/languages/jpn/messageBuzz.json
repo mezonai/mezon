@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Buzzメッセージを入力",
 	"send": "送信",
-	"emojiMatching": "絵文字が一致"
+	"emojiMatching": "絵文字が一致",
+	"anonymousNotAllowed": "匿名モードではBuzzを使用できません"
 }
