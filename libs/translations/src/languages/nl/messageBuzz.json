@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Voer je buzz-bericht in",
 	"send": "Verzenden",
-	"emojiMatching": "Passende emoji"
+	"emojiMatching": "Passende emoji",
+	"anonymousNotAllowed": "Buzz is niet beschikbaar in anonieme modus"
 }

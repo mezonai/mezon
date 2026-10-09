@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Ange ditt Buzz-meddelande",
 	"send": "Skicka",
-	"emojiMatching": "Matchande emoji"
+	"emojiMatching": "Matchande emoji",
+	"anonymousNotAllowed": "Buzz är inte tillgängligt i anonymt läge"
 }
