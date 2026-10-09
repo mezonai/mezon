@@ -25,9 +25,9 @@ const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps
 	};
 
 	const webHookAvatars = [
-		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-1.png`,
-		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-2.png`,
-		`${process.env.NX_BASE_IMG_URL}/images/webhook-avatar-3.png `
+		`${process.env.NX_CLOUDFLARE_CDN_URL}/images/webhook-avatar-1.png`,
+		`${process.env.NX_CLOUDFLARE_CDN_URL}/images/webhook-avatar-2.png`,
+		`${process.env.NX_CLOUDFLARE_CDN_URL}/images/webhook-avatar-3.png `
 	];
 
 	const getRandomAvatar = (): string => {

@@ -64,7 +64,7 @@ const AboutMezon = () => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
+			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
 		}
 		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 	}, [platform, version]);
@@ -177,7 +177,7 @@ const AboutMezon = () => {
 										<span className="text-gray-700 font-svnAvo">macOS</span>
 									</a>
 									<a
-										href={`${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}
+										href={`${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-purple-600 hover:text-pink-600"

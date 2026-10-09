@@ -15,3 +15,7 @@ export enum EMimeTypes {
 	heic = 'image/heic',
 	sticker = 'sticker'
 }
+export enum ETypesCDN {
+	KOMU = 2,
+	MEZON = 1
+}
