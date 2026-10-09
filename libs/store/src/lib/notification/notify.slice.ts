@@ -55,10 +55,11 @@ export const fetchListNotificationCached = async (
 ) => {
 	const state = getState();
 	const notificationData = state[NOTIFICATION_FEATURE_KEY].notifications[category as NotificationCategory];
+	const isLoadMore = Boolean(notificationId);
 	const apiKey = createApiKey('fetchListNotification', clanId, category || '', notificationId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, notificationData?.cache, noCache);
 
-	if (!shouldForceCall && notificationData) {
+	if (!isLoadMore && !shouldForceCall && notificationData) {
 		return {
 			notifications: notificationData.data ?? [],
 			fromCache: true
@@ -298,20 +299,21 @@ export const notificationSlice = createSlice({
 							lastId: data.length >= LIMIT_NOTIFICATION ? data[data.length - 1].id : '',
 							cache: createCacheMetadata()
 						};
-					} else if (dataParse.length > 0) {
-						const existing = state.notifications[category]?.data ?? [];
-						const existingIds = new Set(existing.map((item) => item.id));
-						const newItems = dataParse.filter((item) => !existingIds.has(item.id));
+					} else {
+						const nextLastId = data.length >= LIMIT_NOTIFICATION ? data[data.length - 1].id : '';
 
 						if (state.notifications[category]) {
-							state.notifications[category].data = [...existing, ...newItems];
-							if (data.length >= LIMIT_NOTIFICATION) {
-								state.notifications[category].lastId = data[data.length - 1].id;
+							if (dataParse.length > 0) {
+								const existing = state.notifications[category].data;
+								const existingIds = new Set(existing.map((item) => item.id));
+								const newItems = dataParse.filter((item) => !existingIds.has(item.id));
+								state.notifications[category].data = [...existing, ...newItems];
 							}
+							state.notifications[category].lastId = nextLastId;
 						} else {
 							state.notifications[category] = {
 								data: dataParse,
-								lastId: data.length >= LIMIT_NOTIFICATION ? data[data.length - 1].id : '',
+								lastId: nextLastId,
 								cache: createCacheMetadata()
 							};
 						}
