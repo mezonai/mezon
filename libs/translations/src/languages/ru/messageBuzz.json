@@ -1,6 +1,7 @@
 {
 	"enterMessage": "Введите Ваше сигнальное сообщение",
 	"send": "Отправить",
-	"emojiMatching": "Сопоставление эмодзи"
+	"emojiMatching": "Сопоставление эмодзи",
+	"anonymousNotAllowed": "Buzz недоступен в анонимном режиме"
 }
 

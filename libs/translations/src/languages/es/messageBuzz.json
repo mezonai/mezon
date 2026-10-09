@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Escribe tu mensaje de zumbido",
 	"send": "Enviar",
-	"emojiMatching": "Coincidencia de emojis"
+	"emojiMatching": "Coincidencia de emojis",
+	"anonymousNotAllowed": "Buzz no está disponible en modo anónimo"
 }
