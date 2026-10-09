@@ -72,7 +72,9 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	isEditing,
 	shouldShowUnreadBreak
 }: Readonly<MessageProps>) => {
-	const isSameUser = message?.user?.id === previousMessage?.user?.id;
+	const isSameUser =
+		message?.user?.id === previousMessage?.user?.id &&
+		(message?.user?.id !== process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || message.username === previousMessage.username);
 	const isTimeGreaterThan60Minutes =
 		!!message?.create_time_seconds && message.create_time_seconds - (previousMessage?.create_time_seconds || 0) < TIME_COMBINE_SECOND;
 	const isDifferentDay =
