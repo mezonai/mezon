@@ -263,6 +263,7 @@
 		"loadMore1Option": "Laad 1 antwoord meer",
 		"showLess": "Minder tonen",
 		"noVotesYet": "Nog geen stemmen",
-		"pollLabel": "[Enquête]"
+		"pollLabel": "[Enquête]",
+		"failedToCreatePoll": "Peiling maken mislukt"
 	}
 }

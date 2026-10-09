@@ -263,6 +263,7 @@
 		"loadMore1Option": "Ver mais 1 resposta",
 		"showLess": "Recolher",
 		"noVotesYet": "Ninguém votou ainda",
-		"pollLabel": "[Enquete]"
+		"pollLabel": "[Enquete]",
+		"failedToCreatePoll": "Falha ao criar a enquete"
 	}
 }

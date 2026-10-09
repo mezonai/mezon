@@ -169,5 +169,12 @@
 		"limit": "Бу клан өчен каналларның максималь санына ирешелде"
 	},
 	"moreFile": "яңа файл",
-	"moreFiles": "яңа файл"
+	"moreFiles": "яңа файл",
+	"topics": "Темалар",
+	"pinnedMessage": "Ныгытылган хәбәр",
+	"latestPin": "Соңгы ныгыту",
+	"poll": "Тавыш бирү",
+	"pollDiscussion": "Тавыш бирү",
+	"pollWithQuestion": "Сораштыру: {{question}}",
+	"messageFrom": "{{username}} хәбәре: {{message}}"
 }

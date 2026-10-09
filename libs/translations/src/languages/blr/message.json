@@ -263,6 +263,7 @@
 		"loadMore1Option": "Загрузіць яшчэ 1 адказ",
 		"showLess": "Згарнуць",
 		"noVotesYet": "Яшчэ няма галасоў",
-		"pollLabel": "[Апытанне]"
+		"pollLabel": "[Апытанне]",
+		"failedToCreatePoll": "Не ўдалося стварыць апытанне"
 	}
 }

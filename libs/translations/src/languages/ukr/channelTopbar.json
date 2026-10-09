@@ -169,5 +169,12 @@
 	"moreFile": "ще файлів",
 	"moreFiles": "ще файлів",
 	"joinedThreads": "Приєднані теми",
-	"archivedThreads": "Старі теми"
+	"archivedThreads": "Старі теми",
+	"topics": "Теми",
+	"pinnedMessage": "Закріплене повідомлення",
+	"latestPin": "Останнє закріплення",
+	"poll": "Голосування",
+	"pollDiscussion": "Голосування",
+	"pollWithQuestion": "Опитування: {{question}}",
+	"messageFrom": "Повідомлення від {{username}}: {{message}}"
 }

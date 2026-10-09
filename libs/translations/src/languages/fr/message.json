@@ -263,6 +263,7 @@
 		"loadMore1Option": "Voir 1 autre réponse",
 		"showLess": "Afficher moins",
 		"noVotesYet": "Aucun vote pour le moment",
-		"pollLabel": "[Sondage]"
+		"pollLabel": "[Sondage]",
+		"failedToCreatePoll": "Échec de la création du sondage"
 	}
 }

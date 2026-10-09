@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "Ontvanger heeft het gesprek niet beantwoord.",
 		"aloneTimeoutDisconnected": "Je verbinding met het stemkanaal is verbroken omdat je er te lang alleen in was.",
 		"duplicateSessionDisconnected": "Je bent op een ander apparaat lid geworden van het spraakkanaal. Deze sessie is daarom verbroken.",
-		"disconnectedRejoin": "Je verbinding met het spraakkanaal is verbroken."
+		"disconnectedRejoin": "Je verbinding met het spraakkanaal is verbroken.",
+		"weakNetworkDisconnected": "Je bent losgekoppeld van het spraakkanaal omdat je netwerk zwak is."
 	},
 	"usernameScreen": "Scherm van {{username}}",
 	"recording": {
@@ -152,5 +153,28 @@
 	"agentHint": {
 		"title": "KOMU Agent inschakelen",
 		"body": "Klik op het KOMU Agent-pictogram om de AI-agent aan dit gesprek toe te voegen."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Ruisfilter wordt toegepast…",
+		"applied": "Ruisfilter toegepast",
+		"preparing": "Ruisonderdrukking wordt toegepast…",
+		"audioBlocked": "Je audio wordt niet verzonden terwijl het filter wordt toegepast.",
+		"keepMuted": "Audio is gepauzeerd. Klik om je microfoon gedempt te houden."
+	},
+	"weakNetwork": "Zwak netwerk",
+	"networkWarning": "Je internetverbinding is onstabiel. Anderen horen je mogelijk niet duidelijk.",
+	"reconnectModal": {
+		"title": "Kan geen verbinding maken met spraak",
+		"description": "De spraakverbinding kon niet worden hersteld. Controleer je verbinding en probeer opnieuw deel te nemen.",
+		"weakNetworkTitle": "Zwakke netwerkverbinding",
+		"weakNetworkDescription": "Je netwerk is onstabiel, waardoor de spraakverbinding is verbroken. Controleer je verbinding en neem opnieuw deel.",
+		"rejoin": "Opnieuw deelnemen",
+		"joining": "Deelnemen…",
+		"exit": "Afsluiten"
+	},
+	"pushToTalk": {
+		"holdSpace": "Houd Spatie ingedrukt om te praten",
+		"holdingSpace": "Je praat — laat Spatie los om te dempen",
+		"hintBody": "Je bent lid geworden om te luisteren. Houd Spatie ingedrukt om je microfoon te openen terwijl je praat, laat los om weer te dempen."
 	}
 }

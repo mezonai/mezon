@@ -169,5 +169,12 @@
 		"limit": "Достигнуто максимальное количество каналов для этого клана"
 	},
 	"moreFile": "новый файл",
-	"moreFiles": "новые файлы"
+	"moreFiles": "новые файлы",
+	"topics": "Темы",
+	"pinnedMessage": "Закреплённое сообщение",
+	"latestPin": "Последнее закрепление",
+	"poll": "Голосование",
+	"pollDiscussion": "Голосование",
+	"pollWithQuestion": "Опрос: {{question}}",
+	"messageFrom": "Сообщение от {{username}}: {{message}}"
 }

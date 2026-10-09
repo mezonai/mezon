@@ -13,5 +13,136 @@
 	"community": "Gemenskap",
 	"desCommunity": "Veckovisa händelser och uppdateringar.",
 	"about": "Om",
-	"discoverAndJoin": "Upptäck och gå med i gemenskaper som delar dina intressen."
+	"discoverAndJoin": "Upptäck och gå med i gemenskaper som delar dina intressen.",
+	"title": "Hitta dina människor",
+	"titleHighlight": "människor",
+	"overline": "Mezon-klaner",
+	"subtitle": "Häng med gemenskaper som verkligen känns som hemma.",
+	"searchPlaceholder": "Sök gemenskaper",
+	"searchLabel": "Sök gemenskaper",
+	"featured": "Utvalda gemenskaper",
+	"orbitTitle": "Fler gemenskaper",
+	"orbitHint": "Bläddra",
+	"orbitPrev": "Föregående gemenskaper",
+	"orbitNext": "Nästa gemenskaper",
+	"indexKicker": "Index",
+	"enterClan": "Gå in",
+	"featuredBadge": "Utvald",
+	"viewAll": "Visa alla",
+	"seeAll": "Se alla",
+	"explore": "Utforska gemenskaper",
+	"loadMore": "Ladda fler gemenskaper",
+	"loadingMore": "Laddar...",
+	"joinCommunity": "Gå med i gemenskap",
+	"joinNow": "Gå med nu",
+	"joining": "Går med...",
+	"openInMezon": "Öppna i Mezon",
+	"share": "Dela",
+	"shareClan": "Dela klan",
+	"linkCopied": "Länk kopierad",
+	"copyFailed": "Kunde inte kopiera länken",
+	"copied": "Kopierad!",
+	"copy": "Kopiera",
+	"joinModal": {
+		"subtitle": "Välj hur du vill gå med i den här klanen",
+		"scanQr": "Skanna QR-kod",
+		"scanHint": "Använd telefonens kamera för att skanna och gå med",
+		"openLink": "Öppna länken direkt",
+		"openHint": "Öppna i ny flik"
+	},
+	"shareModal": {
+		"subtitle": "Dela den här klanen med dina vänner"
+	},
+	"online": "online",
+	"onlineCount": "{{count}} online",
+	"onlineCount_one": "{{count}} online",
+	"onlineCount_other": "{{count}} online",
+	"memberCount": "{{count}} medlemmar",
+	"memberCount_one": "{{count}} medlem",
+	"memberCount_other": "{{count}} medlemmar",
+	"statsLine": "{{members}} medlemmar",
+	"more": "Mer",
+	"categories": {
+		"gaming": "Spel",
+		"technology": "Teknik",
+		"education": "Utbildning",
+		"music": "Musik",
+		"anime": "Anime",
+		"sports": "Sport",
+		"lifestyle": "Livsstil"
+	},
+	"filters": {
+		"title": "Filter",
+		"category": "Kategori",
+		"language": "Språk",
+		"activity": "Aktivitet",
+		"verifiedOnly": "Endast verifierade",
+		"reset": "Återställ",
+		"showResults": "Visa gemenskaper",
+		"all": "Alla",
+		"open": "Filter"
+	},
+	"sort": {
+		"label": "Sortera",
+		"recommended": "Rekommenderade",
+		"largest": "Största",
+		"newest": "Nyaste"
+	},
+	"heading": {
+		"default": "Utforska gemenskaper",
+		"search": "{{count}} gemenskaper för “{{query}}”",
+		"category": "{{count}} {{category}}-gemenskaper",
+		"matching": "Gemenskaper som matchar “{{query}}”"
+	},
+	"empty": {
+		"searchTitle": "Vi kunde inte hitta en gemenskap för “{{query}}”.",
+		"searchHint": "Prova en annan sökning eller utforska populära kategorier.",
+		"clearSearch": "Rensa sökning",
+		"filterTitle": "Inga gemenskaper matchar dessa filter.",
+		"clearFilters": "Rensa filter",
+		"genericTitle": "Inga gemenskaper att visa ännu.",
+		"genericHint": "Kom tillbaka snart eller prova en annan sökning."
+	},
+	"error": {
+		"title": "Kunde inte ladda gemenskaper.",
+		"retry": "Försök igen",
+		"clanNotFound": "Den här gemenskapen kunde inte hittas.",
+		"backToDiscover": "Tillbaka till Discover"
+	},
+	"detail": {
+		"about": "Om",
+		"aboutThisCommunity": "Om den här gemenskapen",
+		"readMore": "Läs mer",
+		"readLess": "Läs mindre",
+		"joinThisCommunity": "Gå med i den här gemenskapen",
+		"created": "Skapad",
+		"communityType": "Typ av gemenskap",
+		"communityTypePublic": "Offentlig",
+		"noInvite": "Inbjudningar är inte tillgängliga för den här gemenskapen just nu.",
+		"similar": "Upptäck fler gemenskaper",
+		"breadcrumbDiscover": "Discover",
+		"back": "Tillbaka",
+		"unnamed": "Namnlös klan",
+		"noDescription": "En gemenskap på Mezon.",
+		"overview": "Översikt",
+		"presence": "Nu",
+		"membersLabel": "Medlemmar",
+		"onlineLabel": "Online",
+		"tags": "Taggar"
+	},
+	"card": {
+		"fallbackDescription": "En gemenskap på Mezon"
+	},
+	"addClan": {
+		"title": "Har du en klan du vill lägga till i Discovery?",
+		"body": "Lägg till din klan i Mezon Discovery för att nå miljontals användare och växa din gemenskap."
+	},
+	"header": {
+		"openMezon": "Öppna Mezon",
+		"login": "Öppna Mezon"
+	},
+	"a11y": {
+		"verified": "verifierad",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

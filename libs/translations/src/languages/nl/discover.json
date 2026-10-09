@@ -13,5 +13,136 @@
 	"community": "Community",
 	"desCommunity": "Wekelijkse evenementen en updates.",
 	"about": "Over",
-	"discoverAndJoin": "Ontdek en word lid van communities die jouw interesses delen."
+	"discoverAndJoin": "Ontdek en word lid van communities die jouw interesses delen.",
+	"title": "Vind jouw mensen",
+	"titleHighlight": "mensen",
+	"overline": "Mezon-clans",
+	"subtitle": "Hang rond met communities die echt als thuis voelen.",
+	"searchPlaceholder": "Communities zoeken",
+	"searchLabel": "Communities zoeken",
+	"featured": "Uitgelichte communities",
+	"orbitTitle": "Meer communities",
+	"orbitHint": "Bladeren",
+	"orbitPrev": "Vorige communities",
+	"orbitNext": "Volgende communities",
+	"indexKicker": "Index",
+	"enterClan": "Binnengaan",
+	"featuredBadge": "Uitgelicht",
+	"viewAll": "Alles bekijken",
+	"seeAll": "Alles zien",
+	"explore": "Communities verkennen",
+	"loadMore": "Meer communities laden",
+	"loadingMore": "Laden...",
+	"joinCommunity": "Deelnemen aan community",
+	"joinNow": "Nu deelnemen",
+	"joining": "Deelnemen...",
+	"openInMezon": "Openen in Mezon",
+	"share": "Delen",
+	"shareClan": "Clan delen",
+	"linkCopied": "Link gekopieerd",
+	"copyFailed": "Kan link niet kopiëren",
+	"copied": "Gekopieerd!",
+	"copy": "Kopiëren",
+	"joinModal": {
+		"subtitle": "Kies hoe je aan deze clan wilt deelnemen",
+		"scanQr": "QR-code scannen",
+		"scanHint": "Gebruik de camera van je telefoon om te scannen en deel te nemen",
+		"openLink": "Link direct openen",
+		"openHint": "Openen in nieuw tabblad"
+	},
+	"shareModal": {
+		"subtitle": "Deel deze clan met je vrienden"
+	},
+	"online": "online",
+	"onlineCount": "{{count}} online",
+	"onlineCount_one": "{{count}} online",
+	"onlineCount_other": "{{count}} online",
+	"memberCount": "{{count}} leden",
+	"memberCount_one": "{{count}} lid",
+	"memberCount_other": "{{count}} leden",
+	"statsLine": "{{members}} leden",
+	"more": "Meer",
+	"categories": {
+		"gaming": "Gaming",
+		"technology": "Technologie",
+		"education": "Onderwijs",
+		"music": "Muziek",
+		"anime": "Anime",
+		"sports": "Sport",
+		"lifestyle": "Lifestyle"
+	},
+	"filters": {
+		"title": "Filters",
+		"category": "Categorie",
+		"language": "Taal",
+		"activity": "Activiteit",
+		"verifiedOnly": "Alleen geverifieerd",
+		"reset": "Resetten",
+		"showResults": "Communities tonen",
+		"all": "Alle",
+		"open": "Filters"
+	},
+	"sort": {
+		"label": "Sorteren",
+		"recommended": "Aanbevolen",
+		"largest": "Grootste",
+		"newest": "Nieuwste"
+	},
+	"heading": {
+		"default": "Communities verkennen",
+		"search": "{{count}} communities voor “{{query}}”",
+		"category": "{{count}} {{category}}-communities",
+		"matching": "Communities die overeenkomen met “{{query}}”"
+	},
+	"empty": {
+		"searchTitle": "We konden geen community vinden voor “{{query}}”.",
+		"searchHint": "Probeer een andere zoekopdracht of verken populaire categorieën.",
+		"clearSearch": "Zoekopdracht wissen",
+		"filterTitle": "Geen communities voldoen aan deze filters.",
+		"clearFilters": "Filters wissen",
+		"genericTitle": "Nog geen communities om te tonen.",
+		"genericHint": "Kom snel terug of probeer een andere zoekopdracht."
+	},
+	"error": {
+		"title": "Kan communities niet laden.",
+		"retry": "Opnieuw proberen",
+		"clanNotFound": "Deze community is niet gevonden.",
+		"backToDiscover": "Terug naar Discover"
+	},
+	"detail": {
+		"about": "Over",
+		"aboutThisCommunity": "Over deze community",
+		"readMore": "Meer lezen",
+		"readLess": "Minder lezen",
+		"joinThisCommunity": "Deelnemen aan deze community",
+		"created": "Aangemaakt",
+		"communityType": "Communitytype",
+		"communityTypePublic": "Openbaar",
+		"noInvite": "Uitnodigingen zijn momenteel niet beschikbaar voor deze community.",
+		"similar": "Ontdek meer communities",
+		"breadcrumbDiscover": "Discover",
+		"back": "Terug",
+		"unnamed": "Naamloze clan",
+		"noDescription": "Een community op Mezon.",
+		"overview": "Overzicht",
+		"presence": "Nu",
+		"membersLabel": "Leden",
+		"onlineLabel": "Online",
+		"tags": "Tags"
+	},
+	"card": {
+		"fallbackDescription": "Een community op Mezon"
+	},
+	"addClan": {
+		"title": "Heb je een clan die je aan Discovery wilt toevoegen?",
+		"body": "Voeg je clan toe aan Mezon Discovery om miljoenen gebruikers te bereiken en je community te laten groeien."
+	},
+	"header": {
+		"openMezon": "Mezon openen",
+		"login": "Mezon openen"
+	},
+	"a11y": {
+		"verified": "geverifieerd",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

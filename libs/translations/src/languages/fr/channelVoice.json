@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "La personne appelée n'a pas répondu à l'appel.",
 		"aloneTimeoutDisconnected": "Vous avez été déconnecté du canal vocal car vous y étiez seul depuis trop longtemps.",
 		"duplicateSessionDisconnected": "Vous avez rejoint le salon vocal sur un autre appareil. Cette session a donc été déconnectée.",
-		"disconnectedRejoin": "Vous avez été déconnecté du salon vocal."
+		"disconnectedRejoin": "Vous avez été déconnecté du salon vocal.",
+		"weakNetworkDisconnected": "Vous avez été déconnecté du canal vocal car votre réseau est faible."
 	},
 	"usernameScreen": "Écran de {{username}}",
 	"recording": {
@@ -152,5 +153,28 @@
 	"agentHint": {
 		"title": "Activer KOMU Agent",
 		"body": "Cliquez sur l’icône KOMU Agent pour ajouter l’agent IA à cet appel."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Application du filtre antibruit…",
+		"applied": "Filtre antibruit appliqué",
+		"preparing": "Application de la suppression du bruit…",
+		"audioBlocked": "Votre audio n'est pas envoyé pendant l'application du filtre.",
+		"keepMuted": "L'audio est en pause. Cliquez pour garder votre micro coupé."
+	},
+	"weakNetwork": "Réseau faible",
+	"networkWarning": "Votre connexion internet est instable. Les autres pourraient ne pas vous entendre clairement.",
+	"reconnectModal": {
+		"title": "Impossible de se connecter au vocal",
+		"description": "La connexion vocale n'a pas pu être rétablie. Vérifiez votre connexion et réessayez de rejoindre.",
+		"weakNetworkTitle": "Connexion réseau faible",
+		"weakNetworkDescription": "Votre réseau est instable, la connexion vocale a donc été perdue. Vérifiez votre connexion et rejoignez à nouveau.",
+		"rejoin": "Rejoindre à nouveau",
+		"joining": "Connexion…",
+		"exit": "Quitter"
+	},
+	"pushToTalk": {
+		"holdSpace": "Maintenez Espace pour parler",
+		"holdingSpace": "Vous parlez — relâchez Espace pour couper le micro",
+		"hintBody": "Vous avez rejoint pour écouter. Maintenez Espace pour ouvrir votre micro pendant que vous parlez, relâchez pour couper à nouveau."
 	}
 }

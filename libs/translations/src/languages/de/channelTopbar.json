@@ -169,5 +169,12 @@
 		"limit": "Maximale Kanalanzahl für diesen Clan erreicht"
 	},
 	"moreFile": "weitere Dateien",
-	"moreFiles": "weitere Dateien"
+	"moreFiles": "weitere Dateien",
+	"topics": "Themen",
+	"pinnedMessage": "Angeheftete Nachricht",
+	"latestPin": "Neueste Anheftung",
+	"poll": "Abstimmung",
+	"pollDiscussion": "Abstimmung",
+	"pollWithQuestion": "Umfrage: {{question}}",
+	"messageFrom": "Nachricht von {{username}}: {{message}}"
 }

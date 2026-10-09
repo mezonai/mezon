@@ -13,6 +13,136 @@
 	"desFeature": "Попробуйте официальные функции этого клана!",
 	"community": "Сообщество",
 	"desCommunity": "Еженедельные мероприятия и обновления.",
-	"about": "О"
+	"about": "О",
+	"title": "Найдите своих людей",
+	"titleHighlight": "людей",
+	"overline": "Кланы Mezon",
+	"subtitle": "Проводите время в сообществах, которые действительно ощущаются как дом.",
+	"searchPlaceholder": "Поиск сообществ",
+	"searchLabel": "Поиск сообществ",
+	"featured": "Рекомендуемые сообщества",
+	"orbitTitle": "Больше сообществ",
+	"orbitHint": "Просмотр",
+	"orbitPrev": "Предыдущие сообщества",
+	"orbitNext": "Следующие сообщества",
+	"indexKicker": "Индекс",
+	"enterClan": "Войти",
+	"featuredBadge": "Рекомендуемое",
+	"viewAll": "Показать все",
+	"seeAll": "Смотреть все",
+	"explore": "Исследовать сообщества",
+	"loadMore": "Загрузить больше сообществ",
+	"loadingMore": "Загрузка...",
+	"joinCommunity": "Присоединиться к сообществу",
+	"joinNow": "Присоединиться сейчас",
+	"joining": "Присоединение...",
+	"openInMezon": "Открыть в Mezon",
+	"share": "Поделиться",
+	"shareClan": "Поделиться кланом",
+	"linkCopied": "Ссылка скопирована",
+	"copyFailed": "Не удалось скопировать ссылку",
+	"copied": "Скопировано!",
+	"copy": "Копировать",
+	"joinModal": {
+		"subtitle": "Выберите, как вы хотите присоединиться к этому клану",
+		"scanQr": "Отсканировать QR-код",
+		"scanHint": "Используйте камеру телефона, чтобы отсканировать и присоединиться",
+		"openLink": "Открыть ссылку напрямую",
+		"openHint": "Открыть в новой вкладке"
+	},
+	"shareModal": {
+		"subtitle": "Поделитесь этим кланом с друзьями"
+	},
+	"online": "в сети",
+	"onlineCount": "{{count}} в сети",
+	"onlineCount_one": "{{count}} в сети",
+	"onlineCount_other": "{{count}} в сети",
+	"memberCount": "{{count}} участников",
+	"memberCount_one": "{{count}} участник",
+	"memberCount_other": "{{count}} участников",
+	"statsLine": "{{members}} участников",
+	"more": "Ещё",
+	"categories": {
+		"gaming": "Игры",
+		"technology": "Технологии",
+		"education": "Образование",
+		"music": "Музыка",
+		"anime": "Аниме",
+		"sports": "Спорт",
+		"lifestyle": "Образ жизни"
+	},
+	"filters": {
+		"title": "Фильтры",
+		"category": "Категория",
+		"language": "Язык",
+		"activity": "Активность",
+		"verifiedOnly": "Только проверенные",
+		"reset": "Сбросить",
+		"showResults": "Показать сообщества",
+		"all": "Все",
+		"open": "Фильтры"
+	},
+	"sort": {
+		"label": "Сортировка",
+		"recommended": "Рекомендуемые",
+		"largest": "Крупнейшие",
+		"newest": "Новейшие"
+	},
+	"heading": {
+		"default": "Исследовать сообщества",
+		"search": "{{count}} сообществ по запросу «{{query}}»",
+		"category": "{{count}} сообществ {{category}}",
+		"matching": "Сообщества, соответствующие «{{query}}»"
+	},
+	"empty": {
+		"searchTitle": "Мы не смогли найти сообщество по запросу «{{query}}».",
+		"searchHint": "Попробуйте другой запрос или исследуйте популярные категории.",
+		"clearSearch": "Очистить поиск",
+		"filterTitle": "Ни одно сообщество не соответствует этим фильтрам.",
+		"clearFilters": "Очистить фильтры",
+		"genericTitle": "Пока нет сообществ для отображения.",
+		"genericHint": "Загляните позже или попробуйте другой запрос."
+	},
+	"error": {
+		"title": "Не удалось загрузить сообщества.",
+		"retry": "Попробовать снова",
+		"clanNotFound": "Это сообщество не найдено.",
+		"backToDiscover": "Назад в Discover"
+	},
+	"detail": {
+		"about": "О сообществе",
+		"aboutThisCommunity": "Об этом сообществе",
+		"readMore": "Читать далее",
+		"readLess": "Свернуть",
+		"joinThisCommunity": "Присоединиться к этому сообществу",
+		"created": "Создано",
+		"communityType": "Тип сообщества",
+		"communityTypePublic": "Публичное",
+		"noInvite": "Приглашения для этого сообщества сейчас недоступны.",
+		"similar": "Найти больше сообществ",
+		"breadcrumbDiscover": "Discover",
+		"back": "Назад",
+		"unnamed": "Клан без названия",
+		"noDescription": "Сообщество в Mezon.",
+		"overview": "Обзор",
+		"presence": "Сейчас",
+		"membersLabel": "Участники",
+		"onlineLabel": "В сети",
+		"tags": "Теги"
+	},
+	"card": {
+		"fallbackDescription": "Сообщество в Mezon"
+	},
+	"addClan": {
+		"title": "У вас есть клан, который хотите добавить в Discovery?",
+		"body": "Добавьте свой клан в Mezon Discovery, чтобы охватить миллионы пользователей и развивать своё сообщество."
+	},
+	"header": {
+		"openMezon": "Открыть Mezon",
+		"login": "Открыть Mezon"
+	},
+	"a11y": {
+		"verified": "проверено",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }
-
