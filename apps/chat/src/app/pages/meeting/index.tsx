@@ -305,7 +305,7 @@ export default function PreJoinCalling() {
 			await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
-					username: trimmed,
+					username: sanitizeUsername(account?.user?.username || trimmed),
 					metadata,
 					isGuest: !isUser as boolean
 				})
@@ -320,7 +320,7 @@ export default function PreJoinCalling() {
 			const res = await dispatch(
 				generateMeetTokenExternal({
 					token: code as string,
-					username,
+					username: sanitizeUsername(account?.user?.username || username.trim()),
 					metadata: refreshMetadata,
 					isGuest: !isUser
 				})
