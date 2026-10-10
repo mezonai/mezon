@@ -169,5 +169,12 @@
 		"limit": "Det maximala antalet kanaler för denna klan har uppnåtts"
 	},
 	"moreFile": "fler filer",
-	"moreFiles": "fler filer"
+	"moreFiles": "fler filer",
+	"topics": "Ämnen",
+	"pinnedMessage": "Fäst meddelande",
+	"latestPin": "Senaste fästningen",
+	"poll": "Röstning",
+	"pollDiscussion": "Röstning",
+	"pollWithQuestion": "Omröstning: {{question}}",
+	"messageFrom": "Meddelande från {{username}}: {{message}}"
 }

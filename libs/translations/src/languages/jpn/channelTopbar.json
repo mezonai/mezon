@@ -169,5 +169,12 @@
 		"limit": "このクランのチャンネル数が上限に達しました"
 	},
 	"moreFile": "ファイル",
-	"moreFiles": "ファイル"
+	"moreFiles": "ファイル",
+	"topics": "トピック",
+	"pinnedMessage": "ピン留めされたメッセージ",
+	"latestPin": "最新のピン留め",
+	"poll": "投票",
+	"pollDiscussion": "投票",
+	"pollWithQuestion": "投票: {{question}}",
+	"messageFrom": "{{username}}からのメッセージ: {{message}}"
 }

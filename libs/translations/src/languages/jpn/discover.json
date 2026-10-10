@@ -13,5 +13,136 @@
 	"community": "コミュニティ",
 	"desCommunity": "毎週のイベントとアップデート。",
 	"about": "概要",
-	"discoverAndJoin": "あなたの興味を共有するコミュニティを見つけて参加しましょう。"
+	"discoverAndJoin": "あなたの興味を共有するコミュニティを見つけて参加しましょう。",
+	"title": "仲間を見つけよう",
+	"titleHighlight": "仲間",
+	"overline": "Mezonのクラン",
+	"subtitle": "本当に居心地の良いコミュニティで過ごそう。",
+	"searchPlaceholder": "コミュニティを検索",
+	"searchLabel": "コミュニティを検索",
+	"featured": "おすすめのコミュニティ",
+	"orbitTitle": "さらに多くのコミュニティ",
+	"orbitHint": "見る",
+	"orbitPrev": "前のコミュニティ",
+	"orbitNext": "次のコミュニティ",
+	"indexKicker": "インデックス",
+	"enterClan": "入る",
+	"featuredBadge": "おすすめ",
+	"viewAll": "すべて表示",
+	"seeAll": "すべて見る",
+	"explore": "コミュニティを探索",
+	"loadMore": "さらにコミュニティを読み込む",
+	"loadingMore": "読み込み中...",
+	"joinCommunity": "コミュニティに参加",
+	"joinNow": "今すぐ参加",
+	"joining": "参加中...",
+	"openInMezon": "Mezonで開く",
+	"share": "共有",
+	"shareClan": "クランを共有",
+	"linkCopied": "リンクをコピーしました",
+	"copyFailed": "リンクをコピーできませんでした",
+	"copied": "コピーしました！",
+	"copy": "コピー",
+	"joinModal": {
+		"subtitle": "このクランへの参加方法を選択",
+		"scanQr": "QRコードをスキャン",
+		"scanHint": "スマートフォンのカメラでスキャンして参加",
+		"openLink": "リンクを直接開く",
+		"openHint": "新しいタブで開く"
+	},
+	"shareModal": {
+		"subtitle": "このクランを友達と共有"
+	},
+	"online": "オンライン",
+	"onlineCount": "{{count}}人がオンライン",
+	"onlineCount_one": "{{count}}人がオンライン",
+	"onlineCount_other": "{{count}}人がオンライン",
+	"memberCount": "{{count}}人のメンバー",
+	"memberCount_one": "{{count}}人のメンバー",
+	"memberCount_other": "{{count}}人のメンバー",
+	"statsLine": "{{members}}人のメンバー",
+	"more": "もっと見る",
+	"categories": {
+		"gaming": "ゲーム",
+		"technology": "テクノロジー",
+		"education": "教育",
+		"music": "音楽",
+		"anime": "アニメ",
+		"sports": "スポーツ",
+		"lifestyle": "ライフスタイル"
+	},
+	"filters": {
+		"title": "フィルター",
+		"category": "カテゴリ",
+		"language": "言語",
+		"activity": "アクティビティ",
+		"verifiedOnly": "認証済みのみ",
+		"reset": "リセット",
+		"showResults": "コミュニティを表示",
+		"all": "すべて",
+		"open": "フィルター"
+	},
+	"sort": {
+		"label": "並べ替え",
+		"recommended": "おすすめ",
+		"largest": "最大",
+		"newest": "最新"
+	},
+	"heading": {
+		"default": "コミュニティを探索",
+		"search": "「{{query}}」のコミュニティ{{count}}件",
+		"category": "{{category}}のコミュニティ{{count}}件",
+		"matching": "「{{query}}」に一致するコミュニティ"
+	},
+	"empty": {
+		"searchTitle": "「{{query}}」のコミュニティが見つかりませんでした。",
+		"searchHint": "別の検索を試すか、人気のカテゴリを探索してください。",
+		"clearSearch": "検索をクリア",
+		"filterTitle": "これらのフィルターに一致するコミュニティはありません。",
+		"clearFilters": "フィルターをクリア",
+		"genericTitle": "表示できるコミュニティはまだありません。",
+		"genericHint": "しばらくしてからもう一度確認するか、別の検索を試してください。"
+	},
+	"error": {
+		"title": "コミュニティを読み込めませんでした。",
+		"retry": "再試行",
+		"clanNotFound": "このコミュニティは見つかりませんでした。",
+		"backToDiscover": "Discoverに戻る"
+	},
+	"detail": {
+		"about": "概要",
+		"aboutThisCommunity": "このコミュニティについて",
+		"readMore": "もっと読む",
+		"readLess": "折りたたむ",
+		"joinThisCommunity": "このコミュニティに参加",
+		"created": "作成日",
+		"communityType": "コミュニティの種類",
+		"communityTypePublic": "公開",
+		"noInvite": "このコミュニティへの招待は現在利用できません。",
+		"similar": "他のコミュニティを見つける",
+		"breadcrumbDiscover": "Discover",
+		"back": "戻る",
+		"unnamed": "無名のクラン",
+		"noDescription": "Mezonのコミュニティ。",
+		"overview": "概要",
+		"presence": "現在",
+		"membersLabel": "メンバー",
+		"onlineLabel": "オンライン",
+		"tags": "タグ"
+	},
+	"card": {
+		"fallbackDescription": "Mezonのコミュニティ"
+	},
+	"addClan": {
+		"title": "Discoveryに追加したいクランはありますか？",
+		"body": "あなたのクランをMezon Discoveryに追加して、何百万人ものユーザーにリーチし、コミュニティを成長させましょう。"
+	},
+	"header": {
+		"openMezon": "Mezonを開く",
+		"login": "Mezonを開く"
+	},
+	"a11y": {
+		"verified": "認証済み",
+		"communityCard": "{{name}}{{verified}}、{{members}}"
+	}
 }

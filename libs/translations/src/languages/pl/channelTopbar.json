@@ -169,5 +169,12 @@
 	"moreFile": "kolejny plik",
 	"moreFiles": "kolejne pliki",
 	"joinedThreads": "Dołączone wątki",
-	"archivedThreads": "Starsze wątki"
+	"archivedThreads": "Starsze wątki",
+	"topics": "Tematy",
+	"pinnedMessage": "Przypięta wiadomość",
+	"latestPin": "Najnowsze przypięcie",
+	"poll": "Głosowanie",
+	"pollDiscussion": "Głosowanie",
+	"pollWithQuestion": "Ankieta: {{question}}",
+	"messageFrom": "Wiadomość od {{username}}: {{message}}"
 }

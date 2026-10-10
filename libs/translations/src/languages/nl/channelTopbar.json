@@ -169,5 +169,12 @@
 	"moreFile": "meer bestand",
 	"moreFiles": "meer bestanden",
 	"joinedThreads": "Deelgenomen threads",
-	"archivedThreads": "Oudere threads"
+	"archivedThreads": "Oudere threads",
+	"topics": "Onderwerpen",
+	"pinnedMessage": "Vastgezet bericht",
+	"latestPin": "Laatste vastzetting",
+	"poll": "Stemming",
+	"pollDiscussion": "Stemming",
+	"pollWithQuestion": "Peiling: {{question}}",
+	"messageFrom": "Bericht van {{username}}: {{message}}"
 }

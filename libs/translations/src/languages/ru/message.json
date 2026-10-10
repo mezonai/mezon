@@ -262,7 +262,8 @@
 		"loadMore1Option": "Показать ещё 1 вариант",
 		"showLess": "Показать меньше",
 		"noVotesYet": "Голосов пока нет",
-		"pollLabel": "[Опрос]"
+		"pollLabel": "[Опрос]",
+		"failedToCreatePoll": "Не удалось создать опрос"
 	},
 	"unknown": "неизвестно"
 }

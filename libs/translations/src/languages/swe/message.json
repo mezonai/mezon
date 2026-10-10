@@ -263,6 +263,7 @@
 		"loadMore1Option": "Visa 1 svar mer",
 		"showLess": "Dölj mer",
 		"noVotesYet": "Inga röster än",
-		"pollLabel": "[Röstning]"
+		"pollLabel": "[Röstning]",
+		"failedToCreatePoll": "Kunde inte skapa omröstningen"
 	}
 }

@@ -263,6 +263,7 @@
 		"loadMore1Option": "Завантажити ще 1 відповідь",
 		"showLess": "Згорнути",
 		"noVotesYet": "Ще немає голосів",
-		"pollLabel": "[Опитування]"
+		"pollLabel": "[Опитування]",
+		"failedToCreatePoll": "Не вдалося створити опитування"
 	}
 }

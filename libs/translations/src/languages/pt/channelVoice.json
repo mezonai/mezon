@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "O destinatário não atendeu a chamada.",
 		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo.",
 		"duplicateSessionDisconnected": "Você entrou no canal de voz em outro dispositivo, então esta sessão foi desconectada.",
-		"disconnectedRejoin": "Você foi desconectado do canal de voz."
+		"disconnectedRejoin": "Você foi desconectado do canal de voz.",
+		"weakNetworkDisconnected": "Você foi desconectado do canal de voz porque sua rede está fraca."
 	},
 	"usernameScreen": "Tela de {{username}}",
 	"recording": {
@@ -152,5 +153,28 @@
 	"agentHint": {
 		"title": "Ative o KOMU Agent",
 		"body": "Clique no ícone do KOMU Agent para adicionar o agente de IA a esta chamada."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Aplicando filtro de ruído…",
+		"applied": "Filtro de ruído aplicado",
+		"preparing": "Aplicando supressão de ruído…",
+		"audioBlocked": "Seu áudio não está sendo enviado enquanto o filtro é aplicado.",
+		"keepMuted": "O áudio está pausado. Clique para manter o microfone silenciado."
+	},
+	"weakNetwork": "Rede fraca",
+	"networkWarning": "Sua conexão de internet está instável. Outros podem não te ouvir com clareza.",
+	"reconnectModal": {
+		"title": "Não foi possível conectar ao canal de voz",
+		"description": "A conexão de voz não pôde ser restaurada. Verifique sua conexão e tente entrar novamente.",
+		"weakNetworkTitle": "Conexão de rede fraca",
+		"weakNetworkDescription": "Sua rede está instável, então a conexão de voz foi perdida. Verifique sua conexão e entre novamente.",
+		"rejoin": "Entrar novamente",
+		"joining": "Entrando…",
+		"exit": "Sair"
+	},
+	"pushToTalk": {
+		"holdSpace": "Segure Espaço para falar",
+		"holdingSpace": "Falando — solte Espaço para silenciar",
+		"hintBody": "Você entrou para ouvir. Segure Espaço para abrir seu microfone enquanto fala, solte para silenciar novamente."
 	}
 }

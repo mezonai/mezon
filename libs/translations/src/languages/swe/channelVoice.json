@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "Mottagaren svarade inte på samtal.",
 		"aloneTimeoutDisconnected": "Du kopplades från röstkanalen eftersom du var ensam i den för länge.",
 		"duplicateSessionDisconnected": "Du gick med i röstkanalen på en annan enhet, så den här sessionen kopplades från.",
-		"disconnectedRejoin": "Du kopplades från röstkanalen."
+		"disconnectedRejoin": "Du kopplades från röstkanalen.",
+		"weakNetworkDisconnected": "Du kopplades från röstkanalen eftersom ditt nätverk är svagt."
 	},
 	"usernameScreen": "{{username}}s skärm",
 	"recording": {
@@ -152,5 +153,28 @@
 	"agentHint": {
 		"title": "Slå på KOMU Agent",
 		"body": "Klicka på KOMU Agent-ikonen för att lägga till AI-agenten i det här samtalet."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Tillämpar brusfilter…",
+		"applied": "Brusfilter tillämpat",
+		"preparing": "Tillämpar brusreducering…",
+		"audioBlocked": "Ditt ljud skickas inte medan filtret tillämpas.",
+		"keepMuted": "Ljudet är pausat. Klicka för att hålla mikrofonen avstängd."
+	},
+	"weakNetwork": "Svagt nätverk",
+	"networkWarning": "Din internetanslutning är instabil. Andra kanske inte hör dig tydligt.",
+	"reconnectModal": {
+		"title": "Kan inte ansluta till röst",
+		"description": "Röstanslutningen kunde inte återställas. Kontrollera anslutningen och försök gå med igen.",
+		"weakNetworkTitle": "Svag nätverksanslutning",
+		"weakNetworkDescription": "Ditt nätverk är instabilt, så röstanslutningen förlorades. Kontrollera anslutningen och gå med igen.",
+		"rejoin": "Gå med igen",
+		"joining": "Går med…",
+		"exit": "Avsluta"
+	},
+	"pushToTalk": {
+		"holdSpace": "Håll ned Mellanslag för att prata",
+		"holdingSpace": "Du pratar — släpp Mellanslag för att stänga av",
+		"hintBody": "Du gick med för att lyssna. Håll ned Mellanslag för att öppna mikrofonen medan du pratar, släpp för att stänga av igen."
 	}
 }
