@@ -69,6 +69,7 @@ import {
 
 import { SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
+import { SfuSlotAssignments } from './sfuSlotAssignments';
 
 const ICE_RECOVERY_GRACE_MS = 4000;
 const NETWORK_QUALITY_INTERVAL_MS = 5000;
@@ -553,6 +554,7 @@ export function MezonSfuVoiceRoom({
 	const [selfPeerId, setSelfPeerId] = useState<string>();
 	const selfPeerIdRef = useRef<string>();
 	const peerStateByIdRef = useRef(new Map<string, SfuPeer>());
+	const slotAssignmentsRef = useRef(new SfuSlotAssignments());
 	const currentSfuRoleRef = useRef(joinRole);
 	const microphonePermissionRevokedRef = useRef(false);
 	const desiredMediaRef = useRef({ microphoneEnabled, cameraEnabled });
@@ -845,6 +847,18 @@ export function MezonSfuVoiceRoom({
 		if (pcRef.current !== pc || negotiatingRef.current) return;
 		setRemoteMedia((current) => {
 			if (pcRef.current !== pc || negotiatingRef.current) return current;
+			if (slotAssignmentsRef.current.enabled) {
+				const next = new Map<string, RemoteMedia>();
+				for (const [peerId, peer] of peerStateByIdRef.current) {
+					const id = `sfu-peer-${peerId}`;
+					next.set(id, mergeRemotePeerState({ id }, peer));
+				}
+				for (const [peerId, media] of slotAssignmentsRef.current.getMedia(pc.getTransceivers())) {
+					const previous = next.get(media.id);
+					next.set(media.id, { ...previous, ...media, userId: media.userId ?? previous?.userId, peerId });
+				}
+				return next;
+			}
 			const next = new Map(current);
 			for (const transceiver of pc.getTransceivers()) {
 				const mid = transceiver.mid;
@@ -889,6 +903,11 @@ export function MezonSfuVoiceRoom({
 				peerStateByIdRef.current.set(peerId, updated);
 				return updated;
 			});
+			slotAssignmentsRef.current.seedMembers(peers);
+			if (slotAssignmentsRef.current.enabled) {
+				if (pcRef.current) syncRemoteMedia(pcRef.current);
+				return;
+			}
 			for (const peer of peers) {
 				for (const mid of [peer.mid_audio, peer.mid_video, peer.mid_screen].filter((mid) => mid != null && Number(mid) >= 3).map(String)) {
 					peerIdsByMidRef.current.set(mid, String(peer.peer_id));
@@ -1580,6 +1599,7 @@ export function MezonSfuVoiceRoom({
 			peerIdsByMid.clear();
 			rolesByMid.clear();
 			peerStateByIdRef.current.clear();
+			slotAssignmentsRef.current.reset();
 			setRemoteMedia(new Map());
 		};
 
@@ -1662,12 +1682,17 @@ export function MezonSfuVoiceRoom({
 				const localStream = localStreamRef.current || (await prepareLocalMedia());
 				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 				const stabilizedSdp = stabilizeInactiveVideoSections(offer.sdp, pc.currentRemoteDescription?.sdp);
+				slotAssignmentsRef.current.observeOffer(offer.sdp);
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: stabilizedSdp }));
 				if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 				const uplinkVideoTransceiver = pc.getTransceivers().find((item) => item.mid === '1');
 				if (uplinkVideoTransceiver) forceVideoCodec(uplinkVideoTransceiver, CAMERA_CODEC);
 				const screenTransceiver = pc.getTransceivers().find((item) => item.mid === '2');
 				if (screenTransceiver) forceVideoCodec(screenTransceiver, SCREEN_CODEC);
+				if (slotAssignmentsRef.current.enabled && joinRole === 'speaker') {
+					if (uplinkVideoTransceiver) uplinkVideoTransceiver.direction = 'sendonly';
+					if (screenTransceiver) screenTransceiver.direction = 'sendonly';
+				}
 
 				if (!localTracksAddedRef.current) {
 					const audioTrack = localStream.getAudioTracks()[0];
@@ -1836,7 +1861,9 @@ export function MezonSfuVoiceRoom({
 			!(wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED);
 
 		const openSignaling = () => {
-			if (!canOpenSignaling()) return;
+			if (!canOpenSignaling()) {
+				return;
+			}
 			resetAndCreatePeerConnection();
 			const secureServerUrl =
 				window.location.protocol === 'https:' && serverUrl.startsWith('ws://') ? `wss://${serverUrl.slice(5)}` : serverUrl;
@@ -1885,6 +1912,20 @@ export function MezonSfuVoiceRoom({
 				try {
 					message = JSON.parse(data) as SignalMessage;
 				} catch {
+					return;
+				}
+				if (message.type === 'slot_assigned' || message.type === 'slot_released') {
+					if (slotAssignmentsRef.current.handle(message)) {
+						if (message.type === 'slot_assigned' && message.peer_id != null) {
+							const peerId = String(message.peer_id);
+							peerStateByIdRef.current.set(peerId, {
+								...peerStateByIdRef.current.get(peerId),
+								peer_id: message.peer_id,
+								user_id: message.user_id ?? peerStateByIdRef.current.get(peerId)?.user_id
+							});
+						}
+						if (pcRef.current) syncRemoteMedia(pcRef.current);
+					}
 					return;
 				}
 				if (typeof message.participant_count === 'number') {
@@ -1977,6 +2018,11 @@ export function MezonSfuVoiceRoom({
 				if (message.type === 'peer_left') {
 					const leavingPeerId = message.peer_id != null ? String(message.peer_id) : undefined;
 					if (leavingPeerId) peerStateByIdRef.current.delete(leavingPeerId);
+					if (slotAssignmentsRef.current.enabled) {
+						slotAssignmentsRef.current.removePeer(message);
+						if (pcRef.current) syncRemoteMedia(pcRef.current);
+						return;
+					}
 					const mids = getDepartedMids(
 						leavingPeerId,
 						message.user_id,
@@ -2146,7 +2192,6 @@ export function MezonSfuVoiceRoom({
 			window.removeEventListener('online', handleOnline);
 			window.removeEventListener('offline', handleNetworkLoss);
 		};
-
 		void prepareLocalMedia().finally(() => {
 			if (disposed || !reconnectAllowed) return;
 			localMediaPreparedRef.current = true;
@@ -2224,6 +2269,7 @@ export function MezonSfuVoiceRoom({
 			peerIdsByMid.clear();
 			rolesByMid.clear();
 			peerStateById.clear();
+			slotAssignmentsRef.current.reset();
 			userIdsByMid.clear();
 			retiredMidsRef.current.clear();
 			setRemoteMedia(new Map());
@@ -2266,7 +2312,12 @@ export function MezonSfuVoiceRoom({
 			if (sender) {
 				await sender.replaceTrack(null);
 				const transceiver = pc.getTransceivers().find((item) => item.sender === sender);
-				if (transceiver && transceiver.direction !== 'recvonly' && transceiver.direction !== 'inactive') {
+				if (
+					!slotAssignmentsRef.current.enabled &&
+					transceiver &&
+					transceiver.direction !== 'recvonly' &&
+					transceiver.direction !== 'inactive'
+				) {
 					transceiver.direction = 'recvonly';
 				}
 			}
