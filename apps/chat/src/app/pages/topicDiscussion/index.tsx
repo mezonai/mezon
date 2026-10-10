@@ -23,9 +23,9 @@ const TopicDiscussionMain = () => {
 	});
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex flex-col h-full border-l dark:border-borderDivider border-bgLightTertiary">
 			<TopicHeader />
-			<div className="flex flex-col h-full border-l dark:border-borderDivider border-bgLightTertiary">
+			<div className="flex flex-col h-full">
 				<TopicDiscussionBox currentTopicId={currentTopicId || ''} />
 			</div>
 		</div>
