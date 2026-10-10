@@ -27,7 +27,7 @@ import type {
 	IMentionOnMessage,
 	IMessageSendPayload,
 	IMessageWithUser,
-	IPermissonMedia,
+	IPermissionMedia,
 	IRolesClan,
 	MentionDataProps,
 	MentionItem,
@@ -51,6 +51,7 @@ export * from './calculateAlbumLayout';
 export * from './call';
 export * from './callbacks';
 export * from './canvasLink';
+export * from './cdnSignature';
 export * from './convertMessageToHtml';
 export * from './dateI18n';
 export * from './detectTokenMessage';
@@ -265,12 +266,12 @@ export const convertMarkdown = (markdown: string, type: EBacktickType): string =
 
 export const getSrcEmoji = (id: string) => {
 	if (!id) return '';
-	const baseUrl = `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+	const baseUrl = `${process.env.NX_CLOUDFLARE_CDN_URL}/emojis/${id}.webp`;
 	return createImgproxyUrl(baseUrl, { width: 100, height: 100, resizeType: 'fit' });
 };
 
 export const getSrcSound = (id: string) => {
-	return `${process.env.NX_BASE_IMG_URL}/sounds/${id}.mp3`;
+	return `${process.env.NX_CLOUDFLARE_CDN_URL}/sounds/${id}.mp3`;
 };
 
 export const checkLastChar = (text: string) => {
@@ -898,7 +899,10 @@ export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptio
 	}
 	const { width, height, resizeType } = options;
 	const processingOptions = `rs:${resizeType}:${width}:${height}:1/mb:2097152`;
-	const path = `/${processingOptions}/plain/${sourceImageUrl}@webp`;
+	// imgproxy reads a plain source url up to its own `?` / `@`, so a CDN url that
+	// carries its signature as a query string has to be escaped to reach the CDN whole.
+	const source = /[?@]/.test(sourceImageUrl) ? encodeURIComponent(sourceImageUrl) : sourceImageUrl;
+	const path = `/${processingOptions}/plain/${source}@webp`;
 
 	return `${process.env.NX_IMGPROXY_BASE_URL}/${process.env.NX_IMGPROXY_KEY}${path}`;
 };
@@ -927,7 +931,7 @@ export function copyChannelLink(clanId: string, channelId: string) {
 	}
 }
 
-export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissonMedia> => {
+export const requestMediaPermission = async (mediaType: 'audio' | 'video'): Promise<IPermissionMedia> => {
 	const device = mediaType === 'audio' ? 'microphone' : 'camera';
 	try {
 		if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

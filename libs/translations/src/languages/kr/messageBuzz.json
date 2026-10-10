@@ -1,5 +1,6 @@
 {
 	"enterMessage": "buzz 메시지 입력",
 	"send": "보내기",
-	"emojiMatching": "일치하는 이모지"
+	"emojiMatching": "일치하는 이모지",
+	"anonymousNotAllowed": "익명 모드에서는 Buzz를 사용할 수 없습니다"
 }

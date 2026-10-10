@@ -263,6 +263,7 @@
 		"loadMore1Option": "1 weitere Antwort anzeigen",
 		"showLess": "Weniger anzeigen",
 		"noVotesYet": "Noch keine Stimmen abgegeben",
-		"pollLabel": "[Umfrage]"
+		"pollLabel": "[Umfrage]",
+		"failedToCreatePoll": "Umfrage konnte nicht erstellt werden"
 	}
 }

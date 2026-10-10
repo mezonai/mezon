@@ -13,5 +13,136 @@
 	"community": "Спільнота",
 	"desCommunity": "Події та щотижневі оновлення.",
 	"about": "Про",
-	"discoverAndJoin": "Відкривайте та приєднуйтеся до спільнот, які поділяють ваші інтереси."
+	"discoverAndJoin": "Відкривайте та приєднуйтеся до спільнот, які поділяють ваші інтереси.",
+	"title": "Знайдіть своїх людей",
+	"titleHighlight": "людей",
+	"overline": "Клани Mezon",
+	"subtitle": "Проводьте час із спільнотами, які справді відчуваються як дім.",
+	"searchPlaceholder": "Пошук спільнот",
+	"searchLabel": "Пошук спільнот",
+	"featured": "Рекомендовані спільноти",
+	"orbitTitle": "Більше спільнот",
+	"orbitHint": "Перегляд",
+	"orbitPrev": "Попередні спільноти",
+	"orbitNext": "Наступні спільноти",
+	"indexKicker": "Індекс",
+	"enterClan": "Увійти",
+	"featuredBadge": "Рекомендовано",
+	"viewAll": "Переглянути все",
+	"seeAll": "Дивитися все",
+	"explore": "Досліджувати спільноти",
+	"loadMore": "Завантажити більше спільнот",
+	"loadingMore": "Завантаження...",
+	"joinCommunity": "Приєднатися до спільноти",
+	"joinNow": "Приєднатися зараз",
+	"joining": "Приєднання...",
+	"openInMezon": "Відкрити в Mezon",
+	"share": "Поділитися",
+	"shareClan": "Поділитися кланом",
+	"linkCopied": "Посилання скопійовано",
+	"copyFailed": "Не вдалося скопіювати посилання",
+	"copied": "Скопійовано!",
+	"copy": "Копіювати",
+	"joinModal": {
+		"subtitle": "Виберіть, як ви хочете приєднатися до цього клану",
+		"scanQr": "Сканувати QR-код",
+		"scanHint": "Використовуйте камеру телефона, щоб відсканувати та приєднатися",
+		"openLink": "Відкрити посилання напряму",
+		"openHint": "Відкрити в новій вкладці"
+	},
+	"shareModal": {
+		"subtitle": "Поділіться цим кланом з друзями"
+	},
+	"online": "у мережі",
+	"onlineCount": "{{count}} у мережі",
+	"onlineCount_one": "{{count}} у мережі",
+	"onlineCount_other": "{{count}} у мережі",
+	"memberCount": "{{count}} учасників",
+	"memberCount_one": "{{count}} учасник",
+	"memberCount_other": "{{count}} учасників",
+	"statsLine": "{{members}} учасників",
+	"more": "Ще",
+	"categories": {
+		"gaming": "Ігри",
+		"technology": "Технології",
+		"education": "Освіта",
+		"music": "Музика",
+		"anime": "Аніме",
+		"sports": "Спорт",
+		"lifestyle": "Стиль життя"
+	},
+	"filters": {
+		"title": "Фільтри",
+		"category": "Категорія",
+		"language": "Мова",
+		"activity": "Активність",
+		"verifiedOnly": "Лише перевірені",
+		"reset": "Скинути",
+		"showResults": "Показати спільноти",
+		"all": "Усі",
+		"open": "Фільтри"
+	},
+	"sort": {
+		"label": "Сортувати",
+		"recommended": "Рекомендовані",
+		"largest": "Найбільші",
+		"newest": "Найновіші"
+	},
+	"heading": {
+		"default": "Досліджуйте спільноти",
+		"search": "{{count}} спільнот за запитом «{{query}}»",
+		"category": "{{count}} спільнот {{category}}",
+		"matching": "Спільноти, що відповідають «{{query}}»"
+	},
+	"empty": {
+		"searchTitle": "Ми не змогли знайти спільноту за запитом «{{query}}».",
+		"searchHint": "Спробуйте інший пошук або дослідіть популярні категорії.",
+		"clearSearch": "Очистити пошук",
+		"filterTitle": "Жодна спільнота не відповідає цим фільтрам.",
+		"clearFilters": "Очистити фільтри",
+		"genericTitle": "Поки немає спільнот для показу.",
+		"genericHint": "Заходьте пізніше або спробуйте інший пошук."
+	},
+	"error": {
+		"title": "Не вдалося завантажити спільноти.",
+		"retry": "Спробувати знову",
+		"clanNotFound": "Цю спільноту не знайдено.",
+		"backToDiscover": "Назад до Discover"
+	},
+	"detail": {
+		"about": "Про",
+		"aboutThisCommunity": "Про цю спільноту",
+		"readMore": "Читати далі",
+		"readLess": "Згорнути",
+		"joinThisCommunity": "Приєднатися до цієї спільноти",
+		"created": "Створено",
+		"communityType": "Тип спільноти",
+		"communityTypePublic": "Публічна",
+		"noInvite": "Запрошення для цієї спільноти наразі недоступні.",
+		"similar": "Знайти більше спільнот",
+		"breadcrumbDiscover": "Discover",
+		"back": "Назад",
+		"unnamed": "Клан без назви",
+		"noDescription": "Спільнота в Mezon.",
+		"overview": "Огляд",
+		"presence": "Зараз",
+		"membersLabel": "Учасники",
+		"onlineLabel": "У мережі",
+		"tags": "Теги"
+	},
+	"card": {
+		"fallbackDescription": "Спільнота в Mezon"
+	},
+	"addClan": {
+		"title": "Маєте клан, який хочете додати до Discovery?",
+		"body": "Додайте свій клан до Mezon Discovery, щоб охопити мільйони користувачів і розвивати свою спільноту."
+	},
+	"header": {
+		"openMezon": "Відкрити Mezon",
+		"login": "Відкрити Mezon"
+	},
+	"a11y": {
+		"verified": "перевірено",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

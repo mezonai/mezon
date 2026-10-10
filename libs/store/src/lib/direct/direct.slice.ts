@@ -15,6 +15,7 @@ import type {
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
+import { cdnSignatureActions } from '../cdnSignature/cdnSignature.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
 import type { ChannelMetaEntity } from '../channels/channelmeta.slice';
@@ -114,15 +115,17 @@ export const createNewDirectMessage = createAsyncThunk(
 					directActions.upsertOne({
 						id: response.channel_id || '0',
 						...response,
-						usernames: Array.isArray(username) ? username : username ? [username] : [],
-						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : [],
+						usernames: Array.isArray(username) ? username : username ? [username] : undefined,
+						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : undefined,
 						channel_label: Array.isArray(display_names)
 							? display_names.join(',')
 							: Array.isArray(username)
 								? username.join(',')
-								: display_names || username,
-						channel_avatar: Array.isArray(avatar) ? avatar[0] : avatar || '/assets/images/avatar-group.png',
-						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
+								: display_names || username || undefined,
+						channel_avatar: Array.isArray(avatar)
+							? avatar[0]
+							: avatar || (response.type === ChannelType.CHANNEL_TYPE_GROUP ? '/assets/images/avatar-group.png' : undefined),
+						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : undefined,
 						user_ids: body.user_ids,
 						active: 1,
 						last_sent_message: {
@@ -414,6 +417,7 @@ export const joinDirectMessage = createAsyncThunk<void, JoinDirectMessagePayload
 			if (directMessageId !== '') {
 				thunkAPI.dispatch(directActions.setDmGroupCurrentId(directMessageId));
 				thunkAPI.dispatch(directActions.setDmGroupCurrentType(type ?? ChannelType.CHANNEL_TYPE_DM));
+				thunkAPI.dispatch(cdnSignatureActions.fetchCdnSignature({ channelId: directMessageId }));
 				thunkAPI.dispatch(
 					messagesActions.fetchMessages({
 						clanId: '0',
@@ -515,7 +519,13 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		};
 
 		const isDM = channel_desc.type === ChannelType.CHANNEL_TYPE_DM;
-		for (const user of users) {
+		const isSelfDM = isDM && Boolean(myId) && Boolean(users?.length) && users.every((u) => u?.user_id === myId);
+
+		for (const user of users || []) {
+			if (!user || !user.user_id) {
+				continue;
+			}
+
 			listMember.avatars.push(user.avatar);
 			listMember.user_ids.push(user.user_id);
 			listMember.usernames.push(user.username);
@@ -523,7 +533,11 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			listMember.display_names.push(user.display_name || user.username);
 
 			const isMe = user.user_id === myId;
-			if ((isDM && isMe) || !user.user_id) {
+			if (isDM && !isSelfDM && isMe) {
+				continue;
+			}
+
+			if (isSelfDM && userIds.length > 0) {
 				continue;
 			}
 
@@ -543,7 +557,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			user_ids: userIds,
 			usernames,
 			display_names: label,
-			channel_avatar: channel_desc.channel_avatar || '/assets/images/avatar-group.png',
+			channel_avatar: channel_desc.channel_avatar || (isSelfDM ? avatars[0] : undefined) || '/assets/images/avatar-group.png',
 			avatars,
 			onlines,
 			active: 1,
@@ -609,6 +623,9 @@ export const directSlice = createSlice({
 
 			if ((dataUpdate.channel_label === undefined || dataUpdate.channel_label.trim()) && existingEntity?.channel_label?.trim()) {
 				dataUpdate.channel_label = existingEntity.channel_label;
+			}
+			if (dataUpdate.channel_avatar === undefined && existingEntity?.channel_avatar) {
+				dataUpdate.channel_avatar = existingEntity.channel_avatar;
 			}
 			if (dataUpdate.avatars === undefined && existingEntity?.avatars?.length) {
 				dataUpdate.avatars = existingEntity.avatars;

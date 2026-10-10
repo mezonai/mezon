@@ -23,6 +23,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import AvatarProfile from './AvatarProfile';
 import RoleUserProfile from './RoleUserProfile';
@@ -126,15 +127,22 @@ const ModalUserProfile = ({
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
 	const sendMessage = async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-		const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-		if (response.channel_id) {
-			const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-			sendInviteMessage(content, response.channel_id, channelMode);
-			setContent('');
-			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
-			navigate(directChat);
+		try {
+			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
+			if (response?.channel_id) {
+				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				sendInviteMessage(content, response.channel_id, channelMode);
+				setContent('');
+				const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+				navigate(directChat);
+			} else {
+				toast.error(t('errors.failedToSendMessage', { defaultValue: 'Failed to send message' }));
+			}
+		} catch (error) {
+			toast.error(t('errors.failedToSendMessage', { defaultValue: 'Failed to send message' }));
+		} finally {
+			onLoading.current = false;
 		}
-		onLoading.current = false;
 	};
 	const handleContent = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setContent(e.target.value);
@@ -194,7 +202,7 @@ const ModalUserProfile = ({
 		if (userID === message?.sender_id) {
 			return message?.username;
 		}
-		return message?.references?.[0].message_sender_username;
+		return message?.references?.[0]?.message_sender_username;
 	}, [userById, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
 
 	const handleOnKeyPress = useCallback(
@@ -205,18 +213,19 @@ const ModalUserProfile = ({
 						isFooterProfile ? userId || userById?.user?.id || '' : userById?.user?.id || '',
 						userById?.user?.display_name || userById?.user?.username,
 						userById?.user?.username,
-						userById.user?.avatar_url
+						userById?.user?.avatar_url
 					);
 					onLoading.current = true;
 					return;
 				}
 				sendMessage(
-					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || ''
+					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0]?.message_sender_id) ||
+						''
 				);
 				onLoading.current = true;
 			}
 		},
-		[userById, content, isFooterProfile]
+		[userById, content, isFooterProfile, userId, userID, message]
 	);
 
 	return (

@@ -169,5 +169,12 @@
 		"limit": "O número máximo de canais para este clã foi atingido"
 	},
 	"moreFile": "mais arquivos",
-	"moreFiles": "mais arquivos"
+	"moreFiles": "mais arquivos",
+	"topics": "Tópicos",
+	"pinnedMessage": "Mensagem fixada",
+	"latestPin": "Fixação mais recente",
+	"poll": "Votação",
+	"pollDiscussion": "Votação",
+	"pollWithQuestion": "Enquete: {{question}}",
+	"messageFrom": "Mensagem de {{username}}: {{message}}"
 }

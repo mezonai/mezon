@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Aan het uploaden..."
+		"uploading": "Aan het uploaden...",
+		"fromPrivateChannel": "Media uit een privékanaal"
 	}
 }

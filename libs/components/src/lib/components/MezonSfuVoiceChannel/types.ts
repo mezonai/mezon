@@ -15,6 +15,9 @@ export type SfuPeer = {
 	mid_audio?: number | string;
 	mid_video?: number | string;
 	mid_screen?: number | string;
+	slot?: number;
+	remote_slot?: number;
+	assignment_generation?: number | string;
 	metadata?: string;
 };
 
@@ -39,6 +42,12 @@ export type SfuSignalMessage = {
 	mid_audio?: number | string;
 	mid_video?: number | string;
 	mid_screen?: number | string;
+	slot?: number;
+	generation?: number | string;
+	assignment_generation?: number | string;
+	audio_active?: boolean;
+	video_active?: boolean;
+	screen_active?: boolean;
 };
 
 export type SfuRemoteMedia = {

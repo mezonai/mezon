@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Введіть ваше повідомлення трубки",
 	"send": "Надіслати",
-	"emojiMatching": "Сумісність емодзі"
+	"emojiMatching": "Сумісність емодзі",
+	"anonymousNotAllowed": "Buzz недоступний в анонімному режимі"
 }

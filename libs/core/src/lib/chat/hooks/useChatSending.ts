@@ -18,7 +18,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import { TypeMessage, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -59,6 +59,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 	const currentUserId = userProfile?.user?.id || '';
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, channelOrDirect?.channel_id as string));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
+	const isAnonymousSend = getClanId !== '0' && (fromTopic ? !!currentTopicId && topicAnonymousMode : anonymousMode);
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 	const { clientRef, sessionRef } = useMezon();
 	const isCreatingTopicRef = useRef(false);
@@ -107,6 +108,10 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 						username: priorityNameToShow
 					})
 				);
+				return;
+			}
+
+			if (code === TypeMessage.MessageBuzz && isAnonymousSend) {
 				return;
 			}
 
@@ -206,7 +211,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			currentTopicId,
 			createTopic,
 			anonymousMode,
-			topicAnonymousMode
+			topicAnonymousMode,
+			isAnonymousSend
 		]
 	);
 
@@ -284,9 +290,10 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 		() => ({
 			sendMessage,
 			sendMessageTyping,
-			editSendMessage
+			editSendMessage,
+			isAnonymousSend
 		}),
-		[sendMessage, sendMessageTyping, editSendMessage]
+		[sendMessage, sendMessageTyping, editSendMessage, isAnonymousSend]
 	);
 }
 

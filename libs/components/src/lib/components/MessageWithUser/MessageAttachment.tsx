@@ -1,3 +1,5 @@
+import type { CdnUrlSigner } from '@mezon/core';
+import { useCdnUrlSigner } from '@mezon/core';
 import {
 	attachmentActions,
 	getStore,
@@ -8,6 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import type { ApiPhoto, IMessageWithUser, ObserveFn, PreSendMediaAttachment } from '@mezon/utils';
 import {
 	EMimeTypes,
@@ -26,6 +29,7 @@ import {
 
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Album from './Album';
 import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageLinkFile from './MessageLinkFile';
@@ -142,6 +146,25 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	return { videos, images, documents, audio };
 };
 
+const signAttachment = (attachment: ApiMessageAttachment, { signCdnUrl, isAwaitingSignature }: CdnUrlSigner): ApiMessageAttachment => ({
+	...attachment,
+	url: signCdnUrl(attachment.url),
+	thumbnail: isAwaitingSignature(attachment.thumbnail) ? undefined : signCdnUrl(attachment.thumbnail)
+});
+
+const PrivateChannelMediaPlaceholder = () => {
+	const { t } = useTranslation('media');
+	// `w-full` puts it on its own row under the sender, as the wrappers of real photos do.
+	return (
+		<div className="w-full py-1">
+			<div className="flex flex-col items-center justify-center gap-2 w-[280px] h-[160px] max-w-full rounded-md bg-bgLightSecondary dark:bg-bgSecondary text-textSecondary800 dark:text-textSecondary">
+				<Icons.LockIcon defaultSize="w-6 h-6" />
+				<span className="text-sm px-3 text-center">{t('attachment.fromPrivateChannel')}</span>
+			</div>
+		</div>
+	);
+};
+
 const Attachments: React.FC<{
 	attachments: ApiMessageAttachment[];
 	message: IMessageWithUser;
@@ -153,8 +176,23 @@ const Attachments: React.FC<{
 }> = memo(
 	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
+		const cdnUrls = useMemo(() => attachments.flatMap((attachment) => [attachment.url, attachment.thumbnail]), [attachments]);
+		const cdnSigner = useCdnUrlSigner(cdnUrls);
 
 		const { videos, images, documents, audio } = classified;
+		// A forwarded file keeps the url of the channel it was uploaded to. When the server will not sign that channel
+		// for this user (a private channel they are not in), the media cannot load, so it gives way to a placeholder.
+		const isForwarded = !!message.content?.fwd;
+		const { isSignatureDenied } = cdnSigner;
+		const visibleVideos = useMemo(
+			() => (isForwarded ? videos.filter((video) => !isSignatureDenied(video.url)) : videos),
+			[isForwarded, videos, isSignatureDenied]
+		);
+		const visibleImages = useMemo(
+			() => (isForwarded ? images.filter((image) => !isSignatureDenied(image.url)) : images),
+			[isForwarded, images, isSignatureDenied]
+		);
+		const hasPrivateChannelMedia = visibleVideos.length < videos.length || visibleImages.length < images.length;
 		const presignFinishKeys = useMemo(() => parsePresignFinishKeys(message.content), [message.content]);
 		const presignAttachmentSource = message.attachments ?? attachments;
 		const isPresignPendingForUrl = useCallback(
@@ -165,12 +203,14 @@ const Attachments: React.FC<{
 		const { isMobile } = useAppLayout();
 		return (
 			<>
-				{videos.length > 0 && (
+				{hasPrivateChannelMedia && <PrivateChannelMediaPlaceholder />}
+
+				{visibleVideos.length > 0 && (
 					<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
-						{videos.map((video, index) => (
+						{visibleVideos.map((video, index) => (
 							<div key={index} className="gap-y-2 max-w-full min-w-0">
 								<MessageVideo
-									attachmentData={video}
+									attachmentData={signAttachment(video, cdnSigner)}
 									isMobile={isMobile}
 									isSending={message.isSending}
 									isPresignPending={isPresignPendingForUrl(video.url)}
@@ -181,10 +221,10 @@ const Attachments: React.FC<{
 					</div>
 				)}
 
-				{images.length > 0 && (
+				{visibleImages.length > 0 && (
 					<ImageAlbum
 						observeIntersectionForLoading={observeIntersectionForLoading}
-						images={images}
+						images={visibleImages}
 						message={message}
 						mode={mode}
 						onContextMenu={onContextMenu}
@@ -192,6 +232,7 @@ const Attachments: React.FC<{
 						defaultMaxWidth={defaultMaxWidth}
 						isMobile={isMobile}
 						isPresignPendingForUrl={isPresignPendingForUrl}
+						cdnSigner={cdnSigner}
 					/>
 				)}
 
@@ -202,7 +243,8 @@ const Attachments: React.FC<{
 					documents.map((document, index) => (
 						<MessageLinkFile
 							key={`${index}_${document.url}`}
-							attachmentData={document}
+							attachmentData={signAttachment(document, cdnSigner)}
+							isCdnSignaturePending={cdnSigner.isAwaitingSignature(document.url)}
 							mode={mode}
 							message={message}
 							isPresignPending={isPresignPendingForUrl(document.url)}
@@ -213,7 +255,7 @@ const Attachments: React.FC<{
 					audio.map((audioItem, index) => (
 						<MessageAudio
 							key={`${index}_${audioItem.url}`}
-							audioUrl={audioItem.url || ''}
+							audioUrl={cdnSigner.isAwaitingSignature(audioItem.url) ? '' : cdnSigner.signCdnUrl(audioItem.url || '')}
 							isPresignPending={isPresignPendingForUrl(audioItem.url)}
 						/>
 					))}
@@ -303,7 +345,8 @@ const ImageAlbum = memo(
 		isInSearchMessage,
 		defaultMaxWidth,
 		isMobile,
-		isPresignPendingForUrl
+		isPresignPendingForUrl,
+		cdnSigner
 	}: {
 		images: ApiMessageAttachment[];
 		message: IMessageWithUser;
@@ -314,6 +357,7 @@ const ImageAlbum = memo(
 		defaultMaxWidth?: number;
 		isMobile?: boolean;
 		isPresignPendingForUrl?: (url?: string) => boolean;
+		cdnSigner?: CdnUrlSigner;
 	}) => {
 		const dispatch = useAppDispatch();
 
@@ -419,6 +463,7 @@ const ImageAlbum = memo(
 						isMobile={isMobile}
 						messageId={message.id}
 						images={images}
+						cdnSigner={cdnSigner}
 					/>
 				</div>
 			);
@@ -444,6 +489,7 @@ const ImageAlbum = memo(
 						localSource={(firstImage as PreSendMediaAttachment)?.local_source}
 						loadWhenUnpending={!isPresignPending}
 						isMobile={isMobile}
+						cdnSigner={cdnSigner}
 					/>
 				</div>
 			);
@@ -458,7 +504,8 @@ const ImageAlbum = memo(
 		prev.message.content === next.message.content &&
 		prev.mode === next.mode &&
 		prev.isMobile === next.isMobile &&
-		prev.defaultMaxWidth === next.defaultMaxWidth
+		prev.defaultMaxWidth === next.defaultMaxWidth &&
+		prev.cdnSigner === next.cdnSigner
 );
 
 ImageAlbum.displayName = 'ImageAlbum';

@@ -1,9 +1,11 @@
-/* eslint-disable prettier/prettier */
 import type { AttachmentEntity } from '@mezon/store';
 import { formatDateI18n } from '@mezon/utils';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '../../virtual-core/useVirtualizer';
 import ItemAttachment from './itemAttachment';
+
+const HORIZONTAL_LIST_MEDIA_QUERY = '(max-width: 479.98px)';
+const HORIZONTAL_LIST_HEIGHT = 80;
 
 type ListAttachmentProps = {
 	attachments: AttachmentEntity[];
@@ -26,7 +28,25 @@ type ListAttachmentProps = {
 	hasMoreAfter?: boolean;
 };
 
+const useIsHorizontalList = () => {
+	const [isHorizontal, setIsHorizontal] = useState(() => window.matchMedia(HORIZONTAL_LIST_MEDIA_QUERY).matches);
+
+	useEffect(() => {
+		const mediaQuery = window.matchMedia(HORIZONTAL_LIST_MEDIA_QUERY);
+		const handleChange = (event: MediaQueryListEvent) => setIsHorizontal(event.matches);
+		mediaQuery.addEventListener('change', handleChange);
+		return () => mediaQuery.removeEventListener('change', handleChange);
+	}, []);
+
+	return isHorizontal;
+};
+
 const ListAttachment = (props: ListAttachmentProps) => {
+	const horizontal = useIsHorizontalList();
+	return <ListAttachmentContent key={horizontal ? 'horizontal' : 'vertical'} {...props} horizontal={horizontal} />;
+};
+
+const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolean }) => {
 	const {
 		attachments,
 		channelId,
@@ -40,26 +60,31 @@ const ListAttachment = (props: ListAttachmentProps) => {
 		onLoadMore,
 		isLoading = false,
 		hasMoreBefore = false,
-		hasMoreAfter = false
+		hasMoreAfter = false,
+		horizontal
 	} = props;
 
 	const selectedImageRef = useRef<HTMLDivElement | null>(null);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
-	const previousScrollHeightRef = useRef<number>(0);
-	const previousScrollTopRef = useRef<number>(0);
+	const previousScrollSizeRef = useRef<number>(0);
+	const previousScrollOffsetRef = useRef<number>(0);
 	const isFirstRenderRef = useRef<boolean>(true);
 	const previousIndexRef = useRef<number>(currentIndexAtt);
 	const previousAttachmentsLengthRef = useRef<number>(attachments.length);
 	const lastBeforeTriggerLengthRef = useRef<number>(-1);
 	const lastAfterTriggerLengthRef = useRef<number>(-1);
 
+	const scrollSizeKey = horizontal ? 'scrollWidth' : 'scrollHeight';
+	const scrollOffsetKey = horizontal ? 'scrollLeft' : 'scrollTop';
+
 	const reversedAttachments = useMemo(() => [...attachments].reverse(), [attachments]);
 
 	const virtualizer = useVirtualizer({
 		count: reversedAttachments.length,
 		getScrollElement: () => scrollContainerRef.current,
-		estimateSize: () => 88,
+		estimateSize: () => (horizontal ? 72 : 94),
+		horizontal,
 		overscan: 3
 	});
 
@@ -79,8 +104,8 @@ const ListAttachment = (props: ListAttachmentProps) => {
 			lastBeforeTriggerLengthRef.current = reversedAttachments.length;
 			setIsLoadingMore(true);
 			if (scrollContainerRef.current) {
-				previousScrollHeightRef.current = scrollContainerRef.current.scrollHeight;
-				previousScrollTopRef.current = scrollContainerRef.current.scrollTop;
+				previousScrollSizeRef.current = scrollContainerRef.current[scrollSizeKey];
+				previousScrollOffsetRef.current = scrollContainerRef.current[scrollOffsetKey];
 			}
 			onLoadMore('before');
 			return;
@@ -93,7 +118,7 @@ const ListAttachment = (props: ListAttachmentProps) => {
 			setIsLoadingMore(true);
 			onLoadMore('after');
 		}
-	}, [virtualItems, hasMoreBefore, hasMoreAfter, onLoadMore, isLoadingMore, isLoading, reversedAttachments.length]);
+	}, [virtualItems, hasMoreBefore, hasMoreAfter, onLoadMore, isLoadingMore, isLoading, reversedAttachments.length, scrollSizeKey, scrollOffsetKey]);
 
 	useEffect(() => {
 		if (isFirstRenderRef.current && reversedAttachments.length > 0 && currentIndexAtt !== undefined && scrollContainerRef.current) {
@@ -125,60 +150,67 @@ const ListAttachment = (props: ListAttachmentProps) => {
 
 	useLayoutEffect(() => {
 		if (isLoadingMore && !isLoading) {
-			if (scrollContainerRef.current && previousScrollHeightRef.current > 0) {
-				const newScrollHeight = scrollContainerRef.current.scrollHeight;
-				const heightDifference = newScrollHeight - previousScrollHeightRef.current;
+			if (scrollContainerRef.current && previousScrollSizeRef.current > 0) {
+				const newScrollSize = scrollContainerRef.current[scrollSizeKey];
+				const sizeDifference = newScrollSize - previousScrollSizeRef.current;
 
-				if (heightDifference > 0) {
-					scrollContainerRef.current.scrollTop = previousScrollTopRef.current + heightDifference;
+				if (sizeDifference > 0) {
+					scrollContainerRef.current[scrollOffsetKey] = previousScrollOffsetRef.current + sizeDifference;
 				}
 
-				previousScrollHeightRef.current = 0;
-				previousScrollTopRef.current = 0;
+				previousScrollSizeRef.current = 0;
+				previousScrollOffsetRef.current = 0;
 			}
 
 			setTimeout(() => {
 				setIsLoadingMore(false);
 			}, 100);
 		}
-	}, [isLoading, isLoadingMore]);
+	}, [isLoading, isLoadingMore, scrollSizeKey, scrollOffsetKey]);
 
 	return (
-		<div ref={scrollContainerRef} style={{ width: 100 }} className="thread-scroll">
+		<div ref={scrollContainerRef} className={horizontal ? 'w-full shrink-0 overflow-x-auto overflow-y-hidden' : 'thread-scroll w-[140px]'}>
 			<div
 				style={{
-					height: `${virtualizer.getTotalSize()}px`,
-					width: '100%',
+					...(horizontal
+						? { width: `${virtualizer.getTotalSize()}px`, height: `${HORIZONTAL_LIST_HEIGHT}px` }
+						: { height: `${virtualizer.getTotalSize()}px`, width: '100%' }),
 					position: 'relative'
 				}}
 			>
 				{hasMoreBefore && (isLoadingMore || isLoading) && (
-					<div className="flex items-center justify-center py-2 text-white text-xs absolute top-0 left-0 right-0 z-10">
+					<div
+						className={`flex items-center justify-center text-white text-xs absolute z-10 ${
+							horizontal ? 'px-2 top-0 bottom-0 left-0' : 'py-2 top-0 left-0 right-0'
+						}`}
+					>
 						<div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
 						Loading
 					</div>
 				)}
 
-			{virtualItems.map((virtualItem) => {
-				const attachment = reversedAttachments[virtualItem.index];
-				const originalIndex = attachments.length - 1 - virtualItem.index;
+				{virtualItems.map((virtualItem) => {
+					const attachment = reversedAttachments[virtualItem.index];
+					const originalIndex = attachments.length - 1 - virtualItem.index;
 
-				const currentDate = formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy');
-				const nextAttachment = reversedAttachments[virtualItem.index + 1];
-				const nextDate = nextAttachment ? formatDateI18n(new Date(nextAttachment.create_time || ''), 'en', 'dd/MM/yyyy') : '';
-				const showDate = nextDate !== currentDate;
+					const currentDate = formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy');
+					const nextAttachment = reversedAttachments[virtualItem.index + 1];
+					const nextDate = nextAttachment ? formatDateI18n(new Date(nextAttachment.create_time || ''), 'en', 'dd/MM/yyyy') : '';
+					const showDate = nextDate !== currentDate;
 
 					return (
 						<div
 							key={attachment.id}
 							data-index={virtualItem.index}
 							ref={virtualizer.measureElement}
+							className={horizontal ? 'flex items-end px-0.5 pb-1' : undefined}
 							style={{
 								position: 'absolute',
 								top: 0,
 								left: 0,
-								width: '100%',
-								transform: `translateY(${virtualItem.start}px)`
+								...(horizontal
+									? { height: '100%', transform: `translateX(${virtualItem.start}px)` }
+									: { width: '100%', transform: `translateY(${virtualItem.start}px)` })
 							}}
 						>
 							<ItemAttachment
@@ -199,7 +231,11 @@ const ListAttachment = (props: ListAttachmentProps) => {
 				})}
 
 				{hasMoreAfter && (isLoadingMore || isLoading) && (
-					<div className="flex items-center justify-center py-2 text-white text-xs absolute bottom-0 left-0 right-0 z-10">
+					<div
+						className={`flex items-center justify-center text-white text-xs absolute z-10 ${
+							horizontal ? 'px-2 top-0 bottom-0 right-0' : 'py-2 bottom-0 left-0 right-0'
+						}`}
+					>
 						<div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
 						Loading
 					</div>

@@ -39,7 +39,8 @@ const GeneralInformation = () => {
 					size: file.size,
 					width: 0,
 					height: 0,
-					part_count: 1
+					part_count: 1,
+					channel_id: ''
 				})
 			).unwrap();
 
@@ -47,7 +48,7 @@ const GeneralInformation = () => {
 				try {
 					const response = await uploadImageToMinIO(result.url, file, file.size);
 					if (response) {
-						const url = `${process.env.NX_BASE_IMG_URL}/${result.filename}`;
+						const url = `${process.env.NX_CLOUDFLARE_CDN_URL}/${result.filename}`;
 						setAppLogoUrl(url);
 					}
 				} catch (error) {

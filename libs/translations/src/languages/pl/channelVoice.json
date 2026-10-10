@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "Odbiorca nie odebrał połączenia.",
 		"aloneTimeoutDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ zbyt długo byłeś w nim sam.",
 		"duplicateSessionDisconnected": "Dołączono do kanału głosowego na innym urządzeniu, więc ta sesja została rozłączona.",
-		"disconnectedRejoin": "Rozłączono Cię z kanałem głosowym."
+		"disconnectedRejoin": "Rozłączono Cię z kanałem głosowym.",
+		"weakNetworkDisconnected": "Zostałeś rozłączony z kanału głosowego, ponieważ Twoja sieć jest słaba."
 	},
 	"usernameScreen": "Ekran {{username}}",
 	"recording": {
@@ -148,5 +149,32 @@
 		"savedToDisk": "Nagranie zapisano w {{fileName}} ({{size}})",
 		"downloaded": "Nagranie pobrano: {{fileName}} ({{size}})",
 		"failed": "Nagrywanie nie powiodło się: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Włącz KOMU Agent",
+		"body": "Kliknij ikonę KOMU Agent, aby dodać agenta AI do tego połączenia."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Stosowanie filtra szumów…",
+		"applied": "Filtr szumów zastosowany",
+		"preparing": "Stosowanie redukcji szumów…",
+		"audioBlocked": "Twoje audio nie jest wysyłane podczas stosowania filtra.",
+		"keepMuted": "Audio jest wstrzymane. Kliknij, aby pozostawić mikrofon wyciszony."
+	},
+	"weakNetwork": "Słaba sieć",
+	"networkWarning": "Twoje połączenie internetowe jest niestabilne. Inni mogą Cię nie słyszeć wyraźnie.",
+	"reconnectModal": {
+		"title": "Nie można połączyć się z głosem",
+		"description": "Nie udało się przywrócić połączenia głosowego. Sprawdź połączenie i spróbuj dołączyć ponownie.",
+		"weakNetworkTitle": "Słabe połączenie sieciowe",
+		"weakNetworkDescription": "Twoja sieć jest niestabilna, więc połączenie głosowe zostało utracone. Sprawdź połączenie i dołącz ponownie.",
+		"rejoin": "Dołącz ponownie",
+		"joining": "Dołączanie…",
+		"exit": "Wyjdź"
+	},
+	"pushToTalk": {
+		"holdSpace": "Przytrzymaj spację, aby mówić",
+		"holdingSpace": "Mówisz — puść spację, aby wyciszyć",
+		"hintBody": "Dołączyłeś, aby słuchać. Przytrzymaj spację, aby otworzyć mikrofon podczas mówienia, puść, aby ponownie wyciszyć."
 	}
 }

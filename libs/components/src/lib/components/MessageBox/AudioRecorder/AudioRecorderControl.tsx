@@ -119,7 +119,15 @@ const AudioRecorderControl: React.FC<AudioRecorderProps> = React.memo(({ onSendR
 		if (!client || !session) return;
 
 		const timestamp = new Date().getTime();
-		const fileUploaded = await handleUploadFile(client, session, `${currentInbox?.id}${timestamp}voice_record.mp3`, blobToFile(blob));
+		const fileUploaded = await handleUploadFile(
+			client,
+			session,
+			`${currentInbox?.id}${timestamp}voice_record.mp3`,
+			blobToFile(blob),
+			undefined,
+			undefined,
+			currentInbox?.id
+		);
 
 		const attachmentsArray = [fileUploaded];
 		setAudioList(attachmentsArray);

@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "相手が通話に応答しませんでした。",
 		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。",
 		"duplicateSessionDisconnected": "別のデバイスでボイスチャンネルに参加したため、このセッションは切断されました。",
-		"disconnectedRejoin": "ボイスチャンネルから切断されました。"
+		"disconnectedRejoin": "ボイスチャンネルから切断されました。",
+		"weakNetworkDisconnected": "ネットワークが弱いため、音声チャンネルから切断されました。"
 	},
 	"usernameScreen": "{{username}}のスクリーン",
 	"recording": {
@@ -148,5 +149,32 @@
 		"savedToDisk": "録画を {{fileName}} に保存しました（{{size}}）",
 		"downloaded": "録画をダウンロードしました: {{fileName}}（{{size}}）",
 		"failed": "録画に失敗しました: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent をオンにする",
+		"body": "KOMU Agent のアイコンをクリックすると、この通話に AI エージェントを追加できます。"
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "ノイズフィルターを適用中…",
+		"applied": "ノイズフィルターを適用しました",
+		"preparing": "ノイズ抑制を適用中…",
+		"audioBlocked": "フィルター適用中は音声が送信されません。",
+		"keepMuted": "音声は一時停止しています。クリックするとマイクをミュートのままにします。"
+	},
+	"weakNetwork": "ネットワークが不安定",
+	"networkWarning": "インターネット接続が不安定です。他の人に聞こえにくい可能性があります。",
+	"reconnectModal": {
+		"title": "音声に接続できません",
+		"description": "音声接続を復元できませんでした。接続を確認して、もう一度参加してください。",
+		"weakNetworkTitle": "ネットワーク接続が不安定",
+		"weakNetworkDescription": "ネットワークが不安定なため、音声接続が切断されました。接続を確認して再参加してください。",
+		"rejoin": "再参加",
+		"joining": "参加中…",
+		"exit": "退出"
+	},
+	"pushToTalk": {
+		"holdSpace": "スペースキーを押し続けて話す",
+		"holdingSpace": "話しています — スペースキーを離すとミュート",
+		"hintBody": "あなたは聴くために参加しました。話す間はスペースキーを押し続けてマイクを開き、離すと再びミュートになります。"
 	}
 }

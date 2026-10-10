@@ -2533,6 +2533,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const userCallId = selectUserCallId(state);
 		const isInCall = selectIsInCall(state);
 		const establishedCall = selectEstablishedCall(state);
+		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_JOINED_OTHER_CALL && isInCall) return;
+		if (signalingType === WEBRTC_CLEAR_CALL) {
+			if (isInCall) return;
+			const ringingCall = selectDMVoiceEntities(state)[event.caller_id];
+			const offer = ringingCall?.signalingData;
+			if (offer?.data_type !== WebrtcSignalingType.WEBRTC_SDP_OFFER || offer.channel_id !== event.channel_id) return;
+			const syncData = safeJSONParse(event.json_data || '{}');
+			if (syncData?.callSessionId) {
+				const sessionId = await readSignalSessionId(offer.json_data);
+				const latest = store.getState() as unknown as RootState;
+				if (sessionId !== syncData.callSessionId || selectIsInCall(latest) || selectDMVoiceEntities(latest)[event.caller_id] !== ringingCall)
+					return;
+			}
+		}
 		if (establishedCall) {
 			const isQuitFromEstablishedPeer =
 				signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT &&
@@ -2565,9 +2579,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			return;
 		}
-		if (signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT || event.data_type === WEBRTC_CLEAR_CALL) {
-			const isQuitFromCallPeer =
-				event.caller_id === userCallId || event.caller_id === establishedCall?.peerId || !!selectDMVoiceEntities(state)[event.caller_id];
+		if (
+			signalingType === WebrtcSignalingType.WEBRTC_SDP_QUIT ||
+			signalingType === WebrtcSignalingType.WEBRTC_SDP_TIMEOUT ||
+			event.data_type === WEBRTC_CLEAR_CALL
+		) {
 			dispatch(DMCallActions.removeAll());
 			dispatch(audioCallActions.reset());
 			dispatch(DMCallActions.cancelCall({}));
@@ -2575,16 +2591,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(audioCallActions.setUserCallId(''));
 			dispatch(audioCallActions.setIsJoinedCall(false));
 			dispatch(DMCallActions.setOtherCall({}));
-			if (event.data_type !== WEBRTC_CLEAR_CALL && isQuitFromCallPeer && sessionRef.current) {
-				clientRef.current?.forwardWebrtcSignaling(
-					sessionRef.current,
-					event?.caller_id,
-					WEBRTC_CLEAR_CALL,
-					'',
-					event?.channel_id,
-					userId || ''
-				);
-			} else if (event.data_type === WEBRTC_CLEAR_CALL) {
+			if (event.data_type === WEBRTC_CLEAR_CALL) {
 				dispatch(DMCallActions.setIsForceQuitCallNative(true));
 			}
 		}

@@ -17,10 +17,7 @@ const JoinForm = memo(({ username, setUsername, onJoin, loadingStatus }: JoinFor
 	const joinLabel = joinRole === 'speaker' ? 'Join as speaker' : 'Join as audience';
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const sanitized = e.target.value
-			.toLowerCase()
-			.replace(/[^a-z0-9]/g, '')
-			.slice(0, 12);
+		const sanitized = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
 		setUsername(sanitized);
 	};
 
@@ -30,7 +27,6 @@ const JoinForm = memo(({ username, setUsername, onJoin, loadingStatus }: JoinFor
 				type="text"
 				placeholder="Enter name (a-z, 0-9, max 12 chars)"
 				value={username}
-				maxLength={12}
 				onChange={handleChange}
 				className="w-full px-4 py-2 bg-zinc-900 border border-zinc-700 rounded text-white"
 				aria-label="Enter your username"

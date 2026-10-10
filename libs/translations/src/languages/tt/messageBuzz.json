@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Сигнал хәбәрегезне керетегез",
 	"send": "Җибәрү",
-	"emojiMatching": "Эмодзи тәңгәлләштерү"
+	"emojiMatching": "Эмодзи тәңгәлләштерү",
+	"anonymousNotAllowed": "Аноним режимда Buzz кулланып булмый"
 }

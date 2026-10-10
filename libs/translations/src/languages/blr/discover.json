@@ -13,5 +13,136 @@
 	"community": "Супольнасць",
 	"desCommunity": "Падзеі і штотыднёвыя абнаўленні.",
 	"about": "Пра",
-	"discoverAndJoin": "Адкрыйце для сябе і далучайцеся да супольнасцей, якія падзяляюць вашы інтарэсы."
+	"discoverAndJoin": "Адкрыйце для сябе і далучайцеся да супольнасцей, якія падзяляюць вашы інтарэсы.",
+	"title": "Знайдзіце сваіх людзей",
+	"titleHighlight": "людзей",
+	"overline": "Кланы Mezon",
+	"subtitle": "Баўце час з супольнасцямі, якія сапраўды адчуваюцца як дом.",
+	"searchPlaceholder": "Пошук супольнасцей",
+	"searchLabel": "Пошук супольнасцей",
+	"featured": "Рэкамендаваныя супольнасці",
+	"orbitTitle": "Больш супольнасцей",
+	"orbitHint": "Прагляд",
+	"orbitPrev": "Папярэднія супольнасці",
+	"orbitNext": "Наступныя супольнасці",
+	"indexKicker": "Індэкс",
+	"enterClan": "Увайсці",
+	"featuredBadge": "Рэкамендаванае",
+	"viewAll": "Паказаць усе",
+	"seeAll": "Глядзець усе",
+	"explore": "Даследаваць супольнасці",
+	"loadMore": "Загрузіць больш супольнасцей",
+	"loadingMore": "Загрузка...",
+	"joinCommunity": "Далучыцца да супольнасці",
+	"joinNow": "Далучыцца зараз",
+	"joining": "Далучэнне...",
+	"openInMezon": "Адкрыць у Mezon",
+	"share": "Падзяліцца",
+	"shareClan": "Падзяліцца кланам",
+	"linkCopied": "Спасылка скапіравана",
+	"copyFailed": "Не ўдалося скапіраваць спасылку",
+	"copied": "Скапіравана!",
+	"copy": "Капіраваць",
+	"joinModal": {
+		"subtitle": "Выберыце, як вы хочаце далучыцца да гэтага клана",
+		"scanQr": "Сканіраваць QR-код",
+		"scanHint": "Выкарыстоўвайце камеру тэлефона, каб адсканаваць і далучыцца",
+		"openLink": "Адкрыць спасылку напрамкі",
+		"openHint": "Адкрыць у новай укладцы"
+	},
+	"shareModal": {
+		"subtitle": "Падзяліцеся гэтым кланам з сябрамі"
+	},
+	"online": "у сетцы",
+	"onlineCount": "{{count}} у сетцы",
+	"onlineCount_one": "{{count}} у сетцы",
+	"onlineCount_other": "{{count}} у сетцы",
+	"memberCount": "{{count}} удзельнікаў",
+	"memberCount_one": "{{count}} удзельнік",
+	"memberCount_other": "{{count}} удзельнікаў",
+	"statsLine": "{{members}} удзельнікаў",
+	"more": "Больш",
+	"categories": {
+		"gaming": "Гульні",
+		"technology": "Тэхналогіі",
+		"education": "Адукацыя",
+		"music": "Музыка",
+		"anime": "Анімэ",
+		"sports": "Спорт",
+		"lifestyle": "Лайфстайл"
+	},
+	"filters": {
+		"title": "Фільтры",
+		"category": "Катэгорыя",
+		"language": "Мова",
+		"activity": "Актыўнасць",
+		"verifiedOnly": "Толькі правераныя",
+		"reset": "Скінуць",
+		"showResults": "Паказаць супольнасці",
+		"all": "Усе",
+		"open": "Фільтры"
+	},
+	"sort": {
+		"label": "Сартаванне",
+		"recommended": "Рэкамендаванае",
+		"largest": "Найбольшыя",
+		"newest": "Найноўшыя"
+	},
+	"heading": {
+		"default": "Даследуйце супольнасці",
+		"search": "{{count}} супольнасцей па запыце “{{query}}”",
+		"category": "{{count}} супольнасцей {{category}}",
+		"matching": "Супольнасці, што адпавядаюць “{{query}}”"
+	},
+	"empty": {
+		"searchTitle": "Мы не змаглі знайсці супольнасць па запыце “{{query}}”.",
+		"searchHint": "Паспрабуйце іншы пошук або даследуйце папулярныя катэгорыі.",
+		"clearSearch": "Ачысціць пошук",
+		"filterTitle": "Ніводная супольнасць не адпавядае гэтым фільтрам.",
+		"clearFilters": "Ачысціць фільтры",
+		"genericTitle": "Пакуль няма супольнасцей для паказу.",
+		"genericHint": "Заходзьце пазней або паспрабуйце іншы пошук."
+	},
+	"error": {
+		"title": "Не ўдалося загрузіць супольнасці.",
+		"retry": "Паспрабаваць зноў",
+		"clanNotFound": "Гэта супольнасць не знойдзена.",
+		"backToDiscover": "Назад у Discover"
+	},
+	"detail": {
+		"about": "Пра",
+		"aboutThisCommunity": "Пра гэту супольнасць",
+		"readMore": "Чытаць далей",
+		"readLess": "Згарнуць",
+		"joinThisCommunity": "Далучыцца да гэтай супольнасці",
+		"created": "Створана",
+		"communityType": "Тып супольнасці",
+		"communityTypePublic": "Публічная",
+		"noInvite": "Запрашэнні для гэтай супольнасці зараз недаступныя.",
+		"similar": "Знайдзіце больш супольнасцей",
+		"breadcrumbDiscover": "Discover",
+		"back": "Назад",
+		"unnamed": "Клан без назвы",
+		"noDescription": "Супольнасць на Mezon.",
+		"overview": "Агляд",
+		"presence": "Зараз",
+		"membersLabel": "Удзельнікі",
+		"onlineLabel": "У сетцы",
+		"tags": "Тэгі"
+	},
+	"card": {
+		"fallbackDescription": "Супольнасць на Mezon"
+	},
+	"addClan": {
+		"title": "Маеце клан, які хочаце дадаць у Discovery?",
+		"body": "Дадайце свой клан у Mezon Discovery, каб дасягнуць мільёнаў карыстальнікаў і развіваць сваю супольнасць."
+	},
+	"header": {
+		"openMezon": "Адкрыць Mezon",
+		"login": "Адкрыць Mezon"
+	},
+	"a11y": {
+		"verified": "праверана",
+		"communityCard": "{{name}}{{verified}}, {{members}}"
+	}
 }

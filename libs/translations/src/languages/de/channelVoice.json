@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "Der Empfänger hat den Anruf nicht angenommen.",
 		"aloneTimeoutDisconnected": "Du wurdest vom Sprachkanal getrennt, weil du zu lange allein darin warst.",
 		"duplicateSessionDisconnected": "Du bist dem Sprachkanal auf einem anderen Gerät beigetreten. Diese Sitzung wurde daher getrennt.",
-		"disconnectedRejoin": "Du wurdest vom Sprachkanal getrennt."
+		"disconnectedRejoin": "Du wurdest vom Sprachkanal getrennt.",
+		"weakNetworkDisconnected": "Du wurdest vom Sprachkanal getrennt, weil dein Netzwerk schwach ist."
 	},
 	"usernameScreen": "{{username}}s Bildschirm",
 	"recording": {
@@ -148,5 +149,32 @@
 		"savedToDisk": "Aufzeichnung gespeichert unter {{fileName}} ({{size}})",
 		"downloaded": "Aufzeichnung heruntergeladen: {{fileName}} ({{size}})",
 		"failed": "Aufzeichnung fehlgeschlagen: {{reason}}"
+	},
+	"agentHint": {
+		"title": "KOMU Agent einschalten",
+		"body": "Klicke auf das KOMU-Agent-Symbol, um den KI-Agenten zu diesem Anruf hinzuzufügen."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Rauschfilter wird angewendet…",
+		"applied": "Rauschfilter angewendet",
+		"preparing": "Rauschunterdrückung wird angewendet…",
+		"audioBlocked": "Dein Audio wird während der Anwendung des Filters nicht gesendet.",
+		"keepMuted": "Audio ist pausiert. Klicke, um dein Mikrofon stumm zu lassen."
+	},
+	"weakNetwork": "Schwaches Netzwerk",
+	"networkWarning": "Deine Internetverbindung ist instabil. Andere hören dich möglicherweise nicht klar.",
+	"reconnectModal": {
+		"title": "Verbindung mit Sprachkanal nicht möglich",
+		"description": "Die Sprachverbindung konnte nicht wiederhergestellt werden. Prüfe deine Verbindung und versuche erneut beizutreten.",
+		"weakNetworkTitle": "Schwache Netzwerkverbindung",
+		"weakNetworkDescription": "Dein Netzwerk ist instabil, daher wurde die Sprachverbindung getrennt. Prüfe deine Verbindung und tritt erneut bei.",
+		"rejoin": "Erneut beitreten",
+		"joining": "Trete bei…",
+		"exit": "Beenden"
+	},
+	"pushToTalk": {
+		"holdSpace": "Leertaste halten zum Sprechen",
+		"holdingSpace": "Du sprichst – Leertaste loslassen zum Stummschalten",
+		"hintBody": "Du bist zum Zuhören beigetreten. Halte die Leertaste, um dein Mikrofon zum Sprechen zu öffnen, und lass sie los, um wieder stumm zu schalten."
 	}
 }

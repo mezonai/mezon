@@ -418,7 +418,7 @@ export const fetchMessages = createAsyncThunk(
 				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
 			}
 			const lastMessageId = selectLastMessageIdByChannelId(state, chlId);
-			const requestMessageId = toPresent ? '0' : messageId || lastMessageId || '0';
+			const requestMessageId = toPresent ? '0' : messageId || '0';
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
@@ -553,13 +553,22 @@ export const fetchMessages = createAsyncThunk(
 				);
 			}
 
+			// More messages arrived than one page holds: start over from the latest page instead of leaving a gap.
+			const latestPageSkipsCache =
+				!messageId &&
+				!toPresent &&
+				!!lastMessageId &&
+				!state.messages.isViewingOlderMessagesByChannelId[chlId] &&
+				messages.length > 0 &&
+				messages.every((message) => isOlderMessageId(lastMessageId, message.id));
+
 			return {
 				messages,
 				isFetchingLatestMessages,
 				isClearMessage,
 				viewingOlder,
 				foundE2ee,
-				toPresent
+				toPresent: toPresent || latestPageSkipsCache
 			};
 		} catch (error) {
 			captureSentryError(error, 'messages/fetchMessages');
@@ -1071,7 +1080,7 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 			client_send_time: clientSendTime,
 			temp_id: tempId,
 			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
-			username: anonymous ? 'Anonymous' : username || '',
+			username: anonymous ? '' : username || '',
 			avatar: anonymous ? '' : finalAvatar,
 			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
 			clan_id: clanId !== '0' ? clanId : undefined,
@@ -1452,7 +1461,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			client_send_time: clientSendTime,
 			temp_id: tempId,
 			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
-			username: anonymous ? 'Anonymous' : username || '',
+			username: anonymous ? '' : username || '',
 			avatar: anonymous ? '' : finalAvatar,
 			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
 			clan_id: clanId !== '0' ? clanId : undefined,
@@ -1488,7 +1497,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				const client = mezon.clientRef.current;
 				const session = mezon.sessionRef.current;
 				if (!client || !session) throw new Error('Client is not initialized');
-				attachments = await generatePathAttachments(client, session, attachments);
+				attachments = await generatePathAttachments(client, session, attachments, channelId);
 				attachmentsMessage = attachments.map(({ filename, filetype, size, duration, url, thumbnail, height, width }) => ({
 					filename,
 					filetype,
@@ -2001,18 +2010,17 @@ export const messagesSlice = createSlice({
 			const channel = state.channelMessages[message.channel_id] ?? channelMessagesAdapter.getInitialState({ id: message.channel_id });
 			state.channelMessages[message.channel_id] = channelMessagesAdapter.addOne(channel, message);
 		},
-		removeFakeMessage: (state, action: PayloadAction<{ channelId: string; fakeId: string }>) => {
-			const { channelId, fakeId } = action.payload;
-			const entity = state.channelMessages[channelId];
-			state.channelMessages[channelId] = channelMessagesAdapter.removeOne(entity, fakeId);
-			delete state.queueSending[fakeId];
-		},
 		confirmSentMessage: (state, action: PayloadAction<{ channelId: string; fakeId: string; message: MessagesEntity }>) => {
 			const { channelId, fakeId, message } = action.payload;
 			const channel = state.channelMessages[channelId];
 			if (channel) {
 				channelMessagesAdapter.removeOne(channel, fakeId);
-				channelMessagesAdapter.upsertOne(channel, message);
+				const messageSocket = channel.entities[message.id];
+				channelMessagesAdapter.upsertOne(channel, {
+					...message,
+					avatar: messageSocket?.avatar || message?.avatar,
+					username: messageSocket?.username || message?.username
+				});
 				const viewport = state.channelViewPortMessageIds[channelId] ?? [];
 				state.channelViewPortMessageIds[channelId] = [...new Set(viewport.map((id) => (id === fakeId ? message.id : id)))];
 				if (state.firstMessageId[channelId] === fakeId) {
@@ -2583,7 +2591,11 @@ export const messagesSlice = createSlice({
 									const ts = entities[id]?.create_time_seconds;
 									timestamps.set(id, ts ? +ts : 0);
 								}
-								newViewportIds = combinedViewport.sort((a, b) => (timestamps.get(a) || 0) - (timestamps.get(b) || 0));
+								newViewportIds = combinedViewport.sort(
+									(a, b) =>
+										(timestamps.get(a) || 0) - (timestamps.get(b) || 0) ||
+										(isOlderMessageId(a, b) ? -1 : isOlderMessageId(b, a) ? 1 : 0)
+								);
 							} else {
 								newViewportIds = messageIds;
 							}

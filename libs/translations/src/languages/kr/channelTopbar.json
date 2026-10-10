@@ -169,5 +169,12 @@
 		"limit": "이 클랜의 최대 채널 수에 도달했습니다"
 	},
 	"moreFile": "파일",
-	"moreFiles": "파일"
+	"moreFiles": "파일",
+	"topics": "주제",
+	"pinnedMessage": "고정된 메시지",
+	"latestPin": "최근 고정",
+	"poll": "투표",
+	"pollDiscussion": "투표",
+	"pollWithQuestion": "투표: {{question}}",
+	"messageFrom": "{{username}}님의 메시지: {{message}}"
 }

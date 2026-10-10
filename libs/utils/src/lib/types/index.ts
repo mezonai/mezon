@@ -1531,7 +1531,7 @@ export type IOtherCall = {
 	channel_id?: string;
 };
 
-export type IPermissonMedia = 'granted' | 'denied' | 'not_found';
+export type IPermissionMedia = 'granted' | 'denied' | 'not_found';
 
 export enum AttachmentTypeUpload {
 	BLOB = 'blob:',

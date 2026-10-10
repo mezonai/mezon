@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Hoạt động - Công việc",
 		"music": "Hoạt động - Cuộc sống",
-		"gaming": "Hoạt động - Vui chơi"
+		"gaming": "Hoạt động - Vui chơi",
+		"codingStatus": "Lập trình",
+		"musicStatus": "Âm nhạc",
+		"gamingStatus": "Chơi game"
 	},
 	"friendMenu": {
 		"startVideoCall": "Bắt đầu gọi video",

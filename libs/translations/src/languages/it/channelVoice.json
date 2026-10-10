@@ -134,7 +134,8 @@
 		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata.",
 		"aloneTimeoutDisconnected": "Sei stato disconnesso dal canale vocale perché sei rimasto da solo troppo a lungo.",
 		"duplicateSessionDisconnected": "Hai effettuato l’accesso al canale vocale su un altro dispositivo, quindi questa sessione è stata disconnessa.",
-		"disconnectedRejoin": "Sei stato disconnesso dal canale vocale."
+		"disconnectedRejoin": "Sei stato disconnesso dal canale vocale.",
+		"weakNetworkDisconnected": "Sei stato disconnesso dal canale vocale perché la tua rete è debole."
 	},
 	"usernameScreen": "Schermo di {{username}}",
 	"recording": {
@@ -148,5 +149,32 @@
 		"savedToDisk": "Registrazione salvata in {{fileName}} ({{size}})",
 		"downloaded": "Registrazione scaricata: {{fileName}} ({{size}})",
 		"failed": "Registrazione non riuscita: {{reason}}"
+	},
+	"agentHint": {
+		"title": "Attiva KOMU Agent",
+		"body": "Fai clic sull'icona KOMU Agent per aggiungere l'agente IA a questa chiamata."
+	},
+	"noiseSuppressionStatus": {
+		"applyingCompact": "Applicazione del filtro antirumore…",
+		"applied": "Filtro antirumore applicato",
+		"preparing": "Applicazione della soppressione del rumore…",
+		"audioBlocked": "L'audio non viene inviato durante l'applicazione del filtro.",
+		"keepMuted": "L'audio è in pausa. Fai clic per mantenere il microfono disattivato."
+	},
+	"weakNetwork": "Rete debole",
+	"networkWarning": "La tua connessione internet è instabile. Gli altri potrebbero non sentirti chiaramente.",
+	"reconnectModal": {
+		"title": "Impossibile connettersi alla voce",
+		"description": "La connessione vocale non è stata ripristinata. Controlla la connessione e prova a entrare di nuovo.",
+		"weakNetworkTitle": "Connessione di rete debole",
+		"weakNetworkDescription": "La tua rete è instabile, quindi la connessione vocale è andata persa. Controlla la connessione e rientra.",
+		"rejoin": "Rientra",
+		"joining": "Ingresso…",
+		"exit": "Esci"
+	},
+	"pushToTalk": {
+		"holdSpace": "Tieni premuto Spazio per parlare",
+		"holdingSpace": "Stai parlando — rilascia Spazio per disattivare",
+		"hintBody": "Sei entrato per ascoltare. Tieni premuto Spazio per aprire il microfono mentre parli, rilascia per disattivarlo di nuovo."
 	}
 }

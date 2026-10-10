@@ -126,7 +126,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const handleClickImage = (image: StickerPanel) => {
-		const imageUrl = image.url ? image.url : `${process.env.NX_BASE_IMG_URL}/stickers/${image.id}.webp`;
+		const imageUrl = image.url ? image.url : `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${image.id}.webp`;
 		if (isReplyAction) {
 			sendMessage({ t: '' }, [], [{ url: imageUrl, filetype: EMimeTypes.sticker, filename: image.id }], [dataReferences], undefined);
 
@@ -316,7 +316,7 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 								>
 									<img
 										src={createImgproxyUrl(
-											sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp`
+											sticker.url ? sticker.url : `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${sticker.id}.webp`
 										)}
 										alt="sticker"
 										className={`w-full h-full aspect-square object-contain  hover:bg-bgLightModeButton ${sticker.id === '0' ? 'blur-sm' : ''}`}

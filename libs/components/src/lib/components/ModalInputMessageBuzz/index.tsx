@@ -6,6 +6,7 @@ import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 type ModalInputMessageBuzzProps = {
 	currentChannel: DirectEntity | null;
@@ -16,7 +17,7 @@ type ModalInputMessageBuzzProps = {
 
 const ModalInputMessageBuzz = ({ currentChannel, mode, fromTopic = false, closeBuzzModal }: ModalInputMessageBuzzProps) => {
 	const { t } = useTranslation('messageBuzz');
-	const { sendMessage } = useChatSending({ channelOrDirect: currentChannel || undefined, mode, fromTopic });
+	const { sendMessage, isAnonymousSend } = useChatSending({ channelOrDirect: currentChannel || undefined, mode, fromTopic });
 	const [message, setMessage] = useState('');
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -25,6 +26,12 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, fromTopic = false, closeB
 	useEffect(() => {
 		inputRef.current?.focus();
 	}, []);
+
+	useEffect(() => {
+		if (!isAnonymousSend) return;
+		toast.warning(t('anonymousNotAllowed'));
+		closeBuzzModal();
+	}, [isAnonymousSend, closeBuzzModal, t]);
 
 	const handleClosePopup = useCallback(() => {
 		setMessage('');
@@ -83,6 +90,8 @@ const ModalInputMessageBuzz = ({ currentChannel, mode, fromTopic = false, closeB
 	);
 
 	useOnClickOutside(panelRef, handleClosePopup);
+
+	if (isAnonymousSend) return null;
 
 	return (
 		<div className="w-[100vw] h-[100dvh] fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex justify-center items-center text-theme-primary">

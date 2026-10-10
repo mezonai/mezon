@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Activiteit - Werken",
 		"music": "Activiteit - Leven",
-		"gaming": "Activiteit - Spelen"
+		"gaming": "Activiteit - Spelen",
+		"codingStatus": "Coderen",
+		"musicStatus": "Muziek",
+		"gamingStatus": "Gamen"
 	},
 	"friendMenu": {
 		"startVideoCall": "Videobellen starten",

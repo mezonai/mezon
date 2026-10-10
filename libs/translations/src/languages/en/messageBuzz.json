@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Enter your message buzz",
 	"send": "Send",
-	"emojiMatching": "Emoji matching"
+	"emojiMatching": "Emoji matching",
+	"anonymousNotAllowed": "Buzz is not available in anonymous mode"
 }

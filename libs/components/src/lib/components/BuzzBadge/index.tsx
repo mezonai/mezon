@@ -9,8 +9,8 @@ const BuzzBadge = ({ mode }: BuzzBadgeProps) => {
 
 	return (
 		<div
-			className={`bg-red-500 text-xs absolute z-40 shadow-[0px_0px_10px_1px_#ff000040] ${
-				isPosDmOrGr ? 'top-3.5 right-6' : 'top-1.5 right-12'
+			className={`bg-red-500 text-xs z-40 shadow-[0px_0px_10px_1px_#ff000040] ${
+				isPosDmOrGr ? 'top-3.5 right-6 absolute' : 'relative'
 			} text-white rounded-sm p-0.5 text-center font-medium`}
 		>
 			Buzz!!

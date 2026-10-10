@@ -1,6 +1,7 @@
+import { useCdnUrlSigner } from '@mezon/core';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ImgProxyOptions {
 	width?: number;
@@ -21,7 +22,21 @@ export function MediaImage({ src, alt = '', className = '', loading = 'lazy', im
 	const [hasError, setHasError] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 
-	const processedSrc = src && imgProxyOptions ? (createImgproxyUrl(src, imgProxyOptions) as string) : src;
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([src]);
+	const signedSrc = signCdnUrl(src);
+	const processedSrc = signedSrc && imgProxyOptions ? (createImgproxyUrl(signedSrc, imgProxyOptions) as string) : signedSrc;
+
+	useEffect(() => {
+		setHasError(false);
+	}, [processedSrc]);
+
+	if (isAwaitingSignature(src)) {
+		return (
+			<div className={`relative dark:bg-skeleton-dark bg-skeleton-white ${className} overflow-hidden`}>
+				<div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent dark:via-white/10 via-black/5 to-transparent" />
+			</div>
+		);
+	}
 
 	if (!processedSrc || hasError) {
 		return (

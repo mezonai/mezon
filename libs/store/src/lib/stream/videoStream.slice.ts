@@ -9,6 +9,7 @@ export interface StreamState {
 	isPlaying: boolean;
 	isJoin: boolean;
 	token: string;
+	sfuUrl: string;
 	volume: number;
 	muted: boolean;
 }
@@ -18,6 +19,7 @@ const initialState: StreamState = {
 	isPlaying: false,
 	isJoin: false,
 	token: '',
+	sfuUrl: '',
 	volume: 1,
 	muted: false
 };
@@ -39,6 +41,9 @@ const videoStreamSlice = createSlice({
 		setToken(state, action: PayloadAction<string>) {
 			state.token = action.payload;
 		},
+		setSfuUrl(state, action: PayloadAction<string>) {
+			state.sfuUrl = action.payload;
+		},
 		setVolume(state, action: PayloadAction<number>) {
 			state.volume = Math.min(1, Math.max(0, action.payload));
 			if (state.volume > 0) state.muted = false;
@@ -50,6 +55,7 @@ const videoStreamSlice = createSlice({
 			state.isPlaying = false;
 			state.isJoin = false;
 			state.token = '';
+			state.sfuUrl = '';
 		}
 	}
 });
@@ -69,6 +75,8 @@ export const selectStatusStream = createSelector(getVideoStreamState, (state) =>
 export const selectIsJoin = createSelector(getVideoStreamState, (state) => state.isJoin);
 
 export const selectStreamAudioToken = createSelector(getVideoStreamState, (state) => state.token);
+
+export const selectStreamSfuUrl = createSelector(getVideoStreamState, (state) => state.sfuUrl);
 
 export const selectStreamVolume = createSelector(getVideoStreamState, (state) => state.volume);
 

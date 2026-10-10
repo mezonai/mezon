@@ -183,7 +183,8 @@ export const multipartUploadAttachmentFileStart = createAsyncThunk(
 			size,
 			width = 0,
 			height = 0,
-			partCount = 1
+			partCount = 1,
+			channelId
 		}: {
 			filename: string;
 			filetype: string;
@@ -191,6 +192,7 @@ export const multipartUploadAttachmentFileStart = createAsyncThunk(
 			width?: number;
 			height?: number;
 			partCount?: number;
+			channelId?: string;
 		},
 		thunkAPI
 	) => {
@@ -200,7 +202,8 @@ export const multipartUploadAttachmentFileStart = createAsyncThunk(
 			size,
 			...(width > 0 ? { width } : {}),
 			...(height > 0 ? { height } : {}),
-			...(partCount > 0 ? { part_count: partCount } : {})
+			...(partCount > 0 ? { part_count: partCount } : {}),
+			...(channelId ? { channel_id: channelId } : {})
 		};
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
@@ -349,6 +352,20 @@ export const attachmentSlice = createSlice({
 				hasMoreAfter: true,
 				limit: 50
 			};
+		},
+		setChannelAttachments: (
+			state,
+			action: PayloadAction<{ channelId: string; attachments: AttachmentEntity[]; hasMoreBefore: boolean; hasMoreAfter: boolean }>
+		) => {
+			const { channelId, attachments, hasMoreBefore, hasMoreAfter } = action.payload;
+			if (!state.listAttachmentsByChannel[channelId]) {
+				state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+			}
+			const channelState = state.listAttachmentsByChannel[channelId];
+			channelState.attachments = attachments;
+			channelState.cache = undefined;
+			channelState.pagination = { isLoading: false, hasMoreBefore, hasMoreAfter, limit: channelState.pagination?.limit ?? 50 };
+			attachmentAdapter.setAll(state, attachments);
 		},
 		clearAttachmentChannel: (state, action: PayloadAction<{ channelId: string }>) => {
 			const { channelId } = action.payload;

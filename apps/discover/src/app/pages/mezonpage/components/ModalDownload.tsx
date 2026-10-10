@@ -14,7 +14,7 @@ export const ModalDownload: React.FC<ModalDownloadProps> = ({ isOpen, onClose })
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
 		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
-		linux: `${process.env.NX_BASE_IMG_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+		linux: `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
 	};
 
 	useEffect(() => {

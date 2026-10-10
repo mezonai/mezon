@@ -36,6 +36,7 @@ export const useDmCallAudio = (): DmCallAudioHookReturn => {
 	const ringTone = useRef<HTMLAudioElement | null>(null);
 	const endTone = useRef<HTMLAudioElement | null>(null);
 	const busyTone = useRef<HTMLAudioElement | null>(null);
+	const playbackGeneration = useRef(new WeakMap<HTMLAudioElement, number>());
 
 	useEffect(() => {
 		if (!dialTone.current) {
@@ -73,12 +74,15 @@ export const useDmCallAudio = (): DmCallAudioHookReturn => {
 
 	const playAudio = useCallback((audioRef: React.RefObject<HTMLAudioElement>, loop = true) => {
 		if (audioRef.current) {
+			const audio = audioRef.current;
+			const generation = (playbackGeneration.current.get(audio) || 0) + 1;
+			playbackGeneration.current.set(audio, generation);
 			audioRef.current.pause();
 			audioRef.current.currentTime = 0;
 			audioRef.current.loop = loop;
 
 			setTimeout(() => {
-				if (audioRef.current) {
+				if (audioRef.current === audio && playbackGeneration.current.get(audio) === generation) {
 					audioRef.current.play().catch((error) => {
 						if (error.name !== 'AbortError') {
 							console.error('Audio playback error:', error);
@@ -91,6 +95,7 @@ export const useDmCallAudio = (): DmCallAudioHookReturn => {
 
 	const stopAudio = useCallback((audioRef: React.RefObject<HTMLAudioElement>) => {
 		if (audioRef.current) {
+			playbackGeneration.current.set(audioRef.current, (playbackGeneration.current.get(audioRef.current) || 0) + 1);
 			audioRef.current.pause();
 			audioRef.current.currentTime = 0;
 			audioRef.current.loop = false;

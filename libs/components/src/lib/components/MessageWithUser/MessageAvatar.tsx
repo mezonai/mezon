@@ -41,6 +41,7 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 			message?.avatar) ??
 		'';
 
+	const isAnonymous = message.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	return (
 		<AvatarImage
 			onContextMenu={(e) => {
@@ -50,12 +51,13 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 			alt={message.username ?? ''}
 			username={message.username}
 			data-popover-target="popover-content"
-			srcImgProxy={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fit' })}
-			src={avatarUrl}
+			srcImgProxy={createImgproxyUrl(isAnonymous ? message.avatar || '' : avatarUrl, { width: 100, height: 100, resizeType: 'fit' })}
+			src={isAnonymous ? message.avatar : avatarUrl}
 			className="min-w-10 min-h-10 absolute left-[16px] select-none"
 			classNameText="font-semibold"
-			isAnonymous={message.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID}
+			isAnonymous={isAnonymous}
 			onClick={onClick}
+			isSending={message?.isSending}
 		/>
 	);
 };

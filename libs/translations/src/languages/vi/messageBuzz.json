@@ -1,5 +1,6 @@
 {
 	"enterMessage": "Nhập tin nhắn buzz của bạn",
 	"send": "Gửi",
-	"emojiMatching": "Emoji phù hợp"
+	"emojiMatching": "Emoji phù hợp",
+	"anonymousNotAllowed": "Không thể dùng Buzz khi đang ở chế độ ẩn danh"
 }

@@ -263,6 +263,7 @@
 		"loadMore1Option": "Zobacz 1 odpowiedź",
 		"showLess": "Zwiń",
 		"noVotesYet": "Brak głosów",
-		"pollLabel": "[Sonda]"
+		"pollLabel": "[Sonda]",
+		"failedToCreatePoll": "Nie udało się utworzyć ankiety"
 	}
 }

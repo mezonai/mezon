@@ -12,6 +12,7 @@ export * from './lib/chat/hooks/useAccount';
 export * from './lib/chat/hooks/useApp';
 export * from './lib/chat/hooks/useAttachment';
 export * from './lib/chat/hooks/useCategory';
+export * from './lib/chat/hooks/useCdnSignature';
 export * from './lib/chat/hooks/useChangeChannelId';
 export * from './lib/chat/hooks/useChannelMembers';
 export * from './lib/chat/hooks/useChannelMembersActions';

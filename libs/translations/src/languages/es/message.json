@@ -262,7 +262,8 @@
 		"loadMore1Option": "Cargar 1 opción más",
 		"showLess": "Mostrar menos",
 		"noVotesYet": "Aún no hay votos",
-		"pollLabel": "[Encuesta]"
+		"pollLabel": "[Encuesta]",
+		"failedToCreatePoll": "No se pudo crear la encuesta"
 	},
 	"unknown": "desconocido"
 }

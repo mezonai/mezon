@@ -1,4 +1,4 @@
-import { useAppParams, useAttachments } from '@mezon/core';
+import { useAppParams, useAttachments, useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import {
 	attachmentActions,
@@ -48,7 +48,11 @@ const MessageModalImage = () => {
 	const [showList, setShowList] = useState(true);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
 	const currentClanId = useAppSelector(selectCurrentClanId) ?? '';
-	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
+	const channelAttachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
+	const channelAttachmentUrls = useMemo(() => channelAttachments?.map((att) => att.url) ?? [], [channelAttachments]);
+	const { isSignatureDenied } = useCdnUrlSigner(channelAttachmentUrls);
+	// A file forwarded from a private channel the user is not in cannot load: it stays out of the list and the navigation.
+	const attachments = useMemo(() => channelAttachments?.filter((att) => !isSignatureDenied(att.url)), [channelAttachments, isSignatureDenied]);
 	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, (directId ?? currentChannelId) as string));
 	const { setOpenModalAttachment } = useAttachments();
 	const openModalAttachment = useAppSelector(selectOpenModalAttachment);
@@ -89,6 +93,8 @@ const MessageModalImage = () => {
 			: undefined
 	);
 	const isMainPresignPending = isAttachmentPresignPendingForMessage(urlImg ?? currentAttachment?.url, sourceMessage);
+	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([urlImg]);
+	const signedUrlImg = signCdnUrl(urlImg ?? '');
 
 	const getSourceMessageForAttachment = useCallback(
 		(att: AttachmentEntity | undefined) => {
@@ -280,7 +286,7 @@ const MessageModalImage = () => {
 		(event: React.MouseEvent<HTMLElement>, props?: Partial<MessageContextMenuProps>) => {
 			showMessageContextMenu(event, messageId, mode ?? 2, false, props);
 			setPositionShow(SHOW_POSITION.IN_VIEWER);
-			setImageURL(urlImg);
+			setImageURL(urlImg ?? '');
 		},
 		[showMessageContextMenu, messageId, mode, setPositionShow, setImageURL, urlImg]
 	);
@@ -405,7 +411,7 @@ const MessageModalImage = () => {
 	};
 
 	const handleDownloadImage = async () => {
-		await handleSaveImage(urlImg);
+		await handleSaveImage(signedUrlImg);
 	};
 
 	const stopPropagation = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
@@ -428,7 +434,7 @@ const MessageModalImage = () => {
 					<Icons.MenuClose className="text-white w-full" />
 				</div>
 			</div>
-			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-[480px]:flex-col">
+			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-sbm:flex-col">
 				<div
 					className="flex-1 flex justify-center items-center px-5 py-3 overflow-hidden h-full w-full relative"
 					onClick={handleClickOutsideImage}
@@ -462,7 +468,7 @@ const MessageModalImage = () => {
 							<span className="sr-only">Loading...</span>
 						</div>
 					)}
-					{isMainPresignPending ? (
+					{isMainPresignPending || isAwaitingSignature(urlImg ?? '') ? (
 						<div
 							className="max-h-full max-w-full rounded-[10px] bg-bgLightSecondary dark:bg-bgSecondary animate-pulse"
 							style={{
@@ -475,7 +481,7 @@ const MessageModalImage = () => {
 					) : isVideo ? (
 						<video
 							ref={videoRef}
-							src={urlImg ?? ''}
+							src={signedUrlImg}
 							className={`max-h-full max-w-full object-scale-down rounded-[10px] cursor-pointer transition-opacity duration-300 ${isMediaLoading ? 'opacity-0' : 'opacity-100'}`}
 							controls
 							onContextMenu={handleContextMenu}
@@ -490,7 +496,7 @@ const MessageModalImage = () => {
 						/>
 					) : (
 						<img
-							src={createImgproxyUrl(urlImg ?? '', { width: 0, height: 0, resizeType: 'force' })}
+							src={createImgproxyUrl(signedUrlImg, { width: 0, height: 0, resizeType: 'force' })}
 							alt={urlImg}
 							className={`max-h-full object-scale-down rounded-[10px] cursor-default transition-opacity duration-300 ${isMediaLoading ? 'opacity-0' : 'opacity-100'} ${rotate % 180 === 90 ? 'w-[calc(100vh_-_30px_-_56px)] h-auto' : 'h-auto'}`}
 							onDragStart={handleDrag}
@@ -511,17 +517,17 @@ const MessageModalImage = () => {
 						/>
 					)}
 					<div
-						className={`h-full w-12 absolute flex flex-col right-0 gap-2 justify-center ${scale === 1 && !isVideo ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
+						className={`h-full w-12 absolute flex flex-col right-0 gap-2 justify-center max-sbm:h-auto max-sbm:w-full max-sbm:right-0 max-sbm:bottom-3 max-sbm:flex-row max-sbm:gap-4 ${scale === 1 && !isVideo ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
 						onClick={stopPropagation}
 					>
 						<div
-							className="rounded-full rotate-180 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
+							className="rounded-full rotate-180 max-sbm:rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 							onClick={handleSelectNextImage}
 						>
 							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
 						</div>
 						<div
-							className="rounded-full  bg-bgTertiary  cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
+							className="rounded-full max-sbm:-rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 							onClick={handleSelectPreviousImage}
 						>
 							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />

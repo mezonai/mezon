@@ -40,7 +40,9 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 			<div className="aspect-square h-[72px]  flex justify-center">
 				<img
 					className={' w-auto h-full object-cover select-none'}
-					src={createImgproxyUrl(!sticker.source ? `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp` : sticker.source || '')}
+					src={createImgproxyUrl(
+						!sticker.source ? `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${sticker.id}.webp` : sticker.source || ''
+					)}
 					alt=""
 				/>
 			</div>
