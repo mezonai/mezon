@@ -623,6 +623,14 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => screenKeyframeRecovery.wake(), [remoteMedia, screenKeyframeRecovery]);
 	const [roomParticipantCount, setRoomParticipantCount] = useState(1);
 	const [screenSharing, setScreenSharing] = useState(false);
+	useEffect(() => {
+		dispatch(voiceActions.setShowScreen(screenSharing));
+	}, [screenSharing, dispatch]);
+	useEffect(() => {
+		return () => {
+			dispatch(voiceActions.setShowScreen(false));
+		};
+	}, [dispatch]);
 	const [screenShareMode, setScreenShareMode] = useState<ScreenShareMode>('text');
 	const [changingScreenShareMode, setChangingScreenShareMode] = useState(false);
 	const [pushToTalkActive, setPushToTalkActive] = useState(false);
