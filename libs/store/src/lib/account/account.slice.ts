@@ -232,6 +232,7 @@ export const accountSlice = createSlice({
 				const next = { ...state.anonymousMode };
 				delete next[id];
 				state.anonymousMode = next;
+				state.topicAnonymousMode = false;
 				return;
 			}
 
@@ -239,9 +240,15 @@ export const accountSlice = createSlice({
 				...state.anonymousMode,
 				[id]: true
 			};
+			state.topicAnonymousMode = true;
 		},
-		setTopicAnonymousMode(state) {
-			state.topicAnonymousMode = !state.topicAnonymousMode;
+		setTopicAnonymousMode: {
+			reducer(state, action: PayloadAction<boolean | undefined>) {
+				state.topicAnonymousMode = action.payload !== undefined ? action.payload : !state.topicAnonymousMode;
+			},
+			prepare(payload?: boolean) {
+				return { payload };
+			}
 		},
 		setCustomStatus(state, action: PayloadAction<string>) {
 			if (state?.userProfile?.user) {

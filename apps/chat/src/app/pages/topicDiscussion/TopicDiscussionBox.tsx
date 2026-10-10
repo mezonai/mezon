@@ -1,9 +1,11 @@
 import { AttachmentPreviewThumbnail, FileSelectionButton, MentionReactInput, PreviewOgp, ReplyMessageBox, UserMentionList } from '@mezon/components';
 import { useChatSending, useDragAndDrop, usePermissionChecker, useReference, useSeenMessagePool } from '@mezon/core';
 import {
+	accountActions,
 	fetchMessages,
 	referencesActions,
 	selectAllChannelMemberIds,
+	selectAnonymousMode,
 	selectBanMeInChannel,
 	selectCloseMenu,
 	selectCurrentChannelClanId,
@@ -68,6 +70,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannelId));
+	const isChannelAnonymous = useAppSelector((state) => selectAnonymousMode(state, currentChannelId as string));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
 
 	const lastMessageViewport = useAppSelector((state) => selectLastMessageViewportByChannelId(state, currentTopicId));
@@ -288,6 +291,10 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 			setIsFetchMessageDone(true);
 		}
 	}, [currentTopicId, currentChannelId, currentClanId, dispatch]);
+
+	useEffect(() => {
+		dispatch(accountActions.setTopicAnonymousMode(isChannelAnonymous));
+	}, [currentChannelId, currentTopicId, isChannelAnonymous, dispatch]);
 	const mentionsList = UserMentionList({
 		channelID: currentChannelId as string,
 		channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
@@ -389,7 +396,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 										</div>
 									</div>
 								</div>
-								{topicAnonymousMode && currentTopicId && (
+								{topicAnonymousMode && (
 									<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>
 										<Icons.HatIcon className="w-7 h-7" />
 									</div>
