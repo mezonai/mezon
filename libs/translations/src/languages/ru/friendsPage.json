@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Активность - Работа",
 		"music": "Активность - Жизнь",
-		"gaming": "Активность - Игра"
+		"gaming": "Активность - Игра",
+		"codingStatus": "Кодинг",
+		"musicStatus": "Музыка",
+		"gamingStatus": "Игра"
 	},
 	"friendMenu": {
 		"startVideoCall": "Начать видеозвонок",
