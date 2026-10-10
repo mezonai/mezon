@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "활동 - 작업",
 		"music": "활동 - 생활",
-		"gaming": "활동 - 놀이"
+		"gaming": "활동 - 놀이",
+		"codingStatus": "코딩",
+		"musicStatus": "음악",
+		"gamingStatus": "게임"
 	},
 	"friendMenu": {
 		"startVideoCall": "영상 통화 시작",

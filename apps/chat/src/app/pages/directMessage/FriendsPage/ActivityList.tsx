@@ -130,15 +130,15 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 						>
 							<div className="flex items-center px-4 h-full">
 								{typeof user === 'object' && 'visualCodeSeparate' in user ? (
-									<p className="text-theme-primary text-[14px] font-semibold flex items-center gap-[4px] font-title text-xs tracking-wide uppercase">
+									<p className="w-full truncate text-theme-primary text-[14px] font-semibold uppercase">
 										{t('activity.coding')} - {listActivities.codeCount}
 									</p>
 								) : typeof user === 'object' && 'spotifySeparate' in user ? (
-									<p className="text-theme-primary text-[14px] font-semibold flex items-center gap-[4px] font-title text-xs tracking-wide uppercase">
+									<p className="w-full truncate text-theme-primary text-[14px] font-semibold uppercase">
 										{t('activity.music')} - {listActivities.spotifyCount}
 									</p>
 								) : typeof user === 'object' && 'lOLSeparate' in user ? (
-									<p className="text-theme-primary text-[14px] font-semibold flex items-center gap-[4px] font-title text-xs tracking-wide uppercase">
+									<p className="w-full truncate text-theme-primary text-[14px] font-semibold uppercase">
 										{t('activity.gaming')} - {listActivities.lolCount}
 									</p>
 								) : (

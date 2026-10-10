@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Aktivitet - Arbete",
 		"music": "Aktivitet - Livsstil",
-		"gaming": "Aktivitet - Rolighet"
+		"gaming": "Aktivitet - Rolighet",
+		"codingStatus": "Kodning",
+		"musicStatus": "Musik",
+		"gamingStatus": "Spel"
 	},
 	"friendMenu": {
 		"startVideoCall": "Börja videosamtal",

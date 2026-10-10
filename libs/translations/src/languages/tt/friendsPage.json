@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Эшчәнлек - Эш",
 		"music": "Эшчәнлек - Тормыш",
-		"gaming": "Эшчәнлек - Уен"
+		"gaming": "Эшчәнлек - Уен",
+		"codingStatus": "Кодлау",
+		"musicStatus": "Музыка",
+		"gamingStatus": "Уен"
 	},
 	"friendMenu": {
 		"startVideoCall": "Видеошалтырату башлау",

@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Activité - Travail",
 		"music": "Activité - Vie",
-		"gaming": "Activité - Loisirs"
+		"gaming": "Activité - Loisirs",
+		"codingStatus": "Code",
+		"musicStatus": "Musique",
+		"gamingStatus": "Jeu"
 	},
 	"friendMenu": {
 		"startVideoCall": "Commencer un appel vidéo",

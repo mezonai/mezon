@@ -32,7 +32,10 @@
 	"activity": {
 		"coding": "Дзейнасць - Праца",
 		"music": "Дзейнасць - Жыццё",
-		"gaming": "Дзейнасць - Забавы"
+		"gaming": "Дзейнасць - Забавы",
+		"codingStatus": "Код",
+		"musicStatus": "Музыка",
+		"gamingStatus": "Гульні"
 	},
 	"friendMenu": {
 		"startVideoCall": "Пачаць відэазванок",
