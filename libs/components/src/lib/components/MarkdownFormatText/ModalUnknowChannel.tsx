@@ -13,6 +13,7 @@ type ModalUnknowChannelProps = {
 	isError?: boolean;
 	errMessage?: string;
 	idErr?: string;
+	code?: number;
 	errorType?: 'connection' | 'permission' | 'critical' | 'unknown';
 };
 
@@ -38,11 +39,12 @@ const getErrorConfig = (errMessage?: string) => {
 		shouldAutoRetry: detectedType === 'connection'
 	};
 };
+const INVALID_JOIN_ERROR = 400;
 
 function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useDispatch();
-	const { onClose, isError = false, errMessage, idErr } = props;
+	const { onClose, isError = false, errMessage, idErr, code } = props;
 	const { toClanPage, navigate } = useAppNavigation();
 	const location = useLocation();
 
@@ -62,7 +64,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 		clearAllToastError();
 		const store = await getStoreAsync();
 		const currentClanId = selectCurrentClanId(store.getState() as RootState);
-		if (!currentClanId || currentClanId === '0') {
+		if (!currentClanId || currentClanId === '0' || code === INVALID_JOIN_ERROR) {
 			navigate(FRIEND_PAGE_LINK);
 			return;
 		}
@@ -87,6 +89,9 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 	};
 
 	const onCloseAndReset = () => {
+		if (code === INVALID_JOIN_ERROR) {
+			return;
+		}
 		if (isError) {
 			removeToastError();
 		}
@@ -135,13 +140,15 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 							>
 								{t('modalUnknowChannel.goToWelcomeChannel')}
 							</button>
-							<button
-								onClick={onCloseAndReset}
-								className="px-4 py-2.5 text-theme-primary hover:underline rounded transition-colors duration-200"
-								data-e2e={generateE2eId('clan_page.settings.modal.permission.cancel')}
-							>
-								{t('cancel')}
-							</button>
+							{code !== INVALID_JOIN_ERROR && (
+								<button
+									onClick={onCloseAndReset}
+									className="px-4 py-2.5 text-theme-primary hover:underline rounded transition-colors duration-200"
+									data-e2e={generateE2eId('clan_page.settings.modal.permission.cancel')}
+								>
+									{t('cancel')}
+								</button>
+							)}
 						</>
 					) : (
 						<button
