@@ -3,6 +3,7 @@ import type { SfuSignalMessage } from '../../types';
 import { meetTokenNeedsRefresh } from '../meetToken';
 import { canReactivateMid, getDepartedMids, getMsidOccupantsByMidFromSdp, isReceivingRemoteTrack, type RetiredSource } from '../remoteMediaLifecycle';
 import { sfuCloseAction, sfuReconnectDelay } from '../sfuReconnect';
+import { SfuSlotAssignments } from '../sfuSlotAssignments';
 import { SfuAudioTrack } from './SfuAudioTrack';
 
 export type SfuAudioAudienceState = 'joining' | 'connected' | 'reconnecting' | 'failed' | 'closed';
@@ -88,12 +89,17 @@ export function SfuAudioAudience({
 		const owners = new Map<string, string>();
 		const users = new Map<string, string>();
 		const retired = new Map<string, RetiredSource>();
+		const slots = new SfuSlotAssignments();
 		const syncAudio = (pc: RTCPeerConnection) => {
 			if (disposed || pcRef.current !== pc || negotiatingRef.current) return;
+			const assignedAudio = slots.enabled
+				? new Set([...slots.getMedia(pc.getTransceivers()).values()].flatMap((media) => (media.audio ? [media.audio] : [])))
+				: undefined;
 			const nextByMid = new Map<string, MediaStreamTrack>();
 			for (const transceiver of pc.getTransceivers()) {
 				const mid = transceiver.mid;
-				if (!mid || Number(mid) < 3 || retired.has(mid) || !isReceivingRemoteTrack(transceiver)) continue;
+				if (!mid || Number(mid) < 3 || (!slots.enabled && retired.has(mid)) || !isReceivingRemoteTrack(transceiver)) continue;
+				if (assignedAudio && !assignedAudio.has(transceiver.receiver.track)) continue;
 				if (transceiver.receiver.track.kind !== 'audio') continue;
 				applyReceiverJitterTarget(transceiver.receiver);
 				nextByMid.set(mid, transceiver.receiver.track);
@@ -129,6 +135,7 @@ export function SfuAudioAudience({
 			owners.clear();
 			users.clear();
 			retired.clear();
+			slots.reset();
 			setAudioTracks([]);
 			closingIntentionally = false;
 		};
@@ -168,6 +175,7 @@ export function SfuAudioAudience({
 			negotiatingRef.current = true;
 			try {
 				if (!pc || !ws || ws.readyState !== WebSocket.OPEN) return;
+				slots.observeOffer(offer.sdp);
 				await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: offer.sdp }));
 				if (disposed || disposedRef.current || pcRef.current !== pc || wsRef.current !== ws) return;
 				const offeredKinds = offer.sdp
@@ -304,6 +312,12 @@ export function SfuAudioAudience({
 					} catch {
 						return;
 					}
+					if (message.type === 'slot_assigned' || message.type === 'slot_released') {
+						if (slots.handle(message)) {
+							syncAudio(pc);
+						}
+						return;
+					}
 					if (message.type === 'ping' && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'pong' }));
 					if (message.type === 'offer' && message.sdp && message.offer_generation != null) {
 						void handleOffer({ sdp: message.sdp, offer_generation: message.offer_generation });
@@ -314,6 +328,10 @@ export function SfuAudioAudience({
 							: (message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer
 								? [message.peer]
 								: undefined;
+					if (peers) {
+						slots.seedMembers(peers);
+						if (slots.enabled) syncAudio(pc);
+					}
 					for (const peer of peers || []) {
 						for (const mid of [peer.mid_audio, peer.mid_video, peer.mid_screen]
 							.filter((mid) => mid != null && Number(mid) >= 3)
@@ -323,6 +341,11 @@ export function SfuAudioAudience({
 						}
 					}
 					if (message.type === 'peer_left') {
+						if (slots.enabled) {
+							slots.removePeer(message);
+							syncAudio(pc);
+							return;
+						}
 						const peerId = message.peer_id == null ? undefined : String(message.peer_id);
 						for (const mid of getDepartedMids(
 							peerId,
