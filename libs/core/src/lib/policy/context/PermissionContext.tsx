@@ -1,6 +1,7 @@
-import { getStore, selectCurrentClanId, selectMaxPermissionForChannel, selectUserMaxPermissionLevel } from '@mezon/store';
+import { getStore, selectChannelById, selectCurrentClanId, selectMaxPermissionForChannel, selectUserMaxPermissionLevel } from '@mezon/store';
 import { EOverriddenPermission, EPermission } from '@mezon/utils';
-import React, { ReactNode, createContext, useCallback, useContext, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { usePermissionsLevel } from '../hooks/permissions/usePermissionsLevels';
 import { useIsClanOwner } from '../hooks/useIsClanOwner';
@@ -27,7 +28,14 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
 
 				const store = getStore();
 				const overriddenPermissions = selectMaxPermissionForChannel(store.getState(), channelId || '');
-				return overriddenPermissions[permission as unknown as EOverriddenPermission];
+				const targetChannel = selectChannelById(store.getState(), channelId);
+
+				if (permission === EOverriddenPermission.sendMessage && !targetChannel?.channel_private) {
+					return true;
+				}
+				if (targetChannel?.channel_private) {
+					return overriddenPermissions[permission as unknown as EOverriddenPermission];
+				}
 			}
 
 			if (permission === EPermission.clanOwner) {
