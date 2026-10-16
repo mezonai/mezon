@@ -1,5 +1,6 @@
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
 import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
+
 export class CustomFile extends File {
 	url?: string;
 	width?: number;
@@ -352,6 +353,11 @@ export async function uploadFileToPath(uploadPath: string, file: Blob, size: num
 	}
 }
 
+enum ETypesCDN {
+	CLOUDFLARE = 2,
+	MEZON = 1
+}
+
 export async function uploadFile(
 	client: Client,
 	session: ApiSession,
@@ -390,7 +396,7 @@ export async function uploadFile(
 			if (res.status !== 200) {
 				throw new Error('Failed to upload file to MinIO.');
 			}
-			let url = `${process.env.NX_CLOUDFLARE_CDN_URL}/${data.filename}`;
+			let url = `${data.type_cdn === ETypesCDN.MEZON ? process.env.NX_MEZON_CDN_URL || 'https://cdn.mezon.ai' : process.env.NX_CLOUDFLARE_CDN_URL}/${data.filename}`;
 			if (isOauth) {
 				url = `${process.env.NX_PROFILE_IMG_URL}/${data.filename}`;
 			}
