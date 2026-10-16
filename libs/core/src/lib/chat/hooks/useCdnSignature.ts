@@ -19,8 +19,6 @@ export interface CdnUrlSigner {
 	signCdnUrl: <T extends string | undefined>(url: T) => T;
 	/** True for a CDN url whose signature has not arrived yet: hold the request instead of loading it unsigned. */
 	isAwaitingSignature: (url?: string) => boolean;
-	/** True for a CDN url the server refuses to sign for this user: its file is in a private channel they are not in. */
-	isSignatureDenied: (url?: string) => boolean;
 }
 
 const selectOpenChannelId = (state: RootState) =>
@@ -60,7 +58,6 @@ export function useCdnUrlSigner(urls: ReadonlyArray<string | undefined>, shownIn
 	return useMemo(() => {
 		const signatureByChannelId = new Map(channelIds.map((channelId, index) => [channelId, entries[index]?.signature || undefined]));
 		const pendingChannelIds = new Set(channelIds.filter((_, index) => pending[index]));
-		const deniedChannelIds = new Set(channelIds.filter((_, index) => entries[index]?.denied));
 		return {
 			signCdnUrl: <T extends string | undefined>(url: T) => {
 				const signingChannelId = getCdnSignatureChannelId(url, fallbackChannelId);
@@ -69,10 +66,6 @@ export function useCdnUrlSigner(urls: ReadonlyArray<string | undefined>, shownIn
 			isAwaitingSignature: (url?: string) => {
 				const signingChannelId = getCdnSignatureChannelId(url, fallbackChannelId);
 				return !!signingChannelId && pendingChannelIds.has(signingChannelId);
-			},
-			isSignatureDenied: (url?: string) => {
-				const signingChannelId = getCdnSignatureChannelId(url, fallbackChannelId);
-				return !!signingChannelId && deniedChannelIds.has(signingChannelId);
 			}
 		};
 	}, [channelIds, entries, pending, fallbackChannelId]);

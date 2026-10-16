@@ -140,17 +140,13 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		return listAttach;
 	}, [attachments, mediaFilter, startDate, endDate]);
 
-	const rangeUrls = useMemo(() => rangeAttachments.map((att) => att.url), [rangeAttachments]);
-	const { isSignatureDenied } = useCdnUrlSigner(rangeUrls, currentChannelId);
-
 	const filteredAttachments = useMemo(
 		() =>
 			rangeAttachments.filter((att) => {
-				if (isSignatureDenied(att.url)) return false;
 				const sourceMessage = att.message_id ? messageEntities?.[att.message_id] : undefined;
 				return !isMediaTypeNotSupported(att.filetype, att.url) && !shouldHidePresignAttachment(att.url, sourceMessage);
 			}),
-		[rangeAttachments, messageEntities, isSignatureDenied]
+		[rangeAttachments, messageEntities]
 	);
 
 	const { refs, floatingStyles, context } = useFloating({

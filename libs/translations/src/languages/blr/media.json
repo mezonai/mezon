@@ -13,7 +13,6 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Загрузка...",
-		"fromPrivateChannel": "Медыя з прыватнага канала"
+		"uploading": "Загрузка..."
 	}
 }

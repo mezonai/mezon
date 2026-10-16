@@ -13,7 +13,6 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Téléchargement en cours...",
-		"fromPrivateChannel": "Média provenant d'un canal privé"
+		"uploading": "Téléchargement en cours..."
 	}
 }

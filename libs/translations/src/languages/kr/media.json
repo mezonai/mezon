@@ -13,7 +13,6 @@
 		}
 	},
 	"attachment": {
-		"uploading": "업로드 중...",
-		"fromPrivateChannel": "비공개 채널의 미디어"
+		"uploading": "업로드 중..."
 	}
 }

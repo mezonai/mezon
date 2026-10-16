@@ -13,7 +13,6 @@
 		}
 	},
 	"attachment": {
-		"uploading": "アップロード中...",
-		"fromPrivateChannel": "プライベートチャンネルのメディア"
+		"uploading": "アップロード中..."
 	}
 }
