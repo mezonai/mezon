@@ -15,6 +15,7 @@ import type {
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
+import { settingActions } from '../app/setting.slice';
 import { cdnSignatureActions } from '../cdnSignature/cdnSignature.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
@@ -50,7 +51,6 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	currentPage: number;
 	hasMore: boolean;
 	paginationLoading: boolean;
-	pinnedDms?: string[];
 }
 
 export interface DirectRootState {
@@ -161,6 +161,8 @@ export const closeDirectMessage = createAsyncThunk('direct/closeDirectMessage', 
 		const response = await mezon.client.closeDirectMess(mezon.session, body);
 		if (response) {
 			thunkAPI.dispatch(directActions.remove(body?.channel_id || ''));
+			thunkAPI.dispatch(settingActions.removePinDm({ dmId: body?.channel_id || '' }));
+
 			return response;
 		} else {
 			captureSentryError('no reponse', 'direct/createNewDirectMessage');
@@ -600,8 +602,7 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	updateDmGroupError: {},
 	currentPage: 0,
 	hasMore: true,
-	paginationLoading: false,
-	pinnedDms: []
+	paginationLoading: false
 });
 
 export const directSlice = createSlice({
@@ -842,15 +843,6 @@ export const directSlice = createSlice({
 				}
 			});
 		},
-		setDmActiveStatus: (state, action: PayloadAction<{ dmId: string; isActive: boolean }>) => {
-			const { dmId, isActive } = action.payload;
-			const dmGroup = state.entities?.[dmId];
-			if (!dmGroup) return;
-			state.entities[dmId].active = isActive ? 1 : 0;
-			if (!isActive && state.pinnedDms) {
-				state.pinnedDms = state.pinnedDms.filter((id) => id !== dmId);
-			}
-		},
 		addBadgeDirect: (state, action: PayloadAction<{ channelId: string }>) => {
 			const channelId = action.payload.channelId;
 			const currentBadge = state.entities[channelId]?.count_mess_unread || 0;
@@ -976,17 +968,6 @@ export const directSlice = createSlice({
 					is_mute: payload.isMute
 				}
 			});
-		},
-		togglePinDm: (state, action: PayloadAction<{ dmId: string }>) => {
-			if (!state.pinnedDms) {
-				state.pinnedDms = [];
-			}
-			const index = state.pinnedDms.indexOf(action.payload.dmId);
-			if (index > -1) {
-				state.pinnedDms.splice(index, 1);
-			} else {
-				state.pinnedDms.push(action.payload.dmId);
-			}
 		}
 	},
 	extraReducers: (builder) => {
@@ -1235,4 +1216,3 @@ export const selectDirectLoadingStatus = createSelector(getDirectState, (state) 
 
 export const selectDirectHasMore = createSelector(getDirectState, (state) => state.hasMore);
 export const selectDirectPaginationLoading = createSelector(getDirectState, (state) => state.paginationLoading);
-export const selectPinnedDms = createSelector(getDirectState, (state) => state.pinnedDms || []);

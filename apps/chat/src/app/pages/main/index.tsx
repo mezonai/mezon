@@ -22,16 +22,17 @@ import type { ClanGroupItem } from '@mezon/store';
 import {
 	EErrorType,
 	accountActions,
-	clansActions,
 	e2eeActions,
 	getIsShowPopupForward,
 	getStore,
 	onboardingActions,
+	selectAllClans,
 	selectChannelById,
 	selectChatStreamWidth,
 	selectClanNumber,
 	selectClanView,
 	selectClansEntities,
+	selectClansIds,
 	selectClickedOnTopicStatus,
 	selectCloseMenu,
 	selectCurrentChannelId,
@@ -52,6 +53,7 @@ import {
 	selectStatusMenu,
 	selectTheme,
 	selectToastErrors,
+	settingActions,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -407,16 +409,18 @@ const SidebarMenu = memo(
 
 const ClansList = memo(() => {
 	const dispatch = useAppDispatch();
-	const orderedClansWithGroups = useSelector(selectOrderedClansWithGroups);
+	const allClans = useSelector(selectAllClans);
+	const orderedClansWithGroups = useSelector((state) => selectOrderedClansWithGroups(state, allClans));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
 	const allClansEntities = useSelector(selectClansEntities);
+	const allClanIds = useSelector(selectClansIds);
 
 	const [items, setItems] = useState<ClanGroupItem[]>([]);
-	const { draggingState, handleMouseDown, handleMouseEnter } = useClanGroupDragAndDrop(items, setItems);
+	const { draggingState, handleMouseDown, handleMouseEnter } = useClanGroupDragAndDrop(items, setItems, allClanIds);
 
 	useEffect(() => {
-		dispatch(clansActions.initializeClanGroupOrder());
+		dispatch(settingActions.initializeClanGroupOrder(allClanIds));
 	}, [dispatch]);
 
 	useEffect(() => {

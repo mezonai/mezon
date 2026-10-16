@@ -30,6 +30,7 @@ import type { MezonContextValue } from '@mezon/transport';
 import { publishSessionUpdate } from '@mezon/transport';
 import { safeJSONParse } from 'mezon-js';
 import { ACTIVITIES_API_FEATURE_KEY, activitiesAPIReducer } from './activities/activitiesAPI.slice';
+import { SETTING_USER_FEATURE_KEY, settingUserReducer } from './app/setting.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
 import { auditLogReducer } from './auditLog/auditLog.slice';
@@ -324,6 +325,14 @@ const persistedAccountReducer = persistReducer(
 	accountReducer
 );
 
+const persistedSettingUserReducer = persistReducer(
+	{
+		key: SETTING_USER_FEATURE_KEY,
+		storage
+	},
+	settingUserReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
@@ -402,7 +411,8 @@ const reducer = {
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
 	[DEVICES_FEATURE_KEY]: devicesReducer,
 	[POLLS_FEATURE_KEY]: persistedPollsReducer,
-	[CDN_SIGNATURE_FEATURE_KEY]: cdnSignatureReducer
+	[CDN_SIGNATURE_FEATURE_KEY]: cdnSignatureReducer,
+	[SETTING_USER_FEATURE_KEY]: persistedSettingUserReducer
 };
 
 let storeInstance = configureStore({

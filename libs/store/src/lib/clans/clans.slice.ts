@@ -67,26 +67,10 @@ interface ClanUnreadState {
 	badge: number;
 }
 
-export interface ClanGroup {
-	id: string;
-	name?: string;
-	clanIds: string[];
-	isExpanded: boolean;
-	createdAt?: number;
-}
-
-export interface ClanGroupItem {
-	type: 'clan' | 'group';
-	id: string;
-	clanId?: string;
-	groupId?: string;
-}
-
 const clanMetaAdapter = createEntityAdapter<ClanMeta>();
 const clanUnreadAdapter = createEntityAdapter({
 	selectId: (clan: ClanUnreadState) => clan.clan_id
 });
-const clanGroupAdapter = createEntityAdapter<ClanGroup>();
 
 function extractClanMeta(clan: ClansEntity): ClanMeta {
 	return {
@@ -102,10 +86,7 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	clanMetadata: EntityState<ClanMeta, string>;
 	clanUnreadStates: EntityState<ClanUnreadState, string>; // Normalized unread state
 	invitePeople: boolean;
-	clansOrder?: string[];
-	// Add clan groups state
-	clanGroups: EntityState<ClanGroup, string>;
-	clanGroupOrder: ClanGroupItem[];
+
 	cache?: CacheMetadata;
 	checkJoinList: Record<string, true>;
 }
@@ -609,9 +590,6 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	invitePeople: false,
 	inviteChannelId: undefined,
 	inviteClanId: undefined,
-	clansOrder: [],
-	clanGroups: clanGroupAdapter.getInitialState(),
-	clanGroupOrder: [],
 	checkJoinList: {}
 });
 
@@ -633,140 +611,12 @@ export const clansSlice = createSlice({
 		setCurrentClanId: (state, action: PayloadAction<string>) => {
 			state.currentClanId = action.payload;
 		},
-		updateClansOrder: (state, action: PayloadAction<string[]>) => {
-			state.clansOrder = action.payload;
-		},
+
 		updateClanOwner: (state, action: PayloadAction<{ clanId: string; newOwnerId: string }>) => {
 			clansAdapter.updateOne(state, {
 				id: action.payload.clanId,
 				changes: { creator_id: action.payload.newOwnerId }
 			});
-		},
-
-		createClanGroup: (state, action: PayloadAction<{ clanIds: string[]; name?: string }>) => {
-			const { clanIds, name } = action.payload;
-			const groupId = `group_${Date.now()}`;
-
-			const newGroup: ClanGroup = {
-				id: groupId,
-				name,
-				clanIds,
-				isExpanded: false,
-				createdAt: Date.now()
-			};
-
-			clanGroupAdapter.addOne(state.clanGroups, newGroup);
-
-			const newOrder: ClanGroupItem[] = [];
-			const processedClanIds = new Set<string>();
-
-			newOrder.push({
-				type: 'group',
-				id: groupId,
-				groupId
-			});
-
-			clanIds.forEach((id) => processedClanIds.add(id));
-
-			state.clanGroupOrder.forEach((item) => {
-				if (item.type === 'clan' && item.clanId && !processedClanIds.has(item.clanId)) {
-					newOrder.push(item);
-				} else if (item.type === 'group') {
-					newOrder.push(item);
-				}
-			});
-
-			state.clanGroupOrder = newOrder;
-		},
-
-		addClanToGroup: (state, action: PayloadAction<{ groupId: string; clanId: string }>) => {
-			const { groupId, clanId } = action.payload;
-			const group = state.clanGroups.entities[groupId];
-
-			if (group && !group.clanIds.includes(clanId)) {
-				group.clanIds.push(clanId);
-
-				state.clanGroupOrder = state.clanGroupOrder.filter((item) => !(item.type === 'clan' && item.clanId === clanId));
-			}
-		},
-
-		removeClanFromGroup: (state, action: PayloadAction<{ groupId: string; clanId: string }>) => {
-			const { groupId, clanId } = action.payload;
-			const group = state.clanGroups.entities[groupId];
-
-			if (group) {
-				group.clanIds = group.clanIds.filter((id) => id !== clanId);
-
-				if (group.clanIds.length === 1) {
-					const remainingClanId = group.clanIds[0];
-					clanGroupAdapter.removeOne(state.clanGroups, groupId);
-
-					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
-					if (groupIndex !== -1) {
-						state.clanGroupOrder[groupIndex] = {
-							type: 'clan',
-							id: remainingClanId,
-							clanId: remainingClanId
-						};
-						state.clanGroupOrder.splice(groupIndex + 1, 0, {
-							type: 'clan',
-							id: clanId,
-							clanId
-						});
-					}
-				} else {
-					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
-
-					if (groupIndex !== -1) {
-						state.clanGroupOrder.splice(groupIndex + 1, 0, {
-							type: 'clan',
-							id: clanId,
-							clanId
-						});
-					}
-				}
-			}
-		},
-
-		reorderClansInGroup: (state, action: PayloadAction<{ groupId: string; clanIds: string[] }>) => {
-			const { groupId, clanIds } = action.payload;
-			const group = state.clanGroups.entities[groupId];
-
-			if (group) {
-				group.clanIds = clanIds;
-			}
-		},
-
-		toggleGroupExpanded: (state, action: PayloadAction<string>) => {
-			const groupId = action.payload;
-			const group = state.clanGroups.entities[groupId];
-
-			if (group) {
-				group.isExpanded = !group.isExpanded;
-			}
-		},
-
-		collapseAllGroups: (state) => {
-			Object.values(state.clanGroups.entities).forEach((group) => {
-				if (group && group.isExpanded) {
-					group.isExpanded = false;
-				}
-			});
-		},
-
-		updateClanGroupOrder: (state, action: PayloadAction<ClanGroupItem[]>) => {
-			state.clanGroupOrder = action.payload;
-		},
-
-		initializeClanGroupOrder: (state) => {
-			if (state.clanGroupOrder.length === 0) {
-				const order = state.clansOrder || state.ids;
-				state.clanGroupOrder = order.map((clanId) => ({
-					type: 'clan' as const,
-					id: clanId,
-					clanId
-				}));
-			}
 		},
 
 		toggleInvitePeople: (state, action: PayloadAction<{ status: boolean }>) => {
@@ -898,10 +748,7 @@ export const clansSlice = createSlice({
 				state.cache = undefined;
 			}
 		},
-		clearClanGroups: (state) => {
-			state.clanGroups = clanGroupAdapter.getInitialState();
-			state.clanGroupOrder = [];
-		},
+
 		clearJoinList: (state) => {
 			state.checkJoinList = {};
 		}
@@ -1053,7 +900,7 @@ export const clansActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities, selectById } = clansAdapter.getSelectors();
+const { selectAll, selectEntities, selectById, selectIds } = clansAdapter.getSelectors();
 const { selectAll: selectAllBadgeClan, selectById: selectClanUnreadById } = clanUnreadAdapter.getSelectors();
 
 export const getClansState = (rootState: { [CLANS_FEATURE_KEY]: ClansState }): ClansState => rootState[CLANS_FEATURE_KEY];
@@ -1065,6 +912,7 @@ export const selectClansLoadingStatus = createSelector(getClansState, (state) =>
 export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!(currentClanId && currentClanId !== '0'));
 
 export const selectClansEntities = createSelector(getClansState, selectEntities);
+export const selectClansIds = createSelector(getClansState, selectIds);
 
 export const selectClanById = (id: string) => createSelector(selectClansEntities, (clansEntities) => clansEntities[id]);
 
@@ -1081,18 +929,6 @@ export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentCla
 export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.is_community);
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
 
-export const selectOrderedClans = createSelector([selectAllClans, (state: RootState) => state.clans.clansOrder], (clans, order) => {
-	if (!order || order.length === 0) return clans;
-
-	const clanMap = Object.fromEntries(clans.map((clan) => [clan.id, clan]));
-
-	const orderedClans = order.map((id) => clanMap[id]).filter(Boolean);
-
-	const remainingClans = clans.filter((clan) => !order.includes(clan.id));
-
-	return [...orderedClans, ...remainingClans];
-});
-
 export const selectBadgeCountAllClan = createSelector(getClansState, (state) => {
 	return selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (count.clan_id !== '0' ? (count.badge ?? 0) : 0), 0);
 });
@@ -1101,10 +937,6 @@ export const selectInvitePeopleStatus = createSelector(getClansState, (state) =>
 export const selectWelcomeChannelByClanId = createSelector([getClansState, (state, clanId: string) => clanId], (state, clanId) => {
 	return selectById(state, clanId)?.welcome_channel_id || null;
 });
-
-export const selectClanGroups = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectAll(state.clanGroups));
-
-export const selectClanGroupOrder = createSelector(getClansState, (state) => state?.clanGroupOrder || []);
 
 export const selectClanUnreadStates = createSelector(getClansState, (state) => state?.clanUnreadStates || {});
 export const selectBadgeClanById = createSelector(
@@ -1121,54 +953,6 @@ export const selectClanExists = (clanId: string) =>
 	createSelector(selectClansEntities, (clansEntities) => {
 		return !!clansEntities[clanId];
 	});
-
-export const selectOrderedClansWithGroups = createSelector([selectAllClans, selectClanGroups, selectClanGroupOrder], (clans, groups, order) => {
-	if (!order || order.length === 0) {
-		return clans.map((clan) => ({
-			type: 'clan' as const,
-			id: clan.id,
-			clan
-		}));
-	}
-
-	const clanMap = Object.fromEntries(clans.map((clan) => [clan.id, clan]));
-	const groupMap = Object.fromEntries(groups.map((group) => [group.id, group]));
-
-	const clansInGroups = new Set<string>();
-	groups.forEach((group) => {
-		group.clanIds.forEach((clanId) => clansInGroups.add(clanId));
-	});
-
-	const orderedItems = order
-		.map((item) => {
-			if (item.type === 'clan' && item.clanId) {
-				const clan = clanMap[item.clanId];
-				return clan ? { type: 'clan' as const, id: item.id, clan } : null;
-			} else if (item.type === 'group' && item.groupId) {
-				const group = groupMap[item.groupId];
-				return group ? { type: 'group' as const, id: item.id, group } : null;
-			}
-			return null;
-		})
-		.filter(Boolean);
-
-	const orderedClanIds = new Set(
-		order
-			.filter((item) => item.type === 'clan')
-			.map((item) => item.clanId)
-			.filter(Boolean)
-	);
-
-	const remainingClans = clans
-		.filter((clan) => !clansInGroups.has(clan.id) && !orderedClanIds.has(clan.id))
-		.map((clan) => ({
-			type: 'clan' as const,
-			id: clan.id,
-			clan
-		}));
-
-	return [...orderedItems, ...remainingClans];
-});
 
 export const selectCountClanJoined = createSelector(getClansState, (state) => state?.ids?.length || 0);
 export const seletClanNameById = createSelector([getClansState, (state, clanId: string) => clanId], (state, clanId) => {
