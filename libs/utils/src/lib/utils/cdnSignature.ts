@@ -1,13 +1,14 @@
 import { isCloudflareCdnUrl, isMezonCdnUrl } from './urlSanitization';
 
-export const CDN_SIGNATURE_TTL_MS = 5 * 60 * 60 * 1000;
+export const CDN_SIGNATURE_TTL_MS = Number(process.env.NX_CDN_SIGNATURE_TTL_MS) || 3 * 60 * 60 * 1000;
 const CDN_SIGNATURE_REFRESH_MARGIN_MS = 5 * 60 * 1000;
+const CDN_SIGNATURE_MIN_TTL_MS = 30 * 1000;
 
 export function getCdnSignatureTtlMs(signature: string, now = Date.now()): number {
 	const expiresIn = Number(/^(\d+)-/.exec(signature)?.[1]) * 1000 - now;
-	return expiresIn > 2 * CDN_SIGNATURE_REFRESH_MARGIN_MS
-		? Math.min(expiresIn - CDN_SIGNATURE_REFRESH_MARGIN_MS, CDN_SIGNATURE_TTL_MS)
-		: CDN_SIGNATURE_TTL_MS;
+	if (!(expiresIn > 0)) return CDN_SIGNATURE_TTL_MS;
+	const margin = Math.min(CDN_SIGNATURE_REFRESH_MARGIN_MS, expiresIn / 2);
+	return Math.max(Math.min(expiresIn - margin, CDN_SIGNATURE_TTL_MS), CDN_SIGNATURE_MIN_TTL_MS);
 }
 
 export function isCdnSignatureExpired(signature: string, now = Date.now()): boolean | undefined {
