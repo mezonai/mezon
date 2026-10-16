@@ -1,8 +1,18 @@
-import { useEscapeKey } from '@mezon/core';
-import { appActions, selectCurrentChannelLabel, selectIsShowCreateTopic, selectIsShowMemberList, useAppDispatch } from '@mezon/store';
+import { useEscapeKey, useGifsStickersEmoji, useIdleRender } from '@mezon/core';
+import {
+	appActions,
+	selectCloseMenu,
+	selectCurrentChannelId,
+	selectCurrentChannelLabel,
+	selectIsShowCreateTopic,
+	selectIsShowMemberList,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { SubPanelName } from '@mezon/utils';
 import { memo, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import ReactionEmojiPanel from '../../layouts/ReactionEmojiPanel';
 import ChannelMain from '../channel';
 import TopicDiscussionMain from '../topicDiscussion';
 
@@ -48,6 +58,13 @@ const ChatStream = ({ topicChannelId }: ChatStreamProps) => {
 			if (shouldRestoreMemberList) dispatch(appActions.setIsShowMemberList(true));
 		};
 	}, [dispatch]);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const closeMenu = useSelector(selectCloseMenu);
+
+	const { subPanelActive } = useGifsStickersEmoji();
+	const openEmojiRightPanel = subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT;
+	const openEmojiBottomPanel = subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM;
+	const shouldRender = useIdleRender();
 
 	return (
 		<div className="flex flex-col h-full max-h-full overflow-hidden">
@@ -59,6 +76,17 @@ const ChatStream = ({ topicChannelId }: ChatStreamProps) => {
 					<div className="flex-1 overflow-hidden min-h-0">
 						<ChannelMain topicChannelId={topicChannelId} />
 					</div>
+					{shouldRender && (
+						<ReactionEmojiPanel
+							isFocusTopicOrThreadBox={false}
+							openEmojiRightPanel={openEmojiRightPanel}
+							openEmojiBottomPanel={openEmojiBottomPanel}
+							openEmojiPanelOnTopicOrThreadBox={false}
+							closeMenu={closeMenu}
+							currentChannelId={currentChannelId ?? ''}
+							isShowCreateTopic={isShowCreateTopic}
+						/>
+					)}
 				</>
 			)}
 		</div>

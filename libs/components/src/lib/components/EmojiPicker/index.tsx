@@ -318,7 +318,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className={`outline-none flex max-h-full max-sm:h-32 max-sbm:h-full flex-row w-full md:w-[500px] max-sm:ml-1 pt-3`}
+			className={`outline-none flex max-h-full max-sm:h-32 max-sbm:h-full flex-row w-full md:w-[420px] max-sm:ml-1 pt-3`}
 		>
 			<div
 				className={`w-11 max-sm:gap-x-1 flex flex-col max-sm:flex-row max-sm:justify-end gap-y-1 max-sm:w-full max-sbm:w-11 bg-item-theme pt-1 px-1 md:items-start h-[25rem] pb-1 max-sbm:flex-col overflow-y-scroll hide-scrollbar rounded-tl-lg rounded-tr-lg`}

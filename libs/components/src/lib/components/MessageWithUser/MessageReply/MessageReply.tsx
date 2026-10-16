@@ -130,7 +130,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 									<span>{t('poll.pollLabel', { defaultValue: '[Poll]' })}</span>
 								</div>
 							) : (
-								<div className="h-6 overflow-hidden flex-1">
+								<div className="h-6 overflow-hidden flex-1 truncate max-w-[66vw]">
 									<MessageLine
 										isEditted={false}
 										isTokenClickAble={false}

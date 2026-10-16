@@ -290,7 +290,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 							<img
 								src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
 								alt={currentChannel?.channel_label || t('streamThumbnail')}
-								className="w-full h-full object-cover opacity-80"
+								className="w-full h-full object-contain opacity-80"
 							/>
 							<div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2 bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
 								<div className="flex items-center gap-1">
@@ -318,7 +318,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 						</div>
 						{memberJoin.length > 0 && (
 							<div
-								className={`absolute z-50 opacity-100 sm:opacity-0 transition-opacity duration-300 ${showMembers ? '-bottom-10' : `${isShowChatStream ? 'bottom-20' : 'bottom-20 max-[1700px]:bottom-2'}`} sm:group-hover:opacity-100`}
+								className={`absolute z-50 opacity-100 sm:opacity-0 transition-opacity duration-300 ${showMembers ? 'bottom-20' : `${isShowChatStream ? 'bottom-20' : 'bottom-20 max-[1700px]:bottom-2'}`} sm:group-hover:opacity-100`}
 							>
 								<div
 									title={showMembers ? t('hideMembers') : t('showMembers')}
@@ -336,7 +336,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 					</div>
 					{memberJoin.length > 0 && showMembers && (
 						<div
-							className={`w-full flex gap-2 justify-center p-2 transition-opacity duration-300 ${showMembers ? 'opacity-100' : 'opacity-0'}`}
+							className={`w-full flex gap-2 justify-center p-2 z-10 transition-opacity duration-300 ${showMembers ? 'opacity-100' : 'opacity-0'}`}
 						>
 							<UserListStreamChannel isShowChat={isShowChatStream} memberJoin={memberJoin}></UserListStreamChannel>
 						</div>
