@@ -7,6 +7,7 @@ import {
 	selectChannelDetailById,
 	selectChannelFetchSuccessByClanId,
 	selectClanById,
+	selectClanExists,
 	selectClanView,
 	selectClansEntities,
 	subscribeChannelDetail,
@@ -49,9 +50,10 @@ const ChannelHashtag = ({
 	const { toChannelPage, navigate } = useAppNavigation();
 
 	const storedChannel = getTagById(channelHastagId);
+	const clanExist = useSelector(selectClanExists(clanId || ''));
 	const sentChannel = useMemo<IChannel | undefined>(
 		() =>
-			channelType !== undefined && channelLabel && clanId
+			channelType !== undefined && channelLabel && clanId && clanExist
 				? {
 						id: channelHastagId,
 						channel_id: channelHastagId,
@@ -129,7 +131,8 @@ const ChannelHashtag = ({
 	const isVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
 	const existHashtagAndChannelView = channelHastagId && !isClanView && channel?.id;
-	const isValidChannel = isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel;
+	const isValidChannel =
+		clanExist && (isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel);
 
 	return isValidChannel ? (
 		<span
@@ -168,7 +171,12 @@ const ChannelHashtag = ({
 			<span className="inline">{channel ? channel.channel_label : channelLabel || null}</span>
 		</span>
 	) : (
-		<PrivateChannel onClick={handleClick} isLink={isLink} channelLabel={channelLabel} checkGetChannelData={checkGetChannelData} />
+		<PrivateChannel
+			onClick={handleClick}
+			isLink={isLink}
+			channelLabel={clanExist ? channelLabel : ''}
+			checkGetChannelData={checkGetChannelData}
+		/>
 	);
 };
 
