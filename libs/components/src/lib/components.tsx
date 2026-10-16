@@ -83,6 +83,7 @@ export { default as SettingNotifications } from './components/SettingNotificatio
 export * from './components/SettingProfile';
 export { SettingServer } from './components/SettingServer';
 export { SettingVoice } from './components/SettingVoice';
+export { useMicTest } from './components/SettingVoice/MicTest';
 export { default as MzToast } from './components/ToastController/MzToast';
 export { default as ToastController } from './components/ToastController/ToastController';
 
