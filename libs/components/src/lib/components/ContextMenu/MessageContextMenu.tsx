@@ -657,8 +657,11 @@ function MessageContextMenu({
 		if (imageSrc && imageSrc !== SHOW_POSITION.NONE) {
 			return imageSrc;
 		}
+		if (checkElementIsImage && elementTarget.src) {
+			return elementTarget.src;
+		}
 		return '';
-	}, [imageSrc, message?.content?.embed]);
+	}, [imageSrc, checkElementIsImage, message?.content?.embed]);
 	const { signCdnUrl } = useCdnUrlSigner([urlImage], message?.channel_id);
 
 	useMemo(() => {

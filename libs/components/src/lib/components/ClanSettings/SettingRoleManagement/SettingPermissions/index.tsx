@@ -13,7 +13,7 @@ import {
 	toggleIsShowTrue
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
-import { EOverriddenPermission, SlugPermission, generateE2eId } from '@mezon/utils';
+import { EOverriddenPermission, EPermission, SlugPermission, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -139,11 +139,9 @@ const SettingPermissions = ({
 									checked={selectedPermissions.includes(permission.id)}
 									onChange={() => {
 										if (
-											(hasPermissionEdit &&
-												!(
-													activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage
-												)) ||
-											isClanOwner
+											hasPermissionEdit &&
+											permission.slug !== EOverriddenPermission.sendMessage &&
+											permission.slug !== EPermission.viewChannel
 										) {
 											handlePermissionToggle(permission.id);
 										}
@@ -159,7 +157,8 @@ const SettingPermissions = ({
 										hiddenPermissionAdmin(permission.slug || '') ||
 										!hasPermissionEdit ||
 										(permission.level !== undefined && permission.level >= userMaxPermissionLevel && !isClanOwner) ||
-										(activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage)
+										permission.slug === EOverriddenPermission.sendMessage ||
+										permission.slug === EPermission.viewChannel
 									}
 									data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item.switch')}
 								/>

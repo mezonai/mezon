@@ -80,7 +80,6 @@ export const handleSaveImage = (urlData: string) => {
 			console.error('Invalid URL:', urlData);
 			return;
 		}
-		
 	} catch {
 		console.error('Error parsing URL:', urlData);
 		return;
@@ -88,8 +87,16 @@ export const handleSaveImage = (urlData: string) => {
 	fetch(urlData)
 		.then((response) => response.blob())
 		.then((blob) => {
-			const rawName = urlData.split('/').pop()?.split('?')[0] || 'image.png';
-			const fileName = rawName.replace(/[\\/:*?"<>|]/g, '_').slice(0, 255) || 'image.png';
+			const rawName =
+				urlData
+					.split('/')
+					.pop()
+					?.split('?')[0]
+					.replace(/[\\/:*?"<>|]/g, '_')
+					.slice(0, 255) || 'image.png';
+			const extension = blob.type.split('/')[1] || 'png';
+
+			const fileName = rawName.includes('.') ? rawName : `${rawName}.${extension}`;
 			const url = window.URL.createObjectURL(new Blob([blob]));
 			const a = document.createElement('a');
 			a.href = url;
