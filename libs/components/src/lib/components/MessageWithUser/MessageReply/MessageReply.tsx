@@ -1,5 +1,14 @@
-import { getShowName, useUserById } from '@mezon/core';
-import { getStoreAsync, messagesActions, selectClanView, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
+import { getShowName } from '@mezon/core';
+import {
+	getStoreAsync,
+	messagesActions,
+	selectCurrentChannelId,
+	selectDmGroupCurrentId,
+	selectMemberClanByUserId,
+	selectMemberGroupByUserId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { MEZON_AVATAR_URL, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
@@ -7,9 +16,8 @@ import { MEZON_AVATAR_URL, createImgproxyUrl, generateE2eId, getAvatarForPriorit
 import { useCallback, useRef } from 'react';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
-import { safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { MessageLine } from '../MessageLine';
 type MessageReplyProps = {
 	message: IMessageWithUser;
@@ -19,12 +27,21 @@ type MessageReplyProps = {
 	isTopic?: boolean;
 };
 
-const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, isAnonymousReplied }) => {
+const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isTopic, isAnonymousReplied }) => {
 	const { t } = useTranslation('message');
 	const senderIdMessageRef = message?.references?.[0]?.message_sender_id as string;
 	const messageIdRef = message?.references?.[0]?.message_ref_id;
 	const messageUsernameSenderRef = message?.references?.[0]?.message_sender_username ?? '';
-	const messageSender = useUserById(senderIdMessageRef);
+	const isChannelMode = mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD;
+	const messageSender = useAppSelector((state) => {
+		if (!senderIdMessageRef) return undefined;
+		if (isChannelMode) {
+			return selectMemberClanByUserId(state, senderIdMessageRef);
+		}
+		const currentDMId = selectDmGroupCurrentId(state);
+		if (!currentDMId) return undefined;
+		return selectMemberGroupByUserId(state, currentDMId, senderIdMessageRef);
+	});
 	const content = safeJSONParse(message?.references?.[0]?.content ?? '{}');
 	const hasAttachmentInMessageRef = message?.references?.[0]?.has_attachment;
 	const isEmbedMessage = !content?.t && content?.embed;
@@ -60,7 +77,8 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 		senderIdMessageRef ?? ''
 	);
 
-	const isClanView = useSelector(selectClanView);
+	const priorityDisplayName =
+		messageSender?.user?.display_name || message?.references?.[0]?.message_sender_display_name || messageUsernameSenderRef;
 
 	const getAvatarProps = () => {
 		if (senderIdMessageRef === '0') {
@@ -73,7 +91,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 		const messageRefAvatar = message?.references?.[0]?.message_sender_avatar ?? '';
 		const userAvatar = getAvatarForPrioritize(messageSender?.clan_avatar, messageSender?.user?.avatar_url) || '';
 
-		const finalAvatar = !isClanView ? messageRefAvatar : userAvatar || messageRefAvatar;
+		const finalAvatar = isChannelMode ? userAvatar || messageRefAvatar : messageRefAvatar;
 		return {
 			srcImgProxy: createImgproxyUrl(finalAvatar, { width: 100, height: 100, resizeType: 'fit' }),
 			src: finalAvatar
@@ -105,11 +123,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 								className="h-6 text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
 								data-e2e={generateE2eId('replied_message.username')}
 							>
-								{!isClanView
-									? messageSender?.user?.display_name ||
-										message?.references?.[0]?.message_sender_display_name ||
-										messageUsernameSenderRef
-									: nameShowed}
+								{isChannelMode ? nameShowed : priorityDisplayName}
 							</span>
 							{hasAttachmentInMessageRef || isEmbedMessage ? (
 								<div className=" flex flex-row items-center text-theme-primary">
