@@ -1104,12 +1104,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					});
 				}
 			};
-			const store = getStore();
-			const isMessageExist = selectIsMessageIdExist(store.getState() as RootState, effectiveChannelId, idMessageToJump?.id);
 
-			if (idMessageToJump && isMessageExist) {
+			if (idMessageToJump) {
 				if (idMessageToJump.id === 'temp') return;
+				const store = getStore();
+				const isMessageExist = selectIsMessageIdExist(store.getState() as RootState, effectiveChannelId, idMessageToJump?.id);
 				scrollToMessage(idMessageToJump.id);
+				if (isMessageExist && idMessageToJump.navigate) return;
 				msgIdJumpHightlight.current = idMessageToJump.id;
 				dispatch(messagesActions.setIdMessageToJump(null));
 
