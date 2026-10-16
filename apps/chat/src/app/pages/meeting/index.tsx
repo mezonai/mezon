@@ -329,10 +329,6 @@ export default function PreJoinCalling() {
 			setAvatar(avatar as string);
 			setJoinRole(role);
 
-			if (cameraOn) {
-				dispatch(voiceActions.setShowCamera(true));
-			}
-
 			const metadata = trimmed || avatar || getAvatar ? `${trimmed};${avatar || getAvatar || ''}` : '';
 			await dispatch(
 				generateMeetTokenExternal({
