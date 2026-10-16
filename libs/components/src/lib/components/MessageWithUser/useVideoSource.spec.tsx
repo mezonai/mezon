@@ -151,53 +151,38 @@ it('starts a file outside the transcoding hosts when the viewer pressed play bef
 	expect(video.paused).toBe(false);
 });
 
-it('plays the original of a video the browser decodes, without probing for its stream', async () => {
+it('plays the stream of an mp4 the media server converted, like any other video', async () => {
 	video.nativeHls = 'maybe';
 	serveStream(true);
 
 	render(<Player url={CLIP} />);
 	await settle();
 
-	expect(video.src).toBe(CLIP);
-	expect(fetchMock).not.toHaveBeenCalled();
-	expect(mockHlsInstances).toHaveLength(0);
-});
-
-it('previews the original of a video the browser decodes', async () => {
-	serveStream(true);
-
-	render(<Player url={CLIP} preview />);
-	await settle();
-
-	expect(video.src).toBe(CLIP);
-	expect(fetchMock).not.toHaveBeenCalled();
-	expect(mockHlsInstances).toHaveLength(0);
-});
-
-it('moves a decodable video to its stream once when the original fails, then gives up', async () => {
-	video.nativeHls = 'maybe';
-
-	render(<Player url={CLIP} />);
-	await settle();
-	video.paused = false;
-	mediaError();
-	await settle();
 	expect(video.src).toBe(CLIP_PLAYLIST);
-	expect(video.play).toHaveBeenCalledTimes(1);
-	expect(isFailed()).toBe(false);
-
-	mediaError();
-	await settle();
-	expect(isFailed()).toBe(true);
-	expect(fetchMock).not.toHaveBeenCalled();
+	expect(fetchMock).toHaveBeenCalledTimes(1);
+	expect(mockHlsInstances).toHaveLength(0);
 });
 
-it('moves an original that plays without a picture to its stream', async () => {
+it('plays the original of an mp4 the media server has not converted yet', async () => {
 	video.nativeHls = 'maybe';
-	serveStream(true);
+	serveStream(false);
 
 	render(<Player url={CLIP} />);
 	await settle();
+
+	expect(video.src).toBe(CLIP);
+	expect(isFailed()).toBe(false);
+});
+
+it('moves an original that plays without a picture to its stream once the stream exists', async () => {
+	video.nativeHls = 'maybe';
+	serveStream(false);
+
+	render(<Player url={CLIP} />);
+	await settle();
+	expect(video.src).toBe(CLIP);
+
+	serveStream(true);
 	video.paused = false;
 	act(() => video.emit('loadedmetadata'));
 	await settle();
@@ -217,11 +202,12 @@ it('keeps an original without a picture when it has no stream, like a clip with 
 	await settle();
 
 	expect(video.src).toBe(CLIP);
+	expect(fetchMock).toHaveBeenCalledTimes(2);
 	expect(isFailed()).toBe(false);
 });
 
 it('leaves an original that shows a picture alone', async () => {
-	serveStream(true);
+	serveStream(false);
 
 	render(<Player url={CLIP} />);
 	await settle();
@@ -230,7 +216,7 @@ it('leaves an original that shows a picture alone', async () => {
 	await settle();
 
 	expect(video.src).toBe(CLIP);
-	expect(fetchMock).not.toHaveBeenCalled();
+	expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 
 it('plays the converted stream natively where the browser can', async () => {
