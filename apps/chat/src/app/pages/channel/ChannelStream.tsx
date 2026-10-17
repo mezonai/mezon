@@ -1,9 +1,8 @@
-import { AvatarImage, StreamOutputDeviceMenu } from '@mezon/components';
-import { useAuth } from '@mezon/core';
-import type { ChannelsEntity, UsersStreamEntity } from '@mezon/store';
+import { AvatarImage, StreamOutputDeviceMenu, StreamVideoSlot } from '@mezon/components';
+import type { ChannelsEntity, StreamQuality, UsersStreamEntity } from '@mezon/store';
 import {
 	appActions,
-	generateMeetToken,
+	fetchStreamPlayback,
 	selectCurrentClanId,
 	selectCurrentClanName,
 	selectIsJoin,
@@ -12,11 +11,12 @@ import {
 	selectStatusStream,
 	selectStreamMembersByChannelId,
 	selectStreamMuted,
+	selectStreamQuality,
+	selectStreamViewerCount,
 	selectStreamVolume,
-	streamMemberEntityId,
+	toastActions,
 	useAppDispatch,
 	useAppSelector,
-	usersStreamActions,
 	videoStreamActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -117,9 +117,9 @@ type ChannelStreamProps = {
 export default function ChannelStream({ currentStreamInfo, currentChannel }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
 	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || '0'));
+	const viewerCount = useAppSelector((state) => selectStreamViewerCount(state, currentChannel?.channel_id || '0'));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
-	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 	const [showMembers, setShowMembers] = useState(true);
 	const [showEndCallButton, setShowEndCallButton] = useState(true);
@@ -132,9 +132,13 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
-	const sfuServerUrl = process.env.NX_CHAT_APP_SFU_WS_URL;
 	const volume = useSelector(selectStreamVolume);
 	const muted = useSelector(selectStreamMuted);
+	const quality = useSelector(selectStreamQuality);
+	const videoBoxRef = useRef<HTMLDivElement>(null);
+	const [isFullscreen, setIsFullscreen] = useState(false);
+	const streamPoster =
+		currentChannel?.channel_avatar && currentChannel.channel_avatar !== '0' ? currentChannel.channel_avatar : '/assets/images/flahstream.png';
 
 	useEffect(() => {
 		currentChannelIdRef.current = currentChannel?.channel_id;
@@ -154,13 +158,15 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		}
 	}, [currentChannel, currentStreamInfo, currentClanId, dispatch, streamPlay]);
 
+	useEffect(() => {
+		const handleFullscreenChange = () => setIsFullscreen(document.fullscreenElement === videoBoxRef.current);
+		document.addEventListener('fullscreenchange', handleFullscreenChange);
+		return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+	}, []);
+
 	const handleLeaveChannel = async () => {
 		joinRequestRef.current += 1;
 		setIsJoining(false);
-		const idStreamByMe = memberJoin?.find((user) => user.user_id === userProfile?.user?.id);
-		if (idStreamByMe) {
-			dispatch(usersStreamActions.remove(streamMemberEntityId(idStreamByMe.user_id, idStreamByMe.streaming_channel_id)));
-		}
 		dispatch(videoStreamActions.resetPlayback());
 		dispatch(appActions.setIsShowChatStream(false));
 		setShowMembers(true);
@@ -169,35 +175,20 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	const handleJoinChannel = async () => {
 		if (!currentChannel || !currentClanId) return;
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
-		if (!sfuServerUrl) return;
 		if (!memberJoin.length) return;
 		if (isJoining) return;
 
 		const channelId = currentChannel.channel_id as string;
 		const requestId = ++joinRequestRef.current;
 		setIsJoining(true);
-		let token: string | undefined;
-		let sfuUrl = '';
-		try {
-			const result = await dispatch(
-				generateMeetToken({
-					channelId,
-					roomName: ''
-				})
-			).unwrap();
-			token = result?.token;
-			sfuUrl = result?.url ?? '';
-		} catch {
-			if (requestId === joinRequestRef.current) setIsJoining(false);
-			return;
-		}
+		const playback = await dispatch(fetchStreamPlayback(channelId)).unwrap();
 		if (requestId !== joinRequestRef.current || currentChannelIdRef.current !== channelId) return;
-		if (!token) {
+		if (!playback) {
 			setIsJoining(false);
+			dispatch(toastActions.addToast({ message: t('videoError'), type: 'error', autoClose: 5000 }));
 			return;
 		}
-		dispatch(videoStreamActions.setSfuUrl(sfuUrl));
-		dispatch(videoStreamActions.setToken(token));
+		dispatch(videoStreamActions.setPlayback(playback));
 		dispatch(
 			videoStreamActions.startStream({
 				clanId: currentClanId as string,
@@ -217,6 +208,15 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 
 	const handleVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
 		dispatch(videoStreamActions.setVolume(parseFloat(event.target.value)));
+	};
+
+	const handleQualityChange = (event: ChangeEvent<HTMLSelectElement>) => {
+		dispatch(videoStreamActions.setQuality(event.target.value as StreamQuality));
+	};
+
+	const toggleFullscreen = () => {
+		if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+		else void videoBoxRef.current?.requestFullscreen().catch(() => undefined);
 	};
 
 	const toggleMembers = () => {
@@ -267,6 +267,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 						) : (
 							<div className="text-gray-800 dark:text-white">{t('noOneInStream')}</div>
 						)}
+						{viewerCount > 0 && <div className="text-gray-800 dark:text-white">{t('viewerCount', { count: viewerCount })}</div>}
 						<button
 							disabled={!memberJoin.length || isJoining}
 							className={`bg-green-700 rounded-3xl p-2 ${memberJoin.length > 0 && !isJoining ? 'hover:bg-green-600' : 'opacity-50'}`}
@@ -285,13 +286,10 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 				<div className="flex flex-col justify-center gap-2 w-full bg-theme-setting-primary border-theme-primary">
 					<div className={`relative min-h-40 h-fit items-center flex justify-center ${memberJoin.length > 0 && showMembers ? 'mt-6' : ''}`}>
 						<div
+							ref={videoBoxRef}
 							className={`h-[220px] w-[calc(100%-1rem)] sm:h-[250px] sm:w-[70%] md:h-[350px] lg:h-[450px] xl:h-[550px] text-theme-primary bg-theme-setting-nav flex justify-center items-center text-center border-theme-primary relative overflow-hidden`}
 						>
-							<img
-								src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
-								alt={currentChannel?.channel_label || t('streamThumbnail')}
-								className="w-full h-full object-cover opacity-80"
-							/>
+							{isJoin && currentStreamInfo?.streamId === currentChannel?.channel_id && <StreamVideoSlot poster={streamPoster} />}
 							<div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2 bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
 								<div className="flex items-center gap-1">
 									<button onClick={handleToggleMute} className="p-1" type="button">
@@ -312,8 +310,52 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 										onChange={handleVolumeChange}
 										className="cursor-pointer w-[100px] h-[5px]"
 									/>
+									{viewerCount > 0 && (
+										<span
+											className="flex items-center gap-1 ml-2 text-sm text-white"
+											title={t('viewerCount', { count: viewerCount })}
+										>
+											<Icons.EyeOpen className="w-4 h-4" />
+											{viewerCount}
+										</span>
+									)}
 								</div>
-								<StreamOutputDeviceMenu />
+								<div className="flex items-center gap-2">
+									<select
+										value={quality}
+										onChange={handleQualityChange}
+										title={t('quality')}
+										aria-label={t('quality')}
+										className="bg-transparent text-sm text-white cursor-pointer outline-none"
+									>
+										<option value="auto" className="text-black">
+											{t('qualityAuto')}
+										</option>
+										<option value="high" className="text-black">
+											{t('qualityHigh')}
+										</option>
+										<option value="mid" className="text-black">
+											{t('qualityMid')}
+										</option>
+										<option value="low" className="text-black">
+											{t('qualityLow')}
+										</option>
+									</select>
+									<StreamOutputDeviceMenu />
+									<button
+										onClick={toggleFullscreen}
+										className="p-1"
+										type="button"
+										title={isFullscreen ? t('exitFullscreen') : t('fullscreen')}
+										aria-label={isFullscreen ? t('exitFullscreen') : t('fullscreen')}
+									>
+										{isFullscreen ? (
+											<Icons.ExitFullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
+										) : (
+											<Icons.FullScreen className="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
+										)}
+									</button>
+								</div>
 							</div>
 						</div>
 						{memberJoin.length > 0 && (

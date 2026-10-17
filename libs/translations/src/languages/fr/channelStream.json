@@ -1,5 +1,4 @@
 {
-	"streamThumbnail": "Vignette du Stream",
 	"videoError": "Impossible de lire la vidéo. Veuillez réessayer plus tard.",
 	"everyoneWaiting": "Tout le monde vous attend à l'intérieur",
 	"noOneInStream": "Personne n'est présent dans le streaming pour le moment",
@@ -7,5 +6,12 @@
 	"noStreamToday": "Aucun streaming aujourd'hui",
 	"hideMembers": "Masquer les membres",
 	"showMembers": "Afficher les membres",
-	"duplicateSessionDisconnected": "Déconnecté, car votre compte a rejoint un streaming ou un salon vocal dans une autre session."
+	"viewerCount": "{{count}} spectateurs",
+	"quality": "Qualité",
+	"qualityAuto": "Auto",
+	"qualityHigh": "Haute",
+	"qualityMid": "Moyenne",
+	"qualityLow": "Basse",
+	"fullscreen": "Plein écran",
+	"exitFullscreen": "Quitter le plein écran"
 }

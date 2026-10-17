@@ -1,5 +1,4 @@
 {
-	"streamThumbnail": "Трансляция миниатюрасы",
 	"videoError": "Видеоны уйнатып булмый. Зинһар, соңрак ясап карагыз.",
 	"everyoneWaiting": "Сезне барысы да көтеп тора!",
 	"noOneInStream": "Хәзерге вакытта стримда беркем дә юк",
@@ -7,5 +6,12 @@
 	"noStreamToday": "Бүген стрим булмады",
 	"hideMembers": "Катнашучыларны яшерү",
 	"showMembers": "Катнашучыларны күрсәтү",
-	"duplicateSessionDisconnected": "Сезнең аккаунт башка сессиядә трансляциягә яки тавыш каналына кушылганга күрә, элемтә өзелде."
+	"viewerCount": "Тамашачылар: {{count}}",
+	"quality": "Сыйфат",
+	"qualityAuto": "Автомат",
+	"qualityHigh": "Югары",
+	"qualityMid": "Уртача",
+	"qualityLow": "Түбән",
+	"fullscreen": "Тулы экран",
+	"exitFullscreen": "Тулы экраннан чыгу"
 }
