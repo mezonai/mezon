@@ -114,6 +114,7 @@ export { default as ModalCall } from './components/ModalCall';
 export { default as MultiStepModalE2ee } from './components/ModalSendCode';
 export { default as SettingComunity } from './components/SettingComunity';
 
+export { ClanRailUnreadFloatButton } from './components/ClanRailUnreadFloatButton';
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 
