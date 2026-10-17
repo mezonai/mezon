@@ -124,6 +124,7 @@ export { default as MessageWithSystem } from './components/MessageWithSystem';
 export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
 
 export * from './components/MezonSfuVoiceChannel';
+export * from './components/StreamPlayer';
 export * from './components/virtual-core/useVirtualizer';
 
 export * from './components/PreJoinCalling/BackgroundSelector';

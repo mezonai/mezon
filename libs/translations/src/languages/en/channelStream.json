@@ -1,5 +1,4 @@
 {
-	"streamThumbnail": "Stream Thumbnail",
 	"videoError": "Cannot play video. Please try again later.",
 	"everyoneWaiting": "Everyone is waiting for you inside",
 	"noOneInStream": "No one is currently in stream",
@@ -7,5 +6,12 @@
 	"noStreamToday": "No stream today",
 	"hideMembers": "Hide Members",
 	"showMembers": "Show Members",
-	"duplicateSessionDisconnected": "Disconnected because your account joined a stream or voice channel in another session."
+	"viewerCount": "{{count}} watching",
+	"quality": "Quality",
+	"qualityAuto": "Auto",
+	"qualityHigh": "High",
+	"qualityMid": "Medium",
+	"qualityLow": "Low",
+	"fullscreen": "Full screen",
+	"exitFullscreen": "Exit full screen"
 }

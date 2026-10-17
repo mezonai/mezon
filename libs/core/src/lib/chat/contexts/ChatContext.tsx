@@ -197,6 +197,7 @@ import type {
 	StickerUpdateEvent,
 	StreamingJoinedEvent,
 	StreamingLeavedEvent,
+	StreamingViewerCountEvent,
 	UnblockFriend,
 	UnmuteEvent,
 	UnpinMessageEvent,
@@ -412,6 +413,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
 			dispatch(usersStreamActions.remove(streamMemberEntityId(user.streaming_user_id, user.streaming_channel_id)));
+			dispatch(usersStreamActions.setViewerCount({ channelId: user.streaming_channel_id, count: 0 }));
 			const store = getStore();
 			const streamInfo = selectCurrentStreamInfo(store.getState());
 			const isJoin = selectIsJoin(store.getState());
@@ -433,6 +435,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			};
 		},
 		[dispatch, userId, cancelPendingStreamSelfLeave]
+	);
+
+	const onstreamingviewercount = useCallback(
+		(event: StreamingViewerCountEvent) => {
+			dispatch(usersStreamActions.setViewerCount({ channelId: event.channel_id, count: event.viewer_count }));
+		},
+		[dispatch]
 	);
 
 	const onactivityupdated = useCallback(
@@ -2935,6 +2944,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onstreamingchannelleaved = onstreamingchannelleaved;
 
+			socket.onstreamingviewercount = onstreamingviewercount;
+
 			socket.onchannelmessage = onchannelmessage;
 
 			socket.onchannelpresence = onchannelpresence;
@@ -3078,6 +3089,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onvoiceleaved,
 			onstreamingchanneljoined,
 			onstreamingchannelleaved,
+			onstreamingviewercount,
 			oneventcreated,
 			oncoffeegiven,
 			onroleevent,
@@ -3436,6 +3448,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onvoiceleaved,
 		onstreamingchanneljoined,
 		onstreamingchannelleaved,
+		onstreamingviewercount,
 		onerror,
 		onchannelcreated,
 		oncategoryevent,

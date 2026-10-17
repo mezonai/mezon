@@ -1,15 +1,20 @@
+import { captureSentryError } from '@mezon/logger';
 import type { IStreamInfo } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiGetStreamPlaybackResponse } from 'mezon-js';
+import { ensureSocket, getMezonCtx } from '../helpers';
 
 export const VIDEO_STREAM_FEATURE_KEY = 'videostream';
+
+export type StreamQuality = 'auto' | 'high' | 'mid' | 'low';
 
 export interface StreamState {
 	streamInfo: IStreamInfo | null;
 	isPlaying: boolean;
 	isJoin: boolean;
-	token: string;
-	sfuUrl: string;
+	playback: ApiGetStreamPlaybackResponse | null;
+	quality: StreamQuality;
 	volume: number;
 	muted: boolean;
 }
@@ -18,11 +23,26 @@ const initialState: StreamState = {
 	streamInfo: null,
 	isPlaying: false,
 	isJoin: false,
-	token: '',
-	sfuUrl: '',
+	playback: null,
+	quality: 'auto',
 	volume: 1,
 	muted: false
 };
+
+export const fetchStreamPlayback = createAsyncThunk(
+	'videostream/fetchStreamPlayback',
+	async (channelId: string, thunkAPI): Promise<ApiGetStreamPlaybackResponse | null> => {
+		try {
+			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+			const playback = await mezon.client.getStreamPlayback(mezon.session, { channel_id: channelId });
+			if (!playback?.token || (!playback.whep_url && !playback.hls_url)) throw new Error('stream playback is empty');
+			return playback;
+		} catch (error) {
+			captureSentryError(error, 'videostream/fetchStreamPlayback');
+			return null;
+		}
+	}
+);
 
 const videoStreamSlice = createSlice({
 	name: 'stream',
@@ -38,11 +58,11 @@ const videoStreamSlice = createSlice({
 		setIsJoin(state, action: PayloadAction<boolean>) {
 			state.isJoin = action.payload;
 		},
-		setToken(state, action: PayloadAction<string>) {
-			state.token = action.payload;
+		setPlayback(state, action: PayloadAction<ApiGetStreamPlaybackResponse>) {
+			state.playback = action.payload;
 		},
-		setSfuUrl(state, action: PayloadAction<string>) {
-			state.sfuUrl = action.payload;
+		setQuality(state, action: PayloadAction<StreamQuality>) {
+			state.quality = action.payload;
 		},
 		setVolume(state, action: PayloadAction<number>) {
 			state.volume = Math.min(1, Math.max(0, action.payload));
@@ -54,8 +74,7 @@ const videoStreamSlice = createSlice({
 		resetPlayback(state) {
 			state.isPlaying = false;
 			state.isJoin = false;
-			state.token = '';
-			state.sfuUrl = '';
+			state.playback = null;
 		}
 	}
 });
@@ -74,9 +93,9 @@ export const selectStatusStream = createSelector(getVideoStreamState, (state) =>
 
 export const selectIsJoin = createSelector(getVideoStreamState, (state) => state.isJoin);
 
-export const selectStreamAudioToken = createSelector(getVideoStreamState, (state) => state.token);
+export const selectStreamPlayback = createSelector(getVideoStreamState, (state) => state.playback);
 
-export const selectStreamSfuUrl = createSelector(getVideoStreamState, (state) => state.sfuUrl);
+export const selectStreamQuality = createSelector(getVideoStreamState, (state) => state.quality);
 
 export const selectStreamVolume = createSelector(getVideoStreamState, (state) => state.volume);
 

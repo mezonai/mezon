@@ -29,6 +29,7 @@ export interface UsersStreamState extends EntityState<UsersStreamEntity, string>
 	error?: string | null;
 	streamChannelMember: IChannelMember[];
 	cacheByClans: Record<string, CacheMetadata>;
+	viewerCountByChannel: Record<string, number>;
 }
 
 export const userStreamAdapter = createEntityAdapter({
@@ -161,7 +162,8 @@ export const initialUsersStreamState: UsersStreamState = userStreamAdapter.getIn
 	loadingStatus: 'not loaded',
 	error: null,
 	streamChannelMember: [],
-	cacheByClans: {}
+	cacheByClans: {},
+	viewerCountByChannel: {}
 });
 
 export const usersStreamSlice = createSlice({
@@ -181,6 +183,9 @@ export const usersStreamSlice = createSlice({
 				.filter((member) => member?.streaming_channel_id === channelId)
 				.map((member) => streamMemberEntityId(member?.user_id, member?.streaming_channel_id));
 			userStreamAdapter.removeMany(state, idsToRemove);
+		},
+		setViewerCount: (state, action: PayloadAction<{ channelId: string; count: number }>) => {
+			state.viewerCountByChannel[action.payload.channelId] = action.payload.count;
 		}
 		// ...
 	},
@@ -260,3 +265,8 @@ export const selectStreamMembersByChannelId = createSelector([selectAllUsersStre
 	const listStreamChannelUser = entities.filter((member) => member && member.streaming_channel_id === channelId);
 	return listStreamChannelUser;
 });
+
+export const selectStreamViewerCount = createSelector(
+	[getUsersStreamState, (_, channelId: string) => channelId],
+	(state, channelId) => state.viewerCountByChannel[channelId] ?? 0
+);
