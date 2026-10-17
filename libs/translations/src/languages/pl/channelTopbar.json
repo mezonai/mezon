@@ -166,6 +166,14 @@
 	"errors": {
 		"limit": "Osiągnięto maksymalną liczbę kanałów dla tego klanu"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Ukryj pasek przypięć",
+		"dismissModal": {
+			"title": "Ukryj pasek przypięć",
+			"message": "Czy na pewno chcesz ukryć ten pasek? Pojawi się ponownie, gdy pojawi się nowa przypięta wiadomość lub temat.",
+			"confirm": "Ukryj"
+		}
+	},
 	"moreFile": "kolejny plik",
 	"moreFiles": "kolejne pliki",
 	"joinedThreads": "Dołączone wątki",

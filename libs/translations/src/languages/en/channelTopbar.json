@@ -175,6 +175,14 @@
 	"errors": {
 		"limit": "Maximum channel limit reached for this clan"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Hide pin bar",
+		"dismissModal": {
+			"title": "Hide pin bar",
+			"message": "Are you sure you want to hide this bar? It will appear again when there is a new pinned message or topic.",
+			"confirm": "Hide"
+		}
+	},
 	"moreFile": "more file",
 	"moreFiles": "more files"
 }

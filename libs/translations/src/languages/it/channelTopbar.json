@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "È stato raggiunto il numero massimo di canali per questo clan"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Nascondi barra dei pin",
+		"dismissModal": {
+			"title": "Nascondi barra dei pin",
+			"message": "Vuoi davvero nascondere questa barra? Ricomparirà quando ci sarà un nuovo messaggio fissato o un nuovo argomento.",
+			"confirm": "Nascondi"
+		}
+	},
 	"moreFile": "altri file",
 	"moreFiles": "altri file",
 	"topics": "Argomenti",

@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "このクランのチャンネル数が上限に達しました"
 	},
+	"topicPinBanner": {
+		"dismissButton": "ピン留めバーを非表示",
+		"dismissModal": {
+			"title": "ピン留めバーを非表示",
+			"message": "このバーを非表示にしますか？新しいピン留めメッセージまたは新しいトピックがあるときに再表示されます。",
+			"confirm": "非表示"
+		}
+	},
 	"moreFile": "ファイル",
 	"moreFiles": "ファイル",
 	"topics": "トピック",

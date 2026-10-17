@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "Det maximala antalet kanaler för denna klan har uppnåtts"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Dölj fästlist",
+		"dismissModal": {
+			"title": "Dölj fästlist",
+			"message": "Är du säker på att du vill dölja denna list? Den visas igen när det finns ett nytt fäst meddelande eller ett nytt ämne.",
+			"confirm": "Dölj"
+		}
+	},
 	"moreFile": "fler filer",
 	"moreFiles": "fler filer",
 	"topics": "Ämnen",

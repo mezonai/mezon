@@ -917,7 +917,8 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 		}
 
 		try {
-			const raw = localStorage.getItem(`mezon_banner_dismissed_${currentChannelId}`);
+			const storageKey = `mezon_banner_dismissed_${currentChannelId}`;
+			const raw = localStorage.getItem(storageKey);
 			if (!raw) {
 				setIsDismissed(false);
 				return;
@@ -928,28 +929,48 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 				return;
 			}
 
+			const currentPinnedIds = (pinMessages || []).map((p) => String(p.message_id || '')).filter(Boolean);
+			const channelTopics = allTopics?.filter((tp) => tp.channel_id === currentChannelId) || [];
+			const activeTopicIds = channelTopics.map((tp) => String(tp.id || '')).filter(Boolean);
+
+			let dismissedPinnedIds: string[] = Array.isArray(dismissed.pinnedIds)
+				? dismissed.pinnedIds.map(String)
+				: dismissed.pinId
+					? [String(dismissed.pinId)]
+					: [];
+			let dismissedTopicIds: string[] = Array.isArray(dismissed.topicIds)
+				? dismissed.topicIds.map(String)
+				: dismissed.topicId
+					? [String(dismissed.topicId)]
+					: [];
+
+			dismissedPinnedIds = dismissedPinnedIds.filter((id) => currentPinnedIds.includes(id));
+			dismissedTopicIds = dismissedTopicIds.filter((id) => activeTopicIds.includes(id));
+
+			if (dismissedPinnedIds.length === 0 && dismissedTopicIds.length === 0) {
+				localStorage.removeItem(storageKey);
+				setIsDismissed(false);
+				return;
+			}
+
+			const prunedDismissed = {
+				...dismissed,
+				pinnedIds: dismissedPinnedIds,
+				topicIds: dismissedTopicIds
+			};
+			const prunedRaw = JSON.stringify(prunedDismissed);
+			if (prunedRaw !== raw) {
+				localStorage.setItem(storageKey, prunedRaw);
+			}
+
 			const currentTopicId = latestTopic?.id ? String(latestTopic.id) : '';
-			const hasNewTopic = Boolean(
-				currentTopicId &&
-					(Array.isArray(dismissed.topicIds)
-						? !dismissed.topicIds.includes(currentTopicId)
-						: dismissed.topicId
-							? String(dismissed.topicId) !== currentTopicId
-							: false)
-			);
+			const hasNewTopic = Boolean(currentTopicId && !dismissedTopicIds.includes(currentTopicId));
 
 			const currentPinId = latestPin?.message_id ? String(latestPin.message_id) : '';
-			const hasNewPin = Boolean(
-				currentPinId &&
-					(Array.isArray(dismissed.pinnedIds)
-						? !dismissed.pinnedIds.includes(currentPinId)
-						: dismissed.pinId
-							? String(dismissed.pinId) !== currentPinId
-							: false)
-			);
+			const hasNewPin = Boolean(currentPinId && !dismissedPinnedIds.includes(currentPinId));
 
 			if (hasNewTopic || hasNewPin) {
-				localStorage.removeItem(`mezon_banner_dismissed_${currentChannelId}`);
+				localStorage.removeItem(storageKey);
 				setIsDismissed(false);
 			} else {
 				setIsDismissed(true);
@@ -957,7 +978,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 		} catch {
 			setIsDismissed(false);
 		}
-	}, [currentChannelId, latestTopic?.id, latestPin?.message_id]);
+	}, [currentChannelId, latestTopic?.id, latestPin?.message_id, pinMessages, allTopics]);
 
 	const handleConfirmDismiss = useCallback(() => {
 		if (!currentChannelId) return;
@@ -986,12 +1007,9 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 					handleConfirmDismiss();
 					closeDismissModal();
 				}}
-				title={t('unpin', 'Bỏ ghim')}
-				message={t(
-					'confirmUnpinBannerDesc',
-					'Bạn có chắc chắn muốn bỏ ghim không? Thanh ghim sẽ tự động hiện lại khi có tin nhắn ghim hoặc topic mới.'
-				)}
-				buttonName={t('unpin', 'Bỏ ghim')}
+				title={t('topicPinBanner.dismissModal.title')}
+				message={t('topicPinBanner.dismissModal.message')}
+				buttonName={t('topicPinBanner.dismissModal.confirm')}
 				buttonColor="bg-red-600 hover:bg-red-700"
 			/>
 		),
@@ -1023,10 +1041,8 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 
 	return (
 		<>
-			{/* Lớp layout trong suốt ở dưới để giữ chỗ trong flow, ngăn chữ cuộn lên lọt vào sau banner */}
 			<div className="w-full h-14 shrink-0 pointer-events-none" />
 
-			{/* Banner nổi (absolute) nằm ngoài layout với đầy đủ hiệu ứng nổi, bóng đổ và màu sắc */}
 			<div
 				className="absolute top-2 left-0 z-20 px-4 pointer-events-none transition-[right] duration-200"
 				style={{ right: isMemberListOpen ? 245 : 0 }}
@@ -1112,8 +1128,8 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 						type="button"
 						className="flex items-center justify-center px-2.5 text-theme-primary hover:text-theme-primary-active hover:bg-item-theme-hover transition-colors cursor-pointer shrink-0"
 						onClick={handleOpenDismissModal}
-						title={t('unpin', 'Bỏ ghim')}
-						aria-label={t('unpin', 'Bỏ ghim')}
+						title={t('topicPinBanner.dismissButton')}
+						aria-label={t('topicPinBanner.dismissButton')}
 						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container', 'dismiss_button')}
 					>
 						<UnpinBannerIcon className="w-5 h-5 shrink-0" />

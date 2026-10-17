@@ -166,6 +166,14 @@
 	"errors": {
 		"limit": "Het maximale aantal kanalen voor deze clan is bereikt"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Pinbalk verbergen",
+		"dismissModal": {
+			"title": "Pinbalk verbergen",
+			"message": "Weet je zeker dat je deze balk wilt verbergen? Ze verschijnt weer bij een nieuw vastgezet bericht of een nieuw onderwerp.",
+			"confirm": "Verbergen"
+		}
+	},
 	"moreFile": "meer bestand",
 	"moreFiles": "meer bestanden",
 	"joinedThreads": "Deelgenomen threads",

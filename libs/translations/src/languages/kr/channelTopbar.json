@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "이 클랜의 최대 채널 수에 도달했습니다"
 	},
+	"topicPinBanner": {
+		"dismissButton": "고정 바 숨기기",
+		"dismissModal": {
+			"title": "고정 바 숨기기",
+			"message": "이 바를 숨기시겠습니까? 새로 고정된 메시지나 새 주제가 있으면 다시 표시됩니다.",
+			"confirm": "숨기기"
+		}
+	},
 	"moreFile": "파일",
 	"moreFiles": "파일",
 	"topics": "주제",

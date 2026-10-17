@@ -166,6 +166,14 @@
 	"errors": {
 		"limit": "Le nombre maximal de canaux pour ce clan a été atteint"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Masquer la barre d'épinglage",
+		"dismissModal": {
+			"title": "Masquer la barre d'épinglage",
+			"message": "Voulez-vous vraiment masquer cette barre ? Elle réapparaîtra lorsqu'il y aura un nouveau message épinglé ou un nouveau sujet.",
+			"confirm": "Masquer"
+		}
+	},
 	"moreFile": "autre fichier",
 	"moreFiles": "autres fichiers",
 	"joinedThreads": "Fils rejoints",
