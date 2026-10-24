@@ -4,6 +4,7 @@ import type { ScreenDrawMode } from '../MyVideoConference/ScreenAnnotation/useSc
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
 import { RecordingControl } from '../Recording/RecordingControl';
 import { SfuAgentControl } from './AgentControl';
+import { BreakoutControl } from './BreakoutControl';
 import { CameraControl } from './CameraControl';
 import { EmojiReactionControl } from './EmojiReactionControl';
 import { FullscreenControl } from './FullscreenControl';
@@ -72,6 +73,8 @@ interface SfuControlBarProps {
 	onTogglePopout: () => void;
 	onFullScreen: () => void;
 	roomId?: string;
+	showBreakoutModal?: boolean;
+	onToggleBreakoutModal?: () => void;
 }
 
 export const SfuControlBar = ({
@@ -126,7 +129,9 @@ export const SfuControlBar = ({
 	onLeaveRoom,
 	onTogglePopout,
 	onFullScreen,
-	roomId
+	roomId,
+	showBreakoutModal = false,
+	onToggleBreakoutModal
 }: SfuControlBarProps) => {
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
@@ -245,6 +250,9 @@ export const SfuControlBar = ({
 				)}
 				<SfuAgentControl roomId={roomId} isExternalCalling={isExternalCalling} showHint={showAgentHint} onDismissHint={onDismissAgentHint} />
 				{!isExternalCalling && <SfuRaisingHandControl />}
+				{!isExternalCalling && onToggleBreakoutModal && (
+					<BreakoutControl isExternalCalling={isExternalCalling} isOpen={showBreakoutModal} onToggleModal={onToggleBreakoutModal} />
+				)}
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>
 			<div className="flex justify-end pr-1 max-md:hidden">

@@ -6756,6 +6756,30 @@ export function VoiceFocusIcon({ defaultSize = 'w-5 h-5 ', defaultFill1 = 'curre
 		</svg>
 	);
 }
+
+export function VoiceBreakoutIcon({ defaultSize = 'w-5 h-5 ', defaultFill1 = 'currentColor', ...props }: IconProps) {
+	return (
+		<svg
+			width="20"
+			height="20"
+			aria-hidden="true"
+			role="img"
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+			className={defaultSize}
+			{...props}
+		>
+			<path
+				fill={defaultFill1}
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5Zm0 2h6v6H5V5Zm8 0h6v6h-6V5ZM5 13h6v6H5v-6Zm8 0h6v6h-6v-6Z"
+				className="icon-VoiceBreakoutIcon-fill-1"
+			/>
+		</svg>
+	);
+}
 export function RotateIcon({ defaultSize = 'w-5 h-5 ', defaultFill1 = 'currentColor', ...props }: IconProps) {
 	return (
 		<svg width="20" height="20" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
