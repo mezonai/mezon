@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { SPEAKING_HOLD_MS, isStillSpeaking, pickTileToSwapOut, speakerRecency } from './speakerSpotlight';
+import { SPEAKING_HOLD_MS, isStillSpeaking, isSwappableTile, pickTileToSwapOut, speakerRecency } from './speakerSpotlight';
 
 describe('speakerSpotlight', () => {
 	describe('isStillSpeaking', () => {
@@ -17,6 +17,31 @@ describe('speakerSpotlight', () => {
 		it('respects a custom holdMs', () => {
 			expect(isStillSpeaking(500, 750, 300)).toBe(true);
 			expect(isStillSpeaking(500, 800, 300)).toBe(false);
+		});
+	});
+
+	describe('isSwappableTile', () => {
+		it('only lets a remote camera tile be swapped out', () => {
+			expect(isSwappableTile('peer-1-camera', 'peer-1')).toBe(true);
+			expect(isSwappableTile('local-camera', 'local')).toBe(false);
+			expect(isSwappableTile('local-screen', 'local')).toBe(false);
+			expect(isSwappableTile('peer-1-screen', 'peer-1')).toBe(false);
+		});
+
+		it('keeps the own tile visible when a third speaker appears and every visible peer spoke more recently', () => {
+			const tiles = [
+				{ tileId: 'local-camera', participantId: 'local' },
+				{ tileId: 'peer-a-camera', participantId: 'peer-a' },
+				{ tileId: 'peer-b-camera', participantId: 'peer-b' }
+			];
+			const recency: Record<string, number> = { local: 0, 'peer-a': 4000, 'peer-b': 6000 };
+			const swappable = tiles.filter((t) => isSwappableTile(t.tileId, t.participantId));
+			expect(
+				pickTileToSwapOut(
+					swappable.map((t) => t.tileId),
+					(id) => recency[tiles.find((t) => t.tileId === id)?.participantId ?? ''] ?? 0
+				)
+			).toBe('peer-a-camera');
 		});
 	});
 

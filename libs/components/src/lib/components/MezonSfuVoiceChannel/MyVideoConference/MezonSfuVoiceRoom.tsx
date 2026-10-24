@@ -79,7 +79,7 @@ import {
 import { SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SFU_DUPLICATE_SESSION_CLOSE_CODE, SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
 import { SFU_MEDIA_POOL_VERSION, SfuSlotAssignments } from './sfuSlotAssignments';
-import { isStillSpeaking, pickTileToSwapOut, speakerRecency } from './speakerSpotlight';
+import { isStillSpeaking, isSwappableTile, pickTileToSwapOut, speakerRecency } from './speakerSpotlight';
 
 const ICE_RECOVERY_GRACE_MS = 4000;
 const NETWORK_QUALITY_INTERVAL_MS = 5000;
@@ -3170,11 +3170,15 @@ export function MezonSfuVoiceRoom({
 		});
 		if (visibleThumbnails.some((thumbnail) => thumbnail.dataset.participantId === activeSpeakerId)) return;
 
-		const replacementTileId = pickTileToSwapOut(
-			visibleThumbnails.map((t) => t.dataset.tileId).filter((tileId): tileId is string => Boolean(tileId)),
-			(tileId) =>
-				speakerRecency(speakingMapRef.current.get(visibleThumbnails.find((t) => t.dataset.tileId === tileId)?.dataset.participantId || ''))
-		);
+		const swappableThumbnails = visibleThumbnails.filter((t) => isSwappableTile(t.dataset.tileId || '', t.dataset.participantId));
+		const replacementTileId =
+			pickTileToSwapOut(
+				swappableThumbnails.map((t) => t.dataset.tileId).filter((tileId): tileId is string => Boolean(tileId)),
+				(tileId) =>
+					speakerRecency(
+						speakingMapRef.current.get(swappableThumbnails.find((t) => t.dataset.tileId === tileId)?.dataset.participantId || '')
+					)
+			) ?? visibleThumbnails[visibleThumbnails.length - 1]?.dataset.tileId;
 		const activeIndex = focusTileOrderRef.current.indexOf(activeSpeakerTileId || '');
 		const replacementIndex = focusTileOrderRef.current.indexOf(replacementTileId || '');
 		if (activeIndex < 0 || replacementIndex < 0) return;
