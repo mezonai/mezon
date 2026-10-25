@@ -1,4 +1,5 @@
 import { useAuth } from '@mezon/core';
+import type { BreakoutParticipantItem } from '@mezon/store';
 import {
 	generateMeetToken,
 	selectEntitesUserClans,
@@ -6,6 +7,8 @@ import {
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
+	selectVoiceChannelMembersByChannelId,
+	selectVoiceInfo,
 	toastActions,
 	useAppDispatch,
 	voiceActions
@@ -35,6 +38,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
+import { BreakoutRoomsModal } from '../BreakoutRooms/BreakoutRoomsModal';
 import { SfuControlBar } from '../ControlBar/SfuControlBar';
 import { RecordingIndicator } from '../Recording/RecordingIndicator';
 import type { RecordingAudioSource, RecordingSceneTile } from '../Recording/types';
@@ -708,6 +712,10 @@ export function MezonSfuVoiceRoom({
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
 	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
+	const [showBreakoutModal, setShowBreakoutModal] = useState(false);
+	const voiceInfo = useSelector(selectVoiceInfo);
+	const activeClanId = voiceInfo?.clanId || '';
+	const channelVoiceMembers = useSelector((state) => selectVoiceChannelMembersByChannelId(state, roomId, activeClanId));
 	const [isPopoutOpen, setIsPopoutOpen] = useState(false);
 	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -2877,6 +2885,39 @@ export function MezonSfuVoiceRoom({
 		() => [currentUserId, ...participants.map((participant) => participant.userId)].filter((id): id is string => !!id),
 		[currentUserId, participants]
 	);
+	const breakoutCallParticipants = useMemo<BreakoutParticipantItem[]>(() => {
+		const seen = new Set<string>();
+		const out: BreakoutParticipantItem[] = [];
+		for (const participant of participants) {
+			const uid = participant.userId;
+			if (!uid || uid === '0' || uid === currentUserId || seen.has(uid) || participant.username === AGENT_DISPLAY_NAME) {
+				continue;
+			}
+			seen.add(uid);
+			const profile = getParticipantProfile(participant);
+			out.push({
+				userId: uid,
+				displayName: profile.displayName,
+				avatarUrl: profile.avatar || undefined
+			});
+		}
+		for (const vm of channelVoiceMembers) {
+			const uid = vm.user_id;
+			if (!uid || uid === '0' || uid === currentUserId || seen.has(uid)) {
+				continue;
+			}
+			seen.add(uid);
+			const member = clanMembers[uid];
+			const displayName = getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) || vm.user_name || uid;
+			const avatarUrl = getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || vm.user_avatar || undefined;
+			out.push({
+				userId: uid,
+				displayName,
+				avatarUrl
+			});
+		}
+		return out;
+	}, [channelVoiceMembers, clanMembers, currentUserId, getParticipantProfile, participants]);
 	const resolveRecorderName = useCallback(
 		(userId: string) => {
 			if (userId === currentUserId) return localDisplayName;
@@ -3440,7 +3481,18 @@ export function MezonSfuVoiceRoom({
 					onLeaveRoom={onLeaveRoom}
 					onTogglePopout={() => void togglePopout(activePinnedTrackId)}
 					onFullScreen={onFullScreen}
+					showBreakoutModal={showBreakoutModal}
+					onToggleBreakoutModal={() => setShowBreakoutModal((prev) => !prev)}
 				/>
+				{!isExternalCalling && activeClanId && showBreakoutModal && (
+					<BreakoutRoomsModal
+						clanId={activeClanId}
+						parentChannelId={roomId}
+						currentUserId={currentUserId}
+						callParticipants={breakoutCallParticipants}
+						onClose={() => setShowBreakoutModal(false)}
+					/>
+				)}
 			</div>
 			{isExternalCalling && (
 				<ChatStreamExternal

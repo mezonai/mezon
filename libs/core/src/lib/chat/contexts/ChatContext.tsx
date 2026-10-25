@@ -105,6 +105,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
+import type { PatchedMezonClient, SfuBreakoutRoomEventPayload } from '@mezon/transport';
 import {
 	CHECK_HEALTHY_EVENT,
 	REALTIME_SERVER_CHANGED_EVENT,
@@ -2882,6 +2883,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
+	const onsfubreakoutroomevent = useCallback(
+		(event: SfuBreakoutRoomEventPayload) => {
+			dispatch(voiceActions.receiveBreakoutRoomEvent({ event, selfUserId: userId }));
+		},
+		[dispatch, userId]
+	);
+
 	const setCallbackEventFn = React.useCallback(
 		(socket: Client) => {
 			socket.onconnect = (_evt: Event) => {
@@ -3008,6 +3016,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onbanneduser = onbanneduser;
 
 			socket.onscreenshare = onscreenshare;
+
+			(socket as PatchedMezonClient).onsfubreakoutroomevent = onsfubreakoutroomevent;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -3066,7 +3076,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onbanneduser,
 			runPostReconnectActions,
 			onServerDisconnectStreakLogout,
-			onscreenshare
+			onscreenshare,
+			onsfubreakoutroomevent
 		]
 	);
 
@@ -3376,6 +3387,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onchannelarchive = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onscreenshare = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			(socket as PatchedMezonClient).onsfubreakoutroomevent = () => {};
 		};
 	}, [
 		onchannelmessage,
@@ -3431,7 +3444,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onUnpinMessageEvent,
 		onblockfriend,
 		onunblockfriend,
-		onscreenshare
+		onscreenshare,
+		onsfubreakoutroomevent
 	]);
 
 	const value = React.useMemo<ChatContextValue>(
