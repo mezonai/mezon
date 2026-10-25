@@ -1,10 +1,9 @@
-import { getShowName, useGetPriorityNameFromUserClan } from '@mezon/core';
+import { usePinnedSenderDisplay } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import {
 	appActions,
 	messagesActions,
 	selectCurrentClanId,
-	selectDirectById,
 	selectIsShowCanvas,
 	selectMessageByMessageId,
 	useAppDispatch,
@@ -21,8 +20,8 @@ import {
 	isImageFileType,
 	isVideoFileType
 } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js';
-import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
+import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
+import { decodeAttachments, safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -43,9 +42,10 @@ type ItemPinMessageProps = {
 const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
+	const senderId = String(pinMessage.sender_id || '');
+	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
 	const isShowCanvas = useSelector(selectIsShowCanvas);
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const message = useAppSelector((state) =>
@@ -59,28 +59,15 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	}, [message?.create_time_seconds, pinMessage?.create_time_seconds]);
 	const messageTime = validCreateTime ? convertTimeString(validCreateTime) : '';
 
-	const directChannel = useAppSelector((state) => selectDirectById(state, String(pinMessage?.channel_id || '')));
-
-	let directAvatar = '';
-	let directName = '';
-
-	if (mode === ChannelStreamMode.STREAM_MODE_DM) {
-		if (directChannel?.user_ids) {
-			const userIndex = directChannel.user_ids.indexOf(String(pinMessage?.sender_id || ''));
-			if (userIndex !== -1) {
-				directAvatar = directChannel.avatars?.[userIndex] || '';
-				directName = directChannel.display_names?.[userIndex] || directChannel.usernames?.[userIndex] || '';
-			}
-		}
-	} else if (mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-		if (directChannel?.user_ids) {
-			const userIndex = directChannel.user_ids.indexOf(String(pinMessage?.sender_id || ''));
-			if (userIndex !== -1) {
-				directAvatar = directChannel.avatars?.[userIndex] || '';
-				directName = directChannel.display_names?.[userIndex] || directChannel.usernames?.[userIndex] || '';
-			}
-		}
-	}
+	const { displayName: nameToShow, displayAvatar: avatarToShow } = usePinnedSenderDisplay({
+		senderId,
+		channelId: String(pinMessage?.channel_id || ''),
+		mode,
+		message,
+		pinAvatar: pinMessage.avatar,
+		pinUsername: pinMessage.username,
+		isAnonymous: checkAnonymous
+	});
 
 	const pinMessageAttachments = message?.attachments || pinMessage?.attachment;
 
@@ -137,17 +124,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		});
 	};
 
-	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
-	const senderId = String(pinMessage.sender_id || '');
-
-	const avatarToShow = message?.clan_avatar || message?.avatar || pinMessage.avatar || priorityAvatar || directAvatar || '';
-	const nameToShow = checkAnonymous
-		? 'Anonymous'
-		: getShowName(message?.clan_nick ?? '', message?.display_name ?? '', message?.username ?? '', senderId) ||
-			pinMessage.username ||
-			namePriority ||
-			directName ||
-			'';
 	return (
 		<div
 			key={pinMessage.id}
@@ -257,7 +233,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 														...message,
 														attachments: attachmentsToRender,
 														create_time: validCreateTime,
-														sender_id: String(pinMessage.sender_id || ''),
+														sender_id: senderId,
 														message_id: String(pinMessage.message_id || '0')
 													} as unknown as IMessageWithUser
 												}

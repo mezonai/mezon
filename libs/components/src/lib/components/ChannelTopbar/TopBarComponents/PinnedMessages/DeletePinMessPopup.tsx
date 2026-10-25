@@ -1,6 +1,5 @@
-import { useGetPriorityNameFromUserClan } from '@mezon/core';
+import { usePinnedSenderDisplay } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
-import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TOPBARS_MAX_WIDTH, generateE2eId, getShareContactInfo } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
@@ -18,12 +17,21 @@ type ModalDeletePinMessProps = {
 	handlePinMessage: () => void;
 	attachments: ApiMessageAttachment[];
 	modalref?: React.MutableRefObject<HTMLDivElement | null>;
+	mode?: number;
 };
 export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
-	const { pinMessage, contentString, closeModal, handlePinMessage, attachments, modalref } = props;
+	const { pinMessage, contentString, closeModal, handlePinMessage, attachments, modalref, mode } = props;
 	const { t } = useTranslation('channelTopbar');
-	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id as string));
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
+	const senderId = String(pinMessage.sender_id || '');
+	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const { displayName: nameToShow, displayAvatar: avatarToShow } = usePinnedSenderDisplay({
+		senderId,
+		channelId: String(pinMessage.channel_id || ''),
+		mode,
+		pinAvatar: pinMessage.avatar,
+		pinUsername: pinMessage.username,
+		isAnonymous: checkAnonymous
+	});
 
 	const messageContentObject = useMemo(() => {
 		return safeJSONParse(pinMessage.content || '{}') || {};
@@ -32,8 +40,6 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const { isShareContact, shareContactEmbed } = useMemo(() => {
 		return getShareContactInfo(messageContentObject?.embed);
 	}, [messageContentObject]);
-
-	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
 	return (
 		<div
@@ -48,32 +54,10 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 				<div className="px-4 pb-2 max-h-[60vh] overflow-y-auto hide-scrollbar w-full">
 					<div className="flex items-start gap-2 p-2 shadow-md rounded bg-theme-setting-secondary">
 						<div className="flex-shrink-0">
-							<BaseProfile
-								avatar={priorityAvatar || pinMessage.avatar || ''}
-								name={
-									checkAnonymous
-										? 'Anonymous'
-										: userSender?.clan_nick ||
-											userSender?.user?.display_name ||
-											userSender?.user?.username ||
-											pinMessage.username ||
-											''
-								}
-								hideIcon={true}
-								hideName={true}
-								isAnonymous={checkAnonymous}
-							/>
+							<BaseProfile avatar={avatarToShow} name={nameToShow} hideIcon={true} hideName={true} isAnonymous={checkAnonymous} />
 						</div>
 						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0">
-							<div className="font-medium">
-								{checkAnonymous
-									? 'Anonymous'
-									: userSender?.clan_nick ||
-										userSender?.user?.display_name ||
-										userSender?.user?.username ||
-										pinMessage.username ||
-										''}
-							</div>
+							<div className="font-medium">{nameToShow}</div>
 							{isShareContact && shareContactEmbed ? (
 								<ShareContactCard embed={shareContactEmbed} />
 							) : (
