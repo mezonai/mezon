@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import { AddMemRole } from '../Modal/addMemRoleModal';
 import ModalAskChangeChannel from '../Modal/modalAskChangeChannel';
 import PermissionManage from './PermissionManage';
+import PublicSendMessagePermission from './PublicSendMessagePermission';
 import ListMemberPermission from './listMemberPermission';
 import ListRolePermission from './listRolePermission';
 
@@ -31,6 +32,11 @@ export type PermissionsChannelProps = {
 };
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
+	const channel = useAppSelector((state) => selectChannelById(state, props.channel_id || '0'));
+	return channel ? <PermissionsChannelContent key={`${channel.clan_id}:${channel.id}`} {...props} /> : null;
+};
+
+const PermissionsChannelContent = (props: PermissionsChannelProps) => {
 	const { channel_id, openModalAdd, parentRef, clanId } = props;
 	const channel = useAppSelector((state) => selectChannelById(state, channel_id || '0'));
 	const listCategory = useSelector(selectAllCategories);
@@ -46,7 +52,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	}, [channel?.category_name, channel?.category_id, listCategory]);
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
-	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
+	const [valueToggleInit, setValueToggleInit] = useState(channel.channel_private === 1);
 	const [valueToggle, setValueToggle] = useState(valueToggleInit);
 	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 	// Names and avatars of picked members the clan roster does not hold, until saving fetches the channel listing.
@@ -54,6 +60,11 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
 	const [permissionsListHasChanged, setPermissionsListHasChanged] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+	const savingRef = useRef(false);
+	const [publicPermissionChanged, setPublicPermissionChanged] = useState(false);
+	const publicSaveRef = useRef<(() => Promise<void> | void) | null>(null);
+	const publicResetRef = useRef<(() => void) | null>(null);
+	const publicPreparePrivateRef = useRef<(() => Promise<void>) | null>(null);
 	const saveTriggerRef = useRef<(() => Promise<void> | void) | null>(null);
 	const resetTriggerRef = useRef<(() => void) | null>(null);
 	const { userProfile } = useAuth();
@@ -70,15 +81,31 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		if (rolesClanId) dispatch(rolesClanActions.fetchRolesClan({ clanId: rolesClanId, noCache: true }));
 	}, [accessVersion, channel?.channel_private, channel?.clan_id, channel_id, clanId, dispatch]);
 
+	useEffect(() => {
+		const privateChannel = channel.channel_private === 1;
+		setValueToggleInit(privateChannel);
+		setValueToggle(privateChannel);
+		setSelectedUserIds([]);
+		setSelectedRoleIds([]);
+		setStagedProfiles({});
+		if (!privateChannel) {
+			setPermissionsListHasChanged(false);
+			saveTriggerRef.current = null;
+			resetTriggerRef.current = null;
+		}
+	}, [channel.channel_private]);
+
 	const handleToggle = useCallback(() => {
 		setValueToggle(!valueToggle);
 	}, [valueToggle]);
 
 	const handleReset = useCallback(() => {
+		if (savingRef.current) return;
 		setSelectedRoleIds([]);
 		setSelectedUserIds([]);
 		setStagedProfiles({});
 		setValueToggle(valueToggleInit);
+		publicResetRef.current?.();
 		if (resetTriggerRef.current) {
 			resetTriggerRef.current();
 		}
@@ -91,9 +118,12 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			: creatorId
 				? [creatorId]
 				: [];
+		if (valueToggle && publicPreparePrivateRef.current) {
+			await publicPreparePrivateRef.current();
+		}
 		await dispatch(
 			channelsActions.updateChannelPrivate({
-				clan_id: clanId,
+				clan_id: clanId || channel.clan_id,
 				channel_id: channel.id,
 				channel_private: valueToggle ? 0 : 1,
 				user_ids: userIdsToSave,
@@ -109,29 +139,31 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel, clanId, dispatch]);
 
 	const handleSave = useCallback(async () => {
-		if (isSaving) {
-			return;
-		}
-		const saves: Promise<unknown>[] = [];
-		if (valueToggle !== valueToggleInit) {
-			saves.push(handleSaveChannelPrivateChanged());
-		}
-		if (saveTriggerRef.current && permissionsListHasChanged) {
-			saves.push(Promise.resolve(saveTriggerRef.current()));
-		}
-		// Save and Reset stay disabled until every save lands, so a second click cannot race the first.
+		if (savingRef.current) return;
+		savingRef.current = true;
 		setIsSaving(true);
 		try {
+			const saves: Promise<unknown>[] = [];
+			if (valueToggle !== valueToggleInit) {
+				saves.push(handleSaveChannelPrivateChanged());
+			}
+			if (valueToggleInit && saveTriggerRef.current && permissionsListHasChanged) {
+				saves.push(Promise.resolve(saveTriggerRef.current()));
+			}
+			if (!valueToggleInit && publicPermissionChanged && publicSaveRef.current) {
+				saves.push(Promise.resolve(publicSaveRef.current()));
+			}
 			await Promise.allSettled(saves);
 		} finally {
+			savingRef.current = false;
 			setIsSaving(false);
 		}
-	}, [isSaving, valueToggle, valueToggleInit, permissionsListHasChanged, handleSaveChannelPrivateChanged]);
+	}, [valueToggle, valueToggleInit, permissionsListHasChanged, publicPermissionChanged, handleSaveChannelPrivateChanged]);
 
 	const openAddMemRoleModal = useCallback(() => {
 		setShowAddMemRole(true);
 		openModalAdd.current = true;
-	}, []);
+	}, [openModalAdd]);
 
 	const closeAddMemRoleModal = useCallback(() => {
 		setShowAddMemRole(false);
@@ -141,7 +173,19 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		}, 0);
 	}, [openModalAdd, parentRef]);
 
-	const hasUnsavedChanges = valueToggleInit !== valueToggle || permissionsListHasChanged;
+	const handlePublicModalChange = useCallback(
+		(open: boolean) => {
+			if (openModalAdd.current === open) return;
+			openModalAdd.current = open;
+			if (!open)
+				setTimeout(() => {
+					if (!openModalAdd.current) parentRef.current?.focus();
+				}, 0);
+		},
+		[openModalAdd, parentRef]
+	);
+
+	const hasUnsavedChanges = valueToggleInit !== valueToggle || permissionsListHasChanged || publicPermissionChanged;
 
 	const handleSelectedUsersChange = useCallback((newSelectedUserIds: string[], profiles: Record<string, AddedChannelUserProfile>) => {
 		setSelectedUserIds(newSelectedUserIds);
@@ -180,6 +224,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 								disabled:bg-slate-200 disabled:after:bg-slate-300"
 								type="checkbox"
 								checked={valueToggle}
+								disabled={isSaving || publicPermissionChanged || permissionsListHasChanged}
 								id="id-c01"
 								onChange={handleToggle}
 								data-e2e={generateE2eId('channel_setting_page.permissions.button.change_status')}
@@ -221,7 +266,24 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 							</div>
 						)}
 					</div>
-					{channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
+					{!valueToggleInit &&
+						channel.channel_private !== 1 &&
+						channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
+						(!channel.parent_id || channel.parent_id === '0') && (
+							<PublicSendMessagePermission
+								key={`${channel.clan_id}:${channel.id}`}
+								clanId={clanId || channel.clan_id || ''}
+								channelId={channel.id}
+								channelName={channel.channel_label || ''}
+								onModalChange={handlePublicModalChange}
+								isSaving={isSaving || valueToggle !== valueToggleInit}
+								onDirtyChange={setPublicPermissionChanged}
+								saveTriggerRef={publicSaveRef}
+								resetTriggerRef={publicResetRef}
+								preparePrivateRef={publicPreparePrivateRef}
+							/>
+						)}
+					{channel.channel_private === 1 && channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
 						<>
 							<hr className="border-t border-solid dark:border-gray-700 border-bgModifierHoverLight mt-10 mb-[30px]" />
 							<PermissionManage
@@ -231,7 +293,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 								setPermissionsListHasChanged={setPermissionsListHasChanged}
 								saveTriggerRef={saveTriggerRef}
 								resetTriggerRef={resetTriggerRef}
-								isSaving={isSaving}
+								isSaving={isSaving || valueToggle !== valueToggleInit}
 							/>
 						</>
 					)}

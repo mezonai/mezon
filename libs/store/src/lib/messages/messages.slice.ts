@@ -1250,6 +1250,17 @@ export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (pay
 	return true;
 });
 
+const isMessagePermissionDenied = (error: unknown): boolean => {
+	const outer = typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : {};
+	const inner = typeof outer.error === 'object' && outer.error !== null ? (outer.error as Record<string, unknown>) : {};
+	if ([7, 403].includes(Number(outer.code)) || Number(outer.status) === 403 || Number(inner.code) === 403) return true;
+	return [error, outer.message, outer.error, inner.message].some(
+		(value) =>
+			typeof value === 'string' &&
+			/permission denied|no permission|permission.*(?:send|message)|(?:not allowed|not permitted|cannot).*send|no[-_ ]send/i.test(value)
+	);
+};
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -1364,6 +1375,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				throw new Error('Socket not connected');
 			}
 		} catch (err) {
+			if (isMessagePermissionDenied(err)) throw err;
 			res = await client.sendChannelMessage(
 				session,
 				clanId,
@@ -1391,6 +1403,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			const res = await doSend();
 			return res;
 		} catch (error) {
+			if (isMessagePermissionDenied(error)) throw error;
 			if (error === 'The socket timed out while waiting for a response.') {
 				const timeoutError = new Error('SOCKET_TIMEOUT');
 				timeoutError.name = 'SocketTimeoutError';

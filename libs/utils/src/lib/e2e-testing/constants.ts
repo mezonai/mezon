@@ -660,8 +660,15 @@ export const DATA_E2E_IDENTIFIER = {
 			item: ''
 		},
 		permissions: {
+			exclusions: {
+				add: '',
+				modal: '',
+				remove_member: '',
+				remove_role: ''
+			},
 			button: {
-				change_status: ''
+				change_status: '',
+				prevent_everyone_send_messages: ''
 			},
 			section: {
 				member_role_management: {
