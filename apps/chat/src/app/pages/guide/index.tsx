@@ -41,7 +41,7 @@ function GuideMain() {
 				>
 					{currentClanLogo ? (
 						<img
-							src={createImgproxyUrl(currentClanLogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+							src={createImgproxyUrl(currentClanLogo, { width: 256, height: 256, resizeType: 'fill-down' })}
 							alt=""
 							className="w-full h-full object-cover  rounded-3xl"
 						/>

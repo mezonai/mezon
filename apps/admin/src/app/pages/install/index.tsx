@@ -75,7 +75,7 @@ const Install: React.FC = () => {
 						<div className="rounded-full size-24 min-w-[24px] uppercase flex justify-center items-center text-2xl font-bold border-[3px] dark:border-[#1a1d2e] border-white dark:bg-[#0d0f19] bg-slate-50 dark:text-white text-slate-900 relative z-10 overflow-hidden shadow-2xl flex-shrink-0 transition-transform duration-500 group-hover:scale-[1.03]">
 							{appDetail?.applogo ? (
 								<img
-									src={createImgproxyUrl(appDetail.applogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+									src={createImgproxyUrl(appDetail.applogo, { width: 300, height: 300, resizeType: 'fill-down' })}
 									alt={`imageApp: ${appDetail.appname}`}
 									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
 								/>

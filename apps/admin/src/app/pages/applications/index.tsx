@@ -206,7 +206,7 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 						)}
 						{value.applogo ? (
 							<img
-								src={createImgproxyUrl(value.applogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+								src={createImgproxyUrl(value.applogo, { width: 400, height: 400, resizeType: 'fill-down' })}
 								alt=""
 								className="aspect-square object-cover rounded-md w-full"
 							/>

@@ -92,7 +92,7 @@ const GeneralInformation = () => {
 								<img
 									className="aspect-square w-full hover:grayscale-[50%]"
 									style={{ borderRadius: '25px' }}
-									src={createImgproxyUrl(appLogoUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
+									src={createImgproxyUrl(appLogoUrl, { width: 300, height: 300, resizeType: 'fill-down' })}
 									alt={appDetail.appname}
 								/>
 							) : (

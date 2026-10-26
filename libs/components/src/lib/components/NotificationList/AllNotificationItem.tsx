@@ -1,5 +1,5 @@
 import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useOnClickOutside } from '@mezon/core';
-import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectClanById, selectMemberDMByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification, INotificationContent } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
@@ -10,6 +10,7 @@ import {
 	createImgproxyUrl,
 	generateE2eId,
 	getShareContactInfo,
+	isAttachmentPresignPendingForMessage,
 	patchLinkTokens,
 	processText,
 	stripNotificationMarkers
@@ -222,6 +223,11 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
+	const sourceMessage = useAppSelector((state) =>
+		message.message_id
+			? selectMessageByMessageId(state, message.tp && message.tp !== '0' ? message.tp : message.channel_id || '', message.message_id)
+			: undefined
+	);
 
 	const username = message.username || user?.username || usernameSender || '';
 	let subjectText = subject;
@@ -415,6 +421,7 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 													index={0}
 													compact={true}
 													channelId={message.channel_id}
+													isPresignPending={isAttachmentPresignPendingForMessage(firstAttachment?.url, sourceMessage)}
 												/>
 											</div>
 										)
@@ -428,6 +435,7 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 														index={idx}
 														compact={true}
 														channelId={message.channel_id}
+														isPresignPending={isAttachmentPresignPendingForMessage(attachment?.url, sourceMessage)}
 													/>
 												)
 											)}

@@ -247,7 +247,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 				alt={username}
 				username={username}
 				className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] font-semibold"
-				srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+				srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 300, height: 300, resizeType: 'fill-down' })}
 				src={avatar}
 				classNameText="!text-4xl font-semibold"
 			/>
