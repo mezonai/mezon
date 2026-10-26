@@ -2,7 +2,7 @@
 	"error_0": "OK",
 	"error_1": "Het verzoek is geannuleerd",
 	"error_2": "Onbekende fout",
-	"error_3": "Hmm, er lijkt iets niet te kloppen.",
+	"error_3": "Ongeldig argument",
 	"error_4": "De verbinding is verlopen. Probeer het opnieuw.",
 	"error_5": "Bron niet gevonden",
 	"error_6": "De bron bestaat al",

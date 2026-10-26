@@ -2,7 +2,7 @@
 	"error_0": "OK",
 	"error_1": "Żądanie zostało anulowane",
 	"error_2": "Nieznany błąd",
-	"error_3": "Coś wygląda nie tak.",
+	"error_3": "Nieprawidłowy argument",
 	"error_4": "Upłynął limit czasu połączenia. Spróbuj ponownie.",
 	"error_5": "Nie znaleziono zasobu",
 	"error_6": "Zasób już istnieje",

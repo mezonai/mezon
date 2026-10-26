@@ -8,6 +8,7 @@ import { triggerClanLimitModal } from './errors.slice';
 interface ErrorAction {
 	type: string;
 	payload?: {
+		code?: number;
 		status?: number;
 		error?: { status?: number };
 		errType?: EErrorType;
@@ -181,9 +182,11 @@ errorListenerMiddleware.startListening({
 				return;
 			}
 
+			const code = error.action?.payload?.code;
 			listenerApi.dispatch(
 				toastActions.addToastError({
 					message: toast.message as string,
+					code,
 					errType: action.payload?.errType
 				})
 			);

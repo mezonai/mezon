@@ -2,7 +2,7 @@
 	"error_0": "OK",
 	"error_1": "La solicitud se ha cancelado",
 	"error_2": "Error desconocido",
-	"error_3": "Mmm, algo no parece correcto.",
+	"error_3": "Argumento no válido",
 	"error_4": "Se agotó el tiempo de conexión. Inténtalo de nuevo.",
 	"error_5": "Recurso no encontrado",
 	"error_6": "El recurso ya existe",

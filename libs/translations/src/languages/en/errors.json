@@ -2,7 +2,7 @@
 	"error_0": "OK",
 	"error_1": "Request has been canceled",
 	"error_2": "Unknown error",
-	"error_3": "Hmm, that doesn't look right.",
+	"error_3": "Invalid argument",
 	"error_4": "Connection timed out. Please try again.",
 	"error_5": "Resource not found",
 	"error_6": "Resource already exists",

@@ -2,7 +2,7 @@
 	"error_0": "OK",
 	"error_1": "Begäran har avbrutits",
 	"error_2": "Okänt fel",
-	"error_3": "Hmm, något verkar inte stämma.",
+	"error_3": "Ogiltigt argument",
 	"error_4": "Anslutningen tog för lång tid. Försök igen.",
 	"error_5": "Resursen hittades inte",
 	"error_6": "Resursen finns redan",

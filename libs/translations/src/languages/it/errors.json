@@ -2,7 +2,7 @@
 	"error_0": "OK",
 	"error_1": "La richiesta è stata annullata",
 	"error_2": "Errore sconosciuto",
-	"error_3": "Qualcosa non sembra corretto.",
+	"error_3": "Argomento non valido",
 	"error_4": "Tempo di connessione scaduto. Riprova.",
 	"error_5": "Risorsa non trovata",
 	"error_6": "La risorsa esiste già",
