@@ -321,10 +321,21 @@ describe('breakout domain logic', () => {
 			const onlyOneIdle = [idleChannels[0]];
 			const reboundShort = rebindRoomsToIdlePrefix(rebound, onlyOneIdle);
 			expect(reboundShort).toHaveLength(2);
+			expect(reboundShort.map((r) => r.channelId)).toEqual(['200', '1000']);
+			expect(reboundShort.map((r) => r.label)).toEqual(['Room A', 'Room C']);
 			expect(canOpenSelectedRooms(reboundShort, onlyOneIdle)).toBe(false);
 			expect(pickNextUnusedIdleChannel(rebound.slice(0, 1), idleChannels)?.channelId).toBe('300');
 			expect(canCreateRoomCount(2, idleChannels.length)).toBe(true);
 			expect(canCreateRoomCount(4, idleChannels.length)).toBe(false);
+		});
+
+		it('keeps every room on its own channel when a room channel gets taken', () => {
+			const rooms = idleChannels.map((ch) => ({ channelId: ch.channelId, label: ch.label, userIds: [], collapsed: false }));
+			const firstTaken = idleChannels.slice(1);
+			const rebound = rebindRoomsToIdlePrefix(rooms, firstTaken);
+			expect(rebound.map((r) => r.channelId)).toEqual(['200', '300', '1000']);
+			expect(new Set(rebound.map((r) => r.label)).size).toBe(3);
+			expect(canOpenSelectedRooms(rebound, firstTaken)).toBe(false);
 		});
 
 		it('blocks opening breakout rooms when no other participants are in the call', () => {
