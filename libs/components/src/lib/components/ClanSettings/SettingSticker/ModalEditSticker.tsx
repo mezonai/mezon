@@ -9,6 +9,7 @@ import {
 	fileTypeImage,
 	generateE2eId,
 	getIdSaleItemFromSource,
+	getSrcSticker,
 	resizeFileImage,
 	sanitizeUrlSecure
 } from '@mezon/utils';
@@ -55,7 +56,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 	const tEmojiNs = useTranslation('clanEmojiSetting').t;
 	const t = isSticker ? tSticker : tEmoji;
 	const rawSource = isSticker ? (graphic as ClanSticker)?.source : (graphic as ClanEmoji)?.src;
-	const graphicSource = isSticker && !rawSource && graphic?.id ? `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${graphic.id}.webp` : rawSource;
+	const graphicSource = isSticker && !rawSource && graphic?.id ? getSrcSticker(graphic.id) : rawSource;
 	const [editingGraphic, setEditingGraphic] = useState<EditingGraphic>({
 		fileName: graphicSource?.split('/').pop() ?? null,
 		shortname: graphic?.shortname ?? '',

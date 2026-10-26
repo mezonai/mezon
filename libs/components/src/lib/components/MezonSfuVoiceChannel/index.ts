@@ -1,3 +1,4 @@
+export { BreakoutSessionHost } from './BreakoutRooms/BreakoutSessionHost';
 export { CameraControl, MicrophoneControl } from './ControlBar';
 export { MezonSfuVoiceRoom } from './MyVideoConference/MezonSfuVoiceRoom';
 export * from './PreJoinVoiceChannel/SfuPreJoinVoiceChannel';

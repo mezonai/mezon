@@ -161,6 +161,8 @@ const SfuVoiceInfo = React.memo(() => {
 
 				{!isAudience && (
 					<ButtonControlVoice
+						active={showScreen}
+						activeVariant="blue"
 						overlay={
 							<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t(showScreen ? 'stopScreenShare' : 'shareYourScreen')}</span>
 						}
@@ -189,6 +191,7 @@ interface ButtonControlVoiceProps {
 	overlay: ReactNode;
 	danger?: boolean;
 	active?: boolean;
+	activeVariant?: 'green' | 'blue';
 	icon: ReactNode;
 	showWarning?: boolean;
 	disabled?: boolean;
@@ -206,6 +209,7 @@ const ButtonControlVoice = memo(
 		overlay,
 		danger = false,
 		active = false,
+		activeVariant = 'green',
 		icon,
 		showWarning = false,
 		disabled = false
@@ -222,7 +226,13 @@ const ButtonControlVoice = memo(
 				>
 					<button
 						className={`flex h-9 w-full justify-center items-center ${
-							danger ? 'bg-[#da373c]' : active ? 'bg-green-600' : 'bg-buttonSecondary hover:bg-buttonSecondaryHover'
+							danger
+								? 'bg-[#da373c]'
+								: active
+									? activeVariant === 'blue'
+										? 'bg-[#3B82F6] hover:bg-[#2563EB]'
+										: 'bg-green-600'
+									: 'bg-buttonSecondary hover:bg-buttonSecondaryHover'
 						} p-[6px] rounded-md`}
 						disabled={disabled}
 						onClick={onClick}

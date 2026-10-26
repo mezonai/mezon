@@ -1,7 +1,7 @@
 import { usePermissionChecker } from '@mezon/core';
 import { deleteSticker, selectCurrentClanId, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { EPermission, createImgproxyUrl, generateE2eId, getSrcSticker } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -40,9 +40,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 			<div className="aspect-square h-[72px]  flex justify-center">
 				<img
 					className={' w-auto h-full object-cover select-none'}
-					src={createImgproxyUrl(
-						!sticker.source ? `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${sticker.id}.webp` : sticker.source || ''
-					)}
+					src={sticker.source ? createImgproxyUrl(sticker.source) : getSrcSticker(sticker.id || '', createImgproxyUrl)}
 					alt=""
 				/>
 			</div>

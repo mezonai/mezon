@@ -1,4 +1,5 @@
 import { useAuth } from '@mezon/core';
+import type { BreakoutParticipantItem } from '@mezon/store';
 import {
 	generateMeetToken,
 	selectEntitesUserClans,
@@ -6,6 +7,8 @@ import {
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
+	selectVoiceChannelMembersByChannelId,
+	selectVoiceInfo,
 	toastActions,
 	useAppDispatch,
 	voiceActions
@@ -35,6 +38,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
+import { BreakoutRoomsModal } from '../BreakoutRooms/BreakoutRoomsModal';
 import { SfuControlBar } from '../ControlBar/SfuControlBar';
 import { RecordingIndicator } from '../Recording/RecordingIndicator';
 import type { RecordingAudioSource, RecordingSceneTile } from '../Recording/types';
@@ -79,6 +83,7 @@ import {
 import { SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SFU_DUPLICATE_SESSION_CLOSE_CODE, SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
 import { SFU_MEDIA_POOL_VERSION, SfuSlotAssignments } from './sfuSlotAssignments';
+import { isStillSpeaking, isSwappableTile, pickTileToSwapOut, speakerRecency } from './speakerSpotlight';
 
 const ICE_RECOVERY_GRACE_MS = 4000;
 const NETWORK_QUALITY_INTERVAL_MS = 5000;
@@ -111,6 +116,9 @@ const SFU_PARTICIPANT_ACTION_ERRORS = new Set([
 	'unsupported_participant_action',
 	'auth_not_configured'
 ]);
+const SFU_HEADER_ICON_FILL = 'var(--sfu-header-icon-fill)';
+const SFU_HEADER_ICON_BUTTON_CLASS =
+	'[--sfu-header-icon-fill:var(--bg-icon-theme)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
 const SFU_MEDIA_REFUSALS = new Map<string, { media: 'camera' | 'screen'; toast: string }>([
 	['camera_capacity_full', { media: 'camera', toast: 'toast.cameraLimitReached' }],
 	['camera_update_failed', { media: 'camera', toast: 'toast.cameraUpdateFailed' }],
@@ -216,6 +224,7 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 
 		const nodeMap = new Map<string, { source: MediaStreamAudioSourceNode; analyser: AnalyserNode }>();
 		const lastSpeakingMap = new Map<string, boolean>();
+		const lastLoudAtMap = new Map<string, number>();
 
 		const ctx = audioContext;
 		targetMap.forEach((item, id) => {
@@ -247,7 +256,10 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 						sumSquares += normalized * normalized;
 					}
 					const rms = Math.sqrt(sumSquares / timeDomainData.length);
-					isSpeaking = rms > 0.04;
+					if (rms > 0.04) {
+						lastLoudAtMap.set(id, now);
+					}
+					isSpeaking = isStillSpeaking(lastLoudAtMap.get(id), now);
 				}
 
 				const prevSpeaking = lastSpeakingMap.get(id);
@@ -708,6 +720,10 @@ export function MezonSfuVoiceRoom({
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
 	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
+	const [showBreakoutModal, setShowBreakoutModal] = useState(false);
+	const voiceInfo = useSelector(selectVoiceInfo);
+	const activeClanId = voiceInfo?.clanId || '';
+	const channelVoiceMembers = useSelector((state) => selectVoiceChannelMembersByChannelId(state, roomId, activeClanId));
 	const [isPopoutOpen, setIsPopoutOpen] = useState(false);
 	const [popoutTrackId, setPopoutTrackId] = useState<string>();
 	const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -2877,6 +2893,39 @@ export function MezonSfuVoiceRoom({
 		() => [currentUserId, ...participants.map((participant) => participant.userId)].filter((id): id is string => !!id),
 		[currentUserId, participants]
 	);
+	const breakoutCallParticipants = useMemo<BreakoutParticipantItem[]>(() => {
+		const seen = new Set<string>();
+		const out: BreakoutParticipantItem[] = [];
+		for (const participant of participants) {
+			const uid = participant.userId;
+			if (!uid || uid === '0' || uid === currentUserId || seen.has(uid) || participant.username === AGENT_DISPLAY_NAME) {
+				continue;
+			}
+			seen.add(uid);
+			const profile = getParticipantProfile(participant);
+			out.push({
+				userId: uid,
+				displayName: profile.displayName,
+				avatarUrl: profile.avatar || undefined
+			});
+		}
+		for (const vm of channelVoiceMembers) {
+			const uid = vm.user_id;
+			if (!uid || uid === '0' || uid === currentUserId || seen.has(uid)) {
+				continue;
+			}
+			seen.add(uid);
+			const member = clanMembers[uid];
+			const displayName = getNameForPrioritize(member?.clan_nick, member?.user?.display_name, member?.user?.username) || vm.user_name || uid;
+			const avatarUrl = getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || vm.user_avatar || undefined;
+			out.push({
+				userId: uid,
+				displayName,
+				avatarUrl
+			});
+		}
+		return out;
+	}, [channelVoiceMembers, clanMembers, currentUserId, getParticipantProfile, participants]);
 	const resolveRecorderName = useCallback(
 		(userId: string) => {
 			if (userId === currentUserId) return localDisplayName;
@@ -2889,6 +2938,8 @@ export function MezonSfuVoiceRoom({
 	const isLocalAudioEnabled = joinRole === 'audience' ? pushToTalkActive : microphoneEnabled;
 	const outgoingLocalAudioTrack = getOutgoingAudioTrack(localAudioTrack) || undefined;
 	const speakingMap = useParticipantsSpeakingMap(outgoingLocalAudioTrack, isLocalAudioEnabled, participants);
+	const speakingMapRef = useRef(speakingMap);
+	speakingMapRef.current = speakingMap;
 	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
 	const conferenceTiles: Array<{ id: string; participantId: string; contextMenuUserId?: string; isScreen: boolean; content: ReactNode }> = [];
 	conferenceTiles.push({
@@ -3163,7 +3214,15 @@ export function MezonSfuVoiceRoom({
 		});
 		if (visibleThumbnails.some((thumbnail) => thumbnail.dataset.participantId === activeSpeakerId)) return;
 
-		const replacementTileId = visibleThumbnails[visibleThumbnails.length - 1]?.dataset.tileId;
+		const swappableThumbnails = visibleThumbnails.filter((t) => isSwappableTile(t.dataset.tileId || '', t.dataset.participantId));
+		const replacementTileId =
+			pickTileToSwapOut(
+				swappableThumbnails.map((t) => t.dataset.tileId).filter((tileId): tileId is string => Boolean(tileId)),
+				(tileId) =>
+					speakerRecency(
+						speakingMapRef.current.get(swappableThumbnails.find((t) => t.dataset.tileId === tileId)?.dataset.participantId || '')
+					)
+			) ?? visibleThumbnails[visibleThumbnails.length - 1]?.dataset.tileId;
 		const activeIndex = focusTileOrderRef.current.indexOf(activeSpeakerTileId || '');
 		const replacementIndex = focusTileOrderRef.current.indexOf(replacementTileId || '');
 		if (activeIndex < 0 || replacementIndex < 0) return;
@@ -3227,24 +3286,29 @@ export function MezonSfuVoiceRoom({
 							· {connectionLabel}
 						</span>
 					</div>
-					<div className="flex items-center gap-4 text-[var(--bg-icon-theme)]">
+					<div className="flex items-center gap-4">
 						{headerActions}
-						{!isExternalCalling && <NotificationTooltip />}
+						{!isExternalCalling && <NotificationTooltip useSfuHeaderIconFill />}
 						<button
 							type="button"
 							title={isGridView ? 'Switch to focus view' : 'Switch to grid view'}
+							className={SFU_HEADER_ICON_BUTTON_CLASS}
 							onClick={() => setIsGridView((value) => !value)}
 						>
-							{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
+							{isGridView ? (
+								<Icons.VoiceFocusIcon defaultFill1={SFU_HEADER_ICON_FILL} />
+							) : (
+								<Icons.VoiceGridIcon defaultFill1={SFU_HEADER_ICON_FILL} />
+							)}
 						</button>
 						<button
 							type="button"
 							title={t('chat')}
-							className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''}
+							className={`${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--bg-icon-theme-active)]' : ''}`}
 							onClick={onToggleChat}
 							data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
 						>
-							<Icons.Chat className="h-5 w-5" />
+							<Icons.Chat className="h-5 w-5" defaultFill1={SFU_HEADER_ICON_FILL} defaultFill2={SFU_HEADER_ICON_FILL} />
 						</button>
 					</div>
 				</header>
@@ -3440,7 +3504,18 @@ export function MezonSfuVoiceRoom({
 					onLeaveRoom={onLeaveRoom}
 					onTogglePopout={() => void togglePopout(activePinnedTrackId)}
 					onFullScreen={onFullScreen}
+					showBreakoutModal={showBreakoutModal}
+					onToggleBreakoutModal={() => setShowBreakoutModal((prev) => !prev)}
 				/>
+				{!isExternalCalling && activeClanId && showBreakoutModal && (
+					<BreakoutRoomsModal
+						clanId={activeClanId}
+						parentChannelId={roomId}
+						currentUserId={currentUserId}
+						callParticipants={breakoutCallParticipants}
+						onClose={() => setShowBreakoutModal(false)}
+					/>
+				)}
 			</div>
 			{isExternalCalling && (
 				<ChatStreamExternal

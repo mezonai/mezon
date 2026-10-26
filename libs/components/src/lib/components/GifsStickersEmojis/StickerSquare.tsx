@@ -11,7 +11,16 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EMimeTypes, FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
+import {
+	EMimeTypes,
+	FOR_SALE_CATE,
+	ITEM_TYPE,
+	PREDEFINED_EMOJI_CATEGORIES,
+	SubPanelName,
+	blankReferenceObj,
+	createImgproxyUrl,
+	getSrcSticker
+} from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageRef, ClanSticker } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -126,7 +135,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const handleClickImage = (image: StickerPanel) => {
-		const imageUrl = image.url ? image.url : `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${image.id}.webp`;
+		const imageUrl = image.url ? image.url : getSrcSticker(image.id || '');
 		if (isReplyAction) {
 			sendMessage({ t: '' }, [], [{ url: imageUrl, filetype: EMimeTypes.sticker, filename: image.id }], [dataReferences], undefined);
 
@@ -315,9 +324,7 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 									onMouseEnter={() => setPlaceHolderInput(sticker.shortname || '')}
 								>
 									<img
-										src={createImgproxyUrl(
-											sticker.url ? sticker.url : `${process.env.NX_CLOUDFLARE_CDN_URL}/stickers/${sticker.id}.webp`
-										)}
+										src={sticker.url ? createImgproxyUrl(sticker.url) : getSrcSticker(sticker.id || '', createImgproxyUrl)}
 										alt="sticker"
 										className={`w-full h-full aspect-square object-contain  hover:bg-bgLightModeButton ${sticker.id === '0' ? 'blur-sm' : ''}`}
 										onClick={() => {
