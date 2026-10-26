@@ -68,6 +68,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 	const myProfile = useAuth();
 	const userMemberStatus = useAppSelector((state) => selectMemberCustomStatusById(state, myProfile.userId as string));
 	const { t } = useTranslation(['setting', 'token']);
+	const { t: tUserProfile } = useTranslation('userProfile');
 	const { mmnRef } = useMezon();
 
 	const userCustomStatus = useMemo(() => {
@@ -79,6 +80,25 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 		const userStatus = myProfile.userProfile?.user?.status || EUserStatus.ONLINE;
 		return userStatus;
 	}, [myProfile, myProfile.userProfile?.user?.status]);
+
+	const presenceStatusLabel = useMemo(() => {
+		switch (userStatus) {
+			case EUserStatus.IDLE:
+				return tUserProfile('statusProfile.statusOptions.idle');
+			case EUserStatus.DO_NOT_DISTURB:
+				return tUserProfile('statusProfile.statusOptions.doNotDisturb');
+			case EUserStatus.INVISIBLE:
+				return tUserProfile('statusProfile.statusOptions.invisible');
+			case EUserStatus.ONLINE:
+			default:
+				return tUserProfile('statusProfile.statusOptions.online');
+		}
+	}, [userStatus, tUserProfile]);
+
+	const footerStatusLine = useMemo(() => {
+		const custom = userCustomStatus?.trim();
+		return custom || presenceStatusLabel;
+	}, [userCustomStatus, presenceStatusLabel]);
 
 	const [token, setToken] = useState<number>(0);
 	const [selectedUserId, setSelectedUserId] = useState<string>('');
@@ -355,10 +375,10 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 								{name}
 							</p>
 							<div
-								className="text-[11px] text-left leading-[14px] max-w-[150px] max-sbm:max-w-[100px]"
+								className="text-[11px] text-left leading-[14px] max-w-[150px] max-sbm:max-w-[100px] text-theme-primary/60 truncate"
 								data-e2e={generateE2eId('footer_profile.user_status')}
 							>
-								<NoiseSuppressionStatus fallback={userCustomStatus} />
+								<NoiseSuppressionStatus fallback={footerStatusLine} />
 							</div>
 						</div>
 					</div>
