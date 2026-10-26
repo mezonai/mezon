@@ -341,7 +341,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 							username={username}
 							className="min-w-8 min-h-8 max-w-8 max-h-8 flex-shrink-0"
 							classNameText="font-semibold"
-							srcImgProxy={createImgproxyUrl(avatar ?? '')}
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							src={avatar}
 						/>
 						<div className="absolute top-5 left-5" data-e2e={generateE2eId('icon.profile_status')}>

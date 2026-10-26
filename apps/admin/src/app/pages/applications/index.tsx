@@ -1,5 +1,6 @@
 import { getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 
 import type { ApiApp } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
@@ -204,7 +205,11 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 							</div>
 						)}
 						{value.applogo ? (
-							<img src={value.applogo} alt="" className="aspect-square object-cover rounded-md w-full" />
+							<img
+								src={createImgproxyUrl(value.applogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+								alt=""
+								className="aspect-square object-cover rounded-md w-full"
+							/>
 						) : (
 							<div className={`dark:bg-[#111214] bg-white aspect-square flex justify-center items-center rounded-md w-full`}>
 								{value.appname?.charAt(0).toUpperCase()}

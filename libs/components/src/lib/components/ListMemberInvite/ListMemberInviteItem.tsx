@@ -135,7 +135,7 @@ const ItemInviteDM = (props: ItemInviteDMProps) => {
 				alt={username}
 				username={username}
 				className="min-w-10 min-h-10 max-w-10 max-h-10"
-				srcImgProxy={createImgproxyUrl(avatar ?? '')}
+				srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 				src={avatar}
 			/>
 			<p className="mr-auto px-[10px] flex-1 overflow-hidden text truncate text-theme-primary-active">{label}</p>
@@ -173,7 +173,7 @@ const ItemInviteUser = (props: ItemInviteUserProps) => {
 				alt={username}
 				username={username}
 				className="min-w-10 min-h-10 max-w-10 max-h-10"
-				srcImgProxy={createImgproxyUrl(avatar ?? '')}
+				srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 				src={avatar}
 			/>
 			<p className="mr-auto pl-[10px] max-w-[300px] truncate">

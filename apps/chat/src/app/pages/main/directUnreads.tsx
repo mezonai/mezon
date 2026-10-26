@@ -51,7 +51,7 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 	const avatarProps = useMemo(() => {
 		const isDM = direct.type === ChannelType.CHANNEL_TYPE_DM;
 		const avatarSrc = isDM ? (direct?.avatars?.at(0) ?? '') : direct?.channel_avatar || '/assets/images/avatar-group.png';
-		const avatarProxyOptions = { width: 300, height: 300, resizeType: 'fill-down' as const };
+		const avatarProxyOptions = { width: 100, height: 100, resizeType: 'fill-down' as const };
 
 		return {
 			alt: direct.usernames?.toString() ?? '',

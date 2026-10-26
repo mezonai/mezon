@@ -289,9 +289,9 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 					className="w-10 h-10 min-w-10 flex-shrink-0"
 					username={username}
 					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
-						width: 300,
-						height: 300,
-						resizeType: 'fit'
+						width: 100,
+						height: 100,
+						resizeType: 'fill-down'
 					})}
 					src={priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url}
 				/>

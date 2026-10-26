@@ -1,6 +1,6 @@
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { MAX_FILE_SIZE_10MB, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { MAX_FILE_SIZE_10MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ELimitSize } from '../../../ModalValidateFile';
@@ -85,7 +85,7 @@ const ClanBannerBackground = ({ onUpload, urlImage }: ClanBannerBackgroundProps)
 				<div className="relative w-full h-[180px]">
 					<label>
 						<div
-							style={{ backgroundImage: `url(${urlImage})` }}
+							style={{ backgroundImage: `url(${createImgproxyUrl(urlImage ?? '', { width: 0, height: 0, resizeType: 'force' })})` }}
 							className={`bg-cover bg-no-repeat bg-center w-full h-full rounded-lg relative cursor-pointer`}
 						>
 							{!urlImage && <p className="text-xl font-semibold text-center pt-[25%]">{t('clanBanner.chooseImage')}</p>}

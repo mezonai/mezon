@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Button, Icons } from '@mezon/ui';
-import { fileTypeImage, type IChannel } from '@mezon/utils';
+import { createImgproxyUrl, fileTypeImage, type IChannel } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -196,7 +196,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 								<div className="relative group rounded-2xl overflow-hidden border border-slate-700/50 shadow-2xl bg-slate-800/50">
 									<div className="relative w-full pb-[56.25%]">
 										<img
-											src={thumbnail || '/placeholder.svg'}
+											src={createImgproxyUrl(thumbnail || '/placeholder.svg', { width: 0, height: 0, resizeType: 'force' })}
 											alt="Stream Thumbnail"
 											className="absolute top-0 left-0 w-full h-full object-cover"
 										/>

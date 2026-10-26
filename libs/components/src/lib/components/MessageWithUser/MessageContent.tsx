@@ -104,7 +104,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 					alt={`${topicCreator?.user?.username}'s avatar`}
 					username={topicCreator?.user?.username}
 					className="!size-7 rounded-md object-cover flex-shrink-0"
-					srcImgProxy={createImgproxyUrl(avatarToDisplay ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+					srcImgProxy={createImgproxyUrl(avatarToDisplay ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 					src={avatarToDisplay}
 				/>
 				<div className="flex flex-wrap items-center gap-x-2 flex-1 min-w-0">

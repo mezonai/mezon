@@ -364,7 +364,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 			.slice(0, PRELOAD_AVATAR_ROWS)
 			.map((item) => item.avatarUser)
 			.filter((avatarUrl): avatarUrl is string => !!avatarUrl)
-			.map((avatarUrl) => createImgproxyUrl(avatarUrl));
+			.map((avatarUrl) => createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' }));
 	}, [normalizeSearchText, listItemWithoutRecent, listRecent, unreadList]);
 
 	const isAwaitingSearch = settledSearchText !== searchText;

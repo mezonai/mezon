@@ -13,7 +13,7 @@ import {
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, Menu } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
-import { ChannelIsNotThread, MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
+import { ChannelIsNotThread, MAX_FILE_SIZE_8MB, createImgproxyUrl, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
@@ -46,7 +46,11 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting, isExpand
 	return (
 		<div className="bg-theme-setting-nav border-theme-primary p-[20px]  rounded-md mb-[20px]">
 			<div className="flex gap-[20px] items-center" data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item')}>
-				<img src={webhookItem.avatar} alt="Webhook avatar" className="aspect-square w-[50px] rounded-full" />
+				<img
+					src={createImgproxyUrl(webhookItem.avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+					alt="Webhook avatar"
+					className="aspect-square w-[50px] rounded-full"
+				/>
 				<div className="flex w-full min-w-0 justify-between items-center text-theme-primary-active">
 					<div className="min-w-0 flex-1 overflow-hidden">
 						<div className="break-words" data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_title')}>
@@ -247,7 +251,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 								<Icons.SelectFileIcon />
 							</div>
 							<img
-								src={dataForUpdate.webhookAvatarUrl}
+								src={createImgproxyUrl(dataForUpdate.webhookAvatarUrl ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 								alt="Webhook avatar"
 								className="aspect-square w-[100px] rounded-full hover:grayscale-[50%] cursor-pointer"
 								onClick={() => avatarRef.current?.click()}

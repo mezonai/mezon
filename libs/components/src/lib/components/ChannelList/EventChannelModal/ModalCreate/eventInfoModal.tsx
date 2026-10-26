@@ -3,7 +3,7 @@ import { selectTheme } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { TextArea, TimePicker } from '@mezon/ui';
 import type { ContenSubmitEventProps } from '@mezon/utils';
-import { ERepeatType, MAX_FILE_SIZE_1MB, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { ERepeatType, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { format } from 'date-fns';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -276,7 +276,13 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						data-e2e={generateE2eId('clan_page.modal.create_event.upload.image_cover_input')}
 					/>
 				</label>
-				{contentSubmit.logo && <img src={contentSubmit.logo} alt="logo" className="max-h-[180px] rounded w-full object-cover" />}
+				{contentSubmit.logo && (
+					<img
+						src={createImgproxyUrl(contentSubmit.logo, { width: 0, height: 0, resizeType: 'force' })}
+						alt="logo"
+						className="max-h-[180px] rounded w-full object-cover"
+					/>
+				)}
 			</div>
 
 			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />

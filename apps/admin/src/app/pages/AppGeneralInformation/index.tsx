@@ -2,6 +2,7 @@ import { ModalSaveChanges } from '@mezon/components';
 import { editApplication, selectAppDetail, uploadAppLogoAdmin, useAppDispatch } from '@mezon/store';
 import { uploadImageToMinIO } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 import type { ApiApp, MezonUpdateAppBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -91,7 +92,7 @@ const GeneralInformation = () => {
 								<img
 									className="aspect-square w-full hover:grayscale-[50%]"
 									style={{ borderRadius: '25px' }}
-									src={appLogoUrl}
+									src={createImgproxyUrl(appLogoUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 									alt={appDetail.appname}
 								/>
 							) : (

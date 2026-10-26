@@ -113,9 +113,9 @@ function MentionTabContent({ message, onCloseTooltip }: IMentionTabContent) {
 					className="w-10 h-10 min-w-10"
 					username={message?.username}
 					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar) ?? '', {
-						width: 300,
-						height: 300,
-						resizeType: 'fit'
+						width: 100,
+						height: 100,
+						resizeType: 'fill-down'
 					})}
 					src={priorityAvatar ? priorityAvatar : message.avatar}
 				/>

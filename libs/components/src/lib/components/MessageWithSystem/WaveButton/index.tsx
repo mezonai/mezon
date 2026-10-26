@@ -2,7 +2,7 @@ import { useChatSending } from '@mezon/core';
 import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM } from '@mezon/store';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
-import { EMimeTypes, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME, generateE2eId } from '@mezon/utils';
+import { EMimeTypes, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useMemo } from 'react';
@@ -85,7 +85,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				onClick={handleSendWaveSticker}
 				data-e2e={generateE2eId('chat.button.wave_to_say_hi')}
 			>
-				<img src={urlIcon} alt="Wave Icon" className="object-contain mb-1" width={32} height={32} />
+				<img src={createImgproxyUrl(urlIcon)} alt="Wave Icon" className="object-contain mb-1" width={32} height={32} />
 				<p className="text-theme-secondary text-sm font-medium text-center">{t('waveWelcome')}</p>
 			</button>
 		</div>

@@ -228,7 +228,13 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	return (
 		<div className="rounded-lg overflow-hidden bg-theme-setting-nav border-theme-primary">
-			{logo && <img src={logo} alt="logo" className="w-full max-h-[180px] object-cover" />}
+			{logo && (
+				<img
+					src={createImgproxyUrl(logo, { width: 0, height: 0, resizeType: 'force' })}
+					alt="logo"
+					className="w-full max-h-[180px] object-cover"
+				/>
+			)}
 			<div className="p-4 border-b-theme-primary cursor-pointer" onClick={() => event && setChooseEvent(event)}>
 				<div className="flex justify-between">
 					<div className="flex items-center gap-x-2 mb-4">
@@ -278,7 +284,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									alt={creatorDisplayName}
 									username={creatorDisplayName}
 									className="min-w-6 min-h-6 max-w-6 max-h-6"
-									srcImgProxy={createImgproxyUrl((userCreate?.clan_avatar || userCreate?.user?.avatar_url) ?? '')}
+									srcImgProxy={createImgproxyUrl((userCreate?.clan_avatar || userCreate?.user?.avatar_url) ?? '', {
+										width: 100,
+										height: 100,
+										resizeType: 'fill-down'
+									})}
 									src={userCreate?.clan_avatar || userCreate?.user?.avatar_url}
 									classNameText="text-[9px] pt-[3px]"
 								/>
@@ -322,7 +332,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						</div>
 					</div>
 					{logoRight && (
-						<img src={logoRight} alt="logoRight" className="w-[60%] max-h-[100px] object-contain rounded flex-grow basis-2/5" />
+						<img
+							src={createImgproxyUrl(logoRight, { width: 300, height: 300, resizeType: 'fit' })}
+							alt="logoRight"
+							className="w-[60%] max-h-[100px] object-contain rounded flex-grow basis-2/5"
+						/>
 					)}
 				</div>
 			</div>

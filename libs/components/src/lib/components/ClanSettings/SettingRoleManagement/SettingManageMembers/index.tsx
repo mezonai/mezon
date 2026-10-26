@@ -1,6 +1,14 @@
 import { useRoles } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
-import { getNewAddMembers, getSelectedRoleId, selectAllUserClans, selectCurrentClanId, selectCurrentRoleIcon, setAddMemberRoles, usersClanActions } from '@mezon/store';
+import {
+	getNewAddMembers,
+	getSelectedRoleId,
+	selectAllUserClans,
+	selectCurrentClanId,
+	selectCurrentRoleIcon,
+	setAddMemberRoles,
+	usersClanActions
+} from '@mezon/store';
 import { Icons, InputField } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
@@ -60,7 +68,7 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 		}
 		const userIDArray = userID?.split(',');
 		await updateRole(currentClanId ?? '', clickRole, activeRole?.title ?? '', activeRole?.color ?? '', [], [], userIDArray, [], currentRoleIcon);
-		
+
 		userIDArray?.forEach((id) => {
 			if (id) {
 				dispatchRole(
@@ -154,7 +162,7 @@ const ItemMember = (props: ItemMemberProps) => {
 					alt={username}
 					username={username}
 					className="min-w-6 min-h-6 max-w-6 max-h-6"
-					srcImgProxy={createImgproxyUrl(avatarPrioritize ?? '')}
+					srcImgProxy={createImgproxyUrl(avatarPrioritize ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 					src={avatarPrioritize}
 				/>
 				<span className="font-medium one-line">{namePrioritize}</span>

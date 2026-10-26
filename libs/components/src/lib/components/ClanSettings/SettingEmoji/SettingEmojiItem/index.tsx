@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, MAX_FILE_NAME_EMOJI, generateE2eId, getSrcEmoji } from '@mezon/utils';
+import { EPermission, MAX_FILE_NAME_EMOJI, createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
 import type { ClanEmoji, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
@@ -152,7 +152,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 						{avatarUrl ? (
 							<img
 								className={'w-full h-auto object-cover'}
-								src={dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url}
+								src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 								alt="User avatar"
 							/>
 						) : (

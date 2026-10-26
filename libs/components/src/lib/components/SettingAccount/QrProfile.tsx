@@ -160,7 +160,7 @@ const loadImage = (src: string): Promise<HTMLImageElement | null> => {
 
 const loadAvatarImage = async (url: string): Promise<HTMLImageElement | null> => {
 	if (!url) return null;
-	const proxyUrl = createImgproxyUrl(url, { width: 120, height: 120, resizeType: 'fit' });
+	const proxyUrl = createImgproxyUrl(url, { width: 100, height: 100, resizeType: 'fill-down' });
 	let img = await loadImage(proxyUrl);
 	if (!img) {
 		img = await loadImage(url);
@@ -630,7 +630,7 @@ const QrProfile = ({ onClose, qrData }: QrProfileProps) => {
 							alt={username}
 							username={username}
 							className="w-8 h-8 rounded-full border-2 border-indigo-500/40 object-cover"
-							srcImgProxy={createImgproxyUrl(avatarUrl ?? '', { width: 64, height: 64, resizeType: 'fit' })}
+							srcImgProxy={createImgproxyUrl(avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							src={avatarUrl}
 						/>
 						<h2 className="text-lg font-bold text-theme-primary tracking-tight uppercase line-clamp-1">{displayName}</h2>
@@ -700,7 +700,7 @@ const QrProfile = ({ onClose, qrData }: QrProfileProps) => {
 										alt={username}
 										username={username}
 										className="w-full h-full rounded-lg object-cover pointer-events-none"
-										srcImgProxy={createImgproxyUrl(avatarUrl ?? '', { width: 80, height: 80, resizeType: 'fit' })}
+										srcImgProxy={createImgproxyUrl(avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 										src={avatarUrl}
 									/>
 								)}

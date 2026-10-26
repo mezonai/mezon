@@ -10,7 +10,15 @@ import {
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
-import { LIMIT_SIZE_UPLOAD_IMG, TypeCheck, ValidateSpecialCharacters, checkClanLimit, fileTypeImage, generateE2eId } from '@mezon/utils';
+import {
+	LIMIT_SIZE_UPLOAD_IMG,
+	TypeCheck,
+	ValidateSpecialCharacters,
+	checkClanLimit,
+	createImgproxyUrl,
+	fileTypeImage,
+	generateE2eId
+} from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ApiCategoryDesc } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
@@ -432,7 +440,12 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 				<p className="text-center text-[16px] leading-6 font-[400]">{t('createClanModal.description')}</p>
 				<label className="block mt-8 mb-4">
 					{urlImage ? (
-						<img id="preview_img" className="h-[81px] w-[81px] object-cover rounded-full" src={urlImage} alt="Current profile" />
+						<img
+							id="preview_img"
+							className="h-[81px] w-[81px] object-cover rounded-full"
+							src={createImgproxyUrl(urlImage, { width: 100, height: 100, resizeType: 'fill-down' })}
+							alt="Current profile"
+						/>
 					) : (
 						<div
 							id="preview_img"

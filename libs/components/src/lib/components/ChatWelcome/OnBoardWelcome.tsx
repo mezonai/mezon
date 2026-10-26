@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { TypeMessage, generateE2eId } from '@mezon/utils';
+import { TypeMessage, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode } from 'react';
 import { memo, useEffect, useMemo } from 'react';
@@ -65,7 +65,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 			{currentChannelType === ChannelType.CHANNEL_TYPE_APP ? (
 				<div className="w-[400px] p-4 bg-item-theme rounded-lg">
 					{currentClanBanner ? (
-						<img src={currentClanBanner} />
+						<img src={createImgproxyUrl(currentClanBanner, { width: 0, height: 0, resizeType: 'force' })} />
 					) : (
 						<div className="w-full h-28 font-bold text-2xl text-theme-primary rounded-lg flex items-center justify-center">
 							<p className="[text-shadow:_0_1px_2px_#ffffff]">{t('onboard.clickLaunchToStart')}</p>

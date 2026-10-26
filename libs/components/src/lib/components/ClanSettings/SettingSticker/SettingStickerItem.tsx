@@ -54,7 +54,11 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 
 			<div className="flex items-end justify-center gap-1">
 				{avatarUrl ? (
-					<img className="w-4 h-4 rounded-full select-none object-cover" src={createImgproxyUrl(avatarUrl)} alt="" />
+					<img
+						className="w-4 h-4 rounded-full select-none object-cover"
+						src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
+						alt=""
+					/>
 				) : (
 					<AvatarColor username={avatarDefault || ''} className={`size-4`} />
 				)}

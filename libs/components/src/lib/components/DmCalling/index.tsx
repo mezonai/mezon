@@ -384,7 +384,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 							alt={avatarName}
 							username={avatarName}
 							src={avatar}
-							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							className={`${avatarClass} font-semibold`}
 							classNameText={`${avatarTextClass} font-semibold`}
 						/>
@@ -461,11 +461,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								alt={`Avatar ${index + 1}`}
 								username={nameImages[index] ? nameImages[index] : ``}
 								className="min-w-[55px] min-h-[55px] max-w-[55px] max-h-[55px] sbm:min-w-[75px] sbm:min-h-[75px] sbm:max-w-[75px] sbm:max-h-[75px] font-semibold"
-								srcImgProxy={createImgproxyUrl(avatar ?? '', {
-									width: 300,
-									height: 300,
-									resizeType: 'fit'
-								})}
+								srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 								src={avatar}
 								classNameText="!text-3xl sbm:!text-4xl font-semibold"
 							/>

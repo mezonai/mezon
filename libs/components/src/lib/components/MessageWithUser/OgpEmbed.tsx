@@ -2,7 +2,7 @@ import { getStore, selectCurrentChannel, selectCurrentDM, selectCurrentUserId, s
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { EBacktickType, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import { EBacktickType, createImgproxyUrl, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +52,7 @@ const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, mes
 						className={`w-full h-auto object-cover max-h-[200px] transition-transform duration-500 group-hover:scale-[1.02] ${
 							!image ? 'opacity-30' : ''
 						}`}
-						src={image || '/assets/images/warning.svg'}
+						src={createImgproxyUrl(image || '/assets/images/warning.svg', { width: 0, height: 0, resizeType: 'force' })}
 						alt={title}
 						onError={(e) => {
 							e.currentTarget.src = '/assets/images/warning.svg';
