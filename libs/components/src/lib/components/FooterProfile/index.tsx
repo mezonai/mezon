@@ -375,7 +375,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 								{name}
 							</p>
 							<div
-								className="text-[11px] text-left leading-[14px] max-w-[150px] max-sbm:max-w-[100px] text-theme-primary/60 truncate"
+								className="text-[11px] text-left leading-[14px] max-w-[150px] max-sbm:max-w-[100px] text-theme-primary"
 								data-e2e={generateE2eId('footer_profile.user_status')}
 							>
 								<NoiseSuppressionStatus fallback={footerStatusLine} />
