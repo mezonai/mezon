@@ -892,7 +892,9 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 
 								{!createAllowed && (
 									<div className="text-xs text-[#f23f43]">
-										{`${t('channelVoice:breakout.notEnoughRooms')} (${idleChannels.length})`}
+										{idleChannels.length === 0
+											? t('channelVoice:breakout.noIdleChannels')
+											: t('channelVoice:breakout.notEnoughIdleChannels', { count: idleChannels.length })}
 									</div>
 								)}
 
