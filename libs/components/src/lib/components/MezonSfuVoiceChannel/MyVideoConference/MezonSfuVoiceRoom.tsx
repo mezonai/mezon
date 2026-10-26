@@ -116,6 +116,9 @@ const SFU_PARTICIPANT_ACTION_ERRORS = new Set([
 	'unsupported_participant_action',
 	'auth_not_configured'
 ]);
+const SFU_HEADER_ICON_FILL = 'var(--sfu-header-icon-fill)';
+const SFU_HEADER_ICON_BUTTON_CLASS =
+	'[--sfu-header-icon-fill:var(--bg-icon-theme)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
 const SFU_MEDIA_REFUSALS = new Map<string, { media: 'camera' | 'screen'; toast: string }>([
 	['camera_capacity_full', { media: 'camera', toast: 'toast.cameraLimitReached' }],
 	['camera_update_failed', { media: 'camera', toast: 'toast.cameraUpdateFailed' }],
@@ -3283,24 +3286,29 @@ export function MezonSfuVoiceRoom({
 							· {connectionLabel}
 						</span>
 					</div>
-					<div className="flex items-center gap-4 text-[var(--bg-icon-theme)]">
+					<div className="flex items-center gap-4">
 						{headerActions}
-						{!isExternalCalling && <NotificationTooltip />}
+						{!isExternalCalling && <NotificationTooltip useSfuHeaderIconFill />}
 						<button
 							type="button"
 							title={isGridView ? 'Switch to focus view' : 'Switch to grid view'}
+							className={SFU_HEADER_ICON_BUTTON_CLASS}
 							onClick={() => setIsGridView((value) => !value)}
 						>
-							{isGridView ? <Icons.VoiceFocusIcon /> : <Icons.VoiceGridIcon />}
+							{isGridView ? (
+								<Icons.VoiceFocusIcon defaultFill1={SFU_HEADER_ICON_FILL} />
+							) : (
+								<Icons.VoiceGridIcon defaultFill1={SFU_HEADER_ICON_FILL} />
+							)}
 						</button>
 						<button
 							type="button"
 							title={t('chat')}
-							className={isChatOpen ? 'text-[var(--bg-icon-theme-active)]' : ''}
+							className={`${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--bg-icon-theme-active)]' : ''}`}
 							onClick={onToggleChat}
 							data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
 						>
-							<Icons.Chat className="h-5 w-5" />
+							<Icons.Chat className="h-5 w-5" defaultFill1={SFU_HEADER_ICON_FILL} defaultFill2={SFU_HEADER_ICON_FILL} />
 						</button>
 					</div>
 				</header>
