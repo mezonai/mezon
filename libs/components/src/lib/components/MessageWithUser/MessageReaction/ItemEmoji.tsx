@@ -44,12 +44,12 @@ function ItemEmoji({ emoji, message, isTopic }: EmojiItemProps) {
 	return (
 		<Tooltip overlay={<UserReactionPanel message={message} emojiShowPanel={emoji} isTopic={isTopic} />} placement="top">
 			<div
-				className={`h-[24px] rounded-md w-fit min-w-12 gap-3 h-6 flex flex-row noselect
-          cursor-pointer justify-center  items-center relative pl-7 text-sm font-medium text-theme-primary
-          ${Number(userSenderCount) > 0 ? 'highlight-react-theme' : ''}`}
+				className={`h-6 rounded-md w-fit min-w-12 px-1.5 gap-1.5 flex flex-row noselect
+          cursor-pointer justify-center items-center text-sm leading-none font-medium text-theme-primary
+          ${Number(userSenderCount) > 0 ? 'highlight-react-theme' : 'bg-theme-primary'}`}
 				onClick={() => reactOnExistEmoji(emoji.emojiId ?? '', emoji.message_id ?? '', emoji.emojiId ?? '', emoji.emoji ?? '', 1, false)}
 			>
-				<img src={getUrlItem} className="absolute left-[5px] w-4 h-4 object-scale-down " alt="" />
+				<img src={getUrlItem} className="w-4 h-4 shrink-0 object-scale-down" alt="" />
 				{formatCount(count)}
 			</div>
 		</Tooltip>
