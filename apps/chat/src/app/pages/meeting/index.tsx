@@ -24,7 +24,14 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { GUEST_NAME, ensureMediaPermission, getPreferredInputDeviceId, setPreferredInputDeviceId, useMediaPermissions } from '@mezon/utils';
+import {
+	GUEST_NAME,
+	ensureMediaPermission,
+	getPreferredInputDeviceId,
+	reportMediaAccessError,
+	setPreferredInputDeviceId,
+	useMediaPermissions
+} from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -336,8 +343,11 @@ export default function PreJoinCalling() {
 				} catch (err) {
 					console.error('Error accessing camera:', err);
 					if (request === cameraRequestRef.current) {
-						setError('Failed to access camera. Please check your permissions and try again.');
-						if (inMeeting) dispatch(voiceActions.setShowCamera(false));
+						if (reportMediaAccessError('camera', err)) {
+							if (inMeeting) dispatch(voiceActions.setShowCamera(false));
+						} else {
+							setError('Failed to access camera. Please check your permissions and try again.');
+						}
 					}
 				}
 			};
