@@ -166,7 +166,10 @@
 		"keepMuted": "Audio ist pausiert. Klicke, um dein Mikrofon stumm zu lassen."
 	},
 	"weakNetwork": "Schwaches Netzwerk",
-	"networkWarning": "Deine Internetverbindung ist instabil. Andere hören dich möglicherweise nicht klar.",
+	"networkWarning": {
+		"title": "Deine Internetverbindung ist instabil",
+		"body": "Bitte überprüfe deine Netzwerkverbindung."
+	},
 	"reconnectModal": {
 		"title": "Verbindung mit Sprachkanal nicht möglich",
 		"description": "Die Sprachverbindung konnte nicht wiederhergestellt werden. Prüfe deine Verbindung und versuche erneut beizutreten.",
@@ -180,5 +183,22 @@
 		"holdSpace": "Leertaste halten zum Sprechen",
 		"holdingSpace": "Du sprichst – Leertaste loslassen zum Stummschalten",
 		"hintBody": "Du bist zum Zuhören beigetreten. Halte die Leertaste, um dein Mikrofon zum Sprechen zu öffnen, und lass sie los, um wieder stumm zu schalten."
+	},
+	"screenDraw": {
+		"annotateScreen": "Auf deinem geteilten Bildschirm zeichnen",
+		"stopAnnotating": "Zeichnen auf deinem Bildschirm beenden",
+		"drawOnScreen": "Auf dem Bildschirm zeichnen (nur du siehst es)",
+		"stopDrawing": "Zeichnen beenden",
+		"closeDrawing": "Zeichnen schließen",
+		"selectAndMove": "Auswählen und verschieben",
+		"pen": "Stift",
+		"text": "Text",
+		"eraser": "Radierer",
+		"undo": "Rückgängig",
+		"redo": "Wiederholen",
+		"clear": "Alle Zeichnungen löschen",
+		"textPlaceholder": "Notiz eingeben, Enter zum Platzieren",
+		"commit": "Platzieren (Enter)",
+		"cancel": "Abbrechen (Esc)"
 	}
 }

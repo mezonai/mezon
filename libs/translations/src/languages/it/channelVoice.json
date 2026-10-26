@@ -166,7 +166,10 @@
 		"keepMuted": "L'audio è in pausa. Fai clic per mantenere il microfono disattivato."
 	},
 	"weakNetwork": "Rete debole",
-	"networkWarning": "La tua connessione internet è instabile. Gli altri potrebbero non sentirti chiaramente.",
+	"networkWarning": {
+		"title": "La tua connessione internet è instabile",
+		"body": "Controlla la tua connessione di rete."
+	},
 	"reconnectModal": {
 		"title": "Impossibile connettersi alla voce",
 		"description": "La connessione vocale non è stata ripristinata. Controlla la connessione e prova a entrare di nuovo.",
@@ -180,5 +183,22 @@
 		"holdSpace": "Tieni premuto Spazio per parlare",
 		"holdingSpace": "Stai parlando — rilascia Spazio per disattivare",
 		"hintBody": "Sei entrato per ascoltare. Tieni premuto Spazio per aprire il microfono mentre parli, rilascia per disattivarlo di nuovo."
+	},
+	"screenDraw": {
+		"annotateScreen": "Disegna sul tuo schermo condiviso",
+		"stopAnnotating": "Smetti di disegnare sul tuo schermo",
+		"drawOnScreen": "Disegna sullo schermo (lo vedi solo tu)",
+		"stopDrawing": "Smetti di disegnare",
+		"closeDrawing": "Chiudi disegno",
+		"selectAndMove": "Seleziona e sposta",
+		"pen": "Penna",
+		"text": "Testo",
+		"eraser": "Gomma",
+		"undo": "Annulla",
+		"redo": "Ripeti",
+		"clear": "Cancella tutti i disegni",
+		"textPlaceholder": "Scrivi una nota, Invio per posizionarla",
+		"commit": "Posiziona (Invio)",
+		"cancel": "Annulla (Esc)"
 	}
 }

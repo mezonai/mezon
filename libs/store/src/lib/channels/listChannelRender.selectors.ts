@@ -45,9 +45,8 @@ export const selectListChannelRenderByClanId = createCachedSelector(
 		if (!clanId || !channelEntities) {
 			return undefined;
 		}
-		const hasChannels = channelEntities.ids.length > 0;
 		const hasCategories = (categoryEntities?.ids?.length ?? 0) > 0;
-		if (!hasChannels || !hasCategories) {
+		if (!hasCategories) {
 			return undefined;
 		}
 		const channels = channelEntities.ids.map((id) => channelEntities.entities[id]).filter(Boolean) as ChannelsEntity[];

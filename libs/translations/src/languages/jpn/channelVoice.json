@@ -166,7 +166,10 @@
 		"keepMuted": "音声は一時停止しています。クリックするとマイクをミュートのままにします。"
 	},
 	"weakNetwork": "ネットワークが不安定",
-	"networkWarning": "インターネット接続が不安定です。他の人に聞こえにくい可能性があります。",
+	"networkWarning": {
+		"title": "インターネット接続が不安定です",
+		"body": "ネットワーク接続を確認してください。"
+	},
 	"reconnectModal": {
 		"title": "音声に接続できません",
 		"description": "音声接続を復元できませんでした。接続を確認して、もう一度参加してください。",
@@ -180,5 +183,22 @@
 		"holdSpace": "スペースキーを押し続けて話す",
 		"holdingSpace": "話しています — スペースキーを離すとミュート",
 		"hintBody": "あなたは聴くために参加しました。話す間はスペースキーを押し続けてマイクを開き、離すと再びミュートになります。"
+	},
+	"screenDraw": {
+		"annotateScreen": "共有中の画面に描画",
+		"stopAnnotating": "画面への描画を停止",
+		"drawOnScreen": "画面に描画（自分だけに表示）",
+		"stopDrawing": "描画を停止",
+		"closeDrawing": "描画を閉じる",
+		"selectAndMove": "選択して移動",
+		"pen": "ペン",
+		"text": "テキスト",
+		"eraser": "消しゴム",
+		"undo": "元に戻す",
+		"redo": "やり直す",
+		"clear": "すべての描画を消去",
+		"textPlaceholder": "メモを入力し、Enterで配置",
+		"commit": "配置 (Enter)",
+		"cancel": "キャンセル (Esc)"
 	}
 }

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { useMarkAsRead, usePermissionChecker } from '@mezon/core';
+import { toMembersPage, useMarkAsRead, usePermissionChecker } from '@mezon/core';
 import type { MuteChannelPayload } from '@mezon/store';
 import {
 	FAVORITE_CATEGORY_ID,
@@ -234,10 +234,10 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 				})
 			);
 			if (channel.id === currentChannelId || channel.id === selectedChannel) {
-				if (isThread) {
-					navigate(`/chat/clans/${currentClanId}/channels/${channel.parent_id}`);
+				if (currentClanId) {
+					navigate(toMembersPage(currentClanId));
 				} else {
-					navigate(`/chat/clans/${currentClanId}/channels/${welcomeChannelId}`);
+					navigate(`/chat/direct/friends`);
 				}
 			}
 		} catch (error) {

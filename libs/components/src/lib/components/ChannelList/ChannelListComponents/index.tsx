@@ -34,8 +34,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { CustomTooltip } from '../../ToolTip';
 import EventModal from '../EventChannelModal';
-export const Events = memo(() => {
+export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasChannel: boolean; checkFetchChannel: boolean }) => {
 	const { t } = useTranslation('channelList');
+	const { t: tWelcome } = useTranslation('chatWelcome');
+
 	const ongoingEvent = useSelector(selectOngoingEvent);
 	const previewMode = useSelector(selectOnboardingMode);
 
@@ -203,6 +205,22 @@ export const Events = memo(() => {
 				</Link>
 			) : null}
 			<ChannelAppList />
+			{!checkHasChannel && checkFetchChannel && (
+				<div className="bottom-5 flex-col flex rounded-lg p-3 my-1 gap-2 bg-theme-surface w-[253px] ml-[1px]">
+					<div className="flex gap-1 text-sm items-center font-semibold text-theme-primary-active">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="-5 -10 110 135"
+							className={`h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5 text-theme-primary-active `}
+							fill="currentColor"
+						>
+							<path d="m50 94.488c-30.781-.488-28.59-41.488-28.59-41.488V32a4.86 4.86 0 0 1 9.71 0v21h2.12V14.67a4.86 4.86 0 0 1 9.71 0v36h2.16V10.35a4.85 4.85 0 0 1 9.7 0v40.32h2V15.75a5 5 0 0 1 10 0v45.38l2 .46V46a4.86 4.86 0 0 1 9.71 0v15.59s2.22 33.41-28.52 32.898Z" />
+						</svg>
+						{tWelcome('welcome.welcomeToClan')}
+					</div>
+					<div className="text-xs text-theme-primary"> {tWelcome('welcome.emptyChannel')}</div>
+				</div>
+			)}
 		</>
 	);
 });

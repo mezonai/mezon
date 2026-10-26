@@ -1,5 +1,6 @@
 import {
 	ClanGroup,
+	ClanRailUnreadFloatButton,
 	DmCallManager,
 	FirstJoinPopup,
 	FooterProfile,
@@ -286,6 +287,7 @@ const SidebarMenu = memo(
 		const statusMenu = useSelector(selectStatusMenu);
 		const { setCloseMenu, setStatusMenu } = useMenu();
 		const [isAtTop, setIsAtTop] = useState(true);
+		const clanRailScrollRef = useRef<HTMLDivElement>(null);
 
 		useEffect(() => {
 			const handleSizeWidth = () => {
@@ -342,6 +344,7 @@ const SidebarMenu = memo(
 			>
 				<div className="relative h-full w-full overflow-hidden">
 					<div
+						ref={clanRailScrollRef}
 						className={`top-0 left-0 right-0 flex flex-col items-center pt-0 pb-[68px] overflow-y-auto hide-scrollbar h-[calc(100dvh_-_10px_-_80px)] `}
 						onScroll={(e) => setIsAtTop(e.currentTarget.scrollTop === 0)}
 					>
@@ -401,6 +404,7 @@ const SidebarMenu = memo(
 							</div>
 						</div>
 					</div>
+					<ClanRailUnreadFloatButton scrollContainerRef={clanRailScrollRef} />
 				</div>
 			</div>
 		);
@@ -533,7 +537,11 @@ const ClansList = memo(() => {
 										}`}
 									/>
 								) : item.type === 'group' && 'group' in item && item.group ? (
-									<div onMouseEnter={(e) => handleItemMouseEnter(e, item.id)} onMouseMove={(e) => handleItemMouseEnter(e, item.id)}>
+									<div
+										data-clan-rail-item={`group:${item.group.id}`}
+										onMouseEnter={(e) => handleItemMouseEnter(e, item.id)}
+										onMouseMove={(e) => handleItemMouseEnter(e, item.id)}
+									>
 										<ClanGroup
 											group={item.group}
 											className={`transition-all duration-200 ${draggingThis ? 'opacity-30' : ''} ${
@@ -587,7 +595,6 @@ const ClansList = memo(() => {
 					);
 				})}
 
-			{/* Floating dragged item */}
 			{isDragging && draggedItem && dragPosition && (
 				<div
 					className="fixed pointer-events-none z-50 w-[40px] h-[40px] transform rotate-3 shadow-lg"

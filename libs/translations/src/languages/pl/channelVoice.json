@@ -166,7 +166,10 @@
 		"keepMuted": "Audio jest wstrzymane. Kliknij, aby pozostawić mikrofon wyciszony."
 	},
 	"weakNetwork": "Słaba sieć",
-	"networkWarning": "Twoje połączenie internetowe jest niestabilne. Inni mogą Cię nie słyszeć wyraźnie.",
+	"networkWarning": {
+		"title": "Twoje połączenie jest niestabilne",
+		"body": "Sprawdź swoje połączenie sieciowe."
+	},
 	"reconnectModal": {
 		"title": "Nie można połączyć się z głosem",
 		"description": "Nie udało się przywrócić połączenia głosowego. Sprawdź połączenie i spróbuj dołączyć ponownie.",
@@ -180,5 +183,22 @@
 		"holdSpace": "Przytrzymaj spację, aby mówić",
 		"holdingSpace": "Mówisz — puść spację, aby wyciszyć",
 		"hintBody": "Dołączyłeś, aby słuchać. Przytrzymaj spację, aby otworzyć mikrofon podczas mówienia, puść, aby ponownie wyciszyć."
+	},
+	"screenDraw": {
+		"annotateScreen": "Rysuj na udostępnianym ekranie",
+		"stopAnnotating": "Przestań rysować na ekranie",
+		"drawOnScreen": "Rysuj na ekranie (widzisz to tylko ty)",
+		"stopDrawing": "Przestań rysować",
+		"closeDrawing": "Zamknij rysowanie",
+		"selectAndMove": "Zaznacz i przesuń",
+		"pen": "Pióro",
+		"text": "Tekst",
+		"eraser": "Gumka",
+		"undo": "Cofnij",
+		"redo": "Ponów",
+		"clear": "Wyczyść wszystkie rysunki",
+		"textPlaceholder": "Wpisz notatkę, Enter, aby umieścić",
+		"commit": "Umieść (Enter)",
+		"cancel": "Anuluj (Esc)"
 	}
 }

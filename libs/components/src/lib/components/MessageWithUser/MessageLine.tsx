@@ -200,7 +200,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 			const res = await dispatch(inviteActions.inviteUser({ inviteId })).unwrap();
 			if (res?.clan_id) {
 				dispatch(clansActions.fetchClans({ noCache: true }));
-				navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id || '0'}`);
+				navigate(`/chat/clans/${res.clan_id}/member-safety`);
 			}
 		} catch {
 			setError(t('failedToJoin'));

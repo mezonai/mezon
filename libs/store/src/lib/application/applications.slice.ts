@@ -10,6 +10,7 @@ import type {
 	ApiCreateChannelDescRequest,
 	ApiMezonOauthClient,
 	ApiUploadAttachment,
+	ApiUploadAttachmentRequest,
 	MezonUpdateAppBody
 } from 'mezon-js';
 import {
@@ -112,7 +113,7 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 	};
 };
 
-export const uploadAttachmentAdmin = createAsyncThunk('adminApplication/getApplicationDetail', async (body: UploadAttachmentRequest, thunkAPI) => {
+export const uploadAppLogoAdmin = createAsyncThunk('adminApplication/uploadAppLogo', async (body: ApiUploadAttachmentRequest, thunkAPI) => {
 	const state = thunkAPI.getState() as RootState;
 
 	if (!state?.auth?.session) {
@@ -120,7 +121,7 @@ export const uploadAttachmentAdmin = createAsyncThunk('adminApplication/getAppli
 	}
 
 	const response = await callApiAdmin({
-		path: '/mezon.api.Mezon/UploadAttachmentFile',
+		path: '/mezon.api.Mezon/UploadOauthFile',
 		data: UploadAttachmentRequest.encode(UploadAttachmentRequest.fromPartial(body)).finish(),
 		token: state?.auth?.session.token,
 		decodeBody: (bytes) => UploadAttachment.decode(bytes) as ApiUploadAttachment

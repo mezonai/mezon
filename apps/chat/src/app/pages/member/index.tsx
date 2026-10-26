@@ -1,12 +1,16 @@
 import { useMemberContext } from '@mezon/core';
+import { channelsActions, selectCurrentClanId } from '@mezon/store';
 import { Icons, Menu, Pagination } from '@mezon/ui';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import MemberTopBar from './MemberTopBar';
 import TableMember from './TableMember';
 
 const MemberClan = () => {
 	const { t } = useTranslation('memberPage');
+	const dispatch = useDispatch();
+	const currentClanId = useSelector(selectCurrentClanId);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const { filteredMembers, searchQuery } = useMemberContext();
@@ -17,6 +21,12 @@ const MemberClan = () => {
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchQuery]);
+
+	useEffect(() => {
+		if (currentClanId && currentClanId !== '0') {
+			dispatch(channelsActions.removeRememberChannel({ clanId: currentClanId }));
+		}
+	}, []);
 
 	const onPageChange = (page: number) => {
 		setCurrentPage(page);

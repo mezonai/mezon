@@ -24,7 +24,10 @@
 	"screenShareCaptureFailed": "Trình duyệt không thể ghi lại màn hình đã chọn. Hãy thử chia sẻ một cửa sổ hoặc tab.",
 	"disconnect": "Ngắt kết nối",
 	"weakNetwork": "Mạng yếu",
-	"networkWarning": "Kết nối mạng của bạn không ổn định. Người khác có thể không nghe rõ bạn.",
+	"networkWarning": {
+		"title": "Kết nối mạng của bạn không ổn định",
+		"body": "Hãy kiểm tra lại đường truyền mạng của bạn."
+	},
 	"muteModal": {
 		"title": "Tắt tiếng thành viên",
 		"content": "Bạn có chắc muốn tắt tiếng \"{{userName}}\"?",
@@ -191,5 +194,22 @@
 		"you": "Bạn",
 		"enlarge": "Phóng to {{name}}",
 		"restoreLayout": "Quay lại chế độ xem cạnh nhau"
+	},
+	"screenDraw": {
+		"annotateScreen": "Vẽ lên màn hình đang chia sẻ",
+		"stopAnnotating": "Dừng vẽ lên màn hình",
+		"drawOnScreen": "Vẽ lên màn hình (chỉ mình bạn thấy)",
+		"stopDrawing": "Dừng vẽ",
+		"closeDrawing": "Đóng công cụ vẽ",
+		"selectAndMove": "Chọn và di chuyển",
+		"pen": "Bút",
+		"text": "Chữ",
+		"eraser": "Tẩy",
+		"undo": "Hoàn tác",
+		"redo": "Làm lại",
+		"clear": "Xoá tất cả nét vẽ",
+		"textPlaceholder": "Nhập ghi chú, Enter để đặt",
+		"commit": "Đặt chữ (Enter)",
+		"cancel": "Huỷ (Esc)"
 	}
 }

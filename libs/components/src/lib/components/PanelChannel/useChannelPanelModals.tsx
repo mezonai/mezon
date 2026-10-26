@@ -1,13 +1,5 @@
 import { useChannels } from '@mezon/core';
-import {
-	channelsActions,
-	selectCurrentChannelId,
-	selectCurrentClanId,
-	selectWelcomeChannelByClanId,
-	stickerSettingActions,
-	toastActions,
-	useAppDispatch
-} from '@mezon/store';
+import { channelsActions, selectCurrentChannelId, selectCurrentClanId, stickerSettingActions, toastActions, useAppDispatch } from '@mezon/store';
 import type { IChannel } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +24,6 @@ export const useChannelPanelModals = (channel: IChannel, onClosePanel: () => voi
 
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, currentClanId as string));
 
 	const isThread = !!channel.parent_id && channel.parent_id !== '0';
 
@@ -55,7 +46,9 @@ export const useChannelPanelModals = (channel: IChannel, onClosePanel: () => voi
 				})
 			);
 			if (channel.id === currentChannelId) {
-				navigate(`/chat/clans/${currentClanId}/channels/${isThread ? channel.parent_id : welcomeChannelId}`);
+				const path = isThread ? `/chat/clans/${currentClanId}/channels/${channel.parent_id}` : '/chat/direct/friends';
+
+				navigate(path);
 			}
 		} catch (error) {
 			// Ignored intentionally or handled globally

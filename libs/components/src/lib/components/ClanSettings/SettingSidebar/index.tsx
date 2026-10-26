@@ -23,10 +23,11 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [selectedButton, setSelectedButton] = useState<string | null>(currentSetting);
 	const clanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
-	const [isClanOwner, hasClanPermission, hasChannelPermission] = usePermissionChecker([
+	const [isClanOwner, hasClanPermission, hasChannelPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
-		EPermission.manageChannel
+		EPermission.manageChannel,
+		EPermission.administrator
 	]);
 	const { canViewArchivedChannels } = useCanViewArchivedChannels();
 	const dispatch = useAppDispatch();
@@ -61,10 +62,13 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {
 		const filteredListItem = sidebarItem.listItem.filter((item) => {
+			if (item.id === ItemSetting.OVERVIEW) {
+				return hasAdminPermission;
+			}
 			if (item.id === ItemSetting.INTEGRATIONS) {
 				return hasClanPermission || hasChannelPermission;
 			}
-			if ([ItemSetting.OVERVIEW, ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
+			if ([ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
 				return hasClanPermission;
 			}
 			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {

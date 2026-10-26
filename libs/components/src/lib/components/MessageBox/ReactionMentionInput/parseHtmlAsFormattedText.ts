@@ -1,4 +1,4 @@
-import { sanitizeMessageHtml } from '@mezon/utils';
+import { parenBalance, sanitizeMessageHtml } from '@mezon/utils';
 
 function escapeHtmlText(value: string): string {
 	return value.replace(/[&<>"']/g, (ch) => {
@@ -226,7 +226,6 @@ function getCleanUrlAndTrailing(match: string, fullText: string, matchIndex: num
 	const beforeMatch = fullText.substring(0, matchIndex);
 
 	const wrappingPairs = [
-		{ open: '(', close: ')' },
 		{ open: '[', close: ']' },
 		{ open: '{', close: '}' },
 		{ open: '<', close: '>' }
@@ -252,6 +251,11 @@ function getCleanUrlAndTrailing(match: string, fullText: string, matchIndex: num
 			cleanMatch = match.slice(0, -trailingMatch[0].length);
 			trailingPunctuation = trailingMatch[0];
 		}
+		const ownCloseParens = Math.min(parenBalance(cleanMatch), /^\)*/.exec(trailingPunctuation)?.[0].length ?? 0);
+		if (ownCloseParens > 0) {
+			cleanMatch += trailingPunctuation.slice(0, ownCloseParens);
+			trailingPunctuation = trailingPunctuation.slice(ownCloseParens);
+		}
 	}
 
 	return { cleanMatch, trailingPunctuation };
@@ -264,7 +268,8 @@ export default function parseHtmlAsFormattedToText(html: string, withMarkdownLin
 	const prepared = skipMarkdown ? html : withMarkdownLinks ? parseMarkdown(parseMarkdownLinks(html)) : parseMarkdown(html);
 	fragment.innerHTML = sanitizeMessageHtml(prepared);
 	fixImageContent(fragment);
-	const text = fragment.innerText.trim().replace(/\u200b+/g, '');
+	removeZeroWidthSpaces(fragment);
+	const text = fragment.innerText.trim();
 	const trimShift = fragment.innerText.indexOf(text[0]);
 	let textIndex = -trimShift;
 	let recursionDeepness = 0;
@@ -314,6 +319,15 @@ export default function parseHtmlAsFormattedToText(html: string, withMarkdownLin
 		entities: entities.length ? entities : undefined,
 		linkPreview
 	};
+}
+
+function removeZeroWidthSpaces(fragment: HTMLDivElement) {
+	const walker = document.createTreeWalker(fragment, NodeFilter.SHOW_TEXT);
+	for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+		if (node.nodeValue?.includes('\u200b')) {
+			node.nodeValue = node.nodeValue.replace(/\u200b+/g, '');
+		}
+	}
 }
 
 export function fixImageContent(fragment: HTMLDivElement) {

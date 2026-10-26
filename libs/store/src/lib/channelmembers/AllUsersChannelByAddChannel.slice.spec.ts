@@ -1,4 +1,10 @@
-import { ALL_USERS_BY_ADD_CHANNEL, selectChannelAccessVersion, userChannelsActions, userChannelsReducer } from './AllUsersChannelByAddChannel.slice';
+import {
+	ALL_USERS_BY_ADD_CHANNEL,
+	fetchSearchCtrlK,
+	selectChannelAccessVersion,
+	userChannelsActions,
+	userChannelsReducer
+} from './AllUsersChannelByAddChannel.slice';
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({ TypeSearch: { Dm_Type: 1, Channel_Type: 2 } }));
@@ -26,6 +32,31 @@ describe('channel access version', () => {
 		const before = state.entities['c1'];
 		state = userChannelsReducer(state, userChannelsActions.markAccessChanged('c1'));
 		expect(state.entities['c1']).toBe(before);
+	});
+
+	it('maps avatar_url to avatarUser when avatar_url exists', () => {
+		const state = userChannelsReducer(
+			undefined,
+			fetchSearchCtrlK.fulfilled(
+				{
+					users: [
+						{
+							id: 'u1',
+							display_name: 'User One',
+							username: 'userone',
+							avatar_url: 'https://cdn.example.com/avatar.png',
+							list_nick_names: []
+						}
+					]
+				},
+				'request-id',
+				undefined
+			)
+		);
+
+		const result = state.listSearch.find((item) => item.id === 'u1');
+
+		expect(result?.avatarUser).toBe('https://cdn.example.com/avatar.png');
 	});
 });
 

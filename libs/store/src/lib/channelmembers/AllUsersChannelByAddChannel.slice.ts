@@ -415,7 +415,8 @@ export const userChannelsSlice = createSlice({
 						icon: '@',
 						typeChat: TypeSearch.Dm_Type,
 						prioritizeName: user?.display_name || user?.username || '',
-						searchName: [user?.display_name, user?.username, ...(user?.list_nick_names ?? [])].filter(Boolean).join('.')
+						searchName: [user?.display_name, user?.username, ...(user?.list_nick_names ?? [])].filter(Boolean).join('.'),
+						avatarUser: user?.avatar_url || ''
 					});
 				}
 

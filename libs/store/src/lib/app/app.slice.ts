@@ -6,13 +6,13 @@ import { ChannelType } from 'mezon-js';
 import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
-import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directActions } from '../direct/direct.slice';
 import { sleep } from '../helpers';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
+import { usersStreamActions } from '../stream/usersStream.slice';
 import { voiceActions } from '../voice/voice.slice';
 
 export const APP_FEATURE_KEY = 'app';
@@ -213,9 +213,9 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 		thunkAPI.dispatch(clansActions.clearJoinList());
 
-		const joinPromises = [thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }))];
+		const joinPromises: Promise<unknown>[] = [thunkAPI.dispatch(directActions.joinDirectMessageSpace({ restart: true }))];
 		if (isClanView && currentClanId) {
-			joinPromises.push(thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId })));
+			joinPromises.push(thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId, noCache: true })));
 		}
 		await Promise.allSettled(joinPromises);
 		if (isStaleRefresh(currentGeneration)) {
@@ -250,7 +250,6 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
-		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
 			await yieldToMain();
 			if (isStaleRefresh(currentGeneration)) {
@@ -259,7 +258,6 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			}
 
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
-			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
 
 			await yieldToMain();
 			if (isStaleRefresh(currentGeneration)) {
@@ -274,6 +272,14 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 					channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE
 				})
 			);
+			thunkAPI.dispatch(
+				usersStreamActions.fetchStreamChannelMembers({
+					clanId: currentClanId ?? '',
+					channelId: '0',
+					channelType: ChannelType.CHANNEL_TYPE_STREAMING,
+					noCache: true
+				})
+			);
 		}
 
 		await yieldToMain();
@@ -282,10 +288,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			return { skipped: true, reason: 'stale' as const };
 		}
 
-		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
-
-		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
-		await Promise.allSettled(settledPromises);
+		await Promise.allSettled([fetchClansPromise]);
 		if (isStaleRefresh(currentGeneration)) {
 			console.warn('[refreshApp] aborted stale generation');
 			return { skipped: true, reason: 'stale' as const };

@@ -6,9 +6,10 @@ import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 
 export type VoiceChannelUsersProps = {
 	voiceChannelMembers: VoiceUserData[];
+	total?: number;
 };
 
-export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProps) {
+export function VoiceChannelUsers({ voiceChannelMembers, total }: VoiceChannelUsersProps) {
 	const [displayedMembers, setDisplayedMembers] = useState<VoiceUserData[]>([]);
 	const [remainingCount, setRemainingCount] = useState(0);
 
@@ -28,15 +29,15 @@ export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProp
 			maxMembers = 6;
 		}
 
-		const extraMembers = membersToShow.length - maxMembers;
+		const extraMembers = (total ?? membersToShow.length) - Math.min(membersToShow.length, maxMembers);
 
 		setDisplayedMembers(membersToShow.slice(0, maxMembers));
 		setRemainingCount(extraMembers > 0 ? extraMembers : 0);
-	}, [voiceChannelMembers]);
+	}, [voiceChannelMembers, total]);
 
 	useSyncEffect(() => {
 		handleSizeWidth();
-	}, [voiceChannelMembers]);
+	}, [voiceChannelMembers, total]);
 
 	useWindowSize(() => {
 		handleSizeWidth();

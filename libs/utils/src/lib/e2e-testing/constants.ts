@@ -1048,6 +1048,13 @@ export const DATA_E2E_IDENTIFIER = {
 			tab_server: '',
 			server_item: ''
 		},
+		streaming: {
+			tab_streaming: '',
+			channel: '',
+			reveal: '',
+			get_key: '',
+			quality_item: ''
+		},
 		profile: {
 			button_setting: '',
 			tab_profile: '',

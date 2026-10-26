@@ -166,7 +166,10 @@
 		"keepMuted": "오디오가 일시정지되었습니다. 클릭하면 마이크를 계속 음소거 상태로 유지합니다."
 	},
 	"weakNetwork": "약한 네트워크",
-	"networkWarning": "인터넷 연결이 불안정합니다. 다른 사람들이 당신의 목소리를 선명하게 듣지 못할 수 있습니다.",
+	"networkWarning": {
+		"title": "인터넷 연결이 불안정합니다",
+		"body": "네트워크 연결을 확인해 주세요."
+	},
 	"reconnectModal": {
 		"title": "음성 채널에 연결할 수 없습니다",
 		"description": "음성 연결을 복원하지 못했습니다. 연결을 확인하고 다시 참여해 보세요.",
@@ -180,5 +183,22 @@
 		"holdSpace": "스페이스를 길게 눌러 말하기",
 		"holdingSpace": "말하는 중 — 스페이스를 놓으면 음소거",
 		"hintBody": "당신은 듣기 위해 참여했습니다. 말하는 동안 스페이스를 길게 눌러 마이크를 열고, 놓으면 다시 음소거됩니다."
+	},
+	"screenDraw": {
+		"annotateScreen": "공유 중인 화면에 그리기",
+		"stopAnnotating": "화면에 그리기 중지",
+		"drawOnScreen": "화면에 그리기 (나만 보임)",
+		"stopDrawing": "그리기 중지",
+		"closeDrawing": "그리기 닫기",
+		"selectAndMove": "선택 및 이동",
+		"pen": "펜",
+		"text": "텍스트",
+		"eraser": "지우개",
+		"undo": "실행 취소",
+		"redo": "다시 실행",
+		"clear": "모든 그림 지우기",
+		"textPlaceholder": "메모를 입력하고 Enter로 배치",
+		"commit": "배치 (Enter)",
+		"cancel": "취소 (Esc)"
 	}
 }

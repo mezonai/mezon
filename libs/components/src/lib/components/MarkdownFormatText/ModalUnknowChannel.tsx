@@ -1,12 +1,10 @@
-import { FRIEND_PAGE_LINK, toChannelPage, useAppNavigation } from '@mezon/core';
+import { FRIEND_PAGE_LINK, toMembersPage, useAppNavigation } from '@mezon/core';
 
-import type { RootState } from '@mezon/store';
-import { getStoreAsync, selectClanById, selectCurrentClan, selectWelcomeChannelByClanId, toastActions } from '@mezon/store';
+import { selectAllChannels, selectCurrentClan, toastActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 
 type ModalUnknowChannelProps = {
 	onClose?: () => void;
@@ -43,9 +41,9 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 	const { t } = useTranslation('common');
 	const dispatch = useDispatch();
 	const { onClose, isError = false, errMessage, idErr } = props;
-	const { toClanPage, navigate } = useAppNavigation();
-	const location = useLocation();
+	const { navigate } = useAppNavigation();
 	const currentClan = useSelector(selectCurrentClan);
+	const allChannel = useSelector(selectAllChannels);
 	const currentClanId = currentClan?.id;
 
 	const errorConfig = getErrorConfig(errMessage);
@@ -60,41 +58,28 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 		dispatch(toastActions.clearAllToastErrors());
 	};
 
-	const directToWelcomeChannel = async () => {
+	const goToWelcomeChannel = () => {
 		clearAllToastError();
-		const store = await getStoreAsync();
 		if (!currentClanId || currentClanId === '0') {
 			navigate(FRIEND_PAGE_LINK);
 			return;
 		}
 
-		const currentClan = selectClanById(currentClanId)(store.getState() as RootState);
-		if (!currentClan) {
-			const isFirstEntry = location.key === 'default' || (typeof window !== 'undefined' && (window.history.state?.idx ?? 0) === 0);
-			if (isFirstEntry) {
-				navigate(FRIEND_PAGE_LINK);
-			} else {
-				navigate(-1);
-			}
-			return;
-		}
-		const welcomeChannelId = selectWelcomeChannelByClanId(store.getState(), currentClanId);
-
-		if (welcomeChannelId) {
-			navigate(toClanPage(currentClanId));
-			navigate(toChannelPage(welcomeChannelId, currentClanId));
-			return;
-		}
+		navigate(toMembersPage(currentClanId));
 	};
 
 	const onCloseAndReset = () => {
-		if (!currentClanId) {
-			return;
-		}
 		if (isError) {
 			removeToastError();
 		}
 		onClose?.();
+		if (!currentClanId || currentClanId === '0') {
+			navigate(FRIEND_PAGE_LINK);
+			return;
+		}
+		if (!allChannel.length) {
+			navigate(toMembersPage(currentClanId));
+		}
 	};
 
 	if (errorConfig.type === 'connection') return null;
@@ -133,7 +118,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 					{isError ? (
 						<>
 							<button
-								onClick={directToWelcomeChannel}
+								onClick={goToWelcomeChannel}
 								className="flex-1 bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 px-4 rounded transition-colors duration-200"
 								data-e2e={generateE2eId('clan_page.settings.modal.permission.confirm')}
 							>

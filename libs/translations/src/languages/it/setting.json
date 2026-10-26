@@ -48,7 +48,8 @@
 		"appVersion": "Versione app",
 		"startUp": "Avvio",
 		"quitApp": "Esci dall'app",
-		"server": "Server"
+		"server": "Server",
+		"streaming": "Streaming"
 	},
 	"server": {
 		"auto": "Automatico",
@@ -59,6 +60,30 @@
 		"connectedTo": "Connesso a {{region}}",
 		"connectingTo": "Connessione a {{region}}…",
 		"footer": "Automatico: Sceglie un server per te. Scegli un server se vuoi restarci sempre."
+	},
+	"streaming": {
+		"keyTitle": "Chiave di streaming",
+		"keyDescription": "Usali in OBS o in un altro encoder WHIP per andare in diretta in un canale stream. Non condividerli mai: chi li possiede può trasmettere a tuo nome.",
+		"channel": "Canale stream",
+		"noChannels": "Nessun canale stream in questo clan",
+		"getKey": "Ottieni chiave",
+		"regenerate": "Genera nuova chiave",
+		"server": "Server",
+		"token": "Bearer Token",
+		"show": "Mostra",
+		"hide": "Nascondi",
+		"copy": "Copia",
+		"expiresIn": "Inizia lo streaming entro {{time}}. Una diretta già avviata continua anche dopo.",
+		"expired": "Questa chiave è scaduta. Generane una nuova per andare in diretta.",
+		"error": "Impossibile ottenere la chiave di streaming. Riprova.",
+		"obsTitle": "Configura OBS",
+		"obsStepService": "In OBS, apri Impostazioni → Dirette e scegli WHIP come servizio.",
+		"obsStepPaste": "Incolla il Server e il Bearer Token qui sopra.",
+		"obsStepEncoder": "In Impostazioni → Uscita, scegli un encoder H.264 e imposta l'intervallo dei fotogrammi chiave a 2 s.",
+		"obsStepSimulcast": "Per più qualità, imposta il simulcast a 3 livelli se la tua versione di OBS lo offre.",
+		"obsStepStart": "Fai clic su Avvia la diretta. La chiave deve essere valida solo quando OBS si connette: se OBS si riconnette dopo la scadenza, ottieni una nuova chiave e incollala di nuovo.",
+		"qualityTitle": "Qualità di visione predefinita",
+		"qualityDescription": "Usata ogni volta che entri in una diretta. Puoi comunque cambiarla durante la visione."
 	},
 	"autoStart": {
 		"title": "Avvio automatico app",

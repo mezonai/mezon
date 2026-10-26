@@ -52,6 +52,7 @@ import { MezonNsAudioPipeline } from './Media/mezonNs/MezonNsAudioPipeline';
 import { SfuParticipantTile, getParticipantTileFrameClass } from './ParticipantTile/SfuParticipantTile';
 import { ScreenShareFocusContext, SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
 import { ReactionCallHandler, useSendReaction } from './Reaction';
+import { ScreenAnnotationCompositor, ScreenDrawLayer, useScreenDraw, type ScreenDrawSession } from './ScreenAnnotation';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
 import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
 import { meetTokenNeedsRefresh } from './meetToken';
@@ -575,6 +576,16 @@ export function MezonSfuVoiceRoom({
 		if (pipeline?.inputTrack === inputTrack) pipeline.setOutputEnabled(enabled);
 	}, []);
 	const screenStreamRef = useRef<MediaStream | null>(null);
+	const screenAnnotationRef = useRef<ScreenAnnotationCompositor | null>(null);
+	const getScreenSendTrack = useCallback(() => {
+		const track = screenStreamRef.current?.getVideoTracks()[0] ?? null;
+		const annotatedTrack = screenAnnotationRef.current?.track;
+		return track && annotatedTrack?.readyState === 'live' ? annotatedTrack : track;
+	}, []);
+	const stopScreenAnnotationCompositor = useCallback(() => {
+		screenAnnotationRef.current?.stop();
+		screenAnnotationRef.current = null;
+	}, []);
 	const screenShareModeRef = useRef<ScreenShareMode>('text');
 	const changingScreenShareModeRef = useRef(false);
 	const screenKeyFrameTimersRef = useRef<number[]>([]);
@@ -853,6 +864,7 @@ export function MezonSfuVoiceRoom({
 					const sender = findUplinkVideoSender('2');
 					if (!sender) throw new Error('Screen sender is not negotiated');
 					await updateScreenShareQuality(track, sender, mode);
+					await screenAnnotationRef.current?.applyScreenShareMode(getScreenShareConstraints(mode), SCREEN_SHARE_PROFILES[mode].contentHint);
 				}
 				screenShareModeRef.current = mode;
 				setScreenShareMode(mode);
@@ -867,7 +879,7 @@ export function MezonSfuVoiceRoom({
 	);
 
 	const refreshScreenKeyFrame = useCallback(async () => {
-		const track = screenStreamRef.current?.getVideoTracks()[0];
+		const track = getScreenSendTrack();
 		if (track?.readyState !== 'live' || refreshingScreenKeyFrameRef.current || changingScreenShareModeRef.current) return;
 		const sender = findUplinkVideoSender('2');
 		if (!sender || sender.track !== track) return;
@@ -883,7 +895,7 @@ export function MezonSfuVoiceRoom({
 		} finally {
 			refreshingScreenKeyFrameRef.current = false;
 		}
-	}, [findUplinkVideoSender]);
+	}, [findUplinkVideoSender, getScreenSendTrack]);
 
 	const scheduleScreenKeyFrameRefresh = useCallback(() => {
 		if (screenStreamRef.current?.getVideoTracks()[0]?.readyState !== 'live') return;
@@ -1889,7 +1901,7 @@ export function MezonSfuVoiceRoom({
 						await applyVideoEncodingParams(pc, cameraQualityTierRef.current);
 						if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 					}
-					const screenTrack = screenStreamRef.current?.getVideoTracks()[0] || null;
+					const screenTrack = getScreenSendTrack();
 					if (screenTransceiver && screenTrack) {
 						await screenTransceiver.sender.replaceTrack(screenTrack);
 						screenTransceiver.direction = 'sendonly';
@@ -1898,7 +1910,7 @@ export function MezonSfuVoiceRoom({
 					if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 					localTracksAddedRef.current = true;
 				} else if (screenStreamRef.current) {
-					const screenTrack = screenStreamRef.current.getVideoTracks()[0];
+					const screenTrack = getScreenSendTrack();
 					const sender = screenTransceiver?.sender;
 					if (screenTrack && sender && sender.track !== screenTrack) {
 						await sender.replaceTrack(screenTrack);
@@ -2462,6 +2474,7 @@ export function MezonSfuVoiceRoom({
 			localStreamRef.current?.getTracks().forEach((track) => {
 				if (track !== customVideoTrack) track.stop();
 			});
+			stopScreenAnnotationCompositor();
 			screenStreamRef.current?.getTracks().forEach((track) => track.stop());
 			screenStreamRef.current = null;
 			dispatch(voiceActions.setShowScreen(false));
@@ -2491,6 +2504,7 @@ export function MezonSfuVoiceRoom({
 		getMicrophoneCaptureOptions,
 		openPreferredMicrophone,
 		getOutgoingAudioTrack,
+		getScreenSendTrack,
 		setAudioTrackEnabled,
 		sendMute,
 		isExternalCalling,
@@ -2499,12 +2513,14 @@ export function MezonSfuVoiceRoom({
 		scheduleScreenKeyFrameRefresh,
 		serverUrl,
 		screenKeyframeRecovery,
+		stopScreenAnnotationCompositor,
 		syncRemoteMedia,
 		syncSelectedMicrophone
 	]);
 
 	const stopLocalScreenCapture = () => {
 		clearScreenKeyFrameRefresh();
+		stopScreenAnnotationCompositor();
 		const stream = screenStreamRef.current;
 		if (!stream) return;
 		stream.getTracks().forEach((track) => {
@@ -2972,6 +2988,56 @@ export function MezonSfuVoiceRoom({
 		: conferenceTiles.some((tile) => tile.id === autoFocusedTrackId)
 			? autoFocusedTrackId
 			: preferredFocusTrack;
+	const startScreenAnnotation = useCallback(
+		async (session: ScreenDrawSession) => {
+			const track = screenStreamRef.current?.getVideoTracks()[0];
+			const sender = findUplinkVideoSender('2');
+			if (track?.readyState !== 'live' || !sender || screenAnnotationRef.current) return false;
+			let compositor: ScreenAnnotationCompositor | undefined;
+			try {
+				compositor = new ScreenAnnotationCompositor(track, session);
+				await sender.replaceTrack(compositor.track);
+			} catch (cause) {
+				compositor?.stop();
+				setError(cause instanceof Error ? cause.message : 'Unable to annotate the screen share');
+				return false;
+			}
+			if (screenStreamRef.current?.getVideoTracks()[0] !== track) {
+				compositor.stop();
+				return false;
+			}
+			screenAnnotationRef.current = compositor;
+			return true;
+		},
+		[findUplinkVideoSender]
+	);
+	const stopScreenAnnotation = useCallback(async () => {
+		const compositor = screenAnnotationRef.current;
+		if (!compositor) return;
+		screenAnnotationRef.current = null;
+		const track = screenStreamRef.current?.getVideoTracks()[0];
+		const sender = findUplinkVideoSender('2');
+		try {
+			if (sender?.track === compositor.track) await sender.replaceTrack(track?.readyState === 'live' ? track : null);
+		} catch (cause) {
+			setError(cause instanceof Error ? cause.message : 'Unable to stop annotating the screen share');
+		} finally {
+			compositor.stop();
+		}
+	}, [findUplinkVideoSender]);
+	const focusScreenTile = useCallback((tileId: string) => {
+		setPinnedTrackId(tileId);
+		setIsGridView(false);
+	}, []);
+	const screenDraw = useScreenDraw({
+		screenTileIds: conferenceTiles.filter((tile) => tile.isScreen).map((tile) => tile.id),
+		localScreenTileId: tilesById.has('local-screen') ? 'local-screen' : undefined,
+		pinnedTileId: activePinnedTrackId,
+		focusTile: focusScreenTile,
+		startBroadcast: startScreenAnnotation,
+		stopBroadcast: stopScreenAnnotation
+	});
+	const screenDrawSession = screenDraw.session;
 	const recordingTiles = useMemo<RecordingSceneTile[]>(() => {
 		const sceneTiles: RecordingSceneTile[] = [
 			{
@@ -2992,7 +3058,7 @@ export function MezonSfuVoiceRoom({
 				participantId: 'local',
 				label: t('usernameScreen', { username: localDisplayName }),
 				avatarUrl: localAvatar || null,
-				videoTrack: screenStreamRef.current.getVideoTracks()[0] ?? null,
+				videoTrack: screenDrawSession?.broadcast ? getScreenSendTrack() : (screenStreamRef.current.getVideoTracks()[0] ?? null),
 				isScreenShare: true,
 				focused: activePinnedTrackId === 'local-screen',
 				speaking: localSpeaking
@@ -3031,12 +3097,14 @@ export function MezonSfuVoiceRoom({
 		activePinnedTrackId,
 		cameraEnabled,
 		getParticipantProfile,
+		getScreenSendTrack,
 		joinRole,
 		localAvatar,
 		localDisplayName,
 		localPreview,
 		localSpeaking,
 		participants,
+		screenDrawSession,
 		screenSharing,
 		speakingMap,
 		t
@@ -3249,10 +3317,13 @@ export function MezonSfuVoiceRoom({
 							className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
 						>
 							<div
-								className="h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+								className="relative h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
 								onContextMenu={(event) => handleParticipantContextMenu(event, pinnedTile?.contextMenuUserId)}
 							>
 								<ScreenShareFocusContext.Provider value={true}>{pinnedTile?.content}</ScreenShareFocusContext.Provider>
+								{screenDrawSession && pinnedTile?.id === screenDrawSession.tileId && (
+									<ScreenDrawLayer session={screenDrawSession} onClose={screenDraw.close} />
+								)}
 							</div>
 						</div>
 						{focusConferenceTiles.length > 1 && (
@@ -3323,6 +3394,9 @@ export function MezonSfuVoiceRoom({
 					screenShareMode={screenShareMode}
 					changingScreenShareMode={changingScreenShareMode}
 					onScreenShareModeChange={changeScreenShareMode}
+					screenDrawMode={screenDraw.mode}
+					screenDrawActive={screenDraw.active}
+					onScreenDrawToggle={screenDraw.toggle}
 					isGridView={isGridView}
 					showEmojiPanel={showEmojiPanel}
 					showSoundPanel={showSoundPanel}

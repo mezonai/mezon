@@ -21,7 +21,7 @@ import type { StatusUserArgs } from '../channelmembers/channel.members';
 import type { ChannelMetaEntity } from '../channels/channelmeta.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
-import { listChannelBadgeCount } from '../clans/clans.slice';
+import { joinClan, listChannelBadgeCount } from '../clans/clans.slice';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
@@ -291,6 +291,55 @@ export const fetchDirectMessage = createAsyncThunk(
 			captureSentryError(error, 'direct/fetchDirectMessage');
 			return thunkAPI.rejectWithValue(error);
 		}
+	}
+);
+
+let directMessageSpaceJoin: Promise<boolean> | null = null;
+let directMessageSpaceJoinFailed = false;
+
+// clan_join{0} subscribes the socket only to the DMs in the server's cached DM list and a repeat join on the same
+// connection is a no-op, so every connection loads the list before it joins. Login and reconnect restart the join;
+// other callers wait for it, or retry one that failed.
+export const joinDirectMessageSpace = createAsyncThunk(
+	'direct/joinDirectMessageSpace',
+	async ({ restart = false }: { restart?: boolean }, thunkAPI) => {
+		if (!restart) {
+			if (directMessageSpaceJoin) {
+				await directMessageSpaceJoin;
+				return;
+			}
+			if (!directMessageSpaceJoinFailed) {
+				return;
+			}
+		}
+		const join = (async () => {
+			await thunkAPI.dispatch(fetchDirectMessage({}));
+			return joinClan.fulfilled.match(await thunkAPI.dispatch(joinClan({ clanId: '0' })));
+		})();
+		directMessageSpaceJoin = join;
+		const joined = await join;
+		if (directMessageSpaceJoin === join) {
+			directMessageSpaceJoin = null;
+			directMessageSpaceJoinFailed = !joined;
+		}
+	}
+);
+
+// A DM the peer reopened by messaging was not in the list the socket subscribed from, so it needs its own join; the
+// refetch brings in the message that reopened it.
+export const followReopenedDirectMessage = createAsyncThunk(
+	'direct/followReopenedDirectMessage',
+	async ({ channelId }: { channelId: string }, thunkAPI) => {
+		await thunkAPI.dispatch(fetchDirectMessage({}));
+		const direct = selectDirectById(thunkAPI.getState() as RootState, channelId);
+		await thunkAPI.dispatch(
+			channelsActions.joinChat({
+				clanId: '0',
+				channelId,
+				channelType: direct?.type ?? ChannelType.CHANNEL_TYPE_DM,
+				isPublic: false
+			})
+		);
 	}
 );
 
@@ -1049,6 +1098,8 @@ export const directReducer = directSlice.reducer;
 export const directActions = {
 	...directSlice.actions,
 	fetchDirectMessage,
+	joinDirectMessageSpace,
+	followReopenedDirectMessage,
 	fetchMoreDirectMessages,
 	updateDmGroup,
 	createNewDirectMessage,

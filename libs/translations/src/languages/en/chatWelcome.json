@@ -21,7 +21,9 @@
 		"ignore": "Ignore",
 		"friendRequestSentButton": "Friend Request Sent",
 		"block": "Block",
-		"unblock": "Unblock"
+		"unblock": "Unblock",
+		"welcomeToClan": "Welcome to the Clan",
+		"emptyChannel" : "You're in channel! Channels will appear here once you have access."
 	},
 	"toast": {
 		"userBlockedSuccess": "User blocked successfully",

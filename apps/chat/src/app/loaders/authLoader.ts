@@ -29,12 +29,11 @@ const connectNotification = async (dispatch: AppDispatch) => {
 export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
 	await dispatch(accountActions.getUserProfile());
 	dispatch(stickerSettingActions.fetchStickerByUserId({ clanId: '' }));
-	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(clansActions.fetchClans({}));
 	dispatch(clansActions.listClanBadgeCount());
 	dispatch(friendsActions.fetchListFriends({}));
-	dispatch(directActions.fetchDirectMessage({}));
+	dispatch(directActions.joinDirectMessageSpace({ restart: true }));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
 

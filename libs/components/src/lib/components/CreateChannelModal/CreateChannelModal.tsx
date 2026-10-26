@@ -4,7 +4,6 @@ import {
 	checkDuplicateChannelInCategoryApi,
 	createNewChannel,
 	fetchApplications,
-	selectChannelById,
 	selectCurrentCategory,
 	selectCurrentClanId,
 	selectCurrentClanWelcomeChannelId,
@@ -47,7 +46,6 @@ export const CreateNewChannelModal = () => {
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
-	const channelWelcome = useAppSelector((state) => selectChannelById(state, welcomeChannelId as string));
 
 	useEffect(() => {
 		if (isAppChannel) {
@@ -84,7 +82,7 @@ export const CreateNewChannelModal = () => {
 		}
 
 		try {
-			const categoryIdParams = currentCategory?.category_id || channelWelcome?.category_id;
+			const categoryIdParams = currentCategory?.category_id;
 			if (channelType !== ChannelType.CHANNEL_TYPE_APP && categoryIdParams) {
 				const isDuplicateRes = await dispatch(
 					checkDuplicateChannelInCategoryApi({
@@ -108,7 +106,7 @@ export const CreateNewChannelModal = () => {
 			type: channelType,
 			channel_label: channelName,
 			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL && channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE ? 0 : isPrivate,
-			category_id: currentCategory?.category_id || channelWelcome?.category_id,
+			category_id: currentCategory?.category_id,
 			...(isAppChannel && selectedApp && { app_id: selectedApp.id }),
 			parent_id: '0'
 		};
@@ -182,7 +180,7 @@ export const CreateNewChannelModal = () => {
 							<ChannelLableModal labelProp={t('header.title')} />
 							<span>
 								<p className="self-stretch text-sm font-bold leading-normal uppercase text-cyan-500">
-									{currentCategory?.category_name || channelWelcome?.category_name}
+									{currentCategory?.category_name}
 								</p>
 							</span>
 							<div className="absolute right-0 top-[-6px] sm:top-[-10px]">
@@ -232,7 +230,7 @@ export const CreateNewChannelModal = () => {
 							error={isErrorName}
 							placeholder={t('labels.placeholder')}
 							shouldValidate={true}
-							categoryId={currentCategory?.category_id || channelWelcome?.category_id}
+							categoryId={currentCategory?.category_id}
 							clanId={currentCategory?.clan_id as string}
 							onKeyDown={handleKeyDown}
 						/>

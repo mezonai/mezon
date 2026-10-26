@@ -103,7 +103,7 @@ function MentionTabContent({ message, onCloseTooltip }: IMentionTabContent) {
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg ">
 			{checkMessageHasReply && (
 				<div className="max-w-full overflow-hidden">
-					<MessageReply message={message} />
+					<MessageReply message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 				</div>
 			)}
 

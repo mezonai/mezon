@@ -6,13 +6,12 @@ import {
 	selectChannelById,
 	selectCurrentChannelId,
 	selectCurrentClanId,
-	selectDefaultChannelIdByClanId,
 	selectIsShowCreateThread,
-	selectWelcomeChannelByClanId,
 	threadsActions,
 	useAppDispatch
 } from '@mezon/store';
 import { checkIsThread } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import { useSelector } from 'react-redux';
 import { useAppNavigation } from '../../app/hooks/useAppNavigation';
 
@@ -35,17 +34,17 @@ export function useChannels() {
 			const isUserInChildThread = currentChannel && checkIsThread(currentChannel) && currentChannel.parent_id === channelId;
 
 			if (isUserInChildThread) {
-				const welcomeChannelId = selectWelcomeChannelByClanId(state, clanId);
-				const defaultChannelId = selectDefaultChannelIdByClanId(state, clanId);
-				const fallbackChannelId = channels.find((ch) => ch.id !== channelId && !checkIsThread(ch))?.id;
+				const fallbackChannelId = channels.find(
+					(ch) => ch.id !== channelId && !checkIsThread(ch) && ch.type === ChannelType.CHANNEL_TYPE_CHANNEL
+				)?.id;
 
-				const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
-
-				if (redirectChannelId) {
-					const channelPath = toChannelPage(redirectChannelId, clanId);
+				if (fallbackChannelId) {
+					const channelPath = toChannelPage(fallbackChannelId, clanId);
 					navigate(channelPath);
-					await new Promise((resolve) => setTimeout(resolve, 100));
+				} else {
+					navigate(`/chat/direct/friends`);
 				}
+				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 		}
 

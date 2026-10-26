@@ -109,7 +109,7 @@ export function loadMediaPipeScripts(): Promise<void> {
 
 export function getBackgroundFetchUrl(url: string): string {
 	if (typeof window !== 'undefined') {
-		const isDev = Boolean(import.meta.env?.DEV) || ['localhost', '127.0.0.1'].includes(window.location.hostname);
+		const isDev = process.env.NODE_ENV === 'development' || ['localhost', '127.0.0.1'].includes(window.location.hostname);
 		if (isDev && url.startsWith('https://cdn.komu.vn/')) {
 			return url.replace('https://cdn.komu.vn/', '/vtbg-cdn/');
 		}

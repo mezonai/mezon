@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Miniatura Streamu",
 	"videoError": "Nie można odtworzyć wideo. Proszę spróbować ponownie później.",
-	"everyoneWaiting": "Wszyscy czekają na Ciebie wewnątrz",
 	"noOneInStream": "Teraz nikt nie jest na streamie",
 	"joinStream": "Dołącz do streamu",
 	"noStreamToday": "Dziś nie ma streamu",
+	"everyoneWaiting": "Wszyscy czekają na Ciebie wewnątrz",
 	"hideMembers": "Ukryj członków",
 	"showMembers": "Pokaż członków",
-	"duplicateSessionDisconnected": "Rozłączono, ponieważ Twoje konto dołączyło do streamu lub kanału głosowego w innej sesji."
+	"viewerCount": "Oglądający: {{count}}",
+	"quality": "Jakość",
+	"qualityAuto": "Automatyczna",
+	"qualityHigh": "Wysoka",
+	"qualityMid": "Średnia",
+	"qualityLow": "Niska",
+	"fullscreen": "Pełny ekran",
+	"exitFullscreen": "Zamknij pełny ekran",
+	"live": "Na żywo",
+	"isLive": "{{name}} nadaje na żywo",
+	"volume": "Głośność",
+	"mute": "Wycisz",
+	"unmute": "Wyłącz wyciszenie"
 }

@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Мініяцюра стрыму",
 	"videoError": "Не атрымалася прайграць відэа. Паспрабуйце пазней.",
-	"everyoneWaiting": "Усе чакаюць вас унутры",
 	"noOneInStream": "Зараз у стрыме нікога няма",
 	"joinStream": "Далучыцца да стрыму",
 	"noStreamToday": "Сёння няма стрыму",
+	"everyoneWaiting": "Усе чакаюць вас унутры",
 	"hideMembers": "Схаваць удзельнікаў",
 	"showMembers": "Паказаць удзельнікаў",
-	"duplicateSessionDisconnected": "Адключана, бо ваш уліковы запіс далучыўся да стрыму або галасавога канала ў іншым сеансе."
+	"viewerCount": "Гледачоў: {{count}}",
+	"quality": "Якасць",
+	"qualityAuto": "Аўта",
+	"qualityHigh": "Высокая",
+	"qualityMid": "Сярэдняя",
+	"qualityLow": "Нізкая",
+	"fullscreen": "На ўвесь экран",
+	"exitFullscreen": "Выйсці з поўнаэкраннага рэжыму",
+	"live": "Наўпроставы эфір",
+	"isLive": "{{name}} вядзе трансляцыю",
+	"volume": "Гучнасць",
+	"mute": "Выключыць гук",
+	"unmute": "Уключыць гук"
 }

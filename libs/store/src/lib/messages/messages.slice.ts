@@ -247,7 +247,7 @@ export const fetchMessagesCached = async (
 ) => {
 	const state = getState();
 
-	let foundClan: boolean = clanId === '0' || selectClanExists(clanId)(state);
+	let foundClan: boolean = clanId === '0' || selectClanExists(state, clanId);
 	if (!foundClan) {
 		if (dispatch && clanId !== '0') {
 			const res = await dispatch(clansActions.fetchClans({ noCache: true })).unwrap();

@@ -1,8 +1,7 @@
 import { ModalSaveChanges } from '@mezon/components';
-import { editApplication, selectAppDetail, uploadAttachmentAdmin, useAppDispatch } from '@mezon/store';
+import { editApplication, selectAppDetail, uploadAppLogoAdmin, useAppDispatch } from '@mezon/store';
 import { uploadImageToMinIO } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { ETypesCDN } from '@mezon/utils';
 import type { ApiApp, MezonUpdateAppBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -26,36 +25,38 @@ const GeneralInformation = () => {
 	}, [appId, appDetail.applogo]);
 
 	const handleChooseFile = async (e: ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			const file = e.target.files[0];
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		try {
 			let filename = file.name;
 			const ms = Date.now();
 			filename = `${ms}_${filename}`;
 			filename = filename.replace(/[^a-zA-Z0-9.]/g, '_');
 
 			const result = await dispatch(
-				uploadAttachmentAdmin({
+				uploadAppLogoAdmin({
 					filename,
 					filetype: file.type,
 					size: file.size,
 					width: 0,
 					height: 0,
-					part_count: 1,
-					channel_id: ''
+					part_count: 1
 				})
 			).unwrap();
 
-			if (result.url) {
-				try {
-					const response = await uploadImageToMinIO(result.url, file, file.size);
-					if (response) {
-						const url = `${result.type_cdn === ETypesCDN.MEZON ? process.env.NX_MEZON_CDN_URL : process.env.NX_CLOUDFLARE_CDN_URL}/${result.filename}`;
-						setAppLogoUrl(url);
-					}
-				} catch (error) {
-					console.error(error);
-				}
+			if (!result.url || !result.filename) {
+				throw new Error('Upload URL or filename is missing.');
 			}
+
+			const response = await uploadImageToMinIO(result.url, file, file.size);
+			if (!response.ok) {
+				throw new Error(`Logo upload failed with status ${response.status}`);
+			}
+
+			setAppLogoUrl(`${process.env.NX_PROFILE_IMG_URL}/${result.filename}`);
+		} catch (error) {
+			console.error(error);
 		}
 	};
 

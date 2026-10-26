@@ -1,5 +1,6 @@
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
+import type { ScreenDrawMode } from '../MyVideoConference/ScreenAnnotation/useScreenDraw';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
 import { RecordingControl } from '../Recording/RecordingControl';
 import { SfuAgentControl } from './AgentControl';
@@ -13,6 +14,7 @@ import { PopoutControl } from './PopoutControl';
 import { PushToTalkControl } from './PushToTalkControl';
 import { PushToTalkHint } from './PushToTalkHint';
 import { SfuRaisingHandControl } from './RaisingHandControl';
+import { ScreenDrawControl } from './ScreenDrawControl';
 import { ScreenShareControl } from './ScreenShareControl';
 import { SfuVoiceInteractiveControl } from './SfuVoiceInteractiveControl';
 import { SoundReactionControl } from './SoundReactionControl';
@@ -37,6 +39,9 @@ interface SfuControlBarProps {
 	screenShareMode: ScreenShareMode;
 	changingScreenShareMode: boolean;
 	onScreenShareModeChange: (mode: ScreenShareMode) => void;
+	screenDrawMode?: ScreenDrawMode | null;
+	screenDrawActive?: boolean;
+	onScreenDrawToggle?: () => void;
 	isGridView: boolean;
 	showEmojiPanel: boolean;
 	showSoundPanel: boolean;
@@ -89,6 +94,9 @@ export const SfuControlBar = ({
 	screenShareMode,
 	changingScreenShareMode,
 	onScreenShareModeChange,
+	screenDrawMode,
+	screenDrawActive = false,
+	onScreenDrawToggle,
 	isGridView,
 	showEmojiPanel,
 	showSoundPanel,
@@ -240,6 +248,9 @@ export const SfuControlBar = ({
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>
 			<div className="flex justify-end pr-1 max-md:hidden">
+				{screenDrawMode && onScreenDrawToggle && (
+					<ScreenDrawControl mode={screenDrawMode} active={screenDrawActive} onToggle={onScreenDrawToggle} />
+				)}
 				{!isExternalCalling && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
 				<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 			</div>
