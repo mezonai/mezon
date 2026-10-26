@@ -19,6 +19,7 @@ import { generateMeetToken } from '../meet/meet.slice';
 import type { RootState } from '../store';
 import type { BreakoutInviteState, BreakoutRoomState, BreakoutRule, HostedBreakout } from './breakout';
 import {
+	API_FAILED_PRECONDITION,
 	API_INVALID_ARGUMENT,
 	API_NOT_FOUND,
 	breakoutInviteRoomId,
@@ -393,76 +394,80 @@ export type OpenBreakoutRoomsPayload = {
 	inviteeIds: string[];
 };
 
-export type OpenBreakoutRoomsResult = {
-	hosted: HostedBreakout;
-	openedCount: number;
+export type OpenBreakoutRoomsResult =
+	| {
+			outcome: 'opened';
+			hosted: HostedBreakout;
+			openedCount: number;
+	  }
+	| { outcome: 'failed'; code?: number };
+
+export const openBreakoutRooms = createAsyncThunk<OpenBreakoutRoomsResult, OpenBreakoutRoomsPayload>(
+	'voice/openBreakoutRooms',
+	async ({ clanId, parentChannelId, roomCount, rule, listParticipants, inviteeIds }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const ownerUserId = selectCurrentUserId(state);
+			if (!ownerUserId) {
+				return { outcome: 'failed' };
+			}
+			const response = await callSfuBreakoutRoom(mezon.client, {
+				parent_channel_id: parentChannelId,
+				room_count: roomCount,
+				break_rule_type: rule,
+				list_participants: listParticipants
+			});
+			const roomIds = (response.list_child_rooms ?? []).filter((id) => Boolean(id) && id !== '0');
+			if (!response.breakout_id || response.breakout_id === '0' || roomIds.length === 0) {
+				return { outcome: 'failed' };
+			}
+			const hosted = createOpenedHostedBreakout({
+				breakoutId: response.breakout_id,
+				parentChannelId,
+				clanId,
+				roomIds,
+				ownerUserId,
+				invitees: inviteeIds,
+				openedAtUnixSecs: Math.floor(Date.now() / 1000)
+			});
+			return {
+				outcome: 'opened',
+				hosted,
+				openedCount: roomIds.length
+			};
+		} catch (error) {
+			const code = extractGrpcErrorCode(error);
+			if (code !== API_FAILED_PRECONDITION) {
+				captureSentryError(error, 'voice/openBreakoutRooms');
+			}
+			return { outcome: 'failed', code };
+		}
+	}
+);
+
+export type CloseBreakoutRoomsResult = {
+	parentChannelId: string;
+	breakoutId: string;
+	outcome: 'closed' | 'failed';
 };
 
-export const openBreakoutRooms = createAsyncThunk<
-	OpenBreakoutRoomsResult,
-	OpenBreakoutRoomsPayload,
-	{ rejectValue: { code?: number; message?: string } }
->('voice/openBreakoutRooms', async ({ clanId, parentChannelId, roomCount, rule, listParticipants, inviteeIds }, thunkAPI) => {
-	try {
-		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-		const state = thunkAPI.getState() as RootState;
-		const ownerUserId = selectCurrentUserId(state);
-		if (!ownerUserId) {
-			return thunkAPI.rejectWithValue({ message: 'Not authenticated' });
+export const closeBreakoutRooms = createAsyncThunk<CloseBreakoutRoomsResult, { parentChannelId: string; breakoutId: string }>(
+	'voice/closeBreakoutRooms',
+	async ({ parentChannelId, breakoutId }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			await callSfuBreakoutMerge(mezon.client, { target_id: breakoutId });
+			return { parentChannelId, breakoutId, outcome: 'closed' };
+		} catch (error) {
+			if (extractGrpcErrorCode(error) === API_NOT_FOUND) {
+				return { parentChannelId, breakoutId, outcome: 'closed' };
+			}
+			captureSentryError(error, 'voice/closeBreakoutRooms');
+			return { parentChannelId, breakoutId, outcome: 'failed' };
 		}
-		const response = await callSfuBreakoutRoom(mezon.client, {
-			parent_channel_id: parentChannelId,
-			room_count: roomCount,
-			break_rule_type: rule,
-			list_participants: listParticipants
-		});
-		const roomIds = (response.list_child_rooms ?? []).filter((id) => Boolean(id) && id !== '0');
-		if (!response.breakout_id || response.breakout_id === '0' || roomIds.length === 0) {
-			return thunkAPI.rejectWithValue({ message: 'Empty breakout room list' });
-		}
-		const hosted = createOpenedHostedBreakout({
-			breakoutId: response.breakout_id,
-			parentChannelId,
-			clanId,
-			roomIds,
-			ownerUserId,
-			invitees: inviteeIds,
-			openedAtUnixSecs: Math.floor(Date.now() / 1000)
-		});
-		return {
-			hosted,
-			openedCount: roomIds.length
-		};
-	} catch (error) {
-		captureSentryError(error, 'voice/openBreakoutRooms');
-		return thunkAPI.rejectWithValue({
-			code: extractGrpcErrorCode(error),
-			message: error instanceof Error ? error.message : undefined
-		});
 	}
-});
-
-export const closeBreakoutRooms = createAsyncThunk<
-	{ parentChannelId: string; breakoutId: string },
-	{ parentChannelId: string; breakoutId: string },
-	{ rejectValue: { code?: number; message?: string } }
->('voice/closeBreakoutRooms', async ({ parentChannelId, breakoutId }, thunkAPI) => {
-	try {
-		const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
-		await callSfuBreakoutMerge(mezon.client, { target_id: breakoutId });
-		return { parentChannelId, breakoutId };
-	} catch (error) {
-		const code = extractGrpcErrorCode(error);
-		if (code === API_NOT_FOUND) {
-			return { parentChannelId, breakoutId };
-		}
-		captureSentryError(error, 'voice/closeBreakoutRooms');
-		return thunkAPI.rejectWithValue({
-			code,
-			message: error instanceof Error ? error.message : undefined
-		});
-	}
-});
+);
 
 export type AutoCloseHostedBreakoutResult = {
 	parentChannelId: string;
@@ -1114,6 +1119,9 @@ export const voiceSlice = createSlice({
 			})
 			.addCase(openBreakoutRooms.fulfilled, (state: VoiceState, action: PayloadAction<OpenBreakoutRoomsResult>) => {
 				state.breakoutPending = false;
+				if (action.payload.outcome !== 'opened') {
+					return;
+				}
 				const { hosted } = action.payload;
 				if (state.hostedBreakoutsOwnerId !== hosted.ownerUserId) {
 					const existing = loadHostedBreakouts(hosted.ownerUserId);
@@ -1131,9 +1139,12 @@ export const voiceSlice = createSlice({
 			.addCase(closeBreakoutRooms.pending, (state: VoiceState) => {
 				state.breakoutPending = true;
 			})
-			.addCase(closeBreakoutRooms.fulfilled, (state: VoiceState, action: PayloadAction<{ parentChannelId: string; breakoutId: string }>) => {
+			.addCase(closeBreakoutRooms.fulfilled, (state: VoiceState, action: PayloadAction<CloseBreakoutRoomsResult>) => {
 				state.breakoutPending = false;
-				const { parentChannelId, breakoutId } = action.payload;
+				const { parentChannelId, breakoutId, outcome } = action.payload;
+				if (outcome !== 'closed') {
+					return;
+				}
 				const current = state.hostedBreakouts[parentChannelId];
 				if (current && current.breakoutId === breakoutId) {
 					delete state.hostedBreakouts[parentChannelId];
