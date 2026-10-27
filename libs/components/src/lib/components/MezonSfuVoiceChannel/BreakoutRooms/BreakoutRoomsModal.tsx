@@ -332,11 +332,12 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 				inviteeIds
 			})
 		);
-		if (voiceActions.openBreakoutRooms.fulfilled.match(action)) {
+		const result = voiceActions.openBreakoutRooms.fulfilled.match(action) ? action.payload : undefined;
+		if (result?.outcome === 'opened') {
 			dispatch(toastActions.addToast({ message: t('channelVoice:breakout.opened'), type: 'success', autoClose: 3000 }));
 			onClose();
 		} else {
-			const errCode = action.payload?.code;
+			const errCode = result?.outcome === 'failed' ? result.code : undefined;
 			const message = errCode === API_FAILED_PRECONDITION ? t('channelVoice:breakout.notEnoughRooms') : t('channelVoice:breakout.failed');
 			dispatch(toastActions.addToast({ message, type: 'error', autoClose: 4000 }));
 		}
@@ -352,7 +353,7 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 				breakoutId: hostedBreakout.breakoutId
 			})
 		).then((action) => {
-			if (voiceActions.closeBreakoutRooms.fulfilled.match(action)) {
+			if (voiceActions.closeBreakoutRooms.fulfilled.match(action) && action.payload.outcome === 'closed') {
 				dispatch(toastActions.addToast({ message: t('channelVoice:breakout.closed'), type: 'info', autoClose: 3000 }));
 			} else {
 				dispatch(toastActions.addToast({ message: t('channelVoice:breakout.failed'), type: 'error', autoClose: 4000 }));
@@ -892,7 +893,9 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 
 								{!createAllowed && (
 									<div className="text-xs text-[#f23f43]">
-										{`${t('channelVoice:breakout.notEnoughRooms')} (${idleChannels.length})`}
+										{idleChannels.length === 0
+											? t('channelVoice:breakout.noIdleChannels')
+											: t('channelVoice:breakout.notEnoughIdleChannels', { count: idleChannels.length })}
 									</div>
 								)}
 

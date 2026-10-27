@@ -559,6 +559,9 @@ export function placeUnassignedParticipants(
 }
 
 export function rebindRoomsToIdlePrefix(rooms: readonly DraftBreakoutRoom[], idleChannels: readonly IdleVoiceChannelItem[]): DraftBreakoutRoom[] {
+	if (idleChannels.length < rooms.length) {
+		return rooms.map((room) => ({ ...room, userIds: [...room.userIds] }));
+	}
 	return rooms.map((room, idx) => {
 		const idle = idleChannels[idx];
 		if (!idle) {
