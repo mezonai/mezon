@@ -147,6 +147,7 @@ const PublicSendMessagePermission = ({
 				setStatus('ready');
 			})
 			.catch(() => {
+				loadRef.current = null;
 				if (active) setStatus('error');
 			});
 		return () => {
@@ -237,7 +238,29 @@ const PublicSendMessagePermission = ({
 
 	const handlePreparePrivate = useCallback(async () => {
 		const generation = generationRef.current;
-		const current = persisted ?? (await (loadRef.current ?? dispatch(fetchOverrideEveryoneChannel({ clanId, channelId })).unwrap()));
+		const loadOverride = async () => {
+			const request = dispatch(fetchOverrideEveryoneChannel({ clanId, channelId })).unwrap();
+			loadRef.current = request;
+			try {
+				return await request;
+			} catch (error) {
+				loadRef.current = null;
+				throw error;
+			}
+		};
+		let current = persisted;
+		if (!current) {
+			if (loadRef.current) {
+				try {
+					current = await loadRef.current;
+				} catch {
+					loadRef.current = null;
+					current = await loadOverride();
+				}
+			} else {
+				current = await loadOverride();
+			}
+		}
 		if (current.override !== true) return;
 		await dispatch(setOverrideEveryoneChannel({ clanId, channelId, override: false })).unwrap();
 		if (generationRef.current === generation) {
@@ -273,10 +296,12 @@ const PublicSendMessagePermission = ({
 		};
 	}, [handleSave, handleReset, saveTriggerRef, resetTriggerRef]);
 
-	const applySelection = (selectedKind: EveryoneExcludeKind, ids: string[], pickedProfiles: Record<string, AddedChannelUserProfile>) => {
-		setKind(selectedKind);
-		if (selectedKind === 'users') setUserIds(cleanIds(ids));
-		else setRoleIds(cleanIds(ids));
+	const applySelection = (nextUserIds: string[], nextRoleIds: string[], pickedProfiles: Record<string, AddedChannelUserProfile>) => {
+		const users = cleanIds(nextUserIds);
+		const roles = cleanIds(nextRoleIds);
+		setUserIds(users);
+		setRoleIds(roles);
+		setKind(kindOf(users, roles));
 		setStagedProfiles((previous) => ({ ...previous, ...pickedProfiles }));
 		setShowModal(false);
 		setSaveError(null);

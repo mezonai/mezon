@@ -51,6 +51,7 @@ import { selectCurrentDM, selectDirectMessageEntities } from '../direct/direct.s
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, isMezonClientSocketOpen, withRetry } from '../helpers';
+import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
 import { toastActions } from '../toasts/toasts.slice';
@@ -1254,11 +1255,10 @@ export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (pay
 const isMessagePermissionDenied = (error: unknown): boolean => {
 	const outer = typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : {};
 	const inner = typeof outer.error === 'object' && outer.error !== null ? (outer.error as Record<string, unknown>) : {};
-	if ([7, 403].includes(Number(outer.code)) || Number(outer.status) === 403 || Number(inner.code) === 403) return true;
-	return [error, outer.message, outer.error, inner.message].some(
-		(value) =>
-			typeof value === 'string' &&
-			/permission denied|no permission|permission.*(?:send|message)|(?:not allowed|not permitted|cannot).*send|no[-_ ]send/i.test(value)
+	const messages = [error, outer.message, outer.error, inner.message].filter((value): value is string => typeof value === 'string');
+	if (messages.some((message) => /must join channel before sending/i.test(message))) return false;
+	return messages.some((message) =>
+		/permission denied|no permission|permission.*(?:send|message)|(?:not allowed|not permitted|cannot).*send|no[-_ ]send/i.test(message)
 	);
 };
 
@@ -1674,6 +1674,15 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						autoClose: 3000
 					})
 				);
+				if (clanId && storeChannelId) {
+					thunkAPI.dispatch(
+						overriddenPoliciesActions.fetchMaxChannelPermission({
+							clanId,
+							channelId: storeChannelId,
+							noCache: true
+						})
+					);
+				}
 			} else {
 				thunkAPI.dispatch(
 					messagesActions.markAsError({

@@ -19,7 +19,7 @@ type Props = {
 	roleIds: string[];
 	profiles: Record<string, AddedChannelUserProfile>;
 	onCancel: () => void;
-	onDone: (kind: EveryoneExcludeKind, ids: string[], profiles: Record<string, AddedChannelUserProfile>) => void;
+	onDone: (userIds: string[], roleIds: string[], profiles: Record<string, AddedChannelUserProfile>) => void;
 };
 
 const EveryoneExclusionsModal = ({ clanId, channelName, kind: initialKind, userIds, roleIds, profiles, onCancel, onDone }: Props) => {
@@ -78,8 +78,8 @@ const EveryoneExclusionsModal = ({ clanId, channelName, kind: initialKind, userI
 		}));
 	};
 	const submit = () => {
-		const picked = { ...profiles, ...remote.profilesOf(kind === 'users' ? selected : []) };
-		onDone(kind, selected, picked);
+		const picked = { ...profiles, ...remote.profilesOf(selections.users) };
+		onDone(selections.users, selections.roles, picked);
 	};
 	const trapFocus = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.key !== 'Tab') return;
