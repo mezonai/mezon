@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { appendCdnSignature, getCdnSignatureChannelId, parseSignedCdnMediaSrc } from '@mezon/utils';
+import { appendCdnSignature, getCdnFallbackUrl, getCdnSignatureChannelId, markCdnPrimaryFailed, parseSignedCdnMediaSrc } from '@mezon/utils';
 import { useEffect, useMemo } from 'react';
 import { shallowEqual } from 'react-redux';
 
@@ -100,4 +100,21 @@ export function useCdnSignatureRefreshOnMediaError() {
 		document.addEventListener('error', onError, true);
 		return () => document.removeEventListener('error', onError, true);
 	}, [dispatch]);
+}
+
+export function useCdnFallbackOnMediaError() {
+	useEffect(() => {
+		const onError = (event: Event) => {
+			const target = event.target;
+			if (!(target instanceof HTMLImageElement)) return;
+			const src = target.currentSrc || target.src;
+			const fallback = getCdnFallbackUrl(src);
+			if (!fallback) return;
+			markCdnPrimaryFailed(src);
+			target.src = fallback;
+		};
+
+		document.addEventListener('error', onError, true);
+		return () => document.removeEventListener('error', onError, true);
+	}, []);
 }

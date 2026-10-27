@@ -5,6 +5,7 @@ import {
 	channelAppActions,
 	generateMeetToken,
 	getStore,
+	selectBreakoutRoom,
 	selectChannelById,
 	selectCurrentChannelClanId,
 	selectCurrentChannelId,
@@ -51,8 +52,12 @@ const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapp
 	const channelClanId = useSelector(selectCurrentChannelClanId);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
+	const breakoutRoom = useSelector(selectBreakoutRoom);
 
-	const isCurrentChannel = isJoined && voiceInfo?.channelId === channelId;
+	const isCurrentChannel =
+		isJoined &&
+		(voiceInfo?.channelId === channelId ||
+			(Boolean(breakoutRoom) && voiceInfo?.channelId === breakoutRoom?.roomId && breakoutRoom?.parentChannelId === channelId));
 
 	return (
 		<SfuPreJoinVoiceChannel
@@ -136,9 +141,13 @@ const VoiceConferenceContainer = memo(({ containerRef, isOpenPopOut, rejoinTarge
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
 	const currentChannelId = useSelector(selectCurrentChannelId);
+	const breakoutRoom = useSelector(selectBreakoutRoom);
 
 	const displayedVoiceInfo = rejoinTarget ?? voiceInfo;
-	const isShow = (isJoined || !!rejoinTarget) && displayedVoiceInfo?.channelId === currentChannelId;
+	const isShow =
+		(isJoined || !!rejoinTarget) &&
+		(displayedVoiceInfo?.channelId === currentChannelId ||
+			(Boolean(breakoutRoom) && displayedVoiceInfo?.channelId === breakoutRoom?.roomId && breakoutRoom?.parentChannelId === currentChannelId));
 
 	return (
 		<div
@@ -195,7 +204,7 @@ const MezonSfuChannelVoiceInner = () => {
 		setJoinRole(role);
 		if (target) {
 			flushSync(() => {
-				dispatch(voiceActions.resetVoiceControl());
+				dispatch(voiceActions.resetVoiceControl({ keepBreakout: true }));
 				dispatch(channelAppActions.clearAppInteractiveData());
 			});
 		} else if (token) {

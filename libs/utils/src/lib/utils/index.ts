@@ -271,12 +271,35 @@ export const setEmojiSourceResolver = (resolver: (id: string) => string | undefi
 	resolveEmojiSource = resolver;
 };
 
+const cdnFallbackByUrl = new Map<string, string>();
+const failedPrimaryUrls = new Set<string>();
+
+export const getCdnFallbackUrl = (url: string) => cdnFallbackByUrl.get(url);
+
+export const markCdnPrimaryFailed = (url: string) => {
+	failedPrimaryUrls.add(url);
+};
+
+const idAddressedMediaUrl = (folder: 'emojis' | 'stickers', id: string, wrap: (source: string) => string) => {
+	const primary = wrap(`${process.env.NX_MEZON_CDN_URL}/${folder}/${id}.webp`);
+	const fallback = wrap(`${process.env.NX_CLOUDFLARE_CDN_URL}/${folder}/${id}.webp`);
+	if (failedPrimaryUrls.has(primary)) {
+		return fallback;
+	}
+	cdnFallbackByUrl.set(primary, fallback);
+	return primary;
+};
+
 export const getSrcEmoji = (id: string, src?: string) => {
 	if (!id) return '';
 	const known = src || resolveEmojiSource(id) || '';
-	const source = isMezonMediaUrl(known) ? known : `${process.env.NX_CLOUDFLARE_CDN_URL}/emojis/${id}.webp`;
-	return createImgproxyUrl(source, { width: 100, height: 100, resizeType: 'fit' });
+	if (isMezonMediaUrl(known)) {
+		return createImgproxyUrl(known, { width: 100, height: 100, resizeType: 'fit' });
+	}
+	return idAddressedMediaUrl('emojis', id, (source) => createImgproxyUrl(source, { width: 100, height: 100, resizeType: 'fit' }));
 };
+
+export const getSrcSticker = (id: string, wrap: (source: string) => string = (source) => source) => idAddressedMediaUrl('stickers', id, wrap);
 
 export const getSrcSound = (id: string) => {
 	return `${process.env.NX_CLOUDFLARE_CDN_URL}/sounds/${id}.mp3`;

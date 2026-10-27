@@ -248,6 +248,7 @@ export const VoiceArowUpIcon = createLazyIconWithFallback(() => import('./icons'
 export const VoiceArowDownIcon = createLazyIconWithFallback(() => import('./icons'), 'VoiceArowDownIcon');
 export const VoiceGridIcon = createLazyIconWithFallback(() => import('./icons'), 'VoiceGridIcon');
 export const VoiceFocusIcon = createLazyIconWithFallback(() => import('./icons'), 'VoiceFocusIcon');
+export const VoiceBreakoutIcon = createLazyIconWithFallback(() => import('./icons'), 'VoiceBreakoutIcon');
 export const RotateIcon = createLazyIconWithFallback(() => import('./icons'), 'RotateIcon');
 export const SvgQualityExcellentIcon = createLazyIconWithFallback(() => import('./icons'), 'SvgQualityExcellentIcon');
 export const SvgQualityGoodIcon = createLazyIconWithFallback(() => import('./icons'), 'SvgQualityGoodIcon');
