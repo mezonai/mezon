@@ -1,3 +1,4 @@
+import { grpcCodeFromEnvelopeStatus } from '@mezon/transport';
 import { LIMIT_CLAN_ITEM, trackError } from '@mezon/utils';
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
@@ -182,7 +183,9 @@ errorListenerMiddleware.startListening({
 				return;
 			}
 
-			const code = error.action?.payload?.code;
+			const code =
+				error.action?.payload?.code ||
+				(error.action?.payload?.error?.status ? grpcCodeFromEnvelopeStatus(error.action?.payload?.error?.status) : undefined);
 			listenerApi.dispatch(
 				toastActions.addToastError({
 					message: toast.message as string,

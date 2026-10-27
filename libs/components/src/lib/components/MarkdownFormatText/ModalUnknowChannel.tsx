@@ -2,7 +2,7 @@ import { FRIEND_PAGE_LINK, toMembersPage, useAppNavigation } from '@mezon/core';
 
 import { selectAllChannels, selectCurrentClan, toastActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId } from '@mezon/utils';
+import { E_ERROR_CHANNEL, generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -102,7 +102,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 									{code ? errors(`error_${code}`) : String(errMessage)?.trim() || t('modalUnknowChannel.defaultError')}
 								</h3>
 								<p className="text-theme-primary text-sm leading-relaxed">
-									{errorConfig.type === 'permission'
+									{errorConfig.type === 'permission' || code === E_ERROR_CHANNEL.PERMISSION_DENIED
 										? t('modalUnknowChannel.permissionError')
 										: t('modalUnknowChannel.genericError')}
 								</p>
