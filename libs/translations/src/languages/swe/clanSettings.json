@@ -58,7 +58,8 @@
 		"setupTips": "Skicka användbara tips för server-ställning.",
 		"auditLog": "Skicka logg när en åtgärd tillämpas på clan",
 		"anoTitle": "Anonym-läge",
-		"anoDesc": "Hinder användare från att använda anonym-läge"
+		"anoDesc": "Hinder användare från att använda anonym-läge",
+		"privateWelcome": "Välkomstkanalen har ställts in som en privat kanal."
 	},
 	"appDirectory": {
 		"categories": {
