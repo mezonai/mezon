@@ -1983,17 +1983,26 @@ export class MezonGrammarClient {
 		let current = text;
 
 		// A. Spacing around punctuation
+		const links: string[] = [];
+
 		const puncCleaned = current
+			.replace(/https?:\/\/[^\s)]+|www\.[^\s)]+/gi, (link) => {
+				links.push(link);
+				return `LINKPLACEHOLDER${links.length - 1}END`;
+			})
 			.replace(/\s+([,.\?!:;\]\)\}])/g, '$1')
-			.replace(/([,.\?!:;])([^\s0-9,.\?!:;\"\'\]\)\}])/g, '$1 $2')
-			.replace(/[ \t]+/g, ' ');
+			.replace(/([,.\?!:;])([^\s0-9,.\?!:;"'\]\)\}])/g, '$1 $2')
+			.replace(/[ \t]+/g, ' ')
+			.replace(/LINKPLACEHOLDER(\d+)END/g, (_, index) => links[Number(index)]);
 		if (puncCleaned !== current) {
 			edits.push({ original: current, replacement: puncCleaned, reason: 'Chuẩn hóa khoảng trắng dấu câu' });
 			current = puncCleaned;
 		}
 
 		if (isPredominantlyEnglishSentence(text)) {
-			current = current.replace(/(^|[.?!]\s+)(\p{L})/gu, (m, prefix, char) => prefix + char.toUpperCase());
+			current = current.replace(/https?:\/\/[^\s)]+|www\.[^\s)]+|(^|[.?!]\s+)(\p{L})/giu, (m, prefix, char) =>
+				/^https?:\/\/|^www\./i.test(m) ? m : prefix + char.toUpperCase()
+			);
 			return {
 				original: text,
 				corrected: current.trim(),
@@ -2062,8 +2071,9 @@ export class MezonGrammarClient {
 		});
 
 		// E. Capitalization
-		current = current.replace(/(^|[.?!]\s+)(\p{L})/gu, (m, prefix, char) => prefix + char.toUpperCase());
-
+		current = current.replace(/https?:\/\/[^\s)]+|www\.[^\s)]+|(^|[.?!]\s+)(\p{L})/giu, (m, prefix, char) =>
+			/^https?:\/\/|^www\./i.test(m) ? m : prefix + char.toUpperCase()
+		);
 		return {
 			original: text,
 			corrected: current.trim(),

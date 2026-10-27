@@ -11,7 +11,7 @@ import * as ort from 'onnxruntime-web';
 import { useEffect, useRef, useState } from 'react';
 import { MezonGrammarClient } from './mezon_grammar.js';
 
-ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/';
+ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.proxy = false;
 
@@ -138,10 +138,15 @@ const Spelling = ({
 						setQuickReplies(quickReplies && quickReplies?.length ? quickReplies : []);
 						if (correction && isSpelling) {
 							if (typeof text !== 'string' || !text.trim() || text.length > 256) {
+								setCorrected('');
 								setPendingCorrection('');
 								return;
 							}
 							setPendingCorrection(correction?.trim() !== valueTextInput?.trim() ? correction : '');
+						} else if (!correction) {
+							setCorrected('');
+							setPendingCorrection('');
+							return;
 						}
 					}
 				} catch (error) {
