@@ -4,8 +4,6 @@ export interface RecordingDrawItem {
 	imageHeight: number;
 	avatar: CanvasImageSource | null;
 	label: string;
-	initial: string;
-	accent: string;
 	focused: boolean;
 	contain: boolean;
 	speaking: boolean;
@@ -22,7 +20,6 @@ export function renderRecordingFrame(ctx: CanvasRenderingContext2D, width: numbe
 	const GAP = 8;
 	const RADIUS = 8;
 	const AVATAR_SIZE = 80;
-	const AVATAR_FONT = 36;
 	const NAME_FONT = 16;
 	const META_INSET = 4;
 	const META_PAD = 5;
@@ -193,15 +190,10 @@ export function renderRecordingFrame(ctx: CanvasRenderingContext2D, width: numbe
 				ctx.drawImage(item.avatar, cx - size / 2, cy - size / 2, size, size);
 				ctx.restore();
 			} else {
-				ctx.fillStyle = item.accent;
+				ctx.fillStyle = '#5C5E66';
 				ctx.beginPath();
 				ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
 				ctx.fill();
-				ctx.fillStyle = '#ffffff';
-				ctx.font = `600 ${AVATAR_FONT}px ${FONT_STACK}`;
-				ctx.textAlign = 'center';
-				ctx.textBaseline = 'middle';
-				ctx.fillText(item.initial, cx, cy + 1);
 			}
 		}
 
@@ -244,10 +236,4 @@ export function renderRecordingFrame(ctx: CanvasRenderingContext2D, width: numbe
 			ctx.restore();
 		}
 	}
-}
-
-export function accentColorFor(initial: string): string {
-	const palette = ['#ade603', '#00b2cc', '#fda63c', '#e16dcc', '#e8467b', '#9c7cfd', '#22e2b3'];
-	const char = (initial || '').charAt(0).toUpperCase();
-	return palette[char ? char.charCodeAt(0) % 7 : 0];
 }

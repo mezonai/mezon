@@ -14,7 +14,11 @@ const Avatar = ({ src, alt, placeholder, isUser }: AvatarProps) => {
 
 	if (!isUser && !src) {
 		return (
-			<div className={`${className} flex justify-center items-center text-contentSecondary text-[50px]`}>{alt?.charAt(0).toUpperCase()}</div>
+			<div
+				className={`${className} flex justify-center items-center text-theme-primary text-[50px] bg-item-theme hover:[background:var(--bg-item-hover)]`}
+			>
+				{alt?.charAt(0).toUpperCase()}
+			</div>
 		);
 	}
 

@@ -104,7 +104,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 				emoji.clan_logo !== '' ? (
 					<img src={emoji.clan_logo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
 				) : (
-					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
+					<div className="max-w-7 max-h-7 w-full rounded-full aspect-square flex items-center justify-center text-theme-primary bg-item-theme hover:[background:var(--bg-item-hover)]">
+						{emoji.clan_name?.charAt(0).toUpperCase()}
+					</div>
 				)
 			),
 			<Icons.Smile className="w-7 h-7" />,

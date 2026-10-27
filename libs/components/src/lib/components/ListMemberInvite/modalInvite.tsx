@@ -827,7 +827,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 								className="w-8 h-8 rounded-full border-2 border-indigo-500/40 object-cover"
 							/>
 						) : (
-							<div className="w-8 h-8 rounded-full border-2 border-indigo-500/40 bg-indigo-600 flex items-center justify-center font-bold text-white text-xs select-none">
+							<div className="w-8 h-8 rounded-full border-2 border-indigo-500/40 bg-item-theme hover:[background:var(--bg-item-hover)] flex items-center justify-center font-bold text-theme-primary text-xs select-none">
 								{clanInitial}
 							</div>
 						)}
@@ -905,7 +905,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 										alt={currentClanName}
 									/>
 								) : (
-									<div className="w-full h-full rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-xs select-none">
+									<div className="w-full h-full rounded-lg bg-item-theme hover:[background:var(--bg-item-hover)] flex items-center justify-center font-bold text-theme-primary text-xs select-none">
 										{clanInitial}
 									</div>
 								)}

@@ -15,7 +15,6 @@ import { generateE2eId } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AvatarColor } from '../../AvatarImage/AvatarImage';
 import ModalUploadSound from './ModalUploadSound';
 interface ExtendedClanSticker extends ClanSticker {
 	media_type?: MediaType;
@@ -180,7 +179,6 @@ const SettingSoundEffect = () => {
 
 const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 	const creator = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
-	const avatarDefault = creator?.clan_nick || creator?.user?.display_name || creator?.user?.username || '';
 	const avatarUrl = creator?.clan_avatar || creator?.user?.avatar_url;
 	if (!creator) return null;
 	return (
@@ -192,7 +190,9 @@ const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 					alt="User avatar"
 				/>
 			) : (
-				<AvatarColor username={avatarDefault || ''} className={`size-4`} />
+				<div className="size-4 rounded-full bg-bgDisable flex items-center justify-center">
+					<Icons.AvatarUser className="w-2.5 h-2.5" />
+				</div>
 			)}
 
 			<p className="text-xs text-theme-primary max-w-20 truncate" data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.created_by')}>

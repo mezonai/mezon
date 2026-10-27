@@ -16,7 +16,6 @@ import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { AvatarColor } from '../../../AvatarImage/AvatarImage';
 import { renderDescriptionWithLinks } from '../eventHelper';
 import { timeFomat } from '../timeFomatEvent';
 
@@ -155,7 +154,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				{currentClanLogo ? (
 					<img src={currentClanLogo} alt={currentClanName} className="size-5 rounded-full" />
 				) : (
-					<div className="size-5 bg-bgAvatarDark rounded-full flex justify-center items-center text-bgAvatarLight text-lg font-bold">
+					<div className="size-5 rounded-full flex justify-center items-center text-theme-primary text-lg font-bold bg-item-theme hover:[background:var(--bg-item-hover)]">
 						{avatarClan}
 					</div>
 				)}
@@ -243,7 +242,9 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				{avatarDefault ? (
 					<img src={createImgproxyUrl(avatarDefault)} alt={userName} className="size-5 rounded-full object-cover" />
 				) : (
-					<AvatarColor username={userName || ''} className="size-5" />
+					<div className="size-5 rounded-full bg-bgDisable flex items-center justify-center">
+						<Icons.AvatarUser className="w-3 h-3" />
+					</div>
 				)}
 				<p>{t('eventDetail.createdBy', { username: userName })}</p>
 			</div>
@@ -285,7 +286,9 @@ const InterestedDetail = ({ userIds }: InterestedDetailProps) => {
 							{avatarUrl ? (
 								<img src={createImgproxyUrl(avatarUrl)} alt={name} className="size-7 rounded-full object-cover" />
 							) : (
-								<AvatarColor username={name || ''} className="size-7" />
+								<div className="size-7 rounded-full bg-bgDisable flex items-center justify-center">
+									<Icons.AvatarUser className="w-4 h-4" />
+								</div>
 							)}
 							<p
 								className="text-theme-primary"

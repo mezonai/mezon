@@ -10,7 +10,6 @@ import {
 } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAvatarColor } from '../AvatarImage/AvatarImage';
 import SidebarClanItem from '../ModalListClans';
 
 const FolderIcon = ({ className }: { className?: string }) => (
@@ -229,9 +228,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 								draggable="false"
 							/>
 						) : (
-							<div
-								className={`w-full h-full ${getAvatarColor(displayClans[0].clan_name)} rounded-lg flex justify-center items-center text-white text-[20px]`}
-							>
+							<div className="w-full h-full rounded-lg flex justify-center items-center text-theme-primary text-[20px] bg-item-theme hover:[background:var(--bg-item-hover)]">
 								{(displayClans[0].clan_name || '').trim().charAt(0).toUpperCase()}
 							</div>
 						)}
@@ -250,9 +247,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 												draggable="false"
 											/>
 										) : (
-											<div
-												className={`w-full h-full ${getAvatarColor(clan.clan_name)} flex justify-center items-center text-white text-[10px]`}
-											>
+											<div className="w-full h-full flex justify-center items-center text-theme-primary text-[10px] bg-item-theme hover:[background:var(--bg-item-hover)]">
 												{(clan.clan_name || '').trim().charAt(0).toUpperCase()}
 											</div>
 										)}
@@ -274,9 +269,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 												draggable="false"
 											/>
 										) : (
-											<div
-												className={`w-full h-full ${getAvatarColor(clan.clan_name)} flex justify-center items-center text-white text-[8px]`}
-											>
+											<div className="w-full h-full flex justify-center items-center text-theme-primary text-[8px] bg-item-theme hover:[background:var(--bg-item-hover)]">
 												{(clan.clan_name || '').trim().charAt(0).toUpperCase()}
 											</div>
 										)}

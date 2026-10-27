@@ -60,7 +60,7 @@ const NotificationClanHeader = ({ isUnreadTab, clan_id, notification, onDeleteNo
 				) : (
 					<div>
 						{clan?.clan_name && (
-							<div className="w-[45px] h-[45px] bg-bgDisable flex justify-center items-center text-contentSecondary text-[20px] rounded-xl">
+							<div className="w-[45px] h-[45px] bg-item-theme hover:[background:var(--bg-item-hover)] flex justify-center items-center text-theme-primary text-[20px] rounded-xl">
 								{clan?.clan_name.charAt(0).toUpperCase()}
 							</div>
 						)}

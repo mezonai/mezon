@@ -29,8 +29,6 @@ export interface WorkerSceneTile {
 	videoKey: string | null;
 	avatarKey: string | null;
 	label: string;
-	initial: string;
-	accent: string;
 	focused: boolean;
 	contain: boolean;
 	speaking: boolean;

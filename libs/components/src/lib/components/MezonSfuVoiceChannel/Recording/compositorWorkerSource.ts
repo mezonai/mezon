@@ -92,8 +92,6 @@ export function compositorWorkerMain(helpers: { render: (...args: any[]) => void
 				imageHeight: source ? source.height : 0,
 				avatar: tile.avatarKey ? avatars[tile.avatarKey] || null : null,
 				label: tile.label,
-				initial: tile.initial,
-				accent: tile.accent,
 				focused: tile.focused,
 				contain: tile.contain,
 				speaking: tile.speaking
