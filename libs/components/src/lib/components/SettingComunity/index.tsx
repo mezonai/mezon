@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Button, Icons, TextArea } from '@mezon/ui';
 import { MAX_FILE_SIZE_10MB, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -345,7 +345,7 @@ const SettingComunity = ({
 				const client = clientRef.current;
 				const session = sessionRef.current;
 				if (!client || !session) throw new Error('Client/session not ready');
-				const attachment = await handleUploadFile(client, session, bannerFile.name, bannerFile);
+				const attachment = await handleUploadPublicFile(client, session, bannerFile.name, bannerFile);
 				if (attachment && attachment.url) {
 					bannerUrl = attachment.url;
 				} else {
@@ -436,7 +436,7 @@ const SettingComunity = ({
 				const client = clientRef.current;
 				const session = sessionRef.current;
 				if (!client || !session) throw new Error('Client/session not ready');
-				const attachment = await handleUploadFile(client, session, bannerFile.name, bannerFile);
+				const attachment = await handleUploadPublicFile(client, session, bannerFile.name, bannerFile);
 				if (attachment && attachment.url) {
 					bannerUrl = attachment.url;
 					await dispatch(comunityActions.updateCommunityBanner({ clan_id: clanId, bannerUrl })).unwrap();

@@ -1,6 +1,6 @@
 import { EmojiSuggestionProvider, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { roleSlice, selectTheme } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_256KB, fileTypeImage, getSrcEmoji, resizeFileImage } from '@mezon/utils';
 import React, { useRef, useState } from 'react';
@@ -61,7 +61,7 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 		setIsLoading(true);
 		const resizeFile = (await resizeFileImage(file, 64, 64, 'file')) as File;
 
-		const roleIcon = await handleUploadFile(clientRef.current, sessionRef.current, file.name, resizeFile);
+		const roleIcon = await handleUploadPublicFile(clientRef.current, sessionRef.current, file.name, resizeFile);
 		dispatch(roleSlice.actions.setNewRoleIcon(roleIcon?.url || ''));
 
 		onClose();
