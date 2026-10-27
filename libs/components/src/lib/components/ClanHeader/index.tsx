@@ -46,7 +46,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
 	const { t } = useTranslation('clan');
-	const [isClanOwner, canManageClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
+	const [isClanOwner, canManageClan, adminClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan, EPermission.administrator]);
 	const { removeMemberClan } = useChannelMembersActions();
 	const { userProfile } = useAuth();
 	const currentChannelId = useSelector(selectCurrentVoiceChannelId);
@@ -160,7 +160,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 						closeModalClan();
 					}
 				}}
-				initialSetting={toOnboard ? ItemSetting.ON_BOARDING : canManageClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI}
+				initialSetting={toOnboard ? ItemSetting.ON_BOARDING : adminClan ? ItemSetting.OVERVIEW : ItemSetting.EMOJI}
 			/>
 		),
 		[canManageClan, hasChildModalRef, closeModalClan, toOnboard]

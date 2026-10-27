@@ -62,10 +62,13 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {
 		const filteredListItem = sidebarItem.listItem.filter((item) => {
+			if (item.id === ItemSetting.OVERVIEW) {
+				return hasAdminPermission;
+			}
 			if (item.id === ItemSetting.INTEGRATIONS) {
 				return hasClanPermission || hasChannelPermission;
 			}
-			if ([ItemSetting.OVERVIEW, ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
+			if ([ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
 				return hasClanPermission;
 			}
 			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {
