@@ -21,14 +21,14 @@ import {
 } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import type { ReactElement } from 'react';
-import { Fragment, memo, useCallback, useRef, useState } from 'react';
+import { Fragment, lazy, memo, useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Spelling from '../Spelling';
 import AttachmentPreviewThumbnail from './AttachmentPreviewThumbnail';
 import AudioRecorderControl from './AudioRecorder/AudioRecorderControl';
 import FileSelectionButton from './FileSelectionButton';
 import PreviewOgp from './PreviewOgp';
 import { MentionReactInput } from './ReactionMentionInput';
+const Spelling = lazy(() => import('../Spelling'));
 
 export type MessageBoxProps = {
 	readonly onSend: (
