@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { handleUploadEmoticon, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -116,7 +116,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				const id = Snowflake.generate();
 				const path = `onboarding/${id}.webp`;
 				if (clientRef.current && sessionRef.current) {
-					return handleUploadEmoticon(clientRef.current, sessionRef.current, path, item.file);
+					return handleUploadPublicFile(clientRef.current, sessionRef.current, path, item.file);
 				}
 				return undefined;
 			});

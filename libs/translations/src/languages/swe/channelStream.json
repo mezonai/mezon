@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Stream bildminiatyr",
 	"videoError": "Kunde inte spela video. Vänligen prova igen senare.",
-	"everyoneWaiting": "Alla väntar på dig inuti",
 	"noOneInStream": "Det finns ingen i stream nu",
 	"joinStream": "Gå med i stream",
 	"noStreamToday": "Ingen stream idag",
+	"everyoneWaiting": "Alla väntar på dig inuti",
 	"hideMembers": "Dölj medlemmar",
 	"showMembers": "Visa medlemmar",
-	"duplicateSessionDisconnected": "Frånkopplad eftersom ditt konto gick med i en stream eller röstkanal i en annan session."
+	"viewerCount": "{{count}} tittar",
+	"quality": "Kvalitet",
+	"qualityAuto": "Automatisk",
+	"qualityHigh": "Hög",
+	"qualityMid": "Medel",
+	"qualityLow": "Låg",
+	"fullscreen": "Helskärm",
+	"exitFullscreen": "Avsluta helskärm",
+	"live": "Live",
+	"isLive": "{{name}} sänder live",
+	"volume": "Volym",
+	"mute": "Stäng av ljud",
+	"unmute": "Slå på ljud"
 }

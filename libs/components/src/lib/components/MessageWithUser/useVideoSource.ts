@@ -1,4 +1,4 @@
-import { getHlsMasterPlaylistUrl, isTranscodedVideoContainer, mayBeTranscodedVideo, probeHlsMasterPlaylist } from '@mezon/utils';
+import { getHlsMasterPlaylistUrl, mayBeTranscodedVideo, probeHlsMasterPlaylist } from '@mezon/utils';
 import type Hls from 'hls.js';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -12,10 +12,8 @@ interface VideoSourceOptions {
 
 /**
  * Plays `url` in the video of `videoRef` while `enabled`, which must be true only while that video is mounted.
- * A video the browser can decode plays its original, which starts after a few hundred kilobytes; the HLS stream the
- * media server writes holds the same bitrate in 6 s segments, and Chrome waits for two of them before it starts.
- * An mkv, avi, flv or wmv plays from its stream: natively where the browser can, through hls.js elsewhere.
- * When the chosen source fails, the other one is tried once before `failed` turns true.
+ * A video the media server converted to HLS plays from its stream: natively where the browser can, through hls.js
+ * elsewhere. When the chosen source fails, the other one is tried once before `failed` turns true.
  * A new CDN signature on the same file does not reload it; only a source loaded later carries it.
  * Pass `handleError` to the video's `onError`.
  */
@@ -111,7 +109,7 @@ export function useVideoSource(
 		};
 		video.addEventListener('loadedmetadata', checkPicture);
 
-		if (isTranscodedVideoContainer(url)) {
+		if (mayBeTranscodedVideo(url)) {
 			void probeHlsMasterPlaylist(url, probe.signal).then((playlist) => {
 				if (!disposed) void play(playlist ?? url, Boolean(playlist));
 			});

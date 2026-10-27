@@ -1,9 +1,11 @@
+import type { RootState } from '@mezon/store';
 import {
 	getPoll,
 	getStore,
 	selectCurrentUserId,
 	selectEmojiSrcById,
-	selectMemberClanByUserId,
+	selectEntitesUserClans,
+	selectGroupMembersEntities,
 	selectMemberDMByUserId,
 	selectMessageByMessageId,
 	selectMyVote,
@@ -98,6 +100,29 @@ export type PollVoter = {
 	avatar?: string;
 };
 
+type PollVoterMembers = ReturnType<typeof selectGroupMembersEntities> | ReturnType<typeof selectEntitesUserClans>;
+
+const resolvePollVoter = (state: RootState, members: PollVoterMembers, userId: string): PollVoter => {
+	const entry = members[userId];
+	const member = entry?.user?.username || entry?.user?.display_name ? entry : undefined;
+	if (member) {
+		return {
+			displayName: member.clan_nick || member.user?.display_name || member.user?.username || userId,
+			username: member.user?.username || userId,
+			avatar: member.clan_avatar || member.user?.avatar_url
+		};
+	}
+	const dmProfile = selectMemberDMByUserId(state, userId);
+	if (dmProfile) {
+		return {
+			displayName: dmProfile.display_name || dmProfile.username || userId,
+			username: dmProfile.username || userId,
+			avatar: dmProfile.avatar_url
+		};
+	}
+	return { displayName: userId, username: userId };
+};
+
 export type PollMessageProps = {
 	question: string;
 	answers: string[];
@@ -107,6 +132,7 @@ export type PollMessageProps = {
 	channelId?: string;
 	votersByOption?: PollVoter[][];
 	interactionDisabled?: boolean;
+	isDirect?: boolean;
 };
 
 export const PollMessage = ({
@@ -117,7 +143,8 @@ export const PollMessage = ({
 	messageId,
 	channelId,
 	votersByOption,
-	interactionDisabled = false
+	interactionDisabled = false,
+	isDirect = false
 }: PollMessageProps) => {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
@@ -186,6 +213,8 @@ export const PollMessage = ({
 		return messageId ? (reduxMyVote?.[messageId] ?? []) : [];
 	}, [pollData, currentUserId, uiVotedIndices, messageId, reduxMyVote]);
 
+	const voterMembers = useAppSelector((state) => (isDirect ? selectGroupMembersEntities(state, channelId ?? '') : selectEntitesUserClans(state)));
+
 	const votersByOptionFromApi = useMemo(() => {
 		const pollDataAny = pollData as Record<string, unknown>;
 		if (!pollDataAny?.voter_details) return undefined;
@@ -194,6 +223,7 @@ export const PollMessage = ({
 		if (!Array.isArray(voterDetails)) return undefined;
 
 		const result: PollVoter[][] = Array.from({ length: answers.length }, () => []);
+		const state = getStore().getState();
 
 		voterDetails.forEach((detail: unknown) => {
 			const detailObj = detail as Record<string, unknown>;
@@ -201,35 +231,12 @@ export const PollMessage = ({
 			const userIds = (detailObj.user_ids as string[]) ?? [];
 
 			if (answerIndex >= 0 && answerIndex < answers.length) {
-				const voters: PollVoter[] = [];
-				const state = getStore().getState();
-
-				userIds.forEach((userId) => {
-					const member = selectMemberClanByUserId(state, userId);
-
-					const dmProfile = selectMemberDMByUserId(state, userId);
-
-					if (member) {
-						voters.push({
-							displayName: member.clan_nick || member.user?.display_name || member.user?.username || 'Unknown',
-							username: member.user?.username || 'unknown',
-							avatar: member.clan_avatar || member.user?.avatar_url
-						});
-					} else if (dmProfile) {
-						voters.push({
-							displayName: dmProfile.display_name || dmProfile.username || 'Unknown',
-							username: dmProfile.username || 'unknown',
-							avatar: dmProfile.avatar_url
-						});
-					}
-				});
-
-				result[answerIndex] = voters;
+				result[answerIndex] = userIds.map((userId) => resolvePollVoter(state, voterMembers, userId));
 			}
 		});
 
 		return result;
-	}, [pollData, answers.length]);
+	}, [pollData, answers.length, voterMembers]);
 
 	const hasVoted = useMemo(() => {
 		return votedAnswers.length > 0;
@@ -349,25 +356,7 @@ export const PollMessage = ({
 						const answerIndex = (detailObj.answer_index as number) ?? 0;
 						const userIds = (detailObj.user_ids as string[]) ?? [];
 						if (answerIndex >= 0 && answerIndex < answers.length) {
-							const voters: PollVoter[] = userIds.map((userId) => {
-								const member = selectMemberClanByUserId(state, userId);
-								const dmProfile = selectMemberDMByUserId(state, userId);
-								if (member) {
-									return {
-										displayName: member.clan_nick || member.user?.display_name || member.user?.username || userId,
-										username: member.user?.username || userId,
-										avatar: member.clan_avatar || member.user?.avatar_url
-									};
-								} else if (dmProfile) {
-									return {
-										displayName: dmProfile.display_name || dmProfile.username || userId,
-										username: dmProfile.username || userId,
-										avatar: dmProfile.avatar_url
-									};
-								}
-								return { displayName: userId, username: userId };
-							});
-							result[answerIndex] = voters;
+							result[answerIndex] = userIds.map((userId) => resolvePollVoter(state, voterMembers, userId));
 						}
 					});
 					setDetailVotersByOption(result);

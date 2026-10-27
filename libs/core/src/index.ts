@@ -65,6 +65,7 @@ export * from './lib/chat/hooks/useNotify';
 export * from './lib/chat/hooks/useOnClickOutSide';
 export * from './lib/chat/hooks/useOnScreen';
 export * from './lib/chat/hooks/usePathMatch';
+export * from './lib/chat/hooks/usePinnedSenderDisplay';
 export * from './lib/chat/hooks/useRealtimeServer';
 export * from './lib/chat/hooks/useReconnectOnForeground';
 export * from './lib/chat/hooks/useReference';

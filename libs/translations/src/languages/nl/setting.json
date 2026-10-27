@@ -48,7 +48,8 @@
 		"appVersion": "App-versie",
 		"startUp": "Opstarten",
 		"quitApp": "App afsluiten",
-		"server": "Server"
+		"server": "Server",
+		"streaming": "Streaming"
 	},
 	"server": {
 		"auto": "Automatisch",
@@ -59,6 +60,30 @@
 		"connectedTo": "Verbonden met {{region}}",
 		"connectingTo": "Verbinden met {{region}}…",
 		"footer": "Automatisch: Kiest een server voor je. Kies een server als je er altijd op wilt blijven."
+	},
+	"streaming": {
+		"keyTitle": "Streamsleutel",
+		"keyDescription": "Gebruik deze in OBS of een andere WHIP-encoder om live te gaan in een streamkanaal. Deel ze nooit: wie ze heeft, kan namens jou streamen.",
+		"channel": "Streamkanaal",
+		"noChannels": "Geen streamkanaal in deze clan",
+		"getKey": "Streamsleutel ophalen",
+		"regenerate": "Nieuwe sleutel maken",
+		"server": "Server",
+		"token": "Bearer Token",
+		"show": "Tonen",
+		"hide": "Verbergen",
+		"copy": "Kopiëren",
+		"expiresIn": "Begin binnen {{time}} met streamen. Een stream die al live is, gaat daarna gewoon door.",
+		"expired": "Deze sleutel is verlopen. Maak een nieuwe om live te gaan.",
+		"error": "Kan de streamsleutel niet ophalen. Probeer het opnieuw.",
+		"obsTitle": "OBS instellen",
+		"obsStepService": "Open in OBS Instellingen → Stream en kies WHIP als dienst.",
+		"obsStepPaste": "Plak de Server en het Bearer Token van hierboven.",
+		"obsStepEncoder": "Kies onder Instellingen → Uitvoer een H.264-encoder en zet het keyframe-interval op 2 s.",
+		"obsStepSimulcast": "Voor meerdere kwaliteiten zet je simulcast op 3 lagen als jouw OBS-versie dat biedt.",
+		"obsStepStart": "Klik op Streamen starten. De sleutel hoeft alleen geldig te zijn wanneer OBS verbinding maakt: maakt OBS na het verlopen opnieuw verbinding, haal dan een nieuwe sleutel op en plak die opnieuw.",
+		"qualityTitle": "Standaard kijkkwaliteit",
+		"qualityDescription": "Wordt gebruikt telkens als je een stream bekijkt. Je kunt het tijdens het kijken nog wijzigen."
 	},
 	"autoStart": {
 		"title": "App automatisch starten",

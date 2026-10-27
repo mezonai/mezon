@@ -48,7 +48,8 @@
 		"appVersion": "Versión de la aplicación",
 		"startUp": "Inicio",
 		"quitApp": "Salir de la aplicación",
-		"server": "Servidor"
+		"server": "Servidor",
+		"streaming": "Transmisión"
 	},
 	"server": {
 		"auto": "Automático",
@@ -59,6 +60,30 @@
 		"connectedTo": "Conectado a {{region}}",
 		"connectingTo": "Conectando a {{region}}…",
 		"footer": "Automático: Elige un servidor por ti. Elige un servidor si quieres quedarte siempre en él."
+	},
+	"streaming": {
+		"keyTitle": "Clave de transmisión",
+		"keyDescription": "Úsalos en OBS u otro codificador WHIP para transmitir en vivo en un canal de stream. No los compartas nunca: quien los tenga puede transmitir en tu nombre.",
+		"channel": "Canal de stream",
+		"noChannels": "Este clan no tiene canales de stream",
+		"getKey": "Obtener clave",
+		"regenerate": "Generar clave nueva",
+		"server": "Servidor",
+		"token": "Bearer Token",
+		"show": "Mostrar",
+		"hide": "Ocultar",
+		"copy": "Copiar",
+		"expiresIn": "Empieza a transmitir antes de {{time}}. Una transmisión ya en vivo continúa después.",
+		"expired": "Esta clave ha caducado. Genera una nueva para transmitir.",
+		"error": "No se pudo obtener la clave de transmisión. Inténtalo de nuevo.",
+		"obsTitle": "Configurar OBS",
+		"obsStepService": "En OBS, abre Ajustes → Emisión y elige WHIP como servicio.",
+		"obsStepPaste": "Pega el Servidor y el Bearer Token de arriba.",
+		"obsStepEncoder": "En Ajustes → Salida, elige un codificador H.264 y fija el intervalo de fotogramas clave en 2 s.",
+		"obsStepSimulcast": "Para varias calidades, configura simulcast con 3 capas si tu versión de OBS lo ofrece.",
+		"obsStepStart": "Pulsa Iniciar transmisión. La clave solo debe ser válida cuando OBS se conecta: si OBS se reconecta después de que caduque, obtén una clave nueva y pégala otra vez.",
+		"qualityTitle": "Calidad de reproducción predeterminada",
+		"qualityDescription": "Se usa cada vez que te unes a una transmisión. Puedes cambiarla mientras miras."
 	},
 	"autoStart": {
 		"title": "Iniciar aplicación automáticamente",

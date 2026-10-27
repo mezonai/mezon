@@ -28,7 +28,7 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					width: attach.width,
 					height: attach.height,
 					channel_id: channelId,
-					transcode_hls: wantsHlsTranscode(uploadName, attach.size)
+					transcode_hls: wantsHlsTranscode(uploadName)
 				});
 				// The poster is uploaded HERE, before the message is posted, and its url
 				// is published only once the object is actually on the CDN. It used to

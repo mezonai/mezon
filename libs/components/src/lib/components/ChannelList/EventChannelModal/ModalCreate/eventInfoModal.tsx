@@ -1,6 +1,6 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { selectTheme } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { TextArea, TimePicker } from '@mezon/ui';
 import type { ContenSubmitEventProps } from '@mezon/utils';
 import { ERepeatType, MAX_FILE_SIZE_1MB, fileTypeImage, generateE2eId } from '@mezon/utils';
@@ -161,7 +161,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 			e.target.value = null;
 			return;
 		}
-		handleUploadFile(client, session, file?.name, file).then((attachment: any) => {
+		handleUploadPublicFile(client, session, file?.name, file).then((attachment: any) => {
 			setContentSubmit((prev) => ({ ...prev, logo: attachment.url ?? '' }));
 		});
 	};

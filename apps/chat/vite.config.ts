@@ -31,6 +31,7 @@ function chatAssetPathsPlugin(path: string): PluginOption {
 export default defineConfig(({ mode }) => {
 	const workspaceRoot = path.resolve(__dirname, '../..');
 	const env = loadEnv(mode, workspaceRoot, 'NX_');
+	const streamingUrl = env.NX_CHAT_APP_STREAMING_URL?.trim() ?? '';
 	const appRoot = path.join(workspaceRoot, 'apps/chat');
 	return {
 		root: path.join(appRoot, 'src'),
@@ -81,8 +82,8 @@ export default defineConfig(({ mode }) => {
 					"worker-src 'self' 'wasm-unsafe-eval' blob:",
 					"manifest-src 'self'",
 					"img-src 'self' data: blob: https: *.mezon.ai media.tenor.com *.googleusercontent.com",
-					"connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com",
-					"media-src 'self' blob: https: *.mezon.ai media.tenor.com",
+					`connect-src 'self' ws: wss: https: blob: *.mezon.ai media.tenor.com *.googletagmanager.com *.google-analytics.com *.googleapis.com *.gstatic.com ${streamingUrl}`,
+					`media-src 'self' blob: https: *.mezon.ai media.tenor.com ${streamingUrl}`,
 					"child-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com",
 					"frame-src 'self' https://www.youtube.com https://www.tiktok.com https://www.facebook.com https://player.vimeo.com https://quiz.mezon.ai https://blackboard.mezon.ai https://interactive.mezon.ai",
 					"base-uri 'self'",

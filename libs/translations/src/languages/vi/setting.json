@@ -48,7 +48,8 @@
 		"appVersion": "Phiên bản ứng dụng",
 		"startUp": "Khởi chạy",
 		"quitApp": "Thoát ứng dụng",
-		"server": "Máy chủ"
+		"server": "Máy chủ",
+		"streaming": "Phát trực tiếp"
 	},
 	"server": {
 		"auto": "Tự động",
@@ -59,6 +60,30 @@
 		"connectedTo": "Đã kết nối {{region}}",
 		"connectingTo": "Đang kết nối {{region}}…",
 		"footer": "Tự động: Tự chọn máy chủ phù hợp. Chọn một máy chủ nếu bạn muốn luôn dùng cố định."
+	},
+	"streaming": {
+		"keyTitle": "Khoá phát trực tiếp",
+		"keyDescription": "Dùng trong OBS hoặc phần mềm hỗ trợ WHIP để phát vào một kênh stream. Không chia sẻ cho ai: ai có các thông tin này đều phát được dưới tên bạn.",
+		"channel": "Kênh stream",
+		"noChannels": "Clan này không có kênh stream",
+		"getKey": "Lấy khoá phát",
+		"regenerate": "Tạo khoá mới",
+		"server": "Server",
+		"token": "Bearer Token",
+		"show": "Hiện",
+		"hide": "Ẩn",
+		"copy": "Sao chép",
+		"expiresIn": "Hãy bắt đầu phát trong {{time}}. Buổi phát đã lên sóng vẫn tiếp tục sau mốc này.",
+		"expired": "Khoá đã hết hạn. Tạo khoá mới để lên sóng.",
+		"error": "Không lấy được khoá phát. Vui lòng thử lại.",
+		"obsTitle": "Cài đặt OBS",
+		"obsStepService": "Trong OBS, mở Settings → Stream và chọn dịch vụ WHIP.",
+		"obsStepPaste": "Dán Server và Bearer Token ở trên.",
+		"obsStepEncoder": "Trong Settings → Output, chọn bộ mã hoá H.264 và đặt keyframe interval là 2 s.",
+		"obsStepSimulcast": "Muốn người xem chọn được chất lượng, đặt simulcast 3 layer nếu bản OBS của bạn có.",
+		"obsStepStart": "Bấm Start Streaming. Khoá chỉ cần còn hạn lúc OBS kết nối: nếu OBS phải kết nối lại sau khi khoá hết hạn, hãy lấy khoá mới và dán lại.",
+		"qualityTitle": "Chất lượng xem mặc định",
+		"qualityDescription": "Áp dụng mỗi khi bạn tham gia một buổi phát. Bạn vẫn đổi được trong lúc xem."
 	},
 	"autoStart": {
 		"title": "Tự động khởi động ứng dụng",

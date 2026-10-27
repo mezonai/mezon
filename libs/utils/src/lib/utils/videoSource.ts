@@ -3,9 +3,8 @@
 const TRANSCODING_ORIGINS = ['https://cdn.mezon.ai', 'http://cdn.mezon.ai', 'https://cdn.mezon.vn', 'http://cdn.mezon.vn'];
 // Containers no browser plays, which the media server converts like any other video.
 const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'mkv', 'wmv']);
-// What the media server accepts. Smaller clips play fine as they are, so they are not sent to it.
+// What the media server accepts.
 const HLS_TRANSCODE_EXTENSIONS = new Set(['mp4', 'mov', 'mkv', 'avi', 'flv', 'm4v', 'wmv']);
-const HLS_TRANSCODE_MIN_SIZE = 50 * 1024 * 1024;
 const HLS_OUTPUT_PREFIX = 'hls/';
 const HLS_MASTER_PLAYLIST = 'master.m3u8';
 const HLS_PLAYLIST_SUFFIX = '.m3u8';
@@ -38,9 +37,9 @@ function masterPlaylistPath({ origin, key }: TranscodableUrl): string {
 	return `${origin}/${HLS_OUTPUT_PREFIX}${key}/${HLS_MASTER_PLAYLIST}`;
 }
 
-/** Whether an upload should ask the server to route it to the media server: large videos only. */
-export function wantsHlsTranscode(filename?: string, size?: number): boolean {
-	if (!filename || !size || size < HLS_TRANSCODE_MIN_SIZE) return false;
+/** Whether an upload should ask the server to route it to the media server: every video it accepts, whatever its size. */
+export function wantsHlsTranscode(filename?: string): boolean {
+	if (!filename) return false;
 	const dot = filename.lastIndexOf('.');
 	return dot > 0 && HLS_TRANSCODE_EXTENSIONS.has(filename.slice(dot + 1).toLowerCase());
 }

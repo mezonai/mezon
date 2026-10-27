@@ -61,8 +61,7 @@ const SearchInput = ({
 		(search: string, callback: any) => {
 			setActiveTrigger('>');
 			setValueHighlight(search);
-			const results = searchMentionsHashtag(search, userListData || []);
-			callback(results.length > 0 ? results : userListData || []);
+			callback(searchMentionsHashtag(search, userListData || []));
 		},
 		[userListData]
 	);
@@ -71,8 +70,7 @@ const SearchInput = ({
 		(search: string, callback: any) => {
 			setActiveTrigger('~');
 			setValueHighlight(search);
-			const results = searchMentionsHashtag(search, userListData || []);
-			callback(results.length > 0 ? results : userListData || []);
+			callback(searchMentionsHashtag(search, userListData || []));
 		},
 		[userListData]
 	);

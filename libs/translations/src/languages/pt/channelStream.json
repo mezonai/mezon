@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Miniatura da transmissão",
 	"videoError": "Não foi possível reproduzir o vídeo. Por favor, tente novamente mais tarde.",
-	"everyoneWaiting": "Todos estão esperando por você lá dentro",
 	"noOneInStream": "Não há ninguém na transmissão no momento",
 	"joinStream": "Entrar na transmissão",
 	"noStreamToday": "Não há transmissões hoje",
+	"everyoneWaiting": "Todos estão esperando por você lá dentro",
 	"hideMembers": "Ocultar membros",
 	"showMembers": "Mostrar membros",
-	"duplicateSessionDisconnected": "Desconectado porque sua conta entrou em uma transmissão ou canal de voz em outra sessão."
+	"viewerCount": "{{count}} assistindo",
+	"quality": "Qualidade",
+	"qualityAuto": "Automática",
+	"qualityHigh": "Alta",
+	"qualityMid": "Média",
+	"qualityLow": "Baixa",
+	"fullscreen": "Tela cheia",
+	"exitFullscreen": "Sair da tela cheia",
+	"live": "Ao vivo",
+	"isLive": "{{name}} está ao vivo",
+	"volume": "Volume",
+	"mute": "Silenciar",
+	"unmute": "Ativar som"
 }

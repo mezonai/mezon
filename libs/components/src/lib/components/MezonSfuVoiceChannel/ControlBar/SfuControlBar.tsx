@@ -1,8 +1,10 @@
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
+import type { ScreenDrawMode } from '../MyVideoConference/ScreenAnnotation/useScreenDraw';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
 import { RecordingControl } from '../Recording/RecordingControl';
 import { SfuAgentControl } from './AgentControl';
+import { BreakoutControl } from './BreakoutControl';
 import { CameraControl } from './CameraControl';
 import { EmojiReactionControl } from './EmojiReactionControl';
 import { FullscreenControl } from './FullscreenControl';
@@ -13,6 +15,7 @@ import { PopoutControl } from './PopoutControl';
 import { PushToTalkControl } from './PushToTalkControl';
 import { PushToTalkHint } from './PushToTalkHint';
 import { SfuRaisingHandControl } from './RaisingHandControl';
+import { ScreenDrawControl } from './ScreenDrawControl';
 import { ScreenShareControl } from './ScreenShareControl';
 import { SfuVoiceInteractiveControl } from './SfuVoiceInteractiveControl';
 import { SoundReactionControl } from './SoundReactionControl';
@@ -37,6 +40,9 @@ interface SfuControlBarProps {
 	screenShareMode: ScreenShareMode;
 	changingScreenShareMode: boolean;
 	onScreenShareModeChange: (mode: ScreenShareMode) => void;
+	screenDrawMode?: ScreenDrawMode | null;
+	screenDrawActive?: boolean;
+	onScreenDrawToggle?: () => void;
 	isGridView: boolean;
 	showEmojiPanel: boolean;
 	showSoundPanel: boolean;
@@ -67,6 +73,8 @@ interface SfuControlBarProps {
 	onTogglePopout: () => void;
 	onFullScreen: () => void;
 	roomId?: string;
+	showBreakoutModal?: boolean;
+	onToggleBreakoutModal?: () => void;
 }
 
 export const SfuControlBar = ({
@@ -89,6 +97,9 @@ export const SfuControlBar = ({
 	screenShareMode,
 	changingScreenShareMode,
 	onScreenShareModeChange,
+	screenDrawMode,
+	screenDrawActive = false,
+	onScreenDrawToggle,
 	isGridView,
 	showEmojiPanel,
 	showSoundPanel,
@@ -118,7 +129,9 @@ export const SfuControlBar = ({
 	onLeaveRoom,
 	onTogglePopout,
 	onFullScreen,
-	roomId
+	roomId,
+	showBreakoutModal = false,
+	onToggleBreakoutModal
 }: SfuControlBarProps) => {
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
@@ -237,9 +250,15 @@ export const SfuControlBar = ({
 				)}
 				<SfuAgentControl roomId={roomId} isExternalCalling={isExternalCalling} showHint={showAgentHint} onDismissHint={onDismissAgentHint} />
 				{!isExternalCalling && <SfuRaisingHandControl />}
+				{!isExternalCalling && onToggleBreakoutModal && (
+					<BreakoutControl isExternalCalling={isExternalCalling} isOpen={showBreakoutModal} onToggleModal={onToggleBreakoutModal} />
+				)}
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>
 			<div className="flex justify-end pr-1 max-md:hidden">
+				{screenDrawMode && onScreenDrawToggle && (
+					<ScreenDrawControl mode={screenDrawMode} active={screenDrawActive} onToggle={onScreenDrawToggle} />
+				)}
 				{!isExternalCalling && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
 				<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 			</div>

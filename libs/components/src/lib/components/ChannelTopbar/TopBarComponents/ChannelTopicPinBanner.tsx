@@ -1,4 +1,4 @@
-import { useAuth, useCdnUrlSigner, useGetPriorityNameFromUserClan, usePathMatch } from '@mezon/core';
+import { useAuth, useCdnUrlSigner, useGetPriorityNameFromUserClan, usePathMatch, usePinnedSenderDisplay } from '@mezon/core';
 import {
 	EventName,
 	appActions,
@@ -845,17 +845,20 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 			: null
 	);
 
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(latestPin?.sender_id || ''));
-
 	const isPinAnonymous = Boolean(
 		(latestPin?.sender_id && latestPin.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID) ||
 			(pinMessageInStore?.sender_id && pinMessageInStore.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID)
 	);
 
-	const pinUserName = isPinAnonymous
-		? 'Anonymous'
-		: namePriority || latestPin?.username || pinMessageInStore?.display_name || pinMessageInStore?.username || 'Member';
-	const pinAvatarUrl = isPinAnonymous ? '' : priorityAvatar || latestPin?.avatar || pinMessageInStore?.avatar || '';
+	const { displayName: pinUserName, displayAvatar: pinAvatarUrl } = usePinnedSenderDisplay({
+		senderId: String(latestPin?.sender_id || ''),
+		channelId: String(latestPin?.channel_id || currentChannelId || ''),
+		message: pinMessageInStore,
+		pinAvatar: latestPin?.avatar,
+		pinUsername: latestPin?.username,
+		isAnonymous: isPinAnonymous
+	});
+	const pinUserNameDisplay = pinUserName || 'Member';
 
 	const pinTimeSeconds = pinMessageInStore?.create_time_seconds || latestPin?.create_time_seconds;
 	const pinFormattedTime = useMemo(() => {
@@ -1182,8 +1185,8 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 						>
 							<div className="shrink-0 flex items-center justify-center">
 								<AvatarImage
-									alt={pinUserName}
-									username={pinUserName}
+									alt={pinUserNameDisplay}
+									username={pinUserNameDisplay}
 									className="!w-7 !h-7 !min-w-7 !min-h-7 rounded-full text-xs shrink-0"
 									classNameText="text-[10px]"
 									srcImgProxy={
@@ -1195,7 +1198,9 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 							</div>
 							<div className="flex flex-col min-w-0 flex-1 justify-center">
 								<div className="flex items-baseline gap-2 min-w-0">
-									<span className="text-sm font-semibold text-theme-primary-active truncate leading-tight">{pinUserName}</span>
+									<span className="text-sm font-semibold text-theme-primary-active truncate leading-tight">
+										{pinUserNameDisplay}
+									</span>
 									{pinFormattedTime && (
 										<span className="text-xs text-theme-primary font-normal shrink-0 leading-tight">{pinFormattedTime}</span>
 									)}

@@ -12,6 +12,7 @@ import { directActions } from '../direct/direct.slice';
 import { sleep } from '../helpers';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
+import { usersStreamActions } from '../stream/usersStream.slice';
 import { voiceActions } from '../voice/voice.slice';
 
 export const APP_FEATURE_KEY = 'app';
@@ -267,6 +268,14 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 					clanId: currentClanId ?? '',
 					channelId: '',
 					channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE
+				})
+			);
+			thunkAPI.dispatch(
+				usersStreamActions.fetchStreamChannelMembers({
+					clanId: currentClanId ?? '',
+					channelId: '0',
+					channelType: ChannelType.CHANNEL_TYPE_STREAMING,
+					noCache: true
 				})
 			);
 		}

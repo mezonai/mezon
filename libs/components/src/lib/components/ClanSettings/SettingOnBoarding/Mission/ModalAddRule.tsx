@@ -1,5 +1,5 @@
 import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
-import { handleUploadEmoticon, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { fileTypeImage, generateE2eId, MAX_FILE_SIZE_10MB } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiOnboardingItem } from 'mezon-js';
@@ -71,7 +71,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 				if (clientRef.current && sessionRef.current) {
 					const id = Snowflake.generate();
 					const path = `onboarding/${id}.webp`;
-					const uploadResponse = await handleUploadEmoticon(clientRef.current, sessionRef.current, path, file);
+					const uploadResponse = await handleUploadPublicFile(clientRef.current, sessionRef.current, path, file);
 					if (uploadResponse) {
 						image_url = uploadResponse?.url;
 					}

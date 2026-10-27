@@ -48,7 +48,8 @@
 		"appVersion": "App Version",
 		"startUp": "Start Up",
 		"quitApp": "Quit App",
-		"server": "Server"
+		"server": "Server",
+		"streaming": "Streaming"
 	},
 	"server": {
 		"auto": "Auto",
@@ -59,6 +60,30 @@
 		"connectedTo": "Connected to {{region}}",
 		"connectingTo": "Connecting to {{region}}…",
 		"footer": "Auto: Picks a server for you. Pick a server if you always want to stay on it."
+	},
+	"streaming": {
+		"keyTitle": "Stream key",
+		"keyDescription": "Use these in OBS or another WHIP encoder to go live in a stream channel. Never share them: anyone who has them can stream as you.",
+		"channel": "Stream channel",
+		"noChannels": "No stream channel in this clan",
+		"getKey": "Get stream key",
+		"regenerate": "Generate new key",
+		"server": "Server",
+		"token": "Bearer Token",
+		"show": "Show",
+		"hide": "Hide",
+		"copy": "Copy",
+		"expiresIn": "Start streaming within {{time}}. A stream that is already live keeps going after that.",
+		"expired": "This key has expired. Generate a new one to go live.",
+		"error": "Could not get a stream key. Please try again.",
+		"obsTitle": "Set up OBS",
+		"obsStepService": "In OBS, open Settings → Stream and choose WHIP as the service.",
+		"obsStepPaste": "Paste the Server and the Bearer Token from above.",
+		"obsStepEncoder": "In Settings → Output, pick an H.264 encoder and set the keyframe interval to 2 s.",
+		"obsStepSimulcast": "For several viewing qualities, set simulcast to 3 layers if your OBS version offers it.",
+		"obsStepStart": "Click Start Streaming. The key only has to be valid when OBS connects: if OBS reconnects after it has expired, get a new key and paste it again.",
+		"qualityTitle": "Default viewing quality",
+		"qualityDescription": "Used each time you join a stream. You can still change it while watching."
 	},
 	"autoStart": {
 		"title": "Auto start application",

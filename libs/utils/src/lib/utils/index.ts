@@ -42,7 +42,7 @@ import { getDateLocale } from './dateI18n';
 import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
-import { isMezonCdnUrl, isMezonMediaUrl, isTenorUrl } from './urlSanitization';
+import { isFromAllowedDomain, isMezonCdnUrl, isMezonMediaUrl, isTenorUrl } from './urlSanitization';
 export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
@@ -271,12 +271,35 @@ export const setEmojiSourceResolver = (resolver: (id: string) => string | undefi
 	resolveEmojiSource = resolver;
 };
 
+const cdnFallbackByUrl = new Map<string, string>();
+const failedPrimaryUrls = new Set<string>();
+
+export const getCdnFallbackUrl = (url: string) => cdnFallbackByUrl.get(url);
+
+export const markCdnPrimaryFailed = (url: string) => {
+	failedPrimaryUrls.add(url);
+};
+
+const idAddressedMediaUrl = (folder: 'emojis' | 'stickers', id: string, wrap: (source: string) => string) => {
+	const primary = wrap(`${process.env.NX_MEZON_CDN_URL}/${folder}/${id}.webp`);
+	const fallback = wrap(`${process.env.NX_CLOUDFLARE_CDN_URL}/${folder}/${id}.webp`);
+	if (failedPrimaryUrls.has(primary)) {
+		return fallback;
+	}
+	cdnFallbackByUrl.set(primary, fallback);
+	return primary;
+};
+
 export const getSrcEmoji = (id: string, src?: string) => {
 	if (!id) return '';
 	const known = src || resolveEmojiSource(id) || '';
-	const source = isMezonMediaUrl(known) ? known : `${process.env.NX_CLOUDFLARE_CDN_URL}/emojis/${id}.webp`;
-	return createImgproxyUrl(source, { width: 100, height: 100, resizeType: 'fit' });
+	if (isMezonMediaUrl(known)) {
+		return createImgproxyUrl(known, { width: 100, height: 100, resizeType: 'fit' });
+	}
+	return idAddressedMediaUrl('emojis', id, (source) => createImgproxyUrl(source, { width: 100, height: 100, resizeType: 'fit' }));
 };
+
+export const getSrcSticker = (id: string, wrap: (source: string) => string = (source) => source) => idAddressedMediaUrl('stickers', id, wrap);
 
 export const getSrcSound = (id: string) => {
 	return `${process.env.NX_CLOUDFLARE_CDN_URL}/sounds/${id}.mp3`;
@@ -902,7 +925,9 @@ export const createImgproxyUrl = (sourceImageUrl: string, options: ImgproxyOptio
 	// presign gate does not recognise lets imgproxy cache a not-found for an
 	// upload that has not finished. Still https-only, as before.
 	const isProxyableCdn = sourceImageUrl.startsWith('https://') && isMezonCdnUrl(sourceImageUrl);
-	if (!isProxyableCdn && !sourceImageUrl?.startsWith('https://profile.mezon')) {
+	const profileImgUrl = process.env.NX_PROFILE_IMG_URL;
+	const isProfileImg = isFromAllowedDomain(sourceImageUrl, ['https://profile.mezon.ai', ...(profileImgUrl ? [profileImgUrl] : [])]);
+	if (!isProxyableCdn && !isProfileImg) {
 		return sourceImageUrl;
 	}
 	const { width, height, resizeType } = options;

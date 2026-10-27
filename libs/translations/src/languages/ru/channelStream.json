@@ -1,12 +1,22 @@
 {
-	"streamThumbnail": "Миниатюра трансляции",
 	"videoError": "Невозможно воспроизвести видео. Пожалуйста, попробуйте позже.",
-	"everyoneWaiting": "Вас все уже ждут!",
 	"noOneInStream": "В настоящее время на стриме никого нет",
 	"joinStream": "Присоединиться к трансляции",
 	"noStreamToday": "Сегодня не стримили",
+	"everyoneWaiting": "Вас все уже ждут!",
 	"hideMembers": "Скрыть участников",
 	"showMembers": "Показать участников",
-	"duplicateSessionDisconnected": "Отключено, так как ваша учётная запись присоединилась к трансляции или голосовому каналу в другом сеансе."
+	"viewerCount": "Зрителей: {{count}}",
+	"quality": "Качество",
+	"qualityAuto": "Авто",
+	"qualityHigh": "Высокое",
+	"qualityMid": "Среднее",
+	"qualityLow": "Низкое",
+	"fullscreen": "Во весь экран",
+	"exitFullscreen": "Выйти из полноэкранного режима",
+	"live": "В эфире",
+	"isLive": "{{name}} в эфире",
+	"volume": "Громкость",
+	"mute": "Выключить звук",
+	"unmute": "Включить звук"
 }
-

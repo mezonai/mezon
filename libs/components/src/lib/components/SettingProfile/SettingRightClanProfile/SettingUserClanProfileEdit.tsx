@@ -1,6 +1,6 @@
 import { useAuth, useClanProfileSetting } from '@mezon/core';
 import { checkDuplicateClanNickName, selectUserClanProfileByClanID, toastActions, useAppDispatch } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { InputField } from '@mezon/ui';
 import type { ImageSourceObject } from '@mezon/utils';
 import { MAX_FILE_SIZE_10MB, fileTypeImage, generateE2eId } from '@mezon/utils';
@@ -116,7 +116,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			}
 			setIsLoading(true);
 
-			const attachment = await handleUploadFile(clientRef.current, sessionRef.current, file.name, file);
+			const attachment = await handleUploadPublicFile(clientRef.current, sessionRef.current, file.name, file);
 			setUrlImage(attachment.url || '');
 			setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
 			setIsLoading(false);

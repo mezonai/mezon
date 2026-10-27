@@ -15,6 +15,8 @@ export const USERS_STREAM_FEATURE_KEY = 'usersstream';
 // Entity id must include the channel or join B overwrites join A and leave A wipes B.
 export const streamMemberEntityId = (userId?: string | null, channelId?: string | null) => `${userId || ''}:${channelId || ''}`;
 
+const streamPublisherOf = <T extends { is_publisher?: boolean }>(members: T[]) => members.find((member) => member.is_publisher) ?? members[0];
+
 /*
  * Update these interfaces according to your requirements.
  */
@@ -29,6 +31,7 @@ export interface UsersStreamState extends EntityState<UsersStreamEntity, string>
 	error?: string | null;
 	streamChannelMember: IChannelMember[];
 	cacheByClans: Record<string, CacheMetadata>;
+	presenceRevisionByClan: Record<string, number>;
 }
 
 export const userStreamAdapter = createEntityAdapter({
@@ -47,6 +50,7 @@ type fetchStreamChannelMembersPayload = {
 export type FetchStreamChannelMembersResponse = {
 	streams: ApiStreamingChannelUser[];
 	fromCache?: boolean;
+	presenceRevision: number;
 };
 
 const selectCachedStreamMembers = createSelector(
@@ -58,7 +62,8 @@ const selectCachedStreamMembers = createSelector(
 				user_id: entity.user_id,
 				channel_id: entity.streaming_channel_id,
 				participant: entity.participant,
-				id: entity.id
+				id: entity.id,
+				is_publisher: entity.is_publisher
 			})
 		);
 	}
@@ -113,43 +118,26 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 	async ({ clanId, channelId, channelType, noCache }: fetchStreamChannelMembersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchStreamChannelMembersCached(
-				thunkAPI.getState as () => RootState,
-				mezon,
-				clanId,
-				channelId,
-				channelType,
-				noCache
-			);
-
-			if (!response.streaming_channel_users) {
-				return { streams: [], fromCache: false };
-			}
-
-			const members = response.streaming_channel_users.map((channelRes) => {
-				return {
-					user_id: channelRes.user_id || '',
-					clan_id: clanId,
-					streaming_channel_id: channelRes.channel_id || '0',
-					clan_name: '',
-					participant: channelRes.participant || '',
-					streaming_channel_label: '',
-					id: channelRes.id || '',
-					user_name: '',
-					user_avatar: ''
+			const revisionOf = () => (thunkAPI.getState() as RootState)[USERS_STREAM_FEATURE_KEY].presenceRevisionByClan[clanId] ?? 0;
+			for (let attempt = 0; attempt < 3; attempt++) {
+				const presenceRevision = revisionOf();
+				const response = await fetchStreamChannelMembersCached(
+					thunkAPI.getState as () => RootState,
+					mezon,
+					clanId,
+					channelId,
+					channelType,
+					noCache || attempt > 0
+				);
+				if (revisionOf() !== presenceRevision) continue;
+				const payload: FetchStreamChannelMembersResponse = {
+					streams: response.streaming_channel_users ?? [],
+					fromCache: response.fromCache,
+					presenceRevision
 				};
-			});
-
-			if (!response.fromCache) {
-				thunkAPI.dispatch(usersStreamActions.addMany(members));
+				return payload;
 			}
-
-			const payload: FetchStreamChannelMembersResponse = {
-				streams: response.streaming_channel_users,
-				fromCache: response.fromCache
-			};
-
-			return payload;
+			throw new Error('Stream presence changed during snapshot refresh');
 		} catch (error) {
 			captureSentryError(error, 'stream/fetchStreamChannelMembers');
 			return thunkAPI.rejectWithValue(error);
@@ -161,7 +149,8 @@ export const initialUsersStreamState: UsersStreamState = userStreamAdapter.getIn
 	loadingStatus: 'not loaded',
 	error: null,
 	streamChannelMember: [],
-	cacheByClans: {}
+	cacheByClans: {},
+	presenceRevisionByClan: {}
 });
 
 export const usersStreamSlice = createSlice({
@@ -169,18 +158,24 @@ export const usersStreamSlice = createSlice({
 	initialState: initialUsersStreamState,
 	reducers: {
 		add: (state, action: PayloadAction<UsersStreamEntity>) => {
-			userStreamAdapter.setOne(state, action.payload);
+			const { clan_id, user_id, streaming_channel_id, is_publisher } = action.payload;
+			if (!state.entities[streamMemberEntityId(user_id, streaming_channel_id)]?.is_publisher || is_publisher) {
+				userStreamAdapter.setOne(state, action.payload);
+			}
+			state.presenceRevisionByClan[clan_id] = (state.presenceRevisionByClan[clan_id] ?? 0) + 1;
 		},
-		remove: (state, action: PayloadAction<string>) => {
-			userStreamAdapter.removeOne(state, action.payload);
-		},
-		addMany: userStreamAdapter.addMany,
-		streamEnded: (state, action: PayloadAction<string>) => {
-			const channelId = action.payload;
-			const idsToRemove = Object.values(state.entities)
-				.filter((member) => member?.streaming_channel_id === channelId)
-				.map((member) => streamMemberEntityId(member?.user_id, member?.streaming_channel_id));
-			userStreamAdapter.removeMany(state, idsToRemove);
+		leave: (state, action: PayloadAction<{ userId: string; channelId: string; clanId: string }>) => {
+			const { userId, channelId, clanId } = action.payload;
+			const members = state.ids.map((id) => state.entities[id]).filter((member) => member.streaming_channel_id === channelId);
+			if (streamPublisherOf(members)?.user_id === userId) {
+				userStreamAdapter.removeMany(
+					state,
+					members.map((member) => streamMemberEntityId(member.user_id, member.streaming_channel_id))
+				);
+			} else {
+				userStreamAdapter.removeOne(state, streamMemberEntityId(userId, channelId));
+			}
+			state.presenceRevisionByClan[clanId] = (state.presenceRevisionByClan[clanId] ?? 0) + 1;
 		}
 		// ...
 	},
@@ -190,17 +185,41 @@ export const usersStreamSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchStreamChannelMembers.fulfilled, (state: UsersStreamState, action) => {
-				const { streams, fromCache } = action.payload;
+				const { streams, fromCache, presenceRevision } = action.payload;
 				state.loadingStatus = 'loaded';
 
 				if (fromCache) return;
+
+				const { clanId } = action.meta.arg;
+				const members = streams.map((stream) => {
+					const channelId = stream.channel_id || '0';
+					const known = state.entities[streamMemberEntityId(stream.user_id, channelId)];
+					return {
+						user_id: stream.user_id || '',
+						clan_id: clanId,
+						streaming_channel_id: channelId,
+						clan_name: '',
+						participant: stream.participant || '',
+						streaming_channel_label: '',
+						id: stream.id || '',
+						user_name: stream.participant || known?.user_name || '',
+						user_avatar: known?.user_avatar || '',
+						is_publisher: stream.is_publisher
+					};
+				});
+				if (presenceRevision === (state.presenceRevisionByClan[clanId] ?? 0)) {
+					const liveIds = new Set(members.map((member) => streamMemberEntityId(member.user_id, member.streaming_channel_id)));
+					const staleIds = state.ids.filter((id) => state.entities[id].clan_id === clanId && !liveIds.has(id));
+					userStreamAdapter.removeMany(state, staleIds);
+				}
+				userStreamAdapter.setMany(state, members);
 
 				state.streamChannelMember = streams.map((stream) => ({
 					id: stream.id || '',
 					user_id: stream.user_id,
 					participant: stream.participant
 				}));
-				state.cacheByClans[action.meta.arg.clanId] = createCacheMetadata();
+				state.cacheByClans[clanId] = createCacheMetadata();
 			})
 			.addCase(fetchStreamChannelMembers.rejected, (state: UsersStreamState, action) => {
 				state.loadingStatus = 'error';
@@ -258,5 +277,8 @@ export const selectAllUsersStream = createSelector(getUsersStreamState, selectAl
 
 export const selectStreamMembersByChannelId = createSelector([selectAllUsersStream, (_, channelId: string) => channelId], (entities, channelId) => {
 	const listStreamChannelUser = entities.filter((member) => member && member.streaming_channel_id === channelId);
-	return listStreamChannelUser;
+	const publisher = streamPublisherOf(listStreamChannelUser);
+	return publisher ? [publisher, ...listStreamChannelUser.filter((member) => member !== publisher)] : listStreamChannelUser;
 });
+
+export const selectStreamViewerCount = createSelector([selectStreamMembersByChannelId], (members) => Math.max(0, members.length - 1));

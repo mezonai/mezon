@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Hình thu nhỏ Stream",
 	"videoError": "Không thể phát video. Vui lòng thử lại sau.",
-	"everyoneWaiting": "Mọi người đang chờ bạn bên trong",
 	"noOneInStream": "Hiện không có ai trong phát trực tiếp",
 	"joinStream": "Tham gia phát trực tiếp",
 	"noStreamToday": "Hôm nay không có phát trực tiếp",
+	"everyoneWaiting": "Mọi người đang chờ bạn bên trong",
 	"hideMembers": "Ẩn thành viên",
 	"showMembers": "Hiện thành viên",
-	"duplicateSessionDisconnected": "Đã ngắt kết nối vì tài khoản của bạn đã tham gia phát trực tiếp hoặc kênh thoại ở phiên khác."
+	"viewerCount": "{{count}} người đang xem",
+	"quality": "Chất lượng",
+	"qualityAuto": "Tự động",
+	"qualityHigh": "Cao",
+	"qualityMid": "Vừa",
+	"qualityLow": "Thấp",
+	"fullscreen": "Toàn màn hình",
+	"exitFullscreen": "Thoát toàn màn hình",
+	"live": "Trực tiếp",
+	"isLive": "{{name}} đang phát trực tiếp",
+	"volume": "Âm lượng",
+	"mute": "Tắt tiếng",
+	"unmute": "Bật tiếng"
 }

@@ -48,7 +48,8 @@
 		"appVersion": "Versão do aplicativo",
 		"startUp": "Inicialização",
 		"quitApp": "Sair do aplicativo",
-		"server": "Servidor"
+		"server": "Servidor",
+		"streaming": "Transmissão"
 	},
 	"server": {
 		"auto": "Automático",
@@ -59,6 +60,30 @@
 		"connectedTo": "Conectado a {{region}}",
 		"connectingTo": "Conectando a {{region}}…",
 		"footer": "Automático: Escolhe um servidor para você. Escolha um servidor se quiser ficar sempre nele."
+	},
+	"streaming": {
+		"keyTitle": "Chave de transmissão",
+		"keyDescription": "Use-os no OBS ou em outro codificador WHIP para transmitir ao vivo em um canal de stream. Nunca os compartilhe: quem os tiver pode transmitir em seu nome.",
+		"channel": "Canal de stream",
+		"noChannels": "Este clã não tem canal de stream",
+		"getKey": "Obter chave",
+		"regenerate": "Gerar nova chave",
+		"server": "Servidor",
+		"token": "Bearer Token",
+		"show": "Mostrar",
+		"hide": "Ocultar",
+		"copy": "Copiar",
+		"expiresIn": "Comece a transmitir em até {{time}}. Uma transmissão já ao vivo continua depois disso.",
+		"expired": "Esta chave expirou. Gere uma nova para transmitir.",
+		"error": "Não foi possível obter a chave de transmissão. Tente novamente.",
+		"obsTitle": "Configurar o OBS",
+		"obsStepService": "No OBS, abra Configurações → Transmissão e escolha WHIP como serviço.",
+		"obsStepPaste": "Cole o Servidor e o Bearer Token acima.",
+		"obsStepEncoder": "Em Configurações → Saída, escolha um codificador H.264 e defina o intervalo de quadros-chave em 2 s.",
+		"obsStepSimulcast": "Para várias qualidades, defina o simulcast com 3 camadas se a sua versão do OBS oferecer.",
+		"obsStepStart": "Clique em Iniciar transmissão. A chave só precisa ser válida quando o OBS se conecta: se o OBS reconectar depois que ela expirar, obtenha uma nova chave e cole-a novamente.",
+		"qualityTitle": "Qualidade de exibição padrão",
+		"qualityDescription": "Usada sempre que você entra em uma transmissão. Você ainda pode alterá-la enquanto assiste."
 	},
 	"autoStart": {
 		"title": "Inicialização automática",
