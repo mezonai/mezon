@@ -1,6 +1,7 @@
-import { MentionReactInputProps } from '@mezon/utils';
+import type { MentionReactInputProps } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { memo } from 'react';
 import ClanMentionReactInput from './components/ClanMentionReactInput';
 import DMReactionInput from './components/DMReactionInput';
 

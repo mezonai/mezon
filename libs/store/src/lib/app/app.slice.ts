@@ -114,7 +114,9 @@ export interface AppState {
 	hardwareAcceleration: boolean;
 	isMediaChannelViewMode: boolean;
 	autoHidden: boolean;
+	isOpenRecommand: boolean | null;
 	isSpelling: boolean;
+	isQuickReply: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -165,7 +167,9 @@ export const initialAppState: AppState = {
 	autoStart: false,
 	hardwareAcceleration: true,
 	autoHidden: false,
-	isSpelling: false
+	isOpenRecommand: null,
+	isSpelling: false,
+	isQuickReply: false
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -434,6 +438,12 @@ export const appSlice = createSlice({
 		},
 		toggleIsSpelling: (state) => {
 			state.isSpelling = !state.isSpelling;
+		},
+		toggleIsQuickReply: (state) => {
+			state.isQuickReply = !state.isQuickReply;
+		},
+		toggleRecommand: (state) => {
+			state.isOpenRecommand = !state.isOpenRecommand;
 		}
 	}
 });
@@ -497,3 +507,6 @@ export const selectMediaChannelViewMode = createSelector(getAppState, (state: Ap
 
 export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);
 export const selectIsSpelling = createSelector(getAppState, (state: AppState) => state.isSpelling);
+export const selectIsQuickReply = createSelector(getAppState, (state: AppState) => state.isQuickReply);
+
+export const selectIsRecommand = createSelector(getAppState, (state: AppState) => state.isOpenRecommand);

@@ -175,5 +175,11 @@
 		"recentChannels": "최근 채널",
 		"searchByChannelLabel": "채널 레이블로 검색"
 	},
-	"setting": "설정"
+	"setting": "설정",
+	"chat": {
+		"quickReplies": "빠른 답장",
+		"quickRepliesDescription": "채널의 최신 메시지를 기반으로 빠른 답장 추천을 표시합니다.",
+		"grammar": "문법 교정",
+		"grammarDescription": "입력하는 동안 맞춤법과 문법 수정 사항을 제안합니다(최대 256자)."
+	}
 }

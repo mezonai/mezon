@@ -178,7 +178,9 @@
 	},
 	"setting": "Setting",
 	"chat": {
-		"title": "Show spelling corrections",
-		"description": "Automatically detect spelling mistakes and suggest corrections as you type your messages."
+		"quickReplies": "Quick replies",
+		"quickRepliesDescription": "Show quick reply chips based on the last message in the channel.",
+		"grammar": "Grammar correction",
+		"grammarDescription": "Suggest spelling and grammar fixes while you type (up to 256 characters)."
 	}
 }

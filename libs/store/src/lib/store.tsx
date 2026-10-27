@@ -125,7 +125,8 @@ const persistedAppReducer = persistReducer(
 			'isShowCanvas',
 			'isShowSettingFooter',
 			'isShowWelcomeMobile',
-			'history'
+			'history',
+			'isOpenRecommand'
 		]
 	},
 	appReducer

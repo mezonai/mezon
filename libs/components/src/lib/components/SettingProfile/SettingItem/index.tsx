@@ -63,17 +63,6 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				>
 					{t('setting:accountSettings.profiles')}
 				</button>
-				<br />
-
-				<button
-					className={` w-[170px] text-[16px] text-theme-primary-hover bg-item-hover font-medium rounded-[5px] text-left ml-[-8px] p-2 mt-4  ${selectedButton === EUserSettings.CHAT ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'}`}
-					onClick={() => {
-						handleButtonClick(EUserSettings.CHAT);
-						onItemClick && onItemClick(EUserSettings.CHAT);
-					}}
-				>
-					{t('setting:accountSettings.chat')}
-				</button>
 
 				<div className="hidden">
 					<br />
@@ -111,6 +100,17 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					data-e2e={generateE2eId(`user_setting.activity`)}
 				>
 					{t('setting:appSettings.activity')}
+				</button>
+				<br />
+
+				<button
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.CHAT ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					onClick={() => {
+						handleButtonClick(EUserSettings.CHAT);
+						onItemClick && onItemClick(EUserSettings.CHAT);
+					}}
+				>
+					{t('setting:accountSettings.chat')}
 				</button>
 				<br />
 				<button

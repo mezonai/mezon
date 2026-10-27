@@ -175,5 +175,11 @@
 		"recentChannels": "Canais recentes",
 		"searchByChannelLabel": "Pesquisar por nome do canal"
 	},
-	"setting": "Configurações"
+	"setting": "Configurações",
+	"chat": {
+		"quickReplies": "Respostas rápidas",
+		"quickRepliesDescription": "Mostrar sugestões de respostas rápidas com base na mensagem mais recente do canal.",
+		"grammar": "Correção gramatical",
+		"grammarDescription": "Sugerir correções ortográficas e gramaticais enquanto escreve (até 256 caracteres)."
+	}
 }

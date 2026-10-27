@@ -178,7 +178,9 @@
 	},
 	"setting": "Cài đặt",
 	"chat": {
-		"title": "Hiển thị bắt lỗi văn bản",
-		"description": "Tự động phát hiện và gợi ý sửa các lỗi chính tả trong tin nhắn, giúp bạn viết chính xác và dễ hiểu hơn."
+		"quickReplies": "Câu trả lời nhanh",
+		"quickRepliesDescription": "Hiển thị các gợi ý trả lời nhanh dựa trên tin nhắn gần nhất trong kênh.",
+		"grammar": "Sửa lỗi ngữ pháp",
+		"grammarDescription": "Gợi ý sửa lỗi chính tả và ngữ pháp trong khi bạn nhập (tối đa 256 ký tự)."
 	}
 }

@@ -1519,6 +1519,7 @@ export type MentionReactInputProps = {
 	hasPermissionEdit?: boolean;
 	voiceLongPress?: ILongPressType;
 	isRecording?: boolean;
+	updateRef?: React.MutableRefObject<((input: RequestInput) => void) | null>;
 	readonly onEditEphemeral?: (
 		messageId: string,
 		content: IMessageSendPayload,

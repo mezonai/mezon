@@ -1,6 +1,6 @@
 import { useDraftCompose } from '@mezon/core';
 import { selectIsShowMemberListDM, selectIsUseProfileDM } from '@mezon/store';
-import { MentionReactInputProps, generateE2eId } from '@mezon/utils';
+import type { MentionReactInputProps } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,7 +29,17 @@ const DMReactionInput = memo((props: DMReactionInputProps) => {
 			setMentionWidth(isShowMemberListDM ? widthDmGroupMemberList : widthThumbnailAttachment);
 		}
 	}, [isDm, isGr, isShowDMUserProfile, isShowMemberListDM]);
+	useEffect(() => {
+		if (props.updateRef) {
+			props.updateRef.current = updateDraft;
+		}
 
+		return () => {
+			if (props.updateRef) {
+				props.updateRef.current = null;
+			}
+		};
+	}, [updateDraft]);
 	return (
 		<MentionReactBase
 			{...props}

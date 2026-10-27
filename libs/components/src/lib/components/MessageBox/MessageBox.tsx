@@ -1,7 +1,15 @@
 import { useDragAndDrop, usePermissionChecker, useReference } from '@mezon/core';
-import { referencesActions, selectCloseMenu, selectDataReferences, selectIsSpelling, selectStatusMenu, useAppDispatch } from '@mezon/store';
+import {
+	referencesActions,
+	selectCloseMenu,
+	selectDataReferences,
+	selectIsQuickReply,
+	selectIsSpelling,
+	selectStatusMenu,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ILongPressType, IMessageSendPayload, MentionDataProps, ThreadValue } from '@mezon/utils';
+import type { ILongPressType, IMessageSendPayload, MentionDataProps, RequestInput, ThreadValue } from '@mezon/utils';
 import {
 	EOverriddenPermission,
 	MAX_FILE_ATTACHMENTS,
@@ -13,7 +21,7 @@ import {
 } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import type { ReactElement } from 'react';
-import { Fragment, memo, useCallback, useState } from 'react';
+import { Fragment, memo, useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Spelling from '../Spelling';
 import AttachmentPreviewThumbnail from './AttachmentPreviewThumbnail';
@@ -46,7 +54,7 @@ export type MessageBoxProps = {
 const MessageBox = (props: MessageBoxProps): ReactElement => {
 	const dispatch = useAppDispatch();
 	const { currentChannelId, currentClanId } = props;
-	const isCheckSpelling = useSelector(selectIsSpelling);
+
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], currentChannelId ?? '');
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(props.currentChannelId);
 	const hasReplyMessage = useSelector((state) => {
@@ -118,6 +126,9 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 		onStart: () => setIsRecording(true),
 		onFinish: () => setIsRecording(false)
 	});
+	const isCheckSpelling = useSelector(selectIsSpelling);
+	const isCheckQuickReply = useSelector(selectIsQuickReply);
+	const updateRef = useRef<(input: RequestInput) => void>(null);
 
 	return (
 		<div className="relative max-sm:-pb-2">
@@ -142,8 +153,9 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 			<PreviewOgp />
 			<AudioRecorderControl outerRecording={isRecording} onSendRecord={handleEndRecording} />
-			{isCheckSpelling && <Spelling channelId={currentChannelId || ''} />}
-
+			{(isCheckSpelling || isCheckQuickReply) && (
+				<Spelling updateDraft={updateRef} isSpelling={isCheckSpelling} isQuickReply={isCheckQuickReply} channelId={currentChannelId || ''} />
+			)}
 			<div
 				className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
 			bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || hasReplyMessage ? 'rounded-t-none' : 'rounded-t-lg'}
@@ -153,6 +165,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 				<div className={`w-[calc(100%_-_50px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
 					<div className={`w-full rounded-r-lg  gap-3 relative whitespace-pre-wrap`} onContextMenu={handleChildContextMenu}>
 						<MentionReactInput
+							updateRef={updateRef}
 							handlePaste={onPastedFiles}
 							listMentions={props.listMentions}
 							onSend={props.onSend}

@@ -1,4 +1,4 @@
-import { appActions, selectIsSpelling } from '@mezon/store';
+import { appActions, selectIsQuickReply, selectIsSpelling } from '@mezon/store';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,10 +9,16 @@ type SettingChatProps = {
 const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 	const { t } = useTranslation('accountSetting');
 	const isSpelling = useSelector(selectIsSpelling);
+	const isQuickReply = useSelector(selectIsQuickReply);
+
 	const dispatch = useDispatch();
 
 	const handleToggleSpelling = useCallback(() => {
 		dispatch(appActions.toggleIsSpelling());
+	}, []);
+
+	const handleToggleQuickReply = useCallback(() => {
+		dispatch(appActions.toggleIsQuickReply());
 	}, []);
 
 	return (
@@ -24,8 +30,23 @@ const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 			<div className="rounded-lg bg-theme-setting-nav p-4">
 				<div className="flex items-center justify-between mb-2">
 					<div className="flex flex-col">
-						<h2 className="text-base font-medium text-theme-primary-active mb-1">{t('setting:chat.title')}</h2>
-						<p className="text-sm text-theme-primary">{t('setting:chat.description')}</p>
+						<h2 className="text-base font-medium text-theme-primary-active mb-1">{t('setting:chat.quickReplies')}</h2>
+						<p className="text-sm text-theme-primary">{t('setting:chat.quickRepliesDescription')}</p>
+					</div>
+					<div className="ml-4 flex-shrink-0">
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={isQuickReply} onChange={handleToggleQuickReply} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div className="rounded-lg bg-theme-setting-nav p-4 mt-4">
+				<div className="flex items-center justify-between mb-2">
+					<div className="flex flex-col">
+						<h2 className="text-base font-medium text-theme-primary-active mb-1">{t('setting:chat.grammar')}</h2>
+						<p className="text-sm text-theme-primary">{t('setting:chat.grammarDescription')}</p>
 					</div>
 					<div className="ml-4 flex-shrink-0">
 						<label className="relative inline-flex items-center cursor-pointer">
