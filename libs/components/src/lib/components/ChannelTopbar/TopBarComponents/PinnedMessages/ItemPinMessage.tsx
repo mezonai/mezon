@@ -181,6 +181,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									messageId={String(pinMessage.message_id || '')}
 									channelId={String(pinMessage.channel_id || '')}
 									interactionDisabled
+									isDirect={mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP}
 								/>
 							</div>
 						) : (

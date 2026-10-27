@@ -75,11 +75,13 @@ export type MessageWithUserProps = {
 const PollMessageWrapper = ({
 	message,
 	observeIntersectionForLoading,
-	interactionDisabled
+	interactionDisabled,
+	isDirect
 }: {
 	message: MessagesEntity;
 	observeIntersectionForLoading?: ObserveFn;
 	interactionDisabled?: boolean;
+	isDirect?: boolean;
 }) => {
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation();
@@ -132,6 +134,7 @@ const PollMessageWrapper = ({
 			messageId={message.id}
 			channelId={message.channel_id}
 			interactionDisabled={interactionDisabled}
+			isDirect={isDirect}
 		/>
 	);
 };
@@ -443,6 +446,7 @@ function MessageWithUser({
 								message={message}
 								observeIntersectionForLoading={observeIntersectionForLoading}
 								interactionDisabled={!!isSearchMessage}
+								isDirect={isDM}
 							/>
 						)}
 						{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
