@@ -294,8 +294,7 @@ const persistedActivitiesReducer = persistReducer(
 const persistedDirectReducer = persistReducer(
 	{
 		key: 'direct',
-		storage,
-		whitelist: ['pinnedDms']
+		storage
 	},
 	directReducer
 );

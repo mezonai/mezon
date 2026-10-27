@@ -23,21 +23,32 @@ const clanGroupAdapter = createEntityAdapter<ClanGroup>();
 export interface SettingState {
 	pinnedDms?: string[];
 	clansOrder?: string[];
+	idActive: string | null;
 	// Add clan groups state
 	clanGroups: EntityState<ClanGroup, string>;
 	clanGroupOrder: ClanGroupItem[];
 }
 
-export const initialSettingState = {
+export const initialSettingState: SettingState = {
 	pinnedDms: [] as string[],
 	clansOrder: [] as string[],
 	clanGroups: clanGroupAdapter.getInitialState(),
-	clanGroupOrder: [] as ClanGroupItem[]
+	clanGroupOrder: [] as ClanGroupItem[],
+	idActive: null
 };
 export const SettingSlice = createSlice({
 	name: SETTING_USER_FEATURE_KEY,
 	initialState: initialSettingState,
 	reducers: {
+		setSettingLocal: (state, action: PayloadAction<string>) => {
+			if (state.idActive !== action.payload) {
+				state.idActive = action.payload;
+				state.clanGroupOrder = [];
+				state.clansOrder = [];
+				state.pinnedDms = [];
+				state.clanGroups = clanGroupAdapter.getInitialState();
+			}
+		},
 		togglePinDm: (state, action: PayloadAction<{ dmId: string }>) => {
 			if (!state.pinnedDms) {
 				state.pinnedDms = [];

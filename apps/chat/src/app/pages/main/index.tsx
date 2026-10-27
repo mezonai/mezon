@@ -421,7 +421,7 @@ const ClansList = memo(() => {
 
 	useEffect(() => {
 		dispatch(settingActions.initializeClanGroupOrder(allClanIds));
-	}, [dispatch]);
+	}, [dispatch, allClanIds]);
 
 	useEffect(() => {
 		setItems(

@@ -30,7 +30,8 @@ const ErrorRoutes = () => {
 			'current-theme',
 			'remember_channel',
 			'i18nextLng',
-			'persist:wallet'
+			'persist:wallet',
+			'persist:settingsUser'
 		]);
 
 		window.location.href = '/chat/direct/friends';
