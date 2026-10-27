@@ -1984,7 +1984,12 @@ export class MezonGrammarClient {
 
 		// A. Spacing around punctuation
 		const links: string[] = [];
+		const protectedParts: string[] = [];
 
+		current = current.replace(/<(\w+)\b[^>]*>.*?<\/\1\s*>|<[^>]*>|&nbsp;/g, (match) => {
+			protectedParts.push(match);
+			return `ENTITIES${protectedParts.length - 1}END`;
+		});
 		const puncCleaned = current
 			.replace(/https?:\/\/[^\s)]+|www\.[^\s)]+/gi, (link) => {
 				links.push(link);
@@ -1999,7 +2004,7 @@ export class MezonGrammarClient {
 			current = puncCleaned;
 		}
 
-		if (isPredominantlyEnglishSentence(text)) {
+		if (isPredominantlyEnglishSentence(puncCleaned)) {
 			current = current.replace(/https?:\/\/[^\s)]+|www\.[^\s)]+|(^|[.?!]\s+)(\p{L})/giu, (m, prefix, char) =>
 				/^https?:\/\/|^www\./i.test(m) ? m : prefix + char.toUpperCase()
 			);
@@ -2074,6 +2079,7 @@ export class MezonGrammarClient {
 		current = current.replace(/https?:\/\/[^\s)]+|www\.[^\s)]+|(^|[.?!]\s+)(\p{L})/giu, (m, prefix, char) =>
 			/^https?:\/\/|^www\./i.test(m) ? m : prefix + char.toUpperCase()
 		);
+		current = current.replace(/ENTITIES(\d+)END/g, (_, index) => protectedParts[Number(index)]);
 		return {
 			original: text,
 			corrected: current.trim(),

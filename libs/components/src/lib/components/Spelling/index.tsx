@@ -42,6 +42,7 @@ const Spelling = ({
 	const [corrected, setCorrected] = useState('');
 	const [holdCorrect, setHoldCorrect] = useState('');
 	const [replies, setQuickReplies] = useState<string[]>([]);
+	const [showText, setShowText] = useState('');
 
 	const [pendingCorrection, setPendingCorrection] = useState('');
 
@@ -98,6 +99,12 @@ const Spelling = ({
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			setCorrected(pendingCorrection);
+			setShowText(
+				corrected
+					.replace(/<[^>]*>/g, '')
+					.replace(/&nbsp;/g, ' ')
+					.trim()
+			);
 		}, DEBOUNCE_DELAY);
 
 		return () => {
@@ -127,7 +134,7 @@ const Spelling = ({
 					}
 
 					if (client.isModelLoaded() || client.isAccentModelLoaded()) {
-						const result = await client.onKeystrokeAsync(text, 6, (lastMessage?.content?.t as any) || null);
+						const result = await client.onKeystrokeAsync(valueTextInput, 6, (lastMessage?.content?.t as any) || null);
 
 						if (requestId !== requestIdRef.current) {
 							return;
@@ -142,7 +149,7 @@ const Spelling = ({
 								setPendingCorrection('');
 								return;
 							}
-							setPendingCorrection(correction?.trim() !== valueTextInput?.trim() ? correction : '');
+							setPendingCorrection(correction?.trim() !== text?.trim() ? correction : '');
 						} else if (!correction) {
 							setCorrected('');
 							setPendingCorrection('');
@@ -200,7 +207,7 @@ const Spelling = ({
 	};
 
 	if (corrected && isOpenRecommand) {
-		return <div className="w-full h-8 px-4 pt-2 text-theme-primary bg-theme-setting-nav text-sm pb-1">{corrected}</div>;
+		return <div className="w-full h-8 px-4 pt-2 text-theme-primary bg-theme-setting-nav text-sm pb-1">{showText}</div>;
 	}
 
 	if (replies?.length && !isOpenRecommand) {
