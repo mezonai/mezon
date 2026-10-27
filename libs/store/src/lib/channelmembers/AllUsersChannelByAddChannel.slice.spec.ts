@@ -1,3 +1,4 @@
+import { ensureSession } from '../helpers';
 import {
 	ALL_USERS_BY_ADD_CHANNEL,
 	fetchSearchCtrlK,
@@ -128,5 +129,30 @@ describe('members added before the listing is fetched again', () => {
 		const state = userChannelsReducer(before, userChannelsActions.addUserChannel({ channelId: 'c1', userAdds: ['u2'] }));
 		expect(state.entities['c1']?.user_ids).toEqual(['u1', 'u2']);
 		expect(state.entities['c1']?.usernames).toEqual(['one']);
+	});
+});
+
+describe('Ctrl+K server search', () => {
+	const runSearch = (textSearch: string) => fetchSearchCtrlK({ textSearch })(jest.fn(), () => ({}), undefined);
+
+	it('resolves when the server call fails, so the global error listener stays quiet', async () => {
+		const searchCtrlK = jest.fn().mockRejectedValue({ code: 13, message: 'Internal' });
+		(ensureSession as jest.Mock).mockResolvedValue({ client: { searchCtrlK }, session: {} });
+
+		const action = await runSearch('first-search');
+
+		expect(fetchSearchCtrlK.fulfilled.match(action)).toBe(true);
+		expect(action.payload).toBe(true);
+	});
+
+	it('asks the server again for a text whose last call failed', async () => {
+		const searchCtrlK = jest.fn().mockRejectedValueOnce({ code: 13, message: 'Internal' }).mockResolvedValueOnce({ users: [] });
+		(ensureSession as jest.Mock).mockResolvedValue({ client: { searchCtrlK }, session: {} });
+
+		await runSearch('retry-search');
+		const action = await runSearch('retry-search');
+
+		expect(searchCtrlK).toHaveBeenCalledTimes(2);
+		expect(action.payload).toEqual({ users: [] });
 	});
 });
