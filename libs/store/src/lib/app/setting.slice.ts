@@ -67,9 +67,6 @@ export const SettingSlice = createSlice({
 			}
 			state.pinnedDms = state.pinnedDms.filter((id) => id !== action.payload.dmId);
 		},
-		updateClansOrder: (state, action: PayloadAction<string[]>) => {
-			state.clansOrder = action.payload;
-		},
 		createClanGroup: (state, action: PayloadAction<{ clanIds: string[]; name?: string }>) => {
 			const { clanIds, name } = action.payload;
 			const groupId = `group_${Date.now()}`;
@@ -185,7 +182,7 @@ export const SettingSlice = createSlice({
 
 		initializeClanGroupOrder: (state, action: PayloadAction<string[]>) => {
 			if (state.clanGroupOrder.length === 0) {
-				const order = state.clansOrder || action.payload;
+				const order = state.clansOrder?.length ? state.clansOrder : action.payload;
 				state.clanGroupOrder = order.map((clanId) => ({
 					type: 'clan' as const,
 					id: clanId,
