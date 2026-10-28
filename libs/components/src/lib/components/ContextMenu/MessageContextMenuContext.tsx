@@ -230,7 +230,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 						avatar: message.avatar || message.clan_avatar || '',
 						sender_id: message.sender_id,
 						username: message.display_name || message.username || message.user?.name || '',
-						create_time_seconds: message.create_time_seconds || Math.floor(Date.now() / 1000),
+						create_time_seconds: Math.floor(Date.now() / 1000),
 						attachment: attachments.length ? new TextEncoder().encode(JSON.stringify(attachments)) : new Uint8Array()
 					}
 				})

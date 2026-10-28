@@ -13,6 +13,10 @@ import type { RootState } from '../store';
 
 export const SETTING_CLAN_CHANNEL = 'settingClanChannel';
 
+export interface ApiChannelSettingItemEntity extends ApiChannelSettingItem {
+	clan_id: string;
+}
+
 interface CachedChannelSettingData {
 	channel_setting_list: ApiChannelSettingItem[];
 	channel_count: number;
@@ -20,7 +24,7 @@ interface CachedChannelSettingData {
 	metadata?: CacheMetadata;
 }
 
-export interface SettingClanChannelState extends EntityState<ApiChannelSettingItem, string> {
+export interface SettingClanChannelState extends EntityState<ApiChannelSettingItemEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	channelCount: number;
@@ -32,10 +36,13 @@ export interface SettingClanChannelState extends EntityState<ApiChannelSettingIt
 }
 
 export const channelSettingAdapter = createEntityAdapter({
-	selectId: (channel: ApiChannelSettingItem) => channel.id || ''
+	selectId: (channel: ApiChannelSettingItemEntity) => channel.id || ''
 });
-const cleanUndefinedFields = (item: ApiChannelSettingItem): ApiChannelSettingItem => {
-	return Object.fromEntries(Object.entries(item).filter(([_, value]) => value !== undefined)) as ApiChannelSettingItem;
+const cleanUndefinedFields = (item: ApiChannelSettingItem, clan_id: string): ApiChannelSettingItemEntity => {
+	return {
+		...Object.fromEntries(Object.entries(item).filter(([_, value]) => value !== undefined)),
+		clan_id
+	} as ApiChannelSettingItemEntity;
 };
 
 export const initialSettingClanChannelState: SettingClanChannelState = channelSettingAdapter.getInitialState({
@@ -282,7 +289,7 @@ const applyChannelSettingFulfilled = (
 			apiKey: string;
 			time: number;
 			channel_count?: number;
-			channel_setting_list?: Array<ApiChannelSettingItem>;
+			channel_setting_list?: Array<ApiChannelSettingItem & { clan_id?: string }>;
 			clan_id?: string;
 			thread_count?: number;
 		};
@@ -296,7 +303,7 @@ const applyChannelSettingFulfilled = (
 	if (!response) return;
 
 	state.loadingStatus = 'loaded';
-	const cleanedList = (response.channel_setting_list || []).map(cleanUndefinedFields);
+	const cleanedList = (response.channel_setting_list || []).map((item) => cleanUndefinedFields(item, response.clan_id || item.clan_id || ''));
 
 	switch (typeFetch) {
 		case ETypeFetchChannelSetting.FETCH_CHANNEL:
@@ -312,7 +319,7 @@ const applyChannelSettingFulfilled = (
 			state.listSearchChannel = response.channel_setting_list || [];
 			break;
 		default:
-			channelSettingAdapter.setAll(state, response.channel_setting_list || []);
+			channelSettingAdapter.setAll(state, cleanedList || []);
 	}
 	state.channelCount = response.channel_count || 0;
 	state.threadCount = response.thread_count || 0;
@@ -344,12 +351,12 @@ export const settingClanChannelSlice = createSlice({
 				}
 				const existingThread = state.threadsByChannel[channel.parent_id].find((t) => t.id === channel.id);
 				if (!existingThread) {
-					state.threadsByChannel[channel.parent_id].push(channel);
+					state.threadsByChannel[channel.parent_id].push({ ...channel, clan_id: channel?.clan_id || '' });
 					state.threadCount += 1;
 				}
 				return;
 			}
-			channelSettingAdapter.addOne(state, channel);
+			channelSettingAdapter.addOne(state, { ...channel, clan_id: channel?.clan_id || '' });
 			state.channelCount += 1;
 		},
 		removeChannelFromSocket: (state, action) => {
@@ -380,7 +387,7 @@ export const settingClanChannelSlice = createSlice({
 			const channel = action.payload;
 			if (!channel?.id) return;
 
-			const safeChannel = { ...channel };
+			const safeChannel = { ...channel, clan_id: channel?.clan_id || '' };
 			if (safeChannel.channel_type === 0 || safeChannel.channel_type === undefined) {
 				delete safeChannel.channel_type;
 			}
@@ -404,9 +411,9 @@ export const settingClanChannelSlice = createSlice({
 
 			if (channel.parent_id && channel.parent_id !== '0') {
 				state.threadsByChannel[channel.parent_id] ??= [];
-				state.threadsByChannel[channel.parent_id].push(channel);
+				state.threadsByChannel[channel.parent_id].push({ ...channel, clan_id: channel?.clan_id || '' });
 			} else {
-				channelSettingAdapter.addOne(state, channel);
+				channelSettingAdapter.addOne(state, { ...channel, clan_id: channel?.clan_id || '' });
 			}
 		}
 	},

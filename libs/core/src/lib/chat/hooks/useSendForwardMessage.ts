@@ -1,9 +1,25 @@
-import type { RootState } from '@mezon/store';
-import { getStore, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
+import type { AppDispatch, RootState } from '@mezon/store';
+import {
+	cdnSignatureActions,
+	getStore,
+	selectCdnSignatureByChannelId,
+	selectChannelById,
+	selectCurrentClanId,
+	toastActions,
+	useAppDispatch
+} from '@mezon/store';
+import { uploadFileToPath, useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
-import { MAX_FORWARD_MESSAGE_LENGTH } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageAttachment, type ApiMessageMention } from 'mezon-js';
+import { ChannelStatusEnum, MAX_FORWARD_MESSAGE_LENGTH, appendCdnSignature, generatePathAttachments, getCdnSignatureChannelId } from '@mezon/utils';
+import {
+	ChannelStreamMode,
+	ChannelType,
+	safeJSONParse,
+	type ApiMessageAttachment,
+	type ApiMessageMention,
+	type ApiSession,
+	type Client
+} from 'mezon-js';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -14,6 +30,48 @@ const FORWARD_SOCKET_PAYLOAD_MAX_BYTES = 4 * 1024;
 
 function forwardPayloadBytes(content: IMessageSendPayload, attachments: ApiMessageAttachment[], mentions: ApiMessageMention[]): number {
 	return new TextEncoder().encode(JSON.stringify({ content, attachments, mentions })).length;
+}
+
+function isFiledOutOfReach(url: string | undefined, channelId: string, clanId: string): url is string {
+	const folderChannelId = getCdnSignatureChannelId(url);
+	if (!folderChannelId || folderChannelId === channelId) return false;
+	const folderChannel = selectChannelById(getStore().getState() as RootState, folderChannelId);
+	return !folderChannel || folderChannel.channel_private === ChannelStatusEnum.isPrivate || folderChannel.clan_id !== clanId;
+}
+
+async function downloadCdnFile(dispatch: AppDispatch, url: string): Promise<Blob> {
+	const channelId = getCdnSignatureChannelId(url) as string;
+	await dispatch(cdnSignatureActions.fetchCdnSignature({ channelId }));
+	const response = await fetch(appendCdnSignature(url, selectCdnSignatureByChannelId(getStore().getState() as RootState, channelId)));
+	if (!response.ok) throw new Error(`Download failed with status ${response.status}`);
+	return response.blob();
+}
+
+async function copyIntoChannel(
+	dispatch: AppDispatch,
+	client: Client,
+	session: ApiSession,
+	attachment: ApiMessageAttachment,
+	channelId: string,
+	clanId: string
+): Promise<ApiMessageAttachment> {
+	if (!isFiledOutOfReach(attachment.url, channelId, clanId)) return attachment;
+	try {
+		const file = await downloadCdnFile(dispatch, attachment.url);
+		const copyThumbnail = isFiledOutOfReach(attachment.thumbnail, channelId, clanId);
+		const thumbnailBlob = copyThumbnail ? await downloadCdnFile(dispatch, attachment.thumbnail as string).catch(() => undefined) : undefined;
+		const [prepared] = await generatePathAttachments(
+			client,
+			session,
+			[{ ...attachment, url: '', size: file.size, _thumbnailBlob: thumbnailBlob } as ApiMessageAttachment],
+			channelId
+		);
+		if (!prepared?.uploadPath || !(await uploadFileToPath(prepared.uploadPath, file, file.size))) throw new Error('Upload failed');
+		return { ...attachment, url: prepared.url, thumbnail: prepared.thumbnail ?? (copyThumbnail ? undefined : attachment.thumbnail) };
+	} catch (error) {
+		console.warn('[forward] media copy failed, forwarding the original url', error);
+		return attachment;
+	}
 }
 
 export function useSendForwardMessage() {
@@ -110,22 +168,33 @@ export function useSendForwardMessage() {
 					})
 					.filter((m) => Object.keys(m).length > 0);
 
+				const { presign_finish: _presignFinish, ...forwardedContent } = parsedContent;
 				const validatedContent = {
-					...parsedContent,
+					...forwardedContent,
 					fwd: true
 				};
 
-				const attachmentsMessage: ApiMessageAttachment[] =
-					message.attachments?.map((attach) => ({
-						filename: attach.filename,
-						filetype: attach.filetype,
-						size: attach.size,
-						duration: attach.duration,
-						url: attach.url,
-						thumbnail: attach.thumbnail,
-						height: attach.height,
-						width: attach.width
-					})) ?? [];
+				const attachmentsMessage: ApiMessageAttachment[] = await Promise.all(
+					(message.attachments ?? []).map((attach) =>
+						copyIntoChannel(
+							dispatch,
+							client,
+							session,
+							{
+								filename: attach.filename,
+								filetype: attach.filetype,
+								size: attach.size,
+								duration: attach.duration,
+								url: attach.url,
+								thumbnail: attach.thumbnail,
+								height: attach.height,
+								width: attach.width
+							},
+							channel_id,
+							clanid
+						)
+					)
+				);
 
 				const mentions = sanitizedMentions;
 

@@ -273,4 +273,6 @@ export const selectEmojiByClanId = createSelector(
 	}
 );
 
+export const selectEmojiSrcById = (state: RootState, emojiId: string) => state[EMOJI_SUGGESTION_FEATURE_KEY]?.entities?.[emojiId]?.src || '';
+
 export const selectEmojiOnSale = createSelector([selectAllEmojiSuggestion], (emojis) => emojis?.filter((emoji) => emoji?.is_for_sale === true));

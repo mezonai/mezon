@@ -38,6 +38,12 @@ export function isCloudflareCdnUrl(url: string | undefined): boolean {
 	return isFromAllowedDomain(url, CLOUDFLARE_CDN_DOMAINS);
 }
 
+const MEZON_MEDIA_ORIGINS = ['https://cdn.mezon.ai', 'https://cdn.mezon.vn', 'https://cdn.komu.ai', 'https://cdn.komu.vn'];
+
+export function isMezonMediaUrl(url: string | undefined): boolean {
+	return isMezonCdnUrl(url) || isFromAllowedDomain(url, MEZON_MEDIA_ORIGINS);
+}
+
 export function sanitizeUrl(url: string | undefined, options: SecureURLOptions = {}): string {
 	if (!url) return '';
 

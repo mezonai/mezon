@@ -26,6 +26,8 @@ import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { hasKeySearch, searchFieldName } from './constant';
 
+const SEARCH_MENTION_MARKUP = /[>~&]\[[^\]]*\]\([^)]*\)/g;
+
 export const useSearchLogic = (mode?: ChannelStreamMode) => {
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('searchMessageChannel');
@@ -104,7 +106,7 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 	const handleChange: OnChangeHandlerFunc = useCallback(
 		(event, newValue, newPlainTextValue, mentions) => {
 			const value = event.target.value;
-			const words = value.split(' ');
+			const words = value.replace(SEARCH_MENTION_MARKUP, ' ').split(' ');
 			const cleanedWords = words.filter((word) => {
 				const mentionPrefixes = [...mentionPrefixMap.flatMap((item) => item.prefixes), '>', '~', '&', '#'];
 				const isMentionStart = mentionPrefixes.some((prefix) => word.startsWith(prefix));
@@ -129,15 +131,18 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 				const matchedPrefix = prefixItem?.prefixes.find((prefix) => mentionDisplay.startsWith(prefix)) || '';
 				const mappedType = prefixItem?.mappedType || mentionDisplay.split(':')[0];
 
+				const isSender = mappedType === 'from' && !!mention.id;
 				let fieldValue: string;
 				if (mappedType === 'mentions') {
 					fieldValue = `"user_id":"${mention.id}"`;
+				} else if (isSender) {
+					fieldValue = mention.id;
 				} else {
 					fieldValue = mentionDisplay.replace(matchedPrefix, '') || mention.id;
 				}
 
 				filter.push({
-					field_name: searchFieldName?.[mappedType] || searchFieldName?.[mentionDisplay.split(':')[0]],
+					field_name: isSender ? 'sender_id' : searchFieldName?.[mappedType] || searchFieldName?.[mentionDisplay.split(':')[0]],
 					field_value: fieldValue
 				});
 			}

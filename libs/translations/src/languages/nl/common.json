@@ -18,6 +18,7 @@
 	},
 	"newMessage": "Nieuw bericht",
 	"newMention": "Nieuwe vermelding",
+	"clanRailNew": "Nieuw",
 	"discover": "Ontdekken",
 	"createClan": "Clan aanmaken",
 	"closePreviewMode": "Voorbeeldweergave sluiten",
@@ -531,6 +532,7 @@
 		"accessDenied": "Toegang geweigerd",
 		"accessDeniedDesc": "Je hebt geen toegang tot dit kanaal of clan. Neem contact op met een beheerder als je denkt dat dit een fout is.",
 		"goToWelcomeChannel": "Ga naar welkomstkanaal",
+		"goToFriendPage": "Ga naar de vriendenpagina",
 		"okayGotIt": "Begrepen"
 	},
 	"reportMessage": {

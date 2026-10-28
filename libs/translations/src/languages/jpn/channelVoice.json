@@ -135,7 +135,11 @@
 		"aloneTimeoutDisconnected": "長時間ひとりだったため、ボイスチャンネルから切断されました。",
 		"duplicateSessionDisconnected": "別のデバイスでボイスチャンネルに参加したため、このセッションは切断されました。",
 		"disconnectedRejoin": "ボイスチャンネルから切断されました。",
-		"weakNetworkDisconnected": "ネットワークが弱いため、音声チャンネルから切断されました。"
+		"weakNetworkDisconnected": "ネットワークが弱いため、音声チャンネルから切断されました。",
+		"cameraLimitReached": "このボイスチャンネルはカメラの上限に達しています。誰かがカメラをオフにしてから、もう一度お試しください。",
+		"screenShareLimitReached": "このボイスチャンネルはスクリーン共有の上限に達しています。誰かが共有を停止してから、もう一度お試しください。",
+		"cameraUpdateFailed": "カメラのオン/オフを切り替えられませんでした。もう一度お試しください。",
+		"screenShareUpdateFailed": "スクリーン共有を開始または停止できませんでした。もう一度お試しください。"
 	},
 	"usernameScreen": "{{username}}のスクリーン",
 	"recording": {
@@ -162,7 +166,10 @@
 		"keepMuted": "音声は一時停止しています。クリックするとマイクをミュートのままにします。"
 	},
 	"weakNetwork": "ネットワークが不安定",
-	"networkWarning": "インターネット接続が不安定です。他の人に聞こえにくい可能性があります。",
+	"networkWarning": {
+		"title": "インターネット接続が不安定です",
+		"body": "ネットワーク接続を確認してください。"
+	},
 	"reconnectModal": {
 		"title": "音声に接続できません",
 		"description": "音声接続を復元できませんでした。接続を確認して、もう一度参加してください。",
@@ -176,5 +183,59 @@
 		"holdSpace": "スペースキーを押し続けて話す",
 		"holdingSpace": "話しています — スペースキーを離すとミュート",
 		"hintBody": "あなたは聴くために参加しました。話す間はスペースキーを押し続けてマイクを開き、離すと再びミュートになります。"
+	},
+	"screenDraw": {
+		"annotateScreen": "共有中の画面に描画",
+		"stopAnnotating": "画面への描画を停止",
+		"drawOnScreen": "画面に描画（自分だけに表示）",
+		"stopDrawing": "描画を停止",
+		"closeDrawing": "描画を閉じる",
+		"selectAndMove": "選択して移動",
+		"pen": "ペン",
+		"text": "テキスト",
+		"eraser": "消しゴム",
+		"undo": "元に戻す",
+		"redo": "やり直す",
+		"clear": "すべての描画を消去",
+		"textPlaceholder": "メモを入力し、Enterで配置",
+		"commit": "配置 (Enter)",
+		"cancel": "キャンセル (Esc)"
+	},
+	"breakout": {
+		"title": "ブレイクアウトルーム",
+		"roomCount": "ルーム数",
+		"ruleAutomatic": "自動で割り当てる",
+		"ruleManual": "手動で割り当てる",
+		"ruleSelfSelect": "参加者にルームを選ばせる",
+		"noParticipants": "まだ通話に他の参加者はいません。ルームに割り当てるには他の参加者が参加する必要があります。",
+		"assign": "割り当て",
+		"notStarted": "ブレイクアウトルーム - 未開始",
+		"createHeader": "ブレイクアウトルームを {{count}} 個作成",
+		"recreate": "作り直す",
+		"addRoom": "ルームを追加",
+		"openAllRooms": "すべてのルームを開く",
+		"delete": "削除",
+		"deleteConfirm": "{{name}} を削除しますか？",
+		"moveTo": "移動先",
+		"exchange": "入れ替え",
+		"yes": "はい",
+		"no": "いいえ",
+		"allAssigned": "すべての参加者が割り当て済みです。",
+		"create": "作成",
+		"room": "ルーム {{number}}",
+		"openRooms": "{{count}} 個のブレイクアウトルームが開いています。",
+		"close": "ブレイクアウトルームを閉じる",
+		"returnToMain": "メインルームに戻る",
+		"opened": "ブレイクアウトルームを開きました",
+		"closed": "ブレイクアウトルームを閉じました",
+		"failed": "ブレイクアウトルームを更新できませんでした",
+		"notEnoughRooms": "この数のルームに使える空きボイスチャンネルが足りません。各ルームには誰もいない公開ボイスチャンネルが1つ必要です。ボイスチャンネルを追加するか、ルーム数を減らしてください。",
+		"notEnoughIdleChannels": "使用できる空きの公開ボイスチャンネル: {{count}}。各ルームに1つ必要です。ボイスチャンネルを追加するか、ルーム数を減らしてください。",
+		"noIdleChannels": "ルームとして使える空きの公開ボイスチャンネルがありません。このクランに公開ボイスチャンネルを作成してから、もう一度お試しください。",
+		"inviteAssigned": "ホストがあなたをブレイクアウトルームに割り当てました。",
+		"inviteChoose": "ホストがブレイクアウトルームを開きました。参加するルームを選んでください。",
+		"inviteReturn": "ホストがブレイクアウトルームを閉じました。メインルームに戻りますか？",
+		"join": "参加",
+		"later": "後で"
 	}
 }

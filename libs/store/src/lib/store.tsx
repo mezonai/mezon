@@ -14,7 +14,8 @@ import { usersClanReducer } from './clanMembers/clan.members';
 import { userClanProfileReducer } from './clanProfile/clanProfile.slice';
 import { clansReducer } from './clans/clans.slice';
 import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
-import { emojiSuggestionReducer } from './emojiSuggestion/emojiSuggestion.slice';
+import { directReducer } from './direct/direct.slice';
+import { emojiSuggestionReducer, selectEmojiSrcById } from './emojiSuggestion/emojiSuggestion.slice';
 import { friendsReducer } from './friends/friend.slice';
 import { initFriendRelationCrossTabSync } from './friends/friendCrossTabSync';
 import { gifsReducer } from './giftStickerEmojiPanel/gifs.slice';
@@ -27,6 +28,7 @@ import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
 import type { MezonContextValue } from '@mezon/transport';
 import { publishSessionUpdate } from '@mezon/transport';
+import { setEmojiSourceResolver } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { ACTIVITIES_API_FEATURE_KEY, activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { SETTING_USER_FEATURE_KEY, settingUserReducer } from './app/setting.slice';
@@ -46,7 +48,6 @@ import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
 import { dashboardReducer } from './dashboard/dashboard.slice';
 import { DEVICES_FEATURE_KEY, devicesReducer } from './devices/devices.slice';
-import { directReducer } from './direct/direct.slice';
 import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
@@ -466,6 +467,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	storeInstance = store;
 	storeCreated = true;
 	_resolveStoreReady?.(store);
+	setEmojiSourceResolver((emojiId) => selectEmojiSrcById(store.getState(), emojiId));
 
 	import('./badge/badgeService').then(({ badgeService }) => {
 		badgeService.init(store.dispatch, store.getState);

@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Miniatura de la Transmisión",
 	"videoError": "Error al reproducir el video. Por favor, intenta de nuevo más tarde.",
-	"everyoneWaiting": "Todos te están esperando adentro",
 	"noOneInStream": "Nadie está actualmente en la transmisión",
 	"joinStream": "Unirse a la transmisión",
 	"noStreamToday": "Sin transmisión hoy",
+	"everyoneWaiting": "Todos te están esperando adentro",
 	"hideMembers": "Ocultar Miembros",
 	"showMembers": "Mostrar Miembros",
-	"duplicateSessionDisconnected": "Se desconectó porque tu cuenta se unió a una transmisión o canal de voz en otra sesión."
+	"viewerCount": "{{count}} viendo",
+	"quality": "Calidad",
+	"qualityAuto": "Automática",
+	"qualityHigh": "Alta",
+	"qualityMid": "Media",
+	"qualityLow": "Baja",
+	"fullscreen": "Pantalla completa",
+	"exitFullscreen": "Salir de pantalla completa",
+	"live": "En vivo",
+	"isLive": "{{name}} está en vivo",
+	"volume": "Volumen",
+	"mute": "Silenciar",
+	"unmute": "Activar sonido"
 }

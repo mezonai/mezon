@@ -8,7 +8,14 @@ import { useSelector } from 'react-redux';
 import { RedDot } from '../ChannelTopbar';
 import { NotificationTooltipContent } from './NotificationTooltipContent';
 
-export const NotificationTooltip = memo(() => {
+const SFU_HEADER_ICON_BUTTON_CLASS =
+	'[--sfu-header-icon-fill:var(--bg-icon-theme)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
+
+type NotificationTooltipProps = {
+	useSfuHeaderIconFill?: boolean;
+};
+
+export const NotificationTooltip = memo(({ useSfuHeaderIconFill = false }: NotificationTooltipProps) => {
 	const { t } = useTranslation('notifications');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const badgeCount = useSelector((state) => selectBadgeClanById(state, currentClanId || ''));
@@ -56,13 +63,17 @@ export const NotificationTooltip = memo(() => {
 		>
 			<button
 				title={t('inbox')}
-				className={`focus-visible:outline-none relative group text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					visible ? 'text-[var(--bg-icon-theme-active)]' : ''
+				className={`focus-visible:outline-none relative group ${
+					useSfuHeaderIconFill
+						? `${SFU_HEADER_ICON_BUTTON_CLASS} ${visible ? '[--sfu-header-icon-fill:var(--bg-icon-theme-active)]' : ''}`
+						: `text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+								visible ? 'text-[var(--bg-icon-theme-active)]' : ''
+							}`
 				}`}
 				onContextMenu={(e) => e.preventDefault()}
 				data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 			>
-				<Icons.Inbox className="size-5" />
+				<Icons.Inbox className="size-5" defaultFill1={useSfuHeaderIconFill ? 'var(--sfu-header-icon-fill)' : undefined} />
 				{badgeCount > 0 && <RedDot />}
 			</button>
 		</Tooltip>

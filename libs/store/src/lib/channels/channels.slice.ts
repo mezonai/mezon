@@ -31,9 +31,9 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import { fetchCategoriesCached, mapCategoryToEntity } from '../categories/categories.slice';
 import { cdnSignatureActions } from '../cdnSignature/cdnSignature.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
-import { selectClansEntities } from '../clans/clans.slice';
+import { selectClansEntities, waitForClanJoin } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx, withRetry } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
@@ -47,6 +47,10 @@ import type { ChannelMetaEntity } from './channelmeta.slice';
 import { channelMetaActions, selectChannelMetaById } from './channelmeta.slice';
 
 const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 5;
+const CHANNEL_ARCHIVE_CHANGED = 'Request cancelled: channel archive state changed';
+const isArchiveRequestCancelled = (error: unknown) =>
+	error === CHANNEL_ARCHIVE_CHANGED ||
+	(typeof error === 'object' && error !== null && 'message' in error && error.message === CHANNEL_ARCHIVE_CHANGED);
 
 const pendingFetchChannels = new Map<string, Promise<any>>();
 
@@ -63,8 +67,8 @@ export interface ChannelsEntity extends IChannel {
 function extractChannelMeta(channel: ChannelsEntity): ChannelMetaEntity {
 	return {
 		id: channel.id,
-		lastSeenTimestamp: Number(channel.last_seen_message?.timestamp_seconds) ?? 0,
-		lastSentTimestamp: Number(channel.last_sent_message?.timestamp_seconds),
+		lastSeenTimestamp: Number(channel.last_seen_message?.timestamp_seconds ?? 0),
+		lastSentTimestamp: Number(channel.last_sent_message?.timestamp_seconds ?? 0),
 		clanId: channel.clan_id ?? '0',
 		isMute: channel.is_mute ?? false,
 		senderId: channel.last_sent_message?.sender_id ?? '0',
@@ -101,6 +105,7 @@ export interface ChannelsState {
 			currentCategory?: ICategory;
 			appFocused?: Record<string, ApiChannelAppResponseExtend>;
 			// Cache metadata for different data types
+			archiveStateByChannel?: Record<string, { isArchived: boolean; version: number }>;
 			channelsCache?: CacheMetadata;
 			favoriteChannelsCache?: CacheMetadata;
 			appChannelsCache?: CacheMetadata;
@@ -127,6 +132,7 @@ const getInitialClanState = () => {
 		appChannelsList: {},
 		appChannelsListShowOnPopUp: [],
 		fetchChannelSuccess: false,
+		archiveStateByChannel: {},
 		favoriteChannels: [],
 		buzzState: {},
 		appFocused: {},
@@ -311,6 +317,9 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 	if (!channelId) return null;
 
 	try {
+		if (clanId && clanId !== '0') {
+			await waitForClanJoin(clanId);
+		}
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		const channel = await mezon.clientRef.current?.joinChat(mezon.session, clanId, channelId, channelType, isPublic);
 		return channel;
@@ -320,13 +329,48 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 	}
 });
 
+export const fetchChannelById = createAsyncThunk(
+	'channels/fetchChannelById',
+	async ({ clanId, channelId, restored = false }: { clanId: string; channelId: string; restored?: boolean }, thunkAPI) => {
+		try {
+			const getArchiveVersion = () =>
+				(thunkAPI.getState() as RootState).channels.byClans[clanId]?.archiveStateByChannel?.[channelId]?.version ?? 0;
+			const archiveVersion = getArchiveVersion();
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await withRetry((session) => mezon.client.listChannelDetail(session, channelId), {
+				maxRetries: 3,
+				initialDelay: 1000,
+				scope: 'channel-detail',
+				mezon
+			});
+			if (getArchiveVersion() !== archiveVersion) return thunkAPI.rejectWithValue(CHANNEL_ARCHIVE_CHANGED);
+			if (response?.channel_id !== channelId || (response.clan_id && response.clan_id !== '0' && response.clan_id !== clanId)) {
+				throw new Error('Invalid channel details');
+			}
+			const channel: ChannelsEntity = {
+				...mapChannelToEntity(response),
+				clan_id: clanId,
+				parent_id: response.parent_id || '0',
+				...(restored && { active: ThreadStatus.joined })
+			};
+			thunkAPI.dispatch(channelsActions.upsertOne({ clanId, channel }));
+			thunkAPI.dispatch(listChannelsByUserActions.upsertOne(channel));
+			thunkAPI.dispatch(listChannelsByUserActions.setChannelDetail({ channelId, detail: channel }));
+			thunkAPI.dispatch(channelMetaActions.upsertOne(extractChannelMeta(channel)));
+			return channel;
+		} catch (error) {
+			captureSentryError(error, 'channels/fetchChannelById');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const joinChannel = createAsyncThunk(
 	'channels/joinChannel',
 	async ({ clanId, channelId, noFetchMembers, messageId, isClearMessage = true, noCache = false }: fetchChannelMembersPayload, thunkAPI) => {
 		try {
 			thunkAPI.dispatch(appActions.setMediaChannelViewMode(false));
 			thunkAPI.dispatch(reactionActions.removeAll());
-			thunkAPI.dispatch(channelsActions.setIdChannelSelected({ clanId, channelId }));
 			thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
 			thunkAPI.dispatch(notificationSettingActions.getNotificationSetting({ channelId }));
 			thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: clanId ?? '0', channelId }));
@@ -340,7 +384,17 @@ export const joinChannel = createAsyncThunk(
 				state = thunkAPI.getState() as RootState;
 			}
 
-			const channel = selectChannelById(getChannelsRootState(thunkAPI), channelId);
+			let channel = selectChannelByIdAndClanId(thunkAPI.getState() as RootState, clanId, channelId);
+			if (!channel) {
+				channel = await thunkAPI.dispatch(fetchChannelById({ clanId, channelId })).unwrap();
+				state = thunkAPI.getState() as RootState;
+			}
+			// A slower detail response must not select a channel the user has already left.
+			if ((thunkAPI.getState() as RootState).channels.byClans[clanId]?.currentChannelId !== channelId) return channel;
+			if (channel) {
+				thunkAPI.dispatch(channelsActions.setIdChannelSelected({ clanId, channelId }));
+			}
+
 			const channelMeta = selectChannelMetaById(thunkAPI.getState(), channelId);
 
 			if (!state.messages?.idMessageToJump?.id) {
@@ -397,6 +451,7 @@ export const joinChannel = createAsyncThunk(
 
 			return channel;
 		} catch (error) {
+			if (isArchiveRequestCancelled(error)) return null;
 			captureSentryError(error, 'channels/joinChannel');
 			return thunkAPI.rejectWithValue(error);
 		}
@@ -508,7 +563,15 @@ export const applyChannelArchiveState = createAsyncThunk(
 			return { channelId, parentChannelId, isArchive };
 		}
 
-		return { channelId, parentChannelId, isArchive };
+		const channel = await thunkAPI.dispatch(fetchChannelById({ clanId, channelId, restored: true })).unwrap();
+		const restoredParentId = channel.parent_id || parentChannelId;
+		thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId, channelId, noCache: true }));
+		if (restoredParentId !== '0') {
+			thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId, activeCode: ThreadStatus.joined }));
+			thunkAPI.dispatch(threadsActions.fetchThread({ clanId, channelId: restoredParentId, noCache: true }));
+		}
+		thunkAPI.dispatch(syncClanChannelSidebarSources({ clanId, noCache: true }));
+		return { channelId, parentChannelId: restoredParentId, isArchive };
 	}
 );
 
@@ -555,7 +618,7 @@ export const restoreChannel = createAsyncThunk('channels/restoreChannel', async 
 
 		return { clanId: body.clanId, channelId: body.channelId };
 	} catch (error) {
-		captureSentryError(error, 'channels/restoreChannel');
+		if (!isArchiveRequestCancelled(error)) captureSentryError(error, 'channels/restoreChannel');
 		return thunkAPI.rejectWithValue(error);
 	}
 });
@@ -1534,6 +1597,14 @@ export const channelsSlice = createSlice({
 		}
 	},
 	extraReducers: (builder) => {
+		builder.addCase(applyChannelArchiveState.pending, (state, action) => {
+			const { clanId, channelId, isArchive } = action.meta.arg;
+			const clan = (state.byClans[clanId] ??= getInitialClanState());
+			const archiveStates = (clan.archiveStateByChannel ??= {});
+			const previous = archiveStates[channelId];
+			if (previous?.isArchived === isArchive) return;
+			archiveStates[channelId] = { isArchived: isArchive, version: (previous?.version ?? 0) + 1 };
+		});
 		builder
 			.addCase(fetchChannels.pending, (state: ChannelsState) => {
 				state.loadingStatus = 'loading';
@@ -1682,6 +1753,7 @@ export const { openCreateNewModalChannel } = channelsSlice.actions;
 export const channelsActions = {
 	...channelsSlice.actions,
 	fetchChannels,
+	fetchChannelById,
 	joinChannel,
 	joinChat,
 	createNewChannel,

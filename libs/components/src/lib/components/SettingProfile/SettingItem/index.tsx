@@ -147,6 +147,17 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				>
 					{t('setting:appSettings.voice')}
 				</button>
+				<br />
+				<button
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.STREAMING ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					onClick={() => {
+						handleButtonClick(EUserSettings.STREAMING);
+						onItemClick && onItemClick(EUserSettings.STREAMING);
+					}}
+					data-e2e={generateE2eId(`user_setting.streaming.tab_streaming`)}
+				>
+					{t('setting:appSettings.streaming')}
+				</button>
 				<div className="hidden">
 					<br />
 					<button className="p-2 text-[16px] font-medium w-[170px] rounded-[5px] text-left mt-1 ml-[-8px] ">Accessibility</button>

@@ -21,7 +21,10 @@
 		"ignore": "Bỏ qua",
 		"friendRequestSentButton": "Đã gửi lời mời kết bạn",
 		"block": "Chặn",
-		"unblock": "Bỏ chặn"
+		"unblock": "Bỏ chặn",
+		"welcomeToClan": "Chào mừng đến với Clan",
+		"emptyChannel" : "Các kênh sẽ xuất hiện tại đây khi bạn có quyền truy cập."
+
 	},
 	"toast": {
 		"userBlockedSuccess": "Đã chặn người dùng thành công",

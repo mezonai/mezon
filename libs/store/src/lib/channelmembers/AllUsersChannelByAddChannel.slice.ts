@@ -12,6 +12,43 @@ import type { ChannelMembersEntity } from './channel.members';
 
 export const ALL_USERS_BY_ADD_CHANNEL = 'allUsersByAddChannel';
 
+/** Identity of a member added before the channel listing is fetched again, shaped like the listing's own columns. */
+export type AddedChannelUserProfile = {
+	username?: string;
+	display_name?: string;
+	avatar?: string;
+};
+
+type ChannelListingColumns = Pick<IUserChannel, 'user_ids' | 'usernames' | 'display_names' | 'avatars'>;
+
+/**
+ * The listing ships names and avatars as arrays parallel to `user_ids`. Members added locally are appended to `user_ids`
+ * only, so a member the clan roster does not hold (it is capped at 1000) rendered as a bare id until the next fetch.
+ * This writes their identity at the same index, padding any gap the listing left. The socket event for the same add can
+ * append the id first, so an entry the listing counts but left blank is filled too; one it named is kept.
+ */
+export const withAddedProfiles = (
+	existing: ChannelListingColumns | undefined,
+	userIds: string[],
+	profiles?: Record<string, AddedChannelUserProfile>
+): Partial<ChannelListingColumns> => {
+	if (!profiles || Object.keys(profiles).length === 0) return {};
+	const known = existing?.user_ids?.length ?? 0;
+	const usernames = [...(existing?.usernames ?? [])];
+	const displayNames = [...(existing?.display_names ?? [])];
+	const avatars = [...(existing?.avatars ?? [])];
+	userIds.forEach((userId, index) => {
+		const profile = profiles[userId];
+		const named = !!(usernames[index] || displayNames[index] || avatars[index]);
+		if (named || (index < known && !profile)) return;
+		usernames[index] = profile?.username ?? '';
+		displayNames[index] = profile?.display_name ?? '';
+		avatars[index] = profile?.avatar ?? '';
+	});
+	const filled = (values: string[]) => Array.from(values, (value) => value ?? '');
+	return { usernames: filled(usernames), display_names: filled(displayNames), avatars: filled(avatars) };
+};
+
 export interface UsersByAddChannelState extends EntityState<IUserChannel, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -138,8 +175,10 @@ export const fetchSearchCtrlK = createAsyncThunk(
 
 			return response;
 		} catch (error) {
+			// Search-as-you-type: a rejection would reach the global error listener and cover the app with the
+			// error modal. The local matches stay on screen and the next keystroke retries, since the key is not cached.
 			captureSentryError(error, 'allUsersByAddChannel/fetchSearchCtrlK');
-			return thunkAPI.rejectWithValue(error);
+			return true;
 		}
 	}
 );
@@ -187,8 +226,11 @@ export const userChannelsSlice = createSlice({
 				}
 			});
 		},
-		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
-			const { channelId, userAdds } = action.payload;
+		addUserChannel: (
+			state,
+			action: PayloadAction<{ channelId: string; userAdds: Array<string>; profiles?: Record<string, AddedChannelUserProfile> }>
+		) => {
+			const { channelId, userAdds, profiles } = action.payload;
 
 			if (userAdds.length <= 0) return;
 
@@ -200,13 +242,16 @@ export const userChannelsSlice = createSlice({
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						user_ids: updatedUserIds
+						user_ids: updatedUserIds,
+						...withAddedProfiles(existingChannel, updatedUserIds, profiles)
 					}
 				});
 			} else {
 				UserChannelAdapter.addOne(state, {
 					id: channelId,
-					user_ids: userAdds
+					channel_id: channelId,
+					user_ids: userAdds,
+					...withAddedProfiles(undefined, userAdds, profiles)
 				});
 			}
 
@@ -372,7 +417,8 @@ export const userChannelsSlice = createSlice({
 						icon: '@',
 						typeChat: TypeSearch.Dm_Type,
 						prioritizeName: user?.display_name || user?.username || '',
-						searchName: [user?.display_name, user?.username, ...(user?.list_nick_names ?? [])].filter(Boolean).join('.')
+						searchName: [user?.display_name, user?.username, ...(user?.list_nick_names ?? [])].filter(Boolean).join('.'),
+						avatarUser: user?.avatar_url || ''
 					});
 				}
 

@@ -135,7 +135,11 @@
 		"aloneTimeoutDisconnected": "너무 오랫동안 혼자 있어서 음성 채널에서 연결이 해제되었습니다.",
 		"duplicateSessionDisconnected": "다른 기기에서 음성 채널에 참여하여 이 세션의 연결이 끊어졌습니다.",
 		"disconnectedRejoin": "음성 채널 연결이 끊어졌습니다.",
-		"weakNetworkDisconnected": "네트워크가 약하여 음성 채널에서 연결이 끊어졌습니다."
+		"weakNetworkDisconnected": "네트워크가 약하여 음성 채널에서 연결이 끊어졌습니다.",
+		"cameraLimitReached": "이 음성 채널의 카메라 한도에 도달했습니다. 다른 사람이 카메라를 끈 후 다시 시도하세요.",
+		"screenShareLimitReached": "이 음성 채널의 화면 공유 한도에 도달했습니다. 다른 사람이 공유를 중지한 후 다시 시도하세요.",
+		"cameraUpdateFailed": "카메라를 켜거나 끄지 못했습니다. 다시 시도하세요.",
+		"screenShareUpdateFailed": "화면 공유를 시작하거나 중지하지 못했습니다. 다시 시도하세요."
 	},
 	"usernameScreen": "{{username}} 의 화면",
 	"recording": {
@@ -162,7 +166,10 @@
 		"keepMuted": "오디오가 일시정지되었습니다. 클릭하면 마이크를 계속 음소거 상태로 유지합니다."
 	},
 	"weakNetwork": "약한 네트워크",
-	"networkWarning": "인터넷 연결이 불안정합니다. 다른 사람들이 당신의 목소리를 선명하게 듣지 못할 수 있습니다.",
+	"networkWarning": {
+		"title": "인터넷 연결이 불안정합니다",
+		"body": "네트워크 연결을 확인해 주세요."
+	},
 	"reconnectModal": {
 		"title": "음성 채널에 연결할 수 없습니다",
 		"description": "음성 연결을 복원하지 못했습니다. 연결을 확인하고 다시 참여해 보세요.",
@@ -176,5 +183,59 @@
 		"holdSpace": "스페이스를 길게 눌러 말하기",
 		"holdingSpace": "말하는 중 — 스페이스를 놓으면 음소거",
 		"hintBody": "당신은 듣기 위해 참여했습니다. 말하는 동안 스페이스를 길게 눌러 마이크를 열고, 놓으면 다시 음소거됩니다."
+	},
+	"screenDraw": {
+		"annotateScreen": "공유 중인 화면에 그리기",
+		"stopAnnotating": "화면에 그리기 중지",
+		"drawOnScreen": "화면에 그리기 (나만 보임)",
+		"stopDrawing": "그리기 중지",
+		"closeDrawing": "그리기 닫기",
+		"selectAndMove": "선택 및 이동",
+		"pen": "펜",
+		"text": "텍스트",
+		"eraser": "지우개",
+		"undo": "실행 취소",
+		"redo": "다시 실행",
+		"clear": "모든 그림 지우기",
+		"textPlaceholder": "메모를 입력하고 Enter로 배치",
+		"commit": "배치 (Enter)",
+		"cancel": "취소 (Esc)"
+	},
+	"breakout": {
+		"title": "소회의실",
+		"roomCount": "회의실 수",
+		"ruleAutomatic": "자동으로 배정",
+		"ruleManual": "수동으로 배정",
+		"ruleSelfSelect": "참가자가 회의실 선택",
+		"noParticipants": "아직 통화에 다른 사람이 없습니다. 다른 참가자가 먼저 참여해야 회의실에 배정할 수 있습니다.",
+		"assign": "배정",
+		"notStarted": "소회의실 - 시작 안 됨",
+		"createHeader": "소회의실 {{count}}개 만들기",
+		"recreate": "다시 만들기",
+		"addRoom": "회의실 추가",
+		"openAllRooms": "모든 회의실 열기",
+		"delete": "삭제",
+		"deleteConfirm": "{{name}}을(를) 삭제할까요?",
+		"moveTo": "이동",
+		"exchange": "교환",
+		"yes": "네",
+		"no": "아니요",
+		"allAssigned": "모든 참가자가 배정되었습니다.",
+		"create": "만들기",
+		"room": "회의실 {{number}}",
+		"openRooms": "소회의실 {{count}}개가 열려 있습니다.",
+		"close": "소회의실 닫기",
+		"returnToMain": "메인 회의실로 돌아가기",
+		"opened": "소회의실을 열었습니다",
+		"closed": "소회의실을 닫았습니다",
+		"failed": "소회의실을 업데이트할 수 없습니다",
+		"notEnoughRooms": "이만큼의 회의실에 사용할 빈 음성 채널이 부족합니다. 회의실마다 아무도 없는 공개 음성 채널이 하나씩 필요합니다. 음성 채널을 더 만들거나 회의실 수를 줄이세요.",
+		"notEnoughIdleChannels": "사용 가능한 빈 공개 음성 채널: {{count}}개. 회의실마다 하나씩 필요합니다. 음성 채널을 더 만들거나 회의실 수를 줄이세요.",
+		"noIdleChannels": "회의실로 사용할 빈 공개 음성 채널이 없습니다. 이 클랜에 공개 음성 채널을 만든 후 다시 시도하세요.",
+		"inviteAssigned": "호스트가 회원님을 소회의실에 배정했습니다.",
+		"inviteChoose": "호스트가 소회의실을 열었습니다. 참여할 회의실을 선택하세요.",
+		"inviteReturn": "호스트가 소회의실을 닫았습니다. 메인 회의실로 돌아갈까요?",
+		"join": "참여",
+		"later": "나중에"
 	}
 }

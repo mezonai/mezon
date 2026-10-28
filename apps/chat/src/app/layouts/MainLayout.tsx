@@ -2,6 +2,7 @@ import {
 	ChatContext,
 	ChatContextProvider,
 	ColorRoleProvider,
+	useCdnFallbackOnMediaError,
 	useCdnSignatureRefreshOnMediaError,
 	useDragAndDrop,
 	useFriends,
@@ -12,7 +13,7 @@ import { appActions, e2eeActions, gifsStickerEmojiActions, selectAllAccount, sel
 import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/utils';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries -- shared shell components are required before route-level lazy chunks mount
-import { StreamAudioSession, TooManyUpload, useClanLimitModalErrorHandler } from '@mezon/components';
+import { BreakoutSessionHost, StreamPlaybackSession, TooManyUpload, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
 import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName } from '@mezon/utils';
@@ -40,6 +41,7 @@ const GlobalEventListener = () => {
 		debouncedScheduleMs: 3000
 	});
 	useCdnSignatureRefreshOnMediaError();
+	useCdnFallbackOnMediaError();
 
 	const handleReconnectSuccess = useMemo(
 		() =>
@@ -156,7 +158,8 @@ const MainLayout = memo(
 				}}
 			>
 				{shouldRender && <MezonSfuChannelVoice />}
-				<StreamAudioSession />
+				{shouldRender && <BreakoutSessionHost />}
+				<StreamPlaybackSession />
 				<Outlet />
 				<GlobalEventListener />
 

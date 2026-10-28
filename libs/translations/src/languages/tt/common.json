@@ -92,6 +92,7 @@
 	},
 	"newMessage": "Яңа",
 	"newMention": "Яңа искә алу",
+	"clanRailNew": "Яңа",
 	"discover": "Ачыклагыз",
 	"createClan": "Клан булдыру",
 	"closePreviewMode": "Алдан карау режимын ябу",
@@ -531,6 +532,7 @@
 		"accessDenied": "Керү кире кагылды",
 		"accessDeniedDesc": "Сезнең бу каналга яки кланга керергә рөхсәтегез юк. Зинһар, сервер администраторы белән тикшерегез, бу хата.",
 		"goToWelcomeChannel": "Рәхим итегез каналына керегез",
+		"goToFriendPage": "Дуслар битенә күчү",
 		"okayGotIt": "Ярар, аңладым"
 	},
 	"reportMessage": {

@@ -18,7 +18,7 @@ import {
 } from '@mezon/store';
 import { Menu as Dropdown, Icons } from '@mezon/ui';
 import type { ContextMenuItem, IEmoji, IMessageWithUser } from '@mezon/utils';
-import { QUICK_MENU_TYPE, SHOW_POSITION, generateE2eId, isPublicChannel } from '@mezon/utils';
+import { QUICK_MENU_TYPE, SHOW_POSITION, TypeMessage, generateE2eId, isPublicChannel } from '@mezon/utils';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Item, Menu, Separator, Submenu } from 'react-contexify';
@@ -307,7 +307,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		for (let index = 0; index < items.length; index++) {
 			const item = items[index];
 
-			if (item.label === t('deleteMessage') && !isTopic && message?.content?.tp && message?.content?.tp !== '0') {
+			if (item.label === t('deleteMessage') && !isTopic && message?.code === TypeMessage.Topic) {
 				continue;
 			}
 			if (isCallLogMessage && item.id && HIDDEN_CALL_LOG_MENU_ITEM_IDS.has(item.id)) {

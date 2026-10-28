@@ -9,7 +9,6 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
 import type { ApiPhoto, IMessageWithUser, ObserveFn, PreSendMediaAttachment } from '@mezon/utils';
 import {
 	EMimeTypes,
@@ -29,7 +28,6 @@ import {
 
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import Album from './Album';
 import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageLinkFile from './MessageLinkFile';
@@ -160,18 +158,6 @@ const signAttachment = (
 	thumbnail: isAwaitingSignature?.(attachment.thumbnail) ? undefined : signCdnUrl(attachment.thumbnail)
 });
 
-const PrivateChannelMediaPlaceholder = () => {
-	const { t } = useTranslation('media');
-	return (
-		<div className="w-full py-1">
-			<div className="flex flex-col items-center justify-center gap-2 w-[280px] h-[160px] max-w-full rounded-md bg-bgLightSecondary dark:bg-bgSecondary text-textSecondary800 dark:text-textSecondary">
-				<Icons.LockIcon defaultSize="w-6 h-6" />
-				<span className="text-sm px-3 text-center">{t('attachment.fromPrivateChannel')}</span>
-			</div>
-		</div>
-	);
-};
-
 const Attachments: React.FC<{
 	attachments: ApiMessageAttachment[];
 	message: IMessageWithUser;
@@ -184,19 +170,9 @@ const Attachments: React.FC<{
 	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
 		const cdnUrls = useMemo(() => attachments.flatMap((attachment) => [attachment.url, attachment.thumbnail]), [attachments]);
-		const { signCdnUrl, isAwaitingSignature, isSignatureDenied } = useCdnUrlSigner(cdnUrls, message.channel_id);
+		const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(cdnUrls, message.channel_id);
 
 		const { videos, images, documents, audio } = classified;
-		const isForwarded = !!message.content?.fwd;
-		const visibleVideos = useMemo(
-			() => (isForwarded ? videos.filter((video) => !isSignatureDenied(video.url)) : videos),
-			[isForwarded, videos, isSignatureDenied]
-		);
-		const visibleImages = useMemo(
-			() => (isForwarded ? images.filter((image) => !isSignatureDenied(image.url)) : images),
-			[isForwarded, images, isSignatureDenied]
-		);
-		const hasPrivateChannelMedia = visibleVideos.length < videos.length || visibleImages.length < images.length;
 		const presignFinishKeys = useMemo(() => parsePresignFinishKeys(message.content), [message.content]);
 		const presignAttachmentSource = message.attachments ?? attachments;
 		const isPresignPendingForUrl = useCallback(
@@ -207,11 +183,9 @@ const Attachments: React.FC<{
 		const { isMobile } = useAppLayout();
 		return (
 			<>
-				{hasPrivateChannelMedia && <PrivateChannelMediaPlaceholder />}
-
-				{visibleVideos.length > 0 && (
+				{videos.length > 0 && (
 					<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
-						{visibleVideos.map((video, index) => (
+						{videos.map((video, index) => (
 							<div key={index} className="gap-y-2 max-w-full min-w-0">
 								<MessageVideo
 									attachmentData={signAttachment(video, signCdnUrl, isAwaitingSignature)}
@@ -225,10 +199,10 @@ const Attachments: React.FC<{
 					</div>
 				)}
 
-				{visibleImages.length > 0 && (
+				{images.length > 0 && (
 					<ImageAlbum
 						observeIntersectionForLoading={observeIntersectionForLoading}
-						images={visibleImages}
+						images={images}
 						message={message}
 						mode={mode}
 						onContextMenu={onContextMenu}

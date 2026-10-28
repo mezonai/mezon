@@ -1,5 +1,5 @@
 import { selectCurrentClanLogo, selectCurrentClanName } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_1MB, ValidateSpecialCharacters, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -52,7 +52,7 @@ const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete, 
 			return;
 		}
 
-		handleUploadFile(client, session, file?.name, file).then((attachment: any) => {
+		handleUploadPublicFile(client, session, file?.name, file).then((attachment: any) => {
 			setUrlLogo(attachment.url ?? '');
 			onUpload(attachment.url ?? '');
 		});

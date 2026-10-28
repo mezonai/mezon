@@ -1,7 +1,7 @@
 import { useAuth, useCustomNavigate, useFriends } from '@mezon/core';
 import {
 	channelsActions,
-	clansActions,
+	directActions,
 	selectClanView,
 	selectCurrentClanId,
 	selectDmGroupCurrentId,
@@ -53,7 +53,7 @@ const SidebarLogoItem = () => {
 		openRightClickModal();
 	};
 	const handleClickToJoinClan = () => {
-		dispatch(clansActions.joinClan({ clanId: '0' }));
+		dispatch(directActions.joinDirectMessageSpace({}));
 	};
 	const { quantityPendingRequest } = useFriends();
 	const combinedBadge = quantityPendingRequest || 0;

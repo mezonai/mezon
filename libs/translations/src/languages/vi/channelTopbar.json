@@ -175,6 +175,14 @@
 	"errors": {
 		"limit": "Vượt quá giới hạn số lượng channel"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Ẩn thanh ghim",
+		"dismissModal": {
+			"title": "Ẩn thanh ghim",
+			"message": "Bạn có chắc chắn muốn ẩn thanh ghim không? Thanh ghim sẽ tự động hiện lại khi có tin nhắn ghim hoặc chủ đề mới.",
+			"confirm": "Ẩn"
+		}
+	},
 	"moreFile": "tệp nữa",
 	"moreFiles": "tệp nữa"
 }

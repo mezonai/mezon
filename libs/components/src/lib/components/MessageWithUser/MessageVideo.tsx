@@ -489,6 +489,13 @@ function DefaultVideo({
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [showControl, setShowControl] = useState(true);
 	const isVideoActive = activated && isIntersecting && !isUploading;
+
+	// Scrolling away already stops the video and drops its source, so bring the poster back with it: coming into view
+	// again must not reload a video nobody pressed play on, which for an HLS stream means two whole segments.
+	useEffect(() => {
+		if (!isIntersecting) setActivated(false);
+	}, [isIntersecting]);
+
 	const { requestPlay, tryPlay } = usePlayOnActivation(videoRef, isVideoActive);
 	const { failed, handleError } = useVideoSource(videoRef, attachmentData.url, isVideoActive);
 

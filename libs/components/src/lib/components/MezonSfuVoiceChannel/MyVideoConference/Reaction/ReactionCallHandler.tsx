@@ -1,11 +1,10 @@
 import { getStore, getStoreAsync, selectMemberClanByUserId, selectVoiceInfo } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { getSrcEmoji } from '@mezon/utils';
+import { getSrcEmoji, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarColor } from '../../../AvatarImage/AvatarImage';
-import { sinkIdForHtmlMediaElement } from '../../preferredOutputDevice';
 import { soundReactionsService } from './soundReactionsService';
 import type { DisplayedEmoji, DisplayedHand } from './types';
 

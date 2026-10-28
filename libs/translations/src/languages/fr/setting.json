@@ -48,7 +48,8 @@
 		"appVersion": "Version de l'application",
 		"startUp": "Démarrage",
 		"quitApp": "Quitter l'application",
-		"server": "Serveur"
+		"server": "Serveur",
+		"streaming": "Streaming"
 	},
 	"server": {
 		"auto": "Automatique",
@@ -59,6 +60,30 @@
 		"connectedTo": "Connecté à {{region}}",
 		"connectingTo": "Connexion à {{region}}…",
 		"footer": "Automatique : Choisit un serveur pour vous. Choisissez un serveur si vous voulez toujours y rester."
+	},
+	"streaming": {
+		"keyTitle": "Clé de stream",
+		"keyDescription": "Utilisez-les dans OBS ou un autre encodeur WHIP pour passer en direct dans un salon de stream. Ne les partagez jamais : quiconque les possède peut streamer en votre nom.",
+		"channel": "Salon de stream",
+		"noChannels": "Aucun salon de stream dans ce clan",
+		"getKey": "Obtenir la clé",
+		"regenerate": "Générer une nouvelle clé",
+		"server": "Serveur",
+		"token": "Bearer Token",
+		"show": "Afficher",
+		"hide": "Masquer",
+		"copy": "Copier",
+		"expiresIn": "Commencez à streamer dans les {{time}}. Un stream déjà en direct continue ensuite.",
+		"expired": "Cette clé a expiré. Générez-en une nouvelle pour passer en direct.",
+		"error": "Impossible d'obtenir la clé de stream. Veuillez réessayer.",
+		"obsTitle": "Configurer OBS",
+		"obsStepService": "Dans OBS, ouvrez Paramètres → Stream et choisissez le service WHIP.",
+		"obsStepPaste": "Collez le Serveur et le Bearer Token ci-dessus.",
+		"obsStepEncoder": "Dans Paramètres → Sortie, choisissez un encodeur H.264 et réglez l'intervalle d'images clés sur 2 s.",
+		"obsStepSimulcast": "Pour plusieurs qualités, réglez le simulcast sur 3 couches si votre version d'OBS le propose.",
+		"obsStepStart": "Cliquez sur Démarrer le streaming. La clé doit seulement être valide quand OBS se connecte : si OBS se reconnecte après son expiration, obtenez une nouvelle clé et collez-la à nouveau.",
+		"qualityTitle": "Qualité de lecture par défaut",
+		"qualityDescription": "Utilisée chaque fois que vous rejoignez un stream. Vous pouvez la changer pendant le visionnage."
 	},
 	"autoStart": {
 		"title": "Démarrer l'application automatiquement",

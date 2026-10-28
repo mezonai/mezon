@@ -1,5 +1,5 @@
+import { setPreferredOutputDeviceId, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
-import { setPreferredOutputDeviceId, sinkIdForHtmlMediaElement } from '../../preferredOutputDevice';
 import { attachAudioPlayback, type AudioPlaybackFailure } from './audioPlayback';
 
 export const SfuAudioTrack = ({

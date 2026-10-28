@@ -1,5 +1,5 @@
 import { useAuth, useEscapeKeyClose } from '@mezon/core';
-import type { RolesClanEntity } from '@mezon/store';
+import type { AddedChannelUserProfile, RolesClanEntity } from '@mezon/store';
 import {
 	channelUsersActions,
 	getStore,
@@ -18,12 +18,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
+import { rankByMatch, searchNeedle } from '../PermissionsChannel/permissionMemberList';
+import { clanUserFromMentionUser, memberNames, useRemoteClanMembers } from '../useRemoteClanMembers';
 import ListMembers from './listMembers';
 import ListRole from './listRoles';
 interface AddMemRoleProps {
 	onClose: () => void;
 	channel: IChannel;
-	onSelectedUsersChange: (selectedUserIds: string[]) => void;
+	onSelectedUsersChange: (selectedUserIds: string[], profiles: Record<string, AddedChannelUserProfile>) => void;
 	onSelectedRolesChange: (selectedUserIds: string[]) => void;
 	selectRoleIds: string[];
 	selectUserIds: string[];
@@ -91,6 +93,27 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const [filterItem, setFilterItem] = useState<filterItemProps>(initFilter);
 
 	const dispatch = useAppDispatch();
+	const [valueSearch, setValueSearch] = useState('');
+	const handleValueSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setValueSearch(e.target.value);
+	};
+
+	// The search the member list is filtered by, once typing pauses.
+	const [appliedNeedle, setAppliedNeedle] = useState('');
+	// The roster stops at the newest 1000 members: the server finds the rest, ranked with the local matches.
+	const { users: remoteUsers, profilesOf } = useRemoteClanMembers(valueSearch);
+	const memberRows = useMemo(() => {
+		const skipped = new Set(filterItem.listMembersNotInChannel.map((member) => member.id));
+		if (isPrivateChannel) {
+			userChannelIds.forEach((userId) => skipped.add(userId));
+		} else {
+			selectUserIds.forEach((userId) => skipped.add(userId));
+			if (userProfile?.user?.id) skipped.add(userProfile.user.id);
+		}
+		const remote = remoteUsers.filter((user) => !!user.id && !skipped.has(user.id)).map(clanUserFromMentionUser);
+		return rankByMatch([...filterItem.listMembersNotInChannel, ...remote], appliedNeedle, memberNames);
+	}, [filterItem.listMembersNotInChannel, remoteUsers, isPrivateChannel, userChannelIds, selectUserIds, userProfile?.user?.id, appliedNeedle]);
+
 	const handleCheckboxUserChange = (event: React.ChangeEvent<HTMLInputElement>, userId: string) => {
 		const isChecked = event.target.checked;
 		if (isChecked) {
@@ -116,7 +139,8 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 					channelId: channel.id,
 					channelType: channel.type,
 					userIds: selectedUserIds,
-					clanId: currentClanId || ''
+					clanId: currentClanId || '',
+					profiles: profilesOf(selectedUserIds)
 				};
 				await dispatch(channelUsersActions.addChannelUsers(body));
 			}
@@ -131,17 +155,12 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 			}
 		} else {
 			if (selectedUserIds.length > 0) {
-				onSelectedUsersChange(selectedUserIds);
+				onSelectedUsersChange(selectedUserIds, profilesOf(selectedUserIds));
 			}
 			if (selectedRoleIds.length > 0) {
 				onSelectedRolesChange(selectedRoleIds);
 			}
 		}
-	};
-
-	const [valueSearch, setValueSearch] = useState('');
-	const handleValueSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setValueSearch(e.target.value);
 	};
 
 	const filterData = useCallback(
@@ -191,6 +210,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 
 	const debouncedSetValueSearch = useDebouncedCallback((value) => {
 		filterData(value);
+		setAppliedNeedle(searchNeedle(value));
 	}, 300);
 
 	useEffect(() => {
@@ -243,12 +263,12 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 							</div>
 						</div>
 					)}
-					{filterItem.listMembersNotInChannel.length > 0 && (
+					{memberRows.length > 0 && (
 						<div className="mt-2">
 							<p className="uppercase font-bold text-xs pb-4">{t('addMembersRoles.members')}</p>
 							<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.member_list')}>
 								<ListMembers
-									listItem={filterItem.listMembersNotInChannel}
+									listItem={memberRows}
 									selectedUserIds={selectedUserIds}
 									handleCheckboxUserChange={handleCheckboxUserChange}
 								/>

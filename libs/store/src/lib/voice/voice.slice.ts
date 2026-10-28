@@ -1,19 +1,40 @@
 import { captureSentryError } from '@mezon/logger';
+import type { SfuBreakoutRoomEventPayload } from '@mezon/transport';
+import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
 import { LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, ChannelType, VoiceLeavedEvent } from 'mezon-js';
+import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, VoiceLeavedEvent } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
+import type { SfuBreakoutParticipant } from 'mezon-js-protobuf';
 import type { ScreenShareEvent } from 'node_modules/mezon-js-protobuf/dist/rtapi/realtime';
 import { selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { selectCurrentChannelId } from '../channels/channels.slice';
+import { channelsActions, selectCurrentChannelId } from '../channels/channels.slice';
 import { selectCurrentClanId } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { generateMeetToken } from '../meet/meet.slice';
 import type { RootState } from '../store';
+import type { BreakoutInviteState, BreakoutRoomState, BreakoutRule, HostedBreakout } from './breakout';
+import {
+	API_FAILED_PRECONDITION,
+	API_INVALID_ARGUMENT,
+	API_NOT_FOUND,
+	breakoutInviteRoomId,
+	breakoutInviteToken,
+	breakoutSignalFromEvent,
+	createOpenedHostedBreakout,
+	loadHostedBreakouts,
+	noteHostedBreakoutAutoCloseFailure,
+	observeHostedRooms,
+	saveHostedBreakouts,
+	voiceMembersByChannelId
+} from './breakout';
 import { recordingParams, withRecordingUser } from './recordingSignal';
 
+export * from './breakout';
 export { RECORDING_ANNOUNCE_INTERVAL_MS, RECORDING_INDICATOR_TTL_MS, parseRecordingParams, recordingParams } from './recordingSignal';
 
 export const VOICE_FEATURE_KEY = 'voice';
@@ -125,8 +146,16 @@ export interface VoiceState {
 		position: { x: number; y: number };
 	} | null;
 	listVoiceMemberByClan: Record<string, Record<string, EntityState<VoiceUserData, string>>>;
+	voiceMembersLoadedByClan: Record<string, boolean>;
 	recording: VoiceRecordingState;
 	recordingUserIds: string[];
+	breakoutRoom: BreakoutRoomState | null;
+	breakoutInvite: BreakoutInviteState | null;
+	breakoutParents: string[];
+	hostedBreakouts: Record<string, HostedBreakout>;
+	hostedBreakoutsOwnerId: string | null;
+	breakoutPending: boolean;
+	closingBreakoutIds: string[];
 }
 
 type fetchVoiceChannelMembersPayload = {
@@ -343,6 +372,302 @@ export const giveFlowers = createAsyncThunk('meet/giveFlowers', async ({ receive
 	}
 });
 
+function extractGrpcErrorCode(error: unknown): number | undefined {
+	return error instanceof SfuBreakoutApiError ? error.code : undefined;
+}
+
+function buildMeetMetadataForClan(state: RootState, clanId: string): string {
+	const userProfile = state.account.userProfile;
+	const userId = userProfile?.user?.id || '';
+	const clanMember = state.usersClan?.byClans?.[clanId]?.entities?.entities?.[userId];
+	const username = clanMember?.clan_nick || clanMember?.prioritizeName || userProfile?.user?.display_name || userProfile?.user?.username || '';
+	const avatar = clanMember?.clan_avatar || userProfile?.user?.avatar_url || '';
+	return username || avatar ? `${username};${avatar}` : '';
+}
+
+export type OpenBreakoutRoomsPayload = {
+	clanId: string;
+	parentChannelId: string;
+	roomCount: number;
+	rule: BreakoutRule;
+	listParticipants: SfuBreakoutParticipant[];
+	inviteeIds: string[];
+};
+
+export type OpenBreakoutRoomsResult =
+	| {
+			outcome: 'opened';
+			hosted: HostedBreakout;
+			openedCount: number;
+	  }
+	| { outcome: 'failed'; code?: number };
+
+export const openBreakoutRooms = createAsyncThunk<OpenBreakoutRoomsResult, OpenBreakoutRoomsPayload>(
+	'voice/openBreakoutRooms',
+	async ({ clanId, parentChannelId, roomCount, rule, listParticipants, inviteeIds }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const ownerUserId = selectCurrentUserId(state);
+			if (!ownerUserId) {
+				return { outcome: 'failed' };
+			}
+			const response = await callSfuBreakoutRoom(mezon.client, {
+				parent_channel_id: parentChannelId,
+				room_count: roomCount,
+				break_rule_type: rule,
+				list_participants: listParticipants
+			});
+			const roomIds = (response.list_child_rooms ?? []).filter((id) => Boolean(id) && id !== '0');
+			if (!response.breakout_id || response.breakout_id === '0' || roomIds.length === 0) {
+				return { outcome: 'failed' };
+			}
+			const hosted = createOpenedHostedBreakout({
+				breakoutId: response.breakout_id,
+				parentChannelId,
+				clanId,
+				roomIds,
+				ownerUserId,
+				invitees: inviteeIds,
+				openedAtUnixSecs: Math.floor(Date.now() / 1000)
+			});
+			return {
+				outcome: 'opened',
+				hosted,
+				openedCount: roomIds.length
+			};
+		} catch (error) {
+			const code = extractGrpcErrorCode(error);
+			if (code !== API_FAILED_PRECONDITION) {
+				captureSentryError(error, 'voice/openBreakoutRooms');
+			}
+			return { outcome: 'failed', code };
+		}
+	}
+);
+
+export type CloseBreakoutRoomsResult = {
+	parentChannelId: string;
+	breakoutId: string;
+	outcome: 'closed' | 'failed';
+};
+
+export const closeBreakoutRooms = createAsyncThunk<CloseBreakoutRoomsResult, { parentChannelId: string; breakoutId: string }>(
+	'voice/closeBreakoutRooms',
+	async ({ parentChannelId, breakoutId }, thunkAPI) => {
+		try {
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			await callSfuBreakoutMerge(mezon.client, { target_id: breakoutId });
+			return { parentChannelId, breakoutId, outcome: 'closed' };
+		} catch (error) {
+			if (extractGrpcErrorCode(error) === API_NOT_FOUND) {
+				return { parentChannelId, breakoutId, outcome: 'closed' };
+			}
+			captureSentryError(error, 'voice/closeBreakoutRooms');
+			return { parentChannelId, breakoutId, outcome: 'failed' };
+		}
+	}
+);
+
+export type AutoCloseHostedBreakoutResult = {
+	parentChannelId: string;
+	breakoutId: string;
+	outcome: 'closed' | 'stillOccupied' | 'failed';
+	permanent?: boolean;
+};
+
+export const autoCloseHostedBreakout = createAsyncThunk<AutoCloseHostedBreakoutResult, { parentChannelId: string; breakoutId: string }>(
+	'voice/autoCloseHostedBreakout',
+	async ({ parentChannelId, breakoutId }, thunkAPI) => {
+		try {
+			const hosted = (thunkAPI.getState() as RootState)[VOICE_FEATURE_KEY].hostedBreakouts[parentChannelId];
+			if (hosted?.breakoutId === breakoutId) {
+				const refreshed = await thunkAPI.dispatch(
+					fetchVoiceChannelMembers({
+						clanId: hosted.clanId,
+						channelId: parentChannelId,
+						channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE,
+						noCache: true
+					})
+				);
+				if (fetchVoiceChannelMembers.fulfilled.match(refreshed)) {
+					const voiceState = (thunkAPI.getState() as RootState)[VOICE_FEATURE_KEY];
+					const observation = observeHostedRooms(hosted, true, voiceMembersByChannelId(voiceState.listVoiceMemberByClan[hosted.clanId]));
+					if (observation && observation.occupants.size > 0) {
+						return { parentChannelId, breakoutId, outcome: 'stillOccupied' };
+					}
+				}
+			}
+			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
+			await callSfuBreakoutMerge(mezon.client, { target_id: breakoutId });
+			return { parentChannelId, breakoutId, outcome: 'closed' };
+		} catch (error) {
+			const code = extractGrpcErrorCode(error);
+			if (code === API_NOT_FOUND) {
+				return { parentChannelId, breakoutId, outcome: 'closed' };
+			}
+			return { parentChannelId, breakoutId, outcome: 'failed', permanent: code === API_INVALID_ARGUMENT };
+		}
+	}
+);
+
+export const returnToMainRoom = createAsyncThunk('voice/returnToMainRoom', async (_, thunkAPI) => {
+	try {
+		const state = thunkAPI.getState() as RootState;
+		const voiceState = state[VOICE_FEATURE_KEY];
+		const breakoutRoom = voiceState.breakoutRoom;
+		const voiceInfo = voiceState.voiceInfo;
+		if (!breakoutRoom || !voiceInfo?.clanId) {
+			return null;
+		}
+		const clanId = voiceInfo.clanId;
+		const parentChannelId = breakoutRoom.parentChannelId;
+		const parentChannel = state.channels?.byClans?.[clanId]?.entities?.entities?.[parentChannelId];
+		const parentLabel = parentChannel?.channel_label || breakoutRoom.parentLabel || voiceInfo.channelLabel;
+		const parentPrivate = parentChannel?.channel_private ?? 0;
+		const fallbackToken = voiceState.breakoutInvite?.invite.kind === 'Return' ? breakoutInviteToken(voiceState.breakoutInvite.invite) : null;
+		thunkAPI.dispatch(voiceSlice.actions.dismissBreakoutInvite());
+
+		const metadata = buildMeetMetadataForClan(state, clanId);
+		let nextToken = '';
+		let nextSfuUrl = voiceState.sfuUrl;
+		try {
+			const tokenRes = await thunkAPI
+				.dispatch(
+					generateMeetToken({
+						channelId: parentChannelId,
+						roomName: '',
+						metadata
+					})
+				)
+				.unwrap();
+			nextToken = tokenRes?.token || fallbackToken || '';
+			if (tokenRes?.url) {
+				nextSfuUrl = tokenRes.url;
+			}
+		} catch (tokenErr) {
+			if (fallbackToken) {
+				nextToken = fallbackToken;
+			} else {
+				throw tokenErr;
+			}
+		}
+		if (!nextToken) {
+			return null;
+		}
+		void thunkAPI.dispatch(
+			channelsActions.joinChat({
+				clanId,
+				channelId: parentChannelId,
+				channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE,
+				isPublic: !parentPrivate
+			})
+		);
+		thunkAPI.dispatch(
+			voiceSlice.actions.applyBreakoutRoomSwitch({
+				channelId: parentChannelId,
+				channelLabel: parentLabel,
+				channelPrivate: parentPrivate,
+				token: nextToken,
+				sfuUrl: nextSfuUrl,
+				breakoutRoom: null
+			})
+		);
+		return { clanId, channelId: parentChannelId };
+	} catch (error) {
+		captureSentryError(error, 'voice/returnToMainRoom');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const acceptBreakoutInvite = createAsyncThunk(
+	'voice/acceptBreakoutInvite',
+	async ({ selectedRoomId }: { selectedRoomId?: string } = {}, thunkAPI) => {
+		try {
+			const state = thunkAPI.getState() as RootState;
+			const voiceState = state[VOICE_FEATURE_KEY];
+			const inviteState = voiceState.breakoutInvite;
+			const voiceInfo = voiceState.voiceInfo;
+			if (!inviteState || !voiceInfo?.clanId || !voiceInfo?.channelId) {
+				return null;
+			}
+			const activeParentId = voiceState.breakoutRoom ? voiceState.breakoutRoom.parentChannelId : voiceInfo.channelId;
+			if (inviteState.parentChannelId !== activeParentId) {
+				thunkAPI.dispatch(voiceSlice.actions.dismissBreakoutInvite());
+				return null;
+			}
+			if (inviteState.invite.kind === 'Return') {
+				return await thunkAPI.dispatch(returnToMainRoom()).unwrap();
+			}
+			const targetRoomId = breakoutInviteRoomId(inviteState.invite, selectedRoomId);
+			const fallbackToken = breakoutInviteToken(inviteState.invite);
+			thunkAPI.dispatch(voiceSlice.actions.dismissBreakoutInvite());
+			if (!targetRoomId) {
+				return null;
+			}
+			const clanId = voiceInfo.clanId;
+			const targetChannel = state.channels?.byClans?.[clanId]?.entities?.entities?.[targetRoomId];
+			const targetLabel = targetChannel?.channel_label || targetRoomId;
+			const targetPrivate = targetChannel?.channel_private ?? 0;
+			const parentLabel = voiceState.breakoutRoom ? voiceState.breakoutRoom.parentLabel : voiceInfo.channelLabel;
+
+			const metadata = buildMeetMetadataForClan(state, clanId);
+			let nextToken = '';
+			let nextSfuUrl = voiceState.sfuUrl;
+			try {
+				const tokenRes = await thunkAPI
+					.dispatch(
+						generateMeetToken({
+							channelId: targetRoomId,
+							roomName: '',
+							metadata
+						})
+					)
+					.unwrap();
+				nextToken = tokenRes?.token || fallbackToken || '';
+				if (tokenRes?.url) {
+					nextSfuUrl = tokenRes.url;
+				}
+			} catch (tokenErr) {
+				if (fallbackToken) {
+					nextToken = fallbackToken;
+				} else {
+					throw tokenErr;
+				}
+			}
+			if (!nextToken) {
+				return null;
+			}
+			void thunkAPI.dispatch(
+				channelsActions.joinChat({
+					clanId,
+					channelId: targetRoomId,
+					channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE,
+					isPublic: !targetPrivate
+				})
+			);
+			thunkAPI.dispatch(
+				voiceSlice.actions.applyBreakoutRoomSwitch({
+					channelId: targetRoomId,
+					channelLabel: targetLabel,
+					channelPrivate: targetPrivate,
+					token: nextToken,
+					sfuUrl: nextSfuUrl,
+					breakoutRoom: {
+						parentChannelId: activeParentId,
+						parentLabel,
+						roomId: targetRoomId
+					}
+				})
+			);
+			return { clanId, channelId: targetRoomId };
+		} catch (error) {
+			captureSentryError(error, 'voice/acceptBreakoutInvite');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
 export const initialVoiceState: VoiceState = {
 	loadingStatus: 'not loaded',
 	error: null,
@@ -372,6 +697,7 @@ export const initialVoiceState: VoiceState = {
 	listInVoiceStatus: {},
 	contextMenu: null,
 	listVoiceMemberByClan: {},
+	voiceMembersLoadedByClan: {},
 	recording: {
 		status: 'idle',
 		startedAt: null,
@@ -381,7 +707,14 @@ export const initialVoiceState: VoiceState = {
 		degraded: false,
 		error: null
 	},
-	recordingUserIds: []
+	recordingUserIds: [],
+	breakoutRoom: null,
+	breakoutInvite: null,
+	breakoutParents: [],
+	hostedBreakouts: {},
+	hostedBreakoutsOwnerId: null,
+	breakoutPending: false,
+	closingBreakoutIds: []
 };
 
 export const voiceSlice = createSlice({
@@ -461,6 +794,17 @@ export const voiceSlice = createSlice({
 		},
 		setVoiceInfo: (state, action: PayloadAction<IvoiceInfo>) => {
 			if (state.voiceInfo?.channelId !== action.payload.channelId) {
+				if (state.breakoutRoom && state.breakoutRoom.roomId !== action.payload.channelId) {
+					state.breakoutRoom = null;
+					state.breakoutParents = [];
+				}
+				if (
+					state.breakoutInvite &&
+					state.breakoutInvite.parentChannelId !== action.payload.channelId &&
+					state.breakoutRoom?.roomId !== action.payload.channelId
+				) {
+					state.breakoutInvite = null;
+				}
 				state.voiceInfo = action.payload;
 			}
 		},
@@ -517,7 +861,7 @@ export const voiceSlice = createSlice({
 		setFullScreen: (state, action: PayloadAction<boolean>) => {
 			state.fullScreen = action.payload;
 		},
-		resetVoiceControl: (state) => {
+		resetVoiceControl: (state, action: PayloadAction<{ keepBreakout?: boolean } | undefined>) => {
 			state.showMicrophone = false;
 			state.showCamera = false;
 			state.showScreen = false;
@@ -533,6 +877,13 @@ export const voiceSlice = createSlice({
 			state.stream = null;
 			state.openPopOut = false;
 			state.recordingUserIds = [];
+			if (action.payload?.keepBreakout) {
+				return;
+			}
+			state.breakoutRoom = null;
+			state.breakoutInvite = null;
+			state.breakoutParents = [];
+			state.breakoutPending = false;
 		},
 		resetExternalCall: (state) => {
 			state.showMicrophone = false;
@@ -546,6 +897,107 @@ export const voiceSlice = createSlice({
 			state.stream = null;
 			state.joinCallExtStatus = 'not loaded';
 			state.recordingUserIds = [];
+			state.breakoutRoom = null;
+			state.breakoutInvite = null;
+			state.breakoutParents = [];
+			state.breakoutPending = false;
+		},
+		syncHostedBreakoutsOwner: (state, action: PayloadAction<string | null>) => {
+			const nextOwnerId = action.payload || null;
+			if (state.hostedBreakoutsOwnerId === nextOwnerId) {
+				return;
+			}
+			state.hostedBreakoutsOwnerId = nextOwnerId;
+			state.closingBreakoutIds = [];
+			if (!nextOwnerId) {
+				state.hostedBreakouts = {};
+				state.breakoutRoom = null;
+				state.breakoutInvite = null;
+				state.breakoutParents = [];
+				state.breakoutPending = false;
+				return;
+			}
+			state.hostedBreakouts = loadHostedBreakouts(nextOwnerId);
+		},
+		receiveBreakoutRoomEvent: (state, action: PayloadAction<{ event: SfuBreakoutRoomEventPayload; selfUserId?: string }>) => {
+			if (!state.isJoined || !state.voiceInfo?.channelId || state.externalGroup || state.externalToken) {
+				return;
+			}
+			const { event, selfUserId } = action.payload;
+			const inBreakout = Boolean(state.breakoutRoom && state.breakoutRoom.roomId === state.voiceInfo.channelId);
+			const parentChannelId = inBreakout && state.breakoutRoom ? state.breakoutRoom.parentChannelId : state.voiceInfo.channelId;
+			const clanVoiceRooms = state.listVoiceMemberByClan[state.voiceInfo.clanId];
+			const signal = breakoutSignalFromEvent(event, parentChannelId, inBreakout, state.breakoutParents, (channelId) =>
+				(clanVoiceRooms?.[channelId]?.ids ?? []).some((uid) => String(uid) !== selfUserId)
+			);
+			if (!signal) {
+				return;
+			}
+			if (signal.kind === 'Invite') {
+				if (!state.breakoutParents.includes(parentChannelId)) {
+					state.breakoutParents.push(parentChannelId);
+				}
+				state.breakoutInvite = {
+					parentChannelId,
+					invite: signal.invite
+				};
+				return;
+			}
+			if (signal.kind === 'Closed') {
+				const hosted = state.hostedBreakouts[parentChannelId];
+				if (hosted) {
+					hosted.closedSignal = true;
+				}
+				if (state.breakoutInvite?.parentChannelId === parentChannelId) {
+					state.breakoutInvite = null;
+				}
+			}
+		},
+		dismissBreakoutInvite: (state) => {
+			state.breakoutInvite = null;
+		},
+		applyBreakoutRoomSwitch: (
+			state,
+			action: PayloadAction<{
+				channelId: string;
+				channelLabel: string;
+				channelPrivate: number;
+				token: string;
+				sfuUrl: string;
+				breakoutRoom: BreakoutRoomState | null;
+			}>
+		) => {
+			const { channelId, channelLabel, channelPrivate, token, sfuUrl, breakoutRoom } = action.payload;
+			state.breakoutRoom = breakoutRoom;
+			state.breakoutParents = breakoutRoom ? [breakoutRoom.parentChannelId] : [];
+			state.breakoutInvite = null;
+			state.isJoined = true;
+			state.token = token;
+			state.openPopOut = false;
+			state.showScreen = false;
+			state.stream = null;
+			state.recordingUserIds = [];
+			if (sfuUrl) {
+				state.sfuUrl = sfuUrl;
+			}
+			if (state.voiceInfo) {
+				state.voiceInfo = {
+					...state.voiceInfo,
+					channelId,
+					channelLabel,
+					channelPrivate
+				};
+			}
+		},
+		updateHostedBreakoutState: (state, action: PayloadAction<{ parentChannelId: string; hosted: HostedBreakout; persist?: boolean }>) => {
+			const { parentChannelId, hosted, persist } = action.payload;
+			if (!state.hostedBreakouts[parentChannelId] || state.hostedBreakouts[parentChannelId].breakoutId !== hosted.breakoutId) {
+				return;
+			}
+			state.hostedBreakouts[parentChannelId] = hosted;
+			if (persist && state.hostedBreakoutsOwnerId) {
+				saveHostedBreakouts(state.hostedBreakoutsOwnerId, state.hostedBreakouts);
+			}
 		},
 
 		setPiPModeMobile: (state, action) => {
@@ -592,8 +1044,11 @@ export const voiceSlice = createSlice({
 				const { users, clanId, fromCache, presenceRevision } = action.payload;
 				state.loadingStatus = 'loaded';
 
-				if (fromCache || !users.length) return;
 				if (presenceRevision !== undefined && presenceRevision !== (state.presenceRevisionByClan[clanId] ?? 0)) return;
+				if (clanId && clanId !== '0') {
+					state.voiceMembersLoadedByClan[clanId] = true;
+				}
+				if (fromCache || !users.length) return;
 
 				if (!state.listVoiceMemberByClan[clanId]) {
 					state.listVoiceMemberByClan[clanId] = {};
@@ -658,6 +1113,80 @@ export const voiceSlice = createSlice({
 				state.joinCallExtStatus = 'error';
 				state.error = action.error.message;
 			});
+		builder
+			.addCase(openBreakoutRooms.pending, (state: VoiceState) => {
+				state.breakoutPending = true;
+			})
+			.addCase(openBreakoutRooms.fulfilled, (state: VoiceState, action: PayloadAction<OpenBreakoutRoomsResult>) => {
+				state.breakoutPending = false;
+				if (action.payload.outcome !== 'opened') {
+					return;
+				}
+				const { hosted } = action.payload;
+				if (state.hostedBreakoutsOwnerId !== hosted.ownerUserId) {
+					const existing = loadHostedBreakouts(hosted.ownerUserId);
+					existing[hosted.parentChannelId] = hosted;
+					saveHostedBreakouts(hosted.ownerUserId, existing);
+					return;
+				}
+				state.hostedBreakouts[hosted.parentChannelId] = hosted;
+				saveHostedBreakouts(state.hostedBreakoutsOwnerId, state.hostedBreakouts);
+			})
+			.addCase(openBreakoutRooms.rejected, (state: VoiceState) => {
+				state.breakoutPending = false;
+			});
+		builder
+			.addCase(closeBreakoutRooms.pending, (state: VoiceState) => {
+				state.breakoutPending = true;
+			})
+			.addCase(closeBreakoutRooms.fulfilled, (state: VoiceState, action: PayloadAction<CloseBreakoutRoomsResult>) => {
+				state.breakoutPending = false;
+				const { parentChannelId, breakoutId, outcome } = action.payload;
+				if (outcome !== 'closed') {
+					return;
+				}
+				const current = state.hostedBreakouts[parentChannelId];
+				if (current && current.breakoutId === breakoutId) {
+					delete state.hostedBreakouts[parentChannelId];
+					if (state.hostedBreakoutsOwnerId) {
+						saveHostedBreakouts(state.hostedBreakoutsOwnerId, state.hostedBreakouts);
+					}
+				}
+				state.closingBreakoutIds = state.closingBreakoutIds.filter((id) => id !== breakoutId);
+			})
+			.addCase(closeBreakoutRooms.rejected, (state: VoiceState) => {
+				state.breakoutPending = false;
+			});
+		builder
+			.addCase(autoCloseHostedBreakout.pending, (state: VoiceState, action) => {
+				const { breakoutId } = action.meta.arg;
+				if (!state.closingBreakoutIds.includes(breakoutId)) {
+					state.closingBreakoutIds.push(breakoutId);
+				}
+			})
+			.addCase(autoCloseHostedBreakout.fulfilled, (state: VoiceState, action: PayloadAction<AutoCloseHostedBreakoutResult>) => {
+				const { parentChannelId, breakoutId, outcome, permanent } = action.payload;
+				state.closingBreakoutIds = state.closingBreakoutIds.filter((id) => id !== breakoutId);
+				const current = state.hostedBreakouts[parentChannelId];
+				if (!current || current.breakoutId !== breakoutId || outcome === 'stillOccupied') {
+					return;
+				}
+				if (outcome === 'failed') {
+					state.hostedBreakouts[parentChannelId] = noteHostedBreakoutAutoCloseFailure(
+						current,
+						Boolean(permanent),
+						Math.floor(Date.now() / 1000)
+					);
+					return;
+				}
+				delete state.hostedBreakouts[parentChannelId];
+				if (state.hostedBreakoutsOwnerId) {
+					saveHostedBreakouts(state.hostedBreakoutsOwnerId, state.hostedBreakouts);
+				}
+			})
+			.addCase(autoCloseHostedBreakout.rejected, (state: VoiceState, action) => {
+				state.closingBreakoutIds = state.closingBreakoutIds.filter((id) => id !== action.meta.arg.breakoutId);
+			});
 	}
 });
 
@@ -670,7 +1199,12 @@ export const voiceActions = {
 	sendRecordingState,
 	kickVoiceMember,
 	muteVoiceMember,
-	giveFlowers
+	giveFlowers,
+	openBreakoutRooms,
+	closeBreakoutRooms,
+	autoCloseHostedBreakout,
+	acceptBreakoutInvite,
+	returnToMainRoom
 };
 
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
@@ -754,3 +1288,17 @@ export const selectVoiceOpenPopOut = createSelector(getVoiceState, (state) => st
 export const selectGuestAccessToken = createSelector(getVoiceState, (state) => state.guestAccessToken);
 export const selectGuestUserId = createSelector(getVoiceState, (state) => state.guestUserId);
 export const selectOpenExternalChatBox = createSelector(getVoiceState, (state) => state.openChatBox);
+export const selectBreakoutRoom = createSelector(getVoiceState, (state) => state.breakoutRoom);
+export const selectBreakoutInvite = createSelector(getVoiceState, (state) => state.breakoutInvite);
+export const selectBreakoutParents = createSelector(getVoiceState, (state) => state.breakoutParents);
+export const selectHostedBreakouts = createSelector(getVoiceState, (state) => state.hostedBreakouts);
+export const selectHasHostedBreakouts = createSelector(selectHostedBreakouts, (hostedBreakouts) => Object.keys(hostedBreakouts).length > 0);
+export const selectHostedBreakoutsOwnerId = createSelector(getVoiceState, (state) => state.hostedBreakoutsOwnerId);
+export const selectBreakoutPending = createSelector(getVoiceState, (state) => state.breakoutPending);
+export const selectClosingBreakoutIds = createSelector(getVoiceState, (state) => state.closingBreakoutIds);
+export const selectVoiceMembersLoadedByClan = createSelector(getVoiceState, (state) => state.voiceMembersLoadedByClan);
+export const selectListVoiceMemberByClan = createSelector(getVoiceState, (state) => state.listVoiceMemberByClan);
+export const selectHostedBreakoutByChannelId = createSelector(
+	[selectHostedBreakouts, (_: RootState, channelId: string) => channelId],
+	(hostedBreakouts, channelId) => (channelId ? (hostedBreakouts[channelId] ?? null) : null)
+);

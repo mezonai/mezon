@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "Maximale Kanalanzahl für diesen Clan erreicht"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Anheftungsleiste ausblenden",
+		"dismissModal": {
+			"title": "Anheftungsleiste ausblenden",
+			"message": "Möchten Sie diese Leiste wirklich ausblenden? Sie wird wieder angezeigt, wenn eine neue angeheftete Nachricht oder ein neues Thema vorhanden ist.",
+			"confirm": "Ausblenden"
+		}
+	},
 	"moreFile": "weitere Dateien",
 	"moreFiles": "weitere Dateien",
 	"topics": "Themen",

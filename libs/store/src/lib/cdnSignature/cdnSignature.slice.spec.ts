@@ -23,8 +23,6 @@ jest.mock('../helpers', () => ({
 const {
 	appendCdnSignature,
 	getCdnSignatureChannelId,
-	getCdnSignatureTtlMs,
-	isCdnSignatureExpired,
 	needsCdnSignature,
 	parseSignedCdnMediaSrc,
 	CDN_SIGNATURE_TTL_MS: TTL_MS
@@ -38,7 +36,7 @@ beforeEach(() => {
 	jest.mocked(captureSentryError).mockClear();
 });
 
-it('requests a signature for the channel and reuses it for exactly 5 hours', async () => {
+it('requests a signature for the channel and reuses it for exactly the TTL', async () => {
 	const now = jest.spyOn(Date, 'now').mockReturnValue(1_000);
 	mockGenerateCDNSignature.mockResolvedValue({ signature: '1791259679-abc' });
 	const store = createStore();
@@ -49,7 +47,6 @@ it('requests a signature for the channel and reuses it for exactly 5 hours', asy
 	expect(mockGenerateCDNSignature).toHaveBeenCalledTimes(1);
 	expect(mockGenerateCDNSignature).toHaveBeenCalledWith({ token: 'session' }, { channel_id: '42' });
 	expect(selectCdnSignatureByChannelId(store.getState(), '42')).toBe('1791259679-abc');
-	expect(TTL_MS).toBe(5 * 60 * 60 * 1000);
 	expect(selectCdnSignatureExpiresAt(store.getState(), '42')).toBe(1_000 + TTL_MS);
 
 	now.mockReturnValue(1_000 + TTL_MS - 1);
@@ -147,51 +144,39 @@ it('stops waiting after 5s so the media loads unsigned, and ignores the late rep
 });
 
 describe('after the CDN refuses media', () => {
-	const EXPIRES_AT_MS = 1_791_259_679_000;
+	const SIGNED_AT_MS = 1_791_259_679_000;
 	const signFirst = async (store: ReturnType<typeof createStore>, signature = '1791259679-old') => {
 		mockGenerateCDNSignature.mockResolvedValueOnce({ signature });
 		await store.dispatch(fetchCdnSignature({ channelId: '16' }));
 	};
 
-	it('makes one request for N images refused on an expired signature, and none for the replaced one', async () => {
-		const now = jest.spyOn(Date, 'now').mockReturnValue(EXPIRES_AT_MS - 60_000);
+	it('makes one request for N refused images, and none for the replaced signature', async () => {
+		const now = jest.spyOn(Date, 'now').mockReturnValue(SIGNED_AT_MS);
 		const store = createStore();
 		await signFirst(store);
 
-		now.mockReturnValue(EXPIRES_AT_MS);
-		mockGenerateCDNSignature.mockResolvedValueOnce({ signature: '1791277679-new' });
+		now.mockReturnValue(SIGNED_AT_MS + 30_000);
+		mockGenerateCDNSignature.mockResolvedValueOnce({ signature: '1791259709-new' });
 		await Promise.all([1, 2, 3].map(() => store.dispatch(fetchCdnSignature({ channelId: '16', failedSignature: '1791259679-old' }))));
 		await store.dispatch(fetchCdnSignature({ channelId: '16', failedSignature: '1791259679-old' }));
 
 		expect(mockGenerateCDNSignature).toHaveBeenCalledTimes(2);
-		expect(selectCdnSignatureByChannelId(store.getState(), '16')).toBe('1791277679-new');
+		expect(selectCdnSignatureByChannelId(store.getState(), '16')).toBe('1791259709-new');
 		now.mockRestore();
 	});
 
-	it('keeps a signature still inside its own expiry: a broken file is no reason to re-sign', async () => {
-		const now = jest.spyOn(Date, 'now').mockReturnValue(EXPIRES_AT_MS - TTL_MS);
+	it('renews a fresh signature only once the retry interval has passed', async () => {
+		const now = jest.spyOn(Date, 'now').mockReturnValue(SIGNED_AT_MS);
 		const store = createStore();
 		await signFirst(store);
 
-		now.mockReturnValue(EXPIRES_AT_MS - 1);
+		now.mockReturnValue(SIGNED_AT_MS + 29_999);
 		await store.dispatch(fetchCdnSignature({ channelId: '16', failedSignature: '1791259679-old' }));
-
-		expect(mockGenerateCDNSignature).toHaveBeenCalledTimes(1);
-		now.mockRestore();
-	});
-
-	it('renews a signature that states no expiry once the retry interval has passed', async () => {
-		const now = jest.spyOn(Date, 'now').mockReturnValue(1_000);
-		const store = createStore();
-		await signFirst(store, 'Expires=never&Signature=x');
-
-		now.mockReturnValue(30_999);
-		await store.dispatch(fetchCdnSignature({ channelId: '16', failedSignature: 'Expires=never&Signature=x' }));
 		expect(mockGenerateCDNSignature).toHaveBeenCalledTimes(1);
 
-		now.mockReturnValue(31_000);
-		mockGenerateCDNSignature.mockResolvedValueOnce({ signature: 'Expires=never&Signature=y' });
-		await store.dispatch(fetchCdnSignature({ channelId: '16', failedSignature: 'Expires=never&Signature=x' }));
+		now.mockReturnValue(SIGNED_AT_MS + 30_000);
+		mockGenerateCDNSignature.mockResolvedValueOnce({ signature: '1791259709-new' });
+		await store.dispatch(fetchCdnSignature({ channelId: '16', failedSignature: '1791259679-old' }));
 		expect(mockGenerateCDNSignature).toHaveBeenCalledTimes(2);
 		now.mockRestore();
 	});
@@ -319,13 +304,9 @@ describe('getCdnSignatureChannelId', () => {
 
 	it('gives an older upload, filed under no channel folder, the channel showing it', () => {
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/1775731111020111321/abc.png', '42')).toBe('42');
-		expect(getCdnSignatureChannelId('https://cdn.mezon.vn/0/1843962578301095936/1829065039080853500/dog.jpg', '42')).toBe('42');
+		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/0/1843962578301095936/1829065039080853500/dog.jpg', '42')).toBe('42');
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/abc.png', '42')).toBe('42');
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/abc.png', '0')).toBeUndefined();
-		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/0000000000000000/abc.png', '42')).toBe('42');
-		expect(
-			getCdnSignatureChannelId('https://pub-35517170c1554a008bed9d7565fa4bb2.r2.dev/0000000000000000/2107048337029992454_Screenshot.png', '42')
-		).toBe('42');
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/stickers/1779484504377790464.webp', '42')).toBeUndefined();
 		expect(getCdnSignatureChannelId('https://cdn.komu.vn/stickers/hellomezon.gif', '42')).toBeUndefined();
 		expect(getCdnSignatureChannelId('https://example.com/abc.png', '42')).toBeUndefined();
@@ -334,6 +315,10 @@ describe('getCdnSignatureChannelId', () => {
 
 	it('is undefined for files that take no signature, and for older ones with no channel showing them', () => {
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/0000000000000000/abc.png')).toBeUndefined();
+		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/0000000000000000/abc.png', '42')).toBeUndefined();
+		expect(
+			getCdnSignatureChannelId('https://pub-35517170c1554a008bed9d7565fa4bb2.r2.dev/0000000000000000/2107048337029992454_Screenshot.png', '42')
+		).toBeUndefined();
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/1775731111020111321/abc.png')).toBeUndefined();
 		expect(getCdnSignatureChannelId('https://cdn.mezon.ai/abc.png')).toBeUndefined();
 		expect(getCdnSignatureChannelId(`${CHANNEL_FILE}?1791271179-x`)).toBeUndefined();
@@ -342,40 +327,33 @@ describe('getCdnSignatureChannelId', () => {
 	});
 });
 
-describe('isCdnSignatureExpired', () => {
-	const NOW = 1_791_259_679_000;
+describe('CDN_SIGNATURE_TTL_MS', () => {
+	const ENV_KEY = 'NX_CDN_SIGNATURE_TTL_MS';
+	const originalValue = process.env[ENV_KEY];
 
-	it('is true from the expiry the signature starts with', () => {
-		expect(isCdnSignatureExpired(`${NOW / 1000}-x`, NOW)).toBe(true);
-		expect(isCdnSignatureExpired(`${NOW / 1000 - 60}-x`, NOW)).toBe(true);
-		expect(isCdnSignatureExpired(`${NOW / 1000 + 1}-x`, NOW)).toBe(false);
+	const loadTtl = (value?: string): number => {
+		if (value === undefined) delete process.env[ENV_KEY];
+		else process.env[ENV_KEY] = value;
+		let ttl = NaN;
+		jest.isolateModules(() => {
+			ttl = jest.requireActual('../../../../utils/src/lib/utils/cdnSignature').CDN_SIGNATURE_TTL_MS;
+		});
+		return ttl;
+	};
+
+	afterEach(() => {
+		if (originalValue === undefined) delete process.env[ENV_KEY];
+		else process.env[ENV_KEY] = originalValue;
 	});
 
-	it('is undefined for a signature that states no expiry', () => {
-		expect(isCdnSignatureExpired('abc', NOW)).toBeUndefined();
-		expect(isCdnSignatureExpired('Expires=1&Signature=x', NOW)).toBeUndefined();
-		expect(isCdnSignatureExpired('', NOW)).toBeUndefined();
-	});
-});
-
-describe('getCdnSignatureTtlMs', () => {
-	const NOW = 1_791_259_679_000;
-	const MARGIN = 5 * 60 * 1000;
-
-	it('is 5 hours while the signature outlives them', () => {
-		expect(getCdnSignatureTtlMs(`${NOW / 1000 + 24 * 3600}-x`, NOW)).toBe(TTL_MS);
-		expect(getCdnSignatureTtlMs(`${NOW / 1000 + 5 * 3600 + MARGIN / 1000}-x`, NOW)).toBe(TTL_MS);
+	it('reads the TTL from NX_CDN_SIGNATURE_TTL_MS', () => {
+		expect(loadTtl('300000')).toBe(300_000);
 	});
 
-	it('ends a margin before an earlier expiry the signature starts with', () => {
-		expect(getCdnSignatureTtlMs(`${NOW / 1000 + 5 * 3600}-x`, NOW)).toBe(TTL_MS - MARGIN);
-		expect(getCdnSignatureTtlMs(`${NOW / 1000 + 3600}-x`, NOW)).toBe(3600 * 1000 - MARGIN);
-	});
-
-	it('is 5 hours without a believable expiry', () => {
-		expect(getCdnSignatureTtlMs('abc', NOW)).toBe(TTL_MS);
-		expect(getCdnSignatureTtlMs(`${NOW / 1000 - 60}-x`, NOW)).toBe(TTL_MS);
-		expect(getCdnSignatureTtlMs(`${NOW / 1000 + 6 * 60}-x`, NOW)).toBe(TTL_MS);
+	it('is 3 hours without a valid NX_CDN_SIGNATURE_TTL_MS', () => {
+		expect(loadTtl(undefined)).toBe(3 * 60 * 60 * 1000);
+		expect(loadTtl('abc')).toBe(3 * 60 * 60 * 1000);
+		expect(loadTtl('0')).toBe(3 * 60 * 60 * 1000);
 	});
 });
 
@@ -431,9 +409,6 @@ describe('appendCdnSignature', () => {
 		expect(appendCdnSignature('https://cdn.mezon.ai/1775731111020111321/abc.png', 'sig=1')).toBe(
 			'https://cdn.mezon.ai/1775731111020111321/abc.png?sig=1'
 		);
-		expect(appendCdnSignature('https://cdn.mezon.ai/0000000000000000/abc.png', 'sig=1')).toBe(
-			'https://cdn.mezon.ai/0000000000000000/abc.png?sig=1'
-		);
 	});
 
 	it('leaves non-CDN, already signed, channel-less and unsigned urls alone', () => {
@@ -441,6 +416,7 @@ describe('appendCdnSignature', () => {
 		expect(appendCdnSignature('blob:http://localhost/123', 'sig=1')).toBe('blob:http://localhost/123');
 		expect(appendCdnSignature(`${CHANNEL_FILE}?sig=1`, 'sig=2')).toBe(`${CHANNEL_FILE}?sig=1`);
 		expect(appendCdnSignature('https://cdn.mezon.ai/stickers/hello.webp', 'sig=1')).toBe('https://cdn.mezon.ai/stickers/hello.webp');
+		expect(appendCdnSignature('https://cdn.mezon.ai/0000000000000000/abc.png', 'sig=1')).toBe('https://cdn.mezon.ai/0000000000000000/abc.png');
 		expect(appendCdnSignature(CHANNEL_FILE, undefined)).toBe(CHANNEL_FILE);
 		expect(appendCdnSignature(undefined, 'sig=1')).toBeUndefined();
 	});

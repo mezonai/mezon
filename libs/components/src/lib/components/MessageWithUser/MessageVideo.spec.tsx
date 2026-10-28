@@ -2,12 +2,16 @@ import { act, create } from 'react-test-renderer';
 import MessageVideo from './MessageVideo';
 
 let mockIsIntersecting = true;
-jest.mock('@mezon/ui', () => ({ Icons: { PlayButton: () => null } }), { virtual: true });
+jest.mock('@mezon/ui', () => ({ Icons: { PlayButton: () => null, Download: () => null } }), { virtual: true });
 jest.mock('@mezon/utils', () => ({
 	calculateMediaDimensions: () => ({ width: 320, height: 180 }),
 	createImgproxyUrl: (url: string) => `proxy:${url}`,
 	useIsIntersecting: () => mockIsIntersecting,
-	useResizeObserver: () => undefined
+	useResizeObserver: () => undefined,
+	getHlsMasterPlaylistUrl: () => undefined,
+	isTranscodedVideoContainer: () => false,
+	mayBeTranscodedVideo: () => false,
+	probeHlsMasterPlaylist: async () => undefined
 }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('use-debounce', () => ({ useDebouncedCallback: (callback: unknown) => callback }));
@@ -73,6 +77,26 @@ it('keeps remote-only pending videos gated until upload completes', () => {
 	act(() => {
 		renderer.update(<MessageVideo attachmentData={remote} />);
 	});
+	expect(renderer.root.findByType('img').props.src).toBe(`proxy:${remote.thumbnail}`);
+	act(() => renderer.unmount());
+});
+
+it('shows the poster again instead of reloading a video that scrolled out and back', () => {
+	let renderer!: ReturnType<typeof create>;
+	const remote = { ...attachment, local_source: undefined };
+	act(() => {
+		renderer = create(<MessageVideo attachmentData={remote} />);
+	});
+	act(() => renderer.root.find((node) => typeof node.props.onPlay === 'function').props.onPlay());
+	expect(renderer.root.findAllByType('video')).toHaveLength(1);
+
+	mockIsIntersecting = false;
+	act(() => renderer.update(<MessageVideo attachmentData={remote} />));
+	expect(renderer.root.findAllByType('video')).toHaveLength(0);
+
+	mockIsIntersecting = true;
+	act(() => renderer.update(<MessageVideo attachmentData={remote} />));
+	expect(renderer.root.findAllByType('video')).toHaveLength(0);
 	expect(renderer.root.findByType('img').props.src).toBe(`proxy:${remote.thumbnail}`);
 	act(() => renderer.unmount());
 });

@@ -157,6 +157,7 @@
 		"sticker": "Nhãn dán"
 	},
 	"turnOffAnonymous": "Tắt ẩn danh",
+	"turnOffAnonymousToCreateTopic": "Vui lòng tắt chế độ ẩn danh trước khi tạo thảo luận ngắn",
 	"turnOnAnonymous": "Bật ẩn danh",
 	"goToTopic": "Đi đến thảo luận ngắn",
 	"creator": "Người tạo",

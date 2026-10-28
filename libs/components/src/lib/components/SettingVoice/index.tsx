@@ -1,15 +1,18 @@
-import { getNoiseSuppressionAudioCaptureOptions, requestMediaPermission } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+	getPreferredInputDeviceId,
+	getPreferredOutputDeviceId,
+	requestMediaPermission,
+	setPreferredInputDeviceId,
+	setPreferredOutputDeviceId
+} from '@mezon/utils';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PREFERRED_OUTPUT_DEVICE_STORAGE_KEY, setPreferredOutputDeviceId } from '../MezonSfuVoiceChannel/preferredOutputDevice';
 import { DeviceSelector } from './DeviceSelector';
-import { MicTest } from './MicTest';
-import { NoiseSuppressionControl, type NoiseSuppressionControlRef } from './NoiseSuppressionControl';
+import { MicTest, useMicTest } from './MicTest';
+import { NoiseSuppressionControl } from './NoiseSuppressionControl';
 import { VolumeSlider } from './VolumeSlider';
 
 const LS_KEYS = {
-	inputDeviceId: 'mezon.voice.inputDeviceId',
-	outputDeviceId: PREFERRED_OUTPUT_DEVICE_STORAGE_KEY,
 	micVolume: 'mezon.voice.micVolume',
 	speakerVolume: 'mezon.voice.speakerVolume'
 } as const;
@@ -34,87 +37,26 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false }: IS
 	const [inputDevices, setInputDevices] = useState<MediaDeviceInfo[]>([]);
 	const [outputDevices, setOutputDevices] = useState<MediaDeviceInfo[]>([]);
 
-	const [inputDeviceId, setInputDeviceId] = useState<string>(() => localStorage.getItem(LS_KEYS.inputDeviceId) || '');
-	const [outputDeviceId, setOutputDeviceId] = useState<string>(() => localStorage.getItem(LS_KEYS.outputDeviceId) || '');
+	const [inputDeviceId, setInputDeviceId] = useState<string>(getPreferredInputDeviceId);
+	const [outputDeviceId, setOutputDeviceId] = useState<string>(getPreferredOutputDeviceId);
 	const [micVolume, setMicVolume] = useState<number>(() => clamp01(safeParseNumber(localStorage.getItem(LS_KEYS.micVolume), 0.8)));
 	const [speakerVolume, setSpeakerVolume] = useState<number>(() => clamp01(safeParseNumber(localStorage.getItem(LS_KEYS.speakerVolume), 0.6)));
 
 	const [micLevel, setMicLevel] = useState<number>(0);
-	const [isTesting, setIsTesting] = useState<boolean>(false);
-	const [testError, setTestError] = useState<string>('');
 
-	const inputDeviceIdRef = useRef<string>(inputDeviceId);
 	const outputDeviceIdRef = useRef<string>(outputDeviceId);
-	const micVolumeRef = useRef<number>(micVolume);
-	const speakerVolumeRef = useRef<number>(speakerVolume);
-
-	useEffect(() => {
-		inputDeviceIdRef.current = inputDeviceId;
-	}, [inputDeviceId]);
 	useEffect(() => {
 		outputDeviceIdRef.current = outputDeviceId;
 	}, [outputDeviceId]);
-	useEffect(() => {
-		micVolumeRef.current = micVolume;
-	}, [micVolume]);
-	useEffect(() => {
-		speakerVolumeRef.current = speakerVolume;
-	}, [speakerVolume]);
 
-	const streamRef = useRef<MediaStream | null>(null);
-	const audioContextRef = useRef<AudioContext | null>(null);
-	const analyserRef = useRef<AnalyserNode | null>(null);
-	const rafRef = useRef<number | null>(null);
-	const playbackAudioRef = useRef<HTMLAudioElement | null>(null);
-	const playbackStreamRef = useRef<MediaStream | null>(null);
-	const noiseSuppressionControlRef = useRef<NoiseSuppressionControlRef | null>(null);
-
-	const hasSetSinkId = useMemo(() => {
-		try {
-			return typeof (HTMLMediaElement.prototype as unknown as { setSinkId?: unknown }).setSinkId === 'function';
-		} catch {
-			return false;
-		}
-	}, []);
-
-	const stopLevelMeter = useCallback(() => {
-		if (rafRef.current) {
-			cancelAnimationFrame(rafRef.current);
-			rafRef.current = null;
-		}
-		setMicLevel(0);
-	}, []);
-
-	const stopStream = useCallback(() => {
-		streamRef.current?.getTracks().forEach((t) => t.stop());
-		streamRef.current = null;
-	}, []);
-
-	const cleanupNoiseSuppression = useCallback(() => {
-		noiseSuppressionControlRef.current?.cleanup();
-	}, []);
-
-	const cleanupAudioGraph = useCallback(() => {
-		stopLevelMeter();
-		cleanupNoiseSuppression();
-		noiseSuppressionControlRef.current?.cleanupAudioNodes();
-		try {
-			analyserRef.current?.disconnect();
-		} catch {
-			// ignore
-		}
-		analyserRef.current = null;
-
-		const ctx = audioContextRef.current;
-		audioContextRef.current = null;
-		if (ctx) {
-			try {
-				void ctx.close();
-			} catch {
-				// ignore
-			}
-		}
-	}, [cleanupNoiseSuppression, stopLevelMeter]);
+	const { isTesting, testError, hasSetSinkId, playbackAudioRef, startTest, stopTest, getInputTrack } = useMicTest({
+		inputDeviceId,
+		outputDeviceId,
+		micVolume,
+		speakerVolume,
+		noiseSuppressionEnabled: isNoiseSuppressionEnabled,
+		onLevel: setMicLevel
+	});
 
 	const refreshDevices = useCallback(async () => {
 		if (!navigator.mediaDevices?.enumerateDevices) return;
@@ -163,137 +105,15 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false }: IS
 	}, []);
 
 	useEffect(() => {
-		localStorage.setItem(LS_KEYS.inputDeviceId, inputDeviceId);
-		localStorage.setItem(LS_KEYS.outputDeviceId, outputDeviceId);
+		setPreferredInputDeviceId(inputDeviceId);
 		localStorage.setItem(LS_KEYS.micVolume, String(micVolume));
 		localStorage.setItem(LS_KEYS.speakerVolume, String(speakerVolume));
-	}, [inputDeviceId, outputDeviceId, micVolume, speakerVolume]);
+	}, [inputDeviceId, micVolume, speakerVolume]);
 
 	const handleOutputDeviceChange = useCallback((deviceId: string) => {
 		setOutputDeviceId(deviceId);
 		setPreferredOutputDeviceId(deviceId);
 	}, []);
-
-	const startLevelMeter = useCallback(() => {
-		const analyser = analyserRef.current;
-		if (!analyser) return;
-		const data = new Uint8Array(analyser.fftSize);
-
-		const tick = () => {
-			analyser.getByteTimeDomainData(data);
-			let sum = 0;
-			for (let i = 0; i < data.length; i++) {
-				const sample = data[i] ?? 128;
-				const v = (sample - 128) / 128;
-				sum += v * v;
-			}
-			const rms = Math.sqrt(sum / data.length);
-			setMicLevel(clamp01(rms * 2.2));
-			rafRef.current = requestAnimationFrame(tick);
-		};
-		rafRef.current = requestAnimationFrame(tick);
-	}, []);
-
-	const stopTest = useCallback(() => {
-		setIsTesting(false);
-		setTestError('');
-
-		const audio = playbackAudioRef.current;
-		if (audio) {
-			try {
-				audio.pause();
-			} catch {
-				// ignore
-			}
-			audio.srcObject = null;
-			audio.removeAttribute('src');
-			audio.load();
-		}
-		playbackStreamRef.current = null;
-
-		cleanupAudioGraph();
-		stopStream();
-	}, [cleanupAudioGraph, stopStream]);
-
-	const startTest = useCallback(async () => {
-		setTestError('');
-
-		try {
-			stopTest();
-			setIsTesting(true);
-
-			const currentInputDeviceId = inputDeviceIdRef.current;
-			const currentMicVolume = micVolumeRef.current;
-
-			const constraints: MediaStreamConstraints = {
-				audio: {
-					...getNoiseSuppressionAudioCaptureOptions(isNoiseSuppressionEnabled),
-					...(currentInputDeviceId ? { deviceId: { exact: currentInputDeviceId } } : {})
-				} as MediaTrackConstraints,
-				video: false
-			};
-			const stream = await navigator.mediaDevices.getUserMedia(constraints);
-			streamRef.current = stream;
-
-			const audioContext = new AudioContext();
-			audioContextRef.current = audioContext;
-
-			const analyser = audioContext.createAnalyser();
-			analyser.fftSize = 2048;
-			analyserRef.current = analyser;
-
-			noiseSuppressionControlRef.current?.setupAudioNodes(stream, audioContext, analyser, currentMicVolume);
-
-			startLevelMeter();
-
-			if (isNoiseSuppressionEnabled) {
-				try {
-					await noiseSuppressionControlRef.current?.applyNoiseSuppression(true);
-				} catch (error) {
-					console.error('Failed to init noise suppression for mic test:', error);
-				}
-			}
-
-			// Live monitor: play mic audio immediately instead of waiting until stop.
-			const audio = playbackAudioRef.current;
-			if (audio) {
-				const destStream = noiseSuppressionControlRef.current?.getDestinationStream();
-				if (destStream) {
-					playbackStreamRef.current = destStream;
-					audio.srcObject = destStream;
-					audio.volume = speakerVolumeRef.current;
-
-					if (hasSetSinkId && outputDeviceIdRef.current) {
-						try {
-							await (audio as HTMLMediaElement & { setSinkId: (deviceId: string) => Promise<void> }).setSinkId(
-								outputDeviceIdRef.current
-							);
-						} catch {
-							// ignore and fallback to default output
-						}
-					}
-
-					try {
-						await audio.play();
-					} catch {
-						// ignore autoplay issues
-					}
-				}
-			}
-		} catch (e) {
-			console.error(e);
-			setIsTesting(false);
-			setTestError(t('setting:voice.errors.micPermission'));
-			cleanupAudioGraph();
-			stopStream();
-		}
-	}, [cleanupAudioGraph, hasSetSinkId, isNoiseSuppressionEnabled, startLevelMeter, stopStream, stopTest, t]);
-
-	useEffect(() => {
-		return () => {
-			stopTest();
-		};
-	}, [stopTest]);
 
 	return (
 		<div
@@ -328,11 +148,11 @@ export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false }: IS
 					</div>
 				</div>
 				<NoiseSuppressionControl
-					ref={noiseSuppressionControlRef}
 					className="mt-4"
 					noiseSuppressionEnabled={isNoiseSuppressionEnabled}
 					onNoiseSuppressionEnabledChange={setIsNoiseSuppressionEnabled}
 					isTesting={isTesting}
+					getInputTrack={getInputTrack}
 				/>
 
 				<MicTest

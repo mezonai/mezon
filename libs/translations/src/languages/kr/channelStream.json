@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "스트림 썸네일",
 	"videoError": "비디오 재생 실패. 나중에 다시 시도하세요.",
-	"everyoneWaiting": "모두가 방 안으로 기다리고 있습니다",
 	"noOneInStream": "현재 스트림에 아무도 없습니다",
 	"joinStream": "스트림 참여",
 	"noStreamToday": "오늘 스트림이 없습니다",
+	"everyoneWaiting": "모두가 방 안으로 기다리고 있습니다",
 	"hideMembers": "멤버 숨기기",
 	"showMembers": "멤버 표시",
-	"duplicateSessionDisconnected": "계정이 다른 세션에서 스트림 또는 음성 채널에 참여하여 연결이 끊어졌습니다."
+	"viewerCount": "{{count}}명 시청 중",
+	"quality": "화질",
+	"qualityAuto": "자동",
+	"qualityHigh": "높음",
+	"qualityMid": "중간",
+	"qualityLow": "낮음",
+	"fullscreen": "전체 화면",
+	"exitFullscreen": "전체 화면 종료",
+	"live": "라이브",
+	"isLive": "{{name}}님이 라이브 중",
+	"volume": "볼륨",
+	"mute": "음소거",
+	"unmute": "음소거 해제"
 }

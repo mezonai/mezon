@@ -54,7 +54,6 @@
 	--theme-setting-nav: #f0f0f0;
 	--private-theme: rgb(144, 224, 176);
 	/* button primary */
-	--text-theme-primary: oklab(0.51633 0.00309466 -0.0153829);
 	--bg-active-friend-list: #ebedf0;
 	--bg-active-button: rgba(67, 97, 238, 0.12);
 	--color-text-active-button: #4361ee;
@@ -136,7 +135,7 @@
 	/* unified sound variables */
 	--bg-theme-sound-bar: var(--bg-theme-bar-play-color-light-sound);
 	--bg-theme-sound-unselect: var(--bg-theme-unselect-light-sound);
-	--bg-icon-theme: oklab(60% 0.00763 0.00229);
+	--bg-icon-theme: rgb(92, 92, 92);
 	--bg-theme-secounnd: oklab(87.767% 0.0021 0.00055);
 	--bg-icon-theme-active: oklab(30% 0.0023 -0.01283);
 	--member-icon-head-fill: rgba(171, 171, 173, 1);

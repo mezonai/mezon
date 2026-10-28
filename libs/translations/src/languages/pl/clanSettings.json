@@ -58,7 +58,8 @@
 		"setupTips": "Wyślij przydatne wskazówki dotyczące konfiguracji serwera.",
 		"auditLog": "Wyślij dziennik, gdy zostanie wykonane działanie z clanem",
 		"anoTitle": "Tryb anonimowy",
-		"anoDesc": "Zapobiegaj użytkownikom używającym trybu anonimowego"
+		"anoDesc": "Zapobiegaj użytkownikom używającym trybu anonimowego",
+		"privateWelcome": "Kanał powitalny został ustawiony jako kanał prywatny."
 	},
 	"appDirectory": {
 		"categories": {

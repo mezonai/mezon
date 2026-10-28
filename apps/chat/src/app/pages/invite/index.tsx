@@ -1,7 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { authActions, channelsActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
+import { authActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,9 +23,7 @@ export default function InvitePage() {
 	const clanId = useMemo(() => {
 		return selectInvite?.clan_id || '0';
 	}, [selectInvite]);
-	const channeId = useMemo(() => {
-		return selectInvite?.channel_id || '0';
-	}, [selectInvite]);
+
 	const userJoined = useMemo(() => {
 		return selectInvite?.user_joined;
 	}, [selectInvite]);
@@ -38,13 +36,9 @@ export default function InvitePage() {
 				await inviteUser(inviteIdParam).then(async (res) => {
 					if (res?.channel_id && res?.clan_id) {
 						await new Promise((resolve) => setTimeout(resolve, 1000));
-						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
+						navigate(`/chat/clans/${res.clan_id}/member-safety`);
 					}
 				});
-				if (selectInvite.channel_desc) {
-					const channel = { ...selectInvite, id: selectInvite.channel_id as string };
-					dispatch(channelsActions.add({ clanId: selectInvite.channel_desc?.clan_id as string, channel: { ...channel, active: 1 } }));
-				}
 				return true;
 			} catch (err) {
 				setError(t('invite.failedToJoin'));
@@ -79,7 +73,7 @@ export default function InvitePage() {
 
 	useEffect(() => {
 		if (userJoined) {
-			navigate(`/chat/clans/${clanId}/channels/${channeId}`);
+			navigate(`/chat/clans/${clanId}/member-safety`);
 			toast.info(t('invite.alreadyMember'));
 		} else {
 			const handleKeyDown = (event: KeyboardEvent) => {
@@ -94,7 +88,7 @@ export default function InvitePage() {
 				document.removeEventListener('keydown', handleKeyDown);
 			};
 		}
-	}, [userJoined, navigate, clanId, channeId, t]);
+	}, [userJoined, navigate, clanId, t]);
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-theme-primary">

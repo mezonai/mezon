@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	OUTPUT_DEVICE_CHANGE_EVENT,
 	PREFERRED_OUTPUT_DEVICE_STORAGE_KEY,
@@ -6,7 +5,8 @@ import {
 	parseOutputDeviceChangeEventDetail,
 	setPreferredOutputDeviceId,
 	supportsAudioOutputDeviceSelection
-} from './preferredOutputDevice';
+} from '@mezon/utils';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export function usePreferredOutputDevice() {
 	const [outputDeviceId, setOutputDeviceId] = useState(() => getPreferredOutputDeviceId());
@@ -22,12 +22,10 @@ export function usePreferredOutputDevice() {
 		const devices = await navigator.mediaDevices.enumerateDevices();
 		const outputs = devices.filter((device) => device.kind === 'audiooutput');
 		setOutputDevices(outputs);
+		// Before a media permission the browser hides speaker ids (or every speaker), so the saved one cannot be checked yet
+		if (!outputs.some((device) => device.deviceId)) return;
 		const current = getPreferredOutputDeviceId();
-		if (current !== 'default' && outputs.length > 0 && !outputs.some((device) => device.deviceId === current)) {
-			setPreferredOutputDeviceId('default');
-			return;
-		}
-		if (outputs.length === 0 && current !== 'default') {
+		if (current !== 'default' && !outputs.some((device) => device.deviceId === current)) {
 			setPreferredOutputDeviceId('default');
 		}
 	}, []);

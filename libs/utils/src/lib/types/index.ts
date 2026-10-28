@@ -508,6 +508,7 @@ export type IUserStream = {
 	participant: string;
 	streaming_channel_id: string;
 	streaming_channel_label: string;
+	is_publisher?: boolean;
 };
 
 export type IChannelsStream = {
@@ -1113,6 +1114,7 @@ export enum EUserSettings {
 	LANGUAGE = 'Language',
 	SERVER = 'Server',
 	VOICE = 'Voice',
+	STREAMING = 'Streaming',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
 	LOG_OUT = 'Log Out',

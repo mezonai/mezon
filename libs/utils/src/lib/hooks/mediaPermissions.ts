@@ -105,7 +105,7 @@ const subscribe = (listener: () => void) => {
 	};
 };
 
-const isPermissionRefusal = (error: unknown) => {
+export const isPermissionRefusal = (error: unknown) => {
 	const name = (error as DOMException | undefined)?.name;
 	return name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError';
 };

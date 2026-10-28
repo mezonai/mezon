@@ -10,13 +10,11 @@ import {
 	selectDmGroupById,
 	selectGroupCallId,
 	selectJoinedCall,
-	selectStreamMembersByChannelId,
 	selectTheme,
-	streamMemberEntityId,
 	useAppDispatch,
 	useAppSelector,
-	usersStreamActions,
-	videoStreamActions
+	videoStreamActions,
+	watchStream
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ESummaryInfo } from '@mezon/utils';
@@ -35,7 +33,6 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const appearanceTheme = useSelector(selectTheme);
 	const closeMenu = useSelector(selectCloseMenu);
-	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const groupCallId = useSelector(selectGroupCallId);
 	const currentDmGroup = useSelector((state) => selectDmGroupById(state, groupCallId ?? ''));
 	const dmUserId = currentDmGroup?.user_ids?.[0] || '';
@@ -83,11 +80,8 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			dispatch(audioCallActions.startDmCall(null));
 			dispatch(audioCallActions.setUserCallId(''));
 		} else if (type === ESummaryInfo.STREAM && currentStreamInfo) {
+			void dispatch(watchStream({ channelId: currentStreamInfo.streamId, watching: false }));
 			dispatch(videoStreamActions.resetPlayback());
-			const userStreamId = streamChannelMember?.find((stream) => stream.user_id === userProfile?.user?.id);
-			if (userStreamId) {
-				dispatch(usersStreamActions.remove(streamMemberEntityId(userStreamId.user_id, userStreamId.streaming_channel_id)));
-			}
 		}
 	};
 

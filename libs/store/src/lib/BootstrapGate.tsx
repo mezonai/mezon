@@ -108,14 +108,14 @@ export function BootstrapGate({ children, persistor, fallback }: Props) {
 								await connectSocket({ useToken: true });
 							} catch (errorToken) {
 								// Ask the gateway, the only party that can tell a dead node from a dead
-								// session: a different node is worth retrying right away, a refusal means the
-								// session is gone, and anything else (including a pinned server the user chose,
-								// which is never moved) lets them into the app with a socket the reconnect wave
-								// keeps retrying — staying on this screen would hide Settings → Server, the one
-								// way out.
+								// session: a different node or a renewed session is worth retrying right
+								// away, a refusal means the session is gone, and anything else (including a
+								// pinned server the user chose, which is never moved) lets them into the app
+								// with a socket the reconnect wave keeps retrying — staying on this screen
+								// would hide Settings → Server, the one way out.
 								console.error('ERROR_CONNECT (socket)', errorToken);
 								const verdict = await askHealthyEndpoint({ force: true });
-								if (verdict === 'changed') {
+								if (verdict === 'changed' || verdict === 'renewed') {
 									continue;
 								}
 								if (verdict === 'rejected') {

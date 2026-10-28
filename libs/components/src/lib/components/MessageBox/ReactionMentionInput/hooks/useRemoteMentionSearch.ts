@@ -1,15 +1,16 @@
 import type { ChannelsEntity } from '@mezon/store';
 import { searchMentionUsers, useAppDispatch } from '@mezon/store';
-import { getNameForPrioritize, sleep } from '@mezon/utils';
+import { getNameForPrioritize, normalizeString, sleep } from '@mezon/utils';
 import type { ApiMentionUser } from 'mezon-js';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MentionData } from '../Mention';
 
 // SearchMentionUsers takes 2-64 characters and answers at most SERVER_PAGE_SIZE members.
 const MIN_QUERY_CHARS = 2;
 const MAX_QUERY_CHARS = 64;
 const SERVER_PAGE_SIZE = 50;
-const DEBOUNCE_MS = 200;
+// At 200ms a slow typist paused long enough between keys to search once per key.
+const DEBOUNCE_MS = 350;
 // How long the picker keeps its rows for a pending search before it shows the local matches alone.
 const HOLD_MS = 1000;
 // One letter cannot be searched and its local matches are a sliver of the clan: the rows on screen stay this long for the
@@ -28,6 +29,9 @@ type Answer = { users: ApiMentionUser[] } | null;
 // overload, rate limit, a dropped socket) only for a short while.
 const FINAL_ERROR_CODES = new Set([3, 5, 7]);
 const RETRY_FAILED_MS = 15 * 1000;
+// A search that failed for a passing reason (the server's Elasticsearch call timing out on a cold query answers code 13)
+// is asked once more after this, while the query is still the one being typed.
+const RETRY_ONCE_MS = 1000;
 
 interface SearchSession {
 	scope: string;
@@ -43,14 +47,23 @@ interface SearchSession {
 	members: Set<string>;
 	// When a query that failed for a passing reason may be asked again.
 	retryAt: Map<string, number>;
+	// Queries already asked a second time, and those waiting for it.
+	retried: Set<string>;
+	retrying: Set<string>;
+	retryTimers: Set<ReturnType<typeof setTimeout>>;
 }
 
 // NFC: decomposed input (Unikey's combining mode, text pasted from macOS) must match the composed names the server holds.
 const searchText = (query: string) => query.trim().normalize('NFC');
 const searchKey = (query: string) => searchText(query).toLowerCase();
 
-const matchesQuery = (user: ApiMentionUser, key: string) =>
-	[user.username, user.display_name, user.clan_nick].some((field) => field?.toLowerCase().includes(key));
+// Folded as the server matches, case and accents ignored: an earlier answer for "han" holding "Hạnh" still answers "hanh".
+const foldText = (text: string) => normalizeString(text).replace(/Đ/g, 'D');
+
+const matchesQuery = (user: ApiMentionUser, key: string) => {
+	const folded = foldText(key);
+	return [user.username, user.display_name, user.clan_nick].some((field) => !!field && foldText(field).includes(folded));
+};
 
 const lookup = (session: SearchSession, key: string): Answer | undefined => {
 	if (session.answers.has(key)) {
@@ -115,9 +128,21 @@ export const useRemoteMentionSearch = ({ clanId, channelId, enabled }: UseRemote
 			slow: null,
 			inFlight: 0,
 			members: new Set(),
-			retryAt: new Map()
+			retryAt: new Map(),
+			retried: new Set(),
+			retrying: new Set(),
+			retryTimers: new Set()
 		}),
 		[scope]
+	);
+	// A retry still waiting when the picker closes or moves to another channel is not sent.
+	useEffect(
+		() => () => {
+			session.retryTimers.forEach(clearTimeout);
+			session.retryTimers.clear();
+			session.retrying.clear();
+		},
+		[session]
 	);
 	// Bumped when a search the picker stopped waiting for ends, so the picker asks again and reads the answer from the cache.
 	const [lateAnswers, setLateAnswers] = useState(0);
@@ -147,6 +172,23 @@ export const useRemoteMentionSearch = ({ clanId, channelId, enabled }: UseRemote
 				const errorCode = 'errorCode' in result ? result.errorCode : undefined;
 				if (!answer && !(errorCode !== undefined && FINAL_ERROR_CODES.has(errorCode))) {
 					session.retryAt.set(key, Date.now() + RETRY_FAILED_MS);
+					if (errorCode !== 404 && !session.retried.has(key)) {
+						session.retried.add(key);
+						session.retrying.add(key);
+						const timer = setTimeout(() => {
+							session.retryTimers.delete(timer);
+							session.retrying.delete(key);
+							if (session.latest !== key) return;
+							session.answers.delete(key);
+							session.retryAt.delete(key);
+							send(key, text).then(() => {
+								if (session.latest === key) {
+									setLateAnswers((count) => count + 1);
+								}
+							});
+						}, RETRY_ONCE_MS);
+						session.retryTimers.add(timer);
+					}
 				}
 				if (session.answers.size > MAX_CACHED_ANSWERS) {
 					const oldest = session.answers.keys().next().value as string;
@@ -206,8 +248,14 @@ export const useRemoteMentionSearch = ({ clanId, channelId, enabled }: UseRemote
 		[session, send]
 	);
 
-	// Whether the server is still searching `query` after the picker stopped waiting for it.
-	const isSearching = useCallback((query: string) => session.slow !== null && session.slow === searchKey(query), [session]);
+	// Whether the server is still searching `query` after the picker stopped waiting for it, or will ask it again.
+	const isSearching = useCallback(
+		(query: string) => {
+			const key = searchKey(query);
+			return (session.slow !== null && session.slow === key) || session.retrying.has(key);
+		},
+		[session]
+	);
 
 	// Whether the server listed this user for the current channel, i.e. as a member the store may lack.
 	const isRemoteMember = useCallback((userId: string) => session.members.has(userId), [session]);

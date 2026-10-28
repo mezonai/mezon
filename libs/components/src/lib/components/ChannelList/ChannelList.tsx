@@ -8,6 +8,7 @@ import {
 	applySortChannelInCategory,
 	categoriesActions,
 	extractChannelRowIdsForCategory,
+	selectChannelFetchSuccessByClanId,
 	selectCtrlKFocusChannel,
 	selectCurrentChannelId,
 	selectCurrentClanBanner,
@@ -50,6 +51,7 @@ function ChannelList() {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanCreatorId = useSelector(selectCurrentClanCreatorId);
 	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
+	const checkFetchChannel = useAppSelector((state) => selectChannelFetchSuccessByClanId(state, currentClanId || ''));
 
 	const userId = useSelector(selectCurrentUserId);
 	const [hasAdminPermission, hasClanPermission, hasChannelManagePermission] = usePermissionChecker([
@@ -76,7 +78,10 @@ function ChannelList() {
 		}
 	}, [isOpenModal]);
 
-	const shouldShowSkeleton = !listChannelRender || listChannelRender?.length === 0;
+	const shouldShowSkeleton = !listChannelRender || !checkFetchChannel;
+	const checkHasChannel = useMemo(() => {
+		return !!listChannelRender?.some((channel) => !('channels' in channel));
+	}, [listChannelRender, checkFetchChannel]);
 
 	return (
 		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="contain-strict h-full">
@@ -90,510 +95,528 @@ function ChannelList() {
 				<div
 					className={`transition-opacity duration-300 ${shouldShowSkeleton ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
 				>
-					<RowVirtualizerDynamic permissions={permissions} />
+					<RowVirtualizerDynamic checkHasChannel={checkHasChannel} checkFetchChannel={checkFetchChannel} permissions={permissions} />
 				</div>
 			</div>
 		</div>
 	);
 }
 
-const ChannelBannerAndEvents = memo(({ banner }: { banner?: string }) => {
-	return (
-		<>
-			{banner && (
-				<div className="h-[136px]" data-e2e={generateE2eId('clan_page.banner')}>
-					<img
-						src={createImgproxyUrl(banner ?? '', { width: 300, height: 300, resizeType: 'fit' })}
-						alt="imageCover"
-						className="h-full w-full object-cover"
-					/>
-				</div>
-			)}
-			<div id="channel-list-top" className="self-stretch h-fit flex-col justify-start items-start gap-1 p-2 flex">
-				<Events />
-				<hr className="w-full ml-[3px] border-t-theme-primary"></hr>
-			</div>
-		</>
-	);
-});
-
-const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLinkPermission }) => {
-	const { t } = useTranslation('channelList');
-	const currentClanId = useSelector(selectCurrentClanId);
-	const currentClanBanner = useSelector(selectCurrentClanBanner);
-	const [showFullList, setShowFullList] = useState(false);
-	const [isDragModeEnabled, setIsDragModeEnabled] = useState(false);
-	const prevClanIdRef = useRef<string | null>(null);
-
-	useEffect(() => {
-		if (prevClanIdRef.current !== currentClanId) {
-			prevClanIdRef.current = currentClanId as string;
-			if (showFullList) {
-				setShowFullList(false);
-			}
-		}
-	}, [currentClanId]);
-
-	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
-	const streamPlay = useSelector(selectStatusStream);
-	const isVoiceJoined = useSelector(selectVoiceJoined);
-	const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
-	const dispatch = useAppDispatch();
-
-	const baseListChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
-	const [localChannelOrderByClan, setLocalChannelOrderByClan] = useState<Record<string, Record<string, string[]>>>({});
-
-	const listChannelRender = useMemo(() => {
-		if (!baseListChannelRender) {
-			return undefined;
-		}
-		const orders = localChannelOrderByClan[currentClanId as string] ?? {};
-		let rows = baseListChannelRender;
-		for (const [categoryId, orderedIds] of Object.entries(orders)) {
-			if (categoryId !== FAVORITE_CATEGORY_ID && orderedIds?.length) {
-				rows = applyLocalChannelOrderForCategory(rows, categoryId, orderedIds);
-			}
-		}
-		return rows;
-	}, [baseListChannelRender, localChannelOrderByClan, currentClanId]);
-
-	const firstChannelWithBadgeCount = useSelector((state) => selectFirstChannelWithBadgeByClanId(state, currentClanId as string));
-
-	const [height, setHeight] = useState(0);
-
-	const data = useMemo(() => {
-		const filteredChannels = listChannelRender
-			? isShowEmptyCategory
-				? listChannelRender
-				: listChannelRender.filter(
-						(item) =>
-							(item as ICategoryChannel).category_id === FAVORITE_CATEGORY_ID ||
-							((item as ICategoryChannel).channels && (item as ICategoryChannel).channels.length > 0) ||
-							(item as ICategoryChannel).channels === undefined
-					)
-			: [];
-
-		const countItems = Math.round(height / 36);
-
-		const limitedChannels =
-			!showFullList && filteredChannels.length > 20 ? filteredChannels.slice(0, countItems > 20 ? countItems : 20) : filteredChannels;
-		return [{ type: 'bannerAndEvents' }, ...limitedChannels];
-	}, [listChannelRender, isShowEmptyCategory, showFullList]) as ICategoryChannel[];
-
-	useEffect(() => {
-		const calculateHeight = () => {
-			const clanFooterEle = document.getElementById('clan-footer');
-			const clanFooterHeight = clanFooterEle?.clientHeight || 0;
-			const mdBottomMargin = window.innerWidth >= 768 ? 16 : 0;
-			const totalHeight = clanTopbarEle + clanFooterHeight + mdBottomMargin - 3;
-			const outsideHeight = totalHeight;
-
-			setHeight(window.innerHeight - outsideHeight);
-		};
-		calculateHeight();
-		window.addEventListener('resize', calculateHeight);
-		return () => window.removeEventListener('resize', calculateHeight);
-	}, [data, streamPlay, isVoiceJoined]);
-
-	useEffect(() => {
-		const idleCallback = window.requestIdleCallback(
-			() => {
-				setShowFullList(true);
-			},
-			{ timeout: 3000 }
-		);
-
-		return () => {
-			window.cancelIdleCallback(idleCallback);
-		};
-	}, [listChannelRender]);
-
-	const currentChannelId = useSelector(selectCurrentChannelId);
-
-	const parentRef = useRef<HTMLDivElement>(null);
-	const count = data.length;
-	const virtualizer = useVirtualizer({
-		count,
-		getScrollElement: () => parentRef.current,
-		estimateSize: () => 36
-	});
-
-	const items = virtualizer.getVirtualItems();
-
-	const findScrollIndex = () => {
-		const channelId = firstChannelWithBadgeCount?.id;
-		const index = data.findIndex((item) => item.id === channelId && item.category_id !== FAVORITE_CATEGORY_ID);
-		const currentScrollIndex = virtualizer.getVirtualItems().findIndex((item) => item.index === index);
-		const currentScrollPosition = virtualizer.scrollElement?.scrollTop;
-		const targetScrollPosition = virtualizer.getVirtualItems()[currentScrollIndex]?.start;
-
-		return { index, currentScrollIndex, currentScrollPosition, targetScrollPosition };
-	};
-
-	useLayoutEffect(() => {
-		if (!ctrlKFocusChannel?.id) return;
-		if (!virtualizer.getVirtualItems().length) return;
-
-		const focusChannel = ctrlKFocusChannel;
-		const { id } = focusChannel as { id: string; parentId: string };
-		const index = data.findIndex((item) => item.id === id && item.category_id !== FAVORITE_CATEGORY_ID);
-		if (index <= 0) return;
-
-		const currentScrollIndex = virtualizer.getVirtualItems().findIndex((item) => item.index === index);
-		const currentScrollPosition = virtualizer.scrollElement?.scrollTop;
-		const targetScrollPosition = virtualizer.getVirtualItems()[currentScrollIndex]?.start;
-		if (currentScrollIndex === -1 || targetScrollPosition !== currentScrollPosition) {
-			virtualizer.scrollToIndex(index, { align: 'center' });
-		}
-
-		dispatch(categoriesActions.setCtrlKFocusChannel(null));
-	});
-
-	const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
-
-	const handleScrollChannelIntoView = () => {
-		const { index, currentScrollIndex, currentScrollPosition, targetScrollPosition } = findScrollIndex();
-		if (index === -1) return;
-		if (currentScrollIndex === -1 || targetScrollPosition !== currentScrollPosition) {
-			virtualizer.scrollToIndex(index, { align: 'center' });
-		}
-	};
-
-	const isChannelRefOutOfViewport = () => {
-		const { index, currentScrollIndex } = findScrollIndex();
-		if (index === -1) return false;
-		return currentScrollIndex === -1;
-	};
-	const dragItemIndex = useRef<{ idElement: string; indexEnd: number } | null>(null);
-	const dragInfor = useRef<ICategoryChannel | null>(null);
-	const isDraggingRef = useRef(false);
-
-	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: { distance: 4 }
-		})
-	);
-
-	const handleDragStart = useCallback(
-		(index: number, e: React.DragEvent<HTMLDivElement>, id: string) => {
-			setTimeout(() => {
-				isDraggingRef.current = true;
-			}, 100);
-
-			dragItemIndex.current = {
-				idElement: id,
-				indexEnd: index
-			};
-			dragInfor.current = data[index];
-
-			const dragChannel = data[index] as IChannel;
-			if (dragChannel?.category_id && dragChannel?.clan_id) {
-				dispatch(
-					categoriesActions.setCategoryExpandState({
-						clanId: dragChannel.clan_id,
-						categoryId: dragChannel.category_id,
-						expandState: false
-					})
-				);
-			}
-		},
-		[data]
-	);
-
-	const handleDragEnter = useCallback(
-		(index: number, e: React.DragEvent<HTMLDivElement>, id: string) => {
-			const target = e.target as HTMLDivElement;
-			if (!target.id || dragItemIndex.current?.idElement === target.id || dragInfor.current?.category_id !== data[index]?.category_id) return;
-			const currentEl = document.getElementById(id);
-			const previousEl = document.getElementById(dragItemIndex.current!.idElement);
-			if (currentEl) currentEl.style.borderBottom = '3px solid #22c55e';
-			if (previousEl) previousEl.style.borderBottom = 'none';
-			dragItemIndex.current = {
-				idElement: id,
-				indexEnd: index
-			};
-		},
-		[data]
-	);
-
-	const handleDragEnd = useCallback(
-		(dragIndex: number) => {
-			setTimeout(() => {
-				isDraggingRef.current = false;
-			}, 50);
-
-			const el = document.getElementById(dragItemIndex.current!.idElement);
-			if (el) el.style.borderBottom = 'none';
-
-			if (dragItemIndex.current!.indexEnd === dragIndex) {
-				dragItemIndex.current = null;
-				return;
-			}
-			let countEmptyCategory = 0;
-
-			if (!isShowEmptyCategory && listChannelRender) {
-				for (let index = 0; index < listChannelRender.length - 1; index++) {
-					if (index === dragIndex + countEmptyCategory) {
-						break;
-					}
-
-					const current = listChannelRender[index] as ICategoryChannel;
-					const next = listChannelRender[index + 1] as ICategoryChannel;
-
-					if (current?.channels !== undefined && next?.channels !== undefined) {
-						countEmptyCategory++;
-					}
-				}
-			}
-
-			if ((dragIndex - dragItemIndex.current!.indexEnd >= 2 || dragIndex < dragItemIndex.current!.indexEnd) && listChannelRender) {
-				const categoryId = data[dragIndex].category_id as string;
-				const clanId = data[dragIndex].clan_id as string;
-				const indexEnd = dragItemIndex.current!.indexEnd - 1 + countEmptyCategory;
-				const indexStart = dragIndex - 1 + countEmptyCategory;
-				const newRows = applySortChannelInCategory([...listChannelRender], categoryId, indexStart, indexEnd);
-				const orderedRowIds = extractChannelRowIdsForCategory(newRows, categoryId);
-				setLocalChannelOrderByClan((prev) => ({
-					...prev,
-					[clanId]: {
-						...(prev[clanId] ?? {}),
-						[categoryId]: orderedRowIds
-					}
-				}));
-			}
-		},
-		[data, isShowEmptyCategory, listChannelRender]
-	);
-
-	const handleChannelClick = useCallback((e: React.MouseEvent) => {
-		if (isDraggingRef.current) {
-			e.preventDefault();
-			e.stopPropagation();
-		}
-	}, []);
-
-	const categories = useMemo(() => {
-		return data.filter((item) => item.channels !== undefined) as ICategoryChannel[];
-	}, [data]);
-
-	const categoryIds = useMemo(() => {
-		return categories.map((cat) => cat.category_id).filter((id): id is string => !!id);
-	}, [categories]);
-
-	const handleCategoryDragStart = useCallback(
-		(event: DragStartEvent) => {
-			const categoryId = event.active.id as string;
-			const category = categories.find((cat) => cat.category_id === categoryId);
-			if (category?.clan_id) {
-				dispatch(
-					categoriesActions.setCategoryExpandState({
-						clanId: category.clan_id,
-						categoryId: category.id,
-						expandState: false
-					})
-				);
-			}
-		},
-		[categories, dispatch]
-	);
-
-	const handleCategoryDragEnd = useCallback(
-		(event: DragEndEvent) => {
-			const { active, over } = event;
-			if (!over || active.id === over.id || !listChannelRender || active.id === FAVORITE_CATEGORY_ID || over.id === FAVORITE_CATEGORY_ID) {
-				return;
-			}
-
-			const oldIndex = categories.findIndex((cat) => cat.category_id === active.id);
-			const newIndex = categories.findIndex((cat) => cat.category_id === over.id);
-
-			if (oldIndex === -1 || newIndex === -1) {
-				return;
-			}
-
-			const reordered = arrayMove(categories, oldIndex, newIndex);
-
-			let orderCounter = 1;
-			const categoriesOrderChanges: ApiCategoryOrderUpdate[] = reordered
-				.filter((category: ICategoryChannel) => category.id !== FAVORITE_CATEGORY_ID && category.category_id !== 'favorCate')
-				.map((category: ICategoryChannel) => ({
-					category_id: category.category_id as string,
-					order: orderCounter++
-				}));
-
-			dispatch(
-				categoriesActions.updateCategoriesOrder({
-					clan_id: currentClanId as string,
-					categories: categoriesOrderChanges
-				})
-			);
-		},
-		[categories, dispatch, currentClanId, listChannelRender]
-	);
-
-	const channelListContent = (
-		<div
-			ref={parentRef}
-			style={{
-				height
-			}}
-			className={`thread-scroll`}
-			onWheelCapture={() => {
-				toggleDisableHover(parentRef.current, scrollTimeoutId2);
-			}}
-		>
-			<div
-				className="relative w-full"
-				style={{
-					height: virtualizer.getTotalSize()
-				}}
-			>
-				{firstChannelWithBadgeCount && isChannelRefOutOfViewport() && (
-					<div className={'sticky top-0 z-10 w-full flex justify-center'}>
-						<MentionFloatButton onClick={handleScrollChannelIntoView} />
+const ChannelBannerAndEvents = memo(
+	({ banner, checkFetchChannel, checkHasChannel }: { banner?: string; checkHasChannel: boolean; checkFetchChannel: boolean }) => {
+		return (
+			<>
+				{banner && (
+					<div className="h-[136px]" data-e2e={generateE2eId('clan_page.banner')}>
+						<img
+							src={createImgproxyUrl(banner ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+							alt="imageCover"
+							className="h-full w-full object-cover"
+						/>
 					</div>
 				)}
+				<div id="channel-list-top" className="self-stretch h-fit flex-col justify-start items-start gap-1 p-2 flex">
+					<Events checkHasChannel={checkHasChannel} checkFetchChannel={checkFetchChannel} />
+					<hr className="w-full ml-[3px] border-t-theme-primary"></hr>
+				</div>
+			</>
+		);
+	}
+);
+
+const RowVirtualizerDynamic = memo(
+	({
+		permissions,
+		checkHasChannel,
+		checkFetchChannel
+	}: {
+		permissions: IChannelLinkPermission;
+		checkFetchChannel: boolean;
+		checkHasChannel: boolean;
+	}) => {
+		const { t } = useTranslation('channelList');
+
+		const currentClanId = useSelector(selectCurrentClanId);
+		const currentClanBanner = useSelector(selectCurrentClanBanner);
+		const [showFullList, setShowFullList] = useState(false);
+		const [isDragModeEnabled, setIsDragModeEnabled] = useState(false);
+		const prevClanIdRef = useRef<string | null>(null);
+
+		useEffect(() => {
+			if (prevClanIdRef.current !== currentClanId) {
+				prevClanIdRef.current = currentClanId as string;
+				if (showFullList) {
+					setShowFullList(false);
+				}
+			}
+		}, [currentClanId]);
+
+		const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
+		const streamPlay = useSelector(selectStatusStream);
+		const isVoiceJoined = useSelector(selectVoiceJoined);
+		const ctrlKFocusChannel = useSelector(selectCtrlKFocusChannel);
+		const dispatch = useAppDispatch();
+
+		const baseListChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
+		const [localChannelOrderByClan, setLocalChannelOrderByClan] = useState<Record<string, Record<string, string[]>>>({});
+
+		const listChannelRender = useMemo(() => {
+			if (!baseListChannelRender) {
+				return undefined;
+			}
+			const orders = localChannelOrderByClan[currentClanId as string] ?? {};
+			let rows = baseListChannelRender;
+			for (const [categoryId, orderedIds] of Object.entries(orders)) {
+				if (categoryId !== FAVORITE_CATEGORY_ID && orderedIds?.length) {
+					rows = applyLocalChannelOrderForCategory(rows, categoryId, orderedIds);
+				}
+			}
+			return rows;
+		}, [baseListChannelRender, localChannelOrderByClan, currentClanId]);
+
+		const firstChannelWithBadgeCount = useSelector((state) => selectFirstChannelWithBadgeByClanId(state, currentClanId as string));
+
+		const [height, setHeight] = useState(0);
+
+		const data = useMemo(() => {
+			const filteredChannels = listChannelRender
+				? isShowEmptyCategory
+					? listChannelRender
+					: listChannelRender.filter(
+							(item) =>
+								(item as ICategoryChannel).category_id === FAVORITE_CATEGORY_ID ||
+								((item as ICategoryChannel).channels && (item as ICategoryChannel).channels.length > 0) ||
+								(item as ICategoryChannel).channels === undefined
+						)
+				: [];
+
+			const countItems = Math.round(height / 36);
+
+			const limitedChannels =
+				!showFullList && filteredChannels.length > 20 ? filteredChannels.slice(0, countItems > 20 ? countItems : 20) : filteredChannels;
+			return [{ type: 'bannerAndEvents' }, ...limitedChannels];
+		}, [listChannelRender, isShowEmptyCategory, showFullList]) as ICategoryChannel[];
+
+		useEffect(() => {
+			const calculateHeight = () => {
+				const clanFooterEle = document.getElementById('clan-footer');
+				const clanFooterHeight = clanFooterEle?.clientHeight || 0;
+				const mdBottomMargin = window.innerWidth >= 768 ? 16 : 0;
+				const totalHeight = clanTopbarEle + clanFooterHeight + mdBottomMargin - 3;
+				const outsideHeight = totalHeight;
+
+				setHeight(window.innerHeight - outsideHeight);
+			};
+			calculateHeight();
+			window.addEventListener('resize', calculateHeight);
+			return () => window.removeEventListener('resize', calculateHeight);
+		}, [data, streamPlay, isVoiceJoined]);
+
+		useEffect(() => {
+			const idleCallback = window.requestIdleCallback(
+				() => {
+					setShowFullList(true);
+				},
+				{ timeout: 3000 }
+			);
+
+			return () => {
+				window.cancelIdleCallback(idleCallback);
+			};
+		}, [listChannelRender]);
+
+		const currentChannelId = useSelector(selectCurrentChannelId);
+
+		const parentRef = useRef<HTMLDivElement>(null);
+		const count = data.length;
+		const virtualizer = useVirtualizer({
+			count,
+			getScrollElement: () => parentRef.current,
+			estimateSize: () => 36
+		});
+
+		const items = virtualizer.getVirtualItems();
+
+		const findScrollIndex = () => {
+			const channelId = firstChannelWithBadgeCount?.id;
+			const index = data.findIndex((item) => item.id === channelId && item.category_id !== FAVORITE_CATEGORY_ID);
+			const currentScrollIndex = virtualizer.getVirtualItems().findIndex((item) => item.index === index);
+			const currentScrollPosition = virtualizer.scrollElement?.scrollTop;
+			const targetScrollPosition = virtualizer.getVirtualItems()[currentScrollIndex]?.start;
+
+			return { index, currentScrollIndex, currentScrollPosition, targetScrollPosition };
+		};
+
+		useLayoutEffect(() => {
+			if (!ctrlKFocusChannel?.id) return;
+			if (!virtualizer.getVirtualItems().length) return;
+
+			const focusChannel = ctrlKFocusChannel;
+			const { id } = focusChannel as { id: string; parentId: string };
+			const index = data.findIndex((item) => item.id === id && item.category_id !== FAVORITE_CATEGORY_ID);
+			if (index <= 0) return;
+
+			const currentScrollIndex = virtualizer.getVirtualItems().findIndex((item) => item.index === index);
+			const currentScrollPosition = virtualizer.scrollElement?.scrollTop;
+			const targetScrollPosition = virtualizer.getVirtualItems()[currentScrollIndex]?.start;
+			if (currentScrollIndex === -1 || targetScrollPosition !== currentScrollPosition) {
+				virtualizer.scrollToIndex(index, { align: 'center' });
+			}
+
+			dispatch(categoriesActions.setCtrlKFocusChannel(null));
+		});
+
+		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
+
+		const handleScrollChannelIntoView = () => {
+			const { index, currentScrollIndex, currentScrollPosition, targetScrollPosition } = findScrollIndex();
+			if (index === -1) return;
+			if (currentScrollIndex === -1 || targetScrollPosition !== currentScrollPosition) {
+				virtualizer.scrollToIndex(index, { align: 'center' });
+			}
+		};
+
+		const isChannelRefOutOfViewport = () => {
+			const { index, currentScrollIndex } = findScrollIndex();
+			if (index === -1) return false;
+			return currentScrollIndex === -1;
+		};
+		const dragItemIndex = useRef<{ idElement: string; indexEnd: number } | null>(null);
+		const dragInfor = useRef<ICategoryChannel | null>(null);
+		const isDraggingRef = useRef(false);
+
+		const sensors = useSensors(
+			useSensor(PointerSensor, {
+				activationConstraint: { distance: 4 }
+			})
+		);
+
+		const handleDragStart = useCallback(
+			(index: number, e: React.DragEvent<HTMLDivElement>, id: string) => {
+				setTimeout(() => {
+					isDraggingRef.current = true;
+				}, 100);
+
+				dragItemIndex.current = {
+					idElement: id,
+					indexEnd: index
+				};
+				dragInfor.current = data[index];
+
+				const dragChannel = data[index] as IChannel;
+				if (dragChannel?.category_id && dragChannel?.clan_id) {
+					dispatch(
+						categoriesActions.setCategoryExpandState({
+							clanId: dragChannel.clan_id,
+							categoryId: dragChannel.category_id,
+							expandState: false
+						})
+					);
+				}
+			},
+			[data]
+		);
+
+		const handleDragEnter = useCallback(
+			(index: number, e: React.DragEvent<HTMLDivElement>, id: string) => {
+				const target = e.target as HTMLDivElement;
+				if (!target.id || dragItemIndex.current?.idElement === target.id || dragInfor.current?.category_id !== data[index]?.category_id)
+					return;
+				const currentEl = document.getElementById(id);
+				const previousEl = document.getElementById(dragItemIndex.current!.idElement);
+				if (currentEl) currentEl.style.borderBottom = '3px solid #22c55e';
+				if (previousEl) previousEl.style.borderBottom = 'none';
+				dragItemIndex.current = {
+					idElement: id,
+					indexEnd: index
+				};
+			},
+			[data]
+		);
+
+		const handleDragEnd = useCallback(
+			(dragIndex: number) => {
+				setTimeout(() => {
+					isDraggingRef.current = false;
+				}, 50);
+
+				const el = document.getElementById(dragItemIndex.current!.idElement);
+				if (el) el.style.borderBottom = 'none';
+
+				if (dragItemIndex.current!.indexEnd === dragIndex) {
+					dragItemIndex.current = null;
+					return;
+				}
+				let countEmptyCategory = 0;
+
+				if (!isShowEmptyCategory && listChannelRender) {
+					for (let index = 0; index < listChannelRender.length - 1; index++) {
+						if (index === dragIndex + countEmptyCategory) {
+							break;
+						}
+
+						const current = listChannelRender[index] as ICategoryChannel;
+						const next = listChannelRender[index + 1] as ICategoryChannel;
+
+						if (current?.channels !== undefined && next?.channels !== undefined) {
+							countEmptyCategory++;
+						}
+					}
+				}
+
+				if ((dragIndex - dragItemIndex.current!.indexEnd >= 2 || dragIndex < dragItemIndex.current!.indexEnd) && listChannelRender) {
+					const categoryId = data[dragIndex].category_id as string;
+					const clanId = data[dragIndex].clan_id as string;
+					const indexEnd = dragItemIndex.current!.indexEnd - 1 + countEmptyCategory;
+					const indexStart = dragIndex - 1 + countEmptyCategory;
+					const newRows = applySortChannelInCategory([...listChannelRender], categoryId, indexStart, indexEnd);
+					const orderedRowIds = extractChannelRowIdsForCategory(newRows, categoryId);
+					setLocalChannelOrderByClan((prev) => ({
+						...prev,
+						[clanId]: {
+							...(prev[clanId] ?? {}),
+							[categoryId]: orderedRowIds
+						}
+					}));
+				}
+			},
+			[data, isShowEmptyCategory, listChannelRender]
+		);
+
+		const handleChannelClick = useCallback((e: React.MouseEvent) => {
+			if (isDraggingRef.current) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}, []);
+
+		const categories = useMemo(() => {
+			return data.filter((item) => item.channels !== undefined) as ICategoryChannel[];
+		}, [data]);
+
+		const categoryIds = useMemo(() => {
+			return categories.map((cat) => cat.category_id).filter((id): id is string => !!id);
+		}, [categories]);
+
+		const handleCategoryDragStart = useCallback(
+			(event: DragStartEvent) => {
+				const categoryId = event.active.id as string;
+				const category = categories.find((cat) => cat.category_id === categoryId);
+				if (category?.clan_id) {
+					dispatch(
+						categoriesActions.setCategoryExpandState({
+							clanId: category.clan_id,
+							categoryId: category.id,
+							expandState: false
+						})
+					);
+				}
+			},
+			[categories, dispatch]
+		);
+
+		const handleCategoryDragEnd = useCallback(
+			(event: DragEndEvent) => {
+				const { active, over } = event;
+				if (!over || active.id === over.id || !listChannelRender || active.id === FAVORITE_CATEGORY_ID || over.id === FAVORITE_CATEGORY_ID) {
+					return;
+				}
+
+				const oldIndex = categories.findIndex((cat) => cat.category_id === active.id);
+				const newIndex = categories.findIndex((cat) => cat.category_id === over.id);
+
+				if (oldIndex === -1 || newIndex === -1) {
+					return;
+				}
+
+				const reordered = arrayMove(categories, oldIndex, newIndex);
+
+				let orderCounter = 1;
+				const categoriesOrderChanges: ApiCategoryOrderUpdate[] = reordered
+					.filter((category: ICategoryChannel) => category.id !== FAVORITE_CATEGORY_ID && category.category_id !== 'favorCate')
+					.map((category: ICategoryChannel) => ({
+						category_id: category.category_id as string,
+						order: orderCounter++
+					}));
+
+				dispatch(
+					categoriesActions.updateCategoriesOrder({
+						clan_id: currentClanId as string,
+						categories: categoriesOrderChanges
+					})
+				);
+			},
+			[categories, dispatch, currentClanId, listChannelRender]
+		);
+
+		const channelListContent = (
+			<div
+				ref={parentRef}
+				style={{
+					height
+				}}
+				className={`thread-scroll`}
+				onWheelCapture={() => {
+					toggleDisableHover(parentRef.current, scrollTimeoutId2);
+				}}
+			>
 				<div
+					className="relative w-full"
 					style={{
-						transform: `translateY(${items[0]?.start ?? 0}px)`
+						height: virtualizer.getTotalSize()
 					}}
-					className="channel-wrap absolute top-0 left-0 w-full"
 				>
-					{items.map((virtualRow) => {
-						const item = data[virtualRow.index];
-						if (virtualRow.index === 0) {
-							return (
-								<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>
-									<ChannelBannerAndEvents banner={currentClanBanner} />
-								</div>
-							);
-						} else if (item.channels) {
-							const isFirstCategory = virtualRow.index === 1;
-							return (
-								<div
-									className="pt-[10px] pb-[6px] relative group/category"
-									key={virtualRow.key}
-									data-index={virtualRow.index}
-									ref={virtualizer.measureElement}
-									id={`${item.category_id}-${item.id}`}
-									{...(isDragModeEnabled && {
-										onDragEnter: (e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`),
-										onDragEnd: () => handleDragEnd(virtualRow.index)
-									})}
-								>
-									{isFirstCategory && (
-										<div
-											className={`absolute ${permissions.hasChannelManagePermission && item.id !== FAVORITE_CATEGORY_ID ? 'right-7' : 'right-1'} z-10 transition-opacity ${
-												isDragModeEnabled ? 'opacity-100' : 'opacity-0 group-hover/category:opacity-100'
-											}`}
-										>
-											<button
-												onClick={() => setIsDragModeEnabled(!isDragModeEnabled)}
-												className={`flex items-center justify-center w-5 h-5 rounded-md transition-all ${
-													isDragModeEnabled
-														? 'text-green-500 bg-green-500/10 hover:bg-green-500/20'
-														: 'text-[var(--text-theme-primary)] hover:bg-black/5 dark:hover:bg-white/5'
-												}`}
-												title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
-												data-e2e={generateE2eId('clan_page.channel_list.button.drag_channel')}
-											>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													className="w-4 h-4"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke="currentColor"
-													strokeWidth="2"
-													strokeLinecap="round"
-													strokeLinejoin="round"
-												>
-													<path d="M12 2v20" />
-													<path d="m15 19-3 3-3-3" />
-													<path d="m19 9 3 3-3 3" />
-													<path d="M2 12h20" />
-													<path d="m5 9-3 3 3 3" />
-													<path d="m9 5 3-3 3 3" />
-												</svg>
-											</button>
-										</div>
-									)}
-									<CategorizedItem key={item.id} category={item} />
-								</div>
-							);
-						} else {
-							if ((item as IChannel).type !== ChannelType.CHANNEL_TYPE_THREAD) {
+					{firstChannelWithBadgeCount && isChannelRefOutOfViewport() && (
+						<div className={'sticky top-0 z-10 w-full flex justify-center'}>
+							<MentionFloatButton onClick={handleScrollChannelIntoView} />
+						</div>
+					)}
+					<div
+						style={{
+							transform: `translateY(${items[0]?.start ?? 0}px)`
+						}}
+						className="channel-wrap absolute top-0 left-0 w-full"
+					>
+						{items.map((virtualRow) => {
+							const item = data[virtualRow.index];
+							if (virtualRow.index === 0) {
+								return (
+									<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>
+										<ChannelBannerAndEvents
+											checkFetchChannel={checkFetchChannel}
+											checkHasChannel={checkHasChannel}
+											banner={currentClanBanner}
+										/>
+									</div>
+								);
+							} else if (item.channels) {
+								const isFirstCategory = virtualRow.index === 1;
 								return (
 									<div
+										className="pt-[10px] pb-[6px] relative group/category"
 										key={virtualRow.key}
 										data-index={virtualRow.index}
-										draggable={isDragModeEnabled}
-										onClick={handleChannelClick}
 										ref={virtualizer.measureElement}
-										data-e2e={generateE2eId('clan_page.channel_list.item')}
+										id={`${item.category_id}-${item.id}`}
+										{...(isDragModeEnabled && {
+											onDragEnter: (e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`),
+											onDragEnd: () => handleDragEnd(virtualRow.index)
+										})}
 									>
-										<ChannelListItem
-											isActive={currentChannelId === (item as IChannel).channel_id && !(item as IChannel).isFavor}
-											key={item.id}
-											channel={item as ChannelThreads}
-											permissions={permissions}
-											dragStart={
-												isDragModeEnabled
-													? (e) => handleDragStart(virtualRow.index, e, `${item.category_id}-${item.id}`)
-													: undefined
-											}
-											dragEnter={
-												isDragModeEnabled
-													? (e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)
-													: undefined
-											}
-										/>
+										{isFirstCategory && (
+											<div
+												className={`absolute ${permissions.hasChannelManagePermission && item.id !== FAVORITE_CATEGORY_ID ? 'right-7' : 'right-1'} z-10 transition-opacity ${
+													isDragModeEnabled ? 'opacity-100' : 'opacity-0 group-hover/category:opacity-100'
+												}`}
+											>
+												<button
+													onClick={() => setIsDragModeEnabled(!isDragModeEnabled)}
+													className={`flex items-center justify-center w-5 h-5 rounded-md transition-all ${
+														isDragModeEnabled
+															? 'text-green-500 bg-green-500/10 hover:bg-green-500/20'
+															: 'text-[var(--text-theme-primary)] hover:bg-black/5 dark:hover:bg-white/5'
+													}`}
+													title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
+													data-e2e={generateE2eId('clan_page.channel_list.button.drag_channel')}
+												>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														className="w-4 h-4"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														strokeWidth="2"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+													>
+														<path d="M12 2v20" />
+														<path d="m15 19-3 3-3-3" />
+														<path d="m19 9 3 3-3 3" />
+														<path d="M2 12h20" />
+														<path d="m5 9-3 3 3 3" />
+														<path d="m9 5 3-3 3 3" />
+													</svg>
+												</button>
+											</div>
+										)}
+										<CategorizedItem key={item.id} category={item} />
 									</div>
 								);
 							} else {
-								return (
-									<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>
-										<ThreadLinkWrapper
-											key={item.id}
-											isActive={currentChannelId === item.id}
-											thread={item}
-											notLastThread={
-												data[virtualRow.index + 1] &&
-												(data[virtualRow.index + 1] as IChannel)?.parent_id !== '0' &&
-												!(data[virtualRow.index + 1] as ICategoryChannel)?.channels
-											}
-										/>
-									</div>
-								);
+								if ((item as IChannel).type !== ChannelType.CHANNEL_TYPE_THREAD) {
+									return (
+										<div
+											key={virtualRow.key}
+											data-index={virtualRow.index}
+											draggable={isDragModeEnabled}
+											onClick={handleChannelClick}
+											ref={virtualizer.measureElement}
+											data-e2e={generateE2eId('clan_page.channel_list.item')}
+										>
+											<ChannelListItem
+												isActive={currentChannelId === (item as IChannel).channel_id && !(item as IChannel).isFavor}
+												key={item.id}
+												channel={item as ChannelThreads}
+												permissions={permissions}
+												dragStart={
+													isDragModeEnabled
+														? (e) => handleDragStart(virtualRow.index, e, `${item.category_id}-${item.id}`)
+														: undefined
+												}
+												dragEnter={
+													isDragModeEnabled
+														? (e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)
+														: undefined
+												}
+											/>
+										</div>
+									);
+								} else {
+									return (
+										<div key={virtualRow.key} data-index={virtualRow.index} ref={virtualizer.measureElement}>
+											<ThreadLinkWrapper
+												key={item.id}
+												isActive={currentChannelId === item.id}
+												thread={item}
+												notLastThread={
+													data[virtualRow.index + 1] &&
+													(data[virtualRow.index + 1] as IChannel)?.parent_id !== '0' &&
+													!(data[virtualRow.index + 1] as ICategoryChannel)?.channels
+												}
+											/>
+										</div>
+									);
+								}
 							}
-						}
-					})}
+						})}
+					</div>
 				</div>
 			</div>
-		</div>
-	);
+		);
 
-	const channelListMergedRowsContextValue = useMemo(() => ({ mergedRows: listChannelRender }), [listChannelRender]);
+		const channelListMergedRowsContextValue = useMemo(() => ({ mergedRows: listChannelRender }), [listChannelRender]);
 
-	return (
-		<ChannelListMergedRowsContext.Provider value={channelListMergedRowsContextValue}>
-			{isDragModeEnabled ? (
-				<DndContext
-					sensors={sensors}
-					collisionDetection={closestCenter}
-					onDragStart={handleCategoryDragStart}
-					onDragEnd={handleCategoryDragEnd}
-					modifiers={[restrictToVerticalAxis]}
-				>
-					<SortableContext items={categoryIds} strategy={verticalListSortingStrategy}>
-						{channelListContent}
-					</SortableContext>
-				</DndContext>
-			) : (
-				channelListContent
-			)}
-		</ChannelListMergedRowsContext.Provider>
-	);
-});
+		return (
+			<ChannelListMergedRowsContext.Provider value={channelListMergedRowsContextValue}>
+				{isDragModeEnabled ? (
+					<DndContext
+						sensors={sensors}
+						collisionDetection={closestCenter}
+						onDragStart={handleCategoryDragStart}
+						onDragEnd={handleCategoryDragEnd}
+						modifiers={[restrictToVerticalAxis]}
+					>
+						<SortableContext items={categoryIds} strategy={verticalListSortingStrategy}>
+							{channelListContent}
+						</SortableContext>
+					</DndContext>
+				) : (
+					channelListContent
+				)}
+			</ChannelListMergedRowsContext.Provider>
+		);
+	}
+);
 
 const ChannelListMem = memo(ChannelList, () => true);
 

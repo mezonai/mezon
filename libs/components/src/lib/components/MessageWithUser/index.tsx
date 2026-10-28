@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { startCreateTopicFromMessage } from '@mezon/core';
 import type { MessagesEntity, RootState } from '@mezon/store';
-import { getPoll, getStore, selectBanMeInChannel, topicsActions, useAppDispatch } from '@mezon/store';
+import { getPoll, getStore, selectBanMeInChannel, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
 import {
@@ -74,11 +75,13 @@ export type MessageWithUserProps = {
 const PollMessageWrapper = ({
 	message,
 	observeIntersectionForLoading,
-	interactionDisabled
+	interactionDisabled,
+	isDirect
 }: {
 	message: MessagesEntity;
 	observeIntersectionForLoading?: ObserveFn;
 	interactionDisabled?: boolean;
+	isDirect?: boolean;
 }) => {
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation();
@@ -131,6 +134,7 @@ const PollMessageWrapper = ({
 			messageId={message.id}
 			channelId={message.channel_id}
 			interactionDisabled={interactionDisabled}
+			isDirect={isDirect}
 		/>
 	);
 };
@@ -233,11 +237,8 @@ function MessageWithUser({
 	);
 
 	const handleLeaveComment = useCallback(() => {
-		dispatch(topicsActions.setIsShowCreateTopic(true));
-		dispatch(topicsActions.setCurrentTopicInitMessage(message));
-		dispatch(topicsActions.setCurrentTopicId(''));
-		dispatch(topicsActions.setInitTopicMessageId(message.id));
-	}, [dispatch, message]);
+		startCreateTopicFromMessage(message, dispatch, t, message, channelId);
+	}, [dispatch, message, channelId, t]);
 
 	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
 
@@ -445,6 +446,7 @@ function MessageWithUser({
 								message={message}
 								observeIntersectionForLoading={observeIntersectionForLoading}
 								interactionDisabled={!!isSearchMessage}
+								isDirect={isDM}
 							/>
 						)}
 						{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}

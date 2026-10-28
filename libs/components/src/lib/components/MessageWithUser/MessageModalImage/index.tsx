@@ -49,10 +49,7 @@ const MessageModalImage = () => {
 	const [showList, setShowList] = useState(true);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
 	const currentClanId = useAppSelector(selectCurrentClanId) ?? '';
-	const channelAttachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
-	const channelAttachmentUrls = useMemo(() => channelAttachments?.map((att) => att.url) ?? [], [channelAttachments]);
-	const { isSignatureDenied } = useCdnUrlSigner(channelAttachmentUrls, directId ?? currentChannelId ?? undefined);
-	const attachments = useMemo(() => channelAttachments?.filter((att) => !isSignatureDenied(att.url)), [channelAttachments, isSignatureDenied]);
+	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
 	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, (directId ?? currentChannelId) as string));
 	const { setOpenModalAttachment } = useAttachments();
 	const openModalAttachment = useAppSelector(selectOpenModalAttachment);

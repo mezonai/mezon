@@ -237,7 +237,7 @@ export function renderRecordingFrame(ctx: CanvasRenderingContext2D, width: numbe
 
 		if (item.speaking) {
 			ctx.save();
-			ctx.strokeStyle = '#1f8cf9';
+			ctx.strokeStyle = '#23a559';
 			ctx.lineWidth = SPEAKING_WIDTH;
 			roundRectPath(x + SPEAKING_WIDTH / 2, y + SPEAKING_WIDTH / 2, w - SPEAKING_WIDTH, h - SPEAKING_WIDTH, RADIUS);
 			ctx.stroke();

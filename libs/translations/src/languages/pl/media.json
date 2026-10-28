@@ -13,7 +13,6 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Przekazywanie...",
-		"fromPrivateChannel": "Multimedia z prywatnego kanału"
+		"uploading": "Przekazywanie..."
 	}
 }

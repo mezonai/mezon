@@ -13,7 +13,6 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Đang tải lên...",
-		"fromPrivateChannel": "Ảnh/video từ kênh riêng tư"
+		"uploading": "Đang tải lên..."
 	}
 }

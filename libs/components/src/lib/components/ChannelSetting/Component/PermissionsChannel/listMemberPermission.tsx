@@ -1,5 +1,5 @@
 import { useAppNavigation, useAuth, useCustomNavigate } from '@mezon/core';
-import type { removeChannelUsersPayload } from '@mezon/store';
+import type { AddedChannelUserProfile, removeChannelUsersPayload } from '@mezon/store';
 import {
 	channelUsersActions,
 	fetchUserChannels,
@@ -37,10 +37,12 @@ type ListMemberPermissionProps = {
 	channel: IChannel;
 	selectedUserIds: string[];
 	setSelectedUserIds?: (userIds: string[]) => void;
+	/** Identity of picked members the roster does not hold, before saving makes them part of the channel listing. */
+	stagedProfiles?: Record<string, AddedChannelUserProfile>;
 };
 
 const ListMemberPermission = (props: ListMemberPermissionProps) => {
-	const { channel, selectedUserIds, setSelectedUserIds } = props;
+	const { channel, selectedUserIds, setSelectedUserIds, stagedProfiles } = props;
 	const { t } = useTranslation('channelSetting');
 
 	const dispatch = useAppDispatch();
@@ -65,7 +67,17 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 		const sourceIds = channel.channel_private === 1 ? idUsers : selectedUserIds;
 		return Array.from(new Set(sourceIds.filter(Boolean)));
 	}, [channel.channel_private, idUsers, selectedUserIds]);
-	const profiles = useMemo(() => channelUserProfiles(channelUsers), [channelUsers]);
+	const profiles = useMemo(() => {
+		const listed = channelUserProfiles(channelUsers);
+		if (!stagedProfiles) return listed;
+		const staged = Object.fromEntries(
+			Object.entries(stagedProfiles).map(([userId, profile]) => [
+				userId,
+				{ username: profile.username ?? '', displayName: profile.display_name ?? '', avatar: profile.avatar ?? '' }
+			])
+		);
+		return { ...staged, ...listed };
+	}, [channelUsers, stagedProfiles]);
 	const rows = useMemo(
 		() => displayUserIds.map((id) => permissionMemberRow(id, rosterMembers[id], profiles[id])),
 		[displayUserIds, rosterMembers, profiles]

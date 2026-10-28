@@ -48,7 +48,8 @@
 		"appVersion": "앱 버전",
 		"startUp": "시작",
 		"quitApp": "앱 종료",
-		"server": "서버"
+		"server": "서버",
+		"streaming": "스트리밍"
 	},
 	"server": {
 		"auto": "자동",
@@ -59,6 +60,30 @@
 		"connectedTo": "{{region}}에 연결됨",
 		"connectingTo": "{{region}}에 연결 중…",
 		"footer": "자동: 서버를 자동으로 선택합니다. 항상 같은 서버를 사용하려면 서버를 선택하세요."
+	},
+	"streaming": {
+		"keyTitle": "스트림 키",
+		"keyDescription": "OBS 또는 다른 WHIP 인코더에서 스트림 채널로 방송할 때 사용합니다. 절대 공유하지 마세요. 이 정보를 가진 사람은 누구나 당신으로 방송할 수 있습니다.",
+		"channel": "스트림 채널",
+		"noChannels": "이 클랜에는 스트림 채널이 없습니다",
+		"getKey": "스트림 키 받기",
+		"regenerate": "새 키 생성",
+		"server": "서버",
+		"token": "Bearer Token",
+		"show": "표시",
+		"hide": "숨기기",
+		"copy": "복사",
+		"expiresIn": "{{time}} 안에 방송을 시작하세요. 이미 시작된 방송은 그 이후에도 계속됩니다.",
+		"expired": "이 키는 만료되었습니다. 방송하려면 새 키를 생성하세요.",
+		"error": "스트림 키를 받지 못했습니다. 다시 시도해 주세요.",
+		"obsTitle": "OBS 설정",
+		"obsStepService": "OBS에서 설정 → 방송을 열고 서비스로 WHIP을 선택합니다.",
+		"obsStepPaste": "위의 서버와 Bearer Token을 붙여 넣습니다.",
+		"obsStepEncoder": "설정 → 출력에서 H.264 인코더를 고르고 키프레임 간격을 2초로 설정합니다.",
+		"obsStepSimulcast": "여러 화질을 제공하려면 OBS 버전이 지원하는 경우 사이멀캐스트를 3 레이어로 설정합니다.",
+		"obsStepStart": "방송 시작을 클릭합니다. 키는 OBS가 연결할 때만 유효하면 됩니다. 키가 만료된 뒤 OBS가 다시 연결해야 하면 새 키를 받아 다시 붙여 넣으세요.",
+		"qualityTitle": "기본 시청 화질",
+		"qualityDescription": "방송에 참여할 때마다 사용됩니다. 시청 중에도 바꿀 수 있습니다."
 	},
 	"autoStart": {
 		"title": "앱 자동 시작",

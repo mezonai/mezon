@@ -1,8 +1,8 @@
-import { acitvitiesActions, clansActions } from '@mezon/store';
-import { CustomLoaderFunction } from './appLoader';
+import { acitvitiesActions, directActions } from '@mezon/store';
+import type { CustomLoaderFunction } from './appLoader';
 
 export const friendsLoader: CustomLoaderFunction = async ({ dispatch }) => {
-	dispatch(clansActions.joinClan({ clanId: '0' }));
+	dispatch(directActions.joinDirectMessageSpace({}));
 	dispatch(acitvitiesActions.listActivities({}));
 	return null;
 };

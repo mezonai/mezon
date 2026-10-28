@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Stream thumbnail",
 	"videoError": "Video kon niet worden afgespeeld. Probeer het later opnieuw.",
-	"everyoneWaiting": "Iedereen wacht op jou binnen",
 	"noOneInStream": "Er is momenteel niemand in de stream",
 	"joinStream": "Bij stream betreden",
 	"noStreamToday": "Geen stream vandaag",
+	"everyoneWaiting": "Iedereen wacht op jou binnen",
 	"hideMembers": "Leden verbergen",
 	"showMembers": "Leden tonen",
-	"duplicateSessionDisconnected": "Verbinding verbroken omdat je account in een andere sessie lid is geworden van een stream of spraakkanaal."
+	"viewerCount": "{{count}} kijkers",
+	"quality": "Kwaliteit",
+	"qualityAuto": "Automatisch",
+	"qualityHigh": "Hoog",
+	"qualityMid": "Gemiddeld",
+	"qualityLow": "Laag",
+	"fullscreen": "Volledig scherm",
+	"exitFullscreen": "Volledig scherm afsluiten",
+	"live": "Live",
+	"isLive": "{{name}} is live",
+	"volume": "Volume",
+	"mute": "Dempen",
+	"unmute": "Dempen opheffen"
 }

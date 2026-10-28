@@ -197,7 +197,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 
 			try {
 				const uploadResults = await Promise.all(
-					fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx, undefined, channelId))
+					fileArray.map((file, idx) => handleUploadFile(client, session, file.name, file as any, idx, channelId))
 				);
 
 				const newAttachments: ChannelTimelineAttachment[] = uploadResults.map((uploaded, idx) => ({

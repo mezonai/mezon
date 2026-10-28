@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "O número máximo de canais para este clã foi atingido"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Ocultar barra de fixados",
+		"dismissModal": {
+			"title": "Ocultar barra de fixados",
+			"message": "Tem certeza de que deseja ocultar esta barra? Ela voltará a aparecer quando houver uma nova mensagem fixada ou um novo tópico.",
+			"confirm": "Ocultar"
+		}
+	},
 	"moreFile": "mais arquivos",
 	"moreFiles": "mais arquivos",
 	"topics": "Tópicos",

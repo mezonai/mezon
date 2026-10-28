@@ -157,6 +157,7 @@
 		"sticker": "Stickers"
 	},
 	"turnOffAnonymous": "Turn off Anonymous",
+	"turnOffAnonymousToCreateTopic": "Turn off Anonymous mode before creating a topic",
 	"turnOnAnonymous": "Turn on Anonymous",
 	"goToTopic": "Go to Topic",
 	"creator": "Creator",
@@ -221,7 +222,7 @@
 	"bannedChannel": "You are banned from channel {{channelName}}.",
 	"addAMessage": "Add a message (Optional)",
 	"slideToCancel": "Slide to cancel",
-	"noAccess": "No Access",
+	"noAccess": "Private channel",
 	"unknown": "unknown",
 	"fileSelection": {
 		"uploadFile": "Upload a File",

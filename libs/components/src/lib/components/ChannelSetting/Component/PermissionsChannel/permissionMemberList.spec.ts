@@ -8,7 +8,9 @@ import {
 	pageCount,
 	pageSlice,
 	permissionMemberRow,
-	searchNeedle
+	rankByMatch,
+	searchNeedle,
+	serverRowsFor
 } from './permissionMemberList';
 
 const ids = (count: number) => Array.from({ length: count }, (_, index) => `${index + 1}`);
@@ -52,6 +54,71 @@ describe('permission list search', () => {
 		expect(matchesNeedle('zzz', ['Wumpus', undefined])).toBe(false);
 		expect(matchesNeedle('', [])).toBe(true);
 	});
+
+	it('ranks names starting with the search first, then words starting with it, then names containing it', () => {
+		const rows = [
+			{ id: 'contains', names: ['Magic Mike'] },
+			{ id: 'server-other', names: ['Zed'] },
+			{ id: 'word', names: ['Tran Gi Anh'] },
+			{ id: 'prefix-username', names: ['Someone', 'giang.tran'] },
+			{ id: 'prefix-accent', names: ['Giàng A Páo'] }
+		];
+		const ranked = rankByMatch(rows, ' Gi ', (row) => row.names).map((row) => row.id);
+		expect(ranked).toEqual(['prefix-accent', 'prefix-username', 'word', 'contains', 'server-other']);
+	});
+
+	it('takes a dot or any other non-letter as the start of a word', () => {
+		const rows = [
+			{ id: 'contains', names: ['Ostrander'] },
+			{ id: 'dotted', names: ['', '', 'giang.tran'] },
+			{ id: 'later-word', names: ['Matran Tran'] }
+		];
+		expect(rankByMatch(rows, 'tran', (row) => row.names).map((row) => row.id)).toEqual(['dotted', 'later-word', 'contains']);
+	});
+
+	it('orders equal matches by the name shown, numbers by value, and leaves rows alone without a search', () => {
+		const rows = [
+			{ names: ['', 'Old Timer 099'] },
+			{ names: ['Old Timer 098'] },
+			{ names: [undefined, 'Old Timer 090', 'oldtimer_090'] },
+			{ names: ['Old Timer 9'] },
+			{ names: ['Old Timer 10'] }
+		];
+		const shown = (ranked: typeof rows) => ranked.map((row) => row.names.find(Boolean));
+		expect(shown(rankByMatch(rows, 'old timer', (row) => row.names))).toEqual([
+			'Old Timer 9',
+			'Old Timer 10',
+			'Old Timer 090',
+			'Old Timer 098',
+			'Old Timer 099'
+		]);
+		expect(rankByMatch(rows, '  ', (row) => row.names)).toEqual(rows);
+	});
+
+	it('keeps an accented server row under a longer unaccented query, and returns the answer itself when nothing drops', () => {
+		const users = [{ display_name: 'Nguyễn Văn A' }, { display_name: 'Đức Hạnh' }];
+		expect(serverRowsFor({ needle: 'nguy', users }, 'nguye')).toEqual([{ display_name: 'Nguyễn Văn A' }]);
+		expect(serverRowsFor({ needle: 'han', users }, 'hanh')).toEqual([{ display_name: 'Đức Hạnh' }]);
+		expect(serverRowsFor({ needle: 'n', users }, 'n')).toBe(users);
+		expect(serverRowsFor({ needle: 'a', users }, 'an')).toBe(users);
+		const none: typeof users = [];
+		expect(serverRowsFor({ needle: '', users: none }, 'zz')).toBe(none);
+	});
+
+	it('lists the server answer for the typed query whole', () => {
+		const users = [{ username: 'giang' }, { username: 'ngoc', display_name: 'Ngoc', clan_nick: 'N' }];
+		expect(serverRowsFor({ needle: 'gi', users }, 'gi')).toBe(users);
+	});
+
+	it('drops rows of an earlier query that no longer match while the new one is out', () => {
+		const users = [
+			{ username: 'oldtimer_031', display_name: 'Old Timer 031' },
+			{ username: 'x', clan_nick: 'Oldtimer_05 nick' },
+			{ username: 'oldtimer_050' }
+		];
+		expect(serverRowsFor({ needle: 'oldtimer_03', users }, 'oldtimer_05').map((user) => user.username)).toEqual(['x', 'oldtimer_050']);
+		expect(serverRowsFor({ needle: 'oldtimer_0', users }, 'oldtimer_03').map((user) => user.username)).toEqual(['oldtimer_031']);
+	});
 });
 
 describe('permission member rows', () => {
@@ -79,6 +146,16 @@ describe('permission member rows', () => {
 	it('names a member the roster does not carry from the channel listing', () => {
 		const row = permissionMemberRow('9', undefined, { username: 'wumpus', displayName: 'Wumpus', avatar: 'a.png' });
 		expect(row).toEqual({ id: '9', name: 'Wumpus', username: 'wumpus', avatar: 'a.png', keywords: ['Wumpus', 'wumpus'] });
+	});
+
+	it('names a member from the listing when the roster entry carries no name', () => {
+		const row = permissionMemberRow(
+			'9',
+			{ user: { username: '', display_name: '' } },
+			{ username: 'wumpus', displayName: 'Wumpus', avatar: 'a.png' }
+		);
+		expect(row.name).toBe('Wumpus');
+		expect(matchesNeedle('wump', row.keywords)).toBe(true);
 	});
 
 	it('falls back to the username, then the id, so no row is ever blank', () => {

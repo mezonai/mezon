@@ -51,8 +51,10 @@ import { selectCurrentDM, selectDirectMessageEntities } from '../direct/direct.s
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, isMezonClientSocketOpen, withRetry } from '../helpers';
+import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
+import { toastActions } from '../toasts/toasts.slice';
 import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
@@ -247,7 +249,7 @@ export const fetchMessagesCached = async (
 ) => {
 	const state = getState();
 
-	let foundClan: boolean = clanId === '0' || selectClanExists(clanId)(state);
+	let foundClan: boolean = clanId === '0' || selectClanExists(state, clanId);
 	if (!foundClan) {
 		if (dispatch && clanId !== '0') {
 			const res = await dispatch(clansActions.fetchClans({ noCache: true })).unwrap();
@@ -1250,6 +1252,16 @@ export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (pay
 	return true;
 });
 
+const isMessagePermissionDenied = (error: unknown): boolean => {
+	const outer = typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : {};
+	const inner = typeof outer.error === 'object' && outer.error !== null ? (outer.error as Record<string, unknown>) : {};
+	const messages = [error, outer.message, outer.error, inner.message].filter((value): value is string => typeof value === 'string');
+	if (messages.some((message) => /must join channel before sending/i.test(message))) return false;
+	return messages.some((message) =>
+		/permission denied|no permission|permission.*(?:send|message)|(?:not allowed|not permitted|cannot).*send|no[-_ ]send/i.test(message)
+	);
+};
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -1364,6 +1376,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				throw new Error('Socket not connected');
 			}
 		} catch (err) {
+			if (isMessagePermissionDenied(err)) throw err;
 			res = await client.sendChannelMessage(
 				session,
 				clanId,
@@ -1391,6 +1404,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			const res = await doSend();
 			return res;
 		} catch (error) {
+			if (isMessagePermissionDenied(error)) throw error;
 			if (error === 'The socket timed out while waiting for a response.') {
 				const timeoutError = new Error('SOCKET_TIMEOUT');
 				timeoutError.name = 'SocketTimeoutError';
@@ -1649,13 +1663,35 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				return;
 			}
 
-			thunkAPI.dispatch(
-				messagesActions.markAsError({
-					messageId: id,
-					channelId: storeChannelId,
-					originalSendPayload: payload
-				})
-			);
+			if (isMessagePermissionDenied(error)) {
+				thunkAPI.dispatch(messagesActions.remove({ messageId: id, channelId: storeChannelId }));
+				thunkAPI.dispatch(
+					toastActions.addToast({
+						id: 'message-send-permission-denied',
+						message: t('common:noPermissionToSendMessage'),
+						type: 'error',
+						position: 'top-right',
+						autoClose: 3000
+					})
+				);
+				if (clanId && storeChannelId) {
+					thunkAPI.dispatch(
+						overriddenPoliciesActions.fetchMaxChannelPermission({
+							clanId,
+							channelId: storeChannelId,
+							noCache: true
+						})
+					);
+				}
+			} else {
+				thunkAPI.dispatch(
+					messagesActions.markAsError({
+						messageId: id,
+						channelId: storeChannelId,
+						originalSendPayload: payload
+					})
+				);
+			}
 			captureSentryError(error, 'messages/sendMessage');
 			throw error;
 		} finally {
@@ -2998,6 +3034,8 @@ const handleRemoveOneMessage = ({ state, channelId, messageId }: { state: Messag
 			if (prevMessageId) {
 				// set last message id to the previous message
 				state.lastMessageByChannel[channelId] = channelEntity.entities[prevMessageId];
+			} else {
+				delete state.lastMessageByChannel[channelId];
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_10MB, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -48,7 +48,7 @@ const ClanBannerBackground = ({ onUpload, urlImage }: ClanBannerBackgroundProps)
 			return;
 		}
 
-		handleUploadFile(client, session, file?.name, file).then((attachment: any) => {
+		handleUploadPublicFile(client, session, file?.name, file).then((attachment: any) => {
 			onUpload(attachment.url ?? '');
 		});
 	};

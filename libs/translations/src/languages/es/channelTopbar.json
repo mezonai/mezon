@@ -168,6 +168,14 @@
 	"errors": {
 		"limit": "Se ha alcanzado el número máximo de canales para este clan"
 	},
+	"topicPinBanner": {
+		"dismissButton": "Ocultar barra de fijados",
+		"dismissModal": {
+			"title": "Ocultar barra de fijados",
+			"message": "¿Seguro que quieres ocultar esta barra? Volverá a aparecer cuando haya un nuevo mensaje fijado o un tema nuevo.",
+			"confirm": "Ocultar"
+		}
+	},
 	"moreFile": "más archivo",
 	"moreFiles": "más archivos",
 	"topics": "Temas",

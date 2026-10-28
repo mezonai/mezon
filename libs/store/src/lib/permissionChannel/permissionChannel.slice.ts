@@ -2,6 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
 import { selectCurrentUserId } from '../account/account.slice';
+import type { AddedChannelUserProfile } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectChannelByChannelId } from '../channels/channels.slice';
@@ -14,10 +15,12 @@ type addChannelUsersPayload = {
 	channelType?: number;
 	userIds: string[];
 	clanId: string;
+	/** Names and avatars of added members the clan roster may not hold, shown until the listing is fetched again. */
+	profiles?: Record<string, AddedChannelUserProfile>;
 };
 export const addChannelUsers = createAsyncThunk(
 	'channelUsers/addChannelUsers',
-	async ({ channelId, channelType, userIds, clanId: _clanId }: addChannelUsersPayload, thunkAPI) => {
+	async ({ channelId, channelType, userIds, clanId: _clanId, profiles }: addChannelUsersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.addChannelUsers(mezon.session, channelId, userIds);
@@ -25,7 +28,7 @@ export const addChannelUsers = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (channelId && channelType) {
-				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: userIds }));
+				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: userIds, profiles }));
 				thunkAPI.dispatch(channelMembersActions.addNewMember({ channel_id: channelId, user_ids: userIds }));
 				thunkAPI.dispatch(channelMembersActions.invalidateChannelCache(channelId));
 			}

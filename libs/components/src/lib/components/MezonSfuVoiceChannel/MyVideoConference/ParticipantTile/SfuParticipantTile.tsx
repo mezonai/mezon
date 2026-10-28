@@ -6,6 +6,16 @@ import type { SfuRemoteMedia } from '../../types';
 import { SfuVideo } from '../Media/SfuVideo';
 import { useActiveSoundReaction } from '../Reaction';
 
+const participantTileFrameBaseClass =
+	'relative aspect-video overflow-hidden rounded-xl border-2 bg-theme-setting-primary transition-[border-color,box-shadow] duration-200';
+
+export const SFU_SPEAKING_BORDER_COLOR = '#23a559';
+
+export const getParticipantTileFrameClass = (speaking: boolean) =>
+	`${participantTileFrameBaseClass} ${
+		speaking ? 'border-[#23a559] shadow-[0_0_0_2px_rgba(35,165,89,0.28)]' : 'border-transparent hover:border-zinc-500/40'
+	}`;
+
 export interface SfuParticipantTileProps {
 	participant: SfuRemoteMedia;
 	displayName: string;
@@ -22,11 +32,7 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 	const activeSoundReaction = useActiveSoundReaction(participant.userId);
 
 	return (
-		<div
-			className={`relative aspect-video overflow-hidden rounded-xl border-2 bg-[#181825] transition-[border-color,box-shadow] duration-150 hover:border-zinc-400 ${
-				speaking ? '!border-green-400 shadow-[0_0_18px_rgba(74,222,128,0.55)]' : 'border-transparent'
-			}`}
-		>
+		<div className={getParticipantTileFrameClass(speaking)}>
 			{activeSoundReaction && (
 				<div className="pointer-events-none absolute right-2 top-2 z-40 rounded-full border border-white/20 bg-[#5865f2] p-1.5 shadow-lg">
 					<Icons.VoiceSoundControlIcon className="h-4 w-4 text-white" />

@@ -1,10 +1,11 @@
 import { EInvoice, selectMemberClanByUserId, selectStatusInVoice, useAppSelector } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { AvatarImage } from '../../components';
 
-function UserListItem({ id, user_name, user_avatar }: { id: string; user_name: string; user_avatar: string }) {
+function UserListItem({ id, user_name, user_avatar, children }: { id: string; user_name: string; user_avatar: string; children?: ReactNode }) {
 	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, id ?? ''));
 	const name = getNameForPrioritize(userStream?.clan_nick || user_name, userStream?.user?.display_name, userStream?.user?.username);
 	const avatar = getAvatarForPrioritize(userStream?.clan_avatar || user_avatar, userStream?.user?.avatar_url);
@@ -37,6 +38,7 @@ function UserListItem({ id, user_name, user_avatar }: { id: string; user_name: s
 					data-e2e={generateE2eId('clan_page.channel_list.item.user_list.item.screen_share')}
 				/>
 			) : null}
+			{children}
 		</div>
 	);
 }

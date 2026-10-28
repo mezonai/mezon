@@ -136,7 +136,6 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 						/>
 						{channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 							channel.type !== ChannelType.CHANNEL_TYPE_APP &&
-							channel.id !== welcomeChannelId &&
 							hasManageChannelPermission && (
 								<ChannelSettingItemButton
 									tabName={EChannelSettingTab.PREMISSIONS}

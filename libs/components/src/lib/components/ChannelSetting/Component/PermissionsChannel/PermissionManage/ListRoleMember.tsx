@@ -1,5 +1,5 @@
 import type { RolesClanEntity } from '@mezon/store';
-import { channelUsersActions, selectChannelById, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
+import { channelUsersActions, selectChannelById, selectCurrentClanId, selectUserChannelIds, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import {
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { AvatarImage } from '../../../../AvatarImage/AvatarImage';
+import { clanUserFromMentionUser, memberNames, useRemoteClanMembers } from '../../useRemoteClanMembers';
 import type { PermissionMemberRow } from '../permissionMemberList';
 import {
 	PERMISSION_LIST_PAGE_SIZE,
@@ -25,6 +26,7 @@ import {
 	matchesNeedle,
 	pageCount,
 	pageSlice,
+	rankByMatch,
 	searchNeedle
 } from '../permissionMemberList';
 
@@ -217,6 +219,14 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 	const dispatch = useAppDispatch();
 	const channelIdInStore = channel.id;
 	const channelType = channel.type;
+	const [search, setSearch] = useState('');
+	const [appliedSearch, setAppliedSearch] = useState('');
+	const applySearch = useDebouncedCallback((value: string) => {
+		setAppliedSearch(value);
+	}, PERMISSION_SEARCH_DEBOUNCE_MS);
+	// The roster stops at the newest 1000 members: the server finds the rest, ranked with the local matches.
+	const { users: remoteUsers, pending: remotePending, profilesOf } = useRemoteClanMembers(search);
+	const channelUserIds = useAppSelector((state) => selectUserChannelIds(state, channelIdInStore ?? ''));
 	const addRole = useCallback(
 		async (roleId: string) => {
 			const body = {
@@ -236,18 +246,13 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 				channelId: channelIdInStore,
 				channelType,
 				userIds: [userId],
-				clanId: currentClanId || ''
+				clanId: currentClanId || '',
+				profiles: profilesOf([userId])
 			};
 			await dispatch(channelUsersActions.addChannelUsers(body));
 		},
-		[currentClanId, channelIdInStore, channelType, dispatch]
+		[currentClanId, channelIdInStore, channelType, dispatch, profilesOf]
 	);
-
-	const [search, setSearch] = useState('');
-	const [appliedSearch, setAppliedSearch] = useState('');
-	const applySearch = useDebouncedCallback((value: string) => {
-		setAppliedSearch(value);
-	}, PERMISSION_SEARCH_DEBOUNCE_MS);
 
 	const handleSearchChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {
@@ -269,7 +274,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 	}, [appliedSearch, listRolesNotInChannel]);
 
 	// Members already on the channel are left out: adding them again would do nothing.
-	const listMemberCanAdd = useMemo(() => {
+	const localMemberCanAdd = useMemo(() => {
 		if (!appliedSearch) {
 			return listUsersNotInChannel;
 		}
@@ -280,6 +285,11 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 				searchNormalizeText(user.user?.username || '', appliedSearch)
 		);
 	}, [appliedSearch, listUsersNotInChannel]);
+	const listMemberCanAdd = useMemo(() => {
+		const skipped = new Set([...localMemberCanAdd.map((user) => user.id), ...channelUserIds]);
+		const remote = remoteUsers.filter((user) => !!user.id && !skipped.has(user.id)).map(clanUserFromMentionUser);
+		return rankByMatch([...localMemberCanAdd, ...remote], searchNeedle(appliedSearch), memberNames);
+	}, [localMemberCanAdd, remoteUsers, channelUserIds, appliedSearch]);
 
 	// Only the button opens the panel: the whole header used to, so a click on the label alone popped it up.
 	const togglePopup = useCallback(() => {
@@ -331,6 +341,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 						<AddCandidateList
 							roles={listRoleCanAdd}
 							members={listMemberCanAdd}
+							searching={remotePending}
 							onAddRole={addRole}
 							onAddUser={addUser}
 							onPicked={closeAfterPick}
@@ -345,6 +356,8 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 type AddCandidateListProps = {
 	roles: RolesClanEntity[];
 	members: UsersClanEntity[];
+	/** The server is still looking for members the roster does not hold: no "nothing found" yet. */
+	searching: boolean;
 	onAddRole: (roleId: string) => void;
 	onAddUser: (userId: string) => void;
 	onPicked: () => void;
@@ -352,13 +365,13 @@ type AddCandidateListProps = {
 
 // Memoized apart from the search field: the field re-renders the panel on every keystroke, while
 // the list — up to the roster's 1000 members — only has to follow the debounced filter.
-const AddCandidateList = memo(({ roles, members, onAddRole, onAddUser, onPicked }: AddCandidateListProps) => {
+const AddCandidateList = memo(({ roles, members, searching, onAddRole, onAddUser, onPicked }: AddCandidateListProps) => {
 	const { t } = useTranslation('channelSetting');
 	const hasCandidates = roles.length > 0 || members.length > 0;
 
 	return (
 		<div className="p-2 h-64 overflow-y-scroll hide-scrollbar text-theme-primary" onClick={onPicked}>
-			{!hasCandidates && <p className="p-2 text-sm">{t('channelPermission.noMembersFound')}</p>}
+			{!hasCandidates && !searching && <p className="p-2 text-sm">{t('channelPermission.noMembersFound')}</p>}
 			{roles.length > 0 && (
 				<div>
 					<p className="px-3 py-2 uppercase text-[11px] font-bold">{t('channelPermission.bottomSheet.roles')}</p>

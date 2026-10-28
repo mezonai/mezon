@@ -18,6 +18,7 @@
 	},
 	"newMessage": "New",
 	"newMention": "New mention",
+	"clanRailNew": "New",
 	"discover": "Discover",
 	"createClan": "Create Clan",
 	"closePreviewMode": "Close preview mode",
@@ -531,6 +532,7 @@
 		"accessDenied": "Access Denied",
 		"accessDeniedDesc": "You don't have permission to access this channel or clan. Please check with the server administrator if you believe this is an error.",
 		"goToWelcomeChannel": "Go to Welcome Channel",
+		"goToFriendPage": "Go to Friend Page",
 		"okayGotIt": "Okay, Got It"
 	},
 	"reportMessage": {

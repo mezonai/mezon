@@ -135,7 +135,11 @@
 		"aloneTimeoutDisconnected": "Vous avez été déconnecté du canal vocal car vous y étiez seul depuis trop longtemps.",
 		"duplicateSessionDisconnected": "Vous avez rejoint le salon vocal sur un autre appareil. Cette session a donc été déconnectée.",
 		"disconnectedRejoin": "Vous avez été déconnecté du salon vocal.",
-		"weakNetworkDisconnected": "Vous avez été déconnecté du canal vocal car votre réseau est faible."
+		"weakNetworkDisconnected": "Vous avez été déconnecté du canal vocal car votre réseau est faible.",
+		"cameraLimitReached": "Ce salon vocal a atteint sa limite de caméras. Réessayez quand quelqu'un aura coupé sa caméra.",
+		"screenShareLimitReached": "Ce salon vocal a atteint sa limite de partages d'écran. Réessayez quand quelqu'un aura arrêté de partager.",
+		"cameraUpdateFailed": "Impossible d'activer ou de couper votre caméra. Veuillez réessayer.",
+		"screenShareUpdateFailed": "Impossible de démarrer ou d'arrêter le partage d'écran. Veuillez réessayer."
 	},
 	"usernameScreen": "Écran de {{username}}",
 	"recording": {
@@ -162,7 +166,10 @@
 		"keepMuted": "L'audio est en pause. Cliquez pour garder votre micro coupé."
 	},
 	"weakNetwork": "Réseau faible",
-	"networkWarning": "Votre connexion internet est instable. Les autres pourraient ne pas vous entendre clairement.",
+	"networkWarning": {
+		"title": "Votre connexion internet est instable",
+		"body": "Veuillez vérifier votre connexion réseau."
+	},
 	"reconnectModal": {
 		"title": "Impossible de se connecter au vocal",
 		"description": "La connexion vocale n'a pas pu être rétablie. Vérifiez votre connexion et réessayez de rejoindre.",
@@ -176,5 +183,59 @@
 		"holdSpace": "Maintenez Espace pour parler",
 		"holdingSpace": "Vous parlez — relâchez Espace pour couper le micro",
 		"hintBody": "Vous avez rejoint pour écouter. Maintenez Espace pour ouvrir votre micro pendant que vous parlez, relâchez pour couper à nouveau."
+	},
+	"screenDraw": {
+		"annotateScreen": "Dessiner sur votre écran partagé",
+		"stopAnnotating": "Arrêter de dessiner sur votre écran",
+		"drawOnScreen": "Dessiner sur l'écran (vous seul le voyez)",
+		"stopDrawing": "Arrêter de dessiner",
+		"closeDrawing": "Fermer le dessin",
+		"selectAndMove": "Sélectionner et déplacer",
+		"pen": "Stylo",
+		"text": "Texte",
+		"eraser": "Gomme",
+		"undo": "Annuler",
+		"redo": "Rétablir",
+		"clear": "Effacer tous les dessins",
+		"textPlaceholder": "Saisissez une note, Entrée pour la placer",
+		"commit": "Placer (Entrée)",
+		"cancel": "Annuler (Échap)"
+	},
+	"breakout": {
+		"title": "Salles de sous-groupes",
+		"roomCount": "Nombre de salles",
+		"ruleAutomatic": "Répartir automatiquement",
+		"ruleManual": "Répartir manuellement",
+		"ruleSelfSelect": "Laisser les participants choisir",
+		"noParticipants": "Personne d'autre n'est encore dans l'appel. D'autres participants doivent rejoindre l'appel avant de pouvoir être répartis.",
+		"assign": "Affecter",
+		"notStarted": "Salles de sous-groupes - Non démarrées",
+		"createHeader": "Créer {{count}} salles de sous-groupes",
+		"recreate": "Recréer",
+		"addRoom": "Ajouter une salle",
+		"openAllRooms": "Ouvrir toutes les salles",
+		"delete": "Supprimer",
+		"deleteConfirm": "Supprimer {{name}} ?",
+		"moveTo": "Déplacer vers",
+		"exchange": "Échanger",
+		"yes": "Oui",
+		"no": "Non",
+		"allAssigned": "Tous les participants ont été affectés.",
+		"create": "Créer",
+		"room": "Salle {{number}}",
+		"openRooms": "{{count}} salles de sous-groupes sont ouvertes.",
+		"close": "Fermer les salles de sous-groupes",
+		"returnToMain": "Revenir à la salle principale",
+		"opened": "Salles de sous-groupes ouvertes",
+		"closed": "Salles de sous-groupes fermées",
+		"failed": "Impossible de mettre à jour les salles de sous-groupes",
+		"notEnoughRooms": "Pas assez de salons vocaux vides pour autant de salles. Chaque salle nécessite un salon vocal public sans personne dedans : créez d'autres salons vocaux ou utilisez moins de salles.",
+		"notEnoughIdleChannels": "Salons vocaux publics vides disponibles : {{count}}. Chaque salle en nécessite un : créez d'autres salons vocaux ou utilisez moins de salles.",
+		"noIdleChannels": "Aucun salon vocal public vide à utiliser comme salle. Créez un salon vocal public dans ce clan et réessayez.",
+		"inviteAssigned": "L'hôte vous a placé dans une salle de sous-groupe.",
+		"inviteChoose": "L'hôte a ouvert des salles de sous-groupes. Choisissez-en une.",
+		"inviteReturn": "L'hôte a fermé les salles de sous-groupes. Revenir à la salle principale ?",
+		"join": "Rejoindre",
+		"later": "Plus tard"
 	}
 }

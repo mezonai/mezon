@@ -28,6 +28,72 @@ export const searchNeedle = (input: string) => {
 export const matchesNeedle = (needle: string, fields: ReadonlyArray<string | undefined>) =>
 	!needle || fields.some((field) => !!field && field.toLowerCase().includes(needle));
 
+// As `normalizeSearchString` in @mezon/utils, plus đ: case and accents dropped, `-`, `_` and `+` read as spaces.
+const foldName = (value: string) =>
+	value
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/[đĐ]/g, 'D')
+		.toUpperCase()
+		.replace(/[-_+]/g, ' ');
+
+const WORD_CHAR = /[\p{L}\p{N}]/u;
+
+/**
+ * 0 when a name starts with the search, 1 when a word in it does (after any character that is not a letter or digit, as in
+ * giang.tran), 2 when it only contains it, 3 when none does (the server also matches text it folds its own way).
+ */
+const matchRank = (folded: string, fields: ReadonlyArray<string | undefined>) => {
+	let rank = 3;
+	for (const field of fields) {
+		const name = foldName(field ?? '');
+		for (let at = name.indexOf(folded); at !== -1; at = name.indexOf(folded, at + 1)) {
+			if (at === 0) return 0;
+			rank = Math.min(rank, WORD_CHAR.test(name[at - 1]) ? 2 : 1);
+		}
+	}
+	return rank;
+};
+
+const nameOrder = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
+/**
+ * Best matches first, whether the roster or the server found them, so a member whose name starts with the search never
+ * sits under one who merely contains it; equal matches by the name shown, the first of `namesOf` that is set, as the
+ * mention picker sorts. Without a search the rows keep their order.
+ */
+export const rankByMatch = <T>(rows: readonly T[], needle: string, namesOf: (row: T) => ReadonlyArray<string | undefined>): T[] => {
+	const folded = foldName(needle.trim());
+	if (!folded) return [...rows];
+	return rows
+		.map((row) => {
+			const names = namesOf(row);
+			return { row, rank: matchRank(folded, names), name: names.find(Boolean) ?? '' };
+		})
+		.sort((a, b) => a.rank - b.rank || nameOrder.compare(a.name, b.name))
+		.map((entry) => entry.row);
+};
+
+type NamedUser = { clan_nick?: string; display_name?: string; username?: string };
+
+/** Members the server found for `needle`, a search needle as `searchNeedle` makes it. */
+export type ServerAnswer<T extends NamedUser> = { needle: string; users: T[] };
+
+/**
+ * The server rows a picker lists while `needle` is typed. Until the server answers it, the previous answer stays listed
+ * only where it still matches: a row for the old query must not sit under the new one, where a click would pick someone
+ * the search no longer finds. Matched folded, as the server matches, so "Nguyễn" stays under "nguye". The answer itself
+ * comes back when nothing is dropped, so a memoized list does not render again on every keystroke.
+ */
+export const serverRowsFor = <T extends NamedUser>(answer: ServerAnswer<T>, needle: string): T[] => {
+	if (answer.needle === needle || answer.users.length === 0) return answer.users;
+	const typed = foldName(needle.trim());
+	const narrowed = answer.users.filter((user) =>
+		[user.clan_nick, user.display_name, user.username].some((name) => !!name && foldName(name).includes(typed))
+	);
+	return narrowed.length === answer.users.length ? answer.users : narrowed;
+};
+
 export type ChannelUserProfile = {
 	username: string;
 	displayName: string;
@@ -83,11 +149,13 @@ export type PermissionMemberRow = {
  * The clan roster first (nickname and clan avatar included), then the identity the
  * channel listing carries, then the id itself. The roster is capped server-side and drops
  * anyone who left the clan, so without the fallbacks such a member renders as a blank row
- * nobody can search for or tell apart before removing it.
+ * nobody can search for or tell apart before removing it. A roster entry without any name
+ * yields too: the socket event for an added member carries only its id when the server
+ * has no cached profile, and the roster takes that entry as is.
  */
 export const permissionMemberRow = (userId: string, rosterMember?: RosterMember | null, profile?: ChannelUserProfile): PermissionMemberRow => {
 	const user = rosterMember?.user;
-	if (user) {
+	if (user && (rosterMember.clan_nick || user.display_name || user.username)) {
 		const clanAvatar = rosterMember.clan_avatar;
 		return {
 			id: userId,

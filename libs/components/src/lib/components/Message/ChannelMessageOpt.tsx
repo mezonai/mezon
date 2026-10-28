@@ -1,4 +1,4 @@
-import { useAuth, useChatReaction, useDirect, useEmojiConverted, useGifs, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
+import { useAuth, useChatReaction, useDirect, useEmojiConverted, useGifs, usePermissionChecker, useSendInviteMessage, useTopics } from '@mezon/core';
 import {
 	getStore,
 	gifsStickerEmojiActions,
@@ -154,7 +154,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 	const { t } = useTranslation('contextMenu');
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const realTimeMessage = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, message?.id || ''));
-	const dispatch = useAppDispatch();
+	const { startCreateTopicFromMessage } = useTopics();
 	const clanId = useSelector(selectCurrentClanId);
 	const notAllowedType =
 		message?.code !== TypeMessage.CreateThread &&
@@ -165,30 +165,9 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		message?.code !== TypeMessage.UpcomingEvent &&
 		message?.code !== TypeMessage.Poll;
 
-	const setIsShowCreateTopic = useCallback(
-		(isShowCreateTopic: boolean, channelId?: string) => {
-			dispatch(topicsActions.setIsShowCreateTopic(isShowCreateTopic));
-			dispatch(
-				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannelId as string), isShowCreateThread: false })
-			);
-		},
-		[currentChannelId, dispatch]
-	);
-
-	const setCurrentTopicInitMessage = useCallback(
-		(value: IMessageWithUser | null) => {
-			dispatch(topicsActions.setCurrentTopicInitMessage(value));
-		},
-		[dispatch]
-	);
-
 	const handleCreateTopic = useCallback(() => {
-		setIsShowCreateTopic(true);
-		dispatch(topicsActions.setOpenTopicMessageState(true));
-		setCurrentTopicInitMessage(realTimeMessage);
-		dispatch(topicsActions.setCurrentTopicId(''));
-		dispatch(topicsActions.setInitTopicMessageId(message.id));
-	}, [dispatch, message, realTimeMessage, setIsShowCreateTopic, setCurrentTopicInitMessage]);
+		startCreateTopicFromMessage(message, realTimeMessage);
+	}, [message, realTimeMessage, startCreateTopicFromMessage]);
 
 	const menuPlugin = useMemo(() => {
 		const plugin = {

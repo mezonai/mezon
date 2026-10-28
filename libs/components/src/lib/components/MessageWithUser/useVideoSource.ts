@@ -97,6 +97,18 @@ export function useVideoSource(
 			if (!hls) fail();
 		};
 
+		// A browser that cannot decode the original's video track (HEVC on most Windows and Linux machines) still plays
+		// its audio and raises no error, so an original without a picture moves to the stream when there is one.
+		const checkPicture = () => {
+			if (playingPlaylist || switched || video.videoWidth > 0 || !mayBeTranscodedVideo(url)) return;
+			void probeHlsMasterPlaylist(url, probe.signal).then((playlist) => {
+				if (disposed || switched || !playlist) return;
+				switched = true;
+				void play(playlist, true);
+			});
+		};
+		video.addEventListener('loadedmetadata', checkPicture);
+
 		if (mayBeTranscodedVideo(url)) {
 			void probeHlsMasterPlaylist(url, probe.signal).then((playlist) => {
 				if (!disposed) void play(playlist ?? url, Boolean(playlist));
@@ -107,6 +119,7 @@ export function useVideoSource(
 
 		return () => {
 			disposed = true;
+			video.removeEventListener('loadedmetadata', checkPicture);
 			probe.abort();
 			detach();
 			mediaErrorRef.current = () => undefined;

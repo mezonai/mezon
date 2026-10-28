@@ -3,12 +3,11 @@ import {
 	categoriesActions,
 	getStore,
 	getStoreAsync,
-	listChannelsByUserActions,
 	selectChannelDetailById,
 	selectChannelFetchSuccessByClanId,
 	selectClanById,
+	selectClanExists,
 	selectClanView,
-	selectClansEntities,
 	subscribeChannelDetail,
 	useAppDispatch,
 	useAppSelector
@@ -16,7 +15,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { memo, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -49,9 +48,10 @@ const ChannelHashtag = ({
 	const { toChannelPage, navigate } = useAppNavigation();
 
 	const storedChannel = getTagById(channelHastagId);
+	const clanExist = useAppSelector((state) => selectClanExists(state, clanId || storedChannel?.clan_id || ''));
 	const sentChannel = useMemo<IChannel | undefined>(
 		() =>
-			channelType !== undefined && channelLabel && clanId
+			channelType !== undefined && channelLabel && clanId && clanExist
 				? {
 						id: channelHastagId,
 						channel_id: channelHastagId,
@@ -61,19 +61,13 @@ const ChannelHashtag = ({
 						type: channelType
 					}
 				: undefined,
-		[channelHastagId, channelLabel, channelType, clanId, parentId]
+		[channelHastagId, channelLabel, channelType, clanId, parentId, clanExist]
 	);
 	const subscribeDetail = useCallback((onChange: () => void) => subscribeChannelDetail(channelHastagId, onChange), [channelHastagId]);
 	const readDetail = useCallback(() => selectChannelDetailById(getStore().getState(), channelHastagId), [channelHastagId]);
 	const channelDetail = useSyncExternalStore(subscribeDetail, readDetail);
 	const channel = storedChannel || sentChannel || channelDetail;
 	const parentChannel = getTagById(parentId);
-
-	useEffect(() => {
-		if (storedChannel || sentChannel || channelDetail !== undefined || !channelHastagId) return;
-		if (clanId && !selectClansEntities(getStore().getState())[clanId]) return;
-		dispatch(listChannelsByUserActions.fetchChannelDetail({ channelId: channelHastagId }));
-	}, [storedChannel, sentChannel, channelDetail, channelHastagId, clanId, dispatch]);
 
 	const [openUnknown, closeUnknown] = useModal(() => {
 		return <ModalUnknowChannel onClose={closeUnknown} />;
@@ -129,7 +123,8 @@ const ChannelHashtag = ({
 	const isVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
 	const existHashtagAndChannelView = channelHastagId && !isClanView && channel?.id;
-	const isValidChannel = isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel;
+	const isValidChannel =
+		clanExist && (isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel);
 
 	return isValidChannel ? (
 		<span
@@ -168,7 +163,12 @@ const ChannelHashtag = ({
 			<span className="inline">{channel ? channel.channel_label : channelLabel || null}</span>
 		</span>
 	) : (
-		<PrivateChannel onClick={handleClick} isLink={isLink} channelLabel={channelLabel} checkGetChannelData={checkGetChannelData} />
+		<PrivateChannel
+			onClick={handleClick}
+			isLink={isLink}
+			channelLabel={clanExist ? channelLabel : ''}
+			checkGetChannelData={checkGetChannelData}
+		/>
 	);
 };
 

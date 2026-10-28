@@ -183,6 +183,7 @@ const ClanSettingOverview = () => {
 			prevent_anonymous: prevent
 		});
 	};
+
 	return (
 		<div className="h-full pb-10">
 			<ClanLogoName

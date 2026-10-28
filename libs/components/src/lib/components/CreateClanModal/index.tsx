@@ -8,7 +8,7 @@ import {
 	triggerClanLimitModal,
 	useAppDispatch
 } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
 import { LIMIT_SIZE_UPLOAD_IMG, TypeCheck, ValidateSpecialCharacters, checkClanLimit, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -269,7 +269,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 			e.target.value = null;
 			return;
 		}
-		handleUploadFile(client, session, file?.name, file).then((attachment: any) => {
+		handleUploadPublicFile(client, session, file?.name, file).then((attachment: any) => {
 			setUrlImage(attachment.url ?? '');
 		});
 	};

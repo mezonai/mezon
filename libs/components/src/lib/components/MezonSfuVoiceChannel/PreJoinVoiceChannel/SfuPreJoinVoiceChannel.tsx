@@ -33,7 +33,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 
 	return (
 		<div
-			className={`w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center
+			className={`w-full h-full bg-theme-setting-primary dark:bg-black flex justify-center items-center
 				${isCurrentChannel ? 'hidden' : ''}
 				${statusMenu ? 'max-sbm:hidden' : ''}`}
 		>

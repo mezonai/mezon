@@ -139,14 +139,12 @@ it('gives up when the caller aborts or the CDN hangs', async () => {
 	}
 });
 
-it('asks the server to transcode only large videos the media server accepts', () => {
-	const large = 10 * 1024 * 1024;
+it('asks the server to transcode every video the media server accepts, whatever its size', () => {
 	for (const name of ['clip.mp4', 'IMG_0001.MOV', 'movie.mkv', 'old.avi', 'a.flv', 'b.m4v', 'c.wmv']) {
-		expect(wantsHlsTranscode(name, large)).toBe(true);
-		expect(wantsHlsTranscode(name, large - 1)).toBe(false);
+		expect(wantsHlsTranscode(name)).toBe(true);
 	}
 	for (const name of ['clip.webm', 'photo.png', 'song.mp3', 'notes.pdf', 'mp4', '.mp4', 'clip.mp4.zip', '']) {
-		expect(wantsHlsTranscode(name, Number.MAX_SAFE_INTEGER)).toBe(false);
+		expect(wantsHlsTranscode(name)).toBe(false);
 	}
-	expect(wantsHlsTranscode('clip.mp4', undefined)).toBe(false);
+	expect(wantsHlsTranscode(undefined)).toBe(false);
 });

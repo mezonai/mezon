@@ -48,7 +48,8 @@
 		"appVersion": "App-Version",
 		"startUp": "Startverhalten",
 		"quitApp": "App beenden",
-		"server": "Server"
+		"server": "Server",
+		"streaming": "Streaming"
 	},
 	"server": {
 		"auto": "Automatisch",
@@ -59,6 +60,30 @@
 		"connectedTo": "Verbunden mit {{region}}",
 		"connectingTo": "Verbindung zu {{region}}…",
 		"footer": "Automatisch: Wählt einen Server für dich. Wähle einen Server, wenn du immer bei ihm bleiben möchtest."
+	},
+	"streaming": {
+		"keyTitle": "Stream-Schlüssel",
+		"keyDescription": "Nutze diese Angaben in OBS oder einem anderen WHIP-Encoder, um in einem Stream-Kanal live zu gehen. Gib sie niemals weiter: Wer sie hat, kann in deinem Namen streamen.",
+		"channel": "Stream-Kanal",
+		"noChannels": "Kein Stream-Kanal in diesem Clan",
+		"getKey": "Stream-Schlüssel abrufen",
+		"regenerate": "Neuen Schlüssel erzeugen",
+		"server": "Server",
+		"token": "Bearer Token",
+		"show": "Anzeigen",
+		"hide": "Verbergen",
+		"copy": "Kopieren",
+		"expiresIn": "Starte den Stream innerhalb von {{time}}. Ein bereits laufender Stream läuft danach weiter.",
+		"expired": "Dieser Schlüssel ist abgelaufen. Erzeuge einen neuen, um live zu gehen.",
+		"error": "Der Stream-Schlüssel konnte nicht abgerufen werden. Bitte versuche es erneut.",
+		"obsTitle": "OBS einrichten",
+		"obsStepService": "Öffne in OBS Einstellungen → Stream und wähle WHIP als Dienst.",
+		"obsStepPaste": "Füge den Server und das Bearer Token von oben ein.",
+		"obsStepEncoder": "Wähle unter Einstellungen → Ausgabe einen H.264-Encoder und setze das Keyframe-Intervall auf 2 s.",
+		"obsStepSimulcast": "Für mehrere Qualitätsstufen stelle Simulcast auf 3 Ebenen, falls deine OBS-Version das anbietet.",
+		"obsStepStart": "Klicke auf Streaming starten. Der Schlüssel muss nur beim Verbinden von OBS gültig sein: Verbindet sich OBS nach Ablauf neu, hol dir einen neuen Schlüssel und füge ihn erneut ein.",
+		"qualityTitle": "Standard-Wiedergabequalität",
+		"qualityDescription": "Wird bei jedem Beitritt zu einem Stream verwendet. Du kannst sie beim Zuschauen weiterhin ändern."
 	},
 	"autoStart": {
 		"title": "App automatisch starten",

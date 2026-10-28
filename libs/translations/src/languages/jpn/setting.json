@@ -48,7 +48,8 @@
 		"appVersion": "アプリバージョン",
 		"startUp": "起動",
 		"quitApp": "アプリを終了",
-		"server": "サーバー"
+		"server": "サーバー",
+		"streaming": "配信"
 	},
 	"server": {
 		"auto": "自動",
@@ -59,6 +60,30 @@
 		"connectedTo": "{{region}} に接続済み",
 		"connectingTo": "{{region}} に接続中…",
 		"footer": "自動：サーバーを自動で選択します。常に同じサーバーを使いたい場合はサーバーを選んでください。"
+	},
+	"streaming": {
+		"keyTitle": "ストリームキー",
+		"keyDescription": "OBS などの WHIP 対応エンコーダーで配信チャンネルにライブ配信するときに使います。他人に共有しないでください。知っている人は誰でもあなたとして配信できます。",
+		"channel": "配信チャンネル",
+		"noChannels": "このクランには配信チャンネルがありません",
+		"getKey": "ストリームキーを取得",
+		"regenerate": "新しいキーを生成",
+		"server": "サーバー",
+		"token": "Bearer Token",
+		"show": "表示",
+		"hide": "隠す",
+		"copy": "コピー",
+		"expiresIn": "{{time}} 以内に配信を開始してください。すでに始まっている配信はその後も続きます。",
+		"expired": "このキーは期限切れです。配信するには新しいキーを生成してください。",
+		"error": "ストリームキーを取得できませんでした。もう一度お試しください。",
+		"obsTitle": "OBS の設定",
+		"obsStepService": "OBS で 設定 → 配信 を開き、サービスに WHIP を選びます。",
+		"obsStepPaste": "上のサーバーと Bearer Token を貼り付けます。",
+		"obsStepEncoder": "設定 → 出力 で H.264 エンコーダーを選び、キーフレーム間隔を 2 秒にします。",
+		"obsStepSimulcast": "複数の画質を用意するには、OBS のバージョンが対応していればサイマルキャストを 3 レイヤーにします。",
+		"obsStepStart": "配信開始 をクリックします。キーは OBS の接続時にだけ有効であれば十分です。期限切れの後に OBS が再接続する場合は、新しいキーを取得して貼り直してください。",
+		"qualityTitle": "既定の視聴画質",
+		"qualityDescription": "配信に参加するたびに使われます。視聴中も変更できます。"
 	},
 	"autoStart": {
 		"title": "アプリを自動起動",

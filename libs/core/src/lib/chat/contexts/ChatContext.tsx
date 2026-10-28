@@ -6,7 +6,6 @@ import {
 	EStateFriend,
 	accountActions,
 	acitvitiesActions,
-	appActions,
 	attachmentActions,
 	audioCallActions,
 	authActions,
@@ -70,7 +69,6 @@ import {
 	selectCurrentUserId,
 	selectDMVoiceEntities,
 	selectDataReferences,
-	selectDefaultChannelIdByClanId,
 	selectDirectById,
 	selectDmGroupCurrentId,
 	selectDmMetaEntities,
@@ -79,7 +77,6 @@ import {
 	selectEstablishedCall,
 	selectFriendById,
 	selectIsInCall,
-	selectIsJoin,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
@@ -90,11 +87,9 @@ import {
 	selectThreadCurrentChannel,
 	selectUserCallId,
 	selectVoiceInfo,
-	selectWelcomeChannelByClanId,
 	socketState,
 	statusActions,
 	stickerSettingActions,
-	streamMemberEntityId,
 	threadsActions,
 	toastActions,
 	topicsActions,
@@ -110,6 +105,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
+import type { PatchedMezonClient, SfuBreakoutRoomEventPayload } from '@mezon/transport';
 import {
 	CHECK_HEALTHY_EVENT,
 	REALTIME_SERVER_CHANGED_EVENT,
@@ -241,7 +237,6 @@ const RECONNECT_RETRY_BASE_MS = 500;
 const RECONNECT_RETRY_JITTER_MS = 400;
 
 const RECONNECT_WAVE_COOLDOWN_MS = 10000;
-const STREAM_SELF_REJOIN_GRACE_MS = 3000;
 
 function randomReconnectSpacingMs(): number {
 	return RECONNECT_RETRY_BASE_MS + Math.floor(Math.random() * RECONNECT_RETRY_JITTER_MS);
@@ -382,57 +377,25 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const pendingStreamSelfLeaveRef = useRef<{ channelId: string; timer: NodeJS.Timeout } | null>(null);
-
-	const cancelPendingStreamSelfLeave = useCallback(() => {
-		if (!pendingStreamSelfLeaveRef.current) return;
-		clearTimeout(pendingStreamSelfLeaveRef.current.timer);
-		pendingStreamSelfLeaveRef.current = null;
-	}, []);
-
-	useEffect(() => cancelPendingStreamSelfLeave, [cancelPendingStreamSelfLeave]);
-
 	const onstreamingchanneljoined = useCallback(
 		(user: StreamingJoinedEvent) => {
 			if (!user?.user_id) return;
 			dispatch(
 				usersStreamActions.add({
 					...user,
-					user_avatar: '',
-					user_name: ''
+					user_avatar: user.streaming_channel_label || '',
+					user_name: user.participant || ''
 				})
 			);
-			if (String(user.user_id) !== String(userId)) return;
-			if (pendingStreamSelfLeaveRef.current?.channelId !== String(user.streaming_channel_id)) return;
-			cancelPendingStreamSelfLeave();
 		},
-		[dispatch, userId, cancelPendingStreamSelfLeave]
+		[dispatch]
 	);
 
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
-			dispatch(usersStreamActions.remove(streamMemberEntityId(user.streaming_user_id, user.streaming_channel_id)));
-			const store = getStore();
-			const streamInfo = selectCurrentStreamInfo(store.getState());
-			const isJoin = selectIsJoin(store.getState());
-			if (!isJoin || !streamInfo?.streamId) return;
-			if (String(user.streaming_channel_id) !== String(streamInfo.streamId)) return;
-			if (String(user.streaming_user_id) !== String(userId)) return;
-			const channelId = String(streamInfo.streamId);
-			cancelPendingStreamSelfLeave();
-			pendingStreamSelfLeaveRef.current = {
-				channelId,
-				timer: setTimeout(() => {
-					pendingStreamSelfLeaveRef.current = null;
-					const state = getStore().getState();
-					if (!selectIsJoin(state) || String(selectCurrentStreamInfo(state)?.streamId) !== channelId) return;
-					dispatch(usersStreamActions.streamEnded(channelId));
-					dispatch(videoStreamActions.resetPlayback());
-					dispatch(appActions.setIsShowChatStream(false));
-				}, STREAM_SELF_REJOIN_GRACE_MS)
-			};
+			dispatch(usersStreamActions.leave({ userId: user.streaming_user_id, channelId: user.streaming_channel_id, clanId: user.clan_id }));
 		},
-		[dispatch, userId, cancelPendingStreamSelfLeave]
+		[dispatch]
 	);
 
 	const onactivityupdated = useCallback(
@@ -1139,14 +1102,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							}
 						}
 
-						const defaultChannelId = selectDefaultChannelIdByClanId(store.getState() as unknown as RootState, clanId as string);
 						const clanChannels = selectChannelsByClanId(store.getState() as unknown as RootState, clanId as string);
-						const fallbackChannelId = clanChannels.find((ch) => !checkIsThread(ch))?.id;
+						const fallbackChannelId = clanChannels.find(
+							(ch) => !checkIsThread(ch) && ch.id !== user.channel_id && ch.type === ChannelType.CHANNEL_TYPE_CHANNEL
+						)?.id;
 
-						const redirectChannelId = defaultChannelId || fallbackChannelId;
-
-						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
+						if (fallbackChannelId) {
+							navigate(`/chat/clans/${clanId}/channels/${fallbackChannelId}`, true);
 						} else {
 							navigate(`/chat/clans/${clanId}/member-safety`, true);
 						}
@@ -1369,11 +1331,24 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						addedByUserId: caller?.user_id
 					})
 				);
+				if (user) {
+					dispatch(
+						channelsActions.joinChat({
+							clanId: '0',
+							channelId: channel_desc.channel_id as string,
+							channelType: channel_desc.type,
+							isPublic: false
+						})
+					);
+				}
 			}
 
 			if (currentClanId === clan_id) {
+				// Only members the roster lacks: an entry replaces the roster's whole user, and the event carries just the id
+				// when the server has no cached profile, which blanked the member's name everywhere until the next fetch.
+				const roster = selectEntitesUserClans(store.getState() as unknown as RootState);
 				const members = users
-					.filter((user) => user?.user_id)
+					.filter((user) => user?.user_id && !roster[user.user_id] && (user.username || user.display_name))
 					.map((user) => ({
 						id: user.user_id,
 						user: {
@@ -1840,6 +1815,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					active: 1
 				})
 			);
+			if (channelCreated.creator_id !== userId) {
+				dispatch(directActions.followReopenedDirectMessage({ channelId: channelCreated.channel_id }));
+			}
 		}
 	}, []);
 	const oncategoryevent = useCallback(async (categoryEvent: CategoryEvent) => {
@@ -1874,14 +1852,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						return;
 					}
 
-					const welcomeChannelId = selectWelcomeChannelByClanId(store.getState(), clanId);
-					const defaultChannelId = selectDefaultChannelIdByClanId(store.getState(), clanId);
-					const fallbackChannelId = allChannels.find((ch) => ch.category_id !== categoryEvent.id && !checkIsThread(ch))?.id;
+					const fallbackChannelId = allChannels.find(
+						(ch) => ch.category_id !== categoryEvent.id && !checkIsThread(ch) && ch.type === ChannelType.CHANNEL_TYPE_CHANNEL
+					)?.id;
 
-					const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
-
-					if (redirectChannelId) {
-						navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+					if (fallbackChannelId) {
+						navigate(`/chat/clans/${clanId}/channels/${fallbackChannelId}`);
 					} else {
 						navigate(`/chat/clans/${clanId}/member-safety`);
 					}
@@ -1994,15 +1970,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						return;
 					}
 
-					const welcomeChannelId = selectWelcomeChannelByClanId(store.getState(), clanId);
-					const defaultChannelId = selectDefaultChannelIdByClanId(store.getState(), clanId);
 					const allChannels = selectAllChannels(store.getState());
 					const fallbackChannelId = allChannels.find((ch) => ch.id !== channelDeleted.channel_id && !checkIsThread(ch))?.id;
 
-					const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
-
-					if (redirectChannelId) {
-						navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+					if (fallbackChannelId) {
+						navigate(`/chat/clans/${clanId}/channels/${fallbackChannelId}`);
 					} else {
 						navigate(`/chat/clans/${clanId}/member-safety`);
 					}
@@ -2260,10 +2232,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			);
 
 			if (isArchiveAction && currentChannelId === channelId) {
-				const redirectChannelId = isThread ? parentId : selectWelcomeChannelByClanId(getStore().getState() as unknown as RootState, clanId);
+				const redirectChannelId = isThread ? parentId : '';
 
 				if (redirectChannelId) {
 					navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+				} else {
+					navigate(`/chat/direct/friends`);
 				}
 
 				if (userId && channelArchive.creator_id !== userId) {
@@ -2909,6 +2883,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
+	const onsfubreakoutroomevent = useCallback(
+		(event: SfuBreakoutRoomEventPayload) => {
+			dispatch(voiceActions.receiveBreakoutRoomEvent({ event, selfUserId: userId }));
+		},
+		[dispatch, userId]
+	);
+
 	const setCallbackEventFn = React.useCallback(
 		(socket: Client) => {
 			socket.onconnect = (_evt: Event) => {
@@ -3035,6 +3016,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onbanneduser = onbanneduser;
 
 			socket.onscreenshare = onscreenshare;
+
+			(socket as PatchedMezonClient).onsfubreakoutroomevent = onsfubreakoutroomevent;
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
@@ -3093,7 +3076,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onbanneduser,
 			runPostReconnectActions,
 			onServerDisconnectStreakLogout,
-			onscreenshare
+			onscreenshare,
+			onsfubreakoutroomevent
 		]
 	);
 
@@ -3168,10 +3152,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 							// The first attempt already failed on the node we have: ask the gateway
 							// whether it wants to move us before burning the rest of the wave on it.
-							if (getReconnectWaveAttempts() >= 1 && (await askHealthyEndpoint()) === 'changed') {
-								// A node we have never tried deserves a full budget instead of the
-								// cooldown this wave was about to hit.
-								resetReconnectWave();
+							if (getReconnectWaveAttempts() >= 1) {
+								const verdict = await askHealthyEndpoint();
+								// A node we have never tried, or a session id the gateway has just minted,
+								// deserves a full budget instead of the cooldown this wave was about to hit.
+								if (verdict === 'changed' || verdict === 'renewed') {
+									resetReconnectWave();
+								}
 							}
 
 							if (!consumeReconnectAttempt()) {
@@ -3266,13 +3253,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	// if the gateway keeps naming the same node, we stop asking about slowness until we reconnect.
 	useEffect(() => {
 		const onSlowNode = async () => {
-			if (socketState.status !== 'connected' || !shouldReportSlowNode()) {
+			if (socketState.status !== 'connected' || isRealtimeServerPinned() || !shouldReportSlowNode()) {
 				return;
 			}
 			const verdict = await askHealthyEndpoint();
 			if (verdict === 'changed') {
 				window.dispatchEvent(new CustomEvent(REALTIME_SERVER_CHANGED_EVENT));
-			} else if (verdict === 'same') {
+			} else if (verdict === 'same' || verdict === 'renewed') {
 				disableSlowReports();
 			}
 		};
@@ -3400,6 +3387,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onchannelarchive = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onscreenshare = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			(socket as PatchedMezonClient).onsfubreakoutroomevent = () => {};
 		};
 	}, [
 		onchannelmessage,
@@ -3455,7 +3444,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onUnpinMessageEvent,
 		onblockfriend,
 		onunblockfriend,
-		onscreenshare
+		onscreenshare,
+		onsfubreakoutroomevent
 	]);
 
 	const value = React.useMemo<ChatContextValue>(

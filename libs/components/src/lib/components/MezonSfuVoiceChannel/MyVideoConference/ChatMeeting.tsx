@@ -43,7 +43,7 @@ const ChatStreamExternal = forwardRef<ExternalChatRef, ChatStreamExternalProps>(
 				id: userId,
 				content: value,
 				timestamp: Date.now(),
-				name: profile?.user?.display_name || profile?.user?.username || name || '',
+				name: name || profile?.user?.display_name || profile?.user?.username || '',
 				avatar: profile?.user?.avatar_url || avatar || ''
 			};
 

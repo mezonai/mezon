@@ -1,6 +1,15 @@
 import { audioCallActions, DMCallActions, selectAudioBusyTone, selectIsShowMeetDM, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { compress, decompress, ensureMediaPermission, IMessageTypeCallLog, reportMediaAccessError, requestMediaPermission } from '@mezon/utils';
+import {
+	compress,
+	decompress,
+	ensureMediaPermission,
+	getPreferredInputDeviceId,
+	getPreferredOutputDeviceId,
+	IMessageTypeCallLog,
+	reportMediaAccessError,
+	requestMediaPermission
+} from '@mezon/utils';
 import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,18 +84,8 @@ export const rememberPeerSession = (callerId: string, sessionId: string | null) 
 	knownPeerSessions.push({ callerId, sessionId });
 };
 
-const SAVED_INPUT_DEVICE_KEY = 'mezon.voice.inputDeviceId';
-const SAVED_OUTPUT_DEVICE_KEY = 'mezon.voice.outputDeviceId';
 const SYSTEM_DEFAULT_DEVICE_ID = 'default';
 const AUDIO_DEVICE_SETTLE_MS = 400;
-
-const readSavedDeviceId = (key: string): string => {
-	try {
-		return localStorage.getItem(key) || '';
-	} catch {
-		return '';
-	}
-};
 
 const findDevice = (devices: MediaDeviceInfo[], deviceId: string | undefined): MediaDeviceInfo | null =>
 	(deviceId && devices.find((device) => device.deviceId === deviceId)) || null;
@@ -306,8 +305,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			const devices = await navigator.mediaDevices.enumerateDevices();
 			const outputDevices = devices.filter((device) => device.kind === 'audiooutput');
 			const inputDevices = devices.filter((device) => device.kind === 'audioinput');
-			const inputDevice = pickPreferredDevice(inputDevices, readSavedDeviceId(SAVED_INPUT_DEVICE_KEY));
-			const outputDevice = pickPreferredDevice(outputDevices, readSavedDeviceId(SAVED_OUTPUT_DEVICE_KEY));
+			const inputDevice = pickPreferredDevice(inputDevices, getPreferredInputDeviceId());
+			const outputDevice = pickPreferredDevice(outputDevices, getPreferredOutputDeviceId());
 
 			setAudioInputDevicesList(inputDevices);
 			setAudioOutputDevicesList(outputDevices);
@@ -954,13 +953,13 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 		if (inputTrack && (inputLost || defaultInputMoved)) {
 			const nextInput = inputLost
-				? pickPreferredDevice(inputDevices, readSavedDeviceId(SAVED_INPUT_DEVICE_KEY))
+				? pickPreferredDevice(inputDevices, getPreferredInputDeviceId())
 				: findDevice(inputDevices, SYSTEM_DEFAULT_DEVICE_ID);
 			if (nextInput?.deviceId) await changeAudioInputDevice(nextInput.deviceId);
 		}
 
 		if (!findDevice(outputDevices, outputDeviceIdRef.current)) {
-			const nextOutput = pickPreferredDevice(outputDevices, readSavedDeviceId(SAVED_OUTPUT_DEVICE_KEY));
+			const nextOutput = pickPreferredDevice(outputDevices, getPreferredOutputDeviceId());
 			if (nextOutput?.deviceId) await changeAudioOutputDevice(nextOutput.deviceId);
 		}
 	};

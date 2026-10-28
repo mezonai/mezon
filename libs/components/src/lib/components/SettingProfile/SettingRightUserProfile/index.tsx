@@ -11,7 +11,7 @@ import {
 	userChannelsActions,
 	usersClanActions
 } from '@mezon/store';
-import { handleUploadFile, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
 import type { ImageSourceObject } from '@mezon/utils';
 import { MAX_FILE_SIZE_10MB, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
@@ -151,7 +151,7 @@ const SettingRightUser = ({
 			}
 			setIsLoading(true);
 
-			const attachment = await handleUploadFile(clientRef.current, sessionRef.current, file.name, file, NaN, true);
+			const attachment = await handleUploadPublicFile(clientRef.current, sessionRef.current, file.name, file);
 			setUrlImage(attachment?.url || '');
 			setFlags(true);
 			setIsLoading(false);
@@ -225,7 +225,7 @@ const SettingRightUser = ({
 			throw new Error('Client or file is not initialized');
 		}
 
-		handleUploadFile(client, session, e.target.files[0].name || '', e.target.files[0]).then((attachment) => {
+		handleUploadPublicFile(client, session, e.target.files[0].name || '', e.target.files[0]).then((attachment) => {
 			dispatch(
 				clansActions.updateUser({
 					avatar_url: urlImage,

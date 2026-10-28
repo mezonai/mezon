@@ -72,6 +72,8 @@ export const processBacktick = (input: string): { tripleBackticks: IMarkdownOnMe
 	return { tripleBackticks, singleBackticks };
 };
 
+export const parenBalance = (text: string) => text.split('(').length - text.split(')').length;
+
 const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 	const links: ILinkOnMessage[] = [];
 	const voiceRooms: ILinkVoiceRoomOnMessage[] = [];
@@ -94,6 +96,18 @@ const processLinks = (inputString: string, markdowns: IMarkdownOnMessage[]) => {
 
 			while (i < inputString.length && ![' ', '\n', '\r', '\t'].includes(inputString[i])) {
 				i++;
+			}
+			let unmatchedCloseParens = -parenBalance(inputString.substring(startindex, i));
+			while (unmatchedCloseParens > 0) {
+				let beforePunctuation = i;
+				while (beforePunctuation > startindex && `.,;:!?'"`.includes(inputString[beforePunctuation - 1])) {
+					beforePunctuation--;
+				}
+				if (inputString[beforePunctuation - 1] !== ')') {
+					break;
+				}
+				i = beforePunctuation - 1;
+				unmatchedCloseParens--;
 			}
 
 			const endindex = i;

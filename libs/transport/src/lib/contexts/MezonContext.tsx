@@ -3,12 +3,19 @@ import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDRe
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import React, { useCallback } from 'react';
 
-import type { HealthyEndpointResult } from '../healthyEndpoint';
+import type { HealthyEndpointPayload, HealthyEndpointResult, RenewedTokens } from '../healthyEndpoint';
 import {
 	beginHealthyEndpointAsk,
 	canAskHealthyEndpoint,
 	fetchHealthyEndpoint,
+	fetchSessionRefresh,
+	gatewayAnsweredThisOutage,
+	isJwtExpired,
+	isRefreshRefused,
+	noteGatewayAnswered,
 	noteHealthyEndpointAsked,
+	probeCredential,
+	refreshTokenNeedsRotation,
 	resetHealthyEndpointThrottle
 } from '../healthyEndpoint';
 import type { CreateMezonClientOptions } from '../mezon';
@@ -25,6 +32,61 @@ import { socketState } from '../socketState';
 
 let connectInFlight: Promise<ApiSession | null> | null = null;
 let reconnectInFlight = false;
+// The session id the gateway or the api last refused, and when. While the session still holds it, it is
+// neither dialed nor offered to the gateway again. The hold is shorter than the minute between failed
+// asks, so the id still gets dialed in between: a refusal can also come from a gateway that failed to
+// read its own cache.
+let refusedSessionId = '';
+let refusedSessionIdAt = 0;
+const REFUSED_SESSION_ID_HOLD_MS = 30000;
+// A JWT this tab has just been issued is fresh whatever the local clock makes of its exp.
+let renewedToken = '';
+let renewedTokenAt = 0;
+const RENEWED_TOKEN_TRUST_MS = 5 * 60 * 1000;
+let refreshTokenRotated = false;
+let refreshTokenRotationTriedAt = 0;
+const REFRESH_TOKEN_ROTATION_RETRY_MS = 5 * 60 * 1000;
+const REFRESH_REFUSAL_CONFIRM_MS = 2000;
+const SESSION_RECOVERY_LOCK = 'mezon-session-recovery';
+
+const markSessionIdRefused = (sessionId: string) => {
+	refusedSessionId = sessionId;
+	refusedSessionIdAt = Date.now();
+};
+
+const isSessionIdRefused = (sessionId: string | undefined): boolean =>
+	!!sessionId && sessionId === refusedSessionId && Date.now() - refusedSessionIdAt < REFUSED_SESSION_ID_HOLD_MS;
+
+const isTokenFresh = (token: string | undefined): token is string =>
+	!!token && ((token === renewedToken && Date.now() - renewedTokenAt < RENEWED_TOKEN_TRUST_MS) || !isJwtExpired(token));
+
+// A renewal or a minted session id that lands after a logout or an account switch must not be written
+// over whoever is signed in by then.
+const isSameAccount = (current: ApiSession | null, session: ApiSession): current is ApiSession => {
+	if (!current) return false;
+	const currentUser = (current as { user_id?: string }).user_id;
+	const sessionUser = (session as { user_id?: string }).user_id;
+	return !currentUser || !sessionUser || currentUser === sessionUser;
+};
+
+const readStoredSession = (): ApiSession | null => {
+	try {
+		const raw = localStorage.getItem('persist:auth');
+		const outer = raw ? JSON.parse(raw) : null;
+		const session = outer?.session ? JSON.parse(outer.session) : null;
+		return session && typeof session === 'object' ? (session as ApiSession) : null;
+	} catch {
+		return null;
+	}
+};
+
+// Tabs restored together all find the same session id dead. One at a time, the first renews and mints and
+// the rest pick up what it stored, instead of each spending a SessionRefresh and one of the user's ten
+// gateway slots.
+const withRecoveryLock = <T,>(work: () => Promise<T>): Promise<T> => {
+	const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
+	return locks?.request ? locks.request(SESSION_RECOVERY_LOCK, work) : work();
+};
 
 export type ReconnectSocketStatus = 'SUCCESS' | 'RECONNECTING' | 'MISSING_SESSION';
 export type ReconnectSocketResult = {
@@ -126,6 +188,27 @@ const isAllowedHost = (host: string | undefined): boolean => {
 	if (!host || typeof host !== 'string') return false;
 	const lower = host.toLowerCase();
 	return ALLOWED_HOST_SUFFIXES.some((suffix) => lower === suffix || lower.endsWith(`.${suffix}`));
+};
+
+// The session's api host, as long as it is one we talk to; otherwise the configured host, the way
+// desktop falls back.
+const allowedApiUrl = (session: Pick<ApiSession, 'api_url'>): string | null => {
+	const configuredHost = process.env.NX_CHAT_APP_API_HOST;
+	const configured = configuredHost
+		? `${process.env.NX_CHAT_APP_API_SECURE === 'true' ? 'https' : 'http'}://${configuredHost}:${process.env.NX_CHAT_APP_API_PORT}`
+		: '';
+	for (const apiUrl of [session.api_url?.trim(), configured]) {
+		if (!apiUrl) continue;
+		let host = '';
+		try {
+			host = new URL(apiUrl).hostname;
+		} catch {
+			host = '';
+		}
+		if (isAllowedHost(host)) return apiUrl;
+		console.error('[sessionRefresh] skipping an api host we do not talk to:', apiUrl);
+	}
+	return null;
 };
 
 export const getMezonConfig = (): MezonConfigResult => {
@@ -469,14 +552,23 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			const wsUrl = resolveSessionWsUrl(sr);
 			sessionRef.current = { ...sr, ws_url: wsUrl };
 
-			const credential = options.useToken ? sessionRef.current.token : sessionRef.current.session_id?.trim();
+			const token = sessionRef.current.token?.trim();
+			const tokenFresh = isTokenFresh(token);
+			const sessionIdRefused = isSessionIdRefused(sessionRef.current.session_id?.trim());
+			// An expired JWT, or a session id the server just refused, buys a certain refusal and spends a
+			// handshake on proto-server's limiter, so with nothing better to offer, wait for the next
+			// renewal instead (desktop holds its reconnect the same way).
+			if (options.useToken ? !tokenFresh : sessionIdRefused && !tokenFresh) {
+				throw new Error('No Mezon credential the server would accept yet');
+			}
+			const leadWithToken = options.useToken || sessionIdRefused;
+			const credential = leadWithToken ? token : sessionRef.current.session_id?.trim();
 			if (!credential) {
 				throw new Error('Missing Mezon session credential');
 			}
 
 			await client.connect(credential, resolveConnectWsUrl(sessionRef.current), options.createStatus ?? true);
 
-			resetHealthyEndpointThrottle();
 			socketState.status = 'connected';
 			return sessionRef.current;
 		})();
@@ -496,61 +588,10 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		return attempt;
 	}, []);
 
-	// Auto only: the node the gateway handed out is not answering, so ask the gateway which one is.
-	// A pinned server is the user's call and is never moved by this.
-	const askHealthyEndpoint = useCallback(
-		async ({ force = false }: { force?: boolean } = {}): Promise<HealthyEndpointResult> => {
-			if (isRealtimeServerPinned()) {
-				return 'skipped';
-			}
-			const session = sessionRef.current;
-			// The gateway takes either credential; the session id is the one that stays fresh while the
-			// socket is down (nothing refreshes the JWT on that path).
-			const sessionId = session?.session_id?.trim();
-			const token = session?.token?.trim();
-			const credential = sessionId || token;
-			if (!session || !credential || !canAskHealthyEndpoint(force)) {
-				return 'skipped';
-			}
-
-			const cfg = getMezonConfig();
-			const basePath = `${cfg.ssl ? 'https://' : 'http://'}${cfg.host}:${cfg.port}`;
-			beginHealthyEndpointAsk(force);
-			let { status, payload } = await fetchHealthyEndpoint(basePath, credential);
-			// A session id can be retired on its own (the gateway reuses slots) while the JWT is
-			// still good, so a refused session id is not proof that the session is gone.
-			if (!payload && (status === 401 || status === 403) && token && credential !== token) {
-				({ status, payload } = await fetchHealthyEndpoint(basePath, token));
-			}
-			if (!payload) {
-				noteHealthyEndpointAsked(true);
-				// 401/403 is the gateway saying this session is gone. No status at all means we never
-				// reached it. Any other status (rate limit, 5xx) is the gateway being unhappy, which
-				// says nothing about the session or the network.
-				if (status === 401 || status === 403) {
-					return 'rejected';
-				}
-				return status === 0 ? 'unreachable' : 'failed';
-			}
-			noteHealthyEndpointAsked(false);
-
-			const host = (payload.ws_url ?? '').trim();
-			// The gateway answers with `host` on production but `host:port` elsewhere; the allowlist
-			// only knows hostnames.
-			if (host && !isAllowedHost(host.split(':')[0])) {
-				console.error('[healthyEndpoint] gateway named a host we do not talk to:', host);
-				return 'failed';
-			}
-
-			const previousHost = resolveSessionWsUrl(session);
-			// The gateway mints a session id for every answer and may retire the old one, so the new
-			// session id has to be adopted even when it keeps us on the same node.
-			const next: ApiSession = {
-				...session,
-				ws_url: host || session.ws_url,
-				api_url: (payload.api_url ?? '').trim() || session.api_url,
-				session_id: (payload.session_id ?? '').trim() || session.session_id
-			};
+	// Every credential the gateway or the api hands out while the socket is down lands here, so the next
+	// connect, a reload and the other tabs all pick it up.
+	const adoptSession = useCallback(
+		(next: ApiSession) => {
 			sessionRef.current = next;
 			try {
 				const raw = localStorage.getItem('persist:auth');
@@ -562,14 +603,251 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 			extractAndSaveConfig(next, isFromMobile);
 			publishSessionUpdate(next, 'refresh');
-
-			if (host && host !== previousHost) {
-				console.warn(`[healthyEndpoint] gateway moved us from ${previousHost} to ${host}`);
-				return 'changed';
-			}
-			return 'same';
 		},
 		[isFromMobile]
+	);
+
+	// `refused` only when the api turned the refresh token down, or there is none to send; a refresh it
+	// could not answer, or could not be sent for want of an api host or a server key, keeps the session.
+	const renewSessionTokens = useCallback(
+		async (session: ApiSession): Promise<{ tokens: RenewedTokens | null; refused: boolean }> => {
+			const refreshToken = session.refresh_token?.trim();
+			if (!refreshToken) {
+				return { tokens: null, refused: true };
+			}
+			const apiUrl = allowedApiUrl(session);
+			const serverKey = getMezonConfig().key;
+			if (!apiUrl || !serverKey) {
+				return { tokens: null, refused: false };
+			}
+			const isRemember = !!session.is_remember;
+			let { status, tokens } = await fetchSessionRefresh(apiUrl, serverKey, refreshToken, isRemember);
+			// The api reports a refresh token it will not take as 500, the code any failure of its own would
+			// produce too. A refresh token past its own expiry is beyond doubt; otherwise one more try a
+			// moment later tells a refusal from a hiccup before it costs the user their session. Another tab
+			// may have rotated the token meanwhile (which is what gets this one refused where the api revokes
+			// on refresh), so the retry uses whatever is stored by then.
+			if (!tokens && isRefreshRefused(status) && !isJwtExpired(refreshToken)) {
+				await new Promise((resolve) => setTimeout(resolve, REFRESH_REFUSAL_CONFIRM_MS));
+				const stored = readStoredSession();
+				const latest = stored && isSameAccount(stored, session) ? stored.refresh_token?.trim() || refreshToken : refreshToken;
+				({ status, tokens } = await fetchSessionRefresh(apiUrl, serverKey, latest, isRemember));
+			}
+			const current = sessionRef.current;
+			if (!isSameAccount(current, session)) {
+				return { tokens: null, refused: false };
+			}
+			if (tokens) {
+				renewedToken = tokens.token;
+				renewedTokenAt = Date.now();
+				adoptSession({ ...current, ...tokens });
+			}
+			return { tokens, refused: !tokens && isRefreshRefused(status) };
+		},
+		[adoptSession]
+	);
+
+	// A tab that never needs its JWT still has to keep the refresh token alive, or the first time its
+	// session id is retired after thirty days there is nothing left to renew it with. Once per page load,
+	// like desktop's once-per-launch rotation; a refresh the api could not answer is tried again later.
+	const rotateRefreshTokenIfDue = useCallback(() => {
+		const session = sessionRef.current;
+		const refreshToken = session?.refresh_token?.trim();
+		const now = Date.now();
+		if (
+			refreshTokenRotated ||
+			now - refreshTokenRotationTriedAt < REFRESH_TOKEN_ROTATION_RETRY_MS ||
+			!session ||
+			!refreshToken ||
+			!refreshTokenNeedsRotation(refreshToken)
+		) {
+			return;
+		}
+		refreshTokenRotationTriedAt = now;
+		void renewSessionTokens(session).then(({ tokens, refused }) => {
+			refreshTokenRotated = !!tokens || refused;
+		});
+	}, [renewSessionTokens]);
+
+	React.useEffect(
+		() =>
+			socketState.subscribe((status) => {
+				if (status === 'connected') {
+					rotateRefreshTokenIfDue();
+				}
+			}),
+		[rotateRefreshTokenIfDue]
+	);
+
+	// The node the gateway handed out is not answering, so ask the gateway which one is, and when it is the
+	// session id that died, get a working credential back. A pinned server is the user's call and is never
+	// moved by this.
+	const askHealthyEndpoint = useCallback(
+		async ({ force = false }: { force?: boolean } = {}): Promise<HealthyEndpointResult> => {
+			const session = sessionRef.current;
+			// The gateway takes either credential; the session id is the one that stays fresh while the
+			// socket is down (nothing refreshes the JWT on that path).
+			const sessionId = session?.session_id?.trim();
+			const token = session?.token?.trim();
+			const credential = sessionId || token;
+			if (!session || !credential || !canAskHealthyEndpoint(force)) {
+				return 'skipped';
+			}
+			const pinned = isRealtimeServerPinned();
+			const apiUrl = allowedApiUrl(session);
+			// Asking about a session id that was just refused only costs another round trip.
+			const knownRefused = isSessionIdRefused(sessionId);
+			if (pinned && !knownRefused && (!sessionId || !apiUrl)) {
+				return 'skipped';
+			}
+
+			const cfg = getMezonConfig();
+			const basePath = `${cfg.ssl ? 'https://' : 'http://'}${cfg.host}:${cfg.port}`;
+			beginHealthyEndpointAsk(force);
+			let status = 0;
+			let payload: HealthyEndpointPayload | null = null;
+			let refusedByProbe = false;
+			if (knownRefused) {
+				status = 401;
+			} else if ((pinned || gatewayAnsweredThisOutage()) && sessionId && apiUrl) {
+				// Every gateway answer mints a session id, so a tab with no use for the node it names (pinned,
+				// or already told this outage) only asks once the api has confirmed the session id is dead.
+				const probe = await probeCredential(apiUrl, sessionId);
+				if (probe !== 'rejected') {
+					noteHealthyEndpointAsked(probe === 'inconclusive');
+					return 'skipped';
+				}
+				status = 401;
+				refusedByProbe = true;
+			} else {
+				({ status, payload } = await fetchHealthyEndpoint(basePath, credential));
+				// A gateway that cannot answer says nothing about the session id, but the api can.
+				if (!payload && status !== 0 && status !== 401 && status !== 403 && credential === sessionId && apiUrl) {
+					if ((await probeCredential(apiUrl, sessionId)) === 'rejected') {
+						status = 401;
+						refusedByProbe = true;
+					}
+				}
+			}
+
+			// Once the session id is refused the JWT is the way back, the way desktop does it: renew it if it
+			// is stale, have the gateway mint a session id with it, and if the gateway cannot, let the socket
+			// lead with the JWT. Both refused is what a long-lived tab looks like once its session id is
+			// retired: the JWT expired minutes after load, while the refresh token still holds.
+			const credentialRefused = !payload && (status === 401 || status === 403);
+			let freshToken = isTokenFresh(token) ? token : '';
+			let renewed = false;
+			const renew = async (): Promise<HealthyEndpointResult | null> => {
+				const renewal = await renewSessionTokens(session);
+				if (renewal.tokens) {
+					freshToken = renewal.tokens.token;
+					renewed = true;
+					return null;
+				}
+				noteHealthyEndpointAsked(true);
+				// Only the api turning the refresh token down ends the session; an api that could not
+				// answer leaves it alone.
+				return renewal.refused ? 'rejected' : 'failed';
+			};
+			// What the answers add up to, adopted while this tab still holds the recovery lock so a tab waiting
+			// on it finds the new session id already stored.
+			const settle = (): HealthyEndpointResult => {
+				if (!payload) {
+					noteHealthyEndpointAsked(true);
+					// 401/403 is the gateway saying this session is gone, unless the api has just renewed it: a
+					// gateway refusing a JWT the api issued a moment ago is the gateway's problem. No status at all
+					// means we never reached it. Any other status (rate limit, 5xx) is the gateway being unhappy,
+					// which says nothing about the session or the network.
+					if ((status === 401 || status === 403) && !renewed) {
+						return 'rejected';
+					}
+					// No new session id, but a fresh JWT the socket can lead with until one is minted.
+					if (credentialRefused && freshToken) {
+						return 'renewed';
+					}
+					return status === 0 ? 'unreachable' : 'failed';
+				}
+				noteHealthyEndpointAsked(false);
+				noteGatewayAnswered();
+
+				const host = (payload.ws_url ?? '').trim();
+				// The gateway answers with `host` on production but `host:port` elsewhere; the allowlist
+				// only knows hostnames.
+				if (host && !isAllowedHost(host.split(':')[0])) {
+					console.error('[healthyEndpoint] gateway named a host we do not talk to:', host);
+					return 'failed';
+				}
+
+				const current = sessionRef.current;
+				if (!isSameAccount(current, session)) {
+					return 'skipped';
+				}
+				const previousHost = resolveSessionWsUrl(session);
+				// The gateway mints a session id for every answer and may retire the old one, so the new
+				// session id has to be adopted even when it keeps us on the same node.
+				adoptSession({
+					...current,
+					ws_url: host || current.ws_url,
+					api_url: (payload.api_url ?? '').trim() || current.api_url,
+					session_id: (payload.session_id ?? '').trim() || current.session_id
+				});
+
+				if (!pinned && host && host !== previousHost) {
+					console.warn(`[healthyEndpoint] gateway moved us from ${previousHost} to ${host}`);
+					return 'changed';
+				}
+				return credentialRefused ? 'renewed' : 'same';
+			};
+			if (!credentialRefused) {
+				return settle();
+			}
+			// A gateway refusal holds the id off right away (see REFUSED_SESSION_ID_HOLD_MS); a probe's waits
+			// for the JWT check below.
+			if (sessionId && credential === sessionId && !refusedByProbe && !knownRefused) {
+				markSessionIdRefused(sessionId);
+			}
+			return withRecoveryLock(async (): Promise<HealthyEndpointResult> => {
+				// Another tab may have recovered while this one waited: what it stored is the way back.
+				const stored = readStoredSession();
+				const storedSessionId = stored?.session_id?.trim();
+				const current = sessionRef.current;
+				if (
+					stored &&
+					storedSessionId &&
+					storedSessionId !== sessionId &&
+					!isSessionIdRefused(storedSessionId) &&
+					isSameAccount(current, stored)
+				) {
+					sessionRef.current = { ...current, ...stored };
+					noteHealthyEndpointAsked(false);
+					return 'renewed';
+				}
+				const renewStopped = !freshToken || credential === freshToken ? await renew() : null;
+				if (renewStopped) {
+					return renewStopped;
+				}
+				// The api answers 403 to a rate-limited caller as well. A session id is only written off, and a
+				// new one minted, once the same api takes the JWT: refusing that too is the limiter talking.
+				if (refusedByProbe && apiUrl && (await probeCredential(apiUrl, freshToken)) !== 'alive') {
+					noteHealthyEndpointAsked(true);
+					return 'failed';
+				}
+				if (refusedByProbe && sessionId) {
+					markSessionIdRefused(sessionId);
+				}
+				({ status, payload } = await fetchHealthyEndpoint(basePath, freshToken));
+				// A JWT we still held as fresh can be refused too; a renewed one gets the last word.
+				if (!payload && (status === 401 || status === 403) && !renewed) {
+					const retryStopped = await renew();
+					if (retryStopped) {
+						return retryStopped;
+					}
+					({ status, payload } = await fetchHealthyEndpoint(basePath, freshToken));
+				}
+				return settle();
+			});
+		},
+		[adoptSession, renewSessionTokens]
 	);
 
 	const reconnectSocket = useCallback(async (): Promise<ReconnectSocketResult> => {
@@ -599,6 +877,10 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		resetHealthyEndpointThrottle();
 		reconnectInFlight = false;
 		connectInFlight = null;
+		refusedSessionId = '';
+		renewedToken = '';
+		refreshTokenRotated = false;
+		refreshTokenRotationTriedAt = 0;
 		clearSessionRefreshFromStorage();
 
 		clearSessionFromStorage();

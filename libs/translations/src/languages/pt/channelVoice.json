@@ -135,7 +135,11 @@
 		"aloneTimeoutDisconnected": "Você foi desconectado do canal de voz porque ficou sozinho nele por muito tempo.",
 		"duplicateSessionDisconnected": "Você entrou no canal de voz em outro dispositivo, então esta sessão foi desconectada.",
 		"disconnectedRejoin": "Você foi desconectado do canal de voz.",
-		"weakNetworkDisconnected": "Você foi desconectado do canal de voz porque sua rede está fraca."
+		"weakNetworkDisconnected": "Você foi desconectado do canal de voz porque sua rede está fraca.",
+		"cameraLimitReached": "Este canal de voz atingiu o limite de câmeras. Tente novamente quando alguém desativar a câmera.",
+		"screenShareLimitReached": "Este canal de voz atingiu o limite de compartilhamentos de tela. Tente novamente quando alguém parar de compartilhar.",
+		"cameraUpdateFailed": "Não foi possível ativar ou desativar a câmera. Tente novamente.",
+		"screenShareUpdateFailed": "Não foi possível iniciar ou parar o compartilhamento de tela. Tente novamente."
 	},
 	"usernameScreen": "Tela de {{username}}",
 	"recording": {
@@ -162,7 +166,10 @@
 		"keepMuted": "O áudio está pausado. Clique para manter o microfone silenciado."
 	},
 	"weakNetwork": "Rede fraca",
-	"networkWarning": "Sua conexão de internet está instável. Outros podem não te ouvir com clareza.",
+	"networkWarning": {
+		"title": "Sua conexão de internet está instável",
+		"body": "Verifique sua conexão de rede."
+	},
 	"reconnectModal": {
 		"title": "Não foi possível conectar ao canal de voz",
 		"description": "A conexão de voz não pôde ser restaurada. Verifique sua conexão e tente entrar novamente.",
@@ -176,5 +183,59 @@
 		"holdSpace": "Segure Espaço para falar",
 		"holdingSpace": "Falando — solte Espaço para silenciar",
 		"hintBody": "Você entrou para ouvir. Segure Espaço para abrir seu microfone enquanto fala, solte para silenciar novamente."
+	},
+	"screenDraw": {
+		"annotateScreen": "Desenhar na sua tela compartilhada",
+		"stopAnnotating": "Parar de desenhar na sua tela",
+		"drawOnScreen": "Desenhar na tela (só você vê)",
+		"stopDrawing": "Parar de desenhar",
+		"closeDrawing": "Fechar desenho",
+		"selectAndMove": "Selecionar e mover",
+		"pen": "Caneta",
+		"text": "Texto",
+		"eraser": "Borracha",
+		"undo": "Desfazer",
+		"redo": "Refazer",
+		"clear": "Apagar todos os desenhos",
+		"textPlaceholder": "Digite uma nota, Enter para posicionar",
+		"commit": "Posicionar (Enter)",
+		"cancel": "Cancelar (Esc)"
+	},
+	"breakout": {
+		"title": "Salas simultâneas",
+		"roomCount": "Número de salas",
+		"ruleAutomatic": "Atribuir automaticamente",
+		"ruleManual": "Atribuir manualmente",
+		"ruleSelfSelect": "Deixar os participantes escolherem",
+		"noParticipants": "Ainda não há mais ninguém na chamada. Outros participantes precisam entrar antes de poder atribuí-los.",
+		"assign": "Atribuir",
+		"notStarted": "Salas simultâneas - Não iniciadas",
+		"createHeader": "Criar {{count}} salas simultâneas",
+		"recreate": "Recriar",
+		"addRoom": "Adicionar sala",
+		"openAllRooms": "Abrir todas as salas",
+		"delete": "Excluir",
+		"deleteConfirm": "Excluir {{name}}?",
+		"moveTo": "Mover para",
+		"exchange": "Trocar",
+		"yes": "Sim",
+		"no": "Não",
+		"allAssigned": "Todos os participantes foram atribuídos.",
+		"create": "Criar",
+		"room": "Sala {{number}}",
+		"openRooms": "{{count}} salas simultâneas estão abertas.",
+		"close": "Fechar salas simultâneas",
+		"returnToMain": "Voltar à sala principal",
+		"opened": "Salas simultâneas abertas",
+		"closed": "Salas simultâneas fechadas",
+		"failed": "Não foi possível atualizar as salas simultâneas",
+		"notEnoughRooms": "Não há canais de voz vazios suficientes para tantas salas. Cada sala precisa de um canal de voz público sem ninguém — crie mais canais de voz ou use menos salas.",
+		"notEnoughIdleChannels": "Canais de voz públicos vazios disponíveis: {{count}}. Cada sala precisa de um — crie mais canais de voz ou use menos salas.",
+		"noIdleChannels": "Não há canais de voz públicos vazios para usar como salas. Crie um canal de voz público neste clã e tente novamente.",
+		"inviteAssigned": "O anfitrião colocou você em uma sala simultânea.",
+		"inviteChoose": "O anfitrião abriu salas simultâneas. Escolha uma para entrar.",
+		"inviteReturn": "O anfitrião fechou as salas simultâneas. Voltar à sala principal?",
+		"join": "Entrar",
+		"later": "Agora não"
 	}
 }

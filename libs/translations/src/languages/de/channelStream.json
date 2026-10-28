@@ -1,11 +1,22 @@
 {
-	"streamThumbnail": "Stream-Thumbnail",
 	"videoError": "Video konnte nicht abgespielt werden. Bitte versuche es später erneut.",
-	"everyoneWaiting": "Alle warten drinnen auf dich",
 	"noOneInStream": "Im Livestream ist momentan niemand",
 	"joinStream": "Livestream beitreten",
 	"noStreamToday": "Heute findet kein Livestream statt",
+	"everyoneWaiting": "Alle warten drinnen auf dich",
 	"hideMembers": "Mitglieder ausblenden",
 	"showMembers": "Mitglieder anzeigen",
-	"duplicateSessionDisconnected": "Getrennt, weil dein Konto in einer anderen Sitzung einem Livestream oder Sprachkanal beigetreten ist."
+	"viewerCount": "{{count}} schauen zu",
+	"quality": "Qualität",
+	"qualityAuto": "Automatisch",
+	"qualityHigh": "Hoch",
+	"qualityMid": "Mittel",
+	"qualityLow": "Niedrig",
+	"fullscreen": "Vollbild",
+	"exitFullscreen": "Vollbild beenden",
+	"live": "Live",
+	"isLive": "{{name}} ist live",
+	"volume": "Lautstärke",
+	"mute": "Stummschalten",
+	"unmute": "Stummschaltung aufheben"
 }

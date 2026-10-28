@@ -26,6 +26,7 @@ import {
 	selectReactionRightState,
 	selectStatusMenu,
 	threadsActions,
+	toastActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -134,6 +135,7 @@ export interface MentionReactBaseProps extends MentionReactInputProps {
 
 export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElement => {
 	const { t } = useTranslation('messageBox');
+	const { t: tMessage } = useTranslation('message');
 	const editorRef = useRef<MentionsInputHandle | null>(null);
 	const editorElementRef = useRef<HTMLDivElement | null>(null); // For legacy hooks compatibility
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -595,6 +597,16 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
+			if (props.isTopic && !currTopicId && anonymousMode) {
+				dispatch(
+					toastActions.addToast({
+						message: tMessage('turnOffAnonymousToCreateTopic'),
+						type: 'error'
+					})
+				);
+				return;
+			}
+
 			if (isReplyOnChannel) {
 				props.onSend(
 					filterEmptyArrays(payload),
@@ -736,7 +748,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			handleThreadActivation,
 			checkAttachment,
 			valueThread,
-			isRemoteMember
+			isRemoteMember,
+			currTopicId,
+			anonymousMode,
+			tMessage
 		]
 	);
 	const attachmentData = useMemo(() => {
