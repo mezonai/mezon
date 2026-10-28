@@ -191,7 +191,7 @@ function MessageWithUser({
 
 	const hasIncludeMention = (() => {
 		if (!userId) return false;
-		if (typeof message?.content?.t == 'string') {
+		if (!checkAnonymous && typeof message?.content?.t == 'string') {
 			if (Array.isArray(message?.mentions) && message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
 		}
 		if (!Array.isArray(message?.mentions)) {

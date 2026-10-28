@@ -1,7 +1,17 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage } from '@mezon/utils';
-import { EBacktickType, ETokenMessage, TypeMessage, checkInviteLinkValid, convertMarkdown, generateE2eId } from '@mezon/utils';
+import {
+	EBacktickType,
+	ETokenMessage,
+	ID_MENTION_HERE,
+	NX_CHAT_APP_ANNONYMOUS_USER_ID,
+	TITLE_MENTION_HERE,
+	TypeMessage,
+	checkInviteLinkValid,
+	convertMarkdown,
+	generateE2eId
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +41,7 @@ interface RenderContentProps {
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	senderId?: string;
+	isAnonymous?: boolean;
 	topicId?: string;
 	onCloseTooltip?: () => void;
 }
@@ -331,6 +342,7 @@ export const MessageLine = ({
 	isSending,
 	onContextMenu,
 	senderId,
+	isAnonymous = senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID,
 	topicId,
 	onCloseTooltip
 }: RenderContentProps) => {
@@ -344,7 +356,18 @@ export const MessageLine = ({
 	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
 	const lkym = Array.isArray(lky) ? lky.map((item) => ({ ...item, kindOf: ETokenMessage.LINKYOUTUBE })) : [];
 	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
-	const mtm = Array.isArray(mentions) ? mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) : [];
+	const mtm = Array.isArray(mentions)
+		? mentions
+				.filter((item) => {
+					if (!isAnonymous) return true;
+					const isHereMention =
+						item.user_id === ID_MENTION_HERE ||
+						item.user_id === 'here' ||
+						(!item.role_id && (!item.user_id || item.user_id === '0') && t?.substring(item.s ?? 0, item.e ?? 0) === TITLE_MENTION_HERE);
+					return !isHereMention;
+				})
+				.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS }))
+		: [];
 	const elements: ElementToken[] = [...mtm, ...hgm, ...ejm, ...mkm, ...lkm, ...lkym, ...vkm]
 		.sort((a, b) => (a.s ?? 0) - (b.s ?? 0))
 		.filter((element, index, sortedArray) => {

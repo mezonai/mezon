@@ -1,6 +1,6 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
-import { TOPBARS_MAX_WIDTH, TypeMessage, addMention, createImgproxyUrl } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TOPBARS_MAX_WIDTH, TypeMessage, addMention, createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -126,6 +126,7 @@ function MentionTabContent({ message, onCloseTooltip }: IMentionTabContent) {
 						messageId={message.message_id}
 						isEditted={false}
 						content={contentUpdatedMention}
+						isAnonymous={message.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID}
 						isTokenClickAble={false}
 						isJumMessageEnabled={false}
 						onCloseTooltip={onCloseTooltip}

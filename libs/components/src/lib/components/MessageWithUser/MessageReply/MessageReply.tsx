@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { MEZON_AVATAR_URL, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
+import { MEZON_AVATAR_URL, NX_CHAT_APP_ANNONYMOUS_USER_ID, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 
 import { useCallback, useRef } from 'react';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -150,6 +150,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 										isJumMessageEnabled={true}
 										onClickToMessage={getIdMessageToJump}
 										content={content}
+										isAnonymous={senderIdMessageRef === NX_CHAT_APP_ANNONYMOUS_USER_ID}
 										messageId={message.id}
 										isReply={true}
 									/>

@@ -68,6 +68,7 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 											isJumMessageEnabled={false}
 											isTokenClickAble={false}
 											content={messageContentObject}
+											isAnonymous={checkAnonymous}
 											isInPinMsg={true}
 											messageId={pinMessage.message_id}
 											isSearchMessage={true}
