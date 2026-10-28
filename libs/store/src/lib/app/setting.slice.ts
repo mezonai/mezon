@@ -211,6 +211,9 @@ export const selectClanGroupOrder = createSelector(getSettingState, (state) => s
 export const selectOrderedClansWithGroups = createSelector(
 	[(_, clans: ClansEntity[]) => clans, selectClanGroups, selectClanGroupOrder],
 	(clans, groups, order) => {
+		if (!clans) {
+			return [];
+		}
 		if (!order || order.length === 0) {
 			return clans.map((clan) => ({
 				type: 'clan' as const,
