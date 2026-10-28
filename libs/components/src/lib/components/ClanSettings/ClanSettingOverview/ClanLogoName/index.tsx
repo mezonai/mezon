@@ -1,7 +1,7 @@
 import { selectCurrentClanLogo, selectCurrentClanName } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { MAX_FILE_SIZE_1MB, ValidateSpecialCharacters, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { MAX_FILE_SIZE_1MB, ValidateSpecialCharacters, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -106,7 +106,9 @@ const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete, 
 						<div className="relative flex items-center justify-center w-[100px] h-[100px] rounded-full shadow border-theme-primary ">
 							<label className="w-full h-full">
 								<div
-									style={{ backgroundImage: `url(${urlLogo})` }}
+									style={{
+										backgroundImage: `url(${createImgproxyUrl(urlLogo ?? '', { width: 100, height: 100, resizeType: 'fill-down' })})`
+									}}
 									className={`flex items-center justify-center bg-cover bg-no-repeat bg-center w-[100px] h-[100px] bg-transparent rounded-full relative cursor-pointer overflow-hidden`}
 								>
 									{!urlLogo && (

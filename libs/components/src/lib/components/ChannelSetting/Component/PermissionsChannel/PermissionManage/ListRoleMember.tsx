@@ -189,14 +189,14 @@ const EntityGlyph = ({ row }: { row: PermissionEntityRow }) => {
 				alt={row.member.name}
 				username={row.member.username || row.member.name}
 				className="min-w-6 min-h-6 max-w-6 max-h-6"
-				srcImgProxy={createImgproxyUrl(row.member.avatar)}
+				srcImgProxy={createImgproxyUrl(row.member.avatar, { width: 100, height: 100, resizeType: 'fill-down' })}
 				src={row.member.avatar}
 				classNameText="text-[9px] pt-[3px]"
 			/>
 		);
 	}
 	if (row.role?.role_icon) {
-		return <img src={row.role.role_icon} alt={row.title} className="w-6 h-6 min-w-6 rounded" />;
+		return <img src={createImgproxyUrl(row.role.role_icon)} alt={row.title} className="w-6 h-6 min-w-6 rounded" />;
 	}
 	return <Icons.RoleIcon className="w-6 h-6 min-w-6" defaultFill1={row.role?.color || DEFAULT_ROLE_COLOR} />;
 };
@@ -424,7 +424,7 @@ const ItemUser = (props: ItemUserProps) => {
 				alt={username}
 				username={username}
 				className="min-w-8 min-h-8 max-w-8 max-h-8"
-				srcImgProxy={createImgproxyUrl(avatarPrioritize ?? '')}
+				srcImgProxy={createImgproxyUrl(avatarPrioritize ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 				src={avatarPrioritize}
 			/>
 			<p className="font-medium">{namePrioritize}</p>

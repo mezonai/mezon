@@ -146,11 +146,9 @@ interface ITopicTabContent {
 
 function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
 	const { t } = useTranslation(['channelTopbar', 'notification', 'common']);
-	
-	const originalMessage = useAppSelector((state) => 
-		topic?.channel_id && topic?.message_id 
-			? selectMessageByMessageId(state, topic.channel_id, topic.message_id) 
-			: null
+
+	const originalMessage = useAppSelector((state) =>
+		topic?.channel_id && topic?.message_id ? selectMessageByMessageId(state, topic.channel_id, topic.message_id) : null
 	);
 
 	const messageRl = useMemo(() => {
@@ -233,9 +231,9 @@ function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
 							isAnonymous
 								? ''
 								: createImgproxyUrl((priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url) ?? '', {
-										width: 300,
-										height: 300,
-										resizeType: 'fit'
+										width: 100,
+										height: 100,
+										resizeType: 'fill-down'
 									})
 						}
 						src={isAnonymous ? '' : priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url}
@@ -248,7 +246,13 @@ function AllTabContent({ messageReplied, subject, topic }: ITopicTabContent) {
 					<div className="pt-1">
 						<div
 							className="text-[12px] w-full max-w-full font-normal"
-							style={{ display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}
+							style={{
+								display: '-webkit-box',
+								WebkitLineClamp: 5,
+								WebkitBoxOrient: 'vertical',
+								overflow: 'hidden',
+								wordBreak: 'break-word'
+							}}
 							data-e2e={generateE2eId('chat.channel_message.inbox.topics.init_message')}
 						>
 							<span className="font-semibold">{t('notification:repliedTo')} </span>

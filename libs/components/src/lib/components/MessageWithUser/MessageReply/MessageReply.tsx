@@ -82,7 +82,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 	const getAvatarProps = () => {
 		if (senderIdMessageRef === '0') {
 			return {
-				srcImgProxy: createImgproxyUrl(MEZON_AVATAR_URL, { width: 100, height: 100, resizeType: 'fit' }),
+				srcImgProxy: createImgproxyUrl(MEZON_AVATAR_URL, { width: 100, height: 100, resizeType: 'fill-down' }),
 				src: MEZON_AVATAR_URL
 			};
 		}
@@ -92,7 +92,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 
 		const finalAvatar = isChannelMode ? userAvatar || messageRefAvatar : messageRefAvatar;
 		return {
-			srcImgProxy: createImgproxyUrl(finalAvatar, { width: 100, height: 100, resizeType: 'fit' }),
+			srcImgProxy: createImgproxyUrl(finalAvatar, { width: 100, height: 100, resizeType: 'fill-down' }),
 			src: finalAvatar
 		};
 	};

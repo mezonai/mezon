@@ -673,7 +673,12 @@ const MemoizedErrorModals: React.FC = React.memo(() => {
 			error?.errType === EErrorType.WALLET ? (
 				<ModalWalletNotAvailable isError={true} errMessage={error?.message || ''} idErr={error?.id || ''} />
 			) : (
-				<ModalUnknowChannel isError={true} errMessage={toastError?.[0]?.message || ''} idErr={toastError?.[0]?.id || ''} />
+				<ModalUnknowChannel
+					isError={true}
+					errMessage={toastError?.[0]?.message || ''}
+					code={toastError?.[0]?.code}
+					idErr={toastError?.[0]?.id || ''}
+				/>
 			),
 		[error]
 	);

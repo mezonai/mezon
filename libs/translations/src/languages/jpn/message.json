@@ -221,7 +221,7 @@
 	"bannedChannel": "あなたは{{channelName}}でチャットが禁止されています。",
 	"addAMessage": "メッセージを追加（オプション）",
 	"slideToCancel": "キャンセルするにはスライド",
-	"noAccess": "アクセス権限なし",
+	"noAccess": "プライベートチャンネル",
 	"unknown": "不明",
 	"fileSelection": {
 		"uploadFile": "ファイルをアップロード",

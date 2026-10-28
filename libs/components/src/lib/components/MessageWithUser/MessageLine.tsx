@@ -10,6 +10,7 @@ import {
 	TypeMessage,
 	checkInviteLinkValid,
 	convertMarkdown,
+	createImgproxyUrl,
 	generateE2eId
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -241,12 +242,22 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 		<div className="flex flex-col gap-0.5 max-w-[350px]">
 			<div className="relative rounded-2xl overflow-hidden border border-theme-primary bg-item-theme">
 				<div className="h-[76px] relative overflow-hidden bg-theme-setting-nav bg-theme-chat">
-					{element.banner ? <img src={element.banner} className="absolute inset-0 w-full h-full object-cover" alt="" /> : null}
+					{element.banner ? (
+						<img
+							src={createImgproxyUrl(element.banner, { width: 0, height: 0, resizeType: 'force' })}
+							className="absolute inset-0 w-full h-full object-cover"
+							alt=""
+						/>
+					) : null}
 				</div>
 				<div className="absolute top-[40px] left-4 w-[72px] h-[72px] rounded-[22px] overflow-hidden border-4 border-theme-primary bg-theme-setting-primary shadow-lg">
 					<div className="w-full h-full">
 						{clanImage ? (
-							<img src={clanImage} alt={clanTitle} className="w-full h-full object-cover" />
+							<img
+								src={createImgproxyUrl(clanImage, { width: 100, height: 100, resizeType: 'fill-down' })}
+								alt={clanTitle}
+								className="w-full h-full object-cover"
+							/>
 						) : (
 							<div className="w-full h-full flex items-center justify-center text-theme-primary text-3xl font-semibold select-none shadow-md">
 								{clanInitial}

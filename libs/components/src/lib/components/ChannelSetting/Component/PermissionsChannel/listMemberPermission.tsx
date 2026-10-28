@@ -207,7 +207,7 @@ const ItemMemberPermission = memo((props: ItemMemberPermissionProps) => {
 					alt={row.name}
 					username={row.username || row.name}
 					className="min-w-8 min-h-8 max-w-8 max-h-8"
-					srcImgProxy={createImgproxyUrl(row.avatar)}
+					srcImgProxy={createImgproxyUrl(row.avatar, { width: 100, height: 100, resizeType: 'fill-down' })}
 					src={row.avatar}
 					classNameText="text-[11px] pt-[3px]"
 				/>

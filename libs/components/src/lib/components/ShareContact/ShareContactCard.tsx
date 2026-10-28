@@ -193,7 +193,7 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 							alt={displayName || username}
 							username={username}
 							className="w-12 h-12 rounded-full border-2 border-white/30"
-							srcImgProxy={createImgproxyUrl(avatar ?? '')}
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							src={avatar}
 						/>
 						<div className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm ">

@@ -221,7 +221,7 @@
 	"bannedChannel": "Вы заблакаваны ў канале {{channelName}}.",
 	"addAMessage": "Дадаць паведамленне (неабавязкова)",
 	"slideToCancel": "Правядзіце для скасавання",
-	"noAccess": "Няма доступу",
+	"noAccess": "Прыватны канал",
 	"unknown": "Невядома",
 	"fileSelection": {
 		"uploadFile": "Загрузіць файл",

@@ -58,7 +58,8 @@
 		"setupTips": "Verstuur handige tips voor serveropstelling.",
 		"auditLog": "Verstuur log wanneer een actie wordt toegepast op de clan",
 		"anoTitle": "Anonieme modus",
-		"anoDesc": "Voorkom dat gebruikers de anonieme modus gebruiken"
+		"anoDesc": "Voorkom dat gebruikers de anonieme modus gebruiken",
+		"privateWelcome": "Het welkomstkanaal is ingesteld als privé-kanaal."
 	},
 	"appDirectory": {
 		"categories": {
