@@ -100,7 +100,7 @@ const Spelling = ({
 		const timeoutId = setTimeout(() => {
 			setCorrected(pendingCorrection);
 			setShowText(
-				corrected
+				pendingCorrection
 					.replace(/<[^>]*>/g, '')
 					.replace(/&nbsp;/g, ' ')
 					.trim()
@@ -169,7 +169,7 @@ const Spelling = ({
 		return () => {
 			clearTimeout(timeoutId);
 		};
-	}, [draftRequest?.content, draftRequest?.valueTextInput, isSpelling]);
+	}, [draftRequest?.content, draftRequest?.valueTextInput, isSpelling, lastMessage]);
 
 	useEffect(() => {
 		if (!isSpelling) {
@@ -206,11 +206,11 @@ const Spelling = ({
 		setPendingCorrection('');
 	};
 
-	if (corrected && isOpenRecommand) {
+	if (corrected && isOpenRecommand && isSpelling) {
 		return <div className="w-full h-8 px-4 pt-2 text-theme-primary bg-theme-setting-nav text-sm pb-1">{showText}</div>;
 	}
 
-	if (replies?.length && !isOpenRecommand) {
+	if (replies?.length && !isOpenRecommand && isQuickReply) {
 		return (
 			<div className="w-full h-10 px-4 pb-2 flex items-center justify-end gap-2 overflow-x-auto scrollbar-none">
 				{replies.map((reply, index) => (

@@ -21,7 +21,7 @@ import {
 } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import type { ReactElement } from 'react';
-import { Fragment, lazy, memo, useCallback, useRef, useState } from 'react';
+import { Fragment, Suspense, lazy, memo, useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AttachmentPreviewThumbnail from './AttachmentPreviewThumbnail';
 import AudioRecorderControl from './AudioRecorder/AudioRecorderControl';
@@ -154,7 +154,14 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 			<PreviewOgp />
 			<AudioRecorderControl outerRecording={isRecording} onSendRecord={handleEndRecording} />
 			{(isCheckSpelling || isCheckQuickReply) && (
-				<Spelling updateDraft={updateRef} isSpelling={isCheckSpelling} isQuickReply={isCheckQuickReply} channelId={currentChannelId || ''} />
+				<Suspense fallback={null}>
+					<Spelling
+						updateDraft={updateRef}
+						isSpelling={isCheckSpelling}
+						isQuickReply={isCheckQuickReply}
+						channelId={currentChannelId || ''}
+					/>
+				</Suspense>
 			)}
 			<div
 				className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
