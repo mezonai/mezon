@@ -1,5 +1,5 @@
 import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
-import { handleUploadEmoticon, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { createImgproxyUrl, fileTypeImage, generateE2eId, MAX_FILE_SIZE_10MB } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiOnboardingItem } from 'mezon-js';
