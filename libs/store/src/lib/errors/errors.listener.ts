@@ -11,7 +11,7 @@ interface ErrorAction {
 	payload?: {
 		code?: number;
 		status?: number;
-		error?: { status?: number };
+		error?: { status?: number; code?: number };
 		errType?: EErrorType;
 		json?: () => Promise<{ message: string }>;
 		[key: string]: unknown;
@@ -185,7 +185,7 @@ errorListenerMiddleware.startListening({
 
 			const code =
 				error.action?.payload?.code ||
-				(error.action?.payload?.error?.status ? grpcCodeFromEnvelopeStatus(error.action?.payload?.error?.status) : undefined);
+				(error.action?.payload?.error?.code ? grpcCodeFromEnvelopeStatus(error.action?.payload?.error?.code) : undefined);
 			listenerApi.dispatch(
 				toastActions.addToastError({
 					message: toast.message as string,
