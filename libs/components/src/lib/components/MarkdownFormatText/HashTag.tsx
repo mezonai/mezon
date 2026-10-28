@@ -26,6 +26,7 @@ type ChannelHashtagProps = {
 	isTokenClickAble: boolean;
 	channelLabel?: string;
 	channelType?: number;
+	channelPrivate?: number;
 	clanId?: string;
 	parentId?: string;
 	channelId?: string;
@@ -39,6 +40,7 @@ const ChannelHashtag = ({
 	parentId,
 	channelLabel,
 	channelType,
+	channelPrivate,
 	channelId,
 	clanId,
 	isLink
@@ -49,19 +51,23 @@ const ChannelHashtag = ({
 
 	const storedChannel = getTagById(channelHastagId);
 	const clanExist = useAppSelector((state) => selectClanExists(state, clanId || storedChannel?.clan_id || ''));
+	const checkFetchChannel = useAppSelector((state) => selectChannelFetchSuccessByClanId(state, clanId || ''));
+	const metaVisible =
+		channelType === ChannelType.CHANNEL_TYPE_THREAD ? !!parentId && !!getTagById(parentId) && !channelPrivate : !checkFetchChannel;
 	const sentChannel = useMemo<IChannel | undefined>(
 		() =>
-			channelType !== undefined && channelLabel && clanId && clanExist
+			metaVisible && channelType !== undefined && channelLabel && clanId && clanExist
 				? {
 						id: channelHastagId,
 						channel_id: channelHastagId,
 						channel_label: channelLabel,
+						channel_private: channelPrivate,
 						clan_id: clanId,
 						parent_id: parentId,
 						type: channelType
 					}
 				: undefined,
-		[channelHastagId, channelLabel, channelType, clanId, parentId, clanExist]
+		[metaVisible, channelHastagId, channelLabel, channelType, channelPrivate, clanId, parentId, clanExist]
 	);
 	const subscribeDetail = useCallback((onChange: () => void) => subscribeChannelDetail(channelHastagId, onChange), [channelHastagId]);
 	const readDetail = useCallback(() => selectChannelDetailById(getStore().getState(), channelHastagId), [channelHastagId]);
@@ -73,7 +79,6 @@ const ChannelHashtag = ({
 		return <ModalUnknowChannel onClose={closeUnknown} />;
 	}, []);
 
-	const checkFetchChannel = useAppSelector((state) => selectChannelFetchSuccessByClanId(state, clanId || ''));
 	const checkGetChannelData = checkFetchChannel && !channel;
 
 	const handleClick = useCallback(async () => {
@@ -118,7 +123,7 @@ const ChannelHashtag = ({
 
 	const isTextChannel = channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 	const isStreamingChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
-	const isThreadChannel = channel?.type === ChannelType.CHANNEL_TYPE_THREAD || (parentId && parentChannel);
+	const isThreadChannel = channel?.type === ChannelType.CHANNEL_TYPE_THREAD || (metaVisible && parentId && parentChannel);
 	const isAppChannel = channel?.type === ChannelType.CHANNEL_TYPE_APP;
 	const isVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
@@ -166,7 +171,7 @@ const ChannelHashtag = ({
 		<PrivateChannel
 			onClick={handleClick}
 			isLink={isLink}
-			channelLabel={clanExist ? channelLabel : ''}
+			channelLabel={clanExist && metaVisible ? channelLabel : ''}
 			checkGetChannelData={checkGetChannelData}
 		/>
 	);

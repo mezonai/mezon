@@ -49,6 +49,7 @@ export interface ElementToken {
 	parentId?: string;
 	channelLabel?: string;
 	channelType?: number;
+	channelPrivate?: number;
 	title?: string;
 	image?: string;
 	description?: string;
@@ -388,6 +389,7 @@ export const MessageLine = ({
 						channelHastagId={element.channelId || ''}
 						channelLabel={element.channelLabel}
 						channelType={element.channelType}
+						channelPrivate={element.channelPrivate}
 						clanId={element.clanId}
 						parentId={element.parentId}
 						channelId={element.channelId}
