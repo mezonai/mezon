@@ -14,7 +14,6 @@ import { usersClanReducer } from './clanMembers/clan.members';
 import { userClanProfileReducer } from './clanProfile/clanProfile.slice';
 import { clansReducer } from './clans/clans.slice';
 import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
-import { directReducer } from './direct/direct.slice';
 import { emojiSuggestionReducer } from './emojiSuggestion/emojiSuggestion.slice';
 import { friendsReducer } from './friends/friend.slice';
 import { initFriendRelationCrossTabSync } from './friends/friendCrossTabSync';
@@ -47,6 +46,7 @@ import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
 import { dashboardReducer } from './dashboard/dashboard.slice';
 import { DEVICES_FEATURE_KEY, devicesReducer } from './devices/devices.slice';
+import { directReducer } from './direct/direct.slice';
 import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
@@ -291,14 +291,6 @@ const persistedActivitiesReducer = persistReducer(
 	activitiesAPIReducer
 );
 
-const persistedDirectReducer = persistReducer(
-	{
-		key: 'direct',
-		storage
-	},
-	directReducer
-);
-
 const persistedChannelMetaReducer = persistReducer(
 	{
 		key: 'channelmeta',
@@ -359,7 +351,7 @@ const reducer = {
 	[POLICIES_FEATURE_KEY]: policiesReducer,
 	userClanProfile: userClanProfileReducer,
 	friends: friendsReducer,
-	direct: persistedDirectReducer,
+	direct: directReducer,
 	roleId: roleIdReducer,
 	[OVERRIDDEN_POLICIES_FEATURE_KEY]: overriddenPoliciesReducer,
 	notificationsetting: notificationSettingReducer,
