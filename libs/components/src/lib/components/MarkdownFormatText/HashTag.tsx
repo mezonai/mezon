@@ -48,7 +48,7 @@ const ChannelHashtag = ({
 	const { toChannelPage, navigate } = useAppNavigation();
 
 	const storedChannel = getTagById(channelHastagId);
-	const clanExist = useAppSelector((state) => selectClanExists(state, clanId || storedChannel?.channel_id || ''));
+	const clanExist = useAppSelector((state) => selectClanExists(state, clanId || storedChannel?.clan_id || ''));
 	const sentChannel = useMemo<IChannel | undefined>(
 		() =>
 			channelType !== undefined && channelLabel && clanId && clanExist
