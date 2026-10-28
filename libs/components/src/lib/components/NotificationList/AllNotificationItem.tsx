@@ -1,5 +1,5 @@
 import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useOnClickOutside } from '@mezon/core';
-import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
+import { selectChannelById, selectClanById, selectMemberByIdAndClanId, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
 import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification, INotificationContent } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
@@ -133,6 +133,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const allTabProps = {
 		subject: notify.subject,
 		category: notify.category,
+		clanId,
 		senderId: contentSenderId && contentSenderId !== '0' ? contentSenderId : notify.sender_id,
 		embed: notify?.content?.embed as IEmbedProps[] | undefined,
 		onCloseTooltip
@@ -199,12 +200,13 @@ interface IMentionTabContent {
 	message: INotificationContent;
 	subject?: string;
 	category?: number;
+	clanId?: string;
 	senderId?: string;
 	embed?: IEmbedProps[];
 	onCloseTooltip?: () => void;
 }
 
-function AllTabContent({ message, subject, category, senderId, embed, onCloseTooltip }: IMentionTabContent) {
+function AllTabContent({ message, subject, category, clanId, senderId, embed, onCloseTooltip }: IMentionTabContent) {
 	const { t } = useTranslation(['channelTopbar', 'common', 'message']);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const attachmentContainerRef = useRef<HTMLDivElement>(null);
@@ -215,7 +217,12 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 		}
 	});
 
-	const { priorityAvatar, namePriority, usernameSender } = useGetPriorityNameFromUserClan(senderId || message.sender_id || '');
+	const resolvedSenderId = senderId || message.sender_id || '';
+	const { priorityAvatar, namePriority, usernameSender } = useGetPriorityNameFromUserClan(resolvedSenderId);
+	const isMessageNotification = category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES;
+	const senderClanMember = useAppSelector((state) =>
+		isMessageNotification && clanId && clanId !== '0' && resolvedSenderId ? selectMemberByIdAndClanId(state, clanId, resolvedSenderId) : null
+	);
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id || '0')) || {};
 	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parent_id || '')) || {};
@@ -223,7 +230,9 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
 
-	const username = message.username || user?.username || usernameSender || '';
+	const clanAvatar = senderClanMember?.clan_avatar || senderClanMember?.user?.avatar_url;
+	const avatar = (isMessageNotification ? clanAvatar : priorityAvatar) || message.avatar || user?.avatar_url;
+	const username = message.username || user?.username || (isMessageNotification ? senderClanMember?.user?.username : usernameSender) || '';
 	let subjectText = subject;
 
 	if (username && subject?.startsWith(username)) {
@@ -288,12 +297,12 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 					alt="user avatar"
 					className="w-10 h-10 min-w-10 flex-shrink-0"
 					username={username}
-					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
+					srcImgProxy={createImgproxyUrl(avatar ?? '', {
 						width: 300,
 						height: 300,
 						resizeType: 'fit'
 					})}
-					src={priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url}
+					src={avatar}
 				/>
 
 				<div className="h-full w-full min-w-0 flex-1">
