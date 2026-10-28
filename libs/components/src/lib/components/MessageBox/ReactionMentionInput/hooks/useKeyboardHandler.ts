@@ -1,12 +1,4 @@
-import {
-	appActions,
-	getStore,
-	referencesActions,
-	selectAttachmentByChannelId,
-	selectIsQuickReply,
-	selectIsSpelling,
-	useAppDispatch
-} from '@mezon/store';
+import { appActions, getStore, referencesActions, selectAttachmentByChannelId, selectIsSpelling, useAppDispatch } from '@mezon/store';
 import type { RequestInput } from '@mezon/utils';
 import type { KeyboardEvent, RefObject } from 'react';
 import { useCallback } from 'react';
@@ -68,9 +60,8 @@ export const useKeyboardHandler = ({
 					const store = getStore();
 
 					const openSpellCheck = selectIsSpelling(store.getState());
-					const openRepliesCheck = selectIsQuickReply(store.getState());
 
-					if (openSpellCheck || openRepliesCheck) {
+					if (openSpellCheck) {
 						event.preventDefault();
 						dispatch(appActions.toggleRecommand());
 					}
