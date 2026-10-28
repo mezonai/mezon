@@ -22,7 +22,7 @@ function UserListItem({ id, user_name, user_avatar, children }: { id: string; us
 							alt={avatar || ''}
 							username={name}
 							className="min-w-5 min-h-5 max-w-5 max-h-5"
-							srcImgProxy={createImgproxyUrl(avatar ?? '')}
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							src={avatar}
 						/>
 					) : (

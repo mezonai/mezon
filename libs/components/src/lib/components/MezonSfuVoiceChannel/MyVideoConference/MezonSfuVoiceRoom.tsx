@@ -2956,7 +2956,9 @@ export function MezonSfuVoiceRoom({
 							username={localDisplayName}
 							alt={localDisplayName}
 							src={localAvatar}
-							srcImgProxy={localAvatar ? createImgproxyUrl(localAvatar) : undefined}
+							srcImgProxy={
+								localAvatar ? createImgproxyUrl(localAvatar, { width: 100, height: 100, resizeType: 'fill-down' }) : undefined
+							}
 							className="!h-20 !w-20 !min-h-20 !min-w-20"
 						/>
 					</div>

@@ -180,11 +180,7 @@ const ModalSendToken = ({
 							<AvatarImage
 								alt={user?.username ?? ''}
 								username={user?.username ?? ''}
-								srcImgProxy={createImgproxyUrl(user.avatar_url ?? '', {
-									width: 100,
-									height: 100,
-									resizeType: 'fit'
-								})}
+								srcImgProxy={createImgproxyUrl(user.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 								src={user.avatar_url}
 								className="w-8 h-8 flex-shrink-0"
 								classNameText="text-xs w-8 h-8"

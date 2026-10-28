@@ -11,7 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -188,7 +188,7 @@ const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 			{avatarUrl ? (
 				<img
 					className="w-4 h-4 rounded-full select-none object-cover"
-					src={(creator?.clan_avatar || creator?.user?.avatar_url || '') ?? process.env.NX_LOGO_MEZON}
+					src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 					alt="User avatar"
 				/>
 			) : (

@@ -13,7 +13,7 @@ import {
 	usersClanActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_TITLE, generateE2eId } from '@mezon/utils';
+import { createImgproxyUrl, DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_TITLE, generateE2eId } from '@mezon/utils';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -194,7 +194,7 @@ const RoleListItem = ({ role, onAddRole }: { role: RolesClanEntity; onAddRole: (
 			data-e2e={generateE2eId('short_profile.role.popover.item')}
 		>
 			<div className="size-3 min-w-3 rounded-full" style={roleStyle}></div>
-			{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+			{role?.role_icon && <img src={createImgproxyUrl(role.role_icon)} alt="" className={'size-3'} />}
 			{role.title}
 		</div>
 	);
@@ -274,12 +274,12 @@ const RoleClanItem = ({
 							<Icons.IconRemove fill={isHovered ? 'black' : roleColor} className="w-2 h-2" />
 						</span>
 					</button>
-					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+					{role?.role_icon && <img src={createImgproxyUrl(role.role_icon)} alt="" className={'size-3'} />}
 				</>
 			) : (
 				<>
 					<div className="size-2 rounded-full" style={buttonStyle}></div>
-					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+					{role?.role_icon && <img src={createImgproxyUrl(role.role_icon)} alt="" className={'size-3'} />}
 				</>
 			)}
 			<span

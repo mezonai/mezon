@@ -52,7 +52,7 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 						username={displayName}
 						alt={displayName}
 						src={avatar}
-						srcImgProxy={avatar ? createImgproxyUrl(avatar) : undefined}
+						srcImgProxy={avatar ? createImgproxyUrl(avatar, { width: 100, height: 100, resizeType: 'fill-down' }) : undefined}
 						className="!h-20 !w-20 !min-h-20 !min-w-20"
 					/>
 				</div>

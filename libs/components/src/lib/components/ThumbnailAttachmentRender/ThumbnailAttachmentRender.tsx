@@ -44,7 +44,7 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 			{hasFileImage && !isPresignPending && (
 				<img
 					key="image-thumbnail"
-					src={attachment.url}
+					src={createImgproxyUrl(attachment.url ?? '', { width: 174, height: 174, resizeType: 'fill' })}
 					role="presentation"
 					className="w-[174px] aspect-square object-cover"
 					alt={attachment.url}
@@ -113,11 +113,7 @@ export const AudioAttachment = ({ attachment, size, isFileList }: IAudioAttachme
 				onClick={(e) => handleTogglePlay(e)}
 				className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/40 group-hover:bg-black/60 text-white rounded-full flex items-center justify-center cursor-pointer transition-all ${overlayStyle.container}`}
 			>
-				{isPlaying ? (
-					<Icons.PauseButton className={overlayStyle.icon} />
-				) : (
-					<Icons.PlayButton className={`${overlayStyle.icon} ml-0.5`} />
-				)}
+				{isPlaying ? <Icons.PauseButton className={overlayStyle.icon} /> : <Icons.PlayButton className={`${overlayStyle.icon} ml-0.5`} />}
 			</div>
 			<MessageAudioControl
 				ref={audioControlRef}

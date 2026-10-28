@@ -69,7 +69,7 @@ const SidebarLogoItem = () => {
 				<NavLinkComponent active={!isClanView}>
 					<div onContextMenu={handleMouseClick} data-e2e={generateE2eId('clan_page.side_bar.DM_item')}>
 						<Image
-							src={logoCustom ? createImgproxyUrl(logoCustom, { width: 40, height: 40, resizeType: 'fit' }) : DEFAULT_LOGO_DM}
+							src={logoCustom ? createImgproxyUrl(logoCustom, { width: 100, height: 100, resizeType: 'fill-down' }) : DEFAULT_LOGO_DM}
 							className="rounded-lg clan w-[40px] h-[40px] aspect-square object-cover"
 							onClick={handleClickToJoinClan}
 							draggable="false"

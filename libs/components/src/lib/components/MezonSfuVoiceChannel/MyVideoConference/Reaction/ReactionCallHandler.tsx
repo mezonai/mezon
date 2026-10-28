@@ -1,6 +1,6 @@
 import { getStore, getStoreAsync, selectMemberClanByUserId, selectVoiceInfo } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { getSrcEmoji, sinkIdForHtmlMediaElement } from '@mezon/utils';
+import { createImgproxyUrl, getSrcEmoji, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -283,7 +283,10 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 										key={item.id}
 									>
 										{item.avatar ? (
-											<img src={item.avatar} className="w-8 h-8 rounded-full" />
+											<img
+												src={createImgproxyUrl(item.avatar, { width: 100, height: 100, resizeType: 'fill-down' })}
+												className="w-8 h-8 rounded-full"
+											/>
 										) : (
 											<AvatarColor username={item.name} className="size-8" />
 										)}

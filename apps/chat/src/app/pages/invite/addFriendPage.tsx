@@ -1,6 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { checkMutableRelationship, directActions, selectAddFriendRequestLoading, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js';
 import { ChannelType, safeJSONParse } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
@@ -142,7 +143,7 @@ export default function AddFriendPage() {
 								<div className="flex items-center gap-2.5">
 									{avatarUrl ? (
 										<img
-											src={avatarUrl}
+											src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 											alt={displayName}
 											className="w-8 h-8 rounded-full border-2 border-indigo-500/40 object-cover"
 										/>
@@ -203,7 +204,7 @@ export default function AddFriendPage() {
 										>
 											{avatarUrl ? (
 												<img
-													src={avatarUrl}
+													src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 													className="w-full h-full object-cover rounded-lg pointer-events-none"
 													alt="Center Logo"
 												/>

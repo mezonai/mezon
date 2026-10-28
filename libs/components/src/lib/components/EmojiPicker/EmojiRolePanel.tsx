@@ -1,7 +1,7 @@
 import { useEmojiSuggestionContext, useEscapeKeyClose } from '@mezon/core';
 import { Icons } from '@mezon/ui';
 import type { IEmoji } from '@mezon/utils';
-import { PREDEFINED_EMOJI_CATEGORIES, RECENT_EMOJI_CATEGORY, getSrcEmoji } from '@mezon/utils';
+import { PREDEFINED_EMOJI_CATEGORIES, RECENT_EMOJI_CATEGORY, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,7 +42,11 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 			<Icons.ClockIcon className="h-7 w-7" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
-					<img src={emoji.clan_logo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
+					<img
+						src={createImgproxyUrl(emoji.clan_logo ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+						className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover"
+						alt={emoji.clan_name}
+					/>
 				) : (
 					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
 				)

@@ -8,6 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import GuideBody from './GuideBody';
 
@@ -25,7 +26,13 @@ function GuideMain() {
 				<div
 					className={`h-36 w-full object-cover ${currentClanBanner ? '' : 'bg-private-theme'} rounded-xl flex items-center justify-center`}
 				>
-					{currentClanBanner ? <img src={currentClanBanner} alt="" className="w-full h-full object-cover  rounded-xl" /> : null}
+					{currentClanBanner ? (
+						<img
+							src={createImgproxyUrl(currentClanBanner, { width: 0, height: 0, resizeType: 'force' })}
+							alt=""
+							className="w-full h-full object-cover  rounded-xl"
+						/>
+					) : null}
 				</div>
 			</div>
 			<div className="flex flex-col w-full relative justify-end pt-2">
@@ -33,7 +40,11 @@ function GuideMain() {
 					className={`absolute -top-12 h-28 w-28 rounded-3xl object-cover shadow-sm ${currentClanLogo ? '' : 'bg-zinc-950'} flex items-center justify-center`}
 				>
 					{currentClanLogo ? (
-						<img src={currentClanLogo} alt="" className="w-full h-full object-cover  rounded-3xl" />
+						<img
+							src={createImgproxyUrl(currentClanLogo, { width: 256, height: 256, resizeType: 'fill-down' })}
+							alt=""
+							className="w-full h-full object-cover  rounded-3xl"
+						/>
 					) : (
 						<p className="text-4xl font-bold">{currentClanName?.charAt(0)}</p>
 					)}

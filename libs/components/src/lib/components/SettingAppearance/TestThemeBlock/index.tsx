@@ -8,7 +8,7 @@ const TestThemeBlock = () => {
 	const { userProfile } = useAuth();
 
 	const avatarUrl = userProfile?.user?.avatar_url;
-	const imgproxyUrl = createImgproxyUrl(userProfile?.user?.avatar_url || '', { width: 300, height: 300, resizeType: 'fit' });
+	const imgproxyUrl = createImgproxyUrl(userProfile?.user?.avatar_url || '', { width: 100, height: 100, resizeType: 'fill-down' });
 
 	const date = new Date();
 	const realTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
