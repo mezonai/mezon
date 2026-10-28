@@ -3,6 +3,7 @@ import {
 	categoriesActions,
 	getStore,
 	getStoreAsync,
+	listChannelsByUserActions,
 	selectChannelDetailById,
 	selectChannelFetchSuccessByClanId,
 	selectClanById,
@@ -15,7 +16,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback, useMemo, useSyncExternalStore } from 'react';
+import { memo, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -74,6 +75,12 @@ const ChannelHashtag = ({
 	const channelDetail = useSyncExternalStore(subscribeDetail, readDetail);
 	const channel = storedChannel || sentChannel || channelDetail;
 	const parentChannel = getTagById(parentId);
+	const askThreadDetail = channelType === ChannelType.CHANNEL_TYPE_THREAD && clanExist && !storedChannel && !metaVisible;
+
+	useEffect(() => {
+		if (!askThreadDetail || channelDetail !== undefined || !channelHastagId) return;
+		dispatch(listChannelsByUserActions.fetchChannelDetail({ channelId: channelHastagId }));
+	}, [askThreadDetail, channelDetail, channelHastagId, dispatch]);
 
 	const [openUnknown, closeUnknown] = useModal(() => {
 		return <ModalUnknowChannel onClose={closeUnknown} />;
