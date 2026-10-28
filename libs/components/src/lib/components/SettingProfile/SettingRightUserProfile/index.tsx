@@ -389,7 +389,7 @@ const SettingRightUser = ({
 							>
 								{logoCustom ? (
 									<img
-										src={createImgproxyUrl(logoCustom, { width: 44, height: 44, resizeType: 'fit' })}
+										src={createImgproxyUrl(logoCustom, { width: 100, height: 100, resizeType: 'fill-down' })}
 										className="w-11 aspect-square object-cover rounded"
 									/>
 								) : (

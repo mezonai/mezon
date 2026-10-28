@@ -1,6 +1,7 @@
 import { useNotification } from '@mezon/core';
 import { selectClanById, selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
 import type { INotification, NotificationCategory } from '@mezon/utils';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import NotificationWebhookClanItem from './NotificationWebhookClanItem';
@@ -56,7 +57,11 @@ const NotificationClanHeader = ({ isUnreadTab, clan_id, notification, onDeleteNo
 		<div className="flex justify-between">
 			<div className="flex flex-row items-center gap-2">
 				{notification?.content?.clan_logo ? (
-					<img src={notification?.content?.clan_logo} className="w-[45px] h-[45px] rounded-xl" alt={notification?.content?.clan_logo} />
+					<img
+						src={createImgproxyUrl(notification?.content?.clan_logo ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+						className="w-[45px] h-[45px] rounded-xl"
+						alt={notification?.content?.clan_logo}
+					/>
 				) : (
 					<div>
 						{clan?.clan_name && (

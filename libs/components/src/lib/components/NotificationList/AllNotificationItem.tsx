@@ -1,5 +1,12 @@
 import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification, useOnClickOutside } from '@mezon/core';
-import { selectChannelById, selectClanById, selectMemberByIdAndClanId, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
+import {
+	selectChannelById,
+	selectClanById,
+	selectMemberByIdAndClanId,
+	selectMemberDMByUserId,
+	selectMessageByMessageId,
+	useAppSelector
+} from '@mezon/store';
 import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification, INotificationContent } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
@@ -10,6 +17,7 @@ import {
 	createImgproxyUrl,
 	generateE2eId,
 	getShareContactInfo,
+	isAttachmentPresignPendingForMessage,
 	patchLinkTokens,
 	processText,
 	stripNotificationMarkers
@@ -229,6 +237,11 @@ function AllTabContent({ message, subject, category, clanId, senderId, embed, on
 
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
+	const sourceMessage = useAppSelector((state) =>
+		message.message_id
+			? selectMessageByMessageId(state, message.tp && message.tp !== '0' ? message.tp : message.channel_id || '', message.message_id)
+			: undefined
+	);
 
 	const clanAvatar = senderClanMember?.clan_avatar || senderClanMember?.user?.avatar_url;
 	const avatar = (isMessageNotification ? clanAvatar : priorityAvatar) || message.avatar || user?.avatar_url;
@@ -297,10 +310,10 @@ function AllTabContent({ message, subject, category, clanId, senderId, embed, on
 					alt="user avatar"
 					className="w-10 h-10 min-w-10 flex-shrink-0"
 					username={username}
-					srcImgProxy={createImgproxyUrl(avatar ?? '', {
-						width: 300,
-						height: 300,
-						resizeType: 'fit'
+					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
+						width: 100,
+						height: 100,
+						resizeType: 'fill-down'
 					})}
 					src={avatar}
 				/>
@@ -424,6 +437,7 @@ function AllTabContent({ message, subject, category, clanId, senderId, embed, on
 													index={0}
 													compact={true}
 													channelId={message.channel_id}
+													isPresignPending={isAttachmentPresignPendingForMessage(firstAttachment?.url, sourceMessage)}
 												/>
 											</div>
 										)
@@ -437,6 +451,7 @@ function AllTabContent({ message, subject, category, clanId, senderId, embed, on
 														index={idx}
 														compact={true}
 														channelId={message.channel_id}
+														isPresignPending={isAttachmentPresignPendingForMessage(attachment?.url, sourceMessage)}
 													/>
 												)
 											)}

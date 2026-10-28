@@ -545,7 +545,12 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 		if (avatar) {
 			return (
 				<div className="flex items-center justify-center">
-					<img className="w-8 h-8 flex-shrink-0 rounded-full object-cover" src={avatar} alt="" data-e2e={generateE2eId('avatar.image')} />
+					<img
+						className="w-8 h-8 flex-shrink-0 rounded-full object-cover"
+						src={createImgproxyUrl(avatar, { width: 100, height: 100, resizeType: 'fill-down' })}
+						alt=""
+						data-e2e={generateE2eId('avatar.image')}
+					/>
 				</div>
 			);
 		}
@@ -560,7 +565,7 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 			{avatar ? (
 				<img
 					className="w-8 h-8 flex-shrink-0 rounded-full object-cover "
-					src={createImgproxyUrl(avatar)}
+					src={createImgproxyUrl(avatar, { width: 100, height: 100, resizeType: 'fill-down' })}
 					alt=""
 					data-e2e={generateE2eId(`avatar.image`)}
 				/>

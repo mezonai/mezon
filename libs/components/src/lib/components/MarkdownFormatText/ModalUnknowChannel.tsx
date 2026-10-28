@@ -2,7 +2,7 @@ import { FRIEND_PAGE_LINK, toMembersPage, useAppNavigation } from '@mezon/core';
 
 import { selectAllChannels, selectCurrentClan, toastActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId } from '@mezon/utils';
+import { E_ERROR_CHANNEL, generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,6 +11,7 @@ type ModalUnknowChannelProps = {
 	isError?: boolean;
 	errMessage?: string;
 	idErr?: string;
+	code?: number;
 	errorType?: 'connection' | 'permission' | 'critical' | 'unknown';
 };
 
@@ -39,8 +40,9 @@ const getErrorConfig = (errMessage?: string) => {
 
 function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 	const { t } = useTranslation('common');
+	const { t: errors } = useTranslation('errors');
 	const dispatch = useDispatch();
-	const { onClose, isError = false, errMessage, idErr } = props;
+	const { onClose, isError = false, errMessage, idErr, code } = props;
 	const { navigate } = useAppNavigation();
 	const currentClan = useSelector(selectCurrentClan);
 	const allChannel = useSelector(selectAllChannels);
@@ -97,10 +99,10 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 						{isError ? (
 							<div className="space-y-2">
 								<h3 className="text-xl font-semibold text-theme-primary-active">
-									{String(errMessage)?.trim() || t('modalUnknowChannel.defaultError')}
+									{code ? errors(`error_${code}`) : String(errMessage)?.trim() || t('modalUnknowChannel.defaultError')}
 								</h3>
 								<p className="text-theme-primary text-sm leading-relaxed">
-									{errorConfig.type === 'permission'
+									{errorConfig.type === 'permission' || code === E_ERROR_CHANNEL.PERMISSION_DENIED
 										? t('modalUnknowChannel.permissionError')
 										: t('modalUnknowChannel.genericError')}
 								</p>

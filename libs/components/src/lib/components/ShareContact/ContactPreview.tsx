@@ -19,7 +19,7 @@ export const ContactPreview = ({ displayName, username, avatar, t }: ContactPrev
 					alt={displayName}
 					username={username}
 					className="min-w-10 min-h-10 max-w-10 max-h-10 rounded-full"
-					srcImgProxy={createImgproxyUrl(avatar ?? '')}
+					srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 					src={avatar}
 				/>
 				<div className="flex-1 min-w-0">

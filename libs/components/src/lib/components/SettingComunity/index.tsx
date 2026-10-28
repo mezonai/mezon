@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { Button, Icons, TextArea } from '@mezon/ui';
-import { MAX_FILE_SIZE_10MB, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { MAX_FILE_SIZE_10MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -591,7 +591,7 @@ const SettingComunity = ({
 								{bannerPreview ? (
 									<div className="relative w-full h-40 rounded-xl overflow-hidden shadow-lg">
 										<img
-											src={bannerPreview || '/placeholder.svg'}
+											src={createImgproxyUrl(bannerPreview || '/placeholder.svg', { width: 0, height: 0, resizeType: 'force' })}
 											alt="Community Banner"
 											className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
 										/>
@@ -844,7 +844,7 @@ const SettingComunity = ({
 								{bannerPreview ? (
 									<div className="relative w-full h-40 rounded-xl overflow-hidden shadow-lg">
 										<img
-											src={bannerPreview || '/placeholder.svg'}
+											src={createImgproxyUrl(bannerPreview || '/placeholder.svg', { width: 0, height: 0, resizeType: 'force' })}
 											alt="Community Banner"
 											className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
 										/>

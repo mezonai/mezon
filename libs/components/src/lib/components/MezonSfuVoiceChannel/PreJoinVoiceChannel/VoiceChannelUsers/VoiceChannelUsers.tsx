@@ -63,13 +63,7 @@ export function VoiceUserItem({ userId, userName, userAvatar }: { userId: string
 	const userVoice = useAppSelector((state) => selectMemberClanByUserId(state, userId));
 	const username = getNameForPrioritize(userVoice?.clan_nick, userVoice?.user?.display_name, userVoice?.user?.username) || userName;
 	const avatar = getAvatarForPrioritize(userVoice?.clan_avatar, userVoice?.user?.avatar_url) || userAvatar;
-	const avatarUrl = avatar
-		? createImgproxyUrl(avatar, {
-				width: 300,
-				height: 300,
-				resizeType: 'fit'
-			})
-		: undefined;
+	const avatarUrl = avatar ? createImgproxyUrl(avatar, { width: 100, height: 100, resizeType: 'fill-down' }) : undefined;
 
 	return (
 		<div className="size-14 rounded-full">

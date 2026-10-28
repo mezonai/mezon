@@ -1,5 +1,6 @@
 import { getNewRoleIcon, roleSlice, selectCurrentRoleIcon } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -39,7 +40,7 @@ const RoleIcon = ({ hasPermissionEdit, isEveryoneRole }: { hasPermissionEdit: bo
 			<div className="text-xs mb-2">{t('roleManagement.roleIconDescription')}</div>
 			<div className={'flex flex-col md:flex-row items-start gap-3 md:gap-5'}>
 				{iconRole ? (
-					<img src={iconRole || ''} alt="" className={'w-16 h-16 md:w-20 md:h-20'} />
+					<img src={createImgproxyUrl(iconRole || '')} alt="" className={'w-16 h-16 md:w-20 md:h-20'} />
 				) : (
 					<div className={'bg-theme-setting-nav flex justify-center items-center w-16 h-16 md:w-20 md:h-20'}>
 						<Icons.ImageUploadIcon className="w-5 h-5 md:w-6 md:h-6 text-theme-primary" />

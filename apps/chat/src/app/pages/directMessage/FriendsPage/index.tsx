@@ -11,7 +11,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Button, Icons, Image, InputField } from '@mezon/ui';
-import { EUserStatus, generateE2eId } from '@mezon/utils';
+import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -344,7 +344,11 @@ const FriendsPage = () => {
 							</div>
 							<div className="flex flex-col items-center gap-7">
 								<Image
-									src={'https://cdn.komu.vn/landing-page-mezon/addfriends.webp'}
+									src={createImgproxyUrl('https://cdn.komu.vn/landing-page-mezon/addfriends.webp', {
+										width: 0,
+										height: 0,
+										resizeType: 'force'
+									})}
 									width={100}
 									height={100}
 									className="object-cover w-[646px] opacity-45"

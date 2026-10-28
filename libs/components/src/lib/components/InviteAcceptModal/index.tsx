@@ -1,6 +1,7 @@
 import { useInvite } from '@mezon/core';
 import { clansActions, inviteActions, selectClanById, selectInviteById, useAppDispatch } from '@mezon/store';
 import { Modal } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -69,7 +70,11 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 				<div className="flex items-center justify-center mb-3">
 					<div className="relative w-12 h-12 flex items-center justify-center">
 						{selectInvite?.clan_logo ? (
-							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clan_logo} alt="" />
+							<img
+								className="w-full h-full rounded-md object-cover"
+								src={createImgproxyUrl(selectInvite.clan_logo, { width: 100, height: 100, resizeType: 'fill-down' })}
+								alt=""
+							/>
 						) : (
 							<div className="w-full h-full rounded-md bg-gray-700 flex items-center justify-center text-white text-3xl font-medium select-none">
 								{(selectInvite?.clan_name || 'M').charAt(0).toUpperCase()}

@@ -217,7 +217,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 								<>
 									{avt.url !== '' ? (
 										<img
-											src={createImgproxyUrl(avt.url || '')}
+											src={createImgproxyUrl(avt.url || '', { width: 100, height: 100, resizeType: 'fill-down' })}
 											alt={`avt ${avt.id}`}
 											className={`w-7 h-7 object-cover aspect-square cursor-pointer  bg-item-hover ${avt.type === selectedType ? 'bg-item-theme' : ''} hover:rounded-full justify-center items-center border-theme-primary rounded-full aspect-square`}
 											role="button"
@@ -281,7 +281,7 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 					<Icons.MarketIcons className="w-4 h4" />
 				) : logo !== '' ? (
 					<img
-						src={createImgproxyUrl(logo || '')}
+						src={createImgproxyUrl(logo || '', { width: 100, height: 100, resizeType: 'fill-down' })}
 						alt={categoryName || 'category'}
 						className="w-4 !h-4 flex items-center justify-center rounded-full object-cover"
 					/>

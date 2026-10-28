@@ -2,6 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { EOverriddenPermission } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import isEqual from 'lodash.isequal';
 import type { ApiPermission } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -16,22 +17,22 @@ export interface ChannelPermission {
 	maxPermissions: Record<EOverriddenPermission, ApiPermission>;
 }
 
+interface ChannelPermissionCache {
+	channelPermission?: ChannelPermission | null;
+	cache?: CacheMetadata;
+	permissionVersion?: number;
+}
+
 export type OverriddenPermissionState = {
 	channelPermissions: EntityState<ChannelPermission, string>;
-	byChannels: Record<
-		string,
-		{
-			channelPermission?: ChannelPermission | null;
-			cache?: CacheMetadata;
-		}
-	>;
+	byChannels: Record<string, ChannelPermissionCache>;
 };
 
 const overriddenPermissionAdapter = createEntityAdapter({
 	selectId: (overriddenPolicy: ChannelPermission) => overriddenPolicy.channelId
 });
 
-const getInitialChannelState = () => ({
+const getInitialChannelState = (): ChannelPermissionCache => ({
 	channelPermission: null
 });
 
@@ -55,19 +56,11 @@ const overriddenPoliciesSlice = createSlice({
 	reducers: {
 		updateChannelPermissions: (state, action: PayloadAction<UpdateChannelPermissionsPayload>) => {
 			const { channelId, permissions } = action.payload;
-			const maxPermissions = permissions.reduce<Record<EOverriddenPermission, ApiPermission>>(
-				(acc, perm) => {
-					if (perm.slug) {
-						acc[perm.slug] = {
-							id: perm.id,
-							slug: perm.slug,
-							active: perm.active
-						};
-					}
-					return acc;
-				},
-				{} as Record<EOverriddenPermission, ApiPermission>
-			);
+			const channelData = (state.byChannels[channelId] ??= getInitialChannelState());
+			const maxPermissions = { ...channelData.channelPermission?.maxPermissions } as ChannelPermission['maxPermissions'];
+			for (const permission of permissions) {
+				if (permission.slug) maxPermissions[permission.slug] = permission;
+			}
 
 			const channelPermission: ChannelPermission = {
 				channelId,
@@ -76,26 +69,23 @@ const overriddenPoliciesSlice = createSlice({
 
 			overriddenPermissionAdapter.upsertOne(state.channelPermissions, channelPermission);
 
-			if (!state.byChannels[channelId]) {
-				state.byChannels[channelId] = getInitialChannelState();
-			}
-			state.byChannels[channelId].channelPermission = channelPermission;
-			state.byChannels[channelId].cache = createCacheMetadata();
+			channelData.channelPermission = channelPermission;
+			channelData.cache = createCacheMetadata();
+			channelData.permissionVersion = (channelData.permissionVersion ?? 0) + 1;
 		}
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchMaxChannelPermission.fulfilled, (state, action) => {
-			const { channelId, fromCache, channelPermission } = action.payload;
+			const { channelId, fromCache, channelPermission, permissionVersion } = action.payload;
 
-			if (!state.byChannels[channelId]) {
-				state.byChannels[channelId] = getInitialChannelState();
-			}
-
-			if (!fromCache && channelPermission && 'maxPermissions' in channelPermission) {
+			if (fromCache) return;
+			const channelData = (state.byChannels[channelId] ??= getInitialChannelState());
+			if (permissionVersion !== (channelData.permissionVersion ?? 0)) return;
+			if (!isEqual(channelData.channelPermission?.maxPermissions, channelPermission.maxPermissions)) {
 				overriddenPermissionAdapter.upsertOne(state.channelPermissions, channelPermission);
-				state.byChannels[channelId].channelPermission = channelPermission;
-				state.byChannels[channelId].cache = createCacheMetadata();
+				channelData.channelPermission = channelPermission;
 			}
+			channelData.cache = createCacheMetadata();
 		});
 	}
 });
@@ -152,22 +142,24 @@ export const fetchMaxChannelPermissionCached = async (
 	};
 };
 
-const pendingPermissionRequests = new Map<string, Promise<any>>();
+interface FetchMaxPermissionResult {
+	channelId: string;
+	permissionVersion: number;
+	channelPermission: ChannelPermission;
+	fromCache: boolean;
+}
 
-export const fetchMaxChannelPermission = createAsyncThunk(
+const pendingPermissionRequests = new Map<string, Promise<FetchMaxPermissionResult>>();
+
+export const fetchMaxChannelPermission = createAsyncThunk<FetchMaxPermissionResult, FetchMaxPermissionChannelsArgs>(
 	`${OVERRIDDEN_POLICIES_FEATURE_KEY}/fetchMaxPermissionRoleChannel`,
-	async ({ clanId, channelId, noCache }: FetchMaxPermissionChannelsArgs, thunkAPI) => {
+	async ({ clanId, channelId, noCache }, thunkAPI) => {
 		const requestKey = `${clanId}:${channelId}`;
-		const pendingRequest = pendingPermissionRequests.get(requestKey);
-		if (pendingRequest) {
-			try {
-				return await pendingRequest;
-			} catch (error) {
-				//
-			}
-		}
-		const requestPromise = (async () => {
-			try {
+		let request = pendingPermissionRequests.get(requestKey);
+		if (!request) {
+			const permissionVersion =
+				(thunkAPI.getState() as RootState)[OVERRIDDEN_POLICIES_FEATURE_KEY].byChannels[channelId]?.permissionVersion ?? 0;
+			request = (async (): Promise<FetchMaxPermissionResult> => {
 				const mezon = await ensureSession(getMezonCtx(thunkAPI));
 				const response = await fetchMaxChannelPermissionCached(
 					thunkAPI.getState as () => RootState,
@@ -176,51 +168,31 @@ export const fetchMaxChannelPermission = createAsyncThunk(
 					channelId,
 					Boolean(noCache)
 				);
-
-				if (!response) {
-					return thunkAPI.rejectWithValue('Invalid fetchMaxChannelPermission');
-				}
-
+				if (!response) throw new Error('Invalid fetchMaxChannelPermission response');
+				let channelPermission: ChannelPermission;
 				if (response.fromCache) {
-					return {
-						channelId,
-						channelPermission: response as ChannelPermission,
-						fromCache: true
-					};
+					channelPermission = response as ChannelPermission;
+				} else if ('permissions' in response && response.permissions?.permissions) {
+					const maxPermissions = {} as ChannelPermission['maxPermissions'];
+					for (const permission of response.permissions.permissions as ApiPermission[]) {
+						if (permission.slug) maxPermissions[permission.slug as EOverriddenPermission] = permission;
+					}
+					channelPermission = { channelId, maxPermissions };
+				} else {
+					throw new Error('Invalid fetchMaxChannelPermission response');
 				}
-
-				if (response && 'permissions' in response && response.permissions?.permissions) {
-					const channelPermission: ChannelPermission = {
-						channelId,
-						maxPermissions: (response.permissions.permissions as ApiPermission[]).reduce(
-							(acc: Record<EOverriddenPermission, ApiPermission>, perm: ApiPermission) => {
-								if (perm.slug) {
-									acc[perm.slug as EOverriddenPermission] = perm;
-								}
-								return acc;
-							},
-							{} as Record<EOverriddenPermission, ApiPermission>
-						)
-					};
-
-					return {
-						channelId,
-						channelPermission,
-						fromCache: false
-					};
-				}
-				return thunkAPI.rejectWithValue(null);
-			} catch (error) {
-				captureSentryError(error, 'overriddenPolicies/fetchMaxChannelPermission');
-				return thunkAPI.rejectWithValue(error);
-			} finally {
-				pendingPermissionRequests.delete(requestKey);
-			}
-		})();
-
-		pendingPermissionRequests.set(requestKey, requestPromise);
-
-		return requestPromise;
+				return { channelId, permissionVersion, channelPermission, fromCache: response.fromCache };
+			})();
+			pendingPermissionRequests.set(requestKey, request);
+		}
+		try {
+			return await request;
+		} catch (error) {
+			captureSentryError(error, 'overriddenPolicies/fetchMaxChannelPermission');
+			return thunkAPI.rejectWithValue(error instanceof Error ? error.message : error);
+		} finally {
+			if (pendingPermissionRequests.get(requestKey) === request) pendingPermissionRequests.delete(requestKey);
+		}
 	}
 );
 

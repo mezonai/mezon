@@ -10,7 +10,7 @@ import {
 	selectUserIdCurrentDm
 } from '@mezon/store';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { EMimeTypes, STICKER_WAVE } from '@mezon/utils';
+import { EMimeTypes, STICKER_WAVE, createImgproxyUrl } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useMemo, useState } from 'react';
@@ -104,7 +104,13 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 
 	return (
 		<div className="flex flex-col  w-[232px] items-center mt-6 gap-6">
-			<img src={urlIcon} alt="Wave Sticker" className="object-contain mx-auto" width={160} height={160} />
+			<img
+				src={createImgproxyUrl(urlIcon, { width: 300, height: 300, resizeType: 'fit' })}
+				alt="Wave Sticker"
+				className="object-contain mx-auto"
+				width={160}
+				height={160}
+			/>
 			<button
 				className="btn-primary btn-primary-hover w-full p-3 rounded-lg flex flex-row items-center justify-center gap-1.5 transition-all duration-200 ease-in-out"
 				onClick={handleSendWaveSticker}
