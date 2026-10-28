@@ -58,7 +58,8 @@
 		"setupTips": "서버 설정을 위한 유용한 팁 보내기.",
 		"auditLog": "클랜에 작업이 적용되면 로그 보내기",
 		"anoTitle": "익명 모드",
-		"anoDesc": "멤버가 익명 모드 사용 방지"
+		"anoDesc": "멤버가 익명 모드 사용 방지",
+		"privateWelcome": "환영 채널이 비공개 채널로 설정되었습니다."
 	},
 	"appDirectory": {
 		"categories": {

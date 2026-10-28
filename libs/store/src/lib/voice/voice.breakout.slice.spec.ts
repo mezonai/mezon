@@ -1,6 +1,8 @@
-import { SfuBreakoutApiError, callSfuBreakoutMerge } from '@mezon/transport';
+import { captureSentryError } from '@mezon/logger';
+import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
 import type { EntityState } from '@reduxjs/toolkit';
 import { configureStore } from '@reduxjs/toolkit';
+import { selectCurrentUserId } from '../account/account.slice';
 import { ensureClientAsync } from '../helpers';
 import { createOpenedHostedBreakout } from './breakout';
 import type { VoiceState, VoiceUserData } from './voice.slice';
@@ -195,6 +197,76 @@ describe('voice slice breakout state', () => {
 			const after = store.getState()[VOICE_FEATURE_KEY];
 			expect(after.hostedBreakouts[PARENT_ID]?.autoCloseFailures).toBe(1);
 			expect(after.closingBreakoutIds).toEqual([]);
+		});
+	});
+
+	describe('open and close from the modal', () => {
+		const OWNER_ID = '50';
+		const openArgs = { clanId: CLAN_ID, parentChannelId: PARENT_ID, roomCount: 1, rule: 1, listParticipants: [], inviteeIds: [SELF_ID] };
+
+		function ownerStore(hostedBreakouts: VoiceState['hostedBreakouts'] = {}) {
+			return configureStore({
+				reducer: { [VOICE_FEATURE_KEY]: voiceReducer },
+				preloadedState: { [VOICE_FEATURE_KEY]: { ...initialVoiceState, hostedBreakoutsOwnerId: OWNER_ID, hostedBreakouts } }
+			});
+		}
+
+		beforeEach(() => {
+			jest.mocked(callSfuBreakoutRoom).mockReset();
+			jest.mocked(callSfuBreakoutMerge).mockReset();
+			jest.mocked(captureSentryError).mockReset();
+			jest.mocked(ensureClientAsync).mockResolvedValue({ client: {} } as never);
+			jest.mocked(selectCurrentUserId).mockReturnValue(OWNER_ID);
+		});
+
+		it('resolves with the error code when there are not enough empty voice channels, so no global error modal or Sentry report', async () => {
+			jest.mocked(callSfuBreakoutRoom).mockRejectedValueOnce(Object.assign(new SfuBreakoutApiError('SfuBreakoutRoom failed'), { code: 9 }));
+			const store = ownerStore();
+			const action = await store.dispatch(voiceActions.openBreakoutRooms(openArgs));
+			expect(voiceActions.openBreakoutRooms.fulfilled.match(action)).toBe(true);
+			expect(action.payload).toEqual({ outcome: 'failed', code: 9 });
+			expect(captureSentryError).not.toHaveBeenCalled();
+			expect(store.getState()[VOICE_FEATURE_KEY].breakoutPending).toBe(false);
+			expect(store.getState()[VOICE_FEATURE_KEY].hostedBreakouts).toEqual({});
+		});
+
+		it('still reports unexpected open failures to Sentry without rejecting', async () => {
+			jest.mocked(callSfuBreakoutRoom).mockRejectedValueOnce(Object.assign(new SfuBreakoutApiError('SfuBreakoutRoom failed'), { code: 13 }));
+			const action = await ownerStore().dispatch(voiceActions.openBreakoutRooms(openArgs));
+			expect(action.payload).toEqual({ outcome: 'failed', code: 13 });
+			expect(captureSentryError).toHaveBeenCalledTimes(1);
+		});
+
+		it('tracks the opened rooms for the host', async () => {
+			jest.mocked(callSfuBreakoutRoom).mockResolvedValueOnce({
+				breakout_id: '9001',
+				room_count: 1,
+				break_rule_type: 1,
+				list_child_rooms: [CHILD_ID]
+			});
+			const store = ownerStore();
+			const action = await store.dispatch(voiceActions.openBreakoutRooms(openArgs));
+			expect(action.payload).toMatchObject({ outcome: 'opened', openedCount: 1 });
+			expect(store.getState()[VOICE_FEATURE_KEY].hostedBreakouts[PARENT_ID]?.breakoutId).toBe('9001');
+		});
+
+		it('keeps the hosted rooms and resolves when closing fails', async () => {
+			const hosted = createOpenedHostedBreakout({
+				breakoutId: '9001',
+				parentChannelId: PARENT_ID,
+				clanId: CLAN_ID,
+				roomIds: [CHILD_ID],
+				ownerUserId: OWNER_ID,
+				invitees: [],
+				openedAtUnixSecs: 1000
+			});
+			jest.mocked(callSfuBreakoutMerge).mockRejectedValueOnce(new SfuBreakoutApiError('The socket timed out while waiting for a response.'));
+			const store = ownerStore({ [PARENT_ID]: hosted });
+			const action = await store.dispatch(voiceActions.closeBreakoutRooms({ parentChannelId: PARENT_ID, breakoutId: '9001' }));
+			expect(voiceActions.closeBreakoutRooms.fulfilled.match(action)).toBe(true);
+			expect(action.payload).toMatchObject({ outcome: 'failed' });
+			expect(store.getState()[VOICE_FEATURE_KEY].hostedBreakouts[PARENT_ID]?.breakoutId).toBe('9001');
+			expect(store.getState()[VOICE_FEATURE_KEY].breakoutPending).toBe(false);
 		});
 	});
 });

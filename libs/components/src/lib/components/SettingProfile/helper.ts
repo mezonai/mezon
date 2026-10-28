@@ -1,5 +1,5 @@
 import { toastActions } from '@mezon/store';
-import { handleUploadFile } from '@mezon/transport';
+import { handleUploadPublicFile } from '@mezon/transport';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
 import type { ApiAccount } from 'mezon-js';
 import { toast } from 'react-toastify';
@@ -45,19 +45,20 @@ export const processImage = async (
 
 		const imageAvatarResize = imageCropped as File;
 
-		const attachment = await handleUploadFile(clientRef.current, sessionRef.current, imageAvatarResize.name, imageAvatarResize, NaN, true);
+		const attachment = await handleUploadPublicFile(clientRef.current, sessionRef.current, imageAvatarResize.name, imageAvatarResize);
 
 		if (isMounted) {
 			setUrlImage(attachment.url || '');
 			setFlagOption && setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
 			setImageObject(null);
 			setImageCropped(null);
-			setIsLoading(false);
 		}
 	} catch (error) {
 		if (isMounted) {
 			toast.error('Error uploading avatar image');
 		}
+	} finally {
+		if (isMounted) setIsLoading(false);
 	}
 
 	return () => {

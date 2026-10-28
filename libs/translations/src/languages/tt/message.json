@@ -221,7 +221,7 @@
 	"bannedChannel": "Сез {{channelName}} каналында блоклангансыз.",
 	"addAMessage": "Хәбәр өстәү (мәҗбүри түгел)",
 	"slideToCancel": "Кире кагу өчен шудыраны шудырыгыз",
-	"noAccess": "Керү юк",
+	"noAccess": "Шәхси канал",
 	"unknown": "билгесез",
 	"fileSelection": {
 		"uploadFile": "Файл йөкләү",

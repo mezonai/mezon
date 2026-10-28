@@ -58,7 +58,8 @@
 		"setupTips": "Enviar dicas úteis para a configuração do servidor.",
 		"auditLog": "Enviar logs quando uma ação for aplicada ao clã.",
 		"anoTitle": "Modo anônimo",
-		"anoDesc": "Impedir que os usuários usem o modo anônimo"
+		"anoDesc": "Impedir que os usuários usem o modo anônimo",
+		"privateWelcome": "O canal de boas-vindas foi definido como canal privado."
 	},
 	"appDirectory": {
 		"categories": {

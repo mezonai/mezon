@@ -71,7 +71,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 				if (clientRef.current && sessionRef.current) {
 					const id = Snowflake.generate();
 					const path = `onboarding/${id}.webp`;
-					const uploadResponse = await handleUploadEmoticon(clientRef.current, sessionRef.current, path, file);
+					const uploadResponse = await handleUploadPublicFile(clientRef.current, sessionRef.current, path, file);
 					if (uploadResponse) {
 						image_url = uploadResponse?.url;
 					}

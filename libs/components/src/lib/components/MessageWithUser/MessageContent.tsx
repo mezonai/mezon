@@ -23,7 +23,7 @@ import {
 	isValidEmojiData,
 	patchLinkTokens
 } from '@mezon/utils';
-import { safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -221,6 +221,7 @@ const MessageText = ({
 					messageId={message.id}
 					channelId={message.channel_id}
 					interactionDisabled={!!isSearchMessage}
+					isDirect={mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP}
 				/>
 			) : displayLine?.length > 0 || hasLinkMarkdown ? (
 				<MessageLine

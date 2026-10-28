@@ -125,7 +125,6 @@ const AudioRecorderControl: React.FC<AudioRecorderProps> = React.memo(({ onSendR
 			`${currentInbox?.id}${timestamp}voice_record.mp3`,
 			blobToFile(blob),
 			undefined,
-			undefined,
 			currentInbox?.id
 		);
 

@@ -1,5 +1,5 @@
 import { directActions, useAppDispatch } from '@mezon/store';
-import { handleUploadEmoticon, useMezon } from '@mezon/transport';
+import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { ValidateSpecialCharacters } from '@mezon/utils';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -112,7 +112,7 @@ export const useEditGroupModal = ({ channelId, currentGroupName = '', currentAva
 					const unique = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 					const path = `dm-group-avatar/${channelId || 'temp'}/${unique}.${ext}`;
 
-					const attachment = await handleUploadEmoticon(client, session, path, avatarState.file);
+					const attachment = await handleUploadPublicFile(client, session, path, avatarState.file);
 
 					if (attachment && attachment.url) {
 						avatarUrl = attachment.url;

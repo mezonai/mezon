@@ -221,7 +221,7 @@
 	"bannedChannel": "Du wurdest im Kanal {{channelName}} gesperrt.",
 	"addAMessage": "Eine Nachricht hinzufügen (optional)",
 	"slideToCancel": "Zum Abbrechen wischen",
-	"noAccess": "Kein Zugriff",
+	"noAccess": "Privater Kanal",
 	"unknown": "Unbekannt",
 	"fileSelection": {
 		"uploadFile": "Datei hochladen",

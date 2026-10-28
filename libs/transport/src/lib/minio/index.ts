@@ -1,4 +1,4 @@
-import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
+import type { ApiMessageAttachment, ApiSession, ApiUploadAttachment, Client } from 'mezon-js';
 import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
 export class CustomFile extends File {
 	url?: string;
@@ -44,12 +44,7 @@ export async function handleUploadEmoticon(client: Client, session: ApiSession, 
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
 		try {
-			let fileType = file.type;
-			if (!fileType) {
-				const fileNameParts = file.name.split('.');
-				const fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
-				fileType = `text/${fileExtension}`;
-			}
+			const fileType = getUploadMimeType(file);
 
 			const buf = await file?.arrayBuffer();
 
@@ -69,18 +64,20 @@ function getFileType(mimeType: string): string {
 	return mimeTypeMap[mimeType] || mimeType;
 }
 
+// Fall back to the file extension when the browser gives no mime type
+function getUploadMimeType(file: File): string {
+	if (file.type) {
+		return file.type;
+	}
+	const fileNameParts = file.name.split('.');
+	return `text/${fileNameParts[fileNameParts.length - 1].toLowerCase()}`;
+}
+
 function isRemoteUrl(url: string): boolean {
 	return url.startsWith('http://') || url.startsWith('https://');
 }
 
-async function uploadThumbnailBlob(
-	client: Client,
-	session: ApiSession,
-	blob: Blob,
-	index?: number,
-	isOauth?: boolean,
-	channelId?: string
-): Promise<string | undefined> {
+async function uploadThumbnailBlob(client: Client, session: ApiSession, blob: Blob, index?: number, channelId?: string): Promise<string | undefined> {
 	try {
 		const type = blob.type || 'image/jpeg';
 		const ext = type.includes('png') ? 'png' : 'jpg';
@@ -92,12 +89,10 @@ async function uploadThumbnailBlob(
 			getFileType(type),
 			blob.size,
 			blob,
-			false,
 			originalFilename,
 			undefined,
 			undefined,
 			undefined,
-			isOauth,
 			channelId
 		);
 		return result.url;
@@ -111,13 +106,12 @@ async function uploadBlobThumbnail(
 	session: ApiSession,
 	blobUrl: string,
 	index?: number,
-	isOauth?: boolean,
 	channelId?: string
 ): Promise<string | undefined> {
 	try {
 		const response = await fetch(blobUrl);
 		const blob = await response.blob();
-		return uploadThumbnailBlob(client, session, blob, index, isOauth, channelId);
+		return uploadThumbnailBlob(client, session, blob, index, channelId);
 	} catch {
 		return undefined;
 	}
@@ -129,14 +123,13 @@ async function resolveThumbnailForUpload(
 	file: CustomFile,
 	isVideo: boolean,
 	index?: number,
-	isOauth?: boolean,
 	channelId?: string
 ): Promise<string | undefined> {
 	if (!isVideo) {
 		return file.thumbnail;
 	}
 	if (file.thumbnailBlob) {
-		return uploadThumbnailBlob(client, session, file.thumbnailBlob, index, isOauth, channelId);
+		return uploadThumbnailBlob(client, session, file.thumbnailBlob, index, channelId);
 	}
 	const thumbnail = file.thumbnail;
 	if (!thumbnail) {
@@ -146,7 +139,7 @@ async function resolveThumbnailForUpload(
 		return thumbnail;
 	}
 	if (thumbnail.startsWith('blob:')) {
-		return uploadBlobThumbnail(client, session, thumbnail, index, isOauth, channelId);
+		return uploadBlobThumbnail(client, session, thumbnail, index, channelId);
 	}
 	return thumbnail;
 }
@@ -215,24 +208,18 @@ export async function handleUploadFile(
 	filename: string,
 	file: CustomFile,
 	index?: number,
-	isOauth?: boolean,
 	channelId?: string
 ): Promise<ApiMessageAttachment> {
 	// eslint-disable-next-line no-async-promise-executor
 	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
 		try {
-			let fileType = file.type;
-			if (!fileType) {
-				const fileNameParts = file.name.split('.');
-				const fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
-				fileType = `text/${fileExtension}`;
-			}
+			const fileType = getUploadMimeType(file);
 			const shortFileType = getFileType(fileType);
 			const { filePath, originalFilename } = createUploadFilePath(filename, index);
 			const isVideo = fileType.startsWith('video/');
 
 			if (isVideo) {
-				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, isOauth, channelId);
+				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, channelId);
 
 				if (file.size > MULTIPART_MIN_FILE_SIZE) {
 					const start = await client.multipartUploadAttachmentFile(session, {
@@ -253,12 +240,10 @@ export async function handleUploadFile(
 					shortFileType,
 					file.size,
 					file,
-					false,
 					originalFilename,
 					file.width,
 					file.height,
 					undefined,
-					isOauth,
 					channelId
 				);
 				const [thumbnail, videoResult] = await Promise.all([thumbPromise, videoPromise]);
@@ -296,6 +281,7 @@ export async function handleUploadFile(
 					height: file.height,
 					width: file.width
 				});
+				return;
 			}
 
 			resolve(
@@ -306,12 +292,10 @@ export async function handleUploadFile(
 					shortFileType,
 					file.size,
 					file,
-					false,
 					originalFilename,
 					file.width,
 					file.height,
 					file.thumbnail,
-					isOauth,
 					channelId
 				)
 			);
@@ -319,6 +303,21 @@ export async function handleUploadFile(
 			reject(new Error(`${error}`));
 		}
 	});
+}
+
+export async function handleUploadPublicFile(client: Client, session: ApiSession, filename: string, file: CustomFile): Promise<ApiMessageAttachment> {
+	const { filePath, originalFilename } = createUploadFilePath(filename);
+	return uploadPublicFile(
+		client,
+		session,
+		filePath,
+		getFileType(getUploadMimeType(file)),
+		file.size,
+		file,
+		originalFilename,
+		file.width,
+		file.height
+	);
 }
 
 export function createUploadFilePath(filename: string, index?: number): { filePath: string; originalFilename: string } {
@@ -359,54 +358,77 @@ export async function uploadFile(
 	type: string,
 	size: number,
 	buf: Blob,
-	isMobile?: boolean,
 	originalFilename?: string,
 	width?: number,
 	height?: number,
 	thumbnail?: string,
-	isOauth?: boolean,
 	channelId?: string
 ): Promise<ApiMessageAttachment> {
-	// eslint-disable-next-line no-async-promise-executor
-	return new Promise<ApiMessageAttachment>(async function (resolve, reject) {
-		try {
-			let fn = client.uploadAttachmentFile.bind(client);
-			if (isOauth) {
-				fn = client.uploadOauthFile.bind(client);
-			}
-			const data = await fn(session, {
-				filename,
-				filetype: type,
-				size,
-				width,
-				height,
-				channel_id: channelId
-			});
-			if (!data?.url) {
-				reject(new Error('Failed to upload file. URL not available.'));
-				return;
-			}
-			const res = await uploadImageToMinIO(data.url || '', buf, size);
-			if (res.status !== 200) {
-				throw new Error('Failed to upload file to MinIO.');
-			}
-			let url = `${data.type_cdn === 1 ? process.env.NX_MEZON_CDN_URL : process.env.NX_CLOUDFLARE_CDN_URL}/${data.filename}`;
-			if (isOauth) {
-				url = `${process.env.NX_PROFILE_IMG_URL}/${data.filename}`;
-			}
-			resolve({
-				filename: originalFilename,
-				url,
-				filetype: type,
-				size,
-				width,
-				height,
-				thumbnail
-			});
-		} catch (error) {
-			reject(new Error(`${error}`));
-		}
-	});
+	try {
+		const data = await client.uploadAttachmentFile(session, {
+			filename,
+			filetype: type,
+			size,
+			width,
+			height,
+			channel_id: channelId
+		});
+		await putFileToPresignedUrl(data, buf, size);
+		return {
+			filename: originalFilename,
+			url: `${data.type_cdn === 1 ? process.env.NX_MEZON_CDN_URL : process.env.NX_CLOUDFLARE_CDN_URL}/${data.filename}`,
+			filetype: type,
+			size,
+			width,
+			height,
+			thumbnail
+		};
+	} catch (error) {
+		throw new Error(`${error}`);
+	}
+}
+
+export async function uploadPublicFile(
+	client: Client,
+	session: ApiSession,
+	filename: string,
+	type: string,
+	size: number,
+	buf: Blob,
+	originalFilename?: string,
+	width?: number,
+	height?: number
+): Promise<ApiMessageAttachment> {
+	try {
+		const data = await client.uploadOauthFile(session, {
+			filename,
+			filetype: type,
+			size,
+			width,
+			height
+		});
+		await putFileToPresignedUrl(data, buf, size);
+		return {
+			filename: originalFilename,
+			url: `${process.env.NX_PROFILE_IMG_URL}/${data.filename}`,
+			filetype: type,
+			size,
+			width,
+			height
+		};
+	} catch (error) {
+		throw new Error(`${error}`);
+	}
+}
+
+async function putFileToPresignedUrl(data: ApiUploadAttachment | undefined, buf: Blob, size: number) {
+	if (!data?.url) {
+		throw new Error('Failed to upload file. URL not available.');
+	}
+	const res = await uploadImageToMinIO(data.url, buf, size);
+	if (res.status !== 200) {
+		throw new Error('Failed to upload file to MinIO.');
+	}
 }
 
 export async function handleUrlInput(url: string): Promise<ApiMessageAttachment> {

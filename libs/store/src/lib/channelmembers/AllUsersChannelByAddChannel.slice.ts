@@ -175,8 +175,10 @@ export const fetchSearchCtrlK = createAsyncThunk(
 
 			return response;
 		} catch (error) {
+			// Search-as-you-type: a rejection would reach the global error listener and cover the app with the
+			// error modal. The local matches stay on screen and the next keystroke retries, since the key is not cached.
 			captureSentryError(error, 'allUsersByAddChannel/fetchSearchCtrlK');
-			return thunkAPI.rejectWithValue(error);
+			return true;
 		}
 	}
 );

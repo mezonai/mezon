@@ -11,7 +11,6 @@ export const channelLoader: CustomLoaderFunction = async ({ params, request, dis
 	}
 
 	dispatch(quickMenuActions.listQuickMenuAccess({ channelId, menuType: QUICK_MENU_TYPE.QUICK_MENU }));
-	dispatch(channelsActions.addThreadToChannels({ channelId, clanId }));
 	dispatch(channelsActions.joinChannel({ clanId, channelId, noFetchMembers: false, messageId: messageId || '' }));
 	dispatch(channelsActions.setPreviousChannels({ clanId, channelId }));
 	notificationService.setCurrentChannelId(channelId);
