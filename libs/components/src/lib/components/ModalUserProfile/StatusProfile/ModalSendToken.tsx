@@ -85,7 +85,7 @@ const ModalSendToken = ({
 	};
 	const debouncedSearch = useDebouncedCallback((value: string) => {
 		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: `${value}` }));
-	}, 400);
+	}, 500);
 	const handleSelectUser = useCallback(
 		(id: string, name: string) => {
 			setSearchTerm(name);

@@ -3,7 +3,7 @@ import { forwardServerChannelQuery, forwardServerQueryKey } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-const SERVER_SEARCH_DEBOUNCE_MS = 300;
+const SERVER_SEARCH_DEBOUNCE_MS = 500;
 const SEARCH_TYPE_CHANNELS = 2;
 const NO_CHANNELS: ApiChannelDescription[] = [];
 

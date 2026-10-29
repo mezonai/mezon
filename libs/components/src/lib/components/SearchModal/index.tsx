@@ -71,6 +71,8 @@ const dedupeById = (items: SearchItemProps[]) => {
 	});
 };
 
+const SEARCH_DEBOUNCE_MS = 500;
+
 // Past this a slow SearchCtrlK stops holding the list back, so the local matches show
 // and the server rows land on top of them later.
 const SEARCH_SETTLE_TIMEOUT_MS = 1000;
@@ -127,7 +129,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const [searchText, setSearchText] = useState('');
 	const [settledSearchText, setSettledSearchText] = useState('');
 
-	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), 300), []);
+	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), SEARCH_DEBOUNCE_MS), []);
 	const checkListDM = useRef(new Set<string>());
 	const listDirectSearch = useMemo(() => {
 		const listDmSearchMap: SearchItemProps[] = [];
