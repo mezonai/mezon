@@ -1190,7 +1190,9 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 									className="!w-7 !h-7 !min-w-7 !min-h-7 rounded-full text-xs shrink-0"
 									classNameText="text-[10px]"
 									srcImgProxy={
-										pinAvatarUrl ? createImgproxyUrl(pinAvatarUrl, { width: 64, height: 64, resizeType: 'fit' }) : undefined
+										pinAvatarUrl
+											? createImgproxyUrl(pinAvatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })
+											: undefined
 									}
 									src={pinAvatarUrl}
 									isAnonymous={isPinAnonymous}

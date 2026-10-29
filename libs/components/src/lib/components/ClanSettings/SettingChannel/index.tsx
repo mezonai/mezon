@@ -662,11 +662,7 @@ const ChannelRow = ({
 					alt={creatorDisplayName}
 					username={creatorDisplayName}
 					src={creatorAvatar}
-					srcImgProxy={createImgproxyUrl(creatorAvatar, {
-						width: 32,
-						height: 32,
-						resizeType: 'fit'
-					})}
+					srcImgProxy={createImgproxyUrl(creatorAvatar, { width: 100, height: 100, resizeType: 'fill-down' })}
 					className="w-8 h-8 min-w-8 min-h-8 max-w-8 max-h-8"
 				/>
 			</div>
@@ -689,11 +685,7 @@ export const AvatarUserShort = ({ id, showName = false }: { id: string; showName
 				alt={displayName || 'User avatar'}
 				username={displayName}
 				src={avatarUrl}
-				srcImgProxy={createImgproxyUrl(avatarUrl, {
-					width: 24,
-					height: 24,
-					resizeType: 'fit'
-				})}
+				srcImgProxy={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 				className="rounded-full h-6 w-6 min-w-6 min-h-6 max-w-6 max-h-6"
 			/>
 

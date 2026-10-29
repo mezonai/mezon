@@ -2,6 +2,7 @@ import { useMarkAsRead } from '@mezon/core';
 import { selectChannelById, selectClanById, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { INotification, TNotificationChannel } from '@mezon/utils';
+import { createImgproxyUrl } from '@mezon/utils';
 import { useMemo } from 'react';
 
 type NotificationChannelHeaderProps = {
@@ -27,7 +28,11 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 			<div className="flex flex-row items-center gap-2">
 				{itemUnread?.clan_logo || notification?.content?.clan_logo ? (
 					<img
-						src={itemUnread?.clan_logo || notification?.content?.clan_logo}
+						src={createImgproxyUrl((itemUnread?.clan_logo || notification?.content?.clan_logo) ?? '', {
+							width: 100,
+							height: 100,
+							resizeType: 'fill-down'
+						})}
 						className="w-[45px] h-[45px] rounded-xl"
 						alt={itemUnread?.clan_logo || notification?.content?.clan_logo}
 					/>

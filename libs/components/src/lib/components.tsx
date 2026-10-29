@@ -147,3 +147,5 @@ export { MediaPermissionPrompt } from './components/MediaPermissionPrompt';
 export { default as ModalLayout } from './components/Modal';
 export { default as ModalEditGroup } from './components/ModalEditGroup';
 export { OtpConfirm } from './components/OtpConfirm/index';
+export { default as SettingChat } from './components/SettingChat';
+export { default as Spelling } from './components/Spelling';

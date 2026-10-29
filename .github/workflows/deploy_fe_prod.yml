@@ -104,7 +104,8 @@ jobs:
           envkey_NX_APP_BLACKBOARD: '2089294331818020864'
           envkey_NX_APP_QUIZ: '2089257413122199552'
           envkey_NX_VOICE_AGENT_ID: '2037383744142184448'
-
+          envkey_NX_MODEL_ONNX: 'https://cdn.komu.vn/ns/model.onnx'
+          envkey_NX_MODEL_ACCENT_ONNX: https://cdn.komu.vn/ns/accent_model.onnx
       - name: Build
         env:
           BABEL_ENV: 'remove-e2e'

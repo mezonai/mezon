@@ -32,7 +32,7 @@ const AvatarUser = ({ user }: AvatarUserProps) => {
 						alt={username || ''}
 						username={username}
 						className="min-w-6 min-h-6 max-w-6 max-h-6"
-						srcImgProxy={createImgproxyUrl(avatar ?? '')}
+						srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 						src={avatar}
 					/>
 				) : (

@@ -186,17 +186,17 @@ export const fetchChannelDetail = createAsyncThunk(
 				detail = response?.channel_id ? { ...response, id: response.channel_id } : null;
 			} catch (error) {
 				if (!isServerRejection(error)) {
-					return thunkAPI.rejectWithValue(error);
+					return null;
 				}
 			}
 			if (getMezonCtx(thunkAPI).sessionRef.current?.token !== sessionToken) {
-				return thunkAPI.rejectWithValue('session changed');
+				return null;
 			}
 			thunkAPI.dispatch(listChannelsByUserSlice.actions.setChannelDetail({ channelId, detail }));
 			channelDetailListeners.get(channelId)?.forEach((listener) => listener());
 			return detail;
-		} catch (error) {
-			return thunkAPI.rejectWithValue(error);
+		} catch {
+			return null;
 		} finally {
 			channelDetailsInFlight.delete(channelId);
 		}

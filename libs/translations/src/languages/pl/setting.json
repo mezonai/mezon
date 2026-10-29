@@ -175,5 +175,11 @@
 		"recentChannels": "Ostatnie kanały",
 		"searchByChannelLabel": "Szukaj według etykiety kanału"
 	},
-	"setting": "Ustawienia"
+	"setting": "Ustawienia",
+	"chat": {
+		"quickReplies": "Szybkie odpowiedzi",
+		"quickRepliesDescription": "Wyświetlaj propozycje szybkich odpowiedzi na podstawie ostatniej wiadomości na kanale.",
+		"grammar": "Korekta gramatyczna",
+		"grammarDescription": "Proponuj poprawki pisowni i gramatyki podczas pisania (do 256 znaków)."
+	}
 }

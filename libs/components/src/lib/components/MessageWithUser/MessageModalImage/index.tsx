@@ -614,7 +614,7 @@ const SenderUser = () => {
 					alt={displayName || 'user-avatar'}
 					username={displayName}
 					src={avatarUrl}
-					srcImgProxy={createImgproxyUrl(avatarUrl, { width: 300, height: 300, resizeType: 'fit' })}
+					srcImgProxy={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 					className="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10"
 					isAnonymous={isAnonymous}
 				/>

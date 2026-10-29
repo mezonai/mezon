@@ -1,3 +1,4 @@
+import { createImgproxyUrl } from '@mezon/utils';
 import { useModal } from 'react-modal-hook';
 import { ImagePreview } from '../../ImagePreview';
 
@@ -12,7 +13,7 @@ export function EmbedThumbnail({ url }: ThumbnailProps) {
 
 	return (
 		<div className="relative top-4 w-16 h-16 rounded overflow-hidden">
-			<img src={url} alt="Thumbnail" className="w-full h-full object-cover cursor-pointer" onClick={showPreview} />
+			<img src={createImgproxyUrl(url)} alt="Thumbnail" className="w-full h-full object-cover cursor-pointer" onClick={showPreview} />
 		</div>
 	);
 }

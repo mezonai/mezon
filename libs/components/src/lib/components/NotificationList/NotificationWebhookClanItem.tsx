@@ -1,5 +1,6 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
-import { IMentionOnMessage, IMessageWithUser, INotification, TOPBARS_MAX_WIDTH, addMention, createImgproxyUrl } from '@mezon/utils';
+import type { IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
+import { TOPBARS_MAX_WIDTH, addMention, createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import MessageAttachment from '../MessageWithUser/MessageAttachment';
@@ -53,9 +54,9 @@ function MentionTabContent({ message }: IMentionTabContent) {
 					className="w-10 h-10 min-w-10"
 					username={message?.username}
 					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar) ?? '', {
-						width: 300,
-						height: 300,
-						resizeType: 'fit'
+						width: 100,
+						height: 100,
+						resizeType: 'fill-down'
 					})}
 					src={priorityAvatar ? priorityAvatar : message.avatar}
 				/>

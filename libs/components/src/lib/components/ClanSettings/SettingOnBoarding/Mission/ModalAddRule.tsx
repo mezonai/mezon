@@ -1,6 +1,6 @@
 import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { fileTypeImage, generateE2eId, MAX_FILE_SIZE_10MB } from '@mezon/utils';
+import { createImgproxyUrl, fileTypeImage, generateE2eId, MAX_FILE_SIZE_10MB } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiOnboardingItem } from 'mezon-js';
 import type { ChangeEvent } from 'react';
@@ -198,7 +198,9 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 							/>
 						</button>
 						<div className="h-12 aspect-square rounded-md flex overflow-hidden bg-theme-primary-active border border-theme-border-input">
-							{ruleImage && <img id="blah" src={ruleImage} alt="your image" className="h-full w-full object-cover" />}
+							{ruleImage && (
+								<img id="blah" src={createImgproxyUrl(ruleImage)} alt="your image" className="h-full w-full object-cover" />
+							)}
 						</div>
 					</div>
 				</div>

@@ -17,7 +17,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { MentionData, MentionProps, MentionState } from './Mention';
 import parseHtmlAsFormattedText from './parseHtmlAsFormattedText';
-import { preparePastedHtml } from './utils/cleanHtml';
+import { clearMentionReplacer, preparePastedHtml } from './utils/cleanHtml';
 import renderText from './utils/renderText';
 
 const escapeMentionText = (value: string): string => {
@@ -984,6 +984,9 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				if (containsMentionEntities && htmlContent) {
 					const cleanedHtml = preparePastedHtml(htmlContent);
 					contentToInsert = cleanedHtml;
+					if (cleanedHtml.trim() !== inputRef.current?.innerHTML.trim()) {
+						contentToInsert = clearMentionReplacer(cleanedHtml);
+					}
 				} else if (htmlContent) {
 					contentToInsert = (renderText(plainText || '', ['escape_html', 'br_html']) as string[]).join('').replace(/\u200b+/g, '\u200b');
 				} else {

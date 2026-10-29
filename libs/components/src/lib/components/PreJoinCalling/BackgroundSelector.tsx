@@ -1,3 +1,4 @@
+import { createImgproxyUrl } from '@mezon/utils';
 import { memo } from 'react';
 import { VIRTUAL_BACKGROUNDS, type BackgroundMode } from './mediaPipeBackground';
 
@@ -26,7 +27,12 @@ export const BackgroundSelector = memo(({ selectedMode, onSelectMode, disabled =
 									: 'border-zinc-700 bg-zinc-900 hover:border-zinc-500 hover:brightness-105'
 							} ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
 						>
-							<img src={bg.url} alt="" className="w-full h-full object-cover pointer-events-none" loading="lazy" />
+							<img
+								src={createImgproxyUrl(bg.url, { width: 300, height: 300, resizeType: 'fit' })}
+								alt=""
+								className="w-full h-full object-cover pointer-events-none"
+								loading="lazy"
+							/>
 							<div className="absolute inset-0 bg-black/15 group-hover:bg-black/0 transition-colors" />
 
 							{/* Active badge */}

@@ -48,7 +48,7 @@ function getTransport(client: Client): PatchedTransport | undefined {
 	return (client as unknown as { transport?: PatchedTransport }).transport;
 }
 
-function grpcCodeFromEnvelopeStatus(status: number): number {
+export function grpcCodeFromEnvelopeStatus(status: number): number {
 	switch (status) {
 		case 400:
 			return 3;

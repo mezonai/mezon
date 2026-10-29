@@ -58,7 +58,8 @@
 		"setupTips": "Send helpful tips for clan setup.",
 		"auditLog": "Send a log when an action is applied to the clan",
 		"anoTitle": "Prevent Anonymous",
-		"anoDesc": "Prevent users from using anonymous mode"
+		"anoDesc": "Prevent users from using anonymous mode",
+		"privateWelcome": "The welcome channel has been set to a private channel."
 	},
 	"appDirectory": {
 		"categories": {

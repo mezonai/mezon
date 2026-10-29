@@ -1,4 +1,3 @@
-import { AvatarImage } from '@mezon/components';
 import { useAppNavigation } from '@mezon/core';
 import type { ChannelsEntity, ThreadsEntity } from '@mezon/store';
 import {
@@ -20,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AvatarGroup, { AvatarCount } from '../../../../Avatar/AvatarGroup';
+import { AvatarImage } from '../../../../AvatarImage/AvatarImage';
 import { useMessageSender } from '../../../../MessageWithUser/useMessageSender';
 import ThreadModalContent from './ThreadModalContent';
 
@@ -98,11 +98,7 @@ const ThreadItem = ({ thread, isPublicThread = false, preventClosePannel }: Thre
 							alt={`${senderDisplayName}'s avatar`}
 							username={senderDisplayName}
 							className="size-4 rounded-md object-cover mr-2"
-							srcImgProxy={createImgproxyUrl(senderAvatarUrl, {
-								width: 300,
-								height: 300,
-								resizeType: 'fit'
-							})}
+							srcImgProxy={createImgproxyUrl(senderAvatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 							src={senderAvatarUrl}
 						/>
 						<span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[#17AC86] text-sm font-semibold leading-4">
@@ -130,9 +126,9 @@ const ThreadItem = ({ thread, isPublicThread = false, preventClosePannel }: Thre
 									username={avatar?.clan_nick || avatar?.user?.display_name || avatar?.user?.username || ''}
 									src={avatar.clan_avatar || avatar.user?.avatar_url || ''}
 									srcImgProxy={createImgproxyUrl(avatar.clan_avatar || avatar.user?.avatar_url || '', {
-										width: 24,
-										height: 24,
-										resizeType: 'fit'
+										width: 100,
+										height: 100,
+										resizeType: 'fill-down'
 									})}
 									className="object-cover h-6 w-6 min-w-6 min-h-6 max-w-6 max-h-6 rounded-full"
 								/>

@@ -58,7 +58,8 @@
 		"setupTips": "Gửi mẹo hữu ích cho thiết lập máy chủ.",
 		"auditLog": "Gửi nhật ký khi một hành động được áp dụng cho clan",
 		"anoTitle": "Chế độ ẩn danh",
-		"anoDesc": "Chặn người dùng sử dụng chế độ ẩn danh"
+		"anoDesc": "Chặn người dùng sử dụng chế độ ẩn danh",
+		"privateWelcome": "Kênh chào mừng đã được thiết lập thành kênh riêng tư."
 	},
 	"appDirectory": {
 		"categories": {
