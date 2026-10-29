@@ -225,7 +225,7 @@
 	"bannedChannel": "Вы заблокированы на канале {{channelName}}.",
 	"addAMessage": "Добавить сообщение (опционально)",
 	"slideToCancel": "Сдвиньте ползунок для отмены",
-	"noAccess": "Нет доступа",
+	"noAccess": "Приватный канал",
 	"poll": {
 		"createTitle": "Создать опрос",
 		"question": "Вопрос",

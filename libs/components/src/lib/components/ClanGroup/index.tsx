@@ -1,12 +1,12 @@
 import { useExpandedGroupDragAndDrop } from '@mezon/core';
 import type { ClanGroup as ClanGroupType, RootState } from '@mezon/store';
 import {
-	clansActions,
 	selectBadgeClanById,
 	selectClanHasUnreadMessage,
 	selectClanView,
 	selectClansEntities,
-	selectCurrentClanId
+	selectCurrentClanId,
+	settingActions
 } from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useDispatch, useSelector } from 'react-redux';
@@ -69,7 +69,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 	const expandedGroupDragAndDrop = useExpandedGroupDragAndDrop(group.id, group.clanIds);
 
 	const handleToggle = () => {
-		dispatch(clansActions.toggleGroupExpanded(group.id));
+		dispatch(settingActions.toggleGroupExpanded(group.id));
 		onClanClick?.();
 	};
 
@@ -107,7 +107,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 		e.preventDefault();
 		e.stopPropagation();
 		dispatch(
-			clansActions.removeClanFromGroup({
+			settingActions.removeClanFromGroup({
 				groupId: group.id,
 				clanId
 			})

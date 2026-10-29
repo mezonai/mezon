@@ -225,7 +225,7 @@
 	"bannedChannel": "Estás baneado del canal {{channelName}}.",
 	"addAMessage": "Añadir un mensaje (Opcional)",
 	"slideToCancel": "Desliza para cancelar",
-	"noAccess": "Sin acceso",
+	"noAccess": "Canal privado",
 	"poll": {
 		"createTitle": "Crear una encuesta",
 		"question": "Pregunta",

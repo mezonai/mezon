@@ -66,3 +66,13 @@ export function escapeHtml(html: string) {
 	fragment.appendChild(text);
 	return fragment.innerHTML;
 }
+
+export const clearMentionReplacer = (html: string) => {
+	const doc = new DOMParser().parseFromString(html, 'text/html');
+
+	doc.querySelectorAll('a[data-entity-type="MessageEntityMentionName"][data-user-id]').forEach((element) => {
+		element.replaceWith(doc.createTextNode(element.textContent ?? ''));
+	});
+
+	return doc.body.innerHTML;
+};

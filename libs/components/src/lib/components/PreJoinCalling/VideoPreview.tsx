@@ -1,4 +1,5 @@
 import { Icons } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { memo, useEffect, useRef, useState } from 'react';
 
@@ -81,7 +82,11 @@ const VideoPreview = memo(({ cameraOn, stream, avatarExist, children, onEffectCl
 				<div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
 					<div className="w-24 h-24 bg-zinc-700 rounded-full flex items-center justify-center overflow-hidden border border-zinc-600">
 						{avatarExist ? (
-							<img src={avatarExist} alt="Avatar" className="w-full h-full object-cover" />
+							<img
+								src={createImgproxyUrl(avatarExist, { width: 100, height: 100, resizeType: 'fill-down' })}
+								alt="Avatar"
+								className="w-full h-full object-cover"
+							/>
 						) : (
 							<Icons.UserAvatarIcon className="w-12 h-12 text-white" />
 						)}

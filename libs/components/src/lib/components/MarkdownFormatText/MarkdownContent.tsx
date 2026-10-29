@@ -1,4 +1,5 @@
-import { channelsActions, getStore, inviteActions, selectAppChannelById, selectTheme, useAppDispatch } from '@mezon/store';
+import { toMembersPage } from '@mezon/core';
+import { channelsActions, getStore, inviteActions, selectAppChannelById, selectClanExists, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
 	EBacktickType,
@@ -200,6 +201,8 @@ const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEn
 		async (e: React.MouseEvent) => {
 			e.preventDefault();
 			if (!isJumMessageEnabled || isTokenClickAble) {
+				const store = getStore();
+
 				if (content.startsWith(origin)) {
 					const inviteId = content.replace(origin, '');
 					if (inviteId) {
@@ -211,6 +214,15 @@ const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEn
 							dispatch(inviteActions.setIsClickInvite(true));
 							const result = await dispatch(inviteActions.getLinkInvite({ inviteId })).unwrap();
 							if (result) {
+								if (result.clan_id) {
+									const clanExist = selectClanExists(store.getState(), result.clan_id);
+									if (clanExist) {
+										navigate(toMembersPage(result.clan_id));
+										closeLoadingModal();
+										setIsLoadingInvite(false);
+										return;
+									}
+								}
 								closeLoadingModal();
 								setIsLoadingInvite(false);
 								openInviteModal();
@@ -236,7 +248,6 @@ const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEn
 
 					if (!params?.channelId || !params?.clanId || !params?.code) return;
 
-					const store = getStore();
 					const appChannel = selectAppChannelById(store.getState(), params.channelId);
 
 					if (appChannel) {

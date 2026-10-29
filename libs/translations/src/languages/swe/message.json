@@ -221,7 +221,7 @@
 	"bannedChannel": "Du är bannlyst i kanal {{channelName}}.",
 	"addAMessage": "Lägg till ett meddelande (Valfritt)",
 	"slideToCancel": "Svep för att avbryt",
-	"noAccess": "Ingen tillgång",
+	"noAccess": "Privat kanal",
 	"unknown": "Okänd",
 	"fileSelection": {
 		"uploadFile": "Ladda upp fil",

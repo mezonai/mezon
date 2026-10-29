@@ -175,5 +175,11 @@
 		"recentChannels": "Senaste kanaler",
 		"searchByChannelLabel": "Sök efter kanal etikett"
 	},
-	"setting": "Inställningar"
+	"setting": "Inställningar",
+	"chat": {
+		"quickReplies": "Snabbsvar",
+		"quickRepliesDescription": "Visa förslag på snabbsvar baserade på det senaste meddelandet i kanalen.",
+		"grammar": "Grammatikkorrigering",
+		"grammarDescription": "Föreslå stavnings- och grammatikkorrigeringar medan du skriver (upp till 256 tecken)."
+	}
 }

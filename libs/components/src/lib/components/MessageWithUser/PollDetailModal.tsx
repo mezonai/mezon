@@ -139,7 +139,7 @@ export const PollDetailModal = ({
 													src={voter.avatar}
 													srcImgProxy={
 														voter.avatar
-															? createImgproxyUrl(voter.avatar, { width: 80, height: 80, resizeType: 'fit' })
+															? createImgproxyUrl(voter.avatar, { width: 100, height: 100, resizeType: 'fill-down' })
 															: undefined
 													}
 												/>

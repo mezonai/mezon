@@ -25,7 +25,7 @@ import {
 } from '@mezon/store';
 
 import { Icons } from '@mezon/ui';
-import { buildChannelAppLaunchUrl, DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
+import { buildChannelAppLaunchUrl, createImgproxyUrl, DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
 import type { ApiChannelAppResponse } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -375,7 +375,11 @@ const ChannelAppList = memo(() => {
 							onClick={() => handleOpenApp(item)}
 						>
 							{item.app_logo ? (
-								<img src={item.app_logo} className="w-full h-full" alt={item.app_name} />
+								<img
+									src={createImgproxyUrl(item.app_logo, { width: 100, height: 100, resizeType: 'fill-down' })}
+									className="w-full h-full"
+									alt={item.app_name}
+								/>
 							) : (
 								<svg className="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 									<g>
@@ -433,7 +437,11 @@ const ListChannelApp = ({
 						>
 							<div className="w-10 h-10 flex items-center justify-center">
 								{item.app_logo ? (
-									<img src={item.app_logo} className="w-full h-full" alt={item.app_name} />
+									<img
+										src={createImgproxyUrl(item.app_logo, { width: 100, height: 100, resizeType: 'fill-down' })}
+										className="w-full h-full"
+										alt={item.app_name}
+									/>
 								) : (
 									<svg className="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 										<g>

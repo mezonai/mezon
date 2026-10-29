@@ -34,7 +34,7 @@ export function StreamPublisherAvatar({
 			username={publisher.name}
 			className={className}
 			classNameText={classNameText}
-			srcImgProxy={publisher.avatar ? createImgproxyUrl(publisher.avatar, { width: 300, height: 300, resizeType: 'fit' }) : undefined}
+			srcImgProxy={publisher.avatar ? createImgproxyUrl(publisher.avatar, { width: 100, height: 100, resizeType: 'fill-down' }) : undefined}
 			src={publisher.avatar}
 		/>
 	);

@@ -221,7 +221,7 @@
 	"bannedChannel": "{{channelName}} 채널에서 제한됨.",
 	"addAMessage": "메시지 추가 (선택 사항)",
 	"slideToCancel": "미끄러워 취소",
-	"noAccess": "권한 없음",
+	"noAccess": "비공개 채널",
 	"unknown": "알 수 없음",
 	"fileSelection": {
 		"uploadFile": "파일 업로드",

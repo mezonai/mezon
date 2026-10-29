@@ -315,7 +315,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 											srcImgProxy={createImgproxyUrl(friend.user?.avatar_url ?? '', {
 												width: 100,
 												height: 100,
-												resizeType: 'fit'
+												resizeType: 'fill-down'
 											})}
 											src={friend.user?.avatar_url}
 											className="size-6 md:size-8"

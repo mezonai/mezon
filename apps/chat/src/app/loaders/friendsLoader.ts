@@ -1,5 +1,5 @@
 import { acitvitiesActions, directActions } from '@mezon/store';
-import { CustomLoaderFunction } from './appLoader';
+import type { CustomLoaderFunction } from './appLoader';
 
 export const friendsLoader: CustomLoaderFunction = async ({ dispatch }) => {
 	dispatch(directActions.joinDirectMessageSpace({}));

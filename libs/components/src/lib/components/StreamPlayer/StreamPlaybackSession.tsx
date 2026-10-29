@@ -12,11 +12,13 @@ import {
 	toastActions,
 	useAppDispatch,
 	useAppSelector,
+	usersStreamActions,
 	videoStreamActions,
 	watchStream
 } from '@mezon/store';
 import { setPreferredOutputDeviceId, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import type Hls from 'hls.js';
+import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -30,6 +32,7 @@ const WHEP_CONNECT_TIMEOUT_MS = 5000;
 const WHEP_DISCONNECTED_GRACE_MS = 5000;
 const MAX_RECONNECTS = 3;
 const WATCH_RENEW_MS = 30000;
+const LIVE_MAX_UNCHANGED_RELOADS = 20;
 
 const hlsLevelFor = (quality: StreamQuality, levels: number) => {
 	if (quality === 'auto' || levels === 0) return -1;
@@ -52,6 +55,7 @@ export function StreamPlaybackSession() {
 	const memberCount = useAppSelector((state) => selectStreamMembersByChannelId(state, streamInfo?.streamId || '').length);
 	const { outputDeviceId, handleSinkIdFailure } = usePreferredOutputDevice();
 	const channelId = isJoin ? streamInfo?.streamId : undefined;
+	const clanId = streamInfo?.clanId;
 	const qualityRef = useRef(quality);
 	const reconnectsRef = useRef(0);
 	const whepRef = useRef<WhepSession>();
@@ -170,7 +174,7 @@ export function StreamPlaybackSession() {
 				play();
 				return;
 			}
-			const player = new HlsPlayer({ lowLatencyMode: true, backBufferLength: 10 });
+			const player = new HlsPlayer({ lowLatencyMode: true, backBufferLength: 10, liveMaxUnchangedPlaylistRefresh: LIVE_MAX_UNCHANGED_RELOADS });
 			hls = player;
 			hlsRef.current = player;
 			let recoveredMedia = false;
@@ -181,6 +185,10 @@ export function StreamPlaybackSession() {
 				reconnectsRef.current = 0;
 			});
 			player.on(HlsPlayer.Events.ERROR, (_event, data) => {
+				if (data.details === HlsPlayer.ErrorDetails.PLAYLIST_UNCHANGED_ERROR) {
+					stopRef.current(true);
+					return;
+				}
 				if (!data.fatal) return;
 				if (data.type === HlsPlayer.ErrorTypes.MEDIA_ERROR && !recoveredMedia) {
 					recoveredMedia = true;
@@ -242,6 +250,20 @@ export function StreamPlaybackSession() {
 			void dispatch(watchStream({ channelId, watching: false }));
 		};
 		window.addEventListener('pagehide', handlePageHide, { signal: listeners.signal });
+		const handleEnded = () => {
+			stopRef.current(false);
+			if (clanId) {
+				void dispatch(
+					usersStreamActions.fetchStreamChannelMembers({
+						clanId,
+						channelId: '0',
+						channelType: ChannelType.CHANNEL_TYPE_STREAMING,
+						noCache: true
+					})
+				);
+			}
+		};
+		video.addEventListener('ended', handleEnded, { signal: listeners.signal });
 		void connect();
 
 		return () => {
@@ -257,7 +279,7 @@ export function StreamPlaybackSession() {
 			video.removeAttribute('src');
 			video.load();
 		};
-	}, [channelId, playback, dispatch]);
+	}, [channelId, clanId, playback, dispatch]);
 
 	return null;
 }

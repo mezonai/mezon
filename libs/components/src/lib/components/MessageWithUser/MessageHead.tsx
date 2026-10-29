@@ -2,7 +2,13 @@ import { getShowName, useColorsRoleById } from '@mezon/core';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeStringI18n, convertUnixSecondsToTimeString, generateE2eId } from '@mezon/utils';
+import {
+	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
+	convertTimeStringI18n,
+	convertUnixSecondsToTimeString,
+	createImgproxyUrl,
+	generateE2eId
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 import getPendingNames from './usePendingNames';
@@ -77,7 +83,12 @@ const BaseMessageHead = ({
 						{userRolesClan?.highestPermissionRoleIcon &&
 							mode !== ChannelStreamMode.STREAM_MODE_DM &&
 							mode !== ChannelStreamMode.STREAM_MODE_GROUP && (
-								<img loading="lazy" src={userRolesClan.highestPermissionRoleIcon} alt="" className="'w-5 h-5 ml-1" />
+								<img
+									loading="lazy"
+									src={createImgproxyUrl(userRolesClan.highestPermissionRoleIcon)}
+									alt=""
+									className="'w-5 h-5 ml-1"
+								/>
 							)}
 					</>
 				)}

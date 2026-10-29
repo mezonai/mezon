@@ -9,6 +9,7 @@ import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
+import { settingActions } from '../app/setting.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -82,6 +83,9 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 
 		if (!response) {
 			return thunkAPI.rejectWithValue('Invalid getUserProfile');
+		}
+		if (response?.user?.id) {
+			thunkAPI.dispatch(settingActions.setSettingLocal(response?.user?.id));
 		}
 
 		if (response.fromCache) {

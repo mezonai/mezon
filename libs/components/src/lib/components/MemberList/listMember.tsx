@@ -66,7 +66,7 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 						username={user?.user?.username ?? username}
 						className="min-w-8 min-h-8 max-w-8 max-h-8"
 						classNameText="font-semibold"
-						srcImgProxy={createImgproxyUrl(avatar ?? '')}
+						srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 						src={avatar}
 					/>
 					<div className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary">

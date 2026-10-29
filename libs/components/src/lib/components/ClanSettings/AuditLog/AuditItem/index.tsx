@@ -89,7 +89,7 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 							alt={username || ''}
 							username={username}
 							className="min-w-10 min-h-10 max-w-10 max-h-10"
-							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							src={avatar}
 						/>
 					) : (

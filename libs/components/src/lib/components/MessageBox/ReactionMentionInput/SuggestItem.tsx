@@ -157,7 +157,7 @@ const SuggestItem = ({
 							<AvatarImage
 								alt={subText || ''}
 								username={Array.isArray(subText) ? subText[0] : subText}
-								srcImgProxy={createImgproxyUrl(avatarUrl ?? '')}
+								srcImgProxy={createImgproxyUrl(avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 								src={avatarUrl}
 								className="size-4"
 								classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
