@@ -3,8 +3,7 @@ import { useAuth } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
 import type { ICanvas } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 type GroupCanvasProps = {
 	canvas: ICanvas;
 	channelId?: string;
@@ -16,8 +15,16 @@ type GroupCanvasProps = {
 	onDeleteCanvas: (canvasId: string, canvasTitle: string) => void;
 };
 
-const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, selectedCanvasId, onSelectCanvas, onDeleteCanvas }: GroupCanvasProps) => {
-	const { t } = useTranslation('common');
+const GroupCanvas = ({
+	canvas,
+	channelId,
+	clanId,
+	onClose,
+	creatorIdChannel,
+	selectedCanvasId,
+	onSelectCanvas,
+	onDeleteCanvas
+}: GroupCanvasProps) => {
 	const canvasId = canvas.id;
 	const { canvasId: currentCanvasId } = useParams<{ canvasId: string }>();
 	const { userProfile } = useAuth();
@@ -31,10 +38,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 		onClose();
 	};
 
-	const link =
-		canvas.parent_id && canvas.parent_id !== '0'
-			? `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`
-			: `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
+	const link = `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
 
 	return (
 		<>
