@@ -15,5 +15,6 @@
 		"ephemeral": {
 			"description": "Eine temporäre Nachricht senden (nur für den ausgewählten Nutzer sichtbar)"
 		}
-	}
+	},
+	"convertLongToFile": "Lange Nachricht in Datei umwandeln"
 }

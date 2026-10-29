@@ -15,5 +15,6 @@
 		"ephemeral": {
 			"description": "Gửi tin nhắn tạm thời (chỉ hiển thị cho người dùng được chọn)"
 		}
-	}
+	},
+	"convertLongToFile": "Chuyển tin nhắn dài thành tệp"
 }
