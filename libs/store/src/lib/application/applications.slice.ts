@@ -368,9 +368,10 @@ export const adminApplicationSlice = createSlice({
 			const changes: Partial<typeof payload> & Pick<MezonUpdateAppBody, 'metadata'> = {};
 
 			for (const key of ['appname', 'applogo', 'app_url', 'about', 'metadata'] as const) {
-				if (request[key] !== undefined) {
-					changes[key] = request[key];
-				}
+				const value = request[key];
+				if (value === undefined) continue;
+				if (key !== 'applogo' && value === '') continue;
+				changes[key] = value;
 			}
 
 			const isShadow: unknown = request.is_shadow;
