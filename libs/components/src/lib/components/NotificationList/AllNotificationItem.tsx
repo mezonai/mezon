@@ -310,7 +310,7 @@ function AllTabContent({ message, subject, category, clanId, senderId, embed, on
 					alt="user avatar"
 					className="w-10 h-10 min-w-10 flex-shrink-0"
 					username={username}
-					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
+					srcImgProxy={createImgproxyUrl(avatar ?? '', {
 						width: 100,
 						height: 100,
 						resizeType: 'fill-down'
