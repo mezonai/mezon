@@ -343,11 +343,10 @@ export default function PreJoinCalling() {
 				} catch (err) {
 					console.error('Error accessing camera:', err);
 					if (request === cameraRequestRef.current) {
-						if (reportMediaAccessError('camera', err)) {
-							if (inMeeting) dispatch(voiceActions.setShowCamera(false));
-						} else {
+						if (!reportMediaAccessError('camera', err)) {
 							setError('Failed to access camera. Please check your permissions and try again.');
 						}
+						if (inMeeting) dispatch(voiceActions.setShowCamera(false));
 					}
 				}
 			};
