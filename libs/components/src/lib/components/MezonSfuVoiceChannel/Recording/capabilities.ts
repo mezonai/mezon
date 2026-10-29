@@ -63,7 +63,13 @@ export function supportsDiskStreaming(): boolean {
 
 export function supportsOriginPrivateFileSystem(): boolean {
 	const win = getRecordingWindow();
-	return !!win?.isSecureContext && typeof navigator !== 'undefined' && typeof navigator.storage?.getDirectory === 'function';
+	return (
+		!!win?.isSecureContext &&
+		typeof navigator !== 'undefined' &&
+		typeof navigator.storage?.getDirectory === 'function' &&
+		typeof FileSystemFileHandle !== 'undefined' &&
+		typeof FileSystemFileHandle.prototype.createWritable === 'function'
+	);
 }
 
 export function detectRecorderCapabilities(): RecorderCapabilities {
