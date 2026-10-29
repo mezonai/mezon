@@ -175,5 +175,11 @@
 		"recentChannels": "Kürzlich verwendete Kanäle",
 		"searchByChannelLabel": "Nach Kanalname suchen"
 	},
-	"setting": "Einstellungen"
+	"setting": "Einstellungen",
+	"chat": {
+		"quickReplies": "Schnellantworten",
+		"quickRepliesDescription": "Schnellantwortvorschläge basierend auf der letzten Nachricht im Kanal anzeigen.",
+		"grammar": "Grammatik korrigieren",
+		"grammarDescription": "Beim Tippen Rechtschreib- und Grammatikkorrekturen vorschlagen (bis zu 256 Zeichen)."
+	}
 }

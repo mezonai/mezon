@@ -175,5 +175,11 @@
 		"recentChannels": "Recente kanalen",
 		"searchByChannelLabel": "Zoeken op kanaalletiket"
 	},
-	"setting": "Instellingen"
+	"setting": "Instellingen",
+	"chat": {
+		"quickReplies": "Snelle antwoorden",
+		"quickRepliesDescription": "Suggesties voor snelle antwoorden weergeven op basis van het laatste bericht in het kanaal.",
+		"grammar": "Grammatica corrigeren",
+		"grammarDescription": "Stel spelling- en grammaticacorrecties voor tijdens het typen (maximaal 256 tekens)."
+	}
 }

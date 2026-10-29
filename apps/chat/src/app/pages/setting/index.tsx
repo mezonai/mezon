@@ -3,6 +3,7 @@ import {
 	SettingAccount,
 	SettingActivity,
 	SettingAppearance,
+	SettingChat,
 	SettingDevices,
 	SettingItem,
 	SettingLanguage,
@@ -73,6 +74,7 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 					<SettingItem onItemClick={handleSettingItemClick} initSetting={currentSetting} />
 				</div>
 				{currentSetting === EUserSettings.ACCOUNT && <SettingAccount menuIsOpen={menuIsOpen} onSettingProfile={handleSettingItemClick} />}
+				{currentSetting === EUserSettings.CHAT && <SettingChat menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.DEVICES && <SettingDevices menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.PROFILES && <SettingRightProfile menuIsOpen={menuIsOpen} isDM={isDM} />}
 				{currentSetting === EUserSettings.APPEARANCE && <SettingAppearance menuIsOpen={menuIsOpen} />}
