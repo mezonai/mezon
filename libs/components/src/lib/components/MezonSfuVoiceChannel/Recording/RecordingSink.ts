@@ -197,7 +197,6 @@ class OriginPrivateFileSystemSink implements RecordingSink {
 		}
 		const blob = new Blob(files, { type: this.mimeType });
 		triggerDownload(URL.createObjectURL(blob), this.fileName);
-		// Keep File snapshots readable during download. The next app load removes marked exports.
 		try {
 			await withWriteTimeout(this.directory.getFileHandle(OPFS_EXPORTED, { create: true }));
 		} catch (error) {
@@ -210,7 +209,6 @@ class OriginPrivateFileSystemSink implements RecordingSink {
 		this.accepting = false;
 		this.failed ??= new Error('recording-aborted');
 		abortWritable(this.writable);
-		// Preserve committed data, including when export failed and the caller subsequently aborts.
 		if (this.parts.length === 0) void this.removeTemporaryFiles();
 	}
 
@@ -235,7 +233,6 @@ async function removeExpiredRecordings(directory: FileSystemDirectoryHandle): Pr
 		for await (const [name, entry] of directory.entries()) {
 			if (name.startsWith(OPFS_FILE_PREFIX)) entries.push([name, entry]);
 		}
-		// Do not mutate the live iterator: some browsers otherwise skip the next entry.
 		for (const [name, entry] of entries) {
 			if (activeRecordings.has(name)) continue;
 			try {
