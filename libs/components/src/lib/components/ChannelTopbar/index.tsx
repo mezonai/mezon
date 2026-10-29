@@ -837,6 +837,7 @@ function TimelineViewToggleButton() {
 
 	const handleToggle = useCallback(() => {
 		dispatch(appActions.setMediaChannelViewMode(!isMediaChannelView));
+		dispatch(appActions.setIsShowCanvas(false));
 	}, [dispatch, isMediaChannelView]);
 
 	return (
