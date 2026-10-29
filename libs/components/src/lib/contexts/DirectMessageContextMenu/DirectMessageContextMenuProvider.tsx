@@ -10,6 +10,7 @@ import {
 	selectPinnedDms,
 	selectUpdateDmGroupError,
 	selectUpdateDmGroupLoading,
+	settingActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -259,7 +260,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 										);
 										return;
 									}
-									dispatch(directActions.togglePinDm({ dmId: channelId }));
+									dispatch(settingActions.togglePinDm({ dmId: channelId }));
 								}}
 								setWarningStatus={setWarningStatus}
 							/>

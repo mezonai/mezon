@@ -221,7 +221,7 @@
 	"bannedChannel": "Sei stato bandito dal canale {{channelName}}.",
 	"addAMessage": "Aggiungi un messaggio (opzionale)",
 	"slideToCancel": "Trascina per annullare",
-	"noAccess": "Nessun accesso",
+	"noAccess": "Canale privato",
 	"unknown": "Sconosciuto",
 	"fileSelection": {
 		"uploadFile": "Carica file",

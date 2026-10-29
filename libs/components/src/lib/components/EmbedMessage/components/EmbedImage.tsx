@@ -1,3 +1,4 @@
+import { createImgproxyUrl } from '@mezon/utils';
 import type { CSSProperties } from 'react';
 import { useModal } from 'react-modal-hook';
 import { ImagePreview } from '../../ImagePreview';
@@ -24,7 +25,7 @@ export function EmbedImage({ url, width, height }: EmbedImageProps) {
 	return (
 		<div className="mt-2 rounded overflow-hidden max-w-full w-full" style={containerStyle}>
 			<img
-				src={url}
+				src={createImgproxyUrl(url, { width: 0, height: 0, resizeType: 'force' })}
 				alt=""
 				className={
 					hasAspect ? 'size-full max-w-full object-contain cursor-pointer' : 'w-full h-auto max-w-full object-contain cursor-pointer'

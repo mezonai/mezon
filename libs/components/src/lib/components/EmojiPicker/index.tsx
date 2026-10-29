@@ -28,6 +28,7 @@ import {
 	PREDEFINED_EMOJI_CATEGORIES,
 	RECENT_EMOJI_CATEGORY,
 	SubPanelName,
+	createImgproxyUrl,
 	getIdSaleItemFromSource,
 	getSrcEmoji,
 	isPublicChannel
@@ -102,7 +103,11 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			<Icons.ClockIcon className="h-7 w-7" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
-					<img src={emoji.clan_logo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
+					<img
+						src={createImgproxyUrl(emoji.clan_logo ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+						className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover"
+						alt={emoji.clan_name}
+					/>
 				) : (
 					<div className="max-w-7 max-h-7 w-full rounded-full aspect-square flex items-center justify-center text-theme-primary bg-item-theme hover:[background:var(--bg-item-hover)]">
 						{emoji.clan_name?.charAt(0).toUpperCase()}
@@ -518,7 +523,7 @@ const EmojisPanel = React.memo(function EmojisPanel({
 					>
 						<img
 							draggable="false"
-							src={!item.src ? getSrcEmoji(item?.id || '') : item.src}
+							src={!item.src ? getSrcEmoji(item?.id || '') : createImgproxyUrl(item.src)}
 							alt={item.shortname}
 							className={'max-h-full max-w-full'}
 						/>

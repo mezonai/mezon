@@ -52,7 +52,11 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 
 			<div className="flex items-end justify-center gap-1">
 				{avatarUrl ? (
-					<img className="w-4 h-4 rounded-full select-none object-cover" src={createImgproxyUrl(avatarUrl)} alt="" />
+					<img
+						className="w-4 h-4 rounded-full select-none object-cover"
+						src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
+						alt=""
+					/>
 				) : (
 					<div className="size-4 rounded-full bg-bgDisable flex items-center justify-center">
 						<Icons.AvatarUser className="w-2.5 h-2.5" />

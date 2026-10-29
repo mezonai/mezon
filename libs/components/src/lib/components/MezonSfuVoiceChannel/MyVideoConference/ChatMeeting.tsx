@@ -1,5 +1,6 @@
 import { selectAllAccount, selectOpenExternalChatBox, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { createImgproxyUrl } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -127,7 +128,11 @@ const MessageItem = ({ message }: { message: string }) => {
 		<div className={`flex gap-2 p-2 text-contentPrimary ${iseMe ? 'flex-row-reverse' : 'flex-row'}`}>
 			<div className="flex-shrink-0 pt-1">
 				{avatarUrl ? (
-					<img src={avatarUrl} alt={nameSender} className="w-8 h-8 rounded-full object-cover" />
+					<img
+						src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
+						alt={nameSender}
+						className="w-8 h-8 rounded-full object-cover"
+					/>
 				) : (
 					<div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold">
 						{nameSender.charAt(0).toUpperCase()}

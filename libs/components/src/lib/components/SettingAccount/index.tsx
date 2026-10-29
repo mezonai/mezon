@@ -104,7 +104,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 							alt={userProfile?.user?.username || ''}
 							username={userProfile?.user?.username}
 							className="w-[90px] h-[90px] xl:w-[100px] xl:h-[100px] rounded-[50px] border-[6px] border-solid border-user object-cover"
-							srcImgProxy={createImgproxyUrl(urlImg ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+							srcImgProxy={createImgproxyUrl(urlImg ?? '', { width: 300, height: 300, resizeType: 'fill-down' })}
 							src={urlImg}
 							classNameText="!text-5xl"
 						/>

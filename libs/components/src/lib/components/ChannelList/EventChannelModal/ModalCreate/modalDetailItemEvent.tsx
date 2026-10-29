@@ -56,7 +56,13 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 				className="w-[600px] min-h-[400px] max-h-[600px] rounded-lg overflow-hidden text-base bg-theme-setting-primary text-theme-primary"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item')}
 			>
-				{event?.logo && <img src={event?.logo} alt={event?.title} className="w-full h-44 object-cover" />}
+				{event?.logo && (
+					<img
+						src={createImgproxyUrl(event.logo, { width: 0, height: 0, resizeType: 'force' })}
+						alt={event?.title}
+						className="w-full h-44 object-cover"
+					/>
+				)}
 				<div className="flex justify-between items-center pt-4 border-b font-bold  cursor-pointer ">
 					<div className="flex items-center gap-x-4 ml-4">
 						<div className="gap-x-6 flex items-center">
@@ -152,7 +158,11 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 			</p>
 			<div className="flex items-center gap-x-3">
 				{currentClanLogo ? (
-					<img src={currentClanLogo} alt={currentClanName} className="size-5 rounded-full" />
+					<img
+						src={createImgproxyUrl(currentClanLogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+						alt={currentClanName}
+						className="size-5 rounded-full"
+					/>
 				) : (
 					<div className="size-5 rounded-full flex justify-center items-center text-theme-primary text-lg font-bold bg-item-theme hover:[background:var(--bg-item-hover)]">
 						{avatarClan}
@@ -240,7 +250,11 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 			</div>
 			<div className="flex items-center gap-x-3">
 				{avatarDefault ? (
-					<img src={createImgproxyUrl(avatarDefault)} alt={userName} className="size-5 rounded-full object-cover" />
+					<img
+						src={createImgproxyUrl(avatarDefault, { width: 100, height: 100, resizeType: 'fill-down' })}
+						alt={userName}
+						className="size-5 rounded-full object-cover"
+					/>
 				) : (
 					<div className="size-5 rounded-full bg-bgDisable flex items-center justify-center">
 						<Icons.AvatarUser className="w-3 h-3" />
@@ -284,7 +298,11 @@ const InterestedDetail = ({ userIds }: InterestedDetailProps) => {
 							data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.user_interested.item')}
 						>
 							{avatarUrl ? (
-								<img src={createImgproxyUrl(avatarUrl)} alt={name} className="size-7 rounded-full object-cover" />
+								<img
+									src={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
+									alt={name}
+									className="size-7 rounded-full object-cover"
+								/>
 							) : (
 								<div className="size-7 rounded-full bg-bgDisable flex items-center justify-center">
 									<Icons.AvatarUser className="w-4 h-4" />

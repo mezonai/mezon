@@ -1,4 +1,5 @@
 import React from 'react';
+import { normalizeSearchString } from '.';
 
 export const filterOptionReactSelect = (option: { label: JSX.Element | string; value: string }, inputValue: string) => {
 	let label = '';
@@ -18,5 +19,5 @@ export const filterOptionReactSelect = (option: { label: JSX.Element | string; v
 	} else if (typeof option.label === 'string') {
 		label = option.label;
 	}
-	return label.toLowerCase().includes(inputValue.toLowerCase());
+	return normalizeSearchString(label).includes(normalizeSearchString(inputValue.trim()));
 };

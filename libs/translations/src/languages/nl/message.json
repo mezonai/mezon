@@ -221,7 +221,7 @@
 	"bannedChannel": "Je bent verbannen in kanaal {{channelName}}.",
 	"addAMessage": "Voeg een bericht toe (Optioneel)",
 	"slideToCancel": "Veeg naar annuleren",
-	"noAccess": "Geen toegang",
+	"noAccess": "Privé-kanaal",
 	"unknown": "Onbekend",
 	"fileSelection": {
 		"uploadFile": "Bestand uploaden",

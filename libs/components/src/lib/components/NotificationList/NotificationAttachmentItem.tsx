@@ -42,9 +42,16 @@ export type NotificationAttachmentItemProps = {
 	readonly index: number;
 	readonly compact?: boolean;
 	readonly channelId?: string;
+	readonly isPresignPending?: boolean;
 };
 
-export const NotificationAttachmentItem = ({ attachment: rawAttachment, index, compact = false, channelId }: NotificationAttachmentItemProps) => {
+export const NotificationAttachmentItem = ({
+	attachment: rawAttachment,
+	index,
+	compact = false,
+	channelId,
+	isPresignPending
+}: NotificationAttachmentItemProps) => {
 	const { signCdnUrl } = useCdnUrlSigner([rawAttachment?.url, rawAttachment?.thumbnail], channelId);
 	const attachment = useMemo<ApiMessageAttachment>(
 		() => ({ ...rawAttachment, url: signCdnUrl(rawAttachment?.url), thumbnail: signCdnUrl(rawAttachment?.thumbnail) }),
@@ -166,7 +173,8 @@ export const NotificationAttachmentItem = ({ attachment: rawAttachment, index, c
 			filename: attachment?.filename || displayName
 		},
 		size: compact ? 'w-8 h-8' : 'w-10 h-10',
-		isFileList: true
+		isFileList: true,
+		isPresignPending
 	});
 
 	return (

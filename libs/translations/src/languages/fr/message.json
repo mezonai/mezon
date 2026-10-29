@@ -221,7 +221,7 @@
 	"bannedChannel": "Vous êtes banni du canal {{channelName}}.",
 	"addAMessage": "Ajouter un message (facultatif)",
 	"slideToCancel": "Glissez pour annuler",
-	"noAccess": "Accès refusé",
+	"noAccess": "Canal privé",
 	"unknown": "Inconnu",
 	"fileSelection": {
 		"uploadFile": "Télécharger un fichier",

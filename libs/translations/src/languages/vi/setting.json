@@ -12,7 +12,8 @@
 		"friendRequests": "Yêu cầu kết bạn",
 		"QRScan": "Quét mã QR",
 		"MyQRCode": "Mã QR của tôi",
-		"devices": "Thiết bị"
+		"devices": "Thiết bị",
+		"chat": "Tin nhắn"
 	},
 	"deviceSettings": {
 		"description1": "Đây là tất cả các thiết bị đang đăng nhập vào tài khoản của bạn. Bạn có thể đăng xuất từng thiết bị.",
@@ -175,5 +176,11 @@
 		"recentChannels": "Kênh gần đây",
 		"searchByChannelLabel": "Tìm kiếm theo nhãn kênh"
 	},
-	"setting": "Cài đặt"
+	"setting": "Cài đặt",
+	"chat": {
+		"quickReplies": "Câu trả lời nhanh",
+		"quickRepliesDescription": "Hiển thị các gợi ý trả lời nhanh dựa trên tin nhắn gần nhất trong kênh.",
+		"grammar": "Sửa lỗi ngữ pháp",
+		"grammarDescription": "Gợi ý sửa lỗi chính tả và ngữ pháp trong khi bạn nhập (tối đa 256 ký tự)."
+	}
 }

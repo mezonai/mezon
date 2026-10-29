@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { SubPanelName, blankReferenceObj } from '@mezon/utils';
+import { SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -184,7 +184,11 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 						}`}
 					>
 						{cat.url !== '' ? (
-							<img src={cat.url} alt={cat.type} className="w-full h-full object-cover rounded-[inherit] transition-all duration-300" />
+							<img
+								src={createImgproxyUrl(cat.url, { width: 100, height: 100, resizeType: 'fill-down' })}
+								alt={cat.type}
+								className="w-full h-full object-cover rounded-[inherit] transition-all duration-300"
+							/>
 						) : (
 							<div
 								className={`font-bold text-sm transition-colors duration-200 ${selectedType === cat.type ? 'text-white' : 'text-theme-primary opacity-70 group-hover:text-white group-hover:opacity-100'}`}
@@ -255,7 +259,11 @@ const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 			<div className="flex flex-col gap-2">
 				<button onClick={handleToggleButton} className="flex flex-row items-center gap-2 w-full text-left group sticky top-0  z-10 py-1  ">
 					{categoryLogo ? (
-						<img src={categoryLogo} alt={categoryName} className="w-4 h-4 rounded-full object-cover flex-shrink-0" />
+						<img
+							src={createImgproxyUrl(categoryLogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+							alt={categoryName}
+							className="w-4 h-4 rounded-full object-cover flex-shrink-0"
+						/>
 					) : (
 						<div className="w-4 h-4 rounded-full bg-theme-primary/20 flex items-center justify-center flex-shrink-0">
 							<span className="text-[8px] font-bold text-theme-secondary">{categoryName.charAt(0).toUpperCase()}</span>

@@ -25,6 +25,7 @@ import {
 	selectQuickMenuByChannelId,
 	selectReactionRightState,
 	selectStatusMenu,
+	selectTopicAnonymousMode,
 	threadsActions,
 	toastActions,
 	useAppDispatch,
@@ -156,6 +157,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const dispatch = useAppDispatch();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.id as string));
+	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
 	const [mentionEveryone, setMentionEveryone] = useState(false);
 	const addEmojiState = useSelector(selectAddEmojiState);
 	const emojiPicked = useSelector(selectEmojiObjSuggestion);
@@ -207,6 +209,11 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const [isPasteMulti, setIsPasteMulti] = useState<boolean>(false);
 
 	const mentionClanId = currentChannel?.clan_id ?? '';
+	const isAnonymousSend =
+		!isDm &&
+		Boolean(mentionClanId || props.currentClanId) &&
+		(mentionClanId || props.currentClanId) !== '0' &&
+		(props.isTopic ? Boolean(currTopicId) && topicAnonymousMode : anonymousMode);
 	const clanRosterCapped = useAppSelector((state) => selectClanRosterCapped(state, mentionClanId));
 	const {
 		searchMembers: searchRemoteMembers,
@@ -909,17 +916,23 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const searchLocalUserMentions = useCallback(
 		(search: string): MentionData[] => {
+			if (isAnonymousSend) {
+				return [];
+			}
 			const filteredMentions = !isEphemeralMode
 				? props.listMentions || []
 				: props.listMentions?.filter((item) => item.display !== TITLE_MENTION_HERE && item.id !== userProfile?.user?.id) || [];
 
 			return searchMentionsHashtag(search, filteredMentions) as MentionData[];
 		},
-		[props.listMentions, isEphemeralMode, userProfile?.user?.id]
+		[isAnonymousSend, props.listMentions, isEphemeralMode, userProfile?.user?.id]
 	);
 
 	const handleSearchUserMention = useCallback(
 		async (search: string): Promise<MentionData[]> => {
+			if (isAnonymousSend) {
+				return [];
+			}
 			if (!props.listMentions?.length && props.currentClanId && props.currentClanId !== '0') {
 				dispatch(
 					channelMembersActions.fetchChannelMembers({
@@ -934,6 +947,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			return appendRemoteMembers(localMentions, await searchRemoteMembers(search), isEphemeralMode ? userProfile?.user?.id : undefined);
 		},
 		[
+			isAnonymousSend,
 			props.listMentions,
 			props.currentClanId,
 			props.currentChannelId,

@@ -9,10 +9,12 @@ type Playback = { token: string; whep_url: string; hls_url: string };
 type Watch = { channelId: string; watching: boolean };
 type State = {
 	isJoin: boolean;
-	streamInfo: { streamId: string } | null;
+	streamInfo: { streamId: string; clanId: string } | null;
 	playback: Playback | null;
 	members: Record<string, string[]>;
 	watches: Watch[];
+	toasts: unknown[];
+	refreshes: unknown[];
 };
 type Action = { type: string; payload?: unknown };
 type Act = { (callback: () => Promise<unknown>): Promise<void>; (callback: () => void): void };
@@ -28,6 +30,7 @@ jest.mock(
 		return {
 			appActions: { setIsShowChatStream: action('app/setIsShowChatStream') },
 			toastActions: { addToast: action('toast/addToast') },
+			usersStreamActions: { fetchStreamChannelMembers: action('stream/fetchStreamChannelMembers') },
 			videoStreamActions: { resetPlayback: action('stream/resetPlayback'), setPlayback: action('stream/setPlayback') },
 			fetchStreamPlayback: action('stream/fetchStreamPlayback'),
 			watchStream: action('stream/watchStream'),
@@ -44,6 +47,7 @@ jest.mock(
 	},
 	{ virtual: true }
 );
+jest.mock('mezon-js', () => ({ ChannelType: { CHANNEL_TYPE_STREAMING: 6 } }));
 jest.mock('@mezon/utils', () => ({ setPreferredOutputDeviceId: () => undefined, sinkIdForHtmlMediaElement: () => '' }), { virtual: true });
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('../MezonSfuVoiceChannel/usePreferredOutputDevice', () => ({
@@ -64,10 +68,19 @@ class MockHls {
 	static isSupported = () => true;
 	static Events = { MANIFEST_PARSED: 'manifestParsed', FRAG_BUFFERED: 'fragBuffered', ERROR: 'hlsError' };
 	static ErrorTypes = { MEDIA_ERROR: 'mediaError' };
+	static ErrorDetails = { PLAYLIST_UNCHANGED_ERROR: 'playlistUnchangedError' };
+	static instances: MockHls[] = [];
 	levels = [];
 	currentLevel = -1;
-	on() {
-		return undefined;
+	handlers: Record<string, (event: string, data: unknown) => void> = {};
+	constructor(readonly config: Record<string, unknown>) {
+		MockHls.instances.push(this);
+	}
+	on(event: string, handler: (event: string, data: unknown) => void) {
+		this.handlers[event] = handler;
+	}
+	emit(event: string, data: unknown) {
+		this.handlers[event]?.(event, data);
 	}
 	once() {
 		return undefined;
@@ -85,7 +98,7 @@ class MockHls {
 
 jest.mock('hls.js', () => ({ __esModule: true, default: MockHls }));
 
-const mockVideo = {
+const mockVideo = Object.assign(new EventTarget(), {
 	volume: 1,
 	muted: false,
 	srcObject: null,
@@ -94,13 +107,13 @@ const mockVideo = {
 	canPlayType: () => '',
 	removeAttribute: () => undefined,
 	load: () => undefined
-};
+});
 
 Object.assign(globalThis, { window: new EventTarget() });
 
 const hlsUrl = (channelId: string) => `https://cdn.mezon.ai/${channelId}/live/index.m3u8`;
 
-const initialState: State = { isJoin: false, streamInfo: null, playback: null, members: {}, watches: [] };
+const initialState: State = { isJoin: false, streamInfo: null, playback: null, members: {}, watches: [], toasts: [], refreshes: [] };
 
 const reducer = (state: State = initialState, action: Action): State => {
 	switch (action.type) {
@@ -109,7 +122,7 @@ const reducer = (state: State = initialState, action: Action): State => {
 			return {
 				...state,
 				isJoin: true,
-				streamInfo: { streamId: channelId },
+				streamInfo: { streamId: channelId, clanId: '7' },
 				playback: { token: 't', whep_url: '', hls_url: hlsUrl(channelId) },
 				members: { [channelId]: ['publisher'] }
 			};
@@ -120,6 +133,10 @@ const reducer = (state: State = initialState, action: Action): State => {
 			return { ...state, isJoin: false, playback: null };
 		case 'stream/watchStream':
 			return { ...state, watches: [...state.watches, action.payload as Watch] };
+		case 'toast/addToast':
+			return { ...state, toasts: [...state.toasts, action.payload] };
+		case 'stream/fetchStreamChannelMembers':
+			return { ...state, refreshes: [...state.refreshes, action.payload] };
 		default:
 			return state;
 	}
@@ -137,6 +154,7 @@ beforeEach(() => {
 	jest.useFakeTimers();
 	jest.clearAllMocks();
 	mockHlsSources.length = 0;
+	MockHls.instances.length = 0;
 	store = createStore();
 	act(() => {
 		renderer = create(
@@ -194,4 +212,39 @@ it('plays HLS without trying WHEP when the response has no WHEP URL', async () =
 	await advance(0);
 	expect(startWhep).not.toHaveBeenCalled();
 	expect(mockHlsSources).toEqual([hlsUrl('42')]);
+});
+
+it('leaves the player and refreshes the stream members when the HLS stream ends', async () => {
+	act(() => {
+		store.dispatch(join('42'));
+	});
+	await advance(0);
+	act(() => {
+		mockVideo.dispatchEvent(new Event('ended'));
+	});
+	expect(store.getState().playback).toBeNull();
+	expect(store.getState().toasts).toEqual([]);
+	expect(store.getState().refreshes).toEqual([{ clanId: '7', channelId: '0', channelType: 6, noCache: true }]);
+
+	act(() => {
+		mockVideo.dispatchEvent(new Event('ended'));
+	});
+	expect(store.getState().refreshes).toHaveLength(1);
+});
+
+it('stops with an error once the live playlist stops advancing', async () => {
+	act(() => {
+		store.dispatch(join('42'));
+	});
+	await advance(0);
+	const [player] = MockHls.instances;
+	expect(player.config).toMatchObject({ liveMaxUnchangedPlaylistRefresh: 20 });
+
+	act(() => player.emit('hlsError', { details: 'fragParsingError', fatal: false }));
+	expect(store.getState().playback).not.toBeNull();
+
+	act(() => player.emit('hlsError', { details: 'playlistUnchangedError', fatal: false }));
+	expect(store.getState().playback).toBeNull();
+	expect(store.getState().toasts).toHaveLength(1);
+	expect(store.getState().watches).toEqual([{ channelId: '42', watching: false }]);
 });

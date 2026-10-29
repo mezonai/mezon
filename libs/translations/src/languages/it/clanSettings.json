@@ -58,7 +58,8 @@
 		"setupTips": "Invia suggerimenti utili per la configurazione del server.",
 		"auditLog": "Invia un log quando viene eseguita un'azione nel clan",
 		"anoTitle": "Modalità anonima",
-		"anoDesc": "Impedisci agli utenti di utilizzare la modalità anonima"
+		"anoDesc": "Impedisci agli utenti di utilizzare la modalità anonima",
+		"privateWelcome": "Il canale di benvenuto è stato impostato come canale privato."
 	},
 	"appDirectory": {
 		"categories": {

@@ -1095,6 +1095,7 @@ export type AnswerByClanArgs = {
 
 export enum EUserSettings {
 	ACCOUNT = 'Account',
+	CHAT = 'CHAT',
 	PROFILES = 'Profiles',
 	PRIVACY_SAFETY = 'Privacy & Safety',
 	FAMILY_CENTER = 'Family Center',
@@ -1518,6 +1519,7 @@ export type MentionReactInputProps = {
 	hasPermissionEdit?: boolean;
 	voiceLongPress?: ILongPressType;
 	isRecording?: boolean;
+	updateRef?: React.MutableRefObject<((input: RequestInput) => void) | null>;
 	readonly onEditEphemeral?: (
 		messageId: string,
 		content: IMessageSendPayload,

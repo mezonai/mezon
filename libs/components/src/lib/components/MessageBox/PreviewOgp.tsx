@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
-import { INVITE_URL_REGEX, checkInviteLinkValid, isTikTokLink, isYouTubeLink } from '@mezon/utils';
+import { INVITE_URL_REGEX, checkInviteLinkValid, createImgproxyUrl, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -229,7 +229,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 					<div className="h-[72px] relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
 						{data.banner ? (
 							<img
-								src={data.banner}
+								src={createImgproxyUrl(data.banner, { width: 0, height: 0, resizeType: 'force' })}
 								className="absolute inset-0 w-full h-full object-cover"
 								alt=""
 								onError={(e) => {
@@ -240,7 +240,13 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 					</div>
 					<div className="absolute top-[40px] left-4 w-[72px] h-[72px] rounded-[22px] overflow-hidden border-4 dark:border-bgPrimary border-bgLightTertiary bg-bgLightMode dark:bg-bgSecondary shadow-lg">
 						<div className="w-full h-full">
-							{data.image ? <img src={data.image} className="w-full h-full object-cover" alt="Clan logo" /> : null}
+							{data.image ? (
+								<img
+									src={createImgproxyUrl(data.image, { width: 100, height: 100, resizeType: 'fill-down' })}
+									className="w-full h-full object-cover"
+									alt="Clan logo"
+								/>
+							) : null}
 						</div>
 					</div>
 					<div className="px-4 pb-4 pt-10">
@@ -283,7 +289,12 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 				<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
 			</div>
 			<div className="aspect-square rounded-md h-full flex items-center">
-				<img src={data.image} alt={data.title || ''} className="h-full aspect-square object-cover rounded-md" onError={handleErrorImage} />
+				<img
+					src={createImgproxyUrl(data.image ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+					alt={data.title || ''}
+					className="h-full aspect-square object-cover rounded-md"
+					onError={handleErrorImage}
+				/>
 			</div>
 			<div className="flex flex-col justify-center gap-2 flex-1 overflow-hidden">
 				<h5 className="text-sm truncate font-semibold">{data.title}</h5>

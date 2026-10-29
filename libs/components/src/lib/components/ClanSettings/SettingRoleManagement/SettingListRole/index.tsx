@@ -19,7 +19,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR, EDragBorderPosition } from '@mezon/utils';
+import { DEFAULT_ROLE_COLOR, EDragBorderPosition, createImgproxyUrl } from '@mezon/utils';
 import type { ApiUpdateRoleOrderRequest } from 'mezon-js';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -206,7 +206,7 @@ const ItemRole = forwardRef<HTMLDivElement, ItemRoleProps>(({ title, color, isCh
 				`}
 			>
 				<div className="size-3 rounded-full min-w-3" style={{ backgroundColor: color || DEFAULT_ROLE_COLOR }}></div>
-				{iconUrl && <img src={iconUrl} alt="" className={'w-5 h-5'} />}
+				{iconUrl && <img src={createImgproxyUrl(iconUrl)} alt="" className={'w-5 h-5'} />}
 				{showLock && <Icons.IconLock defaultSize="size-3 text-contentTertiary" />}
 				<span className="one-line">{title}</span>
 			</button>

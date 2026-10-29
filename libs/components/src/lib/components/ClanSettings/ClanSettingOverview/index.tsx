@@ -1,15 +1,13 @@
 import { useClans } from '@mezon/core';
 import {
-	channelSettingActions,
 	checkDuplicateNameApi,
-	ETypeFetchChannelSetting,
 	fetchSystemMessageByClanId,
 	selectCurrentClan,
 	toastActions,
 	updateSystemMessage,
 	useAppDispatch
 } from '@mezon/store';
-import { generateE2eId, TypeCheck } from '@mezon/utils';
+import { TypeCheck, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -186,20 +184,6 @@ const ClanSettingOverview = () => {
 		});
 	};
 
-	useEffect(() => {
-		if (!currentClan?.id) {
-			return;
-		}
-		dispatch(
-			channelSettingActions.fetchActiveChannelSettingInClan({
-				clanId: currentClan?.id || '',
-				parentId: '0',
-				page: 1,
-				limit: 1000,
-				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL
-			})
-		);
-	}, [currentClan?.id]);
 	return (
 		<div className="h-full pb-10">
 			<ClanLogoName

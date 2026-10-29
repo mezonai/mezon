@@ -1,6 +1,6 @@
 import { useAppParams } from '@mezon/core';
 import { Button } from '@mezon/ui';
-import { fileTypeImage, generateE2eId, MAX_FILE_SIZE_8MB, ValidateSpecialCharacters } from '@mezon/utils';
+import { createImgproxyUrl, fileTypeImage, generateE2eId, MAX_FILE_SIZE_8MB, ValidateSpecialCharacters } from '@mezon/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -129,7 +129,11 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 								onClick={handleImageClick}
 							>
 								<img
-									src={imagePreview || '/assets/images/avatar-group.png'}
+									src={createImgproxyUrl(imagePreview || '/assets/images/avatar-group.png', {
+										width: 100,
+										height: 100,
+										resizeType: 'fill-down'
+									})}
 									alt="Group"
 									className="w-full h-full rounded-full object-cover border-4 border-[#404249] group-hover:border-[#5865f2] transition-colors duration-200"
 								/>

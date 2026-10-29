@@ -1,4 +1,4 @@
-import { selectClanUnreadStates, selectOrderedClansWithGroups } from '@mezon/store';
+import { selectAllClans, selectClanUnreadStates, selectOrderedClansWithGroups, useAppSelector } from '@mezon/store';
 import { FloatButton } from '@mezon/ui';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -89,7 +89,9 @@ const targetsKey = (targets: RailScrollTargets) => `${targets.above?.selector ??
 
 export const ClanRailUnreadFloatButton = memo(({ scrollContainerRef }: ClanRailUnreadFloatButtonProps) => {
 	const { t } = useTranslation('common');
-	const orderedClansWithGroups = useSelector(selectOrderedClansWithGroups);
+	const allClans = useSelector(selectAllClans);
+
+	const orderedClansWithGroups = useAppSelector((state) => selectOrderedClansWithGroups(state, allClans));
 	const clanUnreadStates = useSelector(selectClanUnreadStates);
 
 	const railTargets = useMemo((): RailScrollTarget[] => {

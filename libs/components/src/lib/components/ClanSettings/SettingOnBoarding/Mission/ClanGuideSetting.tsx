@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId, titleMission } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId, titleMission } from '@mezon/utils';
 import type { ApiOnboardingItem } from 'mezon-js';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
@@ -175,7 +175,11 @@ const OwnerGreeting = () => {
 				<div className="flex gap-2 md:gap-3">
 					<div className="w-12 relative">
 						<img
-							src={clanOwner?.clan_avatar || clanOwner.user?.avatar_url}
+							src={createImgproxyUrl((clanOwner?.clan_avatar || clanOwner.user?.avatar_url) ?? '', {
+								width: 100,
+								height: 100,
+								resizeType: 'fill-down'
+							})}
 							className="w-12 aspect-square rounded-full absolute bottom-0 left-0"
 						/>
 					</div>

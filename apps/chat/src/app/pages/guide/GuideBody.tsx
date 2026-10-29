@@ -19,7 +19,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { DONE_ONBOARDING_STATUS, generateE2eId, titleMission } from '@mezon/utils';
+import { DONE_ONBOARDING_STATUS, createImgproxyUrl, generateE2eId, titleMission } from '@mezon/utils';
 import type { ApiOnboardingItem } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -128,7 +128,12 @@ function GuideBody() {
 											className="shadow-sm bg-item-theme"
 											action={
 												<div className="w-[72px] aspect-square  rounded-lg flex overflow-hidden">
-													{rule.image_url && <img src={rule.image_url} className="w-full h-full object-cover" />}
+													{rule.image_url && (
+														<img
+															src={createImgproxyUrl(rule.image_url, { width: 300, height: 300, resizeType: 'fit' })}
+															className="w-full h-full object-cover"
+														/>
+													)}
 												</div>
 											}
 										/>

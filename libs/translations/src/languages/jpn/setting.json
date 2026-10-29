@@ -175,5 +175,11 @@
 		"recentChannels": "最近のチャンネル",
 		"searchByChannelLabel": "チャンネルラベルで検索"
 	},
-	"setting": "設定"
+	"setting": "設定",
+	"chat": {
+		"quickReplies": "クイック返信",
+		"quickRepliesDescription": "チャンネルの最新メッセージに基づいて、クイック返信の候補を表示します。",
+		"grammar": "文法修正",
+		"grammarDescription": "入力中にスペルや文法の修正を提案します（最大256文字）。"
+	}
 }

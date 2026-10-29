@@ -2,7 +2,7 @@ import { useInvite } from '@mezon/core';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { authActions, inviteActions, selectInviteById, selectIsLogin, useAppDispatch } from '@mezon/store';
-import { generateE2eId } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -96,7 +96,11 @@ export default function InvitePage() {
 				<div className="flex items-center justify-center mb-3">
 					<div className="relative w-12 h-12 flex items-center justify-center">
 						{selectInvite?.clan_logo ? (
-							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clan_logo} alt="" />
+							<img
+								className="w-full h-full rounded-md object-cover"
+								src={createImgproxyUrl(selectInvite.clan_logo, { width: 100, height: 100, resizeType: 'fill-down' })}
+								alt=""
+							/>
 						) : (
 							<div className="w-full h-full rounded-md bg-item-theme hover:[background:var(--bg-item-hover)] flex items-center justify-center text-theme-primary text-3xl font-medium select-none">
 								{(selectInvite?.clan_name || 'M').charAt(0).toUpperCase()}

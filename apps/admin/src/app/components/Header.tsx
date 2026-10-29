@@ -70,7 +70,7 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 				<div onClick={handleAvatarClick}>
 					{userProfile?.user?.avatar_url ? (
 						<img
-							src={createImgproxyUrl(userProfile?.user?.avatar_url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+							src={createImgproxyUrl(userProfile?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 							className="w-[40px] h-[40px] rounded-full object-cover cursor-pointer"
 							alt=""
 						/>

@@ -511,7 +511,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 
 			const tempId = sound?.id || Snowflake.generate();
 			const trimmed = await trimAudioToWavFallback(audioSourceBlob, trimStartSec, trimEndSec);
-			const path = `sounds/${tempId}.${trimmed.extension}`;
+			const path = `stickers/${tempId}.${trimmed.extension}`;
 
 			const attachment = await handleUploadEmoticon(client, session, path, trimmed.file);
 

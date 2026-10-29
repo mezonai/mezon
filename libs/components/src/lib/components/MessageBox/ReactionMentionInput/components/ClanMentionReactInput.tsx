@@ -39,6 +39,17 @@ const ClanMentionReactInput = memo((props: MentionReactInputProps) => {
 				: (currentChannelId as string);
 	const { draftRequest, updateDraft } = useDraftCompose(draftChannelId);
 
+	useEffect(() => {
+		if (props.updateRef) {
+			props.updateRef.current = updateDraft;
+		}
+
+		return () => {
+			if (props.updateRef) {
+				props.updateRef.current = null;
+			}
+		};
+	}, [updateDraft]);
 	const { membersOfChild, membersOfParent } = useChannelMembers({ channelId: currentChannelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
 	const { setOpenThreadMessageState, checkAttachment } = useReference(props.currentChannelId || currentChannelId || '');

@@ -10,6 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { createImgproxyUrl } from '@mezon/utils';
 import type { ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -166,7 +167,11 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 						<div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-violet-600 via-indigo-500 to-sky-400 opacity-25 blur-sm transition duration-500" />
 						<div className="rounded-full size-11 min-w-[44px] uppercase flex justify-center items-center text-lg font-extrabold border-2 dark:border-[#1a1d2e] border-white dark:bg-[#0d0f19] bg-slate-50 dark:text-white text-slate-900 relative z-10 overflow-hidden shadow-md">
 							{appDetail.applogo ? (
-								<img src={appDetail.applogo} alt={appDetail.appname} className="w-full h-full object-cover" />
+								<img
+									src={createImgproxyUrl(appDetail.applogo, { width: 100, height: 100, resizeType: 'fill-down' })}
+									alt={appDetail.appname}
+									className="w-full h-full object-cover"
+								/>
 							) : (
 								<span className="bg-gradient-to-tr from-violet-500 to-sky-400 bg-clip-text text-transparent truncate overflow-hidden max-w-[300px]">
 									{appDetail.appname?.[0]}

@@ -95,11 +95,7 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 						className="w-16 h-16"
 						alt="user avatar"
 						username={callerName}
-						srcImgProxy={createImgproxyUrl(callerAvatar ?? '', {
-							width: 300,
-							height: 300,
-							resizeType: 'fit'
-						})}
+						srcImgProxy={createImgproxyUrl(callerAvatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
 						src={callerAvatar}
 					/>
 				</div>

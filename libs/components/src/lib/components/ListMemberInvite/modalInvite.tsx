@@ -352,7 +352,7 @@ const loadImage = (src: string): Promise<HTMLImageElement | null> => {
 
 const loadAvatarImage = async (url: string): Promise<HTMLImageElement | null> => {
 	if (!url) return null;
-	const proxyUrl = createImgproxyUrl(url, { width: 120, height: 120, resizeType: 'fit' });
+	const proxyUrl = createImgproxyUrl(url, { width: 100, height: 100, resizeType: 'fill-down' });
 	let img = await loadImage(proxyUrl);
 	if (!img) {
 		img = await loadImage(url);
@@ -822,7 +822,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 					<div className="flex items-center gap-2.5">
 						{currentClanLogo ? (
 							<img
-								src={createImgproxyUrl(currentClanLogo, { width: 64, height: 64, resizeType: 'fit' })}
+								src={createImgproxyUrl(currentClanLogo, { width: 100, height: 100, resizeType: 'fill-down' })}
 								alt={currentClanName}
 								className="w-8 h-8 rounded-full border-2 border-indigo-500/40 object-cover"
 							/>
@@ -900,7 +900,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 									/>
 								) : currentClanLogo ? (
 									<img
-										src={createImgproxyUrl(currentClanLogo, { width: 80, height: 80, resizeType: 'fit' })}
+										src={createImgproxyUrl(currentClanLogo, { width: 100, height: 100, resizeType: 'fill-down' })}
 										className="w-full h-full rounded-lg object-cover pointer-events-none"
 										alt={currentClanName}
 									/>
