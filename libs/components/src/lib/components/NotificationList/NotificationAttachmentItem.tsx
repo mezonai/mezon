@@ -173,7 +173,7 @@ export const NotificationAttachmentItem = ({ attachment: rawAttachment, index, c
 		<div
 			className={`flex items-center justify-between w-[245px] max-w-full ${
 				compact ? 'gap-2 p-2' : 'gap-3 p-3'
-			} rounded-lg bg-item-theme-hover transition-colors group border-theme-primary`}
+			}rounded-lg bg-item-theme hover:bg-item-theme-hover transition-colors group border-theme-primary`}
 		>
 			<div className={`flex items-center ${compact ? 'gap-2' : 'gap-3'} min-w-0 flex-1`}>
 				<div className="shrink-0 flex items-center justify-center cursor-pointer" onClick={handleView}>

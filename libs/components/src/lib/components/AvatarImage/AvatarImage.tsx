@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react';
+import type { DetailedHTMLProps, ImgHTMLAttributes, MouseEventHandler } from 'react';
 import { useState } from 'react';
 
 export type AvatarImageProp = {
@@ -12,8 +12,12 @@ export type AvatarImageProp = {
 	isSending?: boolean;
 } & DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>;
 
-const AvatarPlaceholder = ({ className = '' }: { className?: string }) => (
-	<div className={`flex items-center justify-center rounded-full bg-bgDisable ${className}`} data-e2e={generateE2eId('avatar.image')}>
+const AvatarPlaceholder = ({ className = '', onClick }: { className?: string; onClick?: MouseEventHandler<HTMLElement> }) => (
+	<div
+		className={`flex items-center justify-center rounded-full bg-bgDisable ${onClick ? 'cursor-pointer' : ''} ${className}`}
+		onClick={onClick}
+		data-e2e={generateE2eId('avatar.image')}
+	>
 		<Icons.AvatarUser className="w-[60%] h-[60%]" />
 	</div>
 );
@@ -60,7 +64,12 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 	}
 
 	if (!src || isError) {
-		return <AvatarPlaceholder className={`size-10 min-w-5 min-h-5 ${className} ${classNameText ?? ''}`} />;
+		return (
+			<AvatarPlaceholder
+				className={`size-10 min-w-5 min-h-5 ${className} ${classNameText ?? ''}`}
+				onClick={rest.onClick as MouseEventHandler<HTMLElement> | undefined}
+			/>
+		);
 	}
 
 	return (
