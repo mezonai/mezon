@@ -69,6 +69,7 @@ import type { ReactElement, RefObject } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import Mention, { type MentionData } from './Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
@@ -415,6 +416,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				if (utf8Bytes.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
 					setIsPasteMulti(true);
 					props.handleConvertToFile(payload.t ?? '');
+					toast.info(t('convertLongToFile'));
 					updateDraft?.({
 						valueTextInput: '',
 						content: '',
@@ -562,6 +564,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			if (utf8Bytes.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
 				setIsPasteMulti(true);
 				props.handleConvertToFile(payload.t ?? '');
+				toast.info(t('convertLongToFile'));
 				updateDraft?.({
 					valueTextInput: displayMarkup,
 					content: displayPlaintext,
@@ -894,6 +897,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			pastedContent?.length > MIN_THRESHOLD_CHARS
 		) {
 			props.handleConvertToFile(pastedContent);
+			toast.info(t('convertLongToFile'));
 			updateDraft?.({
 				valueTextInput: previousValue || '',
 				content: previousPlainText || '',
