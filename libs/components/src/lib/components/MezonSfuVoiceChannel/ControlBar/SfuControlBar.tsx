@@ -37,6 +37,7 @@ interface SfuControlBarProps {
 	microphoneEnabled: boolean;
 	cameraEnabled: boolean;
 	screenSharing: boolean;
+	hasScreenShare: boolean;
 	screenShareMode: ScreenShareMode;
 	changingScreenShareMode: boolean;
 	onScreenShareModeChange: (mode: ScreenShareMode) => void;
@@ -94,6 +95,7 @@ export const SfuControlBar = ({
 	microphoneEnabled,
 	cameraEnabled,
 	screenSharing,
+	hasScreenShare,
 	screenShareMode,
 	changingScreenShareMode,
 	onScreenShareModeChange,
@@ -256,10 +258,10 @@ export const SfuControlBar = ({
 				<LeaveButton onLeave={onLeaveRoom} />
 			</div>
 			<div className="flex justify-end pr-1 max-md:hidden">
-				{screenDrawMode && onScreenDrawToggle && (
+				{screenSharing && screenDrawMode === 'broadcast' && onScreenDrawToggle && (
 					<ScreenDrawControl mode={screenDrawMode} active={screenDrawActive} onToggle={onScreenDrawToggle} />
 				)}
-				{!isExternalCalling && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
+				{!isExternalCalling && (hasScreenShare || isPopoutOpen) && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
 				<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 			</div>
 		</footer>

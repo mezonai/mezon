@@ -773,13 +773,23 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 
-				const video = focusVideoContainerRef.current?.querySelector('video');
+				let selectedTrackId = trackId;
+				let video = focusVideoContainerRef.current?.querySelector('video');
+				if (!focusVideoContainerRef.current) {
+					const tiles = Array.from(gridElRef.current?.querySelectorAll<HTMLButtonElement>('[data-tile-id]') || []);
+					const tileWithVideo =
+						tiles.find((tile) => tile.dataset.tileId === trackId && tile.querySelector('video')) ||
+						tiles.find((tile) => tile.dataset.tileId?.endsWith('-screen') && tile.querySelector('video')) ||
+						tiles.find((tile) => tile.querySelector('video'));
+					video = tileWithVideo?.querySelector('video');
+					selectedTrackId = tileWithVideo?.dataset.tileId;
+				}
 				if (!video) {
 					dispatch(toastActions.addToast({ message: 'Please select a video track to popout!', type: 'warning', autoClose: 3000 }));
 					return;
 				}
 
-				video.id = 'focusTrack';
+				await video.requestPictureInPicture();
 				video.addEventListener(
 					'leavepictureinpicture',
 					() => {
@@ -788,11 +798,11 @@ export function MezonSfuVoiceRoom({
 					},
 					{ once: true }
 				);
-				await video.requestPictureInPicture();
 				setIsPopoutOpen(true);
-				setPopoutTrackId(trackId);
+				setPopoutTrackId(selectedTrackId);
 			} catch (popoutError) {
 				console.error('PiP error:', popoutError);
+				dispatch(toastActions.addToast({ message: 'Unable to open picture-in-picture.', type: 'error', autoClose: 3000 }));
 			}
 		},
 		[closePopout, dispatch]
@@ -3342,6 +3352,7 @@ export function MezonSfuVoiceRoom({
 							{gridPagination.pageItems.map((tile) => (
 								<button
 									key={tile.id}
+									data-tile-id={tile.id}
 									type="button"
 									className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
 									title="Pin this track"
@@ -3457,6 +3468,7 @@ export function MezonSfuVoiceRoom({
 					microphoneEnabled={microphoneEnabled}
 					cameraEnabled={cameraEnabled}
 					screenSharing={screenSharing}
+					hasScreenShare={conferenceTiles.some((tile) => tile.isScreen)}
 					screenShareMode={screenShareMode}
 					changingScreenShareMode={changingScreenShareMode}
 					onScreenShareModeChange={changeScreenShareMode}
