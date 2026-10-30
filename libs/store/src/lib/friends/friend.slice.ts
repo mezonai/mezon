@@ -160,7 +160,11 @@ export const sendRequestAddFriend = createAsyncThunk(
 					return thunkAPI.rejectWithValue('ALREADY_PENDING');
 				}
 			}
-			const response = await mezon.client.addFriends(mezon.session, ids ? [ids] : [], usernames ? [usernames] : []);
+			const payload = {
+				ids: ids ? [ids] : [],
+				usernames: !ids && usernames ? [usernames] : []
+			};
+			const response = await mezon.client.addFriends(mezon.session, payload.ids, payload.usernames);
 
 			if (response) {
 				if (response?.ids?.[0] && response.ids[0] !== '0') {
@@ -195,6 +199,7 @@ export const sendRequestAddFriend = createAsyncThunk(
 			}
 			return;
 		} catch (err: any) {
+			console.error('[sendRequestAddFriend] error:', err);
 			if (!isMobile) {
 				toast.error(i18n.t('friends:toast.sendAddFriendFail'));
 			}
