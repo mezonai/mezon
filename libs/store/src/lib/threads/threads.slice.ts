@@ -8,6 +8,7 @@ import type { ApiChannelDescription } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { cdnSignatureActions } from '../cdnSignature/cdnSignature.slice';
+import { isChannelDetailDenied, listChannelsByUserActions, selectChannelDetailById } from '../channels/channelUser.slice';
 import { applyChannelArchiveState, channelsActions, selectChannelById, selectCurrentChannel } from '../channels/channels.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
@@ -221,17 +222,22 @@ export const fetchThread = createAsyncThunk('threads/fetchThread', async ({ chan
 });
 
 export const fetchThreadDetail = createAsyncThunk('direct/fetchThreadDetail', async ({ threadId }: { threadId: string }, thunkAPI) => {
+	if (selectChannelDetailById(thunkAPI.getState() as RootState, threadId) === null) {
+		return null;
+	}
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await withRetry((session) => mezon.client.listChannelDetail(session, threadId), {
-			maxRetries: 3,
-			initialDelay: 1000,
 			scope: 'thread-detail',
 			mezon
 		});
 
 		return response;
 	} catch (error: unknown) {
+		if (isChannelDetailDenied(error)) {
+			thunkAPI.dispatch(listChannelsByUserActions.setChannelDetail({ channelId: threadId, detail: null }));
+			return null;
+		}
 		const err = error as { code?: string; message?: string };
 		const errorMess = err.code ? t(`errors:error_${err.code}`) : err.message || 'Something went wrong';
 

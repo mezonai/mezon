@@ -4,6 +4,7 @@ import {
 	getStore,
 	getStoreAsync,
 	listChannelsByUserActions,
+	putFetchedChannel,
 	selectChannelDetailById,
 	selectChannelFetchSuccessByClanId,
 	selectClanById,
@@ -16,7 +17,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { memo, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -75,12 +76,7 @@ const ChannelHashtag = ({
 	const channelDetail = useSyncExternalStore(subscribeDetail, readDetail);
 	const channel = storedChannel || sentChannel || channelDetail;
 	const parentChannel = getTagById(parentId);
-	const askThreadDetail = channelType === ChannelType.CHANNEL_TYPE_THREAD && clanExist && !storedChannel && !metaVisible;
-
-	useEffect(() => {
-		if (!askThreadDetail || channelDetail !== undefined || !channelHastagId) return;
-		dispatch(listChannelsByUserActions.fetchChannelDetail({ channelId: channelHastagId }));
-	}, [askThreadDetail, channelDetail, channelHastagId, dispatch]);
+	const threadNeedsDetail = channelType === ChannelType.CHANNEL_TYPE_THREAD && clanExist && !storedChannel && !metaVisible;
 
 	const [openUnknown, closeUnknown] = useModal(() => {
 		return <ModalUnknowChannel onClose={closeUnknown} />;
@@ -94,6 +90,22 @@ const ChannelHashtag = ({
 			const clan = selectClanById(clanId)(store.getState());
 			if (!clan) {
 				openUnknown();
+				return;
+			}
+			if (!channel && threadNeedsDetail && channelDetail === undefined && channelHastagId) {
+				const action = await dispatch(listChannelsByUserActions.fetchChannelDetail({ channelId: channelHastagId }));
+				const detail = listChannelsByUserActions.fetchChannelDetail.fulfilled.match(action)
+					? action.payload
+					: selectChannelDetailById(getStore().getState(), channelHastagId);
+				if (detail === undefined) return;
+				if (!detail) {
+					openUnknown();
+					return;
+				}
+				const detailClanId = detail.clan_id && detail.clan_id !== '0' ? detail.clan_id : clanId;
+				const opened = putFetchedChannel(dispatch, detailClanId, detail);
+				dispatch(categoriesActions.setCtrlKFocusChannel({ id: opened.id, parentId: opened.parent_id ?? '' }));
+				navigate(toChannelPage(opened.id, detailClanId));
 				return;
 			}
 			if (checkFetchChannel && !channel) {
@@ -120,7 +132,7 @@ const ChannelHashtag = ({
 			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channelId, parentId }));
 			navigate(channelUrl);
 		}
-	}, [channel, checkFetchChannel, channelHastagId, dispatch, navigate, toChannelPage]);
+	}, [channel, channelDetail, checkFetchChannel, channelHastagId, dispatch, navigate, threadNeedsDetail, toChannelPage]);
 
 	const tokenClickAble = () => {
 		if (!isJumMessageEnabled || isTokenClickAble) {
