@@ -1,6 +1,6 @@
 import { getApplicationDetail, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl } from '@mezon/utils';
+import { IS_MOBILE, createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, useLoaderData, useParams } from 'react-router-dom';
@@ -43,7 +43,9 @@ const Install: React.FC = () => {
 
 	useEffect(() => {
 		if (applicationId) {
-			navigateDeeplinkMobile(applicationId);
+			if (IS_MOBILE) {
+				navigateDeeplinkMobile(applicationId);
+			}
 			dispatch(getApplicationDetail({ appId: applicationId }));
 		}
 		const timer = setTimeout(() => setIsRedirect(true), 400);
