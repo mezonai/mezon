@@ -38,13 +38,25 @@ const MemberClan = () => {
 	};
 	const menu = useMemo(() => {
 		const menuItems: ReactElement[] = [
-			<Menu.Item className={'dark:hover:bg-bgModifierHover hover:bg-bgModifierHoverLight'} onClick={() => handleChangePageSize(10)}>
+			<Menu.Item
+				key="10-item"
+				className={'dark:hover:bg-bgModifierHover hover:bg-bgModifierHoverLight'}
+				onClick={() => handleChangePageSize(10)}
+			>
 				10
 			</Menu.Item>,
-			<Menu.Item className={'dark:hover:bg-bgModifierHover hover:bg-bgModifierHoverLight'} onClick={() => handleChangePageSize(50)}>
+			<Menu.Item
+				key="50-item"
+				className={'dark:hover:bg-bgModifierHover hover:bg-bgModifierHoverLight'}
+				onClick={() => handleChangePageSize(50)}
+			>
 				50
 			</Menu.Item>,
-			<Menu.Item className={'dark:hover:bg-bgModifierHover hover:bg-bgModifierHoverLight'} onClick={() => handleChangePageSize(100)}>
+			<Menu.Item
+				key="100-item"
+				className={'dark:hover:bg-bgModifierHover hover:bg-bgModifierHoverLight'}
+				onClick={() => handleChangePageSize(100)}
+			>
 				100
 			</Menu.Item>
 		];
