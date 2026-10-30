@@ -3,6 +3,7 @@ import { selectChannelById, selectClanById, selectMemberDMByUserId, selectMessag
 import type { IEmbedProps, IExtendedMessage, IMentionOnMessage, IMessageWithUser, INotification, INotificationContent } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
+	NX_CHAT_APP_ANNONYMOUS_USER_ID,
 	NotificationCategory,
 	TOPBARS_MAX_WIDTH,
 	adjustMentionsForStrippedMarkers,
@@ -376,6 +377,7 @@ function AllTabContent({ message, subject, category, senderId, embed, onCloseToo
 										messageId={message.message_id}
 										isEditted={false}
 										content={messageLineContent}
+										isAnonymous={(message.sender_id || senderId) === NX_CHAT_APP_ANNONYMOUS_USER_ID}
 										isTokenClickAble={false}
 										isJumMessageEnabled={false}
 										onCloseTooltip={onCloseTooltip}
