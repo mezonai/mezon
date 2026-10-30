@@ -15,7 +15,7 @@ type ReactionEmojiPannelProps = {
 	isFocusTopicOrThreadBox?: boolean;
 	openEmojiRightPanel?: boolean;
 	openEmojiBottomPanel?: boolean;
-	openEmojiPanelOnTopicOrThreadBox?: boolean;
+	openEmojiPanelOnThreadBox?: boolean;
 	isShowCreateTopic?: boolean;
 };
 
@@ -26,7 +26,7 @@ const ReactionEmojiPanel = memo(
 		isFocusTopicOrThreadBox,
 		openEmojiRightPanel,
 		openEmojiBottomPanel,
-		openEmojiPanelOnTopicOrThreadBox,
+		openEmojiPanelOnThreadBox,
 		isShowCreateTopic
 	}: ReactionEmojiPannelProps) => {
 		const reactionTopState = useSelector(selectReactionTopState);
@@ -52,7 +52,7 @@ const ReactionEmojiPanel = memo(
 			[topPositionEmojiPanel, distanceToBottom, distanceToRight, positionOfSmileButton.left, positionOfSmileButton.right]
 		);
 
-		const topicPanelStyle = useMemo(() => ({ top: topPositionEmojiPanel }), [topPositionEmojiPanel]);
+		const threadPanelStyle = useMemo(() => ({ top: topPositionEmojiPanel }), [topPositionEmojiPanel]);
 
 		return (
 			<>
@@ -74,9 +74,9 @@ const ReactionEmojiPanel = memo(
 						<GifStickerEmojiPopup mode={ChannelStreamMode.STREAM_MODE_CHANNEL} emojiAction={EmojiPlaces.EMOJI_REACTION} />
 					</div>
 				)}
-				{openEmojiPanelOnTopicOrThreadBox && (
+				{openEmojiPanelOnThreadBox && (
 					<div
-						style={topicPanelStyle}
+						style={threadPanelStyle}
 						onMouseDown={(e) => e.stopPropagation()}
 						id="emojiPickerTopic"
 						className="z-50 absolute size-[500px] max-sm:hidden -right-[505px]"
