@@ -187,9 +187,6 @@
 	"screenDraw": {
 		"annotateScreen": "Rysuj na udostępnianym ekranie",
 		"stopAnnotating": "Przestań rysować na ekranie",
-		"drawOnScreen": "Rysuj na ekranie (widzisz to tylko ty)",
-		"stopDrawing": "Przestań rysować",
-		"closeDrawing": "Zamknij rysowanie",
 		"selectAndMove": "Zaznacz i przesuń",
 		"pen": "Pióro",
 		"text": "Tekst",

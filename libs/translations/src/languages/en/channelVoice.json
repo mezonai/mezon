@@ -198,9 +198,6 @@
 	"screenDraw": {
 		"annotateScreen": "Draw on your shared screen",
 		"stopAnnotating": "Stop drawing on your screen",
-		"drawOnScreen": "Draw on screen (only you see it)",
-		"stopDrawing": "Stop drawing",
-		"closeDrawing": "Close drawing",
 		"selectAndMove": "Select and move",
 		"pen": "Pen",
 		"text": "Text",
