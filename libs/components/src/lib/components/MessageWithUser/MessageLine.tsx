@@ -405,10 +405,7 @@ export const MessageLine = ({
 						channelId={element.channelId}
 					/>
 				);
-			} else if (
-				(element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') ||
-				(element.kindOf === ETokenMessage.MENTIONS && element.username)
-			) {
+			} else if (element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') {
 				formattedContent.push(
 					<MentionContent
 						key={`mentionUser-${s}-${messageId}`}
