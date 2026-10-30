@@ -45,6 +45,42 @@ export type LastSeenTimeStampChannelArgs = {
 
 export const notificationAdapter = createEntityAdapter<NotificationEntity>();
 
+function deduplicateNotifications(notifications: INotification[], category: NotificationCategory): INotification[] {
+	const seenIds = new Set<string>();
+	const messageIndices = new Map<string, number>();
+	const result: INotification[] = [];
+
+	for (const notification of notifications) {
+		if (notification.id && seenIds.has(notification.id)) continue;
+		seenIds.add(notification.id);
+
+		const messageId = notification.content?.message_id;
+		const messageKey =
+			category === NotificationCategory.MENTIONS && messageId && messageId !== '0'
+				? JSON.stringify([
+						notification.content?.clan_id || notification.clan_id || '0',
+						notification.content?.channel_id || notification.channel_id || '0',
+						notification.topic_id || notification.content?.tp || '0',
+						messageId
+					])
+				: undefined;
+		const existingIndex = messageKey ? messageIndices.get(messageKey) : undefined;
+
+		if (existingIndex !== undefined) {
+			const existing = result[existingIndex];
+			if (existing.id === messageId && notification.id && notification.id !== messageId) {
+				result[existingIndex] = notification;
+			}
+			continue;
+		}
+
+		if (messageKey) messageIndices.set(messageKey, result.length);
+		result.push(notification);
+	}
+
+	return result;
+}
+
 export const fetchListNotificationCached = async (
 	getState: () => RootState,
 	ensuredMezon: MezonValueContext,
@@ -200,7 +236,7 @@ export const notificationSlice = createSlice({
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
 			if (state.notifications[category]) {
-				state.notifications[category].data = [data, ...state.notifications[category].data];
+				state.notifications[category].data = deduplicateNotifications([data, ...state.notifications[category].data], category);
 			}
 		},
 
@@ -295,7 +331,7 @@ export const notificationSlice = createSlice({
 
 					if (isFirstPage) {
 						state.notifications[category] = {
-							data: dataParse,
+							data: deduplicateNotifications(dataParse, category),
 							lastId: data.length >= LIMIT_NOTIFICATION ? data[data.length - 1].id : '',
 							cache: createCacheMetadata()
 						};
@@ -305,14 +341,12 @@ export const notificationSlice = createSlice({
 						if (state.notifications[category]) {
 							if (dataParse.length > 0) {
 								const existing = state.notifications[category].data;
-								const existingIds = new Set(existing.map((item) => item.id));
-								const newItems = dataParse.filter((item) => !existingIds.has(item.id));
-								state.notifications[category].data = [...existing, ...newItems];
+								state.notifications[category].data = deduplicateNotifications([...existing, ...dataParse], category);
 							}
 							state.notifications[category].lastId = nextLastId;
 						} else {
 							state.notifications[category] = {
-								data: dataParse,
+								data: deduplicateNotifications(dataParse, category),
 								lastId: nextLastId,
 								cache: createCacheMetadata()
 							};
