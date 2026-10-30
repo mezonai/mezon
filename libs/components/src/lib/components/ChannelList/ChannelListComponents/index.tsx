@@ -169,12 +169,16 @@ export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasCh
 			<Link
 				to={memberPath}
 				onClick={handleClose}
-				className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${isMemberPath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''} bg-item-hover text-theme-primary text-theme-primary-hover`}
+				className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
+					isMemberPath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''
+				} bg-item-hover text-theme-primary text-theme-primary-hover ${
+					isMemberPath ? '[--member-list-fill:var(--bg-icon-theme-active)]' : '[--member-list-fill:var(--bg-icon-theme)]'
+				} hover:[--member-list-fill:var(--bg-icon-theme-active)]`}
 			>
 				<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.members')}>
 					<div className="w-5 h-5 relative flex flex-row items-center">
 						<div className="w-5 h-5 ">
-							<Icons.MemberList className="w-5 h-5" />
+							<Icons.MemberList className="w-5 h-5" defaultFill1="var(--member-list-fill)" defaultFill2="var(--member-list-fill)" />
 						</div>
 					</div>
 					<div className="text-base font-medium">{t('navigation.members')}</div>
