@@ -135,7 +135,12 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 									data-e2e={generateE2eId('clan_page.settings.role.item.member_count')}
 								>
 									{role.role_user_list?.role_users?.length ?? 0}
-									<Icons.MemberIcon defaultSize="w-4 h-4 min-w-4" className="shrink-0 text-colorTextLightMode dark:text-zinc-400" />
+									<Icons.MemberIcon
+										defaultSize="w-4 h-4 min-w-4"
+										className="shrink-0 text-theme-primary"
+										defaultFill1="currentColor"
+										defaultFill2="currentColor"
+									/>
 								</p>
 							)}
 						</td>
