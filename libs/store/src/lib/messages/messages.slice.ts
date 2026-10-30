@@ -401,6 +401,9 @@ export const fetchMessages = createAsyncThunk(
 		}: fetchMessageChannelPayload,
 		thunkAPI
 	) => {
+		if (!channelId && !topicId) {
+			return thunkAPI.rejectWithValue('Empty channel id');
+		}
 		try {
 			const state = thunkAPI.getState() as RootState;
 
