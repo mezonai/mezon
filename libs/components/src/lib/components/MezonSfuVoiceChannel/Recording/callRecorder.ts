@@ -285,8 +285,8 @@ class CallRecorderEngine {
 		if (this.startPromise) {
 			await this.startPromise;
 		}
-		if (this.status !== 'recording' && this.status !== 'starting') return;
 		if (this.stopPromise) return this.stopPromise;
+		if (this.status !== 'recording' && this.status !== 'starting') return;
 
 		this.status = 'stopping';
 		this.patchStore({ status: 'stopping' });
@@ -324,18 +324,18 @@ class CallRecorderEngine {
 
 		const sink = this.sink;
 		this.sink = null;
-		this.status = 'idle';
-
-		const failure = this.pendingError;
-		this.pendingError = null;
 
 		if (!sink) {
+			const failure = this.pendingError;
+			this.pendingError = null;
+			this.status = 'idle';
 			this.patchStore({ status: failure ? 'error' : 'idle', startedAt: null, deadlineAt: null, error: failure });
 			return;
 		}
 
 		try {
 			const outcome = await sink.finalize();
+			const failure = this.pendingError;
 			this.patchStore({ status: failure ? 'error' : 'idle', startedAt: null, deadlineAt: null, error: failure });
 			if (failure) return;
 			this.emit({
@@ -348,11 +348,15 @@ class CallRecorderEngine {
 				}
 			});
 		} catch (error) {
+			const failure = this.pendingError;
 			const message = failure || (error as Error).message;
 			this.patchStore({ status: 'error', startedAt: null, deadlineAt: null, error: message });
 			if (!failure) {
 				this.emit({ type: 'error', message });
 			}
+		} finally {
+			this.pendingError = null;
+			this.status = 'idle';
 		}
 	}
 
@@ -380,7 +384,7 @@ class CallRecorderEngine {
 
 	private handleData = (event: BlobEvent) => {
 		if (!this.sink || !event.data || event.data.size === 0) return;
-		this.sink.write(event.data);
+		void this.sink.write(event.data).catch((error: Error) => this.handleRecordingError(error.message || 'recording-write-error'));
 
 		if (!this.sink.streaming && this.sink.bytesWritten > BLOB_SINK_MAX_BYTES) {
 			void this.stop();
@@ -389,11 +393,16 @@ class CallRecorderEngine {
 
 	private handleRecorderError = (event: Event) => {
 		const message = (event as unknown as { error?: DOMException }).error?.message || 'recorder-error';
+		this.handleRecordingError(message);
+	};
+
+	private handleRecordingError(message: string): void {
+		if (this.pendingError) return;
 		this.pendingError = message;
 		this.patchStore({ error: message });
 		this.emit({ type: 'error', message });
 		void this.stop();
-	};
+	}
 
 	private handleBeforeUnload = (event: BeforeUnloadEvent) => {
 		event.preventDefault();

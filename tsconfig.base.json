@@ -14,7 +14,7 @@
 		"module": "esnext",
 		"allowJs": true,
 		"checkJs": false,
-		"lib": ["es2020", "dom"],
+		"lib": ["es2020", "dom", "dom.asynciterable"],
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"baseUrl": ".",
