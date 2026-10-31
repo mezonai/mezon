@@ -31,6 +31,7 @@ jest.mock(
 	'@mezon/utils',
 	() => ({
 		...jest.requireActual<object>('../../../../../utils/src/lib/utils/videoSource'),
+		IS_SAFARI: true,
 		calculateMediaDimensions: () => ({ width: 320, height: 180 }),
 		createImgproxyUrl: (url: string) => `proxy:${url}`,
 		getPresignKeyFromAttachmentUrl: (url?: string) => url?.split('?')[0].split('/').pop()?.split('.')[0],

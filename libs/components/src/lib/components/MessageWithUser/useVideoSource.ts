@@ -1,5 +1,6 @@
 import {
 	HLS_INDEX_PROBE_INTERVAL_MS,
+	IS_SAFARI,
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
 	mayBeTranscodedVideo,
@@ -65,7 +66,7 @@ export function useVideoSource(
 			const resume = !video.paused;
 			detach();
 			playingPlaylist = isPlaylist;
-			if (!isPlaylist || video.canPlayType(HLS_MIME_TYPE)) {
+			if (!isPlaylist || (video.canPlayType(HLS_MIME_TYPE) && (!ingest || IS_SAFARI))) {
 				video.src = source;
 				if (resume) void video.play().catch(() => undefined);
 				return;

@@ -11,7 +11,17 @@ const { act, create } = jest.requireActual<{
 	create: (element: ReactElement, options?: { createNodeMock: (node: { type: unknown }) => unknown }) => ReactTestRenderer;
 }>('react-test-renderer');
 
-jest.mock('@mezon/utils', () => jest.requireActual('../../../../../utils/src/lib/utils/videoSource'), { virtual: true });
+let mockIsSafari = false;
+jest.mock(
+	'@mezon/utils',
+	() => ({
+		...jest.requireActual<object>('../../../../../utils/src/lib/utils/videoSource'),
+		get IS_SAFARI() {
+			return mockIsSafari;
+		}
+	}),
+	{ virtual: true }
+);
 
 type HlsErrorListener = (event: string, data: { fatal: boolean }) => void;
 
@@ -136,6 +146,7 @@ beforeEach(() => {
 	video = new FakeVideo();
 	mockHlsInstances.length = 0;
 	mockHlsSupported = true;
+	mockIsSafari = false;
 	fetchMock = jest.spyOn(globalThis, 'fetch');
 });
 
@@ -461,7 +472,8 @@ describe('a video sent through the file ingest', () => {
 		expect(mockHlsInstances[0].config).toEqual({ capLevelToPlayerSize: true, startPosition: 0 });
 	});
 
-	it('plays it natively where the browser can, as Safari does', async () => {
+	it('plays it natively in Safari', async () => {
+		mockIsSafari = true;
 		video.nativeHls = 'maybe';
 		serveIngest({ [DEV_INDEX]: true });
 
@@ -472,7 +484,32 @@ describe('a video sent through the file ingest', () => {
 		expect(mockHlsInstances).toHaveLength(0);
 	});
 
+	it('plays it through hls.js where another browser also plays HLS itself, as Chrome 156 does, since that player stops at the end of the first playlist', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: true });
+
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+
+		expect(video.src).toBe('');
+		expect(mockHlsInstances).toHaveLength(1);
+		expect(mockHlsInstances[0].source).toBe(DEV_INDEX);
+		expect(mockHlsInstances[0].config).toEqual({ capLevelToPlayerSize: true, startPosition: 0 });
+	});
+
+	it('keeps the native player for a video without the marker in such a browser', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_MASTER_PATH]: true });
+
+		render(<Player url={DEV_CLIP} />);
+		await settle();
+
+		expect(video.src).toBe(DEV_MASTER);
+		expect(mockHlsInstances).toHaveLength(0);
+	});
+
 	it('plays the original when its playlist answers 404', async () => {
+		mockIsSafari = true;
 		video.nativeHls = 'maybe';
 		serveIngest({ [DEV_INDEX]: false, [DEV_MASTER_PATH]: true });
 
@@ -484,6 +521,7 @@ describe('a video sent through the file ingest', () => {
 	});
 
 	it('keeps its playlist while it plays and falls back to the original once, never to master.m3u8', async () => {
+		mockIsSafari = true;
 		video.nativeHls = 'maybe';
 		serveIngest({ [DEV_INDEX]: true, [DEV_MASTER_PATH]: true });
 		render(<Player url={DEV_CLIP} ingest />);
@@ -502,6 +540,7 @@ describe('a video sent through the file ingest', () => {
 	});
 
 	it('tries its playlist, not master.m3u8, when the original fails or shows no picture', async () => {
+		mockIsSafari = true;
 		video.nativeHls = 'maybe';
 		serveIngest({ [DEV_INDEX]: false, [DEV_MASTER_PATH]: true });
 		render(<Player url={DEV_CLIP} ingest />);
