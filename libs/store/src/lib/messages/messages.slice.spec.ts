@@ -433,6 +433,20 @@ describe('a video sent through the file ingest', () => {
 		expect(store.getState().messages.attachmentUploadProgress).toEqual({});
 	});
 
+	it('keeps the upload finishing until its presign_finish edit is saved', async () => {
+		const { store, client } = setup();
+		const saved = deferred<unknown>();
+		client.updateChannelMessage.mockReturnValue(saved.promise);
+		await store.dispatch(sendMessage({ ...payload, attachments: [video] })).unwrap();
+		await new Promise(setImmediate);
+		expect(client.updateChannelMessage).toHaveBeenCalledTimes(1);
+		expect(selectAttachmentUploadProgress(store.getState() as any, key)).toBe(1);
+
+		saved.resolve({});
+		await new Promise(setImmediate);
+		expect(store.getState().messages.attachmentUploadProgress).toEqual({});
+	});
+
 	it('forgets the progress of a failed upload', async () => {
 		jest.mocked(getWebUploadedAttachments).mockImplementation(async ({ onProgress }) => {
 			onProgress?.(key, 0.5);

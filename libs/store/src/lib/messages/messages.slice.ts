@@ -1619,6 +1619,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			if (attachments && attachments.length > 0 && messageResult?.message_id && usePresignFirst) {
 				try {
 					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+					presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key, progress: 1 })));
 
 					thunkAPI.dispatch(
 						messagesActions.updateSendingMessageAttachments({
@@ -1662,7 +1663,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 								if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
 							}
 						}
-					})();
+					})().finally(() => presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key }))));
 				} catch (error) {
 					console.error('error: ', error);
 				}
