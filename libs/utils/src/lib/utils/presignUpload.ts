@@ -1,8 +1,37 @@
-import { uploadFileToPath } from '@mezon/transport';
+import { getFileIngestUrl, isFileIngestCandidate, uploadFileToPath, uploadToFileIngest } from '@mezon/transport';
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
 import { AttachmentTypeUpload, ETypesCDN } from '../types';
 import { isMezonMediaUrl, isTenorUrl } from './urlSanitization';
 import { wantsHlsTranscode } from './videoSource';
+
+type PreparedAttachment = ApiMessageAttachment & { uploadPath?: string; uploadName?: string };
+
+const attachmentFileIngestUrl = (attachment: PreparedAttachment, presignedUrl?: string) =>
+	getFileIngestUrl(presignedUrl, { type: attachment.filetype, name: attachment.filename, size: attachment.size });
+
+export function getPresignUploadKey(uploadName?: string): string | undefined {
+	return uploadName?.split('/').pop()?.split('.')[0];
+}
+
+export function getPresignIngestKeys(attachments: PreparedAttachment[] = []): string[] {
+	return attachments.flatMap((attachment) => {
+		const key = getPresignUploadKey(attachment.uploadName);
+		return key && attachmentFileIngestUrl(attachment, attachment.uploadPath) ? [key] : [];
+	});
+}
+
+export async function putAttachmentFile(
+	attachment: PreparedAttachment,
+	file: Blob,
+	presignedUrl: string,
+	onProgress?: (key: string, fraction: number) => void
+): Promise<boolean> {
+	const ingestUrl = attachmentFileIngestUrl(attachment, presignedUrl);
+	if (!ingestUrl) return Boolean(await uploadFileToPath(presignedUrl, file, file.size));
+	const key = getPresignUploadKey(attachment.uploadName);
+	await uploadToFileIngest(file, presignedUrl, ingestUrl, (fraction) => key && onProgress?.(key, fraction));
+	return true;
+}
 
 export async function generatePathAttachments(client: Client, session: ApiSession, attachments: Array<ApiMessageAttachment>, channelId?: string) {
 	const result = await Promise.all(
@@ -28,7 +57,8 @@ export async function generatePathAttachments(client: Client, session: ApiSessio
 					width: attach.width,
 					height: attach.height,
 					channel_id: channelId,
-					transcode_hls: wantsHlsTranscode(uploadName)
+					transcode_hls:
+						wantsHlsTranscode(uploadName) && !isFileIngestCandidate({ type: fileType, name: attach.filename, size: attach.size })
 				});
 				// The poster is uploaded HERE, before the message is posted, and its url
 				// is published only once the object is actually on the CDN. It used to

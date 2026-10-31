@@ -21,6 +21,7 @@ import {
 	createLocalPreviewUrl,
 	generatePathAttachments,
 	getMessageCreateTimeSeconds,
+	getPresignIngestKeys,
 	getPublicKeys,
 	getWebUploadedAttachments,
 	isTikTokLink,
@@ -161,6 +162,8 @@ export interface MessagesState {
 	channelDraftMessage: Record<string, ChannelDraftMessages>;
 	/** messageId -> ms of the last presign refetch, so N rendered copies cost one request. */
 	presignRefreshAt: Record<string, number>;
+	/** presign key -> share of the file the file ingest holds, while this client uploads it. */
+	attachmentUploadProgress: Record<string, number>;
 	isJumpingToPresent: Record<string, boolean>;
 	channelMessages: Record<
 		string,
@@ -1233,8 +1236,21 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 export const handleUploadFileToMinIO = createAsyncThunk(
 	'chat/handleUploadFileToMinIO',
 	async (attachments: (ApiMessageAttachment & { uploadPath?: string })[], thunkAPI) => {
-		const uploadedFiles = (await getWebUploadedAttachments({ attachments })).filter((attachment) => Boolean(attachment));
-		return uploadedFiles as string[];
+		const keys = new Set<string>();
+		try {
+			const uploadedFiles = (
+				await getWebUploadedAttachments({
+					attachments,
+					onProgress: (key, progress) => {
+						keys.add(key);
+						thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key, progress }));
+					}
+				})
+			).filter((attachment) => Boolean(attachment));
+			return uploadedFiles as string[];
+		} finally {
+			keys.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key })));
+		}
 	}
 );
 
@@ -1543,6 +1559,11 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			const usePresignFirst = Boolean(needUpload) && !anonymous && !topicId && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
 			if (usePresignFirst) {
 				content = { ...content, presign_finish: [] };
+				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
+			}
+			const presignIngest = getPresignIngestKeys(attachments);
+			if (presignIngest.length) {
+				content = { ...content, presign_ingest: presignIngest };
 				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
 			}
 
@@ -1988,6 +2009,7 @@ export const initialMessagesState: MessagesState = {
 	channelMessages: {},
 	channelDraftMessage: {},
 	presignRefreshAt: {},
+	attachmentUploadProgress: {},
 	isFocused: false,
 	isViewingOlderMessagesByChannelId: {},
 	isJumpingToPresent: {},
@@ -2304,6 +2326,17 @@ export const messagesSlice = createSlice({
 				});
 			}
 			state.presignRefreshAt[messageId] = at;
+		},
+		setAttachmentUploadProgress: (state, action: PayloadAction<{ key: string; progress?: number }>) => {
+			const { key, progress } = action.payload;
+			if (!state.attachmentUploadProgress) {
+				state.attachmentUploadProgress = {};
+			}
+			if (progress === undefined) {
+				delete state.attachmentUploadProgress[key];
+			} else {
+				state.attachmentUploadProgress[key] = progress;
+			}
 		},
 		markAsError: (
 			state,
@@ -2795,6 +2828,9 @@ export function orderMessageByIDAscending(a: MessagesEntity, b: MessagesEntity) 
 }
 
 export const selectOpenOptionMessageState = createSelector(getMessagesState, (state: MessagesState) => state.openOptionMessageState);
+
+export const selectAttachmentUploadProgress = (state: RootState, key?: string): number | undefined =>
+	key === undefined ? undefined : getMessagesState(state).attachmentUploadProgress?.[key];
 
 export const selectUnreadMessageEntries = createSelector(getMessagesState, (state) => state.unreadMessagesEntries);
 

@@ -1,4 +1,4 @@
-import { CustomFile, uploadFileToPath } from '@mezon/transport';
+import { CustomFile } from '@mezon/transport';
 import {
 	differenceInDays,
 	differenceInHours,
@@ -42,6 +42,7 @@ import { getDateLocale } from './dateI18n';
 import { getLinkType } from './embed-social';
 import { getPreSendSourceFile, getPreSendThumbnailBlob } from './file';
 import { Foreman } from './foreman';
+import { getPresignUploadKey, putAttachmentFile } from './presignUpload';
 import { isFromAllowedDomain, isMezonCdnUrl, isMezonMediaUrl, isTenorUrl } from './urlSanitization';
 export * from './animateScroll';
 export * from './audio';
@@ -736,8 +737,9 @@ const fileUploadForeman = new Foreman(MAX_WORKERS);
 
 export async function getWebUploadedAttachments(payload: {
 	attachments: (ApiMessageAttachment & { uploadPath?: string; thumbnailUpload?: string; uploadName?: string })[];
+	onProgress?: (key: string, fraction: number) => void;
 }) {
-	const { attachments } = payload;
+	const { attachments, onProgress } = payload;
 	if (!attachments || attachments?.length === 0) {
 		return [];
 	}
@@ -785,7 +787,7 @@ export async function getWebUploadedAttachments(payload: {
 				throw new Error(`Upload path not found for file ${createdFile.name}`);
 			}
 
-			const result = await uploadFileToPath(createdFile.uploadPath, createdFile, createdFile.size);
+			const result = await putAttachmentFile(attachment, createdFile, createdFile.uploadPath, onProgress);
 
 			// The id returned here becomes a presign_finish key, i.e. a promise to
 			// every client that the object is on the CDN. Returning it after a
@@ -800,7 +802,7 @@ export async function getWebUploadedAttachments(payload: {
 			// exists. It used to be uploaded here instead, after the message had
 			// already published the url, with the result discarded.
 			fileUploadForeman.releaseWorker();
-			const id = attachment.uploadName?.split('/').pop()?.split('.')[0];
+			const id = getPresignUploadKey(attachment.uploadName);
 			return id;
 		} catch (error) {
 			fileUploadForeman.releaseWorker();

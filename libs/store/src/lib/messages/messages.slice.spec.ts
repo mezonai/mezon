@@ -1,4 +1,4 @@
-import { Direction_Mode, generatePathAttachments, getWebUploadedAttachments } from '@mezon/utils';
+import { Direction_Mode, generatePathAttachments, getPresignIngestKeys, getWebUploadedAttachments } from '@mezon/utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { ChannelStreamMode } from 'mezon-js';
 import { shouldForceApiCall } from '../cache-metadata';
@@ -12,6 +12,7 @@ import {
 	messagesActions,
 	messagesReducer,
 	resendMessage,
+	selectAttachmentUploadProgress,
 	selectHasMoreBottomByChannelId,
 	selectHasMoreMessageByChannelId,
 	selectMessageIsLoadingByChannelId,
@@ -29,6 +30,7 @@ jest.mock('@mezon/utils', () => ({
 	EOgpType: {},
 	createLocalPreviewUrl: jest.fn(() => 'blob:independent-preview'),
 	generatePathAttachments: jest.fn(),
+	getPresignIngestKeys: jest.fn(() => []),
 	getWebUploadedAttachments: jest.fn(),
 	getMessageCreateTimeSeconds: () => 1,
 	withCreateTimeSecondsInUpdateContent: (content: unknown) => content,
@@ -355,6 +357,115 @@ it('shows the channel placeholder before presign and retains upload gating after
 	expect(client.updateChannelMessage.mock.calls[0][5]).toBe('900');
 	expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toMatchObject({ presign_finish: ['photo'] });
 	expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(['900']);
+	expect(client.writeChatMessage.mock.calls[0][5]).not.toHaveProperty('presign_ingest');
+	expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).not.toHaveProperty('presign_ingest');
+});
+
+describe('a video sent through the file ingest', () => {
+	const video = { ...attachment, filename: 'clip.mp4', filetype: 'video/mp4' };
+	const preparedVideo = {
+		...prepared,
+		filename: 'clip.mp4',
+		filetype: 'video',
+		url: 'https://cdn.example/1846031000000002001_clip.mp4',
+		uploadName: '0000000000031031/1846031000000002001_clip.mp4'
+	};
+	const key = '1846031000000002001_clip';
+
+	beforeEach(() => {
+		jest.mocked(generatePathAttachments).mockResolvedValue([preparedVideo]);
+		jest.mocked(getPresignIngestKeys).mockReturnValue([key]);
+		jest.mocked(getWebUploadedAttachments).mockResolvedValue([key]);
+	});
+
+	it('is marked with presign_ingest next to presign_finish, on the message and on its presign_finish edit', async () => {
+		const { store, client } = setup();
+		await store.dispatch(sendMessage({ ...payload, content: { t: 'look' }, attachments: [video] })).unwrap();
+		await new Promise(setImmediate);
+
+		expect(getPresignIngestKeys).toHaveBeenCalledWith([preparedVideo]);
+		expect(client.writeChatMessage.mock.calls[0][5]).toEqual({ t: 'look', presign_finish: [], presign_ingest: [key] });
+		expect(store.getState().messages.channelMessages.channel.entities['900'].content).toEqual({
+			t: 'look',
+			presign_finish: [],
+			presign_ingest: [key]
+		});
+		expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ t: 'look', presign_finish: [key], presign_ingest: [key] });
+	});
+
+	it.each([
+		['topic', { topicId: 'topic' }],
+		['thread', { mode: ChannelStreamMode.STREAM_MODE_THREAD }],
+		['anonymous', { anonymous: true }]
+	])('in a %s is sent once stored, still with the marker', async (_scope, extra) => {
+		const upload = deferred<string[]>();
+		jest.mocked(getWebUploadedAttachments).mockReturnValue(upload.promise);
+		const { store, client } = setup();
+		const request = store.dispatch(sendMessage({ ...payload, content: { t: 'look' }, attachments: [video], ...extra }));
+		await new Promise(setImmediate);
+		expect(getWebUploadedAttachments).toHaveBeenCalled();
+		expect(client.writeChatMessage).not.toHaveBeenCalled();
+
+		upload.resolve([key]);
+		await request.unwrap();
+
+		expect(client.writeChatMessage.mock.calls[0][5]).toEqual({ t: 'look', presign_ingest: [key] });
+		expect(client.updateChannelMessage).not.toHaveBeenCalled();
+	});
+
+	it('reports the upload progress into the store until the upload ends', async () => {
+		const upload = deferred<string[]>();
+		jest.mocked(getWebUploadedAttachments).mockImplementation(async ({ onProgress }) => {
+			onProgress?.(key, 0.25);
+			onProgress?.(key, 1);
+			return upload.promise;
+		});
+		const { store } = setup();
+		const request = store.dispatch(sendMessage({ ...payload, attachments: [video] }));
+		await new Promise(setImmediate);
+		expect(selectAttachmentUploadProgress(store.getState() as any, key)).toBe(1);
+		expect(selectAttachmentUploadProgress(store.getState() as any, undefined)).toBeUndefined();
+
+		upload.resolve([key]);
+		await request.unwrap();
+		await new Promise(setImmediate);
+		expect(selectAttachmentUploadProgress(store.getState() as any, key)).toBeUndefined();
+		expect(store.getState().messages.attachmentUploadProgress).toEqual({});
+	});
+
+	it('forgets the progress of a failed upload', async () => {
+		jest.mocked(getWebUploadedAttachments).mockImplementation(async ({ onProgress }) => {
+			onProgress?.(key, 0.5);
+			throw new Error('The file ingest answered 409');
+		});
+		jest.spyOn(console, 'error').mockImplementation(() => undefined);
+		const { store, client } = setup();
+		await store.dispatch(sendMessage({ ...payload, attachments: [video] })).unwrap();
+		await new Promise(setImmediate);
+		expect(store.getState().messages.attachmentUploadProgress).toEqual({});
+		expect(client.updateChannelMessage).not.toHaveBeenCalled();
+	});
+
+	it('keeps the marker through later edits, as it keeps presign_finish', async () => {
+		const { store } = setup();
+		await store.dispatch(sendMessage({ ...payload, content: { t: 'look' }, attachments: [video] })).unwrap();
+		const edit = (content: unknown) =>
+			store.dispatch(messagesActions.newMessage({ id: '900', channel_id: 'channel', code: 1, content, attachments: [preparedVideo] } as any));
+
+		edit({ t: 'edited' });
+		expect(store.getState().messages.channelMessages.channel.entities['900'].content).toEqual({
+			t: 'edited',
+			presign_finish: [],
+			presign_ingest: [key]
+		});
+
+		edit({ t: 'edited', presign_finish: [key] });
+		expect(store.getState().messages.channelMessages.channel.entities['900'].content).toEqual({
+			t: 'edited',
+			presign_finish: [key],
+			presign_ingest: [key]
+		});
+	});
 });
 
 it('keeps the topic ID on the HTTP fallback', async () => {
