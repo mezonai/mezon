@@ -109,6 +109,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 						handleButtonClick(EUserSettings.CHAT);
 						onItemClick && onItemClick(EUserSettings.CHAT);
 					}}
+					data-e2e={generateE2eId('user_setting.chat.tab')}
 				>
 					{t('setting:accountSettings.chat')}
 				</button>
