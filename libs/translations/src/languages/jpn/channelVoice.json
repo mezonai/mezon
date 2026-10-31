@@ -187,9 +187,6 @@
 	"screenDraw": {
 		"annotateScreen": "共有中の画面に描画",
 		"stopAnnotating": "画面への描画を停止",
-		"drawOnScreen": "画面に描画（自分だけに表示）",
-		"stopDrawing": "描画を停止",
-		"closeDrawing": "描画を閉じる",
 		"selectAndMove": "選択して移動",
 		"pen": "ペン",
 		"text": "テキスト",

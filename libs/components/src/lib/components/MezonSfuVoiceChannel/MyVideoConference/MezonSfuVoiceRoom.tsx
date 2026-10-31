@@ -775,13 +775,23 @@ export function MezonSfuVoiceRoom({
 					return;
 				}
 
-				const video = focusVideoContainerRef.current?.querySelector('video');
+				let selectedTrackId = trackId;
+				let video = focusVideoContainerRef.current?.querySelector('video');
+				if (!focusVideoContainerRef.current) {
+					const tiles = Array.from(gridElRef.current?.querySelectorAll<HTMLButtonElement>('[data-has-video="true"]') || []);
+					const tileWithVideo =
+						tiles.find((tile) => tile.dataset.tileId === trackId && tile.querySelector('video')) ||
+						tiles.find((tile) => tile.dataset.tileId?.endsWith('-screen') && tile.querySelector('video')) ||
+						tiles.find((tile) => tile.querySelector('video'));
+					video = tileWithVideo?.querySelector('video');
+					selectedTrackId = tileWithVideo?.dataset.tileId;
+				}
 				if (!video) {
 					dispatch(toastActions.addToast({ message: 'Please select a video track to popout!', type: 'warning', autoClose: 3000 }));
 					return;
 				}
 
-				video.id = 'focusTrack';
+				await video.requestPictureInPicture();
 				video.addEventListener(
 					'leavepictureinpicture',
 					() => {
@@ -790,11 +800,11 @@ export function MezonSfuVoiceRoom({
 					},
 					{ once: true }
 				);
-				await video.requestPictureInPicture();
 				setIsPopoutOpen(true);
-				setPopoutTrackId(trackId);
+				setPopoutTrackId(selectedTrackId);
 			} catch (popoutError) {
 				console.error('PiP error:', popoutError);
+				dispatch(toastActions.addToast({ message: 'Unable to open picture-in-picture.', type: 'error', autoClose: 3000 }));
 			}
 		},
 		[closePopout, dispatch]
@@ -2945,11 +2955,19 @@ export function MezonSfuVoiceRoom({
 	const speakingMapRef = useRef(speakingMap);
 	speakingMapRef.current = speakingMap;
 	const localSpeaking = isLocalAudioEnabled ? (speakingMap.get('local')?.speaking ?? false) : false;
-	const conferenceTiles: Array<{ id: string; participantId: string; contextMenuUserId?: string; isScreen: boolean; content: ReactNode }> = [];
+	const conferenceTiles: Array<{
+		id: string;
+		participantId: string;
+		contextMenuUserId?: string;
+		isScreen: boolean;
+		hasVideo: boolean;
+		content: ReactNode;
+	}> = [];
 	conferenceTiles.push({
 		id: 'local-camera',
 		participantId: 'local',
 		isScreen: false,
+		hasVideo: Boolean(joinRole === 'speaker' && localPreview && cameraEnabled),
 		content: (
 			<div className={getParticipantTileFrameClass(localSpeaking)}>
 				{joinRole === 'speaker' && localPreview && cameraEnabled ? (
@@ -2982,6 +3000,7 @@ export function MezonSfuVoiceRoom({
 			id: 'local-screen',
 			participantId: 'local',
 			isScreen: true,
+			hasVideo: true,
 			content: (
 				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 					<SfuVideo stream={screenStreamRef.current} muted fit="contain" />
@@ -3001,6 +3020,7 @@ export function MezonSfuVoiceRoom({
 			participantId: participant.id,
 			contextMenuUserId: participant.userId,
 			isScreen: false,
+			hasVideo: participant.video?.readyState === 'live' && !participant.video.muted && participant.cameraActive !== false,
 			content: (
 				<SfuParticipantTile
 					participant={participant}
@@ -3017,6 +3037,7 @@ export function MezonSfuVoiceRoom({
 				participantId: participant.id,
 				contextMenuUserId: participant.userId,
 				isScreen: true,
+				hasVideo: true,
 				content: <SfuScreenShareTile participant={participant} displayName={profile.displayName} recovery={screenKeyframeRecovery} />
 			});
 		}
@@ -3089,7 +3110,6 @@ export function MezonSfuVoiceRoom({
 	const screenDraw = useScreenDraw({
 		screenTileIds: conferenceTiles.filter((tile) => tile.isScreen).map((tile) => tile.id),
 		localScreenTileId: tilesById.has('local-screen') ? 'local-screen' : undefined,
-		pinnedTileId: activePinnedTrackId,
 		focusTile: focusScreenTile,
 		startBroadcast: startScreenAnnotation,
 		stopBroadcast: stopScreenAnnotation
@@ -3115,7 +3135,7 @@ export function MezonSfuVoiceRoom({
 				participantId: 'local',
 				label: t('usernameScreen', { username: localDisplayName }),
 				avatarUrl: localAvatar || null,
-				videoTrack: screenDrawSession?.broadcast ? getScreenSendTrack() : (screenStreamRef.current.getVideoTracks()[0] ?? null),
+				videoTrack: screenDrawSession ? getScreenSendTrack() : (screenStreamRef.current.getVideoTracks()[0] ?? null),
 				isScreenShare: true,
 				focused: activePinnedTrackId === 'local-screen',
 				speaking: localSpeaking
@@ -3346,6 +3366,8 @@ export function MezonSfuVoiceRoom({
 							{gridPagination.pageItems.map((tile) => (
 								<button
 									key={tile.id}
+									data-tile-id={tile.id}
+									data-has-video={tile.hasVideo}
 									type="button"
 									className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
 									title="Pin this track"
@@ -3461,6 +3483,7 @@ export function MezonSfuVoiceRoom({
 					microphoneEnabled={microphoneEnabled}
 					cameraEnabled={cameraEnabled}
 					screenSharing={screenSharing}
+					hasVideoTile={conferenceTiles.some((tile) => tile.hasVideo)}
 					screenShareMode={screenShareMode}
 					changingScreenShareMode={changingScreenShareMode}
 					onScreenShareModeChange={changeScreenShareMode}

@@ -7,10 +7,7 @@ export class ScreenDrawSession {
 	private version = 0;
 	private readonly listeners = new Set<() => void>();
 
-	constructor(
-		readonly tileId: string,
-		readonly broadcast: boolean
-	) {
+	constructor(readonly tileId: string) {
 		this.state.setActive(true);
 	}
 

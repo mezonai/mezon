@@ -187,9 +187,6 @@
 	"screenDraw": {
 		"annotateScreen": "Dibujar en tu pantalla compartida",
 		"stopAnnotating": "Dejar de dibujar en tu pantalla",
-		"drawOnScreen": "Dibujar en la pantalla (solo tú lo ves)",
-		"stopDrawing": "Dejar de dibujar",
-		"closeDrawing": "Cerrar dibujo",
 		"selectAndMove": "Seleccionar y mover",
 		"pen": "Lápiz",
 		"text": "Texto",
