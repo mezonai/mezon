@@ -1,5 +1,12 @@
 import { messagesActions, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { ETypeLinkMedia, PRESIGN_PENDING_MAX_AGE_SEC, getPresignKeyFromAttachmentUrl, isAttachmentPresignPendingForMessage } from '@mezon/utils';
+import {
+	ETypeLinkMedia,
+	PRESIGN_PENDING_MAX_AGE_SEC,
+	getPresignKeyFromAttachmentUrl,
+	getPresignPendingMaxAgeSec,
+	isAttachmentPresignPendingForMessage,
+	parsePresignIngestKeys
+} from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { useEffect } from 'react';
 
@@ -62,6 +69,11 @@ export function usePresignRefresh({
 		let cancelled = false;
 
 		const ageMs = () => (createTimeSeconds ? Date.now() - createTimeSeconds * 1000 : 0);
+		const presignIngestKeys = parsePresignIngestKeys(content);
+		const maxAgeSec = Math.max(
+			PRESIGN_PENDING_MAX_AGE_SEC,
+			...(attachments ?? []).map((attachment) => getPresignPendingMaxAgeSec(attachment.url, presignIngestKeys))
+		);
 
 		// Last resort. If the sender's patch never landed, the server has no
 		// presign_finish to hand back and the refetch above can only return the same
@@ -94,7 +106,7 @@ export function usePresignRefresh({
 			if (cancelled) return;
 			// Past the expiry the attachment is dropped from the row entirely, so
 			// there is nothing left to heal.
-			if (ageMs() > PRESIGN_PENDING_MAX_AGE_SEC * 1000) return;
+			if (ageMs() > maxAgeSec * 1000) return;
 			dispatch(messagesActions.refreshPresignMessage({ clanId: clan, channelId, messageId, topicId }));
 			refetches += 1;
 			if (refetches >= REFETCHES_BEFORE_IMAGE_PROBE) {

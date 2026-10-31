@@ -1,4 +1,11 @@
-import { getHlsMasterPlaylistUrl, mayBeTranscodedVideo, probeHlsMasterPlaylist } from '@mezon/utils';
+import {
+	HLS_INDEX_PROBE_INTERVAL_MS,
+	getHlsIndexPlaylistUrl,
+	getHlsMasterPlaylistUrl,
+	mayBeTranscodedVideo,
+	probeHlsIndexPlaylist,
+	probeHlsMasterPlaylist
+} from '@mezon/utils';
 import type Hls from 'hls.js';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -8,6 +15,8 @@ const HLS_MIME_TYPE = 'application/vnd.apple.mpegurl';
 interface VideoSourceOptions {
 	/** Only a frame is shown, so buffer a single segment of the smallest rendition. */
 	preview?: boolean;
+	/** Sent through the file ingest: its stream is the EVENT playlist `index.m3u8`, played from the start. */
+	ingest?: boolean;
 }
 
 /**
@@ -21,7 +30,7 @@ export function useVideoSource(
 	videoRef: RefObject<HTMLVideoElement | null>,
 	url: string | undefined,
 	enabled: boolean,
-	{ preview = false }: VideoSourceOptions = {}
+	{ preview = false, ingest = false }: VideoSourceOptions = {}
 ) {
 	const file = url?.split('?')[0];
 	const [failedFile, setFailedFile] = useState<string>();
@@ -42,6 +51,8 @@ export function useVideoSource(
 		let playingPlaylist = false;
 		let hls: Hls | undefined;
 		const probe = new AbortController();
+		const probePlaylist = ingest ? probeHlsIndexPlaylist : probeHlsMasterPlaylist;
+		const getPlaylistUrl = ingest ? getHlsIndexPlaylistUrl : getHlsMasterPlaylistUrl;
 
 		const detach = () => {
 			hls?.destroy();
@@ -66,9 +77,10 @@ export function useVideoSource(
 				fail();
 				return;
 			}
-			const player = new HlsPlayer(
-				preview ? { capLevelToPlayerSize: true, startLevel: 0, maxBufferLength: 1, maxMaxBufferLength: 1 } : { capLevelToPlayerSize: true }
-			);
+			const config = preview
+				? { capLevelToPlayerSize: true, startLevel: 0, maxBufferLength: 1, maxMaxBufferLength: 1 }
+				: { capLevelToPlayerSize: true };
+			const player = new HlsPlayer(ingest ? { ...config, startPosition: 0 } : config);
 			hls = player;
 			player.on(HlsPlayer.Events.ERROR, (_event, data) => {
 				if (data.fatal && hls === player) fail();
@@ -87,7 +99,7 @@ export function useVideoSource(
 			}
 			switched = true;
 			const signedUrl = latestUrlRef.current ?? url;
-			const other = playingPlaylist ? signedUrl : getHlsMasterPlaylistUrl(signedUrl);
+			const other = playingPlaylist ? signedUrl : getPlaylistUrl(signedUrl);
 			if (!other) return;
 			void play(other, !playingPlaylist);
 		};
@@ -101,7 +113,7 @@ export function useVideoSource(
 		// its audio and raises no error, so an original without a picture moves to the stream when there is one.
 		const checkPicture = () => {
 			if (playingPlaylist || switched || video.videoWidth > 0 || !mayBeTranscodedVideo(url)) return;
-			void probeHlsMasterPlaylist(url, probe.signal).then((playlist) => {
+			void probePlaylist(url, probe.signal).then((playlist) => {
 				if (disposed || switched || !playlist) return;
 				switched = true;
 				void play(playlist, true);
@@ -110,7 +122,7 @@ export function useVideoSource(
 		video.addEventListener('loadedmetadata', checkPicture);
 
 		if (mayBeTranscodedVideo(url)) {
-			void probeHlsMasterPlaylist(url, probe.signal).then((playlist) => {
+			void probePlaylist(url, probe.signal).then((playlist) => {
 				if (!disposed) void play(playlist ?? url, Boolean(playlist));
 			});
 		} else {
@@ -125,9 +137,35 @@ export function useVideoSource(
 			mediaErrorRef.current = () => undefined;
 			setFailedFile(undefined);
 		};
-	}, [videoRef, file, enabled, preview]);
+	}, [videoRef, file, enabled, preview, ingest]);
 
 	const handleError = useCallback(() => mediaErrorRef.current(), []);
 
 	return { failed: enabled && failedFile !== undefined && failedFile === file, handleError };
+}
+
+export function useIngestPlaylistReady(url: string | undefined, enabled: boolean): boolean {
+	const file = url?.split('?')[0];
+	const [readyFile, setReadyFile] = useState<string>();
+	const ready = file !== undefined && readyFile === file;
+
+	useEffect(() => {
+		if (!enabled || !file || ready) return;
+		const probe = new AbortController();
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		const poll = async () => {
+			const startedAt = Date.now();
+			const playlist = await probeHlsIndexPlaylist(file, probe.signal);
+			if (probe.signal.aborted) return;
+			if (playlist) setReadyFile(file);
+			else timer = setTimeout(poll, Math.max(0, startedAt + HLS_INDEX_PROBE_INTERVAL_MS - Date.now()));
+		};
+		void poll();
+		return () => {
+			probe.abort();
+			clearTimeout(timer);
+		};
+	}, [file, enabled, ready]);
+
+	return ready;
 }

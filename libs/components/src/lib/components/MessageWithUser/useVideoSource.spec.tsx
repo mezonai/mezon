@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import type { ReactElement } from 'react';
 import { useRef } from 'react';
-import { useVideoSource } from './useVideoSource';
+import { useIngestPlaylistReady, useVideoSource } from './useVideoSource';
 
-type TestInstance = { props: { onError: () => void; 'data-failed'?: boolean } };
+type TestInstance = { props: { onError: () => void; 'data-failed'?: boolean; 'data-ready'?: boolean } };
 type ReactTestRenderer = { root: { findByType: (type: string) => TestInstance }; update: (element: ReactElement) => void; unmount: () => void };
 // The workspace has this renderer but not its optional type package.
 const { act, create } = jest.requireActual<{
@@ -59,6 +59,10 @@ const PLAYLIST = 'https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000001_
 const CLIP = 'https://cdn.mezon.ai/1cf93b197d401000/2080000000000000003_clip.mp4?1791900000-c2lnbmF0dXJl';
 const CLIP_PLAYLIST = 'https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000003_clip.mp4/master.m3u8?1791900000-c2lnbmF0dXJl';
 const MASTER = '#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=3137344,RESOLUTION=1280x720\nstream_0/playlist.m3u8\n';
+const DEV_CLIP = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_clip.mp4?1791900000-c2lnbmF0dXJl';
+const DEV_INDEX = 'https://cdn-dev.nccsoft.vn/hls/0000000000031031/1846031000000002001_clip.mp4/index.m3u8';
+const DEV_MASTER = 'https://cdn-dev.nccsoft.vn/hls/0000000000031031/1846031000000002001_clip.mp4/master.m3u8?1791900000-c2lnbmF0dXJl';
+const EVENT_PLAYLIST = '#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-START:TIME-OFFSET=0\n#EXT-X-MAP:URI="init.mp4"\n';
 
 class FakeVideo {
 	private source = '';
@@ -92,9 +96,9 @@ class FakeVideo {
 	}
 }
 
-function Player({ url, enabled = true, preview = false }: { url?: string; enabled?: boolean; preview?: boolean }) {
+function Player({ url, enabled = true, preview = false, ingest = false }: { url?: string; enabled?: boolean; preview?: boolean; ingest?: boolean }) {
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const { failed, handleError } = useVideoSource(videoRef, url, enabled, { preview });
+	const { failed, handleError } = useVideoSource(videoRef, url, enabled, { preview, ingest });
 	return enabled ? <video ref={videoRef} data-failed={failed} onError={handleError} /> : null;
 }
 
@@ -137,8 +141,21 @@ beforeEach(() => {
 
 afterEach(() => {
 	act(() => renderer?.unmount());
+	delete process.env.NX_MEZON_CDN_URL;
+	jest.useRealTimers();
 	jest.restoreAllMocks();
 });
+
+function serveIngest(playlists: Record<string, boolean>) {
+	fetchMock.mockImplementation(async (input) => {
+		const found = Object.entries(playlists).find(([playlist]) => String(input).startsWith(`${playlist}?`));
+		return found?.[1]
+			? new Response(found[0].includes('index.m3u8') ? EVENT_PLAYLIST : MASTER, { status: 200 })
+			: new Response('<Error><Code>NoSuchKey</Code></Error>', { status: 404 });
+	});
+}
+
+const probed = () => fetchMock.mock.calls.map(([input]) => String(input).split('?')[0]);
 
 it('plays a file outside the transcoding hosts as it is, without probing', async () => {
 	render(<Player url="https://cdn.komu.vn/1cf93b197d401000/clip.mp4" />);
@@ -421,4 +438,179 @@ it('stays failed through a renewed signature and starts over for another file', 
 	expect(isFailed()).toBe(false);
 	await settle();
 	expect(video.src).toBe('https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000002_other.mkv/master.m3u8');
+});
+
+describe('a video sent through the file ingest', () => {
+	const DEV_MASTER_PATH = DEV_MASTER.split('?')[0];
+
+	beforeEach(() => {
+		process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+	});
+
+	it('plays its EVENT playlist from the start through hls.js, probed as index.m3u8 with the shared probe value', async () => {
+		jest.spyOn(Date, 'now').mockReturnValue(1793000000123);
+		serveIngest({ [DEV_INDEX]: true });
+
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+
+		expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([`${DEV_INDEX}?probe=597666666`]);
+		expect(mockHlsInstances).toHaveLength(1);
+		expect(mockHlsInstances[0].source).toBe(DEV_INDEX);
+		expect(mockHlsInstances[0].media).toBe(video);
+		expect(mockHlsInstances[0].config).toEqual({ capLevelToPlayerSize: true, startPosition: 0 });
+	});
+
+	it('plays it natively where the browser can, as Safari does', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: true });
+
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+
+		expect(video.src).toBe(DEV_INDEX);
+		expect(mockHlsInstances).toHaveLength(0);
+	});
+
+	it('plays the original when its playlist answers 404', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: false, [DEV_MASTER_PATH]: true });
+
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+
+		expect(video.src).toBe(DEV_CLIP);
+		expect(probed()).toEqual([DEV_INDEX]);
+	});
+
+	it('keeps its playlist while it plays and falls back to the original once, never to master.m3u8', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: true, [DEV_MASTER_PATH]: true });
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+		expect(video.src).toBe(DEV_INDEX);
+
+		mediaError();
+		await settle();
+		expect(video.src).toBe(DEV_CLIP);
+		expect(isFailed()).toBe(false);
+
+		mediaError();
+		await settle();
+		expect(isFailed()).toBe(true);
+		expect(probed()).toEqual([DEV_INDEX]);
+	});
+
+	it('tries its playlist, not master.m3u8, when the original fails or shows no picture', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: false, [DEV_MASTER_PATH]: true });
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+		mediaError();
+		await settle();
+		expect(video.src).toBe(DEV_INDEX);
+
+		act(() => renderer.unmount());
+		video = new FakeVideo();
+		video.nativeHls = 'maybe';
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+		serveIngest({ [DEV_INDEX]: true });
+		act(() => video.emit('loadedmetadata'));
+		await settle();
+		expect(video.src).toBe(DEV_INDEX);
+		expect(probed()).not.toContain(DEV_MASTER_PATH);
+	});
+
+	it('keeps the old rule for a video without the marker, on the dev CDN too: master.m3u8, then the original', async () => {
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: true, [DEV_MASTER_PATH]: true });
+		render(<Player url={DEV_CLIP} />);
+		await settle();
+		expect(video.src).toBe(DEV_MASTER);
+		expect(probed()).toEqual([DEV_MASTER_PATH]);
+
+		act(() => renderer.unmount());
+		video = new FakeVideo();
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: true });
+		render(<Player url={DEV_CLIP} />);
+		await settle();
+		expect(video.src).toBe(DEV_CLIP);
+	});
+});
+
+describe('useIngestPlaylistReady', () => {
+	const START = 1793000000000;
+	const n = Math.floor(START / 3000);
+
+	function Probe({ url, enabled }: { url?: string; enabled: boolean }) {
+		return <span data-ready={useIngestPlaylistReady(url, enabled)} />;
+	}
+	const isReady = () => renderer.root.findByType('span').props['data-ready'];
+	const advance = (ms: number) =>
+		act(async () => {
+			await jest.advanceTimersByTimeAsync(ms);
+		});
+
+	beforeEach(() => {
+		process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+		jest.useFakeTimers({ now: START, doNotFake: ['nextTick', 'queueMicrotask'] });
+	});
+
+	it('asks every 3 s, with n = Unix ms / 3000, until the playlist exists, then stops', async () => {
+		let stored = false;
+		fetchMock.mockImplementation(async () =>
+			stored ? new Response(EVENT_PLAYLIST, { status: 200 }) : new Response('<Error><Code>NoSuchKey</Code></Error>', { status: 404 })
+		);
+
+		render(<Probe url={DEV_CLIP} enabled />);
+		await advance(0);
+		expect(isReady()).toBe(false);
+		await advance(2999);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		await advance(1);
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		stored = true;
+		await advance(3000);
+		expect(isReady()).toBe(true);
+		await advance(30000);
+
+		expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([
+			`${DEV_INDEX}?probe=${n}`,
+			`${DEV_INDEX}?probe=${n + 1}`,
+			`${DEV_INDEX}?probe=${n + 2}`
+		]);
+	});
+
+	it('asks nothing while disabled, stops when disabled, and does not ask again once ready', async () => {
+		fetchMock.mockImplementation(async () => new Response('', { status: 404 }));
+		render(<Probe url={DEV_CLIP} enabled={false} />);
+		await advance(9000);
+		expect(fetchMock).not.toHaveBeenCalled();
+
+		act(() => renderer.update(<Probe url={DEV_CLIP} enabled />));
+		await advance(0);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		act(() => renderer.update(<Probe url={DEV_CLIP} enabled={false} />));
+		await advance(9000);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockImplementation(async () => new Response(EVENT_PLAYLIST, { status: 200 }));
+		act(() => renderer.update(<Probe url={DEV_CLIP} enabled />));
+		await advance(0);
+		expect(isReady()).toBe(true);
+		act(() => renderer.update(<Probe url={`${DEV_CLIP.split('?')[0]}?1791999999-ZnJlc2g`} enabled={false} />));
+		act(() => renderer.update(<Probe url={`${DEV_CLIP.split('?')[0]}?1791999999-ZnJlc2g`} enabled />));
+		await advance(9000);
+		expect(isReady()).toBe(true);
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+	});
+
+	it('never asks for a file outside the hosts with HLS', async () => {
+		render(<Probe url="https://cdn.komu.vn/1cf93b197d401000/clip.mp4" enabled />);
+		await advance(9000);
+		expect(fetchMock).not.toHaveBeenCalled();
+		expect(isReady()).toBe(false);
+	});
 });

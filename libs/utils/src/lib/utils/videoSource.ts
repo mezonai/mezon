@@ -7,9 +7,11 @@ const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'mkv', 'wmv']);
 const HLS_TRANSCODE_EXTENSIONS = new Set(['mp4', 'mov', 'mkv', 'avi', 'flv', 'm4v', 'wmv']);
 const HLS_OUTPUT_PREFIX = 'hls/';
 const HLS_MASTER_PLAYLIST = 'master.m3u8';
+const HLS_INDEX_PLAYLIST = 'index.m3u8';
 const HLS_PLAYLIST_SUFFIX = '.m3u8';
 const HLS_PLAYLIST_TAG = '#EXTM3U';
 const HLS_PROBE_TIMEOUT_MS = 5000;
+export const HLS_INDEX_PROBE_INTERVAL_MS = 3000;
 
 interface TranscodableUrl {
 	file: string;
@@ -18,12 +20,22 @@ interface TranscodableUrl {
 	query: string;
 }
 
-function readTranscodableUrl(url?: string): TranscodableUrl | undefined {
+// The file ingest writes its HLS under the same prefix of the configured CDN, where nothing converts other containers.
+function hlsOrigins(): string[] {
+	try {
+		const cdn = new URL(process.env.NX_MEZON_CDN_URL ?? '').origin;
+		return TRANSCODING_ORIGINS.includes(cdn) ? TRANSCODING_ORIGINS : [...TRANSCODING_ORIGINS, cdn];
+	} catch {
+		return TRANSCODING_ORIGINS;
+	}
+}
+
+function readTranscodableUrl(url?: string, origins = hlsOrigins()): TranscodableUrl | undefined {
 	if (!url || url.includes('#')) return undefined;
 
 	const queryIndex = url.indexOf('?');
 	const path = queryIndex === -1 ? url : url.slice(0, queryIndex);
-	const origin = TRANSCODING_ORIGINS.find((candidate) => path.startsWith(`${candidate}/`));
+	const origin = origins.find((candidate) => path.startsWith(`${candidate}/`));
 	if (!origin) return undefined;
 
 	const key = path.slice(origin.length + 1);
@@ -51,7 +63,7 @@ export function mayBeTranscodedVideo(url?: string): boolean {
 
 /** True for an mkv/avi/flv/wmv the media server converts, so it plays as a video instead of a file to download. */
 export function isTranscodedVideoContainer(url?: string): boolean {
-	const file = readTranscodableUrl(url)?.file ?? '';
+	const file = readTranscodableUrl(url, TRANSCODING_ORIGINS)?.file ?? '';
 	const dot = file.lastIndexOf('.');
 	return dot !== -1 && TRANSCODED_CONTAINERS.has(file.slice(dot + 1).toLowerCase());
 }
@@ -61,6 +73,12 @@ export function getHlsMasterPlaylistUrl(url?: string): string | undefined {
 	const parts = readTranscodableUrl(url);
 	if (!parts) return undefined;
 	return `${masterPlaylistPath(parts)}${parts.query ? `?${parts.query}` : ''}`;
+}
+
+/** The EVENT playlist the file ingest writes for `url` while the file arrives; the CDN serves it without a signature. */
+export function getHlsIndexPlaylistUrl(url?: string): string | undefined {
+	const parts = readTranscodableUrl(url);
+	return parts && `${parts.origin}/${HLS_OUTPUT_PREFIX}${parts.key}/${HLS_INDEX_PLAYLIST}`;
 }
 
 async function readPrefix(body: ReadableStream<Uint8Array>, length: number): Promise<string> {
@@ -78,6 +96,26 @@ async function readPrefix(body: ReadableStream<Uint8Array>, length: number): Pro
 	return prefix;
 }
 
+async function probePlaylist(probeUrl: string, playlist: string | undefined, signal?: AbortSignal): Promise<string | undefined> {
+	const controller = new AbortController();
+	const abort = () => controller.abort();
+	signal?.addEventListener('abort', abort, { once: true });
+	const timeout = setTimeout(abort, HLS_PROBE_TIMEOUT_MS);
+	try {
+		const response = await fetch(probeUrl, { signal: controller.signal });
+		if (!response.ok || !response.body) {
+			void response.body?.cancel().catch(() => undefined);
+			return undefined;
+		}
+		return (await readPrefix(response.body, HLS_PLAYLIST_TAG.length)) === HLS_PLAYLIST_TAG ? playlist : undefined;
+	} catch {
+		return undefined;
+	} finally {
+		clearTimeout(timeout);
+		signal?.removeEventListener('abort', abort);
+	}
+}
+
 /**
  * Resolves to the HLS stream of `url` when the media server has converted it, or undefined to play `url` itself.
  * The probe url is unique per call because the CDN caches a 404, which would hide a stream written since.
@@ -85,22 +123,12 @@ async function readPrefix(body: ReadableStream<Uint8Array>, length: number): Pro
 export async function probeHlsMasterPlaylist(url?: string, signal?: AbortSignal): Promise<string | undefined> {
 	const parts = readTranscodableUrl(url);
 	if (!parts) return undefined;
+	return probePlaylist(`${masterPlaylistPath(parts)}?probe=${Date.now().toString(16)}`, getHlsMasterPlaylistUrl(url), signal);
+}
 
-	const controller = new AbortController();
-	const abort = () => controller.abort();
-	signal?.addEventListener('abort', abort, { once: true });
-	const timeout = setTimeout(abort, HLS_PROBE_TIMEOUT_MS);
-	try {
-		const response = await fetch(`${masterPlaylistPath(parts)}?probe=${Date.now().toString(16)}`, { signal: controller.signal });
-		if (!response.ok || !response.body) {
-			void response.body?.cancel().catch(() => undefined);
-			return undefined;
-		}
-		return (await readPrefix(response.body, HLS_PLAYLIST_TAG.length)) === HLS_PLAYLIST_TAG ? getHlsMasterPlaylistUrl(url) : undefined;
-	} catch {
-		return undefined;
-	} finally {
-		clearTimeout(timeout);
-		signal?.removeEventListener('abort', abort);
-	}
+/** Resolves to the file ingest's playlist of `url` once stored; viewers share `probe` for 3 s so the CDN cache absorbs them. */
+export async function probeHlsIndexPlaylist(url?: string, signal?: AbortSignal): Promise<string | undefined> {
+	const playlist = getHlsIndexPlaylistUrl(url);
+	if (!playlist) return undefined;
+	return probePlaylist(`${playlist}?probe=${Math.floor(Date.now() / HLS_INDEX_PROBE_INTERVAL_MS)}`, playlist, signal);
 }
