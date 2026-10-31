@@ -1,7 +1,15 @@
+import { afterEach, beforeEach, expect, it, jest } from '@jest/globals';
+import type { ReactElement } from 'react';
 import { useRef } from 'react';
-import type { ReactTestRenderer } from 'react-test-renderer';
-import { act, create } from 'react-test-renderer';
 import { useVideoSource } from './useVideoSource';
+
+type TestInstance = { props: { onError: () => void; 'data-failed'?: boolean } };
+type ReactTestRenderer = { root: { findByType: (type: string) => TestInstance }; update: (element: ReactElement) => void; unmount: () => void };
+// The workspace has this renderer but not its optional type package.
+const { act, create } = jest.requireActual<{
+	act: { (callback: () => Promise<void>): Promise<void>; (callback: () => void): void };
+	create: (element: ReactElement, options?: { createNodeMock: (node: { type: unknown }) => unknown }) => ReactTestRenderer;
+}>('react-test-renderer');
 
 jest.mock('@mezon/utils', () => jest.requireActual('../../../../../utils/src/lib/utils/videoSource'), { virtual: true });
 
@@ -91,10 +99,10 @@ function Player({ url, enabled = true, preview = false }: { url?: string; enable
 }
 
 let video: FakeVideo;
-let fetchMock: jest.SpyInstance;
+let fetchMock: jest.SpiedFunction<typeof fetch>;
 let renderer: ReactTestRenderer;
 
-function render(element: React.ReactElement) {
+function render(element: ReactElement) {
 	act(() => {
 		renderer = create(element, { createNodeMock: (node) => (node.type === 'video' ? video : null) });
 	});

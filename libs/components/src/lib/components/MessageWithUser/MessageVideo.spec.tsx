@@ -1,18 +1,37 @@
-import { act, create } from 'react-test-renderer';
+import { beforeEach, expect, it, jest } from '@jest/globals';
+import type { ReactElement } from 'react';
 import MessageVideo from './MessageVideo';
+
+type TestInstance = { props: { src?: string; onPlay: () => void; onError: () => void } };
+type Query = {
+	find: (predicate: (node: TestInstance) => boolean) => TestInstance;
+	findByType: (type: string) => TestInstance;
+	findAllByType: (type: string) => TestInstance[];
+	findAllByProps: (props: Record<string, unknown>) => TestInstance[];
+};
+type TestRenderer = { root: Query; update: (element: ReactElement) => void; unmount: () => void };
+// The workspace has this renderer but not its optional type package.
+const { act, create } = jest.requireActual<{
+	act: { (callback: () => Promise<void>): Promise<void>; (callback: () => void): void };
+	create: (element: ReactElement, options?: { createNodeMock: (node: { type: unknown }) => unknown }) => TestRenderer;
+}>('react-test-renderer');
 
 let mockIsIntersecting = true;
 jest.mock('@mezon/ui', () => ({ Icons: { PlayButton: () => null, Download: () => null } }), { virtual: true });
-jest.mock('@mezon/utils', () => ({
-	calculateMediaDimensions: () => ({ width: 320, height: 180 }),
-	createImgproxyUrl: (url: string) => `proxy:${url}`,
-	useIsIntersecting: () => mockIsIntersecting,
-	useResizeObserver: () => undefined,
-	getHlsMasterPlaylistUrl: () => undefined,
-	isTranscodedVideoContainer: () => false,
-	mayBeTranscodedVideo: () => false,
-	probeHlsMasterPlaylist: async () => undefined
-}));
+jest.mock(
+	'@mezon/utils',
+	() => ({
+		calculateMediaDimensions: () => ({ width: 320, height: 180 }),
+		createImgproxyUrl: (url: string) => `proxy:${url}`,
+		useIsIntersecting: () => mockIsIntersecting,
+		useResizeObserver: () => undefined,
+		getHlsMasterPlaylistUrl: () => undefined,
+		isTranscodedVideoContainer: () => false,
+		mayBeTranscodedVideo: () => false,
+		probeHlsMasterPlaylist: async () => undefined
+	}),
+	{ virtual: true }
+);
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('use-debounce', () => ({ useDebouncedCallback: (callback: unknown) => callback }));
 jest.mock('mp4box', () => ({}));
