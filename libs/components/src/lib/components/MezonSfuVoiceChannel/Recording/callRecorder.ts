@@ -11,7 +11,6 @@ import {
 } from './RecordingSink';
 import { WorkerCompositor } from './WorkerCompositor';
 import { detectRecorderCapabilities } from './capabilities';
-import { accentColorFor } from './renderRecordingFrame';
 import type {
 	RecordingAudioSource,
 	RecordingCompositor,
@@ -436,13 +435,10 @@ class CallRecorderEngine {
 				videoSources.set(tile.key, tile.videoTrack);
 			}
 			const avatarKey = tile.avatarUrl || null;
-			const initial = (tile.label || '?').trim().charAt(0).toUpperCase() || '?';
 			workerTiles.push({
 				videoKey: hasVideo ? tile.key : null,
 				avatarKey,
 				label: tile.label,
-				initial,
-				accent: accentColorFor(initial),
 				focused: tile.focused,
 				contain: tile.isScreenShare,
 				speaking: tile.speaking && !tile.isScreenShare

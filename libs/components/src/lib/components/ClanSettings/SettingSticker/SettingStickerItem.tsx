@@ -5,7 +5,6 @@ import { EPermission, createImgproxyUrl, generateE2eId, getSrcSticker } from '@m
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AvatarColor } from '../../AvatarImage/AvatarImage';
 
 type SettingEmojiListProps = {
 	updateSticker: (sticker: ClanSticker) => void;
@@ -29,7 +28,6 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 			await dispatch(deleteSticker({ stickerId: sticker.id, clan_id: clanId as string, stickerLabel: sticker.shortname as string }));
 		}
 	};
-	const avatarDefault = dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username;
 	const avatarUrl = dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url;
 	return (
 		<div
@@ -60,7 +58,9 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 						alt=""
 					/>
 				) : (
-					<AvatarColor username={avatarDefault || ''} className={`size-4`} />
+					<div className="size-4 rounded-full bg-bgDisable flex items-center justify-center">
+						<Icons.AvatarUser className="w-2.5 h-2.5" />
+					</div>
 				)}
 				<p className=" max-w-20 truncate">{dataAuthor?.clan_nick || dataAuthor?.user?.username}</p>
 			</div>

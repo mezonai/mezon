@@ -13,7 +13,6 @@ import type { ClanEmoji, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AvatarColor } from '../../../AvatarImage/AvatarImage';
 
 type SettingEmojiItemProp = {
 	emoji: ClanEmoji;
@@ -156,7 +155,9 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 								alt="User avatar"
 							/>
 						) : (
-							<AvatarColor username={avatarDefault} className="size-6" />
+							<div className="w-full h-full bg-bgDisable flex items-center justify-center">
+								<Icons.AvatarUser className="w-4 h-4" />
+							</div>
 						)}
 					</div>
 					<p className={'text-sm h-auto leading-6'} data-e2e={generateE2eId('clan_page.settings.emoji.item.created_by')}>
