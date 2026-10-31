@@ -24,7 +24,14 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { GUEST_NAME, ensureMediaPermission, getPreferredInputDeviceId, setPreferredInputDeviceId, useMediaPermissions } from '@mezon/utils';
+import {
+	GUEST_NAME,
+	ensureMediaPermission,
+	getPreferredInputDeviceId,
+	reportMediaAccessError,
+	setPreferredInputDeviceId,
+	useMediaPermissions
+} from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -198,6 +205,7 @@ export default function PreJoinCalling() {
 	const getGuestAccessToken = useSelector(selectGuestAccessToken);
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const roomCameraOn = useSelector(selectShowCamera);
+	const cameraEnabled = getExternalToken ? joinRole === 'speaker' && roomCameraOn : cameraOn;
 
 	useEffect(() => {
 		function decodeJWT(token: string) {
@@ -288,57 +296,65 @@ export default function PreJoinCalling() {
 		[devices]
 	);
 
-	const startCamera = useCallback((deviceId: string) => {
-		const request = ++cameraRequestRef.current;
-		const run = async () => {
-			if (request !== cameraRequestRef.current) return;
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({
-					video: {
-						width: { ideal: 1280 },
-						height: { ideal: 720 },
-						...(deviceId === 'default' ? { facingMode: 'user' } : { deviceId: { exact: deviceId } })
-					},
-					audio: false
-				});
-				if (request !== cameraRequestRef.current) {
-					stream.getTracks().forEach((track) => track.stop());
-					return;
-				}
-
-				rawStreamRef.current?.getTracks().forEach((track) => track.stop());
-				rawStreamRef.current = stream;
-
-				if (!processorRef.current) {
-					processorRef.current = new MediaPipeBackgroundProcessor();
-				}
-
-				const outStream = await processorRef.current.start(stream, selectedBgRef.current);
-				if (request !== cameraRequestRef.current) {
-					stream.getTracks().forEach((track) => track.stop());
-					// Not already cleaned up by turning the camera off or unmounting, so stop the processor too
-					if (rawStreamRef.current === stream) {
-						rawStreamRef.current = null;
-						processorRef.current?.stop();
+	const startCamera = useCallback(
+		(deviceId: string, inMeeting = false) => {
+			const request = ++cameraRequestRef.current;
+			const run = async () => {
+				if (request !== cameraRequestRef.current) return;
+				try {
+					const stream = await navigator.mediaDevices.getUserMedia({
+						video: {
+							width: { ideal: 1280 },
+							height: { ideal: 720 },
+							...(deviceId === 'default' ? { facingMode: 'user' } : { deviceId: { exact: deviceId } })
+						},
+						audio: false
+					});
+					if (request !== cameraRequestRef.current) {
+						stream.getTracks().forEach((track) => track.stop());
+						return;
 					}
-					return;
-				}
 
-				setProcessedStream(outStream);
-				setProcessorCanvas(processorRef.current.getCanvas());
-				setCustomVideoTrack(processorRef.current.getVideoTrack());
-				setSelectedCamera(stream.getVideoTracks()[0]?.getSettings().deviceId || deviceId);
-				setCameraOn(true);
-				setError(null);
-				setPermissionsState((prev) => ({ ...prev, camera: true }));
-			} catch (err) {
-				console.error('Error accessing camera:', err);
-				if (request === cameraRequestRef.current) setError('Failed to access camera. Please check your permissions and try again.');
-			}
-		};
-		cameraStartQueueRef.current = cameraStartQueueRef.current.then(run);
-		return cameraStartQueueRef.current;
-	}, []);
+					rawStreamRef.current?.getTracks().forEach((track) => track.stop());
+					rawStreamRef.current = stream;
+
+					if (!processorRef.current) {
+						processorRef.current = new MediaPipeBackgroundProcessor();
+					}
+
+					const outStream = await processorRef.current.start(stream, selectedBgRef.current);
+					if (request !== cameraRequestRef.current) {
+						stream.getTracks().forEach((track) => track.stop());
+						// Not already cleaned up by turning the camera off or unmounting, so stop the processor too
+						if (rawStreamRef.current === stream) {
+							rawStreamRef.current = null;
+							processorRef.current?.stop();
+						}
+						return;
+					}
+
+					setProcessedStream(outStream);
+					setProcessorCanvas(processorRef.current.getCanvas());
+					setCustomVideoTrack(processorRef.current.getVideoTrack());
+					setSelectedCamera(stream.getVideoTracks()[0]?.getSettings().deviceId || deviceId);
+					setCameraOn(true);
+					setError(null);
+					setPermissionsState((prev) => ({ ...prev, camera: true }));
+				} catch (err) {
+					console.error('Error accessing camera:', err);
+					if (request === cameraRequestRef.current) {
+						if (!reportMediaAccessError('camera', err)) {
+							setError('Failed to access camera. Please check your permissions and try again.');
+						}
+						if (inMeeting) dispatch(voiceActions.setShowCamera(false));
+					}
+				}
+			};
+			cameraStartQueueRef.current = cameraStartQueueRef.current.then(run);
+			return cameraStartQueueRef.current;
+		},
+		[dispatch]
+	);
 
 	// Stops the camera device; the processed track is left alone
 	const releaseCamera = useCallback(() => {
@@ -362,16 +378,18 @@ export default function PreJoinCalling() {
 	const handleSelectCamera = useCallback(
 		(deviceId: string) => {
 			setSelectedCamera(deviceId);
-			if (cameraOn && (!getExternalToken || roomCameraOn)) void startCamera(deviceId);
+			if (cameraEnabled) void startCamera(deviceId, !!getExternalToken);
 		},
-		[cameraOn, getExternalToken, roomCameraOn, startCamera]
+		[cameraEnabled, getExternalToken, startCamera]
 	);
 
 	useEffect(() => {
-		if (!cameraOn) return;
-		if (getExternalToken && !roomCameraOn) releaseCamera();
-		else if (!rawStreamRef.current) void startCamera(selectedCamera);
-	}, [cameraOn, getExternalToken, roomCameraOn, selectedCamera, releaseCamera, startCamera]);
+		if (!cameraEnabled) {
+			if (getExternalToken) releaseCamera();
+			return;
+		}
+		if (!rawStreamRef.current) void startCamera(selectedCamera, !!getExternalToken);
+	}, [cameraEnabled, getExternalToken, selectedCamera, releaseCamera, startCamera]);
 
 	const requestCameraPermission = useCallback(async () => {
 		const enableCamera = () => void startCamera(selectedCamera);
@@ -501,7 +519,7 @@ export default function PreJoinCalling() {
 	}, [dispatch]);
 
 	// Audience cannot send video, so the room gets neither the pre-join camera nor its background menu
-	const shareCamera = cameraOn && joinRole === 'speaker';
+	const shareCamera = cameraEnabled && joinRole === 'speaker';
 
 	return (
 		<div className="h-screen w-screen flex bg-black">
@@ -521,6 +539,7 @@ export default function PreJoinCalling() {
 						onFullScreen={handleFullScreen}
 						onToggleChat={toggleChat}
 						username={username}
+						cameraManagedExternally
 						customVideoTrack={
 							shareCamera
 								? customVideoTrack && customVideoTrack.readyState === 'live'

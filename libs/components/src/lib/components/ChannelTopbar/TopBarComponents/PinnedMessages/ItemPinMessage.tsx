@@ -166,6 +166,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									isInPinMsg={true}
 									isEditted={false}
 									content={messageContentObject}
+									isAnonymous={checkAnonymous}
 									isJumMessageEnabled={false}
 									isTokenClickAble={false}
 									messageId={message?.id}

@@ -37,6 +37,7 @@ interface SfuControlBarProps {
 	microphoneEnabled: boolean;
 	cameraEnabled: boolean;
 	screenSharing: boolean;
+	hasVideoTile: boolean;
 	screenShareMode: ScreenShareMode;
 	changingScreenShareMode: boolean;
 	onScreenShareModeChange: (mode: ScreenShareMode) => void;
@@ -94,6 +95,7 @@ export const SfuControlBar = ({
 	microphoneEnabled,
 	cameraEnabled,
 	screenSharing,
+	hasVideoTile,
 	screenShareMode,
 	changingScreenShareMode,
 	onScreenShareModeChange,
@@ -259,7 +261,7 @@ export const SfuControlBar = ({
 				{screenDrawMode && onScreenDrawToggle && (
 					<ScreenDrawControl mode={screenDrawMode} active={screenDrawActive} onToggle={onScreenDrawToggle} />
 				)}
-				{!isExternalCalling && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
+				{!isExternalCalling && (hasVideoTile || isPopoutOpen) && <PopoutControl active={isPopoutOpen} onToggle={onTogglePopout} />}
 				<FullscreenControl active={isFullScreen} onToggle={onFullScreen} />
 			</div>
 		</footer>

@@ -187,9 +187,6 @@
 	"screenDraw": {
 		"annotateScreen": "공유 중인 화면에 그리기",
 		"stopAnnotating": "화면에 그리기 중지",
-		"drawOnScreen": "화면에 그리기 (나만 보임)",
-		"stopDrawing": "그리기 중지",
-		"closeDrawing": "그리기 닫기",
 		"selectAndMove": "선택 및 이동",
 		"pen": "펜",
 		"text": "텍스트",
