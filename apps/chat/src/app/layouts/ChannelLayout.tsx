@@ -57,7 +57,7 @@ const ChannelLayout = () => {
 					isFocusTopicOrThreadBox={isFocusTopicBox || isFocusThreadBox}
 					openEmojiRightPanel={openEmojiRightPanel}
 					openEmojiBottomPanel={openEmojiBottomPanel}
-					openEmojiPanelOnTopicOrThreadBox={openEmojiPanelOnTopic || openEmojiPanelOnThreadBox}
+					openEmojiPanelOnThreadBox={openEmojiPanelOnThreadBox}
 					closeMenu={closeMenu}
 					currentChannelId={currentChannelId ?? ''}
 					isShowCreateTopic={isShowCreateTopic}
