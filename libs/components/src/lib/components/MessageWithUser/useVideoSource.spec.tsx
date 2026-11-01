@@ -80,6 +80,8 @@ class FakeVideo {
 	nativeHls = '';
 	paused = true;
 	videoWidth = 0;
+	currentTime = 0;
+	duration = NaN;
 	addEventListener(type: string, listener: () => void) {
 		(this.listeners[type] ??= []).push(listener);
 	}
@@ -96,6 +98,8 @@ class FakeVideo {
 	set src(value: string) {
 		this.source = value;
 		this.paused = true;
+		this.currentTime = 0;
+		this.duration = NaN;
 	}
 	play = jest.fn(() => {
 		this.paused = false;
@@ -576,6 +580,80 @@ describe('a video sent through the file ingest', () => {
 		render(<Player url={DEV_CLIP} />);
 		await settle();
 		expect(video.src).toBe(DEV_CLIP);
+	});
+
+	describe('in Safari, whose player keeps a playlist it started on as live without a duration after #EXT-X-ENDLIST arrives', () => {
+		const START = 1793000000000;
+		const n = Math.floor(START / 3000);
+		const advance = (ms: number) =>
+			act(async () => {
+				await jest.advanceTimersByTimeAsync(ms);
+			});
+		let ended: boolean;
+
+		beforeEach(() => {
+			jest.useFakeTimers({ now: START, doNotFake: ['nextTick', 'queueMicrotask'] });
+			mockIsSafari = true;
+			video.nativeHls = 'maybe';
+			ended = false;
+			fetchMock.mockImplementation(async () => new Response(ended ? `${EVENT_PLAYLIST}#EXT-X-ENDLIST\n` : EVENT_PLAYLIST, { status: 200 }));
+		});
+
+		it('reads it every 3 s with the shared probe value and, once it has ended, loads the copy read at the same position, still playing', async () => {
+			render(<Player url={DEV_CLIP} ingest />);
+			await advance(0);
+			expect(video.src).toBe(DEV_INDEX);
+			video.paused = false;
+			video.duration = Infinity;
+			video.currentTime = 12.5;
+
+			await advance(3000);
+			expect(video.src).toBe(DEV_INDEX);
+			ended = true;
+			await advance(3000);
+
+			expect(video.src).toBe(`${DEV_INDEX}?probe=${n + 2}`);
+			expect(video.currentTime).toBe(12.5);
+			expect(video.play).toHaveBeenCalledTimes(1);
+			await advance(30000);
+			expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([
+				`${DEV_INDEX}?probe=${n}`,
+				`${DEV_INDEX}?probe=${n + 1}`,
+				`${DEV_INDEX}?probe=${n + 2}`
+			]);
+		});
+
+		it('leaves a paused video paused', async () => {
+			render(<Player url={DEV_CLIP} ingest />);
+			await advance(0);
+			video.duration = Infinity;
+			video.currentTime = 30;
+			ended = true;
+			await advance(3000);
+
+			expect(video.src).toBe(`${DEV_INDEX}?probe=${n + 1}`);
+			expect(video.currentTime).toBe(30);
+			expect(video.play).not.toHaveBeenCalled();
+		});
+
+		it('asks nothing more once the player knows the duration, or after falling back to the original', async () => {
+			render(<Player url={DEV_CLIP} ingest />);
+			await advance(0);
+			video.duration = 20.1;
+			await advance(30000);
+			expect(fetchMock).toHaveBeenCalledTimes(1);
+
+			act(() => renderer.unmount());
+			video = new FakeVideo();
+			video.nativeHls = 'maybe';
+			render(<Player url={DEV_CLIP} ingest />);
+			await advance(0);
+			video.duration = Infinity;
+			mediaError();
+			await advance(30000);
+			expect(video.src).toBe(DEV_CLIP);
+			expect(fetchMock).toHaveBeenCalledTimes(2);
+		});
 	});
 });
 

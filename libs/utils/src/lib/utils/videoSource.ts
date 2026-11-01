@@ -10,6 +10,7 @@ const HLS_MASTER_PLAYLIST = 'master.m3u8';
 const HLS_INDEX_PLAYLIST = 'index.m3u8';
 const HLS_PLAYLIST_SUFFIX = '.m3u8';
 const HLS_PLAYLIST_TAG = '#EXTM3U';
+const HLS_END_TAG = '#EXT-X-ENDLIST';
 const HLS_PROBE_TIMEOUT_MS = 5000;
 export const HLS_INDEX_PROBE_INTERVAL_MS = 3000;
 
@@ -47,6 +48,10 @@ function readTranscodableUrl(url?: string, origins = hlsOrigins()): Transcodable
 
 function masterPlaylistPath({ origin, key }: TranscodableUrl): string {
 	return `${origin}/${HLS_OUTPUT_PREFIX}${key}/${HLS_MASTER_PLAYLIST}`;
+}
+
+function indexProbeUrl(playlist: string): string {
+	return `${playlist}?probe=${Math.floor(Date.now() / HLS_INDEX_PROBE_INTERVAL_MS)}`;
 }
 
 /** Whether an upload should ask the server to route it to the media server: every video it accepts, whatever its size. */
@@ -96,7 +101,15 @@ async function readPrefix(body: ReadableStream<Uint8Array>, length: number): Pro
 	return prefix;
 }
 
-async function probePlaylist(probeUrl: string, playlist: string | undefined, signal?: AbortSignal): Promise<string | undefined> {
+const startsAsPlaylist = async (body: ReadableStream<Uint8Array>) => (await readPrefix(body, HLS_PLAYLIST_TAG.length)) === HLS_PLAYLIST_TAG;
+const hasEnded = async (body: ReadableStream<Uint8Array>) => (await new Response(body).text()).includes(HLS_END_TAG);
+
+async function probePlaylist(
+	probeUrl: string,
+	playlist: string | undefined,
+	signal?: AbortSignal,
+	accepts = startsAsPlaylist
+): Promise<string | undefined> {
 	const controller = new AbortController();
 	const abort = () => controller.abort();
 	signal?.addEventListener('abort', abort, { once: true });
@@ -107,7 +120,7 @@ async function probePlaylist(probeUrl: string, playlist: string | undefined, sig
 			void response.body?.cancel().catch(() => undefined);
 			return undefined;
 		}
-		return (await readPrefix(response.body, HLS_PLAYLIST_TAG.length)) === HLS_PLAYLIST_TAG ? playlist : undefined;
+		return (await accepts(response.body)) ? playlist : undefined;
 	} catch {
 		return undefined;
 	} finally {
@@ -130,5 +143,13 @@ export async function probeHlsMasterPlaylist(url?: string, signal?: AbortSignal)
 export async function probeHlsIndexPlaylist(url?: string, signal?: AbortSignal): Promise<string | undefined> {
 	const playlist = getHlsIndexPlaylistUrl(url);
 	if (!playlist) return undefined;
-	return probePlaylist(`${playlist}?probe=${Math.floor(Date.now() / HLS_INDEX_PROBE_INTERVAL_MS)}`, playlist, signal);
+	return probePlaylist(indexProbeUrl(playlist), playlist, signal);
+}
+
+/** Resolves to the url it read the file ingest's playlist of `url` from, with the shared probe value, once that playlist has ended. */
+export async function probeEndedHlsIndexPlaylist(url?: string, signal?: AbortSignal): Promise<string | undefined> {
+	const playlist = getHlsIndexPlaylistUrl(url);
+	if (!playlist) return undefined;
+	const probeUrl = indexProbeUrl(playlist);
+	return probePlaylist(probeUrl, probeUrl, signal, hasEnded);
 }

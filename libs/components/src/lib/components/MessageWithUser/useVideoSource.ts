@@ -4,6 +4,7 @@ import {
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
 	mayBeTranscodedVideo,
+	probeEndedHlsIndexPlaylist,
 	probeHlsIndexPlaylist,
 	probeHlsMasterPlaylist
 } from '@mezon/utils';
@@ -51,6 +52,7 @@ export function useVideoSource(
 		let switched = false;
 		let playingPlaylist = false;
 		let hls: Hls | undefined;
+		let endProbe: ReturnType<typeof setTimeout> | undefined;
 		const probe = new AbortController();
 		const probePlaylist = ingest ? probeHlsIndexPlaylist : probeHlsMasterPlaylist;
 		const getPlaylistUrl = ingest ? getHlsIndexPlaylistUrl : getHlsMasterPlaylistUrl;
@@ -58,6 +60,7 @@ export function useVideoSource(
 		const detach = () => {
 			hls?.destroy();
 			hls = undefined;
+			clearTimeout(endProbe);
 		};
 
 		// Loading a source cancels a play asked for before it (the click that mounted this video, or the viewer's
@@ -69,6 +72,7 @@ export function useVideoSource(
 			if (!isPlaylist || (video.canPlayType(HLS_MIME_TYPE) && (!ingest || IS_SAFARI))) {
 				video.src = source;
 				if (resume) void video.play().catch(() => undefined);
+				if (ingest && isPlaylist) endProbe = setTimeout(() => void reloadOnceEnded(), HLS_INDEX_PROBE_INTERVAL_MS);
 				return;
 			}
 
@@ -88,6 +92,21 @@ export function useVideoSource(
 			});
 			player.loadSource(source);
 			player.attachMedia(video);
+			if (resume) void video.play().catch(() => undefined);
+		};
+
+		const reloadOnceEnded = async () => {
+			if (Number.isFinite(video.duration)) return;
+			const ended = await probeEndedHlsIndexPlaylist(url, probe.signal);
+			if (disposed || !playingPlaylist) return;
+			if (!ended || video.duration !== Infinity) {
+				endProbe = setTimeout(() => void reloadOnceEnded(), HLS_INDEX_PROBE_INTERVAL_MS);
+				return;
+			}
+			const position = video.currentTime;
+			const resume = !video.paused;
+			video.src = ended;
+			video.currentTime = position;
 			if (resume) void video.play().catch(() => undefined);
 		};
 
