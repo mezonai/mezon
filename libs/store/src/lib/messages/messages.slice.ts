@@ -1522,12 +1522,15 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
 
+			// Thread sends keep their upload-first contract so failed PUTs remain retryable
+			// instead of leaving an acknowledged message pointing at a missing file.
+			const postsFirst = !anonymous && !topicId && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
 			if (attachments?.length) {
 				const mezon = await ensureSession(getMezonCtx(thunkAPI));
 				const client = mezon.clientRef.current;
 				const session = mezon.sessionRef.current;
 				if (!client || !session) throw new Error('Client is not initialized');
-				attachments = await generatePathAttachments(client, session, attachments, channelId);
+				attachments = await generatePathAttachments(client, session, attachments, channelId, postsFirst);
 				attachmentsMessage = attachments.map(({ filename, filetype, size, duration, url, thumbnail, height, width }) => ({
 					filename,
 					filetype,
@@ -1554,9 +1557,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				fakeMess = { ...fakeMess, attachments: preparedMessage?.attachments ?? attachmentsMessage };
 			}
 			const needUpload = attachments?.some((attachment) => attachment.uploadPath);
-			// Thread sends keep their upload-first contract so failed PUTs remain retryable
-			// instead of leaving an acknowledged message pointing at a missing file.
-			const usePresignFirst = Boolean(needUpload) && !anonymous && !topicId && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
+			const usePresignFirst = Boolean(needUpload) && postsFirst;
 			if (usePresignFirst) {
 				content = { ...content, presign_finish: [] };
 				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };

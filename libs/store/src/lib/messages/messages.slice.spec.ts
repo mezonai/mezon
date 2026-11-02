@@ -373,8 +373,10 @@ describe('a video sent through the file ingest', () => {
 	const key = '1846031000000002001_clip';
 
 	beforeEach(() => {
-		jest.mocked(generatePathAttachments).mockResolvedValue([preparedVideo]);
-		jest.mocked(getPresignIngestKeys).mockReturnValue([key]);
+		jest.mocked(generatePathAttachments).mockImplementation(async (_client, _session, _attachments, _channelId, ingest) => [
+			ingest ? { ...preparedVideo, ingestUrl: 'https://ingest.example/clip.mp4' } : preparedVideo
+		]);
+		jest.mocked(getPresignIngestKeys).mockImplementation((prepared = []) => (prepared.some((video) => 'ingestUrl' in video) ? [key] : []));
 		jest.mocked(getWebUploadedAttachments).mockResolvedValue([key]);
 	});
 
@@ -383,7 +385,7 @@ describe('a video sent through the file ingest', () => {
 		await store.dispatch(sendMessage({ ...payload, content: { t: 'look' }, attachments: [video] })).unwrap();
 		await new Promise(setImmediate);
 
-		expect(getPresignIngestKeys).toHaveBeenCalledWith([preparedVideo]);
+		expect(jest.mocked(generatePathAttachments).mock.calls[0][4]).toBe(true);
 		expect(client.writeChatMessage.mock.calls[0][5]).toEqual({ t: 'look', presign_finish: [], presign_ingest: [key] });
 		expect(store.getState().messages.channelMessages.channel.entities['900'].content).toEqual({
 			t: 'look',
@@ -397,19 +399,20 @@ describe('a video sent through the file ingest', () => {
 		['topic', { topicId: 'topic' }],
 		['thread', { mode: ChannelStreamMode.STREAM_MODE_THREAD }],
 		['anonymous', { anonymous: true }]
-	])('in a %s is sent once stored, still with the marker', async (_scope, extra) => {
+	])('in a %s keeps the direct upload, done before the message is posted', async (_scope, extra) => {
 		const upload = deferred<string[]>();
 		jest.mocked(getWebUploadedAttachments).mockReturnValue(upload.promise);
 		const { store, client } = setup();
 		const request = store.dispatch(sendMessage({ ...payload, content: { t: 'look' }, attachments: [video], ...extra }));
 		await new Promise(setImmediate);
+		expect(jest.mocked(generatePathAttachments).mock.calls[0][4]).toBe(false);
 		expect(getWebUploadedAttachments).toHaveBeenCalled();
 		expect(client.writeChatMessage).not.toHaveBeenCalled();
 
 		upload.resolve([key]);
 		await request.unwrap();
 
-		expect(client.writeChatMessage.mock.calls[0][5]).toEqual({ t: 'look', presign_ingest: [key] });
+		expect(client.writeChatMessage.mock.calls[0][5]).toEqual({ t: 'look' });
 		expect(client.updateChannelMessage).not.toHaveBeenCalled();
 	});
 
