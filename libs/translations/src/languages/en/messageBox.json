@@ -16,5 +16,5 @@
       "description": "Send an ephemeral message (only visible to selected user)"
     }
   },
-  "convertLongToFile":"Convert long messagae to file"
+  "convertLongToFile":"Convert long message to file"
 }
