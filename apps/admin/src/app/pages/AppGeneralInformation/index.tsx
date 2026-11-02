@@ -90,7 +90,7 @@ const GeneralInformation = () => {
 						<div className="relative w-[144px] cursor-pointer" onClick={() => appLogoRef.current?.click()}>
 							{appLogoUrl ? (
 								<img
-									className="aspect-square w-full hover:grayscale-[50%]"
+									className="aspect-square w-full object-cover hover:grayscale-[50%]"
 									style={{ borderRadius: '25px' }}
 									src={createImgproxyUrl(appLogoUrl, { width: 300, height: 300, resizeType: 'fill-down' })}
 									alt={appDetail.appname}

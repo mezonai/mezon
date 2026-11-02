@@ -187,9 +187,6 @@
 	"screenDraw": {
 		"annotateScreen": "Rita på din delade skärm",
 		"stopAnnotating": "Sluta rita på din skärm",
-		"drawOnScreen": "Rita på skärmen (bara du ser det)",
-		"stopDrawing": "Sluta rita",
-		"closeDrawing": "Stäng ritverktyget",
 		"selectAndMove": "Markera och flytta",
 		"pen": "Penna",
 		"text": "Text",

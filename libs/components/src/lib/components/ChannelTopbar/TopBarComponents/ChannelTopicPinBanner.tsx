@@ -640,7 +640,9 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 
 		if (candidateMsg) {
 			const text = extractMessageText(candidateMsg.content);
-			const attachment = extractAttachment((candidateMsg as any).attachments || (candidateMsg as any).attachment, candidateMsg.content);
+			const attachment = candidateMsg.isSending
+				? null
+				: extractAttachment((candidateMsg as any).attachments || (candidateMsg as any).attachment, candidateMsg.content);
 			const senderId = String(candidateMsg.sender_id || '');
 			if (text || attachment || senderId) {
 				return {

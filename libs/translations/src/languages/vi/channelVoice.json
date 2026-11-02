@@ -198,9 +198,6 @@
 	"screenDraw": {
 		"annotateScreen": "Vẽ lên màn hình đang chia sẻ",
 		"stopAnnotating": "Dừng vẽ lên màn hình",
-		"drawOnScreen": "Vẽ lên màn hình (chỉ mình bạn thấy)",
-		"stopDrawing": "Dừng vẽ",
-		"closeDrawing": "Đóng công cụ vẽ",
 		"selectAndMove": "Chọn và di chuyển",
 		"pen": "Bút",
 		"text": "Chữ",

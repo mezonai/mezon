@@ -6,7 +6,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { RequestInput } from '@mezon/utils';
+import { generateE2eId, type RequestInput } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { getGrammarClient } from './grammar_client';
 
@@ -139,7 +139,14 @@ const Spelling = ({
 	};
 
 	if (corrected && isOpenRecommand && isSpelling) {
-		return <div className="w-full h-8 px-4 pt-2 text-theme-primary bg-theme-setting-nav text-sm pb-1">{showText}</div>;
+		return (
+			<div
+				data-e2e={generateE2eId('chat.spelling.recommendation')}
+				className="w-full h-8 px-4 pt-2 text-theme-primary bg-theme-setting-nav text-sm pb-1"
+			>
+				{showText}
+			</div>
+		);
 	}
 
 	if (replies?.length && !isOpenRecommand && isQuickReply) {

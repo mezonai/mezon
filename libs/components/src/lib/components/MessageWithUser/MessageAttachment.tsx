@@ -235,7 +235,7 @@ const Attachments: React.FC<{
 						<MessageAudio
 							key={`${index}_${audioItem.url}`}
 							audioUrl={isAwaitingSignature(audioItem.url) ? '' : signCdnUrl(audioItem.url || '')}
-							isPresignPending={isPresignPendingForUrl(audioItem.url)}
+							isPresignPending={message.isSending || isPresignPendingForUrl(audioItem.url)}
 						/>
 					))}
 			</>

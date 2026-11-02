@@ -361,77 +361,38 @@ export const adminApplicationSlice = createSlice({
 			state.appDetail = detail as ApiApp;
 		});
 		builder.addCase(editApplication.fulfilled, (state, action) => {
-			if (action.payload) {
-				const payload = action.payload as Record<string, unknown>;
-				const appDetailRecord = state.appDetail as Record<string, unknown>;
-				const originalRequest = action.meta.arg.request as Record<string, unknown>;
+			const { appId, request } = action.meta.arg;
+			if (!action.payload || !appId) return;
 
-				const protectedFields = ['id', 'creator_id', 'create_time_seconds', 'disable_time_seconds'];
+			const payload: ApiApp & Partial<Pick<App, 'disable_time_seconds'>> = action.payload;
+			const changes: Partial<typeof payload> & Pick<MezonUpdateAppBody, 'metadata'> = {};
 
-				Object.keys(originalRequest).forEach((key) => {
-					const value = payload[key];
-
-					if (value === undefined) {
-						return;
-					}
-
-					if (key === 'is_shadow') {
-						const raw = originalRequest[key];
-						appDetailRecord[key] = raw === true || raw === 'true' || raw === 1 || raw === '1';
-						return;
-					}
-
-					if (protectedFields.includes(key)) {
-						const currentValue = appDetailRecord[key];
-						if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
-							return;
-						}
-					}
-
-					if (key === 'token' && value) {
-						appDetailRecord[key] = value;
-						return;
-					}
-
-					if (typeof value === 'string') {
-						const currentValue = appDetailRecord[key];
-						const isEmptyValue = value === '' || value === '0';
-						const isCurrentEmpty = currentValue === '' || currentValue === '0' || !currentValue;
-
-						if (!isEmptyValue || isCurrentEmpty) {
-							appDetailRecord[key] = value;
-						}
-						return;
-					}
-
-					if (typeof value === 'number') {
-						if (value !== 0 || appDetailRecord[key] === 0 || !appDetailRecord[key]) {
-							appDetailRecord[key] = value;
-						}
-						return;
-					}
-
-					appDetailRecord[key] = value;
-				});
-
-				if (payload.token) {
-					appDetailRecord.token = payload.token;
-				}
-				if (payload.disable_time_seconds !== undefined) {
-					appDetailRecord.disable_time_seconds = payload.disable_time_seconds;
-				}
-
-				state.appDetail = appDetailRecord as ApiApp;
-
-				const appId = (action.payload as Record<string, unknown>)?.id as string | undefined;
-				if (appId && state.entities[appId]) {
-					state.entities[appId] = {
-						...state.entities[appId],
-						...(action.payload as IApplicationEntity),
-						is_shadow: appDetailRecord.is_shadow as boolean
-					};
-				}
+			for (const key of ['appname', 'applogo', 'app_url', 'about', 'metadata'] as const) {
+				const value = request[key];
+				if (value === undefined) continue;
+				if (key !== 'applogo' && value === '') continue;
+				changes[key] = value;
 			}
+
+			const isShadow: unknown = request.is_shadow;
+			if (isShadow !== undefined) {
+				changes.is_shadow = isShadow === true || isShadow === 'true' || isShadow === 1 || isShadow === '1';
+			}
+			if (request.token !== undefined && payload.token) {
+				changes.token = payload.token;
+			}
+			if (payload.disable_time_seconds !== undefined) {
+				changes.disable_time_seconds = payload.disable_time_seconds;
+			}
+
+			if (state.appDetail.id === appId) {
+				Object.assign(state.appDetail, changes);
+			}
+			const listedApp = state.appsData.apps?.find((app) => app.id === appId);
+			if (listedApp) {
+				Object.assign(listedApp, changes);
+			}
+			applicationAdapter.updateOne(state, { id: appId, changes });
 		});
 		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
 			const clientId = action.payload.client_id ?? '';

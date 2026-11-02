@@ -157,7 +157,13 @@ const withChannelDetailSlot = async <T>(request: () => Promise<T>): Promise<T> =
 	}
 };
 
-const isServerRejection = (error: unknown) => typeof (error as { code?: unknown })?.code === 'number';
+const DENIED_CHANNEL_DETAIL_CODES = new Set([403, 404, 5, 7]);
+
+export const isChannelDetailDenied = (error: unknown) => {
+	const failure = error as { code?: unknown; status?: unknown; error?: { code?: unknown } } | undefined;
+	const code = typeof failure?.error?.code === 'number' ? failure.error.code : (failure?.status ?? failure?.code);
+	return typeof code === 'number' && DENIED_CHANNEL_DETAIL_CODES.has(code);
+};
 
 const channelDetailListeners = new Map<string, Set<() => void>>();
 
@@ -185,7 +191,7 @@ export const fetchChannelDetail = createAsyncThunk(
 				);
 				detail = response?.channel_id ? { ...response, id: response.channel_id } : null;
 			} catch (error) {
-				if (!isServerRejection(error)) {
+				if (!isChannelDetailDenied(error)) {
 					return null;
 				}
 			}

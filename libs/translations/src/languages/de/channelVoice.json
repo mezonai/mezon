@@ -187,9 +187,6 @@
 	"screenDraw": {
 		"annotateScreen": "Auf deinem geteilten Bildschirm zeichnen",
 		"stopAnnotating": "Zeichnen auf deinem Bildschirm beenden",
-		"drawOnScreen": "Auf dem Bildschirm zeichnen (nur du siehst es)",
-		"stopDrawing": "Zeichnen beenden",
-		"closeDrawing": "Zeichnen schließen",
 		"selectAndMove": "Auswählen und verschieben",
 		"pen": "Stift",
 		"text": "Text",

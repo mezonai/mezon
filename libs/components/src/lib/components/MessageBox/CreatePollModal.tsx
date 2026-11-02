@@ -284,7 +284,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 							type="button"
 							onClick={handlePost}
 							disabled={!canPost}
-							className="px-6 py-2 rounded font-semibold transition-colors bg-buttonPrimary hover:bg-buttonPrimaryHover text-theme-primary-active disabled:opacity-50 disabled:cursor-not-allowed"
+							className="px-6 py-2 rounded font-semibold transition-colors bg-buttonPrimary hover:bg-buttonPrimaryHover text-white disabled:opacity-50 disabled:cursor-not-allowed"
 							data-e2e={generateE2eId('poll.modal.button.post')}
 						>
 							{t('poll.post')}

@@ -752,6 +752,9 @@ export const DATA_E2E_IDENTIFIER = {
 		}
 	},
 	chat: {
+		spelling: {
+			recommendation: ''
+		},
 		message_box: {
 			input: {
 				no_permission: ''
@@ -1104,6 +1107,11 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		notification: {
 			switch: ''
+		},
+		chat: {
+			tab: '',
+			spelling_switch: '',
+			quick_reply_switch: ''
 		}
 	},
 	common: {
