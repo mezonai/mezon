@@ -10,7 +10,7 @@ import {
 	listChannelsByUserActions,
 	stickerSettingActions
 } from '@mezon/store';
-import { isOnline, waitForOnline } from '@mezon/transport';
+import { isOnline, socketState, waitForOnline } from '@mezon/transport';
 import type { CustomLoaderFunction } from './appLoader';
 
 export interface IAuthLoaderData {
@@ -26,7 +26,9 @@ const connectNotification = async (dispatch: AppDispatch) => {
 	}
 };
 
-export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
+let stopReloadOnConnect: (() => void) | null = null;
+
+const loadSignedInData = async (dispatch: AppDispatch) => {
 	await dispatch(accountActions.getUserProfile());
 	dispatch(stickerSettingActions.fetchStickerByUserId({ clanId: '' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
@@ -38,6 +40,19 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
 
 	connectNotification(dispatch);
+};
+
+export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }) => {
+	if (!socketState.isConnected && !stopReloadOnConnect) {
+		stopReloadOnConnect = socketState.subscribe((status) => {
+			if (status !== 'connected') return;
+			stopReloadOnConnect?.();
+			stopReloadOnConnect = null;
+			loadSignedInData(dispatch);
+		});
+	}
+
+	await loadSignedInData(dispatch);
 
 	if (!isOnline()) {
 		const splashScreen = document.getElementById('splash-screen');
