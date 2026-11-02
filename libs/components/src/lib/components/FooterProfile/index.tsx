@@ -296,9 +296,10 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 				name={name}
 				onClose={handleCloseModalCustomStatus}
 				time_reset={userMemberStatus?.time_reset}
+				no_clear={userMemberStatus?.no_clear}
 			/>
 		);
-	}, [userCustomStatus, userMemberStatus?.time_reset]);
+	}, [userCustomStatus, userMemberStatus?.time_reset, userMemberStatus?.no_clear]);
 
 	const [openModalSendToken, closeModalSendToken] = useModal(() => {
 		return (
