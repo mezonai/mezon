@@ -72,13 +72,7 @@
 		"copy": "Kopiera",
 		"expiresIn": "Börja sända inom {{time}}. En sändning som redan är live fortsätter efter det.",
 		"expired": "Den här nyckeln har gått ut. Skapa en ny för att sända live.",
-		"error": "Kunde inte hämta streamnyckeln. Försök igen.",
-		"obsTitle": "Konfigurera OBS",
-		"obsStepService": "Öppna Inställningar → Ström i OBS och välj WHIP som tjänst.",
-		"obsStepPaste": "Klistra in Servern och Bearer Token ovan.",
-		"obsStepEncoder": "Välj en H.264-kodare under Inställningar → Utdata och sätt nyckelbildsintervallet till 2 s.",
-		"obsStepSimulcast": "För flera kvalitetsnivåer, ställ in simulcast på 3 lager om din OBS-version erbjuder det.",
-		"obsStepStart": "Klicka på Starta strömning. Nyckeln behöver bara vara giltig när OBS ansluter: om OBS återansluter efter att den har gått ut, hämta en ny nyckel och klistra in den igen."
+		"error": "Kunde inte hämta streamnyckeln. Försök igen."
 	},
 	"autoStart": {
 		"title": "Starta app automatiskt",

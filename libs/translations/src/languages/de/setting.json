@@ -72,13 +72,7 @@
 		"copy": "Kopieren",
 		"expiresIn": "Starte den Stream innerhalb von {{time}}. Ein bereits laufender Stream läuft danach weiter.",
 		"expired": "Dieser Schlüssel ist abgelaufen. Erzeuge einen neuen, um live zu gehen.",
-		"error": "Der Stream-Schlüssel konnte nicht abgerufen werden. Bitte versuche es erneut.",
-		"obsTitle": "OBS einrichten",
-		"obsStepService": "Öffne in OBS Einstellungen → Stream und wähle WHIP als Dienst.",
-		"obsStepPaste": "Füge den Server und das Bearer Token von oben ein.",
-		"obsStepEncoder": "Wähle unter Einstellungen → Ausgabe einen H.264-Encoder und setze das Keyframe-Intervall auf 2 s.",
-		"obsStepSimulcast": "Für mehrere Qualitätsstufen stelle Simulcast auf 3 Ebenen, falls deine OBS-Version das anbietet.",
-		"obsStepStart": "Klicke auf Streaming starten. Der Schlüssel muss nur beim Verbinden von OBS gültig sein: Verbindet sich OBS nach Ablauf neu, hol dir einen neuen Schlüssel und füge ihn erneut ein."
+		"error": "Der Stream-Schlüssel konnte nicht abgerufen werden. Bitte versuche es erneut."
 	},
 	"autoStart": {
 		"title": "App automatisch starten",

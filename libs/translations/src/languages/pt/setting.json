@@ -72,13 +72,7 @@
 		"copy": "Copiar",
 		"expiresIn": "Comece a transmitir em até {{time}}. Uma transmissão já ao vivo continua depois disso.",
 		"expired": "Esta chave expirou. Gere uma nova para transmitir.",
-		"error": "Não foi possível obter a chave de transmissão. Tente novamente.",
-		"obsTitle": "Configurar o OBS",
-		"obsStepService": "No OBS, abra Configurações → Transmissão e escolha WHIP como serviço.",
-		"obsStepPaste": "Cole o Servidor e o Bearer Token acima.",
-		"obsStepEncoder": "Em Configurações → Saída, escolha um codificador H.264 e defina o intervalo de quadros-chave em 2 s.",
-		"obsStepSimulcast": "Para várias qualidades, defina o simulcast com 3 camadas se a sua versão do OBS oferecer.",
-		"obsStepStart": "Clique em Iniciar transmissão. A chave só precisa ser válida quando o OBS se conecta: se o OBS reconectar depois que ela expirar, obtenha uma nova chave e cole-a novamente."
+		"error": "Não foi possível obter a chave de transmissão. Tente novamente."
 	},
 	"autoStart": {
 		"title": "Inicialização automática",

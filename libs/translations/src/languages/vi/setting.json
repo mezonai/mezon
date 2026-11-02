@@ -73,13 +73,7 @@
 		"copy": "Sao chép",
 		"expiresIn": "Hãy bắt đầu phát trong {{time}}. Buổi phát đã lên sóng vẫn tiếp tục sau mốc này.",
 		"expired": "Khoá đã hết hạn. Tạo khoá mới để lên sóng.",
-		"error": "Không lấy được khoá phát. Vui lòng thử lại.",
-		"obsTitle": "Cài đặt OBS",
-		"obsStepService": "Trong OBS, mở Settings → Stream và chọn dịch vụ WHIP.",
-		"obsStepPaste": "Dán Server và Bearer Token ở trên.",
-		"obsStepEncoder": "Trong Settings → Output, chọn bộ mã hoá H.264 và đặt keyframe interval là 2 s.",
-		"obsStepSimulcast": "Muốn người xem chọn được chất lượng, đặt simulcast 3 layer nếu bản OBS của bạn có.",
-		"obsStepStart": "Bấm Start Streaming. Khoá chỉ cần còn hạn lúc OBS kết nối: nếu OBS phải kết nối lại sau khi khoá hết hạn, hãy lấy khoá mới và dán lại."
+		"error": "Không lấy được khoá phát. Vui lòng thử lại."
 	},
 	"autoStart": {
 		"title": "Tự động khởi động ứng dụng",

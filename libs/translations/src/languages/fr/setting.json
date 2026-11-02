@@ -72,13 +72,7 @@
 		"copy": "Copier",
 		"expiresIn": "Commencez à streamer dans les {{time}}. Un stream déjà en direct continue ensuite.",
 		"expired": "Cette clé a expiré. Générez-en une nouvelle pour passer en direct.",
-		"error": "Impossible d'obtenir la clé de stream. Veuillez réessayer.",
-		"obsTitle": "Configurer OBS",
-		"obsStepService": "Dans OBS, ouvrez Paramètres → Stream et choisissez le service WHIP.",
-		"obsStepPaste": "Collez le Serveur et le Bearer Token ci-dessus.",
-		"obsStepEncoder": "Dans Paramètres → Sortie, choisissez un encodeur H.264 et réglez l'intervalle d'images clés sur 2 s.",
-		"obsStepSimulcast": "Pour plusieurs qualités, réglez le simulcast sur 3 couches si votre version d'OBS le propose.",
-		"obsStepStart": "Cliquez sur Démarrer le streaming. La clé doit seulement être valide quand OBS se connecte : si OBS se reconnecte après son expiration, obtenez une nouvelle clé et collez-la à nouveau."
+		"error": "Impossible d'obtenir la clé de stream. Veuillez réessayer."
 	},
 	"autoStart": {
 		"title": "Démarrer l'application automatiquement",

@@ -72,13 +72,7 @@
 		"copy": "Copiar",
 		"expiresIn": "Empieza a transmitir antes de {{time}}. Una transmisión ya en vivo continúa después.",
 		"expired": "Esta clave ha caducado. Genera una nueva para transmitir.",
-		"error": "No se pudo obtener la clave de transmisión. Inténtalo de nuevo.",
-		"obsTitle": "Configurar OBS",
-		"obsStepService": "En OBS, abre Ajustes → Emisión y elige WHIP como servicio.",
-		"obsStepPaste": "Pega el Servidor y el Bearer Token de arriba.",
-		"obsStepEncoder": "En Ajustes → Salida, elige un codificador H.264 y fija el intervalo de fotogramas clave en 2 s.",
-		"obsStepSimulcast": "Para varias calidades, configura simulcast con 3 capas si tu versión de OBS lo ofrece.",
-		"obsStepStart": "Pulsa Iniciar transmisión. La clave solo debe ser válida cuando OBS se conecta: si OBS se reconecta después de que caduque, obtén una clave nueva y pégala otra vez."
+		"error": "No se pudo obtener la clave de transmisión. Inténtalo de nuevo."
 	},
 	"autoStart": {
 		"title": "Iniciar aplicación automáticamente",

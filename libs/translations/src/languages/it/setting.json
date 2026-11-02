@@ -72,13 +72,7 @@
 		"copy": "Copia",
 		"expiresIn": "Inizia lo streaming entro {{time}}. Una diretta già avviata continua anche dopo.",
 		"expired": "Questa chiave è scaduta. Generane una nuova per andare in diretta.",
-		"error": "Impossibile ottenere la chiave di streaming. Riprova.",
-		"obsTitle": "Configura OBS",
-		"obsStepService": "In OBS, apri Impostazioni → Dirette e scegli WHIP come servizio.",
-		"obsStepPaste": "Incolla il Server e il Bearer Token qui sopra.",
-		"obsStepEncoder": "In Impostazioni → Uscita, scegli un encoder H.264 e imposta l'intervallo dei fotogrammi chiave a 2 s.",
-		"obsStepSimulcast": "Per più qualità, imposta il simulcast a 3 livelli se la tua versione di OBS lo offre.",
-		"obsStepStart": "Fai clic su Avvia la diretta. La chiave deve essere valida solo quando OBS si connette: se OBS si riconnette dopo la scadenza, ottieni una nuova chiave e incollala di nuovo."
+		"error": "Impossibile ottenere la chiave di streaming. Riprova."
 	},
 	"autoStart": {
 		"title": "Avvio automatico app",

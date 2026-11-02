@@ -72,13 +72,7 @@
 		"copy": "Kopiëren",
 		"expiresIn": "Begin binnen {{time}} met streamen. Een stream die al live is, gaat daarna gewoon door.",
 		"expired": "Deze sleutel is verlopen. Maak een nieuwe om live te gaan.",
-		"error": "Kan de streamsleutel niet ophalen. Probeer het opnieuw.",
-		"obsTitle": "OBS instellen",
-		"obsStepService": "Open in OBS Instellingen → Stream en kies WHIP als dienst.",
-		"obsStepPaste": "Plak de Server en het Bearer Token van hierboven.",
-		"obsStepEncoder": "Kies onder Instellingen → Uitvoer een H.264-encoder en zet het keyframe-interval op 2 s.",
-		"obsStepSimulcast": "Voor meerdere kwaliteiten zet je simulcast op 3 lagen als jouw OBS-versie dat biedt.",
-		"obsStepStart": "Klik op Streamen starten. De sleutel hoeft alleen geldig te zijn wanneer OBS verbinding maakt: maakt OBS na het verlopen opnieuw verbinding, haal dan een nieuwe sleutel op en plak die opnieuw."
+		"error": "Kan de streamsleutel niet ophalen. Probeer het opnieuw."
 	},
 	"autoStart": {
 		"title": "App automatisch starten",

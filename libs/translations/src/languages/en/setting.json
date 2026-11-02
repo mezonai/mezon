@@ -73,13 +73,7 @@
 		"copy": "Copy",
 		"expiresIn": "Start streaming within {{time}}. A stream that is already live keeps going after that.",
 		"expired": "This key has expired. Generate a new one to go live.",
-		"error": "Could not get a stream key. Please try again.",
-		"obsTitle": "Set up OBS",
-		"obsStepService": "In OBS, open Settings → Stream and choose WHIP as the service.",
-		"obsStepPaste": "Paste the Server and the Bearer Token from above.",
-		"obsStepEncoder": "In Settings → Output, pick an H.264 encoder and set the keyframe interval to 2 s.",
-		"obsStepSimulcast": "For several viewing qualities, set simulcast to 3 layers if your OBS version offers it.",
-		"obsStepStart": "Click Start Streaming. The key only has to be valid when OBS connects: if OBS reconnects after it has expired, get a new key and paste it again."
+		"error": "Could not get a stream key. Please try again."
 	},
 	"autoStart": {
 		"title": "Auto start application",

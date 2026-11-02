@@ -72,13 +72,7 @@
 		"copy": "Kopiuj",
 		"expiresIn": "Rozpocznij transmisję w ciągu {{time}}. Transmisja, która już trwa, będzie kontynuowana.",
 		"expired": "Ten klucz wygasł. Wygeneruj nowy, aby rozpocząć transmisję.",
-		"error": "Nie udało się pobrać klucza transmisji. Spróbuj ponownie.",
-		"obsTitle": "Konfiguracja OBS",
-		"obsStepService": "W OBS otwórz Ustawienia → Transmisja i wybierz usługę WHIP.",
-		"obsStepPaste": "Wklej Serwer i Bearer Token z góry.",
-		"obsStepEncoder": "W Ustawienia → Wyjście wybierz enkoder H.264 i ustaw interwał klatek kluczowych na 2 s.",
-		"obsStepSimulcast": "Aby udostępnić kilka jakości, ustaw simulcast na 3 warstwy, jeśli Twoja wersja OBS to oferuje.",
-		"obsStepStart": "Kliknij Rozpocznij transmisję. Klucz musi być ważny tylko w chwili łączenia OBS: jeśli OBS łączy się ponownie po jego wygaśnięciu, pobierz nowy klucz i wklej go jeszcze raz."
+		"error": "Nie udało się pobrać klucza transmisji. Spróbuj ponownie."
 	},
 	"autoStart": {
 		"title": "Automatyczne uruchamianie aplikacji",
