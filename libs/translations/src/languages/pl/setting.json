@@ -48,8 +48,7 @@
 		"appVersion": "Wersja aplikacji",
 		"startUp": "Uruchamianie",
 		"quitApp": "Wyjdź z aplikacji",
-		"server": "Serwer",
-		"streaming": "Streaming"
+		"server": "Serwer"
 	},
 	"server": {
 		"auto": "Automatycznie",
@@ -64,8 +63,6 @@
 	"streaming": {
 		"keyTitle": "Klucz transmisji",
 		"keyDescription": "Użyj ich w OBS lub innym enkoderze WHIP, aby nadawać na żywo na kanale stream. Nigdy ich nie udostępniaj: każdy, kto je ma, może nadawać w Twoim imieniu.",
-		"channel": "Kanał stream",
-		"noChannels": "Ten klan nie ma kanału stream",
 		"getKey": "Pobierz klucz",
 		"regenerate": "Wygeneruj nowy klucz",
 		"server": "Serwer",
@@ -81,9 +78,7 @@
 		"obsStepPaste": "Wklej Serwer i Bearer Token z góry.",
 		"obsStepEncoder": "W Ustawienia → Wyjście wybierz enkoder H.264 i ustaw interwał klatek kluczowych na 2 s.",
 		"obsStepSimulcast": "Aby udostępnić kilka jakości, ustaw simulcast na 3 warstwy, jeśli Twoja wersja OBS to oferuje.",
-		"obsStepStart": "Kliknij Rozpocznij transmisję. Klucz musi być ważny tylko w chwili łączenia OBS: jeśli OBS łączy się ponownie po jego wygaśnięciu, pobierz nowy klucz i wklej go jeszcze raz.",
-		"qualityTitle": "Domyślna jakość oglądania",
-		"qualityDescription": "Używana przy każdym dołączeniu do transmisji. Możesz ją zmienić podczas oglądania."
+		"obsStepStart": "Kliknij Rozpocznij transmisję. Klucz musi być ważny tylko w chwili łączenia OBS: jeśli OBS łączy się ponownie po jego wygaśnięciu, pobierz nowy klucz i wklej go jeszcze raz."
 	},
 	"autoStart": {
 		"title": "Automatyczne uruchamianie aplikacji",

@@ -11,45 +11,22 @@ export type StreamQuality = 'auto' | 'high' | 'mid' | 'low';
 
 export const STREAM_QUALITIES: StreamQuality[] = ['auto', 'high', 'mid', 'low'];
 
-const DEFAULT_QUALITY_STORAGE_KEY = 'mezon.stream.defaultQuality';
-
-export const loadDefaultStreamQuality = (): StreamQuality => {
-	try {
-		const stored = localStorage.getItem(DEFAULT_QUALITY_STORAGE_KEY) as StreamQuality | null;
-		return stored && STREAM_QUALITIES.includes(stored) ? stored : 'auto';
-	} catch {
-		return 'auto';
-	}
-};
-
-export const saveDefaultStreamQuality = (quality: StreamQuality) => {
-	try {
-		localStorage.setItem(DEFAULT_QUALITY_STORAGE_KEY, quality);
-	} catch {
-		return;
-	}
-};
-
 export interface StreamState {
 	streamInfo: IStreamInfo | null;
 	isPlaying: boolean;
 	isJoin: boolean;
 	playback: ApiGetStreamPlaybackResponse | null;
 	quality: StreamQuality;
-	defaultQuality: StreamQuality;
 	volume: number;
 	muted: boolean;
 }
-
-const defaultQuality = loadDefaultStreamQuality();
 
 const initialState: StreamState = {
 	streamInfo: null,
 	isPlaying: false,
 	isJoin: false,
 	playback: null,
-	quality: defaultQuality,
-	defaultQuality,
+	quality: 'auto',
 	volume: 1,
 	muted: false
 };
@@ -89,7 +66,7 @@ const videoStreamSlice = createSlice({
 		startStream(state, action: PayloadAction<IStreamInfo>) {
 			state.streamInfo = action.payload;
 			state.isPlaying = true;
-			state.quality = state.defaultQuality;
+			state.quality = 'auto';
 		},
 		stopStream(state) {
 			state.isPlaying = false;
@@ -102,9 +79,6 @@ const videoStreamSlice = createSlice({
 		},
 		setQuality(state, action: PayloadAction<StreamQuality>) {
 			state.quality = action.payload;
-		},
-		setDefaultQuality(state, action: PayloadAction<StreamQuality>) {
-			state.defaultQuality = action.payload;
 		},
 		setVolume(state, action: PayloadAction<number>) {
 			state.volume = Math.min(1, Math.max(0, action.payload));
@@ -138,8 +112,6 @@ export const selectIsJoin = createSelector(getVideoStreamState, (state) => state
 export const selectStreamPlayback = createSelector(getVideoStreamState, (state) => state.playback);
 
 export const selectStreamQuality = createSelector(getVideoStreamState, (state) => state.quality);
-
-export const selectStreamDefaultQuality = createSelector(getVideoStreamState, (state) => state.defaultQuality);
 
 export const selectStreamVolume = createSelector(getVideoStreamState, (state) => state.volume);
 

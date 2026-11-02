@@ -48,8 +48,7 @@
 		"appVersion": "Versión de la aplicación",
 		"startUp": "Inicio",
 		"quitApp": "Salir de la aplicación",
-		"server": "Servidor",
-		"streaming": "Transmisión"
+		"server": "Servidor"
 	},
 	"server": {
 		"auto": "Automático",
@@ -64,8 +63,6 @@
 	"streaming": {
 		"keyTitle": "Clave de transmisión",
 		"keyDescription": "Úsalos en OBS u otro codificador WHIP para transmitir en vivo en un canal de stream. No los compartas nunca: quien los tenga puede transmitir en tu nombre.",
-		"channel": "Canal de stream",
-		"noChannels": "Este clan no tiene canales de stream",
 		"getKey": "Obtener clave",
 		"regenerate": "Generar clave nueva",
 		"server": "Servidor",
@@ -81,9 +78,7 @@
 		"obsStepPaste": "Pega el Servidor y el Bearer Token de arriba.",
 		"obsStepEncoder": "En Ajustes → Salida, elige un codificador H.264 y fija el intervalo de fotogramas clave en 2 s.",
 		"obsStepSimulcast": "Para varias calidades, configura simulcast con 3 capas si tu versión de OBS lo ofrece.",
-		"obsStepStart": "Pulsa Iniciar transmisión. La clave solo debe ser válida cuando OBS se conecta: si OBS se reconecta después de que caduque, obtén una clave nueva y pégala otra vez.",
-		"qualityTitle": "Calidad de reproducción predeterminada",
-		"qualityDescription": "Se usa cada vez que te unes a una transmisión. Puedes cambiarla mientras miras."
+		"obsStepStart": "Pulsa Iniciar transmisión. La clave solo debe ser válida cuando OBS se conecta: si OBS se reconecta después de que caduque, obtén una clave nueva y pégala otra vez."
 	},
 	"autoStart": {
 		"title": "Iniciar aplicación automáticamente",

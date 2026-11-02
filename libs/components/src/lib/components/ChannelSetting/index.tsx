@@ -26,7 +26,7 @@ export enum EChannelSettingTab {
 	INTEGRATIONS = 'Integrations',
 	CATEGORY = 'Category',
 	QUICK_MENU = 'Quick Actions',
-	STREAM_THUMBNAIL = 'Stream Thumbnail'
+	STREAMING = 'Streaming'
 }
 const SettingChannel = (props: ModalSettingProps) => {
 	const { onClose, channel } = props;
@@ -56,7 +56,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 				[EChannelSettingTab.INTEGRATIONS]: t('tabs.integrations'),
 				[EChannelSettingTab.CATEGORY]: t('tabs.category'),
 				[EChannelSettingTab.QUICK_MENU]: t('tabs.quickMenu'),
-				[EChannelSettingTab.STREAM_THUMBNAIL]: t('tabs.streamThumbnail')
+				[EChannelSettingTab.STREAMING]: t('tabs.streaming')
 			};
 			return translations[tabKey] || tabKey;
 		},
@@ -193,7 +193,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 									{currentSetting === EChannelSettingTab.INVITES && <InvitesChannel />}
 									{currentSetting === EChannelSettingTab.INTEGRATIONS && <IntegrationsChannel currentChannel={channel} />}
 									{currentSetting === EChannelSettingTab.CATEGORY && <SettingCategoryChannel channel={channel} />}
-									{currentSetting === EChannelSettingTab.STREAM_THUMBNAIL && <StreamThumbnailChannel channel={channel} />}
+									{currentSetting === EChannelSettingTab.STREAMING && <StreamThumbnailChannel channel={channel} />}
 									{currentSetting === EChannelSettingTab.QUICK_MENU && (
 										<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-full lg:pt-[94px] sbm:pb-7 pr-[10px] sbm:pr-[10px] pl-[10px] sbm:pl-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
 											<QuickMenuAccessManager channelId={channel.channel_id || '0'} clanId={channel.clan_id || '0'} />

@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import {
 	VIDEO_STREAM_FEATURE_KEY,
 	fetchStreamPlayback,
-	loadDefaultStreamQuality,
 	selectStreamQuality,
 	videoStreamActions,
 	videoStreamReducer,
@@ -75,23 +74,13 @@ describe('watchStream', () => {
 	});
 });
 
-describe('default quality', () => {
-	it('is the quality every join starts with', () => {
+describe('quality', () => {
+	it('starts every join at auto', () => {
 		const store = createStore();
-		store.dispatch(videoStreamActions.setDefaultQuality('low'));
 		store.dispatch(videoStreamActions.setQuality('high'));
 
 		store.dispatch(videoStreamActions.startStream({ clanId: '1', clanName: 'c', streamId: '42', streamName: 's', parentId: '0' }));
 
-		expect(selectStreamQuality(store.getState())).toBe('low');
-	});
-
-	it('ignores a stored value that is not a quality', () => {
-		const storage = new Map([['mezon.stream.defaultQuality', 'ultra']]);
-		Object.assign(globalThis, { localStorage: { getItem: (key: string) => storage.get(key) ?? null } });
-
-		expect(loadDefaultStreamQuality()).toBe('auto');
-		storage.set('mezon.stream.defaultQuality', 'mid');
-		expect(loadDefaultStreamQuality()).toBe('mid');
+		expect(selectStreamQuality(store.getState())).toBe('auto');
 	});
 });

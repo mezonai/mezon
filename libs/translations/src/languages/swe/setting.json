@@ -48,8 +48,7 @@
 		"appVersion": "Appversion",
 		"startUp": "Starta upp",
 		"quitApp": "Avsluta app",
-		"server": "Server",
-		"streaming": "Streaming"
+		"server": "Server"
 	},
 	"server": {
 		"auto": "Automatiskt",
@@ -64,8 +63,6 @@
 	"streaming": {
 		"keyTitle": "Streamnyckel",
 		"keyDescription": "Använd dessa i OBS eller en annan WHIP-kodare för att sända live i en streamkanal. Dela dem aldrig: den som har dem kan sända i ditt namn.",
-		"channel": "Streamkanal",
-		"noChannels": "Ingen streamkanal i den här klanen",
 		"getKey": "Hämta streamnyckel",
 		"regenerate": "Skapa ny nyckel",
 		"server": "Server",
@@ -81,9 +78,7 @@
 		"obsStepPaste": "Klistra in Servern och Bearer Token ovan.",
 		"obsStepEncoder": "Välj en H.264-kodare under Inställningar → Utdata och sätt nyckelbildsintervallet till 2 s.",
 		"obsStepSimulcast": "För flera kvalitetsnivåer, ställ in simulcast på 3 lager om din OBS-version erbjuder det.",
-		"obsStepStart": "Klicka på Starta strömning. Nyckeln behöver bara vara giltig när OBS ansluter: om OBS återansluter efter att den har gått ut, hämta en ny nyckel och klistra in den igen.",
-		"qualityTitle": "Standardkvalitet för tittande",
-		"qualityDescription": "Används varje gång du går med i en sändning. Du kan fortfarande ändra den medan du tittar."
+		"obsStepStart": "Klicka på Starta strömning. Nyckeln behöver bara vara giltig när OBS ansluter: om OBS återansluter efter att den har gått ut, hämta en ny nyckel och klistra in den igen."
 	},
 	"autoStart": {
 		"title": "Starta app automatiskt",

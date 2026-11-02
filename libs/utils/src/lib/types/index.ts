@@ -1115,7 +1115,6 @@ export enum EUserSettings {
 	LANGUAGE = 'Language',
 	SERVER = 'Server',
 	VOICE = 'Voice',
-	STREAMING = 'Streaming',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
 	LOG_OUT = 'Log Out',

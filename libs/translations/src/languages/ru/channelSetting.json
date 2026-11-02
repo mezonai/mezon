@@ -259,7 +259,7 @@
 		"integrations": "Интеграции",
 		"category": "Категория",
 		"quickMenu": "Быстрые действия",
-		"streamThumbnail": "Миниатюра стримов"
+		"streaming": "Трансляции"
 	},
 	"categoryManagement": {
 		"title": "Категория",
