@@ -6,7 +6,7 @@ import type { ContenSubmitEventProps } from '@mezon/utils';
 import { OptionEvent, filterOptionReactSelect, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { FilterOptionOption } from 'react-select';
 import Select from 'react-select';
@@ -164,6 +164,8 @@ const LocationModal = (props: LocationModalProps) => {
 		[isClear, optionsTextChannel, contentSubmit.textChannelId]
 	);
 	const showClearButton = Boolean(selectedOption);
+	const selectedVoiceChannel = voicesChannel.find((voice) => voice.id === contentSubmit.voiceChannel);
+	const showPrivateVoiceAudienceTip = displaySelectAudiences && Boolean(selectedOption) && Boolean(selectedVoiceChannel?.channel_private);
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
@@ -217,18 +219,33 @@ const LocationModal = (props: LocationModalProps) => {
 				)}
 			</div>
 			{choiceSpeaker && (
-				<Select
-					classNames={{
-						menuList: () => 'thread-scroll'
-					}}
-					options={options}
-					value={options.find((option) => option.value === contentSubmit.voiceChannel)}
-					onChange={handleChangeVoice}
-					styles={customStyles}
-					placeholder={t('fields.VoiceChannel.title')}
-					filterOption={memoizedFilterOption}
-					noOptionsMessage={() => t('invitation:noResults', 'No result')}
-				/>
+				<div>
+					<Select
+						classNames={{
+							menuList: () => 'thread-scroll'
+						}}
+						options={options}
+						value={options.find((option) => option.value === contentSubmit.voiceChannel)}
+						onChange={handleChangeVoice}
+						styles={customStyles}
+						placeholder={t('fields.VoiceChannel.title')}
+						filterOption={memoizedFilterOption}
+						noOptionsMessage={() => t('invitation:noResults', 'No result')}
+					/>
+					{showPrivateVoiceAudienceTip && (
+						<p
+							className="mt-2 text-xs text-theme-primary break-words"
+							data-e2e={generateE2eId('clan_page.modal.create_event.location.private_voice_audience_tip')}
+						>
+							<Trans
+								t={t}
+								i18nKey="fields.VoiceChannel.privateAudienceTip"
+								values={{ channelName: selectedVoiceChannel?.channel_label }}
+								components={{ channel: <span className="text-blue-500" /> }}
+							/>
+						</p>
+					)}
+				</div>
 			)}
 			{choiceLocation && (
 				<div>

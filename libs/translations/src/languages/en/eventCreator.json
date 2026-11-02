@@ -43,7 +43,8 @@
 			"title": "Select Channel"
 		},
 		"VoiceChannel": {
-			"title": "Select Voice Channel"
+			"title": "Select Voice Channel",
+			"privateAudienceTip": "Tips: To ensure all audience members can join the event, add them to <channel>#{{channelName}}</channel>."
 		},
 		"address": {
 			"title": "Locations",
