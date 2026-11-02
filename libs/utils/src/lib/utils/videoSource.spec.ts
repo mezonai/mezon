@@ -2,6 +2,7 @@ import { isMediaTypeNotSupported } from './file';
 import {
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
+	isRotatedHlsVideo,
 	isTranscodedVideoContainer,
 	mayBeTranscodedVideo,
 	probeHlsIndexPlaylist,
@@ -224,4 +225,83 @@ it('resolves to the ingest playlist once its body starts with #EXTM3U', async ()
 
 	await expect(probeHlsIndexPlaylist('https://cdn.komu.vn/1cf93b197d401000/clip.mp4')).resolves.toBeUndefined();
 	expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+
+describe('isRotatedHlsVideo', () => {
+	const INIT = 'https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000001_clip.mp4/init.mp4';
+	const UPRIGHT = [1, 0, 0, 1];
+	const QUARTER_AS_IPHONE = [0, 1, -1, 0, 2160, 0];
+	const HALF = [-1, 0, 0, -1, 1920, 1080];
+	const THREE_QUARTERS = [0, -1, 1, 0, 0, 1920];
+	const MIRRORED = [-1, 0, 0, 1, 1920, 0];
+
+	function box(type: string, ...parts: Uint8Array[]): Uint8Array {
+		const bytes = new Uint8Array(8 + parts.reduce((size, part) => size + part.length, 0));
+		new DataView(bytes.buffer).setUint32(0, bytes.length);
+		bytes.set(
+			Array.from(type, (char) => char.charCodeAt(0)),
+			4
+		);
+		let at = 8;
+		for (const part of parts) {
+			bytes.set(part, at);
+			at += part.length;
+		}
+		return bytes;
+	}
+
+	function trackHeader([a, b, c, d, x = 0, y = 0]: number[], width: number, height: number, version = 0): Uint8Array {
+		const matrix = version === 1 ? 52 : 40;
+		const body = new Uint8Array(matrix + 44);
+		const view = new DataView(body.buffer);
+		view.setUint8(0, version);
+		[a, b, 0, c, d, 0, x, y].forEach((value, i) => view.setInt32(matrix + i * 4, value * 0x10000));
+		view.setInt32(matrix + 32, 0x40000000);
+		view.setUint32(matrix + 36, width * 0x10000);
+		view.setUint32(matrix + 40, height * 0x10000);
+		return box('tkhd', body);
+	}
+
+	const initSegment = (...headers: Uint8Array[]) =>
+		new Uint8Array([
+			...box('ftyp', new TextEncoder().encode('iso6')),
+			...box('moov', box('mvhd', new Uint8Array(100)), ...headers.map((header) => box('trak', header)))
+		]);
+	const serve = (body: Uint8Array | string, status = 200) =>
+		jest.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response(body, { status }));
+
+	it('reads the init segment next to the playlist, without the signature of the master', async () => {
+		const fetchMock = serve(initSegment(trackHeader(UPRIGHT, 1920, 1080)));
+
+		await isRotatedHlsVideo(INDEX);
+		await isRotatedHlsVideo(`${PLAYLIST}?${SIGNATURE}`);
+
+		expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([INIT, INIT]);
+	});
+
+	it('is true for a video turned a quarter, half or three quarters, or mirrored, in a version 0 or 1 track header', async () => {
+		for (const [matrix, version] of [
+			[QUARTER_AS_IPHONE, 0],
+			[HALF, 0],
+			[THREE_QUARTERS, 1],
+			[MIRRORED, 0]
+		] as const) {
+			serve(initSegment(trackHeader(UPRIGHT, 0, 0), trackHeader(matrix, 1920, 1080, version)));
+			await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(true);
+		}
+	});
+
+	it('is false for an upright video whatever its sound track says, and for a missing, cut or foreign init segment', async () => {
+		serve(initSegment(trackHeader(HALF, 0, 0), trackHeader(UPRIGHT, 3840, 2160, 1)));
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+
+		serve('<Error><Code>NoSuchKey</Code></Error>', 404);
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+		serve('<html>login</html>');
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+		serve(initSegment(trackHeader(QUARTER_AS_IPHONE, 1920, 1080)).subarray(0, 150));
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+		jest.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+	});
 });

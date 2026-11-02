@@ -8,6 +8,7 @@ const HLS_TRANSCODE_EXTENSIONS = new Set(['mp4', 'mov', 'mkv', 'avi', 'flv', 'm4
 const HLS_OUTPUT_PREFIX = 'hls/';
 const HLS_MASTER_PLAYLIST = 'master.m3u8';
 const HLS_INDEX_PLAYLIST = 'index.m3u8';
+const HLS_INIT_SEGMENT = 'init.mp4';
 const HLS_PLAYLIST_SUFFIX = '.m3u8';
 const HLS_PLAYLIST_TAG = '#EXTM3U';
 const HLS_END_TAG = '#EXT-X-ENDLIST';
@@ -104,29 +105,72 @@ async function readPrefix(body: ReadableStream<Uint8Array>, length: number): Pro
 const startsAsPlaylist = async (body: ReadableStream<Uint8Array>) => (await readPrefix(body, HLS_PLAYLIST_TAG.length)) === HLS_PLAYLIST_TAG;
 const hasEnded = async (body: ReadableStream<Uint8Array>) => (await new Response(body).text()).includes(HLS_END_TAG);
 
-async function probePlaylist(
-	probeUrl: string,
-	playlist: string | undefined,
-	signal?: AbortSignal,
-	accepts = startsAsPlaylist
-): Promise<string | undefined> {
+async function withProbeTimeout<T>(signal: AbortSignal | undefined, read: (signal: AbortSignal) => Promise<T | undefined>): Promise<T | undefined> {
 	const controller = new AbortController();
 	const abort = () => controller.abort();
 	signal?.addEventListener('abort', abort, { once: true });
 	const timeout = setTimeout(abort, HLS_PROBE_TIMEOUT_MS);
 	try {
-		const response = await fetch(probeUrl, { signal: controller.signal });
-		if (!response.ok || !response.body) {
-			void response.body?.cancel().catch(() => undefined);
-			return undefined;
-		}
-		return (await accepts(response.body)) ? playlist : undefined;
+		return await read(controller.signal);
 	} catch {
 		return undefined;
 	} finally {
 		clearTimeout(timeout);
 		signal?.removeEventListener('abort', abort);
 	}
+}
+
+function probePlaylist(
+	probeUrl: string,
+	playlist: string | undefined,
+	signal?: AbortSignal,
+	accepts = startsAsPlaylist
+): Promise<string | undefined> {
+	return withProbeTimeout(signal, async (timed) => {
+		const response = await fetch(probeUrl, { signal: timed });
+		if (!response.ok || !response.body) {
+			void response.body?.cancel().catch(() => undefined);
+			return undefined;
+		}
+		return (await accepts(response.body)) ? playlist : undefined;
+	});
+}
+
+const MATRIX_ONE = 0x10000;
+
+function isTurnedVideoHeader(view: DataView, at: number, size: number): boolean {
+	if (size < 92) return false;
+	const matrix = at + 8 + (view.getUint8(at + 8) === 1 ? 52 : 40);
+	if (matrix + 44 > at + size || view.getUint32(matrix + 36) === 0 || view.getUint32(matrix + 40) === 0) return false;
+	return (
+		view.getInt32(matrix) !== MATRIX_ONE ||
+		view.getInt32(matrix + 4) !== 0 ||
+		view.getInt32(matrix + 12) !== 0 ||
+		view.getInt32(matrix + 16) !== MATRIX_ONE
+	);
+}
+
+function hasTurnedVideoTrack(bytes: Uint8Array, start = 0, end = bytes.length): boolean {
+	const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+	for (let at = start; at + 8 <= end; ) {
+		const size = view.getUint32(at) || end - at;
+		if (size < 8 || at + size > end) return false;
+		const type = String.fromCharCode(...bytes.subarray(at + 4, at + 8));
+		if ((type === 'moov' || type === 'trak') && hasTurnedVideoTrack(bytes, at + 8, at + size)) return true;
+		if (type === 'tkhd' && isTurnedVideoHeader(view, at, size)) return true;
+		at += size;
+	}
+	return false;
+}
+
+/** Whether the video track in the init segment next to `playlist` is turned or mirrored; false when it cannot be read. */
+export async function isRotatedHlsVideo(playlist: string, signal?: AbortSignal): Promise<boolean> {
+	const init = new URL(HLS_INIT_SEGMENT, playlist).href;
+	const turned = await withProbeTimeout(signal, async (timed) => {
+		const response = await fetch(init, { signal: timed });
+		return response.ok && hasTurnedVideoTrack(new Uint8Array(await response.arrayBuffer()));
+	});
+	return turned === true;
 }
 
 /**

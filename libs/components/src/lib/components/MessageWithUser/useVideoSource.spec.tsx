@@ -12,13 +12,15 @@ const { act, create } = jest.requireActual<{
 }>('react-test-renderer');
 
 let mockIsSafari = false;
+const mockIsRotatedHlsVideo = jest.fn<(playlist: string, signal?: AbortSignal) => Promise<boolean>>();
 jest.mock(
 	'@mezon/utils',
 	() => ({
 		...jest.requireActual<object>('../../../../../utils/src/lib/utils/videoSource'),
 		get IS_SAFARI() {
 			return mockIsSafari;
-		}
+		},
+		isRotatedHlsVideo: (playlist: string, signal?: AbortSignal) => mockIsRotatedHlsVideo(playlist, signal)
 	}),
 	{ virtual: true }
 );
@@ -151,6 +153,8 @@ beforeEach(() => {
 	mockHlsInstances.length = 0;
 	mockHlsSupported = true;
 	mockIsSafari = false;
+	mockIsRotatedHlsVideo.mockReset();
+	mockIsRotatedHlsVideo.mockResolvedValue(false);
 	fetchMock = jest.spyOn(globalThis, 'fetch');
 });
 
@@ -565,6 +569,58 @@ describe('a video sent through the file ingest', () => {
 		expect(probed()).not.toContain(DEV_MASTER_PATH);
 	});
 
+	it('plays the original of a turned video in Safari, and stays on it when it fails', async () => {
+		mockIsSafari = true;
+		video.nativeHls = 'maybe';
+		mockIsRotatedHlsVideo.mockResolvedValue(true);
+		serveIngest({ [DEV_INDEX]: true, [DEV_MASTER_PATH]: true });
+
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+		expect(mockIsRotatedHlsVideo).toHaveBeenCalledWith(DEV_INDEX, expect.any(AbortSignal));
+		expect(video.src).toBe(DEV_CLIP);
+
+		act(() => video.emit('loadedmetadata'));
+		mediaError();
+		await settle();
+		expect(isFailed()).toBe(true);
+		expect(probed()).toEqual([DEV_INDEX]);
+	});
+
+	it('plays the stream of an upright video in Safari, and never reads the turn outside Safari', async () => {
+		mockIsSafari = true;
+		video.nativeHls = 'maybe';
+		serveIngest({ [DEV_INDEX]: true });
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+		expect(video.src).toBe(DEV_INDEX);
+		expect(mockIsRotatedHlsVideo).toHaveBeenCalledTimes(1);
+
+		act(() => renderer.unmount());
+		mockIsSafari = false;
+		mockIsRotatedHlsVideo.mockResolvedValue(true);
+		video = new FakeVideo();
+		video.nativeHls = 'maybe';
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+		expect(mockHlsInstances).toHaveLength(1);
+		expect(mockHlsInstances[0].source).toBe(DEV_INDEX);
+		expect(mockIsRotatedHlsVideo).toHaveBeenCalledTimes(1);
+	});
+
+	it('plays the original of a turned video without the marker in Safari, as its master.m3u8 leads to the same stream', async () => {
+		mockIsSafari = true;
+		video.nativeHls = 'maybe';
+		mockIsRotatedHlsVideo.mockResolvedValue(true);
+		serveIngest({ [DEV_MASTER_PATH]: true });
+
+		render(<Player url={DEV_CLIP} />);
+		await settle();
+
+		expect(mockIsRotatedHlsVideo).toHaveBeenCalledWith(DEV_MASTER, expect.any(AbortSignal));
+		expect(video.src).toBe(DEV_CLIP);
+	});
+
 	it('keeps the old rule for a video without the marker, on the dev CDN too: master.m3u8, then the original', async () => {
 		video.nativeHls = 'maybe';
 		serveIngest({ [DEV_INDEX]: true, [DEV_MASTER_PATH]: true });
@@ -722,6 +778,24 @@ describe('useIngestPlaylistReady', () => {
 		await advance(9000);
 		expect(isReady()).toBe(true);
 		expect(fetchMock).toHaveBeenCalledTimes(2);
+	});
+
+	it('in Safari, stops asking without becoming ready for a turned video, which waits for its original', async () => {
+		mockIsSafari = true;
+		mockIsRotatedHlsVideo.mockResolvedValue(true);
+		fetchMock.mockImplementation(async () => new Response(EVENT_PLAYLIST, { status: 200 }));
+
+		render(<Probe url={DEV_CLIP} enabled />);
+		await advance(30000);
+		expect(isReady()).toBe(false);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(mockIsRotatedHlsVideo).toHaveBeenCalledWith(DEV_INDEX, expect.any(AbortSignal));
+
+		mockIsRotatedHlsVideo.mockResolvedValue(false);
+		act(() => renderer.update(<Probe url={DEV_CLIP} enabled={false} />));
+		act(() => renderer.update(<Probe url={DEV_CLIP} enabled />));
+		await advance(0);
+		expect(isReady()).toBe(true);
 	});
 
 	it('never asks for a file outside the hosts with HLS', async () => {

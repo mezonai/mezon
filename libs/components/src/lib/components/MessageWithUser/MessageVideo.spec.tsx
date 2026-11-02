@@ -134,8 +134,31 @@ describe('a video sent through the file ingest', () => {
 	const n = Math.floor(START / 3000);
 	const URL = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_clip.mp4?1791900000-c2lnbmF0dXJl';
 	const INDEX = 'https://cdn-dev.nccsoft.vn/hls/0000000000031031/1846031000000002001_clip.mp4/index.m3u8';
+	const INIT = 'https://cdn-dev.nccsoft.vn/hls/0000000000031031/1846031000000002001_clip.mp4/init.mp4';
 	const remote = { ...attachment, url: URL, local_source: undefined };
 	const EVENT_PLAYLIST = '#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-PLAYLIST-TYPE:EVENT\n';
+
+	function quarterTurnedInitSegment(): Uint8Array {
+		const bytes = new Uint8Array(108);
+		const view = new DataView(bytes.buffer);
+		for (const [at, type] of [
+			[0, 'moov'],
+			[8, 'trak'],
+			[16, 'tkhd']
+		] as const) {
+			view.setUint32(at, bytes.length - at);
+			bytes.set(
+				Array.from(type, (char) => char.charCodeAt(0)),
+				at + 4
+			);
+		}
+		const matrix = 16 + 8 + 40;
+		view.setInt32(matrix + 4, 0x10000);
+		view.setInt32(matrix + 12, -0x10000);
+		view.setUint32(matrix + 36, 1920 * 0x10000);
+		view.setUint32(matrix + 40, 1080 * 0x10000);
+		return bytes;
+	}
 
 	class FakeVideo {
 		src = '';
@@ -214,7 +237,7 @@ describe('a video sent through the file ingest', () => {
 		expect(poster().props.disablePlay).toBe(true);
 		stored = true;
 		await advance(3000);
-		expect(requests()).toEqual([`${INDEX}?probe=${n}`, `${INDEX}?probe=${n + 1}`, `${INDEX}?probe=${n + 2}`]);
+		expect(requests()).toEqual([`${INDEX}?probe=${n}`, `${INDEX}?probe=${n + 1}`, `${INDEX}?probe=${n + 2}`, INIT]);
 		expect(poster().props.disablePlay).toBe(false);
 		expect(labels()).toEqual(['attachment.uploading']);
 
@@ -223,6 +246,22 @@ describe('a video sent through the file ingest', () => {
 		expect(renderer.root.findAllByType('video')).toHaveLength(1);
 		expect(video.src).toBe(INDEX);
 		expect(video.play).toHaveBeenCalled();
+	});
+
+	it('in Safari, keeps a turned video uploading once its playlist exists, then plays the original after presign_finish', async () => {
+		fetchMock.mockImplementation(async (input) =>
+			String(input) === INIT ? new Response(quarterTurnedInitSegment(), { status: 200 }) : new Response(EVENT_PLAYLIST, { status: 200 })
+		);
+		render(<MessageVideo attachmentData={remote} isPresignPending isIngest />);
+		await advance(30000);
+		expect(requests()).toEqual([`${INDEX}?probe=${n}`, INIT]);
+		expect(poster().props.disablePlay).toBe(true);
+		expect(labels()).toEqual(['attachment.uploading']);
+
+		act(() => renderer.update(<MessageVideo attachmentData={remote} isIngest />));
+		act(() => poster().props.onPlay());
+		await advance(0);
+		expect(video.src).toBe(URL);
 	});
 
 	it('keeps playing its playlist when presign_finish arrives, as the playlist turns into VOD', async () => {

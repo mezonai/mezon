@@ -3,6 +3,7 @@ import {
 	IS_SAFARI,
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
+	isRotatedHlsVideo,
 	mayBeTranscodedVideo,
 	probeEndedHlsIndexPlaylist,
 	probeHlsIndexPlaylist,
@@ -24,7 +25,8 @@ interface VideoSourceOptions {
 /**
  * Plays `url` in the video of `videoRef` while `enabled`, which must be true only while that video is mounted.
  * A video the media server converted to HLS plays from its stream: natively where the browser can, through hls.js
- * elsewhere. When the chosen source fails, the other one is tried once before `failed` turns true.
+ * elsewhere. Safari plays a turned or mirrored stream's original instead, since its players ignore the turn.
+ * When the chosen source fails, the other one is tried once before `failed` turns true.
  * A new CDN signature on the same file does not reload it; only a source loaded later carries it.
  * Pass `handleError` to the video's `onError`.
  */
@@ -142,8 +144,11 @@ export function useVideoSource(
 		video.addEventListener('loadedmetadata', checkPicture);
 
 		if (mayBeTranscodedVideo(url)) {
-			void probePlaylist(url, probe.signal).then((playlist) => {
-				if (!disposed) void play(playlist ?? url, Boolean(playlist));
+			void probePlaylist(url, probe.signal).then(async (playlist) => {
+				const stream = playlist && IS_SAFARI && (await isRotatedHlsVideo(playlist, probe.signal)) ? undefined : playlist;
+				if (disposed) return;
+				switched = stream !== playlist;
+				void play(stream ?? url, Boolean(stream));
 			});
 		} else {
 			void play(url, false);
@@ -176,7 +181,8 @@ export function useIngestPlaylistReady(url: string | undefined, enabled: boolean
 		const poll = async () => {
 			const startedAt = Date.now();
 			const playlist = await probeHlsIndexPlaylist(file, probe.signal);
-			if (probe.signal.aborted) return;
+			const waitsForOriginal = playlist !== undefined && IS_SAFARI && (await isRotatedHlsVideo(playlist, probe.signal));
+			if (probe.signal.aborted || waitsForOriginal) return;
 			if (playlist) setReadyFile(file);
 			else timer = setTimeout(poll, Math.max(0, startedAt + HLS_INDEX_PROBE_INTERVAL_MS - Date.now()));
 		};
