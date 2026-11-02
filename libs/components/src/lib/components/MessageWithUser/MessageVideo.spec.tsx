@@ -140,6 +140,7 @@ describe('a video sent through the file ingest', () => {
 	class FakeVideo {
 		src = '';
 		paused = true;
+		duration = NaN;
 		videoWidth = 0;
 		addEventListener() {
 			return undefined;
@@ -231,6 +232,7 @@ describe('a video sent through the file ingest', () => {
 		act(() => poster().props.onPlay());
 		await advance(0);
 		expect(video.src).toBe(INDEX);
+		video.duration = 300;
 		const asked = fetchMock.mock.calls.length;
 
 		act(() => renderer.update(<MessageVideo attachmentData={remote} isIngest />));
