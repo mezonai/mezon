@@ -42,7 +42,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 		dmUserId,
 		channelId: groupCallId as string,
 		userId: userProfile?.user?.id as string,
-		callerName: userProfile?.user?.username as string,
+		callerName: userProfile?.user?.display_name?.trim() || userProfile?.user?.username || '',
 		callerAvatar: userProfile?.user?.avatar_url as string,
 		isInChannelCalled: false
 	});
