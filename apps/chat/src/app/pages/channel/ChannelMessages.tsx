@@ -62,7 +62,7 @@ import {
 	useSyncEffect
 } from '@mezon/utils';
 import type { ApiMessageRef, ChannelType } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChannelMessage, MemorizedChannelMessage } from './ChannelMessage';
 
@@ -746,6 +746,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		isJumpingToPresentRef
 	}) => {
 		const effectiveChannelId = topicId || channelId;
+		const isScrollToPresentRequested = useAppSelector((state) => !!state.messages.isJumpingToPresent[effectiveChannelId]);
 		const isHistoryLoading = useAppSelector((state) => selectMessageIsLoadingByChannelId(state, effectiveChannelId));
 		const hasMoreTop = useAppSelector((state) => selectHasMoreMessageByChannelId(state, effectiveChannelId));
 		const hasMoreBottom = useAppSelector((state) => selectHasMoreBottomByChannelId(state, effectiveChannelId));
@@ -820,7 +821,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			(event: { direction: LoadMoreDirection }) => {
 				return onChange(event.direction);
 			},
-			{ scopeId: effectiveChannelId, isLoading: isHistoryLoading, isJumping: !!idMessageToJump, hasMoreTop, hasMoreBottom }
+			{
+				scopeId: effectiveChannelId,
+				isLoading: isHistoryLoading,
+				isJumping: !!idMessageToJump || isScrollToPresentRequested,
+				hasMoreTop,
+				hasMoreBottom
+			}
 		);
 
 		const { observeIntersectionForLoading } = useMessageObservers('thread', chatRef, null, null, channelId);
@@ -1039,6 +1046,36 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			},
 			[messageIds, isViewportNewest, getContainerHeight, prevContainerHeightRef, effectiveChannelId]
 		);
+
+		useLayoutEffect(() => {
+			const container = chatRef.current;
+			if (!isScrollToPresentRequested || !container) return;
+
+			let cancelled = false;
+			requestForcedReflow(() => {
+				if (cancelled || chatRef.current !== container) return;
+
+				return () => {
+					if (cancelled || chatRef.current !== container) return;
+					// Read the height after earlier layout mutations have finished.
+					resetScroll(container, container.scrollHeight);
+					anchorIdRef.current = null;
+					anchorTopRef.current = null;
+					scrollPositionRef.current = null;
+					const lastId = messageIds.at(-1);
+					if (lastId && !entities[lastId]?.isSending) {
+						lastSeenAtBottomRef.current = lastId;
+						dispatch(channelsActions.setScrollPosition({ channelId: effectiveChannelId, messageId: lastId }));
+					}
+					dispatch(channelsActions.setScrollDownVisibility({ channelId: effectiveChannelId, isVisible: false }));
+					dispatch(messagesActions.setIsJumpingToPresent({ channelId: effectiveChannelId, status: false }));
+				};
+			});
+
+			return () => {
+				cancelled = true;
+			};
+		}, [chatRef, isScrollToPresentRequested, messageIds, entities, effectiveChannelId, dispatch, anchorIdRef, anchorTopRef, lastSeenAtBottomRef]);
 
 		const rememberScrollPositionRef = useStateRef(() => {
 			if (!messageIds || !listItemElementsRef.current || isFirstJoinLoadRef.current) {
