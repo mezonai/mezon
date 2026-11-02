@@ -80,26 +80,30 @@ describe('generatePathAttachments', () => {
 describe('putAttachmentFile', () => {
 	const file = new Blob([new Uint8Array(4)]);
 
-	it('sends an ingest video through the ingest and reports its progress under its key', async () => {
+	it('sends an ingest video through the ingest, reporting its progress under its key and when it is sent', async () => {
 		const attachment = prepared('clip.mp4', 'video', 4);
 		const onProgress = jest.fn();
-		jest.mocked(uploadToFileIngest).mockImplementation(async (_file, _presigned, _ingest, report) => {
+		const onSent = jest.fn();
+		jest.mocked(uploadToFileIngest).mockImplementation(async (_file, _presigned, _ingest, report, sent) => {
 			report?.(0.5);
 			report?.(1);
+			sent?.();
 		});
 
-		await expect(putAttachmentFile(attachment, file, attachment.uploadPath, onProgress)).resolves.toBe(true);
+		await expect(putAttachmentFile(attachment, file, attachment.uploadPath, onProgress, onSent)).resolves.toBe(true);
 
 		expect(uploadToFileIngest).toHaveBeenCalledWith(
 			file,
 			attachment.uploadPath,
 			`https://streaming.nccsoft.vn/dev-mezon/0000000000031031/clip.mp4?${QUERY}`,
-			expect.any(Function)
+			expect.any(Function),
+			onSent
 		);
 		expect(onProgress.mock.calls).toEqual([
 			['1846031000000002001_clip', 0.5],
 			['1846031000000002001_clip', 1]
 		]);
+		expect(onSent).toHaveBeenCalledTimes(1);
 		expect(uploadFileToPath).not.toHaveBeenCalled();
 	});
 

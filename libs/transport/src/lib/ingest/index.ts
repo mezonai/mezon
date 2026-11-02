@@ -101,12 +101,16 @@ function isPresignedUrlExpired(url: string): boolean {
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Uploads `file` as mezon-streaming-server's docs/protocol/file-ingest.md asks; resolves once the original is stored. */
+/**
+ * Uploads `file` as mezon-streaming-server's docs/protocol/file-ingest.md asks; resolves once the original is stored.
+ * `onSent` runs whenever the ingest holds every byte, before the wait for the original to be stored.
+ */
 export async function uploadToFileIngest(
 	file: Blob,
 	presignedUrl: string,
 	ingestUrl: string,
-	onProgress?: (fraction: number) => void
+	onProgress?: (fraction: number) => void,
+	onSent?: () => void
 ): Promise<void> {
 	const size = file.size;
 	const moov = await moovAfterMdat(file);
@@ -137,6 +141,7 @@ export async function uploadToFileIngest(
 
 	for (;;) {
 		const chunk = nextFileIngestChunk(size, status?.received ?? [], moov);
+		if (!chunk) onSent?.();
 		if (!chunk && status?.stored) return;
 		const response = chunk ? await put(chunk) : await getStatus(STATUS_POLL_MS);
 		if (response?.status === 200) {

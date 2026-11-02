@@ -288,6 +288,17 @@ describe('uploadToFileIngest', () => {
 		expect(progress).toEqual([0.8, 1, 1, 1, 1]);
 	});
 
+	it('reports the file sent once the ingest holds every byte, before the original is stored', async () => {
+		const size = 10 * MiB;
+		const events: string[] = [];
+		const log = serve(status(size, [[0, 8 * MiB - 1]]), status(size, [[0, size - 1]]), status(size, [[0, size - 1]], true));
+
+		await run(uploadToFileIngest(flat(size), PRESIGNED, INGEST, undefined, () => events.push(`sent after ${log.length} requests`)));
+
+		expect(ranges(log)).toEqual([`bytes 0-${8 * MiB - 1}/${size}`, `bytes ${8 * MiB}-${size - 1}/${size}`, 'GET']);
+		expect(events[0]).toBe('sent after 2 requests');
+	});
+
 	it('resolves at once when the last chunk already finds the original stored', async () => {
 		const size = MiB;
 		const log = serve(status(size, [[0, size - 1]], true));

@@ -24,12 +24,13 @@ export async function putAttachmentFile(
 	attachment: PreparedAttachment,
 	file: Blob,
 	presignedUrl: string,
-	onProgress?: (key: string, fraction: number) => void
+	onProgress?: (key: string, fraction: number) => void,
+	onSent?: () => void
 ): Promise<boolean> {
 	const ingestUrl = attachmentFileIngestUrl(attachment, presignedUrl);
 	if (!ingestUrl) return Boolean(await uploadFileToPath(presignedUrl, file, file.size));
 	const key = getPresignUploadKey(attachment.uploadName);
-	await uploadToFileIngest(file, presignedUrl, ingestUrl, (fraction) => key && onProgress?.(key, fraction));
+	await uploadToFileIngest(file, presignedUrl, ingestUrl, (fraction) => key && onProgress?.(key, fraction), onSent);
 	return true;
 }
 
