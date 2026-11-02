@@ -105,7 +105,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		dmUserId,
 		channelId: dmGroupId as string,
 		userId: userId as string,
-		callerName: userProfile?.user?.username as string,
+		callerName: userProfile?.user?.display_name?.trim() || userProfile?.user?.username || '',
 		callerAvatar: userProfile?.user?.avatar_url as string,
 		isInChannelCalled: isInChannelCalled as boolean
 	});
