@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Téléchargement en cours..."
+		"uploading": "Téléchargement en cours...",
+		"finishing": "Finalisation en cours..."
 	}
 }
