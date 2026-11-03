@@ -82,7 +82,8 @@
 		},
 		"cover": "Banner",
 		"VoiceChannel": {
-			"title": "Spraakkanaal selecteren"
+			"title": "Spraakkanaal selecteren",
+			"privateAudienceTip": "Tip: Voeg alle leden van het publiek toe aan <channel>#{{channelName}}</channel>, zodat ze aan het evenement kunnen deelnemen."
 		}
 	},
 	"actions": {
