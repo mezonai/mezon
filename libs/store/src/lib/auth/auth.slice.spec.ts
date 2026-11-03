@@ -1,7 +1,8 @@
 import { captureSentryError } from '@mezon/logger';
+import { subscribeSessionUpdate } from '@mezon/transport';
 import { configureStore } from '@reduxjs/toolkit';
 import { getMezonCtx } from '../helpers';
-import { AUTH_FEATURE_KEY, authReducer, authenticateMezon } from './auth.slice';
+import { AUTH_FEATURE_KEY, authActions, authReducer, authenticateMezon, setupSessionSyncListener } from './auth.slice';
 
 const mockAuthenticateMezon = jest.fn();
 const mockConnectSocket = jest.fn();
@@ -108,5 +109,73 @@ describe('authenticateMezon', () => {
 		expect(authenticateMezon.rejected.match(action)).toBe(true);
 		expect(action.payload).toBe('Client not initialized');
 		expect(mockConnectSocket).not.toHaveBeenCalled();
+	});
+});
+
+describe('setupSessionSyncListener', () => {
+	const s1 = sessionWithoutIdToken;
+	const s2 = {
+		...sessionWithoutIdToken,
+		token: 'jwt-token-2',
+		session_id: 'session-456'
+	};
+
+	let listener: Parameters<typeof subscribeSessionUpdate>[0];
+	let store: ReturnType<typeof createStore>;
+
+	beforeEach(() => {
+		jest.mocked(subscribeSessionUpdate).mockReset();
+		jest.mocked(subscribeSessionUpdate).mockImplementation((l) => {
+			listener = l;
+			return () => undefined;
+		});
+		store = createStore();
+		setupSessionSyncListener(store);
+	});
+
+	it('sets session and sets isLogin true on cross-tab update when logged out', () => {
+		listener({ session: s1, source: 'cross-tab', sequence: 1 });
+
+		const state = store.getState();
+		expect(state.auth.session).toEqual(s1);
+		expect(state.auth.isLogin).toBe(true);
+	});
+
+	it('stores session and keeps isLogin false on refresh update when logged out', () => {
+		listener({ session: s1, source: 'refresh', sequence: 1 });
+
+		const state = store.getState();
+		expect(state.auth.session).toEqual(s1);
+		expect(state.auth.isLogin).toBe(false);
+	});
+
+	it('clears session and sets isLogin false on cross-tab null session update when logged in', () => {
+		store.dispatch(authActions.setSession(s1));
+
+		listener({ session: null, source: 'cross-tab', sequence: 1 });
+
+		const state = store.getState();
+		expect(state.auth.session).toBeNull();
+		expect(state.auth.isLogin).toBe(false);
+	});
+
+	it('updates session to s2 and keeps isLogin true on refresh update when logged in', () => {
+		store.dispatch(authActions.setSession(s1));
+
+		listener({ session: s2, source: 'refresh', sequence: 1 });
+
+		const state = store.getState();
+		expect(state.auth.session).toEqual(s2);
+		expect(state.auth.isLogin).toBe(true);
+	});
+
+	it('ignores updates with a sequence not greater than the last applied one', () => {
+		listener({ session: s2, source: 'cross-tab', sequence: 2 });
+		listener({ session: s1, source: 'cross-tab', sequence: 2 });
+		listener({ session: null, source: 'cross-tab', sequence: 1 });
+
+		const state = store.getState();
+		expect(state.auth.session).toEqual(s2);
+		expect(state.auth.isLogin).toBe(true);
 	});
 });
