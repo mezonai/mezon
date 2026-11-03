@@ -259,7 +259,7 @@
 		"integrations": "Integraciones",
 		"category": "Categoría",
 		"quickMenu": "Acciones rápidas",
-		"streamThumbnail": "Miniatura de retransmisión"
+		"streaming": "Transmisión"
 	},
 	"categoryManagement": {
 		"title": "Categoría",

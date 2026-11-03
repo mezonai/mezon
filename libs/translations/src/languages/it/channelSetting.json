@@ -259,7 +259,7 @@
 		"integrations": "Integrazioni",
 		"category": "Categoria",
 		"quickMenu": "Azioni rapide",
-		"streamThumbnail": "Copertina dello streaming"
+		"streaming": "Streaming"
 	},
 	"categoryManagement": {
 		"title": "Categoria",
