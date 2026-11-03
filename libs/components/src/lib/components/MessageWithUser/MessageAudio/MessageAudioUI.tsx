@@ -7,7 +7,9 @@ type AudioUIProps = {
 	currentTime: number;
 	duration: number;
 	togglePlay: () => void;
+	seekStart: () => void;
 	seek: (time: number) => void;
+	seekEnd: () => void;
 	handleSaveImage: () => void;
 	posInPopUp?: boolean;
 };
@@ -17,7 +19,9 @@ export const MessageAudioUI: React.FC<AudioUIProps> = ({
 	currentTime,
 	duration,
 	togglePlay,
+	seekStart,
 	seek,
+	seekEnd,
 	handleSaveImage,
 	posInPopUp = false
 }) => (
@@ -43,6 +47,10 @@ export const MessageAudioUI: React.FC<AudioUIProps> = ({
 				)}
 			</button>
 
+			<span className="text-sm whitespace-nowrap tabular-nums">
+				{formatTimeToMMSS(currentTime)} / {formatTimeToMMSS(duration)}
+			</span>
+
 			<div className="relative flex-1 flex items-center h-6 group">
 				<div className="w-full h-1 rounded-full bg-white/30">
 					<div
@@ -59,13 +67,13 @@ export const MessageAudioUI: React.FC<AudioUIProps> = ({
 					step="any"
 					value={currentTime}
 					onChange={(e) => seek(Number(e.target.value))}
+					onPointerDown={(e) => e.button === 0 && seekStart()}
+					onPointerUp={seekEnd}
+					onPointerCancel={seekEnd}
 					className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
 				/>
 			</div>
 
-			<span className="text-sm whitespace-nowrap tabular-nums">
-				{formatTimeToMMSS(currentTime)} / {formatTimeToMMSS(duration)}
-			</span>
 			<button onClick={handleSaveImage}>
 				<Icons.Download defaultFill="text-white" />
 			</button>

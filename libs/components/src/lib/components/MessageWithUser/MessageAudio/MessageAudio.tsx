@@ -27,7 +27,7 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl,
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState<number>(0);
-	const audioControlRef = useRef<{ togglePlay: () => void; seek: (time: number) => void }>(null);
+	const audioControlRef = useRef<{ togglePlay: () => void; seekStart: () => void; seek: (time: number) => void; seekEnd: () => void }>(null);
 
 	const handleTogglePlay = () => {
 		if (audioControlRef.current) {
@@ -39,6 +39,8 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl,
 			audioControlRef.current.seek(time);
 		}
 	};
+	const handleSeekStart = () => audioControlRef.current?.seekStart();
+	const handleSeekEnd = () => audioControlRef.current?.seekEnd();
 	const handleSaveImage = async () => {
 		try {
 			const res = await fetch(audioUrl);
@@ -81,7 +83,9 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl,
 				currentTime={currentTime}
 				duration={duration}
 				togglePlay={handleTogglePlay}
+				seekStart={handleSeekStart}
 				seek={handleSeek}
+				seekEnd={handleSeekEnd}
 				handleSaveImage={handleSaveImage}
 			/>
 		</>
