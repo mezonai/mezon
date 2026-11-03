@@ -34,6 +34,7 @@
 		"categoryName": "Төркемчә исеме",
 		"categoryNamePlaceholder": "Төркемчә исемен керетегез...",
 		"hasWelcomeChannelError": "Бу төркемчәдә рәхим итү каналы бар",
+		"hasChannelError": "Каналлары булган категорияне бетереп булмый.",
 		"deleteCategory": "Төркемчәне бетерү",
 		"deleteCategoryTitle": "Төркемчәне бетерү",
 		"deleteCategoryButton": "Төркемчәне бетерү",

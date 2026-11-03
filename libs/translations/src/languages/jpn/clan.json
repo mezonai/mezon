@@ -34,6 +34,7 @@
 		"categoryName": "カテゴリ名",
 		"categoryNamePlaceholder": "ここにカテゴリ名を入力...",
 		"hasWelcomeChannelError": "このカテゴリにはウェルカムチャンネルがあります",
+		"hasChannelError": "チャンネルがあるカテゴリは削除できません。",
 		"deleteCategory": "カテゴリを削除",
 		"deleteCategoryTitle": "カテゴリを削除",
 		"deleteCategoryButton": "カテゴリを削除",

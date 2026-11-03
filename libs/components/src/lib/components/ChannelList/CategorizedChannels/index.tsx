@@ -138,6 +138,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 		const windowHeight = window.innerHeight;
 
 		if (event.button === MouseButton.RIGHT) {
+			event.preventDefault();
 			await dispatch(
 				defaultNotificationCategoryActions.getDefaultNotificationCategory({
 					clanId: currentClanId as string,

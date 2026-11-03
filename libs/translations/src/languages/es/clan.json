@@ -34,6 +34,7 @@
 		"categoryName": "Nombre de Categoría",
 		"categoryNamePlaceholder": "Introduce el nombre de la categoría aquí...",
 		"hasWelcomeChannelError": "Esta categoría tiene un canal de bienvenida",
+		"hasChannelError": "No se puede eliminar una categoría con canales.",
 		"deleteCategory": "Eliminar Categoría",
 		"deleteCategoryTitle": "Eliminar Categoría",
 		"deleteCategoryButton": "Eliminar categoría",
