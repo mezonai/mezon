@@ -13,10 +13,13 @@ type MessageAudioProps = {
 function AudioUploadingPill() {
 	const { t } = useTranslation('media');
 	return (
-		<div className="mt-[10px] flex items-center gap-2 rounded-lg bg-item-theme border-theme-primary px-3 py-3 w-fit">
-			<div className="w-4 h-4 border-2 border-textSecondary800 dark:border-textSecondary border-t-transparent rounded-full animate-spin" />
-			<span className="text-xs text-theme-primary">{t('attachment.uploading')}</span>
-		</div>
+		<>
+			<hr className="opacity-0 w-full" />
+			<div className="mt-[10px] flex items-center gap-2 rounded-lg bg-item-theme border-theme-primary px-3 py-3 w-fit">
+				<div className="w-4 h-4 border-2 border-textSecondary800 dark:border-textSecondary border-t-transparent rounded-full animate-spin" />
+				<span className="text-xs text-theme-primary">{t('attachment.uploading')}</span>
+			</div>
+		</>
 	);
 }
 
@@ -24,11 +27,16 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl,
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState<number>(0);
-	const audioControlRef = useRef<{ togglePlay: () => void }>(null);
+	const audioControlRef = useRef<{ togglePlay: () => void; seek: (time: number) => void }>(null);
 
 	const handleTogglePlay = () => {
 		if (audioControlRef.current) {
 			audioControlRef.current.togglePlay();
+		}
+	};
+	const handleSeek = (time: number) => {
+		if (audioControlRef.current) {
+			audioControlRef.current.seek(time);
 		}
 	};
 	const handleSaveImage = async () => {
@@ -73,6 +81,7 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl,
 				currentTime={currentTime}
 				duration={duration}
 				togglePlay={handleTogglePlay}
+				seek={handleSeek}
 				handleSaveImage={handleSaveImage}
 			/>
 		</>
