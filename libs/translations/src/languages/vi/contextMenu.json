@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Không thể kết thúc bình chọn"
 	},
 	"copyUserId": "Sao chép ID người dùng",
-	"giveFlowers": "Tặng hoa"
+	"giveFlowers": "Tặng hoa",
+	"userVolume": "Âm lượng người dùng"
 }

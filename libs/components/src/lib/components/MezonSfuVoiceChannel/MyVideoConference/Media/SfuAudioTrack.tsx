@@ -1,6 +1,7 @@
 import { setPreferredOutputDeviceId, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
 import { attachAudioPlayback, type AudioPlaybackFailure } from './audioPlayback';
+import { acquireBoostContext, applyBoostSink, contextSinkSupported, releaseBoostContext, resolveAudioVolume } from './audioVolume';
 
 export const SfuAudioTrack = ({
 	track,
@@ -18,12 +19,53 @@ export const SfuAudioTrack = ({
 	onSinkIdFailure?: (failedSinkId?: string) => void;
 }) => {
 	const ref = useRef<HTMLAudioElement>(null);
+	const gainRef = useRef<GainNode | null>(null);
+	const ctxRef = useRef<AudioContext | null>(null);
+	const { elementVolume, boost } = resolveAudioVolume(volume, sinkId, contextSinkSupported());
+	const boosting = boost !== null;
+	const targetGain = muted ? 0 : (boost ?? 1);
+	const targetGainRef = useRef(targetGain);
+	targetGainRef.current = targetGain;
+
 	useEffect(() => {
 		if (ref.current) {
-			ref.current.muted = muted;
-			ref.current.volume = Math.min(1, Math.max(0, volume));
+			ref.current.muted = muted || boosting;
+			ref.current.volume = elementVolume;
 		}
-	}, [muted, volume]);
+	}, [muted, boosting, elementVolume]);
+
+	useEffect(() => {
+		if (!boosting) return;
+		const ctx = acquireBoostContext();
+		if (!ctx) return;
+		ctxRef.current = ctx;
+		const source = ctx.createMediaStreamSource(new MediaStream([track]));
+		const gain = ctx.createGain();
+		gain.gain.value = targetGainRef.current;
+		source.connect(gain);
+		gain.connect(ctx.destination);
+		gainRef.current = gain;
+		return () => {
+			source.disconnect();
+			gain.disconnect();
+			gainRef.current = null;
+			ctxRef.current = null;
+			releaseBoostContext();
+		};
+	}, [track, boosting]);
+
+	useEffect(() => {
+		if (gainRef.current) {
+			gainRef.current.gain.value = muted ? 0 : (boost ?? 1);
+		}
+	}, [boost, muted]);
+
+	useEffect(() => {
+		if (boosting && ctxRef.current) {
+			void applyBoostSink(ctxRef.current, sinkId);
+		}
+	}, [sinkId, boosting]);
+
 	useEffect(() => {
 		const el = ref.current;
 		if (!el) return;
@@ -68,5 +110,5 @@ export const SfuAudioTrack = ({
 			cleanupPlayback?.();
 		};
 	}, [sinkId, track, onPlaybackFailure, onSinkIdFailure]);
-	return <audio ref={ref} playsInline muted={muted} />;
+	return <audio ref={ref} playsInline muted={muted || boosting} />;
 };

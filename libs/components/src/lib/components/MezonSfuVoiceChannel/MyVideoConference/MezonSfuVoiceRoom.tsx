@@ -2856,7 +2856,7 @@ export function MezonSfuVoiceRoom({
 			event.preventDefault();
 			event.stopPropagation();
 			const menuWidth = 220;
-			const menuHeight = 200;
+			const menuHeight = 260;
 			dispatch(
 				voiceActions.openVoiceContextMenu({
 					participantId: participantUserId,

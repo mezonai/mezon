@@ -1,8 +1,10 @@
 import { useAuth, useDirect, useOnClickOutside, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
 import {
+	appActions,
 	giveCoffeeActions,
 	selectMemberClanByUserId,
 	selectVoiceContextMenu,
+	selectVoiceUserVolume,
 	selectWalletDetail,
 	toastActions,
 	useAppDispatch,
@@ -17,6 +19,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
+import { USER_VOLUME_MAX } from '../Media/audioVolume';
 
 interface SfuVoiceContextMenuProps {
 	channelId: string;
@@ -45,6 +48,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 	const [isKicking, setIsKicking] = useState(false);
 
 	const participantId = contextMenu?.openedParticipantId;
+	const volume = useAppSelector((state) => selectVoiceUserVolume(state, participantId ?? ''));
 	const member = useAppSelector((state) => (participantId ? selectMemberClanByUserId(state, participantId) : undefined));
 
 	useOnClickOutside(menuRef, () => {
@@ -186,6 +190,23 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 			className="contexify fixed z-30 flex w-52 flex-col rounded-md border border-border bg-theme-setting-nav p-2 text-sm font-medium text-theme-primary !bg-theme-contexify !opacity-100"
 			style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
 		>
+			<div className="flex flex-col gap-1.5 p-2">
+				<div className="flex items-center justify-between">
+					<span>{t('userVolume')}</span>
+					<span className="text-xs text-theme-primary-hover">{volume}%</span>
+				</div>
+				<input
+					type="range"
+					min={0}
+					max={USER_VOLUME_MAX}
+					step={1}
+					value={volume}
+					onChange={(e) => dispatch(appActions.setVoiceUserVolume({ userId: participantId, percent: Number(e.target.value) }))}
+					className="h-1 w-full cursor-pointer accent-buttonPrimary"
+					data-e2e={generateE2eId('clan_page.screen.voice_room.input.user_volume')}
+				/>
+			</div>
+			<div className="contexify_separator" />
 			<button
 				className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a] hover:text-white"
 				onClick={handleGiveFlowers}
