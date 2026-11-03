@@ -1,50 +1,65 @@
 import { ModalInvite } from '@mezon/components';
 import { createExternalMezonMeet, useAppDispatch } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
+import { socketState, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { connectSocketWithBackoff } from '../../loaders/socketUtils';
 
 export default function MeetPage() {
-	const { t } = useTranslation('homepage');
+	const { t } = useTranslation(['homepage', 'common']);
 	const dispatch = useAppDispatch();
 	const [error, setError] = useState<string | null>(null);
 	const [externalLink, setExternalLink] = useState<string | null>(null);
 	const [isCreating, setIsCreating] = useState(false);
-	const { sessionRef } = useMezon();
+	const [isConnecting, setIsConnecting] = useState(false);
+	const { sessionRef, connectSocket } = useMezon();
 	const navigate = useNavigate();
+	const mountedRef = useRef(false);
+
+	const createMeeting = useCallback(async () => {
+		if (isCreating || externalLink || !sessionRef.current) {
+			navigate('/mezon');
+			return;
+		}
+
+		setIsCreating(true);
+		setError(null);
+		setIsConnecting(!socketState.isConnected);
+		await connectSocketWithBackoff({
+			connect: () => connectSocket(),
+			isConnected: () => socketState.isConnected,
+			isCancelled: () => !mountedRef.current
+		});
+		if (!mountedRef.current) return;
+		setIsConnecting(false);
+		try {
+			const result = await dispatch(createExternalMezonMeet()).unwrap();
+
+			if (result) {
+				const link = result as string;
+				const fullLink = link.startsWith('http') ? link : `${process.env.NX_CHAT_APP_REDIRECT_URI || ''}${link}`;
+				setExternalLink(fullLink);
+			} else {
+				setError('Failed to create meeting. Please try again.');
+			}
+		} catch (error) {
+			console.error('Error creating meeting:', error);
+			setError('Failed to create meeting. Please try again.');
+		} finally {
+			setIsCreating(false);
+		}
+	}, [isCreating, externalLink, sessionRef, navigate, connectSocket, dispatch]);
 
 	useEffect(() => {
-		const createMeeting = async () => {
-			if (isCreating || externalLink || !sessionRef.current) {
-				navigate('/mezon');
-				return;
-			}
-
-			setIsCreating(true);
-			setError(null);
-			try {
-				const result = await dispatch(createExternalMezonMeet()).unwrap();
-
-				if (result) {
-					const link = result as string;
-					const fullLink = link.startsWith('http') ? link : `${process.env.NX_CHAT_APP_REDIRECT_URI || ''}${link}`;
-					setExternalLink(fullLink);
-				} else {
-					setError('Failed to create meeting. Please try again.');
-				}
-			} catch (error) {
-				console.error('Error creating meeting:', error);
-				setError('Failed to create meeting. Please try again.');
-			} finally {
-				setIsCreating(false);
-			}
-		};
-
+		mountedRef.current = true;
 		createMeeting();
+		return () => {
+			mountedRef.current = false;
+		};
 	}, []);
 
 	const handleJoin = useCallback(() => {
@@ -94,6 +109,7 @@ export default function MeetPage() {
 				{isCreating && !externalLink && (
 					<div className="w-full max-w-lg bg-zinc-800 rounded-lg p-8 flex flex-col items-center">
 						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+						{isConnecting && <p className="mt-4 text-sm text-zinc-300">{t('common:errorBoundary.connecting')}</p>}
 					</div>
 				)}
 
@@ -139,6 +155,14 @@ export default function MeetPage() {
 					<div className="w-full max-w-md mt-4 p-4 bg-red-900/50 border border-red-800 rounded text-red-200 text-sm text-center">
 						{error}
 					</div>
+				)}
+				{error && !isCreating && (
+					<button
+						onClick={createMeeting}
+						className="mt-3 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium transition-colors text-sm"
+					>
+						{t('common:errorBoundary.reload')}
+					</button>
 				)}
 			</div>
 		</div>

@@ -67,7 +67,11 @@ async function persistSessionConnectAfterLogin(mezon: MezonContextValue, session
 	const merged: ApiSession = { ...session, ws_url: wsUrl };
 	mezon.sessionRef.current = merged;
 
-	await mezon.connectSocket();
+	try {
+		await mezon.connectSocket();
+	} catch (error) {
+		captureSentryError(error, 'auth/connectSocketAfterLogin');
+	}
 
 	return mezon.sessionRef.current as ApiSession;
 }
