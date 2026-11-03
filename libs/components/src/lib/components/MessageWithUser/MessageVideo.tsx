@@ -1,7 +1,9 @@
+import { selectAttachmentUploadProgress, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import {
 	calculateMediaDimensions,
 	createImgproxyUrl,
+	getPresignKeyFromAttachmentUrl,
 	useIsIntersecting,
 	useResizeObserver,
 	type ObserveFn,
@@ -15,13 +17,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from 'use-debounce';
 import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
-import { useVideoSource } from './useVideoSource';
+import { useIngestPlaylistReady, useVideoSource } from './useVideoSource';
 export type MessageImage = {
 	readonly attachmentData: ApiMessageAttachment;
 	isMobile?: boolean;
 	isPreview?: boolean;
 	isSending?: boolean;
 	isPresignPending?: boolean;
+	isIngest?: boolean;
 	observeIntersection?: ObserveFn;
 };
 export const MIN_WIDTH_VIDEO_SHOW = 200;
@@ -422,6 +425,7 @@ function VideoPoster({
 	onPlay,
 	disablePlay = false,
 	isSending = false,
+	uploadLabel,
 	boxWidth,
 	boxHeight
 }: {
@@ -431,6 +435,7 @@ function VideoPoster({
 	onPlay: () => void;
 	disablePlay?: boolean;
 	isSending?: boolean;
+	uploadLabel?: string;
 	boxWidth?: number;
 	boxHeight?: number;
 }) {
@@ -444,12 +449,21 @@ function VideoPoster({
 		>
 			{thumbnailUrl && <img src={thumbnailUrl} onError={onThumbnailError} alt="" className="w-full h-full object-cover" loading="lazy" />}
 			{isSending ? (
-				<AttachmentSendingIndicator showLabel boxWidth={boxWidth} boxHeight={boxHeight} />
+				<AttachmentSendingIndicator showLabel label={uploadLabel} boxWidth={boxWidth} boxHeight={boxHeight} />
 			) : (
 				<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group">
 					<div className="flex items-center justify-center w-12 h-12 rounded-full bg-black bg-opacity-50 transition-transform duration-150 group-hover:scale-110">
 						<Icons.PlayButton className="w-5 h-5 text-white" />
 					</div>
+					{uploadLabel && (
+						<span
+							className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black bg-opacity-50 text-xs text-white"
+							role="status"
+							aria-live="polite"
+						>
+							{uploadLabel}
+						</span>
+					)}
 				</div>
 			)}
 		</div>
@@ -469,13 +483,22 @@ function DefaultVideo({
 	isPreview = false,
 	isSending = false,
 	isPresignPending = false,
+	isIngest = false,
 	observeIntersection
 }: MessageImage) {
 	const { t } = useTranslation('media');
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isIntersecting = useIsIntersecting(containerRef, observeIntersection);
 	const [activated, setActivated] = useState(false);
-	const isUploading = isSending || isPresignPending;
+	const isPlayableWhileUploading = useIngestPlaylistReady(attachmentData.url, isIngest && isPresignPending && !isSending && isIntersecting);
+	const isUploading = isSending || (isPresignPending && !isPlayableWhileUploading);
+	const uploadProgress = useAppSelector((state) => selectAttachmentUploadProgress(state, getPresignKeyFromAttachmentUrl(attachmentData.url)));
+	const uploadLabel =
+		uploadProgress === undefined
+			? t('attachment.uploading')
+			: uploadProgress < 1
+				? `${t('attachment.uploading')} ${Math.floor(uploadProgress * 100)}%`
+				: t('attachment.finishing');
 	const { width, height, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
 	const localSource = (attachmentData as PreSendMediaAttachment).local_source;
@@ -497,7 +520,7 @@ function DefaultVideo({
 	}, [isIntersecting]);
 
 	const { requestPlay, tryPlay } = usePlayOnActivation(videoRef, isVideoActive);
-	const { failed, handleError } = useVideoSource(videoRef, attachmentData.url, isVideoActive);
+	const { failed, handleError } = useVideoSource(videoRef, attachmentData.url, isVideoActive, { ingest: isIngest });
 
 	useVideoCleanup(videoRef, isVideoActive);
 
@@ -553,6 +576,7 @@ function DefaultVideo({
 					onPlay={handlePlay}
 					disablePlay={isUploading}
 					isSending={isUploading}
+					uploadLabel={isSending || isPresignPending ? uploadLabel : undefined}
 					boxWidth={width}
 					boxHeight={height}
 				/>

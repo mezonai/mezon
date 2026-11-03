@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "アップロード中..."
+		"uploading": "アップロード中...",
+		"finishing": "完了処理中..."
 	}
 }

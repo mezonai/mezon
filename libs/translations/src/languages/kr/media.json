@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "업로드 중..."
+		"uploading": "업로드 중...",
+		"finishing": "마무리 중..."
 	}
 }

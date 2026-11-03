@@ -1,10 +1,13 @@
 import type { ApiMessageAttachment } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import { FOR_10_MINUTES_SEC } from '../constant';
+import { FOR_10_MINUTES_SEC, FOR_24_HOURS_SEC } from '../constant';
 import type { IMessageSendPayload } from '../types';
 import { isMezonCdnUrl } from './urlSanitization';
 
 export const PRESIGN_PENDING_MAX_AGE_SEC = FOR_10_MINUTES_SEC;
+export const PRESIGN_INGEST_PENDING_MAX_AGE_SEC = FOR_24_HOURS_SEC;
+
+type PresignKeyField = 'presign_finish' | 'presign_ingest';
 
 export function normalizePresignKey(key: string): string {
 	const segment = key.split('?')[0].split('/').filter(Boolean).pop() || key;
@@ -26,15 +29,32 @@ export function getPresignKeyFromAttachmentUrl(url?: string): string | undefined
 	}
 }
 
-export function parsePresignFinishKeys(content: unknown): string[] | null {
+function parsePresignKeys(content: unknown, field: PresignKeyField): string[] | null {
 	const parsed = typeof content === 'string' ? safeJSONParse(content) : content;
 	if (!parsed || typeof parsed !== 'object') return null;
-	if (!('presign_finish' in parsed)) return null;
+	if (!(field in parsed)) return null;
 
-	const keys = (parsed as { presign_finish?: unknown }).presign_finish;
+	const keys = (parsed as Partial<Record<PresignKeyField, unknown>>)[field];
 	if (!Array.isArray(keys)) return null;
 
 	return keys.filter((key): key is string => typeof key === 'string').map(normalizePresignKey);
+}
+
+export function parsePresignFinishKeys(content: unknown): string[] | null {
+	return parsePresignKeys(content, 'presign_finish');
+}
+
+export function parsePresignIngestKeys(content: unknown): string[] {
+	return parsePresignKeys(content, 'presign_ingest') ?? [];
+}
+
+export function isPresignIngestAttachment(url: string | undefined, presignIngestKeys: string[]): boolean {
+	const presignKey = getPresignKeyFromAttachmentUrl(url);
+	return presignKey !== undefined && presignIngestKeys.includes(presignKey);
+}
+
+export function getPresignPendingMaxAgeSec(url: string | undefined, presignIngestKeys: string[]): number {
+	return isPresignIngestAttachment(url, presignIngestKeys) ? PRESIGN_INGEST_PENDING_MAX_AGE_SEC : PRESIGN_PENDING_MAX_AGE_SEC;
 }
 
 export function countPresignableAttachments(attachments: ApiMessageAttachment[] | undefined): number {
@@ -69,11 +89,14 @@ export function getPresignFinishFingerprint(content: unknown): string {
 	return keys ? keys.join('\u0001') : '';
 }
 
-export function mergePresignFinishKeys(existingContent: unknown, incomingContent: unknown): string[] | null {
-	const incomingKeys = parsePresignFinishKeys(incomingContent);
-	if (incomingKeys === null) return null;
-
-	const existingKeys = parsePresignFinishKeys(existingContent);
+function mergePresignKeys(existingContent: unknown, incomingContent: unknown, field: PresignKeyField): string[] | null {
+	const incomingKeys = parsePresignKeys(incomingContent, field);
+	const existingKeys = parsePresignKeys(existingContent, field);
+	// The update carries no keys of its own (a plain edit, for
+	// instance). Dropping the keys we already collected would turn the gate
+	// off and let every still-uploading attachment hit imgproxy, so carry
+	// them over untouched.
+	if (incomingKeys === null) return existingKeys;
 	return [...new Set([...(existingKeys ?? []), ...incomingKeys])];
 }
 
@@ -83,40 +106,36 @@ export function mergePresignFinishContent(existingContent: unknown, incomingCont
 		return incomingContent;
 	}
 
-	const mergedKeys = mergePresignFinishKeys(existingContent, incomingParsed);
-	if (mergedKeys === null) {
-		// The update carries no presign_finish of its own (a plain edit, for
-		// instance). Dropping the keys we already collected would turn the gate
-		// off and let every still-uploading attachment hit imgproxy, so carry
-		// them over untouched.
-		const existingKeys = parsePresignFinishKeys(existingContent);
-		if (existingKeys === null) {
-			return incomingContent;
-		}
-		const carried = {
-			...(incomingParsed as Record<string, unknown>),
-			presign_finish: existingKeys
-		};
-		return typeof incomingContent === 'string' ? JSON.stringify(carried) : carried;
+	const presignFinish = mergePresignKeys(existingContent, incomingParsed, 'presign_finish');
+	const presignIngest = mergePresignKeys(existingContent, incomingParsed, 'presign_ingest');
+	if (presignFinish === null && presignIngest === null) {
+		return incomingContent;
 	}
 
 	const merged = {
 		...(incomingParsed as Record<string, unknown>),
-		presign_finish: mergedKeys
+		...(presignFinish && { presign_finish: presignFinish }),
+		...(presignIngest && { presign_ingest: presignIngest })
 	};
 
 	return typeof incomingContent === 'string' ? JSON.stringify(merged) : merged;
+}
+
+export function withoutPresignMarkers<T extends object>(content: T): Omit<T, PresignKeyField> {
+	const { presign_finish: _presignFinish, presign_ingest: _presignIngest, ...forwarded } = content as T & Partial<Record<PresignKeyField, unknown>>;
+	return forwarded;
 }
 
 export function isExpiredPresignAttachment(
 	url: string | undefined,
 	presignFinishKeys: string[] | null,
 	messageCreateTimeSeconds?: number,
-	nowSeconds = Math.floor(Date.now() / 1000)
+	nowSeconds = Math.floor(Date.now() / 1000),
+	presignIngestKeys: string[] = []
 ): boolean {
 	if (!messageCreateTimeSeconds || presignFinishKeys === null) return false;
 	if (!isPresignAttachmentPending(url, presignFinishKeys)) return false;
-	return nowSeconds - messageCreateTimeSeconds >= PRESIGN_PENDING_MAX_AGE_SEC;
+	return nowSeconds - messageCreateTimeSeconds >= getPresignPendingMaxAgeSec(url, presignIngestKeys);
 }
 
 export function filterExpiredPresignAttachments(
@@ -127,8 +146,11 @@ export function filterExpiredPresignAttachments(
 ): ApiMessageAttachment[] {
 	const presignFinishKeys = parsePresignFinishKeys(content);
 	if (presignFinishKeys === null || !messageCreateTimeSeconds) return attachments;
+	const presignIngestKeys = parsePresignIngestKeys(content);
 
-	return attachments.filter((attachment) => !isExpiredPresignAttachment(attachment.url, presignFinishKeys, messageCreateTimeSeconds, nowSeconds));
+	return attachments.filter(
+		(attachment) => !isExpiredPresignAttachment(attachment.url, presignFinishKeys, messageCreateTimeSeconds, nowSeconds, presignIngestKeys)
+	);
 }
 
 export function hasActivePresignPendingAttachments(attachments: ApiMessageAttachment[] | undefined, content: unknown): boolean {
@@ -142,10 +164,14 @@ export function hasActivePresignPendingAttachments(attachments: ApiMessageAttach
 	return attachments.some((attachment) => isPresignAttachmentPending(attachment.url, presignFinishKeys, attachments));
 }
 
-export function getPresignExpiryDelayMs(messageCreateTimeSeconds?: number, nowMs = Date.now()): number | null {
+export function getPresignExpiryDelayMs(
+	messageCreateTimeSeconds?: number,
+	nowMs = Date.now(),
+	maxAgeSec = PRESIGN_PENDING_MAX_AGE_SEC
+): number | null {
 	if (!messageCreateTimeSeconds) return null;
 
-	const expiresAtMs = (messageCreateTimeSeconds + PRESIGN_PENDING_MAX_AGE_SEC) * 1000;
+	const expiresAtMs = (messageCreateTimeSeconds + maxAgeSec) * 1000;
 	const delay = expiresAtMs - nowMs;
 	return delay <= 0 ? 0 : delay;
 }
@@ -203,5 +229,11 @@ export function shouldHidePresignAttachment(
 	nowSeconds = Math.floor(Date.now() / 1000)
 ): boolean {
 	if (!message) return false;
-	return isExpiredPresignAttachment(url, parsePresignFinishKeys(message.content), getMessageCreateTimeSeconds(message), nowSeconds);
+	return isExpiredPresignAttachment(
+		url,
+		parsePresignFinishKeys(message.content),
+		getMessageCreateTimeSeconds(message),
+		nowSeconds,
+		parsePresignIngestKeys(message.content)
+	);
 }
