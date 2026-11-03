@@ -576,6 +576,15 @@ export const fetchMessages = createAsyncThunk(
 			captureSentryError(error, 'messages/fetchMessages');
 			return thunkAPI.rejectWithValue(error);
 		}
+	},
+	{
+		condition: ({ channelId, topicId }) => {
+			if (!channelId && !topicId) {
+				return false;
+			}
+
+			return true;
+		}
 	}
 );
 

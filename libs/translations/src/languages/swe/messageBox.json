@@ -15,5 +15,6 @@
 		"ephemeral": {
 			"description": "Skicka tillfälligt meddelande (bara vald användare ser)"
 		}
-	}
+	},
+	"convertLongToFile": "Konvertera långt meddelande till fil"
 }

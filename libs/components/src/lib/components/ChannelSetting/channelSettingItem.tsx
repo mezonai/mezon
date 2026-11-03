@@ -169,7 +169,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 					)}
 				{hasManageChannelPermission && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
 					<ChannelSettingItemButton
-						tabName={EChannelSettingTab.STREAM_THUMBNAIL}
+						tabName={EChannelSettingTab.STREAMING}
 						handleOnClick={handleButtonClick}
 						selectedButton={selectedButton}
 						getTabTranslation={getTabTranslation}

@@ -4,6 +4,7 @@ import { selectCurrentChannelId, selectCurrentTopicId, topicsActions, useAppDisp
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import TopicDiscussionBox from './TopicDiscussionBox';
+import TopicReactionEmojiPanel from './TopicReactionEmojiPanel';
 
 const TopicDiscussionMain = () => {
 	const dispatch = useAppDispatch();
@@ -23,11 +24,12 @@ const TopicDiscussionMain = () => {
 	});
 
 	return (
-		<div className="flex flex-col h-full border-l dark:border-borderDivider border-bgLightTertiary">
+		<div className="relative flex flex-col h-full border-l dark:border-borderDivider border-bgLightTertiary">
 			<TopicHeader />
 			<div className="flex flex-col h-full">
 				<TopicDiscussionBox currentTopicId={currentTopicId || ''} />
 			</div>
+			<TopicReactionEmojiPanel />
 		</div>
 	);
 };

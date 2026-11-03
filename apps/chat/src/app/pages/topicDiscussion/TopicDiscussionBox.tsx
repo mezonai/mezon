@@ -322,12 +322,12 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 					/>
 				</div>
 			)}
-			{canSendMessage === false ? (
+			{!canSendMessage ? (
 				<div
 					className="h-11 opacity-80 bg-theme-input text-theme-primary ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission rounded one-line"
 					data-e2e={generateE2eId('chat.message_box.input.no_permission')}
 				>
-					{t('noPermissionToSendMessage')}
+					{canSendMessage === false && t('noPermissionToSendMessage')}
 				</div>
 			) : (
 				<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative`}>

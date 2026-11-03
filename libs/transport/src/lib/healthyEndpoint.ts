@@ -250,12 +250,11 @@ export function refreshTokenNeedsRotation(refreshToken: string, now: number = Da
 }
 
 /**
- * Whether the api turned the refresh token down, as opposed to being unable to answer. It reports an
- * invalid or expired refresh token as 500 (codes.Internal), so that one counts as a refusal; a timeout,
+ * Whether the api turned the refresh token down, as opposed to being unable to answer. A 500, a timeout,
  * 408, 429 or a 502/503/504 from the proxy says nothing about the session.
  */
 export function isRefreshRefused(status: number): boolean {
-	return status === 400 || status === 401 || status === 403 || status === 500;
+	return status === 400 || status === 401 || status === 403;
 }
 
 export type CredentialProbe = 'alive' | 'rejected' | 'inconclusive';

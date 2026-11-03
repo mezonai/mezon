@@ -1,11 +1,21 @@
 import { useChatSending } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM } from '@mezon/store';
+import {
+	getStore,
+	messagesActions,
+	selectBanMeInChannel,
+	selectClanView,
+	selectCurrentChannel,
+	selectCurrentDM,
+	selectHasMoreBottomByChannelId,
+	selectMessageIsLoadingByChannelId,
+	useAppDispatch
+} from '@mezon/store';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { EMimeTypes, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -15,6 +25,8 @@ interface IWaveButtonProps {
 
 const WaveButton = ({ message }: IWaveButtonProps) => {
 	const { t } = useTranslation('dmMessage');
+	const dispatch = useAppDispatch();
+	const [isSending, setIsSending] = useState(false);
 	const currenChannel = useSelector(selectCurrentChannel);
 	const currentDm = useSelector(selectCurrentDM);
 	const mode = useMemo(() => {
@@ -37,14 +49,16 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 		return STICKER_WAVE.LIST_STICKER[message.create_time_seconds % STICKER_WAVE.LIST_STICKER.length];
 	}, [message.create_time_seconds]);
 
-	const handleSendWaveSticker = () => {
+	const handleSendWaveSticker = async () => {
 		const store = getStore();
 		const appState = store.getState() as RootState;
 		const isBanned = selectBanMeInChannel(appState, currenChannel?.id);
 
-		if (isBanned) {
+		const channelId = channelOrDirect?.channel_id;
+		if (isBanned || isSending || !channelId) {
 			return null;
 		}
+		setIsSending(true);
 		try {
 			const content: IMessageSendPayload = { t: '' };
 			const ref = {
@@ -72,9 +86,49 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				}
 			];
 
-			sendMessage(content, [], attachments, [ref], false, false, false);
+			while (selectMessageIsLoadingByChannelId(store.getState(), channelId)) {
+				await new Promise<void>((resolve, reject) => {
+					const timeoutId = setTimeout(() => {
+						unsubscribe();
+						reject(new Error('Timed out waiting for message history'));
+					}, 30000);
+					const unsubscribe = store.subscribe(() => {
+						if (!selectMessageIsLoadingByChannelId(store.getState(), channelId)) {
+							clearTimeout(timeoutId);
+							unsubscribe();
+							resolve();
+						}
+					});
+				});
+			}
+			if (selectHasMoreBottomByChannelId(store.getState(), channelId)) {
+				await dispatch(
+					messagesActions.fetchMessages({
+						clanId: channelOrDirect?.clan_id ?? '0',
+						channelId,
+						noCache: true,
+						isClearMessage: true,
+						toPresent: true
+					})
+				).unwrap();
+			}
+
+			const latestState = store.getState();
+			const isClanChannel = mode === ChannelStreamMode.STREAM_MODE_CHANNEL;
+			const currentConversation = isClanChannel ? selectCurrentChannel(latestState) : selectCurrentDM(latestState);
+			if (selectClanView(latestState) === isClanChannel && currentConversation?.channel_id === channelId) {
+				if (isClanChannel && selectBanMeInChannel(latestState, channelId)) return;
+				dispatch(messagesActions.setIdMessageToJump(null));
+			}
+			dispatch(messagesActions.setViewingOlder({ channelId, status: false }));
+			dispatch(messagesActions.jumToPresent({ channelId }));
+			dispatch(messagesActions.setIsJumpingToPresent({ channelId, status: true }));
+			await sendMessage(content, [], attachments, [ref], false, false, false);
 		} catch (error) {
+			dispatch(messagesActions.setIsJumpingToPresent({ channelId, status: false }));
 			console.error('Error sending wave sticker:', error);
+		} finally {
+			setIsSending(false);
 		}
 	};
 
@@ -83,6 +137,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 			<button
 				className="bg-theme-primary py-1 px-3 rounded flex flex-row items-center gap-2 hover:scale-102 transition-all duration-200 ease-in-out hover:shadow-md"
 				onClick={handleSendWaveSticker}
+				disabled={isSending}
 				data-e2e={generateE2eId('chat.button.wave_to_say_hi')}
 			>
 				<img src={createImgproxyUrl(urlIcon)} alt="Wave Icon" className="object-contain mb-1" width={32} height={32} />

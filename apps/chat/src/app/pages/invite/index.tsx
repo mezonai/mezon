@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { openAppDeeplink } from '../../utils/deeplink';
+import { isMobileBrowser, openAppDeeplink } from '../../utils/deeplink';
 
 export default function InvitePage() {
 	const { t } = useTranslation('common');
@@ -61,7 +61,9 @@ export default function InvitePage() {
 		const result = await joinChannel();
 		handleBackNavigate();
 		if (!result) {
-			openAppDeeplink(`invite/${inviteIdParam}`);
+			if (isMobileBrowser()) {
+				openAppDeeplink(`invite/${inviteIdParam}`);
+			}
 			navigate(`/mezon`);
 			return;
 		}

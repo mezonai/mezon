@@ -259,7 +259,7 @@
 		"integrations": "Integrations",
 		"category": "Category",
 		"quickMenu": "Quick Actions",
-		"streamThumbnail": "Stream Thumbnail"
+		"streaming": "Streaming"
 	},
 	"categoryManagement": {
 		"title": "Category",

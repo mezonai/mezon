@@ -12,9 +12,10 @@ type ModalCustomStatusProps = {
 	onClose: () => void;
 	status?: string;
 	time_reset?: number;
+	no_clear?: boolean;
 };
 
-const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCustomStatusProps) => {
+const ModalCustomStatus = ({ name, status, onClose, time_reset = 0, no_clear = false }: ModalCustomStatusProps) => {
 	const { t } = useTranslation(['userProfile'], { keyPrefix: 'statusProfile.customStatusModal' });
 	const dispatch = useAppDispatch();
 
@@ -43,9 +44,13 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 		}
 	}
 
-	const [timeSetReset, setTimeSetReset] = useState<string>(getTimeResetLabel(time_reset, t));
-	const [resetTimerStatus, setResetTimerStatus] = useState<number>(time_reset);
-	const [noClearStatus, setNoClearStatus] = useState<boolean>(false);
+	const hasStatus = !!status?.trim();
+	const savedNoClear = hasStatus && no_clear;
+	const savedMinutes = hasStatus && (time_reset === 240 || time_reset === 60 || time_reset === 30) ? time_reset : 0;
+
+	const [timeSetReset, setTimeSetReset] = useState<string>(savedNoClear ? t('timeOptions.dontClear') : getTimeResetLabel(savedMinutes, t));
+	const [resetTimerStatus, setResetTimerStatus] = useState<number>(savedMinutes);
+	const [noClearStatus, setNoClearStatus] = useState<boolean>(savedNoClear);
 	const [customStatus, setCustomStatus] = useState<string>(status ?? '');
 
 	const setStatusTimer = useCallback(

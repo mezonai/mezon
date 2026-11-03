@@ -11,6 +11,7 @@ import { clansActions } from '../clans/clans.slice';
 import { directActions } from '../direct/direct.slice';
 import { sleep } from '../helpers';
 import { createCachedSelector, messagesActions } from '../messages/messages.slice';
+import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
 import type { RootState } from '../store';
 import { usersStreamActions } from '../stream/usersStream.slice';
 import { voiceActions } from '../voice/voice.slice';
@@ -243,6 +244,10 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 					noCache: true
 				})
 			);
+
+			if (clanId && clanId !== '0') {
+				thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId, channelId, noCache: true }));
+			}
 		}
 
 		await yieldToMain();
