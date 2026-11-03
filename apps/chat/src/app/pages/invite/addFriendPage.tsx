@@ -10,7 +10,7 @@ import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { openAppDeeplink } from '../../utils/deeplink';
+import { isMobileBrowser, openAppDeeplink } from '../../utils/deeplink';
 
 const DEFAULT_LOGO = 'https://cdn.komu.vn/images/mezon_logo.png';
 const QR_SIZE = 175;
@@ -80,7 +80,9 @@ export default function AddFriendPage() {
 	}, [dispatch, dataEncode?.id, userProfile]);
 
 	const navigateDeeplinkMobile = () => {
-		openAppDeeplink(`invite/chat/${username}?data=${data}`);
+		if (isMobileBrowser()) {
+			openAppDeeplink(`invite/chat/${username}?data=${data}`);
+		}
 	};
 
 	useEffect(() => {
