@@ -612,6 +612,17 @@ export const MessageLine = ({
 						/>
 					);
 				}
+			} else if (contentInElement) {
+				formattedContent.push(
+					<FormattedPlainText
+						key={`plain-${lastindex}-end-${messageId}`}
+						text={contentInElement}
+						isSearchMessage={isSearchMessage}
+						messageId={messageId}
+						keyPrefix="plain"
+						isReply={!!isReply}
+					/>
+				);
 			}
 
 			lastindex = e;
