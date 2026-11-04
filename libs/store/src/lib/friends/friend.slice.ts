@@ -324,15 +324,23 @@ export const friendsSlice = createSlice({
 				userId: string;
 				state: EStateFriend;
 				sourceId?: string;
+				username?: string;
 			}>
 		) => {
-			const { userId, state: nextState, sourceId } = action.payload;
+			const { userId, state: nextState, sourceId, username } = action.payload;
 			const friend = state?.entities?.[userId];
 			if (friend) {
 				friend.state = nextState;
 				if (sourceId !== undefined) {
 					friend.source_id = sourceId;
 				}
+			} else if (nextState === EStateFriend.BLOCK && sourceId) {
+				friendsAdapter.addOne(state, {
+					id: userId,
+					state: EStateFriend.BLOCK,
+					source_id: sourceId,
+					user: { id: userId, username }
+				});
 			}
 		},
 		restoreFriendAfterUnblock: (

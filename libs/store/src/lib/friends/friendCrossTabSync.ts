@@ -7,6 +7,7 @@ export interface FriendRelationPayload {
 	userId: string;
 	state: number;
 	sourceId: string;
+	username?: string;
 }
 
 export function broadcastFriendRelationToOtherTabs(payload: FriendRelationPayload): void {
@@ -15,12 +16,18 @@ export function broadcastFriendRelationToOtherTabs(payload: FriendRelationPayloa
 }
 
 export function initFriendRelationCrossTabSync(dispatch: (action: UnknownAction) => void): () => void {
-	if (typeof window === 'undefined') return () => {};
+	if (typeof window === 'undefined') return () => undefined;
 
 	const isValidPayload = (value: unknown): value is FriendRelationPayload => {
 		if (!value || typeof value !== 'object') return false;
 		const v = value as Record<string, unknown>;
-		return typeof v.userId === 'string' && typeof v.sourceId === 'string' && typeof v.state === 'number' && Number.isFinite(v.state);
+		return (
+			typeof v.userId === 'string' &&
+			typeof v.sourceId === 'string' &&
+			typeof v.state === 'number' &&
+			Number.isFinite(v.state) &&
+			(v.username === undefined || typeof v.username === 'string')
+		);
 	};
 
 	const handler = (e: StorageEvent) => {
@@ -28,7 +35,9 @@ export function initFriendRelationCrossTabSync(dispatch: (action: UnknownAction)
 		try {
 			const data = JSON.parse(e.newValue);
 			if (!isValidPayload(data)) return;
-			dispatch(friendsActions.applyFriendBlockState({ userId: data.userId, state: data.state, sourceId: data.sourceId }));
+			dispatch(
+				friendsActions.applyFriendBlockState({ userId: data.userId, state: data.state, sourceId: data.sourceId, username: data.username })
+			);
 		} catch {
 			// ignore malformed payload
 		}

@@ -77,18 +77,14 @@ export function useFriends() {
 			const response = await dispatch(friendsActions.sendRequestBlockFriend(body));
 
 			if (response?.meta?.requestStatus === 'fulfilled' && currentUserId) {
-				dispatch(
-					friendsActions.applyFriendBlockState({
-						userId: id,
-						state: EStateFriend.BLOCK,
-						sourceId: currentUserId
-					})
-				);
-				broadcastFriendRelationToOtherTabs({
+				const blockState = {
 					userId: id,
 					state: EStateFriend.BLOCK,
-					sourceId: currentUserId
-				});
+					sourceId: currentUserId,
+					username
+				};
+				dispatch(friendsActions.applyFriendBlockState(blockState));
+				broadcastFriendRelationToOtherTabs(blockState);
 				return true;
 			}
 			throw new Error('BLOCK_FRIEND_FAILED');
