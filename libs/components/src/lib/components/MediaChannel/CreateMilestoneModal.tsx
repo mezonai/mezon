@@ -1,7 +1,7 @@
 import type { ChannelTimelineAttachment } from '@mezon/store';
 import { channelMediaActions, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId, isImageFileType, isVideoFileType, useLastCallback } from '@mezon/utils';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -193,7 +193,7 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 				<div className="flex items-center justify-between px-6 py-4 border-b-theme-primary">
 					<h2 className="text-lg font-bold text-theme-primary">{t('fields.createMilestone.headerTitle')}</h2>
 					<button onClick={handleCancel} className="p-1 rounded-lg text-theme-secondary hover:text-theme-primary-active transition-colors">
-						<Icons.CloseIcon className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzCloseCircle} className="text-[var(--mz-icon)]" />
 					</button>
 				</div>
 
@@ -273,7 +273,7 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 												className="absolute top-1 right-1 w-6 h-6 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
 												data-e2e={generateE2eId('timeline.modal.attachments_list.item.button.remove')}
 											>
-												<Icons.CloseIcon className="w-3 h-3" />
+												<MezonIcon icon={MzIcons16.mzCloseCircle} />
 											</button>
 										</div>
 									);
@@ -294,12 +294,12 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 						<button
 							onClick={() => fileInputRef.current?.click()}
 							disabled={isUploading}
-							className="w-full py-8 border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 rounded-xl flex flex-col items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors cursor-pointer bg-theme-primary"
+							className="w-full py-8 border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 rounded-xl flex flex-col items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors cursor-pointer bg-theme-primary group/mzi"
 						>
 							{isUploading ? (
 								<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-buttonPrimary" />
 							) : (
-								<Icons.PlusIcon defaultSize="w-10 h-10" />
+								<MezonIcon icon={MzIcons20.mzPlusCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-buttonPrimary" />
 							)}
 							<span className="text-sm font-medium">{t('fields.createMilestone.uploadTitle')}</span>
 							<span className="text-xs">{t('fields.createMilestone.uploadSubtitle')}</span>

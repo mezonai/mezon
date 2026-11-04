@@ -1,5 +1,5 @@
 import { useCdnUrlSigner } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 
@@ -41,7 +41,7 @@ export function MediaImage({ src, alt = '', className = '', loading = 'lazy', im
 	if (!processedSrc || hasError) {
 		return (
 			<div className={`flex items-center justify-center dark:bg-skeleton-dark bg-skeleton-white ${className}`}>
-				<Icons.ImageThumbnail defaultSize="w-10 h-10" className="text-contentTertiary opacity-40" />
+				<MezonIcon icon={MzIcons20.mzFileImage} className="text-contentTertiary opacity-40" />
 			</div>
 		);
 	}

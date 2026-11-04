@@ -1,6 +1,6 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import type { ChannelTimelineAttachment } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons16, MzIcons20, MzIcons48 } from '@mezon/ui';
 import { createImgproxyUrl, handleSaveImage } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVideoSource } from '../MessageWithUser/useVideoSource';
@@ -227,7 +227,7 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 					{currentIndex + 1} / {attachments.length}
 				</div>
 				<div onClick={onClose} className="w-4 absolute right-2 top-2 cursor-pointer">
-					<Icons.MenuClose className="text-white w-full" />
+					<MezonIcon icon={MzIcons16.mzClose} className="text-white" />
 				</div>
 			</div>
 
@@ -244,21 +244,7 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 								maxHeight: '100%'
 							}}
 						>
-							<svg
-								className="w-16 h-16 text-[#4a4a4a]"
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke="currentColor"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-								/>
-							</svg>
+							<MezonIcon icon={MzIcons48.mzImage} className="w-16 h-16 text-[#4a4a4a]" />
 						</div>
 					)}
 
@@ -307,13 +293,13 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 								className="rounded-full rotate-180 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 								onClick={selectPrevious}
 							>
-								<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
+								<MezonIcon icon={MzIcons20.mzChevronDown} />
 							</div>
 							<div
 								className="rounded-full bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 								onClick={selectNext}
 							>
-								<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
+								<MezonIcon icon={MzIcons20.mzChevronDown} />
 							</div>
 						</div>
 					)}
@@ -331,7 +317,7 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 							return (
 								<div key={`${att.id}-${idx}`} data-index={idx} className="p-1">
 									<div
-										className={`rounded-md cursor-pointer overflow-hidden border-2 ${isSelected ? 'border-white' : 'border-transparent'}`}
+										className={`mz-hover rounded-md cursor-pointer overflow-hidden border-2 ${isSelected ? 'border-white' : 'border-transparent'}`}
 										onClick={() => selectImage(idx)}
 									>
 										{attIsVideo ? (
@@ -344,9 +330,7 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 													preload="metadata"
 												/>
 												<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-													<svg width="20" height="20" viewBox="0 0 24 24" fill="white" className="drop-shadow-lg">
-														<path d="M8 5v14l11-7z" />
-													</svg>
+													<MezonIcon icon={MzIcons20.mzPlay} className="text-white drop-shadow-lg" />
 												</div>
 											</div>
 										) : (
@@ -370,7 +354,7 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 				</div>
 				<div className="gap-3 flex-1 text-white flex items-center justify-center">
 					<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={handleDownload}>
-						<Icons.HomepageDownload className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzDownload} />
 					</div>
 					{!isVideo && (
 						<>
@@ -378,19 +362,19 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 								<Icons.StraightLineIcon className="w-5" />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => handleRotate('LEFT')}>
-								<Icons.RotateLeftIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzRotateLeft} />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => handleRotate('RIGHT')}>
-								<Icons.RotateRightIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzRotateRight} />
 							</div>
 							<div>
 								<Icons.StraightLineIcon className="w-5" />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={handleScaleUp}>
-								<Icons.ZoomIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzZoomIn} />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={handleScaleReset}>
-								<Icons.AspectRatioIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzAspectRatio} />
 							</div>
 						</>
 					)}
@@ -398,7 +382,7 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 				<div className="flex justify-end flex-1">
 					{attachments.length > 1 && (
 						<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => setShowList(!showList)}>
-							<Icons.SideMenuIcon className="w-5 text-white" />
+							<MezonIcon icon={MzIcons20.mzSidebar} className="text-white" />
 						</div>
 					)}
 				</div>

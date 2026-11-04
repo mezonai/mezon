@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 import { SfuAudioDeviceMenu } from './MediaDeviceMenu/SfuAudioDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
@@ -49,9 +49,15 @@ export const MicrophoneControl = ({
 		<div className="relative">
 			<button id="btn-meet-micro" type="button" title={label} aria-label={label} className={SFU_CONTROL_BUTTON_CLASS} onClick={handleClick}>
 				{enabled ? (
-					<Icons.VoiceMicIcon className="h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5" scale={2.5} />
+					<>
+						<MezonIcon icon={MzIcons24.mzMic} className="text-white max-lg:hidden" />
+						<MezonIcon icon={MzIcons20.mzMic} className="hidden text-white max-lg:block" />
+					</>
 				) : (
-					<Icons.VoiceMicDisabledIcon className="h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5" scale={2.5} />
+					<>
+						<MezonIcon icon={MzIcons24.mzMicOff} className="text-white max-lg:hidden" />
+						<MezonIcon icon={MzIcons20.mzMicOff} className="hidden text-white max-lg:block" />
+					</>
 				)}
 			</button>
 			{showWarning && (

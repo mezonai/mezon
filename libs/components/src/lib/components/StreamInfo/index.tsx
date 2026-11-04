@@ -16,7 +16,7 @@ import {
 	videoStreamActions,
 	watchStream
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { ESummaryInfo } from '@mezon/utils';
 import { useSelector } from 'react-redux';
 
@@ -112,7 +112,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			<div className="flex justify-between items-center">
 				<div className="flex flex-col max-w-[200px]">
 					<div className="flex items-center gap-1">
-						<Icons.NetworkStatus className="w-4 h-4 dark:text-channelTextLabel" />
+						<MezonIcon icon={MzIcons16.mzWifi} className="text-[green]" />
 						<span className="text-green-700 font-bold text-base">
 							{type === ESummaryInfo.CALL ? `${isJoinedCall ? 'Call Connected' : 'Calling...'}` : 'Stream Connected'}
 						</span>
@@ -127,7 +127,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 					className="opacity-80 dark:text-[#AEAEAE] text-black dark:hover:bg-[#5e5e5e] hover:bg-bgLightModeButton p-1 rounded-md"
 					onClick={leaveChannel}
 				>
-					<Icons.EndCall className="w-5 h-5" />
+					<MezonIcon icon={MzIcons20.mzCallEnd} />
 				</button>
 			</div>
 		</div>

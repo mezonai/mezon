@@ -1,5 +1,5 @@
 import { EmojiSuggestionProvider } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { EmojiPlaces } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
@@ -22,7 +22,7 @@ export const EmojiReactionControl = memo(({ showEmojiPanel, onVisibleChange, onE
 		[onEmojiSelect]
 	);
 
-	const iconClassName = 'cursor-pointer text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]';
+	const iconClassName = 'cursor-pointer text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]';
 
 	return (
 		<Tooltip
@@ -44,7 +44,7 @@ export const EmojiReactionControl = memo(({ showEmojiPanel, onVisibleChange, onE
 			destroyTooltipOnHide
 		>
 			<div>
-				<Icons.VoiceEmojiControlIcon className={iconClassName} />
+				<MezonIcon icon={MzIcons20.mzEmoji} className={iconClassName} />
 			</div>
 		</Tooltip>
 	);

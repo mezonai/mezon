@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 import { SfuAudioDeviceMenu } from './MediaDeviceMenu/SfuAudioDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
@@ -71,7 +71,7 @@ export const PushToTalkControl = ({
 				onPointerCancel={() => onChange(false)}
 				onLostPointerCapture={() => onChange(false)}
 			>
-				<Icons.InPttCall className="h-6 w-6" />
+				<MezonIcon icon={MzIcons24.mzPtt} />
 			</button>
 			{showWarning && (
 				<div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 pointer-events-none">

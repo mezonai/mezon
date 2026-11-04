@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons24, MzIcons32 } from '@mezon/ui';
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
@@ -64,9 +64,15 @@ export const ScreenShareControl = ({ active, onToggle, mode, changingMode, onMod
 				disabled={changingMode}
 			>
 				{active ? (
-					<Icons.VoiceScreenShareStopIcon className="h-7 w-7 max-lg:h-6 max-lg:w-6 max-md:h-6 max-md:w-6" />
+					<>
+						<MezonIcon icon={MzIcons32.mzScreenShareOff} className="text-white max-lg:hidden" />
+						<MezonIcon icon={MzIcons24.mzScreenShareOff} className="hidden text-white max-lg:block" />
+					</>
 				) : (
-					<Icons.VoiceScreenShareIcon className="h-7 w-7 max-lg:h-6 max-lg:w-6 max-md:h-6 max-md:w-6" />
+					<>
+						<MezonIcon icon={MzIcons32.mzScreenShare} className="text-white max-lg:hidden" />
+						<MezonIcon icon={MzIcons24.mzScreenShare} className="hidden text-white max-lg:block" />
+					</>
 				)}
 			</button>
 			<button
@@ -88,7 +94,11 @@ export const ScreenShareControl = ({ active, onToggle, mode, changingMode, onMod
 				>
 					{selectedLabel}
 				</span>
-				{isOpen ? <Icons.VoiceArowUpIcon className="h-3 w-3 shrink-0" /> : <Icons.VoiceArowDownIcon className="h-3 w-3 shrink-0" />}
+				{isOpen ? (
+					<MezonIcon icon={MzIcons16.mzChevronUp} className="shrink-0" />
+				) : (
+					<MezonIcon icon={MzIcons16.mzChevronDown} className="shrink-0" />
+				)}
 			</button>
 			{isOpen && (
 				<fieldset className="absolute bottom-16 right-0 z-30 w-64 rounded-lg bg-zinc-800 p-3 text-white shadow-2xl" aria-label={modeLabel}>
