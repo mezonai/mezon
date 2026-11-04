@@ -265,5 +265,6 @@
 		"pollLabel": "[Опрос]",
 		"failedToCreatePoll": "Не удалось создать опрос"
 	},
-	"unknown": "неизвестно"
+	"unknown": "неизвестно",
+	"turnOffAnonymousToCreateTopic": "Отключите анонимный режим перед созданием темы"
 }

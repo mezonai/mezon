@@ -12,7 +12,8 @@
 		"friendRequests": "Richieste di amicizia",
 		"QRScan": "Scansiona codice QR",
 		"MyQRCode": "Il mio codice QR",
-		"devices": "Dispositivi"
+		"devices": "Dispositivi",
+		"chat": "Chat"
 	},
 	"deviceSettings": {
 		"description1": "Questi sono tutti i dispositivi connessi al tuo account. Puoi disconnettere ogni singolo dispositivo.",

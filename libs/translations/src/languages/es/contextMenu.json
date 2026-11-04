@@ -123,5 +123,6 @@
 	},
 	"endPollNow": "Finalizar encuesta ahora",
 	"pollEnded": "La encuesta se cerró correctamente",
-	"giveFlowers": "Enviar una flor"
+	"giveFlowers": "Enviar una flor",
+	"userVolume": "Volumen del usuario"
 }

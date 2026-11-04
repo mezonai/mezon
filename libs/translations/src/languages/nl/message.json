@@ -265,5 +265,6 @@
 		"noVotesYet": "Nog geen stemmen",
 		"pollLabel": "[Enquête]",
 		"failedToCreatePoll": "Peiling maken mislukt"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Schakel de anonieme modus uit voordat je een onderwerp maakt"
 }

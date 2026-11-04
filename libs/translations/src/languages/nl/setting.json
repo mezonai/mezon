@@ -12,7 +12,8 @@
 		"friendRequests": "Vriendenverzoeken",
 		"QRScan": "QR-scan",
 		"MyQRCode": "Mijn QR-code",
-		"devices": "Apparaten"
+		"devices": "Apparaten",
+		"chat": "Chat"
 	},
 	"deviceSettings": {
 		"description1": "Dit zijn alle apparaten die ingelogd zijn op je account. Je kunt elk apparaat afzonderlijk uitloggen.",

@@ -125,7 +125,11 @@
 		"inputDevice": "Mikrofon",
 		"outputDevice": "Audio",
 		"camera": "Kamera",
-		"systemDefault": "Domyślny systemowy"
+		"systemDefault": "Domyślny systemowy",
+		"audioSettings": "Ustawienia dźwięku",
+		"noDevices": "Nie znaleziono urządzeń",
+		"noInputDevices": "Nie znaleziono urządzeń wejściowych",
+		"noOutputDevices": "Nie znaleziono urządzeń wyjściowych"
 	},
 	"toast": {
 		"connectionConnected": "Połączono pomyślnie",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "Przytrzymaj spację, aby mówić",
 		"holdingSpace": "Mówisz — puść spację, aby wyciszyć",
-		"hintBody": "Dołączyłeś, aby słuchać. Przytrzymaj spację, aby otworzyć mikrofon podczas mówienia, puść, aby ponownie wyciszyć."
+		"hintBody": "Dołączyłeś, aby słuchać. Przytrzymaj spację, aby otworzyć mikrofon podczas mówienia, puść, aby ponownie wyciszyć.",
+		"title": "Naciśnij, aby mówić"
 	},
 	"screenDraw": {
 		"annotateScreen": "Rysuj na udostępnianym ekranie",
@@ -234,5 +239,11 @@
 		"inviteReturn": "Gospodarz zamknął pokoje podgrup. Wrócić do pokoju głównego?",
 		"join": "Dołącz",
 		"later": "Nie teraz"
+	},
+	"screenShareCaptureFailed": "Twoja przeglądarka nie mogła przechwycić wybranego ekranu. Udostępnij zamiast tego okno lub kartę.",
+	"dmCall": {
+		"you": "Ty",
+		"enlarge": "Powiększ {{name}}",
+		"restoreLayout": "Wróć do widoku obok siebie"
 	}
 }

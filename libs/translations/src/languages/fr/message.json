@@ -265,5 +265,6 @@
 		"noVotesYet": "Aucun vote pour le moment",
 		"pollLabel": "[Sondage]",
 		"failedToCreatePoll": "Échec de la création du sondage"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Désactivez le mode anonyme avant de créer un sujet"
 }

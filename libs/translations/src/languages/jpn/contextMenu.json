@@ -123,5 +123,6 @@
 		"failedToClosePoll": "投票を終了できません"
 	},
 	"copyUserId": "ユーザーIDをコピー",
-	"giveFlowers": "花を贈る"
+	"giveFlowers": "花を贈る",
+	"userVolume": "ユーザー音量"
 }

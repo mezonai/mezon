@@ -12,7 +12,8 @@
 		"friendRequests": "친구 요청",
 		"QRScan": "QR 스캔",
 		"MyQRCode": "내 QR 코드",
-		"devices": "장치"
+		"devices": "장치",
+		"chat": "채팅"
 	},
 	"deviceSettings": {
 		"description1": "귀하의 계정에 로그인한 모든 장치입니다. 각 장치를 로그아웃할 수 있습니다.",

@@ -12,7 +12,8 @@
 		"friendRequests": "Prośby o zaprzyjaźnienie",
 		"QRScan": "Skanowanie kodu QR",
 		"MyQRCode": "Mój kod QR",
-		"devices": "Urządzenia"
+		"devices": "Urządzenia",
+		"chat": "Czat"
 	},
 	"deviceSettings": {
 		"description1": "To są wszystkie urządzenia zalogowane na Twoim koncie. Możesz się wylogować z każdego urządzenia.",
