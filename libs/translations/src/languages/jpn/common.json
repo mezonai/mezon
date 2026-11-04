@@ -547,5 +547,7 @@
 	"cannotCallYourself": "自分自身に通話することはできません",
 	"errorMaxLength": "長さは{{min}}から{{max}}文字である必要があります。",
 	"formatDate": "yyyy年M月d日",
-	"cannotSendLocationWithAnonymous": "匿名モードでは位置情報を送信できません。"
+	"cannotSendLocationWithAnonymous": "匿名モードでは位置情報を送信できません。",
+	"iconAnimations": "アイコンのアニメーション",
+	"iconAnimationsDesc": "ホバー時や、入力中・配信中などリアルタイムの動作中にアイコンをアニメーションで表示します。"
 }

@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Nie możesz zadzwonić do siebie",
 	"errorMaxLength": "Długość musi być w zakresie od {{min}} do {{max}} znaków.",
 	"formatDate": "d 'miesiąca' M, yyyy",
-	"cannotSendLocationWithAnonymous": "Nie można wysłać lokalizacji w trybie anonimowym."
+	"cannotSendLocationWithAnonymous": "Nie można wysłać lokalizacji w trybie anonimowym.",
+	"iconAnimations": "Animacje ikon",
+	"iconAnimationsDesc": "Animuj ikony po najechaniu kursorem i podczas aktywności na żywo, takiej jak pisanie lub transmisja."
 }

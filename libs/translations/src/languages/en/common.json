@@ -547,5 +547,7 @@
 	"cannotCallYourself": "You cannot call yourself.",
 	"errorMaxLength": "Must be between {{min}} and {{max}} in length.",
 	"formatDate": "MMMM d, yyyy",
-	"cannotSendLocationWithAnonymous": "Cannot send location using Anonymous."
+	"cannotSendLocationWithAnonymous": "Cannot send location using Anonymous.",
+	"iconAnimations": "Icon animations",
+	"iconAnimationsDesc": "Animate icons on hover and while something is live, such as typing or a stream."
 }

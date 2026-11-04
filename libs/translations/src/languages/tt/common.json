@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Сез үзегезне чакыра алмыйсыз.",
 	"errorMaxLength": "Араларында булырга тиеш{{min}}һәм{{max}}озынлыкта.",
 	"formatDate": "MMMM d, yyyy",
-	"cannotSendLocationWithAnonymous": "Аноним ярдәмендә урын җибәрә алмый."
+	"cannotSendLocationWithAnonymous": "Аноним ярдәмендә урын җибәрә алмый.",
+	"iconAnimations": "Тамгалар анимациясе",
+	"iconAnimationsDesc": "Курсор өстенә китергәндә һәм язу яки трансляция кебек турыдан-туры эшчәнлек вакытында тамгаларны хәрәкәтләндерергә."
 }

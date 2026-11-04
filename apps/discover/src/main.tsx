@@ -1,5 +1,6 @@
 import { showSelfXssWarning } from '@mezon/logger';
 import i18n from '@mezon/translations';
+import { applyIconMotion } from '@mezon/ui';
 import { Buffer } from 'buffer';
 import * as ReactDOM from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
@@ -8,6 +9,7 @@ import App from './app/app';
 import './styles.scss';
 
 showSelfXssWarning();
+applyIconMotion();
 
 const globalScope = globalThis as typeof globalThis & { Buffer?: typeof Buffer; global?: typeof globalThis };
 globalScope.global = globalScope.global || globalScope;

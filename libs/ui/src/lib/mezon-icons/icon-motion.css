@@ -1,0 +1,24 @@
+.mz-icon{transition:color 200ms cubic-bezier(.2,0,0,1)}
+:hover>.mz-anim-hop,.mz-hover:hover .mz-anim-hop{animation:mz-hop 350ms ease-in-out}
+:hover>.mz-anim-typing,.mz-hover:hover .mz-anim-typing{animation:mz-hop 350ms ease-in-out}
+:hover>.mz-anim-live,.mz-hover:hover .mz-anim-live{animation:mz-hop 350ms ease-in-out}
+:hover>.mz-anim-ring,.mz-hover:hover .mz-anim-ring{animation:mz-ring 450ms ease-in-out}
+:hover>.mz-anim-swing,.mz-hover:hover .mz-anim-swing{animation:mz-swing 500ms ease-in-out;transform-origin:50% 12%}
+:hover>.mz-anim-spin,.mz-hover:hover .mz-anim-spin{animation:mz-spin 400ms cubic-bezier(.2,0,0,1)}
+:hover>.mz-anim-zoom,.mz-hover:hover .mz-anim-zoom{animation:mz-zoom 300ms ease-in-out;transform-origin:46% 46%}
+.mz-i-settings{--mz-turn:45deg}
+.mz-i-sync{--mz-turn:180deg}
+.mz-on.mz-anim-typing .mz-p-dot0{animation:mz-dot 900ms ease-in-out 0ms infinite}
+.mz-on.mz-anim-typing .mz-p-dot1{animation:mz-dot 900ms ease-in-out 150ms infinite}
+.mz-on.mz-anim-typing .mz-p-dot2{animation:mz-dot 900ms ease-in-out 300ms infinite}
+.mz-on.mz-anim-live .mz-p-w1{animation:mz-wave 1600ms ease-in-out 0ms infinite}
+.mz-on.mz-anim-live .mz-p-w2{animation:mz-wave 1600ms ease-in-out 250ms infinite}
+@media (prefers-reduced-motion: reduce){.mz-icon,.mz-icon *{animation:none!important}}
+.mz-motion-off .mz-icon,.mz-motion-off .mz-icon *{animation:none!important}
+@keyframes mz-hop{35%{translate:0 -8.33%}}
+@keyframes mz-ring{20%{rotate:-12deg}40%{rotate:10deg}60%{rotate:-8deg}80%{rotate:5deg}}
+@keyframes mz-swing{20%{rotate:14deg}45%{rotate:-10deg}70%{rotate:5deg}}
+@keyframes mz-spin{to{rotate:var(--mz-turn,360deg)}}
+@keyframes mz-zoom{50%{scale:1.12}}
+@keyframes mz-dot{40%{translate:0 -6.25%}}
+@keyframes mz-wave{0%,100%{opacity:1}50%{opacity:.25}}
