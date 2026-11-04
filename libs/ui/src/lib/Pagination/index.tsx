@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icons } from '../Icons';
+import { MezonIcon } from '../mezon-icons';
+import * as MzIcons20 from '../mezon-icons/20';
 import { paginationItems } from './paginationItems';
 
 type PaginationProps = {
@@ -26,7 +27,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
 				disabled={currentPage === 1}
 				onClick={() => onPageChange(currentPage - 1)}
 			>
-				<Icons.ArrowRight className="rotate-180" />
+				<MezonIcon icon={MzIcons20.mzChevronRight} className="rotate-180" />
 			</button>
 
 			{pages.map((p, idx) =>
@@ -46,7 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
 				disabled={currentPage === totalPages}
 				onClick={() => onPageChange(currentPage + 1)}
 			>
-				<Icons.ArrowRight />
+				<MezonIcon icon={MzIcons20.mzChevronRight} />
 			</button>
 		</div>
 	);
