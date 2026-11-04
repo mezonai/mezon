@@ -105,7 +105,7 @@ export const GifStickerEmojiPopup = ({
 
 	const containerClassName = useMemo(() => {
 		const isStreaming = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
-		const baseClasses = 'w-[370px] max-sm:w-full max-sm:pt-0 max-sm:rounded-none max-sm:mt-[-0.5rem]';
+		const baseClasses = 'w-[370px] max-w-full max-sm:w-full max-sm:pt-0 max-sm:rounded-none max-sm:mt-[-0.5rem]';
 		const widthClasses = isStreaming ? 'sbm:w-[430px]' : 'sbm:w-[500px]';
 		const heightClasses =
 			emojiAction === EmojiPlaces.EMOJI_REACTION || emojiAction === EmojiPlaces.EMOJI_REACTION_BOTTOM
@@ -131,7 +131,7 @@ export const GifStickerEmojiPopup = ({
 				<InputSearch />
 			</div>
 
-			<div className={`w-full min-h-[400px] text-center ${contentWidthClass}`} ref={emojiRefParentDiv}>
+			<div className={`w-full max-w-full min-h-[400px] text-center ${contentWidthClass}`} ref={emojiRefParentDiv}>
 				<ContentPanel
 					subPanelActive={subPanelActive}
 					channelOrDirect={channelOrDirect}
@@ -262,7 +262,7 @@ const ContentPanel = React.memo(
 
 		if (subPanelActive === SubPanelName.EMOJI || isShowEmojiPicker) {
 			return (
-				<div className={`flex h-full px-2 w-full sbm:w-[312px] ${contentWidthClass}`}>
+				<div className={`flex h-full px-2 w-full max-w-full sbm:w-[312px] ${contentWidthClass}`}>
 					<EmojiPickerComp
 						isFocusTopicBox={isFocusTopicBox}
 						currenTopicId={currenTopicId ?? ''}

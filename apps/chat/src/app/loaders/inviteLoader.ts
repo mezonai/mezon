@@ -1,6 +1,6 @@
 import { inviteActions } from '@mezon/store';
 import type { ShouldRevalidateFunction } from 'react-router-dom';
-import { openAppDeeplink } from '../utils/deeplink';
+import { isMobileBrowser, openAppDeeplink } from '../utils/deeplink';
 import type { CustomLoaderFunction } from './appLoader';
 
 export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
@@ -10,7 +10,9 @@ export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) =
 		throw new Error('inviteId ID null');
 	}
 	dispatch(inviteActions.getLinkInvite({ inviteId }));
-	openAppDeeplink(`invite/${inviteId}`);
+	if (isMobileBrowser()) {
+		openAppDeeplink(`invite/${inviteId}`);
+	}
 	return null;
 };
 export const shouldRevalidateInvite: ShouldRevalidateFunction = (ctx) => {

@@ -9,7 +9,7 @@ import type {
 	LoadingStatus
 } from '@mezon/utils';
 import { ModeResponsive, ThreadStatus, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
-import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
+import type { Dispatch, EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import isEqual from 'lodash.isequal';
@@ -75,6 +75,20 @@ function extractChannelMeta(channel: ChannelsEntity): ChannelMetaEntity {
 		lastSeenMessageId: channel.last_seen_message?.id
 	};
 }
+
+export const putFetchedChannel = (dispatch: Dispatch, clanId: string, detail: ApiChannelDescription, restored = false): ChannelsEntity => {
+	const channel: ChannelsEntity = {
+		...mapChannelToEntity(detail),
+		clan_id: clanId,
+		parent_id: detail.parent_id || '0',
+		...(restored && { active: ThreadStatus.joined })
+	};
+	dispatch(channelsActions.upsertOne({ clanId, channel }));
+	dispatch(listChannelsByUserActions.upsertOne(channel));
+	dispatch(listChannelsByUserActions.setChannelDetail({ channelId: channel.id, detail: channel }));
+	dispatch(channelMetaActions.upsertOne(extractChannelMeta(channel)));
+	return channel;
+};
 
 export const mapChannelToEntity = (channelRes: ApiChannelDescription) => {
 	return {
@@ -338,8 +352,6 @@ export const fetchChannelById = createAsyncThunk(
 			const archiveVersion = getArchiveVersion();
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await withRetry((session) => mezon.client.listChannelDetail(session, channelId), {
-				maxRetries: 3,
-				initialDelay: 1000,
 				scope: 'channel-detail',
 				mezon
 			});
@@ -347,17 +359,7 @@ export const fetchChannelById = createAsyncThunk(
 			if (response?.channel_id !== channelId || (response.clan_id && response.clan_id !== '0' && response.clan_id !== clanId)) {
 				throw new Error('Invalid channel details');
 			}
-			const channel: ChannelsEntity = {
-				...mapChannelToEntity(response),
-				clan_id: clanId,
-				parent_id: response.parent_id || '0',
-				...(restored && { active: ThreadStatus.joined })
-			};
-			thunkAPI.dispatch(channelsActions.upsertOne({ clanId, channel }));
-			thunkAPI.dispatch(listChannelsByUserActions.upsertOne(channel));
-			thunkAPI.dispatch(listChannelsByUserActions.setChannelDetail({ channelId, detail: channel }));
-			thunkAPI.dispatch(channelMetaActions.upsertOne(extractChannelMeta(channel)));
-			return channel;
+			return putFetchedChannel(thunkAPI.dispatch, clanId, response, restored);
 		} catch (error) {
 			captureSentryError(error, 'channels/fetchChannelById');
 			return thunkAPI.rejectWithValue(error);

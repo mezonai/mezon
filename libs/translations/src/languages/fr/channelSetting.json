@@ -259,7 +259,7 @@
 		"integrations": "Intégrations",
 		"category": "Catégorie",
 		"quickMenu": "Menu rapide",
-		"streamThumbnail": "Vignette du flux"
+		"streaming": "Streaming"
 	},
 	"categoryManagement": {
 		"title": "Catégorie",

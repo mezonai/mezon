@@ -7,7 +7,7 @@ import type { ApiPermission } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
 export const OVERRIDDEN_POLICIES_FEATURE_KEY = 'overriddenPolicies';
@@ -160,7 +160,7 @@ export const fetchMaxChannelPermission = createAsyncThunk<FetchMaxPermissionResu
 			const permissionVersion =
 				(thunkAPI.getState() as RootState)[OVERRIDDEN_POLICIES_FEATURE_KEY].byChannels[channelId]?.permissionVersion ?? 0;
 			request = (async (): Promise<FetchMaxPermissionResult> => {
-				const mezon = await ensureSession(getMezonCtx(thunkAPI));
+				const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 				const response = await fetchMaxChannelPermissionCached(
 					thunkAPI.getState as () => RootState,
 					mezon,

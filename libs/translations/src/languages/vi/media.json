@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Đang tải lên..."
+		"uploading": "Đang tải lên...",
+		"finishing": "Đang hoàn tất..."
 	}
 }

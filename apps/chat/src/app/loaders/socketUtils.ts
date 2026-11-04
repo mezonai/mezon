@@ -34,3 +34,29 @@ export const waitForSocketConnection = createAsyncThunk('socket/waitForConnectio
 export const resetSocketConnection = () => {
 	globalSocketPromise = null;
 };
+
+export const connectSocketWithBackoff = async ({
+	connect,
+	isConnected,
+	isCancelled,
+	delaysMs = [2000, 4000, 8000, 16000, 30000],
+	sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+}: {
+	connect: () => Promise<unknown>;
+	isConnected: () => boolean;
+	isCancelled: () => boolean;
+	delaysMs?: number[];
+	sleep?: (ms: number) => Promise<void>;
+}): Promise<boolean> => {
+	for (const delay of delaysMs) {
+		if (isConnected() || isCancelled()) {
+			break;
+		}
+		await sleep(delay);
+		if (isCancelled()) {
+			break;
+		}
+		await connect().catch(() => undefined);
+	}
+	return isConnected();
+};

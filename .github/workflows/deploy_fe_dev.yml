@@ -46,6 +46,7 @@ jobs:
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
           echo NX_CHAT_APP_API_GW_PORT="${{ secrets.NX_CHAT_APP_API_GW_PORT_DEV }}" >> apps/chat/.env
           echo NX_CHAT_APP_STREAMING_URL="https://streaming.nccsoft.vn" >> apps/chat/.env
+          echo NX_CHAT_APP_FILE_INGEST="cdn-api-dev.nccsoft.vn=https://streaming.nccsoft.vn" >> apps/chat/.env
           yarn build:chat
 
   deploy:

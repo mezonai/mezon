@@ -1,5 +1,14 @@
 import { isMediaTypeNotSupported } from './file';
-import { getHlsMasterPlaylistUrl, isTranscodedVideoContainer, mayBeTranscodedVideo, probeHlsMasterPlaylist, wantsHlsTranscode } from './videoSource';
+import {
+	getHlsIndexPlaylistUrl,
+	getHlsMasterPlaylistUrl,
+	isRotatedHlsVideo,
+	isTranscodedVideoContainer,
+	mayBeTranscodedVideo,
+	probeHlsIndexPlaylist,
+	probeHlsMasterPlaylist,
+	wantsHlsTranscode
+} from './videoSource';
 
 jest.mock('../constant', () => ({ MAX_FILE_ATTACHMENTS: 10 }));
 jest.mock('../helper/videoPoster', () => ({ captureVideoPosterFromUrl: jest.fn() }));
@@ -8,12 +17,17 @@ const VIDEO = 'https://cdn.mezon.ai/1cf93b197d401000/2080000000000000001_clip.mp
 const PLAYLIST = 'https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000001_clip.mp4/master.m3u8';
 const SIGNATURE = '1791900000-c2lnbmF0dXJl';
 const MASTER = '#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-STREAM-INF:BANDWIDTH=3137344,RESOLUTION=1280x720\nstream_0/playlist.m3u8\n';
+const INDEX = 'https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000001_clip.mp4/index.m3u8';
+const DEV_VIDEO = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_clip.mp4';
+const DEV_INDEX = 'https://cdn-dev.nccsoft.vn/hls/0000000000031031/1846031000000002001_clip.mp4/index.m3u8';
+const EVENT_PLAYLIST = '#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-MAP:URI="init.mp4"\n';
 
 function respond(status: number, body: string) {
 	return new Response(body, { status });
 }
 
 afterEach(() => {
+	delete process.env.NX_MEZON_CDN_URL;
 	jest.restoreAllMocks();
 });
 
@@ -147,4 +161,147 @@ it('asks the server to transcode every video the media server accepts, whatever 
 		expect(wantsHlsTranscode(name)).toBe(false);
 	}
 	expect(wantsHlsTranscode(undefined)).toBe(false);
+});
+
+it('builds the playlist of the file ingest from the origin and path of the attachment, without its signature', () => {
+	expect(getHlsIndexPlaylistUrl(VIDEO)).toBe(INDEX);
+	expect(getHlsIndexPlaylistUrl(`${VIDEO}?${SIGNATURE}`)).toBe(INDEX);
+	expect(getHlsIndexPlaylistUrl('http://cdn.mezon.vn/1cf93b197d401000/IMG_0001.MOV')).toBe(
+		'http://cdn.mezon.vn/hls/1cf93b197d401000/IMG_0001.MOV/index.m3u8'
+	);
+	expect(getHlsIndexPlaylistUrl('https://cdn.komu.vn/1cf93b197d401000/clip.mp4')).toBeUndefined();
+	expect(getHlsIndexPlaylistUrl(INDEX)).toBeUndefined();
+	expect(getHlsIndexPlaylistUrl(undefined)).toBeUndefined();
+});
+
+it('takes the configured CDN as a host with HLS, the dev CDN among others', () => {
+	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(false);
+	expect(getHlsIndexPlaylistUrl(DEV_VIDEO)).toBeUndefined();
+
+	process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(true);
+	expect(getHlsIndexPlaylistUrl(`${DEV_VIDEO}?${SIGNATURE}`)).toBe(DEV_INDEX);
+	expect(getHlsMasterPlaylistUrl(DEV_VIDEO)).toBe('https://cdn-dev.nccsoft.vn/hls/0000000000031031/1846031000000002001_clip.mp4/master.m3u8');
+	expect(getHlsIndexPlaylistUrl(VIDEO)).toBe(INDEX);
+
+	process.env.NX_MEZON_CDN_URL = 'https://cdn.mezon.ai';
+	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(false);
+	expect(mayBeTranscodedVideo(VIDEO)).toBe(true);
+
+	process.env.NX_MEZON_CDN_URL = 'not a url';
+	expect(mayBeTranscodedVideo(VIDEO)).toBe(true);
+	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(false);
+});
+
+it('leaves other containers on the configured CDN as files, since only the prod media server converts them', () => {
+	process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+	expect(isTranscodedVideoContainer('https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_movie.mkv')).toBe(false);
+	expect(isTranscodedVideoContainer('https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_movie.mkv')).toBe(true);
+});
+
+it('probes the ingest playlist with n = Unix ms / 3000 rounded down, the same for every viewer during the same 3 s', async () => {
+	const fetchMock = jest.spyOn(globalThis, 'fetch').mockImplementation(async () => respond(404, '<Error><Code>NoSuchKey</Code></Error>'));
+	const now = jest.spyOn(Date, 'now');
+
+	for (const [ms, n] of [
+		[2999, 0],
+		[3000, 1],
+		[5999, 1],
+		[6000, 2],
+		[1793000000123, 597666666]
+	]) {
+		now.mockReturnValue(ms);
+		await expect(probeHlsIndexPlaylist(`${VIDEO}?${SIGNATURE}`)).resolves.toBeUndefined();
+		expect(String(fetchMock.mock.lastCall?.[0])).toBe(`${INDEX}?probe=${n}`);
+	}
+});
+
+it('resolves to the ingest playlist once its body starts with #EXTM3U', async () => {
+	const fetchMock = jest.spyOn(globalThis, 'fetch').mockImplementation(async () => respond(200, EVENT_PLAYLIST));
+	await expect(probeHlsIndexPlaylist(VIDEO)).resolves.toBe(INDEX);
+
+	fetchMock.mockImplementation(async () => respond(200, '<html>login</html>'));
+	await expect(probeHlsIndexPlaylist(VIDEO)).resolves.toBeUndefined();
+
+	await expect(probeHlsIndexPlaylist('https://cdn.komu.vn/1cf93b197d401000/clip.mp4')).resolves.toBeUndefined();
+	expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+
+describe('isRotatedHlsVideo', () => {
+	const INIT = 'https://cdn.mezon.ai/hls/1cf93b197d401000/2080000000000000001_clip.mp4/init.mp4';
+	const UPRIGHT = [1, 0, 0, 1];
+	const QUARTER_AS_IPHONE = [0, 1, -1, 0, 2160, 0];
+	const HALF = [-1, 0, 0, -1, 1920, 1080];
+	const THREE_QUARTERS = [0, -1, 1, 0, 0, 1920];
+	const MIRRORED = [-1, 0, 0, 1, 1920, 0];
+
+	function box(type: string, ...parts: Uint8Array[]): Uint8Array {
+		const bytes = new Uint8Array(8 + parts.reduce((size, part) => size + part.length, 0));
+		new DataView(bytes.buffer).setUint32(0, bytes.length);
+		bytes.set(
+			Array.from(type, (char) => char.charCodeAt(0)),
+			4
+		);
+		let at = 8;
+		for (const part of parts) {
+			bytes.set(part, at);
+			at += part.length;
+		}
+		return bytes;
+	}
+
+	function trackHeader([a, b, c, d, x = 0, y = 0]: number[], width: number, height: number, version = 0): Uint8Array {
+		const matrix = version === 1 ? 52 : 40;
+		const body = new Uint8Array(matrix + 44);
+		const view = new DataView(body.buffer);
+		view.setUint8(0, version);
+		[a, b, 0, c, d, 0, x, y].forEach((value, i) => view.setInt32(matrix + i * 4, value * 0x10000));
+		view.setInt32(matrix + 32, 0x40000000);
+		view.setUint32(matrix + 36, width * 0x10000);
+		view.setUint32(matrix + 40, height * 0x10000);
+		return box('tkhd', body);
+	}
+
+	const initSegment = (...headers: Uint8Array[]) =>
+		new Uint8Array([
+			...box('ftyp', new TextEncoder().encode('iso6')),
+			...box('moov', box('mvhd', new Uint8Array(100)), ...headers.map((header) => box('trak', header)))
+		]);
+	const serve = (body: Uint8Array | string, status = 200) =>
+		jest.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response(body, { status }));
+
+	it('reads the init segment next to the playlist, without the signature of the master', async () => {
+		const fetchMock = serve(initSegment(trackHeader(UPRIGHT, 1920, 1080)));
+
+		await isRotatedHlsVideo(INDEX);
+		await isRotatedHlsVideo(`${PLAYLIST}?${SIGNATURE}`);
+
+		expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([INIT, INIT]);
+	});
+
+	it('is true for a video turned a quarter, half or three quarters, or mirrored, in a version 0 or 1 track header', async () => {
+		for (const [matrix, version] of [
+			[QUARTER_AS_IPHONE, 0],
+			[HALF, 0],
+			[THREE_QUARTERS, 1],
+			[MIRRORED, 0]
+		] as const) {
+			serve(initSegment(trackHeader(UPRIGHT, 0, 0), trackHeader(matrix, 1920, 1080, version)));
+			await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(true);
+		}
+	});
+
+	it('is false for an upright video whatever its sound track says, and for a missing, cut or foreign init segment', async () => {
+		serve(initSegment(trackHeader(HALF, 0, 0), trackHeader(UPRIGHT, 3840, 2160, 1)));
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+
+		serve('<Error><Code>NoSuchKey</Code></Error>', 404);
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+		serve('<html>login</html>');
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+		serve(initSegment(trackHeader(QUARTER_AS_IPHONE, 1920, 1080)).subarray(0, 150));
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+		jest.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
+		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+	});
 });

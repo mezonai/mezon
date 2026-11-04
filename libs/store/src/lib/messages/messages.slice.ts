@@ -21,6 +21,7 @@ import {
 	createLocalPreviewUrl,
 	generatePathAttachments,
 	getMessageCreateTimeSeconds,
+	getPresignIngestKeys,
 	getPublicKeys,
 	getWebUploadedAttachments,
 	isTikTokLink,
@@ -161,6 +162,8 @@ export interface MessagesState {
 	channelDraftMessage: Record<string, ChannelDraftMessages>;
 	/** messageId -> ms of the last presign refetch, so N rendered copies cost one request. */
 	presignRefreshAt: Record<string, number>;
+	/** presign key -> share of the file the file ingest holds, while this client uploads it. */
+	attachmentUploadProgress: Record<string, number>;
 	isJumpingToPresent: Record<string, boolean>;
 	channelMessages: Record<
 		string,
@@ -575,6 +578,15 @@ export const fetchMessages = createAsyncThunk(
 		} catch (error) {
 			captureSentryError(error, 'messages/fetchMessages');
 			return thunkAPI.rejectWithValue(error);
+		}
+	},
+	{
+		condition: ({ channelId, topicId }) => {
+			if (!channelId && !topicId) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 );
@@ -1233,8 +1245,21 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 export const handleUploadFileToMinIO = createAsyncThunk(
 	'chat/handleUploadFileToMinIO',
 	async (attachments: (ApiMessageAttachment & { uploadPath?: string })[], thunkAPI) => {
-		const uploadedFiles = (await getWebUploadedAttachments({ attachments })).filter((attachment) => Boolean(attachment));
-		return uploadedFiles as string[];
+		const keys = new Set<string>();
+		try {
+			const uploadedFiles = (
+				await getWebUploadedAttachments({
+					attachments,
+					onProgress: (key, progress) => {
+						keys.add(key);
+						thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key, progress }));
+					}
+				})
+			).filter((attachment) => Boolean(attachment));
+			return uploadedFiles as string[];
+		} finally {
+			keys.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key })));
+		}
 	}
 );
 
@@ -1506,12 +1531,15 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
 
+			// Thread sends keep their upload-first contract so failed PUTs remain retryable
+			// instead of leaving an acknowledged message pointing at a missing file.
+			const postsFirst = !anonymous && !topicId && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
 			if (attachments?.length) {
 				const mezon = await ensureSession(getMezonCtx(thunkAPI));
 				const client = mezon.clientRef.current;
 				const session = mezon.sessionRef.current;
 				if (!client || !session) throw new Error('Client is not initialized');
-				attachments = await generatePathAttachments(client, session, attachments, channelId);
+				attachments = await generatePathAttachments(client, session, attachments, channelId, postsFirst);
 				attachmentsMessage = attachments.map(({ filename, filetype, size, duration, url, thumbnail, height, width }) => ({
 					filename,
 					filetype,
@@ -1538,11 +1566,14 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				fakeMess = { ...fakeMess, attachments: preparedMessage?.attachments ?? attachmentsMessage };
 			}
 			const needUpload = attachments?.some((attachment) => attachment.uploadPath);
-			// Thread sends keep their upload-first contract so failed PUTs remain retryable
-			// instead of leaving an acknowledged message pointing at a missing file.
-			const usePresignFirst = Boolean(needUpload) && !anonymous && !topicId && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
+			const usePresignFirst = Boolean(needUpload) && postsFirst;
 			if (usePresignFirst) {
 				content = { ...content, presign_finish: [] };
+				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
+			}
+			const presignIngest = getPresignIngestKeys(attachments);
+			if (presignIngest.length) {
+				content = { ...content, presign_ingest: presignIngest };
 				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
 			}
 
@@ -1598,6 +1629,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			if (attachments && attachments.length > 0 && messageResult?.message_id && usePresignFirst) {
 				try {
 					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+					presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key, progress: 1 })));
 
 					thunkAPI.dispatch(
 						messagesActions.updateSendingMessageAttachments({
@@ -1641,7 +1673,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 								if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
 							}
 						}
-					})();
+					})().finally(() => presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key }))));
 				} catch (error) {
 					console.error('error: ', error);
 				}
@@ -1988,6 +2020,7 @@ export const initialMessagesState: MessagesState = {
 	channelMessages: {},
 	channelDraftMessage: {},
 	presignRefreshAt: {},
+	attachmentUploadProgress: {},
 	isFocused: false,
 	isViewingOlderMessagesByChannelId: {},
 	isJumpingToPresent: {},
@@ -2304,6 +2337,17 @@ export const messagesSlice = createSlice({
 				});
 			}
 			state.presignRefreshAt[messageId] = at;
+		},
+		setAttachmentUploadProgress: (state, action: PayloadAction<{ key: string; progress?: number }>) => {
+			const { key, progress } = action.payload;
+			if (!state.attachmentUploadProgress) {
+				state.attachmentUploadProgress = {};
+			}
+			if (progress === undefined) {
+				delete state.attachmentUploadProgress[key];
+			} else {
+				state.attachmentUploadProgress[key] = progress;
+			}
 		},
 		markAsError: (
 			state,
@@ -2795,6 +2839,9 @@ export function orderMessageByIDAscending(a: MessagesEntity, b: MessagesEntity) 
 }
 
 export const selectOpenOptionMessageState = createSelector(getMessagesState, (state: MessagesState) => state.openOptionMessageState);
+
+export const selectAttachmentUploadProgress = (state: RootState, key?: string): number | undefined =>
+	key === undefined ? undefined : getMessagesState(state).attachmentUploadProgress?.[key];
 
 export const selectUnreadMessageEntries = createSelector(getMessagesState, (state) => state.unreadMessagesEntries);
 

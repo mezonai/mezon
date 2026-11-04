@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Przekazywanie..."
+		"uploading": "Przekazywanie...",
+		"finishing": "Kończenie..."
 	}
 }

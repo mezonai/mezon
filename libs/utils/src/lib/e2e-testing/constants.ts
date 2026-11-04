@@ -607,6 +607,9 @@ export const DATA_E2E_IDENTIFIER = {
 			voice_room: {
 				channel_name: '',
 				control_bar: '',
+				input: {
+					user_volume: ''
+				},
 				button: {
 					join_voice: '',
 					send_flower: '',
@@ -749,6 +752,10 @@ export const DATA_E2E_IDENTIFIER = {
 					delete: ''
 				}
 			}
+		},
+		streaming: {
+			reveal: '',
+			get_key: ''
 		}
 	},
 	chat: {
@@ -1057,13 +1064,6 @@ export const DATA_E2E_IDENTIFIER = {
 		server: {
 			tab_server: '',
 			server_item: ''
-		},
-		streaming: {
-			tab_streaming: '',
-			channel: '',
-			reveal: '',
-			get_key: '',
-			quality_item: ''
 		},
 		profile: {
 			button_setting: '',

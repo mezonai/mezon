@@ -152,7 +152,7 @@ const ChannelSeenListener = memo(({ channelId }: { channelId: string }) => {
 
 type ChannelMainContentTextProps = {
 	channelId: string;
-	canSendMessage: boolean;
+	canSendMessage?: boolean;
 };
 
 const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainContentTextProps) => {
@@ -168,7 +168,6 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 			? ChannelStreamMode.STREAM_MODE_CHANNEL
 			: ChannelStreamMode.STREAM_MODE_THREAD;
 
-	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState<boolean | null>(null);
 	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 	const isTimelineViewMode = useAppSelector(selectTimelineViewMode);
 	const isMediaChannelViewMode = useAppSelector(selectMediaChannelViewMode);
@@ -190,29 +189,6 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClanId as string));
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel.id));
 
-	const timerRef = useRef<NodeJS.Timeout | null>(null);
-	useEffect(() => {
-		if (timerRef.current) {
-			clearTimeout(timerRef.current);
-			timerRef.current = null;
-		}
-
-		timerRef.current = setTimeout(() => {
-			if (canSendMessage && isBanned) {
-				setCanSendMessageDelayed(null);
-				return;
-			}
-			if (canSendMessage !== canSendMessageDelayed) {
-				setCanSendMessageDelayed(canSendMessage);
-			}
-		}, 500);
-
-		return () => {
-			if (timerRef.current) {
-				clearTimeout(timerRef.current);
-			}
-		};
-	}, [canSendMessage, isBanned]);
 	const dispatch = useAppDispatch();
 
 	const previewMode = useSelector(selectOnboardingMode);
@@ -226,16 +202,17 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
 	}, [selectUserProcessing?.onboarding_step, currentClanIsOnboarding, previewMode, currentClanId]);
 
-	if (canSendMessageDelayed === false) {
+	if (!canSendMessage) {
 		return (
 			<div
 				className="h-11 opacity-80 bg-theme-input text-theme-primary ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission rounded one-line"
 				data-e2e={generateE2eId('chat.message_box.input.no_permission')}
 			>
-				{t('noPermissionToSendMessage')}
+				{canSendMessage === false && t('noPermissionToSendMessage')}
 			</div>
 		);
-	} else if (canSendMessageDelayed === null && isBanned) {
+	}
+	if (isBanned) {
 		return (
 			<BanCountDown
 				userId={userId || ''}

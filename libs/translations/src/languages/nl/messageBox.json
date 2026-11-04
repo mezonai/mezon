@@ -15,5 +15,6 @@
 		"ephemeral": {
 			"description": "Tijdelijk bericht versturen (alleen zichtbaar voor geselecteerde gebruiker)"
 		}
-	}
+	},
+	"convertLongToFile": "Lang bericht omzetten in een bestand"
 }

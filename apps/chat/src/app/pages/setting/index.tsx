@@ -10,7 +10,6 @@ import {
 	SettingNotifications,
 	SettingRightProfile,
 	SettingServer,
-	SettingStreaming,
 	SettingVoice
 } from '@mezon/components';
 import { useEscapeKeyClose, useSettingFooter } from '@mezon/core';
@@ -81,7 +80,6 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 				{currentSetting === EUserSettings.LANGUAGE && <SettingLanguage menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.SERVER && <SettingServer menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.VOICE && <SettingVoice menuIsOpen={menuIsOpen} />}
-				{currentSetting === EUserSettings.STREAMING && <SettingStreaming menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.NOTIFICATIONS && <SettingNotifications menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.ACTIVITY && <SettingActivity menuIsOpen={menuIsOpen} />}
 				<ExitSetting onClose={closeSetting} />

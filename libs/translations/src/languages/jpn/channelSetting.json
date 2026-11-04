@@ -259,7 +259,7 @@
 		"integrations": "統合",
 		"category": "カテゴリ",
 		"quickMenu": "クイックアクション",
-		"streamThumbnail": "ストリームサムネイル"
+		"streaming": "配信"
 	},
 	"categoryManagement": {
 		"title": "カテゴリ",

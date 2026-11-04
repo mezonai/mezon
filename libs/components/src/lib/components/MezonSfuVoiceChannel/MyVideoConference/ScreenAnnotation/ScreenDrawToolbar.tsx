@@ -203,8 +203,8 @@ export const ScreenDrawToolbar = ({ session, onClose }: { session: ScreenDrawSes
 			<Divider />
 			<button
 				type="button"
-				title={t(session.broadcast ? 'screenDraw.stopAnnotating' : 'screenDraw.closeDrawing')}
-				aria-label={t(session.broadcast ? 'screenDraw.stopAnnotating' : 'screenDraw.closeDrawing')}
+				title={t('screenDraw.stopAnnotating')}
+				aria-label={t('screenDraw.stopAnnotating')}
 				className="flex h-8 w-8 items-center justify-center rounded-md bg-[#EF4444] text-white hover:opacity-85"
 				onClick={onClose}
 			>

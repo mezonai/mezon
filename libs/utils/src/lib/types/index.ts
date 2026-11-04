@@ -477,6 +477,7 @@ export interface IMessageSendPayload {
 	expire_at?: number;
 	type?: EPollType;
 	presign_finish?: string[];
+	presign_ingest?: string[];
 	create_time_seconds?: number;
 }
 
@@ -1115,7 +1116,6 @@ export enum EUserSettings {
 	LANGUAGE = 'Language',
 	SERVER = 'Server',
 	VOICE = 'Voice',
-	STREAMING = 'Streaming',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
 	LOG_OUT = 'Log Out',

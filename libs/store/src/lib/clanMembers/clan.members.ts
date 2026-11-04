@@ -162,16 +162,44 @@ export const fetchClanMembersWithStatus = createAsyncThunk(
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 
-			const [membersResponse, onlineResponse, statusResponse] = await Promise.all([
+			const [membersResult, onlineResult, statusResult] = await Promise.allSettled([
 				fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId),
 				mezon.client.listUserOnline(mezon.session, clanId),
 				mezon.client.listClanUsersStatus(mezon.session, clanId)
 			]);
 
+			let membersResponse: Awaited<ReturnType<typeof fetchUsersClanCached>> | undefined;
+			let onlineResponse: Awaited<ReturnType<typeof mezon.client.listUserOnline>> | undefined;
+			let statusResponse: Awaited<ReturnType<typeof mezon.client.listClanUsersStatus>> | undefined;
+
+			if (membersResult.status === 'fulfilled') {
+				membersResponse = membersResult.value;
+			} else {
+				console.error('[fetchUsersClanCached] failed:', membersResult.reason);
+				captureSentryError(membersResult.reason, 'UsersClan/fetchUsersClanCached');
+			}
+
+			if (onlineResult.status === 'fulfilled') {
+				onlineResponse = onlineResult.value;
+			} else {
+				console.error('[listUserOnline] failed:', onlineResult.reason);
+				captureSentryError(onlineResult.reason, 'UsersClan/listUserOnline');
+			}
+
+			if (statusResult.status === 'fulfilled') {
+				statusResponse = statusResult.value;
+			} else {
+				console.error('[listClanUsersStatus] failed:', statusResult.reason);
+				captureSentryError(statusResult.reason, 'UsersClan/listClanUsersStatus');
+			}
+
 			const userStatusMap = new Map<string, string>();
+
 			if (statusResponse?.clan_user_statuses) {
 				for (const s of statusResponse.clan_user_statuses) {
-					if (s.user_id) userStatusMap.set(s.user_id, s.user_status || '');
+					if (s.user_id) {
+						userStatusMap.set(s.user_id, s.user_status || '');
+					}
 				}
 			}
 
@@ -188,9 +216,15 @@ export const fetchClanMembersWithStatus = createAsyncThunk(
 			}
 
 			batch(() => {
-				if (!membersResponse.fromCache && membersResponse.users?.length) {
-					thunkAPI.dispatch(initClanMembersAction({ users: membersResponse.users, clanId }));
+				if (!membersResponse?.fromCache && membersResponse?.users?.length) {
+					thunkAPI.dispatch(
+						initClanMembersAction({
+							users: membersResponse.users,
+							clanId
+						})
+					);
 				}
+
 				if (statusData.length) {
 					thunkAPI.dispatch(statusActions.updateBulkStatus(statusData));
 				}

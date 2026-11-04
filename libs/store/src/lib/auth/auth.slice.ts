@@ -67,7 +67,11 @@ async function persistSessionConnectAfterLogin(mezon: MezonContextValue, session
 	const merged: ApiSession = { ...session, ws_url: wsUrl };
 	mezon.sessionRef.current = merged;
 
-	await mezon.connectSocket();
+	try {
+		await mezon.connectSocket();
+	} catch (error) {
+		captureSentryError(error, 'auth/connectSocketAfterLogin');
+	}
 
 	return mezon.sessionRef.current as ApiSession;
 }
@@ -564,11 +568,15 @@ export const selectAllSession = createSelector(getAuthState, (state: AuthState) 
 
 export const setupSessionSyncListener = (store: any) => {
 	let lastAppliedSeq = -1;
-	const unsubscribe = subscribeSessionUpdate(({ session, sequence }) => {
+	const unsubscribe = subscribeSessionUpdate(({ session, source, sequence }) => {
 		if (sequence <= lastAppliedSeq) return;
 		lastAppliedSeq = sequence;
 		if (session) {
-			store.dispatch(authActions.updateSession(session as ISession));
+			if (source === 'cross-tab') {
+				store.dispatch(authActions.setSession(session as ISession));
+			} else {
+				store.dispatch(authActions.updateSession(session as ISession));
+			}
 		} else {
 			store.dispatch(authActions.resetSession());
 		}

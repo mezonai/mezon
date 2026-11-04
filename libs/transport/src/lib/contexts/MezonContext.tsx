@@ -622,9 +622,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 			const isRemember = !!session.is_remember;
 			let { status, tokens } = await fetchSessionRefresh(apiUrl, serverKey, refreshToken, isRemember);
-			// The api reports a refresh token it will not take as 500, the code any failure of its own would
-			// produce too. A refresh token past its own expiry is beyond doubt; otherwise one more try a
-			// moment later tells a refusal from a hiccup before it costs the user their session. Another tab
+			// A refresh token past its own expiry is beyond doubt; otherwise one more try a moment later
+			// confirms the refusal before it costs the user their session. Another tab
 			// may have rotated the token meanwhile (which is what gets this one refused where the api revokes
 			// on refresh), so the retry uses whatever is stored by then.
 			if (!tokens && isRefreshRefused(status) && !isJwtExpired(refreshToken)) {

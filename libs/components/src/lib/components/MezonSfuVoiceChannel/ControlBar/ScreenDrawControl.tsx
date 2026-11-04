@@ -3,8 +3,7 @@ import { ScreenDrawPenIcon } from '../MyVideoConference/ScreenAnnotation/screenD
 import type { ScreenDrawMode } from '../MyVideoConference/ScreenAnnotation/useScreenDraw';
 
 const SCREEN_DRAW_LABEL_KEYS: Record<ScreenDrawMode, [string, string]> = {
-	broadcast: ['screenDraw.annotateScreen', 'screenDraw.stopAnnotating'],
-	local: ['screenDraw.drawOnScreen', 'screenDraw.stopDrawing']
+	broadcast: ['screenDraw.annotateScreen', 'screenDraw.stopAnnotating']
 };
 
 export const ScreenDrawControl = ({ mode, active, onToggle }: { mode: ScreenDrawMode; active: boolean; onToggle: () => void }) => {

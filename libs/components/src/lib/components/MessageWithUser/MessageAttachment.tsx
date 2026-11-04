@@ -13,6 +13,8 @@ import type { ApiPhoto, IMessageWithUser, ObserveFn, PreSendMediaAttachment } fr
 import {
 	EMimeTypes,
 	ETypeLinkMedia,
+	PRESIGN_INGEST_PENDING_MAX_AGE_SEC,
+	PRESIGN_PENDING_MAX_AGE_SEC,
 	calculateAlbumLayout,
 	filterExpiredPresignAttachments,
 	generateAttachmentId,
@@ -21,8 +23,10 @@ import {
 	hasActivePresignPendingAttachments,
 	isMediaTypeNotSupported,
 	isPresignAttachmentPending,
+	isPresignIngestAttachment,
 	isTranscodedVideoContainer,
 	parsePresignFinishKeys,
+	parsePresignIngestKeys,
 	useAppLayout
 } from '@mezon/utils';
 
@@ -66,26 +70,29 @@ function useLiveMessageForAttachments(messageProp: IMessageWithUser, channelId?:
 	);
 }
 
-function usePresignExpiryNow(hasPresignPending: boolean, messageCreateTimeSeconds?: number): number {
+function usePresignExpiryNow(hasPresignPending: boolean, messageCreateTimeSeconds?: number, hasIngestAttachments = false): number {
 	const [nowSeconds, setNowSeconds] = useState(() => Math.floor(Date.now() / 1000));
 
 	useEffect(() => {
 		if (!hasPresignPending) return;
 
-		const delay = getPresignExpiryDelayMs(messageCreateTimeSeconds);
-		if (delay === null) return;
+		const maxAges = hasIngestAttachments ? [PRESIGN_PENDING_MAX_AGE_SEC, PRESIGN_INGEST_PENDING_MAX_AGE_SEC] : [PRESIGN_PENDING_MAX_AGE_SEC];
+		const timeouts = maxAges.map((maxAgeSec) => {
+			const delay = getPresignExpiryDelayMs(messageCreateTimeSeconds, Date.now(), maxAgeSec);
+			if (delay === null) return undefined;
 
-		if (delay === 0) {
-			setNowSeconds(Math.floor(Date.now() / 1000));
-			return;
-		}
+			if (delay === 0) {
+				setNowSeconds(Math.floor(Date.now() / 1000));
+				return undefined;
+			}
 
-		const timeout = setTimeout(() => {
-			setNowSeconds(Math.floor(Date.now() / 1000));
-		}, delay);
+			return setTimeout(() => {
+				setNowSeconds(Math.floor(Date.now() / 1000));
+			}, delay);
+		});
 
-		return () => clearTimeout(timeout);
-	}, [hasPresignPending, messageCreateTimeSeconds]);
+		return () => timeouts.forEach((timeout) => clearTimeout(timeout));
+	}, [hasPresignPending, messageCreateTimeSeconds, hasIngestAttachments]);
 
 	return nowSeconds;
 }
@@ -174,6 +181,7 @@ const Attachments: React.FC<{
 
 		const { videos, images, documents, audio } = classified;
 		const presignFinishKeys = useMemo(() => parsePresignFinishKeys(message.content), [message.content]);
+		const presignIngestKeys = useMemo(() => parsePresignIngestKeys(message.content), [message.content]);
 		const presignAttachmentSource = message.attachments ?? attachments;
 		const isPresignPendingForUrl = useCallback(
 			(url?: string) => isPresignAttachmentPending(url, presignFinishKeys, presignAttachmentSource),
@@ -192,6 +200,7 @@ const Attachments: React.FC<{
 									isMobile={isMobile}
 									isSending={message.isSending}
 									isPresignPending={isPresignPendingForUrl(video.url)}
+									isIngest={isPresignIngestAttachment(video.url, presignIngestKeys)}
 									observeIntersection={observeIntersectionForLoading}
 								/>
 							</div>
@@ -270,7 +279,8 @@ const MessageAttachment = memo(
 			() => hasActivePresignPendingAttachments(message.attachments, message.content),
 			[message.attachments, message.content]
 		);
-		const nowSeconds = usePresignExpiryNow(hasPresignPending, messageCreateTimeSeconds);
+		const hasIngestAttachments = useMemo(() => parsePresignIngestKeys(message.content).length > 0, [message.content]);
+		const nowSeconds = usePresignExpiryNow(hasPresignPending, messageCreateTimeSeconds, hasIngestAttachments);
 		usePresignRefresh({
 			hasPresignPending,
 			clanId: message.clan_id,
