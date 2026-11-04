@@ -1,3 +1,5 @@
+import type { IconData } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -16,14 +18,8 @@ interface CommunityCardProps {
 	onSelect?: (clan: DiscoverClan, meta: { section?: string; position?: number }) => void;
 }
 
-const VerifiedBadge = ({ className = 'w-4 h-4 text-[#f0abfc]' }: { className?: string }) => (
-	<svg className={`shrink-0 ${className}`} fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-		<path
-			fillRule="evenodd"
-			d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-			clipRule="evenodd"
-		/>
-	</svg>
+const VerifiedBadge = ({ icon, className = 'text-[#f0abfc]' }: { icon: IconData; className?: string }) => (
+	<MezonIcon icon={icon} className={`shrink-0 ${className}`} />
 );
 
 const CoverFallback = ({ name }: { name: string }) => (
@@ -127,7 +123,7 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
 								<h3 className="text-[28px] md:text-[40px] leading-none font-extrabold tracking-[-0.03em] text-white truncate">
 									{clanName}
 								</h3>
-								{clan.verified ? <VerifiedBadge className="w-5 h-5 text-white" /> : null}
+								{clan.verified ? <VerifiedBadge icon={MzIcons20.mzVerified} className="text-white" /> : null}
 							</div>
 							<p className="mt-2 max-w-2xl text-sm md:text-base text-white/80 line-clamp-2">
 								{clan.description || t('card.fallbackDescription')}
@@ -178,13 +174,7 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
 						{clan.verified ? (
 							<>
 								<span className="inline-flex shrink-0 text-[var(--color-brand-primary)]" aria-hidden>
-									<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fillRule="evenodd"
-											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-											clipRule="evenodd"
-										/>
-									</svg>
+									<MezonIcon icon={MzIcons16.mzVerified} />
 								</span>
 								<span className="sr-only">{t('verified')}</span>
 							</>

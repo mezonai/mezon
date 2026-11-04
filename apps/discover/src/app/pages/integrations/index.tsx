@@ -1,8 +1,8 @@
 'use client';
 
 import mezonPackage from '@mezon/package-js';
-import { Icons } from '@mezon/ui';
-import { getPlatform, Platform } from '@mezon/utils';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { Platform, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalDownload } from '../mezonpage/components';
@@ -202,7 +202,8 @@ const IntegrationsPage = () => {
 									className="font-svnAvo inline-flex items-center justify-center gap-2 px-8 py-2 sm:px-10 sm:py-3 lg:px-12 lg:py-4 bg-gradient-to-r from-[#8661df] to-[#7979ed] hover:bg-gradient-to-l text-white text-sm sm:text-base lg:text-lg font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
 								>
 									<span>{t('download')}</span>
-									<Icons.ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+									<MezonIcon icon={MzIcons16.mzChevronRight} className="sm:hidden" />
+									<MezonIcon icon={MzIcons20.mzChevronRight} className="hidden sm:inline" />
 								</button>
 							</div>
 						</div>
@@ -237,7 +238,8 @@ const IntegrationsPage = () => {
 									className="font-svnAvo inline-flex items-center justify-center gap-2 px-8 py-2 sm:px-10 sm:py-3 lg:px-12 lg:py-4 bg-gradient-to-r from-[#8661df] to-[#7979ed] hover:bg-gradient-to-l text-white text-sm sm:text-base lg:text-lg font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
 								>
 									<span>{t('download')}</span>
-									<Icons.ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+									<MezonIcon icon={MzIcons16.mzChevronRight} className="sm:hidden" />
+									<MezonIcon icon={MzIcons20.mzChevronRight} className="hidden sm:inline" />
 								</button>
 							</div>
 						</div>
@@ -276,7 +278,8 @@ const IntegrationsPage = () => {
 									className="font-svnAvo inline-flex items-center justify-center gap-2 px-8 py-2 sm:px-10 sm:py-3 lg:px-12 lg:py-4 bg-gradient-to-r from-[#8661df] to-[#7979ed] hover:bg-gradient-to-l text-white text-sm sm:text-base lg:text-lg font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
 								>
 									<span>{t('download')}</span>
-									<Icons.ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+									<MezonIcon icon={MzIcons16.mzChevronRight} className="sm:hidden" />
+									<MezonIcon icon={MzIcons20.mzChevronRight} className="hidden sm:inline" />
 								</button>
 							</div>
 						</div>
@@ -311,7 +314,8 @@ const IntegrationsPage = () => {
 									className="font-svnAvo inline-flex items-center justify-center gap-2 px-8 py-2 sm:px-10 sm:py-3 lg:px-12 lg:py-4 bg-gradient-to-r from-[#8661df] to-[#7979ed] hover:bg-gradient-to-l text-white text-sm sm:text-base lg:text-lg font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
 								>
 									<span>{t('download')}</span>
-									<Icons.ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+									<MezonIcon icon={MzIcons16.mzChevronRight} className="sm:hidden" />
+									<MezonIcon icon={MzIcons20.mzChevronRight} className="hidden sm:inline" />
 								</button>
 							</div>
 						</div>
@@ -331,9 +335,7 @@ const IntegrationsPage = () => {
 								className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] underline inline-flex items-center gap-1 text-base sm:text-lg transition-colors"
 							>
 								{t('faq.seeAll')}
-								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-								</svg>
+								<MezonIcon icon={MzIcons16.mzArrowRight} />
 							</a>
 						</div>
 
@@ -342,11 +344,15 @@ const IntegrationsPage = () => {
 								<div key={index} className="border-b border-gray-200">
 									<button
 										onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-										className="w-full py-4 md:py-6 flex items-center justify-between text-left hover:bg-gray-100 transition-colors duration-200"
+										className="mz-hover w-full py-4 md:py-6 flex items-center justify-between text-left hover:bg-gray-100 transition-colors duration-200"
 									>
 										<span className="font-svnAvo text-base sm:text-lg text-slate-900 pr-4 flex items-start gap-2 select-text">
 											<span className="text-slate-700 mt-1 transition-all duration-300">
-												{openFAQ === index ? <Icons.ArrowDown /> : <Icons.ArrowRight />}
+												{openFAQ === index ? (
+													<MezonIcon icon={MzIcons20.mzChevronDown} />
+												) : (
+													<MezonIcon icon={MzIcons20.mzChevronRight} />
+												)}
 											</span>
 											<span>{faq.question}</span>
 										</span>
@@ -363,9 +369,7 @@ const IntegrationsPage = () => {
 												className="font-svnAvo text-[#b625d3] hover:text-[#9920ba] inline-flex items-center gap-1 text-sm sm:text-base transition-colors"
 											>
 												{t('faq.learnMore')}
-												<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-												</svg>
+												<MezonIcon icon={MzIcons16.mzChevronRight} />
 											</a>
 										</div>
 									</div>

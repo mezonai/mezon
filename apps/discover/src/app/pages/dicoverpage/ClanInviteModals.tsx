@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16, MzIcons24 } from '@mezon/ui';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
@@ -48,9 +49,7 @@ const DiscoverDialog = ({ open, title, onClose, children }: DiscoverDialogProps)
 					className="absolute top-4 right-4 w-8 h-8 inline-flex items-center justify-center text-gray-500 hover:text-gray-700"
 					aria-label={t('detail.back')}
 				>
-					<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-						<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-					</svg>
+					<MezonIcon icon={MzIcons24.mzClose} />
 				</button>
 				<h2 id={titleId} className="text-xl font-bold leading-7 pr-8 mb-2 text-left">
 					{title}
@@ -187,9 +186,7 @@ export const ShareClanModal = ({ open, inviteUrl, clanName, clanId, onClose }: S
 						copied ? 'bg-gray-200 text-gray-600' : 'bg-[#5865f2] text-white hover:bg-[#4752c4]'
 					}`}
 				>
-					<svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-						<path d="M16 1H4c-1.1 0-2 .9-2 2v12h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-					</svg>
+					<MezonIcon icon={MzIcons16.mzCopy} />
 					{copied ? t('copied') : t('copy')}
 				</button>
 			</div>

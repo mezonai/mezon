@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons20, MzIcons24, MzIcons32 } from '@mezon/ui';
 import { Platform } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 
@@ -64,7 +64,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
 
 	return (
 		<div className="relative inline-block leading-[0px]" ref={dropdownRef}>
-			<button className="relative" onClick={toggleDropdown}>
+			<button className="mz-hover relative" onClick={toggleDropdown}>
 				{isWindow ? (
 					<div className="cursor-pointer" onClick={handleOpenCdnUrl}>
 						<div className="bg-black py-1 max-md:py-[2px] px-[10px] max-md:px-2 w-[180px] max-md:w-[125px] flex items-center gap-[10px] rounded-md border-[1.5px] border-white">
@@ -79,10 +79,10 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
 					icon
 				)}
 				<div className="absolute top-2.5 right-2.5 max-md:top-0 max-md:right-0">
-					<Icons.ChevronDownIcon
+					<MezonIcon
+						icon={MzIcons24.mzChevronDown}
 						className={isWindow ? 'text-textDarkTheme' : 'text-transparent'}
 						onClick={toggleDropdownWindow}
-						style={{ width: 26, height: 26 }}
 					/>
 				</div>
 			</button>
@@ -90,7 +90,8 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
 				<div className="absolute z-50 flex flex-col gap-1 mt-1 left-[2px]">
 					<div className="cursor-pointer hidden" onClick={handleOpenCdnUrl}>
 						<div className="bg-black py-1 max-md:py-[2px] px-[10px] max-md:px-2 w-[180px] max-md:w-[125px] flex items-center gap-[10px] rounded-md border-[1.5px] border-white">
-							<Icons.CDNIcon className="w-[29px] h-[29px] max-md:w-[20px] max-md:h-[20px]" />
+							<MezonIcon icon={MzIcons32.mzGlobe} className="max-md:hidden" />
+							<MezonIcon icon={MzIcons20.mzGlobe} className="hidden max-md:inline" />
 							<div>
 								<div className="text-xs max-md:text-[9px]">{t('download.getItFrom')}</div>
 								<div className="max-md:text-[12px] leading-[20px] max-md:leading-[13px]">{t('download.cdnUrl')}</div>
