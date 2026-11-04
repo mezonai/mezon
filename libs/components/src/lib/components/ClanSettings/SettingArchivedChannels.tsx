@@ -7,7 +7,7 @@ import {
 	toastActions,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons48 } from '@mezon/ui';
 import { generateE2eId, getDateLocale } from '@mezon/utils';
 import { formatDistanceToNow } from 'date-fns';
 import type { ApiChannelDescription } from 'mezon-js';
@@ -47,7 +47,7 @@ const SettingArchivedChannels = () => {
 				</div>
 			) : listArchivedChannel.length === 0 ? (
 				<div className="flex flex-col items-center justify-center py-12 text-theme-primary opacity-60">
-					<Icons.Hashtag defaultSize="w-12 h-12 mb-3" />
+					<MezonIcon icon={MzIcons48.mzChannel} className="mb-3 text-[var(--mz-icon)]" />
 					<p className="text-base font-medium">{t('emptyState')}</p>
 				</div>
 			) : (
@@ -64,16 +64,10 @@ const SettingArchivedChannels = () => {
 							const isPrivate = ch.channel_private === 1;
 
 							if (isPrivate) {
-								return (
-									<Icons.HashtagLocked
-										defaultSize="w-5 h-5 flex-shrink-0"
-										defaultFill1="var(--bg-icon-theme)"
-										defaultFill2="var(--bg-icon-theme-active)"
-									/>
-								);
+								return <MezonIcon icon={MzIcons20.mzChannelPrivate} className="flex-shrink-0 text-[var(--mz-icon)]" />;
 							}
 
-							return <Icons.Hashtag defaultSize="w-5 h-5 flex-shrink-0" defaultFill1="var(--bg-icon-theme)" />;
+							return <MezonIcon icon={MzIcons20.mzChannel} className="flex-shrink-0 text-[var(--mz-icon)]" />;
 						};
 
 						return (

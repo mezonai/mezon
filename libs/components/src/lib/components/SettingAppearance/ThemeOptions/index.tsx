@@ -1,7 +1,7 @@
 import { useApp } from '@mezon/core';
 import { selectTheme } from '@mezon/store';
 import { useTheme } from '@mezon/themes';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, SpinningIcon } from '@mezon/ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -58,7 +58,7 @@ const ThemeOptions = () => {
 				<div className="mt-2 p-3 bg-red-100 border border-red-300 rounded-md">
 					<div className="flex items-center gap-2">
 						<div className="text-red-600">
-							<Icons.HashtagWarning className="w-4 h-4" />
+							<MezonIcon icon={MzIcons16.mzChannelWarning} />
 						</div>
 						<p className="text-sm text-red-700">{error}</p>
 					</div>
@@ -68,7 +68,7 @@ const ThemeOptions = () => {
 			{isLoading && (
 				<div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
 					<div className="flex items-center gap-2">
-						<Icons.LoadingSpinner className="w-4 h-4 text-blue-600" />
+						<SpinningIcon icon={MzIcons20.mzSpinner} className="text-blue-600" />
 						<p className="text-sm text-blue-700">{t('switchingTheme')}</p>
 					</div>
 				</div>
@@ -98,7 +98,7 @@ const ThemeOptions = () => {
 										${appearanceTheme === theme.name ? 'block scale-100' : 'hidden scale-0'}
 									`}
 								>
-									<Icons.CheckIcon className="w-3 h-3 text-white" />
+									<MezonIcon icon={MzIcons16.mzCheck} className="text-white" />
 								</div>
 
 								<div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 hover:opacity-100 transition-opacity">

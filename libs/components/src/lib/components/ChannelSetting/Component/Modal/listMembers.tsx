@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
@@ -58,7 +58,10 @@ const ItemMember = (props: ItemMemberProps) => {
 							'channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item.input'
 						)}
 					/>
-					<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4" />
+					<MezonIcon
+						icon={MzIcons16.mzCheck}
+						className="absolute invisible peer-checked:visible forced-colors:hidden text-[var(--mz-icon)]"
+					/>
 				</div>
 				<AvatarImage
 					alt={username}

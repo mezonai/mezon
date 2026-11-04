@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MzIcons20, SpinningIcon } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +41,13 @@ const ModalAskChangeChannel = (props: ModalAskChangeChannelProps) => {
 						disabled={isSaving}
 						data-e2e={generateE2eId('channel_setting_page.permissions.modal.ask_change.button.save_changes')}
 					>
-						{isSaving ? <Icons.IconLoadingTyping bgFill="mx-auto" /> : t('unsavedChanges.saveChanges')}
+						{isSaving ? (
+							<span className="flex items-center justify-center">
+								<SpinningIcon icon={MzIcons20.mzSpinner} />
+							</span>
+						) : (
+							t('unsavedChanges.saveChanges')
+						)}
 					</button>
 				</div>
 			</div>

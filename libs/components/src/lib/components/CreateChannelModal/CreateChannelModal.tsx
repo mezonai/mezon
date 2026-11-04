@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { AlertTitleTextWarning, Icons } from '@mezon/ui';
+import { AlertTitleTextWarning, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
@@ -185,7 +185,7 @@ export const CreateNewChannelModal = () => {
 							</span>
 							<div className="absolute right-0 top-[-6px] sm:top-[-10px]">
 								<button onClick={handleCloseModal} className="p-1 hover:opacity-80 transition-opacity">
-									<Icons.Close />
+									<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 								</button>
 							</div>
 						</div>

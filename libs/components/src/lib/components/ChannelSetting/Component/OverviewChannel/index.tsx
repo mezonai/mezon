@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Menu as Dropdown, Icons, Image, InputField, TextArea } from '@mezon/ui';
+import { Menu as Dropdown, Image, InputField, MezonIcon, MzIcons20, TextArea } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ValidateSpecialCharacters, ValidateURL, checkIsThread, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -480,7 +480,7 @@ const BottomBlock = ({
 							<div className="w-full h-[50px] rounded-md border-theme-primary text-theme-message bg-input-secondary flex flex-row px-3 justify-between items-center">
 								<p className="truncate max-w-[90%]">{hideTimeDropdown}</p>
 								<div>
-									<Icons.ArrowDownFill />
+									<MezonIcon icon={MzIcons20.mzCaretDown} className="text-[var(--mz-icon)]" />
 								</div>
 							</div>
 						</Dropdown>

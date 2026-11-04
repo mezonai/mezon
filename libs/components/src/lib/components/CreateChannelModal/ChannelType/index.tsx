@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
@@ -38,15 +38,31 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, selecte
 		[ChannelType.CHANNEL_TYPE_GROUP]: ''
 	};
 	const iconMap: Partial<Record<ChannelType, JSX.Element>> = {
-		[ChannelType.CHANNEL_TYPE_CHANNEL]: <Icons.Hashtag defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_MEZON_VOICE]: <Icons.Speaker defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_FORUM]: <Icons.Forum defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_ANNOUNCEMENT]: <Icons.Announcement defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_STREAMING]: <Icons.Stream defaultSize="w-6 h-6" />,
+		[ChannelType.CHANNEL_TYPE_CHANNEL]: (
+			<MezonIcon icon={MzIcons24.mzChannel} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
+		[ChannelType.CHANNEL_TYPE_MEZON_VOICE]: (
+			<MezonIcon icon={MzIcons24.mzSpeaker} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
+		[ChannelType.CHANNEL_TYPE_FORUM]: (
+			<MezonIcon icon={MzIcons20.mzForum} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
+		[ChannelType.CHANNEL_TYPE_ANNOUNCEMENT]: (
+			<MezonIcon icon={MzIcons20.mzAnnouncement} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
+		[ChannelType.CHANNEL_TYPE_STREAMING]: (
+			<MezonIcon icon={MzIcons24.mzLive} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
 		// 2 lines below only get index
-		[ChannelType.CHANNEL_TYPE_DM]: <Icons.Hashtag defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_GROUP]: <Icons.Hashtag defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_APP]: <Icons.AppChannelIcon className="w-6 h-6" />
+		[ChannelType.CHANNEL_TYPE_DM]: (
+			<MezonIcon icon={MzIcons24.mzChannel} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
+		[ChannelType.CHANNEL_TYPE_GROUP]: (
+			<MezonIcon icon={MzIcons24.mzChannel} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		),
+		[ChannelType.CHANNEL_TYPE_APP]: (
+			<MezonIcon icon={MzIcons24.mzChannelApp} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		)
 	};
 
 	const onValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +71,7 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, selecte
 
 	return (
 		<label
-			className={`Frame403 self-stretch px-2 py-2 bg-item-theme rounded-lg justify-center items-center gap-4  inline-flex ${disable ? 'hover:bg-none hover:cursor-not-allowed' : 'bg-item-hover text-theme-primary-hover hover:cursor-pointer'}  ${error ? 'border border-red-500' : ' border border-none'}`}
+			className={`Frame403 self-stretch px-2 py-2 bg-item-theme rounded-lg justify-center items-center gap-4  inline-flex ${disable ? 'hover:bg-none hover:cursor-not-allowed' : 'bg-item-hover text-theme-primary-hover hover:cursor-pointer group/mzi'}  ${error ? 'border border-red-500' : ' border border-none'}`}
 			htmlFor={type?.toString()}
 			data-e2e={generateE2eId('clan_page.modal.create_channel.type')}
 		>

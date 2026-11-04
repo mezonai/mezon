@@ -10,7 +10,7 @@ import {
 	selectUserChannelIds,
 	useAppDispatch
 } from '@mezon/store';
-import { ButtonLoading, Icons, InputField } from '@mezon/ui';
+import { ButtonLoading, InputField, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IChannel, UsersClanEntity } from '@mezon/utils';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -230,14 +230,20 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 				<h2 className="text-[24px] font-semibold text-center text-theme-primary-active">{t('addMembersRoles.title')}</h2>
 				<div className="flex justify-center">
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
-						<Icons.SpeakerLocked className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzSpeakerLock} className="text-[var(--mz-icon)]" />
 					)}
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-						<Icons.HashtagLocked className="w-5 h-5" defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />
+						<MezonIcon icon={MzIcons20.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 					)}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker className="w-5 h-5" />}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream className="w-5 h-5" />}
-					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.Hashtag className="w-5 h-5" />}
+					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
+						<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
+					)}
+					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
+						<MezonIcon icon={MzIcons20.mzLive} className="text-[var(--mz-icon)]" />
+					)}
+					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
+						<MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />
+					)}
 					<p className=" text-[16px] break-words">{channel.channel_label}</p>
 				</div>
 				<div className="py-3">

@@ -9,7 +9,7 @@ import {
 	setAddMemberRoles,
 	usersClanActions
 } from '@mezon/store';
-import { Icons, InputField } from '@mezon/ui';
+import { InputField, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { useEffect, useState } from 'react';
@@ -169,8 +169,11 @@ const ItemMember = (props: ItemMemberProps) => {
 				<span className="font-light">{username}</span>
 			</div>
 			{!isNewRole && hasPermissionEdit ? (
-				<div onClick={onRemove} className="w-4 h-4 rounded-full flex justify-center items-center mr-5 cursor-pointer hover:text-red-500">
-					<Icons.Close defaultSize="size-2 " />
+				<div
+					onClick={onRemove}
+					className="w-4 h-4 rounded-full flex justify-center items-center mr-5 cursor-pointer hover:text-red-500 group/mzi"
+				>
+					<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-red-500" />
 				</div>
 			) : null}
 		</li>

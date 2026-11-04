@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { convertTimeString, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 import type { ApiAuditLog } from 'mezon-js';
 import type { Dispatch, SetStateAction } from 'react';
@@ -93,7 +93,7 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 							src={avatar}
 						/>
 					) : (
-						<Icons.AvatarUser />
+						<MezonIcon icon={MzIcons20.mzUserCircle} className="text-[var(--mz-icon)]" />
 					)}
 				</div>
 			</div>

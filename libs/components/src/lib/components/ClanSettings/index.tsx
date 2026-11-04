@@ -10,7 +10,7 @@ import {
 	selectCurrentClanName,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons32 } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -165,17 +165,26 @@ const ClanSetting = (props: ModalSettingProps) => {
 					<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
 					<div className="relative z-10">
 						{!isSidebarOpen ? (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.OpenMenu className="w-full h-full" />
+							<button
+								className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer group/mzi"
+								onClick={handleMenuBtn}
+							>
+								<MezonIcon icon={MzIcons32.mzMenu} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 							</button>
 						) : (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.ArrowLeftCircleActive className="w-full h-full" />
+							<button
+								className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer group/mzi"
+								onClick={handleMenuBtn}
+							>
+								<MezonIcon
+									icon={MzIcons32.mzArrowLeftCircle}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							</button>
 						)}
 					</div>
 					<div onClick={onClose} className="relative z-10 cursor-pointer">
-						<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
+						<MezonIcon icon={MzIcons32.mzCloseCircle} className="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]" />
 					</div>
 				</div>
 

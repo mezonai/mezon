@@ -1,5 +1,5 @@
 import { selectChannelById, selectOneChannelInfor } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useSelector } from 'react-redux';
@@ -22,26 +22,14 @@ const ChannelSettingInforItem = ({ onClose, channelId }: ChannelSettingItemProps
 					<div className="h-7 w-7 overflow-hidden flex items-center justify-center ">
 						{channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
 							channel?.channel_private === ChannelStatusEnum.isPrivate ? (
-								<Icons.HashtagLocked
-									defaultSize="w-6 h-6 dark:text-black"
-									defaultFill1="var(--bg-icon-theme)"
-									defaultFill2="var(--bg-icon-theme-active)"
-								/>
+								<MezonIcon icon={MzIcons24.mzChannelPrivate} className="dark:text-black text-[var(--mz-icon)]" />
 							) : (
-								<Icons.Hashtag defaultSize="w-6 h-6 dark:text-black" />
+								<MezonIcon icon={MzIcons24.mzChannel} className="dark:text-black" />
 							)
 						) : channel?.channel_private === ChannelStatusEnum.isPrivate ? (
-							<Icons.ThreadIconLocker
-								defaultFill1="var(--bg-icon-theme)"
-								defaultFill4="var(--bg-theme-secounnd)"
-								defaultFill5="var(--bg-icon-theme-active)"
-							/>
+							<MezonIcon icon={MzIcons20.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 						) : (
-							<Icons.ThreadIcon
-								defaultFill1="var(--bg-icon-theme)"
-								defaultFill4="var(--bg-theme-secounnd)"
-								defaultFill5="var(--bg-icon-theme)"
-							/>
+							<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />
 						)}
 					</div>
 				</div>

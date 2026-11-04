@@ -1,5 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { accountActions, authActions, selectRegisteringStatus, useAppDispatch } from '@mezon/store';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -112,27 +113,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 					</div>
 					<div className="flex gap-2">
 						<div onClick={openQR} className=" flex items-center justify-center p-2 bg-white mt-8 h-fit rounded-md cursor-pointer">
-							<svg
-								width="24px"
-								height="24px"
-								viewBox="0 0 24 24"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-								aria-labelledby="qrIconTitle"
-								stroke="#000000"
-								strokeWidth="1"
-								strokeLinecap="square"
-								strokeLinejoin="miter"
-								color="#000000"
-							>
-								<title id="qrIconTitle">QR Code</title> <rect x="10" y="3" width="7" height="7" transform="rotate(90 10 3)" />{' '}
-								<rect width="1" height="1" transform="matrix(-1 0 0 1 7 6)" />{' '}
-								<rect x="10" y="14" width="7" height="7" transform="rotate(90 10 14)" /> <rect x="6" y="17" width="1" height="1" />{' '}
-								<rect x="14" y="20" width="1" height="1" /> <rect x="17" y="17" width="1" height="1" />{' '}
-								<rect x="14" y="14" width="1" height="1" /> <rect x="20" y="17" width="1" height="1" />{' '}
-								<rect x="20" y="14" width="1" height="1" /> <rect x="20" y="20" width="1" height="1" />{' '}
-								<rect x="21" y="3" width="7" height="7" transform="rotate(90 21 3)" /> <rect x="17" y="6" width="1" height="1" />{' '}
-							</svg>
+							<MezonIcon icon={MzIcons24.mzQr} />
 						</div>
 						<div
 							className="mt-8 btn-primary btn-primary-hover  h-fit px-4 py-2 rounded-lg cursor-pointer  w-fit text-center"

@@ -1,5 +1,5 @@
 import { auditLogFilterActions, auditLogList, selectTheme, selectUserAuditLog, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IUserAuditLog } from '@mezon/utils';
 import { ActionLog } from '@mezon/utils';
 import { useState } from 'react';
@@ -185,7 +185,11 @@ const SearchActionAuditLogModal = ({
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 					<span className="absolute right-3 top-3 text-gray-400 cursor-pointer" onClick={searchTerm ? handleClearSearch : undefined}>
-						{searchTerm ? <Icons.Close className="w-4 h-4" /> : <Icons.Search className="w-4 h-4 text-theme-primary" />}
+						{searchTerm ? (
+							<MezonIcon icon={MzIcons16.mzClose} />
+						) : (
+							<MezonIcon icon={MzIcons16.mzSearch} className="text-[var(--mz-icon)]" />
+						)}
 					</span>
 				</div>
 
@@ -205,7 +209,7 @@ const SearchActionAuditLogModal = ({
 								<span className="ml-3 ">{action.name}</span>
 								{selectedAction === action.originalKey && (
 									<span className="ml-auto">
-										<Icons.CheckMarkFilter className="w-5 h-5" defaultFill="text-white" />
+										<MezonIcon icon={MzIcons20.mzCheckCircle} />
 									</span>
 								)}
 							</div>

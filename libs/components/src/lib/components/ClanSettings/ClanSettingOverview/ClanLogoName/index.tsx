@@ -1,6 +1,6 @@
 import { selectCurrentClanLogo, selectCurrentClanName } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { MAX_FILE_SIZE_1MB, ValidateSpecialCharacters, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -135,11 +135,11 @@ const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete, 
 									onClick={handledeleteLogo}
 									className="absolute text-sm right-[-15px] cursor-pointer top-[2px] p-[3px] text-theme-primary text-red-500 rounded-full z-50 shadow-xl border-theme-primary"
 								>
-									<Icons.CloseIcon />
+									<MezonIcon icon={MzIcons20.mzCloseCircle} />
 								</div>
 							) : (
 								<div className="absolute right-[-10px] top-0 p-[5px] text-theme-primary rounded-full z-50 shadow-xl border-theme-primary">
-									<Icons.SelectFileIcon />
+									<MezonIcon icon={MzIcons20.mzImageAdd} className="text-[var(--mz-icon)]" />
 								</div>
 							)}
 						</div>

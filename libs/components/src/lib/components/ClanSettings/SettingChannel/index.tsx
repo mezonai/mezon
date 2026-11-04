@@ -7,7 +7,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons, Menu, Pagination } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20, Pagination, SpinningIcon } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getDateLocale, normalizeString } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
 import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js';
@@ -226,7 +226,7 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 							<Menu menu={menu}>
 								<div className="flex flex-row items-center justify-center text-center border-theme-primary rounded mx-1 px-3 w-12">
 									<span className="mr-1">{pageSize}</span>
-									<Icons.ArrowDown />
+									<MezonIcon icon={MzIcons20.mzChevronDown} />
 								</div>
 							</Menu>
 							{t('table.pagination.channelOf')} {countChannel}
@@ -345,11 +345,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 							showThreadsList ? '' : '-rotate-90'
 						}`}
 					>
-						{isLoadingThreads ? (
-							<Icons.LoadingSpinner className="h-6 w-6 dark:text-[#b5bac1] text-black" />
-						) : (
-							<Icons.ArrowDown defaultSize="h-6 w-6 dark:text-[#b5bac1] text-black" />
-						)}
+						{isLoadingThreads ? <SpinningIcon icon={MzIcons20.mzSpinner} /> : <MezonIcon icon={MzIcons20.mzChevronDown} />}
 					</div>
 				)}
 			</div>
@@ -598,26 +594,31 @@ const ChannelRow = ({
 					!isApp &&
 					(isThread ? (
 						privateChannel ? (
-							<Icons.ThreadIconLocker
-								className="w-5 h-5"
-								defaultFill1="var(--bg-icon-theme)"
-								defaultFill4="var(--bg-theme-secounnd)"
-								defaultFill5="var(--bg-icon-theme-active)"
-							/>
+							<MezonIcon icon={MzIcons20.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 						) : (
-							<Icons.ThreadIcon defaultFill1="var(--bg-icon-theme)" defaultFill4="var(--bg-theme-secounnd)" />
+							<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />
 						)
 					) : isAgeRestricted ? (
-						<Icons.HashtagWarning />
+						<MezonIcon icon={MzIcons20.mzChannelWarning} className="text-[var(--mz-icon)]" />
 					) : privateChannel ? (
-						<Icons.HashtagLocked defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />
+						<MezonIcon icon={MzIcons20.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 					) : (
-						<Icons.Hashtag />
+						<MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />
 					))}
 
-				{isVoice && (privateChannel ? <Icons.SpeakerLocked /> : <Icons.Speaker />)}
-				{isStream && <Icons.Stream />}
-				{isApp && (privateChannel ? <Icons.PrivateAppChannelIcon className="w-5 h-5" /> : <Icons.AppChannelIcon className="w-5 h-5" />)}
+				{isVoice &&
+					(privateChannel ? (
+						<MezonIcon icon={MzIcons20.mzSpeakerLock} className="text-[var(--mz-icon)]" />
+					) : (
+						<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
+					))}
+				{isStream && <MezonIcon icon={MzIcons20.mzLive} className="text-[var(--mz-icon)]" />}
+				{isApp &&
+					(privateChannel ? (
+						<MezonIcon icon={MzIcons20.mzChannelAppPrivate} className="text-[var(--mz-icon)]" />
+					) : (
+						<MezonIcon icon={MzIcons20.mzChannelApp} className="text-[var(--mz-icon)]" />
+					))}
 			</div>
 
 			<div className="flex-1 box-border flex overflow-hidden">

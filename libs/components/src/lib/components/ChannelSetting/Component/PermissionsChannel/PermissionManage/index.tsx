@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,10 @@ const HeaderPermissionManage = memo(({ showRole, setShowRole }: HeaderPermission
 	return (
 		<div className="flex items-center gap-x-3.5 w-fit text-theme-primary" onClick={() => setShowRole(!showRole)}>
 			<h3 className="text-xl font-semibold">{t('channelPermission.permissionOverrides')}</h3>
-			<Icons.ArrowDown className={`size-5  transition-all duration-300 ${showRole ? '' : '-rotate-90'}`} />
+			<MezonIcon
+				icon={MzIcons20.mzChevronDown}
+				className={`transition-all duration-300 ${showRole ? '' : '-rotate-90'} text-[var(--mz-icon)]`}
+			/>
 		</div>
 	);
 });

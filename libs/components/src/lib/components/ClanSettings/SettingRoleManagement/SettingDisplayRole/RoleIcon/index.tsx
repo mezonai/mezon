@@ -1,5 +1,5 @@
 import { getNewRoleIcon, roleSlice, selectCurrentRoleIcon } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +43,8 @@ const RoleIcon = ({ hasPermissionEdit, isEveryoneRole }: { hasPermissionEdit: bo
 					<img src={createImgproxyUrl(iconRole || '')} alt="" className={'w-16 h-16 md:w-20 md:h-20'} />
 				) : (
 					<div className={'bg-theme-setting-nav flex justify-center items-center w-16 h-16 md:w-20 md:h-20'}>
-						<Icons.ImageUploadIcon className="w-5 h-5 md:w-6 md:h-6 text-theme-primary" />
+						<MezonIcon icon={MzIcons20.mzImageAdd} className="text-[var(--mz-icon)] md:hidden" />
+						<MezonIcon icon={MzIcons24.mzImageAdd} className="hidden text-[var(--mz-icon)] md:inline" />
 					</div>
 				)}
 				<input type="file" className={'hidden'} ref={fileInputRef} />
