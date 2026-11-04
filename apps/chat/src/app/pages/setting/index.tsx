@@ -15,7 +15,7 @@ import {
 import { useEscapeKeyClose, useSettingFooter } from '@mezon/core';
 import type { showSettingFooterProps } from '@mezon/store';
 import { selectIsShowSettingFooter } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons32 } from '@mezon/ui';
 import { EUserSettings } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -88,17 +88,20 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 					<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
 					<div className="relative z-10">
 						{!menuIsOpen ? (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.OpenMenu className="w-full h-full" />
+							<button className="group/mzi text-theme-primary w-8 h-8 text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
+								<MezonIcon icon={MzIcons32.mzMenu} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 							</button>
 						) : (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.ArrowLeftCircleActive className="w-full h-full" />
+							<button className="group/mzi text-theme-primary w-8 h-8 text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
+								<MezonIcon
+									icon={MzIcons32.mzArrowLeftCircle}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							</button>
 						)}
 					</div>
-					<div onClick={closeSetting} className="relative z-10 cursor-pointer">
-						<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
+					<div onClick={closeSetting} className="group/mzi relative z-10 cursor-pointer">
+						<MezonIcon icon={MzIcons32.mzCloseCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</div>
 				</div>
 			</div>

@@ -1,7 +1,7 @@
 import { ModalInvite } from '@mezon/components';
 import { createExternalMezonMeet, useAppDispatch } from '@mezon/store';
 import { socketState, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons32 } from '@mezon/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -120,7 +120,7 @@ export default function MeetPage() {
 						</div>
 						<div className="text-center mb-4">
 							<div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-500/20">
-								<Icons.Tick className="w-8 h-8" fill="#10b981" />
+								<MezonIcon icon={MzIcons32.mzCheck} className="text-[#10b981]" />
 							</div>
 							<p className="text-lg font-semibold mb-2">{t('externalMeet.creatingMeeting')}</p>
 						</div>
@@ -130,21 +130,21 @@ export default function MeetPage() {
 								onClick={handleJoin}
 								className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm"
 							>
-								<Icons.IconMeetDM className="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzVideo} />
 								<span>{t('externalMeet.joinMeeting')}</span>
 							</button>
 							<button
 								onClick={handleInvite}
 								className="px-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm"
 							>
-								<Icons.IconEvents className="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzEvent} />
 								<span>{t('externalMeet.invite')}</span>
 							</button>
 							<button
 								onClick={handleCopyLink}
 								className="px-4 py-3 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap text-sm"
 							>
-								<Icons.CopyIcon className="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzCopy} />
 								<span>{t('externalMeet.copyLink')}</span>
 							</button>
 						</div>

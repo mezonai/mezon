@@ -42,7 +42,7 @@ import {
 	useAppSelector,
 	usersClanActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24, MzIcons32 } from '@mezon/ui';
 import {
 	DONE_ONBOARDING_STATUS,
 	EOverriddenPermission,
@@ -253,13 +253,13 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				<div className="flex gap-2 px-3 pt-2 text-theme-primary">
 					<div
 						onClick={handleLaunchApp}
-						className="w-[calc(50%_-_4px)] border-theme-primary flex gap-1 items-center justify-center bg-item-theme py-2 px-2 rounded-md cursor-pointer font-medium text-theme-primary-hover"
+						className="mz-hover group/mzi w-[calc(50%_-_4px)] border-theme-primary flex gap-1 items-center justify-center bg-item-theme py-2 px-2 rounded-md cursor-pointer font-medium text-theme-primary-hover"
 					>
-						<Icons.Joystick className="w-6" />
+						<MezonIcon icon={MzIcons24.mzGamepad} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						<div>{appButtonLabel}</div>
 					</div>
-					<div className="w-[calc(50%_-_4px)] border-theme-primary flex gap-1 items-center justify-center bg-item-theme py-2 px-2 rounded-md cursor-pointer font-medium text-theme-primary-hover">
-						<Icons.AppHelpIcon className="w-6" />
+					<div className="mz-hover group/mzi w-[calc(50%_-_4px)] border-theme-primary flex gap-1 items-center justify-center bg-item-theme py-2 px-2 rounded-md cursor-pointer font-medium text-theme-primary-hover">
+						<MezonIcon icon={MzIcons24.mzGuide} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						<div>{t('help')}</div>
 					</div>
 				</div>
@@ -496,7 +496,7 @@ const OnboardingGuide = ({
 					className="relative rounded-t-md w-[calc(100%_-_32px)] h-14 left-4 bu bg-theme-contexify top-2 flex pt-2 px-4 pb-4 items-center gap-3"
 					onClick={handleDoNextMission}
 				>
-					<Icons.Hashtag className="text-theme-primary" />
+					<MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />
 					<div className=" flex flex-col w-full overflow-hidden">
 						<div className="text-base font-semibold text-theme-primary w-full truncate">{currentMission.title} </div>
 						<div className="text-[10px] font-normal text-theme-primary">
@@ -575,13 +575,7 @@ export const BanCountDown = ({ banTime, clanId, channelId, userId }: { banTime: 
 			className="flex h-12 gap-3 items-center opacity-80 bg-theme-contexify text-theme-primary-active ml-4 mb-4 p-2 w-widthInputViewChannelPermission rounded"
 			data-e2e={generateE2eId('mention.banned')}
 		>
-			<svg width="28" height="28" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-				<path
-					fill="#e03c47"
-					d="M33.77 15.39H22.23A3.69 3.69 0 0 1 19 13.56c0-.09-.09-.18-.13-.27v5.11l5 3.39a1 1 0 0 1-1.11 1.66l-5.9-4v-8.7a1 1 0 0 1 1.91-.41 4 4 0 0 1 .23-.45L20.74 7A11.2 11.2 0 0 0 18 6.6a11.39 11.39 0 0 0-2.69 22.47L15 30.63A13 13 0 0 1 18 5a12.8 12.8 0 0 1 3.57.51l1.53-2.66A16 16 0 1 0 34 18a16 16 0 0 0-.23-2.61"
-				/>
-				<path fill="#e03c47" d="M26.85 1.14 21.13 11a1.28 1.28 0 0 0 1.1 2h11.45a1.28 1.28 0 0 0 1.1-2l-5.72-9.86a1.28 1.28 0 0 0-2.21 0" />
-			</svg>
+			<MezonIcon icon={MzIcons32.mzClock} className="text-[#e03c47]" />
 			<div className="flex flex-col gap-1 flex-1">
 				<span className="leading-[14px] font-semibold text-sm">{t('timeout')}</span>
 				<span className="leading-3 text-xs">{t('timeoutDesc')}</span>
