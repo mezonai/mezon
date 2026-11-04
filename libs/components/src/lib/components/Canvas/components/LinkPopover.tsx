@@ -10,7 +10,7 @@ import {
 	useInteractions,
 	useRole
 } from '@floating-ui/react';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { Editor } from '@tiptap/core';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -74,12 +74,12 @@ export function LinkPopover({ editor, isOpen, onOpenChange }: LinkPopoverProps) 
 				title={t('toolbar.addLink')}
 				aria-label={t('toolbar.addLink')}
 			>
-				<Icons.CopyMessageLinkRightClick defaultSize="w-4 h-4" />
+				<MezonIcon icon={MzIcons16.mzLink} />
 			</button>
 
 			{editor.isActive('link') && (
 				<button onClick={() => editor.chain().focus().unsetLink().run()} title={t('toolbar.removeLink')} aria-label={t('toolbar.removeLink')}>
-					<Icons.Close defaultSize="w-4 h-4" />
+					<MezonIcon icon={MzIcons20.mzClose} />
 				</button>
 			)}
 

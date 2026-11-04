@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, EUserStatus } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -218,12 +218,12 @@ const DmInvoiceProfile = memo(({ userId, directId, status, name }: { userId: str
 					>
 						{checkUserInvoice.status === EInvoice.INVOICE ? (
 							<>
-								<Icons.Speaker className="text-green-500 !w-[10px] !h-[10px]" />
+								<MezonIcon icon={MzIcons16.mzSpeaker} className="text-green-500" />
 								{t('inVoice')}
 							</>
 						) : (
 							<>
-								<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-[10px] !h-[10px]" />
+								<MezonIcon icon={MzIcons16.mzScreenShare} className="text-[#22c55e]" />
 								{t('shareScreen')}
 							</>
 						)}

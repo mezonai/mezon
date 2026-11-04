@@ -1,4 +1,4 @@
-import { Checkbox, Icons } from '@mezon/ui';
+import { Checkbox, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { SuggestItem } from '../../components';
 
@@ -39,30 +39,16 @@ export const ShareItemRow = ({ item, isSelected, onToggle, searchText, t }: Shar
 				<div className="flex items-center flex-1 min-w-0 mr-1 gap-2 overflow-hidden">
 					{item.type === 'channel' ? (
 						item.isAgeRestricted ? (
-							<Icons.HashtagWarning className="w-5 h-5 shrink-0 text-theme-secondary" />
+							<MezonIcon icon={MzIcons20.mzChannelWarning} className="shrink-0 text-[var(--mz-icon)]" />
 						) : item.isPublic ? (
-							<Icons.Hashtag className="w-5 h-5 shrink-0 text-theme-secondary" />
+							<MezonIcon icon={MzIcons20.mzChannel} className="shrink-0 text-[var(--mz-icon)]" />
 						) : (
-							<Icons.HashtagLocked
-								className="w-5 h-5 shrink-0"
-								defaultFill1="var(--bg-icon-theme)"
-								defaultFill2="var(--bg-icon-theme-active)"
-							/>
+							<MezonIcon icon={MzIcons20.mzChannelPrivate} className="shrink-0 text-[var(--mz-icon)]" />
 						)
 					) : item.isPublic ? (
-						<Icons.ThreadIcon
-							className="w-5 h-5 shrink-0"
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill4="var(--bg-theme-secounnd)"
-							defaultFill5="var(--bg-icon-theme)"
-						/>
+						<MezonIcon icon={MzIcons20.mzThread} className="shrink-0 text-[var(--mz-icon)]" />
 					) : (
-						<Icons.ThreadIconLocker
-							className="w-5 h-5 shrink-0"
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill4="var(--bg-theme-secounnd)"
-							defaultFill5="var(--bg-icon-theme-active)"
-						/>
+						<MezonIcon icon={MzIcons20.mzThreadPrivate} className="shrink-0 text-[var(--mz-icon)]" />
 					)}
 					<span className="text-theme-primary text-sm flex-1 min-w-0 truncate" title={item.displayName}>
 						{item.displayName}

@@ -19,7 +19,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import type { IMessageWithUser, MenuBuilder } from '@mezon/utils';
 import {
 	EMOJI_GIVE_COFFEE,
@@ -134,7 +134,7 @@ const ChannelMessageOpt = ({
 								key={index}
 								onClick={(e) => (item?.handleItemClick ? item?.handleItemClick(e) : undefined)}
 								className={clx(
-									'h-full p-1 rounded-lg cursor-pointer popup-btn text-theme-primary text-theme-primary-hover bg-item-hover',
+									'h-full p-1 rounded-lg cursor-pointer popup-btn text-theme-primary text-theme-primary-hover bg-item-hover group/mzi',
 									item.classNames
 								)}
 								data-e2e={generateE2eId('chat.hover_message_actions.button.base')}
@@ -179,7 +179,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 							'topic',
 							t('topic'),
 							handleCreateTopic,
-							<Icons.TopicIcon className="w-6 h-6 text-theme-primary text-theme-primary-hover" />
+							<MezonIcon icon={MzIcons24.mzTopic} className="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]" />
 						);
 					}
 				);
@@ -291,7 +291,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 					'giveacoffee',
 					t('giveACoffee', { ns: 'contextMenu' }),
 					handleItemClick,
-					<Icons.DollarIcon defaultSize="w-5 h-5" />
+					<MezonIcon icon={MzIcons20.mzCoin} className="text-[var(--mz-icon)]" />
 				);
 			}
 		);
@@ -332,7 +332,16 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 
 	return createMenuBuilderPlugin((builder) => {
 		builder.when(userId !== message.sender_id && hasPermission, (builder) => {
-			builder.addMenuItem('reply', t('reply'), handleItemClick, <Icons.Reply />, null, false, false, 'rotate-180');
+			builder.addMenuItem(
+				'reply',
+				t('reply'),
+				handleItemClick,
+				<MezonIcon icon={MzIcons20.mzReply} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />,
+				null,
+				false,
+				false,
+				'rotate-180'
+			);
 		});
 	});
 }
@@ -370,7 +379,12 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 				!(message.code === TypeMessage.SendToken) &&
 				!isForwardedMessage,
 			(builder) => {
-				builder.addMenuItem('edit', t('editMessage'), handleItemClick, <Icons.PenEdit className={`w-5 h-5`} />);
+				builder.addMenuItem(
+					'edit',
+					t('editMessage'),
+					handleItemClick,
+					<MezonIcon icon={MzIcons20.mzEdit} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+				);
 			}
 		);
 	});
@@ -401,7 +415,12 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 	);
 
 	return createMenuBuilderPlugin((builder) => {
-		builder.addMenuItem('react', t('reactions'), handleItemClick, <Icons.Smile defaultSize="w-5 h-5" />);
+		builder.addMenuItem(
+			'react',
+			t('reactions'),
+			handleItemClick,
+			<MezonIcon icon={MzIcons20.mzEmoji} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+		);
 	});
 }
 
@@ -441,8 +460,8 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 	}, [dispatch, message, setIsShowCreateThread, setOpenThreadMessageState, setThread, thread, setValueThread]);
 
 	const threadFillClass = thread
-		? '[--thread-fill-1:var(--bg-icon-theme-active)] [--thread-fill-4:var(--bg-theme-secounnd)]'
-		: '[--thread-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] hover:[--thread-fill-1:var(--bg-icon-theme-active)]';
+		? '[--thread-fill-1:var(--mz-icon-selected)]'
+		: '[--thread-fill-1:var(--mz-icon)] hover:[--thread-fill-1:var(--mz-icon-selected)]';
 
 	return createMenuBuilderPlugin((builder) => {
 		builder.when(isShowIconThread && hasPermission && !isAppChannel && !isTopic, (builder) => {
@@ -450,7 +469,7 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 				'thread',
 				t('createThread'),
 				handleItemClick,
-				<Icons.ThreadIcon className="w-5 h-5" defaultFill1="var(--thread-fill-1)" defaultFill4="var(--thread-fill-4)" />,
+				<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--thread-fill-1)]" />,
 				null,
 				false,
 				false,
@@ -483,7 +502,7 @@ function useOptionMenuBuilder(handleContextMenu: any) {
 			'option',
 			t('option'),
 			useHandleClickOption,
-			<Icons.ThreeDot className={'w-5 h-5 text-theme-primary text-theme-primary-hover'} />
+			<MezonIcon icon={MzIcons20.mzMore} className={'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]'} />
 		);
 	});
 }

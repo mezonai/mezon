@@ -1,6 +1,6 @@
 import { embedActions, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
-import { IMessageDatePicker } from '@mezon/utils';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import type { IMessageDatePicker } from '@mezon/utils';
 import React from 'react';
 
 type MessageDatePcikerProps = {
@@ -33,7 +33,7 @@ export const MessageDatePicker: React.FC<MessageDatePcikerProps> = ({ datepicker
 				className="outline-none p-4 py-2 bg-bgTertiary text-channelTextLabel rounded custom-datepicker flex-1"
 			/>
 			<div className="absolute flex items-center justify-center right-3 pointer-events-none">
-				<Icons.CalendarIcon className="w-5 h-5 text-channelTextLabel " />
+				<MezonIcon icon={MzIcons20.mzCalendar} className="text-[var(--mz-icon)]" />
 			</div>
 		</div>
 	);

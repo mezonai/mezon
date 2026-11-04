@@ -1,5 +1,5 @@
 import { useEmojiSuggestionContext, useEscapeKeyClose } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons32 } from '@mezon/ui';
 import type { IEmoji } from '@mezon/utils';
 import { PREDEFINED_EMOJI_CATEGORIES, RECENT_EMOJI_CATEGORY, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -38,8 +38,8 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 
 	const categoryIcons = useMemo(
 		() => [
-			<Icons.Star defaultSize="h-7 w-7" />,
-			<Icons.ClockIcon className="h-7 w-7" />,
+			<MezonIcon icon={MzIcons32.mzStar} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzClock} className="text-[var(--mz-icon)]" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
 					<img
@@ -53,14 +53,14 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 					</div>
 				)
 			),
-			<Icons.Smile defaultSize="w-7 h-7" />,
-			<Icons.TheLeaf defaultSize="w-7 h-7" />,
-			<Icons.Bowl defaultSize="w-7 h-7" />,
-			<Icons.GameController defaultSize="w-7 h-7" />,
-			<Icons.Bicycle defaultSize="w-7 h-7" />,
-			<Icons.Object defaultSize="w-7 h-7" />,
-			<Icons.Heart defaultSize="w-7 h-7" />,
-			<Icons.Ribbon defaultSize="w-7 h-7" />
+			<MezonIcon icon={MzIcons20.mzEmoji} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzLeaf} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzFood} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzGamepad} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzBicycle} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzLamp} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzHeart} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons32.mzFlag} className="text-[var(--mz-icon)]" />
 		],
 		[categoryEmoji]
 	);
@@ -238,14 +238,14 @@ const DisplayByCategories = React.memo(function DisplayByCategories({
 		<div>
 			<button
 				onClick={() => setEmojisPanelStatus(!emojisPanel)}
-				className="w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky z-10 bg-theme-setting-primary text-theme-primary"
+				className="mz-hover w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky z-10 bg-theme-setting-primary text-theme-primary"
 			>
 				<div className="w-4 !h-4 flex items-center justify-center !text-xs">{categoryIcons}</div>
 				<p className="ml-2 uppercase text-left truncate text-xs font-semibold">
 					{shouldTranslate ? t(`emojiCategories.${categoryName}`) || categoryName : categoryName}
 				</p>
 				<span className={`${emojisPanel ? ' rotate-90' : ''}`}>
-					<Icons.ArrowRight defaultSize="w-4 h-4" />
+					<MezonIcon icon={MzIcons20.mzChevronRight} className="text-[var(--mz-icon)]" />
 				</span>
 			</button>
 			{emojisPanel && <EmojisGrid emojisData={emojisByCategoryName} onEmojiSelect={onEmojiSelect} onEmojiHover={onEmojiHover} />}

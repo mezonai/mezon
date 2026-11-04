@@ -1,10 +1,39 @@
-import { Icons } from '@mezon/ui';
+import type { IconData } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons32, MzIcons40, MzIcons48 } from '@mezon/ui';
 import { EMimeTypes, SHOW_POSITION, createImgproxyUrl, fileTypeImage, fileTypeVideo } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { MessageAudioControl } from '../MessageWithUser/MessageAudio/MessageAudioControl';
+import type { FileIconName } from './TypeFormats';
 import { typeFormats } from './TypeFormats';
+
+const FILE_ICONS: Record<FileIconName, [IconData, IconData, IconData]> = {
+	mzFile: [MzIcons32.mzFile, MzIcons40.mzFile, MzIcons48.mzFile],
+	mzFileArchive: [MzIcons32.mzFileArchive, MzIcons40.mzFileArchive, MzIcons48.mzFileArchive],
+	mzFileAudio: [MzIcons32.mzFileAudio, MzIcons40.mzFileAudio, MzIcons48.mzFileAudio],
+	mzFileCode: [MzIcons32.mzFileCode, MzIcons40.mzFileCode, MzIcons48.mzFileCode],
+	mzFilePdf: [MzIcons32.mzFilePdf, MzIcons40.mzFilePdf, MzIcons48.mzFilePdf],
+	mzFileSheet: [MzIcons32.mzFileSheet, MzIcons40.mzFileSheet, MzIcons48.mzFileSheet],
+	mzFileText: [MzIcons32.mzFileText, MzIcons40.mzFileText, MzIcons48.mzFileText]
+};
+
+const LEGACY_FILE_ICONS: Record<FileIconName, JSX.Element> = {
+	mzFile: <MezonIcon icon={MzIcons48.mzFile} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />,
+	mzFileArchive: <MezonIcon icon={MzIcons48.mzFileArchive} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />,
+	mzFileAudio: <MezonIcon icon={MzIcons48.mzFileAudio} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />,
+	mzFileCode: <MezonIcon icon={MzIcons48.mzFileCode} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />,
+	mzFilePdf: <MezonIcon icon={MzIcons48.mzFilePdf} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />,
+	mzFileSheet: <MezonIcon icon={MzIcons48.mzFileSheet} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />,
+	mzFileText: <MezonIcon icon={MzIcons48.mzFileText} className="w-[72px] h-[96px] text-[var(--mz-icon)]" />
+};
+
+const SIZE_INDEX: Record<string, number> = { 'w-8 h-8': 0, 'w-8 h-10': 1, 'w-10 h-10': 1 };
+
+const fileIcon = (name: FileIconName, size?: string) => FILE_ICONS[name][SIZE_INDEX[size ?? ''] ?? 2];
+
+const renderFileIcon = (name: FileIconName, size?: string) =>
+	size === undefined ? LEGACY_FILE_ICONS[name] : <MezonIcon icon={fileIcon(name, size)} className="text-[var(--mz-icon)]" />;
 
 export interface IRenderAttachmentThumbnailParam {
 	attachment: ApiMessageAttachment;
@@ -67,15 +96,15 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 					)}
 					<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
 						<div className="flex items-center justify-center w-10 h-10 rounded-full bg-black bg-opacity-50">
-							<Icons.PlayButton className="w-5 h-5 text-white" />
+							<MezonIcon icon={MzIcons20.mzPlay} className="text-white" />
 						</div>
 					</div>
 				</div>
 			)}
 
-			{!isAudioFile && renderIcon && <renderIcon.icon defaultSize={size} />}
+			{!isAudioFile && renderIcon && renderFileIcon(renderIcon.icon, size)}
 
-			{!hasFileImage && !hasFileVideo && !renderIcon && !isAudioFile && <Icons.EmptyType defaultSize={size} />}
+			{!hasFileImage && !hasFileVideo && !renderIcon && !isAudioFile && renderFileIcon('mzFile', size)}
 		</div>
 	);
 };
@@ -101,19 +130,19 @@ export const AudioAttachment = ({ attachment, size, isFileList }: IAudioAttachme
 
 	const overlayStyle = useMemo(() => {
 		if (isFileList) {
-			return { container: 'w-5 h-5', icon: 'w-2 h-2' };
+			return { container: 'w-5 h-5', play: MzIcons16.mzPlay, pause: MzIcons16.mzPause };
 		}
-		return { container: 'w-12 h-12', icon: 'w-5 h-5' };
+		return { container: 'w-12 h-12', play: MzIcons20.mzPlay, pause: MzIcons20.mzPause };
 	}, [isFileList]);
 
 	return (
 		<div className="relative inline-flex items-center justify-center group">
-			<Icons.EmptyType defaultSize={size} />
+			{renderFileIcon('mzFile', size)}
 			<div
 				onClick={(e) => handleTogglePlay(e)}
 				className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/40 group-hover:bg-black/60 text-white rounded-full flex items-center justify-center cursor-pointer transition-all ${overlayStyle.container}`}
 			>
-				{isPlaying ? <Icons.PauseButton className={overlayStyle.icon} /> : <Icons.PlayButton className={`${overlayStyle.icon} ml-0.5`} />}
+				{isPlaying ? <MezonIcon icon={overlayStyle.pause} /> : <MezonIcon icon={overlayStyle.play} className="ml-0.5" />}
 			</div>
 			<MessageAudioControl
 				ref={audioControlRef}

@@ -9,7 +9,7 @@ import {
 	selectMembersClanCount,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { TypeMessage, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode } from 'react';
@@ -75,15 +75,31 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 			) : (
 				<>
 					<Onboarditem
-						icon={<Icons.AddPerson />}
+						icon={
+							<MezonIcon icon={MzIcons24.mzUserPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+						}
 						title={t('onboard.inviteFriends')}
 						tick={numberMemberClan > 1}
 						onClick={openInviteClanModal}
 					/>
-					<Onboarditem icon={<Icons.Sent />} title={t('onboard.sendFirstMessage')} tick={checkLastMessage} onClick={handleSendMessage} />
-					<Onboarditem icon={<Icons.Download />} title={t('onboard.downloadApp')} tick={true} onClick={handleSendMessage} />
 					<Onboarditem
-						icon={<Icons.Hashtag />}
+						icon={<MezonIcon icon={MzIcons20.mzCheck} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />}
+						title={t('onboard.sendFirstMessage')}
+						tick={checkLastMessage}
+						onClick={handleSendMessage}
+					/>
+					<Onboarditem
+						icon={
+							<MezonIcon icon={MzIcons20.mzDownload} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+						}
+						title={t('onboard.downloadApp')}
+						tick={true}
+						onClick={handleSendMessage}
+					/>
+					<Onboarditem
+						icon={
+							<MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+						}
 						title={t('onboard.createChannel')}
 						tick={numberChannel.length > 1}
 						onClick={handleCreateChannel}
@@ -102,7 +118,7 @@ const Onboarditem = memo(({ icon, title, tick, onClick }: { icon: ReactNode; tit
 	};
 	return (
 		<div
-			className="w-full sbm:w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold text-theme-primary-active text-theme-primary-hover bg-item-hover bg-item-theme rounded-lg hover:cursor-pointer"
+			className="w-full sbm:w-[400px] gap-4 h-[72px] items-center flex p-4 text-sm font-semibold text-theme-primary-active text-theme-primary-hover bg-item-hover bg-item-theme rounded-lg hover:cursor-pointer group/mzi"
 			onClick={handleOnClickItem}
 			data-e2e={generateE2eId('onboarding.chat.guide_sections')}
 		>
@@ -110,10 +126,10 @@ const Onboarditem = memo(({ icon, title, tick, onClick }: { icon: ReactNode; tit
 			<div className="flex-1 ">{title}</div>
 			{tick ? (
 				<div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-green-600">
-					<Icons.Tick className="h-3.5 w-3.5" defaultFill1="white" />
+					<MezonIcon icon={MzIcons16.mzCheck} className="text-[white]" />
 				</div>
 			) : (
-				<Icons.ArrowRight />
+				<MezonIcon icon={MzIcons20.mzChevronRight} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 			)}
 		</div>
 	);

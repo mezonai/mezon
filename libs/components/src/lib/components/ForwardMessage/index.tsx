@@ -22,7 +22,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons32, SpinningIcon } from '@mezon/ui';
 import type { ChannelThreads, UsersClanEntity } from '@mezon/utils';
 import {
 	ModeResponsive,
@@ -495,9 +495,7 @@ const ForwardMessageModal = () => {
 
 	const emptyState = isSearchingServer ? (
 		<span className=" flex flex-row justify-center ">
-			<span className="inline-flex animate-spin text-theme-primary">
-				<Icons.LoadingSpinner />
-			</span>
+			<SpinningIcon icon={MzIcons20.mzSpinner} className="text-[var(--mz-icon)]" />
 		</span>
 	) : (
 		<span className=" flex flex-row justify-center ">{t('modal.noResults')}</span>
@@ -665,7 +663,7 @@ const ForwardMessageModal = () => {
 								<div className="flex flex-col gap-1 text-xs text-theme-primary opacity-60">
 									{attachmentStats.images.length > 0 && (
 										<div className="flex items-center gap-1.5">
-											<Icons.ImageUploadIcon className="w-4 h-4" />
+											<MezonIcon icon={MzIcons16.mzImageAdd} className="text-[var(--mz-icon)]" />
 											<span>
 												{attachmentStats.imageCount}{' '}
 												{attachmentStats.images.length === 1 ? t('modal.image') : t('modal.images')}
@@ -674,7 +672,7 @@ const ForwardMessageModal = () => {
 									)}
 									{attachmentStats.videos.length > 0 && (
 										<div className="flex items-center gap-1.5">
-											<Icons.PlayButton className="w-4 h-4" />
+											<MezonIcon icon={MzIcons16.mzPlay} className="text-[var(--mz-icon)]" />
 											<span>
 												{attachmentStats.videoCount}{' '}
 												{attachmentStats.videos.length === 1 ? t('modal.video') : t('modal.videos')}
@@ -683,7 +681,7 @@ const ForwardMessageModal = () => {
 									)}
 									{attachmentStats.files.length > 0 && (
 										<div className="flex items-center gap-1.5">
-											<Icons.FileIcon className="w-4 h-4" />
+											<MezonIcon icon={MzIcons16.mzFile} className="text-[var(--mz-icon)]" />
 											<span>
 												{attachmentStats.fileCount} {attachmentStats.files.length === 1 ? t('modal.file') : t('modal.files')}
 											</span>
@@ -700,7 +698,7 @@ const ForwardMessageModal = () => {
 									<>
 										<video src={previewAttachment.attachment.url} className="w-full h-full object-cover" />
 										<div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
-											<Icons.PlayButton className="w-8 h-8 text-white" />
+											<MezonIcon icon={MzIcons32.mzPlay} className="text-white" />
 										</div>
 									</>
 								) : (

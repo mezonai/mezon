@@ -1,5 +1,5 @@
 import { useEscapeKeyClose } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
@@ -77,7 +77,7 @@ export const PollDetailModal = ({
 								onClick={onClose}
 								className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors flex-shrink-0"
 							>
-								<Icons.Close className="w-6 h-6" />
+								<MezonIcon icon={MzIcons24.mzClose} className="text-[var(--mz-icon)]" />
 							</button>
 						</div>
 

@@ -16,7 +16,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Menu as Dropdown, Icons } from '@mezon/ui';
+import { Menu as Dropdown, MezonIcon, MzIcons16, SpinningIcon } from '@mezon/ui';
 import type { ContextMenuItem, IEmoji, IMessageWithUser } from '@mezon/utils';
 import { QUICK_MENU_TYPE, SHOW_POSITION, TypeMessage, generateE2eId, isPublicChannel } from '@mezon/utils';
 import type { ReactElement } from 'react';
@@ -252,7 +252,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		reactItems.push(
 			<Item key="view-more" className="w-full px-2 py-1">
 				<div
-					className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium text-theme-primary text-theme-primary-hover p-1`}
+					className={`mz-hover flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium text-theme-primary text-theme-primary-hover p-1`}
 					onClick={() => {
 						if (addReactionFunction) {
 							addReactionFunction.handleItemClick?.();
@@ -271,9 +271,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			return (
 				<div className="w-[240px] p-4 text-center text-gray-500">
 					<div className="flex items-center justify-center gap-2 mb-2">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
-							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="30" strokeDashoffset="30" />
-						</svg>
+						<SpinningIcon icon={MzIcons16.mzSpinner} />
 						<span>{t('loadingQuickMenus')}</span>
 					</div>
 				</div>
@@ -341,11 +339,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 							<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 								<div
 									data-e2e={generateE2eId('chat.message_action_modal.button.base')}
-									className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 text-theme-primary text-theme-primary-hover`}
+									className={`mz-hover flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 text-theme-primary text-theme-primary-hover group/mzi`}
 								>
 									<span>{t('quickMenus')}</span>
 									<span>
-										<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
+										<MezonIcon
+											icon={MzIcons16.mzChevronRight}
+											className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+										/>
 									</span>
 								</div>
 							</Item>
@@ -358,7 +359,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 						<Item key={index} onClick={item.handleItemClick} disabled={item.disabled}>
 							<div
 								data-e2e={generateE2eId('chat.message_action_modal.button.base')}
-								className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'}`}
+								className={`mz-hover flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542] hover:text-[#FFFFFF] ' : 'text-theme-primary text-theme-primary-hover'} group/mzi`}
 							>
 								<span>{t('addReaction')}</span>
 								<span>{item.icon}</span>
@@ -369,7 +370,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			} else if (!labelQuickMenus) {
 				const isCreateThreadItem = item.id === 'createThread';
 				const threadIconHoverClass = isCreateThreadItem
-					? '[--thread-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] hover:[--thread-fill-1:var(--bg-icon-theme-active)]'
+					? '[--thread-fill-1:var(--mz-icon)] hover:[--thread-fill-1:var(--mz-icon-selected)]'
 					: '';
 
 				elements.push(
@@ -390,15 +391,11 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 					>
 						<div
 							data-e2e={generateE2eId('chat.message_action_modal.button.base')}
-							className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542]  ' : 'text-theme-primary text-theme-primary-hover'} ${threadIconHoverClass}`}
+							className={`mz-hover flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 ${lableItemWarning ? ' text-[#E13542]  ' : 'text-theme-primary text-theme-primary-hover'} ${threadIconHoverClass} group/mzi`}
 						>
 							<span>{item.label}</span>
 							<span>
-								{isCreateThreadItem ? (
-									<Icons.ThreadIcon className="w-4 h-4" defaultFill1="var(--thread-fill-1)" defaultFill4="var(--thread-fill-4)" />
-								) : (
-									item.icon
-								)}
+								{isCreateThreadItem ? <MezonIcon icon={MzIcons16.mzThread} className="text-[var(--thread-fill-1)]" /> : item.icon}
 							</span>
 						</div>
 					</Item>

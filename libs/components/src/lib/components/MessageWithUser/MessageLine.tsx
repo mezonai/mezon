@@ -1,5 +1,5 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { IExtendedMessage } from '@mezon/utils';
 import {
 	EBacktickType,
@@ -273,7 +273,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 						</p>
 						{isCommunityEnabled ? (
 							<span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#22c55e] text-theme-primary">
-								<Icons.CheckIcon className="w-3 h-3" />
+								<MezonIcon icon={MzIcons16.mzCheck} />
 							</span>
 						) : null}
 					</div>

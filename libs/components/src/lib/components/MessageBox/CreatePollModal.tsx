@@ -1,5 +1,5 @@
 import { EmojiSuggestionProvider, useEscapeKeyClose } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId, getSrcEmoji } from '@mezon/utils';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -146,7 +146,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 							onClick={onClose}
 							className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 						>
-							<Icons.Close className="w-5 h-5" />
+							<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 						</button>
 					</div>
 
@@ -186,7 +186,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 													className="w-5 h-5 object-contain"
 												/>
 											) : (
-												<Icons.Smile className="w-5 h-5" />
+												<MezonIcon icon={MzIcons20.mzEmoji} className="text-[var(--mz-icon)]" />
 											)}
 										</button>
 
@@ -203,10 +203,13 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 											<button
 												type="button"
 												onClick={() => handleRemoveAnswer(index)}
-												className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary hover:text-colorDangerHover transition-colors"
+												className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary hover:text-colorDangerHover transition-colors group/mzi"
 												data-e2e={generateE2eId('poll.modal.button.delete_answer')}
 											>
-												<Icons.TrashIcon className="w-5 h-5" />
+												<MezonIcon
+													icon={MzIcons20.mzTrash}
+													className="text-[var(--mz-icon)] group-hover/mzi:text-colorDangerHover"
+												/>
 											</button>
 										)}
 									</div>
@@ -220,7 +223,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 									className="mt-2 flex items-center gap-2 text-sm text-theme-primary hover:text-theme-primary-active transition-colors"
 									data-e2e={generateE2eId('poll.modal.button.add_answer')}
 								>
-									<Icons.AddIcon className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzPlusCircle} className="text-[var(--mz-icon)]" />
 									{t('poll.addAnotherAnswer')}
 								</button>
 							)}
@@ -240,7 +243,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 								</button>
 
 								<span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary">
-									<Icons.ArrowDown className="w-5 h-5" />
+									<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)]" />
 								</span>
 
 								{durationDropdownOpen && (

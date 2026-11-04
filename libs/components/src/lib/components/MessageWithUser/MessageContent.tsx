@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import {
 	addMention,
@@ -95,7 +95,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 
 	return (
 		<div
-			className={`border-theme-primary min-w-250 text-theme-primary bg-item-theme text-theme-primary-hover rounded-lg gap-1 my-1 p-1  flex justify-between items-center cursor-pointer group/view-topic-btn  ${isShowCreateThread || isShowCreateTopic ? '' : 'w-fit'}`}
+			className={`border-theme-primary min-w-250 text-theme-primary bg-item-theme text-theme-primary-hover rounded-lg gap-1 my-1 p-1  flex justify-between items-center cursor-pointer group/view-topic-btn  ${isShowCreateThread || isShowCreateTopic ? '' : 'w-fit'} group/mzi`}
 			onClick={handleOpenTopic}
 			data-e2e={generateE2eId('chat.topic.button.view_topic')}
 		>
@@ -119,7 +119,10 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 					<NumberTopicBadge channel_id={message.content.tp as string} />
 				</div>
 			</div>
-			<Icons.ArrowRight className="flex-shrink-0 text-center" />
+			<MezonIcon
+				icon={MzIcons20.mzChevronRight}
+				className="flex-shrink-0 text-center text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+			/>
 		</div>
 	);
 };

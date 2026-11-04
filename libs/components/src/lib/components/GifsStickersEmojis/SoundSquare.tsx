@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -257,7 +257,10 @@ const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 
 		return (
 			<div className="flex flex-col gap-2">
-				<button onClick={handleToggleButton} className="flex flex-row items-center gap-2 w-full text-left group sticky top-0  z-10 py-1  ">
+				<button
+					onClick={handleToggleButton}
+					className="mz-hover flex flex-row items-center gap-2 w-full text-left group sticky top-0  z-10 py-1  "
+				>
 					{categoryLogo ? (
 						<img
 							src={createImgproxyUrl(categoryLogo, { width: 100, height: 100, resizeType: 'fill-down' })}
@@ -275,7 +278,7 @@ const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 					<span
 						className={`transition-transform duration-200 text-theme-secondary group-hover:text-theme-primary ${isShowSoundList ? 'rotate-90' : ''}`}
 					>
-						<Icons.ArrowRight defaultFill="currentColor" className="w-3 h-3" />
+						<MezonIcon icon={MzIcons16.mzChevronRight} className="text-[var(--mz-icon)]" />
 					</span>
 					<div className="h-[1px] flex-1 bg-theme-primary/10 group-hover:bg-theme-primary/20 transition-colors ml-2"></div>
 				</button>
@@ -337,7 +340,7 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 		<div className="grid grid-cols-2 gap-3">
 			{soundList.length === 0 && (
 				<div className="col-span-full flex flex-col items-center justify-center py-10 opacity-50 border-2 border-dashed border-theme-primary/10 rounded-lg">
-					<Icons.Speaker className="w-8 h-8 mb-2 text-theme-primary" />
+					<MezonIcon icon={MzIcons32.mzSpeaker} className="mb-2 text-[var(--mz-icon)]" />
 					<p className="text-xs text-theme-primary font-medium">No sounds available</p>
 				</div>
 			)}
@@ -353,12 +356,9 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 						title="Preview sound"
 					>
 						{playingPreview === sound.id ? (
-							<svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-								<rect x="6" y="4" width="4" height="16" rx="1" />
-								<rect x="14" y="4" width="4" height="16" rx="1" />
-							</svg>
+							<MezonIcon icon={MzIcons16.mzPause} />
 						) : (
-							<Icons.Speaker className="w-4 h-4" />
+							<MezonIcon icon={MzIcons16.mzSpeaker} className="text-[var(--mz-icon)]" />
 						)}
 					</button>
 					<span className="flex-1 text-xs font-bold text-theme-primary truncate select-none">{sound.filename}</span>
@@ -367,7 +367,7 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 						className="flex-shrink-0 flex items-center justify-center text-theme-primary duration-200  hover:scale-110 active:scale-95"
 						title="Send sound"
 					>
-						<Icons.ResendMessageRightClick defaultSize="h-5 w-5" />
+						<MezonIcon icon={MzIcons20.mzSend} className="text-[var(--mz-icon)]" />
 					</button>
 				</div>
 			))}
