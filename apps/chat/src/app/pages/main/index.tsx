@@ -3,6 +3,7 @@ import {
 	ClanRailUnreadFloatButton,
 	DmCallManager,
 	FirstJoinPopup,
+	FirstSetupUsername,
 	FooterProfile,
 	ForwardMessageModal,
 	InternetStatusPopover,
@@ -176,6 +177,21 @@ function MyApp() {
 
 	const isShowPopupQuickMess = useSelector(selectIsShowPopupQuickMess);
 
+	const showSetupUsername = useMemo(() => {
+		const phoneNumber = userProfile?.user?.phone_number?.trim();
+		const username = userProfile?.user?.username?.trim();
+
+		if (!phoneNumber || !username) {
+			return false;
+		}
+
+		const normalizePhone = (value: string) => {
+			return value.replace(/^\+84/, '0');
+		};
+
+		return normalizePhone(username || '') === normalizePhone(phoneNumber);
+	}, [userProfile]);
+
 	const streamStyle = isShowChatStream
 		? { width: `calc(100vw - ${chatStreamWidth}px - 352px)`, right: `${chatStreamWidth + 8}px` }
 		: { width: closeMenu ? undefined : `calc(100vw - 344px)`, right: '0' };
@@ -224,6 +240,7 @@ function MyApp() {
 				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} />}
+				{showSetupUsername && <FirstSetupUsername />}
 				{isShowPopupQuickMess && <PopupQuickMess />}
 			</div>
 
