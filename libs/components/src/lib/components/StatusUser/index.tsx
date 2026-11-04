@@ -1,7 +1,9 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 
 export const RenderTypingIndicator = () => (
-	<Icons.IconLoadingTyping bgFill="bg-colorSuccess" className="shrink-0" width={18} height={8} />
+	<span className="shrink-0 rounded-lg flex items-center justify-center px-[2px] py-[1px] bg-colorSuccess">
+		<MezonIcon icon={MzIcons16.mzTyping} className="mz-on dark:text-textDarkTheme text-textPrimaryLight" />
+	</span>
 );
 
 type Status = 'online' | 'idle' | 'dnd' | 'offline';

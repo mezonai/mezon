@@ -1,7 +1,7 @@
 import { useAuth, useMemberStatus } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
 import { accountActions, giveCoffeeActions, useAppDispatch, useWallet, userClanProfileActions } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons16, MzIcons20, MzIcons32 } from '@mezon/ui';
 import { CURRENCY, EUserStatus, formatBalanceToString, generateE2eId, useAppLayout } from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -56,15 +56,15 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 	const statusIcon = (status: string): ReactNode => {
 		switch (status) {
 			case EUserStatus.ONLINE:
-				return <Icons.OnlineStatus />;
+				return <MezonIcon icon={MzIcons16.mzStatusOnline} className="text-[#16A34A]" />;
 			case EUserStatus.IDLE:
-				return <Icons.DarkModeIcon className="text-[#F0B232] -rotate-90" />;
+				return <MezonIcon icon={MzIcons20.mzMoon} className="text-[#F0B232] -rotate-90" />;
 			case EUserStatus.DO_NOT_DISTURB:
-				return <Icons.MinusCircleIcon />;
+				return <MezonIcon icon={MzIcons20.mzMinusCircle} className="text-[#F23F43]" />;
 			case EUserStatus.INVISIBLE:
-				return <Icons.OfflineStatus />;
+				return <MezonIcon icon={MzIcons16.mzStatusOffline} className="text-[var(--mz-icon)]" />;
 			default:
-				return <Icons.OfflineStatus />;
+				return <MezonIcon icon={MzIcons16.mzStatusOffline} className="text-[var(--mz-icon)]" />;
 		}
 	};
 
@@ -97,7 +97,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 		const menuItems: ReactElement[] = [
 			<ItemStatus
 				children={t('statusProfile.statusOptions.online')}
-				startIcon={<Icons.OnlineStatus />}
+				startIcon={<MezonIcon icon={MzIcons16.mzStatusOnline} className="text-[#16A34A]" />}
 				onClick={() => {
 					updateUserStatus(EUserStatus.ONLINE, 0, true);
 					modalRef.current = false;
@@ -108,14 +108,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				modalRef={modalRef}
 				children={t('statusProfile.statusOptions.idle')}
 				statusValue={EUserStatus.IDLE}
-				startIcon={
-					<Icons.DarkModeIcon
-						defaultFill1="#f0eee924"
-						defaultFill2="#ffffff28"
-						defaultFill3="#F0B232"
-						className=" w-[11px] h-[11px] -rotate-90"
-					/>
-				}
+				startIcon={<MezonIcon icon={MzIcons16.mzMoon} className="-rotate-90 text-[#F0B232]" />}
 				dropdown
 				onClick={() => setStatusMenuVisible(false)}
 			/>,
@@ -124,7 +117,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				children={t('statusProfile.statusOptions.doNotDisturb')}
 				description={t('statusProfile.statusOptionsDescriptions.doNotDisturb')}
 				statusValue={EUserStatus.DO_NOT_DISTURB}
-				startIcon={<Icons.MinusCircleIcon className="w-[12px] h-[12px]" />}
+				startIcon={<MezonIcon icon={MzIcons16.mzMinusCircle} className="text-[#F23F43]" />}
 				dropdown
 				onClick={() => setStatusMenuVisible(false)}
 			/>,
@@ -133,7 +126,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				children={t('statusProfile.statusOptions.invisible')}
 				description={t('statusProfile.statusOptionsDescriptions.invisible')}
 				statusValue={EUserStatus.INVISIBLE}
-				startIcon={<Icons.OfflineStatus />}
+				startIcon={<MezonIcon icon={MzIcons16.mzStatusOffline} className="text-[var(--mz-icon)]" />}
 				dropdown
 				onClick={() => setStatusMenuVisible(false)}
 			/>
@@ -152,31 +145,24 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 			<div className="max-md:relative">
 				<ItemStatus
 					children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
-					startIcon={<Icons.Check className="text-[var(--bg-icon-theme)]" />}
+					startIcon={<MezonIcon icon={MzIcons20.mzCheck} className="text-[var(--mz-icon)]" />}
 					disabled={true}
 				/>
 				<ItemStatus
 					onClick={handleSendToken}
 					children={t('statusProfile.transferFunds')}
-					startIcon={<Icons.SendMoney className="text-[var(--bg-icon-theme)] w-[17px] h-[17px]" />}
+					startIcon={<MezonIcon icon={MzIcons16.mzSendMoney} className="text-[var(--mz-icon)]" />}
 				/>
 				<ItemStatus
 					onClick={handleOpenHistoryModal}
 					children={t('statusProfile.historyTransaction.title')}
-					startIcon={
-						<Icons.History
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill2="#dbd5ca"
-							defaultFill3="#dbd5ca"
-							className="text-theme-primary w-[14px] h-[14px]"
-						/>
-					}
+					startIcon={<MezonIcon icon={MzIcons16.mzHistory} className="text-[var(--mz-icon)]" />}
 				/>
 
 				<ItemStatus
 					onClick={handleCustomStatus}
 					children={status.user_status ? t('statusProfile.editCustomStatus') : t('statusProfile.setCustomStatus')}
-					startIcon={<Icons.SmilingFace className="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />}
+					startIcon={<MezonIcon icon={MzIcons20.mzEmoji} className="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]" />}
 				/>
 				<Menu
 					trigger="click"
@@ -223,12 +209,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 	);
 };
 
-const WalletIcon = () => (
-	<svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-		<path d="M17 7H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3zM6 9h11a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1zm11-2H7V6a2 2 0 0 1 4 0h2a4 4 0 0 0-8 0v1H5a1 1 0 0 0 0 2h12a1 1 0 0 0 0-2z" />
-		<circle cx="15" cy="13" r="1" />
-	</svg>
-);
+const WalletIcon = () => <MezonIcon icon={MzIcons32.mzWallet} />;
 
 const AddAccountModal = ({
 	handleSetAccount,
@@ -292,27 +273,7 @@ const AddAccountModal = ({
 							placeholder={t('statusProfile.addAccountModal.passwordPlaceholder')}
 						/>
 						<button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary">
-							<svg
-								aria-hidden="true"
-								role="img"
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								fill="none"
-								viewBox="0 0 24 24"
-								className="w-5 h-5"
-							>
-								<path
-									fill="currentColor"
-									d="M15.56 11.77c.2-.1.44.02.44.23a4 4 0 1 1-4-4c.21 0 .33.25.23.44a2.5 2.5 0 0 0 3.32 3.32Z"
-								></path>
-								<path
-									fill="currentColor"
-									fillRule="evenodd"
-									d="M22.89 11.7c.07.2.07.4 0 .6C22.27 13.9 19.1 21 12 21c-7.11 0-10.27-7.11-10.89-8.7a.83.83 0 0 1 0-.6C1.73 10.1 4.9 3 12 3c7.11 0 10.27 7.11 10.89 8.7Zm-4.5-3.62A15.11 15.11 0 0 1 20.85 12c-.38.88-1.18 2.47-2.46 3.92C16.87 17.62 14.8 19 12 19c-2.8 0-4.87-1.38-6.39-3.08A15.11 15.11 0 0 1 3.15 12c.38-.88 1.18-2.47 2.46-3.92C7.13 6.38 9.2 5 12 5c2.8 0 4.87 1.38 6.39 3.08Z"
-									clipRule="evenodd"
-								></path>
-							</svg>
+							<MezonIcon icon={MzIcons20.mzEye} className="text-[var(--mz-icon)]" />
 						</button>
 					</div>
 				</div>

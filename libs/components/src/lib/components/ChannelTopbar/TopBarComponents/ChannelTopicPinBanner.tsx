@@ -27,7 +27,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TypeMessage, createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
 import { format } from 'date-fns';
 import type { ApiSdTopic } from 'mezon-js';
@@ -197,27 +197,27 @@ const formatAttachmentSize = (bytes?: number): string => {
 const renderFileIcon = (filename: string, filetype: string) => {
 	const ext = filename?.split('.').pop()?.toLowerCase() || '';
 	if (ext === 'txt' || filetype?.includes('text/plain')) {
-		return <Icons.TxtThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFileText} className="text-[var(--mz-icon)]" />;
 	}
 	if (ext === 'pdf' || filetype?.includes('pdf')) {
-		return <Icons.PdfThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFilePdf} className="text-[var(--mz-icon)]" />;
 	}
 	if (['doc', 'docx'].includes(ext) || filetype?.includes('word')) {
-		return <Icons.DocThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFileText} className="text-[var(--mz-icon)]" />;
 	}
 	if (['xls', 'xlsx'].includes(ext) || filetype?.includes('excel') || filetype?.includes('spreadsheet')) {
-		return <Icons.XlsThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFileSheet} className="text-[var(--mz-icon)]" />;
 	}
 	if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
-		return <Icons.RarThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFileArchive} className="text-[var(--mz-icon)]" />;
 	}
 	if (['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'py', 'java', 'c', 'cpp'].includes(ext)) {
-		return <Icons.CodeThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFileCode} className="text-[var(--mz-icon)]" />;
 	}
 	if (ext === 'json') {
-		return <Icons.JsonThumbnail defaultSize="w-5 h-6" />;
+		return <MezonIcon icon={MzIcons20.mzFileCode} className="text-[var(--mz-icon)]" />;
 	}
-	return <Icons.TxtThumbnail defaultSize="w-5 h-6" />;
+	return <MezonIcon icon={MzIcons20.mzFileText} className="text-[var(--mz-icon)]" />;
 };
 
 const AttachmentThumbnail = memo(({ attachment }: { attachment: ExtractedAttachment }) => {
@@ -310,35 +310,6 @@ const getTopicTimestamp = (t: ApiSdTopic | null | undefined): number => {
 	}
 	return Math.max(lastSent, updateTime, createTime, snowflakeTime, msgSnowflakeTime);
 };
-
-const UnpinBannerIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
-	<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-		<g>
-			<path
-				fillRule="evenodd"
-				clipRule="evenodd"
-				d="M22.75 8C22.75 8.41421 22.4142 8.75 22 8.75H17C16.5858 8.75 16.25 8.41421 16.25 8C16.25 7.58579 16.5858 7.25 17 7.25L22 7.25C22.4142 7.25 22.75 7.58579 22.75 8Z"
-				fill="currentColor"
-			/>
-			<path
-				fillRule="evenodd"
-				clipRule="evenodd"
-				d="M22.75 12.5C22.75 12.9142 22.4142 13.25 22 13.25H18C17.5858 13.25 17.25 12.9142 17.25 12.5C17.25 12.0858 17.5858 11.75 18 11.75H22C22.4142 11.75 22.75 12.0858 22.75 12.5Z"
-				fill="currentColor"
-			/>
-			<path
-				fillRule="evenodd"
-				clipRule="evenodd"
-				d="M13.7605 7.29224L14.1966 7.72835C14.932 8.46373 15.5319 9.06363 15.9422 9.58515C16.3622 10.1191 16.6764 10.683 16.6759 11.3489C16.6756 11.7215 16.5996 12.09 16.4525 12.4323C16.1896 13.0441 15.678 13.4378 15.081 13.7621C14.498 14.0788 13.7098 14.3925 12.7435 14.7771L12.5521 14.8532C11.9399 15.0969 11.7791 15.1689 11.6557 15.2667C11.5467 15.353 11.4528 15.457 11.378 15.5742C11.2934 15.707 11.2382 15.8743 11.0583 16.5082L11.0484 16.5428C10.927 16.9707 10.8212 17.3435 10.7083 17.6318C10.5933 17.9253 10.427 18.2543 10.1137 18.484C9.75352 18.7481 9.306 18.8645 8.8628 18.8093C8.47725 18.7613 8.17174 18.5551 7.92839 18.3548C7.68926 18.158 7.41531 17.884 7.10076 17.5694L6.04035 16.509L3.87701 18.6723C3.58412 18.9652 3.10924 18.9652 2.81635 18.6723C2.52346 18.3794 2.52346 17.9046 2.81635 17.6117L4.97969 15.4483L3.91948 14.3881C3.60488 14.0736 3.33089 13.7996 3.13408 13.5605C2.93379 13.3171 2.72754 13.0116 2.67955 12.626C2.6244 12.1829 2.74078 11.7353 3.00486 11.3752C3.2346 11.0618 3.56355 10.8955 3.85702 10.7806C4.14539 10.6676 4.51813 10.5618 4.9461 10.4404L4.98066 10.4306C5.61458 10.2507 5.78183 10.1955 5.91462 10.1108C6.03187 10.036 6.13582 9.94218 6.22218 9.83317C6.31999 9.70972 6.39195 9.54897 6.63562 8.93672L6.71176 8.74541C7.09632 7.77911 7.41003 6.99084 7.72677 6.40781C8.05109 5.81082 8.44472 5.29922 9.05655 5.03634C9.39882 4.88928 9.7674 4.81329 10.1399 4.81299C10.8058 4.81245 11.3697 5.12666 11.9037 5.54669C12.4252 5.95691 13.0251 6.55684 13.7605 7.29224ZM8.13601 16.4833L6.57938 14.9267L6.57075 14.9179L6.56198 14.9093L5.00552 13.3528C4.65811 13.0054 4.43708 12.7832 4.29225 12.6072C4.20301 12.4988 4.17434 12.4441 4.16681 12.428C4.16283 12.3732 4.17704 12.3186 4.20723 12.2726C4.22164 12.2622 4.27332 12.2285 4.40407 12.1772C4.61629 12.0941 4.91757 12.0077 5.39021 11.8736L5.47823 11.8487C5.98238 11.706 6.37913 11.5937 6.72126 11.3754C6.97922 11.2109 7.20791 11.0045 7.39791 10.7647C7.64991 10.4466 7.80211 10.0634 7.99551 9.57641L8.0872 9.34589C8.49446 8.32262 8.77597 7.61874 9.04482 7.12387C9.31108 6.63376 9.4985 6.47904 9.64869 6.41451C9.80427 6.34767 9.97181 6.31313 10.1411 6.31299C10.3046 6.31286 10.5379 6.38083 10.9763 6.72567C11.419 7.07386 11.9559 7.60901 12.7347 8.38777L13.1011 8.75415C13.8798 9.53291 14.415 10.0699 14.7632 10.5125C15.108 10.9509 15.176 11.1842 15.1759 11.3477C15.1757 11.517 15.1412 11.6846 15.0743 11.8402C15.0098 11.9903 14.8551 12.1778 14.365 12.444C13.8701 12.7129 13.1662 12.9944 12.143 13.4016L11.9124 13.4933C11.4255 13.6867 11.0423 13.8389 10.7242 14.0909C10.4844 14.2809 10.2779 14.5096 10.1134 14.7676C9.89518 15.1097 9.78288 15.5065 9.64019 16.0106L9.61525 16.0986C9.48111 16.5713 9.39472 16.8726 9.3116 17.0848C9.26039 17.2155 9.22661 17.2672 9.21621 17.2816C9.17027 17.3118 9.11564 17.326 9.06082 17.322C9.04472 17.3145 8.99004 17.2858 8.88161 17.1966C8.70564 17.0518 8.48342 16.8307 8.13601 16.4833Z"
-				fill="currentColor"
-			/>
-			<path
-				d="M21.9999 17.75C22.4141 17.75 22.7499 17.4142 22.7499 17C22.7499 16.5858 22.4141 16.25 21.9999 16.25H12.9999C12.5857 16.25 12.2499 16.5858 12.2499 17C12.2499 17.4142 12.5857 17.75 12.9999 17.75H21.9999Z"
-				fill="currentColor"
-			/>
-		</g>
-	</svg>
-);
 
 type ChannelBannerDismissState = {
 	at: number;
@@ -1140,7 +1111,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 				<div className="flex items-stretch w-full bg-theme-setting-primary border border-theme-primary rounded-lg overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-shadow duration-200 pointer-events-auto">
 					{latestTopic && (
 						<div
-							className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
+							className={`mz-hover flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
 								hasBoth ? 'flex-1 pl-3.5 pr-2.5' : 'flex-1 px-3.5'
 							}`}
 							onClick={handleJumpToTopic}
@@ -1148,7 +1119,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 							data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item')}
 						>
 							<div className="relative flex items-center justify-center shrink-0 w-7 h-7 text-theme-primary-active">
-								<Icons.TopicIcon className="w-6 h-6 shrink-0 text-theme-primary-active" />
+								<MezonIcon icon={MzIcons24.mzTopic} className="shrink-0 text-[var(--mz-icon)]" />
 								{showTopicBadge &&
 									(topicBadgeCount > 0 ? (
 										<div
@@ -1178,7 +1149,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 
 					{latestPin && (
 						<div
-							className={`flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
+							className={`mz-hover flex items-center gap-2.5 min-w-0 cursor-pointer py-2 bg-item-theme-hover transition-colors ${
 								hasBoth ? 'flex-1 pl-2.5 pr-3.5' : 'flex-1 px-3.5'
 							}`}
 							onClick={handleJumpToPin}
@@ -1225,7 +1196,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 						aria-label={t('topicPinBanner.dismissButton')}
 						data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container', 'dismiss_button')}
 					>
-						<UnpinBannerIcon className="w-5 h-5 shrink-0" />
+						<MezonIcon icon={MzIcons20.mzPinOff} className="shrink-0 text-[var(--mz-icon)]" />
 					</button>
 				</div>
 			</div>

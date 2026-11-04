@@ -19,7 +19,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { ApiChannelAppResponseExtend, ChannelThreads, IChannel } from '@mezon/utils';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -166,31 +166,8 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 		channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const showWhiteDot = isUnReadChannel && !isActive && notVoiceOrAppOrStreamChannel;
 	const hightLightTextChannel = (isActive || isUnReadChannel) && notVoiceOrAppOrStreamChannel;
-	const iconFillClasses = useMemo(() => {
-		const isIconActive = isActive || (isUnReadChannel && notVoiceOrAppOrStreamChannel) || Boolean(numberNotification);
-		return {
-			hashtagWarning: isIconActive
-				? '[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]'
-				: '[--hashtag-warning-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]',
-			hashtagLocked: `w-4 h-4 ${
-				isIconActive
-					? '[--hashtag-locked-fill-1:var(--bg-icon-theme-active)] [--hashtag-locked-fill-2:var(--bg-icon-theme-active)]'
-					: '[--hashtag-locked-fill-1:var(--bg-icon-theme)] [--hashtag-locked-fill-2:var(--bg-icon-theme-active)] group-hover:[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
-			}`,
-			hashtag: isIconActive
-				? '[--hashtag-fill-1:var(--bg-icon-theme-active)]'
-				: '[--hashtag-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-fill-1:var(--bg-icon-theme-active)]',
-			speaker: isIconActive
-				? '[--speaker-fill-1:var(--bg-icon-theme-active)] [--speaker-fill-2:var(--bg-icon-theme-active)]'
-				: '[--speaker-fill-1:var(--bg-icon-theme)] [--speaker-fill-2:var(--bg-icon-theme)] group-hover:[--speaker-fill-1:var(--bg-icon-theme-active)] group-hover:[--speaker-fill-2:var(--bg-icon-theme-active)]',
-			stream: isIconActive
-				? '[--stream-fill-1:var(--bg-icon-theme-active)] [--stream-fill-2:var(--bg-icon-theme-active)]'
-				: '[--stream-fill-1:var(--bg-icon-theme)] [--stream-fill-2:var(--bg-icon-theme)] group-hover:[--stream-fill-1:var(--bg-icon-theme-active)] group-hover:[--stream-fill-2:var(--bg-icon-theme-active)]',
-			privateApp: isIconActive
-				? '[--private-app-fill-1:var(--bg-icon-theme-active)] [--private-app-fill-2:var(--bg-icon-theme)]'
-				: '[--private-app-fill-1:var(--bg-icon-theme)] [--private-app-fill-2:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-1:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-2:var(--bg-icon-theme)]'
-		};
-	}, [isActive, isUnReadChannel, numberNotification]);
+	const isIconActive = isActive || (isUnReadChannel && notVoiceOrAppOrStreamChannel) || Boolean(numberNotification);
+	const iconColorClass = isIconActive ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)] group-hover:text-[var(--mz-icon-selected)]';
 
 	const [openProfileItem, closeProfileItem] = useModal(() => {
 		return (
@@ -236,7 +213,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${(numberNotification || isUnReadChannel) && notVoiceOrAppOrStreamChannel ? 'text-theme-primary-active' : ''}`}
+					className={`channel-link mz-hover block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${(numberNotification || isUnReadChannel) && notVoiceOrAppOrStreamChannel ? 'text-theme-primary-active' : ''}`}
 					draggable="false"
 				>
 					<span
@@ -245,65 +222,51 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					>
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
-								<Icons.HashtagWarning
-									className={`w-4 h-4 ${iconFillClasses.hashtagWarning}`}
-									defaultFill1="var(--hashtag-warning-fill-1)"
-								/>
+								<MezonIcon icon={MzIcons16.mzChannelWarning} className={iconColorClass} />
 							)}
 							{isPrivate === ChannelStatusEnum.isPrivate &&
 								channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 								!isAgeRestrictedChannel && (
-									<Icons.HashtagLocked
-										className={` ${iconFillClasses.hashtagLocked} w-4 h-4`}
-										defaultFill1="var(--hashtag-locked-fill-1)"
-										defaultFill2="var(--hashtag-locked-fill-2)"
+									<MezonIcon
+										icon={MzIcons16.mzChannelPrivate}
+										className={iconColorClass}
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag_lock')}
 									/>
 								)}
 							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
 								(channel.channel_private ? (
-									<Icons.SpeakerLocked
-										className={` w-4 h-4 ${iconFillClasses.speaker}`}
-										defaultFill1="var(--speaker-fill-1)"
-										defaultFill2="var(--speaker-fill-2)"
-										defaultFill3="var(--speaker-fill-2)"
+									<MezonIcon
+										icon={MzIcons16.mzSpeakerLock}
+										className={iconColorClass}
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.speaker_lock')}
 									/>
 								) : (
-									<Icons.Speaker
-										className={` w-4 h-4 ${iconFillClasses.speaker}`}
-										defaultFill1="var(--speaker-fill-1)"
-										defaultFill2="var(--speaker-fill-2)"
-										defaultFill3="var(--speaker-fill-2)"
+									<MezonIcon
+										icon={MzIcons16.mzSpeaker}
+										className={iconColorClass}
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.speaker')}
 									/>
 								))}
 
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
-								<Icons.Hashtag
-									className={`w-4 h-4 ${iconFillClasses.hashtag}`}
-									defaultFill1="var(--hashtag-fill-1)"
+								<MezonIcon
+									icon={MzIcons16.mzChannel}
+									className={iconColorClass}
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
 								/>
 							)}
 							{channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
-								<Icons.Stream
-									className={`w-5 h-5 ${iconFillClasses.stream}`}
-									defaultFill1="var(--stream-fill-1)"
-									defaultFill2="var(--stream-fill-2)"
+								<MezonIcon
+									icon={MzIcons20.mzLive}
+									className={iconColorClass}
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')}
 								/>
 							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_APP && (
-								<AppChannelListIcon isEmphasized={isActive || isUnReadChannel || Boolean(numberNotification)} className="w-5 h-5" />
+								<AppChannelListIcon isEmphasized={isActive || isUnReadChannel || Boolean(numberNotification)} />
 							)}
 							{isPrivate && channel.type === ChannelType.CHANNEL_TYPE_APP ? (
-								<Icons.PrivateAppChannelIcon
-									className={`w-5 h-5 text-[var(--private-app-fill-1)] ${iconFillClasses.privateApp}`}
-									defaultFill2="var(--private-app-fill-2)"
-									defaultFill3="var(--private-app-fill-2)"
-									defaultFill4="var(--private-app-fill-2)"
-								/>
+								<MezonIcon icon={MzIcons20.mzChannelAppPrivate} className={iconColorClass} />
 							) : null}
 						</div>
 						{events[0] && <EventSchedule event={events[0]} className="ml-1.5 mt-0.5 shrink-0" />}
@@ -321,8 +284,9 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 			}
 
 			{isShowSettingChannel && (
-				<Icons.SettingProfile
-					className={`absolute ml-auto right-3 cursor-pointer hidden group-hover:block text-theme-primary-hover w-5 h-5 top-2 ${isActive ? 'text-theme-primary-active' : 'text-transparent'}`}
+				<MezonIcon
+					icon={MzIcons20.mzSettings}
+					className={`absolute ml-auto right-3 cursor-pointer hidden group-hover:block hover:text-[var(--mz-icon-selected)] top-2 ${isActive ? 'text-[var(--mz-icon-selected)]' : 'text-transparent'}`}
 					onClick={handleOpenCreate}
 				/>
 			)}

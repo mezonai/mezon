@@ -11,7 +11,7 @@ import {
 	selectTheme,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EUserStatus, createImgproxyUrl, generateE2eId, useWindowSize } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,12 +43,12 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
 				{userVoiceStatus?.status === EInvoice.INVOICE ? (
 					<>
-						<Icons.Speaker className="text-[#23a55a] !w-3 !h-3" />
+						<MezonIcon icon={MzIcons16.mzSpeaker} className="text-[#23a55a]" />
 						<span className="opacity-60">{t('inVoice')}</span>
 					</>
 				) : (
 					<>
-						<Icons.VoiceScreenShareIcon color="#23a55a" className="!w-3 !h-3 " />
+						<MezonIcon icon={MzIcons16.mzScreenShare} className="text-[#23a55a]" />
 						<span className="opacity-60">{t('shareScreen')}</span>
 					</>
 				)}
@@ -119,12 +119,12 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 					<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
 						{userVoiceStatus?.status === EInvoice.INVOICE ? (
 							<>
-								<Icons.Speaker className="text-[#23a55a] !w-3 !h-3" />
+								<MezonIcon icon={MzIcons16.mzSpeaker} className="text-[#23a55a]" />
 								<span className="opacity-60">{t('inVoice')}</span>
 							</>
 						) : (
 							<>
-								<Icons.VoiceScreenShareIcon color="#23a55a" className="!w-3 !h-3 " />
+								<MezonIcon icon={MzIcons16.mzScreenShare} className="text-[#23a55a]" />
 								<span className="opacity-60">{t('shareScreen')}</span>
 							</>
 						)}
