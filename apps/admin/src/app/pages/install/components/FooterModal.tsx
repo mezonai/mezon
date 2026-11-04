@@ -1,4 +1,4 @@
-import { ClockIcon, LockIcon } from '@mezon/ui/lib/Icons/icons';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { memo } from 'react';
 
 type FooterModalProps = {
@@ -12,7 +12,7 @@ const FooterModal = memo(({ name, activeSince }: FooterModalProps) => {
 			<div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-[#22263a]/80 to-transparent my-1" />
 
 			<div className="flex gap-x-2 items-start text-left">
-				<LockIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+				<MezonIcon icon={MzIcons16.mzLock} className="text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
 
 				<p className="text-slate-500 dark:text-slate-400 leading-snug font-medium">
 					The Privacy Policy and Terms of Service of{' '}
@@ -27,7 +27,7 @@ const FooterModal = memo(({ name, activeSince }: FooterModalProps) => {
 			</div>
 
 			<div className="flex gap-x-2 items-center text-left">
-				<ClockIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+				<MezonIcon icon={MzIcons16.mzClock} className="text-slate-400 dark:text-slate-500 shrink-0" />
 				<p className="text-slate-500 dark:text-slate-400 font-medium">
 					Active since: <span className="font-bold text-slate-800 dark:text-slate-300">{activeSince}</span>
 				</p>
