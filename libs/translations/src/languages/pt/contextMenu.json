@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Não foi possível encerrar a enquete"
 	},
 	"copyUserId": "Copiar ID do usuário",
-	"giveFlowers": "Enviar uma flor"
+	"giveFlowers": "Enviar uma flor",
+	"userVolume": "Volume do utilizador"
 }

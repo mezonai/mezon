@@ -125,7 +125,11 @@
 		"inputDevice": "마이크",
 		"outputDevice": "오디오",
 		"camera": "카메라",
-		"systemDefault": "시스템 기본값"
+		"systemDefault": "시스템 기본값",
+		"audioSettings": "오디오 설정",
+		"noDevices": "기기를 찾을 수 없음",
+		"noInputDevices": "입력 기기를 찾을 수 없음",
+		"noOutputDevices": "출력 기기를 찾을 수 없음"
 	},
 	"toast": {
 		"connectionConnected": "연결 성공",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "스페이스를 길게 눌러 말하기",
 		"holdingSpace": "말하는 중 — 스페이스를 놓으면 음소거",
-		"hintBody": "당신은 듣기 위해 참여했습니다. 말하는 동안 스페이스를 길게 눌러 마이크를 열고, 놓으면 다시 음소거됩니다."
+		"hintBody": "당신은 듣기 위해 참여했습니다. 말하는 동안 스페이스를 길게 눌러 마이크를 열고, 놓으면 다시 음소거됩니다.",
+		"title": "푸시 투 토크"
 	},
 	"screenDraw": {
 		"annotateScreen": "공유 중인 화면에 그리기",
@@ -234,5 +239,11 @@
 		"inviteReturn": "호스트가 소회의실을 닫았습니다. 메인 회의실로 돌아갈까요?",
 		"join": "참여",
 		"later": "나중에"
+	},
+	"screenShareCaptureFailed": "선택한 화면을 캡처하지 못했어요. 대신 창이나 탭을 공유해 보세요.",
+	"dmCall": {
+		"you": "나",
+		"enlarge": "{{name}} 확대",
+		"restoreLayout": "나란히 보기로 돌아가기"
 	}
 }

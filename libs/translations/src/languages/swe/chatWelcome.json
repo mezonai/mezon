@@ -21,7 +21,9 @@
 		"ignore": "Ignorera",
 		"friendRequestSentButton": "Vän förfrågan skickad",
 		"block": "Blokera",
-		"unblock": "Avblockera"
+		"unblock": "Avblockera",
+		"welcomeToClan": "Välkommen till klanen",
+		"emptyChannel": "Du är i en kanal! Kanaler visas här när du får åtkomst till dem."
 	},
 	"toast": {
 		"userBlockedSuccess": "Användare blockerad framgångsrikt",

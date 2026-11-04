@@ -125,7 +125,11 @@
 		"inputDevice": "Mikrofon",
 		"outputDevice": "Ljud",
 		"camera": "Kamera",
-		"systemDefault": "Systemstandard"
+		"systemDefault": "Systemstandard",
+		"audioSettings": "Ljudinställningar",
+		"noDevices": "Inga enheter hittades",
+		"noInputDevices": "Inga inmatningsenheter hittades",
+		"noOutputDevices": "Inga utmatningsenheter hittades"
 	},
 	"toast": {
 		"connectionConnected": "Ansluten framgångsrikt",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "Håll ned Mellanslag för att prata",
 		"holdingSpace": "Du pratar — släpp Mellanslag för att stänga av",
-		"hintBody": "Du gick med för att lyssna. Håll ned Mellanslag för att öppna mikrofonen medan du pratar, släpp för att stänga av igen."
+		"hintBody": "Du gick med för att lyssna. Håll ned Mellanslag för att öppna mikrofonen medan du pratar, släpp för att stänga av igen.",
+		"title": "Tryck för att prata"
 	},
 	"screenDraw": {
 		"annotateScreen": "Rita på din delade skärm",
@@ -234,5 +239,11 @@
 		"inviteReturn": "Värden har stängt grupprummen. Tillbaka till huvudrummet?",
 		"join": "Gå med",
 		"later": "Inte nu"
+	},
+	"screenShareCaptureFailed": "Din webbläsare kunde inte fånga den valda skärmen. Försök dela ett fönster eller en flik i stället.",
+	"dmCall": {
+		"you": "Du",
+		"enlarge": "Förstora {{name}}",
+		"restoreLayout": "Tillbaka till vy sida vid sida"
 	}
 }

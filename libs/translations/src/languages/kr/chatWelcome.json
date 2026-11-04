@@ -21,7 +21,9 @@
 		"ignore": "무시",
 		"friendRequestSentButton": "친구 요청 전송됨",
 		"block": "차단",
-		"unblock": "차단 해제"
+		"unblock": "차단 해제",
+		"welcomeToClan": "클랜에 오신 것을 환영합니다",
+		"emptyChannel": "채널에 들어왔어요! 접근 권한이 생기면 여기에 채널이 표시됩니다."
 	},
 	"toast": {
 		"userBlockedSuccess": "사용자 성공적으로 차단",

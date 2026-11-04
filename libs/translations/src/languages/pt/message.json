@@ -265,5 +265,6 @@
 		"noVotesYet": "Ninguém votou ainda",
 		"pollLabel": "[Enquete]",
 		"failedToCreatePoll": "Falha ao criar a enquete"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Desativa o modo anónimo antes de criares um tópico"
 }

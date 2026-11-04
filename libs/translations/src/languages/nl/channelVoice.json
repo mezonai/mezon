@@ -125,7 +125,11 @@
 		"inputDevice": "Microfoon",
 		"outputDevice": "Audio",
 		"camera": "Camera",
-		"systemDefault": "Systeemstandaard"
+		"systemDefault": "Systeemstandaard",
+		"audioSettings": "Audio-instellingen",
+		"noDevices": "Geen apparaten gevonden",
+		"noInputDevices": "Geen invoerapparaten gevonden",
+		"noOutputDevices": "Geen uitvoerapparaten gevonden"
 	},
 	"toast": {
 		"connectionConnected": "Succesvol verbonden",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "Houd Spatie ingedrukt om te praten",
 		"holdingSpace": "Je praat — laat Spatie los om te dempen",
-		"hintBody": "Je bent lid geworden om te luisteren. Houd Spatie ingedrukt om je microfoon te openen terwijl je praat, laat los om weer te dempen."
+		"hintBody": "Je bent lid geworden om te luisteren. Houd Spatie ingedrukt om je microfoon te openen terwijl je praat, laat los om weer te dempen.",
+		"title": "Push-to-talk"
 	},
 	"screenDraw": {
 		"annotateScreen": "Tekenen op je gedeelde scherm",
@@ -234,5 +239,11 @@
 		"inviteReturn": "De host heeft de subgroepen gesloten. Terug naar de hoofdruimte?",
 		"join": "Deelnemen",
 		"later": "Niet nu"
+	},
+	"screenShareCaptureFailed": "Je browser kon het geselecteerde scherm niet vastleggen. Deel in plaats daarvan een venster of tabblad.",
+	"dmCall": {
+		"you": "Jij",
+		"enlarge": "{{name}} vergroten",
+		"restoreLayout": "Terug naar de weergave naast elkaar"
 	}
 }

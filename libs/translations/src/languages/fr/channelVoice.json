@@ -125,7 +125,11 @@
 		"inputDevice": "Microphone",
 		"outputDevice": "Audio",
 		"camera": "Caméra",
-		"systemDefault": "Par défaut du système"
+		"systemDefault": "Par défaut du système",
+		"audioSettings": "Paramètres audio",
+		"noDevices": "Aucun appareil trouvé",
+		"noInputDevices": "Aucun périphérique d’entrée trouvé",
+		"noOutputDevices": "Aucun périphérique de sortie trouvé"
 	},
 	"toast": {
 		"connectionConnected": "Connexion réussie",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "Maintenez Espace pour parler",
 		"holdingSpace": "Vous parlez — relâchez Espace pour couper le micro",
-		"hintBody": "Vous avez rejoint pour écouter. Maintenez Espace pour ouvrir votre micro pendant que vous parlez, relâchez pour couper à nouveau."
+		"hintBody": "Vous avez rejoint pour écouter. Maintenez Espace pour ouvrir votre micro pendant que vous parlez, relâchez pour couper à nouveau.",
+		"title": "Appuyer pour parler"
 	},
 	"screenDraw": {
 		"annotateScreen": "Dessiner sur votre écran partagé",
@@ -234,5 +239,11 @@
 		"inviteReturn": "L'hôte a fermé les salles de sous-groupes. Revenir à la salle principale ?",
 		"join": "Rejoindre",
 		"later": "Plus tard"
+	},
+	"screenShareCaptureFailed": "Votre navigateur n’a pas pu capturer l’écran sélectionné. Essayez plutôt de partager une fenêtre ou un onglet.",
+	"dmCall": {
+		"you": "Vous",
+		"enlarge": "Agrandir {{name}}",
+		"restoreLayout": "Revenir à l’affichage côte à côte"
 	}
 }

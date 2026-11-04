@@ -265,5 +265,6 @@
 		"noVotesYet": "Ще немає голосів",
 		"pollLabel": "[Опитування]",
 		"failedToCreatePoll": "Не вдалося створити опитування"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Вимкніть анонімний режим, перш ніж створювати тему"
 }

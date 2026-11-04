@@ -265,5 +265,6 @@
 		"noVotesYet": "아직 투표 없음",
 		"pollLabel": "[설문]",
 		"failedToCreatePoll": "투표를 만들지 못했습니다"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "주제를 만들기 전에 익명 모드를 끄세요"
 }

@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Kunde inte avsluta röstning"
 	},
 	"copyUserId": "Kopiera användar-ID",
-	"giveFlowers": "Skicka en blomma"
+	"giveFlowers": "Skicka en blomma",
+	"userVolume": "Användarvolym"
 }

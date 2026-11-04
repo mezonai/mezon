@@ -12,7 +12,8 @@
 		"friendRequests": "友達招待",
 		"QRScan": "QRスキャン",
 		"MyQRCode": "私のQRコード",
-		"devices": "デバイス"
+		"devices": "デバイス",
+		"chat": "チャット"
 	},
 	"deviceSettings": {
 		"description1": "これはあなたのアカウントにログインしているすべてのデバイスです。各デバイスをログアウトできます。",
