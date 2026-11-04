@@ -568,11 +568,15 @@ export const selectAllSession = createSelector(getAuthState, (state: AuthState) 
 
 export const setupSessionSyncListener = (store: any) => {
 	let lastAppliedSeq = -1;
-	const unsubscribe = subscribeSessionUpdate(({ session, sequence }) => {
+	const unsubscribe = subscribeSessionUpdate(({ session, source, sequence }) => {
 		if (sequence <= lastAppliedSeq) return;
 		lastAppliedSeq = sequence;
 		if (session) {
-			store.dispatch(authActions.updateSession(session as ISession));
+			if (source === 'cross-tab') {
+				store.dispatch(authActions.setSession(session as ISession));
+			} else {
+				store.dispatch(authActions.updateSession(session as ISession));
+			}
 		} else {
 			store.dispatch(authActions.resetSession());
 		}

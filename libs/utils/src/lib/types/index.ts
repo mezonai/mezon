@@ -477,6 +477,7 @@ export interface IMessageSendPayload {
 	expire_at?: number;
 	type?: EPollType;
 	presign_finish?: string[];
+	presign_ingest?: string[];
 	create_time_seconds?: number;
 }
 

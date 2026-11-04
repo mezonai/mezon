@@ -1,5 +1,12 @@
 import { messagesActions, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { ETypeLinkMedia, PRESIGN_PENDING_MAX_AGE_SEC, getPresignKeyFromAttachmentUrl, isAttachmentPresignPendingForMessage } from '@mezon/utils';
+import {
+	ETypeLinkMedia,
+	PRESIGN_PENDING_MAX_AGE_SEC,
+	getPresignKeyFromAttachmentUrl,
+	getPresignPendingMaxAgeSec,
+	isAttachmentPresignPendingForMessage,
+	parsePresignIngestKeys
+} from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { useEffect } from 'react';
 
@@ -7,6 +14,7 @@ import { useEffect } from 'react';
 const FIRST_REFRESH_DELAY_MS = 15000;
 /** Cadence afterwards. Cheap: one message, only while a row is actually stuck. */
 const REFRESH_INTERVAL_MS = 15000;
+const REFRESH_MAX_INTERVAL_MS = 5 * 60 * 1000;
 /** Refetches to give the server before falling back to asking the object itself. */
 const REFETCHES_BEFORE_IMAGE_PROBE = 2;
 /** Only probe pictures small enough that fetching one is not a cost of its own. */
@@ -62,6 +70,11 @@ export function usePresignRefresh({
 		let cancelled = false;
 
 		const ageMs = () => (createTimeSeconds ? Date.now() - createTimeSeconds * 1000 : 0);
+		const presignIngestKeys = parsePresignIngestKeys(content);
+		const maxAgeSec = Math.max(
+			PRESIGN_PENDING_MAX_AGE_SEC,
+			...(attachments ?? []).map((attachment) => getPresignPendingMaxAgeSec(attachment.url, presignIngestKeys))
+		);
 
 		// Last resort. If the sender's patch never landed, the server has no
 		// presign_finish to hand back and the refetch above can only return the same
@@ -90,17 +103,19 @@ export function usePresignRefresh({
 		};
 
 		let refetches = 0;
+		let interval = REFRESH_INTERVAL_MS;
 		const run = () => {
 			if (cancelled) return;
 			// Past the expiry the attachment is dropped from the row entirely, so
 			// there is nothing left to heal.
-			if (ageMs() > PRESIGN_PENDING_MAX_AGE_SEC * 1000) return;
+			if (ageMs() > maxAgeSec * 1000) return;
 			dispatch(messagesActions.refreshPresignMessage({ clanId: clan, channelId, messageId, topicId }));
 			refetches += 1;
 			if (refetches >= REFETCHES_BEFORE_IMAGE_PROBE) {
 				probeImages();
 			}
-			timer = setTimeout(run, REFRESH_INTERVAL_MS);
+			if (ageMs() > PRESIGN_PENDING_MAX_AGE_SEC * 1000) interval = Math.min(interval * 2, REFRESH_MAX_INTERVAL_MS);
+			timer = setTimeout(run, interval);
 		};
 
 		// A message that is already older than the grace period — reopened channel,

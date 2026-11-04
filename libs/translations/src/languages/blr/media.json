@@ -13,6 +13,7 @@
 		}
 	},
 	"attachment": {
-		"uploading": "Загрузка..."
+		"uploading": "Загрузка...",
+		"finishing": "Завяршэнне..."
 	}
 }

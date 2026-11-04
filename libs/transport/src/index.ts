@@ -2,6 +2,7 @@ export * from './lib/contexts/AdminContext';
 export * from './lib/contexts/MezonContext';
 export * from './lib/healthyEndpoint';
 export * from './lib/hooks/useMezon';
+export * from './lib/ingest';
 export * from './lib/mezon';
 export * from './lib/minio';
 export * from './lib/network';

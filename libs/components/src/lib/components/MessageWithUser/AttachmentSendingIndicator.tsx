@@ -17,11 +17,12 @@ type AttachmentSendingIndicatorProps = {
 	className?: string;
 	/** Name the state instead of leaving a bare spinner to be read as "broken". */
 	showLabel?: boolean;
+	label?: string;
 	boxWidth?: number;
 	boxHeight?: number;
 };
 
-export function AttachmentSendingIndicator({ className = '', showLabel = false, boxWidth, boxHeight }: AttachmentSendingIndicatorProps) {
+export function AttachmentSendingIndicator({ className = '', showLabel = false, label, boxWidth, boxHeight }: AttachmentSendingIndicatorProps) {
 	const { t } = useTranslation('media');
 	const fitsWidth = boxWidth === undefined || boxWidth >= LABEL_MIN_WIDTH;
 	const fitsHeight = boxHeight === undefined || boxHeight >= LABEL_MIN_HEIGHT;
@@ -39,7 +40,7 @@ export function AttachmentSendingIndicator({ className = '', showLabel = false, 
 			    announced is not, so on a tile too small to show it the same text
 			    is still there for a screen reader. */}
 			<span className={withLabel ? 'text-xs text-textSecondary800 dark:text-textSecondary' : 'sr-only'} role="status" aria-live="polite">
-				{t('attachment.uploading')}
+				{label ?? t('attachment.uploading')}
 			</span>
 		</div>
 	);

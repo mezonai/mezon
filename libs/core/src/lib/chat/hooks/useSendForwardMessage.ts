@@ -10,7 +10,14 @@ import {
 } from '@mezon/store';
 import { uploadFileToPath, useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
-import { ChannelStatusEnum, MAX_FORWARD_MESSAGE_LENGTH, appendCdnSignature, generatePathAttachments, getCdnSignatureChannelId } from '@mezon/utils';
+import {
+	ChannelStatusEnum,
+	MAX_FORWARD_MESSAGE_LENGTH,
+	appendCdnSignature,
+	generatePathAttachments,
+	getCdnSignatureChannelId,
+	withoutPresignMarkers
+} from '@mezon/utils';
 import {
 	ChannelStreamMode,
 	ChannelType,
@@ -168,7 +175,7 @@ export function useSendForwardMessage() {
 					})
 					.filter((m) => Object.keys(m).length > 0);
 
-				const { presign_finish: _presignFinish, ...forwardedContent } = parsedContent;
+				const forwardedContent = withoutPresignMarkers(parsedContent);
 				const validatedContent = {
 					...forwardedContent,
 					fwd: true

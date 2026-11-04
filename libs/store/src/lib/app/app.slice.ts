@@ -118,6 +118,7 @@ export interface AppState {
 	isOpenRecommand: boolean | null;
 	isSpelling: boolean;
 	isQuickReply: boolean;
+	voiceUserVolumes: Record<string, number>;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -170,7 +171,8 @@ export const initialAppState: AppState = {
 	autoHidden: false,
 	isOpenRecommand: null,
 	isSpelling: false,
-	isQuickReply: false
+	isQuickReply: false,
+	voiceUserVolumes: {}
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -449,6 +451,19 @@ export const appSlice = createSlice({
 		},
 		toggleRecommand: (state) => {
 			state.isOpenRecommand = !state.isOpenRecommand;
+		},
+		setVoiceUserVolume: (state, action: PayloadAction<{ userId: string; percent: number }>) => {
+			const { userId } = action.payload;
+			if (!userId) return;
+			const percent = Math.round(Math.min(150, Math.max(0, action.payload.percent)));
+			if (!state.voiceUserVolumes) {
+				state.voiceUserVolumes = {};
+			}
+			if (percent === 100) {
+				delete state.voiceUserVolumes[userId];
+			} else {
+				state.voiceUserVolumes[userId] = percent;
+			}
 		}
 	}
 });
@@ -515,3 +530,12 @@ export const selectIsSpelling = createSelector(getAppState, (state: AppState) =>
 export const selectIsQuickReply = createSelector(getAppState, (state: AppState) => state.isQuickReply);
 
 export const selectIsRecommand = createSelector(getAppState, (state: AppState) => state.isOpenRecommand);
+
+const EMPTY: Record<string, number> = Object.freeze({});
+
+export const selectVoiceUserVolumes = createSelector(getAppState, (state: AppState) => state.voiceUserVolumes ?? EMPTY);
+
+export const selectVoiceUserVolume = createSelector(
+	[selectVoiceUserVolumes, (_: { [APP_FEATURE_KEY]: AppState }, userId: string) => userId],
+	(volumes, userId) => volumes[userId] ?? 100
+);
