@@ -325,9 +325,11 @@ export const friendsSlice = createSlice({
 				state: EStateFriend;
 				sourceId?: string;
 				username?: string;
+				display_name?: string;
+				avatar_url?: string;
 			}>
 		) => {
-			const { userId, state: nextState, sourceId, username } = action.payload;
+			const { userId, state: nextState, sourceId, username, display_name, avatar_url } = action.payload;
 			const friend = state?.entities?.[userId];
 			if (friend) {
 				friend.state = nextState;
@@ -339,7 +341,7 @@ export const friendsSlice = createSlice({
 					id: userId,
 					state: EStateFriend.BLOCK,
 					source_id: sourceId,
-					user: { id: userId, username }
+					user: { id: userId, username, display_name, avatar_url }
 				});
 			}
 		},

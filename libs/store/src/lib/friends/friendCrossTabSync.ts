@@ -8,6 +8,8 @@ export interface FriendRelationPayload {
 	state: number;
 	sourceId: string;
 	username?: string;
+	display_name?: string;
+	avatar_url?: string;
 }
 
 export function broadcastFriendRelationToOtherTabs(payload: FriendRelationPayload): void {
@@ -26,7 +28,9 @@ export function initFriendRelationCrossTabSync(dispatch: (action: UnknownAction)
 			typeof v.sourceId === 'string' &&
 			typeof v.state === 'number' &&
 			Number.isFinite(v.state) &&
-			(v.username === undefined || typeof v.username === 'string')
+			(v.username === undefined || typeof v.username === 'string') &&
+			(v.display_name === undefined || typeof v.display_name === 'string') &&
+			(v.avatar_url === undefined || typeof v.avatar_url === 'string')
 		);
 	};
 
@@ -36,7 +40,14 @@ export function initFriendRelationCrossTabSync(dispatch: (action: UnknownAction)
 			const data = JSON.parse(e.newValue);
 			if (!isValidPayload(data)) return;
 			dispatch(
-				friendsActions.applyFriendBlockState({ userId: data.userId, state: data.state, sourceId: data.sourceId, username: data.username })
+				friendsActions.applyFriendBlockState({
+					userId: data.userId,
+					state: data.state,
+					sourceId: data.sourceId,
+					username: data.username,
+					display_name: data.display_name,
+					avatar_url: data.avatar_url
+				})
 			);
 		} catch {
 			// ignore malformed payload

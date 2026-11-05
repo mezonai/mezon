@@ -11,6 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import type { ApiUser } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -70,7 +71,7 @@ export function useFriends() {
 	);
 
 	const blockFriend = useCallback(
-		async (username: string, id: string) => {
+		async (username: string, id: string, profile?: Pick<ApiUser, 'display_name' | 'avatar_url'>) => {
 			const body = {
 				ids: [id]
 			};
@@ -81,7 +82,9 @@ export function useFriends() {
 					userId: id,
 					state: EStateFriend.BLOCK,
 					sourceId: currentUserId,
-					username
+					username,
+					display_name: profile?.display_name,
+					avatar_url: profile?.avatar_url
 				};
 				dispatch(friendsActions.applyFriendBlockState(blockState));
 				broadcastFriendRelationToOtherTabs(blockState);
