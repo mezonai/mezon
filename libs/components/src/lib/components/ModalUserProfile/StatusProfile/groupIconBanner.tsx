@@ -1,9 +1,17 @@
-import { useAuth, useFriends } from '@mezon/core';
+import { useAppNavigation, useAuth, useDirect, useFriends } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
-import { EStateFriend, giveCoffeeActions, selectCurrentUserId, selectInfoSendToken, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	EStateFriend,
+	audioCallActions,
+	giveCoffeeActions,
+	selectCurrentUserId,
+	selectInfoSendToken,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, type IUser } from '@mezon/utils';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -31,6 +39,8 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 	const dispatch = useAppDispatch();
 	const isMe = user?.user?.id === currentUserId;
 	const { userProfile } = useAuth();
+	const { createDirectMessageWithUser } = useDirect();
+	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
 	const handleDefault = (event: any) => {
 		event.stopPropagation();
@@ -142,6 +152,36 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 		showShareContactModal();
 	};
 
+	const handleCall = useCallback(
+		async (e: React.MouseEvent) => {
+			e.stopPropagation();
+			const userId = user?.user?.id;
+			if (!userId) return;
+			try {
+				const response = await createDirectMessageWithUser(
+					userId,
+					user.user?.display_name || user.user?.username,
+					user.user?.username,
+					user.user?.avatar_url
+				);
+				if (response?.channel_id) {
+					dispatch(
+						audioCallActions.setOpenVoiceCall({
+							hasVideo: false,
+							channelId: response.channel_id,
+							userId
+						})
+					);
+					const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+					navigate(directChat);
+				}
+			} catch {
+				return;
+			}
+		},
+		[user, createDirectMessageWithUser, dispatch, toDmGroupPageFromMainApp, navigate]
+	);
+
 	if (isMe || !user) return null;
 	return (
 		<>
@@ -156,6 +196,17 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 					<Icons.Transaction className="size-4 iconWhiteImportant" />
 				</span>
 			</div>
+			{checkAddFriend !== EStateFriend.BLOCK && !!user.user?.id && (
+				<div
+					className="p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
+					onClick={handleCall}
+					data-e2e={generateE2eId('short_profile.action.button.call')}
+				>
+					<span title={t('call.title')}>
+						<Icons.IconPhoneDM className="size-4 iconWhiteImportant" />
+					</span>
+				</div>
+			)}
 			{checkAddFriend === EStateFriend.FRIEND && (
 				<div
 					className="p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
