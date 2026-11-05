@@ -336,11 +336,7 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 				'reply',
 				t('reply'),
 				handleItemClick,
-				<MezonIcon icon={MzIcons20.mzReply} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />,
-				null,
-				false,
-				false,
-				'rotate-180'
+				<MezonIcon icon={MzIcons20.mzReply} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 			);
 		});
 	});
