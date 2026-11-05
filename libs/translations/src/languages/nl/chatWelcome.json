@@ -21,7 +21,9 @@
 		"ignore": "Negeren",
 		"friendRequestSentButton": "Vriend verzoek verzonden",
 		"block": "Blokken",
-		"unblock": "Blok opheffen"
+		"unblock": "Blok opheffen",
+		"welcomeToClan": "Welkom bij de clan",
+		"emptyChannel": "Je bent in een kanaal! Kanalen verschijnen hier zodra je toegang hebt."
 	},
 	"toast": {
 		"userBlockedSuccess": "Gebruiker succesvol geblokkeerd",

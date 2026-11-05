@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Umfrage konnte nicht beendet werden"
 	},
 	"copyUserId": "Benutzer-ID kopieren",
-	"giveFlowers": "Eine Blume senden"
+	"giveFlowers": "Eine Blume senden",
+	"userVolume": "Benutzerlautstärke"
 }

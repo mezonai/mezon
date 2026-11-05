@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Impossible de terminer le sondage"
 	},
 	"copyUserId": "Copier l'ID utilisateur",
-	"giveFlowers": "Envoyer une fleur"
+	"giveFlowers": "Envoyer une fleur",
+	"userVolume": "Volume de l’utilisateur"
 }

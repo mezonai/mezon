@@ -12,7 +12,8 @@
 		"friendRequests": "Vänförfrågan",
 		"QRScan": "QR-skanning",
 		"MyQRCode": "Min QR-kod",
-		"devices": "Enheter"
+		"devices": "Enheter",
+		"chat": "Chatt"
 	},
 	"deviceSettings": {
 		"description1": "Detta är alla enheter som är inloggade på ditt konto. Du kan logga ut varje enhet.",

@@ -265,5 +265,6 @@
 		"noVotesYet": "Brak głosów",
 		"pollLabel": "[Sonda]",
 		"failedToCreatePoll": "Nie udało się utworzyć ankiety"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Wyłącz tryb anonimowy przed utworzeniem tematu"
 }

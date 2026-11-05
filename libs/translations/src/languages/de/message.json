@@ -265,5 +265,6 @@
 		"noVotesYet": "Noch keine Stimmen abgegeben",
 		"pollLabel": "[Umfrage]",
 		"failedToCreatePoll": "Umfrage konnte nicht erstellt werden"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Deaktiviere den Anonymmodus, bevor du ein Thema erstellst"
 }

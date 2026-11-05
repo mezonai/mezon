@@ -265,5 +265,6 @@
 		"noVotesYet": "Яшчэ няма галасоў",
 		"pollLabel": "[Апытанне]",
 		"failedToCreatePoll": "Не ўдалося стварыць апытанне"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Выключыце ананімны рэжым перад стварэннем тэмы"
 }

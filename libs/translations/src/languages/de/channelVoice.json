@@ -125,7 +125,11 @@
 		"inputDevice": "Mikrofon",
 		"outputDevice": "Audio",
 		"camera": "Kamera",
-		"systemDefault": "Systemstandard"
+		"systemDefault": "Systemstandard",
+		"audioSettings": "Audioeinstellungen",
+		"noDevices": "Keine Geräte gefunden",
+		"noInputDevices": "Keine Eingabegeräte gefunden",
+		"noOutputDevices": "Keine Ausgabegeräte gefunden"
 	},
 	"toast": {
 		"connectionConnected": "Verbindung erfolgreich hergestellt",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "Leertaste halten zum Sprechen",
 		"holdingSpace": "Du sprichst – Leertaste loslassen zum Stummschalten",
-		"hintBody": "Du bist zum Zuhören beigetreten. Halte die Leertaste, um dein Mikrofon zum Sprechen zu öffnen, und lass sie los, um wieder stumm zu schalten."
+		"hintBody": "Du bist zum Zuhören beigetreten. Halte die Leertaste, um dein Mikrofon zum Sprechen zu öffnen, und lass sie los, um wieder stumm zu schalten.",
+		"title": "Push-to-Talk"
 	},
 	"screenDraw": {
 		"annotateScreen": "Auf deinem geteilten Bildschirm zeichnen",
@@ -234,5 +239,11 @@
 		"inviteReturn": "Der Host hat die Breakout-Räume geschlossen. Zurück zum Hauptraum?",
 		"join": "Beitreten",
 		"later": "Nicht jetzt"
+	},
+	"screenShareCaptureFailed": "Dein Browser konnte den ausgewählten Bildschirm nicht erfassen. Teile stattdessen ein Fenster oder einen Tab.",
+	"dmCall": {
+		"you": "Du",
+		"enlarge": "{{name}} vergrößern",
+		"restoreLayout": "Zurück zur nebeneinanderliegenden Ansicht"
 	}
 }

@@ -21,7 +21,9 @@
 		"ignore": "Ignoruj",
 		"friendRequestSentButton": "Wysłano zaproszenie do zaprzyjaźnienia",
 		"block": "Zablokuj",
-		"unblock": "Odblokuj"
+		"unblock": "Odblokuj",
+		"welcomeToClan": "Witamy w klanie",
+		"emptyChannel": "Jesteś na kanale! Kanały pojawią się tutaj, gdy uzyskasz do nich dostęp."
 	},
 	"toast": {
 		"userBlockedSuccess": "Pomyślnie zablokowano użytkownika",

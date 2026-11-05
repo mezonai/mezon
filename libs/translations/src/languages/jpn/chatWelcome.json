@@ -21,7 +21,9 @@
 		"ignore": "無視",
 		"friendRequestSentButton": "友達招待を送信しました",
 		"block": "ブロック",
-		"unblock": "ブロックを解除"
+		"unblock": "ブロックを解除",
+		"welcomeToClan": "クランへようこそ",
+		"emptyChannel": "チャンネルに参加しました！アクセスできるようになると、ここにチャンネルが表示されます。"
 	},
 	"toast": {
 		"userBlockedSuccess": "ユーザーをブロックしました",

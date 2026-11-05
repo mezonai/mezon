@@ -123,5 +123,6 @@
 		"failedToClosePoll": "투표 종료 실패"
 	},
 	"copyUserId": "사용자 ID 복사",
-	"giveFlowers": "꽃 보내기"
+	"giveFlowers": "꽃 보내기",
+	"userVolume": "사용자 음량"
 }

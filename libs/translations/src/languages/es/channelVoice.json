@@ -125,7 +125,11 @@
 		"inputDevice": "Dispositivo de entrada",
 		"outputDevice": "Dispositivo de salida",
 		"camera": "Cámara",
-		"systemDefault": "Predeterminado del sistema"
+		"systemDefault": "Predeterminado del sistema",
+		"audioSettings": "Configuración de audio",
+		"noDevices": "No se encontraron dispositivos",
+		"noInputDevices": "No se encontraron dispositivos de entrada",
+		"noOutputDevices": "No se encontraron dispositivos de salida"
 	},
 	"toast": {
 		"connectionConnected": "Conexión establecida",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "Mantén Espacio para hablar",
 		"holdingSpace": "Hablando — suelta Espacio para silenciar",
-		"hintBody": "Te uniste para escuchar. Mantén Espacio para abrir tu micrófono mientras hablas; suéltalo para volver a silenciar."
+		"hintBody": "Te uniste para escuchar. Mantén Espacio para abrir tu micrófono mientras hablas; suéltalo para volver a silenciar.",
+		"title": "Pulsar para hablar"
 	},
 	"screenDraw": {
 		"annotateScreen": "Dibujar en tu pantalla compartida",
@@ -234,5 +239,11 @@
 		"inviteReturn": "El anfitrión cerró las salas de grupos. ¿Volver a la sala principal?",
 		"join": "Unirse",
 		"later": "Ahora no"
+	},
+	"screenShareCaptureFailed": "Tu navegador no pudo capturar la pantalla seleccionada. Intenta compartir una ventana o una pestaña.",
+	"dmCall": {
+		"you": "Tú",
+		"enlarge": "Ampliar {{name}}",
+		"restoreLayout": "Volver a la vista en paralelo"
 	}
 }
