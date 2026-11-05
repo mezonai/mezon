@@ -2163,7 +2163,7 @@ export const messagesSlice = createSlice({
 				}
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
-					const resolvedChannelId = resolveMessageStoreChannelId(state, messageId, messageChannelId);
+					const resolvedChannelId = resolveMessageStoreChannelId(state, messageId, messageChannelId, channelId, topic_id);
 					if (!state.channelMessages[resolvedChannelId]) {
 						state.channelMessages[resolvedChannelId] = channelMessagesAdapter.getInitialState({
 							id: resolvedChannelId
@@ -2222,7 +2222,7 @@ export const messagesSlice = createSlice({
 
 				case TypeMessage.DeleteEphemeralMsg:
 				case TypeMessage.ChatRemove: {
-					const resolvedChannelId = resolveMessageStoreChannelId(state, messageId, messageChannelId);
+					const resolvedChannelId = resolveMessageStoreChannelId(state, messageId, messageChannelId, channelId, topic_id);
 					updateReferenceMessage({
 						state,
 						channelId: resolvedChannelId,
@@ -3140,13 +3140,26 @@ const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: Mess
 	}
 };
 
-const resolveMessageStoreChannelId = (state: MessagesState, messageId: string, preferredChannelId: string): string => {
+const resolveMessageStoreChannelId = (
+	state: MessagesState,
+	messageId: string,
+	preferredChannelId: string,
+	eventChannelId: string,
+	eventTopicId?: string
+): string => {
 	if (state.channelMessages[preferredChannelId]?.entities?.[messageId]) {
 		return preferredChannelId;
 	}
 
+	const isValidId = (id?: string): id is string => Boolean(id && id !== '0');
+	const eventIds = [eventChannelId, eventTopicId].filter(isValidId);
+	if (!eventIds.length) {
+		return preferredChannelId;
+	}
+
 	for (const [channelId, channelData] of Object.entries(state.channelMessages)) {
-		if (channelData?.entities?.[messageId]) {
+		const stored = channelData?.entities?.[messageId];
+		if (stored && [channelId, stored.channel_id, stored.topic_id].filter(isValidId).some((id) => eventIds.includes(id))) {
 			return channelId;
 		}
 	}

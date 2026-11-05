@@ -63,6 +63,8 @@ const trackRefreshAttempt = () => {
 
 const isStaleRefresh = (gen: number) => gen !== refreshGeneration;
 
+let refreshAfterCooldownTimer: ReturnType<typeof setTimeout> | null = null;
+
 const yieldToMain = (): Promise<void> =>
 	new Promise((resolve) => {
 		if (typeof MessageChannel === 'undefined') {
@@ -187,6 +189,26 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 	if (!allowed) {
 		console.warn('[refreshApp] Rate limited:', reason);
+		// The joins are what put a reconnected socket back on the clan and DM streams; skipped, it stays open
+		// and gets no messages until a reload. The server takes a repeated join as a no-op, so they go out
+		// now, and the rest of the refresh runs once the cooldown is over.
+		const state = thunkAPI.getState() as RootState;
+		const clanId = state?.clans?.currentClanId;
+		thunkAPI.dispatch(directActions.joinDirectMessageSpace({ restart: true }));
+		if (clanId && clanId !== '0') {
+			thunkAPI.dispatch(clansActions.joinClan({ clanId, noCache: true }));
+		}
+		if (!refreshAfterCooldownTimer && cooldownUntil) {
+			refreshAfterCooldownTimer = setTimeout(
+				() => {
+					refreshAfterCooldownTimer = null;
+					if ((thunkAPI.getState() as RootState)?.auth?.isLogin) {
+						thunkAPI.dispatch(refreshApp());
+					}
+				},
+				Math.max(0, cooldownUntil - Date.now()) + 100
+			);
+		}
 		return thunkAPI.rejectWithValue({ rateLimited: true, reason });
 	}
 

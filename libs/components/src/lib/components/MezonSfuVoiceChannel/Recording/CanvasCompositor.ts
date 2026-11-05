@@ -110,8 +110,6 @@ export class CanvasCompositor implements RecordingCompositor {
 				imageHeight: ready ? video.videoHeight : 0,
 				avatar: tile.avatarKey ? (this.avatars.get(tile.avatarKey) ?? null) : null,
 				label: tile.label,
-				initial: tile.initial,
-				accent: tile.accent,
 				focused: tile.focused,
 				contain: tile.contain,
 				speaking: tile.speaking

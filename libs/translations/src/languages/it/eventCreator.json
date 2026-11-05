@@ -82,7 +82,8 @@
 		},
 		"cover": "Copertina",
 		"VoiceChannel": {
-			"title": "Seleziona canale vocale"
+			"title": "Seleziona canale vocale",
+			"privateAudienceTip": "Suggerimento: Per consentire a tutti i membri del pubblico di partecipare all'evento, aggiungili a <channel>#{{channelName}}</channel>."
 		}
 	},
 	"actions": {

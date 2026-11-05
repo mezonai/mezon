@@ -380,6 +380,12 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 		const client = createMezonClient(mezon);
 		clientRef.current = client;
+		// The chat layout installs its own handler once it mounts. A node at the user's connection limit
+		// completes the handshake and drops the socket a few ms later, before that, so without this the
+		// drop goes unheard and socketState keeps saying 'connected': nothing ever reconnects.
+		client.ondisconnect = () => {
+			socketState.status = 'disconnected';
+		};
 
 		client.onrefreshsession = (sessionNew: ApiSession) => {
 			const prev = sessionRef.current;
@@ -769,21 +775,21 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				noteHealthyEndpointAsked(false);
 				noteGatewayAnswered();
 
-				const host = (payload.ws_url ?? '').trim();
-				// The gateway answers with `host` on production but `host:port` elsewhere; the allowlist
-				// only knows hostnames.
-				if (host && !isAllowedHost(host.split(':')[0])) {
-					console.error('[healthyEndpoint] gateway named a host we do not talk to:', host);
-					return 'failed';
-				}
-
 				const current = sessionRef.current;
 				if (!isSameAccount(current, session)) {
 					return 'skipped';
 				}
 				const previousHost = resolveSessionWsUrl(session);
+				const answeredHost = (payload.ws_url ?? '').trim();
+				// The gateway answers with `host` on production but `host:port` elsewhere; the allowlist only
+				// knows hostnames. The node this session already dials needs no allowlist: on dev its host is
+				// not under the api's domain, and refusing it threw away the session id minted with it.
+				const host = answeredHost && (answeredHost === previousHost || isAllowedHost(answeredHost.split(':')[0])) ? answeredHost : '';
+				if (answeredHost && !host) {
+					console.error('[healthyEndpoint] gateway named a host we do not talk to:', answeredHost);
+				}
 				// The gateway mints a session id for every answer and may retire the old one, so the new
-				// session id has to be adopted even when it keeps us on the same node.
+				// session id has to be adopted even when it keeps us on the same node, or names one we stay off.
 				adoptSession({
 					...current,
 					ws_url: host || current.ws_url,

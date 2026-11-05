@@ -237,6 +237,8 @@ const RECONNECT_RETRY_BASE_MS = 500;
 const RECONNECT_RETRY_JITTER_MS = 400;
 
 const RECONNECT_WAVE_COOLDOWN_MS = 10000;
+// A node at the user's connection limit completes the handshake and drops the socket a few ms later.
+const RECONNECT_SETTLE_MS = 1500;
 
 function randomReconnectSpacingMs(): number {
 	return RECONNECT_RETRY_BASE_MS + Math.floor(Math.random() * RECONNECT_RETRY_JITTER_MS);
@@ -3115,6 +3117,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					throw new Error('Socket reconnection failed: missing client or session');
 				}
 
+				// Taken as a reconnect, a socket the node drops at once ends the wave, and the drop starts a
+				// fresh one at full budget: the tab redials about once a second for as long as the node keeps
+				// refusing. Held as a failed attempt, it gets the wave's backoff instead.
+				await new Promise((resolve) => setTimeout(resolve, RECONNECT_SETTLE_MS));
+				if (!client.isOpen()) {
+					throw new Error('Socket closed right after reconnecting');
+				}
+
 				return true;
 			} catch (error) {
 				socketState.status = 'disconnected';
@@ -3332,8 +3342,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onstatuspresence = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.oncanvasevent = () => {};
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			socket.ondisconnect = () => {};
+			socket.ondisconnect = () => {
+				socketState.status = 'disconnected';
+			};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onheartbeattimeout = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function

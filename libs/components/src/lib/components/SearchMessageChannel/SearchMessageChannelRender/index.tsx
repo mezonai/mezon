@@ -6,6 +6,7 @@ import {
 	selectAllAccount,
 	selectAllChannels,
 	selectChannelById,
+	selectMemberByIdAndClanId,
 	selectMemberClanByUserId,
 	selectTheme,
 	useAppDispatch,
@@ -142,6 +143,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 														searchChannel={searchChannel}
 														searchMessage={searchMessage}
 														user={currentClanUser}
+														isDm={isDm}
 													/>
 												))}
 											</div>
@@ -172,15 +174,27 @@ interface ISearchedItemProps {
 	searchMessage: SearchMessageEntity;
 	searchChannel: ChannelsEntity;
 	user: UsersClanEntity;
+	isDm?: boolean;
 }
 
-const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps) => {
+const SearchedItem = ({ searchMessage, searchChannel, user, isDm }: ISearchedItemProps) => {
 	const { t } = useTranslation('searchMessageChannel');
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const clanId = searchMessage.clan_id || searchChannel.clan_id;
+	const sender = useAppSelector((state) =>
+		!isDm && clanId && clanId !== '0' ? selectMemberByIdAndClanId(state, clanId, searchMessage.sender_id || '') : null
+	);
 
 	const convertedMessage = {
-		...searchMessage
+		...searchMessage,
+		clan_avatar: sender?.clan_avatar,
+		clan_nick: sender?.clan_nick,
+		user: {
+			id: searchMessage.sender_id || '',
+			name: searchMessage.username || '',
+			username: searchMessage.username || ''
+		}
 	} as unknown as IMessageWithUser;
 
 	const handleClickJump = () => {
@@ -207,9 +221,13 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 				allowDisplayShortProfile={false}
 				message={convertedMessage as IMessageWithUser}
 				mode={
-					searchChannel?.type === ChannelType.CHANNEL_TYPE_THREAD
-						? ChannelStreamMode.STREAM_MODE_THREAD
-						: ChannelStreamMode.STREAM_MODE_CHANNEL
+					isDm
+						? searchMessage.channel_type === ChannelType.CHANNEL_TYPE_GROUP
+							? ChannelStreamMode.STREAM_MODE_GROUP
+							: ChannelStreamMode.STREAM_MODE_DM
+						: (searchMessage.channel_type ?? searchChannel?.type) === ChannelType.CHANNEL_TYPE_THREAD
+							? ChannelStreamMode.STREAM_MODE_THREAD
+							: ChannelStreamMode.STREAM_MODE_CHANNEL
 				}
 				isSearchMessage={true}
 				user={user}
