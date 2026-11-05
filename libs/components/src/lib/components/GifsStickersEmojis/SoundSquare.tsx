@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20, MzIcons32 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -367,7 +367,7 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 						className="flex-shrink-0 flex items-center justify-center text-theme-primary duration-200  hover:scale-110 active:scale-95"
 						title="Send sound"
 					>
-						<MezonIcon icon={MzIcons20.mzSend} className="text-[var(--mz-icon)]" />
+						<MezonIcon icon={MzIcons16.mzSend} className="text-[var(--mz-icon)]" />
 					</button>
 				</div>
 			))}

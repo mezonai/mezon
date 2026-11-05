@@ -1,6 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { authActions, useAppDispatch } from '@mezon/store';
-import { Image, MezonIcon, MzIcons24, MzIcons32 } from '@mezon/ui';
+import { Image, MezonIcon, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -50,7 +50,7 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 				{isShowSideBar ? (
 					<MezonIcon icon={MzIcons24.mzClose} className="mt-1 ml-1 text-[var(--mz-icon)]" />
 				) : (
-					<MezonIcon icon={MzIcons32.mzMenu} className="text-[var(--mz-icon)]" />
+					<MezonIcon icon={MzIcons24.mzMenu} className="mt-1 ml-1 text-[var(--mz-icon)]" />
 				)}
 			</div>
 			<div className="flex items-center gap-3">

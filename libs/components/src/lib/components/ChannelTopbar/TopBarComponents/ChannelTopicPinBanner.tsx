@@ -27,7 +27,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TypeMessage, createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
 import { format } from 'date-fns';
 import type { ApiSdTopic } from 'mezon-js';
@@ -1119,7 +1119,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 							data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.topic_item')}
 						>
 							<div className="relative flex items-center justify-center shrink-0 w-7 h-7 text-theme-primary-active">
-								<MezonIcon icon={MzIcons24.mzTopic} className="shrink-0 text-[var(--mz-icon)]" />
+								<MezonIcon icon={MzIcons20.mzTopic} className="shrink-0 text-[var(--mz-icon)]" />
 								{showTopicBadge &&
 									(topicBadgeCount > 0 ? (
 										<div

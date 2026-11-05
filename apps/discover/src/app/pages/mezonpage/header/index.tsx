@@ -1,4 +1,4 @@
-import { Image, MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { Image, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import throttle from 'lodash/throttle';
 import React, { memo, useCallback, useEffect, useState } from 'react';
@@ -146,7 +146,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 
 						<div className="lg:hidden flex w-[40px] h-[40px] items-center justify-center hover:bg-white/10 rounded-full transition-colors duration-200">
 							{sideBarIsOpen ? (
-								<MezonIcon icon={MzIcons24.mzClose} className="cursor-pointer text-white" onClick={toggleSideBar} />
+								<MezonIcon icon={MzIcons20.mzClose} className="cursor-pointer text-white" onClick={toggleSideBar} />
 							) : (
 								<MezonIcon icon={MzIcons20.mzMenu} className="cursor-pointer text-white" onClick={toggleSideBar} />
 							)}

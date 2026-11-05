@@ -1,4 +1,4 @@
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React from 'react';
@@ -45,10 +45,10 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, selecte
 			<MezonIcon icon={MzIcons24.mzSpeaker} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 		),
 		[ChannelType.CHANNEL_TYPE_FORUM]: (
-			<MezonIcon icon={MzIcons20.mzForum} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+			<MezonIcon icon={MzIcons24.mzForum} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 		),
 		[ChannelType.CHANNEL_TYPE_ANNOUNCEMENT]: (
-			<MezonIcon icon={MzIcons20.mzAnnouncement} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+			<MezonIcon icon={MzIcons24.mzAnnouncement} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 		),
 		[ChannelType.CHANNEL_TYPE_STREAMING]: (
 			<MezonIcon icon={MzIcons24.mzLive} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />

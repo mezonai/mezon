@@ -48,8 +48,8 @@ export const BreakoutControl = memo(({ isExternalCalling, isOpen = false, onTogg
 				title={returnTooltip}
 				className={`${SFU_CONTROL_BUTTON_CLASS} disabled:cursor-not-allowed disabled:opacity-50`}
 			>
-				<MezonIcon icon={MzIcons24.mzArrowLeftCircle} className="text-white max-lg:hidden" />
-				<MezonIcon icon={MzIcons20.mzArrowLeftCircle} className="hidden text-white max-lg:block" />
+				<MezonIcon icon={MzIcons24.mzArrowLeftCircle} className="text-white max-md:hidden" />
+				<MezonIcon icon={MzIcons20.mzArrowLeftCircle} className="hidden text-white max-md:block" />
 			</button>
 		);
 	}
@@ -71,8 +71,8 @@ export const BreakoutControl = memo(({ isExternalCalling, isOpen = false, onTogg
 			title={tooltip}
 			className={`${SFU_CONTROL_BUTTON_CLASS} ${highlighted ? '!bg-[#5865f2] hover:!bg-[#4752c4]' : ''}`}
 		>
-			<MezonIcon icon={MzIcons24.mzBreakout} className="text-white max-lg:hidden" />
-			<MezonIcon icon={MzIcons20.mzBreakout} className="hidden text-white max-lg:block" />
+			<MezonIcon icon={MzIcons24.mzBreakout} className="text-white max-md:hidden" />
+			<MezonIcon icon={MzIcons20.mzBreakout} className="hidden text-white max-md:block" />
 		</button>
 	);
 });

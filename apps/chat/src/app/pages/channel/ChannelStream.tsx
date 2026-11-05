@@ -14,7 +14,7 @@ import {
 	videoStreamActions,
 	watchStream
 } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24, MzIcons40 } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons40 } from '@mezon/ui';
 import type { IStreamInfo } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -117,7 +117,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 							onClick={() => setShowMembers((shown) => !shown)}
 							className="flex items-center gap-1 rounded-3xl bg-neutral-700 text-white px-2 py-[6px] hover:bg-bgSecondary600"
 						>
-							<MezonIcon icon={MzIcons24.mzChevronDown} className={`transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`} />
+							<MezonIcon icon={MzIcons20.mzChevronDown} className={`transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`} />
 							<MezonIcon icon={MzIcons20.mzMembers} />
 						</button>
 						{showMembers && <StreamViewers channelId={channelId} />}

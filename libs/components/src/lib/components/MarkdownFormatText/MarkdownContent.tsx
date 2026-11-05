@@ -1,6 +1,6 @@
 import { toMembersPage } from '@mezon/core';
 import { channelsActions, getStore, inviteActions, selectAppChannelById, selectClanExists, selectTheme, useAppDispatch } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import {
 	EBacktickType,
 	getFacebookEmbedSize,
@@ -502,7 +502,7 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 				style={{ wordBreak: 'break-all', overflowWrap: 'break-word' }}
 			>
 				<button className="absolute right-2 top-3" onClick={handleCopyClick}>
-					{copied ? <MezonIcon icon={MzIcons20.mzPaste} /> : <MezonIcon icon={MzIcons16.mzCopy} />}
+					{copied ? <MezonIcon icon={MzIcons16.mzPaste} /> : <MezonIcon icon={MzIcons16.mzCopy} />}
 				</button>
 				<CodeHighlighter code={code} language={language || null} isInPinMsg={isInPinMsg} />
 			</pre>

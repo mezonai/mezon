@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, type MessagesEntity } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { TypeMessage, addMention, convertDateStringI18n, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
@@ -58,7 +58,7 @@ function MessageWithSystem({
 						{message?.code === TypeMessage.Welcome && <MezonIcon icon={MzIcons20.mzArrowRight} className="text-[#16A34A]" />}
 						{message?.code === TypeMessage.UpcomingEvent && <MezonIcon icon={MzIcons20.mzEvent} className="text-[rgba(163,22,22,1)]" />}
 						{(message?.code === TypeMessage.CreateThread || message?.code === TypeMessage.DeleteThread) && (
-							<MezonIcon icon={MzIcons24.mzThread} className="flex-shrink-0 text-[var(--mz-icon)]" />
+							<MezonIcon icon={MzIcons20.mzThread} className="flex-shrink-0 text-[var(--mz-icon)]" />
 						)}
 						{message?.code === TypeMessage.CreatePin && <MezonIcon icon={MzIcons20.mzPin} className="text-[var(--mz-icon)]" />}
 						{message?.code === TypeMessage.AuditLog && <MezonIcon icon={MzIcons20.mzAuditLog} className="text-[#186CF2]" />}

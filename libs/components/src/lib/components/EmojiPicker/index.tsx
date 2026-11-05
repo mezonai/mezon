@@ -99,8 +99,8 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const categoryIcons = useMemo(
 		() => [
 			<MezonIcon icon={MzIcons24.mzShop} />,
-			<MezonIcon icon={MzIcons32.mzStar} />,
-			<MezonIcon icon={MzIcons32.mzClock} />,
+			<MezonIcon icon={MzIcons24.mzStar} />,
+			<MezonIcon icon={MzIcons24.mzClock} />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
 					<img
@@ -114,14 +114,14 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					</div>
 				)
 			),
-			<MezonIcon icon={MzIcons32.mzEmoji} />,
-			<MezonIcon icon={MzIcons32.mzLeaf} />,
-			<MezonIcon icon={MzIcons32.mzFood} />,
-			<MezonIcon icon={MzIcons32.mzGamepad} />,
-			<MezonIcon icon={MzIcons32.mzBicycle} />,
-			<MezonIcon icon={MzIcons32.mzLamp} />,
-			<MezonIcon icon={MzIcons32.mzHeart} />,
-			<MezonIcon icon={MzIcons32.mzFlag} />
+			<MezonIcon icon={MzIcons24.mzEmoji} />,
+			<MezonIcon icon={MzIcons24.mzLeaf} />,
+			<MezonIcon icon={MzIcons24.mzFood} />,
+			<MezonIcon icon={MzIcons24.mzGamepad} />,
+			<MezonIcon icon={MzIcons24.mzBicycle} />,
+			<MezonIcon icon={MzIcons24.mzLamp} />,
+			<MezonIcon icon={MzIcons24.mzHeart} />,
+			<MezonIcon icon={MzIcons24.mzFlag} />
 		],
 		[categoryEmoji]
 	);

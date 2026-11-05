@@ -1,5 +1,5 @@
 import { useEmojiSuggestionContext, useEscapeKeyClose } from '@mezon/core';
-import { MezonIcon, MzIcons20, MzIcons32 } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import type { IEmoji } from '@mezon/utils';
 import { PREDEFINED_EMOJI_CATEGORIES, RECENT_EMOJI_CATEGORY, createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -38,8 +38,8 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 
 	const categoryIcons = useMemo(
 		() => [
-			<MezonIcon icon={MzIcons32.mzStar} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzClock} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzStar} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzClock} className="text-[var(--mz-icon)]" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
 					<img
@@ -53,14 +53,14 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 					</div>
 				)
 			),
-			<MezonIcon icon={MzIcons20.mzEmoji} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzLeaf} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzFood} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzGamepad} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzBicycle} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzLamp} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzHeart} className="text-[var(--mz-icon)]" />,
-			<MezonIcon icon={MzIcons32.mzFlag} className="text-[var(--mz-icon)]" />
+			<MezonIcon icon={MzIcons24.mzEmoji} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzLeaf} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzFood} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzGamepad} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzBicycle} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzLamp} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzHeart} className="text-[var(--mz-icon)]" />,
+			<MezonIcon icon={MzIcons24.mzFlag} className="text-[var(--mz-icon)]" />
 		],
 		[categoryEmoji]
 	);

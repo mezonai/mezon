@@ -1,5 +1,5 @@
 import { useAuth } from '@mezon/core';
-import { MezonIcon, MzIcons32, MzIcons40 } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSendReaction } from '../MyVideoConference/Reaction';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
@@ -42,8 +42,8 @@ export const SfuRaisingHandControl = memo(() => {
 			className={SFU_CONTROL_BUTTON_CLASS}
 			onClick={() => setHand(!active)}
 		>
-			<MezonIcon icon={MzIcons40.mzHandRaise} className={`max-lg:hidden ${active ? 'text-[#efbc39]' : 'text-white'}`} />
-			<MezonIcon icon={MzIcons32.mzHandRaise} className={`hidden max-lg:block ${active ? 'text-[#efbc39]' : 'text-white'}`} />
+			<MezonIcon icon={MzIcons24.mzHandRaise} className={`max-md:hidden ${active ? 'text-[#efbc39]' : 'text-white'}`} />
+			<MezonIcon icon={MzIcons20.mzHandRaise} className={`hidden max-md:block ${active ? 'text-[#efbc39]' : 'text-white'}`} />
 		</button>
 	);
 });

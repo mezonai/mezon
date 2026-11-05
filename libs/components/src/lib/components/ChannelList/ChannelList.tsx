@@ -24,7 +24,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons16 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, toggleDisableHover } from '@mezon/utils';
 import type { ApiCategoryOrderUpdate } from 'mezon-js';
@@ -520,7 +520,7 @@ const RowVirtualizerDynamic = memo(
 													title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
 													data-e2e={generateE2eId('clan_page.channel_list.button.drag_channel')}
 												>
-													<MezonIcon icon={MzIcons16.mzMove} className={isDragModeEnabled ? '' : 'text-[var(--mz-icon)]'} />
+													<MezonIcon icon={MzIcons20.mzMove} className={isDragModeEnabled ? '' : 'text-[var(--mz-icon)]'} />
 												</button>
 											</div>
 										)}

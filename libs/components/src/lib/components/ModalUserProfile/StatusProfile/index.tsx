@@ -58,9 +58,9 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 			case EUserStatus.ONLINE:
 				return <MezonIcon icon={MzIcons16.mzStatusOnline} className="text-[#16A34A]" />;
 			case EUserStatus.IDLE:
-				return <MezonIcon icon={MzIcons20.mzMoon} className="text-[#F0B232] -rotate-90" />;
+				return <MezonIcon icon={MzIcons16.mzMoon} className="text-[#F0B232] -rotate-90" />;
 			case EUserStatus.DO_NOT_DISTURB:
-				return <MezonIcon icon={MzIcons20.mzMinusCircle} className="text-[#F23F43]" />;
+				return <MezonIcon icon={MzIcons16.mzMinusCircle} className="text-[#F23F43]" />;
 			case EUserStatus.INVISIBLE:
 				return <MezonIcon icon={MzIcons16.mzStatusOffline} className="text-[var(--mz-icon)]" />;
 			default:
@@ -145,7 +145,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 			<div className="max-md:relative">
 				<ItemStatus
 					children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
-					startIcon={<MezonIcon icon={MzIcons20.mzCheck} className="text-[var(--mz-icon)]" />}
+					startIcon={<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon)]" />}
 					disabled={true}
 				/>
 				<ItemStatus
@@ -162,7 +162,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 				<ItemStatus
 					onClick={handleCustomStatus}
 					children={status.user_status ? t('statusProfile.editCustomStatus') : t('statusProfile.setCustomStatus')}
-					startIcon={<MezonIcon icon={MzIcons20.mzEmoji} className="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]" />}
+					startIcon={<MezonIcon icon={MzIcons16.mzEmoji} className="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]" />}
 				/>
 				<Menu
 					trigger="click"

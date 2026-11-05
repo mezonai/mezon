@@ -50,13 +50,13 @@ export const MicrophoneControl = ({
 			<button id="btn-meet-micro" type="button" title={label} aria-label={label} className={SFU_CONTROL_BUTTON_CLASS} onClick={handleClick}>
 				{enabled ? (
 					<>
-						<MezonIcon icon={MzIcons24.mzMic} className="text-white max-lg:hidden" />
-						<MezonIcon icon={MzIcons20.mzMic} className="hidden text-white max-lg:block" />
+						<MezonIcon icon={MzIcons24.mzMic} className="text-white max-md:hidden" />
+						<MezonIcon icon={MzIcons20.mzMic} className="hidden text-white max-md:block" />
 					</>
 				) : (
 					<>
-						<MezonIcon icon={MzIcons24.mzMicOff} className="text-white max-lg:hidden" />
-						<MezonIcon icon={MzIcons20.mzMicOff} className="hidden text-white max-lg:block" />
+						<MezonIcon icon={MzIcons24.mzMicOff} className="text-white max-md:hidden" />
+						<MezonIcon icon={MzIcons20.mzMicOff} className="hidden text-white max-md:block" />
 					</>
 				)}
 			</button>

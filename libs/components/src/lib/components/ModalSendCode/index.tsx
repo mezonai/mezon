@@ -14,7 +14,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
 import type { ApiAccount, ApiPubKey } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -35,7 +35,7 @@ const ModalIntro = ({ onNext, onClose }: ModalProps) => {
 			<div className="flex flex-col items-center max-w-sm mx-auto bg-white shadow-md rounded-md relative">
 				<div className="w-full dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black flex justify-end items-center p-4 rounded-t">
 					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={() => onClose()}>
-						<MezonIcon icon={MzIcons16.mzClose} />
+						<MezonIcon icon={MzIcons20.mzClose} />
 					</button>
 				</div>
 				<div className="flex flex-col items-center gap-2 px-4 pb-4 dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black rounded-b">
@@ -132,7 +132,7 @@ const ModalCreatePin = ({ onNext, onBack, onClose, setPin }: ModalProps & { setP
 						<MezonIcon icon={MzIcons20.mzArrowLeft} />
 					</button>
 					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={() => onClose()}>
-						<MezonIcon icon={MzIcons16.mzClose} />
+						<MezonIcon icon={MzIcons20.mzClose} />
 					</button>
 				</div>
 				<div className="flex flex-col items-center gap-2 px-4 pb-4 dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black rounded-b">
@@ -322,7 +322,7 @@ export const ModalConfirmPin = ({
 						</button>
 					)}
 					<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={() => onClose()}>
-						<MezonIcon icon={MzIcons16.mzClose} />
+						<MezonIcon icon={MzIcons20.mzClose} />
 					</button>
 				</div>
 				<div className="flex flex-col items-center gap-2 px-4 pb-4 dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black rounded-b">

@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId, useMediaPermissions } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';
@@ -162,9 +162,9 @@ const SfuVoiceInfo = React.memo(() => {
 						onClick={handleToggleShareCamera}
 						icon={
 							showCamera ? (
-								<MezonIcon icon={MzIcons24.mzVideo} className="text-white" />
+								<MezonIcon icon={MzIcons20.mzVideo} className="text-white" />
 							) : (
-								<MezonIcon icon={MzIcons24.mzVideoOff} className="text-white" />
+								<MezonIcon icon={MzIcons20.mzVideoOff} className="text-white" />
 							)
 						}
 						showWarning={cameraWarning}

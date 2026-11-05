@@ -19,7 +19,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ApiChannelAppResponseExtend, ChannelThreads, IChannel } from '@mezon/utils';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -222,13 +222,13 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					>
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
-								<MezonIcon icon={MzIcons16.mzChannelWarning} className={iconColorClass} />
+								<MezonIcon icon={MzIcons20.mzChannelWarning} className={iconColorClass} />
 							)}
 							{isPrivate === ChannelStatusEnum.isPrivate &&
 								channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 								!isAgeRestrictedChannel && (
 									<MezonIcon
-										icon={MzIcons16.mzChannelPrivate}
+										icon={MzIcons20.mzChannelPrivate}
 										className={iconColorClass}
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag_lock')}
 									/>
@@ -236,13 +236,13 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
 								(channel.channel_private ? (
 									<MezonIcon
-										icon={MzIcons16.mzSpeakerLock}
+										icon={MzIcons20.mzSpeakerLock}
 										className={iconColorClass}
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.speaker_lock')}
 									/>
 								) : (
 									<MezonIcon
-										icon={MzIcons16.mzSpeaker}
+										icon={MzIcons20.mzSpeaker}
 										className={iconColorClass}
 										data-e2e={generateE2eId('clan_page.channel_list.item.icon.speaker')}
 									/>
@@ -250,7 +250,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
 								<MezonIcon
-									icon={MzIcons16.mzChannel}
+									icon={MzIcons20.mzChannel}
 									className={iconColorClass}
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
 								/>

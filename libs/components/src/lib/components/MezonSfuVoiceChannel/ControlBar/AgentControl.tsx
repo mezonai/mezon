@@ -1,6 +1,6 @@
 import { usePermissionChecker } from '@mezon/core';
 import { handleAddAgentToVoice, handleKichAgentFromVoice, selectVoiceInfo, useAppDispatch } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, MzIcons32, SpinningIcon } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, SpinningIcon } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -97,7 +97,7 @@ const AgentHint = ({ onDismiss }: { onDismiss?: () => void }) => {
 
 const AgentIcon = () => (
 	<>
-		<MezonIcon icon={MzIcons32.mzBot} className="text-white max-md:hidden" />
-		<MezonIcon icon={MzIcons24.mzBot} className="hidden text-white max-md:block" />
+		<MezonIcon icon={MzIcons24.mzBot} className="text-white max-md:hidden" />
+		<MezonIcon icon={MzIcons20.mzBot} className="hidden text-white max-md:block" />
 	</>
 );

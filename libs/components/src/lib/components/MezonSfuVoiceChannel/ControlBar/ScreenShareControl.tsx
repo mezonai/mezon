@@ -1,4 +1,4 @@
-import { MezonIcon, MzIcons16, MzIcons24, MzIcons32 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ScreenShareMode } from '../MyVideoConference/screenShareQuality';
@@ -65,13 +65,13 @@ export const ScreenShareControl = ({ active, onToggle, mode, changingMode, onMod
 			>
 				{active ? (
 					<>
-						<MezonIcon icon={MzIcons32.mzScreenShareOff} className="text-white max-lg:hidden" />
-						<MezonIcon icon={MzIcons24.mzScreenShareOff} className="hidden text-white max-lg:block" />
+						<MezonIcon icon={MzIcons24.mzScreenShareOff} className="text-white max-md:hidden" />
+						<MezonIcon icon={MzIcons20.mzScreenShareOff} className="hidden text-white max-md:block" />
 					</>
 				) : (
 					<>
-						<MezonIcon icon={MzIcons32.mzScreenShare} className="text-white max-lg:hidden" />
-						<MezonIcon icon={MzIcons24.mzScreenShare} className="hidden text-white max-lg:block" />
+						<MezonIcon icon={MzIcons24.mzScreenShare} className="text-white max-md:hidden" />
+						<MezonIcon icon={MzIcons20.mzScreenShare} className="hidden text-white max-md:block" />
 					</>
 				)}
 			</button>

@@ -38,7 +38,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { BooleanToVoidFunction, ChannelMembersEntity } from '@mezon/utils';
 import {
 	Direction_Mode,
@@ -656,7 +656,7 @@ const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
 			onClick={handleOpenTopic}
 		>
 			<div>
-				<MezonIcon icon={MzIcons24.mzTopic} className="text-[var(--mz-icon)]" />
+				<MezonIcon icon={MzIcons20.mzTopic} className="text-[var(--mz-icon)]" />
 			</div>
 			<div>New mentions in topic</div>
 			<div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">

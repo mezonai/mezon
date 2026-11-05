@@ -9,7 +9,7 @@ import {
 	selectMembersClanCount,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { TypeMessage, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode } from 'react';
@@ -76,7 +76,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 				<>
 					<Onboarditem
 						icon={
-							<MezonIcon icon={MzIcons24.mzUserPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+							<MezonIcon icon={MzIcons20.mzUserPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						}
 						title={t('onboard.inviteFriends')}
 						tick={numberMemberClan > 1}

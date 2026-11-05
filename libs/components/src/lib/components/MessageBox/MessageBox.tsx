@@ -8,7 +8,7 @@ import {
 	selectStatusMenu,
 	useAppDispatch
 } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ILongPressType, IMessageSendPayload, MentionDataProps, RequestInput, ThreadValue } from '@mezon/utils';
 import {
 	EOverriddenPermission,
@@ -209,7 +209,7 @@ MessageBox.Skeleton = () => {
 					/>
 				</div>
 				<div className="flex flex-row h-full items-center gap-1 mr-2 w-12 rounded-r-lg">
-					<MezonIcon icon={MzIcons24.mzGif} />
+					<MezonIcon icon={MzIcons20.mzGif} />
 					<MezonIcon icon={MzIcons20.mzHelp} />
 				</div>
 			</form>

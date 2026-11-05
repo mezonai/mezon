@@ -57,7 +57,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ContextMenuItem, IMessageWithUser } from '@mezon/utils';
 import {
 	EEventAction,
@@ -888,7 +888,7 @@ function MessageContextMenu({
 					'topicDiscussion',
 					t('topicDiscussion'),
 					handleCreateTopic,
-					<MezonIcon icon={MzIcons24.mzTopic} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					<MezonIcon icon={MzIcons16.mzTopic} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				);
 			});
 		builder.when(checkPos, (builder) => {

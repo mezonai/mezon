@@ -1,4 +1,4 @@
-import { MezonIcon, MzIcons24, MzIcons32 } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 import { SfuDeviceMenu } from './MediaDeviceMenu/SfuDeviceMenu';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
@@ -43,13 +43,13 @@ export const CameraControl = ({
 			<button id="btn-meet-camera" type="button" title={label} aria-label={label} className={SFU_CONTROL_BUTTON_CLASS} onClick={handleClick}>
 				{enabled ? (
 					<>
-						<MezonIcon icon={MzIcons32.mzVideo} className="text-white max-md:hidden" />
-						<MezonIcon icon={MzIcons24.mzVideo} className="hidden text-white max-md:block" />
+						<MezonIcon icon={MzIcons24.mzVideo} className="text-white max-md:hidden" />
+						<MezonIcon icon={MzIcons20.mzVideo} className="hidden text-white max-md:block" />
 					</>
 				) : (
 					<>
-						<MezonIcon icon={MzIcons32.mzVideoOff} className="text-white max-md:hidden" />
-						<MezonIcon icon={MzIcons24.mzVideoOff} className="hidden text-white max-md:block" />
+						<MezonIcon icon={MzIcons24.mzVideoOff} className="text-white max-md:hidden" />
+						<MezonIcon icon={MzIcons20.mzVideoOff} className="hidden text-white max-md:block" />
 					</>
 				)}
 			</button>

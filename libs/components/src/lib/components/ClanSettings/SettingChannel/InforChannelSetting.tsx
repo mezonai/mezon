@@ -1,5 +1,5 @@
 import { selectChannelById, selectOneChannelInfor } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useSelector } from 'react-redux';
@@ -27,9 +27,9 @@ const ChannelSettingInforItem = ({ onClose, channelId }: ChannelSettingItemProps
 								<MezonIcon icon={MzIcons24.mzChannel} className="dark:text-black" />
 							)
 						) : channel?.channel_private === ChannelStatusEnum.isPrivate ? (
-							<MezonIcon icon={MzIcons20.mzThreadPrivate} className="text-[var(--mz-icon)]" />
+							<MezonIcon icon={MzIcons24.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 						) : (
-							<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />
+							<MezonIcon icon={MzIcons24.mzThread} className="text-[var(--mz-icon)]" />
 						)}
 					</div>
 				</div>
