@@ -174,7 +174,7 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 				const isPublisher = isStream && index === 0;
 				return (
 					<div key={isPublisher ? `publisher:${user.user_id}` : user.user_id} className={'mt-[1px]'}>
-						<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar}>
+						<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} showScreenShareIcon={!isStream}>
 							{isPublisher && <StreamViewerCount channelId={channelId} className="text-theme-primary" />}
 						</UserListItem>
 					</div>
