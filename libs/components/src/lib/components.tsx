@@ -140,6 +140,7 @@ export { default as ButtonCopy } from './components/ButtonSwitchCustom/CopyButto
 export { default as CustomCookieConsent } from './components/CustomCookieConsent';
 export * from './components/DmCall';
 export { DmCallManager } from './components/DmCall/DmCallManager';
+export { default as FirstSetupUsername } from './components/FirstJoinPopup/FirstSetupUsername';
 export { default as InternetStatusPopover } from './components/InternetStatusPopover';
 export { MediaChannel } from './components/MediaChannel';
 export { MediaPermissionPrompt } from './components/MediaPermissionPrompt';
