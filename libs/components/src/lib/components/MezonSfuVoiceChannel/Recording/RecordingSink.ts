@@ -1,4 +1,5 @@
 import { getRecordingWindow, supportsDiskStreaming, supportsOriginPrivateFileSystem } from './capabilities';
+import { FragmentedMp4Indexer, finalizedMp4Blob, type Mp4Finalization } from './fragmentedMp4';
 
 export const BLOB_SINK_MAX_BYTES = 800 * 1024 * 1024;
 export const BLOB_SINK_MAX_DURATION_MS = 30 * 60 * 1000;
@@ -35,11 +36,15 @@ class FileSystemSink implements RecordingSink {
 
 	private queue: Promise<void> = Promise.resolve();
 	private failed: Error | null = null;
+	private indexer: FragmentedMp4Indexer | null;
 
 	constructor(
 		readonly fileName: string,
-		private readonly writable: FileSystemWritableFileStream
-	) {}
+		private readonly writable: FileSystemWritableFileStream,
+		isMp4: boolean
+	) {
+		this.indexer = isMp4 ? new FragmentedMp4Indexer() : null;
+	}
 
 	write(chunk: Blob): Promise<void> {
 		if (this.failed) return Promise.reject(this.failed);
@@ -49,6 +54,13 @@ class FileSystemSink implements RecordingSink {
 			await withWriteTimeout(this.writable.write(chunk));
 			if (this.failed) throw this.failed;
 			this.bytesWritten += chunk.size;
+			if (this.indexer) {
+				try {
+					this.indexer.push(new Uint8Array(await chunk.arrayBuffer()));
+				} catch {
+					this.indexer = null;
+				}
+			}
 		});
 		// Keep the queue settled while exposing failures to the recorder immediately.
 		this.queue = write.catch((error: Error) => {
@@ -63,6 +75,23 @@ class FileSystemSink implements RecordingSink {
 			await this.abort();
 			throw this.failed;
 		}
+		let fin: Mp4Finalization | null = null;
+		if (this.indexer) {
+			try {
+				fin = this.indexer.finish();
+			} catch {
+				this.indexer = null;
+			}
+		}
+		if (fin) {
+			try {
+				await withWriteTimeout(this.writable.write({ type: 'write', position: this.bytesWritten, data: fin.tail }));
+				this.bytesWritten += fin.tail.byteLength;
+				await withWriteTimeout(this.writable.write({ type: 'write', position: fin.headOffset, data: fin.head }));
+			} catch (error) {
+				console.warn('[recording] could not finalize mp4 index', error);
+			}
+		}
 		try {
 			await withWriteTimeout(this.writable.close());
 		} catch (error) {
@@ -74,6 +103,7 @@ class FileSystemSink implements RecordingSink {
 
 	async abort(): Promise<void> {
 		this.failed ??= new Error('recording-aborted');
+		this.indexer = null;
 		abortWritable(this.writable);
 	}
 }
@@ -121,6 +151,7 @@ class OriginPrivateFileSystemSink implements RecordingSink {
 	private queuedBytes = 0;
 	private writable: FileSystemWritableFileStream | null = null;
 	private parts: FileSystemFileHandle[] = [];
+	private indexer: FragmentedMp4Indexer | null;
 
 	constructor(
 		readonly fileName: string,
@@ -128,8 +159,11 @@ class OriginPrivateFileSystemSink implements RecordingSink {
 		private readonly directory: FileSystemDirectoryHandle,
 		private readonly root: FileSystemDirectoryHandle,
 		private readonly maxBytes: number,
-		private readonly releaseLock: () => void
-	) {}
+		private readonly releaseLock: () => void,
+		isMp4: boolean
+	) {
+		this.indexer = isMp4 ? new FragmentedMp4Indexer() : null;
+	}
 
 	write(chunk: Blob): Promise<void> {
 		if (this.failed) return Promise.reject(this.failed);
@@ -144,6 +178,13 @@ class OriginPrivateFileSystemSink implements RecordingSink {
 				if (this.failed) throw this.failed;
 				if (exceedsLimit) throw new Error('recording-storage-limit');
 				await withWriteTimeout(this.writePart(chunk));
+				if (this.indexer) {
+					try {
+						this.indexer.push(new Uint8Array(await chunk.arrayBuffer()));
+					} catch {
+						this.indexer = null;
+					}
+				}
 			})
 			.finally(() => {
 				this.queuedBytes -= chunk.size;
@@ -195,19 +236,30 @@ class OriginPrivateFileSystemSink implements RecordingSink {
 		for (const handle of this.parts) {
 			files.push(await withWriteTimeout(handle.getFile()));
 		}
-		const blob = new Blob(files, { type: this.mimeType });
+		let blob = new Blob(files, { type: this.mimeType });
+		if (this.indexer) {
+			try {
+				const fin = this.indexer.finish();
+				if (fin) {
+					blob = finalizedMp4Blob(blob, fin, this.mimeType);
+				}
+			} catch {
+				this.indexer = null;
+			}
+		}
 		triggerDownload(URL.createObjectURL(blob), this.fileName);
 		try {
 			await withWriteTimeout(this.directory.getFileHandle(OPFS_EXPORTED, { create: true }));
 		} catch (error) {
 			console.warn('[recording] could not mark exported recording for cleanup', error);
 		}
-		return { savedToDisk: false, bytes: this.bytesWritten };
+		return { savedToDisk: false, bytes: blob.size };
 	}
 
 	async abort(): Promise<void> {
 		this.accepting = false;
 		this.failed ??= new Error('recording-aborted');
+		this.indexer = null;
 		abortWritable(this.writable);
 		if (this.parts.length === 0) void this.removeTemporaryFiles();
 	}
@@ -297,28 +349,57 @@ class BlobSink implements RecordingSink {
 	bytesWritten = 0;
 
 	private chunks: Blob[] = [];
+	private indexer: FragmentedMp4Indexer | null;
+	private indexing: Promise<void> = Promise.resolve();
 
 	constructor(
 		readonly fileName: string,
-		private readonly mimeType: string
-	) {}
+		private readonly mimeType: string,
+		isMp4: boolean
+	) {
+		this.indexer = isMp4 ? new FragmentedMp4Indexer() : null;
+	}
 
 	async write(chunk: Blob): Promise<void> {
 		if (chunk.size === 0) return;
 		this.chunks.push(chunk);
 		this.bytesWritten += chunk.size;
+		if (this.indexer) {
+			this.indexing = this.indexing.then(async () => {
+				if (!this.indexer) return;
+				try {
+					this.indexer.push(new Uint8Array(await chunk.arrayBuffer()));
+				} catch {
+					this.indexer = null;
+				}
+			});
+			await this.indexing;
+		}
 	}
 
 	async finalize() {
-		const blob = new Blob(this.chunks, { type: this.mimeType });
+		await this.indexing;
+		let blob = new Blob(this.chunks, { type: this.mimeType });
+		if (this.indexer) {
+			try {
+				const fin = this.indexer.finish();
+				if (fin) {
+					blob = finalizedMp4Blob(blob, fin, this.mimeType);
+				}
+			} catch {
+				this.indexer = null;
+			}
+		}
 		const bytes = blob.size;
 		triggerDownload(URL.createObjectURL(blob), this.fileName);
 		this.chunks = [];
+		this.indexer = null;
 		return { savedToDisk: false, bytes };
 	}
 
 	async abort(): Promise<void> {
 		this.chunks = [];
+		this.indexer = null;
 	}
 }
 
@@ -347,6 +428,7 @@ export class RecordingCancelledError extends Error {
 }
 
 export async function createRecordingSink(fileName: string, mimeType: string, extension: string): Promise<RecordingSink> {
+	const isMp4 = extension === 'mp4';
 	const win = getRecordingWindow();
 
 	if (win && supportsDiskStreaming() && win.showSaveFilePicker) {
@@ -361,7 +443,7 @@ export async function createRecordingSink(fileName: string, mimeType: string, ex
 				]
 			});
 			const writable = await handle.createWritable();
-			return new FileSystemSink(handle.name || fileName, writable);
+			return new FileSystemSink(handle.name || fileName, writable, isMp4);
 		} catch (error) {
 			if ((error as DOMException)?.name === 'AbortError') {
 				throw new RecordingCancelledError();
@@ -391,7 +473,7 @@ export async function createRecordingSink(fileName: string, mimeType: string, ex
 					abortWritable(writable);
 					throw error;
 				}
-				const sink = new OriginPrivateFileSystemSink(fileName, mimeType, recording, directory, maxBytes, releaseLock);
+				const sink = new OriginPrivateFileSystemSink(fileName, mimeType, recording, directory, maxBytes, releaseLock, isMp4);
 				void removeExpiredRecordings(directory);
 				return sink;
 			} catch (error) {
@@ -405,7 +487,7 @@ export async function createRecordingSink(fileName: string, mimeType: string, ex
 		}
 	}
 
-	return new BlobSink(fileName, mimeType);
+	return new BlobSink(fileName, mimeType, isMp4);
 }
 
 void cleanupRecordingStorage();
