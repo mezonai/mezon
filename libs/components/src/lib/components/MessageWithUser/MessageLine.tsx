@@ -429,10 +429,7 @@ export const MessageLine = ({
 						channelId={element.channelId}
 					/>
 				);
-			} else if (
-				(element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') ||
-				(element.kindOf === ETokenMessage.MENTIONS && element.username)
-			) {
+			} else if (element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') {
 				formattedContent.push(
 					<MentionContent
 						key={`mentionUser-${s}-${messageId}`}
@@ -639,6 +636,17 @@ export const MessageLine = ({
 						/>
 					);
 				}
+			} else if (contentInElement) {
+				formattedContent.push(
+					<FormattedPlainText
+						key={`plain-${lastindex}-end-${messageId}`}
+						text={contentInElement}
+						isSearchMessage={isSearchMessage}
+						messageId={messageId}
+						keyPrefix="plain"
+						isReply={!!isReply}
+					/>
+				);
 			}
 
 			lastindex = e;
