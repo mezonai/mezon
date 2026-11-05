@@ -62,7 +62,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 
 	const sideBarListItemWithPermissions = sideBarListItem.map((sidebarItem) => {
 		const filteredListItem = sidebarItem.listItem.filter((item) => {
-			if (item.id === ItemSetting.OVERVIEW) {
+			if (item.id === ItemSetting.OVERVIEW || item.id === ItemSetting.ON_COMUNITY) {
 				return hasAdminPermission;
 			}
 			if (item.id === ItemSetting.INTEGRATIONS) {
@@ -74,7 +74,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {
 				return canViewArchivedChannels;
 			}
-			if (item.id === ItemSetting.ON_BOARDING || item.id === ItemSetting.ON_COMUNITY) {
+			if (item.id === ItemSetting.ON_BOARDING) {
 				return hasClanPermission;
 			}
 			return true;
