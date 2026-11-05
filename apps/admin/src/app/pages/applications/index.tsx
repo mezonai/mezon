@@ -149,7 +149,10 @@ const AppPageBottom = () => {
 						onClick={() => setIsSmallSizeSort(true)}
 					>
 						<div className={`w-5`}>
-							<MezonIcon icon={MzIcons20.mzGridDense} className="text-[var(--mz-icon)]" />
+							<MezonIcon
+								icon={MzIcons20.mzGridDense}
+								className={isSmallSizeSort ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+							/>
 						</div>
 						<div>{t('small')}</div>
 					</div>
@@ -158,7 +161,10 @@ const AppPageBottom = () => {
 						onClick={() => setIsSmallSizeSort(false)}
 					>
 						<div className="w-5">
-							<MezonIcon icon={MzIcons20.mzGrid} className="text-[var(--mz-icon)]" />
+							<MezonIcon
+								icon={MzIcons20.mzGrid}
+								className={isSmallSizeSort ? 'text-[var(--mz-icon)]' : 'text-[var(--mz-icon-selected)]'}
+							/>
 						</div>
 						<div>{t('large')}</div>
 					</div>
