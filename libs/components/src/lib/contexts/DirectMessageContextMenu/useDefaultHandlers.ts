@@ -1,5 +1,6 @@
 import type { requestAddFriendParam } from '@mezon/store';
 import { EMuteState } from '@mezon/utils';
+import type { ApiUser } from 'mezon-js';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -21,7 +22,7 @@ interface UseDefaultHandlersParams {
 	handleEnableE2ee: (directId?: string, e2ee?: number) => Promise<void>;
 	handleRemoveMemberFromGroup: (userId: string, channelId: string) => Promise<void>;
 	handleLeaveDmGroup: (channelId: string, isLastOne: boolean) => Promise<void>;
-	blockFriend: (username: string, userId: string) => Promise<boolean>;
+	blockFriend: (username: string, userId: string, profile?: Pick<ApiUser, 'display_name' | 'avatar_url'>) => Promise<boolean>;
 	unBlockFriend: (username: string, userId: string) => Promise<boolean>;
 	openEditGroupModal?: () => void;
 	openLeaveGroupModal?: () => void;
@@ -114,11 +115,14 @@ export function useDefaultHandlers({
 					}
 				},
 				handleBlockFriend: async () => {
-					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
-					if (usernames.length === 0 || ids.length === 0) return;
+					const username = user?.usernames?.[0] || user?.user?.username || '';
+					const userId = user?.user_ids?.[0] || user?.user?.id;
+					if (!userId) return;
 					try {
-						const isBlocked = await blockFriend(usernames[0], ids[0]);
+						const isBlocked = await blockFriend(username, userId, {
+							display_name: user?.display_names?.[0] || user?.user?.display_name,
+							avatar_url: user?.avatars?.[0] || user?.user?.avatar_url
+						});
 						if (isBlocked) {
 							toast.success(t('toast.userBlockedSuccess'));
 						}
@@ -127,11 +131,11 @@ export function useDefaultHandlers({
 					}
 				},
 				handleUnblockFriend: async () => {
-					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
-					if (usernames.length === 0 || ids.length === 0) return;
+					const username = user?.usernames?.[0] || user?.user?.username || '';
+					const userId = user?.user_ids?.[0] || user?.user?.id;
+					if (!userId) return;
 					try {
-						const isUnblocked = await unBlockFriend(usernames[0], ids[0]);
+						const isUnblocked = await unBlockFriend(username, userId);
 						if (isUnblocked) {
 							toast.success(t('toast.userUnblockedSuccess'));
 						}
