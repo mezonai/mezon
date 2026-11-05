@@ -286,7 +286,8 @@ export const DATA_E2E_IDENTIFIER = {
 					channel: {
 						item: ''
 					},
-					input: ''
+					input: '',
+					private_voice_audience_tip: ''
 				},
 				event_info: {
 					input: {
