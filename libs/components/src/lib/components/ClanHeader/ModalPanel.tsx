@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import { selectCurrentClanId } from '@mezon/store';
-import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import type { RefObject } from 'react';
 import React, { useEffect } from 'react';
@@ -59,7 +59,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						children={t('modalPanel.createCategory')}
 						endIcon={
 							<MezonIcon
-								icon={MzIcons20.mzFolderAdd}
+								icon={MzIcons16.mzFolderAdd}
 								className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
 							/>
 						}
@@ -69,6 +69,9 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={statusMarkAsReadClan === 'pending' ? undefined : () => handleMarkAsReadClan(currentClanId as string)}
 					disabled={statusMarkAsReadClan === 'pending'}
+					endIcon={
+						<MezonIcon icon={MzIcons16.mzMarkRead} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					}
 				>
 					{statusMarkAsReadClan === 'pending' ? t('modalPanel.processing') : t('modalPanel.markAsRead')}
 				</ItemModal>
@@ -78,7 +81,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					onClick={handleShowInviteClanModal}
 					children={t('modalPanel.invitePeople')}
 					endIcon={
-						<MezonIcon icon={MzIcons20.mzUserPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+						<MezonIcon icon={MzIcons16.mzUserPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					}
 				/>
 				<ItemModal
@@ -86,14 +89,14 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					onClick={handleShowServerSettings}
 					children={t('modalPanel.clanSettings')}
 					endIcon={
-						<MezonIcon icon={MzIcons20.mzSettings} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+						<MezonIcon icon={MzIcons16.mzSettings} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowNotificationSetting}
 					children={t('modalPanel.notificationSettings')}
-					endIcon={<MezonIcon icon={MzIcons20.mzBell} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />}
+					endIcon={<MezonIcon icon={MzIcons16.mzBell} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />}
 				/>
 				<button
 					onClick={toggleShowEmptyCategory}
@@ -126,7 +129,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 							{t('modalPanel.leaveClan')}
 						</li>
 						<div className="flex items-center justify-center h-[18px] w-[18px]">
-							<MezonIcon icon={MzIcons20.mzLeave} className="text-red-600 group-hover:text-white" />
+							<MezonIcon icon={MzIcons16.mzLeave} className="text-red-600 group-hover:text-white" />
 						</div>
 					</button>
 				)}
