@@ -1,8 +1,6 @@
-import type { MediaType } from '@mezon/store';
+import { usePermissionChecker } from '@mezon/core';
 import {
-	selectAllAccount,
 	selectAudioByClanId,
-	selectCurrentClanCreatorId,
 	selectCurrentClanId,
 	selectCurrentUserId,
 	selectMemberClanByUserId,
@@ -11,25 +9,16 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import type { ClanSticker } from 'mezon-js';
+import { EPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ModalUploadSound from './ModalUploadSound';
-interface ExtendedClanSticker extends ClanSticker {
-	media_type?: MediaType;
-}
 
 export type SoundType = {
 	id: string;
 	name: string;
 	url: string;
 	creator_id?: string;
-};
-
-const isAudioFile = (url: string): boolean => {
-	const lowerUrl = url.toLowerCase();
-	return lowerUrl.endsWith('.mp3') || lowerUrl.endsWith('.wav') || lowerUrl.endsWith('.mpeg');
 };
 
 const SettingSoundEffect = () => {
@@ -39,12 +28,9 @@ const SettingSoundEffect = () => {
 	const dispatch = useAppDispatch();
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';
 	const currentUserId = useAppSelector(selectCurrentUserId) || '';
-	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
-	const userProfile = useAppSelector(selectAllAccount);
+	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 
 	const sounds = useAppSelector((state: any) => selectAudioByClanId(state, currentClanId));
-
-	const isClanOwner = currentClanCreatorId === userProfile?.user?.id;
 
 	const soundList: SoundType[] = sounds.map((sound) => ({
 		id: sound.id || '',
@@ -85,7 +71,7 @@ const SettingSoundEffect = () => {
 	};
 
 	const canManageSound = (creatorId: string) => {
-		return isClanOwner || creatorId === currentUserId;
+		return canManageClan || creatorId === currentUserId;
 	};
 
 	return (
