@@ -16,7 +16,6 @@ import { safeJSONParse } from 'mezon-js';
 import { memo, useState, useTransition } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
-import { getAvatarColor } from '../AvatarImage/AvatarImage';
 import type { Coords } from '../ChannelLink';
 import NavLinkComponent from '../NavLink';
 import PanelClan from '../PanelClan';
@@ -101,7 +100,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 					) : (
 						option?.clan_name && (
 							<div
-								className={`w-[40px] h-[40px] ${getAvatarColor(option.clan_name)} rounded-xl flex justify-center items-center text-white text-[20px] clan`}
+								className="w-[40px] h-[40px] rounded-xl flex justify-center items-center text-theme-primary text-[20px] clan bg-item-theme hover:[background:var(--bg-item-hover)]"
 								data-e2e={generateE2eId('clan_page.side_bar.clan_item.name')}
 							>
 								{(option.clan_name || '').trim().charAt(0).toUpperCase()}

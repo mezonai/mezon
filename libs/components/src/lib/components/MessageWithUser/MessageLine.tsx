@@ -260,7 +260,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 								className="w-full h-full object-cover"
 							/>
 						) : (
-							<div className="w-full h-full flex items-center justify-center text-theme-primary text-3xl font-semibold select-none shadow-md">
+							<div className="w-full h-full flex items-center justify-center text-theme-primary text-3xl font-semibold select-none shadow-md bg-item-theme hover:[background:var(--bg-item-hover)]">
 								{clanInitial}
 							</div>
 						)}
