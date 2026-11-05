@@ -82,7 +82,8 @@
 		},
 		"cover": "Ảnh bìa",
 		"VoiceChannel": {
-			"title": "Chọn kênh thoại"
+			"title": "Chọn kênh thoại",
+			"privateAudienceTip": "Tips: Để đảm bảo tất cả khán giả đều có thể tham gia sự kiện, hãy thêm họ vào <channel>#{{channelName}}</channel>."
 		}
 	},
 	"actions": {

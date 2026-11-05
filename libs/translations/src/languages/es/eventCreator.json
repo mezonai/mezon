@@ -43,7 +43,8 @@
 			"title": "Seleccionar Canal"
 		},
 		"VoiceChannel": {
-			"title": "Seleccionar Canal de Voz"
+			"title": "Seleccionar Canal de Voz",
+			"privateAudienceTip": "Consejo: Para que todos los miembros de la audiencia puedan unirse al evento, añádelos a <channel>#{{channelName}}</channel>."
 		},
 		"address": {
 			"title": "Ubicaciones",

@@ -82,7 +82,8 @@
 		},
 		"cover": "Titelbild",
 		"VoiceChannel": {
-			"title": "Sprachkanal auswählen"
+			"title": "Sprachkanal auswählen",
+			"privateAudienceTip": "Tipp: Damit alle Zuschauer am Event teilnehmen können, füge sie zum Kanal <channel>#{{channelName}}</channel> hinzu."
 		}
 	},
 	"actions": {

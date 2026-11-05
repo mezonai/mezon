@@ -82,7 +82,8 @@
 		},
 		"cover": "Omslagsbild",
 		"VoiceChannel": {
-			"title": "Välj röstkanal"
+			"title": "Välj röstkanal",
+			"privateAudienceTip": "Tips: Lägg till alla i publiken i <channel>#{{channelName}}</channel> så att de kan delta i händelsen."
 		}
 	},
 	"actions": {
