@@ -298,7 +298,7 @@ const ButtonNoiseControl = memo(() => {
 				className="flex items-center rounded-sm bg-bgSecondary bg-item-theme-hover text-theme-primary gap-2 p-[2px] text-sm bg-transparent bg-item-theme-hover"
 			>
 				<MezonIcon
-					icon={noiseSuppressionEnabled ? MzIcons20.mzNoiseSuppression : MzIcons20.mzNoiseSuppressionOff}
+					icon={noiseSuppressionEnabled ? MzIcons16.mzNoiseSuppression : MzIcons16.mzNoiseSuppressionOff}
 					className={`${noiseSuppressionEnabled && noiseSuppressionReady ? 'text-[var(--mz-icon-selected)]' : 'text-red-500'}`}
 				/>
 			</button>
