@@ -30,6 +30,7 @@ import {
 	useAppLayout
 } from '@mezon/utils';
 
+import { Icons } from '@mezon/ui';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Album from './Album';
@@ -299,7 +300,26 @@ const MessageAttachment = memo(
 
 			return visibleAttachments.length ? visibleAttachments : null;
 		}, [message.attachments, message.content, messageCreateTimeSeconds, nowSeconds]);
-		if (!validateAttachment) return null;
+		if (!validateAttachment) {
+			const attachment = message.attachments?.[0];
+
+			return (
+				<div
+					className="break-all w-full relative cursor-default gap-3 flex items-center mt-[10px] py-3 pl-3 pr-3 rounded-lg max-w-full bg-item-theme border-theme-primary"
+					role="button"
+					aria-label="File upload failed"
+				>
+					<div className="relative flex items-center shrink-0 w-8 h-10">
+						<Icons.EmptyType defaultSize={'w-8 h-10'} />
+					</div>
+
+					<div className="flex-1 min-w-0">
+						<p className="text-red-500">{attachment?.filename ?? 'Attachment'}</p>
+						<p className="text-theme-primary">File upload failed</p>
+					</div>
+				</div>
+			);
+		}
 		return (
 			<Attachments
 				mode={mode}
