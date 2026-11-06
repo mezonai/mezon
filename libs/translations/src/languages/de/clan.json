@@ -34,6 +34,7 @@
 		"categoryName": "Kategoriename",
 		"categoryNamePlaceholder": "Gib deinen Kategorienamen hier ein...",
 		"hasWelcomeChannelError": "Diese Kategorie enthält einen Willkommenskanal",
+		"hasChannelError": "Kategorie mit Kanälen kann nicht gelöscht werden.",
 		"deleteCategory": "Kategorie löschen",
 		"deleteCategoryTitle": "Kategorie löschen",
 		"deleteCategoryButton": "Kategorie löschen",

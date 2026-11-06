@@ -34,6 +34,7 @@
 		"categoryName": "Kategori namn",
 		"categoryNamePlaceholder": "Ange ditt kategori namn här...",
 		"hasWelcomeChannelError": "Denna kategori har välkomstkanal",
+		"hasChannelError": "Kan inte ta bort kategori med kanaler.",
 		"deleteCategory": "Ta bort kategori",
 		"deleteCategoryTitle": "Ta bort kategori",
 		"deleteCategoryButton": "Ta bort kategori",
