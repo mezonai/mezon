@@ -86,6 +86,7 @@ export interface MentionsInputProps {
 	setCaretToEnd?: boolean;
 	currentChannelId?: string;
 	allowEmptySend?: boolean;
+	keepTextOnSend?: boolean;
 }
 
 export interface MentionsInputHandle {
@@ -340,7 +341,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			hasFilesToSend = false,
 			setCaretToEnd = false,
 			currentChannelId,
-			allowEmptySend = false
+			allowEmptySend = false,
+			keepTextOnSend = false
 		},
 		ref
 	) => {
@@ -1098,13 +1100,16 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				const hasActualContent = formattedText.text.trim().length > 0;
 				if (hasActualContent || hasFilesToSend || allowEmptySend) {
 					onSend(formattedText);
+					if (keepTextOnSend) {
+						return;
+					}
 					setHtml('');
 					if (inputRef.current) {
 						inputRef.current.innerHTML = '';
 					}
 				}
 			}
-		}, [onSend, html, hasFilesToSend, allowEmptySend]);
+		}, [onSend, html, hasFilesToSend, allowEmptySend, keepTextOnSend]);
 		const sendCurrentTextRef = useRef(sendCurrentText);
 		sendCurrentTextRef.current = sendCurrentText;
 

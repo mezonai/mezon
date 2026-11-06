@@ -94,6 +94,8 @@ const ThreadBox = () => {
 		return membersOfParent?.map((item) => item.id);
 	}, [membersOfParent]);
 
+	const isCreatingThreadRef = useRef(false);
+
 	const createThread = useCallback(
 		async (value: ThreadValue, messageContent?: IMessageSendPayload, attachments?: Array<ApiMessageAttachment>) => {
 			const idParent = currentChannelParentId !== '0' ? currentChannelParentId : (currentChannelId as string);
@@ -137,8 +139,11 @@ const ThreadBox = () => {
 				lastSentTimestamp: timestamp
 			};
 
-			const thread = await dispatch(createNewChannel(body)).unwrap();
-			return thread;
+			try {
+				return await dispatch(createNewChannel(body)).unwrap();
+			} catch {
+				return;
+			}
 		},
 		[currentChannelCategoryId, currentChannelParentId, currentChannelId, currentClanId, dispatch, t]
 	);
@@ -159,6 +164,9 @@ const ThreadBox = () => {
 		) => {
 			if (sessionUser) {
 				if (value?.nameValueThread && !threadCurrentChannel) {
+					if (isCreatingThreadRef.current) {
+						return false;
+					}
 					const shouldSeedStarterFromValueThread = Boolean(valueThread);
 					const hasUserMessage = Boolean(content?.t && content.t.trim().length > 0) || (attachments?.length ?? 0) > 0;
 
@@ -173,8 +181,14 @@ const ThreadBox = () => {
 							? attachments
 							: valueThread?.attachments;
 
-					const thread = (await createThread(value, createThreadMessageContent, createThreadAttachments)) as ApiChannelDescription;
-					if (thread) {
+					isCreatingThreadRef.current = true;
+					const thread = (await createThread(value, createThreadMessageContent, createThreadAttachments).finally(() => {
+						isCreatingThreadRef.current = false;
+					})) as ApiChannelDescription;
+					if (!thread) {
+						return false;
+					}
+					try {
 						await dispatch(
 							channelsActions.joinChat({
 								clanId: currentClanId as string,
@@ -201,15 +215,17 @@ const ThreadBox = () => {
 						if (hasUserMessage) {
 							await sendMessageThread(content, mentions, attachments, references, thread);
 						}
-						dispatch(
-							referencesActions.setAtachmentAfterUpload({
-								channelId: currentInputChannelId,
-								files: []
-							})
-						);
-						dispatch(composeActions.clearComposeInput({ channelId: `${currentChannelId}true` }));
-						setNameValueThread('');
+					} catch (error) {
+						console.error('Failed to send message to new thread', error);
 					}
+					dispatch(
+						referencesActions.setAtachmentAfterUpload({
+							channelId: currentInputChannelId,
+							files: []
+						})
+					);
+					dispatch(composeActions.clearComposeInput({ channelId: `${currentChannelId}true` }));
+					setNameValueThread('');
 				} else {
 					if (usersNotExistingInThread && usersNotExistingInThread.length > 0) {
 						await addMemberToThread(threadCurrentChannel as ChannelsEntity, usersNotExistingInThread);
@@ -218,6 +234,7 @@ const ThreadBox = () => {
 				}
 			} else {
 				console.error('Session is not available');
+				return false;
 			}
 		},
 		[
@@ -275,7 +292,7 @@ const ThreadBox = () => {
 
 				const hasUserText = Boolean(content?.t && content.t.trim().length > 0);
 				const userMentions = hasUserText ? (mentions ?? []) : [];
-				await handleSend(
+				const sent = await handleSend(
 					content,
 					userMentions,
 					combinedAttachments,
@@ -291,7 +308,7 @@ const ThreadBox = () => {
 					ephemeralReceiverId,
 					usersNotExistingInThread
 				);
-				return true;
+				return sent !== false;
 			}
 
 			if (content?.t && content.t.length > CONSTANT.LIMIT_CHARACTER_REACTION_INPUT_LENGTH) {
@@ -312,7 +329,7 @@ const ThreadBox = () => {
 				return false;
 			}
 
-			await handleSend(
+			const sent = await handleSend(
 				content,
 				mentions,
 				attachments,
@@ -325,7 +342,7 @@ const ThreadBox = () => {
 				ephemeralReceiverId,
 				usersNotExistingInThread
 			);
-			return true;
+			return sent !== false;
 		},
 		[handleSend, t, threadCurrentChannel, valueThread, attachmentData, nameValueThread, isPrivate, openThreadMessageState, setOverUploadingState]
 	);
@@ -455,14 +472,10 @@ const ThreadBox = () => {
 							onKeyDown={handleThreadNameKeyDown}
 							value={nameValueThread ?? ''}
 							label={t('createThread.threadName')}
-							placeholder={
-								openThreadMessageState && valueThread?.content.t !== '' ? valueThread?.content.t : t('createThread.enterThreadName')
-							}
+							placeholder={t('createThread.enterThreadName')}
 							className="h-10 p-[10px] bg-item-theme text-theme-message border-theme-primary text-base outline-none rounded-lg placeholder:text-sm"
 						/>
-						{!openThreadMessageState && !valueThread && (
-							<PrivateThread title={t('createThread.privateThread')} label={t('createThread.privateThreadDescription')} />
-						)}
+						<PrivateThread title={t('createThread.privateThread')} label={t('createThread.privateThreadDescription')} />
 						{valueThread && (
 							<div className="max-h-[60vh] overflow-y-auto overflow-x-hidden  thread-scroll ">
 								<div className="px-3">
