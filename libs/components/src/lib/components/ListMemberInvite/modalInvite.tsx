@@ -5,17 +5,19 @@ import {
 	getStore,
 	referencesActions,
 	selectClanById,
+	selectComunityState,
 	selectCurrentClan,
 	selectCurrentClanId,
 	selectCurrentClanLogo,
 	selectCurrentClanName,
 	selectMembersClanCount,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { useTheme } from '@mezon/themes';
 import { Button, Icons } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
 import { useSelector } from 'react-redux';
@@ -367,7 +369,18 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 	const currentClanName = useSelector(selectCurrentClanName) || 'Clan';
 	const currentClanLogo = useSelector(selectCurrentClanLogo);
 	const clan = useSelector(selectClanById(currentClanId ?? ''));
+	const community = useAppSelector((state) => selectComunityState(state)?.byClanId?.[currentClanId ?? '']);
 	const membersClanCount = useSelector(selectMembersClanCount) || (clan as { member_count?: number })?.member_count || 0;
+
+	const qrValue = useMemo(() => {
+		const isCommunityEnabled = community?.isCommunityEnabled ?? clan?.is_community;
+		const description = (community?.description ?? clan?.description)?.trim();
+		if (!data || !isCommunityEnabled || !description) return data;
+
+		const inviteUrl = new URL(data);
+		inviteUrl.searchParams.set('description', description);
+		return inviteUrl.toString();
+	}, [data, community?.isCommunityEnabled, community?.description, clan?.is_community, clan?.description]);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const modalCardRef = useRef<HTMLDivElement | null>(null);
@@ -870,7 +883,7 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 						>
 							<QRCode
 								level="L"
-								value={data}
+								value={qrValue}
 								size={QR_SIZE}
 								style={{ width: '100%', height: '100%' }}
 								bgColor="#ffffff"
