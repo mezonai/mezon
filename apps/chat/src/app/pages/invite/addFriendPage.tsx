@@ -1,15 +1,8 @@
-import { useAuth } from '@mezon/core';
-import { checkMutableRelationship, directActions, selectAddFriendRequestLoading, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
-import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js';
-import { ChannelType, safeJSONParse } from 'mezon-js';
-import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { safeJSONParse } from 'mezon-js';
+import { useEffect, useMemo } from 'react';
 import QRCode from 'react-qr-code';
-import { useSelector } from 'react-redux';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { isMobileBrowser, openAppDeeplink } from '../../utils/deeplink';
 
 const DEFAULT_LOGO = 'https://cdn.komu.vn/images/mezon_logo.png';
@@ -22,13 +15,9 @@ enum ErrorTypeMutable {
 }
 
 export default function AddFriendPage() {
-	const { t } = useTranslation('common');
 	const [searchParams] = useSearchParams();
 	const { username } = useParams();
 	const data = searchParams.get('data');
-	const { userProfile } = useAuth();
-	const [error, setError] = useState<ErrorTypeMutable | null>(null);
-	const [loading, setLoading] = useState(true);
 	const dataEncode: { id: string; name: string; avatar: string } | null | undefined = useMemo(() => {
 		if (data) {
 			try {
@@ -50,35 +39,6 @@ export default function AddFriendPage() {
 		return `${origin}/chat/${username}`;
 	}, [username, data]);
 
-	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
-	const isAddingFriend = useSelector(selectAddFriendRequestLoading);
-
-	useEffect(() => {
-		const fetchData = async () => {
-			if (!username || !userProfile?.user?.id) return;
-			try {
-				const result: ApiIsFollowerResponse = await dispatch(checkMutableRelationship({ userId: dataEncode?.id || username || '' })).unwrap();
-
-				if (result.is_follower) {
-					toast.success(t('invite.canChatNow'));
-					setError(ErrorTypeMutable.MUTABLE);
-				} else if (dataEncode?.id) {
-					setError(ErrorTypeMutable.NOT_MUTABLE);
-				}
-				setLoading(false);
-			} catch (error) {
-				setLoading(false);
-				console.error('Error:', error);
-			}
-		};
-		if (dataEncode?.id || username) {
-			fetchData();
-		} else {
-			setLoading(false);
-		}
-	}, [dispatch, dataEncode?.id, userProfile]);
-
 	const navigateDeeplinkMobile = () => {
 		if (isMobileBrowser()) {
 			openAppDeeplink(`invite/chat/${username}?data=${data}`);
@@ -88,41 +48,6 @@ export default function AddFriendPage() {
 	useEffect(() => {
 		navigateDeeplinkMobile();
 	}, []);
-
-	const handleGotoDm = async () => {
-		const targetUserId = dataEncode?.id;
-
-		if (!userProfile?.user?.id || !targetUserId) return;
-		const bodyCreateDm: ApiCreateChannelDescRequest = {
-			type: ChannelType.CHANNEL_TYPE_DM,
-			channel_private: 1,
-			user_ids: [targetUserId],
-			clan_id: '0'
-		};
-		const result = await dispatch(
-			directActions.createNewDirectMessage({
-				body: bodyCreateDm,
-				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username || ''],
-				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar || '']
-			})
-		);
-		if ((result.payload as ApiChannelDescription).channel_id) {
-			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channel_id}/3`);
-		} else {
-			navigate('/chat/direct/friends');
-		}
-	};
-
-	const handleAddFriend = async () => {
-		if (!userProfile?.user?.id || !username || isAddingFriend) return;
-
-		await dispatch(
-			sendRequestAddFriend({
-				usernames: username
-			})
-		);
-		navigate('/chat/direct/friends');
-	};
 
 	const displayName = dataEncode?.name || username || '';
 	const avatarUrl = dataEncode?.avatar || '';
@@ -137,7 +62,7 @@ export default function AddFriendPage() {
 			/>
 
 			<div className="relative z-10 w-full max-w-[380px] mx-4 flex flex-col items-center">
-				<div className="w-full bg-[#181920] border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col items-center">
+				<div className="w-full pb-6 bg-[#181920] border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col items-center">
 					{username && (
 						<>
 							{/* Personal Information Header */}
@@ -234,42 +159,10 @@ export default function AddFriendPage() {
 							</div>
 						</>
 					)}
-
-					<div className="w-full px-6 pt-5 pb-6">
-						{loading ? (
-							<div className="flex flex-col items-center gap-2.5 py-2">
-								<Icons.LoadingSpinner className="!w-8 !h-8 text-indigo-400 animate-spin" />
-								<p className="text-xs text-white/50">{t('invite.verifyWait')}</p>
-							</div>
-						) : (
-							!!userProfile && (
-								<div className="flex flex-col gap-3 w-full">
-									{error === ErrorTypeMutable.MUTABLE && (
-										<button
-											onClick={handleGotoDm}
-											className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold rounded-2xl transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] cursor-pointer text-sm"
-										>
-											{t('invite.chatNow')}
-										</button>
-									)}
-									{error === ErrorTypeMutable.NOT_MUTABLE && (
-										<button
-											onClick={handleAddFriend}
-											disabled={isAddingFriend}
-											className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold rounded-2xl transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-sm"
-										>
-											{t('invite.addFriend')}
-										</button>
-									)}
-								</div>
-							)
-						)}
+					<div className="flex items-center justify-center gap-2 mt-6">
+						<img src={DEFAULT_LOGO} alt="Mezon" className="w-4 h-4 object-contain rounded" />
+						<span className="text-xs text-white font-medium tracking-wider uppercase">mezon.ai</span>
 					</div>
-				</div>
-
-				<div className="flex items-center justify-center gap-2 mt-6 opacity-40">
-					<img src={DEFAULT_LOGO} alt="Mezon" className="w-4 h-4 object-contain rounded" />
-					<span className="text-xs text-white font-medium tracking-wider uppercase">mezon.ai</span>
 				</div>
 			</div>
 		</div>
