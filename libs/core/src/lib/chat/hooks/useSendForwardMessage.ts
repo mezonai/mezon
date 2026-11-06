@@ -2,7 +2,7 @@ import type { RootState } from '@mezon/store';
 import { getStore, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
-import { E_ERROR_CHANNEL, MAX_FORWARD_MESSAGE_LENGTH, withoutPresignMarkers } from '@mezon/utils';
+import { E_ERROR_CHANNEL, MAX_FORWARD_MESSAGE_LENGTH, getCdnSignatureChannelId, withoutPresignMarkers } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageAttachment, type ApiMessageMention } from 'mezon-js';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,11 +17,15 @@ function forwardPayloadBytes(content: IMessageSendPayload, attachments: ApiMessa
 }
 function generateNewURL(originalUrl: string, newChannelId: string): string {
 	try {
+		const cdnSignatureChannelId = getCdnSignatureChannelId(originalUrl);
+
+		if (!cdnSignatureChannelId) {
+			return originalUrl;
+		}
+
 		const newHex = BigInt(newChannelId).toString(16);
 
-		return originalUrl.replace(/^(https:\/\/[^/]+\/)[0-9a-fA-F]+(\/.*)$/i, (_, prefix, suffix) => {
-			return `${prefix}${newHex}${suffix}`;
-		});
+		return originalUrl.replace(/^(https:\/\/[^/]+\/)[0-9a-fA-F]+(\/.*)$/i, (_, prefix, suffix) => `${prefix}${newHex}${suffix}`);
 	} catch {
 		return originalUrl;
 	}
@@ -130,11 +134,9 @@ export function useSendForwardMessage() {
 					(message.attachments ?? []).map(async (attach) => {
 						if (!attach.url) return attach;
 
-						let dst = attach.url;
+						const dst = generateNewURL(attach.url, channel_id);
 
 						try {
-							dst = generateNewURL(attach.url, channel_id);
-
 							await client.linkCDNFile(session, {
 								src: attach.url,
 								dst
@@ -142,14 +144,19 @@ export function useSendForwardMessage() {
 						} catch (error: unknown) {
 							const code = typeof error === 'object' && error !== null && 'code' in error ? error.code : undefined;
 
-							if (code !== E_ERROR_CHANNEL.ALREADY_EXISTS) {
-								dispatch(
-									toastActions.addToast({
-										type: 'error',
-										message: t(`errors:error_${code}`)
-									})
-								);
+							if (code === E_ERROR_CHANNEL.ALREADY_EXISTS) {
+								return {
+									...attach,
+									url: dst
+								};
 							}
+
+							dispatch(
+								toastActions.addToast({
+									type: 'error',
+									message: t(`errors:error_${code}`)
+								})
+							);
 
 							return attach;
 						}
@@ -157,12 +164,17 @@ export function useSendForwardMessage() {
 						let thumb = attach.thumbnail;
 
 						if (attach.thumbnail) {
-							thumb = generateNewURL(attach.thumbnail, channel_id);
+							try {
+								thumb = generateNewURL(attach.thumbnail, channel_id);
 
-							await client.linkCDNFile(session, {
-								src: attach.thumbnail,
-								dst: thumb
-							});
+								await client.linkCDNFile(session, {
+									src: attach.thumbnail,
+									dst: thumb
+								});
+							} catch {
+								// Thumbnail is optional; keep the original thumbnail.
+								thumb = attach.thumbnail;
+							}
 						}
 
 						return {
