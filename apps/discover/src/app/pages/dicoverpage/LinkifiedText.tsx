@@ -51,7 +51,7 @@ export default function LinkifiedText({ text, linkClassName }: LinkifiedTextProp
 							alt={segment.alt}
 							loading="lazy"
 							decoding="async"
-							className="my-6 block h-auto max-h-[320px] w-auto max-w-full rounded-2xl object-contain"
+							className="my-6 block h-auto max-h-[500px] w-auto max-w-full rounded-2xl object-contain"
 						/>
 					);
 				}
