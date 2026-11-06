@@ -343,11 +343,11 @@ const MessageModalImage = () => {
 				return;
 			}
 			if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-				handleSelectPreviousImage();
+				handleSelectNextImage();
 			}
 
 			if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-				handleSelectNextImage();
+				handleSelectPreviousImage();
 			}
 		},
 		[isVideo, toggleVideoPlayback, handleSelectNextImage, handleSelectPreviousImage]
@@ -523,13 +523,13 @@ const MessageModalImage = () => {
 					>
 						<div
 							className="rounded-full rotate-180 max-sbm:rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
-							onClick={handleSelectNextImage}
+							onClick={handleSelectPreviousImage}
 						>
 							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
 						</div>
 						<div
 							className="rounded-full max-sbm:-rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
-							onClick={handleSelectPreviousImage}
+							onClick={handleSelectNextImage}
 						>
 							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
 						</div>
