@@ -144,9 +144,9 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 						<button
 							type="button"
 							onClick={onClose}
-							className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
+							className="group/mzi p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 						>
-							<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
+							<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						</button>
 					</div>
 

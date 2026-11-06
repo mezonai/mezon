@@ -259,7 +259,7 @@ const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 			<div className="flex flex-col gap-2">
 				<button
 					onClick={handleToggleButton}
-					className="mz-hover flex flex-row items-center gap-2 w-full text-left group sticky top-0  z-10 py-1  "
+					className="mz-hover flex flex-row items-center gap-2 w-full text-left group group/mzi sticky top-0  z-10 py-1  "
 				>
 					{categoryLogo ? (
 						<img
@@ -278,7 +278,7 @@ const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 					<span
 						className={`transition-transform duration-200 text-theme-secondary group-hover:text-theme-primary ${isShowSoundList ? 'rotate-90' : ''}`}
 					>
-						<MezonIcon icon={MzIcons16.mzChevronRight} className="text-[var(--mz-icon)]" />
+						<MezonIcon icon={MzIcons16.mzChevronRight} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</span>
 					<div className="h-[1px] flex-1 bg-theme-primary/10 group-hover:bg-theme-primary/20 transition-colors ml-2"></div>
 				</button>
@@ -352,13 +352,13 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 				>
 					<button
 						onClick={(e) => handlePreview(e, sound)}
-						className={`flex-shrink-0 flex text-theme-primary items-center justify-center w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${playingPreview === sound.id ? 'text-green-500 bg-green-500/10' : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-primary/10'}`}
+						className={`group/mzi flex-shrink-0 flex text-theme-primary items-center justify-center w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${playingPreview === sound.id ? 'text-green-500 bg-green-500/10' : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-primary/10'}`}
 						title="Preview sound"
 					>
 						{playingPreview === sound.id ? (
 							<MezonIcon icon={MzIcons16.mzPause} />
 						) : (
-							<MezonIcon icon={MzIcons16.mzSpeaker} className="text-[var(--mz-icon)]" />
+							<MezonIcon icon={MzIcons16.mzSpeaker} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						)}
 					</button>
 					<span className="flex-1 text-xs font-bold text-theme-primary truncate select-none">{sound.filename}</span>

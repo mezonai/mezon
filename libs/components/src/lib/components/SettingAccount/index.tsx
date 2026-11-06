@@ -113,7 +113,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 					</div>
 					<div className="flex gap-2">
 						<div onClick={openQR} className=" flex items-center justify-center p-2 bg-white mt-8 h-fit rounded-md cursor-pointer">
-							<MezonIcon icon={MzIcons24.mzQr} />
+							<MezonIcon icon={MzIcons24.mzQr} className="text-black" />
 						</div>
 						<div
 							className="mt-8 btn-primary btn-primary-hover  h-fit px-4 py-2 rounded-lg cursor-pointer  w-fit text-center"

@@ -17,7 +17,7 @@ import {
 	watchStream
 } from '@mezon/store';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
-import { ESummaryInfo } from '@mezon/utils';
+import { ESummaryInfo, generateE2eId } from '@mezon/utils';
 import { useSelector } from 'react-redux';
 
 interface StreamInfoProps {
@@ -126,6 +126,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 				<button
 					className="opacity-80 dark:text-[#AEAEAE] text-black dark:hover:bg-[#5e5e5e] hover:bg-bgLightModeButton p-1 rounded-md"
 					onClick={leaveChannel}
+					data-e2e={generateE2eId('icon.end_call')}
 				>
 					<MezonIcon icon={MzIcons20.mzCallEnd} />
 				</button>

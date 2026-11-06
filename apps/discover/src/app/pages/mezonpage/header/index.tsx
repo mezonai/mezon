@@ -144,11 +144,14 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							{isLogin ? t('header.openMezon') : t('header.login')}
 						</a>
 
-						<div className="lg:hidden flex w-[40px] h-[40px] items-center justify-center hover:bg-white/10 rounded-full transition-colors duration-200">
+						<div
+							onClick={toggleSideBar}
+							className="lg:hidden flex w-[40px] h-[40px] items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors duration-200"
+						>
 							{sideBarIsOpen ? (
-								<MezonIcon icon={MzIcons20.mzClose} className="cursor-pointer text-white" onClick={toggleSideBar} />
+								<MezonIcon icon={MzIcons20.mzClose} className="text-white" />
 							) : (
-								<MezonIcon icon={MzIcons20.mzMenu} className="cursor-pointer text-white" onClick={toggleSideBar} />
+								<MezonIcon icon={MzIcons20.mzMenu} className="text-white" />
 							)}
 						</div>
 					</div>

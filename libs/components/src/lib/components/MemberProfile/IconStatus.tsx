@@ -11,7 +11,7 @@ export const UserStatusIconDM = ({ status }: { status?: EUserStatus }) => {
 			return (
 				<span className="flex justify-end items-end h-full w-[10px] h-[10px]">
 					<span className="flex rounded-full bg-theme-primary p-[2px]">
-						<MezonIcon icon={MzIcons16.mzMoon} className="text-[#F0B232] -rotate-90" />
+						<MezonIcon icon={MzIcons16.mzMoon} className="w-2 h-2 text-[#F0B232] -rotate-90" />
 					</span>
 				</span>
 			);

@@ -75,9 +75,12 @@ export const PollDetailModal = ({
 							<button
 								type="button"
 								onClick={onClose}
-								className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors flex-shrink-0"
+								className="group/mzi p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors flex-shrink-0"
 							>
-								<MezonIcon icon={MzIcons24.mzClose} className="text-[var(--mz-icon)]" />
+								<MezonIcon
+									icon={MzIcons24.mzClose}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							</button>
 						</div>
 

@@ -1,6 +1,7 @@
 import type { StreamQuality } from '@mezon/store';
 import { STREAM_QUALITIES, selectStreamMuted, selectStreamQuality, selectStreamVolume, useAppDispatch, videoStreamActions } from '@mezon/store';
 import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -151,6 +152,7 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 					aria-label={t('channelVoice:disconnect')}
 					className={`${SFU_CONTROL_BUTTON_CLASS} !bg-[#da373c] hover:!bg-[#a12829]`}
 					onClick={onLeave}
+					data-e2e={generateE2eId('icon.end_call')}
 				>
 					<MezonIcon icon={MzIcons24.mzCallEnd} />
 				</button>

@@ -192,7 +192,7 @@ const SfuVoiceInfo = React.memo(() => {
 					danger={true}
 					overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t('disconnect')}</span>}
 					onClick={leaveVoice}
-					icon={<MezonIcon icon={MzIcons20.mzCallEnd} />}
+					icon={<MezonIcon icon={MzIcons20.mzCallEnd} data-e2e={generateE2eId('icon.end_call')} />}
 				/>
 			</div>
 		</div>
