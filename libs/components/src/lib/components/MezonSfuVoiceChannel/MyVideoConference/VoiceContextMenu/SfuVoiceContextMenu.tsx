@@ -154,7 +154,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 				member?.user?.username || '',
 				member?.user?.avatar_url
 			);
-			if (response.channel_id) {
+			if (response?.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`Funds Transferred: ${TOKEN_SEND_FLOWER}₫ | ${tokenEvent.note}`,

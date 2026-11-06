@@ -129,7 +129,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		const avatar = friend.user?.avatar_url;
 
 		const response = await createDirectMessageWithUser(userID, name, friend.user?.username, avatar);
-		if (response.channel_id) {
+		if (response?.channel_id) {
 			return response.channel_id;
 		}
 		return;

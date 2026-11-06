@@ -3,11 +3,7 @@ import type { ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 
-type UseDirectParams = {
-	autoFetch: boolean;
-};
-
-export function useDirect({ autoFetch = false }: UseDirectParams = { autoFetch: false }) {
+export function useDirect() {
 	const dispatch = useAppDispatch();
 	const createDirectMessageWithUser = useCallback(
 		async (userId: string, display_names?: string, username?: string, avatar?: string) => {
@@ -18,9 +14,10 @@ export function useDirect({ autoFetch = false }: UseDirectParams = { autoFetch: 
 				clan_id: '0'
 			};
 			const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDm, username, avatar, display_names }));
-			const resPayload = response.payload as ApiCreateChannelDescRequest;
-
-			return resPayload;
+			if (directActions.createNewDirectMessage.fulfilled.match(response)) {
+				return response.payload;
+			}
+			return undefined;
 		},
 		[dispatch]
 	);

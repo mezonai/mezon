@@ -244,7 +244,7 @@ const DirectMessage = () => {
 	const handleDragEnter = (e: DragEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (e.dataTransfer?.types.includes('Files')) {
+		if (!isBlocked && e.dataTransfer?.types.includes('Files')) {
 			setDraggingState(true);
 		}
 	};
@@ -266,7 +266,14 @@ const DirectMessage = () => {
 		() => (currentDmGroup?.type ?? resolvedChannelType) !== ChannelType.CHANNEL_TYPE_GROUP,
 		[currentDmGroup?.type, resolvedChannelType]
 	);
-	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''))?.state === EStateFriend.BLOCK;
+	const dmPeerId = currentDmGroup?.user_ids?.find((id) => id !== userId) || '';
+	const dmFriendState = useAppSelector((state) => selectFriendById(state, dmPeerId)?.state);
+	const isBlocked = resolvedChannelType === ChannelType.CHANNEL_TYPE_DM && dmFriendState === EStateFriend.BLOCK;
+	useEffect(() => {
+		if (!isBlocked) return;
+		setDraggingState(false);
+		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
+	}, [isBlocked, setDraggingState, dispatch]);
 
 	const isDmWithoutParticipants = useMemo(() => {
 		return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (!currentDmGroup.user_ids || currentDmGroup.user_ids.length === 0);
@@ -311,7 +318,7 @@ const DirectMessage = () => {
 
 	return (
 		<>
-			{draggingState && dmUploadChannelId ? <FileUploadByDnD currentId={dmUploadChannelId} /> : null}
+			{!isBlocked && draggingState && dmUploadChannelId ? <FileUploadByDnD currentId={dmUploadChannelId} /> : null}
 			<div
 				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible relative mt-[50px] bg-theme-chat text-theme-text`}
 				onDragEnter={handleDragEnter}
@@ -322,10 +329,7 @@ const DirectMessage = () => {
 					<div
 						className={`flex-col flex-1 h-full max-h-messageViewChatDM ${isUseProfileDM || isShowMemberListDM ? 'w-widthDmProfile' : isSearchMessage ? 'w-widthSearchMessage' : 'w-full'} ${checkTypeDm ? 'sbm:flex hidden' : 'flex'}`}
 					>
-						<div
-							className={`relative overflow-y-auto  h-heightMessageViewChatDM flex-shrink`}
-							ref={messagesContainerRef}
-						>
+						<div className={`relative overflow-y-auto  h-heightMessageViewChatDM flex-shrink`} ref={messagesContainerRef}>
 							{
 								<ChannelMessages
 									clanId="0"
@@ -462,6 +466,9 @@ const KeyPressListener = ({ currentChannel, mode, isBlocked }: KeyPressListenerP
 		),
 		[currentChannel]
 	);
+	useEffect(() => {
+		if (isBlocked) closeModalBuzz();
+	}, [isBlocked, closeModalBuzz]);
 
 	useEffect(() => {
 		if (isListenerAttached.current) return;

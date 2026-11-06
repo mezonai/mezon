@@ -170,6 +170,11 @@
 		"quickReplies": "Quick replies",
 		"quickRepliesDescription": "Show quick reply chips based on the last message in the channel.",
 		"grammar": "Grammar correction",
-		"grammarDescription": "Suggest spelling and grammar fixes while you type (up to 256 characters)."
+		"grammarDescription": "Suggest spelling and grammar fixes while you type (up to 256 characters).",
+		"onlyFriendsDm": {
+			"title": "Don't receive messages from strangers.",
+			"description": "When on, only people who are your friends can start a conversation with you.",
+			"denied": "You can't send a message because this person only accepts messages from friends."
+		}
 	}
 }
