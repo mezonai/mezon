@@ -6,7 +6,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { generateE2eId, type RequestInput } from '@mezon/utils';
+import { CHANNEL_INPUT_ID, generateE2eId, type RequestInput } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { getGrammarClient } from './grammar_client';
 
@@ -136,6 +136,16 @@ const Spelling = ({
 		setCorrected('');
 		setHoldCorrect('');
 		setPendingCorrection('');
+		requestAnimationFrame(() => {
+			const input = document.getElementById(CHANNEL_INPUT_ID);
+
+			if (!input) return;
+
+			input.focus();
+			const selection = window.getSelection();
+			selection?.selectAllChildren(input);
+			selection?.collapseToEnd();
+		});
 	};
 
 	if (corrected && isOpenRecommand && isSpelling) {

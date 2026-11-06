@@ -1,13 +1,11 @@
-import { useChatSending, useEscapeKey } from '@mezon/core';
-import { referencesActions, selectDataReferences, selectSession, useAppDispatch, useAppSelector } from '@mezon/store';
+import { useChatSending } from '@mezon/core';
+import { selectSession } from '@mezon/store';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
-import { blankReferenceObj } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
 import { MessageBox } from '../../MessageBox';
-import { ReplyMessageBox } from '../../ReplyMessageBox';
 import { UserMentionList } from '../../UserMentionList';
 
 interface DirectIdProps {
@@ -23,8 +21,6 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: direct, mode });
 	// TODO: move selector to store
 	const sessionUser = useSelector(selectSession);
-	const dataReferences = useAppSelector((state) => selectDataReferences(state, directParamId ?? ''));
-	const dispatch = useAppDispatch();
 
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
 
@@ -56,20 +52,8 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 
 	const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 
-	const handleCloseReplyMessageBox = useCallback(() => {
-		dispatch(
-			referencesActions.setDataReferences({
-				channelId: directParamId ?? '',
-				dataReferences: blankReferenceObj
-			})
-		);
-	}, [dataReferences.message_ref_id]);
-
-	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
-
 	return (
 		<div className="mx-3 relative" ref={chatboxRef}>
-			{dataReferences.message_ref_id && <ReplyMessageBox channelId={directParamId ?? ''} dataReferences={dataReferences} />}
 			<MessageBox
 				onSend={handleSend}
 				currentChannelId={directParamId}
