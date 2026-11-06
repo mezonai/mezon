@@ -15,5 +15,6 @@
 	"error_13": "Interner Fehler",
 	"error_14": "Die Server sind ausgelastet. Bitte versuche es in Kürze erneut",
 	"error_15": "Datenverlust",
-	"error_16": "Sitzung abgelaufen. Bitte melde dich erneut an"
+	"error_16": "Sitzung abgelaufen. Bitte melde dich erneut an",
+	"invalid_meeting_link": "Dieser Meeting-Link ist ungültig oder abgelaufen"
 }

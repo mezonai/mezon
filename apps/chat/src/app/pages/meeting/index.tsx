@@ -251,7 +251,7 @@ export default function PreJoinCalling() {
 	useEffect(() => {
 		if (isNumber(getJoinCallExtStatus) && getJoinCallExtStatus) {
 			const errorCode = grpcCodeFromEnvelopeStatus(getJoinCallExtStatus);
-			setError(errorExternal(`error_${errorCode}`));
+			setError(errorExternal(errorCode === 16 ? 'invalid_meeting_link' : `error_${errorCode}`));
 		}
 	}, [getJoinCallExtStatus]);
 

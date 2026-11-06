@@ -15,5 +15,6 @@
 	"error_13": "Internal error",
 	"error_14": "Servers are busy. Please try again soon",
 	"error_15": "Data loss",
-	"error_16": "Session expired. Please log in again"
+	"error_16": "Session expired. Please log in again",
+	"invalid_meeting_link": "This meeting link is invalid or has expired"
 }
