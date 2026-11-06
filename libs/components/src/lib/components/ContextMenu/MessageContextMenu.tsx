@@ -669,7 +669,7 @@ function MessageContextMenu({
 	const sendTransactionMessage = useCallback(
 		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
 			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
+			if (response?.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,

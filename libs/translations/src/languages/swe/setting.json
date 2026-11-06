@@ -170,6 +170,11 @@
 		"quickReplies": "Snabbsvar",
 		"quickRepliesDescription": "Visa förslag på snabbsvar baserade på det senaste meddelandet i kanalen.",
 		"grammar": "Grammatikkorrigering",
-		"grammarDescription": "Föreslå stavnings- och grammatikkorrigeringar medan du skriver (upp till 256 tecken)."
+		"grammarDescription": "Föreslå stavnings- och grammatikkorrigeringar medan du skriver (upp till 256 tecken).",
+		"onlyFriendsDm": {
+			"title": "Ta inte emot meddelanden från främlingar.",
+			"description": "När det är på kan bara personer som är dina vänner starta en konversation med dig.",
+			"denied": "Du kan inte skicka ett meddelande eftersom den här personen bara tar emot meddelanden från vänner."
+		}
 	}
 }
