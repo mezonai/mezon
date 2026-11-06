@@ -35,15 +35,6 @@ export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
 							>
 								<LinkifiedText text={body} />
 							</p>
-							{shouldClamp ? (
-								<button
-									type="button"
-									onClick={() => setAboutExpanded((open) => !open)}
-									className="mt-6 min-h-[48px] px-6 rounded-full bg-[#8960e0] text-white text-sm font-semibold hover:bg-[#7a52d4]"
-								>
-									{aboutExpanded ? t('detail.readLess') : t('detail.readMore')}
-								</button>
-							) : null}
 						</div>
 					) : null}
 				</div>
