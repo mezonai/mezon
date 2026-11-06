@@ -1,11 +1,5 @@
-import * as AttachmentThumbs from './attachmentThumb';
-import * as EmojiPanelIcons from './iconInEmojiPanel';
-import * as RightClickIcons from './iconRightClick';
-import * as LazyIcons from './icons.lazy';
+import * as LegacyIcons from './icons';
 
 export const Icons = {
-	...LazyIcons,
-	...AttachmentThumbs,
-	...RightClickIcons,
-	...EmojiPanelIcons
+	...LegacyIcons
 };

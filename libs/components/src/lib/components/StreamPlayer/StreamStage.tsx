@@ -1,6 +1,7 @@
 import type { StreamQuality } from '@mezon/store';
 import { STREAM_QUALITIES, selectStreamMuted, selectStreamQuality, selectStreamVolume, useAppDispatch, videoStreamActions } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -127,11 +128,11 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 						onClick={toggleMute}
 					>
 						{silent ? (
-							<Icons.MutedVolume defaultFill1="currentColor" className="h-5 w-5" />
+							<MezonIcon icon={MzIcons20.mzSpeakerOff} />
 						) : volume < 0.5 ? (
-							<Icons.LowVolume defaultFill1="currentColor" defaultFill2="currentColor" className="h-5 w-5" />
+							<MezonIcon icon={MzIcons20.mzSpeakerLow} />
 						) : (
-							<Icons.LoudVolume defaultFill1="currentColor" defaultFill2="currentColor" className="h-5 w-5" />
+							<MezonIcon icon={MzIcons20.mzSpeaker} />
 						)}
 					</button>
 					<input
@@ -151,8 +152,9 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 					aria-label={t('channelVoice:disconnect')}
 					className={`${SFU_CONTROL_BUTTON_CLASS} !bg-[#da373c] hover:!bg-[#a12829]`}
 					onClick={onLeave}
+					data-e2e={generateE2eId('icon.end_call')}
 				>
-					<Icons.EndCall className="h-6 w-6" />
+					<MezonIcon icon={MzIcons24.mzCallEnd} />
 				</button>
 				<div className="flex min-w-0 items-center justify-end gap-1">
 					<StreamMenu
@@ -171,7 +173,7 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 						aria-label={isFullscreen ? t('exitFullscreen') : t('fullscreen')}
 						onClick={toggleFullscreen}
 					>
-						{isFullscreen ? <Icons.ExitFullScreen className="h-5 w-5" /> : <Icons.FullScreen className="h-5 w-5" />}
+						{isFullscreen ? <MezonIcon icon={MzIcons20.mzFullscreenExit} /> : <MezonIcon icon={MzIcons20.mzFullscreen} />}
 					</button>
 				</div>
 			</div>

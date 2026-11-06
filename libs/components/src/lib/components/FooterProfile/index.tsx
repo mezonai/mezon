@@ -20,7 +20,7 @@ import {
 	userClanProfileActions
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import {
 	CURRENCY,
 	ESummaryInfo,
@@ -385,15 +385,15 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<Icons.MicIcon className="ml-auto w-[18px] h-[18px] opacity-80 text-[#f00] bg-item-hover hidden" />
-					<Icons.HeadPhoneICon className="ml-auto w-[18px] h-[18px] opacity-80 text-theme-primary  bg-item-hover hidden" />
+					<MezonIcon icon={MzIcons20.mzMicOff} className="ml-auto opacity-80 text-[#f00] bg-item-hover hidden" />
+					<MezonIcon icon={MzIcons20.mzHeadphones} className="ml-auto opacity-80 text-[var(--mz-icon)] bg-item-hover hidden" />
 					<div
 						onClick={openSetting}
 						className="cursor-pointer ml-auto p-1 group/setting opacity-80  text-theme-primary bg-item-hover hover:rounded-md "
 						data-e2e={generateE2eId(`user_setting.profile.button_setting`)}
 						title={t('setting')}
 					>
-						<Icons.SettingProfile className="w-5 h-5  group-hover/setting:rotate-180 duration-500" />
+						<MezonIcon icon={MzIcons20.mzSettings} className="group-hover/setting:rotate-180 duration-500 text-[var(--mz-icon)]" />
 					</div>
 				</div>
 			</div>

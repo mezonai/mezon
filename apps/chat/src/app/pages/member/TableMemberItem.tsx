@@ -13,7 +13,7 @@ import {
 	useAppDispatch,
 	usersClanActions
 } from '@mezon/store';
-import { HighlightMatchBold, Icons } from '@mezon/ui';
+import { HighlightMatchBold, MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity } from '@mezon/utils';
 import { DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_TITLE, createImgproxyUrl, generateE2eId, getDateLocale } from '@mezon/utils';
 import { format } from 'date-fns';
@@ -422,7 +422,10 @@ const ListOptionRole = ({
 							}}
 							data-e2e={generateE2eId('clan_page.member_list.role_settings.add_role.choose_role')}
 						/>
-						<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4 pointer-events-none" />
+						<MezonIcon
+							icon={MzIcons16.mzCheck}
+							className="absolute invisible peer-checked:visible forced-colors:hidden pointer-events-none"
+						/>
 					</div>
 				</div>
 			);

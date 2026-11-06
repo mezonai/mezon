@@ -1,7 +1,7 @@
 import { useColorsRoleById } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
 import { selectCurrentChannelId, selectCurrentDmChannelId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
@@ -100,7 +100,7 @@ export function ClanUserName({ name, userId, isOwner }: { name: string; userId: 
 
 			{isOwner && (
 				<button className="w-[14px] text-center h-[14px] pt-[4px]" data-e2e={generateE2eId('icon.owner')}>
-					<Icons.OwnerIcon />
+					<MezonIcon icon={MzIcons16.mzOwner} className="text-[#F0B132]" />
 				</button>
 			)}
 		</div>

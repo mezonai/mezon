@@ -1,4 +1,5 @@
 import { selectVoiceRecording } from '@mezon/store';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,24 +8,9 @@ import { BLOB_SINK_MAX_DURATION_MS } from './RecordingSink';
 import { sfuCallRecorder } from './callRecorder';
 import { detectRecorderCapabilities } from './capabilities';
 
-const RecordGlyph = ({ active }: { active: boolean }) => (
-	<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-		{active ? (
-			<rect x="6" y="6" width="12" height="12" rx="2.5" fill="currentColor" />
-		) : (
-			<>
-				<circle cx="12" cy="12" r="10.5" stroke="currentColor" strokeWidth="2" />
-				<circle cx="12" cy="12" r="5.5" fill="currentColor" />
-			</>
-		)}
-	</svg>
-);
+const RecordGlyph = ({ active }: { active: boolean }) => <MezonIcon icon={active ? MzIcons20.mzStop : MzIcons20.mzRecord} />;
 
-const StalledGlyph = () => (
-	<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-		<path d="M12 2 1 21h22L12 2Zm0 5.5a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1Zm0 9a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z" />
-	</svg>
-);
+const StalledGlyph = () => <MezonIcon icon={MzIcons16.mzWarning} />;
 
 function formatClock(ms: number): string {
 	const total = Math.max(0, Math.floor(ms / 1000));
@@ -96,7 +82,7 @@ export const RecordingControl = memo(({ channelLabel }: RecordingControlProps) =
 				aria-pressed={isActive}
 				onClick={handleToggle}
 				className={`flex items-center cursor-pointer transition-colors ${isBusy ? 'opacity-60 pointer-events-none' : ''} ${
-					isActive ? 'text-[#da373c] hover:text-[#a12829]' : 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'
+					isActive ? 'text-[#da373c] hover:text-[#a12829]' : 'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]'
 				}`}
 				data-e2e={generateE2eId('clan_page.screen.voice_room.button.record')}
 			>

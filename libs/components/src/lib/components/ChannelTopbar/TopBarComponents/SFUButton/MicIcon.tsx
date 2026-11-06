@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 
 interface IMicButtonProps {
 	isTalking: boolean;
@@ -15,9 +15,9 @@ export function MicButton({ isTalking, onClick }: IMicButtonProps) {
 				onContextMenu={(e) => e.preventDefault()}
 			>
 				{isTalking ? (
-					<Icons.MicEnable className="size-6 dark:hover:text-white hover:text-black text-theme-primary" />
+					<MezonIcon icon={MzIcons24.mzMic} className="dark:hover:text-white hover:text-black text-[var(--mz-icon)]" />
 				) : (
-					<Icons.MicDisable className="size-6 text-red-600" />
+					<MezonIcon icon={MzIcons24.mzMicOff} className="text-red-600" />
 				)}
 			</button>
 		</div>

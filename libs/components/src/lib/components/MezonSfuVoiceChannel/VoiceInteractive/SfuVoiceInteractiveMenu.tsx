@@ -10,6 +10,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { buildChannelAppLaunchUrl, generateE2eId } from '@mezon/utils';
 import type { VoiceInteractiveEvent } from 'mezon-js';
 import { useRef } from 'react';
@@ -135,19 +136,13 @@ export const SfuVoiceInteractiveMenu = ({ channelId, onClose }: SfuVoiceInteract
 					<div
 						key={app.eventType}
 						data-e2e={generateE2eId('clan_page.screen.voice_room.interactive_apps.item', app.name.toLowerCase())}
-						className={`relative flex justify-between gap-4 p-2 h-9 content-center text-sm rounded-lg hover:bg-zinc-700 hover:cursor-pointer ${isActive && 'border-green-400 border text-green-400 before:absolute before:top-0 before:right-0 before:rounded-lg before:h-full before:w-full before:bg-green-400/10 before:content-[""]'}`}
+						className={`mz-hover relative flex justify-between gap-4 p-2 h-9 content-center text-sm rounded-lg hover:bg-zinc-700 hover:cursor-pointer ${isActive && 'border-green-400 border text-green-400 before:absolute before:top-0 before:right-0 before:rounded-lg before:h-full before:w-full before:bg-green-400/10 before:content-[""]'}`}
 						onClick={() => handleOpenApp(app)}
 					>
 						<div className="w-20">{app.name}</div>
 						{isActive && (
 							<div>
-								<svg width="16" height="16" viewBox="0 0 44 43" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path
-										d="M17.5638 5.66292C19.0564 3.59465 19.8027 2.56051 20.7566 2.26272C21.3388 2.08096 21.9625 2.08096 22.5447 2.26272C23.4985 2.56051 24.2448 3.59465 25.7375 5.66292L32.476 15L37.5354 22.0106C39.5497 24.8016 40.5568 26.1972 40.4144 27.3636C40.3284 28.0683 39.9952 28.7198 39.474 29.202C38.6116 30 36.8906 30 33.4485 30H9.85274C6.41072 30 4.6897 30 3.82725 29.202C3.3061 28.7198 2.97288 28.0683 2.88684 27.3636C2.74444 26.1972 3.75159 24.8016 5.76588 22.0106L17.5638 5.66292Z"
-										fill="currentColor"
-									/>
-									<rect x="11.6506" y="33" width="20" height="10" rx="5" fill="currentColor" />
-								</svg>
+								<MezonIcon icon={MzIcons16.mzCheck} />
 							</div>
 						)}
 					</div>

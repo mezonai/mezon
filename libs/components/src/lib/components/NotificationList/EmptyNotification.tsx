@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons40 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 
 type EmptyNotification = {
@@ -35,7 +35,7 @@ const EmptyMessages = ({ t }: { t: any }) => {
 	return (
 		<>
 			<button className="relative mx-auto mb-4 p-[22px] rounded-full cursor-default">
-				<Icons.EmptyUnread className="w-9 h-9 " />
+				<MezonIcon icon={MzIcons40.mzInbox} className="text-[var(--mz-icon)]" />
 				<Icons.EmptyUnreadStyle className="w-[104px] h-[80px] absolute top-0 left-[-10px]" />
 			</button>
 			<h1 className="text-center  text-2xl font-semibold mb-2">{t('empty.messages.title')}</h1>
@@ -51,7 +51,7 @@ const EmptyMentions = ({ t }: { t: any }) => {
 	return (
 		<>
 			<button className="relative mx-auto mb-4 p-[22px] rounded-full cursor-default">
-				<Icons.EmptyMention className="w-9 h-9 " />
+				<MezonIcon icon={MzIcons40.mzMention} className="text-[var(--mz-icon)]" />
 				<Icons.EmptyUnreadStyle className="w-[104px] h-[80px] absolute top-0 left-[-10px]" />
 			</button>
 			<h1 className="text-center  text-2xl font-semibold mb-2">{t('empty.mentions.title')}</h1>

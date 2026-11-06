@@ -1,6 +1,6 @@
 import { usePermissionChecker } from '@mezon/core';
 import { deleteSticker, selectCurrentClanId, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EPermission, createImgproxyUrl, generateE2eId, getSrcSticker } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
@@ -59,7 +59,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 					/>
 				) : (
 					<div className="size-4 rounded-full bg-bgDisable flex items-center justify-center">
-						<Icons.AvatarUser className="w-2.5 h-2.5" />
+						<MezonIcon icon={MzIcons16.mzUser} className="text-[var(--mz-icon)]" />
 					</div>
 				)}
 				<p className=" max-w-20 truncate">{dataAuthor?.clan_nick || dataAuthor?.user?.username}</p>
@@ -71,7 +71,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 						className="aspect-square w-6 rounded-full bg-input-theme flex items-center justify-center shadow-sm"
 						data-e2e={generateE2eId('clan_page.settings.image_sticker.item.actions.edit')}
 					>
-						<Icons.EditMessageRightClick defaultSize="w-3 h-3" />
+						<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)]" />
 					</button>
 					<button
 						onClick={handleDeleteSticker}
@@ -82,7 +82,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 					</button>
 				</div>
 			)}
-			{sticker.is_for_sale && <Icons.MarketIcons className="absolute top-1 right-1 w-4 h-4 text-yellow-300" />}
+			{sticker.is_for_sale && <MezonIcon icon={MzIcons16.mzShop} className="absolute top-1 right-1 text-yellow-300" />}
 		</div>
 	);
 };

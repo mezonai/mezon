@@ -67,7 +67,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, ensureMediaPermission, generateE2eId } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -225,8 +225,8 @@ const TopBarChannelText = memo(() => {
 	return (
 		<>
 			<div className="flex relative flex-1 min-w-0 items-center gap-2 text-theme-primary mr-5">
-				<div className="flex w-10 sbm:hidden pl-3 px-2 text-[var(--bg-icon-theme)]" onClick={openMenu} role="button">
-					<Icons.OpenMenu />
+				<div className="flex w-10 sbm:hidden pl-3 px-2 text-[var(--mz-icon)]" onClick={openMenu} role="button">
+					<MezonIcon icon={MzIcons20.mzMenu} />
 				</div>
 
 				{pagePathTitle ? (
@@ -242,7 +242,7 @@ const TopBarChannelText = memo(() => {
 										label={channelParent?.channel_label || ''}
 										type={channelParent?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
 									/>
-									<Icons.ArrowRight />
+									<MezonIcon icon={MzIcons20.mzChevronRight} className="text-[var(--mz-icon)]" />
 								</div>
 							)}
 							<ChannelTopbarLabel
@@ -295,12 +295,12 @@ const TopBarChannelText = memo(() => {
 									>
 										{checkInvoice?.status === EInvoice.INVOICE ? (
 											<>
-												<Icons.Speaker className="text-green-500 !w-3 !h-3" />
+												<MezonIcon icon={MzIcons16.mzSpeaker} className="text-green-500" />
 												{t('invoice')}
 											</>
 										) : (
 											<>
-												<Icons.VoiceScreenShareIcon color="#22c55e" className="!w-3 !h-3 " />
+												<MezonIcon icon={MzIcons16.mzScreenShare} className="text-[#22c55e]" />
 												{t('shareScreen')}
 											</>
 										)}
@@ -308,15 +308,10 @@ const TopBarChannelText = memo(() => {
 								)}
 							</div>
 							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
-								<svg
-									className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0"
-									viewBox="0 0 16 16"
-									fill="currentColor"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path d="M8.29289 3.70711L1 11V15H5L12.2929 7.70711L8.29289 3.70711Z" />
-									<path d="M9.70711 2.29289L13.7071 6.29289L15.1716 4.82843C15.702 4.29799 16 3.57857 16 2.82843C16 1.26633 14.7337 0 13.1716 0C12.4214 0 11.702 0.297995 11.1716 0.828428L9.70711 2.29289Z" />
-								</svg>
+								<MezonIcon
+									icon={MzIcons16.mzEdit}
+									className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 text-[var(--mz-icon)]"
+								/>
 							)}
 						</div>
 					</div>
@@ -384,49 +379,37 @@ const ChannelTopbarLabel = memo(
 
 		const renderIcon = () => {
 			if (type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestricted) {
-				return <Icons.HashtagWarning />;
+				return <MezonIcon icon={MzIcons20.mzChannelWarning} className="text-[var(--mz-icon)]" />;
 			}
 			if (!isPrivate) {
 				switch (type) {
 					case ChannelType.CHANNEL_TYPE_CHANNEL:
-						return <Icons.Hashtag />;
+						return <MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />;
 					case ChannelType.CHANNEL_TYPE_THREAD:
-						return (
-							<Icons.ThreadIcon
-								defaultFill1="var(--bg-icon-theme)"
-								defaultFill4="var(--bg-theme-secounnd)"
-								defaultFill5="var(--bg-icon-theme)"
-							/>
-						);
+						return <MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />;
 					case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
-						return <Icons.Speaker />;
+						return <MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />;
 					case ChannelType.CHANNEL_TYPE_STREAMING:
-						return <Icons.Stream />;
+						return <MezonIcon icon={MzIcons20.mzLive} className="text-[var(--mz-icon)]" />;
 					case ChannelType.CHANNEL_TYPE_APP:
-						return <AppChannelListIcon isEmphasized className="w-4 h-4" />;
+						return <AppChannelListIcon isEmphasized size={16} />;
 					default:
-						return <Icons.Hashtag />;
+						return <MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />;
 				}
 			}
 			switch (type) {
 				case ChannelType.CHANNEL_TYPE_CHANNEL:
-					return <Icons.HashtagLocked defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />;
+					return <MezonIcon icon={MzIcons20.mzChannelPrivate} className="text-[var(--mz-icon)]" />;
 				case ChannelType.CHANNEL_TYPE_THREAD:
-					return (
-						<Icons.ThreadIconLocker
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill4="var(--bg-theme-secounnd)"
-							defaultFill5="var(--bg-icon-theme-active)"
-						/>
-					);
+					return <MezonIcon icon={MzIcons20.mzThreadPrivate} className="text-[var(--mz-icon)]" />;
 				case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
-					return <Icons.SpeakerLocked />;
+					return <MezonIcon icon={MzIcons20.mzSpeakerLock} className="text-[var(--mz-icon)]" />;
 				case ChannelType.CHANNEL_TYPE_STREAMING:
-					return <Icons.Stream />;
+					return <MezonIcon icon={MzIcons20.mzLive} className="text-[var(--mz-icon)]" />;
 				case ChannelType.CHANNEL_TYPE_APP:
-					return <AppChannelListIcon isEmphasized className="w-4 h-4" />;
+					return <AppChannelListIcon isEmphasized size={16} />;
 				default:
-					return <Icons.HashtagLocked defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />;
+					return <MezonIcon icon={MzIcons20.mzChannelPrivate} className="text-[var(--mz-icon)]" />;
 			}
 		};
 
@@ -510,7 +493,7 @@ const ChannelTopbarTools = memo(
 							<PinButton
 								isDMView={false}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-								styleCss={'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'}
+								styleCss={'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]'}
 							/>
 							{!isTimelineView && (
 								<div onClick={setTurnOffThreadMessage}>
@@ -570,7 +553,7 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 				/>
 			) : (
 				<div className="size-8 rounded-full bg-bgDisable flex items-center justify-center">
-					<Icons.AvatarUser className="w-5 h-5" />
+					<MezonIcon icon={MzIcons20.mzUser} className="text-[var(--mz-icon)]" />
 				</div>
 			)}
 		</div>
@@ -660,9 +643,6 @@ const DmTopbarTools = memo(() => {
 		dispatch(audioCallActions.setIsBusyTone(false));
 	};
 	const canShowCallButtons = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM;
-	const phoneFillClass =
-		'[--phone-fill-1:var(--bg-icon-theme)] [--phone-fill-2:var(--bg-icon-theme)] hover:[--phone-fill-1:var(--bg-icon-theme-active)] hover:[--phone-fill-2:var(--bg-icon-theme-active)]';
-
 	const setIsUseProfileDM = useCallback(
 		async (status: boolean) => {
 			await dispatch(appActions.setIsUseProfileDM(status));
@@ -700,22 +680,22 @@ const DmTopbarTools = memo(() => {
 							<button
 								title={t('tooltips.startVoiceCall')}
 								onClick={() => handleStartCall()}
-								className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${phoneFillClass}`}
+								className={`text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]`}
 								data-e2e={generateE2eId(`chat.direct_message.header.right_container.call`)}
 							>
-								<Icons.IconPhoneDM className="w-5 h-5" defaultFill1="var(--phone-fill-1)" defaultFill2="var(--phone-fill-2)" />
+								<MezonIcon icon={MzIcons20.mzCall} />
 							</button>
 							<button
 								title={t('tooltips.startVideoCall')}
 								onClick={() => handleStartCall(true)}
-								className="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
+								className="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]"
 								data-e2e={generateE2eId(`chat.direct_message.header.right_container.video_call`)}
 							>
-								<Icons.IconMeetDM className="w-5 h-5" />
+								<MezonIcon icon={MzIcons20.mzVideo} />
 							</button>
 						</>
 					)}
-					<PinButton isDMView mode={mode} styleCss="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />
+					<PinButton isDMView mode={mode} styleCss="text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]" />
 					<GalleryButton />
 					<div className="hidden sbm:flex">
 						<FileButton />
@@ -726,12 +706,12 @@ const DmTopbarTools = memo(() => {
 							title={!isShowMemberListDM ? t('tooltips.showMemberList') : t('tooltips.hideMemberList')}
 							onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}
 							data-e2e={generateE2eId(`chat.direct_message.member_list.button`)}
-							className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-								isShowMemberListDM ? 'text-[var(--bg-icon-theme-active)]' : ''
+							className={`mz-hover text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+								isShowMemberListDM ? 'text-[var(--mz-icon-selected)]' : ''
 							}`}
 						>
 							<span>
-								<Icons.MemberList className="w-5 h-5" />
+								<MezonIcon icon={MzIcons20.mzMembers} />
 							</span>
 						</button>
 					)}
@@ -740,12 +720,12 @@ const DmTopbarTools = memo(() => {
 							title={!isUseProfileDM ? t('tooltips.showUserProfile') : t('tooltips.hideUserProfile')}
 							onClick={() => setIsUseProfileDM(!isUseProfileDM)}
 							data-e2e={generateE2eId(`chat.direct_message.header.right_container.user_profile`)}
-							className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-								isUseProfileDM ? 'text-[var(--bg-icon-theme-active)]' : ''
+							className={`mz-hover text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+								isUseProfileDM ? 'text-[var(--mz-icon-selected)]' : ''
 							}`}
 						>
 							<span>
-								<Icons.IconUserProfileDM className="w-5 h-5" />
+								<MezonIcon icon={MzIcons20.mzUserCircle} />
 							</span>
 						</button>
 					)}
@@ -758,10 +738,6 @@ const DmTopbarTools = memo(() => {
 function FileButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowFile, setIsShowFile] = useState<boolean>(false);
-	const fileFillClass = isShowFile
-		? '[--file-fill-1:var(--bg-icon-theme-active)] [--file-fill-2:var(--bg-icon-theme-active)] [--file-fill-3:var(--bg-icon-theme)]'
-		: '[--file-fill-1:var(--bg-icon-theme)] [--file-fill-2:var(--bg-icon-theme-active)] [--file-fill-3:var(--bg-icon-theme-active)] hover:[--file-fill-1:var(--bg-icon-theme-active)] hover:[--file-fill-2:var(--bg-icon-theme-active)]';
-
 	const fileRef = useRef<HTMLDivElement | null>(null);
 
 	const handleShowFile = () => {
@@ -776,18 +752,13 @@ function FileButton() {
 		<div className="relative leading-5 h-5" ref={fileRef} data-e2e={generateE2eId('chat.channel_message.header.button.file')}>
 			<button
 				title={t('tooltips.files')}
-				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowFile ? 'text-[var(--bg-icon-theme-active)]' : ''
-				} ${fileFillClass}`}
+				className={`focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isShowFile ? 'text-[var(--mz-icon-selected)]' : ''
+				}`}
 				onClick={handleShowFile}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.FileIcon
-					className="w-5 h-5"
-					defaultFill1="var(--file-fill-1)"
-					defaultFill2="var(--file-fill-2)"
-					defaultFill3="var(--file-fill-3)"
-				/>
+				<MezonIcon icon={MzIcons20.mzFile} />
 			</button>
 			{isShowFile && <FileModal onClose={handleClose} rootRef={fileRef} />}
 		</div>
@@ -798,10 +769,6 @@ function CanvasButton({ onClick }: { onClick?: () => void }) {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowCanvas, setIsShowCanvas] = useState<boolean>(false);
 	const canvasRef = useRef<HTMLDivElement | null>(null);
-	const canvasFillClass = isShowCanvas
-		? '[--canvas-fill-1:var(--bg-icon-theme-active)] [--canvas-fill-2:var(--bg-theme-secounnd)]'
-		: '[--canvas-fill-1:var(--bg-icon-theme)] [--canvas-fill-2:var(--bg-theme-secounnd)] hover:[--canvas-fill-1:var(--bg-icon-theme-active)] hover:[--canvas-fill-2:var(--bg-theme-secounnd)]';
-
 	const handleShowCanvas = async () => {
 		setIsShowCanvas(!isShowCanvas);
 		onClick?.();
@@ -815,13 +782,13 @@ function CanvasButton({ onClick }: { onClick?: () => void }) {
 		<div className="relative leading-5 h-5" ref={canvasRef} data-e2e={generateE2eId('chat.channel_message.header.button.canvas')}>
 			<button
 				title={t('tooltips.canvas')}
-				className={`group focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowCanvas ? 'text-[var(--bg-icon-theme-active)]' : ''
-				} ${canvasFillClass}`}
+				className={`group focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isShowCanvas ? 'text-[var(--mz-icon-selected)]' : ''
+				}`}
 				onClick={handleShowCanvas}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.CanvasIcon className="w-5 h-5" defaultFill1="var(--canvas-fill-1)" defaultFill2="var(--canvas-fill-2)" />
+				<MezonIcon icon={MzIcons20.mzCanvas} />
 			</button>
 			{isShowCanvas && <CanvasModal onClose={handleClose} rootRef={canvasRef} />}
 		</div>
@@ -832,10 +799,6 @@ function TimelineViewToggleButton() {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
 	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
-	const historyFillClass = isMediaChannelView
-		? '[--history-fill-1:var(--bg-icon-theme-active)] [--history-fill-2:var(--bg-icon-theme-active)] [--history-fill-3:var(--bg-theme-secounnd)]'
-		: '[--history-fill-1:var(--bg-icon-theme)] [--history-fill-2:var(--bg-icon-theme)] [--history-fill-3:var(--bg-theme-secounnd)] hover:[--history-fill-1:var(--bg-icon-theme-active)] hover:[--history-fill-2:var(--bg-icon-theme-active)] hover:[--history-fill-3:var(--bg-theme-secounnd)]';
-
 	const handleToggle = useCallback(() => {
 		dispatch(appActions.setMediaChannelViewMode(!isMediaChannelView));
 		dispatch(appActions.setIsShowCanvas(false));
@@ -846,17 +809,12 @@ function TimelineViewToggleButton() {
 			<button
 				title={isMediaChannelView ? t('tooltips.defaultView') : t('tooltips.timelineView')}
 				onClick={handleToggle}
-				className={`group focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isMediaChannelView ? 'text-[var(--bg-icon-theme-active)]' : ''
-				} ${historyFillClass}`}
+				className={`group focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isMediaChannelView ? 'text-[var(--mz-icon-selected)]' : ''
+				}`}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.History
-					className="h-5 w-5"
-					defaultFill1="var(--history-fill-1)"
-					defaultFill2="var(--history-fill-2)"
-					defaultFill3="var(--history-fill-3)"
-				/>
+				<MezonIcon icon={MzIcons20.mzHistory} />
 			</button>
 		</div>
 	);
@@ -870,10 +828,6 @@ function ThreadButton() {
 
 	const dispatch = useDispatch();
 
-	const threadFillClass = isShowThread
-		? '[--thread-fill-1:var(--bg-icon-theme-active)] [--thread-fill-4:var(--bg-theme-secounnd)]'
-		: '[--thread-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] hover:[--thread-fill-1:var(--bg-icon-theme-active)]';
-
 	const handleToggleThreads = () => {
 		dispatch(threadsActions.toggleThreadModal());
 	};
@@ -882,18 +836,13 @@ function ThreadButton() {
 		<div className="relative leading-5 h-5 group" ref={threadRef} data-e2e={generateE2eId('chat.channel_message.header.button.thread')}>
 			<button
 				title={t('tooltips.threads')}
-				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowThread ? 'text-[var(--bg-icon-theme-active)]' : ''
-				} ${threadFillClass}`}
+				className={`focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isShowThread ? 'text-[var(--mz-icon-selected)]' : ''
+				}`}
 				onClick={handleToggleThreads}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.ThreadIcon
-					className="w-5 h-5"
-					defaultFill1="var(--thread-fill-1)"
-					defaultFill4="var(--thread-fill-4)"
-					defaultFill5="var(--thread-fill-1)"
-				/>
+				<MezonIcon icon={MzIcons20.mzThread} />
 			</button>
 			{isShowThread && <ThreadModal onClose={handleToggleThreads} rootRef={threadRef} />}
 		</div>
@@ -949,17 +898,13 @@ function MuteButton() {
 		<div className="relative leading-5 h-5" ref={notiRef} data-e2e={generateE2eId('chat.channel_message.header.button.mute')}>
 			<button
 				title={t('tooltips.notificationSettings')}
-				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowNotificationSetting ? 'text-[var(--bg-icon-theme-active)]' : ''
+				className={`focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isShowNotificationSetting ? 'text-[var(--mz-icon-selected)]' : ''
 				}`}
 				onClick={handleShowNotificationSetting}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				{isMuteBell ? (
-					<Icons.MuteBell className="w-5 h-5" defaultFill1="currentColor" defaultFill3="currentColor" />
-				) : (
-					<Icons.Bell className="w-5 h-5" />
-				)}
+				{isMuteBell ? <MezonIcon icon={MzIcons20.mzBellOff} /> : <MezonIcon icon={MzIcons20.mzBell} />}
 			</button>
 			{isShowNotificationSetting && <NotificationSetting onClose={handleClose} rootRef={notiRef} />}
 		</div>
@@ -1012,17 +957,16 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 		<div className="relative leading-5 h-5" ref={pinRef} data-e2e={generateE2eId('chat.channel_message.header.button.pin')}>
 			<button
 				title={t('tooltips.pinnedMessages')}
-				className={`${styleCss} focus-visible:outline-none relative text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					shouldShowPinMessage ? 'text-[var(--bg-icon-theme-active)]' : ''
+				className={`${styleCss} focus-visible:outline-none relative text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					shouldShowPinMessage ? 'text-[var(--mz-icon-selected)]' : ''
 				}`}
 				onClick={handleTogglePinMessage}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.PinRight
-					className={` ${
-						shouldShowPinMessage
-							? 'text-[var(--bg-icon-theme-active)]'
-							: 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'
+				<MezonIcon
+					icon={MzIcons20.mzPin}
+					className={`${
+						shouldShowPinMessage ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]'
 					}`}
 				/>
 				{isShowPinBadgeFinal && (
@@ -1042,7 +986,7 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 export function InboxButton() {
 	return (
 		<div
-			className="focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] group"
+			className="focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] group"
 			data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 		>
 			<NotificationTooltip />
@@ -1084,12 +1028,10 @@ function ChannelListButton() {
 			<button
 				title={t('tooltips.members')}
 				onClick={handleClick}
-				className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isActive ? 'text-[var(--bg-icon-theme-active)]' : ''
-				}`}
+				className={`text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${isActive ? 'text-[var(--mz-icon-selected)]' : ''}`}
 				data-e2e={generateE2eId('chat.channel_message.header.button.member')}
 			>
-				<Icons.MemberList className="size-5" />
+				<MezonIcon icon={MzIcons20.mzMembers} />
 			</button>
 		</div>
 	);
@@ -1110,11 +1052,11 @@ function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 			<button
 				title={isShowChatStream ? t('tooltips.hideChat') : t('tooltips.showChat')}
 				onClick={handleClick}
-				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowChatStream ? 'text-[var(--bg-icon-theme-active)]' : ''
+				className={`focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isShowChatStream ? 'text-[var(--mz-icon-selected)]' : ''
 				}`}
 			>
-				<Icons.Chat className="w-5 h-5" />
+				<MezonIcon icon={MzIcons20.mzChat} />
 			</button>
 		</div>
 	);
@@ -1146,13 +1088,11 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 				</div>
 			)}
 			<span
-				className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					openAddToGroup ? 'text-[var(--bg-icon-theme-active)]' : ''
-				}`}
+				className={`text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${openAddToGroup ? 'text-[var(--mz-icon-selected)]' : ''}`}
 				title={t('tooltips.addFriendsToDM')}
 				data-e2e={generateE2eId(`chat.direct_message.button.add_user`)}
 			>
-				<Icons.IconAddFriendDM className="size-5" defaultFill1="currentColor" defaultFill2="currentColor" />
+				<MezonIcon icon={MzIcons20.mzUserPlus} />
 			</span>
 		</div>
 	);
@@ -1163,10 +1103,6 @@ function GalleryButton() {
 	const [isShowGallery, setIsShowGallery] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
 	const { channelId: currentChannelId, clanId: currentClanId } = useGalleryTarget();
-	const galleryFillClass = isShowGallery
-		? '[--gallery-fill-1:var(--bg-icon-theme-active)] [--gallery-fill-2:var(--bg-theme-secounnd)]'
-		: '[--gallery-fill-1:var(--bg-icon-theme)] [--gallery-fill-2:var(--bg-theme-secounnd)] hover:[--gallery-fill-1:var(--bg-icon-theme-active)] hover:[--gallery-fill-2:var(--bg-theme-secounnd)]';
-
 	const galleryRef = useRef<HTMLDivElement | null>(null);
 
 	const handleShowGallery = async () => {
@@ -1193,13 +1129,13 @@ function GalleryButton() {
 		<div className="relative leading-5 h-5" ref={galleryRef} data-e2e={generateE2eId('chat.channel_message.header.button.gallery')}>
 			<button
 				title={t('tooltips.gallery')}
-				className={`group focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowGallery ? 'text-[var(--bg-icon-theme-active)]' : ''
-				} ${galleryFillClass}`}
+				className={`group focus-visible:outline-none text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+					isShowGallery ? 'text-[var(--mz-icon-selected)]' : ''
+				}`}
 				onClick={handleShowGallery}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.ImageThumbnail className="w-5 h-5" defaultFill1="var(--gallery-fill-1)" defaultFill2="var(--gallery-fill-2)" />
+				<MezonIcon icon={MzIcons20.mzFileImage} />
 			</button>
 			{isShowGallery && <GalleryModal onClose={handleClose} rootRef={galleryRef} />}
 		</div>

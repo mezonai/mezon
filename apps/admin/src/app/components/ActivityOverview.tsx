@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { formatDateI18n } from '@mezon/utils';
 import 'rc-tooltip/assets/bootstrap.css';
 import React from 'react';
@@ -29,11 +30,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 						<h2 className="text-xl font-semibold">{t('activityOverview.title')}</h2>
 						<div className="mt-1 text-sm dark:text-textSecondary flex items-center">
 							<span className="inline-flex items-center mr-2" aria-hidden="true">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-									<rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
-									<path d="M16 3v4M8 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-									<path d="M7 11h10M7 15h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-								</svg>
+								<MezonIcon icon={MzIcons16.mzCalendar} className="text-[var(--mz-icon)]" />
 							</span>
 							{now} - {t('activityOverview.timePeriod')}: {dateRangeText}
 						</div>

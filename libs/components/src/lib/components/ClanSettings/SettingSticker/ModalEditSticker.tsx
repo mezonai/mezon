@@ -2,7 +2,7 @@ import { useEscapeKeyClose } from '@mezon/core';
 import { createSticker, emojiSuggestionActions, selectCurrentClanId, settingClanStickerActions, updateSticker, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 
-import { Button, ButtonLoading, Checkbox, Icons, InputField } from '@mezon/ui';
+import { Button, ButtonLoading, Checkbox, InputField, MezonIcon, MzIcons20, MzIcons48 } from '@mezon/ui';
 import {
 	LIMIT_SIZE_UPLOAD_IMG,
 	createImgproxyUrl,
@@ -303,7 +303,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 						className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 						onClick={handleCloseModal}
 					>
-						<Icons.Close className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 					</button>
 				</div>
 				<div className={`w-full flex-1 flex flex-col  overflow-y-auto gap-4 relative px-5 py-4 bg-transparent hide-scrollbar`}>
@@ -318,14 +318,14 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 								{editingGraphic.source ? (
 									<PreviewStickerBox preview={editingGraphic.source} />
 								) : (
-									<Icons.UploadImage className="w-16 h-16 " />
+									<MezonIcon icon={MzIcons48.mzCamera} className="w-16 h-16 " />
 								)}
 							</div>
 							<div className={'h-56 w-[50%] flex items-center justify-center '}>
 								{editingGraphic.source ? (
 									<PreviewStickerBox preview={editingGraphic.source} />
 								) : (
-									<Icons.UploadImage className="w-16 h-16" />
+									<MezonIcon icon={MzIcons48.mzCamera} className="w-16 h-16" />
 								)}
 							</div>
 						</div>

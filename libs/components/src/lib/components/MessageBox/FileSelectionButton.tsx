@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFilesForAttachment } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useRef, useState } from 'react';
@@ -132,10 +132,10 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 			<div
 				ref={buttonRef}
 				onClick={handleOpenModal}
-				className="flex flex-row h-6 w-6 items-center justify-center cursor-pointer text-theme-primary text-theme-primary-hover"
+				className="flex flex-row h-6 w-6 items-center justify-center cursor-pointer text-theme-primary text-theme-primary-hover group/mzi"
 				data-e2e={generateE2eId('poll.button.open_modal')}
 			>
-				<Icons.AddCircle className="" />
+				<MezonIcon icon={MzIcons20.mzPlusCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 			</div>
 
 			<FileSelectionModal

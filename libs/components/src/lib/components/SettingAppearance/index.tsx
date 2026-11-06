@@ -1,3 +1,4 @@
+import IconMotionSwitch from './IconMotionSwitch';
 import TestThemeBlock from './TestThemeBlock';
 import ThemeOptions from './ThemeOptions';
 
@@ -12,6 +13,7 @@ const SettingAppearance = ({ menuIsOpen }: SettingAppearanceProps) => {
 		>
 			<TestThemeBlock />
 			<ThemeOptions />
+			<IconMotionSwitch />
 		</div>
 	);
 };

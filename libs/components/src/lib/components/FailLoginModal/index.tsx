@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { useNavigate } from 'react-router-dom';
 
 function FailLoginModal() {
@@ -13,7 +13,7 @@ function FailLoginModal() {
 				<div className="">
 					<div className="p-4 relative w-[400px]">
 						<div className="flex flex-col items-center gap-y-3 ">
-							<Icons.IconClockChannel />
+							<MezonIcon icon={MzIcons48.mzLock} className="w-[120px] h-[90px] text-[#5865f2]" />
 							<h3 className="font-bold text-2xl text-theme-primary-active">Oops! Login Failed</h3>
 						</div>
 					</div>

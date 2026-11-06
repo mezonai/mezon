@@ -1,6 +1,6 @@
 import { OtpConfirm } from '@mezon/components';
 import { authActions, useAppDispatch } from '@mezon/store';
-import { ButtonLoading, Icons, Input } from '@mezon/ui';
+import { ButtonLoading, Input, MezonIcon, MzIcons16 } from '@mezon/ui';
 import { validateEmail } from '@mezon/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,7 +103,7 @@ const FormLoginOTP = ({ handleChangeMethod, onStepChange }: { handleChangeMethod
 								onClick={handleBackStep}
 								className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors font-medium mt-2"
 							>
-								<Icons.LeftArrowIcon className="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzArrowLeft} />
 								{t('login.backToEmailInput')}
 							</button>
 						)}

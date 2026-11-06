@@ -1,5 +1,5 @@
 import { selectAttachmentUploadProgress, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import {
 	calculateMediaDimensions,
 	createImgproxyUrl,
@@ -441,7 +441,7 @@ function VideoPoster({
 }) {
 	return (
 		<div
-			className={`relative overflow-hidden rounded-lg bg-bgLightSecondary dark:bg-bgSecondary flex items-center justify-center ${
+			className={`mz-hover relative overflow-hidden rounded-lg bg-bgLightSecondary dark:bg-bgSecondary flex items-center justify-center ${
 				disablePlay ? 'cursor-default' : 'cursor-pointer'
 			}`}
 			style={style}
@@ -453,7 +453,7 @@ function VideoPoster({
 			) : (
 				<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group">
 					<div className="flex items-center justify-center w-12 h-12 rounded-full bg-black bg-opacity-50 transition-transform duration-150 group-hover:scale-110">
-						<Icons.PlayButton className="w-5 h-5 text-white" />
+						<MezonIcon icon={MzIcons20.mzPlay} className="text-white" />
 					</div>
 					{uploadLabel && (
 						<span
@@ -611,7 +611,7 @@ function DefaultVideo({
 								className="cursor-pointer absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-30 group"
 								onClick={handleShowFullVideo}
 							>
-								<Icons.PlayButton className="w-4 h-4 text-white transition-all duration-150 group-hover:scale-110" />
+								<MezonIcon icon={MzIcons16.mzPlay} className="text-white transition-all duration-150 group-hover:scale-110" />
 							</div>
 						)
 					)}
@@ -620,10 +620,7 @@ function DefaultVideo({
 						className="group-hover:flex hidden top-2 right-1 cursor-pointer absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center z-30"
 						onClick={handleDownloadVideo}
 					>
-						<Icons.Download
-							defaultSize="!w-4 !h-4 "
-							defaultFill="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black"
-						/>
+						<MezonIcon icon={MzIcons20.mzDownload} />
 					</div>
 				</>
 			)}

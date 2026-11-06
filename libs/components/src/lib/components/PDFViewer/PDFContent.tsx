@@ -1,6 +1,6 @@
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import React from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { ExclamationIcon } from './icons';
 import type { PDFContentProps } from './types';
 
 const pdfOptions = {
@@ -40,7 +40,7 @@ export const PDFContent: React.FC<PDFContentProps> = ({
 			{error && (
 				<div className="flex items-center justify-center h-full">
 					<div className="text-center">
-						<ExclamationIcon className="w-12 h-12 mx-auto mb-2 text-[#ed4245]" />
+						<MezonIcon icon={MzIcons48.mzWarning} className="mx-auto mb-2 text-[#ed4245]" />
 						<p className="text-[#ed4245] dark:text-[#ed4245]">{error}</p>
 						<button
 							onClick={() => window.location.reload()}

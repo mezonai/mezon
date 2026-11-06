@@ -10,7 +10,7 @@ import {
 	selectStatusMenu,
 	useAppDispatch
 } from '@mezon/store';
-import { Button, Icons, Image, InputField } from '@mezon/ui';
+import { Button, Image, InputField, MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -194,16 +194,16 @@ const FriendsPage = () => {
 			<div className={`flex min-w-0 items-center bg-theme-chat  px-6 py-3 justify-start h-heightHeader border-b-theme-primary`}>
 				{closeMenuMobile && (
 					<div className="text-theme-primary" onClick={() => setStatusMenu(true)}>
-						<Icons.OpenMenu className="w-6 h-6" />
+						<MezonIcon icon={MzIcons24.mzMenu} className="text-[var(--mz-icon)]" />
 					</div>
 				)}
 				<div className={`gap-3 flex overflow-x-scroll hide-scrollbar ${closeMenuMobile ? 'ml-7' : ''}`}>
 					<div className="flex flex-row gap-2 items-center text-theme-primary-active font-medium">
-						<Icons.IconFriends />
+						<MezonIcon icon={MzIcons20.mzFriends} className="text-[var(--mz-icon)]" />
 						{t('friends')}
 					</div>
 					<div className="flex flex-row gap-2 items-center text-theme-primary">
-						<Icons.DotIcon className="w-1 h-1" />
+						<MezonIcon icon={MzIcons16.mzDot} className="text-[var(--mz-icon)]" />
 					</div>
 					<div className="flex flex-row gap-4 pr-4">
 						{tabData.map((tab, index) => (
@@ -261,7 +261,7 @@ const FriendsPage = () => {
 										</div>
 									)}
 									<div className="absolute top-3 right-5 text-theme-primary">
-										<Icons.Search />
+										<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 									</div>
 								</div>
 								<span className="text-[14px]  mb-4 font-bold px-[14px]">

@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { MutableRefObject } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -268,16 +269,7 @@ export const SfuVoiceInteractiveWindow = memo(
 							aria-label={isMaximized ? 'Restore' : 'Maximize'}
 							className="flex items-center justify-center w-5 h-5 rounded hover:bg-zinc-600/70 text-zinc-300 hover:text-white"
 						>
-							{isMaximized ? (
-								<svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-									<rect x="1.5" y="3.5" width="5" height="5" stroke="currentColor" strokeWidth="1" />
-									<path d="M3.5 3.5V1.5H8.5V6.5H6.5" stroke="currentColor" strokeWidth="1" fill="none" />
-								</svg>
-							) : (
-								<svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-									<rect x="1" y="1" width="8" height="8" stroke="currentColor" strokeWidth="1" />
-								</svg>
-							)}
+							{isMaximized ? <MezonIcon icon={MzIcons16.mzWindowRestore} /> : <MezonIcon icon={MzIcons16.mzWindowMaximize} />}
 						</button>
 
 						<button

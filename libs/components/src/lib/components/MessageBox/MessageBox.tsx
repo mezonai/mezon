@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ILongPressType, IMessageSendPayload, MentionDataProps, RequestInput, ThreadValue } from '@mezon/utils';
 import {
 	EOverriddenPermission,
@@ -214,7 +214,7 @@ MessageBox.Skeleton = () => {
 			<form className="self-stretch p-4 bg-theme-surface rounded-lg justify-start gap-2 inline-flex items-center">
 				<div className="flex flex-row h-full items-center">
 					<div className="flex flex-row  justify-end h-fit">
-						<Icons.AddCircle />
+						<MezonIcon icon={MzIcons20.mzPlusCircle} />
 					</div>
 				</div>
 
@@ -225,8 +225,8 @@ MessageBox.Skeleton = () => {
 					/>
 				</div>
 				<div className="flex flex-row h-full items-center gap-1 mr-2 w-12 rounded-r-lg">
-					<Icons.Gif />
-					<Icons.Help />
+					<MezonIcon icon={MzIcons20.mzGif} />
+					<MezonIcon icon={MzIcons20.mzHelp} />
 				</div>
 			</form>
 		</div>

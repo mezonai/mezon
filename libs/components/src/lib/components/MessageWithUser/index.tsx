@@ -2,7 +2,7 @@
 import { startCreateTopicFromMessage } from '@mezon/core';
 import type { MessagesEntity, RootState } from '@mezon/store';
 import { getPoll, getStore, selectBanMeInChannel, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
 import {
 	HEIGHT_PANEL_PROFILE,
@@ -369,7 +369,7 @@ function MessageWithUser({
 						)}
 						{!!message?.content?.fwd && shouldShowForwardedText && (
 							<div className="flex gap-1 items-center italic font-medium w-full text-theme-primary opacity-60">
-								<Icons.ForwardRightClick defaultSize="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzForward} className="text-[var(--mz-icon)]" />
 								<p>{t('forwarded')}</p>
 							</div>
 						)}{' '}
@@ -397,7 +397,7 @@ function MessageWithUser({
 								/>
 								{isEphemeralMessage && (
 									<div className="flex items-center gap-1 mt-1 mb-1 text-xs italic text-theme-primary opacity-60">
-										<Icons.EyeClose className="w-3 h-3" />
+										<MezonIcon icon={MzIcons16.mzEyeOff} className="text-[var(--mz-icon)]" />
 										<span>{t('onlyVisibleToRecipient')}</span>
 									</div>
 								)}
@@ -466,14 +466,14 @@ function MessageWithUser({
 
 					{!isTopic && message?.content?.isCard && !isEphemeralMessage && message?.code !== TypeMessage.Topic && (
 						<div
-							className="border-t-theme-primary border-divider mt-3 pt-3 flex items-center justify-between cursor-pointer hover:bg-accent transition-colors duration-150 rounded-b-lg -mx-3 -mb-3 px-3 py-2"
+							className="mz-hover border-t-theme-primary border-divider mt-3 pt-3 flex items-center justify-between cursor-pointer hover:bg-accent transition-colors duration-150 rounded-b-lg -mx-3 -mb-3 px-3 py-2"
 							onClick={handleLeaveComment}
 						>
 							<div className="flex items-center gap-2 text-sm text-theme-primary opacity-75">
-								<Icons.MessageSquareIcon className="w-5 h-5" />
+								<MezonIcon icon={MzIcons20.mzChat} className="text-[#92B8FF]" />
 								<span>{t('goToTopic')}</span>
 							</div>
-							<Icons.ArrowRight className="w-4 h-4 text-theme-primary opacity-50" />
+							<MezonIcon icon={MzIcons16.mzChevronRight} className="text-[var(--mz-icon)] opacity-50" />
 						</div>
 					)}
 				</HoverStateWrapper>

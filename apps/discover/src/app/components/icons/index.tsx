@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 
 export const FacebookIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
 	<svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -17,16 +18,6 @@ export const RedditIcon = ({ className = 'w-5 h-5' }: { className?: string }) =>
 	</svg>
 );
 
-export const LightBulbIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
-	<svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-		<path d="M9 21h6v-1H9v1zm3-19a7 7 0 0 0-4 12.9V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.1A7 7 0 0 0 12 2zm3 11.2V16h-6v-2.8l-.3-.2A5 5 0 1 1 17.3 13l-.3.2z" />
-	</svg>
-);
+export const LightBulbIcon = ({ className }: { className?: string }) => <MezonIcon icon={MzIcons24.mzLamp} className={className} />;
 
-export const UserGroupIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
-	<svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-		<path d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5S14.34 11 16 11zm-8 0c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-	</svg>
-);
-
-
+export const UserGroupIcon = ({ className }: { className?: string }) => <MezonIcon icon={MzIcons24.mzMembers} className={className} />;

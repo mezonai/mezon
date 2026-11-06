@@ -1,5 +1,5 @@
 import { toastActions, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons32 } from '@mezon/ui';
 import type { MediaDevice } from '@mezon/utils';
 import { IS_MAC_OS, IS_SAFARI, IS_WINDOWS, allowMediaPermissionRequest, dismissMediaPermissionPrompt, useMediaPermissionPrompt } from '@mezon/utils';
 import type { ReactNode } from 'react';
@@ -25,7 +25,7 @@ const CloseButton = ({ label }: { label: string }) => (
 		aria-label={label}
 		className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full text-theme-primary hover:bg-[var(--bg-tertiary)]"
 	>
-		<Icons.Close className="h-4 w-4" />
+		<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)]" />
 	</button>
 );
 
@@ -44,7 +44,11 @@ const RequestCard = ({ device, requesting }: { device: MediaDevice; requesting: 
 		<div className="relative w-[400px] max-w-full rounded-xl border border-theme-primary bg-theme-setting-primary px-7 pt-8 pb-6 shadow-2xl">
 			<div className="flex flex-col items-center gap-4 text-center">
 				<div className="btn-primary flex h-16 w-16 items-center justify-center rounded-full">
-					{device === 'camera' ? <Icons.VoiceCameraIcon scale={1.6} /> : <Icons.VoiceMicIcon scale={3} />}
+					{device === 'camera' ? (
+						<MezonIcon icon={MzIcons32.mzVideo} className="text-white" />
+					) : (
+						<MezonIcon icon={MzIcons32.mzMic} className="text-white" />
+					)}
 				</div>
 				<h2 id="media-permission-title" className="text-lg font-semibold text-theme-primary-active">
 					{t(`mediaPermission.requestTitle.${device}`)}

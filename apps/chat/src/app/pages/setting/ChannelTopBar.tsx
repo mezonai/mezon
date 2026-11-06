@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +27,7 @@ const ChannelTopBar = ({
 						/>
 					</div>
 					<div className="w-5 h-6 flex flex-row items-center pl-1 absolute right-1 border-theme-p top-1/2 transform -translate-y-1/2">
-						<Icons.Search />
+						<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 					</div>
 				</div>
 			</div>

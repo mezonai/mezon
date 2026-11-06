@@ -1,5 +1,5 @@
 import { selectChannelById, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
-import { HighlightMatchBold, Icons } from '@mezon/ui';
+import { HighlightMatchBold, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -70,74 +70,53 @@ const SuggestItem = ({
 
 		const isThreadEmphasized = isUnread || Boolean(count && count > 0) || isRowFocused;
 		const threadFillClass = isThreadEmphasized
-			? '[--thread-fill-1:var(--bg-icon-theme-active)] [--thread-fill-4:var(--bg-theme-secounnd)]'
-			: '[--thread-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] group-hover:[--thread-fill-1:var(--bg-icon-theme-active)]';
+			? 'text-[var(--mz-icon-selected)]'
+			: 'text-[var(--mz-icon)] group-hover:text-[var(--mz-icon-selected)]';
 
 		const isThreadLockerBodyEmphasized = isRowFocused;
 		const threadLockerFillClass = isThreadLockerBodyEmphasized
-			? '[--thread-body-fill-1:var(--bg-icon-theme-active)] [--thread-fill-4:var(--bg-theme-secounnd)]'
-			: '[--thread-body-fill-1:var(--bg-icon-theme)] [--thread-fill-4:var(--bg-theme-secounnd)] group-hover:[--thread-body-fill-1:var(--bg-icon-theme-active)]';
+			? 'text-[var(--mz-icon-selected)]'
+			: 'text-[var(--mz-icon)] group-hover:text-[var(--mz-icon-selected)]';
 
 		const hashtagLockedFillClass =
-			isUnread || (count && count > 0)
-				? '[--hashtag-locked-fill-1:var(--bg-icon-theme-active)] [--hashtag-locked-fill-2:var(--bg-icon-theme-active)]'
-				: '[--hashtag-locked-fill-1:var(--bg-icon-theme)] [--hashtag-locked-fill-2:var(--bg-icon-theme-active)] hover:[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]';
+			isUnread || (count && count > 0) ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]';
 
 		if (channel_type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isAgeRestrictedChannel) {
-				return <Icons.HashtagWarning defaultSize="w-5 h-5" />;
+				return (
+					<MezonIcon icon={MzIcons20.mzChannelWarning} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+				);
 			}
 			if (!channel_private || channel_private === 0) {
-				return <Icons.Hashtag defaultSize="w-5 h-5" />;
+				return <MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />;
 			}
 			if (channel_private === 1) {
-				return (
-					<Icons.HashtagLocked
-						defaultSize="w-5 h-5"
-						className={hashtagLockedFillClass}
-						defaultFill1="var(--hashtag-locked-fill-1)"
-						defaultFill2="var(--hashtag-locked-fill-2)"
-					/>
-				);
+				return <MezonIcon icon={MzIcons20.mzChannelPrivate} className={hashtagLockedFillClass} />;
 			}
 		}
 
 		if (channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 			if (!channel_private || channel_private === 0) {
-				return (
-					<Icons.ThreadIcon
-						defaultSize="w-5 h-5"
-						defaultFill1="var(--thread-fill-1)"
-						defaultFill4="var(--thread-fill-4)"
-						className={threadFillClass}
-					/>
-				);
+				return <MezonIcon icon={MzIcons20.mzThread} className={threadFillClass} />;
 			}
 			if (channel_private === 1) {
-				return (
-					<Icons.ThreadIconLocker
-						className={`w-5 h-5 ${threadLockerFillClass}`}
-						defaultFill1="var(--thread-body-fill-1)"
-						defaultFill4="var(--thread-fill-4)"
-						defaultFill5="var(--bg-icon-theme-active)"
-					/>
-				);
+				return <MezonIcon icon={MzIcons20.mzThreadPrivate} className={threadLockerFillClass} />;
 			}
 		}
 
 		if (channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			if (!channel_private || channel_private === 0) {
-				return <Icons.Speaker defaultSize="w-5 5-5" />;
+				return <MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />;
 			}
-			return <Icons.SpeakerLocked defaultSize="w-5 h-5" />;
+			return <MezonIcon icon={MzIcons20.mzSpeakerLock} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />;
 		}
 
 		if (channel_type === ChannelType.CHANNEL_TYPE_STREAMING && (!channel_private || channel_private === 0)) {
-			return <Icons.Stream defaultSize="w-5 5-5" />;
+			return <MezonIcon icon={MzIcons20.mzLive} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />;
 		}
 
 		if (channel_type === ChannelType.CHANNEL_TYPE_APP) {
-			return <AppChannelListIcon isEmphasized={isUnread || Boolean(count && count > 0)} className="w-5 h-5" />;
+			return <AppChannelListIcon isEmphasized={isUnread || Boolean(count && count > 0)} size={20} />;
 		}
 
 		return null;
@@ -148,11 +127,11 @@ const SuggestItem = ({
 			className={`group relative flex flex-row items-center h-[24px] w-full ${wrapSuggestItemStyle ?? 'justify-between'}`}
 			data-e2e={generateE2eId('suggest_item')}
 		>
-			<div className="flex flex-row items-center gap-2 py-[3px] text-theme-primary text-theme-primary-hover">
+			<div className="flex flex-row items-center gap-2 py-[3px] text-theme-primary text-theme-primary-hover group/mzi">
 				{showAvatar && (
 					<div>
 						{color && !avatarUrl ? (
-							<Icons.RoleIcon defaultSize="w-5 h-[30px] min-w-5" defaultFill={color} />
+							<MezonIcon icon={MzIcons20.mzRole} className="text-[var(--mz-icon)]" />
 						) : (
 							<AvatarImage
 								alt={subText || ''}

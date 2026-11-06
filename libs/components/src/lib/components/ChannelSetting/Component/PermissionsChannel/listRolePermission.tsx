@@ -1,5 +1,5 @@
 import { channelUsersActions, selectAllRolesClan, selectCurrentClanId, selectRolesByChannelId, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { DEFAULT_ROLE_COLOR, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import React, { useMemo } from 'react';
@@ -61,7 +61,7 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 					{role.role_icon ? (
 						<img src={createImgproxyUrl(role.role_icon)} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
 					) : (
-						<Icons.RoleIcon className="w-5 h-5 min-w-5" defaultFill1={role.color || DEFAULT_ROLE_COLOR} />
+						<MezonIcon icon={MzIcons20.mzRole} className="min-w-5" style={{ color: role.color || DEFAULT_ROLE_COLOR }} />
 					)}
 					<p className="text-sm">{role.title}</p>
 				</div>
@@ -72,7 +72,7 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 						role="button"
 						data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.role_list.button_remove')}
 					>
-						<Icons.EscIcon className="size-[15px] cursor-pointer" />
+						<MezonIcon icon={MzIcons16.mzCloseCircle} className="cursor-pointer text-[var(--mz-icon)]" />
 					</div>
 				</div>
 			</div>
@@ -80,7 +80,7 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 	) : (
 		<div className={`flex justify-between text-theme-primary py-2 rounded`}>
 			<div className="flex gap-x-2 items-center">
-				<Icons.RoleIcon className="w-5 h-5 min-w-5" />
+				<MezonIcon icon={MzIcons20.mzRole} className="min-w-5 text-[var(--mz-icon)]" />
 				<p className="text-sm ">{t('noRoles')}</p>
 			</div>
 		</div>

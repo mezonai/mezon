@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { MutableRefObject, RefObject } from 'react';
@@ -208,7 +208,7 @@ const PermissionsChannelContent = (props: PermissionsChannelProps) => {
 						>
 							<div>
 								<div className="inline-flex mb-2 text-theme-primary-active">
-									<Icons.LockIcon />
+									<MezonIcon icon={MzIcons20.mzLock} className="text-[var(--mz-icon)]" />
 									<p className="ml-2 font-bold text-theme-primary">{t('channelPermission.privateChannel')}</p>
 								</div>
 								<p className="text-xs text-theme-primary">{t('channelPermission.basicViewDescription')}</p>
@@ -327,7 +327,7 @@ const HeaderModal = memo((props: HeaderModalProps) => {
 			<h3 className="mb-4 font-semibold text-xl text-theme-primary-active ">{t('channelPermission.header.title')}</h3>
 			<p className="mb-3 text-theme-primary">{t('channelPermission.header.description')}</p>
 			<div className="flex mt-4 p-4">
-				<Icons.SyncIcon defaultFill1="#F0B033" className="mr-2 shrink-0" />
+				<MezonIcon icon={MzIcons20.mzSync} className="mr-2 shrink-0 text-[#F0B033]" />
 				<p className="text-theme-primary">{t('channelPermission.header.syncedWithCategory')} </p>
 				<p className="font-bold pl-1 text-theme-primary"> {name}</p>
 			</div>

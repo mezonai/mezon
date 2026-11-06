@@ -1,4 +1,5 @@
 import { selectNoiseSuppressionEnabled, selectNoiseSuppressionReady } from '@mezon/store';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -71,9 +72,7 @@ export const NoiseSuppressionStatus = ({ fallback = '' }: { fallback?: string })
 							className="h-2.5 w-2.5 shrink-0 animate-spin rounded-full border border-current border-t-transparent"
 						/>
 					) : (
-						<svg aria-hidden="true" className="h-3 w-3 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-							<path d="m3 8 3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
+						<MezonIcon icon={MzIcons16.mzCheck} className="shrink-0" />
 					)}
 					<span className="min-w-0 truncate">{label}</span>
 				</span>

@@ -133,7 +133,7 @@ const InMeetingBackgroundMenu = React.memo(
 					className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 rounded-full text-xs font-medium text-white shadow-lg backdrop-blur transition-all"
 					title="Backgrounds"
 				>
-					<VisualEffectsIcon className="w-4 h-4 text-white" />
+					<VisualEffectsIcon size={16} className="text-white" />
 					<span>Backgrounds</span>
 				</button>
 				{panelPosition &&

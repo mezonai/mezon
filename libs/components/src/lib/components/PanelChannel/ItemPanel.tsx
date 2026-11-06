@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 
 type ItemPanelProps = {
@@ -36,7 +36,7 @@ const ItemPanel = ({
 		<button
 			disabled={disabled}
 			onClick={onClick}
-			className={`flex flex-col justify-center w-full rounded-sm bg-item-hover pr-2 ${danger ? 'hover:bg-[#f67e882a]' : ''}`}
+			className={`mz-hover flex flex-col justify-center w-full rounded-sm bg-item-hover pr-2 ${danger ? 'hover:bg-[#f67e882a]' : ''}`}
 			data-e2e={generateE2eId('clan_page.channel_list.panel.item')}
 		>
 			<div className={'flex flex-row items-center justify-between w-full text-theme-primary'}>
@@ -46,7 +46,7 @@ const ItemPanel = ({
 				>
 					{children}
 				</li>
-				{dropdown && <Icons.RightIcon />}
+				{dropdown && <MezonIcon icon={MzIcons20.mzChevronRight} className="text-[var(--mz-icon)]" />}
 				{type === 'checkbox' && <input type="checkbox" id="accept" checked={checked} defaultChecked={defaultChecked} readOnly />}
 				{type === 'radio' && <input type="radio" className="" name={name} value="change here" checked={checked} readOnly />}
 			</div>

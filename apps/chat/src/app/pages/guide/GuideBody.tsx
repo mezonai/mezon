@@ -18,7 +18,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, createImgproxyUrl, generateE2eId, titleMission } from '@mezon/utils';
 import type { ApiOnboardingItem } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
@@ -123,7 +123,7 @@ function GuideBody() {
 											title={rule.title}
 											hightLightIcon={true}
 											description={rule.content}
-											icon={<Icons.RuleIcon defaultFill="#e4e4e4" />}
+											icon={<MezonIcon icon={MzIcons20.mzRules} className="text-[var(--mz-icon)]" />}
 											background=""
 											className="shadow-sm bg-item-theme"
 											action={
@@ -147,7 +147,7 @@ function GuideBody() {
 										title={rule.title}
 										hightLightIcon={true}
 										description={rule.content}
-										icon={<Icons.RuleIcon />}
+										icon={<MezonIcon icon={MzIcons20.mzRules} className="text-[var(--mz-icon)]" />}
 										background=""
 										className="shadow-sm dark:shadow-none text-theme-primary bg-theme-setting-nav"
 										action={<div className="w-[72px] aspect-square  rounded-lg"></div>}
@@ -209,9 +209,9 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 		<GuideItemLayout
 			key={mission.id}
 			title={mission.title}
-			className="cursor-pointer shadow-sm dark:shadow-none text-theme-primary bg-item-theme"
+			className="mz-hover cursor-pointer shadow-sm dark:shadow-none text-theme-primary bg-item-theme"
 			hightLightIcon={true}
-			icon={<Icons.TargetIcon className="w-6 h-6 " />}
+			icon={<MezonIcon icon={MzIcons24.mzTarget} className="text-[var(--mz-icon)]" />}
 			onClick={onClick}
 			background=""
 			description={
@@ -224,7 +224,7 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 				<>
 					{tick && (
 						<div className={`w-6 aspect-square rounded-full flex items-center justify-center`}>
-							<Icons.Tick fill="#40C174" className="w-6 h-6" />
+							<MezonIcon icon={MzIcons24.mzCheck} className="text-[#40C174]" />
 						</div>
 					)}
 				</>

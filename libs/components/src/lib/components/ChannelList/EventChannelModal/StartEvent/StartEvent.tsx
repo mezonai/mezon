@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useEventManagementQuantity } from '@mezon/core';
 import { selectShowModelDetailEvent } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24, MzIcons48 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +35,7 @@ export const StartEventModal = (props: StartEventModalProps) => {
 						className="gap-x-2 flex items-center"
 						data-e2e={generateE2eId('clan_page.modal.create_event.event_management.number_of_event')}
 					>
-						<Icons.IconEvents />
+						<MezonIcon icon={MzIcons24.mzEvent} className="text-[var(--mz-icon)]" />
 						<h4 className="font-bold">
 							{numberEventManagement === 0 && t('actions.noEvent')}
 							{numberEventManagement === 1 && t('actions.event_one')}
@@ -72,7 +72,7 @@ export const StartEventModal = (props: StartEventModalProps) => {
 			) : (
 				<div className="h-80 flex flex-col justify-center items-center text-center px-8">
 					<div className="relative mb-4">
-						<Icons.IconEvents className="size-[60px]" />
+						<MezonIcon icon={MzIcons48.mzEvent} className="size-[60px] text-[var(--mz-icon)]" />
 						<span className="absolute -bottom-2 -left-2 text-yellow-400 text-lg">✦</span>
 						<span className="absolute -top-1 -right-3 text-cyan-400 text-xs">✦</span>
 						<span className="absolute top-0 right-0 w-1.5 h-1.5 bg-cyan-400 rounded-full"></span>

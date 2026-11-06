@@ -1,7 +1,7 @@
 import { EmojiSuggestionProvider, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { roleSlice, selectTheme } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { MAX_FILE_SIZE_256KB, fileTypeImage, getSrcEmoji, resizeFileImage } from '@mezon/utils';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -117,7 +117,10 @@ const ChooseIconModal: React.FC<ChooseIconModalProps> = ({ onClose }) => {
 								}
 								onClick={handleIconClick}
 							>
-								<Icons.ImageUploadIcon className="w-[70px] h-[70px] text-theme-primary group-hover:scale-110 ease-in-out duration-75" />
+								<MezonIcon
+									icon={MzIcons48.mzImageAdd}
+									className="w-[70px] h-[70px] text-[var(--mz-icon)] group-hover:scale-110 ease-in-out duration-75"
+								/>
 							</div>
 							<p className={'text-theme-primary'}>{t('roleIcon.chooseImageToUpload')}</p>
 							<input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleChooseImage} />

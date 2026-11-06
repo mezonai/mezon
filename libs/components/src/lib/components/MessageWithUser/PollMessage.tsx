@@ -13,6 +13,7 @@ import {
 	useAppSelector,
 	votePoll
 } from '@mezon/store';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { generateE2eId, getSrcEmoji } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
@@ -457,15 +458,7 @@ export const PollMessage = ({
 											className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0"
 											data-e2e={generateE2eId('poll.card.voted')}
 										>
-											<svg className="w-3 h-3 text-blue-500" viewBox="0 0 12 12" fill="none">
-												<path
-													d="M2 6L5 9L10 3"
-													stroke="currentColor"
-													strokeWidth="2"
-													strokeLinecap="round"
-													strokeLinejoin="round"
-												/>
-											</svg>
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-blue-500" />
 										</div>
 									)}
 								</div>

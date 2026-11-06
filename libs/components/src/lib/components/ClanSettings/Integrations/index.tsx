@@ -1,5 +1,5 @@
 import { selectAllClanWebhooks, selectCurrentChannel, selectWebhooksByChannelId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -39,12 +39,14 @@ const Integrations = ({ isClanSetting }: IIntegrationsProps) => {
 				</div>
 				{isOpenClanWebhooks ? (
 					<div className="flex items-center gap-1 max-sm:gap-0.5">
-						<Icons.ArrowDown className="-rotate-90 w-[20px] max-sm:w-[16px]" />
+						<MezonIcon icon={MzIcons20.mzChevronDown} className="-rotate-90 max-sm:hidden text-[var(--mz-icon)]" />
+						<MezonIcon icon={MzIcons16.mzChevronDown} className="-rotate-90 hidden max-sm:inline text-[var(--mz-icon)]" />
 						<span className="max-sm:text-base">{t('clanWebhooks')}</span>
 					</div>
 				) : isOpenWebhooks ? (
 					<div className="flex items-center gap-1 max-sm:gap-0.5">
-						<Icons.ArrowDown className="-rotate-90 w-[20px] max-sm:w-[16px]" />
+						<MezonIcon icon={MzIcons20.mzChevronDown} className="-rotate-90 max-sm:hidden text-[var(--mz-icon)]" />
+						<MezonIcon icon={MzIcons16.mzChevronDown} className="-rotate-90 hidden max-sm:inline text-[var(--mz-icon)]" />
 						<span className="max-sm:text-base">{t('webhooks')}</span>
 					</div>
 				) : (

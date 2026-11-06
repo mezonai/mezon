@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId, useMediaPermissions } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import type { ReactNode } from 'react';
@@ -96,7 +96,7 @@ const SfuVoiceInfo = React.memo(() => {
 			<div className="flex justify-between items-center">
 				<div className="flex flex-col max-w-[200px]">
 					<div className="flex items-center gap-1">
-						<Icons.NetworkStatus className="w-4 h-4 dark:text-green-600" />
+						<MezonIcon icon={MzIcons16.mzWifi} className="text-[green]" />
 						<span className="text-green-600 font-medium text-base">{t(showCamera ? 'videoConnected' : 'voiceConnected')}</span>
 					</div>
 					<button className="w-fit" onClick={redirectToVoice}>
@@ -126,7 +126,7 @@ const SfuVoiceInfo = React.memo(() => {
 						onPointerUp={() => setPushToTalk(false)}
 						onPointerCancel={() => setPushToTalk(false)}
 						onLostPointerCapture={() => setPushToTalk(false)}
-						icon={<Icons.InPttCall className="w-5 h-5" />}
+						icon={<MezonIcon icon={MzIcons20.mzPtt} />}
 						showWarning={microphoneWarning}
 					/>
 				)}
@@ -141,7 +141,13 @@ const SfuVoiceInfo = React.memo(() => {
 							</span>
 						}
 						onClick={handleToggleOpenMicro}
-						icon={showMicrophone ? <Icons.VoiceMicIcon className="w-5 h-5" /> : <Icons.VoiceMicDisabledIcon className="w-5 h-5" />}
+						icon={
+							showMicrophone ? (
+								<MezonIcon icon={MzIcons20.mzMic} className="text-white" />
+							) : (
+								<MezonIcon icon={MzIcons20.mzMicOff} className="text-white" />
+							)
+						}
 						showWarning={microphoneWarning}
 					/>
 				)}
@@ -154,7 +160,13 @@ const SfuVoiceInfo = React.memo(() => {
 							</span>
 						}
 						onClick={handleToggleShareCamera}
-						icon={showCamera ? <Icons.VoiceCameraIcon className="w-6 h-6" /> : <Icons.VoiceCameraDisabledIcon className="w-6 h-6" />}
+						icon={
+							showCamera ? (
+								<MezonIcon icon={MzIcons20.mzVideo} className="text-white" />
+							) : (
+								<MezonIcon icon={MzIcons20.mzVideoOff} className="text-white" />
+							)
+						}
 						showWarning={cameraWarning}
 					/>
 				)}
@@ -168,7 +180,11 @@ const SfuVoiceInfo = React.memo(() => {
 						}
 						onClick={handleToggleShareScreen}
 						icon={
-							showScreen ? <Icons.VoiceScreenShareStopIcon className="w-5 h-5 " /> : <Icons.VoiceScreenShareIcon className="w-5 h-5 " />
+							showScreen ? (
+								<MezonIcon icon={MzIcons20.mzScreenShareOff} className="text-white" />
+							) : (
+								<MezonIcon icon={MzIcons20.mzScreenShare} className="text-white" />
+							)
 						}
 					/>
 				)}
@@ -176,7 +192,7 @@ const SfuVoiceInfo = React.memo(() => {
 					danger={true}
 					overlay={<span className="bg-[#2B2B2B] p-[6px] text-[14px] rounded">{t('disconnect')}</span>}
 					onClick={leaveVoice}
-					icon={<Icons.EndCall className="w-5 h-5" />}
+					icon={<MezonIcon icon={MzIcons20.mzCallEnd} data-e2e={generateE2eId('icon.end_call')} />}
 				/>
 			</div>
 		</div>
@@ -281,9 +297,9 @@ const ButtonNoiseControl = memo(() => {
 				aria-pressed={noiseSuppressionEnabled && noiseSuppressionReady}
 				className="flex items-center rounded-sm bg-bgSecondary bg-item-theme-hover text-theme-primary gap-2 p-[2px] text-sm bg-transparent bg-item-theme-hover"
 			>
-				<Icons.NoiseSupressionIcon
-					className={`w-5 h-5 ${noiseSuppressionEnabled && noiseSuppressionReady ? 'text-theme-primary-active' : 'text-red-500'}`}
-					disabled={!noiseSuppressionEnabled}
+				<MezonIcon
+					icon={noiseSuppressionEnabled ? MzIcons16.mzNoiseSuppression : MzIcons16.mzNoiseSuppressionOff}
+					className={`${noiseSuppressionEnabled && noiseSuppressionReady ? 'text-[var(--mz-icon-selected)]' : 'text-red-500'}`}
 				/>
 			</button>
 		</Tooltip>

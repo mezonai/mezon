@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { RefObject } from 'react';
 import { useMemo, useRef, useState } from 'react';
@@ -139,7 +139,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 			<div className="flex flex-col bg-theme-setting-primary rounded-md h-[400px] md:w-[480px] max-h-[80vh] lg:w-[540px] justify-between shadow-sm overflow-hidden">
 				<div className="flex flex-row items-center bg-theme-setting-nav border-b-theme-primary justify-between p-[16px] h-12 ">
 					<div className="flex flex-row items-center border-r-[1px] border-color-theme pr-[16px] gap-4">
-						<Icons.CanvasIcon className="w-5 h-5 shrink-0" />
+						<MezonIcon icon={MzIcons20.mzCanvas} className="shrink-0 text-[var(--mz-icon)]" />
 						<span className="text-base font-semibold cursor-default ">{t('modals.canvas.title')}</span>
 					</div>
 					<SearchCanvas setKeywordSearch={setKeywordSearch} />
@@ -151,8 +151,8 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 						>
 							{t('modals.canvas.create')}
 						</button>
-						<button onClick={onClose} className="text-theme-primary text-theme-primary-hover">
-							<Icons.Close className="w-4 h-4 " />
+						<button onClick={onClose} className="text-theme-primary text-theme-primary-hover group/mzi">
+							<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						</button>
 					</div>
 				</div>

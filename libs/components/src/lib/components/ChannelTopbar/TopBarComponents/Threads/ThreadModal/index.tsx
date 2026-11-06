@@ -11,7 +11,7 @@ import {
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { EOverriddenPermission, LIMIT, checkIsThread, generateE2eId } from '@mezon/utils';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -128,11 +128,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 			<div className="flex flex-col rounded-md min-h-[400px] md:w-[480px] lg:w-[540px] shadow-shadowBorder max-h-[calc(100vh_-_180px)] overflow-hidden">
 				<div className="bg-theme-setting-nav flex flex-row items-center justify-between border-b-theme-primary p-[16px] h-12">
 					<div className="flex flex-row items-center border-r-[1px] border-color-theme pr-[16px] gap-4">
-						<Icons.ThreadIcon
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill4="var(--bg-theme-secounnd)"
-							defaultFill5="var(--bg-icon-theme)"
-						/>
+						<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />
 						<span className="text-base font-semibold cursor-default ">{t('modals.threads.title')}</span>
 					</div>
 					<SearchThread channelId={currentChannelId} />
@@ -146,7 +142,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 								{t('modals.threads.create')}
 							</button>
 							<button onClick={onClose} className="text-color-theme-hover">
-								<Icons.Close className="w-4 h-4 " />
+								<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)]" />
 							</button>
 						</div>
 					)}

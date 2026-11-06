@@ -1,6 +1,6 @@
 import type { EventManagementEntity } from '@mezon/store';
 import { selectChannelById, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EEventStatus, openVoiceChannel } from '@mezon/utils';
 import React from 'react';
 import { timeFomat } from '../ChannelList/EventChannelModal/timeFomatEvent';
@@ -36,7 +36,7 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 			onClick={handleOpenVoiceChannel}
 			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.start_time_seconds ?? 0)}`}
 		>
-			<Icons.IconEvents className={`w-4 h-4 ${cssEventStatus}`} />
+			<MezonIcon icon={MzIcons16.mzEvent} className={`${cssEventStatus}`} />
 		</div>
 	);
 };

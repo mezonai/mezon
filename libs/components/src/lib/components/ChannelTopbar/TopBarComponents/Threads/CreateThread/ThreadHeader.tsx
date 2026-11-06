@@ -1,6 +1,6 @@
 import { useMessageValue } from '@mezon/core';
 import { selectComposeInputByChannelId, selectCurrentChannelId, selectIsPrivate, threadsActions, useAppDispatch, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js';
 import { useCallback, useEffect } from 'react';
@@ -64,17 +64,9 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 		<div className="flex flex-row items-center justify-between px-4 h-[48px] min-h-[50px] border-b-theme-primary  z-10 bg-theme-chat">
 			<div className="flex flex-row items-center gap-2 pointer-events-none">
 				{isPrivateThread ? (
-					<Icons.ThreadIconLocker
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill4="var(--bg-theme-secounnd)"
-						defaultFill5="var(--bg-icon-theme-active)"
-					/>
+					<MezonIcon icon={MzIcons20.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 				) : (
-					<Icons.ThreadIcon
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill4="var(--bg-theme-secounnd)"
-						defaultFill5="var(--bg-icon-theme)"
-					/>
+					<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />
 				)}
 				<span className="text-base font-semibold text-theme-primary-active">
 					{threadCurrentChannel ? threadCurrentChannel.channel_label : t('createThread.newThread')}
@@ -82,10 +74,10 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 			</div>
 			<button
 				onClick={handleCloseModal}
-				className="relative right-0 text-theme-primary-hover"
+				className="relative right-0 text-theme-primary-hover group/mzi"
 				data-e2e={generateE2eId('discussion.header.button.close')}
 			>
-				<Icons.Close />
+				<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 			</button>
 		</div>
 	);

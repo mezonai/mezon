@@ -11,7 +11,7 @@ import {
 	selectProcessingByClan,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
 import { DONE_ONBOARDING_STATUS, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
@@ -95,7 +95,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			/>
 			{anonymousMode && (
 				<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>
-					<Icons.HatIcon className="w-7 h-7  " />
+					<MezonIcon icon={MzIcons32.mzAnonymous} className="text-[var(--mz-icon-selected)]" />
 				</div>
 			)}
 		</div>

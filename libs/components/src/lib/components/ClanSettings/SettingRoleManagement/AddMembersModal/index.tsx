@@ -9,7 +9,7 @@ import {
 	setAddMemberRoles,
 	usersClanActions
 } from '@mezon/store';
-import { ButtonLoading, Icons, InputField } from '@mezon/ui';
+import { ButtonLoading, InputField, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { ThemeApp, createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -125,7 +125,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 					<div>
 						<h2 className="text-2xl font-semibold text-theme-primary-active">{t('setupMember.addMember')}</h2>
 						<p className=" text-[16px] mb-4 font-light inline-flex gap-x-2 items-center">
-							<Icons.RoleIcon defaultSize="w-5 h-[30px] min-w-5" />
+							<MezonIcon icon={MzIcons20.mzRole} className="text-[var(--mz-icon)]" />
 							{selectedRole?.title}
 						</p>
 						<div className="w-full flex mb-3">

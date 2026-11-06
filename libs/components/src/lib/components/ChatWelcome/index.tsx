@@ -17,7 +17,7 @@ import {
 	selectUserIdCurrentDm,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons40 } from '@mezon/ui';
 import { ChannelStatusEnum, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
@@ -157,11 +157,11 @@ const WelComeChannel = (props: WelComeChannelProps) => {
 				className={`h-[75px] w-[75px] rounded-full text-theme-primary-active  flex items-center justify-center ${!isChatStream ? 'bg-theme-primary' : ''}`}
 			>
 				{isChatStream ? (
-					<Icons.Chat className="w-10 h-10 " />
+					<MezonIcon icon={MzIcons40.mzChat} className="text-[var(--mz-icon)]" />
 				) : channelPrivate ? (
-					<Icons.HashtagLocked className="w-10 h-10" defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />
+					<MezonIcon icon={MzIcons40.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 				) : (
-					<Icons.Hashtag className="w-10 h-10" defaultFill1="var(--bg-icon-theme)" />
+					<MezonIcon icon={MzIcons40.mzChannel} className="text-[var(--mz-icon)]" />
 				)}
 			</div>
 			<div>
@@ -195,19 +195,9 @@ const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
 		<>
 			<div className="h-[75px] w-[75px] rounded-full bg-item-theme text-theme-primary flex items-center justify-center ">
 				{isPrivate === ChannelStatusEnum.isPrivate ? (
-					<Icons.ThreadIconLocker
-						className="w-10 h-10"
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill4="var(--bg-theme-secounnd)"
-						defaultFill5="var(--bg-icon-theme-active)"
-					/>
+					<MezonIcon icon={MzIcons40.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 				) : (
-					<Icons.ThreadIcon
-						className="w-10 h-10"
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill4="var(--bg-theme-secounnd)"
-						defaultFill5="var(--bg-icon-theme)"
-					/>
+					<MezonIcon icon={MzIcons40.mzThread} className="text-[var(--mz-icon)]" />
 				)}
 			</div>
 			<div>
@@ -267,15 +257,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 					title="Edit Group"
 					data-e2e={generateE2eId(`chat.direct_message.edit_group.button`)}
 				>
-					<svg
-						className="w-4 h-4 transition-transform group-hover:scale-110 "
-						viewBox="0 0 16 16"
-						fill="currentColor"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path d="M8.29289 3.70711L1 11V15H5L12.2929 7.70711L8.29289 3.70711Z" />
-						<path d="M9.70711 2.29289L13.7071 6.29289L15.1716 4.82843C15.702 4.29799 16 3.57857 16 2.82843C16 1.26633 14.7337 0 13.1716 0C12.4214 0 11.702 0.297995 11.1716 0.828428L9.70711 2.29289Z" />
-					</svg>
+					<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)]" />
 					{t('welcome.editGroup')}
 				</button>
 			)}

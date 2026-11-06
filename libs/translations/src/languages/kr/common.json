@@ -547,5 +547,7 @@
 	"cannotCallYourself": "자신에게 전화할 수 있습니다",
 	"errorMaxLength": "길이가 {{min}}~{{max}} 자여야 합니다.",
 	"formatDate": "d '월' M, yyyy",
-	"cannotSendLocationWithAnonymous": "익명 상태일 때 위치를 보낼 수 있습니다."
+	"cannotSendLocationWithAnonymous": "익명 상태일 때 위치를 보낼 수 있습니다.",
+	"iconAnimations": "아이콘 애니메이션",
+	"iconAnimationsDesc": "마우스를 올렸을 때와 입력 중이나 스트림 같은 실시간 활동 중에 아이콘을 움직입니다."
 }

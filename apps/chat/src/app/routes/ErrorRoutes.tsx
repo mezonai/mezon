@@ -31,7 +31,8 @@ const ErrorRoutes = () => {
 			'remember_channel',
 			'i18nextLng',
 			'persist:wallet',
-			'persist:settingsUser'
+			'persist:settingsUser',
+			'mezon-icon-motion'
 		]);
 
 		window.location.href = '/chat/direct/friends';

@@ -1,5 +1,5 @@
 import { getApplicationDetail, selectAllApps, useAppDispatch } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { ApiApp } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -97,8 +97,8 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 
 	return (
 		<div className="flex flex-col gap-6 items-center w-full">
-			<Link to="/developers/applications" className="w-full flex gap-1 items-center">
-				<Icons.LeftArrowIcon className="w-4" />
+			<Link to="/developers/applications" className="w-full flex gap-1 items-center mz-hover">
+				<MezonIcon icon={MzIcons16.mzArrowLeft} className="text-[var(--mz-icon)]" />
 				<div>{t('backToApps')}</div>
 			</Link>
 
@@ -112,7 +112,7 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 				>
 					<div className="w-full h-[40px] rounded-md dark:bg-[#1e1f22] bg-bgLightModeThird flex px-3 justify-between items-center">
 						<p className="truncate max-w-[90%]">{dropdownValue}</p>
-						<Icons.ArrowDownFill />
+						<MezonIcon icon={MzIcons20.mzCaretDown} className="text-[var(--mz-icon)]" />
 					</div>
 				</Menu>
 			</div>
@@ -127,13 +127,21 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 								to={`/developers/applications/${currentAppId}/${tab.routerLink}`}
 								className={({ isActive }) =>
 									isActive
-										? 'sidebar-tab flex gap-3 items-center py-2 px-4 dark:bg-[#3C4370] bg-bgLightModeButton text-[#5865F3] dark:text-[#C9CDFB] rounded-[4px]'
-										: 'sidebar-tab flex gap-3 items-center py-2 px-4 dark:text-white text-textLightTheme hover:dark:bg-[#3C4370] hover:bg-bgLightModeButton hover:text-[#5865F3] rounded-md'
+										? 'mz-hover group/mzi sidebar-tab flex gap-3 items-center py-2 px-4 dark:bg-[#3C4370] bg-bgLightModeButton text-[#5865F3] dark:text-[#C9CDFB] rounded-[4px]'
+										: 'mz-hover group/mzi sidebar-tab flex gap-3 items-center py-2 px-4 dark:text-white text-textLightTheme hover:dark:bg-[#3C4370] hover:bg-bgLightModeButton hover:text-[#5865F3] rounded-md'
 								}
 							>
-								{tab.imgSrc && <img src={tab.imgSrc} alt="img" width={20} height={20} />}
-								<div>{tab.icon}</div>
-								<p className="font-medium text-base">{tab.name}</p>
+								{({ isActive }) => (
+									<>
+										{tab.imgSrc && <img src={tab.imgSrc} alt="img" width={20} height={20} />}
+										<div
+											className={`${isActive ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'} group-hover/mzi:text-[var(--mz-icon-selected)]`}
+										>
+											{tab.icon}
+										</div>
+										<p className="font-medium text-base">{tab.name}</p>
+									</>
+								)}
 							</NavLink>
 						) : null
 					)}

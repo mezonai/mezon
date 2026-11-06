@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { formatTimeToMMSS } from '@mezon/utils';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -60,7 +60,7 @@ const SoundItem: React.FC<ISoundItemProps> = ({ sound, isSelected, onPlay, onSel
 				<audio className="flex-grow bg-transparent" src={sound.src} ref={audioRef} onLoadedMetadata={handleLoadedMetadata} />
 				<p className={' w-1/3'}>{formatTimeToMMSS(duration)}</p>
 				<button onClick={handleOnClickPlay} className={'ml-auto flex justify-center'}>
-					<Icons.Speaker />
+					<MezonIcon icon={MzIcons20.mzSpeaker} className={isSelected ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'} />
 				</button>
 			</div>
 			<div className={' h-[1px] border-t-theme-primary'}></div>

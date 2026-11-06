@@ -1,5 +1,5 @@
 import { useAppNavigation } from '@mezon/core';
-import { Check } from '@mezon/ui/lib/Icons/icons';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import type { TypeSelectClan } from './types';
 
 type ModalSuccessProps = {
@@ -32,7 +32,7 @@ const ModalSuccess = ({ name, clan }: ModalSuccessProps) => {
 				<div className="absolute inset-3.5 rounded-full border border-emerald-500/30 dark:border-emerald-400/20 bg-gradient-to-tr from-emerald-500/[0.03] to-teal-500/[0.03]" />
 
 				<div className="size-12 rounded-full bg-emerald-500 dark:bg-emerald-500/90 flex items-center justify-center shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
-					<Check className="h-6 w-6 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]" />
+					<MezonIcon icon={MzIcons24.mzCheck} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]" />
 				</div>
 			</div>
 

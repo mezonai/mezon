@@ -18,7 +18,7 @@ import {
 	setSelectedRoleId,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition, createImgproxyUrl } from '@mezon/utils';
 import type { ApiUpdateRoleOrderRequest } from 'mezon-js';
 import { forwardRef, useEffect, useRef, useState } from 'react';
@@ -136,9 +136,9 @@ const SettingListRole = (props: closeEditRole) => {
 
 	return (
 		<div className="w-1/3 pr-3 flex flex-col mb-20">
-			<div className="font-semibold mb-4 flex cursor-pointer" onClick={() => handleClose()}>
+			<div className="font-semibold mb-4 flex cursor-pointer mz-hover" onClick={() => handleClose()}>
 				<div className="rotate-90 -ml-[10px] text-theme-primary-active">
-					<Icons.ArrowDown />
+					<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)]" />
 				</div>
 				<div className="tracking-wide text-base text-theme-primary" role="button">
 					{t('roleManagement.back')}
@@ -207,7 +207,7 @@ const ItemRole = forwardRef<HTMLDivElement, ItemRoleProps>(({ title, color, isCh
 			>
 				<div className="size-3 rounded-full min-w-3" style={{ backgroundColor: color || DEFAULT_ROLE_COLOR }}></div>
 				{iconUrl && <img src={createImgproxyUrl(iconUrl)} alt="" className={'w-5 h-5'} />}
-				{showLock && <Icons.IconLock defaultSize="size-3 text-contentTertiary" />}
+				{showLock && <MezonIcon icon={MzIcons16.mzLock} className="text-contentTertiary" />}
 				<span className="one-line">{title}</span>
 			</button>
 		</div>

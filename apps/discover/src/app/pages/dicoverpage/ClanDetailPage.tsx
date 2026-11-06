@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons24, MzIcons32 } from '@mezon/ui';
 import { format } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,14 +26,11 @@ import {
 	type DiscoverClan
 } from './communityUtils';
 
-const VerifiedBadge = ({ className = 'w-6 h-6 text-white' }: { className?: string }) => (
-	<svg className={className} fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-		<path
-			fillRule="evenodd"
-			d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-			clipRule="evenodd"
-		/>
-	</svg>
+const VerifiedBadge = ({ className = 'text-white' }: { className?: string }) => (
+	<>
+		<MezonIcon icon={MzIcons24.mzVerified} className={`${className} lg:hidden`} />
+		<MezonIcon icon={MzIcons32.mzVerified} className={`${className} hidden lg:inline`} />
+	</>
 );
 
 const CoverFallback = ({ name }: { name: string }) => (
@@ -249,7 +247,7 @@ export default function ClanDetailPage() {
 									</h1>
 									{clan.verified ? (
 										<>
-											<VerifiedBadge className="w-6 h-6 lg:w-7 lg:h-7 text-[#de82e6] drop-shadow-[0_1px_6px_rgba(19,18,33,0.9)]" />
+											<VerifiedBadge className="text-[#de82e6] drop-shadow-[0_1px_6px_rgba(19,18,33,0.9)]" />
 											<span className="sr-only">{t('verified')}</span>
 										</>
 									) : null}

@@ -1,6 +1,6 @@
 import { useEscapeKey } from '@mezon/core';
 import { appActions, selectCurrentChannelLabel, selectIsShowCreateTopic, selectIsShowMemberList, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { memo, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ChannelMain from '../channel';
@@ -22,13 +22,13 @@ const ChatHeader = () => {
 	return (
 		<div className="flex flex-row items-center justify-between px-4 h-[58px] min-h-[50px] bg-theme-primary">
 			<div className="flex flex-row items-center gap-2">
-				<Icons.Chat className="w-5 h-5 text-theme-primary" />
+				<MezonIcon icon={MzIcons20.mzChat} className="text-[var(--mz-icon)]" />
 				<span className="text-base font-semibold text-theme-primary">
 					{currentChannelLabel && currentChannelLabel.length > 30 ? `${currentChannelLabel.substring(0, 30)}...` : currentChannelLabel}
 				</span>
 			</div>
-			<button onClick={handleCloseModal} className="text-theme-primary text-theme-primary-hover transition-colors">
-				<Icons.Close className="w-5 h-5" />
+			<button onClick={handleCloseModal} className="group/mzi text-theme-primary text-theme-primary-hover transition-colors">
+				<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 			</button>
 		</div>
 	);

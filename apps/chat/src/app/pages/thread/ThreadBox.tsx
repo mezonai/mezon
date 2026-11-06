@@ -29,7 +29,7 @@ import {
 	useAppSelector,
 	type ChannelsEntity
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
 import {
 	CHANNEL_INPUT_ID,
@@ -451,19 +451,9 @@ const ThreadBox = () => {
 						{!threadCurrentChannel && (
 							<div className="relative flex text-theme-primary-active items-center justify-center mx-4 mt-4 w-16 h-16 bg-item-theme rounded-full pointer-events-none">
 								{isPrivate === 1 ? (
-									<Icons.ThreadIconLocker
-										className="w-7 h-7"
-										defaultFill1="var(--bg-icon-theme)"
-										defaultFill4="var(--bg-theme-secounnd)"
-										defaultFill5="var(--bg-icon-theme-active)"
-									/>
+									<MezonIcon icon={MzIcons32.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 								) : (
-									<Icons.ThreadIcon
-										className="w-7 h-7"
-										defaultFill1="var(--bg-icon-theme)"
-										defaultFill4="var(--bg-theme-secounnd)"
-										defaultFill5="var(--bg-icon-theme)"
-									/>
+									<MezonIcon icon={MzIcons32.mzThread} className="text-[var(--mz-icon)]" />
 								)}
 							</div>
 						)}
@@ -491,11 +481,7 @@ const ThreadBox = () => {
 				<div className="mx-4 mb-2">
 					<div className="flex items-center gap-2 text-white px-3 py-2 rounded-md">
 						<div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
-							<svg width="20" height="20" viewBox="0 0 20 20" fill="none" color="#e44141" xmlns="http://www.w3.org/2000/svg">
-								<circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" fill="none" />
-								<path d="M10 6V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-								<circle cx="10" cy="14" r="1" fill="currentColor" />
-							</svg>
+							<MezonIcon icon={MzIcons20.mzError} className="text-[#e44141]" />
 						</div>
 						<span className="text-sm font-medium text-[#e44141]">{messageThreadError}</span>
 					</div>

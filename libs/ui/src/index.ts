@@ -30,3 +30,12 @@ export { default as Input } from './lib/Login/Input';
 export { default as PasswordInput } from './lib/Login/PasswordInput';
 export { default as SubmitButton } from './lib/Login/SubmitButton';
 export { default as Pagination } from './lib/Pagination/index';
+
+export * from './lib/IconKit';
+export * from './lib/mezon-icons';
+export * as MzIcons16 from './lib/mezon-icons/16';
+export * as MzIcons20 from './lib/mezon-icons/20';
+export * as MzIcons24 from './lib/mezon-icons/24';
+export * as MzIcons32 from './lib/mezon-icons/32';
+export * as MzIcons40 from './lib/mezon-icons/40';
+export * as MzIcons48 from './lib/mezon-icons/48';

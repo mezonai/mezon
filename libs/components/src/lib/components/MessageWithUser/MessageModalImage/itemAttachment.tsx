@@ -1,6 +1,7 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import { attachmentActions, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { EMimeTypes, ETypeLinkMedia, createImgproxyUrl, isAttachmentPresignPendingForMessage } from '@mezon/utils';
 
 type ItemAttachmentProps = {
@@ -47,7 +48,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 	return (
 		<div className={`attachment-item`} ref={isSelected ? selectedImageRef : null}>
 			<div
-				className={`relative flex w-fit mx-auto rounded-md border-2 ${isPresignPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'border-buttonPrimary' : 'border-transparent'}`}
+				className={`mz-hover relative flex w-fit mx-auto rounded-md border-2 ${isPresignPending ? 'cursor-default' : 'cursor-pointer'} ${isSelected ? 'border-buttonPrimary' : 'border-transparent'}`}
 				onClick={handleSelectImage}
 			>
 				{isPresignPending ? (
@@ -68,9 +69,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 							}}
 						/>
 						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="white" className="drop-shadow-lg">
-								<path d="M8 5v14l11-7z" />
-							</svg>
+							<MezonIcon icon={MzIcons24.mzPlay} className="text-white drop-shadow-lg" />
 						</div>
 					</div>
 				) : (

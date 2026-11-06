@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 
@@ -17,7 +17,7 @@ const SelectItem = ({ title, content, onClick, className }: SelectItemProps) => 
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 			onClick={onClick}
-			className={`flex flex-row justify-between items-center group w-full cursor-pointer rounded py-1 px-2 ${className} bg-item-hover`} // Apply className
+			className={`mz-hover flex flex-row justify-between items-center group w-full cursor-pointer rounded py-1 px-2 ${className} bg-item-hover`} // Apply className
 			data-e2e={generateE2eId('chat.search_message.button.select')}
 		>
 			<div>
@@ -26,7 +26,7 @@ const SelectItem = ({ title, content, onClick, className }: SelectItemProps) => 
 			</div>
 			{className === 'bg-item-theme' || className === 'bg-item-theme' || isHovered ? (
 				<div className={` transition-colors duration-300`}>
-					<Icons.Plus />
+					<MezonIcon icon={MzIcons20.mzPlus} />
 				</div>
 			) : null}
 		</button>

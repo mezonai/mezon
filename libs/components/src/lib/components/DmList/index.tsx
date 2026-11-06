@@ -1,6 +1,6 @@
 import { useFriends } from '@mezon/core';
 import { appActions, selectDirectMessageIds, selectDmSort, selectPinnedDms, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +68,7 @@ function DirectMessageList() {
 					</>
 				)}
 
-				<div className="text-xs font-semibold tracking-wide left-sp text-theme-primary mt-2 flex flex-row items-center w-full justify-between px-2 pb-0 h-5 cursor-default text-theme-primary-hover">
+				<div className="text-xs font-semibold tracking-wide left-sp text-theme-primary mt-2 flex flex-row items-center w-full justify-between px-2 pb-0 h-5 cursor-default text-theme-primary-hover group/mzi">
 					<p>{t('directMessages')}</p>
 					<CreateMessageGroupModal />
 				</div>
@@ -105,11 +105,11 @@ const CreateMessageGroupModal = memo(
 			<div
 				ref={buttonPlusRef}
 				onClick={openCreateMessageGroup}
-				className="relative cursor-pointer flex flex-row justify-end ml-0 dark:hover:bg-bgSecondary hover:bg-bgLightMode rounded-full whitespace-nowrap"
+				className="mz-hover relative cursor-pointer flex flex-row justify-end ml-0 dark:hover:bg-bgSecondary hover:bg-bgLightMode rounded-full whitespace-nowrap"
 				data-e2e={generateE2eId('chat.direct_message.button.button_plus')}
 			>
 				<span title={t('createDM')}>
-					<Icons.Plus className="w-4 h-4" />
+					<MezonIcon icon={MzIcons16.mzPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				</span>
 			</div>
 		);
@@ -138,7 +138,7 @@ const FriendsButton = memo(({ navigateToFriend }: { navigateToFriend: boolean })
 			className={`py-2 px-3 rounded-lg font-medium text-theme-primary-hover w-full flex gap-4 items-center ${pathname.includes('friends') ? 'text-theme-secondary bg-button-secondary' : 'text-theme-primary'}`}
 			onClick={handleOpenFriendList}
 		>
-			<Icons.IconFriends />
+			<MezonIcon icon={MzIcons20.mzFriends} className="text-[var(--mz-icon)]" />
 			{t('friends')}
 		</button>
 	);
