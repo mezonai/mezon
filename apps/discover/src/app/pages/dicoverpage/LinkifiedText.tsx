@@ -1,3 +1,4 @@
+import { getPublicAboutImageSrc } from './aboutImage';
 import { splitLinkifiedText, type TextSegment } from './communityUtils';
 
 interface LinkifiedTextProps {
@@ -15,15 +16,12 @@ const IMAGE_TAGS = /(<img\b(?:[^>"']|"[^"]*"|'[^']*')*>)/gi;
 
 function getImageSegment(text: string): ImageSegment | null {
 	if (!/^<img\b/i.test(text)) return null;
-	const image = new DOMParser().parseFromString(text, 'text/html').querySelector('img');
-	const src = image?.getAttribute('src')?.trim();
+	// Template content stays inert until the image source has been validated.
+	const template = document.createElement('template');
+	template.innerHTML = text;
+	const image = template.content.querySelector('img');
+	const src = getPublicAboutImageSrc(image?.getAttribute('src') || '');
 	if (!image || !src) return null;
-	try {
-		const url = new URL(src, window.location.href);
-		if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
-	} catch {
-		return null;
-	}
 	return {
 		type: 'image',
 		src,
