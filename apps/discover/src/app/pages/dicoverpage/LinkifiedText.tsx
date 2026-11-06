@@ -1,4 +1,3 @@
-import AboutQrCard from './AboutQrCard';
 import { splitLinkifiedText, type TextSegment } from './communityUtils';
 
 interface LinkifiedTextProps {
@@ -6,21 +5,36 @@ interface LinkifiedTextProps {
 	linkClassName?: string;
 }
 
-function getQrUrl(text: string): string | null {
-	const value = text.match(/^<qr>([\s\S]*?)<\/qr>$/i)?.[1].trim();
-	if (!value || !/^https?:\/\/\S+$/i.test(value)) return null;
+type ImageSegment = {
+	type: 'image';
+	src: string;
+	alt: string;
+};
+
+const IMAGE_TAGS = /(<img\b(?:[^>"']|"[^"]*"|'[^']*')*>)/gi;
+
+function getImageSegment(text: string): ImageSegment | null {
+	if (!/^<img\b/i.test(text)) return null;
+	const image = new DOMParser().parseFromString(text, 'text/html').querySelector('img');
+	const src = image?.getAttribute('src')?.trim();
+	if (!image || !src) return null;
 	try {
-		new URL(value);
-		return value;
+		const url = new URL(src, window.location.href);
+		if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
 	} catch {
 		return null;
 	}
+	return {
+		type: 'image',
+		src,
+		alt: image.getAttribute('alt') || ''
+	};
 }
 
 export default function LinkifiedText({ text, linkClassName }: LinkifiedTextProps) {
-	const segments = text.split(/(<qr>[\s\S]*?<\/qr>)/gi).flatMap<TextSegment | { type: 'qr'; value: string }>((part) => {
-		const qrUrl = getQrUrl(part);
-		return qrUrl ? [{ type: 'qr', value: qrUrl }] : splitLinkifiedText(part);
+	const segments = text.split(IMAGE_TAGS).flatMap<TextSegment | ImageSegment>((part) => {
+		const image = getImageSegment(part);
+		return image ? [image] : splitLinkifiedText(part);
 	});
 	const linkClass =
 		linkClassName ||
@@ -29,8 +43,17 @@ export default function LinkifiedText({ text, linkClassName }: LinkifiedTextProp
 	return (
 		<>
 			{segments.map((segment, index) => {
-				if (segment.type === 'qr') {
-					return <AboutQrCard key={`qr-${index}`} value={segment.value} />;
+				if (segment.type === 'image') {
+					return (
+						<img
+							key={`image-${index}`}
+							src={segment.src}
+							alt={segment.alt}
+							loading="lazy"
+							decoding="async"
+							className="my-6 block h-auto max-h-[320px] w-auto max-w-full rounded-2xl object-contain"
+						/>
+					);
 				}
 				return segment.type === 'link' ? (
 					<a
