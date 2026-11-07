@@ -186,7 +186,6 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 	const initializePeerConnection = () => {
 		const pc = new RTCPeerConnection(RTCConfig);
-		let isMediaInterrupted = false;
 		callTargetRef.current = { dmUserId, channelId };
 
 		pc.onicecandidate = async (event) => {
@@ -233,16 +232,11 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		pc.oniceconnectionstatechange = async () => {
 			if (pc.iceConnectionState === 'connected' && mezon.sessionRef.current) {
 				if (timeStartConnected.current) {
-					if (isMediaInterrupted) {
-						isMediaInterrupted = false;
-						dispatch(toastActions.addToast({ message: t('toast.connectionConnected'), type: 'success', autoClose: 3000 }));
-					}
 					return;
 				}
 				timeStartConnected.current = new Date();
 				clearCallTimeout();
 				dispatch(audioCallActions.setEstablishedCall({ peerId: dmUserId, channelId }));
-				dispatch(toastActions.addToast({ message: t('toast.connectionConnected'), type: 'success', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(true));
 				dispatch(audioCallActions.setIsDialTone(false));
 				await mezon.clientRef.current?.forwardWebrtcSignaling(
@@ -260,9 +254,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			}
 
 			if (pc.iceConnectionState === 'disconnected') {
-				dispatch(toastActions.addToast({ message: t('toast.connectionDisconnected'), type: 'warning', autoClose: 3000 }));
 				if (timeStartConnected.current) {
-					isMediaInterrupted = true;
 					return;
 				}
 				setIsConnected(null);
