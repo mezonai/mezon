@@ -265,5 +265,6 @@
 		"noVotesYet": "Әлегә тавышлар юк",
 		"pollLabel": "[Сораштыру]",
 		"failedToCreatePoll": "Сораштыру төзеп булмады"
-	}
+	},
+	"turnOffAnonymousToCreateTopic": "Тема ясаганчы аноним режимны сүндерегез"
 }

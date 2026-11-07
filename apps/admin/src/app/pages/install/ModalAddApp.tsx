@@ -191,10 +191,9 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 				<div className="w-full">
 					<SelectField uppercase={true} {...clanConfig} />
 				</div>
-
 				{clanValue && (
 					<div className="w-full">
-						<SelectField {...categoryConfig} />
+						<SelectField uppercase={true} {...categoryConfig} />
 					</div>
 				)}
 

@@ -56,7 +56,8 @@ export const DATA_E2E_IDENTIFIER = {
 				base: '',
 				status: '',
 				remove_friend: '',
-				share_contact: ''
+				share_contact: '',
+				call: ''
 			}
 		},
 		modal: {
@@ -286,7 +287,8 @@ export const DATA_E2E_IDENTIFIER = {
 					channel: {
 						item: ''
 					},
-					input: ''
+					input: '',
+					private_voice_audience_tip: ''
 				},
 				event_info: {
 					input: {

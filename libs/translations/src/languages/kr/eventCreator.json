@@ -82,7 +82,8 @@
 		},
 		"cover": "표지",
 		"VoiceChannel": {
-			"title": "음성 채널 선택"
+			"title": "음성 채널 선택",
+			"privateAudienceTip": "팁: 모든 관객이 이벤트에 참여할 수 있도록 <channel>#{{channelName}}</channel>에 추가하세요."
 		}
 	},
 	"actions": {

@@ -5,7 +5,19 @@ import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { AvatarImage } from '../../components';
 
-function UserListItem({ id, user_name, user_avatar, children }: { id: string; user_name: string; user_avatar: string; children?: ReactNode }) {
+function UserListItem({
+	id,
+	user_name,
+	user_avatar,
+	showScreenShareIcon = true,
+	children
+}: {
+	id: string;
+	user_name: string;
+	user_avatar: string;
+	showScreenShareIcon?: boolean;
+	children?: ReactNode;
+}) {
 	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, id ?? ''));
 	const name = getNameForPrioritize(userStream?.clan_nick || user_name, userStream?.user?.display_name, userStream?.user?.username);
 	const avatar = getAvatarForPrioritize(userStream?.clan_avatar || user_avatar, userStream?.user?.avatar_url);
@@ -31,7 +43,7 @@ function UserListItem({ id, user_name, user_avatar, children }: { id: string; us
 				</div>
 				<div>{name ? <NameComponent id={id || ''} name={name || ''} /> : null}</div>
 			</div>
-			{invoiceStatus?.status === EInvoice.SHARING_SCREEN ? (
+			{showScreenShareIcon && invoiceStatus?.status === EInvoice.SHARING_SCREEN ? (
 				<Icons.VoiceScreenShareIcon
 					color="#22c55e"
 					className="w-4 h-4"
@@ -43,4 +55,7 @@ function UserListItem({ id, user_name, user_avatar, children }: { id: string; us
 	);
 }
 
-export default memo(UserListItem, (prevProps, nextProps) => prevProps.id === nextProps.id);
+export default memo(
+	UserListItem,
+	(prevProps, nextProps) => prevProps.id === nextProps.id && prevProps.showScreenShareIcon === nextProps.showScreenShareIcon
+);

@@ -1,4 +1,4 @@
-import { Direction_Mode, generatePathAttachments, getPresignIngestKeys, getWebUploadedAttachments } from '@mezon/utils';
+import { Direction_Mode, TypeMessage, generatePathAttachments, getPresignIngestKeys, getWebUploadedAttachments } from '@mezon/utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { ChannelStreamMode } from 'mezon-js';
 import { shouldForceApiCall } from '../cache-metadata';
@@ -22,7 +22,7 @@ import {
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
 	mergePresignFinishContent: jest.requireActual('../../../../utils/src/lib/utils/presignFinish').mergePresignFinishContent,
-	TypeMessage: { Chat: 0, ChatUpdate: 1 },
+	TypeMessage: { Chat: 0, ChatUpdate: 1, ChatRemove: 2 },
 	EMessageCode: { FIRST_MESSAGE: 4 },
 	Direction_Mode: { BEFORE_TIMESTAMP: 3, AFTER_TIMESTAMP: 1, AROUND_TIMESTAMP: 2 },
 	LIMIT_MESSAGE: 50,
@@ -915,5 +915,75 @@ describe('reopening a channel that missed messages while offline', () => {
 		expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(ids(951, 1000));
 		expect(store.getState().messages.lastMessageByChannel.channel?.id).toBe(msg(1200).id);
 		expect(selectHasMoreBottomByChannelId(store.getState() as any, 'channel')).toBe(true);
+	});
+});
+
+describe('scoping message update and delete events by conversation', () => {
+	it('does not delete a colliding message ID in another channel', () => {
+		const { store } = setup();
+		store.dispatch(messagesActions.addOneMessage({ id: '100', channel_id: 'channel-a', code: TypeMessage.Chat, content: { t: 'keep' } } as any));
+		store.dispatch(messagesActions.addOneMessage({ id: '200', channel_id: 'channel-b', code: TypeMessage.Chat, content: { t: 'other' } } as any));
+
+		store.dispatch(messagesActions.newMessage({ id: '100', channel_id: 'channel-b', code: TypeMessage.ChatRemove } as any));
+
+		expect(store.getState().messages.channelMessages['channel-a'].entities['100']).toMatchObject({ content: { t: 'keep' } });
+	});
+
+	it('does not update a colliding message ID in another channel', () => {
+		const { store } = setup();
+		store.dispatch(messagesActions.addOneMessage({ id: '100', channel_id: 'channel-a', code: TypeMessage.Chat, content: { t: 'keep' } } as any));
+		store.dispatch(messagesActions.addOneMessage({ id: '200', channel_id: 'channel-b', code: TypeMessage.Chat, content: { t: 'other' } } as any));
+
+		store.dispatch(
+			messagesActions.newMessage({ id: '100', channel_id: 'channel-b', code: TypeMessage.ChatUpdate, content: { t: 'overwritten' } } as any)
+		);
+
+		expect(store.getState().messages.channelMessages['channel-a'].entities['100']?.content).toEqual({ t: 'keep' });
+	});
+
+	it('updates a topic message when the event names the parent channel', () => {
+		const { store } = setup();
+		store.dispatch(messagesActions.addOneMessage({ id: 'seed', channel_id: 'topic', code: TypeMessage.Chat } as any));
+		store.dispatch(messagesActions.remove({ channelId: 'topic', messageId: 'seed' }));
+		store.dispatch(
+			messagesActions.newMessage({
+				id: '100',
+				channel_id: 'parent',
+				topic_id: 'topic',
+				code: TypeMessage.Chat,
+				content: { t: 'initial' }
+			} as any)
+		);
+
+		store.dispatch(
+			messagesActions.newMessage({
+				id: '100',
+				channel_id: 'parent',
+				topic_id: '0',
+				code: TypeMessage.ChatUpdate,
+				content: { t: 'edited' }
+			} as any)
+		);
+
+		expect(store.getState().messages.channelMessages.topic.entities['100']?.content).toEqual({ t: 'edited' });
+	});
+
+	it('deletes a topic message when the event names the parent channel', () => {
+		const { store } = setup();
+		store.dispatch(messagesActions.addOneMessage({ id: 'seed', channel_id: 'topic', code: TypeMessage.Chat } as any));
+		store.dispatch(messagesActions.remove({ channelId: 'topic', messageId: 'seed' }));
+		store.dispatch(
+			messagesActions.newMessage({
+				id: '100',
+				channel_id: 'parent',
+				topic_id: 'topic',
+				code: TypeMessage.Chat,
+				content: { t: 'initial' }
+			} as any)
+		);
+
+		store.dispatch(messagesActions.newMessage({ id: '100', channel_id: 'parent', topic_id: '0', code: TypeMessage.ChatRemove } as any));
+
+		expect(store.getState().messages.channelMessages.topic.entities['100']).toBeUndefined();
 	});
 });

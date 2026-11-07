@@ -1505,7 +1505,7 @@ export type MentionReactInputProps = {
 		clanNick?: string,
 		ephemeralReceiverId?: string,
 		usersNotExistingInThread?: string[]
-	) => void;
+	) => void | Promise<boolean | void>;
 	readonly onTyping?: () => void;
 	readonly listMentions?: MentionDataProps[] | undefined;
 	readonly isThread?: boolean;

@@ -154,6 +154,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	} = props;
 
 	const inputId = props.isTopic ? GENERAL_INPUT_ID : CHANNEL_INPUT_ID;
+	const isCreatingThread = props.isThread && !props.isTopic && !threadCurrentChannel;
 
 	const dispatch = useAppDispatch();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
@@ -324,12 +325,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				if (!hasContent && !checkAttachment && !hasValueThreadMedia) {
 					dispatch(threadsActions.setMessageThreadError(t('channelTopbar:createThread.validation.starterMessageRequired')));
 				}
-				updateDraft?.({
-					valueTextInput: '',
-					content: '',
-					mentionRaw: [],
-					entities: []
-				});
 				return;
 			}
 
@@ -449,7 +444,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					setMentionEveryone(false);
 					dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
 				} else if (isSendMessageOnThreadBox) {
-					props.onSend(
+					const sent = props.onSend(
 						filterEmptyArrays(payload),
 						mentionList,
 						attachmentData,
@@ -462,6 +457,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						ephemeralTargetUserId || undefined,
 						usersNotExistingInThread
 					);
+					if (isCreatingThread && (await sent) === false) {
+						return;
+					}
 				} else if (isReplyOnTopic) {
 					props.onSend(
 						filterEmptyArrays(payload),
@@ -484,7 +482,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						})
 					);
 				} else {
-					props.onSend(
+					const sent = props.onSend(
 						filterEmptyArrays(payload),
 						mentionList,
 						attachmentData,
@@ -497,6 +495,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						ephemeralTargetUserId || undefined,
 						usersNotExistingInThread
 					);
+					if (isCreatingThread && (await sent) === false) {
+						return;
+					}
 					setMentionEveryone(false);
 				}
 				updateDraft?.({
@@ -637,7 +638,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isSendMessageOnThreadBox) {
-				props.onSend(
+				const sent = props.onSend(
 					filterEmptyArrays(payload),
 					isPasteMulti ? mentionUpdated : [],
 					attachmentData,
@@ -649,6 +650,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					undefined,
 					ephemeralTargetUserId || undefined
 				);
+				if (isCreatingThread && (await sent) === false) {
+					return;
+				}
 				setMentionEveryone(false);
 				dispatch(
 					referencesActions.setAtachmentAfterUpload({
@@ -691,7 +695,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else {
-				props.onSend(
+				const sent = props.onSend(
 					filterEmptyArrays(payload),
 					isPasteMulti ? mentionUpdated : [],
 					attachmentData,
@@ -703,6 +707,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					undefined,
 					ephemeralTargetUserId || undefined
 				);
+				if (isCreatingThread && (await sent) === false) {
+					return;
+				}
 				setMentionEveryone(false);
 				dispatch(threadsActions.setNameValueThread({ channelId: props.currentChannelId as string, nameValue: '' }));
 				setMentionData([]);
@@ -1082,6 +1089,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					hasFilesToSend={attachmentData.length > 0}
 					currentChannelId={props.currentChannelId}
 					allowEmptySend={props.allowEmptySend}
+					keepTextOnSend={isCreatingThread}
 				>
 					<Mention
 						trigger="@"

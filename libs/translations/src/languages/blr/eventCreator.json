@@ -82,7 +82,8 @@
 		},
 		"cover": "Вокладка",
 		"VoiceChannel": {
-			"title": "Выберыце галасавы канал"
+			"title": "Выберыце галасавы канал",
+			"privateAudienceTip": "Парада: Каб усе ўдзельнікі аўдыторыі маглі далучыцца да падзеі, дадайце іх у <channel>#{{channelName}}</channel>."
 		}
 	},
 	"actions": {

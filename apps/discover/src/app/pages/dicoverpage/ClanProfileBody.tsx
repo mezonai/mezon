@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LinkifiedText from './LinkifiedText';
 import { splitClanStory, type DiscoverClan } from './communityUtils';
@@ -9,9 +8,7 @@ interface ClanProfileBodyProps {
 
 export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
 	const { t } = useTranslation('discover');
-	const [aboutExpanded, setAboutExpanded] = useState(false);
 	const { lede, body } = splitClanStory(clan);
-	const shouldClamp = body.length > 420;
 	const hasStory = Boolean(lede || body);
 
 	return (
@@ -28,22 +25,9 @@ export default function ClanProfileBody({ clan }: ClanProfileBodyProps) {
 
 					{body ? (
 						<div className={`w-full max-w-full ${lede ? 'md:pl-10 lg:pl-20' : ''}`}>
-							<p
-								className={`w-full max-w-full text-[16px] sm:text-[17px] md:text-[18px] leading-7 md:leading-8 text-[#3f4a5a] whitespace-pre-wrap break-words ${
-									!aboutExpanded && shouldClamp ? 'line-clamp-8' : ''
-								}`}
-							>
+							<p className="w-full max-w-full text-[16px] sm:text-[17px] md:text-[18px] leading-7 md:leading-8 text-[#3f4a5a] whitespace-pre-wrap break-words">
 								<LinkifiedText text={body} />
 							</p>
-							{shouldClamp ? (
-								<button
-									type="button"
-									onClick={() => setAboutExpanded((open) => !open)}
-									className="mt-6 min-h-[48px] px-6 rounded-full bg-[#8960e0] text-white text-sm font-semibold hover:bg-[#7a52d4]"
-								>
-									{aboutExpanded ? t('detail.readLess') : t('detail.readMore')}
-								</button>
-							) : null}
 						</div>
 					) : null}
 				</div>

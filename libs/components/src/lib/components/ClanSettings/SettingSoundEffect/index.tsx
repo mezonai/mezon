@@ -1,8 +1,6 @@
-import type { MediaType } from '@mezon/store';
+import { usePermissionChecker } from '@mezon/core';
 import {
-	selectAllAccount,
 	selectAudioByClanId,
-	selectCurrentClanCreatorId,
 	selectCurrentClanId,
 	selectCurrentUserId,
 	selectMemberClanByUserId,
@@ -11,26 +9,16 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import type { ClanSticker } from 'mezon-js';
+import { EPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AvatarColor } from '../../AvatarImage/AvatarImage';
 import ModalUploadSound from './ModalUploadSound';
-interface ExtendedClanSticker extends ClanSticker {
-	media_type?: MediaType;
-}
 
 export type SoundType = {
 	id: string;
 	name: string;
 	url: string;
 	creator_id?: string;
-};
-
-const isAudioFile = (url: string): boolean => {
-	const lowerUrl = url.toLowerCase();
-	return lowerUrl.endsWith('.mp3') || lowerUrl.endsWith('.wav') || lowerUrl.endsWith('.mpeg');
 };
 
 const SettingSoundEffect = () => {
@@ -40,12 +28,9 @@ const SettingSoundEffect = () => {
 	const dispatch = useAppDispatch();
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';
 	const currentUserId = useAppSelector(selectCurrentUserId) || '';
-	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
-	const userProfile = useAppSelector(selectAllAccount);
+	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 
 	const sounds = useAppSelector((state: any) => selectAudioByClanId(state, currentClanId));
-
-	const isClanOwner = currentClanCreatorId === userProfile?.user?.id;
 
 	const soundList: SoundType[] = sounds.map((sound) => ({
 		id: sound.id || '',
@@ -86,7 +71,7 @@ const SettingSoundEffect = () => {
 	};
 
 	const canManageSound = (creatorId: string) => {
-		return isClanOwner || creatorId === currentUserId;
+		return canManageClan || creatorId === currentUserId;
 	};
 
 	return (
@@ -180,7 +165,6 @@ const SettingSoundEffect = () => {
 
 const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 	const creator = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
-	const avatarDefault = creator?.clan_nick || creator?.user?.display_name || creator?.user?.username || '';
 	const avatarUrl = creator?.clan_avatar || creator?.user?.avatar_url;
 	if (!creator) return null;
 	return (
@@ -192,7 +176,9 @@ const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 					alt="User avatar"
 				/>
 			) : (
-				<AvatarColor username={avatarDefault || ''} className={`size-4`} />
+				<div className="size-4 rounded-full bg-bgDisable flex items-center justify-center">
+					<Icons.AvatarUser className="w-2.5 h-2.5" />
+				</div>
 			)}
 
 			<p className="text-xs text-theme-primary max-w-20 truncate" data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.created_by')}>

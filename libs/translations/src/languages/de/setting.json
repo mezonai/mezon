@@ -12,7 +12,8 @@
 		"friendRequests": "Freundschaftsanfragen",
 		"QRScan": "QR-Code scannen",
 		"MyQRCode": "Mein QR-Code",
-		"devices": "Geräte"
+		"devices": "Geräte",
+		"chat": "Chat"
 	},
 	"deviceSettings": {
 		"description1": "Dies sind alle Geräte, die in dein Konto eingeloggt sind. Du kannst jedes Gerät einzeln abmelden.",

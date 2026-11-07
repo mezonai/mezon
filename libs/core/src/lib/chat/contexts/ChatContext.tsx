@@ -193,6 +193,7 @@ import type {
 	StickerUpdateEvent,
 	StreamingJoinedEvent,
 	StreamingLeavedEvent,
+	TransferOwnershipEvent,
 	UnblockFriend,
 	UnmuteEvent,
 	UnpinMessageEvent,
@@ -237,6 +238,8 @@ const RECONNECT_RETRY_BASE_MS = 500;
 const RECONNECT_RETRY_JITTER_MS = 400;
 
 const RECONNECT_WAVE_COOLDOWN_MS = 10000;
+// A node at the user's connection limit completes the handshake and drops the socket a few ms later.
+const RECONNECT_SETTLE_MS = 1500;
 
 function randomReconnectSpacingMs(): number {
 	return RECONNECT_RETRY_BASE_MS + Math.floor(Math.random() * RECONNECT_RETRY_JITTER_MS);
@@ -2671,6 +2674,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 	}, []);
 
+	const ontransferownership = useCallback(
+		(event: TransferOwnershipEvent) => {
+			if (!event?.clan_id || !event.curr_owner) return;
+			dispatch(clansActions.updateClanOwner({ clanId: event.clan_id, newOwnerId: event.curr_owner }));
+		},
+		[dispatch]
+	);
+
 	const onclanupdated = useCallback(async (clanUpdatedEvent: ClanUpdatedEvent) => {
 		if (!clanUpdatedEvent) return;
 		dispatch(clansSlice.actions.update({ dataUpdate: clanUpdatedEvent }));
@@ -3002,6 +3013,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onclanupdated = onclanupdated;
 
+			socket.ontransferownership = ontransferownership;
+
 			socket.onsdtopicevent = onsdtopicevent;
 
 			socket.onunpinmessageevent = onUnpinMessageEvent;
@@ -3068,6 +3081,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onmessagebuttonclicked,
 			onwebrtcsignalingfwd,
 			onclanupdated,
+			ontransferownership,
 			onsdtopicevent,
 			onUnpinMessageEvent,
 			onblockfriend,
@@ -3113,6 +3127,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				if (result.status === 'MISSING_SESSION') {
 					socketState.status = 'disconnected';
 					throw new Error('Socket reconnection failed: missing client or session');
+				}
+
+				// Taken as a reconnect, a socket the node drops at once ends the wave, and the drop starts a
+				// fresh one at full budget: the tab redials about once a second for as long as the node keeps
+				// refusing. Held as a failed attempt, it gets the wave's backoff instead.
+				await new Promise((resolve) => setTimeout(resolve, RECONNECT_SETTLE_MS));
+				if (!client.isOpen()) {
+					throw new Error('Socket closed right after reconnecting');
 				}
 
 				return true;
@@ -3332,8 +3354,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onstatuspresence = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.oncanvasevent = () => {};
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			socket.ondisconnect = () => {};
+			socket.ondisconnect = () => {
+				socketState.status = 'disconnected';
+			};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onheartbeattimeout = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -3344,6 +3367,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onuserclanremoved = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onclandeleted = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.ontransferownership = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onuserchanneladded = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -3406,6 +3431,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onuserchannelremoved,
 		onuserclanremoved,
 		onclandeleted,
+		ontransferownership,
 		onuserchanneladded,
 		onuserclanadded,
 		onremovefriend,

@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Nie można zakończyć sondy"
 	},
 	"copyUserId": "Kopiuj ID użytkownika",
-	"giveFlowers": "Wyślij kwiat"
+	"giveFlowers": "Wyślij kwiat",
+	"userVolume": "Głośność użytkownika"
 }

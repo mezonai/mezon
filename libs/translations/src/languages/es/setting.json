@@ -12,7 +12,8 @@
 		"friendRequests": "Solicitudes de amistad",
 		"QRScan": "Escanear código QR",
 		"MyQRCode": "Mi código QR",
-		"devices": "Dispositivos"
+		"devices": "Dispositivos",
+		"chat": "Chat"
 	},
 	"deviceSettings": {
 		"description1": "Aquí están todos los dispositivos actualmente iniciados con tu cuenta. Puedes cerrar sesión en cada uno individualmente.",

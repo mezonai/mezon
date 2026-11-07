@@ -123,5 +123,6 @@
 		"failedToClosePoll": "Kon enquête niet beëindigen"
 	},
 	"copyUserId": "Gebruikers-ID kopiëren",
-	"giveFlowers": "Een bloem sturen"
+	"giveFlowers": "Een bloem sturen",
+	"userVolume": "Gebruikersvolume"
 }

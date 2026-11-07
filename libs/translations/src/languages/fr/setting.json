@@ -12,7 +12,8 @@
 		"friendRequests": "Demandes d'ami",
 		"QRScan": "Scanner le code QR",
 		"MyQRCode": "Mon code QR",
-		"devices": "Appareils"
+		"devices": "Appareils",
+		"chat": "Discussion"
 	},
 	"deviceSettings": {
 		"description1": "Voici tous les appareils connectés à votre compte. Vous pouvez vous déconnecter de chaque appareil.",

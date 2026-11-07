@@ -1,10 +1,10 @@
 import { getStore, getStoreAsync, selectMemberClanByUserId, selectVoiceInfo } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
+import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, getSrcEmoji, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AvatarColor } from '../../../AvatarImage/AvatarImage';
 import { soundReactionsService } from './soundReactionsService';
 import type { DisplayedEmoji, DisplayedHand } from './types';
 
@@ -288,7 +288,9 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 												className="w-8 h-8 rounded-full"
 											/>
 										) : (
-											<AvatarColor username={item.name} className="size-8" />
+											<div className="size-8 rounded-full bg-bgDisable flex items-center justify-center">
+												<Icons.AvatarUser className="w-5 h-5" />
+											</div>
 										)}
 										<div className="text-sm text-black flex-1 truncate font-semibold">{item.name}</div>
 										<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" className="h-8" fill="#efbc39">

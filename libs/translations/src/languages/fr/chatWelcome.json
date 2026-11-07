@@ -21,7 +21,9 @@
 		"ignore": "Ignorer",
 		"friendRequestSentButton": "Demande d'amitié envoyée",
 		"block": "Bloquer",
-		"unblock": "Débloquer"
+		"unblock": "Débloquer",
+		"welcomeToClan": "Bienvenue dans le clan",
+		"emptyChannel": "Vous êtes dans un salon ! Les salons s’afficheront ici lorsque vous y aurez accès."
 	},
 	"toast": {
 		"userBlockedSuccess": "Utilisateur bloqué avec succès",

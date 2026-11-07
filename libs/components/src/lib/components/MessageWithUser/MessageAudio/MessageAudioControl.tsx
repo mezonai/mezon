@@ -27,6 +27,24 @@ export const MessageAudioControl = forwardRef((props: AudioControlProps, ref) =>
 						console.error('Error while playing audio:', error);
 					});
 			}
+		},
+		seekStart: () => {
+			if (isPlaying) audioRef.current?.pause();
+		},
+		seek: (time: number) => {
+			if (!audioRef.current) return;
+			audioRef.current.currentTime = time;
+			setCurrentTime(time);
+		},
+		seekEnd: () => {
+			if (!audioRef.current || !isPlaying) return;
+			if (audioRef.current.ended) {
+				setIsPlaying(false);
+				return;
+			}
+			audioRef.current.play().catch((error) => {
+				console.error('Error while playing audio:', error);
+			});
 		}
 	}));
 

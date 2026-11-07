@@ -125,7 +125,11 @@
 		"inputDevice": "マイク",
 		"outputDevice": "オーディオ",
 		"camera": "カメラ",
-		"systemDefault": "システムの既定"
+		"systemDefault": "システムの既定",
+		"audioSettings": "音声設定",
+		"noDevices": "デバイスが見つかりません",
+		"noInputDevices": "入力デバイスが見つかりません",
+		"noOutputDevices": "出力デバイスが見つかりません"
 	},
 	"toast": {
 		"connectionConnected": "接続に成功しました",
@@ -182,7 +186,8 @@
 	"pushToTalk": {
 		"holdSpace": "スペースキーを押し続けて話す",
 		"holdingSpace": "話しています — スペースキーを離すとミュート",
-		"hintBody": "あなたは聴くために参加しました。話す間はスペースキーを押し続けてマイクを開き、離すと再びミュートになります。"
+		"hintBody": "あなたは聴くために参加しました。話す間はスペースキーを押し続けてマイクを開き、離すと再びミュートになります。",
+		"title": "プッシュ・トゥ・トーク"
 	},
 	"screenDraw": {
 		"annotateScreen": "共有中の画面に描画",
@@ -234,5 +239,11 @@
 		"inviteReturn": "ホストがブレイクアウトルームを閉じました。メインルームに戻りますか？",
 		"join": "参加",
 		"later": "後で"
+	},
+	"screenShareCaptureFailed": "選択した画面をキャプチャできませんでした。代わりにウィンドウまたはタブを共有してください。",
+	"dmCall": {
+		"you": "あなた",
+		"enlarge": "{{name}} を拡大",
+		"restoreLayout": "横並び表示に戻る"
 	}
 }
