@@ -133,7 +133,7 @@ export interface VoiceState {
 	externalToken: string | undefined;
 	guestUserId: string | undefined;
 	guestAccessToken: string | undefined;
-	joinCallExtStatus: LoadingStatus;
+	joinCallExtStatus: number | null | LoadingStatus;
 	isPiPMode?: boolean;
 	openPopOut?: boolean;
 	openChatBox?: boolean;
@@ -688,7 +688,7 @@ export const initialVoiceState: VoiceState = {
 	externalToken: undefined,
 	guestUserId: undefined,
 	guestAccessToken: undefined,
-	joinCallExtStatus: 'not loaded',
+	joinCallExtStatus: null,
 	isPiPMode: false,
 	openPopOut: false,
 	openChatBox: false,
@@ -895,7 +895,7 @@ export const voiceSlice = createSlice({
 			state.isJoined = false;
 			state.externalToken = undefined;
 			state.stream = null;
-			state.joinCallExtStatus = 'not loaded';
+			state.joinCallExtStatus = null;
 			state.recordingUserIds = [];
 			state.breakoutRoom = null;
 			state.breakoutInvite = null;
@@ -1107,10 +1107,10 @@ export const voiceSlice = createSlice({
 				state.externalToken = action.payload.token;
 				state.guestAccessToken = action.payload.guest_access_token || undefined;
 				state.guestUserId = action.payload.guest_user_id;
-				state.joinCallExtStatus = 'loaded';
+				state.joinCallExtStatus = 0;
 			})
 			.addCase(generateMeetTokenExternal.rejected, (state: VoiceState, action) => {
-				state.joinCallExtStatus = 'error';
+				state.joinCallExtStatus = (action.payload as { status: number }).status || 2;
 				state.error = action.error.message;
 			});
 		builder

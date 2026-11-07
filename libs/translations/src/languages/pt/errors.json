@@ -15,5 +15,6 @@
 	"error_13": "Erro interno",
 	"error_14": "Os servidores estão ocupados. Tente novamente em instantes",
 	"error_15": "Perda de dados",
-	"error_16": "A sessão expirou. Faça login novamente"
+	"error_16": "A sessão expirou. Faça login novamente",
+	"invalid_meeting_link": "Este link da reunião é inválido ou expirou"
 }

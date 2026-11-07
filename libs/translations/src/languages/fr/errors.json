@@ -15,5 +15,6 @@
 	"error_13": "Erreur interne",
 	"error_14": "Les serveurs sont occupés. Veuillez réessayer dans quelques instants",
 	"error_15": "Perte de données",
-	"error_16": "La session a expiré. Veuillez vous reconnecter"
+	"error_16": "La session a expiré. Veuillez vous reconnecter",
+	"invalid_meeting_link": "Ce lien de réunion est invalide ou a expiré"
 }

@@ -6,12 +6,12 @@ interface JoinFormProps {
 	username: string;
 	setUsername: (value: string) => void;
 	onJoin: (role: SfuJoinRole) => void;
-	loadingStatus: LoadingStatus;
+	loadingStatus: number | null | LoadingStatus;
 }
 
 const JoinForm = memo(({ username, setUsername, onJoin, loadingStatus }: JoinFormProps) => {
 	const isLoading = loadingStatus === 'loading';
-	const isDisabled = loadingStatus === 'loaded' || isLoading;
+	const isDisabled = loadingStatus === 0 || isLoading;
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [showJoinOptions, setShowJoinOptions] = useState(false);
 	const joinLabel = joinRole === 'speaker' ? 'Join as speaker' : 'Join as audience';

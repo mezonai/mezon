@@ -15,5 +15,6 @@
 	"error_13": "Internt fel",
 	"error_14": "Servrarna är upptagna. Försök igen om en stund",
 	"error_15": "Dataförlust",
-	"error_16": "Sessionen har gått ut. Logga in igen"
+	"error_16": "Sessionen har gått ut. Logga in igen",
+	"invalid_meeting_link": "Den här möteslänken är ogiltig eller har gått ut"
 }
