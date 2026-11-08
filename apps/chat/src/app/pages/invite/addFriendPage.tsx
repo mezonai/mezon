@@ -1,9 +1,9 @@
 import { useAuth } from '@mezon/core';
-import { checkMutableRelationship, directActions, selectAddFriendRequestLoading, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
+import { checkMutableRelationship, selectAddFriendRequestLoading, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
-import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js';
-import { ChannelType, safeJSONParse } from 'mezon-js';
+import type { ApiIsFollowerResponse } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
@@ -88,30 +88,6 @@ export default function AddFriendPage() {
 	useEffect(() => {
 		navigateDeeplinkMobile();
 	}, []);
-
-	const handleGotoDm = async () => {
-		const targetUserId = dataEncode?.id;
-
-		if (!userProfile?.user?.id || !targetUserId) return;
-		const bodyCreateDm: ApiCreateChannelDescRequest = {
-			type: ChannelType.CHANNEL_TYPE_DM,
-			channel_private: 1,
-			user_ids: [targetUserId],
-			clan_id: '0'
-		};
-		const result = await dispatch(
-			directActions.createNewDirectMessage({
-				body: bodyCreateDm,
-				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username || ''],
-				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar || '']
-			})
-		);
-		if ((result.payload as ApiChannelDescription).channel_id) {
-			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channel_id}/3`);
-		} else {
-			navigate('/chat/direct/friends');
-		}
-	};
 
 	const handleAddFriend = async () => {
 		if (!userProfile?.user?.id || !username || isAddingFriend) return;
@@ -244,14 +220,6 @@ export default function AddFriendPage() {
 						) : (
 							!!userProfile && (
 								<div className="flex flex-col gap-3 w-full">
-									{error === ErrorTypeMutable.MUTABLE && (
-										<button
-											onClick={handleGotoDm}
-											className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold rounded-2xl transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] cursor-pointer text-sm"
-										>
-											{t('invite.chatNow')}
-										</button>
-									)}
 									{error === ErrorTypeMutable.NOT_MUTABLE && (
 										<button
 											onClick={handleAddFriend}

@@ -15,5 +15,6 @@
 	"error_13": "Lỗi nội bộ",
 	"error_14": "Máy chủ đang bận. Vui lòng thử lại sau",
 	"error_15": "Mất dữ liệu",
-	"error_16": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại"
+	"error_16": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại",
+	"invalid_meeting_link": "Liên kết cuộc họp này không hợp lệ hoặc đã hết hạn"
 }

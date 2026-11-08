@@ -15,5 +15,6 @@
 	"error_13": "Errore interno",
 	"error_14": "I server sono occupati. Riprova tra poco",
 	"error_15": "Perdita di dati",
-	"error_16": "Sessione scaduta. Accedi di nuovo"
+	"error_16": "Sessione scaduta. Accedi di nuovo",
+	"invalid_meeting_link": "Questo link alla riunione non è valido o è scaduto"
 }

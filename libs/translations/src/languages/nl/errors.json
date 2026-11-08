@@ -15,5 +15,6 @@
 	"error_13": "Interne fout",
 	"error_14": "De servers zijn bezet. Probeer het straks opnieuw",
 	"error_15": "Gegevensverlies",
-	"error_16": "Sessie verlopen. Log opnieuw in"
+	"error_16": "Sessie verlopen. Log opnieuw in",
+	"invalid_meeting_link": "Deze vergaderingslink is ongeldig of verlopen"
 }
