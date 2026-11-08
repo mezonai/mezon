@@ -22,6 +22,7 @@ type ListAttachmentProps = {
 	>;
 	setCurrentIndexAtt: React.Dispatch<React.SetStateAction<number>>;
 	currentIndexAtt: number;
+	currentAttachmentId?: string;
 	onLoadMore?: (direction: 'before' | 'after') => void;
 	isLoading?: boolean;
 	hasMoreBefore?: boolean;
@@ -57,6 +58,7 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 		handleDrag,
 		setCurrentIndexAtt,
 		currentIndexAtt,
+		currentAttachmentId,
 		onLoadMore,
 		isLoading = false,
 		hasMoreBefore = false,
@@ -70,8 +72,7 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 	const previousScrollSizeRef = useRef<number>(0);
 	const previousScrollOffsetRef = useRef<number>(0);
 	const isFirstRenderRef = useRef<boolean>(true);
-	const previousIndexRef = useRef<number>(currentIndexAtt);
-	const previousAttachmentsLengthRef = useRef<number>(attachments.length);
+	const previousAttachmentIdRef = useRef(currentAttachmentId);
 	const lastBeforeTriggerLengthRef = useRef<number>(-1);
 	const lastAfterTriggerLengthRef = useRef<number>(-1);
 
@@ -130,18 +131,15 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 	}, [currentIndexAtt, attachments.length, virtualizer]);
 
 	useEffect(() => {
-		const indexChanged = previousIndexRef.current !== currentIndexAtt;
-		const lengthChanged = previousAttachmentsLengthRef.current !== attachments.length;
+		// The parent updates the selected index one render after attachments change.
+		if (!currentAttachmentId || attachments[currentIndexAtt]?.id !== currentAttachmentId) return;
 
-		if (!isFirstRenderRef.current && indexChanged && !lengthChanged && currentIndexAtt !== undefined && currentIndexAtt >= 0) {
-			if (virtualizer && currentIndexAtt < attachments.length) {
-				virtualizer.scrollToIndex(currentIndexAtt, { align: 'center', behavior: 'smooth' });
-			}
+		if (!isFirstRenderRef.current && previousAttachmentIdRef.current !== currentAttachmentId) {
+			virtualizer.scrollToIndex(currentIndexAtt, { align: 'center', behavior: 'smooth' });
 		}
 
-		previousIndexRef.current = currentIndexAtt;
-		previousAttachmentsLengthRef.current = attachments.length;
-	}, [currentIndexAtt, attachments.length, virtualizer]);
+		previousAttachmentIdRef.current = currentAttachmentId;
+	}, [currentAttachmentId, currentIndexAtt, attachments, virtualizer]);
 
 	useLayoutEffect(() => {
 		if (isLoadingMore && !isLoading) {

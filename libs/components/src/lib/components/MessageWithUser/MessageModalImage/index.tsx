@@ -546,6 +546,7 @@ const MessageModalImage = () => {
 						setPosition={setPosition}
 						setCurrentIndexAtt={setCurrentIndexAtt}
 						currentIndexAtt={currentIndexAtt}
+						currentAttachmentId={currentAttachment?.id}
 						onLoadMore={handleLoadMoreAttachments}
 						isLoading={paginationState.isLoading}
 						hasMoreBefore={paginationState.hasMoreBefore}
