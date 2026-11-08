@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "Don't receive messages from strangers.",
 			"description": "When on, only people who are your friends can start a conversation with you.",
-			"denied": "You can't send a message because this person only accepts messages from friends."
+			"denied": "You can't send a message to this user."
 		}
 	}
 }

@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "Không nhận tin nhắn từ người lạ.",
 			"description": "Khi bật, chỉ những người đã là bạn bè của bạn mới có thể bắt đầu cuộc trò chuyện với bạn.",
-			"denied": "Bạn không thể nhắn tin vì người này chỉ nhận tin nhắn từ bạn bè."
+			"denied": "Bạn không thể gửi tin nhắn cho người dùng này."
 		}
 	}
 }

@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "Keine Nachrichten von Fremden erhalten.",
 			"description": "Wenn aktiviert, können nur Personen, die mit dir befreundet sind, eine Unterhaltung mit dir beginnen.",
-			"denied": "Du kannst keine Nachricht senden, da diese Person nur Nachrichten von Freunden annimmt."
+			"denied": "Du kannst dieser Person keine Nachricht senden."
 		}
 	}
 }

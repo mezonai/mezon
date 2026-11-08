@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "No recibir mensajes de desconocidos.",
 			"description": "Si está activado, solo las personas que son tus amigas pueden iniciar una conversación contigo.",
-			"denied": "No puedes enviar un mensaje porque esta persona solo acepta mensajes de amigos."
+			"denied": "No puedes enviar un mensaje a este usuario."
 		}
 	}
 }

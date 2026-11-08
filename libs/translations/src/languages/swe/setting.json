@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "Ta inte emot meddelanden från främlingar.",
 			"description": "När det är på kan bara personer som är dina vänner starta en konversation med dig.",
-			"denied": "Du kan inte skicka ett meddelande eftersom den här personen bara tar emot meddelanden från vänner."
+			"denied": "Du kan inte skicka ett meddelande till den här användaren."
 		}
 	}
 }

@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "Ne pas recevoir de messages d'inconnus.",
 			"description": "Lorsque cette option est activée, seules les personnes qui sont vos amis peuvent démarrer une conversation avec vous.",
-			"denied": "Vous ne pouvez pas envoyer de message car cette personne n'accepte que les messages de ses amis."
+			"denied": "Vous ne pouvez pas envoyer de message à cet utilisateur."
 		}
 	}
 }

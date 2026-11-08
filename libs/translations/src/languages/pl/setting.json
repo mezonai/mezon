@@ -174,7 +174,7 @@
 		"onlyFriendsDm": {
 			"title": "Nie odbieraj wiadomości od nieznajomych.",
 			"description": "Gdy włączone, tylko osoby, które są Twoimi znajomymi, mogą rozpocząć z Tobą rozmowę.",
-			"denied": "Nie możesz wysłać wiadomości, ponieważ ta osoba przyjmuje wiadomości tylko od znajomych."
+			"denied": "Nie możesz wysłać wiadomości do tego użytkownika."
 		}
 	}
 }
