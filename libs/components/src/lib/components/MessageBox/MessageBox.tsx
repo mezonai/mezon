@@ -1,4 +1,4 @@
-import { useDragAndDrop, usePermissionChecker, useReference } from '@mezon/core';
+import { useDragAndDrop, useEscapeKey, usePermissionChecker, useReference } from '@mezon/core';
 import {
 	referencesActions,
 	selectCloseMenu,
@@ -6,7 +6,8 @@ import {
 	selectIsQuickReply,
 	selectIsSpelling,
 	selectStatusMenu,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ILongPressType, IMessageSendPayload, MentionDataProps, RequestInput, ThreadValue } from '@mezon/utils';
@@ -14,6 +15,7 @@ import {
 	EOverriddenPermission,
 	MAX_FILE_ATTACHMENTS,
 	UploadLimitReason,
+	blankReferenceObj,
 	getAttachmentLimitViolation,
 	processFilesForAttachment,
 	readPastedFiles,
@@ -23,6 +25,7 @@ import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mez
 import type { ReactElement } from 'react';
 import { Fragment, Suspense, lazy, memo, useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ReplyMessageBox } from '../ReplyMessageBox';
 import AttachmentPreviewThumbnail from './AttachmentPreviewThumbnail';
 import AudioRecorderControl from './AudioRecorder/AudioRecorderControl';
 import FileSelectionButton from './FileSelectionButton';
@@ -129,9 +132,32 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 	const isCheckSpelling = useSelector(selectIsSpelling);
 	const isCheckQuickReply = useSelector(selectIsQuickReply);
 	const updateRef = useRef<(input: RequestInput) => void>(null);
+	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentChannelId ?? ''));
 
+	const handleCloseReplyMessageBox = useCallback(() => {
+		dispatch(
+			referencesActions.setDataReferences({
+				channelId: currentChannelId ?? '',
+				dataReferences: blankReferenceObj
+			})
+		);
+	}, [dataReferences.message_ref_id]);
+
+	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 	return (
 		<div className="relative max-sm:-pb-2">
+			{(isCheckSpelling || isCheckQuickReply) && (
+				<Suspense fallback={null}>
+					<Spelling
+						updateDraft={updateRef}
+						isSpelling={isCheckSpelling}
+						isQuickReply={isCheckQuickReply}
+						channelId={currentChannelId || ''}
+					/>
+				</Suspense>
+			)}
+			{dataReferences.message_ref_id && <ReplyMessageBox channelId={currentChannelId ?? ''} dataReferences={dataReferences} />}
+
 			{checkAttachment && (
 				<div className={` ${checkAttachment ? 'px-3 pb-1 pt-5  bg-theme-input' : ''} text-theme-primary max-h-full `}>
 					<div className={`max-h-full  flex-nowrap flex gap-6 !overflow-y-hidden !overflow-x-auto thread-scroll relative z-0 `}>
@@ -153,16 +179,6 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 
 			<PreviewOgp />
 			<AudioRecorderControl outerRecording={isRecording} onSendRecord={handleEndRecording} />
-			{(isCheckSpelling || isCheckQuickReply) && (
-				<Suspense fallback={null}>
-					<Spelling
-						updateDraft={updateRef}
-						isSpelling={isCheckSpelling}
-						isQuickReply={isCheckQuickReply}
-						channelId={currentChannelId || ''}
-					/>
-				</Suspense>
-			)}
 			<div
 				className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
 			bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || hasReplyMessage ? 'rounded-t-none' : 'rounded-t-lg'}

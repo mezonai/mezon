@@ -193,6 +193,7 @@ import type {
 	StickerUpdateEvent,
 	StreamingJoinedEvent,
 	StreamingLeavedEvent,
+	TransferOwnershipEvent,
 	UnblockFriend,
 	UnmuteEvent,
 	UnpinMessageEvent,
@@ -2673,6 +2674,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 	}, []);
 
+	const ontransferownership = useCallback(
+		(event: TransferOwnershipEvent) => {
+			if (!event?.clan_id || !event.curr_owner) return;
+			dispatch(clansActions.updateClanOwner({ clanId: event.clan_id, newOwnerId: event.curr_owner }));
+		},
+		[dispatch]
+	);
+
 	const onclanupdated = useCallback(async (clanUpdatedEvent: ClanUpdatedEvent) => {
 		if (!clanUpdatedEvent) return;
 		dispatch(clansSlice.actions.update({ dataUpdate: clanUpdatedEvent }));
@@ -3004,6 +3013,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onclanupdated = onclanupdated;
 
+			socket.ontransferownership = ontransferownership;
+
 			socket.onsdtopicevent = onsdtopicevent;
 
 			socket.onunpinmessageevent = onUnpinMessageEvent;
@@ -3070,6 +3081,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onmessagebuttonclicked,
 			onwebrtcsignalingfwd,
 			onclanupdated,
+			ontransferownership,
 			onsdtopicevent,
 			onUnpinMessageEvent,
 			onblockfriend,
@@ -3356,6 +3368,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onclandeleted = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.ontransferownership = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onuserchanneladded = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onuserclanadded = () => {};
@@ -3417,6 +3431,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		onuserchannelremoved,
 		onuserclanremoved,
 		onclandeleted,
+		ontransferownership,
 		onuserchanneladded,
 		onuserclanadded,
 		onremovefriend,

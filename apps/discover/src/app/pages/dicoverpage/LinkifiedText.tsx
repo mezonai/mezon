@@ -1,20 +1,61 @@
-import { splitLinkifiedText } from './communityUtils';
+import { splitLinkifiedText, type TextSegment } from './communityUtils';
 
 interface LinkifiedTextProps {
 	text: string;
 	linkClassName?: string;
 }
 
+type ImageSegment = {
+	type: 'image';
+	src: string;
+	alt: string;
+};
+
+const IMAGE_TAGS = /(<img\b(?:[^>"']|"[^"]*"|'[^']*')*>)/gi;
+
+function getImageSegment(text: string): ImageSegment | null {
+	if (!/^<img\b/i.test(text)) return null;
+	const image = new DOMParser().parseFromString(text, 'text/html').querySelector('img');
+	const src = image?.getAttribute('src')?.trim();
+	if (!image || !src) return null;
+	try {
+		const url = new URL(src, window.location.href);
+		if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+	} catch {
+		return null;
+	}
+	return {
+		type: 'image',
+		src,
+		alt: image.getAttribute('alt') || ''
+	};
+}
+
 export default function LinkifiedText({ text, linkClassName }: LinkifiedTextProps) {
-	const segments = splitLinkifiedText(text);
+	const segments = text.split(IMAGE_TAGS).flatMap<TextSegment | ImageSegment>((part) => {
+		const image = getImageSegment(part);
+		return image ? [image] : splitLinkifiedText(part);
+	});
 	const linkClass =
 		linkClassName ||
 		'text-[#5865f2] underline underline-offset-4 decoration-[#5865f2]/40 break-all hover:text-[#404eed] hover:decoration-[#404eed]';
 
 	return (
 		<>
-			{segments.map((segment, index) =>
-				segment.type === 'link' ? (
+			{segments.map((segment, index) => {
+				if (segment.type === 'image') {
+					return (
+						<img
+							key={`image-${index}`}
+							src={segment.src}
+							alt={segment.alt}
+							loading="lazy"
+							decoding="async"
+							className="my-6 block h-auto max-h-[450px] w-auto max-w-full rounded-2xl object-contain"
+						/>
+					);
+				}
+				return segment.type === 'link' ? (
 					<a
 						key={`${segment.href}-${index}`}
 						href={segment.href}
@@ -27,8 +68,8 @@ export default function LinkifiedText({ text, linkClassName }: LinkifiedTextProp
 					</a>
 				) : (
 					<span key={`text-${index}`}>{segment.value}</span>
-				)
-			)}
+				);
+			})}
 		</>
 	);
 }

@@ -15,5 +15,6 @@
 	"error_13": "Error interno",
 	"error_14": "Los servidores están ocupados. Inténtalo de nuevo en unos momentos",
 	"error_15": "Pérdida de datos",
-	"error_16": "La sesión ha caducado. Inicia sesión de nuevo"
+	"error_16": "La sesión ha caducado. Inicia sesión de nuevo",
+	"invalid_meeting_link": "Este enlace de reunión no es válido o ha caducado"
 }

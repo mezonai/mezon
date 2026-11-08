@@ -1,22 +1,19 @@
-import { MessageBox, ReplyMessageBox, UserMentionList } from '@mezon/components';
-import { useChatSending, useEscapeKey } from '@mezon/core';
+import { MessageBox, UserMentionList } from '@mezon/components';
+import { useChatSending } from '@mezon/core';
 import {
 	ETypeMission,
 	getStoreAsync,
 	onboardingActions,
-	referencesActions,
 	selectAnonymousMode,
 	selectCurrentClanIsOnboarding,
-	selectDataReferences,
 	selectMissionDone,
 	selectOnboardingByClan,
 	selectProcessingByClan,
-	useAppDispatch,
-	useAppSelector
+	useAppDispatch
 } from '@mezon/store';
 import { MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
-import { DONE_ONBOARDING_STATUS, blankReferenceObj, generateE2eId } from '@mezon/utils';
+import { DONE_ONBOARDING_STATUS, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef } from 'react';
@@ -39,7 +36,6 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const appDispatch = useAppDispatch();
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: channel, mode });
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, channelId as string));
-	const dataReferences = useAppSelector((state) => selectDataReferences(state, channelId ?? ''));
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
 	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));
@@ -84,20 +80,8 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	}, [sendMessageTyping]);
 	const handleTypingDebounced = useThrottledCallback(handleTyping, 1000);
 
-	const handleCloseReplyMessageBox = useCallback(() => {
-		dispatch(
-			referencesActions.setDataReferences({
-				channelId: channelId ?? '',
-				dataReferences: blankReferenceObj
-			})
-		);
-	}, [dataReferences.message_ref_id]);
-
-	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
-
 	return (
 		<div className="mx-3 relative" ref={chatboxRef}>
-			{dataReferences.message_ref_id && <ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} />}
 			<MessageBox
 				listMentions={UserMentionList({
 					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parent_id ?? '') : (channelId ?? ''),
