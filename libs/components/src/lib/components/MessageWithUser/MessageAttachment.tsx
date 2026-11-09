@@ -30,7 +30,7 @@ import {
 	useAppLayout
 } from '@mezon/utils';
 
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons40 } from '@mezon/ui';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -315,8 +315,8 @@ const MessageAttachment = memo(
 					role="button"
 					aria-label={t('failAttachment')}
 				>
-					<div className="relative flex items-center shrink-0 w-8 h-10">
-						<Icons.EmptyType defaultSize={'w-8 h-10'} />
+					<div className="relative flex items-center shrink-0">
+						<MezonIcon icon={MzIcons40.mzFile} className="text-[var(--mz-icon)]" />
 					</div>
 
 					<div className="flex-1 min-w-0">
