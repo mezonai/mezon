@@ -266,5 +266,6 @@
 		"pollLabel": "[Sondage]",
 		"failedToCreatePoll": "Échec de la création du sondage"
 	},
-	"turnOffAnonymousToCreateTopic": "Désactivez le mode anonyme avant de créer un sujet"
+	"turnOffAnonymousToCreateTopic": "Désactivez le mode anonyme avant de créer un sujet",
+	"failAttachment": "Échec du téléversement du fichier"
 }

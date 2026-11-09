@@ -266,5 +266,6 @@
 		"failedToCreatePoll": "Не удалось создать опрос"
 	},
 	"unknown": "неизвестно",
-	"turnOffAnonymousToCreateTopic": "Отключите анонимный режим перед созданием темы"
+	"turnOffAnonymousToCreateTopic": "Отключите анонимный режим перед созданием темы",
+	"failAttachment": "Не удалось загрузить файл"
 }

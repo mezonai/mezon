@@ -266,5 +266,6 @@
 		"pollLabel": "[Опитування]",
 		"failedToCreatePoll": "Не вдалося створити опитування"
 	},
-	"turnOffAnonymousToCreateTopic": "Вимкніть анонімний режим, перш ніж створювати тему"
+	"turnOffAnonymousToCreateTopic": "Вимкніть анонімний режим, перш ніж створювати тему",
+	"failAttachment": "Не вдалося завантажити файл"
 }

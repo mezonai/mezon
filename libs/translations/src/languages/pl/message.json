@@ -266,5 +266,6 @@
 		"pollLabel": "[Sonda]",
 		"failedToCreatePoll": "Nie udało się utworzyć ankiety"
 	},
-	"turnOffAnonymousToCreateTopic": "Wyłącz tryb anonimowy przed utworzeniem tematu"
+	"turnOffAnonymousToCreateTopic": "Wyłącz tryb anonimowy przed utworzeniem tematu",
+	"failAttachment": "Nie udało się przesłać pliku"
 }
