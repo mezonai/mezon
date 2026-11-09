@@ -37,7 +37,7 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 
 	const openModalDeleteCategory = () => {
 		if (category?.channels?.length) {
-			toast.error(t('categoryOverview.hasWelcomeChannelError'));
+			toast.error(t('categoryOverview.hasChannelError'));
 			return;
 		}
 		if (hasWelcomeChannel) {
