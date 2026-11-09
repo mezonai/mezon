@@ -1,6 +1,7 @@
 import type { requestAddFriendParam } from '@mezon/store';
 import {
 	EStateFriend,
+	broadcastFriendRelationRefreshToOtherTabs,
 	broadcastFriendRelationToOtherTabs,
 	friendsActions,
 	selectAddFriendRequestLoading,
@@ -96,24 +97,14 @@ export function useFriends() {
 	);
 
 	const unBlockFriend = useCallback(
-		async (username: string, id: string) => {
+		async (_username: string, id: string) => {
 			const body = {
 				ids: [id]
 			};
 			const response = await dispatch(friendsActions.sendRequestUnblockFriend(body));
 			if (response?.meta?.requestStatus === 'fulfilled' && currentUserId) {
-				dispatch(
-					friendsActions.applyFriendBlockState({
-						userId: id,
-						state: EStateFriend.FRIEND,
-						sourceId: currentUserId
-					})
-				);
-				broadcastFriendRelationToOtherTabs({
-					userId: id,
-					state: EStateFriend.FRIEND,
-					sourceId: currentUserId
-				});
+				await dispatch(friendsActions.fetchListFriends({ noCache: true }));
+				broadcastFriendRelationRefreshToOtherTabs(currentUserId);
 				return true;
 			}
 			throw new Error('UNBLOCK_FRIEND_FAILED');
