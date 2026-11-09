@@ -22,11 +22,11 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	const { dmGroup, isSent, url, onSend, usersInviteExternal, isExternalCalling } = props;
 	const [isInviteSent, setIsInviteSent] = useState(isSent);
 	const { sendInviteMessage } = useSendInviteMessage();
-	const { createDirectMessageWithUser } = useDirect({ autoFetch: false });
+	const { createDirectMessageWithUser } = useDirect();
 	const dispatch = useAppDispatch();
 	const directMessageWithUser = async (userId: string, username?: string, displayName?: string, avatar?: string) => {
 		const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
-		if (response.channel_id && url) {
+		if (response?.channel_id && url) {
 			sendInviteMessage(url, response.channel_id, ChannelStreamMode.STREAM_MODE_DM);
 		}
 		return response;

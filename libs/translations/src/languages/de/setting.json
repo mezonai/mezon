@@ -170,6 +170,11 @@
 		"quickReplies": "Schnellantworten",
 		"quickRepliesDescription": "Schnellantwortvorschläge basierend auf der letzten Nachricht im Kanal anzeigen.",
 		"grammar": "Grammatik korrigieren",
-		"grammarDescription": "Beim Tippen Rechtschreib- und Grammatikkorrekturen vorschlagen (bis zu 256 Zeichen)."
+		"grammarDescription": "Beim Tippen Rechtschreib- und Grammatikkorrekturen vorschlagen (bis zu 256 Zeichen).",
+		"onlyFriendsDm": {
+			"title": "Keine Nachrichten von Fremden erhalten.",
+			"description": "Wenn aktiviert, können nur Personen, die mit dir befreundet sind, eine Unterhaltung mit dir beginnen.",
+			"denied": "Du kannst dieser Person keine Nachricht senden."
+		}
 	}
 }
