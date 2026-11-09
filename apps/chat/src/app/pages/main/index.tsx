@@ -366,7 +366,7 @@ const SidebarMenu = memo(
 										title={t('discover')}
 									>
 										<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
-											<MezonIcon icon={MzIcons20.mzDiscover} className="text-[var(--mz-icon)]" />
+											<MezonIcon icon={MzIcons20.mzDiscover} className="text-[var(--mz-icon)] group-hover:text-white" />
 										</div>
 									</div>
 								</NavLinkComponent>
