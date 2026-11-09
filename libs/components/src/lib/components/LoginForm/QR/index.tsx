@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import React from 'react';
 import QRCode from 'react-qr-code';
 
@@ -12,7 +12,7 @@ export const QRSection: React.FC<{ loginId: string; isExpired: boolean; reloadQR
 				{isExpired && (
 					<div className="absolute inset-0 flex items-center justify-center">
 						<div onClick={reloadQR} className="cursor-pointer">
-							<Icons.ReloadIcon />
+							<MezonIcon icon={MzIcons20.mzRefresh} />
 						</div>
 					</div>
 				)}

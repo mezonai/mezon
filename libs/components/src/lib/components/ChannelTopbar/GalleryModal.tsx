@@ -29,7 +29,7 @@ import {
 	useAppSelector,
 	type MediaFilterType
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons32, MzIcons48 } from '@mezon/ui';
 import {
 	EMimeTypes,
 	ETypeLinkMedia,
@@ -514,11 +514,11 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				<div className="bg-theme-setting-nav flex flex-col p-[16px] shrink-0">
 					<div className="flex flex-row items-center justify-between mb-3">
 						<div className="flex flex-row items-center gap-4">
-							<Icons.ImageThumbnail />
+							<MezonIcon icon={MzIcons20.mzFileImage} className="text-[var(--mz-icon)]" />
 							<span className="text-base font-semibold cursor-default">{t('gallery.title')}</span>
 						</div>
-						<button onClick={onClose} className="text-theme-primary-hover">
-							<Icons.Close className="w-4 h-4" />
+						<button onClick={onClose} className="text-theme-primary-hover group/mzi">
+							<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						</button>
 					</div>
 					<div className="flex flex-row items-center justify-between gap-4">
@@ -553,7 +553,10 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								className="flex items-center gap-2 px-3 py-1.5 bg-theme-surface text-sm text-theme-primary hover:bg-theme-surface-hover transition-colors focus:outline-none"
 							>
 								<span>{getDateRangeText()}</span>
-								<Icons.ArrowDown className={`w-3 h-3 transition-transform ${isDateDropdownOpen ? 'rotate-180' : ''}`} />
+								<MezonIcon
+									icon={MzIcons16.mzChevronDown}
+									className={`transition-transform ${isDateDropdownOpen ? 'rotate-180' : ''} text-[var(--mz-icon)]`}
+								/>
 							</button>
 
 							{isDateDropdownOpen && (
@@ -643,7 +646,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				<div className="flex flex-col gap-4 py-4 px-[16px] min-h-0 flex-1 overflow-hidden">
 					{virtualData.length === 0 ? (
 						<div className="flex flex-col items-center justify-center h-64 text-center">
-							<Icons.ImageThumbnail className="w-12 h-12 text-theme-secondary opacity-50 mb-4" />
+							<MezonIcon icon={MzIcons48.mzFileImage} className="text-[var(--mz-icon)] opacity-50 mb-4" />
 							<p className="text-theme-secondary text-sm">
 								{mediaFilter === 'image'
 									? t('gallery.emptyState.noImages')
@@ -796,41 +799,17 @@ const ImageWithLoading = React.memo<ImageWithLoadingProps>(
 		};
 
 		return (
-			<div ref={containerRef} className="aspect-square relative cursor-pointer" onClick={onClick}>
+			<div ref={containerRef} className="mz-hover aspect-square relative cursor-pointer" onClick={onClick}>
 				{isLoading && !isVideoFailed && (
 					<div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-						<svg
-							className="w-8 h-8 text-gray-400 dark:text-gray-500"
-							fill="currentColor"
-							viewBox="0 0 20 20"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								fillRule="evenodd"
-								d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-								clipRule="evenodd"
-							/>
-						</svg>
+						<MezonIcon icon={MzIcons32.mzImage} className="text-gray-400 dark:text-gray-500" />
 					</div>
 				)}
 
 				{(hasError || isVideoFailed) && (
 					<div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
 						<div className="text-center">
-							<svg
-								className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-1"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-								/>
-							</svg>
+							<MezonIcon icon={MzIcons32.mzWarning} className="text-gray-400 dark:text-gray-500 mx-auto mb-1" />
 							<span className="text-xs text-gray-500">{t?.('gallery.imageError') || 'Error'}</span>
 						</div>
 					</div>
@@ -854,9 +833,7 @@ const ImageWithLoading = React.memo<ImageWithLoadingProps>(
 						)}
 						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
 							<div className="bg-black bg-opacity-60 rounded-full p-3">
-								<svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-									<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-								</svg>
+								<MezonIcon icon={MzIcons32.mzPlay} className="text-white" />
 							</div>
 						</div>
 					</div>

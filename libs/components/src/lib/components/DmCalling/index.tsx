@@ -21,7 +21,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons16, MzIcons20, MzIcons24, MzIcons32 } from '@mezon/ui';
 import { IMessageTypeCallLog, createImgproxyUrl, ensureMediaPermission, useMediaPermissions } from '@mezon/utils';
 import { WebrtcSignalingType } from 'mezon-js';
 import type { RefObject } from 'react';
@@ -246,7 +246,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 									{dmCallingDeviceMenuSubtitle(currentInputDevice, systemDefaultLabel)}
 								</div>
 							</div>
-							<Icons.ArrowRight defaultSize={'w-4 h-4'} defaultFill1={'rgba(249,249,249,1)'} />
+							<MezonIcon icon={MzIcons20.mzChevronRight} className="text-white" />
 						</div>
 						{expandedDevice === 'input' && (
 							<div className={`${flyoutPanelBase} max-h-[320px]`}>
@@ -259,7 +259,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 											setExpandedDevice(null);
 										}}
 									>
-										{device.deviceId === currentInputDevice?.deviceId && <Icons.Check defaultSize="w-4 h-4" />}
+										{device.deviceId === currentInputDevice?.deviceId && <MezonIcon icon={MzIcons20.mzCheck} />}
 										<div className="flex flex-col flex-1 min-w-0">
 											<span className="truncate overflow-hidden whitespace-nowrap">{device.label || '\u200b'}</span>
 											{device.deviceId === 'default' && !device.label?.trim() && (
@@ -283,7 +283,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 									{dmCallingDeviceMenuSubtitle(currentOutputDevice, systemDefaultLabel)}
 								</div>
 							</div>
-							<Icons.ArrowRight defaultSize={'w-4 h-4'} defaultFill1={'rgba(249,249,249,1)'} />
+							<MezonIcon icon={MzIcons20.mzChevronRight} className="text-white" />
 						</div>
 						{expandedDevice === 'output' && (
 							<div className={`${flyoutPanelBase} max-h-[360px]`}>
@@ -296,7 +296,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 											setExpandedDevice(null);
 										}}
 									>
-										{device.deviceId === currentOutputDevice?.deviceId && <Icons.Check defaultSize="w-4 h-4" />}
+										{device.deviceId === currentOutputDevice?.deviceId && <MezonIcon icon={MzIcons20.mzCheck} />}
 										<div className="flex flex-col flex-1 min-w-0">
 											<span className="truncate overflow-hidden whitespace-nowrap">{device.label || '\u200b'}</span>
 											{device.deviceId === 'default' && !device.label?.trim() && (
@@ -391,12 +391,12 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 					</div>
 				)}
 				<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-					{isMicMuted && <Icons.VoiceMicDisabledIcon scale={1.5} className="shrink-0" />}
+					{isMicMuted && <MezonIcon icon={MzIcons16.mzMicOff} className="shrink-0 text-white" />}
 					<span className="truncate">{label}</span>
 				</div>
 				{mode !== 'pip' && (
 					<div className="absolute top-2 left-2 rounded-md bg-black/60 p-1.5 text-white opacity-0 transition-opacity duration-200 group-hover/tile:opacity-100 group-focus-visible/tile:opacity-100">
-						{mode === 'main' ? <Icons.ExitFullScreen className="h-4 w-4" /> : <Icons.FullScreen className="h-4 w-4" />}
+						{mode === 'main' ? <MezonIcon icon={MzIcons16.mzFullscreenExit} /> : <MezonIcon icon={MzIcons16.mzFullscreen} />}
 					</div>
 				)}
 			</div>
@@ -417,7 +417,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 			<div className="sbm:justify-start justify-between items-center gap-1 flex w-full">
 				<div className="flex flex-row gap-1 items-center flex-1">
 					<div onClick={() => setStatusMenu(true)} className={`mx-6 ${closeMenu && !statusMenu ? '' : 'hidden'}`} role="button">
-						<Icons.OpenMenu defaultSize={`w-5 h-5`} />
+						<MezonIcon icon={MzIcons20.mzMenu} />
 					</div>
 				</div>
 			</div>
@@ -475,19 +475,19 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
 								onClick={() => onStartCall({ isVideoCall: true, isAnswer: true })}
 							>
-								<Icons.VoiceCameraIcon scale={1} />
+								<MezonIcon icon={MzIcons20.mzVideo} className="text-white" />
 							</div>
 							<div
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
 								onClick={() => onStartCall({ isVideoCall: false, isAnswer: true })}
 							>
-								<Icons.VoiceMicIcon scale={2} />
+								<MezonIcon icon={MzIcons20.mzMic} className="text-white" />
 							</div>
 							<div
 								onClick={handleCloseCall}
 								className={`h-[44px] w-[44px] sbm:h-[56px] sbm:w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 							>
-								<Icons.CloseButton className={`w-[18px] sbm:w-[20px]`} />
+								<MezonIcon icon={MzIcons20.mzClose} />
 							</div>
 						</div>
 					) : (
@@ -497,7 +497,11 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								onClick={toggleVideo}
 								title={hasCameraAccess === false ? t('mediaPermission.needed.camera') : undefined}
 							>
-								{isShowMeetDM ? <Icons.VoiceCameraIcon scale={1.5} /> : <Icons.VoiceCameraDisabledIcon scale={1.5} />}
+								{isShowMeetDM ? (
+									<MezonIcon icon={MzIcons32.mzVideo} className="text-white" />
+								) : (
+									<MezonIcon icon={MzIcons32.mzVideoOff} className="text-white" />
+								)}
 								{hasCameraAccess === false && <MediaPermissionBadge />}
 							</div>
 							<div
@@ -505,7 +509,11 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								onClick={handleMuteToggle}
 								title={hasMicrophoneAccess === false ? t('mediaPermission.needed.microphone') : undefined}
 							>
-								{isMuteMicrophone ? <Icons.VoiceMicDisabledIcon scale={2.5} /> : <Icons.VoiceMicIcon scale={2.5} />}
+								{isMuteMicrophone ? (
+									<MezonIcon icon={MzIcons24.mzMicOff} className="text-white" />
+								) : (
+									<MezonIcon icon={MzIcons24.mzMic} className="text-white" />
+								)}
 								{hasMicrophoneAccess === false && <MediaPermissionBadge />}
 							</div>
 
@@ -523,14 +531,16 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 									title={deviceSettingsTriggerLabel || undefined}
 									className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:min-w-[56px] lg:max-w-[min(200px,28vw)] lg:w-auto lg:px-3 relative rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200 min-w-0 ${isDeviceMenuOpen ? 'dark:bg-neutral-400 bg-neutral-700' : 'dark:bg-bgSecondary dark:hover:bg-neutral-400 bg-neutral-500 hover:bg-bgSecondary'}`}
 								>
-									<Icons.CallSetting className="text-white dark:text-bgTertiary shrink-0" />
+									<MezonIcon icon={MzIcons20.mzSettings} className="shrink-0 text-white" />
 								</div>
 							</Menu>
 							<div
 								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 								onClick={handleCloseCall}
 							>
-								<Icons.StopCall className="size-4 sbm:size-5 lg:size-6 text-white-600" />
+								<MezonIcon icon={MzIcons16.mzCallEnd} className="text-white-600 sbm:hidden" />
+								<MezonIcon icon={MzIcons20.mzCallEnd} className="hidden text-white-600 sbm:block lg:hidden" />
+								<MezonIcon icon={MzIcons24.mzCallEnd} className="hidden text-white-600 lg:block" />
 							</div>
 						</div>
 					)}

@@ -1,5 +1,5 @@
 import { auditLogFilterActions, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { UserAuditLog, generateE2eId } from '@mezon/utils';
 
 export type ModalExitProps = {
@@ -22,13 +22,13 @@ const ExitSetting = (props: ModalExitProps) => {
 	return (
 		<div className="relative w-1/12 xl:w-1/5 flex-grow hidden sbm:block">
 			<div className="fixed w-1/4 xl:ml-5 pt-[94px]">
-				<div className="w-fit flex flex-col items-center gap-2 text-theme-primary text-theme-primary-hover">
+				<div className="w-fit flex flex-col items-center gap-2 text-theme-primary text-theme-primary-hover group/mzi">
 					<div
 						onClick={handleClose}
 						className="rounded-full p-[10px] border-theme-primary bg-button-secondary bg-secondary-button-hover cursor-pointer"
 						data-e2e={generateE2eId('user_setting.account.exit_setting')}
 					>
-						<Icons.CloseButton />
+						<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</div>
 					<div className="font-semibold text-[13px] text-theme-primary">ESC</div>
 				</div>

@@ -5,6 +5,11 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/ui"],
+      "options": { "jestConfig": "libs/ui/jest.config.cjs" }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]

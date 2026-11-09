@@ -1,7 +1,7 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import type { AddedChannelUserProfile, EveryoneExcludeKind } from '@mezon/store';
 import { selectAllRolesClan, selectAllUserClans, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { KeyboardEvent } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -113,7 +113,7 @@ const EveryoneExclusionsModal = ({ clanId, channelName, kind: initialKind, userI
 					{t('addMembersRoles.title')}
 				</h2>
 				<div className="flex items-center justify-center gap-1 mt-1">
-					<Icons.Hashtag className="size-5" />
+					<MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />
 					<span className="truncate">{channelName}</span>
 				</div>
 				<div className="py-3">

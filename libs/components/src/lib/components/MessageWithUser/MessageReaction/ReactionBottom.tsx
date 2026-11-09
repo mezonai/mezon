@@ -1,6 +1,6 @@
 import { useGifsStickersEmoji } from '@mezon/core';
 import { reactionActions, referencesActions } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { SubPanelName } from '@mezon/utils';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -47,7 +47,7 @@ const ReactionBottom = ({ smileButtonRef, messageIdRefReaction }: ReactionBottom
 
 	return (
 		<div onMouseEnter={handleHoverSmileButton} onClick={handleClickOpenEmojiBottom} ref={smileButtonRef}>
-			<Icons.Smile defaultSize="w-5 h-5" defaultFill={highlightColor} />
+			<MezonIcon icon={MzIcons20.mzEmoji} />
 		</div>
 	);
 };

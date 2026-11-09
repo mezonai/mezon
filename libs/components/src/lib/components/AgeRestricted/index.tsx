@@ -1,6 +1,6 @@
 import { useAccount, useAppNavigation, useAuth } from '@mezon/core';
 import { selectCurrentChannelId, selectCurrentClanId } from '@mezon/store';
-import { Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons16 } from '@mezon/ui';
 import { safeJSONParse } from 'mezon-js';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState } from 'react';
@@ -111,9 +111,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 				<div className="w-full">
 					<div className="flex items-center justify-between px-4 py-3 rounded-md bg-[#2f3746] text-[#d7deea] border border-[#3d4656] cursor-pointer">
 						<span className={`${value ? 'text-[#ffffff]' : 'text-[#d7deea]'}`}>{value || placeholder}</span>
-						<svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
+						<MezonIcon icon={MzIcons16.mzChevronDown} />
 					</div>
 				</div>
 			</Menu>

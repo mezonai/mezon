@@ -1,5 +1,5 @@
 import { selectStatusMenu, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +68,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 						onClick={() => setShowJoinOptions((visible) => !visible)}
 						aria-label="Choose join role"
 					>
-						<Icons.ArrowDown className="h-3 w-3 text-white" />
+						<MezonIcon icon={MzIcons16.mzChevronDown} className="text-white" />
 					</button>
 					{showJoinOptions && (
 						<div className="absolute left-0 top-full z-30 mt-1 w-full overflow-hidden rounded-lg border border-zinc-700 bg-[#20202d] py-1 text-left shadow-xl">

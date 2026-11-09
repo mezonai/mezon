@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Du kan inte ringa dig själv",
 	"errorMaxLength": "Längd måste vara mellan {{min}} till {{max}} tecken.",
 	"formatDate": "d 'månad' M, yyyy",
-	"cannotSendLocationWithAnonymous": "Kunde inte skicka plats när anonym."
+	"cannotSendLocationWithAnonymous": "Kunde inte skicka plats när anonym.",
+	"iconAnimations": "Ikonanimationer",
+	"iconAnimationsDesc": "Animera ikoner vid hovring och under pågående aktivitet, till exempel när någon skriver eller vid en stream."
 }

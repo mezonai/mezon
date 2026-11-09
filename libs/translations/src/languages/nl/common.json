@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Je kunt jezelf niet bellen",
 	"errorMaxLength": "Lengte moet tussen {{min}} en {{max}} tekens zijn.",
 	"formatDate": "d 'maand' M, yyyy",
-	"cannotSendLocationWithAnonymous": "Locatie kan niet worden verzonden tijdens anoniem zijn."
+	"cannotSendLocationWithAnonymous": "Locatie kan niet worden verzonden tijdens anoniem zijn.",
+	"iconAnimations": "Pictogramanimaties",
+	"iconAnimationsDesc": "Animeer pictogrammen bij hover en tijdens live activiteit, zoals typen of een stream."
 }

@@ -15,12 +15,12 @@ export const ScreenDrawControl = ({ mode, active, onToggle }: { mode: ScreenDraw
 			title={label}
 			aria-label={label}
 			aria-pressed={active}
-			className={`cursor-pointer p-2 text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-				active ? 'text-[var(--bg-icon-theme-active)]' : ''
+			className={`cursor-pointer p-2 text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${
+				active ? 'text-[var(--mz-icon-selected)]' : ''
 			}`}
 			onClick={onToggle}
 		>
-			<ScreenDrawPenIcon className="h-5 w-5" />
+			<ScreenDrawPenIcon />
 		</button>
 	);
 };

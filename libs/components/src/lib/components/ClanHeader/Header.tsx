@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import React from 'react';
 
@@ -19,8 +19,8 @@ const Header: React.FC<HeaderProps> = ({ name, handleShowModalClan, isShowModalP
 					data-e2e={generateE2eId('clan_page.header.title.clan_name')}
 				>
 					<p className="text-theme-primary-active text-base font-semibold select-none one-line">{name?.toLocaleUpperCase()}</p>
-					<button className="w-6 h-8 flex flex-col justify-center text-theme-primary text-theme-primary-hover">
-						<Icons.ArrowDown />
+					<button className="w-6 h-8 flex flex-col justify-center text-theme-primary text-theme-primary-hover group/mzi">
+						<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</button>
 				</div>
 				{isShowModalPanelClan && children}

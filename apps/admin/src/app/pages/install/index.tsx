@@ -1,5 +1,5 @@
 import { getApplicationDetail, selectAppDetail, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { IS_MOBILE, createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -145,12 +145,12 @@ const ContentInstall = memo((props: ContentInstallProps) => {
 	return (
 		<div className="w-full">
 			<div
-				className="dark:bg-[#181a2b] bg-slate-50 dark:hover:bg-[#1f2238] hover:bg-violet-50/40 border dark:border-white/[0.04] border-slate-100 dark:hover:border-violet-500/30 hover:border-violet-200 rounded-2xl p-4.5 cursor-pointer flex items-center justify-between gap-4 transition-all duration-300 group shadow-sm hover:shadow-md hover:-translate-y-0.5"
+				className="dark:bg-[#181a2b] bg-slate-50 dark:hover:bg-[#1f2238] hover:bg-violet-50/40 border dark:border-white/[0.04] border-slate-100 dark:hover:border-violet-500/30 hover:border-violet-200 rounded-2xl p-4.5 cursor-pointer flex items-center justify-between gap-4 transition-all duration-300 group shadow-sm hover:shadow-md hover:-translate-y-0.5 mz-hover"
 				onClick={handleOpenModalAdd}
 			>
 				<div className="flex items-center gap-4">
 					<div className="size-12 rounded-xl dark:bg-violet-500/10 bg-violet-100 flex items-center justify-center dark:text-violet-400 text-violet-600 transition-all duration-300 group-hover:scale-105 group-hover:bg-violet-500 group-hover:text-white dark:group-hover:bg-violet-500 dark:group-hover:text-white shadow-sm">
-						<Icons.AddServe className="text-contentTertiary size-5.5 transition-all" />
+						<MezonIcon icon={MzIcons24.mzPlus} className="transition-all" />
 					</div>
 					<div className="flex-1 min-w-0">
 						<h4 className="text-[15px] font-bold dark:text-white text-slate-900 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
@@ -162,7 +162,7 @@ const ContentInstall = memo((props: ContentInstallProps) => {
 					</div>
 				</div>
 				<div className="text-slate-400 dark:text-slate-500 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-all transform group-hover:translate-x-1 flex-shrink-0">
-					<Icons.ArrowRight className="size-5 mr-2" />
+					<MezonIcon icon={MzIcons20.mzChevronRight} className="mr-2" />
 				</div>
 			</div>
 		</div>

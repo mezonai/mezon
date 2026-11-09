@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useMemo } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
@@ -35,7 +35,7 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 		<div className={getParticipantTileFrameClass(speaking)}>
 			{activeSoundReaction && (
 				<div className="pointer-events-none absolute right-2 top-2 z-40 rounded-full border border-white/20 bg-[#5865f2] p-1.5 shadow-lg">
-					<Icons.VoiceSoundControlIcon className="h-4 w-4 text-white" />
+					<MezonIcon icon={MzIcons16.mzSoundboard} className="text-white" />
 				</div>
 			)}
 			{remoteVideoStream && (
@@ -58,7 +58,7 @@ export const SfuParticipantTile = ({ participant, displayName, avatar, speaking:
 				</div>
 			)}
 			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-				{isMuted ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
+				{isMuted ? <MezonIcon icon={MzIcons16.mzMicOff} className="shrink-0 text-white" /> : null}
 				<span className="truncate whitespace-nowrap py-0.5" data-e2e={generateE2eId('clan_page.screen.voice_room.username')}>
 					{displayName}
 				</span>

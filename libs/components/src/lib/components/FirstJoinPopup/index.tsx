@@ -1,6 +1,6 @@
 import { useInvite } from '@mezon/core';
 import { clansActions, useAppDispatch } from '@mezon/store';
-import { Icons, Image } from '@mezon/ui';
+import { Image, MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -59,7 +59,7 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 			<div className="relative z-10 w-[680px] flex max-sm:justify-center">
 				<Image src={`/assets/images/first-join-bg.svg`} width={240} className="object-cover rounded-l-md max-sm:hidden" />
 				<div className="text-[#4e5058] bg-white rounded-r-md max-sm:rounded-md relative flex flex-col">
-					<Icons.MenuClose onClick={handleClose} className="absolute top-5 right-5 w-[16px] cursor-pointer" />
+					<MezonIcon icon={MzIcons16.mzClose} onClick={handleClose} className="absolute top-5 right-5 cursor-pointer" />
 					<div className="px-[16px] flex flex-col h-full flex-1 gap-4 pt-20">
 						<div className="text-center">
 							<div className="text-black text-[13px]">{t('firstJoinPopup.ifYouHaveInvitation')}</div>

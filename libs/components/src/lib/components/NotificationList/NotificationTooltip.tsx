@@ -1,5 +1,5 @@
 import { selectBadgeClanById, selectCurrentClanId } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import { memo, useEffect, useState } from 'react';
@@ -8,8 +8,7 @@ import { useSelector } from 'react-redux';
 import { RedDot } from '../ChannelTopbar';
 import { NotificationTooltipContent } from './NotificationTooltipContent';
 
-const SFU_HEADER_ICON_BUTTON_CLASS =
-	'[--sfu-header-icon-fill:var(--bg-icon-theme)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
+const SFU_HEADER_ICON_BUTTON_CLASS = '[--sfu-header-icon-fill:var(--mz-icon)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
 
 type NotificationTooltipProps = {
 	useSfuHeaderIconFill?: boolean;
@@ -65,15 +64,13 @@ export const NotificationTooltip = memo(({ useSfuHeaderIconFill = false }: Notif
 				title={t('inbox')}
 				className={`focus-visible:outline-none relative group ${
 					useSfuHeaderIconFill
-						? `${SFU_HEADER_ICON_BUTTON_CLASS} ${visible ? '[--sfu-header-icon-fill:var(--bg-icon-theme-active)]' : ''}`
-						: `text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-								visible ? 'text-[var(--bg-icon-theme-active)]' : ''
-							}`
+						? `${SFU_HEADER_ICON_BUTTON_CLASS} ${visible ? '[--sfu-header-icon-fill:var(--mz-icon-selected)]' : ''}`
+						: `text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)] ${visible ? 'text-[var(--mz-icon-selected)]' : ''}`
 				}`}
 				onContextMenu={(e) => e.preventDefault()}
 				data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 			>
-				<Icons.Inbox className="size-5" defaultFill1={useSfuHeaderIconFill ? 'var(--sfu-header-icon-fill)' : undefined} />
+				<MezonIcon icon={MzIcons20.mzInbox} className={useSfuHeaderIconFill ? 'text-[var(--sfu-header-icon-fill)]' : undefined} />
 				{badgeCount > 0 && <RedDot />}
 			</button>
 		</Tooltip>

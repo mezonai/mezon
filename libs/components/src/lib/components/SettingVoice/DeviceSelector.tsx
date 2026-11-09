@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 interface DeviceSelectorProps {
@@ -56,14 +57,7 @@ const DeviceSelectorComponent = ({ devices, value, onChange, label, disabled, t 
 					className="w-full rounded-md bg-theme-setting-primary border border-theme-primary px-3 py-2 text-sm text-left flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed hover:border-theme-primary-active transition-colors"
 				>
 					<span className="truncate flex-1">{selectedOption?.label}</span>
-					<svg
-						className={`w-4 h-4 ml-2 flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-					</svg>
+					<MezonIcon icon={MzIcons16.mzChevronDown} className={`ml-2 flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
 				</button>
 
 				{isOpen && (

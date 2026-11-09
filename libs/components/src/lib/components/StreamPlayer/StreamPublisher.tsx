@@ -1,5 +1,5 @@
 import { selectMemberClanByUserId, selectStreamMembersByChannelId, selectStreamViewerCount, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ export function StreamViewerCount({ channelId, className = '' }: { channelId: st
 	if (count <= 0) return null;
 	return (
 		<span className={`flex shrink-0 items-center gap-1 text-sm ${className}`} title={t('viewerCount', { count })}>
-			<Icons.EyeOpen className="h-4 w-4" />
+			<MezonIcon icon={MzIcons16.mzEye} />
 			{count}
 		</span>
 	);

@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ChangeEvent, HTMLInputTypeAttribute, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,8 +21,11 @@ const ModalControlRule = ({
 		<div className="fixed h-screen w-screen z-50 bg-gray-800/80 dark:bg-bgSurface dark:bg-opacity-80 top-0 left-0 flex items-center justify-center">
 			<div className="w-[440px] mx-4 md:mx-0 p-5 pt-12 pb-[72px] max-h-[90vh] bg-theme-setting-primary rounded-md relative text-theme-primary flex shadow-lg">
 				<div className="flex-1 overflow-y-auto hide-scrollbar">{children}</div>
-				<div className="absolute top-2 right-2 w-6 h-6 cursor-pointer text-theme-primary-active text-theme-primary-hover" onClick={onClose}>
-					<Icons.CloseButton />
+				<div
+					className="absolute top-2 right-2 w-6 h-6 cursor-pointer text-theme-primary-active text-theme-primary-hover group/mzi"
+					onClick={onClose}
+				>
+					<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				</div>
 
 				<div className="absolute w-full p-4 flex bottom-0 left-0 justify-between bg-theme-setting-nav border-t border-gray-200 dark:border-transparent rounded-b-md">

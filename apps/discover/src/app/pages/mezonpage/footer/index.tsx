@@ -1,5 +1,5 @@
 'use client';
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons16 } from '@mezon/ui';
 import { Platform, generateE2eId, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -334,7 +334,7 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 							</a>
 
 							<div className="relative sm:col-span-2 xl:col-auto w-full sm:w-auto flex justify-center" ref={dropdownRef}>
-								<button onClick={toggleDropdown} className="transition-transform duration-300 active:scale-95">
+								<button onClick={toggleDropdown} className="mz-hover transition-transform duration-300 active:scale-95">
 									<OrbitBeamWrapper
 										className="w-44 md:w-52"
 										innerClassName={`h-14 px-6 flex items-center justify-center gap-3 transition-colors ${isOpen ? 'bg-white/10' : ''}`}
@@ -348,14 +348,10 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 											<DesktopIcons.Windows className="w-6 h-6" />
 										)}
 										<span className="text-sm font-black tracking-wider uppercase">Desktop</span>
-										<svg
-											className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-										</svg>
+										<MezonIcon
+											icon={MzIcons16.mzChevronDown}
+											className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+										/>
 									</OrbitBeamWrapper>
 								</button>
 

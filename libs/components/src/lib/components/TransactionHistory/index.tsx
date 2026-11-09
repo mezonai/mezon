@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons40, MzIcons48 } from '@mezon/ui';
 import { formatBalanceToString, generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -141,9 +141,9 @@ const TransactionHistory = ({ onClose }: IProps) => {
 						data-e2e={generateE2eId('send_token.modal.transaction_history.item.button.open_detail')}
 					>
 						{isOpened ? (
-							<Icons.ArrowDown className="w-4 h-4 text-red-600 dark:text-red-400 rotate-180" />
+							<MezonIcon icon={MzIcons16.mzChevronDown} className="text-red-600 dark:text-red-400 rotate-180" />
 						) : (
-							<Icons.ArrowRight className="w-4 h-4 text-red-600 dark:text-red-400" />
+							<MezonIcon icon={MzIcons16.mzChevronRight} className="text-red-600 dark:text-red-400" />
 						)}
 					</div>
 					<div>
@@ -169,9 +169,9 @@ const TransactionHistory = ({ onClose }: IProps) => {
 					data-e2e={generateE2eId('send_token.modal.transaction_history.item.button.open_detail')}
 				>
 					{isOpened ? (
-						<Icons.ArrowDown className="w-4 h-4 text-green-600 dark:text-green-400 rotate-180" />
+						<MezonIcon icon={MzIcons16.mzChevronDown} className="text-green-600 dark:text-green-400 rotate-180" />
 					) : (
-						<Icons.ArrowRight className="w-4 h-4 text-green-600 dark:text-green-400" />
+						<MezonIcon icon={MzIcons16.mzChevronRight} className="text-green-600 dark:text-green-400" />
 					)}
 				</div>
 				<div>
@@ -227,7 +227,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 					<div className="flex items-center justify-between p-6 bg-theme-surface rounded-t-lg">
 						<div className="flex items-center gap-3">
 							<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 flex items-center justify-center shadow-lg">
-								<Icons.HistoryTransaction className="w-9 h-9 text-white" />
+								<MezonIcon icon={MzIcons40.mzHistory} className="text-white" />
 							</div>
 							<div>
 								<h4 className="text-theme-primary text-lg font-semibold">{t(HEADER.TITLE)}</h4>
@@ -235,18 +235,17 @@ const TransactionHistory = ({ onClose }: IProps) => {
 							</div>
 						</div>
 						<div className="flex items-center gap-2 text-theme-primary">
-							<button onClick={refreshData} className="p-2 rounded-lg bg-item-theme-hover transition-colors">
-								<Icons.ReloadIcon
-									className={`w-5 h-5
-									 ${isLoading ? 'animate-spin' : ''}`}
-								/>
+							<button onClick={refreshData} className="p-2 rounded-lg bg-item-theme-hover transition-colors mz-hover">
+								<span className={`inline-flex ${isLoading ? 'animate-spin' : ''}`}>
+									<MezonIcon icon={MzIcons20.mzRefresh} className="text-[var(--mz-icon)]" />
+								</span>
 							</button>
 							<button
 								onClick={onClose}
 								className="p-2 rounded-lg  bg-item-theme-hover transition-colors"
 								data-e2e={generateE2eId('send_token.modal.transaction_history.item.button.close_transaction')}
 							>
-								<Icons.Close className="w-5 h-5 " />
+								<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 							</button>
 						</div>
 					</div>
@@ -330,7 +329,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 							!isLoading && (
 								<div className="flex flex-col items-center justify-center py-12 h-full animate-fade-in">
 									<div className="w-16 h-16 rounded-full dark:bg-gray-700 bg-gray-100 flex items-center justify-center mb-4">
-										<Icons.EmptyType />
+										<MezonIcon icon={MzIcons48.mzFile} className="text-[var(--mz-icon)]" />
 									</div>
 									<h3 className="text-theme-primary text-lg font-semibold mb-2">
 										{activeFilter === TRANSACTION_FILTERS.ALL
@@ -356,7 +355,7 @@ const TransactionHistory = ({ onClose }: IProps) => {
 								</div>
 							) : hasMoreData ? (
 								<div className="flex flex-col items-center animate-bounce">
-									<Icons.ArrowDown className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzChevronDown} />
 								</div>
 							) : (
 								hasData && <span>{t(FOOTERS.NOTI, { count: currentData.length })}</span>

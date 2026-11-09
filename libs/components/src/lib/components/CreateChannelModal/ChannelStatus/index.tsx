@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { ChannelLableModal } from '../ChannelLabel';
@@ -21,7 +21,7 @@ export const ChannelStatusModal: React.FC<ChannelStatusModalProps> = ({ channelN
 				<div className="grow shrink basis-0 h-6 justify-start items-center gap-1 flex">
 					<div className="Lock w-6 h-6 relative">
 						<div className="LiveArea w-5 h-5 left-[2px] top-[2px] absolute" />
-						<Icons.Private />
+						<MezonIcon icon={MzIcons20.mzLock} className="text-[var(--mz-icon)]" />
 					</div>
 					<ChannelLableModal labelProp={t('privacy.private')} />
 				</div>

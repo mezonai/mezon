@@ -1,5 +1,5 @@
 import { selectAppInteractData, selectVoiceInfo } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import { useCallback } from 'react';
@@ -17,7 +17,7 @@ export const SfuVoiceInteractiveControl = ({ showVoiceInteractive, onVisibleChan
 	}, [onVisibleChange]);
 
 	const interactAppData = useSelector(selectAppInteractData);
-	const iconClassName = `cursor-pointer ${interactAppData ? 'text-green-400' : 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'} `;
+	const iconClassName = `cursor-pointer ${interactAppData ? 'text-green-400' : 'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]'} `;
 
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const channelId = voiceInfo?.channelId ?? '';
@@ -36,7 +36,7 @@ export const SfuVoiceInteractiveControl = ({ showVoiceInteractive, onVisibleChan
 				className={`flex items-center justify-center p-1 rounded-full ${interactAppData && 'shadow-[0px_0px_2px_#4ade80]'}`}
 				data-e2e={generateE2eId('clan_page.screen.voice_room.button.open_interactive_apps')}
 			>
-				<Icons.Joystick className={iconClassName} />
+				<MezonIcon icon={MzIcons20.mzGamepad} className={iconClassName} />
 			</div>
 		</Tooltip>
 	);

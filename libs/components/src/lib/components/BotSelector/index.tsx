@@ -1,5 +1,5 @@
-import { Icons } from '@mezon/ui';
-import { BotInfo } from '@mezon/utils';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
+import type { BotInfo } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
 import { memo, useState } from 'react';
 
@@ -48,7 +48,10 @@ export function BotSelector({ bots, selectedBotId, onBotSelect, className = '' }
 											placement="top"
 											trigger={['hover']}
 										>
-											<Icons.InfoIcon className="w-3 h-3 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0" />
+											<MezonIcon
+												icon={MzIcons16.mzInfo}
+												className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0"
+											/>
 										</Tooltip>
 									)}
 								</div>
@@ -78,14 +81,7 @@ export function BotSelector({ bots, selectedBotId, onBotSelect, className = '' }
 						{selectedBot?.avatar && <span className="mr-2 text-lg">{selectedBot.avatar}</span>}
 						<span className="truncate">{selectedBot?.name || 'Select Bot'}</span>
 					</div>
-					<svg
-						className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'transform rotate-180' : ''}`}
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-					</svg>
+					<MezonIcon icon={MzIcons16.mzChevronDown} className={`ml-2 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} />
 				</button>
 			</Tooltip>
 		</div>

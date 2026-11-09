@@ -14,7 +14,7 @@ import {
 } from '@mezon/core';
 import type { RootState } from '@mezon/store';
 import { EStateFriend, selectAllAccount, selectFriendById, selectStatusInVoice, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { EUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -391,7 +391,7 @@ const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
 			<div className="opacity-0 truncate w-0 group-hover:animate-expand flex items-center justify-center leading-4 font-medium">
 				{channelData?.channel_label}
 			</div>
-			<Icons.Speaker defaultSize="w-[14px] h-[14px] text-green-500 pointer-events-none" />
+			<MezonIcon icon={MzIcons16.mzSpeaker} className="text-green-500 pointer-events-none" />
 		</div>
 	);
 };

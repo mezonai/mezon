@@ -7,7 +7,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EPermission, MAX_FILE_NAME_EMOJI, createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
 import type { ClanEmoji, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
@@ -156,7 +156,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 							/>
 						) : (
 							<div className="w-full h-full bg-bgDisable flex items-center justify-center">
-								<Icons.AvatarUser className="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzUser} className="text-[var(--mz-icon)]" />
 							</div>
 						)}
 					</div>
@@ -177,7 +177,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 					</div>
 				)}
 			</div>
-			{emoji.is_for_sale && <Icons.MarketIcons className="absolute top-6 right-6 w-4 h-4 text-yellow-300" />}
+			{emoji.is_for_sale && <MezonIcon icon={MzIcons16.mzShop} className="absolute top-6 right-6 text-yellow-300" />}
 		</div>
 	);
 };

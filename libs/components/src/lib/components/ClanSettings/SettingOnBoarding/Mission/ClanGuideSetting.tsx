@@ -7,7 +7,7 @@ import {
 	selectOnboardingByClan,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, titleMission } from '@mezon/utils';
 import type { ApiOnboardingItem } from 'mezon-js';
 import type { ReactNode } from 'react';
@@ -81,7 +81,7 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 					<div className="uppercase font-bold text-gray-700 dark:text-channelTextLabel">{t('clanGuideSetting.dontDoThis')}</div>
 					<GuideItemLayout
 						hightLightIcon={true}
-						icon={<Icons.IconRemove fill="red" />}
+						icon={<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />}
 						className="px-2 md:px-3 py-2 md:py-[10px] bg-item-theme hover:bg-item-theme-hover-status-hover border-2 border-gray-300 dark:border-channelTextarea rounded-md"
 						title={t('clanGuideSetting.exampleTask.title')}
 						description={t('clanGuideSetting.exampleTask.description')}
@@ -100,7 +100,7 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 					<GuideItemLayout
 						hightLightIcon={true}
 						gap={16}
-						icon={<Icons.RuleIcon className="text-theme-primary" />}
+						icon={<MezonIcon icon={MzIcons20.mzRules} className="text-[var(--mz-icon)]" />}
 						className="px-3"
 						description={
 							<div className="h-full flex items-center text-base text-theme-primary font-bold">
@@ -113,7 +113,7 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 						onClick={openModalAddTask}
 						className="flex items-center justify-center p-4 md:p-4 text-primary text-base md:text-base gap-1 border-dashed border-2 border-gray-400 dark:border-channelTextLabel rounded-md bg-item-theme-hover transition-colors"
 					>
-						<Icons.AddIcon className="w-4 h-4 flex-shrink-0" />{' '}
+						<MezonIcon icon={MzIcons16.mzPlusCircle} className="flex-shrink-0" />{' '}
 						<span className="break-words" data-e2e={generateE2eId('clan_page.settings.onboarding.button.add_task')}>
 							{t('clanGuideSetting.addTask')}
 						</span>
@@ -149,7 +149,8 @@ function ClanGuideSetting({ setOpenModalSaveChanges }: ClanGuideSettingProps = {
 						onClick={openModalAddRules}
 						data-e2e={generateE2eId('clan_page.settings.onboarding.button.add_resources')}
 					>
-						<Icons.AddIcon className="w-4 h-4 flex-shrink-0" /> <span className="break-words">{t('clanGuideSetting.addResource')}</span>
+						<MezonIcon icon={MzIcons16.mzPlusCircle} className="flex-shrink-0" />{' '}
+						<span className="break-words">{t('clanGuideSetting.addResource')}</span>
 					</button>
 				</div>
 			</div>
@@ -184,7 +185,8 @@ const OwnerGreeting = () => {
 						/>
 					</div>
 					<div className="flex font-semibold text-indigo-600 dark:text-white items-center gap-1 text-sm md:text-base">
-						{clanOwner?.clan_nick ?? clanOwner.user?.display_name ?? clanOwner.user?.username} <Icons.OwnerIcon />
+						{clanOwner?.clan_nick ?? clanOwner.user?.display_name ?? clanOwner.user?.username}{' '}
+						<MezonIcon icon={MzIcons16.mzOwner} className="text-[#F0B132]" />
 					</div>
 				</div>
 				<div className="text-sm md:text-base text-indigo-700 dark:text-white">{t('clanGuideSetting.ownerGreeting')}</div>
@@ -219,7 +221,7 @@ const MissionItem = ({ mission, temp, setOpenModalSaveChanges }: MissionItemProp
 		<GuideItemLayout
 			key={mission.title}
 			hightLightIcon={true}
-			icon={<Icons.Hashtag className="w-4 text-theme-primary flex-shrink-0" />}
+			icon={<MezonIcon icon={MzIcons16.mzChannel} className="text-[var(--mz-icon)] flex-shrink-0" />}
 			gap={16}
 			className="px-3 md:px-3"
 			title={mission.title}
@@ -236,7 +238,7 @@ const MissionItem = ({ mission, temp, setOpenModalSaveChanges }: MissionItemProp
 					onClick={openEditModal}
 				>
 					{' '}
-					<Icons.EditMessageRightClick defaultSize="w-5 h-5 md:w-5 md:h-5" />{' '}
+					<MezonIcon icon={MzIcons20.mzEdit} />{' '}
 				</button>
 			}
 		/>
@@ -266,7 +268,7 @@ const RuleItem = ({ rule, temp, setOpenModalSaveChanges }: RuleItemProps) => {
 	return (
 		<GuideItemLayout
 			key={rule.title}
-			icon={<Icons.RuleIcon className="flex-shrink-0" />}
+			icon={<MezonIcon icon={MzIcons20.mzRules} className="text-[var(--mz-icon)]" />}
 			gap={16}
 			className="px-4 md:px-4 py-3 md:py-3"
 			description={rule.content}
@@ -277,7 +279,7 @@ const RuleItem = ({ rule, temp, setOpenModalSaveChanges }: RuleItemProps) => {
 					onClick={openEditModal}
 				>
 					{' '}
-					<Icons.EditMessageRightClick defaultSize="w-5 h-5 md:w-5 md:h-5" />{' '}
+					<MezonIcon icon={MzIcons20.mzEdit} />{' '}
 				</button>
 			}
 		/>

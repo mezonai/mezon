@@ -8,29 +8,10 @@ import {
 	selectCurrentClanId,
 	settingActions
 } from '@mezon/store';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarClanItem from '../ModalListClans';
-
-const FolderIcon = ({ className }: { className?: string }) => (
-	<svg viewBox="0 0 24 24" fill="currentColor" className={`dark:text-contentSecondary text-textLightTheme ${className}`}>
-		<path
-			d="M4 6V4a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L13 4h5a2 2 0 0 1 2 2v2M4 6h16M4 6v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6"
-			stroke="currentColor"
-			strokeWidth="2"
-			fill="none"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		/>
-	</svg>
-);
-
-const CloseIcon = ({ className }: { className?: string }) => (
-	<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
-		<line x1="18" y1="6" x2="6" y2="18"></line>
-		<line x1="6" y1="6" x2="18" y2="18"></line>
-	</svg>
-);
 
 export type ClanGroupProps = {
 	group: ClanGroupType;
@@ -128,7 +109,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 						className="w-full h-full flex items-center justify-center rounded-lg dark:bg-bgSecondary bg-bgLightMode hover:dark:bg-bgSecondary600 hover:bg-bgLightModeButton transition-all duration-200"
 						draggable="false"
 					>
-						<FolderIcon className="w-6 h-6" />
+						<MezonIcon icon={MzIcons24.mzFolder} className="text-[var(--mz-icon)]" />
 						{group.name && <span className="ml-2 text-sm dark:text-contentSecondary text-textLightTheme truncate">{group.name}</span>}
 					</button>
 				</div>
@@ -168,7 +149,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 											className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform hover:scale-110 z-10 bg-gray-100 hover:bg-gray-200  dark:hover:bg-gray-600 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 shadow-sm"
 											title={`Remove ${clan.clan_name} from group`}
 										>
-											<CloseIcon className="w-2.5 h-2.5 stroke-2" />
+											<MezonIcon icon={MzIcons16.mzClose} />
 										</button>
 									)}
 
@@ -279,7 +260,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 					</div>
 				) : (
 					<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode rounded-lg flex justify-center items-center">
-						<FolderIcon className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzFolder} className="text-[var(--mz-icon)]" />
 					</div>
 				)}
 			</div>

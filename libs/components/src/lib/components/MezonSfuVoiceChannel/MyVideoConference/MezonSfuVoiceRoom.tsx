@@ -13,7 +13,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import {
 	GUEST_NAME,
 	OUTPUT_DEVICE_CHANGE_EVENT,
@@ -116,9 +116,7 @@ const SFU_PARTICIPANT_ACTION_ERRORS = new Set([
 	'unsupported_participant_action',
 	'auth_not_configured'
 ]);
-const SFU_HEADER_ICON_FILL = 'var(--sfu-header-icon-fill)';
-const SFU_HEADER_ICON_BUTTON_CLASS =
-	'[--sfu-header-icon-fill:var(--bg-icon-theme)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
+const SFU_HEADER_ICON_BUTTON_CLASS = '[--sfu-header-icon-fill:var(--mz-icon)] hover:[--sfu-header-icon-fill:var(--text-secondary)] transition-colors';
 const SFU_MEDIA_REFUSALS = new Map<string, { media: 'camera' | 'screen'; toast: string }>([
 	['camera_capacity_full', { media: 'camera', toast: 'toast.cameraLimitReached' }],
 	['camera_update_failed', { media: 'camera', toast: 'toast.cameraUpdateFailed' }],
@@ -2986,7 +2984,7 @@ export function MezonSfuVoiceRoom({
 					</div>
 				)}
 				<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-					{!isLocalAudioEnabled ? <Icons.VoiceMicDisabledIcon scale={1.8} className="shrink-0" /> : null}
+					{!isLocalAudioEnabled ? <MezonIcon icon={MzIcons16.mzMicOff} className="shrink-0 text-white" /> : null}
 					<span className="truncate whitespace-nowrap py-0.5">{localDisplayName}</span>
 				</div>
 				{joinRole === 'audience' && (
@@ -3005,7 +3003,7 @@ export function MezonSfuVoiceRoom({
 				<div className="relative aspect-video overflow-hidden rounded-xl border-2 border-transparent bg-[#5d5f66]">
 					<SfuVideo stream={screenStreamRef.current} muted fit="contain" />
 					<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-						<Icons.VoiceScreenShareIcon className="!w-4 !h-4 shrink-0" color="currentColor" />
+						<MezonIcon icon={MzIcons16.mzScreenShare} className="shrink-0" />
 						<span className="truncate whitespace-nowrap py-0.5">{t('usernameScreen', { username: localDisplayName })}</span>
 					</div>
 				</div>
@@ -3283,22 +3281,8 @@ export function MezonSfuVoiceRoom({
 					onSinkIdFailure={handleSinkIdFailure}
 				/>
 				<header className="relative z-20 flex h-[68px] shrink-0 items-center justify-between px-4 text-sm bg-theme-setting-nav">
-					<div className="flex items-center gap-2 text-[var(--bg-icon-theme)]">
-						{isPrivateVoice ? (
-							<Icons.SpeakerLocked
-								defaultSize="h-6 w-6"
-								defaultFill1="currentColor"
-								defaultFill2="currentColor"
-								defaultFill3="currentColor"
-							/>
-						) : (
-							<Icons.Speaker
-								defaultSize="h-6 w-6"
-								defaultFill1="currentColor"
-								defaultFill2="currentColor"
-								defaultFill3="currentColor"
-							/>
-						)}
+					<div className="flex items-center gap-2 text-[var(--mz-icon)]">
+						{isPrivateVoice ? <MezonIcon icon={MzIcons24.mzSpeakerLock} /> : <MezonIcon icon={MzIcons24.mzSpeaker} />}
 						<strong className="text-base">{channelLabel || roomId}</strong>
 						<span
 							className={
@@ -3322,19 +3306,19 @@ export function MezonSfuVoiceRoom({
 							onClick={() => setIsGridView((value) => !value)}
 						>
 							{isGridView ? (
-								<Icons.VoiceFocusIcon defaultFill1={SFU_HEADER_ICON_FILL} />
+								<MezonIcon icon={MzIcons20.mzLayoutFocus} className="text-[var(--sfu-header-icon-fill)]" />
 							) : (
-								<Icons.VoiceGridIcon defaultFill1={SFU_HEADER_ICON_FILL} />
+								<MezonIcon icon={MzIcons20.mzGrid} className="text-[var(--sfu-header-icon-fill)]" />
 							)}
 						</button>
 						<button
 							type="button"
 							title={t('chat')}
-							className={`${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--bg-icon-theme-active)]' : ''}`}
+							className={`${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--mz-icon-selected)]' : ''}`}
 							onClick={onToggleChat}
 							data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
 						>
-							<Icons.Chat className="h-5 w-5" defaultFill1={SFU_HEADER_ICON_FILL} defaultFill2={SFU_HEADER_ICON_FILL} />
+							<MezonIcon icon={MzIcons20.mzChat} className="text-[var(--sfu-header-icon-fill)]" />
 						</button>
 					</div>
 				</header>
@@ -3429,12 +3413,8 @@ export function MezonSfuVoiceRoom({
 									aria-label={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
 									onClick={() => setShowFocusThumbnails((value) => !value)}
 								>
-									{showFocusThumbnails ? (
-										<Icons.VoiceArowDownIcon className="h-3 w-3" />
-									) : (
-										<Icons.VoiceArowUpIcon className="h-3 w-3" />
-									)}
-									<Icons.MemberList defaultFill="text-white" />
+									{showFocusThumbnails ? <MezonIcon icon={MzIcons16.mzChevronDown} /> : <MezonIcon icon={MzIcons16.mzChevronUp} />}
+									<MezonIcon icon={MzIcons20.mzMembers} />
 									<span>{participantCount}</span>
 								</button>
 								<div

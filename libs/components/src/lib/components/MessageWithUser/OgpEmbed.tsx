@@ -1,6 +1,6 @@
 import { getStore, selectCurrentChannel, selectCurrentDM, selectCurrentUserId, selectMessageByMessageId } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, SpinningIcon } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { EBacktickType, createImgproxyUrl, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -141,10 +141,10 @@ const DeleteOgpButton = ({ messageId, topicId, url }: { messageId?: string; topi
 					className="hover:text-red-500 absolute top-1 right-1 rounded-full aspect-square p-1 cursor-pointer bg-item-theme-hover"
 					onClick={handleCloseOgp}
 				>
-					<Icons.Close defaultSize="w-3 h-3" />
+					<MezonIcon icon={MzIcons20.mzClose} />
 				</div>
 			) : (
-				<Icons.LoadingSpinner />
+				<SpinningIcon icon={MzIcons20.mzSpinner} />
 			)}
 		</>
 	);

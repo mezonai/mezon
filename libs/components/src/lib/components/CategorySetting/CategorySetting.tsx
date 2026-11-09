@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { ICategoryChannel } from '@mezon/utils';
 import React, { useEffect, useState } from 'react';
 import ExitSetting from '../ChannelSetting/exitSetting';
@@ -33,7 +33,7 @@ export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, cate
 						onClick={() => onClose()}
 						className="rounded-full p-[10px] border-2 dark:border-[#a8a6a6] border-black cursor-pointer dark:text-[#a8a6a6] text-black"
 					>
-						<Icons.CloseButton className="w-4" />
+						<MezonIcon icon={MzIcons16.mzClose} />
 					</div>
 				</div>
 				<div className="h-fit absolute top-5 left-5 block sbm:hidden z-[1]">
@@ -41,7 +41,7 @@ export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, cate
 						className={`bg-[#AEAEAE] w-[30px] h-[30px] rounded-[50px] font-bold transform hover:scale-105 hover:bg-slate-400 transition duration-300 ease-in-out flex justify-center items-center ${menu ? 'rotate-90' : '-rotate-90'}`}
 						onClick={() => setMenu(!menu)}
 					>
-						<Icons.ArrowDown defaultFill="white" className="w-[20px] h-[30px]" />
+						<MezonIcon icon={MzIcons20.mzChevronDown} />
 					</button>
 				</div>
 				<div

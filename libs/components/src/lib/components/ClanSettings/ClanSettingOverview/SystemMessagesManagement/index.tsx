@@ -1,5 +1,5 @@
 import { selectAllChannels, selectCategoryEntityStateByClanId, selectCurrentClanId, useAppSelector } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
@@ -39,12 +39,12 @@ const SystemMessagesManagement = ({
 
 	const renderChannelIcon = (channel?: { age_restricted?: number; channel_private?: number }) => {
 		if (channel?.age_restricted === 1) {
-			return <Icons.HashtagWarning className="w-4 h-4 dark:text-channelTextLabel" />;
+			return <MezonIcon icon={MzIcons16.mzChannelWarning} className="dark:text-channelTextLabel" />;
 		}
 		if (channel?.channel_private) {
-			return <Icons.HashtagLocked className="w-4 h-4" defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />;
+			return <MezonIcon icon={MzIcons16.mzChannelPrivate} className="text-[var(--mz-icon)]" />;
 		}
-		return <Icons.Hashtag className="w-4 h-4 dark:text-channelTextLabel" />;
+		return <MezonIcon icon={MzIcons16.mzChannel} className="dark:text-channelTextLabel" />;
 	};
 
 	const handleToggleSetting = (checked: boolean, type: ETypeUpdateSystemMessage, channelId?: string) => {
@@ -127,17 +127,13 @@ const SystemMessagesManagement = ({
 							</>
 						) : (
 							<div className={' flex flex-row items-center gap-2'}>
-								<Icons.HashtagLocked
-									className="w-4 h-4"
-									defaultFill1="var(--bg-icon-theme)"
-									defaultFill2="var(--bg-icon-theme-active)"
-								/>
+								<MezonIcon icon={MzIcons16.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 								<p>{t('systemMessages.privateWelcome')}</p>
 							</div>
 						)}
 					</div>
 					<div>
-						<Icons.ArrowDownFill />
+						<MezonIcon icon={MzIcons20.mzCaretDown} />
 					</div>
 				</div>
 			</Menu>

@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useMemberStatus, useOnClickOutside, useSettingFooter, useUserById } from '@mezon/core';
 import type { ChannelMembersEntity, RootState } from '@mezon/store';
 import { selectCurrentClanId, selectCurrentUserId, selectFriendById, selectModeResponsive, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { EUserSettings, ModeResponsive } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -172,9 +172,12 @@ const UserProfileModalInner = ({
 							<div className="flex items-end pr-4">
 								<button
 									onClick={handleOpenEditOption}
-									className="relative flex items-center h-8 px-4 rounded-[3px] text-theme-primary text-theme-primary-hover"
+									className="relative flex items-center h-8 px-4 rounded-[3px] text-theme-primary text-theme-primary-hover group/mzi"
 								>
-									<Icons.PenEdit />
+									<MezonIcon
+										icon={MzIcons20.mzEdit}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
 									<span className="text-sm font-semibold one-line text-theme-primary-active">{t('userProfile.editProfile')}</span>
 								</button>
 								{isOPenEditOption && (

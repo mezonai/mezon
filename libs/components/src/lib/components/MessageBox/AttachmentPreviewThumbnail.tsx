@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 					title={t('deleteMessageModal.removeAttachmentTitle')}
 					className="w-full h-full flex items-center justify-center text-theme-primary hover:bg-item-hover text-theme-primary-hover rounded-lg"
 				>
-					<Icons.TrashIcon className="w-5 h-5 text-colorDanger hover:text-colorDangerHover" />
+					<MezonIcon icon={MzIcons20.mzTrash} className="text-colorDanger hover:text-colorDangerHover" />
 				</button>
 			</div>
 

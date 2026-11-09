@@ -7,7 +7,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -78,7 +78,7 @@ export const BreakoutInviteModal: React.FC<BreakoutInviteModalProps> = ({ clanId
 			>
 				<div className="flex items-center gap-2">
 					<span className="text-white">
-						<Icons.VoiceBreakoutIcon className="h-5 w-5" />
+						<MezonIcon icon={MzIcons20.mzBreakout} />
 					</span>
 					<h3 className="text-xl font-semibold text-white">{t('breakout.title')}</h3>
 				</div>
@@ -94,7 +94,7 @@ export const BreakoutInviteModal: React.FC<BreakoutInviteModalProps> = ({ clanId
 				{assignedRoomName && (
 					<div className="flex items-center gap-2 rounded-lg border border-white/10 bg-[#2b2d31] px-3 py-2">
 						<span className="text-[#5865f2]">
-							<Icons.VoiceBreakoutIcon className="h-[15px] w-[15px]" />
+							<MezonIcon icon={MzIcons16.mzBreakout} />
 						</span>
 						<span className="truncate text-sm font-semibold text-white">{assignedRoomName}</span>
 					</div>

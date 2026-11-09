@@ -12,7 +12,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EPermission, TypeMessage, compareBigInt, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, type ApiTokenSentEvent } from 'mezon-js';
 import { useCallback, useRef, useState } from 'react';
@@ -208,12 +208,12 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 			</div>
 			<div className="contexify_separator" />
 			<button
-				className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a] hover:text-white"
+				className="flex w-full cursor-pointer items-center justify-between rounded p-2 hover:bg-[#f67e882a] hover:text-white group/mzi"
 				onClick={handleGiveFlowers}
 				data-e2e={generateE2eId('clan_page.screen.voice_room.button.send_flower')}
 			>
 				<span>{t('giveFlowers')}</span>
-				<Icons.IconGiveFlower />
+				<MezonIcon icon={MzIcons16.mzGift} className="text-[var(--mz-icon)] group-hover/mzi:text-white" />
 			</button>
 			{canManageVoice && (
 				<button
@@ -226,7 +226,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 					{isMuting ? (
 						<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
 					) : (
-						<Icons.VoiceMicDisabledIcon className="h-4 w-4" />
+						<MezonIcon icon={MzIcons16.mzMicOff} className="text-white" />
 					)}
 				</button>
 			)}
@@ -241,7 +241,7 @@ export const SfuVoiceContextMenu = ({ channelId, onParticipantAction }: SfuVoice
 					{isKicking ? (
 						<div className="h-4 w-4 animate-spin rounded-full border-2 border-[#E13542] border-t-transparent" />
 					) : (
-						<Icons.CloseIcon className="h-4 w-4" />
+						<MezonIcon icon={MzIcons16.mzCloseCircle} />
 					)}
 				</button>
 			)}

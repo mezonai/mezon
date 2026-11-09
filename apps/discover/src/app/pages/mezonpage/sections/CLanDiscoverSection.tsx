@@ -1,6 +1,6 @@
 'use client';
 
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -76,7 +76,8 @@ export const CLanDiscoverSection = () => {
 								<span className="relative after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-purple-600 after:transition-all after:duration-300 group-hover:after:w-full">
 									{t('sections.textChannel.learnMore')}
 								</span>
-								<Icons.TopRight className="w-4 h-4 sm:w-5 sm:h-5" />
+								<MezonIcon icon={MzIcons16.mzExternalLink} className="sm:hidden" />
+								<MezonIcon icon={MzIcons20.mzExternalLink} className="hidden sm:inline" />
 							</Link>
 						</div>
 					</div>

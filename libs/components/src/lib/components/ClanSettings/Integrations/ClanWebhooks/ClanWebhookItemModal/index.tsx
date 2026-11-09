@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { MAX_FILE_SIZE_8MB, createImgproxyUrl, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
 import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
@@ -53,7 +53,7 @@ const ClanWebhookItemModal = ({ webhookItem, isExpanded, onToggleExpand }: IClan
 							className="flex gap-1 items-center min-w-0"
 							data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_description')}
 						>
-							<Icons.ClockIcon className="text-theme-primary shrink-0" />
+							<MezonIcon icon={MzIcons20.mzClock} className="text-[var(--mz-icon)] shrink-0" />
 							<div className="text-theme-primary text-[13px] break-words">
 								{t('webhooksItem.createdBy', {
 									webhookCreateTime: timeFormatI18n(
@@ -70,7 +70,7 @@ const ClanWebhookItemModal = ({ webhookItem, isExpanded, onToggleExpand }: IClan
 						className={`cursor-pointer transition duration-100 ease-in-out ${isItemExpanded ? '' : '-rotate-90'}`}
 						data-e2e={generateE2eId('channel_setting_page.webhook.button.view_webhook')}
 					>
-						<Icons.ArrowDown defaultSize="h-[30px] w-[30px] dark:text-[#b5bac1] text-black" />
+						<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)]" />
 					</div>
 				</div>
 			</div>
@@ -245,7 +245,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 								onClick={() => avatarRef.current?.click()}
 								className="absolute right-0 top-0 p-[5px] bg-[#ffffff] rounded-full z-10 shadow-xl border cursor-pointer"
 							>
-								<Icons.SelectFileIcon />
+								<MezonIcon icon={MzIcons20.mzImageAdd} />
 							</div>
 							<img
 								src={createImgproxyUrl(dataForUpdate.webhookAvatarUrl ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}

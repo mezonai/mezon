@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Button, Icons } from '@mezon/ui';
+import { Button, MezonIcon, MzIcons16, MzIcons20, MzIcons24, MzIcons48 } from '@mezon/ui';
 import { createImgproxyUrl, fileTypeImage, type IChannel } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useRef, useState } from 'react';
@@ -209,7 +209,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 													onClick={() => fileInputRef.current?.click()}
 													disabled={isUploading}
 												>
-													<Icons.PenEdit className="w-4 h-4" />
+													<MezonIcon icon={MzIcons16.mzEdit} />
 													{t('buttons.change')}
 												</Button>
 												<Button
@@ -217,7 +217,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 													onClick={handleRemoveThumbnail}
 													disabled={isUploading}
 												>
-													<Icons.TrashIcon className="w-4 h-4" />
+													<MezonIcon icon={MzIcons16.mzTrash} />
 													{t('buttons.remove')}
 												</Button>
 											</div>
@@ -227,12 +227,12 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 							) : (
 								<div className="space-y-3">
 									<div
-										className="relative overflow-hidden rounded-2xl border-2 border-dashed border-slate-600 hover:border-blue-500 bg-gradient-to-br from-slate-800/50 to-slate-900/50 hover:from-slate-800/80 hover:to-slate-900/80 transition-all duration-300 cursor-pointer group"
+										className="relative overflow-hidden rounded-2xl border-2 border-dashed border-slate-600 hover:border-blue-500 bg-gradient-to-br from-slate-800/50 to-slate-900/50 hover:from-slate-800/80 hover:to-slate-900/80 transition-all duration-300 cursor-pointer group mz-hover"
 										onClick={() => fileInputRef.current?.click()}
 									>
 										<div className="h-80 flex flex-col items-center justify-center gap-4 p-8">
 											<div className="p-4 bg-blue-500/10 rounded-full group-hover:bg-blue-500/20 transition-colors">
-												<Icons.UploadImage className="w-12 h-12 text-blue-400" />
+												<MezonIcon icon={MzIcons48.mzCamera} className="text-blue-400" />
 											</div>
 											<div className="text-center space-y-2">
 												<h3 className="text-lg font-semibold text-theme-primary-active">{t('upload.title')}</h3>
@@ -242,7 +242,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 												className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm flex items-center gap-2 mt-2 transition-all hover:scale-105"
 												disabled={isUploading}
 											>
-												<Icons.UploadImage className="w-4 h-4" />
+												<MezonIcon icon={MzIcons16.mzCamera} />
 												{isUploading ? t('buttons.uploading') : t('buttons.selectFile')}
 											</Button>
 										</div>
@@ -266,7 +266,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 									<div className="p-4 rounded-xl bg-theme-setting-primary border-theme-primary">
 										<div className="flex gap-3">
 											<div className="w-10 h-10 rounded-lg bg-item-theme flex items-center justify-center flex-shrink-0 text-theme-primary">
-												<Icons.ImageThumbnail className="w-5 h-5 " />
+												<MezonIcon icon={MzIcons20.mzFileImage} className="text-[var(--mz-icon)]" />
 											</div>
 											<div className="min-w-0">
 												<p className="text-xs font-semibold text-theme-primary-active uppercase tracking-wide">
@@ -280,7 +280,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 									<div className="p-4 rounded-xl bg-theme-setting-primary border-theme-primary">
 										<div className="flex gap-3">
 											<div className="w-10 h-10 rounded-lg bg-item-theme flex items-center justify-center flex-shrink-0 text-theme-primary">
-												<Icons.ImageUploadIcon className="w-5 h-5 text-theme-primary" />
+												<MezonIcon icon={MzIcons20.mzImageAdd} className="text-[var(--mz-icon)]" />
 											</div>
 											<div className="min-w-0">
 												<p className="text-xs font-semibold text-theme-primary-active uppercase tracking-wide">
@@ -294,7 +294,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 									<div className="p-4 rounded-xl bg-theme-setting-primary border-theme-primary">
 										<div className="flex gap-3">
 											<div className="w-10 h-10 rounded-lg bg-item-theme flex items-center justify-center flex-shrink-0 text-theme-primary">
-												<Icons.FileIcon className="w-5 h-5 text-theme-primary" />
+												<MezonIcon icon={MzIcons20.mzFile} className="text-[var(--mz-icon)]" />
 											</div>
 											<div className="min-w-0">
 												<p className="text-xs font-semibold text-theme-primary-active uppercase tracking-wide">
@@ -317,7 +317,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 						<div className="bg-theme-setting-nav">
 							<div className="flex items-center gap-3 p-2 ">
 								<div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-									<Icons.UploadImage className="w-6 h-6 text-blue-400" />
+									<MezonIcon icon={MzIcons24.mzCamera} className="text-blue-400" />
 								</div>
 								<div>
 									<h2 className="text-xl font-bold text-theme-primary-active">{t('confirmModal.uploadTitle')}</h2>
@@ -385,7 +385,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 								onClick={handleConfirmRemove}
 								disabled={isUploading}
 							>
-								<Icons.TrashIcon className="w-4 h-4" />
+								<MezonIcon icon={MzIcons16.mzTrash} />
 								{isUploading ? t('buttons.removing') : t('buttons.removeThumbnail')}
 							</Button>
 						</div>

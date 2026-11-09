@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 import type { ChartDataPoint, UsageMetrics } from '../../pages/dashboard/types';
 import ActivityOverview from '../ActivityOverview';
@@ -24,9 +24,9 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 					onTabChange={onTabChange}
 					totals={metrics}
 					dateRangeText={dateRangeText}
-					iconUsers={<Icons.MemberList className="w-5 h-5" />}
-					iconChannels={<Icons.Hashtag className="w-5 h-5" />}
-					iconMessages={<Icons.MessageIcon className="w-5 h-5" />}
+					iconUsers={<MezonIcon icon={MzIcons20.mzMembers} />}
+					iconChannels={<MezonIcon icon={MzIcons20.mzChannel} />}
+					iconMessages={<MezonIcon icon={MzIcons20.mzChat} />}
 				/>
 			</div>
 

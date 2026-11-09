@@ -1,4 +1,4 @@
-import { HighlightMatchBold, Icons } from '@mezon/ui';
+import { HighlightMatchBold, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo } from 'react';
 
@@ -14,7 +14,7 @@ const SelectItemUser = ({ title, content, onClick, isFocused, search }: SelectIt
 	return (
 		<button
 			onClick={onClick}
-			className="flex flex-row justify-between items-center w-full cursor-pointer rounded relative p-2"
+			className="mz-hover flex flex-row justify-between items-center w-full cursor-pointer rounded relative p-2"
 			data-e2e={generateE2eId('chat.search_message.select.item')}
 		>
 			<div>
@@ -23,7 +23,7 @@ const SelectItemUser = ({ title, content, onClick, isFocused, search }: SelectIt
 			</div>
 			{isFocused && (
 				<div className="absolute right-2">
-					<Icons.Plus />
+					<MezonIcon icon={MzIcons20.mzPlus} />
 				</div>
 			)}
 		</button>

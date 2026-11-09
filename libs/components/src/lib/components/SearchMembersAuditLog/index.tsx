@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IUserAuditLog, UsersClanEntity } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { useState } from 'react';
@@ -36,7 +36,7 @@ const AvatarUser = ({ user }: AvatarUserProps) => {
 						src={avatar}
 					/>
 				) : (
-					<Icons.AvatarUser />
+					<MezonIcon icon={MzIcons20.mzUserCircle} className="text-[var(--mz-icon)]" />
 				)}
 			</div>
 		</div>
@@ -77,7 +77,11 @@ const SearchMemberAuditLogModal = ({
 	const usersClan = useSelector(selectAllUserClans);
 
 	const users: Users[] = [
-		{ name: t('allUsers'), icon: <Icons.MemberList isWhite={true} />, userId: '' },
+		{
+			name: t('allUsers'),
+			icon: <MezonIcon icon={MzIcons20.mzMembers} className={selectedUser === '' ? '' : 'text-[var(--mz-icon)]'} />,
+			userId: ''
+		},
 		...usersClan.map((item: UsersClanEntity) => ({
 			name: getNameForPrioritize(item?.clan_nick, item?.user?.display_name, item?.user?.username) || '',
 			icon: <AvatarUser user={item} />,
@@ -121,7 +125,11 @@ const SearchMemberAuditLogModal = ({
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 					<span className="absolute right-3 top-3 text-gray-400  cursor-pointer" onClick={searchTerm ? handleClearSearch : undefined}>
-						{searchTerm ? <Icons.Close className="size-4" /> : <Icons.Search className="w-4 h-4 text-theme-primary" />}
+						{searchTerm ? (
+							<MezonIcon icon={MzIcons16.mzClose} />
+						) : (
+							<MezonIcon icon={MzIcons16.mzSearch} className="text-[var(--mz-icon)]" />
+						)}
 					</span>
 				</div>
 
@@ -143,7 +151,7 @@ const SearchMemberAuditLogModal = ({
 									<span className="ml-3">{user?.name}</span>
 									{selectedUser === user?.userId && (
 										<span className="ml-auto ">
-											<Icons.CheckMarkFilter className="w-5 h-5" defaultFill="text-white" />
+											<MezonIcon icon={MzIcons20.mzCheckCircle} />
 										</span>
 									)}
 								</div>

@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Você não pode ligar para si mesmo",
 	"errorMaxLength": "O comprimento deve estar entre {{min}} e {{max}} caracteres.",
 	"formatDate": "d 'de' M, yyyy",
-	"cannotSendLocationWithAnonymous": "Não é possível enviar localização enquanto estiver anônimo."
+	"cannotSendLocationWithAnonymous": "Não é possível enviar localização enquanto estiver anônimo.",
+	"iconAnimations": "Animações de ícones",
+	"iconAnimationsDesc": "Anima os ícones ao passar o rato e durante atividade ao vivo, como digitar ou uma transmissão."
 }

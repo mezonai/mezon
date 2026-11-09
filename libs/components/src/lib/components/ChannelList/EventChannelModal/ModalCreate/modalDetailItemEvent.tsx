@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -146,7 +146,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				className="font-semibold inline-flex gap-x-3"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.start_date_time')}
 			>
-				<Icons.IconEvents />
+				<MezonIcon icon={MzIcons24.mzEvent} className="text-[var(--mz-icon)]" />
 				{time}
 			</h4>
 			<p
@@ -178,7 +178,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 					if (hasAddress) {
 						return (
 							<>
-								<Icons.Location />
+								<MezonIcon icon={MzIcons20.mzLocation} className="text-[var(--mz-icon)]" />
 
 								{renderDescriptionWithLinks(event?.address)}
 							</>
@@ -194,7 +194,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 						};
 						return (
 							<a {...linkProps} className="flex gap-x-3 cursor-pointer items-center">
-								<Icons.Speaker />
+								<MezonIcon icon={MzIcons20.mzSpeaker} />
 								<p className="hover:underline">{channelVoice?.channel_label}</p>
 							</a>
 						);
@@ -220,7 +220,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 								}}
 								className="flex gap-x-3 cursor-pointer items-center"
 							>
-								<Icons.Speaker />
+								<MezonIcon icon={MzIcons20.mzSpeaker} />
 								<p className="hover:underline">{t('eventDetail.privateRoom')}</p>
 							</a>
 						);
@@ -228,7 +228,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 
 					return (
 						<>
-							<Icons.Location />
+							<MezonIcon icon={MzIcons20.mzLocation} className="text-[var(--mz-icon)]" />
 							<p className="hover:underline">No location specified</p>
 						</>
 					);
@@ -238,7 +238,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				className="flex items-center gap-x-3"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.number_of_interested')}
 			>
-				<Icons.MemberList className={'w-5 h-5'} />
+				<MezonIcon icon={MzIcons20.mzMembers} className="text-[var(--mz-icon)]" />
 				<p>
 					{t(
 						(event?.user_ids?.filter((id) => id !== '0')?.length || 0) === 1
@@ -257,7 +257,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 					/>
 				) : (
 					<div className="size-5 rounded-full bg-bgDisable flex items-center justify-center">
-						<Icons.AvatarUser className="w-3 h-3" />
+						<MezonIcon icon={MzIcons16.mzUser} className="text-[var(--mz-icon)]" />
 					</div>
 				)}
 				<p>{t('eventDetail.createdBy', { username: userName })}</p>
@@ -305,7 +305,7 @@ const InterestedDetail = ({ userIds }: InterestedDetailProps) => {
 								/>
 							) : (
 								<div className="size-7 rounded-full bg-bgDisable flex items-center justify-center">
-									<Icons.AvatarUser className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzUser} className="text-[var(--mz-icon)]" />
 								</div>
 							)}
 							<p

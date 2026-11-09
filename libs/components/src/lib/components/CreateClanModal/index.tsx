@@ -9,7 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
+import { Button, ButtonLoading, InputField, MezonIcon, MzIcons20, MzIcons32 } from '@mezon/ui';
 import {
 	LIMIT_SIZE_UPLOAD_IMG,
 	TypeCheck,
@@ -70,7 +70,7 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	{
 		id: 'gaming',
 		name: 'clanTemplateModal.gamingTemplate',
-		icon: <Icons.GamingConsoleIcon />,
+		icon: <MezonIcon icon={MzIcons20.mzGamepad} className="text-[var(--mz-icon)]" />,
 		categories: [
 			{
 				name: '',
@@ -95,7 +95,7 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	{
 		id: 'friends',
 		name: 'clanTemplateModal.friendsTemplate',
-		icon: <Icons.IconFriends />,
+		icon: <MezonIcon icon={MzIcons20.mzFriends} className="text-[var(--mz-icon)]" />,
 		categories: [
 			{
 				name: '',
@@ -120,7 +120,7 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	{
 		id: 'study-group',
 		name: 'clanTemplateModal.studyGroupTemplate',
-		icon: <Icons.MemberList />,
+		icon: <MezonIcon icon={MzIcons20.mzMembers} className="text-[var(--mz-icon)]" />,
 		categories: [
 			{
 				name: '',
@@ -147,7 +147,7 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	{
 		id: 'school-club',
 		name: 'clanTemplateModal.schoolClubTemplate',
-		icon: <Icons.School />,
+		icon: <MezonIcon icon={MzIcons20.mzSchool} className="text-[var(--mz-icon)]" />,
 		categories: [
 			{
 				name: '',
@@ -173,7 +173,7 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	{
 		id: 'local-community',
 		name: 'clanTemplateModal.localCommunityTemplate',
-		icon: <Icons.Community />,
+		icon: <MezonIcon icon={MzIcons20.mzCommunity} className="text-[var(--mz-icon)]" />,
 		categories: [
 			{
 				name: '',
@@ -199,7 +199,7 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	{
 		id: 'artists-creators',
 		name: 'clanTemplateModal.artistsCreatorsTemplate',
-		icon: <Icons.PaintTray />,
+		icon: <MezonIcon icon={MzIcons20.mzPalette} className="text-[var(--mz-icon)]" />,
 		categories: [
 			{
 				name: '',
@@ -406,7 +406,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						className="w-full p-3 mb-4 rounded-lg relative border border-theme-primary cursor-pointer transform hover:scale-105 transition duration-300 ease-in-out flex flex-row items-center gap-2 group h-fit"
 						data-e2e={generateE2eId('clan_page.modal.create_clan.template.item.create_my_own')}
 					>
-						<Icons.Sparkles />
+						<MezonIcon icon={MzIcons20.mzSparkles} />
 						<span className="font-semibold text-sm text-center pl-2">{t('clanTemplateModal.createMyOwn')}</span>
 					</button>
 
@@ -438,7 +438,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 			<div className="flex items-center flex-col justify-center">
 				<span className="text-[24px] pb-4 font-[700] leading-8">{t('createClanModal.title')}</span>
 				<p className="text-center text-[16px] leading-6 font-[400]">{t('createClanModal.description')}</p>
-				<label className="block mt-8 mb-4">
+				<label className="mz-hover block mt-8 mb-4">
 					{urlImage ? (
 						<img
 							id="preview_img"
@@ -452,9 +452,9 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 							className="h-[81px] w-[81px] flex justify-center bg-item-theme items-center flex-col border-white relative border-[1px] border-dashed rounded-full cursor-pointer transform hover:scale-105 transition duration-300 ease-in-out"
 						>
 							<div className="absolute right-0 top-[-3px] left-[54px]">
-								<Icons.AddIcon />
+								<MezonIcon icon={MzIcons32.mzPlusCircle} />
 							</div>
-							<Icons.UploadImage className="" />
+							<MezonIcon icon={MzIcons20.mzCamera} className="" />
 							<span className="text-[14px]">{t('createClanModal.upload')}</span>
 						</div>
 					)}

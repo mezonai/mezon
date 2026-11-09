@@ -1,5 +1,5 @@
 import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -153,9 +153,12 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0, no_clear = f
 							<p className="text-theme-primary text-xs uppercase font-semibold">{t('clearAfter')}</p>
 						</div>
 						<Menu menu={menuTime} className="bg-[var(--theme-setting-primary)] border-none py-0 w-[200px] [&>ul]:py-0">
-							<div className="flex items-center justify-between rounded-lg cursor-pointer h-9 text-theme-primary-hover bg-input-secondary px-3 text-theme-primary">
+							<div className="mz-hover flex items-center justify-between rounded-lg cursor-pointer h-9 text-theme-primary-hover bg-input-secondary px-3 text-theme-primary group/mzi">
 								<li className="text-[14px] text-theme-primary w-full py-[6px] list-none select-none">{timeSetReset}</li>
-								<Icons.ArrowDown />
+								<MezonIcon
+									icon={MzIcons20.mzChevronDown}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							</div>
 						</Menu>
 					</div>
@@ -197,7 +200,7 @@ const ItemSelect = ({ children, startIcon, onClick, timeSetReset }: ItemSelectPr
 			<div>
 				<li className="text-[14px] w-full list-none leading-[44px] ">{children}</li>
 			</div>
-			{children === timeSetReset && <Icons.Check className="w-[18px] h-[18px]" />}
+			{children === timeSetReset && <MezonIcon icon={MzIcons20.mzCheck} />}
 		</div>
 	);
 };

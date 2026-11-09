@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiOnboardingContent } from 'mezon-js';
@@ -201,7 +201,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				<MemberProvider>
 					<div className="flex flex-col gap-4 md:gap-8 overflow-x-hidden">
 						<div onClick={() => handleGoToPage(EOnboardingStep.MAIN)} className="flex gap-3 cursor-pointer">
-							<Icons.LongArrowRight className="rotate-180 w-3 text-theme-primary flex-shrink-0" />
+							<MezonIcon icon={MzIcons16.mzArrowRight} className="rotate-180 text-[var(--mz-icon)] flex-shrink-0" />
 							<div className="font-semibold text-theme-primary" data-e2e={generateE2eId('clan_page.settings.onboarding.button.back')}>
 								{t('buttons.back')}
 							</div>
@@ -222,8 +222,15 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 						<div className="bg-theme-setting-primary w-full max-w-[800px] p-4 md:p-6 rounded-lg max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-thin  [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-thumb]:bg-[#5865F2] [&::-webkit-scrollbar-thumb]:rounded-lg [&::-webkit-scrollbar-track]:bg-gray-200">
 							<div className="flex justify-between items-center mb-4 md:mb-6">
 								<h3 className="text-lg md:text-xl font-semibold text-theme-primary-active">{t('modal.title')}</h3>
-								<button onClick={() => setIsModalOpen(false)} className=" text-theme-primary text-theme-primary-hover ">
-									<Icons.CloseIcon className="w-5 h-5 md:w-6 md:h-6" />
+								<button onClick={() => setIsModalOpen(false)} className=" text-theme-primary text-theme-primary-hover group/mzi">
+									<MezonIcon
+										icon={MzIcons20.mzCloseCircle}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)] md:hidden"
+									/>
+									<MezonIcon
+										icon={MzIcons24.mzCloseCircle}
+										className="hidden text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)] md:inline"
+									/>
 								</button>
 							</div>
 							<div className="overflow-x-hidden">{renderOnboardingContent()}</div>
@@ -266,8 +273,12 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 					<div className="bg-theme-setting-primary w-full max-w-[800px] p-4 md:p-6 rounded-lg max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
 						<div className="flex justify-between items-center mb-4 md:mb-6">
 							<h3 className="text-lg md:text-xl font-semibold text-theme-primary">{t('modal.title')}</h3>
-							<button onClick={() => setIsModalOpen(false)} className=" bg-item-theme hover:text-white">
-								<Icons.CloseIcon className="w-5 h-5 md:w-6 md:h-6" />
+							<button onClick={() => setIsModalOpen(false)} className=" bg-item-theme hover:text-white group/mzi">
+								<MezonIcon icon={MzIcons20.mzCloseCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-white md:hidden" />
+								<MezonIcon
+									icon={MzIcons24.mzCloseCircle}
+									className="hidden text-[var(--mz-icon)] group-hover/mzi:text-white md:inline"
+								/>
 							</button>
 						</div>
 						<div className="overflow-x-hidden">{renderOnboardingContent()}</div>
@@ -374,7 +385,12 @@ const MainIndex = ({ handleGoToPage, onCloseSetting, showOnboardingHighlight }: 
 
 				<GuideItemLayout
 					hightLightIcon
-					icon={<Icons.People className="w-5 md:w-6 text-theme-primary flex-shrink-0" />}
+					icon={
+						<>
+							<MezonIcon icon={MzIcons20.mzUser} className="text-[var(--mz-icon)] flex-shrink-0 md:hidden" />
+							<MezonIcon icon={MzIcons24.mzUser} className="hidden text-[var(--mz-icon)] flex-shrink-0 md:inline" />
+						</>
+					}
 					title={t('questions.title')}
 					description={t('questions.description')}
 					className={` rounded-none ${showOnboardingHighlight ? 'border-2 border-red-500' : ''}`}
@@ -386,14 +402,14 @@ const MainIndex = ({ handleGoToPage, onCloseSetting, showOnboardingHighlight }: 
 							<div className="text-xs md:text-sm" data-e2e={generateE2eId('clan_page.settings.onboarding.button.setup_question')}>
 								{t('buttons.setup')}
 							</div>{' '}
-							<Icons.LongArrowRight className="w-3 flex-shrink-0" />
+							<MezonIcon icon={MzIcons16.mzArrowRight} className="flex-shrink-0" />
 						</div>
 					}
 				/>
 				<div className="mx-2 md:mx-4 border-t border-theme-primary text-theme-primary-hover" />
 				<GuideItemLayout
 					hightLightIcon
-					icon={<Icons.GuideIcon defaultSize="w-5 md:w-6" className="text-theme-primary flex-shrink-0" />}
+					icon={<MezonIcon icon={MzIcons24.mzGuide} className="text-[var(--mz-icon)] flex-shrink-0" />}
 					title={t('clanGuide.title')}
 					description={t('clanGuide.description')}
 					className={` rounded-none ${showOnboardingHighlight ? 'border-2 border-red-500' : ''}`}

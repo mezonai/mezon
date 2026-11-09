@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId, type ImageSourceObject } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -262,7 +262,7 @@ type ImageControlsProps = {
 
 const ImageControls = React.memo(({ zoom, handleZoom, handleRotate, t }: ImageControlsProps) => (
 	<div className="flex flex-row items-center gap-2 p-0.5">
-		<Icons.ImageThumbnail className="w-3 h-3" />
+		<MezonIcon icon={MzIcons16.mzFileImage} />
 		<input
 			type="range"
 			min="0.5"
@@ -273,8 +273,8 @@ const ImageControls = React.memo(({ zoom, handleZoom, handleRotate, t }: ImageCo
 			className="w-[150px] my-4 cursor-pointer"
 			title={t('adjustZoom')}
 		/>
-		<Icons.ImageThumbnail className="w-5 h-5" />
-		<Icons.RotateIcon onClick={handleRotate} className="cursor-pointer w-5 h-5 text-[#AEAEAE] hover:text-gray-300" />
+		<MezonIcon icon={MzIcons20.mzFileImage} />
+		<MezonIcon icon={MzIcons20.mzRotateRight} onClick={handleRotate} className="cursor-pointer text-[#AEAEAE] hover:text-gray-300" />
 	</div>
 ));
 // Footer

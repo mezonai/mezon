@@ -1,7 +1,7 @@
 import { useAppNavigation } from '@mezon/core';
 import type { CategoriesEntity, IUpdateChannelRequest } from '@mezon/store';
 import { channelsActions, selectAllCategories, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
 import type { ReactElement } from 'react';
@@ -90,7 +90,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 						data-e2e={generateE2eId('channel_setting_page.category.dropdown')}
 					>
 						<p>{categoryName}</p>
-						<Icons.ArrowDownFill />
+						<MezonIcon icon={MzIcons20.mzCaretDown} className="text-[var(--mz-icon)]" />
 					</div>
 				</Menu>
 			</div>

@@ -547,5 +547,7 @@
   "cannotCallYourself": "Вы не можаце патэлефанаваць сабе.",
   "errorMaxLength": "Даўжыня павінна быць ад {{min}} да {{max}}.",
   "formatDate": "MMMM d, yyyy",
-  "cannotSendLocationWithAnonymous": "Немагчыма адправіць месцазнаходжанне ў ананімным рэжыме."
+  "cannotSendLocationWithAnonymous": "Немагчыма адправіць месцазнаходжанне ў ананімным рэжыме.",
+  "iconAnimations": "Анімацыя значкоў",
+  "iconAnimationsDesc": "Анімаваць значкі пры навядзенні курсора і падчас актыўнай дзейнасці, напрыклад пры наборы тэксту або трансляцыі."
 }

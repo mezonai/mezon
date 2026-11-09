@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { SfuVideo } from '../Media/SfuVideo';
 import { isRemoteScreenSharing } from '../remoteMediaLifecycle';
@@ -109,7 +109,7 @@ export const SfuScreenShareTile = ({
 			</div>
 			{!showVideo && <div className="flex h-full items-center justify-center bg-[#5d5f66] text-sm text-zinc-300">Loading screen share…</div>}
 			<div className="absolute bottom-2 left-2 flex max-w-[calc(100%-16px)] min-w-0 items-center gap-1 rounded-md bg-[#00000080] p-[5px] text-sm">
-				<Icons.VoiceScreenShareIcon className="!h-4 !w-4 shrink-0" color="currentColor" />
+				<MezonIcon icon={MzIcons16.mzScreenShare} className="shrink-0" />
 				<span className="truncate whitespace-nowrap py-0.5">{displayName} — Screen</span>
 			</div>
 		</div>

@@ -7,7 +7,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js';
 import type { ChangeEvent } from 'react';
@@ -59,7 +59,7 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 	return (
 		<div className="flex flex-col gap-4 md:gap-8 overflow-x-hidden">
 			<div onClick={() => handleGoToPage(EOnboardingStep.MAIN)} className="flex gap-3 cursor-pointer">
-				<Icons.LongArrowRight className="rotate-180 w-3 text-theme-primary flex-shrink-0" />
+				<MezonIcon icon={MzIcons16.mzArrowRight} className="rotate-180 text-[var(--mz-icon)] flex-shrink-0" />
 				<div className="font-semibold text-theme-primary" data-e2e={generateE2eId('clan_page.settings.onboarding.button.back')}>
 					{t('buttons.back').toUpperCase()}
 				</div>
@@ -81,7 +81,7 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 								<div className="w-[70%] h-full rounded-lg bg-green-600" />
 							</div>
 							<div onClick={toggleChannelNotAssigned}>
-								<Icons.ArrowRight defaultSize={`${showChannelNotAssigned ? 'rotate-90' : '-rotate-90'} w-5 md:w-6 duration-200`} />
+								<MezonIcon icon={MzIcons20.mzChevronRight} className="text-[var(--mz-icon)]" />
 							</div>
 						</div>
 					</div>
@@ -110,7 +110,8 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 							onClick={handleAddPreJoinQuestion}
 							className="rounded-xl text-indigo-500 dark:text-[#949cf7] justify-center items-center p-3 md:p-4 border-2 border-gray-300 dark:border-[#4e5058] border-dashed font-medium flex gap-2 hover:border-indigo-400 dark:hover:border-[#7d808c] transition-colors text-sm md:text-base"
 						>
-							<Icons.CirclePlusFill className="w-4 md:w-5 flex-shrink-0" />
+							<MezonIcon icon={MzIcons16.mzPlusCircle} className="flex-shrink-0 md:hidden" />
+							<MezonIcon icon={MzIcons20.mzPlusCircle} className="hidden flex-shrink-0 md:inline" />
 							<div className="break-words" data-e2e={generateE2eId('clan_page.settings.onboarding.button.add_question')}>
 								{t('questionsPage.addQuestion')}
 							</div>
@@ -284,10 +285,10 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 							className="text-gray-500 dark:text-white hover:text-red-500 dark:hover:text-red-400"
 							data-e2e={generateE2eId('clan_page.settings.onboarding.button.remove_question')}
 						>
-							<Icons.TrashIcon className="w-4" />
+							<MezonIcon icon={MzIcons16.mzTrash} />
 						</div>
 						<div onClick={toggleExpand} className="text-gray-500 dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
-							<Icons.ArrowRight defaultSize={`${isExpanded ? 'rotate-90' : '-rotate-90'} w-4`} />
+							<MezonIcon icon={MzIcons20.mzChevronRight} />
 						</div>
 					</div>
 				</div>
@@ -329,7 +330,12 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 							))}
 							<GuideItemLayout
 								onClick={openPopupAnswer}
-								icon={<Icons.CirclePlusFill className="w-4 md:w-5" />}
+								icon={
+									<>
+										<MezonIcon icon={MzIcons16.mzPlusCircle} className="text-[var(--mz-icon)] md:hidden" />
+										<MezonIcon icon={MzIcons20.mzPlusCircle} className="hidden text-[var(--mz-icon)] md:inline" />
+									</>
+								}
 								title={t('questionsPage.addAnswer')}
 								className="w-fit max-w-full hover:bg-transparent rounded-xl text-gray-800 dark:text-white justify-center items-center p-3 md:p-4 border-2 border-gray-300 dark:border-[#4e5058] hover:border-indigo-400 dark:hover:border-[#7d808c] border-dashed font-medium flex gap-2 text-sm md:text-base"
 							/>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../Button';
-import { Icons } from '../Icons';
+import { SpinningIcon } from '../IconKit';
+import * as MzIcons20 from '../mezon-icons/20';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
@@ -27,7 +28,13 @@ const ButtonLoading: React.FC<ButtonProps> = ({ onClick, label, className = '', 
 
 	return (
 		<Button {...rest} onClick={handleClick} disabled={disabled || loading} className={className}>
-			{loading ? <Icons.IconLoadingTyping bgFill="mx-auto" /> : label}
+			{loading ? (
+				<span className="flex items-center justify-center">
+					<SpinningIcon icon={MzIcons20.mzSpinner} />
+				</span>
+			) : (
+				label
+			)}
 		</Button>
 	);
 };

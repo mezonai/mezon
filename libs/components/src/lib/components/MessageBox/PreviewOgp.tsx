@@ -8,7 +8,7 @@ import {
 	selectOgpPreview,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
 import { INVITE_URL_REGEX, checkInviteLinkValid, createImgproxyUrl, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { memo, useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
@@ -256,7 +256,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 							</p>
 							{isCommunityEnabled ? (
 								<span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500 text-white">
-									<Icons.CheckIcon className="w-3 h-3" />
+									<MezonIcon icon={MzIcons16.mzCheck} />
 								</span>
 							) : null}
 						</div>
@@ -277,7 +277,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 						</button>
 					</div>
 					<div className="absolute top-2 right-2 p-1 cursor-pointer rounded-full hover:bg-red-400" onClick={clearOgpData}>
-						<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
+						<MezonIcon icon={MzIcons20.mzClose} />
 					</div>
 				</div>
 			</div>
@@ -286,7 +286,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	return (
 		<div className="px-3 pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2 relative">
 			<div className="absolute top-2 right-2 p-1 cursor-pointer rounded-full hover:bg-red-400" onClick={clearOgpData}>
-				<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
+				<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 			</div>
 			<div className="aspect-square rounded-md h-full flex items-center">
 				<img

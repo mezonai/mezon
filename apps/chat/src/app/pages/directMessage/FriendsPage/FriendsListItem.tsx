@@ -2,7 +2,7 @@ import { BaseProfile, useRemoveFriendModal } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends, useMemberStatus } from '@mezon/core';
 import type { FriendsEntity } from '@mezon/store';
 import { EStateFriend, audioCallActions, selectCurrentTabStatus } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { ETabUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef } from 'react';
@@ -260,15 +260,18 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 				<div className="flex-shrink-0 w-auto min-w-fit" onClick={(e) => e.stopPropagation()}>
 					{friend?.state === EStateFriend.FRIEND && (
 						<div className="flex gap-3 items-center">
-							<button onClick={handleNavigateDM} className=" bg-button-secondary rounded-full p-2 text-theme-primary-hover">
-								<Icons.Chat />
+							<button onClick={handleNavigateDM} className=" bg-button-secondary rounded-full p-2 group/mzi text-theme-primary-hover">
+								<MezonIcon icon={MzIcons20.mzChat} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 							</button>
 							<button
 								title={t('friendMenu.more')}
 								onClick={handleMenuClick}
-								className="bg-button-secondary rounded-full p-2 text-theme-primary-hover"
+								className="bg-button-secondary rounded-full p-2 group/mzi text-theme-primary-hover"
 							>
-								<Icons.IconEditThreeDot />
+								<MezonIcon
+									icon={MzIcons20.mzMoreVertical}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							</button>
 						</div>
 					)}

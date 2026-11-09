@@ -57,7 +57,7 @@ import {
 	settingActions,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -361,31 +361,12 @@ const SidebarMenu = memo(
 							<div>
 								<NavLinkComponent>
 									<div
-										className="flex items-center justify-between text-theme-primary group"
+										className="mz-hover flex items-center justify-between text-theme-primary group"
 										onClick={openDiscoverPage}
 										title={t('discover')}
 									>
 										<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
-											<svg
-												className="text-theme-primary-active size-5"
-												viewBox="0 0 16 16"
-												fill="currentColor"
-												xmlns="http://www.w3.org/2000/svg"
-												width={40}
-												height={40}
-											>
-												<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-												<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-												<g id="SVGRepo_iconCarrier">
-													{' '}
-													<path d="M8 9C8.55229 9 9 8.55229 9 8C9 7.44772 8.55229 7 8 7C7.44772 7 7 7.44772 7 8C7 8.55229 7.44772 9 8 9Z"></path>{' '}
-													<path
-														fillRule="evenodd"
-														clipRule="evenodd"
-														d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM6 6L4 11L5 12L10 10L12 5L11 4L6 6Z"
-													></path>{' '}
-												</g>
-											</svg>
+											<MezonIcon icon={MzIcons20.mzDiscover} className="text-[var(--mz-icon)]" />
 										</div>
 									</div>
 								</NavLinkComponent>
@@ -646,7 +627,7 @@ const PreviewOnboardingMode = () => {
 	return (
 		<div className="fixed z-50 top-0 left-0 w-screen  bg-theme-setting-primary flex px-4 py-2 h-12 items-center justify-center ">
 			<div className="absolute cursor-pointer bg-item-theme-hover left-6 px-2 flex gap-1 border-2 py-1 items-center justify-center  border-theme-primary rounded bg-transparent">
-				<Icons.LeftArrowIcon className="fill-theme-primary-active text-theme-primary-active" />
+				<MezonIcon icon={MzIcons20.mzArrowLeft} className="text-[var(--mz-icon)]" />
 				<p
 					className="text-theme-primary-active text-xs font-medium"
 					onClick={handleClosePreview}

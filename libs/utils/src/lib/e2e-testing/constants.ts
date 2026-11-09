@@ -1110,6 +1110,11 @@ export const DATA_E2E_IDENTIFIER = {
 		notification: {
 			switch: ''
 		},
+		appearance: {
+			icon_motion: {
+				switch: ''
+			}
+		},
 		chat: {
 			tab: '',
 			spelling_switch: '',

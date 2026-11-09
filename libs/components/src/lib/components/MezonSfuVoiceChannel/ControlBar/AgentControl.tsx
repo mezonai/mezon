@@ -1,6 +1,6 @@
 import { usePermissionChecker } from '@mezon/core';
 import { handleAddAgentToVoice, handleKichAgentFromVoice, selectVoiceInfo, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, SpinningIcon } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ export const SfuAgentControl = memo(({ isExternalCalling, roomId, showHint = fal
 				title={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
 				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500 hover:!bg-blue-600' : ''} ${loading ? 'cursor-default' : ''}`}
 			>
-				{loading ? <Icons.LoadingSpinner /> : <AgentIcon />}
+				{loading ? <SpinningIcon icon={MzIcons20.mzSpinner} /> : <AgentIcon />}
 			</button>
 			{showHint && !active && !loading && <AgentHint onDismiss={onDismissHint} />}
 		</div>
@@ -72,8 +72,8 @@ const AgentHint = ({ onDismiss }: { onDismiss?: () => void }) => {
 		<div className="pointer-events-none absolute bottom-full left-[-16px] z-30 mb-[7px] w-80 max-md:hidden">
 			<div className="pointer-events-auto relative rounded-lg border border-white/10 bg-zinc-800 p-4 text-left shadow-xl">
 				<div className="flex items-center gap-2">
-					<span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center [&>svg]:h-[18px] [&>svg]:w-[18px]">
-						<AgentIcon />
+					<span className="flex h-5 w-5 shrink-0 items-center justify-center">
+						<MezonIcon icon={MzIcons20.mzBot} className="text-white" />
 					</span>
 					<span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">{t('agentHint.title')}</span>
 					<button
@@ -82,7 +82,7 @@ const AgentHint = ({ onDismiss }: { onDismiss?: () => void }) => {
 						className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
 						onClick={onDismiss}
 					>
-						<Icons.Close className="h-4 w-4" />
+						<MezonIcon icon={MzIcons16.mzClose} />
 					</button>
 				</div>
 				<p className="mt-2 text-xs text-white/70">{t('agentHint.body')}</p>
@@ -96,23 +96,8 @@ const AgentHint = ({ onDismiss }: { onDismiss?: () => void }) => {
 };
 
 const AgentIcon = () => (
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		width="32px"
-		height="32px"
-		viewBox="0 0 226 183"
-		fill="none"
-		className="h-8 w-8 max-lg:h-7 max-lg:w-7 max-md:h-6 max-md:w-6"
-	>
-		<g>
-			<path
-				d="M73.91 180.56c-17.45-4.82-32.7-21.15-35.91-38.45-.55-2.96-1-19.63-1-37.04 0-24.8.32-32.89 1.49-37.37 6.27-24.07 26.35-38.66 53.26-38.69L98 29l.02-7.25c.03-9.16 2.36-14.67 7.65-18.09 7.25-4.69 15.04-4.3 21.42 1.07 4.41 3.71 5.91 7.96 5.91 16.74V29l4.25.01c19.78.03 38.59 10.82 46.63 26.75 5.73 11.36 6.12 14.49 6.12 49.31 0 17.41-.45 34.08-1 37.04-3.25 17.55-18.57 33.76-36.37 38.5-7.01 1.87-71.91 1.82-78.72-.05m-57.69-44.1C6.67 130.03 0 117.5 0 106c0-6.66 3.35-16.61 7.49-22.21C10.87 79.21 20.19 72 22.74 72c.99 0 1.26 7.28 1.26 34s-.27 34-1.26 34c-.7 0-3.63-1.59-6.52-3.54M202 105c0-26.72.27-34 1.26-34 2.55 0 11.87 7.21 15.25 11.79 4.14 5.6 7.49 15.55 7.49 22.21s-3.35 16.61-7.49 22.21c-3.38 4.58-12.7 11.79-15.25 11.79-.99 0-1.26-7.28-1.26-34m-63.54 6.14c10 6.09 24.54-2.91 24.54-15.19 0-5.2-3.88-12.32-7.82-14.36-7.78-4.02-16.01-2.74-21.52 3.36-7.58 8.39-5.47 19.93 4.8 26.19m-65.05-.03c6.81 4.15 16.68 1.75 21.93-5.35 2.93-3.95 3.38-13.16.87-17.76-5.31-9.71-18.88-11.53-26.81-3.6-7.87 7.87-5.95 20.63 4.01 26.71m25.76 24.58c2.06 2.18 2.89 2.31 15 2.31 11.5 0 13.04-.21 14.83-2 2.43-2.43 2.57-5.71.35-8.17-1.45-1.6-3.34-1.83-14.78-1.83-10.26 0-13.61.34-15.35 1.56-2.82 1.97-2.83 5.16-.05 8.13"
-				fill="rgba(254,254,254,1)"
-			/>
-			<path
-				d="M99.17 135.69c-2.78-2.97-2.77-6.16.05-8.13 1.74-1.22 5.09-1.56 15.35-1.56 11.44 0 13.33.23 14.78 1.83 2.22 2.46 2.08 5.74-.35 8.17-1.79 1.79-3.33 2-14.83 2-12.11 0-12.94-.13-15-2.31m-25.76-24.58c-9.96-6.08-11.88-18.84-4.01-26.71 7.93-7.93 21.5-6.11 26.81 3.6 2.51 4.6 2.06 13.81-.87 17.76-5.25 7.1-15.12 9.5-21.93 5.35m65.05.03c-10.27-6.26-12.38-17.8-4.8-26.19 5.51-6.1 13.74-7.38 21.52-3.36 3.94 2.04 7.82 9.16 7.82 14.36 0 12.28-14.54 21.28-24.54 15.19"
-				fill="rgba(96,96,101,1)"
-			/>
-		</g>
-	</svg>
+	<>
+		<MezonIcon icon={MzIcons24.mzBot} className="text-white max-md:hidden" />
+		<MezonIcon icon={MzIcons20.mzBot} className="hidden text-white max-md:block" />
+	</>
 );

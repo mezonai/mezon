@@ -1,5 +1,5 @@
 import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, EUserStatus, IUserAccount } from '@mezon/utils';
 import { ActivitiesType, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiUserActivity } from 'mezon-js';
@@ -110,14 +110,14 @@ const AvatarProfile = ({
 											className="pl-2 pr-1 py-1 w-fit bg-item-hover rounded-l-full cursor-pointer"
 											data-e2e={generateE2eId('short_profile.activity_status.button.custom')}
 										>
-											<Icons.EditMessageRightClick defaultSize="w-4 h-4" />
+											<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)]" />
 										</div>
 										<div
 											onClick={handleClearCustomStatus}
 											className="pl-1 pr-2 py-1 w-fit bg-item-hover rounded-r-full text-red-600 cursor-pointer"
 											data-e2e={generateE2eId('short_profile.activity_status.button.clear')}
 										>
-											<Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />
+											<MezonIcon icon={MzIcons16.mzTrash} />
 										</div>
 									</div>
 								)}

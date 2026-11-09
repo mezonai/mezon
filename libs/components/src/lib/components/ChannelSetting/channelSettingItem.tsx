@@ -1,6 +1,6 @@
 import { useChannels, usePermissionChecker } from '@mezon/core';
 import { selectChannelById, selectWelcomeChannelByClanId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -56,53 +56,33 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	const renderIcon = () => {
 		if (channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 			if (isPrivate) {
-				return (
-					<Icons.ThreadIconLocker
-						className="w-5 h-5 -mt-1 min-w-5 block dark:text-[#AEAEAE] text-colorTextLightMode"
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill4="var(--bg-theme-secounnd)"
-						defaultFill5="var(--bg-icon-theme-active)"
-					/>
-				);
+				return <MezonIcon icon={MzIcons20.mzThreadPrivate} className="-mt-1 min-w-5 block text-[var(--mz-icon)]" />;
 			}
-			return (
-				<Icons.ThreadIcon
-					className="w-5 h-5 -mt-1 min-w-5"
-					defaultFill1="var(--bg-icon-theme)"
-					defaultFill4="var(--bg-theme-secounnd)"
-					defaultFill5="var(--bg-icon-theme)"
-				/>
-			);
+			return <MezonIcon icon={MzIcons20.mzThread} className="-mt-1 min-w-5 text-[var(--mz-icon)]" />;
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isAgeRestrictedChannel) {
-				return <Icons.HashtagWarning className="w-5 h-5 -mt-1 min-w-5" />;
+				return <MezonIcon icon={MzIcons20.mzChannelWarning} className="-mt-1 min-w-5 text-[var(--mz-icon)]" />;
 			}
 			if (isPrivate) {
-				return (
-					<Icons.HashtagLocked
-						className="w-5 h-5 -mt-1 min-w-5 block dark:text-[#AEAEAE] text-colorTextLightMode"
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill2="var(--bg-icon-theme-active)"
-					/>
-				);
+				return <MezonIcon icon={MzIcons20.mzChannelPrivate} className="-mt-1 min-w-5 block text-[var(--mz-icon)]" />;
 			}
-			return <Icons.Hashtag className="w-5 h-5 -mt-1 min-w-5" />;
+			return <MezonIcon icon={MzIcons20.mzChannel} className="-mt-1 min-w-5 text-[var(--mz-icon)]" />;
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			if (isPrivate) {
-				return <Icons.SpeakerLocked className="w-5 h-5 min-w-5" />;
+				return <MezonIcon icon={MzIcons20.mzSpeakerLock} className="min-w-5 text-[var(--mz-icon)]" />;
 			}
-			return <Icons.Speaker className="w-5 h-5 min-w-5" />;
+			return <MezonIcon icon={MzIcons20.mzSpeaker} className="min-w-5 text-[var(--mz-icon)]" />;
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 			if (isPrivate) {
-				return <Icons.SpeakerLocked className="w-5 h-5 min-w-5" />;
+				return <MezonIcon icon={MzIcons20.mzSpeakerLock} className="min-w-5 text-[var(--mz-icon)]" />;
 			}
-			return <Icons.Stream className="w-5 h-5 min-w-5" />;
+			return <MezonIcon icon={MzIcons20.mzLive} className="min-w-5 text-[var(--mz-icon)]" />;
 		}
 	};
 	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, channel?.clan_id as string));

@@ -1,5 +1,5 @@
 import { selectCurrentClanId, selectStickersByClanId, settingClanStickerActions, useAppDispatch } from '@mezon/store';
-import { Button, Icons } from '@mezon/ui';
+import { Button, MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { ClanSticker } from 'mezon-js';
 import type { RefObject } from 'react';
 import { useCallback, useState } from 'react';
@@ -61,7 +61,7 @@ const SettingSticker = ({ parentRef }: { parentRef: RefObject<HTMLDivElement> })
 							'cursor-pointer group relative text-xs w-[116px] h-[140px] rounded-lg flex flex-col items-center p-3 border-[0.08px] border-dashed  dark:border-borderDivider border-spacing-2 border-bgTertiary justify-center'
 						}
 					>
-						<Icons.ImageUploadIcon className="w-7 h-7 group-hover:scale-110 ease-in-out duration-75" />
+						<MezonIcon icon={MzIcons32.mzImageAdd} className="group-hover:scale-110 ease-in-out duration-75 text-[var(--mz-icon)]" />
 					</div>
 				</div>
 			</div>

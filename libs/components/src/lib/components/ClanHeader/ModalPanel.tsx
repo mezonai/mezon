@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import { selectCurrentClanId } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import type { RefObject } from 'react';
 import React, { useEffect } from 'react';
@@ -58,10 +58,9 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						onClick={handleShowCreateCategory}
 						children={t('modalPanel.createCategory')}
 						endIcon={
-							<Icons.CreateCategoryIcon
-								className="w-[18px] h-[18px]"
-								defaultFill1="currentColor"
-								defaultFill2="var(--bg-theme-contexify)"
+							<MezonIcon
+								icon={MzIcons16.mzFolderAdd}
+								className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
 							/>
 						}
 					/>
@@ -70,6 +69,9 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={statusMarkAsReadClan === 'pending' ? undefined : () => handleMarkAsReadClan(currentClanId as string)}
 					disabled={statusMarkAsReadClan === 'pending'}
+					endIcon={
+						<MezonIcon icon={MzIcons16.mzMarkRead} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					}
 				>
 					{statusMarkAsReadClan === 'pending' ? t('modalPanel.processing') : t('modalPanel.markAsRead')}
 				</ItemModal>
@@ -78,19 +80,23 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowInviteClanModal}
 					children={t('modalPanel.invitePeople')}
-					endIcon={<Icons.AddPerson className="w-[18px] h-[18px]" defaultFill1="currentColor" defaultFill2="currentColor" />}
+					endIcon={
+						<MezonIcon icon={MzIcons16.mzUserPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowServerSettings}
 					children={t('modalPanel.clanSettings')}
-					endIcon={<Icons.SettingProfile className="w-[18px] h-[18px] text-theme-primary-hover" />}
+					endIcon={
+						<MezonIcon icon={MzIcons16.mzSettings} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					}
 				/>
 				<ItemModal
 					className="text-theme-primary-hover bg-item-theme-hover"
 					onClick={handleShowNotificationSetting}
 					children={t('modalPanel.notificationSettings')}
-					endIcon={<Icons.Bell className=" w-[18px] h-[18px] text-theme-primary-hover" />}
+					endIcon={<MezonIcon icon={MzIcons16.mzBell} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />}
 				/>
 				<button
 					onClick={toggleShowEmptyCategory}
@@ -116,19 +122,14 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 				{!isClanOwner && (
 					<button
 						onClick={toggleLeaveClanPopup}
-						className="flex items-center w-full justify-between rounded-sm hover:bg-red-600 text-red-600 hover:text-white group pr-2"
+						className="mz-hover flex items-center w-full justify-between rounded-sm hover:bg-red-600 text-red-600 hover:text-white group pr-2"
 						data-e2e={generateE2eId(`clan_page.header.modal_panel.item`)}
 					>
 						<li className="text-[14px]  font-medium w-full py-[6px] px-[8px] text-left cursor-pointer list-none ">
 							{t('modalPanel.leaveClan')}
 						</li>
 						<div className="flex items-center justify-center h-[18px] w-[18px]">
-							<Icons.LeaveClanIcon
-								className="w-[18px] h-[18px] text-red-600 group-hover:text-white"
-								defaultFill1="currentColor"
-								defaultFill2="currentColor"
-								defaultFill3="currentColor"
-							/>
+							<MezonIcon icon={MzIcons16.mzLeave} className="text-red-600 group-hover:text-white" />
 						</div>
 					</button>
 				)}

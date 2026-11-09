@@ -1,5 +1,5 @@
 import { useTypingUsersByChannel } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +19,7 @@ export function ChannelTyping({ channelId }: ChannelTypingProps) {
 		if (typingUsers.length === 1) {
 			return (
 				<>
-					<Icons.IconLoadingTyping className="shrink-0" width={20} height={10} aria-hidden />
+					<MezonIcon icon={MzIcons16.mzTyping} className="mz-on shrink-0 text-[var(--mz-icon)]" aria-hidden />
 					<span className="min-w-0 text-theme-primary-active font-semibold mr-[2px] truncate">{typingUsers[0].typingName}</span>
 					<span className="shrink-0 text-theme-primary">{t('isTyping')}</span>
 				</>

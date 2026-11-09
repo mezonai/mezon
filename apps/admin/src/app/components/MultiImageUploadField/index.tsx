@@ -1,6 +1,6 @@
 import type { CustomFile } from '@mezon/transport';
 import { handleUploadFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons32 } from '@mezon/ui';
 import { processFile } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
 import type { ChangeEvent } from 'react';
@@ -75,7 +75,7 @@ const MultiImageUploadField = connectField((props: CustomFormFieldProps) => {
 						<p>Uploading...</p>
 					) : (
 						<>
-							<Icons.SelectFileIcon className="w-8 h-8 text-gray-400" />
+							<MezonIcon icon={MzIcons32.mzImageAdd} className="text-gray-400" />
 							<p className="ml-2">Select Images</p>
 						</>
 					)}
@@ -86,7 +86,7 @@ const MultiImageUploadField = connectField((props: CustomFormFieldProps) => {
 							<div key={index} className="flex justify-between items-center bg-white dark:bg-[#36393f] p-2 rounded-md">
 								<span className="truncate max-w-[100%]">{extractFileNameFromUrl(file)}</span>
 								<button className="text-red-500 hover:text-red-700" onClick={() => handleRemoveImage(index)}>
-									<Icons.CloseIcon className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzCloseCircle} />
 								</button>
 							</div>
 						))}

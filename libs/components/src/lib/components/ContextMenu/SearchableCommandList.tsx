@@ -1,3 +1,4 @@
+import { MzIcons16, SpinningIcon } from '@mezon/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Item } from 'react-contexify';
 import { useTranslation } from 'react-i18next';
@@ -110,9 +111,7 @@ export const SearchableCommandList: React.FC<SearchableCommandListProps> = ({
 				{isLoading ? (
 					<div className="p-4 text-center text-theme-secondary">
 						<div className="flex items-center justify-center gap-2">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
-								<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="30" strokeDashoffset="30" />
-							</svg>
+							<SpinningIcon icon={MzIcons16.mzSpinner} className="text-[var(--mz-icon)]" />
 							<span className="text-sm">{t('loadingCommands')}</span>
 						</div>
 					</div>

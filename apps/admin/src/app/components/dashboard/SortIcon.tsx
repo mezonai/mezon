@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import Tooltip from 'rc-tooltip';
 import 'rc-tooltip/assets/bootstrap.css';
 import { useTranslation } from 'react-i18next';
@@ -16,10 +17,9 @@ function SortIcon({ column, sortBy, sort }: SortIconProps) {
 		// Not sorted - both arrows enabled
 		return (
 			<Tooltip overlay={tooltipText} placement="top">
-				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
-				</svg>
+				<span className="inline-flex">
+					<MezonIcon icon={MzIcons16.mzChevronUpDown} className="-my-1 text-[#5865F2]" />
+				</span>
 			</Tooltip>
 		);
 	}
@@ -27,20 +27,18 @@ function SortIcon({ column, sortBy, sort }: SortIconProps) {
 		// Ascending - only top arrow enabled
 		return (
 			<Tooltip overlay={tooltipText} placement="top">
-				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-				</svg>
+				<span className="inline-flex">
+					<MezonIcon icon={MzIcons16.mzCaretUp} className="-my-1 text-[#5865F2]" />
+				</span>
 			</Tooltip>
 		);
 	}
 	// Descending - only bottom arrow enabled
 	return (
 		<Tooltip overlay={tooltipText} placement="top">
-			<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-				<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" opacity="0.3" />
-				<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
-			</svg>
+			<span className="inline-flex">
+				<MezonIcon icon={MzIcons16.mzCaretDown} className="-my-1 text-[#5865F2]" />
+			</span>
 		</Tooltip>
 	);
 }

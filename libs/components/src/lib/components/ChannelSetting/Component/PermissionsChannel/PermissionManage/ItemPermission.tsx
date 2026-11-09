@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ const ItemPermission = memo((props: ItemPermissionProps) => {
 					onClick={handleDeny}
 					data-e2e={generateE2eId('clan_page.settings.role.override.item.button.remove')}
 				>
-					<Icons.Close className="size-4" />
+					<MezonIcon icon={MzIcons16.mzClose} className={choice === TypeChoose.Remove ? '' : 'text-[var(--mz-icon)]'} />
 				</button>
 				<button
 					disabled={!canEdit}
@@ -67,7 +67,7 @@ const ItemPermission = memo((props: ItemPermissionProps) => {
 					className={`${buttonClass} ${choice === TypeChoose.Or ? 'bg-item-theme' : ''}`}
 					onClick={handleInherit}
 				>
-					<Icons.IconOr className="size-4" />
+					<MezonIcon icon={MzIcons16.mzSlash} className="text-[var(--mz-icon)]" />
 				</button>
 				<button
 					disabled={!canEdit}
@@ -77,7 +77,7 @@ const ItemPermission = memo((props: ItemPermissionProps) => {
 					onClick={handleAllow}
 					data-e2e={generateE2eId('clan_page.settings.role.override.item.button.tick')}
 				>
-					<Icons.IconTick className="size-4" />
+					<MezonIcon icon={MzIcons16.mzCheck} className={choice === TypeChoose.Tick ? '' : 'text-[var(--mz-icon)]'} />
 				</button>
 			</div>
 		</div>

@@ -1,5 +1,5 @@
 import mezonPackage from '@mezon/package-js';
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons24 } from '@mezon/ui';
 import { useEffect, useRef } from 'react';
 
 interface ModalDownloadProps {
@@ -52,9 +52,7 @@ export const ModalDownload: React.FC<ModalDownloadProps> = ({ isOpen, onClose })
 				<div className="flex justify-between items-center mb-4">
 					<h3 className="text-lg font-semibold text-gray-800">Choose your platform</h3>
 					<button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-						<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-						</svg>
+						<MezonIcon icon={MzIcons24.mzClose} />
 					</button>
 				</div>
 				<div className="flex flex-col gap-2">

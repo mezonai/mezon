@@ -3,7 +3,8 @@ import type { IChannel } from '@mezon/utils';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useRef } from 'react';
-import { Icons } from '../Icons';
+import { MezonIcon } from '../mezon-icons';
+import * as MzIcons20 from '../mezon-icons/20';
 
 export type ModalProps = {
 	children: React.ReactNode;
@@ -64,14 +65,10 @@ const Modal = (props: ModalProps) => {
 										<div className="inline-flex gap-x-2">
 											{hasChannel.channel_private === ChannelStatusEnum.isPrivate &&
 												hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-													<Icons.HashtagLocked
-														className="w-5 h-5"
-														defaultFill1="var(--bg-icon-theme)"
-														defaultFill2="var(--bg-icon-theme-active)"
-													/>
+													<MezonIcon icon={MzIcons20.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 												)}
 											{hasChannel.channel_private === undefined && hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-												<Icons.Hashtag className="w-5 h-5" />
+												<MezonIcon icon={MzIcons20.mzChannel} />
 											)}
 											<p>{hasChannel.channel_label}</p>
 										</div>
@@ -81,9 +78,12 @@ const Modal = (props: ModalProps) => {
 								<button
 									type="button"
 									onClick={onClose}
-									className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
+									className="group/mzi p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 								>
-									<Icons.Close className="w-5 h-5" />
+									<MezonIcon
+										icon={MzIcons20.mzClose}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
 								</button>
 							</div>
 

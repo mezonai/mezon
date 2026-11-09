@@ -1,7 +1,7 @@
 import { useUserByUserId } from '@mezon/core';
 import { audioCallActions, DMCallActions, selectIsInCall, selectJoinedCall, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { createImgproxyUrl, decompress } from '@mezon/utils';
 import type { WebrtcSignalingFwd } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
@@ -110,13 +110,13 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 						onClick={handleCloseCall}
 						className={`h-[56px] w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 					>
-						<Icons.CloseButton className={`w-[20px]`} />
+						<MezonIcon icon={MzIcons20.mzClose} />
 					</div>
 					<div
 						className={`h-[56px] w-[56px] rounded-full bg-green-500 hover:bg-green-700 flex items-center justify-center cursor-pointer`}
 						onClick={handleJoinCall}
 					>
-						<Icons.IconPhoneDM />
+						<MezonIcon icon={MzIcons20.mzCall} className="text-white" />
 					</div>
 				</div>
 			</div>

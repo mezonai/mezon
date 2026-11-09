@@ -1,5 +1,5 @@
 import { useGifs } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 
 type FeaturedGifsProps = {
@@ -15,7 +15,7 @@ function FeaturedGifs({ onClickToTrending }: FeaturedGifsProps) {
 	const { dataGifsFeartured } = useGifs();
 	return (
 		<div
-			className="relative h-32 rounded-md cursor-pointer overflow-hidden group"
+			className="mz-hover relative h-32 rounded-md cursor-pointer overflow-hidden group"
 			onClick={onClickToTrending}
 			role="button"
 			data-e2e={generateE2eId('mention.popover.gifs.trending')}
@@ -29,7 +29,7 @@ function FeaturedGifs({ onClickToTrending }: FeaturedGifsProps) {
 					alt={'Trending gifs alt'}
 				/>
 				<div className="absolute inset-0 bg-black opacity-80 transition-opacity group-hover:opacity-70 -z-10"></div>
-				<Icons.TrendingGifs />
+				<MezonIcon icon={MzIcons24.mzTrending} />
 				<span className="text-white text-lg font-manrope">Trending GIFs</span>
 			</div>
 			{dataGifsFeartured[0]?.url && (
