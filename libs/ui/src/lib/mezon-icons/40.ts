@@ -1,6 +1,7 @@
 import type { IconData } from './types';
 export const mzAnnouncement: IconData = {"id":"announcement","anim":"hop","size":40,"parts":[["s","M4.5 14.5v10a2 2 0 0 0 2 2h5l17 8V4.5l-17 9h-5a1.5 1.5 0 0 0-2 1zm7-1v13m-3 0v6a2.5 2.5 0 0 0 5 0v-6m21-10v7"]]};
 export const mzAnonymous: IconData = {"id":"anonymous","anim":"hop","size":40,"parts":[["s","M10.5 18.5l3-12l7 3l6-3l3 12m-26 0h33m-30 10a5 5 0 1 0 10 0a5 5 0 1 0-10 0m17 0a5 5 0 1 0 10 0a5 5 0 1 0-10 0m-7-2c2-1.67 5-1.67 7 0"]]};
+export const mzAppVersion: IconData = {"id":"app-version","anim":"hop","size":40,"parts":[["s","M11.5 6.5h17a6.5 6.5 0 0 1 6 7v13a6.5 6.5 0 0 1-6 7h-17a6.5 6.5 0 0 1-6-7v-13a6.5 6.5 0 0 1 6-7zm-1 9l4 9l5-9m5 0l4-2v11"]]};
 export const mzArrowDown: IconData = {"id":"arrow-down","anim":"hop","size":40,"parts":[["s","M20.5 8.5v23m11-11l-11 11l-12-11"]]};
 export const mzArrowLeft: IconData = {"id":"arrow-left","anim":"hop","size":40,"parts":[["s","M31.5 20.5H8.5m12 11l-12-11l12-12"]]};
 export const mzArrowLeftCircle: IconData = {"id":"arrow-left-circle","anim":"hop","size":40,"parts":[["s","M5.5 20a14.5 14.5 0 1 0 29 0a14.5 14.5 0 1 0-29 0m21 .5h-13m7 6l-7-6l7-7"]]};
@@ -212,14 +213,14 @@ export const mzSticker: IconData = {"id":"sticker","anim":"hop","size":40,"parts
 export const mzStop: IconData = {"id":"stop","anim":"hop","size":40,"parts":[["s","M11.5 8.5h17a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-17a3 3 0 0 1-3-3v-17a3 3 0 0 1 3-3z"]]};
 export const mzSwap: IconData = {"id":"swap","anim":"hop","size":40,"parts":[["s","M26.5 4.5l7 7l-7 7m7-7H6.5m7 23l-7-6l7-7m-7 7h27"]]};
 export const mzSync: IconData = {"id":"sync","anim":"spin","size":40,"parts":[["s","M4.5 20.5a16 16 0 0 1 16-16a16.25 16.25 0 0 1 11 5l3 4m0-9v9h-8m8 7a14 14 0 0 1-14 14a16.25 16.25 0 0 1-12-4l-4-4m9 0h-9v8"]]};
-export const mzTarget: IconData = {"id":"target","anim":"hop","size":40,"parts":[["s","M6.5 20a13.5 13.5 0 1 0 27 0a13.5 13.5 0 1 0-27 0m7 0a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0-13 0"],["f","M19 20.5a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0"]]};
+export const mzTarget: IconData = {"id":"target","anim":"hop","size":40,"parts":[["s","M34.5 18.5a15 15 0 1 1-13-13m7 16a8.33 8.33 0 1 1-10-10m2 8l11-11m0 0v-5m0 5h5"]]};
 export const mzText: IconData = {"id":"text","anim":"hop","size":40,"parts":[["s","M6.5 11.5v-5h27v5m-19 22h11m-5-27v27"]]};
 export const mzThread: IconData = {"id":"thread","anim":"hop","size":40,"parts":[["s","M34.5 23.5a3 3 0 0 1-3 3h-20l-7 7V8.5a4 4 0 0 1 4-4h23a3.5 3.5 0 0 1 3 4zm-16-12l-4 9m12-9l-3 9"]]};
 export const mzThreadAdd: IconData = {"id":"thread-add","anim":"hop","size":40,"parts":[["s","M18.5 24.5h-9l-6 6V6.5a3 3 0 0 1 3-3h22a3.5 3.5 0 0 1 4 3v9m-16-6l-4 8m12-8l-4 8"],["s","M30.5 23.5v13m-7-6h13","badge"]]};
 export const mzThreadPrivate: IconData = {"id":"thread-private","anim":"hop","size":40,"parts":[["s","M18.5 24.5h-9l-6 6V6.5a3 3 0 0 1 3-3h22a3.5 3.5 0 0 1 4 3v7m-16-4l-4 8m12-8l-4 8"],["s","M26.5 28.5h7a1.5 1.5 0 0 1 1 2v4a1.5 1.5 0 0 1-1 2h-7a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2zm0 0v-4a3.5 3.5 0 0 1 7 0v4","badge"]]};
 export const mzTools: IconData = {"id":"tools","anim":"hop","size":40,"parts":[["s","M23.5 11.5l5 5l6-6a10 10 0 0 1-13 13l-11 11a3.67 3.67 0 0 1-6-4l12-12a10 10 0 0 1 14-14z"]]};
 export const mzTopic: IconData = {"id":"topic","anim":"hop","size":40,"parts":[["s","M34.5 20.5a15 15 0 0 1-21 13l-9 1l3-7a15 15 0 1 1 27-7zm-21-4h13m-13 7h8"]]};
-export const mzTransaction: IconData = {"id":"transaction","anim":"hop","size":40,"parts":[["s","M10.5 34.5V8.5a3.5 3.5 0 0 1 3-4h13a4 4 0 0 1 4 4v26l-4-3l-3 3l-3-3l-4 3l-3-3zm4-21h10m-10 7h10"]]};
+export const mzTransaction: IconData = {"id":"transaction","anim":"hop","size":40,"parts":[["s","M6.5 13.5a15 15 0 0 1 27-1m-5-1l5 1l1-5m-1 19a15 15 0 0 1-27 1m5 1l-5-1l-1 5m18-19h-5a3.5 3.5 0 1 0 0 7h3a3 3 0 1 1 0 6h-5m4-16v3m0 13v3"]]};
 export const mzTrash: IconData = {"id":"trash","anim":"hop","size":40,"parts":[["s","M4.5 10.5h30m-3 0l-1 23a3.5 3.5 0 0 1-4 3h-13a3 3 0 0 1-3-3l-2-23m6 0v-4a3.5 3.5 0 0 1 4-3h3a3 3 0 0 1 3 3v4"]]};
 export const mzTrending: IconData = {"id":"trending","anim":"hop","size":40,"parts":[["s","M34.5 11.5l-13 13l-7-6l-10 10m20-17h10v10"]]};
 export const mzTv: IconData = {"id":"tv","anim":"hop","size":40,"parts":[["s","M9.5 11.5h21a4.5 4.5 0 0 1 5 4v15a4.5 4.5 0 0 1-5 4H9.5a4.5 4.5 0 0 1-5-4v-15a4.5 4.5 0 0 1 5-4zm19-7l-8 7l-9-7"]]};

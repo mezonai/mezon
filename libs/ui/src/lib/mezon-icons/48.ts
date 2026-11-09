@@ -1,6 +1,7 @@
 import type { IconData } from './types';
 export const mzAnnouncement: IconData = {"id":"announcement","anim":"hop","size":48,"parts":[["s","M6 18V30a2 2 0 0 0 2 2h6L34 42V6L14 16H8a2 2 0 0 0-2 2zm8-2V32m-4 0v7a3 3 0 0 0 6 0V32M42 20v8"]]};
 export const mzAnonymous: IconData = {"id":"anonymous","anim":"hop","size":48,"parts":[["s","M12 22L16 8l8 3l8-3l4 14M4 22H44M8 34a6 6 0 1 0 12 0A6 6 0 1 0 8 34m20 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0m-8-2c2.4-2 5.6-2 8 0"]]};
+export const mzAppVersion: IconData = {"id":"app-version","anim":"hop","size":48,"parts":[["s","M14 8H34a8 8 0 0 1 8 8V32a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8zM13 19l5 11l5-11m7 0l4-3V30"]]};
 export const mzArrowDown: IconData = {"id":"arrow-down","anim":"hop","size":48,"parts":[["s","M24 10V38M38 24L24 38L10 24"]]};
 export const mzArrowLeft: IconData = {"id":"arrow-left","anim":"hop","size":48,"parts":[["s","M38 24H10M24 38L10 24L24 10"]]};
 export const mzArrowLeftCircle: IconData = {"id":"arrow-left-circle","anim":"hop","size":48,"parts":[["s","M6 24a18 18 0 1 0 36 0A18 18 0 1 0 6 24m26 0H16m8 8l-8-8l8-8"]]};
@@ -212,14 +213,14 @@ export const mzSticker: IconData = {"id":"sticker","anim":"hop","size":48,"parts
 export const mzStop: IconData = {"id":"stop","anim":"hop","size":48,"parts":[["s","M14 10H34a4 4 0 0 1 4 4V34a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z"]]};
 export const mzSwap: IconData = {"id":"swap","anim":"hop","size":48,"parts":[["s","M32 6l8 8l-8 8m8-8H8m8 28L8 34l8-8M8 34H40"]]};
 export const mzSync: IconData = {"id":"sync","anim":"spin","size":48,"parts":[["s","M6 24A18 18 0 0 1 24 6a19.5 19.5 0 0 1 13 5l5 5M42 6V16H32m10 8A18 18 0 0 1 24 42a19.5 19.5 0 0 1-13-5L6 32m10 0H6V42"]]};
-export const mzTarget: IconData = {"id":"target","anim":"hop","size":48,"parts":[["s","M8 24a16 16 0 1 0 32 0A16 16 0 1 0 8 24m8 0a8 8 0 1 0 16 0a8 8 0 1 0-16 0"],["f","M22 24a2 2 0 1 0 4 0a2 2 0 1 0-4 0"]]};
+export const mzTarget: IconData = {"id":"target","anim":"hop","size":48,"parts":[["s","M42 22A18 18 0 1 1 26 6m8 20A10 10 0 1 1 22 14m2 10L38 10m0 0V4m0 6h6"]]};
 export const mzText: IconData = {"id":"text","anim":"hop","size":48,"parts":[["s","M8 14V8H40v6M18 40H30M24 8V40"]]};
 export const mzThread: IconData = {"id":"thread","anim":"hop","size":48,"parts":[["s","M42 28a4 4 0 0 1-4 4H14L6 40V10a4 4 0 0 1 4-4H38a4 4 0 0 1 4 4zM22 14L18 24M32 14L28 24"]]};
 export const mzThreadAdd: IconData = {"id":"thread-add","anim":"hop","size":48,"parts":[["s","M22 29H12L4 37V8A4 4 0 0 1 8 4H35a4 4 0 0 1 4 4V19M19 12l-3 9m13-9l-4 9"],["s","M36 28V44m-8-8H44","badge"]]};
 export const mzThreadPrivate: IconData = {"id":"thread-private","anim":"hop","size":48,"parts":[["s","M23 29H12L4 37V8A4 4 0 0 1 8 4H35a4 4 0 0 1 4 4v9M19 12l-3 9m13-9l-4 9"],["s","M32 34h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H32a2 2 0 0 1-2-2V36a2 2 0 0 1 2-2zm0 0V30a4 4 0 0 1 8 0v4","badge"]]};
 export const mzTools: IconData = {"id":"tools","anim":"hop","size":48,"parts":[["s","M28 14l6 6l8-8A12 12 0 0 1 26 28L12 42a4.4 4.4 0 0 1-6-6L20 22A12 12 0 0 1 36 6z"]]};
 export const mzTopic: IconData = {"id":"topic","anim":"hop","size":48,"parts":[["s","M42 24A18 18 0 0 1 16 40L6 42l2-9a18 18 0 1 1 34-9zM16 20H32M16 28H26"]]};
-export const mzTransaction: IconData = {"id":"transaction","anim":"hop","size":48,"parts":[["s","M12 42V10a4 4 0 0 1 4-4H32a4 4 0 0 1 4 4V42l-4-4l-4 4l-4-4l-4 4l-4-4zm6-26H30M18 24H30"]]};
+export const mzTransaction: IconData = {"id":"transaction","anim":"hop","size":48,"parts":[["s","M8 16a18 18 0 0 1 32-1m-6-2l6 2l1-6M40 32A18 18 0 0 1 8 33m6 2L8 33L7 39M28 16H22a4 4 0 1 0 0 8h4a4 4 0 1 1 0 8H20m4-20v4m0 16v4"]]};
 export const mzTrash: IconData = {"id":"trash","anim":"hop","size":48,"parts":[["s","M6 12H42m-4 0L36 40a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4L10 12m8 0V8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v4"]]};
 export const mzTrending: IconData = {"id":"trending","anim":"hop","size":48,"parts":[["s","M42 14L26 30l-8-8L6 34M30 14H42V26"]]};
 export const mzTv: IconData = {"id":"tv","anim":"hop","size":48,"parts":[["s","M11 14H37a5 5 0 0 1 5 5V37a5 5 0 0 1-5 5H11a5 5 0 0 1-5-5V19a5 5 0 0 1 5-5zM34 6L24 14L14 6"]]};

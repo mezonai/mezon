@@ -10,6 +10,7 @@ import * as s48 from './48';
 export const ICONS: Record<IconId, Record<IconSize, IconData>> = {
   "announcement": {16: s16.mzAnnouncement, 20: s20.mzAnnouncement, 24: s24.mzAnnouncement, 32: s32.mzAnnouncement, 40: s40.mzAnnouncement, 48: s48.mzAnnouncement},
   "anonymous": {16: s16.mzAnonymous, 20: s20.mzAnonymous, 24: s24.mzAnonymous, 32: s32.mzAnonymous, 40: s40.mzAnonymous, 48: s48.mzAnonymous},
+  "app-version": {16: s16.mzAppVersion, 20: s20.mzAppVersion, 24: s24.mzAppVersion, 32: s32.mzAppVersion, 40: s40.mzAppVersion, 48: s48.mzAppVersion},
   "arrow-down": {16: s16.mzArrowDown, 20: s20.mzArrowDown, 24: s24.mzArrowDown, 32: s32.mzArrowDown, 40: s40.mzArrowDown, 48: s48.mzArrowDown},
   "arrow-left": {16: s16.mzArrowLeft, 20: s20.mzArrowLeft, 24: s24.mzArrowLeft, 32: s32.mzArrowLeft, 40: s40.mzArrowLeft, 48: s48.mzArrowLeft},
   "arrow-left-circle": {16: s16.mzArrowLeftCircle, 20: s20.mzArrowLeftCircle, 24: s24.mzArrowLeftCircle, 32: s32.mzArrowLeftCircle, 40: s40.mzArrowLeftCircle, 48: s48.mzArrowLeftCircle},
