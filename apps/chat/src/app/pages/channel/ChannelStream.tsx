@@ -103,7 +103,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	if (isWatching) {
 		const membersLabel = showMembers ? t('hideMembers') : t('showMembers');
 		return (
-			<div className="flex h-full w-full flex-col bg-[#11111b] p-4 max-md:p-2">
+			<div className="flex h-full w-full flex-col p-4 dark:bg-[var(--theme-setting-primary)] max-md:p-2">
 				<div className="min-h-0 flex-1">
 					<StreamStage channelId={channelId} poster={streamPoster} onLeave={handleLeaveChannel} />
 				</div>
