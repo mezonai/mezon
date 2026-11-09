@@ -34,6 +34,7 @@
 		"categoryName": "카테고리 이름",
 		"categoryNamePlaceholder": "여기에 카테고리 이름을 입력하세요...",
 		"hasWelcomeChannelError": "이 카테고리에는 환영 채널이 있습니다",
+		"hasChannelError": "채널이 있는 카테고리는 삭제할 수 없습니다.",
 		"deleteCategory": "카테고리 삭제",
 		"deleteCategoryTitle": "카테고리 삭제",
 		"deleteCategoryButton": "카테고리 삭제",

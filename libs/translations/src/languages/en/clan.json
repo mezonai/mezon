@@ -34,6 +34,7 @@
 		"categoryName": "Category Name",
 		"categoryNamePlaceholder": "Enter your category name here...",
 		"hasWelcomeChannelError": "This category has welcome channel",
+		"hasChannelError": "Cannot delete category with channels.",
 		"deleteCategory": "Delete Category",
 		"deleteCategoryTitle": "Delete Category",
 		"deleteCategoryButton": "Delete category",
