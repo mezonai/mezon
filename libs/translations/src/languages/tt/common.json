@@ -161,6 +161,8 @@
 	"confirm": "Ышандыр",
 	"everyoneWaitingInside": "Барысы да сине көтәләр",
 	"noOneInVoice": "Хәзерге вакытта бүлмәдә беркем дә юк",
+	"joinAsSpeaker": "Сөйләүче буларак кушылу",
+	"joinAsAudience": "Тыңлаучы буларак кушылу",
 	"joining": "Кушылу ...",
 	"joinVoice": "Тавышка кушылыгыз",
 	"reset": "Бетерү",

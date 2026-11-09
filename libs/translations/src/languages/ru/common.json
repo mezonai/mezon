@@ -87,6 +87,8 @@
 	"confirm": "Подтвердить",
 	"everyoneWaitingInside": "Вас все ждут",
 	"noOneInVoice": "Сейчас в комнате никого нет",
+	"joinAsSpeaker": "Войти как говорящий",
+	"joinAsAudience": "Войти как слушатель",
 	"joining": "Присоединение...",
 	"joinVoice": "Присоединиться к звонку",
 	"reset": "Сбросить",

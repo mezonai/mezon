@@ -87,6 +87,8 @@
 	"confirm": "Bestätigen",
 	"everyoneWaitingInside": "Alle warten drinnen auf dich",
 	"noOneInVoice": "Momentan ist niemand im Raum",
+	"joinAsSpeaker": "Als Sprecher beitreten",
+	"joinAsAudience": "Als Zuhörer beitreten",
 	"joining": "Tritt bei...",
 	"joinVoice": "Sprachkanal beitreten",
 	"reset": "Zurücksetzen",

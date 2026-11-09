@@ -38,7 +38,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 	const statusMenu = useAppSelector(selectStatusMenu);
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [showJoinOptions, setShowJoinOptions] = useState(false);
-	const joinLabel = joinRole === 'speaker' ? 'Join as speaker' : 'Join as audience';
+	const getJoinLabel = (role: SfuJoinRole) => t(role === 'speaker' ? 'joinAsSpeaker' : 'joinAsAudience');
 
 	return (
 		<div
@@ -46,7 +46,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 				${isCurrentChannel ? 'hidden' : ''}
 				${statusMenu ? 'max-sbm:hidden' : ''}`}
 		>
-			<div className="flex min-w-0 flex-1 flex-col bg-theme-primary">
+			<div className="flex min-w-0 flex-1 flex-col bg-gray-300 dark:bg-[var(--theme-setting-primary)]">
 				<header className="flex h-heightTopBar shrink-0 items-center justify-between gap-5 p-3 border-b-theme-primary bg-theme-chat text-theme-primary">
 					<div className="flex min-w-0 items-center gap-3 text-lg">
 						<MezonIcon icon={isPrivateVoice ? MzIcons20.mzSpeakerLock : MzIcons20.mzSpeaker} className="shrink-0 text-[var(--mz-icon)]" />
@@ -84,7 +84,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 							onClick={() => handleJoinRoom(joinRole)}
 							data-e2e={generateE2eId('clan_page.screen.voice_room.button.join_voice')}
 						>
-							{loading ? t('joining') : joinLabel}
+							{loading ? t('joining') : getJoinLabel(joinRole)}
 						</button>
 						<button
 							type="button"
@@ -107,7 +107,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 											setShowJoinOptions(false);
 										}}
 									>
-										Join as {role}
+										{getJoinLabel(role)}
 									</button>
 								))}
 							</div>

@@ -87,6 +87,8 @@
 	"confirm": "Conferma",
 	"everyoneWaitingInside": "Tutti ti stanno aspettando all'interno",
 	"noOneInVoice": "Al momento non c'è nessuno in stanza",
+	"joinAsSpeaker": "Partecipa come relatore",
+	"joinAsAudience": "Partecipa come ascoltatore",
 	"joining": "Unione in corso...",
 	"joinVoice": "Partecipa alla chiamata",
 	"reset": "Ripristina",
