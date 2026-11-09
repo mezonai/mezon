@@ -3,6 +3,7 @@ import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import {
 	calculateMediaDimensions,
 	createImgproxyUrl,
+	fetchDownloadBlob,
 	getPresignKeyFromAttachmentUrl,
 	useIsIntersecting,
 	useResizeObserver,
@@ -338,9 +339,8 @@ function useDownloadVideo(url?: string, filename?: string) {
 		setIsDownloading(true);
 
 		try {
-			const response = await fetch(url, { mode: 'cors', signal: controller.signal });
-			if (!response.ok) return;
-			const blob = await response.blob();
+			const blob = await fetchDownloadBlob(url, controller.signal, { mode: 'cors' });
+			if (!blob) return;
 			if (controller.signal.aborted) return;
 			const blobUrl = URL.createObjectURL(blob);
 			const a = document.createElement('a');

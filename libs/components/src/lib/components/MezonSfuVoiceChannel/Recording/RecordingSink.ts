@@ -1,5 +1,5 @@
+import { FragmentedMp4Indexer, finalizedMp4Blob, type Mp4Finalization } from '@mezon/utils';
 import { getRecordingWindow, supportsDiskStreaming, supportsOriginPrivateFileSystem } from './capabilities';
-import { FragmentedMp4Indexer, finalizedMp4Blob, type Mp4Finalization } from './fragmentedMp4';
 
 export const BLOB_SINK_MAX_BYTES = 800 * 1024 * 1024;
 export const BLOB_SINK_MAX_DURATION_MS = 30 * 60 * 1000;
