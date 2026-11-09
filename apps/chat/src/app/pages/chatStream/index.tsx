@@ -20,7 +20,7 @@ const ChatHeader = () => {
 	};
 
 	return (
-		<div className="flex flex-row items-center justify-between px-4 h-[58px] min-h-[50px] bg-theme-primary">
+		<div className="flex flex-row items-center justify-between px-4 h-heightTopBar border-b-theme-primary bg-theme-chat text-theme-primary">
 			<div className="flex flex-row items-center gap-2">
 				<MezonIcon icon={MzIcons20.mzChat} className="text-[var(--mz-icon)]" />
 				<span className="text-base font-semibold text-theme-primary">

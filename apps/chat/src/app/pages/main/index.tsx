@@ -177,7 +177,7 @@ function MyApp() {
 	const isShowPopupQuickMess = useSelector(selectIsShowPopupQuickMess);
 
 	const streamStyle = isShowChatStream
-		? { width: `calc(100vw - ${chatStreamWidth}px - 352px)`, right: `${chatStreamWidth + 8}px` }
+		? { width: `calc(100vw - ${chatStreamWidth}px - 344px)`, right: `${chatStreamWidth}px` }
 		: { width: closeMenu ? undefined : `calc(100vw - 344px)`, right: '0' };
 
 	const previewMode = useSelector(selectOnboardingMode);
