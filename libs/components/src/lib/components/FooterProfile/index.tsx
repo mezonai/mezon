@@ -115,7 +115,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 	});
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const { createDirectMessageWithUser } = useDirect();
+	const { createDirectMessageWithUser } = useDirect({ suppressDeniedToast: true });
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const handleCloseModalCustomStatus = () => {

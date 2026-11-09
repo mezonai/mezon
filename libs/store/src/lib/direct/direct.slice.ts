@@ -169,6 +169,7 @@ type CreateDirectMessagePayload = {
 	display_names?: string | string[];
 	username?: string | string[];
 	avatar?: string | string[];
+	suppressDeniedToast?: boolean;
 };
 
 const isNewDMDenied = (error: unknown): boolean => {
@@ -180,7 +181,7 @@ const isNewDMDenied = (error: unknown): boolean => {
 
 export const createNewDirectMessage = createAsyncThunk<ApiChannelDescription, CreateDirectMessagePayload, ThunkConfigWithError>(
 	'direct/createNewDirectMessage',
-	async ({ body, username, avatar, display_names }, thunkAPI) => {
+	async ({ body, username, avatar, display_names, suppressDeniedToast }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
@@ -226,7 +227,9 @@ export const createNewDirectMessage = createAsyncThunk<ApiChannelDescription, Cr
 		} catch (error) {
 			if (body.type === ChannelType.CHANNEL_TYPE_DM && isNewDMDenied(error)) {
 				const message = t('setting:chat.onlyFriendsDm.denied');
-				toast.error(message);
+				if (!suppressDeniedToast) {
+					toast.error(message);
+				}
 				return thunkAPI.rejectWithValue({ message }, { error: { toast: false } });
 			}
 			captureSentryError(error, 'direct/createNewDirectMessage');

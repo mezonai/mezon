@@ -151,7 +151,7 @@ function MessageContextMenu({
 	const dmChannelPrivate = useAppSelector((state) => selectDmChannelPrivateById(state, (currentDmId || '') as string));
 	const dmChannelId = useAppSelector((state) => selectDmChannelIdById(state, (currentDmId || '') as string));
 
-	const { createDirectMessageWithUser } = useDirect();
+	const { createDirectMessageWithUser } = useDirect({ suppressDeniedToast: true });
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const channelOrDirect = useMemo(() => {

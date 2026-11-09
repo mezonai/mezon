@@ -219,13 +219,13 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 	const { userId } = useAuth();
 	const { reactionMessageDispatch } = useChatReaction();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
-	const { createDirectMessageWithUser } = useDirect();
+	const { createDirectMessageWithUser } = useDirect({ suppressDeniedToast: true });
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const sendNotificationMessage = useCallback(
 		async (userId: string, username?: string, avatar?: string, display_names?: string) => {
 			const response = await createDirectMessageWithUser(userId, display_names, username, avatar);
-			if (response.channel_id) {
+			if (response?.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`${t('tokensSent')} ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | ${t('giveCoffeeAction')}`,
