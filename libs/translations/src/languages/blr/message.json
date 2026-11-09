@@ -266,5 +266,6 @@
 		"pollLabel": "[Апытанне]",
 		"failedToCreatePoll": "Не ўдалося стварыць апытанне"
 	},
-	"turnOffAnonymousToCreateTopic": "Выключыце ананімны рэжым перад стварэннем тэмы"
+	"turnOffAnonymousToCreateTopic": "Выключыце ананімны рэжым перад стварэннем тэмы",
+	"failAttachment": "Не ўдалося загрузіць файл"
 }

@@ -80,8 +80,23 @@ export function isPresignAttachmentPending(
 	const presignKey = getPresignKeyFromAttachmentUrl(url);
 	if (!presignKey) return false;
 
-	const finishedKeys = new Set(presignFinishKeys);
-	return !finishedKeys.has(presignKey);
+	const getUploadSnowflake = (key: string): string | null => {
+		const separator = key.indexOf('_');
+		if (separator <= 0) return null;
+
+		const id = key.slice(0, separator);
+		return /^\d+$/.test(id) ? id : null;
+	};
+
+	const attachmentSnowflake = getUploadSnowflake(presignKey);
+
+	const isFinished = presignFinishKeys.some((finishedKey) => {
+		if (finishedKey === presignKey) return true;
+
+		return attachmentSnowflake !== null && getUploadSnowflake(finishedKey) === attachmentSnowflake;
+	});
+
+	return !isFinished;
 }
 
 export function getPresignFinishFingerprint(content: unknown): string {

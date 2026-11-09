@@ -266,5 +266,6 @@
 		"pollLabel": "[投票]",
 		"failedToCreatePoll": "投票の作成に失敗しました"
 	},
-	"turnOffAnonymousToCreateTopic": "トピックを作成する前に匿名モードをオフにしてください"
+	"turnOffAnonymousToCreateTopic": "トピックを作成する前に匿名モードをオフにしてください",
+	"failAttachment": "ファイルのアップロードに失敗しました"
 }

@@ -266,5 +266,6 @@
 		"pollLabel": "[Enquête]",
 		"failedToCreatePoll": "Peiling maken mislukt"
 	},
-	"turnOffAnonymousToCreateTopic": "Schakel de anonieme modus uit voordat je een onderwerp maakt"
+	"turnOffAnonymousToCreateTopic": "Schakel de anonieme modus uit voordat je een onderwerp maakt",
+	"failAttachment": "Bestand uploaden mislukt"
 }

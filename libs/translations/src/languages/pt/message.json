@@ -266,5 +266,6 @@
 		"pollLabel": "[Enquete]",
 		"failedToCreatePoll": "Falha ao criar a enquete"
 	},
-	"turnOffAnonymousToCreateTopic": "Desativa o modo anónimo antes de criares um tópico"
+	"turnOffAnonymousToCreateTopic": "Desativa o modo anónimo antes de criares um tópico",
+	"failAttachment": "Falha ao carregar o ficheiro"
 }
