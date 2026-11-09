@@ -1,6 +1,6 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
@@ -61,7 +61,7 @@ const BaseMessageHead = ({
 	return (
 		<>
 			<div
-				className={`text-base font-medium tracking-normal break-all username text-theme-primary-active flex items-center ${onClick ? 'cursor-pointer hover:underline' : ''}`}
+				className={`text-base font-medium tracking-normal break-all username text-theme-primary-active flex items-center ${onClick ? 'mz-hover cursor-pointer hover:underline' : ''}`}
 				onClick={onClick}
 				role={onClick ? 'button' : undefined}
 				style={{
@@ -76,7 +76,7 @@ const BaseMessageHead = ({
 				{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? nameShowed : priorityName}
 				{isAnonymous && !message.isSending ? (
 					<div className="rounded-full flex items-center justify-center ml-1">
-						<Icons.HatIcon className="w-4 h-4" />
+						<MezonIcon icon={MzIcons16.mzAnonymous} className="text-[var(--mz-icon)]" />
 					</div>
 				) : (
 					<>

@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { MEZON_AVATAR_URL, NX_CHAT_APP_ANNONYMOUS_USER_ID, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 
@@ -132,7 +132,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 									>
 										{t('clickToSeeAttachment')}
 									</div>
-									<Icons.ImageThumbnail />
+									<MezonIcon icon={MzIcons20.mzFileImage} className="text-[var(--mz-icon)]" />
 								</div>
 							) : isPollMessageRef ? (
 								<div
@@ -164,7 +164,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 					<Icons.ReplyCorner />
 					<div className="flex flex-row gap-1 mb-2 pr-12 items-center">
 						<div className="rounded-full flex items-center justify-center text-theme-primary-active size-6 bg-item-theme">
-							<Icons.IconReplyMessDeletedWeb defaultSize="w-4 h-4 text-theme-primary-active" />
+							<MezonIcon icon={MzIcons20.mzReply} className="text-[var(--mz-icon)]" />
 						</div>
 						<i className="text-theme-primary text-[13px]">{t('messageDeleteReply')}</i>
 					</div>

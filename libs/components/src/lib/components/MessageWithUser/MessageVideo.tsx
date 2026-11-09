@@ -1,5 +1,5 @@
 import { selectAttachmentUploadProgress, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import {
 	calculateMediaDimensions,
 	createImgproxyUrl,
@@ -321,6 +321,7 @@ function useVideoMediaDimensions(attachmentData: ApiMessageAttachment, isMobile:
 
 function useDownloadVideo(url?: string, filename?: string) {
 	const abortRef = useRef<AbortController | null>(null);
+	const [isDownloading, setIsDownloading] = useState(false);
 
 	useEffect(() => {
 		return () => {
@@ -329,12 +330,12 @@ function useDownloadVideo(url?: string, filename?: string) {
 		};
 	}, []);
 
-	return useCallback(async () => {
-		if (!url) return;
+	const download = useCallback(async () => {
+		if (!url || abortRef.current) return;
 
-		abortRef.current?.abort();
 		const controller = new AbortController();
 		abortRef.current = controller;
+		setIsDownloading(true);
 
 		try {
 			const response = await fetch(url, { mode: 'cors', signal: controller.signal });
@@ -351,8 +352,17 @@ function useDownloadVideo(url?: string, filename?: string) {
 			URL.revokeObjectURL(blobUrl);
 		} catch {
 			/* aborted or network error */
+		} finally {
+			if (abortRef.current === controller) abortRef.current = null;
+			setIsDownloading(false);
 		}
 	}, [url, filename]);
+
+	return { download, isDownloading };
+}
+
+function DownloadSpinner({ className }: { className: string }) {
+	return <span className={`inline-block border-2 border-current border-t-transparent rounded-full animate-spin ${className}`} />;
 }
 
 function usePlayOnActivation(videoRef: React.RefObject<HTMLVideoElement | null>, shouldPlay: boolean) {
@@ -441,7 +451,7 @@ function VideoPoster({
 }) {
 	return (
 		<div
-			className={`relative overflow-hidden rounded-lg bg-bgLightSecondary dark:bg-bgSecondary flex items-center justify-center ${
+			className={`mz-hover relative overflow-hidden rounded-lg bg-bgLightSecondary dark:bg-bgSecondary flex items-center justify-center ${
 				disablePlay ? 'cursor-default' : 'cursor-pointer'
 			}`}
 			style={style}
@@ -453,7 +463,7 @@ function VideoPoster({
 			) : (
 				<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group">
 					<div className="flex items-center justify-center w-12 h-12 rounded-full bg-black bg-opacity-50 transition-transform duration-150 group-hover:scale-110">
-						<Icons.PlayButton className="w-5 h-5 text-white" />
+						<MezonIcon icon={MzIcons20.mzPlay} className="text-white" />
 					</div>
 					{uploadLabel && (
 						<span
@@ -500,11 +510,15 @@ function DefaultVideo({
 				? `${t('attachment.uploading')} ${Math.floor(uploadProgress * 100)}%`
 				: t('attachment.finishing');
 	const { width, height, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
-	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
+	const { download: handleDownloadVideo, isDownloading } = useDownloadVideo(attachmentData.url, attachmentData.filename);
 	const localSource = (attachmentData as PreSendMediaAttachment).local_source;
 	const [failedLocalSource, setFailedLocalSource] = useState<string>();
 	const hasLocalPoster = Boolean(localSource && localSource !== failedLocalSource);
-	const thumbnailUrl = hasLocalPoster ? localSource : isPresignPending ? undefined : resolveVideoThumbnailUrl(attachmentData, width, height);
+	const thumbnailUrl = hasLocalPoster
+		? localSource
+		: isPresignPending && !isIngest
+			? undefined
+			: resolveVideoThumbnailUrl(attachmentData, width, height);
 	const handleThumbnailError = useCallback(() => {
 		if (hasLocalPoster) setFailedLocalSource(localSource);
 	}, [hasLocalPoster, localSource]);
@@ -601,7 +615,12 @@ function DefaultVideo({
 					{failed ? (
 						<div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 p-2 rounded-lg text-center text-sm bg-bgLightSecondary dark:bg-bgSecondary text-textSecondary800 dark:text-textSecondary">
 							<span>{t('video.error.cannotPlay')}</span>
-							<button className="underline hover:text-black dark:hover:text-white" onClick={handleDownloadVideo}>
+							<button
+								className="inline-flex items-center gap-2 underline hover:text-black dark:hover:text-white"
+								onClick={handleDownloadVideo}
+								disabled={isDownloading}
+							>
+								{isDownloading && <DownloadSpinner className="w-3.5 h-3.5" />}
 								{t('video.error.downloadButton')}
 							</button>
 						</div>
@@ -611,19 +630,20 @@ function DefaultVideo({
 								className="cursor-pointer absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-30 group"
 								onClick={handleShowFullVideo}
 							>
-								<Icons.PlayButton className="w-4 h-4 text-white transition-all duration-150 group-hover:scale-110" />
+								<MezonIcon icon={MzIcons16.mzPlay} className="text-white transition-all duration-150 group-hover:scale-110" />
 							</div>
 						)
 					)}
 
 					<div
-						className="group-hover:flex hidden top-2 right-1 cursor-pointer absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center z-30"
+						className={`${isDownloading ? 'flex cursor-default' : 'group-hover:flex hidden cursor-pointer'} top-2 right-1 absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center z-30`}
 						onClick={handleDownloadVideo}
 					>
-						<Icons.Download
-							defaultSize="!w-4 !h-4 "
-							defaultFill="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black"
-						/>
+						{isDownloading ? (
+							<DownloadSpinner className="w-3.5 h-3.5 dark:text-[#AEAEAE] text-[#535353]" />
+						) : (
+							<MezonIcon icon={MzIcons20.mzDownload} />
+						)}
 					</div>
 				</>
 			)}

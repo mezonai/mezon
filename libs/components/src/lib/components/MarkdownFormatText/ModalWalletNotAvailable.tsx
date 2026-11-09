@@ -1,5 +1,5 @@
 import { toastActions, useWallet } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
@@ -41,7 +41,7 @@ function ModalWalletNotAvailable(props: ModalWalletNotAvailableProps) {
 				<div className="p-6 pt-8">
 					<div className="flex flex-col items-center text-center space-y-4">
 						<div className="flex items-center justify-center w-16 h-16 bg-[#5865f2]/20 rounded-full">
-							<Icons.IconClockChannel />
+							<MezonIcon icon={MzIcons48.mzLock} className="text-[#5865f2]" />
 						</div>
 
 						<div className="space-y-2">
@@ -52,20 +52,18 @@ function ModalWalletNotAvailable(props: ModalWalletNotAvailableProps) {
 				</div>
 
 				<div className="bg-theme-setting-nav px-6 py-4 flex gap-3">
-					<>
-						<button
-							onClick={handleEnableWallet}
-							className="flex-1 bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 px-4 rounded transition-colors duration-200"
-						>
-							{t('wallet.enableWallet')}
-						</button>
-						<button
-							onClick={onCloseAndReset}
-							className="px-4 py-2.5 text-theme-primary hover:underline rounded transition-colors duration-200"
-						>
-							{t('wallet.cancel')}
-						</button>
-					</>
+					<button
+						onClick={handleEnableWallet}
+						className="flex-1 bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 px-4 rounded transition-colors duration-200"
+					>
+						{t('wallet.enableWallet')}
+					</button>
+					<button
+						onClick={onCloseAndReset}
+						className="px-4 py-2.5 text-theme-primary hover:underline rounded transition-colors duration-200"
+					>
+						{t('wallet.cancel')}
+					</button>
 				</div>
 			</div>
 		</div>

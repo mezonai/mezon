@@ -14,7 +14,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useSyncExternalStore } from 'react';
@@ -157,31 +157,27 @@ const ChannelHashtag = ({
 		>
 			{isVoiceChannel ? (
 				channel.channel_private ? (
-					<Icons.SpeakerLocked defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+					<MezonIcon icon={MzIcons16.mzSpeakerLock} className={`inline mt-[-0.2rem]`} />
 				) : (
-					<Icons.Speaker defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+					<MezonIcon icon={MzIcons16.mzSpeaker} className={`inline mt-[-0.2rem]`} />
 				)
 			) : isStreamingChannel ? (
-				<Icons.Stream defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+				<MezonIcon icon={MzIcons16.mzLive} className={`inline mt-[-0.2rem] text-[#3297FF]`} />
 			) : isAppChannel ? (
-				<Icons.AppChannelIcon className={`inline mt-[-0.2rem] w-4 h-4`} />
+				<MezonIcon icon={MzIcons16.mzChannelApp} className={`inline mt-[-0.2rem]`} />
 			) : isTextChannel ? (
 				channel?.age_restricted === 1 ? (
-					<Icons.HashtagWarning defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+					<MezonIcon icon={MzIcons16.mzChannelWarning} className={`inline-block -mt-[0.2rem]`} />
 				) : !channel.channel_private || channel.channel_private === 0 ? (
-					<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+					<MezonIcon icon={MzIcons16.mzChannel} className={`inline-block -mt-[0.2rem]`} />
 				) : (
-					<Icons.HashtagLocked
-						defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`}
-						defaultFill1="var(--bg-icon-theme)"
-						defaultFill2="var(--bg-icon-theme-active)"
-					/>
+					<MezonIcon icon={MzIcons16.mzChannelPrivate} className={`inline-block -mt-[0.2rem] text-[var(--mz-icon)]`} />
 				)
 			) : isThreadChannel ? (
 				(channel && (!channel.channel_private || channel.channel_private === 0)) || parentId ? (
-					<Icons.ThreadIcon defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+					<MezonIcon icon={MzIcons16.mzThread} className={`inline-block -mt-[0.2rem]`} />
 				) : (
-					<Icons.ThreadIconLocker className={`inline-block -mt-[0.2rem] w-4 h-4 `} />
+					<MezonIcon icon={MzIcons16.mzThreadPrivate} className={`inline-block -mt-[0.2rem]`} />
 				)
 			) : null}
 			<span className="inline">{channel ? channel.channel_label : channelLabel || null}</span>
@@ -214,7 +210,7 @@ function PrivateChannel({
 			onClick={onClick}
 			className={`px-0.1 items-center rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
-			{channelLabel ? null : isLink ? <Icons.Hashtag defaultSize={`w-4 h-4`} /> : <Icons.LockedPrivate className={`w-4 h-4`} />}
+			{channelLabel ? null : isLink ? <MezonIcon icon={MzIcons16.mzChannel} /> : <MezonIcon icon={MzIcons16.mzLock} />}
 			<span className={`${isLink ? 'italic' : ''}`}>
 				{channelLabel && !checkGetChannelData ? channelLabel : isLink ? t('unknown') : t('noAccess')}
 			</span>

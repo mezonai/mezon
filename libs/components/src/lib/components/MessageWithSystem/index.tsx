@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, type MessagesEntity } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { TypeMessage, addMention, convertDateStringI18n, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
@@ -55,18 +55,13 @@ function MessageWithSystem({
 						className={`flex items-start min-h-8 relative w-full px-3 text-theme-primary pt-2 pl-5 ${isCustom ? 'pb-2' : ''}`}
 						data-e2e={generateE2eId('chat.system_message', message?.code.toString())}
 					>
-						{message?.code === TypeMessage.Welcome && <Icons.WelcomeIcon defaultSize="size-8 flex-shrink-0" />}
-						{message?.code === TypeMessage.UpcomingEvent && <Icons.UpcomingEventIcon defaultSize="size-8 flex-shrink-0" />}
+						{message?.code === TypeMessage.Welcome && <MezonIcon icon={MzIcons20.mzArrowRight} className="text-[#16A34A]" />}
+						{message?.code === TypeMessage.UpcomingEvent && <MezonIcon icon={MzIcons20.mzEvent} className="text-[rgba(163,22,22,1)]" />}
 						{(message?.code === TypeMessage.CreateThread || message?.code === TypeMessage.DeleteThread) && (
-							<Icons.ThreadIcon
-								defaultSize="size-6 flex-shrink-0"
-								defaultFill1="var(--bg-icon-theme)"
-								defaultFill4="var(--bg-theme-secounnd)"
-								defaultFill5="var(--bg-icon-theme)"
-							/>
+							<MezonIcon icon={MzIcons20.mzThread} className="flex-shrink-0 text-[var(--mz-icon)]" />
 						)}
-						{message?.code === TypeMessage.CreatePin && <Icons.PinRight defaultSize="size-6 flex-shrink-0" />}
-						{message?.code === TypeMessage.AuditLog && <Icons.AuditLogIcon defaultSize="size-8 flex-shrink-0" />}
+						{message?.code === TypeMessage.CreatePin && <MezonIcon icon={MzIcons20.mzPin} className="text-[var(--mz-icon)]" />}
+						{message?.code === TypeMessage.AuditLog && <MezonIcon icon={MzIcons20.mzAuditLog} className="text-[#186CF2]" />}
 						<MessageLineSystem
 							message={message}
 							mode={mode}

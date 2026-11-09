@@ -1,5 +1,5 @@
 import { getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 
 import type { ApiApp } from 'mezon-js';
@@ -138,27 +138,33 @@ const AppPageBottom = () => {
 						<div className="w-[170px] h-[40px] rounded-md dark:bg-[#1e1f22] bg-bgLightModeThird flex flex-row px-3 justify-between items-center">
 							<p className="truncate max-w-[90%]">{dropdownValue}</p>
 							<div>
-								<Icons.ArrowDownFill />
+								<MezonIcon icon={MzIcons20.mzCaretDown} className="text-[var(--mz-icon)]" />
 							</div>
 						</div>
 					</Menu>
 				</div>
 				<div className="flex w-fit gap-4 max-md:mt-4">
 					<div
-						className={`cursor-pointer flex items-center gap-3 p-3 max-md:p-3 rounded-md w-fit h-fit ${isSmallSizeSort ? 'bg-[#e6e6e8] dark:bg-[#3f4147]' : ''}`}
+						className={`mz-hover cursor-pointer flex items-center gap-3 p-3 max-md:p-3 rounded-md w-fit h-fit ${isSmallSizeSort ? 'bg-[#e6e6e8] dark:bg-[#3f4147]' : ''}`}
 						onClick={() => setIsSmallSizeSort(true)}
 					>
 						<div className={`w-5`}>
-							<Icons.SortBySmallSizeBtn className="w-full h-fit" />
+							<MezonIcon
+								icon={MzIcons20.mzGridDense}
+								className={isSmallSizeSort ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+							/>
 						</div>
 						<div>{t('small')}</div>
 					</div>
 					<div
-						className={`cursor-pointer flex items-center gap-3 p-3 max-md:p-3 rounded-md w-fit h-fit ${!isSmallSizeSort ? 'bg-[#e6e6e8] dark:bg-[#3f4147]' : ''}`}
+						className={`mz-hover cursor-pointer flex items-center gap-3 p-3 max-md:p-3 rounded-md w-fit h-fit ${!isSmallSizeSort ? 'bg-[#e6e6e8] dark:bg-[#3f4147]' : ''}`}
 						onClick={() => setIsSmallSizeSort(false)}
 					>
 						<div className="w-5">
-							<Icons.SortByBigSizeBtn />
+							<MezonIcon
+								icon={MzIcons20.mzGrid}
+								className={isSmallSizeSort ? 'text-[var(--mz-icon)]' : 'text-[var(--mz-icon-selected)]'}
+							/>
 						</div>
 						<div>{t('large')}</div>
 					</div>
@@ -201,7 +207,7 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 					>
 						{value.is_shadow && (
 							<div className="w-fit p-[6px] rounded-full dark:bg-bgLightPrimary bg-bgPrimary top-1 left-1 absolute">
-								<Icons.ShadowBotIcon className="w-6 dark:text-textPrimaryLight text-textPrimary" />
+								<MezonIcon icon={MzIcons24.mzBot} className="dark:text-textPrimaryLight text-textPrimary" />
 							</div>
 						)}
 						{value.applogo ? (

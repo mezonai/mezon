@@ -1,5 +1,5 @@
 import { selectCurrentChannelId, selectCurrentClanId } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons24 } from '@mezon/ui';
 import { useSelector } from 'react-redux';
 import { useSFU } from '../../../SFU/SFUContext';
 import { useWebRTC } from '../../../WebRTC/WebRTCContext';
@@ -37,10 +37,10 @@ export const SFUBtn: React.FC<ISFUBtnProps> = ({ isLightMode }) => {
 			>
 				{isJoined ? (
 					<div className="size-6 flex items-center justify-center">
-						<Icons.JoinedSFU className="size-4 dark:hover:text-white hover:text-black text-theme-primary" />
+						<MezonIcon icon={MzIcons16.mzLeave} className="dark:hover:text-white hover:text-black text-[var(--mz-icon)]" />
 					</div>
 				) : (
-						<Icons.NotJoinedSFU className="size-6 dark:hover:text-white hover:text-black text-theme-primary" />
+					<MezonIcon icon={MzIcons24.mzJoin} className="dark:hover:text-white hover:text-black text-[var(--mz-icon)]" />
 				)}
 			</button>
 		</div>

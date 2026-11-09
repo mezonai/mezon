@@ -38,7 +38,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { BooleanToVoidFunction, ChannelMembersEntity } from '@mezon/utils';
 import {
 	Direction_Mode,
@@ -520,7 +520,6 @@ const ScrollDownButton = memo(
 		const jumpToPresentTimeoutRef = useRef<number | null>(null);
 
 		const isVisible = useAppSelector((state) => selectShowScrollDownButton(state, effectiveChannelId));
-		const appearanceTheme = useAppSelector(selectTheme);
 		const lastMessageUnreadId = useAppSelector((state) => selectUnreadMessageIdByChannelId(state, effectiveChannelId));
 		const lastSent = useAppSelector((state) => selectLastSentMessageStateByChannelId(state, effectiveChannelId));
 		const currentUserId = useAppSelector(selectCurrentUserId);
@@ -619,21 +618,7 @@ const ScrollDownButton = memo(
 						{unreadCount > 99 ? '99+' : unreadCount}
 					</div>
 				)}
-				<svg
-					width={18}
-					height={18}
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-					className={`icon-md ${appearanceTheme === 'light' ? 'text-black' : 'text-token-text-primary'}`}
-				>
-					<path
-						fillRule="evenodd"
-						clipRule="evenodd"
-						d="M12 21C11.7348 21 11.4804 20.8946 11.2929 20.7071L4.29289 13.7071C3.90237 13.3166 3.90237 12.6834 4.29289 12.2929C4.68342 11.9024 5.31658 11.9024 5.70711 12.2929L11 17.5858V4C11 3.44772 11.4477 3 12 3C12.5523 3 13 3.44772 13 4V17.5858L18.2929 12.2929C18.6834 11.9024 19.3166 11.9024 19.7071 12.2929C20.0976 12.6834 20.0976 13.3166 19.7071 13.7071L12.7071 20.7071C12.5196 20.8946 12.2652 21 12 21Z"
-						fill="currentColor"
-					/>
-				</svg>
+				<MezonIcon icon={MzIcons20.mzArrowDown} className="text-[var(--mz-icon)]" />
 			</button>
 		);
 	}
@@ -667,11 +652,11 @@ const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
 	if (!badge || !badge.totalCount || !value) return null;
 	return (
 		<div
-			className="cursor-pointer absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 py-2 px-4 rounded-full bg-theme-contexify bottom-3"
+			className="mz-hover cursor-pointer absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 py-2 px-4 rounded-full bg-theme-contexify bottom-3"
 			onClick={handleOpenTopic}
 		>
 			<div>
-				<Icons.TopicIcon />
+				<MezonIcon icon={MzIcons20.mzTopic} className="text-[var(--mz-icon)]" />
 			</div>
 			<div>New mentions in topic</div>
 			<div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">

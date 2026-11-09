@@ -24,8 +24,8 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 
-import { Icons } from '@mezon/ui';
-import { buildChannelAppLaunchUrl, createImgproxyUrl, DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, MzIcons40 } from '@mezon/ui';
+import { DONE_ONBOARDING_STATUS, EPermission, buildChannelAppLaunchUrl, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiChannelAppResponse } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -121,18 +121,16 @@ export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasCh
 				<Link
 					to={serverGuidePath}
 					onClick={handleClose}
-					className={`self-stretch inline-flex cursor-pointer px-2 rounded h-[34px] ${
+					className={`mz-hover self-stretch inline-flex cursor-pointer px-2 rounded h-[34px] ${
 						isGuidePath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''
 					} bg-item-hover text-theme-primary text-theme-primary-hover ${
-						isGuidePath
-							? '[--guide-fill-1:var(--bg-icon-theme-active)] [--guide-fill-2:var(--bg-theme-secounnd)]'
-							: '[--guide-fill-1:var(--bg-icon-theme)] [--guide-fill-2:var(--bg-theme-secounnd)]'
-					} hover:[--guide-fill-1:var(--bg-icon-theme-active)] hover:[--guide-fill-2:var(--bg-theme-secounnd)]`}
+						isGuidePath ? '[--guide-fill-1:var(--mz-icon-selected)]' : '[--guide-fill-1:var(--mz-icon)]'
+					} hover:[--guide-fill-1:var(--mz-icon-selected)]`}
 				>
 					<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.clan_guide')}>
 						<div className="w-5 h-5 relative flex flex-row items-center">
 							<div className="w-5 h-5">
-								<Icons.GuideIcon className="w-5 h-5 " defaultFill1="var(--guide-fill-1)" defaultFill2="var(--guide-fill-2)" />
+								<MezonIcon icon={MzIcons20.mzGuide} className="text-[var(--guide-fill-1)]" />
 							</div>
 						</div>
 						<div className="w-[99px] text-base font-medium">{t('navigation.clanGuide')}</div>
@@ -141,14 +139,14 @@ export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasCh
 			)}
 
 			<div
-				className="self-stretch items-center inline-flex cursor-pointer px-2 rounded-lg h-[34px] bg-item-hover text-theme-primary text-theme-primary-hover [--events-fill-1:var(--bg-icon-theme)] [--events-fill-2:var(--bg-theme-secounnd)] hover:[--events-fill-1:var(--bg-icon-theme-active)] hover:[--events-fill-2:var(--bg-theme-secounnd)]"
+				className="mz-hover self-stretch items-center inline-flex cursor-pointer px-2 rounded-lg h-[34px] bg-item-hover text-theme-primary text-theme-primary-hover [--events-fill-1:var(--mz-icon)] hover:[--events-fill-1:var(--mz-icon-selected)]"
 				onClick={openModal}
 				data-e2e={generateE2eId('clan_page.side_bar.button.events')}
 			>
 				<div className="grow w-5 flex-row items-center gap-2 flex">
 					<div className="h-5 relative flex justify-center gap-2  items-center">
 						<div className="w-5 h-5">
-							<Icons.IconEvents className="w-5 h-5" defaultFill1="var(--events-fill-1)" defaultFill2="var(--events-fill-2)" />
+							<MezonIcon icon={MzIcons20.mzEvent} className="text-[var(--events-fill-1)]" />
 						</div>
 						<div className="w-[99px] text-base font-medium">
 							{numberEventManagement === 0
@@ -169,16 +167,16 @@ export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasCh
 			<Link
 				to={memberPath}
 				onClick={handleClose}
-				className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
+				className={`mz-hover self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
 					isMemberPath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''
 				} bg-item-hover text-theme-primary text-theme-primary-hover ${
-					isMemberPath ? '[--member-list-fill:var(--bg-icon-theme-active)]' : '[--member-list-fill:var(--bg-icon-theme)]'
-				} hover:[--member-list-fill:var(--bg-icon-theme-active)]`}
+					isMemberPath ? '[--member-list-fill:var(--mz-icon-selected)]' : '[--member-list-fill:var(--mz-icon)]'
+				} hover:[--member-list-fill:var(--mz-icon-selected)]`}
 			>
 				<div className="grow w-5 flex-row items-center gap-2 flex" data-e2e={generateE2eId('clan_page.side_bar.button.members')}>
 					<div className="w-5 h-5 relative flex flex-row items-center">
 						<div className="w-5 h-5 ">
-							<Icons.MemberList className="w-5 h-5" defaultFill1="var(--member-list-fill)" defaultFill2="var(--member-list-fill)" />
+							<MezonIcon icon={MzIcons20.mzMembers} className="text-[var(--member-list-fill)]" />
 						</div>
 					</div>
 					<div className="text-base font-medium">{t('navigation.members')}</div>
@@ -188,18 +186,16 @@ export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasCh
 				<Link
 					to={channelSettingPath}
 					onClick={handleClose}
-					className={`self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
+					className={`mz-hover self-stretch inline-flex cursor-pointer px-2 rounded-lg h-[34px] ${
 						isSettingPath ? 'bg-[var(--bg-item-hover)] text-theme-primary-active' : ''
 					} bg-item-hover text-theme-primary text-theme-primary-hover ${
-						isSettingPath
-							? '[--channel-browser-fill-1:var(--bg-icon-theme-active)] [--channel-browser-fill-2:var(--bg-theme-secounnd)]'
-							: '[--channel-browser-fill-1:var(--bg-icon-theme)] [--channel-browser-fill-2:var(--bg-theme-secounnd)]'
-					} hover:[--channel-browser-fill-1:var(--bg-icon-theme-active)] hover:[--channel-browser-fill-2:var(--bg-theme-secounnd)]`}
+						isSettingPath ? '[--channel-browser-fill-1:var(--mz-icon-selected)]' : '[--channel-browser-fill-1:var(--mz-icon)]'
+					} hover:[--channel-browser-fill-1:var(--mz-icon-selected)]`}
 				>
 					<div className="grow w-5 flex-row items-center gap-2 flex">
 						<div className="w-5 h-5 relative flex flex-row items-center">
 							<div className="w-5 h-5">
-								<Icons.ChannelBrowser defaultFill1="var(--channel-browser-fill-1)" defaultFill2="var(--channel-browser-fill-2)" />
+								<MezonIcon icon={MzIcons20.mzChannelBrowse} className="text-[var(--channel-browser-fill-1)]" />
 							</div>
 						</div>
 						<div className="w-full text-base font-medium" data-e2e={generateE2eId('clan_page.side_bar.button.channels')}>
@@ -212,14 +208,8 @@ export const Events = memo(({ checkFetchChannel, checkHasChannel }: { checkHasCh
 			{!checkHasChannel && checkFetchChannel && (
 				<div className="bottom-5 flex-col flex rounded-lg p-3 my-1 gap-2 bg-theme-surface w-[253px] ml-[1px]">
 					<div className="flex gap-1 text-sm items-center font-semibold text-theme-primary-active">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="-5 -10 110 135"
-							className={`h-6 w-6 max-lg:h-5 max-lg:w-5 max-md:h-5 max-md:w-5 text-theme-primary-active `}
-							fill="currentColor"
-						>
-							<path d="m50 94.488c-30.781-.488-28.59-41.488-28.59-41.488V32a4.86 4.86 0 0 1 9.71 0v21h2.12V14.67a4.86 4.86 0 0 1 9.71 0v36h2.16V10.35a4.85 4.85 0 0 1 9.7 0v40.32h2V15.75a5 5 0 0 1 10 0v45.38l2 .46V46a4.86 4.86 0 0 1 9.71 0v15.59s2.22 33.41-28.52 32.898Z" />
-						</svg>
+						<MezonIcon icon={MzIcons24.mzHandRaise} className="text-[var(--mz-icon)] max-lg:hidden" />
+						<MezonIcon icon={MzIcons20.mzHandRaise} className="text-[var(--mz-icon)] hidden max-lg:inline" />
 						{tWelcome('welcome.welcomeToClan')}
 					</div>
 					<div className="text-xs text-theme-primary"> {tWelcome('welcome.emptyChannel')}</div>
@@ -242,11 +232,11 @@ const EventNotification = ({ event, handleOpenDetail }: { event: EventManagement
 					<div className="w-2 h-2 rounded-full bg-green-500"></div>
 					<p className="text-green-500 text-base font-bold ml-2">{t('ongoingEvent.title')}</p>
 				</div>
-				<Icons.CloseButton className="w-3 h-3 mt-2" onClick={handleCloseEvent} />
+				<MezonIcon icon={MzIcons16.mzClose} className="mt-2" onClick={handleCloseEvent} />
 			</div>
 			<p className="text-channelActiveLightColor dark:text-channelActiveColor mt-3 text-base font-medium">{event.title}</p>
 			<div className="flex mt-2">
-				<Icons.Location defaultFill="text-channelActiveLightColor dark:text-channelActiveColor" />
+				<MezonIcon icon={MzIcons20.mzLocation} className="text-[var(--mz-icon)]" />
 				<p className="ml-2 text-channelActiveLightColor dark:text-channelActiveColor">{event.address}</p>
 			</div>
 			<div className="text-center py-1 bg-green-700 mt-2 rounded select-none" onClick={handleOpenDetail}>
@@ -270,14 +260,14 @@ const OnboardingGetStart = ({ link, clanId }: { link: string; clanId: string }) 
 	};
 
 	return (
-		<div className="w-full h-12 flex flex-col gap-2 relative px-2" onClick={handleNavigate}>
+		<div className="mz-hover w-full h-12 flex flex-col gap-2 relative px-2" onClick={handleNavigate}>
 			<div className="flex justify-between">
 				<p className="text-sm font-bold text-theme-primary">{t('onboarding.getStarted')}</p>
 				<div className="flex gap-[1px] items-center text-theme-primary">
 					<p className="text-xs font-bold ">{missionDone}</p>
 					<p className="text-xs">{t('onboarding.of')}</p>
 					<p className="text-xs font-bold">{missionSum}</p>
-					<Icons.ArrowRight className="w-3 h-3" />
+					<MezonIcon icon={MzIcons16.mzChevronRight} className="text-[var(--mz-icon)]" />
 				</div>
 			</div>
 			<div className="flex bg-slate-700 relative rounded-2xl w-full h-1 overflow-hidden">
@@ -375,7 +365,7 @@ const ChannelAppList = memo(() => {
 				{showList.map((item) => (
 					<CustomTooltip key={item.app_id} text={item.app_name || ''}>
 						<div
-							className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover"
+							className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover group/mzi"
 							onClick={() => handleOpenApp(item)}
 						>
 							{item.app_logo ? (
@@ -385,14 +375,10 @@ const ChannelAppList = memo(() => {
 									alt={item.app_name}
 								/>
 							) : (
-								<svg className="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-									<g>
-										<path d="M14,3H4C3.4,3,3,3.4,3,4v10c0,0.6,0.4,1,1,1h10c0.6,0,1-0.4,1-1V4C15,3.4,14.6,3,14,3z" />
-										<path d="M14,17H4c-0.6,0-1,0.4-1,1v10c0,0.6,0.4,1,1,1h10c0.6,0,1-0.4,1-1V18C15,17.4,14.6,17,14,17z" />
-										<path d="M28,3H18c-0.6,0-1,0.4-1,1v10c0,0.6,0.4,1,1,1h10c0.6,0,1-0.4,1-1V4C29,3.4,28.6,3,28,3z" />
-										<path d="M26.5,19.5c-0.4-0.4-1-0.4-1.4,0L23,21.6l-2.1-2.1c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l2.1,2.1l-2.1,2.1 c-0.4,0.4-0.4,1,0,1.4c0.2,0.2,0.5,0.3,0.7,0.3s0.5-0.1,0.7-0.3l2.1-2.1l2.1,2.1c0.2,0.2,0.5,0.3,0.7,0.3s0.5-0.1,0.7-0.3 c0.4-0.4,0.4-1,0-1.4L24.4,23l2.1-2.1C26.9,20.5,26.9,19.9,26.5,19.5z" />
-									</g>
-								</svg>
+								<MezonIcon
+									icon={MzIcons24.mzChannelApp}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							)}
 						</div>
 					</CustomTooltip>
@@ -400,10 +386,10 @@ const ChannelAppList = memo(() => {
 				{allChannelApp.length > NUMBER_APPS_SHOW_OFF + 1 && (
 					<div
 						ref={expandRef}
-						className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover"
+						className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover group/mzi"
 						onClick={handleOpenListApp}
 					>
-						<Icons.RightIcon className="w-6 h-6" />
+						<MezonIcon icon={MzIcons24.mzChevronRight} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</div>
 				)}
 			</div>
@@ -436,7 +422,7 @@ const ListChannelApp = ({
 					{allChannelApp.map((item) => (
 						<div
 							key={item.app_id}
-							className="text-theme-primary text-theme-primary-hover rounded-md p-2 flex flex-col items-center justify-center cursor-pointer bg-item-hover gap-1"
+							className="mz-hover text-theme-primary text-theme-primary-hover rounded-md p-2 flex flex-col items-center justify-center cursor-pointer bg-item-hover gap-1 group/mzi"
 							onClick={() => handleOpenApp(item)}
 						>
 							<div className="w-10 h-10 flex items-center justify-center">
@@ -447,18 +433,10 @@ const ListChannelApp = ({
 										alt={item.app_name}
 									/>
 								) : (
-									<svg className="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-										<g>
-											<path d="M14,3H4C3.4,3,3,3.4,3,4v10c0,0.6,0.4,1,1,1h10c0.6,0,1-0.4,1-1V4C15,3.4,14.6,3,14,3z" />
-											<path d="M14,17H4c-0.6,0-1,0.4-1,1v10c0,0.6,0.4,1,1,1h10c0.6,0,1-0.4,1-1V18C15,17.4,14.6,17,14,17z" />
-											<path d="M28,3H18c-0.6,0-1,0.4-1,1v10c0,0.6,0.4,1,1,1h10c0.6,0,1-0.4,1-1V4C29,3.4,28.6,3,28,3z" />
-											<path
-												d="M26.5,19.5c-0.4-0.4-1-0.4-1.4,0L23,21.6l-2.1-2.1c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l2.1,2.1l-2.1,2.1
-		c-0.4,0.4-0.4,1,0,1.4c0.2,0.2,0.5,0.3,0.7,0.3s0.5-0.1,0.7-0.3l2.1-2.1l2.1,2.1c0.2,0.2,0.5,0.3,0.7,0.3s0.5-0.1,0.7-0.3
-		c0.4-0.4,0.4-1,0-1.4L24.4,23l2.1-2.1C26.9,20.5,26.9,19.9,26.5,19.5z"
-											/>
-										</g>
-									</svg>
+									<MezonIcon
+										icon={MzIcons40.mzChannelApp}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
 								)}
 							</div>
 							<span className="text-xs text-center truncate w-full" title={item.app_name}>
@@ -471,16 +449,16 @@ const ListChannelApp = ({
 			<div>
 				<button
 					onClick={handleFindChannelApp}
-					className="w-full px-4 py-3 flex items-center gap-3 text-theme-primary hover:bg-item-hover transition-colors cursor-pointer bg-item-theme rounded-bl-lg rounded-br-lg"
+					className="mz-hover w-full px-4 py-3 flex items-center gap-3 text-theme-primary hover:bg-item-hover transition-colors cursor-pointer bg-item-theme rounded-bl-lg rounded-br-lg"
 				>
 					<div className="w-8 h-8 rounded-full bg-button-secondary flex items-center justify-center">
-						<Icons.SearchIcon className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 					</div>
 					<div className="flex-1 text-left">
 						<p className="text-sm font-medium">Find Channel App</p>
 						<p className="text-xs opacity-60">Discover more apps</p>
 					</div>
-					<Icons.ArrowRight className="w-5 h-5" />
+					<MezonIcon icon={MzIcons20.mzChevronRight} className="text-[var(--mz-icon)]" />
 				</button>
 			</div>
 		</div>

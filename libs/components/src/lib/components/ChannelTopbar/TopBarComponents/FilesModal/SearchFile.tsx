@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 
 const SearchFile = ({ setKeywordSearch }: { setKeywordSearch: React.Dispatch<React.SetStateAction<string>> }) => {
@@ -19,7 +19,7 @@ const SearchFile = ({ setKeywordSearch }: { setKeywordSearch: React.Dispatch<Rea
 				/>
 			</div>
 			<div className="w-5 h-6 flex flex-row items-center pl-1 absolute right-1 bg-transparent top-1/2 transform -translate-y-1/2">
-				<Icons.Search />
+				<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 			</div>
 		</div>
 	);

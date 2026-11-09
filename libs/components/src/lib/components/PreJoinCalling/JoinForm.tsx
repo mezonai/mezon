@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { LoadingStatus } from '@mezon/utils';
 import React, { memo, useState } from 'react';
 import type { SfuJoinRole } from '../MezonSfuVoiceChannel/types';
@@ -6,12 +7,12 @@ interface JoinFormProps {
 	username: string;
 	setUsername: (value: string) => void;
 	onJoin: (role: SfuJoinRole) => void;
-	loadingStatus: LoadingStatus;
+	loadingStatus: number | null | LoadingStatus;
 }
 
 const JoinForm = memo(({ username, setUsername, onJoin, loadingStatus }: JoinFormProps) => {
 	const isLoading = loadingStatus === 'loading';
-	const isDisabled = loadingStatus === 'loaded' || isLoading;
+	const isDisabled = loadingStatus === 0 || isLoading;
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
 	const [showJoinOptions, setShowJoinOptions] = useState(false);
 	const joinLabel = joinRole === 'speaker' ? 'Join as speaker' : 'Join as audience';
@@ -51,9 +52,7 @@ const JoinForm = memo(({ username, setUsername, onJoin, loadingStatus }: JoinFor
 					onClick={() => setShowJoinOptions((visible) => !visible)}
 					aria-label="Choose join role"
 				>
-					<svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-						<path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-					</svg>
+					<MezonIcon icon={MzIcons16.mzChevronDown} />
 				</button>
 				{showJoinOptions && (
 					<div className="absolute left-0 bottom-full z-30 mb-1 w-full overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 py-1 text-left shadow-2xl">

@@ -1,4 +1,4 @@
-import { Icons, Image } from '@mezon/ui';
+import { Image, MezonIcon, MzIcons20, MzIcons24, MzIcons32 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo, useEffect, useRef, useState, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -216,12 +216,28 @@ const IconCard: React.FC<IconCardProps> = ({ icon, label }) => {
 
 const _IconGrid: React.FC = () => {
 	const items = [
-		{ icon: <Icons.MessageSquareIcon className="max-md:w-5" />, label: 'Text' },
-		{ icon: <Icons.VoiceIcon className="max-md:w-5" />, label: 'Voice' },
-		{ icon: <Icons.VideoIcon className="max-md:w-5" />, label: 'Video' },
-		{ icon: <Icons.UserIcon className="max-md:w-5" />, label: 'Customizable roles & permissions' },
-		{ icon: <Icons.Bell className="w-8 max-md:w-5 text-[#92B8FF]" />, label: 'Notification management' },
-		{ icon: <Icons.PrivateChatIcon className="max-md:w-5" />, label: 'Private messaging' }
+		{
+			icon: (
+				<>
+					<MezonIcon icon={MzIcons32.mzChat} className="max-md:hidden text-[#92B8FF]" />
+					<MezonIcon icon={MzIcons20.mzChat} className="hidden max-md:inline text-[#92B8FF]" />
+				</>
+			),
+			label: 'Text'
+		},
+		{ icon: <MezonIcon icon={MzIcons20.mzMic} className="text-[#92B8FF]" />, label: 'Voice' },
+		{ icon: <MezonIcon icon={MzIcons20.mzVideo} className="text-[#92B8FF]" />, label: 'Video' },
+		{ icon: <MezonIcon icon={MzIcons20.mzUser} className="text-[#92B8FF]" />, label: 'Customizable roles & permissions' },
+		{
+			icon: (
+				<>
+					<MezonIcon icon={MzIcons24.mzBell} className="max-md:hidden text-[#92B8FF]" />
+					<MezonIcon icon={MzIcons20.mzBell} className="hidden max-md:inline text-[#92B8FF]" />
+				</>
+			),
+			label: 'Notification management'
+		},
+		{ icon: <MezonIcon icon={MzIcons20.mzMessages} className="text-[#92B8FF]" />, label: 'Private messaging' }
 	];
 
 	return (

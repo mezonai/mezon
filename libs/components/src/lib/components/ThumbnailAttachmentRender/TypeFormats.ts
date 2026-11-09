@@ -1,109 +1,109 @@
-import { Icons } from '@mezon/ui';
+export type FileIconName = 'mzFile' | 'mzFileArchive' | 'mzFileAudio' | 'mzFileCode' | 'mzFilePdf' | 'mzFileSheet' | 'mzFileText';
 
-export const typeFormats: Record<string, any> = [
+export const typeFormats: { type: string; icon: FileIconName }[] = [
 	{
 		type: 'text/plain',
-		icon: Icons.TxtThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'text/html',
-		icon: Icons.CodeThumbnail
+		icon: 'mzFileCode'
 	},
 	{
 		type: 'text/css',
-		icon: Icons.CodeThumbnail
+		icon: 'mzFileCode'
 	},
 	{
 		type: 'application/xml',
-		icon: Icons.CodeThumbnail
+		icon: 'mzFileCode'
 	},
 	{
 		type: 'application/javascript',
-		icon: Icons.JsonThumbnail
+		icon: 'mzFileCode'
 	},
 	{
 		type: 'application/json',
-		icon: Icons.JsonThumbnail
+		icon: 'mzFileCode'
 	},
 
 	{
 		type: 'image/svg+xml',
-		icon: Icons.CodeThumbnail
+		icon: 'mzFileCode'
 	},
 
 	{
 		type: 'audio/mpeg',
-		icon: Icons.AudioThumbnail
+		icon: 'mzFileAudio'
 	},
 
 	{
 		type: 'application/pdf',
-		icon: Icons.PdfThumbnail
+		icon: 'mzFilePdf'
 	},
 	{
 		type: 'application/msword',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'docx',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'application/vnd.ms-powerpoint',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'pptx',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	},
 	{
 		type: 'application/vnd.ms-excel',
-		icon: Icons.XlsThumbnail
+		icon: 'mzFileSheet'
 	},
 	{
 		type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-		icon: Icons.XlsThumbnail
+		icon: 'mzFileSheet'
 	},
 	{
 		type: 'xlsx',
-		icon: Icons.XlsThumbnail
+		icon: 'mzFileSheet'
 	},
 	{
 		type: 'text/csv',
-		icon: Icons.XlsThumbnail
+		icon: 'mzFileSheet'
 	},
 
 	{
 		type: 'application/zip',
-		icon: Icons.RarThumbnail
+		icon: 'mzFileArchive'
 	},
 	{
 		type: 'application/vnd.rar',
-		icon: Icons.RarThumbnail
+		icon: 'mzFileArchive'
 	},
 
 	{
 		type: 'application/x-compressed',
-		icon: Icons.RarThumbnail
+		icon: 'mzFileArchive'
 	},
 	{
 		type: 'application/x-7z-compressed',
-		icon: Icons.RarThumbnail
+		icon: 'mzFileArchive'
 	},
 	{
 		type: 'application/x-zip-compressed',
-		icon: Icons.RarThumbnail
+		icon: 'mzFileArchive'
 	},
 	{
 		type: 'text/markdown',
-		icon: Icons.DocThumbnail
+		icon: 'mzFileText'
 	}
 ];

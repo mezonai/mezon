@@ -1,4 +1,4 @@
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useCallback, useMemo, useState } from 'react';
 
 export type SelectFieldConfig<T> = {
@@ -70,7 +70,10 @@ const SelectField = <T,>({ label, options, value, onChange, errorMessage, classN
 				<div className="w-full h-9 rounded-lg flex flex-row px-3.5 justify-between items-center cursor-pointer bg-slate-50 dark:bg-[#171a2a] text-slate-900 dark:text-slate-100 border dark:border-white/[0.04] border-slate-200 transition-all duration-300 hover:border-violet-500/40 dark:hover:border-violet-500/30 focus-within:ring-2 focus-within:ring-violet-500/20 shadow-sm">
 					<p className={`text-xs font-semibold truncate ${uppercaseClass}`}>{selectedOption}</p>
 					<div className="text-slate-400 dark:text-slate-500 shrink-0 ml-2">
-						<Icons.ArrowDownFill className={`size-3.5 transform transition-transform duration-200 ${visible ? 'rotate-180' : ''}`} />
+						<MezonIcon
+							icon={MzIcons16.mzCaretDown}
+							className={`transform transition-transform duration-200 ${visible ? 'rotate-180' : ''}`}
+						/>
 					</div>
 				</div>
 			</Menu>

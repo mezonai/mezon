@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { ChannelStreamMode } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
 import { memo, useCallback } from 'react';
@@ -24,7 +24,7 @@ export const SoundReactionControl = memo(({ showSoundPanel, onVisibleChange, onS
 		[onSoundSelect]
 	);
 
-	const iconClassName = 'cursor-pointer text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]';
+	const iconClassName = 'cursor-pointer text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]';
 
 	return (
 		<Tooltip
@@ -37,7 +37,7 @@ export const SoundReactionControl = memo(({ showSoundPanel, onVisibleChange, onS
 			destroyTooltipOnHide
 		>
 			<div>
-				<Icons.VoiceSoundControlIcon className={iconClassName} />
+				<MezonIcon icon={MzIcons20.mzSoundboard} className={iconClassName} />
 			</div>
 		</Tooltip>
 	);

@@ -1,6 +1,6 @@
 import type { AppDispatch, Room } from '@mezon/store';
 import { fetchRooms, selectRooms, selectRoomsLoading, selectRoomsPagination } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -76,7 +76,7 @@ const MeetingRoomsTable: React.FC<MeetingRoomsTableProps> = ({ onViewDetails }) 
 
 			<div className="flex flex-wrap gap-3 mb-6 items-center">
 				<div className="relative flex-1 min-w-[220px]">
-					<Icons.Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+					<MezonIcon icon={MzIcons16.mzSearch} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
 					<input
 						type="text"
 						value={inputValue}

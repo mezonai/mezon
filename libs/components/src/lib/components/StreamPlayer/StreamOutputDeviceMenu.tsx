@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePreferredOutputDevice } from '../MezonSfuVoiceChannel/usePreferredOutputDevice';
@@ -26,7 +26,7 @@ export function StreamOutputDeviceMenu({ onOpenChange }: { onOpenChange?: (open:
 	return (
 		<StreamMenu
 			label={t('device.outputDevice')}
-			trigger={<Icons.Speaker className="h-5 w-5" />}
+			trigger={<MezonIcon icon={MzIcons20.mzSpeaker} />}
 			options={options}
 			selectedId={outputDeviceId}
 			onSelect={changeOutputDevice}

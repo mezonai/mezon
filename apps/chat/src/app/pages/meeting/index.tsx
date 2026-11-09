@@ -24,6 +24,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
+import { grpcCodeFromEnvelopeStatus } from '@mezon/transport';
 import {
 	GUEST_NAME,
 	ensureMediaPermission,
@@ -32,6 +33,7 @@ import {
 	setPreferredInputDeviceId,
 	useMediaPermissions
 } from '@mezon/utils';
+import { isNumber } from '@tiptap/core';
 import React, { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -133,7 +135,7 @@ const InMeetingBackgroundMenu = React.memo(
 					className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 rounded-full text-xs font-medium text-white shadow-lg backdrop-blur transition-all"
 					title="Backgrounds"
 				>
-					<VisualEffectsIcon className="w-4 h-4 text-white" />
+					<VisualEffectsIcon size={16} className="text-white" />
 					<span>Backgrounds</span>
 				</button>
 				{panelPosition &&
@@ -161,6 +163,8 @@ const sanitizeUsername = (val: string) =>
 
 export default function PreJoinCalling() {
 	const { t } = useTranslation('common');
+	const { t: errorExternal } = useTranslation('errors');
+
 	const account = useSelector(selectAllAccount);
 	const getDisplayName = account?.user?.display_name || account?.user?.username;
 	const getAvatar = account?.user?.avatar_url;
@@ -245,8 +249,9 @@ export default function PreJoinCalling() {
 	}, [getGuestAccessToken, dispatch, t]);
 
 	useEffect(() => {
-		if (getJoinCallExtStatus === 'error') {
-			setError('Your session has expired. Please try again.');
+		if (isNumber(getJoinCallExtStatus) && getJoinCallExtStatus) {
+			const errorCode = grpcCodeFromEnvelopeStatus(getJoinCallExtStatus);
+			setError(errorExternal(errorCode === 16 ? 'invalid_meeting_link' : `error_${errorCode}`));
 		}
 	}, [getJoinCallExtStatus]);
 

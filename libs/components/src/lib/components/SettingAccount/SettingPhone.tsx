@@ -1,5 +1,5 @@
 import { accountActions, useAppDispatch } from '@mezon/store';
-import { Button, FormError, Icons, Input, Menu } from '@mezon/ui';
+import { Button, FormError, Input, Menu, MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { ECountryCode, parsePhoneVN, validatePhoneNumber, type LoadingStatus } from '@mezon/utils';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -203,7 +203,7 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 										}}
 										className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors font-medium"
 									>
-										<Icons.LeftArrowIcon className="w-4 h-4" />
+										<MezonIcon icon={MzIcons16.mzArrowLeft} />
 										{t('setPhoneModal.backToPhoneInput')}
 									</button>
 								)}
@@ -281,7 +281,7 @@ export const SelectCountry = ({ country, setCountry }: { country: string; setCou
 						<p className="truncate text-sm font-medium flex items-center gap-2">
 							{flags[country]?.flag} {flags[country]?.name} {`(${flags[country]?.dial})`}
 						</p>
-						<Icons.ArrowDownFill />
+						<MezonIcon icon={MzIcons20.mzCaretDown} className="text-[var(--mz-icon)]" />
 					</div>
 				</Menu>
 			</div>

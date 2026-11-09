@@ -1,6 +1,6 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
-import { IAppDirectoryItem } from './AppDirectoryList';
+import type { IAppDirectoryItem } from './AppDirectoryList';
 
 interface AppDirectoryItemProps {
 	appDirectory: IAppDirectoryItem;
@@ -25,7 +25,7 @@ const AppDirectoryItem: React.FC<AppDirectoryItemProps> = ({ appDirectory }) => 
 				<p className="line-clamp-2">{appDirectory.botDescription}</p>
 			</div>
 			<div className="pt-4 flex text-xs gap-2">
-				<Icons.CompassIcon height="16px" width="16px" />
+				<MezonIcon icon={MzIcons20.mzDiscover} />
 				<p>{t('appDirectory.inServers', { count: appDirectory.botNumber })}</p>
 			</div>
 		</div>

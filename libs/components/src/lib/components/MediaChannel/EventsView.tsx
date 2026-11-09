@@ -6,7 +6,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -74,8 +74,8 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex items-center gap-3 px-6 py-4 border-b-theme-primary">
-				<button onClick={onBack} className="p-1 rounded-lg text-theme-primary text-theme-primary-hover transition-colors">
-					<Icons.ArrowLeft defaultSize="w-5 h-5" />
+				<button onClick={onBack} className="p-1 rounded-lg text-theme-primary text-theme-primary-hover transition-colors group/mzi">
+					<MezonIcon icon={MzIcons20.mzChevronLeft} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				</button>
 				<h2 className="text-lg font-bold text-theme-primary">{t('fields.familyEvents.title')}</h2>
 			</div>
@@ -182,7 +182,7 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 
 								{date && (
 									<div className="flex items-center gap-2 text-theme-secondary text-xs mt-2">
-										<Icons.History className="w-3.5 h-3.5" />
+										<MezonIcon icon={MzIcons16.mzHistory} className="text-[var(--mz-icon)]" />
 										<span data-e2e={generateE2eId('timeline.events.card.created_time')}>
 											{date.month} {date.day}, {date.year}
 										</span>
@@ -203,7 +203,7 @@ export function EventsView({ channelId, clanId, onBack, onNavigateToEventDetail,
 				className="fixed bottom-6 right-6 w-12 h-12 btn-primary btn-primary-hover rounded-full shadow-lg flex items-center justify-center transition-colors z-20"
 				data-e2e={generateE2eId('timeline.buttons.create_new')}
 			>
-				<Icons.Plus defaultSize="w-6 h-6" />
+				<MezonIcon icon={MzIcons20.mzPlus} />
 			</button>
 		</div>
 	);

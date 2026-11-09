@@ -15,5 +15,6 @@
 	"error_13": "Błąd wewnętrzny",
 	"error_14": "Serwery są zajęte. Spróbuj ponownie za chwilę",
 	"error_15": "Utrata danych",
-	"error_16": "Sesja wygasła. Zaloguj się ponownie"
+	"error_16": "Sesja wygasła. Zaloguj się ponownie",
+	"invalid_meeting_link": "Ten link do spotkania jest nieprawidłowy lub wygasł"
 }

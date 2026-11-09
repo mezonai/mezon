@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 
 interface IVideoButoonProps {
 	isEnable: boolean;
@@ -9,9 +9,9 @@ export function VideoButoon({ isEnable, onClick }: IVideoButoonProps) {
 		<div className="relative leading-5 h-6">
 			<button onClick={onClick} className="focus-visible:outline-none" onContextMenu={(e) => e.preventDefault()}>
 				{isEnable ? (
-					<Icons.IconMeetDM className="size-6 dark:hover:text-white hover:text-black text-theme-primary" />
+					<MezonIcon icon={MzIcons24.mzVideo} className="dark:hover:text-white hover:text-black text-[var(--mz-icon)]" />
 				) : (
-					<Icons.VideoDisable className="size-6 text-red-600" />
+					<MezonIcon icon={MzIcons24.mzVideoOff} className="text-red-600" />
 				)}
 			</button>
 		</div>

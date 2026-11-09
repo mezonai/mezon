@@ -15,7 +15,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, MzIcons32, SpinningIcon } from '@mezon/ui';
 import type { IEmoji, RequestInput } from '@mezon/utils';
 import {
 	EEmojiCategory,
@@ -98,9 +98,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 
 	const categoryIcons = useMemo(
 		() => [
-			<Icons.MarketIcons />,
-			<Icons.Star defaultSize="h-7 w-7" />,
-			<Icons.ClockIcon className="h-7 w-7" />,
+			<MezonIcon icon={MzIcons24.mzShop} />,
+			<MezonIcon icon={MzIcons24.mzStar} />,
+			<MezonIcon icon={MzIcons24.mzClock} />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clan_logo !== '' ? (
 					<img
@@ -114,14 +114,14 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					</div>
 				)
 			),
-			<Icons.Smile className="w-7 h-7" />,
-			<Icons.TheLeaf defaultSize="w-7 h-7" />,
-			<Icons.Bowl defaultSize="w-7 h-7" />,
-			<Icons.GameController defaultSize="w-7 h-7" />,
-			<Icons.Bicycle defaultSize="w-7 h-7" />,
-			<Icons.Object defaultSize="w-7 h-7" />,
-			<Icons.Heart defaultSize="w-7 h-7" />,
-			<Icons.Ribbon defaultSize="w-7 h-7" />
+			<MezonIcon icon={MzIcons24.mzEmoji} />,
+			<MezonIcon icon={MzIcons24.mzLeaf} />,
+			<MezonIcon icon={MzIcons24.mzFood} />,
+			<MezonIcon icon={MzIcons24.mzGamepad} />,
+			<MezonIcon icon={MzIcons24.mzBicycle} />,
+			<MezonIcon icon={MzIcons24.mzLamp} />,
+			<MezonIcon icon={MzIcons24.mzHeart} />,
+			<MezonIcon icon={MzIcons24.mzFlag} />
 		],
 		[categoryEmoji]
 	);
@@ -420,14 +420,14 @@ const DisplayByCategories = React.memo(function DisplayByCategories({
 		<div>
 			<button
 				onClick={() => setEmojisPanelStatus(!emojisPanel)}
-				className="w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky z-10  bg-theme-setting-primary"
+				className="mz-hover w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky z-10  bg-theme-setting-primary"
 			>
 				<div className="w-4 !h-4 flex items-center justify-center !text-xs">{categoryIcons}</div>
 				<p className={'ml-2 uppercase text-left truncate text-xs font-semibold'}>
 					{shouldTranslate ? t(`emojiCategories.${categoryName}`) || categoryName : categoryName}
 				</p>
 				<span className={`${emojisPanel ? ' rotate-90' : ''}`}>
-					<Icons.ArrowRight defaultSize={`w-4 h-4`} />
+					<MezonIcon icon={MzIcons20.mzChevronRight} />
 				</span>
 			</button>
 			{emojisPanel && (
@@ -530,9 +530,9 @@ const EmojisPanel = React.memo(function EmojisPanel({
 						{item.is_for_sale && !item.src && (
 							<div className="absolute left-3 flex items-center justify-center aspect-square pointer-events-none">
 								{isItemPendingUnlock ? (
-									<Icons.LoadingSpinner className="w-4 h-4 text-white block group-hover:hidden" />
+									<SpinningIcon icon={MzIcons20.mzSpinner} />
 								) : (
-									<Icons.LockIcon defaultSize="w-4 h-4 text-white block group-hover:hidden" defaultFill="white" />
+									<MezonIcon icon={MzIcons16.mzLock} className="text-white block group-hover:hidden" />
 								)}
 							</div>
 						)}
@@ -550,7 +550,7 @@ const EmojisPanel = React.memo(function EmojisPanel({
 					}
 				>
 					<div onClick={onClickAddButton}>
-						<Icons.AddIcon />
+						<MezonIcon icon={MzIcons32.mzPlusCircle} />
 					</div>
 				</button>
 			)}

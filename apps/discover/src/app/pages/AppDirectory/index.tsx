@@ -1,6 +1,6 @@
 import { AppDirectoryList } from '@mezon/components';
 import { selectTheme } from '@mezon/store';
-import { Button, Icons, Image } from '@mezon/ui';
+import { Button, Icons, Image, MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -15,27 +15,27 @@ const AppDirectory = () => {
 	const { t } = useTranslation('common');
 	const categoryArr: ICategoryArr[] = [
 		{
-			icon: <Icons.GlobalIcon />,
+			icon: <MezonIcon icon={MzIcons20.mzGlobe} className="text-[var(--mz-icon)]" />,
 			title: t('appDirectory.categories.all')
 		},
 		{
-			icon: <Icons.TVIcon />,
+			icon: <MezonIcon icon={MzIcons20.mzTv} className="text-[var(--mz-icon)]" />,
 			title: t('appDirectory.categories.entertainment')
 		},
 		{
-			icon: <Icons.GamingConsoleIcon />,
+			icon: <MezonIcon icon={MzIcons20.mzGamepad} className="text-[var(--mz-icon)]" />,
 			title: t('appDirectory.categories.games')
 		},
 		{
-			icon: <Icons.ToolIcon />,
+			icon: <MezonIcon icon={MzIcons20.mzTools} className="text-[var(--mz-icon)]" />,
 			title: t('appDirectory.categories.moderation')
 		},
 		{
-			icon: <Icons.IconFriends />,
+			icon: <MezonIcon icon={MzIcons20.mzFriends} className="text-[var(--mz-icon)]" />,
 			title: t('appDirectory.categories.social')
 		},
 		{
-			icon: <Icons.UtilitiesIcon />,
+			icon: <MezonIcon icon={MzIcons20.mzTools} className="text-[var(--mz-icon)]" />,
 			title: t('appDirectory.categories.utilities')
 		}
 	];
@@ -89,11 +89,15 @@ const AppDirectory = () => {
 
 								<div className="w-fit">
 									{!inputValue ? (
-										<Icons.SearchIcon className="dark:text-[#626365] text-textLightTheme w-[25px] cursor-pointer" />
+										<MezonIcon icon={MzIcons24.mzSearch} className="text-[var(--mz-icon)] cursor-pointer" />
 									) : (
 										<div className="flex gap-3 items-center">
 											<div className="text-[#626365] text-[12px]">{t('appDirectory.enterToSearch')}</div>
-											<Icons.CloseIcon onClick={() => setInputValue('')} className="text-[#626365] w-[25px] cursor-pointer" />
+											<MezonIcon
+												icon={MzIcons24.mzCloseCircle}
+												onClick={() => setInputValue('')}
+												className="text-[var(--mz-icon)] cursor-pointer"
+											/>
 										</div>
 									)}
 								</div>
@@ -113,7 +117,7 @@ const AppDirectory = () => {
 						{categoryArr.map((category, index) => (
 							<div
 								key={index}
-								className="flex gap-[12px] py-3 px-7 dark:bg-[#2b2d31] bg-bgLightModeThird rounded-md dark:hover:bg-[#232428] hover:bg-bgLightModeButton cursor-pointer max-xl:w-[32%] max-lg:w-[49%]"
+								className="mz-hover flex gap-[12px] py-3 px-7 dark:bg-[#2b2d31] bg-bgLightModeThird rounded-md dark:hover:bg-[#232428] hover:bg-bgLightModeButton cursor-pointer max-xl:w-[32%] max-lg:w-[49%]"
 							>
 								<div className="w-6">{category.icon}</div> <div className="truncate">{category.title}</div>
 							</div>
@@ -167,9 +171,9 @@ const ExitBtn = () => {
 		navigate(-1);
 	};
 	return (
-		<div onClick={handleExit} className="fixed top-5 right-[30px] max-xl:right-[10px] flex flex-col items-center cursor-pointer z-10">
+		<div onClick={handleExit} className="mz-hover fixed top-5 right-[30px] max-xl:right-[10px] flex flex-col items-center cursor-pointer z-10">
 			<div className="rounded-full p-[10px] border dark:border-bgLightMode border-black">
-				<Icons.CloseButton className="w-4" />
+				<MezonIcon icon={MzIcons16.mzClose} />
 			</div>
 			<div>ESC</div>
 		</div>

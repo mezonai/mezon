@@ -253,9 +253,7 @@ const DraggablePopup = forwardRef<HTMLDivElement, DraggablePopupProps>(
 			<div
 				ref={ref}
 				onClick={handlePopupClick}
-				className={`contain-strict fixed rounded-md shadow-lg overflow-hidden flex flex-col ${
-					isMaximized ? 'bg-[#36393f]' : 'bg-[#36393f]'
-				}`}
+				className={`contain-strict fixed rounded-md shadow-lg overflow-hidden flex flex-col ${isMaximized ? 'bg-[#36393f]' : 'bg-[#36393f]'}`}
 				style={{
 					width: `${dimensions.width}px`,
 					height: `${dimensions.height}px`,
@@ -271,12 +269,12 @@ const DraggablePopup = forwardRef<HTMLDivElement, DraggablePopupProps>(
 				) : (
 					<div
 						onMouseDown={handleMouseDown}
-							className="bg-gray-600 dark:bg-black text-white px-4 py-2 cursor-move flex justify-between items-center draggable-header"
+						className="bg-gray-600 dark:bg-black text-white px-4 py-2 cursor-move flex justify-between items-center draggable-header"
 					>
 						<div className="font-medium">{title}</div>
 						<div className="flex space-x-2">
 							{/* <button onClick={maximizeToggle} className="focus:outline-none text-gray-400 hover:text-white">
-							{isMaximized ? <Icons.ExitFullScreen className="w-4 h-4" /> : <Icons.FullScreen className="w-4 h-4" />}
+							{isMaximized ? <MezonIcon icon={MzIcons16.mzFullscreenExit} /> : <MezonIcon icon={MzIcons16.mzFullscreen} />}
 						</button>
 						<button onClick={onClose} className="focus:outline-none text-gray-400 hover:text-[#da373c]">
 							✕

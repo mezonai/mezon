@@ -1,5 +1,5 @@
 import { selectActionAuditLog, selectUserAuditLog } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { ActionLog, UserAuditLog } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,7 +147,7 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 								<div className="one-line">
 									{userFilter && userFilter.username !== UserAuditLog.ALL_USER_AUDIT ? userFilter.username : t('all')}
 								</div>
-								<Icons.ArrowDown />
+								<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)]" />
 							</div>
 						</div>
 						{isShowSearchMemberModal && (
@@ -170,7 +170,7 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 							<div className="flex items-center gap-1 cursor-pointer bg-input-theme border border-theme-primary rounded-lg px-3 py-2 sm:px-0 sm:py-0 sm:bg-transparent sm:border-0">
 								<div className="sm:hidden text-sm font-medium">{t('filterByAction')}:</div>
 								<div className="one-line">{getTranslatedActionName(actionFilter)}</div>
-								<Icons.ArrowDown />
+								<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)]" />
 							</div>
 						</div>
 						{isShowSearchActionModal && (

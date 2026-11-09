@@ -1,6 +1,5 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import React from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, MinusIcon } from './icons';
 import type { PDFControlsProps } from './types';
 
 export const PDFControls: React.FC<PDFControlsProps> = ({
@@ -21,7 +20,7 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 				className="p-2 rounded transition-colors duration-200 text-gray-600 dark:text-[#b9bbbe] hover:bg-gray-300 dark:hover:bg-[#40444b] disabled:opacity-50 disabled:cursor-not-allowed"
 				title="Previous page (←)"
 			>
-				<ChevronLeftIcon className="w-4 h-4" />
+				<MezonIcon icon={MzIcons16.mzChevronLeft} />
 			</button>
 			<span className="px-3 py-1 text-sm text-gray-600 dark:text-[#b9bbbe]">
 				{pageNumber} / {numPages || 1}
@@ -32,7 +31,7 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 				className="p-2 rounded transition-colors duration-200 text-gray-600 dark:text-[#b9bbbe] hover:bg-gray-300 dark:hover:bg-[#40444b] disabled:opacity-50 disabled:cursor-not-allowed"
 				title="Next page (→)"
 			>
-				<ChevronRightIcon className="w-4 h-4" />
+				<MezonIcon icon={MzIcons16.mzChevronRight} />
 			</button>
 		</div>
 
@@ -42,7 +41,7 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 				className="p-2 rounded transition-colors duration-200 text-gray-600 dark:text-[#b9bbbe] hover:bg-gray-300 dark:hover:bg-[#40444b]"
 				title="Zoom out (Ctrl + -)"
 			>
-				<MinusIcon className="w-4 h-4" />
+				<MezonIcon icon={MzIcons16.mzMinusCircle} />
 			</button>
 			<span className="px-3 py-1 text-sm min-w-[60px] text-center text-gray-600 dark:text-[#b9bbbe]">{Math.round(scale * 100)}%</span>
 			<button
@@ -50,7 +49,7 @@ export const PDFControls: React.FC<PDFControlsProps> = ({
 				className="p-2 rounded transition-colors duration-200 text-gray-600 dark:text-[#b9bbbe] hover:bg-gray-300 dark:hover:bg-[#40444b]"
 				title="Zoom in (Ctrl + +)"
 			>
-				<Icons.PlusIcon className="w-4 h-4" />
+				<MezonIcon icon={MzIcons16.mzPlusCircle} />
 			</button>
 		</div>
 	</div>

@@ -1,6 +1,6 @@
 import { useAppParams } from '@mezon/core';
-import { Button } from '@mezon/ui';
-import { createImgproxyUrl, fileTypeImage, generateE2eId, MAX_FILE_SIZE_8MB, ValidateSpecialCharacters } from '@mezon/utils';
+import { Button, MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { MAX_FILE_SIZE_8MB, ValidateSpecialCharacters, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -116,16 +116,14 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 							className="w-8 h-8 rounded-full flex items-center justify-center text-theme-primary bg-item-hover transition-all duration-150 ease-out"
 							onClick={onClose}
 						>
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-								<path d="M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z" />
-							</svg>
+							<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 						</button>
 					</div>
 
 					<div className="px-4 pb-4 space-y-5">
 						<div className="flex flex-col items-center space-y-3">
 							<div
-								className="relative w-20 h-20 rounded-full cursor-pointer group transition-all duration-200 ease-out hover:shadow-lg"
+								className="mz-hover relative w-20 h-20 rounded-full cursor-pointer group transition-all duration-200 ease-out hover:shadow-lg"
 								onClick={handleImageClick}
 							>
 								<img
@@ -139,14 +137,7 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 								/>
 								<div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 									<div className="bg-[#313338] rounded-full p-2 shadow-lg">
-										<svg className="w-4 h-4 text-[#f2f3f5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-											/>
-										</svg>
+										<MezonIcon icon={MzIcons16.mzEdit} className="text-[#f2f3f5]" />
 									</div>
 								</div>
 							</div>
@@ -190,25 +181,13 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 							/>
 							{validationError && (
 								<div className="flex items-center space-x-1 text-xs text-[#f23f42] mt-2">
-									<svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fillRule="evenodd"
-											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-											clipRule="evenodd"
-										/>
-									</svg>
+									<MezonIcon icon={MzIcons16.mzError} className="flex-shrink-0" />
 									<span>{validationError}</span>
 								</div>
 							)}
 							{error && (
 								<div className="flex items-center space-x-1 text-xs text-[#f23f42] mt-2">
-									<svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fillRule="evenodd"
-											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-											clipRule="evenodd"
-										/>
-									</svg>
+									<MezonIcon icon={MzIcons16.mzError} className="flex-shrink-0" />
 									<span>{error}</span>
 								</div>
 							)}

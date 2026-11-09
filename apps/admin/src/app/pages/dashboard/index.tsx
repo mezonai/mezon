@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ClanDetailReport from './ClanDetailReport';
@@ -35,9 +36,7 @@ function DashboardPage() {
 							onClick={handleBackToOverview}
 							className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
 						>
-							<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-								<path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-							</svg>
+							<MezonIcon icon={MzIcons16.mzChevronLeft} />
 							{t('page.backToOverview')}
 						</button>
 					</div>

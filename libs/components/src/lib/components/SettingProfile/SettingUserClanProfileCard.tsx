@@ -1,6 +1,6 @@
 import { useAuth, useMemberStatus } from '@mezon/core';
 import { selectAccountCustomStatus } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MzIcons20, SpinningIcon } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -39,7 +39,7 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 			{props.isLoading && (
 				<div className="absolute w-[78px] h-[78px] top-[61px] left-[22px] z-20 flex items-center justify-center">
 					<div className="absolute w-full h-full bg-white rounded-full opacity-30"></div>
-					<Icons.LoadingSpinner />
+					<SpinningIcon icon={MzIcons20.mzSpinner} />
 				</div>
 			)}
 

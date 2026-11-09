@@ -1,5 +1,5 @@
 import { selectAddress, selectAllAccount, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { formatBalanceToString, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import type { Transaction } from 'mmn-client-js';
@@ -7,6 +7,14 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonCopy } from '../../../components';
 import { CURRENCY, TRANSACTION_DETAIL } from '../constants/constants';
+
+const ICON_CLASS = new Map<unknown, string>([
+	[MzIcons16.mzUser, 'text-[#92B8FF]'],
+	[MzIcons16.mzCoin, 'text-[var(--mz-icon)]'],
+	[MzIcons16.mzHistory, 'text-[var(--mz-icon)]'],
+	[MzIcons16.mzTransaction, 'text-[var(--mz-icon)]'],
+	[MzIcons16.mzEdit, 'text-[var(--mz-icon)]']
+]);
 
 interface TransactionDetailProps {
 	detailLedger: Transaction;
@@ -19,21 +27,21 @@ const TransactionDetailSkeleton: React.FC = () => {
 	const { FIELDS } = TRANSACTION_DETAIL;
 
 	const detailFields = [
-		{ id: 'transaction_id', label: t(FIELDS.TRANSACTION_ID), icon: Icons.Transaction },
-		{ id: 'sender', label: t(FIELDS.SENDER), icon: Icons.UserIcon },
-		{ id: 'amount', label: t(FIELDS.AMOUNT), icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite /> },
-		{ id: 'receiver', label: t(FIELDS.RECEIVER), icon: Icons.UserIcon },
-		{ id: 'note', label: t(FIELDS.NOTE), icon: Icons.PenEdit },
-		{ id: 'created', label: t(FIELDS.CREATED), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
+		{ id: 'transaction_id', label: t(FIELDS.TRANSACTION_ID), icon: MzIcons16.mzTransaction },
+		{ id: 'sender', label: t(FIELDS.SENDER), icon: MzIcons16.mzUser },
+		{ id: 'amount', label: t(FIELDS.AMOUNT), icon: MzIcons16.mzCoin },
+		{ id: 'receiver', label: t(FIELDS.RECEIVER), icon: MzIcons16.mzUser },
+		{ id: 'note', label: t(FIELDS.NOTE), icon: MzIcons16.mzEdit },
+		{ id: 'created', label: t(FIELDS.CREATED), icon: MzIcons16.mzHistory }
 	];
 
 	return (
 		<div className="p-4 bg-item-theme text-theme-primary ">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{detailFields.map(({ id, label, icon: Icon }) => (
+				{detailFields.map(({ id, label, icon }) => (
 					<div key={id} className="space-y-2">
 						<div className="flex items-center gap-2">
-							<Icon className="w-3 h-3 " />
+							<MezonIcon icon={icon} className={ICON_CLASS.get(icon)} />
 							<p className="text-xs font-medium uppercase tracking-wide">{label}</p>
 							{id === 'transaction_id' && (
 								<span>
@@ -72,21 +80,21 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 			extraInfo?.UserReceiverName || extraInfo?.UserReceiverUsername || (isCurrentUserReceiver ? currentUser?.user?.username : null);
 
 		return [
-			{ id: 'transaction_id', label: t(FIELDS.TRANSACTION_ID), value: detailLedger.hash, icon: Icons.Transaction },
-			{ id: 'sender', label: t(FIELDS.SENDER), value: sender || t(UNKNOWN_USER), icon: Icons.UserIcon },
+			{ id: 'transaction_id', label: t(FIELDS.TRANSACTION_ID), value: detailLedger.hash, icon: MzIcons16.mzTransaction },
+			{ id: 'sender', label: t(FIELDS.SENDER), value: sender || t(UNKNOWN_USER), icon: MzIcons16.mzUser },
 			{
 				id: 'amount',
 				label: t(FIELDS.AMOUNT),
 				value: `${formatBalanceToString(detailLedger.value)} ${t(CURRENCY.SYMBOL)}`,
-				icon: () => <Icons.DollarIcon className="w-3 h-3" isWhite />
+				icon: MzIcons16.mzCoin
 			},
-			{ id: 'receiver', label: t(FIELDS.RECEIVER), value: receiver || t(UNKNOWN_USER), icon: Icons.UserIcon },
-			{ id: 'note', label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: Icons.PenEdit },
+			{ id: 'receiver', label: t(FIELDS.RECEIVER), value: receiver || t(UNKNOWN_USER), icon: MzIcons16.mzUser },
+			{ id: 'note', label: t(FIELDS.NOTE), value: detailLedger.text_data || t(TRANSACTION_DETAIL.DEFAULT_NOTE), icon: MzIcons16.mzEdit },
 			{
 				id: 'created',
 				label: t(FIELDS.CREATED),
 				value: formatDate(new Date((detailLedger.transaction_timestamp ?? 0) * 1000).toISOString()),
-				icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" />
+				icon: MzIcons16.mzHistory
 			}
 		];
 	}, [detailLedger, t, formatDate, FIELDS, UNKNOWN_USER, walletAddress, currentUser]);
@@ -102,10 +110,10 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 	return (
 		<div className="p-4 bg-item-theme text-theme-primary">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{detailFields.map(({ id, label, value, icon: Icon }) => (
+				{detailFields.map(({ id, label, value, icon }) => (
 					<div key={id} className="space-y-2">
 						<div className="flex items-center gap-2">
-							<Icon className="w-3 h-3 " />
+							<MezonIcon icon={icon} className={ICON_CLASS.get(icon)} />
 							<p
 								className="text-xs font-medium uppercase tracking-wide"
 								data-e2e={generateE2eId('send_token.modal.transaction_history.item.detail.label')}

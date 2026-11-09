@@ -1,6 +1,6 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import { attachmentActions, useAppDispatch } from '@mezon/store';
-import { Button, Icons } from '@mezon/ui';
+import { Button, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js';
 import { Suspense, lazy, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -215,10 +215,10 @@ export const NotificationAttachmentItem = ({
 					onClick={handleDownload}
 					className={`rounded-md ${
 						compact ? 'w-7 h-7' : 'w-8 h-8'
-					} flex justify-center items-center cursor-pointer bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary transition-colors`}
+					} flex justify-center items-center cursor-pointer bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary transition-colors group/mzi`}
 					title={t('download', { ns: 'common', defaultValue: 'Download' })}
 				>
-					<Icons.Download defaultSize={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
+					<MezonIcon icon={MzIcons20.mzDownload} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				</Button>
 			</div>
 		</div>

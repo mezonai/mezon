@@ -1,6 +1,6 @@
 import type { RolesClanEntity } from '@mezon/store';
 import { channelUsersActions, selectChannelById, selectCurrentClanId, selectUserChannelIds, useAppDispatch, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
 import {
 	DEFAULT_ROLE_COLOR,
@@ -111,7 +111,7 @@ const ListRoleMember = memo((props: ListRoleMemberProps) => {
 				channelId={channelId}
 			/>
 			<div className="flex items-center gap-2 mt-2 h-[28px] px-2 rounded-lg bg-input-secondary">
-				<Icons.Search className="w-4 h-4 shrink-0 text-theme-primary" />
+				<MezonIcon icon={MzIcons16.mzSearch} className="shrink-0 text-[var(--mz-icon)]" />
 				<input
 					type="text"
 					value={query}
@@ -130,11 +130,11 @@ const ListRoleMember = memo((props: ListRoleMemberProps) => {
 			{totalPages > 1 && (
 				<div className="flex items-center justify-center gap-1 pt-2 text-theme-primary">
 					<button className={PAGER_BUTTON_CLASS} disabled={currentPage === 0} onClick={handlePreviousPage}>
-						<Icons.ArrowRight className="rotate-180" />
+						<MezonIcon icon={MzIcons20.mzChevronRight} className="rotate-180" />
 					</button>
 					<span className="w-[88px] shrink-0 text-center text-sm">{pageLabel}</span>
 					<button className={PAGER_BUTTON_CLASS} disabled={currentPage + 1 >= totalPages} onClick={handleNextPage}>
-						<Icons.ArrowRight />
+						<MezonIcon icon={MzIcons20.mzChevronRight} />
 					</button>
 				</div>
 			)}
@@ -198,7 +198,7 @@ const EntityGlyph = ({ row }: { row: PermissionEntityRow }) => {
 	if (row.role?.role_icon) {
 		return <img src={createImgproxyUrl(row.role.role_icon)} alt={row.title} className="w-6 h-6 min-w-6 rounded" />;
 	}
-	return <Icons.RoleIcon className="w-6 h-6 min-w-6" defaultFill1={row.role?.color || DEFAULT_ROLE_COLOR} />;
+	return <MezonIcon icon={MzIcons24.mzRole} className="min-w-6" style={{ color: row.role?.color || DEFAULT_ROLE_COLOR }} />;
 };
 
 type HeaderAddRoleMemberProps = {
@@ -318,7 +318,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 					aria-label={t('channelPermission.bottomSheet.add')}
 					className="shrink-0 cursor-pointer"
 				>
-					<Icons.PlusIcon className="size-4" />
+					<MezonIcon icon={MzIcons16.mzPlusCircle} />
 				</button>
 			)}
 			{showPopup && (
@@ -329,7 +329,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex items-center gap-2 p-2 text-sm bg-theme-setting-nav">
-							<Icons.Search className="w-4 h-4 shrink-0 text-theme-primary" />
+							<MezonIcon icon={MzIcons16.mzSearch} className="shrink-0 text-[var(--mz-icon)]" />
 							<input
 								type="text"
 								className="flex-1 min-w-0 bg-transparent outline-none font-medium"

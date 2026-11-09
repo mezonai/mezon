@@ -1,6 +1,6 @@
 import { getShowName } from '@mezon/core';
 import { referencesActions } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { blankReferenceObj } from '@mezon/utils';
 import classNames from 'classnames';
 import type { ApiMessageRef } from 'mezon-js';
@@ -43,7 +43,7 @@ export function ReplyMessageBox({ channelId, dataReferences, className }: Messag
 				{t('replyingTo')} <span className=" text-theme-primary-active font-semibold">{nameShowed}</span>
 			</div>
 			<button className="relative text-theme-primary-active" onClick={handleRemoveReply}>
-				<Icons.Close />
+				<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 			</button>
 		</div>
 	);

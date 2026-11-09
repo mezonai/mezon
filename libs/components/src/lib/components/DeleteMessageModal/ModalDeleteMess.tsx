@@ -8,7 +8,7 @@ import {
 	topicsActions,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MzIcons20, SpinningIcon } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { TypeMessage, generateE2eId } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
@@ -192,7 +192,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 							disabled={isLoading}
 						>
 							{isRemoveAttachmentNoContent ? t('deleteMessageModal.remove') : t('deleteMessageModal.delete')}
-							{isLoading && <Icons.IconLoadingTyping />}
+							{isLoading && <SpinningIcon icon={MzIcons20.mzSpinner} />}
 						</button>
 					</div>
 				</div>

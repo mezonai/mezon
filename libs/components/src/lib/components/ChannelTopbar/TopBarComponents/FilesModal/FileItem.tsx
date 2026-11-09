@@ -1,7 +1,7 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import { selectMemberClanByUserId, selectMemberGroupByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EFailAttachment, convertTimeString, generateE2eId, isAttachmentPresignPendingForMessage, shouldHidePresignAttachment } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { useState } from 'react';
@@ -121,9 +121,12 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackU
 										handleDownload(event);
 									}}
 									role="button"
-									className="rounded-md w-8 h-8 flex flex-row justify-center items-center cursor-pointer bg-theme-input bg-secondary-button-hover text-theme-primary-hover "
+									className="rounded-md w-8 h-8 flex flex-row justify-center items-center cursor-pointer bg-theme-input bg-secondary-button-hover text-theme-primary-hover group/mzi"
 								>
-									<Icons.Download className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzDownload}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
 								</div>
 							</div>
 						)}

@@ -1,4 +1,4 @@
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ const DeviceSelector: React.FC<DeviceSelectorProps> = ({ deviceList, currentDevi
 							<div className={'text-neutral-400 text-xs'}>{systemDefaultLabel}</div>
 						)}
 					</div>
-					<Icons.ArrowRight defaultSize={'w-4 h-4'} defaultFill1={'rgba(249,249,249,1)'} />
+					<MezonIcon icon={MzIcons20.mzChevronRight} className="text-white" />
 				</div>
 			)
 		);

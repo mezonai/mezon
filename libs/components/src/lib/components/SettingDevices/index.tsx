@@ -8,7 +8,7 @@ import {
 	useAppSelector,
 	type IDevice
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { convertTimeString, generateE2eId, getPlatformLabel, isMobilePlatform } from '@mezon/utils';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,13 +21,13 @@ const DeviceIcon = ({ platform }: { platform?: string }) => {
 	if (isMobilePlatform(platform)) {
 		return (
 			<div className="w-12 h-12 rounded-full bg-theme-setting-nav flex items-center justify-center">
-				<Icons.DeviceMobileIcon className="w-6 h-6 text-theme-primary-active" />
+				<MezonIcon icon={MzIcons24.mzDeviceMobile} className="text-[var(--mz-icon)]" />
 			</div>
 		);
 	}
 	return (
 		<div className="w-12 h-12 rounded-full bg-theme-setting-nav flex items-center justify-center">
-			<Icons.DeviceDesktopIcon className="w-6 h-6 text-theme-primary-active" />
+			<MezonIcon icon={MzIcons24.mzDeviceDesktop} className="text-[var(--mz-icon)]" />
 		</div>
 	);
 };
@@ -78,11 +78,11 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 			{!isCurrent && onRemove && (
 				<button
 					onClick={() => device.device_id && onRemove(device.device_id)}
-					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors"
+					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors group/mzi"
 					title={t('deviceSettings.removeDevice')}
 					data-e2e={generateE2eId('user_setting.devices.tab_devices.button.remove_device')}
 				>
-					<Icons.CloseIcon className="w-5 h-5" />
+					<MezonIcon icon={MzIcons20.mzCloseCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-red-500" />
 				</button>
 			)}
 		</div>

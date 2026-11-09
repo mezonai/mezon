@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useTranslation } from 'react-i18next';
 import type { ChannelsData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
@@ -53,15 +54,7 @@ function ChannelsTable({
 						</>
 					) : (
 						<>
-							<svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="inline">
-								<path
-									d="M7 1V9M7 9L4 6M7 9L10 6M1 13H13"
-									stroke="currentColor"
-									strokeWidth="1.5"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-							</svg>
+							<MezonIcon icon={MzIcons16.mzDownload} className="inline text-[var(--mz-icon)]" />
 							{t('table.exportCSV')}
 						</>
 					)}

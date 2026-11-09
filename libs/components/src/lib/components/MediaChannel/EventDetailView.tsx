@@ -1,7 +1,7 @@
 import type { ChannelTimeline, ChannelTimelineAttachment } from '@mezon/store';
 import { channelMediaActions, selectChannelTimelineDetailById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId, isImageFileType, isVideoFileType } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -367,10 +367,10 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 			<div className="flex items-center gap-3 px-6 py-4 border-b-theme-primary">
 				<button
 					onClick={onBack}
-					className="p-1 rounded-lg text-theme-primary text-theme-primary-hover transition-colors"
+					className="p-1 rounded-lg text-theme-primary text-theme-primary-hover transition-colors group/mzi"
 					data-e2e={generateE2eId('timeline.buttons.back')}
 				>
-					<Icons.ArrowLeft defaultSize="w-5 h-5" />
+					<MezonIcon icon={MzIcons20.mzChevronLeft} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				</button>
 				<div className="flex-1 min-w-0">
 					{isLoading ? (
@@ -410,7 +410,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 							)}
 							{date && (
 								<div className="flex items-center gap-1.5 text-theme-secondary">
-									<Icons.History className="w-3.5 h-3.5" />
+									<MezonIcon icon={MzIcons16.mzHistory} className="text-[var(--mz-icon)]" />
 									<span className="text-xs">{date}</span>
 								</div>
 							)}
@@ -421,9 +421,9 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 					<button
 						onClick={handleUploadClick}
 						disabled={isUploading}
-						className="p-2 rounded-lg text-theme-primary text-theme-primary-hover transition-colors disabled:opacity-50"
+						className="p-2 rounded-lg text-theme-primary text-theme-primary-hover transition-colors disabled:opacity-50 group/mzi"
 					>
-						<Icons.ImageThumbnail defaultSize="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzFileImage} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</button>
 				)}
 			</div>
@@ -481,10 +481,10 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 							<div className="px-6 pt-4">
 								<button
 									onClick={() => setIsEditingDescription(true)}
-									className="w-full p-3 border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 rounded-lg flex items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors"
+									className="w-full p-3 border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 rounded-lg flex items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors group/mzi"
 									data-e2e={generateE2eId('timeline.buttons.add_description')}
 								>
-									<Icons.PenEdit className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)] group-hover/mzi:text-buttonPrimary" />
 									<span className="text-sm">{t('fields.eventDetail.addDescription')}</span>
 								</button>
 							</div>
@@ -495,9 +495,9 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 								<button
 									onClick={handleCancel}
 									disabled={isSaving}
-									className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-theme-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
+									className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-theme-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors group/mzi"
 								>
-									<Icons.CloseIcon className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzCloseCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-red-400" />
 									<span>{t('fields.eventDetail.cancel')}</span>
 								</button>
 								<button
@@ -509,7 +509,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 									{isSaving ? (
 										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
 									) : (
-										<Icons.CheckIcon className="w-4 h-4" />
+										<MezonIcon icon={MzIcons16.mzCheck} />
 									)}
 									<span>{t('fields.eventDetail.save')}</span>
 								</button>
@@ -561,10 +561,10 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 							<button
 								onClick={handleUploadClick}
 								disabled={isUploading}
-								className="relative rounded-xl overflow-hidden aspect-square border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 flex flex-col items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors cursor-pointer bg-theme-primary disabled:opacity-50"
+								className="relative rounded-xl overflow-hidden aspect-square border-2 border-dashed border-theme-secondary hover:border-buttonPrimary/50 flex flex-col items-center justify-center gap-2 text-theme-secondary hover:text-buttonPrimary transition-colors cursor-pointer bg-theme-primary disabled:opacity-50 group/mzi"
 								data-e2e={generateE2eId('timeline.buttons.add_media')}
 							>
-								<Icons.PlusIcon defaultSize="w-8 h-8" />
+								<MezonIcon icon={MzIcons20.mzPlusCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-buttonPrimary" />
 							</button>
 						</div>
 					</>

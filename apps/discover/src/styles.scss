@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../../../libs/ui/src/lib/mezon-icons/icon-colors-light-dark.css';
+@import '../../../libs/ui/src/lib/mezon-icons/icon-motion.css';
+
 @font-face {
 	font-family: 'gg sans';
 	src: url('/assets/fonts/ggsans-Medium.woff2') format('woff2');

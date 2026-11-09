@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { AttachmentTypeUpload } from '@mezon/utils';
 import type { RefObject, UIEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -106,13 +106,13 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 			<div className="flex bg-theme-setting-primary flex-col rounded-md min-h-[400px] w-full md:w-[480px] max-h-[80vh] lg:w-[540px]  shadow-sm overflow-hidden">
 				<div className=" bg-theme-setting-nav flex flex-row items-center justify-between p-[16px] h-12">
 					<div className="flex flex-row items-center border-r-[1px] border-color-theme pr-[16px] gap-4">
-						<Icons.FileIcon />
+						<MezonIcon icon={MzIcons20.mzFile} className="text-[var(--mz-icon)]" />
 						<span className="text-base font-semibold cursor-default ">{t('modals.files.title')}</span>
 					</div>
 					<SearchFile setKeywordSearch={setKeywordSearch} />
-					<div className="flex flex-row items-center gap-4 text-theme-primary-hover">
+					<div className="flex flex-row items-center gap-4 text-theme-primary-hover group/mzi">
 						<button onClick={onClose}>
-							<Icons.Close className="w-4 h-4 " />
+							<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						</button>
 					</div>
 				</div>

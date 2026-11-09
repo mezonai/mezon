@@ -11,7 +11,7 @@ import {
 	useInteractions,
 	useRole
 } from '@floating-ui/react';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { Editor } from '@tiptap/core';
 import { useTranslation } from 'react-i18next';
 
@@ -54,14 +54,14 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 			<button
 				ref={refs.setReference}
 				{...getReferenceProps()}
-				className={`bubble-menu-trigger ${isOpen ? 'is-active' : ''}`}
+				className={`mz-hover bubble-menu-trigger ${isOpen ? 'is-active' : ''}`}
 				title={t('toolbar.blockFormat')}
 				aria-label={t('toolbar.blockFormat')}
 				aria-expanded={isOpen}
 			>
-				<Icons.ParagraphIcon className="canvas-block-trigger-icon" />
+				<MezonIcon icon={MzIcons20.mzParagraph} className="canvas-block-trigger-icon" />
 				<span className={`canvas-block-trigger-arrow ${isOpen ? 'rotate-180' : ''}`}>
-					<Icons.ArrowDown className="w-3 h-3" />
+					<MezonIcon icon={MzIcons16.mzChevronDown} />
 				</span>
 			</button>
 
@@ -75,8 +75,13 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									className={`canvas-block-dropdown-item ${isParagraph(editor) ? 'is-active' : ''}`}
 									onClick={() => handleSelect(() => editor.chain().focus().setParagraph().run())}
 								>
-									<span className="canvas-block-check-col">{isParagraph(editor) && <Icons.IconTick className="w-4 h-4" />}</span>
-									<Icons.ParagraphIcon className="w-4 h-4" />
+									<span className="canvas-block-check-col">
+										{isParagraph(editor) && <MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />}
+									</span>
+									<MezonIcon
+										icon={MzIcons16.mzParagraph}
+										className={isParagraph(editor) ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+									/>
 									<span>{t('blocks.paragraph')}</span>
 								</button>
 								<button
@@ -85,9 +90,16 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleHeading({ level: 1 }).run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('heading', { level: 1 }) && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('heading', { level: 1 }) && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.H1Icon className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzHeading1}
+										className={
+											editor.isActive('heading', { level: 1 }) ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'
+										}
+									/>
 									<span>{t('blocks.h1')}</span>
 								</button>
 								<button
@@ -96,9 +108,16 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleHeading({ level: 2 }).run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('heading', { level: 2 }) && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('heading', { level: 2 }) && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.H2Icon className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzHeading2}
+										className={
+											editor.isActive('heading', { level: 2 }) ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'
+										}
+									/>
 									<span>{t('blocks.h2')}</span>
 								</button>
 								<button
@@ -107,9 +126,16 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleHeading({ level: 3 }).run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('heading', { level: 3 }) && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('heading', { level: 3 }) && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.H3Icon className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzHeading3}
+										className={
+											editor.isActive('heading', { level: 3 }) ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'
+										}
+									/>
 									<span>{t('blocks.h3')}</span>
 								</button>
 							</div>
@@ -123,9 +149,11 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleTaskList().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('taskList') && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('taskList') && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.CheckListIcon className="w-4 h-4" />
+									<MezonIcon icon={MzIcons16.mzListCheck} className="text-[rgba(7,151,7,1)]" />
 									<span>{t('blocks.checkedList')}</span>
 								</button>
 								<button
@@ -134,9 +162,14 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleOrderedList().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('orderedList') && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('orderedList') && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.OrderedListIcon className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzListNumber}
+										className={editor.isActive('orderedList') ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+									/>
 									<span>{t('blocks.orderedList')}</span>
 								</button>
 								<button
@@ -145,9 +178,14 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleBulletList().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('bulletList') && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('bulletList') && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.BulletListIcon className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzListBullet}
+										className={editor.isActive('bulletList') ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+									/>
 									<span>{t('blocks.bulletedList')}</span>
 								</button>
 								<button
@@ -156,9 +194,14 @@ export function BlockFormatDropdown({ editor, isOpen, onOpenChange }: BlockForma
 									onClick={() => handleSelect(() => editor.chain().focus().toggleBlockquote().run())}
 								>
 									<span className="canvas-block-check-col">
-										{editor.isActive('blockquote') && <Icons.IconTick className="w-4 h-4" />}
+										{editor.isActive('blockquote') && (
+											<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon-selected)]" />
+										)}
 									</span>
-									<Icons.BlockquoteIcon className="w-4 h-4" />
+									<MezonIcon
+										icon={MzIcons16.mzQuote}
+										className={editor.isActive('blockquote') ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+									/>
 									<span>{t('blocks.blockquote')}</span>
 								</button>
 							</div>

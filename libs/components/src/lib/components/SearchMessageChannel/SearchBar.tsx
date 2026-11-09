@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { memo } from 'react';
 import SearchInput from './SearchInput';
 import type { SearchBarProps } from './types';
@@ -50,13 +50,13 @@ const SearchBar = ({
 					onClick={onInputClick}
 					className={`${valueInputSearch ? 'z-0 opacity-0 rotate-0' : 'z-10 opacity-100 rotate-90'} w-4 h-4 absolute transition-transform`}
 				>
-					<Icons.Search className="w-4 h-4 text-theme-primary" />
+					<MezonIcon icon={MzIcons16.mzSearch} className="text-[var(--mz-icon)]" />
 				</button>
 				<button
 					onClick={onClose}
 					className={`${valueInputSearch ? 'z-10 opacity-100 rotate-90' : 'z-0 opacity-0 rotate-0'} w-4 h-4 absolute transition-transform`}
 				>
-					<Icons.Close className="w-4 h-4" />
+					<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)]" />
 				</button>
 			</div>
 		</>

@@ -1,9 +1,9 @@
 import { usePermissionChecker } from '@mezon/core';
 import { selectCurrentChannelId } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { EOverriddenPermission, EPermission } from '@mezon/utils';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 type EmptyCanvasProps = {
 	onClick: () => void;
@@ -20,12 +20,7 @@ const EmptyCanvas = ({ onClick }: EmptyCanvasProps) => {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-[400px] p-12">
 			<div className="mx-auto mb-4 p-6 rounded-full flex items-center justify-center cursor-default" aria-hidden>
-				<Icons.CanvasIcon
-					defaultSize="!w-14 !h-14 shrink-0"
-					className="[--canvas-fill-1:var(--bg-icon-theme)] [--canvas-fill-2:var(--bg-theme-secounnd)]"
-					defaultFill1="var(--canvas-fill-1)"
-					defaultFill2="var(--canvas-fill-2)"
-				/>
+				<MezonIcon icon={MzIcons48.mzCanvas} className="!w-14 !h-14 shrink-0 text-[var(--mz-icon)]" />
 			</div>
 			<h2 className="text-2xl font-semibold mb-2">{t('canvas.emptyTitle')}</h2>
 			<p className="text-base text-center">{t('canvas.emptyDescription')}</p>

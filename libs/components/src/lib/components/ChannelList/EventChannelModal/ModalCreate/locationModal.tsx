@@ -1,7 +1,7 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import type { ChannelsEntity } from '@mezon/store';
 import { selectTheme } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ContenSubmitEventProps } from '@mezon/utils';
 import { OptionEvent, filterOptionReactSelect, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -85,7 +85,11 @@ const LocationModal = (props: LocationModalProps) => {
 		value: voice.id,
 		label: (
 			<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
-				{voice.channel_private ? <Icons.SpeakerLocked /> : <Icons.Speaker />}
+				{voice.channel_private ? (
+					<MezonIcon icon={MzIcons20.mzSpeakerLock} className="text-[var(--mz-icon)]" />
+				) : (
+					<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
+				)}
 				<span className="truncate overflow-hidden max-w-[200px]">{voice.channel_label}</span>
 			</div>
 		)
@@ -126,23 +130,15 @@ const LocationModal = (props: LocationModalProps) => {
 
 				const icon = isTextChannel ? (
 					isPrivateChannel ? (
-						<Icons.HashtagLocked defaultFill1="var(--bg-icon-theme)" defaultFill2="var(--bg-icon-theme-active)" />
+						<MezonIcon icon={MzIcons20.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 					) : (
-						<Icons.Hashtag defaultFill1="var(--bg-icon-theme)" />
+						<MezonIcon icon={MzIcons20.mzChannel} className="text-[var(--mz-icon)]" />
 					)
 				) : isThread ? (
 					isPrivateChannel ? (
-						<Icons.ThreadIconLocker
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill4="var(--bg-theme-secounnd)"
-							defaultFill5="var(--bg-icon-theme-active)"
-						/>
+						<MezonIcon icon={MzIcons20.mzThreadPrivate} className="text-[var(--mz-icon)]" />
 					) : (
-						<Icons.ThreadIcon
-							defaultFill1="var(--bg-icon-theme)"
-							defaultFill4="var(--bg-theme-secounnd)"
-							defaultFill5="var(--bg-icon-theme)"
-						/>
+						<MezonIcon icon={MzIcons20.mzThread} className="text-[var(--mz-icon)]" />
 					)
 				) : null;
 
@@ -180,7 +176,12 @@ const LocationModal = (props: LocationModalProps) => {
 			<div className={`flex flex-col mb-4 ${errorVoice ? 'gap-y-2' : 'gap-y-4'}`}>
 				{displaySelectVoiceOrLocation && (
 					<TitleOptionEvent
-						icon={<Icons.Speaker />}
+						icon={
+							<MezonIcon
+								icon={MzIcons20.mzSpeaker}
+								className={choiceSpeaker ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+							/>
+						}
 						title={t('fields.channelType.voiceChannel.title')}
 						desc={t('fields.channelType.voiceChannel.description')}
 						choose={choiceSpeaker}
@@ -195,7 +196,12 @@ const LocationModal = (props: LocationModalProps) => {
 
 				{displaySelectVoiceOrLocation && (
 					<TitleOptionEvent
-						icon={<Icons.Location />}
+						icon={
+							<MezonIcon
+								icon={MzIcons20.mzLocation}
+								className={choiceLocation ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+							/>
+						}
 						title={t('fields.channelType.somewhere.title')}
 						desc={t('fields.channelType.somewhere.description')}
 						choose={choiceLocation}
@@ -209,7 +215,12 @@ const LocationModal = (props: LocationModalProps) => {
 
 				{displaySelectPrivate && (
 					<TitleOptionEvent
-						icon={<Icons.Speaker />}
+						icon={
+							<MezonIcon
+								icon={MzIcons20.mzSpeaker}
+								className={choicePrivateEvent ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
+							/>
+						}
 						title={t('fields.channelType.privateEvent.title')}
 						desc={t('fields.channelType.privateEvent.description')}
 						choose={!!choicePrivateEvent}
@@ -318,7 +329,7 @@ const TitleOptionEvent = ({
 }) => {
 	return (
 		<label
-			className={`w-full bg-item-theme rounded flex justify-between items-center p-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+			className={`mz-hover w-full bg-item-theme rounded flex justify-between items-center p-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
 			htmlFor={disabled ? undefined : id}
 		>
 			<div className={`flex items-center gap-x-2 ${choose ? 'text-theme-primary-active' : ''} `}>

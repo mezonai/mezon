@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { deselectCurrent } from '@mezon/utils';
 import React from 'react';
 import { ButtonSwitch } from '.';
@@ -73,8 +73,8 @@ const CopyButtonComponent: React.FC<CopyButtonComponentProps> = ({
 	return (
 		<ButtonSwitch
 			className={`text-theme-primary-active gap-2 p-1 text-sm bg-transparent bg-item-theme-hover ${className ?? ''}`}
-			iconDefault={<Icons.CopyIcon />}
-			iconSwitch={<Icons.Tick className="w-4 h-4" fill="currentColor" />}
+			iconDefault={<MezonIcon icon={MzIcons16.mzCopy} />}
+			iconSwitch={<MezonIcon icon={MzIcons16.mzCheck} />}
 			onClick={handleCopy}
 			disabled={disabled}
 			title={title}

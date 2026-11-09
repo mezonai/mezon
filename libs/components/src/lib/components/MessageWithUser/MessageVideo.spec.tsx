@@ -18,7 +18,7 @@ const { act, create } = jest.requireActual<{
 
 let mockIsIntersecting = true;
 let mockUploadProgress: Record<string, number> = {};
-jest.mock('@mezon/ui', () => ({ Icons: { PlayButton: () => null, Download: () => null } }), { virtual: true });
+jest.mock('@mezon/ui', () => ({ MezonIcon: () => null, MzIcons16: { mzPlay: {} }, MzIcons20: { mzPlay: {}, mzDownload: {} } }), { virtual: true });
 jest.mock(
 	'@mezon/store',
 	() => ({
@@ -138,7 +138,7 @@ describe('a video sent through the file ingest', () => {
 	const remote = { ...attachment, url: URL, local_source: undefined };
 	const EVENT_PLAYLIST = '#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-PLAYLIST-TYPE:EVENT\n';
 
-	function quarterTurnedInitSegment(): Uint8Array {
+	function quarterTurnedInitSegment(): ArrayBuffer {
 		const bytes = new Uint8Array(108);
 		const view = new DataView(bytes.buffer);
 		for (const [at, type] of [
@@ -157,7 +157,7 @@ describe('a video sent through the file ingest', () => {
 		view.setInt32(matrix + 12, -0x10000);
 		view.setUint32(matrix + 36, 1920 * 0x10000);
 		view.setUint32(matrix + 40, 1080 * 0x10000);
-		return bytes;
+		return bytes.buffer;
 	}
 
 	class FakeVideo {
@@ -291,6 +291,32 @@ describe('a video sent through the file ingest', () => {
 		await advance(0);
 		expect(requests()).toEqual([`${INDEX}?probe=${n + 3}`]);
 		expect(video.src).toBe(URL);
+	});
+
+	it('shows its poster while pending, as the sender stored it before posting', async () => {
+		render(<MessageVideo attachmentData={remote} isPresignPending isIngest />);
+		await advance(0);
+		expect(renderer.root.findByType('img').props.src).toBe(`proxy:${remote.thumbnail}`);
+	});
+
+	it('spins the download button until the file is fetched and ignores presses meanwhile', async () => {
+		render(<MessageVideo attachmentData={remote} isIngest />);
+		act(() => poster().props.onPlay());
+		await advance(0);
+		let finish!: (response: Response) => void;
+		fetchMock.mockImplementation(() => new Promise<Response>((resolve) => (finish = resolve)));
+		const button = () => renderer.root.find((node) => String((node.props as { className?: string }).className).includes('top-2 right-1'));
+		const spinning = () => String((button().props as { className?: string }).className).startsWith('flex');
+		const asked = fetchMock.mock.calls.length;
+
+		await act(async () => void (button().props as unknown as { onClick: () => void }).onClick());
+		await act(async () => void (button().props as unknown as { onClick: () => void }).onClick());
+		expect(fetchMock).toHaveBeenCalledTimes(asked + 1);
+		expect(spinning()).toBe(true);
+
+		await act(async () => finish(new Response('video', { status: 200 })));
+		await advance(0);
+		expect(spinning()).toBe(false);
 	});
 
 	it('asks nothing while the video is off screen', async () => {

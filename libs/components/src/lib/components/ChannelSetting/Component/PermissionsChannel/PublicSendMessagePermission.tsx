@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiGetOverrideEveryoneChannelResponse } from 'mezon-js';
 import type { MutableRefObject, ReactNode } from 'react';
@@ -58,7 +58,7 @@ const ExceptionRow = ({ id, kind, removeLabel, disabled, onRemove, children }: E
 					: 'channel_setting_page.permissions.exclusions.remove_role'
 			)}
 		>
-			<Icons.EscIcon className="size-[15px]" />
+			<MezonIcon icon={MzIcons16.mzCloseCircle} className="text-[var(--mz-icon)]" />
 		</button>
 	</div>
 );
@@ -365,7 +365,11 @@ const PublicSendMessagePermission = ({
 											{role?.role_icon ? (
 												<img src={role.role_icon} alt="" className="size-5 rounded" />
 											) : (
-												<Icons.RoleIcon className="size-5 shrink-0" defaultFill1={role?.color || DEFAULT_ROLE_COLOR} />
+												<MezonIcon
+													icon={MzIcons20.mzRole}
+													className="shrink-0"
+													style={{ color: role?.color || DEFAULT_ROLE_COLOR }}
+												/>
 											)}
 											<span className="text-sm truncate">{name}</span>
 										</ExceptionRow>

@@ -1,5 +1,5 @@
 import { selectSearchedThreadLoadingStatus, selectThreadInputSearchByChannelId, threadsActions, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, SpinningIcon } from '@mezon/ui';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -45,7 +45,11 @@ const SearchThread = ({ channelId }: SearchThreadProps) => {
 				/>
 			</div>
 			<div className="w-5 h-6 flex flex-row items-center pl-1 absolute right-1 bg-transparent top-1/2 transform -translate-y-1/2">
-				{isLoading ? <Icons.LoadingSpinner /> : <Icons.Search />}
+				{isLoading ? (
+					<SpinningIcon icon={MzIcons20.mzSpinner} className="text-[var(--mz-icon)]" />
+				) : (
+					<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
+				)}
 			</div>
 		</div>
 	);

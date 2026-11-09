@@ -8,7 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons40 } from '@mezon/ui';
 import { EPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -102,13 +102,13 @@ const SettingSoundEffect = () => {
 			</div>
 			<div className="flex flex-col gap-4">
 				<div className="flex items-center gap-2 font-semibold text-sm text-theme-primary-active">
-					<Icons.Speaker className="w-5 h-5 text-theme-primary" />
+					<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
 					<span>{t('main.soundEffectList')}</span>
 				</div>
 				<div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 					{soundList.length === 0 && (
 						<div className="col-span-full flex flex-col items-center justify-center py-10 border-2 border-dashed border-theme-primary bg-theme-setting-nav text-center">
-							<Icons.Speaker className="w-10 h-10 text-theme-primary mb-2" />
+							<MezonIcon icon={MzIcons40.mzSpeaker} className="text-[var(--mz-icon)] mb-2" />
 							<p className="text-theme-primary text-sm">{t('main.noSoundEffects')}</p>
 						</div>
 					)}
@@ -131,7 +131,7 @@ const SettingSoundEffect = () => {
 											onClick={() => handleEditSound(sound)}
 											data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.actions.edit')}
 										>
-											<Icons.EditMessageRightClick defaultSize="w-3 h-3" />
+											<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)]" />
 										</button>
 										<button
 											className="aspect-square w-6 text-sm rounded-full bg-theme-setting-primary hover:bg-theme-setting-primary flex items-center justify-center mb-[1px] font-medium text-red-600 shadow-sm"
@@ -177,7 +177,7 @@ const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 				/>
 			) : (
 				<div className="size-4 rounded-full bg-bgDisable flex items-center justify-center">
-					<Icons.AvatarUser className="w-2.5 h-2.5" />
+					<MezonIcon icon={MzIcons16.mzUser} className="text-[var(--mz-icon)]" />
 				</div>
 			)}
 

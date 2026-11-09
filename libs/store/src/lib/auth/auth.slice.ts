@@ -251,7 +251,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	thunkAPI.dispatch(videoStreamActions.resetPlayback());
 	thunkAPI.dispatch(fcmActions.clearGotifyToken());
 	clearApiCallTracker();
-	const restoreKey = ['persist:apps', 'persist:settingsUser', 'current-theme', 'hideNotificationContent', 'i18nextLng'];
+	const restoreKey = ['persist:apps', 'persist:settingsUser', 'current-theme', 'hideNotificationContent', 'i18nextLng', 'mezon-icon-motion'];
 	if (sessionState) {
 		restoreKey.push('mezon_session');
 	}

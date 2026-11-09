@@ -1,5 +1,5 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { SubPanelName } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -86,7 +86,7 @@ export const InputSearch: React.FC = () => {
 		<div className="flex flex-row items-center pt-4">
 			{buttonArrowBackStatus && (
 				<div className="px-2 cursor-pointer" onClick={(e) => onclickBackArrow(e)} role="button">
-					<Icons.BackToCategoriesGif />
+					<MezonIcon icon={MzIcons20.mzArrowLeft} />
 				</div>
 			)}
 
@@ -108,7 +108,7 @@ export const InputSearch: React.FC = () => {
 					/>
 
 					<div className="w-5 h-6 flex flex-row items-center pl-1 absolute right-1  top-1/4 transform -translate-y-1/2 m-2 cursor-pointer">
-						<Icons.Search />
+						<MezonIcon icon={MzIcons20.mzSearch} />
 					</div>
 				</div>
 			)}

@@ -6,7 +6,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons48 } from '@mezon/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -78,7 +78,7 @@ const TranscriptCallDetail = () => {
 	if (!roomId) {
 		return (
 			<div className="flex flex-col items-center justify-center h-full gap-4">
-				<Icons.IconMeetDM className="w-16 h-16 dark:text-textSecondary text-gray-300" />
+				<MezonIcon icon={MzIcons48.mzVideo} className="w-16 h-16 dark:text-textSecondary text-gray-300" />
 				<div className="text-lg font-medium dark:text-textSecondary text-gray-400">{t('transcriptCalls.detail.notFound')}</div>
 				<button
 					type="button"
@@ -106,7 +106,7 @@ const TranscriptCallDetail = () => {
 	if (failedBlock) {
 		return (
 			<div className="flex flex-col items-center justify-center h-full gap-4 max-w-md mx-auto text-center">
-				<Icons.IconMeetDM className="w-16 h-16 dark:text-textSecondary text-gray-300" />
+				<MezonIcon icon={MzIcons48.mzVideo} className="w-16 h-16 dark:text-textSecondary text-gray-300" />
 				<div className="text-sm dark:text-textSecondary text-gray-500">{t('transcriptCalls.detail.loadError')}</div>
 				<div className="flex gap-2">
 					<button
@@ -131,7 +131,7 @@ const TranscriptCallDetail = () => {
 	if (missingStatsBlock) {
 		return (
 			<div className="flex flex-col items-center justify-center h-full gap-4">
-				<Icons.IconMeetDM className="w-16 h-16 dark:text-textSecondary text-gray-300" />
+				<MezonIcon icon={MzIcons48.mzVideo} className="w-16 h-16 dark:text-textSecondary text-gray-300" />
 				<div className="text-lg font-medium dark:text-textSecondary text-gray-400">{t('transcriptCalls.detail.notFound')}</div>
 				<button
 					type="button"
@@ -165,9 +165,9 @@ const TranscriptCallDetail = () => {
 					<button
 						type="button"
 						onClick={() => navigate('/developers/transcript-calls')}
-						className="flex items-center gap-1 dark:text-textSecondary text-gray-500 hover:dark:text-textDarkTheme hover:text-gray-800 transition text-sm font-medium"
+						className="group flex items-center gap-1 dark:text-textSecondary text-gray-500 hover:dark:text-textDarkTheme hover:text-gray-800 transition text-sm font-medium"
 					>
-						<Icons.LeftArrowIcon className="w-4" />
+						<MezonIcon icon={MzIcons16.mzArrowLeft} className="text-[var(--mz-icon)] group-hover:text-[var(--mz-icon-selected)]" />
 						{t('transcriptCalls.detail.back')}
 					</button>
 					<span className="dark:text-textSecondary text-gray-300">/</span>
@@ -183,7 +183,7 @@ const TranscriptCallDetail = () => {
 					onClick={loadRoom}
 					className="flex items-center gap-2 px-4 py-2 bg-buttonPrimary hover:bg-bgSelectItemHover text-white rounded-lg transition text-sm font-medium"
 				>
-					<Icons.SyncIcon className="w-4 h-4" />
+					<MezonIcon icon={MzIcons16.mzSync} />
 					{t('transcriptCalls.detail.refresh')}
 				</button>
 			</div>
@@ -371,7 +371,7 @@ const TranscriptCallDetail = () => {
 								<div className="text-sm text-red-600 dark:text-red-400">{t('transcriptCalls.detail.loadError')}</div>
 							) : detail.participants.filter((p) => p.user_name).length === 0 ? (
 								<div className="flex flex-col items-center justify-center gap-4 py-8">
-									<Icons.IconUserProfileDM className="w-12 h-12 dark:text-textSecondary text-gray-300" />
+									<MezonIcon icon={MzIcons48.mzUserCircle} className="dark:text-textSecondary text-gray-300" />
 									<div className="text-sm dark:text-textSecondary text-gray-500">
 										{t('transcriptCalls.detail.participantsEmpty')}
 									</div>

@@ -1,6 +1,6 @@
 import { useMarkAsRead } from '@mezon/core';
 import { selectChannelById, selectClanById, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import type { INotification, TNotificationChannel } from '@mezon/utils';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useMemo } from 'react';
@@ -63,7 +63,7 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 							title="Notification Settings"
 							className="dark:bg-bgTertiary bg-bgLightModeButton mr-1 dark:text-contentPrimary text-colorTextLightMode rounded-full w-6 h-6 flex items-center justify-center text-[10px]"
 						>
-							<Icons.Bell defaultSize="w-4 h-4" />
+							<MezonIcon icon={MzIcons24.mzBell} />
 						</button>
 
 						<button

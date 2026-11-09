@@ -14,7 +14,7 @@ import {
 	videoStreamActions,
 	watchStream
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons40 } from '@mezon/ui';
 import type { IStreamInfo } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -115,13 +115,10 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 							aria-label={membersLabel}
 							aria-expanded={showMembers}
 							onClick={() => setShowMembers((shown) => !shown)}
-							className="flex items-center gap-1 rounded-3xl bg-neutral-700 px-2 py-[6px] hover:bg-bgSecondary600"
+							className="flex items-center gap-1 rounded-3xl bg-neutral-700 text-white px-2 py-[6px] hover:bg-bgSecondary600"
 						>
-							<Icons.ArrowDown
-								defaultFill="white"
-								className={`size-6 transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`}
-							/>
-							<Icons.MemberList defaultFill="text-white" />
+							<MezonIcon icon={MzIcons20.mzChevronDown} className={`transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`} />
+							<MezonIcon icon={MzIcons20.mzMembers} />
 						</button>
 						{showMembers && <StreamViewers channelId={channelId} />}
 					</div>
@@ -137,7 +134,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 					<StreamPublisherAvatar publisher={publisher} className="!size-20 shrink-0" classNameText="font-semibold !text-3xl" />
 				) : (
 					<div className="flex size-20 items-center justify-center rounded-full bg-gray-400/40 text-gray-800 dark:bg-white/10 dark:text-white">
-						<Icons.Stream defaultSize="h-10 w-10" />
+						<MezonIcon icon={MzIcons40.mzLive} />
 					</div>
 				)}
 				<div className="flex max-w-full items-center gap-2">

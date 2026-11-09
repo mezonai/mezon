@@ -1,5 +1,5 @@
 import { EInvoice, selectMemberClanByUserId, selectStatusInVoice, useAppSelector } from '@mezon/store';
-import { Icons, NameComponent } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, NameComponent } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
@@ -38,15 +38,15 @@ function UserListItem({
 							src={avatar}
 						/>
 					) : (
-						<Icons.AvatarUser />
+						<MezonIcon icon={MzIcons20.mzUserCircle} className="text-[var(--mz-icon)]" />
 					)}
 				</div>
 				<div>{name ? <NameComponent id={id || ''} name={name || ''} /> : null}</div>
 			</div>
 			{showScreenShareIcon && invoiceStatus?.status === EInvoice.SHARING_SCREEN ? (
-				<Icons.VoiceScreenShareIcon
-					color="#22c55e"
-					className="w-4 h-4"
+				<MezonIcon
+					icon={MzIcons16.mzScreenShare}
+					className="text-[#22c55e]"
 					data-e2e={generateE2eId('clan_page.channel_list.item.user_list.item.screen_share')}
 				/>
 			) : null}

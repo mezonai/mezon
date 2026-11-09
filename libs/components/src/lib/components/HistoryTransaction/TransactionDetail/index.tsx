@@ -1,8 +1,16 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { formatNumber } from '@mezon/utils';
 import React from 'react';
 import { ButtonCopy } from '../../../components';
 import { CURRENCY, TRANSACTION_DETAIL } from '../constans/constans';
+
+const ICON_CLASS = new Map<unknown, string>([
+	[MzIcons16.mzUser, 'text-[#92B8FF]'],
+	[MzIcons16.mzCoin, 'text-[var(--mz-icon)]'],
+	[MzIcons16.mzHistory, 'text-[var(--mz-icon)]'],
+	[MzIcons16.mzTransaction, 'text-[var(--mz-icon)]'],
+	[MzIcons16.mzEdit, 'text-[var(--mz-icon)]']
+]);
 
 interface TransactionDetailProps {
 	detailLedger: any;
@@ -14,21 +22,21 @@ const TransactionDetailSkeleton: React.FC = () => {
 	const { FIELDS } = TRANSACTION_DETAIL;
 
 	const detailFields = [
-		{ label: FIELDS.TRANSACTION_ID, icon: Icons.Transaction },
-		{ label: FIELDS.SENDER, icon: Icons.UserIcon },
-		{ label: FIELDS.AMOUNT, icon: () => <Icons.DollarIcon defaultSize="w-3 h-3" isWhite /> },
-		{ label: FIELDS.RECEIVER, icon: Icons.UserIcon },
-		{ label: FIELDS.NOTE, icon: Icons.PenEdit },
-		{ label: FIELDS.CREATED, icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
+		{ label: FIELDS.TRANSACTION_ID, icon: MzIcons16.mzTransaction },
+		{ label: FIELDS.SENDER, icon: MzIcons16.mzUser },
+		{ label: FIELDS.AMOUNT, icon: MzIcons16.mzCoin },
+		{ label: FIELDS.RECEIVER, icon: MzIcons16.mzUser },
+		{ label: FIELDS.NOTE, icon: MzIcons16.mzEdit },
+		{ label: FIELDS.CREATED, icon: MzIcons16.mzHistory }
 	];
 
 	return (
 		<div className="p-4 bg-item-theme text-theme-primary ">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{detailFields.map(({ label, icon: Icon }) => (
+				{detailFields.map(({ label, icon }) => (
 					<div key={label} className="space-y-2">
 						<div className="flex items-center gap-2">
-							<Icon className="w-3 h-3 " />
+							<MezonIcon icon={icon} className={ICON_CLASS.get(icon)} />
 							<p className="text-xs font-medium uppercase tracking-wide">{label}</p>
 							{label === FIELDS.TRANSACTION_ID && (
 								<span>
@@ -56,25 +64,25 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 	const { FIELDS } = TRANSACTION_DETAIL;
 
 	const detailFields = [
-		{ label: FIELDS.TRANSACTION_ID, value: detailLedger.trans_id, icon: Icons.Transaction },
-		{ label: FIELDS.SENDER, value: detailLedger.sender_username, icon: Icons.UserIcon },
+		{ label: FIELDS.TRANSACTION_ID, value: detailLedger.trans_id, icon: MzIcons16.mzTransaction },
+		{ label: FIELDS.SENDER, value: detailLedger.sender_username, icon: MzIcons16.mzUser },
 		{
 			label: FIELDS.AMOUNT,
 			value: `${formatNumber(detailLedger.amount, CURRENCY.CODE)} ${CURRENCY.SYMBOL}`,
-			icon: () => <Icons.DollarIcon defaultSize="w-3 h-3" isWhite />
+			icon: MzIcons16.mzCoin
 		},
-		{ label: FIELDS.RECEIVER, value: detailLedger.receiver_username, icon: Icons.UserIcon },
-		{ label: FIELDS.NOTE, value: detailLedger.metadata || TRANSACTION_DETAIL.DEFAULT_NOTE, icon: Icons.PenEdit },
-		{ label: FIELDS.CREATED, value: formatDate(detailLedger.create_time ?? ''), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
+		{ label: FIELDS.RECEIVER, value: detailLedger.receiver_username, icon: MzIcons16.mzUser },
+		{ label: FIELDS.NOTE, value: detailLedger.metadata || TRANSACTION_DETAIL.DEFAULT_NOTE, icon: MzIcons16.mzEdit },
+		{ label: FIELDS.CREATED, value: formatDate(detailLedger.create_time ?? ''), icon: MzIcons16.mzHistory }
 	];
 
 	return (
 		<div className="p-4 bg-item-theme text-theme-primary">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				{detailFields.map(({ label, value, icon: Icon }) => (
+				{detailFields.map(({ label, value, icon }) => (
 					<div key={value} className="space-y-2">
 						<div className="flex items-center gap-2">
-							<Icon className="w-3 h-3 " />
+							<MezonIcon icon={icon} className={ICON_CLASS.get(icon)} />
 							<p className="text-xs font-medium uppercase tracking-wide">{label}</p>
 							{label === FIELDS.TRANSACTION_ID && value && (
 								<span onClick={(e) => e.stopPropagation()}>
