@@ -2,7 +2,7 @@ import type { RootState } from '@mezon/store';
 import { getStore, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
-import { E_ERROR_CHANNEL, MAX_FORWARD_MESSAGE_LENGTH, getCdnSignatureChannelId, withoutPresignMarkers } from '@mezon/utils';
+import { E_ERROR_CHANNEL, MAX_FORWARD_MESSAGE_LENGTH, getCdnSignatureChannelId, hasFinishedHlsCopy, withoutPresignMarkers } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageAttachment, type ApiMessageMention } from 'mezon-js';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -149,6 +149,10 @@ export function useSendForwardMessage() {
 									...attach,
 									url: dst
 								};
+							}
+
+							if (code === E_ERROR_CHANNEL.NOT_FOUND && (await hasFinishedHlsCopy(attach.url))) {
+								return attach;
 							}
 
 							dispatch(

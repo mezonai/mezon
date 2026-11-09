@@ -1,3 +1,5 @@
+import { fetchDownloadBlob } from '../utils/hlsDownload';
+
 async function copyBlobToClipboard(pngBlob: Blob | null): Promise<boolean> {
 	if (!pngBlob || !(window.navigator.clipboard && window.ClipboardItem)) {
 		return false;
@@ -80,14 +82,16 @@ export const handleSaveImage = (urlData: string) => {
 			console.error('Invalid URL:', urlData);
 			return;
 		}
-		
 	} catch {
 		console.error('Error parsing URL:', urlData);
 		return;
 	}
-	fetch(urlData)
-		.then((response) => response.blob())
+	fetchDownloadBlob(urlData)
 		.then((blob) => {
+			if (!blob) {
+				console.error('Error downloading image:', urlData);
+				return;
+			}
 			const rawName = urlData.split('/').pop()?.split('?')[0] || 'image.png';
 			const fileName = rawName.replace(/[\\/:*?"<>|]/g, '_').slice(0, 255) || 'image.png';
 			const url = window.URL.createObjectURL(new Blob([blob]));
