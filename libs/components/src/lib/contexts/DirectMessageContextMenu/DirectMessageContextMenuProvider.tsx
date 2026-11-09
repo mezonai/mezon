@@ -305,7 +305,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 							</>
 						)}
 
-						{!isDmGroup && (infoFriend?.state === EStateFriend.FRIEND || didIBlockUser) && (
+						{!isDmGroup && (infoFriend?.state !== EStateFriend.BLOCK || didIBlockUser) && (
 							<MemberMenuItem
 								label={didIBlockUser ? t('contextMenu.unblock') : t('contextMenu.block')}
 								onClick={didIBlockUser ? currentHandlers.handleUnblockFriend : currentHandlers.handleBlockFriend}
