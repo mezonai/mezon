@@ -61,6 +61,7 @@ export * from './file';
 export * from './forceReflow';
 export * from './forwardSearch';
 export * from './heavyAnimation';
+export * from './inlineMarkdownStyles';
 export * from './mediaDimensions';
 export * from './mergeRefs';
 export * from './parseHtmlAsFormattedText';

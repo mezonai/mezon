@@ -1,5 +1,5 @@
 import type { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
-import { EBacktickType } from '../types';
+import { EBacktickType } from '../types/messageLine';
 import { getLinkType } from './embed-social';
 
 export const processEntitiesDirectly = (entities: any[], content: string, rolesClan: any[]) => {
@@ -88,6 +88,14 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 
 			case 'MessageEntityBold':
 				markdown.push({ s, e, type: EBacktickType.BOLD });
+				break;
+
+			case 'MessageEntityItalic':
+				markdown.push({ s, e, type: EBacktickType.ITALIC });
+				break;
+
+			case 'MessageEntityStrike':
+				markdown.push({ s, e, type: EBacktickType.STRIKE });
 				break;
 
 			case 'MessageEntityUnderline':

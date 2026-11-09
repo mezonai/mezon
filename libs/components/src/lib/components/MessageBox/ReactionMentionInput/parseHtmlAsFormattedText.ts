@@ -1,4 +1,4 @@
-import { parenBalance, sanitizeMessageHtml } from '@mezon/utils';
+import { extractInlineStyles, parenBalance, sanitizeMessageHtml } from '@mezon/utils';
 
 function escapeHtmlText(value: string): string {
 	return value.replace(/[&<>"']/g, (ch) => {
@@ -277,6 +277,7 @@ export default function parseHtmlAsFormattedToText(html: string, withMarkdownLin
 		url: '',
 		index: -1
 	};
+	let linkPreviewEntityIndex = -1;
 	const entities: ApiMessageEntity[] = [];
 
 	function addEntity(node: ChildNode) {
@@ -289,6 +290,7 @@ export default function parseHtmlAsFormattedToText(html: string, withMarkdownLin
 			if (!isInternal || isInviteLink) {
 				linkPreview.url = urlValue;
 				linkPreview.index = index;
+				linkPreviewEntityIndex = entities.length;
 			}
 		}
 
@@ -314,9 +316,20 @@ export default function parseHtmlAsFormattedToText(html: string, withMarkdownLin
 		addEntity(node);
 	});
 
+	let finalText = text;
+	let finalEntities = entities;
+	if (!skipMarkdown) {
+		const extracted = extractInlineStyles(text, entities);
+		finalText = extracted.text;
+		finalEntities = extracted.entities;
+		if (linkPreviewEntityIndex >= 0 && finalEntities[linkPreviewEntityIndex]) {
+			linkPreview.index = finalEntities[linkPreviewEntityIndex].offset;
+		}
+	}
+
 	return {
-		text,
-		entities: entities.length ? entities : undefined,
+		text: finalText,
+		entities: finalEntities.length ? finalEntities : undefined,
 		linkPreview
 	};
 }
@@ -366,14 +379,6 @@ function parseMarkdown(html: string) {
 	parsedHtml = parsedHtml.replace(
 		/(?!<(?:code|pre)[^<]*|<\/)\[([^\]\n]+)\]\(customEmoji:(\d+)\)(?![^<]*<\/(?:code|pre)>)/g,
 		'<img alt="$1" data-document-id="$2">'
-	);
-
-	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[*]{2}([^*\n]+)[*]{2}(?![^<]*<\/(code|pre)>)/g, '<b>$2</b>');
-	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[_]{2}([^_\n]+)[_]{2}(?![^<]*<\/(code|pre)>)/g, '<i>$2</i>');
-	parsedHtml = parsedHtml.replace(/(?!<(code|pre)[^<]*|<\/)[~]{2}([^~\n]+)[~]{2}(?![^<]*<\/(code|pre)>)/g, '<s>$2</s>');
-	parsedHtml = parsedHtml.replace(
-		/(?!<(code|pre)[^<]*|<\/)[|]{2}([^|\n]+)[|]{2}(?![^<]*<\/(code|pre)>)/g,
-		`<span data-entity-type="${ApiMessageEntityTypes.Spoiler}">$2</span>`
 	);
 
 	return parsedHtml;
