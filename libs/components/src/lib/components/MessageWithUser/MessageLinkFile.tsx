@@ -1,6 +1,6 @@
 import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, selectCurrentUserId } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { EFailAttachment, EMimeTypes } from '@mezon/utils';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
@@ -206,7 +206,7 @@ function MessageLinkFile({ attachmentData, mode, message, isPresignPending = fal
 									disabled={isDownloading}
 									className={`rounded-md w-8 h-8 flex justify-center bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary items-center cursor-pointer ${
 										isDownloading ? 'opacity-60 cursor-not-allowed' : ''
-									}`}
+									} group/mzi`}
 									title="Download"
 								>
 									{isDownloading ? (
@@ -215,16 +215,22 @@ function MessageLinkFile({ attachmentData, mode, message, isPresignPending = fal
 											aria-hidden
 										/>
 									) : (
-										<Icons.Download defaultSize="w-4 h-4" />
+										<MezonIcon
+											icon={MzIcons20.mzDownload}
+											className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+										/>
 									)}
 								</button>
 								{isOwner && (
 									<button
 										onClick={handleOpenRemoveAttachementModal}
-										className="rounded-md w-8 h-8 flex justify-center items-center cursor-pointer bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary"
+										className="rounded-md w-8 h-8 flex justify-center items-center cursor-pointer bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary group/mzi"
 										title="Remove"
 									>
-										<Icons.TrashIcon className="w-4 h-4 " />
+										<MezonIcon
+											icon={MzIcons16.mzTrash}
+											className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+										/>
 									</button>
 								)}
 								{isPDF && (

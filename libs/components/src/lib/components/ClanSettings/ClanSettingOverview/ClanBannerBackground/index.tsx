@@ -1,5 +1,5 @@
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { MAX_FILE_SIZE_10MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -100,7 +100,11 @@ const ClanBannerBackground = ({ onUpload, urlImage }: ClanBannerBackgroundProps)
 						/>
 					</label>
 					<button onClick={handleCloseFile} className="absolute top-4 right-4 w-7 h-7 rounded-full  flex items-center justify-center">
-						{urlImage ? <Icons.Close /> : <Icons.ImageUploadIcon />}
+						{urlImage ? (
+							<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
+						) : (
+							<MezonIcon icon={MzIcons20.mzImageAdd} className="text-[var(--mz-icon)]" />
+						)}
 					</button>
 				</div>
 			</div>

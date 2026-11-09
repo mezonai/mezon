@@ -1,9 +1,10 @@
-import { ButtonCopy } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ICanvas } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
 import { Link, useParams } from 'react-router-dom';
+import ButtonCopy from '../../../../ButtonSwitchCustom/CopyButtonComponent';
 type GroupCanvasProps = {
 	canvas: ICanvas;
 	channelId?: string;
@@ -41,51 +42,44 @@ const GroupCanvas = ({
 	const link = `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
 
 	return (
-		<>
-			<div className="w-full flex gap-2 relative" data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item')}>
-				<Link
-					className={`block w-full py-2 pl-4 cursor-pointer rounded-lg border-theme-primary overflow-hidden ${
-						!isDisableDelCanvas ? 'pr-16' : 'pr-10'
-					} ${currentCanvasId === canvasId ? 'bg-item-theme text-theme-primary-active ' : 'bg-item-hover'}`}
-					role="button"
-					to={link}
-					onClick={handleOpenCanvas}
+		<div className="w-full flex gap-2 relative" data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item')}>
+			<Link
+				className={`block w-full py-2 pl-4 cursor-pointer rounded-lg border-theme-primary overflow-hidden ${
+					!isDisableDelCanvas ? 'pr-16' : 'pr-10'
+				} ${currentCanvasId === canvasId ? 'bg-item-theme text-theme-primary-active ' : 'bg-item-hover'}`}
+				role="button"
+				to={link}
+				onClick={handleOpenCanvas}
+			>
+				<div
+					className="h-6 text-xs truncate font-semibold leading-6"
+					data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.title')}
 				>
-					<div
-						className="h-6 text-xs truncate font-semibold leading-6"
-						data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.title')}
-					>
-						{canvas.title ? canvas.title : 'Untitled'}
-					</div>
-				</Link>
-				<ButtonCopy
-					copyText={process.env.NX_CHAT_APP_REDIRECT_URI + link}
-					className={`absolute top-2 !rounded-full overflow-hidden  ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}  `}
-				/>
-				{!isDisableDelCanvas && (
-					<button
-						title="Delete Canvas"
-						onClick={() => {
-							if (canvasId) {
-								onDeleteCanvas(canvasId, canvas.title ?? 'Untitled');
-							}
-						}}
-						className="absolute top-1/2 -translate-y-1/2 right-2 group flex items-center justify-center w-6 h-6 rounded-full bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-						data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.button.delete')}
-					>
-						<svg
-							className="w-3.5 h-3.5 text-red-500 group-hover:text-red-600 dark:group-hover:text-red-300 transition-colors"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							strokeWidth={2.5}
-						>
-							<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-						</svg>
-					</button>
-				)}
-			</div>
-		</>
+					{canvas.title ? canvas.title : 'Untitled'}
+				</div>
+			</Link>
+			<ButtonCopy
+				copyText={process.env.NX_CHAT_APP_REDIRECT_URI + link}
+				className={`absolute top-2 !rounded-full overflow-hidden  ${!isDisableDelCanvas ? 'right-[35px]' : 'right-[5px]'}  `}
+			/>
+			{!isDisableDelCanvas && (
+				<button
+					title="Delete Canvas"
+					onClick={() => {
+						if (canvasId) {
+							onDeleteCanvas(canvasId, canvas.title ?? 'Untitled');
+						}
+					}}
+					className="absolute top-1/2 -translate-y-1/2 right-2 group flex items-center justify-center w-6 h-6 rounded-full bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+					data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.button.delete')}
+				>
+					<MezonIcon
+						icon={MzIcons16.mzClose}
+						className="text-red-500 group-hover:text-red-600 dark:group-hover:text-red-300 transition-colors"
+					/>
+				</button>
+			)}
+		</div>
 	);
 };
 

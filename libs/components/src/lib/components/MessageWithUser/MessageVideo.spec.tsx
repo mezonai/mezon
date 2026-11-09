@@ -18,7 +18,7 @@ const { act, create } = jest.requireActual<{
 
 let mockIsIntersecting = true;
 let mockUploadProgress: Record<string, number> = {};
-jest.mock('@mezon/ui', () => ({ Icons: { PlayButton: () => null, Download: () => null } }), { virtual: true });
+jest.mock('@mezon/ui', () => ({ MezonIcon: () => null, MzIcons16: { mzPlay: {} }, MzIcons20: { mzPlay: {}, mzDownload: {} } }), { virtual: true });
 jest.mock(
 	'@mezon/store',
 	() => ({

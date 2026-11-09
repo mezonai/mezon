@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { formatTimeToMMSS } from '@mezon/utils';
 import React from 'react';
 
@@ -35,16 +35,7 @@ export const MessageAudioUI: React.FC<AudioUIProps> = ({
 				onClick={togglePlay}
 				className="w-6 h-6 flex items-center justify-center bg-white rounded-full text-bgSelectItem hover:bg-blue-50 transition-colors"
 			>
-				{isPlaying ? (
-					<svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-						<rect x="6" y="4" width="4" height="16" />
-						<rect x="14" y="4" width="4" height="16" />
-					</svg>
-				) : (
-					<svg viewBox="0 0 24 24" className="w-4 h-4 fill-current ml-0.5">
-						<path d="M8 5v14l11-7z" />
-					</svg>
-				)}
+				{isPlaying ? <MezonIcon icon={MzIcons16.mzPause} /> : <MezonIcon icon={MzIcons16.mzPlay} className="ml-0.5" />}
 			</button>
 
 			<span className="text-sm whitespace-nowrap tabular-nums">
@@ -75,7 +66,7 @@ export const MessageAudioUI: React.FC<AudioUIProps> = ({
 			</div>
 
 			<button onClick={handleSaveImage}>
-				<Icons.Download defaultFill="text-white" />
+				<MezonIcon icon={MzIcons20.mzDownload} />
 			</button>
 		</div>
 	</>

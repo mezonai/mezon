@@ -141,7 +141,7 @@ export const ScreenDrawToolbar = ({ session, onClose }: { session: ScreenDrawSes
 			onClick={(event) => event.stopPropagation()}
 		>
 			<div className="flex h-8 w-5 shrink-0 items-center justify-center text-zinc-400">
-				<ScreenDrawGripIcon className="h-5 w-5" />
+				<ScreenDrawGripIcon />
 			</div>
 			{TOOLS.map(({ tool, labelKey, Icon }) => (
 				<ToolbarButton
@@ -150,7 +150,7 @@ export const ScreenDrawToolbar = ({ session, onClose }: { session: ScreenDrawSes
 					selected={state.activeTool === tool}
 					onClick={() => session.edit((draw) => draw.setTool(tool))}
 				>
-					<Icon className="h-5 w-5" />
+					<Icon />
 				</ToolbarButton>
 			))}
 			<Divider />
@@ -192,13 +192,13 @@ export const ScreenDrawToolbar = ({ session, onClose }: { session: ScreenDrawSes
 			</div>
 			<Divider />
 			<ToolbarButton label={t('screenDraw.undo')} disabled={!state.canUndo()} onClick={() => session.edit((draw) => draw.undo())}>
-				<ScreenDrawUndoIcon className="h-5 w-5" />
+				<ScreenDrawUndoIcon />
 			</ToolbarButton>
 			<ToolbarButton label={t('screenDraw.redo')} disabled={!state.canRedo()} onClick={() => session.edit((draw) => draw.redo())}>
 				<ScreenDrawRedoIcon className="h-5 w-5" />
 			</ToolbarButton>
 			<ToolbarButton label={t('screenDraw.clear')} disabled={!state.hasContent()} onClick={() => session.edit((draw) => draw.clear())}>
-				<ScreenDrawTrashIcon className="h-5 w-5" />
+				<ScreenDrawTrashIcon />
 			</ToolbarButton>
 			<Divider />
 			<button
@@ -208,7 +208,7 @@ export const ScreenDrawToolbar = ({ session, onClose }: { session: ScreenDrawSes
 				className="flex h-8 w-8 items-center justify-center rounded-md bg-[#EF4444] text-white hover:opacity-85"
 				onClick={onClose}
 			>
-				<ScreenDrawCloseIcon className="h-4 w-4" />
+				<ScreenDrawCloseIcon />
 			</button>
 		</div>
 	);

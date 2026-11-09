@@ -21,7 +21,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { Icons, MezonIcon, MzIcons16, MzIcons20, MzIcons48 } from '@mezon/ui';
 import {
 	ETypeLinkMedia,
 	ModeResponsive,
@@ -433,7 +433,7 @@ const MessageModalImage = () => {
 			<div className="flex justify-center items-center bg-[#2e2e2e] w-full h-[30px] relative">
 				<div className="text-textDarkTheme">{currentDmLabel || currentChannelLabel}</div>
 				<div onClick={closeModal} className="w-4 absolute right-2 top-2 cursor-pointer">
-					<Icons.MenuClose className="text-white w-full" />
+					<MezonIcon icon={MzIcons16.mzClose} className="text-white" />
 				</div>
 			</div>
 			<div className="flex w-full h-[calc(100vh_-_30px_-_56px)] bg-[#141414] max-sbm:flex-col">
@@ -452,21 +452,7 @@ const MessageModalImage = () => {
 								maxHeight: '100%'
 							}}
 						>
-							<svg
-								className="w-16 h-16 text-[#4a4a4a]"
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke="currentColor"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-								/>
-							</svg>
+							<MezonIcon icon={MzIcons48.mzImage} className="w-16 h-16 text-[#4a4a4a]" />
 							<span className="sr-only">Loading...</span>
 						</div>
 					)}
@@ -525,13 +511,13 @@ const MessageModalImage = () => {
 							className="rounded-full rotate-180 max-sbm:rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 							onClick={handleSelectNextImage}
 						>
-							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
+							<MezonIcon icon={MzIcons20.mzChevronDown} />
 						</div>
 						<div
 							className="rounded-full max-sbm:-rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
 							onClick={handleSelectPreviousImage}
 						>
-							<Icons.ArrowDown size="w-5 h-5 text-channelTextLabel hover:text-white" />
+							<MezonIcon icon={MzIcons20.mzChevronDown} />
 						</div>
 					</div>
 				</div>
@@ -559,7 +545,7 @@ const MessageModalImage = () => {
 				</div>
 				<div className="gap-3  flex-1 text-white flex items-center justify-center">
 					<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={handleDownloadImage}>
-						<Icons.HomepageDownload className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzDownload} />
 					</div>
 					{!isVideo && (
 						<>
@@ -567,26 +553,26 @@ const MessageModalImage = () => {
 								<Icons.StraightLineIcon className="w-5" />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => handleRotateImg('LEFT')}>
-								<Icons.RotateLeftIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzRotateLeft} />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => handleRotateImg('RIGHT')}>
-								<Icons.RotateRightIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzRotateRight} />
 							</div>
 							<div className="">
 								<Icons.StraightLineIcon className="w-5" />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => handleScaleImage(true)}>
-								<Icons.ZoomIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzZoomIn} />
 							</div>
 							<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={() => handleScaleImage(false)}>
-								<Icons.AspectRatioIcon className="w-5" />
+								<MezonIcon icon={MzIcons20.mzAspectRatio} />
 							</div>
 						</>
 					)}
 				</div>
 				<div className="flex justify-end flex-1">
 					<div className="p-2 hover:bg-[#434343] rounded-md cursor-pointer" onClick={handleShowList}>
-						<Icons.SideMenuIcon className="w-5 text-white" />
+						<MezonIcon icon={MzIcons20.mzSidebar} className="text-white" />
 					</div>
 				</div>
 			</div>

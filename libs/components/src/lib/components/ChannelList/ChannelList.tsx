@@ -24,6 +24,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, toggleDisableHover } from '@mezon/utils';
 import type { ApiCategoryOrderUpdate } from 'mezon-js';
@@ -519,23 +520,7 @@ const RowVirtualizerDynamic = memo(
 													title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
 													data-e2e={generateE2eId('clan_page.channel_list.button.drag_channel')}
 												>
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														className="w-4 h-4"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														strokeWidth="2"
-														strokeLinecap="round"
-														strokeLinejoin="round"
-													>
-														<path d="M12 2v20" />
-														<path d="m15 19-3 3-3-3" />
-														<path d="m19 9 3 3-3 3" />
-														<path d="M2 12h20" />
-														<path d="m5 9-3 3 3 3" />
-														<path d="m9 5 3-3 3 3" />
-													</svg>
+													<MezonIcon icon={MzIcons20.mzMove} className={isDragModeEnabled ? '' : 'text-[var(--mz-icon)]'} />
 												</button>
 											</div>
 										)}

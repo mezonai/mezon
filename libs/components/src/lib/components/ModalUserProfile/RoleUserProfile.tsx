@@ -12,7 +12,7 @@ import {
 	useAppSelector,
 	usersClanActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { createImgproxyUrl, DEFAULT_ROLE_COLOR, EPermission, EVERYONE_ROLE_TITLE, generateE2eId } from '@mezon/utils';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { useMemo, useState } from 'react';
@@ -174,7 +174,7 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 						className="flex gap-x-1 rounded p-1 items-center"
 						data-e2e={generateE2eId('short_profile.role.button.add')}
 					>
-						<Icons.Plus className="size-5 select-none" />
+						<MezonIcon icon={MzIcons20.mzPlus} className="select-none" />
 						<p className="text-xs m-0 font-medium select-none">{t('labels.addRole')}</p>
 					</button>
 				</div>
@@ -224,7 +224,7 @@ const AddRolesComp = ({
 					onChange={handleInputChange}
 					onClick={(e) => e.stopPropagation()}
 				/>
-				<Icons.Search className="size-5 text-theme-primary absolute right-2 top-2" />
+				<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)] absolute right-2 top-2" />
 			</div>
 			<div className="w-full flex-1 overflow-y-scroll overflow-x-hidden hide-scrollbar space-y-1">
 				{filteredListRoleBySearch.length > 0 ? (
@@ -263,7 +263,7 @@ const RoleClanItem = ({
 			{hasPermissionEditRole ? (
 				<>
 					<button
-						className="p-0.5 rounded-full h-fit"
+						className="mz-hover p-0.5 rounded-full h-fit"
 						onClick={() => deleteRole(role.id)}
 						style={buttonStyle}
 						onMouseEnter={() => setIsHovered(true)}
@@ -271,7 +271,7 @@ const RoleClanItem = ({
 						data-e2e={generateE2eId('clan_page.channel_list.members.role.role_color')}
 					>
 						<span title={t('labels.removeRole')}>
-							<Icons.IconRemove fill={isHovered ? 'black' : roleColor} className="w-2 h-2" />
+							<MezonIcon icon={MzIcons16.mzClose} />
 						</span>
 					</button>
 					{role?.role_icon && <img src={createImgproxyUrl(role.role_icon)} alt="" className={'size-3'} />}

@@ -16,7 +16,7 @@ import {
 	setSelectedRoleId,
 	useAppDispatch
 } from '@mezon/store';
-import { ButtonLoading, Icons, InputField } from '@mezon/ui';
+import { ButtonLoading, InputField, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -97,18 +97,21 @@ const ServerSettingMainRoles = (props: ModalOpenEdit) => {
 							handleRoleClick(rolesClan.find((role) => role.slug === `everyone-${currentClanId}`)?.id || '');
 							setOpenEdit(true);
 						}}
-						className="rounded-lg border-theme-primary bg-theme-input p-4 pr-6 flex justify-between cursor-pointer group mb-4 bg-item-hover text-theme-primary-hover"
+						className="rounded-lg border-theme-primary bg-theme-input p-4 pr-6 flex justify-between cursor-pointer group mz-hover mb-4 bg-item-hover text-theme-primary-hover group/mzi"
 					>
 						<div className="flex gap-x-4 items-center">
 							<div className=" p-1 rounded-full h-fit">
-								<Icons.MemberList defaultSize="w-5 h-5" />
+								<MezonIcon
+									icon={MzIcons20.mzMembers}
+									className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+								/>
 							</div>
 							<div className="">
 								<h4 className="text-base font-semibold">{t('mainRoles.defaultPermissions')}</h4>
 								<p className="text-xs">{t('mainRoles.everyoneDescription')}</p>
 							</div>
 						</div>
-						<Icons.ArrowDown defaultSize="w-[20px] h-[30px] -rotate-90 " />
+						<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</div>
 					<div className="flex items-center space-x-4 ">
 						<div className="w-full flex-grow">
@@ -146,7 +149,7 @@ const ServerSettingMainRoles = (props: ModalOpenEdit) => {
 									<tr className="h-14">
 										<td className=" text-[15px]">
 											<p className="inline-flex gap-x-2 mt-1.5">
-												<Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />
+												<MezonIcon icon={MzIcons20.mzRole} className="text-[var(--mz-icon)]" />
 												{t('mainRoles.noRoles')}
 											</p>
 										</td>

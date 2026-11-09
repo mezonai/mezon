@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Du kannst dich nicht selbst anrufen",
 	"errorMaxLength": "Die Länge muss zwischen {{min}} und {{max}} Zeichen liegen.",
 	"formatDate": "d. MMMM yyyy",
-	"cannotSendLocationWithAnonymous": "Standort kann nicht im anonymen Modus gesendet werden."
+	"cannotSendLocationWithAnonymous": "Standort kann nicht im anonymen Modus gesendet werden.",
+	"iconAnimations": "Symbolanimationen",
+	"iconAnimationsDesc": "Symbole beim Darüberfahren und bei laufender Aktivität animieren, etwa beim Tippen oder bei einem Stream."
 }

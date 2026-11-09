@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useEffect, useRef, useState } from 'react';
 
 type Option = {
@@ -45,16 +46,10 @@ export default function SelectControl({ value, onChange, options, className, id,
 				className={`w-full h-[40px] rounded-md dark:bg-[#1e1f22] bg-bgLightModeThird flex flex-row px-3 justify-between items-center ${className || ''}`}
 			>
 				<p className="truncate max-w-[90%] text-left">{displayText}</p>
-				<svg
-					width="16"
-					height="16"
-					viewBox="0 0 20 20"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-					className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-				>
-					<path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-				</svg>
+				<MezonIcon
+					icon={MzIcons16.mzChevronDown}
+					className={`text-[var(--mz-icon)] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+				/>
 			</button>
 
 			{open && (

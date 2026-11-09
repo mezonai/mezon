@@ -13,7 +13,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ICategory, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, generateE2eId, MouseButton } from '@mezon/utils';
 import React, { memo, useRef, useState } from 'react';
@@ -197,9 +197,21 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 			>
 				<button
 					onClick={handleToggleCategory}
-					className="text-theme-primary flex items-center px-0.5 w-full font-title tracking-wide text-theme-primary-hover uppercase text-sm font-medium"
+					className="mz-hover text-theme-primary flex items-center px-0.5 w-full font-title tracking-wide text-theme-primary-hover uppercase text-sm font-medium group/mzi"
 				>
-					<div>{categoryExpandState ? <Icons.ArrowDown /> : <Icons.ArrowRight />}</div>
+					<div>
+						{categoryExpandState ? (
+							<MezonIcon
+								icon={MzIcons20.mzChevronDown}
+								className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+							/>
+						) : (
+							<MezonIcon
+								icon={MzIcons20.mzChevronRight}
+								className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+							/>
+						)}
+					</div>
 					<span className="one-line" data-e2e={generateE2eId('clan_page.side_bar.channel_list.category.name')}>
 						{category.id === FAVORITE_CATEGORY_ID
 							? t('favoriteChannel')
@@ -212,11 +224,11 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 				{!category.isFavor && (
 					<UserRestrictionZone policy={isShowCreateChannel}>
 						<button
-							className="focus-visible:outline-none text-theme-primary text-theme-primary-hover"
+							className="focus-visible:outline-none text-theme-primary text-theme-primary-hover group/mzi"
 							onClick={() => handleOpenCreateChannelModal(category)}
 							data-e2e={generateE2eId('clan_page.side_bar.button.add_channel')}
 						>
-							<Icons.Plus />
+							<MezonIcon icon={MzIcons20.mzPlus} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						</button>
 					</UserRestrictionZone>
 				)}

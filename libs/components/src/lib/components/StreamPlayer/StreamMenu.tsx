@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 export type StreamMenuOption = { id: string; label: string };
@@ -72,7 +72,7 @@ export function StreamMenu({ label, trigger, options, selectedId, onSelect, onOp
 									}}
 								>
 									<span className="flex h-4 w-4 shrink-0 items-center justify-center">
-										{selected && <Icons.Check className="h-4 w-4" />}
+										{selected && <MezonIcon icon={MzIcons16.mzCheck} />}
 									</span>
 									<span className="truncate">{option.label}</span>
 								</button>

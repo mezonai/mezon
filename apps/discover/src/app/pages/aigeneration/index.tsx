@@ -1,8 +1,8 @@
 'use client';
 
 import mezonPackage from '@mezon/package-js';
-import { Icons } from '@mezon/ui';
-import { getPlatform, Platform } from '@mezon/utils';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import { Platform, getPlatform } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
@@ -77,7 +77,7 @@ const AIGenerationPage = () => {
 								className="inline-flex items-center gap-2 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-semibold text-lg transition-all shadow-lg hover:shadow-xl"
 							>
 								Download
-								<Icons.Download className="w-5 h-5" />
+								<MezonIcon icon={MzIcons20.mzDownload} />
 							</a>
 						</div>
 

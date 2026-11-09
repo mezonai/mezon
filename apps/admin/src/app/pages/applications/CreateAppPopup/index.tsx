@@ -1,6 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { createApplication, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import type { ApiAddAppRequest } from 'mezon-js';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
@@ -240,7 +240,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 								<input checked={isShadowBot} onChange={handleCheckForShadow} type="checkbox" className="w-6" />
 								<div className="flex-1 flex gap-1">
 									<span>{t('createPopup.form.shadowBot')} </span>
-									<Icons.ShadowBotIcon className="w-6" />
+									<MezonIcon icon={MzIcons24.mzBot} className="text-[var(--mz-icon)]" />
 								</div>
 							</div>
 						</div>

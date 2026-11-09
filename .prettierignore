@@ -47,3 +47,5 @@ LICENSE.md
 
 *.min.js
 *.min.css
+
+libs/ui/src/lib/mezon-icons/

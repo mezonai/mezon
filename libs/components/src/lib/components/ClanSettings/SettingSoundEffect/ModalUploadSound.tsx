@@ -1,6 +1,6 @@
 import { MediaType, selectCurrentClanId, soundEffectActions, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
-import { Icons, InputField, Modal } from '@mezon/ui';
+import { InputField, MezonIcon, Modal, MzIcons16, MzIcons20, MzIcons48 } from '@mezon/ui';
 import { generateE2eId, getIdSaleItemFromSource } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -280,14 +280,9 @@ function WaveformPlayer({
 						className="flex-shrink-0 w-9 h-9 rounded-full bg-item-theme text-theme-primary-active flex items-center justify-center hover:bg-item-theme-hover transition-colors"
 					>
 						{isPlaying ? (
-							<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-								<rect x="2" y="1" width="4" height="12" rx="1" fill="currentColor" />
-								<rect x="8" y="1" width="4" height="12" rx="1" fill="currentColor" />
-							</svg>
+							<MezonIcon icon={MzIcons16.mzPause} className="text-[var(--mz-icon)]" />
 						) : (
-							<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-								<path d="M3 1.5L13 7L3 12.5V1.5Z" fill="currentColor" />
-							</svg>
+							<MezonIcon icon={MzIcons16.mzPlay} className="text-[var(--mz-icon)]" />
 						)}
 					</button>
 					<div
@@ -603,7 +598,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 													onTrimChange={handleTrimChange}
 												/>
 											) : (
-												<Icons.UploadSoundIcon className="w-12 h-12 " />
+												<MezonIcon icon={MzIcons48.mzFileAudio} className="text-[var(--mz-icon)]" />
 											)}
 										</div>
 									</div>
@@ -673,7 +668,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 													<div className="flex items-center gap-2 py-1 px-2 h-full">
 														<div className="relative">
 															<div className="w-8 h-8 bg-buttonPrimary rounded-full flex items-center justify-center">
-																<Icons.Speaker defaultFill="text-white " />
+																<MezonIcon icon={MzIcons20.mzSpeaker} />
 															</div>
 														</div>
 
@@ -692,7 +687,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 															}}
 															className="w-7 h-7  rounded-full flex items-center justify-center transition-all duration-200 to-colorDangerHover z-40"
 														>
-															<Icons.Close className="w-3.5 h-3.5 " />
+															<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)]" />
 														</button>
 													</div>
 												)}
@@ -736,7 +731,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 								{error && (
 									<div className="flex items-center gap-3 p-2 bg-colorDanger/10 rounded-md animate-in slide-in-from-top-2 duration-300">
 										<div className="flex-shrink-0">
-											<Icons.AppHelpIcon className="w-4 h-4 text-colorDanger" />
+											<MezonIcon icon={MzIcons16.mzGuide} className="text-[var(--mz-icon)]" />
 										</div>
 										<div>
 											<p

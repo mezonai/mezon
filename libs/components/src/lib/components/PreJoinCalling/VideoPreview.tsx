@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons24, MzIcons48 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { memo, useEffect, useRef, useState } from 'react';
@@ -13,28 +13,8 @@ interface VideoPreviewProps {
 	isEffectActive?: boolean;
 }
 
-export function VisualEffectsIcon({ className = 'w-6 h-6', ...props }: React.SVGProps<SVGSVGElement>) {
-	return (
-		<svg
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="1.8"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			className={className}
-			{...props}
-		>
-			<path d="M19 13.5V17a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3.5" />
-			<circle cx="11" cy="9.5" r="2" />
-			<path d="M6.5 16.5a4.5 4.5 0 0 1 9 0" />
-			<path
-				d="M17.5 2.5c.3 1.5 1 2.2 2.5 2.5-1.5.3-2.2 1-2.5 2.5-.3-1.5-1-2.2-2.5-2.5 1.5-.3 2.2-1 2.5-2.5z"
-				fill="currentColor"
-				stroke="none"
-			/>
-		</svg>
-	);
+export function VisualEffectsIcon({ size = 24, className }: { size?: 16 | 24; className?: string }) {
+	return <MezonIcon icon={size === 16 ? MzIcons16.mzSparkles : MzIcons24.mzSparkles} className={className} />;
 }
 
 const VideoPreview = memo(({ cameraOn, stream, avatarExist, children, onEffectClick, isEffectActive }: VideoPreviewProps) => {
@@ -88,7 +68,7 @@ const VideoPreview = memo(({ cameraOn, stream, avatarExist, children, onEffectCl
 								className="w-full h-full object-cover"
 							/>
 						) : (
-							<Icons.UserAvatarIcon className="w-12 h-12 text-white" />
+							<MezonIcon icon={MzIcons48.mzUser} className="text-white" />
 						)}
 					</div>
 				</div>
@@ -105,7 +85,7 @@ const VideoPreview = memo(({ cameraOn, stream, avatarExist, children, onEffectCl
 					title="Apply visual effects"
 					aria-label="Apply visual effects"
 				>
-					<VisualEffectsIcon className="w-6 h-6 text-white" />
+					<VisualEffectsIcon className="text-white" />
 				</button>
 			)}
 			{children}

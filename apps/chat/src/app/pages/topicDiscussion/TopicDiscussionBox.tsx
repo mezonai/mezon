@@ -22,7 +22,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import {
 	CREATING_TOPIC,
@@ -391,7 +391,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 								</div>
 								{topicAnonymousMode && currentTopicId && (
 									<div className="absolute -top-3 -right-3 rotate-45 anonymousAnimation" data-e2e={generateE2eId('chat.anonymous')}>
-										<Icons.HatIcon className="w-7 h-7" />
+										<MezonIcon icon={MzIcons32.mzAnonymous} className="text-[var(--mz-icon-selected)]" />
 									</div>
 								)}
 							</div>

@@ -1,6 +1,6 @@
 import type { SortField } from '@mezon/core';
 import { useMemberContext } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 
 interface SortableHeaderProps {
 	field: SortField;
@@ -23,7 +23,10 @@ export const SortableHeader = ({ field, label, className }: SortableHeaderProps)
 				{label}
 			</span>
 
-			<Icons.FiltersIcon className={`w-5 h-5 ${direction === 'desc' ? 'rotate-180' : ''}`} />
+			<MezonIcon
+				icon={MzIcons20.mzFilter}
+				className={`${direction === 'desc' ? 'rotate-180' : ''} ${isActive ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}`}
+			/>
 		</div>
 	);
 };

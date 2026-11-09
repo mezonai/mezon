@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +40,7 @@ export const SfuDeviceMenu = ({ label, devices, selectedDeviceId, onSelect, onOp
 					setIsOpen((value) => !value);
 				}}
 			>
-				{isOpen ? <Icons.VoiceArowUpIcon className="h-3 w-3" /> : <Icons.VoiceArowDownIcon className="h-3 w-3" />}
+				{isOpen ? <MezonIcon icon={MzIcons16.mzChevronUp} /> : <MezonIcon icon={MzIcons16.mzChevronDown} />}
 			</button>
 			{isOpen && (
 				<div className="absolute bottom-7 right-0 min-w-[280px] rounded-lg bg-zinc-800 p-2 text-white shadow-2xl max-md:fixed max-md:inset-x-4 max-md:bottom-16 max-md:max-h-[50vh] max-md:min-w-0 max-md:overflow-y-auto">

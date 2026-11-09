@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -113,7 +113,7 @@ export const SfuAudioDeviceMenu = ({
 					setIsOpen(nextIsOpen);
 				}}
 			>
-				{isOpen ? <Icons.VoiceArowUpIcon className="h-3 w-3" /> : <Icons.VoiceArowDownIcon className="h-3 w-3" />}
+				{isOpen ? <MezonIcon icon={MzIcons16.mzChevronUp} /> : <MezonIcon icon={MzIcons16.mzChevronDown} />}
 			</button>
 
 			{isOpen && (
@@ -133,7 +133,7 @@ export const SfuAudioDeviceMenu = ({
 								<div className="text-white font-medium text-sm">{t('device.inputDevice', { defaultValue: 'Input device' })}</div>
 								<div className="text-[#8c88a8] text-xs truncate overflow-hidden whitespace-nowrap">{inputSubtitle}</div>
 							</div>
-							<Icons.ArrowRight defaultSize="w-4 h-4" defaultFill1="rgba(249,249,249,0.7)" className="shrink-0 text-white/70" />
+							<MezonIcon icon={MzIcons20.mzChevronRight} className="shrink-0 text-white/70" />
 						</div>
 
 						{expandedDevice === 'input' && (
@@ -158,7 +158,7 @@ export const SfuAudioDeviceMenu = ({
 												}}
 											>
 												{active ? (
-													<Icons.Check defaultSize="w-4 h-4" className="shrink-0 text-blue-400" />
+													<MezonIcon icon={MzIcons20.mzCheck} className="shrink-0 text-blue-400" />
 												) : (
 													<span className="w-4 h-4 shrink-0" />
 												)}
@@ -200,7 +200,7 @@ export const SfuAudioDeviceMenu = ({
 									</div>
 									<div className="text-[#8c88a8] text-xs truncate overflow-hidden whitespace-nowrap">{outputSubtitle}</div>
 								</div>
-								<Icons.ArrowRight defaultSize="w-4 h-4" defaultFill1="rgba(249,249,249,0.7)" className="shrink-0 text-white/70" />
+								<MezonIcon icon={MzIcons20.mzChevronRight} className="shrink-0 text-white/70" />
 							</div>
 
 							{expandedDevice === 'output' && (
@@ -225,7 +225,7 @@ export const SfuAudioDeviceMenu = ({
 													}}
 												>
 													{active ? (
-														<Icons.Check defaultSize="w-4 h-4" className="shrink-0 text-blue-400" />
+														<MezonIcon icon={MzIcons20.mzCheck} className="shrink-0 text-blue-400" />
 													) : (
 														<span className="w-4 h-4 shrink-0" />
 													)}

@@ -1,5 +1,5 @@
 import type { IApplicationEntity } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -116,9 +116,10 @@ const UriItem = ({ index, uriInputValuesRef, setInputArrLength, inputArrLength, 
 				/>
 			</div>
 			{inputArrLength > 1 && (
-				<Icons.CloseButton
+				<MezonIcon
+					icon={MzIcons20.mzClose}
 					onClick={handleDeleteInput}
-					className="absolute top-3 right-1 w-5 dark:text-gray-500 dark:hover:text-gray-400 text-gray-500 hover:text-gray-700 cursor-pointer"
+					className="absolute top-3 right-1 dark:text-gray-500 dark:hover:text-gray-400 text-gray-500 hover:text-gray-700 cursor-pointer"
 				/>
 			)}
 		</div>

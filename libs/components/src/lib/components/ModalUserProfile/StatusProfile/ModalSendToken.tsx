@@ -1,6 +1,6 @@
 import type { FriendsEntity, ISendTokenDetailType } from '@mezon/store';
 import { selectAllCtrlK, selectAllFriends, selectWalletDetail, useAppDispatch, userChannelsActions } from '@mezon/store';
-import { ButtonLoading, Icons, Input } from '@mezon/ui';
+import { ButtonLoading, Input, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, formatNumber, generateE2eId } from '@mezon/utils';
 import Dropdown from 'rc-dropdown';
@@ -219,7 +219,7 @@ const ModalSendToken = ({
 				<div className="flex items-center justify-between p-6 border-b dark:border-gray-700 border-gray-200">
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 rounded-full btn-primary text-theme-primary-hover flex items-center justify-center">
-							<Icons.DollarIcon className="w-5 h-5" defaultFill="text-white" />
+							<MezonIcon icon={MzIcons20.mzCoin} />
 						</div>
 						<div>
 							<h1 className="text-theme-primary text-lg font-semibold">{t('title')}</h1>
@@ -228,10 +228,10 @@ const ModalSendToken = ({
 					</div>
 					<button
 						onClick={onClose}
-						className="text-theme-primary text-theme-primary-hover transition-colors"
+						className="text-theme-primary text-theme-primary-hover transition-colors group/mzi"
 						data-e2e={generateE2eId('send_token.modal.send.button.close')}
 					>
-						<Icons.Close className="w-5 h-5" />
+						<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</button>
 				</div>
 

@@ -1,6 +1,6 @@
 import { useMemberContext } from '@mezon/core';
 import { channelsActions, selectCurrentClanId } from '@mezon/store';
-import { Icons, Menu, Pagination } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20, Pagination } from '@mezon/ui';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -73,9 +73,9 @@ const MemberClan = () => {
 					<div className={'hidden lg:flex flex-row items-center'}>
 						{t('show')}
 						<Menu menu={menu}>
-							<div className={'flex flex-row items-center justify-center text-center rounded mx-1 px-3 w-12'}>
+							<div className={'mz-hover flex flex-row items-center justify-center text-center rounded mx-1 px-3 w-12'}>
 								<span className="mr-1">{pageSize}</span>
-								<Icons.ArrowDown />
+								<MezonIcon icon={MzIcons20.mzChevronDown} className="text-[var(--mz-icon)]" />
 							</div>
 						</Menu>
 						{t('membersOf', { count: filteredMembers.length })}

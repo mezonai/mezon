@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { getNoiseSuppressionAudioCaptureOptions } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -47,7 +47,10 @@ export const NoiseSuppressionControl = ({
 				}`}
 				aria-label={t('setting:voice.noiseSuppression.toggleAriaLabel')}
 			>
-				<Icons.NoiseSupressionIcon className="w-5 h-5" disabled={!noiseSuppressionEnabled} />
+				<MezonIcon
+					icon={noiseSuppressionEnabled ? MzIcons20.mzNoiseSuppression : MzIcons20.mzNoiseSuppressionOff}
+					className={!isSupported ? 'text-[var(--mz-icon)]' : noiseSuppressionEnabled ? 'text-[var(--mz-icon-selected)]' : ''}
+				/>
 			</button>
 		</div>
 	);

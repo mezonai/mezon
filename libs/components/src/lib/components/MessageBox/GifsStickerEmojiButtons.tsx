@@ -1,6 +1,6 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
 import { reactionActions, referencesActions, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ILongPressType } from '@mezon/utils';
 import { SubPanelName, generateE2eId } from '@mezon/utils';
 import { memo, useCallback } from 'react';
@@ -90,7 +90,10 @@ const GifStickerEmojiButtons = memo(
 						className={`w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
 						data-e2e={generateE2eId('mention.button.sound')}
 					>
-						<Icons.MicEnable className={`w-5 h-5 ${isRecording ? 'text-red-600' : 'text-theme-primary text-theme-primary-hover'} `} />
+						<MezonIcon
+							icon={MzIcons20.mzMic}
+							className={`${isRecording ? 'text-red-600' : 'text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]'}`}
+						/>
 					</div>
 				)}
 
@@ -101,8 +104,9 @@ const GifStickerEmojiButtons = memo(
 						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
 						data-e2e={generateE2eId('mention.button.gif')}
 					>
-						<Icons.Gif
-							className={`w-5 h-5 ${subPanelActive === SubPanelName.GIFS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
+						<MezonIcon
+							icon={MzIcons20.mzGif}
+							className={`${subPanelActive === SubPanelName.GIFS ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}`}
 						/>
 					</div>
 				)}
@@ -111,13 +115,12 @@ const GifStickerEmojiButtons = memo(
 					<div
 						onClick={handleOpenStickers}
 						className={`block text-theme-primary-hover
-						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'} group/mzi`}
 						data-e2e={generateE2eId('mention.button.sticker')}
 					>
-						<Icons.Sticker
-							className={`w-5 h-5 text-theme-primary-hover ${
-								subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'
-							}`}
+						<MezonIcon
+							icon={MzIcons20.mzSticker}
+							className={`group-hover/mzi:text-[var(--mz-icon-selected)] ${subPanelActive === SubPanelName.STICKERS ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}`}
 						/>
 					</div>
 				)}
@@ -129,7 +132,7 @@ const GifStickerEmojiButtons = memo(
 					} ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
 					data-e2e={generateE2eId('mention.button.emoji')}
 				>
-					<Icons.Smile className="w-5 h-5 text-inherit" />
+					<MezonIcon icon={MzIcons20.mzEmoji} className="text-inherit" />
 				</div>
 			</div>
 		);

@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl, EEventStatus, EPermission, generateE2eId, ONE_MINUTE_MS, OptionEvent } from '@mezon/utils';
 import type { ApiUserEventRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
@@ -238,7 +238,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 			<div className="p-4 border-b-theme-primary cursor-pointer" onClick={() => event && setChooseEvent(event)}>
 				<div className="flex justify-between">
 					<div className="flex items-center gap-x-2 mb-4">
-						<Icons.IconEvents className={`font-semibold ${cssEventStatus}`} />
+						<MezonIcon icon={MzIcons24.mzEvent} className={`font-semibold ${cssEventStatus}`} />
 						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.start_time')}>
 							{displayLabel}
 						</p>
@@ -307,7 +307,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									>
 										{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}
 									</span>
-									<Icons.MemberList className="h-4 w-4" />
+									<MezonIcon icon={MzIcons16.mzMembers} className="text-[var(--mz-icon)]" />
 								</div>
 							</div>
 						</Tooltip>
@@ -357,7 +357,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						!isPrivateEvent &&
 						(isReviewEvent ? (
 							<span className="flex gap-x-2">
-								<Icons.Speaker />
+								<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
 								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
 							</span>
 						) : (
@@ -368,14 +368,14 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								}}
 								className="flex gap-x-2 cursor-pointer"
 							>
-								<Icons.Speaker />
+								<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
 								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
 							</a>
 						))}
 					{checkOptionLocation && (
 						<span className="flex gap-x-2 items-start min-w-0">
 							<span className="mt-0.5 shrink-0">
-								<Icons.Location />
+								<MezonIcon icon={MzIcons20.mzLocation} className="text-[var(--mz-icon)]" />
 							</span>
 							<span className="break-all" data-e2e={generateE2eId('clan_page.modal.create_event.review.location_name')}>
 								{renderDescriptionWithLinks(address)}
@@ -384,13 +384,13 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					)}
 					{option === '' && !address && !channelVoice && (
 						<>
-							<Icons.Location />
+							<MezonIcon icon={MzIcons20.mzLocation} className="text-[var(--mz-icon)]" />
 							<p className="hover:underline ">{channelFirst.channel_label}</p>
 						</>
 					)}
 					{isPrivateEvent && (
 						<div className="flex gap-x-2 items-center">
-							<Icons.Speaker />
+							<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
 							{!isReviewEvent && link ? (
 								<a href={link} target="_blank" rel="noopener noreferrer" className="cursor-pointer whitespace-normal break-words">
 									{t('eventCreator:eventDetail.privateRoom')}
@@ -416,20 +416,33 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									handleStopPropagation(e);
 								}
 							})}
-							className="text-theme-primary-hover cursor-pointer"
+							className="text-theme-primary-hover cursor-pointer group/mzi"
 							data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_panel')}
 						>
-							<Icons.IconEditThreeDot className="rotate-90" />
+							<MezonIcon
+								icon={MzIcons20.mzMoreVertical}
+								className="rotate-90 text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+							/>
 						</div>
 
 						{!checkOptionLocation && (
 							<button
 								onClick={() => setOpenModalShare(true)}
-								className="flex gap-x-1 rounded-lg px-4 py-2  bg-theme-primary text-theme-primary-hover  hover:bg-opacity-80 font-medium "
+								className="flex gap-x-1 rounded-lg px-4 py-2  bg-theme-primary text-theme-primary-hover  hover:bg-opacity-80 font-medium group/mzi"
 								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.share_event')}
 							>
-								{checkOptionVoice && <Icons.IconShareEventVoice />}
-								{checkOptionLocation && <Icons.IConShareEventLocation />}
+								{checkOptionVoice && (
+									<MezonIcon
+										icon={MzIcons20.mzLink}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
+								)}
+								{checkOptionLocation && (
+									<MezonIcon
+										icon={MzIcons20.mzShare}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
+								)}
 								{t('eventCreator:eventDetail.share')}
 							</button>
 						)}
@@ -444,10 +457,20 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						) : !actualEventStatus.isOngoing ? (
 							<button
 								onClick={handleToggleUserEvent}
-								className="flex items-center gap-x-1 rounded-lg text-theme-primary-hover px-4 py-2 bg-theme-primary text-theme-primary-active"
+								className="flex items-center gap-x-1 rounded-lg text-theme-primary-hover px-4 py-2 bg-theme-primary text-theme-primary-active group/mzi"
 								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.interested')}
 							>
-								{isInterested ? <Icons.MuteBell className="size-4" /> : <Icons.Bell className="size-4 " />}
+								{isInterested ? (
+									<MezonIcon
+										icon={MzIcons16.mzBellOff}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
+								) : (
+									<MezonIcon
+										icon={MzIcons16.mzBell}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
+								)}
 								<span className="whitespace-nowrap">{isInterested ? t('dashboard.UnInterested') : t('dashboard.Interested')}</span>
 							</button>
 						) : (

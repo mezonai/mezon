@@ -547,5 +547,7 @@
 	"cannotCallYourself": "Non puoi chiamare te stesso",
 	"errorMaxLength": "La lunghezza deve essere compresa tra {{min}} e {{max}} caratteri.",
 	"formatDate": "d MMMM yyyy",
-	"cannotSendLocationWithAnonymous": "Impossibile inviare la posizione in modalità anonima."
+	"cannotSendLocationWithAnonymous": "Impossibile inviare la posizione in modalità anonima.",
+	"iconAnimations": "Animazioni delle icone",
+	"iconAnimationsDesc": "Anima le icone al passaggio del mouse e durante un'attività in diretta, come la digitazione o uno stream."
 }

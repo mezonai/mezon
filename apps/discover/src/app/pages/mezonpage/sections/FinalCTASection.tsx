@@ -1,6 +1,6 @@
 'use client';
 
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -66,7 +66,7 @@ export const FinalCTASection = () => {
 							>
 								Learn more
 							</span>
-							<Icons.ArrowRight className="w-5 h-5 translate-y-[1px]" />
+							<MezonIcon icon={MzIcons20.mzChevronRight} className="translate-y-[1px]" />
 						</Link>
 					</div>
 				</div>

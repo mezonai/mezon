@@ -16,7 +16,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Button, Icons } from '@mezon/ui';
+import { Button, MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ICategoryChannel, IChannel } from '@mezon/utils';
 import { EMuteState, generateE2eId } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -412,7 +412,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 													}
 													data-e2e={generateE2eId('modal.notification_setting.override.button.remove')}
 												>
-													<Icons.Close className="h-2.5 w-2.5" defaultFill1="currentColor" />
+													<MezonIcon icon={MzIcons16.mzClose} />
 												</button>
 											</td>
 										</tr>

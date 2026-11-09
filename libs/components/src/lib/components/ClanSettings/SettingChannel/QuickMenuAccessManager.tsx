@@ -1,4 +1,5 @@
 import { quickMenuActions, selectFlashMessagesByChannelId, selectQuickMenusByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
+import { MezonIcon, MzIcons16, MzIcons48, SpinningIcon } from '@mezon/ui';
 import { QUICK_MENU_TYPE, generateE2eId } from '@mezon/utils';
 import type { ApiQuickMenuAccessRequest } from 'mezon-js';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -190,9 +191,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 						title={t('quickAction.editCommand')}
 						data-e2e={generateE2eId('channel_setting_page.quick_menu.item.button.edit')}
 					>
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-							<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-						</svg>
+						<MezonIcon icon={MzIcons16.mzEdit} />
 					</button>
 					<button
 						onClick={() => handleDeleteClick(item)}
@@ -201,9 +200,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 						title={t('quickAction.deleteCommand')}
 						data-e2e={generateE2eId('channel_setting_page.quick_menu.item.button.delete')}
 					>
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-							<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-						</svg>
+						<MezonIcon icon={MzIcons16.mzTrash} />
 					</button>
 				</div>
 			</div>
@@ -213,16 +210,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 	const renderEmptyState = () => (
 		<div className="bg-theme-setting-nav rounded-lg p-8 text-center border-theme-primary">
 			<div className="mb-4">
-				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" className="mx-auto text-[var(--text-theme-primary)]">
-					<path
-						d="M5 7H19C20.1046 7 21 7.89543 21 9V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V9C3 7.89543 3.89543 7 5 7Z"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-					<path d="M3 7L12 13L21 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-				</svg>
+				<MezonIcon icon={MzIcons48.mzMail} className="mx-auto text-[var(--mz-icon)]" />
 			</div>
 
 			<h4 className="text-lg font-medium text-theme-primary mb-2">
@@ -246,9 +234,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 					className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-3 py-1.5 text-sm rounded-md font-medium transition-colors duration-200 flex items-center gap-2"
 					data-e2e={generateE2eId('channel_setting_page.quick_menu.button.add')}
 				>
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-						<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
-					</svg>
+					<MezonIcon icon={MzIcons16.mzPlusCircle} />
 					{activeTab === 'flash' ? t('quickAction.addFlashMessage') : t('quickAction.addQuickMenu')}
 				</button>
 			</div>
@@ -330,15 +316,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 							{activeTab === 'menu' && (
 								<div className="bg-blue-500/10 border border-blue-500/20 rounded-md p-3">
 									<div className="flex items-start gap-2">
-										<svg
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-											className="text-blue-400 mt-0.5 flex-shrink-0"
-										>
-											<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-										</svg>
+										<MezonIcon icon={MzIcons16.mzInfo} className="text-blue-400 mt-0.5 flex-shrink-0" />
 										<div>
 											<p className="text-sm text-blue-400 font-medium">{t('quickAction.botEventTrigger')}</p>
 											<p className="text-xs text-blue-300/80 mt-1">{t('quickAction.botEventDescription')}</p>
@@ -363,19 +341,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 									className="bg-[#5865f2] hover:bg-[#4752c4] disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 text-sm rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
 									data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.button.submit')}
 								>
-									{loading && (
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin">
-											<circle
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												strokeWidth="2"
-												strokeDasharray="30"
-												strokeDashoffset="30"
-											/>
-										</svg>
-									)}
+									{loading && <SpinningIcon icon={MzIcons16.mzSpinner} />}
 									{editingItem ? t('quickAction.update') : t('quickAction.create')}
 								</button>
 							</div>
@@ -410,19 +376,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 									className="bg-red-500 hover:bg-red-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-theme-primary-active px-4 py-1.5 text-sm rounded-md font-medium transition-colors duration-200 flex items-center gap-2"
 									data-e2e={generateE2eId('modal.confirm_modal.button.confirm')}
 								>
-									{loading && (
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin">
-											<circle
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												strokeWidth="2"
-												strokeDasharray="30"
-												strokeDashoffset="30"
-											/>
-										</svg>
-									)}
+									{loading && <SpinningIcon icon={MzIcons16.mzSpinner} />}
 									{t('quickAction.delete')}
 								</button>
 							</div>

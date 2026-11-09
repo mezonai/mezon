@@ -1,7 +1,7 @@
 import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { pinMessageActions, selectCurrentChannelClanId, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js';
 import type { RefObject } from 'react';
 import { useRef, useState } from 'react';
@@ -95,7 +95,7 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 			<div className="flex flex-col rounded-md w-[420px] max-sbm:w-auto max-h-[80vh] overflow-hidden shadow-shadowBorder bg-theme-setting-primary">
 				<div className=" flex flex-row items-center justify-between p-[16px] h-12 border-b-theme-primary bg-theme-setting-nav">
 					<div className="flex flex-row items-center pr-[16px] gap-4 bg-theme-primary-nav">
-						<Icons.PinRight />
+						<MezonIcon icon={MzIcons20.mzPin} className="text-[var(--mz-icon)]" />
 						<span className="text-base font-medium cursor-default ">{t('modals.pinnedMessages.title')}</span>
 					</div>
 				</div>

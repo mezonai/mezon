@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons, Pagination } from '@mezon/ui';
+import { MezonIcon, MzIcons16, Pagination } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
@@ -149,7 +149,7 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 					{hasMembers && <span className="shrink-0 px-2 rounded-full bg-item-theme">{count}</span>}
 				</div>
 				<div className="flex items-center gap-2 w-[220px] h-[30px] shrink-0 px-2 rounded-lg bg-input-secondary">
-					<Icons.Search className="w-4 h-4 shrink-0 text-theme-primary" />
+					<MezonIcon icon={MzIcons16.mzSearch} className="shrink-0 text-[var(--mz-icon)]" />
 					<input
 						type="text"
 						value={query}
@@ -223,10 +223,10 @@ const ItemMemberPermission = memo((props: ItemMemberPermissionProps) => {
 						onClick={handleDelete}
 						title={removeLabel}
 						aria-label={removeLabel}
-						className="flex items-center justify-center size-8 rounded-md hover:text-red-500"
+						className="flex items-center justify-center size-8 rounded-md hover:text-red-500 group/mzi"
 						data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.member_list.button_remove')}
 					>
-						<Icons.EscIcon className="size-[15px]" />
+						<MezonIcon icon={MzIcons16.mzCloseCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-red-500" />
 					</button>
 				)}
 			</div>

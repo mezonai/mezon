@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { memo } from 'react';
 import { VIRTUAL_BACKGROUNDS, type BackgroundMode } from './mediaPipeBackground';
@@ -38,9 +39,7 @@ export const BackgroundSelector = memo(({ selectedMode, onSelectMode, disabled =
 							{/* Active badge */}
 							{isSelected && (
 								<div className="absolute top-1 right-1 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center shadow">
-									<svg className="w-2.5 h-2.5 text-white stroke-current" viewBox="0 0 24 24" fill="none" strokeWidth="3">
-										<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-									</svg>
+									<MezonIcon icon={MzIcons16.mzCheck} className="text-white" />
 								</div>
 							)}
 						</button>

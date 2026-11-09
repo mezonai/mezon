@@ -31,7 +31,7 @@ import {
 	useAppDispatch,
 	voiceActions
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -451,7 +451,7 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 				>
 					<div className="flex items-center gap-2">
 						<span className="text-white">
-							<Icons.VoiceBreakoutIcon className="h-5 w-5" />
+							<MezonIcon icon={MzIcons20.mzBreakout} />
 						</span>
 						<h3 className="text-xl font-semibold text-white">{t('channelVoice:breakout.title')}</h3>
 					</div>
@@ -466,7 +466,7 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 										<div className="flex h-[30px] items-center justify-between bg-[#2b2d31] px-3">
 											<div className="flex min-w-0 items-center gap-2">
 												<span className="text-[#b5bac1]">
-													<Icons.VoiceBreakoutIcon className="h-3.5 w-3.5" />
+													<MezonIcon icon={MzIcons16.mzBreakout} />
 												</span>
 												<span className="truncate text-sm font-medium text-white">{roomStatus.label}</span>
 											</div>
@@ -527,7 +527,7 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 				<div className="flex h-[44px] shrink-0 items-center justify-between border-b border-white/10 px-4">
 					<div className="flex items-center gap-2">
 						<span className="text-[#5865f2]">
-							<Icons.VoiceBreakoutIcon className="h-[18px] w-[18px]" />
+							<MezonIcon icon={MzIcons20.mzBreakout} />
 						</span>
 						<h3 className="text-sm font-semibold text-white">{t('channelVoice:breakout.notStarted')}</h3>
 					</div>
@@ -536,7 +536,7 @@ export const BreakoutRoomsModal: React.FC<BreakoutRoomsModalProps> = ({ clanId, 
 						onClick={onClose}
 						className="flex h-7 w-7 items-center justify-center rounded-md text-[#b5bac1] transition-colors hover:bg-white/10 hover:text-white"
 					>
-						<Icons.Close defaultSize="w-3.5 h-3.5" />
+						<MezonIcon icon={MzIcons20.mzClose} />
 					</button>
 				</div>
 

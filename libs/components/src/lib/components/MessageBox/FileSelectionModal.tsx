@@ -1,5 +1,5 @@
 import { useEscapeKeyClose } from '@mezon/core';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 
 	const menuItems = [
 		{
-			icon: <Icons.SelectFileIcon className="w-5 h-5" />,
+			icon: <MezonIcon icon={MzIcons20.mzImageAdd} />,
 			label: t('fileSelection.uploadFile'),
 			onClick: () => {
 				onUploadFile();
@@ -32,7 +32,7 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 		...(onCreatePoll
 			? [
 					{
-						icon: <Icons.CheckListIcon className="w-5 h-5" />,
+						icon: <MezonIcon icon={MzIcons20.mzListCheck} className="text-[rgba(7,151,7,1)]" />,
 						label: t('fileSelection.createPoll'),
 						onClick: () => {
 							onCreatePoll();
@@ -60,12 +60,12 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 							onClick={item.onClick}
 							onMouseEnter={() => setHoveredIndex(index)}
 							onMouseLeave={() => setHoveredIndex(null)}
-							className={`w-full px-4 py-3 flex items-center gap-3 transition-colors text-left rounded-md ${
+							className={`mz-hover w-full px-4 py-3 flex items-center gap-3 transition-colors text-left rounded-md ${
 								hoveredIndex === index ? 'bg-theme-input text-theme-primary-active' : 'text-theme-primary'
 							}`}
 							data-e2e={generateE2eId('poll.button.option')}
 						>
-							<span className={hoveredIndex === index ? 'text-theme-primary-active' : 'text-theme-primary'}>{item.icon}</span>
+							<span className={hoveredIndex === index ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}>{item.icon}</span>
 							<span className="font-medium text-[15px]">{item.label}</span>
 						</button>
 					))}

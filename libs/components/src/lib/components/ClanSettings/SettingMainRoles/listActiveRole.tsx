@@ -1,7 +1,7 @@
 import { useClanOwner, useDragAndDropRole } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import { getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js';
 import { useEffect, useState } from 'react';
@@ -117,10 +117,10 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								{role.role_icon ? (
 									<img src={createImgproxyUrl(role.role_icon)} alt="" className={'size-5'} />
 								) : (
-									<Icons.RoleIcon defaultSize="w-5 h-[30px] min-w-5 mr-2" defaultFill1={role.color || DEFAULT_ROLE_COLOR} />
+									<MezonIcon icon={MzIcons20.mzRole} style={{ color: role.color || DEFAULT_ROLE_COLOR }} />
 								)}
 
-								{!hasPermissionEdit && <Icons.IconLock defaultSize="size-3 text-contentTertiary" />}
+								{!hasPermissionEdit && <MezonIcon icon={MzIcons16.mzLock} className="text-contentTertiary" />}
 								<span className="one-line" data-e2e={generateE2eId('clan_page.settings.role.item.role_name')}>
 									{role.title}
 								</span>
@@ -135,38 +135,33 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 									data-e2e={generateE2eId('clan_page.settings.role.item.member_count')}
 								>
 									{role.role_user_list?.role_users?.length ?? 0}
-									<Icons.MemberIcon
-										defaultSize="w-4 h-4 min-w-4"
-										className="shrink-0 text-theme-primary"
-										defaultFill1="currentColor"
-										defaultFill2="currentColor"
-									/>
+									<MezonIcon icon={MzIcons20.mzMembers} className="shrink-0 text-[var(--mz-icon)]" />
 								</p>
 							)}
 						</td>
 						<td className={` flex h-14 justify-center items-center ${role?.slug === `everyone-${role?.clan_id}` && 'ml-[2.8rem]'}`}>
 							<div className="flex gap-x-2">
-								<div className="text-[15px] cursor-pointer bg-red-500 p-2 rounded-full opacity-0 group-hover:opacity-100 group-hover:text-white">
+								<div className="text-[15px] cursor-pointer bg-red-500 p-2 rounded-full opacity-0 group-hover:opacity-100 group-hover:text-white mz-hover">
 									{hasPermissionEdit ? (
 										<span title={t('roleManagement.edit')} data-e2e={generateE2eId('clan_page.settings.role.item.button.edit')}>
-											<Icons.PenEdit className="size-5" />
+											<MezonIcon icon={MzIcons20.mzEdit} />
 										</span>
 									) : (
 										<span title={t('roleManagement.view')} data-e2e={generateE2eId('clan_page.settings.role.item.button.view')}>
-											<Icons.ViewRole defaultSize="size-5" />
+											<MezonIcon icon={MzIcons20.mzEye} />
 										</span>
 									)}
 								</div>
 								{hasPermissionEdit && role?.slug !== `everyone-${role?.clan_id}` && (
 									<div
-										className={`text-[15px] cursor-pointer bg-red-500 p-2 text-white rounded-full ${hasPermissionEdit ? 'opacity-100' : 'opacity-20'}`}
+										className={`mz-hover text-[15px] cursor-pointer bg-red-500 p-2 text-white rounded-full ${hasPermissionEdit ? 'opacity-100' : 'opacity-20'}`}
 										onClick={(e) => handleOpenDeleteRoleModal(e, role.id)}
 									>
 										<span
 											title={t('roleManagement.delete')}
 											data-e2e={generateE2eId('clan_page.settings.role.item.button.delete')}
 										>
-											<Icons.DeleteMessageRightClick defaultSize="size-5" />
+											<MezonIcon icon={MzIcons20.mzTrash} />
 										</span>
 									</div>
 								)}

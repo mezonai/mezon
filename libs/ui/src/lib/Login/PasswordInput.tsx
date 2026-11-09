@@ -2,7 +2,8 @@
 
 import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icons } from '../Icons';
+import { MezonIcon } from '../mezon-icons';
+import * as MzIcons20 from '../mezon-icons/20';
 import FormError from './FormError';
 
 interface PasswordInputProps {
@@ -47,7 +48,11 @@ const PasswordInput = memo(({ id, label, value, onChange, error, isLoading, onFo
 					onFocus={onFocus}
 				/>
 				<button type="button" onClick={togglePasswordVisibility} className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary">
-					{showPassword ? <Icons.EyeClose className="w-5 h-5" /> : <Icons.EyeOpen className="w-5 h-5" />}
+					{showPassword ? (
+						<MezonIcon icon={MzIcons20.mzEyeOff} className="text-[var(--mz-icon)]" />
+					) : (
+						<MezonIcon icon={MzIcons20.mzEye} className="text-[var(--mz-icon)]" />
+					)}
 				</button>
 			</div>
 			{error && <FormError message={error} />}

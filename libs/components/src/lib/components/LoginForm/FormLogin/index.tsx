@@ -1,8 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { RootState, authActions, selectTheme, useAppDispatch } from '@mezon/store';
-import { Icons, Loading } from '@mezon/ui';
-import { BaseSyntheticEvent, useCallback, useState } from 'react';
-import { Resolver, useForm } from 'react-hook-form';
+import type { RootState } from '@mezon/store';
+import { authActions, selectTheme, useAppDispatch } from '@mezon/store';
+import { Loading, MezonIcon, MzIcons20 } from '@mezon/ui';
+import type { BaseSyntheticEvent } from 'react';
+import { useCallback, useState } from 'react';
+import type { Resolver } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
@@ -148,9 +151,9 @@ function LoginForm(props: LoginFormProps) {
 								/>
 								<button onClick={togglePasswordVisibility} className="outline-none z-50 fill-current left-0">
 									{showPassword ? (
-										<Icons.EyeOpen className="w-5 h-5 text-borderFocus" />
+										<MezonIcon icon={MzIcons20.mzEye} className="text-borderFocus" />
 									) : (
-										<Icons.EyeClose className="w-5 h-5 text-borderFocus" />
+										<MezonIcon icon={MzIcons20.mzEyeOff} className="text-borderFocus" />
 									)}
 								</button>
 							</div>

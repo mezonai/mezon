@@ -1,5 +1,5 @@
 import { messagesActions, selectCurrentUserId, selectDataFormEmbedByMessageId, useAppDispatch } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { IButtonMessage } from '@mezon/utils';
 import { EButtonMessageStyle, EIconEmbedButtonMessage, sanitizeHref } from '@mezon/utils';
 import React, { useCallback, useMemo } from 'react';
@@ -61,7 +61,7 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 			{safeHref ? (
 				<a href={safeHref} target="_blank" rel="noopener noreferrer" className={`${commonClass} flex items-center hover:underline`}>
 					{button?.label}
-					<Icons.ForwardRightClick defaultSize="w-4 h-4 ml-2" defaultFill={'#ffffff'} />
+					<MezonIcon icon={MzIcons16.mzForward} className={`ml-2 ${inside ? 'text-[var(--mz-icon)]' : 'text-[#ffffff]'}`} />
 				</a>
 			) : (
 				<>
@@ -74,6 +74,6 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 };
 
 const IconEmbedMessage: { [key: string]: JSX.Element } = {
-	[EIconEmbedButtonMessage.PLAY]: <Icons.RightFilledTriangle className="w-4 h-4" />,
-	[EIconEmbedButtonMessage.PAUSE]: <Icons.PauseIcon className="w-4 h-4 text-white" />
+	[EIconEmbedButtonMessage.PLAY]: <MezonIcon icon={MzIcons16.mzCaretRight} />,
+	[EIconEmbedButtonMessage.PAUSE]: <MezonIcon icon={MzIcons16.mzPause} className="text-white" />
 };

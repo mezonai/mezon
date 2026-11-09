@@ -1,13 +1,13 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 
 export const FullscreenControl = ({ active, onToggle }: { active: boolean; onToggle: () => void }) => (
 	<button
 		type="button"
 		title={active ? 'Exit full screen' : 'Full screen'}
 		aria-label={active ? 'Exit full screen' : 'Full screen'}
-		className="cursor-pointer p-2 text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
+		className="cursor-pointer p-2 text-[var(--mz-icon)] hover:text-[var(--mz-icon-selected)]"
 		onClick={onToggle}
 	>
-		{active ? <Icons.ExitFullScreen /> : <Icons.FullScreen />}
+		{active ? <MezonIcon icon={MzIcons20.mzFullscreenExit} /> : <MezonIcon icon={MzIcons20.mzFullscreen} />}
 	</button>
 );

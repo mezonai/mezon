@@ -10,7 +10,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, MzIcons48, SpinningIcon } from '@mezon/ui';
 import {
 	EMimeTypes,
 	FOR_SALE_CATE,
@@ -211,7 +211,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 									onClick={(e) => scrollToCategory(e, FOR_SALE_CATE)}
 									className="w-9 h-9 py-2  max-sm:hidden flex flex-row justify-center items-center hover:rounded-md"
 								>
-									<Icons.MarketIcons />
+									<MezonIcon icon={MzIcons24.mzShop} />
 								</div>
 							) : (
 								<>
@@ -275,10 +275,10 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 		<div>
 			<button
 				onClick={handleToggleButton}
-				className="w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky top-[-0.5rem]  z-10  max-h-full bg-theme-setting-primary"
+				className="mz-hover w-full flex flex-row justify-start items-center pl-1 mb-1 mt-0 py-1 sticky top-[-0.5rem]  z-10  max-h-full bg-theme-setting-primary"
 			>
 				{logo === FOR_SALE_CATE ? (
-					<Icons.MarketIcons className="w-4 h4" />
+					<MezonIcon icon={MzIcons16.mzShop} className="h4" />
 				) : logo !== '' ? (
 					<img
 						src={createImgproxyUrl(logo || '', { width: 100, height: 100, resizeType: 'fill-down' })}
@@ -295,7 +295,7 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 					{categoryName !== 'custom' ? displayCategoryName : currentClanName}
 				</p>
 				<span className={`${isShowStickerList ? ' rotate-90' : ''}`}>
-					<Icons.ArrowRight defaultSize="w-4 h-4" />
+					<MezonIcon icon={MzIcons20.mzChevronRight} />
 				</span>
 			</button>
 			{isShowStickerList && (
@@ -341,23 +341,20 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 											{!sticker.url && (
 												<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center aspect-square pointer-events-none group">
 													{isItemPendingUnlock ? (
-														<Icons.LoadingSpinner className="w-8 h-8 text-white block group-hover:hidden" />
+														<SpinningIcon icon={MzIcons20.mzSpinner} />
 													) : (
 														<>
-															<Icons.LockIcon
-																defaultSize="w-16 h-16 text-white block group-hover:hidden"
-																defaultFill="white"
+															<MezonIcon
+																icon={MzIcons48.mzLock}
+																className="w-16 h-16 text-white block group-hover:hidden"
 															/>
-															<Icons.UnLockIcon
-																defaultSize="w-16 h-16 text-white hidden group-hover:block"
-																defaultFill="white"
-															/>
+															<MezonIcon icon={MzIcons20.mzUnlock} />
 														</>
 													)}
 												</div>
 											)}
 
-											<Icons.MarketIcons className="absolute top-1 right-1 w-4 h-4 text-yellow-300" />
+											<MezonIcon icon={MzIcons16.mzShop} className="absolute top-1 right-1 text-yellow-300" />
 										</>
 									)}
 								</div>

@@ -1,4 +1,4 @@
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 
 export type ChannelSortField = 'name' | 'members' | 'messagesCount' | 'lastSent' | 'creator';
 
@@ -24,7 +24,7 @@ export const SortableChannelHeader = ({ field, label, className, sortField, sort
 		>
 			<span className="text-xs font-bold uppercase">{label}</span>
 
-			<Icons.FiltersIcon className={`w-5 h-5 ${direction === 'desc' ? 'rotate-180' : ''}`} />
+			<MezonIcon icon={MzIcons20.mzFilter} className={`${direction === 'desc' ? 'rotate-180' : ''}`} />
 		</div>
 	);
 };

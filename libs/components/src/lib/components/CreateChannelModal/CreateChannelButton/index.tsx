@@ -1,5 +1,5 @@
 import { selectLoadingStatus } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MzIcons20, SpinningIcon } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ export const CreateChannelButton: React.FC<CreateChannelProps> = ({ checkInputEr
 
 			{isLoading === 'loading' ? (
 				<div className="flex flex-row items-center gap-2 px-3 py-3 text-xs font-semibold text-zinc-400">
-					<Icons.LoadingSpinner className="w-4 h-4 fill-white" />
+					<SpinningIcon icon={MzIcons20.mzSpinner} />
 					<span>{t('buttons.creating')}</span>
 				</div>
 			) : (

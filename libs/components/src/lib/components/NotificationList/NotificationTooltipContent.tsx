@@ -12,7 +12,7 @@ import {
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
 import type { ApiSdTopic } from 'mezon-js';
@@ -32,8 +32,8 @@ const InboxType = {
 
 function InboxButton() {
 	return (
-		<div className="text-[var(--bg-icon-theme)]">
-			<Icons.Inbox className="size-5" />
+		<div className="text-[var(--mz-icon)]">
+			<MezonIcon icon={MzIcons20.mzInbox} />
 		</div>
 	);
 }

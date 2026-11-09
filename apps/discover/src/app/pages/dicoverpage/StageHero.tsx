@@ -1,3 +1,4 @@
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -93,9 +94,7 @@ const StageHero: React.FC<StageHeroProps> = ({ clan, loading, searchTerm, onSear
 					</label>
 					<div className="relative">
 						<div className="absolute inset-y-0 left-0 pl-0 flex items-center pointer-events-none">
-							<svg className="h-5 w-5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-							</svg>
+							<MezonIcon icon={MzIcons20.mzSearch} className="text-white/80" />
 						</div>
 						<input
 							id="discover-search"

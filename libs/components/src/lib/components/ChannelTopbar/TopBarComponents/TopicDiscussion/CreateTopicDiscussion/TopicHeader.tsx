@@ -1,6 +1,6 @@
 import { useMessageValue } from '@mezon/core';
 import { selectComposeInputByChannelId, selectCurrentChannelId, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,15 +45,15 @@ const TopicHeader = () => {
 			data-e2e={generateE2eId('chat.topic.header')}
 		>
 			<div className="flex flex-row items-center text-theme-primary gap-2 pointer-events-none">
-				<Icons.TopicIcon />
+				<MezonIcon icon={MzIcons20.mzTopic} className="text-[var(--mz-icon)]" />
 				<span className="text-base font-semibold text-theme-primary-active">{t('topic')}</span>
 			</div>
 			<button
 				onClick={(e) => handleCloseModal(e)}
-				className="relative right-0 text-theme-primary hover:text-red-500"
+				className="relative right-0 text-theme-primary hover:text-red-500 group/mzi"
 				data-e2e={generateE2eId('chat.topic.header.button.close')}
 			>
-				<Icons.Close />
+				<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-red-500" />
 			</button>
 		</div>
 	);

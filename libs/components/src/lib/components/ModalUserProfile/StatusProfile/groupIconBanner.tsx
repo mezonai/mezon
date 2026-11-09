@@ -9,7 +9,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { generateE2eId, type IUser } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,32 +54,32 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				return [
 					{
 						title: t('friend'),
-						icon: <Icons.IconFriend className="size-4" />
+						icon: <MezonIcon icon={MzIcons16.mzUserCheck} className="text-[rgba(84,157,91,1)]" />
 					}
 				];
 			case EStateFriend.OTHER_PENDING:
 				return [
 					{
 						title: t('pending'),
-						icon: <Icons.PendingFriend className="size-4 " />
+						icon: <MezonIcon icon={MzIcons16.mzUserPending} />
 					}
 				];
 			case EStateFriend.MY_PENDING:
 				return [
 					{
 						title: t('accept'),
-						icon: <Icons.IConAcceptFriend className="size-4" />
+						icon: <MezonIcon icon={MzIcons16.mzCheck} className="text-[#8A93E6]" />
 					},
 					{
 						title: t('ignore'),
-						icon: <Icons.IConIgnoreFriend className="size-4" />
+						icon: <MezonIcon icon={MzIcons16.mzClose} className="text-[white]" />
 					}
 				];
 			default:
 				return [
 					{
 						title: t('addFriend'),
-						icon: <Icons.AddPerson className="size-4 " />
+						icon: <MezonIcon icon={MzIcons16.mzUserPlus} className="text-[var(--mz-icon)]" />
 					}
 				];
 		}
@@ -186,14 +186,14 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 	return (
 		<>
 			<div
-				className="p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
+				className="mz-hover p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
 				onClick={(e) => {
 					handleDefault(e);
 					handleOpenTransferModal();
 				}}
 			>
 				<span title={t('transfer')}>
-					<Icons.Transaction className="size-4 iconWhiteImportant" />
+					<MezonIcon icon={MzIcons16.mzTransaction} className="iconWhiteImportant" />
 				</span>
 			</div>
 			{checkAddFriend !== EStateFriend.BLOCK && !!user.user?.id && (
@@ -203,24 +203,24 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 					data-e2e={generateE2eId('short_profile.action.button.call')}
 				>
 					<span title={t('call.title')}>
-						<Icons.IconPhoneDM className="size-4 iconWhiteImportant" />
+						<MezonIcon icon={MzIcons16.mzCall} className="iconWhiteImportant" />
 					</span>
 				</div>
 			)}
 			{checkAddFriend === EStateFriend.FRIEND && (
 				<div
-					className="p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
+					className="mz-hover p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer"
 					onClick={handleOpenShareContactModal}
 					data-e2e={generateE2eId('short_profile.action.button.share_contact')}
 				>
 					<span title={t('shareContact')}>
-						<Icons.IconShareContact className="size-4 iconWhiteImportant" />
+						<MezonIcon icon={MzIcons16.mzContact} className="iconWhiteImportant" />
 					</span>
 				</div>
 			)}
 			{buttonFriendProps?.map((button, index) => (
 				<div
-					className={`p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer  ${checkAddFriend === EStateFriend.MY_PENDING || checkAddFriend === EStateFriend.OTHER_PENDING ? `p-2 rounded-full bg-[#4e5058] relative h-fit` : ''}`}
+					className={`mz-hover p-2 rounded-full bg-buttonMore hover:bg-buttonMoreHover relative h-fit cursor-pointer  ${checkAddFriend === EStateFriend.MY_PENDING || checkAddFriend === EStateFriend.OTHER_PENDING ? `p-2 rounded-full bg-[#4e5058] relative h-fit` : ''}`}
 					onClick={(e) => handleOnClickButtonFriend(e, index)}
 					key={button.title}
 					data-e2e={generateE2eId('short_profile.action.button.remove_friend')}

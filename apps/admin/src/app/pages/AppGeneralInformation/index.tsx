@@ -1,7 +1,7 @@
 import { ModalSaveChanges } from '@mezon/components';
 import { editApplication, selectAppDetail, uploadAppLogoAdmin, useAppDispatch } from '@mezon/store';
 import { uploadImageToMinIO } from '@mezon/transport';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import type { ApiApp, MezonUpdateAppBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
@@ -87,7 +87,7 @@ const GeneralInformation = () => {
 					<div className="text-[12px] uppercase font-semibold">{t('generalInformation.appIcon.label')}</div>
 					<div className="w-fit flex flex-col items-center p-5 gap-4 bg-[#f2f3f5] dark:bg-[#2b2d31] border dark:border-[#4d4f52] rounded-md">
 						<input type="file" hidden ref={appLogoRef} onChange={handleChooseFile} />
-						<div className="relative w-[144px] cursor-pointer" onClick={() => appLogoRef.current?.click()}>
+						<div className="mz-hover relative w-[144px] cursor-pointer" onClick={() => appLogoRef.current?.click()}>
 							{appLogoUrl ? (
 								<img
 									className="aspect-square w-full object-cover hover:grayscale-[50%]"
@@ -104,7 +104,7 @@ const GeneralInformation = () => {
 								</div>
 							)}
 							<div className="absolute right-[-5px] top-[-5px] p-[8px] bg-[#e3e5e8] rounded-full z-10 shadow-xl border">
-								<Icons.SelectFileIcon className="w-6 h-6" />
+								<MezonIcon icon={MzIcons24.mzImageAdd} />
 							</div>
 						</div>
 						{appLogoUrl ? (

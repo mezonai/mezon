@@ -7,7 +7,7 @@ import {
 	selectModeResponsive,
 	useAppDispatch
 } from '@mezon/store';
-import { Icons, Menu } from '@mezon/ui';
+import { Menu, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IMessageSelect, IMessageSelectOption } from '@mezon/utils';
 import { ModeResponsive } from '@mezon/utils';
 import type { ReactElement } from 'react';
@@ -210,7 +210,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 						<p className={'text-xs italic'}>{getSelectNote()}</p>
 					</div>
 				</div>
-				<Icons.ArrowDownFill />
+				<MezonIcon icon={MzIcons20.mzCaretDown} />
 			</div>
 		</Menu>
 	);

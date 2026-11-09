@@ -12,7 +12,7 @@ import {
 	usersClanActions
 } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
-import { DeleteAccountModal, Icons, InputField } from '@mezon/ui';
+import { DeleteAccountModal, InputField, MezonIcon, MzIcons32 } from '@mezon/ui';
 import type { ImageSourceObject } from '@mezon/utils';
 import { MAX_FILE_SIZE_10MB, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
@@ -382,7 +382,7 @@ const SettingRightUser = ({
 						onContextMenu={handleMouseClick}
 					>
 						<p className="font-semibold tracking-wide text-sm">{t('directMessageIcon')}</p>
-						<div className="flex gap-x-5  text-theme-primary text-theme-primary-hover bg-secondary-button-hover bg-button-secondary rounded-lg border-theme-primary">
+						<div className="flex gap-x-5  text-theme-primary text-theme-primary-hover bg-secondary-button-hover bg-button-secondary rounded-lg border-theme-primary group/mzi">
 							<label
 								htmlFor="logo"
 								className=" relative  font-medium flex items-center w-11 aspect-square justify-center  rounded-lg cursor-pointer text-[14px]"
@@ -393,7 +393,10 @@ const SettingRightUser = ({
 										className="w-11 aspect-square object-cover rounded"
 									/>
 								) : (
-									<Icons.AddIcon />
+									<MezonIcon
+										icon={MzIcons32.mzPlusCircle}
+										className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]"
+									/>
 								)}
 
 								<input

@@ -1,7 +1,7 @@
 import { FRIEND_PAGE_LINK, toMembersPage, useAppNavigation } from '@mezon/core';
 
 import { selectAllChannels, selectCurrentClan, toastActions } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { E_ERROR_CHANNEL, generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -93,7 +93,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 				<div className="p-6 pt-8">
 					<div className="flex flex-col items-center text-center space-y-4">
 						<div className="flex items-center justify-center w-16 h-16 bg-[#5865f2]/20 rounded-full">
-							<Icons.IconClockChannel />
+							<MezonIcon icon={MzIcons48.mzLock} className="text-[#5865f2]" />
 						</div>
 
 						{isError ? (

@@ -1,7 +1,7 @@
 import { useAppNavigation, useEscapeKeyClose, useFriends, useOnClickOutside } from '@mezon/core';
 import type { DirectEntity, FriendsEntity } from '@mezon/store';
 import { channelUsersActions, directActions, selectAllAccount, selectAllFriends, toastActions, useAppDispatch } from '@mezon/store';
-import { Icons, InputField } from '@mezon/ui';
+import { InputField, MezonIcon, MzIcons16 } from '@mezon/ui';
 import { GROUP_CHAT_MAXIMUM_MEMBERS, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
@@ -338,7 +338,10 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 											onChange={handleCheckboxChange}
 											className="peer appearance-none forced-colors:appearance-auto relative w-4 h-4 border-theme-primary rounded-md focus:outline-none"
 										/>
-										<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4" />
+										<MezonIcon
+											icon={MzIcons16.mzCheck}
+											className="absolute invisible peer-checked:visible forced-colors:hidden"
+										/>
 									</div>
 								</label>
 							</div>

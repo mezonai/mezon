@@ -1,5 +1,5 @@
-import { selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
-import { Icons } from '@mezon/ui';
+import { useAppDispatch } from '@mezon/store';
+import { MezonIcon, MzIcons24 } from '@mezon/ui';
 import { ValidateSpecialCharacters, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
@@ -28,7 +28,6 @@ export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameM
 	const { t } = useTranslation('createChannel');
 	const [checkValidate, setCheckValidate] = useState(false);
 	const [checkNameChannel, setCheckNameChannel] = useState(false);
-	const theme = useAppSelector(selectTheme);
 	const dispatch = useAppDispatch();
 	const messages = {
 		INVALID_NAME: t('validation.invalidName'),
@@ -70,15 +69,15 @@ export const ChannelNameTextField = forwardRef<ChannelNameModalRef, ChannelNameM
 	);
 
 	const iconMap: Partial<Record<ChannelType, JSX.Element>> = {
-		[ChannelType.CHANNEL_TYPE_CHANNEL]: <Icons.Hashtag defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_MEZON_VOICE]: <Icons.Speaker defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_FORUM]: <Icons.Forum defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_ANNOUNCEMENT]: <Icons.Announcement defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_APP]: <Icons.AppChannelIcon className="w-6 h-6" fill={theme} />,
-		[ChannelType.CHANNEL_TYPE_STREAMING]: <Icons.Stream defaultSize="w-6 h-6" />,
+		[ChannelType.CHANNEL_TYPE_CHANNEL]: <MezonIcon icon={MzIcons24.mzChannel} className="text-[var(--mz-icon)]" />,
+		[ChannelType.CHANNEL_TYPE_MEZON_VOICE]: <MezonIcon icon={MzIcons24.mzSpeaker} className="text-[var(--mz-icon)]" />,
+		[ChannelType.CHANNEL_TYPE_FORUM]: <MezonIcon icon={MzIcons24.mzForum} className="text-[var(--mz-icon)]" />,
+		[ChannelType.CHANNEL_TYPE_ANNOUNCEMENT]: <MezonIcon icon={MzIcons24.mzAnnouncement} className="text-[var(--mz-icon)]" />,
+		[ChannelType.CHANNEL_TYPE_APP]: <MezonIcon icon={MzIcons24.mzChannelApp} className="text-[var(--mz-icon)]" />,
+		[ChannelType.CHANNEL_TYPE_STREAMING]: <MezonIcon icon={MzIcons24.mzLive} className="text-[var(--mz-icon)]" />,
 		// 2 lines below only get index
-		[ChannelType.CHANNEL_TYPE_DM]: <Icons.Hashtag defaultSize="w-6 h-6" />,
-		[ChannelType.CHANNEL_TYPE_GROUP]: <Icons.Speaker defaultSize="w-6 h-6" />
+		[ChannelType.CHANNEL_TYPE_DM]: <MezonIcon icon={MzIcons24.mzChannel} className="text-[var(--mz-icon)]" />,
+		[ChannelType.CHANNEL_TYPE_GROUP]: <MezonIcon icon={MzIcons24.mzSpeaker} className="text-[var(--mz-icon)]" />
 	};
 
 	useImperativeHandle(ref, () => ({
