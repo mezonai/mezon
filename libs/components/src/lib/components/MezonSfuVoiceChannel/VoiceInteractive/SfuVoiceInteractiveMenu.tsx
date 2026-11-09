@@ -136,7 +136,7 @@ export const SfuVoiceInteractiveMenu = ({ channelId, onClose }: SfuVoiceInteract
 					<div
 						key={app.eventType}
 						data-e2e={generateE2eId('clan_page.screen.voice_room.interactive_apps.item', app.name.toLowerCase())}
-						className={`mz-hover relative flex justify-between gap-4 p-2 h-9 content-center text-sm rounded-lg hover:bg-zinc-700 hover:cursor-pointer ${isActive && 'border-green-400 border text-green-400 before:absolute before:top-0 before:right-0 before:rounded-lg before:h-full before:w-full before:bg-green-400/10 before:content-[""]'}`}
+						className={`mz-hover relative flex justify-between gap-4 p-2 h-9 content-center text-sm rounded-lg bg-item-theme-hover hover:cursor-pointer ${isActive && 'border-green-400 border text-green-400 before:absolute before:top-0 before:right-0 before:rounded-lg before:h-full before:w-full before:bg-green-400/10 before:content-[""]'}`}
 						onClick={() => handleOpenApp(app)}
 					>
 						<div className="w-20">{app.name}</div>
