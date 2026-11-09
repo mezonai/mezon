@@ -87,6 +87,8 @@
 	"confirm": "Підтвердити",
 	"everyoneWaitingInside": "Усі чекають вас всередині",
 	"noOneInVoice": "Зараз у кімнаті нікого немає",
+	"joinAsSpeaker": "Приєднатися як мовець",
+	"joinAsAudience": "Приєднатися як слухач",
 	"joining": "Приєднання...",
 	"joinVoice": "Приєднатися до голосового",
 	"reset": "Скинути",

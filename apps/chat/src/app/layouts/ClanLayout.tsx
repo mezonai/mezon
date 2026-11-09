@@ -140,7 +140,7 @@ const ClanLayout = () => {
 				<ChannelList />
 			</div>
 			<div
-				className={`flex flex-1 shrink min-w-0 gap-2 bg-theme-chat h-heightWithoutTopBar mt-[50px] ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'bg-theme-secondary' : ''}`}
+				className={`flex flex-1 shrink min-w-0 bg-theme-chat h-heightWithoutTopBar mt-[50px] ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'bg-theme-secondary' : ''}`}
 			>
 				<div
 					className={`flex flex-col flex-1 shrink ${isShowChatStream && currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible }`}
@@ -151,7 +151,7 @@ const ClanLayout = () => {
 				{isShowChatStream && currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
 					<div
 						ref={chatStreamRef}
-						className="flex flex-col w-[420px] min-w-[360px] max-w-[420px] h-full max-h-full overflow-hidden flex-shrink-0"
+						className="z-20 flex h-full w-[500px] max-w-full flex-shrink-0 flex-col overflow-hidden border-l border-border bg-bgPrimary dark:border-bgTertiary sbm:-mt-[50px] sbm:h-dvh max-xl:w-full max-xl:border-l-0"
 					>
 						<ChatStream />
 					</div>
@@ -165,7 +165,7 @@ const ClanLayout = () => {
 			)}
 
 			{isTopicPanelOpen && (
-				<div onMouseDown={onMouseDownTopicBox} className="w-[510px] rounded-l-lg">
+				<div onMouseDown={onMouseDownTopicBox} className="w-[500px] rounded-l-lg">
 					<TopicDiscussionMain />
 				</div>
 			)}

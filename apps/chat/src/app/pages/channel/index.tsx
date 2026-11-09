@@ -70,7 +70,7 @@ import { ChannelMedia } from './ChannelMedia';
 import { ChannelMessageBox } from './ChannelMessageBox';
 import { ChannelTyping } from './ChannelTyping';
 
-function useChannelSeen(channelId: string) {
+function useChannelSeen(channelId: string, isVoiceChatPanel: boolean) {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
 	const lastMessageViewport = useAppSelector((state) => selectLastMessageViewportByChannelId(state, channelId));
@@ -125,10 +125,10 @@ function useChannelSeen(channelId: string) {
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
 		const voiceInfo = selectVoiceInfo(getStore().getState());
-		if (voiceInfo?.channelId && channelId !== voiceInfo.channelId) {
+		if (!isVoiceChatPanel && voiceInfo?.channelId && channelId !== voiceInfo.channelId) {
 			dispatch(appActions.setIsShowChatVoice(false));
 		}
-	}, [dispatch, channelId]);
+	}, [dispatch, channelId, isVoiceChatPanel]);
 
 	useEffect(() => {
 		if (lastMessageViewport && isWindowFocused) {
@@ -145,8 +145,8 @@ function useChannelSeen(channelId: string) {
 	useBackgroundMode(undefined, markMessageAsRead);
 }
 
-const ChannelSeenListener = memo(({ channelId }: { channelId: string }) => {
-	useChannelSeen(channelId);
+const ChannelSeenListener = memo(({ channelId, isVoiceChatPanel }: { channelId: string; isVoiceChatPanel: boolean }) => {
+	useChannelSeen(channelId, isVoiceChatPanel);
 	return null;
 });
 
@@ -422,7 +422,7 @@ export default function ChannelMain({ topicChannelId }: IChannelMainProps) {
 	return (
 		<>
 			<ChannelMainContent channelId={chlId} isVoiceChatPanel={!!topicChannelId} />
-			<ChannelSeenListener channelId={chlId} />
+			<ChannelSeenListener channelId={chlId} isVoiceChatPanel={!!topicChannelId} />
 		</>
 	);
 }
