@@ -103,7 +103,7 @@ const EmbedOptionRatioItem = ({
 		<div className="flex justify-between items-center gap-4">
 			<div className="flex flex-col">
 				<EmbedTitle title={option.label} />
-				<EmbedDescription description={option.description || ''} />
+				<EmbedDescription description={option.description || ''} messageId={message_id} />
 			</div>
 			<MessageRatioButton
 				key={`${option.name ? `${option.name + message_id}_${checked}` : `ratio_button${message_id}_${checked}`}`}

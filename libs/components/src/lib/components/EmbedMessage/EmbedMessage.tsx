@@ -26,7 +26,7 @@ export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, 
 					<div className={`flex flex-col break-words ${thumbnail && 'pr-2'}`}>
 						{author && <EmbedAuthor {...author} />}
 						{title && <EmbedTitle title={title} url={url} onClick={onClick} />}
-						{description && <EmbedDescription description={description} />}
+						{description && <EmbedDescription description={description} messageId={message_id} />}
 						{fields && (
 							<EmbedFields
 								fields={fields}
