@@ -253,7 +253,7 @@ export async function handleUploadFile(
 				const uploadMultipartFiles = await uploadMultipart({
 					file,
 					urls: start.urls,
-					partSize: MULTIPART_MIN_FILE_SIZE,
+					partSize: MULTIPART_PART_SIZE,
 					mimeType: file.type
 				});
 
