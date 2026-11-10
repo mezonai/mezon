@@ -193,7 +193,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				}}
 			>
 				<span title={t('transfer')}>
-					<MezonIcon icon={MzIcons16.mzTransaction} className="iconWhiteImportant" />
+					<MezonIcon icon={MzIcons16.mzSendMoney} className="iconWhiteImportant" />
 				</span>
 			</div>
 			{checkAddFriend !== EStateFriend.BLOCK && !!user.user?.id && (
