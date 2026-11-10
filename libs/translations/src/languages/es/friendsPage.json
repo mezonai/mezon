@@ -4,6 +4,14 @@
 	"friends": "Amigos",
 	"clearSearch": "Borrar búsqueda",
 	"search": "Buscar",
+	"sort": {
+		"label": "Ordenar",
+		"current": "Ordenar por: {{order}}",
+		"recentActivity": "Conversaciones recientes (predeterminado)",
+		"recentlyAdded": "Añadidos recientemente",
+		"nameAscending": "Nombre (A–Z)",
+		"nameDescending": "Nombre (Z–A)"
+	},
 	"tabs": {
 		"all": "Todos",
 		"online": "En línea",

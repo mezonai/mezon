@@ -4,6 +4,14 @@
 	"friends": "友達",
 	"clearSearch": "検索をクリア",
 	"search": "検索",
+	"sort": {
+		"label": "ソート",
+		"current": "並び順：{{order}}",
+		"recentActivity": "最近メッセージをやり取りした順（デフォルト）",
+		"recentlyAdded": "最近追加した順",
+		"nameAscending": "名前（昇順）",
+		"nameDescending": "名前（降順）"
+	},
 	"tabs": {
 		"all": "すべて",
 		"online": "オンライン",

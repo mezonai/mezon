@@ -4,19 +4,25 @@ import {
 	EStateFriend,
 	channelsActions,
 	friendsActions,
+	selectAllDirectMessages,
 	selectBlockedUsers,
 	selectCloseMenu,
 	selectCurrentTabStatus,
+	selectCurrentUserId,
+	selectDmMetaEntities,
 	selectStatusMenu,
 	useAppDispatch
 } from '@mezon/store';
 import { Button, Image, InputField, MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
+import FriendSort from './FriendSort';
 import FriendList from './FriendsList';
+import type { FriendSortOrder } from './friendSorting';
+import { getFriendMessageTimes, sortFriends } from './friendSorting';
 const FriendsPage = () => {
 	const { t } = useTranslation('friendsPage');
 	const dispatch = useAppDispatch();
@@ -35,10 +41,19 @@ const FriendsPage = () => {
 	const [isAlreadyFriend, setIsAlreadyFriend] = useState<boolean | null>(null);
 	const [openModalAddFriend, setOpenModalAddFriend] = useState(false);
 	const [textSearch, setTextSearch] = useState('');
+	const [sortOrder, setSortOrder] = useState<FriendSortOrder>('recentActivity');
 	const [isInvalidInput, setIsInvalidInput] = useState(false);
 	const [isBlockedUser, setIsBlockedUser] = useState(false);
 	const currentTabStatus = useSelector(selectCurrentTabStatus);
 	const blockedUsers = useSelector(selectBlockedUsers);
+	const directMessages = useSelector(selectAllDirectMessages);
+	const currentUserId = useSelector(selectCurrentUserId);
+	const dmMetadata = useSelector(selectDmMetaEntities);
+	const messageTimes = useMemo(
+		() => getFriendMessageTimes(directMessages, currentUserId ?? '', dmMetadata),
+		[directMessages, currentUserId, dmMetadata]
+	);
+	const canSortFriends = currentTabStatus === 'all' || currentTabStatus === 'online';
 
 	const handleChangeTab = (valueTab: string) => {
 		dispatch(friendsActions.changeCurrentStatusTab(valueTab));
@@ -138,22 +153,18 @@ const FriendsPage = () => {
 		}
 	};
 
-	const listFriendFilter = filterStatus(friends)
-		.filter((obj) => {
+	const listFriendFilter = sortFriends(
+		filterStatus(friends).filter((obj) => {
 			const normalizedUsername = (obj.user?.username || '').toLowerCase();
 			const normalizedDisplayName = (obj.user?.display_name || '').toLowerCase();
 			const normalizedSearchText = textSearch.toLowerCase();
 
 			return normalizedUsername.includes(normalizedSearchText) || normalizedDisplayName.includes(normalizedSearchText);
-		})
-		.sort((start, next) => {
-			if (currentTabStatus === 'pending') {
-				return (next?.state || 0) - (start?.state || 0);
-			}
-			const nameStart = (start.user?.display_name || start.user?.username) ?? '';
-			const nameNext = (next.user?.display_name || next.user?.username) ?? '';
-			return nameStart.localeCompare(nameNext);
-		});
+		}),
+		sortOrder,
+		messageTimes,
+		currentTabStatus
+	);
 
 	const getEmptyStateMessage = (tab: string) => {
 		if (textSearch.trim()) {
@@ -240,29 +251,32 @@ const FriendsPage = () => {
 					{!openModalAddFriend && (
 						<>
 							<div className="flex flex-col text-theme-primary px-8 pt-6">
-								<div className="relative">
-									<InputField
-										type="text"
-										value={textSearch}
-										onChange={(e) => setTextSearch(e.target.value)}
-										placeholder={t('search')}
-										needOutline={true}
-										className="mb-6 py-[10px] rounded-lg border-theme-primary bg-theme-input-primary text-[16px] font-normal h-[44px] focus:outline focus:outline-1  outline-[#006ce7] "
-										data-e2e={generateE2eId('friend_page.input.search')}
-									/>
-									{Boolean(textSearch) && (
-										<div
-											className="absolute top-2.5 right-12 text-theme-primary cursor-pointer select-none text-[25px] px-2 leading-none hover:text-red-500"
-											onClick={() => setTextSearch('')}
-											aria-label={t('clearSearch')}
-											title={t('clearSearch')}
-										>
-											×
+								<div className="flex items-start gap-3 mb-6">
+									<div className="relative flex-1 min-w-0">
+										<InputField
+											type="text"
+											value={textSearch}
+											onChange={(e) => setTextSearch(e.target.value)}
+											placeholder={t('search')}
+											needOutline={true}
+											className="py-[10px] rounded-lg border-theme-primary bg-theme-input-primary text-[16px] font-normal h-[44px] focus:outline focus:outline-1  outline-[#006ce7] "
+											data-e2e={generateE2eId('friend_page.input.search')}
+										/>
+										{Boolean(textSearch) && (
+											<div
+												className="absolute top-2.5 right-12 text-theme-primary cursor-pointer select-none text-[25px] px-2 leading-none hover:text-red-500"
+												onClick={() => setTextSearch('')}
+												aria-label={t('clearSearch')}
+												title={t('clearSearch')}
+											>
+												×
+											</div>
+										)}
+										<div className="absolute top-3 right-5 text-theme-primary">
+											<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 										</div>
-									)}
-									<div className="absolute top-3 right-5 text-theme-primary">
-										<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 									</div>
+									{canSortFriends && <FriendSort value={sortOrder} onChange={setSortOrder} />}
 								</div>
 								<span className="text-[14px]  mb-4 font-bold px-[14px]">
 									{getTranslatedTabName(currentTabStatus)} - {listFriendFilter.length}

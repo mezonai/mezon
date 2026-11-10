@@ -4,6 +4,14 @@
 	"friends": "Друзья",
 	"clearSearch": "Очистить поиск",
 	"search": "Поиск",
+	"sort": {
+		"label": "Сортировать",
+		"current": "Сортировать по: {{order}}",
+		"recentActivity": "Недавняя переписка (по умолчанию)",
+		"recentlyAdded": "Недавно добавленные",
+		"nameAscending": "Имя (А–Я)",
+		"nameDescending": "Имя (Я–А)"
+	},
 	"tabs": {
 		"all": "Все",
 		"online": "Онлайн",

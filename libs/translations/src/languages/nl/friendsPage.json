@@ -4,6 +4,14 @@
 	"friends": "Vrienden",
 	"clearSearch": "Zoeking wissen",
 	"search": "Zoeken",
+	"sort": {
+		"label": "Sorteren",
+		"current": "Sorteren op: {{order}}",
+		"recentActivity": "Recente gesprekken (standaard)",
+		"recentlyAdded": "Onlangs toegevoegd",
+		"nameAscending": "Naam (A–Z)",
+		"nameDescending": "Naam (Z–A)"
+	},
 	"tabs": {
 		"all": "Alle",
 		"online": "Online",

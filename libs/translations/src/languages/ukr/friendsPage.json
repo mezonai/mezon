@@ -4,6 +4,14 @@
 	"friends": "Друзі",
 	"clearSearch": "Очистити пошук",
 	"search": "Пошук",
+	"sort": {
+		"label": "Сортувати",
+		"current": "Сортувати за: {{order}}",
+		"recentActivity": "Нещодавнє листування (за замовчуванням)",
+		"recentlyAdded": "Нещодавно додані",
+		"nameAscending": "Ім’я (А–Я)",
+		"nameDescending": "Ім’я (Я–А)"
+	},
 	"tabs": {
 		"all": "Всі",
 		"online": "Онлайн",

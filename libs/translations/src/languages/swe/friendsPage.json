@@ -4,6 +4,14 @@
 	"friends": "Vänner",
 	"clearSearch": "Rensa sökning",
 	"search": "Sök",
+	"sort": {
+		"label": "Sortera",
+		"current": "Sortera efter: {{order}}",
+		"recentActivity": "Senaste konversationer (standard)",
+		"recentlyAdded": "Nyligen tillagda",
+		"nameAscending": "Namn (A–Ö)",
+		"nameDescending": "Namn (Ö–A)"
+	},
 	"tabs": {
 		"all": "Alla",
 		"online": "Online",

@@ -1212,6 +1212,7 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		button: {
 			add_friend: '',
+			sort: '',
 			send_friend_request: '',
 			accept_friend_request: '',
 			reject_friend_request: '',

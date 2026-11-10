@@ -389,11 +389,15 @@ export const friendsSlice = createSlice({
 			const friendEntity = mapFriendToEntity(action.payload, action.payload.source_id || '');
 			friendsAdapter.upsertOne(state, friendEntity);
 		},
-		acceptFriend: (state, action: PayloadAction<string>) => {
-			friendsAdapter.updateOne(state, {
-				id: action.payload,
-				changes: { state: EStateFriend.FRIEND }
-			});
+		acceptFriend: {
+			reducer: (state, action: PayloadAction<string, string, { acceptedAt: string }>) => {
+				if (state.entities[action.payload]?.state === EStateFriend.FRIEND) return;
+				friendsAdapter.updateOne(state, {
+					id: action.payload,
+					changes: { state: EStateFriend.FRIEND, update_time: action.meta.acceptedAt }
+				});
+			},
+			prepare: (userId: string) => ({ payload: userId, meta: { acceptedAt: new Date().toISOString() } })
 		},
 		removeOne: (state, action: PayloadAction<string>) => {
 			friendsAdapter.removeOne(state, action.payload);

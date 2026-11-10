@@ -4,6 +4,14 @@
 	"friends": "친구",
 	"clearSearch": "검색 지우기",
 	"search": "검색",
+	"sort": {
+		"label": "정렬",
+		"current": "정렬 기준: {{order}}",
+		"recentActivity": "최근 대화순 (기본값)",
+		"recentlyAdded": "최근 친구 추가순",
+		"nameAscending": "이름 (오름차순)",
+		"nameDescending": "이름 (내림차순)"
+	},
 	"tabs": {
 		"all": "모두",
 		"online": "온라인",

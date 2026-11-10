@@ -4,6 +4,14 @@
 	"friends": "Bạn bè",
 	"clearSearch": "Xóa tìm kiếm",
 	"search": "Tìm kiếm",
+	"sort": {
+		"label": "Sắp xếp",
+		"current": "Sắp xếp theo: {{order}}",
+		"recentActivity": "Nhắn tin gần đây (mặc định)",
+		"recentlyAdded": "Mới kết bạn",
+		"nameAscending": "Tên (A–Z)",
+		"nameDescending": "Tên (Z–A)"
+	},
 	"tabs": {
 		"all": "Tất cả",
 		"online": "Trực tuyến",

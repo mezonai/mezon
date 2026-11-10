@@ -4,6 +4,14 @@
 	"friends": "Дуслар",
 	"clearSearch": "Эзләүне чистарту",
 	"search": "Эзләү",
+	"sort": {
+		"label": "Сортлау",
+		"current": "{{order}} буенча сортлау",
+		"recentActivity": "Соңгы язышулар (килешү буенча)",
+		"recentlyAdded": "Күптән түгел өстәлгәннәр",
+		"nameAscending": "Исем (А–Я)",
+		"nameDescending": "Исем (Я–А)"
+	},
 	"tabs": {
 		"all": "Барысы",
 		"online": "Онлайн",

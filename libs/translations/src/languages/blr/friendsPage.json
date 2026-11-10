@@ -4,6 +4,14 @@
 	"friends": "Сябры",
 	"clearSearch": "Ачысціць пошук",
 	"search": "Пошук",
+	"sort": {
+		"label": "Сартаваць",
+		"current": "Сартаваць па: {{order}}",
+		"recentActivity": "Нядаўняя перапіска (па змаўчанні)",
+		"recentlyAdded": "Нядаўна дададзеныя",
+		"nameAscending": "Імя (А–Я)",
+		"nameDescending": "Імя (Я–А)"
+	},
 	"tabs": {
 		"all": "Усе",
 		"online": "Анлайн",
