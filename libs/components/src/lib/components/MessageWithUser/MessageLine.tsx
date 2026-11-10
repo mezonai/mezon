@@ -11,7 +11,9 @@ import {
 	checkInviteLinkValid,
 	convertMarkdown,
 	createImgproxyUrl,
-	generateE2eId
+	generateE2eId,
+	styleAt,
+	styleSegments
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useRef, useState } from 'react';
@@ -362,9 +364,24 @@ export const MessageLine = ({
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
 	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], lky = [] } = content || {};
 
+	const isStyleToken = (type?: EBacktickType) => type === EBacktickType.BOLD || type === EBacktickType.ITALIC || type === EBacktickType.STRIKE;
+	const isNonStyleMarkdownToken = (type?: EBacktickType) =>
+		type === EBacktickType.TRIPLE ||
+		type === EBacktickType.SINGLE ||
+		type === EBacktickType.PRE ||
+		type === EBacktickType.CODE ||
+		type === EBacktickType.LINK ||
+		type === EBacktickType.VOICE_LINK ||
+		type === EBacktickType.LINKYOUTUBE ||
+		type === EBacktickType.LINKFACEBOOK ||
+		type === EBacktickType.LINKTIKTOK ||
+		type === EBacktickType.OGP_PREVIEW;
+	const styleTokens = Array.isArray(mk) ? mk.filter((item) => isStyleToken(item.type)) : [];
 	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
 	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
-	const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
+	const mkm = Array.isArray(mk)
+		? mk.filter((item) => isNonStyleMarkdownToken(item.type)).map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS }))
+		: [];
 	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
 	const lkym = Array.isArray(lky) ? lky.map((item) => ({ ...item, kindOf: ETokenMessage.LINKYOUTUBE })) : [];
 	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
@@ -392,8 +409,41 @@ export const MessageLine = ({
 
 	const isDeletedMessage = code === TypeMessage.ChatRemove || t === 'Original message was deleted';
 	let lastindex = 0;
+	const wrapWithStyle = (node: React.ReactNode, style: { bold: boolean; italic: boolean; strike: boolean }, key: string): React.ReactNode => {
+		let wrapped = node;
+		if (style.strike) {
+			wrapped = <s key={`${key}-st`}>{wrapped}</s>;
+		}
+		if (style.italic) {
+			wrapped = <em key={`${key}-i`}>{wrapped}</em>;
+		}
+		if (style.bold) {
+			wrapped = <strong key={`${key}-b`}>{wrapped}</strong>;
+		}
+		return wrapped;
+	};
 	const content2 = (() => {
 		const formattedContent: React.ReactNode[] = [];
+		const pushPlainRange = (start: number, end: number, keySuffix: string) => {
+			if (!t || end <= start) return;
+			styleSegments(styleTokens, start, end).forEach((seg) => {
+				const segKey = `plain-${seg.s}-${seg.e}-${keySuffix}-${messageId}`;
+				formattedContent.push(
+					wrapWithStyle(
+						<FormattedPlainText
+							key={segKey}
+							text={t.slice(seg.s, seg.e)}
+							isSearchMessage={isSearchMessage}
+							messageId={messageId}
+							keyPrefix="plain"
+							isReply={!!isReply}
+						/>,
+						seg,
+						segKey
+					)
+				);
+			});
+		};
 
 		elements.forEach((element, index) => {
 			const s = element.s ?? 0;
@@ -402,81 +452,97 @@ export const MessageLine = ({
 			const contentInElement = t?.substring(s, e);
 
 			if (lastindex < s) {
-				formattedContent.push(
-					<FormattedPlainText
-						key={`plain-${lastindex}-${messageId}`}
-						text={t?.slice(lastindex, s) ?? ''}
-						isSearchMessage={isSearchMessage}
-						messageId={messageId}
-						keyPrefix="plain"
-						isReply={!!isReply}
-					/>
-				);
+				pushPlainRange(lastindex, s, 'gap');
 			}
 
 			if (element.kindOf === ETokenMessage.HASHTAGS) {
+				const elemKey = `hashtag-${s}-${messageId}`;
 				formattedContent.push(
-					<ChannelHashtag
-						key={`hashtag-${s}-${messageId}`}
-						isTokenClickAble={isTokenClickAble}
-						isJumMessageEnabled={isJumMessageEnabled}
-						channelHastagId={element.channelId || ''}
-						channelLabel={element.channelLabel}
-						channelType={element.channelType}
-						channelPrivate={element.channelPrivate}
-						clanId={element.clanId}
-						parentId={element.parentId}
-						channelId={element.channelId}
-					/>
+					wrapWithStyle(
+						<ChannelHashtag
+							key={elemKey}
+							isTokenClickAble={isTokenClickAble}
+							isJumMessageEnabled={isJumMessageEnabled}
+							channelHastagId={element.channelId || ''}
+							channelLabel={element.channelLabel}
+							channelType={element.channelType}
+							channelPrivate={element.channelPrivate}
+							clanId={element.clanId}
+							parentId={element.parentId}
+							channelId={element.channelId}
+						/>,
+						styleAt(styleTokens, s, e),
+						elemKey
+					)
 				);
 			} else if (element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') {
+				const elemKey = `mentionUser-${s}-${messageId}`;
 				formattedContent.push(
-					<MentionContent
-						key={`mentionUser-${s}-${messageId}`}
-						element={element}
-						contentInElement={contentInElement}
-						isTokenClickAble={isTokenClickAble}
-						isJumMessageEnabled={isJumMessageEnabled}
-						mode={mode}
-						index={index}
-						s={s}
-						mention={element.username}
-						onCloseTooltip={onCloseTooltip}
-					/>
+					wrapWithStyle(
+						<MentionContent
+							key={elemKey}
+							element={element}
+							contentInElement={contentInElement}
+							isTokenClickAble={isTokenClickAble}
+							isJumMessageEnabled={isJumMessageEnabled}
+							mode={mode}
+							index={index}
+							s={s}
+							mention={element.username}
+							onCloseTooltip={onCloseTooltip}
+						/>,
+						styleAt(styleTokens, s, e),
+						elemKey
+					)
 				);
 			} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
+				const elemKey = `mentionRole-${s}-${messageId}`;
 				formattedContent.push(
-					<RoleMentionContent
-						key={`mentionRole-${s}-${messageId}`}
-						element={element}
-						contentInElement={contentInElement}
-						isTokenClickAble={isTokenClickAble}
-						isJumMessageEnabled={isJumMessageEnabled}
-						mode={mode}
-						index={index}
-						s={s}
-					/>
+					wrapWithStyle(
+						<RoleMentionContent
+							key={elemKey}
+							element={element}
+							contentInElement={contentInElement}
+							isTokenClickAble={isTokenClickAble}
+							isJumMessageEnabled={isJumMessageEnabled}
+							mode={mode}
+							index={index}
+							s={s}
+						/>,
+						styleAt(styleTokens, s, e),
+						elemKey
+					)
 				);
 			} else if (element.kindOf === ETokenMessage.EMOJIS) {
+				const elemKey = `emoji-${s}-${messageId}`;
 				formattedContent.push(
-					<EmojiMarkup
-						key={`emoji-${s}-${messageId}`}
-						isOne={Number(t?.length) - 1 === Number(element?.e) - Number(element.s)}
-						emojiSyntax={contentInElement ?? ''}
-						onlyEmoji={isOnlyContainEmoji ?? false}
-						emojiId={element.emojiid ?? ''}
-					/>
+					wrapWithStyle(
+						<EmojiMarkup
+							key={elemKey}
+							isOne={Number(t?.length) - 1 === Number(element?.e) - Number(element.s)}
+							emojiSyntax={contentInElement ?? ''}
+							onlyEmoji={isOnlyContainEmoji ?? false}
+							emojiId={element.emojiid ?? ''}
+						/>,
+						styleAt(styleTokens, s, e),
+						elemKey
+					)
 				);
 			} else if (element.kindOf === ETokenMessage.VOICE_LINKS) {
+				const elemKey = `voiceLink-${s}-${messageId}`;
 				formattedContent.push(
-					<VoiceLinkContent
-						key={`voiceLink-${s}-${messageId}`}
-						isTokenClickAble={isTokenClickAble}
-						isJumMessageEnabled={isJumMessageEnabled}
-						contentInElement={contentInElement}
-						messageId={messageId}
-						onContextMenu={onContextMenu}
-					/>
+					wrapWithStyle(
+						<VoiceLinkContent
+							key={elemKey}
+							isTokenClickAble={isTokenClickAble}
+							isJumMessageEnabled={isJumMessageEnabled}
+							contentInElement={contentInElement}
+							messageId={messageId}
+							onContextMenu={onContextMenu}
+						/>,
+						styleAt(styleTokens, s, e),
+						elemKey
+					)
 				);
 			} else if (element.kindOf === ETokenMessage.MARKDOWNS) {
 				if (
@@ -536,54 +602,55 @@ export const MessageLine = ({
 								/>
 							);
 						}
-						formattedContent.push(
-							componentToRender ?? (
-								<MarkdownContent
-									key={`link${s}-${messageId}`}
-									isLink={true}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-									content={contentInElement}
-									isReply={isReply}
-									isSearchMessage={isSearchMessage}
-									isInPinMsg={isInPinMsg}
-									typeOfBacktick={element.type}
-									messageId={messageId}
-									onContextMenu={onContextMenu}
-								/>
-							)
+						const linkNode = componentToRender ?? (
+							<MarkdownContent
+								key={`link${s}-${messageId}`}
+								isLink={true}
+								isTokenClickAble={isTokenClickAble}
+								isJumMessageEnabled={isJumMessageEnabled}
+								content={contentInElement}
+								isReply={isReply}
+								isSearchMessage={isSearchMessage}
+								isInPinMsg={isInPinMsg}
+								typeOfBacktick={element.type}
+								messageId={messageId}
+								onContextMenu={onContextMenu}
+							/>
 						);
+						formattedContent.push(wrapWithStyle(linkNode, styleAt(styleTokens, s, e), `link-${s}-${messageId}`));
 					} else {
-						formattedContent.push(
-							componentToRender ?? (
-								<MarkdownContent
-									key={`link${s}-${messageId}`}
-									isLink={true}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-									content={contentInElement}
-									isReply={isReply}
-									isSearchMessage={isSearchMessage}
-									isInPinMsg={isInPinMsg}
-									typeOfBacktick={element.type}
-									messageId={messageId}
-									onContextMenu={onContextMenu}
-								/>
-							)
+						const linkNode = componentToRender ?? (
+							<MarkdownContent
+								key={`link${s}-${messageId}`}
+								isLink={true}
+								isTokenClickAble={isTokenClickAble}
+								isJumMessageEnabled={isJumMessageEnabled}
+								content={contentInElement}
+								isReply={isReply}
+								isSearchMessage={isSearchMessage}
+								isInPinMsg={isInPinMsg}
+								typeOfBacktick={element.type}
+								messageId={messageId}
+								onContextMenu={onContextMenu}
+							/>
 						);
+						formattedContent.push(wrapWithStyle(linkNode, styleAt(styleTokens, s, e), `link-${s}-${messageId}`));
 					}
-				} else if (element.type === EBacktickType.BOLD) {
-					formattedContent.push(<b key={`markdown-${s}-${messageId}`}> {contentInElement} </b>);
 				} else if (element.type === EBacktickType.VOICE_LINK) {
+					const elemKey = `voiceLink-${s}-${messageId}`;
 					formattedContent.push(
-						<VoiceLinkContent
-							key={`voiceLink-${s}-${messageId}`}
-							isTokenClickAble={isTokenClickAble}
-							isJumMessageEnabled={isJumMessageEnabled}
-							contentInElement={contentInElement}
-							messageId={messageId}
-							onContextMenu={onContextMenu}
-						/>
+						wrapWithStyle(
+							<VoiceLinkContent
+								key={elemKey}
+								isTokenClickAble={isTokenClickAble}
+								isJumMessageEnabled={isJumMessageEnabled}
+								contentInElement={contentInElement}
+								messageId={messageId}
+								onContextMenu={onContextMenu}
+							/>,
+							styleAt(styleTokens, s, e),
+							elemKey
+						)
 					);
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
 					if (!isSending) {
@@ -637,32 +704,14 @@ export const MessageLine = ({
 					);
 				}
 			} else if (contentInElement) {
-				formattedContent.push(
-					<FormattedPlainText
-						key={`plain-${lastindex}-end-${messageId}`}
-						text={contentInElement}
-						isSearchMessage={isSearchMessage}
-						messageId={messageId}
-						keyPrefix="plain"
-						isReply={!!isReply}
-					/>
-				);
+				pushPlainRange(s, e, 'elem');
 			}
 
 			lastindex = e;
 		});
 
 		if (t && lastindex < t?.length) {
-			formattedContent.push(
-				<FormattedPlainText
-					key={`plain-${lastindex}-end-${messageId}`}
-					text={t.slice(lastindex)}
-					isSearchMessage={isSearchMessage}
-					messageId={messageId}
-					keyPrefix="plain"
-					isReply={!!isReply}
-				/>
-			);
+			pushPlainRange(lastindex, t.length, 'end');
 		}
 
 		if (isEditted) {

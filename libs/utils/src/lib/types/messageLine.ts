@@ -11,6 +11,8 @@ export enum EBacktickType {
 	PRE = 'pre',
 	CODE = 'c',
 	BOLD = 'b',
+	ITALIC = 'i',
+	STRIKE = 'st',
 	LINK = 'lk',
 	VOICE_LINK = 'vk',
 	LINKYOUTUBE = 'lk_yt',
