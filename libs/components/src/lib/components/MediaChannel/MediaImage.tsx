@@ -3,6 +3,13 @@ import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 
+const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.m4v'];
+
+const isVideoUrl = (url?: string) => {
+	const path = url?.split('?')[0].toLowerCase() ?? '';
+	return VIDEO_EXTENSIONS.some((ext) => path.endsWith(ext));
+};
+
 interface ImgProxyOptions {
 	width?: number;
 	height?: number;
@@ -24,7 +31,13 @@ export function MediaImage({ src, alt = '', className = '', loading = 'lazy', im
 
 	const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner([src]);
 	const signedSrc = signCdnUrl(src);
-	const processedSrc = signedSrc && imgProxyOptions ? (createImgproxyUrl(signedSrc, imgProxyOptions) as string) : signedSrc;
+	const isVideo = isVideoUrl(src);
+	const processedSrc = signedSrc && imgProxyOptions && !isVideo ? (createImgproxyUrl(signedSrc, imgProxyOptions) as string) : signedSrc;
+	const handleLoaded = () => setIsLoading(false);
+	const handleError = () => {
+		setHasError(true);
+		setIsLoading(false);
+	};
 
 	useEffect(() => {
 		setHasError(false);
@@ -53,17 +66,33 @@ export function MediaImage({ src, alt = '', className = '', loading = 'lazy', im
 					<div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent dark:via-white/10 via-black/5 to-transparent" />
 				</div>
 			)}
-			<img
-				src={processedSrc}
-				alt={alt}
-				className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
-				loading={loading}
-				onLoad={() => setIsLoading(false)}
-				onError={() => {
-					setHasError(true);
-					setIsLoading(false);
-				}}
-			/>
+			{isVideo ? (
+				<>
+					<video
+						src={processedSrc}
+						className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
+						muted
+						playsInline
+						preload="metadata"
+						onLoadedMetadata={handleLoaded}
+						onError={handleError}
+					/>
+					{!isLoading && (
+						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+							<MezonIcon icon={MzIcons20.mzPlay} className="text-white drop-shadow-lg" />
+						</div>
+					)}
+				</>
+			) : (
+				<img
+					src={processedSrc}
+					alt={alt}
+					className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
+					loading={loading}
+					onLoad={handleLoaded}
+					onError={handleError}
+				/>
+			)}
 		</div>
 	);
 }
