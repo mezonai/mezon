@@ -4,14 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 const MemberTopBar = () => {
 	const { t } = useTranslation('memberTable');
-	const { searchQuery, setSearchQuery, setSort } = useMemberContext();
+	const { searchQuery, setSearchQuery } = useMemberContext();
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchQuery(e.target.value);
-	};
-
-	const toggleSort = () => {
-		setSort('memberSince');
 	};
 
 	return (
@@ -33,15 +29,6 @@ const MemberTopBar = () => {
 					<div className="w-5 h-6 flex flex-row items-center pl-1 absolute right-1 border-theme-p top-1/2 transform -translate-y-1/2">
 						<MezonIcon icon={MzIcons20.mzSearch} className="text-[var(--mz-icon)]" />
 					</div>
-				</div>
-				<div>
-					<button
-						className="h-8 rounded text-sm font-medium flex gap-1 px-2 focus:ring-transparent bg-indigo-500 hover:bg-indigo-600 items-center text-white"
-						onClick={toggleSort}
-					>
-						<MezonIcon icon={MzIcons20.mzSwap} className="rotate-90 mr-1 text-white" />
-						<span>{t('topBar.sort')}</span>
-					</button>
 				</div>
 			</div>
 		</div>

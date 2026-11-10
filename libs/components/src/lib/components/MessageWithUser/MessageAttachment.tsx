@@ -30,8 +30,10 @@ import {
 	useAppLayout
 } from '@mezon/utils';
 
+import { MezonIcon, MzIcons40 } from '@mezon/ui';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Album from './Album';
 import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageLinkFile from './MessageLinkFile';
@@ -273,6 +275,7 @@ const MessageAttachment = memo(
 		defaultMaxWidth,
 		isPreview
 	}: MessageAttachmentProps) => {
+		const { t } = useTranslation('message');
 		const message = useLiveMessageForAttachments(messageProp, channelId, isPreview);
 		const messageCreateTimeSeconds = useMemo(() => getMessageCreateTimeSeconds(message), [message]);
 		const hasPresignPending = useMemo(
@@ -299,7 +302,30 @@ const MessageAttachment = memo(
 
 			return visibleAttachments.length ? visibleAttachments : null;
 		}, [message.attachments, message.content, messageCreateTimeSeconds, nowSeconds]);
-		if (!validateAttachment) return null;
+		if (!message?.attachments?.length) {
+			return null;
+		}
+
+		if (!validateAttachment) {
+			const attachment = message.attachments?.[0];
+
+			return (
+				<div
+					className="break-all w-full relative cursor-default gap-3 flex items-center mt-[10px] py-3 pl-3 pr-3 rounded-lg max-w-full bg-item-theme border-theme-primary"
+					role="button"
+					aria-label={t('failAttachment')}
+				>
+					<div className="relative flex items-center shrink-0">
+						<MezonIcon icon={MzIcons40.mzFile} className="text-[var(--mz-icon)]" />
+					</div>
+
+					<div className="flex-1 min-w-0">
+						<p className="text-red-500">{attachment?.filename ?? t('attachments.attachment')}</p>
+						<p className="text-theme-primary">{t('failAttachment')}</p>
+					</div>
+				</div>
+			);
+		}
 		return (
 			<Attachments
 				mode={mode}

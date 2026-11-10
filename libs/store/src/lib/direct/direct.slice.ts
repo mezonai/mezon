@@ -3,11 +3,13 @@ import type { BuzzArgs, IChannel, IMessage, IUserChannel, IUserProfileActivity, 
 import { ActiveDm } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { t } from 'i18next';
 import type {
 	ApiChannelDescription,
 	ApiChannelMessageHeader,
 	ApiCreateChannelDescRequest,
 	ApiDeleteChannelDescRequest,
+	ApiUpdateDMSettingRequest,
 	ChannelMessage,
 	ChannelUpdatedEvent,
 	UserProfile
@@ -23,6 +25,7 @@ import type { ChannelMetaEntity } from '../channels/channelmeta.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
 import { joinClan, listChannelBadgeCount } from '../clans/clans.slice';
+import type { ThunkConfigWithError } from '../errors';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
@@ -39,6 +42,26 @@ export type DMMetaEntity = DirectEntity;
 
 export const DM_PAGE_SIZE = 500;
 
+interface DMSettingState {
+	onlyFriendsDM: boolean;
+	confirmedOnlyFriendsDM: boolean;
+	saveGeneration: number;
+	resetGeneration: number;
+	loadRequestId?: string;
+	saveRequestId?: string;
+}
+
+const initialDMSettingState: DMSettingState = {
+	onlyFriendsDM: false,
+	confirmedOnlyFriendsDM: false,
+	saveGeneration: 0,
+	resetGeneration: 0
+};
+
+const dmSettingSaveQueues = new WeakMap<() => unknown, Promise<unknown>>();
+
+type SavedDMSetting = { onlyFriendsDM: boolean; resetGeneration: number };
+
 export interface DirectState extends EntityState<DirectEntity, string> {
 	loadingStatus: LoadingStatus;
 	socketStatus: LoadingStatus;
@@ -51,11 +74,14 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	currentPage: number;
 	hasMore: boolean;
 	paginationLoading: boolean;
+	dmSetting?: DMSettingState;
 }
 
 export interface DirectRootState {
 	[DIRECT_FEATURE_KEY]: DirectState;
 }
+
+const getDMSettingState = (state: RootState): DMSettingState => state.direct.dmSetting ?? initialDMSettingState;
 
 export const directAdapter = createEntityAdapter<DirectEntity>();
 
@@ -78,6 +104,49 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEn
 	return mapped;
 };
 
+export const fetchDMSetting = createAsyncThunk<{ onlyFriendsDM: boolean; generation: number }, void, ThunkConfigWithError>(
+	'direct/fetchDMSetting',
+	async (_, thunkAPI) => {
+		const generation = getDMSettingState(thunkAPI.getState() as RootState).saveGeneration;
+		try {
+			const { client, session } = await ensureSession(getMezonCtx(thunkAPI));
+			const setting = await client.getDMSetting(session);
+			return { onlyFriendsDM: setting.only_friends_dm ?? false, generation };
+		} catch (error) {
+			captureSentryError(error, 'direct/fetchDMSetting');
+			return thunkAPI.rejectWithValue(null, { error: { toast: false } });
+		}
+	},
+	{ condition: (_, { getState }) => !getDMSettingState(getState() as RootState).saveRequestId }
+);
+
+export const updateDMSetting = createAsyncThunk<SavedDMSetting | undefined, ApiUpdateDMSettingRequest, ThunkConfigWithError>(
+	'direct/updateDMSetting',
+	async (setting, thunkAPI) => {
+		const resetGeneration = getDMSettingState(thunkAPI.getState() as RootState).resetGeneration;
+		const previousSave = dmSettingSaveQueues.get(thunkAPI.getState) ?? Promise.resolve();
+		const save = previousSave
+			.catch(() => undefined)
+			.then(async () => {
+				const isCurrentSession = () => getDMSettingState(thunkAPI.getState() as RootState).resetGeneration === resetGeneration;
+				if (!isCurrentSession()) return;
+				const { client, session } = await ensureSession(getMezonCtx(thunkAPI));
+				if (!isCurrentSession()) return;
+				await client.updateDMSetting(session, setting);
+				return { onlyFriendsDM: setting.only_friends_dm ?? false, resetGeneration };
+			});
+		dmSettingSaveQueues.set(thunkAPI.getState, save);
+		try {
+			return await save;
+		} catch (error) {
+			captureSentryError(error, 'direct/updateDMSetting');
+			return thunkAPI.rejectWithValue(null, { error: { toast: false } });
+		} finally {
+			if (dmSettingSaveQueues.get(thunkAPI.getState) === save) dmSettingSaveQueues.delete(thunkAPI.getState);
+		}
+	}
+);
+
 export const fetchDirectDetail = createAsyncThunk('direct/fetchDirectDetail', async ({ directId }: { directId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
@@ -95,17 +164,24 @@ export const fetchDirectDetail = createAsyncThunk('direct/fetchDirectDetail', as
 	}
 });
 
-export const createNewDirectMessage = createAsyncThunk(
+type CreateDirectMessagePayload = {
+	body: ApiCreateChannelDescRequest;
+	display_names?: string | string[];
+	username?: string | string[];
+	avatar?: string | string[];
+	suppressDeniedToast?: boolean;
+};
+
+const isNewDMDenied = (error: unknown): boolean => {
+	if (typeof error !== 'object' || error === null) return false;
+	const outer = error as Record<string, unknown>;
+	const inner = typeof outer.error === 'object' && outer.error !== null ? (outer.error as Record<string, unknown>) : {};
+	return [outer.code, outer.status, inner.code, inner.status].some((code) => code === 7 || code === 403);
+};
+
+export const createNewDirectMessage = createAsyncThunk<ApiChannelDescription, CreateDirectMessagePayload, ThunkConfigWithError>(
 	'direct/createNewDirectMessage',
-	async (
-		{
-			body,
-			username,
-			avatar,
-			display_names
-		}: { body: ApiCreateChannelDescRequest; display_names?: string | string[]; username?: string | string[]; avatar?: string | string[] },
-		thunkAPI
-	) => {
+	async ({ body, username, avatar, display_names, suppressDeniedToast }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createChannelDesc(mezon.session, body);
@@ -146,11 +222,18 @@ export const createNewDirectMessage = createAsyncThunk(
 				return response;
 			} else {
 				captureSentryError('no response', 'direct/createNewDirectMessage');
-				return thunkAPI.rejectWithValue('no reponse');
+				return thunkAPI.rejectWithValue('no reponse', {});
 			}
 		} catch (error) {
+			if (body.type === ChannelType.CHANNEL_TYPE_DM && isNewDMDenied(error)) {
+				const message = t('setting:chat.onlyFriendsDm.denied');
+				if (!suppressDeniedToast) {
+					toast.error(message);
+				}
+				return thunkAPI.rejectWithValue({ message }, { error: { toast: false } });
+			}
 			captureSentryError(error, 'direct/createNewDirectMessage');
-			return thunkAPI.rejectWithValue(error);
+			return thunkAPI.rejectWithValue(error, {});
 		}
 	}
 );
@@ -654,6 +737,15 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	paginationLoading: false
 });
 
+const resetDMSetting = (state: DirectState) => {
+	if (!state.dmSetting) return;
+	state.dmSetting = {
+		...initialDMSettingState,
+		saveGeneration: state.dmSetting.saveGeneration + 1,
+		resetGeneration: state.dmSetting.resetGeneration + 1
+	};
+};
+
 export const directSlice = createSlice({
 	name: DIRECT_FEATURE_KEY,
 	initialState: initialDirectState,
@@ -1021,6 +1113,41 @@ export const directSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
+			.addCase('auth/setLogout', resetDMSetting)
+			.addCase('auth/resetSession', resetDMSetting)
+			.addCase(fetchDMSetting.pending, (state, action) => {
+				state.dmSetting ??= { ...initialDMSettingState };
+				state.dmSetting.loadRequestId = action.meta.requestId;
+			})
+			.addCase(fetchDMSetting.fulfilled, (state, action) => {
+				if (
+					!state.dmSetting ||
+					state.dmSetting.loadRequestId !== action.meta.requestId ||
+					state.dmSetting.saveGeneration !== action.payload.generation
+				)
+					return;
+				state.dmSetting.onlyFriendsDM = action.payload.onlyFriendsDM;
+				state.dmSetting.confirmedOnlyFriendsDM = action.payload.onlyFriendsDM;
+			})
+			.addCase(updateDMSetting.pending, (state, action) => {
+				state.dmSetting ??= { ...initialDMSettingState };
+				state.dmSetting.onlyFriendsDM = action.meta.arg.only_friends_dm ?? false;
+				state.dmSetting.saveGeneration++;
+				state.dmSetting.saveRequestId = action.meta.requestId;
+			})
+			.addCase(updateDMSetting.fulfilled, (state, action) => {
+				if (!action.payload || state.dmSetting?.resetGeneration !== action.payload.resetGeneration) return;
+				state.dmSetting.confirmedOnlyFriendsDM = action.payload.onlyFriendsDM;
+				if (state.dmSetting.saveRequestId === action.meta.requestId) {
+					state.dmSetting.onlyFriendsDM = action.payload.onlyFriendsDM;
+					state.dmSetting.saveRequestId = undefined;
+				}
+			})
+			.addCase(updateDMSetting.rejected, (state, action) => {
+				if (state.dmSetting?.saveRequestId !== action.meta.requestId) return;
+				state.dmSetting.onlyFriendsDM = state.dmSetting.confirmedOnlyFriendsDM;
+				state.dmSetting.saveRequestId = undefined;
+			})
 			.addCase(fetchDirectMessage.pending, (state: DirectState) => {
 				state.loadingStatus = 'loading';
 			})
@@ -1078,6 +1205,8 @@ export const directReducer = directSlice.reducer;
 
 export const directActions = {
 	...directSlice.actions,
+	fetchDMSetting,
+	updateDMSetting,
 	fetchDirectMessage,
 	joinDirectMessageSpace,
 	followReopenedDirectMessage,
@@ -1099,6 +1228,8 @@ const { selectAll, selectEntities, selectIds } = directAdapter.getSelectors();
 export const getDirectState = (rootState: { [DIRECT_FEATURE_KEY]: DirectState }): DirectState => rootState[DIRECT_FEATURE_KEY];
 export const selectDirectMessageEntities = createSelector(getDirectState, selectEntities);
 export const selectDirectMessageIds = createSelector(getDirectState, selectIds);
+
+export const selectOnlyFriendsDM = (state: RootState) => getDMSettingState(state).onlyFriendsDM;
 
 export const selectAllDirectMessages = createSelector(getDirectState, selectAll);
 export const selectDmGroupCurrentId = createSelector(getDirectState, (state) => state.currentDirectMessageId);

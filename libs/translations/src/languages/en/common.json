@@ -87,6 +87,8 @@
 	"confirm": "Confirm",
 	"everyoneWaitingInside": "Everyone is waiting for you inside",
 	"noOneInVoice": "No one is currently in room",
+	"joinAsSpeaker": "Join as Speaker",
+	"joinAsAudience": "Join as Audience",
 	"joining": "Joining...",
 	"joinVoice": "Join Voice",
 	"reset": "Reset",

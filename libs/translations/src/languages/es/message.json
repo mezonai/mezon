@@ -266,5 +266,6 @@
 		"failedToCreatePoll": "No se pudo crear la encuesta"
 	},
 	"unknown": "desconocido",
-	"turnOffAnonymousToCreateTopic": "Desactiva el modo anónimo antes de crear un tema"
+	"turnOffAnonymousToCreateTopic": "Desactiva el modo anónimo antes de crear un tema",
+	"failAttachment": "Error al subir el archivo"
 }

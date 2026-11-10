@@ -266,5 +266,6 @@
 		"pollLabel": "[Sondaggio]",
 		"failedToCreatePoll": "Impossibile creare il sondaggio"
 	},
-	"turnOffAnonymousToCreateTopic": "Disattiva la modalità anonima prima di creare un argomento"
+	"turnOffAnonymousToCreateTopic": "Disattiva la modalità anonima prima di creare un argomento",
+	"failAttachment": "Caricamento del file non riuscito"
 }

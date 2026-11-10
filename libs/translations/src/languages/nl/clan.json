@@ -34,6 +34,7 @@
 		"categoryName": "Categorie naam",
 		"categoryNamePlaceholder": "Voer hier je categorie naam in...",
 		"hasWelcomeChannelError": "Deze categorie heeft een welkomstkanaal",
+		"hasChannelError": "Categorie met kanalen kan niet worden verwijderd.",
 		"deleteCategory": "Categorie verwijderen",
 		"deleteCategoryTitle": "Categorie verwijderen",
 		"deleteCategoryButton": "Categorie verwijderen",

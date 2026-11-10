@@ -266,5 +266,6 @@
 		"pollLabel": "[Umfrage]",
 		"failedToCreatePoll": "Umfrage konnte nicht erstellt werden"
 	},
-	"turnOffAnonymousToCreateTopic": "Deaktiviere den Anonymmodus, bevor du ein Thema erstellst"
+	"turnOffAnonymousToCreateTopic": "Deaktiviere den Anonymmodus, bevor du ein Thema erstellst",
+	"failAttachment": "Datei-Upload fehlgeschlagen"
 }

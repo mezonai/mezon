@@ -266,5 +266,6 @@
 		"noVotesYet": "Chưa có người bình chọn",
 		"pollLabel": "[Bình chọn]",
 		"failedToCreatePoll": "Không thể tạo bình chọn"
-	}
+	},
+	"failAttachment": "Tải tệp lên thất bại"
 }

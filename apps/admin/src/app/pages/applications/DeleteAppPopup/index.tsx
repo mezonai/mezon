@@ -22,7 +22,7 @@ const DeleteAppPopup = ({ togglePopup, appName, appId }: IDeleteAppPopup) => {
 		await dispatch(deleteApplication({ appId }));
 		await dispatch(fetchApplications({ noCache: true }));
 		togglePopup();
-		navigate('/');
+		navigate('/developers/applications');
 	};
 
 	return (

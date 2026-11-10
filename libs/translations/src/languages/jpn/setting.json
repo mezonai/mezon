@@ -170,6 +170,11 @@
 		"quickReplies": "クイック返信",
 		"quickRepliesDescription": "チャンネルの最新メッセージに基づいて、クイック返信の候補を表示します。",
 		"grammar": "文法修正",
-		"grammarDescription": "入力中にスペルや文法の修正を提案します（最大256文字）。"
+		"grammarDescription": "入力中にスペルや文法の修正を提案します（最大256文字）。",
+		"onlyFriendsDm": {
+			"title": "知らない人からのメッセージを受け取らない。",
+			"description": "オンにすると、友達になっている人だけがあなたと会話を始められます。",
+			"denied": "このユーザーにメッセージを送信できません。"
+		}
 	}
 }

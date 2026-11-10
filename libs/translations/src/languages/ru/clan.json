@@ -34,6 +34,7 @@
 		"categoryName": "Название категории",
 		"categoryNamePlaceholder": "Введите название категории...",
 		"hasWelcomeChannelError": "В этой категории есть приветственный канал",
+		"hasChannelError": "Нельзя удалить категорию с каналами.",
 		"deleteCategory": "Удалить категорию",
 		"deleteCategoryTitle": "Удалить категорию",
 		"deleteCategoryButton": "Удалить категорию",

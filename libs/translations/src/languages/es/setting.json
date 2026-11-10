@@ -170,6 +170,11 @@
 		"quickReplies": "Respuestas rápidas",
 		"quickRepliesDescription": "Mostrar sugerencias de respuestas rápidas basadas en el último mensaje del canal.",
 		"grammar": "Corrección gramatical",
-		"grammarDescription": "Sugerir correcciones ortográficas y gramaticales mientras escribes (hasta 256 caracteres)."
+		"grammarDescription": "Sugerir correcciones ortográficas y gramaticales mientras escribes (hasta 256 caracteres).",
+		"onlyFriendsDm": {
+			"title": "No recibir mensajes de desconocidos.",
+			"description": "Si está activado, solo las personas que son tus amigas pueden iniciar una conversación contigo.",
+			"denied": "No puedes enviar un mensaje a este usuario."
+		}
 	}
 }

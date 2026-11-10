@@ -34,6 +34,7 @@
 		"categoryName": "Nome da categoria",
 		"categoryNamePlaceholder": "Digite o nome da sua categoria aqui...",
 		"hasWelcomeChannelError": "Esta categoria possui um canal de boas-vindas",
+		"hasChannelError": "Não é possível excluir uma categoria com canais.",
 		"deleteCategory": "Excluir categoria",
 		"deleteCategoryTitle": "Excluir categoria",
 		"deleteCategoryButton": "Excluir categoria",

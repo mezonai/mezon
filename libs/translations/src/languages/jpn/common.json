@@ -87,6 +87,8 @@
 	"confirm": "確認",
 	"everyoneWaitingInside": "みんなあなたが内側で待っています",
 	"noOneInVoice": "現在ボイスルーム内に誰もいません",
+	"joinAsSpeaker": "スピーカーとして参加",
+	"joinAsAudience": "リスナーとして参加",
 	"joining": "参加中...",
 	"joinVoice": "ボイスに参加",
 	"reset": "リセット",

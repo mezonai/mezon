@@ -39,7 +39,7 @@ describe('screen share quality changes', () => {
 			transactionId: 'negotiated-transaction',
 			codecs: [{ mimeType: 'video/VP9' }],
 			degradationPreference: 'maintain-framerate',
-			encodings: [{ rid: 'screen', active: true, maxFramerate: 30, maxBitrate: 3_500_000 }]
+			encodings: [{ rid: 'screen', active: true, maxFramerate: 30, maxBitrate: 5_000_000 }]
 		});
 		await changeMode('text');
 		expect(track.getConstraints().frameRate).toEqual({ ideal: 5, max: 5 });

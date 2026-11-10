@@ -170,6 +170,11 @@
 		"quickReplies": "Snelle antwoorden",
 		"quickRepliesDescription": "Suggesties voor snelle antwoorden weergeven op basis van het laatste bericht in het kanaal.",
 		"grammar": "Grammatica corrigeren",
-		"grammarDescription": "Stel spelling- en grammaticacorrecties voor tijdens het typen (maximaal 256 tekens)."
+		"grammarDescription": "Stel spelling- en grammaticacorrecties voor tijdens het typen (maximaal 256 tekens).",
+		"onlyFriendsDm": {
+			"title": "Geen berichten van onbekenden ontvangen.",
+			"description": "Als dit aan staat, kunnen alleen mensen die je vrienden zijn een gesprek met je starten.",
+			"denied": "Je kunt geen bericht sturen naar deze gebruiker."
+		}
 	}
 }

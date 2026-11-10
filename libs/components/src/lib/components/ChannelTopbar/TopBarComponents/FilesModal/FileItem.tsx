@@ -2,7 +2,14 @@ import { useCdnUrlSigner } from '@mezon/core';
 import type { AttachmentEntity } from '@mezon/store';
 import { selectMemberClanByUserId, selectMemberGroupByUserId, selectMessageByMessageId, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
-import { EFailAttachment, convertTimeString, generateE2eId, isAttachmentPresignPendingForMessage, shouldHidePresignAttachment } from '@mezon/utils';
+import {
+	EFailAttachment,
+	convertTimeString,
+	fetchDownloadBlob,
+	generateE2eId,
+	isAttachmentPresignPendingForMessage,
+	shouldHidePresignAttachment
+} from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,12 +50,11 @@ const FileItem = ({ attachmentData, mode, channelId, isDirect = false, fallbackU
 
 	const handleDownload = async (event: React.MouseEvent) => {
 		event.stopPropagation();
-		const response = await fetch(signCdnUrl(attachmentData?.url) as string);
-		if (!response.ok) {
-			return;
-		}
 		try {
-			const blob = await response.blob();
+			const blob = await fetchDownloadBlob(signCdnUrl(attachmentData?.url) as string);
+			if (!blob) {
+				return;
+			}
 			const dataUrl = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = dataUrl;

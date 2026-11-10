@@ -139,11 +139,12 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 				/>
 			) : null}
 			<button
-				className={`group-hover/itemListDm:opacity-100 opacity-0 absolute right-2 text-gray-500 text-2xl hover:text-red-500 top-[6px]`}
+				className="group-hover/itemListDm:opacity-100 opacity-0 absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-4 items-center justify-center text-gray-500 hover:text-red-500"
+				aria-label={t('close')}
 				onClick={(e) => handleCloseClick(e)}
 				data-e2e={generateE2eId(`chat.direct_message.chat_item.close_dm_button`)}
 			>
-				&times;
+				<MezonIcon icon={MzIcons16.mzClose} />
 			</button>
 		</div>
 	);
