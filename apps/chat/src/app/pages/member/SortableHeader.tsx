@@ -24,7 +24,7 @@ export const SortableHeader = ({ field, label, className }: SortableHeaderProps)
 			</span>
 
 			<MezonIcon
-				icon={MzIcons20.mzFilter}
+				icon={MzIcons20.mzArrowUp}
 				className={`${direction === 'desc' ? 'rotate-180' : ''} ${isActive ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}`}
 			/>
 		</div>
