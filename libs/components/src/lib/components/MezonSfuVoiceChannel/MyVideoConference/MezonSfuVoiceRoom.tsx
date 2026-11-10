@@ -53,6 +53,7 @@ import { useSfuGridLayout, useSfuPagination } from './GridLayout/useSfuGridLayou
 import { SfuRoomAudioRenderer } from './Media/SfuRoomAudioRenderer';
 import { SfuVideo } from './Media/SfuVideo';
 import { MezonNsAudioPipeline } from './Media/mezonNs/MezonNsAudioPipeline';
+import { ScreenAudioMixer, reportedMute } from './Media/screenAudioMixer';
 import { SfuParticipantTile, getParticipantTileFrameClass } from './ParticipantTile/SfuParticipantTile';
 import { ScreenShareFocusContext, SfuScreenShareTile } from './ParticipantTile/SfuScreenShareTile';
 import { ReactionCallHandler, useSendReaction } from './Reaction';
@@ -576,6 +577,13 @@ export function MezonSfuVoiceRoom({
 		if (pipeline?.inputTrack === inputTrack) pipeline.setOutputEnabled(enabled);
 	}, []);
 	const screenStreamRef = useRef<MediaStream | null>(null);
+	const screenAudioMixerRef = useRef<ScreenAudioMixer | null>(null);
+	const routeOutgoingAudio = useCallback((micOutgoing: MediaStreamTrack | null) => {
+		const mixer = screenAudioMixerRef.current;
+		if (!mixer) return micOutgoing;
+		mixer.setMicrophone(micOutgoing);
+		return mixer.track;
+	}, []);
 	const screenAnnotationRef = useRef<ScreenAnnotationCompositor | null>(null);
 	const getScreenSendTrack = useCallback(() => {
 		const track = screenStreamRef.current?.getVideoTracks()[0] ?? null;
@@ -637,6 +645,20 @@ export function MezonSfuVoiceRoom({
 			restartSessionRef.current();
 		}
 	}, []);
+
+	const isScreenAudioActive = useCallback(() => joinRole === 'speaker' && screenAudioMixerRef.current !== null, [joinRole]);
+
+	const releaseScreenAudio = useCallback(() => {
+		const mixer = screenAudioMixerRef.current;
+		if (!mixer) return false;
+		screenAudioMixerRef.current = null;
+		mixer.stop();
+		const localAudio = localStreamRef.current?.getAudioTracks()[0];
+		const audioSender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
+		void audioSender?.replaceTrack(desiredMediaRef.current.microphoneEnabled ? getOutgoingAudioTrack(localAudio) : null).catch(() => undefined);
+		sendMute(reportedMute(!desiredMediaRef.current.microphoneEnabled, isScreenAudioActive()));
+		return true;
+	}, [getOutgoingAudioTrack, isScreenAudioActive, sendMute]);
 
 	useEffect(() => {
 		onRefreshTokenRef.current = onRefreshToken;
@@ -1081,9 +1103,12 @@ export function MezonSfuVoiceRoom({
 			if (audioTrack) {
 				setAudioTrackEnabled(audioTrack, desiredMediaRef.current.microphoneEnabled);
 				const audioSender = pc?.getTransceivers().find((item) => item.mid === '0')?.sender;
-				if (audioSender) await audioSender.replaceTrack(desiredMediaRef.current.microphoneEnabled ? getOutgoingAudioTrack(audioTrack) : null);
+				if (audioSender)
+					await audioSender.replaceTrack(
+						routeOutgoingAudio(desiredMediaRef.current.microphoneEnabled ? getOutgoingAudioTrack(audioTrack) : null)
+					);
 			}
-			if (isCurrent()) sendMute(!desiredMediaRef.current.microphoneEnabled);
+			if (isCurrent()) sendMute(reportedMute(!desiredMediaRef.current.microphoneEnabled, isScreenAudioActive()));
 		})().catch(() => {
 			if (isCurrent()) restartSessionRef.current();
 		});
@@ -1096,7 +1121,9 @@ export function MezonSfuVoiceRoom({
 		microphoneEnabled,
 		hasMicrophoneAccess,
 		getOutgoingAudioTrack,
+		isScreenAudioActive,
 		localMediaPrepared,
+		routeOutgoingAudio,
 		setAudioTrackEnabled,
 		sendMute
 	]);
@@ -1240,7 +1267,7 @@ export function MezonSfuVoiceRoom({
 		if (!enabled && !currentPipeline && inputTrack?.readyState === 'live' && microphoneCaptureModeRef.current.get(inputTrack) === 'native') {
 			dispatch(voiceActions.setNoiseSuppressionReady(false));
 			const sender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
-			const outgoing = inputTrack.enabled ? inputTrack : null;
+			const outgoing = routeOutgoingAudio(inputTrack.enabled ? inputTrack : null);
 			if (sender && sender.track !== outgoing) {
 				void sender.replaceTrack(outgoing).catch((cause) => console.warn('[MezonSFU][Mezon-NS] cannot restore native audio', cause));
 			}
@@ -1268,7 +1295,7 @@ export function MezonSfuVoiceRoom({
 		void (async () => {
 			try {
 				const activeSender = sender();
-				if (activeSender && !enabled) await activeSender.replaceTrack(null);
+				if (activeSender && !enabled) await activeSender.replaceTrack(routeOutgoingAudio(null));
 				if (!isCurrent()) return;
 				currentPipeline?.dispose();
 				if (mezonNsPipelineRef.current === currentPipeline) mezonNsPipelineRef.current = null;
@@ -1326,7 +1353,7 @@ export function MezonSfuVoiceRoom({
 					localStream.removeTrack(inputTrack);
 					localStream.addTrack(nextTrack);
 				}
-				if (activeSender) await activeSender.replaceTrack(nextTrack.enabled ? getOutgoingAudioTrack(nextTrack) : null);
+				if (activeSender) await activeSender.replaceTrack(routeOutgoingAudio(nextTrack.enabled ? getOutgoingAudioTrack(nextTrack) : null));
 				if (!isCurrent()) return;
 				if (nextTrack !== inputTrack) inputTrack.stop();
 				candidate?.setPreparationEnabled(false);
@@ -1357,6 +1384,7 @@ export function MezonSfuVoiceRoom({
 		mezonNsUnavailable,
 		noiseSuppressionEnabled,
 		openPreferredMicrophone,
+		routeOutgoingAudio,
 		syncSelectedMicrophone
 	]);
 
@@ -1451,8 +1479,9 @@ export function MezonSfuVoiceRoom({
 						?.getTransceivers()
 						.find((item) => item.mid === '0' || item.receiver.track.kind === 'audio');
 					if (audioTransceiver) {
-						await audioTransceiver.sender.replaceTrack(isAudioActive ? getOutgoingAudioTrack(nextTrack) : null);
-						if (isAudioActive && audioTransceiver.direction !== 'sendonly' && audioTransceiver.direction !== 'sendrecv') {
+						const routedTrack = routeOutgoingAudio(isAudioActive ? getOutgoingAudioTrack(nextTrack) : null);
+						await audioTransceiver.sender.replaceTrack(routedTrack);
+						if (routedTrack && audioTransceiver.direction !== 'sendonly' && audioTransceiver.direction !== 'sendrecv') {
 							audioTransceiver.direction = 'sendonly';
 						}
 					}
@@ -1494,6 +1523,7 @@ export function MezonSfuVoiceRoom({
 			joinRole,
 			microphoneEnabled,
 			pushToTalkActive,
+			routeOutgoingAudio,
 			setAudioTrackEnabled
 		]
 	);
@@ -1876,7 +1906,9 @@ export function MezonSfuVoiceRoom({
 								: desiredMediaRef.current.microphoneEnabled;
 						if (audioTrack) setAudioTrackEnabled(audioTrack, audioEnabled);
 						await audioTransceiver.sender.replaceTrack(
-							joinRole === 'audience' ? getOutgoingAudioTrack(audioTrack) : audioEnabled ? getOutgoingAudioTrack(audioTrack) : null
+							joinRole === 'audience'
+								? getOutgoingAudioTrack(audioTrack)
+								: routeOutgoingAudio(audioEnabled ? getOutgoingAudioTrack(audioTrack) : null)
 						);
 						if (disposed || pcRef.current !== pc || wsRef.current !== ws) return;
 						audioTransceiver.direction = 'sendonly';
@@ -2123,19 +2155,32 @@ export function MezonSfuVoiceRoom({
 					if (message.type === 'peer_updated' && isCurrentPeer && typeof message.peer.is_mute === 'boolean') {
 						const sync = muteSyncRef.current;
 
-						sync.observeSelf(message.peer.is_mute, !desiredMediaRef.current.microphoneEnabled, Date.now());
+						sync.observeSelf(
+							message.peer.is_mute,
+							reportedMute(!desiredMediaRef.current.microphoneEnabled, isScreenAudioActive()),
+							Date.now()
+						);
 						if (pendingForcedMuteRef.current !== undefined) window.clearTimeout(pendingForcedMuteRef.current);
 						pendingForcedMuteRef.current = undefined;
 						if (sync.deadline !== undefined) {
 							pendingForcedMuteRef.current = window.setTimeout(
 								() => {
 									pendingForcedMuteRef.current = undefined;
-									if (disposed || wsRef.current !== ws || muteSyncRef.current !== sync || !sync.takeForcedMute(Date.now())) return;
+									if (
+										disposed ||
+										wsRef.current !== ws ||
+										muteSyncRef.current !== sync ||
+										!sync.takeForcedMute(Date.now()) ||
+										reportedMute(!desiredMediaRef.current.microphoneEnabled, isScreenAudioActive())
+									)
+										return;
 									desiredMediaRef.current.microphoneEnabled = false;
 									const audioTrack = localStreamRef.current?.getAudioTracks()[0];
 									if (audioTrack) setAudioTrackEnabled(audioTrack, false);
-									const sender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
-									void sender?.replaceTrack(null).catch(() => undefined);
+									if (!releaseScreenAudio()) {
+										const sender = pcRef.current?.getTransceivers().find((item) => item.mid === '0')?.sender;
+										void sender?.replaceTrack(null).catch(() => undefined);
+									}
 									dispatch(voiceActions.setShowMicrophone(false));
 								},
 								Math.max(0, sync.deadline - Date.now())
@@ -2159,7 +2204,7 @@ export function MezonSfuVoiceRoom({
 					everJoined = true;
 					tokenRefreshAttempts = 0;
 					const resumePushToTalk = joinRole === 'audience' && pushToTalkRequestedRef.current;
-					if (desiredMediaRef.current.microphoneEnabled || resumePushToTalk) sendMute(false);
+					if (!reportedMute(!desiredMediaRef.current.microphoneEnabled, isScreenAudioActive()) || resumePushToTalk) sendMute(false);
 					if (resumePushToTalk) {
 						ws.send(JSON.stringify({ type: 'push_to_talk', active: true }));
 					}
@@ -2459,6 +2504,8 @@ export function MezonSfuVoiceRoom({
 				if (track !== customVideoTrack) track.stop();
 			});
 			stopScreenAnnotationCompositor();
+			screenAudioMixerRef.current?.stop();
+			screenAudioMixerRef.current = null;
 			screenStreamRef.current?.getTracks().forEach((track) => track.stop());
 			screenStreamRef.current = null;
 			dispatch(voiceActions.setShowScreen(false));
@@ -2489,6 +2536,9 @@ export function MezonSfuVoiceRoom({
 		openPreferredMicrophone,
 		getOutgoingAudioTrack,
 		getScreenSendTrack,
+		isScreenAudioActive,
+		releaseScreenAudio,
+		routeOutgoingAudio,
 		setAudioTrackEnabled,
 		sendMute,
 		isExternalCalling,
@@ -2503,6 +2553,7 @@ export function MezonSfuVoiceRoom({
 
 	const stopLocalScreenCapture = () => {
 		stopScreenAnnotationCompositor();
+		releaseScreenAudio();
 		const stream = screenStreamRef.current;
 		if (!stream) return;
 		stream.getTracks().forEach((track) => {
@@ -2551,13 +2602,27 @@ export function MezonSfuVoiceRoom({
 		}
 		const sender = findUplinkVideoSender('2');
 		let stream: MediaStream | undefined;
+		let audioContext: AudioContext | null = null;
 		try {
+			if (joinRole === 'speaker') {
+				audioContext = new AudioContext({ latencyHint: 'interactive' });
+			}
 			const CaptureControllerConstructor = (window as typeof window & { CaptureController?: new () => ScreenCaptureController })
 				.CaptureController;
 			const captureController = CaptureControllerConstructor ? new CaptureControllerConstructor() : undefined;
 			stream = await navigator.mediaDevices.getDisplayMedia({
 				video: getScreenShareConstraints(screenShareModeRef.current),
-				audio: false,
+				audio:
+					joinRole === 'speaker'
+						? {
+								echoCancellation: false,
+								noiseSuppression: false,
+								autoGainControl: false,
+								suppressLocalAudioPlayback: false,
+								restrictOwnAudio: true
+							}
+						: false,
+				...(joinRole === 'speaker' ? { systemAudio: 'include' } : {}),
 				...(captureController ? { controller: captureController } : {})
 			} as DisplayMediaStreamOptions);
 			try {
@@ -2577,6 +2642,23 @@ export function MezonSfuVoiceRoom({
 				if (transceiver) forceVideoCodec(transceiver, SCREEN_CODEC);
 				await applyScreenEncodingParams(sender);
 			}
+			const screenAudioTrack = stream.getAudioTracks()[0];
+			if (audioContext && screenAudioTrack) {
+				screenAudioMixerRef.current = new ScreenAudioMixer(audioContext, screenAudioTrack);
+				const localAudio = localStreamRef.current?.getAudioTracks()[0];
+				const audioTransceiver = pc.getTransceivers().find((item) => item.mid === '0');
+				if (audioTransceiver) {
+					await audioTransceiver.sender.replaceTrack(
+						routeOutgoingAudio(desiredMediaRef.current.microphoneEnabled ? getOutgoingAudioTrack(localAudio) : null)
+					);
+					if (audioTransceiver.direction === 'recvonly' || audioTransceiver.direction === 'inactive') {
+						audioTransceiver.direction = 'sendonly';
+					}
+				}
+				sendMute(reportedMute(!desiredMediaRef.current.microphoneEnabled, isScreenAudioActive()));
+			} else if (audioContext) {
+				void Promise.resolve(audioContext.close()).catch(() => undefined);
+			}
 			screenStreamRef.current = stream;
 			dispatch(voiceActions.setShowScreen(true));
 			if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -2584,6 +2666,9 @@ export function MezonSfuVoiceRoom({
 			}
 			track.onended = () => void toggleScreenShare();
 		} catch (cause) {
+			if (!releaseScreenAudio() && audioContext) {
+				void Promise.resolve(audioContext.close()).catch(() => undefined);
+			}
 			stream?.getTracks().forEach((captureTrack) => captureTrack.stop());
 			dispatch(voiceActions.setShowScreen(false));
 			if (cause instanceof DOMException && cause.name === 'NotReadableError') setError(t('screenShareCaptureFailed'));
@@ -2652,11 +2737,11 @@ export function MezonSfuVoiceRoom({
 			setPushToTalkActive(active);
 			if (wsRef.current?.readyState === WebSocket.OPEN) {
 				if (active) {
-					sendMute(false);
+					sendMute(reportedMute(false, isScreenAudioActive()));
 					wsRef.current.send(JSON.stringify({ type: 'push_to_talk', active: true }));
 				} else {
 					wsRef.current.send(JSON.stringify({ type: 'push_to_talk', active: false }));
-					sendMute(true);
+					sendMute(reportedMute(true, isScreenAudioActive()));
 				}
 			}
 		},
@@ -2664,6 +2749,7 @@ export function MezonSfuVoiceRoom({
 			dispatch,
 			getMicrophoneCaptureOptions,
 			getOutgoingAudioTrack,
+			isScreenAudioActive,
 			joinRole,
 			openPreferredMicrophone,
 			pushToTalkActive,
