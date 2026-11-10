@@ -256,6 +256,7 @@ export const selectAllPermissionsUser = createSelector(getPoliciesState, selectA
 export const selectUserMaxPermissionLevel = createSelector([getPoliciesState], (state) => {
 	return state.maxPermissionUser ?? null;
 });
+export const selectPermissionsUserClanId = createSelector(getPoliciesState, (state) => state.PermissionsUserId);
 
 export const selectAllPermissionsDefault = createSelector(getPoliciesState, selectAll);
 export const selectAllPermissionsDefaultEntities = createSelector(getPoliciesState, selectEntities);
