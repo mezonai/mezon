@@ -316,18 +316,6 @@ const useParticipantsSpeakingMap = (localAudioTrack: MediaStreamTrack | undefine
 
 const CAMERA_CODEC = 'VP8';
 const SCREEN_CODEC = 'VP9';
-const SCREEN_KEYFRAME_REFRESH_DELAYS_MS = [1500, 4000];
-const SCREEN_KEYFRAME_MIN_INTERVAL_MS = 1000;
-
-const setSenderEncodingsActive = async (sender: RTCRtpSender, active: boolean) => {
-	const parameters = sender.getParameters();
-	if (!parameters.encodings?.length) return false;
-	parameters.encodings.forEach((encoding) => {
-		encoding.active = active;
-	});
-	await sender.setParameters(parameters);
-	return true;
-};
 
 const CAMERA_TIERS = [
 	{ maxCameras: 2, width: 640, height: 360, frameRate: 24, kbps: 1000, uncapped: true },
@@ -372,7 +360,7 @@ const openCameraStream = async (video: MediaTrackConstraints): Promise<MediaStre
 
 const SCREEN_MIN_BITRATE_KBPS = 400;
 const SCREEN_START_BITRATE_KBPS = 1000;
-const SCREEN_MAX_BITRATE_KBPS = 3500;
+const SCREEN_MAX_BITRATE_KBPS = 5000;
 
 type ScreenCaptureController = {
 	setFocusBehavior: (behavior: 'focus-capturing-application' | 'focus-captured-surface' | 'no-focus-change') => void;
@@ -600,9 +588,6 @@ export function MezonSfuVoiceRoom({
 	}, []);
 	const screenShareModeRef = useRef<ScreenShareMode>('text');
 	const changingScreenShareModeRef = useRef(false);
-	const screenKeyFrameTimersRef = useRef<number[]>([]);
-	const lastScreenKeyFrameAtRef = useRef(0);
-	const refreshingScreenKeyFrameRef = useRef(false);
 	const cameraTrackRef = useRef<MediaStreamTrack | null>(null);
 	const cameraQualityTierRef = useRef(0);
 	const localTracksAddedRef = useRef(false);
@@ -903,41 +888,6 @@ export function MezonSfuVoiceRoom({
 		},
 		[findUplinkVideoSender]
 	);
-
-	const refreshScreenKeyFrame = useCallback(async () => {
-		const track = getScreenSendTrack();
-		if (track?.readyState !== 'live' || refreshingScreenKeyFrameRef.current || changingScreenShareModeRef.current) return;
-		const sender = findUplinkVideoSender('2');
-		if (!sender || sender.track !== track) return;
-		const now = Date.now();
-		if (now - lastScreenKeyFrameAtRef.current < SCREEN_KEYFRAME_MIN_INTERVAL_MS) return;
-		lastScreenKeyFrameAtRef.current = now;
-		refreshingScreenKeyFrameRef.current = true;
-		try {
-			if (await setSenderEncodingsActive(sender, false)) await setSenderEncodingsActive(sender, true);
-		} catch (e) {
-			console.warn('refreshScreenKeyFrame failed:', e);
-			await setSenderEncodingsActive(sender, true).catch(() => false);
-		} finally {
-			refreshingScreenKeyFrameRef.current = false;
-		}
-	}, [findUplinkVideoSender, getScreenSendTrack]);
-
-	const scheduleScreenKeyFrameRefresh = useCallback(() => {
-		if (screenStreamRef.current?.getVideoTracks()[0]?.readyState !== 'live') return;
-		for (const delay of SCREEN_KEYFRAME_REFRESH_DELAYS_MS) {
-			const timer = window.setTimeout(() => {
-				screenKeyFrameTimersRef.current = screenKeyFrameTimersRef.current.filter((item) => item !== timer);
-				void refreshScreenKeyFrame();
-			}, delay);
-			screenKeyFrameTimersRef.current.push(timer);
-		}
-	}, [refreshScreenKeyFrame]);
-
-	const clearScreenKeyFrameRefresh = useCallback(() => {
-		screenKeyFrameTimersRef.current.forEach((timer) => window.clearTimeout(timer));
-		screenKeyFrameTimersRef.current = [];
-	}, []);
 
 	const syncRemoteMedia = useCallback((pc: RTCPeerConnection) => {
 		if (pcRef.current !== pc || negotiatingRef.current) return;
@@ -2161,7 +2111,6 @@ export function MezonSfuVoiceRoom({
 				if ((message.type === 'peer_joined' || message.type === 'peer_updated') && message.peer) {
 					applySfuPeers([message.peer]);
 					const isCurrentPeer = isCurrentSfuPeer(message.peer.peer_id, selfPeerIdRef.current);
-					if (message.type === 'peer_joined' && !isCurrentPeer) scheduleScreenKeyFrameRefresh();
 					if (message.type === 'peer_updated' && isCurrentPeer && typeof message.peer.is_mute === 'boolean') {
 						const sync = muteSyncRef.current;
 
@@ -2490,7 +2439,6 @@ export function MezonSfuVoiceRoom({
 			removeNetworkListeners();
 			clearIceRecoveryTimer();
 			clearTransportDeadlineTimer();
-			clearScreenKeyFrameRefresh();
 			if (reconnectTimer !== undefined) clearTimeout(reconnectTimer);
 			wsRef.current?.close();
 			pcRef.current?.close();
@@ -2525,7 +2473,6 @@ export function MezonSfuVoiceRoom({
 		applySfuPeers,
 		cameraManagedExternally,
 		claimRemoteMid,
-		clearScreenKeyFrameRefresh,
 		currentUserId,
 		dispatch,
 		findUplinkVideoSender,
@@ -2538,7 +2485,6 @@ export function MezonSfuVoiceRoom({
 		isExternalCalling,
 		joinRole,
 		roomId,
-		scheduleScreenKeyFrameRefresh,
 		serverUrl,
 		screenKeyframeRecovery,
 		stopScreenAnnotationCompositor,
@@ -2547,7 +2493,6 @@ export function MezonSfuVoiceRoom({
 	]);
 
 	const stopLocalScreenCapture = () => {
-		clearScreenKeyFrameRefresh();
 		stopScreenAnnotationCompositor();
 		const stream = screenStreamRef.current;
 		if (!stream) return;
