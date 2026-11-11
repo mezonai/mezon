@@ -1,12 +1,15 @@
 import { ListChannelSetting } from '@mezon/components';
+import { usePermissionChecker } from '@mezon/core';
 import {
-	channelSettingActions,
 	ETypeFetchChannelSetting,
+	channelSettingActions,
 	selectAllChannelSuggestion,
 	selectCurrentClanId,
 	selectNumberChannelCount,
+	selectPermissionsUserClanId,
 	useAppDispatch
 } from '@mezon/store';
+import { EPermission } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -30,6 +33,8 @@ const ChannelSetting = () => {
 	const countChannel = useSelector(selectNumberChannelCount);
 	const dispatch = useAppDispatch();
 	const selectClanId = useSelector(selectCurrentClanId);
+	const permissionsClanId = useSelector(selectPermissionsUserClanId);
+	const [isAdmin] = usePermissionChecker([EPermission.administrator]);
 	const prevClanIdRef = useRef<string | null>(null);
 
 	const handleSearchByNameChannel = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -50,9 +55,8 @@ const ChannelSetting = () => {
 		}
 		prevClanIdRef.current = selectClanId as string;
 	}, [selectClanId, dispatch]);
-
 	useEffect(() => {
-		if (!selectClanId) return;
+		if (!selectClanId || permissionsClanId !== selectClanId || !isAdmin) return;
 		dispatch(
 			channelSettingActions.fetchActiveChannelSettingInClan({
 				clanId: selectClanId,
@@ -62,7 +66,7 @@ const ChannelSetting = () => {
 				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL
 			})
 		);
-	}, [selectClanId, dispatch]);
+	}, [selectClanId, permissionsClanId, isAdmin, dispatch]);
 
 	return (
 		<div className="p-4 h-[calc(100vh_-_56px)] flex flex-col text-theme-primary ">
