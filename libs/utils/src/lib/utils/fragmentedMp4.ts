@@ -476,3 +476,227 @@ export class FragmentedMp4Indexer {
 export function finalizedMp4Blob(blob: Blob, fin: Mp4Finalization, type: string): Blob {
 	return new Blob([blob.slice(0, fin.headOffset), fin.head, blob.slice(fin.headOffset + fin.head.length), fin.tail], { type });
 }
+
+interface ParsedFmp4Track {
+	id: number;
+	timescale: number;
+	handler: string;
+}
+
+interface ParsedFmp4Head {
+	initEnd: number;
+	mvhdTimescale: number;
+	mvhdDuration: number;
+	trackId: number;
+	trackTimescale: number;
+}
+
+function parseFmp4Moov(buf: Uint8Array, start: number, end: number): Omit<ParsedFmp4Head, 'initEnd'> | undefined {
+	let mvhdTimescale = 0;
+	let mvhdDuration = 0;
+	let hasMvhd = false;
+	let hasMvex = false;
+	const tracks: ParsedFmp4Track[] = [];
+
+	const ok = walkChildBoxes(buf, start, end, (type, body, boxEnd) => {
+		if (type === 'mvhd') {
+			if (body + 4 > boxEnd) return false;
+			const version = buf[body];
+			if (version !== 0 && version !== 1) return false;
+			if (body + (version === 0 ? 20 : 32) > boxEnd) return false;
+			const timescale = readU32(buf, body + (version === 0 ? 12 : 20));
+			if (timescale === 0) return false;
+			const rawDuration = version === 0 ? BigInt(readU32(buf, body + 16)) : readU64(buf, body + 24);
+			const unknown = (version === 0 && rawDuration === MAX_U32) || (version === 1 && rawDuration === MAX_U64);
+			mvhdTimescale = timescale;
+			mvhdDuration = unknown ? 0 : Number(rawDuration);
+			hasMvhd = true;
+			return true;
+		}
+		if (type === 'mvex') {
+			hasMvex = true;
+			return true;
+		}
+		if (type === 'trak') {
+			const state: { trackId?: number; timescale?: number; handler: string } = { handler: '' };
+			const trakOk = walkChildBoxes(buf, body, boxEnd, (childType, childBody, childEnd) => {
+				if (childType === 'tkhd') {
+					if (childBody + 4 > childEnd) return false;
+					const version = buf[childBody];
+					if (version !== 0 && version !== 1) return false;
+					if (childBody + (version === 0 ? 16 : 24) > childEnd) return false;
+					state.trackId = readU32(buf, childBody + (version === 0 ? 12 : 20));
+					return true;
+				}
+				if (childType === 'mdia') {
+					return walkChildBoxes(buf, childBody, childEnd, (mdiaType, mdiaBody, mdiaEnd) => {
+						if (mdiaType === 'mdhd') {
+							if (mdiaBody + 4 > mdiaEnd) return false;
+							const version = buf[mdiaBody];
+							if (version !== 0 && version !== 1) return false;
+							if (mdiaBody + (version === 0 ? 16 : 24) > mdiaEnd) return false;
+							const ts = readU32(buf, mdiaBody + (version === 0 ? 12 : 20));
+							if (ts === 0) return false;
+							state.timescale = ts;
+							return true;
+						}
+						if (mdiaType === 'hdlr') {
+							if (mdiaBody + 12 > mdiaEnd) return false;
+							state.handler = readFourCC(buf, mdiaBody + 8);
+							return true;
+						}
+						return true;
+					});
+				}
+				return true;
+			});
+			if (!trakOk || state.trackId === undefined || state.timescale === undefined) return false;
+			tracks.push({ id: state.trackId, timescale: state.timescale, handler: state.handler });
+			return true;
+		}
+		return true;
+	});
+
+	if (!ok || !hasMvhd || !hasMvex || tracks.length === 0) return undefined;
+	const chosen = tracks.find((track) => track.handler === 'vide') ?? tracks[0];
+	return {
+		mvhdTimescale,
+		mvhdDuration,
+		trackId: chosen.id,
+		trackTimescale: chosen.timescale
+	};
+}
+
+function parseFmp4Head(head: Uint8Array): ParsedFmp4Head | undefined {
+	let off = 0;
+	let sawFtyp = false;
+	let parsedMoov: Omit<ParsedFmp4Head, 'initEnd'> | undefined;
+
+	while (off + 8 <= head.length) {
+		const size32 = readU32(head, off);
+		const type = readFourCC(head, off + 4);
+		if (!sawFtyp) {
+			if (type !== 'ftyp') return undefined;
+			sawFtyp = true;
+		}
+		let hdr = 8;
+		let boxSize = size32;
+		if (size32 === 1) {
+			if (off + 16 > head.length) return undefined;
+			const size64 = readU64(head, off + 8);
+			if (size64 < 16n || size64 > BigInt(Number.MAX_SAFE_INTEGER)) return undefined;
+			hdr = 16;
+			boxSize = Number(size64);
+		} else if (size32 < 8) {
+			return undefined;
+		}
+
+		if (type === 'moof') {
+			if (!parsedMoov) return undefined;
+			return { ...parsedMoov, initEnd: off };
+		}
+
+		if (off + boxSize > head.length) return undefined;
+
+		if (type === 'moov') {
+			if (parsedMoov) return undefined;
+			parsedMoov = parseFmp4Moov(head, off + hdr, off + boxSize);
+			if (!parsedMoov) return undefined;
+		}
+
+		off += boxSize;
+	}
+
+	return undefined;
+}
+
+export function fragmentedMp4InitEnd(head: Uint8Array): number | undefined {
+	return parseFmp4Head(head)?.initEnd;
+}
+
+export function fragmentedMp4Playlist(url: string, head: Uint8Array, fileSize: number, mfra: Uint8Array): string | undefined {
+	const parsed = parseFmp4Head(head);
+	if (!parsed) return undefined;
+	if (!Number.isFinite(fileSize) || mfra.length < 8) return undefined;
+	if (readU32(mfra, 0) !== mfra.length || readFourCC(mfra, 4) !== 'mfra') return undefined;
+
+	const dataEnd = fileSize - mfra.length;
+	if (dataEnd <= parsed.initEnd) return undefined;
+
+	const mfraState: { entries?: Array<{ time: bigint; offset: number }> } = {};
+
+	const mfraOk = walkChildBoxes(mfra, 8, mfra.length, (type, body, boxEnd) => {
+		if (type !== 'tfra') return true;
+		if (body + 16 > boxEnd) return false;
+		const version = mfra[body];
+		if (version !== 0 && version !== 1) return false;
+		const trackId = readU32(mfra, body + 4);
+		const lengthSizes = readU32(mfra, body + 8);
+		const count = readU32(mfra, body + 12);
+		const extra = ((lengthSizes >> 4) & 3) + 1 + (((lengthSizes >> 2) & 3) + 1) + ((lengthSizes & 3) + 1);
+		const entrySize = (version === 0 ? 8 : 16) + extra;
+		if (body + 16 + count * entrySize > boxEnd) return false;
+		if (trackId !== parsed.trackId || mfraState.entries !== undefined) return true;
+
+		const list: Array<{ time: bigint; offset: number }> = [];
+		let p = body + 16;
+		for (let i = 0; i < count; i += 1) {
+			const time = version === 0 ? BigInt(readU32(mfra, p)) : readU64(mfra, p);
+			const rawOffset = version === 0 ? BigInt(readU32(mfra, p + 4)) : readU64(mfra, p + 8);
+			if (rawOffset > BigInt(Number.MAX_SAFE_INTEGER)) return false;
+			list.push({ time, offset: Number(rawOffset) });
+			p += entrySize;
+		}
+		mfraState.entries = list;
+		return true;
+	});
+
+	const entries = mfraState.entries;
+	if (!mfraOk || !entries || entries.length === 0) return undefined;
+	if (entries[0].offset !== parsed.initEnd) return undefined;
+
+	for (let i = 0; i < entries.length; i += 1) {
+		if (entries[i].offset >= dataEnd) return undefined;
+		if (i > 0 && (entries[i].offset <= entries[i - 1].offset || entries[i].time < entries[i - 1].time)) {
+			return undefined;
+		}
+	}
+
+	const durations: number[] = [];
+	let sumOthers = 0;
+	for (let i = 0; i < entries.length - 1; i += 1) {
+		const dur = Number(entries[i + 1].time - entries[i].time) / parsed.trackTimescale;
+		durations.push(dur);
+		sumOthers += dur;
+	}
+
+	const lastStartSec = Number(entries[entries.length - 1].time) / parsed.trackTimescale;
+	let lastDuration = parsed.mvhdDuration / parsed.mvhdTimescale - lastStartSec;
+	if (lastDuration <= 0) {
+		lastDuration = entries.length > 1 && sumOthers > 0 ? sumOthers / (entries.length - 1) : 1;
+	}
+	durations.push(lastDuration);
+
+	let maxDuration = 0;
+	for (const dur of durations) {
+		if (dur > maxDuration) maxDuration = dur;
+	}
+	const targetDuration = Math.max(1, Math.ceil(maxDuration));
+
+	const lines = [
+		'#EXTM3U',
+		'#EXT-X-VERSION:7',
+		`#EXT-X-TARGETDURATION:${targetDuration}`,
+		'#EXT-X-PLAYLIST-TYPE:VOD',
+		`#EXT-X-MAP:URI="${url}",BYTERANGE="${parsed.initEnd}@0"`
+	];
+
+	for (let i = 0; i < entries.length; i += 1) {
+		const offset = entries[i].offset;
+		const end = i + 1 < entries.length ? entries[i + 1].offset : dataEnd;
+		lines.push(`#EXTINF:${durations[i].toFixed(3)},`, `#EXT-X-BYTERANGE:${end - offset}@${offset}`, url);
+	}
+
+	lines.push('#EXT-X-ENDLIST', '');
+	return lines.join('\n');
+}

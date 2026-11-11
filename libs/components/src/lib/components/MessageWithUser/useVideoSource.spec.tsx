@@ -246,7 +246,7 @@ it('keeps an original without a picture when it has no stream, like a clip with 
 	await settle();
 
 	expect(video.src).toBe(CLIP);
-	expect(fetchMock).toHaveBeenCalledTimes(2);
+	expect(fetchMock).toHaveBeenCalledTimes(3);
 	expect(isFailed()).toBe(false);
 });
 
@@ -260,7 +260,7 @@ it('leaves an original that shows a picture alone', async () => {
 	await settle();
 
 	expect(video.src).toBe(CLIP);
-	expect(fetchMock).toHaveBeenCalledTimes(1);
+	expect(fetchMock).toHaveBeenCalledTimes(2);
 });
 
 it('plays the converted stream natively where the browser can', async () => {
@@ -525,7 +525,7 @@ describe('a video sent through the file ingest', () => {
 		await settle();
 
 		expect(video.src).toBe(DEV_CLIP);
-		expect(probed()).toEqual([DEV_INDEX]);
+		expect(probed()).toEqual([DEV_INDEX, DEV_CLIP.split('?')[0]]);
 	});
 
 	it('keeps its playlist while it plays and falls back to the original once, never to master.m3u8', async () => {
@@ -803,5 +803,185 @@ describe('useIngestPlaylistReady', () => {
 		await advance(9000);
 		expect(fetchMock).not.toHaveBeenCalled();
 		expect(isReady()).toBe(false);
+	});
+});
+
+describe('a fragmented mp4 with an mfra index and no HLS stream', () => {
+	function u32(value: number): Uint8Array {
+		const out = new Uint8Array(4);
+		new DataView(out.buffer).setUint32(0, value, false);
+		return out;
+	}
+
+	function mp4Box(type: string, ...parts: Uint8Array[]): Uint8Array {
+		const bytes = new Uint8Array(8 + parts.reduce((size, part) => size + part.length, 0));
+		new DataView(bytes.buffer).setUint32(0, bytes.length);
+		bytes.set(
+			Array.from(type, (char) => char.charCodeAt(0)),
+			4
+		);
+		let at = 8;
+		for (const part of parts) {
+			bytes.set(part, at);
+			at += part.length;
+		}
+		return bytes;
+	}
+
+	function fullBox(type: string, version: number, flags: number, ...parts: Uint8Array[]): Uint8Array {
+		return mp4Box(type, u32((((version & 0xff) << 24) | (flags & 0xffffff)) >>> 0), ...parts);
+	}
+
+	function buildIndexedFmp4(): Uint8Array {
+		const encode = (text: string) => new TextEncoder().encode(text);
+		const ftyp = mp4Box('ftyp', encode('isom'), u32(512), encode('iso6'));
+		const mvhd = fullBox('mvhd', 0, 0, u32(0), u32(0), u32(1000), u32(6000), new Uint8Array(80));
+		const tkhd = fullBox('tkhd', 0, 3, u32(0), u32(0), u32(1), u32(0), u32(0), new Uint8Array(60));
+		const mdhd = fullBox('mdhd', 0, 0, u32(0), u32(0), u32(1000), u32(0), u32(0));
+		const hdlr = fullBox('hdlr', 0, 0, u32(0), encode('vide'), new Uint8Array(13));
+		const trak = mp4Box('trak', tkhd, mp4Box('mdia', mdhd, hdlr, mp4Box('minf', mp4Box('stbl'))));
+		const mvex = mp4Box('mvex', fullBox('trex', 0, 0, u32(1), u32(1), u32(3000), u32(0), u32(0)));
+		const moov = mp4Box('moov', mvhd, trak, mvex);
+		const initEnd = ftyp.length + moov.length;
+		const frag1 = new Uint8Array([...mp4Box('moof', fullBox('mfhd', 0, 0, u32(1))), ...mp4Box('mdat', new Uint8Array(9000))]);
+		const frag2 = new Uint8Array([...mp4Box('moof', fullBox('mfhd', 0, 0, u32(2))), ...mp4Box('mdat', new Uint8Array(9000))]);
+		const tfra = fullBox(
+			'tfra',
+			0,
+			0,
+			u32(1),
+			u32(0),
+			u32(2),
+			u32(0),
+			u32(initEnd),
+			new Uint8Array([1, 1, 1]),
+			u32(3000),
+			u32(initEnd + frag1.length),
+			new Uint8Array([1, 1, 1])
+		);
+		const mfra = mp4Box('mfra', tfra, fullBox('mfro', 0, 0, u32(8 + tfra.length + 16)));
+		return new Uint8Array([...ftyp, ...moov, ...frag1, ...frag2, ...mfra]);
+	}
+
+	const recording = buildIndexedFmp4();
+
+	function serveFmp4(hlsExists = false) {
+		fetchMock.mockImplementation(async (input, init) => {
+			const target = String(input);
+			if (target.includes('/hls/')) {
+				return hlsExists ? new Response(MASTER, { status: 200 }) : new Response('<Error><Code>NoSuchKey</Code></Error>', { status: 404 });
+			}
+			const range = new Headers(init?.headers).get('range') ?? '';
+			const [, startStr, endStr] = /^bytes=(\d+)-(\d+)$/.exec(range)!;
+			const start = Number(startStr);
+			const end = Math.min(Number(endStr), recording.length - 1);
+			return new Response(recording.subarray(start, end + 1), {
+				status: 206,
+				headers: { 'Content-Range': `bytes ${start}-${end}/${recording.length}` }
+			});
+		});
+	}
+
+	it('plays the byte-range blob playlist through hls.js even when native HLS is reported, without probing HLS on loadedmetadata', async () => {
+		const createUrlSpy = jest.spyOn(URL, 'createObjectURL');
+		video.nativeHls = 'maybe';
+		video.paused = false;
+		serveFmp4(false);
+
+		render(<Player url={CLIP} />);
+		await settle();
+
+		expect(video.src).toBe('');
+		expect(mockHlsInstances).toHaveLength(1);
+		expect(mockHlsInstances[0].source).toMatch(/^blob:/);
+		expect(mockHlsInstances[0].media).toBe(video);
+		expect(video.play).toHaveBeenCalledTimes(1);
+		expect(createUrlSpy).toHaveBeenCalledTimes(1);
+		const playlistBlob = createUrlSpy.mock.calls[0][0] as Blob;
+		expect(playlistBlob.type).toBe('application/vnd.apple.mpegurl');
+		await expect(playlistBlob.text()).resolves.toContain(`#EXT-X-MAP:URI="${CLIP}"`);
+
+		const callsBeforeMetadata = fetchMock.mock.calls.length;
+		act(() => video.emit('loadedmetadata'));
+		await settle();
+		expect(fetchMock).toHaveBeenCalledTimes(callsBeforeMetadata);
+	});
+
+	it('falls back to the signed original once on a fatal hls.js error, then fails if the original also errors', async () => {
+		const revokeSpy = jest.spyOn(URL, 'revokeObjectURL');
+		video.nativeHls = 'maybe';
+		serveFmp4(false);
+
+		render(<Player url={CLIP} />);
+		await settle();
+		const [hls] = mockHlsInstances;
+		const blobSource = hls.source!;
+
+		const renewed = `${CLIP.split('?')[0]}?1791999999-ZnJlc2g`;
+		act(() => renderer.update(<Player url={renewed} />));
+		act(() => hls.fail(false));
+		await settle();
+		expect(hls.destroyed).toBe(false);
+		expect(video.src).toBe('');
+
+		act(() => hls.fail(true));
+		await settle();
+		expect(hls.destroyed).toBe(true);
+		expect(revokeSpy).toHaveBeenCalledWith(blobSource);
+		expect(video.src).toBe(renewed);
+		expect(isFailed()).toBe(false);
+
+		mediaError();
+		await settle();
+		expect(isFailed()).toBe(true);
+	});
+
+	it('plays the original natively when hls.js is not supported', async () => {
+		mockHlsSupported = false;
+		serveFmp4(false);
+
+		render(<Player url={CLIP} />);
+		await settle();
+
+		expect(mockHlsInstances).toHaveLength(0);
+		expect(video.src).toBe(CLIP);
+		expect(isFailed()).toBe(false);
+	});
+
+	it('does not probe for fragmented mp4 when an HLS stream exists', async () => {
+		video.nativeHls = 'maybe';
+		serveFmp4(true);
+
+		render(<Player url={CLIP} />);
+		await settle();
+		expect(video.src).toBe(CLIP_PLAYLIST);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('plays a file ingest upload left without a playlist through its mfra index', async () => {
+		process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+		serveFmp4(false);
+
+		render(<Player url={DEV_CLIP} ingest />);
+		await settle();
+
+		expect(String(fetchMock.mock.calls[0][0]).split('?')[0]).toBe(DEV_INDEX);
+		expect(video.src).toBe('');
+		expect(mockHlsInstances).toHaveLength(1);
+		expect(mockHlsInstances[0].source).toMatch(/^blob:/);
+	});
+
+	it('revokes the blob playlist URL and destroys hls.js on unmount', async () => {
+		const revokeSpy = jest.spyOn(URL, 'revokeObjectURL');
+		serveFmp4(false);
+
+		render(<Player url={CLIP} />);
+		await settle();
+		const [hls] = mockHlsInstances;
+		const blobSource = hls.source!;
+
+		act(() => renderer.unmount());
+		expect(hls.destroyed).toBe(true);
+		expect(revokeSpy).toHaveBeenCalledWith(blobSource);
 	});
 });
