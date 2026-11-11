@@ -561,11 +561,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage && !isTopicRootMessage && !isPollMessage;
+		const enableEdit = isMyMessage && !isTopicRootMessage && !isPollMessage && message?.code !== TypeMessage.SendToken;
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos, isTopicRootMessage, isPollMessage]);
+	}, [isMyMessage, checkPos, isTopicRootMessage, isPollMessage, message]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
