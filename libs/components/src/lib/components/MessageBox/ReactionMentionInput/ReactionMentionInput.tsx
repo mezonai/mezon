@@ -838,6 +838,18 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	}, [draftRequest?.content]);
 
 	const cachedLinkOgp = useRef<string>('');
+	const handleLongTextPaste = useCallback(
+		(pastedText: string, event: React.ClipboardEvent<HTMLDivElement>) => {
+			if (!draftRequest?.content?.trim() && pastedText.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
+				event.preventDefault();
+				props.handleConvertToFile(pastedText);
+				toast.info(t('convertLongToFile'));
+				return true;
+			}
+			return false;
+		},
+		[draftRequest?.content, props.handleConvertToFile, t]
+	);
 
 	const onChangeMentionInput = (html: string) => {
 		const { text: newPlainTextValue, entities, linkPreview } = parseHtmlAsFormattedToText(html);
@@ -1085,6 +1097,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						cachedLinkOgp.current = '';
 					}}
 					onHandlePaste={props.handlePaste}
+					onLongTextPaste={handleLongTextPaste}
 					enableUndoRedo={true}
 					maxHistorySize={50}
 					hasFilesToSend={attachmentData.length > 0}

@@ -80,6 +80,7 @@ export interface MentionsInputProps {
 	suggestionStyle?: React.CSSProperties;
 	suggestionsClassName?: string;
 	onHandlePaste?: (event: React.ClipboardEvent<HTMLDivElement>) => void;
+	onLongTextPaste?: (text: string, event: React.ClipboardEvent<HTMLDivElement>) => boolean;
 	enableUndoRedo?: boolean;
 	maxHistorySize?: number;
 	hasFilesToSend?: boolean;
@@ -336,6 +337,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			suggestionsClassName = '',
 			suggestionStyle,
 			onHandlePaste,
+			onLongTextPaste,
 			enableUndoRedo = false,
 			maxHistorySize = 50,
 			hasFilesToSend = false,
@@ -970,6 +972,11 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					return;
 				}
 
+				const pastedPlainText = e.clipboardData.getData('text/plain');
+				if (onLongTextPaste?.(pastedPlainText, e)) {
+					return;
+				}
+
 				const htmlContent = e.clipboardData.getData('text/html');
 				const plainText = e.clipboardData.getData('text/plain');
 
@@ -1004,7 +1011,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				onChange?.(e.currentTarget.innerHTML);
 				debouncedDetectMention();
 			},
-			[disabled, onChange, debouncedDetectMention, onHandlePaste]
+			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste]
 		);
 
 		const { t } = useTranslation('message');
