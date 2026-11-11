@@ -404,6 +404,7 @@ export const PollMessage = ({
 						const voteCount = voteCounts[index];
 						const percentage = getPercentage(voteCount);
 						const isVoted = votedAnswers.includes(index);
+						const isSelected = selectedAnswers.includes(index);
 
 						const canToggleAnswer = !shouldShowResults && !interactionDisabled;
 						return (
@@ -415,7 +416,7 @@ export const PollMessage = ({
 										? `${isVoted ? 'border-blue-500' : 'border-theme-primary'} cursor-default pointer-events-none`
 										: interactionDisabled
 											? '[background:var(--bg-item-hover)] border-transparent cursor-default pointer-events-none'
-											: selectedAnswers.includes(index)
+											: isSelected
 												? '[background:var(--bg-item-hover)] border-blue-500 hover:[background:var(--bg-active-member-channel)] hover:brightness-105 cursor-pointer'
 												: '[background:var(--bg-item-hover)] border-transparent cursor-pointer'
 								}`}
@@ -448,17 +449,30 @@ export const PollMessage = ({
 									)}
 									{canSelectAnswers && (
 										<div
-											className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 border-[var(--text-theme-primary)]`}
+											aria-hidden="true"
+											className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+												allowMultipleAnswers
+													? `rounded ${isSelected ? 'border-blue-500 bg-blue-500' : 'border-[var(--text-theme-primary)]'}`
+													: 'rounded-full border-[var(--text-theme-primary)]'
+											}`}
 										>
-											{selectedAnswers.includes(index) && <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />}
+											{isSelected &&
+												(allowMultipleAnswers ? (
+													<MezonIcon icon={MzIcons16.mzCheck} className="text-white" />
+												) : (
+													<div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+												))}
 										</div>
 									)}
 									{hasVoted && isVoted && (
 										<div
-											className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0"
+											aria-hidden="true"
+											className={`w-5 h-5 flex items-center justify-center flex-shrink-0 ${
+												allowMultipleAnswers ? 'rounded bg-blue-500' : 'rounded-full bg-blue-500/20'
+											}`}
 											data-e2e={generateE2eId('poll.card.voted')}
 										>
-											<MezonIcon icon={MzIcons16.mzCheck} className="text-blue-500" />
+											<MezonIcon icon={MzIcons16.mzCheck} className={allowMultipleAnswers ? 'text-white' : 'text-blue-500'} />
 										</div>
 									)}
 								</div>
@@ -519,7 +533,7 @@ export const PollMessage = ({
 									type="button"
 									onClick={handleVote}
 									disabled={selectedAnswers.length === 0 || isVoting || isClosing}
-									className="px-4 py-1.5 text-sm font-medium rounded transition-colors bg-buttonPrimary hover:bg-buttonPrimaryHover text-theme-primary-active disabled:opacity-50 disabled:cursor-not-allowed"
+									className="px-4 py-1.5 text-sm font-medium rounded transition-colors bg-buttonPrimary hover:bg-buttonPrimaryHover text-white disabled:opacity-50 disabled:cursor-not-allowed"
 									data-e2e={generateE2eId('poll.card.button.vote')}
 								>
 									{t('poll.voteButton')}
