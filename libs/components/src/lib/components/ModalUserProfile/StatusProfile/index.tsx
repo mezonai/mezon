@@ -145,7 +145,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 			<div className="max-md:relative">
 				<ItemStatus
 					children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
-					startIcon={<MezonIcon icon={MzIcons16.mzCheck} className="text-[var(--mz-icon)]" />}
+					startIcon={<MezonIcon icon={MzIcons16.mzWallet} className="text-[var(--mz-icon)]" />}
 					disabled={true}
 				/>
 				<ItemStatus

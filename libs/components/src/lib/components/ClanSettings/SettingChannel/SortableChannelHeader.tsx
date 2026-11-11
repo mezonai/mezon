@@ -24,7 +24,7 @@ export const SortableChannelHeader = ({ field, label, className, sortField, sort
 		>
 			<span className="text-xs font-bold uppercase">{label}</span>
 
-			<MezonIcon icon={MzIcons20.mzFilter} className={`${direction === 'desc' ? 'rotate-180' : ''}`} />
+			<MezonIcon icon={MzIcons20.mzArrowUp} className={`${direction === 'desc' ? 'rotate-180' : ''}`} />
 		</div>
 	);
 };
