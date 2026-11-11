@@ -289,7 +289,7 @@ describe('a video sent through the file ingest', () => {
 
 		act(() => poster().props.onPlay());
 		await advance(0);
-		expect(requests()).toEqual([`${INDEX}?probe=${n + 3}`]);
+		expect(requests()).toEqual([`${INDEX}?probe=${n + 3}`, URL]);
 		expect(video.src).toBe(URL);
 	});
 

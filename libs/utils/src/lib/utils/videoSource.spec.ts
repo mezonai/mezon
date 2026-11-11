@@ -1,10 +1,12 @@
 import { isMediaTypeNotSupported } from './file';
+import { FragmentedMp4Indexer, fragmentedMp4InitEnd } from './fragmentedMp4';
 import {
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
 	isRotatedHlsVideo,
 	isTranscodedVideoContainer,
 	mayBeTranscodedVideo,
+	probeFragmentedMp4Playlist,
 	probeHlsIndexPlaylist,
 	probeHlsMasterPlaylist,
 	wantsHlsTranscode
@@ -303,5 +305,213 @@ describe('isRotatedHlsVideo', () => {
 		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
 		jest.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Failed to fetch'));
 		await expect(isRotatedHlsVideo(INDEX)).resolves.toBe(false);
+	});
+});
+
+describe('probeFragmentedMp4Playlist', () => {
+	function u32(value: number): Uint8Array {
+		const out = new Uint8Array(4);
+		new DataView(out.buffer).setUint32(0, value, false);
+		return out;
+	}
+
+	function mp4Box(type: string, ...parts: Uint8Array[]): Uint8Array {
+		const bytes = new Uint8Array(8 + parts.reduce((size, part) => size + part.length, 0));
+		new DataView(bytes.buffer).setUint32(0, bytes.length);
+		bytes.set(
+			Array.from(type, (char) => char.charCodeAt(0)),
+			4
+		);
+		let at = 8;
+		for (const part of parts) {
+			bytes.set(part, at);
+			at += part.length;
+		}
+		return bytes;
+	}
+
+	function fullBox(type: string, version: number, flags: number, ...parts: Uint8Array[]): Uint8Array {
+		return mp4Box(type, u32((((version & 0xff) << 24) | (flags & 0xffffff)) >>> 0), ...parts);
+	}
+
+	function buildRecording(withMfra: boolean, fragmented = true, mdatSize = 12000): { bytes: Uint8Array; mfraSize: number } {
+		const ftyp = mp4Box('ftyp', new TextEncoder().encode('isom'), u32(512), new TextEncoder().encode('iso6'));
+		const mvhd = fullBox('mvhd', 0, 0, u32(0), u32(0), u32(1000), u32(0), new Uint8Array(80));
+		const tkhd = fullBox('tkhd', 0, 3, u32(0), u32(0), u32(1), u32(0), u32(0), new Uint8Array(60));
+		const mdhd = fullBox('mdhd', 0, 0, u32(0), u32(0), u32(1000), u32(0), u32(0));
+		const hdlr = fullBox('hdlr', 0, 0, u32(0), new TextEncoder().encode('vide'), new Uint8Array(13));
+		const trak = mp4Box('trak', tkhd, mp4Box('mdia', mdhd, hdlr, mp4Box('minf', mp4Box('stbl'))));
+		const mvex = fragmented ? mp4Box('mvex', fullBox('trex', 0, 0, u32(1), u32(1), u32(3000), u32(0), u32(0))) : new Uint8Array(0);
+		const moov = mp4Box('moov', mvhd, trak, mvex);
+
+		if (!fragmented) {
+			return { bytes: new Uint8Array([...ftyp, ...moov, ...mp4Box('mdat', new Uint8Array(24000))]), mfraSize: 0 };
+		}
+
+		const makeFrag = (seq: number, base: number) => [
+			mp4Box(
+				'moof',
+				fullBox('mfhd', 0, 0, u32(seq)),
+				mp4Box('traf', fullBox('tfhd', 0, 0x020000, u32(1)), fullBox('tfdt', 0, 0, u32(base)), fullBox('trun', 0, 0, u32(1)))
+			),
+			mp4Box('mdat', new Uint8Array(mdatSize))
+		];
+		const [moof1, mdat1] = makeFrag(1, 0);
+		const [moof2, mdat2] = makeFrag(2, 3000);
+		const raw = new Uint8Array([...ftyp, ...moov, ...moof1, ...mdat1, ...moof2, ...mdat2]);
+
+		if (!withMfra) {
+			return { bytes: raw, mfraSize: 0 };
+		}
+
+		const indexer = new FragmentedMp4Indexer();
+		indexer.push(raw);
+		const fin = indexer.finish()!;
+		const full = new Uint8Array(raw.length + fin.tail.length);
+		full.set(raw.subarray(0, fin.headOffset), 0);
+		full.set(fin.head, fin.headOffset);
+		full.set(raw.subarray(fin.headOffset + fin.head.length), fin.headOffset + fin.head.length);
+		full.set(fin.tail, raw.length);
+		return { bytes: full, mfraSize: fin.tail.length };
+	}
+
+	function serveRange(file: Uint8Array) {
+		return jest.spyOn(globalThis, 'fetch').mockImplementation(async (_input, init) => {
+			const headers = new Headers(init?.headers);
+			const range = headers.get('range') ?? '';
+			expect(range).toMatch(/^bytes=\d+-\d+$/);
+			const [, startStr, endStr] = /^bytes=(\d+)-(\d+)$/.exec(range)!;
+			const start = Number(startStr);
+			const end = Math.min(Number(endStr), file.length - 1);
+			return new Response(file.subarray(start, end + 1), {
+				status: 206,
+				headers: { 'Content-Range': `bytes ${start}-${end}/${file.length}` }
+			});
+		});
+	}
+
+	it('makes no request for non-CDN hosts or non-mp4/m4v/mov extensions', async () => {
+		const fetchMock = jest.spyOn(globalThis, 'fetch');
+
+		await expect(probeFragmentedMp4Playlist('https://cdn.komu.vn/1cf93b197d401000/clip.mp4')).resolves.toBeUndefined();
+		await expect(probeFragmentedMp4Playlist('https://cdn.mezon.ai/1cf93b197d401000/movie.mkv')).resolves.toBeUndefined();
+		await expect(probeFragmentedMp4Playlist('https://cdn.mezon.ai/1cf93b197d401000/clip.webm')).resolves.toBeUndefined();
+		await expect(probeFragmentedMp4Playlist('blob:https://mezon.ai/0b6f')).resolves.toBeUndefined();
+		await expect(probeFragmentedMp4Playlist(undefined)).resolves.toBeUndefined();
+
+		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	it('stops after one fetch for a normal mp4 and after two when the tail is not mfro', async () => {
+		const normal = buildRecording(false, false);
+		const normalFetch = serveRange(normal.bytes);
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+		expect(normalFetch).toHaveBeenCalledTimes(1);
+
+		normalFetch.mockRestore();
+		const unindexed = buildRecording(false, true);
+		const unindexedFetch = serveRange(unindexed.bytes);
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+		expect(unindexedFetch).toHaveBeenCalledTimes(2);
+	});
+
+	it('reads the head and one tail range holding mfro and mfra, and returns the VOD playlist', async () => {
+		const { bytes } = buildRecording(true, true);
+		const fetchMock = serveRange(bytes);
+		const signed = `${VIDEO}?${SIGNATURE}`;
+
+		const playlist = await probeFragmentedMp4Playlist(signed);
+
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		const ranges = fetchMock.mock.calls.map(([, init]) => new Headers(init?.headers).get('range'));
+		expect(ranges).toEqual(['bytes=0-16383', `bytes=${fragmentedMp4InitEnd(bytes)}-${bytes.length - 1}`]);
+		expect(playlist).toContain('#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:3\n#EXT-X-PLAYLIST-TYPE:VOD\n');
+		expect(playlist).toContain(`#EXT-X-MAP:URI="${signed}"`);
+		expect(playlist?.endsWith('#EXT-X-ENDLIST\n')).toBe(true);
+
+		await expect(probeFragmentedMp4Playlist('https://cdn.mezon.ai/1cf93b197d401000/REC.MOV')).resolves.toContain('#EXTM3U\n');
+		await expect(probeFragmentedMp4Playlist('https://cdn.mezon.ai/1cf93b197d401000/rec.m4v')).resolves.toContain('#EXTM3U\n');
+	});
+
+	it('reads only the last 256 KiB of a large file for the index', async () => {
+		const { bytes } = buildRecording(true, true, 300000);
+		const fetchMock = serveRange(bytes);
+
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toContain('#EXT-X-ENDLIST\n');
+		const ranges = fetchMock.mock.calls.map(([, init]) => new Headers(init?.headers).get('range'));
+		expect(ranges).toEqual(['bytes=0-16383', `bytes=${bytes.length - 262144}-${bytes.length - 1}`]);
+	});
+
+	it('fetches the mfra on its own when it is larger than the tail range', async () => {
+		const { bytes } = buildRecording(true, true, 300000);
+		const claimed = 270000;
+		new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).setUint32(bytes.length - 4, claimed);
+		const fetchMock = serveRange(bytes);
+
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+		const ranges = fetchMock.mock.calls.map(([, init]) => new Headers(init?.headers).get('range'));
+		expect(ranges).toEqual([
+			'bytes=0-16383',
+			`bytes=${bytes.length - 262144}-${bytes.length - 1}`,
+			`bytes=${bytes.length - claimed}-${bytes.length - 1}`
+		]);
+	});
+
+	it('returns undefined when any response is not 206 or lacks Content-Range', async () => {
+		const { bytes } = buildRecording(true, true);
+		const fetchMock = jest.spyOn(globalThis, 'fetch');
+
+		fetchMock.mockResolvedValueOnce(new Response(bytes, { status: 200 }));
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+
+		fetchMock.mockResolvedValueOnce(new Response('', { status: 404 }));
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+
+		fetchMock.mockResolvedValueOnce(new Response(bytes.subarray(0, 16384), { status: 206 }));
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+
+		let call = 0;
+		fetchMock.mockImplementation(async () => {
+			call += 1;
+			if (call === 1) {
+				return new Response(bytes.subarray(0, 16384), {
+					status: 206,
+					headers: { 'Content-Range': `bytes 0-16383/${bytes.length}` }
+				});
+			}
+			return new Response('', { status: 403 });
+		});
+		await expect(probeFragmentedMp4Playlist(VIDEO)).resolves.toBeUndefined();
+	});
+
+	it('returns undefined on abort or timeout and never sends a suffix range', async () => {
+		jest.useFakeTimers();
+		try {
+			const seenRanges: string[] = [];
+			jest.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+				seenRanges.push(new Headers(init?.headers).get('range') ?? '');
+				return new Promise((_resolve, reject) => {
+					init?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
+				});
+			});
+
+			const controller = new AbortController();
+			const aborted = probeFragmentedMp4Playlist(VIDEO, controller.signal);
+			controller.abort();
+			await expect(aborted).resolves.toBeUndefined();
+
+			const hung = probeFragmentedMp4Playlist(VIDEO);
+			jest.advanceTimersByTime(29999);
+			await Promise.resolve();
+			expect(seenRanges).toHaveLength(2);
+			jest.advanceTimersByTime(1);
+			await expect(hung).resolves.toBeUndefined();
+
+			for (const range of seenRanges) {
+				expect(range).toMatch(/^bytes=\d+-\d+$/);
+			}
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 });

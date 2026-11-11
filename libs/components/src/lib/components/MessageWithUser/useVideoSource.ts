@@ -6,6 +6,7 @@ import {
 	isRotatedHlsVideo,
 	mayBeTranscodedVideo,
 	probeEndedHlsIndexPlaylist,
+	probeFragmentedMp4Playlist,
 	probeHlsIndexPlaylist,
 	probeHlsMasterPlaylist
 } from '@mezon/utils';
@@ -54,6 +55,7 @@ export function useVideoSource(
 		let switched = false;
 		let playingPlaylist = false;
 		let hls: Hls | undefined;
+		let blobUrl: string | undefined;
 		let endProbe: ReturnType<typeof setTimeout> | undefined;
 		const probe = new AbortController();
 		const probePlaylist = ingest ? probeHlsIndexPlaylist : probeHlsMasterPlaylist;
@@ -62,16 +64,20 @@ export function useVideoSource(
 		const detach = () => {
 			hls?.destroy();
 			hls = undefined;
+			if (blobUrl) {
+				URL.revokeObjectURL(blobUrl);
+				blobUrl = undefined;
+			}
 			clearTimeout(endProbe);
 		};
 
 		// Loading a source cancels a play asked for before it (the click that mounted this video, or the viewer's
 		// play before a fallback), so ask again once the new source is attached.
-		const play = async (source: string, isPlaylist: boolean) => {
+		const play = async (source: string, isPlaylist: boolean, isBlobPlaylist = false) => {
 			const resume = !video.paused;
 			detach();
 			playingPlaylist = isPlaylist;
-			if (!isPlaylist || (video.canPlayType(HLS_MIME_TYPE) && (!ingest || IS_SAFARI))) {
+			if (!isPlaylist || (!isBlobPlaylist && video.canPlayType(HLS_MIME_TYPE) && (!ingest || IS_SAFARI))) {
 				video.src = source;
 				if (resume) void video.play().catch(() => undefined);
 				if (ingest && isPlaylist) endProbe = setTimeout(() => void reloadOnceEnded(), HLS_INDEX_PROBE_INTERVAL_MS);
@@ -81,7 +87,11 @@ export function useVideoSource(
 			const { default: HlsPlayer } = await import('hls.js');
 			if (disposed) return;
 			if (!HlsPlayer.isSupported()) {
-				fail();
+				if (isBlobPlaylist) {
+					void play(latestUrlRef.current ?? url, false);
+				} else {
+					fail();
+				}
 				return;
 			}
 			const config = preview
@@ -92,7 +102,8 @@ export function useVideoSource(
 			player.on(HlsPlayer.Events.ERROR, (_event, data) => {
 				if (data.fatal && hls === player) fail();
 			});
-			player.loadSource(source);
+			const hlsSource = isBlobPlaylist ? (blobUrl = URL.createObjectURL(new Blob([source], { type: HLS_MIME_TYPE }))) : source;
+			player.loadSource(hlsSource);
 			player.attachMedia(video);
 			if (resume) void video.play().catch(() => undefined);
 		};
@@ -148,6 +159,14 @@ export function useVideoSource(
 				const stream = playlist && IS_SAFARI && (await isRotatedHlsVideo(playlist, probe.signal)) ? undefined : playlist;
 				if (disposed) return;
 				switched = stream !== playlist;
+				if (!playlist) {
+					const fmp4 = await probeFragmentedMp4Playlist(url, probe.signal);
+					if (disposed) return;
+					if (fmp4) {
+						void play(fmp4, true, true);
+						return;
+					}
+				}
 				void play(stream ?? url, Boolean(stream));
 			});
 		} else {
