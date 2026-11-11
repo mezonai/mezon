@@ -275,7 +275,7 @@ const TopBarChannelText = memo(() => {
 							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
 							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis group ${
 								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
-									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg pl-2 pr-4'
+									? 'cursor-pointer text-theme-primary-hover transition-colors bg-item-theme-hover rounded-lg pl-2 pr-4'
 									: 'pointer-events-none cursor-default'
 							} font-medium bg-transparent outline-none leading-10 text-theme-primary  min-w-content `}
 							onClick={handleOpenEditModal}

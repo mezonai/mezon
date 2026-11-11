@@ -75,7 +75,7 @@ export const PollDetailModal = ({
 							<button
 								type="button"
 								onClick={onClose}
-								className="group/mzi p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors flex-shrink-0"
+								className="group/mzi p-2 rounded-md border border-transparent text-theme-primary text-theme-primary-hover hover:border-theme-primary bg-item-theme-hover transition-colors flex-shrink-0"
 							>
 								<MezonIcon
 									icon={MzIcons24.mzClose}
@@ -113,8 +113,8 @@ export const PollDetailModal = ({
 												isSelected
 													? 'text-theme-primary-active [background:var(--bg-active-member-channel)] border-theme-primary transition-colors'
 													: isVoted
-														? 'text-theme-primary border-theme-primary bg-item-theme-hover hover:text-theme-primary-active'
-														: 'text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover border-transparent transition-colors'
+														? 'text-theme-primary border-theme-primary bg-item-theme-hover text-theme-primary-hover'
+														: 'text-theme-primary text-theme-primary-hover hover:border-theme-primary bg-item-theme-hover border-transparent transition-colors'
 											}`}
 										>
 											<span className="text-lg font-medium truncate flex-1 min-w-0">{renderPollTextWithEmoji(answer)}</span>

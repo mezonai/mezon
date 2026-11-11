@@ -78,7 +78,7 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 			{!isCurrent && onRemove && (
 				<button
 					onClick={() => device.device_id && onRemove(device.device_id)}
-					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors group/mzi"
+					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary text-theme-primary-hover transition-colors group/mzi"
 					title={t('deviceSettings.removeDevice')}
 					data-e2e={generateE2eId('user_setting.devices.tab_devices.button.remove_device')}
 				>

@@ -153,7 +153,7 @@ const ChannelHashtag = ({
 	return isValidChannel ? (
 		<span
 			onClick={tokenClickAble}
-			className={`no-underline font-medium rounded-sm inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
+			className={`no-underline font-medium rounded-sm inline whitespace-nowrap cursor-pointer bg-mention color-mention ${!isJumMessageEnabled ? 'hover-mention' : 'cursor-text'}`}
 		>
 			{isVoiceChannel ? (
 				channel.channel_private ? (

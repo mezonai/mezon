@@ -508,7 +508,7 @@ export const PollMessage = ({
 								<button
 									type="button"
 									onClick={() => setShowResults((prev) => !prev)}
-									className="px-1 py-1.5 text-sm font-medium border-theme-primary text-theme-primary hover:text-theme-primary-active rounded transition-colors"
+									className="px-1 py-1.5 text-sm font-medium border-theme-primary text-theme-primary text-theme-primary-hover rounded transition-colors"
 									data-e2e={generateE2eId('poll.card.button.show_result')}
 								>
 									{showResults ? t('poll.backToVote') : t('poll.showResults')}

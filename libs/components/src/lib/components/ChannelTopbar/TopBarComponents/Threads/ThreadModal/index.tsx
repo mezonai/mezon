@@ -141,7 +141,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 							>
 								{t('modals.threads.create')}
 							</button>
-							<button onClick={onClose} className="text-color-theme-hover">
+							<button onClick={onClose}>
 								<MezonIcon icon={MzIcons16.mzClose} className="text-[var(--mz-icon)]" />
 							</button>
 						</div>
