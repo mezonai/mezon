@@ -162,12 +162,14 @@ class BadgeService extends EventEmitter {
 	}
 
 	incrementChannel(clanId: string, channelId: string, count = 1) {
+		if (!channelId || channelId === '0') return;
+
 		this.events$.next({ type: 'CHANNEL_INCREMENT', clanId, channelId, count, createdAt: Date.now() });
 	}
 
 	incrementChannelIfMentioned(message: ChannelMessage, currentUserId: string): boolean {
 		const state = this.getState?.();
-		if (!state || !message.clan_id || !message.message_id) return false;
+		if (!state || !message.clan_id || !message.message_id || !message.channel_id || message.channel_id === '0') return false;
 
 		const badgeKey = `${message.channel_id}_${message.message_id}`;
 		if (this.processedBadgeMessageIds.has(badgeKey)) {
@@ -206,6 +208,8 @@ class BadgeService extends EventEmitter {
 	}
 
 	incrementChannelFromNotification(clanId: string, channelId: string, messageId?: string) {
+		if (!channelId || channelId === '0') return;
+
 		const badgeKey = messageId && messageId !== '0' ? `${channelId}_${messageId}` : '';
 		if (!badgeKey || this.processedBadgeMessageIds.has(badgeKey)) {
 			return;
