@@ -10,6 +10,15 @@ const WEAK_NETWORK_MIN_PACKETS = 50;
 const WEAK_NETWORK_WARNING_SAMPLES = 2;
 const WEAK_NETWORK_CLEAR_SAMPLES = 2;
 
+type CameraUplinkStat = { framesEncoded?: number; targetBitrate?: number; qualityLimitationReason?: string };
+
+const CAMERA_UPLINK_MID = '1';
+const CAMERA_UPLINK_TARGET_RATIO = 0.8;
+const CAMERA_UPLINK_LIMITED_SAMPLES = 2;
+const CAMERA_UPLINK_RECOVERY_SAMPLES = 6;
+const CAMERA_UPLINK_MAX_RECOVERY_SAMPLES = 24;
+const CAMERA_UPLINK_RELAPSE_SAMPLES = 12;
+
 export class SfuNetworkQuality {
 	private streams = new Map<string, StreamLoss>();
 	private weak = false;
@@ -52,6 +61,52 @@ export class SfuNetworkQuality {
 		if (lossRatio >= WEAK_NETWORK_SEVERE_LOSS_RATIO || this.badSamples >= WEAK_NETWORK_WARNING_SAMPLES) this.weak = true;
 		else if (this.cleanSamples >= WEAK_NETWORK_CLEAR_SAMPLES) this.weak = false;
 		return this.weak;
+	}
+}
+
+export class SfuCameraUplinkQuality {
+	private limited = false;
+	private limitedSamples = 0;
+	private cleanSamples = 0;
+	private recoverySamples = CAMERA_UPLINK_RECOVERY_SAMPLES;
+	private samplesSinceRecovery = Number.POSITIVE_INFINITY;
+	private framesEncoded: number | undefined;
+
+	isLimited(report: RTCStatsReport, maxBitrateBps: number): boolean {
+		const cameras: CameraUplinkStat[] = [];
+		report.forEach((stat) => {
+			if (stat.type === 'outbound-rtp' && (stat.kind || stat.mediaType) === 'video' && stat.mid === CAMERA_UPLINK_MID) cameras.push(stat);
+		});
+		const camera = cameras[0];
+		const previousFrames = this.framesEncoded;
+		this.framesEncoded = camera?.framesEncoded;
+		const sending = typeof camera?.framesEncoded === 'number' && typeof previousFrames === 'number' && camera.framesEncoded > previousFrames;
+		if (!camera || !sending) {
+			this.limited = false;
+			this.limitedSamples = 0;
+			this.cleanSamples = 0;
+			return false;
+		}
+		if (typeof camera.targetBitrate !== 'number' || typeof camera.qualityLimitationReason !== 'string') return this.limited;
+		const sampleLimited = camera.qualityLimitationReason === 'bandwidth' && camera.targetBitrate < maxBitrateBps * CAMERA_UPLINK_TARGET_RATIO;
+		this.limitedSamples = sampleLimited ? this.limitedSamples + 1 : 0;
+		this.cleanSamples = sampleLimited ? 0 : this.cleanSamples + 1;
+		if (this.limited) {
+			if (this.cleanSamples >= this.recoverySamples) {
+				this.limited = false;
+				this.samplesSinceRecovery = 0;
+			}
+			return this.limited;
+		}
+		this.samplesSinceRecovery += 1;
+		if (this.limitedSamples >= CAMERA_UPLINK_LIMITED_SAMPLES) {
+			this.limited = true;
+			this.recoverySamples =
+				this.samplesSinceRecovery <= CAMERA_UPLINK_RELAPSE_SAMPLES
+					? Math.min(this.recoverySamples * 2, CAMERA_UPLINK_MAX_RECOVERY_SAMPLES)
+					: CAMERA_UPLINK_RECOVERY_SAMPLES;
+		}
+		return this.limited;
 	}
 }
 
