@@ -590,6 +590,7 @@ export function MezonSfuVoiceRoom({
 	const changingScreenShareModeRef = useRef(false);
 	const cameraTrackRef = useRef<MediaStreamTrack | null>(null);
 	const cameraQualityTierRef = useRef(0);
+	const cameraCountTierRef = useRef(0);
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
 	const joinedRef = useRef(false);
@@ -2755,21 +2756,26 @@ export function MezonSfuVoiceRoom({
 
 	useEffect(() => {
 		const currentTier = cameraQualityTierRef.current;
-		const nextTier = resolveCameraTier(activeCameraCount, currentTier);
-		if (nextTier === currentTier) return;
+		const countTier = resolveCameraTier(activeCameraCount, cameraCountTierRef.current);
+		const nextTier = weakNetwork ? Math.min(countTier + 1, CAMERA_TIERS.length - 1) : countTier;
+		if (nextTier === currentTier) {
+			cameraCountTierRef.current = countTier;
+			return;
+		}
 		const timer = setTimeout(
 			() => {
 				void (async () => {
 					const cameraTrack = cameraTrackRef.current;
-					if (cameraTrack?.readyState === 'live') await cameraTrack.applyConstraints(getCameraConstraints(nextTier));
+					if (cameraTrack?.readyState === 'live') await cameraTrack.applyConstraints(getCameraConstraints(nextTier)).catch(() => undefined);
 					if (pcRef.current) await applyVideoEncodingParams(pcRef.current, nextTier);
+					cameraCountTierRef.current = countTier;
 					cameraQualityTierRef.current = nextTier;
 				})().catch(() => undefined);
 			},
 			nextTier > currentTier ? CAMERA_TIER_DOWNGRADE_MS : CAMERA_TIER_UPGRADE_MS
 		);
 		return () => clearTimeout(timer);
-	}, [activeCameraCount]);
+	}, [activeCameraCount, weakNetwork]);
 
 	const handleParticipantAction = useCallback(
 		async (action: 'mute' | 'kick', participantId: string) => {
