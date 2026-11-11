@@ -55,7 +55,7 @@ describe('channel access version', () => {
 			)
 		);
 
-		const result = state.listSearch.find((item) => item.id === 'u1');
+		const result = state.listSearch.entities['u1'];
 
 		expect(result?.avatarUser).toBe('https://cdn.example.com/avatar.png');
 	});
