@@ -4,7 +4,7 @@ import { generateE2eId } from '@mezon/utils';
 import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 enum ETypeUpdateSystemMessage {
@@ -30,6 +30,8 @@ const SystemMessagesManagement = ({
 	setClanRequest
 }: SystemMessagesManagementProps) => {
 	const { t } = useTranslation('clanSettings');
+	const { t: tCommon } = useTranslation('common');
+	const [channelSearch, setChannelSearch] = useState('');
 	const currentClanId = useAppSelector(selectCurrentClanId);
 	const channelsList = useAppSelector(selectAllChannels);
 	const selectCategoryEntites = useAppSelector((state) => selectCategoryEntityStateByClanId(state, currentClanId || ''))?.entities;
@@ -69,8 +71,16 @@ const SystemMessagesManagement = ({
 	};
 	const menu = useMemo(() => {
 		const menuItems: ReactElement[] = [];
+		const normalizedSearch = channelSearch.trim().toLocaleLowerCase();
 		channelsList
-			.filter((channel) => channel.clan_id === currentClanId && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL)
+			.filter((channel) => {
+				if (channel.clan_id !== currentClanId || channel.type !== ChannelType.CHANNEL_TYPE_CHANNEL) return false;
+				if (!normalizedSearch) return true;
+
+				const channelName = channel.channel_label?.toLocaleLowerCase() || '';
+				const categoryName = selectCategoryEntites?.[channel.category_id || '']?.category_name?.toLocaleLowerCase() || '';
+				return channelName.includes(normalizedSearch) || categoryName.includes(normalizedSearch);
+			})
 			.map((channel) => {
 				if (channel.id !== selectedChannel?.id) {
 					menuItems.push(
@@ -95,12 +105,33 @@ const SystemMessagesManagement = ({
 					);
 				}
 			});
-		return <>{menuItems}</>;
-	}, [channelsList, selectedChannel?.id]);
+		return (
+			<div className="w-full">
+				<div className="sticky top-0 z-10 p-2">
+					<input
+						type="search"
+						value={channelSearch}
+						onChange={(event) => setChannelSearch(event.target.value)}
+						onClick={(event) => event.stopPropagation()}
+						placeholder={tCommon('searchModal.search')}
+						aria-label={tCommon('searchModal.search')}
+						className="w-full rounded-md border border-theme-primary bg-theme-input px-3 py-2 text-sm outline-none focus:border-theme-primary-hover"
+					/>
+				</div>
+				{menuItems.length ? menuItems : <p className="px-4 py-3 text-sm text-theme-secondary">{tCommon('searchModal.noResults')}</p>}
+			</div>
+		);
+	}, [channelsList, selectedChannel?.id, currentClanId, selectCategoryEntites, channelSearch, tCommon]);
 	return (
 		<div className={'border-t-theme-primary mt-10 pt-10 flex flex-col '}>
 			<h3 className="text-sm font-bold uppercase mb-2">{t('systemMessages.title')}</h3>
-			<Menu menu={menu} className={'h-fit max-h-[200px] text-xs overflow-y-auto customSmallScrollLightMode '}>
+			<Menu
+				menu={menu}
+				className={'h-fit max-h-[260px] text-xs overflow-y-auto customSmallScrollLightMode '}
+				onVisibleChange={(visible) => {
+					if (!visible) setChannelSearch('');
+				}}
+			>
 				<div
 					className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center text-sm border border-theme-primary "
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
