@@ -42,6 +42,7 @@ import {
 	selectFriendById,
 	selectIsInCall,
 	selectIsPinModalOpenFor,
+	selectIsShowCanvas,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
@@ -437,9 +438,8 @@ const ChannelTopbarTools = memo(
 		isStream: boolean;
 	}) => {
 		const dispatch = useAppDispatch();
-		const isShowChatStream = useSelector(selectIsShowChatStream);
 		const isTimelineView = useAppSelector(selectTimelineViewMode);
-		const isShowMemberList = useSelector(selectIsShowMemberList);
+		const isCanvas = useAppSelector(selectIsShowCanvas);
 		const { setStatusMenu } = useMenu();
 
 		if (isPagePath) {
@@ -501,7 +501,7 @@ const ChannelTopbarTools = memo(
 								</div>
 							)}
 							{!isApp && <ThreadButton />}
-							<TimelineViewToggleButton />
+							{!isCanvas && <TimelineViewToggleButton />}
 							<CanvasButton onClick={fetchCanvasChannel} />
 						</div>
 						{!isTimelineView && (

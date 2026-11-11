@@ -200,7 +200,7 @@ function MessageContextMenu({
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
 	const isMyMessage = useMemo(() => {
-		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
+		return message?.sender_id === userId && !message?.content?.callLog?.callLogType;
 	}, [message?.sender_id, message?.content?.callLog?.callLogType, message?.code, userId]);
 
 	const isErrorMessage = useMemo(() => {
@@ -561,11 +561,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage && !isTopicRootMessage && !isPollMessage;
+		const enableEdit = isMyMessage && !isTopicRootMessage && !isPollMessage && message?.code !== TypeMessage.SendToken;
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos, isTopicRootMessage, isPollMessage]);
+	}, [isMyMessage, checkPos, isTopicRootMessage, isPollMessage, message]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
