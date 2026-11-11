@@ -1,12 +1,11 @@
 import { selectAttachmentUploadProgress, useAppSelector } from '@mezon/store';
-import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import {
 	calculateMediaDimensions,
 	createImgproxyUrl,
 	fetchDownloadBlob,
 	getPresignKeyFromAttachmentUrl,
 	useIsIntersecting,
-	useResizeObserver,
 	type ObserveFn,
 	type PreSendMediaAttachment
 } from '@mezon/utils';
@@ -16,7 +15,6 @@ import type { Movie, Track } from 'mp4box';
 import { MP4BoxBuffer, createFile } from 'mp4box';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebouncedCallback } from 'use-debounce';
 import { AttachmentSendingIndicator } from './AttachmentSendingIndicator';
 import { useIngestPlaylistReady, useVideoSource } from './useVideoSource';
 export type MessageImage = {
@@ -28,7 +26,6 @@ export type MessageImage = {
 	isIngest?: boolean;
 	observeIntersection?: ObserveFn;
 };
-export const MIN_WIDTH_VIDEO_SHOW = 200;
 export const DEFAULT_HEIGHT_VIDEO_SHOW = 150;
 
 type VideoProbeStatus = 'idle' | 'probing' | 'ready' | 'unsupported' | 'error';
@@ -524,7 +521,6 @@ function DefaultVideo({
 	}, [hasLocalPoster, localSource]);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const [showControl, setShowControl] = useState(true);
 	const isVideoActive = activated && isIntersecting && !isUploading;
 
 	// Scrolling away already stops the video and drops its source, so bring the poster back with it: coming into view
@@ -543,38 +539,6 @@ function DefaultVideo({
 		requestPlay();
 		setActivated(true);
 	}, [isUploading, requestPlay]);
-
-	const handleOnCanPlay = useCallback(
-		(e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-			tryPlay();
-			if (e.currentTarget.offsetWidth < MIN_WIDTH_VIDEO_SHOW) {
-				setShowControl(false);
-			}
-		},
-		[tryPlay]
-	);
-
-	const handleShowFullVideo = useCallback(() => {
-		if (videoRef.current) {
-			videoRef.current.requestFullscreen();
-			if (videoRef.current.paused) {
-				videoRef.current.play();
-			}
-		}
-	}, []);
-
-	const handleResize = useDebouncedCallback(() => {
-		const video = videoRef.current;
-		if (!video) return;
-		setShowControl(video.offsetWidth >= MIN_WIDTH_VIDEO_SHOW);
-	}, 100);
-	useResizeObserver(videoRef, handleResize);
-
-	useEffect(() => {
-		if (!showControl && !activated && videoRef.current && !videoRef.current.paused) {
-			videoRef.current.pause();
-		}
-	}, [showControl, activated]);
 
 	const showMedia = isUploading || isIntersecting || hasLocalPoster;
 
@@ -599,11 +563,11 @@ function DefaultVideo({
 			{isVideoActive && (
 				<>
 					<video
-						controls={showControl}
+						controls
 						autoPlay={false}
 						style={mediaStyle}
 						ref={videoRef}
-						onCanPlay={handleOnCanPlay}
+						onCanPlay={tryPlay}
 						onError={handleError}
 						className="object-contain"
 						preload="auto"
@@ -612,7 +576,7 @@ function DefaultVideo({
 						{t('video.error.browserNotSupported')}
 					</video>
 
-					{failed ? (
+					{failed && (
 						<div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 p-2 rounded-lg text-center text-sm bg-bgLightSecondary dark:bg-bgSecondary text-textSecondary800 dark:text-textSecondary">
 							<span>{t('video.error.cannotPlay')}</span>
 							<button
@@ -624,15 +588,6 @@ function DefaultVideo({
 								{t('video.error.downloadButton')}
 							</button>
 						</div>
-					) : (
-						!showControl && (
-							<div
-								className="cursor-pointer absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-30 group"
-								onClick={handleShowFullVideo}
-							>
-								<MezonIcon icon={MzIcons16.mzPlay} className="text-white transition-all duration-150 group-hover:scale-110" />
-							</div>
-						)
 					)}
 
 					<div
