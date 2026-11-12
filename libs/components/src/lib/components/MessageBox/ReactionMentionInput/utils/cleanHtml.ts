@@ -241,7 +241,7 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 			}
 			walkChildren(tokens);
 			if (href && label) {
-				pushText(tokens, ` (${href})`, '', false);
+				pushText(tokens, ` (${href}) `, '', false);
 				formatted = true;
 			}
 			return;
