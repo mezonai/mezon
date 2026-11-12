@@ -115,7 +115,8 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 
 		elements.forEach((element, index) => {
 			const s = element.s ?? 0;
-			const e = element.e ?? 0;
+			const mentionEnd = element.e ?? 0;
+			const e = (t?.codePointAt(mentionEnd - 1) ?? 0) > 0xffff ? mentionEnd + 1 : mentionEnd;
 
 			const contentInElement = t?.substring(s, e);
 

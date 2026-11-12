@@ -15,13 +15,10 @@ import {
 	selectHasFetchedTopics,
 	selectIsShowCanvas,
 	selectIsShowCreateTopic,
-	selectIsShowMemberList,
 	selectLastMessageByChannelId,
-	selectMediaChannelViewMode,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
 	selectPinMessageByChannelId,
-	selectTimelineViewMode,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -423,13 +420,8 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 	const channelType = useSelector(selectCurrentChannelType);
 	const channelAgeRestricted = useSelector(selectCurrentChannelAgeRestricted);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
-	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const currentTopicId = useSelector(selectCurrentTopicId);
-	const isTimelineView = useAppSelector(selectTimelineViewMode);
-	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
-	const isSpecialView = Boolean(isTimelineView || isMediaChannelView);
-	const isMemberListOpen = Boolean(isShowMemberList && !isSpecialView);
 
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const channelSettingPath = `/chat/clans/${currentClanId}/channel-setting`;
@@ -1100,12 +1092,9 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 	const hasBoth = Boolean(latestTopic && latestPin);
 
 	return (
-		<>
-			<div className="w-full h-14 shrink-0 pointer-events-none" />
-
+		<div className="relative w-full h-14 shrink-0 pointer-events-none">
 			<div
-				className="absolute top-2 left-0 z-20 px-4 pointer-events-none transition-[right] duration-200"
-				style={{ right: isMemberListOpen ? 245 : 0 }}
+				className="absolute top-2 inset-x-0 z-20 px-4 pointer-events-none"
 				data-e2e={generateE2eId('chat.channel_message.topic_pin_banner.container')}
 			>
 				<div className="flex items-stretch w-full bg-theme-setting-primary border border-theme-primary rounded-lg overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.35)] transition-shadow duration-200 pointer-events-auto">
@@ -1200,7 +1189,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 					</button>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 });
 
