@@ -37,5 +37,10 @@
 	},
 	"image": "OBRAZ",
 	"name": "NAZWA",
-	"uploadedBy": "PRZEŁADOWANO PRZEZ"
+	"uploadedBy": "PRZEŁADOWANO PRZEZ",
+	"deleteModal": {
+		"title": "Usuń emoji",
+		"message": "Czy na pewno chcesz usunąć {{name}}? Tej akcji nie można cofnąć.",
+		"success": "Usunięto {{name}}"
+	}
 }

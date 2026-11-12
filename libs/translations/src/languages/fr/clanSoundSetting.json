@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Impossible de télécharger le son",
 		"characters": "Le nom doit contenir entre 3 et 64 caractères",
 		"errorName": "Le nom de l'effet sonore doit contenir entre {{min}} et {{max}} caractères, uniquement des lettres, chiffres, _ et -"
+	},
+	"deleteModal": {
+		"title": "Supprimer l'effet sonore",
+		"message": "Voulez-vous vraiment supprimer {{name}} ? Cette action ne peut pas être annulée.",
+		"success": "{{name}} a été supprimé"
 	}
 }

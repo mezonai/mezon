@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "Nessun sticker disponibile"
 		}
+	},
+	"deleteModal": {
+		"title": "Elimina sticker",
+		"message": "Vuoi davvero eliminare {{name}}? Questa azione non può essere annullata.",
+		"success": "Hai eliminato {{name}}"
 	}
 }

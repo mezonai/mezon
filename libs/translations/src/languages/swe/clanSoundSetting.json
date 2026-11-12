@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Kunde inte ladda upp ljud",
 		"characters": "Namn måste vara från 3 till 64 tecken",
 		"errorName": "Ljudnamn måste vara från {{min}} till {{max}} tecken, bara bokstäver, siffror, _ och -"
+	},
+	"deleteModal": {
+		"title": "Ta bort ljud",
+		"message": "Är du säker på att du vill ta bort {{name}}? Denna åtgärd kan inte ångras.",
+		"success": "{{name}} har tagits bort"
 	}
 }

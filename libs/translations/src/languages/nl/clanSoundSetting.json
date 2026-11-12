@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Geluid kon niet worden geüpload",
 		"characters": "Naam moet van 3 tot 64 tekens zijn",
 		"errorName": "Naam geluidseffect moet van {{min}} tot {{max}} tekens zijn, alleen letters, cijfers, _ en -"
+	},
+	"deleteModal": {
+		"title": "Geluidseffect verwijderen",
+		"message": "Weet je zeker dat je {{name}} wilt verwijderen? Deze actie is onherroepelijk.",
+		"success": "{{name}} is verwijderd"
 	}
 }
