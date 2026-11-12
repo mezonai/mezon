@@ -305,7 +305,6 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 					>
 						<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)]" />
 					</button>
-					<span className="hover:text-theme-primary-active text-theme-primary-hover ">alalal</span>
 				</div>
 				<div className={`w-full flex-1 flex flex-col  overflow-y-auto gap-4 relative px-5 py-4 bg-transparent hide-scrollbar`}>
 					<div className={`flex flex-col gap-2 items-center select-none `}>
