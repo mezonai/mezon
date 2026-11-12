@@ -15,7 +15,6 @@ export async function forwardCallSetup(
 	{ receiverId, dataType, jsonData, channelId, callerId }: CallSetup
 ): Promise<boolean> {
 	if (signal.aborted) throw new DOMException('Call setup ended', 'AbortError');
-	// The SDK uses WebrtcSignalingFwd internally but does not export its protobuf codec.
 	const body = Writer.create()
 		.uint32(8)
 		.int64(receiverId)

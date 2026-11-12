@@ -217,7 +217,10 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			const session = activeSession();
 			if (!sendOverHttp || attemptedHttp || !session) return false;
 			attemptedHttp = true;
-			return sendOverHttp(session);
+			return sendOverHttp(session).catch((error) => {
+				if (!setup.aborted) console.warn('Call setup HTTP fallback failed:', error);
+				return false;
+			});
 		};
 		const attempt = async (): Promise<boolean> => {
 			for (let session = activeSession(); session; session = activeSession()) {
@@ -242,8 +245,6 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			try {
 				return await attempt();
 			} catch (error) {
-				// The SDK rejects with this message before assigning a correlation ID.
-				// Its public isOpen() may still report the old connection until close is processed.
 				if (!isSocketNotOpen(error)) throw error;
 			}
 			if (await tryHttp()) return false;
@@ -557,19 +558,21 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	const sendLocalIceCandidate = async (candidate: RTCIceCandidate) => {
-		const session = mezon.sessionRef.current;
-		if (!session) return;
+		const setup = callSetupRef.current?.signal;
+		if (!setup) return;
 		try {
-			await mezon.clientRef.current?.forwardWebrtcSignaling(
-				session,
-				dmUserId,
-				WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-				JSON.stringify(candidate),
-				channelId,
-				userId
+			await sendCallSetup(setup, (client, session) =>
+				client.forwardWebrtcSignaling(
+					session,
+					dmUserId,
+					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+					JSON.stringify(candidate),
+					channelId,
+					userId
+				)
 			);
 		} catch (error) {
-			console.warn('Call ICE candidate send failed:', error);
+			if (!setup.aborted) console.warn('Call ICE candidate send failed:', error);
 		}
 	};
 
@@ -652,7 +655,6 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				await newPc.setLocalDescription(answer);
 				const compressedAnswer = await compress(JSON.stringify(answer));
 				await sendInitialDescription(setup, WebrtcSignalingType.WEBRTC_SDP_ANSWER, compressedAnswer, isShowMeetDM).catch((error) => {
-					// The server may have forwarded the answer before its ACK timed out.
 					if (!isSignalingAckTimeout(error)) throw error;
 					if (!setup.aborted) console.warn('Call answer ACK timed out:', error);
 				});
