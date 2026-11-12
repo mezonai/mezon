@@ -1,5 +1,5 @@
 import { audioCallActions, DMCallActions, selectAudioBusyTone, selectIsShowMeetDM, toastActions, useAppDispatch } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
+import { allowedApiUrl, resolveSessionApiCredential, socketState, useMezon } from '@mezon/transport';
 import {
 	compress,
 	decompress,
@@ -10,10 +10,11 @@ import {
 	reportMediaAccessError,
 	requestMediaPermission
 } from '@mezon/utils';
-import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
+import { safeJSONParse, WebrtcSignalingType, type ApiSession, type Client } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { forwardCallSetup } from '../utils/forwardCallSetup';
 
 const STUN_SERVERS = [
 	{ urls: 'stun:stun.l.google.com:19302' },
@@ -27,6 +28,17 @@ const STUN_SERVERS = [
 const RTCConfig = {
 	iceServers: STUN_SERVERS,
 	iceCandidatePoolSize: 10
+};
+
+const CALL_SOCKET_TIMEOUT_MS = 10000;
+const CALL_CONNECT_TIMEOUT_MS = 30000;
+const SOCKET_NOT_OPEN = 'Socket connection has not been established yet.';
+
+const isSocketNotOpen = (error: unknown) => (error instanceof Error ? error.message : error) === SOCKET_NOT_OPEN;
+
+const isSignalingAckTimeout = (error: unknown) => {
+	const message = error instanceof Error ? error.message : error;
+	return message === 'Request timed out.' || message === 'The socket timed out while waiting for a response.';
 };
 
 interface CallState {
@@ -107,6 +119,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		micEnabled: true
 	});
 	const peerConnection = useRef<RTCPeerConnection | null>(null);
+	const localStreamRef = useRef<MediaStream | null>(null);
+	const callSetupRef = useRef<AbortController | null>(null);
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
 	const mezon = useMezon();
@@ -114,8 +128,10 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	const timeStartConnected = useRef<Date | null>(null);
 	const localVideoRef = useRef<HTMLVideoElement>(null);
 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
-	const pendingCandidatesRef = useRef<(RTCIceCandidate | null)[]>([]);
+	const pendingCandidatesRef = useRef<RTCIceCandidate[]>([]);
 	const remoteIceCandidatesRef = useRef<RTCIceCandidate[]>([]);
+	const localIceReadyRef = useRef(false);
+	const remoteAnswerReceivedRef = useRef(false);
 
 	const callTimeout = useRef<NodeJS.Timeout | null>(null);
 	const [audioInputDevicesList, setAudioInputDevicesList] = useState<MediaDeviceInfo[]>([]);
@@ -144,6 +160,11 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 	useEffect(() => {
 		return () => {
+			callSetupRef.current?.abort();
+			const pc = peerConnection.current;
+			peerConnection.current = null;
+			pc?.close();
+			localStreamRef.current?.getTracks().forEach((track) => track.stop());
 			if (callTimeout.current) {
 				clearTimeout(callTimeout.current);
 				callTimeout.current = null;
@@ -153,14 +174,16 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 	useEffect(() => {
 		if (isConnected && !hasSyncRemoteMediaRef?.current && mezon.sessionRef.current) {
-			mezon.clientRef.current?.forwardWebrtcSignaling(
-				mezon.sessionRef.current,
-				dmUserId,
-				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
-				`{"cameraEnabled": ${controlState?.cameraEnabled}, "micEnabled": ${controlState?.micEnabled}}`,
-				channelId,
-				userId
-			);
+			void mezon.clientRef.current
+				?.forwardWebrtcSignaling(
+					mezon.sessionRef.current,
+					dmUserId,
+					WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
+					`{"cameraEnabled": ${controlState?.cameraEnabled}, "micEnabled": ${controlState?.micEnabled}}`,
+					channelId,
+					userId
+				)
+				.catch((error) => console.warn('Call media status send failed:', error));
 			hasSyncRemoteMediaRef.current = true;
 		}
 	}, [channelId, dmUserId, isConnected, controlState?.cameraEnabled, controlState?.micEnabled, mezon?.clientRef, userId]);
@@ -170,6 +193,133 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			clearTimeout(callTimeout.current);
 			callTimeout.current = null;
 		}
+	};
+
+	const sendCallSetup = async (
+		setup: AbortSignal,
+		send: (client: Client, session: ApiSession) => Promise<unknown>,
+		{ shouldSend = () => true, sendOverHttp }: { shouldSend?: () => boolean; sendOverHttp?: (session: ApiSession) => Promise<boolean> } = {}
+	): Promise<boolean> => {
+		const deadline = performance.now() + CALL_SOCKET_TIMEOUT_MS;
+		let connectionGeneration = 0;
+		let attemptedGeneration = -1;
+		let attemptedClient: Client | null = null;
+		let attemptedHttp = false;
+		const unsubscribe = socketState.subscribe((status) => {
+			if (status === 'connected') connectionGeneration += 1;
+		});
+		const activeSession = () => {
+			const session = mezon.sessionRef.current;
+			const sessionUserId = (session as (ApiSession & { user_id?: string }) | null)?.user_id;
+			return setup.aborted || !shouldSend() || (sessionUserId && sessionUserId !== userId) ? null : session;
+		};
+		const tryHttp = async () => {
+			const session = activeSession();
+			if (!sendOverHttp || attemptedHttp || !session) return false;
+			attemptedHttp = true;
+			return sendOverHttp(session).catch((error) => {
+				if (!setup.aborted) console.warn('Call setup HTTP fallback failed:', error);
+				return false;
+			});
+		};
+		const attempt = async (): Promise<boolean> => {
+			for (let session = activeSession(); session; session = activeSession()) {
+				const client = mezon.clientRef.current;
+				const remaining = deadline - performance.now();
+				if (remaining <= 0) throw new Error('Call setup timed out waiting for the signaling socket');
+				if (!client?.isOpen()) {
+					attemptedClient = null;
+					if (sendOverHttp && !attemptedHttp && (await tryHttp())) return false;
+				} else if (client !== attemptedClient || connectionGeneration !== attemptedGeneration) {
+					attemptedClient = client;
+					attemptedGeneration = connectionGeneration;
+					await send(client, session);
+					return true;
+				}
+				await new Promise((resolve) => setTimeout(resolve, Math.min(100, remaining)));
+			}
+			throw new DOMException('Call setup ended', 'AbortError');
+		};
+
+		try {
+			try {
+				return await attempt();
+			} catch (error) {
+				if (!isSocketNotOpen(error)) throw error;
+			}
+			if (await tryHttp()) return false;
+			return await attempt();
+		} finally {
+			unsubscribe();
+		}
+	};
+
+	const sendInitialDescription = (setup: AbortSignal, type: WebrtcSignalingType, description: string, isVideoCall: boolean) => {
+		let cameraStatusAttempted = false;
+		const sendOverSocket = (client: Client, session: ApiSession) => {
+			if (isVideoCall && !cameraStatusAttempted) {
+				cameraStatusAttempted = true;
+				void client
+					.forwardWebrtcSignaling(
+						session,
+						dmUserId,
+						WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
+						'{"cameraEnabled": true}',
+						channelId,
+						userId
+					)
+					.catch((error) => console.warn('Call media status send failed:', error));
+			}
+			return client.forwardWebrtcSignaling(session, dmUserId, type, description, channelId, userId);
+		};
+		return sendCallSetup(setup, sendOverSocket, {
+			sendOverHttp: async (session) => {
+				const apiUrl = allowedApiUrl(session);
+				const credential = resolveSessionApiCredential(session);
+				if (!apiUrl || !credential) return false;
+				return forwardCallSetup(apiUrl, credential, setup, {
+					receiverId: dmUserId,
+					dataType: type,
+					jsonData: description,
+					channelId,
+					callerId: userId
+				});
+			}
+		});
+	};
+
+	const startOutgoingCallTimeout = (setup: AbortSignal, isVideoCall: boolean) => {
+		clearCallTimeout();
+		callTimeout.current = setTimeout(() => {
+			if (setup.aborted || timeStartConnected.current) return;
+			dispatch(
+				toastActions.addToast({
+					message: t(remoteAnswerReceivedRef.current ? 'common:errorBoundary.connectionFailed' : 'toast.recipientDidNotAnswer'),
+					type: 'warning',
+					autoClose: 3000
+				})
+			);
+			dispatch(
+				DMCallActions.updateCallLog({
+					channelId: channelId || '0',
+					content: {
+						t: `${isVideoCall ? 'Video' : 'Voice'} call timed out`,
+						callLog: {
+							isVideo: isVideoCall,
+							callLogType: IMessageTypeCallLog.TIMEOUTCALL,
+							showCallBack: true
+						}
+					}
+				})
+			);
+			void handleEndCall();
+		}, CALL_CONNECT_TIMEOUT_MS);
+	};
+
+	const registerLocalStream = (stream: MediaStream) => {
+		localStreamRef.current = stream;
+		if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+		setCallState((prev) => ({ ...prev, localStream: stream }));
 	};
 
 	const applyOutputDevice = async () => {
@@ -186,26 +336,20 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 	const initializePeerConnection = () => {
 		const pc = new RTCPeerConnection(RTCConfig);
+		peerConnection.current = pc;
 		callTargetRef.current = { dmUserId, channelId };
 
-		pc.onicecandidate = async (event) => {
-			if (event.candidate) {
-				if (pc.remoteDescription && mezon.sessionRef.current) {
-					await mezon.clientRef.current?.forwardWebrtcSignaling(
-						mezon.sessionRef.current,
-						dmUserId,
-						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-						JSON.stringify(event.candidate),
-						channelId,
-						userId
-					);
-				} else {
-					pendingCandidatesRef.current = [...(pendingCandidatesRef?.current || []), event.candidate];
-				}
+		pc.onicecandidate = ({ candidate }) => {
+			if (!candidate || peerConnection.current !== pc) return;
+			if (pc.remoteDescription && localIceReadyRef.current) {
+				void sendLocalIceCandidate(candidate);
+			} else {
+				pendingCandidatesRef.current.push(candidate);
 			}
 		};
 
 		pc.ontrack = (event) => {
+			if (peerConnection.current !== pc) return;
 			const remoteStream = event.streams[0];
 			remoteStream.getVideoTracks().forEach((track) => {
 				if (remoteVideoRef.current) {
@@ -230,7 +374,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		};
 
 		pc.oniceconnectionstatechange = async () => {
-			if (pc.iceConnectionState === 'connected' && mezon.sessionRef.current) {
+			if (peerConnection.current !== pc) return;
+			if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
 				if (timeStartConnected.current) {
 					return;
 				}
@@ -239,35 +384,30 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				dispatch(audioCallActions.setEstablishedCall({ peerId: dmUserId, channelId }));
 				dispatch(audioCallActions.setIsJoinedCall(true));
 				dispatch(audioCallActions.setIsDialTone(false));
-				await mezon.clientRef.current?.forwardWebrtcSignaling(
-					mezon.sessionRef.current,
-					dmUserId,
-					WebrtcSignalingType.WEBRTC_SDP_INIT,
-					'',
-					channelId,
-					userId
-				);
-				if (isMyCaller?.current) {
-					await cancelCallFCMMobile(true);
-				}
 				setIsConnected(true);
+				const session = mezon.sessionRef.current;
+				if (session) {
+					const init = mezon.clientRef.current?.forwardWebrtcSignaling(
+						session,
+						dmUserId,
+						WebrtcSignalingType.WEBRTC_SDP_INIT,
+						'',
+						channelId,
+						userId
+					);
+					await Promise.allSettled([init, isMyCaller.current ? cancelCallFCMMobile(true) : undefined]);
+				}
 			}
 
-			if (pc.iceConnectionState === 'disconnected') {
-				if (timeStartConnected.current) {
-					return;
-				}
-				setIsConnected(null);
-				dispatch(audioCallActions.setIsJoinedCall(false));
-				handleEndCall();
-				clearCallTimeout();
+			if (pc.iceConnectionState === 'failed' && !timeStartConnected.current) {
+				void handleEndCall();
 			}
 		};
 
 		return pc;
 	};
 
-	const getConstraintsLocal = async (isVideoCall: boolean, isAnswer?: boolean): Promise<MediaStreamConstraints> => {
+	const getConstraintsLocal = async (isVideoCall: boolean): Promise<MediaStreamConstraints> => {
 		let permissionCameraGranted = false;
 		let audioConstraint: MediaStreamConstraints['audio'] = false;
 
@@ -288,7 +428,6 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					autoClose: 1000
 				})
 			);
-			if (!isAnswer) await handleEndCall(true);
 			return {
 				audio: false,
 				video: isVideoCall && permissionCameraGranted
@@ -332,28 +471,35 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		if (!mezon.sessionRef.current) {
 			return;
 		}
+		callSetupRef.current?.abort();
+		const setup = new AbortController();
+		callSetupRef.current = setup;
 		try {
-			callTimeout?.current && clearTimeout(callTimeout.current);
+			clearCallTimeout();
 			timeStartConnected.current = null;
 			pendingCandidatesRef.current = [];
 			remoteIceCandidatesRef.current = [];
+			localIceReadyRef.current = false;
+			remoteAnswerReceivedRef.current = false;
 			setIsConnected(null);
 			hasSyncRemoteMediaRef.current = false;
 			callTargetRef.current = null;
 			isMyCaller.current = !isAnswer;
 			if (!isAnswer) {
-				const constraints = await getConstraintsLocal(isVideoCall, isAnswer);
+				const constraints = await getConstraintsLocal(isVideoCall);
+				if (setup.signal.aborted) return;
+				if (!constraints.audio) {
+					void handleEndCall(true);
+					return;
+				}
 				const stream = await openLocalStream(constraints);
+				if (setup.signal.aborted) {
+					stream.getTracks().forEach((track) => track.stop());
+					return;
+				}
+				registerLocalStream(stream);
 				const pc = initializePeerConnection();
 				if (isVideoCall) {
-					await mezon.clientRef.current?.forwardWebrtcSignaling(
-						mezon.sessionRef.current,
-						dmUserId,
-						WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
-						`{"cameraEnabled": true}`,
-						channelId,
-						userId
-					);
 					setControlState((prev) => ({
 						...prev,
 						cameraEnabled: true
@@ -369,98 +515,89 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				});
 				await pc.setLocalDescription(new RTCSessionDescription(offer));
 				const compressedOffer = await compress(JSON.stringify({ ...offer, callerName, callerAvatar, isVideoCall }));
-				await mezon.clientRef.current?.forwardWebrtcSignaling(
-					mezon.sessionRef.current,
-					dmUserId,
-					WebrtcSignalingType.WEBRTC_SDP_OFFER,
-					compressedOffer,
-					channelId,
-					userId
-				);
-				const bodyFCMMobile = {
-					offer: compressedOffer,
-					callerName,
-					callerAvatar,
-					callerId: userId,
-					isVideoCall,
-					channelId,
-					sentAt: String(Date.now())
-				};
-				await mezon.clientRef.current?.makeCallPush(mezon.sessionRef.current, dmUserId, JSON.stringify(bodyFCMMobile), channelId, userId);
-				callTimeout.current = setTimeout(() => {
-					if (timeStartConnected.current) {
-						return;
-					}
-					dispatch(
-						toastActions.addToast({
-							message: t('toast.recipientDidNotAnswer'),
-							type: 'warning',
-							autoClose: 3000
-						})
-					);
-					dispatch(
-						DMCallActions.updateCallLog({
-							channelId: channelId || '0',
-							content: {
-								t: `${isVideoCall ? 'Video' : 'Voice'} call timed out`,
-								callLog: {
-									isVideo: isVideoCall,
-									callLogType: IMessageTypeCallLog.TIMEOUTCALL,
-									showCallBack: true
-								}
-							}
-						})
-					);
-					handleEndCall();
-				}, 30000);
-				if (localVideoRef.current) {
-					localVideoRef.current.srcObject = stream;
+				const sentOverSocket = await sendInitialDescription(setup.signal, WebrtcSignalingType.WEBRTC_SDP_OFFER, compressedOffer, isVideoCall);
+				if (sentOverSocket) {
+					await sendCallSetup(
+						setup.signal,
+						(client, session) =>
+							client.makeCallPush(
+								session,
+								dmUserId,
+								JSON.stringify({
+									offer: compressedOffer,
+									callerName,
+									callerAvatar,
+									callerId: userId,
+									isVideoCall,
+									channelId,
+									sentAt: String(Date.now())
+								}),
+								channelId,
+								userId
+							),
+						{ shouldSend: () => !timeStartConnected.current }
+					).catch((error) => {
+						if (!setup.signal.aborted && !timeStartConnected.current) console.warn('Call offer push failed:', error);
+					});
 				}
-				setCallState({
-					localStream: stream,
-					remoteStream: null,
-					localScreenStream: null,
-					remoteScreenStream: null
-				});
-				peerConnection.current = pc;
+				if (!setup.signal.aborted && !remoteAnswerReceivedRef.current && !timeStartConnected.current) {
+					startOutgoingCallTimeout(setup.signal, isVideoCall);
+				}
 			} else {
-				const constraints = await getConstraintsLocal(isVideoCall, isAnswer);
-				if (constraints?.audio) {
+				const constraints = await getConstraintsLocal(isVideoCall);
+				if (constraints.audio && !setup.signal.aborted) {
 					dispatch(DMCallActions.setIsInCall(true));
 				}
 			}
 		} catch (error) {
-			console.error('Error starting call:', error);
-			handleEndCall(true);
+			if (!setup.signal.aborted && !timeStartConnected.current) {
+				console.error('Error starting call:', error);
+				void handleEndCall(true);
+			}
 		}
 	};
 
-	const sendPendingLocalCandidates = async () => {
-		if (pendingCandidatesRef?.current?.length && mezon.sessionRef.current) {
-			for (const candidateItem of pendingCandidatesRef.current) {
-				await mezon.clientRef.current?.forwardWebrtcSignaling(
-					mezon.sessionRef.current,
+	const sendLocalIceCandidate = async (candidate: RTCIceCandidate) => {
+		const setup = callSetupRef.current?.signal;
+		if (!setup) return;
+		try {
+			await sendCallSetup(setup, (client, session) =>
+				client.forwardWebrtcSignaling(
+					session,
 					dmUserId,
 					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-					JSON.stringify(candidateItem),
+					JSON.stringify(candidate),
 					channelId,
 					userId
-				);
-			}
-			pendingCandidatesRef.current = [];
+				)
+			);
+		} catch (error) {
+			if (!setup.aborted) console.warn('Call ICE candidate send failed:', error);
+		}
+	};
+
+	const sendPendingLocalCandidates = async (pc: RTCPeerConnection) => {
+		if (peerConnection.current !== pc) return;
+		localIceReadyRef.current = true;
+		const candidates = pendingCandidatesRef.current;
+		pendingCandidatesRef.current = [];
+		for (const candidate of candidates) {
+			if (peerConnection.current !== pc) return;
+			await sendLocalIceCandidate(candidate);
 		}
 	};
 
 	const drainRemoteIceCandidates = async (pc: RTCPeerConnection) => {
-		if (remoteIceCandidatesRef.current.length > 0) {
-			for (const candidate of remoteIceCandidatesRef.current) {
-				await pc.addIceCandidate(candidate);
-			}
-			remoteIceCandidatesRef.current = [];
+		if (peerConnection.current !== pc) return;
+		const candidates = remoteIceCandidatesRef.current;
+		remoteIceCandidatesRef.current = [];
+		for (const candidate of candidates) {
+			if (peerConnection.current !== pc) return;
+			await pc.addIceCandidate(candidate);
 		}
 	};
 
-	const handleOffer = async (signalingData: any) => {
+	const handleOffer = async (signalingData: any, setup: AbortSignal) => {
 		if (!mezon.sessionRef.current) {
 			return;
 		}
@@ -469,8 +606,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			sdp: signalingData.sdp
 		});
 
-		const pc = peerConnection?.current;
-		const isRenegotiation = !!pc && pc.connectionState !== 'new';
+		const pc = peerConnection.current;
+		if (pc && !isMyCaller.current && !localIceReadyRef.current) return;
+		const isRenegotiation = !!pc && (pc.remoteDescription || pc.connectionState !== 'new');
 
 		if (isRenegotiation) {
 			await pc.setRemoteDescription(offer);
@@ -487,78 +625,74 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				channelId,
 				userId
 			);
-			await sendPendingLocalCandidates();
+			await sendPendingLocalCandidates(pc);
 		} else {
-			const constraints = await getConstraintsLocal(isShowMeetDM, true);
-			const stream = await openLocalStream(constraints);
-			const newPc = pc || initializePeerConnection();
+			clearCallTimeout();
+			callTimeout.current = setTimeout(() => {
+				if (!setup.aborted && !timeStartConnected.current) void handleEndCall();
+			}, CALL_CONNECT_TIMEOUT_MS);
+			try {
+				const newPc = pc || initializePeerConnection();
+				const constraints = await getConstraintsLocal(isShowMeetDM);
+				if (setup.aborted) return;
+				const stream = await openLocalStream(constraints);
+				if (setup.aborted) {
+					stream.getTracks().forEach((track) => track.stop());
+					return;
+				}
+				registerLocalStream(stream);
+				if (isShowMeetDM) {
+					setControlState((prev) => ({
+						...prev,
+						cameraEnabled: true
+					}));
+				}
+				stream.getTracks().forEach((track) => newPc.addTrack(track, stream));
 
-			if (isShowMeetDM) {
-				await mezon.clientRef.current?.forwardWebrtcSignaling(
-					mezon.sessionRef.current,
-					dmUserId,
-					WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
-					`{"cameraEnabled": true}`,
-					channelId,
-					userId
-				);
-				setControlState((prev) => ({
-					...prev,
-					cameraEnabled: true
-				}));
+				await newPc.setRemoteDescription(offer);
+				await drainRemoteIceCandidates(newPc);
+				const answer = await newPc.createAnswer();
+				await newPc.setLocalDescription(answer);
+				const compressedAnswer = await compress(JSON.stringify(answer));
+				await sendInitialDescription(setup, WebrtcSignalingType.WEBRTC_SDP_ANSWER, compressedAnswer, isShowMeetDM).catch((error) => {
+					if (!isSignalingAckTimeout(error)) throw error;
+					if (!setup.aborted) console.warn('Call answer ACK timed out:', error);
+				});
+				await sendPendingLocalCandidates(newPc);
+			} catch (error) {
+				if (!setup.aborted) {
+					console.error('Error answering call:', error);
+					if (timeStartConnected.current && peerConnection.current) {
+						await sendPendingLocalCandidates(peerConnection.current);
+					} else {
+						void handleEndCall();
+					}
+				}
 			}
-
-			stream.getTracks().forEach((track) => {
-				newPc.addTrack(track, stream);
-			});
-
-			await newPc.setRemoteDescription(new RTCSessionDescription(offer));
-			await drainRemoteIceCandidates(newPc);
-			const answer = await newPc.createAnswer();
-			await newPc.setLocalDescription(answer);
-			const compressedAnswer = await compress(JSON.stringify(answer));
-			await mezon.clientRef.current?.forwardWebrtcSignaling(
-				mezon.sessionRef.current,
-				dmUserId,
-				WebrtcSignalingType.WEBRTC_SDP_ANSWER,
-				compressedAnswer,
-				channelId,
-				userId
-			);
-			await sendPendingLocalCandidates();
-
-			if (localVideoRef.current) {
-				localVideoRef.current.srcObject = stream;
-			}
-
-			if (!peerConnection?.current) {
-				peerConnection.current = newPc;
-			}
-
-			setCallState({
-				localStream: stream,
-				remoteStream: null,
-				localScreenStream: null,
-				remoteScreenStream: null
-			});
 		}
 	};
 
-	const handleAnswer = async (signalingData: any) => {
-		if (!peerConnection?.current) return;
+	const handleAnswer = async (signalingData: any, setup: AbortSignal) => {
+		const pc = peerConnection.current;
+		if (!pc) return;
 
-		await peerConnection?.current.setRemoteDescription(signalingData);
-		await drainRemoteIceCandidates(peerConnection.current);
-		await sendPendingLocalCandidates();
+		if (!remoteAnswerReceivedRef.current) {
+			remoteAnswerReceivedRef.current = true;
+			if (isMyCaller.current && !timeStartConnected.current) startOutgoingCallTimeout(setup, isShowMeetDM);
+		}
+		await pc.setRemoteDescription(signalingData);
+		await drainRemoteIceCandidates(pc);
+		await sendPendingLocalCandidates(pc);
 	};
 
 	const handleICECandidate = async (data: any) => {
-		if (!peerConnection?.current) return;
+		const pc = peerConnection.current;
+		if (!pc && !callSetupRef.current) return;
 		try {
 			if (data) {
 				const candidate = new RTCIceCandidate(data);
-				if (peerConnection?.current?.remoteDescription) {
-					await peerConnection?.current?.addIceCandidate(candidate);
+				if (pc?.remoteDescription) {
+					await pc.addIceCandidate(candidate);
 				} else {
 					// Queue candidate if remote description is not set yet
 					remoteIceCandidatesRef.current.push(candidate);
@@ -600,22 +734,25 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			handleEndCall(true);
 		}
 		if (isInChannelCalled) {
+			const setup = callSetupRef.current?.signal;
+			if (!setup) return;
 			try {
 				switch (signalingData.data_type) {
 					case WebrtcSignalingType.WEBRTC_SDP_OFFER: {
 						const decompressedData = await decompress(signalingData.json_data);
+						if (setup.aborted) return;
 						const offer = safeJSONParse(decompressedData || '{}');
 						rememberPeerSession(signalingData?.caller_id, getSdpSessionId(offer?.sdp));
-						await handleOffer(offer);
+						await handleOffer(offer, setup);
 
 						break;
 					}
 
 					case WebrtcSignalingType.WEBRTC_SDP_ANSWER: {
 						const decompressedData = await decompress(signalingData.json_data);
+						if (setup.aborted) return;
 						const answer = safeJSONParse(decompressedData || '{}');
-						await handleAnswer(answer);
-						clearCallTimeout();
+						await handleAnswer(answer, setup);
 						break;
 					}
 
@@ -668,34 +805,27 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	const handleEndCall = async (isCallerEndCall = false) => {
+		callSetupRef.current?.abort();
+		callSetupRef.current = null;
 		const callPeerId = callTargetRef.current?.dmUserId || dmUserId;
 		const callChannelId = callTargetRef.current?.channelId || channelId;
-		const callSessionId = getSdpSessionId(peerConnection.current?.localDescription?.sdp);
+		const pc = peerConnection.current;
+		const callSessionId = getSdpSessionId(pc?.localDescription?.sdp);
 		const wasMyCaller = isMyCaller.current;
+		const session = mezon.sessionRef.current;
+		const client = mezon.clientRef.current;
 		try {
-			if (!isCallerEndCall && mezon.sessionRef.current) {
-				await mezon.clientRef.current?.forwardWebrtcSignaling(
-					mezon.sessionRef.current,
-					callPeerId,
-					WebrtcSignalingType.WEBRTC_SDP_QUIT,
-					'',
-					callChannelId,
-					userId
-				);
-			}
 			clearCallTimeout();
 			setIsConnected(null);
 			hasSyncRemoteMediaRef.current = false;
 
-			if (callState.localStream) {
-				callState.localStream.getTracks().forEach((track) => track.stop());
-			}
+			localStreamRef.current?.getTracks().forEach((track) => track.stop());
+			localStreamRef.current = null;
 			if (callState.localScreenStream) {
 				callState.localScreenStream.getTracks().forEach((track) => track.stop());
 			}
-			if (peerConnection?.current) {
-				peerConnection?.current.close();
-			}
+			peerConnection.current = null;
+			pc?.close();
 
 			if (localVideoRef.current) {
 				localVideoRef.current.srcObject = null;
@@ -728,10 +858,11 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				cameraEnabled: false,
 				micEnabled: true
 			});
-			peerConnection.current = null;
 			callTargetRef.current = null;
 			pendingCandidatesRef.current = [];
 			remoteIceCandidatesRef.current = [];
+			localIceReadyRef.current = false;
+			remoteAnswerReceivedRef.current = false;
 			isMyCaller.current = false;
 			if (timeStartConnected?.current && wasMyCaller) {
 				let timeCall = '';
@@ -757,11 +888,15 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				);
 			}
 			timeStartConnected.current = null;
+			const quit =
+				!isCallerEndCall && session
+					? client?.forwardWebrtcSignaling(session, callPeerId, WebrtcSignalingType.WEBRTC_SDP_QUIT, '', callChannelId, userId)
+					: undefined;
 			if (wasMyCaller) {
 				const relay = async () => {
-					if (!mezon.sessionRef.current) return;
-					await mezon.clientRef.current?.forwardWebrtcSignaling(
-						mezon.sessionRef.current,
+					if (!session) return;
+					await client?.forwardWebrtcSignaling(
+						session,
 						callPeerId,
 						50,
 						JSON.stringify({ callSessionId, sentAt: String(Date.now()) }),
@@ -769,7 +904,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 						userId
 					);
 				};
-				await Promise.allSettled([relay(), cancelCallFCMMobile(false, callPeerId, callChannelId, callSessionId)]);
+				await Promise.allSettled([quit, relay(), cancelCallFCMMobile(false, callPeerId, callChannelId, callSessionId)]);
+			} else {
+				await quit;
 			}
 		} catch (error) {
 			console.error('Error ending call:', error);

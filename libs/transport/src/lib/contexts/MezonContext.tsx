@@ -60,6 +60,14 @@ const isSessionIdRefused = (sessionId: string | undefined): boolean =>
 const isTokenFresh = (token: string | undefined): token is string =>
 	!!token && ((token === renewedToken && Date.now() - renewedTokenAt < RENEWED_TOKEN_TRUST_MS) || !isJwtExpired(token));
 
+export function resolveSessionApiCredential(session: Pick<ApiSession, 'session_id' | 'token'>): string | undefined {
+	const sessionId = session.session_id?.trim();
+	if (sessionId && !isSessionIdRefused(sessionId)) return sessionId;
+
+	const token = session.token?.trim();
+	return isTokenFresh(token) ? token : undefined;
+}
+
 // A renewal or a minted session id that lands after a logout or an account switch must not be written
 // over whoever is signed in by then.
 const isSameAccount = (current: ApiSession | null, session: ApiSession): current is ApiSession => {
@@ -192,7 +200,7 @@ const isAllowedHost = (host: string | undefined): boolean => {
 
 // The session's api host, as long as it is one we talk to; otherwise the configured host, the way
 // desktop falls back.
-const allowedApiUrl = (session: Pick<ApiSession, 'api_url'>): string | null => {
+export const allowedApiUrl = (session: Pick<ApiSession, 'api_url'>): string | null => {
 	const configuredHost = process.env.NX_CHAT_APP_API_HOST;
 	const configured = configuredHost
 		? `${process.env.NX_CHAT_APP_API_SECURE === 'true' ? 'https' : 'http'}://${configuredHost}:${process.env.NX_CHAT_APP_API_PORT}`
