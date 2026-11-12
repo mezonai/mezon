@@ -37,5 +37,10 @@
 	},
 	"image": "IMMAGINE",
 	"name": "NOME",
-	"uploadedBy": "CARICATO DA"
+	"uploadedBy": "CARICATO DA",
+	"deleteModal": {
+		"title": "Elimina emoji",
+		"message": "Vuoi davvero eliminare {{name}}? Questa azione non può essere annullata.",
+		"success": "Hai eliminato {{name}}"
+	}
 }

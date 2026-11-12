@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "No sticker found"
 		}
+	},
+	"deleteModal": {
+		"title": "Delete Sticker",
+		"message": "Are you sure you want to delete {{name}}? This cannot be undone.",
+		"success": "{{name}} has been deleted"
 	}
 }

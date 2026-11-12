@@ -37,5 +37,10 @@
 	},
 	"image": "HÌNH ẢNH",
 	"name": "TÊN",
-	"uploadedBy": "TẢI LÊN BỚI"
+	"uploadedBy": "TẢI LÊN BỚI",
+	"deleteModal": {
+		"title": "Xóa biểu cảm",
+		"message": "Bạn có chắc muốn xoá {{name}}? Hành động này không thể hoàn tác.",
+		"success": "Đã xoá {{name}}"
+	}
 }

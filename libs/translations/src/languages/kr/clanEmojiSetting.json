@@ -37,5 +37,10 @@
 	},
 	"image": "이미지",
 	"name": "이름",
-	"uploadedBy": "업로드한 사람"
+	"uploadedBy": "업로드한 사람",
+	"deleteModal": {
+		"title": "이모지 삭제",
+		"message": "{{name}}을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+		"success": "{{name}}이(가) 삭제되었습니다"
+	}
 }

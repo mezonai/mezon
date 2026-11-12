@@ -12,6 +12,9 @@ import { MezonIcon, MzIcons16, MzIcons20, MzIcons40 } from '@mezon/ui';
 import { EPermission, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
+import { toast } from 'react-toastify';
+import ModalConfirm from '../../ModalConfirm';
 import ModalUploadSound from './ModalUploadSound';
 
 export type SoundType = {
@@ -25,12 +28,13 @@ const SettingSoundEffect = () => {
 	const { t } = useTranslation('clanSoundSetting');
 	const [showModal, setShowModal] = useState(false);
 	const [selectedSound, setSelectedSound] = useState<SoundType | null>(null);
+	const [soundToDelete, setSoundToDelete] = useState<SoundType | null>(null);
 	const dispatch = useAppDispatch();
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';
 	const currentUserId = useAppSelector(selectCurrentUserId) || '';
 	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 
-	const sounds = useAppSelector((state: any) => selectAudioByClanId(state, currentClanId));
+	const sounds = useAppSelector((state) => selectAudioByClanId(state, currentClanId));
 
 	const soundList: SoundType[] = sounds.map((sound) => ({
 		id: sound.id || '',
@@ -54,20 +58,38 @@ const SettingSoundEffect = () => {
 		setShowModal(true);
 	};
 
-	const handleDeleteSound = async (soundId: string, soundName: string) => {
-		try {
-			await dispatch(
-				soundEffectActions.deleteSound({
-					soundId,
-					clan_id: currentClanId,
-					soundLabel: soundName
-				})
-			);
-
-			dispatch(soundEffectActions.fetchSoundByUserId({ noCache: true, clanId: currentClanId }));
-		} catch (error) {
-			console.error('Error deleting sound:', error);
+	const handleDeleteSound = async () => {
+		closeDeleteModal();
+		if (!soundToDelete) return;
+		const result = await dispatch(
+			soundEffectActions.deleteSound({
+				soundId: soundToDelete.id,
+				clan_id: currentClanId,
+				soundLabel: soundToDelete.name
+			})
+		);
+		if (soundEffectActions.deleteSound.fulfilled.match(result)) {
+			toast.success(t('deleteModal.success', { name: soundToDelete.name }));
 		}
+		dispatch(soundEffectActions.fetchSoundByUserId({ noCache: true, clanId: currentClanId }));
+	};
+
+	const [openDeleteModal, closeDeleteModal] = useModal(
+		() => (
+			<ModalConfirm
+				handleCancel={closeDeleteModal}
+				handleConfirm={handleDeleteSound}
+				title={t('deleteModal.title')}
+				buttonName={t('button.delete')}
+				message={t('deleteModal.message', { name: soundToDelete?.name })}
+			/>
+		),
+		[soundToDelete, currentClanId]
+	);
+
+	const handleOpenDeleteModal = (sound: SoundType) => {
+		setSoundToDelete(sound);
+		openDeleteModal();
 	};
 
 	const canManageSound = (creatorId: string) => {
@@ -135,7 +157,7 @@ const SettingSoundEffect = () => {
 										</button>
 										<button
 											className="aspect-square w-6 text-sm rounded-full bg-theme-setting-primary hover:bg-theme-setting-primary flex items-center justify-center mb-[1px] font-medium text-red-600 shadow-sm"
-											onClick={() => handleDeleteSound(sound.id, sound.name)}
+											onClick={() => handleOpenDeleteModal(sound)}
 											data-e2e={generateE2eId('clan_page.settings.voice_sticker.item.actions.delete')}
 										>
 											x

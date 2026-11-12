@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Nie można przesłać dźwięku",
 		"characters": "Nazwa musi mieć od 3 do 64 znaków",
 		"errorName": "Nazwa efektu dźwiękowego musi mieć od {{min}} do {{max}} znaków, może zawierać tylko litery, cyfry, _ i -"
+	},
+	"deleteModal": {
+		"title": "Usuń efekt dźwiękowy",
+		"message": "Czy na pewno chcesz usunąć {{name}}? Tej akcji nie można cofnąć.",
+		"success": "Usunięto {{name}}"
 	}
 }

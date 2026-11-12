@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "Chưa có nhãn dán nào"
 		}
+	},
+	"deleteModal": {
+		"title": "Xóa nhãn dán",
+		"message": "Bạn có chắc muốn xoá {{name}}? Hành động này không thể hoàn tác.",
+		"success": "Đã xoá {{name}}"
 	}
 }
