@@ -5,6 +5,7 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import { t } from 'i18next';
 import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUpdateUsernameRequest, ApiUserStatusUpdate } from 'mezon-js';
 import { toast } from 'react-toastify';
+import type { ISession } from '../auth/auth.slice';
 import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -218,7 +219,9 @@ export const updateAccountUsername = createAsyncThunk('userstatusapi/updateAccou
 		if (!response) {
 			return '';
 		}
-		return request.username || '';
+		const updatedSession = response as ISession;
+		thunkAPI.dispatch(authActions.updateSession(updatedSession));
+		return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
 	} catch (error) {
 		captureSentryError(error, 'userstatusapi/updateAccountUsername');
 		return thunkAPI.rejectWithValue(error);
