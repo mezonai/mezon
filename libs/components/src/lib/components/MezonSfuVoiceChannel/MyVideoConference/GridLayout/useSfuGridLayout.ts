@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 
-export const useSfuGridLayout = (containerRef: React.RefObject<HTMLElement>, totalItems: number) => {
+export const useSfuGridLayout = (containerRef: React.RefObject<HTMLElement>, totalItems: number, isGridView: boolean) => {
 	const [layout, setLayout] = useState({ columns: 1, rows: 1, maxTiles: 0 });
 
 	useEffect(() => {
+		if (!isGridView) return;
 		const element = containerRef.current;
 		if (!element) return;
 
@@ -47,7 +48,7 @@ export const useSfuGridLayout = (containerRef: React.RefObject<HTMLElement>, tot
 		const observer = new ResizeObserver(updateLayout);
 		observer.observe(element);
 		return () => observer.disconnect();
-	}, [containerRef, totalItems]);
+	}, [containerRef, totalItems, isGridView]);
 
 	return layout;
 };
