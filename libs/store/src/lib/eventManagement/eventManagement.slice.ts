@@ -146,7 +146,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 			logo,
 			channel_id,
 			repeat_type,
-			is_private = false
+			is_external = false
 		}: ApiCreateEventRequest,
 		thunkAPI
 	) => {
@@ -163,7 +163,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				logo: logo || '',
 				channel_id: channel_id || '0',
 				repeat_type: repeat_type || ERepeatType.DOES_NOT_REPEAT,
-				is_private
+				is_external
 			};
 			const response = await mezon.client.createEvent(mezon.session, body);
 
@@ -457,7 +457,7 @@ export const eventManagementSlice = createSlice({
 				state.error = null;
 				const event = action.payload;
 
-				if (event?.is_private && event?.meet_room) {
+				if (event?.is_external && event?.meet_room) {
 					if (!state.privateMeetingRooms) {
 						state.privateMeetingRooms = [];
 					}
