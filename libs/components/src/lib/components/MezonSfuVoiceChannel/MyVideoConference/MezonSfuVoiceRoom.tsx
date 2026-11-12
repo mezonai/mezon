@@ -825,6 +825,7 @@ export function MezonSfuVoiceRoom({
 		}
 		let cancelled = false;
 		const quality = new SfuNetworkQuality();
+		const uplinkQuality = new SfuNetworkQuality(['sent']);
 		const cameraUplink = new SfuCameraUplinkQuality();
 		const timer = window.setInterval(() => {
 			const pc = pcRef.current;
@@ -833,7 +834,9 @@ export function MezonSfuVoiceRoom({
 				.then((report) => {
 					if (cancelled || pcRef.current !== pc) return;
 					setWeakNetwork(quality.isWeak(report));
-					setCameraUplinkLimited(cameraUplink.isLimited(report, cameraTierAt(cameraQualityTierRef.current).kbps * 1000));
+					const uplinkLossy = uplinkQuality.isWeak(report);
+					const encoderLimited = cameraUplink.isLimited(report, cameraTierAt(cameraQualityTierRef.current).kbps * 1000);
+					setCameraUplinkLimited(uplinkLossy || encoderLimited);
 				})
 				.catch(() => undefined);
 		}, NETWORK_QUALITY_INTERVAL_MS);
@@ -2762,7 +2765,7 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		const currentTier = cameraQualityTierRef.current;
 		const countTier = resolveCameraTier(activeCameraCount, cameraCountTierRef.current);
-		const nextTier = weakNetwork || cameraUplinkLimited ? Math.min(countTier + 1, CAMERA_TIERS.length - 1) : countTier;
+		const nextTier = cameraUplinkLimited ? Math.min(countTier + 1, CAMERA_TIERS.length - 1) : countTier;
 		if (nextTier === currentTier) {
 			cameraCountTierRef.current = countTier;
 			return;
@@ -2780,7 +2783,7 @@ export function MezonSfuVoiceRoom({
 			nextTier > currentTier ? CAMERA_TIER_DOWNGRADE_MS : CAMERA_TIER_UPGRADE_MS
 		);
 		return () => clearTimeout(timer);
-	}, [activeCameraCount, weakNetwork, cameraUplinkLimited]);
+	}, [activeCameraCount, cameraUplinkLimited]);
 
 	const handleParticipantAction = useCallback(
 		async (action: 'mute' | 'kick', participantId: string) => {

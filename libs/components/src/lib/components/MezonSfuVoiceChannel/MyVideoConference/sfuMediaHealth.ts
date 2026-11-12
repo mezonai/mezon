@@ -2,6 +2,7 @@ type MicrophoneHealth = { micExpected: boolean; captureHealthy: boolean; senderH
 type ReceiveProgress = { packets: number; samples?: number };
 type StreamLoss = { packets: number; lost: number };
 type LossWindow = { expected: number; lost: number };
+type LossDirection = 'received' | 'sent';
 
 const WEAK_NETWORK_WARNING_LOSS_RATIO = 0.1;
 const WEAK_NETWORK_SEVERE_LOSS_RATIO = 0.2;
@@ -24,6 +25,8 @@ export class SfuNetworkQuality {
 	private weak = false;
 	private badSamples = 0;
 	private cleanSamples = 0;
+
+	constructor(private readonly directions: readonly LossDirection[] = ['received', 'sent']) {}
 
 	isWeak(report: RTCStatsReport): boolean {
 		const streams = new Map<string, StreamLoss>();
@@ -49,7 +52,11 @@ export class SfuNetworkQuality {
 			direction.expected += outbound ? packetsDelta : packetsDelta + lostDelta;
 		});
 		this.streams = streams;
-		const ratios = [received, sent].filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS).map(({ expected, lost }) => lost / expected);
+		const windows: Record<LossDirection, LossWindow> = { received, sent };
+		const ratios = this.directions
+			.map((direction) => windows[direction])
+			.filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS)
+			.map(({ expected, lost }) => lost / expected);
 		if (!ratios.length) {
 			this.badSamples = 0;
 			this.cleanSamples = 0;
