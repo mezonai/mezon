@@ -1,6 +1,6 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, useAppDispatch } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
-import type { IExtendedMessage } from '@mezon/utils';
+import type { IExtendedMessage, MarkdownBlockLine, NamedLink } from '@mezon/utils';
 import {
 	EBacktickType,
 	ETokenMessage,
@@ -11,6 +11,8 @@ import {
 	checkInviteLinkValid,
 	convertMarkdown,
 	createImgproxyUrl,
+	findMarkdownBlockLines,
+	findNamedLinks,
 	generateE2eId,
 	styleAt,
 	styleSegments
@@ -408,7 +410,11 @@ export const MessageLine = ({
 		});
 
 	const isDeletedMessage = code === TypeMessage.ChatRemove || t === 'Original message was deleted';
-	let lastindex = 0;
+	const isLinkMarkdownType = (type?: EBacktickType) =>
+		type === EBacktickType.LINK || type === EBacktickType.LINKYOUTUBE || type === EBacktickType.LINKFACEBOOK || type === EBacktickType.LINKTIKTOK;
+	const blockLines: MarkdownBlockLine[] = !isJumMessageEnabled && !isDeletedMessage && t ? findMarkdownBlockLines(t, elements) : [];
+	const linkElements = elements.filter((el) => el.kindOf === ETokenMessage.MARKDOWNS && isLinkMarkdownType(el.type));
+	const namedLinks: Map<number, NamedLink> = t ? findNamedLinks(t, linkElements, elements) : new Map();
 	const wrapWithStyle = (node: React.ReactNode, style: { bold: boolean; italic: boolean; strike: boolean }, key: string): React.ReactNode => {
 		let wrapped = node;
 		if (style.strike) {
@@ -422,13 +428,14 @@ export const MessageLine = ({
 		}
 		return wrapped;
 	};
-	const content2 = (() => {
-		const formattedContent: React.ReactNode[] = [];
-		const pushPlainRange = (start: number, end: number, keySuffix: string) => {
-			if (!t || end <= start) return;
-			styleSegments(styleTokens, start, end).forEach((seg) => {
-				const segKey = `plain-${seg.s}-${seg.e}-${keySuffix}-${messageId}`;
-				formattedContent.push(
+	const renderRange = (start: number, end: number, keyPrefix = '', includeTrailing = false): React.ReactNode[] => {
+		const rangeNodes: React.ReactNode[] = [];
+		let rangeLastIndex = start;
+		const pushPlainRange = (plainStart: number, plainEnd: number, keySuffix: string) => {
+			if (!t || plainEnd <= plainStart) return;
+			styleSegments(styleTokens, plainStart, plainEnd).forEach((seg) => {
+				const segKey = `${keyPrefix}plain-${seg.s}-${seg.e}-${keySuffix}-${messageId}`;
+				rangeNodes.push(
 					wrapWithStyle(
 						<FormattedPlainText
 							key={segKey}
@@ -448,16 +455,137 @@ export const MessageLine = ({
 		elements.forEach((element, index) => {
 			const s = element.s ?? 0;
 			const e = element.e ?? 0;
+			const inRange = (s >= start && e <= end && s < end) || (includeTrailing && s >= start && e > end);
+			if (!inRange || s < rangeLastIndex) {
+				return;
+			}
 
 			const contentInElement = t?.substring(s, e);
 
-			if (lastindex < s) {
-				pushPlainRange(lastindex, s, 'gap');
+			if (element.kindOf === ETokenMessage.MARKDOWNS && isLinkMarkdownType(element.type)) {
+				const basePath = '/chat/clans/';
+				const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
+				let componentToRender: React.ReactNode = null;
+
+				const ids = extractIdsFromUrl(contentInElement as string);
+
+				if (ids) {
+					const { clanId, channelId, canvasId } = ids;
+
+					const isCanvas = contentHasChannelLink && contentInElement?.includes('canvas');
+
+					const canvasTitleFromPayload = content.cvtt?.[canvasId];
+					let canvasTitle = canvasTitleFromPayload;
+
+					if (!canvasTitle) {
+						const state = getStore().getState();
+						const canvases = selectCanvasIdsByChannelId(state, channelId);
+						const foundCanvas = canvases.find((item) => item.id === canvasId);
+						canvasTitle = foundCanvas?.title;
+					}
+
+					if (isCanvas && channelId && canvasTitle) {
+						componentToRender = (
+							<CanvasHashtag
+								key={`${keyPrefix}canvas-${s}-${messageId}`}
+								clanId={clanId}
+								channelId={channelId}
+								canvasId={canvasId}
+								title={canvasTitle}
+								isTokenClickAble={isTokenClickAble}
+								isJumMessageEnabled={isJumMessageEnabled}
+							/>
+						);
+					} else if (!isCanvas && contentHasChannelLink) {
+						const isSentForThisLink =
+							(!element.clanId || element.clanId === clanId) && (!element.channelId || element.channelId === channelId);
+						componentToRender = (
+							<ChannelHashtag
+								key={`${keyPrefix}linkChannel${s}-${messageId}`}
+								isTokenClickAble={isTokenClickAble}
+								isJumMessageEnabled={isJumMessageEnabled}
+								channelHastagId={channelId}
+								channelLabel={(isSentForThisLink && element.channelLabel) || contentInElement}
+								channelType={isSentForThisLink ? element.channelType : undefined}
+								clanId={clanId}
+								parentId={isSentForThisLink ? element.parentId : undefined}
+								channelId={channelId}
+								isLink={true}
+							/>
+						);
+					}
+				}
+
+				const namedLink = !componentToRender ? namedLinks.get(s) : undefined;
+				if (namedLink && t && namedLink.open >= rangeLastIndex && namedLink.close + 1 <= end) {
+					if (rangeLastIndex < namedLink.open) {
+						pushPlainRange(rangeLastIndex, namedLink.open, 'gap');
+					}
+					rangeNodes.push(
+						<span key={`${keyPrefix}nl-open-${s}-${messageId}`} className="hidden">
+							[
+						</span>
+					);
+					const linkNode = (
+						<MarkdownContent
+							key={`${keyPrefix}link${s}-${messageId}`}
+							isLink={true}
+							isTokenClickAble={isTokenClickAble}
+							isJumMessageEnabled={isJumMessageEnabled}
+							content={contentInElement}
+							linkLabel={t.slice(namedLink.labelStart, namedLink.labelEnd)}
+							isReply={isReply}
+							isSearchMessage={isSearchMessage}
+							isInPinMsg={isInPinMsg}
+							typeOfBacktick={element.type}
+							messageId={messageId}
+							onContextMenu={onContextMenu}
+						/>
+					);
+					rangeNodes.push(
+						wrapWithStyle(linkNode, styleAt(styleTokens, namedLink.labelStart, namedLink.labelEnd), `${keyPrefix}link-${s}-${messageId}`)
+					);
+					rangeNodes.push(
+						<span key={`${keyPrefix}nl-close-${s}-${messageId}`} className="hidden">
+							{t.slice(namedLink.labelEnd, namedLink.close + 1)}
+						</span>
+					);
+					rangeLastIndex = namedLink.close + 1;
+					return;
+				}
+
+				const linkGapEnd = Math.min(s, end);
+				if (rangeLastIndex < linkGapEnd) {
+					pushPlainRange(rangeLastIndex, linkGapEnd, 'gap');
+				}
+				const linkNode = componentToRender ?? (
+					<MarkdownContent
+						key={`${keyPrefix}link${s}-${messageId}`}
+						isLink={true}
+						isTokenClickAble={isTokenClickAble}
+						isJumMessageEnabled={isJumMessageEnabled}
+						content={contentInElement}
+						isReply={isReply}
+						isSearchMessage={isSearchMessage}
+						isInPinMsg={isInPinMsg}
+						typeOfBacktick={element.type}
+						messageId={messageId}
+						onContextMenu={onContextMenu}
+					/>
+				);
+				rangeNodes.push(wrapWithStyle(linkNode, styleAt(styleTokens, s, e), `${keyPrefix}link-${s}-${messageId}`));
+				rangeLastIndex = e;
+				return;
+			}
+
+			const gapEnd = Math.min(s, end);
+			if (rangeLastIndex < gapEnd) {
+				pushPlainRange(rangeLastIndex, gapEnd, 'gap');
 			}
 
 			if (element.kindOf === ETokenMessage.HASHTAGS) {
-				const elemKey = `hashtag-${s}-${messageId}`;
-				formattedContent.push(
+				const elemKey = `${keyPrefix}hashtag-${s}-${messageId}`;
+				rangeNodes.push(
 					wrapWithStyle(
 						<ChannelHashtag
 							key={elemKey}
@@ -476,8 +604,8 @@ export const MessageLine = ({
 					)
 				);
 			} else if (element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') {
-				const elemKey = `mentionUser-${s}-${messageId}`;
-				formattedContent.push(
+				const elemKey = `${keyPrefix}mentionUser-${s}-${messageId}`;
+				rangeNodes.push(
 					wrapWithStyle(
 						<MentionContent
 							key={elemKey}
@@ -496,8 +624,8 @@ export const MessageLine = ({
 					)
 				);
 			} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
-				const elemKey = `mentionRole-${s}-${messageId}`;
-				formattedContent.push(
+				const elemKey = `${keyPrefix}mentionRole-${s}-${messageId}`;
+				rangeNodes.push(
 					wrapWithStyle(
 						<RoleMentionContent
 							key={elemKey}
@@ -514,8 +642,8 @@ export const MessageLine = ({
 					)
 				);
 			} else if (element.kindOf === ETokenMessage.EMOJIS) {
-				const elemKey = `emoji-${s}-${messageId}`;
-				formattedContent.push(
+				const elemKey = `${keyPrefix}emoji-${s}-${messageId}`;
+				rangeNodes.push(
 					wrapWithStyle(
 						<EmojiMarkup
 							key={elemKey}
@@ -529,8 +657,8 @@ export const MessageLine = ({
 					)
 				);
 			} else if (element.kindOf === ETokenMessage.VOICE_LINKS) {
-				const elemKey = `voiceLink-${s}-${messageId}`;
-				formattedContent.push(
+				const elemKey = `${keyPrefix}voiceLink-${s}-${messageId}`;
+				rangeNodes.push(
 					wrapWithStyle(
 						<VoiceLinkContent
 							key={elemKey}
@@ -545,100 +673,9 @@ export const MessageLine = ({
 					)
 				);
 			} else if (element.kindOf === ETokenMessage.MARKDOWNS) {
-				if (
-					element.type === EBacktickType.LINK ||
-					element.type === EBacktickType.LINKYOUTUBE ||
-					element.type === EBacktickType.LINKFACEBOOK ||
-					element.type === EBacktickType.LINKTIKTOK
-				) {
-					const basePath = '/chat/clans/';
-					const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
-					let componentToRender: React.ReactNode = null;
-
-					const ids = extractIdsFromUrl(contentInElement as string);
-
-					if (ids) {
-						const { clanId, channelId, canvasId } = ids;
-
-						const isCanvas = contentHasChannelLink && contentInElement?.includes('canvas');
-
-						const canvasTitleFromPayload = content.cvtt?.[canvasId];
-						let canvasTitle = canvasTitleFromPayload;
-
-						if (!canvasTitle) {
-							const state = getStore().getState();
-							const canvases = selectCanvasIdsByChannelId(state, channelId);
-							const foundCanvas = canvases.find((item) => item.id === canvasId);
-							canvasTitle = foundCanvas?.title;
-						}
-
-						if (isCanvas && channelId && canvasTitle) {
-							componentToRender = (
-								<CanvasHashtag
-									key={`canvas-${s}-${messageId}`}
-									clanId={clanId}
-									channelId={channelId}
-									canvasId={canvasId}
-									title={canvasTitle}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-								/>
-							);
-						} else if (!isCanvas && contentHasChannelLink) {
-							const isSentForThisLink =
-								(!element.clanId || element.clanId === clanId) && (!element.channelId || element.channelId === channelId);
-							componentToRender = (
-								<ChannelHashtag
-									key={`linkChannel${s}-${messageId}`}
-									isTokenClickAble={isTokenClickAble}
-									isJumMessageEnabled={isJumMessageEnabled}
-									channelHastagId={channelId}
-									channelLabel={(isSentForThisLink && element.channelLabel) || contentInElement}
-									channelType={isSentForThisLink ? element.channelType : undefined}
-									clanId={clanId}
-									parentId={isSentForThisLink ? element.parentId : undefined}
-									channelId={channelId}
-									isLink={true}
-								/>
-							);
-						}
-						const linkNode = componentToRender ?? (
-							<MarkdownContent
-								key={`link${s}-${messageId}`}
-								isLink={true}
-								isTokenClickAble={isTokenClickAble}
-								isJumMessageEnabled={isJumMessageEnabled}
-								content={contentInElement}
-								isReply={isReply}
-								isSearchMessage={isSearchMessage}
-								isInPinMsg={isInPinMsg}
-								typeOfBacktick={element.type}
-								messageId={messageId}
-								onContextMenu={onContextMenu}
-							/>
-						);
-						formattedContent.push(wrapWithStyle(linkNode, styleAt(styleTokens, s, e), `link-${s}-${messageId}`));
-					} else {
-						const linkNode = componentToRender ?? (
-							<MarkdownContent
-								key={`link${s}-${messageId}`}
-								isLink={true}
-								isTokenClickAble={isTokenClickAble}
-								isJumMessageEnabled={isJumMessageEnabled}
-								content={contentInElement}
-								isReply={isReply}
-								isSearchMessage={isSearchMessage}
-								isInPinMsg={isInPinMsg}
-								typeOfBacktick={element.type}
-								messageId={messageId}
-								onContextMenu={onContextMenu}
-							/>
-						);
-						formattedContent.push(wrapWithStyle(linkNode, styleAt(styleTokens, s, e), `link-${s}-${messageId}`));
-					}
-				} else if (element.type === EBacktickType.VOICE_LINK) {
-					const elemKey = `voiceLink-${s}-${messageId}`;
-					formattedContent.push(
+				if (element.type === EBacktickType.VOICE_LINK) {
+					const elemKey = `${keyPrefix}voiceLink-${s}-${messageId}`;
+					rangeNodes.push(
 						wrapWithStyle(
 							<VoiceLinkContent
 								key={elemKey}
@@ -657,11 +694,11 @@ export const MessageLine = ({
 						const url = element.url || '';
 						const isInviteLink = checkInviteLinkValid(url);
 						if (isInviteLink) {
-							formattedContent.push(<InvitePreviewCard key={`invite-${s}-${messageId}`} element={element} url={url} />);
+							rangeNodes.push(<InvitePreviewCard key={`${keyPrefix}invite-${s}-${messageId}`} element={element} url={url} />);
 						} else {
-							formattedContent.push(
+							rangeNodes.push(
 								<OgpEmbed
-									key={`ogp-${s}-${messageId}`}
+									key={`${keyPrefix}ogp-${s}-${messageId}`}
 									url={url}
 									senderId={senderId}
 									description={element.description}
@@ -675,26 +712,26 @@ export const MessageLine = ({
 						}
 					}
 				} else {
-					let content = contentInElement ?? '';
+					let backtickContent = contentInElement ?? '';
 
 					if (isJumMessageEnabled) {
-						content = content.replace(/\n/g, '');
+						backtickContent = backtickContent.replace(/\n/g, '');
 
 						if (element.type === EBacktickType.TRIPLE) {
-							content = content.replace(/```/g, '`');
+							backtickContent = backtickContent.replace(/```/g, '`');
 						}
 					} else {
 						if (element.type !== EBacktickType.CODE && element.type !== EBacktickType.PRE) {
-							content = convertMarkdown(content, element.type as EBacktickType);
+							backtickContent = convertMarkdown(backtickContent, element.type as EBacktickType);
 						}
 					}
-					formattedContent.push(
+					rangeNodes.push(
 						<MarkdownContent
-							key={`markdown-${s}-${messageId}`}
+							key={`${keyPrefix}markdown-${s}-${messageId}`}
 							isBacktick={true}
 							isTokenClickAble={isTokenClickAble}
 							isJumMessageEnabled={isJumMessageEnabled}
-							content={content}
+							content={backtickContent}
 							isInPinMsg={isInPinMsg}
 							typeOfBacktick={element.type}
 							language={element.language}
@@ -707,17 +744,81 @@ export const MessageLine = ({
 				pushPlainRange(s, e, 'elem');
 			}
 
-			lastindex = e;
+			rangeLastIndex = e;
 		});
 
-		if (t && lastindex < t?.length) {
-			pushPlainRange(lastindex, t.length, 'end');
+		if (t && rangeLastIndex < end) {
+			pushPlainRange(rangeLastIndex, end, 'end');
+		}
+
+		return rangeNodes;
+	};
+	const content2 = (() => {
+		const textLen = t?.length ?? 0;
+		const formattedContent: React.ReactNode[] = [];
+
+		if (blockLines.length === 0) {
+			formattedContent.push(...renderRange(0, textLen, '', true));
+		} else if (t) {
+			let cursor = 0;
+			blockLines.forEach((block, blockIdx) => {
+				if (cursor < block.lineStart) {
+					const plainEnd = block.lineStart - 1;
+					if (cursor < plainEnd) {
+						formattedContent.push(...renderRange(cursor, plainEnd, `pre${blockIdx}-`));
+					}
+					formattedContent.push(
+						<span key={`nl-before-${block.lineStart}-${messageId}`} className="hidden">
+							{'\n'}
+						</span>
+					);
+				}
+
+				if (block.kind === 'quote') {
+					formattedContent.push(
+						<div key={`quote-${block.lineStart}-${messageId}`} className="border-l-4 border-[var(--text-theme-primary)] pl-3 opacity-90">
+							<span className="hidden">{t.slice(block.markerStart, block.contentStart)}</span>
+							{renderRange(block.contentStart, block.lineEnd, `b${blockIdx}-`)}
+						</div>
+					);
+				} else {
+					const markerEnd = block.markerStart + block.marker.length;
+					formattedContent.push(
+						<div key={`list-${block.lineStart}-${messageId}`} className="flex" style={{ paddingLeft: block.depth * 20 }}>
+							<span className="hidden">{t.slice(block.lineStart, block.markerStart)}</span>
+							{block.kind === 'ul' ? (
+								<span className="select-none w-5 shrink-0 text-center">{block.marker}</span>
+							) : (
+								<span className="min-w-[1.5rem] shrink-0 text-right pr-1">{block.marker}</span>
+							)}
+							<span className="hidden">{t.slice(markerEnd, block.contentStart)}</span>
+							<div className="min-w-0 flex-1">{renderRange(block.contentStart, block.lineEnd, `b${blockIdx}-`)}</div>
+						</div>
+					);
+				}
+
+				if (block.lineEnd < textLen) {
+					formattedContent.push(
+						<span key={`nl-after-${block.lineEnd}-${messageId}`} className="hidden">
+							{'\n'}
+						</span>
+					);
+					cursor = block.lineEnd + 1;
+				} else {
+					cursor = block.lineEnd;
+				}
+			});
+
+			if (cursor < textLen) {
+				formattedContent.push(...renderRange(cursor, textLen, 'post-'));
+			}
+			formattedContent.push(...renderRange(textLen, textLen, 'trail-', true));
 		}
 
 		if (isEditted) {
 			formattedContent.push(
 				<p
-					key={`edited-status-${lastindex}-end`}
+					key={`edited-status-${textLen}-end`}
 					className="ml-[5px] inline opacity-50 text-[9px] self-center font-semibold text-theme-message w-[50px] select-none"
 				>
 					({translate('message.edited')})
