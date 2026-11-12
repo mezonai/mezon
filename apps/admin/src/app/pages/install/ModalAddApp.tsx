@@ -129,17 +129,21 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 			toggleSuccess();
 		} catch (error: any) {
 			console.error('Failed to Add App:', error);
+			const errorMessage = typeof error === 'string' ? error : error?.message || '';
+			const normalizedErrorMessage = errorMessage.toLowerCase();
 
-			const isForbidden =
-				error?.status === 403 ||
-				error?.message?.includes?.('403') ||
-				error?.message?.includes?.('Forbidden') ||
-				(typeof error === 'string' && (error.includes('403') || error.includes('Forbidden')));
+			const isForbidden = error?.status === 403 || errorMessage.includes('403') || normalizedErrorMessage.includes('forbidden');
+			const isDuplicateChannelName =
+				error?.status === 400 &&
+				normalizedErrorMessage.includes('channel') &&
+				(normalizedErrorMessage.includes('already exists') || normalizedErrorMessage.includes('duplicate'));
 
 			if (isForbidden) {
 				toast.error('You do not have permission to add to this clan. Please choose another clan where you have permission.');
+			} else if (isDuplicateChannelName) {
+				toast.error('A channel with this name already exists. Please choose another name.');
 			} else {
-				toast.error(error?.message || 'Failed to add app. Please try again.');
+				toast.error(errorMessage || 'Failed to add app. Please try again.');
 			}
 		}
 	}, [applicationId, clanValue, categoryValue, labelValue, dispatch, appDetail]);
