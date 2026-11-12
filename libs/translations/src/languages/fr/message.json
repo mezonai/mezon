@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Coller l'image",
 	"pasteOption": "Coller",
+	"pasteAsPlainTextOption": "Coller en texte brut",
 	"toast": {
 		"copyText": "Texte du message copié",
 		"attachmentIsLoading": "Pièce jointe en cours de chargement, veuillez patienter",

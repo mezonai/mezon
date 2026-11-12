@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Incolla immagine",
 	"pasteOption": "Incolla",
+	"pasteAsPlainTextOption": "Incolla come testo semplice",
 	"toast": {
 		"copyText": "Testo messaggio copiato",
 		"attachmentIsLoading": "Allegato in caricamento, attendere prego",

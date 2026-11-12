@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "画像を貼り付け",
 	"pasteOption": "貼り付け",
+	"pasteAsPlainTextOption": "プレーンテキストとして貼り付け",
 	"toast": {
 		"copyText": "メッセージテキストをコピーしました",
 		"attachmentIsLoading": "添付ファイルはロード中、少々お待ちください",
