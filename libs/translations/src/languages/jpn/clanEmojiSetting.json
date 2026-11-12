@@ -37,5 +37,10 @@
 	},
 	"image": "画像",
 	"name": "名前",
-	"uploadedBy": "アップロード元"
+	"uploadedBy": "アップロード元",
+	"deleteModal": {
+		"title": "絵文字を削除",
+		"message": "{{name}} を削除してもよろしいですか？この操作は元に戻せません。",
+		"success": "{{name}} を削除しました"
+	}
 }

@@ -13,7 +13,7 @@ import {
 } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { IEmbedProps } from '@mezon/utils';
-import { IMessageTypeCallLog, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { IMessageTypeCallLog, createImgproxyUrl, ensureMediaPermission, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -111,6 +111,8 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 			);
 			return;
 		}
+
+		if (!(await ensureMediaPermission('microphone', () => void handleCall()))) return;
 
 		try {
 			const response = await createDirectMessageWithUser(userId, displayName || username, username, avatar);

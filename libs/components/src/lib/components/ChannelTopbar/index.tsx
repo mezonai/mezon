@@ -661,8 +661,14 @@ const DmTopbarTools = memo(() => {
 
 	useEffect(() => {
 		if (selectOpenVoice?.open && currentDmGroup?.id === selectOpenVoice?.channelId) {
-			startCallDM(selectOpenVoice?.hasVideo, selectOpenVoice?.channelId, selectOpenVoice?.userId);
+			const { hasVideo, channelId, userId } = selectOpenVoice;
 			dispatch(audioCallActions.setCloseVoiceCall());
+			const start = () => {
+				if (!selectIsInCall(getStore().getState())) startCallDM(hasVideo, channelId, userId);
+			};
+			void ensureMediaPermission('microphone', start).then((granted) => {
+				if (granted) start();
+			});
 		}
 	}, [selectOpenVoice, currentDmGroup, sendMessage]);
 

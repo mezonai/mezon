@@ -37,5 +37,10 @@
 	},
 	"image": "AFBEELDING",
 	"name": "NAAM",
-	"uploadedBy": "UPLOADED DOOR"
+	"uploadedBy": "UPLOADED DOOR",
+	"deleteModal": {
+		"title": "Emoji verwijderen",
+		"message": "Weet je zeker dat je {{name}} wilt verwijderen? Deze actie is onherroepelijk.",
+		"success": "{{name}} is verwijderd"
+	}
 }

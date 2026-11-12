@@ -210,10 +210,8 @@ function PrivateChannel({
 			onClick={onClick}
 			className={`px-0.1 items-center rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
-			{channelLabel ? null : isLink ? <MezonIcon icon={MzIcons16.mzChannel} /> : <MezonIcon icon={MzIcons16.mzLock} />}
-			<span className={`${isLink ? 'italic' : ''}`}>
-				{channelLabel && !checkGetChannelData ? channelLabel : isLink ? t('unknown') : t('noAccess')}
-			</span>
+			{channelLabel ? null : <MezonIcon icon={MzIcons16.mzLock} />}
+			<span className={`${isLink ? 'italic' : ''}`}>{channelLabel && !checkGetChannelData ? channelLabel : t('noAccess')}</span>
 		</span>
 	);
 }

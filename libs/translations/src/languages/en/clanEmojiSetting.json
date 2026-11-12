@@ -37,5 +37,10 @@
 	},
 	"image": "IMAGE",
 	"name": "NAME",
-	"uploadedBy": "UPLOADED BY"
+	"uploadedBy": "UPLOADED BY",
+	"deleteModal": {
+		"title": "Delete Emoji",
+		"message": "Are you sure you want to delete {{name}}? This cannot be undone.",
+		"success": "{{name}} has been deleted"
+	}
 }

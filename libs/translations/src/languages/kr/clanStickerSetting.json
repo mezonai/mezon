@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "스티커가 없습니다"
 		}
+	},
+	"deleteModal": {
+		"title": "스티커 삭제",
+		"message": "{{name}}을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+		"success": "{{name}}이(가) 삭제되었습니다"
 	}
 }

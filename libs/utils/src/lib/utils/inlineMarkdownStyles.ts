@@ -61,10 +61,18 @@ function canOpenStyle(text: string, pos: number, runEnd: number, end: number): b
 	if (runEnd >= end || WHITESPACE_RE.test(text[runEnd])) {
 		return false;
 	}
-	if (ch === '_' && pos > 0 && ALPHANUMERIC_END_RE.test(text.slice(Math.max(0, pos - 2), pos))) {
+	if (isIntrawordMarker(text, pos, len)) {
 		return false;
 	}
 	return true;
+}
+
+function isIntrawordMarker(text: string, pos: number, len: number): boolean {
+	const ch = text[pos];
+	if (ch !== '_' && !(ch === '*' && len === 1)) {
+		return false;
+	}
+	return pos > 0 && ALPHANUMERIC_END_RE.test(text.slice(Math.max(0, pos - 2), pos));
 }
 
 function canCloseStyle(text: string, openEnd: number, close: number, closeEnd: number): boolean {
@@ -74,7 +82,8 @@ function canCloseStyle(text: string, openEnd: number, close: number, closeEnd: n
 	if (!/\S/.test(text.slice(openEnd, close))) {
 		return false;
 	}
-	if (text[close] === '_' && closeEnd < text.length && ALPHANUMERIC_START_RE.test(text.slice(closeEnd, closeEnd + 2))) {
+	const closesIntraword = text[close] === '_' || (text[close] === '*' && closeEnd - close === 1);
+	if (closesIntraword && closeEnd < text.length && ALPHANUMERIC_START_RE.test(text.slice(closeEnd, closeEnd + 2))) {
 		return false;
 	}
 	return true;
@@ -105,6 +114,10 @@ function findStyleClose(text: string, open: number, len: number, end: number, pr
 			}
 			j = kEnd;
 		} else if (ch === '*') {
+			if (isIntrawordMarker(text, j, kLen)) {
+				j = kEnd;
+				continue;
+			}
 			if (canOpenStyle(text, j, kEnd, end)) {
 				const nestedClose = findStyleClose(text, j, kLen, end, protectedEndAt);
 				if (nestedClose !== -1) {

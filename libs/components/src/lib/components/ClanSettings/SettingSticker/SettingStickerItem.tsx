@@ -4,7 +4,11 @@ import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { EPermission, createImgproxyUrl, generateE2eId, getSrcSticker } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import ModalConfirm from '../../ModalConfirm';
 
 type SettingEmojiListProps = {
 	updateSticker: (sticker: ClanSticker) => void;
@@ -12,22 +16,38 @@ type SettingEmojiListProps = {
 };
 
 const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) => {
+	const { t } = useTranslation('clanStickerSetting');
 	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, sticker.creator_id ?? ''));
 	const dispatch = useAppDispatch();
 	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const hasDeleteOrEditPermission = useMemo(() => {
 		return canManageClan || currentUserId === sticker.creator_id;
-	}, [currentUserId, sticker.creator_id]);
+	}, [canManageClan, currentUserId, sticker.creator_id]);
 	const clanId = useSelector(selectCurrentClanId);
 	const handleUpdateSticker = () => {
 		updateSticker(sticker);
 	};
 	const handleDeleteSticker = async () => {
-		if (sticker.id) {
-			await dispatch(deleteSticker({ stickerId: sticker.id, clan_id: clanId as string, stickerLabel: sticker.shortname as string }));
+		closeDeleteModal();
+		if (!sticker.id) return;
+		const result = await dispatch(deleteSticker({ stickerId: sticker.id, clan_id: clanId as string, stickerLabel: sticker.shortname as string }));
+		if (deleteSticker.fulfilled.match(result)) {
+			toast.success(t('deleteModal.success', { name: sticker.shortname }));
 		}
 	};
+	const [openDeleteModal, closeDeleteModal] = useModal(
+		() => (
+			<ModalConfirm
+				handleCancel={closeDeleteModal}
+				handleConfirm={handleDeleteSticker}
+				title={t('deleteModal.title')}
+				buttonName={t('btn.delete')}
+				message={t('deleteModal.message', { name: sticker.shortname })}
+			/>
+		),
+		[sticker.id, sticker.shortname, clanId]
+	);
 	const avatarUrl = dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url;
 	return (
 		<div
@@ -74,7 +94,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 						<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)]" />
 					</button>
 					<button
-						onClick={handleDeleteSticker}
+						onClick={openDeleteModal}
 						className="aspect-square w-6 text-sm rounded-full bg-input-theme  flex items-center justify-center mb-[1px] font-medium text-red-600 shadow-sm"
 						data-e2e={generateE2eId('clan_page.settings.image_sticker.item.actions.delete')}
 					>

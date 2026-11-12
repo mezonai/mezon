@@ -6,7 +6,7 @@ import { processEntitiesDirectly } from './processEntitiesDirectly';
 jest.mock('../types', () => jest.requireActual('../types/messageLine'));
 
 describe('extractInlineStyles', () => {
-	it('parses *it*, _it_, ***bi***, ~~st~~, and mid*word*s', () => {
+	it('parses *it*, _it_, ***bi***, ~~st~~, and keeps a single * between letters or digits as text', () => {
 		expect(extractInlineStyles('*it*', [])).toEqual({
 			text: 'it',
 			entities: [{ type: 'MessageEntityItalic', offset: 0, length: 2 }]
@@ -30,9 +30,24 @@ describe('extractInlineStyles', () => {
 			entities: [{ type: 'MessageEntityStrike', offset: 0, length: 2 }]
 		});
 
-		expect(extractInlineStyles('mid*word*s', [])).toEqual({
-			text: 'midwords',
-			entities: [{ type: 'MessageEntityItalic', offset: 3, length: 4 }]
+		expect(extractInlineStyles('mid*word*s', [])).toEqual({ text: 'mid*word*s', entities: [] });
+		expect(extractInlineStyles('5*2=10, 3*4=12', [])).toEqual({ text: '5*2=10, 3*4=12', entities: [] });
+		expect(extractInlineStyles('foo*.rs, bar*.toml', [])).toEqual({ text: 'foo*.rs, bar*.toml', entities: [] });
+		expect(extractInlineStyles('a *b*c d', [])).toEqual({ text: 'a *b*c d', entities: [] });
+	});
+
+	it('keeps bold between letters and lets a literal * live inside a bold run', () => {
+		expect(extractInlineStyles('mid**word**bold', [])).toEqual({
+			text: 'midwordbold',
+			entities: [{ type: 'MessageEntityBold', offset: 3, length: 4 }]
+		});
+		expect(extractInlineStyles('**5*2=10**', [])).toEqual({
+			text: '5*2=10',
+			entities: [{ type: 'MessageEntityBold', offset: 0, length: 6 }]
+		});
+		expect(extractInlineStyles('see *this* and 2*3', [])).toEqual({
+			text: 'see this and 2*3',
+			entities: [{ type: 'MessageEntityItalic', offset: 4, length: 4 }]
 		});
 	});
 

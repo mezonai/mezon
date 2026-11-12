@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "Nie ma jeszcze naklejek"
 		}
+	},
+	"deleteModal": {
+		"title": "Usuń naklejkę",
+		"message": "Czy na pewno chcesz usunąć {{name}}? Tej akcji nie można cofnąć.",
+		"success": "Usunięto {{name}}"
 	}
 }

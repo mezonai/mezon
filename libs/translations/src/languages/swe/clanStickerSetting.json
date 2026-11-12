@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "Inga stickers än"
 		}
+	},
+	"deleteModal": {
+		"title": "Ta bort sticker",
+		"message": "Är du säker på att du vill ta bort {{name}}? Denna åtgärd kan inte ångras.",
+		"success": "{{name}} har tagits bort"
 	}
 }

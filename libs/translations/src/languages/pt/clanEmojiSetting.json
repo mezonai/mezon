@@ -37,5 +37,10 @@
 	},
 	"image": "IMAGEM",
 	"name": "NOME",
-	"uploadedBy": "CARREGADO POR"
+	"uploadedBy": "CARREGADO POR",
+	"deleteModal": {
+		"title": "Excluir emoji",
+		"message": "Tem certeza de que deseja excluir {{name}}? Esta ação não pode ser desfeita.",
+		"success": "{{name}} foi excluído"
+	}
 }

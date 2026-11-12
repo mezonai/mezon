@@ -80,7 +80,7 @@ import {
 	type ScreenShareMode
 } from './screenShareQuality';
 
-import { SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
+import { SfuCameraUplinkQuality, SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SFU_DUPLICATE_SESSION_CLOSE_CODE, SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
 import { SFU_MEDIA_POOL_VERSION, SfuSlotAssignments } from './sfuSlotAssignments';
 import { isStillSpeaking, isSwappableTile, pickTileToSwapOut, speakerRecency } from './speakerSpotlight';
@@ -590,6 +590,7 @@ export function MezonSfuVoiceRoom({
 	const changingScreenShareModeRef = useRef(false);
 	const cameraTrackRef = useRef<MediaStreamTrack | null>(null);
 	const cameraQualityTierRef = useRef(0);
+	const cameraCountTierRef = useRef(0);
 	const localTracksAddedRef = useRef(false);
 	const negotiatingRef = useRef(false);
 	const joinedRef = useRef(false);
@@ -642,6 +643,7 @@ export function MezonSfuVoiceRoom({
 	}, [onRefreshToken]);
 	const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
 	const [weakNetwork, setWeakNetwork] = useState(false);
+	const [cameraUplinkLimited, setCameraUplinkLimited] = useState(false);
 	const weakNetworkRef = useRef(weakNetwork);
 	weakNetworkRef.current = weakNetwork;
 	const [error, setError] = useState<string>();
@@ -818,16 +820,23 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		if (connectionState !== 'connected') {
 			setWeakNetwork(false);
+			setCameraUplinkLimited(false);
 			return;
 		}
 		let cancelled = false;
 		const quality = new SfuNetworkQuality();
+		const uplinkQuality = new SfuNetworkQuality('uplink');
+		const cameraUplink = new SfuCameraUplinkQuality();
 		const timer = window.setInterval(() => {
 			const pc = pcRef.current;
 			if (!pc) return;
 			void withSfuTimeout(pc.getStats(), 2000)
 				.then((report) => {
-					if (!cancelled && pcRef.current === pc) setWeakNetwork(quality.isWeak(report));
+					if (cancelled || pcRef.current !== pc) return;
+					setWeakNetwork(quality.isWeak(report));
+					const uplinkLossy = uplinkQuality.isWeak(report);
+					const encoderLimited = cameraUplink.isLimited(report, cameraTierAt(cameraQualityTierRef.current).kbps * 1000);
+					setCameraUplinkLimited(uplinkLossy || encoderLimited);
 				})
 				.catch(() => undefined);
 		}, NETWORK_QUALITY_INTERVAL_MS);
@@ -2755,21 +2764,26 @@ export function MezonSfuVoiceRoom({
 
 	useEffect(() => {
 		const currentTier = cameraQualityTierRef.current;
-		const nextTier = resolveCameraTier(activeCameraCount, currentTier);
-		if (nextTier === currentTier) return;
+		const countTier = resolveCameraTier(activeCameraCount, cameraCountTierRef.current);
+		const nextTier = cameraUplinkLimited ? Math.min(countTier + 1, CAMERA_TIERS.length - 1) : countTier;
+		if (nextTier === currentTier) {
+			cameraCountTierRef.current = countTier;
+			return;
+		}
 		const timer = setTimeout(
 			() => {
 				void (async () => {
 					const cameraTrack = cameraTrackRef.current;
-					if (cameraTrack?.readyState === 'live') await cameraTrack.applyConstraints(getCameraConstraints(nextTier));
+					if (cameraTrack?.readyState === 'live') await cameraTrack.applyConstraints(getCameraConstraints(nextTier)).catch(() => undefined);
 					if (pcRef.current) await applyVideoEncodingParams(pcRef.current, nextTier);
+					cameraCountTierRef.current = countTier;
 					cameraQualityTierRef.current = nextTier;
 				})().catch(() => undefined);
 			},
 			nextTier > currentTier ? CAMERA_TIER_DOWNGRADE_MS : CAMERA_TIER_UPGRADE_MS
 		);
 		return () => clearTimeout(timer);
-	}, [activeCameraCount]);
+	}, [activeCameraCount, cameraUplinkLimited]);
 
 	const handleParticipantAction = useCallback(
 		async (action: 'mute' | 'kick', participantId: string) => {
@@ -3143,7 +3157,7 @@ export function MezonSfuVoiceRoom({
 	}, [isLocalAudioEnabled, outgoingLocalAudioTrack, participants]);
 	useSfuCallRecorder({ tiles: recordingTiles, audioSources: recordingAudioSources });
 	useRecordingBroadcast();
-	const gridLayout = useSfuGridLayout(gridElRef, conferenceTiles.length);
+	const gridLayout = useSfuGridLayout(gridElRef, conferenceTiles.length, isGridView);
 
 	if (isGridView && activeSpeakerId && gridLayout.maxTiles > 0) {
 		const activeSpeakerIndex = gridTileOrderRef.current.findIndex((id) => tilesById.get(id)?.participantId === activeSpeakerId);

@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Sound konnte nicht hochgeladen werden",
 		"characters": "Der Name muss zwischen 3 und 64 Zeichen lang sein",
 		"errorName": "Der Name des Soundeffekts muss zwischen {{min}} und {{max}} Zeichen lang sein und darf nur Buchstaben, Zahlen, _ und - enthalten."
+	},
+	"deleteModal": {
+		"title": "Soundeffekt löschen",
+		"message": "Möchtest du {{name}} wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+		"success": "{{name}} wurde gelöscht"
 	}
 }

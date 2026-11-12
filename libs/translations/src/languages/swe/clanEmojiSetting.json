@@ -37,5 +37,10 @@
 	},
 	"image": "BILD",
 	"name": "NAMN",
-	"uploadedBy": "UPPLADDAD AV"
+	"uploadedBy": "UPPLADDAD AV",
+	"deleteModal": {
+		"title": "Ta bort uttryck",
+		"message": "Är du säker på att du vill ta bort {{name}}? Denna åtgärd kan inte ångras.",
+		"success": "{{name}} har tagits bort"
+	}
 }
