@@ -24,6 +24,7 @@ import './highlight-github-dark.scss';
 
 type MarkdownContentOpt = {
 	content?: string;
+	linkLabel?: string;
 	isJumMessageEnabled: boolean;
 	isTokenClickAble: boolean;
 	isInPinMsg?: boolean;
@@ -118,13 +119,14 @@ function highlightCode(text: string, language: string | null): Root | null {
 
 type LinkContentProps = {
 	content: string;
+	linkLabel?: string;
 	messageId?: string;
 	isJumMessageEnabled: boolean;
 	isTokenClickAble: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEnabled, isTokenClickAble, onContextMenu }) => {
+const LinkContent = memo<LinkContentProps>(({ content, linkLabel, messageId, isJumMessageEnabled, isTokenClickAble, onContextMenu }) => {
 	const { t } = useTranslation('common');
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
@@ -308,18 +310,19 @@ const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEn
 		[content, messageId, showMessageContextMenu, onContextMenu]
 	);
 
-	const isGoogleMaps = isGoogleMapsLink(content);
+	const isGoogleMaps = !linkLabel && isGoogleMapsLink(content);
 
 	return (
 		<a
 			href={content}
+			title={linkLabel ? content : undefined}
 			onClick={handleClickLink}
 			onContextMenu={handleContextMenu}
 			rel="noopener noreferrer"
 			className="text-blue-500 cursor-pointer break-words underline tagLink"
 			target="_blank"
 		>
-			{isGoogleMaps ? <span>{t('locationSharedMessage')}</span> : content}
+			{linkLabel ?? (isGoogleMaps ? <span>{t('locationSharedMessage')}</span> : content)}
 		</a>
 	);
 });
@@ -328,6 +331,7 @@ LinkContent.displayName = 'LinkContent';
 
 export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	content,
+	linkLabel,
 	isJumMessageEnabled,
 	isTokenClickAble,
 	isInPinMsg,
@@ -346,6 +350,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const posInNotification = !isJumMessageEnabled && !isTokenClickAble;
 	const posInReply = isJumMessageEnabled && !isTokenClickAble;
 	const isSocialLink =
+		!linkLabel &&
 		!isReply &&
 		isLink &&
 		content &&
@@ -358,6 +363,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 			{isLink && content && (
 				<LinkContent
 					content={content}
+					linkLabel={linkLabel}
 					messageId={messageId}
 					isJumMessageEnabled={isJumMessageEnabled}
 					isTokenClickAble={isTokenClickAble}

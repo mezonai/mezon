@@ -64,6 +64,7 @@ export * from './fragmentedMp4';
 export * from './heavyAnimation';
 export * from './hlsDownload';
 export * from './inlineMarkdownStyles';
+export * from './markdownBlocks';
 export * from './mediaDimensions';
 export * from './mergeRefs';
 export * from './parseHtmlAsFormattedText';
