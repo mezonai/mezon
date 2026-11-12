@@ -2,7 +2,7 @@ type MicrophoneHealth = { micExpected: boolean; captureHealthy: boolean; senderH
 type ReceiveProgress = { packets: number; samples?: number };
 type StreamLoss = { packets: number; lost: number };
 type LossWindow = { expected: number; lost: number };
-type LossDirection = 'received' | 'sent';
+type LossScope = 'network' | 'uplink';
 
 const WEAK_NETWORK_WARNING_LOSS_RATIO = 0.1;
 const WEAK_NETWORK_SEVERE_LOSS_RATIO = 0.2;
@@ -26,20 +26,22 @@ export class SfuNetworkQuality {
 	private badSamples = 0;
 	private cleanSamples = 0;
 
-	constructor(private readonly directions: readonly LossDirection[] = ['received', 'sent']) {}
+	constructor(private readonly scope: LossScope = 'network') {}
 
 	isWeak(report: RTCStatsReport): boolean {
 		const streams = new Map<string, StreamLoss>();
 		const received: LossWindow = { expected: 0, lost: 0 };
 		const sent: LossWindow = { expected: 0, lost: 0 };
-		const statsById = new Map<string, { kind?: string; mediaType?: string; packetsSent?: number }>();
+		const statsById = new Map<string, { kind?: string; mediaType?: string; mid?: string; packetsSent?: number }>();
 		report.forEach((stat) => statsById.set(stat.id, stat));
 		report.forEach((stat) => {
 			if (stat.type !== 'inbound-rtp' && stat.type !== 'remote-inbound-rtp') return;
 			if (typeof stat.packetsLost !== 'number') return;
 			const outbound = stat.type === 'remote-inbound-rtp' ? statsById.get(stat.localId) : undefined;
 			const media = outbound ?? stat;
-			if ((media.kind || media.mediaType) !== 'audio') return;
+			const kind = media.kind || media.mediaType;
+			const sentCamera = this.scope === 'uplink' && kind === 'video' && outbound?.mid === CAMERA_UPLINK_MID;
+			if (kind !== 'audio' && !sentCamera) return;
 			const packets = stat.type === 'inbound-rtp' ? stat.packetsReceived : outbound?.packetsSent;
 			if (typeof packets !== 'number') return;
 			streams.set(stat.id, { packets, lost: stat.packetsLost });
@@ -52,14 +54,12 @@ export class SfuNetworkQuality {
 			direction.expected += outbound ? packetsDelta : packetsDelta + lostDelta;
 		});
 		this.streams = streams;
-		const windows: Record<LossDirection, LossWindow> = { received, sent };
-		const ratios = this.directions
-			.map((direction) => windows[direction])
-			.filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS)
-			.map(({ expected, lost }) => lost / expected);
+		const windows = this.scope === 'uplink' ? [sent] : [received, sent];
+		const ratios = windows.filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS).map(({ expected, lost }) => lost / expected);
 		if (!ratios.length) {
 			this.badSamples = 0;
 			this.cleanSamples = 0;
+			if (this.scope === 'uplink') this.weak = false;
 			return this.weak;
 		}
 		const lossRatio = Math.max(...ratios);

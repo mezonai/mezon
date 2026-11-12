@@ -825,7 +825,7 @@ export function MezonSfuVoiceRoom({
 		}
 		let cancelled = false;
 		const quality = new SfuNetworkQuality();
-		const uplinkQuality = new SfuNetworkQuality(['sent']);
+		const uplinkQuality = new SfuNetworkQuality('uplink');
 		const cameraUplink = new SfuCameraUplinkQuality();
 		const timer = window.setInterval(() => {
 			const pc = pcRef.current;
