@@ -3198,7 +3198,7 @@ export function MezonSfuVoiceRoom({
 	}, [isLocalAudioEnabled, outgoingLocalAudioTrack, participants]);
 	useSfuCallRecorder({ tiles: recordingTiles, audioSources: recordingAudioSources });
 	useRecordingBroadcast();
-	const gridLayout = useSfuGridLayout(gridElRef, conferenceTiles.length);
+	const gridLayout = useSfuGridLayout(gridElRef, conferenceTiles.length, isGridView);
 
 	if (isGridView && activeSpeakerId && gridLayout.maxTiles > 0) {
 		const activeSpeakerIndex = gridTileOrderRef.current.findIndex((id) => tilesById.get(id)?.participantId === activeSpeakerId);
