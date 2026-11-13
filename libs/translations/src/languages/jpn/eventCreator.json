@@ -137,6 +137,7 @@
 		"channelEvent": "チャンネルイベント",
 		"privateEvent": "外部イベント",
 		"privateRoom": "外部会議室",
+		"privateChannel": "プライベートチャンネル",
 		"newEvent": "新規",
 		"share": "共有",
 		"noOneInterested": "このイベントに興味を持っている人はいません。"

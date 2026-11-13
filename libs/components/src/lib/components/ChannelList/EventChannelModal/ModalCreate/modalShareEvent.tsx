@@ -1,5 +1,4 @@
 import { useOnClickOutside } from '@mezon/core';
-import type { ChannelsEntity } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect, useRef } from 'react';
@@ -7,13 +6,14 @@ import { useTranslation } from 'react-i18next';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
 
 type ModalShareEventProps = {
-	channel: ChannelsEntity;
+	channelLabel?: string;
+	isPrivateVoice?: boolean;
 	setOpenModalShareEvent: React.Dispatch<React.SetStateAction<boolean>>;
 	link?: string;
 };
 
 const ModalShareEvent = (props: ModalShareEventProps) => {
-	const { channel, setOpenModalShareEvent, link } = props;
+	const { channelLabel, isPrivateVoice, setOpenModalShareEvent, link } = props;
 	const { t } = useTranslation('eventCreator');
 
 	const closeModal = () => {
@@ -62,8 +62,8 @@ const ModalShareEvent = (props: ModalShareEventProps) => {
 						</button>
 					</div>
 					<div className="pb-4 flex gap-x-2">
-						<MezonIcon icon={MzIcons20.mzSpeaker} />
-						<p>{channel.channel_label}</p>
+						<MezonIcon icon={isPrivateVoice ? MzIcons20.mzSpeakerLock : MzIcons20.mzSpeaker} />
+						<p>{channelLabel}</p>
 					</div>
 					<p className="pb-4">{t('eventDetail.shareLink')}</p>
 					<div className={`flex items-center dark:bg-black bg-gray-300 py-2 px-1 pr-2 rounded-lg border `}>

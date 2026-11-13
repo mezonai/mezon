@@ -78,6 +78,10 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const formatTimeI18n = useMemo(() => createI18nTimeFormatter(i18n.language), [i18n.language]);
 	const channelFirst = useSelector(selectChannelFirst);
 	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
+	const canViewVoice = Boolean(channelVoice?.channel_id);
+	const isPrivateVoice = Boolean(channelVoice?.channel_private) || (Boolean(voiceChannel) && !canViewVoice);
+	const voiceIcon = isPrivateVoice ? MzIcons20.mzSpeakerLock : MzIcons20.mzSpeaker;
+	const voiceLabel = canViewVoice || !voiceChannel ? channelVoice?.channel_label : t('eventCreator:eventDetail.privateChannel');
 	const textChannel = useAppSelector((state) => selectChannelById(state, textChannelId ?? '')) || {};
 	const isThread = textChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
@@ -355,10 +359,10 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				>
 					{checkOptionVoice &&
 						!isPrivateEvent &&
-						(isReviewEvent ? (
+						(isReviewEvent || !canViewVoice ? (
 							<span className="flex gap-x-2">
-								<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
-								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+								<MezonIcon icon={voiceIcon} className="text-[var(--mz-icon)]" />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{voiceLabel}</p>
 							</span>
 						) : (
 							<a
@@ -368,8 +372,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								}}
 								className="flex gap-x-2 cursor-pointer"
 							>
-								<MezonIcon icon={MzIcons20.mzSpeaker} className="text-[var(--mz-icon)]" />
-								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+								<MezonIcon icon={voiceIcon} className="text-[var(--mz-icon)]" />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{voiceLabel}</p>
 							</a>
 						))}
 					{checkOptionLocation && (
@@ -546,7 +550,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				</FloatingPortal>
 			)}
 			{openModalDelEvent && <ModalDelEvent event={event} setOpenModalDelEvent={setOpenModalDelEvent} />}
-			{openModalShare && <ModalShareEvent link={link} channel={channelVoice} setOpenModalShareEvent={setOpenModalShare} />}
+			{openModalShare && (
+				<ModalShareEvent link={link} channelLabel={voiceLabel} isPrivateVoice={isPrivateVoice} setOpenModalShareEvent={setOpenModalShare} />
+			)}
 		</div>
 	);
 };

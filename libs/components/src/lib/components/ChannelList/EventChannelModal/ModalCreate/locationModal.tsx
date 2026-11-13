@@ -2,7 +2,7 @@ import { useEscapeKeyClose } from '@mezon/core';
 import type { ChannelsEntity } from '@mezon/store';
 import { selectTheme } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
-import type { ContenSubmitEventProps } from '@mezon/utils';
+import type { ContentSubmitEventProps } from '@mezon/utils';
 import { OptionEvent, filterOptionReactSelect, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,19 +13,20 @@ import Select from 'react-select';
 import { customStyles } from '../../../NotificationSetting';
 
 export type LocationModalProps = {
-	contentSubmit: ContenSubmitEventProps;
+	contentSubmit: ContentSubmitEventProps;
 	voicesChannel: ChannelsEntity[];
 	textChannels: ChannelsEntity[];
 	choiceLocation: boolean;
 	choiceSpeaker: boolean;
 	choicePrivateEvent?: boolean;
 	handleOption: (optionEvent: string) => void;
-	setContentSubmit: React.Dispatch<React.SetStateAction<ContenSubmitEventProps>>;
+	setContentSubmit: React.Dispatch<React.SetStateAction<ContentSubmitEventProps>>;
 	onClose: () => void;
 	isEditEventAction?: boolean;
 	isClanEvent?: boolean;
 	isChannelEvent?: boolean;
 	isPrivateEvent?: boolean;
+	isAudienceRequired?: boolean;
 };
 
 type OptionType = {
@@ -49,7 +50,8 @@ const LocationModal = (props: LocationModalProps) => {
 		isEditEventAction = false,
 		isClanEvent = false,
 		isChannelEvent = false,
-		isPrivateEvent = false
+		isPrivateEvent = false,
+		isAudienceRequired = false
 	} = props;
 
 	const { t } = useTranslation('eventCreator');
@@ -279,7 +281,10 @@ const LocationModal = (props: LocationModalProps) => {
 			{displaySelectAudiences && (
 				<>
 					<div className="flex flex-col mb-2 mt-3">
-						<h3 className="text-xl text-center font-semibold  ">{t('screens.channelSelection.title')}</h3>
+						<h3 className="text-xl text-center font-semibold  ">
+							{t('screens.channelSelection.title')}
+							{isAudienceRequired && <span className="text-red-500 ml-1">*</span>}
+						</h3>
 						<p className=" text-center">{t('screens.channelSelection.description')}</p>
 					</div>
 

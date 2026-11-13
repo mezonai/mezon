@@ -121,6 +121,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 
 	const hasAddress = !!event?.address;
 	const hasVoiceChannel = !!event?.channel_voice_id && !!channelVoice?.channel_id;
+	const isHiddenVoiceChannel = !!event?.channel_voice_id && !channelVoice?.channel_id;
 	const isPrivateEvent = event?.is_private;
 
 	const handleStopPropagation = (e: any) => {
@@ -194,9 +195,18 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 						};
 						return (
 							<a {...linkProps} className="flex gap-x-3 cursor-pointer items-center">
-								<MezonIcon icon={MzIcons20.mzSpeaker} />
+								<MezonIcon icon={channelVoice?.channel_private ? MzIcons20.mzSpeakerLock : MzIcons20.mzSpeaker} />
 								<p className="hover:underline">{channelVoice?.channel_label}</p>
 							</a>
+						);
+					}
+
+					if (isHiddenVoiceChannel && !isPrivateEvent) {
+						return (
+							<>
+								<MezonIcon icon={MzIcons20.mzSpeakerLock} />
+								<p>{t('eventDetail.privateChannel')}</p>
+							</>
 						);
 					}
 
