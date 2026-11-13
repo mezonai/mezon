@@ -266,5 +266,6 @@
 		"noVotesYet": "No votes yet",
 		"pollLabel": "[Poll]",
 		"failedToCreatePoll": "Failed to create poll"
-	}
+	},
+	"failAttachment": "File upload failed"
 }

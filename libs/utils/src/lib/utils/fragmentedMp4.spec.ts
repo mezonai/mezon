@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { FragmentedMp4Indexer, finalizedMp4Blob } from './fragmentedMp4';
+import { FragmentedMp4Indexer, finalizedMp4Blob, fragmentedMp4Playlist } from './fragmentedMp4';
 
 function concat(...parts: Uint8Array[]): Uint8Array {
 	let total = 0;
@@ -64,8 +64,9 @@ function buildMdhd(timescale: number, duration = 0, version = 0): Uint8Array {
 	return fullBox('mdhd', 1, 0, u64(0n), u64(0n), u32(timescale), u64(BigInt(duration)), u32(0));
 }
 
-function buildTrak(trackId: number, mediaTimescale: number, version = 0): Uint8Array {
-	const mdia = box('mdia', buildMdhd(mediaTimescale, 0, version), box('minf', box('stbl')));
+function buildTrak(trackId: number, mediaTimescale: number, version = 0, handler?: string): Uint8Array {
+	const hdlr = handler ? fullBox('hdlr', 0, 0, u32(0), ascii(handler), new Uint8Array(13)) : new Uint8Array(0);
+	const mdia = box('mdia', buildMdhd(mediaTimescale, 0, version), hdlr, box('minf', box('stbl')));
 	return box('trak', buildTkhd(trackId, 0, version), mdia);
 }
 
@@ -394,5 +395,205 @@ describe('FragmentedMp4Indexer', () => {
 		expect(fin!.head.length).toBe(moovLarge.length);
 		const view = new DataView(fin!.head.buffer, fin!.head.byteOffset, fin!.head.byteLength);
 		expect(view.getBigUint64(16 + 8 + 24, false)).toBe(5_000_002_000n);
+	});
+});
+
+describe('fragmentedMp4Playlist', () => {
+	const SIGNED_URL = 'https://cdn.mezon.ai/1cf93b197d401000/recording.mp4?1791900000-c2lnbmF0dXJl';
+
+	function finalizeStream(raw: Uint8Array) {
+		const indexer = new FragmentedMp4Indexer();
+		indexer.push(raw);
+		const fin = indexer.finish()!;
+		const full = concat(raw.subarray(0, fin.headOffset), fin.head, raw.subarray(fin.headOffset + fin.head.length), fin.tail);
+		return { full, fin };
+	}
+
+	it('builds an exact VOD byte-range playlist from a finalized fragmented mp4', () => {
+		const ftyp = box('ftyp', ascii('isom'), u32(512), ascii('isom'), ascii('iso6'), ascii('mp41'));
+		const moov = box(
+			'moov',
+			buildMvhd(1000, 0),
+			buildTrak(1, 48000, 0, 'soun'),
+			buildTrak(2, 30000, 0, 'vide'),
+			box('mvex', buildTrex(1, 960), buildTrex(2, 0))
+		);
+		const audioBases = [0, 4800, 9600];
+		const videoBases = [0n, 3600n, 7500n];
+		const videoDurations = [
+			[1200, 1200, 1200],
+			[1300, 1300, 1300],
+			[1500, 1500, 1500]
+		];
+		const fragments: Uint8Array[] = [];
+		const offsets: number[] = [];
+		let cursor = ftyp.length + moov.length;
+		for (let i = 0; i < 3; i += 1) {
+			const moof = box(
+				'moof',
+				fullBox('mfhd', 0, 0, u32(i + 1)),
+				buildAudioTraf(1, audioBases[i], 5),
+				buildVideoTraf(2, videoBases[i], videoDurations[i])
+			);
+			const mdat = box('mdat', new Uint8Array(20 + i * 7));
+			offsets.push(cursor);
+			fragments.push(moof, mdat);
+			cursor += moof.length + mdat.length;
+		}
+		const raw = concat(ftyp, moov, ...fragments);
+		const { full, fin } = finalizeStream(raw);
+		const head = full.subarray(0, offsets[0] + 16);
+
+		expect(fragmentedMp4Playlist(SIGNED_URL, head, full.length, fin.tail)).toBe(
+			[
+				'#EXTM3U',
+				'#EXT-X-VERSION:7',
+				'#EXT-X-TARGETDURATION:1',
+				'#EXT-X-PLAYLIST-TYPE:VOD',
+				`#EXT-X-MAP:URI="${SIGNED_URL}",BYTERANGE="${offsets[0]}@0"`,
+				'#EXTINF:0.120,',
+				`#EXT-X-BYTERANGE:${offsets[1] - offsets[0]}@${offsets[0]}`,
+				SIGNED_URL,
+				'#EXTINF:0.130,',
+				`#EXT-X-BYTERANGE:${offsets[2] - offsets[1]}@${offsets[1]}`,
+				SIGNED_URL,
+				'#EXTINF:0.150,',
+				`#EXT-X-BYTERANGE:${raw.length - offsets[2]}@${offsets[2]}`,
+				SIGNED_URL,
+				'#EXT-X-ENDLIST',
+				''
+			].join('\n')
+		);
+	});
+
+	it('chooses the video track when audio comes first, and falls back to the first track when no video track exists', () => {
+		const ftyp = box('ftyp', ascii('isom'), u32(512), ascii('isom'));
+		const makeStream = (secondHandler: string) => {
+			const moov = box(
+				'moov',
+				buildMvhd(1000, 0),
+				buildTrak(1, 1000, 0, 'soun'),
+				buildTrak(2, 1000, 0, secondHandler),
+				box('mvex', buildTrex(1, 2000), buildTrex(2, 0))
+			);
+			const frag1 = concat(
+				box('moof', fullBox('mfhd', 0, 0, u32(1)), buildAudioTraf(1, 0, 1), buildVideoTraf(2, 0n, [3500])),
+				box('mdat', u32(1))
+			);
+			const frag2 = concat(
+				box('moof', fullBox('mfhd', 0, 0, u32(2)), buildAudioTraf(1, 2000, 1), buildVideoTraf(2, 3500n, [1500])),
+				box('mdat', u32(2))
+			);
+			return finalizeStream(concat(ftyp, moov, frag1, frag2));
+		};
+
+		const withVideo = makeStream('vide');
+		const videoPlaylist = fragmentedMp4Playlist(SIGNED_URL, withVideo.full.subarray(0, 16384), withVideo.full.length, withVideo.fin.tail);
+		expect(videoPlaylist).toContain('#EXT-X-TARGETDURATION:4\n');
+		expect(videoPlaylist).toContain('#EXTINF:3.500,\n');
+		expect(videoPlaylist).toContain('#EXTINF:1.500,\n');
+
+		const audioOnly = makeStream('meta');
+		const audioPlaylist = fragmentedMp4Playlist(SIGNED_URL, audioOnly.full.subarray(0, 16384), audioOnly.full.length, audioOnly.fin.tail);
+		expect(audioPlaylist).toContain('#EXT-X-TARGETDURATION:3\n');
+		expect(audioPlaylist).toContain('#EXTINF:2.000,\n');
+		expect(audioPlaylist).toContain('#EXTINF:3.000,\n');
+	});
+
+	it('returns undefined when moov has no mvex', () => {
+		const sample = buildSyntheticFmp4();
+		const { full, fin } = finalizeStream(sample.bytes);
+		const normalMoov = box('moov', buildMvhd(1000, 317), buildTrak(1, 48000, 0, 'soun'), buildTrak(2, 30000, 0, 'vide'));
+		const normalHead = concat(sample.ftyp, normalMoov, box('mdat', new Uint8Array(32)));
+
+		expect(fragmentedMp4Playlist(SIGNED_URL, normalHead, full.length, fin.tail)).toBeUndefined();
+	});
+
+	it('returns undefined when moof is beyond head or moov is truncated in head', () => {
+		const sample = buildSyntheticFmp4();
+		const { full, fin } = finalizeStream(sample.bytes);
+		const initEnd = sample.moofOffsets[0];
+
+		expect(fragmentedMp4Playlist(SIGNED_URL, full.subarray(0, initEnd), full.length, fin.tail)).toBeUndefined();
+		expect(fragmentedMp4Playlist(SIGNED_URL, full.subarray(0, initEnd + 4), full.length, fin.tail)).toBeUndefined();
+		expect(fragmentedMp4Playlist(SIGNED_URL, full.subarray(0, sample.ftyp.length + 16), full.length, fin.tail)).toBeUndefined();
+	});
+
+	it('returns undefined when mfra offsets do not start at initEnd, are not strictly increasing, or exceed the mfra start', () => {
+		const sample = buildSyntheticFmp4();
+		const { full, fin } = finalizeStream(sample.bytes);
+		const initEnd = sample.moofOffsets[0];
+		const dataEnd = full.length - fin.tail.length;
+
+		const makeCustomMfra = (offsets: number[]) => {
+			const entries = concat(...offsets.map((off, idx) => concat(u32(idx * 1000), u32(off), new Uint8Array([1, 1, 1]))));
+			const tfra = fullBox('tfra', 0, 0, u32(1), u32(0), u32(offsets.length), entries);
+			const totalSize = 8 + tfra.length + 16;
+			const mfro = fullBox('mfro', 0, 0, u32(totalSize));
+			return box('mfra', tfra, mfro);
+		};
+
+		const badStart = makeCustomMfra([initEnd + 8, sample.moofOffsets[1]]);
+		expect(fragmentedMp4Playlist(SIGNED_URL, full, dataEnd + badStart.length, badStart)).toBeUndefined();
+
+		const nonIncreasing = makeCustomMfra([initEnd, initEnd]);
+		expect(fragmentedMp4Playlist(SIGNED_URL, full, dataEnd + nonIncreasing.length, nonIncreasing)).toBeUndefined();
+
+		const outOfRange = makeCustomMfra([initEnd, dataEnd]);
+		expect(fragmentedMp4Playlist(SIGNED_URL, full, dataEnd + outOfRange.length, outOfRange)).toBeUndefined();
+
+		const emptyTfra = makeCustomMfra([]);
+		expect(fragmentedMp4Playlist(SIGNED_URL, full, dataEnd + emptyTfra.length, emptyTfra)).toBeUndefined();
+	});
+
+	it('parses v1 tfra boxes with 64-bit times, variable length sizes, and falls back when mvhd duration is zero', () => {
+		const ftyp = box('ftyp', ascii('isom'), u32(512), ascii('isom'));
+		const moov = box('moov', buildMvhd(1000, 0, 1), buildTrak(1, 1_000_000, 1, 'vide'), box('mvex', buildTrex(1, 0)));
+		const frag1 = concat(box('moof', fullBox('mfhd', 0, 0, u32(1))), box('mdat', new Uint8Array(24)));
+		const frag2 = concat(box('moof', fullBox('mfhd', 0, 0, u32(2))), box('mdat', new Uint8Array(32)));
+		const initEnd = ftyp.length + moov.length;
+		const secondOffset = initEnd + frag1.length;
+		const dataEnd = secondOffset + frag2.length;
+
+		const entries = concat(
+			u64(5_000_000_000n),
+			u64(BigInt(initEnd)),
+			u32(1),
+			u32(1),
+			u32(1),
+			u64(5_004_250_000n),
+			u64(BigInt(secondOffset)),
+			u32(1),
+			u32(1),
+			u32(1)
+		);
+		const tfra = fullBox('tfra', 1, 0, u32(1), u32(0x3f), u32(2), entries);
+		const mfraSize = 8 + tfra.length + 16;
+		const mfra = box('mfra', tfra, fullBox('mfro', 0, 0, u32(mfraSize)));
+		const full = concat(ftyp, moov, frag1, frag2, mfra);
+
+		expect(fragmentedMp4Playlist(SIGNED_URL, full.subarray(0, secondOffset), full.length, mfra)).toBe(
+			[
+				'#EXTM3U',
+				'#EXT-X-VERSION:7',
+				'#EXT-X-TARGETDURATION:5',
+				'#EXT-X-PLAYLIST-TYPE:VOD',
+				`#EXT-X-MAP:URI="${SIGNED_URL}",BYTERANGE="${initEnd}@0"`,
+				'#EXTINF:4.250,',
+				`#EXT-X-BYTERANGE:${frag1.length}@${initEnd}`,
+				SIGNED_URL,
+				'#EXTINF:4.250,',
+				`#EXT-X-BYTERANGE:${dataEnd - secondOffset}@${secondOffset}`,
+				SIGNED_URL,
+				'#EXT-X-ENDLIST',
+				''
+			].join('\n')
+		);
+
+		const singleEntry = concat(u64(0n), u64(BigInt(initEnd)), new Uint8Array([1, 1, 1]));
+		const singleTfra = fullBox('tfra', 1, 0, u32(1), u32(0), u32(1), singleEntry);
+		const singleMfra = box('mfra', singleTfra, fullBox('mfro', 0, 0, u32(8 + singleTfra.length + 16)));
+		const singleFull = concat(ftyp, moov, frag1, singleMfra);
+		expect(fragmentedMp4Playlist(SIGNED_URL, singleFull.subarray(0, initEnd + 8), singleFull.length, singleMfra)).toContain('#EXTINF:1.000,\n');
 	});
 });

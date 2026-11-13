@@ -118,6 +118,7 @@ errorListenerMiddleware.startListening({
 		}
 
 		trackError(error);
+		if (error.config?.toast === false) return;
 
 		const toast = createErrorToast(error);
 

@@ -1,5 +1,5 @@
 import type { IEmojiOnMessage, IExtendedMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
-import { EBacktickType } from '../types';
+import { EBacktickType } from '../types/messageLine';
 
 const escapeHtml = (text: string): string => {
 	return text
@@ -87,77 +87,99 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 		}
 	});
 
+	const styleByRange = new Map<string, { s: number; e: number; bold: boolean; italic: boolean; strike: boolean }>();
+
 	markdown.forEach((mark: IMarkdownOnMessage) => {
 		if (mark.s !== undefined && mark.e !== undefined) {
-			const markdownText = text.substring(mark.s, mark.e);
-			let markdownFormatted = '';
+			if (mark.type === EBacktickType.PRE || mark.type === EBacktickType.CODE) {
+				const codeContent = text.substring(mark.s, mark.e);
+				const escapedCodeContent = escapeHtml(codeContent);
+				const markdownFormatted = mark.type === EBacktickType.PRE ? `\`\`\`${escapedCodeContent}\`\`\`` : `\`${escapedCodeContent}\``;
 
-			switch (mark.type) {
-				case EBacktickType.PRE:
-					markdownFormatted = `\`\`\`${markdownText}\`\`\``;
-					break;
-				case EBacktickType.CODE:
-					markdownFormatted = `\`${markdownText}\``;
-					break;
-				case EBacktickType.BOLD:
-					markdownFormatted = `**${markdownText}**`;
-					break;
-				// case EBacktickType.SINGLE:
-				//   markdownFormatted = `*${markdownText}*`;
-				//   break;
-				case EBacktickType.LINK:
-					markdownFormatted = markdownText;
-					break;
-				default:
-					markdownFormatted = markdownText;
-					break;
+				allEntities.push({
+					start: mark.s,
+					end: mark.e,
+					html: markdownFormatted,
+					type: 'markdown'
+				});
+			} else if (
+				mark.s < mark.e &&
+				(mark.type === EBacktickType.BOLD || mark.type === EBacktickType.ITALIC || mark.type === EBacktickType.STRIKE)
+			) {
+				const s = Math.max(0, mark.s);
+				const e = Math.min(text.length, mark.e);
+				if (s < e) {
+					const key = `${s}:${e}`;
+					const entry = styleByRange.get(key) ?? { s, e, bold: false, italic: false, strike: false };
+					if (mark.type === EBacktickType.BOLD) entry.bold = true;
+					if (mark.type === EBacktickType.ITALIC) entry.italic = true;
+					if (mark.type === EBacktickType.STRIKE) entry.strike = true;
+					styleByRange.set(key, entry);
+				}
 			}
+		}
+	});
 
-			allEntities.push({
-				start: mark.s,
-				end: mark.e,
-				html: markdownFormatted,
-				type: 'markdown'
-			});
+	const styleEntries = Array.from(styleByRange.values());
+	const styleMarkers: Array<{ s: number; e: number; marker: string; rank: number }> = [];
+
+	styleEntries.forEach((entry) => {
+		if (entry.strike) {
+			styleMarkers.push({ s: entry.s, e: entry.e, marker: '~~', rank: 3 });
+		}
+		if (entry.bold && entry.italic) {
+			styleMarkers.push({ s: entry.s, e: entry.e, marker: '***', rank: 2 });
+		} else if (entry.bold) {
+			styleMarkers.push({ s: entry.s, e: entry.e, marker: '**', rank: 1 });
+		} else if (entry.italic) {
+			const sharesBoundWithBold = styleEntries.some((other) => other !== entry && other.bold && (other.s === entry.s || other.e === entry.e));
+			styleMarkers.push({ s: entry.s, e: entry.e, marker: sharesBoundWithBold ? '_' : '*', rank: 0 });
 		}
 	});
 
 	allEntities.sort((a, b) => a.start - b.start);
 
-	let result = '';
-	let lastIndex = 0;
-
+	const splitPointSet = new Set<number>([0, text.length]);
 	allEntities.forEach((entity) => {
-		const beforeEntityText = text.substring(lastIndex, entity.start);
-		const escapedBeforeText = escapeHtml(beforeEntityText);
+		splitPointSet.add(Math.max(0, Math.min(text.length, entity.start)));
+		splitPointSet.add(Math.max(0, Math.min(text.length, entity.end)));
+	});
+	styleMarkers.forEach((sm) => {
+		splitPointSet.add(sm.s);
+		splitPointSet.add(sm.e);
+	});
+	const splitPoints = Array.from(splitPointSet).sort((a, b) => a - b);
 
-		result += escapedBeforeText;
+	let result = '';
+	let cursor = 0;
 
-		if (entity.type === 'markdown') {
-			const markdownMatch = markdown.find((m) => m.s === entity.start && m.e === entity.end);
-			if (markdownMatch && (markdownMatch.type === EBacktickType.PRE || markdownMatch.type === EBacktickType.CODE)) {
-				const codeContent = text.substring(entity.start, entity.end);
-				const escapedCodeContent = escapeHtml(codeContent);
-
-				if (markdownMatch.type === EBacktickType.PRE) {
-					result += `\`\`\`${escapedCodeContent}\`\`\``;
-				} else {
-					result += `\`${escapedCodeContent}\``;
-				}
-			} else {
-				result += entity.html;
-			}
-		} else {
-			result += entity.html;
+	while (cursor <= text.length) {
+		if (cursor > 0) {
+			const closing = styleMarkers.filter((sm) => sm.e === cursor).sort((a, b) => b.s - a.s || a.rank - b.rank);
+			closing.forEach((sm) => {
+				result += sm.marker;
+			});
 		}
 
-		lastIndex = entity.end;
-	});
+		if (cursor === text.length) {
+			break;
+		}
 
-	const remainingText = text.substring(lastIndex);
-	const escapedRemainingText = escapeHtml(remainingText);
+		const opening = styleMarkers.filter((sm) => sm.s === cursor).sort((a, b) => b.e - a.e || b.rank - a.rank);
+		opening.forEach((sm) => {
+			result += sm.marker;
+		});
 
-	result += escapedRemainingText;
+		const entityAtCursor = allEntities.find((entity) => entity.start === cursor && entity.end > cursor);
+		if (entityAtCursor) {
+			result += entityAtCursor.html;
+			cursor = entityAtCursor.end;
+		} else {
+			const nextPos = splitPoints.find((p) => p > cursor) ?? text.length;
+			result += escapeHtml(text.substring(cursor, nextPos));
+			cursor = nextPos;
+		}
+	}
 
 	return result;
 };

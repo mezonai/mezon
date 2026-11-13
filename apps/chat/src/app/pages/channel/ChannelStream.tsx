@@ -60,7 +60,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		if (currentStreamInfo.streamId !== currentChannel.id || (!streamPlay && currentStreamInfo?.streamId === currentChannel.id)) {
 			dispatch(appActions.setIsShowChatStream(false));
 		}
-	}, [currentChannel, currentStreamInfo, currentClanId, dispatch, streamPlay]);
+	}, [currentChannel?.id, currentChannel?.type, currentStreamInfo?.streamId, currentClanId, dispatch, streamPlay]);
 
 	const handleLeaveChannel = useCallback(() => {
 		joinRequestRef.current += 1;
@@ -103,7 +103,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	if (isWatching) {
 		const membersLabel = showMembers ? t('hideMembers') : t('showMembers');
 		return (
-			<div className="flex h-full w-full flex-col bg-[#11111b] p-4 max-md:p-2">
+			<div className="flex h-full w-full flex-col p-4 dark:bg-[var(--theme-setting-primary)] max-md:p-2">
 				<div className="min-h-0 flex-1">
 					<StreamStage channelId={channelId} poster={streamPoster} onLeave={handleLeaveChannel} />
 				</div>
@@ -128,7 +128,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	}
 
 	return (
-		<div className="flex h-full w-full items-center justify-center bg-gray-300 dark:bg-black">
+		<div className="flex h-full w-full items-center justify-center bg-gray-300 dark:bg-[var(--theme-setting-primary)]">
 			<div className="flex w-full max-w-md flex-col items-center gap-4 px-4 text-center">
 				{publisher ? (
 					<StreamPublisherAvatar publisher={publisher} className="!size-20 shrink-0" classNameText="font-semibold !text-3xl" />

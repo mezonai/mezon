@@ -12,7 +12,11 @@ import { EPermission, MAX_FILE_NAME_EMOJI, createImgproxyUrl, generateE2eId, get
 import type { ClanEmoji, MezonUpdateClanEmojiByIdBody } from 'mezon-js';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import ModalConfirm from '../../../ModalConfirm';
 
 type SettingEmojiItemProp = {
 	emoji: ClanEmoji;
@@ -20,6 +24,7 @@ type SettingEmojiItemProp = {
 };
 
 const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmojiItemProp) => {
+	const { t } = useTranslation('clanEmojiSetting');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const isUpdatingRef = useRef<boolean>(false);
 	const [showDelete, setShowDelete] = useState<boolean>(false);
@@ -35,9 +40,27 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 		return hasManageClanPermission || currentUserId === emoji.creator_id;
 	}, [hasManageClanPermission, currentUserId, emoji.creator_id]);
 
-	const handleDelete = () => {
-		dispatch(emojiSuggestionActions.deleteEmojiSetting({ emoji, clan_id: clanId as string, label: emoji.shortname as string }));
+	const handleDelete = async () => {
+		closeDeleteModal();
+		const result = await dispatch(
+			emojiSuggestionActions.deleteEmojiSetting({ emoji, clan_id: clanId as string, label: emoji.shortname as string })
+		);
+		if (emojiSuggestionActions.deleteEmojiSetting.fulfilled.match(result)) {
+			toast.success(t('deleteModal.success', { name: emoji.shortname }));
+		}
 	};
+	const [openDeleteModal, closeDeleteModal] = useModal(
+		() => (
+			<ModalConfirm
+				handleCancel={closeDeleteModal}
+				handleConfirm={handleDelete}
+				title={t('deleteModal.title')}
+				buttonName={t('emojiList.delete')}
+				message={t('deleteModal.message', { name: emoji.shortname })}
+			/>
+		),
+		[emoji, clanId]
+	);
 	const handleOnMouseLeave = () => {
 		setShowDelete(false);
 	};
@@ -82,7 +105,6 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 			handleUpdateEmoji();
 		}
 	};
-	const avatarDefault = dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username || '';
 	const avatarUrl = dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url;
 	const handleInputFocus = () => {
 		setIsInputFocused(true);
@@ -168,7 +190,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 				{showDelete && (
 					<div className={'absolute text-xs font-bold w-6 top-[-12px] right-[-12px]'}>
 						<button
-							onClick={handleDelete}
+							onClick={openDeleteModal}
 							className="border-theme-primary text-red-600 shadow-emoji_item-delete  text-xs font-bold w-6 h-6 flex items-center justify-center rounded-[50%]"
 							data-e2e={generateE2eId('clan_page.settings.emoji.item.actions.delete')}
 						>

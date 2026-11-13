@@ -266,5 +266,6 @@
 		"pollLabel": "[Сораштыру]",
 		"failedToCreatePoll": "Сораштыру төзеп булмады"
 	},
-	"turnOffAnonymousToCreateTopic": "Тема ясаганчы аноним режимны сүндерегез"
+	"turnOffAnonymousToCreateTopic": "Тема ясаганчы аноним режимны сүндерегез",
+	"failAttachment": "Файлны йөкләп булмады"
 }

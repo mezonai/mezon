@@ -177,7 +177,7 @@ function MyApp() {
 	const isShowPopupQuickMess = useSelector(selectIsShowPopupQuickMess);
 
 	const streamStyle = isShowChatStream
-		? { width: `calc(100vw - ${chatStreamWidth}px - 352px)`, right: `${chatStreamWidth + 8}px` }
+		? { width: `calc(100vw - ${chatStreamWidth}px - 344px)`, right: `${chatStreamWidth}px` }
 		: { width: closeMenu ? undefined : `calc(100vw - 344px)`, right: '0' };
 
 	const previewMode = useSelector(selectOnboardingMode);
@@ -366,7 +366,7 @@ const SidebarMenu = memo(
 										title={t('discover')}
 									>
 										<div className="w-[40px] h-[40px] rounded-xl theme-base-color flex justify-center items-center  cursor-pointer transition-all bg-add-clan-hover duration-200 size-12">
-											<MezonIcon icon={MzIcons20.mzDiscover} className="text-[var(--mz-icon)]" />
+											<MezonIcon icon={MzIcons20.mzDiscover} className="text-[var(--mz-icon)] group-hover:text-white" />
 										</div>
 									</div>
 								</NavLinkComponent>

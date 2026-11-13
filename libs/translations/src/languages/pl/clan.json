@@ -34,6 +34,7 @@
 		"categoryName": "Nazwa kategorii",
 		"categoryNamePlaceholder": "Wpisz nazwę swojej kategorii tutaj...",
 		"hasWelcomeChannelError": "Ta kategoria ma kanał powitalny",
+		"hasChannelError": "Nie można usunąć kategorii z kanałami.",
 		"deleteCategory": "Usuń kategorię",
 		"deleteCategoryTitle": "Usuń kategorię",
 		"deleteCategoryButton": "Usuń kategorię",

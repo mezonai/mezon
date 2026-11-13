@@ -1,67 +1,82 @@
-import type { EBacktickType, IMarkdownOnMessage } from '@mezon/utils';
-import { ETokenMessage, convertMarkdown, parseHtmlAsFormattedText, processMarkdownEntities } from '@mezon/utils';
+import type { IMarkdownOnMessage } from '@mezon/utils';
+import { EBacktickType, parseHtmlAsFormattedText, processMarkdownEntities, sanitizeHref } from '@mezon/utils';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { MarkdownContent } from '../../MarkdownFormatText/MarkdownContent';
-import type { ElementToken } from '../../MessageWithUser/MessageLine';
 
 interface EmbedDescriptionProps {
 	description: string;
+	messageId?: string;
 }
 
-export function EmbedDescription({ description }: EmbedDescriptionProps) {
-	const { text, entities } = parseHtmlAsFormattedText(String(description || ''));
-	const markdownList: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
+const LINK_TYPES = new Set<string>([EBacktickType.LINK, EBacktickType.LINKYOUTUBE, EBacktickType.LINKFACEBOOK, EBacktickType.LINKTIKTOK]);
 
-	const mkm = markdownList.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS }));
-	const elements: ElementToken[] = [...mkm].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+function isWebUrl(value: string): boolean {
+	return /^https?:\/\//i.test(sanitizeHref(value) ?? '');
+}
 
-	let lastindex = 0;
+function renderMarkdown(item: IMarkdownOnMessage, value: string, key: string, messageId?: string): ReactNode {
+	if (LINK_TYPES.has(item.type as string)) {
+		if (!isWebUrl(value)) {
+			return <span key={key}>{value}</span>;
+		}
+		return (
+			<MarkdownContent
+				key={key}
+				isLink={true}
+				isTokenClickAble={true}
+				isJumMessageEnabled={false}
+				content={value}
+				typeOfBacktick={EBacktickType.LINK}
+				messageId={messageId}
+			/>
+		);
+	}
+
+	if (item.type === EBacktickType.BOLD) {
+		return <b key={key}>{value}</b>;
+	}
+
+	return (
+		<MarkdownContent
+			key={key}
+			isBacktick={true}
+			isTokenClickAble={false}
+			isJumMessageEnabled={false}
+			content={value}
+			isInPinMsg={false}
+			typeOfBacktick={item.type}
+		/>
+	);
+}
+
+export function EmbedDescription({ description, messageId }: EmbedDescriptionProps) {
 	const content = useMemo(() => {
-		const formattedContent: React.ReactNode[] = [];
+		const { text, entities } = parseHtmlAsFormattedText(String(description || ''));
+		const markdownList = [...processMarkdownEntities(text, entities)].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
+		const nodes: ReactNode[] = [];
+		let lastIndex = 0;
 
-		elements.forEach((element, index) => {
-			const s = element.s ?? 0;
-			const e = element.e ?? 0;
+		markdownList.forEach((item) => {
+			const s = item.s ?? 0;
+			const e = item.e ?? 0;
+			if (s < lastIndex) return;
 
-			const contentInElement = text?.substring(s, e);
-
-			if (lastindex < s) {
-				formattedContent.push(
-					<p key={`plain-${lastindex}`} className="whitespace-pre-line break-words">
-						{text?.slice(lastindex, s) ?? ''}
-					</p>
-				);
+			if (lastIndex < s) {
+				nodes.push(<span key={`plain-${lastIndex}`}>{text.slice(lastIndex, s)}</span>);
 			}
-
-			if (element.kindOf === ETokenMessage.MARKDOWNS) {
-				let content = contentInElement ?? '';
-				content = convertMarkdown(content, element.type as EBacktickType);
-				formattedContent.push(
-					<MarkdownContent
-						isBacktick={true}
-						isTokenClickAble={false}
-						isJumMessageEnabled={false}
-						key={`markdown-${index}-${s}-${contentInElement}`}
-						content={content}
-						isInPinMsg={false}
-						typeOfBacktick={element.type}
-					/>
-				);
-			}
-
-			lastindex = e;
+			nodes.push(renderMarkdown(item, text.slice(s, e), `markdown-${s}`, messageId));
+			lastIndex = e;
 		});
 
-		if (text && lastindex < text?.length) {
-			formattedContent.push(
-				<p key={`plain-${lastindex}-end`} className="whitespace-pre-line break-words">
-					{text.slice(lastindex)}
-				</p>
-			);
+		if (lastIndex < text.length) {
+			nodes.push(<span key={`plain-${lastIndex}`}>{text.slice(lastIndex)}</span>);
 		}
 
-		return formattedContent;
-	}, [elements]);
+		return nodes;
+	}, [description, messageId]);
 
-	return <div className="mt-2 text-sm text-theme-primary break-words">{content}</div>;
+	return (
+		<div className="mt-2 text-sm text-theme-primary whitespace-pre-line [overflow-wrap:anywhere] [&_*]:[overflow-wrap:anywhere]">{content}</div>
+	);
 }

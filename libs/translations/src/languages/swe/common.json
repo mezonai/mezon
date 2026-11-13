@@ -87,6 +87,8 @@
 	"confirm": "Bekräfta",
 	"everyoneWaitingInside": "Alla väntar på dig inuti",
 	"noOneInVoice": "Det finns ingen i rummet",
+	"joinAsSpeaker": "Gå med som talare",
+	"joinAsAudience": "Gå med som lyssnare",
 	"joining": "Ansluter...",
 	"joinVoice": "Gå med i röst",
 	"reset": "Återställ",

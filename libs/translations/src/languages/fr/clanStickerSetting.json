@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "Aucun autocollant pour le moment"
 		}
+	},
+	"deleteModal": {
+		"title": "Supprimer l'autocollant",
+		"message": "Voulez-vous vraiment supprimer {{name}} ? Cette action ne peut pas être annulée.",
+		"success": "{{name}} a été supprimé"
 	}
 }

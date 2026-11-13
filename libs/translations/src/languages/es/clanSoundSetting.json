@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Error al subir efecto de voz",
 		"characters": "El nombre debe tener entre 3 y 64 caracteres",
 		"errorName": "El nombre de voz debe tener entre {{min}} y {{max}} caracteres, solo letras, números, _ y - son permitidos"
+	},
+	"deleteModal": {
+		"title": "Eliminar efecto de voz",
+		"message": "¿Seguro que deseas eliminar {{name}}? Esta acción no se puede deshacer.",
+		"success": "Se eliminó {{name}}"
 	}
 }

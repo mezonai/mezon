@@ -266,5 +266,6 @@
 		"pollLabel": "[Röstning]",
 		"failedToCreatePoll": "Kunde inte skapa omröstningen"
 	},
-	"turnOffAnonymousToCreateTopic": "Stäng av anonymt läge innan du skapar ett ämne"
+	"turnOffAnonymousToCreateTopic": "Stäng av anonymt läge innan du skapar ett ämne",
+	"failAttachment": "Det gick inte att ladda upp filen"
 }

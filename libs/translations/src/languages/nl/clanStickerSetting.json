@@ -39,5 +39,10 @@
 		"sticker": {
 			"title": "Nog geen stickers"
 		}
+	},
+	"deleteModal": {
+		"title": "Sticker verwijderen",
+		"message": "Weet je zeker dat je {{name}} wilt verwijderen? Deze actie is onherroepelijk.",
+		"success": "{{name}} is verwijderd"
 	}
 }

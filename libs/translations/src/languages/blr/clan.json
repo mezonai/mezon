@@ -34,6 +34,7 @@
 		"categoryName": "Назва катэгорыі",
 		"categoryNamePlaceholder": "Увядзіце назву катэгорыі тут...",
 		"hasWelcomeChannelError": "У гэтай катэгорыі ёсць вітальны канал",
+		"hasChannelError": "Нельга выдаліць катэгорыю з каналамі.",
 		"deleteCategory": "Выдаліць катэгорыю",
 		"deleteCategoryTitle": "Выдаліць катэгорыю",
 		"deleteCategoryButton": "Выдаліць катэгорыю",

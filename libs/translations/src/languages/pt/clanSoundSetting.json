@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Não foi possível carregar o áudio",
 		"characters": "O nome deve ter de 3 a 64 caracteres",
 		"errorName": "O nome do efeito sonoro deve ter de {{min}} a {{max}} caracteres, contendo apenas letras, números, _ e -"
+	},
+	"deleteModal": {
+		"title": "Excluir efeito sonoro",
+		"message": "Tem certeza de que deseja excluir {{name}}? Esta ação não pode ser desfeita.",
+		"success": "{{name}} foi excluído"
 	}
 }

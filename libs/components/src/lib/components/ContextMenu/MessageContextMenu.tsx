@@ -151,7 +151,7 @@ function MessageContextMenu({
 	const dmChannelPrivate = useAppSelector((state) => selectDmChannelPrivateById(state, (currentDmId || '') as string));
 	const dmChannelId = useAppSelector((state) => selectDmChannelIdById(state, (currentDmId || '') as string));
 
-	const { createDirectMessageWithUser } = useDirect();
+	const { createDirectMessageWithUser } = useDirect({ suppressDeniedToast: true });
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const channelOrDirect = useMemo(() => {
@@ -200,7 +200,7 @@ function MessageContextMenu({
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
 	const isMyMessage = useMemo(() => {
-		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
+		return message?.sender_id === userId && !message?.content?.callLog?.callLogType;
 	}, [message?.sender_id, message?.content?.callLog?.callLogType, message?.code, userId]);
 
 	const isErrorMessage = useMemo(() => {
@@ -561,11 +561,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage && !isTopicRootMessage && !isPollMessage;
+		const enableEdit = isMyMessage && !isTopicRootMessage && !isPollMessage && message?.code !== TypeMessage.SendToken;
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos, isTopicRootMessage, isPollMessage]);
+	}, [isMyMessage, checkPos, isTopicRootMessage, isPollMessage, message]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
@@ -669,7 +669,7 @@ function MessageContextMenu({
 	const sendTransactionMessage = useCallback(
 		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
 			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
+			if (response?.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,

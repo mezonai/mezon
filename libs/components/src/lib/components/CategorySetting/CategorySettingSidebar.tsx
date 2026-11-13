@@ -36,6 +36,10 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 	const welcomeChannel = useSelector((state) => selectWelcomeChannelByClanId(state, category.clan_id as string));
 
 	const openModalDeleteCategory = () => {
+		if (category?.channels?.length) {
+			toast.error(t('categoryOverview.hasChannelError'));
+			return;
+		}
 		if (hasWelcomeChannel) {
 			toast.error(t('categoryOverview.hasWelcomeChannelError'));
 			return;

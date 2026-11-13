@@ -36,6 +36,81 @@
 		<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
 		<meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless" />
 		<link rel="stylesheet" href="./bootstrap/splash.css" />
+		<script>
+			(function () {
+				var reloadKey = 'mezon-stale-build-reload-at';
+				var started = false;
+				function showReloadMessage() {
+					var splash = document.getElementById('splash-screen');
+					if (!splash) {
+						if (document.readyState === 'loading') {
+							document.addEventListener('DOMContentLoaded', showReloadMessage);
+						}
+						return;
+					}
+					var box = document.createElement('div');
+					box.style.textAlign = 'center';
+					var text = document.createElement('div');
+					text.textContent = 'Mezon could not finish loading. Please reload the page.';
+					var button = document.createElement('button');
+					button.type = 'button';
+					button.textContent = 'Reload';
+					button.style.cssText =
+						'margin-top:12px;padding:6px 16px;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit;font:inherit;cursor:pointer';
+					button.onclick = function () {
+						location.reload();
+					};
+					box.appendChild(text);
+					box.appendChild(button);
+					splash.replaceChildren(box);
+				}
+				function recover() {
+					if (started) return;
+					started = true;
+					var lastReload;
+					try {
+						lastReload = Number(sessionStorage.getItem(reloadKey)) || 0;
+					} catch (error) {
+						showReloadMessage();
+						return;
+					}
+					if (Date.now() - lastReload < 60000) {
+						showReloadMessage();
+						return;
+					}
+					fetch(location.href, { cache: 'reload', credentials: 'same-origin' }).then(
+						function (response) {
+							if (!response.ok) {
+								showReloadMessage();
+								return;
+							}
+							try {
+								sessionStorage.setItem(reloadKey, String(Date.now()));
+							} catch (error) {
+								showReloadMessage();
+								return;
+							}
+							location.reload();
+						},
+						function () {
+							started = false;
+							showReloadMessage();
+						}
+					);
+				}
+				window.addEventListener(
+					'error',
+					function (event) {
+						var target = event.target;
+						if (target && target.tagName === 'SCRIPT' && target.type === 'module' && target.src.indexOf(location.origin + '/') === 0) {
+							recover();
+						}
+					},
+					true
+				);
+				window.addEventListener('vite:preloadError', recover);
+			})();
+		</script>
 		<script type="module" src="./bootstrap/theme-early.ts"></script>
 		<!-- Google MediaPipe Selfie Segmentation -->
 		<script src="https://cdn.komu.vn/npm/mediapipe/camera_utils/camera_utils.js"></script>

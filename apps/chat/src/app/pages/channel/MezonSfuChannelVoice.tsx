@@ -41,6 +41,9 @@ import { SfuReconnectModal } from './SfuReconnectModal';
 
 type VoiceJoinTarget = NonNullable<ReturnType<typeof selectVoiceInfo>>;
 
+const VOICE_CHAT_PANEL_CLASS =
+	'z-40 w-[500px] flex-shrink-0 border-l border-border bg-bgPrimary dark:border-bgTertiary max-xl:absolute max-xl:inset-0 max-xl:w-full max-xl:border-l-0';
+
 interface VoicePreJoinWrapperProps {
 	loading: boolean;
 	handleJoinRoom: (role: SfuJoinRole) => void;
@@ -53,6 +56,9 @@ const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapp
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
 	const breakoutRoom = useSelector(selectBreakoutRoom);
+	const isPrivateVoice = !!useSelector(selectCurrentChannelPrivate);
+	const isShowChatVoice = useSelector(selectIsShowChatVoice);
+	const dispatch = useAppDispatch();
 
 	const isCurrentChannel =
 		isJoined &&
@@ -67,7 +73,18 @@ const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapp
 			handleJoinRoom={handleJoinRoom}
 			clan_id={channelClanId}
 			isCurrentChannel={isCurrentChannel}
-		/>
+			isPrivateVoice={isPrivateVoice}
+			isChatOpen={isShowChatVoice}
+			onToggleChat={() => dispatch(appActions.setIsShowChatVoice(!isShowChatVoice))}
+		>
+			{isShowChatVoice && !isCurrentChannel && (
+				<EmojiSuggestionProvider>
+					<div className={VOICE_CHAT_PANEL_CLASS}>
+						<ChatStream topicChannelId={channelId as string} />
+					</div>
+				</EmojiSuggestionProvider>
+			)}
+		</SfuPreJoinVoiceChannel>
 	);
 });
 
@@ -127,7 +144,7 @@ const VoiceConferenceContent = memo(
 				/>
 				<EmojiSuggestionProvider>
 					{isShowChatVoice && (
-						<div className="z-40 w-[500px] flex-shrink-0 border-l border-border bg-bgPrimary dark:border-bgTertiary max-md:absolute max-md:inset-0 max-md:w-full max-md:border-l-0">
+						<div className={VOICE_CHAT_PANEL_CLASS}>
 							<ChatStream topicChannelId={voiceInfo?.channelId} />
 						</div>
 					)}
@@ -175,6 +192,9 @@ const MezonSfuChannelVoiceInner = () => {
 	const serverUrl = sfuUrl || process.env.NX_CHAT_APP_SFU_WS_URL;
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const isShowChatVoice = useSelector(selectIsShowChatVoice);
+	const viewedChannelId = useSelector(selectCurrentChannelId);
+	const breakoutRoom = useSelector(selectBreakoutRoom);
+	const isViewingVoiceRoom = voiceInfo?.channelId === viewedChannelId || breakoutRoom?.parentChannelId === viewedChannelId;
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const isChannelMezonVoice = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -316,6 +336,7 @@ const MezonSfuChannelVoiceInner = () => {
 		setRejoinTarget(null);
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
+		dispatch(appActions.setIsShowChatVoice(false));
 	});
 
 	const handleLeaveRoom = useLastCallback(async (_self?: boolean) => {
@@ -330,6 +351,7 @@ const MezonSfuChannelVoiceInner = () => {
 
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
+		dispatch(appActions.setIsShowChatVoice(false));
 
 		isDisconnectingRef.current = false;
 	});
@@ -363,7 +385,7 @@ const MezonSfuChannelVoiceInner = () => {
 									handleLeaveRoom={handleLeaveRoom}
 									onReconnectRequired={handleReconnectRequired}
 									handleFullScreen={handleFullScreen}
-									isShowChatVoice={isShowChatVoice}
+									isShowChatVoice={isShowChatVoice && isViewingVoiceRoom}
 									isVoiceFullScreen={!!isVoiceFullScreen}
 									handleToggleChat={handleToggleChat}
 									onRefreshToken={handleRefreshToken}

@@ -87,6 +87,8 @@
 	"confirm": "확인",
 	"everyoneWaitingInside": "모두가 안쪽에서 기다리고 있습니다",
 	"noOneInVoice": "현재 음성 룸에 아무도 없습니다",
+	"joinAsSpeaker": "발언자로 참여",
+	"joinAsAudience": "청중으로 참여",
 	"joining": "참가 중...",
 	"joinVoice": "음성 참여",
 	"reset": "재설정",

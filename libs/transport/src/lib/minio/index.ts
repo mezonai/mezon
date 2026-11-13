@@ -221,18 +221,6 @@ export async function handleUploadFile(
 			if (isVideo) {
 				const thumbPromise = resolveThumbnailForUpload(client, session, file, true, index, channelId);
 
-				if (file.size > MULTIPART_MIN_FILE_SIZE) {
-					const start = await client.multipartUploadAttachmentFile(session, {
-						filename,
-						filetype: file.type,
-						height: file.height,
-						size: file.size,
-						width: file.width,
-						part_count: multipartPartCount(file.size),
-						channel_id: channelId
-					});
-				}
-
 				const videoPromise = uploadFile(
 					client,
 					session,
@@ -262,18 +250,19 @@ export async function handleUploadFile(
 					channel_id: channelId
 				});
 
-				const updaloadMultipeFile = await uploadMultipart({
+				const uploadMultipartFiles = await uploadMultipart({
 					file,
 					urls: start.urls,
-					partSize: MULTIPART_MIN_FILE_SIZE,
+					partSize: MULTIPART_PART_SIZE,
 					mimeType: file.type
 				});
 
 				const finish = await client.multipartUploadAttachmentFileFinish(session, {
 					filename,
-					parts: updaloadMultipeFile,
+					parts: uploadMultipartFiles,
 					upload_id: start.upload_id
 				});
+
 				resolve({
 					url: filePath,
 					size: file.size,

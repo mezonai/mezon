@@ -377,7 +377,9 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	const handleSelectMem = useCallback(
 		async (user: SearchItemProps) => {
-			const foundDirect = dmGroupChatList.find((item) => item.id === user.id);
+			const foundDirect = dmGroupChatList.find(
+				(item) => item.id === user.id || (item.type === ChannelType.CHANNEL_TYPE_DM && item.user_ids?.includes(user.idDM || user.id || ''))
+			);
 			dispatch(appActions.setIsShowSettingFooterStatus(false));
 			if (foundDirect !== undefined) {
 				dispatch(
@@ -396,11 +398,11 @@ function SearchModal({ onClose }: SearchModalProps) {
 					})
 				);
 				if (result) {
-					navigate(toDmGroupPageFromMainApp(foundDirect.id ?? '', user?.type ?? ChannelType.CHANNEL_TYPE_DM));
+					navigate(toDmGroupPageFromMainApp(foundDirect.id ?? '', foundDirect.type ?? ChannelType.CHANNEL_TYPE_DM));
 				}
 			} else {
 				const response = await createDirectMessageWithUser(user.idDM || '', user.displayName || user.name, user.name, user.avatarUser);
-				if (response.channel_id) {
+				if (response?.channel_id) {
 					const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
 					navigate(directChat);
 				}

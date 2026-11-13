@@ -1,3 +1,5 @@
+import { fragmentedMp4InitEnd, fragmentedMp4Playlist } from './fragmentedMp4';
+
 // The media server converts videos uploaded to these hosts into HLS and writes the stream under its own
 // prefix, `<origin>/hls/<key>/master.m3u8`, while the message keeps the url of the original.
 const TRANSCODING_ORIGINS = ['https://cdn.mezon.ai', 'http://cdn.mezon.ai', 'https://cdn.mezon.vn', 'http://cdn.mezon.vn'];
@@ -5,6 +7,11 @@ const TRANSCODING_ORIGINS = ['https://cdn.mezon.ai', 'http://cdn.mezon.ai', 'htt
 const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'mkv', 'wmv']);
 // What the media server accepts.
 const HLS_TRANSCODE_EXTENSIONS = new Set(['mp4', 'mov', 'mkv', 'avi', 'flv', 'm4v', 'wmv']);
+const FMP4_EXTENSIONS = new Set(['mp4', 'm4v', 'mov']);
+const FMP4_HEAD_BYTES = 16384;
+const FMP4_TAIL_BYTES = 256 * 1024;
+const FMP4_PROBE_TIMEOUT_MS = 30000;
+const MAX_MFRA_BYTES = 16 * 1024 * 1024;
 const HLS_OUTPUT_PREFIX = 'hls/';
 const HLS_MASTER_PLAYLIST = 'master.m3u8';
 const HLS_INDEX_PLAYLIST = 'index.m3u8';
@@ -105,11 +112,15 @@ async function readPrefix(body: ReadableStream<Uint8Array>, length: number): Pro
 const startsAsPlaylist = async (body: ReadableStream<Uint8Array>) => (await readPrefix(body, HLS_PLAYLIST_TAG.length)) === HLS_PLAYLIST_TAG;
 const hasEnded = async (body: ReadableStream<Uint8Array>) => (await new Response(body).text()).includes(HLS_END_TAG);
 
-async function withProbeTimeout<T>(signal: AbortSignal | undefined, read: (signal: AbortSignal) => Promise<T | undefined>): Promise<T | undefined> {
+async function withProbeTimeout<T>(
+	signal: AbortSignal | undefined,
+	read: (signal: AbortSignal) => Promise<T | undefined>,
+	timeoutMs = HLS_PROBE_TIMEOUT_MS
+): Promise<T | undefined> {
 	const controller = new AbortController();
 	const abort = () => controller.abort();
 	signal?.addEventListener('abort', abort, { once: true });
-	const timeout = setTimeout(abort, HLS_PROBE_TIMEOUT_MS);
+	const timeout = setTimeout(abort, timeoutMs);
 	try {
 		return await read(controller.signal);
 	} catch {
@@ -196,4 +207,60 @@ export async function probeEndedHlsIndexPlaylist(url?: string, signal?: AbortSig
 	if (!playlist) return undefined;
 	const probeUrl = indexProbeUrl(playlist);
 	return probePlaylist(probeUrl, probeUrl, signal, hasEnded);
+}
+
+export async function probeFragmentedMp4Playlist(url?: string, signal?: AbortSignal): Promise<string | undefined> {
+	const parts = readTranscodableUrl(url);
+	if (!url || !parts) return undefined;
+	const dot = parts.file.lastIndexOf('.');
+	if (dot <= 0 || !FMP4_EXTENSIONS.has(parts.file.slice(dot + 1).toLowerCase())) return undefined;
+
+	return withProbeTimeout(
+		signal,
+		async (timed) => {
+			const headRes = await fetch(url, { headers: { Range: `bytes=0-${FMP4_HEAD_BYTES - 1}` }, signal: timed });
+			if (headRes.status !== 206) {
+				void headRes.body?.cancel().catch(() => undefined);
+				return undefined;
+			}
+			const rangeMatch = /^bytes \d+-\d+\/(\d+)$/i.exec(headRes.headers.get('content-range') ?? '');
+			if (!rangeMatch) {
+				void headRes.body?.cancel().catch(() => undefined);
+				return undefined;
+			}
+			const size = Number(rangeMatch[1]);
+			if (!Number.isSafeInteger(size) || size <= 0) {
+				void headRes.body?.cancel().catch(() => undefined);
+				return undefined;
+			}
+			const head = new Uint8Array(await headRes.arrayBuffer());
+			const initEnd = fragmentedMp4InitEnd(head);
+			if (initEnd === undefined || size - initEnd < 16) return undefined;
+
+			const tailStart = Math.max(initEnd, size - FMP4_TAIL_BYTES);
+			const tailRes = await fetch(url, { headers: { Range: `bytes=${tailStart}-${size - 1}` }, signal: timed });
+			if (tailRes.status !== 206) {
+				void tailRes.body?.cancel().catch(() => undefined);
+				return undefined;
+			}
+			const tail = new Uint8Array(await tailRes.arrayBuffer());
+			if (tail.length !== size - tailStart) return undefined;
+			const mfro = tail.subarray(tail.length - 16);
+			const mfroView = new DataView(mfro.buffer, mfro.byteOffset, mfro.byteLength);
+			if (mfroView.getUint32(0) !== 16 || String.fromCharCode(mfro[4], mfro[5], mfro[6], mfro[7]) !== 'mfro') return undefined;
+			const mfraSize = mfroView.getUint32(12);
+			if (mfraSize < 16 || mfraSize > MAX_MFRA_BYTES || mfraSize > size - initEnd) return undefined;
+			if (mfraSize <= tail.length) return fragmentedMp4Playlist(url, head, size, tail.subarray(tail.length - mfraSize));
+
+			const mfraRes = await fetch(url, { headers: { Range: `bytes=${size - mfraSize}-${size - 1}` }, signal: timed });
+			if (mfraRes.status !== 206) {
+				void mfraRes.body?.cancel().catch(() => undefined);
+				return undefined;
+			}
+			const mfra = new Uint8Array(await mfraRes.arrayBuffer());
+			if (mfra.length !== mfraSize) return undefined;
+			return fragmentedMp4Playlist(url, head, size, mfra);
+		},
+		FMP4_PROBE_TIMEOUT_MS
+	);
 }

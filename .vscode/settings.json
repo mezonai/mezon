@@ -1,5 +1,14 @@
 {
-	"cSpell.words": ["gorhom", "Mezon", "Nittro", "onchannelmessage", "onmessagetyping", "persistor", "Pressable"],
+	"cSpell.words": [
+		"gorhom",
+		"Imgproxy",
+		"Mezon",
+		"Nittro",
+		"onchannelmessage",
+		"onmessagetyping",
+		"persistor",
+		"Pressable"
+	],
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": "explicit",

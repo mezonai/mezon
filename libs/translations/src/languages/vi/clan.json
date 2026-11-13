@@ -34,6 +34,7 @@
 		"categoryName": "Tên danh mục",
 		"categoryNamePlaceholder": "Nhập tên danh mục của bạn tại đây...",
 		"hasWelcomeChannelError": "Danh mục này có kênh chào mừng",
+		"hasChannelError": "Không thể xóa danh mục vẫn còn kênh.",
 		"deleteCategory": "Xóa danh mục",
 		"deleteCategoryTitle": "Xóa danh mục",
 		"deleteCategoryButton": "Xóa danh mục",

@@ -1,8 +1,10 @@
-import { selectAllTextChannel, selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store';
+import { selectAllAccount, selectAllTextChannel, selectCurrentClanId, selectEventsByClanId, useAppSelector } from '@mezon/store';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 export const useEventManagementQuantity = () => {
+	const userId = useSelector(selectAllAccount)?.user?.id;
+
 	const currentClanId = useSelector(selectCurrentClanId);
 
 	const allEventManagement = useAppSelector((state) => selectEventsByClanId(state, currentClanId as string));
@@ -12,9 +14,11 @@ export const useEventManagementQuantity = () => {
 	const eventsByUser = useMemo(
 		() =>
 			allEventManagement.filter(
-				(event) => !event.channel_id || event.channel_id === '0' || allThreadChannelPrivateIds.includes(event.channel_id)
+				(event) =>
+					(!event?.is_private || event.creator_id === userId) &&
+					(!event.channel_id || event.channel_id === '0' || allThreadChannelPrivateIds.includes(event.channel_id))
 			),
-		[allEventManagement, allThreadChannelPrivateIds]
+		[allEventManagement, allThreadChannelPrivateIds, userId]
 	);
 
 	const numberEventManagement = eventsByUser.length;

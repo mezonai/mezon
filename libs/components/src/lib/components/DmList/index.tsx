@@ -105,7 +105,7 @@ const CreateMessageGroupModal = memo(
 			<div
 				ref={buttonPlusRef}
 				onClick={openCreateMessageGroup}
-				className="mz-hover relative cursor-pointer flex flex-row justify-end ml-0 dark:hover:bg-bgSecondary hover:bg-bgLightMode rounded-full whitespace-nowrap"
+				className="mz-hover relative cursor-pointer flex flex-row justify-end ml-0 bg-item-theme-hover rounded-full whitespace-nowrap"
 				data-e2e={generateE2eId('chat.direct_message.button.button_plus')}
 			>
 				<span title={t('createDM')}>

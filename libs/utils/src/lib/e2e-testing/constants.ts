@@ -1118,7 +1118,8 @@ export const DATA_E2E_IDENTIFIER = {
 		chat: {
 			tab: '',
 			spelling_switch: '',
-			quick_reply_switch: ''
+			quick_reply_switch: '',
+			only_friends_dm_switch: ''
 		}
 	},
 	common: {

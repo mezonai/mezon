@@ -2,6 +2,7 @@ type MicrophoneHealth = { micExpected: boolean; captureHealthy: boolean; senderH
 type ReceiveProgress = { packets: number; samples?: number };
 type StreamLoss = { packets: number; lost: number };
 type LossWindow = { expected: number; lost: number };
+type LossScope = 'network' | 'uplink';
 
 const WEAK_NETWORK_WARNING_LOSS_RATIO = 0.1;
 const WEAK_NETWORK_SEVERE_LOSS_RATIO = 0.2;
@@ -10,24 +11,37 @@ const WEAK_NETWORK_MIN_PACKETS = 50;
 const WEAK_NETWORK_WARNING_SAMPLES = 2;
 const WEAK_NETWORK_CLEAR_SAMPLES = 2;
 
+type CameraUplinkStat = { framesEncoded?: number; targetBitrate?: number; qualityLimitationReason?: string };
+
+const CAMERA_UPLINK_MID = '1';
+const CAMERA_UPLINK_TARGET_RATIO = 0.8;
+const CAMERA_UPLINK_LIMITED_SAMPLES = 2;
+const CAMERA_UPLINK_RECOVERY_SAMPLES = 6;
+const CAMERA_UPLINK_MAX_RECOVERY_SAMPLES = 24;
+const CAMERA_UPLINK_RELAPSE_SAMPLES = 12;
+
 export class SfuNetworkQuality {
 	private streams = new Map<string, StreamLoss>();
 	private weak = false;
 	private badSamples = 0;
 	private cleanSamples = 0;
 
+	constructor(private readonly scope: LossScope = 'network') {}
+
 	isWeak(report: RTCStatsReport): boolean {
 		const streams = new Map<string, StreamLoss>();
 		const received: LossWindow = { expected: 0, lost: 0 };
 		const sent: LossWindow = { expected: 0, lost: 0 };
-		const statsById = new Map<string, { kind?: string; mediaType?: string; packetsSent?: number }>();
+		const statsById = new Map<string, { kind?: string; mediaType?: string; mid?: string; packetsSent?: number }>();
 		report.forEach((stat) => statsById.set(stat.id, stat));
 		report.forEach((stat) => {
 			if (stat.type !== 'inbound-rtp' && stat.type !== 'remote-inbound-rtp') return;
 			if (typeof stat.packetsLost !== 'number') return;
 			const outbound = stat.type === 'remote-inbound-rtp' ? statsById.get(stat.localId) : undefined;
 			const media = outbound ?? stat;
-			if ((media.kind || media.mediaType) !== 'audio') return;
+			const kind = media.kind || media.mediaType;
+			const sentCamera = this.scope === 'uplink' && kind === 'video' && outbound?.mid === CAMERA_UPLINK_MID;
+			if (kind !== 'audio' && !sentCamera) return;
 			const packets = stat.type === 'inbound-rtp' ? stat.packetsReceived : outbound?.packetsSent;
 			if (typeof packets !== 'number') return;
 			streams.set(stat.id, { packets, lost: stat.packetsLost });
@@ -40,10 +54,12 @@ export class SfuNetworkQuality {
 			direction.expected += outbound ? packetsDelta : packetsDelta + lostDelta;
 		});
 		this.streams = streams;
-		const ratios = [received, sent].filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS).map(({ expected, lost }) => lost / expected);
+		const windows = this.scope === 'uplink' ? [sent] : [received, sent];
+		const ratios = windows.filter(({ expected }) => expected >= WEAK_NETWORK_MIN_PACKETS).map(({ expected, lost }) => lost / expected);
 		if (!ratios.length) {
 			this.badSamples = 0;
 			this.cleanSamples = 0;
+			if (this.scope === 'uplink') this.weak = false;
 			return this.weak;
 		}
 		const lossRatio = Math.max(...ratios);
@@ -52,6 +68,52 @@ export class SfuNetworkQuality {
 		if (lossRatio >= WEAK_NETWORK_SEVERE_LOSS_RATIO || this.badSamples >= WEAK_NETWORK_WARNING_SAMPLES) this.weak = true;
 		else if (this.cleanSamples >= WEAK_NETWORK_CLEAR_SAMPLES) this.weak = false;
 		return this.weak;
+	}
+}
+
+export class SfuCameraUplinkQuality {
+	private limited = false;
+	private limitedSamples = 0;
+	private cleanSamples = 0;
+	private recoverySamples = CAMERA_UPLINK_RECOVERY_SAMPLES;
+	private samplesSinceRecovery = Number.POSITIVE_INFINITY;
+	private framesEncoded: number | undefined;
+
+	isLimited(report: RTCStatsReport, maxBitrateBps: number): boolean {
+		const cameras: CameraUplinkStat[] = [];
+		report.forEach((stat) => {
+			if (stat.type === 'outbound-rtp' && (stat.kind || stat.mediaType) === 'video' && stat.mid === CAMERA_UPLINK_MID) cameras.push(stat);
+		});
+		const camera = cameras[0];
+		const previousFrames = this.framesEncoded;
+		this.framesEncoded = camera?.framesEncoded;
+		const sending = typeof camera?.framesEncoded === 'number' && typeof previousFrames === 'number' && camera.framesEncoded > previousFrames;
+		if (!camera || !sending) {
+			this.limited = false;
+			this.limitedSamples = 0;
+			this.cleanSamples = 0;
+			return false;
+		}
+		if (typeof camera.targetBitrate !== 'number' || typeof camera.qualityLimitationReason !== 'string') return this.limited;
+		const sampleLimited = camera.qualityLimitationReason === 'bandwidth' && camera.targetBitrate < maxBitrateBps * CAMERA_UPLINK_TARGET_RATIO;
+		this.limitedSamples = sampleLimited ? this.limitedSamples + 1 : 0;
+		this.cleanSamples = sampleLimited ? 0 : this.cleanSamples + 1;
+		if (this.limited) {
+			if (this.cleanSamples >= this.recoverySamples) {
+				this.limited = false;
+				this.samplesSinceRecovery = 0;
+			}
+			return this.limited;
+		}
+		this.samplesSinceRecovery += 1;
+		if (this.limitedSamples >= CAMERA_UPLINK_LIMITED_SAMPLES) {
+			this.limited = true;
+			this.recoverySamples =
+				this.samplesSinceRecovery <= CAMERA_UPLINK_RELAPSE_SAMPLES
+					? Math.min(this.recoverySamples * 2, CAMERA_UPLINK_MAX_RECOVERY_SAMPLES)
+					: CAMERA_UPLINK_RECOVERY_SAMPLES;
+		}
+		return this.limited;
 	}
 }
 

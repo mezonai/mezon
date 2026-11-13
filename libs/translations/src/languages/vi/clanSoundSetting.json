@@ -46,5 +46,10 @@
 		"errorUploadFailed": "Không thể tải lên âm thanh",
 		"characters": "Tên phải từ 3 đến 64 ký tự",
 		"errorName": "Tên hiệu ứng âm thanh phải từ {{min}} đến {{max}} kí tự, chỉ bao gồm chữ cái, chữ số, _ và -"
+	},
+	"deleteModal": {
+		"title": "Xoá hiệu ứng âm thanh",
+		"message": "Bạn có chắc muốn xoá {{name}}? Hành động này không thể hoàn tác.",
+		"success": "Đã xoá {{name}}"
 	}
 }

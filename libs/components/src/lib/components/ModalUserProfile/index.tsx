@@ -22,7 +22,7 @@ import type { RefObject } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import AvatarProfile from './AvatarProfile';
@@ -85,6 +85,17 @@ const ModalUserProfile = ({
 	modalControlRef
 }: ModalUserProfileProps) => {
 	const { t } = useTranslation('userProfile');
+	const location = useLocation();
+	const isMounted = useRef(false);
+	const profileContext = useMemo(() => ({ userID, isFooterProfile, location }), [userID, isFooterProfile, location]);
+	const activeProfile = useRef(profileContext);
+	activeProfile.current = profileContext;
+	useEffect(() => {
+		isMounted.current = true;
+		return () => {
+			isMounted.current = false;
+		};
+	}, []);
 
 	const userProfile = useSelector(selectAllAccount);
 
@@ -107,7 +118,7 @@ const ModalUserProfile = ({
 	}, [userStatusById, userID, userProfile, userId]);
 
 	const modalRef = useRef<boolean>(false);
-	const onLoading = useRef<boolean>(false);
+	const [isSending, setIsSending] = useState(false);
 
 	const createTimeMs =
 		Number((userById?.user as { join_time_seconds?: number })?.join_time_seconds ?? userById?.user?.create_time_seconds ?? 0) * 1000;
@@ -117,6 +128,10 @@ const ModalUserProfile = ({
 	const avatarByUserId = isDM ? userById?.user?.avatar_url : userById?.clan_avatar || userById?.user?.avatar_url;
 
 	const [content, setContent] = useState<string>('');
+	useEffect(() => {
+		setContent('');
+		setIsSending(false);
+	}, [profileContext]);
 
 	const initOpenModal = {
 		openFriend: false,
@@ -127,21 +142,23 @@ const ModalUserProfile = ({
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
 	const sendMessage = async (userId: string, display_name?: string, username?: string, avatar?: string) => {
+		const sendingProfile = profileContext;
+		const isCurrentProfile = () => isMounted.current && activeProfile.current === sendingProfile;
 		try {
 			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
 			if (response?.channel_id) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(content, response.channel_id, channelMode);
+				await sendInviteMessage(content.trim(), response.channel_id, channelMode);
+				if (!isCurrentProfile()) return;
 				setContent('');
 				const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+				onClose();
 				navigate(directChat);
-			} else {
-				toast.error(t('errors.failedToSendMessage', { defaultValue: 'Failed to send message' }));
 			}
 		} catch (error) {
-			toast.error(t('errors.failedToSendMessage', { defaultValue: 'Failed to send message' }));
+			if (isCurrentProfile()) toast.error(t('errors.failedToSendMessage', { defaultValue: 'Failed to send message' }));
 		} finally {
-			onLoading.current = false;
+			if (isCurrentProfile()) setIsSending(false);
 		}
 	};
 	const handleContent = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,7 +224,8 @@ const ModalUserProfile = ({
 
 	const handleOnKeyPress = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (e.key === 'Enter' && content && onLoading.current === false) {
+			if (e.key === 'Enter' && content.trim() && !isSending) {
+				setIsSending(true);
 				if (userById) {
 					sendMessage(
 						isFooterProfile ? userId || userById?.user?.id || '' : userById?.user?.id || '',
@@ -215,17 +233,15 @@ const ModalUserProfile = ({
 						userById?.user?.username,
 						userById?.user?.avatar_url
 					);
-					onLoading.current = true;
 					return;
 				}
 				sendMessage(
 					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0]?.message_sender_id) ||
 						''
 				);
-				onLoading.current = true;
 			}
 		},
-		[userById, content, isFooterProfile, userId, userID, message]
+		[userById, content, isFooterProfile, userId, userID, message, isSending, profileContext]
 	);
 
 	return (
@@ -304,7 +320,12 @@ const ModalUserProfile = ({
 						mode !== 4 && mode !== 3 && !isDM && userById && <RoleUserProfile userID={userID} />
 					)}
 
-					{userID !== '0' && !checkAnonymous && !isUserRemoved && !isBlockUser && (isFooterProfile ? userProfile : userById) ? (
+					{userID !== '0' &&
+					!checkAnonymous &&
+					!isUserRemoved &&
+					!isBlockUser &&
+					!isSending &&
+					(isFooterProfile ? userProfile : userById) ? (
 						(isFooterProfile ? userProfile?.user?.username : userById?.user?.username) ? (
 							<div className="w-full items-center mt-2">
 								<input

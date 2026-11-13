@@ -87,6 +87,8 @@
 	"confirm": "Bevestigen",
 	"everyoneWaitingInside": "Iedereen wacht op jou binnen",
 	"noOneInVoice": "Er is momenteel niemand in de kamer",
+	"joinAsSpeaker": "Deelnemen als spreker",
+	"joinAsAudience": "Deelnemen als luisteraar",
 	"joining": "Aan het joinen...",
 	"joinVoice": "Stem joinen",
 	"reset": "Herstellen",

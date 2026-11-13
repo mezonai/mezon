@@ -39,5 +39,10 @@
 	"btn": {
 		"upload": "Subir sticker",
 		"delete": "Eliminar"
+	},
+	"deleteModal": {
+		"title": "Eliminar sticker",
+		"message": "¿Seguro que deseas eliminar {{name}}? Esta acción no se puede deshacer.",
+		"success": "Se eliminó {{name}}"
 	}
 }
