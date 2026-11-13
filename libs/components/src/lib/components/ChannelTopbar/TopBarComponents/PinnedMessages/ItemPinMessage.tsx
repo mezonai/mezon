@@ -5,6 +5,7 @@ import {
 	messagesActions,
 	selectCurrentClanId,
 	selectIsShowCanvas,
+	selectMemberClanByUserId,
 	selectMessageByMessageId,
 	useAppDispatch,
 	useAppSelector
@@ -51,6 +52,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(state, String(pinMessage?.channel_id || '0'), String(pinMessage?.message_id || '0'))
 	);
+	const clanUser = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id || ''));
 
 	const validCreateTime = useMemo(() => {
 		const createTimeSeconds = message?.create_time_seconds ?? pinMessage?.create_time_seconds;
@@ -64,8 +66,8 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		channelId: String(pinMessage?.channel_id || ''),
 		mode,
 		message,
-		pinAvatar: pinMessage.avatar,
-		pinUsername: pinMessage.username,
+		pinAvatar: clanUser?.clan_avatar || clanUser?.user?.avatar_url || pinMessage.avatar,
+		pinUsername: clanUser?.clan_nick || clanUser?.user?.display_name || clanUser?.user?.username || pinMessage.username,
 		isAnonymous: checkAnonymous
 	});
 

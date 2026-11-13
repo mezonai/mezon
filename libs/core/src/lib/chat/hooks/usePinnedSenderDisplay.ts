@@ -1,4 +1,3 @@
-import { selectDirectById, useAppSelector } from '@mezon/store';
 import { NX_CHAT_APP_ANNONYMOUS_USER_ID } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useMemo } from 'react';
@@ -23,20 +22,6 @@ export type UsePinnedSenderDisplayOptions = {
 	isAnonymous?: boolean;
 };
 
-function getDirectParticipant(directChannel: ReturnType<typeof selectDirectById> | undefined, senderId: string) {
-	if (!directChannel?.user_ids?.length || !senderId) {
-		return { directAvatar: '', directName: '' };
-	}
-	const userIndex = directChannel.user_ids.findIndex((id) => String(id) === senderId);
-	if (userIndex === -1) {
-		return { directAvatar: '', directName: '' };
-	}
-	return {
-		directAvatar: directChannel.avatars?.[userIndex] || '',
-		directName: directChannel.display_names?.[userIndex] || directChannel.usernames?.[userIndex] || ''
-	};
-}
-
 export function usePinnedSenderDisplay({
 	senderId,
 	channelId = '',
@@ -47,9 +32,6 @@ export function usePinnedSenderDisplay({
 	isAnonymous: isAnonymousOverride
 }: UsePinnedSenderDisplayOptions) {
 	const { priorityAvatar, namePriority, isAnonymous: isAnonymousSender } = useGetPriorityNameFromUserClan(senderId);
-	const directChannel = useAppSelector((state) => (channelId ? selectDirectById(state, channelId) : undefined));
-
-	const { directAvatar, directName } = useMemo(() => getDirectParticipant(directChannel, senderId), [directChannel, senderId]);
 
 	const isDirectMode = mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
 	const isAnonymous = isAnonymousOverride ?? (isAnonymousSender || senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID);
@@ -58,20 +40,21 @@ export function usePinnedSenderDisplay({
 		const nameFromMessage = getShowName(message?.clan_nick ?? '', message?.display_name ?? '', message?.username ?? '', senderId) || '';
 
 		if (isDirectMode) {
-			return nameFromMessage || directName || namePriority || pinUsername || '';
+			return nameFromMessage || namePriority || pinUsername || '';
 		}
-		return nameFromMessage || namePriority || pinUsername || directName || '';
-	}, [message?.clan_nick, message?.display_name, message?.username, senderId, isDirectMode, directName, namePriority, pinUsername]);
+
+		return nameFromMessage || namePriority || pinUsername || '';
+	}, [message?.clan_nick, message?.display_name, message?.username, senderId, isDirectMode, namePriority, pinUsername]);
 
 	const displayAvatar = useMemo(() => {
 		if (isAnonymous) {
 			return message?.avatar || '';
 		}
 		if (isDirectMode) {
-			return directAvatar || priorityAvatar || message?.avatar || pinAvatar || '';
+			return priorityAvatar || message?.avatar || pinAvatar || '';
 		}
-		return priorityAvatar || message?.clan_avatar || message?.avatar || pinAvatar || directAvatar || '';
-	}, [isAnonymous, isDirectMode, message?.avatar, message?.clan_avatar, pinAvatar, directAvatar, priorityAvatar]);
+		return priorityAvatar || message?.clan_avatar || message?.avatar || pinAvatar || '';
+	}, [isAnonymous, isDirectMode, message?.avatar, pinUsername, message?.clan_avatar, pinAvatar, priorityAvatar]);
 
 	return {
 		displayName,
