@@ -6,14 +6,12 @@ import {
 	selectCurrentClanId,
 	selectIsShowCanvas,
 	selectMemberClanByUserId,
-	selectMessageByMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import {
 	NX_CHAT_APP_ANNONYMOUS_USER_ID,
-	TypeMessage,
 	convertTimeString,
 	convertTimestampToTimeRemainingI18n,
 	generateE2eId,
@@ -40,6 +38,30 @@ type ItemPinMessageProps = {
 	mode?: number;
 };
 
+const getPinAttachments = (rawAttachments: unknown): ApiMessageAttachment[] => {
+	if (Array.isArray(rawAttachments)) {
+		return rawAttachments.filter((att): att is ApiMessageAttachment => !!att && typeof att === 'object' && Object.keys(att).length > 0);
+	}
+	if (!rawAttachments) return [];
+
+	let decoded: unknown;
+	try {
+		decoded = decodeAttachments(rawAttachments as Parameters<typeof decodeAttachments>[0]);
+	} catch {
+		const parsed = safeJSONParse(String(rawAttachments));
+		decoded = parsed?.t ? [] : parsed?.attachments || parsed || [];
+	}
+
+	const attachments = Array.isArray(decoded)
+		? decoded
+		: decoded && typeof decoded === 'object'
+			? (decoded as { attachments?: unknown }).attachments
+			: [];
+	return Array.isArray(attachments)
+		? attachments.filter((att): att is ApiMessageAttachment => !!att && typeof att === 'object' && Object.keys(att).length > 0)
+		: [];
+};
+
 const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
@@ -49,30 +71,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const message = useAppSelector((state) =>
-		selectMessageByMessageId(state, String(pinMessage?.channel_id || '0'), String(pinMessage?.message_id || '0'))
-	);
 	const clanUser = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id || ''));
-
-	const validCreateTime = useMemo(() => {
-		const createTimeSeconds = message?.create_time_seconds ?? pinMessage?.create_time_seconds;
-		if (createTimeSeconds) return new Date(createTimeSeconds * 1000).toISOString();
-		return '';
-	}, [message?.create_time_seconds, pinMessage?.create_time_seconds]);
-	const messageTime = validCreateTime ? convertTimeString(validCreateTime) : '';
-
-	const { displayName: nameToShow, displayAvatar: avatarToShow } = usePinnedSenderDisplay({
-		senderId,
-		channelId: String(pinMessage?.channel_id || ''),
-		mode,
-		message,
-		pinAvatar: clanUser?.clan_avatar || clanUser?.user?.avatar_url || pinMessage.avatar,
-		pinUsername: clanUser?.clan_nick || clanUser?.user?.display_name || clanUser?.user?.username || pinMessage.username,
-		isAnonymous: checkAnonymous
-	});
-
-	const pinMessageAttachments = message?.attachments || pinMessage?.attachment;
-
 	const messageContentObject = useMemo(() => {
 		try {
 			return safeJSONParse(pinMessage.content || '{}') || {};
@@ -81,15 +80,33 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		}
 		return {};
 	}, [pinMessage.content]);
+	const validCreateTime = useMemo(() => {
+		const createTimeSeconds = pinMessage?.create_time_seconds;
+		if (createTimeSeconds) return new Date(createTimeSeconds * 1000).toISOString();
+		return '';
+	}, [pinMessage?.create_time_seconds]);
+	const messageTime = validCreateTime ? convertTimeString(validCreateTime) : '';
 
-	// Poll data: prefer from message.content (messages store), fallback to parsed pinMessage.content
+	const { displayName: nameToShow, displayAvatar: avatarToShow } = usePinnedSenderDisplay({
+		senderId,
+		channelId: String(pinMessage?.channel_id || ''),
+		mode,
+		pinAvatar: clanUser?.clan_avatar || clanUser?.user?.avatar_url || pinMessage.avatar,
+		pinUsername: clanUser?.clan_nick || clanUser?.user?.display_name || clanUser?.user?.username || pinMessage.username,
+		isAnonymous: checkAnonymous
+	});
+
+	const attachmentsList = useMemo(() => getPinAttachments(pinMessage.attachment), [pinMessage.attachment]);
+	const firstAttachment = attachmentsList[0];
+	const remainingCount = Math.max(0, attachmentsList.length - 1);
+	const isImageOrVideo = isImageFileType(firstAttachment?.filetype) || isVideoFileType(firstAttachment?.filetype);
 	const pollData = useMemo(() => {
-		const contentObj = (message?.content as unknown as Record<string, unknown>) || messageContentObject;
+		const contentObj = messageContentObject as Record<string, unknown>;
 		if (!contentObj || !('id' in contentObj || 'question' in contentObj || 'answer_counts' in contentObj)) return null;
 		return contentObj;
-	}, [message?.content, messageContentObject]);
+	}, [messageContentObject]);
 
-	const isPollMessage = message?.code === TypeMessage.Poll || Boolean(pollData?.answer_counts);
+	const isPollMessage = Boolean(pollData && ('question' in pollData || 'answer_counts' in pollData));
 
 	const pollDuration = useMemo(() => {
 		if (!pollData?.expire_at) return '';
@@ -97,9 +114,9 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	}, [pollData?.expire_at, t]);
 
 	const { isShareContact, shareContactEmbed } = useMemo(() => {
-		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+		const embeds = messageContentObject?.embed || [];
 		return getShareContactInfo(embeds);
-	}, [message, messageContentObject]);
+	}, [messageContentObject]);
 
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
@@ -122,7 +139,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		handleUnPinMessage({
 			pinMessage,
 			contentString: contentString || '',
-			attachments: message?.attachments ? message?.attachments : []
+			attachments: attachmentsList
 		});
 	};
 
@@ -171,89 +188,51 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									isAnonymous={checkAnonymous}
 									isJumMessageEnabled={false}
 									isTokenClickAble={false}
-									messageId={message?.id}
+									messageId={String(pinMessage.message_id || '')}
 									isSearchMessage={true}
 								/>
 							)
 						)}
 					</div>
-					{!!pinMessageAttachments?.length &&
-						(() => {
-							let attachmentsList: ApiMessageAttachment[] = [];
-							if (Array.isArray(pinMessageAttachments)) {
-								attachmentsList = pinMessageAttachments.filter((att) => att && Object.keys(att).length > 0);
-							} else {
-								let attachment: unknown;
-								try {
-									attachment = decodeAttachments(pinMessageAttachments);
-								} catch (error) {
-									const parsed = safeJSONParse(pinMessageAttachments.toString());
-									if (parsed?.t) {
-										attachment = [];
-									} else {
-										attachment = parsed?.attachments || parsed || [];
+					{firstAttachment && (
+						<div className="flex items-end gap-1">
+							<div
+								className={
+									isImageOrVideo
+										? 'relative w-[120px] h-[120px] overflow-hidden rounded cursor-default [&_*]:cursor-default [&_*]:hover:!scale-100 [&_*]:hover:!bg-transparent [&_*]:hover:!opacity-100'
+										: 'relative cursor-default'
+								}
+							>
+								<div
+									className={
+										isImageOrVideo
+											? 'w-full h-full [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_div]:w-full [&_div]:h-full'
+											: ''
 									}
-								}
-
-								if (Array.isArray(attachment)) {
-									attachmentsList = (attachment as ApiMessageAttachment[]).filter((att) => att && Object.keys(att).length > 0);
-								} else if (attachment && typeof attachment === 'object') {
-									const parsedAttachments = (attachment as { attachments?: ApiMessageAttachment[] }).attachments;
-									attachmentsList = (parsedAttachments || []).filter((att) => att && Object.keys(att).length > 0);
-								} else {
-									attachmentsList = [];
-								}
-							}
-
-							if (attachmentsList.length === 0) return null;
-
-							const attachmentsToRender = [attachmentsList[0]];
-							const remainingCount = Math.max(0, attachmentsList.length - 1);
-
-							const firstAttachment = attachmentsList[0];
-							const isImageOrVideo = isImageFileType(firstAttachment?.filetype) || isVideoFileType(firstAttachment?.filetype);
-
-							return (
-								<div className="flex items-end gap-1">
-									<div
-										className={
-											isImageOrVideo
-												? 'relative w-[120px] h-[120px] overflow-hidden rounded cursor-default [&_*]:cursor-default [&_*]:hover:!scale-100 [&_*]:hover:!bg-transparent [&_*]:hover:!opacity-100'
-												: 'relative cursor-default'
+								>
+									<MessageAttachment
+										mode={mode as ChannelStreamMode}
+										message={
+											{
+												...pinMessage,
+												attachments: [firstAttachment],
+												create_time: validCreateTime,
+												sender_id: senderId,
+												message_id: String(pinMessage.message_id || '0')
+											} as unknown as IMessageWithUser
 										}
-									>
-										<div
-											className={
-												isImageOrVideo
-													? 'w-full h-full [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_div]:w-full [&_div]:h-full'
-													: ''
-											}
-										>
-											<MessageAttachment
-												mode={mode as ChannelStreamMode}
-												message={
-													{
-														...pinMessage,
-														...message,
-														attachments: attachmentsToRender,
-														create_time: validCreateTime,
-														sender_id: senderId,
-														message_id: String(pinMessage.message_id || '0')
-													} as unknown as IMessageWithUser
-												}
-												defaultMaxWidth={50}
-											/>
-										</div>
-									</div>
-
-									{remainingCount > 0 && (
-										<div className="bg-theme-setting-primary text-theme-primary text-md px-1.5 py-0.5 rounded-full flex items-center justify-center min-h-[35px] min-w-[35px]">
-											+{remainingCount}
-										</div>
-									)}
+										defaultMaxWidth={50}
+									/>
 								</div>
-							);
-						})()}
+							</div>
+
+							{remainingCount > 0 && (
+								<div className="bg-theme-setting-primary text-theme-primary text-md px-1.5 py-0.5 rounded-full flex items-center justify-center min-h-[35px] min-w-[35px]">
+									+{remainingCount}
+								</div>
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 			<div className="absolute h-fit flex gap-x-2 items-center opacity-0 right-2 top-2 group-hover/item-pinMess:opacity-100">
