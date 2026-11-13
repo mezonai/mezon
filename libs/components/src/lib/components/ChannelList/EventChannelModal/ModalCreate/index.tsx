@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ContenSubmitEventProps } from '@mezon/utils';
+import type { ContentSubmitEventProps } from '@mezon/utils';
 import { ERepeatType, OptionEvent, Tabs_Option, generateE2eId } from '@mezon/utils';
 import isEqual from 'lodash.isequal';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -60,7 +60,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const defaultCreateEventTimes = useMemo(() => getDefaultCreateEventTimes(), []);
 	const toMsFromSeconds = useCallback((seconds?: number) => (typeof seconds === 'number' ? seconds * 1000 : undefined), []);
 
-	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
+	const [contentSubmit, setContentSubmit] = useState<ContentSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
 		address: currentEvent ? currentEvent?.address || '' : '',
 		timeStart: currentEvent?.start_time_seconds
@@ -318,13 +318,19 @@ const ModalCreate = (props: ModalCreateProps) => {
 		}
 	}, [currentModal, contentSubmit.topic]);
 
+	const isPrivateVoiceSelected = useMemo(
+		() => choiceSpeaker && Boolean(voicesChannel.find((voice) => voice.id === contentSubmit.voiceChannel)?.channel_private),
+		[choiceSpeaker, voicesChannel, contentSubmit.voiceChannel]
+	);
+	const isMissingAudience = isPrivateVoiceSelected && (!contentSubmit.textChannelId || contentSubmit.textChannelId === '0');
+
 	useEffect(() => {
-		if ((choiceLocation && contentSubmit.address === '') || (choiceSpeaker && contentSubmit.voiceChannel === '')) {
+		if ((choiceLocation && contentSubmit.address === '') || (choiceSpeaker && contentSubmit.voiceChannel === '') || isMissingAudience) {
 			setErrorOption(true);
 		} else {
 			setErrorOption(false);
 		}
-	}, [choiceLocation, choiceSpeaker, contentSubmit.address, contentSubmit.voiceChannel, option]);
+	}, [choiceLocation, choiceSpeaker, contentSubmit.address, contentSubmit.voiceChannel, isMissingAudience, option]);
 
 	useEffect(() => {
 		if (eventId === '') {
@@ -368,6 +374,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 					isChannelEvent={isChannelEvent}
 					isClanEvent={isClanEvent}
 					isPrivateEvent={isPrivateEvent}
+					isAudienceRequired={isPrivateVoiceSelected}
 				/>
 			)}
 			{currentModal === Tabs_Option.EVENT_INFO && (

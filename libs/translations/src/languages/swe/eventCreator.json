@@ -137,6 +137,7 @@
 		"channelEvent": "Kanal Händelse",
 		"privateEvent": "Extern händelse",
 		"privateRoom": "Extern mötesrum",
+		"privateChannel": "Privat kanal",
 		"newEvent": "Ny",
 		"share": "Dela",
 		"noOneInterested": "Ingen är intresserad av denna händelse än."

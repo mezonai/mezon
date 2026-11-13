@@ -137,6 +137,7 @@
 		"channelEvent": "Channel Event",
 		"privateEvent": "External Event",
 		"privateRoom": "External Meeting Room",
+		"privateChannel": "Private Channel",
 		"newEvent": "New",
 		"share": "Share",
 		"noOneInterested": "No one's interested in this event yet."
