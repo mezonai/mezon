@@ -10,17 +10,22 @@ const pdfOptions = {
 };
 
 const maxWidth = 800;
+const defaultPageRatio = Math.SQRT2;
 
 export const PDFContent: React.FC<PDFContentProps> = ({
 	pdfUrl,
-	pageNumber,
+	numPages,
+	pageRatios,
+	visibleRange,
 	scale,
 	loading,
 	error,
 	containerWidth,
 	onDocumentLoadSuccess,
 	onDocumentLoadError,
-	onContainerRef
+	onContainerRef,
+	onScroll,
+	onItemClick
 }) => {
 	const getPageWidth = (): number => {
 		if (!containerWidth) return maxWidth * scale;
@@ -29,8 +34,15 @@ export const PDFContent: React.FC<PDFContentProps> = ({
 		return baseWidth * scale;
 	};
 
+	const pageWidth = getPageWidth();
+
 	return (
-		<div className="thread-scroll flex-1 overflow-auto p-4 flex justify-center bg-white dark:bg-[#36393f]" ref={onContainerRef}>
+		<div
+			className="thread-scroll flex-1 overflow-auto p-4 flex justify-center bg-white dark:bg-[#36393f] outline-none"
+			ref={onContainerRef}
+			onScroll={onScroll}
+			tabIndex={-1}
+		>
 			{loading && (
 				<div className="flex items-center justify-center h-full">
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5865f2]" />
@@ -58,12 +70,26 @@ export const PDFContent: React.FC<PDFContentProps> = ({
 						file={pdfUrl}
 						onLoadSuccess={onDocumentLoadSuccess}
 						onLoadError={onDocumentLoadError}
+						onItemClick={onItemClick}
 						loading={<div></div>}
 						options={pdfOptions}
-						className="react-pdf__Document"
+						className="react-pdf__Document flex flex-col gap-4"
 						externalLinkTarget="_blank"
 					>
-						<Page pageNumber={pageNumber} width={getPageWidth()} loading={<div></div>} className="react-pdf__Page" />
+						{Array.from({ length: numPages || 0 }, (_, index) => {
+							const page = index + 1;
+							const shouldRender = page >= visibleRange.start - 1 && page <= visibleRange.end + 1;
+							return (
+								<div
+									key={page}
+									data-pdf-page={page}
+									className="bg-white shadow-md"
+									style={{ width: pageWidth, minHeight: pageWidth * (pageRatios[index] ?? pageRatios[0] ?? defaultPageRatio) }}
+								>
+									{shouldRender && <Page pageNumber={page} width={pageWidth} loading={<div></div>} className="react-pdf__Page" />}
+								</div>
+							);
+						})}
 					</Document>
 				</div>
 			)}
