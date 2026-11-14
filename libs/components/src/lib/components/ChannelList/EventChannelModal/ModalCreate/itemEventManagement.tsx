@@ -70,8 +70,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		isPrivate
 	} = props;
 	const isChannelEvent = textChannelId && textChannelId !== '0';
-	const isPrivateEvent = !isChannelEvent && ((!isReviewEvent && event?.is_private) || (isReviewEvent && isPrivate));
-	const isClanEvent = !isChannelEvent && ((!isReviewEvent && !event?.is_private) || (isReviewEvent && !isPrivate));
+	const isPrivateEvent = !isChannelEvent && ((!isReviewEvent && event?.is_external) || (isReviewEvent && isPrivate));
+	const isClanEvent = !isChannelEvent && ((!isReviewEvent && !event?.is_external) || (isReviewEvent && !isPrivate));
 	const { t, i18n } = useTranslation(['eventMenu', 'eventCreator']);
 	const dispatch = useAppDispatch();
 

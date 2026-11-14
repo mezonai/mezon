@@ -78,7 +78,7 @@ const Modal = (props: ModalProps) => {
 								<button
 									type="button"
 									onClick={onClose}
-									className="group/mzi p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
+									className="group/mzi p-2 rounded-md border border-transparent text-theme-primary text-theme-primary-hover hover:border-theme-primary bg-item-theme-hover transition-colors"
 								>
 									<MezonIcon
 										icon={MzIcons20.mzClose}

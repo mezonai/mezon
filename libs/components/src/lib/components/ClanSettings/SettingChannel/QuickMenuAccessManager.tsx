@@ -137,7 +137,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 		<button
 			onClick={() => setActiveTab(tabKey)}
 			className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 flex items-center gap-2 ${
-				activeTab === tabKey ? 'bg-[#5865f2] text-white' : 'text-theme-primary hover:text-theme-primary-active hover:bg-theme-setting-nav'
+				activeTab === tabKey ? 'bg-[#5865f2] text-white' : 'text-theme-primary text-theme-primary-hover hover:bg-theme-setting-nav'
 			}`}
 			data-e2e={generateE2eId('channel_setting_page.quick_menu.tab')}
 		>
@@ -366,7 +366,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 								<button
 									onClick={handleDeleteCancel}
 									disabled={loading}
-									className="px-3 py-1.5 text-sm text-theme-primary-active hover:text-theme-primary-active transition-colors duration-200 font-medium"
+									className="px-3 py-1.5 text-sm text-theme-primary-active text-theme-primary-hover transition-colors duration-200 font-medium"
 								>
 									{t('quickAction.cancel')}
 								</button>

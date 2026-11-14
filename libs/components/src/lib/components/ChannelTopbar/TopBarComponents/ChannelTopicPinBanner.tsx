@@ -1190,7 +1190,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 
 					<button
 						type="button"
-						className="flex items-center justify-center px-2.5 text-theme-primary hover:text-theme-primary-active hover:bg-item-theme-hover transition-colors cursor-pointer shrink-0"
+						className="flex items-center justify-center px-2.5 text-theme-primary text-theme-primary-hover hover:bg-item-theme-hover transition-colors cursor-pointer shrink-0"
 						onClick={handleOpenDismissModal}
 						title={t('topicPinBanner.dismissButton')}
 						aria-label={t('topicPinBanner.dismissButton')}

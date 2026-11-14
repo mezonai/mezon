@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Вставити зображення",
 	"pasteOption": "Вставити",
+	"pasteAsPlainTextOption": "Вставити як звичайний текст",
 	"toast": {
 		"copyText": "Текст повідомлення скопійовано",
 		"attachmentIsLoading": "Вкладення завантажується, будь ласка, зачекайте",
