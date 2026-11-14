@@ -1,5 +1,6 @@
 import type { IEmojiOnMessage, IExtendedMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
 import { EBacktickType } from '../types/messageLine';
+import { escapeInlineStyles } from './inlineMarkdownStyles';
 
 const escapeHtml = (text: string): string => {
 	return text
@@ -176,7 +177,7 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 			cursor = entityAtCursor.end;
 		} else {
 			const nextPos = splitPoints.find((p) => p > cursor) ?? text.length;
-			result += escapeHtml(text.substring(cursor, nextPos));
+			result += escapeHtml(escapeInlineStyles(text.substring(cursor, nextPos)));
 			cursor = nextPos;
 		}
 	}

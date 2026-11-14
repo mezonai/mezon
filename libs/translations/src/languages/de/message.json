@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Bild einfügen",
 	"pasteOption": "Einfügen",
+	"pasteAsPlainTextOption": "Als reinen Text einfügen",
 	"toast": {
 		"copyText": "Nachrichtentext kopiert",
 		"attachmentIsLoading": "Anhang wird geladen, bitte einen Moment Geduld",

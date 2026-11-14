@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Wklej obraz",
 	"pasteOption": "Wklej",
+	"pasteAsPlainTextOption": "Wklej jako zwykły tekst",
 	"toast": {
 		"copyText": "Skopiowano tekst wiadomości",
 		"attachmentIsLoading": "Załącznik jest ładowany, proszę czekać chwilę",

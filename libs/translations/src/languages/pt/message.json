@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Colar Imagem",
 	"pasteOption": "Colar",
+	"pasteAsPlainTextOption": "Colar como texto simples",
 	"toast": {
 		"copyText": "Texto da mensagem copiado",
 		"attachmentIsLoading": "O anexo está carregando, aguarde um momento",

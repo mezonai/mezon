@@ -35,6 +35,30 @@ const PROTECTED_ENTITY_TYPES = new Set<string>([
 const WHITESPACE_RE = /^\s/;
 const ALPHANUMERIC_END_RE = /[\p{L}\p{N}]$/u;
 const ALPHANUMERIC_START_RE = /^[\p{L}\p{N}]/u;
+const ESCAPABLE_STYLE_CHARS = new Set(['*', '_', '~']);
+const URL_LIKE_RE = /((?:\w+:)?\/\/[^\s<>]+)/;
+
+function isStyleEscape(text: string, pos: number, end: number, protectedEndAt: (p: number) => number): boolean {
+	return text[pos] === '\\' && pos + 1 < end && ESCAPABLE_STYLE_CHARS.has(text[pos + 1]) && protectedEndAt(pos + 1) === -1;
+}
+
+export function escapeInlineStyles(text: string): string {
+	return text
+		.split(URL_LIKE_RE)
+		.map((part, index) =>
+			index % 2
+				? part
+				: part.replace(/[*_~]/g, (ch: string, pos: number) => {
+						const prev = part[pos - 1] ?? '';
+						const next = part[pos + 1] ?? '';
+						if (/\s/.test(prev) && /\s/.test(next)) return ch;
+						if (ch === '_' && ALPHANUMERIC_END_RE.test(prev) && ALPHANUMERIC_START_RE.test(next)) return ch;
+						if (ch === '~' && prev !== '~' && next !== '~' && prev !== '\\') return ch;
+						return `\\${ch}`;
+					})
+		)
+		.join('');
+}
 
 function styleRunEnd(text: string, pos: number, end: number, protectedEndAt: (p: number) => number): number {
 	const ch = text[pos];
@@ -99,6 +123,10 @@ function findStyleClose(text: string, open: number, len: number, end: number, pr
 			j = Math.min(protEnd, end);
 			continue;
 		}
+		if (isStyleEscape(text, j, end, protectedEndAt)) {
+			j += 2;
+			continue;
+		}
 		if (text[j] !== ch) {
 			j += 1;
 			continue;
@@ -133,12 +161,17 @@ function findStyleClose(text: string, open: number, len: number, end: number, pr
 	return -1;
 }
 
-function scanStyles(text: string, start: number, end: number, protectedEndAt: (p: number) => number, out: StyleMatch[]): void {
+function scanStyles(text: string, start: number, end: number, protectedEndAt: (p: number) => number, out: StyleMatch[], escapes: number[]): void {
 	let i = start;
 	while (i < end) {
 		const protEnd = protectedEndAt(i);
 		if (protEnd !== -1) {
 			i = Math.min(protEnd, end);
+			continue;
+		}
+		if (isStyleEscape(text, i, end, protectedEndAt)) {
+			escapes.push(i);
+			i += 2;
 			continue;
 		}
 		const ch = text[i];
@@ -162,7 +195,7 @@ function scanStyles(text: string, start: number, end: number, protectedEndAt: (p
 				} else if (ch === '~' && len === 2) {
 					out.push({ type: 'MessageEntityStrike', start: i, end: matchEnd, marker: 2 });
 				}
-				scanStyles(text, runEnd, close, protectedEndAt, out);
+				scanStyles(text, runEnd, close, protectedEndAt, out, escapes);
 				i = matchEnd;
 				continue;
 			}
@@ -198,6 +231,7 @@ export function extractInlineStyles<T extends InlineStyleEntity = InlineStyleEnt
 
 	const n = text.length;
 	const matches: StyleMatch[] = [];
+	const escapes: number[] = [];
 	let lineStart = 0;
 	while (lineStart < n) {
 		let lineEnd = lineStart;
@@ -205,16 +239,19 @@ export function extractInlineStyles<T extends InlineStyleEntity = InlineStyleEnt
 			lineEnd += 1;
 		}
 		if (lineEnd > lineStart) {
-			scanStyles(text, lineStart, lineEnd, protectedEndAt, matches);
+			scanStyles(text, lineStart, lineEnd, protectedEndAt, matches, escapes);
 		}
 		lineStart = lineEnd + 1;
 	}
 
-	if (matches.length === 0) {
+	if (matches.length === 0 && escapes.length === 0) {
 		return { text, entities: [...entities] };
 	}
 
 	const removed = new Array<boolean>(n).fill(false);
+	for (const pos of escapes) {
+		removed[pos] = true;
+	}
 	for (const m of matches) {
 		for (let k = m.start; k < m.start + m.marker; k++) {
 			removed[k] = true;

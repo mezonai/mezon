@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Уставіць выяву",
 	"pasteOption": "Уставіць",
+	"pasteAsPlainTextOption": "Уставіць як звычайны тэкст",
 	"toast": {
 		"copyText": "Тэкст паведамлення скапіяваны",
 		"attachmentIsLoading": "Укладанне загружаецца, калі ласка, пачакайце",
