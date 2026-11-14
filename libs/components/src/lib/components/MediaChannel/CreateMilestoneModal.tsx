@@ -194,7 +194,7 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 					<h2 className="text-lg font-bold text-theme-primary">{t('fields.createMilestone.headerTitle')}</h2>
 					<button
 						onClick={handleCancel}
-						className="group/mzi p-1 rounded-lg text-theme-secondary hover:text-theme-primary-active transition-colors"
+						className="group/mzi p-1 rounded-lg text-theme-secondary text-theme-primary-hover transition-colors"
 					>
 						<MezonIcon icon={MzIcons20.mzCloseCircle} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</button>

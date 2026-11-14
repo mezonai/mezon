@@ -272,11 +272,11 @@ const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 							<span className="text-[8px] font-bold text-theme-secondary">{categoryName.charAt(0).toUpperCase()}</span>
 						</div>
 					)}
-					<p className="uppercase font-bold text-xs tracking-wide text-theme-secondary group-hover:text-theme-primary transition-colors truncate overflow-hidden max-w-[300px]">
+					<p className="uppercase font-bold text-xs tracking-wide text-theme-secondary group-hover:text-[var(--text-theme-primary)] transition-colors truncate overflow-hidden max-w-[300px]">
 						{categoryName !== 'custom' ? categoryName : currentClanName}
 					</p>
 					<span
-						className={`transition-transform duration-200 text-theme-secondary group-hover:text-theme-primary ${isShowSoundList ? 'rotate-90' : ''}`}
+						className={`transition-transform duration-200 text-theme-secondary group-hover:text-[var(--text-theme-primary)] ${isShowSoundList ? 'rotate-90' : ''}`}
 					>
 						<MezonIcon icon={MzIcons16.mzChevronRight} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 					</span>
@@ -352,7 +352,7 @@ export const SoundPanel: React.FC<ISoundPanelProps> = React.memo(({ soundList, o
 				>
 					<button
 						onClick={(e) => handlePreview(e, sound)}
-						className={`group/mzi flex-shrink-0 flex text-theme-primary items-center justify-center w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${playingPreview === sound.id ? 'text-green-500 bg-green-500/10' : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-primary/10'}`}
+						className={`group/mzi flex-shrink-0 flex text-theme-primary items-center justify-center w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${playingPreview === sound.id ? 'text-green-500 bg-green-500/10' : 'text-theme-secondary hover:text-[var(--text-theme-primary)] hover:bg-theme-primary/10'}`}
 						title="Preview sound"
 					>
 						{playingPreview === sound.id ? (

@@ -30,7 +30,7 @@ const PrivateThread = ({ label, title }: PrivateThreadProps) => {
 					className="w-4 h-4 rounded focus:ring-transparent cursor-pointer"
 					data-e2e={generateE2eId('chat.channel_message.thread_box.checkbox.private_thread')}
 				/>
-				<label htmlFor="private" className="text-theme-primary text-base hover:text-theme-primary cursor-pointer">
+				<label htmlFor="private" className="text-theme-primary text-base hover:text-[var(--text-theme-primary)] cursor-pointer">
 					{label}
 				</label>
 			</div>

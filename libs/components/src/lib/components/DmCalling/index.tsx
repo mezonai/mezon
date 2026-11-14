@@ -538,9 +538,9 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 								className={`h-9 w-9 sbm:h-11 sbm:w-11 lg:h-[56px] lg:w-[56px] rounded-full bg-red-500 hover:bg-red-700 flex items-center justify-center cursor-pointer`}
 								onClick={handleCloseCall}
 							>
-								<MezonIcon icon={MzIcons16.mzCallEnd} className="text-white-600 sbm:hidden" />
-								<MezonIcon icon={MzIcons20.mzCallEnd} className="hidden text-white-600 sbm:block lg:hidden" />
-								<MezonIcon icon={MzIcons24.mzCallEnd} className="hidden text-white-600 lg:block" />
+								<MezonIcon icon={MzIcons16.mzCallEnd} className="text-white sbm:hidden" />
+								<MezonIcon icon={MzIcons20.mzCallEnd} className="hidden text-white sbm:block lg:hidden" />
+								<MezonIcon icon={MzIcons24.mzCallEnd} className="hidden text-white lg:block" />
 							</div>
 						</div>
 					)}
