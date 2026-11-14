@@ -1,5 +1,4 @@
 import {
-	badgeService,
 	fetchListNotification,
 	notificationActions,
 	selectCurrentClanId,
@@ -9,6 +8,7 @@ import {
 	selectNotificationForYou,
 	selectNotificationMentions,
 	selectTopicsSort,
+	selectUnreadTopicCountByClan,
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
@@ -81,6 +81,11 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 			fetchedTabsRef.current = { clanId: currentClanId, tabs: new Set() };
 		}
 
+		if (currentClanId !== '0' && !hasFetchedTopics && !fetchedTabsRef.current.tabs.has(InboxType.TOPICS)) {
+			fetchedTabsRef.current.tabs.add(InboxType.TOPICS);
+			dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
+		}
+
 		if (fetchedTabsRef.current.tabs.has(currentTabNotify)) {
 			return;
 		}
@@ -98,9 +103,6 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category: NotificationCategory.MENTIONS }));
 				break;
 			case InboxType.TOPICS:
-				if (!hasFetchedTopics) {
-					dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
-				}
 				break;
 		}
 	}, [currentTabNotify, currentClanId, hasFetchedTopics, dispatch]);
@@ -293,11 +295,12 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 }
 
 const BadgeTopic = ({ clanId }: { clanId: string }) => {
-	const badgeCount = badgeService.getAllTopicNotiClan(clanId);
+	const badgeCount = useSelector(selectUnreadTopicCountByClan(clanId));
+	const displayBadgeCount = badgeCount > 9 ? '9+' : badgeCount;
 	if (!badgeCount) return null;
 	return (
 		<div className="absolute w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">
-			{badgeCount > 9 ? '9+' : badgeCount}
+			{displayBadgeCount}
 		</div>
 	);
 };
