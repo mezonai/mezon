@@ -5,6 +5,7 @@
 	"yes": "네",
 	"settings": "설정",
 	"search": "검색",
+	"socketReconnecting": "연결이 끊어졌습니다. 다시 연결하는 중…",
 	"errorBoundary": {
 		"title": "오, 이게 정말 당황스러워요",
 		"crashMessage": "Mezon 이 예상치 못한 문제를 만난 것 같습니다...",

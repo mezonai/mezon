@@ -5,6 +5,7 @@
 	"yes": "Sí",
 	"settings": "Configuración",
 	"search": "Buscar",
+	"socketReconnecting": "Se perdió la conexión. Reconectando…",
 	"errorBoundary": {
 		"title": "Bueno, esto es incómodo",
 		"crashMessage": "Parece que Mezon se cerró inesperadamente....",

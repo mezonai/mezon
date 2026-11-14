@@ -5,6 +5,7 @@
 	"yes": "Ja",
 	"settings": "Einstellungen",
 	"search": "Suche",
+	"socketReconnecting": "Verbindung unterbrochen. Verbindung wird wiederhergestellt…",
 	"errorBoundary": {
 		"title": "Oh, das ist unangenehm",
 		"crashMessage": "Es scheint, als ob Mezon ein unerwartetes Problem hatte...",
