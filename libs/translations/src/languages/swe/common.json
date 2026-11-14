@@ -5,6 +5,7 @@
 	"yes": "Ja",
 	"settings": "Inställningar",
 	"search": "Sök",
+	"socketReconnecting": "Anslutningen bröts. Ansluter igen…",
 	"errorBoundary": {
 		"title": "Åh, detta är besvärligt",
 		"crashMessage": "Mezon verkar ha stött på ett oväntat fel...",

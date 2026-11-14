@@ -5,6 +5,7 @@
 	"yes": "Yes",
 	"settings": "Settings",
 	"search": "Search",
+	"socketReconnecting": "Connection lost. Reconnecting…",
 	"errorBoundary": {
 		"title": "Well, this is awkward",
 		"crashMessage": "Looks like Mezon has crashed unexpectedly....",

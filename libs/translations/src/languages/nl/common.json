@@ -5,6 +5,7 @@
 	"yes": "Ja",
 	"settings": "Instellingen",
 	"search": "Zoeken",
+	"socketReconnecting": "Verbinding verbroken. Opnieuw verbinden…",
 	"errorBoundary": {
 		"title": "Oeps, dit is wat ongepast",
 		"crashMessage": "Het lijkt erop dat Mezon een onverwacht probleem heeft...",

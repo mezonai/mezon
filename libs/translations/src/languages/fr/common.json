@@ -5,6 +5,7 @@
 	"yes": "Oui",
 	"settings": "Paramètres",
 	"search": "Rechercher",
+	"socketReconnecting": "Connexion perdue. Reconnexion en cours…",
 	"errorBoundary": {
 		"title": "Oh, c'est embarrassant",
 		"crashMessage": "Mezon semble avoir rencontré un problème inattendu...",

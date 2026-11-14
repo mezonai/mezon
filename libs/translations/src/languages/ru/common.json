@@ -5,6 +5,7 @@
 	"yes": "Да",
 	"settings": "Настройки",
 	"search": "Поиск",
+	"socketReconnecting": "Соединение потеряно. Переподключение…",
 	"errorBoundary": {
 		"title": "Неловко вышло",
 		"crashMessage": "Похоже, что Mezon был внезапно приостановлен...",

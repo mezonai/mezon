@@ -229,6 +229,7 @@ import {
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
 } from '../utils/socketReconnectBudget';
+import { watchReconnectNotice } from './reconnectNotice';
 
 const MobileEventEmitter = new EventEmitter();
 
@@ -309,6 +310,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isMobile = false }) => {
 	const { t } = useTranslation('token');
 	const { t: tChannelMenu } = useTranslation('channelMenu');
+	const { t: tCommon } = useTranslation('common');
 	const { clientRef, sessionRef, mmnRef, askHealthyEndpoint, connectSocket, reconnectSocket } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
@@ -3230,6 +3232,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			subscription.unsubscribe();
 		};
 	}, [reconnect$, executeReconnect, clientRef, dispatch, runPostReconnectActions, askHealthyEndpoint]);
+
+	useEffect(
+		() =>
+			watchReconnectNotice({
+				subscribe: (listener) => socketState.subscribe(listener),
+				isConnected: () => socketState.isConnected,
+				isRecovering: () => reconnectRecoveryPendingRef.current,
+				show: () =>
+					dispatch(
+						toastActions.addToast({
+							id: 'SOCKET_RECONNECTING',
+							message: tCommon('socketReconnecting'),
+							type: 'warning',
+							autoClose: false
+						})
+					),
+				hide: () => dispatch(toastActions.removeToast('SOCKET_RECONNECTING'))
+			}),
+		[dispatch, tCommon]
+	);
 
 	useEffect(() => {
 		const onWaveReset = () => {
