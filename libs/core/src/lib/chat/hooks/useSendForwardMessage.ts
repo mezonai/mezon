@@ -30,6 +30,33 @@ function generateNewURL(originalUrl: string, newChannelId: string): string {
 		return originalUrl;
 	}
 }
+type CdnLinkResult = { linked: true } | { linked: false; code: unknown };
+
+export async function linkForwardAttachment(
+	attach: ApiMessageAttachment,
+	channelId: string,
+	link: (src: string, dst: string) => Promise<CdnLinkResult>,
+	hasHlsCopy: (url: string) => Promise<boolean>
+): Promise<{ attachment: ApiMessageAttachment; failure?: { code: unknown } }> {
+	if (!attach.url) return { attachment: attach };
+
+	const dst = generateNewURL(attach.url, channelId);
+	const thumbnailDst = attach.thumbnail ? generateNewURL(attach.thumbnail, channelId) : undefined;
+	const [urlResult, thumbnailResult] = await Promise.all([
+		link(attach.url, dst),
+		attach.thumbnail && thumbnailDst ? link(attach.thumbnail, thumbnailDst) : undefined
+	]);
+	const thumbnail = thumbnailDst && thumbnailResult?.linked ? thumbnailDst : attach.thumbnail;
+	const withThumbnail = thumbnail ? { thumbnail } : {};
+
+	if (urlResult.linked) {
+		return { attachment: { ...attach, url: dst, ...withThumbnail } };
+	}
+	if (urlResult.code === E_ERROR_CHANNEL.NOT_FOUND && (await hasHlsCopy(attach.url))) {
+		return { attachment: { ...attach, ...withThumbnail } };
+	}
+	return { attachment: { ...attach, ...withThumbnail }, failure: { code: urlResult.code } };
+}
 export function useSendForwardMessage() {
 	const { t } = useTranslation(['forwardMessage', 'errors']);
 	const { clientRef, sessionRef } = useMezon();
@@ -130,62 +157,28 @@ export function useSendForwardMessage() {
 					fwd: true
 				};
 
+				const linkIntoChannel = async (src: string, dst: string): Promise<CdnLinkResult> => {
+					try {
+						await client.linkCDNFile(session, { src, dst });
+						return { linked: true };
+					} catch (error: unknown) {
+						const code = typeof error === 'object' && error !== null && 'code' in error ? error.code : undefined;
+						return code === E_ERROR_CHANNEL.ALREADY_EXISTS ? { linked: true } : { linked: false, code };
+					}
+				};
+
 				const attachmentsMessage: ApiMessageAttachment[] = await Promise.all(
 					(message.attachments ?? []).map(async (attach) => {
-						if (!attach.url) return attach;
-
-						const dst = generateNewURL(attach.url, channel_id);
-
-						try {
-							await client.linkCDNFile(session, {
-								src: attach.url,
-								dst
-							});
-						} catch (error: unknown) {
-							const code = typeof error === 'object' && error !== null && 'code' in error ? error.code : undefined;
-
-							if (code === E_ERROR_CHANNEL.ALREADY_EXISTS) {
-								return {
-									...attach,
-									url: dst
-								};
-							}
-
-							if (code === E_ERROR_CHANNEL.NOT_FOUND && (await hasFinishedHlsCopy(attach.url))) {
-								return attach;
-							}
-
+						const { attachment, failure } = await linkForwardAttachment(attach, channel_id, linkIntoChannel, hasFinishedHlsCopy);
+						if (failure) {
 							dispatch(
 								toastActions.addToast({
 									type: 'error',
-									message: t(`errors:error_${code}`)
+									message: t(`errors:error_${failure.code}`)
 								})
 							);
-
-							return attach;
 						}
-
-						let thumb = attach.thumbnail;
-
-						if (attach.thumbnail) {
-							try {
-								thumb = generateNewURL(attach.thumbnail, channel_id);
-
-								await client.linkCDNFile(session, {
-									src: attach.thumbnail,
-									dst: thumb
-								});
-							} catch {
-								// Thumbnail is optional; keep the original thumbnail.
-								thumb = attach.thumbnail;
-							}
-						}
-
-						return {
-							...attach,
-							url: dst,
-							...(thumb ? { thumbnail: thumb } : {})
-						};
+						return attachment;
 					})
 				);
 
