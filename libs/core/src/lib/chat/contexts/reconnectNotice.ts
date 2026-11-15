@@ -20,6 +20,7 @@ export function watchReconnectNotice({
 	delayMs = RECONNECT_NOTICE_DELAY_MS
 }: ReconnectNoticeOptions): () => void {
 	let timer: ReturnType<typeof setTimeout> | undefined;
+	let shown = false;
 
 	const clearTimer = () => {
 		if (timer !== undefined) {
@@ -31,6 +32,7 @@ export function watchReconnectNotice({
 	const unsubscribe = subscribe((status) => {
 		if (status === 'connected') {
 			clearTimer();
+			shown = false;
 			hide();
 			return;
 		}
@@ -40,6 +42,7 @@ export function watchReconnectNotice({
 		timer = setTimeout(() => {
 			timer = undefined;
 			if (!isConnected() && isRecovering()) {
+				shown = true;
 				show();
 			}
 		}, delayMs);
@@ -48,5 +51,9 @@ export function watchReconnectNotice({
 	return () => {
 		clearTimer();
 		unsubscribe();
+		if (shown) {
+			shown = false;
+			hide();
+		}
 	};
 }

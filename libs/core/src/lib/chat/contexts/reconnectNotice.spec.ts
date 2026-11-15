@@ -76,6 +76,15 @@ describe('watchReconnectNotice', () => {
 		expect(show).not.toHaveBeenCalled();
 	});
 
+	it('removes a shown notice when it is stopped', () => {
+		const { socket, show, hide, stop } = setup();
+		socket.set('connecting');
+		jest.advanceTimersByTime(5000);
+		expect(show).toHaveBeenCalledTimes(1);
+		stop();
+		expect(hide).toHaveBeenCalledTimes(1);
+	});
+
 	it('does not show after it is stopped', () => {
 		const { socket, show, stop } = setup();
 		socket.set('connecting');
