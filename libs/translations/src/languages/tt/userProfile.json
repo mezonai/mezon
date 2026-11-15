@@ -206,6 +206,8 @@
 		"memberSince": "Шуннан әгъза",
 		"activity": "Эшчәнлек",
 		"unknownUser": "Билгесез кулланучы",
+		"noInformation": "Кулланучы турында мәгълүмат юк",
+		"noInformationShort": "Мәгълүмат юк",
 		"anonymous": "Аноним",
 		"editProfile": "Профильне үзгәртү",
 		"note": "Искәрмә",
