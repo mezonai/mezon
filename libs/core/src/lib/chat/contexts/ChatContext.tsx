@@ -674,7 +674,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 								const isFromMe = Boolean(currentUserId && message.sender_id === currentUserId);
 								const isViewingTopic =
 									isFocused && selectClanView(state) && selectIsShowCreateTopic(state) && selectCurrentTopicId(state) === topicId;
-								if (!isFromMe && !isViewingTopic) {
+								const isAlreadyUnread = state.topicdiscussions?.unreadTopics?.[topicId] === message.clan_id;
+								if (!isFromMe && !isViewingTopic && !isAlreadyUnread) {
 									dispatch(topicsActions.markTopicUnread({ topicId, clanId: message.clan_id }));
 								}
 							}
