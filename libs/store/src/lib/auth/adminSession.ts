@@ -46,10 +46,8 @@ export async function getAdminSession(context: AdminSessionContext): Promise<ISe
 			!!session.is_remember
 		);
 
-		// A response arriving after logout or an account change must not restore the old session.
 		const current = readSession(context);
 		if (current?.token !== session.token || current?.refresh_token !== session.refresh_token) {
-			// Another tab may have already rotated these credentials, including when our refresh was refused.
 			if (
 				current &&
 				session.user_id &&

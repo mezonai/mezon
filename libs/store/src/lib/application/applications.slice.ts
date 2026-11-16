@@ -322,7 +322,6 @@ export const editMezonOauthClient = createAsyncThunk<
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/editMezonOauthClient');
-		// The OAuth form reports this error and keeps the unsaved changes visible.
 		return thunkAPI.rejectWithValue(error, { error: { toast: false } });
 	}
 });
