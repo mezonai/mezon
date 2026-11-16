@@ -18,7 +18,6 @@ import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
 import type { ChannelLinkRef } from '../../ChannelLink';
 import { ChannelLink } from '../../ChannelLink';
 import { AvatarUserShort } from '../../ClanSettings/SettingChannel';
-import { StreamViewerCount } from '../../StreamPlayer/StreamPublisher';
 import UserListItem from '../../UserListVoiceChannel/UserListItemVoiceChannel';
 import type { IChannelLinkPermission } from '../CategorizedChannels';
 
@@ -140,7 +139,6 @@ const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMembe
 				<AvatarUserShort id={user.user_id || ''} key={(user.user_id || '') + index} />
 			))}
 			{hiddenMembers > 0 && <AvatarCount number={Math.min(hiddenMembers, 99)} />}
-			{channelType === ChannelType.CHANNEL_TYPE_STREAMING && <StreamViewerCount channelId={channelId} className="ml-auto text-theme-primary" />}
 		</AvatarGroup>
 	);
 };
@@ -174,9 +172,7 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 				const isPublisher = isStream && index === 0;
 				return (
 					<div key={isPublisher ? `publisher:${user.user_id}` : user.user_id} className={'mt-[1px]'}>
-						<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} showScreenShareIcon={!isStream}>
-							{isPublisher && <StreamViewerCount channelId={channelId} className="text-theme-primary" />}
-						</UserListItem>
+						<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} showScreenShareIcon={!isStream} />
 					</div>
 				);
 			})}
