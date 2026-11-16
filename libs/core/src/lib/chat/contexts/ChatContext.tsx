@@ -216,6 +216,7 @@ import { exhaustMap, filter, takeWhile, tap } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { isKnownPeerSession, readSignalSessionId, rememberPeerSession } from '../hooks/useWebRTCCall';
+import { isTopicConversationVisible } from '../utils/isTopicConversationVisible';
 import {
 	MAX_RECONNECT_WAVES_BEFORE_LOGOUT,
 	beginReconnectWave,
@@ -647,6 +648,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (isNewMessage) {
 							const state = store.getState() as RootState;
 							const isTopicMessage = Boolean(message.topic_id && message.topic_id !== '0');
+							const isMessageVisible = isTopicMessage
+								? isTopicConversationVisible({
+										channelId: message.channel_id,
+										topicId: message.topic_id,
+										currentChannelId: selectCurrentChannelId(state),
+										currentTopicId: selectCurrentTopicId(state),
+										isTopicOpen: selectIsShowCreateTopic(state),
+										isClanView: selectClanView(state),
+										isFocused
+									})
+								: mess.isCurrentChannel && isFocused;
 							const topicId = isTopicMessage ? (message.topic_id ?? message.channel_id) : '';
 
 							const checkChannelId = isTopicMessage ? topicId : message.channel_id;
@@ -654,21 +666,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							const msgTime = message.create_time_seconds ?? 0;
 							const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
 
-							if ((!mess.isCurrentChannel || !isFocused) && !isAlreadySeen) {
-								if (isTopicMessage) {
-									const topicMessage = { ...message, channel_id: topicId };
-									const didIncrement = badgeService.incrementChannelIfMentioned(topicMessage, userId as string);
-									if (didIncrement) {
-										badgeService.incrementChannelForTopic(
-											message.clan_id || '0',
-											message.channel_id,
-											topicId,
-											message.message_id
-										);
-									}
-								} else {
-									badgeService.incrementChannelIfMentioned(message, userId as string);
-								}
+							if (!isMessageVisible && !isAlreadySeen) {
+								badgeService.incrementChannelIfMentioned(message, userId as string);
 							}
 
 							if (isTopicMessage && !isAlreadySeen && message.clan_id && message.clan_id !== '0') {
@@ -910,15 +909,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const isDirectViewPage = path.includes('/chat/direct/message/');
 
 			const store = await getStoreAsync();
-			const currentChannel = selectCurrentChannel(store.getState() as unknown as RootState);
+			const state = store.getState() as unknown as RootState;
+			const currentChannel = selectCurrentChannel(state);
 			const isFocus = !isBackgroundModeActive();
+			const isTopicNotification = Boolean(notification.topic_id && notification.topic_id !== '0');
+			const shouldNotify = isTopicNotification
+				? !isTopicConversationVisible({
+						channelId: notification.channel_id,
+						topicId: notification.topic_id,
+						currentChannelId: currentChannel?.channel_id,
+						currentTopicId: selectCurrentTopicId(state),
+						isTopicOpen: selectIsShowCreateTopic(state),
+						isClanView: selectClanView(state) && !isDirectViewPage && !isFriendPageView,
+						isFocused: isFocus
+					})
+				: (currentChannel?.channel_id !== notification?.channel_id && notification?.clan_id !== '0') ||
+					isDirectViewPage ||
+					isFriendPageView ||
+					!isFocus;
 
-			if (
-				(currentChannel?.channel_id !== notification?.channel_id && notification?.clan_id !== '0') ||
-				isDirectViewPage ||
-				isFriendPageView ||
-				!isFocus
-			) {
+			if (shouldNotify) {
 				const parsedNotificationContent = safeJSONParse(notification.content?.content);
 				const parsedAttachments = parsedNotificationContent?.attachments;
 
@@ -959,7 +969,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						);
 					}
 
-					const isTopicNotification = notification.topic_id && notification.topic_id !== '0';
 					const topicId = isTopicNotification ? (notification.topic_id ?? notification?.channel_id ?? '') : '';
 					const checkChannelId = isTopicNotification ? topicId : (notification?.channel_id ?? '');
 					const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
@@ -969,7 +978,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const clanId = notification?.clan_id || '0';
 						const messageId = notification?.content?.message_id;
 						if (isTopicNotification) {
-							badgeService.incrementChannelFromNotification(clanId, topicId, messageId);
 							badgeService.incrementChannelFromNotificationForTopic(clanId, notification?.channel_id ?? '', topicId, messageId);
 						} else {
 							badgeService.incrementChannelFromNotification(clanId, notification?.channel_id ?? '', messageId);

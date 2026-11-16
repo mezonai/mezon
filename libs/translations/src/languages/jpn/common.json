@@ -19,6 +19,7 @@
 	},
 	"newMessage": "新しいメッセージ",
 	"newMention": "新しいメンション",
+	"newMentionsInTopic": "トピック内の新しいメンション",
 	"clanRailNew": "新着",
 	"discover": "発見",
 	"createClan": "クランを作成",

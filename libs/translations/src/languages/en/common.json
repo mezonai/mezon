@@ -19,6 +19,7 @@
 	},
 	"newMessage": "New",
 	"newMention": "New mention",
+	"newMentionsInTopic": "New mentions in topic",
 	"clanRailNew": "New",
 	"discover": "Discover",
 	"createClan": "Create Clan",
@@ -383,7 +384,7 @@
 		"noQuestions": "You don't have any questions. Setting questions for this clan first !!",
 		"noRules": "You don't have any rule. Setting rule for this clan first !!",
 		"noMissions": "You don't have any mission. Setting mission for this clan first !!",
-		"emptyGuideLine":  "No guidelines have been added yet !!"
+		"emptyGuideLine": "No guidelines have been added yet !!"
 	},
 	"updateUsername": {
 		"enterUsername": "Enter Mezon name",
