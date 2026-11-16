@@ -10,6 +10,7 @@ import type { DisplayedEmoji, DisplayedHand } from './types';
 
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
+const STALE_EMOJI_MS = 500;
 
 type AudioWithSink = HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> };
 
@@ -115,11 +116,12 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 	useEffect(() => {
 		const handleAnimationFrame = () => {
 			if (emojiQueueRef.current.length) {
-				setDisplayedEmojis((prev) => {
-					const merged = [...prev, ...emojiQueueRef.current];
-					emojiQueueRef.current = [];
-					return merged.slice(-MAX_EMOJIS_DISPLAYED);
-				});
+				const now = Date.now();
+				const freshEmojis = emojiQueueRef.current.filter((item) => now - item.timestamp < STALE_EMOJI_MS);
+				emojiQueueRef.current = [];
+				if (freshEmojis.length) {
+					setDisplayedEmojis((prev) => [...prev, ...freshEmojis].slice(-MAX_EMOJIS_DISPLAYED));
+				}
 			}
 			rafRef.current = requestAnimationFrame(handleAnimationFrame);
 		};
@@ -232,7 +234,9 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 
 		return () => {
 			if (currentSocket) {
-				currentSocket.onvoicereactionmessage = () => {};
+				currentSocket.onvoicereactionmessage = () => {
+					return;
+				};
 			}
 			audioMap.forEach((audio) => {
 				audio.pause();
@@ -286,6 +290,7 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 											<img
 												src={createImgproxyUrl(item.avatar, { width: 100, height: 100, resizeType: 'fill-down' })}
 												className="w-8 h-8 rounded-full"
+												alt={item.name}
 											/>
 										) : (
 											<div className="size-8 rounded-full bg-bgDisable flex items-center justify-center">
