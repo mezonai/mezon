@@ -5,6 +5,7 @@
 	"yes": "Sim",
 	"settings": "Configurações",
 	"search": "Pesquisar",
+	"socketReconnecting": "Conexão perdida. Reconectando…",
 	"errorBoundary": {
 		"title": "Ops, algo deu errado",
 		"crashMessage": "Parece que o Mezon encontrou um problema inesperado...",

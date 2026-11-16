@@ -5,6 +5,7 @@
 	"yes": "はい",
 	"settings": "設定",
 	"search": "検索",
+	"socketReconnecting": "接続が切れました。再接続しています…",
 	"errorBoundary": {
 		"title": "おっと、これは尴尬です",
 		"crashMessage": "Mezonが予期しない問題に遭遇したようです...",

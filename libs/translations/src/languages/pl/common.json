@@ -5,6 +5,7 @@
 	"yes": "Tak",
 	"settings": "Ustawienia",
 	"search": "Szukaj",
+	"socketReconnecting": "Utracono połączenie. Ponowne łączenie…",
 	"errorBoundary": {
 		"title": "O nie, to niezręczne",
 		"crashMessage": "Wygląda na to, że Mezon napotkał nieoczekiwany problem...",
