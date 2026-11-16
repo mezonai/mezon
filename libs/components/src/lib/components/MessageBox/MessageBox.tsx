@@ -4,7 +4,6 @@ import {
 	selectCloseMenu,
 	selectDataReferences,
 	selectIsQuickReply,
-	selectIsSpelling,
 	selectStatusMenu,
 	useAppDispatch,
 	useAppSelector
@@ -129,7 +128,6 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 		onStart: () => setIsRecording(true),
 		onFinish: () => setIsRecording(false)
 	});
-	const isCheckSpelling = useSelector(selectIsSpelling);
 	const isCheckQuickReply = useSelector(selectIsQuickReply);
 	const updateRef = useRef<(input: RequestInput) => void>(null);
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentChannelId ?? ''));
@@ -146,14 +144,9 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 	return (
 		<div className="relative max-sm:-pb-2">
-			{(isCheckSpelling || isCheckQuickReply) && (
+			{isCheckQuickReply && (
 				<Suspense fallback={null}>
-					<Spelling
-						updateDraft={updateRef}
-						isSpelling={isCheckSpelling}
-						isQuickReply={isCheckQuickReply}
-						channelId={currentChannelId || ''}
-					/>
+					<Spelling updateDraft={updateRef} isQuickReply={isCheckQuickReply} channelId={currentChannelId || ''} />
 				</Suspense>
 			)}
 			{dataReferences.message_ref_id && <ReplyMessageBox channelId={currentChannelId ?? ''} dataReferences={dataReferences} />}

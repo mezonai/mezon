@@ -6,7 +6,6 @@ ort.env.wasm.numThreads = 1;
 ort.env.wasm.proxy = false;
 
 const MODEL_URL = process.env.NX_MODEL_ONNX;
-const ACCENT_MODEL_URL = process.env.NX_MODEL_ACCENT_ONNX;
 
 let client: MezonGrammarClient | null = null;
 let loadingPromise: Promise<MezonGrammarClient> | null = null;
@@ -21,25 +20,18 @@ export const getGrammarClient = async (): Promise<MezonGrammarClient> => {
 	}
 
 	loadingPromise = (async () => {
-		if (!MODEL_URL || !ACCENT_MODEL_URL) {
+		if (!MODEL_URL) {
 			throw new Error('NOT FOUND CDN MODEL URL');
 		}
 
 		const newClient = new MezonGrammarClient();
 
-		const results = await Promise.allSettled([
-			newClient.loadModel(MODEL_URL, ort as any),
-			newClient.loadAccentModel(ACCENT_MODEL_URL, ort as any)
-		]);
-
-		results.forEach((result, index) => {
-			if (result.status === 'rejected') {
-				console.error(index === 0 ? '[Grammar] Intent model load failed:' : '[Grammar] Accent model load failed:', result.reason);
-			}
+		await newClient.loadModel(MODEL_URL, ort as any).catch((reason) => {
+			console.error('[QuickReply] Intent model load failed:', reason);
 		});
 
-		if (!newClient.isModelLoaded() && !newClient.isAccentModelLoaded()) {
-			throw new Error('Không thể tải cả intent model và accent model');
+		if (!newClient.isModelLoaded()) {
+			throw new Error('Không thể tải intent model');
 		}
 
 		client = newClient;
@@ -50,7 +42,6 @@ export const getGrammarClient = async (): Promise<MezonGrammarClient> => {
 	try {
 		return await loadingPromise;
 	} catch (error) {
-		// Cho phép retry nếu lần load đầu tiên thất bại.
 		loadingPromise = null;
 		throw error;
 	}

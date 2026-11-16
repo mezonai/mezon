@@ -117,8 +117,6 @@ export interface AppState {
 	hardwareAcceleration: boolean;
 	isMediaChannelViewMode: boolean;
 	autoHidden: boolean;
-	isOpenRecommand: boolean | null;
-	isSpelling: boolean;
 	isQuickReply: boolean;
 	voiceUserVolumes: Record<string, number>;
 }
@@ -171,8 +169,6 @@ export const initialAppState: AppState = {
 	autoStart: false,
 	hardwareAcceleration: true,
 	autoHidden: false,
-	isOpenRecommand: null,
-	isSpelling: false,
 	isQuickReply: false,
 	voiceUserVolumes: {}
 };
@@ -465,14 +461,8 @@ export const appSlice = createSlice({
 		toggleAutoHidden: (state) => {
 			state.autoHidden = state.autoHidden === undefined ? true : !state.autoHidden;
 		},
-		toggleIsSpelling: (state) => {
-			state.isSpelling = !state.isSpelling;
-		},
 		toggleIsQuickReply: (state) => {
 			state.isQuickReply = !state.isQuickReply;
-		},
-		toggleRecommand: (state) => {
-			state.isOpenRecommand = !state.isOpenRecommand;
 		},
 		setVoiceUserVolume: (state, action: PayloadAction<{ userId: string; percent: number }>) => {
 			const { userId } = action.payload;
@@ -548,10 +538,7 @@ export const selectHardwareAcceleration = createSelector(getAppState, (state: Ap
 export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
 
 export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);
-export const selectIsSpelling = createSelector(getAppState, (state: AppState) => state.isSpelling);
 export const selectIsQuickReply = createSelector(getAppState, (state: AppState) => state.isQuickReply);
-
-export const selectIsRecommand = createSelector(getAppState, (state: AppState) => state.isOpenRecommand);
 
 const EMPTY: Record<string, number> = Object.freeze({});
 

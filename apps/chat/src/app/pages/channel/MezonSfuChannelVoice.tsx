@@ -1,4 +1,11 @@
-import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@mezon/components';
+import {
+	InMeetingBackgroundMenu,
+	MediaPipeBackgroundProcessor,
+	MezonSfuVoiceRoom,
+	SfuPreJoinVoiceChannel,
+	type BackgroundMode,
+	type SfuJoinRole
+} from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
@@ -30,7 +37,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 
-import { useLastCallback } from '@mezon/utils';
+import { reportMediaAccessError, useLastCallback } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
 import React, { Suspense, memo, useCallback, useEffect, useRef, useState, type ErrorInfo } from 'react';
@@ -108,6 +115,7 @@ interface VoiceConferenceContentProps {
 	handleToggleChat: () => void;
 	isPrivateVoice?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
+	containerRef?: RefObject<HTMLDivElement | null>;
 }
 
 const VoiceConferenceContent = memo(
@@ -123,8 +131,122 @@ const VoiceConferenceContent = memo(
 		isVoiceFullScreen,
 		handleToggleChat,
 		isPrivateVoice,
-		onRefreshToken
+		onRefreshToken,
+		containerRef
 	}: VoiceConferenceContentProps) => {
+		const roomCameraOn = useSelector(selectShowCamera);
+		const cameraEnabled = joinRole === 'speaker' && roomCameraOn;
+		const shareCamera = cameraEnabled;
+
+		const [selectedCamera, setSelectedCamera] = useState('default');
+		const [selectedBg, setSelectedBg] = useState<BackgroundMode | null>(null);
+		const [customVideoTrack, setCustomVideoTrack] = useState<MediaStreamTrack | null>(null);
+
+		const selectedBgRef = useRef<BackgroundMode | null>(null);
+		const rawStreamRef = useRef<MediaStream | null>(null);
+		const processorRef = useRef<MediaPipeBackgroundProcessor | null>(null);
+		const cameraRequestRef = useRef(0);
+		const cameraStartQueueRef = useRef<Promise<void>>(Promise.resolve());
+		const dispatch = useAppDispatch();
+
+		const startCamera = useCallback(
+			(deviceId: string) => {
+				const request = ++cameraRequestRef.current;
+				const run = async () => {
+					if (request !== cameraRequestRef.current) return;
+					try {
+						const stream = await navigator.mediaDevices.getUserMedia({
+							video: {
+								width: { ideal: 1280 },
+								height: { ideal: 720 },
+								...(deviceId === 'default' ? { facingMode: 'user' } : { deviceId: { exact: deviceId } })
+							},
+							audio: false
+						});
+						if (request !== cameraRequestRef.current) {
+							stream.getTracks().forEach((track) => track.stop());
+							return;
+						}
+
+						rawStreamRef.current?.getTracks().forEach((track) => track.stop());
+						rawStreamRef.current = stream;
+
+						if (!processorRef.current) {
+							processorRef.current = new MediaPipeBackgroundProcessor();
+						}
+
+						await processorRef.current.start(stream, selectedBgRef.current);
+						if (request !== cameraRequestRef.current) {
+							stream.getTracks().forEach((track) => track.stop());
+							if (rawStreamRef.current === stream) {
+								rawStreamRef.current = null;
+								processorRef.current?.stop();
+							}
+							return;
+						}
+
+						setCustomVideoTrack(processorRef.current.getVideoTrack());
+						setSelectedCamera(stream.getVideoTracks()[0]?.getSettings().deviceId || deviceId);
+					} catch (err) {
+						console.error('Error accessing camera:', err);
+						if (request === cameraRequestRef.current) {
+							reportMediaAccessError('camera', err);
+							dispatch(voiceActions.setShowCamera(false));
+						}
+					}
+				};
+				cameraStartQueueRef.current = cameraStartQueueRef.current.then(run);
+				return cameraStartQueueRef.current;
+			},
+			[dispatch]
+		);
+
+		const releaseCamera = useCallback(() => {
+			cameraRequestRef.current += 1;
+			rawStreamRef.current?.getTracks().forEach((track) => track.stop());
+			rawStreamRef.current = null;
+			processorRef.current?.stop();
+			setCustomVideoTrack(null);
+		}, []);
+
+		const handleSelectCamera = useCallback(
+			(deviceId: string) => {
+				setSelectedCamera(deviceId);
+				if (cameraEnabled) void startCamera(deviceId);
+			},
+			[cameraEnabled, startCamera]
+		);
+
+		const handleSelectBg = useCallback((mode: BackgroundMode | null) => {
+			setSelectedBg(mode);
+			selectedBgRef.current = mode;
+			if (processorRef.current) {
+				processorRef.current.setMode(mode);
+			}
+		}, []);
+
+		useEffect(() => {
+			if (!cameraEnabled) {
+				releaseCamera();
+				return;
+			}
+			if (!rawStreamRef.current) void startCamera(selectedCamera);
+		}, [cameraEnabled, selectedCamera, releaseCamera, startCamera]);
+
+		useEffect(() => {
+			return () => {
+				cameraRequestRef.current += 1;
+				if (rawStreamRef.current) {
+					rawStreamRef.current.getTracks().forEach((track) => track.stop());
+					rawStreamRef.current = null;
+				}
+				if (processorRef.current) {
+					processorRef.current.destroy();
+					processorRef.current = null;
+				}
+			};
+		}, []);
+
 		return (
 			<div className="flex-1 relative flex overflow-hidden">
 				<MezonSfuVoiceRoom
@@ -141,6 +263,21 @@ const VoiceConferenceContent = memo(
 					onToggleChat={handleToggleChat}
 					isPrivateVoice={isPrivateVoice}
 					onRefreshToken={onRefreshToken}
+					cameraManagedExternally
+					customVideoTrack={
+						shareCamera
+							? customVideoTrack && customVideoTrack.readyState === 'live'
+								? customVideoTrack
+								: processorRef.current?.getVideoTrack()
+							: null
+					}
+					preferredCameraId={selectedCamera}
+					onSelectCamera={handleSelectCamera}
+					headerActions={
+						shareCamera && containerRef ? (
+							<InMeetingBackgroundMenu selectedMode={selectedBg} onSelectMode={handleSelectBg} containerRef={containerRef} />
+						) : undefined
+					}
 				/>
 				<EmojiSuggestionProvider>
 					{isShowChatVoice && (
@@ -389,6 +526,7 @@ const MezonSfuChannelVoiceInner = () => {
 									isVoiceFullScreen={!!isVoiceFullScreen}
 									handleToggleChat={handleToggleChat}
 									onRefreshToken={handleRefreshToken}
+									containerRef={containerRef}
 								/>
 							) : (
 								<div className="flex h-full w-full flex-col p-5 text-textSecondary">
