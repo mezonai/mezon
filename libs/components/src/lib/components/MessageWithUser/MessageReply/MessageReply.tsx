@@ -113,6 +113,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 								srcImgProxy={avatarProps.srcImgProxy}
 								src={avatarProps.src}
 								isAnonymous={isAnonymousReplied}
+								useUserPlaceholder={isChannelMode}
 							/>
 						</div>
 

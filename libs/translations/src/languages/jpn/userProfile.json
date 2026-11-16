@@ -69,6 +69,8 @@
 		"memberSince": "メンバー desde",
 		"activity": "アクティビティ",
 		"unknownUser": "不明なユーザー",
+		"noInformation": "ユーザー情報がありません",
+		"noInformationShort": "情報なし",
 		"anonymous": "匿名",
 		"editProfile": "プロフィールを編集",
 		"note": "メモ",

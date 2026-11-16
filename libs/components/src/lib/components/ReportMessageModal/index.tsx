@@ -126,7 +126,7 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 								onClick={handleIgnoreUser}
 								className="group flex w-full flex-col items-start rounded-lg bg-theme-setting-nav p-4 transition-all hover:bg-theme-setting-nav-hover active:scale-[0.99] hover:scale-x-105"
 							>
-								<span className="text-base font-semibold text-theme-primary group-hover:text-theme-primary-active">
+								<span className="text-base font-semibold text-theme-primary group-hover:text-[var(--text-secondary)]">
 									{t('reportMessageModal.actionModal.ignoreMessages')}
 								</span>
 								<span className="mt-1 text-xs text-theme-primary opacity-70">
@@ -152,7 +152,7 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 						<div className="mt-6 flex justify-end">
 							<button
 								onClick={handleSkipActions}
-								className="rounded px-4 py-2 text-sm font-medium text-theme-primary transition-colors hover:text-theme-primary-active hover:underline"
+								className="rounded px-4 py-2 text-sm font-medium text-theme-primary transition-colors text-theme-primary-hover hover:underline"
 							>
 								{t('reportMessageModal.actionModal.skip')}
 							</button>

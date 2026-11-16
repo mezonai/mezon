@@ -69,6 +69,8 @@
 		"memberSince": "참여",
 		"activity": "활동",
 		"unknownUser": "알 수 없는 사용자",
+		"noInformation": "사용자 정보가 없습니다",
+		"noInformationShort": "정보 없음",
 		"anonymous": "익명",
 		"editProfile": "프로필 수정",
 		"note": "메모",

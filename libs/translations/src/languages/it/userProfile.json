@@ -69,6 +69,8 @@
 		"memberSince": "Membro dal",
 		"activity": "Attività",
 		"unknownUser": "Utente sconosciuto",
+		"noInformation": "Nessuna informazione sull'utente",
+		"noInformationShort": "Nessun dato",
 		"anonymous": "Anonimo",
 		"editProfile": "Modifica profilo",
 		"note": "NOTA",

@@ -144,7 +144,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 						<button
 							type="button"
 							onClick={onClose}
-							className="group/mzi p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
+							className="group/mzi p-2 rounded-md border border-transparent text-theme-primary text-theme-primary-hover hover:border-theme-primary bg-item-theme-hover transition-colors"
 						>
 							<MezonIcon icon={MzIcons20.mzClose} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 						</button>
@@ -177,7 +177,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 										<button
 											type="button"
 											onClick={(e) => handleToggleEmojiPicker(index, e)}
-											className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-primary hover:text-theme-primary-active hover:brightness-200 transition-all"
+											className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-primary text-theme-primary-hover hover:brightness-200 transition-all"
 										>
 											{answerEmojiIds[index] ? (
 												<img
@@ -220,7 +220,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 								<button
 									type="button"
 									onClick={handleAddAnswer}
-									className="mt-2 flex items-center gap-2 text-sm text-theme-primary hover:text-theme-primary-active transition-colors"
+									className="mt-2 flex items-center gap-2 text-sm text-theme-primary text-theme-primary-hover transition-colors"
 									data-e2e={generateE2eId('poll.modal.button.add_answer')}
 								>
 									<MezonIcon icon={MzIcons16.mzPlusCircle} className="text-[var(--mz-icon)]" />

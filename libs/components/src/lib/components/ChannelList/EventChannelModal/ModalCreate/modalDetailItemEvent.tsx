@@ -122,7 +122,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const hasAddress = !!event?.address;
 	const hasVoiceChannel = !!event?.channel_voice_id && !!channelVoice?.channel_id;
 	const isHiddenVoiceChannel = !!event?.channel_voice_id && !channelVoice?.channel_id;
-	const isPrivateEvent = event?.is_private;
+	const isPrivateEvent = event?.is_external;
 
 	const handleStopPropagation = (e: any) => {
 		e.stopPropagation();

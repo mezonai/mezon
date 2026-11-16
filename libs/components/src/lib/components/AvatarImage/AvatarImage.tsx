@@ -7,6 +7,7 @@ export type AvatarImageProp = {
 	username?: string;
 	alt: string;
 	isAnonymous?: boolean;
+	useUserPlaceholder?: boolean;
 	classNameText?: string;
 	srcImgProxy?: string;
 	isSending?: boolean;
@@ -22,7 +23,18 @@ const AvatarPlaceholder = ({ className = '', onClick }: { className?: string; on
 	</div>
 );
 
-export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', isSending, isAnonymous, classNameText, ...rest }: AvatarImageProp) => {
+export const AvatarImage = ({
+	username,
+	src,
+	srcImgProxy,
+	alt,
+	className = '',
+	isSending,
+	isAnonymous,
+	useUserPlaceholder = false,
+	classNameText,
+	...rest
+}: AvatarImageProp) => {
 	const [isError, setIsError] = useState(false);
 
 	const computedClassName = `size-10 rounded-full object-cover min-w-5 min-h-5 cursor-pointer ${className}`;
@@ -40,7 +52,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 			</div>
 		);
 
-	if (!src && !username) {
+	if (!src && !username && !useUserPlaceholder) {
 		return <MezonIcon icon={MzIcons20.mzUserCircle} className={`${className} text-[var(--mz-icon)]`} />;
 	}
 
