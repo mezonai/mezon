@@ -2,13 +2,26 @@ import type { ApiChannelDescription } from 'mezon-js';
 
 export const SEARCH_CTRL_K_MAX_TEXT_BYTES = 255;
 
+/** Shortest text the server accepts: a one-character prefix matches nearly the whole index. */
+export const SEARCH_CTRL_K_MIN_CHARS = 2;
+
+/** Counts code points, like the server's rune check, so an emoji is one character. */
+export function ctrlkSearchCharCount(text: string): number {
+	return [...text.trim()].length;
+}
+
+export function isCtrlkSearchTooShort(text: string): boolean {
+	return ctrlkSearchCharCount(text) < SEARCH_CTRL_K_MIN_CHARS;
+}
+
 export function forwardServerChannelQuery(searchText: string): string | null {
 	const text = searchText.trim();
 	if (text.startsWith('@')) {
 		return null;
 	}
 	const needle = (text.startsWith('#') ? text.slice(1) : text).trim();
-	if (!needle || new TextEncoder().encode(needle).length > SEARCH_CTRL_K_MAX_TEXT_BYTES) {
+	// The server rejects text shorter than SEARCH_CTRL_K_MIN_CHARS, so asking buys a round trip only.
+	if (!needle || isCtrlkSearchTooShort(needle) || new TextEncoder().encode(needle).length > SEARCH_CTRL_K_MAX_TEXT_BYTES) {
 		return null;
 	}
 	return needle;
