@@ -76,15 +76,27 @@ const ModalSendToken = ({
 		setWalletBalanceError(null);
 	}, [walletDetail?.balance]);
 
+	const searchAbortRef = useRef<AbortController | null>(null);
+
+	useEffect(() => {
+		return () => {
+			searchAbortRef.current?.abort();
+		};
+	}, []);
+
 	const handleChangeSearchTerm = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setSearchTerm(value);
 		setSelectedUserId('');
 		setIsDropdownOpen(true);
+		searchAbortRef.current?.abort();
 		debouncedSearch(value);
 	};
 	const debouncedSearch = useDebouncedCallback((value: string) => {
-		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: `${value}` }));
+		searchAbortRef.current?.abort();
+		const controller = new AbortController();
+		searchAbortRef.current = controller;
+		dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: `${value}`, signal: controller.signal }));
 	}, 500);
 	const handleSelectUser = useCallback(
 		(id: string, name: string) => {
