@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "Mają puste pola wprowadzania!",
+			"saveFailed": "Nie udało się zapisać ustawień OAuth. Spróbuj ponownie. Jeśli problem będzie się powtarzał, zaloguj się ponownie.",
 			"invalidUris": "URI musi być poprawne!",
 			"redirectUriRequired": "Redirect URI jest wymagany!"
 		}

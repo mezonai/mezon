@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "Er zijn lege invoervelden!",
+			"saveFailed": "De OAuth-instellingen konden niet worden opgeslagen. Probeer het opnieuw. Als het probleem aanhoudt, log dan opnieuw in.",
 			"invalidUris": "URI moet geldig zijn!",
 			"redirectUriRequired": "Redirect URI is verplicht!"
 		}

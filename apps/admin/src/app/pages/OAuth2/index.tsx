@@ -83,7 +83,11 @@ const OAuth2 = () => {
 			scope: newScope.trim()
 		};
 
-		await dispatch(editMezonOauthClient({ body: request }));
+		const result = await dispatch(editMezonOauthClient({ body: request }));
+		if (editMezonOauthClient.rejected.match(result)) {
+			toast.error(t('oauth2.toasts.saveFailed'));
+			return;
+		}
 		setHasChange(false);
 	};
 
