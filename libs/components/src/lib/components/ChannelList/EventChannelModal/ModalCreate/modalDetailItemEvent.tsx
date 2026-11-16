@@ -151,7 +151,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				{time}
 			</h4>
 			<p
-				className="font-bold text-theme-primary-active text-lg truncate"
+				className="font-bold text-theme-primary-active text-lg truncate select-text"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.topic')}
 				title={event?.title}
 			>
@@ -273,7 +273,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				<p>{t('eventDetail.createdBy', { username: userName })}</p>
 			</div>
 			<div
-				className="break-all whitespace-pre-wrap"
+				className="break-all whitespace-pre-wrap select-text"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.description')}
 			>
 				{renderDescriptionWithLinks(event?.description)}
