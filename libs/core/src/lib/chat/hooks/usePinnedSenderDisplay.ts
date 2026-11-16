@@ -1,3 +1,4 @@
+import { selectMemberByGroupId, useAppSelector } from '@mezon/store';
 import { NX_CHAT_APP_ANNONYMOUS_USER_ID } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useMemo } from 'react';
@@ -32,6 +33,11 @@ export function usePinnedSenderDisplay({
 	isAnonymous: isAnonymousOverride
 }: UsePinnedSenderDisplayOptions) {
 	const { priorityAvatar, namePriority, isAnonymous: isAnonymousSender } = useGetPriorityNameFromUserClan(senderId);
+	const directMembers = useAppSelector((state) => (channelId ? selectMemberByGroupId(state, channelId) : undefined));
+	const directName = useMemo(() => {
+		const member = directMembers?.find((item) => String(item.id) === senderId);
+		return member?.user?.display_name || member?.user?.username || '';
+	}, [directMembers, senderId]);
 
 	const isDirectMode = mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
 	const isAnonymous = isAnonymousOverride ?? (isAnonymousSender || senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID);
@@ -40,11 +46,11 @@ export function usePinnedSenderDisplay({
 		const nameFromMessage = getShowName(message?.clan_nick ?? '', message?.display_name ?? '', message?.username ?? '', senderId) || '';
 
 		if (isDirectMode) {
-			return nameFromMessage || namePriority || pinUsername || '';
+			return nameFromMessage || directName || namePriority || pinUsername || '';
 		}
 
 		return nameFromMessage || namePriority || pinUsername || '';
-	}, [message?.clan_nick, message?.display_name, message?.username, senderId, isDirectMode, namePriority, pinUsername]);
+	}, [message?.clan_nick, message?.display_name, message?.username, senderId, isDirectMode, directName, namePriority, pinUsername]);
 
 	const displayAvatar = useMemo(() => {
 		if (isAnonymous) {
