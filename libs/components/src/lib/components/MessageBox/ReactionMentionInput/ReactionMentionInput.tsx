@@ -1102,6 +1102,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					maxHistorySize={50}
 					hasFilesToSend={attachmentData.length > 0}
 					currentChannelId={props.currentChannelId}
+					mentionUsers={props.listMentions}
 					allowEmptySend={props.allowEmptySend}
 					keepTextOnSend={isCreatingThread}
 				>
