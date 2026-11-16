@@ -422,12 +422,15 @@ type UpdateLinkUser = {
 	dob: number;
 	noCache?: boolean;
 	logo?: string;
+	banner?: string;
 	encrypt_private_key?: string;
 };
 
-export const updateUser = createAsyncThunk(
+export const updateUser = createAsyncThunk<boolean, UpdateLinkUser, { rejectedMeta: { error: { toast: boolean } } }>(
 	'clans/updateUser',
-	async ({ avatar_url, display_name, about_me, logo, noCache: _noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
+	async ({ avatar_url, display_name, about_me, logo, banner, noCache: _noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
+		// The cover editor reports save errors locally and retains the draft for retry.
+		const errorMeta = { error: { toast: banner === undefined } };
 		try {
 			const state = thunkAPI.getState() as RootState;
 			const currentUser = state.account?.userProfile;
@@ -454,8 +457,12 @@ export const updateUser = createAsyncThunk(
 				}
 			}
 
-			if (logo !== currentUser?.logo) {
+			if (logo !== undefined && logo !== currentUser?.logo) {
 				body.logo = logo;
+			}
+
+			if (banner !== undefined && banner !== (currentUser?.banner ?? currentUser?.user?.banner ?? '')) {
+				body.banner = banner;
 			}
 
 			if (encrypt_private_key && encrypt_private_key !== currentUser?.encrypt_private_key) {
@@ -466,23 +473,43 @@ export const updateUser = createAsyncThunk(
 				return true;
 			}
 
+			if (banner !== undefined && process.env.NODE_ENV !== 'production') {
+				// eslint-disable-next-line no-console -- Requested diagnostics before protobuf encoding.
+				console.info(
+					'[Profile cover] UpdateAccount request (before protobuf)',
+					JSON.stringify({
+						fields: Object.keys(body),
+						banner: body.banner?.split('?')[0],
+						bannerLength: body.banner?.length,
+						displayNameLength: body.display_name?.length,
+						about_me_length: body.about_me?.length,
+						dob_seconds: body.dob_seconds
+					})
+				);
+			}
 			const response = await mezon.client.updateAccount(mezon.session, body as ApiUpdateAccountRequest);
+			if (banner !== undefined && process.env.NODE_ENV !== 'production') {
+				// eslint-disable-next-line no-console -- Requested diagnostics for the cover save response.
+				console.info('[Profile cover] UpdateAccount response', JSON.stringify({ ok: !!response }));
+			}
 			if (!response) {
-				return thunkAPI.rejectWithValue([]);
+				return thunkAPI.rejectWithValue([], errorMeta);
+			}
+			if ((thunkAPI.getState() as RootState).account.userProfile?.user?.id !== currentUser?.user?.id) {
+				return thunkAPI.rejectWithValue('Account changed', errorMeta);
 			}
 			if (response) {
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
-						logo,
-						encrypt_private_key,
+						...(body.banner !== undefined && { banner: body.banner }),
+						...(body.logo !== undefined && { logo: body.logo }),
+						...(body.encrypt_private_key !== undefined && { encrypt_private_key: body.encrypt_private_key }),
 						user: {
-							avatar_url: avatar_url || '',
-							display_name: display_name || '',
-							lang_tag: 'en',
-							location: '',
-							timezone: '',
-							about_me,
-							dob_seconds: body.dob_seconds
+							...(body.banner !== undefined && { banner: body.banner }),
+							...(body.avatar_url !== undefined && { avatar_url: body.avatar_url }),
+							...(body.display_name !== undefined && { display_name: body.display_name }),
+							...(body.about_me !== undefined && { about_me: body.about_me }),
+							...(body.dob_seconds !== undefined && { dob_seconds: body.dob_seconds })
 						}
 					})
 				);
@@ -495,7 +522,14 @@ export const updateUser = createAsyncThunk(
 			return response as true;
 		} catch (error) {
 			captureSentryError(error, 'clans/updateUser');
-			return thunkAPI.rejectWithValue(error);
+			if (banner !== undefined && process.env.NODE_ENV !== 'production') {
+				const failure = error as { code?: number; status?: number };
+				console.error(
+					'[Profile cover] UpdateAccount failed',
+					JSON.stringify({ code: failure?.code, status: failure?.status, errorType: error instanceof Error ? error.name : typeof error })
+				);
+			}
+			return thunkAPI.rejectWithValue(error, errorMeta);
 		}
 	}
 );

@@ -1073,6 +1073,7 @@ export const DATA_E2E_IDENTIFIER = {
 			tab_profile: '',
 			user_profile: {
 				preview: {
+					cover_photo: '',
 					avatar: '',
 					display_name: ''
 				},
@@ -1082,12 +1083,15 @@ export const DATA_E2E_IDENTIFIER = {
 				},
 				button: {
 					reset: '',
-					save_changes: ''
+					save_changes: '',
+					change_cover: '',
+					remove_cover: ''
 				},
 				text: {
 					about_me_length: ''
 				},
 				upload: {
+					cover_photo: '',
 					direct_message_icon_input: '',
 					avatar_input: {
 						apply_button: ''

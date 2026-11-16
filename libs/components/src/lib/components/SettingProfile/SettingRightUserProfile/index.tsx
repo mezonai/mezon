@@ -29,6 +29,7 @@ import ImageEditor from '../ImageEditor/ImageEditor';
 import type { Profilesform } from '../SettingUserClanProfileCard';
 import PreviewSetting from '../SettingUserClanProfileCard';
 import { processImage } from '../helper';
+import { useProfileCoverDraft } from './useProfileCoverDraft';
 
 const SettingRightUser = ({
 	onClanProfileClick,
@@ -55,6 +56,10 @@ const SettingRightUser = ({
 	const [editAboutUser, setEditAboutUser] = useState(aboutMe);
 	const { sessionRef, clientRef } = useMezon();
 	const { userProfile } = useAuth();
+	const cover = useProfileCoverDraft(userProfile?.banner ?? userProfile?.user?.banner ?? '');
+	const coverInputRef = useRef<HTMLInputElement>(null);
+	const [isSaving, setIsSaving] = useState(false);
+	const savingRef = useRef(false);
 	const [urlImage, setUrlImage] = useState(avatar);
 	const { updateUser } = useAccount();
 	const [flags, setFlags] = useState(true);
@@ -69,9 +74,27 @@ const SettingRightUser = ({
 	const [valueDisplayName, setValueDisplayName] = useState<string>(currentDisplayName || '');
 
 	const handleUpdateUser = async () => {
-		if (name || urlImage || valueDisplayName || editAboutUser || dob) {
-			const result = await updateUser(name, urlImage, valueDisplayName.trim(), editAboutUser, dob, userProfile?.logo || '');
-			if (result === true) handleSaveClose();
+		if (savingRef.current || cover.isPreparing || isLoading) return;
+		savingRef.current = true;
+		setIsSaving(true);
+		try {
+			const coverChange = await cover.uploadForSave();
+			if (!coverChange) return;
+			const result = await updateUser(
+				name,
+				urlImage,
+				valueDisplayName.trim(),
+				editAboutUser,
+				dob,
+				userProfile?.logo || '',
+				undefined,
+				coverChange.banner
+			);
+			if (result !== true) {
+				toast.error(t('updateProfileError'));
+				return;
+			}
+			handleSaveClose();
 			if (currentClanId && userProfile?.user?.id) {
 				await dispatch(
 					usersClanActions.updateUserDisplayName({
@@ -98,6 +121,11 @@ const SettingRightUser = ({
 					})
 				);
 			}
+		} catch {
+			toast.error(t('updateProfileError'));
+		} finally {
+			savingRef.current = false;
+			setIsSaving(false);
 		}
 	};
 
@@ -171,6 +199,8 @@ const SettingRightUser = ({
 	};
 
 	const handleClose = () => {
+		if (savingRef.current) return;
+		cover.reset();
 		setValueDisplayName(currentDisplayName);
 		setEditAboutUser(aboutMe);
 		setUrlImage(avatar);
@@ -178,11 +208,14 @@ const SettingRightUser = ({
 		setFlagsRemoveAvartar(false);
 	};
 	const handleSaveClose = () => {
+		cover.reset();
 		setFlags(false);
+		setFlagsRemoveAvartar(false);
 	};
 	const editProfile: Profilesform = {
 		displayName: valueDisplayName || '',
-		urlImage: urlImage || ''
+		urlImage: urlImage || '',
+		banner: cover.banner
 	};
 	const handleDisplayName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.value.startsWith(' ')) {
@@ -322,7 +355,44 @@ const SettingRightUser = ({
 	return (
 		<>
 			<div className="flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col">
-				<div className="flex-1 ">
+				<fieldset disabled={isSaving} className="flex-1 min-w-0">
+					<div className="mb-8">
+						<p className="font-semibold tracking-wide text-sm">{t('coverPhoto.label')}</p>
+						<div className="grid grid-cols-2 mt-[10px] gap-x-5">
+							<button
+								type="button"
+								className="font-medium bg-[var(--button-theme-primary)] hover:bg-[var(--bg-button-primary-hover)] text-white rounded-lg p-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+								onClick={() => coverInputRef.current?.click()}
+								disabled={isSaving || cover.isPreparing}
+								data-e2e={generateE2eId('user_setting.profile.user_profile.button.change_cover')}
+							>
+								{t('coverPhoto.change')}
+							</button>
+							<button
+								type="button"
+								className="bg-[var(--bg-tertiary)] text-theme-primary-hover bg-secondary-button-hover border-theme-primary font-medium rounded-lg p-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+								onClick={cover.remove}
+								disabled={isSaving || cover.isPreparing || !cover.banner}
+								data-e2e={generateE2eId('user_setting.profile.user_profile.button.remove_cover')}
+							>
+								{t('coverPhoto.remove')}
+							</button>
+						</div>
+						<input
+							ref={coverInputRef}
+							type="file"
+							accept="image/jpeg,image/png,image/gif,image/webp"
+							className="hidden"
+							aria-label={t('coverPhoto.change')}
+							disabled={isSaving || cover.isPreparing}
+							onChange={(event) => {
+								const file = event.target.files?.[0];
+								event.target.value = '';
+								if (file && !savingRef.current) return cover.selectFile(file);
+							}}
+							data-e2e={generateE2eId('user_setting.profile.user_profile.upload.cover_photo')}
+						/>
+					</div>
 					<div data-e2e={generateE2eId(`user_setting.profile.user_profile.input.display_name`)}>
 						<label htmlFor="inputField" className="font-semibold tracking-wide text-sm">
 							{t('displayName')}
@@ -421,8 +491,8 @@ const SettingRightUser = ({
 							</button>
 						</div>
 					</div>
-				</div>
-				<div className="flex-1 flex flex-col gap-2 relative">
+				</fieldset>
+				<div className="flex-1 min-w-0 flex flex-col gap-2 relative">
 					<p className="font-semibold tracking-wide text-sm">{t('preview')}</p>
 					<PreviewSetting isLoading={isLoading} profiles={editProfile} />
 				</div>
@@ -430,30 +500,30 @@ const SettingRightUser = ({
 			{(urlImage !== avatar && flags) ||
 			(valueDisplayName !== currentDisplayName && flags) ||
 			(flagsRemoveAvartar !== false && flags) ||
-			(editAboutUser !== aboutMe && flags) ? (
+			(editAboutUser !== aboutMe && flags) ||
+			cover.hasChanges ||
+			cover.isPreparing ? (
 				<div className="flex flex-col sm:flex-row gap-2 border-theme-primary shadow-sm bg-modal-theme absolute max-w-[815px] w-[calc(100%-1rem)] sm:w-full left-2 sm:left-1/2 sm:translate-x-[-50%] bottom-4 min-w-0 sm:min-w-96 h-fit p-3 rounded-lg transform z-10">
 					<div className="flex-1 flex items-center min-w-0">
 						<p className="text-theme-message text-sm sm:text-base">{t('unsavedChangesWarning')}</p>
 					</div>
 					<div className="flex flex-row justify-end gap-3 shrink-0">
 						<button
-							className="rounded-[4px] px-2 hover:underline text-sm sm:text-base"
-							onClick={() => {
-								handleClose();
-							}}
+							className="rounded-[4px] px-2 hover:underline text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+							onClick={handleClose}
+							disabled={isSaving}
 							data-e2e={generateE2eId(`user_setting.profile.user_profile.button.reset`)}
 						>
 							{t('reset')}
 						</button>
 
 						<button
-							className=" btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1 text-sm sm:text-base"
-							onClick={() => {
-								handleUpdateUser();
-							}}
+							className="btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+							onClick={handleUpdateUser}
+							disabled={isSaving || cover.isPreparing || isLoading}
 							data-e2e={generateE2eId(`user_setting.profile.user_profile.button.save_changes`)}
 						>
-							{t('saveChanges')}
+							{t(isSaving ? 'coverPhoto.saving' : 'saveChanges')}
 						</button>
 					</div>
 				</div>

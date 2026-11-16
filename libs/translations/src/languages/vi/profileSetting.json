@@ -72,5 +72,15 @@
 		"description": "Tạo hoăc tham gia một clan để thiết lập hồ sơ clan của bạn.",
 		"createClan": "Tạo clan",
 		"joinClan": "Tham gia clan"
+	},
+	"coverPhoto": {
+		"label": "ẢNH BÌA",
+		"change": "Đổi ảnh bìa",
+		"remove": "Xóa ảnh bìa",
+		"saving": "Đang lưu…",
+		"invalidType": "Chọn ảnh JPG, PNG, GIF hoặc WebP.",
+		"tooLarge": "Ảnh bìa phải có dung lượng tối đa 10 MB.",
+		"invalidImage": "Không thể mở ảnh này. Vui lòng chọn ảnh khác.",
+		"uploadFailed": "Không thể tải ảnh bìa lên. Vui lòng thử lại."
 	}
 }

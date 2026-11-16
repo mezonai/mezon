@@ -1,6 +1,13 @@
 import { useEscapeKeyClose, useMemberStatus, useOnClickOutside, useSettingFooter, useUserById } from '@mezon/core';
 import type { ChannelMembersEntity, RootState } from '@mezon/store';
-import { selectCurrentClanId, selectCurrentUserId, selectFriendById, selectModeResponsive, useAppSelector } from '@mezon/store';
+import {
+	selectCurrentClanId,
+	selectCurrentUserId,
+	selectFriendById,
+	selectModeResponsive,
+	selectProfileBannerByUserId,
+	useAppSelector
+} from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { EUserSettings, ModeResponsive } from '@mezon/utils';
@@ -11,6 +18,7 @@ import type { OpenModalProps } from '../ModalUserProfile';
 import AvatarProfile from '../ModalUserProfile/AvatarProfile';
 import GroupIconBanner from '../ModalUserProfile/StatusProfile/groupIconBanner';
 import ItemPanel from '../PanelChannel/ItemPanel';
+import ProfileCover from '../ProfileCover';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import { EActiveType } from '../SettingProfile/SettingRightProfile';
 import AboutMe from './AboutMe';
@@ -55,6 +63,7 @@ const UserProfileModalInner = ({
 	const userProfileRef = useRef<HTMLDivElement | null>(null);
 	const modeResponsive = useAppSelector(selectModeResponsive);
 	const userById = useUserById(userId);
+	const banner = useAppSelector((state) => selectProfileBannerByUserId(state, userId || '', user?.user ?? user));
 
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userById?.user?.id || userId || ''));
 	const checkAddFriend = useMemo(() => {
@@ -145,9 +154,10 @@ const UserProfileModalInner = ({
 				ref={userProfileRef}
 				className="w-[600px] h-[90vh] bg-theme-setting-primary rounded-lg flex-col justify-start items-start inline-flex"
 			>
-				<div
+				<ProfileCover
 					className={`relative flex justify-end w-full h-[210px] rounded-t-md ${!color && 'dark:bg-bgAvatarDark bg-bgAvatarLight'}`}
-					style={{ backgroundColor: color }}
+					color={color}
+					banner={banner}
 					onClick={() => setGroupIconBanner(initOpenModal)}
 				>
 					<div className={`rounded-tl-lg rounded-tr-lg h-[60px]  flex justify-end gap-x-2 p-2 `}>
@@ -194,7 +204,7 @@ const UserProfileModalInner = ({
 							</div>
 						) : null}
 					</div>
-				</div>
+				</ProfileCover>
 				<div className="bg-theme-contexify pt-[60px] pb-4 px-4 rounded-b-md w-full flex-1">
 					<div className="flex flex-col gap-3 h-full">
 						<div className="mt-4">
