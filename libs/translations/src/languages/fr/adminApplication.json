@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "Il y a des champs de saisie vides !",
+			"saveFailed": "Impossible d'enregistrer les paramètres OAuth. Veuillez réessayer. Si le problème persiste, reconnectez-vous.",
 			"invalidUris": "Les URIs doivent être valides !",
 			"redirectUriRequired": "L'URI de redirection est requis !"
 		}

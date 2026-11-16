@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "¡Hay un input vacío!",
+			"saveFailed": "No se pudo guardar la configuración de OAuth. Inténtalo de nuevo. Si el problema persiste, vuelve a iniciar sesión.",
 			"invalidUris": "¡Los URIs deben ser válidos!",
 			"redirectUriRequired": "¡El redirect URI es requerido!"
 		}
