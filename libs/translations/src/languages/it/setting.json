@@ -171,8 +171,11 @@
 		"quickRepliesDescription": "Mostra suggerimenti di risposte rapide basati sull'ultimo messaggio nel canale.",
 		"grammar": "Correzione grammaticale",
 		"grammarDescription": "Suggerisci correzioni ortografiche e grammaticali durante la digitazione (fino a 256 caratteri).",
+		"quickReaction": "Reazione rapida",
+		"quickReactionDescription": "Compare nell'angolo del messaggio quando ci passi sopra con il mouse.",
+		"quickReactionChange": "Cambia",
 		"onlyFriendsDm": {
-			"title": "Non ricevere messaggi da sconosciuti.",
+			"title": "Non ricevere messaggi da sconosciuti",
 			"description": "Se attivo, solo le persone che sono tue amiche possono iniziare una conversazione con te.",
 			"denied": "Non puoi inviare un messaggio a questo utente."
 		}

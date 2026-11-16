@@ -120,6 +120,7 @@ export interface AppState {
 	isOpenRecommand: boolean | null;
 	isSpelling: boolean;
 	isQuickReply: boolean;
+	quickReactionEmoji: { id: string; shortname: string } | null;
 	voiceUserVolumes: Record<string, number>;
 }
 
@@ -174,6 +175,7 @@ export const initialAppState: AppState = {
 	isOpenRecommand: null,
 	isSpelling: false,
 	isQuickReply: false,
+	quickReactionEmoji: null,
 	voiceUserVolumes: {}
 };
 
@@ -471,6 +473,9 @@ export const appSlice = createSlice({
 		toggleIsQuickReply: (state) => {
 			state.isQuickReply = !state.isQuickReply;
 		},
+		setQuickReactionEmoji: (state, action: PayloadAction<{ id: string; shortname: string }>) => {
+			state.quickReactionEmoji = action.payload;
+		},
 		toggleRecommand: (state) => {
 			state.isOpenRecommand = !state.isOpenRecommand;
 		},
@@ -550,6 +555,7 @@ export const selectMediaChannelViewMode = createSelector(getAppState, (state: Ap
 export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);
 export const selectIsSpelling = createSelector(getAppState, (state: AppState) => state.isSpelling);
 export const selectIsQuickReply = createSelector(getAppState, (state: AppState) => state.isQuickReply);
+export const selectQuickReactionEmoji = createSelector(getAppState, (state: AppState) => state.quickReactionEmoji);
 
 export const selectIsRecommand = createSelector(getAppState, (state: AppState) => state.isOpenRecommand);
 

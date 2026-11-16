@@ -18,12 +18,13 @@ interface OgpEmbedProps {
 	senderId?: string;
 	topicId?: string;
 	isSearchMessage?: boolean;
+	quickReaction?: React.ReactNode;
 }
 
-const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId, senderId, topicId, isSearchMessage }) => {
+const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId, senderId, topicId, isSearchMessage, quickReaction }) => {
 	const userId = useSelector(selectCurrentUserId);
 	return (
-		<div className="flex flex-col gap-0.5 max-w-[350px]">
+		<div className="relative flex flex-col gap-0.5 max-w-[350px]">
 			<div
 				className="group relative flex flex-col gap-1.5 rounded-lg p-2.5 shadow-lg transition-all bg-highlight-no-hover-left-meta bg-theme-setting-nav cursor-pointer"
 				onClick={() => {
@@ -62,6 +63,7 @@ const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, mes
 				</div>
 				{senderId === userId && !isSearchMessage && <DeleteOgpButton messageId={messageId} topicId={topicId} url={url} />}
 			</div>
+			{quickReaction}
 		</div>
 	);
 };

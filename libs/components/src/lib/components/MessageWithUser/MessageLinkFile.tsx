@@ -4,6 +4,7 @@ import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { EFailAttachment, EMimeTypes } from '@mezon/utils';
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
+import type { ReactNode } from 'react';
 import { Suspense, lazy, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -22,6 +23,7 @@ export type MessageImage = {
 	isPresignPending?: boolean;
 	/** The file's CDN signature has not arrived yet, so an image thumbnail waits instead of loading unsigned. */
 	isCdnSignaturePending?: boolean;
+	quickReaction?: ReactNode;
 };
 function formatFileSize(bytes: number) {
 	if (bytes >= 1000000) {
@@ -54,7 +56,7 @@ const PDFLoadingFallback = () => {
 	);
 };
 
-function MessageLinkFile({ attachmentData, mode, message, isPresignPending = false, isCdnSignaturePending = false }: MessageImage) {
+function MessageLinkFile({ attachmentData, mode, message, isPresignPending = false, isCdnSignaturePending = false, quickReaction }: MessageImage) {
 	const { t } = useTranslation('media');
 	// The sender sees isSending, a reader only ever sees the presign gate; both
 	// mean the same thing to whoever is looking at the row.
@@ -247,6 +249,7 @@ function MessageLinkFile({ attachmentData, mode, message, isPresignPending = fal
 					</>
 				)
 			)}
+			{quickReaction}
 		</div>
 	);
 }

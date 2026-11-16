@@ -41,6 +41,25 @@ interface ReactionMessageDispatchParams {
 	channelIdOnMessage?: string;
 }
 
+const REACTION_EFFECT_TTL = 5000;
+const pendingReactionEffects = new Map<string, number>();
+
+const markReactionEffect = (messageId: string, emojiId: string) => {
+	const now = Date.now();
+	pendingReactionEffects.forEach((markedAt, key) => {
+		if (now - markedAt > REACTION_EFFECT_TTL) pendingReactionEffects.delete(key);
+	});
+	pendingReactionEffects.set(`${messageId}_${emojiId}`, now);
+};
+
+export const consumeReactionEffect = (messageId: string, emojiId: string) => {
+	const key = `${messageId}_${emojiId}`;
+	const markedAt = pendingReactionEffects.get(key);
+	if (!markedAt) return false;
+	pendingReactionEffects.delete(key);
+	return Date.now() - markedAt <= REACTION_EFFECT_TTL;
+};
+
 export function useChatReaction({ isMobile = false, isClanViewMobile = undefined }: ChatReactionProps = {}) {
 	const dispatch = useAppDispatch();
 	const userProfile = useSelector(selectAllAccount);
@@ -153,6 +172,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				emoji_recent_id,
 				sender_name: userName
 			};
+			if (!action_delete) markReactionEffect(messageId, emoji_id);
 			return dispatch(reactionActions.writeMessageReaction(payloadDispatchReaction)).unwrap();
 		},
 		[userId, userName, emojiRecentId, addMemberToThread]

@@ -34,7 +34,7 @@ import MessageAvatar from './MessageAvatar';
 import MessageContent, { TopicViewButton } from './MessageContent';
 import MessageHead from './MessageHead';
 import MessageInput from './MessageInput';
-import MessageReaction from './MessageReaction/MessageReaction';
+import MessageReaction, { QuickReaction } from './MessageReaction/MessageReaction';
 import MessageReply from './MessageReply/MessageReply';
 import { PollMessage } from './PollMessage';
 
@@ -76,12 +76,14 @@ const PollMessageWrapper = ({
 	message,
 	observeIntersectionForLoading,
 	interactionDisabled,
-	isDirect
+	isDirect,
+	quickReaction
 }: {
 	message: MessagesEntity;
 	observeIntersectionForLoading?: ObserveFn;
 	interactionDisabled?: boolean;
 	isDirect?: boolean;
+	quickReaction?: ReactNode;
 }) => {
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation();
@@ -135,6 +137,7 @@ const PollMessageWrapper = ({
 			channelId={message.channel_id}
 			interactionDisabled={interactionDisabled}
 			isDirect={isDirect}
+			quickReaction={quickReaction}
 		/>
 	);
 };
@@ -207,6 +210,21 @@ function MessageWithUser({
 	const isEphemeralMessage = message?.code === TypeMessage.Ephemeral;
 
 	const shouldRenderMessageReply = checkMessageHasReply && !isEphemeralMessage;
+
+	const quickReactionTarget = (() => {
+		if (!popup || isEphemeralMessage || isSearchMessage) return undefined;
+		if (message?.code === TypeMessage.Poll) return 'poll';
+		if (message?.content?.callLog?.callLogType) return 'callLog';
+		if (message?.code === TypeMessage.SendToken) return 'token';
+		const trimmedText = message?.content?.t?.trim();
+		if (trimmedText && message?.attachments?.[0]?.url !== trimmedText) return 'text';
+		if (message?.attachments?.length) return 'attachment';
+		if (message?.content?.embed?.length) return 'embed';
+		return undefined;
+	})();
+
+	const renderQuickReaction = (target: typeof quickReactionTarget, className: string) =>
+		quickReactionTarget === target ? <QuickReaction message={message} isTopic={!!isTopic} className={className} /> : undefined;
 
 	const handleOpenShortUser = useCallback(
 		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isClickOnReply = false) => {
@@ -394,6 +412,7 @@ function MessageWithUser({
 									isInTopic={isTopic}
 									isEphemeral={isEphemeralMessage}
 									onContextMenu={onContextMenu}
+									quickReaction={renderQuickReaction('text', 'left-1 -top-1')}
 								/>
 								{isEphemeralMessage && (
 									<div className="flex items-center gap-1 mt-1 mb-1 text-xs italic text-theme-primary opacity-60">
@@ -413,6 +432,7 @@ function MessageWithUser({
 								isInSearchMessage={isSearchMessage}
 								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}
 								isPreview={isPreview}
+								quickReaction={renderQuickReaction('attachment', '-right-2 -bottom-2 z-[2]')}
 							/>
 						)}
 						{Array.isArray(message?.content?.embed) && (
@@ -423,6 +443,7 @@ function MessageWithUser({
 								messageId={message?.id}
 								channelId={message.channel_id}
 								code={message?.code}
+								quickReaction={renderQuickReaction('embed', '-right-3 -bottom-3 z-[2]')}
 							/>
 						)}
 						{!isTopic && message?.code === TypeMessage.Topic && (
@@ -431,15 +452,20 @@ function MessageWithUser({
 							</div>
 						)}
 						{!!message?.content?.callLog?.callLogType && (
-							<CallLogMessage
-								userId={userId || ''}
-								username={message?.display_name || message?.username || ''}
-								channelId={message?.channel_id}
-								messageId={message?.id}
-								senderId={message?.sender_id}
-								callLog={message?.content?.callLog}
-								contentMsg={message?.content?.t || ''}
-							/>
+							<div className="w-full">
+								<div className={quickReactionTarget === 'callLog' ? 'relative w-fit max-w-full' : ''}>
+									<CallLogMessage
+										userId={userId || ''}
+										username={message?.display_name || message?.username || ''}
+										channelId={message?.channel_id}
+										messageId={message?.id}
+										senderId={message?.sender_id}
+										callLog={message?.content?.callLog}
+										contentMsg={message?.content?.t || ''}
+									/>
+									{renderQuickReaction('callLog', '-right-3 -bottom-3 z-[2]')}
+								</div>
+							</div>
 						)}
 						{message.code === TypeMessage.Poll && (
 							<PollMessageWrapper
@@ -447,9 +473,12 @@ function MessageWithUser({
 								observeIntersectionForLoading={observeIntersectionForLoading}
 								interactionDisabled={!!isSearchMessage}
 								isDirect={isDM}
+								quickReaction={renderQuickReaction('poll', '-right-3 -bottom-3 z-[2]')}
 							/>
 						)}
-						{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
+						{!!(message.code === TypeMessage.SendToken) && (
+							<TokenTransactionMessage message={message} quickReaction={renderQuickReaction('token', '-right-3 -bottom-3 z-[2]')} />
+						)}
 						{message?.content?.components &&
 							message?.content.components.map((actionRow, index) => (
 								<div className={'flex flex-col w-full'} key={index}>

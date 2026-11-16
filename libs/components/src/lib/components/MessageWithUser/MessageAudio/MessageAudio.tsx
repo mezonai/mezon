@@ -8,6 +8,7 @@ type MessageAudioProps = {
 	posInPopUp?: boolean;
 	/** The row exists but the object is not on the CDN yet. */
 	isPresignPending?: boolean;
+	quickReaction?: React.ReactNode;
 };
 
 function AudioUploadingPill() {
@@ -23,7 +24,7 @@ function AudioUploadingPill() {
 	);
 }
 
-export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl, posInPopUp = false, isPresignPending = false }) => {
+export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl, posInPopUp = false, isPresignPending = false, quickReaction }) => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState<number>(0);
@@ -87,6 +88,7 @@ export const MessageAudio: React.FC<MessageAudioProps> = React.memo(({ audioUrl,
 				seek={handleSeek}
 				seekEnd={handleSeekEnd}
 				handleSaveImage={handleSaveImage}
+				quickReaction={quickReaction}
 			/>
 		</>
 	);

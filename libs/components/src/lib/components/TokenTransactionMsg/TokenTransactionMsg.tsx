@@ -1,14 +1,16 @@
 import type { MessagesEntity } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
+import type { ReactNode } from 'react';
 import { useModal } from 'react-modal-hook';
 import TransactionHistory from '../TransactionHistory';
 
 interface ITokenTransactionMessageProps {
 	message: MessagesEntity;
+	quickReaction?: ReactNode;
 }
 
-const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => {
+const TokenTransactionMessage = ({ message, quickReaction }: ITokenTransactionMessageProps) => {
 	const transactionData = message?.content?.t ?? '';
 	const [title, ...rest] = transactionData.split(' | ');
 	const description = rest.join(' | ');
@@ -17,7 +19,7 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 	});
 	return (
 		<div className="py-2 w-full">
-			<div className="w-[300px]  border-theme-primary rounded-md text-theme-primary-dark bg-theme-setting-primary shadow-md">
+			<div className="relative w-[300px]  border-theme-primary rounded-md text-theme-primary-dark bg-theme-setting-primary shadow-md">
 				<div className="p-3 flex gap-2 w-full">
 					<div className="w-[50px]">
 						<MezonIcon icon={MzIcons20.mzTransaction} className="dark:text-green-600 text-green-700" />
@@ -47,6 +49,7 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 						Mezon transfer
 					</div>
 				</div>
+				{quickReaction}
 			</div>
 		</div>
 	);

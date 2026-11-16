@@ -51,6 +51,7 @@ type MessageAttachmentProps = {
 	isTopic?: boolean;
 	defaultMaxWidth?: number;
 	isPreview?: boolean;
+	quickReaction?: React.ReactNode;
 };
 
 function areAttachmentLiveFieldsEqual(prev: IMessageWithUser, next: IMessageWithUser): boolean {
@@ -175,8 +176,9 @@ const Attachments: React.FC<{
 	observeIntersectionForLoading?: ObserveFn;
 	isInSearchMessage?: boolean;
 	defaultMaxWidth?: number;
+	quickReaction?: React.ReactNode;
 }> = memo(
-	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
+	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth, quickReaction }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
 		const cdnUrls = useMemo(() => attachments.flatMap((attachment) => [attachment.url, attachment.thumbnail]), [attachments]);
 		const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(cdnUrls, message.channel_id);
@@ -191,22 +193,27 @@ const Attachments: React.FC<{
 		);
 
 		const { isMobile } = useAppLayout();
+		const quickReactionTarget = audio.length ? 'audio' : documents.length ? 'document' : images.length ? 'image' : 'video';
 		return (
 			<>
 				{videos.length > 0 && (
 					<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
-						{videos.map((video, index) => (
-							<div key={index} className="gap-y-2 max-w-full min-w-0">
-								<MessageVideo
-									attachmentData={signAttachment(video, signCdnUrl, isAwaitingSignature)}
-									isMobile={isMobile}
-									isSending={message.isSending}
-									isPresignPending={isPresignPendingForUrl(video.url)}
-									isIngest={isPresignIngestAttachment(video.url, presignIngestKeys)}
-									observeIntersection={observeIntersectionForLoading}
-								/>
-							</div>
-						))}
+						{videos.map((video, index) => {
+							const videoQuickReaction = quickReactionTarget === 'video' && index === videos.length - 1 ? quickReaction : undefined;
+							return (
+								<div key={index} className={`gap-y-2 max-w-full min-w-0 ${videoQuickReaction ? 'relative' : ''}`}>
+									<MessageVideo
+										attachmentData={signAttachment(video, signCdnUrl, isAwaitingSignature)}
+										isMobile={isMobile}
+										isSending={message.isSending}
+										isPresignPending={isPresignPendingForUrl(video.url)}
+										isIngest={isPresignIngestAttachment(video.url, presignIngestKeys)}
+										observeIntersection={observeIntersectionForLoading}
+									/>
+									{videoQuickReaction}
+								</div>
+							);
+						})}
 					</div>
 				)}
 
@@ -223,6 +230,7 @@ const Attachments: React.FC<{
 						isPresignPendingForUrl={isPresignPendingForUrl}
 						signCdnUrl={signCdnUrl}
 						isAwaitingSignature={isAwaitingSignature}
+						quickReaction={quickReactionTarget === 'image' ? quickReaction : undefined}
 					/>
 				)}
 
@@ -238,6 +246,7 @@ const Attachments: React.FC<{
 							mode={mode}
 							message={message}
 							isPresignPending={isPresignPendingForUrl(document.url)}
+							quickReaction={quickReactionTarget === 'document' && index === documents.length - 1 ? quickReaction : undefined}
 						/>
 					))}
 
@@ -247,6 +256,7 @@ const Attachments: React.FC<{
 							key={`${index}_${audioItem.url}`}
 							audioUrl={isAwaitingSignature(audioItem.url) ? '' : signCdnUrl(audioItem.url || '')}
 							isPresignPending={message.isSending || isPresignPendingForUrl(audioItem.url)}
+							quickReaction={quickReactionTarget === 'audio' && index === audio.length - 1 ? quickReaction : undefined}
 						/>
 					))}
 			</>
@@ -273,7 +283,8 @@ const MessageAttachment = memo(
 		observeIntersectionForLoading,
 		isInSearchMessage,
 		defaultMaxWidth,
-		isPreview
+		isPreview,
+		quickReaction
 	}: MessageAttachmentProps) => {
 		const { t } = useTranslation('message');
 		const message = useLiveMessageForAttachments(messageProp, channelId, isPreview);
@@ -323,6 +334,7 @@ const MessageAttachment = memo(
 						<p className="text-red-500">{attachment?.filename ?? t('attachments.attachment')}</p>
 						<p className="text-theme-primary">{t('failAttachment')}</p>
 					</div>
+					{quickReaction}
 				</div>
 			);
 		}
@@ -335,6 +347,7 @@ const MessageAttachment = memo(
 				observeIntersectionForLoading={observeIntersectionForLoading}
 				isInSearchMessage={isInSearchMessage}
 				defaultMaxWidth={defaultMaxWidth}
+				quickReaction={quickReaction}
 			/>
 		);
 	},
@@ -362,7 +375,8 @@ const ImageAlbum = memo(
 		isMobile,
 		isPresignPendingForUrl,
 		signCdnUrl,
-		isAwaitingSignature
+		isAwaitingSignature,
+		quickReaction
 	}: {
 		images: ApiMessageAttachment[];
 		message: IMessageWithUser;
@@ -375,6 +389,7 @@ const ImageAlbum = memo(
 		isPresignPendingForUrl?: (url?: string) => boolean;
 		signCdnUrl: SignCdnUrl;
 		isAwaitingSignature: IsAwaitingSignature;
+		quickReaction?: React.ReactNode;
 	}) => {
 		const dispatch = useAppDispatch();
 
@@ -468,20 +483,23 @@ const ImageAlbum = memo(
 		if (images.length >= 2 && albumLayout) {
 			return (
 				<div className="w-full">
-					<Album
-						album={images.map((image) => signAttachment(image, signCdnUrl)) as any}
-						observeIntersection={observeIntersectionForLoading}
-						albumLayout={albumLayout}
-						onClick={handleClick}
-						onContextMenu={onContextMenu}
-						isInSearchMessage={isInSearchMessage}
-						isSending={message.isSending}
-						isPresignPendingForUrl={isPresignPendingForUrl}
-						isAwaitingSignatureForUrl={isAwaitingSignature}
-						isMobile={isMobile}
-						messageId={message.id}
-						images={images}
-					/>
+					<div className={quickReaction ? 'relative w-fit max-w-full' : ''}>
+						<Album
+							album={images.map((image) => signAttachment(image, signCdnUrl)) as any}
+							observeIntersection={observeIntersectionForLoading}
+							albumLayout={albumLayout}
+							onClick={handleClick}
+							onContextMenu={onContextMenu}
+							isInSearchMessage={isInSearchMessage}
+							isSending={message.isSending}
+							isPresignPendingForUrl={isPresignPendingForUrl}
+							isAwaitingSignatureForUrl={isAwaitingSignature}
+							isMobile={isMobile}
+							messageId={message.id}
+							images={images}
+						/>
+						{quickReaction}
+					</div>
 				</div>
 			);
 		}
@@ -490,24 +508,32 @@ const ImageAlbum = memo(
 			const firstImage = images[0];
 			const attachmentId = firstImage ? generateAttachmentId(firstImage, message.id) : message.id;
 			const isPresignPending = isPresignPendingForUrl?.(firstImage?.url);
+			const photoWrapperClass = !quickReaction
+				? ''
+				: photoProps.width || photoProps.filetype === EMimeTypes.sticker
+					? 'relative w-fit max-w-full'
+					: 'relative w-[150px] max-w-full';
 			return (
 				<div className="w-full py-1">
-					<Photo
-						id={attachmentId}
-						key={message.id}
-						photo={photoProps}
-						observeIntersection={observeIntersectionForLoading}
-						onClick={handleClick}
-						isDownloading={false}
-						onContextMenu={onContextMenu}
-						isInSearchMessage={isInSearchMessage}
-						isSending={message.isSending}
-						isPresignPending={isPresignPending}
-						localSource={(firstImage as PreSendMediaAttachment)?.local_source}
-						loadWhenUnpending={!isPresignPending}
-						isMobile={isMobile}
-						isAwaitingSignature={isAwaitingSignature(firstImage?.url)}
-					/>
+					<div className={photoWrapperClass}>
+						<Photo
+							id={attachmentId}
+							key={message.id}
+							photo={photoProps}
+							observeIntersection={observeIntersectionForLoading}
+							onClick={handleClick}
+							isDownloading={false}
+							onContextMenu={onContextMenu}
+							isInSearchMessage={isInSearchMessage}
+							isSending={message.isSending}
+							isPresignPending={isPresignPending}
+							localSource={(firstImage as PreSendMediaAttachment)?.local_source}
+							loadWhenUnpending={!isPresignPending}
+							isMobile={isMobile}
+							isAwaitingSignature={isAwaitingSignature(firstImage?.url)}
+						/>
+						{quickReaction}
+					</div>
 				</div>
 			);
 		}
