@@ -26,6 +26,7 @@ export const TOPIC_DISCUSSIONS_FEATURE_KEY = 'topicdiscussions';
  */
 export interface TopicDiscussionsEntity extends ApiSdTopic {
 	id: string; // Primary ID
+	unread_count?: number;
 }
 
 export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntity, string> {
@@ -41,6 +42,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	channelTopics: Record<string, string>;
 	clanTopics: Record<string, EntityState<TopicDiscussionsEntity, string>>;
 	clanTopicsHasMore: Record<string, boolean>;
+	unreadTopics: Record<string, string>;
 	topicMeta: EntityState<TopicInMessageEvent, string>;
 }
 
@@ -68,6 +70,20 @@ const mapToTopicEntity = (topics: ApiSdTopic[]) => {
 		...topic,
 		id: topic.id || ''
 	}));
+};
+
+const syncUnreadTopics = (state: TopicDiscussionsState, clanId: string, topics: TopicDiscussionsEntity[] = []) => {
+	if (!state.unreadTopics) {
+		state.unreadTopics = {};
+	}
+	for (const topic of topics) {
+		if (!topic?.id) continue;
+		if ((topic.unread_count ?? 0) > 0) {
+			state.unreadTopics[topic.id] = topic.clan_id || clanId;
+		} else {
+			delete state.unreadTopics[topic.id];
+		}
+	}
 };
 
 export const getFirstMessageOfTopic = createAsyncThunk(
@@ -145,6 +161,7 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 	channelTopics: {},
 	clanTopics: {},
 	clanTopicsHasMore: {},
+	unreadTopics: {},
 	initTopicMessageId: undefined,
 	topicMeta: topicMetaAdapter.getInitialState()
 });
@@ -361,6 +378,20 @@ export const topicsSlice = createSlice({
 					rpl: newRpl
 				}
 			});
+		},
+		markTopicUnread: (state, action: PayloadAction<{ topicId: string; clanId: string }>) => {
+			const { topicId, clanId } = action.payload;
+			if (!topicId || topicId === '0' || !clanId || clanId === '0') return;
+			if (!state.unreadTopics) {
+				state.unreadTopics = {};
+			}
+			if (state.unreadTopics[topicId] === clanId) return;
+			state.unreadTopics[topicId] = clanId;
+		},
+		markTopicRead: (state, action: PayloadAction<{ topicId: string }>) => {
+			const { topicId } = action.payload;
+			if (!topicId || !state.unreadTopics || !(topicId in state.unreadTopics)) return;
+			delete state.unreadTopics[topicId];
 		}
 	},
 	extraReducers: (builder) => {
@@ -379,6 +410,7 @@ export const topicsSlice = createSlice({
 					state.clanTopics[clanId] = topicsAdapter.getInitialState();
 				}
 				state.clanTopics[clanId] = topicsAdapter.setAll(state.clanTopics[clanId], action.payload.topics);
+				syncUnreadTopics(state, clanId, action.payload.topics);
 				state.clanTopicsHasMore[clanId] = action.payload.topics.length >= action.payload.limit;
 				state.loadingStatus = 'loaded';
 			})
@@ -396,6 +428,7 @@ export const topicsSlice = createSlice({
 				}
 
 				state.clanTopics[clanId] = topicsAdapter.upsertMany(state.clanTopics[clanId], action.payload.topics);
+				syncUnreadTopics(state, clanId, action.payload.topics);
 
 				if (action.payload.topics.length === 0) {
 					state.clanTopicsHasMore[clanId] = false;
@@ -524,3 +557,47 @@ export const selectHasFetchedTopics = createSelector([getTopicsState, (state: Ro
 	if (!clanId) return false;
 	return state.clanTopics[clanId] !== undefined;
 });
+
+const emptyUnreadTopics: Record<string, string> = {};
+const selectUnreadTopicsMap = (rootState: { [TOPIC_DISCUSSIONS_FEATURE_KEY]: TopicDiscussionsState }) =>
+	getTopicsState(rootState)?.unreadTopics ?? emptyUnreadTopics;
+
+const selectUnreadTopicCountsByClan = createSelector([selectUnreadTopicsMap], (unreadTopics): Record<string, number> => {
+	const counts: Record<string, number> = {};
+	for (const clanId of Object.values(unreadTopics)) {
+		if (clanId) {
+			counts[clanId] = (counts[clanId] || 0) + 1;
+		}
+	}
+	return counts;
+});
+
+const unreadTopicCountSelectorCache = new Map<string, (rootState: { [TOPIC_DISCUSSIONS_FEATURE_KEY]: TopicDiscussionsState }) => number>();
+
+export const selectUnreadTopicCountByClan = (clanId?: string | null) => {
+	const key = clanId || '';
+	let selector = unreadTopicCountSelectorCache.get(key);
+	if (!selector) {
+		if (unreadTopicCountSelectorCache.size >= 200) {
+			unreadTopicCountSelectorCache.clear();
+		}
+		selector = createSelector([selectUnreadTopicCountsByClan], (counts) => (key ? counts[key] || 0 : 0));
+		unreadTopicCountSelectorCache.set(key, selector);
+	}
+	return selector;
+};
+
+const isTopicUnreadSelectorCache = new Map<string, (rootState: { [TOPIC_DISCUSSIONS_FEATURE_KEY]: TopicDiscussionsState }) => boolean>();
+
+export const selectIsTopicUnread = (topicId?: string | null) => {
+	const key = topicId || '';
+	let selector = isTopicUnreadSelectorCache.get(key);
+	if (!selector) {
+		if (isTopicUnreadSelectorCache.size >= 500) {
+			isTopicUnreadSelectorCache.clear();
+		}
+		selector = createSelector([selectUnreadTopicsMap], (unreadTopics) => Boolean(key && unreadTopics[key]));
+		isTopicUnreadSelectorCache.set(key, selector);
+	}
+	return selector;
+};
