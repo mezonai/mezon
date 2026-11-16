@@ -2,10 +2,15 @@ import { selectStatusMenu, selectVoiceChannelMembersByChannelId, useAppSelector 
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SfuJoinRole } from '../types';
 import { VoiceChannelUsers } from './VoiceChannelUsers/VoiceChannelUsers';
+
+const AUDIENCE_BY_DEFAULT_PARTICIPANT_THRESHOLD = 20;
+
+const defaultJoinRole = (participantCount: number): SfuJoinRole =>
+	participantCount >= AUDIENCE_BY_DEFAULT_PARTICIPANT_THRESHOLD ? 'audience' : 'speaker';
 
 interface PreJoinVoiceChannelProps {
 	channel_label?: string;
@@ -36,8 +41,14 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 	const { t } = useTranslation(['common', 'channelTopbar']);
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel_id as string, clan_id as string));
 	const statusMenu = useAppSelector(selectStatusMenu);
-	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
+	const [pickedJoinRole, setPickedJoinRole] = useState<SfuJoinRole | null>(null);
+	const joinRole = pickedJoinRole ?? defaultJoinRole(voiceChannelMembers.length);
 	const [showJoinOptions, setShowJoinOptions] = useState(false);
+
+	useEffect(() => {
+		setPickedJoinRole(null);
+	}, [channel_id, isCurrentChannel]);
+
 	const getJoinLabel = (role: SfuJoinRole) => t(role === 'speaker' ? 'joinAsSpeaker' : 'joinAsAudience');
 
 	return (
@@ -103,7 +114,7 @@ export const SfuPreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 										type="button"
 										className="block w-full px-4 py-2 text-left text-sm text-theme-primary-active bg-item-theme-hover"
 										onClick={() => {
-											setJoinRole(role);
+											setPickedJoinRole(role);
 											setShowJoinOptions(false);
 										}}
 									>
