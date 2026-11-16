@@ -1,4 +1,4 @@
-import { EventName, badgeService, topicsActions, useAppDispatch } from '@mezon/store';
+import { EventName, badgeService, threadsActions, topicsActions, useAppDispatch } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ export const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
 
 	const handleOpenTopic = () => {
 		if (badge?.topicId) {
+			dispatch(threadsActions.setIsShowCreateThread({ channelId, isShowCreateThread: false }));
 			dispatch(topicsActions.setIsShowCreateTopic(true));
 			dispatch(topicsActions.setCurrentTopicId(badge.topicId));
 		}

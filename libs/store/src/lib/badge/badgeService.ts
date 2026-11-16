@@ -505,6 +505,9 @@ class BadgeService extends EventEmitter {
 				break;
 			}
 		}
+		if (event.type === 'MARK_AS_READ_CHANNEL') {
+			dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId: event.clanId }));
+		}
 		this.notifyClearedTopics(clearedTopics);
 	}
 
