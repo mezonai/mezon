@@ -235,7 +235,10 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					className="w-full max-h-[180px] object-cover"
 				/>
 			)}
-			<div className="p-4 border-b-theme-primary cursor-pointer" onClick={() => event && setChooseEvent(event)}>
+			<div
+				className="p-4 border-b-theme-primary cursor-pointer"
+				onClick={() => event && !window.getSelection()?.toString() && setChooseEvent(event)}
+			>
 				<div className="flex justify-between">
 					<div className="flex items-center gap-x-2 mb-4">
 						<MezonIcon icon={MzIcons24.mzEvent} className={`font-semibold ${cssEventStatus}`} />
