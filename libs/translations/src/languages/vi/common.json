@@ -5,6 +5,7 @@
 	"yes": "Có",
 	"settings": "Cài đặt",
 	"search": "Tìm kiếm",
+	"socketReconnecting": "Mất kết nối. Đang kết nối lại…",
 	"errorBoundary": {
 		"title": "Ồ, điều này thật khó xử",
 		"crashMessage": "Có vẻ như Mezon đã gặp sự cố bất ngờ...",

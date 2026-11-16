@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Рәсем өстәү",
 	"pasteOption": "Өстәү",
+	"pasteAsPlainTextOption": "Гади текст итеп өстәү",
 	"toast": {
 		"copyText": "Хәбәр тексты күчерелде",
 		"attachmentIsLoading": "Кушымта йөкләнә, зинһар бераз көтегез",

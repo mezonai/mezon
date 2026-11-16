@@ -100,8 +100,7 @@ const GifStickerEmojiButtons = memo(
 				{!isThreadbox && (
 					<div
 						onClick={handleOpenGifs}
-						className={`block text-theme-primary-hover
-						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+						className={`block text-theme-primary-hover max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
 						data-e2e={generateE2eId('mention.button.gif')}
 					>
 						<MezonIcon
@@ -114,8 +113,7 @@ const GifStickerEmojiButtons = memo(
 				{!isThreadbox && (
 					<div
 						onClick={handleOpenStickers}
-						className={`block text-theme-primary-hover
-						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'} group/mzi`}
+						className={`block text-theme-primary-hover max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'} group/mzi`}
 						data-e2e={generateE2eId('mention.button.sticker')}
 					>
 						<MezonIcon

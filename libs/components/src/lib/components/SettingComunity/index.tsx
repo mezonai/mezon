@@ -722,7 +722,7 @@ const SettingComunity = ({
 										onChange={handleChangeVanityUrl}
 										placeholder={t('communitySettings.vanityUrl.placeholder')}
 										onBlur={handleBlurVanityUrl}
-										maxLength={50}
+										maxLength={32}
 										data-e2e={generateE2eId('clan_page.settings.community.vanity_url')}
 									/>
 								</div>
@@ -734,7 +734,7 @@ const SettingComunity = ({
 										</p>
 									</div>
 								)}
-								<div className="absolute -bottom-6 right-0 text-xs text-theme-primary opacity-60">{vanityUrl.length}/50</div>
+								<div className="absolute -bottom-6 right-0 text-xs text-theme-primary opacity-60">{vanityUrl.length}/32</div>
 							</div>
 						</div>
 
@@ -918,7 +918,7 @@ const SettingComunity = ({
 										value={vanityUrl}
 										onChange={handleChangeVanityUrl}
 										placeholder={t('communitySettings.vanityUrl.placeholder')}
-										maxLength={50}
+										maxLength={32}
 									/>
 								</div>
 								{vanityUrl && (
@@ -929,7 +929,7 @@ const SettingComunity = ({
 										</p>
 									</div>
 								)}
-								<div className="absolute -bottom-6 right-0 text-xs text-theme-primary opacity-60">{vanityUrl.length}/50</div>
+								<div className="absolute -bottom-6 right-0 text-xs text-theme-primary opacity-60">{vanityUrl.length}/32</div>
 							</div>
 						</div>
 

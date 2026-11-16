@@ -10,6 +10,7 @@ import { clansActions } from '../clans/clans.slice';
 import { directMetaActions } from '../direct/direct.slice';
 import { selectLatestMessageId } from '../messages/messages.slice';
 import type { AppDispatch, RootState } from '../store';
+import { topicsActions } from '../topicDiscussion/topicDiscussions.slice';
 
 import EventEmitter from 'events';
 
@@ -412,6 +413,7 @@ class BadgeService extends EventEmitter {
 			dispatch(clansActions.updateClanBadgeCount({ clanId: parentClanId, count: -decrement, isReset: false }));
 		}
 
+		dispatch(topicsActions.markTopicRead({ topicId }));
 		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: topicId, timestamp: now, messageId, clanId }));
 		dispatch(listChannelsByUserActions.updateLastSeenTime({ channelId: topicId }));
 		this.markResetProcessed(topicId, messageId);

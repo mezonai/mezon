@@ -174,7 +174,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 				>
 					<ButtonCopy
 						copyText={messageContent}
-						className="flex items-center justify-center w-5 h-5 rounded-full bg-item-theme-hover text-theme-primary hover:text-theme-primary-active p-0 shadow-md hover:scale-110 active:scale-95"
+						className="flex items-center justify-center w-5 h-5 rounded-full bg-item-theme-hover text-theme-primary text-theme-primary-hover p-0 shadow-md hover:scale-110 active:scale-95"
 					/>
 				</div>
 			)}

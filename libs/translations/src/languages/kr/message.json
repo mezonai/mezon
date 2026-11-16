@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "이미지 붙여넣기",
 	"pasteOption": "붙여넣기",
+	"pasteAsPlainTextOption": "일반 텍스트로 붙여넣기",
 	"toast": {
 		"copyText": "메시지 텍스트 복사됨",
 		"attachmentIsLoading": "첨부 파일 로딩 중, 잠시 기다려주세요",

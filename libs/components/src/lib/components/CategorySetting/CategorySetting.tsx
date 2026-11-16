@@ -27,7 +27,7 @@ export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, cate
 
 	return (
 		<div className="flex fixed inset-0  w-screen z-30" onMouseDown={(event) => event.stopPropagation()}>
-			<div className="flex text-gray- w-screen relative text-white">
+			<div className="flex w-screen relative text-white">
 				<div className="h-fit absolute top-5 right-5 block sbm:hidden z-[1]">
 					<div
 						onClick={() => onClose()}

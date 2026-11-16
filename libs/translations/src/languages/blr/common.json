@@ -5,6 +5,7 @@
   "yes": "Так",
   "settings": "Налады",
   "search": "Пошук",
+  "socketReconnecting": "Злучэнне страчана. Паўторнае падключэнне…",
   "errorBoundary": {
     "title": "Ой, гэта няёмка",
     "crashMessage": "Падобна, Mezon сутыкнуўся з нечаканай праблемай...",

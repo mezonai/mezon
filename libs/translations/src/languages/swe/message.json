@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Klistra in Bild",
 	"pasteOption": "Klistra in",
+	"pasteAsPlainTextOption": "Klistra in som oformaterad text",
 	"toast": {
 		"copyText": "Meddelande text kopierad",
 		"attachmentIsLoading": "Bilaga laddar, vänligen vänta en stund",
