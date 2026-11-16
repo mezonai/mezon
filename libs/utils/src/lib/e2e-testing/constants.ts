@@ -38,6 +38,7 @@ export const DATA_E2E_IDENTIFIER = {
 	short_profile: {
 		display_name: '',
 		username: '',
+		no_information: '',
 		activity_status: {
 			button: {
 				custom: '',

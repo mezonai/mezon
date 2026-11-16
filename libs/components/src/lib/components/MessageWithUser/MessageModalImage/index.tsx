@@ -32,6 +32,7 @@ import {
 	isAttachmentPresignPendingForMessage
 } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import type { MessageContextMenuProps } from '../../ContextMenu';
 import { useMessageContextMenu } from '../../ContextMenu';
@@ -582,6 +583,7 @@ const MessageModalImage = () => {
 };
 
 const SenderUser = () => {
+	const { t } = useTranslation('userProfile');
 	const { directId } = useAppParams();
 	const attachment = useAppSelector(selectCurrentAttachmentShowImage);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
@@ -592,7 +594,7 @@ const SenderUser = () => {
 	const user = modeResponsive === ModeResponsive.MODE_CLAN ? clanUser : dmUser;
 
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
-	const isAnonymous = !user || !user.user || attachment?.uploader === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const isAnonymous = attachment?.uploader === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	const displayName =
 		user?.clan_nick ||
 		user?.user?.display_name ||
@@ -600,7 +602,7 @@ const SenderUser = () => {
 		message?.display_name ||
 		message?.user?.name ||
 		message?.user?.username ||
-		'Anonymous';
+		(isAnonymous ? 'Anonymous' : t('labels.noInformationShort'));
 	const avatarUrl = user?.clan_avatar || user?.user?.avatar_url || message?.avatar || '';
 
 	return (
@@ -613,6 +615,7 @@ const SenderUser = () => {
 					srcImgProxy={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fill-down' })}
 					className="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10"
 					isAnonymous={isAnonymous}
+					useUserPlaceholder={modeResponsive === ModeResponsive.MODE_CLAN}
 				/>
 			</div>
 			<div className="flex flex-col justify-between ">

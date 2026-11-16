@@ -69,6 +69,8 @@
 		"memberSince": "Учасник з",
 		"activity": "Діяльність",
 		"unknownUser": "Невідомий користувач",
+		"noInformation": "Немає інформації про користувача",
+		"noInformationShort": "Немає інформації",
 		"anonymous": "Анонімний",
 		"editProfile": "Редагувати профіль",
 		"note": "ПРИМІТКА",
