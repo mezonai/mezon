@@ -411,7 +411,6 @@ export async function uploadPublicFile(
 		};
 		if (debugCover) console.info('[Profile cover upload] UploadOauthFile request (before protobuf)', JSON.stringify(request));
 		const data = await client.uploadOauthFile(session, request);
-		// The active session can upload to a different environment from the local build.
 		const profileBase = options?.preserveContentType ? coverProfileReadBase(data.url) : process.env.NX_PROFILE_IMG_URL;
 		const publicUrl = `${profileBase}/${data.filename}`;
 		stage = 'PUT';
@@ -426,8 +425,6 @@ export async function uploadPublicFile(
 				})
 			);
 		}
-		// Cover validation checks Content-Type with HEAD. Other uploads retain their
-		// existing header behavior for compatibility with their CORS configuration.
 		const status = await putFileToPresignedUrl(data, buf, size, options?.preserveContentType ? type : undefined);
 		if (debugCover) console.info('[Profile cover upload] PUT succeeded', JSON.stringify({ status }));
 		return {
@@ -468,7 +465,7 @@ function coverProfileReadBase(uploadUrl?: string) {
 				return 'https://cdn-dev-profile.nccsoft.vn';
 		}
 	} catch {
-		// Missing upload URLs are rejected by putFileToPresignedUrl below.
+		console.error('[Profile cover upload] Failed to get CDN URL');
 	}
 	return process.env.NX_PROFILE_IMG_URL?.replace(/\/+$/, '');
 }

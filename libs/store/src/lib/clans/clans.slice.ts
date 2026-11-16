@@ -429,7 +429,6 @@ type UpdateLinkUser = {
 export const updateUser = createAsyncThunk<boolean, UpdateLinkUser, { rejectedMeta: { error: { toast: boolean } } }>(
 	'clans/updateUser',
 	async ({ avatar_url, display_name, about_me, logo, banner, noCache: _noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
-		// The cover editor reports save errors locally and retains the draft for retry.
 		const errorMeta = { error: { toast: banner === undefined } };
 		try {
 			const state = thunkAPI.getState() as RootState;

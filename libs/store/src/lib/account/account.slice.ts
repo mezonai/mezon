@@ -407,7 +407,6 @@ export const selectProfileBannerByUserId = createSelector(
 		if (!userId || userId === '0') return undefined;
 		if (account?.user?.id === userId) return account.banner ?? account.user.banner;
 		if (profileBanners?.[userId] !== undefined) return profileBanners[userId];
-		// A member passed by the opener can be absent from the cached roster (which is capped).
 		if (profileUser?.id === userId && profileUser.banner !== undefined) return profileUser.banner;
 		const currentClanBanner = currentClanId ? clans?.[currentClanId]?.entities.entities[userId]?.user?.banner : undefined;
 		if (currentClanBanner !== undefined) return currentClanBanner;
