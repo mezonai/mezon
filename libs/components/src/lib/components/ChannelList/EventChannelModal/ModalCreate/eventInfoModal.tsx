@@ -2,7 +2,7 @@ import { useEscapeKeyClose } from '@mezon/core';
 import { selectTheme } from '@mezon/store';
 import { handleUploadPublicFile, useMezon } from '@mezon/transport';
 import { TextArea, TimePicker } from '@mezon/ui';
-import type { ContenSubmitEventProps } from '@mezon/utils';
+import type { ContentSubmitEventProps } from '@mezon/utils';
 import { ERepeatType, MAX_FILE_SIZE_1MB, createImgproxyUrl, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { format } from 'date-fns';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -17,10 +17,10 @@ const DatePickerWrapper = lazy(() => import('./DatePickerWrapper'));
 const DatePickerPlaceholder = () => <div className="w-full h-[38px]  animate-pulse rounded"></div>;
 
 export type EventInfoModalProps = {
-	contentSubmit: ContenSubmitEventProps;
+	contentSubmit: ContentSubmitEventProps;
 	choiceLocation: boolean;
 	setErrorTime: (status: boolean) => void;
-	setContentSubmit: React.Dispatch<React.SetStateAction<ContenSubmitEventProps>>;
+	setContentSubmit: React.Dispatch<React.SetStateAction<ContentSubmitEventProps>>;
 	onClose: () => void;
 	errorTopic: boolean;
 };

@@ -137,6 +137,7 @@
 		"channelEvent": "채널 이벤트",
 		"privateEvent": "외부 이벤트",
 		"privateRoom": "외부 회의실",
+		"privateChannel": "비공개 채널",
 		"newEvent": "새로",
 		"share": "공유",
 		"noOneInterested": "이 이벤트에 관심 있는 사람이 없습니다."
