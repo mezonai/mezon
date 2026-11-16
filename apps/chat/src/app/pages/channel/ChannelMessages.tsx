@@ -611,7 +611,7 @@ const ScrollDownButton = memo(
 				onClick={handleScrollDownClick}
 				className={`bg-theme-primary ${
 					isVisible ? 'opacity-100' : 'opacity-0'
-				} cursor-pointer absolute z-10 rounded-full bg-clip-padding border text-token-text-secondary border-token-border-light w-8 h-8 flex items-center justify-center bottom-5 right-[12px] transition-all duration-200 hover:scale-105 active:scale-95 active:shadow-inner`}
+				} cursor-pointer absolute z-10 rounded-full bg-clip-padding border border-token-border-light w-8 h-8 flex items-center justify-center bottom-5 right-[12px] transition-all duration-200 hover:scale-105 active:scale-95 active:shadow-inner`}
 			>
 				{unreadCount > 0 && (
 					<div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-semibold">

@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Paste Image",
 	"pasteOption": "Paste",
+	"pasteAsPlainTextOption": "Paste as plain text",
 	"toast": {
 		"copyText": "Copied Message Text",
 		"attachmentIsLoading": "Attachment is loading, please wait a moment",

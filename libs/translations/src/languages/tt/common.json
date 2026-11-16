@@ -79,6 +79,7 @@
 	"yes": "Әйе",
 	"settings": "Көйләүләр",
 	"search": "Эзләү",
+	"socketReconnecting": "Бәйләнеш өзелде. Яңадан тоташу…",
 	"errorBoundary": {
 		"title": "Бу бик уңайсыз",
 		"crashMessage": "Мезон көтмәгәндә егылган кебек ....",

@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Plak Afbeelding",
 	"pasteOption": "Plakken",
+	"pasteAsPlainTextOption": "Plakken als platte tekst",
 	"toast": {
 		"copyText": "Berichttekst gekopieerd",
 		"attachmentIsLoading": "Bijlage is aan het laden, even wachten",

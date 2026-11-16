@@ -2,6 +2,7 @@ import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { MessagesEntity } from '@mezon/store';
 import {
 	appActions,
+	badgeService,
 	getStore,
 	messagesActions,
 	notificationActions,
@@ -9,6 +10,7 @@ import {
 	selectCurrentChannelId,
 	selectIsShowCanvas,
 	selectIsShowInbox,
+	selectIsTopicUnread,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
 	threadsActions,
@@ -44,6 +46,10 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	const subjectTopic = t('notification:topicAndYou');
 	const dispatch = useAppDispatch();
 	const isShowCanvas = useSelector(selectIsShowCanvas);
+	const topicId = topic.id || '';
+	const isTopicUnread = useSelector(selectIsTopicUnread(topicId));
+	const hasMentionBadge = isTopicUnread && Boolean(topicId && badgeService.getTopicBadge(topicId) > 0);
+	const unreadDotClassName = hasMentionBadge ? 'bg-red-600' : 'bg-white border border-zinc-400 dark:border-zinc-500';
 
 	const rafIdsRef = useRef<Set<number>>(new Set());
 	const isUnmountedRef = useRef(false);
@@ -124,6 +130,7 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 
 	return (
 		<div className="rounded-[8px] relative group max-h-[150px] overflow-hidden" data-e2e={generateE2eId('chat.channel_message.inbox.topics')}>
+			{isTopicUnread && <span className={`absolute top-2.5 right-3 z-20 w-2.5 h-2.5 rounded-full pointer-events-none ${unreadDotClassName}`} />}
 			<button
 				className="absolute py-1 px-2 bg-theme-setting-primary bottom-[10px] z-50 right-3 text-[10px] rounded-[6px] transition-all duration-300 group-hover:block hidden"
 				onClick={handleOpenTopic}

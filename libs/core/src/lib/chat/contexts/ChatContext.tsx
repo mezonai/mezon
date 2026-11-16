@@ -229,6 +229,7 @@ import {
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
 } from '../utils/socketReconnectBudget';
+import { watchReconnectNotice } from './reconnectNotice';
 
 const MobileEventEmitter = new EventEmitter();
 
@@ -309,6 +310,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isMobile = false }) => {
 	const { t } = useTranslation('token');
 	const { t: tChannelMenu } = useTranslation('channelMenu');
+	const { t: tCommon } = useTranslation('common');
 	const { clientRef, sessionRef, mmnRef, askHealthyEndpoint, connectSocket, reconnectSocket } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
@@ -642,16 +644,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 						const isFocused = !isBackgroundModeActive();
 						const isNewMessage = message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove;
-						if (isNewMessage && (!mess.isCurrentChannel || !isFocused)) {
-							const isTopicMessage = message.topic_id && message.topic_id !== '0';
+						if (isNewMessage) {
+							const state = store.getState() as RootState;
+							const isTopicMessage = Boolean(message.topic_id && message.topic_id !== '0');
 							const topicId = isTopicMessage ? (message.topic_id ?? message.channel_id) : '';
 
 							const checkChannelId = isTopicMessage ? topicId : message.channel_id;
-							const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
+							const channelMeta = state?.channelmeta?.entities?.[checkChannelId];
 							const msgTime = message.create_time_seconds ?? 0;
 							const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
 
-							if (!isAlreadySeen) {
+							if ((!mess.isCurrentChannel || !isFocused) && !isAlreadySeen) {
 								if (isTopicMessage) {
 									const topicMessage = { ...message, channel_id: topicId };
 									const didIncrement = badgeService.incrementChannelIfMentioned(topicMessage, userId as string);
@@ -665,6 +668,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 									}
 								} else {
 									badgeService.incrementChannelIfMentioned(message, userId as string);
+								}
+							}
+
+							if (isTopicMessage && !isAlreadySeen && message.clan_id && message.clan_id !== '0') {
+								const currentUserId = userId || selectCurrentUserId(state);
+								const isFromMe = Boolean(currentUserId && message.sender_id === currentUserId);
+								const isViewingTopic =
+									isFocused && selectClanView(state) && selectIsShowCreateTopic(state) && selectCurrentTopicId(state) === topicId;
+								const isAlreadyUnread = state.topicdiscussions?.unreadTopics?.[topicId] === message.clan_id;
+								if (!isFromMe && !isViewingTopic && !isAlreadyUnread) {
+									dispatch(topicsActions.markTopicUnread({ topicId, clanId: message.clan_id }));
 								}
 							}
 						}
@@ -3230,6 +3244,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			subscription.unsubscribe();
 		};
 	}, [reconnect$, executeReconnect, clientRef, dispatch, runPostReconnectActions, askHealthyEndpoint]);
+
+	useEffect(
+		() =>
+			watchReconnectNotice({
+				subscribe: (listener) => socketState.subscribe(listener),
+				isConnected: () => socketState.isConnected,
+				isRecovering: () => reconnectRecoveryPendingRef.current,
+				show: () =>
+					dispatch(
+						toastActions.addToast({
+							id: 'SOCKET_RECONNECTING',
+							message: tCommon('socketReconnecting'),
+							type: 'warning',
+							autoClose: false
+						})
+					),
+				hide: () => dispatch(toastActions.removeToast('SOCKET_RECONNECTING'))
+			}),
+		[dispatch, tCommon]
+	);
 
 	useEffect(() => {
 		const onWaveReset = () => {

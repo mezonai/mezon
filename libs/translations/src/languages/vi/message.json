@@ -44,6 +44,7 @@
 	},
 	"pasteImage": "Dán Ảnh",
 	"pasteOption": "Dán",
+	"pasteAsPlainTextOption": "Dán văn bản thuần túy",
 	"toast": {
 		"copyText": "Đã sao chép văn bản tin nhắn",
 		"attachmentIsLoading": "Tệp đính kèm đang tải, vui lòng đợi một chút",

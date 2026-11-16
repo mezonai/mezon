@@ -343,11 +343,11 @@ const MessageModalImage = () => {
 				return;
 			}
 			if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-				handleSelectNextImage();
+				handleSelectPreviousImage();
 			}
 
 			if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-				handleSelectPreviousImage();
+				handleSelectNextImage();
 			}
 		},
 		[isVideo, toggleVideoPlayback, handleSelectNextImage, handleSelectPreviousImage]
@@ -509,13 +509,13 @@ const MessageModalImage = () => {
 					>
 						<div
 							className="rounded-full rotate-180 max-sbm:rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
-							onClick={handleSelectPreviousImage}
+							onClick={handleSelectNextImage}
 						>
 							<MezonIcon icon={MzIcons20.mzChevronDown} />
 						</div>
 						<div
 							className="rounded-full max-sbm:-rotate-90 bg-bgTertiary cursor-pointer w-10 aspect-square flex items-center justify-center text-white"
-							onClick={handleSelectNextImage}
+							onClick={handleSelectPreviousImage}
 						>
 							<MezonIcon icon={MzIcons20.mzChevronDown} />
 						</div>
