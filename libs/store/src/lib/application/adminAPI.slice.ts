@@ -1,15 +1,19 @@
+import type { AdminSessionContext } from '../auth/adminSession';
+import { getAdminSession } from '../auth/adminSession';
+
 export async function callApiAdmin<T>({
 	path,
 	data,
-	token,
+	thunkAPI,
 	decodeBody
 }: {
 	path: string;
 	data: Uint8Array;
-	token: string;
+	thunkAPI: AdminSessionContext;
 	decodeBody: (data: Uint8Array) => T;
 }): Promise<T> {
 	try {
+		const { token } = await getAdminSession(thunkAPI);
 		const response = await fetch(`https://${process.env.NX_CHAT_APP_API_HOST}:${process.env.NX_CHAT_APP_API_PORT}${path}`, {
 			method: 'POST',
 			headers: {

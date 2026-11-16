@@ -241,7 +241,9 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	const mezon = getMezonCtx(thunkAPI);
 	const sessionState = selectOthersSession(thunkAPI.getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 	const streamState = getVideoStreamState(thunkAPI.getState() as unknown as { [VIDEO_STREAM_FEATURE_KEY]: StreamState });
-	if (streamState.isJoin && streamState.streamInfo) thunkAPI.dispatch(watchStream({ channelId: streamState.streamInfo.streamId, watching: false }));
+	if (streamState?.isJoin && streamState.streamInfo) {
+		thunkAPI.dispatch(watchStream({ channelId: streamState.streamInfo.streamId, watching: false }));
+	}
 	thunkAPI.dispatch(authActions.setLogout());
 	publishSessionUpdate(null, 'logout');
 	thunkAPI.dispatch(walletActions.setLogout());
@@ -257,7 +259,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	}
 	restoreLocalStorage(restoreKey);
 	try {
-		await mezon?.logOutMezon(device_id, platform, !sessionState);
+		await mezon?.logOutMezon?.(device_id, platform, !sessionState);
 	} catch (error) {
 		console.error('error: ', error);
 	}

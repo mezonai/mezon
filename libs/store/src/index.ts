@@ -8,6 +8,7 @@ export * from './lib/application/applications.slice';
 export * from './lib/attachment/attachments.slice';
 export * from './lib/auditLog/auditLog.slice';
 export * from './lib/auditLog/auditLogFilter.slice';
+export * from './lib/auth/adminSession';
 export * from './lib/auth/auth.slice';
 export * from './lib/avatarOverride/avatarOverride';
 export * from './lib/badge/badgeHelpers';

@@ -18,6 +18,7 @@ export default {
 		]
 	},
 	moduleNameMapper: {
+		'^mezon-js-protobuf$': '<rootDir>/node_modules/mezon-js-protobuf/dist/mezon-js-protobuf.cjs.js',
 		'^@mezon/utils$': '<rootDir>/libs/utils/src/index.ts',
 		'^@mezon/logger$': '<rootDir>/libs/logger/src/index.ts'
 	}

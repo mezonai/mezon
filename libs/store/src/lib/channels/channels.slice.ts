@@ -732,7 +732,7 @@ export const syncClanChannelSidebarSources = createAsyncThunk(
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const [favoritesRes, categoriesRes] = await Promise.all([
 			fetchListFavoriteChannelCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache)),
-			fetchCategoriesCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache))
+			fetchCategoriesCached(thunkAPI, mezon, clanId, Boolean(noCache))
 		]);
 		return {
 			clanId,
