@@ -13,6 +13,7 @@ const MAX_BACKOFF_MS = 16_000;
 const VIDEO_MAX_BITRATE = 4_000_000;
 const VIDEO_MAX_FRAMERATE = 30;
 const AUDIO_MAX_BITRATE = 128_000;
+const ENDPOINT_TIMEOUT_MS = 10_000;
 
 export type LiveEndpoint = {
 	token: string;
@@ -61,6 +62,22 @@ function stopMediaStream(stream: MediaStream | null): void {
 		track.onended = null;
 		track.stop();
 	}
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+	return new Promise<T | null>((resolve) => {
+		const timer = setTimeout(() => resolve(null), ms);
+		promise.then(
+			(value) => {
+				clearTimeout(timer);
+				resolve(value);
+			},
+			() => {
+				clearTimeout(timer);
+				resolve(null);
+			}
+		);
+	});
 }
 
 function backoffMs(attempt: number): number {
@@ -277,7 +294,7 @@ export class LiveSession {
 			this.watch.observe(Date.now());
 		});
 
-		const endpoint = await this.fetchEndpoint();
+		const endpoint = await withTimeout(this.fetchEndpoint(), ENDPOINT_TIMEOUT_MS);
 		if (this.stopped) return;
 
 		if (!endpoint?.token || !endpoint?.whip_url) {
@@ -477,10 +494,10 @@ export class LiveSession {
 			clearTimeout(this.disconnectedTimer);
 			this.disconnectedTimer = null;
 		}
-		if (this.pc) {
-			this.pc.onconnectionstatechange = null;
-			this.pc.close();
-			this.pc = null;
+		const oldPc = this.pc;
+		this.pc = null;
+		if (oldPc) {
+			oldPc.onconnectionstatechange = null;
 		}
 
 		const now = Date.now();
@@ -497,6 +514,7 @@ export class LiveSession {
 		if (oldSession) {
 			if (trustTakeover) {
 				const deleteStatus = await deleteWhip(oldSession.resource, oldSession.token);
+				oldPc?.close();
 				if (this.stopped) return;
 				const stillOnline = typeof navigator === 'undefined' ? true : navigator.onLine !== false;
 				const gapSeen = this.watch.observe(Date.now());
@@ -505,8 +523,10 @@ export class LiveSession {
 					return;
 				}
 			} else {
-				void deleteWhip(oldSession.resource, oldSession.token);
+				void deleteWhip(oldSession.resource, oldSession.token).finally(() => oldPc?.close());
 			}
+		} else {
+			oldPc?.close();
 		}
 
 		let lastServerBusy = initialServerBusy;
@@ -524,7 +544,7 @@ export class LiveSession {
 
 			this.flushStaleResource();
 
-			const freshEndpoint = await this.fetchEndpoint();
+			const freshEndpoint = await withTimeout(this.fetchEndpoint(), ENDPOINT_TIMEOUT_MS);
 			if (this.stopped) return;
 
 			if (!freshEndpoint?.token || !freshEndpoint?.whip_url) {
@@ -730,14 +750,20 @@ export class LiveSession {
 		this.resource = null;
 		this.staleResource = null;
 
-		if (activeResource && activeToken) {
-			void deleteWhip(activeResource, activeToken, keepalive);
+		const pc = this.pc;
+		this.pc = null;
+		if (pc) {
+			pc.onconnectionstatechange = null;
 		}
-
-		if (this.pc) {
-			this.pc.onconnectionstatechange = null;
-			this.pc.close();
-			this.pc = null;
+		if (activeResource && activeToken) {
+			const deleted = deleteWhip(activeResource, activeToken, keepalive);
+			if (keepalive) {
+				pc?.close();
+			} else {
+				void deleted.finally(() => pc?.close());
+			}
+		} else {
+			pc?.close();
 		}
 
 		stopMediaStream(this.screenStream);
