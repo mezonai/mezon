@@ -80,60 +80,68 @@ export function LivePublishSession() {
 		const sessionClanId = capture.clanId;
 		const sessionChannelId = capture.channelId;
 
-		const session = new LiveSession({
-			channelId: sessionChannelId,
-			screen: capture.screen,
-			camera: capture.camera,
-			mic: capture.mic,
-			audioContext: capture.audioContext,
-			systemAudioOn: capture.systemAudioOn,
-			fetchEndpoint: async () => {
-				const playback = await dispatch(fetchStreamPlayback({ channelId: sessionChannelId, publish: true })).unwrap();
-				if (!playback?.token || !playback?.whip_url) return null;
-				return { token: playback.token, whip_url: playback.whip_url };
-			},
-			onPhase: (nextPhase: LivePhase, attempt?: number) => {
-				if (nextPhase === 'idle') {
-					if (getLiveSession() === session) {
-						setLiveSession(null);
+		let session: LiveSession;
+		try {
+			session = new LiveSession({
+				channelId: sessionChannelId,
+				screen: capture.screen,
+				camera: capture.camera,
+				mic: capture.mic,
+				audioContext: capture.audioContext,
+				systemAudioOn: capture.systemAudioOn,
+				fetchEndpoint: async () => {
+					const playback = await dispatch(fetchStreamPlayback({ channelId: sessionChannelId, publish: true })).unwrap();
+					if (!playback?.token || !playback?.whip_url) return null;
+					return { token: playback.token, whip_url: playback.whip_url };
+				},
+				onPhase: (nextPhase: LivePhase, attempt?: number) => {
+					if (nextPhase === 'idle') {
+						if (getLiveSession() === session) {
+							setLiveSession(null);
+						}
+						dispatch(liveStreamActions.reset());
+						if (!refreshedOnIdle) {
+							refreshedOnIdle = true;
+							refetchStreamMembers(sessionClanId);
+						}
+						return;
 					}
-					dispatch(liveStreamActions.reset());
-					if (!refreshedOnIdle) {
-						refreshedOnIdle = true;
+					dispatch(liveStreamActions.setPhase({ phase: nextPhase, attempt }));
+					if (nextPhase === 'live') {
 						refetchStreamMembers(sessionClanId);
 					}
-					return;
+				},
+				onSources: (sources: LiveSourcesUpdate) => {
+					dispatch(liveStreamActions.setSources(sources));
+				},
+				onFailure: (failure: LiveFailure) => {
+					dispatch(
+						toastActions.addToast({
+							message: tRef.current(`liveError.${failure}`),
+							type: 'error',
+							autoClose: 5000
+						})
+					);
+					dispatch(liveStreamActions.reset());
+				},
+				onSourceIssue: (source: LiveSource, kind: 'start' | 'ended') => {
+					const sourceName = tRef.current(SOURCE_LABEL_KEYS[source]);
+					const key = kind === 'start' ? 'liveError.source' : 'liveError.sourceEnded';
+					dispatch(
+						toastActions.addToast({
+							message: tRef.current(key, { source: sourceName }),
+							type: 'error',
+							autoClose: 5000
+						})
+					);
 				}
-				dispatch(liveStreamActions.setPhase({ phase: nextPhase, attempt }));
-				if (nextPhase === 'live') {
-					refetchStreamMembers(sessionClanId);
-				}
-			},
-			onSources: (sources: LiveSourcesUpdate) => {
-				dispatch(liveStreamActions.setSources(sources));
-			},
-			onFailure: (failure: LiveFailure) => {
-				dispatch(
-					toastActions.addToast({
-						message: tRef.current(`liveError.${failure}`),
-						type: 'error',
-						autoClose: 5000
-					})
-				);
-				dispatch(liveStreamActions.reset());
-			},
-			onSourceIssue: (source: LiveSource, kind: 'start' | 'ended') => {
-				const sourceName = tRef.current(SOURCE_LABEL_KEYS[source]);
-				const key = kind === 'start' ? 'liveError.source' : 'liveError.sourceEnded';
-				dispatch(
-					toastActions.addToast({
-						message: tRef.current(key, { source: sourceName }),
-						type: 'error',
-						autoClose: 5000
-					})
-				);
-			}
-		});
+			});
+		} catch {
+			disposePendingCapture(capture);
+			dispatch(toastActions.addToast({ message: tRef.current('liveError.unsupported'), type: 'error', autoClose: 5000 }));
+			dispatch(liveStreamActions.reset());
+			return;
+		}
 
 		setLiveSession(session);
 		void session.start();

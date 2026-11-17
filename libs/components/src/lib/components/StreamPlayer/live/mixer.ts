@@ -111,30 +111,43 @@ export class LiveMixer {
 		return this._track;
 	}
 
-	setMic(stream: MediaStream | null): void {
+	setMic(stream: MediaStream | null): boolean {
 		this.disconnectMic();
-		if (this.disposed || !stream) return;
+		if (this.disposed || !stream) return true;
 		const audioTrack = stream.getAudioTracks()[0];
-		if (!audioTrack || audioTrack.readyState === 'ended') return;
-		const source = this.context.createMediaStreamSource(new MediaStream([audioTrack]));
-		const gain = this.context.createGain();
-		gain.gain.value = 1;
-		source.connect(gain);
-		gain.connect(this.destination);
-		this.micSource = source;
-		this.micGain = gain;
+		if (!audioTrack || audioTrack.readyState === 'ended') return false;
+		try {
+			const source = this.context.createMediaStreamSource(new MediaStream([audioTrack]));
+			const gain = this.context.createGain();
+			gain.gain.value = 1;
+			source.connect(gain);
+			gain.connect(this.destination);
+			this.micSource = source;
+			this.micGain = gain;
+			return true;
+		} catch {
+			this.disconnectMic();
+			return false;
+		}
 	}
 
-	setSystemAudio(track: MediaStreamTrack | null): void {
+	setSystemAudio(track: MediaStreamTrack | null): boolean {
 		this.disconnectSystemAudio();
-		if (this.disposed || !track || track.readyState === 'ended') return;
-		const source = this.context.createMediaStreamSource(new MediaStream([track]));
-		const gain = this.context.createGain();
-		gain.gain.value = 1;
-		source.connect(gain);
-		gain.connect(this.destination);
-		this.sysSource = source;
-		this.sysGain = gain;
+		if (this.disposed || !track) return true;
+		if (track.readyState === 'ended') return false;
+		try {
+			const source = this.context.createMediaStreamSource(new MediaStream([track]));
+			const gain = this.context.createGain();
+			gain.gain.value = 1;
+			source.connect(gain);
+			gain.connect(this.destination);
+			this.sysSource = source;
+			this.sysGain = gain;
+			return true;
+		} catch {
+			this.disconnectSystemAudio();
+			return false;
+		}
 	}
 
 	private disconnectMic(): void {

@@ -141,7 +141,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 
 		let audioContext: AudioContext | null = null;
 		try {
-			audioContext = new AudioContext({ sampleRate: 48000, latencyHint: 'interactive' });
+			audioContext = new AudioContext({ latencyHint: 'interactive' });
 			void Promise.resolve(audioContext.resume()).catch(() => undefined);
 		} catch {
 			audioContext = null;

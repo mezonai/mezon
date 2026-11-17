@@ -190,7 +190,7 @@ export class LiveSession {
 		this.systemAudioOn = Boolean(this.wantSystemAudio && this.hasSystemAudio);
 		this.bindScreenTrackListeners(stream, videoTrack, audioTrack);
 		this.compositor.setScreen(stream);
-		this.mixer.setSystemAudio(this.systemAudioOn && audioTrack ? audioTrack : null);
+		this.connectSystemAudio(this.systemAudioOn && audioTrack ? audioTrack : null);
 	}
 
 	private bindScreenTrackListeners(stream: MediaStream, videoTrack: MediaStreamTrack, audioTrack: MediaStreamTrack | null): void {
@@ -253,7 +253,7 @@ export class LiveSession {
 		this.micStream = stream;
 		this.micOn = true;
 		this.bindMicTrackListener(stream, audioTrack);
-		this.mixer.setMic(stream);
+		if (!this.mixer.setMic(stream)) this.dropMic();
 	}
 
 	private bindMicTrackListener(stream: MediaStream, audioTrack: MediaStreamTrack): void {
@@ -266,6 +266,19 @@ export class LiveSession {
 			this.emitSources();
 			this.onSourceIssue('mic', 'ended');
 		};
+	}
+
+	private dropMic(): void {
+		stopMediaStream(this.micStream);
+		this.micStream = null;
+		this.micOn = false;
+		this.onSourceIssue('mic', 'start');
+	}
+
+	private connectSystemAudio(track: MediaStreamTrack | null): void {
+		if (this.mixer.setSystemAudio(track)) return;
+		this.systemAudioOn = false;
+		this.onSourceIssue('systemAudio', 'start');
 	}
 
 	private emitSources(): void {
@@ -628,7 +641,7 @@ export class LiveSession {
 		this.systemAudioOn = Boolean(this.wantSystemAudio && this.hasSystemAudio);
 		this.bindScreenTrackListeners(stream, videoTrack, audioTrack);
 		this.compositor.setScreen(stream);
-		this.mixer.setSystemAudio(this.systemAudioOn && audioTrack ? audioTrack : null);
+		this.connectSystemAudio(this.systemAudioOn && audioTrack ? audioTrack : null);
 		this.emitSources();
 	}
 
@@ -703,7 +716,7 @@ export class LiveSession {
 				this.micStream = stream;
 				this.micOn = true;
 				this.bindMicTrackListener(stream, audioTrack);
-				this.mixer.setMic(stream);
+				if (!this.mixer.setMic(stream)) this.dropMic();
 				this.emitSources();
 			})
 			.catch(() => {
@@ -720,7 +733,7 @@ export class LiveSession {
 		const audioTrack = this.screenStream?.getAudioTracks()[0] ?? null;
 		this.hasSystemAudio = Boolean(audioTrack && audioTrack.readyState !== 'ended');
 		this.systemAudioOn = Boolean(on && this.hasSystemAudio);
-		this.mixer.setSystemAudio(this.systemAudioOn && audioTrack ? audioTrack : null);
+		this.connectSystemAudio(this.systemAudioOn && audioTrack ? audioTrack : null);
 		this.emitSources();
 	}
 
