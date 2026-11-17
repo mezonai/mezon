@@ -1,6 +1,5 @@
 'use client';
 
-import mezonPackage from '@mezon/package-js';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -13,7 +12,7 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const IntegrationsPage = () => {
 	const { t } = useTranslation('integrationspage');
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [openFAQ, setOpenFAQ] = useState<number | null>(0);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +25,7 @@ const IntegrationsPage = () => {
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_latest_amd64.deb`
 				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const section1Ref = useRef<HTMLDivElement>(null);
@@ -357,7 +356,7 @@ const IntegrationsPage = () => {
 											<span>{faq.question}</span>
 										</span>
 									</button>
-									<div className="faq-content ${openFAQ === index ? 'open' : ''}">
+									<div className={`faq-content ${openFAQ === index ? 'open' : ''}`}>
 										<div className="pb-4 md:pb-6 pl-6 md:pl-8 pr-4">
 											<p className="font-svnAvo text-sm sm:text-base text-slate-600 leading-relaxed mb-4 select-text">
 												{faq.answer}

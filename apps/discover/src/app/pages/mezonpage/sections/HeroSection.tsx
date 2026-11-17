@@ -1,4 +1,3 @@
-import mezonPackage from '@mezon/package-js';
 import { Icons } from '@mezon/ui';
 import { getPlatform } from '@mezon/utils';
 import type { RefObject } from 'react';
@@ -13,7 +12,7 @@ interface HeroSectionProps {
 export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isImageLoaded, setIsImageLoaded] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
@@ -21,7 +20,7 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
 		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
-		linux: `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+		linux: `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_latest_amd64.deb`
 	};
 
 	const handleTryMezon = () => {

@@ -1,6 +1,5 @@
 'use client';
 
-import mezonPackage from '@mezon/package-js';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
 import { useEffect, useState } from 'react';
@@ -9,12 +8,12 @@ import HeaderMezon from '../mezonpage/header';
 
 const OrganizePage = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+
 	const downloadUrl: string =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_latest_amd64.deb`
 				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const [activeFeature, setActiveFeature] = useState(0);

@@ -1,5 +1,4 @@
 import { CustomCookieConsent } from '@mezon/components';
-import mezonPackage from '@mezon/package-js';
 import { Platform, getPlatform } from '@mezon/utils';
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
@@ -61,15 +60,14 @@ function MezonPage() {
 		setSideBarIsOpen(!sideBarIsOpen);
 	};
 
-	const version = mezonPackage.desktopVersion;
 	const downloadUrl: string = useMemo(() => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
+			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_latest_amd64.deb`;
 		}
 		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
-	}, [platform, version]);
+	}, [platform]);
 
 	const scrollToSection = (id: string, event: React.MouseEvent) => {
 		event.preventDefault();
@@ -87,20 +85,6 @@ function MezonPage() {
 			top: sectionTop
 		});
 	};
-
-	const trackDownloadEvent = (platform: string, downloadType: string) => {
-		if (typeof window !== 'undefined' && typeof (window as Window & { gtag?: (...args: unknown[]) => void }).gtag !== 'undefined') {
-			(window as Window & { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'download_click', {
-				event_category: 'Downloads',
-				event_label: platform,
-				download_type: downloadType,
-				app_version: version,
-				custom_parameter_1: 'mezon_homepage'
-			});
-		}
-	};
-
-	// Carousel navigation functions
 
 	useEffect(() => {
 		const externalScript = document.createElement('script');

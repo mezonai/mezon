@@ -1,8 +1,8 @@
-import mezonPackage from '@mezon/package-js';
 import { Button, Icons } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
 
@@ -54,28 +54,22 @@ const AnimatedSection = ({ className = '', children }: AnimatedSectionProps) => 
 
 const AboutMezon = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+	const navigate = useNavigate();
 	const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
-	const [openAboutUs, setOpenAboutUs] = useState(false);
 	const desktopDropdownRef = useRef<HTMLDivElement>(null);
 	const mobileDropdownRef = useRef<HTMLDivElement>(null);
 	const downloadUrl: string = useMemo(() => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
+			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_latest_amd64.deb`;
 		}
 		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
-	}, [platform, version]);
-	const trackHeaderLoginClick = (action: string) => {
-		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
-			(window as any).gtag('event', 'Login Button', {
-				event_category: 'Login Button',
-				event_label: action,
-				custom_parameter_1: 'mezon_header_login'
-			});
-		}
+	}, [platform]);
+
+	const handleOpenContactUs = () => {
+		navigate('/contact-us');
 	};
 
 	const handleDownloadDesktop = () => {
@@ -87,12 +81,7 @@ const AboutMezon = () => {
 			setIsDesktopDropdownOpen(!isDesktopDropdownOpen);
 		}
 	};
-	const handleOpenAboutUs = () => {
-		setOpenAboutUs(true);
-	};
-	const handleCloseAboutUs = () => {
-		setOpenAboutUs(false);
-	};
+
 	const handleDownloadMobile = () => {
 		if (platform === Platform.IOS) {
 			window.open('https://apps.apple.com/vn/app/mezon/id6502750046', '_blank', 'noopener,noreferrer');
@@ -177,7 +166,7 @@ const AboutMezon = () => {
 										<span className="text-gray-700 font-svnAvo">macOS</span>
 									</a>
 									<a
-										href={`${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}
+										href={`${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_latest_amd64.deb`}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-purple-600 hover:text-pink-600"
@@ -309,12 +298,12 @@ const AboutMezon = () => {
 					<p className="text-[22px] max-md:text-[18px] leading-[34px] text-gray-800 font-svnAvo py-3 select-text">
 						Whether you're learning, working, or just chilling with friends, our support team and community are right by your side.
 					</p>
-					<button
+					<Button
 						className="bg-gradient-to-r from-[#8661df] to-[#7979ed] hover:bg-gradient-to-l text-white px-[40px] py-[16px] rounded-full text-[20px] font-svnAvo hover:opacity-90 transition-opacity mb-[48px]"
-						onClick={handleOpenAboutUs}
+						onClick={handleOpenContactUs}
 					>
 						Reach Us Anytime
-					</button>
+					</Button>
 
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-[24px]">
 						{[
@@ -340,7 +329,7 @@ const AboutMezon = () => {
 					</h2>
 					<Button
 						className="bg-gradient-to-r from-[#8661df] to-[#7979ed] hover:bg-gradient-to-l text-white px-[40px] py-[18px] rounded-full text-[20px] font-svnAvo hover:opacity-90 transition-opacity inline-flex items-center justify-center"
-						onClick={handleOpenAboutUs}
+						onClick={handleOpenContactUs}
 					>
 						Reach Us Anytime
 					</Button>
