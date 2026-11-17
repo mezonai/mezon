@@ -170,6 +170,12 @@
 		"keepMuted": "L'audio est en pause. Cliquez pour garder votre micro coupé."
 	},
 	"weakNetwork": "Réseau faible",
+	"connecting": "Connexion…",
+	"reconnecting": "Reconnexion…",
+	"raiseHand": "Lever la main",
+	"lowerHand": "Baisser la main",
+	"addAgent": "Ajouter un agent IA",
+	"removeAgent": "Retirer l'agent IA",
 	"networkWarning": {
 		"title": "Votre connexion internet est instable",
 		"body": "Veuillez vérifier votre connexion réseau."

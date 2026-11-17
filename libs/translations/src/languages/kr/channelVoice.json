@@ -170,6 +170,12 @@
 		"keepMuted": "오디오가 일시정지되었습니다. 클릭하면 마이크를 계속 음소거 상태로 유지합니다."
 	},
 	"weakNetwork": "약한 네트워크",
+	"connecting": "연결 중…",
+	"reconnecting": "다시 연결 중…",
+	"raiseHand": "손 들기",
+	"lowerHand": "손 내리기",
+	"addAgent": "AI 에이전트 추가",
+	"removeAgent": "AI 에이전트 제거",
 	"networkWarning": {
 		"title": "인터넷 연결이 불안정합니다",
 		"body": "네트워크 연결을 확인해 주세요."
