@@ -553,5 +553,11 @@
 	"formatDate": "d 'maand' M, yyyy",
 	"cannotSendLocationWithAnonymous": "Locatie kan niet worden verzonden tijdens anoniem zijn.",
 	"iconAnimations": "Pictogramanimaties",
-	"iconAnimationsDesc": "Animeer pictogrammen bij hover en tijdens live activiteit, zoals typen of een stream."
+	"iconAnimationsDesc": "Animeer pictogrammen bij hover en tijdens live activiteit, zoals typen of een stream.",
+	"openInDesktopApp": {
+		"title": "Deze link openen in de Mezon-desktopapp?",
+		"open": "App openen",
+		"dismiss": "Sluiten",
+		"continueInBrowser": "Doorgaan in de browser"
+	}
 }
