@@ -1,5 +1,6 @@
 import { liveStreamActions, toastActions, useAppDispatch } from '@mezon/store';
 import { Modal } from '@mezon/ui';
+import { ensureMediaPermission, reportMediaAccessError, reportMediaAccessGranted } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setPendingLiveCapture } from './liveSessionHolder';
@@ -117,6 +118,15 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			const wantScreen = canShareScreen && withScreen;
 			const wantCamera = !wantScreen || cameraOn;
 			const wantSystemAudio = wantScreen && systemAudioOn;
+			if (micOn && !(await ensureMediaPermission('microphone'))) {
+				setSubmitting(false);
+				return;
+			}
+			if (wantCamera && !(await ensureMediaPermission('camera'))) {
+				setSubmitting(false);
+				return;
+			}
+			if (runId !== startRunRef.current) return;
 			const screenPromise = wantScreen ? requestDisplayMedia(wantSystemAudio) : null;
 
 			let audioContext: AudioContext | null = null;
@@ -185,16 +195,18 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			if (wantCamera) {
 				try {
 					cameraStream = await openLiveCameraStream();
-				} catch {
+					reportMediaAccessGranted('camera');
+				} catch (err) {
 					cameraStream = null;
 					if (abandon([screenStream])) return;
-					dispatch(
-						toastActions.addToast({
-							message: t('liveError.source', { source: t('liveCamera') }),
-							type: 'error',
-							autoClose: 5000
-						})
-					);
+					if (!reportMediaAccessError('camera', err))
+						dispatch(
+							toastActions.addToast({
+								message: t('liveError.source', { source: t('liveCamera') }),
+								type: 'error',
+								autoClose: 5000
+							})
+						);
 				}
 			}
 
@@ -210,16 +222,18 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			if (micOn) {
 				try {
 					micStream = await openLiveMicStream();
-				} catch {
+					reportMediaAccessGranted('microphone');
+				} catch (err) {
 					micStream = null;
 					if (abandon([screenStream, cameraStream])) return;
-					dispatch(
-						toastActions.addToast({
-							message: t('liveError.source', { source: t('liveMic') }),
-							type: 'error',
-							autoClose: 5000
-						})
-					);
+					if (!reportMediaAccessError('microphone', err))
+						dispatch(
+							toastActions.addToast({
+								message: t('liveError.source', { source: t('liveMic') }),
+								type: 'error',
+								autoClose: 5000
+							})
+						);
 				}
 			}
 

@@ -1,4 +1,5 @@
 import type { LiveFailure, LivePhase, LiveSource, LiveSourcesUpdate } from '@mezon/store';
+import { reportMediaAccessError } from '@mezon/utils';
 import { waitConnected } from '../whep';
 import { LiveCompositor, startIntervalWorker } from './compositor';
 import { LiveMixer, openLiveCameraStream, openLiveMicStream } from './mixer';
@@ -693,11 +694,11 @@ export class LiveSession {
 				this.compositor.setCamera(stream);
 				this.emitSources();
 			})
-			.catch(() => {
+			.catch((err: unknown) => {
 				if (this.stopped || gen !== this.cameraGen) return;
 				this.cameraOn = false;
 				this.emitSources();
-				this.onSourceIssue('camera', 'start');
+				if (!reportMediaAccessError('camera', err)) this.onSourceIssue('camera', 'start');
 			});
 	}
 
@@ -734,11 +735,11 @@ export class LiveSession {
 				if (!this.mixer.setMic(stream)) this.dropMic();
 				this.emitSources();
 			})
-			.catch(() => {
+			.catch((err: unknown) => {
 				if (this.stopped || gen !== this.micGen) return;
 				this.micOn = false;
 				this.emitSources();
-				this.onSourceIssue('mic', 'start');
+				if (!reportMediaAccessError('microphone', err)) this.onSourceIssue('mic', 'start');
 			});
 	}
 

@@ -10,6 +10,7 @@ import {
 } from '@mezon/store';
 import type { IconData } from '@mezon/ui';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
+import { ensureMediaPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -111,12 +112,16 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 		}
 	}, []);
 
-	const handleToggleMic = useCallback(() => {
-		getLiveSession()?.setMic(!sources.micOn);
+	const handleToggleMic = useCallback(async () => {
+		const next = !sources.micOn;
+		if (next && !(await ensureMediaPermission('microphone'))) return;
+		getLiveSession()?.setMic(next);
 	}, [sources.micOn]);
 
-	const handleToggleCamera = useCallback(() => {
-		getLiveSession()?.setCamera(!sources.cameraOn);
+	const handleToggleCamera = useCallback(async () => {
+		const next = !sources.cameraOn;
+		if (next && !(await ensureMediaPermission('camera'))) return;
+		getLiveSession()?.setCamera(next);
 	}, [sources.cameraOn]);
 
 	const handleToggleSystemAudio = useCallback(() => {
