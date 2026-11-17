@@ -2849,6 +2849,12 @@ export function MezonSfuVoiceRoom({
 	}, [pushToTalkActive]);
 
 	const participants = useMemo(() => getRemoteParticipants(remoteMedia.values(), selfPeerId), [remoteMedia, selfPeerId]);
+	const agentInRoom = useMemo(
+		() =>
+			participants.some((participant) => participant.userId === process.env.NX_VOICE_AGENT_ID) ||
+			channelVoiceMembers.some((member) => member.user_id === process.env.NX_VOICE_AGENT_ID),
+		[channelVoiceMembers, participants]
+	);
 
 	const activeCameraCount = useMemo(() => {
 		const remoteCameras = participants.filter(
@@ -3320,7 +3326,13 @@ export function MezonSfuVoiceRoom({
 		wsRef.current?.send(JSON.stringify({ type: 'send_message', message }));
 	};
 	const connectionLabel =
-		connectionState === 'connected' && weakNetwork ? t('weakNetwork') : connectionState === 'awaiting offer' ? 'connecting' : connectionState;
+		connectionState === 'connected'
+			? t(weakNetwork ? 'weakNetwork' : cameraEnabled ? 'videoConnected' : 'voiceConnected')
+			: connectionState === 'disconnected'
+				? t('reconnecting')
+				: connectionState === 'failed'
+					? t('reconnectModal.title')
+					: t('connecting');
 
 	return (
 		<>
@@ -3545,6 +3557,7 @@ export function MezonSfuVoiceRoom({
 					onPushToTalk={(active) => void setPushToTalk(active)}
 					pushToTalkHintDismissed={pushToTalkHintDismissed}
 					onDismissPushToTalkHint={() => setPushToTalkHintDismissed(true)}
+					agentActive={agentInRoom}
 					agentHintDismissed={agentHintDismissed}
 					onDismissAgentHint={dismissAgentHint}
 					weakNetwork={connectionState === 'connected' && weakNetwork}
