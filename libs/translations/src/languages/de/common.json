@@ -553,5 +553,11 @@
 	"formatDate": "d. MMMM yyyy",
 	"cannotSendLocationWithAnonymous": "Standort kann nicht im anonymen Modus gesendet werden.",
 	"iconAnimations": "Symbolanimationen",
-	"iconAnimationsDesc": "Symbole beim Darüberfahren und bei laufender Aktivität animieren, etwa beim Tippen oder bei einem Stream."
+	"iconAnimationsDesc": "Symbole beim Darüberfahren und bei laufender Aktivität animieren, etwa beim Tippen oder bei einem Stream.",
+	"openInDesktopApp": {
+		"title": "Diesen Link in der Mezon-Desktop-App öffnen?",
+		"open": "App öffnen",
+		"dismiss": "Schließen",
+		"continueInBrowser": "Im Browser fortfahren"
+	}
 }

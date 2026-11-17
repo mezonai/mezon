@@ -553,5 +553,11 @@
 	"formatDate": "yyyy年M月d日",
 	"cannotSendLocationWithAnonymous": "匿名モードでは位置情報を送信できません。",
 	"iconAnimations": "アイコンのアニメーション",
-	"iconAnimationsDesc": "ホバー時や、入力中・配信中などリアルタイムの動作中にアイコンをアニメーションで表示します。"
+	"iconAnimationsDesc": "ホバー時や、入力中・配信中などリアルタイムの動作中にアイコンをアニメーションで表示します。",
+	"openInDesktopApp": {
+		"title": "このリンクを Mezon デスクトップアプリで開きますか？",
+		"open": "アプリで開く",
+		"dismiss": "閉じる",
+		"continueInBrowser": "ブラウザで続ける"
+	}
 }

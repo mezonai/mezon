@@ -553,5 +553,11 @@
 	"formatDate": "d 'janvier' MMMM, yyyy",
 	"cannotSendLocationWithAnonymous": "Impossible d'envoyer une position lorsque vous êtes anonyme.",
 	"iconAnimations": "Animations des icônes",
-	"iconAnimationsDesc": "Animer les icônes au survol et pendant une activité en direct, comme la saisie ou un stream."
+	"iconAnimationsDesc": "Animer les icônes au survol et pendant une activité en direct, comme la saisie ou un stream.",
+	"openInDesktopApp": {
+		"title": "Ouvrir ce lien dans l'application de bureau Mezon ?",
+		"open": "Ouvrir l'app",
+		"dismiss": "Fermer",
+		"continueInBrowser": "Continuer dans le navigateur"
+	}
 }
