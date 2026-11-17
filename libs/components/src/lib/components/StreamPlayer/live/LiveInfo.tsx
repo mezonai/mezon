@@ -46,8 +46,8 @@ export function LiveInfo() {
 
 	return (
 		<div className="border-b dark:border-borderDefault border-gray-300 px-4 py-2 hover:bg-gray-550/[0.16] shadow-sm transition bg-item-theme w-full group">
-			<div className="flex items-center justify-between">
-				<div className="flex max-w-[200px] flex-col">
+			<div className="flex items-center justify-between gap-2">
+				<div className="flex min-w-0 flex-1 flex-col">
 					<div className="flex items-center gap-1.5">
 						<MezonIcon icon={MzIcons16.mzLive} className="shrink-0 text-[green]" />
 						<span className="truncate text-base font-bold text-green-700">{statusLabel}</span>
