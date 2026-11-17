@@ -1,17 +1,8 @@
-import {
-	liveStreamActions,
-	selectCurrentStreamInfo,
-	selectIsJoin,
-	toastActions,
-	useAppDispatch,
-	videoStreamActions,
-	watchStream
-} from '@mezon/store';
+import { liveStreamActions, toastActions, useAppDispatch } from '@mezon/store';
 import type { IconData } from '@mezon/ui';
 import { MezonIcon, Modal, MzIcons20 } from '@mezon/ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { setPendingLiveCapture } from './liveSessionHolder';
 import { openLiveCameraStream, openLiveMicStream, requestDisplayMedia } from './mixer';
 
@@ -83,8 +74,7 @@ function isPickerCancelled(error: unknown): boolean {
 export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, channelLabel, parentId }: GoLiveModalProps) {
 	const { t } = useTranslation(['channelStream', 'common']);
 	const dispatch = useAppDispatch();
-	const isJoin = useSelector(selectIsJoin);
-	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
+	const startRunRef = useRef(0);
 
 	const canShareScreen = useMemo(() => typeof navigator !== 'undefined' && typeof navigator.mediaDevices?.getDisplayMedia === 'function', []);
 
@@ -95,13 +85,23 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 	const [submitting, setSubmitting] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (!showModal) return;
+		if (!showModal) {
+			startRunRef.current += 1;
+			return;
+		}
 		setScreenOn(canShareScreen);
 		setSystemAudioOn(true);
 		setMicOn(true);
 		setCameraOn(!canShareScreen);
 		setSubmitting(false);
 	}, [canShareScreen, showModal]);
+
+	useEffect(
+		() => () => {
+			startRunRef.current += 1;
+		},
+		[]
+	);
 
 	const handleToggleScreen = useCallback(() => {
 		setScreenOn((prev) => !prev);
@@ -134,6 +134,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 	const handleStart = useCallback(async () => {
 		if (!canStart) return;
 		setSubmitting(true);
+		const runId = ++startRunRef.current;
 
 		const wantScreen = canShareScreen && screenOn;
 		const wantSystemAudio = wantScreen && systemAudioOn;
@@ -156,10 +157,19 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			return;
 		}
 
+		const liveContext = audioContext;
+		const abandon = (streams: Array<MediaStream | null>) => {
+			if (runId === startRunRef.current) return false;
+			streams.forEach(stopStreamTracks);
+			void Promise.resolve(liveContext.close()).catch(() => undefined);
+			return true;
+		};
+
 		let screenStream: MediaStream | null = null;
 		if (screenPromise) {
 			try {
 				screenStream = await screenPromise;
+				if (abandon([screenStream])) return;
 				if (!screenStream.getVideoTracks()[0]) {
 					stopStreamTracks(screenStream);
 					screenStream = null;
@@ -172,6 +182,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 					);
 				}
 			} catch (err) {
+				if (abandon([])) return;
 				if (isPickerCancelled(err)) {
 					void Promise.resolve(audioContext.close()).catch(() => undefined);
 					setSubmitting(false);
@@ -189,12 +200,15 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			}
 		}
 
+		if (abandon([screenStream])) return;
+
 		let cameraStream: MediaStream | null = null;
 		if (cameraOn) {
 			try {
 				cameraStream = await openLiveCameraStream();
 			} catch {
 				cameraStream = null;
+				if (abandon([screenStream])) return;
 				dispatch(
 					toastActions.addToast({
 						message: t('liveError.source', { source: t('liveCamera') }),
@@ -204,6 +218,8 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 				);
 			}
 		}
+
+		if (abandon([screenStream, cameraStream])) return;
 
 		if (!screenStream && !cameraStream) {
 			void Promise.resolve(audioContext.close()).catch(() => undefined);
@@ -217,6 +233,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 				micStream = await openLiveMicStream();
 			} catch {
 				micStream = null;
+				if (abandon([screenStream, cameraStream])) return;
 				dispatch(
 					toastActions.addToast({
 						message: t('liveError.source', { source: t('liveMic') }),
@@ -227,10 +244,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			}
 		}
 
-		if (isJoin && currentStreamInfo?.streamId === channelId) {
-			void dispatch(watchStream({ channelId, watching: false }));
-			dispatch(videoStreamActions.resetPlayback());
-		}
+		if (abandon([screenStream, cameraStream, micStream])) return;
 
 		const hasSystemAudio = Boolean(screenStream?.getAudioTracks()[0]);
 		setPendingLiveCapture({
@@ -266,9 +280,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 		channelLabel,
 		clanId,
 		clanName,
-		currentStreamInfo?.streamId,
 		dispatch,
-		isJoin,
 		micOn,
 		onClose,
 		parentId,

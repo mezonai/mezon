@@ -35,8 +35,7 @@ export async function openLiveMicStream(): Promise<MediaStream> {
 	const baseAudio: MediaTrackConstraints = {
 		echoCancellation: true,
 		noiseSuppression: true,
-		autoGainControl: true,
-		sampleRate: 48000
+		autoGainControl: true
 	};
 	const deviceId = getPreferredInputDeviceId();
 	if (deviceId && deviceId !== 'default') {

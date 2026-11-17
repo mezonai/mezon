@@ -102,7 +102,7 @@ export function LivePublishSession() {
 						dispatch(liveStreamActions.reset());
 						if (!refreshedOnIdle) {
 							refreshedOnIdle = true;
-							refetchStreamMembers(sessionClanId);
+							void session.closed.then(() => refetchStreamMembers(sessionClanId));
 						}
 						return;
 					}
@@ -144,7 +144,11 @@ export function LivePublishSession() {
 		}
 
 		setLiveSession(session);
-		void session.start();
+		void session.start().catch(() => {
+			if (getLiveSession() !== session) return;
+			dispatch(toastActions.addToast({ message: tRef.current('liveError.unsupported'), type: 'error', autoClose: 5000 }));
+			session.stop();
+		});
 	}, [dispatch, phase, refetchStreamMembers]);
 
 	useEffect(() => {

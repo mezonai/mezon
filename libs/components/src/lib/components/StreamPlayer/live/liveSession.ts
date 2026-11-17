@@ -121,6 +121,8 @@ async function applySenderParameters(videoSender: RTCRtpSender, audioSender: RTC
 
 export class LiveSession {
 	readonly channelId: string;
+	readonly closed: Promise<void>;
+	private resolveClosed: () => void = () => undefined;
 	readonly compositor: LiveCompositor;
 	private readonly mixer: LiveMixer;
 	private readonly mediaStream: MediaStream;
@@ -159,6 +161,9 @@ export class LiveSession {
 
 	constructor(options: LiveSessionOptions) {
 		this.channelId = options.channelId;
+		this.closed = new Promise<void>((resolve) => {
+			this.resolveClosed = resolve;
+		});
 		this.fetchEndpoint = options.fetchEndpoint;
 		this.onPhase = options.onPhase;
 		this.onSources = options.onSources;
@@ -168,8 +173,13 @@ export class LiveSession {
 		this.watch = new WallClockWatch(Date.now());
 
 		this.compositor = new LiveCompositor();
-		this.mixer = new LiveMixer(options.audioContext);
-		this.mediaStream = new MediaStream([this.compositor.track, this.mixer.track]);
+		try {
+			this.mixer = new LiveMixer(options.audioContext);
+			this.mediaStream = new MediaStream([this.compositor.track, this.mixer.track]);
+		} catch (error) {
+			this.compositor.dispose();
+			throw error;
+		}
 
 		this.attachInitialScreen(options.screen);
 		this.attachInitialCamera(options.camera);
@@ -277,7 +287,12 @@ export class LiveSession {
 
 	private connectSystemAudio(track: MediaStreamTrack | null): void {
 		if (this.mixer.setSystemAudio(track)) return;
+		if (track) {
+			track.onended = null;
+			track.stop();
+		}
 		this.systemAudioOn = false;
+		this.hasSystemAudio = false;
 		this.onSourceIssue('systemAudio', 'start');
 	}
 
@@ -311,7 +326,7 @@ export class LiveSession {
 		if (this.stopped) return;
 
 		if (!endpoint?.token || !endpoint?.whip_url) {
-			await this.runReconnectLoop(h264Codecs, false, undefined);
+			this.fail('network');
 			return;
 		}
 
@@ -772,11 +787,16 @@ export class LiveSession {
 			const deleted = deleteWhip(activeResource, activeToken, keepalive);
 			if (keepalive) {
 				pc?.close();
+				this.resolveClosed();
 			} else {
-				void deleted.finally(() => pc?.close());
+				void deleted.finally(() => {
+					pc?.close();
+					this.resolveClosed();
+				});
 			}
 		} else {
 			pc?.close();
+			this.resolveClosed();
 		}
 
 		stopMediaStream(this.screenStream);
