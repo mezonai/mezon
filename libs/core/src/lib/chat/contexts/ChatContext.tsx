@@ -176,6 +176,7 @@ import type {
 	CustomStatusEvent,
 	DeleteAccountEvent,
 	EventEmoji,
+	FriendStateUpdated,
 	LastPinMessageEvent,
 	LastSeenMessageEvent,
 	ListActivity,
@@ -2856,6 +2857,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		dispatch(friendsActions.upsertFriendRequest({ user, myId: userId || '' }));
 	}, []);
 
+	const onfriendstateupdated = useCallback(
+		(user: FriendStateUpdated) => {
+			dispatch(friendsActions.applyFriendStateUpdated({ user, myId: userId || '' }));
+		},
+		[userId]
+	);
+
 	const onbanneduser = useCallback((user: BannedUserEvent) => {
 		if (user.action === 1) {
 			dispatch(
@@ -3049,6 +3057,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onaddfriend = onaddfriend;
 
+			socket.onfriendstateupdated = onfriendstateupdated;
+
 			socket.onbanneduser = onbanneduser;
 
 			socket.onscreenshare = onscreenshare;
@@ -3110,6 +3120,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onunblockfriend,
 			onMarkAsRead,
 			onaddfriend,
+			onfriendstateupdated,
 			onbanneduser,
 			runPostReconnectActions,
 			onServerDisconnectStreakLogout,
