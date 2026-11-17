@@ -344,12 +344,12 @@ const getCameraConstraints = (index: number): MediaTrackConstraints => {
 };
 
 // Prefers the given camera but still opens another one if it is gone
-const withPreferredCamera = (constraints: MediaTrackConstraints, deviceId?: string): MediaTrackConstraints =>
+export const withPreferredCamera = (constraints: MediaTrackConstraints, deviceId?: string): MediaTrackConstraints =>
 	deviceId && deviceId !== 'default' ? { ...constraints, deviceId: { ideal: deviceId } } : constraints;
 
 // Cheap webcams can list a mode they cannot start (e.g. "Timeout starting video source"), so retry once in the camera's own default mode.
 // No retry when the permission was refused or the camera is gone: the same deviceId would fail again
-const openCameraStream = async (video: MediaTrackConstraints): Promise<MediaStream> => {
+export const openCameraStream = async (video: MediaTrackConstraints): Promise<MediaStream> => {
 	try {
 		return await navigator.mediaDevices.getUserMedia({ audio: false, video });
 	} catch (cause) {
@@ -741,6 +741,11 @@ export function MezonSfuVoiceRoom({
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	// A ref so changing it never restarts the connection effect that opens the camera on join
 	const preferredCameraIdRef = useRef(preferredCameraId);
+	useEffect(() => {
+		if (preferredCameraId) {
+			preferredCameraIdRef.current = preferredCameraId;
+		}
+	}, [preferredCameraId]);
 	useEffect(() => {
 		const handleOutputDeviceChange = (e: Event) => {
 			const nextId = parseOutputDeviceChangeEventDetail((e as CustomEvent).detail);
@@ -1213,6 +1218,10 @@ export function MezonSfuVoiceRoom({
 
 	useEffect(() => {
 		if (customVideoTrack && customVideoTrack.readyState === 'live') {
+			const previousTrack = cameraTrackRef.current;
+			if (previousTrack && previousTrack !== customVideoTrack) {
+				previousTrack.stop();
+			}
 			cameraTrackRef.current = customVideoTrack;
 			const localStream = localStreamRef.current || new MediaStream();
 			localStream.getVideoTracks().forEach((track) => localStream.removeTrack(track));
@@ -3547,9 +3556,10 @@ export function MezonSfuVoiceRoom({
 					onScreenShareToggle={() => void toggleScreenShare()}
 					onMicrophoneSelect={(deviceId) => void changeInputDevice('audioinput', deviceId)}
 					onCameraSelect={(deviceId) => {
-						if (onSelectCamera && (cameraManagedExternally || customVideoTrack)) {
+						onSelectCamera?.(deviceId);
+						if (cameraManagedExternally || customVideoTrack) {
 							setSelectedCamera(deviceId);
-							onSelectCamera(deviceId);
+							preferredCameraIdRef.current = deviceId;
 							return;
 						}
 						void changeInputDevice('videoinput', deviceId);
