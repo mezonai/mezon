@@ -1,6 +1,6 @@
 import { useAppNavigation, useMenu } from '@mezon/core';
 import { categoriesActions, liveStreamActions, selectCloseMenu, selectLiveInfo, selectLivePhase, useAppDispatch } from '@mezon/store';
-import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -49,8 +49,8 @@ export function LiveInfo() {
 			<div className="flex items-center justify-between">
 				<div className="flex max-w-[200px] flex-col">
 					<div className="flex items-center gap-1.5">
-						<span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#da373c]" />
-						<span className="truncate text-base font-bold text-[#da373c]">{statusLabel}</span>
+						<MezonIcon icon={MzIcons16.mzLive} className="shrink-0 text-[green]" />
+						<span className="truncate text-base font-bold text-green-700">{statusLabel}</span>
 					</div>
 					<button type="button" className="w-fit" onClick={handleNavigate}>
 						<div className="text-xs font-medium text-theme-primary hover:underline">{displayAddress}</div>

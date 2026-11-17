@@ -1,32 +1,50 @@
 import {
 	liveStreamActions,
-	selectAllAccount,
 	selectLivePhase,
 	selectLiveSources,
-	selectMemberClanByUserId,
 	selectStreamMembersByChannelId,
+	selectStreamViewerCount,
 	toastActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
-import { getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
-import type { PointerEvent } from 'react';
+import type { IconData } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { SFU_CONTROL_BUTTON_CLASS } from '../../MezonSfuVoiceChannel/ControlBar/controlStyles';
-import type { StreamPublisherInfo } from '../StreamPublisher';
-import { StreamLiveBadge, StreamPublisherAvatar, StreamViewerCount, StreamViewers } from '../StreamPublisher';
+import { VoiceChannelUsers } from '../../MezonSfuVoiceChannel/PreJoinVoiceChannel/VoiceChannelUsers/VoiceChannelUsers';
+import { StreamLiveBadge } from '../StreamPublisher';
 import { getLiveSession, subscribeLiveSession } from './liveSessionHolder';
 import { requestDisplayMedia } from './mixer';
-
-const CONTROLS_HIDE_DELAY_MS = 3000;
-const CONTROL_BUTTON_CLASS = 'flex h-9 w-9 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white';
 
 function isPickerCancelled(error: unknown): boolean {
 	const name = (error as DOMException | undefined)?.name;
 	return name === 'NotAllowedError' || name === 'AbortError';
+}
+
+type LiveControlButtonProps = {
+	icon: IconData;
+	active: boolean;
+	label: string;
+	onClick: () => void;
+};
+
+function LiveControlButton({ icon, active, label, onClick }: LiveControlButtonProps) {
+	return (
+		<button
+			type="button"
+			title={label}
+			aria-label={label}
+			aria-pressed={active}
+			onClick={onClick}
+			className={`flex size-10 items-center justify-center rounded-full text-white transition-colors hover:bg-white/[0.22] ${
+				active ? 'bg-white/15' : 'bg-white/[0.08]'
+			}`}
+		>
+			<MezonIcon icon={icon} />
+		</button>
+	);
 }
 
 export type LivePublisherStageProps = {
@@ -38,35 +56,14 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 	const dispatch = useAppDispatch();
 	const phase = useSelector(selectLivePhase);
 	const sources = useSelector(selectLiveSources);
-	const account = useSelector(selectAllAccount);
-	const myUserId = account?.user?.id ?? '';
-	const myMember = useAppSelector((state) => selectMemberClanByUserId(state, myUserId));
-	const listedViewers = useAppSelector((state) => Math.max(0, selectStreamMembersByChannelId(state, channelId).length - 1));
+	const members = useAppSelector((state) => selectStreamMembersByChannelId(state, channelId));
+	const viewerCount = useAppSelector((state) => selectStreamViewerCount(state, channelId));
 
 	const stageRef = useRef<HTMLDivElement>(null);
 	const previewContainerRef = useRef<HTMLDivElement>(null);
-	const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
-
-	const [idle, setIdle] = useState(false);
-	const [controlsHovered, setControlsHovered] = useState(false);
-	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [showMembers, setShowMembers] = useState(true);
 
 	const canShareScreen = useMemo(() => typeof navigator !== 'undefined' && typeof navigator.mediaDevices?.getDisplayMedia === 'function', []);
-
-	const selfPublisher = useMemo<StreamPublisherInfo>(
-		() => ({
-			userId: myUserId,
-			name:
-				getNameForPrioritize(
-					myMember?.clan_nick,
-					myMember?.user?.display_name || account?.user?.display_name,
-					myMember?.user?.username || account?.user?.username
-				) || '',
-			avatar: getAvatarForPrioritize(myMember?.clan_avatar, myMember?.user?.avatar_url || account?.user?.avatar_url) || ''
-		}),
-		[account?.user?.avatar_url, account?.user?.display_name, account?.user?.username, myMember, myUserId]
-	);
 
 	const statusText = useMemo(() => {
 		if (phase === 'starting') return t('liveConnecting');
@@ -74,7 +71,8 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 		return '';
 	}, [phase, t]);
 
-	const controlsVisible = !idle || controlsHovered;
+	const hasMembers = members.length > 0;
+	const viewerCountText = useMemo(() => t('viewerCount', { count: viewerCount }), [t, viewerCount]);
 	const membersLabel = useMemo(() => (showMembers ? t('hideMembers') : t('showMembers')), [showMembers, t]);
 	const micTitle = useMemo(() => t('liveMic'), [t]);
 	const cameraTitle = useMemo(() => t('liveCamera'), [t]);
@@ -82,24 +80,6 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 	const screenTitle = useMemo(() => (sources.screenOn ? t('changeScreen') : t('shareScreen')), [sources.screenOn, t]);
 	const stopScreenTitle = useMemo(() => t('stopScreen'), [t]);
 	const endLiveTitle = useMemo(() => t('endLive'), [t]);
-	const fullscreenTitle = useMemo(() => (isFullscreen ? t('exitFullscreen') : t('fullscreen')), [isFullscreen, t]);
-
-	const wake = useCallback(() => {
-		setIdle(false);
-		clearTimeout(idleTimerRef.current);
-		idleTimerRef.current = setTimeout(() => setIdle(true), CONTROLS_HIDE_DELAY_MS);
-	}, []);
-
-	useEffect(() => {
-		wake();
-		return () => clearTimeout(idleTimerRef.current);
-	}, [wake]);
-
-	useEffect(() => {
-		const handleFullscreenChange = () => setIsFullscreen(document.fullscreenElement === stageRef.current);
-		document.addEventListener('fullscreenchange', handleFullscreenChange);
-		return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-	}, []);
 
 	useEffect(() => {
 		const mountCanvas = () => {
@@ -121,20 +101,6 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 				canvas.remove();
 			}
 		};
-	}, []);
-
-	const handlePointerLeave = useCallback((event: PointerEvent<HTMLDivElement>) => {
-		if (event.pointerType !== 'mouse') return;
-		clearTimeout(idleTimerRef.current);
-		setIdle(true);
-	}, []);
-
-	const handleControlsEnter = useCallback(() => {
-		setControlsHovered(true);
-	}, []);
-
-	const handleControlsLeave = useCallback(() => {
-		setControlsHovered(false);
 	}, []);
 
 	const handleToggleFullscreen = useCallback(() => {
@@ -198,109 +164,71 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 	return (
 		<div className="flex h-full w-full flex-col p-4 dark:bg-[var(--theme-setting-primary)] max-md:p-2">
 			<div className="min-h-0 flex-1">
-				<div
-					ref={stageRef}
-					className={`relative h-full w-full overflow-hidden bg-black ${isFullscreen ? '' : 'rounded-xl'} ${controlsVisible ? '' : 'cursor-none'}`}
-					onPointerMove={wake}
-					onPointerDown={wake}
-					onPointerLeave={handlePointerLeave}
-				>
+				<div ref={stageRef} className="relative h-full w-full overflow-hidden rounded-xl bg-black">
 					<div ref={previewContainerRef} className="h-full w-full" onDoubleClick={handleToggleFullscreen} />
-					<div
-						className={`pointer-events-none absolute inset-x-0 top-0 flex min-w-0 items-center gap-2 bg-gradient-to-b from-black/70 to-transparent px-4 pb-10 pt-3 text-white transition-opacity duration-200 ${controlsVisible ? 'opacity-100' : 'opacity-0'}`}
-					>
-						<StreamPublisherAvatar publisher={selfPublisher} className="!size-7 !min-w-7" classNameText="!text-xs" />
-						<span className="truncate font-semibold">{selfPublisher.name}</span>
+					<div className="pointer-events-none absolute inset-x-0 top-0 flex min-w-0 items-center gap-2 bg-gradient-to-b from-black/60 to-transparent px-4 pb-10 pt-3">
 						<StreamLiveBadge />
-						<StreamViewerCount channelId={channelId} className="text-white/90" />
-						{statusText && <span className="rounded bg-black/50 px-2 py-0.5 text-xs text-white/90">{statusText}</span>}
+						<span className="flex shrink-0 items-center gap-1 text-sm text-white/90">
+							<MezonIcon icon={MzIcons16.mzEye} />
+							{viewerCountText}
+						</span>
 					</div>
-					<div
-						className={`absolute inset-x-0 bottom-0 grid grid-cols-[1fr_auto_1fr] items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12 text-white transition-opacity duration-200 max-md:px-2 max-md:pb-2 ${controlsVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
-						onPointerEnter={handleControlsEnter}
-						onPointerLeave={handleControlsLeave}
-					>
-						<div />
-						<div className="flex items-center justify-center gap-3 max-md:gap-2">
-							<button
-								type="button"
-								title={micTitle}
-								aria-label={micTitle}
-								aria-pressed={sources.micOn}
+					{statusText && (
+						<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+							<span className="rounded-lg bg-black/70 px-4 py-2 text-sm font-medium text-white">{statusText}</span>
+						</div>
+					)}
+					<div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12 max-md:px-2 max-md:pb-2">
+						<div className="flex min-w-0 flex-wrap items-center gap-2">
+							<LiveControlButton
+								icon={sources.micOn ? MzIcons20.mzMic : MzIcons20.mzMicOff}
+								active={sources.micOn}
+								label={micTitle}
 								onClick={handleToggleMic}
-								className={`${SFU_CONTROL_BUTTON_CLASS} ${sources.micOn ? '' : '!bg-zinc-800 text-red-400'}`}
-							>
-								<MezonIcon icon={sources.micOn ? MzIcons24.mzMic : MzIcons24.mzMicOff} />
-							</button>
-							<button
-								type="button"
-								title={cameraTitle}
-								aria-label={cameraTitle}
-								aria-pressed={sources.cameraOn}
+							/>
+							<LiveControlButton
+								icon={sources.cameraOn ? MzIcons20.mzVideo : MzIcons20.mzVideoOff}
+								active={sources.cameraOn}
+								label={cameraTitle}
 								onClick={handleToggleCamera}
-								className={`${SFU_CONTROL_BUTTON_CLASS} ${sources.cameraOn ? '!bg-[#3B82F6] hover:!bg-[#2563EB]' : ''}`}
-							>
-								<MezonIcon icon={sources.cameraOn ? MzIcons24.mzCamera : MzIcons24.mzCameraOff} />
-							</button>
+							/>
 							{sources.hasSystemAudio && (
-								<button
-									type="button"
-									title={systemAudioTitle}
-									aria-label={systemAudioTitle}
-									aria-pressed={sources.systemAudioOn}
+								<LiveControlButton
+									icon={sources.systemAudioOn ? MzIcons20.mzSpeaker : MzIcons20.mzSpeakerOff}
+									active={sources.systemAudioOn}
+									label={systemAudioTitle}
 									onClick={handleToggleSystemAudio}
-									className={`${SFU_CONTROL_BUTTON_CLASS} ${sources.systemAudioOn ? '!bg-[#3B82F6] hover:!bg-[#2563EB]' : ''}`}
-								>
-									<MezonIcon icon={sources.systemAudioOn ? MzIcons24.mzSpeaker : MzIcons24.mzSpeakerOff} />
-								</button>
+								/>
 							)}
 							{canShareScreen && (
-								<button
-									type="button"
-									title={screenTitle}
-									aria-label={screenTitle}
+								<LiveControlButton
+									icon={MzIcons20.mzScreenShare}
+									active={sources.screenOn}
+									label={screenTitle}
 									onClick={handleShareOrChangeScreen}
-									className={`${SFU_CONTROL_BUTTON_CLASS} ${sources.screenOn ? '!bg-[#3B82F6] hover:!bg-[#2563EB]' : ''}`}
-								>
-									<MezonIcon icon={MzIcons24.mzScreenShare} />
-								</button>
+								/>
 							)}
 							{sources.screenOn && (
-								<button
-									type="button"
-									title={stopScreenTitle}
-									aria-label={stopScreenTitle}
+								<LiveControlButton
+									icon={MzIcons20.mzScreenShareOff}
+									active={false}
+									label={stopScreenTitle}
 									onClick={handleStopScreen}
-									className={SFU_CONTROL_BUTTON_CLASS}
-								>
-									<MezonIcon icon={MzIcons24.mzScreenShareOff} />
-								</button>
+								/>
 							)}
-							<button
-								type="button"
-								title={endLiveTitle}
-								aria-label={endLiveTitle}
-								onClick={handleEndLive}
-								className={`${SFU_CONTROL_BUTTON_CLASS} !bg-[#da373c] hover:!bg-[#a12829]`}
-							>
-								<MezonIcon icon={MzIcons24.mzCallEnd} />
-							</button>
 						</div>
-						<div className="flex min-w-0 items-center justify-end gap-1">
-							<button
-								type="button"
-								className={CONTROL_BUTTON_CLASS}
-								title={fullscreenTitle}
-								aria-label={fullscreenTitle}
-								onClick={handleToggleFullscreen}
-							>
-								<MezonIcon icon={isFullscreen ? MzIcons20.mzFullscreenExit : MzIcons20.mzFullscreen} />
-							</button>
-						</div>
+						<button
+							type="button"
+							onClick={handleEndLive}
+							className="flex shrink-0 items-center gap-2 rounded-full bg-[#da373c] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a12829]"
+						>
+							<MezonIcon icon={MzIcons20.mzCallEnd} />
+							{endLiveTitle}
+						</button>
 					</div>
 				</div>
 			</div>
-			{listedViewers > 0 && (
+			{hasMembers && (
 				<div className="flex shrink-0 flex-col items-center gap-2 pt-2">
 					<button
 						type="button"
@@ -313,7 +241,7 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 						<MezonIcon icon={MzIcons20.mzChevronDown} className={`transition-all duration-300 ${showMembers ? '' : '-rotate-180'}`} />
 						<MezonIcon icon={MzIcons20.mzMembers} />
 					</button>
-					{showMembers && <StreamViewers channelId={channelId} />}
+					{showMembers && <VoiceChannelUsers voiceChannelMembers={members} total={members.length} />}
 				</div>
 			)}
 		</div>

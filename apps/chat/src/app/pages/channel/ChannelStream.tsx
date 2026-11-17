@@ -116,6 +116,8 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		void dispatch(watchStream({ channelId, watching: true }));
 	};
 
+	const goLiveTitle = isLiveElsewhere ? t('liveElsewhere') : undefined;
+
 	const handleOpenGoLive = useCallback(() => {
 		if (isLiveActive || publisher) return;
 		setShowGoLiveModal(true);
@@ -158,7 +160,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 
 	return (
 		<div className="flex h-full w-full items-center justify-center bg-gray-300 dark:bg-[var(--theme-setting-primary)]">
-			<div className="flex w-full max-w-md flex-col items-center gap-4 px-4 text-center">
+			<div className="flex w-full max-w-xl flex-col items-center gap-4 px-4 text-center">
 				{publisher ? (
 					<StreamPublisherAvatar publisher={publisher} className="!size-20 shrink-0" classNameText="font-semibold !text-3xl" />
 				) : (
@@ -184,15 +186,26 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 						{isJoining ? t('common:joining') : t('joinStream')}
 					</button>
 				) : (
-					<button
-						type="button"
-						disabled={isLiveElsewhere}
-						title={isLiveElsewhere ? t('liveElsewhere') : undefined}
-						className="w-64 max-w-full rounded-3xl bg-green-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-green-700"
-						onClick={handleOpenGoLive}
-					>
-						{t('goLive')}
-					</button>
+					<div className="flex flex-wrap items-center justify-center gap-3">
+						<button
+							type="button"
+							disabled
+							className="w-64 max-w-full rounded-3xl bg-green-700 px-4 py-2 text-sm font-semibold text-white opacity-50 cursor-not-allowed"
+						>
+							{t('joinStream')}
+						</button>
+						<button
+							type="button"
+							aria-disabled={isLiveElsewhere}
+							title={goLiveTitle}
+							className={`w-64 max-w-full rounded-3xl border border-theme-primary bg-button-secondary px-4 py-2 text-sm font-semibold text-theme-primary-active transition-colors ${
+								isLiveElsewhere ? 'cursor-not-allowed opacity-50' : 'bg-secondary-button-hover'
+							}`}
+							onClick={handleOpenGoLive}
+						>
+							{t('goLive')}
+						</button>
+					</div>
 				)}
 			</div>
 			<GoLiveModal

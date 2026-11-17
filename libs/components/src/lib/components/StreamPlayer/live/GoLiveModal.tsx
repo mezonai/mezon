@@ -1,32 +1,22 @@
 import { liveStreamActions, toastActions, useAppDispatch } from '@mezon/store';
-import type { IconData } from '@mezon/ui';
-import { MezonIcon, Modal, MzIcons20 } from '@mezon/ui';
+import { Modal } from '@mezon/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setPendingLiveCapture } from './liveSessionHolder';
 import { openLiveCameraStream, openLiveMicStream, requestDisplayMedia } from './mixer';
 
-type GoLiveToggleRowProps = {
+type GoLiveSwitchProps = {
 	id: string;
-	icon: IconData;
 	label: string;
-	hint?: string;
 	checked: boolean;
-	disabled?: boolean;
-	indented?: boolean;
+	disabled: boolean;
 	onToggle: () => void;
 };
 
-function GoLiveToggleRow({ id, icon, label, hint, checked, disabled = false, indented = false, onToggle }: GoLiveToggleRowProps) {
+function GoLiveSwitch({ id, label, checked, disabled, onToggle }: GoLiveSwitchProps) {
 	return (
-		<div className={`flex items-start justify-between gap-3 rounded-lg bg-item-theme px-3 py-2.5 ${indented ? 'ml-6' : ''}`}>
-			<label htmlFor={id} className={`flex min-w-0 flex-1 items-start gap-2.5 ${disabled ? 'opacity-50' : 'cursor-pointer'}`}>
-				<MezonIcon icon={icon} className="mt-0.5 shrink-0 text-[var(--mz-icon)]" />
-				<span className="flex min-w-0 flex-col">
-					<span className="text-sm font-medium text-theme-primary-active">{label}</span>
-					{hint && <span className="text-xs text-theme-primary">{hint}</span>}
-				</span>
-			</label>
+		<label htmlFor={id} className={`flex items-center gap-2 ${disabled ? 'opacity-50' : 'cursor-pointer'}`}>
+			<span className="text-sm text-theme-primary-active">{label}</span>
 			<button
 				id={id}
 				type="button"
@@ -35,17 +25,15 @@ function GoLiveToggleRow({ id, icon, label, hint, checked, disabled = false, ind
 				aria-label={label}
 				disabled={disabled}
 				onClick={onToggle}
-				className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-					checked ? 'bg-green-600' : 'bg-zinc-600'
+				className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:cursor-not-allowed ${
+					checked ? 'bg-[#5865f2]' : 'bg-zinc-500'
 				}`}
 			>
 				<span
-					className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-						checked ? 'translate-x-6' : 'translate-x-1'
-					}`}
+					className={`inline-block size-3.5 transform rounded-full bg-white transition-transform ${checked ? 'translate-x-[18px]' : 'translate-x-[3px]'}`}
 				/>
 			</button>
-		</div>
+		</label>
 	);
 }
 
@@ -78,10 +66,9 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 
 	const canShareScreen = useMemo(() => typeof navigator !== 'undefined' && typeof navigator.mediaDevices?.getDisplayMedia === 'function', []);
 
-	const [screenOn, setScreenOn] = useState<boolean>(canShareScreen);
-	const [systemAudioOn, setSystemAudioOn] = useState<boolean>(true);
+	const [systemAudioOn, setSystemAudioOn] = useState<boolean>(false);
 	const [micOn, setMicOn] = useState<boolean>(true);
-	const [cameraOn, setCameraOn] = useState<boolean>(!canShareScreen);
+	const [cameraOn, setCameraOn] = useState<boolean>(false);
 	const [submitting, setSubmitting] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -89,10 +76,9 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 			startRunRef.current += 1;
 			return;
 		}
-		setScreenOn(canShareScreen);
-		setSystemAudioOn(true);
+		setSystemAudioOn(false);
 		setMicOn(true);
-		setCameraOn(!canShareScreen);
+		setCameraOn(false);
 		setSubmitting(false);
 	}, [canShareScreen, showModal]);
 
@@ -102,10 +88,6 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 		},
 		[]
 	);
-
-	const handleToggleScreen = useCallback(() => {
-		setScreenOn((prev) => !prev);
-	}, []);
 
 	const handleToggleSystemAudio = useCallback(() => {
 		setSystemAudioOn((prev) => !prev);
@@ -119,59 +101,73 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 		setCameraOn((prev) => !prev);
 	}, []);
 
-	const effectiveScreenOn = canShareScreen && screenOn;
-	const canStart = (effectiveScreenOn || cameraOn) && !submitting;
-	const modalTitle = useMemo(() => t('goLiveTitle', { channel: channelLabel }), [channelLabel, t]);
+	const modalTitle = useMemo(() => t('goLive'), [t]);
 	const cancelLabel = useMemo(() => t('common:cancel', { defaultValue: 'Cancel' }), [t]);
 	const startLabel = useMemo(() => t('startLive'), [t]);
-	const shareScreenLabel = useMemo(() => t('shareScreen'), [t]);
-	const systemAudioLabel = useMemo(() => t('liveSystemAudio'), [t]);
-	const systemAudioHint = useMemo(() => t('systemAudioHint'), [t]);
+	const cameraOnlyLabel = useMemo(() => t('cameraOnly'), [t]);
+	const systemAudioLabel = useMemo(() => t('alsoShareSystemAudio'), [t]);
 	const micLabel = useMemo(() => t('liveMic'), [t]);
 	const cameraLabel = useMemo(() => t('liveCamera'), [t]);
-	const systemAudioDisabled = !effectiveScreenOn || submitting;
+	const startLive = useCallback(
+		async (withScreen: boolean) => {
+			if (submitting) return;
+			setSubmitting(true);
+			const runId = ++startRunRef.current;
 
-	const handleStart = useCallback(async () => {
-		if (!canStart) return;
-		setSubmitting(true);
-		const runId = ++startRunRef.current;
+			const wantScreen = canShareScreen && withScreen;
+			const wantCamera = !wantScreen || cameraOn;
+			const wantSystemAudio = wantScreen && systemAudioOn;
+			const screenPromise = wantScreen ? requestDisplayMedia(wantSystemAudio) : null;
 
-		const wantScreen = canShareScreen && screenOn;
-		const wantSystemAudio = wantScreen && systemAudioOn;
-		const screenPromise = wantScreen ? requestDisplayMedia(wantSystemAudio) : null;
-
-		let audioContext: AudioContext | null = null;
-		try {
-			audioContext = new AudioContext({ latencyHint: 'interactive' });
-			void Promise.resolve(audioContext.resume()).catch(() => undefined);
-		} catch {
-			audioContext = null;
-		}
-
-		if (!audioContext) {
-			if (screenPromise) {
-				void screenPromise.then((s) => stopStreamTracks(s)).catch(() => undefined);
-			}
-			setSubmitting(false);
-			dispatch(toastActions.addToast({ message: t('liveError.unsupported'), type: 'error', autoClose: 5000 }));
-			return;
-		}
-
-		const liveContext = audioContext;
-		const abandon = (streams: Array<MediaStream | null>) => {
-			if (runId === startRunRef.current) return false;
-			streams.forEach(stopStreamTracks);
-			void Promise.resolve(liveContext.close()).catch(() => undefined);
-			return true;
-		};
-
-		let screenStream: MediaStream | null = null;
-		if (screenPromise) {
+			let audioContext: AudioContext | null = null;
 			try {
-				screenStream = await screenPromise;
-				if (abandon([screenStream])) return;
-				if (!screenStream.getVideoTracks()[0]) {
-					stopStreamTracks(screenStream);
+				audioContext = new AudioContext({ latencyHint: 'interactive' });
+				void Promise.resolve(audioContext.resume()).catch(() => undefined);
+			} catch {
+				audioContext = null;
+			}
+
+			if (!audioContext) {
+				if (screenPromise) {
+					void screenPromise.then((s) => stopStreamTracks(s)).catch(() => undefined);
+				}
+				setSubmitting(false);
+				dispatch(toastActions.addToast({ message: t('liveError.unsupported'), type: 'error', autoClose: 5000 }));
+				return;
+			}
+
+			const liveContext = audioContext;
+			const abandon = (streams: Array<MediaStream | null>) => {
+				if (runId === startRunRef.current) return false;
+				streams.forEach(stopStreamTracks);
+				void Promise.resolve(liveContext.close()).catch(() => undefined);
+				return true;
+			};
+
+			let screenStream: MediaStream | null = null;
+			if (screenPromise) {
+				try {
+					screenStream = await screenPromise;
+					if (abandon([screenStream])) return;
+					if (!screenStream.getVideoTracks()[0]) {
+						stopStreamTracks(screenStream);
+						screenStream = null;
+						dispatch(
+							toastActions.addToast({
+								message: t('liveError.source', { source: t('liveScreen') }),
+								type: 'error',
+								autoClose: 5000
+							})
+						);
+					}
+				} catch (err) {
+					if (abandon([])) return;
+					if (isPickerCancelled(err)) {
+						void Promise.resolve(audioContext.close()).catch(() => undefined);
+						setSubmitting(false);
+						onClose();
+						return;
+					}
 					screenStream = null;
 					dispatch(
 						toastActions.addToast({
@@ -181,172 +177,145 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 						})
 					);
 				}
-			} catch (err) {
-				if (abandon([])) return;
-				if (isPickerCancelled(err)) {
-					void Promise.resolve(audioContext.close()).catch(() => undefined);
-					setSubmitting(false);
-					onClose();
-					return;
+			}
+
+			if (abandon([screenStream])) return;
+
+			let cameraStream: MediaStream | null = null;
+			if (wantCamera) {
+				try {
+					cameraStream = await openLiveCameraStream();
+				} catch {
+					cameraStream = null;
+					if (abandon([screenStream])) return;
+					dispatch(
+						toastActions.addToast({
+							message: t('liveError.source', { source: t('liveCamera') }),
+							type: 'error',
+							autoClose: 5000
+						})
+					);
 				}
-				screenStream = null;
-				dispatch(
-					toastActions.addToast({
-						message: t('liveError.source', { source: t('liveScreen') }),
-						type: 'error',
-						autoClose: 5000
-					})
-				);
 			}
-		}
 
-		if (abandon([screenStream])) return;
+			if (abandon([screenStream, cameraStream])) return;
 
-		let cameraStream: MediaStream | null = null;
-		if (cameraOn) {
-			try {
-				cameraStream = await openLiveCameraStream();
-			} catch {
-				cameraStream = null;
-				if (abandon([screenStream])) return;
-				dispatch(
-					toastActions.addToast({
-						message: t('liveError.source', { source: t('liveCamera') }),
-						type: 'error',
-						autoClose: 5000
-					})
-				);
+			if (!screenStream && !cameraStream) {
+				void Promise.resolve(audioContext.close()).catch(() => undefined);
+				setSubmitting(false);
+				return;
 			}
-		}
 
-		if (abandon([screenStream, cameraStream])) return;
-
-		if (!screenStream && !cameraStream) {
-			void Promise.resolve(audioContext.close()).catch(() => undefined);
-			setSubmitting(false);
-			return;
-		}
-
-		let micStream: MediaStream | null = null;
-		if (micOn) {
-			try {
-				micStream = await openLiveMicStream();
-			} catch {
-				micStream = null;
-				if (abandon([screenStream, cameraStream])) return;
-				dispatch(
-					toastActions.addToast({
-						message: t('liveError.source', { source: t('liveMic') }),
-						type: 'error',
-						autoClose: 5000
-					})
-				);
+			let micStream: MediaStream | null = null;
+			if (micOn) {
+				try {
+					micStream = await openLiveMicStream();
+				} catch {
+					micStream = null;
+					if (abandon([screenStream, cameraStream])) return;
+					dispatch(
+						toastActions.addToast({
+							message: t('liveError.source', { source: t('liveMic') }),
+							type: 'error',
+							autoClose: 5000
+						})
+					);
+				}
 			}
-		}
 
-		if (abandon([screenStream, cameraStream, micStream])) return;
+			if (abandon([screenStream, cameraStream, micStream])) return;
 
-		const hasSystemAudio = Boolean(screenStream?.getAudioTracks()[0]);
-		setPendingLiveCapture({
-			clanId,
-			channelId,
-			screen: screenStream,
-			camera: cameraStream,
-			mic: micStream,
-			audioContext,
-			systemAudioOn: wantSystemAudio
-		});
-		dispatch(
-			liveStreamActions.starting({
+			const hasSystemAudio = Boolean(screenStream?.getAudioTracks()[0]);
+			setPendingLiveCapture({
 				clanId,
 				channelId,
-				channelLabel,
-				clanName,
-				parentId,
-				screenOn: Boolean(screenStream),
-				cameraOn: Boolean(cameraStream),
-				micOn: Boolean(micStream),
-				systemAudioOn: Boolean(wantSystemAudio && hasSystemAudio),
-				hasSystemAudio
-			})
-		);
-		setSubmitting(false);
-		onClose();
-	}, [
-		cameraOn,
-		canShareScreen,
-		canStart,
-		channelId,
-		channelLabel,
-		clanId,
-		clanName,
-		dispatch,
-		micOn,
-		onClose,
-		parentId,
-		screenOn,
-		systemAudioOn,
-		t
-	]);
+				screen: screenStream,
+				camera: cameraStream,
+				mic: micStream,
+				audioContext,
+				systemAudioOn: wantSystemAudio
+			});
+			dispatch(
+				liveStreamActions.starting({
+					clanId,
+					channelId,
+					channelLabel,
+					clanName,
+					parentId,
+					screenOn: Boolean(screenStream),
+					cameraOn: Boolean(cameraStream),
+					micOn: Boolean(micStream),
+					systemAudioOn: Boolean(wantSystemAudio && hasSystemAudio),
+					hasSystemAudio
+				})
+			);
+			setSubmitting(false);
+			onClose();
+		},
+		[cameraOn, canShareScreen, channelId, channelLabel, clanId, clanName, dispatch, micOn, onClose, parentId, submitting, systemAudioOn, t]
+	);
+
+	const handleGoLive = useCallback(() => {
+		void startLive(true);
+	}, [startLive]);
+
+	const handleCameraOnly = useCallback(() => {
+		void startLive(false);
+	}, [startLive]);
 
 	return (
 		<Modal showModal={showModal} onClose={onClose} title={modalTitle} isInviteModal>
-			<div className="flex flex-col gap-3">
-				{canShareScreen && (
-					<>
-						<GoLiveToggleRow
-							id="go-live-screen"
-							icon={MzIcons20.mzScreenShare}
-							label={shareScreenLabel}
-							checked={screenOn}
-							disabled={submitting}
-							onToggle={handleToggleScreen}
-						/>
-						<GoLiveToggleRow
+			<div className="flex flex-col gap-5">
+				<div className="flex flex-wrap items-center justify-between gap-4">
+					{canShareScreen ? (
+						<GoLiveSwitch
 							id="go-live-system-audio"
-							icon={MzIcons20.mzSpeaker}
 							label={systemAudioLabel}
-							hint={systemAudioHint}
-							checked={systemAudioOn && screenOn}
-							disabled={systemAudioDisabled}
-							indented
+							checked={systemAudioOn}
+							disabled={submitting}
 							onToggle={handleToggleSystemAudio}
 						/>
-					</>
-				)}
-				<GoLiveToggleRow
-					id="go-live-mic"
-					icon={MzIcons20.mzMic}
-					label={micLabel}
-					checked={micOn}
-					disabled={submitting}
-					onToggle={handleToggleMic}
-				/>
-				<GoLiveToggleRow
-					id="go-live-camera"
-					icon={MzIcons20.mzCamera}
-					label={cameraLabel}
-					checked={cameraOn}
-					disabled={submitting}
-					onToggle={handleToggleCamera}
-				/>
-				<div className="flex items-center justify-end gap-3 pt-2">
+					) : (
+						<span />
+					)}
+					<div className="flex items-center gap-4">
+						<GoLiveSwitch id="go-live-mic" label={micLabel} checked={micOn} disabled={submitting} onToggle={handleToggleMic} />
+						<GoLiveSwitch
+							id="go-live-camera"
+							label={cameraLabel}
+							checked={cameraOn}
+							disabled={submitting}
+							onToggle={handleToggleCamera}
+						/>
+					</div>
+				</div>
+				<div className="flex items-center justify-end gap-2">
 					<button
 						type="button"
 						onClick={onClose}
 						disabled={submitting}
-						className="rounded-lg px-4 py-2 text-sm font-medium text-theme-primary transition-colors hover:bg-item-theme-hover disabled:opacity-50"
+						className="rounded px-4 py-2 text-sm font-medium text-theme-primary hover:underline disabled:opacity-50"
 					>
 						{cancelLabel}
 					</button>
 					<button
 						type="button"
-						disabled={!canStart}
-						onClick={handleStart}
-						className="rounded-lg bg-green-700 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
+						onClick={handleCameraOnly}
+						disabled={submitting}
+						className="rounded bg-button-secondary bg-secondary-button-hover px-4 py-2 text-sm font-medium text-theme-primary-active disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						{startLabel}
+						{cameraOnlyLabel}
 					</button>
+					{canShareScreen && (
+						<button
+							type="button"
+							onClick={handleGoLive}
+							disabled={submitting}
+							className="rounded bg-[#5865f2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4752c4] disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							{startLabel}
+						</button>
+					)}
 				</div>
 			</div>
 		</Modal>
