@@ -302,7 +302,7 @@ export const clearMentionReplacer = (html: string, users: MentionDataProps[] = [
 		const userId = element.getAttribute('data-user-id');
 		const pastedName = normalizeMentionName(element.textContent ?? '');
 		const matchedUser = users.find((user) => String(user.id) === userId);
-		const knownName = matchedUser?.clanNick?.trim() || matchedUser?.displayName?.trim();
+		const knownName = matchedUser?.clanNick?.trim() || matchedUser?.displayName?.trim() || matchedUser?.username?.trim();
 		const shouldKeepMention = !!knownName && pastedName === normalizeMentionName(knownName);
 
 		if (!shouldKeepMention) {
