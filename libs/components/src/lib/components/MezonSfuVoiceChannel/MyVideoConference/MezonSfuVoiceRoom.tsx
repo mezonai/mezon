@@ -742,6 +742,11 @@ export function MezonSfuVoiceRoom({
 	// A ref so changing it never restarts the connection effect that opens the camera on join
 	const preferredCameraIdRef = useRef(preferredCameraId);
 	useEffect(() => {
+		if (preferredCameraId) {
+			preferredCameraIdRef.current = preferredCameraId;
+		}
+	}, [preferredCameraId]);
+	useEffect(() => {
 		const handleOutputDeviceChange = (e: Event) => {
 			const nextId = parseOutputDeviceChangeEventDetail((e as CustomEvent).detail);
 			setSelectedSpeaker((prev) => (prev !== nextId ? nextId : prev));
@@ -3554,6 +3559,7 @@ export function MezonSfuVoiceRoom({
 						onSelectCamera?.(deviceId);
 						if (cameraManagedExternally || customVideoTrack) {
 							setSelectedCamera(deviceId);
+							preferredCameraIdRef.current = deviceId;
 							return;
 						}
 						void changeInputDevice('videoinput', deviceId);
