@@ -1,6 +1,6 @@
 import { getStore, getStoreAsync, selectMemberClanByUserId, selectVoiceInfo } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { MezonIcon, MzIcons20, MzIcons32 } from '@mezon/ui';
+import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { createImgproxyUrl, getSrcEmoji, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -298,7 +298,7 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 											</div>
 										)}
 										<div className="text-sm text-black flex-1 truncate font-semibold">{item.name}</div>
-										<MezonIcon icon={MzIcons32.mzHandRaise} className="text-[#efbc39] drop-shadow-lg" />
+										<MezonIcon icon={MzIcons24.mzHandRaise} className="text-[#efbc39] drop-shadow-lg" />
 									</div>
 								))}
 							</div>
