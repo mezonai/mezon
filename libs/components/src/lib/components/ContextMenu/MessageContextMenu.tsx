@@ -774,7 +774,7 @@ function MessageContextMenu({
 							console.error(t('errors.failedToEditMessage'), error);
 						}
 					},
-					<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					<MezonIcon icon={MzIcons16.mzEdit} className="size-3.5 text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				);
 			});
 		}
