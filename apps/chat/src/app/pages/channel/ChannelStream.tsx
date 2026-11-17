@@ -1,4 +1,13 @@
-import { StreamLiveBadge, StreamPublisherAvatar, StreamStage, StreamViewerCount, StreamViewers, useStreamPublisher } from '@mezon/components';
+import {
+	GoLiveModal,
+	LivePublisherStage,
+	StreamLiveBadge,
+	StreamPublisherAvatar,
+	StreamStage,
+	StreamViewerCount,
+	StreamViewers,
+	useStreamPublisher
+} from '@mezon/components';
 import type { ChannelsEntity } from '@mezon/store';
 import {
 	appActions,
@@ -6,6 +15,8 @@ import {
 	selectCurrentClanId,
 	selectCurrentClanName,
 	selectIsJoin,
+	selectIsLiveActive,
+	selectIsLiveInChannel,
 	selectStatusStream,
 	selectStreamMembersByChannelId,
 	toastActions,
@@ -38,8 +49,12 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
 	const [isJoining, setIsJoining] = useState(false);
+	const [showGoLiveModal, setShowGoLiveModal] = useState(false);
 	const joinRequestRef = useRef(0);
 	const currentChannelIdRef = useRef(currentChannel?.channel_id);
+	const isLiveHere = useAppSelector((state) => selectIsLiveInChannel(state, channelId));
+	const isLiveActive = useSelector(selectIsLiveActive);
+	const isLiveElsewhere = isLiveActive && !isLiveHere;
 	const isWatching = isJoin && currentStreamInfo?.streamId === currentChannel?.channel_id;
 	const streamPoster =
 		currentChannel?.channel_avatar && currentChannel.channel_avatar !== '0' ? currentChannel.channel_avatar : '/assets/images/flahstream.png';
@@ -48,6 +63,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		currentChannelIdRef.current = currentChannel?.channel_id;
 		joinRequestRef.current += 1;
 		setIsJoining(false);
+		setShowGoLiveModal(false);
 
 		return () => {
 			joinRequestRef.current += 1;
@@ -100,6 +116,19 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		void dispatch(watchStream({ channelId, watching: true }));
 	};
 
+	const handleOpenGoLive = useCallback(() => {
+		if (isLiveActive || publisher) return;
+		setShowGoLiveModal(true);
+	}, [isLiveActive, publisher]);
+
+	const handleCloseGoLive = useCallback(() => {
+		setShowGoLiveModal(false);
+	}, []);
+
+	if (isLiveHere) {
+		return <LivePublisherStage channelId={channelId} />;
+	}
+
 	if (isWatching) {
 		const membersLabel = showMembers ? t('hideMembers') : t('showMembers');
 		return (
@@ -145,15 +174,36 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 				{publisher && <StreamViewerCount channelId={channelId} className="text-gray-700 dark:text-gray-300" />}
 				{publisher && <StreamViewers channelId={channelId} />}
 				{publisher && listedViewers > 0 && <p className="text-gray-800 dark:text-white">{t('everyoneWaiting')}</p>}
-				<button
-					type="button"
-					disabled={!publisher || isJoining}
-					className="w-64 max-w-full rounded-3xl bg-green-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-green-700"
-					onClick={handleJoinChannel}
-				>
-					{isJoining ? t('common:joining') : t('joinStream')}
-				</button>
+				{publisher ? (
+					<button
+						type="button"
+						disabled={isJoining}
+						className="w-64 max-w-full rounded-3xl bg-green-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-green-700"
+						onClick={handleJoinChannel}
+					>
+						{isJoining ? t('common:joining') : t('joinStream')}
+					</button>
+				) : (
+					<button
+						type="button"
+						disabled={isLiveElsewhere}
+						title={isLiveElsewhere ? t('liveElsewhere') : undefined}
+						className="w-64 max-w-full rounded-3xl bg-green-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-green-700"
+						onClick={handleOpenGoLive}
+					>
+						{t('goLive')}
+					</button>
+				)}
 			</div>
+			<GoLiveModal
+				showModal={showGoLiveModal && !publisher && !isLiveActive}
+				onClose={handleCloseGoLive}
+				clanId={currentClanId || ''}
+				clanName={currentClanName || ''}
+				channelId={channelId}
+				channelLabel={currentChannel?.channel_label || ''}
+				parentId={currentChannel?.parent_id || '0'}
+			/>
 		</div>
 	);
 }
