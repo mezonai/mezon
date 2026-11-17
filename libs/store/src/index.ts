@@ -84,6 +84,7 @@ export * from './lib/settingSticker/settingSticker.slice';
 export * from './lib/slices/groupCall.slice';
 export * from './lib/store';
 export * from './lib/storeAdmin';
+export * from './lib/stream/liveStream.slice';
 export * from './lib/stream/usersStream.slice';
 export * from './lib/stream/videoStream.slice';
 export * from './lib/systemMessages/systemMessage.slice';

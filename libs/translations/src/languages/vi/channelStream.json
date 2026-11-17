@@ -18,5 +18,32 @@
 	"isLive": "{{name}} đang phát trực tiếp",
 	"volume": "Âm lượng",
 	"mute": "Tắt tiếng",
-	"unmute": "Bật tiếng"
+	"unmute": "Bật tiếng",
+	"goLive": "Phát trực tiếp",
+	"endLive": "Kết thúc phát",
+	"youAreLive": "Bạn đang phát trực tiếp",
+	"liveConnecting": "Đang kết nối…",
+	"liveReconnecting": "Đang kết nối lại…",
+	"cameraOnly": "Chỉ camera",
+	"liveMic": "Micro",
+	"liveCamera": "Camera",
+	"liveSystemAudio": "Âm thanh hệ thống",
+	"alsoShareSystemAudio": "Chia sẻ cả âm thanh hệ thống",
+	"liveScreen": "Chia sẻ màn hình",
+	"changeScreen": "Đổi màn hình",
+	"stopScreen": "Dừng chia sẻ màn hình",
+	"liveElsewhere": "Bạn đang phát ở kênh khác",
+	"shareScreen": "Chia sẻ màn hình",
+	"startLive": "Phát trực tiếp",
+	"liveError": {
+		"busy": "Kênh này đang có người khác phát",
+		"forbidden": "Bạn không thể phát trong kênh này",
+		"serverBusy": "Máy chủ phát đang bận, thử lại sau",
+		"unsupported": "Thiết bị không mã hoá được luồng phát",
+		"network": "Mất kết nối tới máy chủ phát",
+		"replaced": "Luồng phát đã bị ứng dụng hoặc thiết bị khác dùng tài khoản của bạn thay thế",
+		"accessLost": "Luồng phát đã dừng vì bạn không còn quyền truy cập kênh này",
+		"source": "Không bật được {{source}}",
+		"sourceEnded": "{{source}} đã dừng"
+	}
 }
