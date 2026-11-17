@@ -268,7 +268,8 @@ const Attachments: React.FC<{
 		prev.message.isSending === next.message.isSending &&
 		prev.message.attachments === next.message.attachments &&
 		prev.message.content === next.message.content &&
-		prev.mode === next.mode
+		prev.mode === next.mode &&
+		!!prev.quickReaction === !!next.quickReaction
 );
 
 Attachments.displayName = 'Attachments';
@@ -358,6 +359,7 @@ const MessageAttachment = memo(
 		prev.isInSearchMessage === next.isInSearchMessage &&
 		prev.defaultMaxWidth === next.defaultMaxWidth &&
 		prev.isPreview === next.isPreview &&
+		!!prev.quickReaction === !!next.quickReaction &&
 		prev.message?.content?.presign_finish === next.message?.content?.presign_finish
 );
 
@@ -548,7 +550,8 @@ const ImageAlbum = memo(
 		prev.mode === next.mode &&
 		prev.isMobile === next.isMobile &&
 		prev.defaultMaxWidth === next.defaultMaxWidth &&
-		prev.signCdnUrl === next.signCdnUrl
+		prev.signCdnUrl === next.signCdnUrl &&
+		!!prev.quickReaction === !!next.quickReaction
 );
 
 ImageAlbum.displayName = 'ImageAlbum';

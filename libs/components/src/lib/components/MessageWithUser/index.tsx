@@ -21,7 +21,7 @@ import {
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
@@ -39,6 +39,8 @@ import MessageReply from './MessageReply/MessageReply';
 import { PollMessage } from './PollMessage';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
+
+const MessageHoverContext = createContext(false);
 
 export type ReactedOutsideOptional = {
 	id: string;
@@ -212,7 +214,7 @@ function MessageWithUser({
 	const shouldRenderMessageReply = checkMessageHasReply && !isEphemeralMessage;
 
 	const quickReactionTarget = (() => {
-		if (!popup || isEphemeralMessage || isSearchMessage) return undefined;
+		if (!popup || isEphemeralMessage || isSearchMessage || message?.isError) return undefined;
 		if (message?.code === TypeMessage.Poll) return 'poll';
 		if (message?.content?.callLog?.callLogType) return 'callLog';
 		if (message?.code === TypeMessage.SendToken) return 'token';
@@ -224,7 +226,11 @@ function MessageWithUser({
 	})();
 
 	const renderQuickReaction = (target: typeof quickReactionTarget, className: string) =>
-		quickReactionTarget === target ? <QuickReaction message={message} isTopic={!!isTopic} className={className} /> : undefined;
+		quickReactionTarget === target ? (
+			<MessageHoverContext.Consumer>
+				{(isHover) => isHover && <QuickReaction message={message} isTopic={!!isTopic} className={className} />}
+			</MessageHoverContext.Consumer>
+		) : undefined;
 
 	const handleOpenShortUser = useCallback(
 		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isClickOnReply = false) => {
@@ -590,7 +596,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 			id={`msg-${messageId}`}
 			data-e2e={generateE2eId(`message.item`)}
 		>
-			{children}
+			<MessageHoverContext.Provider value={isHover}>{children}</MessageHoverContext.Provider>
 			{isHover && (
 				<>
 					{!showMessageHead && create_time && (
