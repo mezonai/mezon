@@ -75,13 +75,13 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 					key="image-thumbnail"
 					src={createImgproxyUrl(attachment.url ?? '', { width: 174, height: 174, resizeType: 'fill' })}
 					role="presentation"
-					className="w-[174px] aspect-square object-cover"
+					className="w-[80px] aspect-square object-cover"
 					alt={attachment.url}
 				/>
 			)}
 
 			{hasFileVideo && (
-				<div className="relative w-[174px] aspect-square overflow-hidden rounded-md bg-bgLightSecondary dark:bg-bgSecondary">
+				<div className="relative w-[80px] aspect-square overflow-hidden rounded-md bg-bgLightSecondary dark:bg-bgSecondary">
 					{attachment.thumbnail && !isPresignPending && (
 						<img
 							src={
@@ -90,7 +90,7 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 									: createImgproxyUrl(attachment.thumbnail, { width: 174, height: 174, resizeType: 'fill' })
 							}
 							role="presentation"
-							className="w-full h-full object-cover"
+							className="w-full h-full object-contain"
 							alt=""
 						/>
 					)}
