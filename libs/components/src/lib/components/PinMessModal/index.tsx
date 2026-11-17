@@ -67,6 +67,7 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 					<div className="p-4 max-h-[60vh] overflow-y-auto hide-scrollbar">
 						<ColorRoleProvider>
 							<MessageWithUser
+								isSearchMessage={true}
 								allowDisplayShortProfile={false}
 								message={mess}
 								mode={mode}
