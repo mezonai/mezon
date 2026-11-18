@@ -1398,11 +1398,12 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			handleSelectionUnresolved
 		]);
 
+		const isCommandSuggestion = activeTrigger === '/';
 		const { refs, floatingStyles } = useFloating({
 			open: !!activeMentionContext,
 			placement: 'top-start',
 			strategy: 'fixed',
-			middleware: [offset({ mainAxis: 8, crossAxis: -55 }), flip(), shift({ padding: 8 })],
+			middleware: [offset({ mainAxis: 8, crossAxis: isCommandSuggestion ? 0 : -55 }), flip(), shift({ padding: 8 })],
 			whileElementsMounted: autoUpdate
 		});
 
@@ -1411,18 +1412,24 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				if (anchorRef) {
 					(anchorRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
 				}
-				refs.setReference(node);
+				const reference = isCommandSuggestion
+					? node?.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView') || node?.parentElement || null
+					: node;
+				refs.setReference(reference);
 			},
-			[refs]
+			[refs, isCommandSuggestion]
 		);
 
 		useEffect(() => {
-			if (activeMentionContext && inputRef.current) {
-				const parentElement = inputRef.current.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView');
-				const width = parentElement ? parentElement.getBoundingClientRect().width : inputRef.current.getBoundingClientRect().width;
-				setInputWidth(width);
-			}
-		}, [activeMentionContext]);
+			if (!activeTrigger || !inputRef.current) return;
+			const parentElement = inputRef.current.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView');
+			const element = parentElement || (activeTrigger === '/' ? inputRef.current.parentElement : null) || inputRef.current;
+			const updateWidth = () => setInputWidth(element.getBoundingClientRect().width);
+			updateWidth();
+			const observer = new ResizeObserver(updateWidth);
+			observer.observe(element);
+			return () => observer.disconnect();
+		}, [activeTrigger]);
 
 		const handleFloatingRef = useCallback(
 			(node: HTMLDivElement | null) => {
@@ -1447,13 +1454,14 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 						border: '1px solid var(--border-color)',
 						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
 						padding: 0,
-						width: inputWidth
+						width: inputWidth,
+						maxWidth: isCommandSuggestion ? 'calc(100vw - 16px)' : undefined
 					}}
 				>
 					{mentionContent}
 				</div>
 			);
-		}, [mentionContent, refs, floatingStyles, activeMentionContext, inputWidth]);
+		}, [mentionContent, handleFloatingRef, floatingStyles, activeMentionContext, inputWidth, isCommandSuggestion]);
 
 		return (
 			<div className={`mention-input relative ${className} `} style={style} onContextMenu={handleContextMenu}>

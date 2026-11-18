@@ -71,6 +71,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from '
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { CommandSuggestion } from './CommandSuggestion';
 import Mention, { type MentionData } from './Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
@@ -1233,14 +1234,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 								);
 							}
 							return (
-								<div
+								<CommandSuggestion
 									key={suggestion.id}
-									className={`bg-item-theme-hover flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-item-theme text-white' : ''
-									}`}
-								>
-									<SuggestItem display={suggestion.display} subText={suggestion.description} symbol="/" valueHightLight={search} />
-								</div>
+									display={suggestion.display}
+									description={suggestion.description}
+									search={search}
+									focused={focused}
+								/>
 							);
 						}}
 						appendSpaceOnAdd={false}
