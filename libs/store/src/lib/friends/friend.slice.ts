@@ -251,7 +251,7 @@ export const upsertFriendRequest = createAsyncThunk(
 			return;
 		}
 		const friend: FriendsEntity = {
-			state: EStateFriend.MY_PENDING,
+			state: user?.accepted ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
 			id: user.user_id,
 			source_id: myId,
 			user: {
