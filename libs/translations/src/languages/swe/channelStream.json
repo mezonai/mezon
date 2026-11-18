@@ -18,5 +18,32 @@
 	"isLive": "{{name}} sänder live",
 	"volume": "Volym",
 	"mute": "Stäng av ljud",
-	"unmute": "Slå på ljud"
+	"unmute": "Slå på ljud",
+	"goLive": "Sänd live",
+	"endLive": "Avsluta sändning",
+	"youAreLive": "Du sänder live",
+	"liveConnecting": "Ansluter…",
+	"liveReconnecting": "Återansluter…",
+	"cameraOnly": "Endast kamera",
+	"liveMic": "Mikrofon",
+	"liveCamera": "Kamera",
+	"liveSystemAudio": "Systemljud",
+	"alsoShareSystemAudio": "Dela även systemljud",
+	"liveScreen": "Skärmdelning",
+	"changeScreen": "Byt skärm",
+	"stopScreen": "Sluta dela skärm",
+	"liveElsewhere": "Du sänder redan live i en annan kanal",
+	"shareScreen": "Dela skärm",
+	"startLive": "Sänd live",
+	"liveError": {
+		"busy": "Någon annan sänder redan live i den här kanalen",
+		"forbidden": "Du kan inte sända live i den här kanalen",
+		"serverBusy": "Streamservern är upptagen, försök igen om en stund",
+		"unsupported": "Den här enheten kan inte koda strömmen",
+		"network": "Tappade anslutningen till streamservern",
+		"replaced": "Din stream togs över av en annan app eller enhet som använder ditt konto",
+		"accessLost": "Din stream avslutades eftersom du inte längre har åtkomst till den här kanalen",
+		"source": "Kunde inte starta {{source}}",
+		"sourceEnded": "{{source}} stoppades"
+	}
 }

@@ -170,6 +170,12 @@
 		"keepMuted": "Ljudet är pausat. Klicka för att hålla mikrofonen avstängd."
 	},
 	"weakNetwork": "Svagt nätverk",
+	"connecting": "Ansluter…",
+	"reconnecting": "Återansluter…",
+	"raiseHand": "Räck upp handen",
+	"lowerHand": "Sänk handen",
+	"addAgent": "Lägg till AI-agent",
+	"removeAgent": "Ta bort AI-agent",
 	"networkWarning": {
 		"title": "Din internetanslutning är instabil",
 		"body": "Kontrollera din nätverksanslutning."

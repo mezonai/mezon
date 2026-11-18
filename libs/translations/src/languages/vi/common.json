@@ -553,5 +553,11 @@
 	"formatDate": "d 'tháng' M, yyyy",
 	"cannotSendLocationWithAnonymous": "Không thể gửi vị trí khi đang ẩn danh.",
 	"iconAnimations": "Hiệu ứng icon",
-	"iconAnimationsDesc": "Icon chuyển động khi rê chuột và khi có hoạt động trực tiếp, như đang nhập hay đang phát trực tiếp."
+	"iconAnimationsDesc": "Icon chuyển động khi rê chuột và khi có hoạt động trực tiếp, như đang nhập hay đang phát trực tiếp.",
+	"openInDesktopApp": {
+		"title": "Mở liên kết này bằng ứng dụng Mezon trên máy tính?",
+		"open": "Mở ứng dụng",
+		"dismiss": "Đóng",
+		"continueInBrowser": "Tiếp tục trên trình duyệt"
+	}
 }

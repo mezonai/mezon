@@ -170,6 +170,12 @@
 		"keepMuted": "Audio ist pausiert. Klicke, um dein Mikrofon stumm zu lassen."
 	},
 	"weakNetwork": "Schwaches Netzwerk",
+	"connecting": "Verbinden…",
+	"reconnecting": "Neu verbinden…",
+	"raiseHand": "Hand heben",
+	"lowerHand": "Hand senken",
+	"addAgent": "KI-Agent hinzufügen",
+	"removeAgent": "KI-Agent entfernen",
 	"networkWarning": {
 		"title": "Deine Internetverbindung ist instabil",
 		"body": "Bitte überprüfe deine Netzwerkverbindung."

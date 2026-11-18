@@ -31,6 +31,7 @@ interface SfuControlBarProps {
 	pushToTalkActive: boolean;
 	pushToTalkHintDismissed?: boolean;
 	onDismissPushToTalkHint?: () => void;
+	agentActive?: boolean;
 	agentHintDismissed?: boolean;
 	onDismissAgentHint?: () => void;
 	weakNetwork: boolean;
@@ -89,6 +90,7 @@ export const SfuControlBar = ({
 	pushToTalkActive,
 	pushToTalkHintDismissed = false,
 	onDismissPushToTalkHint,
+	agentActive = false,
 	agentHintDismissed = false,
 	onDismissAgentHint,
 	weakNetwork,
@@ -250,7 +252,13 @@ export const SfuControlBar = ({
 						/>
 					</div>
 				)}
-				<SfuAgentControl roomId={roomId} isExternalCalling={isExternalCalling} showHint={showAgentHint} onDismissHint={onDismissAgentHint} />
+				<SfuAgentControl
+					roomId={roomId}
+					isExternalCalling={isExternalCalling}
+					active={agentActive}
+					showHint={showAgentHint}
+					onDismissHint={onDismissAgentHint}
+				/>
 				{!isExternalCalling && <SfuRaisingHandControl />}
 				{!isExternalCalling && onToggleBreakoutModal && (
 					<BreakoutControl isExternalCalling={isExternalCalling} isOpen={showBreakoutModal} onToggleModal={onToggleBreakoutModal} />

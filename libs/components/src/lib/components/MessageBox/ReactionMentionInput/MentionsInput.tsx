@@ -1,4 +1,5 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
+import type { MentionDataProps } from '@mezon/utils';
 import { ID_MENTION_HERE, IS_MAC_OS, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
@@ -88,6 +89,7 @@ export interface MentionsInputProps {
 	currentChannelId?: string;
 	allowEmptySend?: boolean;
 	keepTextOnSend?: boolean;
+	mentionUsers?: MentionDataProps[];
 }
 
 export interface MentionsInputHandle {
@@ -344,7 +346,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setCaretToEnd = false,
 			currentChannelId,
 			allowEmptySend = false,
-			keepTextOnSend = false
+			keepTextOnSend = false,
+			mentionUsers = []
 		},
 		ref
 	) => {
@@ -995,10 +998,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				if (containsMentionEntities && htmlContent) {
 					const cleanedHtml = preparePastedHtml(htmlContent);
-					contentToInsert = cleanedHtml;
-					if (cleanedHtml.trim() !== inputRef.current?.innerHTML.trim()) {
-						contentToInsert = clearMentionReplacer(cleanedHtml);
-					}
+					contentToInsert = clearMentionReplacer(cleanedHtml, mentionUsers);
 				} else if (htmlContent) {
 					contentToInsert = (
 						renderText(convertPastedHtmlToMarkdown(htmlContent) || plainText || '', ['escape_html', 'br_html']) as string[]
@@ -1018,7 +1018,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				onChange?.(e.currentTarget.innerHTML);
 				debouncedDetectMention();
 			},
-			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste]
+			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste, mentionUsers]
 		);
 
 		const { t } = useTranslation('message');
@@ -1521,6 +1521,7 @@ const MentionsInput = memo(MentionsInputComponent, (prevProps, nextProps) => {
 		prevProps.disabled !== nextProps.disabled ||
 		prevProps.placeholder !== nextProps.placeholder ||
 		prevProps.currentChannelId !== nextProps.currentChannelId ||
+		prevProps.mentionUsers !== nextProps.mentionUsers ||
 		prevProps.hasFilesToSend !== nextProps.hasFilesToSend ||
 		prevProps.setCaretToEnd !== nextProps.setCaretToEnd ||
 		prevProps.children !== nextProps.children

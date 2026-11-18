@@ -8,7 +8,10 @@ import {
 } from './AllUsersChannelByAddChannel.slice';
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
-jest.mock('@mezon/utils', () => ({ TypeSearch: { Dm_Type: 1, Channel_Type: 2 } }));
+jest.mock('@mezon/utils', () => ({
+	TypeSearch: { Dm_Type: 1, Channel_Type: 2 },
+	isCtrlkSearchTooShort: (text: string) => [...text.trim()].length < 2
+}));
 jest.mock('../helpers', () => ({ ensureSession: jest.fn(), fetchDataWithSocketFallback: jest.fn(), getMezonCtx: jest.fn() }));
 
 const root = (state: ReturnType<typeof userChannelsReducer>) => ({ [ALL_USERS_BY_ADD_CHANNEL]: state });
@@ -154,5 +157,36 @@ describe('Ctrl+K server search', () => {
 
 		expect(searchCtrlK).toHaveBeenCalledTimes(2);
 		expect(action.payload).toEqual({ users: [] });
+	});
+
+	it('does not spend a request on one-character text the server rejects', async () => {
+		const searchCtrlK = jest.fn().mockResolvedValue({ users: [] });
+		(ensureSession as jest.Mock).mockResolvedValue({ client: { searchCtrlK }, session: {} });
+
+		const action = await runSearch('g');
+
+		expect(searchCtrlK).not.toHaveBeenCalled();
+		expect(action.payload).toBe(true);
+	});
+
+	it('forwards the abort signal so a superseded keystroke abandons its request', async () => {
+		const searchCtrlK = jest.fn().mockResolvedValue({ users: [] });
+		(ensureSession as jest.Mock).mockResolvedValue({ client: { searchCtrlK }, session: {} });
+		const controller = new AbortController();
+
+		await fetchSearchCtrlK({ textSearch: 'signal-search', signal: controller.signal })(jest.fn(), () => ({}), undefined);
+
+		expect(searchCtrlK).toHaveBeenCalledWith(expect.anything(), { text: 'signal-search', type: 0 }, { signal: controller.signal });
+	});
+
+	it('treats an abandoned request as settled instead of reporting it', async () => {
+		const aborted = Object.assign(new Error('The request was aborted.'), { name: 'AbortError' });
+		const searchCtrlK = jest.fn().mockRejectedValue(aborted);
+		(ensureSession as jest.Mock).mockResolvedValue({ client: { searchCtrlK }, session: {} });
+
+		const action = await runSearch('abandoned-search');
+
+		expect(fetchSearchCtrlK.fulfilled.match(action)).toBe(true);
+		expect(action.payload).toBe(true);
 	});
 });
