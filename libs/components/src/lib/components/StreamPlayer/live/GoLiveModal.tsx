@@ -2,6 +2,7 @@ import { liveStreamActions, toastActions, useAppDispatch } from '@mezon/store';
 import { Modal } from '@mezon/ui';
 import { ensureMediaPermission, reportMediaAccessError, reportMediaAccessGranted } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { setPendingLiveCapture } from './liveSessionHolder';
 import { openLiveCameraStream, openLiveMicStream, requestDisplayMedia } from './mixer';
@@ -277,7 +278,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 		void startLive(false);
 	}, [startLive]);
 
-	return (
+	return createPortal(
 		<Modal showModal={showModal} onClose={onClose} title={modalTitle} isInviteModal>
 			<div className="flex flex-col gap-5">
 				<div className="flex flex-wrap items-center justify-between gap-4">
@@ -332,6 +333,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 					)}
 				</div>
 			</div>
-		</Modal>
+		</Modal>,
+		document.body
 	);
 }
