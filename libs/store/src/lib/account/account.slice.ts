@@ -225,7 +225,8 @@ export const updateAccountUsername = createAsyncThunk('userstatusapi/updateAccou
 			authActions.updateSession({
 				...currentSession,
 				token: updatedSession.token,
-				refresh_token: updatedSession.refresh_token
+				refresh_token: updatedSession.refresh_token,
+				created: false
 			})
 		);
 		return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');

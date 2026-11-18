@@ -29,6 +29,7 @@ import {
 	getStore,
 	onboardingActions,
 	selectAllClans,
+	selectAllSession,
 	selectChannelById,
 	selectChatStreamWidth,
 	selectClanNumber,
@@ -87,6 +88,7 @@ function MyApp() {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const { userProfile } = useAuth();
+	const session = useSelector(selectAllSession);
 	const createTimeMs = userProfile?.user?.create_time_seconds ? Number(userProfile.user.create_time_seconds) * 1000 : 0;
 	const calculateJoinedTime = createTimeMs > 0 ? new Date().getTime() - createTimeMs : Infinity;
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
@@ -177,21 +179,6 @@ function MyApp() {
 
 	const isShowPopupQuickMess = useSelector(selectIsShowPopupQuickMess);
 
-	const showSetupUsername = useMemo(() => {
-		const phoneNumber = userProfile?.user?.phone_number?.trim();
-		const username = userProfile?.user?.username?.trim();
-
-		if (!phoneNumber || !username) {
-			return false;
-		}
-
-		const normalizePhone = (value: string) => {
-			return value.replace(/^\+84/, '0');
-		};
-
-		return normalizePhone(username || '') === normalizePhone(phoneNumber);
-	}, [userProfile]);
-
 	const streamStyle = isShowChatStream
 		? { width: `calc(100vw - ${chatStreamWidth}px - 352px)`, right: `${chatStreamWidth + 8}px` }
 		: { width: closeMenu ? undefined : `calc(100vw - 344px)`, right: '0' };
@@ -240,7 +227,7 @@ function MyApp() {
 				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} />}
-				{showSetupUsername && <FirstSetupUsername />}
+				{session?.created && <FirstSetupUsername />}
 				{isShowPopupQuickMess && <PopupQuickMess />}
 			</div>
 
