@@ -1,20 +1,20 @@
 'use client';
 
-import mezonPackage from '@mezon/package-js';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
 import { useEffect, useState } from 'react';
+import { useLinuxDownload } from '../../hooks/useLinuxDownload';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
 
 const CustomizePage = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
-	const downloadUrl: string =
+	const { downloadUrl: linuxDownloadUrl } = useLinuxDownload();
+	const downloadUrl =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				? linuxDownloadUrl
 				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const [activeFeature, setActiveFeature] = useState(0);
@@ -75,7 +75,8 @@ const CustomizePage = () => {
 							</p>
 							<a
 								href={downloadUrl}
-								className="inline-flex items-center gap-2 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-semibold text-lg transition-all shadow-lg hover:shadow-xl"
+								aria-disabled={!downloadUrl}
+								className="aria-disabled:opacity-50 aria-disabled:cursor-not-allowed inline-flex items-center gap-2 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-semibold text-lg transition-all shadow-lg hover:shadow-xl"
 							>
 								Download
 								<MezonIcon icon={MzIcons20.mzDownload} />

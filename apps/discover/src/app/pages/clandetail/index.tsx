@@ -1,10 +1,10 @@
 'use client';
 
-import mezonPackage from '@mezon/package-js';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLinuxDownload } from '../../hooks/useLinuxDownload';
 import { ModalDownload } from '../mezonpage/components';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
@@ -13,17 +13,17 @@ import { SideBarMezon } from '../mezonpage/sidebar';
 const ClanWorld = () => {
 	const { t } = useTranslation('clandetail');
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+	const { downloadUrl: linuxDownloadUrl } = useLinuxDownload();
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [openFAQ, setOpenFAQ] = useState<number | null>(0);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [sideBarIsOpen, setSideBarIsOpen] = useState(false);
 
-	const downloadUrl: string =
+	const downloadUrl =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				? linuxDownloadUrl
 				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	const section1Ref = useRef<HTMLDivElement>(null);

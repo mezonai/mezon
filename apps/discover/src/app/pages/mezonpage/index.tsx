@@ -1,8 +1,8 @@
 import { CustomCookieConsent } from '@mezon/components';
-import mezonPackage from '@mezon/package-js';
 import { Platform, getPlatform } from '@mezon/utils';
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useLinuxDownload } from '../../hooks/useLinuxDownload';
 import Footer from './footer';
 import HeaderMezon from './header';
 import {
@@ -61,15 +61,15 @@ function MezonPage() {
 		setSideBarIsOpen(!sideBarIsOpen);
 	};
 
-	const version = mezonPackage.desktopVersion;
-	const downloadUrl: string = useMemo(() => {
+	const { version, downloadUrl: linuxDownloadUrl } = useLinuxDownload();
+	const downloadUrl = useMemo(() => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
+			return linuxDownloadUrl;
 		}
 		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
-	}, [platform, version]);
+	}, [platform, linuxDownloadUrl]);
 
 	const scrollToSection = (id: string, event: React.MouseEvent) => {
 		event.preventDefault();

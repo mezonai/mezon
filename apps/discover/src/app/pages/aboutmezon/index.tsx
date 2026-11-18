@@ -1,8 +1,8 @@
-import mezonPackage from '@mezon/package-js';
 import { Button, Icons } from '@mezon/ui';
 import { Platform, getPlatform } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLinuxDownload } from '../../hooks/useLinuxDownload';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
 
@@ -54,20 +54,20 @@ const AnimatedSection = ({ className = '', children }: AnimatedSectionProps) => 
 
 const AboutMezon = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+	const { downloadUrl: linuxDownloadUrl } = useLinuxDownload();
 	const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 	const [openAboutUs, setOpenAboutUs] = useState(false);
 	const desktopDropdownRef = useRef<HTMLDivElement>(null);
 	const mobileDropdownRef = useRef<HTMLDivElement>(null);
-	const downloadUrl: string = useMemo(() => {
+	const downloadUrl = useMemo(() => {
 		if (platform === Platform.MACOS) {
 			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
-			return `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`;
+			return linuxDownloadUrl;
 		}
 		return 'https://apps.microsoft.com/detail/9pf25lf1fj17';
-	}, [platform, version]);
+	}, [platform, linuxDownloadUrl]);
 	const trackHeaderLoginClick = (action: string) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
 			(window as any).gtag('event', 'Login Button', {
@@ -177,10 +177,11 @@ const AboutMezon = () => {
 										<span className="text-gray-700 font-svnAvo">macOS</span>
 									</a>
 									<a
-										href={`${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`}
+										href={linuxDownloadUrl}
+										aria-disabled={!linuxDownloadUrl}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-purple-600 hover:text-pink-600"
+										className="aria-disabled:opacity-50 aria-disabled:cursor-not-allowed flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-purple-600 hover:text-pink-600"
 										onClick={() => setIsDesktopDropdownOpen(false)}
 									>
 										<Icons.Linux className="w-5 h-5" />

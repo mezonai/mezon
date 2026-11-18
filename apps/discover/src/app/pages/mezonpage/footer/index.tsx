@@ -59,7 +59,7 @@ const DesktopIcons = {
 };
 
 interface FooterProps {
-	downloadUrl: string;
+	downloadUrl: string | undefined;
 }
 
 /**
@@ -377,11 +377,12 @@ const Footer = ({ downloadUrl }: FooterProps) => {
 											</a>
 										) : platform === Platform.LINUX ? (
 											<a
-												className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
+												className="aria-disabled:opacity-50 aria-disabled:cursor-not-allowed flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group"
 												href={downloadUrl}
+												aria-disabled={!downloadUrl}
 												target="_blank"
 												rel="noreferrer"
-												onClick={() => trackFooterDownloadEvent('Linux', 'DEB Package')}
+												onClick={() => downloadUrl && trackFooterDownloadEvent('Linux', 'DEB Package')}
 											>
 												<div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
 													<DesktopIcons.Linux className="w-6 h-6" />

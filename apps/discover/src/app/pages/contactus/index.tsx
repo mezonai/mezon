@@ -1,22 +1,22 @@
-import mezonPackage from '@mezon/package-js';
 import { Button } from '@mezon/ui';
 import { getPlatform, Platform } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLinuxDownload } from '../../hooks/useLinuxDownload';
 import { ContactUs } from '../mezonpage/components/ContactUs';
 import Footer from '../mezonpage/footer';
 import HeaderMezon from '../mezonpage/header';
 
 const ContactUsPage = () => {
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+	const { downloadUrl: linuxDownloadUrl } = useLinuxDownload();
 	const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
-	const downloadUrl: string =
+	const downloadUrl =
 		platform === Platform.MACOS
 			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
-				? `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+				? linuxDownloadUrl
 				: 'https://apps.microsoft.com/detail/9pf25lf1fj17';
 
 	useEffect(() => {

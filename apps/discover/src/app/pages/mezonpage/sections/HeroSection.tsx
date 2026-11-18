@@ -1,9 +1,9 @@
-import mezonPackage from '@mezon/package-js';
 import { Icons } from '@mezon/ui';
 import { getPlatform } from '@mezon/utils';
 import type { RefObject } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLinuxDownload } from '../../../hooks/useLinuxDownload';
 
 interface HeroSectionProps {
 	homeRef: RefObject<HTMLDivElement>;
@@ -13,7 +13,7 @@ interface HeroSectionProps {
 export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const { t } = useTranslation('homepage');
 	const platform = getPlatform();
-	const version = mezonPackage.desktopVersion;
+	const { downloadUrl: linuxDownloadUrl } = useLinuxDownload();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isImageLoaded, setIsImageLoaded] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
@@ -21,7 +21,7 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
 		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
-		linux: `${process.env.NX_CLOUDFLARE_CDN_URL}/desktop/release/latest/mezon_${version}_amd64.deb`
+		linux: linuxDownloadUrl
 	};
 
 	const handleTryMezon = () => {
@@ -97,7 +97,8 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 									</a>
 									<a
 										href={downloadLinks.linux}
-										className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300  text-purple-500 hover:text-pink-500 "
+										aria-disabled={!downloadLinks.linux}
+										className="aria-disabled:opacity-50 aria-disabled:cursor-not-allowed flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-all border border-gray-200 hover:border-purple-300  text-purple-500 hover:text-pink-500 "
 									>
 										<Icons.Linux className="w-6 h-6 " />
 										<span className="font-medium text-gray-800 group-hover:text-purple-600">Linux</span>

@@ -43,6 +43,12 @@ export default defineConfig(({ mode }) => {
 			host: '127.0.0.1',
 			open: false,
 			historyApiFallback: true,
+			proxy: {
+				'/release/latest-native-linux-x86_64.yml': {
+					target: 'https://cdn.komu.vn',
+					changeOrigin: true
+				}
+			},
 			fs: {
 				allow: [workspaceRoot, path.join(workspaceRoot, 'libs/assets/src/assets')]
 			}
