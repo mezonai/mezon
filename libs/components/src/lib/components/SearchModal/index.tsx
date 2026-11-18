@@ -130,6 +130,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const [settledSearchText, setSettledSearchText] = useState('');
 
 	const debouncedSetSearchText = useMemo(() => debounce((value) => setSearchText(value), SEARCH_DEBOUNCE_MS), []);
+	const searchAbortRef = useRef<AbortController | null>(null);
 	const checkListDM = useRef(new Set<string>());
 	const listDirectSearch = useMemo(() => {
 		const listDmSearchMap: SearchItemProps[] = [];
@@ -454,6 +455,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 	);
 
 	useEffect(() => {
+		searchAbortRef.current?.abort();
+		const controller = new AbortController();
+		searchAbortRef.current = controller;
+
 		let isLatestSearch = true;
 		const settle = () => {
 			if (isLatestSearch) {
@@ -463,7 +468,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 		const settleTimeout = setTimeout(settle, SEARCH_SETTLE_TIMEOUT_MS);
 		// Deliberately the avatars of this render only: re-running on every list change would
 		// refetch SearchCtrlK and restart the hold.
-		const searchLoaded = dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText }));
+		const searchLoaded = dispatch(userChannelsActions.fetchSearchCtrlK({ textSearch: searchText, signal: controller.signal }));
 		const avatarsLoaded = preloadImages(firstRowAvatarUrls, AVATAR_PRELOAD_TIMEOUT_MS);
 		Promise.all([searchLoaded, avatarsLoaded]).finally(() => {
 			clearTimeout(settleTimeout);
@@ -472,6 +477,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return () => {
 			isLatestSearch = false;
 			clearTimeout(settleTimeout);
+			controller.abort();
 		};
 	}, [searchText]);
 
@@ -488,7 +494,10 @@ function SearchModal({ onClose }: SearchModalProps) {
 						type="text"
 						placeholder={t('searchModal.placeholder')}
 						className="py-[12px] md:py-[18px] text-[16px] mt-2 mb-[15px] bg-input-secondary rounded-lg text-theme-message border-theme-primary"
-						onChange={(e) => debouncedSetSearchText(e.target.value)}
+						onChange={(e) => {
+							searchAbortRef.current?.abort();
+							debouncedSetSearchText(e.target.value);
+						}}
 						autoFocus
 					/>
 				</div>

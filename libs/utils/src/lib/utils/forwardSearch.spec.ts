@@ -27,6 +27,13 @@ describe('forwardServerChannelQuery', () => {
 		expect(forwardServerChannelQuery('a'.repeat(SEARCH_CTRL_K_MAX_TEXT_BYTES + 1))).toBeNull();
 		expect(forwardServerChannelQuery('đ'.repeat(128))).toBeNull();
 	});
+
+	it('skips one-character text the server rejects', () => {
+		expect(forwardServerChannelQuery('g')).toBeNull();
+		expect(forwardServerChannelQuery('# g')).toBeNull();
+		expect(forwardServerChannelQuery('đ')).toBeNull();
+		expect(forwardServerChannelQuery('ge')).toBe('ge');
+	});
 });
 
 describe('forwardServerQueryKey', () => {
