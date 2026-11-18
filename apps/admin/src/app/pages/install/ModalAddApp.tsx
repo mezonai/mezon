@@ -133,10 +133,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 			const normalizedErrorMessage = errorMessage.toLowerCase();
 
 			const isForbidden = error?.status === 403 || errorMessage.includes('403') || normalizedErrorMessage.includes('forbidden');
-			const isDuplicateChannelName =
-				error?.status === 400 &&
-				normalizedErrorMessage.includes('channel') &&
-				(normalizedErrorMessage.includes('already exists') || normalizedErrorMessage.includes('duplicate'));
+			const isDuplicateChannelName = error?.status === 400;
 
 			if (isForbidden) {
 				toast.error('You do not have permission to add to this clan. Please choose another clan where you have permission.');
