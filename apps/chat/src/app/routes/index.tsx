@@ -49,7 +49,6 @@ const FriendsPage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pag
 const GuideMain = lazy(() => import(/* webpackChunkName: "guide-pages" */ '../pages/guide'));
 const InvitePage = lazy(() => import(/* webpackChunkName: "invite-pages" */ '../pages/invite'));
 const LoginDeeplinkPage = lazy(() => import(/* webpackChunkName: "login-deeplink-pages" */ '../pages/loginDeeplink'));
-const Login = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/login'));
 const LoginCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/loginCallback'));
 const LogoutCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/logoutCallback'));
 const Main = lazy(() => import(/* webpackChunkName: "main-pages" */ '../pages/main'));
