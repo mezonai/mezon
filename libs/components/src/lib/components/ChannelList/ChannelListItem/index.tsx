@@ -1,5 +1,5 @@
 import type { DragEvent } from 'react';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import {
@@ -49,7 +49,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
 
-	const renderChannelLink = () => {
+	const renderChannelLink = useCallback(() => {
 		return (
 			<ChannelLink
 				clanId={channel?.clan_id}
@@ -65,7 +65,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 				dragEnter={dragEnter}
 			/>
 		);
-	};
+	}, [channel, dragEnter, dragStart, isActive, isUnreadChannel, permissions]);
 
 	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, channel.threadIds || []));
 	const isVoiceOrStreamingChannel =
@@ -166,9 +166,6 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 	return (
 		<>
 			{channelMemberList.map((user, index) => {
-				if (user.user_id === process.env.NX_VOICE_AGENT_ID) {
-					return null;
-				}
 				const isPublisher = isStream && index === 0;
 				return (
 					<div key={isPublisher ? `publisher:${user.user_id}` : user.user_id} className={'mt-[1px]'}>

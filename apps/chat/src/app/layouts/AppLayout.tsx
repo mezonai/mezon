@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { Outlet, useLoaderData } from 'react-router-dom';
 import { useNotificationDisconnect } from '../hooks/useNotificationManagement';
 import type { IAppLoaderData } from '../loaders/appLoader';
+import OpenInDesktopAppPrompt from './OpenInDesktopAppPrompt';
 
 const AppLayout = () => {
 	const isLogin = useSelector(selectIsLogin) ?? false;
@@ -19,6 +20,7 @@ const AppLayout = () => {
 		<MezonUiProvider>
 			<RedirectHandler />
 			<ToastController />
+			<OpenInDesktopAppPrompt />
 			<Outlet />
 		</MezonUiProvider>
 	);

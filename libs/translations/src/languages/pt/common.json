@@ -553,5 +553,11 @@
 	"formatDate": "d 'de' M, yyyy",
 	"cannotSendLocationWithAnonymous": "Não é possível enviar localização enquanto estiver anônimo.",
 	"iconAnimations": "Animações de ícones",
-	"iconAnimationsDesc": "Anima os ícones ao passar o rato e durante atividade ao vivo, como digitar ou uma transmissão."
+	"iconAnimationsDesc": "Anima os ícones ao passar o rato e durante atividade ao vivo, como digitar ou uma transmissão.",
+	"openInDesktopApp": {
+		"title": "Abrir este link no aplicativo Mezon para desktop?",
+		"open": "Abrir app",
+		"dismiss": "Fechar",
+		"continueInBrowser": "Continuar no navegador"
+	}
 }

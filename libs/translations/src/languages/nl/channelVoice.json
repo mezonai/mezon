@@ -170,6 +170,12 @@
 		"keepMuted": "Audio is gepauzeerd. Klik om je microfoon gedempt te houden."
 	},
 	"weakNetwork": "Zwak netwerk",
+	"connecting": "Verbinden…",
+	"reconnecting": "Opnieuw verbinden…",
+	"raiseHand": "Hand opsteken",
+	"lowerHand": "Hand omlaag",
+	"addAgent": "AI-agent toevoegen",
+	"removeAgent": "AI-agent verwijderen",
 	"networkWarning": {
 		"title": "Je internetverbinding is onstabiel",
 		"body": "Controleer je netwerkverbinding."

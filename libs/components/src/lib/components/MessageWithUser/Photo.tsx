@@ -176,6 +176,7 @@ const Photo = <T,>({
 				height < MIN_MEDIA_HEIGHT && 'fix-min-height',
 				className
 			);
+	const displayWidth = isSticker ? maxStickerWidth : forcedWidth || width || 150;
 
 	const style = isSticker
 		? {
@@ -187,7 +188,7 @@ const Photo = <T,>({
 		: size === 'inline'
 			? {
 					height: height ? `${height}px` : 150,
-					width: isInSearchMessage ? '' : width ? `${width}px` : 'auto',
+					width: dimensions ? `${dimensions.width}px` : isInSearchMessage ? '' : `${displayWidth}px`,
 					...(dimensions && {
 						position: 'absolute' as const,
 						left: `${dimensions.x}px`,
@@ -196,7 +197,6 @@ const Photo = <T,>({
 				}
 			: undefined;
 
-	const displayWidth = isSticker ? maxStickerWidth : forcedWidth || width || 150;
 	const displayHeight = isSticker ? maxStickerHeight : height || 150;
 
 	const isGif = useMemo(() => {

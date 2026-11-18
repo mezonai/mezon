@@ -1,4 +1,4 @@
-import { appActions, fetchDMSetting, selectIsQuickReply, selectIsSpelling, selectOnlyFriendsDM, updateDMSetting, useAppDispatch } from '@mezon/store';
+import { appActions, fetchDMSetting, selectIsQuickReply, selectOnlyFriendsDM, updateDMSetting, useAppDispatch } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,6 @@ type SettingChatProps = {
 
 const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 	const { t } = useTranslation('setting');
-	const isSpelling = useSelector(selectIsSpelling);
 	const isQuickReply = useSelector(selectIsQuickReply);
 	const onlyFriendsDM = useSelector(selectOnlyFriendsDM);
 	const dispatch = useAppDispatch();
@@ -26,13 +25,6 @@ const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 			description: t('chat.quickRepliesDescription'),
 			checked: isQuickReply,
 			onChange: () => dispatch(appActions.toggleIsQuickReply())
-		},
-		{
-			id: 'spelling_switch',
-			title: t('chat.grammar'),
-			description: t('chat.grammarDescription'),
-			checked: isSpelling,
-			onChange: () => dispatch(appActions.toggleIsSpelling())
 		},
 		{
 			id: 'only_friends_dm_switch',

@@ -1,27 +1,39 @@
 import { usePermissionChecker } from '@mezon/core';
-import { handleAddAgentToVoice, handleKichAgentFromVoice, selectVoiceInfo, useAppDispatch } from '@mezon/store';
+import { handleAddAgentToVoice, handleKickAgentFromVoice, selectVoiceInfo, useAppDispatch } from '@mezon/store';
 import { MezonIcon, MzIcons16, MzIcons20, MzIcons24, SpinningIcon } from '@mezon/ui';
 import { EPermission } from '@mezon/utils';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
-const activeAgentChannels = new Set<string>();
+const AGENT_PENDING_TIMEOUT_MS = 30000;
 
 interface SfuAgentControlProps {
 	isExternalCalling?: boolean;
 	roomId?: string;
+	active?: boolean;
 	showHint?: boolean;
 	onDismissHint?: () => void;
 }
 
-export const SfuAgentControl = memo(({ isExternalCalling, roomId, showHint = false, onDismissHint }: SfuAgentControlProps) => {
+export const SfuAgentControl = memo(({ isExternalCalling, roomId, active = false, showHint = false, onDismissHint }: SfuAgentControlProps) => {
+	const { t } = useTranslation('channelVoice');
 	const [hasChannelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const dispatch = useAppDispatch();
-	const [active, setActive] = useState(() => Boolean(voiceInfo?.channelId && activeAgentChannels.has(voiceInfo.channelId)));
-	const [loading, setLoading] = useState(false);
+	const [target, setTarget] = useState<boolean>();
+	const loading = target !== undefined && target !== active;
+
+	useEffect(() => {
+		if (target === undefined) return;
+		if (target === active) {
+			setTarget(undefined);
+			return;
+		}
+		const timer = window.setTimeout(() => setTarget(undefined), AGENT_PENDING_TIMEOUT_MS);
+		return () => window.clearTimeout(timer);
+	}, [active, target]);
 
 	const handleToggle = useCallback(async () => {
 		const channelId = isExternalCalling ? roomId : voiceInfo?.channelId;
@@ -32,17 +44,13 @@ export const SfuAgentControl = memo(({ isExternalCalling, roomId, showHint = fal
 			room_name: isExternalCalling ? channelId : '0'
 		};
 
-		setLoading(true);
+		setTarget(!active);
 
 		try {
-			await dispatch(active ? handleKichAgentFromVoice(payload) : handleAddAgentToVoice(payload)).unwrap();
-			active ? activeAgentChannels.delete(channelId) : activeAgentChannels.add(channelId);
+			await dispatch(active ? handleKickAgentFromVoice(payload) : handleAddAgentToVoice(payload)).unwrap();
 			if (!active) onDismissHint?.();
-			setActive(!active);
 		} catch {
-			return;
-		} finally {
-			setLoading(false);
+			setTarget(undefined);
 		}
 	}, [active, dispatch, isExternalCalling, loading, onDismissHint, roomId, voiceInfo?.channelId]);
 
@@ -54,8 +62,8 @@ export const SfuAgentControl = memo(({ isExternalCalling, roomId, showHint = fal
 				type="button"
 				disabled={loading}
 				onClick={() => void handleToggle()}
-				aria-label={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
-				title={active ? 'Turn off KOMU Agent' : 'Turn on KOMU Agent'}
+				aria-label={t(active ? 'removeAgent' : 'addAgent')}
+				title={t(active ? 'removeAgent' : 'addAgent')}
 				className={`${SFU_CONTROL_BUTTON_CLASS} ${active ? '!bg-blue-500 hover:!bg-blue-600' : ''} ${loading ? 'cursor-default' : ''}`}
 			>
 				{loading ? <SpinningIcon icon={MzIcons20.mzSpinner} /> : <AgentIcon />}

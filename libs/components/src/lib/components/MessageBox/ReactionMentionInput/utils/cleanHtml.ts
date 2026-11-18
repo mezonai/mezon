@@ -1,3 +1,4 @@
+import type { MentionDataProps } from '@mezon/utils';
 import { escapeInlineStyles, sanitizeMessageHtml } from '@mezon/utils';
 import { ApiMessageEntityTypes, ENTITY_CLASS_BY_NODE_NAME } from '../parseHtmlAsFormattedText';
 import cleanDocsHtml from './cleanDocsHtml';
@@ -292,11 +293,21 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 	return formatted && !/^(`[^`\n]*`|```\n[^\n]*\n```)$/.test(text) ? text : '';
 }
 
-export const clearMentionReplacer = (html: string) => {
+const normalizeMentionName = (name: string) => name.trim().replace(/^@/, '').normalize('NFC').toLocaleLowerCase();
+
+export const clearMentionReplacer = (html: string, users: MentionDataProps[] = []) => {
 	const doc = new DOMParser().parseFromString(html, 'text/html');
 
 	doc.querySelectorAll('a[data-entity-type="MessageEntityMentionName"][data-user-id]').forEach((element) => {
-		element.replaceWith(doc.createTextNode(element.textContent ?? ''));
+		const userId = element.getAttribute('data-user-id');
+		const pastedName = normalizeMentionName(element.textContent ?? '');
+		const matchedUser = users.find((user) => String(user.id) === userId);
+		const knownNames = [matchedUser?.clanNick, matchedUser?.displayName, matchedUser?.username].filter((name): name is string => !!name?.trim());
+		const shouldKeepMention = knownNames.some((name) => pastedName === normalizeMentionName(name));
+
+		if (!shouldKeepMention) {
+			element.replaceWith(doc.createTextNode(element.textContent ?? ''));
+		}
 	});
 
 	return doc.body.innerHTML;

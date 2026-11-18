@@ -1,8 +1,9 @@
 import { selectIsLogin } from '@mezon/store';
 import { useSelector } from 'react-redux';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { OpenInDesktopAppPage, landingDesktopAppLink } from '../layouts/OpenInDesktopAppPrompt';
 
 const InitialRoutes = () => {
 	const isLogin = useSelector(selectIsLogin);
@@ -11,6 +12,10 @@ const InitialRoutes = () => {
 		sessionStorage.setItem('oauth_state', randomState);
 		return randomState;
 	}, []);
+	const [continueInBrowser, setContinueInBrowser] = useState(false);
+	if (!isLogin && landingDesktopAppLink && !continueInBrowser) {
+		return <OpenInDesktopAppPage link={landingDesktopAppLink} onContinueInBrowser={() => setContinueInBrowser(true)} />;
+	}
 	if (!isLogin) {
 		const OAUTH2_AUTHORIZE_URL = process.env.NX_CHAT_APP_OAUTH2_AUTHORIZE_URL;
 		const CLIENT_ID = process.env.NX_CHAT_APP_OAUTH2_CLIENT_ID;

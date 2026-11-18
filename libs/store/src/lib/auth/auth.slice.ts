@@ -12,6 +12,7 @@ import { cdnSignatureActions } from '../cdnSignature/cdnSignature.slice';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { fcmActions } from '../fcm/fcm.slice';
 import { ensureClientAsync, ensureSession, getMezonCtx, restoreLocalStorage } from '../helpers';
+import { liveStreamActions } from '../stream/liveStream.slice';
 import type { StreamState, VIDEO_STREAM_FEATURE_KEY } from '../stream/videoStream.slice';
 import { getVideoStreamState, videoStreamActions, watchStream } from '../stream/videoStream.slice';
 import { voiceActions } from '../voice/voice.slice';
@@ -244,6 +245,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	if (streamState?.isJoin && streamState.streamInfo) {
 		thunkAPI.dispatch(watchStream({ channelId: streamState.streamInfo.streamId, watching: false }));
 	}
+	thunkAPI.dispatch(liveStreamActions.requestStop('user'));
 	thunkAPI.dispatch(authActions.setLogout());
 	publishSessionUpdate(null, 'logout');
 	thunkAPI.dispatch(walletActions.setLogout());
