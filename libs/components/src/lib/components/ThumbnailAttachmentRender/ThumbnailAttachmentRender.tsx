@@ -67,13 +67,13 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 			{isAudioFile && <AudioAttachment attachment={attachment} size={size} isFileList={isFileList} />}
 
 			{hasFileImage && isPresignPending && (
-				<div key="image-thumbnail-pending" className="w-[174px] aspect-square bg-bgLightSecondary dark:bg-bgSecondary" />
+				<div key="image-thumbnail-pending" className="w-[80px] aspect-square bg-bgLightSecondary dark:bg-bgSecondary" />
 			)}
 
 			{hasFileImage && !isPresignPending && (
 				<img
 					key="image-thumbnail"
-					src={createImgproxyUrl(attachment.url ?? '', { width: 174, height: 174, resizeType: 'fill' })}
+					src={createImgproxyUrl(attachment.url ?? '', { width: 80, height: 80, resizeType: 'fill' })}
 					role="presentation"
 					className="w-[80px] aspect-square object-cover"
 					alt={attachment.url}
@@ -87,7 +87,7 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList, i
 							src={
 								attachment.thumbnail.startsWith('blob:')
 									? attachment.thumbnail
-									: createImgproxyUrl(attachment.thumbnail, { width: 174, height: 174, resizeType: 'fill' })
+									: createImgproxyUrl(attachment.thumbnail, { width: 80, height: 80, resizeType: 'fill' })
 							}
 							role="presentation"
 							className="w-full h-full object-contain"
