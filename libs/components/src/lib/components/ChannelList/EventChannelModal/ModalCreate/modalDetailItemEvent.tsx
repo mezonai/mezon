@@ -121,7 +121,8 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 
 	const hasAddress = !!event?.address;
 	const hasVoiceChannel = !!event?.channel_voice_id && !!channelVoice?.channel_id;
-	const isPrivateEvent = event?.is_private;
+	const isHiddenVoiceChannel = !!event?.channel_voice_id && !channelVoice?.channel_id;
+	const isPrivateEvent = event?.is_external;
 
 	const handleStopPropagation = (e: any) => {
 		e.stopPropagation();
@@ -150,7 +151,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				{time}
 			</h4>
 			<p
-				className="font-bold text-theme-primary-active text-lg truncate"
+				className="font-bold text-theme-primary-active text-lg truncate select-text"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.topic')}
 				title={event?.title}
 			>
@@ -194,9 +195,18 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 						};
 						return (
 							<a {...linkProps} className="flex gap-x-3 cursor-pointer items-center">
-								<MezonIcon icon={MzIcons20.mzSpeaker} />
+								<MezonIcon icon={channelVoice?.channel_private ? MzIcons20.mzSpeakerLock : MzIcons20.mzSpeaker} />
 								<p className="hover:underline">{channelVoice?.channel_label}</p>
 							</a>
+						);
+					}
+
+					if (isHiddenVoiceChannel && !isPrivateEvent) {
+						return (
+							<>
+								<MezonIcon icon={MzIcons20.mzSpeakerLock} />
+								<p>{t('eventDetail.privateChannel')}</p>
+							</>
 						);
 					}
 
@@ -263,7 +273,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				<p>{t('eventDetail.createdBy', { username: userName })}</p>
 			</div>
 			<div
-				className="break-all whitespace-pre-wrap"
+				className="break-all whitespace-pre-wrap select-text"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.description')}
 			>
 				{renderDescriptionWithLinks(event?.description)}

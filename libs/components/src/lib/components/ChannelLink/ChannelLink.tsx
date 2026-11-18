@@ -14,6 +14,7 @@ import {
 	selectCurrentMission,
 	selectEventsByChannelId,
 	selectIsChannelMuted,
+	selectStreamMembersByChannelId,
 	selectToCheckAppIsOpening,
 	threadsActions,
 	useAppDispatch,
@@ -36,6 +37,7 @@ import SettingChannel from '../ChannelSetting';
 import EventSchedule from '../EventSchedule';
 import ModalConfirm from '../ModalConfirm';
 import PanelChannel from '../PanelChannel';
+import { StreamViewerCount } from '../StreamPlayer/StreamPublisher';
 
 export type ChannelLinkProps = {
 	clanId?: string;
@@ -85,6 +87,8 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, channel?.channel_id ?? ''));
 	const events = useAppSelector((state) => selectEventsByChannelId(state, channel.clan_id ?? '', channel?.channel_id ?? ''));
 	const isChannelMuted = useAppSelector((state) => selectIsChannelMuted(state, clanId ?? '', channel?.channel_id ?? ''));
+	const isStreamChannel = channel.type === ChannelType.CHANNEL_TYPE_STREAMING;
+	const isStreamLive = useAppSelector((state) => isStreamChannel && selectStreamMembersByChannelId(state, channel.id).length > 0);
 
 	const handleOpenCreate = () => {
 		openSettingModal();
@@ -213,14 +217,14 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link mz-hover block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${(numberNotification || isUnReadChannel) && notVoiceOrAppOrStreamChannel ? 'text-theme-primary-active' : ''}`}
+					className={`channel-link mz-hover block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${(numberNotification || isUnReadChannel) && notVoiceOrAppOrStreamChannel ? 'text-theme-primary-active' : ''} ${isStreamChannel && isShowSettingChannel ? 'group-hover:pr-8' : ''}`}
 					draggable="false"
 				>
 					<span
 						ref={channelLinkRef}
-						className={`flex flex-row items-center rounded relative flex-1 pointer-events-none  ${hightLightTextChannel ? ' font-semibold text-theme-primary-active' : 'font-medium '} ${isChannelMuted ? 'opacity-70' : ''}`}
+						className={`flex flex-row items-center rounded relative flex-1 pointer-events-none ${isStreamChannel ? 'min-w-0' : ''} ${hightLightTextChannel ? ' font-semibold text-theme-primary-active' : 'font-medium '} ${isChannelMuted ? 'opacity-70' : ''}`}
 					>
-						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
+						<div className={`relative ${isStreamChannel ? 'shrink-0' : ''}`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 								<MezonIcon icon={MzIcons20.mzChannelWarning} className={iconColorClass} />
 							)}
@@ -255,10 +259,10 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
 								/>
 							)}
-							{channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
+							{isStreamChannel && (
 								<MezonIcon
 									icon={MzIcons20.mzLive}
-									className={iconColorClass}
+									className={isStreamLive ? 'text-green-500' : iconColorClass}
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')}
 								/>
 							)}
@@ -271,7 +275,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 						</div>
 						{events[0] && <EventSchedule event={events[0]} className="ml-1.5 mt-0.5 shrink-0" />}
 						<p
-							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover ${isChannelMuted ? 'opacity-70' : ''}`}
+							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover ${isStreamChannel ? 'truncate' : ''} ${isChannelMuted ? 'opacity-70' : ''}`}
 							title={channel.channel_label && channel?.channel_label.length > 20 ? channel?.channel_label : undefined}
 							data-e2e={generateE2eId('clan_page.channel_list.item.name')}
 						>
@@ -280,6 +284,12 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 								: channel?.channel_label}
 						</p>
 					</span>
+					{isStreamChannel && (
+						<>
+							<StreamViewerCount channelId={channel.id} className="ml-2 text-theme-primary" />
+							<ChannelBadge channelId={channel.id} buzzState={buzzState?.isReset} inline />
+						</>
+					)}
 				</Link>
 			}
 
@@ -291,7 +301,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 				/>
 			)}
 
-			<ChannelBadge channelId={channel.id} buzzState={buzzState?.isReset} />
+			{!isStreamChannel && <ChannelBadge channelId={channel.id} buzzState={buzzState?.isReset} />}
 		</div>
 	);
 };
@@ -335,12 +345,15 @@ const ModalConfirmComponent: React.FC<ModalConfirmComponentProps> = ({ handleCan
 	);
 };
 
-const ChannelBadge = memo(({ channelId, buzzState }: { channelId: string; buzzState?: boolean }) => {
+const ChannelBadge = memo(({ channelId, buzzState, inline = false }: { channelId: string; buzzState?: boolean; inline?: boolean }) => {
 	const badgeChannel = useSelector((state) => selectChannelBadgeById(state, channelId));
 	const countNumberNotification = badgeChannel && badgeChannel > 99 ? '99+' : (badgeChannel ?? 0);
+	if (inline && !buzzState && !badgeChannel) return null;
 
 	return (
-		<div className="absolute flex gap-1 top-[9px] text-white right-3 group-hover:hidden items-center justify-center">
+		<div
+			className={`flex gap-1 text-white group-hover:hidden items-center justify-center ${inline ? 'ml-2 shrink-0' : 'absolute top-[9px] right-3'}`}
+		>
 			{buzzState ? <BuzzBadge mode={ChannelStreamMode.STREAM_MODE_CHANNEL} /> : null}
 			{badgeChannel ? (
 				<div className=" ml-auto w-4 h-4  bg-red-600 flex justify-center items-center rounded-full text-xs">{countNumberNotification}</div>

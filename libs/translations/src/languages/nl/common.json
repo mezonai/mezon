@@ -5,6 +5,7 @@
 	"yes": "Ja",
 	"settings": "Instellingen",
 	"search": "Zoeken",
+	"socketReconnecting": "Verbinding verbroken. Opnieuw verbinden…",
 	"errorBoundary": {
 		"title": "Oeps, dit is wat ongepast",
 		"crashMessage": "Het lijkt erop dat Mezon een onverwacht probleem heeft...",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "Nieuw bericht",
 	"newMention": "Nieuwe vermelding",
+	"newMentionsInTopic": "Nieuwe vermeldingen in het topic",
 	"clanRailNew": "Nieuw",
 	"discover": "Ontdekken",
 	"createClan": "Clan aanmaken",
@@ -551,5 +553,11 @@
 	"formatDate": "d 'maand' M, yyyy",
 	"cannotSendLocationWithAnonymous": "Locatie kan niet worden verzonden tijdens anoniem zijn.",
 	"iconAnimations": "Pictogramanimaties",
-	"iconAnimationsDesc": "Animeer pictogrammen bij hover en tijdens live activiteit, zoals typen of een stream."
+	"iconAnimationsDesc": "Animeer pictogrammen bij hover en tijdens live activiteit, zoals typen of een stream.",
+	"openInDesktopApp": {
+		"title": "Deze link openen in de Mezon-desktopapp?",
+		"open": "App openen",
+		"dismiss": "Sluiten",
+		"continueInBrowser": "Doorgaan in de browser"
+	}
 }

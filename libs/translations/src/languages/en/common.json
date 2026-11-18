@@ -5,6 +5,7 @@
 	"yes": "Yes",
 	"settings": "Settings",
 	"search": "Search",
+	"socketReconnecting": "Connection lost. Reconnecting…",
 	"errorBoundary": {
 		"title": "Well, this is awkward",
 		"crashMessage": "Looks like Mezon has crashed unexpectedly....",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "New",
 	"newMention": "New mention",
+	"newMentionsInTopic": "New mentions in topic",
 	"clanRailNew": "New",
 	"discover": "Discover",
 	"createClan": "Create Clan",
@@ -382,7 +384,7 @@
 		"noQuestions": "You don't have any questions. Setting questions for this clan first !!",
 		"noRules": "You don't have any rule. Setting rule for this clan first !!",
 		"noMissions": "You don't have any mission. Setting mission for this clan first !!",
-		"emptyGuideLine":  "No guidelines have been added yet !!"
+		"emptyGuideLine": "No guidelines have been added yet !!"
 	},
 	"updateUsername": {
 		"enterUsername": "Enter Mezon name",
@@ -551,5 +553,11 @@
 	"formatDate": "MMMM d, yyyy",
 	"cannotSendLocationWithAnonymous": "Cannot send location using Anonymous.",
 	"iconAnimations": "Icon animations",
-	"iconAnimationsDesc": "Animate icons on hover and while something is live, such as typing or a stream."
+	"iconAnimationsDesc": "Animate icons on hover and while something is live, such as typing or a stream.",
+	"openInDesktopApp": {
+		"title": "Open this link in the Mezon desktop app?",
+		"open": "Open app",
+		"dismiss": "Close",
+		"continueInBrowser": "Continue in browser"
+	}
 }

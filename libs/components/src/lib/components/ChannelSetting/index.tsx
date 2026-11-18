@@ -138,7 +138,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 			onMouseDown={(event) => event.stopPropagation()}
 			role="button"
 		>
-			<div className="flex text-gray- w-screen relative text-white">
+			<div className="flex w-screen relative text-white">
 				<div className="flex sbm:hidden fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">
 					<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
 					<div className="relative z-10">

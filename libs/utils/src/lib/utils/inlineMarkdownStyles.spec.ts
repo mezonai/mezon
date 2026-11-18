@@ -1,6 +1,6 @@
 import { EBacktickType } from '../types/messageLine';
 import { convertMessageToHtml } from './convertMessageToHtml';
-import { extractInlineStyles, styleAt, styleSegments } from './inlineMarkdownStyles';
+import { escapeInlineStyles, extractInlineStyles, styleAt, styleSegments } from './inlineMarkdownStyles';
 import { processEntitiesDirectly } from './processEntitiesDirectly';
 
 jest.mock('../types', () => jest.requireActual('../types/messageLine'));
@@ -237,5 +237,35 @@ describe('convertMessageToHtml round trip', () => {
 		expect(extracted.text).toBe('@alice hi');
 		expect(processed.mentions).toEqual([{ user_id: 'u1', s: 0, e: 6, display: '@alice', role_id: undefined }]);
 		expect(processed.markdown).toEqual([{ type: EBacktickType.BOLD, s: 0, e: 9 }]);
+	});
+
+	it('round-trips literal markers in the text as escapes', () => {
+		const html = convertMessageToHtml({ t: '5*2=10, 3*4=12 bold', mk: [{ type: EBacktickType.BOLD, s: 15, e: 19 }] });
+		expect(html).toBe('5\\*2=10, 3\\*4=12 **bold**');
+		expect(extractInlineStyles(html, [])).toEqual({
+			text: '5*2=10, 3*4=12 bold',
+			entities: [{ type: 'MessageEntityBold', offset: 15, length: 4 }]
+		});
+	});
+});
+
+describe('style escapes', () => {
+	it('keeps escaped markers literal and drops the backslash outside protected entities', () => {
+		expect(extractInlineStyles('5\\*2=10, 3\\*4=12', [])).toEqual({ text: '5*2=10, 3*4=12', entities: [] });
+		expect(extractInlineStyles('**5\\*2**', [])).toEqual({
+			text: '5*2',
+			entities: [{ type: 'MessageEntityBold', offset: 0, length: 3 }]
+		});
+		expect(extractInlineStyles('\\_a\\_ \\~\\~b\\~\\~', [])).toEqual({ text: '_a_ ~~b~~', entities: [] });
+		expect(extractInlineStyles('a\\*b', [{ type: 'MessageEntityCode', offset: 1, length: 2 }])).toEqual({
+			text: 'a\\*b',
+			entities: [{ type: 'MessageEntityCode', offset: 1, length: 2 }]
+		});
+	});
+
+	it('escapes only markers that could be parsed and leaves URLs alone', () => {
+		expect(escapeInlineStyles('5*2=10, 3*4=12')).toBe('5\\*2=10, 3\\*4=12');
+		expect(escapeInlineStyles('snake_case a * b ~5 _x_')).toBe('snake_case a * b ~5 \\_x\\_');
+		expect(escapeInlineStyles('~~x~~ see https://x.com/~a_b*c')).toBe('\\~\\~x\\~\\~ see https://x.com/~a_b*c');
 	});
 });

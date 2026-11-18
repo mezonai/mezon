@@ -882,7 +882,7 @@ export enum MentionTypeEnum {
 	EMOJI_SYNTAX = 'EMOJI_SYNTAX'
 }
 
-export type ContenSubmitEventProps = {
+export type ContentSubmitEventProps = {
 	topic: string;
 	timeStart: number;
 	timeEnd: number;

@@ -27,7 +27,9 @@ export interface PDFHeaderProps {
 
 export interface PDFContentProps {
 	pdfUrl: string;
-	pageNumber: number;
+	numPages?: number;
+	pageRatios: number[];
+	visibleRange: { start: number; end: number };
 	scale: number;
 	loading: boolean;
 	error: string | null;
@@ -35,6 +37,8 @@ export interface PDFContentProps {
 	onDocumentLoadSuccess: (pdf: PDFDocumentProxy) => void;
 	onDocumentLoadError: (error: Error) => void;
 	onContainerRef: (ref: HTMLElement | null) => void;
+	onScroll: () => void;
+	onItemClick: (args: { pageNumber: number }) => void;
 }
 
 export interface IconProps {

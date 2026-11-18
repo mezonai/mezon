@@ -5,6 +5,7 @@
 	"yes": "Ja",
 	"settings": "Einstellungen",
 	"search": "Suche",
+	"socketReconnecting": "Verbindung unterbrochen. Verbindung wird wiederhergestellt…",
 	"errorBoundary": {
 		"title": "Oh, das ist unangenehm",
 		"crashMessage": "Es scheint, als ob Mezon ein unerwartetes Problem hatte...",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "Neue Nachricht",
 	"newMention": "Neue Erwähnung",
+	"newMentionsInTopic": "Neue Erwähnungen im Thema",
 	"clanRailNew": "Neu",
 	"discover": "Entdecken",
 	"createClan": "Clan erstellen",
@@ -551,5 +553,11 @@
 	"formatDate": "d. MMMM yyyy",
 	"cannotSendLocationWithAnonymous": "Standort kann nicht im anonymen Modus gesendet werden.",
 	"iconAnimations": "Symbolanimationen",
-	"iconAnimationsDesc": "Symbole beim Darüberfahren und bei laufender Aktivität animieren, etwa beim Tippen oder bei einem Stream."
+	"iconAnimationsDesc": "Symbole beim Darüberfahren und bei laufender Aktivität animieren, etwa beim Tippen oder bei einem Stream.",
+	"openInDesktopApp": {
+		"title": "Diesen Link in der Mezon-Desktop-App öffnen?",
+		"open": "App öffnen",
+		"dismiss": "Schließen",
+		"continueInBrowser": "Im Browser fortfahren"
+	}
 }

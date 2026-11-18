@@ -18,5 +18,32 @@
 	"isLive": "{{name}} está en vivo",
 	"volume": "Volumen",
 	"mute": "Silenciar",
-	"unmute": "Activar sonido"
+	"unmute": "Activar sonido",
+	"goLive": "Transmitir en vivo",
+	"endLive": "Finalizar transmisión",
+	"youAreLive": "Estás en vivo",
+	"liveConnecting": "Conectando…",
+	"liveReconnecting": "Reconectando…",
+	"cameraOnly": "Solo cámara",
+	"liveMic": "Micrófono",
+	"liveCamera": "Cámara",
+	"liveSystemAudio": "Audio del sistema",
+	"alsoShareSystemAudio": "Compartir también el audio del sistema",
+	"liveScreen": "Compartir pantalla",
+	"changeScreen": "Cambiar pantalla",
+	"stopScreen": "Dejar de compartir pantalla",
+	"liveElsewhere": "Ya estás transmitiendo en otro canal",
+	"shareScreen": "Compartir pantalla",
+	"startLive": "Transmitir en vivo",
+	"liveError": {
+		"busy": "Alguien más ya está en vivo en este canal",
+		"forbidden": "No puedes transmitir en vivo en este canal",
+		"serverBusy": "El servidor de transmisión está ocupado, inténtalo en un momento",
+		"unsupported": "Este dispositivo no puede codificar la transmisión",
+		"network": "Se perdió la conexión con el servidor de transmisión",
+		"replaced": "Otra app o dispositivo con tu cuenta ha tomado el control de tu transmisión",
+		"accessLost": "Tu transmisión finalizó porque ya no tienes acceso a este canal",
+		"source": "No se pudo iniciar {{source}}",
+		"sourceEnded": "{{source}} se detuvo"
+	}
 }

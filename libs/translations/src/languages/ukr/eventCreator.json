@@ -137,6 +137,7 @@
 		"channelEvent": "Подія каналу",
 		"privateEvent": "Зовнішня подія",
 		"privateRoom": "Зовнішня приватна кімната",
+		"privateChannel": "Приватний канал",
 		"newEvent": "Нове",
 		"share": "Поділитися",
 		"noOneInterested": "Ще ніхто не зацікавлений у цій події."

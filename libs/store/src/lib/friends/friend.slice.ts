@@ -2,7 +2,7 @@ import i18n from '@mezon/translations';
 import { EUserStatus, type IUserProfileActivity, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { AddFriend, ApiFriend } from 'mezon-js';
+import type { AddFriend, ApiFriend, FriendStateUpdated } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -245,13 +245,14 @@ export const upsertFriendRequest = createAsyncThunk(
 		const state = thunkAPI.getState() as RootState;
 		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.user_id}`);
 		if (currentFriendApi) {
-			if (currentFriendApi.state === EStateFriend.OTHER_PENDING) {
+			const accepted = user.accepted || currentFriendApi.state === EStateFriend.OTHER_PENDING;
+			if (accepted && currentFriendApi.state !== EStateFriend.FRIEND && currentFriendApi.state !== EStateFriend.BLOCK) {
 				thunkAPI.dispatch(friendsActions.acceptFriend(user.user_id));
 			}
 			return;
 		}
 		const friend: FriendsEntity = {
-			state: EStateFriend.MY_PENDING,
+			state: user.accepted ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
 			id: user.user_id,
 			source_id: myId,
 			user: {
@@ -262,6 +263,41 @@ export const upsertFriendRequest = createAsyncThunk(
 			}
 		};
 		thunkAPI.dispatch(friendsActions.upsertFriend(friend));
+	}
+);
+
+export const applyFriendStateUpdated = createAsyncThunk(
+	'friends/applyFriendStateUpdated',
+	async ({ user, myId }: { user: FriendStateUpdated; myId: string }, thunkAPI) => {
+		if (user.state === EStateFriend.BLOCK) {
+			thunkAPI.dispatch(
+				friendsActions.applyFriendBlockState({
+					userId: user.user_id,
+					state: EStateFriend.BLOCK,
+					sourceId: myId,
+					username: user.username,
+					display_name: user.display_name,
+					avatar_url: user.avatar
+				})
+			);
+			return;
+		}
+		if (user.state !== EStateFriend.FRIEND && user.state !== EStateFriend.OTHER_PENDING && user.state !== EStateFriend.MY_PENDING) {
+			return;
+		}
+		thunkAPI.dispatch(
+			friendsActions.upsertFriend({
+				state: user.state,
+				id: user.user_id,
+				source_id: myId,
+				user: {
+					id: user.user_id,
+					username: user.username,
+					avatar_url: user.avatar,
+					display_name: user.display_name
+				}
+			})
+		);
 	}
 );
 
@@ -451,7 +487,8 @@ export const friendsActions = {
 	sendRequestDeleteFriend,
 	sendRequestBlockFriend,
 	sendRequestUnblockFriend,
-	upsertFriendRequest
+	upsertFriendRequest,
+	applyFriendStateUpdated
 };
 
 const { selectAll, selectById, selectEntities } = friendsAdapter.getSelectors();

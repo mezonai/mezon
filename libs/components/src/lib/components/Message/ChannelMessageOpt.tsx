@@ -19,7 +19,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IMessageWithUser, MenuBuilder } from '@mezon/utils';
 import {
 	EMOJI_GIVE_COFFEE,
@@ -379,7 +379,7 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 					'edit',
 					t('editMessage'),
 					handleItemClick,
-					<MezonIcon icon={MzIcons20.mzEdit} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
+					<MezonIcon icon={MzIcons16.mzEdit} className="text-[var(--mz-icon)] group-hover/mzi:text-[var(--mz-icon-selected)]" />
 				);
 			}
 		);

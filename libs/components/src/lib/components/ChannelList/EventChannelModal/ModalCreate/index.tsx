@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ContenSubmitEventProps } from '@mezon/utils';
+import type { ContentSubmitEventProps } from '@mezon/utils';
 import { ERepeatType, OptionEvent, Tabs_Option, generateE2eId } from '@mezon/utils';
 import isEqual from 'lodash.isequal';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -51,7 +51,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const isEditEventAction = Boolean(currentEvent);
 	const isClanEvent = currentEvent?.channel_id === undefined;
 	const isChannelEvent = Boolean(currentEvent?.channel_id && currentEvent?.channel_id !== '0');
-	const isPrivateEvent = currentEvent?.is_private;
+	const isPrivateEvent = currentEvent?.is_external;
 	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '0' : '')) || {};
 
 	const createStatus = useSelector(selectCreatingLoaded);
@@ -60,7 +60,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const defaultCreateEventTimes = useMemo(() => getDefaultCreateEventTimes(), []);
 	const toMsFromSeconds = useCallback((seconds?: number) => (typeof seconds === 'number' ? seconds * 1000 : undefined), []);
 
-	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
+	const [contentSubmit, setContentSubmit] = useState<ContentSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
 		address: currentEvent ? currentEvent?.address || '' : '',
 		timeStart: currentEvent?.start_time_seconds
@@ -78,7 +78,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 		description: currentEvent ? currentEvent.description || '' : '',
 		textChannelId: currentEvent ? currentEvent.channel_id || '0' : '',
 		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
-		isPrivate: Boolean(currentEvent?.is_private)
+		isPrivate: Boolean(currentEvent?.is_external)
 	});
 	const [buttonWork, setButtonWork] = useState(true);
 	const [errorOption, setErrorOption] = useState(false);
@@ -90,7 +90,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 	const isExistChannelVoice = Boolean(currentEvent?.channel_voice_id);
 	const isExistAddress = Boolean(currentEvent?.address);
-	const isExistPrivateEvent = currentEvent?.is_private;
+	const isExistPrivateEvent = currentEvent?.is_external;
 
 	useEffect(() => {
 		if (!currentEvent || option) {
@@ -245,7 +245,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 				clan_id: currentClanId as string,
 				creator_id: creatorId as string,
 				channel_id_old: currentEvent?.channel_id || '0',
-				is_private: Boolean(currentEvent?.is_private)
+				is_external: Boolean(currentEvent?.is_external)
 			};
 
 			const updatedEventFields: Partial<Record<string, string | number | undefined>> = {
@@ -318,13 +318,19 @@ const ModalCreate = (props: ModalCreateProps) => {
 		}
 	}, [currentModal, contentSubmit.topic]);
 
+	const isPrivateVoiceSelected = useMemo(
+		() => choiceSpeaker && Boolean(voicesChannel.find((voice) => voice.id === contentSubmit.voiceChannel)?.channel_private),
+		[choiceSpeaker, voicesChannel, contentSubmit.voiceChannel]
+	);
+	const isMissingAudience = isPrivateVoiceSelected && (!contentSubmit.textChannelId || contentSubmit.textChannelId === '0');
+
 	useEffect(() => {
-		if ((choiceLocation && contentSubmit.address === '') || (choiceSpeaker && contentSubmit.voiceChannel === '')) {
+		if ((choiceLocation && contentSubmit.address === '') || (choiceSpeaker && contentSubmit.voiceChannel === '') || isMissingAudience) {
 			setErrorOption(true);
 		} else {
 			setErrorOption(false);
 		}
-	}, [choiceLocation, choiceSpeaker, contentSubmit.address, contentSubmit.voiceChannel, option]);
+	}, [choiceLocation, choiceSpeaker, contentSubmit.address, contentSubmit.voiceChannel, isMissingAudience, option]);
 
 	useEffect(() => {
 		if (eventId === '') {
@@ -368,6 +374,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 					isChannelEvent={isChannelEvent}
 					isClanEvent={isClanEvent}
 					isPrivateEvent={isPrivateEvent}
+					isAudienceRequired={isPrivateVoiceSelected}
 				/>
 			)}
 			{currentModal === Tabs_Option.EVENT_INFO && (

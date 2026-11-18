@@ -4,8 +4,6 @@ import { MessageContextMenuProvider, MessageWithUser, useMessageContextMenu } fr
 import { useMessageObservers, usePermissionChecker } from '@mezon/core';
 import type { RootState } from '@mezon/store';
 import {
-	EventName,
-	badgeService,
 	channelsActions,
 	getStore,
 	messagesActions,
@@ -34,7 +32,6 @@ import {
 	selectShowScrollDownButton,
 	selectTheme,
 	selectUnreadMessageIdByChannelId,
-	topicsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -65,6 +62,7 @@ import type { ApiMessageRef, ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChannelMessage, MemorizedChannelMessage } from './ChannelMessage';
+import { NotiTopicButton } from './NotiTopicButton';
 
 const useSafeTimeout = () => {
 	const timeoutsRef = useRef<Set<number>>(new Set());
@@ -611,7 +609,7 @@ const ScrollDownButton = memo(
 				onClick={handleScrollDownClick}
 				className={`bg-theme-primary ${
 					isVisible ? 'opacity-100' : 'opacity-0'
-				} cursor-pointer absolute z-10 rounded-full bg-clip-padding border text-token-text-secondary border-token-border-light w-8 h-8 flex items-center justify-center bottom-5 right-[12px] transition-all duration-200 hover:scale-105 active:scale-95 active:shadow-inner`}
+				} cursor-pointer absolute z-10 rounded-full bg-clip-padding border border-token-border-light w-8 h-8 flex items-center justify-center bottom-5 right-[12px] transition-all duration-200 hover:scale-105 active:scale-95 active:shadow-inner`}
 			>
 				{unreadCount > 0 && (
 					<div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-semibold">
@@ -624,47 +622,6 @@ const ScrollDownButton = memo(
 	}
 );
 
-const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
-	const badge = badgeService.getTopicInChannel(channelId);
-	const [value, setValue] = useState(badge?.totalCount || 0);
-	const topicId = badge?.topicId;
-	const dispatch = useAppDispatch();
-
-	const handleOpenTopic = () => {
-		if (topicId) {
-			dispatch(topicsActions.setIsShowCreateTopic(true));
-			dispatch(topicsActions.setCurrentTopicId(topicId || ''));
-		}
-	};
-	useEffect(() => {
-		const onChange = (data: { topicId: string; count: number; channelId: string }) => {
-			if (data?.channelId === channelId) {
-				setValue((pre) => pre + data?.count);
-			}
-		};
-
-		badgeService.on(EventName.INCREASE_BADGE_TOPIC, onChange);
-		return () => {
-			badgeService.off(EventName.INCREASE_BADGE_TOPIC, onChange);
-		};
-	}, []);
-
-	if (!badge || !badge.totalCount || !value) return null;
-	return (
-		<div
-			className="mz-hover cursor-pointer absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 py-2 px-4 rounded-full bg-theme-contexify bottom-3"
-			onClick={handleOpenTopic}
-		>
-			<div>
-				<MezonIcon icon={MzIcons20.mzTopic} className="text-[var(--mz-icon)]" />
-			</div>
-			<div>New mentions in topic</div>
-			<div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">
-				{value > 9 ? '9+' : value}
-			</div>
-		</div>
-	);
-});
 ChannelMessages.Skeleton = () => {
 	if (ChannelMessage.Skeleton) {
 		return <></>;

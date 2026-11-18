@@ -77,6 +77,7 @@ import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/rolec
 import { SEARCH_MESSAGES_FEATURE_KEY, searchMessageReducer } from './searchmessages/searchmessage.slice';
 import { settingStickerReducer } from './settingSticker/settingSticker.slice';
 import { groupCallReducer } from './slices/groupCall.slice';
+import { LIVE_STREAM_FEATURE_KEY, liveStreamReducer } from './stream/liveStream.slice';
 import { usersStreamReducer } from './stream/usersStream.slice';
 import { videoStreamReducer } from './stream/videoStream.slice';
 import { systemMessageReducer } from './systemMessages/systemMessage.slice';
@@ -368,6 +369,7 @@ const reducer = {
 	voice: voiceReducer,
 	usersstream: usersStreamReducer,
 	videostream: videoStreamReducer,
+	[LIVE_STREAM_FEATURE_KEY]: liveStreamReducer,
 	channelApp: persistedChannelAppReducer,
 	canvasapi: canvasAPIReducer,
 	activitiesapi: persistedActivitiesReducer,

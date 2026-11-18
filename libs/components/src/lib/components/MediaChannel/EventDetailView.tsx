@@ -469,7 +469,7 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 										className="w-full text-left p-3 bg-theme-primary rounded-lg border-theme-primary hover:bg-item-hover-chat transition-colors group"
 										data-e2e={generateE2eId('timeline.buttons.add_description')}
 									>
-										<p className="text-sm text-theme-secondary whitespace-pre-wrap group-hover:text-theme-primary transition-colors">
+										<p className="text-sm text-theme-secondary whitespace-pre-wrap group-hover:text-[var(--text-theme-primary)] transition-colors">
 											{description}
 										</p>
 									</button>

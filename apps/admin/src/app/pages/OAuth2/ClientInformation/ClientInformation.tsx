@@ -111,7 +111,11 @@ const ResetSecretPopup = ({ handleClosePopup, currentApp, handleCopyKey: _handle
 			...currentApp?.oAuthClient,
 			client_secret: newSecretKey
 		};
-		await dispatch(editMezonOauthClient({ body: request }));
+		const result = await dispatch(editMezonOauthClient({ body: request }));
+		if (editMezonOauthClient.rejected.match(result)) {
+			toast.error(t('oauth2.toasts.saveFailed'));
+			return;
+		}
 		handleClosePopup();
 	};
 	const handleCoppyKey = (url: string) => {

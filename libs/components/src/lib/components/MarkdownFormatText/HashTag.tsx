@@ -153,7 +153,7 @@ const ChannelHashtag = ({
 	return isValidChannel ? (
 		<span
 			onClick={tokenClickAble}
-			className={`no-underline font-medium rounded-sm inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
+			className={`no-underline font-medium rounded-sm ${isStreamingChannel ? 'inline-flex items-center gap-0.5 align-baseline' : 'inline'} whitespace-nowrap cursor-pointer bg-mention color-mention ${!isJumMessageEnabled ? 'hover-mention' : 'cursor-text'}`}
 		>
 			{isVoiceChannel ? (
 				channel.channel_private ? (
@@ -162,7 +162,7 @@ const ChannelHashtag = ({
 					<MezonIcon icon={MzIcons16.mzSpeaker} className={`inline mt-[-0.2rem]`} />
 				)
 			) : isStreamingChannel ? (
-				<MezonIcon icon={MzIcons16.mzLive} className={`inline mt-[-0.2rem] text-[#3297FF]`} />
+				<MezonIcon icon={MzIcons16.mzLive} className="shrink-0 text-[#3297FF]" />
 			) : isAppChannel ? (
 				<MezonIcon icon={MzIcons16.mzChannelApp} className={`inline mt-[-0.2rem]`} />
 			) : isTextChannel ? (

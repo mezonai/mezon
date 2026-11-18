@@ -38,6 +38,7 @@ export const DATA_E2E_IDENTIFIER = {
 	short_profile: {
 		display_name: '',
 		username: '',
+		no_information: '',
 		activity_status: {
 			button: {
 				custom: '',
@@ -761,9 +762,6 @@ export const DATA_E2E_IDENTIFIER = {
 		}
 	},
 	chat: {
-		spelling: {
-			recommendation: ''
-		},
 		message_box: {
 			input: {
 				no_permission: ''
@@ -1117,7 +1115,6 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		chat: {
 			tab: '',
-			spelling_switch: '',
 			quick_reply_switch: '',
 			only_friends_dm_switch: ''
 		}

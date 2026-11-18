@@ -18,6 +18,7 @@ import {
 } from '@mezon/store';
 import { setPreferredOutputDeviceId, sinkIdForHtmlMediaElement } from '@mezon/utils';
 import type Hls from 'hls.js';
+import type { LevelDetails } from 'hls.js';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +34,15 @@ const WHEP_DISCONNECTED_GRACE_MS = 5000;
 const MAX_RECONNECTS = 3;
 const WATCH_RENEW_MS = 30000;
 const LIVE_MAX_UNCHANGED_RELOADS = 20;
+const STALE_PLAYLIST_RETRY_MS = 1500;
+const MAX_STALE_PLAYLIST_RETRIES = 3;
+const STALE_PLAYLIST_AGE_MS = 30000;
+
+const isStaleLivePlaylist = (details: LevelDetails) => {
+	if (!details.live) return true;
+	const newest = details.fragments[details.fragments.length - 1]?.programDateTime;
+	return typeof newest === 'number' && newest > 0 && Date.now() - newest > STALE_PLAYLIST_AGE_MS;
+};
 
 const hlsLevelFor = (quality: StreamQuality, levels: number) => {
 	if (quality === 'auto' || levels === 0) return -1;
@@ -131,6 +141,8 @@ export function StreamPlaybackSession() {
 		let disconnectedTimer: ReturnType<typeof setTimeout> | undefined;
 		let whep: WhepSession | undefined;
 		let hls: Hls | undefined;
+		let staleRetries = 0;
+		let staleRetryTimer: ReturnType<typeof setTimeout> | undefined;
 
 		const play = () => {
 			video.play().catch((error: unknown) => {
@@ -178,6 +190,19 @@ export function StreamPlaybackSession() {
 			hls = player;
 			hlsRef.current = player;
 			let recoveredMedia = false;
+			let checkedFirstPlaylist = false;
+			player.on(HlsPlayer.Events.LEVEL_LOADED, (_event, data) => {
+				if (checkedFirstPlaylist) return;
+				checkedFirstPlaylist = true;
+				if (staleRetries >= MAX_STALE_PLAYLIST_RETRIES || !isStaleLivePlaylist(data.details)) return;
+				staleRetries += 1;
+				player.destroy();
+				if (hls === player) hls = undefined;
+				if (hlsRef.current === player) hlsRef.current = undefined;
+				staleRetryTimer = setTimeout(() => {
+					if (!disposed) void playHls(url);
+				}, STALE_PLAYLIST_RETRY_MS);
+			});
 			player.on(HlsPlayer.Events.MANIFEST_PARSED, () => {
 				if (qualityRef.current !== 'auto') player.currentLevel = hlsLevelFor(qualityRef.current, player.levels.length);
 			});
@@ -270,6 +295,7 @@ export function StreamPlaybackSession() {
 			disposed = true;
 			listeners.abort();
 			clearTimeout(disconnectedTimer);
+			clearTimeout(staleRetryTimer);
 			if (whep) stopWhep(whep);
 			hls?.destroy();
 			whepRef.current = undefined;

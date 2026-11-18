@@ -657,10 +657,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 											: t('gallery.emptyState.noMediaFiles')}
 							</p>
 							{(startDate || endDate) && (
-								<button
-									onClick={clearDateFilter}
-									className="text-theme-primary hover:text-theme-primary-active text-sm underline mt-2"
-								>
+								<button onClick={clearDateFilter} className="text-theme-primary text-theme-primary-hover text-sm underline mt-2">
 									{t('gallery.buttons.clearDateFilter')}
 								</button>
 							)}

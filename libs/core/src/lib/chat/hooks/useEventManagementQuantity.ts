@@ -15,7 +15,7 @@ export const useEventManagementQuantity = () => {
 		() =>
 			allEventManagement.filter(
 				(event) =>
-					(!event?.is_private || event.creator_id === userId) &&
+					(!event?.is_external || event.creator_id === userId) &&
 					(!event.channel_id || event.channel_id === '0' || allThreadChannelPrivateIds.includes(event.channel_id))
 			),
 		[allEventManagement, allThreadChannelPrivateIds, userId]

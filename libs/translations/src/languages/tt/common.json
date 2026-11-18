@@ -79,6 +79,7 @@
 	"yes": "Әйе",
 	"settings": "Көйләүләр",
 	"search": "Эзләү",
+	"socketReconnecting": "Бәйләнеш өзелде. Яңадан тоташу…",
 	"errorBoundary": {
 		"title": "Бу бик уңайсыз",
 		"crashMessage": "Мезон көтмәгәндә егылган кебек ....",
@@ -92,6 +93,7 @@
 	},
 	"newMessage": "Яңа",
 	"newMention": "Яңа искә алу",
+	"newMentionsInTopic": "Темадагы яңа искә алулар",
 	"clanRailNew": "Яңа",
 	"discover": "Ачыклагыз",
 	"createClan": "Клан булдыру",
@@ -551,5 +553,11 @@
 	"formatDate": "MMMM d, yyyy",
 	"cannotSendLocationWithAnonymous": "Аноним ярдәмендә урын җибәрә алмый.",
 	"iconAnimations": "Тамгалар анимациясе",
-	"iconAnimationsDesc": "Курсор өстенә китергәндә һәм язу яки трансляция кебек турыдан-туры эшчәнлек вакытында тамгаларны хәрәкәтләндерергә."
+	"iconAnimationsDesc": "Курсор өстенә китергәндә һәм язу яки трансляция кебек турыдан-туры эшчәнлек вакытында тамгаларны хәрәкәтләндерергә.",
+	"openInDesktopApp": {
+		"title": "Бу сылтаманы Mezon өстәл кушымтасында ачаргамы?",
+		"open": "Кушымтаны ачу",
+		"dismiss": "Ябу",
+		"continueInBrowser": "Браузерда дәвам итү"
+	}
 }

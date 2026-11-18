@@ -5,6 +5,7 @@
 	"yes": "Có",
 	"settings": "Cài đặt",
 	"search": "Tìm kiếm",
+	"socketReconnecting": "Mất kết nối. Đang kết nối lại…",
 	"errorBoundary": {
 		"title": "Ồ, điều này thật khó xử",
 		"crashMessage": "Có vẻ như Mezon đã gặp sự cố bất ngờ...",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "Tin nhắn mới",
 	"newMention": "Đề cập mới",
+	"newMentionsInTopic": "Đề cập mới trong chủ đề",
 	"clanRailNew": "Mới",
 	"discover": "Khám phá",
 	"createClan": "Tạo Clan",
@@ -551,5 +553,11 @@
 	"formatDate": "d 'tháng' M, yyyy",
 	"cannotSendLocationWithAnonymous": "Không thể gửi vị trí khi đang ẩn danh.",
 	"iconAnimations": "Hiệu ứng icon",
-	"iconAnimationsDesc": "Icon chuyển động khi rê chuột và khi có hoạt động trực tiếp, như đang nhập hay đang phát trực tiếp."
+	"iconAnimationsDesc": "Icon chuyển động khi rê chuột và khi có hoạt động trực tiếp, như đang nhập hay đang phát trực tiếp.",
+	"openInDesktopApp": {
+		"title": "Mở liên kết này bằng ứng dụng Mezon trên máy tính?",
+		"open": "Mở ứng dụng",
+		"dismiss": "Đóng",
+		"continueInBrowser": "Tiếp tục trên trình duyệt"
+	}
 }

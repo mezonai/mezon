@@ -492,15 +492,9 @@ export async function createRecordingSink(fileName: string, mimeType: string, ex
 
 void cleanupRecordingStorage();
 
-export function buildRecordingFileName(channelLabel: string | undefined, extension: string): string {
+export function buildRecordingFileName(_channelLabel: string | undefined, extension: string): string {
 	const now = new Date();
 	const pad = (value: number) => String(value).padStart(2, '0');
-	const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
-	const safeLabel = (channelLabel || 'call')
-		.normalize('NFKD')
-		.replace(/[^\w\s-]/g, '')
-		.trim()
-		.replace(/\s+/g, '-')
-		.slice(0, 40);
-	return `mezon-${safeLabel || 'call'}-${stamp}.${extension}`;
+	const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+	return `mezon-call-${stamp}.${extension}`;
 }

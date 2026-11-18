@@ -9,6 +9,7 @@ import {
 	selectInfoSendToken,
 	selectIsInCall,
 	selectIsJoin,
+	selectIsLiveActive,
 	selectMemberCustomStatusById,
 	selectShowModalCustomStatus,
 	selectShowModalSendToken,
@@ -46,6 +47,7 @@ import { NoiseSuppressionStatus } from '../MezonSfuVoiceChannel/NoiseSuppression
 import ModalCustomStatus from '../ModalUserProfile/StatusProfile/ModalCustomStatus';
 import ModalSendToken from '../ModalUserProfile/StatusProfile/ModalSendToken';
 import StreamInfo from '../StreamInfo';
+import { LiveInfo } from '../StreamPlayer';
 import ModalFooterProfile from './ModalFooterProfile';
 export type FooterProfileProps = {
 	name: string;
@@ -256,6 +258,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 	const modalControlRef = useRef<HTMLDivElement>(null);
 	const isInCall = useSelector(selectIsInCall);
 	const isJoin = useSelector(selectIsJoin);
+	const isLiveActive = useSelector(selectIsLiveActive);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
 
 	const [showProfile, setShowProfile] = useState(false);
@@ -343,6 +346,7 @@ function FooterProfile({ name, status, avatar, userId, isDM, username }: FooterP
 		>
 			{isInCall && <StreamInfo type={ESummaryInfo.CALL} />}
 			{isJoin && <StreamInfo type={ESummaryInfo.STREAM} />}
+			{isLiveActive && <LiveInfo />}
 			{isVoiceJoined && <SfuVoiceInfo />}
 			<div
 				className={`flex items-center gap-2 pr-4 pl-2 py-2 font-title text-[15px]

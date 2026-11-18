@@ -1,5 +1,6 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
-import { ID_MENTION_HERE, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
+import type { MentionDataProps } from '@mezon/utils';
+import { ID_MENTION_HERE, IS_MAC_OS, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
 	cloneElement,
@@ -17,7 +18,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { MentionData, MentionProps, MentionState } from './Mention';
 import parseHtmlAsFormattedText from './parseHtmlAsFormattedText';
-import { clearMentionReplacer, preparePastedHtml } from './utils/cleanHtml';
+import { clearMentionReplacer, convertPastedHtmlToMarkdown, preparePastedHtml } from './utils/cleanHtml';
 import renderText from './utils/renderText';
 
 const escapeMentionText = (value: string): string => {
@@ -88,6 +89,7 @@ export interface MentionsInputProps {
 	currentChannelId?: string;
 	allowEmptySend?: boolean;
 	keepTextOnSend?: boolean;
+	mentionUsers?: MentionDataProps[];
 }
 
 export interface MentionsInputHandle {
@@ -344,7 +346,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setCaretToEnd = false,
 			currentChannelId,
 			allowEmptySend = false,
-			keepTextOnSend = false
+			keepTextOnSend = false,
+			mentionUsers = []
 		},
 		ref
 	) => {
@@ -363,6 +366,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setTriggerSelection(false);
 		}, []);
 		const savedCaretPositionRef = useRef<{ range: Range; inputHtml: string } | null>(null);
+		const plainTextPasteRef = useRef(false);
 		const [suggestionsCount, setSuggestionsCount] = useState(0);
 
 		// A pick that is waiting for a pending answer belongs to the mention it was made in.
@@ -953,6 +957,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 		const handlePaste = useCallback(
 			(e: React.ClipboardEvent<HTMLDivElement>) => {
+				const asPlainText = plainTextPasteRef.current;
+				plainTextPasteRef.current = false;
 				if (!e.clipboardData || disabled) {
 					return;
 				}
@@ -977,7 +983,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					return;
 				}
 
-				const htmlContent = e.clipboardData.getData('text/html');
+				const htmlContent = asPlainText ? '' : e.clipboardData.getData('text/html');
 				const plainText = e.clipboardData.getData('text/plain');
 
 				const containsMentionEntities =
@@ -992,12 +998,13 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				if (containsMentionEntities && htmlContent) {
 					const cleanedHtml = preparePastedHtml(htmlContent);
-					contentToInsert = cleanedHtml;
-					if (cleanedHtml.trim() !== inputRef.current?.innerHTML.trim()) {
-						contentToInsert = clearMentionReplacer(cleanedHtml);
-					}
+					contentToInsert = clearMentionReplacer(cleanedHtml, mentionUsers);
 				} else if (htmlContent) {
-					contentToInsert = (renderText(plainText || '', ['escape_html', 'br_html']) as string[]).join('').replace(/\u200b+/g, '\u200b');
+					contentToInsert = (
+						renderText(convertPastedHtmlToMarkdown(htmlContent) || plainText || '', ['escape_html', 'br_html']) as string[]
+					)
+						.join('')
+						.replace(/\u200b+/g, '\u200b');
 				} else {
 					if (!plainText) {
 						return;
@@ -1011,35 +1018,44 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				onChange?.(e.currentTarget.innerHTML);
 				debouncedDetectMention();
 			},
-			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste]
+			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste, mentionUsers]
 		);
 
 		const { t } = useTranslation('message');
 
-		const handlePasteFromContextMenu = useCallback(async () => {
-			if (!inputRef.current || disabled) return;
-
-			try {
-				const clipboardText = await navigator.clipboard.readText();
-				if (!clipboardText) return;
-
-				inputRef.current.focus();
-
-				const contentToInsert = (renderText(clipboardText, ['escape_html', 'br_html']) as string[]).join('').replace(/\u200b+/g, '\u200b');
-
-				insertHtmlInSelection(contentToInsert);
-				inputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-
-				const newHtml = inputRef.current.innerHTML;
-				setHtml(newHtml);
-				onChange?.(newHtml);
-				debouncedDetectMention();
-
+		const handlePasteFromContextMenu = useCallback(
+			async (asPlainText: boolean) => {
+				if (!inputRef.current || disabled) return;
 				setContextMenuPosition(null);
-			} catch (error) {
-				console.error('Failed to paste from clipboard:', error);
-			}
-		}, [disabled, onChange, debouncedDetectMention]);
+
+				try {
+					const [clipboardItem] = asPlainText ? [] : await navigator.clipboard.read();
+					const readClipboard = async (type: string) =>
+						clipboardItem?.types.includes(type) ? (await clipboardItem.getType(type)).text() : '';
+					const clipboardText = clipboardItem
+						? convertPastedHtmlToMarkdown(await readClipboard('text/html')) || (await readClipboard('text/plain'))
+						: await navigator.clipboard.readText();
+					if (!clipboardText || !inputRef.current) return;
+
+					inputRef.current.focus();
+
+					const contentToInsert = (renderText(clipboardText, ['escape_html', 'br_html']) as string[])
+						.join('')
+						.replace(/\u200b+/g, '\u200b');
+
+					insertHtmlInSelection(contentToInsert);
+					inputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+
+					const newHtml = inputRef.current.innerHTML;
+					setHtml(newHtml);
+					onChange?.(newHtml);
+					debouncedDetectMention();
+				} catch (error) {
+					console.error('Failed to paste from clipboard:', error);
+				}
+			},
+			[disabled, onChange, debouncedDetectMention]
+		);
 
 		const handleContextMenu = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
@@ -1049,6 +1065,26 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			},
 			[disabled]
 		);
+
+		const {
+			refs: contextMenuRefs,
+			floatingStyles: contextMenuStyles,
+			isPositioned: isContextMenuPositioned
+		} = useFloating({
+			open: !!contextMenuPosition,
+			strategy: 'fixed',
+			placement: 'bottom-start',
+			middleware: [offset(2), flip({ padding: 8 }), shift({ padding: 8 })],
+			whileElementsMounted: autoUpdate
+		});
+
+		useEffect(() => {
+			if (contextMenuPosition) {
+				contextMenuRefs.setPositionReference({
+					getBoundingClientRect: () => new DOMRect(contextMenuPosition.x, contextMenuPosition.y, 0, 0)
+				});
+			}
+		}, [contextMenuPosition, contextMenuRefs]);
 
 		useEffect(() => {
 			const handleClickOutside = () => {
@@ -1131,6 +1167,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 		const handleKeyDown = useCallback(
 			(e: React.KeyboardEvent<HTMLDivElement>) => {
 				const isComposing = (e.nativeEvent as any)?.isComposing || (e as any).isComposing;
+				plainTextPasteRef.current = (e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'v' || e.key === 'V');
 
 				if (disabled || isComposing) {
 					return;
@@ -1449,20 +1486,25 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				{contextMenuPosition &&
 					(createPortal(
 						<div
-							className="fixed bg-theme-surface border border-theme-primary rounded-md shadow-lg py-1 z-[10000]"
-							style={{
-								left: `${contextMenuPosition.x}px`,
-								top: `${contextMenuPosition.y}px`
-							}}
+							ref={contextMenuRefs.setFloating}
+							className="z-[10000] min-w-[220px] p-1.5 rounded-lg border-theme-primary bg-theme-contexify shadow-xl"
+							style={{ ...contextMenuStyles, visibility: isContextMenuPositioned ? 'visible' : 'hidden' }}
 							onClick={(e) => e.stopPropagation()}
 						>
-							<button
-								className="w-full px-4 text-left text-theme-primary hover:bg-theme-surface-hover flex items-center justify-between gap-8 cursor-pointer transition-colors"
-								onClick={handlePasteFromContextMenu}
-							>
-								<span>{t('pasteOption')}</span>
-								<span className="text-xs text-theme-secondary">Ctrl+V</span>
-							</button>
+							{[
+								{ label: t('pasteOption'), shortcut: IS_MAC_OS ? '⌘V' : 'Ctrl+V', asPlainText: false },
+								{ label: t('pasteAsPlainTextOption'), shortcut: IS_MAC_OS ? '⇧⌘V' : 'Ctrl+Shift+V', asPlainText: true }
+							].map(({ label, shortcut, asPlainText }) => (
+								<button
+									key={shortcut}
+									type="button"
+									className="w-full flex items-center justify-between gap-6 px-2.5 py-1.5 rounded-md text-sm text-left text-theme-primary text-theme-primary-hover bg-item-hover cursor-pointer"
+									onClick={() => handlePasteFromContextMenu(asPlainText)}
+								>
+									<span>{label}</span>
+									<span className="text-xs text-theme-primary opacity-70">{shortcut}</span>
+								</button>
+							))}
 						</div>,
 						document.body
 					) as React.ReactElement)}
@@ -1479,6 +1521,7 @@ const MentionsInput = memo(MentionsInputComponent, (prevProps, nextProps) => {
 		prevProps.disabled !== nextProps.disabled ||
 		prevProps.placeholder !== nextProps.placeholder ||
 		prevProps.currentChannelId !== nextProps.currentChannelId ||
+		prevProps.mentionUsers !== nextProps.mentionUsers ||
 		prevProps.hasFilesToSend !== nextProps.hasFilesToSend ||
 		prevProps.setCaretToEnd !== nextProps.setCaretToEnd ||
 		prevProps.children !== nextProps.children

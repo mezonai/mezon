@@ -1,5 +1,5 @@
 import type { DragEvent } from 'react';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import {
@@ -18,7 +18,6 @@ import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
 import type { ChannelLinkRef } from '../../ChannelLink';
 import { ChannelLink } from '../../ChannelLink';
 import { AvatarUserShort } from '../../ClanSettings/SettingChannel';
-import { StreamViewerCount } from '../../StreamPlayer/StreamPublisher';
 import UserListItem from '../../UserListVoiceChannel/UserListItemVoiceChannel';
 import type { IChannelLinkPermission } from '../CategorizedChannels';
 
@@ -50,7 +49,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
 
-	const renderChannelLink = () => {
+	const renderChannelLink = useCallback(() => {
 		return (
 			<ChannelLink
 				clanId={channel?.clan_id}
@@ -66,7 +65,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 				dragEnter={dragEnter}
 			/>
 		);
-	};
+	}, [channel, dragEnter, dragStart, isActive, isUnreadChannel, permissions]);
 
 	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, channel.threadIds || []));
 	const isVoiceOrStreamingChannel =
@@ -140,7 +139,6 @@ const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMembe
 				<AvatarUserShort id={user.user_id || ''} key={(user.user_id || '') + index} />
 			))}
 			{hiddenMembers > 0 && <AvatarCount number={Math.min(hiddenMembers, 99)} />}
-			{channelType === ChannelType.CHANNEL_TYPE_STREAMING && <StreamViewerCount channelId={channelId} className="ml-auto text-theme-primary" />}
 		</AvatarGroup>
 	);
 };
@@ -168,15 +166,10 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 	return (
 		<>
 			{channelMemberList.map((user, index) => {
-				if (user.user_id === process.env.NX_VOICE_AGENT_ID) {
-					return null;
-				}
 				const isPublisher = isStream && index === 0;
 				return (
 					<div key={isPublisher ? `publisher:${user.user_id}` : user.user_id} className={'mt-[1px]'}>
-						<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} showScreenShareIcon={!isStream}>
-							{isPublisher && <StreamViewerCount channelId={channelId} className="text-theme-primary" />}
-						</UserListItem>
+						<UserListItem id={user.user_id} user_name={user.user_name} user_avatar={user.user_avatar} showScreenShareIcon={!isStream} />
 					</div>
 				);
 			})}

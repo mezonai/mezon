@@ -5,6 +5,7 @@
 	"yes": "Ja",
 	"settings": "Inställningar",
 	"search": "Sök",
+	"socketReconnecting": "Anslutningen bröts. Ansluter igen…",
 	"errorBoundary": {
 		"title": "Åh, detta är besvärligt",
 		"crashMessage": "Mezon verkar ha stött på ett oväntat fel...",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "Nytt meddelande",
 	"newMention": "Ny nämning",
+	"newMentionsInTopic": "Nya omnämnanden i ämnet",
 	"clanRailNew": "Nytt",
 	"discover": "Upptäcka",
 	"createClan": "Skapa Clan",
@@ -551,5 +553,11 @@
 	"formatDate": "d 'månad' M, yyyy",
 	"cannotSendLocationWithAnonymous": "Kunde inte skicka plats när anonym.",
 	"iconAnimations": "Ikonanimationer",
-	"iconAnimationsDesc": "Animera ikoner vid hovring och under pågående aktivitet, till exempel när någon skriver eller vid en stream."
+	"iconAnimationsDesc": "Animera ikoner vid hovring och under pågående aktivitet, till exempel när någon skriver eller vid en stream.",
+	"openInDesktopApp": {
+		"title": "Öppna länken i Mezons skrivbordsapp?",
+		"open": "Öppna appen",
+		"dismiss": "Stäng",
+		"continueInBrowser": "Fortsätt i webbläsaren"
+	}
 }

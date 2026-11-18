@@ -1,6 +1,6 @@
 import type { AttachmentEntity } from '@mezon/store';
 import { formatDateI18n } from '@mezon/utils';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '../../virtual-core/useVirtualizer';
 import ItemAttachment from './itemAttachment';
 
@@ -79,8 +79,10 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 	const scrollSizeKey = horizontal ? 'scrollWidth' : 'scrollHeight';
 	const scrollOffsetKey = horizontal ? 'scrollLeft' : 'scrollTop';
 
+	const reversedAttachments = useMemo(() => [...attachments].reverse(), [attachments]);
+
 	const virtualizer = useVirtualizer({
-		count: attachments.length,
+		count: reversedAttachments.length,
 		getScrollElement: () => scrollContainerRef.current,
 		estimateSize: () => (horizontal ? 72 : 94),
 		horizontal,
@@ -98,44 +100,46 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 		if (virtualItemsList.length === 0) return;
 
 		const firstItem = virtualItemsList[0];
-		if (firstItem && firstItem.index === 0 && hasMoreAfter) {
-			if (lastAfterTriggerLengthRef.current === attachments.length) return;
-			lastAfterTriggerLengthRef.current = attachments.length;
+		if (firstItem && firstItem.index === 0 && hasMoreBefore) {
+			if (lastBeforeTriggerLengthRef.current === reversedAttachments.length) return;
+			lastBeforeTriggerLengthRef.current = reversedAttachments.length;
 			setIsLoadingMore(true);
 			if (scrollContainerRef.current) {
 				previousScrollSizeRef.current = scrollContainerRef.current[scrollSizeKey];
 				previousScrollOffsetRef.current = scrollContainerRef.current[scrollOffsetKey];
 			}
-			onLoadMore('after');
+			onLoadMore('before');
 			return;
 		}
 
 		const lastItem = virtualItemsList[virtualItemsList.length - 1];
-		if (lastItem && lastItem.index >= attachments.length - 1 && hasMoreBefore) {
-			if (lastBeforeTriggerLengthRef.current === attachments.length) return;
-			lastBeforeTriggerLengthRef.current = attachments.length;
+		if (lastItem && lastItem.index >= reversedAttachments.length - 1 && hasMoreAfter) {
+			if (lastAfterTriggerLengthRef.current === reversedAttachments.length) return;
+			lastAfterTriggerLengthRef.current = reversedAttachments.length;
 			setIsLoadingMore(true);
-			onLoadMore('before');
+			onLoadMore('after');
 		}
-	}, [virtualItems, hasMoreBefore, hasMoreAfter, onLoadMore, isLoadingMore, isLoading, attachments.length, scrollSizeKey, scrollOffsetKey]);
+	}, [virtualItems, hasMoreBefore, hasMoreAfter, onLoadMore, isLoadingMore, isLoading, reversedAttachments.length, scrollSizeKey, scrollOffsetKey]);
 
 	useEffect(() => {
-		if (isFirstRenderRef.current && attachments.length > 0 && currentIndexAtt !== undefined && scrollContainerRef.current) {
+		if (isFirstRenderRef.current && reversedAttachments.length > 0 && currentIndexAtt !== undefined && scrollContainerRef.current) {
+			const reversedIndex = attachments.length - 1 - currentIndexAtt;
+
 			if (scrollContainerRef.current && virtualizer) {
-				virtualizer.scrollToIndex(currentIndexAtt, { align: 'center' });
+				virtualizer.scrollToIndex(reversedIndex, { align: 'center' });
 				setTimeout(() => {
 					isFirstRenderRef.current = false;
 				}, 300);
 			}
 		}
-	}, [currentIndexAtt, attachments.length, virtualizer]);
+	}, [reversedAttachments.length, currentIndexAtt, attachments.length, virtualizer]);
 
 	useEffect(() => {
-		// The parent updates the selected index one render after attachments change.
 		if (!currentAttachmentId || attachments[currentIndexAtt]?.id !== currentAttachmentId) return;
 
 		if (!isFirstRenderRef.current && previousAttachmentIdRef.current !== currentAttachmentId) {
-			virtualizer.scrollToIndex(currentIndexAtt, { align: 'center', behavior: 'smooth' });
+			const reversedIndex = attachments.length - 1 - currentIndexAtt;
+			virtualizer.scrollToIndex(reversedIndex, { align: 'center', behavior: 'smooth' });
 		}
 
 		previousAttachmentIdRef.current = currentAttachmentId;
@@ -171,7 +175,7 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 					position: 'relative'
 				}}
 			>
-				{hasMoreAfter && (isLoadingMore || isLoading) && (
+				{hasMoreBefore && (isLoadingMore || isLoading) && (
 					<div
 						className={`flex items-center justify-center text-white text-xs absolute z-10 ${
 							horizontal ? 'px-2 top-0 bottom-0 left-0' : 'py-2 top-0 left-0 right-0'
@@ -183,10 +187,11 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 				)}
 
 				{virtualItems.map((virtualItem) => {
-					const attachment = attachments[virtualItem.index];
+					const attachment = reversedAttachments[virtualItem.index];
+					const originalIndex = attachments.length - 1 - virtualItem.index;
 
 					const currentDate = formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy');
-					const nextAttachment = attachments[virtualItem.index + 1];
+					const nextAttachment = reversedAttachments[virtualItem.index + 1];
 					const nextDate = nextAttachment ? formatDateI18n(new Date(nextAttachment.create_time || ''), 'en', 'dd/MM/yyyy') : '';
 					const showDate = nextDate !== currentDate;
 
@@ -214,7 +219,7 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 								showDate={showDate}
 								setUrlImg={setUrlImg}
 								handleDrag={handleDrag}
-								index={virtualItem.index}
+								index={originalIndex}
 								setCurrentIndexAtt={setCurrentIndexAtt}
 								currentIndexAtt={currentIndexAtt}
 							/>
@@ -222,7 +227,7 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 					);
 				})}
 
-				{hasMoreBefore && (isLoadingMore || isLoading) && (
+				{hasMoreAfter && (isLoadingMore || isLoading) && (
 					<div
 						className={`flex items-center justify-center text-white text-xs absolute z-10 ${
 							horizontal ? 'px-2 top-0 bottom-0 right-0' : 'py-2 bottom-0 left-0 right-0'

@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "Det finns tomt fält!",
+			"saveFailed": "Det gick inte att spara OAuth-inställningarna. Försök igen. Om problemet kvarstår, logga in igen.",
 			"invalidUris": "URI måste vara giltig!",
 			"redirectUriRequired": "Redirect URI är obligatorisk!"
 		}

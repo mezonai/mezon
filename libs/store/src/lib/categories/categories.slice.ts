@@ -12,6 +12,7 @@ import type {
 } from 'mezon-js';
 import { CategoryDesc, CategoryDescList } from 'mezon-js-protobuf';
 import { callApiAdmin } from '../application/adminAPI.slice';
+import type { AdminSessionContext } from '../auth/adminSession';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
@@ -84,8 +85,8 @@ const selectCachedCategoriesByClan = createSelector(
 	}
 );
 
-export const fetchCategoriesCached = async (getState: () => RootState, ensuredMezon: MezonValueContext, clanId: string, noCache = false) => {
-	const state = getState();
+export const fetchCategoriesCached = async (thunkAPI: AdminSessionContext, ensuredMezon: MezonValueContext, clanId: string, noCache = false) => {
+	const state = thunkAPI.getState() as RootState;
 	const clanData = state[CATEGORIES_FEATURE_KEY].byClans[clanId];
 	const apiKey = createApiKey('fetchCategories', clanId);
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData?.cache, noCache);
@@ -107,7 +108,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 			path: '/mezon.api.Mezon/ListCategoryDescs',
 			data: CategoryDesc.encode(CategoryDesc.fromPartial({ clan_id: clanId })).finish(),
 			decodeBody: (bytes) => CategoryDescList.decode(bytes) as ApiCategoryDescList,
-			token
+			thunkAPI
 		});
 		markApiFirstCalled(apiKey);
 		return {
@@ -140,7 +141,7 @@ export const fetchCategories = createAsyncThunk('categories/fetchCategories', as
 	try {
 		const mezonCtx = getMezonCtx(thunkAPI);
 		const mezon = mezonCtx?.clientRef?.current ? await ensureSession(mezonCtx) : (mezonCtx as any);
-		const response = await fetchCategoriesCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
+		const response = await fetchCategoriesCached(thunkAPI, mezon, clanId, noCache);
 		if (!response.categorydesc) {
 			return { categories: [], clanId };
 		}

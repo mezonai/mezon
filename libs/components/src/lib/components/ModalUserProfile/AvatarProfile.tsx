@@ -53,8 +53,6 @@ const AvatarProfile = ({
 	};
 
 	const isUserLeft = !avatar && !username;
-	const avatarChar = username?.charAt(0)?.toUpperCase() || '';
-	const displayAvatar = isUserLeft ? avatarChar : avatar || '';
 	const activityStatus = useMemo(() => {
 		return typeof customStatus === 'string'
 			? customStatus
@@ -71,9 +69,10 @@ const AvatarProfile = ({
 					alt={username || ''}
 					username={username || ''}
 					className={`w-[90px] h-[90px] min-w-[90px] min-h-[90px] xl:w-[90px] xl:h-[90px] rounded-[50px] border-[6px] border-color-avatar object-cover my-0 ${styleAvatar} ${isUserLeft ? 'opacity-60' : ''}`}
-					srcImgProxy={displayAvatar ? createImgproxyUrl(displayAvatar, { width: 300, height: 300, resizeType: 'fill-down' }) : undefined}
-					src={displayAvatar || ''}
-					isAnonymous={isUserLeft || isAnonymous}
+					srcImgProxy={avatar ? createImgproxyUrl(avatar, { width: 300, height: 300, resizeType: 'fill-down' }) : undefined}
+					src={avatar || ''}
+					isAnonymous={isAnonymous}
+					useUserPlaceholder
 					classNameText="!text-5xl"
 				/>
 
