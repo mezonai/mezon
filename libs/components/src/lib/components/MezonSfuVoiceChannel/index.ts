@@ -1,6 +1,6 @@
 export { BreakoutSessionHost } from './BreakoutRooms/BreakoutSessionHost';
 export { CameraControl, MicrophoneControl } from './ControlBar';
-export { MezonSfuVoiceRoom } from './MyVideoConference/MezonSfuVoiceRoom';
+export { MezonSfuVoiceRoom, openCameraStream, withPreferredCamera } from './MyVideoConference/MezonSfuVoiceRoom';
 export * from './PreJoinVoiceChannel/SfuPreJoinVoiceChannel';
 export { default as SfuVoiceInfo } from './VoiceInfo/SfuVoiceInfo';
 export * from './types';

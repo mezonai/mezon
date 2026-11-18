@@ -5,6 +5,7 @@
 	"yes": "はい",
 	"settings": "設定",
 	"search": "検索",
+	"socketReconnecting": "接続が切れました。再接続しています…",
 	"errorBoundary": {
 		"title": "おっと、これは尴尬です",
 		"crashMessage": "Mezonが予期しない問題に遭遇したようです...",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "新しいメッセージ",
 	"newMention": "新しいメンション",
+	"newMentionsInTopic": "トピック内の新しいメンション",
 	"clanRailNew": "新着",
 	"discover": "発見",
 	"createClan": "クランを作成",
@@ -551,5 +553,11 @@
 	"formatDate": "yyyy年M月d日",
 	"cannotSendLocationWithAnonymous": "匿名モードでは位置情報を送信できません。",
 	"iconAnimations": "アイコンのアニメーション",
-	"iconAnimationsDesc": "ホバー時や、入力中・配信中などリアルタイムの動作中にアイコンをアニメーションで表示します。"
+	"iconAnimationsDesc": "ホバー時や、入力中・配信中などリアルタイムの動作中にアイコンをアニメーションで表示します。",
+	"openInDesktopApp": {
+		"title": "このリンクを Mezon デスクトップアプリで開きますか？",
+		"open": "アプリで開く",
+		"dismiss": "閉じる",
+		"continueInBrowser": "ブラウザで続ける"
+	}
 }

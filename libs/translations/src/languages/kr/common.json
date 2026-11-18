@@ -5,6 +5,7 @@
 	"yes": "네",
 	"settings": "설정",
 	"search": "검색",
+	"socketReconnecting": "연결이 끊어졌습니다. 다시 연결하는 중…",
 	"errorBoundary": {
 		"title": "오, 이게 정말 당황스러워요",
 		"crashMessage": "Mezon 이 예상치 못한 문제를 만난 것 같습니다...",
@@ -18,6 +19,7 @@
 	},
 	"newMessage": "새 메시지",
 	"newMention": "새 알림",
+	"newMentionsInTopic": "주제의 새 멘션",
 	"clanRailNew": "새",
 	"discover": "탐색",
 	"createClan": "클랜 만들기",
@@ -551,5 +553,11 @@
 	"formatDate": "d '월' M, yyyy",
 	"cannotSendLocationWithAnonymous": "익명 상태일 때 위치를 보낼 수 있습니다.",
 	"iconAnimations": "아이콘 애니메이션",
-	"iconAnimationsDesc": "마우스를 올렸을 때와 입력 중이나 스트림 같은 실시간 활동 중에 아이콘을 움직입니다."
+	"iconAnimationsDesc": "마우스를 올렸을 때와 입력 중이나 스트림 같은 실시간 활동 중에 아이콘을 움직입니다.",
+	"openInDesktopApp": {
+		"title": "이 링크를 Mezon 데스크톱 앱에서 여시겠습니까?",
+		"open": "앱 열기",
+		"dismiss": "닫기",
+		"continueInBrowser": "브라우저에서 계속"
+	}
 }

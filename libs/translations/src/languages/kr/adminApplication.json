@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "빈 입력 필드가 있습니다!",
+			"saveFailed": "OAuth 설정을 저장하지 못했습니다. 다시 시도해 주세요. 문제가 계속되면 다시 로그인해 주세요.",
 			"invalidUris": "URI 가 유효해야 합니다!",
 			"redirectUriRequired": "리디렉션 URI 가 필요합니다!"
 		}

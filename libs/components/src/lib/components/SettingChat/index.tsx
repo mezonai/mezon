@@ -12,7 +12,6 @@ type SettingChatProps = {
 
 const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 	const { t } = useTranslation('setting');
-	const isSpelling = useSelector(selectIsSpelling);
 	const isQuickReply = useSelector(selectIsQuickReply);
 	const onlyFriendsDM = useSelector(selectOnlyFriendsDM);
 	const quickReaction = useQuickReactionEmoji();
@@ -35,13 +34,6 @@ const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 			description: t('chat.quickRepliesDescription'),
 			checked: isQuickReply,
 			onChange: () => dispatch(appActions.toggleIsQuickReply())
-		},
-		{
-			id: 'spelling_switch',
-			title: t('chat.grammar'),
-			description: t('chat.grammarDescription'),
-			checked: isSpelling,
-			onChange: () => dispatch(appActions.toggleIsSpelling())
 		},
 		{
 			id: 'only_friends_dm_switch',

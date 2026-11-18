@@ -308,8 +308,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 	const lastPersistedSidRef = React.useRef<string | null>(null);
 
 	React.useEffect(() => {
-		const unsubscribe = subscribeSessionUpdate(({ session, source }) => {
-			if (source === 'refresh') return;
+		const unsubscribe = subscribeSessionUpdate(({ session }) => {
 			sessionRef.current = session;
 		});
 		return unsubscribe;

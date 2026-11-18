@@ -170,6 +170,12 @@
 		"keepMuted": "L'audio è in pausa. Fai clic per mantenere il microfono disattivato."
 	},
 	"weakNetwork": "Rete debole",
+	"connecting": "Connessione…",
+	"reconnecting": "Riconnessione…",
+	"raiseHand": "Alza la mano",
+	"lowerHand": "Abbassa la mano",
+	"addAgent": "Aggiungi agente IA",
+	"removeAgent": "Rimuovi agente IA",
 	"networkWarning": {
 		"title": "La tua connessione internet è instabile",
 		"body": "Controlla la tua connessione di rete."

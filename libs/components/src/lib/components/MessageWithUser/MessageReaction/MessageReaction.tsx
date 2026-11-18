@@ -86,7 +86,7 @@ const ReactionContent: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 					<ItemEmoji key={`${index}-${message.id}`} message={message} emoji={emoji as any} isTopic={isTopic} />
 				))}
 			{showIconSmile && (
-				<div className="w-6 h-6 flex justify-center items-center cursor-pointer relative bg-item-hover hover:bg-item-theme rounded-md">
+				<div className="w-6 h-6 flex justify-center items-center cursor-pointer relative bg-item-hover hover:bg-item-theme rounded-md text-theme-primary text-theme-primary-hover">
 					<ReactionBottom messageIdRefReaction={message.id} smileButtonRef={smileButtonRef} />
 				</div>
 			)}

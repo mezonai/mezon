@@ -169,8 +169,6 @@
 	"chat": {
 		"quickReplies": "Snabbsvar",
 		"quickRepliesDescription": "Visa förslag på snabbsvar baserade på det senaste meddelandet i kanalen.",
-		"grammar": "Grammatikkorrigering",
-		"grammarDescription": "Föreslå stavnings- och grammatikkorrigeringar medan du skriver (upp till 256 tecken).",
 		"quickReaction": "Snabbreaktion",
 		"quickReactionDescription": "Visas i hörnet av ett meddelande när du för musen över det.",
 		"quickReactionChange": "Ändra",

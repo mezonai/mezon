@@ -169,8 +169,6 @@
 	"chat": {
 		"quickReplies": "Snelle antwoorden",
 		"quickRepliesDescription": "Suggesties voor snelle antwoorden weergeven op basis van het laatste bericht in het kanaal.",
-		"grammar": "Grammatica corrigeren",
-		"grammarDescription": "Stel spelling- en grammaticacorrecties voor tijdens het typen (maximaal 256 tekens).",
 		"quickReaction": "Snelle reactie",
 		"quickReactionDescription": "Verschijnt in de hoek van een bericht als je eroverheen beweegt.",
 		"quickReactionChange": "Wijzigen",

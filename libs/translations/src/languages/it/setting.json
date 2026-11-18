@@ -169,8 +169,6 @@
 	"chat": {
 		"quickReplies": "Risposte rapide",
 		"quickRepliesDescription": "Mostra suggerimenti di risposte rapide basati sull'ultimo messaggio nel canale.",
-		"grammar": "Correzione grammaticale",
-		"grammarDescription": "Suggerisci correzioni ortografiche e grammaticali durante la digitazione (fino a 256 caratteri).",
 		"quickReaction": "Reazione rapida",
 		"quickReactionDescription": "Compare nell'angolo del messaggio quando ci passi sopra con il mouse.",
 		"quickReactionChange": "Cambia",

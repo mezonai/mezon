@@ -1,8 +1,8 @@
 export type ScreenShareMode = 'text' | 'video';
 
 export const SCREEN_SHARE_PROFILES = {
-	text: { frameRate: 5, contentHint: 'detail', degradationPreference: 'maintain-resolution' },
-	video: { frameRate: 30, contentHint: 'motion', degradationPreference: 'maintain-framerate' }
+	text: { frameRate: 5, contentHint: 'detail', degradationPreference: 'maintain-resolution', scalabilityMode: 'L1T1' },
+	video: { frameRate: 30, contentHint: 'motion', degradationPreference: 'maintain-framerate', scalabilityMode: 'L1T3' }
 } as const;
 
 export const getScreenShareConstraints = (mode: ScreenShareMode): MediaTrackConstraints => ({
@@ -16,7 +16,7 @@ export const applyScreenShareEncoding = async (sender: RTCRtpSender, mode: Scree
 	if (!parameters.encodings?.length) parameters.encodings = [{}];
 	parameters.degradationPreference = SCREEN_SHARE_PROFILES[mode].degradationPreference;
 	const encoding = parameters.encodings[0] as RTCRtpEncodingParameters & { scalabilityMode?: string };
-	encoding.scalabilityMode = 'L1T1';
+	encoding.scalabilityMode = SCREEN_SHARE_PROFILES[mode].scalabilityMode;
 	encoding.maxFramerate = SCREEN_SHARE_PROFILES[mode].frameRate;
 	encoding.maxBitrate = 5_000_000;
 	encoding.scaleResolutionDownBy = 1;
@@ -25,7 +25,6 @@ export const applyScreenShareEncoding = async (sender: RTCRtpSender, mode: Scree
 	await sender.setParameters(parameters);
 };
 
-// Change the existing track in place: switching quality must not restart capture or the room.
 export const updateScreenShareQuality = async (track: MediaStreamTrack, sender: RTCRtpSender, mode: ScreenShareMode) => {
 	const previousConstraints = track.getConstraints();
 	const previousHint = track.contentHint;

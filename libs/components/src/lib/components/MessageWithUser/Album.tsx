@@ -96,7 +96,7 @@ const Album: FC<OwnProps> = ({
 	const { width: containerWidth, height: containerHeight } = albumLayout.containerStyle;
 
 	return (
-		<div className="relative overflow-hidden" style={{ width: isInSearchMessage ? '' : containerWidth, height: containerHeight }}>
+		<div className="relative overflow-hidden" style={{ width: containerWidth, height: containerHeight }}>
 			{(album as any).map(renderAlbumMessage)}
 		</div>
 	);

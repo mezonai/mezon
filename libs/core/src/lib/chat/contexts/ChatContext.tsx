@@ -36,6 +36,7 @@ import {
 	giveCoffeeActions,
 	inviteActions,
 	listChannelsByUserActions,
+	liveStreamActions,
 	mapMessageChannelToEntityAction,
 	mapReactionToEntity,
 	messagesActions,
@@ -77,11 +78,14 @@ import {
 	selectEstablishedCall,
 	selectFriendById,
 	selectIsInCall,
+	selectIsLiveActive,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
+	selectLiveChannelId,
+	selectLiveInfo,
 	selectLoadingStatus,
 	selectMessageByMessageId,
 	selectThreadCurrentChannel,
@@ -216,6 +220,7 @@ import { exhaustMap, filter, takeWhile, tap } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { isKnownPeerSession, readSignalSessionId, rememberPeerSession } from '../hooks/useWebRTCCall';
+import { isTopicConversationVisible } from '../utils/isTopicConversationVisible';
 import {
 	MAX_RECONNECT_WAVES_BEFORE_LOGOUT,
 	beginReconnectWave,
@@ -229,6 +234,7 @@ import {
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
 } from '../utils/socketReconnectBudget';
+import { watchReconnectNotice } from './reconnectNotice';
 
 const MobileEventEmitter = new EventEmitter();
 
@@ -309,6 +315,7 @@ const ChatContext = React.createContext<ChatContextValue>({} as ChatContextValue
 const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isMobile = false }) => {
 	const { t } = useTranslation('token');
 	const { t: tChannelMenu } = useTranslation('channelMenu');
+	const { t: tCommon } = useTranslation('common');
 	const { clientRef, sessionRef, mmnRef, askHealthyEndpoint, connectSocket, reconnectSocket } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
@@ -642,29 +649,39 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 						const isFocused = !isBackgroundModeActive();
 						const isNewMessage = message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove;
-						if (isNewMessage && (!mess.isCurrentChannel || !isFocused)) {
-							const isTopicMessage = message.topic_id && message.topic_id !== '0';
+						if (isNewMessage) {
+							const state = store.getState() as RootState;
+							const isTopicMessage = Boolean(message.topic_id && message.topic_id !== '0');
+							const isMessageVisible = isTopicMessage
+								? isTopicConversationVisible({
+										channelId: message.channel_id,
+										topicId: message.topic_id,
+										currentChannelId: selectCurrentChannelId(state),
+										currentTopicId: selectCurrentTopicId(state),
+										isTopicOpen: selectIsShowCreateTopic(state),
+										isClanView: selectClanView(state),
+										isFocused
+									})
+								: mess.isCurrentChannel && isFocused;
 							const topicId = isTopicMessage ? (message.topic_id ?? message.channel_id) : '';
 
 							const checkChannelId = isTopicMessage ? topicId : message.channel_id;
-							const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
+							const channelMeta = state?.channelmeta?.entities?.[checkChannelId];
 							const msgTime = message.create_time_seconds ?? 0;
 							const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
 
-							if (!isAlreadySeen) {
-								if (isTopicMessage) {
-									const topicMessage = { ...message, channel_id: topicId };
-									const didIncrement = badgeService.incrementChannelIfMentioned(topicMessage, userId as string);
-									if (didIncrement) {
-										badgeService.incrementChannelForTopic(
-											message.clan_id || '0',
-											message.channel_id,
-											topicId,
-											message.message_id
-										);
-									}
-								} else {
-									badgeService.incrementChannelIfMentioned(message, userId as string);
+							if (!isMessageVisible && !isAlreadySeen) {
+								badgeService.incrementChannelIfMentioned(message, userId as string);
+							}
+
+							if (isTopicMessage && !isAlreadySeen && message.clan_id && message.clan_id !== '0') {
+								const currentUserId = userId || selectCurrentUserId(state);
+								const isFromMe = Boolean(currentUserId && message.sender_id === currentUserId);
+								const isViewingTopic =
+									isFocused && selectClanView(state) && selectIsShowCreateTopic(state) && selectCurrentTopicId(state) === topicId;
+								const isAlreadyUnread = state.topicdiscussions?.unreadTopics?.[topicId] === message.clan_id;
+								if (!isFromMe && !isViewingTopic && !isAlreadyUnread) {
+									dispatch(topicsActions.markTopicUnread({ topicId, clanId: message.clan_id }));
 								}
 							}
 						}
@@ -896,15 +913,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const isDirectViewPage = path.includes('/chat/direct/message/');
 
 			const store = await getStoreAsync();
-			const currentChannel = selectCurrentChannel(store.getState() as unknown as RootState);
+			const state = store.getState() as unknown as RootState;
+			const currentChannel = selectCurrentChannel(state);
 			const isFocus = !isBackgroundModeActive();
+			const isTopicNotification = Boolean(notification.topic_id && notification.topic_id !== '0');
+			const shouldNotify = isTopicNotification
+				? !isTopicConversationVisible({
+						channelId: notification.channel_id,
+						topicId: notification.topic_id,
+						currentChannelId: currentChannel?.channel_id,
+						currentTopicId: selectCurrentTopicId(state),
+						isTopicOpen: selectIsShowCreateTopic(state),
+						isClanView: selectClanView(state) && !isDirectViewPage && !isFriendPageView,
+						isFocused: isFocus
+					})
+				: (currentChannel?.channel_id !== notification?.channel_id && notification?.clan_id !== '0') ||
+					isDirectViewPage ||
+					isFriendPageView ||
+					!isFocus;
 
-			if (
-				(currentChannel?.channel_id !== notification?.channel_id && notification?.clan_id !== '0') ||
-				isDirectViewPage ||
-				isFriendPageView ||
-				!isFocus
-			) {
+			if (shouldNotify) {
 				const parsedNotificationContent = safeJSONParse(notification.content?.content);
 				const parsedAttachments = parsedNotificationContent?.attachments;
 
@@ -945,7 +973,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						);
 					}
 
-					const isTopicNotification = notification.topic_id && notification.topic_id !== '0';
 					const topicId = isTopicNotification ? (notification.topic_id ?? notification?.channel_id ?? '') : '';
 					const checkChannelId = isTopicNotification ? topicId : (notification?.channel_id ?? '');
 					const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
@@ -955,7 +982,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const clanId = notification?.clan_id || '0';
 						const messageId = notification?.content?.message_id;
 						if (isTopicNotification) {
-							badgeService.incrementChannelFromNotification(clanId, topicId, messageId);
 							badgeService.incrementChannelFromNotificationForTopic(clanId, notification?.channel_id ?? '', topicId, messageId);
 						} else {
 							badgeService.incrementChannelFromNotification(clanId, notification?.channel_id ?? '', messageId);
@@ -1075,6 +1101,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onuserchannelremoved = useCallback(
 		async (user: UserChannelRemovedEvent) => {
 			const store = await getStoreAsync();
+			const liveChannelId = selectLiveChannelId(store.getState());
+			if (liveChannelId && user.channel_id === liveChannelId && userId && user.user_ids?.includes(userId)) {
+				dispatch(liveStreamActions.requestStop('accessLost'));
+			}
 			const channelId = selectCurrentChannelId(store.getState() as unknown as RootState);
 			const directId = selectDmGroupCurrentId(store.getState());
 			const clanId = selectCurrentClanId(store.getState());
@@ -1186,6 +1216,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		async (user: UserClanRemovedEvent) => {
 			if (!user?.user_ids) return;
 			const store = await getStoreAsync();
+			if (
+				selectIsLiveActive(store.getState()) &&
+				user.clan_id === selectLiveInfo(store.getState()).clanId &&
+				Boolean(userId) &&
+				user.user_ids.includes(userId as string)
+			) {
+				dispatch(liveStreamActions.requestStop('accessLost'));
+			}
 			const channels = selectChannelsByClanId(store.getState() as unknown as RootState, user.clan_id as string);
 			const clanId = selectCurrentClanId(store.getState());
 			const currentVoice = selectVoiceInfo(store.getState());
@@ -1948,6 +1986,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const isVoiceJoined = selectVoiceInfo(store.getState());
 			if (channelDeleted?.channel_id === isVoiceJoined?.channelId) {
 				dispatch(voiceActions.resetVoiceControl());
+			}
+			const liveChannelId = selectLiveChannelId(store.getState());
+			if (liveChannelId && channelDeleted?.channel_id === liveChannelId) {
+				dispatch(liveStreamActions.requestStop('accessLost'));
 			}
 
 			if (channelDeleted.channel_id !== '0') {
@@ -3230,6 +3272,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			subscription.unsubscribe();
 		};
 	}, [reconnect$, executeReconnect, clientRef, dispatch, runPostReconnectActions, askHealthyEndpoint]);
+
+	useEffect(
+		() =>
+			watchReconnectNotice({
+				subscribe: (listener) => socketState.subscribe(listener),
+				isConnected: () => socketState.isConnected,
+				isRecovering: () => reconnectRecoveryPendingRef.current,
+				show: () =>
+					dispatch(
+						toastActions.addToast({
+							id: 'SOCKET_RECONNECTING',
+							message: tCommon('socketReconnecting'),
+							type: 'warning',
+							autoClose: false
+						})
+					),
+				hide: () => dispatch(toastActions.removeToast('SOCKET_RECONNECTING'))
+			}),
+		[dispatch, tCommon]
+	);
 
 	useEffect(() => {
 		const onWaveReset = () => {

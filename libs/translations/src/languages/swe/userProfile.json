@@ -69,6 +69,8 @@
 		"memberSince": "Medlem från",
 		"activity": "Aktivitet",
 		"unknownUser": "Okänd användare",
+		"noInformation": "Ingen användarinformation tillgänglig",
+		"noInformationShort": "Ingen information",
 		"anonymous": "Anonym",
 		"editProfile": "Redigera profil",
 		"note": "NOTERA",

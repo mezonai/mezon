@@ -18,5 +18,32 @@
 	"isLive": "{{name}}さんがライブ配信中",
 	"volume": "音量",
 	"mute": "ミュート",
-	"unmute": "ミュート解除"
+	"unmute": "ミュート解除",
+	"goLive": "ライブ配信を開始",
+	"endLive": "配信を終了",
+	"youAreLive": "ライブ配信中",
+	"liveConnecting": "接続中…",
+	"liveReconnecting": "再接続中…",
+	"cameraOnly": "カメラのみ",
+	"liveMic": "マイク",
+	"liveCamera": "カメラ",
+	"liveSystemAudio": "システム音声",
+	"alsoShareSystemAudio": "システム音声も共有",
+	"liveScreen": "画面共有",
+	"changeScreen": "画面を変更",
+	"stopScreen": "画面共有を停止",
+	"liveElsewhere": "すでに別のチャンネルでライブ配信中です",
+	"shareScreen": "画面を共有",
+	"startLive": "ライブ配信を開始",
+	"liveError": {
+		"busy": "このチャンネルではすでに他のユーザーが配信中です",
+		"forbidden": "このチャンネルではライブ配信できません",
+		"serverBusy": "配信サーバーが混雑しています。しばらくしてから再試行してください",
+		"unsupported": "このデバイスではストリームをエンコードできません",
+		"network": "配信サーバーとの接続が切断されました",
+		"replaced": "あなたのアカウントを使う別のアプリまたはデバイスに配信が引き継がれました",
+		"accessLost": "このチャンネルへのアクセス権がなくなったため、配信が終了しました",
+		"source": "{{source}}を開始できませんでした",
+		"sourceEnded": "{{source}}が停止しました"
+	}
 }

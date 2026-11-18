@@ -169,8 +169,6 @@
 	"chat": {
 		"quickReplies": "Schnellantworten",
 		"quickRepliesDescription": "Schnellantwortvorschläge basierend auf der letzten Nachricht im Kanal anzeigen.",
-		"grammar": "Grammatik korrigieren",
-		"grammarDescription": "Beim Tippen Rechtschreib- und Grammatikkorrekturen vorschlagen (bis zu 256 Zeichen).",
 		"quickReaction": "Schnellreaktion",
 		"quickReactionDescription": "Wird in der Ecke einer Nachricht angezeigt, wenn du mit der Maus darüberfährst.",
 		"quickReactionChange": "Ändern",

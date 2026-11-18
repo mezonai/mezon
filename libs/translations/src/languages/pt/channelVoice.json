@@ -170,6 +170,12 @@
 		"keepMuted": "O áudio está pausado. Clique para manter o microfone silenciado."
 	},
 	"weakNetwork": "Rede fraca",
+	"connecting": "A ligar…",
+	"reconnecting": "A reconectar…",
+	"raiseHand": "Levantar a mão",
+	"lowerHand": "Baixar a mão",
+	"addAgent": "Adicionar agente de IA",
+	"removeAgent": "Remover agente de IA",
 	"networkWarning": {
 		"title": "Sua conexão de internet está instável",
 		"body": "Verifique sua conexão de rede."

@@ -1,10 +1,12 @@
 import { useAuth } from '@mezon/core';
 import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSendReaction } from '../MyVideoConference/Reaction';
 import { SFU_CONTROL_BUTTON_CLASS } from './controlStyles';
 
 export const SfuRaisingHandControl = memo(() => {
+	const { t } = useTranslation('channelVoice');
 	const { userId } = useAuth();
 	const { sendRaisingHand } = useSendReaction();
 	const [active, setActive] = useState(false);
@@ -36,8 +38,8 @@ export const SfuRaisingHandControl = memo(() => {
 	return (
 		<button
 			type="button"
-			title={active ? 'Lower hand' : 'Raise hand'}
-			aria-label={active ? 'Lower hand' : 'Raise hand'}
+			title={t(active ? 'lowerHand' : 'raiseHand')}
+			aria-label={t(active ? 'lowerHand' : 'raiseHand')}
 			aria-pressed={active}
 			className={SFU_CONTROL_BUTTON_CLASS}
 			onClick={() => setHand(!active)}

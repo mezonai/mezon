@@ -169,8 +169,6 @@
 	"chat": {
 		"quickReplies": "빠른 답장",
 		"quickRepliesDescription": "채널의 최신 메시지를 기반으로 빠른 답장 추천을 표시합니다.",
-		"grammar": "문법 교정",
-		"grammarDescription": "입력하는 동안 맞춤법과 문법 수정 사항을 제안합니다(최대 256자).",
 		"quickReaction": "빠른 반응",
 		"quickReactionDescription": "메시지에 마우스를 올리면 모서리에 표시됩니다.",
 		"quickReactionChange": "변경",

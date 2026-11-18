@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "Existem campos vazios!",
+			"saveFailed": "Não foi possível salvar as configurações do OAuth. Tente novamente. Se o problema persistir, entre novamente.",
 			"invalidUris": "Os URIs devem ser válidos!",
 			"redirectUriRequired": "O URI de redirecionamento é obrigatório!"
 		}

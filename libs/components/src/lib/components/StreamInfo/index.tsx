@@ -112,8 +112,8 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			<div className="flex justify-between items-center">
 				<div className="flex flex-col max-w-[200px]">
 					<div className="flex items-center gap-1">
-						<MezonIcon icon={MzIcons16.mzWifi} className="text-[green]" />
-						<span className="text-green-700 font-bold text-base">
+						<MezonIcon icon={type === ESummaryInfo.CALL ? MzIcons16.mzCall : MzIcons16.mzLive} className="shrink-0 text-[green]" />
+						<span className={`text-base ${type === ESummaryInfo.CALL ? 'text-green-600 font-medium' : 'text-green-700 font-bold'}`}>
 							{type === ESummaryInfo.CALL ? `${isJoinedCall ? 'Call Connected' : 'Calling...'}` : 'Stream Connected'}
 						</span>
 					</div>

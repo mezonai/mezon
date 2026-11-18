@@ -5,6 +5,7 @@ import type { EmojiDataOptionals, IMessageWithUser, SenderInfoOptionals } from '
 import { calculateTotalCount, createImgproxyUrl, getSrcEmoji, isPublicChannel } from '@mezon/utils';
 import type { ForwardedRef } from 'react';
 import { Fragment, forwardRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
@@ -119,6 +120,7 @@ type SenderItemProps = {
 };
 
 const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId, removeEmojiSender, hideSenderOnPanel }) => {
+	const { t } = useTranslation('userProfile');
 	const handleRemoveEmojiSender = async (e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
 		await removeEmojiSender(
@@ -140,6 +142,7 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 				<AvatarImage
 					className="w-8 h-8"
 					alt="user avatar"
+					useUserPlaceholder
 					username={user?.clan_nick || user?.user?.display_name || user?.user?.username}
 					srcImgProxy={createImgproxyUrl((user?.clan_avatar || user?.user?.avatar_url) ?? '', {
 						width: 100,
@@ -150,7 +153,10 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 				/>
 			</div>
 
-			<NameComponent id={sender.sender_id ?? ''} name={user?.clan_nick || user?.user?.display_name || user?.user?.username} />
+			<NameComponent
+				id={sender.sender_id ?? ''}
+				name={user?.clan_nick || user?.user?.display_name || user?.user?.username || t('labels.noInformationShort')}
+			/>
 			<p className="text-xs absolute right-8 text-theme-primary-hover text-theme-primary ">{sender.count}</p>
 			{sender.sender_id === userId.userId && sender.count && sender.count > 0 && (
 				<div onClick={handleRemoveEmojiSender} className="right-1 absolute cursor-pointer text-theme-primary hover:text-red-500 group/mzi">

@@ -1,5 +1,5 @@
 import type { MessagesEntity } from '@mezon/store';
-import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -18,21 +18,22 @@ const TokenTransactionMessage = ({ message, quickReaction }: ITokenTransactionMe
 		return <TransactionHistory onClose={closeModalHistory} />;
 	});
 	return (
-		<div className="py-2 w-full">
-			<div className="relative w-[300px]  border-theme-primary rounded-md text-theme-primary-dark bg-theme-setting-primary shadow-md">
-				<div className="p-3 flex gap-2 w-full">
-					<div className="w-[50px]">
-						<MezonIcon icon={MzIcons20.mzTransaction} className="dark:text-green-600 text-green-700" />
-					</div>
-					<div className="flex flex-col gap-2 flex-1">
-						<div className="font-semibold text-theme-primary-active " data-e2e={generateE2eId('send_token.message.title')}>
+		<div className="py-2 w-full min-w-0">
+			<div className="relative w-[360px] max-w-full border-theme-primary rounded-md text-theme-primary-dark bg-theme-setting-primary shadow-sm">
+				<div className="px-3 py-3.5 flex items-start gap-2.5 w-full">
+					<MezonIcon icon={MzIcons48.mzTransaction} className="shrink-0 dark:text-green-600 text-green-700" />
+					<div className="flex min-w-0 flex-col gap-2 flex-1 truncate">
+						<div
+							className="text-base font-semibold text-theme-primary-active [overflow-wrap:anywhere]"
+							data-e2e={generateE2eId('send_token.message.title')}
+						>
 							{title}
 						</div>
-						<div className="flex items-center text-xs font-medium">
-							<span className="dark:text-blue-500 text-blue-600 mr-1">Detail:</span>
+						<div className="flex min-w-0 items-center text-xs font-medium">
+							<span className="shrink-0 dark:text-blue-500 text-blue-600 mr-1">Detail:</span>
 							<span
 								title={description}
-								className="font-semibold truncate text-theme-primary-active text-ellipsis whitespace-nowrap max-w-[200px]"
+								className="min-w-0 truncate font-semibold text-theme-primary-active"
 								data-e2e={generateE2eId('send_token.message.detail')}
 							>
 								{description}
@@ -40,10 +41,10 @@ const TokenTransactionMessage = ({ message, quickReaction }: ITokenTransactionMe
 						</div>
 					</div>
 				</div>
-				<div className="p-3 flex justify-center bg-theme-setting-nav rounded-md">
+				<div className="px-3 py-3.5 flex justify-center bg-theme-setting-nav">
 					<div
 						onClick={openModalHistory}
-						className="cursor-pointer dark:text-blue-500 text-blue-600 font-semibold text-[15px]"
+						className="cursor-pointer dark:text-blue-500 text-blue-600 font-semibold text-sm"
 						data-e2e={generateE2eId('send_token.message.button.open_history')}
 					>
 						Mezon transfer

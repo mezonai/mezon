@@ -1,4 +1,13 @@
-import { MezonSfuVoiceRoom, SfuPreJoinVoiceChannel, type SfuJoinRole } from '@mezon/components';
+import {
+	InMeetingBackgroundMenu,
+	MediaPipeBackgroundProcessor,
+	MezonSfuVoiceRoom,
+	SfuPreJoinVoiceChannel,
+	openCameraStream,
+	withPreferredCamera,
+	type BackgroundMode,
+	type SfuJoinRole
+} from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
 import {
 	appActions,
@@ -30,7 +39,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 
-import { useLastCallback } from '@mezon/utils';
+import { reportMediaAccessError, useLastCallback } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
 import React, { Suspense, memo, useCallback, useEffect, useRef, useState, type ErrorInfo } from 'react';
@@ -108,6 +117,11 @@ interface VoiceConferenceContentProps {
 	handleToggleChat: () => void;
 	isPrivateVoice?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
+	containerRef?: RefObject<HTMLDivElement | null>;
+	selectedCamera: string;
+	onSelectCamera: (deviceId: string) => void;
+	selectedBg: BackgroundMode | null;
+	onSelectBg: (mode: BackgroundMode | null) => void;
 }
 
 const VoiceConferenceContent = memo(
@@ -123,8 +137,146 @@ const VoiceConferenceContent = memo(
 		isVoiceFullScreen,
 		handleToggleChat,
 		isPrivateVoice,
-		onRefreshToken
+		onRefreshToken,
+		containerRef,
+		selectedCamera,
+		onSelectCamera,
+		selectedBg,
+		onSelectBg
 	}: VoiceConferenceContentProps) => {
+		const roomCameraOn = useSelector(selectShowCamera);
+		const cameraEnabled = joinRole === 'speaker' && roomCameraOn;
+		const shareCamera = cameraEnabled;
+
+		const [customVideoTrack, setCustomVideoTrack] = useState<MediaStreamTrack | null>(null);
+
+		const selectedBgRef = useRef<BackgroundMode | null>(selectedBg);
+		const currentDeviceIdRef = useRef(selectedCamera);
+		const rawStreamRef = useRef<MediaStream | null>(null);
+		const processorRef = useRef<MediaPipeBackgroundProcessor | null>(null);
+		const cameraRequestRef = useRef(0);
+		const cameraStartQueueRef = useRef<Promise<void>>(Promise.resolve());
+		const dispatch = useAppDispatch();
+
+		const startCamera = useCallback(
+			(deviceId: string) => {
+				const request = ++cameraRequestRef.current;
+				const run = async () => {
+					if (request !== cameraRequestRef.current) return;
+					try {
+						const videoConstraints = withPreferredCamera(
+							{
+								width: { ideal: 1280 },
+								height: { ideal: 720 },
+								...(deviceId === 'default' ? { facingMode: 'user' } : {})
+							},
+							deviceId
+						);
+						const stream = await openCameraStream(videoConstraints);
+						if (request !== cameraRequestRef.current) {
+							stream.getTracks().forEach((track) => track.stop());
+							return;
+						}
+
+						rawStreamRef.current?.getTracks().forEach((track) => track.stop());
+						rawStreamRef.current = stream;
+
+						if (!processorRef.current) {
+							processorRef.current = new MediaPipeBackgroundProcessor();
+						}
+
+						await processorRef.current.start(stream, selectedBgRef.current);
+						if (request !== cameraRequestRef.current) {
+							stream.getTracks().forEach((track) => track.stop());
+							if (rawStreamRef.current === stream) {
+								rawStreamRef.current = null;
+								processorRef.current?.stop();
+							}
+							return;
+						}
+
+						setCustomVideoTrack(processorRef.current.getVideoTrack());
+					} catch (err) {
+						console.error('Error accessing camera:', err);
+						if (request === cameraRequestRef.current) {
+							reportMediaAccessError('camera', err);
+							dispatch(voiceActions.setShowCamera(false));
+						}
+					}
+				};
+				cameraStartQueueRef.current = cameraStartQueueRef.current.then(run);
+				return cameraStartQueueRef.current;
+			},
+			[dispatch]
+		);
+
+		const releaseCamera = useCallback(() => {
+			cameraRequestRef.current += 1;
+			rawStreamRef.current?.getTracks().forEach((track) => track.stop());
+			rawStreamRef.current = null;
+			setCustomVideoTrack((prev) => {
+				prev?.stop();
+				return null;
+			});
+			processorRef.current?.stop();
+		}, []);
+
+		const handleSelectCamera = useCallback(
+			(deviceId: string) => {
+				onSelectCamera(deviceId);
+				currentDeviceIdRef.current = deviceId;
+				if (cameraEnabled && selectedBg) void startCamera(deviceId);
+			},
+			[cameraEnabled, onSelectCamera, selectedBg, startCamera]
+		);
+
+		const handleSelectBg = useCallback(
+			(mode: BackgroundMode | null) => {
+				onSelectBg(mode);
+				selectedBgRef.current = mode;
+				if (mode) {
+					if (processorRef.current) {
+						processorRef.current.setMode(mode);
+					}
+					if (cameraEnabled && !rawStreamRef.current) {
+						void startCamera(selectedCamera);
+					}
+				} else {
+					releaseCamera();
+				}
+			},
+			[cameraEnabled, onSelectBg, releaseCamera, selectedCamera, startCamera]
+		);
+
+		useEffect(() => {
+			selectedBgRef.current = selectedBg;
+		}, [selectedBg]);
+
+		useEffect(() => {
+			if (!cameraEnabled || !selectedBg) {
+				releaseCamera();
+				return;
+			}
+			if (!rawStreamRef.current || currentDeviceIdRef.current !== selectedCamera) {
+				currentDeviceIdRef.current = selectedCamera;
+				void startCamera(selectedCamera);
+			}
+		}, [cameraEnabled, selectedBg, selectedCamera, releaseCamera, startCamera]);
+
+		useEffect(() => {
+			return () => {
+				cameraRequestRef.current += 1;
+				if (rawStreamRef.current) {
+					rawStreamRef.current.getTracks().forEach((track) => track.stop());
+					rawStreamRef.current = null;
+				}
+				if (processorRef.current) {
+					processorRef.current.destroy();
+					processorRef.current = null;
+				}
+			};
+		}, []);
+
 		return (
 			<div className="flex-1 relative flex overflow-hidden">
 				<MezonSfuVoiceRoom
@@ -141,6 +293,15 @@ const VoiceConferenceContent = memo(
 					onToggleChat={handleToggleChat}
 					isPrivateVoice={isPrivateVoice}
 					onRefreshToken={onRefreshToken}
+					cameraManagedExternally={false}
+					customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
+					preferredCameraId={selectedCamera}
+					onSelectCamera={handleSelectCamera}
+					headerActions={
+						shareCamera && containerRef ? (
+							<InMeetingBackgroundMenu selectedMode={selectedBg} onSelectMode={handleSelectBg} containerRef={containerRef} />
+						) : undefined
+					}
 				/>
 				<EmojiSuggestionProvider>
 					{isShowChatVoice && (
@@ -184,6 +345,8 @@ const MezonSfuChannelVoiceInner = () => {
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [joinRole, setJoinRole] = useState<SfuJoinRole>('speaker');
+	const [selectedCamera, setSelectedCamera] = useState('default');
+	const [selectedBg, setSelectedBg] = useState<BackgroundMode | null>(null);
 	const [rejoinTarget, setRejoinTarget] = useState<VoiceJoinTarget | null>(null);
 	const [rejoinNetworkLost, setRejoinNetworkLost] = useState(false);
 	const joinRequestRef = useRef(0);
@@ -220,7 +383,11 @@ const MezonSfuChannelVoiceInner = () => {
 		const previousState = getStore().getState();
 		const restoreMicrophone = !!target && selectShowMicrophone(previousState);
 		const restoreCamera = !!target && selectShowCamera(previousState);
-		if (!target) setRejoinTarget(null);
+		if (!target) {
+			setRejoinTarget(null);
+			setSelectedBg(null);
+			setSelectedCamera('default');
+		}
 		setJoinRole(role);
 		if (target) {
 			flushSync(() => {
@@ -334,6 +501,8 @@ const MezonSfuChannelVoiceInner = () => {
 		joiningRef.current = false;
 		setLoading(false);
 		setRejoinTarget(null);
+		setSelectedBg(null);
+		setSelectedCamera('default');
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
 		dispatch(appActions.setIsShowChatVoice(false));
@@ -348,6 +517,8 @@ const MezonSfuChannelVoiceInner = () => {
 		joiningRef.current = false;
 		setLoading(false);
 		setRejoinTarget(null);
+		setSelectedBg(null);
+		setSelectedCamera('default');
 
 		dispatch(voiceActions.resetVoiceControl());
 		dispatch(channelAppActions.clearAppInteractiveData());
@@ -389,6 +560,11 @@ const MezonSfuChannelVoiceInner = () => {
 									isVoiceFullScreen={!!isVoiceFullScreen}
 									handleToggleChat={handleToggleChat}
 									onRefreshToken={handleRefreshToken}
+									containerRef={containerRef}
+									selectedCamera={selectedCamera}
+									onSelectCamera={setSelectedCamera}
+									selectedBg={selectedBg}
+									onSelectBg={setSelectedBg}
 								/>
 							) : (
 								<div className="flex h-full w-full flex-col p-5 text-textSecondary">

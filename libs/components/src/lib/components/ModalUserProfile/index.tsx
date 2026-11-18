@@ -222,6 +222,8 @@ const ModalUserProfile = ({
 		return message?.references?.[0]?.message_sender_username;
 	}, [userById, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
 
+	const hasProfileDetails = Boolean(isFooterProfile || userById || currentUserId || usernameShow || checkAnonymous || isUserRemoved);
+
 	const handleOnKeyPress = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === 'Enter' && content.trim() && !isSending) {
@@ -277,6 +279,14 @@ const ModalUserProfile = ({
 			/>
 			<div className="px-[16px]">
 				<div className=" w-full border-theme-primary p-2 my-[16px] text-theme-primary shadow rounded-[10px] flex flex-col text-justify bg-item-theme">
+					{!hasProfileDetails && (
+						<p
+							className="py-3 text-center text-sm text-theme-primary opacity-70"
+							data-e2e={generateE2eId('short_profile.no_information')}
+						>
+							{t('labels.noInformation')}
+						</p>
+					)}
 					<div>
 						<p
 							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"

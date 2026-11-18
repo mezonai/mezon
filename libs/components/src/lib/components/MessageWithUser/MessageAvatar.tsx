@@ -56,6 +56,7 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 			className="min-w-10 min-h-10 absolute left-[16px] select-none"
 			classNameText="font-semibold"
 			isAnonymous={isAnonymous}
+			useUserPlaceholder={mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD}
 			onClick={onClick}
 			isSending={message?.isSending}
 		/>
