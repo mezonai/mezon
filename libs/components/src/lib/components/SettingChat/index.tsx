@@ -1,5 +1,5 @@
 import { EmojiSuggestionProvider, useQuickReactionEmoji } from '@mezon/core';
-import { appActions, fetchDMSetting, selectIsQuickReply, selectIsSpelling, selectOnlyFriendsDM, updateDMSetting, useAppDispatch } from '@mezon/store';
+import { appActions, fetchDMSetting, selectIsQuickReply, selectOnlyFriendsDM, updateDMSetting, useAppDispatch } from '@mezon/store';
 import { generateE2eId, getSrcEmoji } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
