@@ -1904,7 +1904,9 @@ export const selectChannelsByClanId = createSelector([getChannelsState, (state: 
 export const selectDefaultChannelIdByClanId = createSelector(
 	[selectAllChannels, (state: RootState, clanId: string) => clanId],
 	(channels, clanId) => {
-		const defaultChannel = channels.find((channel) => channel.parent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL);
+		const defaultChannel = channels.find(
+			(channel) => channel.parent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !channel.channel_private
+		);
 		return defaultChannel ? defaultChannel.id : null;
 	}
 );
