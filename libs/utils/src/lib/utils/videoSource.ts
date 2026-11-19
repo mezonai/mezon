@@ -2,7 +2,13 @@ import { fragmentedMp4InitEnd, fragmentedMp4Playlist } from './fragmentedMp4';
 
 // The media server converts videos uploaded to these hosts into HLS and writes the stream under its own
 // prefix, `<origin>/hls/<key>/master.m3u8`, while the message keeps the url of the original.
-const TRANSCODING_ORIGINS = ['https://cdn.mezon.ai', 'http://cdn.mezon.ai', 'https://cdn.mezon.vn', 'http://cdn.mezon.vn'];
+const TRANSCODING_ORIGINS = [
+	'https://cdn.mezon.ai',
+	'http://cdn.mezon.ai',
+	'https://cdn.mezon.vn',
+	'http://cdn.mezon.vn',
+	...(process.env.NX_ENV === 'development' ? ['https://cdn-dev.nccsoft.vn', 'https://cdn-dev.nccsoft.vn'] : [])
+];
 // Containers no browser plays, which the media server converts like any other video.
 const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'mkv', 'wmv']);
 // What the media server accepts.
