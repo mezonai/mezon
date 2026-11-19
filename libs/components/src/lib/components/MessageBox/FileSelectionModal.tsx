@@ -16,7 +16,7 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 	const { t } = useTranslation('message');
 	const modalRef = useRef<HTMLDivElement>(null);
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-	useEscapeKeyClose(modalRef, onClose);
+	useEscapeKeyClose(modalRef, onClose, isOpen);
 
 	if (!isOpen) return null;
 

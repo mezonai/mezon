@@ -40,7 +40,7 @@ export const PollDetailModal = ({
 	const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
 	const modalRef = useRef<HTMLDivElement>(null);
 
-	useEscapeKeyClose(modalRef, onClose);
+	useEscapeKeyClose(modalRef, onClose, open);
 
 	useEffect(() => {
 		if (open) setSelectedIndex(initialSelectedIndex);

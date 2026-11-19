@@ -39,7 +39,7 @@ const Modal = (props: ModalProps) => {
 		classNameHeader
 	} = props;
 	const modalRef = useRef<HTMLDivElement>(null);
-	useEscapeKeyClose(modalRef, onClose);
+	useEscapeKeyClose(modalRef, onClose, showModal);
 
 	const handleConfirmClick = async () => {
 		if (confirmButton) {
