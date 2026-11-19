@@ -44,9 +44,19 @@ type IMessageContentProps = {
 	isInTopic?: boolean;
 	isEphemeral?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+	quickReaction?: React.ReactNode;
 };
 
-const MessageContent = ({ message, mode, isSearchMessage, isInTopic, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
+const MessageContent = ({
+	message,
+	mode,
+	isSearchMessage,
+	isInTopic,
+	isEphemeral,
+	isSending,
+	onContextMenu,
+	quickReaction
+}: IMessageContentProps) => {
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
@@ -73,6 +83,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isInTopic, isEphemeral
 			isEphemeral={isEphemeral}
 			isSending={isSending}
 			onContextMenu={onContextMenu}
+			quickReaction={quickReaction}
 		/>
 	);
 };
@@ -170,7 +181,8 @@ const MessageText = ({
 	onCopy,
 	isEphemeral,
 	isSending,
-	onContextMenu
+	onContextMenu,
+	quickReaction
 }: {
 	message: IMessageWithUser;
 	lines: string;
@@ -183,6 +195,7 @@ const MessageText = ({
 	isEphemeral?: boolean;
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+	quickReaction?: React.ReactNode;
 }) => {
 	const patchedContent = patchLinkTokens(content);
 
@@ -225,6 +238,7 @@ const MessageText = ({
 					channelId={message.channel_id}
 					interactionDisabled={!!isSearchMessage}
 					isDirect={mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP}
+					quickReaction={quickReaction}
 				/>
 			) : displayLine?.length > 0 || hasLinkMarkdown ? (
 				<MessageLine
@@ -244,6 +258,7 @@ const MessageText = ({
 					onContextMenu={onContextMenu}
 					senderId={message.sender_id}
 					topicId={isInTopic ? message.channel_id : undefined}
+					quickReaction={quickReaction}
 				/>
 			) : null}
 		</>

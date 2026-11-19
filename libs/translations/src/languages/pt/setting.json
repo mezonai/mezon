@@ -169,8 +169,11 @@
 	"chat": {
 		"quickReplies": "Respostas rápidas",
 		"quickRepliesDescription": "Mostrar sugestões de respostas rápidas com base na mensagem mais recente do canal.",
+		"quickReaction": "Reação rápida",
+		"quickReactionDescription": "Aparece no canto da mensagem ao passar o cursor.",
+		"quickReactionChange": "Alterar",
 		"onlyFriendsDm": {
-			"title": "Não receber mensagens de desconhecidos.",
+			"title": "Não receber mensagens de desconhecidos",
 			"description": "Quando ativado, apenas pessoas que são suas amigas podem iniciar uma conversa com você.",
 			"denied": "Você não pode enviar uma mensagem para este usuário."
 		}

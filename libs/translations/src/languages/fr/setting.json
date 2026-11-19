@@ -169,8 +169,11 @@
 	"chat": {
 		"quickReplies": "Réponses rapides",
 		"quickRepliesDescription": "Afficher des suggestions de réponses rapides basées sur le dernier message du canal.",
+		"quickReaction": "Réaction rapide",
+		"quickReactionDescription": "S'affiche dans le coin du message au survol.",
+		"quickReactionChange": "Modifier",
 		"onlyFriendsDm": {
-			"title": "Ne pas recevoir de messages d'inconnus.",
+			"title": "Ne pas recevoir de messages d'inconnus",
 			"description": "Lorsque cette option est activée, seules les personnes qui sont vos amis peuvent démarrer une conversation avec vous.",
 			"denied": "Vous ne pouvez pas envoyer de message à cet utilisateur."
 		}
