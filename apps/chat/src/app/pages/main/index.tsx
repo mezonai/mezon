@@ -3,6 +3,7 @@ import {
 	ClanRailUnreadFloatButton,
 	DmCallManager,
 	FirstJoinPopup,
+	FirstSetupUsername,
 	FooterProfile,
 	ForwardMessageModal,
 	InternetStatusPopover,
@@ -28,6 +29,7 @@ import {
 	getStore,
 	onboardingActions,
 	selectAllClans,
+	selectAllSession,
 	selectChannelById,
 	selectChatStreamWidth,
 	selectClanNumber,
@@ -86,6 +88,7 @@ function MyApp() {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const { userProfile } = useAuth();
+	const session = useSelector(selectAllSession);
 	const createTimeMs = userProfile?.user?.create_time_seconds ? Number(userProfile.user.create_time_seconds) * 1000 : 0;
 	const calculateJoinedTime = createTimeMs > 0 ? new Date().getTime() - createTimeMs : Infinity;
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
@@ -224,6 +227,7 @@ function MyApp() {
 				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} />}
+				{session?.created && <FirstSetupUsername />}
 				{isShowPopupQuickMess && <PopupQuickMess />}
 			</div>
 
