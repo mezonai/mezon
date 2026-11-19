@@ -158,6 +158,7 @@ const UserProfileModalInner = ({
 					className={`relative flex justify-end w-full h-[210px] rounded-t-md ${!color && 'dark:bg-bgAvatarDark bg-bgAvatarLight'}`}
 					color={color}
 					banner={banner}
+					imageWidth={600}
 					onClick={() => setGroupIconBanner(initOpenModal)}
 				>
 					<div className={`rounded-tl-lg rounded-tr-lg h-[60px]  flex justify-end gap-x-2 p-2 `}>

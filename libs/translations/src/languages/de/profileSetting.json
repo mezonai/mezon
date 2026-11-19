@@ -72,5 +72,15 @@
 		"description": "Erstelle oder tritt einem Clan bei, um dein Clan-Profil einzurichten.",
 		"createClan": "Clan erstellen",
 		"joinClan": "Clan beitreten"
+	},
+	"coverPhoto": {
+		"label": "TITELBILD",
+		"change": "Titelbild ändern",
+		"remove": "Titelbild entfernen",
+		"saving": "Speichern…",
+		"invalidType": "Wähle ein Bild im Format JPG, PNG, GIF oder WebP.",
+		"tooLarge": "Titelbilder dürfen höchstens 10 MB groß sein.",
+		"invalidImage": "Dieses Bild konnte nicht geöffnet werden. Wähle ein anderes Bild.",
+		"uploadFailed": "Das Titelbild konnte nicht hochgeladen werden. Bitte versuche es erneut."
 	}
 }

@@ -407,15 +407,16 @@ export const selectProfileBannerByUserId = createSelector(
 		if (!userId || userId === '0') return undefined;
 		if (account?.user?.id === userId) return account.banner ?? account.user.banner;
 		if (profileBanners?.[userId] !== undefined) return profileBanners[userId];
-		if (profileUser?.id === userId && profileUser.banner !== undefined) return profileUser.banner;
+		const suppliedBanner = profileUser?.id === userId ? profileUser.banner : undefined;
+		if (suppliedBanner) return suppliedBanner;
 		const currentClanBanner = currentClanId ? clans?.[currentClanId]?.entities.entities[userId]?.user?.banner : undefined;
 		if (currentClanBanner !== undefined) return currentClanBanner;
 		const friendBanner = friends?.[userId]?.user?.banner;
-		if (friendBanner !== undefined) return friendBanner;
+		if (friendBanner) return friendBanner;
 		for (const clan of Object.values(clans ?? {})) {
 			const banner = clan.entities.entities[userId]?.user?.banner;
 			if (banner !== undefined) return banner;
 		}
-		return undefined;
+		return friendBanner ?? suppliedBanner;
 	}
 );

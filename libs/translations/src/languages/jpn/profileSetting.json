@@ -72,5 +72,15 @@
 		"description": "クランプロフィールを設定するためにクランを作成または参加しましょう。",
 		"createClan": "クランを作成",
 		"joinClan": "クランに参加"
+	},
+	"coverPhoto": {
+		"label": "カバー画像",
+		"change": "カバー画像を変更",
+		"remove": "カバー画像を削除",
+		"saving": "保存中…",
+		"invalidType": "JPG、PNG、GIF、WebP形式の画像を選択してください。",
+		"tooLarge": "カバー画像は10 MB以下にしてください。",
+		"invalidImage": "この画像を開けませんでした。別の画像を選択してください。",
+		"uploadFailed": "カバー画像をアップロードできませんでした。もう一度お試しください。"
 	}
 }

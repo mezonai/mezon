@@ -99,7 +99,12 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 		>
 			<h1 className="text-xl font-semibold tracking-wider text-theme-primary-active  mb-8">{t('myAccount')}</h1>
 			<div className="w-full rounded-lg bg-theme-setting-nav">
-				<ProfileCover banner={userProfile?.banner ?? userProfile?.user?.banner} color={color} className="h-[100px] rounded-t-lg" />
+				<ProfileCover
+					banner={userProfile?.banner ?? userProfile?.user?.banner}
+					color={color}
+					imageWidth={900}
+					className="h-[100px] rounded-t-lg"
+				/>
 				<div className="flex justify-between relative -top-5 px-4 flex-col sbm:flex-row sbm:items-center">
 					<div className="flex items-center gap-x-4" data-e2e={generateE2eId(`user_setting.account.info`)}>
 						<AvatarImage

@@ -72,5 +72,15 @@
 		"description": "Crie ou entre em um clã para configurar seu perfil de clã.",
 		"createClan": "Criar clã",
 		"joinClan": "Participar de um clã"
+	},
+	"coverPhoto": {
+		"label": "FOTO DE CAPA",
+		"change": "Alterar capa",
+		"remove": "Remover capa",
+		"saving": "Salvando…",
+		"invalidType": "Escolha uma imagem JPG, PNG, GIF ou WebP.",
+		"tooLarge": "As fotos de capa devem ter no máximo 10 MB.",
+		"invalidImage": "Não foi possível abrir esta imagem. Escolha outra imagem.",
+		"uploadFailed": "Não foi possível enviar a foto de capa. Tente novamente."
 	}
 }

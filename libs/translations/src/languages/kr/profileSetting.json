@@ -72,5 +72,15 @@
 		"description": "클랜 프로필을 설정하려면 클랜을 만들거나 참가하세요.",
 		"createClan": "클랜 만들기",
 		"joinClan": "클랜 참가"
+	},
+	"coverPhoto": {
+		"label": "커버 사진",
+		"change": "커버 사진 변경",
+		"remove": "커버 사진 삭제",
+		"saving": "저장 중…",
+		"invalidType": "JPG, PNG, GIF 또는 WebP 이미지를 선택하세요.",
+		"tooLarge": "커버 사진은 10 MB 이하여야 합니다.",
+		"invalidImage": "이 이미지를 열 수 없습니다. 다른 이미지를 선택하세요.",
+		"uploadFailed": "커버 사진을 업로드하지 못했습니다. 다시 시도해 주세요."
 	}
 }

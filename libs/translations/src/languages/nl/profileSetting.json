@@ -72,5 +72,15 @@
 		"description": "Maak of join een clan om je clanprofiel in te stellen.",
 		"createClan": "Clan aanmaken",
 		"joinClan": "Clan betreden"
+	},
+	"coverPhoto": {
+		"label": "OMSLAGFOTO",
+		"change": "Omslagfoto wijzigen",
+		"remove": "Omslagfoto verwijderen",
+		"saving": "Aan het opslaan…",
+		"invalidType": "Kies een JPG-, PNG-, GIF- of WebP-afbeelding.",
+		"tooLarge": "Omslagfoto’s mogen maximaal 10 MB groot zijn.",
+		"invalidImage": "Deze afbeelding kon niet worden geopend. Kies een andere afbeelding.",
+		"uploadFailed": "De omslagfoto kon niet worden geüpload. Probeer het opnieuw."
 	}
 }
