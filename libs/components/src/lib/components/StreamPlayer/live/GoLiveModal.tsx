@@ -128,7 +128,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 				return;
 			}
 			if (runId !== startRunRef.current) return;
-			const screenPromise = wantScreen ? requestDisplayMedia(wantSystemAudio) : null;
+			const screenPromise = wantScreen ? requestDisplayMedia(true) : null;
 
 			let audioContext: AudioContext | null = null;
 			try {
