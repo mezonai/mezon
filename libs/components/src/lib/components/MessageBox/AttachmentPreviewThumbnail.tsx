@@ -19,12 +19,10 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 		}
 	};
 
-	const filename = attachment.filename;
-	const displayedFilename = filename && filename.length > 25 ? `${filename.substring(0, 25)}...` : filename;
 	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment });
 
 	return (
-		<div className="relative w-[216px] flex-shrink-0 mb-3">
+		<div className="relative w-[80px] flex-shrink-0 mb-3">
 			<div className="absolute top-[-1px] -right-1 z-10 bg-theme-contexify h-8 w-8 rounded-lg shadow-shadowInbox flex items-center justify-center">
 				<button
 					onClick={handleRemove}
@@ -35,13 +33,9 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 				</button>
 			</div>
 
-			<div title={attachment.filename} className="flex flex-col p-2 rounded bg-item-theme w-[216px] h-[216px] border-theme-primary">
+			<div title={attachment.filename} className="flex flex-col rounded bg-item-theme w-[80px] h-[80px] border-theme-primary">
 				<div className="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden rounded-md">
 					<div className="min-w-0 min-h-0 w-full h-full flex items-center justify-center overflow-hidden">{thumbnailAttachment}</div>
-				</div>
-
-				<div className="flex-shrink-0 pt-1.5 pl-0.5 text-left">
-					<p className="text-sm text-theme-primary truncate">{displayedFilename}</p>
 				</div>
 			</div>
 		</div>
