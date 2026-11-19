@@ -198,8 +198,8 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 							type="button"
 							aria-disabled={isLiveElsewhere}
 							title={goLiveTitle}
-							className={`w-64 max-w-full rounded-3xl border border-theme-primary bg-button-secondary px-4 py-2 text-sm font-semibold text-theme-primary-active transition-colors ${
-								isLiveElsewhere ? 'cursor-not-allowed opacity-50' : 'bg-secondary-button-hover'
+							className={`w-64 max-w-full rounded-3xl bg-[#5865f2] px-4 py-2 text-sm font-semibold text-white transition-colors ${
+								isLiveElsewhere ? 'cursor-not-allowed opacity-50' : 'hover:bg-[#4752c4]'
 							}`}
 							onClick={handleOpenGoLive}
 						>

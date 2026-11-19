@@ -6,13 +6,13 @@ import { useLocation } from 'react-router-dom';
 
 const DESKTOP_APP_SCHEME = 'mezonapp://';
 
-const DESKTOP_APP_PATHS = [/^\/chat\/clans\/\d+\/channels\/\d+$/, /^\/chat\/direct\/message\/\d+\/\d+$/, /^\/invite\/[\w-]+$/];
+const INVITE_PATH = /^\/invite\/[\w-]+$/;
 
 const SIGN_IN_PATH = '/mezon';
 
-export const desktopAppLinkFor = (pathname: string): string | null => {
+const desktopAppLinkFor = (pathname: string): string | null => {
 	const path = pathname.replace(/\/+$/, '');
-	if (!DESKTOP_APP_PATHS.some((pattern) => pattern.test(path))) {
+	if (!INVITE_PATH.test(path)) {
 		return null;
 	}
 	return `${DESKTOP_APP_SCHEME}${path.slice(1)}`;
