@@ -278,6 +278,8 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 		void startLive(false);
 	}, [startLive]);
 
+	if (!showModal) return null;
+
 	return createPortal(
 		<Modal showModal={showModal} onClose={onClose} title={modalTitle} isInviteModal>
 			<div className="flex flex-col gap-5">
