@@ -189,6 +189,22 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		}
 	};
 
+	const canOpenTextChannel = !isReviewEvent && Boolean(textChannel?.channel_id);
+	const isPrivateTextChannel = Boolean(textChannel?.channel_private);
+	const textChannelIcon = isThread
+		? isPrivateTextChannel
+			? MzIcons20.mzThreadPrivate
+			: MzIcons20.mzThread
+		: isPrivateTextChannel
+			? MzIcons20.mzChannelPrivate
+			: MzIcons20.mzChannel;
+
+	const redirectToTextChannel = () => {
+		if (!canOpenTextChannel) return;
+		navigate(toChannelPage(textChannel.channel_id as string, textChannel.clan_id as string));
+		onClose();
+	};
+
 	const setChooseEvent = useCallback(
 		(event: EventManagementEntity) => {
 			dispatch(eventManagementActions.setChooseEvent(event));
@@ -277,8 +293,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{event?.creator_id && (
 						<Tooltip
 							placement="left"
+							showArrow={false}
 							overlay={
-								<p className="text-theme-primary-active w-[max-content]">
+								<p className="text-theme-primary-active w-[max-content] bg-theme-pop border border-color-primary rounded-md px-2 py-1 shadow-md">
 									{t('eventCreator:eventDetail.createdBy', { username: creatorDisplayName })}
 								</p>
 							}
@@ -488,31 +505,36 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 			</div>
 			<div className="flex gap-x-2 mx-4 mb-2">
 				{isPrivateEvent ? (
-					<span className="flex flex-row items-center gap-2">
+					<span className="flex flex-row flex-wrap items-center gap-x-3 gap-y-1">
 						<p className="">{t('eventCreator:eventDetail.onlyInvitedMembers')}</p>
 						{hasLink && (
-							<>
-								<button onClick={handleOpenLink} className="text-blue-500 hover:underline">
+							<span className="flex items-center gap-x-3">
+								<button onClick={handleOpenLink} className="text-blue-500 hover:underline whitespace-nowrap">
 									{t('eventCreator:eventDetail.openLink')}
 								</button>
 
-								<button onClick={handleInvite} className="text-blue-500 hover:underline">
+								<button onClick={handleInvite} className="text-blue-500 hover:underline whitespace-nowrap">
 									{t('eventCreator:eventDetail.invite')}
 								</button>
 								<ButtonCopy
 									copyText={link}
 									title={t('eventCreator:eventDetail.copyLink')}
-									className="bg-transparent flex-row-reverse hover:!bg-transparent !text-blue-500 hover:!underline"
+									className="bg-transparent flex-row-reverse !p-0 whitespace-nowrap hover:!bg-transparent !text-blue-500 hover:!underline"
 								/>
-							</>
+							</span>
 						)}
 					</span>
 				) : isChannelEvent ? (
 					<span className="flex flex-row">
 						<p className="">
 							{t('eventCreator:eventDetail.audienceConsists')}{' '}
-							{isThread ? t('eventCreator:eventDetail.thread') : t('eventCreator:eventDetail.channel')}
-							<strong className="" data-e2e={generateE2eId('clan_page.modal.create_event.review.text_channel')}>
+							{isThread ? t('eventCreator:eventDetail.thread') : t('eventCreator:eventDetail.channel')}{' '}
+							<strong
+								onClick={redirectToTextChannel}
+								className={`inline-flex items-center gap-x-1 align-bottom ${canOpenTextChannel ? 'cursor-pointer hover:underline' : ''}`}
+								data-e2e={generateE2eId('clan_page.modal.create_event.review.text_channel')}
+							>
+								<MezonIcon icon={textChannelIcon} className="shrink-0 text-[var(--mz-icon)]" />
 								{textChannel.channel_label}
 							</strong>
 						</p>
