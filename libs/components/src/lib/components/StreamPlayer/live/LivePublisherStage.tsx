@@ -1,5 +1,6 @@
 import {
 	liveStreamActions,
+	selectCurrentClanId,
 	selectLivePhase,
 	selectLiveSources,
 	selectStreamMembersByChannelId,
@@ -14,6 +15,7 @@ import { ensureMediaPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { LiveCommentInput, LiveCommentStack, useStreamComments } from '../../LiveComments';
 import { VoiceChannelUsers } from '../../MezonSfuVoiceChannel/PreJoinVoiceChannel/VoiceChannelUsers/VoiceChannelUsers';
 import { StreamLiveBadge } from '../StreamPublisher';
 import { getLiveSession, subscribeLiveSession } from './liveSessionHolder';
@@ -50,19 +52,74 @@ function LiveControlButton({ icon, active, label, onClick }: LiveControlButtonPr
 
 export type LivePublisherStageProps = {
 	channelId: string;
+	clanId?: string;
 };
 
-export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
-	const { t } = useTranslation('channelStream');
+export function LivePublisherStage({ channelId, clanId }: LivePublisherStageProps) {
+	const { t } = useTranslation(['channelStream', 'channelVoice']);
 	const dispatch = useAppDispatch();
 	const phase = useSelector(selectLivePhase);
 	const sources = useSelector(selectLiveSources);
+	const fallbackClanId = useSelector(selectCurrentClanId);
+	const resolvedClanId = clanId || fallbackClanId || '';
+	const {
+		comments: liveComments,
+		hidden: commentsHidden,
+		hasUnseen: hasUnseenComments,
+		hide: hideComments,
+		show: showComments,
+		sendComment
+	} = useStreamComments(channelId, resolvedClanId);
 	const members = useAppSelector((state) => selectStreamMembersByChannelId(state, channelId));
 	const viewerCount = useAppSelector((state) => selectStreamViewerCount(state, channelId));
 
 	const stageRef = useRef<HTMLDivElement>(null);
 	const previewContainerRef = useRef<HTMLDivElement>(null);
+	const sendSeqRef = useRef(0);
 	const [showMembers, setShowMembers] = useState(true);
+	const [showCommentInput, setShowCommentInput] = useState(false);
+	const [commentDraft, setCommentDraft] = useState('');
+	const [sendingComment, setSendingComment] = useState(false);
+
+	useEffect(() => {
+		sendSeqRef.current += 1;
+		setShowCommentInput(false);
+		setCommentDraft('');
+		setSendingComment(false);
+		return () => {
+			sendSeqRef.current += 1;
+		};
+	}, [channelId]);
+
+	const commentStackLabels = useMemo(() => ({ hide: t('channelVoice:comment.hide') }), [t]);
+	const commentPlaceholder = useMemo(() => t('channelVoice:comment.placeholder'), [t]);
+	const commentButtonLabel = useMemo(
+		() => (commentsHidden ? t('channelVoice:comment.show') : t('channelVoice:comment.button')),
+		[commentsHidden, t]
+	);
+	const commentSendLabel = useMemo(() => t('channelVoice:comment.button'), [t]);
+	const showCommentDot = commentsHidden && hasUnseenComments;
+	const showLiveCommentOverlay = !commentsHidden || showCommentInput;
+
+	const handleToggleComment = useCallback(() => {
+		if (commentsHidden) {
+			showComments();
+			setShowCommentInput(true);
+			return;
+		}
+		setShowCommentInput((prev) => !prev);
+	}, [commentsHidden, showComments]);
+
+	const handleSendComment = useCallback(() => {
+		if (sendingComment || !commentDraft.trim()) return;
+		const seq = ++sendSeqRef.current;
+		setSendingComment(true);
+		void sendComment(commentDraft).then((sent) => {
+			if (sendSeqRef.current !== seq) return;
+			setSendingComment(false);
+			if (sent) setCommentDraft('');
+		});
+	}, [commentDraft, sendComment, sendingComment]);
 
 	const canShareScreen = useMemo(() => typeof navigator !== 'undefined' && typeof navigator.mediaDevices?.getDisplayMedia === 'function', []);
 
@@ -183,6 +240,25 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 							<span className="rounded-lg bg-black/70 px-4 py-2 text-sm font-medium text-white">{statusText}</span>
 						</div>
 					)}
+					{showLiveCommentOverlay && (
+						<div className="pointer-events-none absolute bottom-20 right-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-end gap-2">
+							{!commentsHidden && (
+								<LiveCommentStack comments={liveComments} onHide={hideComments} labels={commentStackLabels} className="w-full" />
+							)}
+							{showCommentInput && (
+								<LiveCommentInput
+									value={commentDraft}
+									onChange={setCommentDraft}
+									onSend={handleSendComment}
+									placeholder={commentPlaceholder}
+									sendLabel={commentSendLabel}
+									disabled={sendingComment}
+									autoFocus
+									className="w-full"
+								/>
+							)}
+						</div>
+					)}
 					<div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12 max-md:px-2 max-md:pb-2">
 						<div className="flex min-w-0 flex-wrap items-center gap-2">
 							<LiveControlButton
@@ -221,6 +297,19 @@ export function LivePublisherStage({ channelId }: LivePublisherStageProps) {
 									onClick={handleStopScreen}
 								/>
 							)}
+							<button
+								type="button"
+								title={commentButtonLabel}
+								aria-label={commentButtonLabel}
+								aria-pressed={showCommentInput}
+								onClick={handleToggleComment}
+								className={`relative flex size-10 items-center justify-center rounded-full text-white transition-colors hover:bg-white/[0.22] ${
+									showCommentInput ? 'bg-white/15' : 'bg-white/[0.08]'
+								}`}
+							>
+								<MezonIcon icon={MzIcons20.mzMessageAdd} />
+								{showCommentDot && <span className="btn-primary absolute right-1.5 top-1.5 size-2 rounded-full" />}
+							</button>
 						</div>
 						<button
 							type="button"

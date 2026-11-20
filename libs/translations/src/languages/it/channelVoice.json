@@ -251,5 +251,11 @@
 		"you": "Tu",
 		"enlarge": "Ingrandisci {{name}}",
 		"restoreLayout": "Torna alla visualizzazione affiancata"
+	},
+	"comment": {
+		"button": "Commenta",
+		"placeholder": "Scrivi un commento…",
+		"hide": "Nascondi commenti fluttuanti",
+		"show": "Mostra commenti fluttuanti"
 	}
 }
