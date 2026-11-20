@@ -141,6 +141,60 @@ describe('useLiveCommentQueue', () => {
 		expect(jest.getTimerCount()).toBe(0);
 	});
 
+	it('clears hasUnseen when all queued comments expire', () => {
+		act(() => {
+			latestQueue.hide();
+			latestQueue.add(makeComment(1, { id: 'c-1' }));
+		});
+		expect(latestQueue.hasUnseen).toBe(true);
+
+		act(() => {
+			jest.advanceTimersByTime(3000);
+		});
+		act(() => {
+			latestQueue.add(makeComment(2, { id: 'c-2' }));
+		});
+		expect(latestQueue.hasUnseen).toBe(true);
+
+		act(() => {
+			jest.advanceTimersByTime(LIVE_COMMENT_TTL_MS - 3000);
+		});
+		expect(latestQueue.comments).toHaveLength(1);
+		expect(latestQueue.hasUnseen).toBe(true);
+
+		act(() => {
+			jest.advanceTimersByTime(3000);
+		});
+		expect(latestQueue.comments).toEqual([]);
+		expect(latestQueue.hasUnseen).toBe(false);
+	});
+
+	it('does not set hasUnseen for own comments added while hidden', () => {
+		act(() => {
+			latestQueue.hide();
+			latestQueue.add(makeComment(1, { id: 'own-1' }), { own: true });
+		});
+		expect(latestQueue.comments).toHaveLength(1);
+		expect(latestQueue.hasUnseen).toBe(false);
+
+		act(() => {
+			latestQueue.add(makeComment(2, { id: 'other-1' }));
+		});
+		expect(latestQueue.hasUnseen).toBe(true);
+
+		act(() => {
+			jest.advanceTimersByTime(LIVE_COMMENT_TTL_MS);
+		});
+		expect(latestQueue.comments).toEqual([]);
+		expect(latestQueue.hasUnseen).toBe(false);
+
+		act(() => {
+			latestQueue.add(makeComment(3, { id: 'own-2' }), { own: true });
+		});
+		expect(latestQueue.comments).toHaveLength(1);
+		expect(latestQueue.hasUnseen).toBe(false);
+	});
+
 	it('clears all pending timers on unmount', () => {
 		act(() => {
 			latestQueue.add(makeComment(1, { id: 'c-1' }));

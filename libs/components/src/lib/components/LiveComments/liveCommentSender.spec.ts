@@ -5,8 +5,7 @@ import {
 	isStreamCommentToken,
 	parseRoomComment,
 	parseStreamCommentToken,
-	resolveClanMemberSender,
-	resolveRoomCommentSender
+	resolveClanMemberSender
 } from './liveCommentSender';
 
 jest.mock(
@@ -26,79 +25,13 @@ jest.mock(
 );
 
 describe('liveCommentSender', () => {
-	describe('resolveRoomCommentSender', () => {
-		it('returns null when userId is missing, empty, or "0"', () => {
-			const clanMembers = {
-				'0': { clan_nick: 'Zero' },
-				'10': { clan_nick: 'Alice' }
-			};
-			expect(resolveRoomCommentSender(undefined, clanMembers)).toBeNull();
-			expect(resolveRoomCommentSender(null, clanMembers)).toBeNull();
-			expect(resolveRoomCommentSender('', clanMembers)).toBeNull();
-			expect(resolveRoomCommentSender('   ', clanMembers)).toBeNull();
-			expect(resolveRoomCommentSender('0', clanMembers)).toBeNull();
-		});
-
-		it('returns null when user is neither a clan member nor a participant', () => {
-			expect(resolveRoomCommentSender('999', {}, [])).toBeNull();
-		});
-
-		it('prioritizes clan_nick > display_name > username and clan_avatar > avatar_url', () => {
-			const fullMember = {
-				clan_nick: 'ClanNick',
-				clan_avatar: 'https://cdn/clan-avatar.png',
-				user: {
-					display_name: 'DisplayName',
-					username: 'UserName',
-					avatar_url: 'https://cdn/user-avatar.png'
-				}
-			};
-			expect(resolveRoomCommentSender('1', { '1': fullMember })).toEqual({
-				userId: '1',
-				name: 'ClanNick',
-				avatar: 'https://cdn/clan-avatar.png'
-			});
-
-			const noNickMember = {
-				clan_nick: '',
-				user: {
-					display_name: 'DisplayName',
-					username: 'UserName',
-					avatar_url: 'https://cdn/user-avatar.png'
-				}
-			};
-			expect(resolveRoomCommentSender('2', { '2': noNickMember })).toEqual({
-				userId: '2',
-				name: 'DisplayName',
-				avatar: 'https://cdn/user-avatar.png'
-			});
-
-			const usernameOnlyMember = {
-				user: {
-					display_name: '',
-					username: 'UserName'
-				}
-			};
-			expect(resolveRoomCommentSender('3', { '3': usernameOnlyMember })).toEqual({
-				userId: '3',
-				name: 'UserName',
-				avatar: ''
-			});
-		});
-
-		it('falls back to participant profile when absent from clanMembers', () => {
-			expect(resolveRoomCommentSender('42', {}, [{ userId: '42', username: 'PeerName', avatar: 'https://cdn/peer.png' }])).toEqual({
-				userId: '42',
-				name: 'PeerName',
-				avatar: 'https://cdn/peer.png'
-			});
-		});
-	});
-
 	describe('resolveClanMemberSender', () => {
 		it('returns null when userId is invalid or member is absent', () => {
+			expect(resolveClanMemberSender(undefined, { clan_nick: 'Alice' })).toBeNull();
+			expect(resolveClanMemberSender(null, { clan_nick: 'Alice' })).toBeNull();
 			expect(resolveClanMemberSender('0', { clan_nick: 'Zero' })).toBeNull();
 			expect(resolveClanMemberSender('', { clan_nick: 'Blank' })).toBeNull();
+			expect(resolveClanMemberSender('   ', { clan_nick: 'Spaces' })).toBeNull();
 			expect(resolveClanMemberSender('10', undefined)).toBeNull();
 			expect(resolveClanMemberSender('10', null)).toBeNull();
 		});
@@ -124,6 +57,51 @@ describe('liveCommentSender', () => {
 				userId: '10',
 				name: 'Display',
 				avatar: 'https://cdn/user.png'
+			});
+
+			expect(
+				resolveClanMemberSender('10', {
+					user: { display_name: '', username: 'User' }
+				})
+			).toEqual({
+				userId: '10',
+				name: 'User',
+				avatar: ''
+			});
+		});
+
+		it('trims names so whitespace-only values fall through to the next fallback', () => {
+			expect(
+				resolveClanMemberSender('10', {
+					clan_nick: '   ',
+					user: { display_name: '  Display  ', username: 'User' }
+				})
+			).toEqual({
+				userId: '10',
+				name: 'Display',
+				avatar: ''
+			});
+
+			expect(
+				resolveClanMemberSender('10', {
+					clan_nick: '   ',
+					user: { display_name: '\t ', username: '  User  ' }
+				})
+			).toEqual({
+				userId: '10',
+				name: 'User',
+				avatar: ''
+			});
+
+			expect(
+				resolveClanMemberSender('10', {
+					clan_nick: '   ',
+					user: { display_name: '  ', username: '   ' }
+				})
+			).toEqual({
+				userId: '10',
+				name: '10',
+				avatar: ''
 			});
 		});
 	});

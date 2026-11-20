@@ -56,25 +56,16 @@ export function StreamStage({ channelId, clanId, poster, onLeave }: StreamStageP
 	const publisher = useStreamPublisher(channelId);
 	const stageRef = useRef<HTMLDivElement>(null);
 	const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
-	const sendSeqRef = useRef(0);
 	const [idle, setIdle] = useState(false);
 	const [controlsHovered, setControlsHovered] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [showCommentInput, setShowCommentInput] = useState(false);
-	const [commentDraft, setCommentDraft] = useState('');
-	const [sendingComment, setSendingComment] = useState(false);
 	const controlsVisible = !idle || controlsHovered || menuOpen || showCommentInput;
 	const silent = muted || volume === 0;
 
 	useEffect(() => {
-		sendSeqRef.current += 1;
 		setShowCommentInput(false);
-		setCommentDraft('');
-		setSendingComment(false);
-		return () => {
-			sendSeqRef.current += 1;
-		};
 	}, [channelId]);
 
 	const commentStackLabels = useMemo(() => ({ hide: t('channelVoice:comment.hide') }), [t]);
@@ -97,16 +88,7 @@ export function StreamStage({ channelId, clanId, poster, onLeave }: StreamStageP
 		setShowCommentInput((prev) => !prev);
 	}, [commentsHidden, showComments]);
 
-	const handleSendComment = useCallback(() => {
-		if (sendingComment || !commentDraft.trim()) return;
-		const seq = ++sendSeqRef.current;
-		setSendingComment(true);
-		void sendComment(commentDraft).then((sent) => {
-			if (sendSeqRef.current !== seq) return;
-			setSendingComment(false);
-			if (sent) setCommentDraft('');
-		});
-	}, [commentDraft, sendComment, sendingComment]);
+	const handleSendComment = useCallback((text: string) => sendComment(text), [sendComment]);
 
 	const qualityOptions = useMemo(() => STREAM_QUALITIES.map((id) => ({ id, label: t(STREAM_QUALITY_LABEL_KEYS[id]) })), [t]);
 
@@ -188,12 +170,10 @@ export function StreamStage({ channelId, clanId, poster, onLeave }: StreamStageP
 					)}
 					{showCommentInput && (
 						<LiveCommentInput
-							value={commentDraft}
-							onChange={setCommentDraft}
+							key={channelId}
 							onSend={handleSendComment}
 							placeholder={commentPlaceholder}
 							sendLabel={commentSendLabel}
-							disabled={sendingComment}
 							autoFocus
 							className="w-full"
 						/>

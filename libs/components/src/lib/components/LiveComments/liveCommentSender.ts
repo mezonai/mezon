@@ -28,12 +28,6 @@ export interface LiveCommentClanMember {
 	} | null;
 }
 
-export interface LiveCommentParticipant {
-	userId?: string;
-	username?: string;
-	avatar?: string;
-}
-
 export interface ParsedRoomComment {
 	content: string;
 	timestamp: number;
@@ -51,32 +45,11 @@ export const resolveClanMemberSender = (
 ): LiveCommentSender | null => {
 	const normalizedUserId = typeof userId === 'string' ? userId.trim() : '';
 	if (!normalizedUserId || normalizedUserId === '0' || !member) return null;
-	const name =
-		getNameForPrioritize(member.clan_nick ?? undefined, member.user?.display_name ?? undefined, member.user?.username ?? undefined)?.trim() ||
-		normalizedUserId;
+	const clanNick = member.clan_nick?.trim() || undefined;
+	const displayName = member.user?.display_name?.trim() || undefined;
+	const username = member.user?.username?.trim() || undefined;
+	const name = getNameForPrioritize(clanNick, displayName, username) || normalizedUserId;
 	const avatar = getAvatarForPrioritize(member.clan_avatar ?? undefined, member.user?.avatar_url ?? undefined) || '';
-	return {
-		userId: normalizedUserId,
-		name,
-		avatar
-	};
-};
-
-export const resolveRoomCommentSender = (
-	userId: string | undefined | null,
-	clanMembers: Record<string, LiveCommentClanMember | undefined>,
-	participants: readonly LiveCommentParticipant[] = []
-): LiveCommentSender | null => {
-	const normalizedUserId = typeof userId === 'string' ? userId.trim() : '';
-	if (!normalizedUserId || normalizedUserId === '0') return null;
-	const member = clanMembers[normalizedUserId];
-	const participant = participants.find((item) => item.userId === normalizedUserId);
-	if (!member && !participant) return null;
-	const name =
-		getNameForPrioritize(member?.clan_nick ?? undefined, member?.user?.display_name ?? undefined, member?.user?.username ?? undefined)?.trim() ||
-		participant?.username?.trim() ||
-		normalizedUserId;
-	const avatar = getAvatarForPrioritize(member?.clan_avatar ?? undefined, member?.user?.avatar_url ?? undefined) || participant?.avatar || '';
 	return {
 		userId: normalizedUserId,
 		name,

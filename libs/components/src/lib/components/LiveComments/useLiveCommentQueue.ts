@@ -9,6 +9,10 @@ export type LiveCommentDraftItem = Omit<LiveCommentItem, 'id' | 'timestamp'> & {
 	timestamp?: number;
 };
 
+export interface AddLiveCommentOptions {
+	own?: boolean;
+}
+
 export const useLiveCommentQueue = () => {
 	const [comments, setComments] = useState<LiveCommentItem[]>([]);
 	const [hidden, setHidden] = useState(false);
@@ -17,7 +21,7 @@ export const useLiveCommentQueue = () => {
 	const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 	const seqRef = useRef(0);
 
-	const add = useCallback((input: LiveCommentDraftItem) => {
+	const add = useCallback((input: LiveCommentDraftItem, options?: AddLiveCommentOptions) => {
 		const id = input.id || `live-comment-${Date.now()}-${++seqRef.current}`;
 		const item: LiveCommentItem = {
 			id,
@@ -51,10 +55,13 @@ export const useLiveCommentQueue = () => {
 		const timer = setTimeout(() => {
 			timersRef.current.delete(item.id);
 			setComments((prev) => prev.filter((existing) => existing.id !== item.id));
+			if (timersRef.current.size === 0) {
+				setHasUnseen(false);
+			}
 		}, LIVE_COMMENT_TTL_MS);
 		timersRef.current.set(item.id, timer);
 
-		if (hiddenRef.current) {
+		if (hiddenRef.current && !options?.own) {
 			setHasUnseen(true);
 		}
 	}, []);

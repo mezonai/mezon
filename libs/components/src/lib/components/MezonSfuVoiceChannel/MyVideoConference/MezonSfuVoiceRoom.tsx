@@ -2,7 +2,9 @@ import { useAuth } from '@mezon/core';
 import type { BreakoutParticipantItem } from '@mezon/store';
 import {
 	generateMeetToken,
+	getStore,
 	selectEntitesUserClans,
+	selectMemberByIdAndClanId,
 	selectNoiseSuppressionEnabled,
 	selectShowCamera,
 	selectShowMicrophone,
@@ -41,7 +43,7 @@ import {
 	LiveCommentInput,
 	LiveCommentStack,
 	parseRoomComment,
-	resolveRoomCommentSender,
+	resolveClanMemberSender,
 	truncateLiveComment,
 	useLiveCommentQueue
 } from '../../LiveComments';
@@ -739,7 +741,6 @@ export function MezonSfuVoiceRoom({
 	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
 	const [showBreakoutModal, setShowBreakoutModal] = useState(false);
 	const [showCommentInput, setShowCommentInput] = useState(false);
-	const [liveCommentDraft, setLiveCommentDraft] = useState('');
 	const {
 		comments: liveComments,
 		hidden: commentsHidden,
@@ -752,7 +753,6 @@ export function MezonSfuVoiceRoom({
 	useEffect(() => {
 		resetLiveComments();
 		setShowCommentInput(false);
-		setLiveCommentDraft('');
 	}, [roomId, resetLiveComments]);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const activeClanId = voiceInfo?.clanId || '';
@@ -2992,10 +2992,12 @@ export function MezonSfuVoiceRoom({
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
 	const handleIncomingRoomComment = useCallback(
 		(message: SignalMessage) => {
-			if (!message.message) return;
+			if (!message.message || !activeClanId || activeClanId === '0' || !message.user_id) return;
 			const parsed = parseRoomComment(message.message);
 			if (!parsed) return;
-			const sender = resolveRoomCommentSender(message.user_id, clanMembers, participants);
+			const state = getStore().getState();
+			const member = selectMemberByIdAndClanId(state, activeClanId, message.user_id);
+			const sender = resolveClanMemberSender(message.user_id, member);
 			if (!sender) return;
 			addLiveComment({
 				senderId: sender.userId,
@@ -3005,7 +3007,7 @@ export function MezonSfuVoiceRoom({
 				timestamp: parsed.timestamp
 			});
 		},
-		[addLiveComment, clanMembers, participants]
+		[activeClanId, addLiveComment]
 	);
 	handleIncomingRoomCommentRef.current = handleIncomingRoomComment;
 	const presentUserIds = useMemo(
@@ -3381,33 +3383,39 @@ export function MezonSfuVoiceRoom({
 		setShowCommentInput((prev) => !prev);
 	}, [commentsHidden, showLiveComments]);
 
-	const handleSendLiveComment = useCallback(() => {
-		const content = truncateLiveComment(liveCommentDraft);
-		if (!content) return;
-		const ws = wsRef.current;
-		if (!ws || ws.readyState !== WebSocket.OPEN) return;
-		const timestamp = Date.now();
-		const payload = {
-			id: currentUserId,
-			content,
-			timestamp,
-			name: localDisplayName,
-			avatar: localAvatar || ''
-		};
-		try {
-			ws.send(JSON.stringify({ type: 'send_message', message: JSON.stringify(payload) }));
-		} catch {
-			return;
-		}
-		addLiveComment({
-			senderId: currentUserId,
-			name: localDisplayName,
-			avatar: localAvatar || '',
-			content,
-			timestamp
-		});
-		setLiveCommentDraft('');
-	}, [addLiveComment, currentUserId, liveCommentDraft, localAvatar, localDisplayName]);
+	const handleSendLiveComment = useCallback(
+		(text: string): boolean => {
+			const content = truncateLiveComment(text);
+			if (!content) return false;
+			const ws = wsRef.current;
+			if (!joinedRef.current || !ws || ws.readyState !== WebSocket.OPEN) return false;
+			const timestamp = Date.now();
+			const payload = {
+				id: currentUserId,
+				content,
+				timestamp,
+				name: localDisplayName,
+				avatar: localAvatar || ''
+			};
+			try {
+				ws.send(JSON.stringify({ type: 'send_message', message: JSON.stringify(payload) }));
+			} catch {
+				return false;
+			}
+			addLiveComment(
+				{
+					senderId: currentUserId,
+					name: localDisplayName,
+					avatar: localAvatar || '',
+					content,
+					timestamp
+				},
+				{ own: true }
+			);
+			return true;
+		},
+		[addLiveComment, currentUserId, localAvatar, localDisplayName]
+	);
 
 	const liveCommentStackLabels = useMemo(() => ({ hide: t('comment.hide') }), [t]);
 	const liveCommentPlaceholder = useMemo(() => t('comment.placeholder'), [t]);
@@ -3618,8 +3626,7 @@ export function MezonSfuVoiceRoom({
 							)}
 							{showCommentInput && (
 								<LiveCommentInput
-									value={liveCommentDraft}
-									onChange={setLiveCommentDraft}
+									key={roomId}
 									onSend={handleSendLiveComment}
 									placeholder={liveCommentPlaceholder}
 									sendLabel={liveCommentButtonLabel}

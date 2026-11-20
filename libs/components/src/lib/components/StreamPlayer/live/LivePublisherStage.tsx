@@ -75,20 +75,11 @@ export function LivePublisherStage({ channelId, clanId }: LivePublisherStageProp
 
 	const stageRef = useRef<HTMLDivElement>(null);
 	const previewContainerRef = useRef<HTMLDivElement>(null);
-	const sendSeqRef = useRef(0);
 	const [showMembers, setShowMembers] = useState(true);
 	const [showCommentInput, setShowCommentInput] = useState(false);
-	const [commentDraft, setCommentDraft] = useState('');
-	const [sendingComment, setSendingComment] = useState(false);
 
 	useEffect(() => {
-		sendSeqRef.current += 1;
 		setShowCommentInput(false);
-		setCommentDraft('');
-		setSendingComment(false);
-		return () => {
-			sendSeqRef.current += 1;
-		};
 	}, [channelId]);
 
 	const commentStackLabels = useMemo(() => ({ hide: t('channelVoice:comment.hide') }), [t]);
@@ -110,16 +101,7 @@ export function LivePublisherStage({ channelId, clanId }: LivePublisherStageProp
 		setShowCommentInput((prev) => !prev);
 	}, [commentsHidden, showComments]);
 
-	const handleSendComment = useCallback(() => {
-		if (sendingComment || !commentDraft.trim()) return;
-		const seq = ++sendSeqRef.current;
-		setSendingComment(true);
-		void sendComment(commentDraft).then((sent) => {
-			if (sendSeqRef.current !== seq) return;
-			setSendingComment(false);
-			if (sent) setCommentDraft('');
-		});
-	}, [commentDraft, sendComment, sendingComment]);
+	const handleSendComment = useCallback((text: string) => sendComment(text), [sendComment]);
 
 	const canShareScreen = useMemo(() => typeof navigator !== 'undefined' && typeof navigator.mediaDevices?.getDisplayMedia === 'function', []);
 
@@ -247,12 +229,10 @@ export function LivePublisherStage({ channelId, clanId }: LivePublisherStageProp
 							)}
 							{showCommentInput && (
 								<LiveCommentInput
-									value={commentDraft}
-									onChange={setCommentDraft}
+									key={channelId}
 									onSend={handleSendComment}
 									placeholder={commentPlaceholder}
 									sendLabel={commentSendLabel}
-									disabled={sendingComment}
 									autoFocus
 									className="w-full"
 								/>
