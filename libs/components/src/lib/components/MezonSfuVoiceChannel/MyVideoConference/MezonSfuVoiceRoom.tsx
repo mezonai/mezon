@@ -472,6 +472,7 @@ export interface MezonSfuVoiceRoomProps {
 	isFullScreen: boolean;
 	isExternalCalling?: boolean;
 	onRefreshToken?: () => Promise<string | undefined>;
+	onSfuFailover?: (failedServerUrl: string) => Promise<{ token?: string; url?: string } | undefined>;
 	onLeaveRoom: () => void;
 	onReconnectRequired?: (networkLost: boolean) => void;
 	onFullScreen: () => void;
@@ -502,6 +503,7 @@ export function MezonSfuVoiceRoom({
 	isFullScreen,
 	isExternalCalling,
 	onRefreshToken,
+	onSfuFailover,
 	onLeaveRoom,
 	onReconnectRequired,
 	onFullScreen,
@@ -625,6 +627,8 @@ export function MezonSfuVoiceRoom({
 		if (pc?.getReceivers().some((receiver) => receiver.track === track)) requestManualRejoinRef.current();
 	}, []);
 	const onRefreshTokenRef = useRef(onRefreshToken);
+	const onSfuFailoverRef = useRef(onSfuFailover);
+	onSfuFailoverRef.current = onSfuFailover;
 	const tRef = useRef(t);
 	const muteSyncRef = useRef(new SfuMuteSync());
 	const connectionEpochRef = useRef(0);
@@ -1564,6 +1568,8 @@ export function MezonSfuVoiceRoom({
 		setLocalMediaPrepared(false);
 		let reconnectAllowed = true;
 		let sessionToken = signalingTokenRef.current;
+		let sessionServerUrl = serverUrl;
+		let sfuFailoverAttempted = false;
 		let tokenRejected = false;
 		let everJoined = false;
 		let serverRestarting = false;
@@ -2077,7 +2083,9 @@ export function MezonSfuVoiceRoom({
 			}
 			resetAndCreatePeerConnection();
 			const secureServerUrl =
-				window.location.protocol === 'https:' && serverUrl.startsWith('ws://') ? `wss://${serverUrl.slice(5)}` : serverUrl;
+				window.location.protocol === 'https:' && sessionServerUrl.startsWith('ws://')
+					? `wss://${sessionServerUrl.slice(5)}`
+					: sessionServerUrl;
 			const wsUrl = new URL(secureServerUrl);
 			wsUrl.searchParams.set('access_token', sessionToken);
 			const ws = new WebSocket(wsUrl.toString());
@@ -2407,6 +2415,36 @@ export function MezonSfuVoiceRoom({
 			openSignaling();
 		};
 
+		const failOverToAnotherSfuOrFail = () => {
+			const provideSfuFailover = onSfuFailoverRef.current;
+			if (sfuFailoverAttempted || !provideSfuFailover) {
+				endCallAfterReconnectFailure();
+				return;
+			}
+			sfuFailoverAttempted = true;
+			const failedServerUrl = sessionServerUrl;
+			refreshingTokenRef.current = true;
+			void withSfuTimeout(Promise.resolve().then(() => provideSfuFailover(failedServerUrl)), 10_000)
+				.catch(() => undefined)
+				.then((next) => {
+					if (disposed || !reconnectAllowed) return;
+					refreshingTokenRef.current = false;
+					const nextToken = next?.token;
+					const nextServerUrl = next?.url;
+					if (!nextToken || !nextServerUrl || nextServerUrl === failedServerUrl) {
+						endCallAfterReconnectFailure();
+						return;
+					}
+					sessionServerUrl = nextServerUrl;
+					sessionToken = nextToken;
+					signalingTokenRef.current = nextToken;
+					tokenRejected = false;
+					reconnectAttempts = 0;
+					dispatch(voiceActions.setToken(nextToken));
+					reconnect();
+				});
+		};
+
 		requestReconnect = () => {
 			if (disposed || !reconnectAllowed || refreshingTokenRef.current || (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED))
 				return;
@@ -2420,7 +2458,7 @@ export function MezonSfuVoiceRoom({
 				return;
 			}
 			if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-				endCallAfterReconnectFailure();
+				failOverToAnotherSfuOrFail();
 				return;
 			}
 			const delayMs = sfuReconnectDelay(reconnectAttempts);
