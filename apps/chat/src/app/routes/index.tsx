@@ -258,6 +258,10 @@ export const Routes = memo(() => {
 														),
 														children: [
 															{
+																path: '',
+																element: <ChannelIndex />
+															},
+															{
 																path: 'member-safety',
 																element: (
 																	<MemberProvider>
