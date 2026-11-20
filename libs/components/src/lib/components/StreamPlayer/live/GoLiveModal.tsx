@@ -128,7 +128,7 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 				return;
 			}
 			if (runId !== startRunRef.current) return;
-			const screenPromise = wantScreen ? requestDisplayMedia(wantSystemAudio) : null;
+			const screenPromise = wantScreen ? requestDisplayMedia(true) : null;
 
 			let audioContext: AudioContext | null = null;
 			try {
@@ -277,6 +277,8 @@ export function GoLiveModal({ showModal, onClose, clanId, clanName, channelId, c
 	const handleCameraOnly = useCallback(() => {
 		void startLive(false);
 	}, [startLive]);
+
+	if (!showModal) return null;
 
 	return createPortal(
 		<Modal showModal={showModal} onClose={onClose} title={modalTitle} isInviteModal>

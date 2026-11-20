@@ -1,15 +1,15 @@
 import { getTrackGeneratorCtor, getTrackProcessorCtor } from '../../MezonSfuVoiceChannel/Recording/capabilities';
 
-const CANVAS_WIDTH = 1920;
-const CANVAS_HEIGHT = 1080;
+const CANVAS_WIDTH = 1280;
+const CANVAS_HEIGHT = 720;
 const CANVAS_FPS = 30;
 const IDLE_REPEAT_MS = 100;
 const MAX_FRAME_GAP_MS = 1000;
 const FRAME_INTERVAL_SMOOTHING = 0.2;
 const SCREEN_DRIVE_TOLERANCE = 1.25;
-const PIP_WIDTH = 384;
-const PIP_MARGIN = 24;
-const PIP_RADIUS = 12;
+const PIP_WIDTH = 256;
+const PIP_MARGIN = 16;
+const PIP_RADIUS = 8;
 
 type CaptureTrack = MediaStreamTrack & {
 	requestFrame?: () => void;

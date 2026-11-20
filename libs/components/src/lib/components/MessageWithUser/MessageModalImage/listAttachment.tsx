@@ -10,8 +10,6 @@ const HORIZONTAL_LIST_HEIGHT = 80;
 type ListAttachmentProps = {
 	attachments: AttachmentEntity[];
 	channelId: string;
-	urlImg: string;
-	setUrlImg: React.Dispatch<React.SetStateAction<string>>;
 	handleDrag: (e: any) => void;
 	setScale: React.Dispatch<React.SetStateAction<number>>;
 	setPosition: React.Dispatch<
@@ -51,8 +49,6 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 	const {
 		attachments,
 		channelId,
-		urlImg,
-		setUrlImg,
 		setScale,
 		setPosition,
 		handleDrag,
@@ -217,7 +213,6 @@ const ListAttachmentContent = (props: ListAttachmentProps & { horizontal: boolea
 								previousDate={currentDate}
 								selectedImageRef={selectedImageRef}
 								showDate={showDate}
-								setUrlImg={setUrlImg}
 								handleDrag={handleDrag}
 								index={originalIndex}
 								setCurrentIndexAtt={setCurrentIndexAtt}

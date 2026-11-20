@@ -169,8 +169,11 @@
 	"chat": {
 		"quickReplies": "Schnellantworten",
 		"quickRepliesDescription": "Schnellantwortvorschläge basierend auf der letzten Nachricht im Kanal anzeigen.",
+		"quickReaction": "Schnellreaktion",
+		"quickReactionDescription": "Wird in der Ecke einer Nachricht angezeigt, wenn du mit der Maus darüberfährst.",
+		"quickReactionChange": "Ändern",
 		"onlyFriendsDm": {
-			"title": "Keine Nachrichten von Fremden erhalten.",
+			"title": "Keine Nachrichten von Fremden erhalten",
 			"description": "Wenn aktiviert, können nur Personen, die mit dir befreundet sind, eine Unterhaltung mit dir beginnen.",
 			"denied": "Du kannst dieser Person keine Nachricht senden."
 		}

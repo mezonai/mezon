@@ -1,14 +1,16 @@
 import type { MessagesEntity } from '@mezon/store';
 import { MezonIcon, MzIcons48 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
+import type { ReactNode } from 'react';
 import { useModal } from 'react-modal-hook';
 import TransactionHistory from '../TransactionHistory';
 
 interface ITokenTransactionMessageProps {
 	message: MessagesEntity;
+	quickReaction?: ReactNode;
 }
 
-const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => {
+const TokenTransactionMessage = ({ message, quickReaction }: ITokenTransactionMessageProps) => {
 	const transactionData = message?.content?.t ?? '';
 	const [title, ...rest] = transactionData.split(' | ');
 	const description = rest.join(' | ');
@@ -17,10 +19,10 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 	});
 	return (
 		<div className="py-2 w-full min-w-0">
-			<div className="w-[360px] max-w-full overflow-hidden border-theme-primary rounded-md text-theme-primary-dark bg-theme-setting-primary shadow-sm">
+			<div className="relative w-[360px] max-w-full border-theme-primary rounded-md text-theme-primary-dark bg-theme-setting-primary shadow-sm">
 				<div className="px-3 py-3.5 flex items-start gap-2.5 w-full">
 					<MezonIcon icon={MzIcons48.mzTransaction} className="shrink-0 dark:text-green-600 text-green-700" />
-					<div className="flex min-w-0 flex-col gap-2 flex-1">
+					<div className="flex min-w-0 flex-col gap-2 flex-1 truncate">
 						<div
 							className="text-base font-semibold text-theme-primary-active [overflow-wrap:anywhere]"
 							data-e2e={generateE2eId('send_token.message.title')}
@@ -48,6 +50,7 @@ const TokenTransactionMessage = ({ message }: ITokenTransactionMessageProps) => 
 						Mezon transfer
 					</div>
 				</div>
+				{quickReaction}
 			</div>
 		</div>
 	);

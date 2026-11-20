@@ -8,7 +8,7 @@ export function requestDisplayMedia(withSystemAudio: boolean): Promise<MediaStre
 	const CaptureControllerCtor = (window as typeof window & { CaptureController?: new () => ScreenCaptureController }).CaptureController;
 	const captureController = CaptureControllerCtor ? new CaptureControllerCtor() : undefined;
 	const promise = navigator.mediaDevices.getDisplayMedia({
-		video: { width: 1920, height: 1080, frameRate: 30 },
+		video: { width: 1280, height: 720, frameRate: 30 },
 		audio: withSystemAudio
 			? {
 					echoCancellation: false,

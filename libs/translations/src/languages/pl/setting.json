@@ -169,8 +169,11 @@
 	"chat": {
 		"quickReplies": "Szybkie odpowiedzi",
 		"quickRepliesDescription": "Wyświetlaj propozycje szybkich odpowiedzi na podstawie ostatniej wiadomości na kanale.",
+		"quickReaction": "Szybka reakcja",
+		"quickReactionDescription": "Pojawia się w rogu wiadomości po najechaniu kursorem.",
+		"quickReactionChange": "Zmień",
 		"onlyFriendsDm": {
-			"title": "Nie odbieraj wiadomości od nieznajomych.",
+			"title": "Nie odbieraj wiadomości od nieznajomych",
 			"description": "Gdy włączone, tylko osoby, które są Twoimi znajomymi, mogą rozpocząć z Tobą rozmowę.",
 			"denied": "Nie możesz wysłać wiadomości do tego użytkownika."
 		}

@@ -297,6 +297,32 @@ module.exports = {
 						width: '120px',
 						opacity: 1
 					}
+				},
+				reaction_fly: {
+					'0%': {
+						opacity: 0,
+						transform: 'translate(-50%, 0) scale(0.6)'
+					},
+					'18%': {
+						opacity: 1
+					},
+					'100%': {
+						opacity: 0,
+						transform: 'translate(calc(-50% + var(--reaction-fly-x, 0px)), -40px) scale(1.15)'
+					}
+				},
+				reaction_burst: {
+					'0%': {
+						opacity: 0,
+						transform: 'translate(-50%, -50%) scale(0.3)'
+					},
+					'20%': {
+						opacity: 1
+					},
+					'100%': {
+						opacity: 0,
+						transform: 'translate(calc(-50% + var(--reaction-burst-x, 0px)), calc(-50% + var(--reaction-burst-y, 0px))) scale(1)'
+					}
 				}
 			},
 			boxShadow: {
@@ -323,7 +349,9 @@ module.exports = {
 			wiggle: 'wiggle 2s linear forwards',
 			login_otp: 'login_otp 0.5s ease-in-out forwards',
 			login_email: 'login_email 0.5s ease-in-out forwards',
-			expand: 'expand 0.5s ease-in-out forwards'
+			expand: 'expand 0.5s ease-in-out forwards',
+			reaction_fly: 'reaction_fly 0.75s ease-out both',
+			reaction_burst: 'reaction_burst 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) both'
 		},
 		screens: {
 			ssm: '430px',

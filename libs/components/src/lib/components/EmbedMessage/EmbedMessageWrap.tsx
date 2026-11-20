@@ -1,6 +1,7 @@
 import { useCustomNavigate } from '@mezon/core';
 import { channelsActions, getStore, selectAppChannelById } from '@mezon/store';
 import { SHARE_CONTACT_KEY, TypeMessage, type IEmbedProps, type ObserveFn } from '@mezon/utils';
+import type { ReactNode } from 'react';
 import { useDispatch } from 'react-redux';
 import ShareContactCard from '../ShareContact/ShareContactCard';
 import { EmbedMessage } from './EmbedMessage';
@@ -12,6 +13,7 @@ interface EmbedMessageWrapProps {
 	channelId: string;
 	observeIntersectionForLoading?: ObserveFn;
 	code?: number;
+	quickReaction?: ReactNode;
 }
 
 const isShareContactEmbed = (embed: IEmbedProps, code: number): boolean => {
@@ -19,7 +21,15 @@ const isShareContactEmbed = (embed: IEmbedProps, code: number): boolean => {
 	return (fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY) || code === TypeMessage.ShareContact;
 };
 
-export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading, code }: EmbedMessageWrapProps) {
+export function EmbedMessageWrap({
+	embeds,
+	senderId,
+	messageId,
+	channelId,
+	observeIntersectionForLoading,
+	code,
+	quickReaction
+}: EmbedMessageWrapProps) {
 	const navigate = useCustomNavigate();
 	const dispatch = useDispatch();
 
@@ -65,21 +75,27 @@ export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, obser
 
 	return (
 		<div className="w-full">
-			{embeds.map((embed, index) =>
-				isShareContactEmbed(embed, code ?? 0) ? (
-					<ShareContactCard key={index} embed={embed} />
-				) : (
-					<EmbedMessage
-						key={index}
-						embed={embed}
-						senderId={senderId}
-						message_id={messageId}
-						onClick={() => onEmbedClick(embed)}
-						channelId={channelId}
-						observeIntersectionForLoading={observeIntersectionForLoading}
-					/>
-				)
-			)}
+			{embeds.map((embed, index) => {
+				const isShareContact = isShareContactEmbed(embed, code ?? 0);
+				const embedQuickReaction = index === embeds.length - 1 ? quickReaction : undefined;
+				return (
+					<div key={index} className={embedQuickReaction ? `relative ${isShareContact ? 'w-fit' : 'max-w-[520px]'}` : ''}>
+						{isShareContact ? (
+							<ShareContactCard embed={embed} />
+						) : (
+							<EmbedMessage
+								embed={embed}
+								senderId={senderId}
+								message_id={messageId}
+								onClick={() => onEmbedClick(embed)}
+								channelId={channelId}
+								observeIntersectionForLoading={observeIntersectionForLoading}
+							/>
+						)}
+						{embedQuickReaction}
+					</div>
+				);
+			})}
 		</div>
 	);
 }
