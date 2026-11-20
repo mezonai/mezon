@@ -44,7 +44,7 @@
 		},
 		"VoiceChannel": {
 			"title": "Выберите голосовой канал",
-			"privateAudienceTip": "Совет: Чтобы все зрители могли присоединиться к событию, добавьте их в <channel>#{{channelName}}</channel>."
+			"privateAudienceTip": "Совет: Чтобы все зрители могли присоединиться к событию, добавьте их в <channel><icon/>{{channelName}}</channel>."
 		},
 		"address": {
 			"title": "Локации",
