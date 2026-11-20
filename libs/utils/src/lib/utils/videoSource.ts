@@ -7,7 +7,7 @@ const TRANSCODING_ORIGINS = [
 	'http://cdn.mezon.ai',
 	'https://cdn.mezon.vn',
 	'http://cdn.mezon.vn',
-	...(process.env.NX_ENV === 'development' ? ['https://cdn-dev.nccsoft.vn', 'https://cdn-dev.nccsoft.vn'] : [])
+	...(process.env.NX_ENV === 'development' ? ['https://cdn-dev.nccsoft.vn', 'http://cdn-dev.nccsoft.vn'] : [])
 ];
 // Containers no browser plays, which the media server converts like any other video.
 const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'mkv', 'wmv']);

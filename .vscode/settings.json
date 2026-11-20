@@ -58,6 +58,5 @@
 		"typescript": "html",
 		"typescriptreact": "html"
 	},
-	"nxConsole.generateAiAgentRules": true,
-	"js/ts.tsdk.path": "node_modules\\typescript\\lib"
+	"nxConsole.generateAiAgentRules": true
 }
