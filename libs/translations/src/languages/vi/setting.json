@@ -169,10 +169,11 @@
 	"chat": {
 		"quickReplies": "Câu trả lời nhanh",
 		"quickRepliesDescription": "Hiển thị các gợi ý trả lời nhanh dựa trên tin nhắn gần nhất trong kênh.",
-		"grammar": "Sửa lỗi ngữ pháp",
-		"grammarDescription": "Gợi ý sửa lỗi chính tả và ngữ pháp trong khi bạn nhập (tối đa 256 ký tự).",
+		"quickReaction": "Biểu cảm nhanh",
+		"quickReactionDescription": "Hiển thị ở góc tin nhắn khi rê chuột vào.",
+		"quickReactionChange": "Đổi",
 		"onlyFriendsDm": {
-			"title": "Không nhận tin nhắn từ người lạ.",
+			"title": "Không nhận tin nhắn từ người lạ",
 			"description": "Khi bật, chỉ những người đã là bạn bè của bạn mới có thể bắt đầu cuộc trò chuyện với bạn.",
 			"denied": "Bạn không thể gửi tin nhắn cho người dùng này."
 		}

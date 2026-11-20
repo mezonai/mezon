@@ -4,6 +4,7 @@ import {
 	selectAllEmojiSuggestion,
 	selectEmojiListStatus,
 	selectEmojiObjSuggestion,
+	selectQuickReactionEmoji,
 	selectShiftPressedStatus,
 	selectTextToSearchEmojiSuggestion,
 	useAppDispatch
@@ -150,4 +151,18 @@ export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = 
 export function useEmojiConverted() {
 	const emojiMetadata = useSelector(selectAllEmojiRecent);
 	return emojiMetadata;
+}
+
+const DEFAULT_QUICK_REACTION_SHORTNAME = ':heart:';
+
+export function useQuickReactionEmoji(): IEmoji | undefined {
+	const emojiMetadata = useSelector(selectAllEmojiSuggestion);
+	const quickReactionId = useSelector(selectQuickReactionEmoji)?.id;
+
+	return useMemo(
+		() =>
+			(quickReactionId && emojiMetadata.find((emoji) => emoji.id === quickReactionId)) ||
+			emojiMetadata.find((emoji) => emoji.shortname === DEFAULT_QUICK_REACTION_SHORTNAME),
+		[emojiMetadata, quickReactionId]
+	);
 }

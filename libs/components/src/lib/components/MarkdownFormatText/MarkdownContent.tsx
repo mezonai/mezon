@@ -36,6 +36,7 @@ type MarkdownContentOpt = {
 	isSearchMessage?: boolean;
 	messageId?: string;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+	quickReaction?: React.ReactNode;
 };
 
 const extractChannelParams = (url: string) => {
@@ -342,7 +343,8 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	isSearchMessage,
 	messageId,
 	onContextMenu,
-	language
+	language,
+	quickReaction
 }) => {
 	const appearanceTheme = useSelector(selectTheme);
 
@@ -371,7 +373,15 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				/>
 			)}
 
-			{isSocialLink && <SocialEmbed url={content} platform={typeOfBacktick} isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />}
+			{isSocialLink && (
+				<SocialEmbed
+					url={content}
+					platform={typeOfBacktick}
+					isSearchMessage={isSearchMessage}
+					isInPinMsg={isInPinMsg}
+					quickReaction={quickReaction}
+				/>
+			)}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
@@ -547,7 +557,8 @@ const SocialEmbed: React.FC<{
 	isSearchMessage?: boolean;
 	isInPinMsg?: boolean;
 	observeIntersection?: ObserveFn;
-}> = ({ url, platform, isSearchMessage, isInPinMsg, observeIntersection }) => {
+	quickReaction?: React.ReactNode;
+}> = ({ url, platform, isSearchMessage, isInPinMsg, observeIntersection, quickReaction }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [isIntersecting, setIsIntersecting] = useState(!observeIntersection);
 
@@ -617,7 +628,7 @@ const SocialEmbed: React.FC<{
 			{isIntersecting && (
 				<>
 					<div className="border-l-4 rounded-l" style={{ borderColor }}></div>
-					<div className={`p-4 bg-[#2b2d31] rounded ${isInPinMsg ? 'flex-1 min-w-0' : ''}`}>
+					<div className={`relative p-4 bg-[#2b2d31] rounded ${isInPinMsg ? 'flex-1 min-w-0' : ''}`}>
 						{embedData.type === 'youtube' && embedData.videoId && (
 							<lite-youtube
 								videoid={embedData.videoId}
@@ -651,6 +662,7 @@ const SocialEmbed: React.FC<{
 								referrerPolicy={'strict-origin-when-cross-origin'}
 							/>
 						)}
+						{quickReaction}
 					</div>
 				</>
 			)}

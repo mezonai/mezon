@@ -36,6 +36,7 @@ import {
 	giveCoffeeActions,
 	inviteActions,
 	listChannelsByUserActions,
+	liveStreamActions,
 	mapMessageChannelToEntityAction,
 	mapReactionToEntity,
 	messagesActions,
@@ -77,11 +78,14 @@ import {
 	selectEstablishedCall,
 	selectFriendById,
 	selectIsInCall,
+	selectIsLiveActive,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectLastMessageByChannelId,
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
+	selectLiveChannelId,
+	selectLiveInfo,
 	selectLoadingStatus,
 	selectMessageByMessageId,
 	selectThreadCurrentChannel,
@@ -176,6 +180,7 @@ import type {
 	CustomStatusEvent,
 	DeleteAccountEvent,
 	EventEmoji,
+	FriendStateUpdated,
 	LastPinMessageEvent,
 	LastSeenMessageEvent,
 	ListActivity,
@@ -1097,6 +1102,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onuserchannelremoved = useCallback(
 		async (user: UserChannelRemovedEvent) => {
 			const store = await getStoreAsync();
+			const liveChannelId = selectLiveChannelId(store.getState());
+			if (liveChannelId && user.channel_id === liveChannelId && userId && user.user_ids?.includes(userId)) {
+				dispatch(liveStreamActions.requestStop('accessLost'));
+			}
 			const channelId = selectCurrentChannelId(store.getState() as unknown as RootState);
 			const directId = selectDmGroupCurrentId(store.getState());
 			const clanId = selectCurrentClanId(store.getState());
@@ -1208,6 +1217,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		async (user: UserClanRemovedEvent) => {
 			if (!user?.user_ids) return;
 			const store = await getStoreAsync();
+			if (
+				selectIsLiveActive(store.getState()) &&
+				user.clan_id === selectLiveInfo(store.getState()).clanId &&
+				Boolean(userId) &&
+				user.user_ids.includes(userId as string)
+			) {
+				dispatch(liveStreamActions.requestStop('accessLost'));
+			}
 			const channels = selectChannelsByClanId(store.getState() as unknown as RootState, user.clan_id as string);
 			const clanId = selectCurrentClanId(store.getState());
 			const currentVoice = selectVoiceInfo(store.getState());
@@ -1970,6 +1987,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const isVoiceJoined = selectVoiceInfo(store.getState());
 			if (channelDeleted?.channel_id === isVoiceJoined?.channelId) {
 				dispatch(voiceActions.resetVoiceControl());
+			}
+			const liveChannelId = selectLiveChannelId(store.getState());
+			if (liveChannelId && channelDeleted?.channel_id === liveChannelId) {
+				dispatch(liveStreamActions.requestStop('accessLost'));
 			}
 
 			if (channelDeleted.channel_id !== '0') {
@@ -2856,6 +2877,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		dispatch(friendsActions.upsertFriendRequest({ user, myId: userId || '' }));
 	}, []);
 
+	const onfriendstateupdated = useCallback(
+		(user: FriendStateUpdated) => {
+			dispatch(friendsActions.applyFriendStateUpdated({ user, myId: userId || '' }));
+		},
+		[userId]
+	);
+
 	const onbanneduser = useCallback((user: BannedUserEvent) => {
 		if (user.action === 1) {
 			dispatch(
@@ -3049,6 +3077,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			socket.onaddfriend = onaddfriend;
 
+			socket.onfriendstateupdated = onfriendstateupdated;
+
 			socket.onbanneduser = onbanneduser;
 
 			socket.onscreenshare = onscreenshare;
@@ -3110,6 +3140,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onunblockfriend,
 			onMarkAsRead,
 			onaddfriend,
+			onfriendstateupdated,
 			onbanneduser,
 			runPostReconnectActions,
 			onServerDisconnectStreakLogout,

@@ -18,5 +18,32 @@
 	"isLive": "{{name}}님이 라이브 중",
 	"volume": "볼륨",
 	"mute": "음소거",
-	"unmute": "음소거 해제"
+	"unmute": "음소거 해제",
+	"goLive": "라이브 시작",
+	"endLive": "방송 종료",
+	"youAreLive": "라이브 중",
+	"liveConnecting": "연결 중…",
+	"liveReconnecting": "재연결 중…",
+	"cameraOnly": "카메라만",
+	"liveMic": "마이크",
+	"liveCamera": "카메라",
+	"liveSystemAudio": "시스템 오디오",
+	"alsoShareSystemAudio": "시스템 오디오도 공유",
+	"liveScreen": "화면 공유",
+	"changeScreen": "화면 변경",
+	"stopScreen": "화면 공유 중지",
+	"liveElsewhere": "이미 다른 채널에서 라이브 방송 중입니다",
+	"shareScreen": "화면 공유",
+	"startLive": "라이브 시작",
+	"liveError": {
+		"busy": "이 채널에서 이미 다른 사용자가 라이브 방송 중입니다",
+		"forbidden": "이 채널에서 라이브 방송을 시작할 수 없습니다",
+		"serverBusy": "스트리밍 서버가 혼잡합니다. 잠시 후 다시 시도해 주세요",
+		"unsupported": "이 기기에서 스트림을 인코딩할 수 없습니다",
+		"network": "스트리밍 서버와의 연결이 끊어졌습니다",
+		"replaced": "내 계정을 사용하는 다른 앱이나 기기가 방송을 가져갔습니다",
+		"accessLost": "이 채널에 대한 접근 권한이 없어 방송이 종료되었습니다",
+		"source": "{{source}}을(를) 시작할 수 없습니다",
+		"sourceEnded": "{{source}}이(가) 중지되었습니다"
+	}
 }

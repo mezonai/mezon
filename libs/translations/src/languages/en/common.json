@@ -553,5 +553,11 @@
 	"formatDate": "MMMM d, yyyy",
 	"cannotSendLocationWithAnonymous": "Cannot send location using Anonymous.",
 	"iconAnimations": "Icon animations",
-	"iconAnimationsDesc": "Animate icons on hover and while something is live, such as typing or a stream."
+	"iconAnimationsDesc": "Animate icons on hover and while something is live, such as typing or a stream.",
+	"openInDesktopApp": {
+		"title": "Open this link in the Mezon desktop app?",
+		"open": "Open app",
+		"dismiss": "Close",
+		"continueInBrowser": "Continue in browser"
+	}
 }

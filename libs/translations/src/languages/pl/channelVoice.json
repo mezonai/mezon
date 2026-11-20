@@ -170,6 +170,12 @@
 		"keepMuted": "Audio jest wstrzymane. Kliknij, aby pozostawić mikrofon wyciszony."
 	},
 	"weakNetwork": "Słaba sieć",
+	"connecting": "Łączenie…",
+	"reconnecting": "Ponowne łączenie…",
+	"raiseHand": "Podnieś rękę",
+	"lowerHand": "Opuść rękę",
+	"addAgent": "Dodaj agenta AI",
+	"removeAgent": "Usuń agenta AI",
 	"networkWarning": {
 		"title": "Twoje połączenie jest niestabilne",
 		"body": "Sprawdź swoje połączenie sieciowe."

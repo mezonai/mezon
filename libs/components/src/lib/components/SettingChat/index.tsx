@@ -1,8 +1,10 @@
-import { appActions, fetchDMSetting, selectIsQuickReply, selectIsSpelling, selectOnlyFriendsDM, updateDMSetting, useAppDispatch } from '@mezon/store';
-import { generateE2eId } from '@mezon/utils';
-import { useEffect } from 'react';
+import { EmojiSuggestionProvider, useQuickReactionEmoji } from '@mezon/core';
+import { appActions, fetchDMSetting, selectIsQuickReply, selectOnlyFriendsDM, updateDMSetting, useAppDispatch } from '@mezon/store';
+import { generateE2eId, getSrcEmoji } from '@mezon/utils';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { EmojiRolePanel } from '../EmojiPicker/EmojiRolePanel';
 
 type SettingChatProps = {
 	menuIsOpen: boolean;
@@ -10,10 +12,16 @@ type SettingChatProps = {
 
 const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 	const { t } = useTranslation('setting');
-	const isSpelling = useSelector(selectIsSpelling);
 	const isQuickReply = useSelector(selectIsQuickReply);
 	const onlyFriendsDM = useSelector(selectOnlyFriendsDM);
+	const quickReaction = useQuickReactionEmoji();
+	const [isQuickReactionPickerOpen, setIsQuickReactionPickerOpen] = useState(false);
 	const dispatch = useAppDispatch();
+
+	const handleSelectQuickReaction = (emojiId: string, emojiShortname: string) => {
+		dispatch(appActions.setQuickReactionEmoji({ id: emojiId, shortname: emojiShortname }));
+		setIsQuickReactionPickerOpen(false);
+	};
 
 	useEffect(() => {
 		dispatch(fetchDMSetting());
@@ -26,13 +34,6 @@ const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 			description: t('chat.quickRepliesDescription'),
 			checked: isQuickReply,
 			onChange: () => dispatch(appActions.toggleIsQuickReply())
-		},
-		{
-			id: 'spelling_switch',
-			title: t('chat.grammar'),
-			description: t('chat.grammarDescription'),
-			checked: isSpelling,
-			onChange: () => dispatch(appActions.toggleIsSpelling())
 		},
 		{
 			id: 'only_friends_dm_switch',
@@ -80,6 +81,40 @@ const SettingChat = ({ menuIsOpen }: SettingChatProps) => {
 						</label>
 					</div>
 				))}
+				<div className="flex flex-col gap-3 rounded-lg border border-color-primary bg-theme-setting-nav p-4">
+					<div className="flex items-center justify-between gap-4">
+						<div className="flex min-w-0 flex-col gap-1">
+							<h2 id="quick_reaction-label" className="text-base font-medium text-theme-primary-active">
+								{t('chat.quickReaction')}
+							</h2>
+							<p className="text-sm text-theme-primary">{t('chat.quickReactionDescription')}</p>
+						</div>
+						<button
+							id="quick_reaction-button"
+							type="button"
+							onClick={() => setIsQuickReactionPickerOpen((isOpen) => !isOpen)}
+							aria-expanded={isQuickReactionPickerOpen}
+							aria-labelledby="quick_reaction-label quick_reaction-button"
+							className="flex shrink-0 items-center gap-2 rounded-lg border border-color-primary bg-theme-input bg-item-hover px-3 py-1.5 text-theme-primary-active"
+						>
+							{quickReaction?.id && (
+								<img
+									src={getSrcEmoji(quickReaction.id, quickReaction.src)}
+									alt={quickReaction.shortname}
+									className="h-6 w-6 object-scale-down"
+								/>
+							)}
+							{t('chat.quickReactionChange')}
+						</button>
+					</div>
+					{isQuickReactionPickerOpen && (
+						<div className="rounded-lg border border-color-primary bg-theme-setting-primary">
+							<EmojiSuggestionProvider>
+								<EmojiRolePanel onEmojiSelect={handleSelectQuickReaction} onClose={() => setIsQuickReactionPickerOpen(false)} />
+							</EmojiSuggestionProvider>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);

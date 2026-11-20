@@ -1,4 +1,5 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
+import type { MentionDataProps } from '@mezon/utils';
 import { ID_MENTION_HERE, IS_MAC_OS, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
@@ -88,6 +89,7 @@ export interface MentionsInputProps {
 	currentChannelId?: string;
 	allowEmptySend?: boolean;
 	keepTextOnSend?: boolean;
+	mentionUsers?: MentionDataProps[];
 }
 
 export interface MentionsInputHandle {
@@ -344,7 +346,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			setCaretToEnd = false,
 			currentChannelId,
 			allowEmptySend = false,
-			keepTextOnSend = false
+			keepTextOnSend = false,
+			mentionUsers = []
 		},
 		ref
 	) => {
@@ -995,10 +998,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				if (containsMentionEntities && htmlContent) {
 					const cleanedHtml = preparePastedHtml(htmlContent);
-					contentToInsert = cleanedHtml;
-					if (cleanedHtml.trim() !== inputRef.current?.innerHTML.trim()) {
-						contentToInsert = clearMentionReplacer(cleanedHtml);
-					}
+					contentToInsert = clearMentionReplacer(cleanedHtml, mentionUsers);
 				} else if (htmlContent) {
 					contentToInsert = (
 						renderText(convertPastedHtmlToMarkdown(htmlContent) || plainText || '', ['escape_html', 'br_html']) as string[]
@@ -1018,7 +1018,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				onChange?.(e.currentTarget.innerHTML);
 				debouncedDetectMention();
 			},
-			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste]
+			[disabled, onChange, debouncedDetectMention, onHandlePaste, onLongTextPaste, mentionUsers]
 		);
 
 		const { t } = useTranslation('message');
@@ -1398,11 +1398,12 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 			handleSelectionUnresolved
 		]);
 
+		const isCommandSuggestion = activeTrigger === '/';
 		const { refs, floatingStyles } = useFloating({
 			open: !!activeMentionContext,
 			placement: 'top-start',
 			strategy: 'fixed',
-			middleware: [offset({ mainAxis: 8, crossAxis: -55 }), flip(), shift({ padding: 8 })],
+			middleware: [offset({ mainAxis: 8, crossAxis: isCommandSuggestion ? 0 : -55 }), flip(), shift({ padding: 8 })],
 			whileElementsMounted: autoUpdate
 		});
 
@@ -1411,18 +1412,24 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				if (anchorRef) {
 					(anchorRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
 				}
-				refs.setReference(node);
+				const reference = isCommandSuggestion
+					? node?.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView') || node?.parentElement || null
+					: node;
+				refs.setReference(reference);
 			},
-			[refs]
+			[refs, isCommandSuggestion]
 		);
 
 		useEffect(() => {
-			if (activeMentionContext && inputRef.current) {
-				const parentElement = inputRef.current.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView');
-				const width = parentElement ? parentElement.getBoundingClientRect().width : inputRef.current.getBoundingClientRect().width;
-				setInputWidth(width);
-			}
-		}, [activeMentionContext]);
+			if (!activeTrigger || !inputRef.current) return;
+			const parentElement = inputRef.current.closest('.max-w-wrappBoxChatViewMobile, .w-wrappBoxChatView');
+			const element = parentElement || (activeTrigger === '/' ? inputRef.current.parentElement : null) || inputRef.current;
+			const updateWidth = () => setInputWidth(element.getBoundingClientRect().width);
+			updateWidth();
+			const observer = new ResizeObserver(updateWidth);
+			observer.observe(element);
+			return () => observer.disconnect();
+		}, [activeTrigger]);
 
 		const handleFloatingRef = useCallback(
 			(node: HTMLDivElement | null) => {
@@ -1447,13 +1454,14 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 						border: '1px solid var(--border-color)',
 						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
 						padding: 0,
-						width: inputWidth
+						width: inputWidth,
+						maxWidth: isCommandSuggestion ? 'calc(100vw - 16px)' : undefined
 					}}
 				>
 					{mentionContent}
 				</div>
 			);
-		}, [mentionContent, refs, floatingStyles, activeMentionContext, inputWidth]);
+		}, [mentionContent, handleFloatingRef, floatingStyles, activeMentionContext, inputWidth, isCommandSuggestion]);
 
 		return (
 			<div className={`mention-input relative ${className} `} style={style} onContextMenu={handleContextMenu}>
@@ -1521,6 +1529,7 @@ const MentionsInput = memo(MentionsInputComponent, (prevProps, nextProps) => {
 		prevProps.disabled !== nextProps.disabled ||
 		prevProps.placeholder !== nextProps.placeholder ||
 		prevProps.currentChannelId !== nextProps.currentChannelId ||
+		prevProps.mentionUsers !== nextProps.mentionUsers ||
 		prevProps.hasFilesToSend !== nextProps.hasFilesToSend ||
 		prevProps.setCaretToEnd !== nextProps.setCaretToEnd ||
 		prevProps.children !== nextProps.children

@@ -1,12 +1,5 @@
-import {
-	appActions,
-	selectComposeInputByChannelId,
-	selectIsRecommand,
-	selectLastMessageByChannelId,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store';
-import { CHANNEL_INPUT_ID, generateE2eId, type RequestInput } from '@mezon/utils';
+import { selectComposeInputByChannelId, selectLastMessageByChannelId, useAppSelector } from '@mezon/store';
+import { CHANNEL_INPUT_ID, type RequestInput } from '@mezon/utils';
 import { useEffect, useState } from 'react';
 import { getGrammarClient } from './grammar_client';
 
@@ -14,80 +7,37 @@ const DEBOUNCE_DELAY = 120;
 
 const Spelling = ({
 	channelId,
-	isSpelling,
 	updateDraft,
 	isQuickReply
 }: {
 	channelId: string;
-	isSpelling?: boolean;
 	isQuickReply?: boolean;
 	updateDraft: React.MutableRefObject<((input: RequestInput) => void) | null>;
 }) => {
 	const draftRequest = useAppSelector((state) => selectComposeInputByChannelId(state, channelId));
-	const isOpenRecommand = useAppSelector(selectIsRecommand);
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 
-	const dispatch = useAppDispatch();
-
-	const [corrected, setCorrected] = useState('');
-	const [holdCorrect, setHoldCorrect] = useState('');
 	const [replies, setQuickReplies] = useState<string[]>([]);
-	const [showText, setShowText] = useState('');
-
-	const [pendingCorrection, setPendingCorrection] = useState('');
 
 	useEffect(() => {
-		const timeoutId = setTimeout(() => {
-			setCorrected(pendingCorrection);
-			setShowText(
-				pendingCorrection
-					.replace(/<[^>]*>/g, '')
-					.replace(/&nbsp;/g, ' ')
-					.trim()
-			);
-		}, DEBOUNCE_DELAY);
-
-		return () => {
-			clearTimeout(timeoutId);
-		};
-	}, [pendingCorrection]);
-
-	useEffect(() => {
-		const text = draftRequest?.content;
-		const valueTextInput = draftRequest?.valueTextInput ?? '';
+		if (!isQuickReply) {
+			setQuickReplies([]);
+			return;
+		}
 
 		const timeoutId = setTimeout(() => {
 			const process = async () => {
 				try {
 					const client = await getGrammarClient();
-
-					const result = await client.onKeystrokeAsync(valueTextInput, 6, (lastMessage?.content?.t as any) || null);
-
-					const correction = result.correction.corrected;
-
-					const quickReplies = (result as { quickReplies?: string[] })?.quickReplies;
-
+					const previousMessage = (lastMessage?.content?.t as any) || null;
+					if (!previousMessage) {
+						setQuickReplies([]);
+						return;
+					}
+					const quickReplies = await client.suggestQuickRepliesAsync(previousMessage, 6);
 					setQuickReplies(quickReplies?.length ? quickReplies : []);
-
-					if (!isSpelling) {
-						return;
-					}
-
-					if (typeof text !== 'string' || !text.trim() || text.length > 256) {
-						setCorrected('');
-						setPendingCorrection('');
-						return;
-					}
-
-					if (!correction) {
-						setCorrected('');
-						setPendingCorrection('');
-						return;
-					}
-
-					setPendingCorrection(correction.trim() !== text.trim() ? correction : '');
 				} catch (error) {
-					console.error('[Spelling] Processing failed:', error);
+					console.error('[QuickReply] Processing failed:', error);
 				}
 			};
 
@@ -97,35 +47,7 @@ const Spelling = ({
 		return () => {
 			clearTimeout(timeoutId);
 		};
-	}, [draftRequest?.content, draftRequest?.valueTextInput, isSpelling, isQuickReply, lastMessage]);
-
-	useEffect(() => {
-		if (!isSpelling) {
-			return;
-		}
-
-		if (isOpenRecommand) {
-			if (!corrected) {
-				dispatch(appActions.toggleRecommand());
-				return;
-			}
-
-			setHoldCorrect(corrected);
-			return;
-		}
-
-		if (holdCorrect) {
-			updateDraft.current?.({
-				...draftRequest,
-				content: holdCorrect,
-				valueTextInput: holdCorrect
-			});
-
-			setCorrected('');
-			setHoldCorrect('');
-			setPendingCorrection('');
-		}
-	}, [isOpenRecommand, updateDraft, holdCorrect, corrected, isSpelling, draftRequest, dispatch]);
+	}, [draftRequest?.valueTextInput, isQuickReply, lastMessage]);
 
 	const handleQuickReply = (reply: string) => {
 		updateDraft?.current?.({
@@ -133,9 +55,6 @@ const Spelling = ({
 			content: reply,
 			valueTextInput: reply
 		});
-		setCorrected('');
-		setHoldCorrect('');
-		setPendingCorrection('');
 		requestAnimationFrame(() => {
 			const input = document.getElementById(CHANNEL_INPUT_ID);
 
@@ -148,18 +67,7 @@ const Spelling = ({
 		});
 	};
 
-	if (corrected && isOpenRecommand && isSpelling) {
-		return (
-			<div
-				data-e2e={generateE2eId('chat.spelling.recommendation')}
-				className="w-full h-8 px-4 pt-2 text-theme-primary bg-theme-setting-nav text-sm pb-1"
-			>
-				{showText}
-			</div>
-		);
-	}
-
-	if (replies?.length && !isOpenRecommand && isQuickReply) {
+	if (replies?.length && isQuickReply) {
 		return (
 			<div className="w-full h-10 px-4 pb-2 flex items-center justify-end gap-2 overflow-x-auto scrollbar-none">
 				{replies.map((reply) => (

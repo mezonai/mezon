@@ -49,6 +49,7 @@ interface RenderContentProps {
 	isAnonymous?: boolean;
 	topicId?: string;
 	onCloseTooltip?: () => void;
+	quickReaction?: React.ReactNode;
 }
 
 export interface ElementToken {
@@ -187,9 +188,10 @@ const FormattedPlainText: React.FC<{ text: string; isSearchMessage?: boolean; me
 type InvitePreviewCardProps = {
 	element: ElementToken;
 	url: string;
+	quickReaction?: React.ReactNode;
 };
 
-const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
+const InvitePreviewCard = ({ element, url, quickReaction }: InvitePreviewCardProps) => {
 	const { t } = useTranslation('linkMessageInvite');
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
@@ -235,16 +237,17 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 	if (isInvalidInvite) {
 		const invalidInviteMessage = element.description || t('invalidInvite.message');
 		return (
-			<div className="flex flex-col gap-0.5 max-w-[350px]">
+			<div className="relative flex flex-col gap-0.5 max-w-[350px]">
 				<div className="rounded-lg p-2.5 border border-red-400/30 bg-theme-setting-nav">
 					<p className="text-sm text-red-300">{invalidInviteMessage}</p>
 				</div>
+				{quickReaction}
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex flex-col gap-0.5 max-w-[350px]">
+		<div className="relative flex flex-col gap-0.5 max-w-[350px]">
 			<div className="relative rounded-2xl overflow-hidden border border-theme-primary bg-item-theme">
 				<div className="h-[76px] relative overflow-hidden bg-theme-setting-nav bg-theme-chat">
 					{element.banner ? (
@@ -298,6 +301,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 					</button>
 				</div>
 			</div>
+			{quickReaction}
 		</div>
 	);
 };
@@ -360,7 +364,8 @@ export const MessageLine = ({
 	senderId,
 	isAnonymous = senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID,
 	topicId,
-	onCloseTooltip
+	onCloseTooltip,
+	quickReaction
 }: RenderContentProps) => {
 	const { t: translate } = useTranslation('common');
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -415,6 +420,24 @@ export const MessageLine = ({
 	const blockLines: MarkdownBlockLine[] = !isJumMessageEnabled && !isDeletedMessage && t ? findMarkdownBlockLines(t, elements) : [];
 	const linkElements = elements.filter((el) => el.kindOf === ETokenMessage.MARKDOWNS && isLinkMarkdownType(el.type));
 	const namedLinks: Map<number, NamedLink> = t ? findNamedLinks(t, linkElements, elements) : new Map();
+	const isQuickReactionAtEnd = !!quickReaction && !isEditted;
+	const trailingOgpStart =
+		isQuickReactionAtEnd && !isSending
+			? mkm.find((item) => item.type === EBacktickType.OGP_PREVIEW && (item.s ?? 0) >= (t?.length ?? 0))?.s
+			: undefined;
+	const trailingSocialStart =
+		isQuickReactionAtEnd && trailingOgpStart === undefined
+			? mkm.find(
+					(item) =>
+						(item.type === EBacktickType.LINKYOUTUBE ||
+							item.type === EBacktickType.LINKFACEBOOK ||
+							item.type === EBacktickType.LINKTIKTOK) &&
+						!namedLinks.has(item.s ?? 0) &&
+						!t?.slice(item.e ?? 0).trim()
+				)?.s
+			: undefined;
+	const isQuickReactionInCard = trailingOgpStart !== undefined || trailingSocialStart !== undefined;
+	const cardQuickReaction = isQuickReactionInCard ? <span className="absolute right-4 bottom-2 w-0 h-0">{quickReaction}</span> : undefined;
 	const wrapWithStyle = (node: React.ReactNode, style: { bold: boolean; italic: boolean; strike: boolean }, key: string): React.ReactNode => {
 		let wrapped = node;
 		if (style.strike) {
@@ -571,6 +594,7 @@ export const MessageLine = ({
 						typeOfBacktick={element.type}
 						messageId={messageId}
 						onContextMenu={onContextMenu}
+						quickReaction={s === trailingSocialStart ? cardQuickReaction : undefined}
 					/>
 				);
 				rangeNodes.push(wrapWithStyle(linkNode, styleAt(styleTokens, s, e), `${keyPrefix}link-${s}-${messageId}`));
@@ -693,8 +717,16 @@ export const MessageLine = ({
 					if (!isSending) {
 						const url = element.url || '';
 						const isInviteLink = checkInviteLinkValid(url);
+						const ogpQuickReaction = s === trailingOgpStart ? cardQuickReaction : undefined;
 						if (isInviteLink) {
-							rangeNodes.push(<InvitePreviewCard key={`${keyPrefix}invite-${s}-${messageId}`} element={element} url={url} />);
+							rangeNodes.push(
+								<InvitePreviewCard
+									key={`${keyPrefix}invite-${s}-${messageId}`}
+									element={element}
+									url={url}
+									quickReaction={ogpQuickReaction}
+								/>
+							);
 						} else {
 							rangeNodes.push(
 								<OgpEmbed
@@ -707,6 +739,7 @@ export const MessageLine = ({
 									messageId={messageId}
 									topicId={topicId}
 									isSearchMessage={isSearchMessage}
+									quickReaction={ogpQuickReaction}
 								/>
 							);
 						}
@@ -756,12 +789,28 @@ export const MessageLine = ({
 	const content2 = (() => {
 		const textLen = t?.length ?? 0;
 		const formattedContent: React.ReactNode[] = [];
+		const lastBlockLine = blockLines[blockLines.length - 1];
+		const isEndOnBlockLine = isQuickReactionAtEnd && !isQuickReactionInCard && !!lastBlockLine && lastBlockLine.lineEnd >= textLen;
+		const isEndOnCodeBlock =
+			isQuickReactionAtEnd &&
+			!isQuickReactionInCard &&
+			!isEndOnBlockLine &&
+			mkm.some((item) => (item.type === EBacktickType.TRIPLE || item.type === EBacktickType.PRE) && !t?.slice(item.e ?? 0).trim());
+		const quickReactionAnchor = quickReaction ? (
+			<span
+				key={`quick-reaction-${messageId}`}
+				className={`relative w-0 h-0 ${isEndOnCodeBlock ? 'block ml-auto -left-4 -top-3' : 'inline-block align-middle'}`}
+			>
+				{quickReaction}
+			</span>
+		) : null;
 
 		if (blockLines.length === 0) {
 			formattedContent.push(...renderRange(0, textLen, '', true));
 		} else if (t) {
 			let cursor = 0;
 			blockLines.forEach((block, blockIdx) => {
+				const blockQuickReaction = isEndOnBlockLine && block === lastBlockLine ? quickReactionAnchor : null;
 				if (cursor < block.lineStart) {
 					const plainEnd = block.lineStart - 1;
 					if (cursor < plainEnd) {
@@ -779,6 +828,7 @@ export const MessageLine = ({
 						<div key={`quote-${block.lineStart}-${messageId}`} className="border-l-4 border-[var(--text-theme-primary)] pl-3 opacity-90">
 							<span className="hidden">{t.slice(block.markerStart, block.contentStart)}</span>
 							{renderRange(block.contentStart, block.lineEnd, `b${blockIdx}-`)}
+							{blockQuickReaction}
 						</div>
 					);
 				} else {
@@ -792,7 +842,10 @@ export const MessageLine = ({
 								<span className="min-w-[1.5rem] shrink-0 text-right pr-1">{block.marker}</span>
 							)}
 							<span className="hidden">{t.slice(markerEnd, block.contentStart)}</span>
-							<div className="min-w-0 flex-1">{renderRange(block.contentStart, block.lineEnd, `b${blockIdx}-`)}</div>
+							<div className="min-w-0 flex-1">
+								{renderRange(block.contentStart, block.lineEnd, `b${blockIdx}-`)}
+								{blockQuickReaction}
+							</div>
 						</div>
 					);
 				}
@@ -824,6 +877,10 @@ export const MessageLine = ({
 					({translate('message.edited')})
 				</p>
 			);
+		}
+
+		if (quickReactionAnchor && !isEndOnBlockLine && !isQuickReactionInCard) {
+			formattedContent.push(quickReactionAnchor);
 		}
 
 		return formattedContent;
