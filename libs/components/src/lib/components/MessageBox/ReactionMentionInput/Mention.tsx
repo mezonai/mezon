@@ -357,12 +357,15 @@ export default function Mention({
 	]);
 
 	const overflowing = suggestions.length > MAX_ROWS;
+	const isCommandSuggestion = trigger === '/';
 
-	// Past MAX_ROWS (a slow source's group below the local one) the dropdown keeps the height of MAX_ROWS rows and scrolls,
-	// following the highlighted row.
 	useLayoutEffect(() => {
 		const dropdown = dropdownRef.current;
 		if (!dropdown) return;
+		if (isCommandSuggestion) {
+			dropdown.style.maxHeight = 'min(400px, 50vh)';
+			return;
+		}
 		if (!overflowing) {
 			dropdown.style.maxHeight = '';
 			return;
@@ -371,19 +374,19 @@ export default function Mention({
 		if (lastVisible) {
 			dropdown.style.maxHeight = `${lastVisible.offsetTop + lastVisible.offsetHeight}px`;
 		}
-	}, [overflowing, suggestions]);
+	}, [overflowing, suggestions, isCommandSuggestion]);
 
 	const selectedIndex = mentionState?.selectedIndex ?? 0;
 	useLayoutEffect(() => {
 		const dropdown = dropdownRef.current;
 		const row = dropdown?.children[selectedIndex + 1] as HTMLElement | undefined;
-		if (!dropdown || !row || !overflowing) return;
+		if (!dropdown || !row || dropdown.scrollHeight <= dropdown.clientHeight) return;
 		if (row.offsetTop < dropdown.scrollTop) {
 			dropdown.scrollTop = row.offsetTop;
 		} else if (row.offsetTop + row.offsetHeight > dropdown.scrollTop + dropdown.clientHeight) {
 			dropdown.scrollTop = row.offsetTop + row.offsetHeight - dropdown.clientHeight;
 		}
-	}, [selectedIndex, overflowing, suggestions]);
+	}, [selectedIndex, overflowing, suggestions, isCommandSuggestion]);
 
 	if (suggestions.length <= 0) {
 		if (!mentionState || !isSearching?.(mentionState.query)) {
@@ -402,7 +405,7 @@ export default function Mention({
 	return (
 		<div
 			ref={dropdownRef}
-			className={`mention-dropdown thread-scroll ${overflowing ? 'overflow-y-auto' : ''} ${className} ${suggestionsClassName}`}
+			className={`mention-dropdown thread-scroll ${overflowing || isCommandSuggestion ? 'overflow-y-auto' : ''} ${className} ${suggestionsClassName}`}
 			style={{ ...style, ...suggestionStyle }}
 		>
 			<div className="flex items-center justify-between p-2 h-10">
