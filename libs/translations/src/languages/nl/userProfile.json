@@ -223,5 +223,8 @@
 		"banList": "Verbannen lijst",
 		"search": "Gebruikers zoeken die zijn verbannen",
 		"banListEmpty": "Geen verbannen gebruikers gevonden"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro"
 	}
 }

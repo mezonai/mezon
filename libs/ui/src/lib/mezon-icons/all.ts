@@ -178,6 +178,7 @@ export const ICONS: Record<IconId, Record<IconSize, IconData>> = {
   "plus": {16: s16.mzPlus, 20: s20.mzPlus, 24: s24.mzPlus, 32: s32.mzPlus, 40: s40.mzPlus, 48: s48.mzPlus},
   "plus-circle": {16: s16.mzPlusCircle, 20: s20.mzPlusCircle, 24: s24.mzPlusCircle, 32: s32.mzPlusCircle, 40: s40.mzPlusCircle, 48: s48.mzPlusCircle},
   "poll": {16: s16.mzPoll, 20: s20.mzPoll, 24: s24.mzPoll, 32: s32.mzPoll, 40: s40.mzPoll, 48: s48.mzPoll},
+  "pro": {16: s16.mzPro, 20: s20.mzPro, 24: s24.mzPro, 32: s32.mzPro, 40: s40.mzPro, 48: s48.mzPro},
   "ptt": {16: s16.mzPtt, 20: s20.mzPtt, 24: s24.mzPtt, 32: s32.mzPtt, 40: s40.mzPtt, 48: s48.mzPtt},
   "qr": {16: s16.mzQr, 20: s20.mzQr, 24: s24.mzQr, 32: s32.mzQr, 40: s40.mzQr, 48: s48.mzQr},
   "qr-scan": {16: s16.mzQrScan, 20: s20.mzQrScan, 24: s24.mzQrScan, 32: s32.mzQrScan, 40: s40.mzQrScan, 48: s48.mzQrScan},

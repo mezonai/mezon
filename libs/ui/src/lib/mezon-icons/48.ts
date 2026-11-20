@@ -169,6 +169,7 @@ export const mzPlay: IconData = {"id":"play","anim":"hop","size":48,"parts":[["s
 export const mzPlus: IconData = {"id":"plus","anim":"hop","size":48,"parts":[["s","M24 10V38M10 24H38"]]};
 export const mzPlusCircle: IconData = {"id":"plus-circle","anim":"hop","size":48,"parts":[["s","M6 24a18 18 0 1 0 36 0A18 18 0 1 0 6 24m18-8V32m-8-8H32"]]};
 export const mzPoll: IconData = {"id":"poll","anim":"hop","size":48,"parts":[["s","M6 6V38a4 4 0 0 0 4 4H42M14 32H30M14 22H38M14 12h6"]]};
+export const mzPro: IconData = {"id":"pro","anim":"zoom","size":48,"parts":[["s","M12 8h24l8 10l-20 22L4 18zM4 18h40M18 8l-4 10l10 22l10-22l-4-10"]]};
 export const mzPtt: IconData = {"id":"ptt","anim":"hop","size":48,"parts":[["s","M18 39V31l4 1a4.42 4.42 0 0 0 4-4V17A10.32 10.32 0 0 0 5 17c0 5.38 1.34 6.12 2 9a11.08 11.08 0 0 1 0 5L5 39m34-4a14.4 14.4 0 0 0 0-20M34 30a6.72 6.72 0 0 0 0-10"]]};
 export const mzQr: IconData = {"id":"qr","anim":"hop","size":48,"parts":[["s","M6 16V10a4 4 0 0 1 4-4h6M32 6h6a4 4 0 0 1 4 4v6m0 16v6a4 4 0 0 1-4 4H32M16 42H10a4 4 0 0 1-4-4V32"],["f","M16 14h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V16a2 2 0 0 1 2-2zm12 0h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H28a2 2 0 0 1-2-2V16a2 2 0 0 1 2-2zM16 26h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2V28a2 2 0 0 1 2-2zm14 2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H30a2 2 0 0 1-2-2V30a2 2 0 0 1 2-2z"]]};
 export const mzQrScan: IconData = {"id":"qr-scan","anim":"hop","size":48,"parts":[["s","M6 16V10a4 4 0 0 1 4-4h6M32 6h6a4 4 0 0 1 4 4v6m0 16v6a4 4 0 0 1-4 4H32M16 42H10a4 4 0 0 1-4-4V32m0-8H42"]]};

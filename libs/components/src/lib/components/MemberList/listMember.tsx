@@ -20,15 +20,19 @@ import { AvatarImage, useVirtualizer } from '../../components';
 import { useMemberContextMenu } from '../../contexts';
 import { UserStatusIconClan } from '../MemberProfile';
 import { BaseMemberProfile, ClanUserName } from '../MemberProfile/MemberProfile';
+import { ProAvatarFrame, getProPalette, type ProPalette } from '../ProfileBadges';
+
+type WithProPlan = { pro_plan?: boolean };
 
 const heightTopBar = 50;
 
 type TempMemberItemProps = {
 	id: string;
 	isOwner?: boolean;
+	proPalette?: ProPalette;
 };
 
-const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
+const TempMemberItem = memo(({ id, isOwner, proPalette }: TempMemberItemProps) => {
 	const { t } = useTranslation('memberPage');
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
@@ -38,6 +42,7 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 	const avatar = user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '');
 	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
+	const isPro = Boolean((user?.user as WithProPlan | undefined)?.pro_plan);
 	const secondaryLine =
 		userVoiceStatus && userMeta?.online ? (
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
@@ -61,15 +66,17 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
 			<div className="cursor-pointer flex items-center gap-[9px] relative">
 				<div className="relative">
-					<AvatarImage
-						alt={username}
-						username={user?.user?.username ?? username}
-						className="min-w-8 min-h-8 max-w-8 max-h-8"
-						classNameText="font-semibold"
-						srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
-						src={avatar}
-					/>
-					<div className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary">
+					<ProAvatarFrame isPro={isPro} palette={proPalette ?? getProPalette()} glow={false} ringWidth={2} className="-m-[2px]">
+						<AvatarImage
+							alt={username}
+							username={user?.user?.username ?? username}
+							className="min-w-8 min-h-8 max-w-8 max-h-8"
+							classNameText="font-semibold"
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+							src={avatar}
+						/>
+					</ProAvatarFrame>
+					<div className="rounded-full right-[-4px] absolute bottom-0 z-10 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary">
 						<UserStatusIconClan channelId={currentChannelID || ''} userId={id || ''} status={userMeta?.status} />
 					</div>
 				</div>
@@ -91,11 +98,12 @@ type MemberClanProps = {
 	isOwner?: boolean;
 	temp: boolean;
 	clanId: string;
+	proPalette: ProPalette;
 };
 
 const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const { t } = useTranslation('memberPage');
-	const { id, isOwner, temp, clanId } = props;
+	const { id, isOwner, temp, clanId, proPalette } = props;
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user?.user?.id || ''));
@@ -111,7 +119,7 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 		openProfileItem(event, user);
 	};
 	return temp ? (
-		<TempMemberItem id={id} isOwner={isOwner} />
+		<TempMemberItem id={id} isOwner={isOwner} proPalette={proPalette} />
 	) : (
 		<BaseMemberProfile
 			userStatus={
@@ -142,6 +150,7 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			username={username}
 			id={id}
 			isOwner={isOwner}
+			proPalette={proPalette}
 			onContextMenu={showContextMenu}
 			onClick={handleClick}
 		/>
@@ -203,6 +212,7 @@ const ListMember = () => {
 	}, [members, showFullList, height]);
 
 	const appearanceTheme = useSelector(selectTheme);
+	const proPalette = useMemo(() => getProPalette(appearanceTheme), [appearanceTheme]);
 
 	useWindowSize(() => {
 		setHeight(window.innerHeight - heightTopBar);
@@ -275,6 +285,7 @@ const ListMember = () => {
 										temp={!showFullList}
 										isOwner={currentClanCreatorId === user}
 										clanId={currentClanId || ''}
+										proPalette={proPalette}
 									/>
 								)}
 							</div>
