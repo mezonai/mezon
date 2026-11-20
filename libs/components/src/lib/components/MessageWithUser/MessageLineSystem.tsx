@@ -115,7 +115,13 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 
 		elements.forEach((element, index) => {
 			const s = element.s ?? 0;
-			const e = element.e ?? 0;
+			const mentionEnd = element.e ?? 0;
+			const e =
+				message.code === TypeMessage.CreatePin
+					? Array.from(t ?? '')
+							.slice(0, mentionEnd)
+							.join('').length
+					: mentionEnd;
 
 			const contentInElement = t?.substring(s, e);
 

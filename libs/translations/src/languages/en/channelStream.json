@@ -18,5 +18,32 @@
 	"isLive": "{{name}} is live",
 	"volume": "Volume",
 	"mute": "Mute",
-	"unmute": "Unmute"
+	"unmute": "Unmute",
+	"goLive": "Go Live",
+	"endLive": "End stream",
+	"youAreLive": "You're live",
+	"liveConnecting": "Connecting…",
+	"liveReconnecting": "Reconnecting…",
+	"cameraOnly": "Camera only",
+	"liveMic": "Microphone",
+	"liveCamera": "Camera",
+	"liveSystemAudio": "System audio",
+	"alsoShareSystemAudio": "Also share system audio",
+	"liveScreen": "Screen sharing",
+	"changeScreen": "Change screen",
+	"stopScreen": "Stop sharing screen",
+	"liveElsewhere": "You're already live in another channel",
+	"shareScreen": "Share screen",
+	"startLive": "Go Live",
+	"liveError": {
+		"busy": "Someone else is already live in this channel",
+		"forbidden": "You can't go live in this channel",
+		"serverBusy": "The stream server is busy, try again in a moment",
+		"unsupported": "This device can't encode the stream",
+		"network": "Lost connection to the stream server",
+		"replaced": "Your stream was taken over by another app or device using your account",
+		"accessLost": "Your stream ended because you no longer have access to this channel",
+		"source": "Couldn't start {{source}}",
+		"sourceEnded": "{{source}} stopped"
+	}
 }

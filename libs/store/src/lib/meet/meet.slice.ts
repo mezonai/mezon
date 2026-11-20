@@ -78,15 +78,15 @@ export const handleAddAgentToVoice = createAsyncThunk(
 	}
 );
 
-export const handleKichAgentFromVoice = createAsyncThunk(
-	'meet/handleKichAgentFromVoice',
+export const handleKickAgentFromVoice = createAsyncThunk(
+	'meet/handleKickAgentFromVoice',
 	async ({ channel_id, room_name }: { channel_id: string; room_name: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const response = await mezon.client.disconnectAgent(mezon.session, room_name, channel_id);
 			return response;
 		} catch (error) {
-			captureSentryError(error, 'meet/handleKichAgentFromVoice');
+			captureSentryError(error, 'meet/handleKickAgentFromVoice');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}

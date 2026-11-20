@@ -13,7 +13,7 @@ import { appActions, e2eeActions, gifsStickerEmojiActions, selectAllAccount, sel
 import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/utils';
 
 // eslint-disable-next-line @nx/enforce-module-boundaries -- shared shell components are required before route-level lazy chunks mount
-import { BreakoutSessionHost, StreamPlaybackSession, TooManyUpload, useClanLimitModalErrorHandler } from '@mezon/components';
+import { BreakoutSessionHost, LivePublishSession, StreamPlaybackSession, TooManyUpload, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
 import { MezonSuspense } from '@mezon/transport';
 import { SubPanelName } from '@mezon/utils';
@@ -160,6 +160,7 @@ const MainLayout = memo(
 				{shouldRender && <MezonSfuChannelVoice />}
 				{shouldRender && <BreakoutSessionHost />}
 				<StreamPlaybackSession />
+				<LivePublishSession />
 				<Outlet />
 				<GlobalEventListener />
 

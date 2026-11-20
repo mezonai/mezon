@@ -24,18 +24,25 @@ export function useForwardChannelSearch(searchText: string) {
 			return;
 		}
 		let cancelled = false;
+		const controller = new AbortController();
 		const timer = setTimeout(async () => {
 			const client = clientRef.current;
 			const session = sessionRef.current;
 			try {
 				if (client && session) {
-					const response = await client.searchCtrlK(session, { text, type: SEARCH_TYPE_CHANNELS });
+					const response = await (client.searchCtrlK as (session: any, req: any, opt?: { signal?: AbortSignal }) => Promise<any>)(
+						session,
+						{ text, type: SEARCH_TYPE_CHANNELS },
+						{ signal: controller.signal }
+					);
 					if (!cancelled) {
 						setChannels(response?.channels ?? NO_CHANNELS);
 					}
 				}
 			} catch (error) {
-				console.warn('[forward] SearchCtrlK channels failed', error);
+				if ((error as { name?: string } | undefined)?.name !== 'AbortError') {
+					console.warn('[forward] SearchCtrlK channels failed', error);
+				}
 			} finally {
 				if (!cancelled) {
 					setSettledKey(queryKey);
@@ -45,6 +52,7 @@ export function useForwardChannelSearch(searchText: string) {
 		return () => {
 			cancelled = true;
 			clearTimeout(timer);
+			controller.abort();
 		};
 	}, [queryKey, clientRef, sessionRef]);
 

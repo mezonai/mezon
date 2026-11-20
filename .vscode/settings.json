@@ -7,6 +7,7 @@
 		"onchannelmessage",
 		"onmessagetyping",
 		"persistor",
+		"Presign",
 		"Pressable"
 	],
 	"editor.formatOnSave": true,

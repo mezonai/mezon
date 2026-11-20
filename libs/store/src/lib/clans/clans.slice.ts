@@ -18,6 +18,7 @@ import { ClanDescList, ListClanDescRequest } from 'mezon-js-protobuf';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { callApiAdmin } from '../application/adminAPI.slice';
+import type { AdminSessionContext } from '../auth/adminSession';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -181,14 +182,14 @@ export const listChannelBadgeCount = createAsyncThunk('clans/listChannelBadgeCou
 });
 
 export const fetchClansCached = async (
-	getState: () => RootState,
+	thunkAPI: AdminSessionContext,
 	ensuredMezon: MezonValueContext,
 	limit?: number,
 	state?: number,
 	cursor?: string,
 	noCache = false
 ) => {
-	const rootState = getState();
+	const rootState = thunkAPI.getState() as RootState;
 	const clansState = rootState[CLANS_FEATURE_KEY];
 	const apiKey = createApiKey('fetchClans', limit?.toString() || '0', state?.toString() || '0', cursor || '');
 
@@ -212,7 +213,7 @@ export const fetchClansCached = async (
 			path: '/mezon.api.Mezon/ListClanDescs',
 			data: ListClanDescRequest.encode(ListClanDescRequest.fromPartial({ limit, state: 1, cursor: cursor || '' })).finish(),
 			decodeBody: (bytes) => ClanDescList.decode(bytes) as ApiClanDescList,
-			token
+			thunkAPI
 		});
 		markApiFirstCalled(apiKey);
 		return {
@@ -272,7 +273,7 @@ export const fetchClans = createAsyncThunk(
 		try {
 			const mezonCtx = getMezonCtx(thunkAPI);
 			const mezon = mezonCtx?.clientRef?.current ? await ensureSession(mezonCtx) : (mezonCtx as any);
-			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '0', noCache);
+			const response = await fetchClansCached(thunkAPI, mezon, LIMIT_CLAN_ITEM, 1, '0', noCache);
 			if (!response.clandesc) {
 				return { clans: [], fromCache: response.fromCache };
 			}

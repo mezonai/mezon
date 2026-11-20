@@ -1,8 +1,8 @@
 import { captureSentryError } from '@mezon/logger';
-import { TypeSearch, type IUserChannel, type LoadingStatus, type SearchItemProps } from '@mezon/utils';
+import { TypeSearch, isCtrlkSearchTooShort, type IUserChannel, type LoadingStatus, type SearchItemProps } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAllUsersAddChannelResponse, ApiSearchCtrlKResponse } from 'mezon-js';
+import type { ApiAllUsersAddChannelResponse, ApiSearchCtrlKRequest, ApiSearchCtrlKResponse, ApiSession, Client } from 'mezon-js';
 import { profileBannerUpdated } from '../account/profileBanner.actions';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -79,6 +79,25 @@ export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapte
 
 const cacheSearchKey = new Set<string>();
 
+type SearchCtrlKOptions = { signal?: AbortSignal };
+
+/**
+ * mezon-js takes an options bag so a superseded keystroke can abandon its request
+ * (`searchCtrlK(session, request, { signal })`). The installed build may predate that
+ * parameter, which is why the call is typed here instead of relying on its signature.
+ */
+const searchCtrlKWithSignal = (
+	client: Client,
+	session: ApiSession,
+	request: ApiSearchCtrlKRequest,
+	options: SearchCtrlKOptions
+): Promise<ApiSearchCtrlKResponse> =>
+	(client.searchCtrlK as (session: ApiSession, request: ApiSearchCtrlKRequest, options?: SearchCtrlKOptions) => Promise<ApiSearchCtrlKResponse>)(
+		session,
+		request,
+		options
+	);
+
 export const fetchUserChannelsCached = async (
 	getState: () => RootState,
 	ensuredMezon: MezonValueContext,
@@ -151,10 +170,12 @@ export const fetchUserChannels = createAsyncThunk(
 
 export const fetchSearchCtrlK = createAsyncThunk(
 	'allUsersByAddChannel/fetchSearchCtrlK',
-	async ({ textSearch }: { textSearch: string }, thunkAPI) => {
+	async ({ textSearch, signal }: { textSearch: string; signal?: AbortSignal }, thunkAPI) => {
 		const typeSearch = textSearch.startsWith('@') ? 1 : textSearch.startsWith('#') ? 2 : 0;
 		const textSearchValue = !typeSearch ? textSearch.trim() : textSearch.slice(1).trim();
-		if (!textSearchValue.trim()) {
+		// The server rejects a one-character query: a 1-rune prefix matches nearly the whole
+		// edge_ngram index, so asking would only spend a round trip on a 400.
+		if (isCtrlkSearchTooShort(textSearchValue)) {
 			return true;
 		}
 		try {
@@ -163,10 +184,15 @@ export const fetchSearchCtrlK = createAsyncThunk(
 				return true;
 			}
 
-			const response = await mezon.client.searchCtrlK(mezon.session, {
-				text: textSearchValue,
-				type: typeSearch
-			});
+			const response = await searchCtrlKWithSignal(
+				mezon.client,
+				mezon.session,
+				{
+					text: textSearchValue,
+					type: typeSearch
+				},
+				{ signal }
+			);
 
 			if (!typeSearch) {
 				cacheSearchKey.add(`@${textSearch}`);
@@ -177,6 +203,10 @@ export const fetchSearchCtrlK = createAsyncThunk(
 
 			return response;
 		} catch (error) {
+			// An abandoned keystroke is not a failure: a newer request owns the result now.
+			if ((error as { name?: string } | undefined)?.name === 'AbortError') {
+				return true;
+			}
 			// Search-as-you-type: a rejection would reach the global error listener and cover the app with the
 			// error modal. The local matches stay on screen and the next keystroke retries, since the key is not cached.
 			captureSentryError(error, 'allUsersByAddChannel/fetchSearchCtrlK');

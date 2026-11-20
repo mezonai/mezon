@@ -39,14 +39,14 @@ describe('screen share quality changes', () => {
 			transactionId: 'negotiated-transaction',
 			codecs: [{ mimeType: 'video/VP9' }],
 			degradationPreference: 'maintain-framerate',
-			encodings: [{ rid: 'screen', active: true, maxFramerate: 30, maxBitrate: 5_000_000 }]
+			encodings: [{ rid: 'screen', active: true, maxFramerate: 30, maxBitrate: 5_000_000, scalabilityMode: 'L1T3' }]
 		});
 		await changeMode('text');
 		expect(track.getConstraints().frameRate).toEqual({ ideal: 5, max: 5 });
 		expect(track.contentHint).toBe('detail');
 		expect(sender.getParameters()).toMatchObject({
 			degradationPreference: 'maintain-resolution',
-			encodings: [{ maxFramerate: 5 }]
+			encodings: [{ maxFramerate: 5, scalabilityMode: 'L1T1' }]
 		});
 		expect(track.stop).not.toHaveBeenCalled();
 		expect(sender.replaceTrack).not.toHaveBeenCalled();

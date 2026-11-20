@@ -24,6 +24,12 @@
 	"screenShareCaptureFailed": "Trình duyệt không thể ghi lại màn hình đã chọn. Hãy thử chia sẻ một cửa sổ hoặc tab.",
 	"disconnect": "Ngắt kết nối",
 	"weakNetwork": "Mạng yếu",
+	"connecting": "Đang kết nối…",
+	"reconnecting": "Đang kết nối lại…",
+	"raiseHand": "Giơ tay",
+	"lowerHand": "Hạ tay",
+	"addAgent": "Thêm AI agent",
+	"removeAgent": "Gỡ AI agent",
 	"networkWarning": {
 		"title": "Kết nối mạng của bạn không ổn định",
 		"body": "Hãy kiểm tra lại đường truyền mạng của bạn."

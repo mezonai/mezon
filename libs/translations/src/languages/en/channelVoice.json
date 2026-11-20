@@ -24,6 +24,12 @@
 	"screenShareCaptureFailed": "Your browser couldn't capture the selected screen. Try sharing a window or a tab instead.",
 	"disconnect": "Disconnect",
 	"weakNetwork": "Weak network",
+	"connecting": "Connecting…",
+	"reconnecting": "Reconnecting…",
+	"raiseHand": "Raise Hand",
+	"lowerHand": "Lower Hand",
+	"addAgent": "Add AI agent",
+	"removeAgent": "Remove AI agent",
 	"networkWarning": {
 		"title": "Your internet connection is unstable",
 		"body": "Please check your network connection."

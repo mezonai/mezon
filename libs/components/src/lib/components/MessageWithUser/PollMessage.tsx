@@ -134,6 +134,7 @@ export type PollMessageProps = {
 	votersByOption?: PollVoter[][];
 	interactionDisabled?: boolean;
 	isDirect?: boolean;
+	quickReaction?: ReactNode;
 };
 
 export const PollMessage = ({
@@ -145,7 +146,8 @@ export const PollMessage = ({
 	channelId,
 	votersByOption,
 	interactionDisabled = false,
-	isDirect = false
+	isDirect = false,
+	quickReaction
 }: PollMessageProps) => {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
@@ -369,7 +371,7 @@ export const PollMessage = ({
 
 	return (
 		<div className="block w-full">
-			<div className="max-w-[420px] rounded bg-item-theme p-3 border-theme-primary">
+			<div className="relative max-w-[420px] rounded bg-item-theme p-3 border-theme-primary">
 				<div className="flex items-center gap-2 mb-1">
 					<h3
 						className="text-[15px] font-semibold text-theme-primary-active break-all flex-1 min-w-0"
@@ -553,6 +555,7 @@ export const PollMessage = ({
 						</div>
 					)}
 				</div>
+				{quickReaction}
 			</div>
 
 			<PollDetailModal

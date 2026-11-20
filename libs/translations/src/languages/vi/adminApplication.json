@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "Có trường nhập rỗng!",
+			"saveFailed": "Không thể lưu cấu hình OAuth. Vui lòng thử lại. Nếu vẫn gặp lỗi, hãy đăng nhập lại.",
 			"invalidUris": "URI phải hợp lệ!",
 			"redirectUriRequired": "Redirect URI là bắt buộc!"
 		}

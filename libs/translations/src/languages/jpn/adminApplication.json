@@ -184,6 +184,7 @@
 		},
 		"toasts": {
 			"emptyInput": "空の入力があります!",
+			"saveFailed": "OAuth設定を保存できませんでした。もう一度お試しください。問題が解決しない場合は、再度ログインしてください。",
 			"invalidUris": "URIは有効である必要があります!",
 			"redirectUriRequired": "リダイレクトURIは必須です!"
 		}

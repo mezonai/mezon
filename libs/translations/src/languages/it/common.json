@@ -19,6 +19,7 @@
 	},
 	"newMessage": "Nuovo messaggio",
 	"newMention": "Nuova menzione",
+	"newMentionsInTopic": "Nuove menzioni nell'argomento",
 	"clanRailNew": "Nuovo",
 	"discover": "Scopri",
 	"createClan": "Crea Clan",
@@ -552,5 +553,11 @@
 	"formatDate": "d MMMM yyyy",
 	"cannotSendLocationWithAnonymous": "Impossibile inviare la posizione in modalità anonima.",
 	"iconAnimations": "Animazioni delle icone",
-	"iconAnimationsDesc": "Anima le icone al passaggio del mouse e durante un'attività in diretta, come la digitazione o uno stream."
+	"iconAnimationsDesc": "Anima le icone al passaggio del mouse e durante un'attività in diretta, come la digitazione o uno stream.",
+	"openInDesktopApp": {
+		"title": "Aprire questo link nell'app desktop di Mezon?",
+		"open": "Apri app",
+		"dismiss": "Chiudi",
+		"continueInBrowser": "Continua nel browser"
+	}
 }

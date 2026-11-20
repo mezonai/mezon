@@ -143,8 +143,8 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 	useEscapeKeyClose(modalRef, onClose);
 
 	return (
-		<div ref={modalRef} tabIndex={-1} className="outline-none flex flex-col max-h-full w-full pt-3 gap-2">
-			<div className="w-full px-2">
+		<div ref={modalRef} tabIndex={-1} className="outline-none flex flex-col max-h-full w-full p-2 gap-2">
+			<div className="w-full">
 				<input
 					type="text"
 					value={searchValue}

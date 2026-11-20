@@ -19,6 +19,7 @@
 	},
 	"newMessage": "Nuevo",
 	"newMention": "Nueva mención",
+	"newMentionsInTopic": "Nuevas menciones en el tema",
 	"clanRailNew": "Nuevo",
 	"discover": "Descubrir",
 	"createClan": "Crear Clan",
@@ -552,5 +553,11 @@
 	"formatDate": "d MMMM, yyyy",
 	"cannotSendLocationWithAnonymous": "Incapaz de enviar ubicación usando Anónimo.",
 	"iconAnimations": "Animaciones de iconos",
-	"iconAnimationsDesc": "Anima los iconos al pasar el cursor y mientras hay actividad en vivo, como escribir o una transmisión."
+	"iconAnimationsDesc": "Anima los iconos al pasar el cursor y mientras hay actividad en vivo, como escribir o una transmisión.",
+	"openInDesktopApp": {
+		"title": "¿Abrir este enlace en la aplicación de escritorio de Mezon?",
+		"open": "Abrir app",
+		"dismiss": "Cerrar",
+		"continueInBrowser": "Continuar en el navegador"
+	}
 }

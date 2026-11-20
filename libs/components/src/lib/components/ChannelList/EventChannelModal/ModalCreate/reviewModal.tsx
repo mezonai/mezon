@@ -1,13 +1,13 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import type { EventManagementEntity } from '@mezon/store';
-import type { ContenSubmitEventProps } from '@mezon/utils';
+import type { ContentSubmitEventProps } from '@mezon/utils';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createI18nTimeFormatter } from '../timeFomatEvent';
 import ItemEventManagement from './itemEventManagement';
 
 export type ReviewModalProps = {
-	contentSubmit: ContenSubmitEventProps;
+	contentSubmit: ContentSubmitEventProps;
 	option: string;
 	onClose: () => void;
 	event?: EventManagementEntity | undefined;
