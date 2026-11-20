@@ -32,8 +32,9 @@ const LiveCommentBubble = memo(({ comment }: { comment: LiveCommentItem }) => {
 
 	return (
 		<div
-			className={`pointer-events-auto flex max-w-full items-start gap-2 rounded-2xl border-theme-primary bg-theme-setting-primary px-3 py-2 shadow-lg transition-all duration-200 ease-out ${motionClassName}`}
+			className={`pointer-events-none relative isolate flex max-w-full items-start gap-2 rounded-2xl border-theme-primary px-3 py-2 shadow-lg backdrop-blur-sm transition-all duration-200 ease-out ${motionClassName}`}
 		>
+			<span aria-hidden="true" className="absolute inset-0 -z-10 rounded-2xl bg-theme-setting-primary opacity-85" />
 			<AvatarImage
 				alt={comment.name}
 				username={comment.name}
