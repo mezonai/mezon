@@ -1,10 +1,19 @@
 import type { StreamQuality } from '@mezon/store';
-import { STREAM_QUALITIES, selectStreamMuted, selectStreamQuality, selectStreamVolume, useAppDispatch, videoStreamActions } from '@mezon/store';
+import {
+	STREAM_QUALITIES,
+	selectCurrentClanId,
+	selectStreamMuted,
+	selectStreamQuality,
+	selectStreamVolume,
+	useAppDispatch,
+	videoStreamActions
+} from '@mezon/store';
 import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { LiveCommentInput, LiveCommentStack, useStreamComments } from '../LiveComments';
 import { SFU_CONTROL_BUTTON_CLASS } from '../MezonSfuVoiceChannel/ControlBar/controlStyles';
 import { StreamMenu } from './StreamMenu';
 import { StreamOutputDeviceMenu } from './StreamOutputDeviceMenu';
@@ -23,16 +32,27 @@ export const STREAM_QUALITY_LABEL_KEYS: Record<StreamQuality, string> = {
 
 type StreamStageProps = {
 	channelId: string;
+	clanId?: string;
 	poster: string;
 	onLeave: () => void;
 };
 
-export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
+export function StreamStage({ channelId, clanId, poster, onLeave }: StreamStageProps) {
 	const { t } = useTranslation(['channelStream', 'channelVoice']);
 	const dispatch = useAppDispatch();
 	const volume = useSelector(selectStreamVolume);
 	const muted = useSelector(selectStreamMuted);
 	const quality = useSelector(selectStreamQuality);
+	const fallbackClanId = useSelector(selectCurrentClanId);
+	const resolvedClanId = clanId || fallbackClanId || '';
+	const {
+		comments: liveComments,
+		hidden: commentsHidden,
+		hasUnseen: hasUnseenComments,
+		hide: hideComments,
+		show: showComments,
+		sendComment
+	} = useStreamComments(channelId, resolvedClanId);
 	const publisher = useStreamPublisher(channelId);
 	const stageRef = useRef<HTMLDivElement>(null);
 	const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -40,8 +60,35 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 	const [controlsHovered, setControlsHovered] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [isFullscreen, setIsFullscreen] = useState(false);
-	const controlsVisible = !idle || controlsHovered || menuOpen;
+	const [showCommentInput, setShowCommentInput] = useState(false);
+	const controlsVisible = !idle || controlsHovered || menuOpen || showCommentInput;
 	const silent = muted || volume === 0;
+
+	useEffect(() => {
+		setShowCommentInput(false);
+	}, [channelId]);
+
+	const commentStackLabels = useMemo(() => ({ hide: t('channelVoice:comment.hide') }), [t]);
+	const commentPlaceholder = useMemo(() => t('channelVoice:comment.placeholder'), [t]);
+	const commentButtonLabel = useMemo(
+		() => (commentsHidden ? t('channelVoice:comment.show') : t('channelVoice:comment.button')),
+		[commentsHidden, t]
+	);
+	const commentSendLabel = useMemo(() => t('channelVoice:comment.button'), [t]);
+	const showCommentDot = commentsHidden && hasUnseenComments;
+	const showLiveCommentOverlay = !commentsHidden || showCommentInput;
+	const commentOverlayPositionClass = controlsVisible ? 'bottom-20' : 'bottom-4';
+
+	const handleToggleComment = useCallback(() => {
+		if (commentsHidden) {
+			showComments();
+			setShowCommentInput(true);
+			return;
+		}
+		setShowCommentInput((prev) => !prev);
+	}, [commentsHidden, showComments]);
+
+	const handleSendComment = useCallback((text: string) => sendComment(text), [sendComment]);
 
 	const qualityOptions = useMemo(() => STREAM_QUALITIES.map((id) => ({ id, label: t(STREAM_QUALITY_LABEL_KEYS[id]) })), [t]);
 
@@ -114,6 +161,31 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 				<StreamLiveBadge />
 				<StreamViewerCount channelId={channelId} className="text-white/90" />
 			</div>
+			{showLiveCommentOverlay && (
+				<div
+					className={`pointer-events-none absolute left-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-start gap-2 transition-[bottom] duration-200 ${commentOverlayPositionClass}`}
+				>
+					{!commentsHidden && (
+						<LiveCommentStack
+							comments={liveComments}
+							onHide={hideComments}
+							labels={commentStackLabels}
+							className="w-full"
+							align="start"
+						/>
+					)}
+					{showCommentInput && (
+						<LiveCommentInput
+							key={channelId}
+							onSend={handleSendComment}
+							placeholder={commentPlaceholder}
+							sendLabel={commentSendLabel}
+							autoFocus
+							className="w-full"
+						/>
+					)}
+				</div>
+			)}
 			<div
 				className={`absolute inset-x-0 bottom-0 grid grid-cols-[1fr_auto_1fr] items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12 text-white transition-opacity duration-200 max-md:px-2 max-md:pb-2 ${controlsVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
 				onPointerEnter={() => setControlsHovered(true)}
@@ -145,6 +217,17 @@ export function StreamStage({ channelId, poster, onLeave }: StreamStageProps) {
 						aria-label={t('volume')}
 						className="h-1 w-24 cursor-pointer accent-white max-sm:hidden"
 					/>
+					<button
+						type="button"
+						className={`relative ${CONTROL_BUTTON_CLASS} ${showCommentInput ? 'bg-white/15 text-white' : ''}`}
+						title={commentButtonLabel}
+						aria-label={commentButtonLabel}
+						aria-pressed={showCommentInput}
+						onClick={handleToggleComment}
+					>
+						<MezonIcon icon={MzIcons20.mzMessageAdd} />
+						{showCommentDot && <span className="btn-primary absolute right-1.5 top-1.5 size-2 rounded-full" />}
+					</button>
 				</div>
 				<button
 					type="button"

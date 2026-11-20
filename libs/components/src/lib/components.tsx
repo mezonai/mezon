@@ -125,6 +125,7 @@ export { default as ChannelMessageThread } from './components/MessageBox/Reactio
 export { default as MessageWithSystem } from './components/MessageWithSystem';
 export { default as ModalInputMessageBuzz } from './components/ModalInputMessageBuzz';
 
+export * from './components/LiveComments';
 export * from './components/MezonSfuVoiceChannel';
 export * from './components/StreamPlayer';
 export * from './components/virtual-core/useVirtualizer';

@@ -251,5 +251,11 @@
 		"inviteReturn": "The host closed the breakout rooms. Return to the main room?",
 		"join": "Join",
 		"later": "Not now"
+	},
+	"comment": {
+		"button": "Comment",
+		"placeholder": "Write a comment…",
+		"hide": "Hide floating comments",
+		"show": "Show floating comments"
 	}
 }
