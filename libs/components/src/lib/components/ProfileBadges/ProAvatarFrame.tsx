@@ -27,7 +27,7 @@ const ProAvatarFrameBase = ({ isPro, palette, glow = true, ringWidth = 3, classN
 	}
 
 	return (
-		<div className={`inline-flex items-center justify-center rounded-full shrink-0 ${className ?? ''}`} style={frameStyle}>
+		<div className={`flex items-center justify-center rounded-full shrink-0 ${className ?? ''}`} style={frameStyle}>
 			{children}
 		</div>
 	);

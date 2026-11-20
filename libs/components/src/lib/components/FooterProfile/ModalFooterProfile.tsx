@@ -1,5 +1,5 @@
 import { useEscapeKeyClose } from '@mezon/core';
-import { selectIsProUser, useAppSelector } from '@mezon/store';
+import { selectAccountProPlan, useAppSelector } from '@mezon/store';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import ModalUserProfile from '../ModalUserProfile';
@@ -18,7 +18,7 @@ type ModalFooterProfileProps = {
 
 const ModalFooterProfile = ({ userId, avatar, name, isDM, userStatusProfile, rootRef, onCloseModal, modalControlRef }: ModalFooterProfileProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
-	const isPro = useAppSelector((state) => selectIsProUser(state, userId));
+	const isPro = useAppSelector(selectAccountProPlan);
 	const proPalette = useProPalette();
 	const cardStyle = useMemo(() => (isPro ? proCardStyle(proPalette) : undefined), [isPro, proPalette]);
 

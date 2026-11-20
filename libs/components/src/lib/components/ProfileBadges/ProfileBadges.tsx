@@ -1,8 +1,9 @@
-import { MezonIcon, MzIcons16 } from '@mezon/ui';
+import { MezonIcon } from '@mezon/ui';
 import Tooltip from 'rc-tooltip';
 import type { CSSProperties } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { mzPro16 } from './proIcon';
 import type { ProPalette, ProfileBadgeItem } from './proPalette';
 import { hexToRgba } from './proPalette';
 
@@ -56,7 +57,7 @@ const ProBadgeTile = memo(({ label, palette }: ProBadgeTileProps) => {
 				aria-label={label}
 				tabIndex={0}
 			>
-				<MezonIcon icon={MzIcons16.mzPro} className="w-[14px] h-[14px]" />
+				<MezonIcon icon={mzPro16} className="w-[14px] h-[14px]" />
 			</span>
 		</Tooltip>
 	);

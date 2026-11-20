@@ -21,6 +21,8 @@ type BaseMemberProfileProps = {
 	isOwner?: boolean;
 	userStatus?: ReactNode;
 	proPalette?: ProPalette;
+	isPro?: boolean;
+	ownProUserId?: string;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
 	onClick: (event: React.MouseEvent) => void;
 };
@@ -34,6 +36,8 @@ export const BaseMemberProfile = ({
 	isOwner,
 	userStatus,
 	proPalette,
+	isPro: isProProp,
+	ownProUserId,
 	onContextMenu,
 	onClick
 }: BaseMemberProfileProps) => {
@@ -56,7 +60,7 @@ export const BaseMemberProfile = ({
 	};
 
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
-	const isPro = Boolean((user?.user as WithProPlan | undefined)?.pro_plan);
+	const isPro = isProProp ?? (Boolean((user?.user as WithProPlan | undefined)?.pro_plan) || Boolean(ownProUserId && id === ownProUserId));
 
 	return (
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>

@@ -1,10 +1,12 @@
 import { useMemberStatus } from '@mezon/core';
 import {
 	EInvoice,
+	selectAccountProPlan,
 	selectChannelMembersSortedByStatus,
 	selectCurrentChannelId,
 	selectCurrentClanCreatorId,
 	selectCurrentClanId,
+	selectCurrentUserId,
 	selectMemberClanByUserId,
 	selectMemberCustomStatusByUserId,
 	selectStatusInVoice,
@@ -30,9 +32,10 @@ type TempMemberItemProps = {
 	id: string;
 	isOwner?: boolean;
 	proPalette?: ProPalette;
+	ownProUserId?: string;
 };
 
-const TempMemberItem = memo(({ id, isOwner, proPalette }: TempMemberItemProps) => {
+const TempMemberItem = memo(({ id, isOwner, proPalette, ownProUserId }: TempMemberItemProps) => {
 	const { t } = useTranslation('memberPage');
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
@@ -42,7 +45,7 @@ const TempMemberItem = memo(({ id, isOwner, proPalette }: TempMemberItemProps) =
 	const avatar = user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '');
 	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
-	const isPro = Boolean((user?.user as WithProPlan | undefined)?.pro_plan);
+	const isPro = Boolean((user?.user as WithProPlan | undefined)?.pro_plan) || Boolean(ownProUserId && id === ownProUserId);
 	const secondaryLine =
 		userVoiceStatus && userMeta?.online ? (
 			<span className="flex items-center gap-1" data-e2e={generateE2eId('clan_page.secondary_side_bar.member.in_voice')}>
@@ -99,11 +102,12 @@ type MemberClanProps = {
 	temp: boolean;
 	clanId: string;
 	proPalette: ProPalette;
+	ownProUserId: string;
 };
 
 const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const { t } = useTranslation('memberPage');
-	const { id, isOwner, temp, clanId, proPalette } = props;
+	const { id, isOwner, temp, clanId, proPalette, ownProUserId } = props;
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user?.user?.id || ''));
@@ -119,7 +123,7 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 		openProfileItem(event, user);
 	};
 	return temp ? (
-		<TempMemberItem id={id} isOwner={isOwner} proPalette={proPalette} />
+		<TempMemberItem id={id} isOwner={isOwner} proPalette={proPalette} ownProUserId={ownProUserId} />
 	) : (
 		<BaseMemberProfile
 			userStatus={
@@ -151,6 +155,7 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 			id={id}
 			isOwner={isOwner}
 			proPalette={proPalette}
+			ownProUserId={ownProUserId}
 			onContextMenu={showContextMenu}
 			onClick={handleClick}
 		/>
@@ -213,6 +218,9 @@ const ListMember = () => {
 
 	const appearanceTheme = useSelector(selectTheme);
 	const proPalette = useMemo(() => getProPalette(appearanceTheme), [appearanceTheme]);
+	const currentUserId = useSelector(selectCurrentUserId);
+	const isOwnPro = useSelector(selectAccountProPlan);
+	const ownProUserId = isOwnPro ? currentUserId : '';
 
 	useWindowSize(() => {
 		setHeight(window.innerHeight - heightTopBar);
@@ -286,6 +294,7 @@ const ListMember = () => {
 										isOwner={currentClanCreatorId === user}
 										clanId={currentClanId || ''}
 										proPalette={proPalette}
+										ownProUserId={ownProUserId}
 									/>
 								)}
 							</div>
