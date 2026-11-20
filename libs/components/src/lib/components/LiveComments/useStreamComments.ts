@@ -1,8 +1,24 @@
-import { getStore, selectMemberByIdAndClanId, selectMemberClanByUserId } from '@mezon/store';
+import {
+	getStore,
+	getUsersClanState,
+	selectAllAccount,
+	selectClanMemberByClanId,
+	selectClanRosterCapped,
+	selectCurrentClanId,
+	selectMemberByIdAndClanId,
+	selectStreamMembersByChannelId
+} from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { VoiceReactionSend } from 'mezon-js';
 import { useCallback, useEffect } from 'react';
-import { formatStreamCommentToken, parseStreamCommentToken, resolveClanMemberSender } from './liveCommentSender';
+import {
+	canAcceptLiveCommentSender,
+	findMemberInAnyLoadedClan,
+	formatStreamCommentToken,
+	isClanRosterLoaded,
+	parseStreamCommentToken,
+	resolveLiveCommentSender
+} from './liveCommentSender';
 import { useLiveCommentQueue } from './useLiveCommentQueue';
 import { subscribeVoiceReaction } from './voiceReactionFanout';
 
@@ -25,8 +41,30 @@ export const useStreamComments = (channelId: string, clanId?: string) => {
 			if (!content) return;
 
 			const state = getStore().getState();
-			const member = clanId ? selectMemberByIdAndClanId(state, clanId, message.sender_id) : selectMemberClanByUserId(state, message.sender_id);
-			const sender = resolveClanMemberSender(message.sender_id, member);
+			const senderId = typeof message.sender_id === 'string' ? message.sender_id.trim() : '';
+			const resolvedClanId = clanId && clanId !== '0' ? clanId : selectCurrentClanId(state) || '';
+			const hasClanId = Boolean(resolvedClanId && resolvedClanId !== '0');
+			const clanRoster = hasClanId ? selectClanMemberByClanId(state, resolvedClanId) : undefined;
+			const rosterLoaded = isClanRosterLoaded(clanRoster);
+			const rosterCapped = hasClanId ? selectClanRosterCapped(state, resolvedClanId) : false;
+			const clanMember = hasClanId ? selectMemberByIdAndClanId(state, resolvedClanId, senderId) : null;
+			if (!canAcceptLiveCommentSender({ userId: senderId, inClanRoster: Boolean(clanMember), rosterLoaded, rosterCapped })) return;
+
+			const account = selectAllAccount(state);
+			const fallbackMember = clanMember
+				? null
+				: (findMemberInAnyLoadedClan(getUsersClanState(state)?.byClans, senderId, resolvedClanId) ??
+					(account?.user?.id === senderId ? { user: account.user } : null));
+			const streamMember = clanMember ? undefined : selectStreamMembersByChannelId(state, channelId).find((item) => item.user_id === senderId);
+			const fallbackName = streamMember?.user_name || streamMember?.participant;
+			const sender = resolveLiveCommentSender({
+				userId: senderId,
+				clanMember,
+				rosterLoaded,
+				rosterCapped,
+				fallbackMember,
+				fallbackName
+			});
 			if (!sender) return;
 
 			add({

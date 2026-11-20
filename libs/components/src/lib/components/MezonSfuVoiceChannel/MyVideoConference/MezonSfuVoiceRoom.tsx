@@ -3,6 +3,10 @@ import type { BreakoutParticipantItem } from '@mezon/store';
 import {
 	generateMeetToken,
 	getStore,
+	getUsersClanState,
+	selectAllAccount,
+	selectClanMemberByClanId,
+	selectClanRosterCapped,
 	selectEntitesUserClans,
 	selectMemberByIdAndClanId,
 	selectNoiseSuppressionEnabled,
@@ -42,8 +46,11 @@ import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import {
 	LiveCommentInput,
 	LiveCommentStack,
+	canAcceptLiveCommentSender,
+	findMemberInAnyLoadedClan,
+	isClanRosterLoaded,
 	parseRoomComment,
-	resolveClanMemberSender,
+	resolveLiveCommentSender,
 	truncateLiveComment,
 	useLiveCommentQueue
 } from '../../LiveComments';
@@ -2995,9 +3002,28 @@ export function MezonSfuVoiceRoom({
 			if (!message.message || !activeClanId || activeClanId === '0' || !message.user_id) return;
 			const parsed = parseRoomComment(message.message);
 			if (!parsed) return;
+			const senderId = message.user_id.trim();
 			const state = getStore().getState();
-			const member = selectMemberByIdAndClanId(state, activeClanId, message.user_id);
-			const sender = resolveClanMemberSender(message.user_id, member);
+			const clanRoster = selectClanMemberByClanId(state, activeClanId);
+			const rosterLoaded = isClanRosterLoaded(clanRoster);
+			const rosterCapped = selectClanRosterCapped(state, activeClanId);
+			const clanMember = selectMemberByIdAndClanId(state, activeClanId, senderId);
+			if (!canAcceptLiveCommentSender({ userId: senderId, inClanRoster: Boolean(clanMember), rosterLoaded, rosterCapped })) return;
+			const account = selectAllAccount(state);
+			const fallbackMember = clanMember
+				? null
+				: (findMemberInAnyLoadedClan(getUsersClanState(state)?.byClans, senderId, activeClanId) ??
+					(account?.user?.id === senderId ? { user: account.user } : null));
+			const participant = clanMember ? undefined : participants.find((item) => item.userId === senderId);
+			const fallbackName = participant ? getParticipantProfile(participant).displayName : undefined;
+			const sender = resolveLiveCommentSender({
+				userId: senderId,
+				clanMember,
+				rosterLoaded,
+				rosterCapped,
+				fallbackMember,
+				fallbackName
+			});
 			if (!sender) return;
 			addLiveComment({
 				senderId: sender.userId,
@@ -3007,7 +3033,7 @@ export function MezonSfuVoiceRoom({
 				timestamp: parsed.timestamp
 			});
 		},
-		[activeClanId, addLiveComment]
+		[activeClanId, addLiveComment, getParticipantProfile, participants]
 	);
 	handleIncomingRoomCommentRef.current = handleIncomingRoomComment;
 	const presentUserIds = useMemo(
