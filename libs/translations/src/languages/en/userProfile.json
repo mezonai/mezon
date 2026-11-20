@@ -95,6 +95,15 @@
 		"manageAccounts": "Manage Accounts",
 		"switchAccounts": "Switch Accounts",
 		"copyUserId": "Copy User ID",
+		"userProPlan": {
+			"enable": "Enable User Pro Plan",
+			"confirmTitle": "Confirm User Pro Plan purchase",
+			"confirmMessage": "Enable User Pro Plan for {{price}} tokens per year?",
+			"confirmButton": "Confirm purchase",
+			"processing": "Processing purchase…",
+			"purchaseUnavailable": "Purchases are unavailable until the recipient ID and price are configured.",
+			"purchaseSubmitted": "User Pro payment submitted."
+		},
 		"statusOptions": {
 			"online": "Online",
 			"idle": "Idle",
