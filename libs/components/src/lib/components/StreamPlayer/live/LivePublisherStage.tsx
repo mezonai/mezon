@@ -223,9 +223,15 @@ export function LivePublisherStage({ channelId, clanId }: LivePublisherStageProp
 						</div>
 					)}
 					{showLiveCommentOverlay && (
-						<div className="pointer-events-none absolute bottom-20 right-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-end gap-2">
+						<div className="pointer-events-none absolute bottom-20 left-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-start gap-2">
 							{!commentsHidden && (
-								<LiveCommentStack comments={liveComments} onHide={hideComments} labels={commentStackLabels} className="w-full" />
+								<LiveCommentStack
+									comments={liveComments}
+									onHide={hideComments}
+									labels={commentStackLabels}
+									className="w-full"
+									align="start"
+								/>
 							)}
 							{showCommentInput && (
 								<LiveCommentInput

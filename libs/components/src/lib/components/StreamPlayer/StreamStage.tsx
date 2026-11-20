@@ -163,10 +163,16 @@ export function StreamStage({ channelId, clanId, poster, onLeave }: StreamStageP
 			</div>
 			{showLiveCommentOverlay && (
 				<div
-					className={`pointer-events-none absolute right-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-end gap-2 transition-[bottom] duration-200 ${commentOverlayPositionClass}`}
+					className={`pointer-events-none absolute left-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-start gap-2 transition-[bottom] duration-200 ${commentOverlayPositionClass}`}
 				>
 					{!commentsHidden && (
-						<LiveCommentStack comments={liveComments} onHide={hideComments} labels={commentStackLabels} className="w-full" />
+						<LiveCommentStack
+							comments={liveComments}
+							onHide={hideComments}
+							labels={commentStackLabels}
+							className="w-full"
+							align="start"
+						/>
 					)}
 					{showCommentInput && (
 						<LiveCommentInput

@@ -13,6 +13,7 @@ export interface LiveCommentStackProps {
 	onHide: () => void;
 	labels: LiveCommentStackLabels;
 	className?: string;
+	align?: 'start' | 'end';
 }
 
 const LiveCommentBubble = memo(({ comment }: { comment: LiveCommentItem }) => {
@@ -52,27 +53,31 @@ const LiveCommentBubble = memo(({ comment }: { comment: LiveCommentItem }) => {
 
 LiveCommentBubble.displayName = 'LiveCommentBubble';
 
-export const LiveCommentStack = memo(({ comments, onHide, labels, className = 'absolute bottom-4 right-4' }: LiveCommentStackProps) => {
-	if (comments.length === 0) return null;
+export const LiveCommentStack = memo(
+	({ comments, onHide, labels, className = 'absolute bottom-4 right-4', align = 'end' }: LiveCommentStackProps) => {
+		if (comments.length === 0) return null;
 
-	return (
-		<div className={`pointer-events-none z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-end gap-2 ${className}`}>
-			<button
-				type="button"
-				onClick={onHide}
-				title={labels.hide}
-				aria-label={labels.hide}
-				className="pointer-events-auto flex size-7 items-center justify-center rounded-full border-theme-primary bg-theme-setting-primary text-theme-primary shadow-md transition-colors hover:text-theme-message"
-			>
-				<MezonIcon icon={MzIcons16.mzEyeOff} />
-			</button>
-			<div className="flex w-full flex-col items-end gap-2">
-				{comments.map((comment) => (
-					<LiveCommentBubble key={comment.id} comment={comment} />
-				))}
+		const alignClassName = align === 'start' ? 'items-start' : 'items-end';
+
+		return (
+			<div className={`pointer-events-none z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col ${alignClassName} gap-2 ${className}`}>
+				<button
+					type="button"
+					onClick={onHide}
+					title={labels.hide}
+					aria-label={labels.hide}
+					className="pointer-events-auto flex size-7 items-center justify-center rounded-full border-theme-primary bg-theme-setting-primary text-theme-primary shadow-md transition-colors hover:text-theme-message"
+				>
+					<MezonIcon icon={MzIcons16.mzEyeOff} />
+				</button>
+				<div className={`flex w-full flex-col ${alignClassName} gap-2`}>
+					{comments.map((comment) => (
+						<LiveCommentBubble key={comment.id} comment={comment} />
+					))}
+				</div>
 			</div>
-		</div>
-	);
-});
+		);
+	}
+);
 
 LiveCommentStack.displayName = 'LiveCommentStack';
