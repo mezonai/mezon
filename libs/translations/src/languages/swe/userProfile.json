@@ -223,5 +223,8 @@
 		"banList": "Bannlista",
 		"search": "Sök bannlysta användare",
 		"banListEmpty": "Inga bannlysta användare hittades"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro"
 	}
 }
