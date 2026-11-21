@@ -72,5 +72,15 @@
 		"description": "Créez ou rejoignez un clan pour configurer votre profil de clan.",
 		"createClan": "Créer un clan",
 		"joinClan": "Rejoindre un clan"
+	},
+	"coverPhoto": {
+		"label": "PHOTO DE COUVERTURE",
+		"change": "Modifier la couverture",
+		"remove": "Supprimer la couverture",
+		"saving": "Sauvegarde…",
+		"invalidType": "Choisissez une image JPG, PNG, GIF ou WebP.",
+		"tooLarge": "La photo de couverture ne doit pas dépasser 10 Mo.",
+		"invalidImage": "Impossible d’ouvrir cette image. Choisissez une autre image.",
+		"uploadFailed": "Impossible de téléverser la photo de couverture. Veuillez réessayer."
 	}
 }

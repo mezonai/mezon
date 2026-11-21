@@ -72,5 +72,15 @@
 		"description": "Skapa eller gå med i en clan för att ställa in din clan profil.",
 		"createClan": "Skapa clan",
 		"joinClan": "Gå med i clan"
+	},
+	"coverPhoto": {
+		"label": "OMSLAGSBILD",
+		"change": "Ändra omslagsbild",
+		"remove": "Ta bort omslagsbild",
+		"saving": "Sparar…",
+		"invalidType": "Välj en bild i formatet JPG, PNG, GIF eller WebP.",
+		"tooLarge": "Omslagsbilder får vara högst 10 MB stora.",
+		"invalidImage": "Det gick inte att öppna bilden. Välj en annan bild.",
+		"uploadFailed": "Det gick inte att ladda upp omslagsbilden. Försök igen."
 	}
 }

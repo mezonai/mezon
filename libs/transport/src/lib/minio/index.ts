@@ -294,7 +294,15 @@ export async function handleUploadFile(
 	});
 }
 
-export async function handleUploadPublicFile(client: Client, session: ApiSession, filename: string, file: CustomFile): Promise<ApiMessageAttachment> {
+type PublicUploadOptions = { preserveContentType?: boolean };
+
+export async function handleUploadPublicFile(
+	client: Client,
+	session: ApiSession,
+	filename: string,
+	file: CustomFile,
+	options?: PublicUploadOptions
+): Promise<ApiMessageAttachment> {
 	const { filePath, originalFilename } = createUploadFilePath(filename);
 	return uploadPublicFile(
 		client,
@@ -305,7 +313,8 @@ export async function handleUploadPublicFile(client: Client, session: ApiSession
 		file,
 		originalFilename,
 		file.width,
-		file.height
+		file.height,
+		options
 	);
 }
 
@@ -377,6 +386,7 @@ export async function uploadFile(
 	}
 }
 
+/* eslint-disable no-console -- Development-only diagnostics for binary cover upload requests. */
 export async function uploadPublicFile(
 	client: Client,
 	session: ApiSession,
@@ -386,38 +396,108 @@ export async function uploadPublicFile(
 	buf: Blob,
 	originalFilename?: string,
 	width?: number,
-	height?: number
+	height?: number,
+	options?: PublicUploadOptions
 ): Promise<ApiMessageAttachment> {
+	const debugCover = options?.preserveContentType && process.env.NODE_ENV !== 'production';
+	let stage = 'UploadOauthFile';
 	try {
-		const data = await client.uploadOauthFile(session, {
+		const request = {
 			filename,
 			filetype: type,
 			size,
 			width,
 			height
-		});
-		await putFileToPresignedUrl(data, buf, size);
+		};
+		if (debugCover) console.info('[Profile cover upload] UploadOauthFile request (before protobuf)', JSON.stringify(request));
+		const data = await client.uploadOauthFile(session, request);
+		const profileBase = options?.preserveContentType ? coverProfileReadBase(data.url) : process.env.NX_PROFILE_IMG_URL;
+		const publicUrl = `${profileBase}/${data.filename}`;
+		stage = 'PUT';
+		if (debugCover) {
+			console.info(
+				'[Profile cover upload] UploadOauthFile response',
+				JSON.stringify({
+					filename: data.filename,
+					pageOrigin: typeof window !== 'undefined' ? window.location.origin : undefined,
+					uploadTarget: uploadUrlWithoutCredentials(data.url),
+					publicUrl: uploadUrlWithoutCredentials(publicUrl)
+				})
+			);
+		}
+		const status = await putFileToPresignedUrl(data, buf, size, options?.preserveContentType ? type : undefined);
+		if (debugCover) console.info('[Profile cover upload] PUT succeeded', JSON.stringify({ status }));
 		return {
 			filename: originalFilename,
-			url: `${process.env.NX_PROFILE_IMG_URL}/${data.filename}`,
+			url: publicUrl,
 			filetype: type,
 			size,
 			width,
 			height
 		};
 	} catch (error) {
+		if (options?.preserveContentType) {
+			if (debugCover) {
+				const failure = error as { code?: unknown; status?: unknown } | undefined;
+				console.error(
+					'[Profile cover upload] Failed',
+					JSON.stringify({
+						stage,
+						errorType: error instanceof TypeError ? 'TypeError' : error instanceof Error ? 'Error' : typeof error,
+						code: typeof failure?.code === 'number' ? failure.code : undefined,
+						status: typeof failure?.status === 'number' ? failure.status : undefined
+					})
+				);
+			}
+			throw error;
+		}
 		throw new Error(`${error}`);
 	}
 }
+/* eslint-enable no-console */
 
-async function putFileToPresignedUrl(data: ApiUploadAttachment | undefined, buf: Blob, size: number) {
+function coverProfileReadBase(uploadUrl?: string) {
+	try {
+		switch (new URL(uploadUrl || '').hostname) {
+			case 'cdn-api.mezon.ai':
+				return 'https://profile.mezon.ai';
+			case 'cdn-api-dev.nccsoft.vn':
+				return 'https://cdn-dev-profile.nccsoft.vn';
+		}
+	} catch {
+		console.error('[Profile cover upload] Failed to get CDN URL');
+	}
+	return process.env.NX_PROFILE_IMG_URL?.replace(/\/+$/, '');
+}
+
+function uploadUrlWithoutCredentials(value?: string) {
+	try {
+		const url = new URL(value || '');
+		return `${url.origin}${url.pathname}`;
+	} catch {
+		return '(missing or invalid URL)';
+	}
+}
+
+function coverUploadUrl(value: string) {
+	if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined' || window.location.hostname !== '127.0.0.1') return value;
+	const url = new URL(value);
+	const target = url.hostname === 'cdn-api.mezon.ai' ? 'production' : url.hostname === 'cdn-api-dev.nccsoft.vn' ? 'development' : undefined;
+	return target ? `/profile-cover-upload/${target}${url.pathname}${url.search}` : value;
+}
+
+async function putFileToPresignedUrl(data: ApiUploadAttachment | undefined, buf: Blob, size: number, contentType?: string) {
 	if (!data?.url) {
 		throw new Error('Failed to upload file. URL not available.');
 	}
-	const res = await uploadImageToMinIO(data.url, buf, size);
+	const res = contentType
+		? await fetch(coverUploadUrl(data.url), { method: 'PUT', headers: { 'Content-Type': contentType }, body: buf, credentials: 'omit' })
+		: await uploadImageToMinIO(data.url, buf, size);
 	if (res.status !== 200) {
-		throw new Error('Failed to upload file to MinIO.');
+		const error = new Error('Failed to upload file to MinIO.');
+		throw contentType ? Object.assign(error, { status: res.status }) : error;
 	}
+	return res.status;
 }
 
 export async function handleUrlInput(url: string): Promise<ApiMessageAttachment> {

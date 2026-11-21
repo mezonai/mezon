@@ -2045,6 +2045,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onuserprofileupdate = useCallback(
 		(userUpdated: UserProfileUpdatedEvent) => {
+			dispatch(accountActions.profileBannerUpdated({ userId: userUpdated.user_id, banner: userUpdated.banner }));
 			if (userUpdated.user_id === userId) {
 				dispatch(accountActions.setUpdateAccount({ encrypt_private_key: userUpdated?.encrypt_private_key }));
 			} else {

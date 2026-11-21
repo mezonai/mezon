@@ -72,5 +72,15 @@
 		"description": "Utwórz lub dołącz do clanu, aby skonfigurować swój profil clanu.",
 		"createClan": "Utwórz clan",
 		"joinClan": "Dołącz do clanu"
+	},
+	"coverPhoto": {
+		"label": "ZDJĘCIE W TLE",
+		"change": "Zmień zdjęcie w tle",
+		"remove": "Usuń zdjęcie w tle",
+		"saving": "Zapisywanie…",
+		"invalidType": "Wybierz obraz w formacie JPG, PNG, GIF lub WebP.",
+		"tooLarge": "Zdjęcia w tle nie mogą przekraczać 10 MB.",
+		"invalidImage": "Nie można otworzyć tego obrazu. Wybierz inny obraz.",
+		"uploadFailed": "Nie udało się przesłać zdjęcia w tle. Spróbuj ponownie."
 	}
 }

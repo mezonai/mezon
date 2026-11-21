@@ -45,6 +45,16 @@ export default defineConfig(({ mode }) => {
 			open: '/chat/',
 			proxy: {
 				...JSON.parse(fs.readFileSync(path.resolve(__dirname, 'proxy.conf.json'), 'utf-8')),
+				'/profile-cover-upload/production': {
+					target: 'https://cdn-api.mezon.ai',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/profile-cover-upload\/production/, '')
+				},
+				'/profile-cover-upload/development': {
+					target: 'https://cdn-api-dev.nccsoft.vn',
+					changeOrigin: true,
+					rewrite: (p: string) => p.replace(/^\/profile-cover-upload\/development/, '')
+				},
 				// LOCAL DEV ONLY. imgproxy answers with a hard-coded
 				// `Access-Control-Allow-Origin: https://mezon.ai` — it does not echo the
 				// caller's origin — so from 127.0.0.1 an avatar can never be read into a

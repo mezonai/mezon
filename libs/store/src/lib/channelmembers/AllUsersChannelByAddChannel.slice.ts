@@ -3,6 +3,7 @@ import { TypeSearch, isCtrlkSearchTooShort, type IUserChannel, type LoadingStatu
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiAllUsersAddChannelResponse, ApiSearchCtrlKRequest, ApiSearchCtrlKResponse, ApiSession, Client } from 'mezon-js';
+import { profileBannerUpdated } from '../account/profileBanner.actions';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -50,6 +51,7 @@ export const withAddedProfiles = (
 };
 
 export interface UsersByAddChannelState extends EntityState<IUserChannel, string> {
+	profileBanners?: Record<string, string>;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	cacheByChannels: Record<string, CacheMetadata>;
@@ -369,6 +371,12 @@ export const userChannelsSlice = createSlice({
 	},
 	extraReducers(builder) {
 		builder
+			.addCase(profileBannerUpdated, (state, action) => {
+				const { userId, banner } = action.payload;
+				if (userId && banner) {
+					(state.profileBanners ??= {})[userId] = banner;
+				}
+			})
 			.addCase(
 				fetchUserChannels.fulfilled,
 				(

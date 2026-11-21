@@ -13,7 +13,7 @@ import {
 	useUserByUserId
 } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { EStateFriend, selectAllAccount, selectFriendById, selectStatusInVoice, useAppSelector } from '@mezon/store';
+import { EStateFriend, selectAllAccount, selectFriendById, selectProfileBannerByUserId, selectStatusInVoice, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { EUserStatus, generateE2eId } from '@mezon/utils';
@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import ProfileCover from '../ProfileCover';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import AvatarProfile from './AvatarProfile';
 import RoleUserProfile from './RoleUserProfile';
@@ -78,6 +79,7 @@ const ModalUserProfile = ({
 	avatar,
 	positionType,
 	isDM,
+	user,
 	onClose,
 	rootRef,
 	isUserRemoved,
@@ -100,6 +102,9 @@ const ModalUserProfile = ({
 	const userProfile = useSelector(selectAllAccount);
 
 	const { userId } = useAuth();
+	const banner = useAppSelector((state) =>
+		selectProfileBannerByUserId(state, checkAnonymous || isUserRemoved ? '' : (isFooterProfile ? userId : userID) || '', user?.user)
+	);
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
 	const userInvoice = useSelector((state) => selectStatusInVoice(state, userID as string));
@@ -248,9 +253,10 @@ const ModalUserProfile = ({
 
 	return (
 		<div tabIndex={-1} ref={profileRef} className={`outline-none ${classWrapper}`} onClick={() => setOpenModal(initOpenModal)}>
-			<div
+			<ProfileCover
 				className={`${classBanner ? classBanner : 'rounded-tl-lg bg-indigo-400 rounded-tr-lg h-[105px]'} flex justify-end gap-x-2 p-2 `}
-				style={{ backgroundColor: color }}
+				color={color}
+				banner={banner}
 			>
 				{userInvoice && !isFooterProfile && !isDM && <MemberInVoiceButton channelId={userInvoice?.channelId} />}
 				{!checkUser && !checkAnonymous && (
@@ -263,7 +269,7 @@ const ModalUserProfile = ({
 						kichUser={message?.user}
 					/>
 				)}
-			</div>
+			</ProfileCover>
 			<AvatarProfile
 				avatar={avatar || avatarByUserId}
 				username={

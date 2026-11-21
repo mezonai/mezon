@@ -72,5 +72,15 @@
 		"description": "Create or join a clan to get started!",
 		"createClan": "Create a clan",
 		"joinClan": "Join a clan"
+	},
+	"coverPhoto": {
+		"label": "COVER PHOTO",
+		"change": "Change cover",
+		"remove": "Remove cover",
+		"saving": "Saving…",
+		"invalidType": "Choose a JPG, PNG, GIF or WebP image.",
+		"tooLarge": "Cover photos must be 10 MB or smaller.",
+		"invalidImage": "This image could not be opened. Choose another image.",
+		"uploadFailed": "Could not upload the cover photo. Please try again."
 	}
 }

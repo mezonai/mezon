@@ -71,6 +71,7 @@ const SettingRightProfile = ({ menuIsOpen, isDM }: SettingRightProfileProps) => 
 			<div className="flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col">
 				{activeType === EActiveType.USER_SETTING ? (
 					<SettingRightUser
+						key={userProfile?.user?.id}
 						onClanProfileClick={handleClanProfileClick}
 						name={userProfile?.user?.username || ''}
 						avatar={userProfile?.user?.avatar_url || ''}
