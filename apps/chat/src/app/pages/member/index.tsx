@@ -1,6 +1,7 @@
 import { useMemberContext } from '@mezon/core';
 import { channelsActions, selectCurrentClanId } from '@mezon/store';
 import { Menu, MezonIcon, MzIcons20, Pagination } from '@mezon/ui';
+import { isRealClanId } from '@mezon/utils';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +24,7 @@ const MemberClan = () => {
 	}, [searchQuery]);
 
 	useEffect(() => {
-		if (currentClanId && currentClanId !== '0') {
+		if (isRealClanId(currentClanId)) {
 			dispatch(channelsActions.removeRememberChannel({ clanId: currentClanId }));
 		}
 	}, []);

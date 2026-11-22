@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
-import { CREATING_TOPIC, EBacktickType, isTikTokLink, isYouTubeLink } from '@mezon/utils';
+import { CREATING_TOPIC, EBacktickType, isRealClanId, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type {
@@ -381,7 +381,7 @@ export const topicsSlice = createSlice({
 		},
 		markTopicUnread: (state, action: PayloadAction<{ topicId: string; clanId: string }>) => {
 			const { topicId, clanId } = action.payload;
-			if (!topicId || topicId === '0' || !clanId || clanId === '0') return;
+			if (!topicId || topicId === '0' || !isRealClanId(clanId)) return;
 			if (!state.unreadTopics) {
 				state.unreadTopics = {};
 			}

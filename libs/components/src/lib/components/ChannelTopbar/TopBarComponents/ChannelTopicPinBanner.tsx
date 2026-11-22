@@ -25,7 +25,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
-import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TypeMessage, createImgproxyUrl, generateE2eId, isImageFileType } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, TypeMessage, createImgproxyUrl, generateE2eId, isImageFileType, isRealClanId } from '@mezon/utils';
 import { format } from 'date-fns';
 import type { ApiSdTopic } from 'mezon-js';
 import { ChannelType, decodeAttachments, safeJSONParse } from 'mezon-js';
@@ -481,15 +481,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 		channelAgeRestricted !== 1 || (isAgeGatePassed && checkAgeGatePassed(currentChannelId, channelAgeRestricted, dobSeconds));
 
 	useEffect(() => {
-		if (
-			currentClanId &&
-			currentClanId !== '0' &&
-			currentChannelId &&
-			isChannelKnown &&
-			!isExcludedRoute &&
-			!isVoiceOrStream &&
-			isChannelGatePassed
-		) {
+		if (isRealClanId(currentClanId) && currentChannelId && isChannelKnown && !isExcludedRoute && !isVoiceOrStream && isChannelGatePassed) {
 			dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId, clanId: currentClanId }));
 			if (!hasFetchedTopics) {
 				dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
@@ -528,7 +520,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 
 	useEffect(() => {
 		const topicId = latestTopic?.id;
-		if (!topicId || !currentClanId || currentClanId === '0' || !currentChannelId || isExcludedRoute || isVoiceOrStream || !isChannelGatePassed) {
+		if (!topicId || !isRealClanId(currentClanId) || !currentChannelId || isExcludedRoute || isVoiceOrStream || !isChannelGatePassed) {
 			return;
 		}
 
@@ -1077,8 +1069,7 @@ export const ChannelTopicPinBanner = memo(({ channelId: propChannelId }: Channel
 	);
 
 	if (
-		!currentClanId ||
-		currentClanId === '0' ||
+		!isRealClanId(currentClanId) ||
 		isExcludedRoute ||
 		isVoiceOrStream ||
 		(!latestTopic && !latestPin) ||

@@ -53,6 +53,7 @@ export * from './call';
 export * from './callbacks';
 export * from './canvasLink';
 export * from './cdnSignature';
+export * from './clanChannel';
 export * from './convertMessageToHtml';
 export * from './dateI18n';
 export * from './detectTokenMessage';

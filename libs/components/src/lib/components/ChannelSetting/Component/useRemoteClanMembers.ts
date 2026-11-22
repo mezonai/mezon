@@ -1,6 +1,7 @@
 import type { AddedChannelUserProfile } from '@mezon/store';
 import { selectClanRosterCapped, selectCurrentClanId, useAppSelector } from '@mezon/store';
 import type { UsersClanEntity } from '@mezon/utils';
+import { isRealClanId } from '@mezon/utils';
 import type { ApiMentionUser } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -44,7 +45,7 @@ export const listingProfileOf = (user: ApiMentionUser): AddedChannelUserProfile 
 export const useRemoteClanMembers = (query: string) => {
 	const clanId = useSelector(selectCurrentClanId) ?? '';
 	const rosterCapped = useAppSelector((state) => selectClanRosterCapped(state, clanId));
-	const enabled = rosterCapped && clanId !== '' && clanId !== '0';
+	const enabled = rosterCapped && isRealClanId(clanId);
 	const { searchMembers, isSearching, lateAnswers } = useRemoteMentionSearch({ clanId, channelId: CLAN_SCOPE, enabled });
 	const [answer, setAnswer] = useState<ServerAnswer<ApiMentionUser>>(NO_ANSWER);
 	const [pending, setPending] = useState(false);

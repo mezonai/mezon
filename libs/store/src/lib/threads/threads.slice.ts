@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
-import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
+import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas, isRealClanId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
@@ -175,7 +175,7 @@ export const searchedThreads = createAsyncThunk('threads/searchThreads', async (
 		const clanId = state?.clans?.currentClanId;
 		const currentChannel = selectCurrentChannel(state);
 		const channelSearch = currentChannel ? getParentChannelIdIfHas(currentChannel) : channelId;
-		if (clanId && clanId !== '0' && channelId) {
+		if (isRealClanId(clanId) && channelId) {
 			const response = await mezon.client.searchThread(mezon.session, clanId, channelSearch, label?.trim());
 			if (!response.channeldesc) {
 				return [];

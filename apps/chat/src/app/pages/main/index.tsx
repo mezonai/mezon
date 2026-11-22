@@ -58,7 +58,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
-import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId } from '@mezon/utils';
+import { PLATFORM_ENV, Platform, TIME_OF_SHOWING_FIRST_POPUP, generateE2eId, isRealClanId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -200,7 +200,7 @@ function MyApp() {
 				{previewMode?.open && previewMode.clanId === currentClanId && <PreviewOnboardingMode />}
 				{openPopupForward && <ForwardMessageModal />}
 				<SidebarMenu openCreateClanModal={openCreateClanModal} openDiscoverPage={openDiscoverPage} />
-				<Topbar isHidden={currentClanId !== '0' ? false : !directId}>
+				<Topbar isHidden={isRealClanId(currentClanId) ? false : !directId}>
 					<OpenChannelInAppButton />
 				</Topbar>
 				<MainContent />
@@ -210,10 +210,10 @@ function MyApp() {
 					status={userProfile?.user?.online}
 					avatar={userProfile?.user?.avatar_url || ''}
 					userId={userProfile?.user?.id || ''}
-					isDM={currentClanId === '0'}
+					isDM={!isRealClanId(currentClanId)}
 				/>
 				<div
-					className={`fixed h-heightWithoutTopBar bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && currentClanId !== '0' && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
+					className={`fixed h-heightWithoutTopBar bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && isRealClanId(currentClanId) && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
 					style={streamStyle}
 				>
 					{currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? (

@@ -12,7 +12,7 @@ import {
 	selectLastEmojiRecent,
 	useAppDispatch
 } from '@mezon/store';
-import { transformPayloadWriteSocket } from '@mezon/utils';
+import { isDMStreamMode, isRealClanId, transformPayloadWriteSocket } from '@mezon/utils';
 import type { ApiClanEmoji } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -144,7 +144,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 			channelIdOnMessage
 		}: ReactionMessageDispatchParams) => {
 			const mode = getActiveMode(channelId);
-			const checkIsClanView = clanId && clanId !== '0';
+			const checkIsClanView = !isDMStreamMode(mode) && isRealClanId(clanId);
 			const isClanView = isClanViewMobile !== undefined ? isClanViewMobile : checkIsClanView;
 
 			isClanView && addMemberToThread(userId || '');

@@ -8,6 +8,7 @@ import {
 	selectWelcomeChannelByClanId,
 	useAppSelector
 } from '@mezon/store';
+import { isRealClanId } from '@mezon/utils';
 import { ChannelType, safeJSONParse } from 'mezon-js';
 import { useEffect } from 'react';
 
@@ -33,7 +34,7 @@ export const useChannelRedirect = () => {
 	)?.id;
 
 	useEffect(() => {
-		if (!clanId || clanId === '0' || !isFetchChannelSuccess) return;
+		if (!isRealClanId(clanId) || !isFetchChannelSuccess) return;
 		const publicWelcomeChannelId = welcomeChannel && !welcomeChannel.channel_private ? welcomeChannel.id : '';
 		const redirectId = channel?.id || publicWelcomeChannelId || firstPublicChannelId || defaultChannelId;
 		navigate(redirectId ? toChannelPage(redirectId, clanId) : toMembersPage(clanId), true);

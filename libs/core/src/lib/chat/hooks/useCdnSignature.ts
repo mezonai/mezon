@@ -10,7 +10,14 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { appendCdnSignature, getCdnFallbackUrl, getCdnSignatureChannelId, markCdnPrimaryFailed, parseSignedCdnMediaSrc } from '@mezon/utils';
+import {
+	appendCdnSignature,
+	getCdnFallbackUrl,
+	getCdnSignatureChannelId,
+	isRealClanId,
+	markCdnPrimaryFailed,
+	parseSignedCdnMediaSrc
+} from '@mezon/utils';
 import { useEffect, useMemo } from 'react';
 import { shallowEqual } from 'react-redux';
 
@@ -22,7 +29,7 @@ export interface CdnUrlSigner {
 }
 
 const selectOpenChannelId = (state: RootState) =>
-	(selectCurrentClanId(state) === '0' ? selectDmGroupCurrentId(state) : selectCurrentChannelId(state)) || undefined;
+	(!isRealClanId(selectCurrentClanId(state)) ? selectDmGroupCurrentId(state) : selectCurrentChannelId(state)) || undefined;
 
 /**
  * Signs each CDN url in `urls` with the signature of the channel its file was uploaded to, read from the url

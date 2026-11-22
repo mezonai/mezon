@@ -1,9 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IPinMessage, LoadingStatus } from '@mezon/utils';
+import { isDMStreamMode, isRealClanId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiMessageAttachment, ApiPinMessage, ApiPinMessageRequest } from 'mezon-js';
-import { ChannelStreamMode } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions, selectCurrentChannelId } from '../channels/channels.slice';
@@ -20,7 +20,7 @@ export type PinModalTarget = {
 	isDM: boolean;
 };
 
-export const isDMStreamMode = (mode: number) => mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
+export { isDMStreamMode };
 
 /*
  * Update these interfaces according to your requirements.
@@ -392,7 +392,7 @@ export const setIsShowPinBadge = (isShow: boolean) => (dispatch: AppDispatch, ge
 	const state = getState();
 	const currentClanId = selectCurrentClanId(state) as string;
 	const currentChannelId = selectCurrentChannelId(state) as string;
-	if (currentClanId && currentChannelId) {
+	if (isRealClanId(currentClanId) && currentChannelId) {
 		dispatch(channelsActions.setShowPinBadgeOfChannel({ clanId: currentClanId, channelId: currentChannelId, isShow }));
 	}
 };

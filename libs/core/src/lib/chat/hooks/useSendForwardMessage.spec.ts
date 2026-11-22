@@ -16,6 +16,7 @@ jest.mock('@mezon/transport', () => ({ useMezon: () => ({ clientRef: { current: 
 jest.mock(
 	'@mezon/utils',
 	() => ({
+		...jest.requireActual('../../../../../utils/src/lib/utils/clanChannel'),
 		E_ERROR_CHANNEL: { NOT_FOUND: 5, ALREADY_EXISTS: 6 },
 		MAX_FORWARD_MESSAGE_LENGTH: 4000,
 		getCdnSignatureChannelId: (url: string) => {
