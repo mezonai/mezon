@@ -251,5 +251,11 @@
 		"you": "Du",
 		"enlarge": "{{name}} vergrößern",
 		"restoreLayout": "Zurück zur nebeneinanderliegenden Ansicht"
+	},
+	"comment": {
+		"button": "Kommentar",
+		"placeholder": "Kommentar schreiben…",
+		"hide": "Schwebende Kommentare ausblenden",
+		"show": "Schwebende Kommentare einblenden"
 	}
 }

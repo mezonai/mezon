@@ -6,6 +6,7 @@ import { RecordingControl } from '../Recording/RecordingControl';
 import { SfuAgentControl } from './AgentControl';
 import { BreakoutControl } from './BreakoutControl';
 import { CameraControl } from './CameraControl';
+import { CommentControl } from './CommentControl';
 import { EmojiReactionControl } from './EmojiReactionControl';
 import { FullscreenControl } from './FullscreenControl';
 import { LeaveButton } from './LeaveButton';
@@ -77,6 +78,10 @@ interface SfuControlBarProps {
 	roomId?: string;
 	showBreakoutModal?: boolean;
 	onToggleBreakoutModal?: () => void;
+	showCommentInput?: boolean;
+	commentsHidden?: boolean;
+	hasUnseenComments?: boolean;
+	onToggleComment?: () => void;
 }
 
 export const SfuControlBar = ({
@@ -135,7 +140,11 @@ export const SfuControlBar = ({
 	onFullScreen,
 	roomId,
 	showBreakoutModal = false,
-	onToggleBreakoutModal
+	onToggleBreakoutModal,
+	showCommentInput = false,
+	commentsHidden = false,
+	hasUnseenComments = false,
+	onToggleComment
 }: SfuControlBarProps) => {
 	const [localShowVoiceInteractive, setLocalShowVoiceInteractive] = useState(false);
 	const showVoiceInteractive = showVoiceInteractivePanel ?? localShowVoiceInteractive;
@@ -174,6 +183,16 @@ export const SfuControlBar = ({
 						<div className="max-md:hidden">
 							<SfuVoiceInteractiveControl showVoiceInteractive={showVoiceInteractive} onVisibleChange={handleVoiceInteractiveChange} />
 						</div>
+						{!isFullScreen && onToggleComment && (
+							<div className="max-md:hidden">
+								<CommentControl
+									active={showCommentInput}
+									hidden={commentsHidden}
+									hasUnseen={hasUnseenComments}
+									onToggle={onToggleComment}
+								/>
+							</div>
+						)}
 					</>
 				)}
 				<div className="max-md:hidden">
