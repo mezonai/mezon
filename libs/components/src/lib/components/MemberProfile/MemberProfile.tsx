@@ -7,7 +7,10 @@ import { EUserStatus, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../components';
+import { DEFAULT_PRO_PALETTE, ProAvatarFrame, type ProPalette } from '../ProfileBadges';
 import { UserStatusIconClan } from './IconStatus';
+
+type WithProPlan = { pro_plan?: boolean };
 
 type BaseMemberProfileProps = {
 	id: string;
@@ -17,11 +20,27 @@ type BaseMemberProfileProps = {
 	avatar: string;
 	isOwner?: boolean;
 	userStatus?: ReactNode;
+	proPalette?: ProPalette;
+	isPro?: boolean;
+	ownProUserId?: string;
 	onContextMenu: (event: React.MouseEvent<Element, MouseEvent>, channelId: string, user: UsersClanEntity) => void;
 	onClick: (event: React.MouseEvent) => void;
 };
 
-export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwner, userStatus, onContextMenu, onClick }: BaseMemberProfileProps) => {
+export const BaseMemberProfile = ({
+	id,
+	user,
+	userMeta,
+	username,
+	avatar,
+	isOwner,
+	userStatus,
+	proPalette,
+	isPro: isProProp,
+	ownProUserId,
+	onContextMenu,
+	onClick
+}: BaseMemberProfileProps) => {
 	const currentChannelID = useSelector(selectCurrentChannelId);
 	const currentDmId = useAppSelector(selectCurrentDmChannelId);
 	const handleContextMenu = (event: React.MouseEvent) => {
@@ -41,6 +60,7 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 	};
 
 	const isOffline = userMeta?.status === EUserStatus.INVISIBLE || !userMeta?.online;
+	const isPro = isProProp ?? (Boolean((user?.user as WithProPlan | undefined)?.pro_plan) || Boolean(ownProUserId && id === ownProUserId));
 
 	return (
 		<div className={`relative group w-full ${isOffline ? 'opacity-50' : ''}`}>
@@ -51,16 +71,18 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 				data-e2e={generateE2eId('clan_page.secondary_side_bar.member')}
 			>
 				<div className="relative">
-					<AvatarImage
-						alt={username}
-						username={user?.user?.username ?? username}
-						className="min-w-8 min-h-8 max-w-8 max-h-8"
-						classNameText="font-semibold"
-						srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
-						src={avatar}
-					/>
+					<ProAvatarFrame isPro={isPro} palette={proPalette ?? DEFAULT_PRO_PALETTE} glow={false} ringWidth={2} className="-m-[2px]">
+						<AvatarImage
+							alt={username}
+							username={user?.user?.username ?? username}
+							className="min-w-8 min-h-8 max-w-8 max-h-8"
+							classNameText="font-semibold"
+							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 100, height: 100, resizeType: 'fill-down' })}
+							src={avatar}
+						/>
+					</ProAvatarFrame>
 					<div
-						className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary"
+						className="rounded-full right-[-4px] absolute bottom-0 z-10 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary"
 						data-e2e={generateE2eId('icon.profile_status')}
 					>
 						<UserStatusIconClan
