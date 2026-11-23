@@ -78,7 +78,7 @@ import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { ScreenAnnotationCompositor, ScreenDrawLayer, useScreenDraw, type ScreenDrawSession } from './ScreenAnnotation';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
 import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
-import { notifyExternalChatMessage } from './externalChatNotification';
+import { closeExternalChatNotification, externalChatNotificationTag, notifyExternalChatMessage } from './externalChatNotification';
 import { meetTokenNeedsRefresh } from './meetToken';
 import {
 	canReactivateMid,
@@ -1592,10 +1592,20 @@ export function MezonSfuVoiceRoom({
 		(message: string) => {
 			chatRef.current?.setMessages((prev) => [...prev, message]);
 			dispatch(voiceActions.noteExternalChatMessage());
-			notifyExternalChatMessage(message, `external-meeting-chat-${roomId}`, openExternalChat);
+			notifyExternalChatMessage(message, externalChatNotificationTag(roomId), openExternalChat);
 		},
 		[dispatch, openExternalChat, roomId]
 	);
+	useEffect(() => {
+		if (!isExternalCalling) {
+			return;
+		}
+		const tag = externalChatNotificationTag(roomId);
+		return () => {
+			closeExternalChatNotification(tag);
+			dispatch(voiceActions.clearExternalChatUnread());
+		};
+	}, [dispatch, isExternalCalling, roomId]);
 	const handleIncomingRoomCommentRef = useRef<(message: SignalMessage) => void>(() => undefined);
 	const [roomPeerId, setRoomPeerId] = useState('');
 	const signalingTokenRef = useRef(token);

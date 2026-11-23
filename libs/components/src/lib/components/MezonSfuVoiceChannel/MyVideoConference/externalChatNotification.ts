@@ -1,5 +1,4 @@
 import { createImgproxyUrl } from '@mezon/utils';
-import { safeJSONParse } from 'mezon-js';
 
 type ExternalChatMessagePayload = {
 	name?: unknown;
@@ -9,11 +8,34 @@ type ExternalChatMessagePayload = {
 
 const HIDE_NOTIFICATION_CONTENT_KEY = 'hideNotificationContent';
 
+const activeNotifications = new Map<string, Notification>();
+
+export const externalChatNotificationTag = (roomId: string): string => `external-meeting-chat-${roomId}`;
+
+export const closeExternalChatNotification = (tag: string): void => {
+	const notification = activeNotifications.get(tag);
+	if (!notification) {
+		return;
+	}
+	activeNotifications.delete(tag);
+	notification.onclick = null;
+	notification.close();
+};
+
 const shouldHideNotificationContent = (): boolean => {
 	try {
 		return typeof localStorage !== 'undefined' && localStorage.getItem(HIDE_NOTIFICATION_CONTENT_KEY) === 'true';
 	} catch {
 		return false;
+	}
+};
+
+const parseChatPayload = (raw: string): ExternalChatMessagePayload | null => {
+	try {
+		const parsed: unknown = JSON.parse(raw);
+		return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as ExternalChatMessagePayload) : null;
+	} catch {
+		return null;
 	}
 };
 
@@ -49,8 +71,8 @@ export const notifyExternalChatMessage = (raw: string, tag: string, onOpen?: () 
 		return null;
 	}
 
-	const parsed = safeJSONParse(raw) as ExternalChatMessagePayload | null | undefined;
-	if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+	const parsed = parseChatPayload(raw);
+	if (!parsed) {
 		return null;
 	}
 
@@ -63,18 +85,21 @@ export const notifyExternalChatMessage = (raw: string, tag: string, onOpen?: () 
 	const avatar = typeof parsed.avatar === 'string' ? parsed.avatar.trim() : '';
 	const title = `${name || 'Guest'} · Meeting Room`;
 	const body = shouldHideNotificationContent() ? '' : content;
-	const icon = avatar ? createImgproxyUrl(avatar, { width: 100, height: 100, resizeType: 'fill-down' }) : '';
+	const proxiedAvatar = createImgproxyUrl(avatar, { width: 100, height: 100, resizeType: 'fill-down' });
+	const icon = proxiedAvatar === avatar ? '' : proxiedAvatar;
 
 	try {
+		closeExternalChatNotification(tag);
 		const notification = new Notification(title, {
 			body,
 			tag,
 			...(icon ? { icon } : {})
 		});
+		activeNotifications.set(tag, notification);
 		notification.onclick = () => {
+			closeExternalChatNotification(tag);
 			window.focus();
 			onOpen?.();
-			notification.close();
 		};
 		return notification;
 	} catch {

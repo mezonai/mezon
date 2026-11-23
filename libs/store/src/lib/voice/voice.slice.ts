@@ -1020,6 +1020,9 @@ export const voiceSlice = createSlice({
 				state.externalChatUnread += 1;
 			}
 		},
+		clearExternalChatUnread: (state) => {
+			state.externalChatUnread = 0;
+		},
 		setExternalGroup: (state) => {
 			state.externalGroup = true;
 		},

@@ -82,4 +82,13 @@ describe('voice slice external chat unread', () => {
 
 		expect(reset.externalChatUnread).toBe(0);
 	});
+
+	it('zeroes externalChatUnread on clearExternalChatUnread without touching openChatBox', () => {
+		const withUnread = stateWith({ openChatBox: false, externalChatUnread: 4 });
+
+		const cleared = voiceReducer(withUnread, voiceActions.clearExternalChatUnread());
+
+		expect(cleared.externalChatUnread).toBe(0);
+		expect(cleared.openChatBox).toBe(false);
+	});
 });

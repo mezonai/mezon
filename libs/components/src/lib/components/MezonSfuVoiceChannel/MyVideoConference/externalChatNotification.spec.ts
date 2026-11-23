@@ -1,26 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { isPageInBackground, notifyExternalChatMessage, requestExternalChatNotificationPermission } from './externalChatNotification';
+import {
+	closeExternalChatNotification,
+	externalChatNotificationTag,
+	isPageInBackground,
+	notifyExternalChatMessage,
+	requestExternalChatNotificationPermission
+} from './externalChatNotification';
 
 jest.mock(
 	'@mezon/utils',
 	() => ({
-		createImgproxyUrl: (url: string) => `imgproxy:${url}`
+		createImgproxyUrl: (url: string) => (url.startsWith('https://cdn/') ? `imgproxy:${url}` : url)
 	}),
 	{ virtual: true }
 );
-
-jest.mock('mezon-js', () => ({
-	safeJSONParse: (raw: string) => {
-		if (!raw || raw === '[]') {
-			return { t: raw };
-		}
-		try {
-			return JSON.parse(raw);
-		} catch {
-			return { t: raw };
-		}
-	}
-}));
 
 class MockNotification {
 	static permission: NotificationPermission = 'granted';
@@ -173,6 +166,19 @@ describe('externalChatNotification', () => {
 		expect(MockNotification.instances).toHaveLength(0);
 	});
 
+	it('drops non-object and malformed payloads without logging them', () => {
+		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+		expect(notifyExternalChatMessage('{"content": "secret', 'tag')).toBeNull();
+		expect(notifyExternalChatMessage('[]', 'tag')).toBeNull();
+		expect(notifyExternalChatMessage('null', 'tag')).toBeNull();
+		expect(notifyExternalChatMessage('"text"', 'tag')).toBeNull();
+
+		expect(consoleError).not.toHaveBeenCalled();
+		expect(MockNotification.instances).toHaveLength(0);
+		consoleError.mockRestore();
+	});
+
 	it('returns null when Notification permission is denied or Notification is missing', () => {
 		MockNotification.permission = 'denied';
 		expect(notifyExternalChatMessage(JSON.stringify({ name: 'Alice', content: 'hello' }), 'tag')).toBeNull();
@@ -211,6 +217,52 @@ describe('externalChatNotification', () => {
 		expect(windowFocusMock).toHaveBeenCalledTimes(1);
 		expect(onOpen).toHaveBeenCalledTimes(1);
 		expect(MockNotification.instances[0].close).toHaveBeenCalledTimes(1);
+	});
+
+	it('omits the icon when the avatar is not a proxied Mezon image', () => {
+		notifyExternalChatMessage(
+			JSON.stringify({ name: 'Alice', content: 'hi', avatar: 'https://attacker.example/track.png' }),
+			'external-meeting-chat-room1'
+		);
+
+		expect(MockNotification.instances).toHaveLength(1);
+		expect(MockNotification.instances[0].options).toEqual({
+			body: 'hi',
+			tag: 'external-meeting-chat-room1'
+		});
+	});
+
+	it('closes the previous notification of the same meeting before showing the next one', () => {
+		const tag = externalChatNotificationTag('room-replace');
+		const otherTag = externalChatNotificationTag('room-other');
+
+		notifyExternalChatMessage(JSON.stringify({ name: 'Alice', content: 'first' }), tag, jest.fn());
+		notifyExternalChatMessage(JSON.stringify({ name: 'Carol', content: 'elsewhere' }), otherTag);
+		notifyExternalChatMessage(JSON.stringify({ name: 'Bob', content: 'second' }), tag, jest.fn());
+
+		expect(MockNotification.instances).toHaveLength(3);
+		expect(MockNotification.instances[0].close).toHaveBeenCalledTimes(1);
+		expect(MockNotification.instances[0].onclick).toBeNull();
+		expect(MockNotification.instances[1].close).not.toHaveBeenCalled();
+		expect(MockNotification.instances[2].close).not.toHaveBeenCalled();
+		expect(MockNotification.instances[2].onclick).not.toBeNull();
+
+		closeExternalChatNotification(otherTag);
+		closeExternalChatNotification(tag);
+	});
+
+	it('closeExternalChatNotification closes the open notification so a later click does nothing', () => {
+		const tag = externalChatNotificationTag('room-left');
+		const onOpen = jest.fn();
+		notifyExternalChatMessage(JSON.stringify({ name: 'Alice', content: 'bye' }), tag, onOpen);
+
+		closeExternalChatNotification(tag);
+		closeExternalChatNotification(tag);
+
+		expect(MockNotification.instances[0].close).toHaveBeenCalledTimes(1);
+		expect(MockNotification.instances[0].onclick).toBeNull();
+		expect(onOpen).not.toHaveBeenCalled();
+		expect(windowFocusMock).not.toHaveBeenCalled();
 	});
 
 	it('requests notification permission only when permission is default', async () => {
