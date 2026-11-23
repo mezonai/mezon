@@ -1,3 +1,4 @@
+import { mezonAppIcon } from '@mezon/assets';
 import { useAuth } from '@mezon/core';
 import { checkMutableRelationship, selectAddFriendRequestLoading, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { MezonIcon, MzIcons16, MzIcons20, SpinningIcon } from '@mezon/ui';
@@ -12,7 +13,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { isMobileBrowser, openAppDeeplink } from '../../utils/deeplink';
 
-const DEFAULT_LOGO = 'https://cdn.komu.vn/images/mezon_logo.png';
+const DEFAULT_LOGO = mezonAppIcon;
 const QR_SIZE = 175;
 const LOGO_SIZE = 36;
 

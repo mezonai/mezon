@@ -4,8 +4,13 @@
 		<meta charset="utf-8" class="" />
 		<title>Mezon</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-		<link rel="manifest" href="assets/site.webmanifest" />
+		<link rel="icon" type="image/x-icon" href="/chat/assets/favicon.ico?v=20261112" />
+		<link rel="icon" type="image/svg+xml" href="/chat/assets/favicon.svg?v=20261112" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/chat/assets/apple-touch-icon.png?v=20261112" />
+		<link rel="mask-icon" href="/chat/assets/safari-pinned-tab.svg?v=20261112" color="#5C0F97" />
+		<link rel="manifest" href="/chat/assets/site.webmanifest?v=20261112" />
+		<meta name="theme-color" content="#882BDA" />
+		<meta name="msapplication-config" content="/chat/assets/browserconfig.xml?v=20261112" />
 		<meta
 			name="description"
 			content="Join Mezon to play games, chill with friends, and build your community. Create your own customized space to chat, play, and hang out with people from around the world."
@@ -18,10 +23,10 @@
 		/>
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://mezon.ai" />
-		<meta property="og:image" itemprop="thumbnailUrl" content="https://mezon.ai/assets/images/preview.png" />
+		<meta property="og:image" itemprop="thumbnailUrl" content="https://mezon.ai/chat/assets/images/preview.png?v=20261112" />
 		<meta property="og:image:alt" content="Mezon" />
 		<meta property="og:image:width" content="1200" />
-		<meta property="og:image:height" content="675" />
+		<meta property="og:image:height" content="630" />
 		<meta name="twitter:card" content="summary" />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:site" content="@mezon.ai" />
@@ -32,7 +37,7 @@
 			name="twitter:description"
 			content="Join Mezon to play games, chill with friends, and build your community. Create your own customized space to chat, play, and hang out with people from around the world."
 		/>
-		<meta name="twitter:image" content="https://mezon.ai/assets/images/preview.png" />
+		<meta name="twitter:image" content="https://mezon.ai/chat/assets/images/preview.png?v=20261112" />
 		<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
 		<meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless" />
 		<link rel="stylesheet" href="./bootstrap/splash.css" />
@@ -111,15 +116,22 @@
 				window.addEventListener('vite:preloadError', recover);
 			})();
 		</script>
-		<script type="module" src="./bootstrap/theme-early.ts"></script>
+		<script src="/chat/assets/theme-early.js?v=20261112"></script>
 		<!-- Google MediaPipe Selfie Segmentation -->
 		<script src="https://cdn.komu.vn/npm/mediapipe/camera_utils/camera_utils.js"></script>
 		<script src="https://cdn.komu.vn/npm/mediapipe/selfie_segmentation/selfie_segmentation.js"></script>
 	</head>
 
 	<body>
-		<div id="splash-screen" class="splash-screen">
-			<div>Loading ...</div>
+		<div id="splash-screen" class="splash-screen" role="status" aria-label="Loading Mezon">
+			<img
+				class="splash-logo splash-logo-on-light"
+				src="/chat/assets/splash-logo-on-light.svg?v=20261112"
+				width="280"
+				height="52"
+				alt="Mezon"
+			/>
+			<img class="splash-logo splash-logo-on-dark" src="/chat/assets/splash-logo-on-dark.svg?v=20261112" width="280" height="52" alt="Mezon" />
 		</div>
 		<div id="root"></div>
 		<script type="module" src="./bootstrap/polyfills.ts"></script>

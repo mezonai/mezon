@@ -1,3 +1,4 @@
+import { mezonMarkOnDark, mezonMarkOnLight } from '@mezon/assets';
 import { useAuth } from '@mezon/core';
 import { authActions, useAppDispatch } from '@mezon/store';
 import { Image, MezonIcon, MzIcons24 } from '@mezon/ui';
@@ -54,12 +55,8 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 				)}
 			</div>
 			<div className="flex items-center gap-3">
-				<Link to="/developers" className="flex flex-row items-center justify-center gap-[4px]">
-					<Image
-						src={`${isDarkMode ? 'assets/images/mezon-logo-black.svg' : 'assets/images/mezon-logo-white.svg'}`}
-						width={28}
-						height={28}
-					/>
+				<Link to="/developers" className="flex flex-row items-center justify-center gap-2">
+					<Image src={isDarkMode ? mezonMarkOnDark : mezonMarkOnLight} alt="Mezon" width={28} height={28} />
 					<span className="mt-1 text-[15px] font-semibold dark:text-textPrimary text-colorTextLightMode">MEZON DEVELOPERS</span>
 				</Link>
 			</div>

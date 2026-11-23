@@ -2,7 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "../../dist/out-tsc",
-		"types": ["node", "@nx/react/typings/cssmodule.d.ts", "@nx/react/typings/image.d.ts"]
+		"types": ["node"]
 	},
 	"exclude": [
 		"jest.config.ts",
@@ -22,6 +22,7 @@
 		"src/**/*.tsx",
 		"src/**/*.json",
 		"../../libs/components/src/lib/components/Message/ChannelMessageOpt.tsx",
-		"../../libs/components/src/lib/components/MessageWithUser/lite-embeds.d.ts"
+		"../../libs/components/src/lib/components/MessageWithUser/lite-embeds.d.ts",
+		"../../libs/assets/src/typings.d.ts"
 	]
 }

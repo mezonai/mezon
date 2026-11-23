@@ -1,3 +1,4 @@
+import { mezonAppIcon } from '@mezon/assets';
 import { useAuth, useCustomNavigate, useFriends } from '@mezon/core';
 import {
 	channelsActions,
@@ -26,7 +27,7 @@ const SidebarLogoItem = () => {
 	const currentDmId = useAppSelector(selectDmGroupCurrentId);
 	const currentDmIType = useAppSelector(selectDmGroupCurrentType);
 	const logoCustom = useAppSelector(selectLogoCustom);
-	const DEFAULT_LOGO_DM = 'https://cdn.komu.vn/landing-page-mezon/logodefault.webp';
+	const DEFAULT_LOGO_DM = mezonAppIcon;
 	const setModeResponsive = useCallback(
 		(value: ModeResponsive) => {
 			dispatch(channelsActions.setModeResponsive({ clanId: currentClanId as string, mode: value }));

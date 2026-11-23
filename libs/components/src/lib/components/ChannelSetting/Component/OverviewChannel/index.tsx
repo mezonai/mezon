@@ -1,3 +1,4 @@
+import { mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
@@ -420,9 +421,9 @@ const BottomBlock = ({
 	const { t } = useTranslation('channelSetting');
 	const logoImgSrc = useMemo(() => {
 		if (appearanceTheme === 'light') {
-			return '/assets/images/channel_setting_logo_light.svg';
+			return mezonLogoOnLight;
 		}
-		return '/assets/images/channel_setting_logo_dark.svg';
+		return mezonLogoOnDark;
 	}, [appearanceTheme]);
 
 	const menu = useMemo(() => {
@@ -488,7 +489,7 @@ const BottomBlock = ({
 					<div className="text-theme-primary">{t('fields.channelHideInactivity.description')}</div>
 				</div>
 				<div className="flex justify-center pb-10">
-					<Image src={logoImgSrc} width={48} height={48} className="object-cover w-[280px]" />
+					<Image src={logoImgSrc} alt="Mezon" className="object-contain w-[280px] max-w-full h-auto" />
 				</div>
 			</div>
 		)

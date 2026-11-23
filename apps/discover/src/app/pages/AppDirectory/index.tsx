@@ -1,3 +1,4 @@
+import { mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import { AppDirectoryList } from '@mezon/components';
 import { selectTheme } from '@mezon/store';
 import { Button, Icons, Image, MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
@@ -67,12 +68,10 @@ const AppDirectory = () => {
 						<div className="block1-left flex-1 flex flex-col gap-[30px]">
 							<div className="logo flex gap-[8px] items-center">
 								<Image
-									src={`assets/images/${appearanceTheme === 'light' ? 'mezon-logo-white.svg' : 'mezon-logo-black.svg'}`}
-									width={48}
-									height={48}
-									className="w-10 aspect-square object-cover"
+									src={appearanceTheme === 'light' ? mezonLogoOnLight : mezonLogoOnDark}
+									alt="Mezon"
+									className="h-6 w-auto object-contain"
 								/>
-								<div className="uppercase font-bold tracking-wide text-[20px] dark:text-textDarkTheme text-textLightTheme">Mezon</div>
 								<div className="font-semibold">{t('appDirectory.title')}</div>
 							</div>
 							<div className="heading uppercase text-[44px] font-extrabold dark:text-textDarkTheme text-textLightTheme max-lg:text-center">
