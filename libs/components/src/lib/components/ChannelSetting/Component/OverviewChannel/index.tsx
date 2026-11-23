@@ -13,6 +13,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { ThemeManager } from '@mezon/themes';
 import { Menu as Dropdown, Image, InputField, MezonIcon, MzIcons20, TextArea } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ValidateSpecialCharacters, ValidateURL, checkIsThread, generateE2eId } from '@mezon/utils';
@@ -403,7 +404,7 @@ interface IBottomBlockProps {
 
 const BottomBlock = ({
 	slowModeValues,
-	appearanceTheme,
+	appearanceTheme = 'dark',
 	slowModeDropdown,
 	setSlowDropdown,
 	hideInactivityTimes,
@@ -420,7 +421,7 @@ const BottomBlock = ({
 }: IBottomBlockProps) => {
 	const { t } = useTranslation('channelSetting');
 	const logoImgSrc = useMemo(() => {
-		if (appearanceTheme === 'light') {
+		if (ThemeManager.isLightTheme(appearanceTheme)) {
 			return mezonLogoOnLight;
 		}
 		return mezonLogoOnDark;
