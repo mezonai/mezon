@@ -1,5 +1,6 @@
 import { isMediaTypeNotSupported } from './file';
 import { FragmentedMp4Indexer, fragmentedMp4InitEnd } from './fragmentedMp4';
+import type * as VideoSource from './videoSource';
 import {
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
@@ -32,6 +33,18 @@ afterEach(() => {
 	delete process.env.NX_MEZON_CDN_URL;
 	jest.restoreAllMocks();
 });
+
+function loadVideoSource(nxEnv: string): typeof VideoSource {
+	const original = process.env.NX_ENV;
+	process.env.NX_ENV = nxEnv;
+	let videoSource = {} as typeof VideoSource;
+	jest.isolateModules(() => {
+		videoSource = jest.requireActual('./videoSource');
+	});
+	if (original === undefined) delete process.env.NX_ENV;
+	else process.env.NX_ENV = original;
+	return videoSource;
+}
 
 it('only treats files on the transcoding hosts as possibly converted', () => {
 	expect(mayBeTranscodedVideo(VIDEO)).toBe(true);
@@ -177,6 +190,7 @@ it('builds the playlist of the file ingest from the origin and path of the attac
 });
 
 it('takes the configured CDN as a host with HLS, the dev CDN among others', () => {
+	const { mayBeTranscodedVideo, getHlsIndexPlaylistUrl, getHlsMasterPlaylistUrl } = loadVideoSource('production');
 	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(false);
 	expect(getHlsIndexPlaylistUrl(DEV_VIDEO)).toBeUndefined();
 
@@ -195,9 +209,11 @@ it('takes the configured CDN as a host with HLS, the dev CDN among others', () =
 	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(false);
 });
 
-it('leaves other containers on the configured CDN as files, since only the prod media server converts them', () => {
+it('plays the containers the media server converts on the dev CDN only in development', () => {
+	const devMovie = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_movie.mkv';
 	process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
-	expect(isTranscodedVideoContainer('https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_movie.mkv')).toBe(false);
+	expect(loadVideoSource('production').isTranscodedVideoContainer(devMovie)).toBe(false);
+	expect(loadVideoSource('development').isTranscodedVideoContainer(devMovie)).toBe(true);
 	expect(isTranscodedVideoContainer('https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_movie.mkv')).toBe(true);
 });
 
