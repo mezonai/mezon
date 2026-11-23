@@ -28,7 +28,7 @@ const SortOptionRow = ({ optionValue, label, selected, onSelect }: SortOptionRow
 			role="radio"
 			aria-checked={selected}
 			onClick={handleClick}
-			className={`w-full flex items-center justify-between gap-4 px-3 py-2 rounded-md text-[14px] font-medium text-left cursor-pointer transition-colors ${selected ? 'bg-active-button text-theme-primary-active' : 'text-theme-primary text-theme-primary-hover bg-item-hover'}`}
+			className={`w-full flex items-center justify-between gap-4 px-3 py-2 rounded-md text-[14px] font-medium text-left cursor-pointer transition-colors ${selected ? '[background:var(--bg-active-button)] text-theme-primary-active' : 'text-theme-primary text-theme-primary-hover bg-item-hover'}`}
 		>
 			<span className="whitespace-nowrap">{label}</span>
 			<span
@@ -116,7 +116,7 @@ const FriendSort = ({ value, onChange }: FriendSortProps) => {
 				aria-expanded={open}
 				aria-haspopup="true"
 				data-e2e={generateE2eId('friend_page.button.sort')}
-				className={`h-[44px] shrink-0 px-4 rounded-lg border-theme-primary text-theme-primary-hover bg-item-hover flex items-center gap-2 text-[15px] font-medium whitespace-nowrap cursor-pointer transition-colors ${open ? 'bg-active-button text-theme-primary-active' : 'bg-theme-input-primary text-theme-primary'}`}
+				className={`h-[44px] shrink-0 px-4 rounded-lg border-theme-primary text-theme-primary-hover bg-item-hover flex items-center gap-2 text-[15px] font-medium whitespace-nowrap cursor-pointer transition-colors ${open ? '[background:var(--bg-active-button)] text-theme-primary-active' : '[background:var(--bg-primary)] text-theme-primary'}`}
 			>
 				<MezonIcon icon={MzIcons20.mzSwap} className="text-[var(--mz-icon)] rotate-90 shrink-0" />
 				<span>{t('sort.label')}</span>
