@@ -83,5 +83,14 @@
 		"online": "Nessuno online trovato per la tua ricerca. Prova un altro nome.",
 		"pending": "Nessuna richiesta di amicizia trovata. Controlla il nome o riprova.",
 		"block": "Nessun utente bloccato trovato per la tua ricerca. Prova un altro nome."
+	},
+	"sort": {
+		"label": "Ordina",
+		"recent": "Interazione recente",
+		"name": "Nome (A–Z)"
+	},
+	"sections": {
+		"recent": "Recenti",
+		"others": "Altri amici"
 	}
 }
