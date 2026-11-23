@@ -19,6 +19,7 @@ import {
 	selectDataReferences,
 	selectEmojiObjSuggestion,
 	selectIdMessageRefEdit,
+	selectIsProUser,
 	selectMemberIdsByChannelId,
 	selectOpenEditMessageState,
 	selectOpenThreadMessageState,
@@ -49,8 +50,7 @@ import {
 	GENERAL_INPUT_ID,
 	ID_MENTION_HERE,
 	IS_SAFARI,
-	MIN_THRESHOLD_CHARS,
-	PREFIX_MESSAGE_LENGTH,
+	MESSAGE_FILE_LIMIT_MULTIPLIER,
 	QUICK_MENU_TYPE,
 	RECENT_EMOJI_CATEGORY,
 	SubPanelName,
@@ -59,8 +59,10 @@ import {
 	ThreadStatus,
 	blankReferenceObj,
 	checkIsThread,
+	countMessageChars,
 	extractCanvasIdsFromText,
 	filterEmptyArrays,
+	getMessageCharLimit,
 	isRealClanId,
 	processEntitiesDirectly,
 	searchMentionsHashtag
@@ -70,9 +72,11 @@ import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ReactElement, RefObject } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { CommandSuggestion } from './CommandSuggestion';
+import LongMessageModal from './LongMessageModal';
 import Mention, { type MentionData } from './Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
@@ -88,6 +92,7 @@ import {
 	useRemoteMentionSearch
 } from './hooks';
 import parseHtmlAsFormattedToText, { ApiMessageEntityTypes } from './parseHtmlAsFormattedText';
+import { sendMessageInParts } from './sendLongMessage';
 import { getCanvasTitles } from './utils/canvas';
 
 interface SlashCommand extends MentionData {
@@ -204,6 +209,54 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const isDm = props.mode === ChannelStreamMode.STREAM_MODE_DM || props.mode === ChannelStreamMode.STREAM_MODE_GROUP;
 
 	const userProfile = useSelector(selectAllAccount);
+	const isProUser = useAppSelector((state) => selectIsProUser(state, userProfile?.user?.id));
+	const messageCharLimit = getMessageCharLimit({ isPro: isProUser });
+	const fileCharLimit = messageCharLimit * MESSAGE_FILE_LIMIT_MULTIPLIER;
+
+	const pendingLongMessageRef = useRef<{ text: string; charCount: number; clearDraft: boolean } | null>(null);
+	const [openLongMessageModal, closeLongMessageModal] = useModal(() => {
+		const pending = pendingLongMessageRef.current;
+		if (!pending) return null;
+		const sizeLabel = `${(new Blob([pending.text]).size / 1024).toFixed(1)} KB`;
+		const handleCancel = () => {
+			pendingLongMessageRef.current = null;
+			closeLongMessageModal();
+		};
+		const handleConfirm = () => {
+			const current = pendingLongMessageRef.current;
+			pendingLongMessageRef.current = null;
+			closeLongMessageModal();
+			if (!current || !props.handleConvertToFile) {
+				return;
+			}
+			props.handleConvertToFile(current.text);
+			if (current.clearDraft) {
+				updateDraft?.({
+					valueTextInput: '',
+					content: '',
+					mentionRaw: [],
+					entities: []
+				});
+			}
+		};
+		return (
+			<LongMessageModal
+				charCount={pending.charCount}
+				limit={messageCharLimit}
+				sizeLabel={sizeLabel}
+				onConfirm={handleConfirm}
+				onCancel={handleCancel}
+			/>
+		);
+	}, [messageCharLimit, props.handleConvertToFile, updateDraft]);
+
+	const openLongMessageConfirm = useCallback(
+		(text: string, charCount: number, clearDraft: boolean) => {
+			pendingLongMessageRef.current = { text, charCount, clearDraft };
+			openLongMessageModal();
+		},
+		[openLongMessageModal]
+	);
 	const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
 	const allChannels = useAppSelector((state) => selectDataMentions(state, isDm));
 	const { setOpenThreadMessageState, checkAttachment } = useReference(scopeId || '');
@@ -278,7 +331,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			currentChannel,
 			setOpenThreadMessageState,
 			updateDraft,
-			setSubPanelActive
+			setSubPanelActive,
+			messageCharLimit,
+			fileCharLimit,
+			isCreatingThread,
+			currTopicId,
+			openLongMessageConfirm
 		]
 	);
 
@@ -402,22 +460,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					payload.cvtt = canvasTitles;
 				}
 
-				const removeEmptyOnPayload = filterEmptyArrays(payload);
+				const charCount = countMessageChars(payload.t ?? '');
 
-				const encoder = new TextEncoder();
-				const payloadJson = JSON.stringify(removeEmptyOnPayload);
-				const utf8Bytes = encoder.encode(payloadJson);
+				if (charCount > fileCharLimit && props.handleConvertToFile) {
+					openLongMessageConfirm(payload.t ?? '', charCount, true);
+					return;
+				}
 
-				if (utf8Bytes.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
-					setIsPasteMulti(true);
-					props.handleConvertToFile(payload.t ?? '');
-					toast.info(t('convertLongToFile'));
-					updateDraft?.({
-						valueTextInput: '',
-						content: '',
-						mentionRaw: [],
-						entities: []
-					});
+				if (charCount > messageCharLimit && (isCreatingThread || (props.isTopic && !currTopicId))) {
+					toast.error(t('channelTopbar:createThread.toast.messageLimitExceeded', { limit: messageCharLimit }));
 					return;
 				}
 
@@ -428,51 +479,63 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				}
 
 				if (isReplyOnChannel) {
-					props.onSend(
-						filterEmptyArrays(payload),
-						mentionList,
-						attachmentData,
-						[dataReferences],
-						{ nameValueThread, isPrivate },
-						anonymousMessage,
-						mentionEveryone,
-						undefined,
-						undefined,
-						ephemeralTargetUserId || undefined,
-						usersNotExistingInThread
+					sendMessageInParts(
+						props.onSend,
+						[
+							filterEmptyArrays(payload),
+							mentionList,
+							attachmentData,
+							[dataReferences],
+							{ nameValueThread, isPrivate },
+							anonymousMessage,
+							mentionEveryone,
+							undefined,
+							undefined,
+							ephemeralTargetUserId || undefined,
+							usersNotExistingInThread
+						],
+						messageCharLimit
 					);
 					setMentionEveryone(false);
 					dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
 				} else if (isSendMessageOnThreadBox) {
-					const sent = props.onSend(
-						filterEmptyArrays(payload),
-						mentionList,
-						attachmentData,
-						valueThread?.references,
-						{ nameValueThread, isPrivate },
-						anonymousMessage,
-						mentionEveryone,
-						undefined,
-						undefined,
-						ephemeralTargetUserId || undefined,
-						usersNotExistingInThread
+					const sent = sendMessageInParts(
+						props.onSend,
+						[
+							filterEmptyArrays(payload),
+							mentionList,
+							attachmentData,
+							valueThread?.references,
+							{ nameValueThread, isPrivate },
+							anonymousMessage,
+							mentionEveryone,
+							undefined,
+							undefined,
+							ephemeralTargetUserId || undefined,
+							usersNotExistingInThread
+						],
+						messageCharLimit
 					);
 					if (isCreatingThread && (await sent) === false) {
 						return;
 					}
 				} else if (isReplyOnTopic) {
-					props.onSend(
-						filterEmptyArrays(payload),
-						mentionList,
-						attachmentData,
-						[dataReferencesTopic],
-						{ nameValueThread, isPrivate },
-						anonymousMessage,
-						mentionEveryone,
-						undefined,
-						undefined,
-						ephemeralTargetUserId || undefined,
-						usersNotExistingInThread
+					sendMessageInParts(
+						props.onSend,
+						[
+							filterEmptyArrays(payload),
+							mentionList,
+							attachmentData,
+							[dataReferencesTopic],
+							{ nameValueThread, isPrivate },
+							anonymousMessage,
+							mentionEveryone,
+							undefined,
+							undefined,
+							ephemeralTargetUserId || undefined,
+							usersNotExistingInThread
+						],
+						messageCharLimit
 					);
 					setMentionEveryone(false);
 					dispatch(
@@ -482,18 +545,22 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 						})
 					);
 				} else {
-					const sent = props.onSend(
-						filterEmptyArrays(payload),
-						mentionList,
-						attachmentData,
-						undefined,
-						{ nameValueThread, isPrivate },
-						anonymousMessage,
-						mentionEveryone,
-						undefined,
-						undefined,
-						ephemeralTargetUserId || undefined,
-						usersNotExistingInThread
+					const sent = sendMessageInParts(
+						props.onSend,
+						[
+							filterEmptyArrays(payload),
+							mentionList,
+							attachmentData,
+							undefined,
+							{ nameValueThread, isPrivate },
+							anonymousMessage,
+							mentionEveryone,
+							undefined,
+							undefined,
+							ephemeralTargetUserId || undefined,
+							usersNotExistingInThread
+						],
+						messageCharLimit
 					);
 					if (isCreatingThread && (await sent) === false) {
 						return;
@@ -557,22 +624,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				payload.cvtt = canvasTitles;
 			}
 
-			const removeEmptyOnPayload = filterEmptyArrays(payload);
-			const encoder = new TextEncoder();
-			const payloadJson = JSON.stringify(removeEmptyOnPayload);
-			const utf8Bytes = encoder.encode(payloadJson);
+			const charCount = countMessageChars(payload.t ?? '');
 
-			if (utf8Bytes.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
-				setIsPasteMulti(true);
-				props.handleConvertToFile(payload.t ?? '');
-				toast.info(t('convertLongToFile'));
-				updateDraft?.({
-					valueTextInput: displayMarkup,
-					content: displayPlaintext,
-					mentionRaw: [],
-					entities: []
-				});
+			if (charCount > fileCharLimit && props.handleConvertToFile) {
+				openLongMessageConfirm(payload.t ?? '', charCount, true);
+				return;
+			}
 
+			if (charCount > messageCharLimit && (isCreatingThread || (props.isTopic && !currTopicId))) {
+				toast.error(t('channelTopbar:createThread.toast.messageLimitExceeded', { limit: messageCharLimit }));
 				return;
 			}
 
@@ -619,17 +679,21 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			}
 
 			if (isReplyOnChannel) {
-				props.onSend(
-					filterEmptyArrays(payload),
-					isPasteMulti ? mentionUpdated : [],
-					attachmentData,
-					[dataReferences],
-					{ nameValueThread, isPrivate },
-					anonymousMessage,
-					mentionEveryone,
-					undefined,
-					undefined,
-					ephemeralTargetUserId || undefined
+				sendMessageInParts(
+					props.onSend,
+					[
+						filterEmptyArrays(payload),
+						isPasteMulti ? mentionUpdated : [],
+						attachmentData,
+						[dataReferences],
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					],
+					messageCharLimit
 				);
 
 				setMentionEveryone(false);
@@ -638,17 +702,21 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isSendMessageOnThreadBox) {
-				const sent = props.onSend(
-					filterEmptyArrays(payload),
-					isPasteMulti ? mentionUpdated : [],
-					attachmentData,
-					valueThread?.references,
-					{ nameValueThread, isPrivate },
-					anonymousMessage,
-					mentionEveryone,
-					undefined,
-					undefined,
-					ephemeralTargetUserId || undefined
+				const sent = sendMessageInParts(
+					props.onSend,
+					[
+						filterEmptyArrays(payload),
+						isPasteMulti ? mentionUpdated : [],
+						attachmentData,
+						valueThread?.references,
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					],
+					messageCharLimit
 				);
 				if (isCreatingThread && (await sent) === false) {
 					return;
@@ -672,17 +740,21 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isReplyOnTopic) {
-				props.onSend(
-					filterEmptyArrays(payload),
-					[],
-					attachmentData,
-					[dataReferencesTopic],
-					{ nameValueThread, isPrivate },
-					anonymousMessage,
-					mentionEveryone,
-					undefined,
-					undefined,
-					ephemeralTargetUserId || undefined
+				sendMessageInParts(
+					props.onSend,
+					[
+						filterEmptyArrays(payload),
+						[],
+						attachmentData,
+						[dataReferencesTopic],
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					],
+					messageCharLimit
 				);
 				setMentionEveryone(false);
 				dispatch(
@@ -695,17 +767,21 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				setMentionData([]);
 				dispatch(threadsActions.setIsPrivate(0));
 			} else {
-				const sent = props.onSend(
-					filterEmptyArrays(payload),
-					isPasteMulti ? mentionUpdated : [],
-					attachmentData,
-					undefined,
-					{ nameValueThread, isPrivate },
-					anonymousMessage,
-					mentionEveryone,
-					undefined,
-					undefined,
-					ephemeralTargetUserId || undefined
+				const sent = sendMessageInParts(
+					props.onSend,
+					[
+						filterEmptyArrays(payload),
+						isPasteMulti ? mentionUpdated : [],
+						attachmentData,
+						undefined,
+						{ nameValueThread, isPrivate },
+						anonymousMessage,
+						mentionEveryone,
+						undefined,
+						undefined,
+						ephemeralTargetUserId || undefined
+					],
+					messageCharLimit
 				);
 				if (isCreatingThread && (await sent) === false) {
 					return;
@@ -768,7 +844,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			isRemoteMember,
 			currTopicId,
 			anonymousMode,
-			tMessage
+			tMessage,
+			fileCharLimit,
+			messageCharLimit,
+			isCreatingThread,
+			openLongMessageConfirm,
+			t
 		]
 	);
 	const attachmentData = useMemo(() => {
@@ -839,15 +920,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	const cachedLinkOgp = useRef<string>('');
 	const handleLongTextPaste = useCallback(
 		(pastedText: string, event: React.ClipboardEvent<HTMLDivElement>) => {
-			if (!draftRequest?.content?.trim() && pastedText.length > MIN_THRESHOLD_CHARS && props.handleConvertToFile) {
+			const pastedCharCount = countMessageChars(pastedText);
+			if (!draftRequest?.content?.trim() && pastedCharCount > fileCharLimit && props.handleConvertToFile) {
 				event.preventDefault();
-				props.handleConvertToFile(pastedText);
-				toast.info(t('convertLongToFile'));
+				openLongMessageConfirm(pastedText, pastedCharCount, false);
 				return true;
 			}
 			return false;
 		},
-		[draftRequest?.content, props.handleConvertToFile, t]
+		[draftRequest?.content, fileCharLimit, props.handleConvertToFile, openLongMessageConfirm]
 	);
 
 	const onChangeMentionInput = (html: string) => {
@@ -910,13 +991,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setIsPasteMulti(false);
 		}
 
+		const pastedCharCount = countMessageChars(pastedContent);
 		if (
 			props.handleConvertToFile !== undefined &&
-			newPlainTextValue?.length > MIN_THRESHOLD_CHARS &&
-			pastedContent?.length > MIN_THRESHOLD_CHARS
+			countMessageChars(newPlainTextValue || '') > fileCharLimit &&
+			pastedCharCount > fileCharLimit
 		) {
-			props.handleConvertToFile(pastedContent);
-			toast.info(t('convertLongToFile'));
+			openLongMessageConfirm(pastedContent, pastedCharCount, false);
 			updateDraft?.({
 				valueTextInput: previousValue || '',
 				content: previousPlainText || '',
@@ -1068,6 +1149,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		dispatch
 	});
 
+	const isCreatingTopic = Boolean(props.isTopic && !currTopicId);
+	const draftContent = draftRequest?.content ?? '';
+	const isOverFileLimit =
+		Boolean(props.handleConvertToFile) && draftContent.length > fileCharLimit && countMessageChars(draftContent) > fileCharLimit;
+	const isTopicOverLimit = isCreatingTopic && draftContent.length > messageCharLimit && countMessageChars(draftContent) > messageCharLimit;
+	const keepTextOnSend = Boolean(isCreatingThread || isOverFileLimit || isTopicOverLimit);
+
 	return (
 		<div
 			className={`contain-layout relative bg-theme-surface rounded-lg ${props.isThread && !props.isThreadbox ? 'border-theme-primary' : ''}`}
@@ -1103,7 +1191,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					currentChannelId={props.currentChannelId}
 					mentionUsers={props.listMentions}
 					allowEmptySend={props.allowEmptySend}
-					keepTextOnSend={isCreatingThread}
+					keepTextOnSend={keepTextOnSend}
 				>
 					<Mention
 						trigger="@"
@@ -1256,11 +1344,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				isThreadbox={props.isThreadbox || false}
 				onEmojiSelect={insertEmojiDirectly}
 			/>
-			{draftRequest?.content && draftRequest.content.length > MIN_THRESHOLD_CHARS - PREFIX_MESSAGE_LENGTH && (
-				<div className="w-16 text-red-300 bottom-0 right-0 absolute">
-					{MIN_THRESHOLD_CHARS - PREFIX_MESSAGE_LENGTH - draftRequest.content.length}
-				</div>
-			)}
 		</div>
 	);
 });
