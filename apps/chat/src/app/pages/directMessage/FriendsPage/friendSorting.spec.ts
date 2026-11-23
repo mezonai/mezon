@@ -42,13 +42,13 @@ const makeMeta = (id: string, lastSentTimestamp: number): ChannelMetaEntity => (
 describe('getFriendInteractionTimes', () => {
 	it('takes the max timestamp per peer across 1-1 DMs and prefers dmMeta over last_sent_message', () => {
 		const directs = [
-			makeDirect('dm-1', { user_ids: ['me', 'u1'], last_sent_message: { timestamp_seconds: 100 } }),
-			makeDirect('dm-2', { user_ids: ['me', 'u1'], last_sent_message: { timestamp_seconds: 500 } }),
-			makeDirect('dm-3', { user_ids: ['u2'], last_sent_message: { timestamp_seconds: 250 } }),
+			makeDirect('dm-1', { user_ids: ['me', 'u1'], last_sent_message: { id: 'm1', timestamp_seconds: 100 } }),
+			makeDirect('dm-2', { user_ids: ['me', 'u1'], last_sent_message: { id: 'm2', timestamp_seconds: 500 } }),
+			makeDirect('dm-3', { user_ids: ['u2'], last_sent_message: { id: 'm3', timestamp_seconds: 250 } }),
 			makeDirect('grp-1', {
 				type: ChannelType.CHANNEL_TYPE_GROUP,
 				user_ids: ['me', 'u1', 'u3'],
-				last_sent_message: { timestamp_seconds: 9999 }
+				last_sent_message: { id: 'm4', timestamp_seconds: 9999 }
 			})
 		];
 		const dmMeta = {
@@ -67,10 +67,10 @@ describe('getFriendInteractionTimes', () => {
 
 	it('falls back to last_sent_message when meta is missing or invalid and ignores NaN, Infinity, or <= 0 timestamps', () => {
 		const directs = [
-			makeDirect('dm-nan', { user_ids: ['u1'], last_sent_message: { timestamp_seconds: 300 } }),
-			makeDirect('dm-zero', { user_ids: ['u2'], last_sent_message: { timestamp_seconds: 0 } }),
-			makeDirect('dm-neg', { user_ids: ['u3'], last_sent_message: { timestamp_seconds: -5 } }),
-			makeDirect('dm-inf', { user_ids: ['u4'], last_sent_message: { timestamp_seconds: Number.POSITIVE_INFINITY } })
+			makeDirect('dm-nan', { user_ids: ['u1'], last_sent_message: { id: 'm5', timestamp_seconds: 300 } }),
+			makeDirect('dm-zero', { user_ids: ['u2'], last_sent_message: { id: 'm6', timestamp_seconds: 0 } }),
+			makeDirect('dm-neg', { user_ids: ['u3'], last_sent_message: { id: 'm7', timestamp_seconds: -5 } }),
+			makeDirect('dm-inf', { user_ids: ['u4'], last_sent_message: { id: 'm8', timestamp_seconds: Number.POSITIVE_INFINITY } })
 		];
 		const dmMeta = {
 			'dm-nan': makeMeta('dm-nan', Number.NaN),
@@ -85,6 +85,28 @@ describe('getFriendInteractionTimes', () => {
 		expect(result.has('u2')).toBe(false);
 		expect(result.has('u3')).toBe(false);
 		expect(result.has('u4')).toBe(false);
+	});
+
+	it('ignores last_sent_message fallback when message id is missing, empty, or "0"', () => {
+		const directs = [
+			makeDirect('dm-no-id', { user_ids: ['me', 'u1'], last_sent_message: { timestamp_seconds: 900 } }),
+			makeDirect('dm-empty-id', { user_ids: ['me', 'u2'], last_sent_message: { id: '', timestamp_seconds: 900 } }),
+			makeDirect('dm-zero-id', { user_ids: ['me', 'u3'], last_sent_message: { id: '0', timestamp_seconds: 900 } }),
+			makeDirect('dm-real-id', { user_ids: ['me', 'u4'], last_sent_message: { id: 'm-real', timestamp_seconds: 400 } }),
+			makeDirect('dm-meta-wins', { user_ids: ['me', 'u5'], last_sent_message: { timestamp_seconds: 900 } })
+		];
+		const dmMeta = {
+			'dm-empty-id': makeMeta('dm-empty-id', 0),
+			'dm-meta-wins': makeMeta('dm-meta-wins', 700)
+		};
+
+		const result = getFriendInteractionTimes(directs, dmMeta, 'me');
+
+		expect(result.has('u1')).toBe(false);
+		expect(result.has('u2')).toBe(false);
+		expect(result.has('u3')).toBe(false);
+		expect(result.get('u4')).toBe(400);
+		expect(result.get('u5')).toBe(700);
 	});
 });
 

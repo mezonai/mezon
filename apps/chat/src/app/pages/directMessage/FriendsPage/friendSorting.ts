@@ -30,7 +30,9 @@ export const getFriendInteractionTimes = (
 			continue;
 		}
 		const metaTime = toValidTimestamp(dmMeta?.[direct.id]?.lastSentTimestamp);
-		const fallbackTime = toValidTimestamp(direct.last_sent_message?.timestamp_seconds);
+		const lastSentMessageId = direct.last_sent_message?.id;
+		const hasRealLastSentMessage = Boolean(lastSentMessageId && lastSentMessageId !== '0');
+		const fallbackTime = hasRealLastSentMessage ? toValidTimestamp(direct.last_sent_message?.timestamp_seconds) : 0;
 		const timestamp = metaTime || fallbackTime;
 		if (!timestamp) {
 			continue;

@@ -1,6 +1,7 @@
 import { Menu, MezonIcon, MzIcons20 } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import type { FocusEvent, KeyboardEvent } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { FriendSortOrder } from './friendSorting';
 
@@ -44,19 +45,6 @@ const FriendSort = ({ value, onChange }: FriendSortProps) => {
 	const { t } = useTranslation('friendsPage');
 	const [open, setOpen] = useState(false);
 
-	useEffect(() => {
-		if (!open) return;
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
-				setOpen(false);
-			}
-		};
-		window.addEventListener('keydown', handleKeyDown);
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [open]);
-
 	const handleSelect = useCallback(
 		(nextValue: FriendSortOrder) => {
 			onChange(nextValue);
@@ -69,14 +57,48 @@ const FriendSort = ({ value, onChange }: FriendSortProps) => {
 		setOpen(visible);
 	}, []);
 
+	const handleRadioGroupFocus = useCallback((event: FocusEvent<HTMLDivElement>) => {
+		if (event.target !== event.currentTarget) {
+			return;
+		}
+		const target =
+			event.currentTarget.querySelector<HTMLButtonElement>('[role="radio"][aria-checked="true"]') ||
+			event.currentTarget.querySelector<HTMLButtonElement>('[role="radio"]');
+		target?.focus();
+	}, []);
+
+	const handleRadioGroupKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+			return;
+		}
+		const radios = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
+		if (radios.length === 0) {
+			return;
+		}
+		event.preventDefault();
+		const activeElement = event.currentTarget.ownerDocument.activeElement;
+		const currentIndex = radios.findIndex((radio) => radio === activeElement);
+		const delta = event.key === 'ArrowDown' ? 1 : -1;
+		const fallbackIndex = event.key === 'ArrowDown' ? 0 : radios.length - 1;
+		const nextIndex = currentIndex < 0 ? fallbackIndex : (currentIndex + delta + radios.length) % radios.length;
+		radios[nextIndex]?.focus();
+	}, []);
+
 	const menu = useMemo(
 		() => (
-			<div role="radiogroup" aria-label={t('sort.label')} className="flex flex-col gap-1">
+			<div
+				role="radiogroup"
+				tabIndex={-1}
+				aria-label={t('sort.label')}
+				onFocus={handleRadioGroupFocus}
+				onKeyDown={handleRadioGroupKeyDown}
+				className="flex flex-col gap-1"
+			>
 				<SortOptionRow optionValue="recent" label={t('sort.recent')} selected={value === 'recent'} onSelect={handleSelect} />
 				<SortOptionRow optionValue="name" label={t('sort.name')} selected={value === 'name'} onSelect={handleSelect} />
 			</div>
 		),
-		[handleSelect, t, value]
+		[handleRadioGroupFocus, handleRadioGroupKeyDown, handleSelect, t, value]
 	);
 
 	return (
@@ -94,7 +116,7 @@ const FriendSort = ({ value, onChange }: FriendSortProps) => {
 				aria-expanded={open}
 				aria-haspopup="true"
 				data-e2e={generateE2eId('friend_page.button.sort')}
-				className={`h-[44px] shrink-0 px-4 rounded-lg border-theme-primary bg-theme-input-primary text-theme-primary-hover bg-item-hover flex items-center gap-2 text-[15px] font-medium whitespace-nowrap cursor-pointer transition-colors ${open ? 'bg-active-button text-theme-primary-active' : 'text-theme-primary'}`}
+				className={`h-[44px] shrink-0 px-4 rounded-lg border-theme-primary text-theme-primary-hover bg-item-hover flex items-center gap-2 text-[15px] font-medium whitespace-nowrap cursor-pointer transition-colors ${open ? 'bg-active-button text-theme-primary-active' : 'bg-theme-input-primary text-theme-primary'}`}
 			>
 				<MezonIcon icon={MzIcons20.mzSwap} className="text-[var(--mz-icon)] rotate-90 shrink-0" />
 				<span>{t('sort.label')}</span>

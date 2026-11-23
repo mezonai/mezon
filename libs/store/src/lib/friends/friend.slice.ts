@@ -286,11 +286,15 @@ export const applyFriendStateUpdated = createAsyncThunk(
 		if (user.state !== EStateFriend.FRIEND && user.state !== EStateFriend.OTHER_PENDING && user.state !== EStateFriend.MY_PENDING) {
 			return;
 		}
+		const state = thunkAPI.getState() as RootState;
+		const existing = state.friends?.entities?.[user.user_id];
+		const shouldStampTime = user.state === EStateFriend.FRIEND && existing?.state !== EStateFriend.FRIEND;
 		thunkAPI.dispatch(
 			friendsActions.upsertFriend({
 				state: user.state,
 				id: user.user_id,
 				source_id: myId,
+				...(shouldStampTime ? { update_time: new Date().toISOString() } : {}),
 				user: {
 					id: user.user_id,
 					username: user.username,
