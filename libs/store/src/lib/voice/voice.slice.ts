@@ -137,6 +137,7 @@ export interface VoiceState {
 	isPiPMode?: boolean;
 	openPopOut?: boolean;
 	openChatBox?: boolean;
+	externalChatUnread: number;
 	externalGroup?: boolean;
 	presenceRevisionByClan: Record<string, number>;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
@@ -692,6 +693,7 @@ export const initialVoiceState: VoiceState = {
 	isPiPMode: false,
 	openPopOut: false,
 	openChatBox: false,
+	externalChatUnread: 0,
 	externalGroup: false,
 	presenceRevisionByClan: {},
 	listInVoiceStatus: {},
@@ -901,6 +903,7 @@ export const voiceSlice = createSlice({
 			state.breakoutInvite = null;
 			state.breakoutParents = [];
 			state.breakoutPending = false;
+			state.externalChatUnread = 0;
 		},
 		syncHostedBreakoutsOwner: (state, action: PayloadAction<string | null>) => {
 			const nextOwnerId = action.payload || null;
@@ -1008,6 +1011,14 @@ export const voiceSlice = createSlice({
 		},
 		setToggleChatBox: (state) => {
 			state.openChatBox = !state.openChatBox;
+			if (state.openChatBox) {
+				state.externalChatUnread = 0;
+			}
+		},
+		noteExternalChatMessage: (state) => {
+			if (!state.openChatBox) {
+				state.externalChatUnread += 1;
+			}
 		},
 		setExternalGroup: (state) => {
 			state.externalGroup = true;
@@ -1288,6 +1299,7 @@ export const selectVoiceOpenPopOut = createSelector(getVoiceState, (state) => st
 export const selectGuestAccessToken = createSelector(getVoiceState, (state) => state.guestAccessToken);
 export const selectGuestUserId = createSelector(getVoiceState, (state) => state.guestUserId);
 export const selectOpenExternalChatBox = createSelector(getVoiceState, (state) => state.openChatBox);
+export const selectExternalChatUnread = createSelector(getVoiceState, (state) => state.externalChatUnread);
 export const selectBreakoutRoom = createSelector(getVoiceState, (state) => state.breakoutRoom);
 export const selectBreakoutInvite = createSelector(getVoiceState, (state) => state.breakoutInvite);
 export const selectBreakoutParents = createSelector(getVoiceState, (state) => state.breakoutParents);

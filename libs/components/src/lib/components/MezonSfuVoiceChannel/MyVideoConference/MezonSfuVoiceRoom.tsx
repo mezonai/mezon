@@ -10,6 +10,7 @@ import {
 	selectEntitesUserClans,
 	selectMemberByIdAndClanId,
 	selectNoiseSuppressionEnabled,
+	selectOpenExternalChatBox,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
@@ -63,7 +64,7 @@ import { useRecordingBroadcast } from '../Recording/useRecordingBroadcast';
 import { useSfuCallRecorder } from '../Recording/useSfuCallRecorder';
 import type { SfuConnectionState as ConnectionState, SfuRemoteMedia as RemoteMedia, SfuPeer, SfuSignalMessage as SignalMessage } from '../types';
 import type { ExternalChatRef } from './ChatMeeting';
-import ChatStreamExternal from './ChatMeeting';
+import ChatStreamExternal, { ExternalChatUnreadBadge } from './ChatMeeting';
 import { SfuFocusLayoutContainer } from './FocusLayout/SfuFocusLayoutContainer';
 import { SfuGridLayoutContainer } from './GridLayout/SfuGridLayoutContainer';
 import { useSfuGridLayout, useSfuPagination } from './GridLayout/useSfuGridLayout';
@@ -77,6 +78,7 @@ import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { ScreenAnnotationCompositor, ScreenDrawLayer, useScreenDraw, type ScreenDrawSession } from './ScreenAnnotation';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
 import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
+import { notifyExternalChatMessage } from './externalChatNotification';
 import { meetTokenNeedsRefresh } from './meetToken';
 import {
 	canReactivateMid,
@@ -1581,9 +1583,19 @@ export function MezonSfuVoiceRoom({
 		});
 	}, []);
 	const chatRef = useRef<ExternalChatRef>(null);
-	const handleAddMessage = useCallback((message: string) => {
-		chatRef.current?.setMessages((prev) => [...prev, message]);
-	}, []);
+	const openExternalChat = useCallback(() => {
+		if (!selectOpenExternalChatBox(getStore().getState())) {
+			dispatch(voiceActions.setToggleChatBox());
+		}
+	}, [dispatch]);
+	const handleAddMessage = useCallback(
+		(message: string) => {
+			chatRef.current?.setMessages((prev) => [...prev, message]);
+			dispatch(voiceActions.noteExternalChatMessage());
+			notifyExternalChatMessage(message, `external-meeting-chat-${roomId}`, openExternalChat);
+		},
+		[dispatch, openExternalChat, roomId]
+	);
 	const handleIncomingRoomCommentRef = useRef<(message: SignalMessage) => void>(() => undefined);
 	const [roomPeerId, setRoomPeerId] = useState('');
 	const signalingTokenRef = useRef(token);
@@ -3502,11 +3514,12 @@ export function MezonSfuVoiceRoom({
 						<button
 							type="button"
 							title={t('chat')}
-							className={`${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--mz-icon-selected)]' : ''}`}
+							className={`relative ${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--mz-icon-selected)]' : ''}`}
 							onClick={onToggleChat}
 							data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
 						>
 							<MezonIcon icon={MzIcons20.mzChat} className="text-[var(--sfu-header-icon-fill)]" />
+							{isExternalCalling && <ExternalChatUnreadBadge />}
 						</button>
 					</div>
 				</header>
