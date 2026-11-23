@@ -1,5 +1,5 @@
 import type { MentionReactInputProps } from '@mezon/utils';
-import { ID_MENTION_HERE, splitMessagePayload } from '@mezon/utils';
+import { ID_MENTION_HERE, MESSAGE_MAX_PART_BYTES, splitMessagePayload } from '@mezon/utils';
 
 export type OnSendFn = MentionReactInputProps['onSend'];
 export type OnSendArgs = Parameters<OnSendFn>;
@@ -63,7 +63,7 @@ async function sendPartsSequentially(
 
 export function sendMessageInParts(onSend: OnSendFn, args: OnSendArgs, limit: number): void | Promise<boolean | void> {
 	const [content, mentions] = args;
-	const parts = splitMessagePayload(content, mentions, limit);
+	const parts = splitMessagePayload(content, mentions, limit, MESSAGE_MAX_PART_BYTES);
 
 	if (parts.length === 0) {
 		return undefined;

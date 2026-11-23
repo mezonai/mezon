@@ -5,6 +5,7 @@ import {
 	MESSAGE_CHAR_LIMIT_BOT,
 	MESSAGE_CHAR_LIMIT_PRO,
 	MESSAGE_FILE_LIMIT_MULTIPLIER,
+	MESSAGE_MAX_PART_BYTES,
 	countMessageChars,
 	getMessageCharLimit,
 	splitMessagePayload,
@@ -18,6 +19,7 @@ describe('splitMessage', () => {
 			expect(MESSAGE_CHAR_LIMIT_PRO).toBe(4096);
 			expect(MESSAGE_CHAR_LIMIT_BOT).toBe(4096);
 			expect(MESSAGE_FILE_LIMIT_MULTIPLIER).toBe(3);
+			expect(MESSAGE_MAX_PART_BYTES).toBe(3072);
 		});
 
 		it('returns the right limit for normal, Pro, and bot users', () => {
@@ -109,10 +111,10 @@ describe('splitMessage', () => {
 
 		it('hard-cuts when there is no whitespace, never splits surrogate pairs, and counts limit in code points', () => {
 			const exactEmojis = '😀'.repeat(2048);
-			expect(splitMessagePayload({ t: exactEmojis }, [], 2048)).toHaveLength(1);
+			expect(splitMessagePayload({ t: exactEmojis }, [], 2048, Number.POSITIVE_INFINITY)).toHaveLength(1);
 
 			const overEmojis = '😀'.repeat(2049);
-			const parts = splitMessagePayload({ t: overEmojis }, [], 2048);
+			const parts = splitMessagePayload({ t: overEmojis }, [], 2048, Number.POSITIVE_INFINITY);
 
 			expect(parts).toHaveLength(2);
 			expect(countMessageChars(parts[0].content.t ?? '')).toBe(2048);
@@ -121,6 +123,16 @@ describe('splitMessage', () => {
 			expect(parts[1].content.t).toBe('😀');
 			expect(parts[0].content.t?.isWellFormed?.() ?? true).toBe(true);
 			expect(parts[1].content.t?.isWellFormed?.() ?? true).toBe(true);
+
+			const byteCappedParts = splitMessagePayload({ t: exactEmojis }, [], 2048);
+			expect(byteCappedParts.length).toBeGreaterThan(1);
+			for (const part of byteCappedParts) {
+				expect(Buffer.byteLength(JSON.stringify({ ...part.content, mentions: part.mentions }), 'utf8')).toBeLessThanOrEqual(
+					MESSAGE_MAX_PART_BYTES
+				);
+				expect(part.content.t?.isWellFormed?.() ?? true).toBe(true);
+			}
+			expect(byteCappedParts.map((part) => part.content.t).join('')).toBe(exactEmojis);
 		});
 
 		it('moves a mention crossing the cut whole to the next part and rebases both mentions and content.mentions offsets', () => {
@@ -238,8 +250,66 @@ describe('splitMessage', () => {
 			expect(parts[1].content.t).toBe(part2);
 			expect(parts[1].content.mk).toEqual([
 				{ s: 0, e: part2.length, type: EBacktickType.BOLD },
-				{ s: 0, e: part2.length, type: EBacktickType.PRE, language: 'typescript' }
+				{ s: 0, e: part2.length, type: EBacktickType.PRE }
 			]);
+		});
+
+		it('splits 2000 chars of Vietnamese text with diacritics so each part JSON fits within MESSAGE_MAX_PART_BYTES', () => {
+			const input = 'đẹp đẽ ửng đỏ ươm ướt ầm ĩ ếch ộp ủ rũ '.repeat(55).slice(0, 2000).trim();
+			expect(countMessageChars(input)).toBeLessThanOrEqual(2048);
+			expect(Buffer.byteLength(input, 'utf8')).toBeGreaterThan(MESSAGE_MAX_PART_BYTES);
+
+			const parts = splitMessagePayload({ t: input }, [], 2048);
+
+			expect(parts.length).toBeGreaterThan(1);
+			for (const part of parts) {
+				expect(Buffer.byteLength(JSON.stringify({ ...part.content, mentions: part.mentions }), 'utf8')).toBeLessThanOrEqual(
+					MESSAGE_MAX_PART_BYTES
+				);
+			}
+			expect(parts.map((part) => part.content.t).join(' ')).toBe(input);
+		});
+
+		it('splits 4096 ASCII chars with Pro limit 4096 into parts within MESSAGE_MAX_PART_BYTES and keeps short messages as one identical object', () => {
+			const shortPayload: IMessageSendPayload = { t: 'hello world' };
+			const shortParts = splitMessagePayload(shortPayload, [], 4096);
+			expect(shortParts).toHaveLength(1);
+			expect(shortParts[0].content).toBe(shortPayload);
+
+			const proInput = 'a'.repeat(4096);
+			const proParts = splitMessagePayload({ t: proInput }, [], 4096);
+
+			expect(proParts.length).toBeGreaterThanOrEqual(2);
+			for (const part of proParts) {
+				expect(Buffer.byteLength(JSON.stringify({ ...part.content, mentions: part.mentions }), 'utf8')).toBeLessThanOrEqual(
+					MESSAGE_MAX_PART_BYTES
+				);
+			}
+			expect(proParts.map((part) => part.content.t).join('')).toBe(proInput);
+		});
+
+		it('re-splits parts with heavy entities to fit MESSAGE_MAX_PART_BYTES and keeps an oversized single atomic entity intact', () => {
+			const words = Array.from({ length: 80 }, (_, index) => `@user_${String(index).padStart(3, '0')}`);
+			const text = words.join(' ');
+			const mentions: Array<{ user_id: string; s: number; e: number }> = [];
+			let cursor = 0;
+			for (const word of words) {
+				mentions.push({ user_id: `uid_${cursor}_very_long_identifier`, s: cursor, e: cursor + word.length });
+				cursor += word.length + 1;
+			}
+
+			const parts = splitMessagePayload({ t: text }, mentions, 2048);
+			expect(parts.length).toBeGreaterThan(1);
+			for (const part of parts) {
+				expect(Buffer.byteLength(JSON.stringify({ ...part.content, mentions: part.mentions }), 'utf8')).toBeLessThanOrEqual(
+					MESSAGE_MAX_PART_BYTES
+				);
+			}
+
+			const singleHugeMention = `@${'m'.repeat(3500)}`;
+			const oversizedParts = splitMessagePayload({ t: singleHugeMention }, [{ user_id: 'u1', s: 0, e: singleHugeMention.length }], 4096);
+			expect(oversizedParts).toHaveLength(1);
+			expect(oversizedParts[0].content.t).toBe(singleHugeMention);
 		});
 
 		it('copies cvtt to every part and copies other payload fields to the first part only', () => {

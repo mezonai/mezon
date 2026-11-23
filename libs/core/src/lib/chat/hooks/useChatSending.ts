@@ -165,7 +165,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					}
 				}
 
-				dispatch(
+				await dispatch(
 					topicsActions.handleSendTopic({
 						clanId: getClanId as string,
 						channelId: channelIdOrDirectId as string,

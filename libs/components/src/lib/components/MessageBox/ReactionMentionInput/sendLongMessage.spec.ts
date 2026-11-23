@@ -11,6 +11,7 @@ jest.mock(
 	'@mezon/utils',
 	() => ({
 		ID_MENTION_HERE: '1775731111020111321',
+		MESSAGE_MAX_PART_BYTES: 3072,
 		splitMessagePayload: (...args: unknown[]) => mockSplitMessagePayload(...args)
 	}),
 	{ virtual: true }
@@ -45,6 +46,7 @@ describe('sendMessageInParts', () => {
 		const syncResult = sendMessageInParts(onSendSync, args, 2048);
 
 		expect(syncResult).toBeUndefined();
+		expect(mockSplitMessagePayload).toHaveBeenCalledWith(content, mentions, 2048, 3072);
 		expect(onSendSync).toHaveBeenCalledTimes(1);
 		expect(onSendSync).toHaveBeenCalledWith(...args);
 

@@ -50,6 +50,7 @@ import {
 	GENERAL_INPUT_ID,
 	ID_MENTION_HERE,
 	IS_SAFARI,
+	MAX_FILE_ATTACHMENTS,
 	MESSAGE_FILE_LIMIT_MULTIPLIER,
 	QUICK_MENU_TYPE,
 	RECENT_EMOJI_CATEGORY,
@@ -229,8 +230,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			if (!current || !props.handleConvertToFile) {
 				return;
 			}
+			const atAttachmentLimit = (attachmentFiltered?.files?.length ?? 0) >= MAX_FILE_ATTACHMENTS;
 			props.handleConvertToFile(current.text);
-			if (current.clearDraft) {
+			if (current.clearDraft && !atAttachmentLimit) {
 				updateDraft?.({
 					valueTextInput: '',
 					content: '',
@@ -248,7 +250,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				onCancel={handleCancel}
 			/>
 		);
-	}, [messageCharLimit, props.handleConvertToFile, updateDraft]);
+	}, [attachmentFiltered?.files?.length, messageCharLimit, props.handleConvertToFile, updateDraft]);
 
 	const openLongMessageConfirm = useCallback(
 		(text: string, charCount: number, clearDraft: boolean) => {
@@ -462,9 +464,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 				const charCount = countMessageChars(payload.t ?? '');
 
-				if (charCount > fileCharLimit && props.handleConvertToFile) {
-					openLongMessageConfirm(payload.t ?? '', charCount, true);
-					return;
+				if (charCount > fileCharLimit) {
+					if (props.handleConvertToFile) {
+						openLongMessageConfirm(payload.t ?? '', charCount, true);
+						return;
+					}
+					if (!isCreatingThread && !(props.isTopic && !currTopicId)) {
+						toast.error(t('channelTopbar:createThread.toast.messageLimitExceeded', { limit: fileCharLimit }));
+						return;
+					}
 				}
 
 				if (charCount > messageCharLimit && (isCreatingThread || (props.isTopic && !currTopicId))) {
@@ -626,9 +634,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 			const charCount = countMessageChars(payload.t ?? '');
 
-			if (charCount > fileCharLimit && props.handleConvertToFile) {
-				openLongMessageConfirm(payload.t ?? '', charCount, true);
-				return;
+			if (charCount > fileCharLimit) {
+				if (props.handleConvertToFile) {
+					openLongMessageConfirm(payload.t ?? '', charCount, true);
+					return;
+				}
+				if (!isCreatingThread && !(props.isTopic && !currTopicId)) {
+					toast.error(t('channelTopbar:createThread.toast.messageLimitExceeded', { limit: fileCharLimit }));
+					return;
+				}
 			}
 
 			if (charCount > messageCharLimit && (isCreatingThread || (props.isTopic && !currTopicId))) {
@@ -991,19 +1005,17 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setIsPasteMulti(false);
 		}
 
-		const pastedCharCount = countMessageChars(pastedContent);
-		if (
-			props.handleConvertToFile !== undefined &&
-			countMessageChars(newPlainTextValue || '') > fileCharLimit &&
-			pastedCharCount > fileCharLimit
-		) {
-			openLongMessageConfirm(pastedContent, pastedCharCount, false);
-			updateDraft?.({
-				valueTextInput: previousValue || '',
-				content: previousPlainText || '',
-				entities: draftRequest?.entities || []
-			});
-			setPastedContent('');
+		if (props.handleConvertToFile !== undefined && pastedContent.length > fileCharLimit && (newPlainTextValue?.length ?? 0) > fileCharLimit) {
+			const pastedCharCount = countMessageChars(pastedContent);
+			if (countMessageChars(newPlainTextValue || '') > fileCharLimit && pastedCharCount > fileCharLimit) {
+				openLongMessageConfirm(pastedContent, pastedCharCount, false);
+				updateDraft?.({
+					valueTextInput: previousValue || '',
+					content: previousPlainText || '',
+					entities: draftRequest?.entities || []
+				});
+				setPastedContent('');
+			}
 		}
 	};
 
@@ -1151,8 +1163,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const isCreatingTopic = Boolean(props.isTopic && !currTopicId);
 	const draftContent = draftRequest?.content ?? '';
-	const isOverFileLimit =
-		Boolean(props.handleConvertToFile) && draftContent.length > fileCharLimit && countMessageChars(draftContent) > fileCharLimit;
+	const isOverFileLimit = draftContent.length > fileCharLimit && countMessageChars(draftContent) > fileCharLimit;
 	const isTopicOverLimit = isCreatingTopic && draftContent.length > messageCharLimit && countMessageChars(draftContent) > messageCharLimit;
 	const keepTextOnSend = Boolean(isCreatingThread || isOverFileLimit || isTopicOverLimit);
 
