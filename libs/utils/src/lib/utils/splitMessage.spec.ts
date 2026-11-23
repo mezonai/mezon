@@ -268,6 +268,9 @@ describe('splitMessage', () => {
 				);
 			}
 			expect(parts.map((part) => part.content.t).join(' ')).toBe(input);
+			for (const part of parts.slice(0, -1)) {
+				expect(Buffer.byteLength(part.content.t ?? '', 'utf8')).toBeGreaterThan(MESSAGE_MAX_PART_BYTES / 2);
+			}
 		});
 
 		it('splits 4096 ASCII chars with Pro limit 4096 into parts within MESSAGE_MAX_PART_BYTES and keeps short messages as one identical object', () => {

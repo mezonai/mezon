@@ -387,22 +387,19 @@ function splitPayloadAtBudget<M extends { s?: number; e?: number }>(
 		return builtParts;
 	}
 
-	const fittedParts: Array<{ content: IMessageSendPayload; mentions: M[] }> = [];
+	let nextBudget: number | undefined;
 	for (const part of builtParts) {
 		const jsonBytes = partJsonBytes(part.content, part.mentions);
 		if (jsonBytes <= maxBytes) {
-			fittedParts.push(part);
 			continue;
 		}
-		const partTextBytes = utf8ByteLength(part.content.t ?? '');
-		const nextBudget = Math.max(MIN_RETRY_TEXT_BYTES, maxBytes - (jsonBytes - partTextBytes));
-		if (textBudget !== undefined && nextBudget >= textBudget) {
-			fittedParts.push(part);
-			continue;
-		}
-		fittedParts.push(...splitPayloadAtBudget(part.content, part.mentions, limit, maxBytes, nextBudget, depth + 1));
+		const partBudget = Math.max(MIN_RETRY_TEXT_BYTES, maxBytes - (jsonBytes - utf8ByteLength(part.content.t ?? '')));
+		nextBudget = nextBudget === undefined ? partBudget : Math.min(nextBudget, partBudget);
 	}
-	return fittedParts;
+	if (nextBudget === undefined || (textBudget !== undefined && nextBudget >= textBudget)) {
+		return builtParts;
+	}
+	return splitPayloadAtBudget(content, mentions, limit, maxBytes, nextBudget, depth + 1);
 }
 
 export function splitMessagePayload<M extends { s?: number; e?: number }>(
