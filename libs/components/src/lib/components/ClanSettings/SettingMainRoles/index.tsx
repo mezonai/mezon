@@ -17,7 +17,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { ButtonLoading, InputField, MezonIcon, MzIcons20 } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
+import { DEFAULT_ROLE_COLOR, EPermissionId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -82,7 +82,7 @@ const ServerSettingMainRoles = (props: ModalOpenEdit) => {
 		dispatch(setColorRoleNew(DEFAULT_ROLE_COLOR));
 		dispatch(setAddPermissions([]));
 		dispatch(setAddMemberRoles([]));
-		dispatch(setSelectedPermissions([]));
+		dispatch(setSelectedPermissions([EPermissionId.VIEW_CHANNEL, EPermissionId.SEND_MESSAGE]));
 		dispatch(roleSlice.actions.setCurrentRoleIcon(''));
 		setOpenEdit(true);
 	};

@@ -1,5 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IRolesClan, LoadingStatus, UsersClanEntity } from '@mezon/utils';
+import { EPermissionId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiRole, ApiRoleListEventResponse, ApiUpdateRoleOrderRequest, ApiUpdateRoleRequest, RoleUserListRoleUser } from 'mezon-js';
@@ -230,8 +231,9 @@ export const fetchCreateRole = createAsyncThunk(
 	async ({ clanId, title, color, addUserIds, activePermissionIds, maxPermissionId }: CreateRolePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const mandatoryPermissionIds = [EPermissionId.VIEW_CHANNEL, EPermissionId.SEND_MESSAGE];
 			const body = {
-				active_permission_ids: activePermissionIds || [],
+				active_permission_ids: [...new Set([...(activePermissionIds || []), ...mandatoryPermissionIds])],
 				add_user_ids: addUserIds || [],
 				allow_mention: 0,
 				clan_id: clanId,
@@ -286,6 +288,10 @@ export const updateRole = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const store = thunkAPI.getState() as RootState;
+			const role = store.rolesclan.entities[roleId];
+			const isEveryoneRole = role?.slug?.startsWith('everyone-') ?? false;
+			const mandatoryPermissionIds = isEveryoneRole ? [] : [EPermissionId.VIEW_CHANNEL, EPermissionId.SEND_MESSAGE];
 			const body: ApiUpdateRoleRequest = {
 				role_id: roleId,
 				title: title ?? '',
@@ -297,7 +303,7 @@ export const updateRole = createAsyncThunk(
 				add_user_ids: addUserIds || [],
 				active_permission_ids: activePermissionIds || [],
 				remove_user_ids: removeUserIds || [],
-				remove_permission_ids: removePermissionIds || [],
+				remove_permission_ids: (removePermissionIds || []).filter((id) => !mandatoryPermissionIds.includes(id as EPermissionId)),
 				clan_id: clanId,
 				max_permission_id: maxPermissionId || '0'
 			};
@@ -307,13 +313,12 @@ export const updateRole = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 
-			const store = thunkAPI.getState() as RootState;
 			const roles = store.rolesclan.entities;
 			const permission = selectAllPermissionsDefaultEntities(store);
 			const listUserClan = selectEntitesUserClans(store);
-			const role = roles[roleId];
+			const updatedRole = roles[roleId];
 
-			const updateRoleData = handleMapUpdateRole(role, body, permission, listUserClan);
+			const updateRoleData = handleMapUpdateRole(updatedRole, body, permission, listUserClan);
 
 			return updateRoleData;
 		} catch (error) {
