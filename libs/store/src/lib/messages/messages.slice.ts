@@ -24,6 +24,8 @@ import {
 	getPresignIngestKeys,
 	getPublicKeys,
 	getWebUploadedAttachments,
+	isDMStreamMode,
+	isRealClanId,
 	isTikTokLink,
 	isYouTubeLink,
 	mergePresignFinishContent,
@@ -217,7 +219,7 @@ export const mapMessageChannelToEntityAction = createAsyncThunk(
 		{ message, lock = false, isSystem = false }: { message: ChannelMessage; lock?: boolean; isSystem?: boolean },
 		thunkAPI: GetThunkAPI<unknown>
 	): Promise<IMessageWithUser> => {
-		const checkEnableE2EE = checkE2EE(message.clan_id as string, message.channel_id, thunkAPI);
+		const checkEnableE2EE = checkE2EE(message.clan_id as string, message.channel_id, thunkAPI, message.mode);
 		const currentUser = selectAllAccount(thunkAPI.getState() as RootState);
 		const mapMessage = mapMessageChannelToEntity(message);
 
@@ -252,9 +254,10 @@ export const fetchMessagesCached = async (
 ) => {
 	const state = getState();
 
-	let foundClan: boolean = clanId === '0' || selectClanExists(state, clanId);
+	const isRealClan = isRealClanId(clanId);
+	let foundClan: boolean = !isRealClan || selectClanExists(state, clanId);
 	if (!foundClan) {
-		if (dispatch && clanId !== '0') {
+		if (dispatch && isRealClan) {
 			const res = await dispatch(clansActions.fetchClans({ noCache: true })).unwrap();
 			foundClan = res?.clans?.some((item) => item.id === clanId) ?? false;
 			if (!foundClan) {
@@ -278,7 +281,8 @@ export const fetchMessagesCached = async (
 	}
 
 	const response = await withRetry(
-		(session) => ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
+		(session) =>
+			ensuredMezon.client.listChannelMessages(session, isRealClan ? clanId : '0', channelId, messageId, direction, LIMIT_MESSAGE, topicId),
 		{
 			scope: 'channel-messages',
 			mezon: ensuredMezon
@@ -460,7 +464,7 @@ export const fetchMessages = createAsyncThunk(
 					messages: []
 				};
 			}
-			const lastSentState = clanId || clanId === '0' ? selectDmLastSentMessage(state, channelId) : selectLastSentMessageId(state, channelId);
+			const lastSentState = !isRealClanId(clanId) ? selectDmLastSentMessage(state, channelId) : selectLastSentMessageId(state, channelId);
 
 			let lastSentMessage = lastSentState || (state.messages.lastMessageByChannel[chlId] as ApiChannelMessageHeader);
 
@@ -545,7 +549,7 @@ export const fetchMessages = createAsyncThunk(
 				return mapMessageChannelToEntity(item, response.last_seen_message?.id);
 			});
 
-			if (clanId === '0' || !clanId) {
+			if (!isRealClanId(clanId)) {
 				messages = await MessageCrypt.decryptMessages(messages, currentUser?.user?.id as string);
 			}
 
@@ -751,7 +755,7 @@ export const jumpToMessage = createAsyncThunk(
 
 			const state = thunkAPI.getState() as RootState;
 			const currentClanId = state.clans?.currentClanId;
-			const isDirectMessage = !clanId && currentClanId === '0';
+			const isDirectMessage = !clanId && !isRealClanId(currentClanId);
 
 			const isClanChanged = currentClanId !== clanId;
 			const isChannelChanged = clanId && state.channels.byClans[clanId]?.currentChannelId !== channelId;
@@ -759,7 +763,7 @@ export const jumpToMessage = createAsyncThunk(
 
 			if (shouldNavigate) {
 				let channelPath = `/chat/clans/${clanId}/channels/${channelId}`;
-				if (clanId === '0') {
+				if (isDMStreamMode(mode) || !isRealClanId(clanId)) {
 					channelPath = `/chat/direct/message/${channelId}/${mode}`;
 				}
 				found &&
@@ -873,8 +877,9 @@ async function executeUpdateLastSeenMessageBody(args: UpdateMessageArgs, thunkAP
 	const { clanId, channelId, messageId, mode, badge_count, message_time, updateLast = false, isTopic = false, parentChannelId } = args;
 	const now = Math.floor(Date.now() / 1000);
 	const state = thunkAPI.getState() as RootState;
+	const isDM = isDMStreamMode(mode) || !isRealClanId(clanId);
 
-	if (clanId !== '0') {
+	if (!isDM) {
 		const lookupChannelId = isTopic && parentChannelId ? parentChannelId : channelId;
 		const channel = selectChannelById(state, lookupChannelId);
 		if (!channel) {
@@ -889,19 +894,19 @@ async function executeUpdateLastSeenMessageBody(args: UpdateMessageArgs, thunkAP
 
 	const channelsLoadingStatus = selectLoadingStatus(state);
 	const clansLoadingStatus = selectClansLoadingStatus(state);
-	if (clanId !== '0' && (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading')) {
+	if (!isDM && (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading')) {
 		thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count, message_time }));
 		return;
 	}
 
 	let badgeCount = badge_count;
 
-	if (clanId !== '0') {
+	if (!isDM) {
 		const currentChannelBadge = getCurrentChannelBadgeCount({ getState: () => thunkAPI.getState() as RootState }, clanId, channelId);
 		badgeCount = currentChannelBadge;
 	}
 
-	if (clanId !== '0') {
+	if (!isDM) {
 		badgeService.resetChannel({
 			clanId,
 			channelId,
@@ -914,7 +919,7 @@ async function executeUpdateLastSeenMessageBody(args: UpdateMessageArgs, thunkAP
 		badgeService.resetDm(channelId, message_time ?? now, messageId);
 	}
 
-	if (clanId && clanId !== '0') {
+	if (!isDM && isRealClanId(clanId)) {
 		const latestState = thunkAPI.getState() as RootState;
 		const hasUnread = selectClanHasUnreadMessage(latestState, clanId);
 		if (hasUnread) {
@@ -941,7 +946,7 @@ async function executeUpdateLastSeenMessageBody(args: UpdateMessageArgs, thunkAP
 		if (!queuedAlsoTargetsThisSeen) {
 			await performDedupedSerializedLastSeenSocketRpc({
 				mezon,
-				clanId,
+				clanId: isDM ? '0' : clanId,
 				channelId,
 				mode,
 				messageId,
@@ -1069,12 +1074,13 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 	async function fakeItUntilYouMakeIt() {
 		const rootState = thunkAPI.getState() as RootState;
 		const currentUser = selectAllAccount(rootState);
+		const isRealClan = !isDMStreamMode(mode) && isRealClanId(clanId);
 
 		const overrideAvatar = getUserAvatarOverride(senderId);
-		const overrideClanAvatar = clanId && clanId !== '0' ? getUserClanAvatarOverride(senderId, clanId) : undefined;
+		const overrideClanAvatar = isRealClan ? getUserClanAvatarOverride(senderId, clanId) : undefined;
 
 		let clanAvatar = avatar;
-		if (clanId && clanId !== '0' && currentUser?.user?.id) {
+		if (isRealClan && currentUser?.user?.id) {
 			const userClanProfile = selectUserClanProfileByClanID(clanId, currentUser.user.id)(rootState);
 			clanAvatar = overrideClanAvatar || userClanProfile?.avatar || avatar;
 		}
@@ -1096,8 +1102,8 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
 			username: anonymous ? '' : username || '',
 			avatar: anonymous ? '' : finalAvatar,
-			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
-			clan_id: clanId !== '0' ? clanId : undefined,
+			clan_avatar: isRealClan ? clanAvatar : undefined,
+			clan_id: isRealClan ? clanId : undefined,
 			isSending: true,
 			references: references?.filter((item) => item) || [],
 			isMe: true,
@@ -1345,7 +1351,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		tempId
 	};
 
-	const checkEnableE2EE = checkE2EE(clanId, channelId, thunkAPI);
+	const checkEnableE2EE = checkE2EE(clanId, channelId, thunkAPI, mode);
 
 	async function doSend() {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
@@ -1448,12 +1454,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	async function fakeItUntilYouMakeIt() {
 		const rootState = thunkAPI.getState() as RootState;
 		const currentUser = selectAllAccount(rootState);
+		const isRealClan = !isDMStreamMode(mode) && isRealClanId(clanId);
 
 		const overrideAvatar = getUserAvatarOverride(senderId);
-		const overrideClanAvatar = clanId && clanId !== '0' ? getUserClanAvatarOverride(senderId, clanId) : undefined;
+		const overrideClanAvatar = isRealClan ? getUserClanAvatarOverride(senderId, clanId) : undefined;
 
 		let clanAvatar = avatar;
-		if (clanId && clanId !== '0' && currentUser?.user?.id) {
+		if (isRealClan && currentUser?.user?.id) {
 			const userClanProfile = selectUserClanProfileByClanID(clanId, currentUser.user.id)(rootState);
 			clanAvatar = overrideClanAvatar || userClanProfile?.avatar || avatar;
 		}
@@ -1502,8 +1509,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
 			username: anonymous ? '' : username || '',
 			avatar: anonymous ? '' : finalAvatar,
-			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
-			clan_id: clanId !== '0' ? clanId : undefined,
+			clan_avatar: isRealClan ? clanAvatar : undefined,
+			clan_id: isRealClan ? clanId : undefined,
 			isSending: true,
 			references: references?.filter((item) => item) || [],
 			isMe: true,

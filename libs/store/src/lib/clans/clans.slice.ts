@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { ApiChannelMessageHeaderWithChannel, IClan, LoadingStatus } from '@mezon/utils';
-import { FOR_1_HOUR_SEC, LIMIT_CLAN_ITEM, ONE_MILISECONDS } from '@mezon/utils';
+import { FOR_1_HOUR_SEC, LIMIT_CLAN_ITEM, ONE_MILISECONDS, isRealClanId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type {
@@ -514,29 +514,31 @@ export const waitForClanJoin = (clanId: string) => clanJoinsInFlight.get(clanId)
 // and the server ignores a repeat clan join, or one sent after a public channel join of that clan, so the list is loaded first
 // and channel joins wait for the clan join.
 export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan', async ({ clanId, noCache = false }, thunkAPI) => {
+	const isRealClan = isRealClanId(clanId);
+	const targetClanId = isRealClan ? clanId : '0';
 	const join = (async () => {
-		if (clanId !== '0') {
-			await thunkAPI.dispatch(channelsActions.fetchChannels({ clanId, noCache }));
+		if (isRealClan) {
+			await thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: targetClanId, noCache }));
 		}
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.clientRef.current?.joinClanChat(mezon.session, clanId);
+		await mezon.clientRef.current?.joinClanChat(mezon.session, targetClanId);
 	})();
 	const settled = join.then(
 		() => undefined,
 		() => undefined
 	);
-	clanJoinsInFlight.set(clanId, settled);
+	clanJoinsInFlight.set(targetClanId, settled);
 	settled.then(() => {
-		if (clanJoinsInFlight.get(clanId) === settled) {
-			clanJoinsInFlight.delete(clanId);
+		if (clanJoinsInFlight.get(targetClanId) === settled) {
+			clanJoinsInFlight.delete(targetClanId);
 		}
 	});
 	try {
 		await join;
 		const state = thunkAPI.getState() as RootState;
-		if (!state.clans?.checkJoinList?.[clanId] && clanId !== '0') {
-			thunkAPI.dispatch(listChannelBadgeCount({ clanId }));
-			await thunkAPI.dispatch(fetchClanMembersWithStatus({ clanId }));
+		if (!state.clans?.checkJoinList?.[targetClanId] && isRealClan) {
+			thunkAPI.dispatch(listChannelBadgeCount({ clanId: targetClanId }));
+			await thunkAPI.dispatch(fetchClanMembersWithStatus({ clanId: targetClanId }));
 		}
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');
@@ -661,6 +663,7 @@ export const clansSlice = createSlice({
 		},
 		setClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; badgeCount: number }>) => {
 			const { clanId, badgeCount } = action.payload;
+			if (!isRealClanId(clanId)) return;
 			const entity = state.entities[clanId];
 			if (entity) {
 				clanUnreadAdapter.upsertOne(state.clanUnreadStates, {
@@ -672,6 +675,7 @@ export const clansSlice = createSlice({
 		},
 		updateClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, count, isReset } = action.payload;
+			if (!isRealClanId(clanId)) return;
 			const entity = state.clanUnreadStates.entities[clanId];
 
 			if (!entity) return;
@@ -706,6 +710,7 @@ export const clansSlice = createSlice({
 		},
 		setHasUnreadMessage: (state, action: PayloadAction<{ clanId: string; hasUnread: boolean }>) => {
 			const { clanId, hasUnread } = action.payload;
+			if (!isRealClanId(clanId)) return;
 			const currentUnreadState = state.clanUnreadStates.entities[clanId];
 
 			if (!currentUnreadState) {
@@ -832,6 +837,7 @@ export const clansSlice = createSlice({
 		});
 		builder.addCase(updateHasUnreadBasedOnChannels.fulfilled, (state: ClansState, action) => {
 			const { clanId, hasUnread } = action.payload;
+			if (!isRealClanId(clanId)) return;
 			const currentUnreadState = state.clanUnreadStates.entities[clanId];
 			if (!currentUnreadState) {
 				clanUnreadAdapter.addOne(state.clanUnreadStates, {
@@ -934,7 +940,7 @@ export const selectClanNumber = createSelector(getClansState, (state) => state?.
 export const selectCurrentClanId = createSelector(getClansState, (state) => state.currentClanId);
 export const selectClansLoadingStatus = createSelector(getClansState, (state) => state.loadingStatus);
 
-export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!(currentClanId && currentClanId !== '0'));
+export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => isRealClanId(currentClanId));
 
 export const selectClansEntities = createSelector(getClansState, selectEntities);
 export const selectClansIds = createSelector(getClansState, selectIds);
@@ -955,7 +961,7 @@ export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (c
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
 
 export const selectBadgeCountAllClan = createSelector(getClansState, (state) => {
-	return selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (count.clan_id !== '0' ? (count.badge ?? 0) : 0), 0);
+	return selectAllBadgeClan(state.clanUnreadStates).reduce((total, count) => total + (isRealClanId(count.clan_id) ? (count.badge ?? 0) : 0), 0);
 });
 
 export const selectInvitePeopleStatus = createSelector(getClansState, (state) => state.invitePeople);

@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { Pagination } from '@mezon/ui';
 import type { IMessageWithUser, UsersClanEntity } from '@mezon/utils';
-import { SIZE_PAGE_SEARCH } from '@mezon/utils';
+import { SIZE_PAGE_SEARCH, isRealClanId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -183,7 +183,7 @@ const SearchedItem = ({ searchMessage, searchChannel, user, isDm }: ISearchedIte
 	const navigate = useNavigate();
 	const clanId = searchMessage.clan_id || searchChannel.clan_id;
 	const sender = useAppSelector((state) =>
-		!isDm && clanId && clanId !== '0' ? selectMemberByIdAndClanId(state, clanId, searchMessage.sender_id || '') : null
+		!isDm && isRealClanId(clanId) ? selectMemberByIdAndClanId(state, clanId, searchMessage.sender_id || '') : null
 	);
 
 	const convertedMessage = {

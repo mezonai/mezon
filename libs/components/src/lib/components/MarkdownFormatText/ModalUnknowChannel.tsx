@@ -2,7 +2,7 @@ import { FRIEND_PAGE_LINK, toMembersPage, useAppNavigation } from '@mezon/core';
 
 import { selectAllChannels, selectCurrentClan, toastActions } from '@mezon/store';
 import { MezonIcon, MzIcons48 } from '@mezon/ui';
-import { E_ERROR_CHANNEL, generateE2eId } from '@mezon/utils';
+import { E_ERROR_CHANNEL, generateE2eId, isRealClanId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -62,7 +62,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 
 	const goToWelcomeChannel = () => {
 		clearAllToastError();
-		if (!currentClanId || currentClanId === '0') {
+		if (!isRealClanId(currentClanId)) {
 			navigate(FRIEND_PAGE_LINK);
 			return;
 		}
@@ -75,7 +75,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 			removeToastError();
 		}
 		onClose?.();
-		if (!currentClanId || currentClanId === '0') {
+		if (!isRealClanId(currentClanId)) {
 			navigate(FRIEND_PAGE_LINK);
 			return;
 		}

@@ -14,6 +14,7 @@ jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }), { virtual:
 jest.mock(
 	'@mezon/utils',
 	() => ({
+		...jest.requireActual('../../../../utils/src/lib/utils/clanChannel'),
 		CREATING_TOPIC: 'CREATING_TOPIC',
 		EBacktickType: {},
 		isTikTokLink: jest.fn(),
@@ -122,5 +123,13 @@ describe('topicDiscussions unread state', () => {
 		expect(selectClan1Count(rootState)).toBe(2);
 		expect(selectUnreadTopicCountByClan('clan-2')(rootState)).toBe(1);
 		expect(selectUnreadTopicCountByClan('clan-3')(rootState)).toBe(0);
+	});
+
+	it('ignores zero and negative synthetic DM/Group clanIds in markTopicUnread', () => {
+		let sliceState = initialTopicsState;
+		sliceState = topicsReducer(sliceState, topicsActions.markTopicUnread({ topicId: 't1', clanId: '0' }));
+		sliceState = topicsReducer(sliceState, topicsActions.markTopicUnread({ topicId: 't2', clanId: '-999001' }));
+
+		expect(sliceState.unreadTopics).toEqual({});
 	});
 });

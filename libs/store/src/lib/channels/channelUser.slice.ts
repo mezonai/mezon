@@ -1,5 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IChannel, IChannelUser, LoadingStatus } from '@mezon/utils';
+import { isDmOrGroupChannelType } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelDescription } from 'mezon-js';
@@ -22,7 +23,12 @@ export interface ChannelUsersEntity extends IChannelUser {
 }
 
 export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: channelRes.channel_id || '0', status: channelRes.channel_id ? 1 : 0 };
+	return {
+		...channelRes,
+		...(isDmOrGroupChannelType(channelRes.type) ? { clan_id: '0' } : {}),
+		id: channelRes.channel_id || '0',
+		status: channelRes.channel_id ? 1 : 0
+	};
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {
