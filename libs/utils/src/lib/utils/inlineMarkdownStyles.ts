@@ -1,4 +1,5 @@
 import { EBacktickType } from '../types/messageLine';
+import { isMarkdownBlockLine } from './markdownBlocks';
 
 export interface InlineStyleEntity {
 	type: string;
@@ -6,20 +7,48 @@ export interface InlineStyleEntity {
 	length: number;
 }
 
-export interface StyleSegment {
-	s: number;
-	e: number;
+export interface InlineStyleFlags {
 	bold: boolean;
 	italic: boolean;
 	strike: boolean;
+	underline: boolean;
+	spoiler: number;
 }
 
+export interface StyleSegment extends InlineStyleFlags {
+	s: number;
+	e: number;
+}
+
+type StyleEntityType = 'MessageEntityBold' | 'MessageEntityItalic' | 'MessageEntityStrike' | 'MessageEntityUnderline' | 'MessageEntitySpoiler';
+
 interface StyleMatch {
-	type: 'MessageEntityBold' | 'MessageEntityItalic' | 'MessageEntityStrike';
+	type: StyleEntityType;
 	start: number;
 	end: number;
 	marker: number;
 }
+
+const STYLE_TYPES_BY_MARKER: Record<string, StyleEntityType[]> = {
+	'*': ['MessageEntityItalic'],
+	'**': ['MessageEntityBold'],
+	'***': ['MessageEntityBold', 'MessageEntityItalic'],
+	_: ['MessageEntityItalic'],
+	__: ['MessageEntityUnderline'],
+	___: ['MessageEntityUnderline', 'MessageEntityItalic'],
+	'~~': ['MessageEntityStrike'],
+	'||': ['MessageEntitySpoiler']
+};
+
+const INLINE_STYLE_TYPES = new Set<string>([
+	EBacktickType.BOLD,
+	EBacktickType.ITALIC,
+	EBacktickType.STRIKE,
+	EBacktickType.UNDERLINE,
+	EBacktickType.SPOILER
+]);
+
+export const isInlineStyleType = (type?: string) => !!type && INLINE_STYLE_TYPES.has(type);
 
 const PROTECTED_ENTITY_TYPES = new Set<string>([
 	'MessageEntityCode',
@@ -35,8 +64,10 @@ const PROTECTED_ENTITY_TYPES = new Set<string>([
 const WHITESPACE_RE = /^\s/;
 const ALPHANUMERIC_END_RE = /[\p{L}\p{N}]$/u;
 const ALPHANUMERIC_START_RE = /^[\p{L}\p{N}]/u;
-const ESCAPABLE_STYLE_CHARS = new Set(['*', '_', '~']);
+const ESCAPABLE_STYLE_CHARS = new Set(['*', '_', '~', '|']);
+const TABLE_ROW_RE = /^ *\|/;
 const URL_LIKE_RE = /((?:\w+:)?\/\/[^\s<>]+)/;
+const PLAIN_PROTECTED_RE = /```[\s\S]*?```|`[^`\n]+`|(?:\w+:)?\/\/[^\s<>]+/g;
 
 function isStyleEscape(text: string, pos: number, end: number, protectedEndAt: (p: number) => number): boolean {
 	return text[pos] === '\\' && pos + 1 < end && ESCAPABLE_STYLE_CHARS.has(text[pos + 1]) && protectedEndAt(pos + 1) === -1;
@@ -48,13 +79,13 @@ export function escapeInlineStyles(text: string): string {
 		.map((part, index) =>
 			index % 2
 				? part
-				: part.replace(/[*_~]/g, (ch: string, pos: number) => {
+				: part.replace(/(?<![|\\])\|\|(?!\|)|[*_~]/g, (ch: string, pos: number) => {
 						const prev = part[pos - 1] ?? '';
-						const next = part[pos + 1] ?? '';
+						const next = part[pos + ch.length] ?? '';
 						if (/\s/.test(prev) && /\s/.test(next)) return ch;
 						if (ch === '_' && ALPHANUMERIC_END_RE.test(prev) && ALPHANUMERIC_START_RE.test(next)) return ch;
 						if (ch === '~' && prev !== '~' && next !== '~' && prev !== '\\') return ch;
-						return `\\${ch}`;
+						return ch.replace(/./g, '\\$&');
 					})
 		)
 		.join('');
@@ -70,10 +101,7 @@ function styleRunEnd(text: string, pos: number, end: number, protectedEndAt: (p:
 }
 
 function validStyleMarker(ch: string, len: number): boolean {
-	if (ch === '*') return len >= 1 && len <= 3;
-	if (ch === '_') return len === 1;
-	if (ch === '~') return len === 2;
-	return false;
+	return !!STYLE_TYPES_BY_MARKER[ch.repeat(len)];
 }
 
 function canOpenStyle(text: string, pos: number, runEnd: number, end: number): boolean {
@@ -93,7 +121,7 @@ function canOpenStyle(text: string, pos: number, runEnd: number, end: number): b
 
 function isIntrawordMarker(text: string, pos: number, len: number): boolean {
 	const ch = text[pos];
-	if (ch !== '_' && !(ch === '*' && len === 1)) {
+	if (len !== 1 || (ch !== '_' && ch !== '*')) {
 		return false;
 	}
 	return pos > 0 && ALPHANUMERIC_END_RE.test(text.slice(Math.max(0, pos - 2), pos));
@@ -106,7 +134,7 @@ function canCloseStyle(text: string, openEnd: number, close: number, closeEnd: n
 	if (!/\S/.test(text.slice(openEnd, close))) {
 		return false;
 	}
-	const closesIntraword = text[close] === '_' || (text[close] === '*' && closeEnd - close === 1);
+	const closesIntraword = (text[close] === '_' || text[close] === '*') && closeEnd - close === 1;
 	if (closesIntraword && closeEnd < text.length && ALPHANUMERIC_START_RE.test(text.slice(closeEnd, closeEnd + 2))) {
 		return false;
 	}
@@ -175,7 +203,7 @@ function scanStyles(text: string, start: number, end: number, protectedEndAt: (p
 			continue;
 		}
 		const ch = text[i];
-		if (ch !== '*' && ch !== '_' && ch !== '~') {
+		if (ch !== '*' && ch !== '_' && ch !== '~' && ch !== '|') {
 			i += 1;
 			continue;
 		}
@@ -185,15 +213,8 @@ function scanStyles(text: string, start: number, end: number, protectedEndAt: (p
 			const close = findStyleClose(text, i, len, end, protectedEndAt);
 			if (close !== -1) {
 				const matchEnd = close + len;
-				if (ch === '*' && len === 3) {
-					out.push({ type: 'MessageEntityBold', start: i, end: matchEnd, marker: 3 });
-					out.push({ type: 'MessageEntityItalic', start: i, end: matchEnd, marker: 3 });
-				} else if (ch === '*' && len === 2) {
-					out.push({ type: 'MessageEntityBold', start: i, end: matchEnd, marker: 2 });
-				} else if ((ch === '*' && len === 1) || (ch === '_' && len === 1)) {
-					out.push({ type: 'MessageEntityItalic', start: i, end: matchEnd, marker: 1 });
-				} else if (ch === '~' && len === 2) {
-					out.push({ type: 'MessageEntityStrike', start: i, end: matchEnd, marker: 2 });
+				for (const type of STYLE_TYPES_BY_MARKER[ch.repeat(len)]) {
+					out.push({ type, start: i, end: matchEnd, marker: len });
 				}
 				scanStyles(text, runEnd, close, protectedEndAt, out, escapes);
 				i = matchEnd;
@@ -201,6 +222,58 @@ function scanStyles(text: string, start: number, end: number, protectedEndAt: (p
 			}
 		}
 		i = runEnd;
+	}
+}
+
+function protectedEndAtFor(ranges: ReadonlyArray<{ s: number; e: number }>): (pos: number) => number {
+	return (pos: number): number => {
+		let maxEnd = -1;
+		for (const r of ranges) {
+			if (pos >= r.s && pos < r.e && r.e > maxEnd) {
+				maxEnd = r.e;
+			}
+		}
+		return maxEnd;
+	};
+}
+
+function scanInlineStyles(text: string, protectedEndAt: (pos: number) => number): { matches: StyleMatch[]; escapes: number[] } {
+	const n = text.length;
+	const matches: StyleMatch[] = [];
+	const escapes: number[] = [];
+	let lineStart = 0;
+	while (lineStart < n) {
+		let lineEnd = lineStart;
+		while (lineEnd < n && text[lineEnd] !== '\n') {
+			lineEnd += 1;
+		}
+		if (lineEnd > lineStart) {
+			scanStyles(text, lineStart, lineEnd, protectedEndAt, matches, escapes);
+		}
+		lineStart = lineEnd + 1;
+	}
+	return { matches, escapes };
+}
+
+export function escapeMatchedInlineStyles(text: string): string {
+	let out = text;
+	for (let pass = 0; ; pass++) {
+		const ranges = Array.from(out.matchAll(PLAIN_PROTECTED_RE), (match) => ({ s: match.index ?? 0, e: (match.index ?? 0) + match[0].length }));
+		const { matches, escapes } = scanInlineStyles(out, protectedEndAtFor(ranges));
+		const marks = new Set(pass ? [] : escapes.map((pos) => pos + 1));
+		for (const m of matches) {
+			for (let k = 0; k < m.marker; k++) {
+				marks.add(m.start + k);
+				marks.add(m.end - m.marker + k);
+			}
+		}
+		if (!marks.size) {
+			return out;
+		}
+		out = out
+			.split('')
+			.map((ch, idx) => (marks.has(idx) ? `\\${ch}` : ch))
+			.join('');
 	}
 }
 
@@ -219,30 +292,8 @@ export function extractInlineStyles<T extends InlineStyleEntity = InlineStyleEnt
 		}
 	}
 
-	const protectedEndAt = (pos: number): number => {
-		let maxEnd = -1;
-		for (const r of protectedRanges) {
-			if (pos >= r.s && pos < r.e && r.e > maxEnd) {
-				maxEnd = r.e;
-			}
-		}
-		return maxEnd;
-	};
-
 	const n = text.length;
-	const matches: StyleMatch[] = [];
-	const escapes: number[] = [];
-	let lineStart = 0;
-	while (lineStart < n) {
-		let lineEnd = lineStart;
-		while (lineEnd < n && text[lineEnd] !== '\n') {
-			lineEnd += 1;
-		}
-		if (lineEnd > lineStart) {
-			scanStyles(text, lineStart, lineEnd, protectedEndAt, matches, escapes);
-		}
-		lineStart = lineEnd + 1;
-	}
+	const { matches, escapes } = scanInlineStyles(text, protectedEndAtFor(protectedRanges));
 
 	if (matches.length === 0 && escapes.length === 0) {
 		return { text, entities: [...entities] };
@@ -250,7 +301,7 @@ export function extractInlineStyles<T extends InlineStyleEntity = InlineStyleEnt
 
 	const removed = new Array<boolean>(n).fill(false);
 	for (const pos of escapes) {
-		removed[pos] = true;
+		removed[pos] = text[pos + 1] !== '|' || !TABLE_ROW_RE.test(text.slice(text.lastIndexOf('\n', pos) + 1));
 	}
 	for (const m of matches) {
 		for (let k = m.start; k < m.start + m.marker; k++) {
@@ -259,6 +310,20 @@ export function extractInlineStyles<T extends InlineStyleEntity = InlineStyleEnt
 		for (let k = m.end - m.marker; k < m.end; k++) {
 			removed[k] = true;
 		}
+	}
+	for (const pos of escapes) {
+		const lineStart = text.lastIndexOf('\n', pos) + 1;
+		if (!removed[pos] || text.slice(lineStart, pos).trim()) {
+			continue;
+		}
+		const lineEnd = text.indexOf('\n', pos) === -1 ? n : text.indexOf('\n', pos);
+		let rest = '';
+		for (let k = pos + 1; k < lineEnd; k++) {
+			if (!removed[k]) {
+				rest += text[k];
+			}
+		}
+		removed[pos] = !isMarkdownBlockLine(rest);
 	}
 
 	let outText = '';
@@ -309,24 +374,24 @@ export function styleAt(
 	styles: ReadonlyArray<{ s?: number; e?: number; type?: EBacktickType | string }>,
 	segS: number,
 	segE: number
-): { bold: boolean; italic: boolean; strike: boolean } {
-	let bold = false;
-	let italic = false;
-	let strike = false;
+): InlineStyleFlags {
+	const style: InlineStyleFlags = { bold: false, italic: false, strike: false, underline: false, spoiler: -1 };
 	if (segE <= segS) {
-		return { bold, italic, strike };
+		return style;
 	}
 	for (const st of styles) {
 		const s = st.s ?? 0;
 		const e = st.e ?? 0;
 		if (e <= s) continue;
 		if (s <= segS && e >= segE) {
-			if (st.type === EBacktickType.BOLD) bold = true;
-			else if (st.type === EBacktickType.ITALIC) italic = true;
-			else if (st.type === EBacktickType.STRIKE) strike = true;
+			if (st.type === EBacktickType.BOLD) style.bold = true;
+			else if (st.type === EBacktickType.ITALIC) style.italic = true;
+			else if (st.type === EBacktickType.STRIKE) style.strike = true;
+			else if (st.type === EBacktickType.UNDERLINE) style.underline = true;
+			else if (st.type === EBacktickType.SPOILER) style.spoiler = s;
 		}
 	}
-	return { bold, italic, strike };
+	return style;
 }
 
 export function styleSegments(
@@ -339,7 +404,7 @@ export function styleSegments(
 	}
 	const points: number[] = [a, b];
 	for (const st of styles) {
-		if (st.type !== EBacktickType.BOLD && st.type !== EBacktickType.ITALIC && st.type !== EBacktickType.STRIKE) {
+		if (!isInlineStyleType(st.type)) {
 			continue;
 		}
 		const s = st.s ?? 0;
@@ -369,20 +434,20 @@ export function styleSegments(
 		idx += 1;
 		while (idx + 1 < uniquePoints.length) {
 			const next = styleAt(styles, uniquePoints[idx], uniquePoints[idx + 1]);
-			if (next.bold === cur.bold && next.italic === cur.italic && next.strike === cur.strike) {
+			if (
+				next.bold === cur.bold &&
+				next.italic === cur.italic &&
+				next.strike === cur.strike &&
+				next.underline === cur.underline &&
+				next.spoiler === cur.spoiler
+			) {
 				segE = uniquePoints[idx + 1];
 				idx += 1;
 			} else {
 				break;
 			}
 		}
-		out.push({
-			s: segS,
-			e: segE,
-			bold: cur.bold,
-			italic: cur.italic,
-			strike: cur.strike
-		});
+		out.push({ s: segS, e: segE, ...cur });
 	}
 	return out;
 }

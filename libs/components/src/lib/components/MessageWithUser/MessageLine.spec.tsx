@@ -9,6 +9,7 @@ type TestInstance = {
 	type: unknown;
 	props: Record<string, unknown>;
 	findAllByType: (type: string) => TestInstance[];
+	findAll: (predicate: (node: TestInstance) => boolean) => TestInstance[];
 };
 type TestRenderer = {
 	root: TestInstance;
@@ -16,8 +17,9 @@ type TestRenderer = {
 	unmount: () => void;
 };
 
-const { create } = jest.requireActual<{
+const { create, act } = jest.requireActual<{
 	create: (element: ReactElement) => TestRenderer;
+	act: (callback: () => void) => void;
 }>('react-test-renderer');
 
 jest.mock('@mezon/core', () => ({ toMembersPage: (id: string) => `/members/${id}` }), { virtual: true });
@@ -213,6 +215,84 @@ describe('MessageLine markdown blocks and named links', () => {
 		expect(collectText(mapsRenderer.toJSON())).toBe(mapsText);
 		expect(mapsRenderer.root.findAllByType('a')[0].props.children).toBe('office map');
 		mapsRenderer.unmount();
+	});
+
+	it('renders task items, rules, tables, images, underline and click-to-reveal spoilers with exact textContent', () => {
+		const imageUrl = 'https://x.example/c.png';
+		const t = ['- [ ] todo', '- [x] done', '---', '| A | B |', '| :-- | --: |', `| a \\| b | ![cat](${imageUrl}) |`, 'see secret and under'].join(
+			'\n'
+		);
+		const urlStart = t.indexOf(imageUrl);
+		const secretStart = t.indexOf('secret');
+		const underStart = t.indexOf('under');
+		const renderer = create(
+			<MessageLine
+				content={{
+					t,
+					mk: [
+						{ type: EBacktickType.LINK, s: urlStart, e: urlStart + imageUrl.length },
+						{ type: EBacktickType.SPOILER, s: secretStart, e: secretStart + 6 },
+						{ type: EBacktickType.UNDERLINE, s: underStart, e: underStart + 5 }
+					]
+				}}
+				isTokenClickAble={true}
+				isJumMessageEnabled={false}
+				isEditted={false}
+				messageId="m7"
+			/>
+		);
+		expect(collectText(renderer.toJSON())).toBe(t);
+		expect(renderer.root.findAllByType('input').map((input) => input.props.checked)).toEqual([false, true]);
+		expect(renderer.root.findAllByType('hr')).toHaveLength(1);
+		expect(renderer.root.findAllByType('th')).toHaveLength(2);
+		const cells = renderer.root.findAllByType('td');
+		expect(cells).toHaveLength(2);
+		expect(cells[1].props.style).toEqual({ textAlign: 'right' });
+		const image = renderer.root.findAllByType('img')[0];
+		expect(image.props.src).toBe(imageUrl);
+		expect(image.props.alt).toBe('cat');
+		expect(renderer.root.findAllByType('u')).toHaveLength(1);
+
+		const spoiler = renderer.root.findAll((node) => typeof node.props.onClickCapture === 'function')[0];
+		expect(spoiler.props.className).toContain('text-transparent');
+		act(() => {
+			(spoiler.props.onClickCapture as (event: object) => void)({ preventDefault: () => undefined, stopPropagation: () => undefined });
+		});
+		expect(renderer.root.findAll((node) => node.type === 'span' && node.props.className === 'rounded px-0.5 bg-item-theme')).toHaveLength(1);
+		expect(renderer.root.findAll((node) => typeof node.props.onClickCapture === 'function')).toHaveLength(0);
+		expect(collectText(renderer.toJSON())).toBe(t);
+		renderer.unmount();
+	});
+
+	it('hides the backslash of line-start block escapes and renders those lines as plain text with exact textContent', () => {
+		const t = [
+			'\\# not heading',
+			'\\- not list',
+			'\\1. not ordered',
+			'\\> not quote',
+			'\\***',
+			'\\| a | b |',
+			'- \\[ ] not task',
+			'> \\# quoted',
+			'a \\- b'
+		].join('\n');
+		const boldStart = t.indexOf('heading');
+		const renderer = create(
+			<MessageLine
+				content={{ t, mk: [{ type: EBacktickType.BOLD, s: boldStart, e: boldStart + 7 }] }}
+				isTokenClickAble={true}
+				isJumMessageEnabled={false}
+				isEditted={false}
+				messageId="m8"
+			/>
+		);
+		expect(collectText(renderer.toJSON())).toBe(t.replace('- \\[', '• \\['));
+		expect(
+			renderer.root.findAll((node) => node.type === 'span' && node.props.className === 'hidden' && node.props.children === '\\')
+		).toHaveLength(8);
+		['h1', 'hr', 'table', 'input'].forEach((tag) => expect(renderer.root.findAllByType(tag)).toHaveLength(0));
+		expect(renderer.root.findAllByType('strong')).toHaveLength(1);
+		renderer.unmount();
 	});
 
 	it('skips block rendering in jump/reply preview mode while still converting named links and leaving channel links untouched', () => {

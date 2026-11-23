@@ -1,6 +1,6 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react';
 import type { MentionDataProps } from '@mezon/utils';
-import { ID_MENTION_HERE, IS_MAC_OS, IS_SAFARI, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
+import { ID_MENTION_HERE, IS_MAC_OS, IS_SAFARI, escapeMatchedInlineStyles, generateE2eId, getPastedFiles, sanitizeMessageHtml } from '@mezon/utils';
 import React, {
 	Children,
 	cloneElement,
@@ -1001,7 +1001,10 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					contentToInsert = clearMentionReplacer(cleanedHtml, mentionUsers);
 				} else if (htmlContent) {
 					contentToInsert = (
-						renderText(convertPastedHtmlToMarkdown(htmlContent) || plainText || '', ['escape_html', 'br_html']) as string[]
+						renderText(convertPastedHtmlToMarkdown(htmlContent) || escapeMatchedInlineStyles(plainText || ''), [
+							'escape_html',
+							'br_html'
+						]) as string[]
 					)
 						.join('')
 						.replace(/\u200b+/g, '\u200b');
@@ -1009,7 +1012,9 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					if (!plainText) {
 						return;
 					}
-					contentToInsert = (renderText(plainText, ['escape_html', 'br_html']) as string[]).join('').replace(/\u200b+/g, '\u200b');
+					contentToInsert = (renderText(escapeMatchedInlineStyles(plainText), ['escape_html', 'br_html']) as string[])
+						.join('')
+						.replace(/\u200b+/g, '\u200b');
 				}
 
 				insertHtmlInSelection(contentToInsert);
@@ -1033,8 +1038,9 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					const readClipboard = async (type: string) =>
 						clipboardItem?.types.includes(type) ? (await clipboardItem.getType(type)).text() : '';
 					const clipboardText = clipboardItem
-						? convertPastedHtmlToMarkdown(await readClipboard('text/html')) || (await readClipboard('text/plain'))
-						: await navigator.clipboard.readText();
+						? convertPastedHtmlToMarkdown(await readClipboard('text/html')) ||
+							escapeMatchedInlineStyles(await readClipboard('text/plain'))
+						: escapeMatchedInlineStyles(await navigator.clipboard.readText());
 					if (!clipboardText || !inputRef.current) return;
 
 					inputRef.current.focus();
