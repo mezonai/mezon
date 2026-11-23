@@ -788,9 +788,14 @@ export const MessageLine = ({
 	};
 	const content2 = (() => {
 		const textLen = t?.length ?? 0;
+		const contentEnd = elements.reduce(
+			(end, element) => ((element.s ?? 0) < end && (element.e ?? 0) > end ? (element.e ?? 0) : end),
+			t?.trimEnd().length ?? 0
+		);
 		const formattedContent: React.ReactNode[] = [];
 		const lastBlockLine = blockLines[blockLines.length - 1];
-		const isEndOnBlockLine = isQuickReactionAtEnd && !isQuickReactionInCard && !!lastBlockLine && lastBlockLine.lineEnd >= textLen;
+		const isEndOnBlockLine = isQuickReactionAtEnd && !isQuickReactionInCard && !!lastBlockLine && lastBlockLine.lineEnd >= contentEnd;
+		const isAnchorBeforeTrailing = isQuickReactionAtEnd && !isQuickReactionInCard && !isEndOnBlockLine && contentEnd < textLen;
 		const isEndOnCodeBlock =
 			isQuickReactionAtEnd &&
 			!isQuickReactionInCard &&
@@ -806,7 +811,11 @@ export const MessageLine = ({
 		) : null;
 
 		if (blockLines.length === 0) {
-			formattedContent.push(...renderRange(0, textLen, '', true));
+			if (isAnchorBeforeTrailing) {
+				formattedContent.push(...renderRange(0, contentEnd), quickReactionAnchor, ...renderRange(contentEnd, textLen, 'tail-', true));
+			} else {
+				formattedContent.push(...renderRange(0, textLen, '', true));
+			}
 		} else if (t) {
 			let cursor = 0;
 			blockLines.forEach((block, blockIdx) => {
@@ -862,7 +871,9 @@ export const MessageLine = ({
 				}
 			});
 
-			if (cursor < textLen) {
+			if (isAnchorBeforeTrailing) {
+				formattedContent.push(...renderRange(cursor, contentEnd, 'post-'), quickReactionAnchor, ...renderRange(contentEnd, textLen, 'tail-'));
+			} else if (cursor < textLen) {
 				formattedContent.push(...renderRange(cursor, textLen, 'post-'));
 			}
 			formattedContent.push(...renderRange(textLen, textLen, 'trail-', true));
@@ -879,7 +890,7 @@ export const MessageLine = ({
 			);
 		}
 
-		if (quickReactionAnchor && !isEndOnBlockLine && !isQuickReactionInCard) {
+		if (quickReactionAnchor && !isEndOnBlockLine && !isQuickReactionInCard && !isAnchorBeforeTrailing) {
 			formattedContent.push(quickReactionAnchor);
 		}
 

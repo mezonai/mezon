@@ -218,10 +218,10 @@ function MessageWithUser({
 		if (message?.code === TypeMessage.Poll) return 'poll';
 		if (message?.content?.callLog?.callLogType) return 'callLog';
 		if (message?.code === TypeMessage.SendToken) return 'token';
-		const trimmedText = message?.content?.t?.trim();
-		if (trimmedText && message?.attachments?.[0]?.url !== trimmedText) return 'text';
-		if (message?.attachments?.length) return 'attachment';
+		if (!isTopic && message?.code === TypeMessage.Topic) return 'topic';
 		if (message?.content?.embed?.length) return 'embed';
+		if (message?.attachments?.length) return 'attachment';
+		if (message?.content?.t?.trim()) return 'text';
 		return undefined;
 	})();
 
@@ -454,7 +454,7 @@ function MessageWithUser({
 						)}
 						{!isTopic && message?.code === TypeMessage.Topic && (
 							<div className="w-full flex">
-								<TopicViewButton message={message} />
+								<TopicViewButton message={message} quickReaction={renderQuickReaction('topic', '-right-2 -bottom-2 z-[2]')} />
 							</div>
 						)}
 						{!!message?.content?.callLog?.callLogType && (
