@@ -44,7 +44,7 @@
 		},
 		"VoiceChannel": {
 			"title": "Select Voice Channel",
-			"privateAudienceTip": "Tips: To ensure all audience members can join the event, add them to <channel>#{{channelName}}</channel>."
+			"privateAudienceTip": "Tips: To ensure all audience members can join the event, add them to <channel><icon/>{{channelName}}</channel>."
 		},
 		"address": {
 			"title": "Locations",
