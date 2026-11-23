@@ -18,7 +18,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { MentionData, MentionProps, MentionState } from './Mention';
 import parseHtmlAsFormattedText from './parseHtmlAsFormattedText';
-import { clearMentionReplacer, convertPastedHtmlToMarkdown, preparePastedHtml } from './utils/cleanHtml';
+import { clearMentionReplacer, convertPastedHtmlToMarkdown, preparePastedHtml, rememberComposerCopy, shouldKeepPastedText } from './utils/cleanHtml';
 import renderText from './utils/renderText';
 
 const escapeMentionText = (value: string): string => {
@@ -985,6 +985,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 
 				const htmlContent = asPlainText ? '' : e.clipboardData.getData('text/html');
 				const plainText = e.clipboardData.getData('text/plain');
+				const keepLiteral = shouldKeepPastedText(inputRef.current, plainText);
+				const toPlainMarkdown = (text: string) => (keepLiteral ? text : escapeMatchedInlineStyles(text));
 
 				const containsMentionEntities =
 					htmlContent &&
@@ -997,11 +999,11 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 				let contentToInsert: string;
 
 				if (containsMentionEntities && htmlContent) {
-					const cleanedHtml = preparePastedHtml(htmlContent);
+					const cleanedHtml = preparePastedHtml(htmlContent, !keepLiteral);
 					contentToInsert = clearMentionReplacer(cleanedHtml, mentionUsers);
 				} else if (htmlContent) {
 					contentToInsert = (
-						renderText(convertPastedHtmlToMarkdown(htmlContent) || escapeMatchedInlineStyles(plainText || ''), [
+						renderText((!keepLiteral && convertPastedHtmlToMarkdown(htmlContent)) || toPlainMarkdown(plainText || ''), [
 							'escape_html',
 							'br_html'
 						]) as string[]
@@ -1012,7 +1014,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					if (!plainText) {
 						return;
 					}
-					contentToInsert = (renderText(escapeMatchedInlineStyles(plainText), ['escape_html', 'br_html']) as string[])
+					contentToInsert = (renderText(toPlainMarkdown(plainText), ['escape_html', 'br_html']) as string[])
 						.join('')
 						.replace(/\u200b+/g, '\u200b');
 				}
@@ -1037,13 +1039,15 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					const [clipboardItem] = asPlainText ? [] : await navigator.clipboard.read();
 					const readClipboard = async (type: string) =>
 						clipboardItem?.types.includes(type) ? (await clipboardItem.getType(type)).text() : '';
-					const clipboardText = clipboardItem
-						? convertPastedHtmlToMarkdown(await readClipboard('text/html')) ||
-							escapeMatchedInlineStyles(await readClipboard('text/plain'))
-						: escapeMatchedInlineStyles(await navigator.clipboard.readText());
-					if (!clipboardText || !inputRef.current) return;
+					const plainText = clipboardItem ? await readClipboard('text/plain') : await navigator.clipboard.readText();
+					if (!inputRef.current) return;
 
 					inputRef.current.focus();
+					const keepLiteral = shouldKeepPastedText(inputRef.current, plainText);
+					const clipboardText =
+						(clipboardItem && !keepLiteral && convertPastedHtmlToMarkdown(await readClipboard('text/html'))) ||
+						(keepLiteral ? plainText : escapeMatchedInlineStyles(plainText));
+					if (!clipboardText) return;
 
 					const contentToInsert = (renderText(clipboardText, ['escape_html', 'br_html']) as string[])
 						.join('')
@@ -1481,6 +1485,8 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					onKeyDown={handleKeyDown}
 					onMouseDown={cancelPendingPick}
 					onPaste={handlePaste}
+					onCopy={rememberComposerCopy}
+					onCut={rememberComposerCopy}
 					onContextMenu={handleContextMenu}
 					onBlur={saveCaretPosition}
 					onMouseUp={saveCaretPosition}

@@ -5,7 +5,37 @@ import cleanDocsHtml from './cleanDocsHtml';
 
 const STYLE_TAG_REGEX = /<style>(.*?)<\/style>/gs;
 
-export function preparePastedHtml(html: string) {
+let lastComposerCopy = '';
+
+const normalizeClipboardText = (text: string) =>
+	text
+		.replace(/\r\n?/g, '\n')
+		.replace(/[^\S\n]/g, ' ')
+		.trim();
+
+export function rememberComposerCopy() {
+	lastComposerCopy = normalizeClipboardText(window.getSelection()?.toString() || '');
+}
+
+export function shouldKeepPastedText(input: HTMLElement | null, text: string): boolean {
+	if (lastComposerCopy && normalizeClipboardText(text) === lastComposerCopy) {
+		return true;
+	}
+	const selection = window.getSelection();
+	if (!input || !selection?.rangeCount || !input.contains(selection.getRangeAt(0).startContainer)) {
+		return false;
+	}
+	const range = selection.getRangeAt(0).cloneRange();
+	range.collapse(true);
+	range.setStart(input, 0);
+	const before = document.createElement('div');
+	before.appendChild(range.cloneContents());
+	before.querySelectorAll('br, div, p').forEach((node) => node.before('\n'));
+	const fences = (before.textContent || '').split('```');
+	return fences.length % 2 === 0 || (fences[fences.length - 1].split('\n').pop() || '').split('`').length % 2 === 0;
+}
+
+export function preparePastedHtml(html: string, escapeText = false) {
 	let fragment = document.createElement('div');
 	try {
 		html = cleanDocsHtml(html);
@@ -58,11 +88,13 @@ export function preparePastedHtml(html: string) {
 		}
 	});
 
-	fragment.normalize();
-	const walker = document.createTreeWalker(fragment, NodeFilter.SHOW_TEXT);
-	for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-		if (!node.parentElement?.closest('code, pre, [contenteditable="false"]')) {
-			node.nodeValue = escapeMatchedInlineStyles(node.nodeValue || '');
+	if (escapeText) {
+		fragment.normalize();
+		const walker = document.createTreeWalker(fragment, NodeFilter.SHOW_TEXT);
+		for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+			if (!node.parentElement?.closest('code, pre, [contenteditable="false"]')) {
+				node.nodeValue = escapeMatchedInlineStyles(node.nodeValue || '');
+			}
 		}
 	}
 
@@ -201,10 +233,12 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 		if (tag === 'IMG') {
 			const alt = node.getAttribute('alt') || '';
 			const src = getPasteLinkUrl(node.getAttribute('src'));
-			const isPixel = ['width', 'height'].some((size) => node.hasAttribute(size) && Number(node.getAttribute(size)) <= 2);
-			if (alt && !/[\p{L}\p{N}\s]/u.test(alt)) {
+			const sizes = ['width', 'height'].filter((size) => node.hasAttribute(size)).map((size) => Number(node.getAttribute(size)));
+			const isPixel = sizes.some((size) => size <= 2);
+			const isIcon = /^:[\w+-]+:$/.test(alt) || sizes.some((size) => size <= 32);
+			if (alt && ((isIcon && !isPixel) || !/[\p{L}\p{N}\s]/u.test(alt))) {
 				pushText(tokens, ctx.code ? alt : escapeInlineStyles(alt), marker, false);
-			} else if (src && !ctx.code && !ctx.link && !isPixel) {
+			} else if (src && !ctx.code && !ctx.link && !isPixel && !isIcon) {
 				pushText(tokens, `![${escapeInlineStyles(alt.replace(/[[\]\s]+/g, ' ').trim())}](${src})`, '', false);
 				formatted = true;
 			}

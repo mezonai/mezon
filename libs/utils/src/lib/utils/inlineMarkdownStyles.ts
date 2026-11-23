@@ -70,7 +70,18 @@ const URL_LIKE_RE = /((?:\w+:)?\/\/[^\s<>]+)/;
 const PLAIN_PROTECTED_RE = /```[\s\S]*?```|`[^`\n]+`|(?:\w+:)?\/\/[^\s<>]+/g;
 
 function isStyleEscape(text: string, pos: number, end: number, protectedEndAt: (p: number) => number): boolean {
-	return text[pos] === '\\' && pos + 1 < end && ESCAPABLE_STYLE_CHARS.has(text[pos + 1]) && protectedEndAt(pos + 1) === -1;
+	const isPipePair = text[pos + 2] === '|' || text[pos - 1] === '|' || (text[pos + 2] === '\\' && text[pos + 3] === '|');
+	return (
+		text[pos] === '\\' &&
+		pos + 1 < end &&
+		ESCAPABLE_STYLE_CHARS.has(text[pos + 1]) &&
+		(text[pos + 1] !== '|' || isPipePair) &&
+		protectedEndAt(pos + 1) === -1
+	);
+}
+
+function keepsTablePipeEscape(text: string, pos: number): boolean {
+	return text[pos + 1] === '|' && TABLE_ROW_RE.test(text.slice(text.lastIndexOf('\n', pos) + 1));
 }
 
 export function escapeInlineStyles(text: string): string {
@@ -258,9 +269,13 @@ function scanInlineStyles(text: string, protectedEndAt: (pos: number) => number)
 export function escapeMatchedInlineStyles(text: string): string {
 	let out = text;
 	for (let pass = 0; ; pass++) {
-		const ranges = Array.from(out.matchAll(PLAIN_PROTECTED_RE), (match) => ({ s: match.index ?? 0, e: (match.index ?? 0) + match[0].length }));
-		const { matches, escapes } = scanInlineStyles(out, protectedEndAtFor(ranges));
-		const marks = new Set(pass ? [] : escapes.map((pos) => pos + 1));
+		const current = out;
+		const ranges = Array.from(current.matchAll(PLAIN_PROTECTED_RE), (match) => ({
+			s: match.index ?? 0,
+			e: (match.index ?? 0) + match[0].length
+		}));
+		const { matches, escapes } = scanInlineStyles(current, protectedEndAtFor(ranges));
+		const marks = new Set(pass ? [] : escapes.filter((pos) => !keepsTablePipeEscape(current, pos)).map((pos) => pos + 1));
 		for (const m of matches) {
 			for (let k = 0; k < m.marker; k++) {
 				marks.add(m.start + k);
@@ -268,9 +283,9 @@ export function escapeMatchedInlineStyles(text: string): string {
 			}
 		}
 		if (!marks.size) {
-			return out;
+			return current;
 		}
-		out = out
+		out = current
 			.split('')
 			.map((ch, idx) => (marks.has(idx) ? `\\${ch}` : ch))
 			.join('');
@@ -301,7 +316,7 @@ export function extractInlineStyles<T extends InlineStyleEntity = InlineStyleEnt
 
 	const removed = new Array<boolean>(n).fill(false);
 	for (const pos of escapes) {
-		removed[pos] = text[pos + 1] !== '|' || !TABLE_ROW_RE.test(text.slice(text.lastIndexOf('\n', pos) + 1));
+		removed[pos] = !keepsTablePipeEscape(text, pos);
 	}
 	for (const m of matches) {
 		for (let k = m.start; k < m.start + m.marker; k++) {

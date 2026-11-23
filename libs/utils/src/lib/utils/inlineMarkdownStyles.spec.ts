@@ -342,9 +342,11 @@ describe('style escapes', () => {
 		);
 	});
 
-	it('drops the backslash of \\| except on table rows, where the renderer needs it to split cells', () => {
+	it('treats \\| as an escape only next to another pipe, and keeps it on table rows where the renderer splits cells', () => {
 		expect(extractInlineStyles('\\|\\|x\\|\\|', [])).toEqual({ text: '||x||', entities: [] });
-		expect(extractInlineStyles('| a \\| b | \\*c\\* |\nx \\| y', [])).toEqual({ text: '| a \\| b | *c* |\nx | y', entities: [] });
+		expect(extractInlineStyles("grep 'a\\|b' file", [])).toEqual({ text: "grep 'a\\|b' file", entities: [] });
+		expect(extractInlineStyles('| a \\| b | \\*c\\* |\nx \\| y', [])).toEqual({ text: '| a \\| b | *c* |\nx \\| y', entities: [] });
+		expect(extractInlineStyles('| \\|\\|x\\|\\| | y |', [])).toEqual({ text: '| \\|\\|x\\|\\| | y |', entities: [] });
 	});
 
 	it('keeps a line-start backslash when dropping it would turn the line into a list, rule or table', () => {
@@ -385,6 +387,13 @@ describe('escapeMatchedInlineStyles', () => {
 		expect(escapeMatchedInlineStyles('C:\\_temp\\*.txt')).toBe('C:\\\\_temp\\\\*.txt');
 		expect(escapeMatchedInlineStyles('`__x__` and https://a.com/__b__ and __c__')).toBe('`__x__` and https://a.com/__b__ and \\_\\_c\\_\\_');
 		expect(escapeMatchedInlineStyles('```\n__x__\n```')).toBe('```\n__x__\n```');
+	});
+
+	it('does not double \\| that stays literal or sits on a table row', () => {
+		const table = '| a | b |\n|---|---|\n| x \\| y | \\|\\|z\\|\\| |';
+		expect(escapeMatchedInlineStyles(table)).toBe(table);
+		expect(extractInlineStyles(escapeMatchedInlineStyles(table), [])).toEqual({ text: table, entities: [] });
+		expect(escapeMatchedInlineStyles("grep 'a\\|b'")).toBe("grep 'a\\|b'");
 	});
 
 	it('sends back exactly the pasted text', () => {
