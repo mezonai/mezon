@@ -8,7 +8,7 @@ import type {
 	IChannel,
 	LoadingStatus
 } from '@mezon/utils';
-import { ModeResponsive, ThreadStatus, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
+import { ModeResponsive, ThreadStatus, TypeCheck, checkIsThread, isDmOrGroupChannelType, isRealClanId, mapChannelToAppEntity } from '@mezon/utils';
 import type { Dispatch, EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
@@ -331,11 +331,12 @@ export const joinChat = createAsyncThunk('channels/joinChat', async ({ clanId, c
 	if (!channelId) return null;
 
 	try {
-		if (clanId && clanId !== '0') {
+		const isDmOrGroup = isDmOrGroupChannelType(channelType) || !isRealClanId(clanId);
+		if (!isDmOrGroup) {
 			await waitForClanJoin(clanId);
 		}
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const channel = await mezon.clientRef.current?.joinChat(mezon.session, clanId, channelId, channelType, isPublic);
+		const channel = await mezon.clientRef.current?.joinChat(mezon.session, isDmOrGroup ? '0' : clanId, channelId, channelType, isPublic);
 		return channel;
 	} catch (error) {
 		captureSentryError(error, 'channels/joinChat');
@@ -356,7 +357,11 @@ export const fetchChannelById = createAsyncThunk(
 				mezon
 			});
 			if (getArchiveVersion() !== archiveVersion) return thunkAPI.rejectWithValue(CHANNEL_ARCHIVE_CHANGED);
-			if (response?.channel_id !== channelId || (response.clan_id && response.clan_id !== '0' && response.clan_id !== clanId)) {
+			if (
+				response?.channel_id !== channelId ||
+				isDmOrGroupChannelType(response.type) ||
+				(response.clan_id && response.clan_id !== '0' && response.clan_id !== clanId)
+			) {
 				throw new Error('Invalid channel details');
 			}
 			return putFetchedChannel(thunkAPI.dispatch, clanId, response, restored);
@@ -1120,6 +1125,7 @@ export const channelsSlice = createSlice({
 		},
 		add: (state: ChannelsState, action: PayloadAction<{ clanId: string; channel: ChannelsEntity }>) => {
 			const { clanId, channel } = action.payload;
+			if (isDmOrGroupChannelType(channel.type) || !isRealClanId(clanId)) return;
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
@@ -1269,6 +1275,7 @@ export const channelsSlice = createSlice({
 		createChannelSocket: (state, action: PayloadAction<ChannelCreatedEvent>) => {
 			const payload = action.payload;
 			const clanId = payload.clan_id;
+			if (isDmOrGroupChannelType(payload.channel_type) || !isRealClanId(clanId)) return;
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
@@ -1299,6 +1306,7 @@ export const channelsSlice = createSlice({
 		deleteChannelSocket: (state, action: PayloadAction<ChannelDeletedEvent>) => {
 			const payload = action.payload;
 			const clanId = payload.clan_id;
+			if (!isRealClanId(clanId)) return;
 
 			if (state.byClans[clanId]) {
 				channelsAdapter.removeOne(state.byClans[clanId].entities, payload.channel_id);
@@ -1308,6 +1316,7 @@ export const channelsSlice = createSlice({
 		updateChannelSocket: (state, action: PayloadAction<ChannelUpdatedEvent>) => {
 			const payload = action.payload;
 			const clanId = payload.clan_id;
+			if (isDmOrGroupChannelType(payload.channel_type) || !isRealClanId(clanId)) return;
 
 			if (state.byClans[clanId]) {
 				channelsAdapter.updateOne(state.byClans[clanId].entities, {
@@ -1522,6 +1531,7 @@ export const channelsSlice = createSlice({
 		},
 		setShowPinBadgeOfChannel: (state, action: PayloadAction<{ clanId: string; channelId: string; isShow: boolean }>) => {
 			const { clanId, channelId, isShow } = action.payload;
+			if (!isRealClanId(clanId)) return;
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
@@ -1904,7 +1914,9 @@ export const selectChannelsByClanId = createSelector([getChannelsState, (state: 
 export const selectDefaultChannelIdByClanId = createSelector(
 	[selectAllChannels, (state: RootState, clanId: string) => clanId],
 	(channels, clanId) => {
-		const defaultChannel = channels.find((channel) => channel.parent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL);
+		const defaultChannel = channels.find(
+			(channel) => channel.parent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !channel.channel_private
+		);
 		return defaultChannel ? defaultChannel.id : null;
 	}
 );

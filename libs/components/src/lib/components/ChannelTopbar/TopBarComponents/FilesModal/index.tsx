@@ -11,7 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
-import { AttachmentTypeUpload } from '@mezon/utils';
+import { AttachmentTypeUpload, isRealClanId } from '@mezon/utils';
 import type { RefObject, UIEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
 	const { channelId, clanId } = useGalleryTarget();
-	const isDirect = clanId === '0';
+	const isDirect = !isRealClanId(clanId);
 	const [keywordSearch, setKeywordSearch] = useState('');
 
 	const allAttachments = useAppSelector((state) => selectAllListDocumentByChannel(state, channelId));

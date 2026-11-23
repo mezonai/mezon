@@ -61,6 +61,7 @@ import {
 	checkIsThread,
 	extractCanvasIdsFromText,
 	filterEmptyArrays,
+	isRealClanId,
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
@@ -71,6 +72,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from '
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { CommandSuggestion } from './CommandSuggestion';
 import Mention, { type MentionData } from './Mention';
 import MentionsInput, { type FormattedText, type MentionsInputHandle } from './MentionsInput';
 import SuggestItem from './SuggestItem';
@@ -213,10 +215,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const mentionClanId = currentChannel?.clan_id ?? '';
 	const isAnonymousSend =
-		!isDm &&
-		Boolean(mentionClanId || props.currentClanId) &&
-		(mentionClanId || props.currentClanId) !== '0' &&
-		(props.isTopic ? Boolean(currTopicId) && topicAnonymousMode : anonymousMode);
+		!isDm && isRealClanId(mentionClanId || props.currentClanId) && (props.isTopic ? Boolean(currTopicId) && topicAnonymousMode : anonymousMode);
 	const clanRosterCapped = useAppSelector((state) => selectClanRosterCapped(state, mentionClanId));
 	const {
 		searchMembers: searchRemoteMembers,
@@ -226,7 +225,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	} = useRemoteMentionSearch({
 		clanId: mentionClanId,
 		channelId: mentionScopeChannelId(currentChannel),
-		enabled: !isDm && clanRosterCapped && mentionClanId !== '' && mentionClanId !== '0'
+		enabled: !isDm && clanRosterCapped && isRealClanId(mentionClanId)
 	});
 
 	useEffect(() => {
@@ -957,7 +956,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			if (isAnonymousSend) {
 				return [];
 			}
-			if (!props.listMentions?.length && props.currentClanId && props.currentClanId !== '0') {
+			if (!props.listMentions?.length && isRealClanId(props.currentClanId)) {
 				dispatch(
 					channelMembersActions.fetchChannelMembers({
 						clanId: props.currentClanId as string,
@@ -1234,14 +1233,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 								);
 							}
 							return (
-								<div
+								<CommandSuggestion
 									key={suggestion.id}
-									className={`bg-item-theme-hover flex items-center px-3 py-2 cursor-pointer rounded-lg ${
-										focused ? 'bg-item-theme text-white' : ''
-									}`}
-								>
-									<SuggestItem display={suggestion.display} subText={suggestion.description} symbol="/" valueHightLight={search} />
-								</div>
+									display={suggestion.display}
+									description={suggestion.description}
+									search={search}
+									focused={focused}
+								/>
 							);
 						}}
 						appendSpaceOnAdd={false}

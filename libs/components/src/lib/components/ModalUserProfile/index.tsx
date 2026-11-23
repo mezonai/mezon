@@ -13,7 +13,15 @@ import {
 	useUserByUserId
 } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { EStateFriend, selectAllAccount, selectFriendById, selectProfileBannerByUserId, selectStatusInVoice, useAppSelector } from '@mezon/store';
+import {
+	EStateFriend,
+	selectAllAccount,
+	selectFriendById,
+	selectIsProUser,
+	selectProfileBannerByUserId,
+	selectStatusInVoice,
+	useAppSelector
+} from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { EUserStatus, generateE2eId } from '@mezon/utils';
@@ -24,6 +32,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ProfileBadges, proCardStyle, useProPalette } from '../ProfileBadges';
 import ProfileCover from '../ProfileCover';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import AvatarProfile from './AvatarProfile';
@@ -100,6 +109,15 @@ const ModalUserProfile = ({
 	}, []);
 
 	const userProfile = useSelector(selectAllAccount);
+
+	const effectiveUserId = isFooterProfile ? userProfile?.user?.id || userID : userID;
+	const isProFromStore = useAppSelector((state) => selectIsProUser(state, effectiveUserId));
+	const isPro = Boolean(!isUserRemoved && !checkAnonymous && isProFromStore);
+	const proPalette = useProPalette();
+	const isDmPanel = Boolean(isDM && showPopupLeft);
+	const showProCardGlow = isPro && !isFooterProfile && !isDmPanel;
+	const showProAvatar = isPro && !isDmPanel;
+	const cardStyle = useMemo(() => (showProCardGlow ? proCardStyle(proPalette) : undefined), [showProCardGlow, proPalette]);
 
 	const { userId } = useAuth();
 	const banner = useAppSelector((state) =>
@@ -252,7 +270,13 @@ const ModalUserProfile = ({
 	);
 
 	return (
-		<div tabIndex={-1} ref={profileRef} className={`outline-none ${classWrapper}`} onClick={() => setOpenModal(initOpenModal)}>
+		<div
+			tabIndex={-1}
+			ref={profileRef}
+			className={`outline-none ${showProCardGlow ? 'rounded-lg ' : ''}${classWrapper ?? ''}`}
+			style={cardStyle}
+			onClick={() => setOpenModal(initOpenModal)}
+		>
 			<ProfileCover
 				className={`${classBanner ? classBanner : 'rounded-tl-lg bg-indigo-400 rounded-tr-lg h-[105px]'} flex justify-end gap-x-2 p-2 `}
 				color={color}
@@ -282,6 +306,8 @@ const ModalUserProfile = ({
 				positionType={positionType}
 				isFooterProfile={isFooterProfile}
 				statusOnline={userStatus?.status as EUserStatus}
+				isPro={showProAvatar}
+				proPalette={proPalette}
 			/>
 			<div className="px-[16px]">
 				<div className=" w-full border-theme-primary p-2 my-[16px] text-theme-primary shadow rounded-[10px] flex flex-col text-justify bg-item-theme">
@@ -294,22 +320,25 @@ const ModalUserProfile = ({
 						</p>
 					)}
 					<div>
-						<p
-							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
-							data-e2e={generateE2eId('short_profile.display_name')}
-						>
-							{isUserRemoved
-								? t('labels.unknownUser')
-								: checkAnonymous
-									? t('labels.anonymous')
-									: isFooterProfile
-										? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
-										: userById?.clan_nick ||
-											userById?.user?.display_name ||
-											userById?.user?.username ||
-											currentUserId?.display_name ||
-											usernameShow}
-						</p>
+						<div className="flex items-center gap-1.5 min-w-0">
+							<p
+								className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
+								data-e2e={generateE2eId('short_profile.display_name')}
+							>
+								{isUserRemoved
+									? t('labels.unknownUser')
+									: checkAnonymous
+										? t('labels.anonymous')
+										: isFooterProfile
+											? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
+											: userById?.clan_nick ||
+												userById?.user?.display_name ||
+												userById?.user?.username ||
+												currentUserId?.display_name ||
+												usernameShow}
+							</p>
+							{isPro && <ProfileBadges isPro={isPro} palette={proPalette} />}
+						</div>
 						<p
 							className="text-base font-semibold tracking-wide text-theme-primary my-0 truncate"
 							data-e2e={generateE2eId('short_profile.username')}

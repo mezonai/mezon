@@ -5,7 +5,10 @@ const mockListChannelDescs = jest.fn();
 const mockJoinClanChat = jest.fn();
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
-jest.mock('@mezon/utils', () => ({ ActiveDm: { OPEN_DM: 1 } }));
+jest.mock('@mezon/utils', () => ({
+	...jest.requireActual('../../../../utils/src/lib/utils/clanChannel'),
+	ActiveDm: { OPEN_DM: 1 }
+}));
 jest.mock('react-toastify', () => ({ toast: jest.fn() }));
 jest.mock('mezon-js', () => ({
 	ChannelType: { CHANNEL_TYPE_GROUP: 2, CHANNEL_TYPE_DM: 3 },
@@ -56,7 +59,7 @@ const load = () => {
 		slice = require('./direct.slice');
 	});
 	const store = configureStore({ reducer: { direct: slice.directReducer } });
-	return { joinDirectMessageSpace: slice.joinDirectMessageSpace, store };
+	return { slice, joinDirectMessageSpace: slice.joinDirectMessageSpace, store };
 };
 
 beforeEach(() => {
@@ -115,4 +118,40 @@ it('lets a later caller retry a join that failed', async () => {
 	await store.dispatch(joinDirectMessageSpace({}));
 
 	expect(calls).toEqual(['list', 'join failed', 'list', 'join:0']);
+});
+
+it('normalizes negative synthetic clan_id to "0" and reopens inactive DMs in direct.slice', () => {
+	const { slice, store } = load();
+	const mapped = slice.mapDmGroupToEntity({
+		channel_id: 'dm-1',
+		clan_id: '-999001',
+		type: 3,
+		active: 0
+	});
+	expect(mapped.clan_id).toBe('0');
+
+	store.dispatch(slice.directActions.upsertOne({ ...mapped, clan_id: '-999001' }));
+	store.dispatch(slice.directActions.setDmGroupCurrentId('dm-1'));
+	expect(store.getState().direct.entities['dm-1']?.clan_id).toBe('0');
+	expect(slice.selectCurrentDmClanId(store.getState())).toBe('0');
+
+	store.dispatch(
+		slice.directActions.updateOne({
+			channel_id: 'dm-1',
+			clan_id: '-123456',
+			channel_label: 'Renamed Group'
+		})
+	);
+	expect(store.getState().direct.entities['dm-1']?.clan_id).toBe('0');
+	expect(store.getState().direct.entities['dm-1']?.channel_label).toBe('Renamed Group');
+
+	store.dispatch(
+		slice.directActions.updateMoreData({
+			id: 'dm-1',
+			channel_id: 'dm-1',
+			clan_id: '-999001',
+			type: 3
+		})
+	);
+	expect(store.getState().direct.entities['dm-1']?.active).toBe(1);
 });

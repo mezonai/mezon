@@ -18,7 +18,10 @@ jest.mock(
 	}),
 	{ virtual: true }
 );
-jest.mock('@mezon/utils', () => ({ LENGHT_USER_ID: 19 }));
+jest.mock('@mezon/utils', () => ({
+	...jest.requireActual('../../../../utils/src/lib/utils/clanChannel'),
+	LENGHT_USER_ID: 19
+}));
 jest.mock('mezon-js', () => ({ ChannelType: { CHANNEL_TYPE_MEZON_VOICE: 4 } }));
 jest.mock('../account/account.slice', () => ({ selectCurrentUserId: jest.fn() }));
 jest.mock('../cache-metadata', () => ({

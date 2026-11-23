@@ -7,8 +7,7 @@
 
 import type { MessagesEntity } from '@mezon/store';
 import { directMetaActions, messagesActions, useAppDispatch } from '@mezon/store';
-import { isBackgroundModeActive } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { isBackgroundModeActive, isDMStreamMode, normalizeClanId } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 
 interface MarkAsReadOptions {
@@ -27,7 +26,7 @@ export function useSeenMessagePool() {
 			}
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '0',
+					clanId: isDMStreamMode(mode) ? '0' : normalizeClanId(message?.clan_id),
 					channelId: message?.channel_id,
 					messageId: message?.id,
 					mode,
@@ -36,7 +35,7 @@ export function useSeenMessagePool() {
 					parentChannelId: options?.parentChannelId
 				})
 			);
-			if (isFocus && (mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM)) {
+			if (isFocus && isDMStreamMode(mode)) {
 				dispatch(directMetaActions.updateLastSeenTime(message));
 			}
 		},

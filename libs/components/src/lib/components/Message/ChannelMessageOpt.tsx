@@ -34,6 +34,7 @@ import {
 	formatMoney,
 	generateE2eId,
 	isPublicChannel,
+	isRealClanId,
 	useMenuBuilder
 } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -173,7 +174,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		const plugin = {
 			setup: (builder: MenuBuilder) => {
 				builder.when(
-					clanId && clanId !== '0' && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
+					isRealClanId(clanId) && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
 					(builder: MenuBuilder) => {
 						builder.addMenuItem(
 							'topic',

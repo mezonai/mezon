@@ -1,7 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import type { SfuBreakoutRoomEventPayload } from '@mezon/transport';
 import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
-import { LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
+import { LENGHT_USER_ID, isRealClanId, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, VoiceLeavedEvent } from 'mezon-js';
@@ -1045,7 +1045,7 @@ export const voiceSlice = createSlice({
 				state.loadingStatus = 'loaded';
 
 				if (presenceRevision !== undefined && presenceRevision !== (state.presenceRevisionByClan[clanId] ?? 0)) return;
-				if (clanId && clanId !== '0') {
+				if (isRealClanId(clanId)) {
 					state.voiceMembersLoadedByClan[clanId] = true;
 				}
 				if (fromCache || !users.length) return;
@@ -1246,7 +1246,7 @@ const selectChannelId = (_: RootState, channelId: string) => channelId;
 export const selectVoiceChannelMembersByChannelId = createSelector(
 	[getVoiceState, selectChannelId, (_, __, clanId: string) => clanId],
 	(state, channelId, clanId) => {
-		if (!clanId || clanId === '0') return [];
+		if (!isRealClanId(clanId)) return [];
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {
@@ -1259,7 +1259,7 @@ export const selectVoiceChannelMembersByChannelId = createSelector(
 export const selectUserInvoiceData = createSelector(
 	[getVoiceState, (_, userId: string) => userId, selectCurrentChannelId, selectCurrentClanId],
 	(state, userId, channelId, clanId) => {
-		if (!clanId || clanId === '0' || !channelId) return null;
+		if (!isRealClanId(clanId) || !channelId) return null;
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {

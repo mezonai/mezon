@@ -1,12 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { joinClan, waitForClanJoin } from './clans.slice';
+import { clansActions, clansReducer, joinClan, selectBadgeCountAllClan, selectClanView, waitForClanJoin } from './clans.slice';
 
 const calls: string[] = [];
 const mockFetchChannels = jest.fn();
 const mockJoinClanChat = jest.fn();
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
-jest.mock('@mezon/utils', () => ({ FOR_1_HOUR_SEC: 3600, LIMIT_CLAN_ITEM: 50, ONE_MILISECONDS: 1 }));
+jest.mock('@mezon/utils', () => ({
+	...jest.requireActual('../../../../utils/src/lib/utils/clanChannel'),
+	FOR_1_HOUR_SEC: 3600,
+	LIMIT_CLAN_ITEM: 50,
+	ONE_MILISECONDS: 1
+}));
 jest.mock('mezon-js', () => ({ ChannelType: { CHANNEL_TYPE_CHANNEL: 1 } }));
 jest.mock('mezon-js-protobuf', () => ({ ClanDescList: {}, ListClanDescRequest: {} }));
 jest.mock('react-redux', () => ({ batch: (fn: () => void) => fn() }));
@@ -102,4 +107,21 @@ it('releases waiting channel joins when the clan join fails', async () => {
 	await expect(waitForClanJoin('42')).resolves.toBeUndefined();
 	await joining;
 	expect(waitForClanJoin('42')).toBeUndefined();
+});
+
+it('treats negative synthetic DM/Group clan IDs as non-clan in joinClan, unread state, and selectors', async () => {
+	const store = configureStore({ reducer: { clans: clansReducer } });
+
+	await store.dispatch(joinClan({ clanId: '-999001' }));
+	expect(calls).toEqual(['join:0']);
+
+	store.dispatch(clansActions.setCurrentClanId('-999001'));
+	expect(selectClanView(store.getState())).toBe(false);
+
+	store.dispatch(clansActions.setCurrentClanId('42'));
+	expect(selectClanView(store.getState())).toBe(true);
+
+	store.dispatch(clansActions.setHasUnreadMessage({ clanId: '-999001', hasUnread: true }));
+	expect(store.getState().clans.clanUnreadStates.entities['-999001']).toBeUndefined();
+	expect(selectBadgeCountAllClan(store.getState())).toBe(0);
 });

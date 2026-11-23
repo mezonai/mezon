@@ -20,6 +20,8 @@ export interface IAccount {
 	email: string;
 	password: string;
 }
+type WithProPlan = { pro_plan?: boolean };
+
 export interface AccountState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -301,11 +303,28 @@ export const accountSlice = createSlice({
 			}
 		},
 		setUpdateAccount(state, action: PayloadAction<IUserAccount>) {
-			state.userProfile = {
+			const prevProfile = state.userProfile as (IUserAccount & WithProPlan) | null | undefined;
+			const nextProfile = action.payload as IUserAccount & WithProPlan;
+			const prevUser = state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined;
+			const nextUser = action.payload.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined;
+			const preservedProPlan = nextProfile.pro_plan !== undefined ? nextProfile.pro_plan : prevProfile?.pro_plan;
+			const preservedUserProPlan = nextUser?.pro_plan !== undefined ? nextUser.pro_plan : prevUser?.pro_plan;
+			const mergedUser: (NonNullable<IUserAccount['user']> & WithProPlan) | undefined =
+				state.userProfile?.user || action.payload.user
+					? {
+							...state.userProfile?.user,
+							...action.payload.user,
+							...(preservedUserProPlan !== undefined ? { pro_plan: preservedUserProPlan } : {})
+						}
+					: undefined;
+			const mergedProfile: IUserAccount & WithProPlan = {
 				...state.userProfile,
 				...action.payload,
-				user: { ...state.userProfile?.user, ...action.payload.user }
+				user: mergedUser,
+				encrypt_private_key: action.payload.encrypt_private_key,
+				...(preservedProPlan !== undefined ? { pro_plan: preservedProPlan } : {})
 			};
+			state.userProfile = mergedProfile;
 		},
 		incrementAvatarVersion(state) {
 			state.avatarVersion = (state.avatarVersion || 0) + 1;
@@ -419,4 +438,11 @@ export const selectProfileBannerByUserId = createSelector(
 		}
 		return friendBanner ?? suppliedBanner;
 	}
+);
+
+export const selectAccountProPlan = createSelector(getAccountState, (state: AccountState) =>
+	Boolean(
+		(state.userProfile as (IUserAccount & WithProPlan) | null | undefined)?.pro_plan ||
+			(state.userProfile?.user as (NonNullable<IUserAccount['user']> & WithProPlan) | undefined)?.pro_plan
+	)
 );

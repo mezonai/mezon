@@ -89,15 +89,19 @@ const SystemMessagesManagement = ({
 							className="flex justify-between flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer bg-item-hover transition-colors"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
-							<div className={' flex flex-row items-center gap-2'}>
+							<div className="flex min-w-0 flex-1 flex-row items-center gap-2">
 								{renderChannelIcon(channel)}
-								<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
+								<p
+									className="truncate"
+									data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}
+								>
 									{channel.channel_label ?? ''}
 								</p>
 							</div>
 							<p
 								data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.category_name')}
-								className="uppercase ml-5 font-semibold"
+								className="ml-5 max-w-[40%] shrink truncate text-right font-semibold uppercase"
+								title={selectCategoryEntites?.[channel.category_id || '']?.category_name}
 							>
 								{selectCategoryEntites?.[channel.category_id || '']?.category_name}
 							</p>
@@ -136,12 +140,13 @@ const SystemMessagesManagement = ({
 					className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center text-sm border border-theme-primary "
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
 				>
-					<div className={' flex flex-row items-center justify-between'}>
+					<div className="flex min-w-0 flex-1 flex-row items-center justify-between gap-4">
 						{selectedChannel ? (
 							<>
-								<div className={' flex flex-row items-center gap-2'}>
+								<div className="flex min-w-0 flex-1 flex-row items-center gap-2">
 									{renderChannelIcon(selectedChannel)}
 									<p
+										className="truncate"
 										data-e2e={generateE2eId(
 											'clan_page.settings.overview.system_messages_channel.selection.selected.channel_name'
 										)}
@@ -150,14 +155,15 @@ const SystemMessagesManagement = ({
 									</p>
 								</div>
 								<p
-									className={'ml-5 font-semibold'}
+									className="ml-5 max-w-[40%] shrink truncate text-right font-semibold"
 									data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.category_name')}
+									title={selectCategoryEntites?.[selectedChannel?.category_id || '']?.category_name}
 								>
 									{selectCategoryEntites?.[selectedChannel?.category_id || '']?.category_name}
 								</p>
 							</>
 						) : (
-							<div className={' flex flex-row items-center gap-2'}>
+							<div className="flex min-w-0 flex-1 flex-row items-center gap-2">
 								<MezonIcon icon={MzIcons16.mzChannelPrivate} className="text-[var(--mz-icon)]" />
 								<p>{t('systemMessages.privateWelcome')}</p>
 							</div>

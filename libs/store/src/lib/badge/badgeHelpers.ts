@@ -1,5 +1,5 @@
 import type { IChannel } from '@mezon/utils';
-import { ID_MENTION_HERE, TIME_OFFSET, TypeMessage, debounce } from '@mezon/utils';
+import { ID_MENTION_HERE, TIME_OFFSET, TypeMessage, debounce, isDMStreamMode, isRealClanId } from '@mezon/utils';
 import type { ApiMessageMention, ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
@@ -72,13 +72,14 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 
 	const id = channelId + messageId;
 
+	const isRealClan = isRealClanId(clanId);
 	const currentChannelBadge = store ? getCurrentChannelBadgeCount(store, clanId, channelId) : 0;
 
-	if (clanId !== '0' && isMessageAlreadyProcessed(id) && currentChannelBadge === 0) {
+	if (isRealClan && isMessageAlreadyProcessed(id) && currentChannelBadge === 0) {
 		return;
 	}
 
-	if (clanId !== '0' && messageId) {
+	if (isRealClan && messageId) {
 		cleanupOutdatedEntries();
 		processedMessagesCache.set(id, Date.now());
 	}
@@ -86,7 +87,7 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 	const now = timestamp || Date.now() / 1000;
 	const currentClanBadge = store ? getCurrentClanBadgeCount(store, clanId) : 0;
 
-	if (clanId !== '0') {
+	if (isRealClan) {
 		dispatch(
 			channelMetaActions.updateChannelBadgeCount({
 				clanId,
@@ -191,7 +192,7 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 		message.update_time_seconds && message.update_time_seconds > 0 ? message.update_time_seconds : message.create_time_seconds || 0;
 
 	// Handle direct messages (DM/Group)
-	if (!message.clan_id || message.clan_id === '0') {
+	if (isDMStreamMode(message.mode) || !isRealClanId(message.clan_id)) {
 		const dmMeta = store.getState().direct?.entities?.[message.channel_id];
 		const lastSeenTimestamp = Number(dmMeta?.last_seen_message?.timestamp_seconds ?? Number.NaN);
 		if (

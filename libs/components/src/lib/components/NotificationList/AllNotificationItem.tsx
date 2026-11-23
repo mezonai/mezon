@@ -19,6 +19,7 @@ import {
 	generateE2eId,
 	getShareContactInfo,
 	isAttachmentPresignPendingForMessage,
+	isRealClanId,
 	patchLinkTokens,
 	processText,
 	stripNotificationMarkers
@@ -230,7 +231,7 @@ function AllTabContent({ message, subject, category, clanId, senderId, embed, on
 	const { priorityAvatar, namePriority, usernameSender } = useGetPriorityNameFromUserClan(resolvedSenderId);
 	const isMessageNotification = category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES;
 	const senderClanMember = useAppSelector((state) =>
-		isMessageNotification && clanId && clanId !== '0' && resolvedSenderId ? selectMemberByIdAndClanId(state, clanId, resolvedSenderId) : null
+		isMessageNotification && isRealClanId(clanId) && resolvedSenderId ? selectMemberByIdAndClanId(state, clanId, resolvedSenderId) : null
 	);
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id || '0')) || {};

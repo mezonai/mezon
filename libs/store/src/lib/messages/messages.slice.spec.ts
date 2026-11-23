@@ -21,6 +21,7 @@ import {
 
 jest.mock('@mezon/logger', () => ({ captureSentryError: jest.fn() }));
 jest.mock('@mezon/utils', () => ({
+	...jest.requireActual('../../../../utils/src/lib/utils/clanChannel'),
 	mergePresignFinishContent: jest.requireActual('../../../../utils/src/lib/utils/presignFinish').mergePresignFinishContent,
 	TypeMessage: { Chat: 0, ChatUpdate: 1, ChatRemove: 2 },
 	EMessageCode: { FIRST_MESSAGE: 4 },
@@ -39,7 +40,11 @@ jest.mock('@mezon/utils', () => ({
 	isYouTubeLink: jest.fn(),
 	isTikTokLink: jest.fn()
 }));
-jest.mock('mezon-js', () => ({ safeJSONParse: JSON.parse, ChannelStreamMode: { STREAM_MODE_THREAD: 6 } }));
+jest.mock('mezon-js', () => ({
+	safeJSONParse: JSON.parse,
+	ChannelType: { CHANNEL_TYPE_CHANNEL: 1, CHANNEL_TYPE_GROUP: 2, CHANNEL_TYPE_DM: 3, CHANNEL_TYPE_THREAD: 7 },
+	ChannelStreamMode: { STREAM_MODE_CHANNEL: 2, STREAM_MODE_GROUP: 3, STREAM_MODE_DM: 4, STREAM_MODE_THREAD: 6 }
+}));
 jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: { error: jest.fn() } }));
 jest.mock('../account/account.slice', () => ({ selectAllAccount: () => ({ user: { id: 'user' } }) }));
@@ -985,5 +990,30 @@ describe('scoping message update and delete events by conversation', () => {
 		store.dispatch(messagesActions.newMessage({ id: '100', channel_id: 'parent', topic_id: '0', code: TypeMessage.ChatRemove } as any));
 
 		expect(store.getState().messages.channelMessages.topic.entities['100']).toBeUndefined();
+	});
+
+	it('normalizes negative synthetic DM/Group clan_id when fetching and sending messages', async () => {
+		const { store, client, mezon } = setup();
+		client.listChannelMessages.mockResolvedValue({ messages: [] });
+
+		await fetchMessagesCached(store.getState as any, mezon as any, '-999001', 'dm-channel', '0', undefined, undefined, true);
+		expect(client.listChannelMessages).toHaveBeenCalledWith({}, '0', 'dm-channel', '0', undefined, 50, undefined);
+
+		await store
+			.dispatch(
+				sendMessage({
+					clanId: '-999001',
+					channelId: 'dm-channel',
+					senderId: 'user',
+					mode: ChannelStreamMode.STREAM_MODE_DM,
+					isPublic: false,
+					content: { t: 'hello dm' }
+				})
+			)
+			.unwrap();
+
+		const sentMessages = Object.values(store.getState().messages.channelMessages['dm-channel']?.entities ?? {});
+		expect(sentMessages.length).toBeGreaterThan(0);
+		expect(sentMessages[0]?.clan_id).toBeUndefined();
 	});
 });

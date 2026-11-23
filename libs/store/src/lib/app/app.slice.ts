@@ -1,5 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
+import { isRealClanId } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
@@ -193,7 +194,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		const state = thunkAPI.getState() as RootState;
 		const clanId = state?.clans?.currentClanId;
 		thunkAPI.dispatch(directActions.joinDirectMessageSpace({ restart: true }));
-		if (clanId && clanId !== '0') {
+		if (isRealClanId(clanId)) {
 			thunkAPI.dispatch(clansActions.joinClan({ clanId, noCache: true }));
 		}
 		if (!refreshAfterCooldownTimer && cooldownUntil) {
@@ -223,7 +224,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 
 		clearApiCallTracker();
 
-		const isClanView = state?.clans?.currentClanId && state.clans.currentClanId !== '0';
+		const isClanView = isRealClanId(state?.clans?.currentClanId);
 		const currentChannelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
 		const currentDirectId = state.direct?.currentDirectMessageId;
 		const currentClanId = state.clans?.currentClanId;
@@ -267,7 +268,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 				})
 			);
 
-			if (clanId && clanId !== '0') {
+			if (isRealClanId(clanId)) {
 				thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId, channelId, noCache: true }));
 			}
 		}
@@ -326,7 +327,7 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 
 		badgeService.onReconnect();
-		if (currentClanId && currentClanId !== '0') {
+		if (isRealClanId(currentClanId)) {
 			badgeService.syncClanBadge(currentClanId);
 		}
 

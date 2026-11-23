@@ -10,7 +10,6 @@ type ItemAttachmentProps = {
 	previousDate: any;
 	selectedImageRef: React.MutableRefObject<HTMLDivElement | null>;
 	showDate: boolean;
-	setUrlImg: React.Dispatch<React.SetStateAction<string>>;
 	handleDrag: (e: any) => void;
 	index: number;
 	setCurrentIndexAtt: React.Dispatch<React.SetStateAction<number>>;
@@ -18,8 +17,7 @@ type ItemAttachmentProps = {
 };
 
 const ItemAttachment = (props: ItemAttachmentProps) => {
-	const { attachment, channelId, previousDate, selectedImageRef, showDate, setUrlImg, handleDrag, setCurrentIndexAtt, index, currentIndexAtt } =
-		props;
+	const { attachment, channelId, previousDate, selectedImageRef, showDate, handleDrag, setCurrentIndexAtt, index, currentIndexAtt } = props;
 	const dispatch = useAppDispatch();
 	const isSelected = index === currentIndexAtt;
 	const sourceMessage = useAppSelector((state) =>
@@ -30,7 +28,6 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 
 	const handleSelectImage = () => {
 		if (isPresignPending) return;
-		setUrlImg(attachment.url || '');
 		setCurrentIndexAtt(index);
 		dispatch(attachmentActions.setCurrentAttachment(attachment));
 	};

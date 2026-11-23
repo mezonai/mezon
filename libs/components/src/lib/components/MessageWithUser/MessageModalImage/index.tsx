@@ -29,7 +29,8 @@ import {
 	createImgproxyUrl,
 	formatDateI18n,
 	handleSaveImage,
-	isAttachmentPresignPendingForMessage
+	isAttachmentPresignPendingForMessage,
+	normalizeClanId
 } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -56,7 +57,7 @@ const MessageModalImage = () => {
 	const openModalAttachment = useAppSelector(selectOpenModalAttachment);
 	const attachment = useAppSelector(selectAttachment);
 	const currentAttachment = useAppSelector(selectCurrentAttachmentShowImage);
-	const [urlImg, setUrlImg] = useState(attachment);
+	const urlImg = currentAttachment ? (currentAttachment.url ?? '') : attachment;
 	const [currentIndexAtt, setCurrentIndexAtt] = useState(-1);
 	const { showMessageContextMenu, setPositionShow, setImageURL } = useMessageContextMenu();
 	const [isPlaying, setIsPlaying] = useState(false);
@@ -151,7 +152,7 @@ const MessageModalImage = () => {
 						: currentAttachments?.[0]?.create_time_seconds;
 				const timestampNumber = timestamp ? Math.floor(Number(timestamp)) : undefined;
 
-				const clanId = currentClanId === '0' ? '0' : currentClanId;
+				const clanId = normalizeClanId(currentClanId);
 
 				let beforeParam: number | undefined;
 				let afterParam: number | undefined;
@@ -217,7 +218,7 @@ const MessageModalImage = () => {
 	}, [isVideoFailed, handleMediaLoaded]);
 
 	useEffect(() => {
-		if (!currentAttachment) return;
+		if (!urlImg) return;
 
 		setIsMediaLoading(true);
 		setShowSkeleton(false);
@@ -235,22 +236,25 @@ const MessageModalImage = () => {
 				clearTimeout(skeletonTimerRef.current);
 			}
 		};
-	}, [currentAttachment]);
+	}, [urlImg]);
 
 	useEffect(() => {
 		setShowList(true);
+		if (openModalAttachment && modalRef.current) {
+			modalRef.current.focus();
+		}
+	}, [openModalAttachment]);
+
+	useEffect(() => {
 		setScale(1);
 		setRotate(0);
-		setUrlImg(attachment);
+		setPosition({ x: 0, y: 0 });
 		setIsPlaying(false);
 		if (videoRef.current) {
 			videoRef.current.pause();
 			videoRef.current.currentTime = 0;
 		}
-		if (openModalAttachment && modalRef.current) {
-			modalRef.current.focus();
-		}
-	}, [openModalAttachment, attachment]);
+	}, [openModalAttachment, urlImg]);
 
 	useEffect(() => {
 		if (attachments && attachments.length > 0 && currentAttachment?.id) {
@@ -303,7 +307,6 @@ const MessageModalImage = () => {
 			setScale(1);
 			setRotate(0);
 			setPosition({ x: 0, y: 0 });
-			setUrlImg(attachments[newIndex]?.url || '');
 			setCurrentIndexAtt(newIndex);
 			dispatch(attachmentActions.setCurrentAttachment(attachments[newIndex]));
 		},
@@ -484,6 +487,7 @@ const MessageModalImage = () => {
 						/>
 					) : (
 						<img
+							key={urlImg}
 							src={createImgproxyUrl(signedUrlImg, { width: 0, height: 0, resizeType: 'force' })}
 							alt={urlImg}
 							className={`max-h-full object-scale-down rounded-[10px] cursor-default transition-opacity duration-300 ${isMediaLoading ? 'opacity-0' : 'opacity-100'} ${rotate % 180 === 90 ? 'w-[calc(100vh_-_30px_-_56px)] h-auto' : 'h-auto'}`}
@@ -526,8 +530,6 @@ const MessageModalImage = () => {
 					<ListAttachment
 						attachments={attachments ? attachments : []}
 						channelId={channelIdForAttachments}
-						urlImg={urlImg}
-						setUrlImg={setUrlImg}
 						handleDrag={handleDrag}
 						setScale={setScale}
 						setPosition={setPosition}
