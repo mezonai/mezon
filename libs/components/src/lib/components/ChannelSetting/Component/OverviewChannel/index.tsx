@@ -1,3 +1,4 @@
+import { mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
@@ -12,6 +13,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { ThemeManager } from '@mezon/themes';
 import { Menu as Dropdown, Image, InputField, MezonIcon, MzIcons20, TextArea } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ValidateSpecialCharacters, ValidateURL, checkIsThread, generateE2eId } from '@mezon/utils';
@@ -402,7 +404,7 @@ interface IBottomBlockProps {
 
 const BottomBlock = ({
 	slowModeValues,
-	appearanceTheme,
+	appearanceTheme = 'dark',
 	slowModeDropdown,
 	setSlowDropdown,
 	hideInactivityTimes,
@@ -419,10 +421,10 @@ const BottomBlock = ({
 }: IBottomBlockProps) => {
 	const { t } = useTranslation('channelSetting');
 	const logoImgSrc = useMemo(() => {
-		if (appearanceTheme === 'light') {
-			return '/assets/images/channel_setting_logo_light.svg';
+		if (ThemeManager.isLightTheme(appearanceTheme)) {
+			return mezonLogoOnLight;
 		}
-		return '/assets/images/channel_setting_logo_dark.svg';
+		return mezonLogoOnDark;
 	}, [appearanceTheme]);
 
 	const menu = useMemo(() => {
@@ -488,7 +490,7 @@ const BottomBlock = ({
 					<div className="text-theme-primary">{t('fields.channelHideInactivity.description')}</div>
 				</div>
 				<div className="flex justify-center pb-10">
-					<Image src={logoImgSrc} width={48} height={48} className="object-cover w-[280px]" />
+					<Image src={logoImgSrc} alt="Mezon" className="object-contain w-[280px] max-w-full h-auto" />
 				</div>
 			</div>
 		)

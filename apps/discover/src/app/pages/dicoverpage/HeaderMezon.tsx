@@ -85,11 +85,10 @@ const HeaderMezon = memo((props: HeaderProps) => {
 					<div className="flex items-center justify-between md:px-[32px] max-md:px-[16px] max-md:py-[14px] h-[80px] max-md:h-[72px]">
 						<div className="flex items-center gap-[40px]">
 							<a href="/clans" className="flex items-center gap-2">
-								<img src={isOverlay ? MEZON_LOGO.DARK : MEZON_LOGO.LIGHT} alt="" className="w-11 h-11 aspect-square object-contain" />
 								<img
-									src={MEZON_LOGO.WORDMARK}
+									src={isOverlay ? MEZON_LOGO.ON_DARK : MEZON_LOGO.ON_LIGHT}
 									alt="Mezon"
-									className={`h-6 md:h-7 w-auto object-contain ${isOverlay ? '' : 'brightness-0'}`}
+									className="h-6 md:h-7 w-auto object-contain"
 								/>
 							</a>
 							<div className="hidden lg:flex items-center gap-[32px]">
@@ -187,8 +186,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 			>
 				<div className="container mx-auto flex items-center justify-between px-4 h-full">
 					<Link to={'/'} className="flex items-center gap-2">
-						<img src={MEZON_LOGO.LIGHT} alt="" className="w-12 h-12 object-contain" />
-						<img src={MEZON_LOGO.WORDMARK} alt="Mezon" className="h-6 w-auto object-contain brightness-0" />
+						<img src={MEZON_LOGO.ON_LIGHT} alt="Mezon" className="h-6 w-auto object-contain" />
 					</Link>
 					<button
 						className="max-lg:block lg:hidden p-2 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-gray-100"
