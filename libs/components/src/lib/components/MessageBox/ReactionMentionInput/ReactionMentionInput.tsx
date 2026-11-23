@@ -61,6 +61,7 @@ import {
 	checkIsThread,
 	extractCanvasIdsFromText,
 	filterEmptyArrays,
+	isRealClanId,
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
@@ -214,10 +215,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const mentionClanId = currentChannel?.clan_id ?? '';
 	const isAnonymousSend =
-		!isDm &&
-		Boolean(mentionClanId || props.currentClanId) &&
-		(mentionClanId || props.currentClanId) !== '0' &&
-		(props.isTopic ? Boolean(currTopicId) && topicAnonymousMode : anonymousMode);
+		!isDm && isRealClanId(mentionClanId || props.currentClanId) && (props.isTopic ? Boolean(currTopicId) && topicAnonymousMode : anonymousMode);
 	const clanRosterCapped = useAppSelector((state) => selectClanRosterCapped(state, mentionClanId));
 	const {
 		searchMembers: searchRemoteMembers,
@@ -227,7 +225,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	} = useRemoteMentionSearch({
 		clanId: mentionClanId,
 		channelId: mentionScopeChannelId(currentChannel),
-		enabled: !isDm && clanRosterCapped && mentionClanId !== '' && mentionClanId !== '0'
+		enabled: !isDm && clanRosterCapped && isRealClanId(mentionClanId)
 	});
 
 	useEffect(() => {
@@ -958,7 +956,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			if (isAnonymousSend) {
 				return [];
 			}
-			if (!props.listMentions?.length && props.currentClanId && props.currentClanId !== '0') {
+			if (!props.listMentions?.length && isRealClanId(props.currentClanId)) {
 				dispatch(
 					channelMembersActions.fetchChannelMembers({
 						clanId: props.currentClanId as string,

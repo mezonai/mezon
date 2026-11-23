@@ -21,7 +21,16 @@ import {
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
-import { TypeSearch, createImgproxyUrl, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
+import {
+	TypeSearch,
+	createImgproxyUrl,
+	filterListByName,
+	generateE2eId,
+	isDmOrGroupChannelType,
+	isRealClanId,
+	normalizeString,
+	sortFilteredList
+} from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -182,7 +191,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 					return;
 				}
 				if (item.typeChat === TypeSearch.Channel_Type) {
-					if (item.clanId === '0') {
+					if (isDmOrGroupChannelType(item.type) || !isRealClanId(item.clanId)) {
 						return;
 					}
 					const clanName = resolveClanName(item.clanId, item.subText);

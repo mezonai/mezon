@@ -16,6 +16,7 @@ import {
 	addMention,
 	convertMessageToHtml,
 	filterEmptyArrays,
+	isRealClanId,
 	processEntitiesDirectly,
 	searchMentionsHashtag
 } from '@mezon/utils';
@@ -75,7 +76,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 	} = useRemoteMentionSearch({
 		clanId: mentionClanId,
 		channelId: mentionScopeChannelId(messageChannel),
-		enabled: !isDmMode && clanRosterCapped && mentionClanId !== '' && mentionClanId !== '0'
+		enabled: !isDmMode && clanRosterCapped && isRealClanId(mentionClanId)
 	});
 	const rolesClan = useSelector(selectAllRolesClan);
 	useChannelMembers({ channelId, mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0 });

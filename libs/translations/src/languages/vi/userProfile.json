@@ -232,5 +232,8 @@
 		"banList": "Danh sách cấm",
 		"search": "Tìm người dùng bị cấm",
 		"banListEmpty": "Không tìm thấy người dùng bị cấm nào"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro"
 	}
 }

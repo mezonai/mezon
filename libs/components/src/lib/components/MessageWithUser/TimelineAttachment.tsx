@@ -19,7 +19,8 @@ import {
 	getMessageCreateTimeSeconds,
 	hasActivePresignPendingAttachments,
 	isAttachmentPresignPendingForMessage,
-	isMediaTypeNotSupported
+	isMediaTypeNotSupported,
+	isRealClanId
 } from '@mezon/utils';
 
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
@@ -140,8 +141,9 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 			dispatch(attachmentActions.setAttachment(enhancedAttachmentData.url));
 
 			if ((currentClanId && currentChannelId) || currentDmGroupId) {
-				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
-				const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
+				const isRealClan = isRealClanId(currentClanId);
+				const clanId = isRealClan ? currentClanId : '0';
+				const channelId = isRealClan ? (currentChannelId as string) : (currentDmGroupId as string);
 				const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
 				const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 				dispatch(

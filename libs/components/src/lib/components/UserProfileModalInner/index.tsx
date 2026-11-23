@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useMemberStatus, useOnClickOutside, useSettingFooter, useUserById } from '@mezon/core';
 import type { ChannelMembersEntity, RootState } from '@mezon/store';
-import { selectCurrentClanId, selectCurrentUserId, selectFriendById, selectModeResponsive, useAppSelector } from '@mezon/store';
+import { selectCurrentClanId, selectCurrentUserId, selectFriendById, selectIsProUser, selectModeResponsive, useAppSelector } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { EUserSettings, ModeResponsive } from '@mezon/utils';
@@ -11,6 +11,7 @@ import type { OpenModalProps } from '../ModalUserProfile';
 import AvatarProfile from '../ModalUserProfile/AvatarProfile';
 import GroupIconBanner from '../ModalUserProfile/StatusProfile/groupIconBanner';
 import ItemPanel from '../PanelChannel/ItemPanel';
+import { ProfileBadges, proCardStyle, useProPalette } from '../ProfileBadges';
 import { getColorAverageFromURL } from '../SettingProfile/AverageColor';
 import { EActiveType } from '../SettingProfile/SettingRightProfile';
 import AboutMe from './AboutMe';
@@ -65,6 +66,9 @@ const UserProfileModalInner = ({
 	const [color, setColor] = useState<string>('');
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const isSelf = currentUserId === userId;
+	const isPro = useAppSelector((state) => selectIsProUser(state, userId));
+	const proPalette = useProPalette();
+	const cardStyle = useMemo(() => (isPro ? proCardStyle(proPalette) : undefined), [isPro, proPalette]);
 	const [isOPenEditOption, setIsOPenEditOption] = useState(false);
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
@@ -144,6 +148,7 @@ const UserProfileModalInner = ({
 			<div
 				ref={userProfileRef}
 				className="w-[600px] h-[90vh] bg-theme-setting-primary rounded-lg flex-col justify-start items-start inline-flex"
+				style={cardStyle}
 			>
 				<div
 					className={`relative flex justify-end w-full h-[210px] rounded-t-md ${!color && 'dark:bg-bgAvatarDark bg-bgAvatarLight'}`}
@@ -167,6 +172,8 @@ const UserProfileModalInner = ({
 							userID={userId}
 							statusOnline={userStatus?.status}
 							styleAvatar="w-[120px] h-[120px] rounded-full"
+							isPro={isPro}
+							proPalette={proPalette}
 						/>
 						{isSelf ? (
 							<div className="flex items-end pr-4">
@@ -198,9 +205,16 @@ const UserProfileModalInner = ({
 				<div className="bg-theme-contexify pt-[60px] pb-4 px-4 rounded-b-md w-full flex-1">
 					<div className="flex flex-col gap-3 h-full">
 						<div className="mt-4">
-							<h3 className="text-2xl font-semibold text-theme-primary">
-								{name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || notify?.content?.username}
-							</h3>
+							<div className="flex items-center gap-1.5 min-w-0">
+								<h3 className="text-2xl font-semibold text-theme-primary truncate">
+									{name ||
+										userById?.clan_nick ||
+										userById?.user?.display_name ||
+										userById?.user?.username ||
+										notify?.content?.username}
+								</h3>
+								{isPro && <ProfileBadges isPro={isPro} palette={proPalette} />}
+							</div>
 							<p className="text-sm font-normal text-theme-primary">
 								{usernameAva || userById?.user?.username || notify?.content?.username}
 							</p>

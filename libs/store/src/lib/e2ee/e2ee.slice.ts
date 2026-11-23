@@ -1,5 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
+import { isDMStreamMode, isRealClanId } from '@mezon/utils';
 import type { EntityState, GetThunkAPI } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiPubKey, GetPubKeysResponseUserPubKey } from 'mezon-js';
@@ -138,13 +139,14 @@ export const selectE2eeByUserIds = createSelector([selectE2eeMessageEntities, (_
 	return userIds.map((userId) => entities[userId]);
 });
 
-const isEnableE2EE = (enableE2ee: boolean | undefined, clanId: string) => enableE2ee && (clanId === '0' || !clanId);
+const isEnableE2EE = (enableE2ee: boolean | undefined, clanId: string, mode?: number) =>
+	enableE2ee && (isDMStreamMode(mode) || !isRealClanId(clanId));
 
-export const checkE2EE = (clanId: string, channelId: string, thunkAPI: GetThunkAPI<unknown>) => {
+export const checkE2EE = (clanId: string, channelId: string, thunkAPI: GetThunkAPI<unknown>, mode?: number) => {
 	const state = thunkAPI.getState() as RootState;
 	const currentDM = selectDirectById(state, channelId);
 	const enableE2ee = currentDM?.e2ee === 1;
-	return isEnableE2EE(enableE2ee, clanId);
+	return isEnableE2EE(enableE2ee, clanId, mode);
 };
 
 export const selectOpenModalE2ee = createSelector(getE2eeState, (state) => state.openModalE2ee);

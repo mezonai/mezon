@@ -223,5 +223,8 @@
 		"banList": "禁止リスト",
 		"search": "禁止されたユーザーを検索",
 		"banListEmpty": "禁止されたユーザーが見つかりません"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro"
 	}
 }

@@ -70,7 +70,7 @@ import {
 } from '@mezon/store';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, ensureMediaPermission, generateE2eId } from '@mezon/utils';
+import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, ensureMediaPermission, generateE2eId, isRealClanId } from '@mezon/utils';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -157,7 +157,7 @@ const TopBarChannelText = memo(() => {
 	}, [setStatusMenu]);
 
 	const handleNavigateToParent = () => {
-		if (!channelParent?.id || !channelParent?.clan_id) {
+		if (!channelParent?.id || !isRealClanId(channelParent?.clan_id)) {
 			return;
 		}
 		navigate(toChannelPage(channelParent.id, channelParent.clan_id));
@@ -257,7 +257,7 @@ const TopBarChannelText = memo(() => {
 					)
 				)}
 
-				{currentClanId === '0' && (
+				{!isRealClanId(currentClanId) && (
 					<div
 						className="h-9 flex items-center gap-3 flex-1 overflow-hidden relative"
 						data-e2e={generateE2eId(`chat.direct_message.header.left_container`)}

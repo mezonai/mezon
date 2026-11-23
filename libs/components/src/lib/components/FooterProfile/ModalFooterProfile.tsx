@@ -1,7 +1,9 @@
 import { useEscapeKeyClose } from '@mezon/core';
+import { selectAccountProPlan, useAppSelector } from '@mezon/store';
 import type { RefObject } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import ModalUserProfile from '../ModalUserProfile';
+import { proCardStyle, useProPalette } from '../ProfileBadges';
 
 type ModalFooterProfileProps = {
 	userId: string;
@@ -16,6 +18,9 @@ type ModalFooterProfileProps = {
 
 const ModalFooterProfile = ({ userId, avatar, name, isDM, userStatusProfile, rootRef, onCloseModal, modalControlRef }: ModalFooterProfileProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
+	const isPro = useAppSelector(selectAccountProPlan);
+	const proPalette = useProPalette();
+	const cardStyle = useMemo(() => (isPro ? proCardStyle(proPalette) : undefined), [isPro, proPalette]);
 
 	const handleCloseModalFooterProfile = useCallback(() => {
 		onCloseModal?.();
@@ -70,7 +75,8 @@ const ModalFooterProfile = ({ userId, avatar, name, isDM, userStatusProfile, roo
 			ref={modalRef}
 			tabIndex={-1}
 			onClick={(e) => e.stopPropagation()}
-			className={`outline-none fixed sbm:left-[50px] left-5 bottom-[70px]  mt-[10px] w-[340px] max-w-[89vw] rounded-lg flex flex-col z-30 opacity-100 shadow-md shadow-bgTertiary-500/40 origin-bottom bg-outside-footer `}
+			style={cardStyle}
+			className={`outline-none fixed sbm:left-[50px] left-5 bottom-[70px]  mt-[10px] w-[340px] max-w-[89vw] rounded-lg flex flex-col z-30 opacity-100 ${isPro ? '' : 'shadow-md shadow-bgTertiary-500/40'} origin-bottom bg-outside-footer `}
 		>
 			<ModalUserProfile
 				rootRef={rootRef}

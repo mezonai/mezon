@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
-import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
+import { NotificationCategory, generateE2eId, isRealClanId, sortNotificationsByDate } from '@mezon/utils';
 import type { ApiSdTopic } from 'mezon-js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -81,7 +81,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 			fetchedTabsRef.current = { clanId: currentClanId, tabs: new Set() };
 		}
 
-		if (currentClanId !== '0' && !hasFetchedTopics && !fetchedTabsRef.current.tabs.has(InboxType.TOPICS)) {
+		if (isRealClanId(currentClanId) && !hasFetchedTopics && !fetchedTabsRef.current.tabs.has(InboxType.TOPICS)) {
 			fetchedTabsRef.current.tabs.add(InboxType.TOPICS);
 			dispatch(topicsActions.fetchTopics({ clanId: currentClanId }));
 		}

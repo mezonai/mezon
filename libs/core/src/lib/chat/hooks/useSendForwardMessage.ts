@@ -2,7 +2,16 @@ import type { RootState } from '@mezon/store';
 import { getStore, selectCurrentClanId, toastActions, useAppDispatch } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
-import { E_ERROR_CHANNEL, MAX_FORWARD_MESSAGE_LENGTH, getCdnSignatureChannelId, hasFinishedHlsCopy, withoutPresignMarkers } from '@mezon/utils';
+import {
+	E_ERROR_CHANNEL,
+	MAX_FORWARD_MESSAGE_LENGTH,
+	getCdnSignatureChannelId,
+	hasFinishedHlsCopy,
+	isDMStreamMode,
+	isRealClanId,
+	normalizeClanId,
+	withoutPresignMarkers
+} from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, type ApiMessageAttachment, type ApiMessageMention } from 'mezon-js';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -194,13 +203,15 @@ export function useSendForwardMessage() {
 					return;
 				}
 
-				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL && isPublic && clanid && clanid !== '0' && clanid !== currentClanId) {
+				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL && isPublic && isRealClanId(clanid) && clanid !== currentClanId) {
 					await joinClanBeforePublicChannel(clanid);
 				}
 
-				await client.joinChat(session, clanid || '0', channel_id, type, isPublic);
+				const targetClanId = isDMStreamMode(mode) ? '0' : normalizeClanId(clanid);
 
-				await client.writeChatMessage(session, clanid || '0', channel_id, mode, isPublic, validatedContent, mentions, attachmentsMessage);
+				await client.joinChat(session, targetClanId, channel_id, type, isPublic);
+
+				await client.writeChatMessage(session, targetClanId, channel_id, mode, isPublic, validatedContent, mentions, attachmentsMessage);
 
 				if (additionalMessage && additionalMessage.trim()) {
 					const trimmedMessage = additionalMessage.trim();
@@ -212,7 +223,7 @@ export function useSendForwardMessage() {
 					const additionalContent: IMessageSendPayload = {
 						t: trimmedMessage
 					};
-					await client.writeChatMessage(session, clanid || '0', channel_id, mode, isPublic, additionalContent, [], []);
+					await client.writeChatMessage(session, targetClanId, channel_id, mode, isPublic, additionalContent, [], []);
 				}
 
 				dispatch(
