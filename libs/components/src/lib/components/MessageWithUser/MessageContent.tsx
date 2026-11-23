@@ -239,7 +239,7 @@ const MessageText = ({
 					channelId={message.channel_id}
 					interactionDisabled={!!isSearchMessage}
 					isDirect={mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP}
-					quickReaction={quickReaction}
+					quickReaction={quickReaction && <span className="absolute right-4 bottom-0 w-0 h-0">{quickReaction}</span>}
 				/>
 			) : displayLine?.length > 0 || hasLinkMarkdown ? (
 				<MessageLine

@@ -225,10 +225,15 @@ function MessageWithUser({
 		return undefined;
 	})();
 
+	const isQuickReactionBurstingRef = useRef(false);
 	const renderQuickReaction = (target: typeof quickReactionTarget, className: string) =>
 		quickReactionTarget === target ? (
 			<MessageHoverContext.Consumer>
-				{(isHover) => isHover && <QuickReaction message={message} isTopic={!!isTopic} className={className} />}
+				{(isHover) =>
+					(isHover || isQuickReactionBurstingRef.current) && (
+						<QuickReaction message={message} isTopic={!!isTopic} className={className} isBurstingRef={isQuickReactionBurstingRef} />
+					)
+				}
 			</MessageHoverContext.Consumer>
 		) : undefined;
 
@@ -418,7 +423,7 @@ function MessageWithUser({
 									isInTopic={isTopic}
 									isEphemeral={isEphemeralMessage}
 									onContextMenu={onContextMenu}
-									quickReaction={renderQuickReaction('text', 'left-1 -top-1')}
+									quickReaction={renderQuickReaction('text', 'left-1 -top-3')}
 								/>
 								{isEphemeralMessage && (
 									<div className="flex items-center gap-1 mt-1 mb-1 text-xs italic text-theme-primary opacity-60">

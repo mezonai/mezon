@@ -437,7 +437,7 @@ export const MessageLine = ({
 				)?.s
 			: undefined;
 	const isQuickReactionInCard = trailingOgpStart !== undefined || trailingSocialStart !== undefined;
-	const cardQuickReaction = isQuickReactionInCard ? <span className="absolute right-4 bottom-2 w-0 h-0">{quickReaction}</span> : undefined;
+	const cardQuickReaction = isQuickReactionInCard ? <span className="absolute right-4 bottom-0 w-0 h-0">{quickReaction}</span> : undefined;
 	const wrapWithStyle = (node: React.ReactNode, style: { bold: boolean; italic: boolean; strike: boolean }, key: string): React.ReactNode => {
 		let wrapped = node;
 		if (style.strike) {
@@ -804,7 +804,7 @@ export const MessageLine = ({
 		const quickReactionAnchor = quickReaction ? (
 			<span
 				key={`quick-reaction-${messageId}`}
-				className={`relative w-0 h-0 ${isEndOnCodeBlock ? 'block ml-auto -left-4 -top-3' : 'inline-block align-middle'}`}
+				className={`relative w-0 h-0 ${isEndOnCodeBlock ? 'block ml-auto -left-4 -top-1' : 'inline-block align-middle'}`}
 			>
 				{quickReaction}
 			</span>
