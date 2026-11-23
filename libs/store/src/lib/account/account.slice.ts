@@ -221,14 +221,14 @@ export const updateAccountUsername = createAsyncThunk('userstatusapi/updateAccou
 		}
 		const updatedSession = response as ISession;
 		const currentSession = (thunkAPI.getState() as RootState).auth.session ?? (mezon.session as ISession);
-		thunkAPI.dispatch(
-			authActions.updateSession({
-				...currentSession,
-				token: updatedSession.token,
-				refresh_token: updatedSession.refresh_token,
-				created: false
-			})
-		);
+		const nextSession = {
+			...currentSession,
+			token: updatedSession.token,
+			refresh_token: updatedSession.refresh_token,
+			created: false
+		};
+		mezon.sessionRef.current = nextSession;
+		thunkAPI.dispatch(authActions.updateSession(nextSession));
 		return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
 	} catch (error) {
 		captureSentryError(error, 'userstatusapi/updateAccountUsername');
