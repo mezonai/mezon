@@ -1142,8 +1142,12 @@ export function MezonSfuVoiceRoom({
 		void (async () => {
 			try {
 				let cameraTrack = cameraTrackRef.current;
-				if (cameraEnabled && cameraTrack?.readyState !== 'live') {
-					if (customVideoTrack && customVideoTrack.readyState === 'live') {
+				const hasLiveCustomTrack = Boolean(customVideoTrack && customVideoTrack.readyState === 'live');
+				if (cameraEnabled && (cameraTrack?.readyState !== 'live' || (hasLiveCustomTrack && cameraTrack !== customVideoTrack))) {
+					if (hasLiveCustomTrack && customVideoTrack) {
+						if (cameraTrack && cameraTrack !== customVideoTrack) {
+							cameraTrack.stop();
+						}
 						cameraTrack = customVideoTrack;
 					} else if (!cameraManagedExternally) {
 						const video = withPreferredCamera(getCameraConstraints(cameraQualityTierRef.current), preferredCameraIdRef.current);
@@ -1168,7 +1172,7 @@ export function MezonSfuVoiceRoom({
 						localStream.addTrack(cameraTrack);
 						localStreamRef.current = localStream;
 						cameraTrackRef.current = cameraTrack;
-						setSelectedCamera(cameraTrack.getSettings().deviceId || 'default');
+						setSelectedCamera(cameraTrack.getSettings().deviceId || preferredCameraIdRef.current || 'default');
 						setLocalPreview(new MediaStream(localStream.getTracks()));
 					}
 				}
@@ -1229,7 +1233,7 @@ export function MezonSfuVoiceRoom({
 			localStreamRef.current = localStream;
 			setLocalPreview(new MediaStream(localStream.getTracks()));
 			const videoSender = findUplinkVideoSender();
-			if (videoSender && cameraEnabled) {
+			if (videoSender && cameraEnabled && videoSender.track !== customVideoTrack) {
 				void videoSender.replaceTrack(customVideoTrack);
 			}
 		}
@@ -1766,7 +1770,7 @@ export function MezonSfuVoiceRoom({
 			if (videoTrack) {
 				videoTrack.enabled = desiredMediaRef.current.cameraEnabled;
 				cameraTrackRef.current = videoTrack;
-				setSelectedCamera(videoTrack.getSettings().deviceId || 'default');
+				setSelectedCamera(videoTrack.getSettings().deviceId || preferredCameraIdRef.current || 'default');
 			}
 			localStreamRef.current = stream;
 			setLocalPreview(stream);
