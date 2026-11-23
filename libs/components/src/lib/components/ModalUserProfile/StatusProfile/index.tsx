@@ -260,6 +260,7 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 							}
 				}
 				onClick={() => setIsUserProConfirmOpen(true)}
+				hoverTextColor={false}
 				disabled={isUserPro}
 				children={t('statusProfile.userProPlan.enable')}
 				endIcon={<MezonIcon icon={MzIcons16.mzSparkles} className={isUserPro ? 'text-theme-secondary' : 'text-white'} />}

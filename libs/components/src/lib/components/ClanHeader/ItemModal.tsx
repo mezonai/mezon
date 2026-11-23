@@ -6,11 +6,12 @@ type ItemModalProps = {
 	endIcon?: ReactNode;
 	onClick?: () => void;
 	disabled?: boolean;
+	hoverTextColor?: boolean;
 	className?: string;
 	style?: CSSProperties;
 };
 
-const ItemModal = ({ children, endIcon, onClick, disabled, className, style }: ItemModalProps) => {
+const ItemModal = ({ children, endIcon, onClick, disabled, hoverTextColor = true, className, style }: ItemModalProps) => {
 	return (
 		<button
 			onClick={onClick}
@@ -20,7 +21,7 @@ const ItemModal = ({ children, endIcon, onClick, disabled, className, style }: I
 			data-e2e={generateE2eId(`clan_page.header.modal_panel.item`)}
 		>
 			<li
-				className={`text-[14px] font-medium w-full py-[6px] px-[8px] text-left list-none ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+				className={`text-[14px] font-medium w-full py-[6px] px-[8px] text-left list-none ${hoverTextColor ? 'text-theme-primary-hover' : ''} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
 			>
 				{children}
 			</li>

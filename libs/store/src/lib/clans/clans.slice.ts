@@ -410,7 +410,7 @@ export const buyClanProPlan = createAsyncThunk(
 					walletActions.sendTransaction({
 						sender: senderUserId,
 						recipient: normalizedRecipientUserId,
-						amount: '1',
+						amount: clanPrice,
 						textData: ETransferType.UnlockItem,
 						extraInfo: {
 							type: ETransferType.UnlockItem,
@@ -704,6 +704,12 @@ export const clansSlice = createSlice({
 			clansAdapter.updateOne(state, {
 				id: action.payload.clanId,
 				changes: { creator_id: action.payload.newOwnerId }
+			});
+		},
+		setClanProPlan: (state, action: PayloadAction<{ clanId: string; proPlan: boolean }>) => {
+			clansAdapter.updateOne(state, {
+				id: action.payload.clanId,
+				changes: { pro_plan: action.payload.proPlan }
 			});
 		},
 
