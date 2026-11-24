@@ -572,7 +572,7 @@ export default function PreJoinCalling() {
 						onFullScreen={handleFullScreen}
 						onToggleChat={toggleChat}
 						username={username}
-						cameraManagedExternally={false}
+						cameraManagedExternally={Boolean(selectedBg)}
 						customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
 						preferredCameraId={selectedCamera}
 						onSelectCamera={handleSelectCamera}
