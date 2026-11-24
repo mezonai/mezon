@@ -1,3 +1,4 @@
+import { mezonAppIcon } from '@mezon/assets';
 import { getShowName } from '@mezon/core';
 import {
 	getStoreAsync,
@@ -10,7 +11,7 @@ import {
 } from '@mezon/store';
 import { Icons, MezonIcon, MzIcons20 } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { MEZON_AVATAR_URL, NX_CHAT_APP_ANNONYMOUS_USER_ID, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
+import { NX_CHAT_APP_ANNONYMOUS_USER_ID, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 
 import { useCallback, useRef } from 'react';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -82,8 +83,8 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, mode, onClick, isT
 	const getAvatarProps = () => {
 		if (senderIdMessageRef === '0') {
 			return {
-				srcImgProxy: createImgproxyUrl(MEZON_AVATAR_URL, { width: 100, height: 100, resizeType: 'fill-down' }),
-				src: MEZON_AVATAR_URL
+				srcImgProxy: mezonAppIcon,
+				src: mezonAppIcon
 			};
 		}
 

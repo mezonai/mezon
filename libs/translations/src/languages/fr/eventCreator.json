@@ -83,7 +83,7 @@
 		"cover": "Bannière",
 		"VoiceChannel": {
 			"title": "Sélectionner un salon vocal",
-			"privateAudienceTip": "Conseil : Pour que tous les membres du public puissent rejoindre l'événement, ajoutez-les à <channel>#{{channelName}}</channel>."
+			"privateAudienceTip": "Conseil : Pour que tous les membres du public puissent rejoindre l'événement, ajoutez-les à <channel><icon/>{{channelName}}</channel>."
 		}
 	},
 	"actions": {

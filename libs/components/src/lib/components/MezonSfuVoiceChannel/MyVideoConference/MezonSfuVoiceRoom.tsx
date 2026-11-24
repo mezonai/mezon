@@ -2,8 +2,15 @@ import { useAuth } from '@mezon/core';
 import type { BreakoutParticipantItem } from '@mezon/store';
 import {
 	generateMeetToken,
+	getStore,
+	getUsersClanState,
+	selectAllAccount,
+	selectClanMemberByClanId,
+	selectClanRosterCapped,
 	selectEntitesUserClans,
+	selectMemberByIdAndClanId,
 	selectNoiseSuppressionEnabled,
+	selectOpenExternalChatBox,
 	selectShowCamera,
 	selectShowMicrophone,
 	selectShowScreen,
@@ -37,6 +44,17 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
+import {
+	LiveCommentInput,
+	LiveCommentStack,
+	canAcceptLiveCommentSender,
+	findMemberInAnyLoadedClan,
+	isClanRosterLoaded,
+	parseRoomComment,
+	resolveLiveCommentSender,
+	truncateLiveComment,
+	useLiveCommentQueue
+} from '../../LiveComments';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import { BreakoutRoomsModal } from '../BreakoutRooms/BreakoutRoomsModal';
 import { SfuControlBar } from '../ControlBar/SfuControlBar';
@@ -46,7 +64,7 @@ import { useRecordingBroadcast } from '../Recording/useRecordingBroadcast';
 import { useSfuCallRecorder } from '../Recording/useSfuCallRecorder';
 import type { SfuConnectionState as ConnectionState, SfuRemoteMedia as RemoteMedia, SfuPeer, SfuSignalMessage as SignalMessage } from '../types';
 import type { ExternalChatRef } from './ChatMeeting';
-import ChatStreamExternal from './ChatMeeting';
+import ChatStreamExternal, { ExternalChatUnreadBadge } from './ChatMeeting';
 import { SfuFocusLayoutContainer } from './FocusLayout/SfuFocusLayoutContainer';
 import { SfuGridLayoutContainer } from './GridLayout/SfuGridLayoutContainer';
 import { useSfuGridLayout, useSfuPagination } from './GridLayout/useSfuGridLayout';
@@ -60,6 +78,7 @@ import { ReactionCallHandler, useSendReaction } from './Reaction';
 import { ScreenAnnotationCompositor, ScreenDrawLayer, useScreenDraw, type ScreenDrawSession } from './ScreenAnnotation';
 import { SfuVoiceContextMenu } from './VoiceContextMenu';
 import { SfuVoiceInteractiveLayer } from './VoiceContextMenu/SfuVoiceInteractiveLayer';
+import { closeExternalChatNotification, externalChatNotificationTag, notifyExternalChatMessage } from './externalChatNotification';
 import { meetTokenNeedsRefresh } from './meetToken';
 import {
 	canReactivateMid,
@@ -730,6 +749,20 @@ export function MezonSfuVoiceRoom({
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
 	const [showVoiceInteractivePanel, setShowVoiceInteractivePanel] = useState(false);
 	const [showBreakoutModal, setShowBreakoutModal] = useState(false);
+	const [showCommentInput, setShowCommentInput] = useState(false);
+	const {
+		comments: liveComments,
+		hidden: commentsHidden,
+		hasUnseen: hasUnseenComments,
+		add: addLiveComment,
+		hide: hideLiveComments,
+		show: showLiveComments,
+		reset: resetLiveComments
+	} = useLiveCommentQueue();
+	useEffect(() => {
+		resetLiveComments();
+		setShowCommentInput(false);
+	}, [roomId, resetLiveComments]);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const activeClanId = voiceInfo?.clanId || '';
 	const channelVoiceMembers = useSelector((state) => selectVoiceChannelMembersByChannelId(state, roomId, activeClanId));
@@ -1554,9 +1587,30 @@ export function MezonSfuVoiceRoom({
 		});
 	}, []);
 	const chatRef = useRef<ExternalChatRef>(null);
-	const handleAddMessage = useCallback((message: string) => {
-		chatRef.current?.setMessages((prev) => [...prev, message]);
-	}, []);
+	const openExternalChat = useCallback(() => {
+		if (!selectOpenExternalChatBox(getStore().getState())) {
+			dispatch(voiceActions.setToggleChatBox());
+		}
+	}, [dispatch]);
+	const handleAddMessage = useCallback(
+		(message: string) => {
+			chatRef.current?.setMessages((prev) => [...prev, message]);
+			dispatch(voiceActions.noteExternalChatMessage());
+			notifyExternalChatMessage(message, externalChatNotificationTag(roomId), openExternalChat);
+		},
+		[dispatch, openExternalChat, roomId]
+	);
+	useEffect(() => {
+		if (!isExternalCalling) {
+			return;
+		}
+		const tag = externalChatNotificationTag(roomId);
+		return () => {
+			closeExternalChatNotification(tag);
+			dispatch(voiceActions.clearExternalChatUnread());
+		};
+	}, [dispatch, isExternalCalling, roomId]);
+	const handleIncomingRoomCommentRef = useRef<(message: SignalMessage) => void>(() => undefined);
 	const [roomPeerId, setRoomPeerId] = useState('');
 	const signalingTokenRef = useRef(token);
 	useEffect(() => {
@@ -2309,7 +2363,11 @@ export function MezonSfuVoiceRoom({
 					});
 				}
 				if (message.type === 'room_message' && message.message) {
-					handleAddMessage(message.message);
+					if (isExternalCalling) {
+						handleAddMessage(message.message);
+					} else {
+						handleIncomingRoomCommentRef.current(message);
+					}
 				}
 				if (message.type === 'error') {
 					const errorMsg = message.message || 'SFU signaling error';
@@ -2965,6 +3023,45 @@ export function MezonSfuVoiceRoom({
 		GUEST_NAME;
 
 	const localAvatar = getAvatarForPrioritize(localMember?.clan_avatar, localMember?.user?.avatar_url);
+	const handleIncomingRoomComment = useCallback(
+		(message: SignalMessage) => {
+			if (!message.message || !activeClanId || activeClanId === '0' || !message.user_id) return;
+			const parsed = parseRoomComment(message.message);
+			if (!parsed) return;
+			const senderId = message.user_id.trim();
+			const state = getStore().getState();
+			const clanRoster = selectClanMemberByClanId(state, activeClanId);
+			const rosterLoaded = isClanRosterLoaded(clanRoster);
+			const rosterCapped = selectClanRosterCapped(state, activeClanId);
+			const clanMember = selectMemberByIdAndClanId(state, activeClanId, senderId);
+			if (!canAcceptLiveCommentSender({ userId: senderId, inClanRoster: Boolean(clanMember), rosterLoaded, rosterCapped })) return;
+			const account = selectAllAccount(state);
+			const fallbackMember = clanMember
+				? null
+				: (findMemberInAnyLoadedClan(getUsersClanState(state)?.byClans, senderId, activeClanId) ??
+					(account?.user?.id === senderId ? { user: account.user } : null));
+			const participant = clanMember ? undefined : participants.find((item) => item.userId === senderId);
+			const fallbackName = participant ? getParticipantProfile(participant).displayName : undefined;
+			const sender = resolveLiveCommentSender({
+				userId: senderId,
+				clanMember,
+				rosterLoaded,
+				rosterCapped,
+				fallbackMember,
+				fallbackName
+			});
+			if (!sender) return;
+			addLiveComment({
+				senderId: sender.userId,
+				name: sender.name,
+				avatar: sender.avatar,
+				content: parsed.content,
+				timestamp: parsed.timestamp
+			});
+		},
+		[activeClanId, addLiveComment, getParticipantProfile, participants]
+	);
+	handleIncomingRoomCommentRef.current = handleIncomingRoomComment;
 	const presentUserIds = useMemo(
 		() => [currentUserId, ...participants.map((participant) => participant.userId)].filter((id): id is string => !!id),
 		[currentUserId, participants]
@@ -3329,6 +3426,53 @@ export function MezonSfuVoiceRoom({
 	const handleWriteChatExternal = (message: string) => {
 		wsRef.current?.send(JSON.stringify({ type: 'send_message', message }));
 	};
+	const handleToggleComment = useCallback(() => {
+		if (commentsHidden) {
+			showLiveComments();
+			setShowCommentInput(true);
+			return;
+		}
+		setShowCommentInput((prev) => !prev);
+	}, [commentsHidden, showLiveComments]);
+
+	const handleSendLiveComment = useCallback(
+		(text: string): boolean => {
+			const content = truncateLiveComment(text);
+			if (!content) return false;
+			const ws = wsRef.current;
+			if (!joinedRef.current || !ws || ws.readyState !== WebSocket.OPEN) return false;
+			const timestamp = Date.now();
+			const payload = {
+				id: currentUserId,
+				content,
+				timestamp,
+				name: localDisplayName,
+				avatar: localAvatar || ''
+			};
+			try {
+				ws.send(JSON.stringify({ type: 'send_message', message: JSON.stringify(payload) }));
+			} catch {
+				return false;
+			}
+			addLiveComment(
+				{
+					senderId: currentUserId,
+					name: localDisplayName,
+					avatar: localAvatar || '',
+					content,
+					timestamp
+				},
+				{ own: true }
+			);
+			return true;
+		},
+		[addLiveComment, currentUserId, localAvatar, localDisplayName]
+	);
+
+	const liveCommentStackLabels = useMemo(() => ({ hide: t('comment.hide') }), [t]);
+	const liveCommentPlaceholder = useMemo(() => t('comment.placeholder'), [t]);
+	const liveCommentButtonLabel = useMemo(() => t('comment.button'), [t]);
+	const showLiveCommentOverlay = !isExternalCalling && !isFullScreen && (!commentsHidden || showCommentInput);
 	const connectionLabel =
 		connectionState === 'connected'
 			? t(weakNetwork ? 'weakNetwork' : cameraEnabled ? 'videoConnected' : 'voiceConnected')
@@ -3384,139 +3528,168 @@ export function MezonSfuVoiceRoom({
 						<button
 							type="button"
 							title={t('chat')}
-							className={`${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--mz-icon-selected)]' : ''}`}
+							className={`relative ${SFU_HEADER_ICON_BUTTON_CLASS} ${isChatOpen ? '[--sfu-header-icon-fill:var(--mz-icon-selected)]' : ''}`}
 							onClick={onToggleChat}
 							data-e2e={generateE2eId('chat.channel_message.header.button.chat')}
 						>
 							<MezonIcon icon={MzIcons20.mzChat} className="text-[var(--sfu-header-icon-fill)]" />
+							{isExternalCalling && <ExternalChatUnreadBadge />}
 						</button>
 					</div>
 				</header>
 				<RecordingIndicator presentUserIds={presentUserIds} resolveName={resolveRecorderName} />
 
-				{isGridView ? (
-					<SfuGridLayoutContainer
-						ref={gridElRef}
-						onWheel={(e) => {
-							if (gridPagination.totalPageCount <= 1) return;
-							const now = Date.now();
-							if (now - lastGridWheelTimeRef.current < 250) return;
-							if (e.deltaY > 10) {
-								lastGridWheelTimeRef.current = now;
-								gridPagination.nextPage();
-							} else if (e.deltaY < -10) {
-								lastGridWheelTimeRef.current = now;
-								gridPagination.prevPage();
-							}
-						}}
-					>
-						<div
-							className="grid min-h-0 flex-1 gap-2 overflow-hidden"
-							style={{
-								gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
-								gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
+				<div className="relative flex min-h-0 flex-1 flex-col">
+					{isGridView ? (
+						<SfuGridLayoutContainer
+							ref={gridElRef}
+							onWheel={(e) => {
+								if (gridPagination.totalPageCount <= 1) return;
+								const now = Date.now();
+								if (now - lastGridWheelTimeRef.current < 250) return;
+								if (e.deltaY > 10) {
+									lastGridWheelTimeRef.current = now;
+									gridPagination.nextPage();
+								} else if (e.deltaY < -10) {
+									lastGridWheelTimeRef.current = now;
+									gridPagination.prevPage();
+								}
 							}}
 						>
-							{gridPagination.pageItems.map((tile) => (
-								<button
-									key={tile.id}
-									data-tile-id={tile.id}
-									data-has-video={tile.hasVideo}
-									type="button"
-									className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
-									title="Pin this track"
-									onClick={() => {
-										setPinnedTrackId(tile.id);
-										setIsGridView(false);
-									}}
-									onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
-								>
-									{tile.content}
-								</button>
-							))}
-						</div>
-
-						{gridPagination.totalPageCount > 1 && (
-							<div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
-								{Array.from({ length: gridPagination.totalPageCount }).map((_, idx) => {
-									const pageNum = idx + 1;
-									const isActive = pageNum === gridPagination.currentPage;
-									return (
-										<button
-											key={pageNum}
-											type="button"
-											className={`h-2.5 w-2.5 rounded-full transition-all ${
-												isActive ? 'bg-white opacity-100' : 'bg-white/40 hover:bg-white/70'
-											}`}
-											onClick={() => gridPagination.setPage(pageNum)}
-											title={`Page ${pageNum}`}
-										/>
-									);
-								})}
-							</div>
-						)}
-					</SfuGridLayoutContainer>
-				) : (
-					<SfuFocusLayoutContainer>
-						<div
-							ref={focusVideoContainerRef}
-							className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
-						>
 							<div
-								className="relative h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
-								onContextMenu={(event) => handleParticipantContextMenu(event, pinnedTile?.contextMenuUserId)}
+								className="grid min-h-0 flex-1 gap-2 overflow-hidden"
+								style={{
+									gridTemplateColumns: `repeat(${gridLayout.columns}, minmax(0, 1fr))`,
+									gridTemplateRows: `repeat(${gridLayout.rows}, minmax(0, 1fr))`
+								}}
 							>
-								<ScreenShareFocusContext.Provider value={true}>{pinnedTile?.content}</ScreenShareFocusContext.Provider>
-								{screenDrawSession && pinnedTile?.id === screenDrawSession.tileId && (
-									<ScreenDrawLayer session={screenDrawSession} onClose={screenDraw.close} />
-								)}
+								{gridPagination.pageItems.map((tile) => (
+									<button
+										key={tile.id}
+										data-tile-id={tile.id}
+										data-has-video={tile.hasVideo}
+										type="button"
+										className="relative h-full w-full min-h-0 min-w-0 overflow-hidden text-left [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+										title="Pin this track"
+										onClick={() => {
+											setPinnedTrackId(tile.id);
+											setIsGridView(false);
+										}}
+										onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
+									>
+										{tile.content}
+									</button>
+								))}
 							</div>
-						</div>
-						{focusConferenceTiles.length > 1 && (
-							<>
-								<button
-									type="button"
-									className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-3 py-1.5 text-sm text-white shadow-lg transition-[bottom,background-color] hover:bg-zinc-800 ${
-										showFocusThumbnails ? 'bottom-[9.25rem]' : 'bottom-3'
-									}`}
-									title={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
-									aria-label={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
-									onClick={() => setShowFocusThumbnails((value) => !value)}
-								>
-									{showFocusThumbnails ? <MezonIcon icon={MzIcons16.mzChevronDown} /> : <MezonIcon icon={MzIcons16.mzChevronUp} />}
-									<MezonIcon icon={MzIcons20.mzMembers} />
-									<span>{participantCount}</span>
-								</button>
-								<div
-									ref={focusThumbnailsRef}
-									className={`${
-										showFocusThumbnails ? 'flex' : 'hidden'
-									} h-36 shrink-0 gap-1 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
-									onWheel={(e) => {
-										e.stopPropagation();
-										e.currentTarget.scrollLeft += e.deltaY;
-									}}
-								>
-									{focusConferenceTiles
-										.filter((tile) => tile.id !== activePinnedTrackId)
-										.map((tile) => (
+
+							{gridPagination.totalPageCount > 1 && (
+								<div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
+									{Array.from({ length: gridPagination.totalPageCount }).map((_, idx) => {
+										const pageNum = idx + 1;
+										const isActive = pageNum === gridPagination.currentPage;
+										return (
 											<button
-												key={tile.id}
-												data-tile-id={tile.id}
-												data-participant-id={tile.participantId}
+												key={pageNum}
 												type="button"
-												className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors"
-												onClick={() => setPinnedTrackId(tile.id)}
-												onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
-											>
-												{tile.content}
-											</button>
-										))}
+												className={`h-2.5 w-2.5 rounded-full transition-all ${
+													isActive ? 'bg-white opacity-100' : 'bg-white/40 hover:bg-white/70'
+												}`}
+												onClick={() => gridPagination.setPage(pageNum)}
+												title={`Page ${pageNum}`}
+											/>
+										);
+									})}
 								</div>
-							</>
-						)}
-					</SfuFocusLayoutContainer>
-				)}
+							)}
+						</SfuGridLayoutContainer>
+					) : (
+						<SfuFocusLayoutContainer>
+							<div
+								ref={focusVideoContainerRef}
+								className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#5d5f66]"
+							>
+								<div
+									className="relative h-full w-full min-h-0 min-w-0 [&>div]:!h-full [&>div]:!w-full [&>div]:!aspect-auto"
+									onContextMenu={(event) => handleParticipantContextMenu(event, pinnedTile?.contextMenuUserId)}
+								>
+									<ScreenShareFocusContext.Provider value={true}>{pinnedTile?.content}</ScreenShareFocusContext.Provider>
+									{screenDrawSession && pinnedTile?.id === screenDrawSession.tileId && (
+										<ScreenDrawLayer session={screenDrawSession} onClose={screenDraw.close} />
+									)}
+								</div>
+							</div>
+							{focusConferenceTiles.length > 1 && (
+								<>
+									<button
+										type="button"
+										className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-white/10 bg-zinc-900/95 px-3 py-1.5 text-sm text-white shadow-lg transition-[bottom,background-color] hover:bg-zinc-800 ${
+											showFocusThumbnails ? 'bottom-[9.25rem]' : 'bottom-3'
+										}`}
+										title={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
+										aria-label={showFocusThumbnails ? 'Hide participants' : 'Show participants'}
+										onClick={() => setShowFocusThumbnails((value) => !value)}
+									>
+										{showFocusThumbnails ? (
+											<MezonIcon icon={MzIcons16.mzChevronDown} />
+										) : (
+											<MezonIcon icon={MzIcons16.mzChevronUp} />
+										)}
+										<MezonIcon icon={MzIcons20.mzMembers} />
+										<span>{participantCount}</span>
+									</button>
+									<div
+										ref={focusThumbnailsRef}
+										className={`${
+											showFocusThumbnails ? 'flex' : 'hidden'
+										} h-36 shrink-0 gap-1 overflow-x-auto pb-1 [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#6d6f77] [&::-webkit-scrollbar-track]:bg-transparent`}
+										onWheel={(e) => {
+											e.stopPropagation();
+											e.currentTarget.scrollLeft += e.deltaY;
+										}}
+									>
+										{focusConferenceTiles
+											.filter((tile) => tile.id !== activePinnedTrackId)
+											.map((tile) => (
+												<button
+													key={tile.id}
+													data-tile-id={tile.id}
+													data-participant-id={tile.participantId}
+													type="button"
+													className="w-56 shrink-0 overflow-hidden rounded-xl border-2 border-transparent text-left transition-colors"
+													onClick={() => setPinnedTrackId(tile.id)}
+													onContextMenu={(event) => handleParticipantContextMenu(event, tile.contextMenuUserId)}
+												>
+													{tile.content}
+												</button>
+											))}
+									</div>
+								</>
+							)}
+						</SfuFocusLayoutContainer>
+					)}
+					{showLiveCommentOverlay && (
+						<div className="pointer-events-none absolute bottom-4 right-4 z-30 flex w-[320px] max-w-[calc(100%-2rem)] flex-col items-end gap-2">
+							{!commentsHidden && (
+								<LiveCommentStack
+									comments={liveComments}
+									onHide={hideLiveComments}
+									labels={liveCommentStackLabels}
+									className="w-full"
+								/>
+							)}
+							{showCommentInput && (
+								<LiveCommentInput
+									key={roomId}
+									onSend={handleSendLiveComment}
+									placeholder={liveCommentPlaceholder}
+									sendLabel={liveCommentButtonLabel}
+									autoFocus
+									className="w-full"
+								/>
+							)}
+						</div>
+					)}
+				</div>
 
 				<SfuVoiceContextMenu channelId={roomId} onParticipantAction={handleParticipantAction} />
 				<SfuControlBar
@@ -3587,6 +3760,10 @@ export function MezonSfuVoiceRoom({
 					onFullScreen={onFullScreen}
 					showBreakoutModal={showBreakoutModal}
 					onToggleBreakoutModal={() => setShowBreakoutModal((prev) => !prev)}
+					showCommentInput={showCommentInput}
+					commentsHidden={commentsHidden}
+					hasUnseenComments={hasUnseenComments}
+					onToggleComment={handleToggleComment}
 				/>
 				{!isExternalCalling && activeClanId && showBreakoutModal && (
 					<BreakoutRoomsModal

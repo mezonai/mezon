@@ -251,5 +251,11 @@
 		"you": "나",
 		"enlarge": "{{name}} 확대",
 		"restoreLayout": "나란히 보기로 돌아가기"
+	},
+	"comment": {
+		"button": "댓글",
+		"placeholder": "댓글 작성…",
+		"hide": "플로팅 댓글 숨기기",
+		"show": "플로팅 댓글 표시"
 	}
 }

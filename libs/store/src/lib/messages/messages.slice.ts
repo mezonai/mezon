@@ -202,6 +202,7 @@ type FetchMessagesPayloadAction = {
 	foundE2ee?: boolean;
 	fromCache?: boolean;
 	toPresent?: boolean;
+	notModified?: boolean;
 };
 
 export interface MessagesRootState {
@@ -241,6 +242,40 @@ export const mapMessageChannelToEntityAction = createAsyncThunk(
 
 export const TYPING_TIMEOUT = 3000;
 
+function isNumericServerMessageId(id: string | undefined): id is string {
+	return Boolean(id && id !== '0' && /^\d+$/.test(id));
+}
+
+function getLatestCachedServerMessageId(
+	channelData: (EntityState<MessagesEntity, string> & { cache?: CacheMetadata }) | undefined
+): string | undefined {
+	if (!channelData?.cache || !channelData.ids?.length) {
+		return undefined;
+	}
+	let latest: string | undefined;
+	let latestBigInt = BigInt(0);
+	for (let i = 0; i < channelData.ids.length; i++) {
+		const id = channelData.ids[i];
+		const entity = channelData.entities[id];
+		if (!entity || entity.isSending || entity.isError || entity.code === TypeMessage.Ephemeral) {
+			continue;
+		}
+		if (!isNumericServerMessageId(entity.id)) {
+			continue;
+		}
+		try {
+			const parsed = BigInt(entity.id);
+			if (parsed > latestBigInt) {
+				latestBigInt = parsed;
+				latest = entity.id;
+			}
+		} catch {
+			// Ignore non-integer IDs.
+		}
+	}
+	return latest;
+}
+
 export const fetchMessagesCached = async (
 	getState: () => RootState,
 	ensuredMezon: MezonValueContext,
@@ -250,7 +285,8 @@ export const fetchMessagesCached = async (
 	direction?: number,
 	topicId?: string,
 	noCache = false,
-	dispatch?: AppDispatch
+	dispatch?: AppDispatch,
+	lastSeenMessageId?: string
 ) => {
 	const state = getState();
 
@@ -282,7 +318,26 @@ export const fetchMessagesCached = async (
 
 	const response = await withRetry(
 		(session) =>
-			ensuredMezon.client.listChannelMessages(session, isRealClan ? clanId : '0', channelId, messageId, direction, LIMIT_MESSAGE, topicId),
+			lastSeenMessageId
+				? ensuredMezon.client.listChannelMessages(
+						session,
+						isRealClan ? clanId : '0',
+						channelId,
+						messageId,
+						direction,
+						LIMIT_MESSAGE,
+						topicId,
+						lastSeenMessageId
+					)
+				: ensuredMezon.client.listChannelMessages(
+						session,
+						isRealClan ? clanId : '0',
+						channelId,
+						messageId,
+						direction,
+						LIMIT_MESSAGE,
+						topicId
+					),
 		{
 			scope: 'channel-messages',
 			mezon: ensuredMezon
@@ -428,6 +483,9 @@ export const fetchMessages = createAsyncThunk(
 			}
 			const lastMessageId = selectLastMessageIdByChannelId(state, chlId);
 			const requestMessageId = toPresent ? '0' : messageId || '0';
+			const canUseLastSeen =
+				requestMessageId === '0' && !toPresent && !isClearMessage && !foundE2ee && !state.messages.isViewingOlderMessagesByChannelId[chlId];
+			const lastSeenMessageId = canUseLastSeen ? getLatestCachedServerMessageId(state.messages.channelMessages[chlId]) : undefined;
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
@@ -438,8 +496,21 @@ export const fetchMessages = createAsyncThunk(
 				direction,
 				topicId,
 				noCache,
-				thunkAPI.dispatch as AppDispatch
+				thunkAPI.dispatch as AppDispatch,
+				lastSeenMessageId
 			);
+
+			if (lastSeenMessageId && !response.fromCache && (!response.messages || response.messages.length === 0)) {
+				return {
+					messages: [],
+					isFetchingLatestMessages,
+					isClearMessage: false,
+					viewingOlder,
+					foundE2ee,
+					fromCache: false,
+					notModified: true
+				};
+			}
 
 			// Fallback
 			if (!topicId && messageId && (!response.messages || response.messages.length === 0)) {
@@ -2599,7 +2670,12 @@ export const messagesSlice = createSlice({
 					state.loadingStatus = 'loaded';
 					let direction = action.meta.arg.direction;
 
-					if (!action?.payload?.messages?.length) return;
+					if (!action?.payload?.messages?.length) {
+						if (action?.payload?.notModified && state.channelMessages[scopeId]) {
+							state.channelMessages[scopeId].cache = createCacheMetadata();
+						}
+						return;
+					}
 
 					const isNew =
 						channelId &&

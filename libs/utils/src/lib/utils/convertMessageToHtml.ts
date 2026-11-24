@@ -1,6 +1,7 @@
 import type { IEmojiOnMessage, IExtendedMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
 import { EBacktickType } from '../types/messageLine';
-import { escapeInlineStyles } from './inlineMarkdownStyles';
+import { escapeInlineStyles, isInlineStyleType } from './inlineMarkdownStyles';
+import { isMarkdownBlockLine } from './markdownBlocks';
 
 const escapeHtml = (text: string): string => {
 	return text
@@ -88,7 +89,10 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 		}
 	});
 
-	const styleByRange = new Map<string, { s: number; e: number; bold: boolean; italic: boolean; strike: boolean }>();
+	const styleByRange = new Map<
+		string,
+		{ s: number; e: number; bold: boolean; italic: boolean; strike: boolean; underline: boolean; spoiler: boolean }
+	>();
 
 	markdown.forEach((mark: IMarkdownOnMessage) => {
 		if (mark.s !== undefined && mark.e !== undefined) {
@@ -103,18 +107,17 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 					html: markdownFormatted,
 					type: 'markdown'
 				});
-			} else if (
-				mark.s < mark.e &&
-				(mark.type === EBacktickType.BOLD || mark.type === EBacktickType.ITALIC || mark.type === EBacktickType.STRIKE)
-			) {
+			} else if (mark.s < mark.e && isInlineStyleType(mark.type)) {
 				const s = Math.max(0, mark.s);
 				const e = Math.min(text.length, mark.e);
 				if (s < e) {
 					const key = `${s}:${e}`;
-					const entry = styleByRange.get(key) ?? { s, e, bold: false, italic: false, strike: false };
+					const entry = styleByRange.get(key) ?? { s, e, bold: false, italic: false, strike: false, underline: false, spoiler: false };
 					if (mark.type === EBacktickType.BOLD) entry.bold = true;
 					if (mark.type === EBacktickType.ITALIC) entry.italic = true;
 					if (mark.type === EBacktickType.STRIKE) entry.strike = true;
+					if (mark.type === EBacktickType.UNDERLINE) entry.underline = true;
+					if (mark.type === EBacktickType.SPOILER) entry.spoiler = true;
 					styleByRange.set(key, entry);
 				}
 			}
@@ -125,6 +128,12 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 	const styleMarkers: Array<{ s: number; e: number; marker: string; rank: number }> = [];
 
 	styleEntries.forEach((entry) => {
+		if (entry.spoiler) {
+			styleMarkers.push({ s: entry.s, e: entry.e, marker: '||', rank: 5 });
+		}
+		if (entry.underline) {
+			styleMarkers.push({ s: entry.s, e: entry.e, marker: '__', rank: 4 });
+		}
 		if (entry.strike) {
 			styleMarkers.push({ s: entry.s, e: entry.e, marker: '~~', rank: 3 });
 		}
@@ -150,6 +159,10 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 		splitPointSet.add(sm.e);
 	});
 	const splitPoints = Array.from(splitPointSet).sort((a, b) => a - b);
+	const lineMarkers = Array.from(text.matchAll(/^ *[*_]/gm), (match) => (match.index ?? 0) + match[0].length - 1).filter((pos) => {
+		const lineEnd = text.indexOf('\n', pos);
+		return isMarkdownBlockLine(text.slice(pos, lineEnd === -1 ? text.length : lineEnd));
+	});
 
 	let result = '';
 	let cursor = 0;
@@ -177,7 +190,14 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 			cursor = entityAtCursor.end;
 		} else {
 			const nextPos = splitPoints.find((p) => p > cursor) ?? text.length;
-			result += escapeHtml(escapeInlineStyles(text.substring(cursor, nextPos)));
+			let from = cursor;
+			for (const pos of lineMarkers) {
+				if (pos >= from && pos < nextPos && (pos > cursor || !opening.length)) {
+					result += escapeHtml(escapeInlineStyles(text.substring(from, pos))) + text[pos];
+					from = pos + 1;
+				}
+			}
+			result += escapeHtml(escapeInlineStyles(text.substring(from, nextPos)));
 			cursor = nextPos;
 		}
 	}

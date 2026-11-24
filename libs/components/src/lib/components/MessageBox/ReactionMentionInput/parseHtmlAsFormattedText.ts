@@ -283,7 +283,11 @@ export default function parseHtmlAsFormattedToText(html: string, withMarkdownLin
 	function addEntity(node: ChildNode) {
 		if (node.nodeType === Node.COMMENT_NODE) return;
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
-		if (!linkPreview.url && (entity?.type === ApiMessageEntityTypes.Url || entity?.type === ApiMessageEntityTypes.TextUrl)) {
+		if (
+			!linkPreview.url &&
+			(entity?.type === ApiMessageEntityTypes.Url || entity?.type === ApiMessageEntityTypes.TextUrl) &&
+			!/!\[[^\]\n]*\]\($/.test(text.slice(0, index))
+		) {
 			const urlValue = (entity as unknown as ApiMessageEntityTextUrl).url;
 			const isInternal = !!process.env.NX_DOMAIN_URL && urlValue.includes(process.env.NX_DOMAIN_URL);
 			const isInviteLink = /\/invite\/[A-Za-z0-9_-]+/i.test(urlValue);

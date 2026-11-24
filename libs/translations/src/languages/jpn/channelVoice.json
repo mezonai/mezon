@@ -251,5 +251,11 @@
 		"you": "あなた",
 		"enlarge": "{{name}} を拡大",
 		"restoreLayout": "横並び表示に戻る"
+	},
+	"comment": {
+		"button": "コメント",
+		"placeholder": "コメントを入力…",
+		"hide": "フローティングコメントを非表示",
+		"show": "フローティングコメントを表示"
 	}
 }

@@ -1,3 +1,4 @@
+import { mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import { getApplicationDetail, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { MezonIcon, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { IS_MOBILE, createImgproxyUrl } from '@mezon/utils';
@@ -124,13 +125,7 @@ const HeaderInstall = memo(() => {
 
 	return (
 		<div className="flex flex-row items-center justify-center gap-[4px] absolute top-5 left-5">
-			<img
-				src={isDarkMode ? 'assets/images/mezon-logo-black.svg' : 'assets/images/mezon-logo-white.svg'}
-				alt="LogoMezon"
-				width={36}
-				height={36}
-			/>
-			<span className="text-2xl font-bold dark:text-[#dcdcdc] text-colorTextLightMode">MEZON</span>
+			<img src={isDarkMode ? mezonLogoOnDark : mezonLogoOnLight} alt="Mezon" className="h-8 w-auto object-contain" />
 		</div>
 	);
 });

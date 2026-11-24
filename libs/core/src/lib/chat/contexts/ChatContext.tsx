@@ -239,6 +239,7 @@ import {
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
 } from '../utils/socketReconnectBudget';
+import { createClanEventsRefresher } from './clanEventsRefresh';
 import { watchReconnectNotice } from './reconnectNotice';
 
 const MobileEventEmitter = new EventEmitter();
@@ -325,6 +326,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
 	const reconnectRecoveryPendingRef = useRef(false);
+	const clanEventsRefresher = useMemo(
+		() =>
+			createClanEventsRefresher({
+				refresh: (clanId) => dispatch(eventManagementActions.fetchEventManagement({ clanId, noCache: true }))
+			}),
+		[dispatch]
+	);
+
+	useEffect(() => () => clanEventsRefresher.cancelAll(), [clanEventsRefresher]);
 
 	const navigate = useCustomNavigate();
 	const onvoiceended = useCallback(
@@ -1293,6 +1303,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const userIds = users.map((u) => u.user_id);
 			const user = users?.find((user) => user.user_id === userId);
 			if (user) {
+				clanEventsRefresher.schedule(channel_desc.clan_id || clan_id || '');
 				if (
 					channel_desc.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
 					channel_desc.type === ChannelType.CHANNEL_TYPE_THREAD ||
@@ -1428,7 +1439,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			dispatch(userChannelsActions.markAccessChanged(channel_desc.channel_id as string));
 		},
-		[userId, dispatch]
+		[userId, dispatch, clanEventsRefresher]
 	);
 
 	const onuserclanadded = useCallback(
@@ -3419,9 +3430,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		setCallbackEventFn(socket);
 
 		return () => {
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			socket.onvoicereactionmessage = () => {};
-
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onchannelmessage = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function

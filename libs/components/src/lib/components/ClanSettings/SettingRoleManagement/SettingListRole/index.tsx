@@ -12,14 +12,16 @@ import {
 	selectTheme,
 	selectUserMaxPermissionLevel,
 	setAddMemberRoles,
+	setAddPermissions,
 	setColorRoleNew,
 	setNameRoleNew,
+	setRemovePermissions,
 	setSelectedPermissions,
 	setSelectedRoleId,
 	useAppDispatch
 } from '@mezon/store';
 import { MezonIcon, MzIcons16, MzIcons20 } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR, EDragBorderPosition, createImgproxyUrl } from '@mezon/utils';
+import { DEFAULT_ROLE_COLOR, EDragBorderPosition, EPermissionId, createImgproxyUrl } from '@mezon/utils';
 import type { ApiUpdateRoleOrderRequest } from 'mezon-js';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -125,7 +127,10 @@ const SettingListRole = (props: closeEditRole) => {
 
 	useEffect(() => {
 		if (isNewRole && newRoleRef.current) {
-			dispatch(setSelectedPermissions([]));
+			const requiredPermissions = [EPermissionId.VIEW_CHANNEL, EPermissionId.SEND_MESSAGE];
+			dispatch(setSelectedPermissions(requiredPermissions));
+			dispatch(setAddPermissions(requiredPermissions));
+			dispatch(setRemovePermissions([]));
 			newRoleRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
 		}
 	}, [clickedRole, dispatch, isNewRole]);

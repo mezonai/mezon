@@ -251,5 +251,11 @@
 		"you": "Du",
 		"enlarge": "Förstora {{name}}",
 		"restoreLayout": "Tillbaka till vy sida vid sida"
+	},
+	"comment": {
+		"button": "Kommentera",
+		"placeholder": "Skriv en kommentar…",
+		"hide": "Dölj flytande kommentarer",
+		"show": "Visa flytande kommentarer"
 	}
 }

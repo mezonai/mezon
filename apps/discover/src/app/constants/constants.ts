@@ -1,6 +1,4 @@
-import Mezon_Brand from '../assets/Brand_logo.png';
-import Mezon_Dark from '../assets/Logo_mezon_dark.png';
-import Mezon_Light from '../assets/Logo_mezon_light.png';
+import { mezonAppIcon, mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import No_Banner from '../assets/no_banner.jpg';
 
 export const NAVIGATION_LINKS = {
@@ -26,9 +24,8 @@ export const NAVIGATION_LINKS = {
 	}
 };
 export const MEZON_LOGO = {
-	LIGHT: Mezon_Light,
-	DARK: Mezon_Dark,
-	WORDMARK: Mezon_Brand
+	ON_LIGHT: mezonLogoOnLight,
+	ON_DARK: mezonLogoOnDark
 };
 export const CATEGORY_TYPES = {
 	1: {
@@ -59,7 +56,7 @@ export const CATEGORY_TYPES = {
 
 export const DEFAULT_IMAGES = {
 	BANNER: No_Banner,
-	LOGO: 'https://cdn.komu.vn/landing-page-mezon/logodefault.webp'
+	LOGO: mezonAppIcon
 };
 
 export const PAGINATION = {

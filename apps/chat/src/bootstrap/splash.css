@@ -1,10 +1,10 @@
 :root {
-	--splash-background: rgba(240, 240, 240, 0.95);
+	--splash-background: #f2f3f5;
 	--splash-text-color: rgb(78, 80, 87);
 }
 
 html.dark {
-	--splash-background: rgba(0, 0, 0, 0.8);
+	--splash-background: #000000;
 	--splash-text-color: #e6e6e6;
 }
 
@@ -24,4 +24,20 @@ html.dark {
 	background-color: var(--splash-background);
 	font-family: sans-serif;
 	color: var(--splash-text-color);
+}
+
+.splash-logo {
+	width: 280px;
+	max-width: calc(100vw - 32px);
+	height: auto;
+	object-fit: contain;
+}
+
+.splash-logo-on-dark,
+html.dark .splash-logo-on-light {
+	display: none;
+}
+
+html.dark .splash-logo-on-dark {
+	display: block;
 }

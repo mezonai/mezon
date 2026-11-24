@@ -1,11 +1,41 @@
 import type { MentionDataProps } from '@mezon/utils';
-import { escapeInlineStyles, sanitizeMessageHtml } from '@mezon/utils';
+import { escapeInlineStyles, escapeMatchedInlineStyles, sanitizeMessageHtml } from '@mezon/utils';
 import { ApiMessageEntityTypes, ENTITY_CLASS_BY_NODE_NAME } from '../parseHtmlAsFormattedText';
 import cleanDocsHtml from './cleanDocsHtml';
 
 const STYLE_TAG_REGEX = /<style>(.*?)<\/style>/gs;
 
-export function preparePastedHtml(html: string) {
+let lastComposerCopy = '';
+
+const normalizeClipboardText = (text: string) =>
+	text
+		.replace(/\r\n?/g, '\n')
+		.replace(/[^\S\n]/g, ' ')
+		.trim();
+
+export function rememberComposerCopy() {
+	lastComposerCopy = normalizeClipboardText(window.getSelection()?.toString() || '');
+}
+
+export function shouldKeepPastedText(input: HTMLElement | null, text: string): boolean {
+	if (lastComposerCopy && normalizeClipboardText(text) === lastComposerCopy) {
+		return true;
+	}
+	const selection = window.getSelection();
+	if (!input || !selection?.rangeCount || !input.contains(selection.getRangeAt(0).startContainer)) {
+		return false;
+	}
+	const range = selection.getRangeAt(0).cloneRange();
+	range.collapse(true);
+	range.setStart(input, 0);
+	const before = document.createElement('div');
+	before.appendChild(range.cloneContents());
+	before.querySelectorAll('br, div, p').forEach((node) => node.before('\n'));
+	const fences = (before.textContent || '').split('```');
+	return fences.length % 2 === 0 || (fences[fences.length - 1].split('\n').pop() || '').split('`').length % 2 === 0;
+}
+
+export function preparePastedHtml(html: string, escapeText = false) {
 	let fragment = document.createElement('div');
 	try {
 		html = cleanDocsHtml(html);
@@ -58,6 +88,16 @@ export function preparePastedHtml(html: string) {
 		}
 	});
 
+	if (escapeText) {
+		fragment.normalize();
+		const walker = document.createTreeWalker(fragment, NodeFilter.SHOW_TEXT);
+		for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+			if (!node.parentElement?.closest('code, pre, [contenteditable="false"]')) {
+				node.nodeValue = escapeMatchedInlineStyles(node.nodeValue || '');
+			}
+		}
+	}
+
 	return fragment.innerHTML.trim();
 }
 
@@ -68,7 +108,7 @@ export function escapeHtml(html: string) {
 	return fragment.innerHTML;
 }
 
-type PasteContext = { bold: boolean; italic: boolean; strike: boolean; code: boolean; keep: boolean };
+type PasteContext = { bold: boolean; italic: boolean; strike: boolean; underline: boolean; link: boolean; code: boolean; keep: boolean };
 type PasteRun = { text: string; marker: string; verbatim: boolean };
 type PasteToken = PasteRun | 'break' | 'newline';
 
@@ -167,7 +207,11 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 	};
 
 	const walk = (node: Node, ctx: PasteContext, tokens: PasteToken[]) => {
-		const marker = ctx.code ? '' : (ctx.bold && ctx.italic ? '***' : ctx.bold ? '**' : ctx.italic ? '*' : '') + (ctx.strike ? '~~' : '');
+		const marker = ctx.code
+			? ''
+			: (ctx.underline && !ctx.link ? '__' : '') +
+				(ctx.bold && ctx.italic ? '***' : ctx.bold ? '**' : ctx.italic ? '*' : '') +
+				(ctx.strike ? '~~' : '');
 		if (node.nodeType === Node.TEXT_NODE) {
 			const value = node.nodeValue || '';
 			if (!ctx.keep && !value.trim() && /^(TABLE|THEAD|TBODY|TFOOT|TR|UL|OL)$/.test(node.parentElement?.tagName || '')) {
@@ -188,14 +232,27 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 		}
 		if (tag === 'IMG') {
 			const alt = node.getAttribute('alt') || '';
-			if (alt && !/[\p{L}\p{N}\s]/u.test(alt)) {
+			const src = getPasteLinkUrl(node.getAttribute('src'));
+			const sizes = ['width', 'height'].filter((size) => node.hasAttribute(size)).map((size) => Number(node.getAttribute(size)));
+			const isPixel = sizes.some((size) => size <= 2);
+			const isIcon = /^:[\w+-]+:$/.test(alt) || sizes.some((size) => size <= 32);
+			if (alt && ((isIcon && !isPixel) || !/[\p{L}\p{N}\s]/u.test(alt))) {
 				pushText(tokens, ctx.code ? alt : escapeInlineStyles(alt), marker, false);
+			} else if (src && !ctx.code && !ctx.link && !isPixel && !isIcon) {
+				pushText(tokens, `![${escapeInlineStyles(alt.replace(/[[\]\s]+/g, ' ').trim())}](${src})`, '', false);
+				formatted = true;
 			}
+			return;
+		}
+		if (tag === 'HR') {
+			tokens.push('break', { text: '---', marker: '', verbatim: true }, 'break');
+			formatted = true;
 			return;
 		}
 		if (/mso-list:\s*ignore/i.test(node.getAttribute('style') || '')) {
 			const label = (node.textContent || '').trim();
-			pushText(tokens, /^\w+[.)]$/.test(label) ? `${label} ` : '- ', '', true);
+			const level = Number(/level(\d+)/i.exec(node.parentElement?.closest('[style*="mso-list"]')?.getAttribute('style') || '')?.[1]) || 1;
+			pushText(tokens, '  '.repeat(level - 1) + (/^\w+[.)]$/.test(label) ? `${label} ` : '- '), '', true);
 			formatted = true;
 			return;
 		}
@@ -210,6 +267,8 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 				: ctx.bold || tag === 'B' || tag === 'STRONG',
 			italic: fontStyle ? fontStyle !== 'normal' : ctx.italic || tag === 'I' || tag === 'EM',
 			strike: ctx.strike || tag === 'S' || tag === 'STRIKE' || tag === 'DEL' || textDecorationLine.includes('line-through'),
+			underline: ctx.underline || tag === 'U' || tag === 'INS' || textDecorationLine.includes('underline'),
+			link: ctx.link || tag === 'A',
 			code: ctx.code || isCodeBlock || isInlineCode,
 			keep: tag === 'PRE' || (whiteSpace ? /^pre|break-spaces/.test(whiteSpace) : ctx.keep)
 		};
@@ -240,9 +299,25 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 				pushText(tokens, /^https?:\/\//i.test(label) ? label : href, '', false);
 				return;
 			}
+			const isNamed = !/[[\]]/.test(label);
+			if (href && label && isNamed) {
+				pushText(tokens, '[', '', false);
+			}
 			walkChildren(tokens);
 			if (href && label) {
-				pushText(tokens, ` (${href}) `, '', false);
+				pushText(tokens, isNamed ? `](${href})` : ` (${href}) `, '', false);
+				formatted = true;
+			}
+			return;
+		}
+
+		if (/^H[1-6]$/.test(tag)) {
+			const inner: PasteToken[] = [];
+			walkChildren(inner);
+			const unstyled = inner.map((token) => (typeof token === 'object' ? { ...token, marker: '' } : token));
+			const text = joinPasteTokens(unstyled).replace(/\s*\n\s*/g, ' ');
+			if (text) {
+				tokens.push('break', { text: `${'#'.repeat(Number(tag[1]))} ${text}`, marker: '', verbatim: true }, 'break');
 				formatted = true;
 			}
 			return;
@@ -252,10 +327,12 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 			const inner: PasteToken[] = [];
 			walkChildren(inner);
 			const list = node.parentElement;
-			const bullet =
+			const checkbox = Array.from(node.querySelectorAll('input[type="checkbox"]')).find((input) => input.closest('li') === node);
+			const checked = tag === 'LI' ? (node.getAttribute('aria-checked') ?? (checkbox ? String(checkbox.hasAttribute('checked')) : null)) : null;
+			const marker =
 				tag === 'BLOCKQUOTE'
 					? '> '
-					: list?.tagName === 'OL'
+					: list?.tagName === 'OL' && checked === null
 						? `${
 								(Number(list.getAttribute('start')) || 1) +
 								Array.from(list.children)
@@ -263,13 +340,33 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 									.indexOf(node)
 							}. `
 						: '- ';
+			const bullet = marker + (checked === null ? '' : checked === 'true' ? '[x] ' : '[ ] ');
 			const lines = joinPasteTokens(inner).split('\n');
-			const text = lines.map((line, index) => (index && tag === 'LI' ? ' '.repeat(bullet.length) : bullet) + line).join('\n');
+			const text = lines.map((line, index) => (index && tag === 'LI' ? ' '.repeat(marker.length) : bullet) + line).join('\n');
 			tokens.push('break', { text, marker: '', verbatim: true }, 'break');
 			formatted = true;
 			return;
 		}
 
+		if (node instanceof HTMLTableElement && !node.querySelector('table')) {
+			const rows = Array.from(node.rows).map((row) =>
+				Array.from(row.cells).map((cell) => {
+					const inner: PasteToken[] = [];
+					cell.childNodes.forEach((child) => walk(child, next, inner));
+					return joinPasteTokens(inner)
+						.replace(/\s*\n\s*/g, ' ')
+						.replace(/(?<!\\)\|/g, '\\|');
+				})
+			);
+			const columns = Math.max(0, ...rows.map((row) => row.length));
+			if (rows.length > 1 && columns > 1) {
+				const toLine = (cells: string[]) => `| ${Array.from({ length: columns }, (_, idx) => cells[idx] || ' ').join(' | ')} |`;
+				const table = [toLine(rows[0]), toLine(Array(columns).fill('---')), ...rows.slice(1).map(toLine)].join('\n');
+				tokens.push('break', { text: table, marker: '', verbatim: true }, 'break');
+				formatted = true;
+				return;
+			}
+		}
 		if ((tag === 'TD' || tag === 'TH') && node.previousElementSibling) {
 			pushText(tokens, '\t', '', true);
 		}
@@ -288,7 +385,14 @@ export function convertPastedHtmlToMarkdown(html: string): string {
 	};
 
 	const tokens: PasteToken[] = [];
-	walk(new DOMParser().parseFromString(html, 'text/html').body, { bold: false, italic: false, strike: false, code: false, keep: false }, tokens);
+	const body = new DOMParser().parseFromString(html, 'text/html').body;
+	body.querySelectorAll('ul > ul, ul > ol, ol > ul, ol > ol').forEach((list) => {
+		const item = list.previousElementSibling;
+		if (item?.tagName === 'LI') {
+			item.appendChild(list);
+		}
+	});
+	walk(body, { bold: false, italic: false, strike: false, underline: false, link: false, code: false, keep: false }, tokens);
 	const text = joinPasteTokens(tokens);
 	return formatted && !/^(`[^`\n]*`|```\n[^\n]*\n```)$/.test(text) ? text : '';
 }

@@ -83,7 +83,7 @@
 		"cover": "表紙",
 		"VoiceChannel": {
 			"title": "ボイスチャンネルを選択",
-			"privateAudienceTip": "ヒント：すべての視聴者がイベントに参加できるよう、全員を<channel>#{{channelName}}</channel>に追加してください。"
+			"privateAudienceTip": "ヒント：すべての視聴者がイベントに参加できるよう、全員を<channel><icon/>{{channelName}}</channel>に追加してください。"
 		}
 	},
 	"actions": {

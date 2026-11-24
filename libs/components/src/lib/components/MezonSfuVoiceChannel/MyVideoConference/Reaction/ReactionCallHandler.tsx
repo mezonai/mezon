@@ -5,6 +5,7 @@ import { createImgproxyUrl, getSrcEmoji, sinkIdForHtmlMediaElement } from '@mezo
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { isStreamCommentToken, subscribeVoiceReaction } from '../../../LiveComments';
 import { soundReactionsService } from './soundReactionsService';
 import type { DisplayedEmoji, DisplayedHand } from './types';
 
@@ -141,7 +142,7 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 		const currentSocket = clientRef.current;
 		const audioMap = audioRefs.current;
 
-		currentSocket.onvoicereactionmessage = (message: VoiceReactionSend) => {
+		const unsubscribe = subscribeVoiceReaction(currentSocket, (message: VoiceReactionSend) => {
 			if (channelId === message.channel_id) {
 				try {
 					const emojis = message.emojis || [];
@@ -199,6 +200,9 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 
 							return;
 						}
+						if (isStreamCommentToken(firstEmojiId)) {
+							return;
+						}
 						const now = Date.now();
 						if (now - lastEmojiTimestampRef.current < EMOJI_RATE_LIMIT_MS) {
 							return;
@@ -230,14 +234,10 @@ export const ReactionCallHandler = memo(({ sinkId }: ReactionCallHandlerProps = 
 					console.error(error);
 				}
 			}
-		};
+		});
 
 		return () => {
-			if (currentSocket) {
-				currentSocket.onvoicereactionmessage = () => {
-					return;
-				};
-			}
+			unsubscribe();
 			audioMap.forEach((audio) => {
 				audio.pause();
 			});

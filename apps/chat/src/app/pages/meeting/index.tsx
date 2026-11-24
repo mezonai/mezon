@@ -8,6 +8,7 @@ import {
 	MicrophoneControl,
 	VideoPreview,
 	openCameraStream,
+	requestExternalChatNotificationPermission,
 	useMicTest,
 	usePreferredOutputDevice,
 	withPreferredCamera,
@@ -464,6 +465,8 @@ export default function PreJoinCalling() {
 				setError('Username must be containing only 0-9, a-z and A-Z.');
 				return;
 			}
+
+			requestExternalChatNotificationPermission();
 
 			setError(null);
 			setAvatar(avatar as string);
