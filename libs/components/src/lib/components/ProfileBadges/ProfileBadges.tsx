@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { mzPro16 } from './proIcon';
 import type { ProPalette, ProfileBadgeItem } from './proPalette';
 import { hexToRgba } from './proPalette';
+import { useProPalette } from './useProPalette';
 
 const TOOLTIP_TRIGGER: ('hover' | 'focus')[] = ['hover', 'focus'];
 const OVERLAY_INNER_STYLE: CSSProperties = { minHeight: 'auto', padding: 0, background: 'transparent' };
@@ -90,3 +91,21 @@ const ProfileBadgesBase = ({ isPro, badges, palette, className }: ProfileBadgesP
 };
 
 export const ProfileBadges = memo(ProfileBadgesBase);
+
+export type ClanProBadgeProps = {
+	className?: string;
+};
+
+const ClanProBadgeBase = ({ className }: ClanProBadgeProps) => {
+	const { t } = useTranslation('userProfile');
+	const palette = useProPalette();
+	const label = t('badges.clanPro');
+
+	return (
+		<span className={`inline-flex items-center shrink-0 ${className ?? ''}`}>
+			<ProBadgeTile label={label} palette={palette} />
+		</span>
+	);
+};
+
+export const ClanProBadge = memo(ClanProBadgeBase);

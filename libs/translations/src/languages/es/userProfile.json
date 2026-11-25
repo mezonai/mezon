@@ -225,6 +225,7 @@
 		"banListEmpty": "No se encontraron usuarios baneados"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

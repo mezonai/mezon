@@ -7,6 +7,7 @@ import {
 	hasGrandchildModal,
 	selectCurrentClanId,
 	selectCurrentClanName,
+	selectCurrentClanProPlan,
 	selectCurrentVoiceChannelId,
 	selectInvitePeopleStatus,
 	selectIsShowEmptyCategory,
@@ -45,6 +46,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const params = useParams();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
+	const isClanPro = useSelector(selectCurrentClanProPlan);
 	const { t } = useTranslation('clan');
 	const [isClanOwner, canManageClan, adminClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan, EPermission.administrator]);
 	const { removeMemberClan } = useChannelMembersActions();
@@ -189,7 +191,13 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 					/>
 				</div>
 			) : (
-				<Header name={name} handleShowModalClan={handleShowModalClan} isShowModalPanelClan={isShowModalPanelClan} modalRef={modalRef}>
+				<Header
+					name={name}
+					isPro={isClanPro}
+					handleShowModalClan={handleShowModalClan}
+					isShowModalPanelClan={isShowModalPanelClan}
+					modalRef={modalRef}
+				>
 					<ModalPanel
 						handleShowCreateCategory={handleShowCreateCategory}
 						handleShowInviteClanModal={handleShowInviteClanModal}
