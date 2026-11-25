@@ -410,6 +410,7 @@ export const buyClanProPlan = createAsyncThunk(
 					walletActions.sendTransaction({
 						sender: senderUserId,
 						recipient: normalizedRecipientUserId,
+						isSendByAddress: true,
 						amount: clanPrice,
 						textData: ETransferType.UnlockItem,
 						extraInfo: {
@@ -433,6 +434,33 @@ export const buyClanProPlan = createAsyncThunk(
 			console.error('buyClanProPlan: ', error);
 			captureSentryError(error, 'clans/buyClanProPlan');
 			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const applyCouponPro = createAsyncThunk(
+	'clans/applyCouponPro',
+	async (
+		{
+			clanId,
+			code
+		}: {
+			clanId?: string;
+			code: string;
+		},
+		thunkAPI
+	) => {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		try {
+			await mezon.client.redeemProPlanCoupon(mezon.session, {
+				clan_id: clanId,
+				code
+			});
+
+			return true;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error || 'Clan Pro purchase failed');
 		}
 	}
 );
@@ -984,7 +1012,8 @@ export const clansActions = {
 	buyClanProPlan,
 	updateHasUnreadBasedOnChannels,
 	listClanBadgeCount,
-	listChannelBadgeCount
+	listChannelBadgeCount,
+	applyCouponPro
 };
 
 /*

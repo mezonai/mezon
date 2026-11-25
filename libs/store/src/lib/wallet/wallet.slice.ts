@@ -235,6 +235,7 @@ const buyUserProPlan = createAsyncThunk(
 				sendTransaction({
 					sender: senderUserId,
 					recipient: normalizedRecipientUserId,
+					isSendByAddress: true,
 					amount: USER_PRO_PLAN_PRICE,
 					textData: 'unlock item',
 					extraInfo: {
