@@ -11,6 +11,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 // import { selectCurrentClanId } from '../clans/clans.slice';
 import { settingActions } from '../app/setting.slice';
+import type { ThunkConfigWithError } from '../errors';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
@@ -213,30 +214,33 @@ export const updateAccountStatus = createAsyncThunk('userstatusapi/updateUserSta
 	}
 });
 
-export const updateAccountUsername = createAsyncThunk('userstatusapi/updateAccountUsername', async (request: ApiUpdateUsernameRequest, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+export const updateAccountUsername = createAsyncThunk<string, ApiUpdateUsernameRequest, ThunkConfigWithError>(
+	'userstatusapi/updateAccountUsername',
+	async (request: ApiUpdateUsernameRequest, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.updateUsername(mezon.session, request);
-		if (!response) {
-			return '';
+			const response = await mezon.client.updateUsername(mezon.session, request);
+			if (!response) {
+				return '';
+			}
+			const updatedSession = response as ISession;
+			const currentSession = (thunkAPI.getState() as RootState).auth.session ?? (mezon.session as ISession);
+			const nextSession = {
+				...currentSession,
+				token: updatedSession.token,
+				refresh_token: updatedSession.refresh_token,
+				created: false
+			};
+			mezon.sessionRef.current = nextSession;
+			thunkAPI.dispatch(authActions.updateSession(nextSession));
+			return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
+		} catch (error) {
+			captureSentryError(error, 'userstatusapi/updateAccountUsername');
+			return thunkAPI.rejectWithValue(error, { error: { toast: false } });
 		}
-		const updatedSession = response as ISession;
-		const currentSession = (thunkAPI.getState() as RootState).auth.session ?? (mezon.session as ISession);
-		const nextSession = {
-			...currentSession,
-			token: updatedSession.token,
-			refresh_token: updatedSession.refresh_token,
-			created: false
-		};
-		mezon.sessionRef.current = nextSession;
-		thunkAPI.dispatch(authActions.updateSession(nextSession));
-		return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
-	} catch (error) {
-		captureSentryError(error, 'userstatusapi/updateAccountUsername');
-		return thunkAPI.rejectWithValue(error);
 	}
-});
+);
 
 export const accountSlice = createSlice({
 	name: ACCOUNT_FEATURE_KEY,
