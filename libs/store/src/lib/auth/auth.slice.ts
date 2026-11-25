@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { MezonContextValue } from '@mezon/transport';
-import { publishSessionUpdate, resolveSessionWsUrl, subscribeSessionUpdate } from '@mezon/transport';
+import { grpcCodeFromEnvelopeStatus, publishSessionUpdate, resolveSessionWsUrl, subscribeSessionUpdate } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -345,16 +345,36 @@ export const registrationPassword = createAsyncThunk(
 			return response;
 		} catch (error: any) {
 			captureSentryError(error, `auth/registrationPassword`);
-			const errPayload = await error?.json();
+			let errorCode: number | undefined;
+			let errorMessage = '';
+			if (typeof error?.json === 'function') {
+				try {
+					const errPayload = await error.json();
+					errorCode = errPayload?.code;
+					errorMessage = typeof errPayload?.message === 'string' ? errPayload.message : '';
+				} catch {
+					errorCode = undefined;
+				}
+			} else if (typeof error?.error?.code === 'number') {
+				errorCode = grpcCodeFromEnvelopeStatus(error.error.code);
+				errorMessage = typeof error?.error?.message === 'string' ? error.error.message : '';
+			} else if (typeof error?.code === 'number') {
+				errorCode = error.code;
+				errorMessage = typeof error?.message === 'string' ? error.message : '';
+			} else if (typeof error?.message === 'string') {
+				errorMessage = error.message;
+			} else if (typeof error === 'string') {
+				errorMessage = error;
+			}
 			toast.error(
 				oldPassword
-					? errPayload?.code === 3
+					? errorCode === 3
 						? t(`accountSetting:setPasswordAccount.error.incorrectCurrent`)
 						: t('accountSetting:setPasswordAccount.error.updateFail')
 					: t('accountSetting:setPasswordAccount.error.createFail')
 			);
 			if (isMobile) {
-				return thunkAPI.rejectWithValue({ ...error, message: errPayload?.message || '' });
+				return thunkAPI.rejectWithValue({ ...error, message: errorMessage });
 			}
 		}
 	}
