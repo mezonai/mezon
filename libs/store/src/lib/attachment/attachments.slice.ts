@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IAttachmentEntity, IChannelAttachment, LoadingStatus } from '@mezon/utils';
+import type { IAttachmentEntity, IChannelAttachment, IMessageWithUser, LoadingStatus } from '@mezon/utils';
 import { AttachmentTypeUpload, EMimeTypes, ETypeLinkMedia, isMediaTypeNotSupported } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -41,6 +41,7 @@ export interface AttachmentState extends EntityState<AttachmentEntity, string> {
 		}
 	>;
 	isSendHDImageMobile?: boolean;
+	listChannelId?: string;
 }
 
 export const attachmentAdapter = createEntityAdapter({
@@ -127,6 +128,36 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 	const create_time = attachmentRes.create_time_seconds ? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString() : undefined;
 	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo, create_time };
 	return attachmentEntity;
+};
+
+export const buildTopicAttachmentList = (messages: IMessageWithUser[]): AttachmentEntity[] => {
+	const seenUrls = new Set<string>();
+	const result: AttachmentEntity[] = [];
+
+	for (const message of messages) {
+		for (const attachment of message?.attachments || []) {
+			if (!attachment?.url) continue;
+			const filetype = attachment.filetype || '';
+			const isMedia =
+				(filetype.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || filetype.startsWith(ETypeLinkMedia.VIDEO_PREFIX)) &&
+				filetype !== EMimeTypes.sticker;
+			if (!isMedia) continue;
+			if (seenUrls.has(attachment.url)) continue;
+			seenUrls.add(attachment.url);
+
+			const create_time = message.create_time_seconds ? new Date(Number(message.create_time_seconds) * 1000).toISOString() : undefined;
+			result.push({
+				...attachment,
+				id: `${message.id}_${attachment.url}`,
+				message_id: message.id,
+				uploader: message.sender_id,
+				create_time_seconds: message.create_time_seconds,
+				create_time
+			});
+		}
+	}
+
+	return result.reverse();
 };
 
 export const fetchChannelAttachments = createAsyncThunk(
@@ -286,6 +317,12 @@ export const attachmentSlice = createSlice({
 		},
 		setOpenModalAttachment: (state, action) => {
 			state.openModalAttachment = action.payload;
+			if (!action.payload) {
+				state.listChannelId = undefined;
+			}
+		},
+		setListChannelId: (state, action: PayloadAction<string | undefined>) => {
+			state.listChannelId = action.payload;
 		},
 		setMode: (state, action) => {
 			state.mode = action.payload;
@@ -577,3 +614,5 @@ export const selectAttachmentPaginationByChannel = createSelector(
 );
 
 export const selectIsSendHDImageMobile = createSelector(getAttachmentState, (state: AttachmentState) => state?.isSendHDImageMobile);
+
+export const selectAttachmentListChannelId = createSelector(getAttachmentState, (state: AttachmentState) => state?.listChannelId);

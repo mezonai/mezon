@@ -1,11 +1,16 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import {
 	attachmentActions,
+	buildTopicAttachmentList,
 	getStore,
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectCurrentDM,
+	selectCurrentTopicId,
+	selectFirstMessageOfCurrentTopic,
 	selectMessageByMessageId,
+	selectMessageEntitiesByChannelId,
+	selectMessageIdsByChannelId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -176,10 +181,11 @@ const Attachments: React.FC<{
 	mode: ChannelStreamMode;
 	observeIntersectionForLoading?: ObserveFn;
 	isInSearchMessage?: boolean;
+	isTopic?: boolean;
 	defaultMaxWidth?: number;
 	quickReaction?: React.ReactNode;
 }> = memo(
-	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth, quickReaction }) => {
+	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, isTopic, defaultMaxWidth, quickReaction }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
 		const cdnUrls = useMemo(() => attachments.flatMap((attachment) => [attachment.url, attachment.thumbnail]), [attachments]);
 		const { signCdnUrl, isAwaitingSignature } = useCdnUrlSigner(cdnUrls, message.channel_id);
@@ -226,6 +232,7 @@ const Attachments: React.FC<{
 						mode={mode}
 						onContextMenu={onContextMenu}
 						isInSearchMessage={isInSearchMessage}
+						isTopic={isTopic}
 						defaultMaxWidth={defaultMaxWidth}
 						isMobile={isMobile}
 						isPresignPendingForUrl={isPresignPendingForUrl}
@@ -270,6 +277,7 @@ const Attachments: React.FC<{
 		prev.message.attachments === next.message.attachments &&
 		prev.message.content === next.message.content &&
 		prev.mode === next.mode &&
+		prev.isTopic === next.isTopic &&
 		!!prev.quickReaction === !!next.quickReaction
 );
 
@@ -284,6 +292,7 @@ const MessageAttachment = memo(
 		mode,
 		observeIntersectionForLoading,
 		isInSearchMessage,
+		isTopic,
 		defaultMaxWidth,
 		isPreview,
 		quickReaction
@@ -348,6 +357,7 @@ const MessageAttachment = memo(
 				onContextMenu={onContextMenu}
 				observeIntersectionForLoading={observeIntersectionForLoading}
 				isInSearchMessage={isInSearchMessage}
+				isTopic={isTopic}
 				defaultMaxWidth={defaultMaxWidth}
 				quickReaction={quickReaction}
 			/>
@@ -358,6 +368,7 @@ const MessageAttachment = memo(
 		prev.channelId === next.channelId &&
 		prev.mode === next.mode &&
 		prev.isInSearchMessage === next.isInSearchMessage &&
+		prev.isTopic === next.isTopic &&
 		prev.defaultMaxWidth === next.defaultMaxWidth &&
 		prev.isPreview === next.isPreview &&
 		!!prev.quickReaction === !!next.quickReaction &&
@@ -374,6 +385,7 @@ const ImageAlbum = memo(
 		onContextMenu,
 		observeIntersectionForLoading,
 		isInSearchMessage,
+		isTopic,
 		defaultMaxWidth,
 		isMobile,
 		isPresignPendingForUrl,
@@ -387,6 +399,7 @@ const ImageAlbum = memo(
 		onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
 		observeIntersectionForLoading?: ObserveFn;
 		isInSearchMessage?: boolean;
+		isTopic?: boolean;
 		defaultMaxWidth?: number;
 		isMobile?: boolean;
 		isPresignPendingForUrl?: (url?: string) => boolean;
@@ -432,6 +445,36 @@ const ImageAlbum = memo(
 				dispatch(attachmentActions.setOpenModalAttachment(true));
 				dispatch(attachmentActions.setAttachment(enhancedAttachmentData.url));
 
+				const topicId = isTopic ? selectCurrentTopicId(state) : undefined;
+				if (topicId) {
+					const topicMessageIds = selectMessageIdsByChannelId(state, topicId);
+					const topicMessageEntities = selectMessageEntitiesByChannelId(state, topicId);
+					const firstTopicMessage = currentChannelId ? selectFirstMessageOfCurrentTopic(state, currentChannelId) : undefined;
+					const topicMessages: IMessageWithUser[] = [];
+					if (firstTopicMessage && !topicMessageIds.includes(firstTopicMessage.id)) {
+						topicMessages.push(firstTopicMessage);
+					}
+					for (const id of topicMessageIds) {
+						const topicMessage = topicMessageEntities[id];
+						if (topicMessage) {
+							topicMessages.push(topicMessage);
+						}
+					}
+					dispatch(
+						attachmentActions.setChannelAttachments({
+							channelId: topicId,
+							attachments: buildTopicAttachmentList(topicMessages),
+							hasMoreBefore: false,
+							hasMoreAfter: false
+						})
+					);
+					dispatch(attachmentActions.setListChannelId(topicId));
+					dispatch(attachmentActions.setMessageId(message.id));
+					return;
+				}
+
+				dispatch(attachmentActions.setListChannelId(undefined));
+
 				if ((currentClanId && currentChannelId) || currentDmGroupId) {
 					const isRealClan = isRealClanId(currentClanId);
 					const clanId = isRealClan ? currentClanId : '0';
@@ -451,7 +494,7 @@ const ImageAlbum = memo(
 
 				dispatch(attachmentActions.setMessageId(message.id));
 			},
-			[images, message, mode, dispatch]
+			[images, message, mode, dispatch, isTopic]
 		);
 
 		const albumLayout = useMemo(() => {
@@ -550,6 +593,7 @@ const ImageAlbum = memo(
 		prev.message.isSending === next.message.isSending &&
 		prev.message.content === next.message.content &&
 		prev.mode === next.mode &&
+		prev.isTopic === next.isTopic &&
 		prev.isMobile === next.isMobile &&
 		prev.defaultMaxWidth === next.defaultMaxWidth &&
 		prev.signCdnUrl === next.signCdnUrl &&

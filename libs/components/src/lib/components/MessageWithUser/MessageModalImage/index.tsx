@@ -5,6 +5,7 @@ import {
 	getStore,
 	selectAllListAttachmentByChannel,
 	selectAttachment,
+	selectAttachmentListChannelId,
 	selectAttachmentPaginationByChannel,
 	selectCurrentAttachmentShowImage,
 	selectCurrentChannelId,
@@ -50,9 +51,11 @@ const MessageModalImage = () => {
 
 	const [showList, setShowList] = useState(true);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
+	const listChannelId = useAppSelector(selectAttachmentListChannelId);
+	const attachmentChannelId = (listChannelId || directId || currentChannelId) as string;
 	const currentClanId = useAppSelector(selectCurrentClanId) ?? '';
-	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
-	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, (directId ?? currentChannelId) as string));
+	const attachments = useAppSelector((state) => selectAllListAttachmentByChannel(state, attachmentChannelId));
+	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, attachmentChannelId));
 	const { setOpenModalAttachment } = useAttachments();
 	const openModalAttachment = useAppSelector(selectOpenModalAttachment);
 	const attachment = useAppSelector(selectAttachment);
@@ -85,7 +88,7 @@ const MessageModalImage = () => {
 
 	const mode = useAppSelector(selectModeAttachment);
 	const messageId = useAppSelector(selectMessageIdAttachment);
-	const channelIdForAttachments = (directId ?? currentChannelId) as string;
+	const channelIdForAttachments = attachmentChannelId;
 	const sourceMessage = useAppSelector((state) =>
 		currentAttachment?.message_id && channelIdForAttachments
 			? selectMessageByMessageId(state, channelIdForAttachments, currentAttachment.message_id)
@@ -129,7 +132,7 @@ const MessageModalImage = () => {
 
 	const handleLoadMoreAttachments = useCallback(
 		async (direction: 'before' | 'after') => {
-			const channelId = (directId ?? currentChannelId) as string;
+			const channelId = attachmentChannelId;
 			if (paginationState.isLoading || !channelId) {
 				return;
 			}
@@ -184,8 +187,7 @@ const MessageModalImage = () => {
 			paginationState.limit,
 			paginationState.hasMoreBefore,
 			paginationState.hasMoreAfter,
-			currentChannelId,
-			directId,
+			attachmentChannelId,
 			currentClanId,
 			dispatch
 		]
