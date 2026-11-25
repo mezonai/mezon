@@ -32,6 +32,25 @@ const RTCConfig = {
 
 const CALL_SOCKET_TIMEOUT_MS = 10000;
 const CALL_CONNECT_TIMEOUT_MS = 30000;
+const LOCAL_ICE_RESEND_DELAYS_MS = [1000, 2500, 4500, 7000, 10000, 14000, 19000];
+const REMOTE_ICE_TRIGGERED_RESEND_MIN_INTERVAL_MS = 1000;
+const PUSH_OFFER_CANDIDATE_WAIT_MS = 1500;
+const PUSH_OFFER_CANDIDATE_POLL_MS = 100;
+const MAX_CALL_PUSH_PAYLOAD_BYTES = 3500;
+
+const sdpKeepingReachableCandidates = (sdp: string) =>
+	sdp
+		.split('\r\n')
+		.filter((line) => !(line.startsWith('a=candidate:') && line.includes(' typ host')))
+		.join('\r\n');
+
+const waitForRelayCandidate = async (pc: RTCPeerConnection, setup: AbortSignal) => {
+	const deadline = performance.now() + PUSH_OFFER_CANDIDATE_WAIT_MS;
+	while (!setup.aborted && performance.now() < deadline) {
+		if (pc.iceGatheringState === 'complete' || pc.localDescription?.sdp.includes(' typ relay')) return;
+		await new Promise((resolve) => setTimeout(resolve, PUSH_OFFER_CANDIDATE_POLL_MS));
+	}
+};
 const SOCKET_NOT_OPEN = 'Socket connection has not been established yet.';
 
 const isSocketNotOpen = (error: unknown) => (error instanceof Error ? error.message : error) === SOCKET_NOT_OPEN;
@@ -129,6 +148,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	const localVideoRef = useRef<HTMLVideoElement>(null);
 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
 	const pendingCandidatesRef = useRef<RTCIceCandidate[]>([]);
+	const sentLocalCandidatesRef = useRef<RTCIceCandidate[]>([]);
+	const localIceResendTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+	const lastRemoteTriggeredIceResendAtRef = useRef(0);
 	const remoteIceCandidatesRef = useRef<RTCIceCandidate[]>([]);
 	const localIceReadyRef = useRef(false);
 	const remoteAnswerReceivedRef = useRef(false);
@@ -169,6 +191,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				clearTimeout(callTimeout.current);
 				callTimeout.current = null;
 			}
+			localIceResendTimersRef.current.forEach((timer) => clearTimeout(timer));
+			localIceResendTimersRef.current = [];
 		};
 	}, []);
 
@@ -376,6 +400,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		pc.oniceconnectionstatechange = async () => {
 			if (peerConnection.current !== pc) return;
 			if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+				stopLocalIceResend();
 				if (timeStartConnected.current) {
 					return;
 				}
@@ -478,6 +503,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			clearCallTimeout();
 			timeStartConnected.current = null;
 			pendingCandidatesRef.current = [];
+			stopLocalIceResend();
+			sentLocalCandidatesRef.current = [];
 			remoteIceCandidatesRef.current = [];
 			localIceReadyRef.current = false;
 			remoteAnswerReceivedRef.current = false;
@@ -517,26 +544,31 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				const compressedOffer = await compress(JSON.stringify({ ...offer, callerName, callerAvatar, isVideoCall }));
 				const sentOverSocket = await sendInitialDescription(setup.signal, WebrtcSignalingType.WEBRTC_SDP_OFFER, compressedOffer, isVideoCall);
 				if (sentOverSocket) {
-					await sendCallSetup(
-						setup.signal,
-						(client, session) =>
-							client.makeCallPush(
-								session,
-								dmUserId,
-								JSON.stringify({
-									offer: compressedOffer,
-									callerName,
-									callerAvatar,
-									callerId: userId,
-									isVideoCall,
-									channelId,
-									sentAt: String(Date.now())
-								}),
-								channelId,
-								userId
-							),
-						{ shouldSend: () => !timeStartConnected.current }
-					).catch((error) => {
+					const callPushPayload = (pushOffer: string) =>
+						JSON.stringify({
+							offer: pushOffer,
+							callerName,
+							callerAvatar,
+							callerId: userId,
+							isVideoCall,
+							channelId,
+							sentAt: String(Date.now())
+						});
+					let pushPayload = callPushPayload(compressedOffer);
+					await waitForRelayCandidate(pc, setup.signal);
+					const gatheredSdp = pc.localDescription?.sdp;
+					if (!setup.signal.aborted && gatheredSdp) {
+						const reachableSdp = sdpKeepingReachableCandidates(gatheredSdp);
+						if (reachableSdp.includes('a=candidate:')) {
+							const enrichedPayload = callPushPayload(
+								await compress(JSON.stringify({ ...offer, sdp: reachableSdp, callerName, callerAvatar, isVideoCall }))
+							);
+							if (new TextEncoder().encode(enrichedPayload).length <= MAX_CALL_PUSH_PAYLOAD_BYTES) pushPayload = enrichedPayload;
+						}
+					}
+					await sendCallSetup(setup.signal, (client, session) => client.makeCallPush(session, dmUserId, pushPayload, channelId, userId), {
+						shouldSend: () => !timeStartConnected.current
+					}).catch((error) => {
 						if (!setup.signal.aborted && !timeStartConnected.current) console.warn('Call offer push failed:', error);
 					});
 				}
@@ -560,6 +592,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	const sendLocalIceCandidate = async (candidate: RTCIceCandidate) => {
 		const setup = callSetupRef.current?.signal;
 		if (!setup) return;
+		if (!sentLocalCandidatesRef.current.includes(candidate)) sentLocalCandidatesRef.current.push(candidate);
 		try {
 			await sendCallSetup(setup, (client, session) =>
 				client.forwardWebrtcSignaling(
@@ -585,6 +618,32 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			if (peerConnection.current !== pc) return;
 			await sendLocalIceCandidate(candidate);
 		}
+	};
+
+	const stopLocalIceResend = () => {
+		localIceResendTimersRef.current.forEach((timer) => clearTimeout(timer));
+		localIceResendTimersRef.current = [];
+	};
+
+	const resendSentLocalCandidates = async (pc: RTCPeerConnection) => {
+		for (const candidate of [...sentLocalCandidatesRef.current]) {
+			if (peerConnection.current !== pc || timeStartConnected.current) return;
+			await sendLocalIceCandidate(candidate);
+		}
+	};
+
+	const startLocalIceResendUntilConnected = (pc: RTCPeerConnection) => {
+		stopLocalIceResend();
+		if (peerConnection.current !== pc || timeStartConnected.current) return;
+		localIceResendTimersRef.current = LOCAL_ICE_RESEND_DELAYS_MS.map((delay) => setTimeout(() => void resendSentLocalCandidates(pc), delay));
+	};
+
+	const resendLocalIceAfterRemoteCandidate = (pc: RTCPeerConnection | null) => {
+		if (!pc || !isMyCaller.current || timeStartConnected.current || localIceResendTimersRef.current.length === 0) return;
+		const now = performance.now();
+		if (now - lastRemoteTriggeredIceResendAtRef.current < REMOTE_ICE_TRIGGERED_RESEND_MIN_INTERVAL_MS) return;
+		lastRemoteTriggeredIceResendAtRef.current = now;
+		void resendSentLocalCandidates(pc);
 	};
 
 	const drainRemoteIceCandidates = async (pc: RTCPeerConnection) => {
@@ -659,6 +718,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					if (!setup.aborted) console.warn('Call answer ACK timed out:', error);
 				});
 				await sendPendingLocalCandidates(newPc);
+				startLocalIceResendUntilConnected(newPc);
 			} catch (error) {
 				if (!setup.aborted) {
 					console.error('Error answering call:', error);
@@ -683,6 +743,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		await pc.setRemoteDescription(signalingData);
 		await drainRemoteIceCandidates(pc);
 		await sendPendingLocalCandidates(pc);
+		startLocalIceResendUntilConnected(pc);
 	};
 
 	const handleICECandidate = async (data: any) => {
@@ -694,9 +755,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				if (pc?.remoteDescription) {
 					await pc.addIceCandidate(candidate);
 				} else {
-					// Queue candidate if remote description is not set yet
 					remoteIceCandidatesRef.current.push(candidate);
 				}
+				resendLocalIceAfterRemoteCandidate(pc);
 			} else {
 				console.error('Invalid ICE candidate data:', data);
 			}
@@ -860,6 +921,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			});
 			callTargetRef.current = null;
 			pendingCandidatesRef.current = [];
+			stopLocalIceResend();
+			sentLocalCandidatesRef.current = [];
 			remoteIceCandidatesRef.current = [];
 			localIceReadyRef.current = false;
 			remoteAnswerReceivedRef.current = false;
