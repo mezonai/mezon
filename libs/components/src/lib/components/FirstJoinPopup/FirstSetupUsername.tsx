@@ -2,16 +2,7 @@ import { accountActions, useAppDispatch } from '@mezon/store';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-
-export const toMezonUsername = (name: string): string =>
-	name
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '')
-		.replace(/đ/g, 'd')
-		.replace(/Đ/g, 'D')
-		.toLowerCase()
-		.replace(/[^a-z0-9._\-+]/g, '')
-		.slice(0, 32);
+import { toMezonUsername } from './toMezonUsername';
 
 const FirstSetupUsername = () => {
 	const { t } = useTranslation('common');

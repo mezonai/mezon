@@ -237,7 +237,7 @@ export const updateAccountUsername = createAsyncThunk<string, ApiUpdateUsernameR
 			return updatedSession.username || (request.username || '').toLowerCase().replace(/\s/g, '');
 		} catch (error) {
 			captureSentryError(error, 'userstatusapi/updateAccountUsername');
-			return thunkAPI.rejectWithValue(error, { error: { toast: false } });
+			return thunkAPI.rejectWithValue(error ?? null, { error: { toast: false } });
 		}
 	}
 );

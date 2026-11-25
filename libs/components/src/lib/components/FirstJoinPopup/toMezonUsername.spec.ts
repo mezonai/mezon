@@ -1,7 +1,5 @@
-import { describe, expect, it, jest } from '@jest/globals';
-import { toMezonUsername } from './FirstSetupUsername';
-
-jest.mock('@mezon/store', () => ({}), { virtual: true });
+import { describe, expect, it } from '@jest/globals';
+import { toMezonUsername } from './toMezonUsername';
 
 describe('toMezonUsername', () => {
 	it('strips Vietnamese diacritics and spaces', () => {
@@ -22,6 +20,12 @@ describe('toMezonUsername', () => {
 
 	it('caps output at 32 characters', () => {
 		expect(toMezonUsername('a'.repeat(40))).toBe('a'.repeat(32));
+	});
+
+	it('folds full-width letters, ligatures and dotted capital I', () => {
+		expect(toMezonUsername('ＡＢＣ１２３')).toBe('abc123');
+		expect(toMezonUsername('ﬁle²')).toBe('file2');
+		expect(toMezonUsername('İstanbul')).toBe('istanbul');
 	});
 
 	it('returns empty string for whitespace only', () => {
