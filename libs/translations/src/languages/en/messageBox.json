@@ -16,5 +16,12 @@
       "description": "Send an ephemeral message (only visible to selected user)"
     }
   },
-  "convertLongToFile":"Convert long message to file"
+  "convertLongToFile": "Convert long message to file",
+  "longMessage": {
+    "title": "Message too long",
+    "description": "This message has {{count}} characters, more than {{multiplier}}× the {{limit}}-character limit, so it can't be sent as messages. Convert it to a .txt file? You can still edit it if you cancel.",
+    "convert": "Convert to file",
+    "size": "{{size}}",
+    "chars": "{{count}} characters"
+  }
 }

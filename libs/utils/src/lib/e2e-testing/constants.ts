@@ -1145,6 +1145,12 @@ export const DATA_E2E_IDENTIFIER = {
 				cancel: ''
 			}
 		},
+		long_message: {
+			button: {
+				cancel: '',
+				convert: ''
+			}
+		},
 		voice_management: {
 			button: {
 				control_item: ''
