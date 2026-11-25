@@ -1170,9 +1170,12 @@ describe('scoping message update and delete events by conversation', () => {
 		expect(toast.error).not.toHaveBeenCalled();
 	});
 
-	it('treats an HTTP 403 from the oversized route as a permission refusal without retrying', async () => {
+	it.each([
+		['a 403 without a message', { status: 403 }],
+		['a request timeout', new Error('Request timed out.')]
+	])('does not retry an oversized HTTP send after %s and leaves the row failed', async (_label, failure) => {
 		const { store, client } = setup();
-		client.sendChannelMessageApi.mockRejectedValue({ status: 403 });
+		client.sendChannelMessageApi.mockRejectedValue(failure);
 
 		const result = await store.dispatch(
 			sendMessage({
@@ -1185,7 +1188,9 @@ describe('scoping message update and delete events by conversation', () => {
 		expect(result.meta.requestStatus).toBe('rejected');
 		expect(client.sendChannelMessageApi).toHaveBeenCalledTimes(1);
 		expect(client.writeChatMessage).not.toHaveBeenCalled();
-		expect(store.getState().messages.channelMessages.channel?.ids ?? []).toEqual([]);
+		const channel = store.getState().messages.channelMessages.channel;
+		expect(channel?.ids).toHaveLength(1);
+		expect(channel?.entities[channel.ids[0] as string]?.isError).toBe(true);
 	});
 
 	it('sends a presign-first channel reply with a long quoted message over HTTP when its patch stays under 4 KB', async () => {

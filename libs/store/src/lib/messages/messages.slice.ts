@@ -1414,6 +1414,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 	};
 
 	const checkEnableE2EE = checkE2EE(clanId, channelId, thunkAPI, mode);
+	let sentOverHttp = false;
 
 	async function doSend() {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
@@ -1450,29 +1451,23 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		let res;
 
 		if (frameBytes > SOCKET_MESSAGE_MAX_BYTES) {
-			res = await client
-				.sendChannelMessageApi(
-					session,
-					clanId,
-					channelId,
-					mode,
-					isPublic,
-					content,
-					anonymous && !topicId ? undefined : mentions,
-					attachmentsMessage,
-					references,
-					anonymous,
-					mentionEveryone,
-					'',
-					code,
-					topicId
-				)
-				.catch((error: unknown) => {
-					if ((error as { status?: number } | null)?.status === 403) {
-						throw new Error('permission denied');
-					}
-					throw error;
-				});
+			sentOverHttp = true;
+			res = await client.sendChannelMessageApi(
+				session,
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				content,
+				anonymous && !topicId ? undefined : mentions,
+				attachmentsMessage,
+				references,
+				anonymous,
+				mentionEveryone,
+				'',
+				code,
+				topicId
+			);
 		} else {
 			try {
 				if (client) {
@@ -1526,6 +1521,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			return res;
 		} catch (error) {
 			if (isMessagePermissionDenied(error)) throw error;
+			if (sentOverHttp) throw error;
 			if (error === 'The socket timed out while waiting for a response.') {
 				const timeoutError = new Error('SOCKET_TIMEOUT');
 				timeoutError.name = 'SocketTimeoutError';
@@ -1667,10 +1663,11 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					presign_finish: (attachments ?? []).map((attachment) => getPresignUploadKey(attachment.uploadName) ?? ''),
 					presign_ingest: getPresignIngestKeys(attachments)
 				};
-				const e2eeTextBytes = checkEnableE2EE ? Buffer.byteLength(content.t ?? '', 'utf8') + 1024 : 0;
+				const e2eeTextBytes = checkEnableE2EE && content.t ? Buffer.byteLength(content.t, 'utf8') + 1024 : 0;
 				const presignPatchBytes =
 					Buffer.byteLength(JSON.stringify({ content: presignPatchContent, mentions, channelId, clanId, messageId: id }), 'utf8') +
-					e2eeTextBytes;
+					e2eeTextBytes +
+					128;
 				if (presignPatchBytes > SOCKET_MESSAGE_MAX_BYTES) {
 					toast.error(t('message:tooLongMessage'));
 					const invalidError = new Error('Message presign patch exceeds socket limit');
