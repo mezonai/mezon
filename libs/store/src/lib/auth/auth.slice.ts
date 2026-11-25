@@ -374,7 +374,7 @@ export const registrationPassword = createAsyncThunk(
 					: t('accountSetting:setPasswordAccount.error.createFail')
 			);
 			if (isMobile) {
-				return thunkAPI.rejectWithValue({ ...error, message: errorMessage });
+				return thunkAPI.rejectWithValue({ ...(typeof error === 'object' && error !== null ? error : {}), message: errorMessage });
 			}
 		}
 	}
