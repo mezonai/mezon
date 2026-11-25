@@ -16,5 +16,12 @@
 			"description": "Wyślij tymczasową wiadomość (tylko dla wybranego użytkownika)"
 		}
 	},
-	"convertLongToFile": "Konwertuj długą wiadomość na plik"
+	"convertLongToFile": "Konwertuj długą wiadomość na plik",
+	"longMessage": {
+		"title": "Wiadomość jest za długa",
+		"description": "Ta wiadomość ma {{count}} znaków, czyli ponad {{multiplier}}× limit {{limit}} znaków, więc nie można jej wysłać jako wiadomości. Przekonwertować ją na plik .txt? Jeśli anulujesz, nadal możesz ją edytować.",
+		"convert": "Konwertuj na plik",
+		"size": "{{size}}",
+		"chars": "{{count}} znaków"
+	}
 }

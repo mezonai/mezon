@@ -83,5 +83,14 @@
 		"online": "Żaden użytkownik online nie pasuje do Twojego wyszukiwania. Spróbuj innej nazwy.",
 		"pending": "Żadna prośba o zaprzyjaźnienie nie pasuje do Twojego wyszukiwania. Proszę sprawdzić nazwę lub spróbować ponownie.",
 		"block": "Żaden zablokowany użytkownik nie pasuje do Twojego wyszukiwania. Spróbuj innej nazwy."
+	},
+	"sort": {
+		"label": "Sortuj",
+		"recent": "Ostatnia interakcja",
+		"name": "Nazwa (A–Z)"
+	},
+	"sections": {
+		"recent": "Ostatnie",
+		"others": "Inni znajomi"
 	}
 }

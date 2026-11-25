@@ -83,5 +83,14 @@
 		"online": "Keine passenden Online-Nutzer gefunden. Versuche es mit einem anderen Namen.",
 		"pending": "Keine passenden Freundschaftsanfragen gefunden. Überprüfe den Namen oder versuche es erneut.",
 		"block": "Keine blockierten Nutzer passend zu deiner Suche gefunden. Versuche es mit einem anderen Namen."
+	},
+	"sort": {
+		"label": "Sortieren",
+		"recent": "Letzte Interaktion",
+		"name": "Name (A–Z)"
+	},
+	"sections": {
+		"recent": "Kürzlich",
+		"others": "Weitere Freunde"
 	}
 }
