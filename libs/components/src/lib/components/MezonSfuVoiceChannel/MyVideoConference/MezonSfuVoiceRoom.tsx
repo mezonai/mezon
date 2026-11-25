@@ -774,6 +774,11 @@ export function MezonSfuVoiceRoom({
 	const [selectedCamera, setSelectedCamera] = useState('default');
 	// A ref so changing it never restarts the connection effect that opens the camera on join
 	const preferredCameraIdRef = useRef(preferredCameraId);
+	// Refs so toggling virtual backgrounds never restarts the connection effect
+	const cameraManagedExternallyRef = useRef(cameraManagedExternally);
+	cameraManagedExternallyRef.current = cameraManagedExternally;
+	const customVideoTrackRef = useRef(customVideoTrack);
+	customVideoTrackRef.current = customVideoTrack;
 	useEffect(() => {
 		if (preferredCameraId) {
 			preferredCameraIdRef.current = preferredCameraId;
@@ -1175,8 +1180,12 @@ export function MezonSfuVoiceRoom({
 		void (async () => {
 			try {
 				let cameraTrack = cameraTrackRef.current;
-				if (cameraEnabled && cameraTrack?.readyState !== 'live') {
-					if (customVideoTrack && customVideoTrack.readyState === 'live') {
+				const hasLiveCustomTrack = Boolean(customVideoTrack && customVideoTrack.readyState === 'live');
+				if (cameraEnabled && (cameraTrack?.readyState !== 'live' || (hasLiveCustomTrack && cameraTrack !== customVideoTrack))) {
+					if (hasLiveCustomTrack && customVideoTrack) {
+						if (cameraTrack && cameraTrack !== customVideoTrack) {
+							cameraTrack.stop();
+						}
 						cameraTrack = customVideoTrack;
 					} else if (!cameraManagedExternally) {
 						const video = withPreferredCamera(getCameraConstraints(cameraQualityTierRef.current), preferredCameraIdRef.current);
@@ -1184,8 +1193,8 @@ export function MezonSfuVoiceRoom({
 							if (reportMediaAccessError('camera', cause)) dispatch(voiceActions.setShowCamera(false));
 							throw cause;
 						});
-						// Turned off while the camera was opening: drop it, the newer run already reported the camera off
-						if (cancelled || !desiredMediaRef.current.cameraEnabled) {
+						// Turned off or handed to external camera management while opening: drop it
+						if (cancelled || !desiredMediaRef.current.cameraEnabled || cameraManagedExternallyRef.current) {
 							stream.getTracks().forEach((track) => track.stop());
 							return;
 						}
@@ -1201,7 +1210,7 @@ export function MezonSfuVoiceRoom({
 						localStream.addTrack(cameraTrack);
 						localStreamRef.current = localStream;
 						cameraTrackRef.current = cameraTrack;
-						setSelectedCamera(cameraTrack.getSettings().deviceId || 'default');
+						setSelectedCamera(cameraTrack.getSettings().deviceId || preferredCameraIdRef.current || 'default');
 						setLocalPreview(new MediaStream(localStream.getTracks()));
 					}
 				}
@@ -1262,7 +1271,7 @@ export function MezonSfuVoiceRoom({
 			localStreamRef.current = localStream;
 			setLocalPreview(new MediaStream(localStream.getTracks()));
 			const videoSender = findUplinkVideoSender();
-			if (videoSender && cameraEnabled) {
+			if (videoSender && cameraEnabled && videoSender.track !== customVideoTrack) {
 				void videoSender.replaceTrack(customVideoTrack);
 			}
 		}
@@ -1538,6 +1547,10 @@ export function MezonSfuVoiceRoom({
 					setSelectedMicrophone(deviceId);
 					acquiredTrackCommitted = true;
 				} else {
+					if (!desiredMediaRef.current.cameraEnabled || cameraManagedExternallyRef.current) {
+						releaseAcquiredStream();
+						return;
+					}
 					const previousTrack = cameraTrackRef.current;
 					nextTrack.enabled = cameraEnabled;
 					cameraTrackRef.current = nextTrack;
@@ -1777,8 +1790,11 @@ export function MezonSfuVoiceRoom({
 			let stream: MediaStream;
 			let usingMezonNsCapture = noiseSuppressionEnabledRef.current && !mezonNsUnavailableRef.current;
 			// Joining with the camera off leaves it closed; the camera effect opens it when it is turned on
+			const initialCustomVideoTrack = customVideoTrackRef.current;
 			const shouldOpenNativeCamera =
-				!cameraManagedExternally && desiredMediaRef.current.cameraEnabled && (!customVideoTrack || customVideoTrack.readyState !== 'live');
+				!cameraManagedExternallyRef.current &&
+				desiredMediaRef.current.cameraEnabled &&
+				(!initialCustomVideoTrack || initialCustomVideoTrack.readyState !== 'live');
 			try {
 				stream = await openPreferredMicrophone(
 					getMicrophoneCaptureOptions(),
@@ -1797,19 +1813,24 @@ export function MezonSfuVoiceRoom({
 					stream = new MediaStream();
 				}
 			}
+			const activeCustomVideoTrack = customVideoTrackRef.current;
 			if (disposed) {
 				stream.getTracks().forEach((track) => {
-					if (track !== customVideoTrack) track.stop();
+					if (track !== activeCustomVideoTrack) track.stop();
 				});
 				return stream;
 			}
 			const audioTrack = stream.getAudioTracks()[0];
-			let videoTrack = stream.getVideoTracks()[0];
-			if (customVideoTrack && customVideoTrack.readyState === 'live') {
-				if (videoTrack && videoTrack !== customVideoTrack) videoTrack.stop();
-				videoTrack = customVideoTrack;
+			let videoTrack: MediaStreamTrack | undefined = stream.getVideoTracks()[0];
+			if (activeCustomVideoTrack && activeCustomVideoTrack.readyState === 'live') {
+				if (videoTrack && videoTrack !== activeCustomVideoTrack) videoTrack.stop();
+				videoTrack = activeCustomVideoTrack;
 				stream.getVideoTracks().forEach((t) => stream.removeTrack(t));
-				stream.addTrack(customVideoTrack);
+				stream.addTrack(activeCustomVideoTrack);
+			} else if (cameraManagedExternallyRef.current && videoTrack) {
+				videoTrack.stop();
+				stream.removeTrack(videoTrack);
+				videoTrack = undefined;
 			}
 			if (audioTrack) {
 				microphoneCaptureModeRef.current.set(audioTrack, usingMezonNsCapture ? 'mezon-ns' : 'native');
@@ -1820,7 +1841,7 @@ export function MezonSfuVoiceRoom({
 			if (videoTrack) {
 				videoTrack.enabled = desiredMediaRef.current.cameraEnabled;
 				cameraTrackRef.current = videoTrack;
-				setSelectedCamera(videoTrack.getSettings().deviceId || 'default');
+				setSelectedCamera(videoTrack.getSettings().deviceId || preferredCameraIdRef.current || 'default');
 			}
 			localStreamRef.current = stream;
 			setLocalPreview(stream);
@@ -2568,7 +2589,7 @@ export function MezonSfuVoiceRoom({
 			mezonNsPipelineRef.current = null;
 			dispatch(voiceActions.setNoiseSuppressionReady(false));
 			localStreamRef.current?.getTracks().forEach((track) => {
-				if (track !== customVideoTrack) track.stop();
+				if (track !== customVideoTrackRef.current) track.stop();
 			});
 			stopScreenAnnotationCompositor();
 			screenAudioMixerRef.current?.stop();
@@ -2594,7 +2615,6 @@ export function MezonSfuVoiceRoom({
 	}, [
 		applyScreenEncodingParams,
 		applySfuPeers,
-		cameraManagedExternally,
 		claimRemoteMid,
 		currentUserId,
 		dispatch,

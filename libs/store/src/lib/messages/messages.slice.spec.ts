@@ -899,10 +899,33 @@ describe('reopening a channel that missed messages while offline', () => {
 	it('fetches the missed messages in order instead of the page before its newest cached row', async () => {
 		const { store, client } = await openThenMiss(1003);
 		await store.dispatch(fetchMessages(args)).unwrap();
-		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined]);
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined, msg(1000).id]);
 		expect(store.getState().messages.channelViewPortMessageIds.channel.slice(-4)).toEqual(ids(1000, 1003));
 		expect(store.getState().messages.lastMessageByChannel.channel?.id).toBe(msg(1003).id);
 		expect(selectHasMoreBottomByChannelId(store.getState() as any, 'channel')).toBe(false);
+	});
+
+	it('keeps cached messages and refreshes cache metadata when server returns empty for matching lastSeenMessageId', async () => {
+		const { store, client } = await openThenMiss(1000);
+		client.listChannelMessages.mockResolvedValueOnce({ messages: [] });
+		const beforeCache = store.getState().messages.channelMessages.channel.cache;
+
+		await store.dispatch(fetchMessages(args)).unwrap();
+
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined, msg(1000).id]);
+		expect(store.getState().messages.channelViewPortMessageIds.channel).toEqual(ids(951, 1000));
+		expect(store.getState().messages.channelMessages.channel.cache).toBeDefined();
+		expect(store.getState().messages.channelMessages.channel.cache).not.toBe(beforeCache);
+	});
+
+	it('does not send lastSeenMessageId when channel only has an unfetched realtime message', async () => {
+		const { store, client } = setup();
+		store.dispatch(messagesActions.addOneMessage({ ...msg(1000) } as any));
+		client.listChannelMessages.mockResolvedValueOnce({ messages: page(951, 1000), last_sent_message: msg(1000) });
+
+		await store.dispatch(fetchMessages(args)).unwrap();
+
+		expect(client.listChannelMessages.mock.calls.at(-1)).toEqual([{}, 'clan', 'channel', '0', undefined, 50, undefined]);
 	});
 
 	it('replaces a cache that no longer connects to the latest page', async () => {
