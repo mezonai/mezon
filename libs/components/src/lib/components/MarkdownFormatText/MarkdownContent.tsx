@@ -1,8 +1,22 @@
 import { toMembersPage } from '@mezon/core';
-import { channelsActions, getStore, inviteActions, selectAppChannelById, selectClanExists, selectTheme, useAppDispatch } from '@mezon/store';
+import {
+	channelAppActions,
+	channelsActions,
+	getChannelsState,
+	getStore,
+	inviteActions,
+	selectAppChannelById,
+	selectAppChannelsList,
+	selectChannelById,
+	selectClanExists,
+	selectTheme,
+	seletClanNameById,
+	useAppDispatch
+} from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import {
 	EBacktickType,
+	buildChannelAppLaunchUrl,
 	getFacebookEmbedSize,
 	getFacebookEmbedUrl,
 	getTikTokEmbedSize,
@@ -269,6 +283,30 @@ const LinkContent = memo<LinkContentProps>(({ content, linkLabel, messageId, isJ
 				} else {
 					try {
 						const parsedContent = new URL(content);
+						const state = store.getState();
+						const sameOriginApps = [
+							...selectAppChannelsList(state),
+							...Object.values(getChannelsState(state).byClans).flatMap((clan) => Object.values(clan.appChannelsList ?? {}))
+						].filter((app) => app.app_id && app.app_url && `${app.app_url}/`.startsWith(`${parsedContent.origin}/`));
+						const appChannel = sameOriginApps.find((app) => content.startsWith(app.app_url?.split('?')[0] ?? '')) ?? sameOriginApps[0];
+						if (appChannel?.app_id) {
+							const hashData = await dispatch(channelAppActions.generateAppUserHash({ appId: appChannel.app_id })).unwrap();
+							if (hashData.web_app_data) {
+								const clanId = appChannel.clan_id ?? '';
+								parsedContent.searchParams.delete('clanName');
+								const urlWithHash = buildChannelAppLaunchUrl(parsedContent.toString(), {
+									webAppData: hashData.web_app_data,
+									clanId,
+									clanName: seletClanNameById(state, clanId) ?? ''
+								});
+								window.open(
+									urlWithHash,
+									selectChannelById(state, appChannel.channel_id ?? '')?.channel_label,
+									'width=900,height=700,noopener,noreferrer'
+								);
+							}
+							return;
+						}
 						if (parsedContent.protocol === 'http:' || parsedContent.protocol === 'https:' || parsedContent.protocol === 'mailto:') {
 							window.open(content, '_blank', 'noopener,noreferrer');
 						}
