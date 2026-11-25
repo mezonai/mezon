@@ -16,5 +16,12 @@
 			"description": "Eine temporäre Nachricht senden (nur für den ausgewählten Nutzer sichtbar)"
 		}
 	},
-	"convertLongToFile": "Lange Nachricht in Datei umwandeln"
+	"convertLongToFile": "Lange Nachricht in Datei umwandeln",
+	"longMessage": {
+		"title": "Nachricht zu lang",
+		"description": "Diese Nachricht hat {{count}} Zeichen, mehr als das {{multiplier}}-Fache des Limits von {{limit}} Zeichen, und kann daher nicht als Nachrichten gesendet werden. In eine .txt-Datei umwandeln? Wenn du abbrichst, kannst du sie weiterhin bearbeiten.",
+		"convert": "In Datei umwandeln",
+		"size": "{{size}}",
+		"chars": "{{count}} Zeichen"
+	}
 }

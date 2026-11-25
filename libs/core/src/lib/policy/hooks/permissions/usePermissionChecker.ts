@@ -6,6 +6,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { EOverriddenPermission, EPermission } from '@mezon/utils';
+import { isRealClanId } from '@mezon/utils';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { usePermissionContext } from '../../context/PermissionContext';
@@ -15,7 +16,7 @@ function usePermissionChecker(permissions: Array<EPermission | EOverriddenPermis
 
 function usePermissionChecker(permissions: string[], channelId?: string, clanId?: string) {
 	const currentClanId = useSelector(selectCurrentClanId);
-	const effectiveClanId = clanId && clanId !== '0' ? clanId : currentClanId || '';
+	const effectiveClanId = isRealClanId(clanId) ? clanId : currentClanId || '';
 	const dispatch = useAppDispatch();
 	const _ = useAppSelector(selectAllChannelsWithMaxPermissionEntities);
 
@@ -26,7 +27,7 @@ function usePermissionChecker(permissions: string[], channelId?: string, clanId?
 
 	// Handle fetching overridden policies for channel-specific permissions
 	useEffect(() => {
-		if (effectiveClanId && effectiveClanId !== '0' && channelId) {
+		if (isRealClanId(effectiveClanId) && channelId) {
 			dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: effectiveClanId, channelId }));
 		}
 	}, [channelId, effectiveClanId, dispatch]);

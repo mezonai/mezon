@@ -16,6 +16,7 @@ import {
 } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
+import { isRealClanId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -102,7 +103,7 @@ const ChannelHashtag = ({
 					openUnknown();
 					return;
 				}
-				const detailClanId = detail.clan_id && detail.clan_id !== '0' ? detail.clan_id : clanId;
+				const detailClanId = isRealClanId(detail.clan_id) ? detail.clan_id : clanId;
 				const opened = putFetchedChannel(dispatch, detailClanId, detail);
 				dispatch(categoriesActions.setCtrlKFocusChannel({ id: opened.id, parentId: opened.parent_id ?? '' }));
 				navigate(toChannelPage(opened.id, detailClanId));

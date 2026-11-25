@@ -44,7 +44,7 @@
 		},
 		"VoiceChannel": {
 			"title": "Тавышлы канал сайлагыз",
-			"privateAudienceTip": "Киңәш: Барлык тыңлаучылар чарага кушыла алсын өчен, аларны <channel>#{{channelName}}</channel> каналына өстәгез."
+			"privateAudienceTip": "Киңәш: Барлык тыңлаучылар чарага кушыла алсын өчен, аларны <channel><icon/>{{channelName}}</channel> каналына өстәгез."
 		},
 		"address": {
 			"title": "Урыннар",

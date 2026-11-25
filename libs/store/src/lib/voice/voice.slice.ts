@@ -1,7 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import type { SfuBreakoutRoomEventPayload } from '@mezon/transport';
 import { SfuBreakoutApiError, callSfuBreakoutMerge, callSfuBreakoutRoom } from '@mezon/transport';
-import { LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
+import { LENGHT_USER_ID, isRealClanId, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser, VoiceLeavedEvent } from 'mezon-js';
@@ -137,6 +137,7 @@ export interface VoiceState {
 	isPiPMode?: boolean;
 	openPopOut?: boolean;
 	openChatBox?: boolean;
+	externalChatUnread: number;
 	externalGroup?: boolean;
 	presenceRevisionByClan: Record<string, number>;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
@@ -692,6 +693,7 @@ export const initialVoiceState: VoiceState = {
 	isPiPMode: false,
 	openPopOut: false,
 	openChatBox: false,
+	externalChatUnread: 0,
 	externalGroup: false,
 	presenceRevisionByClan: {},
 	listInVoiceStatus: {},
@@ -901,6 +903,7 @@ export const voiceSlice = createSlice({
 			state.breakoutInvite = null;
 			state.breakoutParents = [];
 			state.breakoutPending = false;
+			state.externalChatUnread = 0;
 		},
 		syncHostedBreakoutsOwner: (state, action: PayloadAction<string | null>) => {
 			const nextOwnerId = action.payload || null;
@@ -1008,6 +1011,17 @@ export const voiceSlice = createSlice({
 		},
 		setToggleChatBox: (state) => {
 			state.openChatBox = !state.openChatBox;
+			if (state.openChatBox) {
+				state.externalChatUnread = 0;
+			}
+		},
+		noteExternalChatMessage: (state) => {
+			if (!state.openChatBox) {
+				state.externalChatUnread += 1;
+			}
+		},
+		clearExternalChatUnread: (state) => {
+			state.externalChatUnread = 0;
 		},
 		setExternalGroup: (state) => {
 			state.externalGroup = true;
@@ -1045,7 +1059,7 @@ export const voiceSlice = createSlice({
 				state.loadingStatus = 'loaded';
 
 				if (presenceRevision !== undefined && presenceRevision !== (state.presenceRevisionByClan[clanId] ?? 0)) return;
-				if (clanId && clanId !== '0') {
+				if (isRealClanId(clanId)) {
 					state.voiceMembersLoadedByClan[clanId] = true;
 				}
 				if (fromCache || !users.length) return;
@@ -1246,7 +1260,7 @@ const selectChannelId = (_: RootState, channelId: string) => channelId;
 export const selectVoiceChannelMembersByChannelId = createSelector(
 	[getVoiceState, selectChannelId, (_, __, clanId: string) => clanId],
 	(state, channelId, clanId) => {
-		if (!clanId || clanId === '0') return [];
+		if (!isRealClanId(clanId)) return [];
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {
@@ -1259,7 +1273,7 @@ export const selectVoiceChannelMembersByChannelId = createSelector(
 export const selectUserInvoiceData = createSelector(
 	[getVoiceState, (_, userId: string) => userId, selectCurrentChannelId, selectCurrentClanId],
 	(state, userId, channelId, clanId) => {
-		if (!clanId || clanId === '0' || !channelId) return null;
+		if (!isRealClanId(clanId) || !channelId) return null;
 		const listByClan = state.listVoiceMemberByClan[clanId];
 
 		if (listByClan && listByClan[channelId]) {
@@ -1288,6 +1302,7 @@ export const selectVoiceOpenPopOut = createSelector(getVoiceState, (state) => st
 export const selectGuestAccessToken = createSelector(getVoiceState, (state) => state.guestAccessToken);
 export const selectGuestUserId = createSelector(getVoiceState, (state) => state.guestUserId);
 export const selectOpenExternalChatBox = createSelector(getVoiceState, (state) => state.openChatBox);
+export const selectExternalChatUnread = createSelector(getVoiceState, (state) => state.externalChatUnread);
 export const selectBreakoutRoom = createSelector(getVoiceState, (state) => state.breakoutRoom);
 export const selectBreakoutInvite = createSelector(getVoiceState, (state) => state.breakoutInvite);
 export const selectBreakoutParents = createSelector(getVoiceState, (state) => state.breakoutParents);

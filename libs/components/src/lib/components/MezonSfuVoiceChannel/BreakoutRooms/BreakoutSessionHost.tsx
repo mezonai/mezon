@@ -17,6 +17,7 @@ import {
 	voiceActions,
 	voiceMembersByChannelId
 } from '@mezon/store';
+import { isRealClanId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -48,7 +49,7 @@ const HostedBreakoutWatcher = () => {
 
 		for (const hosted of hostedList) {
 			const clanId = hosted.clanId;
-			if (!clanId || clanId === '0' || hosted.roomIds.length === 0) {
+			if (!isRealClanId(clanId) || hosted.roomIds.length === 0) {
 				continue;
 			}
 			const clanChannelsState = state.channels?.byClans?.[clanId];

@@ -16,5 +16,12 @@
 			"description": "一時的メッセージを送信（選択されたユーザーのみが表示）"
 		}
 	},
-	"convertLongToFile": "長いメッセージをファイルに変換"
+	"convertLongToFile": "長いメッセージをファイルに変換",
+	"longMessage": {
+		"title": "メッセージが長すぎます",
+		"description": "このメッセージは{{count}}文字あり、{{limit}}文字制限の{{multiplier}}倍を超えているため、メッセージとして送信できません。.txtファイルに変換しますか？キャンセルすれば引き続き編集できます。",
+		"convert": "ファイルに変換",
+		"size": "{{size}}",
+		"chars": "{{count}}文字"
+	}
 }

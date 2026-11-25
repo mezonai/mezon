@@ -227,7 +227,8 @@ export const STICKER_WAVE = {
 	]
 };
 
-export const MEZON_AVATAR_URL = 'https://cdn.komu.vn/0/1840653409082937344/1782991817428439000/1748500199026_0logo_new.png';
+// Message references and default avatars are persisted, so use a stable public URL.
+export const MEZON_AVATAR_URL = 'https://mezon.ai/chat/assets/brand/app-icon.png?v=20261112';
 export const WAVE_SENDER_NAME = 'Mezon';
 
 export const CURRENCY = {

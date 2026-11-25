@@ -1,5 +1,7 @@
+import { mezonLogoOnDark, mezonLogoOnLight } from '@mezon/assets';
 import { AppDirectoryList } from '@mezon/components';
 import { selectTheme } from '@mezon/store';
+import { ThemeManager } from '@mezon/themes';
 import { Button, Icons, Image, MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,19 +42,10 @@ const AppDirectory = () => {
 		}
 	];
 	const appearanceTheme = useSelector(selectTheme);
-	const elementHTML = document.documentElement;
+	const isLightTheme = ThemeManager.isLightTheme(appearanceTheme);
 	useEffect(() => {
-		switch (appearanceTheme) {
-			case 'dark':
-				elementHTML.classList.add('dark');
-				break;
-			case 'light':
-				elementHTML.classList.remove('dark');
-				break;
-			default:
-				break;
-		}
-	}, [appearanceTheme]);
+		document.documentElement.classList.toggle('dark', !isLightTheme);
+	}, [isLightTheme]);
 
 	const [inputValue, setInputValue] = useState('');
 	const inputOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,13 +59,7 @@ const AppDirectory = () => {
 					<div className="block1 flex gap-[48px] relative flex-1 max-lg:gap-0">
 						<div className="block1-left flex-1 flex flex-col gap-[30px]">
 							<div className="logo flex gap-[8px] items-center">
-								<Image
-									src={`assets/images/${appearanceTheme === 'light' ? 'mezon-logo-white.svg' : 'mezon-logo-black.svg'}`}
-									width={48}
-									height={48}
-									className="w-10 aspect-square object-cover"
-								/>
-								<div className="uppercase font-bold tracking-wide text-[20px] dark:text-textDarkTheme text-textLightTheme">Mezon</div>
+								<Image src={isLightTheme ? mezonLogoOnLight : mezonLogoOnDark} alt="Mezon" className="h-6 w-auto object-contain" />
 								<div className="font-semibold">{t('appDirectory.title')}</div>
 							</div>
 							<div className="heading uppercase text-[44px] font-extrabold dark:text-textDarkTheme text-textLightTheme max-lg:text-center">

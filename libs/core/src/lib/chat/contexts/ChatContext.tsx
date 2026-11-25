@@ -143,7 +143,11 @@ import {
 	addBigInt,
 	checkIsThread,
 	isBackgroundModeActive,
+	isDMStreamMode,
+	isDmOrGroupChannelType,
+	isRealClanId,
 	isUiActive,
+	normalizeClanId,
 	subBigInt
 } from '@mezon/utils';
 import type { Update } from '@reduxjs/toolkit';
@@ -235,6 +239,7 @@ import {
 	shouldProbeNetworkBeforeConnect,
 	waitForNetworkProbeSlot
 } from '../utils/socketReconnectBudget';
+import { createClanEventsRefresher } from './clanEventsRefresh';
 import { watchReconnectNotice } from './reconnectNotice';
 
 const MobileEventEmitter = new EventEmitter();
@@ -321,6 +326,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
 	const reconnectRecoveryPendingRef = useRef(false);
+	const clanEventsRefresher = useMemo(
+		() =>
+			createClanEventsRefresher({
+				refresh: (clanId) => dispatch(eventManagementActions.fetchEventManagement({ clanId, noCache: true }))
+			}),
+		[dispatch]
+	);
+
+	useEffect(() => () => clanEventsRefresher.cancelAll(), [clanEventsRefresher]);
 
 	const navigate = useCustomNavigate();
 	const onvoiceended = useCallback(
@@ -630,7 +644,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 									channelId: message.channel_id,
 									timestamp,
 									senderId: message.sender_id,
-									clanId: message.clan_id || '0'
+									clanId: '0'
 								})
 							);
 						}
@@ -644,7 +658,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							messageId: message.id
 						});
 					} else {
-						if (message.clan_id) {
+						if (isRealClanId(message.clan_id)) {
 							dispatch(clansActions.setHasUnreadMessage({ clanId: message.clan_id, hasUnread: true }));
 						}
 
@@ -675,7 +689,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 								badgeService.incrementChannelIfMentioned(message, userId as string);
 							}
 
-							if (isTopicMessage && !isAlreadySeen && message.clan_id && message.clan_id !== '0') {
+							if (isTopicMessage && !isAlreadySeen && isRealClanId(message.clan_id)) {
 								const currentUserId = userId || selectCurrentUserId(state);
 								const isFromMe = Boolean(currentUserId && message.sender_id === currentUserId);
 								const isViewingTopic =
@@ -772,7 +786,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						});
 
 						const notificationId = message.id || message.message_id || Date.now().toString();
-						const clanId = message.clan_id || '0';
+						const clanId = isDMStreamMode(mess.mode) ? '0' : normalizeClanId(message.clan_id);
 						const channelId = message.channel_id;
 
 						const replyNotification: INotification = {
@@ -918,6 +932,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const currentChannel = selectCurrentChannel(state);
 			const isFocus = !isBackgroundModeActive();
 			const isTopicNotification = Boolean(notification.topic_id && notification.topic_id !== '0');
+			const isDmNotification =
+				isDmOrGroupChannelType(notification?.channel_type) ||
+				isDmOrGroupChannelType(notification?.channel?.type) ||
+				!isRealClanId(notification?.clan_id);
 			const shouldNotify = isTopicNotification
 				? !isTopicConversationVisible({
 						channelId: notification.channel_id,
@@ -928,10 +946,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						isClanView: selectClanView(state) && !isDirectViewPage && !isFriendPageView,
 						isFocused: isFocus
 					})
-				: (currentChannel?.channel_id !== notification?.channel_id && notification?.clan_id !== '0') ||
-					isDirectViewPage ||
-					isFriendPageView ||
-					!isFocus;
+				: (currentChannel?.channel_id !== notification?.channel_id && !isDmNotification) || isDirectViewPage || isFriendPageView || !isFocus;
 
 			if (shouldNotify) {
 				const parsedNotificationContent = safeJSONParse(notification.content?.content);
@@ -980,7 +995,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					const msgTime = notification.content?.create_time_seconds ?? 0;
 					const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
 					if (!isAlreadySeen) {
-						const clanId = notification?.clan_id || '0';
+						const clanId = isDmNotification ? '0' : normalizeClanId(notification?.clan_id);
 						const messageId = notification?.content?.message_id;
 						if (isTopicNotification) {
 							badgeService.incrementChannelFromNotificationForTopic(clanId, notification?.channel_id ?? '', topicId, messageId);
@@ -1005,7 +1020,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		(pin: LastPinMessageEvent) => {
 			if (!pin?.channel_id || pin.operation !== 1) return;
 
-			const isDM = !pin.clan_id || pin.clan_id === '0';
+			const isDM = isDMStreamMode(pin.mode) || !isRealClanId(pin.clan_id);
 
 			if (isDM) {
 				dispatch(directActions.setShowPinBadgeOfDM({ dmId: pin.channel_id, isShow: true }));
@@ -1082,7 +1097,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				return;
 			}
 
-			if (clan_id && clan_id !== '0') {
+			const isDM = isDMStreamMode(event.mode) || !isRealClanId(clan_id);
+			if (!isDM) {
 				const channel = selectChannelMetaById(state, channel_id);
 				badge_count = channel?.count_mess_unread || 0;
 				badgeService.resetChannel({
@@ -1123,8 +1139,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						channelMetaEntities?.[user.channel_id]?.count_mess_unread ||
 						0;
 
+					const isDmOrGroupRemoved = isDmOrGroupChannelType(user.channel_type) || !isRealClanId(user.clan_id);
 					if (badgeCount > 0) {
-						badgeService.decrementChannel(user?.clan_id || '0', user.channel_id, badgeCount);
+						badgeService.decrementChannel(isDmOrGroupRemoved ? '0' : user.clan_id, user.channel_id, badgeCount);
 					}
 
 					if (channelId === user.channel_id) {
@@ -1157,7 +1174,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						user.channel_type === ChannelType.CHANNEL_TYPE_THREAD ? selectChannelById(currentState, user.channel_id) : null;
 
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
-					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: user.clan_id || (clanId as string) }));
+					if (!isDmOrGroupRemoved) {
+						dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: user.clan_id || (clanId as string) }));
+					}
 					// A file forwarded out of this channel must stop loading for this user now, not when the signature expires.
 					dispatch(cdnSignatureActions.removeByChannelId(user.channel_id));
 
@@ -1179,7 +1198,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					dispatch(directMetaActions.remove(user.channel_id));
 					dispatch(
 						channelsActions.removePreviousChannel({
-							clanId: user.clan_id,
+							clanId: isDmOrGroupRemoved ? '0' : user.clan_id,
 							channelId: user.channel_id
 						})
 					);
@@ -1284,6 +1303,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const userIds = users.map((u) => u.user_id);
 			const user = users?.find((user) => user.user_id === userId);
 			if (user) {
+				clanEventsRefresher.schedule(channel_desc.clan_id || clan_id || '');
 				if (
 					channel_desc.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
 					channel_desc.type === ChannelType.CHANNEL_TYPE_THREAD ||
@@ -1358,7 +1378,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 			}
 
-			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP || channel_desc.type === ChannelType.CHANNEL_TYPE_DM) {
+			if (isDmOrGroupChannelType(channel_desc.type)) {
 				dispatch(
 					directActions.addGroupUserWS({
 						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
@@ -1385,7 +1405,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 			}
 
-			if (currentClanId === clan_id) {
+			if (!isDmOrGroupChannelType(channel_desc.type) && isRealClanId(clan_id) && currentClanId === clan_id) {
 				// Only members the roster lacks: an entry replaces the roster's whole user, and the event carries just the id
 				// when the server has no cached profile, which blanked the member's name everywhere until the next fetch.
 				const roster = selectEntitesUserClans(store.getState() as unknown as RootState);
@@ -1419,7 +1439,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			dispatch(userChannelsActions.markAccessChanged(channel_desc.channel_id as string));
 		},
-		[userId, dispatch]
+		[userId, dispatch, clanEventsRefresher]
 	);
 
 	const onuserclanadded = useCallback(
@@ -1704,7 +1724,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const isTopicTyping = Boolean(e?.topic_id && e?.topic_id !== '0');
 			const channelId = isTopicTyping ? e.topic_id! : e.channel_id;
 			const currentClanId = selectCurrentClanId(state);
-			const isDM = !currentClanId || currentClanId === '0';
+			const isDM = !isRealClanId(currentClanId);
 
 			if (!isDM) {
 				const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
@@ -1787,7 +1807,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 			}
 		}
-		if (channelCreated && channelCreated.channel_private === 0 && (channelCreated.parent_id === '' || channelCreated.parent_id === '0')) {
+		if (
+			channelCreated &&
+			!isDmOrGroupChannelType(channelCreated.channel_type) &&
+			isRealClanId(channelCreated.clan_id) &&
+			channelCreated.channel_private === 0 &&
+			(channelCreated.parent_id === '' || channelCreated.parent_id === '0')
+		) {
 			const store = await getStoreAsync();
 			const category = channelCreated.category_id ? selectCategoryById(store.getState(), channelCreated.category_id) : null;
 			const channelWithCategoryName = {
@@ -1821,7 +1847,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				})
 			);
 		} else if (channelCreated.creator_id === userId) {
-			if (channelCreated.channel_type !== ChannelType.CHANNEL_TYPE_DM && channelCreated.channel_type !== ChannelType.CHANNEL_TYPE_GROUP) {
+			if (!isDmOrGroupChannelType(channelCreated.channel_type)) {
 				dispatch(
 					listChannelsByUserActions.addOneChannel({
 						id: channelCreated.channel_id,
@@ -1832,7 +1858,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 		}
 
-		if (channelCreated.channel_type !== ChannelType.CHANNEL_TYPE_DM && channelCreated.channel_type !== ChannelType.CHANNEL_TYPE_GROUP) {
+		if (!isDmOrGroupChannelType(channelCreated.channel_type)) {
 			dispatch(
 				channelSettingActions.addChannelFromSocket({
 					id: channelCreated.channel_id,
@@ -1937,7 +1963,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onclandeleted = useCallback(
 		(clanDelete: ClanDeletedEvent) => {
-			if (!clanDelete?.clan_id) return;
+			if (!isRealClanId(clanDelete?.clan_id)) return;
 			dispatch(inviteActions.removeByClanId(clanDelete.clan_id));
 			const store = getStore();
 			const currentClanId = selectCurrentClanId(store.getState());
@@ -2012,7 +2038,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				const isUserInChildThread = currentChannel && checkIsThread(currentChannel) && currentChannel.parent_id === channelDeleted.channel_id;
 
 				if (isUserInDeletedChannel || isUserInChildThread) {
-					if (!clanId) {
+					if (!isRealClanId(clanId)) {
 						navigate(`/chat/direct/friends`);
 						return;
 					}
@@ -2101,17 +2127,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				channelUpdated.channel_id
 			);
 
-			if (channelUpdated.clan_id === '0') {
+			if (isDmOrGroupChannelType(channelUpdated.channel_type) || !isRealClanId(channelUpdated.clan_id)) {
 				if (channelUpdated?.e2ee && channelUpdated.creator_id !== userId) {
 					dispatch(e2eeActions.setOpenModalE2ee(true));
 				}
 				if (channelUpdated.channel_label === '') {
-					return dispatch(directActions.updateE2EE({ ...channelUpdated, currentUserId: userId }));
+					return dispatch(directActions.updateE2EE({ ...channelUpdated, clan_id: '0', currentUserId: userId }));
 				}
-				return dispatch(directActions.updateOne({ ...channelUpdated, currentUserId: userId }));
+				return dispatch(directActions.updateOne({ ...channelUpdated, clan_id: '0', currentUserId: userId }));
 			}
 
-			if (channelUpdated.channel_type !== ChannelType.CHANNEL_TYPE_DM && channelUpdated.channel_type !== ChannelType.CHANNEL_TYPE_GROUP) {
+			if (!isDmOrGroupChannelType(channelUpdated.channel_type)) {
 				dispatch(
 					channelSettingActions.updateChannelFromSocket({
 						id: channelUpdated.channel_id,
@@ -2259,7 +2285,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onchannelarchive = useCallback(
 		(channelArchive: ChannelArchiveEvent) => {
 			const clanId = channelArchive.clan_id;
-			if (!clanId || clanId === '0') {
+			if (isDmOrGroupChannelType(channelArchive.channel_type) || !isRealClanId(clanId)) {
 				return;
 			}
 
@@ -3404,9 +3430,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		setCallbackEventFn(socket);
 
 		return () => {
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			socket.onvoicereactionmessage = () => {};
-
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onchannelmessage = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function

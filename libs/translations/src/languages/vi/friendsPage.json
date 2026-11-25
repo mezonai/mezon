@@ -83,5 +83,14 @@
 		"online": "Không có ai trực tuyến phù hợp với tìm kiếm của bạn. Hãy thử tên khác.",
 		"pending": "Không có yêu cầu kết bạn phù hợp với tìm kiếm của bạn. Hãy kiểm tra lại tên hoặc thử lại.",
 		"block": "Không có người dùng bị chặn phù hợp với tìm kiếm của bạn. Hãy thử tên khác."
+	},
+	"sort": {
+		"label": "Sắp xếp",
+		"recent": "Tương tác gần đây",
+		"name": "Tên (A–Z)"
+	},
+	"sections": {
+		"recent": "Gần đây",
+		"others": "Bạn bè khác"
 	}
 }

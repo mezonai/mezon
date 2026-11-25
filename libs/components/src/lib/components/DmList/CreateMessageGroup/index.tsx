@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import EmptySearchFriends from './EmptySearchFriends';
+import { resolveEnterKeyAction } from './enterKeyAction';
 
 type CreateMessageGroupProps = {
 	isOpen: boolean;
@@ -183,7 +184,11 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 
 				case 'Enter':
 					event.preventDefault();
-					handleEnter(listFriends, idActive);
+					if (resolveEnterKeyAction(event.target as HTMLElement | null, selectedFriends.length) === 'submit') {
+						handleCreateDM();
+					} else {
+						handleEnter(listFriends, idActive);
+					}
 					break;
 
 				default:
@@ -196,7 +201,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [idActive, listFriends]);
+	}, [idActive, listFriends, selectedFriends, isCreating]);
 
 	const handleArrowDown = (listFriends: FriendsEntity[], currentIndex: number) => {
 		const nextIndex = currentIndex === listFriends.length - 1 ? 0 : currentIndex + 1;

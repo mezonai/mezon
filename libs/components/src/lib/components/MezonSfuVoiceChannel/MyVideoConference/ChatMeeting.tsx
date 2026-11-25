@@ -1,4 +1,4 @@
-import { selectAllAccount, selectOpenExternalChatBox, voiceActions } from '@mezon/store';
+import { selectAllAccount, selectExternalChatUnread, selectOpenExternalChatBox, voiceActions } from '@mezon/store';
 import { MezonIcon, MzIcons16 } from '@mezon/ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
@@ -151,5 +151,22 @@ const MessageItem = ({ message }: { message: string }) => {
 		</div>
 	);
 };
+
+export const ExternalChatUnreadBadge = React.memo(() => {
+	const unreadCount = useSelector(selectExternalChatUnread);
+	const badgeLabel = unreadCount > 99 ? '99+' : String(unreadCount);
+
+	if (!unreadCount || unreadCount <= 0) {
+		return null;
+	}
+
+	return (
+		<span className="pointer-events-none absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
+			{badgeLabel}
+		</span>
+	);
+});
+
+ExternalChatUnreadBadge.displayName = 'ExternalChatUnreadBadge';
 
 export default ChatStreamExternal;

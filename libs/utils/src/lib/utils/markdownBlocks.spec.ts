@@ -1,4 +1,4 @@
-import { findMarkdownBlockLines, findNamedLinks } from './markdownBlocks';
+import { findBlockEscapes, findMarkdownBlockLines, findNamedLinks, isMarkdownBlockLine } from './markdownBlocks';
 
 describe('findMarkdownBlockLines', () => {
 	it('detects ul, ol, and quote lines including nesting depth', () => {
@@ -27,9 +27,50 @@ describe('findMarkdownBlockLines', () => {
 		]);
 	});
 
-	it('does not match ---, ***x***, -x, *x*, 1.x, or bare >', () => {
-		const text = ['---', '***', '***x***', '-x', '*x*', '1.x', '>', '>   ', '-   ', '1.   '].join('\n');
+	it('does not match ***x***, -x, *x*, 1.x, --, or bare >', () => {
+		const text = ['***x***', '-x', '*x*', '1.x', '--', '>', '>   ', '-   ', '1.   '].join('\n');
 		expect(findMarkdownBlockLines(text, [])).toEqual([]);
+	});
+
+	it('detects ---, ***, ___ and - - - as horizontal rules before lists', () => {
+		const text = ['---', '***', ' ___ ', '- - -', '-----'].join('\n');
+		expect(findMarkdownBlockLines(text, []).map((block) => [block.kind, text.slice(block.lineStart, block.lineEnd)])).toEqual([
+			['hr', '---'],
+			['hr', '***'],
+			['hr', ' ___ '],
+			['hr', '- - -'],
+			['hr', '-----']
+		]);
+	});
+
+	it('detects task items with their checked state and keeps the box out of the content', () => {
+		const text = '- [ ] todo\n  * [x] done\n- [X] caps\n- [] not a task';
+		expect(findMarkdownBlockLines(text, [])).toEqual([
+			{ lineStart: 0, lineEnd: 10, markerStart: 0, contentStart: 6, kind: 'ul', depth: 0, marker: '', checked: false },
+			{ lineStart: 11, lineEnd: 23, markerStart: 13, contentStart: 19, kind: 'ul', depth: 1, marker: '', checked: true },
+			{ lineStart: 24, lineEnd: 34, markerStart: 24, contentStart: 30, kind: 'ul', depth: 0, marker: '', checked: true },
+			{ lineStart: 35, lineEnd: 50, markerStart: 35, contentStart: 37, kind: 'ul', depth: 0, marker: '•' }
+		]);
+	});
+
+	it('detects a table with alignment, escaped pipes, missing trailing pipes and stops at the first non-row line', () => {
+		const text = ['intro', '| Name | Qty | Note |', '|:-----|----:|:---:|', '| a \\| b | 1 | |', '| `x|y` | 22', 'after'].join('\n');
+		const code = { s: text.indexOf('`x|y`'), e: text.indexOf('`x|y`') + 5 };
+		const [table] = findMarkdownBlockLines(text, [code]);
+		expect(table.kind).toBe('table');
+		expect(text.slice(table.lineStart, table.lineEnd)).toBe(text.split('\n').slice(1, 5).join('\n'));
+		expect(table.align).toEqual(['left', 'right', 'center']);
+		expect(table.rows?.map((row) => row.map((cell) => text.slice(cell.s, cell.e)))).toEqual([
+			['Name', 'Qty', 'Note'],
+			['a \\| b', '1', ''],
+			['`x|y`', '22']
+		]);
+	});
+
+	it('rejects tables without a matching delimiter row or a leading pipe', () => {
+		expect(findMarkdownBlockLines('| a | b |\n| --- |', [])).toEqual([]);
+		expect(findMarkdownBlockLines('a | b\n--- | ---', [])).toEqual([]);
+		expect(findMarkdownBlockLines('| a | b |\nplain', [])).toEqual([]);
 	});
 
 	it('skips lines inside a code block or multiline element and markers covered by inline code', () => {
@@ -110,6 +151,21 @@ describe('findNamedLinks', () => {
 		expect(findNamedLinks(unclosed, [unclosedLink], [unclosedLink]).size).toBe(0);
 	});
 
+	it('marks ![alt](url) as an image that starts at the !, and allows an empty alt', () => {
+		const text = 'see ![a cat](https://x.example/cat.png) and ![](https://x.example/b.png)';
+		const s1 = text.indexOf('https://x.example/cat.png');
+		const e1 = s1 + 'https://x.example/cat.png'.length;
+		const s2 = text.indexOf('https://x.example/b.png');
+		const e2 = s2 + 'https://x.example/b.png'.length;
+		const links = [
+			{ s: s1, e: e1 },
+			{ s: s2, e: e2 }
+		];
+		const found = findNamedLinks(text, links, links);
+		expect(found.get(s1)).toEqual({ open: 4, labelStart: 6, labelEnd: 11, urlStart: s1, urlEnd: e1, close: e1, image: true });
+		expect(found.get(s2)).toEqual({ open: s2 - 4, labelStart: s2 - 2, labelEnd: s2 - 2, urlStart: s2, urlEnd: e2, close: e2, image: true });
+	});
+
 	it('rejects a named link whose label overlaps a mention or other occupied range', () => {
 		const text = 'hi [@alice](https://mezon.ai) ok';
 		const urlStart = text.indexOf('https://mezon.ai');
@@ -147,5 +203,28 @@ describe('findNamedLinks', () => {
 			urlEnd: e2,
 			close: e2
 		});
+	});
+});
+
+describe('block escapes', () => {
+	it('recognizes lines that would render as a heading, list, quote, rule or table', () => {
+		['# a', '- a', '* a', '1. a', '2) a', '> a', '---', '***', '_ _ _', '| a |'].forEach((line) => expect(isMarkdownBlockLine(line)).toBe(true));
+		['#a', '-a', '||a||', 'text', '*a*', '>'].forEach((line) => expect(isMarkdownBlockLine(line)).toBe(false));
+	});
+
+	it('finds backslashes that escape a block marker at a line start or block content start', () => {
+		const t = ['\\# a', '\\- b', '\\1. c', '\\> d', '\\---', '\\| e |', '\\#tag', 'x \\- y', '- \\[ ] f', '> \\# g', '  \\* h'].join('\n');
+		const at = (line: string, offset = 0) => t.indexOf(line) + offset;
+		expect(findBlockEscapes(t, findMarkdownBlockLines(t, []))).toEqual([
+			at('\\# a'),
+			at('\\- b'),
+			at('\\1. c'),
+			at('\\> d'),
+			at('\\---'),
+			at('\\| e |'),
+			at('- \\[ ] f', 2),
+			at('> \\# g', 2),
+			at('  \\* h', 2)
+		]);
 	});
 });

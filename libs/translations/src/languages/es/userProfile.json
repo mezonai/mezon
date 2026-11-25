@@ -223,5 +223,8 @@
 		"banList": "Lista de bans",
 		"search": "Buscar usuarios baneados",
 		"banListEmpty": "No se encontraron usuarios baneados"
+	},
+	"badges": {
+		"mezonPro": "Mezon Pro"
 	}
 }

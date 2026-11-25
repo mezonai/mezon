@@ -1,7 +1,7 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import type { ChannelsEntity } from '@mezon/store';
 import { selectTheme } from '@mezon/store';
-import { MezonIcon, MzIcons20 } from '@mezon/ui';
+import { MezonIcon, MzIcons16, MzIcons20, MzIcons24 } from '@mezon/ui';
 import type { ContentSubmitEventProps } from '@mezon/utils';
 import { OptionEvent, filterOptionReactSelect, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -180,7 +180,7 @@ const LocationModal = (props: LocationModalProps) => {
 					<TitleOptionEvent
 						icon={
 							<MezonIcon
-								icon={MzIcons20.mzSpeaker}
+								icon={MzIcons24.mzSpeaker}
 								className={choiceSpeaker ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
 							/>
 						}
@@ -200,7 +200,7 @@ const LocationModal = (props: LocationModalProps) => {
 					<TitleOptionEvent
 						icon={
 							<MezonIcon
-								icon={MzIcons20.mzLocation}
+								icon={MzIcons24.mzLocation}
 								className={choiceLocation ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
 							/>
 						}
@@ -219,7 +219,7 @@ const LocationModal = (props: LocationModalProps) => {
 					<TitleOptionEvent
 						icon={
 							<MezonIcon
-								icon={MzIcons20.mzSpeaker}
+								icon={MzIcons24.mzSpeaker}
 								className={choicePrivateEvent ? 'text-[var(--mz-icon-selected)]' : 'text-[var(--mz-icon)]'}
 							/>
 						}
@@ -247,14 +247,17 @@ const LocationModal = (props: LocationModalProps) => {
 					/>
 					{showPrivateVoiceAudienceTip && (
 						<p
-							className="mt-2 text-xs text-theme-primary break-words"
+							className="mt-2 text-xs text-theme-primary break-words text-justify"
 							data-e2e={generateE2eId('clan_page.modal.create_event.location.private_voice_audience_tip')}
 						>
 							<Trans
 								t={t}
 								i18nKey="fields.VoiceChannel.privateAudienceTip"
 								values={{ channelName: selectedVoiceChannel?.channel_label }}
-								components={{ channel: <span className="text-blue-500" /> }}
+								components={{
+									channel: <span className="inline-flex items-center align-bottom text-blue-500" />,
+									icon: <MezonIcon icon={MzIcons16.mzSpeakerLock} className="shrink-0 mr-0.5" />
+								}}
 							/>
 						</p>
 					)}
@@ -334,12 +337,12 @@ const TitleOptionEvent = ({
 }) => {
 	return (
 		<label
-			className={`mz-hover w-full bg-item-theme rounded flex justify-between items-center p-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+			className={`mz-hover w-full bg-item-theme rounded flex gap-3 justify-between items-center p-4 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
 			htmlFor={disabled ? undefined : id}
 		>
-			<div className={`flex items-center gap-x-2 ${choose ? 'text-theme-primary-active' : ''} `}>
-				{icon}
-				<div>
+			<div className={`flex flex-1 min-w-0 items-center gap-x-4 ${choose ? 'text-theme-primary-active' : ''} `}>
+				<span className="flex shrink-0">{icon}</span>
+				<div className="min-w-0">
 					<h4 className={`font-semibold`} data-e2e={generateE2eId('clan_page.modal.create_event.location.type')}>
 						{title}
 					</h4>
@@ -351,7 +354,7 @@ const TitleOptionEvent = ({
 				checked={choose}
 				id={id}
 				value={id}
-				className="focus:outline-none focus:ring-0"
+				className="shrink-0 focus:outline-none focus:ring-0"
 				onChange={onChange}
 				disabled={disabled}
 			/>

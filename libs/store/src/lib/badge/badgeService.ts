@@ -1,4 +1,4 @@
-import { ID_MENTION_HERE, TypeMessage } from '@mezon/utils';
+import { ID_MENTION_HERE, TypeMessage, isDMStreamMode, isRealClanId } from '@mezon/utils';
 import type { ApiMessageMention, ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
 import { Subject, merge, type Subscription } from 'rxjs';
@@ -171,7 +171,15 @@ class BadgeService extends EventEmitter {
 
 	incrementChannelIfMentioned(message: ChannelMessage, currentUserId: string): boolean {
 		const state = this.getState?.();
-		if (!state || !message.clan_id || !message.message_id || !message.channel_id || message.channel_id === '0') return false;
+		if (
+			!state ||
+			isDMStreamMode(message.mode) ||
+			!isRealClanId(message.clan_id) ||
+			!message.message_id ||
+			!message.channel_id ||
+			message.channel_id === '0'
+		)
+			return false;
 		if (!this.isMessageMentionOrReply(state, message, currentUserId)) return false;
 
 		if (message.topic_id && message.topic_id !== '0') {
@@ -285,7 +293,7 @@ class BadgeService extends EventEmitter {
 		const messageTimestamp =
 			message.update_time_seconds && message.update_time_seconds > 0 ? message.update_time_seconds : message.create_time_seconds || 0;
 
-		if (!message.clan_id || message.clan_id === '0') {
+		if (isDMStreamMode(message.mode) || !isRealClanId(message.clan_id)) {
 			this.handleDmMessageDeleted(state, message, messageTimestamp);
 		} else {
 			this.handleChannelMessageDeleted(state, message, messageTimestamp, userId);
@@ -428,7 +436,9 @@ class BadgeService extends EventEmitter {
 			if (totalCount <= 0) continue;
 			dispatch(channelMetaActions.updateChannelBadgeCount({ clanId, channelId, count: totalCount }));
 			dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId, count: totalCount }));
-			dispatch(clansActions.updateClanBadgeCount({ clanId, count: totalCount }));
+			if (isRealClanId(clanId)) {
+				dispatch(clansActions.updateClanBadgeCount({ clanId, count: totalCount }));
+			}
 		}
 	}
 
@@ -438,11 +448,11 @@ class BadgeService extends EventEmitter {
 		if (!dispatch || !state) return;
 
 		const { clanId, channelId, count } = event;
-		const currentClanBadge = state.clans?.clanUnreadStates?.entities?.[clanId]?.badge ?? 0;
+		const currentClanBadge = isRealClanId(clanId) ? (state.clans?.clanUnreadStates?.entities?.[clanId]?.badge ?? 0) : 0;
 
 		dispatch(channelMetaActions.updateChannelBadgeCount({ clanId, channelId, count: -count }));
 		dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId, count: -count }));
-		if (currentClanBadge > 0) {
+		if (isRealClanId(clanId) && currentClanBadge > 0) {
 			dispatch(clansActions.updateClanBadgeCount({ clanId, count: -count }));
 		}
 	}

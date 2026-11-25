@@ -29,7 +29,8 @@ import {
 	createImgproxyUrl,
 	formatDateI18n,
 	handleSaveImage,
-	isAttachmentPresignPendingForMessage
+	isAttachmentPresignPendingForMessage,
+	normalizeClanId
 } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -151,7 +152,7 @@ const MessageModalImage = () => {
 						: currentAttachments?.[0]?.create_time_seconds;
 				const timestampNumber = timestamp ? Math.floor(Number(timestamp)) : undefined;
 
-				const clanId = currentClanId === '0' ? '0' : currentClanId;
+				const clanId = normalizeClanId(currentClanId);
 
 				let beforeParam: number | undefined;
 				let afterParam: number | undefined;

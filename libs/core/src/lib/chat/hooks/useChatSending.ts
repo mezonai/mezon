@@ -18,7 +18,14 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { TypeMessage, getMessageCreateTimeSeconds, withCreateTimeSecondsInUpdateContent } from '@mezon/utils';
+import {
+	TypeMessage,
+	getMessageCreateTimeSeconds,
+	isDMStreamMode,
+	isDmOrGroupChannelType,
+	isRealClanId,
+	withCreateTimeSecondsInUpdateContent
+} from '@mezon/utils';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -34,6 +41,8 @@ export type UseChatSendingOptions = {
 export function useChatSending({ mode, channelOrDirect, fromTopic = false }: UseChatSendingOptions) {
 	const dispatch = useAppDispatch();
 	const getClanId = channelOrDirect?.clan_id;
+	const isClanChannel = !isDMStreamMode(mode) && !isDmOrGroupChannelType(channelOrDirect?.type) && isRealClanId(getClanId);
+	const effectiveClanId = isClanChannel ? getClanId : '0';
 	const isPublic = !channelOrDirect?.channel_private;
 	const channelIdOrDirectId = channelOrDirect?.channel_id;
 	const currentTopicId = useSelector(selectCurrentTopicId);
@@ -59,7 +68,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 	const currentUserId = userProfile?.user?.id || '';
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, channelOrDirect?.channel_id as string));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
-	const isAnonymousSend = getClanId !== '0' && (fromTopic ? !!currentTopicId && topicAnonymousMode : anonymousMode);
+	const isAnonymousSend = isClanChannel && (fromTopic ? !!currentTopicId && topicAnonymousMode : anonymousMode);
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 	const { clientRef, sessionRef } = useMezon();
 	const isCreatingTopicRef = useRef(false);
@@ -96,7 +105,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					messagesActions.sendEphemeralMessage({
 						receiverId: ephemeralReceiverId,
 						channelId: channelIdOrDirectId ?? '',
-						clanId: getClanId || '',
+						clanId: effectiveClanId,
 						mode,
 						isPublic,
 						content,
@@ -156,12 +165,12 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					}
 				}
 
-				dispatch(
+				await dispatch(
 					topicsActions.handleSendTopic({
 						clanId: getClanId as string,
 						channelId: channelIdOrDirectId as string,
 						mode,
-						anonymous: getClanId !== '0' ? topicAnonymousMode : false,
+						anonymous: isClanChannel ? topicAnonymousMode : false,
 						attachments,
 						code: code ?? 0,
 						content,
@@ -182,14 +191,14 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			await dispatch(
 				messagesActions.sendMessage({
 					channelId: channelIdOrDirectId ?? '',
-					clanId: getClanId || '',
+					clanId: effectiveClanId,
 					mode,
 					isPublic,
 					content,
 					mentions: isAnonymousSend ? [] : mentions,
 					attachments,
 					references,
-					anonymous: getClanId !== '0' ? anonymousMode : false,
+					anonymous: isClanChannel ? anonymousMode : false,
 					mentionEveryone: isAnonymousSend ? false : mentionEveryone,
 					senderId: currentUserId,
 					avatar: priorityAvatar,
@@ -203,6 +212,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			dispatch,
 			channelIdOrDirectId,
 			getClanId,
+			isClanChannel,
+			effectiveClanId,
 			mode,
 			isPublic,
 			currentUserId,
@@ -220,7 +231,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 		if (!anonymousMode) {
 			dispatch(
 				messagesActions.sendTypingUser({
-					clanId: getClanId || '0',
+					clanId: effectiveClanId,
 					channelId: channelIdOrDirectId ?? '0',
 					mode,
 					isPublic,
@@ -229,7 +240,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				})
 			);
 		}
-	}, [anonymousMode, dispatch, getClanId, channelIdOrDirectId, mode, isPublic, priorityNameToShow, fromTopic, currentTopicId]);
+	}, [anonymousMode, dispatch, effectiveClanId, channelIdOrDirectId, mode, isPublic, priorityNameToShow, fromTopic, currentTopicId]);
 
 	// Move this function to to a new action of messages slice
 	const editSendMessage = React.useCallback(
@@ -266,7 +277,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			try {
 				await client.updateChannelMessage(
 					session,
-					getClanId || '0',
+					effectiveClanId,
 					channelIdOrDirectId ?? '0',
 					mode,
 					isPublic,
@@ -283,7 +294,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				console.error(e);
 			}
 		},
-		[sessionRef, clientRef, channelOrDirect, dispatch, getClanId, channelIdOrDirectId, mode, isPublic, currentTopicId]
+		[sessionRef, clientRef, channelOrDirect, dispatch, effectiveClanId, channelIdOrDirectId, mode, isPublic, currentTopicId]
 	);
 
 	return useMemo(
@@ -307,7 +318,14 @@ function findLinkedChannel(state: RootState, channelId: string): ApiChannelDescr
 }
 
 function channelLinkDetails(channel: ApiChannelDescription | null | undefined) {
-	if (!channel?.channel_id || !channel.clan_id || !channel.channel_label || channel.channel_private) return undefined;
+	if (
+		!channel?.channel_id ||
+		isDmOrGroupChannelType(channel.type) ||
+		!isRealClanId(channel.clan_id) ||
+		!channel.channel_label ||
+		channel.channel_private
+	)
+		return undefined;
 	return {
 		clanId: channel.clan_id,
 		channelLabel: channel.channel_label,

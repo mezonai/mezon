@@ -18,7 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { ChannelLableModal } from './ChannelLabel';
+import { ChannelLabelModal } from './ChannelLabel';
 import type { ChannelNameModalRef } from './ChannelNameTextField';
 import { ChannelNameTextField } from './ChannelNameTextField';
 import { ChannelTypeComponent } from './ChannelType';
@@ -174,12 +174,12 @@ export const CreateNewChannelModal = () => {
 			className="fixed inset-0 h-dvh w-screen text-theme-primary overflow-hidden z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center sm:p-4"
 		>
 			<div className="z-60 w-full h-full sm:h-auto sm:max-h-[630px] sm:w-4/5 md:w-[684px] bg-theme-setting-primary rounded-2xl flex flex-col justify-between relative shadow-lg overflow-hidden">
-				<div className="flex-shrink-0 self-stretch px-5 pt-6 sm:pt-8 pb-1 flex flex-col justify-start items-start gap-3">
+				<div className="flex-shrink-0 self-stretch px-5 pt-5 pb-1 flex flex-col justify-start items-start gap-3">
 					<div className="self-stretch h-14 flex-col justify-center items-start gap-1 flex">
 						<div className="flex flex-col items-start gap-x-2 sm:flex-row sm:items-center w-full relative pr-8">
-							<ChannelLableModal labelProp={t('header.title')} />
-							<span>
-								<p className="self-stretch text-sm font-bold leading-normal uppercase text-cyan-500">
+							<ChannelLabelModal labelProp={t('header.title')} />
+							<span className="min-w-0 max-w-full sm:flex-1">
+								<p className="self-stretch text-sm font-bold leading-normal uppercase text-cyan-500 truncate">
 									{currentCategory?.category_name}
 								</p>
 							</span>
@@ -196,7 +196,7 @@ export const CreateNewChannelModal = () => {
 
 				<div className="flex-1 min-h-0 overflow-y-auto px-5 py-1 flex flex-col gap-3 w-full app-scroll">
 					<div className="Frame407 self-stretch flex-col items-center gap-2 flex">
-						<ChannelLableModal labelProp={t('labels.chooseType')} />
+						<ChannelLabelModal labelProp={t('labels.chooseType')} />
 						<div className="Frame405 self-stretch flex-col justify-start items-start gap-2 flex sm:max-h-[200px] lg:h-fit lg:max-h-fit overflow-y-auto max-xl:h-auto app-scroll">
 							<ChannelTypeComponent
 								type={ChannelType.CHANNEL_TYPE_CHANNEL}

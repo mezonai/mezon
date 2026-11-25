@@ -251,5 +251,11 @@
 		"inviteReturn": "Chủ phòng đã đóng các phòng chia nhóm. Quay về phòng chính?",
 		"join": "Vào phòng",
 		"later": "Để sau"
+	},
+	"comment": {
+		"button": "Bình luận",
+		"placeholder": "Viết bình luận…",
+		"hide": "Ẩn bình luận nổi",
+		"show": "Hiện bình luận nổi"
 	}
 }

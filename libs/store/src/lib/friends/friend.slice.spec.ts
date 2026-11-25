@@ -43,6 +43,45 @@ it('turns an incoming request accepted on another device into a friend', async (
 	expect(friends(store)[0]).toEqual(expect.objectContaining({ id: PEER, state: EStateFriend.FRIEND }));
 });
 
+it('stamps update_time when applyFriendStateUpdated transitions a missing or non-friend entity to friend', async () => {
+	const storeOutgoing = createStore();
+	await storeOutgoing.dispatch(friendsActions.applyFriendStateUpdated({ user: event(EStateFriend.OTHER_PENDING), myId: ME }));
+	expect(friends(storeOutgoing)[0].update_time).toBeUndefined();
+
+	const storeMissing = createStore();
+	await storeMissing.dispatch(friendsActions.applyFriendStateUpdated({ user: event(EStateFriend.FRIEND), myId: ME }));
+	const addedFriend = friends(storeMissing)[0];
+	expect(addedFriend.state).toBe(EStateFriend.FRIEND);
+	expect(typeof addedFriend.update_time).toBe('string');
+	expect(Number.isNaN(Date.parse(addedFriend.update_time || ''))).toBe(false);
+
+	const storePending = createStore();
+	storePending.dispatch(
+		friendsActions.upsertFriend({ id: PEER, source_id: ME, state: EStateFriend.MY_PENDING, user: { id: PEER, username: 'bichtest' } })
+	);
+	await storePending.dispatch(friendsActions.applyFriendStateUpdated({ user: event(EStateFriend.FRIEND), myId: ME }));
+	const acceptedFriend = friends(storePending)[0];
+	expect(acceptedFriend.state).toBe(EStateFriend.FRIEND);
+	expect(typeof acceptedFriend.update_time).toBe('string');
+	expect(Number.isNaN(Date.parse(acceptedFriend.update_time || ''))).toBe(false);
+});
+
+it('does not overwrite update_time when applyFriendStateUpdated receives friend for an existing friend', async () => {
+	const store = createStore();
+	const originalTime = '2025-01-01T00:00:00.000Z';
+	store.dispatch(
+		friendsActions.upsertFriend({
+			id: PEER,
+			source_id: ME,
+			state: EStateFriend.FRIEND,
+			update_time: originalTime,
+			user: { id: PEER, username: 'bichtest' }
+		})
+	);
+	await store.dispatch(friendsActions.applyFriendStateUpdated({ user: event(EStateFriend.FRIEND), myId: ME }));
+	expect(friends(store)[0].update_time).toBe(originalTime);
+});
+
 it('applies incoming and blocked states and ignores unknown ones', async () => {
 	const store = createStore();
 	await store.dispatch(friendsActions.applyFriendStateUpdated({ user: event(EStateFriend.MY_PENDING), myId: ME }));
@@ -93,4 +132,63 @@ it('keeps a plain AddFriend as an incoming request', async () => {
 		friendsActions.upsertFriendRequest({ user: { user_id: PEER, username: 'bichtest', display_name: 'Bich', avatar: 'a.png' }, myId: ME })
 	);
 	expect(friends(store)[0]).toEqual(expect.objectContaining({ state: EStateFriend.MY_PENDING }));
+});
+
+it('leaves update_time unset when upsertFriendRequest creates a plain incoming request', async () => {
+	const store = createStore();
+	await store.dispatch(
+		friendsActions.upsertFriendRequest({ user: { user_id: PEER, username: 'bichtest', display_name: 'Bich', avatar: 'a.png' }, myId: ME })
+	);
+	expect(friends(store)[0].update_time).toBeUndefined();
+});
+
+it('stamps update_time when acceptFriend transitions a non-friend entity to friend', () => {
+	const store = createStore();
+	store.dispatch(
+		friendsActions.upsertFriend({ id: PEER, source_id: ME, state: EStateFriend.MY_PENDING, user: { id: PEER, username: 'bichtest' } })
+	);
+	store.dispatch(friendsActions.acceptFriend(PEER));
+	const updated = friends(store)[0];
+	expect(updated.state).toBe(EStateFriend.FRIEND);
+	expect(typeof updated.update_time).toBe('string');
+	expect(Number.isNaN(Date.parse(updated.update_time || ''))).toBe(false);
+});
+
+it('does not overwrite update_time when acceptFriend is dispatched for an existing friend', () => {
+	const store = createStore();
+	const originalTime = '2025-01-01T00:00:00.000Z';
+	store.dispatch(
+		friendsActions.upsertFriend({
+			id: PEER,
+			source_id: ME,
+			state: EStateFriend.FRIEND,
+			update_time: originalTime,
+			user: { id: PEER, username: 'bichtest' }
+		})
+	);
+	store.dispatch(friendsActions.acceptFriend(PEER));
+	expect(friends(store)[0].update_time).toBe(originalTime);
+});
+
+it('keeps acceptFriend as a no-op for an unknown entity id', () => {
+	const store = createStore();
+	store.dispatch(
+		friendsActions.upsertFriend({ id: PEER, source_id: ME, state: EStateFriend.MY_PENDING, user: { id: PEER, username: 'bichtest' } })
+	);
+	store.dispatch(friendsActions.acceptFriend(`${ME}_${PEER}`));
+	expect(friends(store)).toHaveLength(1);
+	expect(friends(store)[0].state).toBe(EStateFriend.MY_PENDING);
+	expect(friends(store)[0].update_time).toBeUndefined();
+});
+
+it('stamps update_time when upsertFriendRequest creates a new accepted friend', async () => {
+	const store = createStore();
+	await store.dispatch(
+		friendsActions.upsertFriendRequest({
+			user: { user_id: PEER, username: 'bichtest', display_name: 'Bich', avatar: 'a.png', accepted: true },
+			myId: ME
+		})
+	);
+	expect(typeof friends(store)[0].update_time).toBe('string');
+	expect(Number.isNaN(Date.parse(friends(store)[0].update_time || ''))).toBe(false);
 });

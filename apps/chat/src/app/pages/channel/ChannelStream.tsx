@@ -48,6 +48,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	const isJoin = useSelector(selectIsJoin);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
+	const streamClanId = currentChannel?.clan_id || currentClanId || '';
 	const [isJoining, setIsJoining] = useState(false);
 	const [showGoLiveModal, setShowGoLiveModal] = useState(false);
 	const joinRequestRef = useRef(0);
@@ -128,7 +129,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 	}, []);
 
 	if (isLiveHere) {
-		return <LivePublisherStage channelId={channelId} />;
+		return <LivePublisherStage channelId={channelId} clanId={streamClanId} />;
 	}
 
 	if (isWatching) {
@@ -136,7 +137,7 @@ export default function ChannelStream({ currentStreamInfo, currentChannel }: Cha
 		return (
 			<div className="flex h-full w-full flex-col p-4 dark:bg-[var(--theme-setting-primary)] max-md:p-2">
 				<div className="min-h-0 flex-1">
-					<StreamStage channelId={channelId} poster={streamPoster} onLeave={handleLeaveChannel} />
+					<StreamStage channelId={channelId} clanId={streamClanId} poster={streamPoster} onLeave={handleLeaveChannel} />
 				</div>
 				{listedViewers > 0 && (
 					<div className="flex shrink-0 flex-col items-center gap-2 pt-2">

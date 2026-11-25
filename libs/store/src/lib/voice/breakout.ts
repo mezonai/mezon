@@ -105,7 +105,9 @@ interface PersistedHostedBreakoutsEnvelope {
 }
 
 function isValidSnowflakeId(value: string | null | undefined): value is string {
-	return typeof value === 'string' && value.trim().length > 0 && value.trim() !== '0';
+	if (typeof value !== 'string') return false;
+	const trimmed = value.trim();
+	return trimmed.length > 0 && trimmed !== '0' && !trimmed.startsWith('-');
 }
 
 export function createOpenedHostedBreakout(params: {

@@ -16,5 +16,12 @@
 			"description": "Envia uma mensagem efêmera (visível apenas para o usuário selecionado)"
 		}
 	},
-	"convertLongToFile": "Converter mensagem longa em arquivo"
+	"convertLongToFile": "Converter mensagem longa em arquivo",
+	"longMessage": {
+		"title": "Mensagem muito longa",
+		"description": "Esta mensagem tem {{count}} caracteres, mais de {{multiplier}}× o limite de {{limit}} caracteres, portanto não pode ser enviada como mensagens. Converter em um arquivo .txt? Você ainda pode editá-la se cancelar.",
+		"convert": "Converter em arquivo",
+		"size": "{{size}}",
+		"chars": "{{count}} caracteres"
+	}
 }

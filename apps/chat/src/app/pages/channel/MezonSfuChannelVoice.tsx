@@ -39,7 +39,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 
-import { reportMediaAccessError, useLastCallback } from '@mezon/utils';
+import { isRealClanId, reportMediaAccessError, useLastCallback } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
 import React, { Suspense, memo, useCallback, useEffect, useRef, useState, type ErrorInfo } from 'react';
@@ -296,7 +296,7 @@ const VoiceConferenceContent = memo(
 					isPrivateVoice={isPrivateVoice}
 					onRefreshToken={onRefreshToken}
 					onSfuFailover={onSfuFailover}
-					cameraManagedExternally={false}
+					cameraManagedExternally={Boolean(selectedBg)}
 					customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
 					preferredCameraId={selectedCamera}
 					onSelectCamera={handleSelectCamera}
@@ -567,7 +567,7 @@ const MezonSfuChannelVoiceInner = () => {
 				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute bottom-0 right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
 				style={!isVoiceFullScreen ? { width: 'calc(100% - 72px - 272px)', height: '100%' } : { width: '100vw', height: '100vh' }}
 			>
-				{!rejoinTarget && (token === '' || !serverUrl || voiceInfo?.clanId === '0') ? (
+				{!rejoinTarget && (token === '' || !serverUrl || !isRealClanId(voiceInfo?.clanId)) ? (
 					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />
 				) : (
 					<>

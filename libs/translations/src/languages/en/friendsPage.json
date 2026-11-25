@@ -83,5 +83,14 @@
 		"online": "No one online matches your search. Try another name.",
 		"pending": "No requests match your search. Double-check the name or try again.",
 		"block": "No blocked users match your search. Try another name."
+	},
+	"sort": {
+		"label": "Sort",
+		"recent": "Recent interaction",
+		"name": "Name (A–Z)"
+	},
+	"sections": {
+		"recent": "Recent",
+		"others": "Other friends"
 	}
 }
