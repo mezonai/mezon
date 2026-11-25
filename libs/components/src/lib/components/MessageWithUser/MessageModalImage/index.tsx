@@ -89,11 +89,17 @@ const MessageModalImage = () => {
 	const mode = useAppSelector(selectModeAttachment);
 	const messageId = useAppSelector(selectMessageIdAttachment);
 	const channelIdForAttachments = attachmentChannelId;
-	const sourceMessage = useAppSelector((state) =>
-		currentAttachment?.message_id && channelIdForAttachments
+	const fallbackChannelId = (directId || currentChannelId) as string;
+	const sourceMessage = useAppSelector((state) => {
+		if (!currentAttachment?.message_id) return undefined;
+		const fromAttachmentChannel = channelIdForAttachments
 			? selectMessageByMessageId(state, channelIdForAttachments, currentAttachment.message_id)
-			: undefined
-	);
+			: undefined;
+		if (fromAttachmentChannel) return fromAttachmentChannel;
+		return fallbackChannelId && fallbackChannelId !== channelIdForAttachments
+			? selectMessageByMessageId(state, fallbackChannelId, currentAttachment.message_id)
+			: undefined;
+	});
 	const isMainPresignPending = isAttachmentPresignPendingForMessage(urlImg ?? currentAttachment?.url, sourceMessage);
 	const { signCdnUrl } = useCdnUrlSigner([urlImg]);
 	const signedUrlImg = signCdnUrl(urlImg ?? '');
@@ -101,10 +107,17 @@ const MessageModalImage = () => {
 
 	const getSourceMessageForAttachment = useCallback(
 		(att: AttachmentEntity | undefined) => {
-			if (!att?.message_id || !channelIdForAttachments) return undefined;
-			return selectMessageByMessageId(getStore()?.getState(), channelIdForAttachments, att.message_id);
+			if (!att?.message_id) return undefined;
+			const state = getStore()?.getState();
+			const fromAttachmentChannel = channelIdForAttachments
+				? selectMessageByMessageId(state, channelIdForAttachments, att.message_id)
+				: undefined;
+			if (fromAttachmentChannel) return fromAttachmentChannel;
+			return fallbackChannelId && fallbackChannelId !== channelIdForAttachments
+				? selectMessageByMessageId(state, fallbackChannelId, att.message_id)
+				: undefined;
 		},
-		[channelIdForAttachments]
+		[channelIdForAttachments, fallbackChannelId]
 	);
 
 	const isAttPresignPending = useCallback(
@@ -591,7 +604,13 @@ const SenderUser = () => {
 	const { directId } = useAppParams();
 	const attachment = useAppSelector(selectCurrentAttachmentShowImage);
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
-	const message = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, attachment?.message_id || ''));
+	const listChannelId = useAppSelector(selectAttachmentListChannelId);
+	const message = useAppSelector((state) => {
+		const attachmentMessageId = attachment?.message_id || '';
+		if (!attachmentMessageId) return undefined;
+		const fromListChannel = listChannelId ? selectMessageByMessageId(state, listChannelId, attachmentMessageId) : undefined;
+		return fromListChannel ?? selectMessageByMessageId(state, currentChannelId, attachmentMessageId);
+	});
 	const clanUser = useAppSelector((state) => selectMemberClanByUserId(state, attachment?.uploader as string));
 	const dmUser = useAppSelector((state) => selectMemberGroupByUserId(state, directId as string, attachment?.uploader as string));
 	const modeResponsive = useAppSelector(selectModeResponsive);

@@ -161,6 +161,11 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 	return { videos, images, documents, audio };
 };
 
+const pickTopicMedia = (attachments: ApiMessageAttachment[], message: IMessageWithUser): ApiMessageAttachment[] => {
+	const { videos, images } = classifyAttachments(attachments, message);
+	return [...videos, ...images.filter((image) => image.filetype !== EMimeTypes.sticker)];
+};
+
 type SignCdnUrl = <T extends string | undefined>(url: T) => T;
 type IsAwaitingSignature = (url?: string) => boolean;
 
@@ -463,7 +468,7 @@ const ImageAlbum = memo(
 					dispatch(
 						attachmentActions.setChannelAttachments({
 							channelId: topicId,
-							attachments: buildTopicAttachmentList(topicMessages),
+							attachments: buildTopicAttachmentList(topicMessages, pickTopicMedia),
 							hasMoreBefore: false,
 							hasMoreAfter: false
 						})

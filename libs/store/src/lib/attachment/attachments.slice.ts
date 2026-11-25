@@ -1,9 +1,17 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IAttachmentEntity, IChannelAttachment, IMessageWithUser, LoadingStatus } from '@mezon/utils';
-import { AttachmentTypeUpload, EMimeTypes, ETypeLinkMedia, isMediaTypeNotSupported } from '@mezon/utils';
+import {
+	AttachmentTypeUpload,
+	EMimeTypes,
+	ETypeLinkMedia,
+	filterExpiredPresignAttachments,
+	getMessageCreateTimeSeconds,
+	isAttachmentPresignPendingForMessage,
+	isMediaTypeNotSupported
+} from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelAttachment, ChannelStreamMode } from 'mezon-js';
+import type { ApiChannelAttachment, ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
 import type { MultipartUploadAttachmentPart } from 'mezon-js-protobuf';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
@@ -130,28 +138,38 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 	return attachmentEntity;
 };
 
-export const buildTopicAttachmentList = (messages: IMessageWithUser[]): AttachmentEntity[] => {
-	const seenUrls = new Set<string>();
+export const buildTopicAttachmentList = (
+	messages: IMessageWithUser[],
+	pickMedia: (attachments: ApiMessageAttachment[], message: IMessageWithUser) => ApiMessageAttachment[]
+): AttachmentEntity[] => {
+	const seenIds = new Set<string>();
 	const result: AttachmentEntity[] = [];
 
 	for (const message of messages) {
-		for (const attachment of message?.attachments || []) {
-			if (!attachment?.url) continue;
-			const filetype = attachment.filetype || '';
-			const isMedia =
-				(filetype.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || filetype.startsWith(ETypeLinkMedia.VIDEO_PREFIX)) &&
-				filetype !== EMimeTypes.sticker;
-			if (!isMedia) continue;
-			if (seenUrls.has(attachment.url)) continue;
-			seenUrls.add(attachment.url);
+		if (!message || message.isSending || message.isError) continue;
+		const rawAttachments = (message.attachments || []).filter((attachment) => attachment && Object.keys(attachment).length !== 0);
+		if (!rawAttachments.length) continue;
 
-			const create_time = message.create_time_seconds ? new Date(Number(message.create_time_seconds) * 1000).toISOString() : undefined;
+		const createTimeSeconds = getMessageCreateTimeSeconds(message);
+		const visibleAttachments = filterExpiredPresignAttachments(rawAttachments, message.content, createTimeSeconds);
+		if (!visibleAttachments.length) continue;
+
+		const mediaAttachments = pickMedia(visibleAttachments, message);
+		for (const attachment of mediaAttachments) {
+			if (!attachment?.url) continue;
+			if (isAttachmentPresignPendingForMessage(attachment.url, message)) continue;
+
+			const id = `${message.id}_${attachment.url}`;
+			if (seenIds.has(id)) continue;
+			seenIds.add(id);
+
+			const create_time = createTimeSeconds ? new Date(createTimeSeconds * 1000).toISOString() : undefined;
 			result.push({
 				...attachment,
-				id: `${message.id}_${attachment.url}`,
+				id,
 				message_id: message.id,
 				uploader: message.sender_id,
-				create_time_seconds: message.create_time_seconds,
+				create_time_seconds: createTimeSeconds,
 				create_time
 			});
 		}
@@ -317,9 +335,7 @@ export const attachmentSlice = createSlice({
 		},
 		setOpenModalAttachment: (state, action) => {
 			state.openModalAttachment = action.payload;
-			if (!action.payload) {
-				state.listChannelId = undefined;
-			}
+			state.listChannelId = undefined;
 		},
 		setListChannelId: (state, action: PayloadAction<string | undefined>) => {
 			state.listChannelId = action.payload;
@@ -555,6 +571,9 @@ export const selectMessageIdAttachment = createSelector(getAttachmentState, (sta
 export const selectAllListAttachmentByChannel = createSelector([getAttachmentState, (state, channelId: string) => channelId], (state, channelId) => {
 	if (!Object.prototype.hasOwnProperty.call(state?.listAttachmentsByChannel, channelId)) {
 		return undefined;
+	}
+	if (state.listChannelId && state.listChannelId === channelId) {
+		return state.listAttachmentsByChannel[channelId]?.attachments;
 	}
 	return state.listAttachmentsByChannel[channelId]?.attachments?.filter(
 		(att) =>
