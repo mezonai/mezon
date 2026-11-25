@@ -84,4 +84,32 @@ describe('selectCurrentClanProPlan', () => {
 		store.dispatch(clansActions.setCurrentClanId('clan-2'));
 		expect(selectCurrentClanProPlan(store.getState())).toBe(false);
 	});
+
+	it('keeps pro_plan: true on an existing Pro clan when clansActions.update runs without pro_plan', () => {
+		const store = createClansStore();
+		store.dispatch(clansActions.add(mapClanToEntity({ clan_id: 'clan-pro', clan_name: 'Pro Clan', pro_plan: true } as never)));
+		store.dispatch(clansActions.setCurrentClanId('clan-pro'));
+
+		store.dispatch(
+			clansActions.update({
+				dataUpdate: {
+					clan_id: 'clan-pro',
+					clan_name: 'Renamed Pro Clan',
+					logo: '',
+					banner: '',
+					status: 1,
+					is_onboarding: false,
+					welcome_channel_id: '0',
+					onboarding_banner: '',
+					about: '',
+					prevent_anonymous: false
+				}
+			})
+		);
+
+		const updatedClan = store.getState()[CLANS_FEATURE_KEY].entities['clan-pro'] as { clan_name?: string; pro_plan?: boolean } | undefined;
+		expect(updatedClan?.clan_name).toBe('Renamed Pro Clan');
+		expect(updatedClan?.pro_plan).toBe(true);
+		expect(selectCurrentClanProPlan(store.getState())).toBe(true);
+	});
 });
