@@ -115,7 +115,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 			isSendingRef.current = true;
 
 			try {
-				await sendMessage(content, mentions, safeAttachments, references, false, false, false, 0);
+				const sent = await sendMessage(content, mentions, safeAttachments, references, false, false, false, 0);
 
 				dispatch(
 					referencesActions.setAtachmentAfterUpload({
@@ -125,6 +125,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 				);
 
 				setIsFetchMessageDone(true);
+				return sent;
 			} finally {
 				isSendingRef.current = false;
 			}

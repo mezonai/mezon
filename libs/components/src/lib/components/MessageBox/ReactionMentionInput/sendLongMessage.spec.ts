@@ -6,6 +6,18 @@ import { sendMessageInParts } from './sendLongMessage';
 
 const ID_MENTION_HERE = '1775731111020111321';
 const mockSplitMessagePayload = jest.fn();
+const mockT = jest.fn((key: string, options?: Record<string, unknown>) => `${key}:${JSON.stringify(options)}`);
+const mockToastError = jest.fn();
+
+jest.mock('i18next', () => ({
+	t: (key: string, options?: Record<string, unknown>) => mockT(key, options)
+}));
+
+jest.mock('react-toastify', () => ({
+	toast: {
+		error: (message: unknown) => mockToastError(message)
+	}
+}));
 
 jest.mock(
 	'@mezon/utils',
@@ -28,6 +40,8 @@ function createDeferred<T>() {
 describe('sendMessageInParts', () => {
 	beforeEach(() => {
 		mockSplitMessagePayload.mockReset();
+		mockT.mockClear();
+		mockToastError.mockClear();
 	});
 
 	it('calls onSend once with identical arguments and returns its result unchanged for a single part', async () => {
@@ -198,5 +212,67 @@ describe('sendMessageInParts', () => {
 
 		expect(result).toBe(false);
 		expect(onSend).toHaveBeenCalledTimes(2);
+	});
+
+	it('stops the chain, returns false, and shows one toast when onSend throws on part 2 of 3', async () => {
+		mockSplitMessagePayload.mockReturnValue([
+			{ content: { t: 'p1' }, mentions: [] },
+			{ content: { t: 'p2' }, mentions: [] },
+			{ content: { t: 'p3' }, mentions: [] }
+		]);
+
+		const onSend = jest
+			.fn<(...args: OnSendArgs) => Promise<boolean | void>>()
+			.mockResolvedValueOnce(true)
+			.mockRejectedValueOnce(new Error('network error'))
+			.mockResolvedValueOnce(true);
+
+		const result = await sendMessageInParts(onSend, [{ t: 'all' }, []], 2048);
+
+		expect(result).toBe(false);
+		expect(onSend).toHaveBeenCalledTimes(2);
+		expect(mockT).toHaveBeenCalledWith('message:longMessagePartFailed', { failed: 2, total: 3 });
+		expect(mockToastError).toHaveBeenCalledTimes(1);
+	});
+
+	it('stops on part 1 of 3 when onSend resolves false and shows one toast with failed 1 total 3', async () => {
+		mockSplitMessagePayload.mockReturnValue([
+			{ content: { t: 'p1' }, mentions: [] },
+			{ content: { t: 'p2' }, mentions: [] },
+			{ content: { t: 'p3' }, mentions: [] }
+		]);
+
+		const onSend = jest.fn<(...args: OnSendArgs) => Promise<boolean | void>>().mockResolvedValueOnce(false);
+
+		const result = await sendMessageInParts(onSend, [{ t: 'all' }, []], 2048);
+
+		expect(result).toBe(false);
+		expect(onSend).toHaveBeenCalledTimes(1);
+		expect(mockT).toHaveBeenCalledWith('message:longMessagePartFailed', { failed: 1, total: 3 });
+		expect(mockToastError).toHaveBeenCalledTimes(1);
+	});
+
+	it('sends attachments with empty text when splitting whitespace-only text yields 0 parts, and returns undefined without attachments', async () => {
+		mockSplitMessagePayload.mockReturnValue([]);
+		const attachments: ApiMessageAttachment[] = [{ filename: 'pic.png', url: 'https://cdn/pic.png' }];
+		const references: ApiMessageRef[] = [{ message_ref_id: 'ref-1', has_attachment: false }];
+		const threadValue = { nameValueThread: 'Topic', isPrivate: 0 };
+		const users = ['u-new'];
+		const onSend = jest.fn<(...args: OnSendArgs) => Promise<boolean | void>>().mockResolvedValue(true);
+
+		const result = await sendMessageInParts(
+			onSend,
+			[{ t: '   \n\n   ' }, [{ user_id: 'u1', s: 0, e: 2 }], attachments, references, threadValue, true, true, 'Disp', 'Clan', 'ephem', users],
+			2048
+		);
+
+		expect(result).toBe(true);
+		expect(onSend).toHaveBeenCalledTimes(1);
+		expect(onSend).toHaveBeenCalledWith({ t: '' }, [], attachments, references, threadValue, true, true, 'Disp', 'Clan', 'ephem', users);
+
+		onSend.mockClear();
+		const noAttachResult = sendMessageInParts(onSend, [{ t: '   \n\n   ' }, []], 2048);
+		expect(noAttachResult).toBeUndefined();
+		expect(onSend).not.toHaveBeenCalled();
 	});
 });

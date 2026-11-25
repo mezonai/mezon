@@ -124,6 +124,7 @@
 	"newMessages": "НОВЫЕ СООБЩЕНИЯ",
 	"noSendMessagePermission": "У Вас нет разрешения на отправку сообщения.",
 	"tooLongMessage": "Слишком длинное сообщение",
+	"longMessagePartFailed": "Не удалось отправить часть {{failed}} из {{total}} вашего сообщения, поэтому остальная часть не была отправлена.",
 	"isBanned": "Вы забанены",
 	"blockedUserMessage": "Вы не можете ответить на этот разговор",
 	"messageInputPlaceHolder": "Написать сообщение...",

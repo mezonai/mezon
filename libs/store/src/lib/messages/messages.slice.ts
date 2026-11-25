@@ -22,6 +22,7 @@ import {
 	generatePathAttachments,
 	getMessageCreateTimeSeconds,
 	getPresignIngestKeys,
+	getPresignUploadKey,
 	getPublicKeys,
 	getWebUploadedAttachments,
 	isDMStreamMode,
@@ -95,6 +96,7 @@ export const MESSAGES_FEATURE_KEY = 'messages';
 
 /** Retry schedule for the presign_finish patch; the last entry means "no more waiting". */
 const PRESIGN_PATCH_BACKOFF_MS = [1000, 3000, 0];
+const SOCKET_MESSAGE_MAX_BYTES = 4 * 1024;
 
 export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
 	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -1402,17 +1404,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			})
 		: attachmentsMessage;
 
-	const payloadSizeInBytes = Buffer.byteLength(
-		JSON.stringify({
-			...payload,
-			attachments: attachmentsMessage
-		}),
-		'utf8'
-	);
-	if (payloadSizeInBytes > 4 * 1024) {
-		toast.error(t(`message:tooLongMessage`));
-		return;
-	}
 	let content = payload.content;
 	const clientSendTime = Date.now();
 	const tempId = `${storeChannelId}-${Snowflake.generate()}`;
@@ -1448,18 +1439,20 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 			const pubKeys = await getPublicKeys(keys.filter((item) => item?.PK).map((item) => item.PK));
 			const otherUserPublicKeys: PublicKeyMaterial[] = pubKeys;
-			if (content?.t) {
+			if (content?.t && !content.e2ee) {
 				const encryptedMessage = await MessageCrypt.encryptMessage(content.t, otherUserPublicKeys, senderId);
 				content = { ...content, t: encryptedMessage, e2ee: 1 };
 			}
 		}
 
+		const frameBytes = Buffer.byteLength(JSON.stringify({ ...payload, content, attachments: attachmentsMessage }), 'utf8');
+
 		let res;
 
-		try {
-			if (client) {
-				res = await client.writeChatMessage(
-					mezon.session,
+		if (frameBytes > SOCKET_MESSAGE_MAX_BYTES) {
+			res = await client
+				.sendChannelMessageApi(
+					session,
 					clanId,
 					channelId,
 					mode,
@@ -1473,28 +1466,54 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					'',
 					code,
 					topicId
+				)
+				.catch((error: unknown) => {
+					if ((error as { status?: number } | null)?.status === 403) {
+						throw new Error('permission denied');
+					}
+					throw error;
+				});
+		} else {
+			try {
+				if (client) {
+					res = await client.writeChatMessage(
+						mezon.session,
+						clanId,
+						channelId,
+						mode,
+						isPublic,
+						content,
+						anonymous && !topicId ? undefined : mentions,
+						attachmentsMessage,
+						references,
+						anonymous,
+						mentionEveryone,
+						'',
+						code,
+						topicId
+					);
+				} else {
+					throw new Error('Socket not connected');
+				}
+			} catch (err) {
+				if (isMessagePermissionDenied(err)) throw err;
+				res = await client.sendChannelMessage(
+					session,
+					clanId,
+					channelId,
+					mode,
+					isPublic,
+					typeof content === 'object' ? JSON.stringify(content) : content,
+					anonymous && !topicId ? undefined : mentions,
+					attachmentsMessage,
+					references,
+					anonymous,
+					mentionEveryone,
+					avatar,
+					code,
+					topicId
 				);
-			} else {
-				throw new Error('Socket not connected');
 			}
-		} catch (err) {
-			if (isMessagePermissionDenied(err)) throw err;
-			res = await client.sendChannelMessage(
-				session,
-				clanId,
-				channelId,
-				mode,
-				isPublic,
-				typeof content === 'object' ? JSON.stringify(content) : content,
-				anonymous && !topicId ? undefined : mentions,
-				attachmentsMessage,
-				references,
-				anonymous,
-				mentionEveryone,
-				avatar,
-				code,
-				topicId
-			);
 		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
 
@@ -1628,11 +1647,6 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					height,
 					width
 				}));
-				const preparedPayloadSize = Buffer.byteLength(JSON.stringify({ ...payload, attachments: attachmentsMessage }), 'utf8');
-				if (preparedPayloadSize > 4 * 1024) {
-					toast.error(t('message:tooLongMessage'));
-					throw new Error('Message attachments exceed the payload limit');
-				}
 				thunkAPI.dispatch(
 					messagesActions.updateSendingMessageAttachments({
 						channelId: storeChannelId,
@@ -1648,6 +1662,21 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			if (usePresignFirst) {
 				content = { ...content, presign_finish: [] };
 				fakeMess = { ...fakeMess, content: content as MessagesEntity['content'] };
+				const presignPatchContent = {
+					...content,
+					presign_finish: (attachments ?? []).map((attachment) => getPresignUploadKey(attachment.uploadName) ?? ''),
+					presign_ingest: getPresignIngestKeys(attachments)
+				};
+				const e2eeTextBytes = checkEnableE2EE ? Buffer.byteLength(content.t ?? '', 'utf8') + 1024 : 0;
+				const presignPatchBytes =
+					Buffer.byteLength(JSON.stringify({ content: presignPatchContent, mentions, channelId, clanId, messageId: id }), 'utf8') +
+					e2eeTextBytes;
+				if (presignPatchBytes > SOCKET_MESSAGE_MAX_BYTES) {
+					toast.error(t('message:tooLongMessage'));
+					const invalidError = new Error('Message presign patch exceeds socket limit');
+					invalidError.name = 'MessageInvalid';
+					throw invalidError;
+				}
 			}
 			const presignIngest = getPresignIngestKeys(attachments);
 			if (presignIngest.length) {
@@ -1756,6 +1785,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					console.error('error: ', error);
 				}
 			}
+			return true;
 		} catch (error) {
 			const payload = originalSendPayload;
 			thunkAPI.dispatch(messagesActions.deleteQueueSending(fakeMess.id));
@@ -1770,7 +1800,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 						channelId: fakeMessage.channel_id
 					})
 				);
-				return;
+				return false;
 			}
 
 			if (isMessagePermissionDenied(error)) {
