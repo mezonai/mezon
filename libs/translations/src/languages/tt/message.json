@@ -124,6 +124,7 @@
 	"newMessages": "ЯҢА ХӘБӘРЛӘР",
 	"noSendMessagePermission": "Сезнең хәбәр җибәрү рөхсәтегез юк.",
 	"tooLongMessage": "Хәбәр чынлыктан аерып торган!",
+	"longMessagePartFailed": "Хәбәрегезнең {{total}} өлешеннән {{failed}} өлеше җибәрелмәде, шуңа күрә калган өлеше җибәрелмәде.",
 	"isBanned": "Сез банлангансыз",
 	"blockedUserMessage": "Сез бу сөйләшүгә җавап бирә алмыйсыз",
 	"messageInputPlaceHolder": "Хәбәр язу...",

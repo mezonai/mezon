@@ -125,6 +125,7 @@ import type { IMessageSendPayload, INotification, IUserProfileActivity } from '@
 import {
 	ADD_ROLE_CHANNEL_STATUS,
 	AMOUNT_TOKEN,
+	CLAN_PRO_PLAN_ITEM_TYPE,
 	ChannelStatusEnum,
 	EEventAction,
 	EEventStatus,
@@ -140,6 +141,7 @@ import {
 	TOKEN_TO_AMOUNT,
 	ThreadStatus,
 	TypeMessage,
+	USER_PRO_PLAN_ITEM_TYPE,
 	addBigInt,
 	checkIsThread,
 	isBackgroundModeActive,
@@ -1635,34 +1637,37 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			if (tokenEvent.extra_attribute) {
 				try {
-					const parsedExtraAttribute = JSON.parse(tokenEvent.extra_attribute);
-					if (
-						'item_id' in parsedExtraAttribute &&
-						'item_type' in parsedExtraAttribute &&
-						'source' in parsedExtraAttribute &&
-						parsedExtraAttribute.item_id &&
-						parsedExtraAttribute.source
-					) {
-						if (parsedExtraAttribute.item_type === ITEM_TYPE.EMOJI) {
+					const parsedExtraAttribute: unknown = JSON.parse(tokenEvent.extra_attribute);
+					if (parsedExtraAttribute && typeof parsedExtraAttribute === 'object') {
+						const extraAttribute = parsedExtraAttribute as { item_id?: string; item_type?: number | string; source?: string };
+						const itemId = extraAttribute.item_id;
+						const itemType = Number(extraAttribute.item_type);
+
+						if (itemId && itemType === USER_PRO_PLAN_ITEM_TYPE && isSenderGiveCoffee && itemId === userId) {
+							dispatch(accountActions.setUserProPlan(true));
+						} else if (itemId && itemType === CLAN_PRO_PLAN_ITEM_TYPE && isSenderGiveCoffee) {
+							dispatch(clansActions.setClanProPlan({ clanId: itemId, proPlan: true }));
+						} else if (itemId && extraAttribute.source && itemType === ITEM_TYPE.EMOJI) {
 							dispatch(
 								emojiSuggestionActions.update({
-									id: parsedExtraAttribute.item_id,
+									id: itemId,
 									changes: {
-										src: parsedExtraAttribute.source
+										src: extraAttribute.source
 									}
 								})
 							);
-						} else {
+							dispatch(emojiRecentActions.removePendingUnlock({ emojiId: itemId }));
+						} else if (itemId && extraAttribute.source && itemType === ITEM_TYPE.STICKER) {
 							dispatch(
 								stickerSettingActions.update({
-									id: parsedExtraAttribute.item_id,
+									id: itemId,
 									changes: {
-										source: parsedExtraAttribute.source
+										source: extraAttribute.source
 									}
 								})
 							);
+							dispatch(emojiRecentActions.removePendingUnlock({ emojiId: itemId }));
 						}
-						dispatch(emojiRecentActions.removePendingUnlock({ emojiId: parsedExtraAttribute.item_id }));
 					}
 				} catch (error) {
 					console.error('Error parsing extra attribute', error);

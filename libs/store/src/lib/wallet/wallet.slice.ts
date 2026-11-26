@@ -1,9 +1,10 @@
 import i18n from '@mezon/translations';
-import { compareBigInt, type LoadingStatus } from '@mezon/utils';
+import { USER_PRO_PLAN_ITEM_TYPE, USER_PRO_PLAN_MIN_PRICE, USER_PRO_PLAN_PRICE, compareBigInt, type LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
 import type { ClaimRedEnvelopeQRResponse, ExtraInfo, IEphemeralKeyPair, IZkProof } from 'mmn-client-js';
+import { ETransferType } from 'mmn-client-js';
 import { selectAllAccount } from '../account/account.slice';
 import { ensureSession, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
@@ -104,7 +105,7 @@ const sendTransaction = createAsyncThunk(
 		}: {
 			sender?: string;
 			recipient?: string;
-			amount?: number;
+			amount?: number | string;
 			textData?: string;
 			extraInfo?: ExtraInfo;
 			isSendByAddress?: boolean;
@@ -134,18 +135,31 @@ const sendTransaction = createAsyncThunk(
 			return thunkAPI.rejectWithValue(errMsg);
 		}
 
-		if (!amount || amount <= 0) {
+		if (amount === undefined || amount === null || amount === '') {
 			const errMsg = i18n.t('token:toast.error.amountMustThanZero');
 			notifyError(errMsg);
 			return thunkAPI.rejectWithValue(errMsg);
 		}
-
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		if (!mezon.mmnClient) {
 			return thunkAPI.rejectWithValue('MmnClient not initialized');
 		}
 
-		if (compareBigInt(walletDetail?.balance || '', mezon.mmnClient.scaleAmountToDecimals(amount)) < 0) {
+		let scaledAmount: string;
+		try {
+			if (BigInt(amount) <= 0n) {
+				const errMsg = i18n.t('token:toast.error.amountMustThanZero');
+				notifyError(errMsg);
+				return thunkAPI.rejectWithValue(errMsg);
+			}
+			scaledAmount = mezon.mmnClient.scaleAmountToDecimals(amount);
+		} catch {
+			const errMsg = i18n.t('token:toast.error.amountMustThanZero');
+			notifyError(errMsg);
+			return thunkAPI.rejectWithValue(errMsg);
+		}
+
+		if (compareBigInt(walletDetail?.balance || '', scaledAmount) < 0) {
 			const errMsg = i18n.t('token:toast.error.exceedWallet');
 			notifyError(errMsg);
 			return thunkAPI.rejectWithValue(errMsg);
@@ -164,7 +178,7 @@ const sendTransaction = createAsyncThunk(
 				? await mezon.mmnClient.sendTransactionByAddress({
 						sender,
 						recipient,
-						amount: mezon.mmnClient.scaleAmountToDecimals(amount),
+						amount: scaledAmount,
 						nonce: currentNonce.nonce + 1,
 						textData,
 						extraInfo,
@@ -176,7 +190,7 @@ const sendTransaction = createAsyncThunk(
 				: await mezon.mmnClient.sendTransaction({
 						sender,
 						recipient,
-						amount: mezon.mmnClient.scaleAmountToDecimals(amount),
+						amount: scaledAmount,
 						nonce: currentNonce.nonce + 1,
 						textData,
 						extraInfo,
@@ -198,6 +212,43 @@ const sendTransaction = createAsyncThunk(
 			notifyError(errMsg);
 			return thunkAPI.rejectWithValue(errMsg);
 		}
+	}
+);
+
+const buyUserProPlan = createAsyncThunk(
+	'wallet/buyUserProPlan',
+	async (
+		{ senderUserId, senderUsername, recipientUserId }: { senderUserId: string; senderUsername: string; recipientUserId: string },
+		thunkAPI
+	) => {
+		const normalizedRecipientUserId = (recipientUserId || '').trim();
+		if (!senderUserId || !normalizedRecipientUserId) {
+			return thunkAPI.rejectWithValue('User Pro purchase details are incomplete');
+		}
+
+		if (!Number.isSafeInteger(USER_PRO_PLAN_PRICE) || USER_PRO_PLAN_PRICE < USER_PRO_PLAN_MIN_PRICE) {
+			return thunkAPI.rejectWithValue('User Pro price is invalid');
+		}
+
+		return thunkAPI
+			.dispatch(
+				sendTransaction({
+					sender: senderUserId,
+					recipient: normalizedRecipientUserId,
+					isSendByAddress: true,
+					amount: USER_PRO_PLAN_PRICE,
+					textData: 'unlock item',
+					extraInfo: {
+						type: ETransferType.UnlockItem,
+						ItemId: String(senderUserId),
+						ItemType: USER_PRO_PLAN_ITEM_TYPE.toString(),
+						UserReceiverId: normalizedRecipientUserId,
+						UserSenderId: String(senderUserId),
+						UserSenderUsername: senderUsername
+					}
+				})
+			)
+			.unwrap();
 	}
 );
 
@@ -361,6 +412,7 @@ export const walletActions = {
 	fetchEphemeralKeyPair,
 	fetchZkProofs,
 	sendTransaction,
+	buyUserProPlan,
 	claimAmountRedEnvelopeQR,
 	claimRedEnvelopeQR
 };

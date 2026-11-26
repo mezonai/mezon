@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { ApiChannelMessageHeaderWithChannel, IClan, LoadingStatus } from '@mezon/utils';
-import { FOR_1_HOUR_SEC, LIMIT_CLAN_ITEM, ONE_MILISECONDS, isRealClanId } from '@mezon/utils';
+import { CLAN_PRO_PLAN_ITEM_TYPE, FOR_1_HOUR_SEC, LIMIT_CLAN_ITEM, ONE_MILISECONDS, isRealClanId } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type {
@@ -15,6 +15,7 @@ import type {
 } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { ClanDescList, ListClanDescRequest } from 'mezon-js-protobuf';
+import { ETransferType } from 'mmn-client-js';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { callApiAdmin } from '../application/adminAPI.slice';
@@ -42,6 +43,7 @@ import { settingClanStickerSlice, soundEffectActions } from '../settingSticker/s
 import type { RootState } from '../store';
 import { usersStreamActions } from '../stream/usersStream.slice';
 import { voiceActions } from '../voice/voice.slice';
+import { walletActions } from '../wallet/wallet.slice';
 
 export const CLANS_FEATURE_KEY = 'clans';
 
@@ -374,6 +376,95 @@ export const transferClan = createAsyncThunk('clans/transferClan', async (body: 
 	}
 });
 
+export const buyClanProPlan = createAsyncThunk(
+	'clans/buyClanProPlan',
+	async (
+		{
+			clanId,
+			clanPrice,
+			proPlanRecipientUserId,
+			senderUserId,
+			senderUsername
+		}: {
+			clanId: string;
+			clanPrice: number | string;
+			proPlanRecipientUserId: string;
+			senderUserId: string;
+			senderUsername: string;
+		},
+		thunkAPI
+	) => {
+		try {
+			const normalizedRecipientUserId = (proPlanRecipientUserId || '').trim();
+			if (!clanId || !normalizedRecipientUserId || !senderUserId) {
+				return thunkAPI.rejectWithValue('Clan Pro purchase details are incomplete');
+			}
+
+			const price = BigInt(clanPrice);
+			if (price <= 0n) {
+				return thunkAPI.rejectWithValue('Clan Pro price must be greater than zero');
+			}
+
+			const response = await thunkAPI
+				.dispatch(
+					walletActions.sendTransaction({
+						sender: senderUserId,
+						recipient: normalizedRecipientUserId,
+						isSendByAddress: true,
+						amount: clanPrice,
+						textData: ETransferType.UnlockItem,
+						extraInfo: {
+							type: ETransferType.UnlockItem,
+							ItemId: String(clanId),
+							ItemType: CLAN_PRO_PLAN_ITEM_TYPE.toString(),
+							UserReceiverId: normalizedRecipientUserId,
+							UserSenderId: String(senderUserId),
+							UserSenderUsername: senderUsername
+						}
+					})
+				)
+				.unwrap();
+
+			if (!response?.ok) {
+				return thunkAPI.rejectWithValue(response?.error || 'Clan Pro purchase failed');
+			}
+
+			return response;
+		} catch (error) {
+			console.error('buyClanProPlan: ', error);
+			captureSentryError(error, 'clans/buyClanProPlan');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const applyCouponPro = createAsyncThunk(
+	'clans/applyCouponPro',
+	async (
+		{
+			clanId,
+			code
+		}: {
+			clanId?: string;
+			code: string;
+		},
+		thunkAPI
+	) => {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		try {
+			await mezon.client.redeemProPlanCoupon(mezon.session, {
+				clan_id: clanId,
+				code
+			});
+
+			return true;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error || 'Clan Pro purchase failed');
+		}
+	}
+);
+
 type removeClanUsersPayload = {
 	clanId: string;
 	userIds: string[];
@@ -645,6 +736,12 @@ export const clansSlice = createSlice({
 				changes: { creator_id: action.payload.newOwnerId }
 			});
 		},
+		setClanProPlan: (state, action: PayloadAction<{ clanId: string; proPlan: boolean }>) => {
+			clansAdapter.updateOne(state, {
+				id: action.payload.clanId,
+				changes: { pro_plan: action.payload.proPlan }
+			});
+		},
 
 		toggleInvitePeople: (state, action: PayloadAction<{ status: boolean }>) => {
 			state.invitePeople = action.payload.status;
@@ -912,9 +1009,11 @@ export const clansActions = {
 	deleteClan,
 	joinClan,
 	transferClan,
+	buyClanProPlan,
 	updateHasUnreadBasedOnChannels,
 	listClanBadgeCount,
-	listChannelBadgeCount
+	listChannelBadgeCount,
+	applyCouponPro
 };
 
 /*
