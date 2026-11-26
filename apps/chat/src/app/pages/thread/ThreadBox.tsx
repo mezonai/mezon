@@ -230,7 +230,7 @@ const ThreadBox = () => {
 					if (usersNotExistingInThread && usersNotExistingInThread.length > 0) {
 						await addMemberToThread(threadCurrentChannel as ChannelsEntity, usersNotExistingInThread);
 					}
-					await sendMessageThread(content, mentions, attachments, references, threadCurrentChannel);
+					return sendMessageThread(content, mentions, attachments, references, threadCurrentChannel);
 				}
 			} else {
 				console.error('Session is not available');

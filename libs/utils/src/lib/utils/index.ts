@@ -77,6 +77,7 @@ export * from './sanitizeHtml';
 export * from './schedulers';
 export * from './select';
 export * from './signals';
+export * from './splitMessage';
 export * from './timeFormatterI18n';
 export * from './toggleSelection';
 export * from './transform';

@@ -1053,6 +1053,7 @@ export const selectCurrentClan = createSelector(selectClansEntities, selectCurre
 export const selectCurrentClanBanner = createSelector(selectCurrentClan, (clan) => clan?.banner);
 export const selectCurrentClanLogo = createSelector(selectCurrentClan, (clan) => clan?.logo);
 export const selectCurrentClanName = createSelector(selectCurrentClan, (clan) => clan?.clan_name);
+export const selectCurrentClanProPlan = createSelector(selectCurrentClan, (clan) => Boolean(clan?.pro_plan));
 export const selectCurrentClanCreatorId = createSelector(selectCurrentClan, (clan) => clan?.creator_id);
 export const selectCurrentClanIsOnboarding = createSelector(selectCurrentClan, (clan) => clan?.is_onboarding);
 export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentClan, (clan) => clan?.welcome_channel_id);

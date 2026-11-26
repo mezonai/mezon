@@ -124,6 +124,7 @@
 	"newMessages": "NIEUWE BERICHTEN",
 	"noSendMessagePermission": "Je hebt geen toestemming om berichten te sturen",
 	"tooLongMessage": "Bericht is te lang",
+	"longMessagePartFailed": "Deel {{failed}} van {{total}} van je bericht kon niet worden verzonden, dus de rest is niet verzonden.",
 	"isBanned": "Je bent verbannen om te chatten",
 	"blockedUserMessage": "Je kunt deze conversatie niet beantwoorden",
 	"messageInputPlaceHolder": "Bericht invoeren...",

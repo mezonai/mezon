@@ -6,16 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { mzPro16 } from './proIcon';
 import type { ProPalette, ProfileBadgeItem } from './proPalette';
 import { hexToRgba } from './proPalette';
+import { useProPalette } from './useProPalette';
 
 const TOOLTIP_TRIGGER: ('hover' | 'focus')[] = ['hover', 'focus'];
+const HOVER_ONLY_TOOLTIP_TRIGGER: ('hover' | 'focus')[] = ['hover'];
 const OVERLAY_INNER_STYLE: CSSProperties = { minHeight: 'auto', padding: 0, background: 'transparent' };
 
 type ProBadgeTileProps = {
 	label: string;
 	palette: ProPalette;
+	focusable?: boolean;
+	cursorClassName?: string;
 };
 
-const ProBadgeTile = memo(({ label, palette }: ProBadgeTileProps) => {
+const ProBadgeTile = memo(({ label, palette, focusable = true, cursorClassName = 'cursor-default' }: ProBadgeTileProps) => {
 	const [isHovered, setIsHovered] = useState(false);
 
 	const handleMouseEnter = useCallback(() => {
@@ -47,15 +51,19 @@ const ProBadgeTile = memo(({ label, palette }: ProBadgeTileProps) => {
 		[label]
 	);
 
+	const tooltipTrigger = focusable ? TOOLTIP_TRIGGER : HOVER_ONLY_TOOLTIP_TRIGGER;
+	const tabIndex = focusable ? 0 : undefined;
+	const tileClassName = `mz-hover inline-flex items-center justify-center w-[22px] h-[22px] rounded-[6px] shrink-0 transition-all duration-150 ${cursorClassName}`;
+
 	return (
-		<Tooltip placement="top" trigger={TOOLTIP_TRIGGER} overlay={overlay} overlayInnerStyle={OVERLAY_INNER_STYLE} destroyTooltipOnHide>
+		<Tooltip placement="top" trigger={tooltipTrigger} overlay={overlay} overlayInnerStyle={OVERLAY_INNER_STYLE} destroyTooltipOnHide>
 			<span
-				className="mz-hover inline-flex items-center justify-center w-[22px] h-[22px] rounded-[6px] shrink-0 transition-all duration-150 cursor-default"
+				className={tileClassName}
 				style={tileStyle}
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
 				aria-label={label}
-				tabIndex={0}
+				tabIndex={tabIndex}
 			>
 				<MezonIcon icon={mzPro16} className="w-[14px] h-[14px]" />
 			</span>
@@ -90,3 +98,21 @@ const ProfileBadgesBase = ({ isPro, badges, palette, className }: ProfileBadgesP
 };
 
 export const ProfileBadges = memo(ProfileBadgesBase);
+
+export type ClanProBadgeProps = {
+	className?: string;
+};
+
+const ClanProBadgeBase = ({ className }: ClanProBadgeProps) => {
+	const { t } = useTranslation('userProfile');
+	const palette = useProPalette();
+	const label = t('badges.clanPro');
+
+	return (
+		<span className={`inline-flex items-center shrink-0 ${className ?? ''}`}>
+			<ProBadgeTile label={label} palette={palette} focusable={false} cursorClassName="cursor-pointer" />
+		</span>
+	);
+};
+
+export const ClanProBadge = memo(ClanProBadgeBase);

@@ -11,8 +11,7 @@ const Footer: React.FC = () => {
 			<div className="relative px-4 md:px-8 lg:px-12 py-16 md:py-24">
 				<div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-12 pb-12 border-b border-white/15">
 					<div className="flex items-center gap-3">
-						<img src={MEZON_LOGO.DARK} alt="" className="w-12 h-12 object-contain" />
-						<img src={MEZON_LOGO.WORDMARK} alt="Mezon" className="h-8 md:h-10 w-auto object-contain" />
+						<img src={MEZON_LOGO.ON_DARK} alt="Mezon" className="h-8 md:h-10 w-auto object-contain" />
 					</div>
 					<nav className="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-3 text-sm">
 						<Link to="/about" className="text-white/70 hover:text-[#de82e6]">

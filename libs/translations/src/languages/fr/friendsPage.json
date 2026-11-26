@@ -83,5 +83,14 @@
 		"online": "Aucun utilisateur en ligne ne correspond à votre recherche. Essayez un autre nom.",
 		"pending": "Aucune demande d'ami ne correspond à votre recherche. Vérifiez à nouveau le nom ou réessayez.",
 		"block": "Aucun utilisateur bloqué ne correspond à votre recherche. Essayez un autre nom."
+	},
+	"sort": {
+		"label": "Trier",
+		"recent": "Interaction récente",
+		"name": "Nom (A–Z)"
+	},
+	"sections": {
+		"recent": "Récents",
+		"others": "Autres amis"
 	}
 }

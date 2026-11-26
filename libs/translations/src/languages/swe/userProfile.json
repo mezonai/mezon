@@ -225,6 +225,7 @@
 		"banListEmpty": "Inga bannlysta användare hittades"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

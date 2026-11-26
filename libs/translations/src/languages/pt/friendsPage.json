@@ -83,5 +83,14 @@
 		"online": "Ninguém online encontrado para sua pesquisa. Tente outro nome.",
 		"pending": "Nenhum pedido de amizade encontrado para sua pesquisa. Verifique o nome ou tente novamente.",
 		"block": "Nenhum usuário bloqueado encontrado para sua pesquisa. Tente outro nome."
+	},
+	"sort": {
+		"label": "Ordenar",
+		"recent": "Interação recente",
+		"name": "Nome (A–Z)"
+	},
+	"sections": {
+		"recent": "Recentes",
+		"others": "Outros amigos"
 	}
 }

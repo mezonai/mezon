@@ -102,3 +102,12 @@ it('accepts attachment-only sends without a mentions array', async () => {
 	expect(messagesActions.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ isPublic: false }));
 	unmount();
 });
+
+it('returns false and skips adding members when sendMessage resolves false', async () => {
+	mockDispatch.mockReturnValue({ unwrap: () => Promise.resolve(false) });
+	const { result, unmount } = renderHook();
+	const sent = await result.sendMessageThread({ t: 'hi' }, [{ user_id: 'u1', s: 0, e: 2 }], [], [], { channel_id: 'thread', channel_private: 1 });
+	expect(sent).toBe(false);
+	expect(mockAddMember).not.toHaveBeenCalled();
+	unmount();
+});

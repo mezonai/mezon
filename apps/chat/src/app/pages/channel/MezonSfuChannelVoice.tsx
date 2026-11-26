@@ -293,7 +293,7 @@ const VoiceConferenceContent = memo(
 					onToggleChat={handleToggleChat}
 					isPrivateVoice={isPrivateVoice}
 					onRefreshToken={onRefreshToken}
-					cameraManagedExternally={false}
+					cameraManagedExternally={Boolean(selectedBg)}
 					customVideoTrack={shareCamera && selectedBg && customVideoTrack?.readyState === 'live' ? customVideoTrack : null}
 					preferredCameraId={selectedCamera}
 					onSelectCamera={handleSelectCamera}

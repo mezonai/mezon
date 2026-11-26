@@ -225,6 +225,7 @@
 		"banListEmpty": "禁止されたユーザーが見つかりません"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }

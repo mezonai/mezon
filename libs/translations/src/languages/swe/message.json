@@ -124,6 +124,7 @@
 	"newMessages": "NYA MEDELANDEN",
 	"noSendMessagePermission": "Du har inte rätt att skicka meddelande",
 	"tooLongMessage": "Meddelande är för långt",
+	"longMessagePartFailed": "Del {{failed}} av {{total}} av ditt meddelande kunde inte skickas, så resten skickades inte.",
 	"isBanned": "Du är bannlyst från chatt",
 	"blockedUserMessage": "Du kan inte svara på detta samtal",
 	"messageInputPlaceHolder": "Ange meddelande...",

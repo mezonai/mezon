@@ -83,5 +83,14 @@
 		"description": "¿Estás seguro de que quieres rechazar la solicitud de amistad de <bold>{{username}}</bold>?",
 		"cancel": "Cancelar",
 		"confirm": "Rechazar solicitud"
+	},
+	"sort": {
+		"label": "Ordenar",
+		"recent": "Interacción reciente",
+		"name": "Nombre (A–Z)"
+	},
+	"sections": {
+		"recent": "Recientes",
+		"others": "Otros amigos"
 	}
 }

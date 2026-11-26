@@ -16,5 +16,12 @@
 			"description": "Gửi tin nhắn tạm thời (chỉ hiển thị cho người dùng được chọn)"
 		}
 	},
-	"convertLongToFile": "Chuyển tin nhắn dài thành tệp"
+	"convertLongToFile": "Chuyển tin nhắn dài thành tệp",
+	"longMessage": {
+		"title": "Tin nhắn quá dài",
+		"description": "Tin nhắn có {{count}} ký tự, vượt quá {{multiplier}} lần giới hạn {{limit}} ký tự nên không thể gửi dạng tin nhắn. Chuyển thành file .txt? Nếu hủy, bạn vẫn sửa được nội dung.",
+		"convert": "Chuyển thành file",
+		"size": "{{size}}",
+		"chars": "{{count}} ký tự"
+	}
 }
