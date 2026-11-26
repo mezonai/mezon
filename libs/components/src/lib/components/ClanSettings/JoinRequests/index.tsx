@@ -21,6 +21,7 @@ const JoinRequests = ({ currentClanId }: JoinRequestsProps) => {
 
 	const [joinMode, setJoinMode] = useState<number>(currentClan?.join_mode ?? CLAN_JOIN_MODE_INSTANT);
 	const [savingJoinMode, setSavingJoinMode] = useState<boolean>(false);
+	const isCommunity = Boolean(currentClan?.is_community);
 	const [items, setItems] = useState<JoinPendingItem[]>([]);
 	const [cursor, setCursor] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(true);
@@ -196,6 +197,15 @@ const JoinRequests = ({ currentClanId }: JoinRequestsProps) => {
 						</div>
 					</label>
 				</div>
+				<p
+					className={
+						isCommunity
+							? 'text-xs rounded-md px-3 py-2 border border-amber-500/40 bg-amber-500/10 text-amber-500'
+							: 'text-xs text-theme-primary opacity-75'
+					}
+				>
+					{t('joinMode.communityNote')}
+				</p>
 			</div>
 
 			<div className="border-t-theme-primary pt-8">

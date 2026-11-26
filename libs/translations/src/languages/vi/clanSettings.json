@@ -110,7 +110,8 @@
 		"instantTitle": "Tham gia ngay bằng lời mời",
 		"instantDesc": "Bất kỳ ai có liên kết mời hợp lệ đều có thể tham gia clan ngay lập tức.",
 		"requestTitle": "Yêu cầu tham gia, chủ clan phê duyệt",
-		"requestDesc": "Người dùng có liên kết mời sẽ gửi yêu cầu chờ chủ clan phê duyệt."
+		"requestDesc": "Người dùng có liên kết mời sẽ gửi yêu cầu chờ chủ clan phê duyệt.",
+		"communityNote": "Lưu ý: Nếu clan là Cộng đồng, cài đặt chế độ tham gia sẽ bị bỏ qua và mọi người có thể tham gia ngay lập tức."
 	},
 	"joinRequests": {
 		"description": "Xem xét các yêu cầu đang chờ từ những người dùng muốn tham gia clan này qua liên kết mời.",
