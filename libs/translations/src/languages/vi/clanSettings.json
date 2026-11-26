@@ -18,7 +18,8 @@
 			"auditLog": "Nhật ký kiểm tra",
 			"onboarding": "Hướng dẫn",
 			"enableCommunity": "Kích hoạt cộng đồng",
-			"archivedChannels": "Kênh đã lưu trữ"
+			"archivedChannels": "Kênh đã lưu trữ",
+			"joinRequests": "Yêu cầu tham gia"
 		}
 	},
 	"clanLogo": {
@@ -110,5 +111,20 @@
 		"instantDesc": "Bất kỳ ai có liên kết mời hợp lệ đều có thể tham gia clan ngay lập tức.",
 		"requestTitle": "Yêu cầu tham gia, chủ clan phê duyệt",
 		"requestDesc": "Người dùng có liên kết mời sẽ gửi yêu cầu chờ chủ clan phê duyệt."
+	},
+	"joinRequests": {
+		"description": "Xem xét các yêu cầu đang chờ từ những người dùng muốn tham gia clan này qua liên kết mời.",
+		"emptyState": "Không có yêu cầu tham gia nào đang chờ.",
+		"fetchError": "Không thể tải danh sách yêu cầu tham gia.",
+		"retry": "Thử lại",
+		"refresh": "Làm mới",
+		"loadMore": "Tải thêm",
+		"loading": "Đang tải...",
+		"requested": "Đã yêu cầu",
+		"approve": "Chấp nhận",
+		"reject": "Từ chối",
+		"approveSuccess": "Đã chấp nhận và thêm thành viên vào clan.",
+		"rejectSuccess": "Đã từ chối yêu cầu tham gia.",
+		"reviewError": "Không thể xử lý yêu cầu tham gia."
 	}
 }

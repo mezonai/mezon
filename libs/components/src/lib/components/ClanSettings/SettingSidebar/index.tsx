@@ -45,6 +45,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			[ItemSetting.ARCHIVED_CHANNELS]: t('sidebar.items.archivedChannels'),
 			[ItemSetting.INTEGRATIONS]: t('sidebar.items.integrations'),
 			[ItemSetting.AUDIT_LOG]: t('sidebar.items.auditLog'),
+			[ItemSetting.JOIN_REQUESTS]: t('sidebar.items.joinRequests'),
 			[ItemSetting.ON_BOARDING]: t('sidebar.items.onboarding'),
 			[ItemSetting.ON_COMUNITY]: isCommunityEnabled ? t('sidebar.communityOverview') : t('sidebar.items.enableCommunity')
 		};
@@ -70,6 +71,9 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 			}
 			if ([ItemSetting.ROLES, ItemSetting.AUDIT_LOG].includes(item.id)) {
 				return hasClanPermission;
+			}
+			if (item.id === ItemSetting.JOIN_REQUESTS) {
+				return isClanOwner;
 			}
 			if (item.id === ItemSetting.ARCHIVED_CHANNELS) {
 				return canViewArchivedChannels;

@@ -24,6 +24,7 @@ import ClanSettingOverview from './ClanSettingOverview';
 import Integrations from './Integrations';
 import type { ItemObjProps } from './ItemObj';
 import { ItemSetting, createTranslatedListItemSetting } from './ItemObj';
+import JoinRequests from './JoinRequests';
 import CategoryOrderSetting from './OrderCategorySetting';
 import SettingArchivedChannels from './SettingArchivedChannels';
 import SettingEmoji from './SettingEmoji';
@@ -56,6 +57,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 			{ id: ItemSetting.VOIDE_STICKERS, name: t('sidebar.items.voiceStickers') },
 			{ id: ItemSetting.INTEGRATIONS, name: t('sidebar.items.integrations') },
 			{ id: ItemSetting.AUDIT_LOG, name: t('sidebar.items.auditLog') },
+			{ id: ItemSetting.JOIN_REQUESTS, name: t('sidebar.items.joinRequests') },
 			{ id: ItemSetting.ON_BOARDING, name: t('sidebar.items.onboarding') },
 			{ id: ItemSetting.ON_COMUNITY, name: t('sidebar.items.enableCommunity') }
 		],
@@ -67,7 +69,11 @@ const ClanSetting = (props: ModalSettingProps) => {
 	}, [currentSettingId, allSettings]);
 
 	const dispatch = useAppDispatch();
-	const [canManageClan, canManagerChannel] = usePermissionChecker([EPermission.manageClan, EPermission.manageChannel]);
+	const [isClanOwner, canManageClan, canManagerChannel] = usePermissionChecker([
+		EPermission.clanOwner,
+		EPermission.manageClan,
+		EPermission.manageChannel
+	]);
 	const { canViewArchivedChannels } = useCanViewArchivedChannels();
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
@@ -136,6 +142,8 @@ const ClanSetting = (props: ModalSettingProps) => {
 				return canViewArchivedChannels ? <SettingArchivedChannels /> : null;
 			case ItemSetting.AUDIT_LOG:
 				return <AuditLog currentClanId={currentClanId} />;
+			case ItemSetting.JOIN_REQUESTS:
+				return isClanOwner ? <JoinRequests currentClanId={currentClanId} /> : null;
 			case ItemSetting.ON_BOARDING:
 				return <SettingOnBoarding onClose={onClose} />;
 			case ItemSetting.ON_COMUNITY:

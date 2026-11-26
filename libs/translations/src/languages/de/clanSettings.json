@@ -18,7 +18,8 @@
 			"auditLog": "Audit-Log",
 			"onboarding": "Leitfaden",
 			"enableCommunity": "Community aktivieren",
-			"archivedChannels": "Archivierte Kanäle"
+			"archivedChannels": "Archivierte Kanäle",
+			"joinRequests": "Join Requests"
 		}
 	},
 	"clanLogo": {
@@ -110,5 +111,20 @@
 		"instantDesc": "Anyone with a valid invite link joins the clan immediately.",
 		"requestTitle": "Request to join, owner approves",
 		"requestDesc": "Users with an invite link submit a pending join request for the clan owner to approve."
+	},
+	"joinRequests": {
+		"description": "Review pending requests from users who tried to join this clan via an invite link.",
+		"emptyState": "No pending join requests.",
+		"fetchError": "Failed to load pending join requests.",
+		"retry": "Retry",
+		"refresh": "Refresh",
+		"loadMore": "Load more",
+		"loading": "Loading...",
+		"requested": "Requested",
+		"approve": "Approve",
+		"reject": "Reject",
+		"approveSuccess": "Member approved and added to the clan.",
+		"rejectSuccess": "Join request rejected.",
+		"reviewError": "Failed to update join request."
 	}
 }
