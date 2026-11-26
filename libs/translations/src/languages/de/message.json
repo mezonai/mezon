@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "Dein Standort",
 		"sender": "Absender",
-		"locationOf": "Standort von {{name}}"
+		"locationOf": "Standort von {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Geteilt von {{username}}",
 	"deleteMessageModal": {

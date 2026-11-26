@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "내 위치",
 		"sender": "발신자",
-		"locationOf": "{{name}}의 위치"
+		"locationOf": "{{name}}의 위치",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "{{username}}님이 공유",
 	"deleteMessageModal": {

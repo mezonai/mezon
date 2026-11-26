@@ -170,7 +170,8 @@
 	"mapView": {
 		"yourLocation": "Tu ubicación",
 		"sender": "Remitente",
-		"locationOf": "Ubicación de {{name}}"
+		"locationOf": "Ubicación de {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Compartido por {{username}}",
 	"deleteMessageModal": {

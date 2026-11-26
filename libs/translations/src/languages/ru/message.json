@@ -170,7 +170,8 @@
 	"mapView": {
 		"yourLocation": "Ваша локация",
 		"sender": "Отправитель",
-		"locationOf": "Локация {{name}}"
+		"locationOf": "Локация {{name}}",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "{{username}} поделился",
 	"deleteMessageModal": {

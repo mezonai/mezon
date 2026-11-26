@@ -166,7 +166,8 @@
 	"mapView": {
 		"yourLocation": "Din plats",
 		"sender": "Avsändare",
-		"locationOf": "{{name}}s plats"
+		"locationOf": "{{name}}s plats",
+		"mapCredit": "© OpenStreetMap contributors"
 	},
 	"sharedBy": "Delad av {{username}}",
 	"deleteMessageModal": {
