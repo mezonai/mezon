@@ -284,11 +284,14 @@ const LinkContent = memo<LinkContentProps>(({ content, linkLabel, messageId, isJ
 					try {
 						const parsedContent = new URL(content);
 						const state = store.getState();
-						const sameOriginApps = [
+						const toPathPrefix = (url: string) => `${url.split(/[?#]/)[0].replace(/\/+$/, '')}/`;
+						const linkPrefix = toPathPrefix(content);
+						const appChannel = [
 							...selectAppChannelsList(state),
 							...Object.values(getChannelsState(state).byClans).flatMap((clan) => Object.values(clan.appChannelsList ?? {}))
-						].filter((app) => app.app_id && app.app_url && `${app.app_url}/`.startsWith(`${parsedContent.origin}/`));
-						const appChannel = sameOriginApps.find((app) => content.startsWith(app.app_url?.split('?')[0] ?? '')) ?? sameOriginApps[0];
+						]
+							.filter((app) => app.app_id && app.app_url && linkPrefix.startsWith(toPathPrefix(app.app_url)))
+							.sort((a, b) => toPathPrefix(b.app_url ?? '').length - toPathPrefix(a.app_url ?? '').length)[0];
 						if (appChannel?.app_id) {
 							const hashData = await dispatch(channelAppActions.generateAppUserHash({ appId: appChannel.app_id })).unwrap();
 							if (hashData.web_app_data) {
