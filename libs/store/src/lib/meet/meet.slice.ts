@@ -13,7 +13,7 @@ type generateMeetTokenPayload = {
 
 type GenerateMeetTokenBody = ApiGenerateMeetTokenRequest & { current_endpoint_id?: number };
 
-const SFU_CLUSTER_HOST_PATTERN = /^sfu(\d*)\.mezon\.vn$/;
+const SFU_CLUSTER_HOST_PATTERN = /^(?:test-)?sfu(\d*)(?:-test)?\.(?:mezon|nccsoft)\.vn$/;
 const MAX_SFU_CLUSTER_NUMBER = 0x7fffffff;
 
 const sfuClusterIndex = (sfuUrl: string): number | undefined => {
