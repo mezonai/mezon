@@ -225,6 +225,7 @@
 		"banListEmpty": "밴된 사용자 찾지 못함"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }
