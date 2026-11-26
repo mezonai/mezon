@@ -140,6 +140,31 @@ function findLastMatchBreak(
 	return null;
 }
 
+type GraphemeSegmenterCtor = new (
+	locales?: string | string[],
+	options?: { granularity: 'grapheme' }
+) => { segment(input: string): Iterable<{ index: number }> };
+
+function snapToGraphemeBoundary(text: string, start: number, maxEnd: number): number {
+	const Segmenter = (Intl as typeof Intl & { Segmenter?: GraphemeSegmenterCtor }).Segmenter;
+	if (!Segmenter) {
+		return maxEnd;
+	}
+	const segmenter = new Segmenter(undefined, { granularity: 'grapheme' });
+	const slice = text.slice(start, maxEnd + 16);
+	let lastBoundary = start;
+	for (const segment of segmenter.segment(slice)) {
+		const pos = start + segment.index;
+		if (pos > maxEnd) {
+			break;
+		}
+		if (pos > start) {
+			lastBoundary = pos;
+		}
+	}
+	return lastBoundary > start ? lastBoundary : maxEnd;
+}
+
 export function splitMessageRanges(
 	text: string,
 	limit: number,
@@ -165,14 +190,23 @@ export function splitMessageRanges(
 
 		const scanLimit = Math.min(maxEnd, text.length - 1);
 
-		const picked = findParagraphBreak(text, start, scanLimit) ??
-			findLastMatchBreak(text, start, scanLimit, (ch) => ch === '\n') ??
+		const newlineBreak = findParagraphBreak(text, start, scanLimit) ?? findLastMatchBreak(text, start, scanLimit, (ch) => ch === '\n');
+		let { end, next } = newlineBreak ??
 			findLastMatchBreak(text, start, scanLimit, (ch) => ch === ' ' || ch === '\t') ?? {
-				end: maxEnd,
-				next: maxEnd
+				end: -1,
+				next: -1
 			};
 
-		let { end, next } = picked;
+		if (end === -1) {
+			end = snapToGraphemeBoundary(text, start, maxEnd);
+			next = end;
+		}
+
+		if (newlineBreak) {
+			while (end > start && text[end - 1] === '\r') {
+				end -= 1;
+			}
+		}
 
 		let adjusted = true;
 		while (adjusted) {

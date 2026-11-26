@@ -343,5 +343,30 @@ describe('splitMessage', () => {
 			const parts = splitMessagePayload({ t: 'hello world\n\n     ' }, [], 12);
 			expect(parts.map((part) => part.content.t)).toEqual(['hello world']);
 		});
+
+		it('does not split inside ZWJ emoji sequences on hard cuts', () => {
+			const familyEmoji = '👨‍👩‍👧';
+			const text = familyEmoji.repeat(2100);
+
+			const parts = splitMessagePayload({ t: text }, [], 2048, Number.POSITIVE_INFINITY);
+
+			expect(parts.length).toBeGreaterThan(1);
+			for (const part of parts) {
+				const partText = part.content.t ?? '';
+				expect(partText.startsWith('\u200d')).toBe(false);
+				expect(partText.endsWith('\u200d')).toBe(false);
+				expect(partText.isWellFormed?.() ?? true).toBe(true);
+			}
+			expect(parts.map((part) => part.content.t).join('')).toBe(text);
+		});
+
+		it('drops trailing carriage return when breaking at CRLF newlines', () => {
+			const text = `${'a'.repeat(1500)}\r\n${'b'.repeat(1000)}`;
+
+			const parts = splitMessagePayload({ t: text }, [], 2048);
+
+			expect(parts.map((part) => part.content.t)).toEqual(['a'.repeat(1500), 'b'.repeat(1000)]);
+			expect(parts[0].content.t?.endsWith('\r')).toBe(false);
+		});
 	});
 });
