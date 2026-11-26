@@ -1,5 +1,8 @@
 import { useClans } from '@mezon/core';
+import type { ClanUpdateDescRequest } from '@mezon/store';
 import {
+	CLAN_JOIN_MODE_INSTANT,
+	CLAN_JOIN_MODE_REQUEST_APPROVAL,
 	checkDuplicateNameApi,
 	fetchSystemMessageByClanId,
 	selectCurrentClan,
@@ -9,7 +12,7 @@ import {
 } from '@mezon/store';
 import { TypeCheck, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js';
+import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateSystemMessageBody } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -22,13 +25,14 @@ const ClanSettingOverview = () => {
 	const { updateClan } = useClans();
 	const currentClan = useSelector(selectCurrentClan);
 
-	const [clanRequest, setClanRequest] = useState<MezonUpdateClanDescBody>({
+	const [clanRequest, setClanRequest] = useState<ClanUpdateDescRequest>({
 		banner: currentClan?.banner ?? '',
 		clan_name: currentClan?.clan_name ?? '',
 		creator_id: currentClan?.creator_id ?? '',
 		logo: currentClan?.logo ?? '',
 		welcome_channel_id: currentClan?.welcome_channel_id ?? '',
-		prevent_anonymous: !!currentClan?.prevent_anonymous
+		prevent_anonymous: !!currentClan?.prevent_anonymous,
+		join_mode: currentClan?.join_mode ?? CLAN_JOIN_MODE_INSTANT
 	});
 	const { t } = useTranslation('clanSettings');
 	const [systemMessage, setSystemMessage] = useState<ApiSystemMessage | null>(null);
@@ -81,6 +85,9 @@ const ClanSettingOverview = () => {
 		if (currentClan && clanRequest) {
 			const hasChanges = Object.keys(clanRequest).some((key) => {
 				const typedKey = key as keyof typeof clanRequest;
+				if (typedKey === 'join_mode') {
+					return (clanRequest.join_mode ?? CLAN_JOIN_MODE_INSTANT) !== (currentClan.join_mode ?? CLAN_JOIN_MODE_INSTANT);
+				}
 				if (
 					typedKey !== 'description' &&
 					typedKey !== 'about' &&
@@ -89,6 +96,7 @@ const ClanSettingOverview = () => {
 				) {
 					return clanRequest[typedKey] !== currentClan[typedKey];
 				}
+				return false;
 			});
 			if (hasChanges) {
 				return true;
@@ -168,7 +176,8 @@ const ClanSettingOverview = () => {
 			logo: currentClan?.logo ?? '',
 			is_onboarding: currentClan?.is_onboarding,
 			welcome_channel_id: currentClan?.welcome_channel_id ?? '',
-			prevent_anonymous: !!currentClan?.prevent_anonymous
+			prevent_anonymous: !!currentClan?.prevent_anonymous,
+			join_mode: currentClan?.join_mode ?? CLAN_JOIN_MODE_INSTANT
 		});
 		setUpdateSystemMessageRequest(systemMessage);
 	};
@@ -182,6 +191,13 @@ const ClanSettingOverview = () => {
 			...clanRequest,
 			prevent_anonymous: prevent
 		});
+	};
+
+	const handleChangeJoinMode = (joinMode: number) => {
+		setClanRequest((prev) => ({
+			...prev,
+			join_mode: joinMode
+		}));
 	};
 
 	return (
@@ -214,6 +230,53 @@ const ClanSettingOverview = () => {
 			>
 				<h3 className="text-sm font-bold uppercase mb-2">{t('systemMessages.anoTitle')}</h3>
 				<ToggleItem label={t('systemMessages.anoDesc')} value={!!clanRequest.prevent_anonymous} handleToggle={handleToggleAno} />
+			</div>
+
+			<div
+				className={'border-t-theme-primary mt-10 pt-10 flex flex-col gap-3'}
+				data-e2e={generateE2eId('clan_page.settings.overview.join_mode')}
+			>
+				<h3 className="text-sm font-bold uppercase">{t('joinMode.title')}</h3>
+				<div className="flex flex-col gap-2">
+					<label
+						className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+							(clanRequest.join_mode ?? CLAN_JOIN_MODE_INSTANT) === CLAN_JOIN_MODE_INSTANT
+								? 'border-indigo-500 bg-item-theme'
+								: 'border-theme-primary bg-theme-setting-nav hover:bg-item-theme'
+						}`}
+					>
+						<input
+							type="radio"
+							name="clan-join-mode"
+							checked={(clanRequest.join_mode ?? CLAN_JOIN_MODE_INSTANT) === CLAN_JOIN_MODE_INSTANT}
+							onChange={() => handleChangeJoinMode(CLAN_JOIN_MODE_INSTANT)}
+							className="mt-1 accent-indigo-500 cursor-pointer"
+						/>
+						<div className="flex flex-col">
+							<span className="text-sm font-medium text-theme-primary-active">{t('joinMode.instantTitle')}</span>
+							<span className="text-xs text-theme-primary">{t('joinMode.instantDesc')}</span>
+						</div>
+					</label>
+					<label
+						className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+							(clanRequest.join_mode ?? CLAN_JOIN_MODE_INSTANT) === CLAN_JOIN_MODE_REQUEST_APPROVAL
+								? 'border-indigo-500 bg-item-theme'
+								: 'border-theme-primary bg-theme-setting-nav hover:bg-item-theme'
+						}`}
+					>
+						<input
+							type="radio"
+							name="clan-join-mode"
+							checked={(clanRequest.join_mode ?? CLAN_JOIN_MODE_INSTANT) === CLAN_JOIN_MODE_REQUEST_APPROVAL}
+							onChange={() => handleChangeJoinMode(CLAN_JOIN_MODE_REQUEST_APPROVAL)}
+							className="mt-1 accent-indigo-500 cursor-pointer"
+						/>
+						<div className="flex flex-col">
+							<span className="text-sm font-medium text-theme-primary-active">{t('joinMode.requestTitle')}</span>
+							<span className="text-xs text-theme-primary">{t('joinMode.requestDesc')}</span>
+						</div>
+					</label>
+				</div>
 			</div>
 
 			{(hasClanChanges || hasSystemMessageChanges) && isClanNameValid && <ModalSaveChanges onSave={handleSave} onReset={handleReset} />}

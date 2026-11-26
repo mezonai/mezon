@@ -103,5 +103,12 @@
 	"toast": {
 		"clanDeletedSuccess": "Xóa clan thành công",
 		"clanCreatedSuccess": "Tạo clan thành công"
+	},
+	"joinMode": {
+		"title": "Chế độ tham gia",
+		"instantTitle": "Tham gia ngay bằng lời mời",
+		"instantDesc": "Bất kỳ ai có liên kết mời hợp lệ đều có thể tham gia clan ngay lập tức.",
+		"requestTitle": "Yêu cầu tham gia, chủ clan phê duyệt",
+		"requestDesc": "Người dùng có liên kết mời sẽ gửi yêu cầu chờ chủ clan phê duyệt."
 	}
 }

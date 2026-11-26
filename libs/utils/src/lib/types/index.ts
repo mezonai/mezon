@@ -69,6 +69,7 @@ export type IClan = ApiClanDesc & {
 	id: string;
 	hashtags?: string;
 	pro_plan?: boolean;
+	join_mode?: number;
 };
 
 export type IChannelAttachment = ApiChannelAttachment & {
@@ -78,6 +79,7 @@ export type IChannelAttachment = ApiChannelAttachment & {
 
 export type IInvite = ApiInviteUserRes & {
 	id: string;
+	join_pending?: boolean;
 };
 
 export type IClanProfile = ApiClanProfile & {
