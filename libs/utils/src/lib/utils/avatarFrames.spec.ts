@@ -1,4 +1,4 @@
-import { AVATAR_FRAMES, avatarFrameUrl, defaultAvatarFrameForUser } from './avatarFrames';
+import { AVATAR_FRAMES, avatarFrameUrl, clanFrameId, defaultAvatarFrameForUser } from './avatarFrames';
 
 describe('avatarFrames', () => {
 	it('has 18 unique frame ids', () => {
@@ -46,5 +46,17 @@ describe('avatarFrames', () => {
 	it('builds static and animated frame urls', () => {
 		expect(avatarFrameUrl('edu_2', false)).toBe('/assets/images/avatar-frames/edu_2.png');
 		expect(avatarFrameUrl('edu_2', true)).toBe('/assets/images/avatar-frames/edu_2.webp');
+	});
+
+	it.each([
+		[false, 5, undefined],
+		[true, 0, undefined],
+		[true, 1, 'edu_1'],
+		[true, 18, 'food_2'],
+		[true, 19, undefined],
+		[true, -1, undefined],
+		[true, undefined, undefined]
+	])('clanFrameId(%s, %s) returns %s', (proPlan, frame, expected) => {
+		expect(clanFrameId(proPlan, frame)).toBe(expected);
 	});
 });

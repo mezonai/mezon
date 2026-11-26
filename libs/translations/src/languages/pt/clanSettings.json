@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Visão geral",
+			"clanPro": "Clan Pro",
 			"roles": "Cargos",
 			"emoji": "Emoji",
 			"imageStickers": "Figurinhas de imagem",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "O clã foi excluído com sucesso",
 		"clanCreatedSuccess": "O clã foi criado com sucesso"
+	},
+	"clanPro": {
+		"title": "Moldura do ícone do clã",
+		"description": "Escolha uma moldura decorativa Pro para exibir ao redor do ícone do seu clã.",
+		"noFrame": "Sem moldura",
+		"notPro": "Atualize este clã para Clan Pro para escolher uma moldura.",
+		"saved": "Moldura do clã salva.",
+		"saveFailed": "Falha ao salvar a moldura do clã. Tente novamente."
 	}
 }

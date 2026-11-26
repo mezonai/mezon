@@ -1,3 +1,4 @@
+import type { AvatarFrameId } from '@mezon/utils';
 import { avatarFrameUrl, defaultAvatarFrameForUser } from '@mezon/utils';
 import type { CSSProperties, ReactElement, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
@@ -5,6 +6,7 @@ import { memo, useMemo } from 'react';
 export type ProAvatarFrameProps = {
 	isPro: boolean;
 	userId: string;
+	frameId?: AvatarFrameId;
 	animated?: boolean;
 	className?: string;
 	children: ReactNode;
@@ -17,18 +19,20 @@ const FRAME_OVERLAY_STYLE: CSSProperties = {
 	top: '-12.5%'
 };
 
-const ProAvatarFrameBase = ({ isPro, userId, animated = false, className, children }: ProAvatarFrameProps) => {
+const ProAvatarFrameBase = ({ isPro, userId, frameId, animated = false, className, children }: ProAvatarFrameProps) => {
 	const shouldAnimate = useMemo(
 		() => Boolean(animated && !(typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches)),
 		[animated]
 	);
 
+	const resolvedFrameId = frameId ?? (userId ? defaultAvatarFrameForUser(userId) : undefined);
+
 	const frameSrc = useMemo(
-		() => (!isPro || !userId ? '' : avatarFrameUrl(defaultAvatarFrameForUser(userId), shouldAnimate)),
-		[isPro, userId, shouldAnimate]
+		() => (!isPro || !resolvedFrameId ? '' : avatarFrameUrl(resolvedFrameId, shouldAnimate)),
+		[isPro, resolvedFrameId, shouldAnimate]
 	);
 
-	if (!isPro || !userId) {
+	if (!isPro || !resolvedFrameId) {
 		return children as ReactElement;
 	}
 

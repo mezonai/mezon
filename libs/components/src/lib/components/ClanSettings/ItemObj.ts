@@ -6,6 +6,7 @@ export type ItemObjProps = {
 // Translation keys for i18n
 export const ITEM_TRANSLATION_KEYS = {
 	OVERVIEW: 'overview',
+	CLAN_PRO: 'clanPro',
 	ROLES: 'roles',
 	CATEGORY_ORDER: 'categoryOrder',
 	INTEGRATIONS: 'integrations',
@@ -27,6 +28,7 @@ export type ListSideBarProps = {
 
 export const ItemSetting = {
 	OVERVIEW: 'overview',
+	CLAN_PRO: 'clan-pro',
 	ROLES: 'roles',
 	EMOJI: 'emoji',
 	IMAGE_STICKERS: 'Stickers',
@@ -44,6 +46,7 @@ export const ItemSetting = {
 // Helper function to create translated list items
 export const createTranslatedListItemSetting = (t: (key: string) => string): ItemObjProps[] => [
 	{ id: ItemSetting.OVERVIEW, name: getTranslatedItemName(ItemSetting.OVERVIEW, t) },
+	{ id: ItemSetting.CLAN_PRO, name: getTranslatedItemName(ItemSetting.CLAN_PRO, t) },
 	{ id: ItemSetting.ROLES, name: getTranslatedItemName(ItemSetting.ROLES, t) },
 	{ id: ItemSetting.CATEGORY_ORDER, name: getTranslatedItemName(ItemSetting.CATEGORY_ORDER, t) }
 ];
@@ -51,6 +54,7 @@ export const createTranslatedListItemSetting = (t: (key: string) => string): Ite
 // Keep original for backward compatibility (will be removed later)
 export const listItemSetting: ItemObjProps[] = [
 	{ id: ItemSetting.OVERVIEW, name: 'Overview' },
+	{ id: ItemSetting.CLAN_PRO, name: 'Clan Pro' },
 	{ id: ItemSetting.ROLES, name: 'Roles' },
 	{ id: ItemSetting.CATEGORY_ORDER, name: 'Category Order' },
 	{ id: ItemSetting.ARCHIVED_CHANNELS, name: 'Archived Channels' }
@@ -60,6 +64,7 @@ export const listItemSetting: ItemObjProps[] = [
 export const getTranslatedItemName = (id: string, t: (key: string) => string): string => {
 	const translationMap: Record<string, string> = {
 		[ItemSetting.OVERVIEW]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.OVERVIEW}`),
+		[ItemSetting.CLAN_PRO]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.CLAN_PRO}`),
 		[ItemSetting.ROLES]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.ROLES}`),
 		[ItemSetting.CATEGORY_ORDER]: t(`sidebar.items.${ITEM_TRANSLATION_KEYS.CATEGORY_ORDER}`),
 		[ItemSetting.ARCHIVED_CHANNELS]: t('sidebar.items.archivedChannels'),

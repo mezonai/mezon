@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Översikt",
+			"clanPro": "Clan Pro",
 			"roles": "Roller",
 			"emoji": "Uttryck",
 			"imageStickers": "Bildstickers",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Klanen har raderats",
 		"clanCreatedSuccess": "Klanen har skapats"
+	},
+	"clanPro": {
+		"title": "Ram för klanikon",
+		"description": "Välj en Pro-dekorationsram att visa runt din klanikon.",
+		"noFrame": "Ingen ram",
+		"notPro": "Uppgradera den här klanen till Clan Pro för att välja en ram.",
+		"saved": "Klanramen har sparats.",
+		"saveFailed": "Det gick inte att spara klanramen. Försök igen."
 	}
 }

@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Übersicht",
+			"clanPro": "Clan Pro",
 			"roles": "Rollen",
 			"emoji": "Emojis",
 			"imageStickers": "Bild-Sticker",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Clan wurde erfolgreich gelöscht",
 		"clanCreatedSuccess": "Clan wurde erfolgreich erstellt"
+	},
+	"clanPro": {
+		"title": "Clan-Symbol-Rahmen",
+		"description": "Wähle einen Pro-Dekorationsrahmen für dein Clan-Symbol.",
+		"noFrame": "Kein Rahmen",
+		"notPro": "Upgrade diesen Clan auf Clan Pro, um einen Rahmen auszuwählen.",
+		"saved": "Clan-Rahmen gespeichert.",
+		"saveFailed": "Clan-Rahmen konnte nicht gespeichert werden. Bitte versuche es erneut."
 	}
 }

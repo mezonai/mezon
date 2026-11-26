@@ -40,3 +40,10 @@ export function defaultAvatarFrameForUser(userId: string): AvatarFrameId {
 export function avatarFrameUrl(id: AvatarFrameId, animated: boolean): string {
 	return `/assets/images/avatar-frames/${id}.${animated ? 'webp' : 'png'}`;
 }
+
+export function clanFrameId(proPlan?: boolean, frame?: number): AvatarFrameId | undefined {
+	if (!proPlan || typeof frame !== 'number' || !Number.isInteger(frame) || frame < 1 || frame > AVATAR_FRAMES.length) {
+		return undefined;
+	}
+	return AVATAR_FRAMES[frame - 1];
+}

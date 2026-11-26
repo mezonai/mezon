@@ -9,6 +9,7 @@
 		},
 		"items": {
 			"overview": "Aperçu",
+			"clanPro": "Clan Pro",
 			"roles": "Rôles",
 			"emoji": "Émojis",
 			"imageStickers": "Autocollants image",
@@ -103,5 +104,13 @@
 	"toast": {
 		"clanDeletedSuccess": "Le clan a été supprimé avec succès",
 		"clanCreatedSuccess": "Le clan a été créé avec succès"
+	},
+	"clanPro": {
+		"title": "Cadre d'icône du clan",
+		"description": "Choisissez un cadre décoratif Pro à afficher autour de l'icône de votre clan.",
+		"noFrame": "Sans cadre",
+		"notPro": "Passez ce clan à Clan Pro pour choisir un cadre.",
+		"saved": "Cadre du clan enregistré.",
+		"saveFailed": "Échec de l'enregistrement du cadre du clan. Veuillez réessayer."
 	}
 }
