@@ -6,6 +6,7 @@
 		"description": "Nou, we willen nog eens bevestigen dat je dit bericht in #{{channelLabel}} wilt vastzetten voor altijd.",
 		"descriptionDM": "Nou, we willen nog eens bevestigen dat je dit bericht in het huidige gesprek wilt vastzetten voor altijd.",
 		"cancel": "Annuleren",
-		"confirm": "Vastzetten"
+		"confirm": "Vastzetten",
+		"remainingImages": "+{{count}} afbeeldingen extra"
 	}
 }

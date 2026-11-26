@@ -6,6 +6,7 @@
 		"description": "Hey, ich möchte nur noch einmal kurz bestätigen: Möchtest du diese Nachricht in #{{channelLabel}} anpinnen, um sie dauerhaft zu speichern?",
 		"descriptionDM": "Hey, ich möchte nur noch einmal kurz bestätigen: Möchtest du diese Nachricht in diesem Chat anpinnen, um sie dauerhaft zu speichern?",
 		"cancel": "Abbrechen",
-		"confirm": "Jetzt anpinnen"
+		"confirm": "Jetzt anpinnen",
+		"remainingImages": "+{{count}} weitere Bilder"
 	}
 }

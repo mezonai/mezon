@@ -6,6 +6,7 @@
     "description": "Oye, solo comprobando que quieras fijar este mensaje en #{{channelLabel}} para la posteridad y la grandeza?",
     "descriptionDM": "Oye, solo comprobando que quieras fijar este mensaje en el canal actual para la posteridad y la grandeza?",
     "cancel": "Cancelar",
-    "confirm": "Oh sí. Fíjalo"
+    "confirm": "Oh sí. Fíjalo",
+    "remainingImages": "+{{count}} imágenes más"
   }
 }

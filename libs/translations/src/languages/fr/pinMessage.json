@@ -6,6 +6,7 @@
 		"description": "Hé, je voulais juste confirmer une dernière fois que vous voulez vraiment épingler ce message dans #{{channelLabel}} pour le conserver à jamais ?",
 		"descriptionDM": "Hé, je voulais juste confirmer une dernière fois que vous voulez vraiment épingler ce message dans la conversation actuelle pour le conserver à jamais ?",
 		"cancel": "Annuler",
-		"confirm": "Épinglez pour de bon"
+		"confirm": "Épinglez pour de bon",
+		"remainingImages": "+{{count}} images supplémentaires"
 	}
 }

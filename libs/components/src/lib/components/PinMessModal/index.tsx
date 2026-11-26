@@ -1,12 +1,20 @@
 import { ColorRoleProvider, useEscapeKeyClose } from '@mezon/core';
 import { selectAllAccount, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { KEY_KEYBOARD, generateE2eId } from '@mezon/utils';
+import { KEY_KEYBOARD, generateE2eId, isImageFileType } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import MessageWithUser from '../MessageWithUser';
+
+const isImageAttachment = (attachment: NonNullable<IMessageWithUser['attachments']>[number]) => {
+	const filetype = attachment.filetype ?? '';
+	return (
+		((filetype === 'image' || isImageFileType(filetype)) && !filetype.includes('svg+xml')) ||
+		attachment.url?.split('?')[0].toLowerCase().endsWith('.gif')
+	);
+};
 
 type ModalAddPinMessProps = {
 	mess: IMessageWithUser;
@@ -20,6 +28,18 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 	const { t } = useTranslation('pinMessage');
 	const userId = useSelector(selectAllAccount)?.user?.id;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
+	const { previewMessage, remainingImageCount } = useMemo(() => {
+		const attachments = mess.attachments ?? [];
+		const imageAttachments = attachments.filter(isImageAttachment);
+		if (imageAttachments.length <= 1) return { previewMessage: mess, remainingImageCount: 0 };
+
+		const firstImage = imageAttachments[0];
+		const previewAttachments = attachments.filter((attachment) => !isImageAttachment(attachment) || attachment === firstImage);
+		return {
+			previewMessage: { ...mess, attachments: previewAttachments },
+			remainingImageCount: imageAttachments.length - 1
+		};
+	}, [mess]);
 
 	const isDM = mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
 
@@ -69,13 +89,19 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 							<MessageWithUser
 								isSearchMessage={true}
 								allowDisplayShortProfile={false}
-								message={mess}
 								mode={mode}
 								isMention={true}
 								isShowFull={true}
 								user={currentClanUser}
+								message={previewMessage}
+								isPreview={previewMessage !== mess}
 							/>
 						</ColorRoleProvider>
+						{remainingImageCount > 0 && (
+							<div className="pl-[72px] pt-1 text-sm text-theme-primary opacity-75">
+								{t('modal.remainingImages', { count: remainingImageCount })}
+							</div>
+						)}
 					</div>
 					<div className="w-full  p-4 flex justify-end gap-x-4 bg-theme-setting-nav">
 						<button

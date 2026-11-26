@@ -6,6 +6,7 @@
 		"description": "Ehi, volevo solo confermare un'ultima volta: vuoi fissare questo messaggio in #{{channelLabel}} per conservarlo per sempre?",
 		"descriptionDM": "Ehi, volevo solo confermare un'ultima volta: vuoi fissare questo messaggio in questa conversazione per conservarlo per sempre?",
 		"cancel": "Annulla",
-		"confirm": "Fissa subito"
+		"confirm": "Fissa subito",
+		"remainingImages": "+altre {{count}} immagini"
 	}
 }
