@@ -80,6 +80,9 @@ jobs:
           envkey_NX_CHAT_APP_OAUTH2_RESPONSE_TYPE: ${{ secrets.NX_CHAT_APP_OAUTH2_RESPONSE_TYPE }}
           envkey_NX_CHAT_APP_OAUTH2_SCOPE: ${{ secrets.NX_CHAT_APP_OAUTH2_SCOPE }}
           envkey_NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD: ${{ secrets.NX_CHAT_APP_OAUTH2_CODE_CHALLENGE_METHOD }}
+          envkey_NX_PRO_PLAN_RECIPIENT_ID: DkHT6NZe5orVEhEoc1XiuAxKx84KFn6AvNmMng1agBjQ
+          envkey_NX_PRO_PLAN_USER_PRICE: '500000'
+          envkey_NX_PRO_PLAN_CLAN_PRICE: '2000000'
           envkey_NX_CHAT_APP_API_KLIPY_URL: https://api.klipy.com/api/v1
           envkey_NX_MAX_LENGTH_NAME_ALLOWED: 64
           envkey_NX_LOGO_MEZON: https://cdn.komu.vn/images/mezon_logo.png

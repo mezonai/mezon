@@ -1,5 +1,7 @@
 import type { MentionReactInputProps } from '@mezon/utils';
 import { ID_MENTION_HERE, MESSAGE_MAX_PART_BYTES, splitMessagePayload } from '@mezon/utils';
+import { t } from 'i18next';
+import { toast } from 'react-toastify';
 
 export type OnSendFn = MentionReactInputProps['onSend'];
 export type OnSendArgs = Parameters<OnSendFn>;
@@ -39,21 +41,30 @@ async function sendPartsSequentially(
 				: isFirst
 			: mentionEveryone;
 
-		lastResult = await onSend(
-			part.content,
-			part.mentions,
-			partAttachments,
-			partReferences,
-			value,
-			anonymousMessage,
-			partMentionEveryone,
-			displayName,
-			clanNick,
-			ephemeralReceiverId,
-			partUsersNotExistingInThread
-		);
+		let failed = false;
+		try {
+			lastResult = await onSend(
+				part.content,
+				part.mentions,
+				partAttachments,
+				partReferences,
+				value,
+				anonymousMessage,
+				partMentionEveryone,
+				displayName,
+				clanNick,
+				ephemeralReceiverId,
+				partUsersNotExistingInThread
+			);
+			failed = lastResult === false;
+		} catch {
+			failed = true;
+		}
 
-		if (lastResult === false) {
+		if (failed) {
+			if (parts.length > 1) {
+				toast.error(t('message:longMessagePartFailed', { failed: index + 1, total: parts.length }));
+			}
 			return false;
 		}
 	}
@@ -62,10 +73,13 @@ async function sendPartsSequentially(
 }
 
 export function sendMessageInParts(onSend: OnSendFn, args: OnSendArgs, limit: number): void | Promise<boolean | void> {
-	const [content, mentions] = args;
+	const [content, mentions, attachments, ...restArgs] = args;
 	const parts = splitMessagePayload(content, mentions, limit, MESSAGE_MAX_PART_BYTES);
 
 	if (parts.length === 0) {
+		if (attachments && attachments.length > 0) {
+			return onSend({ t: '' }, [], attachments, ...restArgs);
+		}
 		return undefined;
 	}
 

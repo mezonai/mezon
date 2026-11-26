@@ -11,6 +11,7 @@ jest.mock('@mezon/utils', () => ({
 }));
 jest.mock('mezon-js', () => ({ ChannelType: { CHANNEL_TYPE_CHANNEL: 1 } }));
 jest.mock('mezon-js-protobuf', () => ({ ClanDescList: {}, ListClanDescRequest: {} }));
+jest.mock('mmn-client-js', () => ({ ETransferType: {} }));
 jest.mock('react-redux', () => ({ batch: (fn: () => void) => fn() }));
 jest.mock('i18next', () => ({ t: (key: string) => key }));
 jest.mock('react-toastify', () => ({ toast: jest.fn() }));
@@ -30,6 +31,7 @@ jest.mock('../roleclan/roleclan.slice', () => ({ rolesClanActions: {} }));
 jest.mock('../settingSticker/settingSticker.slice', () => ({ settingClanStickerSlice: {}, soundEffectActions: {} }));
 jest.mock('../stream/usersStream.slice', () => ({ usersStreamActions: {} }));
 jest.mock('../voice/voice.slice', () => ({ voiceActions: {} }));
+jest.mock('../wallet/wallet.slice', () => ({ walletActions: {} }));
 jest.mock('../helpers', () => ({
 	getMezonCtx: () => ({}),
 	ensureSocket: jest.fn(),

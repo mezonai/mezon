@@ -55,8 +55,18 @@
         "processing": "Processing...",
         "invitePeople": "Invite People",
         "clanSettings": "Clan Settings", 
+		"clanBenefits": "Enable Pro Plan",
         "notificationSettings": "Notification Settings",
         "showEmptyCategories": "Show Empty Categories",
         "leaveClan": "Leave Clan"
+	},
+	"proPlanConfirm": {
+		"title": "Confirm Clan Pro purchase",
+		"message": "Enable Clan Pro for {{clanName}} for {{price}} tokens per year?",
+		"yourClan": "your clan",
+		"confirmButton": "Confirm purchase",
+		"processing": "Processing purchase…",
+		"purchaseUnavailable": "Purchases are unavailable until a recipient user ID is configured.",
+		"purchaseSubmitted": "Clan Pro payment submitted."
     }
 }

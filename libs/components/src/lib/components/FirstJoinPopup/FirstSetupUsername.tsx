@@ -1,29 +1,30 @@
-import { accountActions, selectAllAccount, useAppDispatch } from '@mezon/store';
-import { useCallback, useState } from 'react';
+import { accountActions, useAppDispatch } from '@mezon/store';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { toMezonUsername } from './toMezonUsername';
 
 const FirstSetupUsername = () => {
 	const { t } = useTranslation('common');
 	const [inputValue, setInputValue] = useState('');
 	const dispatch = useAppDispatch();
-	const userProfile = useSelector(selectAllAccount);
+	const username = useMemo(() => toMezonUsername(inputValue), [inputValue]);
 	const handleSetInputValue = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value);
 	}, []);
 
 	const handleUpdateUsername = useCallback(async () => {
+		if (!username) return;
 		try {
 			await dispatch(
 				accountActions.updateAccountUsername({
-					username: inputValue
+					username
 				})
 			).unwrap();
 		} catch {
 			toast.error(t('updateUsername.errorDuplicate'));
 		}
-	}, [inputValue, dispatch, userProfile?.user?.display_name, t]);
+	}, [username, dispatch, t]);
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
 			<div className="w-full max-w-[440px] bg-white rounded-2xl shadow-2xl overflow-hidden">
@@ -46,16 +47,17 @@ const FirstSetupUsername = () => {
 								type="text"
 								value={inputValue}
 								onChange={handleSetInputValue}
-								placeholder={t('updateUsername.enterUsername')}
+								placeholder={t('updateUsername.yourName')}
 								className="w-full bg-transparent outline-none px-2 py-3 text-sm text-gray-900"
 							/>
 						</div>
+						{username && <p className="text-xs text-gray-500">{t('updateUsername.usernamePreview', { username })}</p>}
 					</div>
 
 					{/* Submit */}
 					<button
 						onClick={handleUpdateUsername}
-						disabled={!inputValue.trim()}
+						disabled={!username}
 						className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
 					>
 						{t('updateUsername.update')}

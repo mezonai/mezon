@@ -236,9 +236,14 @@ export const CURRENCY = {
 	SYMBOL: 'đồng'
 };
 
+export const EMOJI_ITEM_TYPE = 0;
+export const STICKER_ITEM_TYPE = 1;
+export const USER_PRO_PLAN_ITEM_TYPE = 2;
+export const CLAN_PRO_PLAN_ITEM_TYPE = 3;
+
 export const ITEM_TYPE = {
-	EMOJI: 0,
-	STICKER: 1
+	EMOJI: EMOJI_ITEM_TYPE,
+	STICKER: STICKER_ITEM_TYPE
 };
 
 export const MAX_CLAN_ITEM_SLOTS = 250;

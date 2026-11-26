@@ -124,6 +124,7 @@
 	"newMessages": "TIN NHẮN MỚI",
 	"noSendMessagePermission": "Bạn không có quyền gửi tin nhắn",
 	"tooLongMessage": "Tin nhắn quá dài",
+	"longMessagePartFailed": "Không gửi được phần {{failed}}/{{total}} của tin nhắn nên phần còn lại chưa được gửi.",
 	"isBanned": "Bạn đã bị cấm trò chuyện",
 	"blockedUserMessage": "Bạn không thể trả lời cuộc trò chuyện này",
 	"messageInputPlaceHolder": "Nhập tin nhắn...",

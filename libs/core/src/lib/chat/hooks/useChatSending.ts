@@ -37,6 +37,10 @@ export type UseChatSendingOptions = {
 	fromTopic?: boolean;
 };
 
+function isDispatchFailed(result: { meta: { requestStatus: string }; payload?: unknown }): boolean {
+	return result.meta.requestStatus === 'rejected' || result.payload === false;
+}
+
 // TODO: separate this hook into 2 hooks for send and edit message
 export function useChatSending({ mode, channelOrDirect, fromTopic = false }: UseChatSendingOptions) {
 	const dispatch = useAppDispatch();
@@ -101,7 +105,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			addChannelLinkDetails(moreContent);
 
 			if (ephemeralReceiverId) {
-				await dispatch(
+				const result = await dispatch(
 					messagesActions.sendEphemeralMessage({
 						receiverId: ephemeralReceiverId,
 						channelId: channelIdOrDirectId ?? '',
@@ -117,6 +121,9 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 						username: priorityNameToShow
 					})
 				);
+				if (isDispatchFailed(result)) {
+					return false;
+				}
 				return;
 			}
 
@@ -134,11 +141,11 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					try {
 						const topic = (await createTopic()) as ApiSdTopic;
 						if (!topic?.id) {
-							return;
+							return false;
 						}
 
 						dispatch(topicsActions.setCurrentTopicId(topic.id as string));
-						await dispatch(
+						const result = await dispatch(
 							topicsActions.handleSendTopic({
 								clanId: getClanId as string,
 								channelId: channelIdOrDirectId as string,
@@ -159,13 +166,16 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 								username: priorityNameToShow
 							})
 						);
+						if (isDispatchFailed(result)) {
+							return false;
+						}
 						return;
 					} finally {
 						isCreatingTopicRef.current = false;
 					}
 				}
 
-				await dispatch(
+				const result = await dispatch(
 					topicsActions.handleSendTopic({
 						clanId: getClanId as string,
 						channelId: channelIdOrDirectId as string,
@@ -185,10 +195,13 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 						username: priorityNameToShow
 					})
 				);
+				if (isDispatchFailed(result)) {
+					return false;
+				}
 				return;
 			}
 
-			await dispatch(
+			const result = await dispatch(
 				messagesActions.sendMessage({
 					channelId: channelIdOrDirectId ?? '',
 					clanId: effectiveClanId,
@@ -206,6 +219,9 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					code
 				})
 			);
+			if (isDispatchFailed(result)) {
+				return false;
+			}
 		},
 		[
 			fromTopic,

@@ -124,6 +124,7 @@
 	"newMessages": "НОВІ ПОВІДОМЛЕННЯ",
 	"noSendMessagePermission": "У вас немає права надсилати повідомлення",
 	"tooLongMessage": "Занадто довге повідомлення",
+	"longMessagePartFailed": "Не вдалося надіслати частину {{failed}} з {{total}} вашого повідомлення, тому решту не було надіслано.",
 	"isBanned": "Ви заблоковані для спілкування",
 	"blockedUserMessage": "Ви не можете відповісти на цю розмову",
 	"messageInputPlaceHolder": "Введіть повідомлення...",

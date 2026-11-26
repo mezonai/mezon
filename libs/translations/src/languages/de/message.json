@@ -124,6 +124,7 @@
 	"newMessages": "NEUE NACHRICHTEN",
 	"noSendMessagePermission": "Du hast keine Berechtigung, Nachrichten zu senden",
 	"tooLongMessage": "Nachricht ist zu lang",
+	"longMessagePartFailed": "Teil {{failed}} von {{total}} deiner Nachricht konnte nicht gesendet werden, daher wurde der Rest nicht gesendet.",
 	"isBanned": "Du wurdest gesperrt",
 	"blockedUserMessage": "Du kannst diesem Chat nicht antworten",
 	"messageInputPlaceHolder": "Nachricht eingeben...",

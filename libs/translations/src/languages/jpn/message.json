@@ -124,6 +124,7 @@
 	"newMessages": "新しいメッセージ",
 	"noSendMessagePermission": "メッセージを送信する権限がありません",
 	"tooLongMessage": "メッセージが長すぎます",
+	"longMessagePartFailed": "メッセージの{{total}}パート中{{failed}}パート目を送信できなかったため、残りは送信されませんでした。",
 	"isBanned": "チャットが禁止されています",
 	"blockedUserMessage": "この会話に返信できません",
 	"messageInputPlaceHolder": "メッセージを入力...",
