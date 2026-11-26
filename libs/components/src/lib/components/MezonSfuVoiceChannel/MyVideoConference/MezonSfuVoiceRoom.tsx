@@ -99,6 +99,7 @@ import {
 	updateScreenShareQuality,
 	type ScreenShareMode
 } from './screenShareQuality';
+import { isSelfMuteShortcut } from './selfMuteShortcut';
 
 import { SfuCameraUplinkQuality, SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SFU_DUPLICATE_SESSION_CLOSE_CODE, SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
@@ -2862,6 +2863,14 @@ export function MezonSfuVoiceRoom({
 			return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable;
 		};
 		const onKeyDown = (event: KeyboardEvent) => {
+			if (isSelfMuteShortcut(event)) {
+				if (isTyping(event.target) || isTyping(document.activeElement)) return;
+				if (event.repeat || joinRole === 'audience') return;
+				event.preventDefault();
+				holdToTalkRef.current = false;
+				dispatch(voiceActions.setShowMicrophone(!microphoneEnabledRef.current));
+				return;
+			}
 			if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 			if (isTyping(event.target) || isTyping(document.activeElement)) return;
 			if ((event.target as HTMLElement | null)?.closest?.('[role="dialog"]')) return;
