@@ -1,5 +1,5 @@
-import { describe, expect, it } from '@jest/globals';
-import { isSelfMuteShortcut, type SelfMuteShortcutEvent } from './selfMuteShortcut';
+import { describe, expect, it, jest } from '@jest/globals';
+import { isSelfMuteShortcut, runSelfMuteShortcut, type SelfMuteShortcutEvent } from './selfMuteShortcut';
 
 const keyEvent = (overrides: Partial<SelfMuteShortcutEvent> = {}): SelfMuteShortcutEvent => ({
 	key: 'd',
@@ -28,5 +28,27 @@ describe('isSelfMuteShortcut', () => {
 	it('does not match when Alt or Shift is also held', () => {
 		expect(isSelfMuteShortcut(keyEvent({ ctrlKey: true, altKey: true }))).toBe(false);
 		expect(isSelfMuteShortcut(keyEvent({ ctrlKey: true, shiftKey: true }))).toBe(false);
+	});
+});
+
+describe('runSelfMuteShortcut', () => {
+	it('requests microphone permission before enabling a muted microphone', () => {
+		const onMute = jest.fn();
+		const onRequestMicrophonePermission = jest.fn();
+
+		runSelfMuteShortcut(false, onMute, onRequestMicrophonePermission);
+
+		expect(onMute).not.toHaveBeenCalled();
+		expect(onRequestMicrophonePermission).toHaveBeenCalledTimes(1);
+	});
+
+	it('mutes an enabled microphone without requesting permission again', () => {
+		const onMute = jest.fn();
+		const onRequestMicrophonePermission = jest.fn();
+
+		runSelfMuteShortcut(true, onMute, onRequestMicrophonePermission);
+
+		expect(onMute).toHaveBeenCalledTimes(1);
+		expect(onRequestMicrophonePermission).not.toHaveBeenCalled();
 	});
 });

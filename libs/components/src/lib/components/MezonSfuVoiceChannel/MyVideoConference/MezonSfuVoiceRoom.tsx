@@ -99,7 +99,7 @@ import {
 	updateScreenShareQuality,
 	type ScreenShareMode
 } from './screenShareQuality';
-import { isSelfMuteShortcut } from './selfMuteShortcut';
+import { isSelfMuteShortcut, runSelfMuteShortcut } from './selfMuteShortcut';
 
 import { SfuCameraUplinkQuality, SfuMediaHealth, SfuNetworkQuality } from './sfuMediaHealth';
 import { SFU_DUPLICATE_SESSION_CLOSE_CODE, SfuMuteSync, sfuCloseAction, sfuReconnectDelay, withSfuTimeout } from './sfuReconnect';
@@ -2868,7 +2868,11 @@ export function MezonSfuVoiceRoom({
 				if (event.repeat || joinRole === 'audience') return;
 				event.preventDefault();
 				holdToTalkRef.current = false;
-				dispatch(voiceActions.setShowMicrophone(!microphoneEnabledRef.current));
+				runSelfMuteShortcut(
+					microphoneEnabledRef.current,
+					() => dispatch(voiceActions.setShowMicrophone(false)),
+					() => void handleRequestMicrophonePermission()
+				);
 				return;
 			}
 			if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
@@ -2912,7 +2916,7 @@ export function MezonSfuVoiceRoom({
 			window.removeEventListener('blur', onBlur);
 			releaseHoldToTalk();
 		};
-	}, [dispatch, joinRole, releaseHoldToTalk]);
+	}, [dispatch, handleRequestMicrophonePermission, joinRole, releaseHoldToTalk]);
 
 	useEffect(() => {
 		if (joinRole === 'audience' && hasMicrophoneAccess === false) {

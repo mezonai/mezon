@@ -10,3 +10,12 @@ export type SelfMuteShortcutEvent = {
 // Matches on the produced key rather than the physical key code so the shortcut follows the layout's "D".
 export const isSelfMuteShortcut = (event: SelfMuteShortcutEvent): boolean =>
 	(event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'd';
+
+export const runSelfMuteShortcut = (
+	microphoneEnabled: boolean,
+	onMute: () => void,
+	onRequestMicrophonePermission: () => void
+): void => {
+	if (microphoneEnabled) onMute();
+	else onRequestMicrophonePermission();
+};
