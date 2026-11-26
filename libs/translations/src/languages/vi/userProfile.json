@@ -234,6 +234,7 @@
 		"banListEmpty": "Không tìm thấy người dùng bị cấm nào"
 	},
 	"badges": {
-		"mezonPro": "Mezon Pro"
+		"mezonPro": "Mezon Pro",
+		"clanPro": "Clan Pro"
 	}
 }
