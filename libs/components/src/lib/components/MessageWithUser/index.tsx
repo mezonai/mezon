@@ -441,6 +441,7 @@ function MessageWithUser({
 								channelId={channelId || message.channel_id}
 								onContextMenu={onContextMenu}
 								isInSearchMessage={isSearchMessage}
+								isTopic={isTopic}
 								defaultMaxWidth={isTopic ? TOPIC_MAX_WIDTH : undefined}
 								isPreview={isPreview}
 								quickReaction={renderQuickReaction('attachment', '-right-2 -bottom-2 z-[2]')}
