@@ -67,6 +67,16 @@
 		"confirmButton": "Confirm purchase",
 		"processing": "Processing purchase…",
 		"purchaseUnavailable": "Purchases are unavailable until a recipient user ID is configured.",
-		"purchaseSubmitted": "Clan Pro payment submitted."
+		"purchaseSubmitted": "Clan Pro payment submitted.",
+		"couponTitle": "Confirm Clan Pro coupon",
+		"couponMessage": "Are you sure you want to enable Clan Pro for {{clanName}} with this coupon?",
+		"couponConfirmButton": "Enable Clan Pro",
+		"couponProcessing": "Applying coupon…",
+		"couponApplied": "Coupon applied successfully.",
+		"couponFailed": "This coupon could not be applied.",
+		"userCouponTitle": "Confirm User Pro coupon",
+		"userCouponMessage": "Are you sure you want to enable User Pro for {{userName}} with this coupon?",
+		"userCouponConfirmButton": "Enable User Pro",
+		"yourAccount": "your account"
     }
 }

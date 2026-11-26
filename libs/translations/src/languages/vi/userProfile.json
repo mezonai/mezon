@@ -102,7 +102,14 @@
 			"confirmButton": "Xác nhận mua",
 			"processing": "Đang xử lý giao dịch…",
 			"purchaseUnavailable": "Chưa thể mua vì chưa cấu hình ID người nhận hoặc giá.",
-			"purchaseSubmitted": "Đã gửi giao dịch thanh toán User Pro."
+			"purchaseSubmitted": "Đã gửi giao dịch thanh toán User Pro.",
+			"couponTitle": "Xác nhận dùng coupon User Pro",
+			"couponMessage": "Bạn có chắc muốn bật User Pro cho tài khoản {{userName}} bằng coupon này không?",
+			"couponConfirmButton": "Xác nhận bật User Pro",
+			"couponProcessing": "Đang xử lý coupon…",
+			"couponApplied": "Đã áp dụng coupon thành công.",
+			"couponFailed": "Không thể áp dụng coupon này.",
+			"yourAccount": "của bạn"
 		},
 		"statusOptions": {
 			"online": "Trực tuyến",

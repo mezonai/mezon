@@ -1,0 +1,42 @@
+{
+	"popular": "MEEST GEKOZEN",
+	"vipBadge": "VIP",
+	"close": "Sluiten",
+	"membershipLabel": "MEZON-LIDMAATSCHAP",
+	"heading": "Haal meer uit Mezon",
+	"productName": "Mezon Workplace & Clan",
+	"description": "Verhoog ledenlimieten, organiseer webinars, bel onbeperkt en gebruik premiumfuncties.",
+	"coupon": { "label": "COUPONCODE", "placeholder": "Voer de couponcode in", "processing": "Bezig…", "apply": "Toepassen", "applied": "Coupon succesvol toegepast.", "invalid": "Deze coupon is ongeldig.", "unavailable": "Couponverwerking is niet ingesteld.", "processingFailed": "De coupon kon niet worden verwerkt. Probeer het opnieuw." },
+	"plans": {
+		"standard": {
+			"name": "Standaard", "label": "HUIDIG ABONNEMENT", "category": "STANDAARDABONNEMENT", "description": "Voor individuen en nieuwe gebruikers", "price": "0 VND", "period": "/ Gratis", "featuresTitle": "FUNCTIES EN LIMIETEN", "buttonText": "Huidig abonnement",
+			"features": {
+				"voice": { "title": "Spraakkanalen:", "description": "Maximaal 100 gebruikers in één kanaal" },
+				"livestream": { "title": "Livestreams:", "description": "Maximaal 1 uur en 100 gebruikers in één kanaal" },
+				"soundEffects": { "title": "Geluidseffecten:", "description": "Beperkte duur per geluidseffect" },
+				"storage": { "title": "Opslag:", "description": "Beperkte opslag voor afbeeldingen, video's en bestanden" }
+			}
+		},
+		"user": {
+			"name": "User Pro", "label": "VOOR INDIVIDUEN", "category": "PROFIEL / ACCOUNT-UPGRADE", "description": "Premiumfuncties voor ervaren gebruikers", "price": "500.000 VND", "period": "/ jaar", "priceNote": "Ongeveer 41.600 VND / maand · Jaarlijks gefactureerd", "featuresTitle": "ALLES VAN STANDAARD EN MEER", "buttonText": "Upgraden naar User Pro",
+			"features": {
+				"meetings": { "title": "Externe vergaderingen:", "description": "Maximaal 500 gebruikers zonder tijdslimiet" },
+				"soundEffects": { "title": "Geavanceerde geluidseffecten:", "description": "Maak langere effecten met meer aanpassingsopties" },
+				"storage": { "title": "Opslag:", "description": "Veel meer ruimte voor bijlagen en geschiedenis" },
+				"badge": { "title": "Exclusieve PRO-badge:", "description": "Een schitterende badge op je avatar en profiel" },
+				"bandwidth": { "title": "Voorrangsbandbreedte:", "description": "Studio-kwaliteit voor spraak en video met zeer lage vertraging" }
+			}
+		},
+		"clan": {
+			"name": "Clan Pro", "label": "VOOR COMMUNITY'S", "category": "CLANINSTELLINGEN / CLAN PRO-UPGRADE", "description": "Vergroot de capaciteit van je Clan en community", "price": "2.000.000 VND", "period": "/ jaar", "priceNote": "Ongeveer 166.000 VND / maand", "featuresTitle": "EEN COMPLETE UPGRADE VOOR JE CLAN", "buttonText": "Upgraden naar Clan Pro",
+			"features": {
+				"livestream": { "title": "Livestreams:", "description": "Langere streams met maximaal 500 deelnemers" },
+				"events": { "title": "Externe evenementen:", "description": "Evenementen voor maximaal 500 gebruikers zonder tijdslimiet" },
+				"webinar": { "title": "Webinars:", "description": "Webinars met maximaal 500 deelnemers" },
+				"storage": { "title": "Opslag:", "description": "Meer Clan-opslag met uploads tot 10 GB" },
+				"soundboard": { "title": "Clan-soundboard:", "description": "Maak langere geluidseffecten voor alle leden" },
+				"customization": { "title": "Clan aanpassen:", "description": "Pas rollen, bewegende pictogrammen en het Clan-thema aan" }
+			}
+		}
+	}
+}

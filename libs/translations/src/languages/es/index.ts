@@ -7,6 +7,7 @@ import appThemeSetting from './appThemeSetting.json';
 import appearanceSetting from './appearanceSetting.json';
 import auditLog from './auditLog.json';
 import auditLogSearch from './auditLogSearch.json';
+import benefitModal from './benefitModal.json';
 import canvas from './canvas.json';
 import categoryCreator from './categoryCreator.json';
 import categoryMenu from './categoryMenu.json';
@@ -123,6 +124,7 @@ export default {
 	categoryCreator,
 	screenStack,
 	clanMenu,
+	benefitModal,
 	pinMessage,
 	clanSetting,
 	clanOverviewSetting,
