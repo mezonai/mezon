@@ -55,6 +55,7 @@ beforeEach(() => {
 
 afterEach(() => {
 	delete process.env.NX_CHAT_APP_FILE_INGEST;
+	delete process.env.NX_MEZON_CDN_URL;
 });
 
 describe('generatePathAttachments', () => {
@@ -77,6 +78,42 @@ describe('generatePathAttachments', () => {
 		expect((await prepare([clip], true)).requests[0].transcode_hls).toBe(true);
 		process.env.NX_CHAT_APP_FILE_INGEST = 'cdn-api-dev.nccsoft.vn=https://streaming.nccsoft.vn';
 		expect((await prepare([{ ...clip, size: 1024 * MiB + 1 }], true)).requests[0].transcode_hls).toBe(true);
+	});
+
+	const withPoster = {
+		...clip,
+		thumbnail: 'blob:https://mezon.ai/poster',
+		_thumbnailBlob: new Blob([new Uint8Array(4)], { type: 'image/jpeg' })
+	};
+
+	it('sends the uploaded poster url, and never the local blob poster when its upload fails', async () => {
+		process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
+
+		const uploaded = (await prepare([withPoster])).result[0].thumbnail;
+		expect(uploaded).toMatch(/^https:\/\/cdn-dev\.nccsoft\.vn\/0000000000031031\/1846031000000002001_\d+_thumbnail\.jpg$/);
+
+		jest.mocked(uploadFileToPath).mockResolvedValueOnce(false);
+		expect((await prepare([withPoster])).result[0].thumbnail).toBeUndefined();
+	});
+
+	it('still prepares the video, without a poster, when the poster presign is refused', async () => {
+		const client = {
+			uploadAttachmentFile: jest.fn(async (_session: ApiSession, request: { filename: string }) => {
+				if (request.filename.includes('_thumbnail')) throw new Error('presign refused');
+				return { filename: `0000000000031031/1846031000000002001_${request.filename}`, url: presigned(request.filename), type_cdn: 1 };
+			})
+		};
+
+		const [video] = await generatePathAttachments(
+			client as unknown as Client,
+			{} as ApiSession,
+			[{ ...withPoster, url: 'blob:https://mezon.ai/1' }],
+			'channel'
+		);
+
+		expect(video.uploadPath).toBe(presigned('clip.mp4'));
+		expect(video.thumbnail).toBeUndefined();
+		expect(uploadFileToPath).not.toHaveBeenCalled();
 	});
 });
 

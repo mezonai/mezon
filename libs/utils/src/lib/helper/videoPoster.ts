@@ -2,6 +2,8 @@ export const MAX_VIDEO_POSTER_EDGE = 480;
 const JPEG_QUALITY = 0.82;
 const POSTER_CAPTURE_TIMEOUT_MS = 3000;
 const METADATA_LOAD_TIMEOUT_MS = 5000;
+const POSTER_FRAME_RETRY_MS = 50;
+const POSTER_FRAME_MAX_RETRIES = 20;
 
 export type VideoPosterCaptureResult = {
 	width: number;
@@ -21,13 +23,27 @@ function scaleDimensions(width: number, height: number, maxEdge: number): { widt
 	};
 }
 
+function hasDrawnPixels(ctx: CanvasRenderingContext2D, width: number, height: number): boolean {
+	const { data } = ctx.getImageData(0, 0, width, height);
+	for (let i = 3; i < data.length; i += 4) {
+		if (data[i]) return true;
+	}
+	return false;
+}
+
 export function capturePosterFromVideoElement(video: HTMLVideoElement): Promise<Blob | undefined> {
 	return new Promise((resolve, reject) => {
 		const seekTarget = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(video.duration, 1) : 0;
 
-		const timeout = window.setTimeout(() => resolve(undefined), POSTER_CAPTURE_TIMEOUT_MS);
+		let settled = false;
+
+		const timeout = window.setTimeout(() => {
+			cleanup();
+			resolve(undefined);
+		}, POSTER_CAPTURE_TIMEOUT_MS);
 
 		const cleanup = () => {
+			settled = true;
 			window.clearTimeout(timeout);
 			video.onseeked = null;
 			video.onerror = null;
@@ -39,8 +55,8 @@ export function capturePosterFromVideoElement(video: HTMLVideoElement): Promise<
 		};
 
 		video.onseeked = () => {
-			cleanup();
 			if (!video.videoWidth || !video.videoHeight) {
+				cleanup();
 				resolve(undefined);
 				return;
 			}
@@ -49,13 +65,24 @@ export function capturePosterFromVideoElement(video: HTMLVideoElement): Promise<
 			const canvas = document.createElement('canvas');
 			canvas.width = width;
 			canvas.height = height;
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext('2d', { willReadFrequently: true });
 			if (!ctx) {
+				cleanup();
 				resolve(undefined);
 				return;
 			}
-			ctx.drawImage(video, 0, 0, width, height);
-			canvas.toBlob((blob) => resolve(blob ?? undefined), 'image/jpeg', JPEG_QUALITY);
+
+			const draw = (retriesLeft: number) => {
+				if (settled) return;
+				ctx.drawImage(video, 0, 0, width, height);
+				if (retriesLeft > 0 && !hasDrawnPixels(ctx, width, height)) {
+					window.setTimeout(() => draw(retriesLeft - 1), POSTER_FRAME_RETRY_MS);
+					return;
+				}
+				cleanup();
+				canvas.toBlob((blob) => resolve(blob ?? undefined), 'image/jpeg', JPEG_QUALITY);
+			};
+			draw(POSTER_FRAME_MAX_RETRIES);
 		};
 
 		video.currentTime = seekTarget;

@@ -209,6 +209,7 @@ const Attachments: React.FC<{
 										isSending={message.isSending}
 										isPresignPending={isPresignPendingForUrl(video.url)}
 										isIngest={isPresignIngestAttachment(video.url, presignIngestKeys)}
+										isCdnSignaturePending={isAwaitingSignature(video.url)}
 										observeIntersection={observeIntersectionForLoading}
 									/>
 									{videoQuickReaction}
