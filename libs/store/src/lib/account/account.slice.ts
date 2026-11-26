@@ -280,6 +280,13 @@ export const accountSlice = createSlice({
 				state.userProfile.user.user_status = action.payload;
 			}
 		},
+		setUserProPlan(state, action: PayloadAction<boolean>) {
+			if (!state.userProfile) return;
+			state.userProfile.pro_plan = action.payload;
+			if (state.userProfile.user) {
+				state.userProfile.user.pro_plan = action.payload;
+			}
+		},
 		setWalletMetadata(state, action: PayloadAction<any>) {
 			if (state?.userProfile?.user) {
 				state.userProfile.user.user_status = action.payload;

@@ -10,6 +10,9 @@ import ItemModal from './ItemModal';
 
 type ModalPanelProps = {
 	handleShowCreateCategory: () => void;
+	handleShowClanBenefits: () => void;
+	showClanBenefits: boolean;
+	isClanPro: boolean;
 	handleShowInviteClanModal: () => void;
 	handleShowServerSettings: () => void;
 	handleShowNotificationSetting: () => void;
@@ -23,6 +26,9 @@ type ModalPanelProps = {
 
 const ModalPanel: React.FC<ModalPanelProps> = ({
 	handleShowCreateCategory,
+	handleShowClanBenefits,
+	showClanBenefits,
+	isClanPro,
 	handleShowInviteClanModal,
 	handleShowServerSettings,
 	toggleShowEmptyCategory,
@@ -119,6 +125,30 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 						onChange={toggleShowEmptyCategory}
 					/>
 				</button>
+				{showClanBenefits && (
+					<ItemModal
+						className={
+							isClanPro
+								? 'text-theme-secondary'
+								: 'rounded-md text-white shadow-sm transition-[filter] duration-150 ease-out hover:brightness-[1.03]'
+						}
+						style={
+							isClanPro
+								? undefined
+								: {
+										background:
+											'linear-gradient(90deg, #7C3AED 0%, #853EE2 10%, #8F41D6 20%, #9843CB 30%, #A143C0 40%, #AB42B4 50%, #B540A8 60%, #BE3D9D 70%, #C83890 80%, #D13184 90%, #DB2777 100%)',
+										backgroundImage: 'linear-gradient(90deg in oklab, #7C3AED 0%, #DB2777 100%)'
+									}
+						}
+						onClick={isClanPro ? undefined : handleShowClanBenefits}
+						hoverTextColor={false}
+						disabled={isClanPro}
+						children={t('modalPanel.clanBenefits')}
+						endIcon={<MezonIcon icon={MzIcons16.mzSparkles} className={isClanPro ? 'text-theme-secondary' : 'text-white'} />}
+					/>
+				)}
+
 				{!isClanOwner && (
 					<button
 						onClick={toggleLeaveClanPopup}
