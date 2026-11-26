@@ -173,7 +173,6 @@ const UserProfileModalInner = ({
 							statusOnline={userStatus?.status}
 							styleAvatar="w-[120px] h-[120px] rounded-full"
 							isPro={isPro}
-							proPalette={proPalette}
 						/>
 						{isSelf ? (
 							<div className="flex items-end pr-4">

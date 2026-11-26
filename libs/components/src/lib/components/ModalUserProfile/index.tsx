@@ -289,11 +289,11 @@ const ModalUserProfile = ({
 				customStatus={status.user_status}
 				isAnonymous={checkAnonymous}
 				userID={userID}
+				frameUserId={effectiveUserId}
 				positionType={positionType}
 				isFooterProfile={isFooterProfile}
 				statusOnline={userStatus?.status as EUserStatus}
 				isPro={showProAvatar}
-				proPalette={proPalette}
 			/>
 			<div className="px-[16px]">
 				<div className=" w-full border-theme-primary p-2 my-[16px] text-theme-primary shadow rounded-[10px] flex flex-col text-justify bg-item-theme">
