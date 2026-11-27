@@ -1,8 +1,22 @@
-import { Direction_Mode, TypeMessage, generatePathAttachments, getPresignIngestKeys, getWebUploadedAttachments } from '@mezon/utils';
+import {
+	Direction_Mode,
+	TypeMessage,
+	deletePendingUpload,
+	generatePathAttachments,
+	getMessageCreateTimeSeconds,
+	getPendingUpload,
+	getPendingUploads,
+	getPresignIngestKeys,
+	getWebUploadedAttachments,
+	holdPendingUploadLock,
+	savePendingUpload,
+	updatePendingUpload
+} from '@mezon/utils';
 import { configureStore } from '@reduxjs/toolkit';
 import { ChannelStreamMode } from 'mezon-js';
 import { toast } from 'react-toastify';
 import { shouldForceApiCall } from '../cache-metadata';
+import { ensureSocket } from '../helpers';
 import { handleSendTopic } from '../topicDiscussion/topicDiscussions.slice';
 import {
 	addNewMessage,
@@ -35,7 +49,16 @@ jest.mock('@mezon/utils', () => ({
 	getPresignIngestKeys: jest.fn(() => []),
 	getPresignUploadKey: (uploadName?: string) => uploadName?.split('/').pop()?.split('.')[0],
 	getWebUploadedAttachments: jest.fn(),
-	getMessageCreateTimeSeconds: () => 1,
+	getMessageCreateTimeSeconds: jest.fn(() => 1),
+	getPreSendSourceFile: (attachment: { _sourceFile?: File }) => attachment._sourceFile,
+	toPublicMessageAttachments: (attachments: { _sourceFile?: File }[]) => attachments.map(({ _sourceFile, ...attachment }) => attachment),
+	savePendingUpload: jest.fn(async () => undefined),
+	updatePendingUpload: jest.fn(async () => undefined),
+	deletePendingUpload: jest.fn(async () => undefined),
+	getPendingUploads: jest.fn(async () => []),
+	getPendingUpload: jest.fn(async () => undefined),
+	holdPendingUploadLock: jest.fn(async () => () => undefined),
+	PRESIGN_PENDING_MAX_AGE_SEC: 600,
 	withCreateTimeSecondsInUpdateContent: (content: unknown) => content,
 	revokePreSendAttachmentUrls: jest.fn(),
 	isFacebookLink: jest.fn(),
@@ -458,7 +481,7 @@ describe('a video sent through the file ingest', () => {
 		expect(store.getState().messages.attachmentUploadProgress).toEqual({});
 	});
 
-	it('forgets the progress of a failed upload', async () => {
+	it('forgets the progress of a failed upload, drops it from disk and marks it failed', async () => {
 		jest.mocked(getWebUploadedAttachments).mockImplementation(async ({ onProgress }) => {
 			onProgress?.(key, 0.5);
 			throw new Error('The file ingest answered 409');
@@ -468,7 +491,13 @@ describe('a video sent through the file ingest', () => {
 		await store.dispatch(sendMessage({ ...payload, attachments: [video] })).unwrap();
 		await new Promise(setImmediate);
 		expect(store.getState().messages.attachmentUploadProgress).toEqual({});
-		expect(client.updateChannelMessage).not.toHaveBeenCalled();
+		expect(deletePendingUpload).toHaveBeenCalledWith('900');
+		expect(jest.mocked(deletePendingUpload).mock.invocationCallOrder[0]).toBeLessThan(client.updateChannelMessage.mock.invocationCallOrder[0]);
+		expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({
+			presign_finish: [],
+			presign_ingest: [key],
+			presign_failed: [key]
+		});
 	});
 
 	it('keeps the marker through later edits, as it keeps presign_finish', async () => {
@@ -490,6 +519,166 @@ describe('a video sent through the file ingest', () => {
 			presign_finish: [key],
 			presign_ingest: [key]
 		});
+	});
+});
+
+it('keeps the upload on disk until its presign_finish edit is saved', async () => {
+	const file = new Blob(['photo']);
+	jest.mocked(generatePathAttachments).mockResolvedValueOnce([{ ...prepared, _sourceFile: file } as typeof prepared]);
+	const { store } = setup();
+	await store.dispatch(sendMessage(payload)).unwrap();
+	await new Promise(setImmediate);
+
+	expect(savePendingUpload).toHaveBeenCalledWith(
+		expect.objectContaining({ messageId: '900', channelId: 'channel', content: { presign_finish: [] }, attachments: [prepared] }),
+		[file]
+	);
+	expect(updatePendingUpload).toHaveBeenCalledWith('900', { presignFinish: ['photo'] });
+	expect(deletePendingUpload).toHaveBeenCalledWith('900');
+});
+
+it('patches presign_finish onto the message as the server holds it now, with its mentions', async () => {
+	const { store, client } = setup();
+	const mentions = [{ user_id: 'friend', s: 0, e: 7 }];
+	client.listChannelMessages.mockResolvedValue({
+		messages: [{ id: '900', content: JSON.stringify({ t: 'edited', presign_finish: [] }), mentions }]
+	});
+	await store.dispatch(sendMessage({ ...payload, content: { t: 'typo' } })).unwrap();
+	await new Promise(setImmediate);
+
+	expect(client.listChannelMessages).toHaveBeenCalledWith({}, 'clan', 'channel', '900', Direction_Mode.AFTER_TIMESTAMP, 1);
+	expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ t: 'edited', presign_finish: ['photo'] });
+	expect(client.updateChannelMessage.mock.calls[0][7]).toBe(mentions);
+});
+
+it('waits for the socket before it patches presign_finish', async () => {
+	const socket = deferred<unknown>();
+	const { store, client, mezon } = setup();
+	jest.mocked(ensureSocket)
+		.mockImplementationOnce(async () => mezon as never)
+		.mockImplementationOnce(async () => {
+			await socket.promise;
+			return mezon as never;
+		});
+	await store.dispatch(sendMessage(payload)).unwrap();
+	await new Promise(setImmediate);
+	expect(ensureSocket).toHaveBeenCalledTimes(2);
+	expect(client.updateChannelMessage).not.toHaveBeenCalled();
+
+	socket.resolve(undefined);
+	await new Promise(setImmediate);
+	expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ presign_finish: ['photo'] });
+});
+
+it('heals a row that missed its presign_failed edit when the message is refetched', async () => {
+	jest.mocked(getWebUploadedAttachments).mockRejectedValueOnce(new Error('The direct upload failed'));
+	jest.spyOn(console, 'error').mockImplementation(() => undefined);
+	const { store, client } = setup();
+	await store.dispatch(sendMessage(payload)).unwrap();
+	await new Promise(setImmediate);
+	const failed = JSON.parse(client.updateChannelMessage.mock.calls[0][6]);
+	expect(failed).toEqual({ presign_finish: [], presign_failed: ['photo'] });
+	expect(store.getState().messages.channelMessages.channel.entities['900'].content).toEqual({ presign_finish: [] });
+
+	client.listChannelMessages.mockResolvedValue({ messages: [{ id: '900', content: JSON.stringify(failed) }] });
+	await store.dispatch(messagesActions.refreshPresignMessage({ clanId: 'clan', channelId: 'channel', messageId: '900' })).unwrap();
+
+	expect(client.listChannelMessages).toHaveBeenLastCalledWith({}, 'clan', 'channel', '900', 1, 1, undefined);
+	expect(store.getState().messages.channelMessages.channel.entities['900'].content).toEqual({ presign_finish: [], presign_failed: ['photo'] });
+});
+
+describe('an upload left behind by a closed tab', () => {
+	const file = new Blob(['photo']);
+	const pending = {
+		messageId: '700',
+		userId: 'user',
+		clanId: 'clan',
+		channelId: 'channel',
+		mode: 2,
+		isPublic: true,
+		content: { t: 'look', presign_finish: [] },
+		attachments: [prepared],
+		createTimeSeconds: 1234,
+		aliveAt: Date.now(),
+		files: [file]
+	};
+	const resume = async (upload: Partial<typeof pending> & { presignFinish?: string[] }) => {
+		const record = { ...pending, ...upload };
+		jest.mocked(getPendingUploads).mockResolvedValueOnce([{ ...record, files: undefined }]);
+		jest.mocked(getPendingUpload).mockImplementation(async (messageId) => (messageId === record.messageId ? record : undefined));
+		const { store, client } = setup();
+		await store.dispatch(messagesActions.resumePendingUploads()).unwrap();
+		return client;
+	};
+
+	it('carries on uploading within ten minutes of the tab going away', async () => {
+		jest.mocked(getMessageCreateTimeSeconds).mockReturnValueOnce(undefined);
+		const client = await resume({ aliveAt: Date.now() - 9 * 60 * 1000 });
+
+		expect(jest.mocked(getWebUploadedAttachments).mock.calls[0][0].attachments[0]).toMatchObject({ ...prepared, _sourceFile: file });
+		expect(client.updateChannelMessage.mock.calls[0][5]).toBe('700');
+		expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ t: 'look', presign_finish: ['photo'] });
+		expect(client.updateChannelMessage.mock.calls[0][9]).toBe(1234);
+		expect(deletePendingUpload).toHaveBeenCalledWith('700');
+	});
+
+	it.each([
+		['the tab has been gone ten minutes', { messageId: '701', aliveAt: Date.now() - 11 * 60 * 1000 }],
+		['its file never reached the disk', { messageId: '702', files: undefined }]
+	])('marks the upload failed when %s', async (_reason, upload) => {
+		const client = await resume(upload);
+
+		expect(getWebUploadedAttachments).not.toHaveBeenCalled();
+		expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ t: 'look', presign_finish: [], presign_failed: ['photo'] });
+		expect(deletePendingUpload).toHaveBeenCalledWith(upload.messageId);
+		expect(jest.mocked(deletePendingUpload).mock.invocationCallOrder[0]).toBeLessThan(client.updateChannelMessage.mock.invocationCallOrder[0]);
+	});
+
+	it.each([
+		['still within ten minutes', { messageId: '706', aliveAt: Date.now() }, false],
+		['gone over ten minutes', { messageId: '707', aliveAt: Date.now() - 11 * 60 * 1000 }, true],
+		['saved before uploads were tied to a user', { messageId: '708', userId: undefined, aliveAt: 0 }, true]
+	])('leaves an upload of another account alone, deleting it only once %s', async (_when, upload, deleted) => {
+		const client = await resume({ ...upload, userId: 'userId' in upload ? upload.userId : 'someone-else' } as Partial<typeof pending>);
+
+		expect(holdPendingUploadLock).not.toHaveBeenCalled();
+		expect(getWebUploadedAttachments).not.toHaveBeenCalled();
+		expect(client.updateChannelMessage).not.toHaveBeenCalled();
+		expect(jest.mocked(deletePendingUpload).mock.calls).toEqual(deleted ? [[upload.messageId]] : []);
+	});
+
+	it('skips an upload that another tab finished while this one waited for the lock', async () => {
+		jest.mocked(getPendingUploads).mockResolvedValueOnce([{ ...pending, messageId: '709' }]);
+		jest.mocked(getPendingUpload).mockResolvedValue(undefined);
+		const { store, client } = setup();
+		await store.dispatch(messagesActions.resumePendingUploads()).unwrap();
+
+		expect(getPendingUpload).toHaveBeenCalledWith('709');
+		expect(getWebUploadedAttachments).not.toHaveBeenCalled();
+		expect(client.updateChannelMessage).not.toHaveBeenCalled();
+	});
+
+	it('marks the upload failed when the resumed upload fails', async () => {
+		jest.mocked(getWebUploadedAttachments).mockRejectedValueOnce(new Error('The direct upload failed'));
+		const client = await resume({ messageId: '703' });
+
+		expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ t: 'look', presign_finish: [], presign_failed: ['photo'] });
+	});
+
+	it('only saves the edit of an upload that finished before the tab went away', async () => {
+		const client = await resume({ messageId: '704', aliveAt: 0, presignFinish: ['photo'] });
+
+		expect(getWebUploadedAttachments).not.toHaveBeenCalled();
+		expect(JSON.parse(client.updateChannelMessage.mock.calls[0][6])).toEqual({ t: 'look', presign_finish: ['photo'] });
+	});
+
+	it('leaves an upload that another tab is still running', async () => {
+		jest.mocked(holdPendingUploadLock).mockResolvedValueOnce(undefined);
+		const client = await resume({ messageId: '705' });
+
+		expect(getWebUploadedAttachments).not.toHaveBeenCalled();
+		expect(client.updateChannelMessage).not.toHaveBeenCalled();
+		expect(deletePendingUpload).not.toHaveBeenCalled();
 	});
 });
 

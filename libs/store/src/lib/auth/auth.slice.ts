@@ -2,6 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { MezonContextValue } from '@mezon/transport';
 import { grpcCodeFromEnvelopeStatus, publishSessionUpdate, resolveSessionWsUrl, subscribeSessionUpdate } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
+import { clearPendingUploads } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
@@ -255,6 +256,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	thunkAPI.dispatch(videoStreamActions.resetPlayback());
 	thunkAPI.dispatch(fcmActions.clearGotifyToken());
 	clearApiCallTracker();
+	void clearPendingUploads().catch(() => undefined);
 	const restoreKey = ['persist:apps', 'persist:settingsUser', 'current-theme', 'hideNotificationContent', 'i18nextLng', 'mezon-icon-motion'];
 	if (sessionState) {
 		restoreKey.push('mezon_session');

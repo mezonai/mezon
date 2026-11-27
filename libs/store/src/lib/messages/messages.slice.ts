@@ -6,6 +6,7 @@ import type {
 	IMessageSendPayload,
 	IMessageWithUser,
 	LoadingStatus,
+	PendingUpload,
 	PreSendMediaAttachment,
 	PublicKeyMaterial
 } from '@mezon/utils';
@@ -19,19 +20,26 @@ import {
 	PRESIGN_PENDING_MAX_AGE_SEC,
 	TypeMessage,
 	createLocalPreviewUrl,
+	deletePendingUpload,
 	generatePathAttachments,
 	getMessageCreateTimeSeconds,
+	getPendingUpload,
+	getPendingUploads,
+	getPreSendSourceFile,
 	getPresignIngestKeys,
 	getPresignUploadKey,
 	getPublicKeys,
 	getWebUploadedAttachments,
+	holdPendingUploadLock,
 	isDMStreamMode,
 	isRealClanId,
 	isTikTokLink,
 	isYouTubeLink,
 	mergePresignFinishContent,
 	revokePreSendAttachmentUrls,
+	savePendingUpload,
 	toPublicMessageAttachments,
+	updatePendingUpload,
 	withCreateTimeSecondsInUpdateContent
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
@@ -1265,10 +1273,12 @@ export type EditMessageViaApiPayload = {
 	hideEditted?: boolean;
 	topicId?: string;
 	isTopic?: boolean;
+	createTimeSeconds?: number;
 };
 
 export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', async (payload: EditMessageViaApiPayload, thunkAPI) => {
-	const { channelId, clanId, mode, isPublic, messageId, content, mentions, attachments, hideEditted, topicId, isTopic } = payload;
+	const { channelId, clanId, mode, isPublic, messageId, content, mentions, attachments, hideEditted, topicId, isTopic, createTimeSeconds } =
+		payload;
 
 	// eslint-disable-next-line no-useless-catch
 	try {
@@ -1287,8 +1297,8 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 		const state = thunkAPI.getState() as RootState;
 		const existingMessage = selectMessageByMessageId(state, channelId, messageId);
 		const isAttachmentFieldUpdate = attachments !== undefined;
-		const hasExistingAttachments = (existingMessage?.attachments?.length ?? 0) > 0;
-		const messageCreateTimeSeconds = getMessageCreateTimeSeconds(existingMessage ?? {});
+		const hasExistingAttachments = (existingMessage?.attachments?.length ?? 0) > 0 || createTimeSeconds !== undefined;
+		const messageCreateTimeSeconds = getMessageCreateTimeSeconds(existingMessage ?? {}) ?? createTimeSeconds;
 
 		let contentForUpdate = trimContent;
 		if (hasExistingAttachments && !isAttachmentFieldUpdate) {
@@ -1341,6 +1351,114 @@ export const handleUploadFileToMinIO = createAsyncThunk(
 		}
 	}
 );
+
+const PENDING_UPLOAD_HEARTBEAT_MS = 30000;
+
+const uploadPendingAttachments = createAsyncThunk(
+	'messages/uploadPendingAttachments',
+	async ({ messageId, attachments }: { messageId: string; attachments: (ApiMessageAttachment & { uploadPath?: string })[] }, thunkAPI) => {
+		const heartbeat = setInterval(() => void updatePendingUpload(messageId).catch(() => undefined), PENDING_UPLOAD_HEARTBEAT_MS);
+		try {
+			const presignFinish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+			void updatePendingUpload(messageId, { presignFinish }).catch(() => undefined);
+			return presignFinish;
+		} catch (error) {
+			void deletePendingUpload(messageId).catch(() => undefined);
+			throw error;
+		} finally {
+			clearInterval(heartbeat);
+		}
+	}
+);
+
+const patchPendingUpload = createAsyncThunk(
+	'messages/patchPendingUpload',
+	async ({ upload, presignFinish }: { upload: PendingUpload; presignFinish?: string[] }, thunkAPI) => {
+		const presign = presignFinish
+			? { presign_finish: presignFinish }
+			: { presign_failed: upload.attachments.flatMap((attachment) => getPresignUploadKey(attachment.uploadName) ?? []) };
+		for (let attempt = 0; attempt < PRESIGN_PATCH_BACKOFF_MS.length; attempt++) {
+			try {
+				const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+				const response = await mezon.client.listChannelMessages(
+					mezon.session,
+					upload.clanId,
+					upload.channelId,
+					upload.messageId,
+					Direction_Mode.AFTER_TIMESTAMP,
+					1
+				);
+				const current = response?.messages?.find((message) => (message.id || message.message_id) === upload.messageId);
+				const currentContent = typeof current?.content === 'string' ? safeJSONParse(current.content) : current?.content;
+				await thunkAPI
+					.dispatch(
+						editMessageViaApi({
+							content: { ...((currentContent as IMessageSendPayload | undefined) ?? upload.content), ...presign },
+							channelId: upload.channelId,
+							clanId: upload.clanId,
+							isPublic: upload.isPublic,
+							messageId: upload.messageId,
+							mentions: current ? current.mentions : upload.mentions,
+							mode: upload.mode,
+							hideEditted: true,
+							createTimeSeconds: upload.createTimeSeconds
+						})
+					)
+					.unwrap();
+				break;
+			} catch (e) {
+				console.error(`presign patch failed (attempt ${attempt + 1}/${PRESIGN_PATCH_BACKOFF_MS.length})`, e);
+				const wait = PRESIGN_PATCH_BACKOFF_MS[attempt];
+				if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+			}
+		}
+		await deletePendingUpload(upload.messageId).catch(() => undefined);
+	}
+);
+
+const resumedUploads = new Set<string>();
+
+export const resumePendingUploads = createAsyncThunk('messages/resumePendingUploads', async (_: void, thunkAPI) => {
+	const userId = selectAllAccount(thunkAPI.getState() as RootState)?.user?.id;
+	if (!userId) return;
+	const uploads = await getPendingUploads().catch(() => [] as PendingUpload[]);
+	await Promise.all(
+		uploads.map(async ({ messageId, userId: ownerId, aliveAt }) => {
+			if (ownerId !== userId) {
+				if (Date.now() - aliveAt >= PRESIGN_PENDING_MAX_AGE_SEC * 1000) await deletePendingUpload(messageId).catch(() => undefined);
+				return;
+			}
+			if (resumedUploads.has(messageId)) return;
+			resumedUploads.add(messageId);
+			const release = await holdPendingUploadLock(messageId);
+			if (!release) return;
+			try {
+				const pending = await getPendingUpload(messageId).catch(() => undefined);
+				if (!pending) return;
+				const { files, ...upload } = pending;
+				const attachments = upload.attachments.map((attachment, index) => ({
+					...attachment,
+					_sourceFile: files?.[index] as File | undefined
+				}));
+				const resumable =
+					Date.now() - upload.aliveAt < PRESIGN_PENDING_MAX_AGE_SEC * 1000 &&
+					attachments.every((attachment) => !attachment.uploadPath || attachment._sourceFile);
+				let presignFinish = upload.presignFinish;
+				if (!presignFinish && resumable) {
+					presignFinish = await thunkAPI
+						.dispatch(uploadPendingAttachments({ messageId, attachments }))
+						.unwrap()
+						.catch(() => undefined);
+					if (presignFinish) await new Promise((resolve) => setTimeout(resolve, 1000));
+				}
+				if (!presignFinish) await deletePendingUpload(messageId).catch(() => undefined);
+				await thunkAPI.dispatch(patchPendingUpload({ upload, presignFinish }));
+			} finally {
+				release();
+			}
+		})
+	);
+});
 
 export const addRealMessage = createAsyncThunk('chat/addRealMessage', async (payload: MessagesEntity, thunkAPI) => {
 	const state = thunkAPI.getState() as RootState;
@@ -1731,8 +1849,28 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			finishMessageAck = undefined;
 
 			if (attachments && attachments.length > 0 && messageResult?.message_id && usePresignFirst) {
+				const pendingUpload: PendingUpload = {
+					messageId: messageResult.message_id,
+					userId: senderId,
+					clanId,
+					channelId,
+					mode,
+					isPublic,
+					content,
+					mentions,
+					attachments: toPublicMessageAttachments(attachments),
+					createTimeSeconds: clientSendTime / 1000,
+					aliveAt: Date.now()
+				};
+				void savePendingUpload(
+					pendingUpload,
+					attachments.map((attachment) => getPreSendSourceFile(attachment))
+				).catch(() => undefined);
+				const releaseUpload = await holdPendingUploadLock(pendingUpload.messageId);
 				try {
-					const presign_finish = await thunkAPI.dispatch(handleUploadFileToMinIO(attachments)).unwrap();
+					const presign_finish = await thunkAPI
+						.dispatch(uploadPendingAttachments({ messageId: pendingUpload.messageId, attachments }))
+						.unwrap();
 					presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key, progress: 1 })));
 
 					thunkAPI.dispatch(
@@ -1746,40 +1884,13 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					// This patch is what stops every receiver showing "uploading". It used
 					// to be dispatched once and never checked: one failed request and the
 					// row stayed stuck for everyone until a reload.
-					// Capture the id — the closure below outlives the guard above.
-					const presignMessageId = messageResult.message_id as string;
-					const patch = () =>
-						thunkAPI
-							.dispatch(
-								editMessageViaApi({
-									content: {
-										...content,
-										presign_finish
-									},
-									channelId,
-									clanId,
-									isPublic,
-									messageId: presignMessageId,
-									mentions,
-									mode,
-									hideEditted: true
-								})
-							)
-							.unwrap();
-					void (async () => {
-						for (let attempt = 0; attempt < PRESIGN_PATCH_BACKOFF_MS.length; attempt++) {
-							try {
-								await patch();
-								return;
-							} catch (e) {
-								console.error(`presign_finish patch failed (attempt ${attempt + 1}/${PRESIGN_PATCH_BACKOFF_MS.length})`, e);
-								const wait = PRESIGN_PATCH_BACKOFF_MS[attempt];
-								if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
-							}
-						}
-					})().finally(() => presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key }))));
+					void thunkAPI.dispatch(patchPendingUpload({ upload: pendingUpload, presignFinish: presign_finish })).finally(() => {
+						presignIngest.forEach((key) => thunkAPI.dispatch(messagesActions.setAttachmentUploadProgress({ key })));
+						releaseUpload?.();
+					});
 				} catch (error) {
 					console.error('error: ', error);
+					void thunkAPI.dispatch(patchPendingUpload({ upload: pendingUpload })).finally(() => releaseUpload?.());
 				}
 			}
 			return true;
@@ -2398,8 +2509,11 @@ export const messagesSlice = createSlice({
 				changes: { attachments: withLocalSource }
 			});
 		},
-		applyPresignRefresh: (state, action: PayloadAction<{ channelId: string; messageId: string; presignFinish: string[] }>) => {
-			const { channelId, messageId, presignFinish } = action.payload;
+		applyPresignRefresh: (
+			state,
+			action: PayloadAction<{ channelId: string; messageId: string; presignFinish: string[]; presignFailed?: string[] }>
+		) => {
+			const { channelId, messageId, presignFinish, presignFailed = [] } = action.payload;
 			const channelEntity = state.channelMessages[channelId];
 			const existing = channelEntity?.entities[messageId];
 			if (!existing) {
@@ -2418,12 +2532,14 @@ export const messagesSlice = createSlice({
 			// Union, not replace: the list only ever grows, and the caller may be
 			// contributing a single key it just proved readable rather than the whole
 			// server-side list.
-			const storedKeys = Array.isArray((base as { presign_finish?: unknown })?.presign_finish)
-				? ((base as { presign_finish: unknown[] }).presign_finish.filter((key): key is string => typeof key === 'string') as string[])
-				: [];
+			const storedKeys = (field: 'presign_finish' | 'presign_failed') => {
+				const keys = (base as Record<string, unknown> | null)?.[field];
+				return Array.isArray(keys) ? keys.filter((key): key is string => typeof key === 'string') : [];
+			};
 			const merged = {
 				...(base && typeof base === 'object' ? base : {}),
-				presign_finish: [...new Set([...storedKeys, ...presignFinish])]
+				presign_finish: [...new Set([...storedKeys('presign_finish'), ...presignFinish])],
+				...(presignFailed.length ? { presign_failed: [...new Set([...storedKeys('presign_failed'), ...presignFailed])] } : {})
 			};
 			channelMessagesAdapter.updateOne(channelEntity, {
 				id: messageId,
@@ -2875,7 +2991,10 @@ export const refreshPresignMessage = createAsyncThunk(
 		// Take the keys verbatim rather than the parsed/normalised form: they end up
 		// back in `content`, which a later edit re-sends to the server.
 		const freshContent = typeof fresh.content === 'string' ? safeJSONParse(fresh.content) : fresh.content;
-		const presignFinish = (freshContent as { presign_finish?: unknown } | null)?.presign_finish;
+		const { presign_finish: presignFinish, presign_failed: presignFailed } = (freshContent ?? {}) as {
+			presign_finish?: unknown;
+			presign_failed?: unknown;
+		};
 		if (!Array.isArray(presignFinish)) {
 			return;
 		}
@@ -2883,7 +3002,8 @@ export const refreshPresignMessage = createAsyncThunk(
 			messagesActions.applyPresignRefresh({
 				channelId: topicId || channelId,
 				messageId,
-				presignFinish: presignFinish.filter((key): key is string => typeof key === 'string')
+				presignFinish: presignFinish.filter((key): key is string => typeof key === 'string'),
+				presignFailed: Array.isArray(presignFailed) ? presignFailed.filter((key): key is string => typeof key === 'string') : []
 			})
 		);
 	}
@@ -2895,6 +3015,7 @@ export const messagesActions = {
 	sendMessage,
 	sendMessageViaApi,
 	editMessageViaApi,
+	resumePendingUploads,
 	resendMessage,
 	sendEphemeralMessage,
 	fetchMessages,

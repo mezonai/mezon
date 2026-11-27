@@ -479,6 +479,7 @@ export interface IMessageSendPayload {
 	type?: EPollType;
 	presign_finish?: string[];
 	presign_ingest?: string[];
+	presign_failed?: string[];
 	create_time_seconds?: number;
 }
 

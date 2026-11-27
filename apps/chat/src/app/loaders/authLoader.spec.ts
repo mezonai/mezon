@@ -31,7 +31,8 @@ jest.mock(
 		directActions: { joinDirectMessageSpace: mockJoinDirectMessageSpace },
 		emojiRecentActions: { fetchEmojiRecent: mockFetchEmojiRecent },
 		emojiSuggestionActions: { fetchEmoji: mockFetchEmoji },
-		fcmActions: { connectNotificationService: mockConnectNotificationService }
+		fcmActions: { connectNotificationService: mockConnectNotificationService },
+		messagesActions: { resumePendingUploads: jest.fn(() => ({ type: 'messages/resumePendingUploads' })) }
 	}),
 	{ virtual: true }
 );

@@ -7,7 +7,7 @@ import { isMezonCdnUrl } from './urlSanitization';
 export const PRESIGN_PENDING_MAX_AGE_SEC = FOR_10_MINUTES_SEC;
 export const PRESIGN_INGEST_PENDING_MAX_AGE_SEC = FOR_24_HOURS_SEC;
 
-type PresignKeyField = 'presign_finish' | 'presign_ingest';
+type PresignKeyField = 'presign_finish' | 'presign_ingest' | 'presign_failed';
 
 export function normalizePresignKey(key: string): string {
 	const segment = key.split('?')[0].split('/').filter(Boolean).pop() || key;
@@ -46,6 +46,15 @@ export function parsePresignFinishKeys(content: unknown): string[] | null {
 
 export function parsePresignIngestKeys(content: unknown): string[] {
 	return parsePresignKeys(content, 'presign_ingest') ?? [];
+}
+
+export function parsePresignFailedKeys(content: unknown): string[] {
+	return parsePresignKeys(content, 'presign_failed') ?? [];
+}
+
+function isPresignFailedAttachment(url: string | undefined, presignFailedKeys: string[]): boolean {
+	const presignKey = getPresignKeyFromAttachmentUrl(url);
+	return presignKey !== undefined && presignFailedKeys.includes(presignKey);
 }
 
 export function isPresignIngestAttachment(url: string | undefined, presignIngestKeys: string[]): boolean {
@@ -123,21 +132,28 @@ export function mergePresignFinishContent(existingContent: unknown, incomingCont
 
 	const presignFinish = mergePresignKeys(existingContent, incomingParsed, 'presign_finish');
 	const presignIngest = mergePresignKeys(existingContent, incomingParsed, 'presign_ingest');
-	if (presignFinish === null && presignIngest === null) {
+	const presignFailed = mergePresignKeys(existingContent, incomingParsed, 'presign_failed');
+	if (presignFinish === null && presignIngest === null && presignFailed === null) {
 		return incomingContent;
 	}
 
 	const merged = {
 		...(incomingParsed as Record<string, unknown>),
 		...(presignFinish && { presign_finish: presignFinish }),
-		...(presignIngest && { presign_ingest: presignIngest })
+		...(presignIngest && { presign_ingest: presignIngest }),
+		...(presignFailed && { presign_failed: presignFailed })
 	};
 
 	return typeof incomingContent === 'string' ? JSON.stringify(merged) : merged;
 }
 
 export function withoutPresignMarkers<T extends object>(content: T): Omit<T, PresignKeyField> {
-	const { presign_finish: _presignFinish, presign_ingest: _presignIngest, ...forwarded } = content as T & Partial<Record<PresignKeyField, unknown>>;
+	const {
+		presign_finish: _presignFinish,
+		presign_ingest: _presignIngest,
+		presign_failed: _presignFailed,
+		...forwarded
+	} = content as T & Partial<Record<PresignKeyField, unknown>>;
 	return forwarded;
 }
 
@@ -146,10 +162,12 @@ export function isExpiredPresignAttachment(
 	presignFinishKeys: string[] | null,
 	messageCreateTimeSeconds?: number,
 	nowSeconds = Math.floor(Date.now() / 1000),
-	presignIngestKeys: string[] = []
+	presignIngestKeys: string[] = [],
+	presignFailedKeys: string[] = []
 ): boolean {
 	if (!messageCreateTimeSeconds || presignFinishKeys === null) return false;
 	if (!isPresignAttachmentPending(url, presignFinishKeys)) return false;
+	if (isPresignFailedAttachment(url, presignFailedKeys)) return true;
 	return nowSeconds - messageCreateTimeSeconds >= getPresignPendingMaxAgeSec(url, presignIngestKeys);
 }
 
@@ -162,9 +180,11 @@ export function filterExpiredPresignAttachments(
 	const presignFinishKeys = parsePresignFinishKeys(content);
 	if (presignFinishKeys === null || !messageCreateTimeSeconds) return attachments;
 	const presignIngestKeys = parsePresignIngestKeys(content);
+	const presignFailedKeys = parsePresignFailedKeys(content);
 
 	return attachments.filter(
-		(attachment) => !isExpiredPresignAttachment(attachment.url, presignFinishKeys, messageCreateTimeSeconds, nowSeconds, presignIngestKeys)
+		(attachment) =>
+			!isExpiredPresignAttachment(attachment.url, presignFinishKeys, messageCreateTimeSeconds, nowSeconds, presignIngestKeys, presignFailedKeys)
 	);
 }
 
@@ -176,7 +196,12 @@ export function hasActivePresignPendingAttachments(attachments: ApiMessageAttach
 	// all arrived is finished even when a key does not match its url by name. Without
 	// this the answer disagrees with what the row actually renders, and anything
 	// driven off it (the expiry tick, the refetch) never stops.
-	return attachments.some((attachment) => isPresignAttachmentPending(attachment.url, presignFinishKeys, attachments));
+	const presignFailedKeys = parsePresignFailedKeys(content);
+	return attachments.some(
+		(attachment) =>
+			isPresignAttachmentPending(attachment.url, presignFinishKeys, attachments) &&
+			!isPresignFailedAttachment(attachment.url, presignFailedKeys)
+	);
 }
 
 export function getPresignExpiryDelayMs(
@@ -249,6 +274,7 @@ export function shouldHidePresignAttachment(
 		parsePresignFinishKeys(message.content),
 		getMessageCreateTimeSeconds(message),
 		nowSeconds,
-		parsePresignIngestKeys(message.content)
+		parsePresignIngestKeys(message.content),
+		parsePresignFailedKeys(message.content)
 	);
 }

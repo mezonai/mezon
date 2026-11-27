@@ -8,6 +8,7 @@ import {
 	fcmActions,
 	friendsActions,
 	listChannelsByUserActions,
+	messagesActions,
 	stickerSettingActions
 } from '@mezon/store';
 import { isOnline, socketState, waitForOnline } from '@mezon/transport';
@@ -38,6 +39,7 @@ const loadSignedInData = async (dispatch: AppDispatch) => {
 	dispatch(directActions.joinDirectMessageSpace({ restart: true }));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
+	dispatch(messagesActions.resumePendingUploads());
 
 	connectNotification(dispatch);
 };
