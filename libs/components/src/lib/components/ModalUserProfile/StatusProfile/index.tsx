@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { ButtonCopy } from '../../../components';
 import BenefitModal, { type BenefitPlanId, type CouponValidationResult } from '../../BenefitModal';
+import { getCouponFailureKey } from '../../BenefitModal/couponError';
 import ItemModal from '../../ClanHeader/ItemModal';
 import TransactionHistory from '../../TransactionHistory';
 import ItemStatus from './ItemStatus';
@@ -93,11 +94,13 @@ const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfi
 	}, [dispatch, isBuyingUserPro, isUserPro, proPlanRecipientUserId, t, userProfile?.user?.id, userProfile?.user?.username]);
 	const handleApplyUserProCoupon = useCallback(
 		async (_plan: BenefitPlanId, couponCode: string): Promise<CouponValidationResult> => {
-			const result = await dispatch(clansActions.applyCouponPro({ clanId: '', code: couponCode }));
+			const result = await dispatch(clansActions.applyCouponPro({ clanId: undefined, code: couponCode }));
 			const success = clansActions.applyCouponPro.fulfilled.match(result);
+			if (success) dispatch(accountActions.setUserProPlan(true));
+			const messageKey = success ? 'couponApplied' : getCouponFailureKey(result.payload ?? result.error);
 			return {
 				success,
-				message: t(success ? 'statusProfile.userProPlan.couponApplied' : 'statusProfile.userProPlan.couponFailed')
+				message: t(`statusProfile.userProPlan.${messageKey}`)
 			};
 		},
 		[dispatch, t]

@@ -109,6 +109,10 @@
 			"couponProcessing": "Đang xử lý coupon…",
 			"couponApplied": "Đã áp dụng coupon thành công.",
 			"couponFailed": "Không thể áp dụng coupon này.",
+			"couponNotFound": "Không tìm thấy coupon này.",
+			"couponExpiredOrWrongPlan": "Coupon này đã hết hạn hoặc không hợp lệ cho gói này.",
+			"couponAlreadyUsed": "Coupon này đã được sử dụng.",
+			"couponNotClanOwner": "Chỉ chủ sở hữu clan mới có thể đổi coupon này.",
 			"yourAccount": "của bạn"
 		},
 		"statusOptions": {

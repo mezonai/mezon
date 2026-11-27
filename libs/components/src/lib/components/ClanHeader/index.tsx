@@ -1,5 +1,6 @@
 import { useAuth, useChannelMembersActions, usePermissionChecker } from '@mezon/core';
 import {
+	accountActions,
 	categoriesActions,
 	clansActions,
 	defaultNotificationCategoryActions,
@@ -27,6 +28,7 @@ import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import BenefitModal, { type BenefitPlanId, type CouponValidationResult } from '../BenefitModal';
+import { getCouponFailureKey } from '../BenefitModal/couponError';
 import ClanSetting from '../ClanSettings';
 import { ItemSetting } from '../ClanSettings/ItemObj';
 import ModalInvite from '../ListMemberInvite/modalInvite';
@@ -55,6 +57,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const [isClanOwner, canManageClan, adminClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan, EPermission.administrator]);
 	const { removeMemberClan } = useChannelMembersActions();
 	const { userProfile } = useAuth();
+	const isUserPro = Boolean(userProfile?.pro_plan || userProfile?.user?.pro_plan);
 	const proPlanRecipientUserId = process.env.NX_PRO_PLAN_RECIPIENT_ID?.trim() ?? '';
 	const parsedClanProPlanPrice = Number(process.env.NX_PRO_PLAN_CLAN_PRICE || 0);
 	const clanProPlanPrice =
@@ -184,19 +187,25 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 
 				await dispatch(
 					clansActions.applyCouponPro({
-						clanId: plan === 'clan' ? (currentClanId ?? '') : '',
+						clanId: plan === 'clan' ? (currentClanId ?? undefined) : undefined,
 						code: couponCode
 					})
 				).unwrap();
+
+				if (plan === 'clan' && currentClanId) {
+					dispatch(clansActions.setClanProPlan({ clanId: currentClanId, proPlan: true }));
+				} else if (plan === 'user') {
+					dispatch(accountActions.setUserProPlan(true));
+				}
 
 				return {
 					success: true,
 					message: t('clanMenu:proPlanConfirm.couponApplied')
 				};
-			} catch {
+			} catch (error) {
 				return {
 					success: false,
-					message: t('clanMenu:proPlanConfirm.couponFailed')
+					message: t(`clanMenu:proPlanConfirm.${getCouponFailureKey(error)}`)
 				};
 			}
 		},
@@ -208,7 +217,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 				open
 				onClose={closeClanBenefitModal}
 				availablePlans={['clan']}
-				couponPlans={['clan', 'user']}
+				couponPlans={isUserPro ? ['clan'] : ['clan', 'user']}
 				onConfirmPlan={handleBuyClanProPlan}
 				onApplyCoupon={handleApplyBenefitCoupon}
 				getConfirmation={(plan, action) => {
@@ -247,7 +256,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 				}}
 			/>
 		),
-		[clanProPlanPrice, currentClanName, handleApplyBenefitCoupon, handleBuyClanProPlan, i18n.language, t, userProfile?.user?.username]
+		[clanProPlanPrice, currentClanName, handleApplyBenefitCoupon, handleBuyClanProPlan, i18n.language, isUserPro, t, userProfile?.user?.username]
 	);
 
 	const closeModalClan = useCallback(() => {
