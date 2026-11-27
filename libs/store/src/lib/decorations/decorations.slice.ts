@@ -116,7 +116,7 @@ export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, nu
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			for (let offset = 0; offset < idsToFetch.length; offset += DECORATIONS_CHUNK_SIZE) {
-				if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation !== startGeneration) {
+				if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation !== startGeneration || staleEpoch !== startEpoch) {
 					break;
 				}
 				const chunk = idsToFetch.slice(offset, offset + DECORATIONS_CHUNK_SIZE);
@@ -132,7 +132,10 @@ export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, nu
 						}
 					}
 				} catch {
-					if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration) {
+					if (
+						getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration &&
+						staleEpoch === startEpoch
+					) {
 						const retryAt = Date.now() + DECORATIONS_RETRY_PAUSE_MS;
 						for (const id of chunk) {
 							failedUntilById.set(id, retryAt);
@@ -141,7 +144,7 @@ export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, nu
 				}
 			}
 		} catch {
-			if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration) {
+			if (getDecorationsState(thunkAPI.getState() as DecorationsRootState).generation === startGeneration && staleEpoch === startEpoch) {
 				const retryAt = Date.now() + DECORATIONS_RETRY_PAUSE_MS;
 				for (const id of idsToFetch) {
 					failedUntilById.set(id, retryAt);
