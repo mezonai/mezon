@@ -185,17 +185,19 @@ const Photo = <T,>({
 				width: 'fit-content',
 				height: 'fit-content'
 			}
-		: size === 'inline'
-			? {
-					height: height ? `${height}px` : 150,
-					width: dimensions ? `${dimensions.width}px` : isInSearchMessage ? '' : `${displayWidth}px`,
-					...(dimensions && {
-						position: 'absolute' as const,
-						left: `${dimensions.x}px`,
-						top: `${dimensions.y}px`
-					})
-				}
-			: undefined;
+		: size === 'inline' && isInSearchMessage && !dimensions && !hasZeroDimension
+			? { width: '100%', maxWidth: `${displayWidth}px`, aspectRatio: `${width} / ${height}`, overflow: 'hidden' as const }
+			: size === 'inline'
+				? {
+						height: height ? `${height}px` : 150,
+						width: dimensions ? `${dimensions.width}px` : isInSearchMessage ? '' : `${displayWidth}px`,
+						...(dimensions && {
+							position: 'absolute' as const,
+							left: `${dimensions.x}px`,
+							top: `${dimensions.y}px`
+						})
+					}
+				: undefined;
 
 	const displayHeight = isSticker ? maxStickerHeight : height || 150;
 

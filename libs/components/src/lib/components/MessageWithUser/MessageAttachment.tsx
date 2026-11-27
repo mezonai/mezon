@@ -502,12 +502,18 @@ const ImageAlbum = memo(
 			[images, message, mode, dispatch, isTopic]
 		);
 
+		const albumImages = useMemo(() => (isInSearchMessage ? images.slice(0, 1) : images), [images, isInSearchMessage]);
+
 		const albumLayout = useMemo(() => {
-			if (images.length >= 2) {
-				return calculateAlbumLayout(false, true, images, isMobile, defaultMaxWidth);
+			if (images.length < 2) return null;
+			if (isInSearchMessage) {
+				return {
+					layout: [{ dimensions: { width: 120, height: 120, x: 0, y: 0 }, sides: 0 }],
+					containerStyle: { width: 120, height: 120 }
+				};
 			}
-			return null;
-		}, [images, isMobile, defaultMaxWidth]);
+			return calculateAlbumLayout(false, true, images, isMobile, defaultMaxWidth);
+		}, [images, isMobile, defaultMaxWidth, isInSearchMessage]);
 
 		const photoProps = useMemo(() => {
 			if (images.length === 1) {
@@ -534,10 +540,10 @@ const ImageAlbum = memo(
 
 		if (images.length >= 2 && albumLayout) {
 			return (
-				<div className="w-full">
+				<div className={isInSearchMessage ? 'w-full flex items-end gap-1 py-1' : 'w-full'}>
 					<div className={quickReaction ? 'relative w-fit max-w-full' : ''}>
 						<Album
-							album={images.map((image) => signAttachment(image, signCdnUrl)) as any}
+							album={albumImages.map((image) => signAttachment(image, signCdnUrl)) as any}
 							observeIntersection={observeIntersectionForLoading}
 							albumLayout={albumLayout}
 							onClick={handleClick}
@@ -548,10 +554,15 @@ const ImageAlbum = memo(
 							isAwaitingSignatureForUrl={isAwaitingSignature}
 							isMobile={isMobile}
 							messageId={message.id}
-							images={images}
+							images={albumImages}
 						/>
 						{quickReaction}
 					</div>
+					{isInSearchMessage && (
+						<div className="bg-theme-setting-primary text-theme-primary text-md px-1.5 py-0.5 rounded-full flex items-center justify-center min-h-[35px] min-w-[35px]">
+							+{images.length - 1}
+						</div>
+					)}
 				</div>
 			);
 		}

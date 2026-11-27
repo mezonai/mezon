@@ -35,7 +35,8 @@ const decodeOrParseField = <T>(field: string | undefined, decodeFunc: (data: unk
 
 	try {
 		if (field.startsWith('[') || field.startsWith('{')) {
-			return safeJSONParse(field) as T[];
+			const parsed = safeJSONParse(field);
+			return Array.isArray(parsed) ? (parsed as T[]) : parsed?.[propertyName];
 		}
 
 		const decoded = decodeFunc(Buffer.from(field, 'base64')) as Record<string, T[] | undefined>;
