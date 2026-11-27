@@ -137,6 +137,14 @@ export * from './components/PreJoinCalling/JoinForm';
 export * from './components/PreJoinCalling/VideoPreview';
 export * from './components/PreJoinCalling/mediaPipeBackground';
 
+export { default as BenefitModal } from './components/BenefitModal';
+export type {
+	BenefitConfirmation,
+	BenefitConfirmationAction,
+	BenefitModalProps,
+	BenefitPlanId,
+	CouponValidationResult
+} from './components/BenefitModal';
 export * from './components/ButtonSwitchCustom';
 export { default as ButtonCopy } from './components/ButtonSwitchCustom/CopyButtonComponent';
 export { default as CustomCookieConsent } from './components/CustomCookieConsent';
