@@ -1,4 +1,5 @@
-import { createLocalPreviewUrl, forgetLocalPreview, revokePreSendAttachmentUrls } from './file';
+import { captureVideoPosterFromUrl } from '../helper/videoPoster';
+import { createLocalPreviewUrl, forgetLocalPreview, processFile, revokePreSendAttachmentUrls } from './file';
 
 jest.mock('../constant', () => ({ MAX_FILE_ATTACHMENTS: 10 }));
 jest.mock('../helper/videoPoster', () => ({ captureVideoPosterFromUrl: jest.fn() }));
@@ -34,6 +35,20 @@ it('does not create an image preview from the video itself when no poster was ca
 	try {
 		expect(createLocalPreviewUrl({ filetype: 'video/mp4' })).toBeUndefined();
 		expect(createUrl).not.toHaveBeenCalled();
+	} finally {
+		createUrl.mockRestore();
+	}
+});
+
+it('treats files with Windows mpeg-tts MIME as non-media without video poster capture', async () => {
+	const createUrl = jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:ts-file');
+	const tsFile = new File(['export const x = 1;'], 'example.ts', { type: 'video/vnd.dlna.mpeg-tts' });
+	try {
+		const attachment = await processFile<{ filename?: string; filetype?: string; url?: string }>(tsFile);
+		expect(attachment.filename).toBe('example.ts');
+		expect(attachment.filetype).toBe('video/vnd.dlna.mpeg-tts');
+		expect(attachment.url).toBe('blob:ts-file');
+		expect(captureVideoPosterFromUrl).not.toHaveBeenCalled();
 	} finally {
 		createUrl.mockRestore();
 	}

@@ -20,7 +20,8 @@ import {
 	hasActivePresignPendingAttachments,
 	isAttachmentPresignPendingForMessage,
 	isMediaTypeNotSupported,
-	isRealClanId
+	isRealClanId,
+	isTranscodedVideoContainer
 } from '@mezon/utils';
 
 import type { ApiMessageAttachment, ChannelStreamMode } from 'mezon-js';
@@ -49,7 +50,8 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 		if (
 			((attachment.filetype?.includes(EMimeTypes.mp4) || attachment.filetype?.includes(EMimeTypes.mov)) &&
 				!attachment.url?.includes(EMimeTypes.tenor)) ||
-			(attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !attachment.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE))
+			(attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !attachment.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)) ||
+			isTranscodedVideoContainer(attachment.url)
 		) {
 			videos.push(attachment);
 			return;
@@ -170,9 +172,10 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 				<div className="flex gap-2">
 					{visibleItems.map((item, index) => {
 						const isVideo =
-							item.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
+							(item.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !item.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)) ||
 							item.filetype?.includes(EMimeTypes.mp4) ||
-							item.filetype?.includes(EMimeTypes.mov);
+							item.filetype?.includes(EMimeTypes.mov) ||
+							isTranscodedVideoContainer(item.url);
 						const isPresignPending = isPresignPendingForUrl(item.url);
 
 						const thumbnailUrl = isPresignPending

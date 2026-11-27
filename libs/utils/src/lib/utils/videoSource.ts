@@ -10,9 +10,10 @@ const TRANSCODING_ORIGINS = [
 	...(process.env.NX_ENV === 'development' ? ['https://cdn-dev.nccsoft.vn', 'http://cdn-dev.nccsoft.vn'] : [])
 ];
 // Containers no browser plays, which the media server converts like any other video.
-const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'mkv', 'wmv']);
+const TRANSCODED_CONTAINERS = new Set(['avi', 'flv', 'm2ts', 'mkv', 'mts', 'wmv']);
 // What the media server accepts.
-const HLS_TRANSCODE_EXTENSIONS = new Set(['mp4', 'mov', 'mkv', 'avi', 'flv', 'm4v', 'wmv']);
+const HLS_TRANSCODE_EXTENSIONS = new Set(['mp4', 'mov', 'mkv', 'avi', 'flv', 'm4v', 'wmv', 'm2ts', 'mts']);
+const VIDEO_URL_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'mov', 'avi', 'flv', 'mkv', 'm4v', 'm2ts', 'mts', 'wmv']);
 const FMP4_EXTENSIONS = new Set(['mp4', 'm4v', 'mov']);
 const FMP4_HEAD_BYTES = 16384;
 const FMP4_TAIL_BYTES = 256 * 1024;
@@ -45,12 +46,12 @@ function hlsOrigins(): string[] {
 	}
 }
 
-function readTranscodableUrl(url?: string, origins = hlsOrigins()): TranscodableUrl | undefined {
+function readTranscodableUrl(url?: string): TranscodableUrl | undefined {
 	if (!url || url.includes('#')) return undefined;
 
 	const queryIndex = url.indexOf('?');
 	const path = queryIndex === -1 ? url : url.slice(0, queryIndex);
-	const origin = origins.find((candidate) => path.startsWith(`${candidate}/`));
+	const origin = hlsOrigins().find((candidate) => path.startsWith(`${candidate}/`));
 	if (!origin) return undefined;
 
 	const key = path.slice(origin.length + 1);
@@ -82,9 +83,17 @@ export function mayBeTranscodedVideo(url?: string): boolean {
 
 /** True for an mkv/avi/flv/wmv the media server converts, so it plays as a video instead of a file to download. */
 export function isTranscodedVideoContainer(url?: string): boolean {
-	const file = readTranscodableUrl(url, TRANSCODING_ORIGINS)?.file ?? '';
+	const file = readTranscodableUrl(url)?.file ?? '';
 	const dot = file.lastIndexOf('.');
 	return dot !== -1 && TRANSCODED_CONTAINERS.has(file.slice(dot + 1).toLowerCase());
+}
+
+export function hasVideoExtension(url?: string): boolean {
+	if (!url) return false;
+	const path = url.split('?')[0].split('#')[0];
+	const file = path.slice(path.lastIndexOf('/') + 1);
+	const dot = file.lastIndexOf('.');
+	return dot > 0 && VIDEO_URL_EXTENSIONS.has(file.slice(dot + 1).toLowerCase());
 }
 
 /** The HLS stream the media server writes for `url`, carrying the same CDN signature. */

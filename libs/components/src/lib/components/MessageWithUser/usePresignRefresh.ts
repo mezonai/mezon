@@ -4,7 +4,9 @@ import {
 	PRESIGN_PENDING_MAX_AGE_SEC,
 	getPresignKeyFromAttachmentUrl,
 	getPresignPendingMaxAgeSec,
+	hasFinishedHlsCopy,
 	isAttachmentPresignPendingForMessage,
+	isPresignIngestAttachment,
 	parsePresignIngestKeys
 } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js';
@@ -68,6 +70,9 @@ export function usePresignRefresh({
 
 		let timer: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
+		const abortController = new AbortController();
+		const probingVideoKeys = new Set<string>();
+		const finishedVideoKeys = new Set<string>();
 
 		const ageMs = () => (createTimeSeconds ? Date.now() - createTimeSeconds * 1000 : 0);
 		const presignIngestKeys = parsePresignIngestKeys(content);
@@ -102,6 +107,31 @@ export function usePresignRefresh({
 			});
 		};
 
+		const probeFinishedIngestVideos = () => {
+			(attachments ?? []).forEach((attachment) => {
+				const url = attachment.url;
+				const key = getPresignKeyFromAttachmentUrl(url);
+				if (!url || !key) return;
+				if (!isPresignIngestAttachment(url, presignIngestKeys)) return;
+				if (probingVideoKeys.has(key) || finishedVideoKeys.has(key)) return;
+				if (!isAttachmentPresignPendingForMessage(url, { content })) return;
+
+				probingVideoKeys.add(key);
+				void (async () => {
+					try {
+						const finished = await hasFinishedHlsCopy(url, abortController.signal);
+						if (cancelled || !finished) return;
+						finishedVideoKeys.add(key);
+						dispatch(messagesActions.applyPresignRefresh({ channelId: bucketId, messageId, presignFinish: [key] }));
+					} catch {
+						return;
+					} finally {
+						probingVideoKeys.delete(key);
+					}
+				})();
+			});
+		};
+
 		let refetches = 0;
 		let interval = REFRESH_INTERVAL_MS;
 		const run = () => {
@@ -113,6 +143,7 @@ export function usePresignRefresh({
 			refetches += 1;
 			if (refetches >= REFETCHES_BEFORE_IMAGE_PROBE) {
 				probeImages();
+				probeFinishedIngestVideos();
 			}
 			if (ageMs() > PRESIGN_PENDING_MAX_AGE_SEC * 1000) interval = Math.min(interval * 2, REFRESH_MAX_INTERVAL_MS);
 			timer = setTimeout(run, interval);
@@ -132,6 +163,7 @@ export function usePresignRefresh({
 
 		return () => {
 			cancelled = true;
+			abortController.abort();
 			if (timer) clearTimeout(timer);
 			window.removeEventListener('mezon:socket-reconnect', onReconnect);
 		};

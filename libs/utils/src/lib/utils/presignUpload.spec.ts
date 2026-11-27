@@ -115,6 +115,28 @@ describe('generatePathAttachments', () => {
 		expect(video.thumbnail).toBeUndefined();
 		expect(uploadFileToPath).not.toHaveBeenCalled();
 	});
+	it('keeps TypeScript files as doc even with Windows mpeg-tts MIME and routes m2ts/mts videos to ingest', async () => {
+		const { result, requests } = await prepare(
+			[
+				{ filename: 'example.ts', filetype: 'video/vnd.dlna.mpeg-tts', size: 1024 },
+				{ filename: 'clip.m2ts', filetype: 'video/vnd.dlna.mpeg-tts', size: 20 * MiB },
+				{ filename: 'clip.mts', filetype: '', size: 20 * MiB }
+			],
+			true
+		);
+
+		expect(result[0].filetype).toBe('doc');
+		expect(result[0].ingestUrl).toBeUndefined();
+		expect(requests[0].transcode_hls).toBe(false);
+
+		expect(result[1].filetype).toBe('video');
+		expect(result[1].ingestUrl).toBe(`https://streaming.nccsoft.vn/dev-mezon/0000000000031031/clip.m2ts?${QUERY}`);
+		expect(requests[1].transcode_hls).toBe(false);
+
+		expect(result[2].filetype).toBe('video');
+		expect(result[2].ingestUrl).toBe(`https://streaming.nccsoft.vn/dev-mezon/0000000000031031/clip.mts?${QUERY}`);
+		expect(requests[2].transcode_hls).toBe(false);
+	});
 });
 
 describe('the presign_ingest marker', () => {
