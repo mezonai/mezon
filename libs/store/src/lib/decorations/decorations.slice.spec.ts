@@ -242,4 +242,42 @@ describe('decorations.slice', () => {
 
 		expect(ids).toEqual(['me', 'p1', 'grp-1', 'dm-peer-1']);
 	});
+
+	it('reconnect frees in-flight ids for a refetch and drops the older in-flight answer', async () => {
+		const store = createStore();
+		let resolveFirst!: (value: unknown) => void;
+		mockListUserDecorations.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					resolveFirst = resolve;
+				})
+		);
+		const firstPromise = store.dispatch(fetchUserDecorations(['u-1']));
+		for (let i = 0; i < 5; i += 1) {
+			await Promise.resolve();
+		}
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(1);
+
+		store.dispatch(decorationsActions.markAllStale());
+		mockListUserDecorations.mockResolvedValueOnce({ decorations: [{ user_id: 'u-1', frame: 6 }] });
+		await store.dispatch(fetchUserDecorations(['u-1']));
+		expect(mockListUserDecorations).toHaveBeenCalledTimes(2);
+		expect(selectUserDecorationFrame(store.getState(), 'u-1')).toBe(6);
+
+		resolveFirst({ decorations: [{ user_id: 'u-1', frame: 2 }] });
+		await firstPromise;
+		expect(selectUserDecorationFrame(store.getState(), 'u-1')).toBe(6);
+	});
+
+	it('treats an empty updateUserDecoration reply as unsupported and keeps the stored frame', async () => {
+		const store = createStore();
+		store.dispatch(decorationsActions.receiveDecorationUpdated({ userId: 'self-1', frame: 3 }));
+		mockUpdateUserDecoration.mockResolvedValueOnce({ user_id: '0', frame: 0 });
+
+		const action = await store.dispatch(updateUserDecoration(7));
+		expect(updateUserDecoration.rejected.match(action)).toBe(true);
+		expect(classifyDecorationSaveError(action.payload)).toBe('unsupported');
+		expect(selectUserDecorationFrame(store.getState(), 'self-1')).toBe(3);
+		expect(selectUserDecorationFrame(store.getState(), '0')).toBeUndefined();
+	});
 });

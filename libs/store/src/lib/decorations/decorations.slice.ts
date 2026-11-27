@@ -26,6 +26,8 @@ export type DecorationSaveErrorReason = 'notPro' | 'rateLimited' | 'unsupported'
 type DecorationsRootState = { [DECORATIONS_FEATURE_KEY]?: DecorationsState };
 
 const inFlightIds = new Map<string, number>();
+let fetchSeq = 0;
+let staleEpoch = 0;
 const failedUntilById = new Map<string, number>();
 
 const resetTracking = () => {
@@ -77,6 +79,8 @@ export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, nu
 	async (rawIds, thunkAPI) => {
 		const decoState = getDecorationsState(thunkAPI.getState() as DecorationsRootState);
 		const startGeneration = decoState.generation;
+		const startEpoch = staleEpoch;
+		const fetchToken = ++fetchSeq;
 		const now = Date.now();
 		const seen = new Set<string>();
 		const idsToFetch: string[] = [];
@@ -103,7 +107,7 @@ export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, nu
 		}
 
 		for (const id of idsToFetch) {
-			inFlightIds.set(id, startGeneration);
+			inFlightIds.set(id, fetchToken);
 		}
 
 		const fetchedFrames: Record<string, number> = {};
@@ -145,12 +149,15 @@ export const fetchUserDecorations = createAsyncThunk<{ frames: Record<string, nu
 			}
 		} finally {
 			for (const id of idsToFetch) {
-				if (inFlightIds.get(id) === startGeneration) {
+				if (inFlightIds.get(id) === fetchToken) {
 					inFlightIds.delete(id);
 				}
 			}
 		}
 
+		if (staleEpoch !== startEpoch) {
+			return { frames: {}, generation: startGeneration };
+		}
 		return { frames: fetchedFrames, generation: startGeneration };
 	}
 );
@@ -162,15 +169,17 @@ export const updateUserDecoration = createAsyncThunk<{ userId: string; frame: nu
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.updateUserDecoration(mezon.session, frame);
-			if (!response) {
-				return thunkAPI.rejectWithValue(null, { error: { toast: false } });
+			if (!response?.user_id || response.user_id === '0') {
+				return thunkAPI.rejectWithValue({ code: 404 }, { error: { toast: false } });
 			}
 			const ownUserId = (thunkAPI.getState() as RootState).account?.userProfile?.user?.id || '';
 			const userId = response.user_id || ownUserId;
 			const savedFrame = typeof response.frame === 'number' ? response.frame : frame;
 			return { userId, frame: savedFrame, generation: startGeneration };
 		} catch (error) {
-			captureSentryError(error, 'decorations/updateUserDecoration');
+			if (classifyDecorationSaveError(error) === 'failed') {
+				captureSentryError(error, 'decorations/updateUserDecoration');
+			}
 			if (error && typeof (error as { json?: unknown }).json === 'function') {
 				const body = await (error as { json: () => Promise<{ code?: unknown }> }).json().catch(() => null);
 				const status = (error as { status?: unknown }).status;
@@ -204,6 +213,8 @@ export const decorationsSlice = createSlice({
 		},
 		markAllStale(state) {
 			failedUntilById.clear();
+			inFlightIds.clear();
+			staleEpoch += 1;
 			const nextStale: Record<string, true> = {};
 			for (const userId of Object.keys(state.frames)) {
 				nextStale[userId] = true;
