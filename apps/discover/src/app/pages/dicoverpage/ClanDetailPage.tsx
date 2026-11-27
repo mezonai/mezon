@@ -93,22 +93,45 @@ export default function ClanDetailPage() {
 
 	useEffect(() => {
 		if (!clan) return;
-		document.title = `${clan.clan_name || t('detail.unnamed')} | Mezon`;
+		const prevTitle = document.title;
+		const clanTitle = `${clan.clan_name || t('detail.unnamed')} | Mezon`;
+		document.title = clanTitle;
 		trackDiscoverEvent('clan_detail_view', { clan_id: clan.clan_id });
 		const description = clan.description || clan.about || t('detail.noDescription');
+		const cleanups: Array<() => void> = [];
 		const setMeta = (property: string, content: string, attr: 'property' | 'name' = 'property') => {
 			let tag = document.querySelector(`meta[${attr}="${property}"]`);
+			const created = !tag;
+			const prevContent = tag?.getAttribute('content') ?? null;
 			if (!tag) {
 				tag = document.createElement('meta');
 				tag.setAttribute(attr, property);
 				document.head.appendChild(tag);
 			}
 			tag.setAttribute('content', content);
+			cleanups.push(() => {
+				if (created) {
+					tag?.remove();
+				} else if (prevContent !== null) {
+					tag?.setAttribute('content', prevContent);
+				} else {
+					tag?.removeAttribute('content');
+				}
+			});
 		};
-		setMeta('og:title', `${clan.clan_name || t('detail.unnamed')} | Mezon`);
+		setMeta('og:title', clanTitle);
 		setMeta('og:description', description);
-		if (clan.banner) setMeta('og:image', clan.banner);
+		setMeta('twitter:title', clanTitle, 'name');
+		setMeta('twitter:description', description, 'name');
+		if (clan.banner) {
+			setMeta('og:image', clan.banner);
+			setMeta('twitter:image', clan.banner, 'name');
+		}
 		setMeta('description', description, 'name');
+		return () => {
+			document.title = prevTitle;
+			cleanups.forEach((fn) => fn());
+		};
 	}, [clan, t]);
 
 	const similarClans = useMemo(() => {
