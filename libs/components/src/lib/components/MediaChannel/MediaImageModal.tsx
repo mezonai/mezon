@@ -1,7 +1,7 @@
 import { useCdnUrlSigner } from '@mezon/core';
 import type { ChannelTimelineAttachment } from '@mezon/store';
 import { Icons, MezonIcon, MzIcons16, MzIcons20, MzIcons48 } from '@mezon/ui';
-import { createImgproxyUrl, handleSaveImage } from '@mezon/utils';
+import { ETypeLinkMedia, createImgproxyUrl, handleSaveImage, hasVideoExtension } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVideoSource } from '../MessageWithUser/useVideoSource';
 
@@ -36,16 +36,13 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 	const currentUrl = signCdnUrl(currentAttachment?.file_url || '');
 
 	const isVideo = useMemo(() => {
-		if (currentAttachment?.file_type?.startsWith('video/')) {
+		if (
+			currentAttachment?.file_type?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) &&
+			!currentAttachment?.file_type?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)
+		) {
 			return true;
 		}
-		if (currentUrl) {
-			const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.m4v'];
-			const lowerUrl = currentUrl.toLowerCase();
-			if (lowerUrl.includes('.avif')) return false;
-			return videoExtensions.some((ext) => lowerUrl.includes(ext));
-		}
-		return false;
+		return hasVideoExtension(currentUrl);
 	}, [currentAttachment?.file_type, currentUrl]);
 	const { failed: isVideoFailed, handleError: handleVideoError } = useVideoSource(videoRef, currentUrl, isVideo);
 
@@ -311,8 +308,8 @@ export function MediaImageModal({ attachments, initialIndex, onClose }: MediaIma
 							const isSelected = idx === currentIndex;
 							const thumbUrl = signCdnUrl(att.thumbnail || att.file_url || '');
 							const attIsVideo =
-								att.file_type?.startsWith('video/') ||
-								['.mp4', '.webm', '.ogg', '.mov'].some((ext) => (att.file_url || '').toLowerCase().includes(ext));
+								(att.file_type?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) && !att.file_type?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE)) ||
+								hasVideoExtension(att.file_url);
 
 							return (
 								<div key={`${att.id}-${idx}`} data-index={idx} className="p-1">

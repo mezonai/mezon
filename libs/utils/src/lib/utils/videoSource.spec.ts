@@ -4,6 +4,7 @@ import type * as VideoSource from './videoSource';
 import {
 	getHlsIndexPlaylistUrl,
 	getHlsMasterPlaylistUrl,
+	hasVideoExtension,
 	isRotatedHlsVideo,
 	isTranscodedVideoContainer,
 	mayBeTranscodedVideo,
@@ -71,16 +72,53 @@ it('points at the master playlist under the hls/ prefix and keeps the CDN signat
 });
 
 it('plays the containers the media server converts and keeps the rest as files', () => {
-	for (const name of ['movie.mkv', 'OLD.AVI', 'clip.flv', 'clip.wmv']) {
+	for (const name of ['movie.mkv', 'OLD.AVI', 'clip.flv', 'clip.wmv', 'clip.m2ts', 'CLIP.MTS']) {
 		const url = `https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_${name}`;
 		expect(isTranscodedVideoContainer(url)).toBe(true);
 		expect(isMediaTypeNotSupported('video/mkv', url)).toBe(false);
+		expect(isMediaTypeNotSupported('video/vnd.dlna.mpeg-tts', url)).toBe(false);
 		expect(isMediaTypeNotSupported('application/octet-stream', `${url}?${SIGNATURE}`)).toBe(false);
 	}
 	expect(isTranscodedVideoContainer(VIDEO)).toBe(false);
+	expect(isTranscodedVideoContainer('https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_index.ts')).toBe(false);
+	expect(isTranscodedVideoContainer(`https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_app.TS?${SIGNATURE}`)).toBe(false);
 	expect(isMediaTypeNotSupported('video/mkv', 'https://cdn.komu.vn/1cf93b197d401000/movie.mkv')).toBe(true);
+	expect(isMediaTypeNotSupported('video/mp2t', 'https://cdn.komu.vn/1cf93b197d401000/clip.m2ts')).toBe(true);
+	expect(isMediaTypeNotSupported('video/mp2t', 'https://cdn.komu.vn/1cf93b197d401000/clip.mts')).toBe(true);
 	expect(isMediaTypeNotSupported('video', 'https://cdn.mezon.ai/1cf93b197d401000/movie.rmvb')).toBe(true);
 	expect(isMediaTypeNotSupported('image/bmp', 'https://cdn.mezon.ai/1cf93b197d401000/scan.bmp')).toBe(true);
+});
+
+it('matches video URL extensions only on the path filename and rejects TypeScript files and non-video extensions', () => {
+	for (const url of [
+		'https://cdn.mezon.ai/1/clip.mp4',
+		'https://cdn.mezon.ai/1/clip.webm',
+		'https://cdn.mezon.ai/1/clip.ogg',
+		'https://cdn.mezon.ai/1/clip.MOV',
+		'https://cdn.mezon.ai/1/clip.avi',
+		'https://cdn.mezon.ai/1/clip.flv?sig=1',
+		'https://cdn.mezon.ai/1/clip.mkv#t=3',
+		'https://cdn.mezon.ai/1/clip.m4v',
+		'https://cdn.mezon.ai/1/clip.m2ts?download=photo.png',
+		'https://cdn.mezon.ai/1/CLIP.MTS#frag',
+		'https://cdn.mezon.ai/1/clip.wmv'
+	]) {
+		expect(hasVideoExtension(url)).toBe(true);
+	}
+	for (const url of [
+		'https://cdn.mezon.ai/1/example.ts',
+		'https://cdn.mezon.ai/1/app.TS?sig=1',
+		'https://cdn.mezon.ai/1/photo.avif',
+		'https://cdn.mezon.ai/1/movie.avi.png',
+		'https://cdn.mezon.ai/1/remove.png',
+		'https://cdn.mezon.ai/1/blogger.jpg',
+		'https://cdn.mezon.ai/clip.mp4/image.png',
+		'https://cdn.mezon.ai/1/.mp4',
+		'',
+		undefined
+	]) {
+		expect(hasVideoExtension(url)).toBe(false);
+	}
 });
 
 it('resolves to the signed playlist when the converted stream exists', async () => {
@@ -169,10 +207,10 @@ it('gives up when the caller aborts or the CDN hangs', async () => {
 });
 
 it('asks the server to transcode every video the media server accepts, whatever its size', () => {
-	for (const name of ['clip.mp4', 'IMG_0001.MOV', 'movie.mkv', 'old.avi', 'a.flv', 'b.m4v', 'c.wmv']) {
+	for (const name of ['clip.mp4', 'IMG_0001.MOV', 'movie.mkv', 'old.avi', 'a.flv', 'b.m4v', 'c.wmv', 'd.m2ts', 'E.MTS']) {
 		expect(wantsHlsTranscode(name)).toBe(true);
 	}
-	for (const name of ['clip.webm', 'photo.png', 'song.mp3', 'notes.pdf', 'mp4', '.mp4', 'clip.mp4.zip', '']) {
+	for (const name of ['clip.webm', 'example.ts', 'app.TS', 'photo.png', 'song.mp3', 'notes.pdf', 'mp4', '.mp4', 'clip.mp4.zip', '']) {
 		expect(wantsHlsTranscode(name)).toBe(false);
 	}
 	expect(wantsHlsTranscode(undefined)).toBe(false);
@@ -209,12 +247,32 @@ it('takes the configured CDN as a host with HLS, the dev CDN among others', () =
 	expect(mayBeTranscodedVideo(DEV_VIDEO)).toBe(false);
 });
 
-it('plays the containers the media server converts on the dev CDN only in development', () => {
+it('plays transcoded containers on the configured CDN and dev CDN consistently with hlsOrigins', () => {
 	const devMovie = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_movie.mkv';
+	const devM2ts = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_clip.m2ts';
+	const devMts = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_clip.mts';
+	const devTs = 'https://cdn-dev.nccsoft.vn/0000000000031031/1846031000000002001_example.ts';
+	const prodModule = loadVideoSource('production');
+	const devModule = loadVideoSource('development');
+
+	expect(prodModule.isTranscodedVideoContainer(devMovie)).toBe(false);
+	expect(prodModule.isTranscodedVideoContainer(devM2ts)).toBe(false);
+	expect(devModule.isTranscodedVideoContainer(devMovie)).toBe(true);
+	expect(devModule.isTranscodedVideoContainer(devM2ts)).toBe(true);
+	expect(devModule.isTranscodedVideoContainer(devMts)).toBe(true);
+	expect(devModule.isTranscodedVideoContainer(devTs)).toBe(false);
+
 	process.env.NX_MEZON_CDN_URL = 'https://cdn-dev.nccsoft.vn';
-	expect(loadVideoSource('production').isTranscodedVideoContainer(devMovie)).toBe(false);
-	expect(loadVideoSource('development').isTranscodedVideoContainer(devMovie)).toBe(true);
+	expect(prodModule.isTranscodedVideoContainer(devMovie)).toBe(true);
+	expect(prodModule.isTranscodedVideoContainer(devM2ts)).toBe(true);
+	expect(prodModule.isTranscodedVideoContainer(devMts)).toBe(true);
+	expect(prodModule.isTranscodedVideoContainer(devTs)).toBe(false);
+
+	process.env.NX_MEZON_CDN_URL = 'https://cdn.mezon.ai';
+	expect(prodModule.isTranscodedVideoContainer(devMovie)).toBe(false);
+	expect(prodModule.isTranscodedVideoContainer(devM2ts)).toBe(false);
 	expect(isTranscodedVideoContainer('https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_movie.mkv')).toBe(true);
+	expect(isTranscodedVideoContainer('https://cdn.mezon.ai/1cf93b197d401000/2081000000000000013_clip.m2ts')).toBe(true);
 });
 
 it('probes the ingest playlist with n = Unix ms / 3000 rounded down, the same for every viewer during the same 3 s', async () => {

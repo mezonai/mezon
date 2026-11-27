@@ -1,6 +1,6 @@
 import { getFileIngestUrl, isFileIngestCandidate, uploadFileToPath, uploadToFileIngest } from '@mezon/transport';
 import type { ApiMessageAttachment, ApiSession, Client } from 'mezon-js';
-import { AttachmentTypeUpload, ETypesCDN } from '../types';
+import { AttachmentTypeUpload, ETypeLinkMedia, ETypesCDN } from '../types';
 import { isMezonMediaUrl, isTenorUrl } from './urlSanitization';
 import { wantsHlsTranscode } from './videoSource';
 
@@ -46,14 +46,15 @@ export async function generatePathAttachments(
 				return attach;
 			}
 			try {
+				const uploadName = (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_');
+				const isVideoTsMime = Boolean(attach.filetype?.endsWith(ETypeLinkMedia.VIDEO_TS_FILE));
 				const fileType = attach.filetype?.includes(AttachmentTypeUpload.image)
 					? AttachmentTypeUpload.image
-					: attach.filetype?.includes(AttachmentTypeUpload.video)
+					: (attach.filetype?.includes(AttachmentTypeUpload.video) && !isVideoTsMime) || wantsHlsTranscode(uploadName)
 						? AttachmentTypeUpload.video
 						: attach.filetype?.includes(AttachmentTypeUpload.audio)
 							? AttachmentTypeUpload.audio
 							: AttachmentTypeUpload.doc;
-				const uploadName = (attach.filename || '').replace(/[^a-zA-Z0-9.]/g, '_');
 				const data = await client.uploadAttachmentFile(session, {
 					filename: uploadName,
 					filetype: fileType,
