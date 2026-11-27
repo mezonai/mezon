@@ -15,6 +15,7 @@ import { mainLoader, shouldRevalidateMain } from '../loaders/mainLoader';
 import { Canvas } from '@mezon/components';
 import { MemberProvider } from '@mezon/core';
 import { appActions, useAppDispatch } from '@mezon/store';
+import { getDeveloperPortalRedirect } from '@mezon/utils';
 import { canvasLoader, shouldRevalidateCanvas } from '../loaders/canvasLoader';
 import { inviteLoader, shouldRevalidateInvite } from '../loaders/inviteLoader';
 import { loginDeeplinkLoader, shouldRevalidateLoginDeeplink } from '../loaders/loginDeeplinkLoader';
@@ -74,6 +75,18 @@ const SuspenseFallback = () => {
 
 // Add a simple HydrateFallback component for the initial hydration
 const HydrateFallback = () => null;
+
+const DeveloperRedirectRoute = () => {
+	useEffect(() => {
+		const target =
+			typeof window !== 'undefined'
+				? (getDeveloperPortalRedirect(window.location.pathname, window.location.search, window.location.hash) ?? '/developers/')
+				: '/developers/';
+		window.location.replace(target);
+	}, []);
+
+	return null;
+};
 
 const RouterMonitor = () => {
 	const navigation = useNavigation();
@@ -503,6 +516,14 @@ export const Routes = memo(() => {
 								)
 							}
 						]
+					},
+					{
+						path: 'developer/*',
+						element: <DeveloperRedirectRoute />
+					},
+					{
+						path: 'developer',
+						element: <DeveloperRedirectRoute />
 					},
 					{
 						path: '*',
